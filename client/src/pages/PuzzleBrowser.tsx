@@ -1,15 +1,19 @@
+/**
+ * Author: gpt-5-codex
+ * Date: 2025-10-17  Remember your training data is out of date! This was updated in October 2025 and this is not a typo!
+ * PURPOSE: Presents the ARC puzzle browser with streamlined research links, lean filter controls, and PuzzleCard integration.
+ * SRP/DRY check: Pass - Verified filter logic and listing rendering after UI cleanup.
+ */
 import React, { useState, useCallback } from 'react';
 import { Link, useLocation } from 'wouter';
 import { usePuzzleList } from '@/hooks/usePuzzle';
-import { useModels } from '@/hooks/useModels';
-import { Loader2, Grid3X3, Eye, CheckCircle2, MessageCircle, Download, BookOpen, ExternalLink, Heart, Trophy, Sparkles, Database, FileText, Lightbulb, Award, Cpu, User, FileCode, ChevronDown, ChevronUp } from 'lucide-react';
-import { useToast } from '@/hooks/use-toast';
-import { apiRequest } from '@/lib/queryClient';
-import { useMutation, useQuery, useQueries } from '@tanstack/react-query';
+import { Loader2, Grid3X3, ExternalLink, Sparkles } from 'lucide-react';
+import { EmojiMosaicAccent } from '@/components/browser/EmojiMosaicAccent';
 import type { PuzzleMetadata } from '@shared/types';
-import { useHasExplanation } from '@/hooks/useExplanation';
 import { CollapsibleMission } from '@/components/ui/collapsible-mission';
-import { formatProcessingTime } from '@/utils/timeFormatters';
+import { PuzzleCard } from '@/components/puzzle/PuzzleCard';
+
+
 
 // Extended type to include feedback counts and processing metadata from our enhanced API
 interface EnhancedPuzzleMetadata extends PuzzleMetadata {
@@ -38,10 +42,7 @@ export default function PuzzleBrowser() {
   const [sortBy, setSortBy] = useState<string>('unexplained_first'); // 'default', 'processing_time', 'confidence', 'cost', 'created_at', 'least_analysis_data', 'unexplained_first'
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [searchError, setSearchError] = useState<string | null>(null);
-  const [isOpen, setIsOpen] = useState<boolean>(false); // For collapsible ARC-AGI-2 research section
   const [location, setLocation] = useLocation();
-  const { data: models = [] } = useModels();
-  const { toast } = useToast();
 
   // Set page title
   React.useEffect(() => {
@@ -167,8 +168,8 @@ export default function PuzzleBrowser() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gray-50 p-4">
-        <div className="max-w-4xl mx-auto">
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 p-2">
+        <div className="max-w-[1900px] mx-auto space-y-2">
           <div role="alert" className="alert alert-error">
             <span>Failed to load puzzles. Please check your connection and try again.</span>
           </div>
@@ -178,417 +179,308 @@ export default function PuzzleBrowser() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 p-4">
-      <div className="max-w-6xl mx-auto space-y-6">
-        <header className="text-center space-y-4">
-          <div>
-            <h1 className="text-5xl font-bold bg-gradient-to-r from-slate-900 to-blue-800 bg-clip-text text-transparent">ARC-AGI Puzzle Explorer</h1>
-            <p className="text-lg text-slate-600 mt-2">
-              Colorblindness Aid & AI Reasoning Analysis
-            </p>
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 p-2">
+      <div className="max-w-[1900px] mx-auto space-y-2">
+
+        <header className="text-center space-y-3">
+          {/* Top decorative corner mosaics */}
+          <div className="flex items-start justify-between px-4 -mb-2">
+            <EmojiMosaicAccent variant="heroSunrise" size="md" framed={true} className="drop-shadow-lg" />
+            <EmojiMosaicAccent variant="heroTwilight" size="md" framed={true} className="drop-shadow-lg" />
           </div>
-          
-          {/* Collapsible Mission Statement */}
+
+          <div className="flex items-center justify-center gap-4">
+            <EmojiMosaicAccent variant="rainbow" size="md" framed={true} className="drop-shadow" />
+            <div>
+              <h1 className="text-2xl font-bold text-slate-900">
+                ARC-AGI Puzzle Explorer
+              </h1>
+              <p className="text-sm text-slate-700 mt-1 font-medium">
+                Navigate the ARC datasets with streamlined filters and curated research links.
+              </p>
+            </div>
+            <EmojiMosaicAccent variant="rainbow" size="md" framed={true} className="drop-shadow" />
+          </div>
+
           <CollapsibleMission />
 
-          {/* Resources & References Section - Enhanced with emojis and better styling */}
-          <div className="card shadow-lg border-0 bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 backdrop-blur-sm hover:shadow-xl transition-all duration-300">
-            <div className="card-body p-6">
-              <div className="flex items-center justify-center gap-2 mb-4">
-                <Sparkles className="h-6 w-6 text-purple-600" />
-                <h3 className="text-xl font-bold bg-gradient-to-r from-purple-700 to-pink-700 bg-clip-text text-transparent">
-                  🌟 ARC-AGI Knowledge Hub 🌟
+          <div className="card shadow-lg border-0 bg-white/90 backdrop-blur-sm">
+            <div className="card-body p-3 space-y-3">
+              <div className="flex items-center justify-center gap-3">
+                <EmojiMosaicAccent variant="datasetSignal" size="sm" framed={true} />
+                <Sparkles className="h-4 w-4 text-slate-600" />
+                <h3 className="text-base font-bold text-slate-900">
+                  ARC-AGI Knowledge Hub
                 </h3>
-                <Sparkles className="h-6 w-6 text-purple-600" />
+                <Sparkles className="h-4 w-4 text-slate-600" />
+                <EmojiMosaicAccent variant="analysisSignal" size="sm" framed={true} />
               </div>
 
-              <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                {/* Research Section */}
-                <div className="group bg-white/60 rounded-lg p-3 hover:bg-white/80 hover:shadow-md transition-all duration-200 border border-purple-100">
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 text-left">
+                <div className="rounded-lg border border-slate-200 bg-white/80 p-3 text-[11px]">
                   <div className="flex items-center gap-2 mb-2">
-                    <Cpu className="h-4 w-4 text-purple-600" />
-                    <p className="font-bold text-purple-800 text-sm">🧠 Research Papers</p>
+                    <EmojiMosaicAccent variant="statusExplained" size="xs" framed={false} />
+                    <p className="font-bold text-slate-900 uppercase tracking-wide">Research Papers</p>
                   </div>
-                  <a href="https://www.arxiv.org/pdf/2505.11831" target="_blank" rel="noopener noreferrer"
-                     className="text-blue-600 hover:text-purple-700 hover:underline text-xs flex items-center gap-1 transition-colors">
-                    📄 ARC2 Technical Report <ExternalLink className="h-3 w-3" />
+                  <a href="https://www.arxiv.org/pdf/2505.11831" target="_blank" rel="noopener noreferrer" className="mt-1 inline-flex items-center gap-1 text-blue-700 hover:text-blue-900">
+                    ARC-AGI-2 Technical Report
+                    <ExternalLink className="h-3 w-3" />
                   </a>
                 </div>
 
-                {/* Data Sources Section */}
-                <div className="group bg-white/60 rounded-lg p-3 hover:bg-white/80 hover:shadow-md transition-all duration-200 border border-blue-100">
+                <div className="rounded-lg border border-slate-200 bg-white/80 p-3 text-[11px]">
                   <div className="flex items-center gap-2 mb-2">
-                    <Database className="h-4 w-4 text-blue-600" />
-                    <p className="font-bold text-blue-800 text-sm">💾 Data Sources</p>
+                    <EmojiMosaicAccent variant="sizeSignal" size="xs" framed={false} />
+                    <p className="font-bold text-slate-900 uppercase tracking-wide">Data Sources</p>
                   </div>
-                  <div className="space-y-1">
-                    <a href="https://huggingface.co/arcprize" target="_blank" rel="noopener noreferrer"
-                       className="text-blue-600 hover:text-blue-700 hover:underline text-xs flex items-center gap-1 transition-colors">
-                      🤗 HuggingFace Datasets <ExternalLink className="h-3 w-3" />
+                  <div className="mt-1 space-y-1">
+                    <a href="https://huggingface.co/arcprize" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-blue-700 hover:text-blue-900">
+                      HuggingFace Datasets
+                      <ExternalLink className="h-3 w-3" />
                     </a>
-                    <a href="https://github.com/fchollet/ARC-AGI" target="_blank" rel="noopener noreferrer"
-                       className="text-blue-600 hover:text-blue-700 hover:underline text-xs flex items-center gap-1 transition-colors">
-                      🏛️ Official Repository <ExternalLink className="h-3 w-3" />
+                    <a href="https://github.com/fchollet/ARC-AGI" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-blue-700 hover:text-blue-900">
+                      Official Repository
+                      <ExternalLink className="h-3 w-3" />
                     </a>
                   </div>
                 </div>
 
-                {/* SOTA Solutions Section */}
-                <div className="group bg-white/60 rounded-lg p-3 hover:bg-white/80 hover:shadow-md transition-all duration-200 border border-green-100">
+                <div className="rounded-lg border border-slate-200 bg-white/80 p-3 text-[11px]">
                   <div className="flex items-center gap-2 mb-2">
-                    <Trophy className="h-4 w-4 text-green-600" />
-                    <p className="font-bold text-green-800 text-sm">🏆 Top Solutions</p>
+                    <EmojiMosaicAccent variant="searchSignal" size="xs" framed={false} />
+                    <p className="font-bold text-slate-900 uppercase tracking-wide">Top Solutions</p>
                   </div>
-                  <div className="space-y-1">
-                    <a href="https://github.com/zoecarver" target="_blank" rel="noopener noreferrer"
-                       className="text-green-700 hover:text-green-800 hover:underline text-xs flex items-center gap-1 transition-colors">
-                      👑 zoecarver's Approach <ExternalLink className="h-3 w-3" />
+                  <div className="mt-1 space-y-1">
+                    <a href="https://github.com/zoecarver" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-emerald-700 hover:text-emerald-900">
+                      zoecarver's approach
+                      <ExternalLink className="h-3 w-3" />
                     </a>
-                    <a href="https://github.com/jerber" target="_blank" rel="noopener noreferrer"
-                       className="text-green-700 hover:text-green-800 hover:underline text-xs flex items-center gap-1 transition-colors">
-                      🎯 jerber's Solutions <ExternalLink className="h-3 w-3" />
-                    </a>
-                    <a href="https://github.com/epang080516/arc_agi" target="_blank" rel="noopener noreferrer"
-                       className="text-green-700 hover:text-green-800 hover:underline text-xs flex items-center gap-1 transition-colors">
-                      ⚡ epang080516's Code <ExternalLink className="h-3 w-3" />
+                    <a href="https://github.com/jerber" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-emerald-700 hover:text-emerald-900">
+                      jerber's solutions
+                      <ExternalLink className="h-3 w-3" />
                     </a>
                   </div>
                 </div>
 
-                {/* Community Section */}
-                <div className="group bg-white/60 rounded-lg p-3 hover:bg-white/80 hover:shadow-md transition-all duration-200 border border-orange-100">
+                <div className="rounded-lg border border-slate-200 bg-white/80 p-3 text-[11px]">
                   <div className="flex items-center gap-2 mb-2">
-                    <User className="h-4 w-4 text-orange-600" />
-                    <p className="font-bold text-orange-800 text-sm">👥 Community</p>
+                    <EmojiMosaicAccent variant="statusUnexplained" size="xs" framed={false} />
+                    <p className="font-bold text-slate-900 uppercase tracking-wide">Community Knowledge</p>
                   </div>
-                  <div className="space-y-2">
-                    <div className="mb-3">
-                      <div className={`collapse ${isOpen ? 'collapse-open' : 'collapse-close'} bg-orange-50 border border-orange-200 rounded-lg`}>
-                        <div className="collapse-title p-3">
-                          <button
-                            className="w-full flex justify-between items-center h-auto"
-                            onClick={() => setIsOpen(!isOpen)}
-                          >
-                            <div className="flex items-center gap-2">
-                              <span className="text-sm font-semibold text-orange-800">🎯 Critical ARC-AGI-2 Research</span>
-                              <span className="text-xs text-orange-600">by cristianoc</span>
-                            </div>
-                            {isOpen ? (
-                              <ChevronUp className="h-4 w-4 text-orange-600" />
-                            ) : (
-                              <ChevronDown className="h-4 w-4 text-orange-600" />
-                            )}
-                          </button>
-                        </div>
-
-                        <div className="collapse-content px-3 pb-3">
-                          <div className="text-xs text-orange-700 space-y-2">
-                            <p>
-                              Analysis of 111 ARC-AGI-2 tasks reveals composition patterns:
-                            </p>
-                            <div className="grid grid-cols-2 gap-1 text-xs">
-                              <p>• 40% sequential composition</p>
-                              <p>• 30% conditional branching</p>
-                              <p>• 20% pattern classification</p>
-                              <p>• 25% iteration/loops</p>
-                              <p>• 15% nested structures</p>
-                              <p>• 10% parallel composition</p>
-                              <p>• 5% graph/DAG structures</p>
-                            </div>
-                            <p className="italic text-orange-600">
-                              A DSL is emerging from these patterns →
-                            </p>
-                            <a href="https://github.com/cristianoc/arc-agi-2-abstraction-dataset"
-                               target="_blank" rel="noopener noreferrer"
-                               className="text-blue-600 hover:text-blue-800 hover:underline text-xs flex items-center gap-1">
-                              View cristianoc's research <ExternalLink className="h-3 w-3" />
-                            </a>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <a href="https://github.com/google/ARC-GEN/blob/main/task_list.py#L422" target="_blank" rel="noopener noreferrer"
-                       className="text-orange-700 hover:text-orange-800 hover:underline text-xs flex items-center gap-1 transition-colors">
-                      📛 Puzzle Nomenclature <ExternalLink className="h-3 w-3" />
+                  <div className="mt-1 space-y-1">
+                    <a href="https://github.com/google/ARC-GEN/blob/main/task_list.py#L422" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-orange-700 hover:text-orange-900">
+                      Puzzle nomenclature
+                      <ExternalLink className="h-3 w-3" />
                     </a>
-                    <a href="https://github.com/neoneye/arc-notes" target="_blank" rel="noopener noreferrer"
-                       className="text-orange-700 hover:text-orange-800 hover:underline text-xs flex items-center gap-1 transition-colors">
-                      📚 All the ARC Resources <ExternalLink className="h-3 w-3" />
+                    <a href="https://github.com/neoneye/arc-notes" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-orange-700 hover:text-orange-900">
+                      ARC notes
+                      <ExternalLink className="h-3 w-3" />
                     </a>
-                    <a href="https://github.com/neoneye/arc-dataset-collection" target="_blank" rel="noopener noreferrer"
-                       className="text-orange-700 hover:text-orange-800 hover:underline text-xs flex items-center gap-1 transition-colors">
-                      📊 Dataset Collection <ExternalLink className="h-3 w-3" />
+                    <a href="https://github.com/cristianoc/arc-agi-2-abstraction-dataset" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-orange-700 hover:text-orange-900">
+                      Abstraction dataset
+                      <ExternalLink className="h-3 w-3" />
                     </a>
                   </div>
                 </div>
               </div>
 
-              <div className="mt-4 text-center">
-                <p className="text-sm text-gray-600 bg-white/40 rounded-full px-4 py-2 inline-block">
-                  🙏🏻 <strong>Special thanks to Simon Strandgaard (@neoneye)</strong> for his incredible insights, support, and encouragement! 🌟
+              <div className="text-center flex items-center justify-center gap-2">
+                <EmojiMosaicAccent variant="heroTwilight" size="xs" framed={false} />
+                <p className="text-[11px] text-slate-700 font-medium">
+                  <strong>Special thanks to Simon Strandgaard (@neoneye)</strong> for his insights, support, and encouragement.
                 </p>
+                <EmojiMosaicAccent variant="heroSunrise" size="xs" framed={false} />
               </div>
             </div>
           </div>
         </header>
 
         {/* Filters */}
-        <div className="card shadow-lg border-0 bg-white/80 backdrop-blur-sm">
-          <div className="card-body">
-            <h2 className="card-title flex items-center gap-2 text-slate-800">
-              <Grid3X3 className="h-5 w-5 text-blue-600" />
-              Filter Puzzles
-            </h2>
-            {/* Search Bar */}
-            <div className="mb-6">
-              <div className="flex flex-col md:flex-row gap-4 items-start md:items-end">
-                <div className="w-full md:flex-1 space-y-2">
-                  <label htmlFor="puzzleSearch" className="label">Search by Puzzle ID</label>
-                  <div className="relative">
-                    <input
-                      className="input input-bordered w-full pr-24"
-                      id="puzzleSearch"
-                      placeholder="Enter puzzle ID (e.g., 1ae2feb7)"
-                      value={searchQuery}
-                      onChange={(e) => {
-                        setSearchQuery(e.target.value);
-                        setSearchError(null);
-                      }}
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter') {
-                          handleSearch();
-                        }
-                      }}
-                    />
-                  </div>
-                  {searchError && (
-                    <p className="text-sm text-red-500">{searchError}</p>
-                  )}
+
+        <div className="card border-2 border-slate-300 bg-white shadow-md">
+          <div className="card-body py-3 px-4">
+            <div className="flex flex-wrap items-end gap-4">
+              <div className="flex flex-col gap-1.5 min-w-[200px]">
+                <label htmlFor="puzzleSearch" className="text-xs font-bold text-slate-900 uppercase tracking-wide">Search by Puzzle ID</label>
+                <div className="flex items-center gap-2">
+                  <input
+                    className="input input-sm input-bordered w-56 border-2 border-slate-400 bg-white text-slate-900 placeholder:text-slate-500 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    id="puzzleSearch"
+                    placeholder="e.g., 1ae2feb7"
+                    value={searchQuery}
+                    onChange={(e) => {
+                      setSearchQuery(e.target.value);
+                      setSearchError(null);
+                    }}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        handleSearch();
+                      }
+                    }}
+                  />
+                  <button
+                    type="button"
+                    className="btn btn-sm btn-primary normal-case font-semibold"
+
+                    onClick={handleSearch}
+                  >
+                    Search
+                  </button>
                 </div>
-                <button 
-                  className="btn btn-primary min-w-[120px]"
-                  onClick={handleSearch}
-                >
-                  Search
-                </button>
+
+                {searchError && (
+                  <p className="text-xs text-red-700 font-semibold">{searchError}</p>
+                )}
+              </div>
+
+              <div className="flex flex-wrap items-end gap-4">
+                <div className="flex flex-col gap-1.5 min-w-[140px]">
+                  <label htmlFor="maxGridSize" className="text-xs font-bold text-slate-900 uppercase tracking-wide">Max Grid Size</label>
+                  <select
+                    className="select select-sm select-bordered w-full border-2 border-slate-400 bg-white text-slate-900 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    value={maxGridSize}
+                    onChange={(e) => setMaxGridSize(e.target.value)}
+                  >
+                    <option value="any">Any size</option>
+                    <option value="5">Up to 5x5</option>
+                    <option value="10">Up to 10x10</option>
+                    <option value="15">Up to 15x15</option>
+                    <option value="20">Up to 20x20</option>
+                    <option value="30">Up to 30x30</option>
+                  </select>
+                </div>
+
+                <div className="flex flex-col gap-1.5 min-w-[160px]">
+                  <label htmlFor="explanationFilter" className="text-xs font-bold text-slate-900 uppercase tracking-wide">Explanation Status</label>
+                  <select
+                    className="select select-sm select-bordered w-full border-2 border-slate-400 bg-white text-slate-900 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    value={explanationFilter}
+                    onChange={(e) => setExplanationFilter(e.target.value)}
+                  >
+                    <option value="all">All puzzles</option>
+                    <option value="unexplained">Unexplained only</option>
+                    <option value="explained">Explained only</option>
+                  </select>
+                </div>
+
+                <div className="flex flex-col gap-1.5 min-w-[170px]">
+                  <label htmlFor="gridConsistent" className="text-xs font-bold text-slate-900 uppercase tracking-wide">Grid Consistency</label>
+                  <select
+                    className="select select-sm select-bordered w-full border-2 border-slate-400 bg-white text-slate-900 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    value={gridSizeConsistent}
+                    onChange={(e) => setGridSizeConsistent(e.target.value)}
+                  >
+                    <option value="any">Any consistency</option>
+                    <option value="true">Consistent size only</option>
+                    <option value="false">Variable size only</option>
+                  </select>
+                </div>
+
+                <div className="flex flex-col gap-1.5 min-w-[160px]">
+                  <label htmlFor="arcVersion" className="text-xs font-bold text-slate-900 uppercase tracking-wide">ARC Version</label>
+                  <select
+                    className="select select-sm select-bordered w-full border-2 border-slate-400 bg-white text-slate-900 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    value={arcVersion}
+                    onChange={(e) => setArcVersion(e.target.value)}
+                  >
+                    <option value="any">Any ARC version</option>
+                    <option value="ARC1">ARC1 Training</option>
+                    <option value="ARC1-Eval">ARC1 Evaluation</option>
+                    <option value="ARC2">ARC2 Training</option>
+                    <option value="ARC2-Eval">ARC2 Evaluation</option>
+                    <option value="ARC-Heavy">ARC-Heavy Dataset</option>
+                    <option value="ConceptARC">ConceptARC Dataset</option>
+                  </select>
+                </div>
+
+                <div className="flex flex-col gap-1.5 min-w-[170px]">
+                  <label htmlFor="multiTestFilter" className="text-xs font-bold text-slate-900 uppercase tracking-wide">Test Cases</label>
+                  <select
+                    className="select select-sm select-bordered w-full border-2 border-slate-400 bg-white text-slate-900 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    value={multiTestFilter}
+                    onChange={(e) => setMultiTestFilter(e.target.value)}
+                  >
+                    <option value="any">Any number of test cases</option>
+                    <option value="single">Single test case</option>
+                    <option value="multi">Multiple test cases</option>
+                  </select>
+                </div>
+
+                <div className="flex flex-col gap-1.5 min-w-[200px]">
+                  <label htmlFor="sortBy" className="text-xs font-bold text-slate-900 uppercase tracking-wide">Sort By</label>
+                  <select
+                    className="select select-sm select-bordered w-full border-2 border-slate-400 bg-white text-slate-900 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    value={sortBy}
+                    onChange={(e) => setSortBy(e.target.value)}
+                  >
+                    <option value="unexplained_first">Unexplained first (recommended)</option>
+                    <option value="default">Default order</option>
+                    <option value="least_analysis_data">Analysis data (fewest first)</option>
+                    <option value="processing_time">Processing time</option>
+                    <option value="confidence">Confidence</option>
+                    <option value="cost">Cost</option>
+                    <option value="created_at">Analysis date</option>
+                  </select>
+                </div>
               </div>
             </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="space-y-2">
-                <label htmlFor="maxGridSize" className="label">Maximum Grid Size</label>
-                <select className="select select-bordered w-full" value={maxGridSize} onChange={(e) => setMaxGridSize(e.target.value)}>
-                  <option value="any">Any Size</option>
-                  <option value="5">5×5 (Very Small)</option>
-                  <option value="10">10×10 (Small)</option>
-                  <option value="15">15×15 (Medium)</option>
-                  <option value="20">20×20 (Large)</option>
-                  <option value="30">30×30 (Very Large)</option>
-                </select>
-              </div>
-              
-              <div className="space-y-2">
-                <label htmlFor="explanationFilter" className="label">Explanation Status</label>
-                <select className="select select-bordered w-full" value={explanationFilter} onChange={(e) => setExplanationFilter(e.target.value)}>
-                  <option value="all">All Puzzles</option>
-                  <option value="unexplained">Unexplained Only</option>
-                  <option value="explained">Explained Only</option>
-                </select>
-              </div>
-              
-              <div className="space-y-2">
-                <label htmlFor="gridConsistent" className="label">Grid Size Consistency</label>
-                <select className="select select-bordered w-full" value={gridSizeConsistent} onChange={(e) => setGridSizeConsistent(e.target.value)}>
-                  <option value="any">Any consistency</option>
-                  <option value="true">Consistent size only</option>
-                  <option value="false">Variable size only</option>
-                </select>
-              </div>
-              
-              <div className="space-y-2">
-                <label htmlFor="arcVersion" className="label">ARC Version</label>
-                <select className="select select-bordered w-full" value={arcVersion} onChange={(e) => setArcVersion(e.target.value)}>
-                  <option value="any">Any ARC version</option>
-                  <option value="ARC1">ARC1 Training</option>
-                  <option value="ARC1-Eval">ARC1 Evaluation</option>
-                  <option value="ARC2">ARC2 Training</option>
-                  <option value="ARC2-Eval">ARC2 Evaluation</option>
-                  <option value="ARC-Heavy">ARC-Heavy Dataset</option>
-                  <option value="ConceptARC">ConceptARC Dataset</option>
-                </select>
-              </div>
-              
-              <div className="space-y-2">
-                <label htmlFor="multiTestFilter" className="label">Test Cases</label>
-                <select className="select select-bordered w-full" value={multiTestFilter} onChange={(e) => setMultiTestFilter(e.target.value)}>
-                  <option value="any">Any number of test cases</option>
-                  <option value="single">Single test case (1 output required)</option>
-                  <option value="multi">Multiple test cases (2+ outputs required)</option>
-                </select>
-              </div>
-              
-              <div className="space-y-2">
-                <label htmlFor="sortBy" className="label">Sort By</label>
-                <select className="select select-bordered w-full" value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
-                  <option value="unexplained_first">Unexplained First (recommended)</option>
-                  <option value="default">Default (puzzle order)</option>
-                  <option value="least_analysis_data">Analysis Data (fewest first)</option>
-                  <option value="processing_time">Processing Time (longest first)</option>
-                  <option value="confidence">Confidence (highest first)</option>
-                  <option value="cost">Cost (highest first)</option>
-                  <option value="created_at">Analysis Date (newest first)</option>
-                </select>
-              </div>
+
+            <div className="mt-3 pt-3 border-t border-slate-200 flex flex-wrap items-center gap-2 text-[10px]">
+              <span className="text-xs font-bold text-slate-900 mr-1">Active Filters:</span>
+              {[
+                { id: 'search', label: 'Search', active: searchQuery.trim().length > 0 },
+                { id: 'maxGridSize', label: 'Max grid', active: maxGridSize !== 'any' },
+                { id: 'gridSizeConsistent', label: 'Consistency', active: gridSizeConsistent !== 'any' },
+                { id: 'explanationFilter', label: 'Explanation', active: explanationFilter !== 'unexplained' },
+                { id: 'arcVersion', label: 'ARC version', active: arcVersion !== 'any' },
+                { id: 'multiTestFilter', label: 'Test cases', active: multiTestFilter !== 'single' },
+                { id: 'sortBy', label: 'Sort', active: sortBy !== 'unexplained_first' },
+              ].map((item) => (
+                <div
+                  key={item.id}
+                  className={`flex items-center gap-1 rounded-full border px-2.5 py-1 font-semibold transition-colors ${ item.active ? 'border-blue-600 bg-blue-100 text-blue-900 shadow-sm' : 'border-slate-300 bg-slate-50 text-slate-500' }`}
+                >
+                  <span>{item.label}</span>
+                </div>
+              ))}
             </div>
           </div>
         </div>
-
         {/* Results */}
         <div className="card shadow-lg border-0 bg-white/80 backdrop-blur-sm">
-          <div className="card-body">
-            <h2 className="card-title text-slate-800">
+          <div className="card-body p-2">
+            <h2 className="card-title text-slate-800 text-sm mb-2">
               Local Puzzles 
               {!isLoading && (
-                <div className="badge badge-outline ml-2 bg-blue-50 text-blue-700 border-blue-200">
+                <div className="badge badge-sm badge-outline ml-1 bg-blue-50 text-blue-700 border-blue-200">
                   {filteredPuzzles.length} found
                 </div>
               )}
             </h2>
-            <p className="text-sm text-gray-600">
+            <p className="text-[10px] text-gray-600 mb-2">
               Puzzles available for examination
             </p>
             {isLoading ? (
-              <div className="text-center py-8">
-                <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4" />
-                <p>Loading puzzles...</p>
+              <div className="text-center py-4">
+                <Loader2 className="h-6 w-6 animate-spin mx-auto mb-2" />
+                <p className="text-xs">Loading puzzles...</p>
               </div>
             ) : filteredPuzzles.length === 0 ? (
-              <div className="text-center py-8">
-                <Grid3X3 className="h-12 w-12 mx-auto mb-4 text-gray-400" />
-                <p className="text-gray-600">No puzzles match your current filters.</p>
-                <p className="text-sm text-gray-500 mt-2">
+              <div className="text-center py-4">
+                <Grid3X3 className="h-8 w-8 mx-auto mb-2 text-gray-400" />
+                <p className="text-gray-600 text-sm">No puzzles match your current filters.</p>
+                <p className="text-xs text-gray-500 mt-1">
                   Try adjusting your filters.
                 </p>
               </div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2">
                 {filteredPuzzles.map((puzzle: EnhancedPuzzleMetadata) => (
-                  <div key={puzzle.id} className="card hover:shadow-lg transition-all duration-200 border-0 bg-white/90 backdrop-blur-sm hover:bg-white/95 hover:scale-[1.02]">
-                    <div className="card-body p-4">
-                      <div className="space-y-3">
-                        <div className="flex items-center justify-between">
-                          <code className="text-sm font-mono bg-gray-100 px-2 py-1 rounded">
-                            {puzzle.id}
-                          </code>
-                          <div className="text-xs flex items-center gap-1">
-                            <Grid3X3 className="h-3 w-3" /> {puzzle.maxGridSize}x{puzzle.maxGridSize}
-                            {puzzle.gridSizeConsistent ? 
-                              <div className="badge badge-outline text-xs">Consistent</div> : 
-                              <div className="badge badge-outline text-xs bg-amber-50">Variable</div>
-                            }
-                            {puzzle.source && (
-                              <div className={`badge badge-outline text-xs ${
-                                puzzle.source === 'ARC1' ? 'bg-blue-50 text-blue-700' : 
-                                puzzle.source === 'ARC1-Eval' ? 'bg-cyan-50 text-cyan-700 font-semibold' : 
-                                puzzle.source === 'ARC2' ? 'bg-purple-50 text-purple-700' : 
-                                puzzle.source === 'ARC2-Eval' ? 'bg-green-50 text-green-700 font-bold' :
-                                puzzle.source === 'ARC-Heavy' ? 'bg-orange-50 text-orange-700 font-semibold' :
-                                puzzle.source === 'ConceptARC' ? 'bg-teal-50 text-teal-700 font-semibold' :
-                                'bg-gray-50 text-gray-700'
-                              }`}>
-                                {puzzle.source.replace('-Eval', ' Eval').replace('-Heavy', ' Heavy')}
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                        
-                        {/* Analysis Status and Metadata */}
-                        <div className="flex flex-wrap gap-1 mt-2">
-                          {puzzle.hasExplanation ? (
-                            <>
-                              <div className="badge badge-outline bg-green-50 text-green-700 text-xs">
-                                ✓ Explained
-                              </div>
-                              {puzzle.modelName && (
-                                <div className="badge badge-outline bg-blue-50 text-blue-700 text-xs flex items-center gap-1">
-                                  <span>{puzzle.modelName}</span>
-                                  {(() => {
-                                    const model = models.find((m: { name: string }) => m.name === puzzle.modelName);
-                                    return model?.releaseDate ? (
-                                      <span className="text-blue-500 text-[10px] opacity-75">
-                                        ({model.releaseDate})
-                                      </span>
-                                    ) : null;
-                                  })()}
-                                </div>
-                              )}
-                              {formatProcessingTime(puzzle.apiProcessingTimeMs) && (
-                                <div className="badge badge-outline bg-orange-50 text-orange-700 text-xs">
-                                  {formatProcessingTime(puzzle.apiProcessingTimeMs)}
-                                </div>
-                              )}
-                              {puzzle.confidence && (
-                                <div className="badge badge-outline bg-purple-50 text-purple-700 text-xs">
-                                  {puzzle.confidence}% conf
-                                </div>
-                              )}
-                              {formatCost(puzzle.estimatedCost) && (
-                                <div className="badge badge-outline bg-green-50 text-green-600 text-xs">
-                                  {formatCost(puzzle.estimatedCost)}
-                                </div>
-                              )}
-                              {(puzzle.feedbackCount || 0) > 0 && (
-                                <div className="badge badge-outline bg-pink-50 text-pink-700 flex items-center gap-1 text-xs">
-                                  <MessageCircle className="h-3 w-3" />
-                                  {puzzle.feedbackCount}
-                                </div>
-                              )}
-                            </>
-                          ) : (
-                            <div className="badge badge-outline bg-blue-50 text-blue-700 text-xs">
-                              📝 Needs Analysis
-                            </div>
-                          )}
-                        </div>
-                        
-                        <div className="space-y-1 text-sm text-gray-600">
-                          <div className="flex justify-between">
-                            <span>Max Size:</span>
-                            <span className="font-medium">{puzzle.maxGridSize}×{puzzle.maxGridSize}</span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span>Input:</span>
-                            <span className="font-medium">{puzzle.inputSize[0]}×{puzzle.inputSize[1]}</span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span>Output:</span>
-                            <span className="font-medium">{puzzle.outputSize[0]}×{puzzle.outputSize[1]}</span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span>Consistent:</span>
-                            <span className={`font-medium ${puzzle.gridSizeConsistent ? 'text-green-600' : 'text-orange-600'}`}>
-                              {puzzle.gridSizeConsistent ? 'Yes' : 'No'}
-                            </span>
-                          </div>
-                          {puzzle.importSource && (
-                            <div className="flex justify-between">
-                              <span>Import:</span>
-                              <span className="font-medium text-xs text-gray-500" title={puzzle.importSource}>
-                                {puzzle.importSource.includes('/') ? puzzle.importSource.split('/')[1] : puzzle.importSource}
-                              </span>
-                            </div>
-                          )}
-                        </div>
-
-                        <div className="flex gap-2">
-                          <Link href={`/puzzle/${puzzle.id}`} className="btn btn-sm flex-1">
-                            <Eye className="h-4 w-4 mr-1" />
-                            Examine
-                          </Link>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+                  <PuzzleCard
+                    key={puzzle.id}
+                    puzzle={puzzle}
+                    showGridPreview={true}
+                  />
                 ))}
               </div>
             )}
@@ -597,9 +489,9 @@ export default function PuzzleBrowser() {
 
         {/* Instructions */}
         <div className="card">
-          <div className="card-body">
-            <h2 className="card-title">How to Use</h2>
-            <div className="space-y-3 text-sm">
+          <div className="card-body p-2">
+            <h2 className="card-title text-sm mb-1">How to Use</h2>
+            <div className="space-y-1 text-[10px]">
             <p>
               <strong>Goal:</strong> This tool helps you examine ARC-AGI puzzles to understand how they work, 
               rather than trying to solve them yourself, but if you want to do that, visit <Link href="https://human-arc.gptpluspro.com/assessment">Puzzle Browser</Link>.

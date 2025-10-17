@@ -12,11 +12,12 @@ import React, { useEffect, useRef } from 'react';
 interface Props {
   streamingText?: string;
   streamingReasoning?: string;
+  logLines?: string[];
   isRunning: boolean;
   phase?: string;
 }
 
-export default function SaturnTerminalLogs({ streamingText, streamingReasoning, isRunning, phase }: Props) {
+export default function SaturnTerminalLogs({ streamingText, streamingReasoning, logLines, isRunning, phase }: Props) {
   const scrollRef = useRef<HTMLDivElement>(null);
 
   // Auto-scroll to bottom when content updates
@@ -24,9 +25,9 @@ export default function SaturnTerminalLogs({ streamingText, streamingReasoning, 
     if (scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
-  }, [streamingText, streamingReasoning]);
+  }, [streamingText, streamingReasoning, logLines]);
 
-  const hasContent = streamingText || streamingReasoning;
+  const hasContent = streamingText || streamingReasoning || (logLines && logLines.length > 0);
 
   return (
     <div className="bg-white border border-gray-300 rounded h-full flex flex-col">
@@ -59,6 +60,23 @@ export default function SaturnTerminalLogs({ streamingText, streamingReasoning, 
           </div>
         ) : (
           <div className="space-y-3">
+            {/* Log Lines - Status Messages */}
+            {logLines && logLines.length > 0 && (
+              <div className="border border-gray-300 rounded bg-white p-3">
+                <div className="text-xs font-bold text-gray-700 mb-2 flex items-center gap-2">
+                  {isRunning && <span className="text-gray-600">●</span>}
+                  STATUS LOG
+                </div>
+                <div className="text-xs font-mono text-gray-700 space-y-1">
+                  {logLines.map((line, i) => (
+                    <div key={i} className="border-l-2 border-gray-300 pl-2">
+                      {line}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
             {/* Reasoning */}
             {streamingReasoning && (
               <div className="border border-blue-300 rounded bg-blue-50 p-3">

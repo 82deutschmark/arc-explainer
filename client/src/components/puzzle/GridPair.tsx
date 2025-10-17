@@ -3,9 +3,10 @@
  *
  * Author: Cascade (DeepSeek R1)
  * Date: 2025-10-12
- * PURPOSE: Explicit input→output grid pair display with clear labeling
- * Handles single and multiple outputs with proper visual hierarchy
- * Replaces ambiguous arrow-only separation with explicit INPUT/OUTPUT badges
+ * PURPOSE: Explicit input→output grid pair display with clear labeling and strong visual distinction.
+ * Handles single and multiple outputs with proper visual hierarchy.
+ * Uses high-contrast colors (blue for input, yellow/green for output) to eliminate confusion.
+ * Removed hardcoded size constraints to support grids of any dimension (2x2 to 30x30).
  * 
  * SRP/DRY check: Pass - Single responsibility (grid pair visualization)
  * DaisyUI: Pass - Uses DaisyUI badge component
@@ -22,9 +23,6 @@ interface GridPairProps {
   showEmojis: boolean;
   emojiSet: EmojiSet;
   isTest?: boolean;
-  compact?: boolean;
-  maxWidth?: number;
-  maxHeight?: number;
 }
 
 /**
@@ -37,46 +35,41 @@ export function GridPair({
   title,
   showEmojis,
   emojiSet,
-  isTest = false,
-  compact = true,
-  maxWidth = 180,
-  maxHeight = 180
+  isTest = false
 }: GridPairProps) {
   const hasMultipleOutputs = outputs.length > 1;
 
   return (
     <div 
-      className={`border-2 rounded-lg overflow-hidden ${
-        isTest ? 'border-green-500 bg-green-50' : 'border-base-300 bg-base-100'
+      className={`inline-block border-3 rounded-lg overflow-visible shadow-md ${
+        isTest ? 'border-green-600 bg-base-100' : 'border-blue-600 bg-base-100'
       }`}
+      style={{ minWidth: 'fit-content' }}
     >
       {/* Title Bar */}
-      <div className={`px-2 py-1 text-xs font-semibold ${
-        isTest ? 'bg-green-600 text-white' : 'bg-base-200 text-base-content'
+      <div className={`px-3 py-2 text-sm font-bold ${
+        isTest ? 'bg-green-700 text-white' : 'bg-blue-700 text-white'
       }`}>
         {title}
         {hasMultipleOutputs && (
-          <span className="ml-2 badge badge-warning badge-xs">
+          <span className="ml-2 badge badge-warning badge-sm">
             {outputs.length} outputs
           </span>
         )}
       </div>
 
       {/* Grid Display Area */}
-      <div className="flex divide-x-2 divide-base-300">
+      <div className="flex divide-x-4 divide-gray-300">
         {/* INPUT Section */}
-        <div className="flex-1 p-2 bg-blue-50">
-          <div className="flex items-center gap-1 mb-1">
-            <span className="text-[10px] font-bold text-blue-700 uppercase">📋 Input</span>
+        <div className="p-3 bg-blue-200">
+          <div className="flex items-center gap-2 mb-2">
+            <span className="text-xs font-bold text-blue-900 uppercase px-2 py-1 bg-blue-300 rounded">📋 Input</span>
           </div>
           <PuzzleGrid
             grid={input}
             title=""
             showEmojis={showEmojis}
             emojiSet={emojiSet}
-            compact={compact}
-            maxWidth={maxWidth}
-            maxHeight={maxHeight}
           />
         </div>
 
@@ -84,11 +77,11 @@ export function GridPair({
         {outputs.map((output, idx) => (
           <div 
             key={idx}
-            className={`flex-1 p-2 ${isTest ? 'bg-green-100' : 'bg-amber-50'}`}
+            className={`p-3 ${isTest ? 'bg-green-200' : 'bg-yellow-200'}`}
           >
-            <div className="flex items-center gap-1 mb-1">
-              <span className={`text-[10px] font-bold uppercase ${
-                isTest ? 'text-green-700' : 'text-amber-700'
+            <div className="flex items-center gap-2 mb-2">
+              <span className={`text-xs font-bold uppercase px-2 py-1 rounded ${
+                isTest ? 'text-green-900 bg-green-300' : 'text-yellow-900 bg-yellow-300'
               }`}>
                 🎯 Output{hasMultipleOutputs ? ` ${idx + 1}` : ''}
               </span>
@@ -98,9 +91,6 @@ export function GridPair({
               title=""
               showEmojis={showEmojis}
               emojiSet={emojiSet}
-              compact={compact}
-              maxWidth={maxWidth}
-              maxHeight={maxHeight}
             />
           </div>
         ))}

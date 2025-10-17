@@ -1,13 +1,40 @@
 /**
- * aiServiceFactory.ts
- *
- * Factory pattern implementation to get the appropriate AI service based on model name.
- * Supports OpenAI, Anthropic (Claude), xAI Grok, Google Gemini, and DeepSeek providers.
- * This replaces dynamic imports in route handlers with a more efficient approach that
- * loads services once at startup.
- *
- * @author Cascade
+ * Author: gpt-5-codex
+ * Date: 2025-10-16
+ * PURPOSE: Centralized factory that lazily loads and routes AI service singletons by model prefix.
+ *          Integration points: dynamic ES module imports for provider implementations (OpenAI, Anthropic, Grok, Gemini,
+ *          DeepSeek, OpenRouter, Grover, Saturn, Heuristic) used by HTTP controllers when resolving model requests.
+ * SRP/DRY check: Pass — single responsibility for provider routing and reuse of existing services.
+ * DaisyUI: Pass — backend-only TypeScript module with no UI elements.
  */
+
+export interface CanonicalModelKey {
+  original: string;
+  normalized: string;
+}
+
+const OPENAI_PREFIX = 'openai/';
+
+export const canonicalizeModelKey = (modelKey: string): CanonicalModelKey => {
+  if (typeof modelKey !== 'string' || modelKey.length === 0) {
+    return {
+      original: modelKey,
+      normalized: modelKey,
+    };
+  }
+
+  if (modelKey.startsWith(OPENAI_PREFIX)) {
+    return {
+      original: modelKey,
+      normalized: modelKey.slice(OPENAI_PREFIX.length),
+    };
+  }
+
+  return {
+    original: modelKey,
+    normalized: modelKey,
+  };
+};
 
 class AIServiceFactory {
   private anthropicService: any;
@@ -18,7 +45,6 @@ class AIServiceFactory {
   private openrouterService: any;
   private groverService: any;
   private saturnService: any;
-  private jjoshService: any;
   private heuristicService: any;
 
   /**
@@ -35,7 +61,6 @@ class AIServiceFactory {
       const { openrouterService } = await import('./openrouter');
       const { groverService } = await import('./grover');
       const { saturnService } = await import('./saturnService');
-      const { jjoshService } = await import('./jjosh');
       const { heuristicService } = await import('./heuristic');
 
       this.anthropicService = anthropicService;
@@ -46,7 +71,6 @@ class AIServiceFactory {
       this.openrouterService = openrouterService;
       this.groverService = groverService;
       this.saturnService = saturnService;
-      this.jjoshService = jjoshService;
       this.heuristicService = heuristicService;
     } catch (error) {
       console.error('[Factory] Error initializing services:', error);
@@ -61,59 +85,63 @@ class AIServiceFactory {
    * @returns The appropriate AI service
    */
   getService(model: string) {
+    const { original, normalized } = canonicalizeModelKey(model);
     // Log routing decision for debugging
-    console.log(`[Factory] Routing model '${model}' to service:`);
+    console.log(
+      `[Factory] Routing model '${original}' (normalized: '${normalized}') to service:`
+    );
 
     // Anthropic Claude models
-    if (model.startsWith('claude-')) {
+    if (normalized.startsWith('claude-')) {
       console.log('   -> Anthropic service');
       return this.anthropicService;
     }
 
-    // jjosh ARC AGI solver (external Python solver)
-    if (model.startsWith('jjosh-')) {
-      console.log('   -> jjosh service');
-      return this.jjoshService;
-    }
-
     // Heuristic solver (internal Python solver)
-    if (model.startsWith('heuristic-')) {
+    if (normalized.startsWith('heuristic-')) {
       console.log('   -> heuristic service');
       return this.heuristicService;
     }
 
     // Saturn visual solver (uses underlying models with visual analysis)
-    if (model.startsWith('saturn-')) {
+    if (normalized.startsWith('saturn-')) {
       console.log('   -> Saturn service');
       return this.saturnService;
     }
 
     // Grover iterative solver (uses underlying models)
-    if (model.startsWith('grover-')) {
+    if (normalized.startsWith('grover-')) {
       console.log('   -> Grover service');
       return this.groverService;
     }
 
     // xAI Grok models
-    if (model.startsWith('grok-')) {
+    if (normalized.startsWith('grok-')) {
       console.log('   -> Grok service');
       return this.grokService;
     }
 
     // Google Gemini models
-    if (model.startsWith('gemini-')) {
+    if (normalized.startsWith('gemini-')) {
       console.log('   -> Gemini service');
       return this.geminiService;
     }
 
     // DeepSeek models
-    if (model.startsWith('deepseek-')) {
+    if (normalized.startsWith('deepseek-')) {
       console.log('   -> DeepSeek service');
       return this.deepseekService;
     }
 
     // OpenRouter models (detect by provider-style naming: provider/model-name)
-    if (model.includes('/') || model.startsWith('meta-') || model.startsWith('anthropic/') || model.startsWith('google/') || model.startsWith('openai/') || model.startsWith('qwen/') || model.startsWith('x-ai/')) {
+    if (
+      normalized.includes('/') ||
+      normalized.startsWith('meta-') ||
+      normalized.startsWith('anthropic/') ||
+      normalized.startsWith('google/') ||
+      normalized.startsWith('qwen/') ||
+      normalized.startsWith('x-ai/')
+    ) {
       console.log('   -> OpenRouter service');
       return this.openrouterService;
     }

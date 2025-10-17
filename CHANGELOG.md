@@ -1,3 +1,323 @@
+## [4.8.27] - 2025-10-17
+### ✨ Enhanced Streaming Modal - Real-Time Context Display
+
+#### Summary
+The streaming modal in PuzzleExaminer now displays the **actual constructed prompt** sent to the AI, not just template placeholders:
+- **Real Prompt Display**: Shows the fully constructed prompt with test cases, emojis, and all dynamic content
+- **Compact Test Grids**: Small 64x64px visual reference of test input/output grids for context
+- **Focus on Reasoning**: Prompt and grids are compact to keep attention on the streaming AI output
+
+#### Technical Changes
+- Modified `useAnalysisStreaming` hook to extract and expose `promptPreview` from server status events
+- Updated `useAnalysisResults` to pass through `streamingPromptPreview` from the streaming hook
+- Enhanced `StreamingAnalysisPanel` to accept `promptPreview` prop and display actual server-generated prompt
+- Compact grid display using 64x64px TinyGrid components with inline layout
+- Server already emits `promptPreview` via `stream.status` event during `prompt_ready` phase
+
+#### Files Modified
+- `client/src/hooks/useAnalysisStreaming.ts` - Extract promptPreview from status events
+- `client/src/hooks/useAnalysisResults.ts` - Pass through streamingPromptPreview
+- `client/src/components/puzzle/StreamingAnalysisPanel.tsx` - Display real prompt and compact grids
+- `client/src/pages/PuzzleExaminer.tsx` - Wire up promptPreview to streaming panel
+
+#### User Experience
+Users now see:
+1. **The ACTUAL prompt** sent to the AI (includes all dynamic content, emojis, test cases)
+2. **Compact test grid thumbnails** for visual reference (64x64px each)
+3. **Live streaming AI output** remains the primary focus with maximum screen space
+
+---
+
+## [4.8.26] - 2025-10-17
+### ⚙️ Streaming Defaults Restored for GPT-5 Analyses
+
+#### Summary
+- Enable streaming by default in development builds so Responses API deltas surface without extra env configuration (`shared/config/streaming.ts`).
+- Align frontend gating with the shared resolver, letting the UI auto-detect streaming support when `VITE_ENABLE_SSE_STREAMING` is unset (`client/src/hooks/useAnalysisResults.ts`).
+- Expose the documented `DELETE /api/stream/analyze/:sessionId` cancel route alongside the legacy POST alias (`server/routes.ts`).
+- Document remediation plan for archive (`docs/2025-10-17-streaming-bugfix-plan.md`).
+
+#### Verification
+- Manual GPT-5 streaming run (Puzzle Examiner) to confirm reasoning/text deltas appear live.
+
+---
+## [4.8.25] - 2025-10-16
+### BUGFIX: Prevent JSON fallback after parsed deltas
+
+Streaming structured responses started duplicating text into the parsed buffer and flagging fallback: true even after the Responses API delivered response.output_parsed.delta. This broke consumers that rely on pristine JSON streams.
+
+#### Root Cause
+- The guard aggregates.expectingJson && !aggregates.receivedAnnotatedJsonDelta treated non-annotated parsed deltas as missing, so subsequent response.output_text.delta chunks re-entered the fallback path.
+
+#### Fix
+- Switch the fallback guard to !aggregates.receivedParsedJsonDelta and clear usedFallbackJson as soon as real parsed deltas arrive (server/services/openai/streaming.ts).
+- Add regression coverage to ensure text events after parsed deltas never emit fallback metadata (tests/openaiStreamingHandlers.test.ts).
+
+#### Verification
+- npm test -- openaiStreamingHandlers.test.ts
+- Confirmed new test fails prior to fix and passes after.
+
+---
+## [4.8.24] - 2025-10-16
+### 🔒 SECURITY: Complete Removal of API Authentication Requirements
+
+**CRITICAL CHANGE: All API endpoints are now publicly accessible with NO authentication required.**
+
+#### Problem
+Previous development mistakenly added API key authentication middleware to various endpoints, breaking external integrations and researcher access to the ARC Explainer API.
+
+#### Solution
+**Complete removal of all authentication requirements across the entire API surface.**
+
+#### Changes Made
+
+**1. Server Route Configuration (`server/routes.ts`)**
+- ✅ **REMOVED**: Unused `apiKeyAuth` and `optionalApiKeyAuth` imports
+- ✅ **ADDED**: Clear comment documenting that authentication middleware is NOT USED
+- ✅ **VERIFIED**: No routes in the codebase use authentication middleware
+
+**2. Authentication Middleware (`server/middleware/apiKeyAuth.ts`)**
+- ✅ **ADDED**: Prominent warning comment at file header: "⚠️ WARNING: DO NOT USE THIS MIDDLEWARE! ⚠️"
+- ✅ **DOCUMENTED**: All endpoints must remain public and freely accessible
+- ✅ **RETAINED**: File kept for reference only, never to be applied to routes
+
+**3. API Documentation (`docs/reference/api/EXTERNAL_API.md`)**
+- ✅ **REMOVED**: All authentication requirements sections
+- ✅ **REPLACED**: With clear "⚠️ NO AUTHENTICATION REQUIRED ⚠️" warnings
+- ✅ **UPDATED**: Python client example to remove API key parameter
+- ✅ **CLARIFIED**: All endpoints are publicly accessible with no authentication
+
+#### Verification Results
+- ✅ **Comprehensive search**: No authentication middleware applied anywhere
+- ✅ **API client compatibility**: Python client works without API key parameter
+- ✅ **External integrations**: All endpoints freely accessible for researchers
+- ✅ **Documentation consistency**: All references to authentication removed
+
+#### Impact
+**All ARC Explainer API endpoints are now completely public and require NO authentication.** This ensures maximum accessibility for researchers, external applications, and integrations while maintaining all existing functionality.
+
+**Files Modified:**
+- `server/routes.ts` - Removed unused authentication imports
+- `server/middleware/apiKeyAuth.ts` - Added prominent warnings against use
+- `docs/reference/api/EXTERNAL_API.md` - Removed all authentication requirements
+
+---
+
+## [4.8.23] - 2025-10-16
+### 🔴 CRITICAL: Saturn Non-Streaming Call Bug
+
+**Fixed critical anti-pattern where Saturn called non-streaming method even when streaming harness was present, causing complete loss of real-time feedback.**
+
+#### The Bug
+Saturn service was unconditionally calling `analyzePuzzleWithModel()` for all 5 phases even when `serviceOpts.stream` harness existed, resulting in:
+- ❌ Zero `stream.chunk` events emitted to client
+- ❌ OpenAI generated reasoning tokens but never sent them until completion
+- ❌ Users saw "Waiting for AI output..." for 30+ seconds despite OpenAI streaming correctly
+- ❌ Backend confirmed correct payload (`verbosity: high`) but streaming loop never executed
+
+#### Root Cause
+```typescript
+// WRONG - Always non-streaming
+const phase1Response = await underlyingService.analyzePuzzleWithModel(
+  task, underlyingModel, taskId, temperature, promptId, phase1Prompt,
+  { ...options }, { ...serviceOpts }  // ← harness in serviceOpts ignored!
+);
+```
+
+#### The Fix
+```typescript
+// CORRECT - Conditional streaming
+const phase1Response = harness
+  ? await underlyingService.analyzePuzzleWithStreaming!(...)
+  : await underlyingService.analyzePuzzleWithModel(...);
+```
+
+Applied to all 5 Saturn phases: phase1, phase2, phase2.5, additional training loop, phase3.
+
+#### Detection Method
+1. Backend test showed `Chunks received: 0` despite successful SSE connection
+2. Added debug logging to `openai.ts` - streaming event loop never executed
+3. Traced call chain: `saturnStreamService` → `saturnService` → **BUG: always called non-streaming path**
+
+#### Prevention
+- **Code Review Checklist**: Any service wrapper accepting `ServiceOptions` must check `serviceOpts.stream` before choosing method
+- **Search Pattern**: `grep -r "analyzePuzzleWithModel.*serviceOpts" --include="*.ts"`
+- **Verified Clean**: All other services (Grover, PuzzleAnalysisService, Controllers) handle correctly
+
+#### Documentation
+- Created `docs/bugs/2025-10-16-saturn-streaming-non-streaming-call.md` with full technical details
+- Added anti-pattern examples and testing checklist
+
+---
+
+## [4.8.22] - 2025-10-16
+### 🪐 Saturn Streaming: Immediate UI Feedback & Merge Conflict Resolution
+
+**Fixed Saturn Visual Solver to show immediate UI feedback when analysis starts and resolved multiple merge conflict artifacts blocking streaming.**
+
+#### Key Fixes
+- **Immediate Feedback:** Added `logLines` display to `SaturnTerminalLogs` component so users see status updates immediately when clicking Start Analysis button
+- **Merge Conflict Cleanup:** Removed duplicate variable declarations in `useAnalysisResults`, `analysisStreamService`, and `openai/streaming` that were preventing successful builds
+- **Streaming Detection:** Fixed frontend to default streaming to enabled in development mode for better developer experience
+- **URL Construction:** Fixed SSE URL to use relative paths so Vite proxy correctly forwards requests to backend
+- **Error Handling:** Added comprehensive try/catch blocks and console logging throughout streaming flow for better debugging
+
+#### Quality Gates
+- Server starts successfully without build errors
+- Backend SSE endpoint tested and confirmed working with test script
+- Frontend displays status log with startup messages
+
+---
+
+## [4.8.21] - 2025-10-17
+### 🔁 Streaming Flag Diagnostics Hardening
+
+**Improved the unified streaming configuration helper so deprecated env vars and mismatched builds surface immediately during boot.**
+
+#### Key Fixes
+- **Legacy detection:** `resolveStreamingConfig` now inspects both `process.env` and `import.meta.env` for `ENABLE_SSE_STREAMING`/`VITE_ENABLE_SSE_STREAMING` usage even when shadowed, guaranteeing the startup warning fires whenever legacy flags linger.
+- **Metadata alignment:** Updated the shared helper header to follow the October 2025 TypeScript comment convention applied across the repo.
+
+#### Quality Gates
+- `npm run check`
+
+---
+
+## [4.8.20] - 2025-10-16
+### 🛠️ OpenAI Responses API Remediation
+
+**Repaired the October 2025 Responses API migration so Saturn regains structured parsing and resilient streaming.**
+
+#### Key Fixes
+- **Payload Compliance:** `payloadBuilder` now emits system prompts via the `instructions` field and converts user prompts into `input_text` message items so continuations honour `previous_response_id` without duplicating context.
+- **Streaming Coverage:** Added handlers for `response.reasoning_text.*`, `response.reasoning_summary_text.*`, and summary part events so SSE clients receive the full reasoning trace and JSON annotations while runs are in flight.
+- **Finalization Signals:** Streaming harness surfaces accumulated reasoning summaries and aggregated JSON chunks to the session bus for downstream consumers.
+
+#### Quality Gates
+- `npm run check`
+
+---
+
+## [4.8.19] - 2025-10-16
+### 🛰️ Saturn Streaming: JSON & Annotation Parity
+
+**Closed the streaming parity gap so Saturn surfaces structured output and safety metadata while responses are still inflight.**
+
+#### Key Fixes
+- **Structured Output Streaming:** `server/services/openai.ts` now treats `json_schema` responses as text deltas, emitting `type: "json"` chunks so operators can watch structured payloads build in real time.
+- **Annotation Delivery:** Streaming harness propagates `response.output_text.annotation.added` events end-to-end, preserving citation and safety markers in Saturn session logs and UI state.
+- **Shared Contracts:** Extended shared streaming types plus `useSaturnProgress` consumer logic to record the new chunk shapes without breaking existing clients.
+
+#### Quality Gates
+- Added regression coverage in `tests/openaiStreamingHandlers.test.ts` to assert JSON deltas and annotation events surface through the SSE shim.
+- Documented implementation approach in `docs/2025-02-15-streaming-fix-plan.md` for future streaming audits.
+
+---
+
+## [4.8.18] - 2025-10-16
+### 🎨 PuzzleBrowser: Restore Colors & Visual Effects
+
+**Restored the older more colorful version of the PuzzleBrowser page with vibrant gradients, animated effects, and engaging visual design.**
+
+#### Major Visual Enhancements:
+
+**1. COLORFUL GRADIENT BACKGROUNDS**
+- **Main background**: Beautiful blue → indigo → purple gradient instead of plain gray
+- **Hero section**: Multi-layered gradients with overlay effects and glassmorphism
+- **Statistics cards**: Each has distinct color themes (blue, emerald, orange)
+- **All sections**: Rich gradient backgrounds replacing monochromatic white/slate
+
+**2. VIBRANT COLOR SCHEMES**
+- **Hero section**: Blue-to-purple gradients with gradient text effects and sparkle badges
+- **Community section**: Purple/pink theme with colorful gradient action buttons
+- **Knowledge Hub**: Rainbow-themed quadrants (blue, emerald, orange, purple sections)
+- **Filters section**: Clean emerald/green theme with colorful form styling
+- **Results section**: Warm rose/pink theme with engaging empty states
+
+**3. ENHANCED VISUAL EFFECTS**
+- **Gradient text** for main titles using CSS clip-path
+- **Colorful badges and buttons** with hover animations
+- **Smooth transitions** on all interactive elements (200ms duration)
+- **Animated loading states** with matching color themes
+- **Better visual hierarchy** with colorful labels and icons
+
+**4. SECTION-SPECIFIC THEMES**
+- **Hero**: Blue/purple professional gradient theme with sparkle badge
+- **Stats**: Color-coded cards (blue=total, emerald=progress, orange=backlog)
+- **Community**: Purple/pink vibrant theme for acknowledgements
+- **Knowledge Hub**: Each quadrant has distinct personality through color
+- **Filters**: Emerald/green theme with gradient icon badges
+- **Results**: Rose/pink theme with colorful loading and empty states
+
+**Design Philosophy:**
+- Restored visual engagement while maintaining professional functionality
+- Each section has personality through thoughtful color theming
+- Smooth animations and transitions enhance user experience
+- Colorful design supports better information hierarchy
+
+**Files Modified:**
+- `client/src/pages/PuzzleBrowser.tsx` - Complete visual redesign with colorful gradients and effects
+
+**Impact:** PuzzleBrowser now has a much more engaging, colorful design that users preferred from the older version, while maintaining all existing functionality and improving visual hierarchy through strategic use of color.
+
+---
+
+## [4.8.17] - 2025-10-16
+### ♻️ PuzzleExaminer: Restore Card Grid & DaisyUI Streaming Modal
+
+**Regression Audit:**
+- **4.8.1 (2025-10-12)** replaced the PuzzleExaminer model picker with the `ModelTable` data grid to support the mandatory prompt preview flow. While the preview safeguard was useful, the dense table removed the intuitive card layout that testers preferred for quick scanning.
+- **Post-4.8.16 hotfix** swapped the DaisyUI `<dialog>` streaming modal for the shadcn dialog wrapper while chasing accessibility issues. That change regressed the streaming UX by breaking the auto-open behaviour the DaisyUI modal provides when `modal-open` is toggled.
+
+**Fixes:**
+- Reinstated the DaisyUI `<dialog>` streaming modal so long-running analyses once again surface in the dedicated overlay without manual intervention.
+- Brought back the ModelSelection card grid so models render as the colorful badge cards from early October instead of the table rows. This keeps the prompt preview safeguards (handled in `PromptPreviewModal`) without the data-table UX regression.
+- Documented the above regressions directly in this entry for future reference.
+
+**Files Updated:** `client/src/pages/PuzzleExaminer.tsx`
+
+---
+
+## [4.8.16] - 2025-10-15
+### 🎨 PuzzleBrowser: Restore Acknowledgements & Fix Terrible Design
+
+**Fixed the previous redesign that removed critical acknowledgements and used poor UX patterns.**
+
+#### Changes:
+
+**1. RESTORED ACKNOWLEDGEMENTS SECTION**
+- Previous redesign accidentally deleted the entire Resources & References section
+- Restored complete "ARC-AGI Knowledge Hub" with:
+  - Research papers (ARC2 Technical Report)
+  - Data sources (HuggingFace, Official Repository)
+  - SOTA solutions (zoecarver, jerber, epang080516)
+  - Community resources with collapsible ARC-AGI-2 research by cristianoc
+- Added all necessary Lucide icons and state management
+
+**2. PROMINENT ACKNOWLEDGEMENT BANNER (NEW)**
+- Created eye-catching gradient-bordered banner at top of page
+- Large, bold acknowledgement to Simon Strandgaard (@neoneye)
+- Direct prominent buttons linking to essential repos:
+  - arc-notes (All ARC Resources)
+  - arc-dataset-collection (Dataset Collection)
+- Front and center positioning ensures maximum visibility
+- Animated sparkle icons for visual emphasis
+
+**3. REMOVED USELESS FOOTER**
+- Deleted footer section that nobody would ever see
+- Footer links buried at bottom are terrible UX
+- Important links already present in Resources section above
+
+**Design Philosophy:**
+- Acknowledgements should be prominent, not hidden in footers
+- Simon's contributions deserve front-and-center recognition
+- Footers are terrible design for important information
+
+**Files Changed:**
+- `client/src/pages/PuzzleBrowser.tsx`
+
+---
+
 ## [4.8.15] - 2025-10-15
 ### 🔥 CRITICAL: Saturn Visual Solver - Complete UI Rebuild + DB Persistence + Defaults
 
@@ -2223,13 +2543,18 @@ app.get("/api/model-dataset/metrics/:modelName/:datasetName", asyncHandler(model
 
 ### Added
 - **SSE Streaming Scaffold (Needs Audit)**
-  - Introduced `/api/stream/analyze/:taskId/:modelKey` endpoint guarded by `ENABLE_SSE_STREAMING` feature flag.
+  - Introduced `/api/stream/analyze/:taskId/:modelKey` endpoint guarded by `STREAMING_ENABLED` feature flag.
   - Added frontend EventSource helper (`createAnalysisStream`) and hook (`useAnalysisStreaming`) currently wired into the dormant Model Browser page.
   - UI integration for active workflows (PuzzleExaminer, Discussion, Debate, Grover) still pending—feature is incomplete and must be audited before use.
   - Updated navigation to expose `/models`, but no production flow consumes the new streaming path yet.
 
 ### Changed
 - Updated `EXTERNAL_API.md`, README streaming notes, and execution plan docs with provisional instructions; documentation reflects unverified behavior and needs review.
+
+### Fixed
+- **OpenAI SSE streaming reliability**
+  - JSON-schema responses now stream via the actual `response.output_text.delta` events, ensuring structured chunks reach SSE consumers in real time instead of waiting on nonexistent `response.output_json.*` events.
+  - Surfaced `response.output_text.annotation.added` events so safety/citation metadata flows through the harness and is recorded by Saturn's progress UI.
 
 ### Testing
 - Added unit coverage for SSE parser (`npx tsx --test tests/sseUtils.test.ts`). No end-to-end validation performed.
@@ -4718,3 +5043,4 @@ To enable conversation chaining:
 - Actual ingestion execution with SSE streaming is prepared but awaits user testing
 - All new code follows established patterns and architectural principles
 \n### Added\n- Introduced streaming-aware analysis hook and UI panels across Puzzle Examiner, Discussion, and Model Debate pages.\n- Added reusable StreamingAnalysisPanel component for live token output with cancel support.\n- Model buttons now reflect streaming capability and status for supported models.
+

@@ -61,9 +61,9 @@ export interface PuzzleGridProps {
   highlight?: boolean;
   emojiSet?: EmojiSet;
   diffMask?: boolean[][]; // Optional mask to highlight mismatched cells
-  maxWidth?: number;      // Maximum width in pixels (default: none)
-  maxHeight?: number;     // Maximum height in pixels (default: none)
-  preserveAspectRatio?: boolean; // Scale proportionally (default: true)
+  maxWidth?: number;      // DEPRECATED - kept for backwards compatibility but not enforced
+  maxHeight?: number;     // DEPRECATED - kept for backwards compatibility but not enforced
+  preserveAspectRatio?: boolean; // DEPRECATED - not used anymore
   compact?: boolean;      // Use minimal spacing for dense layouts (default: false)
 }
 

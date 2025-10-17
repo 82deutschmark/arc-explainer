@@ -1,288 +1,305 @@
 # AGENTS.md
 
 **Author:** The User  
-**Date:** 2025-09-28 18:26:41  
-**Purpose:** Guidance for AI Agents working with code in this repository
+**Date:** 2025-10-15  
+**Purpose:** Consolidated guidance for AI agents working with the ARC Explainer repository.  
+This version merges the best material from previous guidelines and adds **quick pointers** to locate critical information fast.
 
-## 🚨 CRITICAL PLATFORM NOTES
+---
 
-- **WE ARE ON WINDOWS** - Use PowerShell syntax and commands only
-- **NEVER** use `&&` or `||` as statement separators on Windows
-- **NEVER** use `cd` commands - we are always in the correct directory
-- **WAIT 5 SECONDS** after terminal commands before checking output
-- **GO SLOW** - Work methodically and understand the established codebase
+## 📚 Quick Reference – Where to Find Things
 
-## Agent Role & Communication
+- **Core Documentation**
+  - README.md – `docs/README.md`
+  - DEVELOPER_GUIDE.md – `docs/DEVELOPER_GUIDE.md` (Architecture & onboarding)
 
-### Your Role
-You are a senior software engineer with 20+ years of experience, dedicated to:
-- **DRY (Don't Repeat Yourself)** and **SRP (Single Responsibility Principle)**
-- Clean code principles and modular design
-- Production-ready implementations without shortcuts
+- **Reference Materials**
+  - **API Documentation** – `docs/reference/api/`
+    - EXTERNAL_API.md – `docs/reference/api/EXTERNAL_API.md` (Public REST/SSE APIs)
+    - OpenAI_Responses_API_Streaming_Implementation.md – `docs/reference/api/OpenAI_Responses_API_Streaming_Implementation.md`
+    - ResponsesAPI.md – `docs/reference/api/ResponsesAPI.md`
+    - xAI-API.md – `docs/reference/api/xAI-API.md`
+    - API_Conversation_Chaining.md – `docs/reference/api/API_Conversation_Chaining.md`
+  - **Architecture** – `docs/reference/architecture/`
+  - **Data** – `docs/reference/data/`
+  - **Frontend** – `docs/reference/frontend/`
+  - **Solvers** – `docs/reference/solvers/`
 
-### User Context
-- **Hobbyist developer** with no formal computer-science education
-- **Non-technical executive** mindset - consult for creative direction, not code
-- **Hobby projects only** - 4-5 users, not enterprise-grade
-- May request ill-advised approaches - gently guide toward best practices
+- **Other Key Areas**
+  - HOOKS_REFERENCE.md – `docs/HOOKS_REFERENCE.md` (React hooks cheat-sheet)
+  - Backend controllers – `server/controllers/`
+  - Domain repositories (SRP compliant) – `server/repositories/`
+  - Prompt components – `server/services/prompts/components/`
+  - Frontend pages – `client/src/pages/`
+  - Reusable UI components – `client/src/components/`
+  - Shared TypeScript types – `shared/types.ts`
+  - ARC datasets – `data/`
+  - Python visual solver – `solver/`
 
-### Communication Guidelines
-- **Unpack jargon** and explain concepts simply
-- **Don't echo chain of thought** - user can see it
-- **Limit communication** to essential questions not in README/docs
-- **On errors**: Stop, think, ask user for input before proceeding
-- **On completion**: Use "done" or "next" - detailed commentary belongs in commit messages
+- **Plans and Historical Context**
+  - Current plans – `docs/plans/`
+  - Old plans – `docs/oldPlans/`
 
-## File Creation Standards
+_This directory provides a structured overview of critical docs. For deeper dives, start with the developer guide or specific reference sections._
 
-**Every TypeScript file you create or edit should have a header with the following information:**
+## 🚨 Critical Platform Notes
 
+- If you are running on Codex you may do anything and run the dev server and do any testing you want to!
+- If you are running in the user's IDE you are on Windows only. Use **PowerShell** commands (no `&&` or `||` separators, never `cd`).
+- Wait **5 seconds** after running terminal commands before reading output.
+- Work **slowly and methodically**—this is a large established codebase.
+
+## 🎯 Agent Role & User Context
+
+- Senior software engineer (20 + years). Primary values: **SRP** and **DRY**.
+- User is a **hobbyist** / non-technical executive. Provide clear, jargon-free guidance.
+- Project is for 4-5 users; avoid enterprise-grade over-engineering.
+
+## 💬 Communication Guidelines
+
+- Keep messages concise; do not echo chain-of-thought.
+- Ask only essential questions not answered in the docs.
+- On errors: pause, think, and request user input if needed.
+- On completion: reply with **“done”** or **“next”**. Put detailed commentary in commit messages.
+
+## ✍️ Coding Standards
+
+Every TypeScript file should start with a basic header like this:
+
+```typescript
 /**
- * Author: {Your Model Name} (Example: "DeepSeek V3.2 Exp")
- * Date: {timestamp}
- * PURPOSE: {Verbose details about functionality, integration points, and dependencies}
- * SRP/DRY check: Pass/Fail - Did you check for existing functionality?
- * DaisyUI: Pass/Fail - Are you using DaisyUI components instead of custom UI?
+ * Author: {Your Model Name}
+ * Date: {timestamp}  Remember your training data is out of date! This was updated in October 2025 and this is not a typo!
+ * PURPOSE: Verbose details about functionality, integration points, dependencies
+ * SRP/DRY check: Pass/Fail — did you verify existing functionality?
  */
+```
 
-Code Quality Requirements
-Well-commented code throughout
-No mock data or placeholders - production-ready only
-Consistent naming conventions and proper error handling
-Thorough analysis of existing codebase before writing new code
-Workflow & Planning
-Development Process
-Deep Analysis - Study existing codebase for reusable components
-Plan Architecture - Create {date}-{goal}-plan.md in /docs with:
-File list and responsibilities
-TODO list for implementation
-User reference for feedback
-Implement Modularly - Leverage existing patterns and components
-Verify Integration - Ensure all APIs and dependencies work with real implementations
-Git & Version Control
-GitHub is our VCS
-Commit every file you edit with informative summaries
-Detailed commit messages must include:
-What the file does
-How it works
-How the project uses it
-Your model name as author
-Platform & Environment
-Development Environment
-OS: Windows (PowerShell commands only)
-Deployment: Railway (Postgres databases + deployment)
-Environment Variables: .env file (assume present and working)
-Tool Limitations
-Training data out of date - User knows more about latest LLMs/AI tools
-Be transparent about your limitations
-Use available tools appropriately
-Project Architecture
-Monorepo Structure
+Additional rules:
 
-├── client/          # React frontend (Vite + TypeScript)
-├── server/          # Express backend (TypeScript) 
-├── shared/          # Shared types and schemas
-├── data/            # ARC-AGI puzzle datasets
-├── solver/          # Saturn Visual Solver (Python)
-└── dist/            # Production build output
-Frontend (React + TypeScript)
-Build: Vite with TypeScript
-Routing: Wouter (client-side)
-State: TanStack Query for server state
-UI: shadcn/ui + TailwindCSS
-Key Components: AnalysisResultCard, AnalysisResultHeader, AnalysisResultContent, etc.
-Key Pages: PuzzleBrowser, PuzzleExaminer, AnalyticsOverview, etc.
-Backend (Express + TypeScript)
-Server: Express.js with ESM modules
-Database: PostgreSQL via Drizzle ORM (in-memory fallback)
-AI Services: Multi-provider support (OpenAI, Anthropic, Gemini, Grok, DeepSeek, OpenRouter)
-WebSockets: Saturn solver progress streaming
-Python Integration: Saturn Visual Solver subprocess execution
-Database Schema
-EXPLANATIONS Table (Core Analytics)
+- Production-ready only – no mock data or placeholders.  
+- Consistent naming, robust error handling, thorough comments.  
+- Prefer composition over duplication; always search existing code first.
 
--- Primary puzzle analysis storage
-id                    INTEGER (PRIMARY KEY)
-puzzle_id             VARCHAR(255)      -- Puzzle ID from ARC dataset
-pattern_description   TEXT              -- LLM's pattern/transform analysis
-solving_strategy      TEXT              -- LLM's solving strategy
-hints                 TEXT[]            -- LLM's hints/algorithms
-confidence            INTEGER           -- Used in trustworthiness score
-alien_meaning_confidence INTEGER        -- Confidence in invented alien meaning
-alien_meaning         TEXT              -- Invented alien meaning
-model_name            VARCHAR(100)
-reasoning_log         TEXT              -- Human-readable reasoning summary
-has_reasoning_log     BOOLEAN           -- Flag for reasoning data presence
-provider_response_id  TEXT
-api_processing_time_ms INTEGER
-saturn_images         JSONB             -- Saturn Visual Solver only
-saturn_log            JSONB             -- Saturn Visual Solver only
-saturn_events         JSONB             -- Saturn Visual Solver only
-saturn_success        BOOLEAN           -- Saturn Visual Solver only
+## 🔧 Workflow & Planning
 
--- CRITICAL Prediction Fields
-predicted_output_grid    JSONB          -- Predicted output grid
-is_prediction_correct    BOOLEAN        -- Evaluation 1 of 3 for accuracy
-trustworthiness_score DOUBLE PRECISION  -- TRUSTWORTHINESS SCORE (formerly called prediction_accuracy_score which was problematic!!)
+1. **Deep analysis** – scan existing code for reuse.  
+2. **Plan architecture** – create `{date}-{goal}-plan.md` in `docs/` (list files & todos).  
+3. **Implement modularly** – follow project patterns and SRP.  
+4. **Verify integration** – ensure APIs & dependencies work with real implementations.  
+5. **Version control** – commit every touched file with an informative message detailing  
+   what/why/how and your model name as author.
 
--- Multi-test Support
-multiple_predicted_outputs JSONB        -- Multiple test predictions
-multi_test_results         JSONB        -- Multi-test results
-multi_test_all_correct     BOOLEAN      -- Evaluation 2 of 3 for accuracy
-multi_test_average_accuracy DOUBLE PRECISION  -- Evaluation 3 of 3 for accuracy
-has_multiple_predictions   BOOLEAN      -- False for single-test puzzles
-multi_test_prediction_grids JSONB       -- Multiple test prediction grids
+## 🗄️ Repository Architecture (High-level)
 
--- Token & Cost Tracking
-input_tokens          INTEGER
-output_tokens         INTEGER
-reasoning_tokens      INTEGER
-total_tokens          INTEGER
-estimated_cost        NUMERIC
+- Monorepo: `client/`, `server/`, `shared/`, `data/`, `solver/`, `dist/`.
+- Strict **domain separation** in repositories:
+  - `AccuracyRepository` → correctness
+  - `TrustworthinessRepository` → confidence reliability
+  - `CostRepository` → cost calculations
+  - `MetricsRepository` → aggregation
 
--- AI Model Parameters
-temperature           DOUBLE PRECISION  -- Applied selectively
-reasoning_effort      TEXT              -- GPT-5 only: minimal/low/medium/high
-reasoning_verbosity   TEXT              -- GPT-5 only: low/medium/high  
-reasoning_summary_type TEXT             -- GPT-5 only: auto/none/detailed
+See `docs/DEVELOPER_GUIDE.md` for full diagrams and table of key files.
 
--- Timestamp
-created_at            TIMESTAMPTZ
-FEEDBACK Table
-Foreign key to explanations (1:N relationship)
-vote_type constraint: 'helpful' | 'not_helpful'
-Required comment field for feedback
-AI Provider Integration
-Prompt System Architecture
-DRY Architecture: Composable prompt components in server/services/prompts/components/
-Single Source of Truth: Shared prompt components eliminate 90% duplication
-Database Traceability: system_prompt_used, user_prompt_used, prompt_template_id columns
-Schema Alignment: JSON fields map 1:1 to database columns
-Provider-agnostic: Works with both Chat Completions and Responses API
-API Endpoint Differences
-Chat Completions (/v1/chat/completions):
+## 🛠️ Common Commands
 
-Text in choices[0].message.content
-No structured reasoning, only free-form text
-Simple parsing logic
-Responses API (/v1/responses):
+- `npm run test` – build & start dev server (wait 10 s).
+- `npm run db:push` – apply Drizzle schema changes.
+- **Never** run the dev server automatically; the user controls it.
 
-Answer in output_text or output[]
-Structured reasoning in output_reasoning.summary and output_reasoning.items[]
-Separate token accounting for reasoning vs output
-Complex parsing required for multiple top-level keys
-Analytics Architecture 🚨 CRITICAL
-Repository Domain Separation (SRP Compliance)
+## 🚫 Prohibited Actions
 
-// ✅ CORRECT - Single responsibility domains
-AccuracyRepository       → Pure puzzle-solving correctness ONLY
-TrustworthinessRepository → AI confidence reliability analysis ONLY  
-CostRepository          → Financial cost calculations ONLY
-MetricsRepository       → Cross-domain aggregation via delegation ONLY
+- No time estimates or premature celebration.
+- No shortcuts sacrificing code quality.
+- No custom UI when DaisyUI provides a component.
 
-// ❌ WRONG - Architectural violations
-TrustworthinessRepository calculating costs  // VIOLATES SRP
-Multiple repositories with duplicate logic   // VIOLATES DRY
-Analytics Data Flow Pattern
+---
 
-explanations table → Domain Repository → API Controller → Frontend Hook → UI Component
-Repository Integration Examples
+**Remember:** small hobby project, but quality matters. Think before you code, reuse, and keep things clean.
 
-// Single domain - direct access
-const accuracyStats = await repositoryService.accuracy.getPureAccuracyStats();
 
-// Cross-domain - use delegation
-const dashboard = await repositoryService.metrics.getComprehensiveDashboard();
+## STREAMING GUIDE:
 
-// Combined APIs - controller combines repositories
-async getRealPerformanceStats() {
-  const trustworthinessStats = await repositoryService.trustworthiness.getRealPerformanceStats();
-  const costMap = await repositoryService.cost.getModelCostMap();
-  return this.combineStatsWithCosts(trustworthinessStats, costMap);
+- Streaming
+The Agents SDK can deliver output from the model and other execution steps incrementally. Streaming keeps your UI responsive and avoids waiting for the entire final result before updating the user.
+
+Enabling streaming
+Pass a { stream: true } option to Runner.run() to obtain a streaming object rather than a full result:
+
+Enabling streaming
+import { Agent, run } from '@openai/agents';
+
+const agent = new Agent({
+  name: 'Storyteller',
+  instructions:
+    'You are a storyteller. You will be given a topic and you will tell a story about it.',
+});
+
+const result = await run(agent, 'Tell me a story about a cat.', {
+  stream: true,
+});
+
+When streaming is enabled the returned stream implements the AsyncIterable interface. Each yielded event is an object describing what happened within the run. The stream yields one of three event types, each describing a different part of the agent’s execution. Most applications only want the model’s text though, so the stream provides helpers.
+
+Get the text output
+Call stream.toTextStream() to obtain a stream of the emitted text. When compatibleWithNodeStreams is true the return value is a regular Node.js Readable. We can pipe it directly into process.stdout or another destination.
+
+Logging out the text as it arrives
+import { Agent, run } from '@openai/agents';
+
+const agent = new Agent({
+  name: 'Storyteller',
+  instructions:
+    'You are a storyteller. You will be given a topic and you will tell a story about it.',
+});
+
+const result = await run(agent, 'Tell me a story about a cat.', {
+  stream: true,
+});
+
+result
+  .toTextStream({
+    compatibleWithNodeStreams: true,
+  })
+  .pipe(process.stdout);
+
+The promise stream.completed resolves once the run and all pending callbacks are completed. Always await it if you want to ensure there is no more output.
+
+Listen to all events
+You can use a for await loop to inspect each event as it arrives. Useful information includes low level model events, any agent switches and SDK specific run information:
+
+Listening to all events
+import { Agent, run } from '@openai/agents';
+
+const agent = new Agent({
+  name: 'Storyteller',
+  instructions:
+    'You are a storyteller. You will be given a topic and you will tell a story about it.',
+});
+
+const result = await run(agent, 'Tell me a story about a cat.', {
+  stream: true,
+});
+
+for await (const event of result) {
+  // these are the raw events from the model
+  if (event.type === 'raw_model_stream_event') {
+    console.log(`${event.type} %o`, event.data);
+  }
+  // agent updated events
+  if (event.type === 'agent_updated_stream_event') {
+    console.log(`${event.type} %s`, event.agent.name);
+  }
+  // Agent SDK specific events
+  if (event.type === 'run_item_stream_event') {
+    console.log(`${event.type} %o`, event.item);
+  }
 }
-Model Name Normalization - ALWAYS USE
 
-import { normalizeModelName } from '../utils/modelNormalizer.ts';
+See the streamed example for a fully worked script that prints both the plain text stream and the raw event stream.
 
-// Handles: claude-3.5-sonnet:beta → claude-3.5-sonnet
-// Handles: z-ai/glm-4.5-air:free → z-ai/glm-4.5
-const normalized = normalizeModelName(rawModelName);
-ARC-AGI Dataset Information
-Data Loading Priority
-ARC datasets loaded in order:
+Event types
+The stream yields three different event types:
 
-ARC2-Eval (evaluation2) - Highest priority
-ARC2 (training2)
-ARC1-Eval (evaluation)
-ARC1 (training) - Lowest priority
-ARC-AGI-2 Structure (arxiv.org)
-Training Set: 1,000 public tasks for prototyping/training
-Public Eval Set: 120 calibrated tasks for final evaluation
-Average Human Performance: 66% on evaluation tasks
-Task Success: Correct output grid for all test inputs within 2 trials
-Task File Format
+raw_model_stream_event
+type RunRawModelStreamEvent = {
+  type: 'raw_model_stream_event';
+  data: ResponseStreamEvent;
+};
+
+Example:
 
 {
-  "train": [  // Demonstration pairs (typically 3)
-    {
-      "input": [[grid_matrix]],  // 1x1 to 30x30 grid
-      "output": [[grid_matrix]]  // Integers 0-9
-    }
-  ],
-  "test": [   // Test pairs (typically 1-2)
-    {
-      "input": [[grid_matrix]],
-      "output": [[grid_matrix]]  // Target for prediction
-    }
-  ]
+  "type": "raw_model_stream_event",
+  "data": {
+    "type": "output_text_delta",
+    "delta": "Hello"
+  }
 }
-Common Commands
-Development
-npm run test - Build and start dev server (wait 10 seconds)
-User manages dev server - only run commands when explicitly told
-Use "Kill Bash" to stop dev server
-Database Management
-npm run db:push - Push schema changes using Drizzle
-Tables auto-create on startup with PostgreSQL
-Testing Philosophy
-User handles testing and validation
-Wait 20 seconds when running tests to read output
-Tell a coding joke while waiting for test results
-Second-guess user suggestions that violate best practices
-Important Implementation Notes
-Technical Configuration
-ESM Modules throughout (type: "module" in package.json)
-TypeScript with shared types in shared/types.ts
-Path aliases: @/* (client), @shared/* (shared types)
-Production vs Development
-Development: Vite dev server (:5173), Express API (:5000)
-Production: Express serves static files from dist/public with SPA fallback
-Environment Variables (Present and Working)
-AI Services (at least one required):
 
-OPENAI_API_KEY, GROK_API_KEY, GEMINI_API_KEY, ANTHROPIC_API_KEY, DEEPSEEK_API_KEY, OPENROUTER_API_KEY
-Database:
+run_item_stream_event
+type RunItemStreamEvent = {
+  type: 'run_item_stream_event';
+  name: RunItemStreamEventName;
+  item: RunItem;
+};
 
-DATABASE_URL - PostgreSQL connection
-External Integration
-API Documentation
-docs/EXTERNAL_API.md - Complete API endpoint reference
-docs/HOOKS_REFERENCE.md - React hooks documentation
-Key External APIs
-/api/feedback/accuracy-stats - Pure accuracy leaderboard
-/api/puzzle/performance-stats - Trustworthiness metrics
-/api/feedback/stats - User feedback statistics
-/api/metrics/comprehensive-dashboard - Combined analytics
-Repository Pattern for External Apps
+Example handoff payload:
 
-// Access data through repositoryService, not direct queries
-repositoryService.accuracy.getPureAccuracyStats()        // Accuracy leaderboards
-repositoryService.trustworthiness.getTrustworthinessStats() // Trustworthiness metrics
-repositoryService.cost.getAllModelCosts()               // Cost analysis
-repositoryService.explanation.getByPuzzle(puzzleId)     // Explanations
-repositoryService.feedback.create(...)                  // Submit feedback
-🚫 PROHIBITED ACTIONS
-No time estimates - Never give completion time predictions
-No celebration - Avoid "done/finished" assertions
-No shortcuts - Never compromise on code quality
-No over-engineering - Keep solutions simple and maintainable for hobby project scale
+{
+  "type": "run_item_stream_event",
+  "name": "handoff_occurred",
+  "item": {
+    "type": "handoff_call",
+    "id": "h1",
+    "status": "completed",
+    "name": "transfer_to_refund_agent"
+  }
+}
+
+agent_updated_stream_event
+type RunAgentUpdatedStreamEvent = {
+  type: 'agent_updated_stream_event';
+  agent: Agent<any, any>;
+};
+
+Example:
+
+{
+  "type": "agent_updated_stream_event",
+  "agent": {
+    "name": "Refund Agent"
+  }
+}
+
+Human in the loop while streaming
+Streaming is compatible with handoffs that pause execution (for example when a tool requires approval). The interruption field on the stream object exposes the interruptions, and you can continue execution by calling state.approve() or state.reject() for each of them. Executing again with { stream: true } resumes streaming output.
+
+Handling human approval while streaming
+import { Agent, run } from '@openai/agents';
+
+const agent = new Agent({
+  name: 'Storyteller',
+  instructions:
+    'You are a storyteller. You will be given a topic and you will tell a story about it.',
+});
+
+let stream = await run(
+  agent,
+  'What is the weather in San Francisco and Oakland?',
+  { stream: true },
+);
+stream.toTextStream({ compatibleWithNodeStreams: true }).pipe(process.stdout);
+await stream.completed;
+
+while (stream.interruptions?.length) {
+  console.log(
+    'Human-in-the-loop: approval required for the following tool calls:',
+  );
+  const state = stream.state;
+  for (const interruption of stream.interruptions) {
+    const approved = confirm(
+      `Agent ${interruption.agent.name} would like to use the tool ${interruption.rawItem.name} with "${interruption.rawItem.arguments}". Do you approve?`,
+    );
+    if (approved) {
+      state.approve(interruption);
+    } else {
+      state.reject(interruption);
+    }
+  }
+
+  // Resume execution with streaming output
+  stream = await run(agent, state, { stream: true });
+  const textStream = stream.toTextStream({ compatibleWithNodeStreams: true });
+  textStream.pipe(process.stdout);
+  await stream.completed;
+}
+
+A fuller example that interacts with the user is human-in-the-loop-stream.ts.
+
+Tips
+Remember to wait for stream.completed before exiting to ensure all output has been flushed.
+The initial { stream: true } option only applies to the call where it is provided. If you re-run with a RunState you must specify the option again.
+If your application only cares about the textual result prefer toTextStream() to avoid dealing with individual event objects.
+With streaming and the event system you can integrate an agent into a chat interface, terminal application or any place where users benefit from incremental updates.
+
