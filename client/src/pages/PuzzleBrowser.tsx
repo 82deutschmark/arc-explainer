@@ -13,6 +13,18 @@ import type { PuzzleMetadata } from '@shared/types';
 import { CollapsibleMission } from '@/components/ui/collapsible-mission';
 import { PuzzleCard } from '@/components/puzzle/PuzzleCard';
 
+const HERO_STREAMER_PATTERN = [
+  '🟥', '🟧', '🟨', '🟩', '🟦', '🟪', '⬛', '🟥', '🟧', '🟨',
+  '🟩', '🟦', '🟪', '⬛', '🟩', '🟦', '🟪', '⬛', '🟥', '🟧',
+  '🟦', '🟪', '⬛', '🟩', '🟦', '🟪', '⬛', '🟥', '🟧', '🟨',
+];
+
+const HERO_TWILIGHT_PATTERN = [
+  '🟪', '🟦', '🟪', '🟦', '⬛', '🟪', '🟦', '⬛', '🟪', '🟦',
+  '🟦', '⬛', '🟪', '🟦', '⬛', '🟪', '🟦', '⬛', '🟪', '🟦',
+  '🟪', '🟦', '⬛', '🟪', '🟦', '⬛', '🟪', '🟦', '⬛', '🟪',
+];
+
 
 
 // Extended type to include feedback counts and processing metadata from our enhanced API
@@ -169,7 +181,7 @@ export default function PuzzleBrowser() {
   if (error) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 p-2">
-        <div className="max-w-[1900px] mx-auto space-y-2">
+        <div className="mx-auto max-w-5xl space-y-2">
           <div role="alert" className="alert alert-error">
             <span>Failed to load puzzles. Please check your connection and try again.</span>
           </div>
@@ -180,43 +192,60 @@ export default function PuzzleBrowser() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 p-2">
-      <div className="max-w-[1900px] mx-auto space-y-2">
+      <div className="mx-auto max-w-7xl space-y-4">
 
-        <header className="text-center space-y-3">
+        <header className="text-center">
           {/* Top decorative corner mosaics */}
-          <div className="flex items-start justify-between px-4 -mb-2">
-            <EmojiMosaicAccent variant="heroSunrise" size="md" framed={true} className="drop-shadow-lg" />
-            <EmojiMosaicAccent variant="heroTwilight" size="md" framed={true} className="drop-shadow-lg" />
+          <div className="-mb-4 flex items-start justify-between px-4">
+            <EmojiMosaicAccent
+              pattern={HERO_STREAMER_PATTERN}
+              columns={10}
+              maxColumns={10}
+              size="md"
+              framed
+              className="drop-shadow-lg"
+            />
+            <EmojiMosaicAccent
+              pattern={HERO_TWILIGHT_PATTERN}
+              columns={10}
+              maxColumns={10}
+              size="md"
+              framed
+              className="drop-shadow-lg"
+            />
           </div>
 
-          <div className="flex items-center justify-center gap-4">
-            <EmojiMosaicAccent variant="rainbow" size="md" framed={true} className="drop-shadow" />
-            <div>
-              <h1 className="text-2xl font-bold text-slate-900">
-                ARC-AGI Puzzle Explorer
-              </h1>
-              <p className="text-sm text-slate-700 mt-1 font-medium">
-                Navigate the ARC datasets with streamlined filters and curated research links.
-              </p>
-            </div>
-            <EmojiMosaicAccent variant="rainbow" size="md" framed={true} className="drop-shadow" />
-          </div>
-
-          <CollapsibleMission />
-
-          <div className="card shadow-lg border-0 bg-white/90 backdrop-blur-sm">
-            <div className="card-body p-3 space-y-3">
-              <div className="flex items-center justify-center gap-3">
-                <EmojiMosaicAccent variant="datasetSignal" size="sm" framed={true} />
-                <Sparkles className="h-4 w-4 text-slate-600" />
-                <h3 className="text-base font-bold text-slate-900">
-                  ARC-AGI Knowledge Hub
-                </h3>
-                <Sparkles className="h-4 w-4 text-slate-600" />
-                <EmojiMosaicAccent variant="analysisSignal" size="sm" framed={true} />
+          <div className="mx-auto flex max-w-4xl flex-col items-center justify-center gap-4">
+            <div className="flex items-center justify-center gap-4">
+              <EmojiMosaicAccent variant="rainbow" size="md" framed className="drop-shadow" />
+              <div>
+                <h1 className="text-3xl font-bold text-slate-900">
+                  ARC-AGI Puzzle Explorer
+                </h1>
+                <p className="mt-1 text-sm font-medium text-slate-700">
+                  Navigate the ARC datasets with streamlined filters and curated research links.
+                </p>
               </div>
+              <EmojiMosaicAccent variant="rainbow" size="md" framed className="drop-shadow" />
+            </div>
 
-              <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 text-left">
+            <CollapsibleMission />
+          </div>
+
+          <div className="mx-auto mt-6 max-w-5xl">
+            <div className="card border-0 bg-white/90 shadow-lg backdrop-blur-sm">
+              <div className="card-body space-y-4 p-4">
+                <div className="flex flex-wrap items-center justify-center gap-3 text-center">
+                  <EmojiMosaicAccent variant="datasetSignal" size="sm" framed />
+                  <Sparkles className="h-4 w-4 text-slate-600" />
+                  <h3 className="text-base font-bold text-slate-900">
+                    ARC-AGI Knowledge Hub
+                  </h3>
+                  <Sparkles className="h-4 w-4 text-slate-600" />
+                  <EmojiMosaicAccent variant="analysisSignal" size="sm" framed />
+                </div>
+
+                <div className="grid grid-cols-1 gap-3 text-left sm:grid-cols-2 lg:grid-cols-4">
                 <div className="rounded-lg border border-slate-200 bg-white/80 p-3 text-[11px]">
                   <div className="flex items-center gap-2 mb-2">
                     <EmojiMosaicAccent variant="statusExplained" size="xs" framed={false} />
@@ -297,9 +326,9 @@ export default function PuzzleBrowser() {
 
         {/* Filters */}
 
-        <div className="card border-2 border-slate-300 bg-white shadow-md">
+        <div className="card border-2 border-slate-300 bg-white shadow-md max-w-5xl mx-auto">
           <div className="card-body py-3 px-4">
-            <div className="flex flex-wrap items-end gap-4">
+            <div className="flex flex-wrap items-end justify-center gap-4">
               <div className="flex flex-col gap-1.5 min-w-[200px]">
                 <label htmlFor="puzzleSearch" className="text-xs font-bold text-slate-900 uppercase tracking-wide">Search by Puzzle ID</label>
                 <div className="flex items-center gap-2">
@@ -333,7 +362,7 @@ export default function PuzzleBrowser() {
                 )}
               </div>
 
-              <div className="flex flex-wrap items-end gap-4">
+              <div className="flex flex-wrap items-end justify-center gap-4">
                 <div className="flex flex-col gap-1.5 min-w-[140px]">
                   <label htmlFor="maxGridSize" className="text-xs font-bold text-slate-900 uppercase tracking-wide">Max Grid Size</label>
                   <select
@@ -425,8 +454,8 @@ export default function PuzzleBrowser() {
               </div>
             </div>
 
-            <div className="mt-3 pt-3 border-t border-slate-200 flex flex-wrap items-center gap-2 text-[10px]">
-              <span className="text-xs font-bold text-slate-900 mr-1">Active Filters:</span>
+            <div className="mt-3 flex flex-wrap items-center justify-center gap-2 border-t border-slate-200 pt-3 text-[10px]">
+              <span className="text-xs font-bold text-slate-900">Active Filters:</span>
               {[
                 { id: 'search', label: 'Search', active: searchQuery.trim().length > 0 },
                 { id: 'maxGridSize', label: 'Max grid', active: maxGridSize !== 'any' },
@@ -447,19 +476,16 @@ export default function PuzzleBrowser() {
           </div>
         </div>
         {/* Results */}
-        <div className="card shadow-lg border-0 bg-white/80 backdrop-blur-sm">
+        <div className="card shadow-lg border-0 bg-white/80 backdrop-blur-sm max-w-6xl mx-auto">
           <div className="card-body p-2">
-            <h2 className="card-title text-slate-800 text-sm mb-2">
-              Local Puzzles 
+            <div className="mb-3 flex flex-wrap items-center justify-center gap-2 text-slate-800">
+              <h2 className="text-base font-semibold">Puzzle Results</h2>
               {!isLoading && (
-                <div className="badge badge-sm badge-outline ml-1 bg-blue-50 text-blue-700 border-blue-200">
+                <div className="badge badge-sm badge-outline bg-blue-50 text-blue-700 border-blue-200">
                   {filteredPuzzles.length} found
                 </div>
               )}
-            </h2>
-            <p className="text-[10px] text-gray-600 mb-2">
-              Puzzles available for examination
-            </p>
+            </div>
             {isLoading ? (
               <div className="text-center py-4">
                 <Loader2 className="h-6 w-6 animate-spin mx-auto mb-2" />
@@ -474,7 +500,7 @@ export default function PuzzleBrowser() {
                 </p>
               </div>
             ) : (
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2">
+              <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
                 {filteredPuzzles.map((puzzle: EnhancedPuzzleMetadata) => (
                   <PuzzleCard
                     key={puzzle.id}
@@ -488,7 +514,7 @@ export default function PuzzleBrowser() {
         </div>
 
         {/* Instructions */}
-        <div className="card">
+        <div className="card max-w-5xl mx-auto">
           <div className="card-body p-2">
             <h2 className="card-title text-sm mb-1">How to Use</h2>
             <div className="space-y-1 text-[10px]">
