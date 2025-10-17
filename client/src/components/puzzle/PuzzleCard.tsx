@@ -12,7 +12,6 @@ import { Eye, Grid3X3 } from 'lucide-react';
 import { TinyGrid } from './TinyGrid';
 import { getPuzzleName, hasPuzzleName } from '@shared/utils/puzzleNames';
 import type { ARCTask } from '@shared/types';
-import { EmojiStatusMosaic } from './EmojiStatusMosaic';
 
 interface PuzzleCardProps {
   puzzle: {
@@ -95,7 +94,6 @@ export const PuzzleCard: React.FC<PuzzleCardProps> = ({
           <span className={`text-[11px] font-semibold uppercase tracking-wide ${statusColorClass}`}>
             {statusText}
           </span>
-          <EmojiStatusMosaic status={isExplained ? 'explained' : 'unexplained'} />
         </div>
 
         {/* Header - Name or ID */}
@@ -174,13 +172,7 @@ export const PuzzleCard: React.FC<PuzzleCardProps> = ({
         </div>
 
         {/* Action Button */}
-        <div className="space-y-1">
-          <div className="flex items-center justify-end gap-1 px-1">
-            <EmojiStatusMosaic
-              status={isExplained ? 'explained' : 'unexplained'}
-              className="transition-transform duration-200 group-hover:scale-110 group-focus-within:scale-110"
-            />
-          </div>
+        <div>
           <Link
             href={`/puzzle/${puzzle.id}`}
             className={`relative inline-flex w-full items-center justify-center gap-2 overflow-hidden rounded-lg bg-gradient-to-r ${buttonGradient} px-3 py-2 text-sm font-semibold text-white shadow-md transition-all duration-200 hover:scale-[1.02] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-400 focus-visible:ring-offset-2 focus-visible:ring-offset-white`}

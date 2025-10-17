@@ -9,7 +9,6 @@
 import React from 'react';
 import { Loader2 } from 'lucide-react';
 import { TinyGrid } from './TinyGrid';
-import { PROMPT_TEMPLATES } from '@shared/types';
 import type { ARCTask } from '@shared/types';
 
 interface TokenUsageSummary {
@@ -31,8 +30,7 @@ interface StreamingAnalysisPanelProps {
   onCancel?: () => void;
   onClose?: () => void;
   task?: ARCTask;
-  promptId?: string;
-  customPrompt?: string;
+  promptPreview?: string;
 }
 
 export function StreamingAnalysisPanel({
@@ -48,8 +46,7 @@ export function StreamingAnalysisPanel({
   onCancel,
   onClose,
   task,
-  promptId,
-  customPrompt,
+  promptPreview,
 }: StreamingAnalysisPanelProps) {
   const renderStatusBadge = () => {
     switch (status) {
@@ -92,16 +89,6 @@ export function StreamingAnalysisPanel({
 
   const visibleOutput = (formattedStructuredJson ?? text)?.trim();
 
-  // Build the prompt text that was sent
-  const promptText = React.useMemo(() => {
-    if (!promptId) return null;
-    if (promptId === 'custom') {
-      return customPrompt || '';
-    }
-    const template = PROMPT_TEMPLATES[promptId];
-    return template?.content || '';
-  }, [promptId, customPrompt]);
-
   // Get test grids
   const testExample = task?.test?.[0];
 
@@ -128,34 +115,39 @@ export function StreamingAnalysisPanel({
           )}
         </div>
         <div className="space-y-4 text-sm text-blue-900 pt-2">
-          {/* Prompt Section */}
-          {promptText && (
+          {/* Test Grids Section - Compact */}
+          {testExample && (
+            <div className="flex items-center gap-3">
+              <div>
+                <p className="text-[9px] text-blue-600 mb-0.5 font-medium">Test Input</p>
+                <div className="bg-white border border-blue-200 rounded p-1">
+                  <TinyGrid grid={testExample.input} className="w-16 h-16" />
+                </div>
+              </div>
+              <div>
+                <p className="text-[9px] text-blue-600 mb-0.5 font-medium">Test Output</p>
+                <div className="bg-white border border-blue-200 rounded p-1">
+                  <TinyGrid grid={testExample.output} className="w-16 h-16" />
+                </div>
+              </div>
+              {promptPreview && (
+                <div className="flex-1 ml-2">
+                  <p className="text-[9px] font-semibold text-blue-600 uppercase tracking-wide mb-1">Prompt Sent</p>
+                  <pre className="whitespace-pre-wrap bg-blue-50 border border-blue-300 rounded p-2 max-h-[80px] overflow-y-auto text-[9px] text-blue-800 leading-tight">
+                    {promptPreview}
+                  </pre>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Prompt only if no test grids */}
+          {!testExample && promptPreview && (
             <div>
               <p className="text-xs font-semibold text-blue-600 uppercase tracking-wide mb-1">Prompt Sent</p>
               <pre className="whitespace-pre-wrap bg-blue-50 border border-blue-300 rounded-md p-3 max-h-[150px] overflow-y-auto text-xs text-blue-800">
-                {promptText}
+                {promptPreview}
               </pre>
-            </div>
-          )}
-          
-          {/* Test Grids Section */}
-          {testExample && (
-            <div>
-              <p className="text-xs font-semibold text-blue-600 uppercase tracking-wide mb-2">Test Case</p>
-              <div className="flex gap-4 items-start">
-                <div className="flex-1">
-                  <p className="text-xs text-blue-600 mb-1 font-medium">Input</p>
-                  <div className="bg-white border border-blue-200 rounded-md p-2">
-                    <TinyGrid grid={testExample.input} className="max-w-[200px] max-h-[200px]" />
-                  </div>
-                </div>
-                <div className="flex-1">
-                  <p className="text-xs text-blue-600 mb-1 font-medium">Output</p>
-                  <div className="bg-white border border-blue-200 rounded-md p-2">
-                    <TinyGrid grid={testExample.output} className="max-w-[200px] max-h-[200px]" />
-                  </div>
-                </div>
-              </div>
             </div>
           )}
 

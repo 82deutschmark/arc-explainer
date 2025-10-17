@@ -1,28 +1,30 @@
 ## [4.8.27] - 2025-10-17
-### ✨ Enhanced Streaming Modal - More Informative Analysis View
+### ✨ Enhanced Streaming Modal - Real-Time Context Display
 
 #### Summary
-The streaming modal in PuzzleExaminer now provides significantly more context during live analysis:
-- **Prompt Display**: Shows the actual prompt template sent to the AI model
-- **Test Case Visualization**: Displays test input and output grids using TinyGrid components for visual reference
-- **Improved Information Density**: Users can now see what the AI is working on while watching the analysis stream
+The streaming modal in PuzzleExaminer now displays the **actual constructed prompt** sent to the AI, not just template placeholders:
+- **Real Prompt Display**: Shows the fully constructed prompt with test cases, emojis, and all dynamic content
+- **Compact Test Grids**: Small 64x64px visual reference of test input/output grids for context
+- **Focus on Reasoning**: Prompt and grids are compact to keep attention on the streaming AI output
 
 #### Technical Changes
-- Enhanced `StreamingAnalysisPanel` component to accept `task`, `promptId`, and `customPrompt` props
-- Added prompt text section that displays the selected template or custom prompt
-- Integrated `TinyGrid` component to render test input/output grids side-by-side
-- Updated `PuzzleExaminer` to pass task and prompt data to the streaming panel
+- Modified `useAnalysisStreaming` hook to extract and expose `promptPreview` from server status events
+- Updated `useAnalysisResults` to pass through `streamingPromptPreview` from the streaming hook
+- Enhanced `StreamingAnalysisPanel` to accept `promptPreview` prop and display actual server-generated prompt
+- Compact grid display using 64x64px TinyGrid components with inline layout
+- Server already emits `promptPreview` via `stream.status` event during `prompt_ready` phase
 
 #### Files Modified
-- `client/src/components/puzzle/StreamingAnalysisPanel.tsx` - Added prompt and grid display sections
-- `client/src/pages/PuzzleExaminer.tsx` - Pass task and prompt props to streaming panel
+- `client/src/hooks/useAnalysisStreaming.ts` - Extract promptPreview from status events
+- `client/src/hooks/useAnalysisResults.ts` - Pass through streamingPromptPreview
+- `client/src/components/puzzle/StreamingAnalysisPanel.tsx` - Display real prompt and compact grids
+- `client/src/pages/PuzzleExaminer.tsx` - Wire up promptPreview to streaming panel
 
 #### User Experience
-Users can now see:
-1. The exact prompt template being used
-2. Visual representation of the test grids being analyzed
-3. Live streaming output from the AI model
-All in one comprehensive modal view.
+Users now see:
+1. **The ACTUAL prompt** sent to the AI (includes all dynamic content, emojis, test cases)
+2. **Compact test grid thumbnails** for visual reference (64x64px each)
+3. **Live streaming AI output** remains the primary focus with maximum screen space
 
 ---
 
