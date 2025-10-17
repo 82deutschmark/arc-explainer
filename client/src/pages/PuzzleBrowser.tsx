@@ -19,6 +19,42 @@ import { CollapsibleMission } from '@/components/ui/collapsible-mission';
 import { formatProcessingTime } from '@/utils/timeFormatters';
 import { PuzzleCard } from '@/components/puzzle/PuzzleCard';
 
+const emojiGridCells = ['🟥', '🟧', '🟨', '🟩', '🟦', '🟪', '⬛', '⬜', '🟫'];
+
+interface EmojiGridAccentProps {
+  orientation?: 'horizontal' | 'vertical';
+  className?: string;
+}
+
+const EmojiGridAccent: React.FC<EmojiGridAccentProps> = ({ orientation = 'horizontal', className }) => {
+  const baseClass = orientation === 'vertical'
+    ? 'hidden md:flex md:flex-col md:items-center md:justify-center md:px-1'
+    : 'flex justify-center w-full';
+
+  return (
+    <div className={`${baseClass} ${className ?? ''}`} aria-hidden="true">
+      <div className="grid grid-cols-3 gap-[1px] text-[10px] leading-none">
+        {emojiGridCells.map((cell, index) => (
+          <span key={`${cell}-${index}`}>{cell}</span>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+const EmojiGridIcon: React.FC<{ active: boolean }> = ({ active }) => (
+  <div
+    className={`grid grid-cols-3 gap-[1px] text-[9px] leading-none transition-all duration-200 ${
+      active ? 'opacity-100 drop-shadow-[0_0_4px_rgba(79,70,229,0.45)]' : 'opacity-40'
+    }`}
+    aria-hidden="true"
+  >
+    {emojiGridCells.map((cell, index) => (
+      <span key={`${cell}-legend-${index}`}>{cell}</span>
+    ))}
+  </div>
+);
+
 // Extended type to include feedback counts and processing metadata from our enhanced API
 interface EnhancedPuzzleMetadata extends PuzzleMetadata {
   explanationId?: number;
@@ -469,105 +505,165 @@ export default function PuzzleBrowser() {
               <Grid3X3 className="h-3 w-3 text-blue-600" />
               Filter Puzzles
             </h2>
-            {/* Search Bar */}
-            <div className="mb-2">
-              <div className="flex flex-col md:flex-row gap-2 items-start md:items-end">
-                <div className="w-full md:flex-1">
-                  <label htmlFor="puzzleSearch" className="text-[10px] font-medium text-slate-600 block mb-0.5">Search by Puzzle ID</label>
-                  <div className="relative">
-                    <input
-                      className="input input-sm input-bordered w-full"
-                      id="puzzleSearch"
-                      placeholder="Enter puzzle ID (e.g., 1ae2feb7)"
-                      value={searchQuery}
-                      onChange={(e) => {
-                        setSearchQuery(e.target.value);
-                        setSearchError(null);
-                      }}
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter') {
-                          handleSearch();
-                        }
-                      }}
-                    />
+            <div className="space-y-2">
+              <div className="rounded-2xl border border-sky-200/70 bg-gradient-to-br from-sky-50 via-white to-sky-100 p-3 shadow-sm">
+                <div className="flex flex-col gap-2 md:flex-row md:items-end">
+                  <div className="w-full md:flex-1">
+                    <label htmlFor="puzzleSearch" className="text-[10px] font-medium text-slate-600 block mb-0.5">
+                      Search by Puzzle ID
+                    </label>
+                    <div className="relative">
+                      <input
+                        className="input input-sm input-bordered w-full border-sky-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-400 focus-visible:ring-offset-2 focus-visible:border-sky-400 transition-shadow"
+                        id="puzzleSearch"
+                        placeholder="Enter puzzle ID (e.g., 1ae2feb7)"
+                        value={searchQuery}
+                        onChange={(e) => {
+                          setSearchQuery(e.target.value);
+                          setSearchError(null);
+                        }}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') {
+                            handleSearch();
+                          }
+                        }}
+                      />
+                    </div>
+                    {searchError && (
+                      <p className="text-[10px] text-red-500">{searchError}</p>
+                    )}
                   </div>
-                  {searchError && (
-                    <p className="text-[10px] text-red-500">{searchError}</p>
-                  )}
+                  <EmojiGridAccent orientation="vertical" />
+                  <button
+                    type="button"
+                    className="inline-flex items-center justify-center rounded-full bg-gradient-to-r from-sky-500 via-blue-500 to-indigo-500 px-4 py-2 text-xs font-semibold uppercase tracking-wide text-white shadow-sm transition-colors duration-200 hover:from-sky-600 hover:via-blue-600 hover:to-indigo-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 focus-visible:ring-offset-2 focus-visible:ring-offset-sky-100"
+                    onClick={handleSearch}
+                  >
+                    Search
+                  </button>
                 </div>
-                <button 
-                  className="btn btn-sm btn-primary min-w-[80px]"
-                  onClick={handleSearch}
-                >
-                  Search
-                </button>
+                <EmojiGridAccent orientation="horizontal" className="mt-2" />
               </div>
-            </div>
-            
-            <div className="grid grid-cols-2 md:grid-cols-6 gap-2">
-              <div>
-                <label htmlFor="maxGridSize" className="text-[10px] font-medium text-slate-600 block mb-0.5">Maximum Grid Size</label>
-                <select className="select select-sm select-bordered w-full" value={maxGridSize} onChange={(e) => setMaxGridSize(e.target.value)}>
-                  <option value="any">Any Size</option>
-                  <option value="5">5×5 (Very Small)</option>
-                  <option value="10">10×10 (Small)</option>
-                  <option value="15">15×15 (Medium)</option>
-                  <option value="20">20×20 (Large)</option>
-                  <option value="30">30×30 (Very Large)</option>
-                </select>
+
+              <div className="hidden md:flex md:justify-center">
+                <EmojiGridAccent orientation="horizontal" />
               </div>
-              
-              <div>
-                <label htmlFor="explanationFilter" className="text-[10px] font-medium text-slate-600 block mb-0.5">Explanation Status</label>
-                <select className="select select-sm select-bordered w-full" value={explanationFilter} onChange={(e) => setExplanationFilter(e.target.value)}>
-                  <option value="all">All Puzzles</option>
-                  <option value="unexplained">Unexplained Only</option>
-                  <option value="explained">Explained Only</option>
-                </select>
-              </div>
-              
-              <div>
-                <label htmlFor="gridConsistent" className="text-[10px] font-medium text-slate-600 block mb-0.5">Grid Size Consistency</label>
-                <select className="select select-sm select-bordered w-full" value={gridSizeConsistent} onChange={(e) => setGridSizeConsistent(e.target.value)}>
-                  <option value="any">Any consistency</option>
-                  <option value="true">Consistent size only</option>
-                  <option value="false">Variable size only</option>
-                </select>
-              </div>
-              
-              <div>
-                <label htmlFor="arcVersion" className="text-[10px] font-medium text-slate-600 block mb-0.5">ARC Version</label>
-                <select className="select select-sm select-bordered w-full" value={arcVersion} onChange={(e) => setArcVersion(e.target.value)}>
-                  <option value="any">Any ARC version</option>
-                  <option value="ARC1">ARC1 Training</option>
-                  <option value="ARC1-Eval">ARC1 Evaluation</option>
-                  <option value="ARC2">ARC2 Training</option>
-                  <option value="ARC2-Eval">ARC2 Evaluation</option>
-                  <option value="ARC-Heavy">ARC-Heavy Dataset</option>
-                  <option value="ConceptARC">ConceptARC Dataset</option>
-                </select>
-              </div>
-              
-              <div>
-                <label htmlFor="multiTestFilter" className="text-[10px] font-medium text-slate-600 block mb-0.5">Test Cases</label>
-                <select className="select select-sm select-bordered w-full" value={multiTestFilter} onChange={(e) => setMultiTestFilter(e.target.value)}>
-                  <option value="any">Any number of test cases</option>
-                  <option value="single">Single test case (1 output required)</option>
-                  <option value="multi">Multiple test cases (2+ outputs required)</option>
-                </select>
-              </div>
-              
-              <div>
-                <label htmlFor="sortBy" className="text-[10px] font-medium text-slate-600 block mb-0.5">Sort By</label>
-                <select className="select select-sm select-bordered w-full" value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
-                  <option value="unexplained_first">Unexplained First (recommended)</option>
-                  <option value="default">Default (puzzle order)</option>
-                  <option value="least_analysis_data">Analysis Data (fewest first)</option>
-                  <option value="processing_time">Processing Time (longest first)</option>
-                  <option value="confidence">Confidence (highest first)</option>
-                  <option value="cost">Cost (highest first)</option>
-                  <option value="created_at">Analysis Date (newest first)</option>
-                </select>
+
+              <div className="rounded-2xl border border-rose-200/70 bg-gradient-to-br from-violet-50 via-white to-rose-100 p-3 shadow-sm">
+                <div className="grid grid-cols-2 md:grid-cols-6 gap-2">
+                  <div>
+                    <label htmlFor="maxGridSize" className="text-[10px] font-medium text-slate-600 block mb-0.5">Maximum Grid Size</label>
+                    <select
+                      className="select select-sm select-bordered w-full border-violet-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400 focus-visible:ring-offset-2 focus-visible:border-violet-400 transition-shadow"
+                      value={maxGridSize}
+                      onChange={(e) => setMaxGridSize(e.target.value)}
+                    >
+                      <option value="any">Any Size</option>
+                      <option value="5">5×5 (Very Small)</option>
+                      <option value="10">10×10 (Small)</option>
+                      <option value="15">15×15 (Medium)</option>
+                      <option value="20">20×20 (Large)</option>
+                      <option value="30">30×30 (Very Large)</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label htmlFor="explanationFilter" className="text-[10px] font-medium text-slate-600 block mb-0.5">Explanation Status</label>
+                    <select
+                      className="select select-sm select-bordered w-full border-violet-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400 focus-visible:ring-offset-2 focus-visible:border-violet-400 transition-shadow"
+                      value={explanationFilter}
+                      onChange={(e) => setExplanationFilter(e.target.value)}
+                    >
+                      <option value="all">All Puzzles</option>
+                      <option value="unexplained">Unexplained Only</option>
+                      <option value="explained">Explained Only</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label htmlFor="gridConsistent" className="text-[10px] font-medium text-slate-600 block mb-0.5">Grid Size Consistency</label>
+                    <select
+                      className="select select-sm select-bordered w-full border-violet-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400 focus-visible:ring-offset-2 focus-visible:border-violet-400 transition-shadow"
+                      value={gridSizeConsistent}
+                      onChange={(e) => setGridSizeConsistent(e.target.value)}
+                    >
+                      <option value="any">Any consistency</option>
+                      <option value="true">Consistent size only</option>
+                      <option value="false">Variable size only</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label htmlFor="arcVersion" className="text-[10px] font-medium text-slate-600 block mb-0.5">ARC Version</label>
+                    <select
+                      className="select select-sm select-bordered w-full border-violet-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400 focus-visible:ring-offset-2 focus-visible:border-violet-400 transition-shadow"
+                      value={arcVersion}
+                      onChange={(e) => setArcVersion(e.target.value)}
+                    >
+                      <option value="any">Any ARC version</option>
+                      <option value="ARC1">ARC1 Training</option>
+                      <option value="ARC1-Eval">ARC1 Evaluation</option>
+                      <option value="ARC2">ARC2 Training</option>
+                      <option value="ARC2-Eval">ARC2 Evaluation</option>
+                      <option value="ARC-Heavy">ARC-Heavy Dataset</option>
+                      <option value="ConceptARC">ConceptARC Dataset</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label htmlFor="multiTestFilter" className="text-[10px] font-medium text-slate-600 block mb-0.5">Test Cases</label>
+                    <select
+                      className="select select-sm select-bordered w-full border-violet-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400 focus-visible:ring-offset-2 focus-visible:border-violet-400 transition-shadow"
+                      value={multiTestFilter}
+                      onChange={(e) => setMultiTestFilter(e.target.value)}
+                    >
+                      <option value="any">Any number of test cases</option>
+                      <option value="single">Single test case (1 output required)</option>
+                      <option value="multi">Multiple test cases (2+ outputs required)</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label htmlFor="sortBy" className="text-[10px] font-medium text-slate-600 block mb-0.5">Sort By</label>
+                    <select
+                      className="select select-sm select-bordered w-full border-violet-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400 focus-visible:ring-offset-2 focus-visible:border-violet-400 transition-shadow"
+                      value={sortBy}
+                      onChange={(e) => setSortBy(e.target.value)}
+                    >
+                      <option value="unexplained_first">Unexplained First (recommended)</option>
+                      <option value="default">Default (puzzle order)</option>
+                      <option value="least_analysis_data">Analysis Data (fewest first)</option>
+                      <option value="processing_time">Processing Time (longest first)</option>
+                      <option value="confidence">Confidence (highest first)</option>
+                      <option value="cost">Cost (highest first)</option>
+                      <option value="created_at">Analysis Date (newest first)</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div className="mt-2 flex flex-wrap items-center gap-1.5">
+                  {[
+                    { id: 'search', label: 'Search', active: searchQuery.trim().length > 0 },
+                    { id: 'maxGridSize', label: 'Max Grid', active: maxGridSize !== 'any' },
+                    { id: 'gridSizeConsistent', label: 'Consistency', active: gridSizeConsistent !== 'any' },
+                    { id: 'explanationFilter', label: 'Explanation', active: explanationFilter !== 'unexplained' },
+                    { id: 'arcVersion', label: 'ARC Version', active: arcVersion !== 'any' },
+                    { id: 'multiTestFilter', label: 'Test Cases', active: multiTestFilter !== 'single' },
+                    { id: 'sortBy', label: 'Sort', active: sortBy !== 'unexplained_first' },
+                  ].map((item) => (
+                    <div
+                      key={item.id}
+                      className={`flex items-center gap-1 rounded-full border px-2 py-1 text-[9px] font-semibold transition-colors duration-200 ${
+                        item.active
+                          ? 'border-violet-300 bg-gradient-to-r from-indigo-100 via-rose-100 to-amber-100 text-slate-800 shadow-sm'
+                          : 'border-slate-200 bg-white/70 text-slate-400'
+                      }`}
+                    >
+                      <EmojiGridIcon active={item.active} />
+                      <span>{item.label}</span>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
           </div>
