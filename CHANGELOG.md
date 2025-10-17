@@ -1,3 +1,31 @@
+## [4.8.27] - 2025-10-17
+### ✨ Enhanced Streaming Modal - More Informative Analysis View
+
+#### Summary
+The streaming modal in PuzzleExaminer now provides significantly more context during live analysis:
+- **Prompt Display**: Shows the actual prompt template sent to the AI model
+- **Test Case Visualization**: Displays test input and output grids using TinyGrid components for visual reference
+- **Improved Information Density**: Users can now see what the AI is working on while watching the analysis stream
+
+#### Technical Changes
+- Enhanced `StreamingAnalysisPanel` component to accept `task`, `promptId`, and `customPrompt` props
+- Added prompt text section that displays the selected template or custom prompt
+- Integrated `TinyGrid` component to render test input/output grids side-by-side
+- Updated `PuzzleExaminer` to pass task and prompt data to the streaming panel
+
+#### Files Modified
+- `client/src/components/puzzle/StreamingAnalysisPanel.tsx` - Added prompt and grid display sections
+- `client/src/pages/PuzzleExaminer.tsx` - Pass task and prompt props to streaming panel
+
+#### User Experience
+Users can now see:
+1. The exact prompt template being used
+2. Visual representation of the test grids being analyzed
+3. Live streaming output from the AI model
+All in one comprehensive modal view.
+
+---
+
 ## [4.8.26] - 2025-10-17
 ### ⚙️ Streaming Defaults Restored for GPT-5 Analyses
 
