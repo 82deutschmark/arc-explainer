@@ -1,3 +1,12 @@
+## [4.8.28] - 2025-02-15
+### 🎨 Puzzle Browser layout refinements
+
+- Expanded `EmojiMosaicAccent` to support up to 12-column patterns with responsive sizing so the hero banner can showcase 3×10 emoji mosaics and other wide treatments.
+- Centered the puzzle browser hero, knowledge hub, filters, and active filter chips while slimming the results card to highlight content instead of chrome.
+- Replaced the bulky mission card with a compact badge that opens an accessible modal containing the full project background narrative.
+
+---
+
 ## [4.8.27] - 2025-10-17
 ### ✨ Enhanced Streaming Modal - Real-Time Context Display
 
