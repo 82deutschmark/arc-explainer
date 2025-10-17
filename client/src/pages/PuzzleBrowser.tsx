@@ -1,15 +1,15 @@
 /**
  * Author: gpt-5-codex
- * Date: 2025-01-27
- * PURPOSE: Presents the ARC puzzle browser with enhanced knowledge hub styling,
- *          filtering tools, and interactive navigation for puzzle exploration.
- * SRP/DRY check: Pass — Verified existing functionality while refining UI accents.
+ * Date: 2025-10-17
+ * PURPOSE: Presents the ARC puzzle browser with gradient-rich knowledge hubs,
+ *          compact filter controls, and interactive navigation for puzzle exploration.
+ * SRP/DRY check: Pass — Verified data fetching and filtering logic remain intact.
  */
 import React, { useState, useCallback } from 'react';
 import { Link, useLocation } from 'wouter';
 import { usePuzzleList } from '@/hooks/usePuzzle';
 import { useModels } from '@/hooks/useModels';
-import { Loader2, Grid3X3, Eye, CheckCircle2, MessageCircle, Download, BookOpen, ExternalLink, Sparkles, FileText, Lightbulb, Award, FileCode, ChevronDown, ChevronUp } from 'lucide-react';
+import { Loader2, Grid3X3, ExternalLink, Sparkles, ChevronDown, ChevronUp } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { apiRequest } from '@/lib/queryClient';
 import { useMutation, useQuery, useQueries } from '@tanstack/react-query';
@@ -18,42 +18,7 @@ import { useHasExplanation } from '@/hooks/useExplanation';
 import { CollapsibleMission } from '@/components/ui/collapsible-mission';
 import { formatProcessingTime } from '@/utils/timeFormatters';
 import { PuzzleCard } from '@/components/puzzle/PuzzleCard';
-
-const emojiGridCells = ['🟥', '🟧', '🟨', '🟩', '🟦', '🟪', '⬛', '⬜', '🟫'];
-
-interface EmojiGridAccentProps {
-  orientation?: 'horizontal' | 'vertical';
-  className?: string;
-}
-
-const EmojiGridAccent: React.FC<EmojiGridAccentProps> = ({ orientation = 'horizontal', className }) => {
-  const baseClass = orientation === 'vertical'
-    ? 'hidden md:flex md:flex-col md:items-center md:justify-center md:px-1'
-    : 'flex justify-center w-full';
-
-  return (
-    <div className={`${baseClass} ${className ?? ''}`} aria-hidden="true">
-      <div className="grid grid-cols-3 gap-[1px] text-[10px] leading-none">
-        {emojiGridCells.map((cell, index) => (
-          <span key={`${cell}-${index}`}>{cell}</span>
-        ))}
-      </div>
-    </div>
-  );
-};
-
-const EmojiGridIcon: React.FC<{ active: boolean }> = ({ active }) => (
-  <div
-    className={`grid grid-cols-3 gap-[1px] text-[9px] leading-none transition-all duration-200 ${
-      active ? 'opacity-100 drop-shadow-[0_0_4px_rgba(79,70,229,0.45)]' : 'opacity-40'
-    }`}
-    aria-hidden="true"
-  >
-    {emojiGridCells.map((cell, index) => (
-      <span key={`${cell}-legend-${index}`}>{cell}</span>
-    ))}
-  </div>
-);
+import { EmojiMosaicAccent, type MosaicVariant } from '@/components/browser/EmojiMosaicAccent';
 
 // Extended type to include feedback counts and processing metadata from our enhanced API
 interface EnhancedPuzzleMetadata extends PuzzleMetadata {
@@ -72,6 +37,100 @@ interface EnhancedPuzzleMetadata extends PuzzleMetadata {
   hasMultiplePredictions?: boolean;
   multiTestPredictionGrids?: any;
 }
+
+type KnowledgeTileLink = {
+  href: string;
+  label: string;
+  icon: string;
+};
+
+type KnowledgeTile = {
+  id: string;
+  title: string;
+  gradient: string;
+  mosaicVariant: MosaicVariant;
+  links: KnowledgeTileLink[];
+};
+
+const KNOWLEDGE_TILES: KnowledgeTile[] = [
+  {
+    id: 'research',
+    title: 'Research Papers',
+    gradient: 'from-fuchsia-500 via-purple-500 to-indigo-600',
+    mosaicVariant: 'heroTwilight',
+    links: [
+      {
+        href: 'https://www.arxiv.org/pdf/2505.11831',
+        label: 'ARC2 Technical Report',
+        icon: '📄',
+      },
+    ],
+  },
+  {
+    id: 'data',
+    title: 'Data Sources',
+    gradient: 'from-sky-500 via-cyan-500 to-indigo-500',
+    mosaicVariant: 'datasetSignal',
+    links: [
+      {
+        href: 'https://huggingface.co/arcprize',
+        label: 'HuggingFace Datasets',
+        icon: '🗂️',
+      },
+      {
+        href: 'https://github.com/fchollet/ARC-AGI',
+        label: 'Official Repository',
+        icon: '📦',
+      },
+    ],
+  },
+  {
+    id: 'solutions',
+    title: 'Top Solutions',
+    gradient: 'from-emerald-500 via-lime-500 to-teal-500',
+    mosaicVariant: 'sizeSignal',
+    links: [
+      {
+        href: 'https://github.com/zoecarver',
+        label: "zoecarver's Approach",
+        icon: '1️⃣',
+      },
+      {
+        href: 'https://github.com/jerber',
+        label: "jerber's Solutions",
+        icon: '2️⃣',
+      },
+      {
+        href: 'https://github.com/epang080516/arc_agi',
+        label: "epang080516's Code",
+        icon: '3️⃣',
+      },
+    ],
+  },
+  {
+    id: 'community',
+    title: 'Community',
+    gradient: 'from-amber-500 via-orange-500 to-rose-500',
+    mosaicVariant: 'analysisSignal',
+    links: [
+      {
+        href: 'https://github.com/google/ARC-GEN/blob/main/task_list.py#L422',
+        label: 'Puzzle Nomenclature',
+        icon: '📖',
+      },
+      {
+        href: 'https://github.com/neoneye/arc-notes',
+        label: 'All the ARC Resources',
+        icon: '📚',
+      },
+      {
+        href: 'https://github.com/neoneye/arc-dataset-collection',
+        label: 'Dataset Collection',
+        icon: '🗃️',
+      },
+    ],
+  },
+];
 
 export default function PuzzleBrowser() {
   const [maxGridSize, setMaxGridSize] = useState<string>('any');
@@ -224,212 +283,87 @@ export default function PuzzleBrowser() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 p-2">
       <div className="max-w-[1900px] mx-auto space-y-2">
-        <header className="text-center space-y-1">
-          <div>
-            <h1 className="text-2xl font-bold bg-gradient-to-r from-slate-900 to-blue-800 bg-clip-text text-transparent">
-              🟦🟦🟦 ⬜⬛⬜ ARC-AGI Puzzle Explorer ⬜⬛⬜ 🟩🟩🟩
-            </h1>
-            <p className="text-xs text-slate-600 mt-1 font-mono">
-              3️⃣×3️⃣ 🟦⬜🟦 → 🟩🟩🟩 ⬜ ARC-AGI Explainer Hub ⬜ 🟥⬜🟥 → 🟪🟪🟪 3️⃣×3️⃣
-            </p>
-          </div>
-          
-          {/* Collapsible Mission Statement */}
-          <CollapsibleMission />
+        <header className="space-y-3">
+          <section className="relative overflow-hidden rounded-3xl border border-slate-200/60 bg-[radial-gradient(circle_at_top,_#f8fafc,_#dbeafe_65%,_#1d4ed8_125%)] p-4 shadow-lg">
+            <div className="absolute -left-6 -top-6 hidden md:block">
+              <EmojiMosaicAccent variant="heroSunrise" size="md" className="-rotate-6 drop-shadow-xl" />
+            </div>
+            <div className="absolute -bottom-8 right-4 hidden md:block">
+              <EmojiMosaicAccent variant="heroTwilight" size="md" className="rotate-6 drop-shadow-xl" />
+            </div>
+            <div className="relative z-10 space-y-4">
+              <div className="text-center space-y-1">
+                <h1 className="text-3xl font-black bg-gradient-to-r from-slate-900 via-blue-800 to-indigo-700 bg-clip-text text-transparent tracking-tight">
+                  🟥🟧🟨 ARC-AGI Puzzle Explorer 🟩🟦🟪
+                </h1>
+                <p className="text-xs text-slate-600 font-mono">
+                  3×3 emoji mosaics spotlight the interactive tools—follow the gradients to explore puzzles faster.
+                </p>
+              </div>
 
-          {/* Resources & References Section - Enhanced with emojis and better styling */}
-          <div className="card shadow-lg border-0 bg-gradient-to-br from-slate-50 via-gray-50 to-blue-50 backdrop-blur-sm hover:shadow-xl transition-all duration-300">
-            <div className="card-body p-2">
-              <div className="flex items-center justify-center gap-1 mb-2">
-                <Sparkles className="h-3 w-3 text-slate-500" />
-                <h3 className="text-sm font-bold bg-gradient-to-r from-slate-800 to-blue-700 bg-clip-text text-transparent">
-                  <span className="font-mono">🟥🟥🟥 🟦🟦🟦 🟩🟩🟩</span> ARC-AGI Knowledge Hub <span className="font-mono">🟪🟪🟪 🟧🟧🟧 🟨🟨🟨</span>
-                </h3>
-                <Sparkles className="h-3 w-3 text-slate-500" />
+              <CollapsibleMission />
+
+              <div className="flex items-center justify-center gap-2 text-[10px] font-semibold uppercase tracking-wider text-slate-700">
+                <Sparkles className="h-3 w-3 text-indigo-500" />
+                <span>ARC-AGI Knowledge Hub</span>
+                <Sparkles className="h-3 w-3 text-indigo-500" />
               </div>
 
               <div className="grid grid-cols-2 lg:grid-cols-4 gap-2">
-                {/* Research Section */}
-                <div className="group rounded-lg bg-gradient-to-br from-purple-600 via-fuchsia-500 to-indigo-600 p-[1px] transition-all duration-200 focus-within:shadow-lg focus-within:scale-[1.01] focus-within:from-purple-700 focus-within:via-fuchsia-600 focus-within:to-indigo-700 hover:shadow-lg hover:scale-[1.01] hover:from-purple-700 hover:via-fuchsia-600 hover:to-indigo-700">
-                  <div className="h-full rounded-md bg-white/90 p-2 shadow-sm transition-colors duration-200 group-hover:bg-white group-focus-within:bg-white">
-                    <div className="flex items-center gap-2 mb-1">
-                      <span
-                        aria-hidden="true"
-                        className="inline-grid grid-cols-3 gap-[1px] rounded-sm bg-purple-100/80 p-0.5 text-[10px] leading-[0.65rem] text-purple-700 transition-transform duration-200 group-hover:scale-110 group-focus-within:scale-110"
-                      >
-                        <span>🟪</span>
-                        <span>🟪</span>
-                        <span>🟪</span>
-                        <span>🟪</span>
-                        <span>⬛️</span>
-                        <span>🟪</span>
-                        <span>🟪</span>
-                        <span>🟪</span>
-                        <span>🟪</span>
-                      </span>
-                      <p className="font-bold text-slate-900 text-[10px] font-mono uppercase tracking-wide">Research Papers</p>
-                    </div>
-                    <a
-                      href="https://www.arxiv.org/pdf/2505.11831"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1 text-[9px] font-medium text-purple-700 transition-all duration-150 hover:text-purple-900 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-purple-500 focus-visible:ring-offset-1 focus-visible:ring-offset-white"
-                    >
-                      <span className="font-mono" aria-hidden="true">📄</span>
-                      ARC2 Technical Report
-                      <ExternalLink className="h-2.5 w-2.5" />
-                    </a>
-                  </div>
-                </div>
+                {KNOWLEDGE_TILES.map((tile) => (
+                  <div
+                    key={tile.id}
+                    className={`group relative overflow-hidden rounded-2xl border border-white/60 bg-gradient-to-br ${tile.gradient} p-[1px] shadow-md transition-all duration-200 hover:shadow-xl focus-within:shadow-xl`}
+                  >
+                    <div className="h-full rounded-[1.1rem] bg-white/92 p-3 text-left space-y-2">
+                      <div className="flex items-center gap-2">
+                        <EmojiMosaicAccent variant={tile.mosaicVariant} size="xs" className="drop-shadow-sm" />
+                        <p className="text-[10px] font-mono font-semibold uppercase tracking-wider text-slate-700">
+                          {tile.title}
+                        </p>
+                      </div>
+                      <div className="space-y-1">
+                        {tile.links.map((link) => (
+                          <a
+                            key={link.href}
+                            href={link.href}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-1 text-[9px] font-medium text-slate-700 transition-all duration-150 hover:text-slate-900 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-indigo-400 focus-visible:ring-offset-1 focus-visible:ring-offset-white"
+                          >
+                            <span className="font-mono" aria-hidden="true">{link.icon}</span>
+                            {link.label}
+                            <ExternalLink className="h-2.5 w-2.5" />
+                          </a>
+                        ))}
+                      </div>
 
-                {/* Data Sources Section */}
-                <div className="group rounded-lg bg-gradient-to-br from-blue-600 via-sky-500 to-cyan-600 p-[1px] transition-all duration-200 focus-within:shadow-lg focus-within:scale-[1.01] focus-within:from-blue-700 focus-within:via-sky-600 focus-within:to-cyan-700 hover:shadow-lg hover:scale-[1.01] hover:from-blue-700 hover:via-sky-600 hover:to-cyan-700">
-                  <div className="h-full rounded-md bg-white/90 p-2 shadow-sm transition-colors duration-200 group-hover:bg-white group-focus-within:bg-white">
-                    <div className="flex items-center gap-2 mb-1">
-                      <span
-                        aria-hidden="true"
-                        className="inline-grid grid-cols-3 gap-[1px] rounded-sm bg-blue-100/80 p-0.5 text-[10px] leading-[0.65rem] text-blue-700 transition-transform duration-200 group-hover:scale-110 group-focus-within:scale-110"
-                      >
-                        <span>🟦</span>
-                        <span>🟦</span>
-                        <span>🟦</span>
-                        <span>🟦</span>
-                        <span>⬜️</span>
-                        <span>🟦</span>
-                        <span>🟦</span>
-                        <span>🟦</span>
-                        <span>🟦</span>
-                      </span>
-                      <p className="font-bold text-slate-900 text-[10px] font-mono uppercase tracking-wide">Data Sources</p>
-                    </div>
-                    <div className="space-y-0.5">
-                      <a
-                        href="https://huggingface.co/arcprize"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1 text-[9px] font-medium text-blue-700 transition-all duration-150 hover:text-blue-900 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-blue-500 focus-visible:ring-offset-1 focus-visible:ring-offset-white"
-                      >
-                        <span className="font-mono" aria-hidden="true">🗂️</span>
-                        HuggingFace Datasets
-                        <ExternalLink className="h-2.5 w-2.5" />
-                      </a>
-                      <a
-                        href="https://github.com/fchollet/ARC-AGI"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1 text-[9px] font-medium text-blue-700 transition-all duration-150 hover:text-blue-900 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-blue-500 focus-visible:ring-offset-1 focus-visible:ring-offset-white"
-                      >
-                        <span className="font-mono" aria-hidden="true">📦</span>
-                        Official Repository
-                        <ExternalLink className="h-2.5 w-2.5" />
-                      </a>
-                    </div>
-                  </div>
-                </div>
-
-                {/* SOTA Solutions Section */}
-                <div className="group rounded-lg bg-gradient-to-br from-emerald-600 via-green-500 to-lime-600 p-[1px] transition-all duration-200 focus-within:shadow-lg focus-within:scale-[1.01] focus-within:from-emerald-700 focus-within:via-green-600 focus-within:to-lime-700 hover:shadow-lg hover:scale-[1.01] hover:from-emerald-700 hover:via-green-600 hover:to-lime-700">
-                  <div className="h-full rounded-md bg-white/90 p-2 shadow-sm transition-colors duration-200 group-hover:bg-white group-focus-within:bg-white">
-                    <div className="flex items-center gap-2 mb-1">
-                      <span
-                        aria-hidden="true"
-                        className="inline-grid grid-cols-3 gap-[1px] rounded-sm bg-emerald-100/80 p-0.5 text-[10px] leading-[0.65rem] text-emerald-700 transition-transform duration-200 group-hover:scale-110 group-focus-within:scale-110"
-                      >
-                        <span>🟩</span>
-                        <span>🟩</span>
-                        <span>🟩</span>
-                        <span>🟩</span>
-                        <span>⬜️</span>
-                        <span>🟩</span>
-                        <span>🟩</span>
-                        <span>🟩</span>
-                        <span>🟩</span>
-                      </span>
-                      <p className="font-bold text-slate-900 text-[10px] font-mono uppercase tracking-wide">Top Solutions</p>
-                    </div>
-                    <div className="space-y-0.5">
-                      <a
-                        href="https://github.com/zoecarver"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1 text-[9px] font-medium text-emerald-700 transition-all duration-150 hover:text-emerald-900 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-emerald-500 focus-visible:ring-offset-1 focus-visible:ring-offset-white"
-                      >
-                        <span className="font-mono" aria-hidden="true">1️⃣</span>
-                        zoecarver's Approach
-                        <ExternalLink className="h-2.5 w-2.5" />
-                      </a>
-                      <a
-                        href="https://github.com/jerber"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1 text-[9px] font-medium text-emerald-700 transition-all duration-150 hover:text-emerald-900 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-emerald-500 focus-visible:ring-offset-1 focus-visible:ring-offset-white"
-                      >
-                        <span className="font-mono" aria-hidden="true">2️⃣</span>
-                        jerber's Solutions
-                        <ExternalLink className="h-2.5 w-2.5" />
-                      </a>
-                      <a
-                        href="https://github.com/epang080516/arc_agi"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1 text-[9px] font-medium text-emerald-700 transition-all duration-150 hover:text-emerald-900 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-emerald-500 focus-visible:ring-offset-1 focus-visible:ring-offset-white"
-                      >
-                        <span className="font-mono" aria-hidden="true">3️⃣</span>
-                        epang080516's Code
-                        <ExternalLink className="h-2.5 w-2.5" />
-                      </a>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Community Section */}
-                <div className="group rounded-lg bg-gradient-to-br from-orange-600 via-amber-500 to-rose-500 p-[1px] transition-all duration-200 focus-within:shadow-lg focus-within:scale-[1.01] focus-within:from-orange-700 focus-within:via-amber-600 focus-within:to-rose-600 hover:shadow-lg hover:scale-[1.01] hover:from-orange-700 hover:via-amber-600 hover:to-rose-600">
-                  <div className="h-full rounded-md bg-white/90 p-2 shadow-sm transition-colors duration-200 group-hover:bg-white group-focus-within:bg-white">
-                    <div className="flex items-center gap-2 mb-1">
-                      <span
-                        aria-hidden="true"
-                        className="inline-grid grid-cols-3 gap-[1px] rounded-sm bg-orange-100/80 p-0.5 text-[10px] leading-[0.65rem] text-orange-700 transition-transform duration-200 group-hover:scale-110 group-focus-within:scale-110"
-                      >
-                        <span>🟧</span>
-                        <span>🟧</span>
-                        <span>🟧</span>
-                        <span>🟧</span>
-                        <span>⬜️</span>
-                        <span>🟧</span>
-                        <span>🟧</span>
-                        <span>🟧</span>
-                        <span>🟧</span>
-                      </span>
-                      <p className="font-bold text-slate-900 text-[10px] font-mono uppercase tracking-wide">Community</p>
-                    </div>
-                    <div className="space-y-0.5">
-                      <div className="mb-1">
-                        <div
-                          className={`collapse ${isOpen ? 'collapse-open' : 'collapse-close'} bg-orange-50/70 border border-orange-200 rounded focus-within:outline-none focus-within:ring-1 focus-within:ring-orange-500`}
-                        >
-                          <div className="collapse-title p-1">
-                            <button
-                              className="w-full flex justify-between items-center h-auto text-left focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-orange-500 focus-visible:ring-offset-1 focus-visible:ring-offset-orange-50"
-                              onClick={() => setIsOpen(!isOpen)}
-                            >
-                              <div className="flex items-center gap-1">
-                                <span className="text-[9px] font-semibold text-orange-800 font-mono">🟧🟨🟧 Critical ARC-AGI-2 Research</span>
-                                <span className="text-[8px] text-orange-600">by cristianoc</span>
-                              </div>
-                              {isOpen ? (
-                                <ChevronUp className="h-2.5 w-2.5 text-orange-600" />
-                              ) : (
-                                <ChevronDown className="h-2.5 w-2.5 text-orange-600" />
-                              )}
-                            </button>
-                          </div>
-
-                          <div className="collapse-content px-1 pb-1">
-                            <div className="text-[8px] text-orange-700 space-y-1">
+                      {tile.id === 'community' && (
+                        <div className="space-y-1 pt-1 border-t border-orange-100/70">
+                          <div
+                            className={`collapse ${isOpen ? 'collapse-open' : 'collapse-close'} bg-orange-50/80 border border-orange-200 rounded-xl focus-within:outline-none focus-within:ring-1 focus-within:ring-orange-500`}
+                          >
+                            <div className="collapse-title p-1">
+                              <button
+                                className="w-full flex justify-between items-center text-left text-[9px] font-semibold text-orange-800 font-mono focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-orange-500 focus-visible:ring-offset-1 focus-visible:ring-offset-orange-50"
+                                onClick={() => setIsOpen(!isOpen)}
+                              >
+                                <span className="flex items-center gap-1">
+                                  🟧🟨🟧 Critical ARC-AGI-2 Research
+                                  <span className="text-[8px] text-orange-600">by cristianoc</span>
+                                </span>
+                                {isOpen ? (
+                                  <ChevronUp className="h-2.5 w-2.5 text-orange-600" />
+                                ) : (
+                                  <ChevronDown className="h-2.5 w-2.5 text-orange-600" />
+                                )}
+                              </button>
+                            </div>
+                            <div className="collapse-content px-1 pb-2 text-[8px] text-orange-700 space-y-1">
                               <p className="font-mono">
                                 📊 Analysis of 1️⃣1️⃣1️⃣ ARC-AGI-2 tasks reveals composition patterns:
                               </p>
-                              <div className="grid grid-cols-2 gap-0.5 text-[8px] font-mono">
+                              <div className="grid grid-cols-2 gap-0.5 font-mono">
                                 <p>🟥🟥🟥🟥 4️⃣0️⃣% sequential composition</p>
                                 <p>🟧🟧🟧⬜ 3️⃣0️⃣% conditional branching</p>
                                 <p>🟨🟨⬜⬜ 2️⃣0️⃣% pattern classification</p>
@@ -453,108 +387,97 @@ export default function PuzzleBrowser() {
                             </div>
                           </div>
                         </div>
-                      </div>
-                      <a
-                        href="https://github.com/google/ARC-GEN/blob/main/task_list.py#L422"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1 text-[9px] font-medium text-orange-700 transition-all duration-150 hover:text-orange-900 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-orange-500 focus-visible:ring-offset-1 focus-visible:ring-offset-white"
-                      >
-                        <span className="font-mono" aria-hidden="true">📖</span>
-                        Puzzle Nomenclature
-                        <ExternalLink className="h-2.5 w-2.5" />
-                      </a>
-                      <a
-                        href="https://github.com/neoneye/arc-notes"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1 text-[9px] font-medium text-orange-700 transition-all duration-150 hover:text-orange-900 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-orange-500 focus-visible:ring-offset-1 focus-visible:ring-offset-white"
-                      >
-                        <span className="font-mono" aria-hidden="true">📚</span>
-                        All the ARC Resources
-                        <ExternalLink className="h-2.5 w-2.5" />
-                      </a>
-                      <a
-                        href="https://github.com/neoneye/arc-dataset-collection"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1 text-[9px] font-medium text-orange-700 transition-all duration-150 hover:text-orange-900 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-orange-500 focus-visible:ring-offset-1 focus-visible:ring-offset-white"
-                      >
-                        <span className="font-mono" aria-hidden="true">🗃️</span>
-                        Dataset Collection
-                        <ExternalLink className="h-2.5 w-2.5" />
-                      </a>
+                      )}
                     </div>
                   </div>
-                </div>
+                ))}
               </div>
 
-              <div className="mt-1 text-center">
-                <p className="text-[9px] text-gray-600 bg-white/40 rounded-full px-2 py-1 inline-block font-mono">
-                  🟥🟦🟩🟪🟧🟨 <strong>Special thanks to Simon Strandgaard (@neoneye)</strong> for his incredible insights, support, and encouragement! 🟨🟧🟪🟩🟦🟥
+              <div className="text-center">
+                <p className="inline-flex items-center gap-2 rounded-full bg-white/60 px-3 py-1 text-[9px] font-mono text-slate-600">
+                  <EmojiMosaicAccent variant="rainbow" size="xs" />
+                  <span>
+                    <strong>Special thanks to Simon Strandgaard (@neoneye)</strong> for incredible insights, support, and encouragement!
+                  </span>
                 </p>
               </div>
             </div>
-          </div>
+          </section>
         </header>
 
         {/* Filters */}
-        <div className="card shadow-lg border-0 bg-white/80 backdrop-blur-sm">
-          <div className="card-body p-2">
-            <h2 className="card-title flex items-center gap-1 text-slate-800 text-sm mb-2">
-              <Grid3X3 className="h-3 w-3 text-blue-600" />
-              Filter Puzzles
-            </h2>
-            <div className="space-y-2">
-              <div className="rounded-2xl border border-sky-200/70 bg-gradient-to-br from-sky-50 via-white to-sky-100 p-3 shadow-sm">
-                <div className="flex flex-col gap-2 md:flex-row md:items-end">
-                  <div className="w-full md:flex-1">
+        <div className="card shadow-lg border-0 bg-white/85 backdrop-blur-sm">
+          <div className="card-body p-3 space-y-3">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <div className="flex items-center gap-2">
+                <EmojiMosaicAccent variant="rainbow" size="sm" />
+                <h2 className="text-sm font-semibold text-slate-800 flex items-center gap-1">
+                  <Grid3X3 className="h-3 w-3 text-indigo-500" />
+                  Filter Puzzles
+                </h2>
+              </div>
+              <p className="text-[10px] text-slate-500">
+                Gradients highlight the interactive controls below.
+              </p>
+            </div>
+
+            <div className="grid gap-2 lg:grid-cols-4">
+              <fieldset className="lg:col-span-2 rounded-2xl border border-slate-200/70 bg-gradient-to-br from-sky-50 via-white to-indigo-50/80 p-3 shadow-sm">
+                <legend className="px-2">
+                  <span className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-fuchsia-500 via-purple-500 to-indigo-500 px-3 py-1 text-[10px] font-semibold uppercase tracking-wider text-white shadow-sm">
+                    <EmojiMosaicAccent variant="searchSignal" size="xs" className="drop-shadow" />
+                    Search
+                  </span>
+                </legend>
+                <div className="mt-2 flex flex-col gap-1.5 sm:flex-row sm:items-end">
+                  <div className="w-full sm:flex-1">
                     <label htmlFor="puzzleSearch" className="text-[10px] font-medium text-slate-600 block mb-0.5">
                       Search by Puzzle ID
                     </label>
-                    <div className="relative">
-                      <input
-                        className="input input-sm input-bordered w-full border-sky-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-400 focus-visible:ring-offset-2 focus-visible:border-sky-400 transition-shadow"
-                        id="puzzleSearch"
-                        placeholder="Enter puzzle ID (e.g., 1ae2feb7)"
-                        value={searchQuery}
-                        onChange={(e) => {
-                          setSearchQuery(e.target.value);
-                          setSearchError(null);
-                        }}
-                        onKeyDown={(e) => {
-                          if (e.key === 'Enter') {
-                            handleSearch();
-                          }
-                        }}
-                      />
-                    </div>
+                    <input
+                      className="input input-xs input-bordered w-full border-sky-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-400 focus-visible:ring-offset-2 focus-visible:border-sky-400"
+                      id="puzzleSearch"
+                      placeholder="Enter puzzle ID (e.g., 1ae2feb7)"
+                      value={searchQuery}
+                      onChange={(e) => {
+                        setSearchQuery(e.target.value);
+                        setSearchError(null);
+                      }}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                          handleSearch();
+                        }
+                      }}
+                    />
                     {searchError && (
-                      <p className="text-[10px] text-red-500">{searchError}</p>
+                      <p className="mt-1 text-[10px] text-rose-500">{searchError}</p>
                     )}
                   </div>
-                  <EmojiGridAccent orientation="vertical" />
+                  <div className="hidden sm:flex sm:flex-col sm:justify-end">
+                    <EmojiMosaicAccent variant="heroSunrise" size="xs" className="rotate-3" />
+                  </div>
                   <button
                     type="button"
-                    className="inline-flex items-center justify-center rounded-full bg-gradient-to-r from-sky-500 via-blue-500 to-indigo-500 px-4 py-2 text-xs font-semibold uppercase tracking-wide text-white shadow-sm transition-colors duration-200 hover:from-sky-600 hover:via-blue-600 hover:to-indigo-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 focus-visible:ring-offset-2 focus-visible:ring-offset-sky-100"
+                    className="inline-flex items-center justify-center rounded-full bg-gradient-to-r from-sky-500 via-blue-500 to-indigo-500 px-4 py-1.5 text-[11px] font-semibold uppercase tracking-wide text-white shadow-sm transition-transform duration-200 hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 focus-visible:ring-offset-2 focus-visible:ring-offset-sky-100"
                     onClick={handleSearch}
                   >
                     Search
                   </button>
                 </div>
-                <EmojiGridAccent orientation="horizontal" className="mt-2" />
-              </div>
+              </fieldset>
 
-              <div className="hidden md:flex md:justify-center">
-                <EmojiGridAccent orientation="horizontal" />
-              </div>
-
-              <div className="rounded-2xl border border-rose-200/70 bg-gradient-to-br from-violet-50 via-white to-rose-100 p-3 shadow-sm">
-                <div className="grid grid-cols-2 md:grid-cols-6 gap-2">
+              <fieldset className="rounded-2xl border border-emerald-200/70 bg-gradient-to-br from-emerald-50 via-white to-teal-50/80 p-3 shadow-sm">
+                <legend className="px-2">
+                  <span className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-emerald-500 via-teal-500 to-sky-500 px-3 py-1 text-[10px] font-semibold uppercase tracking-wider text-white shadow-sm">
+                    <EmojiMosaicAccent variant="sizeSignal" size="xs" className="drop-shadow" />
+                    Puzzle Shape
+                  </span>
+                </legend>
+                <div className="mt-2 space-y-1.5">
                   <div>
                     <label htmlFor="maxGridSize" className="text-[10px] font-medium text-slate-600 block mb-0.5">Maximum Grid Size</label>
                     <select
-                      className="select select-sm select-bordered w-full border-violet-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400 focus-visible:ring-offset-2 focus-visible:border-violet-400 transition-shadow"
+                      className="select select-xs select-bordered w-full border-emerald-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400 focus-visible:ring-offset-2 focus-visible:border-emerald-400"
                       value={maxGridSize}
                       onChange={(e) => setMaxGridSize(e.target.value)}
                     >
@@ -566,24 +489,10 @@ export default function PuzzleBrowser() {
                       <option value="30">30×30 (Very Large)</option>
                     </select>
                   </div>
-
-                  <div>
-                    <label htmlFor="explanationFilter" className="text-[10px] font-medium text-slate-600 block mb-0.5">Explanation Status</label>
-                    <select
-                      className="select select-sm select-bordered w-full border-violet-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400 focus-visible:ring-offset-2 focus-visible:border-violet-400 transition-shadow"
-                      value={explanationFilter}
-                      onChange={(e) => setExplanationFilter(e.target.value)}
-                    >
-                      <option value="all">All Puzzles</option>
-                      <option value="unexplained">Unexplained Only</option>
-                      <option value="explained">Explained Only</option>
-                    </select>
-                  </div>
-
                   <div>
                     <label htmlFor="gridConsistent" className="text-[10px] font-medium text-slate-600 block mb-0.5">Grid Size Consistency</label>
                     <select
-                      className="select select-sm select-bordered w-full border-violet-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400 focus-visible:ring-offset-2 focus-visible:border-violet-400 transition-shadow"
+                      className="select select-xs select-bordered w-full border-emerald-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400 focus-visible:ring-offset-2 focus-visible:border-emerald-400"
                       value={gridSizeConsistent}
                       onChange={(e) => setGridSizeConsistent(e.target.value)}
                     >
@@ -592,11 +501,21 @@ export default function PuzzleBrowser() {
                       <option value="false">Variable size only</option>
                     </select>
                   </div>
+                </div>
+              </fieldset>
 
+              <fieldset className="rounded-2xl border border-cyan-200/70 bg-gradient-to-br from-cyan-50 via-white to-sky-50/80 p-3 shadow-sm">
+                <legend className="px-2">
+                  <span className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-cyan-500 via-sky-500 to-indigo-500 px-3 py-1 text-[10px] font-semibold uppercase tracking-wider text-white shadow-sm">
+                    <EmojiMosaicAccent variant="datasetSignal" size="xs" className="drop-shadow" />
+                    Dataset
+                  </span>
+                </legend>
+                <div className="mt-2 space-y-1.5">
                   <div>
                     <label htmlFor="arcVersion" className="text-[10px] font-medium text-slate-600 block mb-0.5">ARC Version</label>
                     <select
-                      className="select select-sm select-bordered w-full border-violet-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400 focus-visible:ring-offset-2 focus-visible:border-violet-400 transition-shadow"
+                      className="select select-xs select-bordered w-full border-cyan-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:ring-offset-2 focus-visible:border-cyan-400"
                       value={arcVersion}
                       onChange={(e) => setArcVersion(e.target.value)}
                     >
@@ -609,11 +528,10 @@ export default function PuzzleBrowser() {
                       <option value="ConceptARC">ConceptARC Dataset</option>
                     </select>
                   </div>
-
                   <div>
                     <label htmlFor="multiTestFilter" className="text-[10px] font-medium text-slate-600 block mb-0.5">Test Cases</label>
                     <select
-                      className="select select-sm select-bordered w-full border-violet-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400 focus-visible:ring-offset-2 focus-visible:border-violet-400 transition-shadow"
+                      className="select select-xs select-bordered w-full border-cyan-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:ring-offset-2 focus-visible:border-cyan-400"
                       value={multiTestFilter}
                       onChange={(e) => setMultiTestFilter(e.target.value)}
                     >
@@ -622,11 +540,33 @@ export default function PuzzleBrowser() {
                       <option value="multi">Multiple test cases (2+ outputs required)</option>
                     </select>
                   </div>
+                </div>
+              </fieldset>
 
+              <fieldset className="rounded-2xl border border-rose-200/70 bg-gradient-to-br from-rose-50 via-white to-amber-50/80 p-3 shadow-sm">
+                <legend className="px-2">
+                  <span className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-rose-500 via-amber-500 to-violet-500 px-3 py-1 text-[10px] font-semibold uppercase tracking-wider text-white shadow-sm">
+                    <EmojiMosaicAccent variant="statusUnexplained" size="xs" className="drop-shadow" />
+                    Analysis
+                  </span>
+                </legend>
+                <div className="mt-2 space-y-1.5">
+                  <div>
+                    <label htmlFor="explanationFilter" className="text-[10px] font-medium text-slate-600 block mb-0.5">Explanation Status</label>
+                    <select
+                      className="select select-xs select-bordered w-full border-rose-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-400 focus-visible:ring-offset-2 focus-visible:border-rose-400"
+                      value={explanationFilter}
+                      onChange={(e) => setExplanationFilter(e.target.value)}
+                    >
+                      <option value="all">All Puzzles</option>
+                      <option value="unexplained">Unexplained Only</option>
+                      <option value="explained">Explained Only</option>
+                    </select>
+                  </div>
                   <div>
                     <label htmlFor="sortBy" className="text-[10px] font-medium text-slate-600 block mb-0.5">Sort By</label>
                     <select
-                      className="select select-sm select-bordered w-full border-violet-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400 focus-visible:ring-offset-2 focus-visible:border-violet-400 transition-shadow"
+                      className="select select-xs select-bordered w-full border-rose-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-400 focus-visible:ring-offset-2 focus-visible:border-rose-400"
                       value={sortBy}
                       onChange={(e) => setSortBy(e.target.value)}
                     >
@@ -640,31 +580,36 @@ export default function PuzzleBrowser() {
                     </select>
                   </div>
                 </div>
+              </fieldset>
+            </div>
 
-                <div className="mt-2 flex flex-wrap items-center gap-1.5">
-                  {[
-                    { id: 'search', label: 'Search', active: searchQuery.trim().length > 0 },
-                    { id: 'maxGridSize', label: 'Max Grid', active: maxGridSize !== 'any' },
-                    { id: 'gridSizeConsistent', label: 'Consistency', active: gridSizeConsistent !== 'any' },
-                    { id: 'explanationFilter', label: 'Explanation', active: explanationFilter !== 'unexplained' },
-                    { id: 'arcVersion', label: 'ARC Version', active: arcVersion !== 'any' },
-                    { id: 'multiTestFilter', label: 'Test Cases', active: multiTestFilter !== 'single' },
-                    { id: 'sortBy', label: 'Sort', active: sortBy !== 'unexplained_first' },
-                  ].map((item) => (
-                    <div
-                      key={item.id}
-                      className={`flex items-center gap-1 rounded-full border px-2 py-1 text-[9px] font-semibold transition-colors duration-200 ${
-                        item.active
-                          ? 'border-violet-300 bg-gradient-to-r from-indigo-100 via-rose-100 to-amber-100 text-slate-800 shadow-sm'
-                          : 'border-slate-200 bg-white/70 text-slate-400'
-                      }`}
-                    >
-                      <EmojiGridIcon active={item.active} />
-                      <span>{item.label}</span>
-                    </div>
-                  ))}
+            <div className="mt-1 flex flex-wrap items-center gap-1.5">
+              {[
+                { id: 'search', label: 'Search', active: searchQuery.trim().length > 0, variant: 'searchSignal' as const },
+                { id: 'maxGridSize', label: 'Max Grid', active: maxGridSize !== 'any', variant: 'sizeSignal' as const },
+                { id: 'gridSizeConsistent', label: 'Consistency', active: gridSizeConsistent !== 'any', variant: 'sizeSignal' as const },
+                { id: 'explanationFilter', label: 'Explanation', active: explanationFilter !== 'unexplained', variant: 'statusUnexplained' as const },
+                { id: 'arcVersion', label: 'ARC Version', active: arcVersion !== 'any', variant: 'datasetSignal' as const },
+                { id: 'multiTestFilter', label: 'Test Cases', active: multiTestFilter !== 'single', variant: 'analysisSignal' as const },
+                { id: 'sortBy', label: 'Sort', active: sortBy !== 'unexplained_first', variant: 'heroTwilight' as const },
+              ].map((item) => (
+                <div
+                  key={item.id}
+                  className={`flex items-center gap-1 rounded-full border px-2 py-1 text-[9px] font-semibold transition-colors duration-200 ${
+                    item.active
+                      ? 'border-indigo-200 bg-gradient-to-r from-indigo-100 via-rose-100 to-amber-100 text-slate-800 shadow-sm'
+                      : 'border-slate-200 bg-white/70 text-slate-400'
+                  }`}
+                >
+                  <EmojiMosaicAccent
+                    variant={item.active ? item.variant : 'chipInactive'}
+                    size="xs"
+                    framed={item.active}
+                    className={item.active ? 'drop-shadow-[0_0_6px_rgba(79,70,229,0.45)]' : 'opacity-40'}
+                  />
+                  <span>{item.label}</span>
                 </div>
-              </div>
+              ))}
             </div>
           </div>
         </div>
