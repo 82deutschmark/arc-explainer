@@ -40,12 +40,12 @@ interface ResponsesAPIPayload {
   // Reasoning configuration (GPT-5 specific)
   reasoning?: {
     effort?: "minimal" | "low" | "medium" | "high";  // Controls depth
-    summary?: "auto" | "detailed" | "concise";       // Summary style
+    summary?: "auto" | "detailed";       // Summary style
   };
 
   // Text configuration (verbosity + structured output)
   text?: {
-    verbosity?: "low" | "medium" | "high";           // Reasoning detail in output
+    verbosity?: "high";           // Reasoning detail in output - ONLY USE HIGH, otherwise streaming fails
     format?: {
       type: "json_schema";
       name: string;
@@ -55,7 +55,7 @@ interface ResponsesAPIPayload {
   };
 
   // Standard parameters
-  temperature?: number;                              // Only for non-reasoning models
+  temperature?: number;  // Only for non-reasoning models!!!  This is not applicaple to GPT-5 at all!!!
   max_output_tokens?: number;                        // Default: 128000 for GPT-5
   store?: boolean;                                   // Enable conversation chaining
   previous_response_id?: string;                     // For multi-turn conversations
