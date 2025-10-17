@@ -318,10 +318,11 @@ export default function PuzzleBrowser() {
                 <p className="text-[11px] text-slate-700 font-medium">
                   <strong>Special thanks to Simon Strandgaard (@neoneye)</strong> for his insights, support, and encouragement.
                 </p>
-                <EmojiMosaicAccent variant="heroSunrise" size="xs" framed={false} />
+              <EmojiMosaicAccent variant="heroSunrise" size="xs" framed={false} />
               </div>
             </div>
           </div>
+        </div>
         </header>
 
         {/* Filters */}
