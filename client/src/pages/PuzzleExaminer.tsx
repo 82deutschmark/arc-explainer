@@ -43,7 +43,26 @@ export default function PuzzleExaminer() {
   const { taskId } = useParams<{ taskId: string }>();
 
   // Check if we're in retry mode (coming from discussion page)
-  const isRetryMode = window.location.search.includes('retry=true') || document.referrer.includes('/discussion');
+  const isRetryMode = useMemo(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('retry') === 'true') {
+      return true;
+    }
+
+    if (!document.referrer) {
+      return false;
+    }
+
+    try {
+      const referrerUrl = new URL(document.referrer);
+      return (
+        referrerUrl.origin === window.location.origin &&
+        referrerUrl.pathname.startsWith('/discussion')
+      );
+    } catch {
+      return false;
+    }
+  }, []);
 
   // Local UI state
   const [showEmojis, setShowEmojis] = useState(false);
