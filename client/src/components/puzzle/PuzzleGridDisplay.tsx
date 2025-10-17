@@ -67,64 +67,58 @@ export function PuzzleGridDisplay({ task, showEmojis, emojiSet }: PuzzleGridDisp
             Training Examples
           </div>
 
-          <div className="space-y-2">
-            {/* Standard Pairs: Flex wrap */}
+          <div className="space-y-3">
+            {/* Standard Pairs: Flex wrap with overflow scroll */}
             {classifiedTraining.standard.length > 0 && (
-              <div className="flex flex-wrap gap-2">
+              <div className="flex flex-wrap gap-3">
                 {classifiedTraining.standard.map(({ item, idx }) => (
-                  <GridPair
-                    key={idx}
-                    input={item.input}
-                    outputs={[item.output]}
-                    title={`Training Example ${idx + 1}`}
-                    showEmojis={showEmojis}
-                    emojiSet={emojiSet}
-                    isTest={false}
-                    compact={true}
-                    maxWidth={180}
-                    maxHeight={180}
-                  />
-                ))}
-              </div>
-            )}
-
-            {/* Wide Pairs: Full-width blocks */}
-            {classifiedTraining.wide.length > 0 && (
-              <div className="space-y-2">
-                {classifiedTraining.wide.map(({ item, idx }) => (
-                  <GridPair
-                    key={idx}
-                    input={item.input}
-                    outputs={[item.output]}
-                    title={`Training Example ${idx + 1}`}
-                    showEmojis={showEmojis}
-                    emojiSet={emojiSet}
-                    isTest={false}
-                    compact={true}
-                    maxWidth={300}
-                    maxHeight={250}
-                  />
-                ))}
-              </div>
-            )}
-
-            {/* Tall Pairs: Horizontal scroll */}
-            {classifiedTraining.tall.length > 0 && (
-              <div className="overflow-x-auto -mx-2 px-2">
-                <div className="flex gap-2" style={{ width: 'max-content' }}>
-                  {classifiedTraining.tall.map(({ item, idx }) => (
+                  <div key={idx} className="overflow-auto max-w-full">
                     <GridPair
-                      key={idx}
                       input={item.input}
                       outputs={[item.output]}
                       title={`Training Example ${idx + 1}`}
                       showEmojis={showEmojis}
                       emojiSet={emojiSet}
                       isTest={false}
-                      compact={true}
-                      maxWidth={250}
-                      maxHeight={400}
                     />
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* Wide Pairs: Full-width blocks with horizontal scroll */}
+            {classifiedTraining.wide.length > 0 && (
+              <div className="space-y-3">
+                {classifiedTraining.wide.map(({ item, idx }) => (
+                  <div key={idx} className="overflow-x-auto max-w-full">
+                    <GridPair
+                      input={item.input}
+                      outputs={[item.output]}
+                      title={`Training Example ${idx + 1}`}
+                      showEmojis={showEmojis}
+                      emojiSet={emojiSet}
+                      isTest={false}
+                    />
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* Tall Pairs: Horizontal scroll */}
+            {classifiedTraining.tall.length > 0 && (
+              <div className="overflow-x-auto pb-2">
+                <div className="flex gap-3" style={{ width: 'max-content' }}>
+                  {classifiedTraining.tall.map(({ item, idx }) => (
+                    <div key={idx} className="overflow-y-auto" style={{ maxHeight: '600px' }}>
+                      <GridPair
+                        input={item.input}
+                        outputs={[item.output]}
+                        title={`Training Example ${idx + 1}`}
+                        showEmojis={showEmojis}
+                        emojiSet={emojiSet}
+                        isTest={false}
+                      />
+                    </div>
                   ))}
                 </div>
               </div>
@@ -139,20 +133,18 @@ export function PuzzleGridDisplay({ task, showEmojis, emojiSet }: PuzzleGridDisp
             Test Cases
           </div>
 
-          <div className="space-y-2">
+          <div className="space-y-3">
             {task.test.map((testCase, idx) => (
-              <GridPair
-                key={idx}
-                input={testCase.input}
-                outputs={[testCase.output]}
-                title={`Test ${idx + 1}`}
-                showEmojis={showEmojis}
-                emojiSet={emojiSet}
-                isTest={true}
-                compact={true}
-                maxWidth={180}
-                maxHeight={180}
-              />
+              <div key={idx} className="overflow-auto max-w-full">
+                <GridPair
+                  input={testCase.input}
+                  outputs={[testCase.output]}
+                  title={`Test ${idx + 1}`}
+                  showEmojis={showEmojis}
+                  emojiSet={emojiSet}
+                  isTest={true}
+                />
+              </div>
             ))}
           </div>
         </div>
