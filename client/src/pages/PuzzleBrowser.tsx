@@ -30,6 +30,105 @@ interface EnhancedPuzzleMetadata extends PuzzleMetadata {
   multiTestPredictionGrids?: any;
 }
 
+interface EmojiGrid {
+  id: string;
+  caption: string;
+  description: string;
+  alt: string;
+  pattern: string[][];
+  rowLabels?: string[];
+  columnLabels?: string[];
+}
+
+const EmojiGridPreview: React.FC<Pick<EmojiGrid, 'pattern' | 'rowLabels' | 'columnLabels'>> = ({
+  pattern,
+  rowLabels,
+  columnLabels,
+}) => {
+  const columnCount = pattern[0]?.length ?? 0;
+
+  return (
+    <div className="flex flex-col items-center gap-2">
+      {columnLabels && (
+        <div
+          className="grid gap-1"
+          style={{ gridTemplateColumns: `repeat(${columnCount}, minmax(0, 1fr))` }}
+        >
+          {columnLabels.map(label => (
+            <span key={label} className="text-[0.65rem] font-semibold text-slate-500 text-center">
+              {label}
+            </span>
+          ))}
+        </div>
+      )}
+      <div className="flex items-center gap-2">
+        {rowLabels && (
+          <div className="grid gap-1" style={{ gridTemplateRows: `repeat(${pattern.length}, minmax(0, 1fr))` }}>
+            {rowLabels.map(label => (
+              <span key={label} className="text-[0.65rem] font-semibold text-slate-500 leading-none">
+                {label}
+              </span>
+            ))}
+          </div>
+        )}
+        <div
+          className="grid gap-1 rounded-lg bg-white/80 p-3 shadow-sm ring-1 ring-slate-200"
+          aria-hidden="true"
+          style={{ gridTemplateColumns: `repeat(${columnCount}, minmax(0, 1fr))` }}
+        >
+          {pattern.flat().map((emoji, index) => (
+            <span key={`${emoji}-${index}`} className="text-2xl sm:text-3xl md:text-4xl leading-none">
+              {emoji}
+            </span>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const EMOJI_GRIDS: EmojiGrid[] = [
+  {
+    id: '2x2-mini-transform',
+    caption: '2️⃣×2️⃣ Mini Transform',
+    description: 'A compact grid showing red, blue, green, and blank tiles trading places.',
+    alt: 'Two by two grid with red, blue, green, and white squares illustrating a simple swap.',
+    pattern: [
+      ['🟥', '🟦'],
+      ['🟩', '⬜'],
+    ],
+    rowLabels: ['1️⃣', '2️⃣'],
+    columnLabels: ['1️⃣', '2️⃣'],
+  },
+  {
+    id: '3x3-symmetry-scan',
+    caption: '3️⃣×3️⃣ Symmetry Scan',
+    description: 'Yellow borders wrap a purple core, hinting at rotational balance.',
+    alt: 'Three by three grid with yellow corners and edges framing a purple center tile.',
+    pattern: [
+      ['🟨', '⬛', '🟨'],
+      ['⬛', '🟪', '⬛'],
+      ['🟨', '⬛', '🟨'],
+    ],
+    rowLabels: ['1️⃣', '2️⃣', '3️⃣'],
+    columnLabels: ['1️⃣', '2️⃣', '3️⃣'],
+  },
+  {
+    id: '4x4-path-planner',
+    caption: '4️⃣×4️⃣ Path Planner',
+    description: 'Blue trails cut through charcoal cells to map a guided route.',
+    alt: 'Four by four grid with blue path pieces weaving through dark squares.',
+    pattern: [
+      ['⬛', '🟦', '⬛', '⬛'],
+      ['⬛', '🟦', '🟦', '⬛'],
+      ['⬛', '⬛', '🟦', '⬛'],
+      ['🟩', '⬛', '🟦', '🟩'],
+    ],
+    rowLabels: ['1️⃣', '2️⃣', '3️⃣', '4️⃣'],
+    columnLabels: ['1️⃣', '2️⃣', '3️⃣', '4️⃣'],
+  },
+];
+
 export default function PuzzleBrowser() {
   const [maxGridSize, setMaxGridSize] = useState<string>('any');
   const [gridSizeConsistent, setGridSizeConsistent] = useState<string>('any');
@@ -181,14 +280,36 @@ export default function PuzzleBrowser() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 p-4">
       <div className="max-w-6xl mx-auto space-y-6">
-        <header className="text-center space-y-4">
-          <div>
-            <h1 className="text-5xl font-bold bg-gradient-to-r from-slate-900 to-blue-800 bg-clip-text text-transparent">🟥🟦🟩 ARC-AGI Puzzle Explorer 🟪🟧🟨</h1>
-            <p className="text-lg text-slate-600 mt-2">
-              🔲🔳 ◾◽◼0️⃣1️⃣2️⃣3️⃣4️⃣5️⃣6️⃣7️⃣8️⃣9️⃣◻▫▪ ARC-AGI Explainer Hub 9️8️⃣7️⃣6️⃣5️⃣4️⃣3️⃣2️⃣1️⃣0️⃣ ◾◽◼◻▫▪ 🔳🔲
+        <header className="space-y-6">
+          <div className="text-center space-y-3">
+            <h1 className="text-5xl font-bold bg-gradient-to-r from-slate-900 to-blue-800 bg-clip-text text-transparent">
+              ARC-AGI Puzzle Explorer
+            </h1>
+            <p className="text-lg text-slate-600">
+              Discover ARC puzzle patterns through bite-sized emoji grids designed for quick intuition.
             </p>
           </div>
-          
+
+          <div className="mx-auto grid w-full max-w-4xl gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {EMOJI_GRIDS.map(grid => (
+              <article
+                key={grid.id}
+                className="flex flex-col items-center gap-3 rounded-xl border border-slate-200 bg-white/70 p-4 text-center shadow-sm backdrop-blur"
+              >
+                <EmojiGridPreview
+                  pattern={grid.pattern}
+                  rowLabels={grid.rowLabels}
+                  columnLabels={grid.columnLabels}
+                />
+                <div className="space-y-1">
+                  <h3 className="text-base font-semibold text-slate-800">{grid.caption}</h3>
+                  <p className="text-sm text-slate-600">{grid.description}</p>
+                  <span className="sr-only">{grid.alt}</span>
+                </div>
+              </article>
+            ))}
+          </div>
+
           {/* Collapsible Mission Statement */}
           <CollapsibleMission />
 
