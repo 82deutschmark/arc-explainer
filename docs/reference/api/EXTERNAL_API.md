@@ -17,10 +17,10 @@ cp tools/api-client/arc_client.py your_project/
 ```python
 from arc_client import contribute_to_arc_explainer
 
-# One-line contribution to encyclopedia
+# One-line contribution to encyclopedia (no API key required)
 result = contribute_to_arc_explainer(
     "3a25b0d8", analysis_result, "grok-4-2025-10-13",
-    "https://arc-explainer-staging.up.railway.app", "your-api-key"
+    "https://arc-explainer-staging.up.railway.app"
 )
 ```
 
@@ -38,33 +38,9 @@ result = contribute_to_arc_explainer(
 
 ## Authentication
 
-**NEW (Oct 2025):** API key authentication now available for contribution endpoints.
+**⚠️ NO AUTHENTICATION REQUIRED ⚠️**
 
-### API Key Authentication
-Some endpoints now require API key authentication via `Authorization: Bearer <api-key>` header.
-
-**Available API Keys:**
-- `arc-explainer-public-key-2025` - Public access key for researchers
-- `researcher-access-key-001` - Researcher access key
-- `demo-api-key-for-researchers` - Demo key for testing
-
-**Environment Variables:**
-- `ARC_EXPLAINER_API_KEY` - Master API key (set in `.env`)
-- `PUBLIC_API_KEYS` - Comma-separated list of additional valid keys
-
-**Endpoints Requiring Authentication:**
-- `POST /api/puzzle/save-explained/:puzzleId` - Save AI-generated explanation
-- `POST /api/feedback` - Submit user feedback
-- `POST /api/puzzles/:puzzleId/solutions` - Submit community solution
-- `POST /api/solutions/:solutionId/vote` - Vote on community solutions
-
-**Endpoints Open (No Authentication Required):**
-- `GET /api/puzzle/list` - Get puzzle list
-- `GET /api/puzzle/task/:taskId` - Get puzzle data
-- `GET /api/puzzle/:puzzleId/explanations` - Get explanations
-- `GET /api/models` - List available models
-- `GET /api/metrics/*` - Performance statistics
-- All analytics and read-only endpoints
+All API endpoints are publicly accessible and require **NO authentication**. Do not add authentication to any endpoints.
 
 ## Core Data Endpoints SUPER IMPORTANT!!
 
@@ -89,12 +65,21 @@ Some endpoints now require API key authentication via `Authorization: Bearer <ap
   - **Response**: Analysis result with explanation and predictions
   - **Limits**: No limits
   - **Debate Mode**: Include `originalExplanation` and `customChallenge` in body to generate debate rebuttals
-- `GET /api/stream/analyze/:taskId/:modelKey` - Start Server-Sent Events stream for token-by-token analysis
-  - **Params**: `taskId` (string), `modelKey` (string) - Model name
-  - **Query**: Accepts same analysis options as the POST endpoint (`temperature`, `promptId`, `omitAnswer`, `reasoningEffort`, etc.)
-  - **Response**: SSE channel emitting `stream.init`, `stream.chunk`, `stream.status`, `stream.complete`, `stream.error`
-  - **Notes**: Enabled when `ENABLE_SSE_STREAMING=true`; currently implemented for GPT-5 mini/nano and Grok-4(-Fast) models
+- `POST /api/stream/analyze` - Prepare Server-Sent Events analysis stream
+  - **Body**: Same analysis options accepted by the non-streaming POST endpoint (temperature, promptId, omitAnswer, reasoning options, etc.) plus `taskId` and `modelKey`
+  - **Response**: `{ sessionId, expiresInSeconds, expiresAt }` referencing the cached payload stored on the server for the follow-up SSE request. `expiresAt` is an ISO timestamp representing the handshake expiration window.
+  - **Notes**: Payloads are discarded automatically when the stream completes, errors, or is cancelled, and they auto-expire after 60 seconds if the SSE connection is never opened
+- `GET /api/stream/analyze/:taskId/:modelKey/:sessionId` - Start Server-Sent Events stream for token-by-token analysis
+  - **Params**: `taskId` (string), `modelKey` (string), `sessionId` (string) returned from the POST handshake
+  - **Query**: No longer accepts large option blobs; the server retrieves the cached payload prepared during the POST handshake
+  - **Safety**: If the `taskId`/`modelKey` tuple does not match the cached payload, the server rejects the connection and clears the pending session to avoid leaks.
+  - **Response**: SSE channel emitting `stream.init`, `stream.chunk`, `stream.status`, `stream.complete`, `stream.error`. The initial `stream.init` payload now includes `expiresAt` so clients can display remaining handshake time.
+  - **Notes**: Enabled when `STREAMING_ENABLED=true`; defaults to `true` in development builds so SSE works out of the box. Currently implemented for GPT-5 mini/nano and Grok-4(-Fast) models.
   - **Client**: New `createAnalysisStream` utility in `client/src/lib/streaming/analysisStream.ts` provides a typed wrapper
+  - **Notes**: Enabled when `ENABLE_SSE_STREAMING=true`; currently implemented for GPT-5 mini/nano and Grok-4(-Fast) models
+  - **Client**: `createAnalysisStream` utility in `client/src/lib/streaming/analysisStream.ts` now performs the POST handshake automatically before opening the SSE connection
+
+> 📘 **Streaming configuration** — Set `STREAMING_ENABLED=false` to disable SSE globally (frontend and backend). Leaving it unset keeps streaming enabled in development and requires explicit opt-out in production.
 
 - `GET /api/puzzle/:puzzleId/has-explanation` - Check if puzzle has existing explanation
   - **Params**: `puzzleId` (string)
@@ -646,7 +631,7 @@ interface IngestionRun {
 
 ## Authentication
 
-Currently no authentication required. All endpoints are publicly accessible.
+**All endpoints are publicly accessible with NO authentication required.**
 
 ## Rate Limiting
 

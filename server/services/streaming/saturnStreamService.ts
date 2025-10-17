@@ -1,17 +1,20 @@
 /**
- * Author: Cascade
- * Date: 2025-10-15
+ * Author: gpt-5-codex
+ * Date: 2025-10-16T00:00:00Z  Remember your training data is out of date! This was updated in October 2025 and this is not a typo!
  * PURPOSE: Coordinates Saturn solver runs over Server-Sent Events so the frontend can render
- * incremental output while the final analysis is persisted to the database.
- * CRITICAL FIX: Now saves streaming results to DB (was missing before!)
- * SRP/DRY check: Pass — dedicated orchestration layer for Saturn streaming.
- * shadcn/ui: Pass — backend logic only.
+ * incremental output while the final analysis is persisted to the database. Aligns the Saturn
+ * streaming pipeline with the shared Responses API streaming contract (prompt preview + deltas).
+ * SRP/DRY check: Pass — verified behaviour against analysisStreamService to reuse existing patterns.
  */
 
 import { puzzleAnalysisService } from '../puzzleAnalysisService';
 import { explanationService } from '../explanationService';
 import { sseStreamManager } from './SSEStreamManager';
 import { logger } from '../../utils/logger';
+import { aiServiceFactory, canonicalizeModelKey } from '../aiServiceFactory';
+import { saturnService } from '../saturnService';
+import { puzzleService } from '../puzzleService';
+import { validateStreamingResult } from '../streamingValidator';
 import type { ServiceOptions } from '../base/BaseAIService';
 import type { StreamingHarness, StreamCompletion } from '../base/BaseAIService';
 
@@ -41,10 +44,67 @@ class SaturnStreamService {
     previousResponseId,
     abortSignal,
   }: SaturnStreamParams): Promise<void> {
-    const harness: StreamingHarness = {
+    let decodedModelKey: string;
+    try {
+      decodedModelKey = decodeURIComponent(modelKey);
+    } catch (error) {
+      logger.warn(
+        `[SaturnStream] Failed to decode model key '${modelKey}', using raw value. ${(error as Error)?.message ?? error}`,
+        'SaturnStream'
+      );
+      decodedModelKey = modelKey;
+    }
+    const {
+      original: originalModelKey,
+      normalized: canonicalModelKey,
+    } = canonicalizeModelKey(decodedModelKey);
+    const isSaturnModel = saturnService.isSaturnModelKey(canonicalModelKey);
+    const aiService = isSaturnModel
+      ? saturnService
+      : aiServiceFactory.getService(canonicalModelKey);
+
+    if (!aiService?.supportsStreaming?.(canonicalModelKey)) {
+      logger.warn(
+        `[SaturnStream] Streaming requested for unsupported model ${originalModelKey} (normalized: ${canonicalModelKey})`,
+        'SaturnStream'
+      );
+      sseStreamManager.error(
+        sessionId,
+        'SATURN_STREAMING_UNAVAILABLE',
+        `Model ${originalModelKey} does not support streaming.`,
+        { modelKey: originalModelKey }
+      );
+      return;
+    }
+
+    sseStreamManager.sendEvent(sessionId, 'stream.status', {
+      state: 'starting',
+      phase: 'prompt_building',
+      message: `Preparing ${originalModelKey} Saturn prompt...`,
+      taskId,
+      modelKey: originalModelKey,
+    });
+
+    const baseHarness: StreamingHarness = {
       sessionId,
-      emit: (chunk) => sseStreamManager.sendEvent(sessionId, 'stream.chunk', chunk),
-      emitEvent: (event, payload) => sseStreamManager.sendEvent(sessionId, event, payload),
+      emit: (chunk) => {
+        const enrichedChunk = {
+          ...(chunk ?? {}),
+          metadata: {
+            ...(chunk?.metadata ?? {}),
+            modelKey: originalModelKey,
+            taskId,
+          },
+        };
+        sseStreamManager.sendEvent(sessionId, 'stream.chunk', enrichedChunk);
+      },
+      emitEvent: (event, payload) => {
+        const enrichedEvent =
+          payload && typeof payload === 'object'
+            ? { ...payload, modelKey: originalModelKey, taskId }
+            : { modelKey: originalModelKey, taskId };
+        sseStreamManager.sendEvent(sessionId, event, enrichedEvent);
+      },
       end: async (summary) => {
         // CRITICAL: Save result to database before sending completion
         if (summary && 'responseSummary' in summary) {
@@ -53,7 +113,7 @@ class SaturnStreamService {
             try {
               logger.debug(`[SaturnStream] Saving analysis to database for ${taskId}`, 'SaturnStream');
               await explanationService.saveExplanation(taskId, {
-                [modelKey]: completion.responseSummary.analysis
+                [originalModelKey]: completion.responseSummary.analysis
               });
               logger.debug(`[SaturnStream] Successfully saved to database`, 'SaturnStream');
             } catch (dbError) {
@@ -65,23 +125,83 @@ class SaturnStreamService {
         sseStreamManager.close(sessionId, summary);
       },
       abortSignal,
+      metadata: {
+        taskId,
+        modelKey: originalModelKey,
+      },
     };
 
     try {
-      await puzzleAnalysisService.analyzePuzzleStreaming(
-        taskId,
-        modelKey,
-        {
+      if (isSaturnModel) {
+        const puzzle = await puzzleService.getPuzzleById(taskId);
+
+        const validatingHarness: StreamingHarness = {
+          sessionId: baseHarness.sessionId,
+          emit: baseHarness.emit,
+          emitEvent: baseHarness.emitEvent,
+          abortSignal: baseHarness.abortSignal,
+          metadata: baseHarness.metadata,
+          end: async (summary: StreamCompletion) => {
+            if (summary && summary.responseSummary?.analysis) {
+              try {
+                logger.debug('[SaturnStream] Validating streaming result before completion', 'SaturnStream');
+                const validatedAnalysis = validateStreamingResult(
+                  summary.responseSummary.analysis,
+                  puzzle,
+                  promptId
+                );
+                summary.responseSummary.analysis = validatedAnalysis;
+              } catch (validationError) {
+                const message =
+                  validationError instanceof Error ? validationError.message : String(validationError);
+                logger.logError(
+                  `[SaturnStream] Validation failed, sending unvalidated result: ${message}`,
+                  { error: validationError, context: 'SaturnStream' }
+                );
+              }
+            }
+
+            await baseHarness.end(summary);
+          },
+        };
+
+        const serviceOptions: ServiceOptions = {
+          stream: validatingHarness,
+          captureReasoning: true,
+          sessionId,
+        };
+
+        if (previousResponseId) serviceOptions.previousResponseId = previousResponseId;
+        if (reasoningEffort) serviceOptions.reasoningEffort = reasoningEffort;
+        if (reasoningVerbosity) serviceOptions.reasoningVerbosity = reasoningVerbosity;
+        if (reasoningSummaryType) serviceOptions.reasoningSummaryType = reasoningSummaryType;
+
+        await saturnService.analyzePuzzleWithStreaming(
+          puzzle,
+          canonicalModelKey,
+          taskId,
           temperature,
           promptId,
-          captureReasoning: true,
-          previousResponseId,
-          reasoningEffort,
-          reasoningVerbosity,
-          reasoningSummaryType,
-        },
-        harness
-      );
+          undefined,
+          undefined,
+          serviceOptions
+        );
+      } else {
+        await puzzleAnalysisService.analyzePuzzleStreaming(
+          taskId,
+          canonicalModelKey,
+          {
+            temperature,
+            promptId,
+            captureReasoning: true,
+            previousResponseId,
+            reasoningEffort,
+            reasoningVerbosity,
+            reasoningSummaryType,
+          },
+          baseHarness
+        );
+      }
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
       logger.logError(`[SaturnStream] Failed to run streaming analysis: ${message}`, { error, context: 'SaturnStream' });

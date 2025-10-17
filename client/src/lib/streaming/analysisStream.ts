@@ -17,6 +17,7 @@ export interface StreamChunkPayload {
   content?: string;
   metadata?: Record<string, unknown>;
   timestamp?: number;
+  raw?: unknown;
 }
 
 export interface StreamSummary {
@@ -51,7 +52,13 @@ export interface AnalysisStreamParams {
 }
 
 export interface AnalysisStreamHandlers {
-  onInit?: (payload: { sessionId: string; taskId: string; modelKey: string; createdAt: string }) => void;
+  onInit?: (payload: {
+    sessionId: string;
+    taskId: string;
+    modelKey: string;
+    createdAt: string;
+    expiresAt?: string;
+  }) => void;
   onChunk?: (chunk: StreamChunkPayload) => void;
   onStatus?: (status: StreamStatus) => void;
   onComplete?: (summary: StreamSummary) => void;
@@ -64,59 +71,48 @@ export interface AnalysisStreamHandle {
 
 const API_BASE_URL = (import.meta.env.VITE_API_URL as string | undefined) || "";
 
-function buildQuery(params: AnalysisStreamParams): string {
-  const query = new URLSearchParams();
-
-  const append = (key: string, value: unknown) => {
-    if (value === undefined || value === null) return;
-    query.append(key, String(value));
-  };
-
-  append("temperature", params.temperature);
-  append("promptId", params.promptId);
-  append("customPrompt", params.customPrompt);
-  append("emojiSetKey", params.emojiSetKey);
-  append("omitAnswer", params.omitAnswer);
-  append("topP", params.topP);
-  append("candidateCount", params.candidateCount);
-  append("thinkingBudget", params.thinkingBudget);
-  append("reasoningEffort", params.reasoningEffort);
-  append("reasoningVerbosity", params.reasoningVerbosity);
-  append("reasoningSummaryType", params.reasoningSummaryType);
-  append("systemPromptMode", params.systemPromptMode);
-  append("previousResponseId", params.previousResponseId);
-  append("captureReasoning", params.captureReasoning);
-  append("sessionId", params.sessionId);
-  append("retryMode", params.retryMode);
-  append("originalExplanationId", params.originalExplanationId);
-  append("customChallenge", params.customChallenge);
-
-  if (params.originalExplanation) {
-    try {
-      query.append("originalExplanation", JSON.stringify(params.originalExplanation));
-    } catch (error) {
-      console.warn("[SSE] Failed to serialize originalExplanation for query", error);
-    }
-  }
-
-  return query.toString();
-}
-
-export function createAnalysisStream(
+export async function createAnalysisStream(
   params: AnalysisStreamParams,
   handlers: AnalysisStreamHandlers = {}
-): AnalysisStreamHandle {
+): Promise<AnalysisStreamHandle> {
   const encodedModel = encodeURIComponent(params.modelKey);
   const baseUrl = API_BASE_URL.endsWith("/")
     ? API_BASE_URL.slice(0, -1)
     : API_BASE_URL;
 
-  const query = buildQuery(params);
-  const url = `${baseUrl}/api/stream/analyze/${params.taskId}/${encodedModel}${
-    query ? `?${query}` : ""
-  }`;
+  const { sessionId: _ignoredSessionId, ...handshakePayload } = params;
 
-  const eventSource = new EventSource(url, { withCredentials: false });
+  const handshakeResponse = await fetch(`${baseUrl}/api/stream/analyze`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(handshakePayload),
+  });
+
+  if (!handshakeResponse.ok) {
+    let errorMessage = `Handshake failed (${handshakeResponse.status})`;
+    try {
+      const errorJson = await handshakeResponse.json();
+      if (typeof errorJson?.error === "string") {
+        errorMessage = errorJson.error;
+      }
+      if (Array.isArray(errorJson?.details) && errorJson.details.length > 0) {
+        errorMessage = `${errorMessage}: ${errorJson.details.join(", ")}`;
+      }
+    } catch {
+      // Ignore JSON parse failure and use default message
+    }
+    throw new Error(errorMessage);
+  }
+
+  const handshakeJson = (await handshakeResponse.json()) as { sessionId?: string };
+  if (!handshakeJson?.sessionId) {
+    throw new Error("Handshake response missing sessionId");
+  }
+
+  const streamUrl = `${baseUrl}/api/stream/analyze/${params.taskId}/${encodedModel}/${handshakeJson.sessionId}`;
+  const eventSource = new EventSource(streamUrl, { withCredentials: false });
 
   const handleChunk = (event: MessageEvent<string>) => {
     try {
@@ -143,6 +139,7 @@ export function createAnalysisStream(
         taskId: string;
         modelKey: string;
         createdAt: string;
+        expiresAt?: string;
       };
       handlers.onInit?.(initPayload);
     } catch (error) {

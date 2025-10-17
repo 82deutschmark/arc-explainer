@@ -6,7 +6,10 @@
  * DaisyUI: Pass — Uses DaisyUI card, badge, and button components.
  */
 
+import React from 'react';
 import { Loader2 } from 'lucide-react';
+import { TinyGrid } from './TinyGrid';
+import type { ARCTask } from '@shared/types';
 
 interface TokenUsageSummary {
   input?: number;
@@ -20,10 +23,14 @@ interface StreamingAnalysisPanelProps {
   phase?: string;
   message?: string;
   text?: string;
+  structuredJsonText?: string;
+  structuredJson?: unknown;
   reasoning?: string;
   tokenUsage?: TokenUsageSummary;
   onCancel?: () => void;
   onClose?: () => void;
+  task?: ARCTask;
+  promptPreview?: string;
 }
 
 export function StreamingAnalysisPanel({
@@ -32,10 +39,14 @@ export function StreamingAnalysisPanel({
   phase,
   message,
   text,
+  structuredJsonText,
+  structuredJson,
   reasoning,
   tokenUsage,
   onCancel,
   onClose,
+  task,
+  promptPreview,
 }: StreamingAnalysisPanelProps) {
   const renderStatusBadge = () => {
     switch (status) {
@@ -56,6 +67,30 @@ export function StreamingAnalysisPanel({
         return <div className="badge badge-neutral badge-sm">Idle</div>;
     }
   };
+
+  const hasStructuredJson = Boolean(structuredJsonText && structuredJsonText.trim().length > 0);
+  let formattedStructuredJson: string | null = null;
+
+  if (hasStructuredJson) {
+    if (structuredJson && typeof structuredJson === 'object') {
+      try {
+        formattedStructuredJson = JSON.stringify(structuredJson, null, 2);
+      } catch {
+        formattedStructuredJson = structuredJsonText ?? null;
+      }
+    } else if (structuredJsonText) {
+      try {
+        formattedStructuredJson = JSON.stringify(JSON.parse(structuredJsonText), null, 2);
+      } catch {
+        formattedStructuredJson = structuredJsonText;
+      }
+    }
+  }
+
+  const visibleOutput = (formattedStructuredJson ?? text)?.trim();
+
+  // Get test grids
+  const testExample = task?.test?.[0];
 
   return (
     <div className="card bg-blue-50 border border-blue-200 shadow-sm">
@@ -80,12 +115,56 @@ export function StreamingAnalysisPanel({
           )}
         </div>
         <div className="space-y-4 text-sm text-blue-900 pt-2">
+          {/* Test Grids Section - Compact */}
+          {testExample && (
+            <div className="flex items-center gap-3">
+              <div>
+                <p className="text-[9px] text-blue-600 mb-0.5 font-medium">Test Input</p>
+                <div className="bg-white border border-blue-200 rounded p-1">
+                  <TinyGrid grid={testExample.input} className="w-16 h-16" />
+                </div>
+              </div>
+              <div>
+                <p className="text-[9px] text-blue-600 mb-0.5 font-medium">Test Output</p>
+                <div className="bg-white border border-blue-200 rounded p-1">
+                  <TinyGrid grid={testExample.output} className="w-16 h-16" />
+                </div>
+              </div>
+              {promptPreview && (
+                <div className="flex-1 ml-2">
+                  <p className="text-[9px] font-semibold text-blue-600 uppercase tracking-wide mb-1">Prompt Sent</p>
+                  <pre className="whitespace-pre-wrap bg-blue-50 border border-blue-300 rounded p-2 max-h-[80px] overflow-y-auto text-[9px] text-blue-800 leading-tight">
+                    {promptPreview}
+                  </pre>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Prompt only if no test grids */}
+          {!testExample && promptPreview && (
+            <div>
+              <p className="text-xs font-semibold text-blue-600 uppercase tracking-wide mb-1">Prompt Sent</p>
+              <pre className="whitespace-pre-wrap bg-blue-50 border border-blue-300 rounded-md p-3 max-h-[150px] overflow-y-auto text-xs text-blue-800">
+                {promptPreview}
+              </pre>
+            </div>
+          )}
+
           <div>
             <p className="text-xs font-semibold text-blue-600 uppercase tracking-wide mb-1">Current Output</p>
             <pre className="whitespace-pre-wrap bg-white border border-blue-200 rounded-md p-3 max-h-[500px] overflow-y-auto font-mono text-xs">
-              {text?.trim() || 'Waiting for output\u2026'}
+              {visibleOutput && visibleOutput.length > 0 ? visibleOutput : 'Waiting for output\u2026'}
             </pre>
           </div>
+          {hasStructuredJson && text && text.trim().length > 0 && formattedStructuredJson !== text.trim() && (
+            <div>
+              <p className="text-xs font-semibold text-blue-600 uppercase tracking-wide mb-1">Raw Text Stream</p>
+              <pre className="whitespace-pre-wrap bg-white border border-blue-200 rounded-md p-3 max-h-[300px] overflow-y-auto font-mono text-xs">
+                {text.trim()}
+              </pre>
+            </div>
+          )}
           {reasoning && reasoning.trim().length > 0 && (
             <div>
               <p className="text-xs font-semibold text-blue-600 uppercase tracking-wide mb-1">Reasoning</p>

@@ -1,12 +1,8 @@
 /**
- * useAnalysisResults.ts
- * 
- * Author: Cascade
- * PURPOSE: Central hook that orchestrates puzzle analysis requests, manages model-specific state,
- * and coordinates persistence. Streaming integration augments the legacy POST flow so UI consumers
- * can transparently render incremental output while preserving the database-first contract.
- * SRP/DRY check: Pass — single hook responsible for analysis lifecycle; no duplication across pages.
- * shadcn/ui: Pass — logic only.
+ * Author: GPT-5 Codex
+ * Date: 2025-10-17
+ * PURPOSE: Coordinates puzzle analysis requests, bridging legacy POST flows with SSE streaming so UI components receive live reasoning and persisted results.
+ * SRP/DRY check: Pass - verified streaming and non-streaming branches share this orchestration hook without duplicated lifecycle logic.
  */
 
 import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
@@ -16,6 +12,8 @@ import type { ExplanationData } from '@/types/puzzle';
 import { useAnalysisStreaming } from '@/hooks/useAnalysisStreaming';
 import type { AnalysisStreamParams } from '@/lib/streaming/analysisStream';
 import type { ModelConfig } from '@shared/types';
+import { isFeatureFlagEnabled } from '@shared/utils/featureFlags';
+import { doesFrontendAdvertiseStreaming } from '@shared/config/streaming';
 
 interface UseAnalysisResultsProps {
   taskId: string;
@@ -60,15 +58,25 @@ export function useAnalysisResults({
   const [reasoningSummaryType, setReasoningSummaryType] = useState<'auto' | 'detailed'>('detailed');
 
   // Streaming integration
-  const streamingEnabled = import.meta.env.VITE_ENABLE_SSE_STREAMING === 'true';
+  const streamingEnabled = useMemo(() => {
+    const rawValue = import.meta.env.VITE_ENABLE_SSE_STREAMING as string | undefined;
+    if (typeof rawValue === 'string' && rawValue.trim().length > 0) {
+      return isFeatureFlagEnabled(rawValue);
+    }
+
+    return doesFrontendAdvertiseStreaming();
+  }, []);
   const {
     startStream,
     closeStream,
     status: streamStatus,
     visibleText: streamingVisibleText,
     reasoningText: streamingReasoningText,
+    structuredJsonText: streamingStructuredJsonText,
+    structuredJson: streamingStructuredJson,
     summary: streamSummary,
     error: streamError,
+    promptPreview: streamingPromptPreview,
   } = useAnalysisStreaming();
   const streamingContextRef = useRef<{ modelKey: string; startTime: number } | null>(null);
   const [streamingModelKey, setStreamingModelKey] = useState<string | null>(null);
@@ -209,7 +217,7 @@ export function useAnalysisResults({
         originalExplanationId: originalExplanation?.id,
       };
 
-      startStream(params, {
+      void startStream(params, {
         onStatus: status => {
           if (status && typeof status === 'object') {
             if ('phase' in status && typeof (status as any).phase === 'string') {
@@ -441,9 +449,12 @@ export function useAnalysisResults({
     streamStatus,
     streamingText: streamingVisibleText,
     streamingReasoning: streamingReasoningText,
+    streamingStructuredJsonText,
+    streamingStructuredJson,
     streamingPhase,
     streamingMessage,
     streamingTokenUsage,
+    streamingPromptPreview,
     streamError,
     cancelStreamingAnalysis,
     closeStreamingModal,
