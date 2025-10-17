@@ -1,14 +1,15 @@
 /**
  * Author: gpt-5-codex
- * Date: 2025-10-15
- * PURPOSE: Enhanced ARC puzzle browser UI with accessible search and filtering trays, decorative emoji accents, and responsive focus handling.
- * SRP/DRY check: Pass — verified integration with existing puzzle filtering logic without duplicating functionality.
+ * Date: 2025-01-27
+ * PURPOSE: Presents the ARC puzzle browser with enhanced knowledge hub styling,
+ *          filtering tools, and interactive navigation for puzzle exploration.
+ * SRP/DRY check: Pass — Verified existing functionality while refining UI accents.
  */
 import React, { useState, useCallback } from 'react';
 import { Link, useLocation } from 'wouter';
 import { usePuzzleList } from '@/hooks/usePuzzle';
 import { useModels } from '@/hooks/useModels';
-import { Loader2, Grid3X3, Eye, CheckCircle2, MessageCircle, Download, BookOpen, ExternalLink, Heart, Trophy, Sparkles, Database, FileText, Lightbulb, Award, Cpu, User, FileCode, ChevronDown, ChevronUp } from 'lucide-react';
+import { Loader2, Grid3X3, Eye, CheckCircle2, MessageCircle, Download, BookOpen, ExternalLink, Sparkles, FileText, Lightbulb, Award, FileCode, ChevronDown, ChevronUp } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { apiRequest } from '@/lib/queryClient';
 import { useMutation, useQuery, useQueries } from '@tanstack/react-query';
@@ -249,121 +250,241 @@ export default function PuzzleBrowser() {
 
               <div className="grid grid-cols-2 lg:grid-cols-4 gap-2">
                 {/* Research Section */}
-                <div className="group bg-white/60 rounded p-1.5 hover:bg-white/80 hover:shadow-md transition-all duration-200 border border-slate-200">
-                  <div className="flex items-center gap-1 mb-1">
-                    <Cpu className="h-3 w-3 text-slate-600" />
-                    <p className="font-bold text-slate-800 text-[10px] font-mono">⬛️⬜️⬛️ Research Papers</p>
+                <div className="group rounded-lg bg-gradient-to-br from-purple-600 via-fuchsia-500 to-indigo-600 p-[1px] transition-all duration-200 focus-within:shadow-lg focus-within:scale-[1.01] focus-within:from-purple-700 focus-within:via-fuchsia-600 focus-within:to-indigo-700 hover:shadow-lg hover:scale-[1.01] hover:from-purple-700 hover:via-fuchsia-600 hover:to-indigo-700">
+                  <div className="h-full rounded-md bg-white/90 p-2 shadow-sm transition-colors duration-200 group-hover:bg-white group-focus-within:bg-white">
+                    <div className="flex items-center gap-2 mb-1">
+                      <span
+                        aria-hidden="true"
+                        className="inline-grid grid-cols-3 gap-[1px] rounded-sm bg-purple-100/80 p-0.5 text-[10px] leading-[0.65rem] text-purple-700 transition-transform duration-200 group-hover:scale-110 group-focus-within:scale-110"
+                      >
+                        <span>🟪</span>
+                        <span>🟪</span>
+                        <span>🟪</span>
+                        <span>🟪</span>
+                        <span>⬛️</span>
+                        <span>🟪</span>
+                        <span>🟪</span>
+                        <span>🟪</span>
+                        <span>🟪</span>
+                      </span>
+                      <p className="font-bold text-slate-900 text-[10px] font-mono uppercase tracking-wide">Research Papers</p>
+                    </div>
+                    <a
+                      href="https://www.arxiv.org/pdf/2505.11831"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1 text-[9px] font-medium text-purple-700 transition-all duration-150 hover:text-purple-900 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-purple-500 focus-visible:ring-offset-1 focus-visible:ring-offset-white"
+                    >
+                      <span className="font-mono" aria-hidden="true">📄</span>
+                      ARC2 Technical Report
+                      <ExternalLink className="h-2.5 w-2.5" />
+                    </a>
                   </div>
-                  <a href="https://www.arxiv.org/pdf/2505.11831" target="_blank" rel="noopener noreferrer"
-                       className="text-blue-600 hover:text-blue-800 hover:underline text-[9px] flex items-center gap-1 transition-colors">
-                      <span className="font-mono">📄</span> ARC2 Technical Report <ExternalLink className="h-2.5 w-2.5" />
-                  </a>
                 </div>
 
                 {/* Data Sources Section */}
-                <div className="group bg-white/60 rounded p-1.5 hover:bg-white/80 hover:shadow-md transition-all duration-200 border border-blue-100">
-                  <div className="flex items-center gap-1 mb-1">
-                    <Database className="h-3 w-3 text-blue-600" />
-                    <p className="font-bold text-blue-800 text-[10px] font-mono">🟦⬛🟦 Data Sources</p>
-                  </div>
-                  <div className="space-y-0.5">
-                    <a href="https://huggingface.co/arcprize" target="_blank" rel="noopener noreferrer"
-                       className="text-blue-600 hover:text-blue-700 hover:underline text-[9px] flex items-center gap-1 transition-colors">
-                      <span className="font-mono">🗂️</span> HuggingFace Datasets <ExternalLink className="h-2.5 w-2.5" />
-                    </a>
-                    <a href="https://github.com/fchollet/ARC-AGI" target="_blank" rel="noopener noreferrer"
-                       className="text-blue-600 hover:text-blue-700 hover:underline text-[9px] flex items-center gap-1 transition-colors">
-                      <span className="font-mono">📦</span> Official Repository <ExternalLink className="h-2.5 w-2.5" />
-                    </a>
+                <div className="group rounded-lg bg-gradient-to-br from-blue-600 via-sky-500 to-cyan-600 p-[1px] transition-all duration-200 focus-within:shadow-lg focus-within:scale-[1.01] focus-within:from-blue-700 focus-within:via-sky-600 focus-within:to-cyan-700 hover:shadow-lg hover:scale-[1.01] hover:from-blue-700 hover:via-sky-600 hover:to-cyan-700">
+                  <div className="h-full rounded-md bg-white/90 p-2 shadow-sm transition-colors duration-200 group-hover:bg-white group-focus-within:bg-white">
+                    <div className="flex items-center gap-2 mb-1">
+                      <span
+                        aria-hidden="true"
+                        className="inline-grid grid-cols-3 gap-[1px] rounded-sm bg-blue-100/80 p-0.5 text-[10px] leading-[0.65rem] text-blue-700 transition-transform duration-200 group-hover:scale-110 group-focus-within:scale-110"
+                      >
+                        <span>🟦</span>
+                        <span>🟦</span>
+                        <span>🟦</span>
+                        <span>🟦</span>
+                        <span>⬜️</span>
+                        <span>🟦</span>
+                        <span>🟦</span>
+                        <span>🟦</span>
+                        <span>🟦</span>
+                      </span>
+                      <p className="font-bold text-slate-900 text-[10px] font-mono uppercase tracking-wide">Data Sources</p>
+                    </div>
+                    <div className="space-y-0.5">
+                      <a
+                        href="https://huggingface.co/arcprize"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1 text-[9px] font-medium text-blue-700 transition-all duration-150 hover:text-blue-900 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-blue-500 focus-visible:ring-offset-1 focus-visible:ring-offset-white"
+                      >
+                        <span className="font-mono" aria-hidden="true">🗂️</span>
+                        HuggingFace Datasets
+                        <ExternalLink className="h-2.5 w-2.5" />
+                      </a>
+                      <a
+                        href="https://github.com/fchollet/ARC-AGI"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1 text-[9px] font-medium text-blue-700 transition-all duration-150 hover:text-blue-900 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-blue-500 focus-visible:ring-offset-1 focus-visible:ring-offset-white"
+                      >
+                        <span className="font-mono" aria-hidden="true">📦</span>
+                        Official Repository
+                        <ExternalLink className="h-2.5 w-2.5" />
+                      </a>
+                    </div>
                   </div>
                 </div>
 
                 {/* SOTA Solutions Section */}
-                <div className="group bg-white/60 rounded p-1.5 hover:bg-white/80 hover:shadow-md transition-all duration-200 border border-green-100">
-                  <div className="flex items-center gap-1 mb-1">
-                    <Trophy className="h-3 w-3 text-green-600" />
-                    <p className="font-bold text-green-800 text-[10px] font-mono">🟩⬜🟩 Top Solutions</p>
-                  </div>
-                  <div className="space-y-0.5">
-                    <a href="https://github.com/zoecarver" target="_blank" rel="noopener noreferrer"
-                       className="text-green-700 hover:text-green-800 hover:underline text-[9px] flex items-center gap-1 transition-colors">
-                      <span className="font-mono">1️⃣</span> zoecarver's Approach <ExternalLink className="h-2.5 w-2.5" />
-                    </a>
-                    <a href="https://github.com/jerber" target="_blank" rel="noopener noreferrer"
-                       className="text-green-700 hover:text-green-800 hover:underline text-[9px] flex items-center gap-1 transition-colors">
-                      <span className="font-mono">2️⃣</span> jerber's Solutions <ExternalLink className="h-2.5 w-2.5" />
-                    </a>
-                    <a href="https://github.com/epang080516/arc_agi" target="_blank" rel="noopener noreferrer"
-                       className="text-green-700 hover:text-green-800 hover:underline text-[9px] flex items-center gap-1 transition-colors">
-                      <span className="font-mono">3️⃣</span> epang080516's Code <ExternalLink className="h-2.5 w-2.5" />
-                    </a>
+                <div className="group rounded-lg bg-gradient-to-br from-emerald-600 via-green-500 to-lime-600 p-[1px] transition-all duration-200 focus-within:shadow-lg focus-within:scale-[1.01] focus-within:from-emerald-700 focus-within:via-green-600 focus-within:to-lime-700 hover:shadow-lg hover:scale-[1.01] hover:from-emerald-700 hover:via-green-600 hover:to-lime-700">
+                  <div className="h-full rounded-md bg-white/90 p-2 shadow-sm transition-colors duration-200 group-hover:bg-white group-focus-within:bg-white">
+                    <div className="flex items-center gap-2 mb-1">
+                      <span
+                        aria-hidden="true"
+                        className="inline-grid grid-cols-3 gap-[1px] rounded-sm bg-emerald-100/80 p-0.5 text-[10px] leading-[0.65rem] text-emerald-700 transition-transform duration-200 group-hover:scale-110 group-focus-within:scale-110"
+                      >
+                        <span>🟩</span>
+                        <span>🟩</span>
+                        <span>🟩</span>
+                        <span>🟩</span>
+                        <span>⬜️</span>
+                        <span>🟩</span>
+                        <span>🟩</span>
+                        <span>🟩</span>
+                        <span>🟩</span>
+                      </span>
+                      <p className="font-bold text-slate-900 text-[10px] font-mono uppercase tracking-wide">Top Solutions</p>
+                    </div>
+                    <div className="space-y-0.5">
+                      <a
+                        href="https://github.com/zoecarver"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1 text-[9px] font-medium text-emerald-700 transition-all duration-150 hover:text-emerald-900 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-emerald-500 focus-visible:ring-offset-1 focus-visible:ring-offset-white"
+                      >
+                        <span className="font-mono" aria-hidden="true">1️⃣</span>
+                        zoecarver's Approach
+                        <ExternalLink className="h-2.5 w-2.5" />
+                      </a>
+                      <a
+                        href="https://github.com/jerber"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1 text-[9px] font-medium text-emerald-700 transition-all duration-150 hover:text-emerald-900 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-emerald-500 focus-visible:ring-offset-1 focus-visible:ring-offset-white"
+                      >
+                        <span className="font-mono" aria-hidden="true">2️⃣</span>
+                        jerber's Solutions
+                        <ExternalLink className="h-2.5 w-2.5" />
+                      </a>
+                      <a
+                        href="https://github.com/epang080516/arc_agi"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1 text-[9px] font-medium text-emerald-700 transition-all duration-150 hover:text-emerald-900 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-emerald-500 focus-visible:ring-offset-1 focus-visible:ring-offset-white"
+                      >
+                        <span className="font-mono" aria-hidden="true">3️⃣</span>
+                        epang080516's Code
+                        <ExternalLink className="h-2.5 w-2.5" />
+                      </a>
+                    </div>
                   </div>
                 </div>
 
                 {/* Community Section */}
-                <div className="group bg-white/60 rounded p-1.5 hover:bg-white/80 hover:shadow-md transition-all duration-200 border border-orange-100">
-                  <div className="flex items-center gap-1 mb-1">
-                    <User className="h-3 w-3 text-orange-600" />
-                    <p className="font-bold text-orange-800 text-[10px] font-mono">🟧🟨🟧 Community</p>
-                  </div>
-                  <div className="space-y-0.5">
-                    <div className="mb-1">
-                      <div className={`collapse ${isOpen ? 'collapse-open' : 'collapse-close'} bg-orange-50 border border-orange-200 rounded`}>
-                        <div className="collapse-title p-1">
-                          <button
-                            className="w-full flex justify-between items-center h-auto"
-                            onClick={() => setIsOpen(!isOpen)}
-                          >
-                            <div className="flex items-center gap-1">
-                              <span className="text-[9px] font-semibold text-orange-800 font-mono">🟧🟨🟧 Critical ARC-AGI-2 Research</span>
-                              <span className="text-[8px] text-orange-600">by cristianoc</span>
-                            </div>
-                            {isOpen ? (
-                              <ChevronUp className="h-2.5 w-2.5 text-orange-600" />
-                            ) : (
-                              <ChevronDown className="h-2.5 w-2.5 text-orange-600" />
-                            )}
-                          </button>
-                        </div>
+                <div className="group rounded-lg bg-gradient-to-br from-orange-600 via-amber-500 to-rose-500 p-[1px] transition-all duration-200 focus-within:shadow-lg focus-within:scale-[1.01] focus-within:from-orange-700 focus-within:via-amber-600 focus-within:to-rose-600 hover:shadow-lg hover:scale-[1.01] hover:from-orange-700 hover:via-amber-600 hover:to-rose-600">
+                  <div className="h-full rounded-md bg-white/90 p-2 shadow-sm transition-colors duration-200 group-hover:bg-white group-focus-within:bg-white">
+                    <div className="flex items-center gap-2 mb-1">
+                      <span
+                        aria-hidden="true"
+                        className="inline-grid grid-cols-3 gap-[1px] rounded-sm bg-orange-100/80 p-0.5 text-[10px] leading-[0.65rem] text-orange-700 transition-transform duration-200 group-hover:scale-110 group-focus-within:scale-110"
+                      >
+                        <span>🟧</span>
+                        <span>🟧</span>
+                        <span>🟧</span>
+                        <span>🟧</span>
+                        <span>⬜️</span>
+                        <span>🟧</span>
+                        <span>🟧</span>
+                        <span>🟧</span>
+                        <span>🟧</span>
+                      </span>
+                      <p className="font-bold text-slate-900 text-[10px] font-mono uppercase tracking-wide">Community</p>
+                    </div>
+                    <div className="space-y-0.5">
+                      <div className="mb-1">
+                        <div
+                          className={`collapse ${isOpen ? 'collapse-open' : 'collapse-close'} bg-orange-50/70 border border-orange-200 rounded focus-within:outline-none focus-within:ring-1 focus-within:ring-orange-500`}
+                        >
+                          <div className="collapse-title p-1">
+                            <button
+                              className="w-full flex justify-between items-center h-auto text-left focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-orange-500 focus-visible:ring-offset-1 focus-visible:ring-offset-orange-50"
+                              onClick={() => setIsOpen(!isOpen)}
+                            >
+                              <div className="flex items-center gap-1">
+                                <span className="text-[9px] font-semibold text-orange-800 font-mono">🟧🟨🟧 Critical ARC-AGI-2 Research</span>
+                                <span className="text-[8px] text-orange-600">by cristianoc</span>
+                              </div>
+                              {isOpen ? (
+                                <ChevronUp className="h-2.5 w-2.5 text-orange-600" />
+                              ) : (
+                                <ChevronDown className="h-2.5 w-2.5 text-orange-600" />
+                              )}
+                            </button>
+                          </div>
 
-                        <div className="collapse-content px-1 pb-1">
-                          <div className="text-[8px] text-orange-700 space-y-1">
-                            <p className="font-mono">
-                              📊 Analysis of 1️⃣1️⃣1️⃣ ARC-AGI-2 tasks reveals composition patterns:
-                            </p>
-                            <div className="grid grid-cols-2 gap-0.5 text-[8px] font-mono">
-                              <p>🟥🟥🟥🟥 4️⃣0️⃣% sequential composition</p>
-                              <p>🟧🟧🟧⬜ 3️⃣0️⃣% conditional branching</p>
-                              <p>🟨🟨⬜⬜ 2️⃣0️⃣% pattern classification</p>
-                              <p>🟩🟩⬜⬜ 2️⃣5️⃣% iteration/loops</p>
-                              <p>🟦🟦⬜⬜ 1️⃣5️⃣% nested structures</p>
-                              <p>🟪⬜⬜⬜ 1️⃣0️⃣% parallel composition</p>
-                              <p>🟫⬜⬜⬜ 5️⃣% graph/DAG structures</p>
+                          <div className="collapse-content px-1 pb-1">
+                            <div className="text-[8px] text-orange-700 space-y-1">
+                              <p className="font-mono">
+                                📊 Analysis of 1️⃣1️⃣1️⃣ ARC-AGI-2 tasks reveals composition patterns:
+                              </p>
+                              <div className="grid grid-cols-2 gap-0.5 text-[8px] font-mono">
+                                <p>🟥🟥🟥🟥 4️⃣0️⃣% sequential composition</p>
+                                <p>🟧🟧🟧⬜ 3️⃣0️⃣% conditional branching</p>
+                                <p>🟨🟨⬜⬜ 2️⃣0️⃣% pattern classification</p>
+                                <p>🟩🟩⬜⬜ 2️⃣5️⃣% iteration/loops</p>
+                                <p>🟦🟦⬜⬜ 1️⃣5️⃣% nested structures</p>
+                                <p>🟪⬜⬜⬜ 1️⃣0️⃣% parallel composition</p>
+                                <p>🟫⬜⬜⬜ 5️⃣% graph/DAG structures</p>
+                              </div>
+                              <p className="italic text-orange-600 font-mono">
+                                ⬛⬜⬛ A DSL is emerging from these patterns ⬛⬜⬛
+                              </p>
+                              <a
+                                href="https://github.com/cristianoc/arc-agi-2-abstraction-dataset"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-flex items-center gap-1 text-[8px] font-medium text-blue-700 transition-all duration-150 hover:text-blue-900 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-blue-500 focus-visible:ring-offset-1 focus-visible:ring-offset-orange-50"
+                              >
+                                View cristianoc's research
+                                <ExternalLink className="h-2.5 w-2.5" />
+                              </a>
                             </div>
-                            <p className="italic text-orange-600 font-mono">
-                              ⬛⬜⬛ A DSL is emerging from these patterns ⬛⬜⬛
-                            </p>
-                            <a href="https://github.com/cristianoc/arc-agi-2-abstraction-dataset"
-                               target="_blank" rel="noopener noreferrer"
-                               className="text-blue-600 hover:text-blue-800 hover:underline text-[8px] flex items-center gap-1">
-                              View cristianoc's research <ExternalLink className="h-2.5 w-2.5" />
-                            </a>
                           </div>
                         </div>
                       </div>
+                      <a
+                        href="https://github.com/google/ARC-GEN/blob/main/task_list.py#L422"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1 text-[9px] font-medium text-orange-700 transition-all duration-150 hover:text-orange-900 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-orange-500 focus-visible:ring-offset-1 focus-visible:ring-offset-white"
+                      >
+                        <span className="font-mono" aria-hidden="true">📖</span>
+                        Puzzle Nomenclature
+                        <ExternalLink className="h-2.5 w-2.5" />
+                      </a>
+                      <a
+                        href="https://github.com/neoneye/arc-notes"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1 text-[9px] font-medium text-orange-700 transition-all duration-150 hover:text-orange-900 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-orange-500 focus-visible:ring-offset-1 focus-visible:ring-offset-white"
+                      >
+                        <span className="font-mono" aria-hidden="true">📚</span>
+                        All the ARC Resources
+                        <ExternalLink className="h-2.5 w-2.5" />
+                      </a>
+                      <a
+                        href="https://github.com/neoneye/arc-dataset-collection"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1 text-[9px] font-medium text-orange-700 transition-all duration-150 hover:text-orange-900 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-orange-500 focus-visible:ring-offset-1 focus-visible:ring-offset-white"
+                      >
+                        <span className="font-mono" aria-hidden="true">🗃️</span>
+                        Dataset Collection
+                        <ExternalLink className="h-2.5 w-2.5" />
+                      </a>
                     </div>
-                    <a href="https://github.com/google/ARC-GEN/blob/main/task_list.py#L422" target="_blank" rel="noopener noreferrer"
-                       className="text-orange-700 hover:text-orange-800 hover:underline text-[9px] flex items-center gap-1 transition-colors">
-                      <span className="font-mono">📖</span> Puzzle Nomenclature <ExternalLink className="h-2.5 w-2.5" />
-                    </a>
-                    <a href="https://github.com/neoneye/arc-notes" target="_blank" rel="noopener noreferrer"
-                       className="text-orange-700 hover:text-orange-800 hover:underline text-[9px] flex items-center gap-1 transition-colors">
-                      <span className="font-mono">📚</span> All the ARC Resources <ExternalLink className="h-2.5 w-2.5" />
-                    </a>
-                    <a href="https://github.com/neoneye/arc-dataset-collection" target="_blank" rel="noopener noreferrer"
-                       className="text-orange-700 hover:text-orange-800 hover:underline text-[9px] flex items-center gap-1 transition-colors">
-                      <span className="font-mono">🗃️</span> Dataset Collection <ExternalLink className="h-2.5 w-2.5" />
-                    </a>
                   </div>
                 </div>
               </div>
