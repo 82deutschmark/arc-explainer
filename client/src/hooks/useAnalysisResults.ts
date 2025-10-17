@@ -76,6 +76,7 @@ export function useAnalysisResults({
     structuredJson: streamingStructuredJson,
     summary: streamSummary,
     error: streamError,
+    promptPreview: streamingPromptPreview,
   } = useAnalysisStreaming();
   const streamingContextRef = useRef<{ modelKey: string; startTime: number } | null>(null);
   const [streamingModelKey, setStreamingModelKey] = useState<string | null>(null);
@@ -453,6 +454,7 @@ export function useAnalysisResults({
     streamingPhase,
     streamingMessage,
     streamingTokenUsage,
+    streamingPromptPreview,
     streamError,
     cancelStreamingAnalysis,
     closeStreamingModal,

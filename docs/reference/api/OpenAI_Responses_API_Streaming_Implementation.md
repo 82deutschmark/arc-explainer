@@ -98,7 +98,67 @@ interface ResponsesAPIResponse {
 
 ---
 
+## Part 1.5: Feature Flags and Configuration
+
+### Streaming Enablement
+
+The system uses a shared `STREAMING_ENABLED` feature flag that must be enabled for streaming to work:
+
+```typescript
+// server/config/streaming.ts
+export function resolveStreamingConfig() {
+  return {
+    enabled: isFeatureFlagEnabled(process.env.STREAMING_ENABLED || "true"),
+  };
+}
+
+// client/src/hooks/useAnalysisResults.ts
+const streamingEnabled = useMemo(() => {
+  const rawValue = import.meta.env.VITE_ENABLE_SSE_STREAMING as string | undefined;
+  if (typeof rawValue === 'string' && rawValue.trim().length > 0) {
+    return isFeatureFlagEnabled(rawValue);
+  }
+  return doesFrontendAdvertiseStreaming();
+}, []);
+```
+
+Both server and client must agree on this flag for streaming to be available.
+
+---
+
 ## Part 2: Implementing SSE Streaming
+
+### Step 0: Two-Step Handshake Process
+
+**CRITICAL**: Always use the two-step handshake to avoid race conditions and ensure proper session management:
+
+1. **POST /api/stream/analyze**: Cache the analysis payload and return a `sessionId`
+2. **GET /api/stream/analyze/:taskId/:modelKey/:sessionId**: Register SSE connection and start streaming
+
+```typescript
+// Step 1: Cache payload
+const handshakeResponse = await fetch('/api/stream/analyze', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({
+    taskId: 'puzzle_001',
+    modelKey: 'gpt-5-mini-2025-08-07',
+    reasoningEffort: 'medium',
+    reasoningVerbosity: 'high',
+    captureReasoning: true,
+    // ... other params
+  }),
+});
+
+const { sessionId } = await handshakeResponse.json();
+
+// Step 2: Immediately open SSE (critical timing!)
+const eventSource = new EventSource(
+  `/api/stream/analyze/${taskId}/${encodeURIComponent(modelKey)}/${sessionId}`
+);
+```
+
+**Session Expiration**: Cached sessions expire after 60 seconds. Always open the SSE connection immediately after the POST to avoid `HANDSHAKE_FAILED` errors.
 
 ### Step 1: Enable Streaming in Request
 
@@ -110,26 +170,26 @@ const response = await openai.responses.stream({
     { role: "user", content: userPrompt }
   ],
   reasoning: {
-    effort: "medium",      // Control reasoning depth
-    summary: "detailed"    // Get detailed reasoning summary
+    effort: "medium",      // Controls reasoning depth - NEVER "minimal"
+    summary: "detailed"    // Required for summary emission
   },
   text: {
-    verbosity: "high",     // Emit detailed reasoning deltas
-    format: {              // Structured JSON output
+    verbosity: "high",     // CRITICAL: Without this, NO reasoning deltas emit
+    format: {              // Optional: Structured JSON output
       type: "json_schema",
       name: "puzzle_solution",
       strict: true,
       schema: yourJsonSchema
     }
   },
-  stream: true,            // CRITICAL: Enable streaming
+  stream: true,            // Enable streaming
   max_output_tokens: 128000
 });
 ```
 
 ### Step 2: Handle Stream Events
 
-The stream emits different event types. You MUST handle all of them:
+The stream emits different event types that MUST be normalized:
 
 ```typescript
 // Use async iteration (OpenAI SDK v4+)
@@ -139,39 +199,33 @@ for await (const event of response) {
       // Real-time reasoning summary chunks
       const reasoningDelta = event.delta;
       console.log("[Reasoning]", reasoningDelta);
-      aggregatedReasoning += reasoningDelta;
-      // Emit to SSE client: send("stream.chunk", { type: "reasoning", delta: reasoningDelta })
-      break;
-
-    case "response.reasoning_summary_part.added":
-      // Complete reasoning parts (alternative format)
-      const reasoningPart = event.part?.text;
-      aggregatedReasoning += reasoningPart;
+      // Normalize to SSE: send("stream.chunk", { type: "reasoning", delta: reasoningDelta })
       break;
 
     case "response.content_part.added":
       // Output text chunks
       const textDelta = event.part?.text;
-      aggregatedOutput += textDelta;
-      // Emit to SSE client: send("stream.chunk", { type: "text", delta: textDelta })
+      // Normalize to SSE: send("stream.chunk", { type: "text", delta: textDelta })
       break;
 
     case "response.in_progress":
-      // Status update (optional)
-      console.log("[Status] Processing...");
+      // Status update
+      send("stream.status", { state: "in_progress" });
       break;
 
     case "response.completed":
-      // Stream finished successfully
-      console.log("[Status] Stream completed");
+      // Stream finished - get final response
+      const finalResponse = await response.finalResponse();
+      const analysis = extractAnalysis(finalResponse);
+      await saveToDatabase(analysis);
+      send("stream.complete", { status: "success", analysisId: analysis.id });
       break;
 
     case "response.failed":
     case "error":
       // Handle errors
       const errorMsg = event.error?.message || "Stream failed";
-      console.error("[Error]", errorMsg);
-      throw new Error(errorMsg);
+      send("stream.error", { code: "STREAM_FAILED", message: errorMsg });
       break;
   }
 }
@@ -179,7 +233,7 @@ for await (const event of response) {
 
 ### Step 3: Extract Final Response
 
-After streaming completes, get the final response:
+After streaming completes, get the final response with proper token usage extraction:
 
 ```typescript
 const finalResponse = await response.finalResponse();
@@ -207,26 +261,14 @@ if (finalResponse.output_reasoning?.summary) {
     reasoningLog = summary.map(s =>
       typeof s === "string" ? s : (s?.text || s?.content || JSON.stringify(s))
     ).join("\n\n");
-  } else if (typeof summary === "object") {
-    reasoningLog = summary.text || summary.content || JSON.stringify(summary, null, 2);
   }
 }
 
-// Fallback: Scan output[] for reasoning blocks
-if (!reasoningLog && finalResponse.output) {
-  const reasoningBlocks = finalResponse.output.filter(block =>
-    block.type === "reasoning" || block.type === "Reasoning"
-  );
-  reasoningLog = reasoningBlocks.map(block =>
-    block.content || block.summary || JSON.stringify(block)
-  ).join("\n\n");
-}
-
-// Extract token usage
+// Extract token usage (CRITICAL: nested path)
 const tokenUsage = {
   input: finalResponse.usage.input_tokens,
   output: finalResponse.usage.output_tokens,
-  reasoning: finalResponse.usage.output_tokens_details?.reasoning_tokens || 0
+  reasoning: finalResponse.usage.output_tokens_details?.reasoning_tokens || 0  // NOT usage.reasoning_tokens!
 };
 ```
 
@@ -236,7 +278,7 @@ const tokenUsage = {
 
 ### For GPT-5 Models to Emit Reasoning Deltas
 
-You MUST set ALL three parameters:
+You MUST set ALL three parameters correctly:
 
 ```typescript
 reasoning: {
@@ -267,29 +309,47 @@ reasoning: {
 
 ## Part 4: SSE Server Implementation
 
-### Express SSE Endpoint
+### Express SSE Endpoint with Session Management
 
 ```typescript
 const pendingSessions = new Map<string, StreamAnalysisPayload>();
 
 app.post("/api/stream/analyze", (req, res) => {
-  const payload = validateStreamPayload(req.body);
-  if (!payload) {
-    res.status(422).json({ error: "Invalid payload" });
+  const { payload, errors } = buildPayloadFromBody(req.body);
+
+  if (errors.length > 0 || !payload) {
+    res.status(422).json({
+      error: "Invalid stream request payload.",
+      details: errors,
+    });
     return;
   }
 
-  const sessionId = nanoid();
-  pendingSessions.set(sessionId, payload);
-  res.json({ sessionId });
+  try {
+    const sessionId = analysisStreamService.savePendingPayload(payload);
+    const cachedPayload = analysisStreamService.getPendingPayload(sessionId);
+    const expiresAtMs = cachedPayload?.expiresAt;
+    const expiresInSeconds = typeof expiresAtMs === "number"
+      ? Math.max(0, Math.round((expiresAtMs - Date.now()) / 1000))
+      : PENDING_SESSION_TTL_SECONDS;
+
+    res.status(200).json({
+      sessionId,
+      expiresInSeconds,
+      expiresAt: expiresAtMs ? new Date(expiresAtMs).toISOString() : undefined,
+    });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'Failed to prepare analysis stream';
+    res.status(500).json({ error: "Failed to prepare analysis stream." });
+  }
 });
 
 app.get("/api/stream/analyze/:taskId/:modelKey/:sessionId", async (req, res) => {
   const { taskId, modelKey, sessionId } = req.params;
-  const cached = pendingSessions.get(sessionId);
+  const cached = analysisStreamService.getPendingPayload(sessionId);
 
   if (!cached || cached.taskId !== taskId || cached.modelKey !== decodeURIComponent(modelKey)) {
-    res.status(404).json({ error: "Session payload missing" });
+    res.status(404).json({ error: "Session payload missing or mismatched." });
     return;
   }
 
@@ -302,33 +362,13 @@ app.get("/api/stream/analyze/:taskId/:modelKey/:sessionId", async (req, res) => 
   res.write(`data: ${JSON.stringify({ sessionId, taskId, modelKey })}\n\n`);
 
   try {
-    const puzzle = await getPuzzle(taskId);
-    const prompt = buildPrompt(puzzle, cached);
-    const stream = await openai.responses.stream({
-      model: getApiModelName(modelKey),
-      input: buildInputMessages(prompt, cached),
-      reasoning: cached.reasoning,
-      text: cached.text,
-      stream: true
-    });
-
-    for await (const event of stream) {
-      forwardEvent(res, event);
-    }
-
-    const finalResponse = await stream.finalResponse();
-    const analysis = extractAnalysis(finalResponse);
-    await saveToDatabase(analysis);
-
-    res.write(`event: stream.complete\n`);
-    res.write(`data: ${JSON.stringify({ status: "success", analysisId: analysis.id })}\n\n`);
-    res.end();
+    // Streaming logic here...
   } catch (error) {
     res.write(`event: stream.error\n`);
     res.write(`data: ${JSON.stringify({ error: error instanceof Error ? error.message : String(error) })}\n\n`);
     res.end();
   } finally {
-    pendingSessions.delete(sessionId);
+    analysisStreamService.clearPendingPayload(sessionId);
   }
 });
 ```
@@ -337,94 +377,208 @@ app.get("/api/stream/analyze/:taskId/:modelKey/:sessionId", async (req, res) => 
 
 ## Part 5: Client-Side SSE Consumption
 
-### JavaScript/TypeScript Client
+### React Hook Integration
 
 ```typescript
-const handshake = await fetch("/api/stream/analyze", {
-  method: "POST",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify({
-    taskId,
-    modelKey,
-    temperature: 0.2,
-    reasoningEffort: "medium",
-    reasoningVerbosity: "high",
-    captureReasoning: true,
-  }),
-});
+// useAnalysisStreaming.ts - Hook wrapper around SSE utility
+export function useAnalysisStreaming() {
+  const [state, setState] = useState<UseAnalysisStreamingState>(INITIAL_STATE);
+  const streamHandleRef = useRef<{ close: () => void } | null>(null);
 
-const { sessionId } = await handshake.json();
-const eventSource = new EventSource(
-  `/api/stream/analyze/${taskId}/${encodeURIComponent(modelKey)}/${sessionId}`
-);
+  const startStream = useCallback(
+    async (params: AnalysisStreamParams, extraHandlers: Partial<AnalysisStreamHandlers> = {}) => {
+      if (streamHandleRef.current) {
+        streamHandleRef.current.close();
+      }
 
-let reasoningBuffer = "";
-let outputBuffer = "";
+      setState({
+        status: { state: 'requested' },
+        chunks: [],
+        summary: undefined,
+        error: undefined,
+      });
 
-eventSource.addEventListener("stream.init", (event) => {
-  const data = JSON.parse(event.data);
-  console.log("Stream started:", data.sessionId);
-});
+      try {
+        const handle = await createAnalysisStream(params, {
+          onInit: payload => {
+            setState(prev => ({
+              ...prev,
+              sessionId: payload.sessionId,
+            }));
+            extraHandlers.onInit?.(payload);
+          },
+          onStatus: status => {
+            setState(prev => ({
+              ...prev,
+              status,
+            }));
+            extraHandlers.onStatus?.(status);
+          },
+          onChunk: chunk => {
+            setState(prev => ({
+              ...prev,
+              chunks: [...prev.chunks, chunk],
+            }));
+            extraHandlers.onChunk?.(chunk);
+          },
+          onComplete: summary => {
+            setState(prev => ({
+              ...prev,
+              status: { state: 'completed' },
+              summary,
+            }));
+            extraHandlers.onComplete?.(summary);
+          },
+          onError: error => {
+            setState(prev => ({
+              ...prev,
+              status: { state: 'failed', message: error.message },
+              error,
+            }));
+            extraHandlers.onError?.(error);
+          },
+        });
 
-eventSource.addEventListener("stream.chunk", (event) => {
-  const chunk = JSON.parse(event.data);
+        streamHandleRef.current = handle;
+      } catch (err) {
+        const message = err instanceof Error ? err.message : 'Failed to start analysis stream';
+        const errorPayload = { code: 'HANDSHAKE_FAILED', message };
 
-  if (chunk.type === "reasoning") {
-    reasoningBuffer += chunk.delta;
-    updateReasoningDisplay(reasoningBuffer);  // Update UI in real-time
-  } else if (chunk.type === "text") {
-    outputBuffer += chunk.delta;
-    updateOutputDisplay(outputBuffer);
-  }
-});
+        setState(prev => ({
+          ...prev,
+          status: { state: 'failed', message },
+          error: errorPayload,
+        }));
 
-eventSource.addEventListener("stream.complete", (event) => {
-  const result = JSON.parse(event.data);
-  console.log("Analysis complete:", result.analysisId);
-  console.log("Total tokens:", result.tokenUsage);
-  eventSource.close();
-});
+        extraHandlers.onError?.(errorPayload);
+      }
+    },
+    []
+  );
 
-eventSource.addEventListener("stream.error", (event) => {
-  const error = JSON.parse(event.data);
-  console.error("Stream error:", error);
-  eventSource.close();
-});
+  const closeStream = useCallback(() => {
+    if (streamHandleRef.current) {
+      streamHandleRef.current.close();
+      streamHandleRef.current = null;
+    }
+    setState(INITIAL_STATE);
+  }, []);
 
-// Handle connection errors
-eventSource.onerror = (error) => {
-  console.error("SSE connection error:", error);
-  eventSource.close();
-};
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (streamHandleRef.current) {
+        streamHandleRef.current.close();
+        streamHandleRef.current = null;
+      }
+    };
+  }, []);
+
+  return {
+    sessionId: state.sessionId,
+    status: state.status,
+    chunks: state.chunks,
+    summary: state.summary,
+    error: state.error,
+    visibleText: aggregatedContent.text,
+    reasoningText: aggregatedContent.reasoning,
+    structuredJsonText: aggregatedContent.json,
+    structuredJson: parsedStructuredJson,
+    promptPreview,
+    startStream,
+    closeStream,
+  };
+}
+```
+
+### Orchestrator Hook (useAnalysisResults)
+
+```typescript
+// useAnalysisResults.ts - Main orchestrator hook
+export function useAnalysisResults({ taskId, refetchExplanations, ...props }) {
+  const {
+    startStream,
+    closeStream,
+    status: streamStatus,
+    visibleText: streamingVisibleText,
+    reasoningText: streamingReasoningText,
+    summary: streamSummary,
+    error: streamError,
+  } = useAnalysisStreaming();
+
+  const canStreamModel = useCallback(
+    (modelKey: string) => streamingEnabled && streamSupportedModels.has(modelKey),
+    [streamingEnabled, streamSupportedModels]
+  );
+
+  const startStreamingAnalysis = useCallback(
+    (modelKey: string, supportsTemperature: boolean) => {
+      const params: AnalysisStreamParams = {
+        taskId,
+        modelKey,
+        temperature: supportsTemperature ? temperature : undefined,
+        reasoningEffort: isGPT5ReasoningModel(modelKey) ? reasoningEffort : undefined,
+        reasoningVerbosity: isGPT5ReasoningModel(modelKey) ? reasoningVerbosity : undefined,
+        reasoningSummaryType: isGPT5ReasoningModel(modelKey) ? reasoningSummaryType : undefined,
+        captureReasoning: true,
+        // ... other params
+      };
+
+      void startStream(params, {
+        onStatus: status => {
+          // Update streaming phase/message
+          if (status && typeof status === 'object') {
+            if ('phase' in status) {
+              setStreamingPhase((status as any).phase);
+            }
+            if ('message' in status) {
+              setStreamingMessage((status as any).message);
+            }
+          }
+        },
+        onComplete: summary => handleStreamingComplete(summary, modelKey),
+        onError: error => handleStreamingError(error, modelKey),
+      });
+    },
+    [startStream, taskId, temperature, reasoningEffort, reasoningVerbosity, reasoningSummaryType]
+  );
+
+  const analyzeWithModel = useCallback(
+    (modelKey: string, supportsTemperature: boolean = true) => {
+      if (canStreamModel(modelKey)) {
+        startStreamingAnalysis(modelKey, supportsTemperature);
+        return;
+      }
+
+      // Fallback to legacy mutation
+      analyzeAndSaveMutation.mutate(payload);
+    },
+    [canStreamModel, startStreamingAnalysis, analyzeAndSaveMutation]
+  );
+
+  return {
+    analyzeWithModel,
+    startStreamingAnalysis,
+    streamingEnabled,
+    streamingModelKey,
+    streamStatus,
+    streamingText: streamingVisibleText,
+    streamingReasoning: streamingReasoningText,
+    streamingPhase,
+    streamingMessage,
+    streamingTokenUsage,
+    streamError,
+    cancelStreamingAnalysis,
+    closeStreamingModal,
+    canStreamModel,
+    // ... other exports
+  };
+}
 ```
 
 ---
 
 ## Part 6: Testing & Debugging
-
-### Test with curl
-
-```bash
-curl -N -H "Accept: text/event-stream" \
-  "http://localhost:5000/api/stream/analyze/PUZZLE_ID/gpt-5-mini?reasoningEffort=medium&reasoningVerbosity=high&reasoningSummaryType=detailed"
-```
-
-**Expected output:**
-```
-event: stream.init
-data: {"sessionId":"abc123","taskId":"puzzle_001","modelKey":"gpt-5-mini"}
-
-event: stream.chunk
-data: {"type":"reasoning","delta":"Let me analyze the pattern...","timestamp":1234567890}
-
-event: stream.chunk
-data: {"type":"reasoning","delta":" The transformation appears to...","timestamp":1234567891}
-
-...
-
-event: stream.complete
-data: {"status":"success","analysisId":42,"tokenUsage":{"input":1500,"output":800,"reasoning":6784}}
-```
 
 ### Debug Checklist
 
@@ -446,6 +600,12 @@ data: {"status":"success","analysisId":42,"tokenUsage":{"input":1500,"output":80
    if (!reasoningLog || reasoningLog === "[]" || reasoningLog === "") {
      console.error("Reasoning extraction failed - check configuration!");
    }
+   ```
+
+4. **Verify SSE events emit correctly**:
+   ```bash
+   curl -N -H "Accept: text/event-stream" \
+     "http://localhost:5000/api/stream/analyze/puzzle_id/gpt-5-mini?reasoningEffort=medium&reasoningVerbosity=high&reasoningSummaryType=detailed"
    ```
 
 ---
@@ -490,6 +650,37 @@ const text = response.output_text
   || JSON.stringify(response.output_parsed);
 ```
 
+### ❌ Pitfall 5: Ignoring Handshake Timing
+```typescript
+// WRONG - Session expires before SSE opens
+setTimeout(() => {
+  const eventSource = new EventSource(streamUrl); // Too late!
+}, 1000);
+```
+
+### ❌ Pitfall 6: Not Handling Session Expiration
+```typescript
+// WRONG - No retry on session expiry
+eventSource.onerror = () => {
+  console.error("Connection lost");
+};
+
+// CORRECT - Implement retry logic for expired sessions
+```
+
+### ❌ Pitfall 7: Missing Feature Flag Check
+```typescript
+// WRONG - Assumes streaming always available
+if (model.supportsStreaming) {
+  startStreamingAnalysis(modelKey); // May fail if flag disabled
+}
+
+// CORRECT - Check feature flag first
+if (streamingEnabled && canStreamModel(modelKey)) {
+  startStreamingAnalysis(modelKey);
+}
+```
+
 ---
 
 ## Summary Checklist
@@ -498,11 +689,15 @@ const text = response.output_text
 ✅ Set `reasoning.effort` to "medium" or "high" (not "minimal")
 ✅ Set `reasoning.summary` to "detailed"
 ✅ Set `text.verbosity` to "high" for real-time deltas
-✅ Handle ALL stream event types (reasoning, content, status, error)
+✅ Use two-step handshake (POST then GET) for SSE
+✅ Handle session expiration (60-second TTL)
 ✅ Extract reasoning from `output_reasoning.summary` with fallbacks
 ✅ Track reasoning tokens in `output_tokens_details.reasoning_tokens`
+✅ Check `STREAMING_ENABLED` feature flag on both ends
+✅ Handle ALL SSE events (init, status, chunk, complete, error)
 ✅ Test with curl to verify SSE events emit correctly
-✅ Check server logs confirm `Has reasoning: true`
+✅ Reset streaming state only when user explicitly closes modal
+✅ Implement proper error recovery and retry logic
 
 ---
 

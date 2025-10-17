@@ -160,6 +160,14 @@ export function useAnalysisStreaming() {
     };
   }, []);
 
+  // Extract promptPreview from status if available
+  const promptPreview = useMemo(() => {
+    if (state.status && typeof state.status === 'object' && 'promptPreview' in state.status) {
+      return state.status.promptPreview as string;
+    }
+    return undefined;
+  }, [state.status]);
+
   return {
     sessionId: state.sessionId,
     status: state.status,
@@ -170,6 +178,7 @@ export function useAnalysisStreaming() {
     reasoningText: aggregatedReasoning,
     structuredJsonText: aggregatedJson,
     structuredJson: parsedStructuredJson,
+    promptPreview,
     startStream,
     closeStream,
   };

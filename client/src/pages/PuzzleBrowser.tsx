@@ -182,43 +182,57 @@ export default function PuzzleBrowser() {
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 p-2">
       <div className="max-w-[1900px] mx-auto space-y-2">
 
-        <header className="text-center space-y-2">
-          <div className="flex items-center justify-center gap-3">
-            <EmojiMosaicAccent variant="heroSunrise" size="sm" framed={true} className="drop-shadow" />
+        <header className="text-center space-y-3">
+          {/* Top decorative corner mosaics */}
+          <div className="flex items-start justify-between px-4 -mb-2">
+            <EmojiMosaicAccent variant="heroSunrise" size="md" framed={true} className="drop-shadow-lg" />
+            <EmojiMosaicAccent variant="heroTwilight" size="md" framed={true} className="drop-shadow-lg" />
+          </div>
+
+          <div className="flex items-center justify-center gap-4">
+            <EmojiMosaicAccent variant="rainbow" size="md" framed={true} className="drop-shadow" />
             <div>
               <h1 className="text-2xl font-bold text-slate-900">
                 ARC-AGI Puzzle Explorer
               </h1>
-              <p className="text-xs text-slate-600 mt-1">
+              <p className="text-sm text-slate-700 mt-1 font-medium">
                 Navigate the ARC datasets with streamlined filters and curated research links.
               </p>
             </div>
-            <EmojiMosaicAccent variant="heroTwilight" size="sm" framed={true} className="drop-shadow" />
+            <EmojiMosaicAccent variant="rainbow" size="md" framed={true} className="drop-shadow" />
           </div>
 
           <CollapsibleMission />
 
           <div className="card shadow-lg border-0 bg-white/90 backdrop-blur-sm">
-            <div className="card-body p-3 space-y-2">
-              <div className="flex items-center justify-center gap-2">
-                <Sparkles className="h-3 w-3 text-slate-500" />
-                <h3 className="text-sm font-semibold text-slate-800">
+            <div className="card-body p-3 space-y-3">
+              <div className="flex items-center justify-center gap-3">
+                <EmojiMosaicAccent variant="datasetSignal" size="sm" framed={true} />
+                <Sparkles className="h-4 w-4 text-slate-600" />
+                <h3 className="text-base font-bold text-slate-900">
                   ARC-AGI Knowledge Hub
                 </h3>
-                <Sparkles className="h-3 w-3 text-slate-500" />
+                <Sparkles className="h-4 w-4 text-slate-600" />
+                <EmojiMosaicAccent variant="analysisSignal" size="sm" framed={true} />
               </div>
 
-              <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 text-left">
-                <div className="rounded-lg border border-slate-200 bg-white/80 p-2 text-[10px]">
-                  <p className="font-bold text-slate-800 uppercase tracking-wide">Research Papers</p>
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 text-left">
+                <div className="rounded-lg border border-slate-200 bg-white/80 p-3 text-[11px]">
+                  <div className="flex items-center gap-2 mb-2">
+                    <EmojiMosaicAccent variant="statusExplained" size="xs" framed={false} />
+                    <p className="font-bold text-slate-900 uppercase tracking-wide">Research Papers</p>
+                  </div>
                   <a href="https://www.arxiv.org/pdf/2505.11831" target="_blank" rel="noopener noreferrer" className="mt-1 inline-flex items-center gap-1 text-blue-700 hover:text-blue-900">
                     ARC-AGI-2 Technical Report
                     <ExternalLink className="h-3 w-3" />
                   </a>
                 </div>
 
-                <div className="rounded-lg border border-slate-200 bg-white/80 p-2 text-[10px]">
-                  <p className="font-bold text-slate-800 uppercase tracking-wide">Data Sources</p>
+                <div className="rounded-lg border border-slate-200 bg-white/80 p-3 text-[11px]">
+                  <div className="flex items-center gap-2 mb-2">
+                    <EmojiMosaicAccent variant="sizeSignal" size="xs" framed={false} />
+                    <p className="font-bold text-slate-900 uppercase tracking-wide">Data Sources</p>
+                  </div>
                   <div className="mt-1 space-y-1">
                     <a href="https://huggingface.co/arcprize" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-blue-700 hover:text-blue-900">
                       HuggingFace Datasets
@@ -231,8 +245,11 @@ export default function PuzzleBrowser() {
                   </div>
                 </div>
 
-                <div className="rounded-lg border border-slate-200 bg-white/80 p-2 text-[10px]">
-                  <p className="font-bold text-slate-800 uppercase tracking-wide">Top Solutions</p>
+                <div className="rounded-lg border border-slate-200 bg-white/80 p-3 text-[11px]">
+                  <div className="flex items-center gap-2 mb-2">
+                    <EmojiMosaicAccent variant="searchSignal" size="xs" framed={false} />
+                    <p className="font-bold text-slate-900 uppercase tracking-wide">Top Solutions</p>
+                  </div>
                   <div className="mt-1 space-y-1">
                     <a href="https://github.com/zoecarver" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-emerald-700 hover:text-emerald-900">
                       zoecarver's approach
@@ -245,8 +262,11 @@ export default function PuzzleBrowser() {
                   </div>
                 </div>
 
-                <div className="rounded-lg border border-slate-200 bg-white/80 p-2 text-[10px]">
-                  <p className="font-bold text-slate-800 uppercase tracking-wide">Community Knowledge</p>
+                <div className="rounded-lg border border-slate-200 bg-white/80 p-3 text-[11px]">
+                  <div className="flex items-center gap-2 mb-2">
+                    <EmojiMosaicAccent variant="statusUnexplained" size="xs" framed={false} />
+                    <p className="font-bold text-slate-900 uppercase tracking-wide">Community Knowledge</p>
+                  </div>
                   <div className="mt-1 space-y-1">
                     <a href="https://github.com/google/ARC-GEN/blob/main/task_list.py#L422" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-orange-700 hover:text-orange-900">
                       Puzzle nomenclature
@@ -264,10 +284,12 @@ export default function PuzzleBrowser() {
                 </div>
               </div>
 
-              <div className="text-center">
-                <p className="text-[10px] text-gray-600">
+              <div className="text-center flex items-center justify-center gap-2">
+                <EmojiMosaicAccent variant="heroTwilight" size="xs" framed={false} />
+                <p className="text-[11px] text-slate-700 font-medium">
                   <strong>Special thanks to Simon Strandgaard (@neoneye)</strong> for his insights, support, and encouragement.
                 </p>
+                <EmojiMosaicAccent variant="heroSunrise" size="xs" framed={false} />
               </div>
             </div>
           </div>
@@ -275,16 +297,16 @@ export default function PuzzleBrowser() {
 
         {/* Filters */}
 
-        <div className="card border border-slate-200 bg-white/80">
-          <div className="card-body py-2 px-3">
-            <div className="flex flex-wrap items-end gap-3">
-              <div className="flex flex-col gap-1">
-                <label htmlFor="puzzleSearch" className="text-[10px] font-medium text-slate-600">Search by Puzzle ID</label>
+        <div className="card border-2 border-slate-300 bg-white shadow-md">
+          <div className="card-body py-3 px-4">
+            <div className="flex flex-wrap items-end gap-4">
+              <div className="flex flex-col gap-1.5 min-w-[200px]">
+                <label htmlFor="puzzleSearch" className="text-xs font-bold text-slate-900 uppercase tracking-wide">Search by Puzzle ID</label>
                 <div className="flex items-center gap-2">
                   <input
-                    className="input input-sm input-bordered w-48 border-slate-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-400"
+                    className="input input-sm input-bordered w-56 border-2 border-slate-400 bg-white text-slate-900 placeholder:text-slate-500 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     id="puzzleSearch"
-                    placeholder="Enter puzzle ID (e.g., 1ae2feb7)"
+                    placeholder="e.g., 1ae2feb7"
                     value={searchQuery}
                     onChange={(e) => {
                       setSearchQuery(e.target.value);
@@ -298,7 +320,7 @@ export default function PuzzleBrowser() {
                   />
                   <button
                     type="button"
-                    className="btn btn-sm btn-primary normal-case"
+                    className="btn btn-sm btn-primary normal-case font-semibold"
 
                     onClick={handleSearch}
                   >
@@ -307,15 +329,15 @@ export default function PuzzleBrowser() {
                 </div>
 
                 {searchError && (
-                  <p className="text-[10px] text-red-500">{searchError}</p>
+                  <p className="text-xs text-red-700 font-semibold">{searchError}</p>
                 )}
               </div>
 
-              <div className="flex flex-wrap items-end gap-3">
-                <div className="flex flex-col gap-1">
-                  <label htmlFor="maxGridSize" className="text-[10px] font-medium text-slate-600">Maximum Grid Size</label>
+              <div className="flex flex-wrap items-end gap-4">
+                <div className="flex flex-col gap-1.5 min-w-[140px]">
+                  <label htmlFor="maxGridSize" className="text-xs font-bold text-slate-900 uppercase tracking-wide">Max Grid Size</label>
                   <select
-                    className="select select-sm select-bordered w-36 border-slate-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400"
+                    className="select select-sm select-bordered w-full border-2 border-slate-400 bg-white text-slate-900 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     value={maxGridSize}
                     onChange={(e) => setMaxGridSize(e.target.value)}
                   >
@@ -328,10 +350,10 @@ export default function PuzzleBrowser() {
                   </select>
                 </div>
 
-                <div className="flex flex-col gap-1">
-                  <label htmlFor="explanationFilter" className="text-[10px] font-medium text-slate-600">Explanation Status</label>
+                <div className="flex flex-col gap-1.5 min-w-[160px]">
+                  <label htmlFor="explanationFilter" className="text-xs font-bold text-slate-900 uppercase tracking-wide">Explanation Status</label>
                   <select
-                    className="select select-sm select-bordered w-40 border-slate-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400"
+                    className="select select-sm select-bordered w-full border-2 border-slate-400 bg-white text-slate-900 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     value={explanationFilter}
                     onChange={(e) => setExplanationFilter(e.target.value)}
                   >
@@ -341,10 +363,10 @@ export default function PuzzleBrowser() {
                   </select>
                 </div>
 
-                <div className="flex flex-col gap-1">
-                  <label htmlFor="gridConsistent" className="text-[10px] font-medium text-slate-600">Grid Size Consistency</label>
+                <div className="flex flex-col gap-1.5 min-w-[170px]">
+                  <label htmlFor="gridConsistent" className="text-xs font-bold text-slate-900 uppercase tracking-wide">Grid Consistency</label>
                   <select
-                    className="select select-sm select-bordered w-44 border-slate-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400"
+                    className="select select-sm select-bordered w-full border-2 border-slate-400 bg-white text-slate-900 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     value={gridSizeConsistent}
                     onChange={(e) => setGridSizeConsistent(e.target.value)}
                   >
@@ -354,10 +376,10 @@ export default function PuzzleBrowser() {
                   </select>
                 </div>
 
-                <div className="flex flex-col gap-1">
-                  <label htmlFor="arcVersion" className="text-[10px] font-medium text-slate-600">ARC Version</label>
+                <div className="flex flex-col gap-1.5 min-w-[160px]">
+                  <label htmlFor="arcVersion" className="text-xs font-bold text-slate-900 uppercase tracking-wide">ARC Version</label>
                   <select
-                    className="select select-sm select-bordered w-36 border-slate-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400"
+                    className="select select-sm select-bordered w-full border-2 border-slate-400 bg-white text-slate-900 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     value={arcVersion}
                     onChange={(e) => setArcVersion(e.target.value)}
                   >
@@ -371,10 +393,10 @@ export default function PuzzleBrowser() {
                   </select>
                 </div>
 
-                <div className="flex flex-col gap-1">
-                  <label htmlFor="multiTestFilter" className="text-[10px] font-medium text-slate-600">Test Cases</label>
+                <div className="flex flex-col gap-1.5 min-w-[170px]">
+                  <label htmlFor="multiTestFilter" className="text-xs font-bold text-slate-900 uppercase tracking-wide">Test Cases</label>
                   <select
-                    className="select select-sm select-bordered w-40 border-slate-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400"
+                    className="select select-sm select-bordered w-full border-2 border-slate-400 bg-white text-slate-900 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     value={multiTestFilter}
                     onChange={(e) => setMultiTestFilter(e.target.value)}
                   >
@@ -384,10 +406,10 @@ export default function PuzzleBrowser() {
                   </select>
                 </div>
 
-                <div className="flex flex-col gap-1">
-                  <label htmlFor="sortBy" className="text-[10px] font-medium text-slate-600">Sort By</label>
+                <div className="flex flex-col gap-1.5 min-w-[200px]">
+                  <label htmlFor="sortBy" className="text-xs font-bold text-slate-900 uppercase tracking-wide">Sort By</label>
                   <select
-                    className="select select-sm select-bordered w-40 border-slate-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400"
+                    className="select select-sm select-bordered w-full border-2 border-slate-400 bg-white text-slate-900 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     value={sortBy}
                     onChange={(e) => setSortBy(e.target.value)}
                   >
@@ -403,7 +425,8 @@ export default function PuzzleBrowser() {
               </div>
             </div>
 
-            <div className="mt-2 flex flex-wrap items-center gap-1 text-[9px]">
+            <div className="mt-3 pt-3 border-t border-slate-200 flex flex-wrap items-center gap-2 text-[10px]">
+              <span className="text-xs font-bold text-slate-900 mr-1">Active Filters:</span>
               {[
                 { id: 'search', label: 'Search', active: searchQuery.trim().length > 0 },
                 { id: 'maxGridSize', label: 'Max grid', active: maxGridSize !== 'any' },
@@ -415,7 +438,7 @@ export default function PuzzleBrowser() {
               ].map((item) => (
                 <div
                   key={item.id}
-                  className={`flex items-center gap-1 rounded-full border px-2 py-0.5 transition-colors ${ item.active ? 'border-slate-500 bg-slate-100 text-slate-800' : 'border-slate-200 bg-white text-slate-400' }`}
+                  className={`flex items-center gap-1 rounded-full border px-2.5 py-1 font-semibold transition-colors ${ item.active ? 'border-blue-600 bg-blue-100 text-blue-900 shadow-sm' : 'border-slate-300 bg-slate-50 text-slate-500' }`}
                 >
                   <span>{item.label}</span>
                 </div>
