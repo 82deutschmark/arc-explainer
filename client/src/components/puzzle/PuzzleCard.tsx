@@ -88,11 +88,11 @@ export const PuzzleCard: React.FC<PuzzleCardProps> = ({
   const firstTrainingExample = taskData?.train?.[0];
 
   return (
-    <div 
+    <div
       ref={cardRef}
-      className="bg-white rounded-lg border border-gray-200 hover:border-blue-300 hover:shadow-md transition-all duration-200"
+      className="group relative rounded-2xl bg-gradient-to-br from-blue-600/35 via-indigo-500/25 to-purple-600/35 p-[1px] transition-all duration-300 hover:shadow-xl focus-within:shadow-xl hover:from-blue-600/45 hover:via-indigo-500/35 hover:to-purple-600/45 focus-within:from-blue-600/45 focus-within:via-indigo-500/35 focus-within:to-purple-600/45"
     >
-      <div className="p-4 space-y-3">
+      <div className="relative h-full rounded-[1.05rem] bg-white/95 p-4 backdrop-blur-sm shadow-sm transition-all duration-300 group-hover:bg-white group-focus-within:bg-white space-y-3">
         {/* Header - Name or ID */}
         <div className="space-y-1">
           {hasName && puzzleName ? (
@@ -122,7 +122,7 @@ export const PuzzleCard: React.FC<PuzzleCardProps> = ({
 
         {/* Grid Preview */}
         {showGridPreview && firstTrainingExample && (
-          <div className="bg-gray-50 rounded border border-gray-200 p-2">
+          <div className="rounded-xl bg-slate-50/90 p-2 outline outline-1 outline-blue-200/70 transition-all duration-200 group-hover:outline-blue-400/80 group-focus-within:outline-blue-400/80">
             <div className="flex gap-2 items-start">
               <div className="flex-1 min-w-0">
                 <p className="text-xs text-gray-500 mb-1">Input</p>
@@ -169,10 +169,35 @@ export const PuzzleCard: React.FC<PuzzleCardProps> = ({
         </div>
 
         {/* Action Button */}
-        <Link href={`/puzzle/${puzzle.id}`} className="btn btn-primary btn-sm w-full">
-          <Eye className="h-4 w-4 mr-2" />
-          Examine Puzzle
-        </Link>
+        <div className="space-y-1">
+          <div className="flex items-center justify-between px-1">
+            <span
+              aria-hidden="true"
+              className="inline-grid grid-cols-2 gap-[1px] rounded-sm bg-blue-100/80 p-0.5 text-[9px] leading-[0.7rem] text-blue-700 transition-transform duration-200 group-hover:scale-110 group-focus-within:scale-110"
+            >
+              <span>🟦</span>
+              <span>🟦</span>
+              <span>🟪</span>
+              <span>🟪</span>
+            </span>
+            <span
+              aria-hidden="true"
+              className="inline-grid grid-cols-2 gap-[1px] rounded-sm bg-purple-100/80 p-0.5 text-[9px] leading-[0.7rem] text-purple-700 transition-transform duration-200 group-hover:scale-110 group-focus-within:scale-110"
+            >
+              <span>🟪</span>
+              <span>🟪</span>
+              <span>🟦</span>
+              <span>🟦</span>
+            </span>
+          </div>
+          <Link
+            href={`/puzzle/${puzzle.id}`}
+            className="relative inline-flex w-full items-center justify-center gap-2 overflow-hidden rounded-lg bg-gradient-to-r from-blue-600 to-indigo-700 px-3 py-2 text-sm font-semibold text-white shadow-md transition-all duration-200 hover:from-blue-700 hover:to-indigo-800 hover:scale-[1.02] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white"
+          >
+            <Eye className="h-4 w-4" />
+            Examine Puzzle
+          </Link>
+        </div>
       </div>
     </div>
   );
