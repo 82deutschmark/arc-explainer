@@ -81,6 +81,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     "/api/stream/analyze/:taskId/:modelKey/:sessionId",
     asyncHandler(streamController.startAnalysisStream),
   );
+  app.delete("/api/stream/analyze/:sessionId", asyncHandler(streamController.cancel));
   app.post("/api/stream/cancel/:sessionId", asyncHandler(streamController.cancel));
   
   // Debug route to force puzzle loader reinitialization

@@ -1,3 +1,16 @@
+## [4.8.26] - 2025-10-17
+### ⚙️ Streaming Defaults Restored for GPT-5 Analyses
+
+#### Summary
+- Enable streaming by default in development builds so Responses API deltas surface without extra env configuration (`shared/config/streaming.ts`).
+- Align frontend gating with the shared resolver, letting the UI auto-detect streaming support when `VITE_ENABLE_SSE_STREAMING` is unset (`client/src/hooks/useAnalysisResults.ts`).
+- Expose the documented `DELETE /api/stream/analyze/:sessionId` cancel route alongside the legacy POST alias (`server/routes.ts`).
+- Document remediation plan for archive (`docs/2025-10-17-streaming-bugfix-plan.md`).
+
+#### Verification
+- Manual GPT-5 streaming run (Puzzle Examiner) to confirm reasoning/text deltas appear live.
+
+---
 ## [4.8.25] - 2025-10-16
 ### BUGFIX: Prevent JSON fallback after parsed deltas
 

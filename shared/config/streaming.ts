@@ -100,7 +100,7 @@ function detectDevelopmentDefault(
     return mode !== 'production';
   }
 
-  return false;
+  return true;
 }
 
 export function resolveStreamingConfig(): StreamingConfigResolution {
