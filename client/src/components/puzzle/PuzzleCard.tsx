@@ -1,21 +1,9 @@
 /**
- * PuzzleCard.tsx
- * 
- * Author: Cascade using DeepSeek V3
- * Date: 2025-10-15
- * PURPOSE: Enhanced puzzle card component for the browser page.
- * Displays puzzle ID, name (if available), grid preview, and analysis status.
- * Lazy loads puzzle grids only when card is visible (intersection observer).
- * 
- * FEATURES:
- * - Named puzzles show friendly name prominently
- * - Optional grid preview (first training example)
- * - Clean, professional styling consistent with redesigned landing page
- * - Lazy loading for performance
- * - Clickable to navigate to puzzle details
- * 
- * SRP/DRY check: Pass - Single responsibility for puzzle card display
- * DaisyUI: Pass - Uses DaisyUI components and classes
+ * Author: gpt-5-codex
+ * Date: 2025-10-17
+ * PURPOSE: Presents ARC puzzle summary cards with status-driven gradients,
+ *          emoji mosaics, and lazy-loaded grid previews for the browser page.
+ * SRP/DRY check: Pass — Verified lazy loading and navigation remain intact.
  */
 
 import React, { useState, useEffect, useRef } from 'react';
@@ -24,6 +12,7 @@ import { Eye, Grid3X3 } from 'lucide-react';
 import { TinyGrid } from './TinyGrid';
 import { getPuzzleName, hasPuzzleName } from '@shared/utils/puzzleNames';
 import type { ARCTask } from '@shared/types';
+import { EmojiStatusMosaic } from './EmojiStatusMosaic';
 
 interface PuzzleCardProps {
   puzzle: {
@@ -86,15 +75,31 @@ export const PuzzleCard: React.FC<PuzzleCardProps> = ({
   }, [isVisible, puzzle.id, taskData]);
 
   const firstTrainingExample = taskData?.train?.[0];
+  const isExplained = Boolean(puzzle.hasExplanation);
+  const statusGradient = isExplained
+    ? 'from-emerald-500/35 via-teal-500/25 to-sky-500/35'
+    : 'from-rose-500/35 via-amber-400/25 to-violet-500/30';
+  const statusText = isExplained ? 'Explained' : 'Needs Analysis';
+  const statusColorClass = isExplained ? 'text-emerald-600' : 'text-rose-600';
+  const buttonGradient = isExplained
+    ? 'from-emerald-500 via-teal-500 to-sky-500'
+    : 'from-rose-500 via-amber-500 to-violet-500';
 
   return (
     <div
       ref={cardRef}
-      className="group relative rounded-2xl bg-gradient-to-br from-blue-600/35 via-indigo-500/25 to-purple-600/35 p-[1px] transition-all duration-300 hover:shadow-xl focus-within:shadow-xl hover:from-blue-600/45 hover:via-indigo-500/35 hover:to-purple-600/45 focus-within:from-blue-600/45 focus-within:via-indigo-500/35 focus-within:to-purple-600/45"
+      className={`group relative rounded-2xl bg-gradient-to-br ${statusGradient} p-[1px] transition-all duration-300 hover:shadow-xl focus-within:shadow-xl`}
     >
       <div className="relative h-full rounded-[1.05rem] bg-white/95 p-4 backdrop-blur-sm shadow-sm transition-all duration-300 group-hover:bg-white group-focus-within:bg-white space-y-3">
+        <div className="pointer-events-none absolute right-4 top-4 flex items-center gap-2">
+          <span className={`text-[11px] font-semibold uppercase tracking-wide ${statusColorClass}`}>
+            {statusText}
+          </span>
+          <EmojiStatusMosaic status={isExplained ? 'explained' : 'unexplained'} />
+        </div>
+
         {/* Header - Name or ID */}
-        <div className="space-y-1">
+        <div className="space-y-1 pr-14">
           {hasName && puzzleName ? (
             <>
               <h3 className="text-base font-semibold text-gray-900 capitalize">
@@ -122,7 +127,7 @@ export const PuzzleCard: React.FC<PuzzleCardProps> = ({
 
         {/* Grid Preview */}
         {showGridPreview && firstTrainingExample && (
-          <div className="rounded-xl bg-slate-50/90 p-2 outline outline-1 outline-blue-200/70 transition-all duration-200 group-hover:outline-blue-400/80 group-focus-within:outline-blue-400/80">
+          <div className="rounded-xl bg-gradient-to-br from-slate-50 via-white to-sky-50 p-2 ring-1 ring-sky-100/70 transition-all duration-200 group-hover:ring-sky-300/80 group-focus-within:ring-sky-300/80">
             <div className="flex gap-2 items-start">
               <div className="flex-1 min-w-0">
                 <p className="text-xs text-gray-500 mb-1">Input</p>
@@ -147,15 +152,15 @@ export const PuzzleCard: React.FC<PuzzleCardProps> = ({
 
         {/* Analysis Status */}
         <div className="flex items-center gap-2 text-sm">
-          {puzzle.hasExplanation ? (
+          {isExplained ? (
             <>
-              <span className="text-green-600 font-medium">✓ Analyzed</span>
+              <span className="font-medium text-emerald-600">✓ Analyzed</span>
               {puzzle.modelName && (
                 <span className="text-gray-500">by {puzzle.modelName.split('/').pop()}</span>
               )}
             </>
           ) : (
-            <span className="text-gray-500">Not analyzed</span>
+            <span className="text-gray-500">Awaiting explanation</span>
           )}
         </div>
 
@@ -170,29 +175,15 @@ export const PuzzleCard: React.FC<PuzzleCardProps> = ({
 
         {/* Action Button */}
         <div className="space-y-1">
-          <div className="flex items-center justify-between px-1">
-            <span
-              aria-hidden="true"
-              className="inline-grid grid-cols-2 gap-[1px] rounded-sm bg-blue-100/80 p-0.5 text-[9px] leading-[0.7rem] text-blue-700 transition-transform duration-200 group-hover:scale-110 group-focus-within:scale-110"
-            >
-              <span>🟦</span>
-              <span>🟦</span>
-              <span>🟪</span>
-              <span>🟪</span>
-            </span>
-            <span
-              aria-hidden="true"
-              className="inline-grid grid-cols-2 gap-[1px] rounded-sm bg-purple-100/80 p-0.5 text-[9px] leading-[0.7rem] text-purple-700 transition-transform duration-200 group-hover:scale-110 group-focus-within:scale-110"
-            >
-              <span>🟪</span>
-              <span>🟪</span>
-              <span>🟦</span>
-              <span>🟦</span>
-            </span>
+          <div className="flex items-center justify-end gap-1 px-1">
+            <EmojiStatusMosaic
+              status={isExplained ? 'explained' : 'unexplained'}
+              className="transition-transform duration-200 group-hover:scale-110 group-focus-within:scale-110"
+            />
           </div>
           <Link
             href={`/puzzle/${puzzle.id}`}
-            className="relative inline-flex w-full items-center justify-center gap-2 overflow-hidden rounded-lg bg-gradient-to-r from-blue-600 to-indigo-700 px-3 py-2 text-sm font-semibold text-white shadow-md transition-all duration-200 hover:from-blue-700 hover:to-indigo-800 hover:scale-[1.02] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white"
+            className={`relative inline-flex w-full items-center justify-center gap-2 overflow-hidden rounded-lg bg-gradient-to-r ${buttonGradient} px-3 py-2 text-sm font-semibold text-white shadow-md transition-all duration-200 hover:scale-[1.02] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-400 focus-visible:ring-offset-2 focus-visible:ring-offset-white`}
           >
             <Eye className="h-4 w-4" />
             Examine Puzzle
