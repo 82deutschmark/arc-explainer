@@ -168,8 +168,8 @@ export default function PuzzleBrowser() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gray-50 p-4">
-        <div className="max-w-4xl mx-auto">
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 p-2">
+        <div className="max-w-[1900px] mx-auto space-y-2">
           <div role="alert" className="alert alert-error">
             <span>Failed to load puzzles. Please check your connection and try again.</span>
           </div>
@@ -179,14 +179,14 @@ export default function PuzzleBrowser() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 p-4">
-      <div className="max-w-6xl mx-auto space-y-6">
-        <header className="text-center space-y-4">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 p-2">
+      <div className="max-w-[1900px] mx-auto space-y-2">
+        <header className="text-center space-y-1">
           <div>
-            <h1 className="text-5xl font-bold bg-gradient-to-r from-slate-900 to-blue-800 bg-clip-text text-transparent">
+            <h1 className="text-2xl font-bold bg-gradient-to-r from-slate-900 to-blue-800 bg-clip-text text-transparent">
               🟦🟦🟦 ⬜⬛⬜ ARC-AGI Puzzle Explorer ⬜⬛⬜ 🟩🟩🟩
             </h1>
-            <p className="text-lg text-slate-600 mt-2 font-mono">
+            <p className="text-xs text-slate-600 mt-1 font-mono">
               3️⃣×3️⃣ 🟦⬜🟦 → 🟩🟩🟩 ⬜ ARC-AGI Explainer Hub ⬜ 🟥⬜🟥 → 🟪🟪🟪 3️⃣×3️⃣
             </p>
           </div>
@@ -196,100 +196,100 @@ export default function PuzzleBrowser() {
 
           {/* Resources & References Section - Enhanced with emojis and better styling */}
           <div className="card shadow-lg border-0 bg-gradient-to-br from-slate-50 via-gray-50 to-blue-50 backdrop-blur-sm hover:shadow-xl transition-all duration-300">
-            <div className="card-body p-6">
-              <div className="flex items-center justify-center gap-2 mb-4">
-                <Sparkles className="h-5 w-5 text-slate-500" />
-                <h3 className="text-xl font-bold bg-gradient-to-r from-slate-800 to-blue-700 bg-clip-text text-transparent">
+            <div className="card-body p-2">
+              <div className="flex items-center justify-center gap-1 mb-2">
+                <Sparkles className="h-3 w-3 text-slate-500" />
+                <h3 className="text-sm font-bold bg-gradient-to-r from-slate-800 to-blue-700 bg-clip-text text-transparent">
                   <span className="font-mono">🟥🟥🟥 🟦🟦🟦 🟩🟩🟩</span> ARC-AGI Knowledge Hub <span className="font-mono">🟪🟪🟪 🟧🟧🟧 🟨🟨🟨</span>
                 </h3>
-                <Sparkles className="h-5 w-5 text-slate-500" />
+                <Sparkles className="h-3 w-3 text-slate-500" />
               </div>
 
-              <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-2">
                 {/* Research Section */}
-                <div className="group bg-white/60 rounded-lg p-3 hover:bg-white/80 hover:shadow-md transition-all duration-200 border border-slate-200">
-                  <div className="flex items-center gap-2 mb-2">
-                    <Cpu className="h-4 w-4 text-slate-600" />
-                    <p className="font-bold text-slate-800 text-sm font-mono">⬛️⬜️⬛️ Research Papers</p>
+                <div className="group bg-white/60 rounded p-1.5 hover:bg-white/80 hover:shadow-md transition-all duration-200 border border-slate-200">
+                  <div className="flex items-center gap-1 mb-1">
+                    <Cpu className="h-3 w-3 text-slate-600" />
+                    <p className="font-bold text-slate-800 text-[10px] font-mono">⬛️⬜️⬛️ Research Papers</p>
                   </div>
                   <a href="https://www.arxiv.org/pdf/2505.11831" target="_blank" rel="noopener noreferrer"
-                       className="text-blue-600 hover:text-blue-800 hover:underline text-xs flex items-center gap-1 transition-colors">
-                      <span className="font-mono">📄</span> ARC2 Technical Report <ExternalLink className="h-3 w-3" />
+                       className="text-blue-600 hover:text-blue-800 hover:underline text-[9px] flex items-center gap-1 transition-colors">
+                      <span className="font-mono">📄</span> ARC2 Technical Report <ExternalLink className="h-2.5 w-2.5" />
                   </a>
                 </div>
 
                 {/* Data Sources Section */}
-                <div className="group bg-white/60 rounded-lg p-3 hover:bg-white/80 hover:shadow-md transition-all duration-200 border border-blue-100">
-                  <div className="flex items-center gap-2 mb-2">
-                    <Database className="h-4 w-4 text-blue-600" />
-                    <p className="font-bold text-blue-800 text-sm font-mono">🟦⬛🟦 Data Sources</p>
+                <div className="group bg-white/60 rounded p-1.5 hover:bg-white/80 hover:shadow-md transition-all duration-200 border border-blue-100">
+                  <div className="flex items-center gap-1 mb-1">
+                    <Database className="h-3 w-3 text-blue-600" />
+                    <p className="font-bold text-blue-800 text-[10px] font-mono">🟦⬛🟦 Data Sources</p>
                   </div>
-                  <div className="space-y-1">
+                  <div className="space-y-0.5">
                     <a href="https://huggingface.co/arcprize" target="_blank" rel="noopener noreferrer"
-                       className="text-blue-600 hover:text-blue-700 hover:underline text-xs flex items-center gap-1 transition-colors">
-                      <span className="font-mono">🗂️</span> HuggingFace Datasets <ExternalLink className="h-3 w-3" />
+                       className="text-blue-600 hover:text-blue-700 hover:underline text-[9px] flex items-center gap-1 transition-colors">
+                      <span className="font-mono">🗂️</span> HuggingFace Datasets <ExternalLink className="h-2.5 w-2.5" />
                     </a>
                     <a href="https://github.com/fchollet/ARC-AGI" target="_blank" rel="noopener noreferrer"
-                       className="text-blue-600 hover:text-blue-700 hover:underline text-xs flex items-center gap-1 transition-colors">
-                      <span className="font-mono">📦</span> Official Repository <ExternalLink className="h-3 w-3" />
+                       className="text-blue-600 hover:text-blue-700 hover:underline text-[9px] flex items-center gap-1 transition-colors">
+                      <span className="font-mono">📦</span> Official Repository <ExternalLink className="h-2.5 w-2.5" />
                     </a>
                   </div>
                 </div>
 
                 {/* SOTA Solutions Section */}
-                <div className="group bg-white/60 rounded-lg p-3 hover:bg-white/80 hover:shadow-md transition-all duration-200 border border-green-100">
-                  <div className="flex items-center gap-2 mb-2">
-                    <Trophy className="h-4 w-4 text-green-600" />
-                    <p className="font-bold text-green-800 text-sm font-mono">🟩⬜🟩 Top Solutions</p>
+                <div className="group bg-white/60 rounded p-1.5 hover:bg-white/80 hover:shadow-md transition-all duration-200 border border-green-100">
+                  <div className="flex items-center gap-1 mb-1">
+                    <Trophy className="h-3 w-3 text-green-600" />
+                    <p className="font-bold text-green-800 text-[10px] font-mono">🟩⬜🟩 Top Solutions</p>
                   </div>
-                  <div className="space-y-1">
+                  <div className="space-y-0.5">
                     <a href="https://github.com/zoecarver" target="_blank" rel="noopener noreferrer"
-                       className="text-green-700 hover:text-green-800 hover:underline text-xs flex items-center gap-1 transition-colors">
-                      <span className="font-mono">1️⃣</span> zoecarver's Approach <ExternalLink className="h-3 w-3" />
+                       className="text-green-700 hover:text-green-800 hover:underline text-[9px] flex items-center gap-1 transition-colors">
+                      <span className="font-mono">1️⃣</span> zoecarver's Approach <ExternalLink className="h-2.5 w-2.5" />
                     </a>
                     <a href="https://github.com/jerber" target="_blank" rel="noopener noreferrer"
-                       className="text-green-700 hover:text-green-800 hover:underline text-xs flex items-center gap-1 transition-colors">
-                      <span className="font-mono">2️⃣</span> jerber's Solutions <ExternalLink className="h-3 w-3" />
+                       className="text-green-700 hover:text-green-800 hover:underline text-[9px] flex items-center gap-1 transition-colors">
+                      <span className="font-mono">2️⃣</span> jerber's Solutions <ExternalLink className="h-2.5 w-2.5" />
                     </a>
                     <a href="https://github.com/epang080516/arc_agi" target="_blank" rel="noopener noreferrer"
-                       className="text-green-700 hover:text-green-800 hover:underline text-xs flex items-center gap-1 transition-colors">
-                      <span className="font-mono">3️⃣</span> epang080516's Code <ExternalLink className="h-3 w-3" />
+                       className="text-green-700 hover:text-green-800 hover:underline text-[9px] flex items-center gap-1 transition-colors">
+                      <span className="font-mono">3️⃣</span> epang080516's Code <ExternalLink className="h-2.5 w-2.5" />
                     </a>
                   </div>
                 </div>
 
                 {/* Community Section */}
-                <div className="group bg-white/60 rounded-lg p-3 hover:bg-white/80 hover:shadow-md transition-all duration-200 border border-orange-100">
-                  <div className="flex items-center gap-2 mb-2">
-                    <User className="h-4 w-4 text-orange-600" />
-                    <p className="font-bold text-orange-800 text-sm font-mono">🟧🟨🟧 Community</p>
+                <div className="group bg-white/60 rounded p-1.5 hover:bg-white/80 hover:shadow-md transition-all duration-200 border border-orange-100">
+                  <div className="flex items-center gap-1 mb-1">
+                    <User className="h-3 w-3 text-orange-600" />
+                    <p className="font-bold text-orange-800 text-[10px] font-mono">🟧🟨🟧 Community</p>
                   </div>
-                  <div className="space-y-2">
-                    <div className="mb-3">
-                      <div className={`collapse ${isOpen ? 'collapse-open' : 'collapse-close'} bg-orange-50 border border-orange-200 rounded-lg`}>
-                        <div className="collapse-title p-3">
+                  <div className="space-y-0.5">
+                    <div className="mb-1">
+                      <div className={`collapse ${isOpen ? 'collapse-open' : 'collapse-close'} bg-orange-50 border border-orange-200 rounded`}>
+                        <div className="collapse-title p-1">
                           <button
                             className="w-full flex justify-between items-center h-auto"
                             onClick={() => setIsOpen(!isOpen)}
                           >
-                            <div className="flex items-center gap-2">
-                              <span className="text-sm font-semibold text-orange-800 font-mono">🟧🟨🟧 Critical ARC-AGI-2 Research</span>
-                              <span className="text-xs text-orange-600">by cristianoc</span>
+                            <div className="flex items-center gap-1">
+                              <span className="text-[9px] font-semibold text-orange-800 font-mono">🟧🟨🟧 Critical ARC-AGI-2 Research</span>
+                              <span className="text-[8px] text-orange-600">by cristianoc</span>
                             </div>
                             {isOpen ? (
-                              <ChevronUp className="h-4 w-4 text-orange-600" />
+                              <ChevronUp className="h-2.5 w-2.5 text-orange-600" />
                             ) : (
-                              <ChevronDown className="h-4 w-4 text-orange-600" />
+                              <ChevronDown className="h-2.5 w-2.5 text-orange-600" />
                             )}
                           </button>
                         </div>
 
-                        <div className="collapse-content px-3 pb-3">
-                          <div className="text-xs text-orange-700 space-y-2">
+                        <div className="collapse-content px-1 pb-1">
+                          <div className="text-[8px] text-orange-700 space-y-1">
                             <p className="font-mono">
                               📊 Analysis of 1️⃣1️⃣1️⃣ ARC-AGI-2 tasks reveals composition patterns:
                             </p>
-                            <div className="grid grid-cols-2 gap-1 text-xs font-mono">
+                            <div className="grid grid-cols-2 gap-0.5 text-[8px] font-mono">
                               <p>🟥🟥🟥🟥 4️⃣0️⃣% sequential composition</p>
                               <p>🟧🟧🟧⬜ 3️⃣0️⃣% conditional branching</p>
                               <p>🟨🟨⬜⬜ 2️⃣0️⃣% pattern classification</p>
@@ -303,31 +303,31 @@ export default function PuzzleBrowser() {
                             </p>
                             <a href="https://github.com/cristianoc/arc-agi-2-abstraction-dataset"
                                target="_blank" rel="noopener noreferrer"
-                               className="text-blue-600 hover:text-blue-800 hover:underline text-xs flex items-center gap-1">
-                              View cristianoc's research <ExternalLink className="h-3 w-3" />
+                               className="text-blue-600 hover:text-blue-800 hover:underline text-[8px] flex items-center gap-1">
+                              View cristianoc's research <ExternalLink className="h-2.5 w-2.5" />
                             </a>
                           </div>
                         </div>
                       </div>
                     </div>
                     <a href="https://github.com/google/ARC-GEN/blob/main/task_list.py#L422" target="_blank" rel="noopener noreferrer"
-                       className="text-orange-700 hover:text-orange-800 hover:underline text-xs flex items-center gap-1 transition-colors">
-                      <span className="font-mono">📖</span> Puzzle Nomenclature <ExternalLink className="h-3 w-3" />
+                       className="text-orange-700 hover:text-orange-800 hover:underline text-[9px] flex items-center gap-1 transition-colors">
+                      <span className="font-mono">📖</span> Puzzle Nomenclature <ExternalLink className="h-2.5 w-2.5" />
                     </a>
                     <a href="https://github.com/neoneye/arc-notes" target="_blank" rel="noopener noreferrer"
-                       className="text-orange-700 hover:text-orange-800 hover:underline text-xs flex items-center gap-1 transition-colors">
-                      <span className="font-mono">📚</span> All the ARC Resources <ExternalLink className="h-3 w-3" />
+                       className="text-orange-700 hover:text-orange-800 hover:underline text-[9px] flex items-center gap-1 transition-colors">
+                      <span className="font-mono">📚</span> All the ARC Resources <ExternalLink className="h-2.5 w-2.5" />
                     </a>
                     <a href="https://github.com/neoneye/arc-dataset-collection" target="_blank" rel="noopener noreferrer"
-                       className="text-orange-700 hover:text-orange-800 hover:underline text-xs flex items-center gap-1 transition-colors">
-                      <span className="font-mono">🗃️</span> Dataset Collection <ExternalLink className="h-3 w-3" />
+                       className="text-orange-700 hover:text-orange-800 hover:underline text-[9px] flex items-center gap-1 transition-colors">
+                      <span className="font-mono">🗃️</span> Dataset Collection <ExternalLink className="h-2.5 w-2.5" />
                     </a>
                   </div>
                 </div>
               </div>
 
-              <div className="mt-4 text-center">
-                <p className="text-sm text-gray-600 bg-white/40 rounded-full px-4 py-2 inline-block font-mono">
+              <div className="mt-1 text-center">
+                <p className="text-[9px] text-gray-600 bg-white/40 rounded-full px-2 py-1 inline-block font-mono">
                   🟥🟦🟩🟪🟧🟨 <strong>Special thanks to Simon Strandgaard (@neoneye)</strong> for his incredible insights, support, and encouragement! 🟨🟧🟪🟩🟦🟥
                 </p>
               </div>
@@ -337,19 +337,19 @@ export default function PuzzleBrowser() {
 
         {/* Filters */}
         <div className="card shadow-lg border-0 bg-white/80 backdrop-blur-sm">
-          <div className="card-body">
-            <h2 className="card-title flex items-center gap-2 text-slate-800">
-              <Grid3X3 className="h-5 w-5 text-blue-600" />
+          <div className="card-body p-2">
+            <h2 className="card-title flex items-center gap-1 text-slate-800 text-sm mb-2">
+              <Grid3X3 className="h-3 w-3 text-blue-600" />
               Filter Puzzles
             </h2>
             {/* Search Bar */}
-            <div className="mb-6">
-              <div className="flex flex-col md:flex-row gap-4 items-start md:items-end">
-                <div className="w-full md:flex-1 space-y-2">
-                  <label htmlFor="puzzleSearch" className="label">Search by Puzzle ID</label>
+            <div className="mb-2">
+              <div className="flex flex-col md:flex-row gap-2 items-start md:items-end">
+                <div className="w-full md:flex-1">
+                  <label htmlFor="puzzleSearch" className="text-[10px] font-medium text-slate-600 block mb-0.5">Search by Puzzle ID</label>
                   <div className="relative">
                     <input
-                      className="input input-bordered w-full pr-24"
+                      className="input input-sm input-bordered w-full"
                       id="puzzleSearch"
                       placeholder="Enter puzzle ID (e.g., 1ae2feb7)"
                       value={searchQuery}
@@ -365,11 +365,11 @@ export default function PuzzleBrowser() {
                     />
                   </div>
                   {searchError && (
-                    <p className="text-sm text-red-500">{searchError}</p>
+                    <p className="text-[10px] text-red-500">{searchError}</p>
                   )}
                 </div>
                 <button 
-                  className="btn btn-primary min-w-[120px]"
+                  className="btn btn-sm btn-primary min-w-[80px]"
                   onClick={handleSearch}
                 >
                   Search
@@ -377,10 +377,10 @@ export default function PuzzleBrowser() {
               </div>
             </div>
             
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="space-y-2">
-                <label htmlFor="maxGridSize" className="label">Maximum Grid Size</label>
-                <select className="select select-bordered w-full" value={maxGridSize} onChange={(e) => setMaxGridSize(e.target.value)}>
+            <div className="grid grid-cols-2 md:grid-cols-6 gap-2">
+              <div>
+                <label htmlFor="maxGridSize" className="text-[10px] font-medium text-slate-600 block mb-0.5">Maximum Grid Size</label>
+                <select className="select select-sm select-bordered w-full" value={maxGridSize} onChange={(e) => setMaxGridSize(e.target.value)}>
                   <option value="any">Any Size</option>
                   <option value="5">5×5 (Very Small)</option>
                   <option value="10">10×10 (Small)</option>
@@ -390,27 +390,27 @@ export default function PuzzleBrowser() {
                 </select>
               </div>
               
-              <div className="space-y-2">
-                <label htmlFor="explanationFilter" className="label">Explanation Status</label>
-                <select className="select select-bordered w-full" value={explanationFilter} onChange={(e) => setExplanationFilter(e.target.value)}>
+              <div>
+                <label htmlFor="explanationFilter" className="text-[10px] font-medium text-slate-600 block mb-0.5">Explanation Status</label>
+                <select className="select select-sm select-bordered w-full" value={explanationFilter} onChange={(e) => setExplanationFilter(e.target.value)}>
                   <option value="all">All Puzzles</option>
                   <option value="unexplained">Unexplained Only</option>
                   <option value="explained">Explained Only</option>
                 </select>
               </div>
               
-              <div className="space-y-2">
-                <label htmlFor="gridConsistent" className="label">Grid Size Consistency</label>
-                <select className="select select-bordered w-full" value={gridSizeConsistent} onChange={(e) => setGridSizeConsistent(e.target.value)}>
+              <div>
+                <label htmlFor="gridConsistent" className="text-[10px] font-medium text-slate-600 block mb-0.5">Grid Size Consistency</label>
+                <select className="select select-sm select-bordered w-full" value={gridSizeConsistent} onChange={(e) => setGridSizeConsistent(e.target.value)}>
                   <option value="any">Any consistency</option>
                   <option value="true">Consistent size only</option>
                   <option value="false">Variable size only</option>
                 </select>
               </div>
               
-              <div className="space-y-2">
-                <label htmlFor="arcVersion" className="label">ARC Version</label>
-                <select className="select select-bordered w-full" value={arcVersion} onChange={(e) => setArcVersion(e.target.value)}>
+              <div>
+                <label htmlFor="arcVersion" className="text-[10px] font-medium text-slate-600 block mb-0.5">ARC Version</label>
+                <select className="select select-sm select-bordered w-full" value={arcVersion} onChange={(e) => setArcVersion(e.target.value)}>
                   <option value="any">Any ARC version</option>
                   <option value="ARC1">ARC1 Training</option>
                   <option value="ARC1-Eval">ARC1 Evaluation</option>
@@ -421,18 +421,18 @@ export default function PuzzleBrowser() {
                 </select>
               </div>
               
-              <div className="space-y-2">
-                <label htmlFor="multiTestFilter" className="label">Test Cases</label>
-                <select className="select select-bordered w-full" value={multiTestFilter} onChange={(e) => setMultiTestFilter(e.target.value)}>
+              <div>
+                <label htmlFor="multiTestFilter" className="text-[10px] font-medium text-slate-600 block mb-0.5">Test Cases</label>
+                <select className="select select-sm select-bordered w-full" value={multiTestFilter} onChange={(e) => setMultiTestFilter(e.target.value)}>
                   <option value="any">Any number of test cases</option>
                   <option value="single">Single test case (1 output required)</option>
                   <option value="multi">Multiple test cases (2+ outputs required)</option>
                 </select>
               </div>
               
-              <div className="space-y-2">
-                <label htmlFor="sortBy" className="label">Sort By</label>
-                <select className="select select-bordered w-full" value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
+              <div>
+                <label htmlFor="sortBy" className="text-[10px] font-medium text-slate-600 block mb-0.5">Sort By</label>
+                <select className="select select-sm select-bordered w-full" value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
                   <option value="unexplained_first">Unexplained First (recommended)</option>
                   <option value="default">Default (puzzle order)</option>
                   <option value="least_analysis_data">Analysis Data (fewest first)</option>
@@ -448,33 +448,33 @@ export default function PuzzleBrowser() {
 
         {/* Results */}
         <div className="card shadow-lg border-0 bg-white/80 backdrop-blur-sm">
-          <div className="card-body">
-            <h2 className="card-title text-slate-800">
+          <div className="card-body p-2">
+            <h2 className="card-title text-slate-800 text-sm mb-2">
               Local Puzzles 
               {!isLoading && (
-                <div className="badge badge-outline ml-2 bg-blue-50 text-blue-700 border-blue-200">
+                <div className="badge badge-sm badge-outline ml-1 bg-blue-50 text-blue-700 border-blue-200">
                   {filteredPuzzles.length} found
                 </div>
               )}
             </h2>
-            <p className="text-sm text-gray-600">
+            <p className="text-[10px] text-gray-600 mb-2">
               Puzzles available for examination
             </p>
             {isLoading ? (
-              <div className="text-center py-8">
-                <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4" />
-                <p>Loading puzzles...</p>
+              <div className="text-center py-4">
+                <Loader2 className="h-6 w-6 animate-spin mx-auto mb-2" />
+                <p className="text-xs">Loading puzzles...</p>
               </div>
             ) : filteredPuzzles.length === 0 ? (
-              <div className="text-center py-8">
-                <Grid3X3 className="h-12 w-12 mx-auto mb-4 text-gray-400" />
-                <p className="text-gray-600">No puzzles match your current filters.</p>
-                <p className="text-sm text-gray-500 mt-2">
+              <div className="text-center py-4">
+                <Grid3X3 className="h-8 w-8 mx-auto mb-2 text-gray-400" />
+                <p className="text-gray-600 text-sm">No puzzles match your current filters.</p>
+                <p className="text-xs text-gray-500 mt-1">
                   Try adjusting your filters.
                 </p>
               </div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2">
                 {filteredPuzzles.map((puzzle: EnhancedPuzzleMetadata) => (
                   <PuzzleCard
                     key={puzzle.id}
@@ -489,9 +489,9 @@ export default function PuzzleBrowser() {
 
         {/* Instructions */}
         <div className="card">
-          <div className="card-body">
-            <h2 className="card-title">How to Use</h2>
-            <div className="space-y-3 text-sm">
+          <div className="card-body p-2">
+            <h2 className="card-title text-sm mb-1">How to Use</h2>
+            <div className="space-y-1 text-[10px]">
             <p>
               <strong>Goal:</strong> This tool helps you examine ARC-AGI puzzles to understand how they work, 
               rather than trying to solve them yourself, but if you want to do that, visit <Link href="https://human-arc.gptpluspro.com/assessment">Puzzle Browser</Link>.
