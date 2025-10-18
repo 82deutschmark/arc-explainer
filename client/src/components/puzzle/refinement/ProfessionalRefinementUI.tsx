@@ -113,6 +113,7 @@ export const ProfessionalRefinementUI: React.FC<ProfessionalRefinementUIProps> =
   onContinueRefinement
 }) => {
   const [showPromptPreview, setShowPromptPreview] = React.useState(false);
+  const [previewMode, setPreviewMode] = React.useState<'view' | 'run' | null>(null);
   const [showInlinePreview, setShowInlinePreview] = React.useState(false);
   const [promptPreviewData, setPromptPreviewData] = React.useState<any>(null);
   const [isLoadingPreview, setIsLoadingPreview] = React.useState(false);
@@ -297,7 +298,10 @@ export const ProfessionalRefinementUI: React.FC<ProfessionalRefinementUIProps> =
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={() => setShowPromptPreview(true)}
+                onClick={() => {
+                  setPreviewMode('view');
+                  setShowPromptPreview(true);
+                }}
                 disabled={isProcessing}
                 className="text-xs h-8"
               >
@@ -459,13 +463,25 @@ export const ProfessionalRefinementUI: React.FC<ProfessionalRefinementUIProps> =
       {/* Prompt Preview Modal */}
       <PromptPreviewModal
         isOpen={showPromptPreview}
-        onClose={() => setShowPromptPreview(false)}
+        onClose={() => {
+          setShowPromptPreview(false);
+          setPreviewMode(null);
+        }}
         task={task}
         taskId={taskId}
         promptId={promptId}
         options={{
           customChallenge: userGuidance
         }}
+        confirmMode={previewMode === 'run'}
+        onConfirm={previewMode === 'run'
+          ? async () => {
+              await Promise.resolve(onContinueRefinement());
+              setShowPromptPreview(false);
+              setPreviewMode(null);
+            }
+          : undefined}
+        confirmButtonText="Send Refinement Request"
       />
 
       {/* Iteration Data Table */}
@@ -513,7 +529,10 @@ export const ProfessionalRefinementUI: React.FC<ProfessionalRefinementUIProps> =
             </div>
 
             <Button
-              onClick={onContinueRefinement}
+              onClick={() => {
+                setPreviewMode('run');
+                setShowPromptPreview(true);
+              }}
               disabled={isProcessing}
               className="w-full h-11 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
             >

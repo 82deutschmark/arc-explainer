@@ -98,6 +98,7 @@ export const IndividualDebate: React.FC<IndividualDebateProps> = ({
   challengeButtonText = 'Generate Challenge' // Default for ModelDebate
 }) => {
   const [showPromptPreview, setShowPromptPreview] = useState(false);
+  const [previewMode, setPreviewMode] = useState<'view' | 'run' | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   // Auto-scroll to newest message when debate updates
@@ -119,8 +120,27 @@ export const IndividualDebate: React.FC<IndividualDebateProps> = ({
   });
 
   // Handle prompt preview - now uses API-based prompt generation
-  const handlePreviewPrompt = () => {
+  const openPromptPreview = (mode: 'view' | 'run') => {
+    setPreviewMode(mode);
     setShowPromptPreview(true);
+  };
+
+  const handlePreviewPrompt = () => {
+    openPromptPreview('view');
+  };
+
+  const handleGenerateChallengeClick = () => {
+    openPromptPreview('run');
+  };
+
+  const handleClosePromptPreview = () => {
+    setShowPromptPreview(false);
+    setPreviewMode(null);
+  };
+
+  const handleConfirmChallenge = async () => {
+    await Promise.resolve(onGenerateChallenge());
+    handleClosePromptPreview();
   };
 
   // Everything is debatable unless explicitly correct
@@ -266,7 +286,7 @@ export const IndividualDebate: React.FC<IndividualDebateProps> = ({
                   Preview
                 </Button>
                 <Button
-                  onClick={onGenerateChallenge}
+                  onClick={handleGenerateChallengeClick}
                   disabled={!challengerModel || processingModels.has(challengerModel)}
                   className="h-[72px] text-sm bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-700 hover:to-orange-700"
                 >
@@ -333,7 +353,7 @@ export const IndividualDebate: React.FC<IndividualDebateProps> = ({
       {task && (
         <PromptPreviewModal
           isOpen={showPromptPreview}
-          onClose={() => setShowPromptPreview(false)}
+          onClose={handleClosePromptPreview}
           task={task}
           taskId={taskId}
           promptId="debate"
@@ -342,6 +362,9 @@ export const IndividualDebate: React.FC<IndividualDebateProps> = ({
             originalExplanation: originalExplanation,
             customChallenge: customChallenge
           }}
+          confirmMode={previewMode === 'run'}
+          onConfirm={previewMode === 'run' ? handleConfirmChallenge : undefined}
+          confirmButtonText="Send Challenge"
         />
       )}
     </div>
