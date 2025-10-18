@@ -1,3 +1,12 @@
+## [4.8.30] - 2025-10-18
+### 📊 Leaderboards dashboard rebuild
+
+- Replaced the deprecated Leaderboards view with a repository-backed dashboard that surfaces trustworthiness, reliability, speed, efficiency, and feedback metrics in one place.
+- Introduced summary cards, hero callouts, and operational panels that reuse the shared leaderboard and performance hooks while tightening loading and error handling.
+- Logged the refresh scope, dependencies, and follow-up questions in `docs/2025-10-18-leaderboards-refresh-plan.md` to guide future iterations.
+
+---
+
 ## [4.8.29] - 2025-10-17
 ### 🧠 Discussion streaming parity & reasoning controls
 
