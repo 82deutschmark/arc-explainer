@@ -221,38 +221,34 @@ export default function ModelComparisonPage() {
           </div>
         </div>
 
-        {/* Compact Stats Grid */}
-        <div className="grid grid-cols-5 gap-2">
+        {/* Actionable Comparison Stats */}
+        <div className="grid grid-cols-4 gap-2">
           <div className="card bg-white shadow-sm border border-gray-200">
             <div className="card-body p-3">
-              <div className="text-xs text-gray-600 mb-1">Agreement: Both Correct</div>
+              <div className="text-xs text-gray-600 mb-1">Consensus: Both Correct</div>
               <div className="text-2xl font-bold text-green-600">{summary.allCorrect}</div>
+              <div className="text-xs text-gray-500 mt-1">Reliable solutions</div>
             </div>
           </div>
           <div className="card bg-white shadow-sm border border-gray-200">
             <div className="card-body p-3">
-              <div className="text-xs text-gray-600 mb-1">Agreement: Both Incorrect</div>
+              <div className="text-xs text-gray-600 mb-1">{summary.model1Name} Only Correct</div>
+              <div className="text-2xl font-bold text-blue-600">{summary.model1OnlyCorrect}</div>
+              <div className="text-xs text-gray-500 mt-1">Unique {summary.model1Name} wins</div>
+            </div>
+          </div>
+          <div className="card bg-white shadow-sm border border-gray-200">
+            <div className="card-body p-3">
+              <div className="text-xs text-gray-600 mb-1">{summary.model2Name} Only Correct</div>
+              <div className="text-2xl font-bold text-purple-600">{summary.model2OnlyCorrect}</div>
+              <div className="text-xs text-gray-500 mt-1">Unique {summary.model2Name} wins</div>
+            </div>
+          </div>
+          <div className="card bg-white shadow-sm border border-gray-200">
+            <div className="card-body p-3">
+              <div className="text-xs text-gray-600 mb-1">Systematic Failures</div>
               <div className="text-2xl font-bold text-red-600">{summary.allIncorrect}</div>
-            </div>
-          </div>
-          <div className="card bg-white shadow-sm border border-gray-200">
-            <div className="card-body p-3">
-              <div className="text-xs text-gray-600 mb-1">Disagreements</div>
-              <div className="text-2xl font-bold text-orange-600">
-                {summary.totalPuzzles - summary.allCorrect - summary.allIncorrect - summary.allNotAttempted}
-              </div>
-            </div>
-          </div>
-          <div className="card bg-white shadow-sm border border-gray-200">
-            <div className="card-body p-3">
-              <div className="text-xs text-gray-600 mb-1">Correct by ≥1 Model</div>
-              <div className="text-2xl font-bold text-blue-600">{summary.fullySolvedCount}</div>
-            </div>
-          </div>
-          <div className="card bg-white shadow-sm border border-gray-200">
-            <div className="card-body p-3">
-              <div className="text-xs text-gray-600 mb-1">Not Attempted (All Failed)</div>
-              <div className="text-2xl font-bold text-gray-600">{summary.allNotAttempted + summary.allIncorrect}</div>
+              <div className="text-xs text-gray-500 mt-1">Both models failed</div>
             </div>
           </div>
         </div>
