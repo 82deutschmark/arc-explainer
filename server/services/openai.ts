@@ -70,12 +70,22 @@ export class OpenAIService extends BaseAIService {
 
   supportsStreaming(modelKey: string): boolean {
     const normalized = normalizeModelKey(modelKey);
-    if (STREAMING_MODEL_KEYS.includes(normalized) || STREAMING_MODEL_KEYS.includes(modelKey)) {
-      return true;
+    const comparisonKeys = new Set<string>();
+    if (normalized) {
+      comparisonKeys.add(normalized);
+    }
+    if (modelKey) {
+      comparisonKeys.add(modelKey);
+    }
+
+    for (const key of comparisonKeys) {
+      if (STREAMING_MODEL_KEYS.includes(key)) {
+        return true;
+      }
     }
 
     return STREAMING_MODEL_KEYS.some(candidate =>
-      candidate.startsWith(`${normalized}-`) || candidate.startsWith(`${modelKey}-`)
+      Array.from(comparisonKeys).some(key => candidate.startsWith(`${key}-`))
     );
   }
 
@@ -272,11 +282,12 @@ export class OpenAIService extends BaseAIService {
     const normalizedKey = normalizeModelKey(modelKey);
     const isReasoning = MODELS_WITH_REASONING.has(normalizedKey);
     const modelConfig = getModelConfig(modelKey);
+    const supportsTemperature = !normalizedKey.startsWith("gpt-5") && modelSupportsTemperature(normalizedKey);
 
     return {
       name: modelName,
       isReasoning,
-      supportsTemperature: modelSupportsTemperature(modelKey),
+      supportsTemperature,
       contextWindow: modelConfig?.contextWindow,
       supportsFunctionCalling: true,
       supportsSystemPrompts: true,

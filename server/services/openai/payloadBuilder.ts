@@ -160,6 +160,8 @@ export function buildResponsesPayload({
   const reasoningConfig = buildReasoningConfig(modelKey, serviceOpts);
   const textPayload = buildTextConfig(modelKey, testCount, serviceOpts);
   const isGPT5ChatModel = GPT5_CHAT_MODELS.has(normalizedKey);
+  const isGPT5Family = normalizedKey.startsWith("gpt-5");
+  const supportsTemperature = !isGPT5Family && modelSupportsTemperature(normalizedKey);
 
   const payload = removeUndefined({
     model: modelName,
@@ -167,8 +169,8 @@ export function buildResponsesPayload({
     instructions: promptPackage.systemPrompt || undefined,
     reasoning: reasoningConfig,
     text: textPayload,
-    temperature: modelSupportsTemperature(modelKey) ? (temperature ?? 0.2) : undefined,
-    top_p: modelSupportsTemperature(modelKey) && isGPT5ChatModel ? 1 : undefined,
+    temperature: supportsTemperature ? (temperature ?? 0.2) : undefined,
+    top_p: supportsTemperature && isGPT5ChatModel ? 1 : undefined,
     previous_response_id: serviceOpts.previousResponseId,
     store: serviceOpts.store !== false,
     parallel_tool_calls: false,
