@@ -76,8 +76,8 @@ export const PuzzleCard: React.FC<PuzzleCardProps> = ({
   const firstTrainingExample = taskData?.train?.[0];
   const isExplained = Boolean(puzzle.hasExplanation);
   const statusGradient = isExplained
-    ? 'from-emerald-500/35 via-teal-500/25 to-sky-500/35'
-    : 'from-rose-500/35 via-amber-400/25 to-violet-500/30';
+    ? 'from-emerald-400/40 via-teal-400/30 to-sky-400/40'
+    : 'from-rose-400/40 via-amber-400/30 to-violet-400/35';
   const statusText = isExplained ? 'Explained' : 'Needs Analysis';
   const statusColorClass = isExplained ? 'text-emerald-600' : 'text-rose-600';
   const buttonGradient = isExplained
@@ -89,7 +89,7 @@ export const PuzzleCard: React.FC<PuzzleCardProps> = ({
       ref={cardRef}
       className={`group relative rounded-2xl bg-gradient-to-br ${statusGradient} p-[1px] transition-all duration-300 hover:shadow-xl focus-within:shadow-xl`}
     >
-      <div className="relative h-full rounded-[1.05rem] bg-white/95 p-4 backdrop-blur-sm shadow-sm transition-all duration-300 group-hover:bg-white group-focus-within:bg-white space-y-3">
+      <div className="relative h-full rounded-[1.05rem] bg-gradient-to-br from-white via-slate-50/80 to-blue-50/60 p-4 backdrop-blur-sm shadow-sm transition-all duration-300 group-hover:from-white group-hover:to-white group-focus-within:from-white group-focus-within:to-white space-y-3">
         <div className="pointer-events-none absolute right-4 top-4 flex items-center gap-2">
           <span className={`text-[11px] font-semibold uppercase tracking-wide ${statusColorClass}`}>
             {statusText}
@@ -125,7 +125,7 @@ export const PuzzleCard: React.FC<PuzzleCardProps> = ({
 
         {/* Grid Preview */}
         {showGridPreview && firstTrainingExample && (
-          <div className="rounded-xl bg-gradient-to-br from-slate-50 via-white to-sky-50 p-2 ring-1 ring-sky-100/70 transition-all duration-200 group-hover:ring-sky-300/80 group-focus-within:ring-sky-300/80">
+          <div className="rounded-xl bg-gradient-to-br from-slate-50/80 via-white/90 to-sky-50/80 p-2 ring-1 ring-sky-200/60 transition-all duration-200 group-hover:ring-sky-400/70 group-focus-within:ring-sky-400/70">
             <div className="flex gap-2 items-start">
               <div className="flex-1 min-w-0">
                 <p className="text-xs text-gray-500 mb-1">Input</p>
