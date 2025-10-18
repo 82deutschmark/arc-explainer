@@ -43,7 +43,7 @@ export function PuzzleHeader({
   const puzzleName = getPuzzleName(taskId);
 
   return (
-    <div className="flex items-center justify-between mb-1">
+    <div className="flex items-center justify-between mb-4 p-4">
       {/* Title and Badges */}
       <div>
         <h1 className="text-xl font-bold">
@@ -78,7 +78,7 @@ export function PuzzleHeader({
       </div>
 
       {/* Action Buttons */}
-      <div className="flex items-center gap-2 flex-wrap">
+      <div className="flex items-center gap-3 flex-wrap">
         {/* Emoji Toggle Button */}
         <button
           className={`btn btn-sm transition-all duration-300 ${

@@ -51,7 +51,7 @@ export function PuzzleGridDisplay({ task, showEmojis, emojiSet }: PuzzleGridDisp
 
   return (
     <div className="card bg-base-100 border border-base-300 shadow-sm">
-      <div className="card-body p-2">
+      <div className="card-body p-1">
         <div className="text-sm font-semibold text-base-content mb-2 flex items-center gap-2">
           <Grid3X3 className="h-4 w-4" />
           Puzzle Grids
