@@ -343,7 +343,7 @@ export default function PuzzleDiscussion() {
   };
 
   // Filter explanations to only show eligible ones (has provider response ID + within 30-day retention window)
-  const filteredEligibleExplanations = useMemo(() => {
+  const refinableExplanations = useMemo(() => {
     if (!explanations) return [];
 
     const thirtyDaysAgo = new Date();
@@ -675,9 +675,9 @@ export default function PuzzleDiscussion() {
             </>
           );
         })()
-      ) : filteredEligibleExplanations.length > 0 ? (
+      ) : refinableExplanations.length > 0 ? (
         <AnalysisSelector
-          explanations={filteredEligibleExplanations}
+          explanations={refinableExplanations}
           models={models}
           testCases={task!.test}
           correctnessFilter={refinementState.correctnessFilter}
