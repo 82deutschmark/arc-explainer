@@ -245,7 +245,8 @@ export default function PuzzleExaminer() {
   if (!task) return null;
 
   return (
-    <div className="container mx-auto p-2 max-w-6xl space-y-2">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-gray-50 to-blue-50/30">
+      <div className="container mx-auto p-2 max-w-6xl space-y-2">
       {/* Header Component */}
       <PuzzleHeader
         taskId={taskId}
@@ -395,6 +396,7 @@ export default function PuzzleExaminer() {
           sendAsEmojis
         }}
       />
+      </div>
     </div>
   );
 }
