@@ -19,7 +19,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { CollapsibleCard } from '@/components/ui/collapsible-card';
-import { Brain, Loader2, AlertTriangle, Search, Sparkles, Info } from 'lucide-react';
+import { Brain, Loader2, AlertTriangle, Search, Info } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 // Refinement-specific components
@@ -28,6 +28,7 @@ import { PuzzleGrid } from '@/components/puzzle/PuzzleGrid';
 import { ProfessionalRefinementUI } from '@/components/puzzle/refinement/ProfessionalRefinementUI';
 import { StreamingAnalysisPanel } from '@/components/puzzle/StreamingAnalysisPanel';
 import { AnalysisSelector } from '@/components/puzzle/refinement/AnalysisSelector';
+import { EligibleAnalysisLaunchpadCard } from '@/components/puzzle/refinement/EligibleAnalysisLaunchpadCard';
 
 import { usePuzzle } from '@/hooks/usePuzzle';
 import { usePuzzleWithExplanation } from '@/hooks/useExplanation';
@@ -44,6 +45,7 @@ export default function PuzzleDiscussion() {
   const { toast } = useToast();
   const [location, navigate] = useLocation();
   const [searchPuzzleId, setSearchPuzzleId] = useState('');
+  const [recentProviderFilter, setRecentProviderFilter] = useState<'all' | string>('all');
 
   // Parse ?select=123 query parameter for auto-selection
   const selectId = useMemo(() => {
@@ -65,6 +67,26 @@ export default function PuzzleDiscussion() {
   // Fetch eligible explanations for landing page (filtered client-side to match refinement requirements)
   const { data: eligibleData, isLoading: isLoadingEligible } = useEligibleExplanations(20, 0);
   const eligibleExplanations = eligibleData?.explanations || [];
+
+  const availableRecentProviders = useMemo(() => {
+    const providers = new Set<string>();
+    eligibleExplanations.forEach((exp) => providers.add(exp.provider));
+    return Array.from(providers);
+  }, [eligibleExplanations]);
+
+  useEffect(() => {
+    if (recentProviderFilter !== 'all' && !availableRecentProviders.includes(recentProviderFilter)) {
+      setRecentProviderFilter('all');
+    }
+  }, [availableRecentProviders, recentProviderFilter]);
+
+  const filteredEligibleExplanations = useMemo(() => {
+    if (recentProviderFilter === 'all') {
+      return eligibleExplanations;
+    }
+
+    return eligibleExplanations.filter((exp) => exp.provider === recentProviderFilter);
+  }, [eligibleExplanations, recentProviderFilter]);
   // Refinement state management (NOT debate state)
   const refinementState = useRefinementState();
 
@@ -231,6 +253,10 @@ export default function PuzzleDiscussion() {
         variant: "destructive",
       });
     }
+  };
+
+  const handleLaunchpadRefine = (puzzleId: string, explanationId: number) => {
+    navigate(`/discussion/${puzzleId}?select=${explanationId}`);
   };
 
   useEffect(() => {
@@ -429,59 +455,69 @@ export default function PuzzleDiscussion() {
         </Alert>
 
         {/* Recent Eligible Explanations */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Recent Eligible Analyses</CardTitle>
-          </CardHeader>
-          <CardContent>
-            {isLoadingEligible ? (
-              <div className="flex items-center justify-center py-8">
-                <Loader2 className="h-6 w-6 animate-spin text-gray-400" />
+        <Card className="border-0 bg-gradient-to-br from-slate-950 via-indigo-950 to-slate-900 text-white shadow-xl">
+          <CardHeader className="pb-0">
+            <CardTitle className="text-xl font-semibold">Recent Eligible Analyses</CardTitle>
+            <p className="text-sm text-indigo-100/80">
+              Pick up where the models left off. These reasoning runs retain encrypted provider memory for seamless refinement.
+            </p>
+            <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <div className="text-xs uppercase tracking-wide text-indigo-200/70">
+                {eligibleExplanations.length} analyses in the last 30 days
               </div>
-            ) : eligibleExplanations.length > 0 ? (
-              <div className="space-y-2">
-                {eligibleExplanations.map(exp => (
-                  <Card key={exp.id} className="hover:shadow-sm transition-shadow">
-                    <CardContent className="p-4">
-                      <div className="flex items-center justify-between gap-4">
-                        {/* Left: Model info and status */}
-                        <div className="flex items-center gap-3 flex-1 min-w-0">
-                          <Link 
-                            href={`/discussion/${exp.puzzleId}`} 
-                            className="text-blue-600 hover:underline font-mono text-sm font-medium"
-                          >
-                            {exp.puzzleId}
-                          </Link>
-                          <Badge variant="outline" className="font-mono text-xs">
-                            {exp.modelName}
-                          </Badge>
-                          <Badge variant={exp.isCorrect ? "default" : "secondary"} className="text-xs">
-                            {exp.isCorrect ? "Correct" : "Incorrect"}
-                          </Badge>
-                          <Badge variant="outline" className="text-xs">
-                            {exp.provider.toUpperCase()}
-                          </Badge>
-                          <span className="text-xs text-gray-500">{Math.floor(exp.hoursOld)}h {Math.floor((exp.hoursOld % 1) * 60)}m ago</span>
-                        </div>
-                        
-                        {/* Right: Action */}
-                        <Button
-                          size="sm"
-                          onClick={() => navigate(`/discussion/${exp.puzzleId}?select=${exp.id}`)}
-                          className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white"
-                        >
-                          <Sparkles className="h-4 w-4 mr-1.5" />
-                          Refine
-                        </Button>
-                      </div>
-                    </CardContent>
-                  </Card>
+              <div className="flex items-center gap-2">
+                <label htmlFor="recent-provider-filter" className="text-xs font-medium text-indigo-100/70">
+                  Provider
+                </label>
+                <select
+                  id="recent-provider-filter"
+                  className="select select-sm select-bordered w-40 border-indigo-400/40 bg-slate-900/60 text-indigo-50"
+                  value={recentProviderFilter}
+                  onChange={(event) => setRecentProviderFilter(event.target.value)}
+                >
+                  <option value="all">All providers</option>
+                  {availableRecentProviders.map((provider) => (
+                    <option key={provider} value={provider}>
+                      {provider.toUpperCase()}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent className="pt-6">
+            {isLoadingEligible ? (
+              <div className="grid gap-4 sm:grid-cols-1 lg:grid-cols-2">
+                {Array.from({ length: 4 }).map((_, index) => (
+                  <div
+                    key={index}
+                    className="h-40 animate-pulse rounded-2xl border border-indigo-400/30 bg-indigo-500/10"
+                  />
                 ))}
               </div>
+            ) : filteredEligibleExplanations.length > 0 ? (
+              <div className="space-y-4">
+                <div className="hidden grid-cols-[1.25fr,1fr,1fr,1fr,1.1fr] gap-4 text-[11px] font-semibold uppercase tracking-wide text-indigo-200/60 lg:grid">
+                  <span>Puzzle</span>
+                  <span>Model</span>
+                  <span>Status</span>
+                  <span>Provider</span>
+                  <span className="text-right">Last Updated</span>
+                </div>
+                <div className="grid gap-4 sm:grid-cols-1 lg:grid-cols-2">
+                  {filteredEligibleExplanations.map((exp) => (
+                    <EligibleAnalysisLaunchpadCard
+                      key={exp.id}
+                      explanation={exp}
+                      onRefine={handleLaunchpadRefine}
+                    />
+                  ))}
+                </div>
+              </div>
             ) : (
-              <p className="text-sm text-muted-foreground text-center py-8">
-                No eligible analyses found. Generate new analyses from reasoning models (GPT-5, o-series, Grok-4).
-              </p>
+              <div className="rounded-2xl border border-indigo-400/40 bg-indigo-500/10 p-6 text-center text-sm text-indigo-100/80">
+                No eligible analyses found for the selected provider. Generate a new reasoning run with GPT-5, o-series, or Grok-4 to seed the launchpad.
+              </div>
             )}
           </CardContent>
         </Card>

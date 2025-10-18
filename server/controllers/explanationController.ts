@@ -58,19 +58,51 @@ export const explanationController = {
     try {
       const { puzzleId } = req.params;
       const explanation = await explanationService.getExplanationForPuzzle(puzzleId);
-      
+
       if (!explanation) {
         return res.status(404).json(formatResponse.error(
-          'NOT_FOUND', 
+          'NOT_FOUND',
           'No explanation found for this puzzle'
         ));
       }
-      
+
       res.json(formatResponse.success(explanation));
     } catch (error) {
       console.error('Error in explanationController.getOne:', error);
       res.status(500).json(formatResponse.error(
-        'INTERNAL_ERROR', 
+        'INTERNAL_ERROR',
+        'Failed to retrieve explanation',
+        { error: error instanceof Error ? error.message : 'Unknown error' }
+      ));
+    }
+  },
+
+  /**
+   * Get a single explanation by its ID
+   */
+  async getById(req: Request, res: Response) {
+    try {
+      const id = parseInt(req.params.id, 10);
+      if (Number.isNaN(id)) {
+        return res.status(400).json(formatResponse.error(
+          'INVALID_ID',
+          'Explanation id must be a number'
+        ));
+      }
+
+      const explanation = await explanationService.getExplanationById(id);
+      if (!explanation) {
+        return res.status(404).json(formatResponse.error(
+          'NOT_FOUND',
+          'Explanation not found'
+        ));
+      }
+
+      res.json(formatResponse.success(explanation));
+    } catch (error) {
+      console.error('Error in explanationController.getById:', error);
+      res.status(500).json(formatResponse.error(
+        'INTERNAL_ERROR',
         'Failed to retrieve explanation',
         { error: error instanceof Error ? error.message : 'Unknown error' }
       ));
