@@ -593,9 +593,9 @@ const Leaderboards: React.FC = () => {
             ? `${(confidenceStats.confidenceCalibrationGap).toFixed(1)} pts`
             : '—',
         description: confidenceStats
-          ? `${formatPercentage(confidenceStats.avgConfidenceWhenCorrect, { decimals: 1 })} when correct vs ${formatPercentage(
+          ? `${formatPercentage(confidenceStats.avgConfidenceWhenCorrect, { decimals: 1, treatAsFraction: true })} when correct vs ${formatPercentage(
               confidenceStats.avgConfidenceWhenIncorrect,
-              { decimals: 1 }
+              { decimals: 1, treatAsFraction: true }
             )} when incorrect`
           : 'Confidence analytics populate from recorded solver confidence.',
         icon: GaugeCircle,
@@ -843,7 +843,7 @@ const Leaderboards: React.FC = () => {
                       Avg when correct
                     </p>
                     <p className="text-2xl font-semibold text-base-content">
-                      {formatPercentage(confidenceStats.avgConfidenceWhenCorrect, { decimals: 1 })}
+                      {formatPercentage(confidenceStats.avgConfidenceWhenCorrect, { decimals: 1, treatAsFraction: true })}
                     </p>
                   </div>
                   <div className="rounded-lg border border-base-200 bg-base-200/40 p-4 text-left">
@@ -851,7 +851,7 @@ const Leaderboards: React.FC = () => {
                       Avg when incorrect
                     </p>
                     <p className="text-2xl font-semibold text-base-content">
-                      {formatPercentage(confidenceStats.avgConfidenceWhenIncorrect, { decimals: 1 })}
+                      {formatPercentage(confidenceStats.avgConfidenceWhenIncorrect, { decimals: 1, treatAsFraction: true })}
                     </p>
                   </div>
                   <div className="rounded-lg border border-base-200 bg-base-200/40 p-4 text-left">
@@ -859,7 +859,7 @@ const Leaderboards: React.FC = () => {
                       Overall avg confidence
                     </p>
                     <p className="text-2xl font-semibold text-base-content">
-                      {formatPercentage(confidenceStats.overallAvgConfidence, { decimals: 1 })}
+                      {formatPercentage(confidenceStats.overallAvgConfidence, { decimals: 1, treatAsFraction: true })}
                     </p>
                   </div>
                   <div className="rounded-lg border border-base-200 bg-base-200/40 p-4 text-left">
