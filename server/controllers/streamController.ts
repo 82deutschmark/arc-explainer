@@ -1,10 +1,8 @@
 /**
- * 
- * Author: Codex using GPT-5-high
- * Date: 2025-10-09T00:00:00Z
- * PURPOSE: Handles SSE analysis streaming requests by validating parameters, opening SSE channels, and delegating to the streaming service orchestrator.
- * SRP/DRY check: Pass — no prior controller for SSE analysis streaming.
- * shadcn/ui: Pass — backend controller only.
+ * Author: gpt-5-codex
+ * Date: 2025-03-09T00:00:00Z
+ * PURPOSE: Validates streaming analysis requests, manages SSE session lifecycle hooks, and delegates orchestration to the analysis streaming service.
+ * SRP/DRY check: Pass — shares helpers with existing streaming utilities and verified via `npm run check`.
  */
 
 import type { Request, Response } from "express";
@@ -54,12 +52,12 @@ function isPlainObject(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
 }
 
-function pruneUndefined<T extends Record<string, unknown>>(value: T): T | undefined {
-  const entries = Object.entries(value).filter(([, v]) => v !== undefined);
+function pruneUndefined<T extends object>(value: T): Partial<T> | undefined {
+  const entries = Object.entries(value as Record<string, unknown>).filter(([, v]) => v !== undefined);
   if (entries.length === 0) {
     return undefined;
   }
-  return Object.fromEntries(entries) as T;
+  return Object.fromEntries(entries) as Partial<T>;
 }
 
 function coerceOriginalExplanation(value: unknown): any | undefined {
@@ -254,13 +252,16 @@ function buildPayloadFromBody(body: any): { payload?: StreamAnalysisPayload; err
     serviceOpts.previousResponseId = previousResponseId;
   }
 
+  const normalizedPromptOptions = pruneUndefined(promptOptions);
+  const normalizedServiceOpts = pruneUndefined(serviceOpts);
+
   const payload: StreamAnalysisPayload = {
     taskId: taskId ?? "",
     modelKey: modelKey ?? "",
     promptId,
     temperature,
-    options: pruneUndefined(promptOptions),
-    serviceOpts: pruneUndefined(serviceOpts),
+    options: normalizedPromptOptions,
+    serviceOpts: normalizedServiceOpts,
     customPrompt,
     captureReasoning,
     retryMode,

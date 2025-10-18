@@ -1,3 +1,16 @@
+## [4.8.29] - 2025-10-17
+### 🧠 Discussion streaming parity & reasoning controls
+
+#### Summary
+- Align the Puzzle Discussion workflow with the shared streaming handshake so session preparation, SSE start, and cancellation mirror the rest of the app's live analysis flows (`useAnalysisResults`, `PuzzleDiscussion`, streaming controller updates).
+- Surface GPT-5 reasoning effort, verbosity, and summary toggles in the discussion view, ensuring provider-prefixed model keys keep the controls available for advanced refinement sessions.
+- Capture the refactor plan and verification steps in `docs/2025-03-09-streaming-controller-plan.md` for future regression tracking.
+
+#### Verification
+- `npm run check`
+
+---
+
 ## [4.8.28] - 2025-02-15
 ### 🎨 Puzzle Browser layout refinements
 
