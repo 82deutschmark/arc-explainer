@@ -11,7 +11,7 @@
  */
 
 import React, { useEffect, useMemo, useState } from 'react';
-import type { AnalysisResult } from '@/types/puzzle';
+import type { ExplanationData } from '@/types/puzzle';
 import { useParams, Link, useLocation } from 'wouter';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -73,6 +73,8 @@ export default function PuzzleDiscussion() {
   // Analysis hook for refinement generation
   const {
     analyzeAndSaveMutation,
+    startStreamingAnalysis,
+    canStreamModel,
     processingModels,
     analyzerErrors,
     promptId,
@@ -103,6 +105,7 @@ export default function PuzzleDiscussion() {
     streamingPhase,
     streamingMessage,
     streamingTokenUsage,
+    streamingPromptPreview,
     streamError,
     cancelStreamingAnalysis
   } = useAnalysisResults({
@@ -154,15 +157,44 @@ export default function PuzzleDiscussion() {
 
     try {
       setPromptId('discussion');
+      const activeModelKey = refinementState.activeModel;
+      const modelConfig = models?.find(model => model.key === activeModelKey);
+      const supportsTemperature = modelConfig?.supportsTemperature ?? true;
       const lastResponseId = refinementState.getLastResponseId();
 
+      if (canStreamModel(activeModelKey)) {
+        const baseline = explanations
+          ?.filter(exp => exp.modelName === activeModelKey)
+          .reduce<string | null>((acc, exp) => {
+            if (!acc) return exp.createdAt;
+            return new Date(exp.createdAt) > new Date(acc) ? exp.createdAt : acc;
+          }, null) ?? null;
+
+        setPendingStream({ modelKey: activeModelKey, baseline });
+
+        if (lastResponseId) {
+          console.log(`[Refinement] ✅ Continuing streaming conversation with response ID: ${lastResponseId}`);
+        } else {
+          console.log('[Refinement] Starting new streaming conversation');
+        }
+
+        startStreamingAnalysis(activeModelKey, supportsTemperature);
+
+        toast({
+          title: 'Streaming refinement started',
+          description: `${modelConfig?.name ?? activeModelKey} is refining the analysis with live output.`,
+        });
+
+        return;
+      }
+
       const payload: any = {
-        modelKey: refinementState.activeModel,
+        modelKey: activeModelKey,
         temperature,
         topP,
         candidateCount,
         thinkingBudget,
-        ...(isGPT5ReasoningModel(refinementState.activeModel) ? {
+        ...(isGPT5ReasoningModel(activeModelKey) ? {
           reasoningEffort,
           reasoningVerbosity,
           reasoningSummaryType
@@ -178,7 +210,7 @@ export default function PuzzleDiscussion() {
       const savedData = await analyzeAndSaveMutation.mutateAsync(payload);
       await refetchExplanations();
 
-      const newExplanationData = savedData?.explanations?.[refinementState.activeModel];
+      const newExplanationData = savedData?.explanations?.[activeModelKey];
 
       if (newExplanationData) {
         refinementState.addIteration(newExplanationData);
@@ -200,6 +232,73 @@ export default function PuzzleDiscussion() {
       });
     }
   };
+
+  useEffect(() => {
+    if (!pendingStream) {
+      return;
+    }
+    if (isStreamingActive) {
+      return;
+    }
+    if (!explanations || explanations.length === 0) {
+      return;
+    }
+
+    const { modelKey, baseline } = pendingStream;
+    const latest = explanations
+      .filter(exp => exp.modelName === modelKey)
+      .reduce<ExplanationData | null>((acc, exp) => {
+        if (!acc) return exp;
+        return new Date(exp.createdAt) > new Date(acc.createdAt) ? exp : acc;
+      }, null);
+
+    if (!latest) {
+      return;
+    }
+
+    if (baseline && new Date(latest.createdAt) <= new Date(baseline)) {
+      return;
+    }
+
+    if (refinementState.iterations.some(iter => iter.content.id === latest.id)) {
+      setPendingStream(null);
+      return;
+    }
+
+    const nextIterationNumber = refinementState.currentIteration + 1;
+    refinementState.addIteration(latest);
+    refinementState.setUserGuidance('');
+    toast({
+      title: 'Analysis Refined!',
+      description: `Iteration #${nextIterationNumber} completed.`,
+    });
+    setPendingStream(null);
+  }, [
+    pendingStream,
+    isStreamingActive,
+    explanations,
+    refinementState.iterations,
+    refinementState.currentIteration,
+    refinementState.addIteration,
+    refinementState.setUserGuidance,
+    toast,
+  ]);
+
+  useEffect(() => {
+    if (!pendingStream) {
+      return;
+    }
+    if (streamingPanelStatus !== 'failed') {
+      return;
+    }
+
+    toast({
+      title: 'Streaming failed',
+      description: streamError?.message ?? 'The streaming request failed.',
+      variant: 'destructive',
+    });
+    setPendingStream(null);
+  }, [pendingStream, streamingPanelStatus, streamError, toast]);
 
   // Search handler
   const handlePuzzleSearch = (e: React.FormEvent) => {
@@ -492,6 +591,7 @@ export default function PuzzleDiscussion() {
                   structuredJson={streamingStructuredJson}
                   reasoning={streamingReasoning}
                   tokenUsage={streamingTokenUsage}
+                  promptPreview={streamingPromptPreview}
                   onCancel={
                     streamingPanelStatus === 'in_progress'
                       ? () => {
