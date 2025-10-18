@@ -5,6 +5,9 @@
 - Introduced summary cards, hero callouts, and operational panels that reuse the shared leaderboard and performance hooks while tightening loading and error handling.
 - Logged the refresh scope, dependencies, and follow-up questions in `docs/2025-10-18-leaderboards-refresh-plan.md` to guide future iterations.
 
+#### Fixes
+- Restored the previous safeguard that omits `temperature` and related sampling parameters when targeting any GPT-5 variant (including provider-prefixed keys), preventing unsupported parameter errors in the OpenAI Responses API payload builder.
+
 ---
 
 ## [4.8.29] - 2025-10-17
