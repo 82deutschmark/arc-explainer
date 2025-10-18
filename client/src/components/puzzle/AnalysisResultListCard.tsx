@@ -11,7 +11,7 @@
  * shadcn/ui: Pass - Uses shadcn/ui components throughout
  */
 
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { determineCorrectness, isDebatable } from '@shared/utils/correctness';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -36,6 +36,7 @@ interface AnalysisResultListCardProps extends AnalysisResultCardProps {
   debateButtonText?: string; // Custom text for debate button (default: "Start Debate")
   actionButton?: React.ReactNode; // Custom action button (overrides debate button)
   compact?: boolean;
+  enableExpansion?: boolean; // NEW: allow consumers to disable expanded view when context is unavailable
 }
 
 export const AnalysisResultListCard: React.FC<AnalysisResultListCardProps> = ({
@@ -48,9 +49,17 @@ export const AnalysisResultListCard: React.FC<AnalysisResultListCardProps> = ({
   debateButtonText = 'Start Debate',
   actionButton,
   compact = true,
-  eloMode = false
+  eloMode = false,
+  enableExpansion = true
 }) => {
   const [isExpanded, setIsExpanded] = useState(false);
+
+  // Ensure expansion state resets when disabled by parent
+  useEffect(() => {
+    if (!enableExpansion && isExpanded) {
+      setIsExpanded(false);
+    }
+  }, [enableExpansion, isExpanded]);
 
   // Use shared correctness logic (matches AccuracyRepository exactly!)
   const accuracyStatus = useMemo(() => {
@@ -163,15 +172,17 @@ export const AnalysisResultListCard: React.FC<AnalysisResultListCardProps> = ({
                 )
               )}
 
-              <Button
-                size="sm"
-                variant="ghost"
-                onClick={() => setIsExpanded(true)}
-                className="text-xs"
-              >
-                <ChevronRight className="h-3 w-3 mr-1" />
-                Expand
-              </Button>
+              {enableExpansion && (
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  onClick={() => setIsExpanded(true)}
+                  className="text-xs"
+                >
+                  <ChevronRight className="h-3 w-3 mr-1" />
+                  Expand
+                </Button>
+              )}
             </div>
           </div>
 
@@ -189,6 +200,78 @@ export const AnalysisResultListCard: React.FC<AnalysisResultListCardProps> = ({
   }
 
   // Expanded view - show full AnalysisResultCard with collapse option
+  if (!enableExpansion) {
+    return (
+      <Card className="hover:shadow-sm transition-shadow">
+        <CardContent className="p-4">
+          <div className="flex items-center justify-between gap-4">
+            {/* Left side: Model info and accuracy */}
+            <div className="flex items-center gap-3 flex-1 min-w-0">
+              <div className="flex items-center gap-2 flex-wrap">
+                <Badge variant="outline" className="font-mono text-xs">
+                  {result.modelName}
+                </Badge>
+
+                {/* Rebuttal badge - shows if this is challenging another explanation */}
+                {result.rebuttingExplanationId && (
+                  <Badge variant="secondary" className="text-xs flex items-center gap-1">
+                    <ArrowRight className="h-3 w-3" />
+                    Rebuttal
+                  </Badge>
+                )}
+
+                <div className={`flex items-center gap-1 ${accuracyStatus.color}`}>
+                  <accuracyStatus.icon className="h-4 w-4" />
+                  <span className="text-xs font-medium">{accuracyStatus.label}</span>
+                </div>
+              </div>
+
+              {/* Confidence and basic stats -DONT SHOW CONFIDENCE!!! */}
+              <div className="flex items-center gap-3 text-xs text-gray-500">
+                <span>
+
+                </span>
+                <span className="flex items-center gap-1">
+                  <Clock className="h-3 w-3" />
+                  {formatDate(result.createdAt)}
+                </span>
+              </div>
+            </div>
+
+            {/* Right side: Actions */}
+            <div className="flex items-center gap-2">
+              {/* Show custom action button if provided, otherwise show debate button */}
+              {actionButton ? (
+                actionButton
+              ) : (
+                showDebateButton && canDebate && (
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={handleDebateClick}
+                    className="text-xs"
+                  >
+                    <MessageSquare className="h-3 w-3 mr-1" />
+                    {debateButtonText}
+                  </Button>
+                )
+              )}
+            </div>
+          </div>
+
+          {/* Quick preview of pattern description */}
+          {result.patternDescription && (
+            <div className="mt-2 pt-2 border-t border-gray-100">
+              <p className="text-xs text-gray-600 line-clamp-2">
+                <strong>Pattern:</strong> {result.patternDescription}
+              </p>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+    );
+  }
+
   return (
     <div className="space-y-2">
       {/* Compact header with collapse button */}

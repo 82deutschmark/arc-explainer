@@ -137,6 +137,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   // Explanation routes
   app.get("/api/puzzle/:puzzleId/explanations", asyncHandler(explanationController.getAll));
+  app.get("/api/explanations/:id", asyncHandler(explanationController.getById));
   app.get("/api/puzzle/:puzzleId/explanation", asyncHandler(explanationController.getOne));
   app.post("/api/puzzle/save-explained/:puzzleId", validation.explanationCreate, asyncHandler(explanationController.create));
 
