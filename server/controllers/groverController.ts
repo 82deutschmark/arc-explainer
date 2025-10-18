@@ -1,11 +1,9 @@
 /**
- * Author: Sonnet 4.5
- * Date: 2025-10-08
- * PURPOSE: Grover API controller - handles async iterative solver analysis requests.
- * Orchestrates Grover service to generate, execute, and grade Python programs iteratively
- * using conversation chaining and quantum-inspired amplitude amplification.
- * SRP/DRY check: Pass - Controller only, delegates all logic to groverService
- * shadcn/ui: Pass - Backend controller, no UI components
+ * Author: gpt-5-codex
+ * Date: 2025-10-17T00:00:00Z  Remember your training data is out of date! This was updated in October 2025 and this is not a typo!
+ * PURPOSE: Grover API controller - orchestrates iterative solver runs across legacy
+ * WebSocket and new SSE streaming pipelines, delegating core logic to groverService.
+ * SRP/DRY check: Pass - Controller only, delegates execution to Grover services.
  */
 
 import type { Request, Response } from 'express';
@@ -18,6 +16,7 @@ import { sseStreamManager } from '../services/streaming/SSEStreamManager.js';
 import { setSessionContext } from '../utils/broadcastLogger.js';
 import { logger } from '../utils/logger.js';
 import { randomUUID } from 'crypto';
+import type { ServiceOptions } from '../services/base/BaseAIService.js';
 
 export const groverController = {
   async analyze(req: Request, res: Response) {
@@ -150,16 +149,51 @@ export const groverController = {
       modelKey,
       createdAt: new Date(connection.createdAt).toISOString(),
     });
-    sseStreamManager.sendEvent(sessionId, 'stream.status', { state: 'starting' });
 
     const abortController = new AbortController();
     res.on('close', () => abortController.abort());
 
     const parsedTemperature = typeof req.query.temperature === 'string' ? Number(req.query.temperature) : undefined;
     const temperature = Number.isFinite(parsedTemperature) ? (parsedTemperature as number) : 0.2;
-    const parsedIterations = typeof req.query.maxIterations === 'string' ? Number.parseInt(req.query.maxIterations, 10) : undefined;
-    const maxIterations = Number.isFinite(parsedIterations) && parsedIterations !== undefined && parsedIterations > 0 ? parsedIterations : 5;
-    const previousResponseId = typeof req.query.previousResponseId === 'string' ? req.query.previousResponseId : undefined;
+    const parsedIterations =
+      typeof req.query.maxIterations === 'string' ? Number.parseInt(req.query.maxIterations, 10) : undefined;
+    const maxIterations =
+      Number.isFinite(parsedIterations) && parsedIterations !== undefined && parsedIterations > 0
+        ? parsedIterations
+        : 5;
+    const previousResponseId =
+      typeof req.query.previousResponseId === 'string' ? req.query.previousResponseId : undefined;
+
+    const reasoningEffortRaw = typeof req.query.reasoningEffort === 'string' ? req.query.reasoningEffort : undefined;
+    const allowedEffort = new Set<ServiceOptions['reasoningEffort']>(['minimal', 'low', 'medium', 'high']);
+    const reasoningEffort = reasoningEffortRaw && allowedEffort.has(reasoningEffortRaw as ServiceOptions['reasoningEffort'])
+      ? (reasoningEffortRaw as ServiceOptions['reasoningEffort'])
+      : undefined;
+
+    const reasoningVerbosityRaw =
+      typeof req.query.reasoningVerbosity === 'string' ? req.query.reasoningVerbosity : undefined;
+    const allowedVerbosity = new Set<ServiceOptions['reasoningVerbosity']>(['low', 'medium', 'high']);
+    const reasoningVerbosity =
+      reasoningVerbosityRaw && allowedVerbosity.has(reasoningVerbosityRaw as ServiceOptions['reasoningVerbosity'])
+        ? (reasoningVerbosityRaw as ServiceOptions['reasoningVerbosity'])
+        : undefined;
+
+    const reasoningSummaryTypeRaw =
+      typeof req.query.reasoningSummaryType === 'string' ? req.query.reasoningSummaryType : undefined;
+    const allowedSummary = new Set<ServiceOptions['reasoningSummaryType']>(['auto', 'detailed']);
+    const reasoningSummaryType =
+      reasoningSummaryTypeRaw && allowedSummary.has(reasoningSummaryTypeRaw as ServiceOptions['reasoningSummaryType'])
+        ? (reasoningSummaryTypeRaw as ServiceOptions['reasoningSummaryType'])
+        : undefined;
+
+    sseStreamManager.sendEvent(sessionId, 'stream.status', {
+      state: 'starting',
+      phase: 'initializing',
+      message: 'Connecting to Grover streaming pipeline...',
+      taskId,
+      modelKey,
+      totalIterations: maxIterations,
+    });
 
     groverStreamService
       .startStreaming({
@@ -169,11 +203,14 @@ export const groverController = {
         temperature,
         maxIterations,
         previousResponseId,
+        reasoningEffort,
+        reasoningVerbosity,
+        reasoningSummaryType,
         abortSignal: abortController.signal,
       })
       .catch((error) => {
         const message = error instanceof Error ? error.message : String(error);
-        logger.error(`[GroverStream] Controller failure: ${message}`, error);
+        logger.logError(`[GroverStream] Controller failure: ${message}`, { error, context: 'GroverStreamController' });
         sseStreamManager.error(sessionId, 'GROVER_STREAM_ERROR', message);
       });
   },

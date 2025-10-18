@@ -27,6 +27,14 @@ export class GroverService extends BaseAIService {
     "grover-gpt-5-mini": "gpt-5-mini-2025-08-07"
   };
 
+  isGroverModelKey(modelKey: string): boolean {
+    return Object.prototype.hasOwnProperty.call(this.models, modelKey);
+  }
+
+  supportsStreaming(modelKey: string): boolean {
+    return this.isGroverModelKey(modelKey);
+  }
+
   /**
    * Override streaming method to route to analyzePuzzleWithModel which already handles streaming harness
    */
