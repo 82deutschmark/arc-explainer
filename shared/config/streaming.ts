@@ -86,23 +86,6 @@ function resolveFirstDefined(candidates: SourceCandidate[]): StreamingSourceReso
   return undefined;
 }
 
-function detectDevelopmentDefault(
-  processEnv: EnvMap | undefined,
-  importMetaEnv: EnvMap | undefined,
-): boolean {
-  const nodeEnv = typeof processEnv?.NODE_ENV === 'string' ? processEnv.NODE_ENV : undefined;
-  if (nodeEnv) {
-    return nodeEnv !== 'production';
-  }
-
-  const mode = typeof importMetaEnv?.MODE === 'string' ? importMetaEnv.MODE : undefined;
-  if (mode) {
-    return mode !== 'production';
-  }
-
-  return true;
-}
-
 export function resolveStreamingConfig(): StreamingConfigResolution {
   const processEnv = typeof process !== 'undefined' ? (process.env as EnvMap) : undefined;
   const importMetaEnv = readImportMetaEnv();
@@ -123,7 +106,7 @@ export function resolveStreamingConfig(): StreamingConfigResolution {
   const backendSource = resolveFirstDefined(backendCandidates);
   const frontendSource = resolveFirstDefined(frontendCandidates);
 
-  const defaultValue = detectDevelopmentDefault(processEnv, importMetaEnv);
+  const defaultValue = true;
 
   const enabled = backendSource?.value ?? frontendSource?.value ?? defaultValue;
   const frontendAdvertises = frontendSource?.value ?? backendSource?.value ?? defaultValue;
