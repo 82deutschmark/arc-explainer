@@ -245,8 +245,8 @@ export default function PuzzleExaminer() {
   if (!task) return null;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-gray-50 to-blue-50/30">
-      <div className="container mx-auto p-2 max-w-6xl space-y-2">
+    <div className="min-h-screen">
+      <div className="container mx-auto max-w-7xl">
       {/* Header Component */}
       <PuzzleHeader
         taskId={taskId}
@@ -260,14 +260,17 @@ export default function PuzzleExaminer() {
       />
 
       {/* Puzzle Grid Display Component (PERFORMANCE-OPTIMIZED) */}
-      <PuzzleGridDisplay
-        task={task}
-        showEmojis={showEmojis}
-        emojiSet={emojiSet}
-      />
+      <div className="mb-4">
+        <PuzzleGridDisplay
+          task={task}
+          showEmojis={showEmojis}
+          emojiSet={emojiSet}
+        />
+      </div>
 
       {/* Compact Controls - Prompt & Advanced Parameters */}
-      <CompactControls
+      <div className="mb-4">
+        <CompactControls
         promptId={promptId}
         onPromptChange={setPromptId}
         customPrompt={customPrompt}
@@ -292,7 +295,8 @@ export default function PuzzleExaminer() {
         onReasoningVerbosityChange={setReasoningVerbosity}
         reasoningSummaryType={reasoningSummaryType}
         onReasoningSummaryTypeChange={setReasoningSummaryType}
-      />
+        />
+      </div>
 
       {/* Streaming Modal Dialog (DaisyUI) */}
       <dialog className={`modal ${isStreamingActive ? 'modal-open' : ''}`}>
@@ -335,7 +339,7 @@ export default function PuzzleExaminer() {
       </dialog>
 
       {/* Model Selection - Card Grid */}
-      <div className="border border-base-300 rounded-lg bg-base-100 p-3">
+      <div className="border border-base-300 rounded-lg bg-base-100 p-4 mb-4">
         <h3 className="font-medium text-sm mb-3 flex items-center gap-2">
           🚀 Model Selection
           <span className="text-xs opacity-60">Choose AI models to run analysis with</span>
