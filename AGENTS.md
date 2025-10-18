@@ -64,16 +64,13 @@ _This directory provides a structured overview of critical docs. For deeper dive
 
 ## ✍️ Coding Standards
 
-Every TypeScript file should start with a basic header like this:
+Ideally, every TypeScript file should start with a basic header like this:
 
-```typescript
-/**
  * Author: {Your Model Name}
- * Date: {timestamp}  Remember your training data is out of date! This was updated in October 2025 and this is not a typo!
+ * Date: {timestamp}  
  * PURPOSE: Verbose details about functionality, integration points, dependencies
  * SRP/DRY check: Pass/Fail — did you verify existing functionality?
- */
-```
+
 
 Additional rules:
 
