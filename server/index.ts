@@ -1,8 +1,7 @@
 /**
- * Author: claude-haiku-4-5-20251001
- * Date: 2025-10-19T00:00:00Z
+ * Author: gpt-5-codex
+ * Date: 2025-10-16T00:00:00Z
  * PURPOSE: Bootstraps the Express server, wiring middleware, routes, static serving, and startup diagnostics.
- * Fixed: Explicitly check process.env.NODE_ENV instead of app.get("env") for reliable production mode detection in Railway deployments.
  * SRP/DRY check: Pass — initialization and environment checks consolidated in a single entry point.
  */
 
@@ -122,8 +121,7 @@ const initServer = async () => {
 
   // In production, set up static file serving and the SPA fallback.
   // This must come AFTER API routes are registered.
-  // Explicitly check NODE_ENV instead of app.get("env") for reliability
-  if (process.env.NODE_ENV === "production") {
+  if (app.get("env") === "production") {
     // In the Railway environment, process.cwd() is the root of the project.
     // The client assets are built to 'dist/public'.
     const staticPath = path.join(process.cwd(), "dist", "public");
@@ -182,8 +180,7 @@ const initServer = async () => {
   const host = '0.0.0.0'; // Listen on all available interfaces in production
   
   server.listen(port, () => {
-    const mode = process.env.NODE_ENV === "production" ? "production" : "development";
-    log(`Server running in ${mode} mode at http://${host}:${port}`);
+    log(`Server running in ${app.get("env")} mode at http://${host}:${port}`);
   });
 };
 
