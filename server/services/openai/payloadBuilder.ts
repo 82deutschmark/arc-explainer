@@ -175,7 +175,7 @@ export function buildResponsesPayload({
     store: serviceOpts.store !== false,
     parallel_tool_calls: false,
     truncation: "auto",
-    max_steps: serviceOpts.maxSteps,
+    // max_steps is internal to Grover/Saturn services; NOT a valid Responses API parameter
     max_output_tokens: serviceOpts.maxOutputTokens || 128000,
     metadata: taskId ? { taskId } : undefined
   });
