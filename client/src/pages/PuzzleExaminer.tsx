@@ -246,7 +246,6 @@ export default function PuzzleExaminer() {
 
   return (
     <div className="min-h-screen">
-      <div className="container mx-auto max-w-7xl">
       {/* Header Component */}
       <PuzzleHeader
         taskId={taskId}
@@ -259,18 +258,20 @@ export default function PuzzleExaminer() {
         isAnalyzing={isAnalyzing}
       />
 
-      {/* Puzzle Grid Display Component (PERFORMANCE-OPTIMIZED) */}
-      <div className="mb-4">
-        <PuzzleGridDisplay
-          task={task}
-          showEmojis={showEmojis}
-          emojiSet={emojiSet}
-        />
-      </div>
+      {/* Main Content Area - Full Width */}
+      <div className="px-2">
+        {/* Puzzle Grid Display Component (PERFORMANCE-OPTIMIZED) */}
+        <div className="mb-2">
+          <PuzzleGridDisplay
+            task={task}
+            showEmojis={showEmojis}
+            emojiSet={emojiSet}
+          />
+        </div>
 
-      {/* Compact Controls - Prompt & Advanced Parameters */}
-      <div className="mb-4">
-        <CompactControls
+        {/* Compact Controls - Prompt & Advanced Parameters */}
+        <div className="mb-2">
+          <CompactControls
         promptId={promptId}
         onPromptChange={setPromptId}
         customPrompt={customPrompt}
@@ -295,95 +296,86 @@ export default function PuzzleExaminer() {
         onReasoningVerbosityChange={setReasoningVerbosity}
         reasoningSummaryType={reasoningSummaryType}
         onReasoningSummaryTypeChange={setReasoningSummaryType}
-        />
-      </div>
-
-      {/* Streaming Modal Dialog (DaisyUI) */}
-      <dialog className={`modal ${isStreamingActive ? 'modal-open' : ''}`}>
-        <div className="modal-box max-w-[95vw] max-h-[90vh] overflow-y-auto">
-          <h3 className="font-bold text-lg mb-4">
-            {`Streaming ${streamingModel?.name ?? streamingModelKey ?? 'Analysis'}`}
-          </h3>
-          <StreamingAnalysisPanel
-            title={`${streamingModel?.name ?? streamingModelKey ?? 'Analysis'}`}
-            status={streamingPanelStatus}
-            phase={typeof streamingPhase === 'string' ? streamingPhase : undefined}
-            message={
-              streamingPanelStatus === 'failed'
-                ? streamError?.message ?? streamingMessage ?? 'Streaming failed'
-                : streamingMessage
-            }
-            text={streamingText}
-            structuredJsonText={streamingStructuredJsonText}
-            structuredJson={streamingStructuredJson}
-            reasoning={streamingReasoning}
-            tokenUsage={streamingTokenUsage}
-            onCancel={streamingPanelStatus === 'in_progress' ? cancelStreamingAnalysis : undefined}
-            onClose={closeStreamingModal}
-            task={task}
-            promptPreview={streamingPromptPreview}
           />
         </div>
-        <form method="dialog" className="modal-backdrop">
-          <button
-            onClick={() => {
-              if (streamingPanelStatus === 'in_progress') {
-                cancelStreamingAnalysis();
-              }
-              closeStreamingModal();
-            }}
-          >
-            close
-          </button>
-        </form>
-      </dialog>
 
-      {/* Model Selection - Card Grid */}
-      <div className="border border-base-300 rounded-lg bg-base-100 p-4 mb-4">
-        <h3 className="font-medium text-sm mb-3 flex items-center gap-2">
-          🚀 Model Selection
-          <span className="text-xs opacity-60">Choose AI models to run analysis with</span>
-        </h3>
-        <ModelSelection
-          models={models}
-          processingModels={processingModels}
-          streamingModelKey={streamingModelKey}
-          streamingEnabled={streamingEnabled}
-          canStreamModel={canStreamModel}
-          explanations={explanations}
-          onAnalyze={handleAnalyzeWithModel}
-          analyzerErrors={analyzerErrors}
-        />
-      </div>
+        {/* Model Selection - Card Grid */}
+        <div className="bg-base-100 p-2 mb-2">
+          <h3 className="font-medium text-sm mb-2 flex items-center gap-2">
+            🚀 Model Selection
+            <span className="text-xs opacity-60">Choose AI models to run analysis with</span>
+          </h3>
+          <ModelSelection
+            models={models}
+            processingModels={processingModels}
+            streamingModelKey={streamingModelKey}
+            streamingEnabled={streamingEnabled}
+            canStreamModel={canStreamModel}
+            explanations={explanations}
+            onAnalyze={handleAnalyzeWithModel}
+            analyzerErrors={analyzerErrors}
+          />
+        </div>
 
-      {/* Analysis Results (PERFORMANCE-OPTIMIZED with progressive loading) */}
-      {(allResults.length > 0 || isAnalyzing || isLoadingExplanations) && (
-        <AnalysisResults
-          allResults={allResults}
-          correctnessFilter={correctnessFilter}
-          onFilterChange={setCorrectnessFilter}
-          models={models}
-          task={task}
-          isAnalyzing={isAnalyzing}
-          currentModel={currentModel}
-        />
-      )}
+        {/* Analysis Results (PERFORMANCE-OPTIMIZED with progressive loading) */}
+        {(allResults.length > 0 || isAnalyzing || isLoadingExplanations) && (
+          <AnalysisResults
+            allResults={allResults}
+            correctnessFilter={correctnessFilter}
+            onFilterChange={setCorrectnessFilter}
+            models={models}
+            task={task}
+            isAnalyzing={isAnalyzing}
+            currentModel={currentModel}
+          />
+        )}
 
-      {/* Loading skeleton for explanations (progressive loading UX) */}
-      {isLoadingExplanations && allResults.length === 0 && !isAnalyzing && (
-        <div className="card bg-base-100 shadow">
-          <div className="card-body">
-            <div className="flex items-center gap-2 mb-4">
-              <Loader2 className="h-4 w-4 animate-spin" />
-              <span className="text-sm opacity-70">Loading previous analyses...</span>
-            </div>
-            <div className="space-y-3">
-              {[1, 2, 3].map((i) => (
-                <div key={i} className="skeleton h-32 w-full"></div>
-              ))}
+        {/* Loading skeleton for explanations (progressive loading UX) */}
+        {isLoadingExplanations && allResults.length === 0 && !isAnalyzing && (
+          <div className="card bg-base-100 shadow">
+            <div className="card-body">
+              <div className="flex items-center gap-2 mb-4">
+                <Loader2 className="h-4 w-4 animate-spin" />
+                <span className="text-sm opacity-70">Loading previous analyses...</span>
+              </div>
+              <div className="space-y-3">
+                {[1, 2, 3].map((i) => (
+                  <div key={i} className="skeleton h-32 w-full"></div>
+                ))}
+              </div>
             </div>
           </div>
-        </div>
+        )}
+      </div>
+
+      {/* Streaming Modal Dialog (DaisyUI) - FIXED: No auto-close on backdrop */}
+      {isStreamingActive && (
+        <dialog className="modal modal-open">
+          <div className="modal-box max-w-[95vw] max-h-[90vh] overflow-y-auto">
+            <h3 className="font-bold text-lg mb-4">
+              {`Streaming ${streamingModel?.name ?? streamingModelKey ?? 'Analysis'}`}
+            </h3>
+            <StreamingAnalysisPanel
+              title={`${streamingModel?.name ?? streamingModelKey ?? 'Analysis'}`}
+              status={streamingPanelStatus}
+              phase={typeof streamingPhase === 'string' ? streamingPhase : undefined}
+              message={
+                streamingPanelStatus === 'failed'
+                  ? streamError?.message ?? streamingMessage ?? 'Streaming failed'
+                  : streamingMessage
+              }
+              text={streamingText}
+              structuredJsonText={streamingStructuredJsonText}
+              structuredJson={streamingStructuredJson}
+              reasoning={streamingReasoning}
+              tokenUsage={streamingTokenUsage}
+              onCancel={streamingPanelStatus === 'in_progress' ? cancelStreamingAnalysis : undefined}
+              onClose={closeStreamingModal}
+              task={task}
+              promptPreview={streamingPromptPreview}
+            />
+          </div>
+        </dialog>
       )}
 
       {/* Prompt Preview Modal */}
@@ -400,7 +392,6 @@ export default function PuzzleExaminer() {
           sendAsEmojis
         }}
       />
-      </div>
     </div>
   );
 }

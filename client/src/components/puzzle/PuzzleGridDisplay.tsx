@@ -50,9 +50,9 @@ export function PuzzleGridDisplay({ task, showEmojis, emojiSet }: PuzzleGridDisp
   }, [task.test]);
 
   return (
-    <div className="card bg-base-100 border border-base-300 shadow-sm">
-      <div className="card-body p-1">
-        <div className="text-sm font-semibold text-base-content mb-2 flex items-center gap-2">
+    <div className="bg-base-100">
+      <div className="p-2">
+        <div className="text-sm font-semibold text-base-content mb-1 flex items-center gap-2">
           <Grid3X3 className="h-4 w-4" />
           Puzzle Grids
           <span className="text-xs font-normal opacity-60">
@@ -61,16 +61,16 @@ export function PuzzleGridDisplay({ task, showEmojis, emojiSet }: PuzzleGridDisp
         </div>
 
         {/* TRAINING EXAMPLES - Stratified Layout */}
-        <div className="mb-3">
-          <div className="text-[10px] font-semibold opacity-60 uppercase tracking-wide mb-2 flex items-center gap-1">
+        <div className="mb-2">
+          <div className="text-[10px] font-semibold opacity-60 uppercase tracking-wide mb-1 flex items-center gap-1">
             <span className="inline-block w-1 h-1 rounded-full bg-blue-500"></span>
             Training Examples
           </div>
 
-          <div className="space-y-3">
+          <div className="space-y-2">
             {/* Standard Pairs: Flex wrap with overflow scroll */}
             {classifiedTraining.standard.length > 0 && (
-              <div className="flex flex-wrap gap-3">
+              <div className="flex flex-wrap gap-2">
                 {classifiedTraining.standard.map(({ item, idx }) => (
                   <div key={idx} className="overflow-auto max-w-full">
                     <GridPair
@@ -107,7 +107,7 @@ export function PuzzleGridDisplay({ task, showEmojis, emojiSet }: PuzzleGridDisp
             {/* Tall Pairs: Horizontal scroll */}
             {classifiedTraining.tall.length > 0 && (
               <div className="overflow-x-auto pb-2">
-                <div className="flex gap-3" style={{ width: 'max-content' }}>
+                <div className="flex gap-2" style={{ width: 'max-content' }}>
                   {classifiedTraining.tall.map(({ item, idx }) => (
                     <div key={idx} className="overflow-y-auto" style={{ maxHeight: '600px' }}>
                       <GridPair
