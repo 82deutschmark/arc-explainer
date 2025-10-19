@@ -83,9 +83,7 @@ export default defineConfig(async ({ mode }): Promise<import('vite').UserConfig>
       strictPort: true,
     },
     server: {
-      allowedHosts: [
-        'arc-explainer-staging.up.railway.app'
-      ],
+      allowedHosts: true, // Allow all hosts for deployment flexibility
       hmr: {
         overlay: false, // Suppress HMR error overlay when accessing via backend (localhost:5000)
       },
