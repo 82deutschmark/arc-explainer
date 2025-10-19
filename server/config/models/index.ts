@@ -54,8 +54,7 @@ export {
   modelCapabilities,
   getModelCapabilities,
   isModelAvailable,
-  supportsFeature,
-  getModelHealth
+  supportsFeature
 } from './ModelCapabilities.js';
 export type { ModelCapabilityStatus } from './ModelCapabilities.js';
 
