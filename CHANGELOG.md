@@ -1,3 +1,16 @@
+## [4.8.33] - 2025-10-19
+### 🔧 BUGFIX: Remove unstable health check routines
+
+#### Summary
+- Removed the repository service health-check helper and `/api/health/database` endpoint that were crashing deploys.
+- Simplified `ModelCapabilities` by eliminating transient health monitoring fields in favor of the existing cache timestamp.
+- Documented the rollback scope in `docs/2025-10-19-remove-health-checks-plan.md` for future traceability.
+
+#### Verification
+- Not run (not requested).
+
+---
+
 ## [4.8.32] - 2025-10-18
 ### 🎨 UI/UX: PuzzleExaminer and GroverSolver complete redesign
 

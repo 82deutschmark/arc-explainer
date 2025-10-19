@@ -268,60 +268,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   }));
   
-  // Database health check endpoint for debugging
-  app.get("/api/health/database", asyncHandler(async (req: any, res: any) => {
-    try {
-      const isConnected = repositoryService.isConnected();
-      const hasUrl = !!process.env.DATABASE_URL;
-      
-      if (!hasUrl) {
-        return res.status(503).json({
-          status: 'error',
-          message: 'DATABASE_URL environment variable not set',
-          connected: false,
-          hasUrl: false
-        });
-      }
-      
-      if (!isConnected) {
-        return res.status(503).json({
-          status: 'error', 
-          message: 'Database connection pool not initialized',
-          connected: false,
-          hasUrl: true
-        });
-      }
-      
-      // Test actual database query
-      try {
-        const testResult = await repositoryService.explanations.getExplanationForPuzzle('health-check-test');
-        res.json({
-          status: 'ok',
-          message: 'Database connection healthy',
-          connected: true,
-          hasUrl: true,
-          queryTest: 'passed'
-        });
-      } catch (queryError) {
-        res.status(503).json({
-          status: 'error',
-          message: 'Database query failed',
-          connected: true,
-          hasUrl: true,
-          queryTest: 'failed',
-          error: queryError instanceof Error ? queryError.message : String(queryError)
-        });
-      }
-    } catch (error) {
-      logger.error('Health check failed: ' + (error instanceof Error ? error.message : String(error)), 'health-check');
-      res.status(500).json({
-        status: 'error',
-        message: 'Health check failed',
-        error: error instanceof Error ? error.message : String(error)
-      });
-    }
-  }));
-
   // Validation endpoint - return 501 Not Implemented (keeping for backward compatibility)
   app.post("/api/puzzle/validate", (req, res) => {
     return res.status(501).json({ 
