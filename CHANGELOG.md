@@ -1,5 +1,5 @@
 ## [4.8.32] - 2025-10-18
-### 🎨 UI/UX: PuzzleExaminer complete redesign
+### 🎨 UI/UX: PuzzleExaminer and GroverSolver complete redesign
 
 #### Changes
 - **Full-width responsive grid layout**: Training and test grids now use CSS Grid (1-4 columns based on screen size) to utilize full screen width instead of stacking vertically on the left
@@ -14,6 +14,7 @@
 
 #### Components Updated
 - `PuzzleExaminer.tsx` - Main layout, gradient background, spacing
+- `GroverSolver.tsx` - Same warm gradient and compact layout as PuzzleExaminer
 - `PuzzleHeader.tsx` - Full-width header, larger buttons
 - `PuzzleGridDisplay.tsx` - CSS Grid layout, reduced spacing
 - `GridPair.tsx` - Softer colors, reduced borders
