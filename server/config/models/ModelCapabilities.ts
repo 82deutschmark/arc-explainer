@@ -61,7 +61,8 @@ export class ModelCapabilities {
 
   constructor() {
     this.initializeCapabilities();
-    this.startHealthMonitoring();
+    // DISABLED: Health monitoring causes build failures by making API calls during startup
+    // this.startHealthMonitoring();
   }
 
   /**
