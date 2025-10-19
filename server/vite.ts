@@ -40,6 +40,7 @@ export async function setupVite(app: Express, server: Server) {
       },
     },
     server: {
+      ...baseConfig.server,  // Preserve base config settings like allowedHosts
       middlewareMode: true,
       hmr: {
         server,
