@@ -81,6 +81,7 @@ export default defineConfig(async ({ mode }): Promise<import('vite').UserConfig>
     preview: {
       port: process.env.PORT ? parseInt(process.env.PORT, 10) : 3000,
       strictPort: true,
+      allowedHosts: true,
     },
     server: {
       allowedHosts: true, // Allow all hosts for deployment flexibility
