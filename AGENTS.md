@@ -5,8 +5,6 @@
 **Purpose:** Consolidated guidance for AI agents working with the ARC Explainer repository.  
 This version merges the best material from previous guidelines and adds **quick pointers** to locate critical information fast.
 
----
-
 ## 📚 Quick Reference – Where to Find Things
 
 - **Core Documentation**
