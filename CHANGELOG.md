@@ -11,6 +11,7 @@
 - **Compact layout**: Eliminated unnecessary borders and container constraints for tighter, more efficient use of space
 - **Button improvements**: Upgraded header buttons from btn-sm to btn-md with rounded-lg styling
 - **Modal fix**: Streaming analysis modal no longer auto-closes when clicking backdrop
+- **Regression**: Restored always-mounted streaming dialog so live output modal renders correctly on new layout
 
 #### Components Updated
 - `PuzzleExaminer.tsx` - Main layout, gradient background, spacing
