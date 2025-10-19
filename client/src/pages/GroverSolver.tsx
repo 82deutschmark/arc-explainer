@@ -65,7 +65,7 @@ export default function GroverSolver() {
 
   if (!taskId) {
     return (
-      <div className="container mx-auto p-6 max-w-6xl">
+      <div className="container mx-auto p-2 max-w-6xl">
         <div role="alert" className="alert alert-error">
           <span>Invalid puzzle ID</span>
         </div>
@@ -75,7 +75,7 @@ export default function GroverSolver() {
 
   if (isLoadingTask) {
     return (
-      <div className="container mx-auto p-6 max-w-6xl">
+      <div className="container mx-auto p-2 max-w-6xl">
         <div className="flex items-center justify-center min-h-[400px]">
           <div className="flex items-center gap-2">
             <Loader2 className="h-6 w-6 animate-spin" />
@@ -88,7 +88,7 @@ export default function GroverSolver() {
 
   if (taskError || !task) {
     return (
-      <div className="container mx-auto p-6 max-w-6xl">
+      <div className="container mx-auto p-2 max-w-6xl">
         <div role="alert" className="alert alert-error">
           <span>Failed to load puzzle: {taskError?.message || 'Puzzle not found'}</span>
         </div>
@@ -114,9 +114,10 @@ export default function GroverSolver() {
   };
 
   return (
-    <div className="container mx-auto p-3 max-w-6xl">
+    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-rose-50">
+      <div className="container mx-auto p-2 max-w-7xl">
       {/* Header - Compact */}
-      <div className="flex items-center justify-between mb-3">
+      <div className="flex items-center justify-between mb-2 px-2 py-3 bg-base-100 border-b border-base-300">
         <div className="flex items-center gap-2">
           <Link href={`/puzzle/${taskId}`}>
             <button 
@@ -203,8 +204,8 @@ export default function GroverSolver() {
             </div>
 
             {/* GPT-5 Reasoning Parameters */}
-            <div className="p-2 bg-blue-50 border border-blue-200 rounded-lg">
-              <h5 className="text-sm font-semibold text-blue-800 mb-2 flex items-center gap-2">
+            <div className="p-2 bg-slate-50 border border-slate-200 rounded-lg">
+              <h5 className="text-sm font-semibold text-slate-700 mb-2 flex items-center gap-2">
                 <Brain className="h-4 w-4" />
                 GPT-5 Reasoning Parameters
               </h5>
@@ -212,7 +213,7 @@ export default function GroverSolver() {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                   {/* Effort Control */}
                   <div>
-                    <label htmlFor="reasoning-effort" className="label text-sm font-medium text-blue-700">
+                    <label htmlFor="reasoning-effort" className="label text-sm font-medium text-slate-700">
                       Effort Level
                     </label>
                     <select 
@@ -230,7 +231,7 @@ export default function GroverSolver() {
 
                   {/* Verbosity Control */}
                   <div>
-                    <label htmlFor="reasoning-verbosity" className="label text-sm font-medium text-blue-700">
+                    <label htmlFor="reasoning-verbosity" className="label text-sm font-medium text-slate-700">
                       Verbosity
                     </label>
                     <select 
@@ -247,7 +248,7 @@ export default function GroverSolver() {
 
                   {/* Summary Control */}
                   <div>
-                    <label htmlFor="reasoning-summary" className="label text-sm font-medium text-blue-700">
+                    <label htmlFor="reasoning-summary" className="label text-sm font-medium text-slate-700">
                       Summary
                     </label>
                     <select 
@@ -267,7 +268,7 @@ export default function GroverSolver() {
 
       {/* Visual Status Panel */}
       {isRunning && (
-        <div className="card mb-3 bg-gradient-to-r from-blue-50 to-purple-50 border-2 border-blue-300 shadow">
+        <div className="card mb-2 bg-gradient-to-r from-slate-50 to-purple-50 border border-slate-300 shadow-sm">
           <div className="card-body p-4">
             <div className="flex items-start gap-4">
               <div className="flex-shrink-0">
@@ -324,7 +325,7 @@ export default function GroverSolver() {
 
       {/* Compact Status Bar (when not running) */}
       {!isRunning && (
-        <div className="mb-2 p-2 bg-gray-50 rounded border flex items-center justify-between text-xs">
+        <div className="mb-2 p-2 bg-slate-50 rounded border flex items-center justify-between text-xs">
           <div className="flex items-center gap-3">
             <div className={`badge text-xs py-0 ${isDone ? '' : hasError ? 'badge-error' : 'badge-secondary'}`}>
               {state.status}
@@ -339,7 +340,7 @@ export default function GroverSolver() {
       )}
 
       {/* Three Column Layout - Compact & Side-by-Side */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-3 mb-3">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-2 mb-2">
         {/* LEFT: Iteration Cards - 50% width */}
         <div className="lg:col-span-6 space-y-0">
           {Array.from({ length: state.totalIterations || 5 }).map((_, idx) => {
@@ -391,6 +392,7 @@ export default function GroverSolver() {
             />
           )}
         </div>
+      </div>
       </div>
     </div>
   );
