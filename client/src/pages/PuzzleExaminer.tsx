@@ -348,35 +348,45 @@ export default function PuzzleExaminer() {
         )}
       </div>
 
-      {/* Streaming Modal Dialog (DaisyUI) - FIXED: No auto-close on backdrop */}
-      {isStreamingActive && (
-        <dialog className="modal modal-open">
-          <div className="modal-box max-w-[95vw] max-h-[90vh] overflow-y-auto">
-            <h3 className="font-bold text-lg mb-4">
-              {`Streaming ${streamingModel?.name ?? streamingModelKey ?? 'Analysis'}`}
-            </h3>
-            <StreamingAnalysisPanel
-              title={`${streamingModel?.name ?? streamingModelKey ?? 'Analysis'}`}
-              status={streamingPanelStatus}
-              phase={typeof streamingPhase === 'string' ? streamingPhase : undefined}
-              message={
-                streamingPanelStatus === 'failed'
-                  ? streamError?.message ?? streamingMessage ?? 'Streaming failed'
-                  : streamingMessage
+      {/* Streaming Modal Dialog (DaisyUI) */}
+      <dialog className={`modal ${isStreamingActive ? 'modal-open' : ''}`}>
+        <div className="modal-box max-w-[95vw] max-h-[90vh] overflow-y-auto">
+          <h3 className="font-bold text-lg mb-4">
+            {`Streaming ${streamingModel?.name ?? streamingModelKey ?? 'Analysis'}`}
+          </h3>
+          <StreamingAnalysisPanel
+            title={`${streamingModel?.name ?? streamingModelKey ?? 'Analysis'}`}
+            status={streamingPanelStatus}
+            phase={typeof streamingPhase === 'string' ? streamingPhase : undefined}
+            message={
+              streamingPanelStatus === 'failed'
+                ? streamError?.message ?? streamingMessage ?? 'Streaming failed'
+                : streamingMessage
+            }
+            text={streamingText}
+            structuredJsonText={streamingStructuredJsonText}
+            structuredJson={streamingStructuredJson}
+            reasoning={streamingReasoning}
+            tokenUsage={streamingTokenUsage}
+            onCancel={streamingPanelStatus === 'in_progress' ? cancelStreamingAnalysis : undefined}
+            onClose={closeStreamingModal}
+            task={task}
+            promptPreview={streamingPromptPreview}
+          />
+        </div>
+        <form method="dialog" className="modal-backdrop">
+          <button
+            onClick={() => {
+              if (streamingPanelStatus === 'in_progress') {
+                cancelStreamingAnalysis();
               }
-              text={streamingText}
-              structuredJsonText={streamingStructuredJsonText}
-              structuredJson={streamingStructuredJson}
-              reasoning={streamingReasoning}
-              tokenUsage={streamingTokenUsage}
-              onCancel={streamingPanelStatus === 'in_progress' ? cancelStreamingAnalysis : undefined}
-              onClose={closeStreamingModal}
-              task={task}
-              promptPreview={streamingPromptPreview}
-            />
-          </div>
-        </dialog>
-      )}
+              closeStreamingModal();
+            }}
+          >
+            close
+          </button>
+        </form>
+      </dialog>
 
       {/* Prompt Preview Modal */}
       <PromptPreviewModal
