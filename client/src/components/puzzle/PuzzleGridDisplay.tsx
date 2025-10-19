@@ -68,11 +68,11 @@ export function PuzzleGridDisplay({ task, showEmojis, emojiSet }: PuzzleGridDisp
           </div>
 
           <div className="space-y-2">
-            {/* Standard Pairs: Flex wrap with overflow scroll */}
+            {/* Standard Pairs: CSS Grid for full width utilization */}
             {classifiedTraining.standard.length > 0 && (
-              <div className="flex flex-wrap gap-2">
+              <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-2">
                 {classifiedTraining.standard.map(({ item, idx }) => (
-                  <div key={idx} className="overflow-auto max-w-full">
+                  <div key={idx} className="overflow-auto">
                     <GridPair
                       input={item.input}
                       outputs={[item.output]}
@@ -88,9 +88,9 @@ export function PuzzleGridDisplay({ task, showEmojis, emojiSet }: PuzzleGridDisp
 
             {/* Wide Pairs: Full-width blocks with horizontal scroll */}
             {classifiedTraining.wide.length > 0 && (
-              <div className="space-y-3">
+              <div className="space-y-2">
                 {classifiedTraining.wide.map(({ item, idx }) => (
-                  <div key={idx} className="overflow-x-auto max-w-full">
+                  <div key={idx} className="overflow-x-auto">
                     <GridPair
                       input={item.input}
                       outputs={[item.output]}
@@ -126,16 +126,16 @@ export function PuzzleGridDisplay({ task, showEmojis, emojiSet }: PuzzleGridDisp
           </div>
         </div>
 
-        {/* TEST CASES - Display in Original Order */}
+        {/* TEST CASES - Display in Grid Layout */}
         <div>
-          <div className="text-[10px] font-semibold opacity-60 uppercase tracking-wide mb-2 flex items-center gap-1">
+          <div className="text-[10px] font-semibold opacity-60 uppercase tracking-wide mb-1 flex items-center gap-1">
             <span className="inline-block w-1 h-1 rounded-full bg-green-500"></span>
             Test Cases
           </div>
 
-          <div className="space-y-3">
+          <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-2">
             {task.test.map((testCase, idx) => (
-              <div key={idx} className="overflow-auto max-w-full">
+              <div key={idx} className="overflow-auto">
                 <GridPair
                   input={testCase.input}
                   outputs={[testCase.output]}

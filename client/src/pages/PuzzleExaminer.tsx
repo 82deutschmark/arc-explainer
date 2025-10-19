@@ -245,7 +245,7 @@ export default function PuzzleExaminer() {
   if (!task) return null;
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-rose-50">
       {/* Header Component */}
       <PuzzleHeader
         taskId={taskId}

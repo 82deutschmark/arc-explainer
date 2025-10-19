@@ -1,3 +1,45 @@
+## [4.8.32] - 2025-10-18
+### 🎨 UI/UX: PuzzleExaminer complete redesign
+
+#### Changes
+- **Full-width responsive grid layout**: Training and test grids now use CSS Grid (1-4 columns based on screen size) to utilize full screen width instead of stacking vertically on the left
+- **Warmer color palette**: 
+  - Replaced harsh white background with warm amber→orange→rose gradient
+  - Changed bright blue/yellow grid backgrounds to soft slate-50/amber-50/emerald-50
+  - Reduced border thickness and shadow intensity for less visual noise
+- **Minimal spacing**: Removed excessive margins and padding throughout (px-2, mb-2 instead of px-4, mb-4)
+- **Compact layout**: Eliminated unnecessary borders and container constraints for tighter, more efficient use of space
+- **Button improvements**: Upgraded header buttons from btn-sm to btn-md with rounded-lg styling
+- **Modal fix**: Streaming analysis modal no longer auto-closes when clicking backdrop
+
+#### Components Updated
+- `PuzzleExaminer.tsx` - Main layout, gradient background, spacing
+- `PuzzleHeader.tsx` - Full-width header, larger buttons
+- `PuzzleGridDisplay.tsx` - CSS Grid layout, reduced spacing
+- `GridPair.tsx` - Softer colors, reduced borders
+- `CompactControls.tsx` - Minimal padding, borderless design
+
+---
+
+## [4.8.31] - 2025-10-18
+### 🔧 BUGFIX: Remove max_steps from OpenAI Responses API payload
+
+#### Problem
+Grover solver failed with `400 Unknown parameter: 'max_steps'` when calling OpenAI's Responses API. The `max_steps` parameter is internal to Grover's iteration control logic but was being incorrectly passed to the OpenAI API.
+
+#### Root Cause
+`server/services/openai/payloadBuilder.ts` was including `max_steps: serviceOpts.maxSteps` in the API payload. The OpenAI Responses API doesn't support this parameter - it only accepts: `model`, `input`, `instructions`, `reasoning`, `text`, `temperature` (conditionally), `max_output_tokens`, `store`, `previous_response_id`, `stream`, `parallel_tool_calls`, `truncation`, and `metadata`.
+
+#### Fix
+- Removed `max_steps` from the OpenAI API payload builder while keeping it available in `ServiceOptions` for internal use by Grover/Saturn iteration control.
+- Added clarifying comment explaining that `max_steps` is internal only.
+- This matches the pattern established for `temperature` exclusion on GPT-5 models.
+
+#### Verification
+- Test Grover solver with GPT-5 models to confirm 400 error is resolved.
+
+---
+
 ## [4.8.30] - 2025-10-18
 ### 📊 Leaderboards dashboard rebuild
 
