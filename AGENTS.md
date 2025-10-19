@@ -6,7 +6,6 @@
 This version merges the best material from previous guidelines and adds **quick pointers** to locate critical information fast.
 
 ## 📚 Quick Reference – Where to Find Things
-
 - **Core Documentation**
   - README.md – `docs/README.md`
   - DEVELOPER_GUIDE.md – `docs/DEVELOPER_GUIDE.md` (Architecture & onboarding)
