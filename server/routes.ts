@@ -268,9 +268,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   }));
   
+  // Simple health check endpoint for deployment monitoring
+  app.get("/api/health", (req, res) => {
+    res.json({
+      status: 'ok',
+      message: 'ARC Explainer API is healthy',
+      timestamp: new Date().toISOString()
+    });
+  });
+
   // Validation endpoint - return 501 Not Implemented (keeping for backward compatibility)
   app.post("/api/puzzle/validate", (req, res) => {
-    return res.status(501).json({ 
+    return res.status(501).json({
       success: false,
       message: 'Solution validation is not available in this version. Please update your client.'
     });
