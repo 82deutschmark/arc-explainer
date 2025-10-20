@@ -19,13 +19,14 @@ import SaturnMonitoringTable from '@/components/saturn/SaturnMonitoringTable';
 import SaturnWorkTable from '@/components/saturn/SaturnWorkTable';
 import SaturnTerminalLogs from '@/components/saturn/SaturnTerminalLogs';
 import SaturnImageGallery from '@/components/saturn/SaturnImageGallery';
+import SaturnFinalResultPanel from '@/components/saturn/SaturnFinalResultPanel';
 import { getDefaultSaturnModel } from '@/lib/saturnModels';
 import { CompactPuzzleDisplay } from '@/components/puzzle/CompactPuzzleDisplay';
 
 export default function SaturnVisualSolver() {
   const { taskId } = useParams<{ taskId: string }>();
   const { currentTask: task, isLoadingTask, taskError } = usePuzzle(taskId);
-  const { state, start, cancel, sessionId } = useSaturnProgress(taskId);
+  const { state, start, cancel } = useSaturnProgress(taskId);
 
   // Settings state - GPT-5 Mini with high reasoning/verbosity/detailed summary as DEFAULT
   const defaultModel = getDefaultSaturnModel();
@@ -40,6 +41,19 @@ export default function SaturnVisualSolver() {
   const isRunning = state.status === 'running';
   const isDone = state.status === 'completed';
   const hasError = state.status === 'error';
+
+  const finalAnalysis = React.useMemo(() => {
+    if (!state.result || typeof state.result !== 'object') {
+      return null;
+    }
+
+    const analysis = (state.result as { analysis?: Record<string, unknown> }).analysis;
+    if (analysis && typeof analysis === 'object') {
+      return analysis as Record<string, unknown>;
+    }
+
+    return state.result as Record<string, unknown>;
+  }, [state.result]);
 
   // Track start time for elapsed calculation
   React.useEffect(() => {
@@ -81,6 +95,10 @@ export default function SaturnVisualSolver() {
       </div>
     );
   }
+
+  const expectedOutputs = React.useMemo(() => {
+    return (task?.test ?? []).map((testCase) => testCase.output);
+  }, [task]);
 
   const onStart = () => start({
     model,
@@ -292,6 +310,13 @@ export default function SaturnVisualSolver() {
                 logLines={state.logLines}
                 isRunning={isRunning}
                 phase={state.streamingPhase || state.phase}
+              />
+            </div>
+            <div className="max-h-[50vh] overflow-auto">
+              <SaturnFinalResultPanel
+                analysis={finalAnalysis}
+                expectedOutputs={expectedOutputs}
+                status={state.status}
               />
             </div>
           </div>
