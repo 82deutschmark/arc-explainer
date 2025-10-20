@@ -1,3 +1,15 @@
+## [4.8.34] - 2025-10-19
+### 🔧 BUGFIX: Sanitize Grover solver service options
+
+#### Summary
+- Strip Grover-only controls like `maxSteps` before calling the underlying OpenAI Responses API so unsupported payload fields are never forwarded.
+- Ensure Grover retains its internal iteration settings by applying the sanitized options when invoking the delegated LLM service.
+
+#### Verification
+- npm run check
+
+---
+
 ## [4.8.33] - 2025-10-19
 ### 🔧 BUGFIX: Remove unstable health check routines
 
