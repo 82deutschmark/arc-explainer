@@ -12,7 +12,7 @@ import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import { ChevronDown, ChevronUp, CheckCircle2, Loader2, Clock } from 'lucide-react';
+import { ChevronDown, ChevronUp, CheckCircle2, Loader2, Clock, Copy, Check } from 'lucide-react';
 import type { GroverIteration } from '@/hooks/useGroverProgress';
 
 // Iteration strategies from Grover algorithm (credit: Zoe Carver)
@@ -80,9 +80,30 @@ export function IterationCard({
   // ALWAYS start expanded so user can see the actual code generated
   const [isExpanded, setIsExpanded] = React.useState(true);
   // Track which programs are expanded (by index)
-  const [expandedPrograms, setExpandedPrograms] = React.useState<Set<number>>(new Set());
+  const [expandedPrograms, setExpandedPrograms] = React.useState<Set<number>>(() => {
+    const defaults = new Set<number>();
+    if (data?.best?.programIdx !== undefined && data.best.programIdx >= 0) {
+      defaults.add(data.best.programIdx);
+    }
+    return defaults;
+  });
   // Track prompt preview expanded state
   const [isPromptOpen, setIsPromptOpen] = React.useState(false);
+  const [copiedProgram, setCopiedProgram] = React.useState<number | null>(null);
+
+  React.useEffect(() => {
+    const bestIdx = data?.best?.programIdx;
+    if (typeof bestIdx === 'number' && bestIdx >= 0) {
+      setExpandedPrograms(prev => {
+        if (prev.has(bestIdx)) {
+          return prev;
+        }
+        const next = new Set(prev);
+        next.add(bestIdx);
+        return next;
+      });
+    }
+  }, [data?.best?.programIdx]);
   const formatCount = (value?: number | null) =>
     typeof value === 'number' && Number.isFinite(value) ? value.toLocaleString() : '—';
 
@@ -101,6 +122,33 @@ export function IterationCard({
 
   const bestScore = data?.best?.score ?? 0;
   const programCount = data?.programs?.length ?? 0;
+
+  const handleExpandAll = React.useCallback(() => {
+    if (!data?.programs?.length) return;
+    setExpandedPrograms(new Set(data.programs.map((_, index) => index)));
+  }, [data?.programs]);
+
+  const handleCollapseAll = React.useCallback(() => {
+    setExpandedPrograms(new Set());
+  }, []);
+
+  const handleCopyProgram = React.useCallback((program: string, idx: number) => {
+    if (!navigator?.clipboard?.writeText) {
+      setCopiedProgram(null);
+      return;
+    }
+    navigator.clipboard
+      .writeText(program)
+      .then(() => {
+        setCopiedProgram(idx);
+        setTimeout(() => {
+          setCopiedProgram(prev => (prev === idx ? null : prev));
+        }, 2000);
+      })
+      .catch(() => {
+        setCopiedProgram(null);
+      });
+  }, []);
 
   return (
     <Card className="mb-2 border-2 shadow-sm hover:shadow-md transition-shadow">
@@ -229,10 +277,30 @@ export function IterationCard({
             
             {/* Programs Generated */}
             <div className="border-t pt-3">
-              <h4 className="text-sm font-bold mb-3 text-gray-900 flex items-center gap-2">
-                <span className="text-purple-600">📝</span> Programs Generated
-                <Badge variant="outline" className="text-xs">{data.programs.length}</Badge>
-              </h4>
+              <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
+                <h4 className="text-sm font-bold text-gray-900 flex items-center gap-2">
+                  <span className="text-purple-600">📝</span> Programs Generated
+                  <Badge variant="outline" className="text-xs">{data.programs.length}</Badge>
+                </h4>
+                {data.programs.length > 0 && (
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={handleExpandAll}
+                      className="btn btn-xs btn-outline"
+                    >
+                      Expand all
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleCollapseAll}
+                      className="btn btn-xs btn-ghost"
+                    >
+                      Collapse all
+                    </button>
+                  </div>
+                )}
+              </div>
               <div className="space-y-2">
                 {data.programs.map((program, idx) => {
                   const result = data.executionResults.find(r => r.programIdx === idx);
@@ -292,7 +360,27 @@ export function IterationCard({
                       </CollapsibleTrigger>
                       <CollapsibleContent>
                         <div className="mt-2 border-2 border-gray-200 rounded-lg overflow-hidden">
-                          <pre className="p-3 bg-gray-900 text-gray-100 text-xs overflow-x-auto leading-relaxed max-h-96">
+                          <div className="flex items-center justify-between bg-gray-900 text-gray-100 px-3 py-2">
+                            <span className="text-xs font-semibold tracking-wide uppercase">Python Program</span>
+                            <button
+                              type="button"
+                              onClick={() => handleCopyProgram(program, idx)}
+                              className="btn btn-ghost btn-xs text-gray-200 hover:bg-gray-800 gap-1"
+                            >
+                              {copiedProgram === idx ? (
+                                <>
+                                  <Check className="h-3.5 w-3.5" />
+                                  <span className="ml-1 text-xs">Copied</span>
+                                </>
+                              ) : (
+                                <>
+                                  <Copy className="h-3.5 w-3.5" />
+                                  <span className="ml-1 text-xs">Copy</span>
+                                </>
+                              )}
+                            </button>
+                          </div>
+                          <pre className="p-3 bg-gray-950 text-gray-100 text-xs sm:text-sm overflow-auto leading-relaxed">
                             <code>{program}</code>
                           </pre>
                           {result?.error && (
