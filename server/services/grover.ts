@@ -36,6 +36,19 @@ export class GroverService extends BaseAIService {
   }
 
   /**
+   * Remove Grover-only service options before delegating to the underlying provider
+   * to prevent accidental propagation of unsupported parameters (e.g., max_steps).
+   */
+  private sanitizeServiceOptionsForUnderlying(serviceOpts?: ServiceOptions): ServiceOptions {
+    if (!serviceOpts) {
+      return {};
+    }
+
+    const { maxSteps: _ignoredMaxSteps, ...externalOptions } = serviceOpts;
+    return { ...externalOptions };
+  }
+
+  /**
    * Override streaming method to route to analyzePuzzleWithModel which already handles streaming harness
    */
   async analyzePuzzleWithStreaming(
@@ -76,6 +89,7 @@ export class GroverService extends BaseAIService {
     const maxIterations = serviceOpts.maxSteps || 5;
     const underlyingModel = this.models[modelKey];
     const sessionId = serviceOpts.sessionId;
+    const sanitizedServiceOpts = this.sanitizeServiceOptionsForUnderlying(serviceOpts);
 
     if (!underlyingModel) {
       const error = `Invalid Grover model key: ${modelKey}. Available: ${Object.keys(this.models).join(', ')}`;
@@ -190,7 +204,7 @@ export class GroverService extends BaseAIService {
         });
 
         const underlyingServiceOpts: ServiceOptions = {
-          ...serviceOpts,
+          ...sanitizedServiceOpts,
           stream: undefined, // CRITICAL: Prevent child service from streaming
           previousResponseId,
         };

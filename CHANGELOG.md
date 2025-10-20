@@ -1,22 +1,12 @@
 ## [4.8.34] - 2025-10-19
-### 🔧 BUGFIX: Fix Railway deployment - revert strict environment mode checks
+### 🔧 BUGFIX: Sanitize Grover solver service options
 
-#### Problem
-Railway deployment failed with error: "Blocked request. This host (arc-explainer-staging.up.railway.app) is not allowed"
+#### Summary
+- Strip Grover-only controls like `maxSteps` before calling the underlying OpenAI Responses API so unsupported payload fields are never forwarded.
+- Ensure Grover retains its internal iteration settings by applying the sanitized options when invoking the delegated LLM service.
 
-#### Root Cause
-Recent commits introduced strict environment mode checking with `NODE_ENV=production` in `railway.json`, forcing static file serving and triggering Vite's host validation errors. This was overly complex for a multi-branch deployment strategy.
-
-#### Solution
-- Reverted `railway.json` startCommand to `node dist/index.js` (removed `NODE_ENV=production`)
-- Removed unnecessary `allowedHosts: true` settings from `vite.config.ts`
-- Removed `process.env.NODE_ENV` checks from `server/index.ts`
-- App now defaults to development mode and always runs Vite dev server, matching the original working approach
-
-#### Impact
-- Railway deployment now works without host validation errors
-- Lenient dev server approach works across staging/prod branches
-- Matches behavior on main branch
+#### Verification
+- npm run check
 
 ---
 
