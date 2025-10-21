@@ -35,8 +35,6 @@ export default function SaturnVisualSolver() {
   const [reasoningEffort, setReasoningEffort] = React.useState<'minimal' | 'low' | 'medium' | 'high'>('high');
   const [reasoningVerbosity, setReasoningVerbosity] = React.useState<'low' | 'medium' | 'high'>('high');
   const [reasoningSummaryType, setReasoningSummaryType] = React.useState<'auto' | 'detailed'>('detailed');
-  const [startTime, setStartTime] = React.useState<Date | null>(null);
-
   // Track running state
   const isRunning = state.status === 'running';
   const isDone = state.status === 'completed';
@@ -54,17 +52,6 @@ export default function SaturnVisualSolver() {
 
     return state.result as Record<string, unknown>;
   }, [state.result]);
-
-  // Track start time for elapsed calculation
-  // Note: startTime intentionally NOT in dependency array to avoid infinite loop
-  React.useEffect(() => {
-    if (state.status === 'running' && !startTime) {
-      setStartTime(new Date());
-    } else if (state.status !== 'running') {
-      setStartTime(null);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [state.status]);
 
   // Error states
   if (!taskId) {
