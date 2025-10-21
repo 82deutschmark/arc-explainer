@@ -17,6 +17,40 @@ import ast
 import threading
 from typing import Dict, List, Any, Optional
 
+# Whitelist of safe modules Grover programs are allowed to import.
+# NOTE: Puzzle solutions occasionally rely on small portions of the Python
+# standard library (e.g., `copy.deepcopy`, `itertools.product`). Blocking
+# imports entirely caused otherwise valid solutions to fail AST validation.
+# The whitelist intentionally mirrors deterministic, side-effect free modules.
+SAFE_IMPORT_MODULES: tuple[str, ...] = (
+    "collections",
+    "collections.abc",
+    "copy",
+    "functools",
+    "itertools",
+    "math",
+    "statistics",
+    "typing",
+)
+
+
+def _is_safe_import(module_name: str | None) -> bool:
+    """Return True if the import target is included in the safe whitelist."""
+    if not module_name:
+        return False
+
+    # Accept either the exact module or any parent module in the whitelist so
+    # statements like `from collections import Counter` or
+    # `from collections.abc import Iterable` succeed.
+    target = module_name
+    while target:
+        if target in SAFE_IMPORT_MODULES:
+            return True
+        if "." not in target:
+            break
+        target = target.rsplit(".", 1)[0]
+    return module_name in SAFE_IMPORT_MODULES
+
 class ExecutionTimeout(Exception):
     """Raised when code execution exceeds timeout"""
     pass
@@ -28,8 +62,14 @@ def validate_ast(code: str) -> tuple[bool, str]:
 
         # Check for dangerous nodes
         for node in ast.walk(tree):
-            if isinstance(node, (ast.Import, ast.ImportFrom)):
-                return (False, "Imports not allowed")
+            if isinstance(node, ast.Import):
+                for alias in node.names:
+                    if not _is_safe_import(alias.name):
+                        return (False, f"Import of '{alias.name}' not allowed")
+            if isinstance(node, ast.ImportFrom):
+                module_name = node.module or ""
+                if not _is_safe_import(module_name):
+                    return (False, f"Import from '{module_name or node.names[0].name}' not allowed")
             # Note: ast.Exec was removed in Python 3 (exec is now a function, checked below)
             if isinstance(node, ast.Call):
                 # Block dangerous function calls
