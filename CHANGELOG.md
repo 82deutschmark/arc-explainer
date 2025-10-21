@@ -1,3 +1,21 @@
+## [4.8.36] - 2025-10-20
+### 🔧 BUGFIX: Fix infinite re-render loop in Saturn solver
+
+#### Problem
+- React error #310 (Too many re-renders) occurring in SaturnVisualSolver
+- Console showing: "Uncaught Error: Minified React error #310" at line 99
+
+#### Root Cause
+- `useEffect` at lines 59-65 had `startTime` in dependency array
+- Effect calls `setStartTime()` which triggers effect to run again → infinite loop
+
+#### Fix
+- Removed `startTime` from dependency array (only `state.status` needed)
+- Added explanatory comment and eslint-disable directive
+- Effect now only runs when solver status changes (intended behavior)
+
+---
+
 ## [4.8.35] - 2025-10-20
 ### 🎨 UI/UX: Intelligent grid sizing for extreme aspect ratios
 
