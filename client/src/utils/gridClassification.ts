@@ -12,10 +12,36 @@ export interface GridPair {
   output: number[][];
 }
 
+export type GridLayoutCategory = 'standard' | 'wide' | 'tall';
+
 export interface ClassifiedGridPairs<T extends GridPair> {
   standard: Array<{ item: T; idx: number }>;
   wide: Array<{ item: T; idx: number }>;
   tall: Array<{ item: T; idx: number }>;
+}
+
+/**
+ * Determines the layout category for a single grid pair
+ */
+export function classifyGridPair<T extends GridPair>(pair: T): GridLayoutCategory {
+  const inputRows = pair.input.length;
+  const inputCols = pair.input[0]?.length || 0;
+  const outputRows = pair.output.length;
+  const outputCols = pair.output[0]?.length || 0;
+
+  const maxHeight = Math.max(inputRows, outputRows);
+  const combinedWidth = inputCols + outputCols;
+  const maxDim = Math.max(inputRows, inputCols, outputRows, outputCols);
+
+  if (maxHeight > 15) {
+    return 'tall';
+  }
+
+  if (combinedWidth > 30 || maxDim > 15) {
+    return 'wide';
+  }
+
+  return 'standard';
 }
 
 /**
@@ -43,23 +69,19 @@ export function classifyGridPairs<T extends GridPair>(
   const tall: Array<{ item: T; idx: number }> = [];
 
   pairs.forEach((item, idx) => {
-    const inputRows = item.input.length;
-    const inputCols = item.input[0]?.length || 0;
-    const outputRows = item.output.length;
-    const outputCols = item.output[0]?.length || 0;
+    const layout = classifyGridPair(item);
 
-    const maxHeight = Math.max(inputRows, outputRows);
-    const combinedWidth = inputCols + outputCols;
-    const maxDim = Math.max(inputRows, inputCols, outputRows, outputCols);
-
-    // Classification logic - more aggressive categorization
-    if (maxHeight > 15) {
+    if (layout === 'tall') {
       tall.push({ item, idx });
-    } else if (combinedWidth > 30 || maxDim > 15) {
-      wide.push({ item, idx });
-    } else {
-      standard.push({ item, idx });
+      return;
     }
+
+    if (layout === 'wide') {
+      wide.push({ item, idx });
+      return;
+    }
+
+    standard.push({ item, idx });
   });
 
   return { standard, wide, tall };
