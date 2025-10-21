@@ -1,3 +1,37 @@
+## [4.8.35] - 2025-10-20
+### 🎨 UI/UX: Intelligent grid sizing for extreme aspect ratios
+
+#### Problem
+- Fixed max-w/max-h constraints (16rem) causing unnecessary scrollbars even when viewport space available
+- Grids with extreme aspect ratios (very wide or very tall) poorly sized and wasting screen real estate
+- PuzzleGridDisplay using overflow-auto containers creating scrollbars for content that could fit naturally
+- No intelligent adaptation to grid dimensions or available viewport space
+
+#### Solution
+- **New utility: `gridSizing.ts`** - Intelligent dimension calculation with aspect ratio-aware scaling
+  - `calculateGridSize()`: Scales grids based on viewport constraints and aspect ratio (handles >3:1 and <1:3 ratios specially)
+  - `calculateGridPairSize()`: Ensures uniform cell size across input/output pairs
+  - Maintains existing cell size thresholds (12px-40px based on grid dimensions)
+- **GridDisplay enhancements**: Dynamic container sizing with useMemo optimization instead of fixed Tailwind classes
+- **TestCaseCard improvements**: Calculates optimal grid pair sizes with uniform cell dimensions
+- **PuzzleGridDisplay layout**: Removed overflow-auto containers, improved flex-wrap handling for tall grids
+- **Backward compatible**: Legacy `sizeClass` prop still supported for gradual migration
+
+#### Components Updated
+- `client/src/utils/gridSizing.ts` (NEW) - Intelligent sizing algorithms
+- `client/src/components/puzzle/grids/GridDisplay.tsx` - Dynamic sizing
+- `client/src/components/puzzle/grids/InputGridDisplay.tsx` - Pass-through props
+- `client/src/components/puzzle/grids/OutputGridDisplay.tsx` - Pass-through props
+- `client/src/components/puzzle/testcases/TestCaseCard.tsx` - Grid pair sizing
+- `client/src/components/puzzle/PuzzleGridDisplay.tsx` - Layout improvements
+
+#### Verification
+- Test with puzzles containing extreme aspect ratios (e.g., 1×30, 30×1, 2×25 grids)
+- Verify no scrollbars appear when content can fit naturally
+- Confirm responsive grid layouts adapt to viewport size
+
+---
+
 ## [4.8.34] - 2025-10-19
 ### 🔧 BUGFIX: Sanitize Grover solver service options
 
