@@ -40,8 +40,8 @@ export function GridPair({
   const hasMultipleOutputs = outputs.length > 1;
 
   return (
-    <div 
-      className={`border-2 rounded-lg overflow-hidden shadow-sm ${
+    <div
+      className={`w-full border-2 rounded-lg overflow-hidden shadow-sm ${
         isTest ? 'border-emerald-300 bg-base-100' : 'border-slate-300 bg-base-100'
       }`}
     >
@@ -58,9 +58,9 @@ export function GridPair({
       </div>
 
       {/* Grid Display Area */}
-      <div className="flex divide-x-2 divide-gray-200">
+      <div className="flex max-w-full divide-x-2 divide-gray-200 overflow-x-auto">
         {/* INPUT Section */}
-        <div className="p-3 bg-slate-50">
+        <div className="p-3 bg-slate-50 flex-shrink-0">
           <div className="flex items-center gap-2 mb-2">
             <span className="text-xs font-bold text-slate-700 uppercase px-2 py-1 bg-slate-200 rounded">📋 Input</span>
           </div>
@@ -74,9 +74,9 @@ export function GridPair({
 
         {/* OUTPUT Section(s) */}
         {outputs.map((output, idx) => (
-          <div 
+          <div
             key={idx}
-            className={`p-3 ${isTest ? 'bg-emerald-50' : 'bg-amber-50'}`}
+            className={`p-3 ${isTest ? 'bg-emerald-50' : 'bg-amber-50'} flex-shrink-0`}
           >
             <div className="flex items-center gap-2 mb-2">
               <span className={`text-xs font-bold uppercase px-2 py-1 rounded ${

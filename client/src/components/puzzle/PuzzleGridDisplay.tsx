@@ -18,9 +18,10 @@
 import React, { useMemo } from 'react';
 import { Grid3X3 } from 'lucide-react';
 import { GridPair } from './GridPair';
-import { classifyGridPairs, type GridPair as GridPairType } from '@/utils/gridClassification';
+import { classifyGridPair, type GridLayoutCategory } from '@/utils/gridClassification';
 import type { ARCTask } from '@shared/types';
 import type { EmojiSet } from '@/lib/spaceEmojis';
+import { cn } from '@/lib/utils';
 
 interface PuzzleGridDisplayProps {
   task: ARCTask;
@@ -34,22 +35,47 @@ interface PuzzleGridDisplayProps {
  * Performance optimization: Grid classification is memoized and only recalculates
  * when task data changes, not on every UI state change.
  */
+interface GridExampleConfig {
+  key: string;
+  title: string;
+  layout: GridLayoutCategory;
+  input: number[][];
+  outputs: number[][][];
+  isTest: boolean;
+}
+
+const getGridSpanClasses = (layout: GridLayoutCategory) => {
+  switch (layout) {
+    case 'wide':
+      return 'md:col-span-2 2xl:col-span-3';
+    default:
+      return 'col-span-1';
+  }
+};
+
+const needsOverflowScroll = (layout: GridLayoutCategory) => layout !== 'standard';
+
 export function PuzzleGridDisplay({ task, showEmojis, emojiSet }: PuzzleGridDisplayProps) {
-  // PERFORMANCE FIX: Memoize training grid classification
-  // Previously: Recalculated on every render (lines 344-471 in old PuzzleExaminer)
-  const classifiedTraining = useMemo(() => {
-    return classifyGridPairs(task.train.map(example => ({
+  const trainingExamples = useMemo<GridExampleConfig[]>(() => {
+    return task.train.map((example, idx) => ({
+      key: `train-${idx}`,
+      title: `Training Example ${idx + 1}`,
+      layout: classifyGridPair({ input: example.input, output: example.output }),
       input: example.input,
-      output: example.output
-    })));
+      outputs: [example.output],
+      isTest: false
+    }));
   }, [task.train]);
 
-  // PERFORMANCE FIX: Memoize test grid classification (still used for training examples)
-  const classifiedTest = useMemo(() => {
-    return classifyGridPairs(task.test.map(testCase => ({
-      input: testCase.input,
-      output: testCase.output
-    })));
+  const testExamples = useMemo<GridExampleConfig[]>(() => {
+    return task.test.map((example, idx) => ({
+      key: `test-${idx}`,
+      title: `Test ${idx + 1}`,
+      layout: classifyGridPair({ input: example.input, output: example.output }),
+      input: example.input,
+      outputs: [example.output],
+      isTest: true
+    }));
   }, [task.test]);
 
   return (
@@ -71,62 +97,30 @@ export function PuzzleGridDisplay({ task, showEmojis, emojiSet }: PuzzleGridDisp
           </div>
 
           <div className="space-y-2">
-            {/* Standard Pairs: Responsive grid - no overflow containers */}
-            {classifiedTraining.standard.length > 0 && (
-              <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-2">
-                {classifiedTraining.standard.map(({ item, idx }) => (
-                  <GridPair
-                    key={idx}
-                    input={item.input}
-                    outputs={[item.output]}
-                    title={`Training Example ${idx + 1}`}
-                    showEmojis={showEmojis}
-                    emojiSet={emojiSet}
-                    isTest={false}
-                  />
-                ))}
-              </div>
-            )}
-
-            {/* Wide Pairs: Full-width stacked layout - no scrollbars needed */}
-            {classifiedTraining.wide.length > 0 && (
-              <div className="space-y-2 w-full">
-                {classifiedTraining.wide.map(({ item, idx }) => (
-                  <div key={idx} className="w-full flex justify-center">
-                    <div className="max-w-full">
-                      <GridPair
-                        input={item.input}
-                        outputs={[item.output]}
-                        title={`Training Example ${idx + 1}`}
-                        showEmojis={showEmojis}
-                        emojiSet={emojiSet}
-                        isTest={false}
-                      />
-                    </div>
+            <div className="grid auto-rows-max grid-cols-1 gap-2 sm:gap-3 md:grid-cols-2 2xl:grid-cols-3">
+              {trainingExamples.map((example) => (
+                <div
+                  key={example.key}
+                  className={cn('w-full', getGridSpanClasses(example.layout))}
+                >
+                  <div
+                    className={cn(
+                      'w-full',
+                      needsOverflowScroll(example.layout) && 'overflow-x-auto'
+                    )}
+                  >
+                    <GridPair
+                      input={example.input}
+                      outputs={example.outputs}
+                      title={example.title}
+                      showEmojis={showEmojis}
+                      emojiSet={emojiSet}
+                      isTest={example.isTest}
+                    />
                   </div>
-                ))}
-              </div>
-            )}
-
-            {/* Tall Pairs: Horizontal flex layout with smart spacing */}
-            {classifiedTraining.tall.length > 0 && (
-              <div className="w-full">
-                <div className="flex gap-2 flex-wrap justify-start">
-                  {classifiedTraining.tall.map(({ item, idx }) => (
-                    <div key={idx} className="flex-shrink-0">
-                      <GridPair
-                        input={item.input}
-                        outputs={[item.output]}
-                        title={`Training Example ${idx + 1}`}
-                        showEmojis={showEmojis}
-                        emojiSet={emojiSet}
-                        isTest={false}
-                      />
-                    </div>
-                  ))}
                 </div>
-              </div>
-            )}
+              ))}
+            </div>
           </div>
         </div>
 
@@ -138,62 +132,30 @@ export function PuzzleGridDisplay({ task, showEmojis, emojiSet }: PuzzleGridDisp
           </div>
 
           <div className="space-y-2">
-            {/* Standard test cases: Responsive grid */}
-            {classifiedTest.standard.length > 0 && (
-              <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-2">
-                {classifiedTest.standard.map(({ item, idx }) => (
-                  <GridPair
-                    key={idx}
-                    input={item.input}
-                    outputs={[item.output]}
-                    title={`Test ${task.test.findIndex(t => t.input === item.input) + 1}`}
-                    showEmojis={showEmojis}
-                    emojiSet={emojiSet}
-                    isTest={true}
-                  />
-                ))}
-              </div>
-            )}
-
-            {/* Wide test cases: Full-width stacked */}
-            {classifiedTest.wide.length > 0 && (
-              <div className="space-y-2 w-full">
-                {classifiedTest.wide.map(({ item, idx }) => (
-                  <div key={idx} className="w-full flex justify-center">
-                    <div className="max-w-full">
-                      <GridPair
-                        input={item.input}
-                        outputs={[item.output]}
-                        title={`Test ${task.test.findIndex(t => t.input === item.input) + 1}`}
-                        showEmojis={showEmojis}
-                        emojiSet={emojiSet}
-                        isTest={true}
-                      />
-                    </div>
+            <div className="grid auto-rows-max grid-cols-1 gap-2 sm:gap-3 md:grid-cols-2 2xl:grid-cols-3">
+              {testExamples.map((example) => (
+                <div
+                  key={example.key}
+                  className={cn('w-full', getGridSpanClasses(example.layout))}
+                >
+                  <div
+                    className={cn(
+                      'w-full',
+                      needsOverflowScroll(example.layout) && 'overflow-x-auto'
+                    )}
+                  >
+                    <GridPair
+                      input={example.input}
+                      outputs={example.outputs}
+                      title={example.title}
+                      showEmojis={showEmojis}
+                      emojiSet={emojiSet}
+                      isTest={example.isTest}
+                    />
                   </div>
-                ))}
-              </div>
-            )}
-
-            {/* Tall test cases: Horizontal flex */}
-            {classifiedTest.tall.length > 0 && (
-              <div className="w-full">
-                <div className="flex gap-2 flex-wrap justify-start">
-                  {classifiedTest.tall.map(({ item, idx }) => (
-                    <div key={idx} className="flex-shrink-0">
-                      <GridPair
-                        input={item.input}
-                        outputs={[item.output]}
-                        title={`Test ${task.test.findIndex(t => t.input === item.input) + 1}`}
-                        showEmojis={showEmojis}
-                        emojiSet={emojiSet}
-                        isTest={true}
-                      />
-                    </div>
-                  ))}
                 </div>
-              </div>
-            )}
+              ))}
+            </div>
           </div>
         </div>
       </div>
