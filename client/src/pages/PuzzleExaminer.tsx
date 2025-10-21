@@ -68,7 +68,8 @@ export default function PuzzleExaminer() {
   const [showEmojis, setShowEmojis] = useState(false);
   const [emojiSet, setEmojiSet] = useState<EmojiSet>(DEFAULT_EMOJI_SET);
   const [sendAsEmojis, setSendAsEmojis] = useState(false);
-  const [showPromptPreview, setShowPromptPreview] = useState(false);
+  const [isPromptPreviewOpen, setIsPromptPreviewOpen] = useState(false);
+  const [pendingAnalysis, setPendingAnalysis] = useState<{ modelKey: string; supportsTemperature: boolean } | null>(null);
   const [omitAnswer, setOmitAnswer] = useState(true);
   const [correctnessFilter, setCorrectnessFilter] = useState<CorrectnessFilter>('all');
 
@@ -213,7 +214,25 @@ export default function PuzzleExaminer() {
   // Handle model selection
   const handleAnalyzeWithModel = (modelKey: string) => {
     const model = models?.find(m => m.key === modelKey);
-    analyzeWithModel(modelKey, model?.supportsTemperature ?? true);
+    setPendingAnalysis({
+      modelKey,
+      supportsTemperature: model?.supportsTemperature ?? true,
+    });
+    setIsPromptPreviewOpen(true);
+  };
+
+  const handleConfirmAnalysis = async () => {
+    if (!pendingAnalysis) {
+      return;
+    }
+    analyzeWithModel(pendingAnalysis.modelKey, pendingAnalysis.supportsTemperature);
+    setPendingAnalysis(null);
+    setIsPromptPreviewOpen(false);
+  };
+
+  const handleClosePromptPreview = () => {
+    setPendingAnalysis(null);
+    setIsPromptPreviewOpen(false);
   };
 
   // Loading state
@@ -281,7 +300,10 @@ export default function PuzzleExaminer() {
         onSendAsEmojisChange={setSendAsEmojis}
         omitAnswer={omitAnswer}
         onOmitAnswerChange={setOmitAnswer}
-        onPreviewClick={() => setShowPromptPreview(true)}
+        onPreviewClick={() => {
+          setPendingAnalysis(null);
+          setIsPromptPreviewOpen(true);
+        }}
         temperature={temperature}
         onTemperatureChange={setTemperature}
         topP={topP}
@@ -390,8 +412,8 @@ export default function PuzzleExaminer() {
 
       {/* Prompt Preview Modal */}
       <PromptPreviewModal
-        isOpen={showPromptPreview}
-        onClose={() => setShowPromptPreview(false)}
+        isOpen={isPromptPreviewOpen}
+        onClose={handleClosePromptPreview}
         task={task}
         taskId={taskId}
         promptId={promptId}
@@ -401,6 +423,9 @@ export default function PuzzleExaminer() {
           omitAnswer,
           sendAsEmojis
         }}
+        confirmMode={pendingAnalysis !== null}
+        onConfirm={pendingAnalysis ? handleConfirmAnalysis : undefined}
+        confirmButtonText="Confirm & Send Analysis"
       />
     </div>
   );
