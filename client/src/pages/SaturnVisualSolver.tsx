@@ -56,13 +56,15 @@ export default function SaturnVisualSolver() {
   }, [state.result]);
 
   // Track start time for elapsed calculation
+  // Note: startTime intentionally NOT in dependency array to avoid infinite loop
   React.useEffect(() => {
     if (state.status === 'running' && !startTime) {
       setStartTime(new Date());
     } else if (state.status !== 'running') {
       setStartTime(null);
     }
-  }, [state.status, startTime]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [state.status]);
 
   // Error states
   if (!taskId) {
