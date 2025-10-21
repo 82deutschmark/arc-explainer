@@ -53,6 +53,10 @@ export default function SaturnVisualSolver() {
     return state.result as Record<string, unknown>;
   }, [state.result]);
 
+  const expectedOutputs = React.useMemo(() => {
+    return (task?.test ?? []).map((testCase) => testCase.output);
+  }, [task]);
+
   // Error states
   if (!taskId) {
     return (
@@ -84,10 +88,6 @@ export default function SaturnVisualSolver() {
       </div>
     );
   }
-
-  const expectedOutputs = React.useMemo(() => {
-    return (task?.test ?? []).map((testCase) => testCase.output);
-  }, [task]);
 
   const onStart = () => start({
     model,
