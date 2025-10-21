@@ -73,18 +73,17 @@ export function PuzzleGridDisplay({ task, showEmojis, emojiSet }: PuzzleGridDisp
           <div className="space-y-2">
             {/* Standard Pairs: Responsive grid - no overflow containers */}
             {classifiedTraining.standard.length > 0 && (
-              <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-2">
+              <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-2">
                 {classifiedTraining.standard.map(({ item, idx }) => (
-                  <div key={idx} className="flex justify-center items-start">
-                    <GridPair
-                      input={item.input}
-                      outputs={[item.output]}
-                      title={`Training Example ${idx + 1}`}
-                      showEmojis={showEmojis}
-                      emojiSet={emojiSet}
-                      isTest={false}
-                    />
-                  </div>
+                  <GridPair
+                    key={idx}
+                    input={item.input}
+                    outputs={[item.output]}
+                    title={`Training Example ${idx + 1}`}
+                    showEmojis={showEmojis}
+                    emojiSet={emojiSet}
+                    isTest={false}
+                  />
                 ))}
               </div>
             )}
@@ -141,18 +140,17 @@ export function PuzzleGridDisplay({ task, showEmojis, emojiSet }: PuzzleGridDisp
           <div className="space-y-2">
             {/* Standard test cases: Responsive grid */}
             {classifiedTest.standard.length > 0 && (
-              <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-2">
+              <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-2">
                 {classifiedTest.standard.map(({ item, idx }) => (
-                  <div key={idx} className="flex justify-center items-start">
-                    <GridPair
-                      input={item.input}
-                      outputs={[item.output]}
-                      title={`Test ${task.test.findIndex(t => t.input === item.input) + 1}`}
-                      showEmojis={showEmojis}
-                      emojiSet={emojiSet}
-                      isTest={true}
-                    />
-                  </div>
+                  <GridPair
+                    key={idx}
+                    input={item.input}
+                    outputs={[item.output]}
+                    title={`Test ${task.test.findIndex(t => t.input === item.input) + 1}`}
+                    showEmojis={showEmojis}
+                    emojiSet={emojiSet}
+                    isTest={true}
+                  />
                 ))}
               </div>
             )}

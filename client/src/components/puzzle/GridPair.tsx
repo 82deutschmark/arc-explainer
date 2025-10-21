@@ -41,10 +41,9 @@ export function GridPair({
 
   return (
     <div 
-      className={`inline-block border-2 rounded-lg overflow-visible shadow-sm ${
+      className={`border-2 rounded-lg overflow-hidden shadow-sm ${
         isTest ? 'border-emerald-300 bg-base-100' : 'border-slate-300 bg-base-100'
       }`}
-      style={{ minWidth: 'fit-content' }}
     >
       {/* Title Bar */}
       <div className={`px-3 py-2 text-sm font-bold ${
