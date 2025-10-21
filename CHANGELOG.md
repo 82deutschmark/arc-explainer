@@ -1,3 +1,13 @@
+## [4.8.37] - 2025-10-21
+### 🎨 UI/UX: Amplify Puzzle Browser clarity
+
+#### Summary
+- Removed page-wide gutters so the Puzzle Browser now stretches edge-to-edge against a saturated twilight gradient background.
+- Reframed the knowledge hub, filters, and instructions in glassmorphism panels with brighter call-to-action buttons for unmistakable interactivity.
+- Enlarged PuzzleCard typography, grid previews, and primary "Examine" action so each tile reads as a prominent, clickable card.
+
+---
+
 ## [4.8.36] - 2025-10-20
 ### 🔧 BUGFIX: Fix infinite re-render loop in Saturn solver
 

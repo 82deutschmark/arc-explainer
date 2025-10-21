@@ -76,47 +76,47 @@ export const PuzzleCard: React.FC<PuzzleCardProps> = ({
   const firstTrainingExample = taskData?.train?.[0];
   const isExplained = Boolean(puzzle.hasExplanation);
   const statusGradient = isExplained
-    ? 'from-emerald-400/40 via-teal-400/30 to-sky-400/40'
-    : 'from-rose-400/40 via-amber-400/30 to-violet-400/35';
+    ? 'from-emerald-400/80 via-teal-400/70 to-sky-500/80'
+    : 'from-rose-500/80 via-amber-400/70 to-violet-600/80';
   const statusText = isExplained ? 'Explained' : 'Needs Analysis';
   const statusColorClass = isExplained ? 'text-emerald-600' : 'text-rose-600';
   const buttonGradient = isExplained
     ? 'from-emerald-500 via-teal-500 to-sky-500'
-    : 'from-rose-500 via-amber-500 to-violet-500';
+    : 'from-rose-600 via-amber-500 to-violet-600';
 
   return (
     <div
       ref={cardRef}
-      className={`group relative rounded-2xl bg-gradient-to-br ${statusGradient} p-[1px] transition-all duration-300 hover:shadow-xl focus-within:shadow-xl`}
+      className={`group relative rounded-[2.25rem] bg-gradient-to-br ${statusGradient} p-[3px] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_30px_80px_-40px_rgba(15,23,42,0.65)] focus-within:-translate-y-1 focus-within:shadow-[0_30px_80px_-40px_rgba(15,23,42,0.65)]`}
     >
-      <div className="relative h-full rounded-[1.05rem] bg-gradient-to-br from-white via-slate-50/80 to-blue-50/60 p-4 backdrop-blur-sm shadow-sm transition-all duration-300 group-hover:from-white group-hover:to-white group-focus-within:from-white group-focus-within:to-white space-y-3">
-        <div className="pointer-events-none absolute right-4 top-4 flex items-center gap-2">
+      <div className="relative h-full rounded-[2rem] bg-gradient-to-br from-white via-slate-50 to-sky-50 p-7 backdrop-blur-sm shadow-lg transition-all duration-300 group-hover:translate-y-[-2px] group-hover:shadow-xl group-focus-within:translate-y-[-2px] group-focus-within:shadow-xl space-y-5">
+        <div className="pointer-events-none absolute right-7 top-7 flex items-center gap-2">
           <span className={`text-[11px] font-semibold uppercase tracking-wide ${statusColorClass}`}>
             {statusText}
           </span>
         </div>
 
         {/* Header - Name or ID */}
-        <div className="space-y-1 pr-14">
+        <div className="space-y-3 pr-24">
           {hasName && puzzleName ? (
             <>
-              <h3 className="text-base font-semibold text-gray-900 capitalize">
+              <h3 className="text-xl font-semibold text-gray-900 capitalize">
                 {puzzleName}
               </h3>
-              <code className="text-xs font-mono text-gray-500">
+              <code className="text-base font-mono text-gray-500">
                 {puzzle.id}
               </code>
             </>
           ) : (
-            <code className="text-sm font-mono font-semibold text-gray-900">
+            <code className="text-lg font-mono font-semibold text-gray-900">
               {puzzle.id}
             </code>
           )}
-          
+
           {/* Source badge */}
           {puzzle.source && (
             <div className="inline-block">
-              <span className="text-xs px-2 py-0.5 rounded bg-gray-100 text-gray-700">
+              <span className="rounded-full bg-gray-100 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-gray-700">
                 {puzzle.source.replace('-Eval', '').replace('-Heavy', '').replace('ARC', 'ARC-')}
               </span>
             </div>
@@ -125,22 +125,22 @@ export const PuzzleCard: React.FC<PuzzleCardProps> = ({
 
         {/* Grid Preview */}
         {showGridPreview && firstTrainingExample && (
-          <div className="rounded-xl bg-gradient-to-br from-slate-50/80 via-white/90 to-sky-50/80 p-2 ring-1 ring-sky-200/60 transition-all duration-200 group-hover:ring-sky-400/70 group-focus-within:ring-sky-400/70">
-            <div className="flex gap-2 items-start">
+          <div className="rounded-3xl bg-gradient-to-br from-slate-50 via-white to-sky-100/80 p-4 ring-1 ring-sky-200/80 transition-all duration-200 group-hover:ring-sky-400 group-focus-within:ring-sky-400">
+            <div className="flex items-start gap-4">
               <div className="flex-1 min-w-0">
-                <p className="text-xs text-gray-500 mb-1">Input</p>
-                <div className="w-full max-w-[80px]">
+                <p className="mb-1 text-sm font-semibold text-gray-500">Input</p>
+                <div className="w-full max-w-[140px]">
                   <TinyGrid grid={firstTrainingExample.input} />
                 </div>
               </div>
               <div className="flex items-center text-gray-400">
-                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                 </svg>
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-xs text-gray-500 mb-1">Output</p>
-                <div className="w-full max-w-[80px]">
+                <p className="mb-1 text-sm font-semibold text-gray-500">Output</p>
+                <div className="w-full max-w-[140px]">
                   <TinyGrid grid={firstTrainingExample.output} />
                 </div>
               </div>
@@ -149,35 +149,35 @@ export const PuzzleCard: React.FC<PuzzleCardProps> = ({
         )}
 
         {/* Analysis Status */}
-        <div className="flex items-center gap-2 text-sm">
+        <div className="flex items-center gap-2 text-lg">
           {isExplained ? (
             <>
-              <span className="font-medium text-emerald-600">✓ Analyzed</span>
+              <span className="font-semibold text-emerald-600">✓ Analyzed</span>
               {puzzle.modelName && (
                 <span className="text-gray-500">by {puzzle.modelName.split('/').pop()}</span>
               )}
             </>
           ) : (
-            <span className="text-gray-500">Awaiting explanation</span>
+            <span className="font-medium text-gray-500">Awaiting explanation</span>
           )}
         </div>
 
         {/* Grid Info */}
-        <div className="flex items-center gap-4 text-sm text-gray-600">
-          <div className="flex items-center gap-1">
-            <Grid3X3 className="h-4 w-4" />
-            <span>{puzzle.maxGridSize}×{puzzle.maxGridSize}</span>
+        <div className="flex items-center gap-5 text-base text-gray-600">
+          <div className="flex items-center gap-1.5">
+            <Grid3X3 className="h-6 w-6" />
+            <span className="font-semibold">{puzzle.maxGridSize}×{puzzle.maxGridSize}</span>
           </div>
-          <span>{puzzle.gridSizeConsistent ? 'Consistent' : 'Variable'}</span>
+          <span className="font-medium">{puzzle.gridSizeConsistent ? 'Consistent grid' : 'Variable grid'}</span>
         </div>
 
         {/* Action Button */}
         <div>
           <Link
             href={`/puzzle/${puzzle.id}`}
-            className={`relative inline-flex w-full items-center justify-center gap-2 overflow-hidden rounded-lg bg-gradient-to-r ${buttonGradient} px-3 py-2 text-sm font-semibold text-white shadow-md transition-all duration-200 hover:scale-[1.02] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-400 focus-visible:ring-offset-2 focus-visible:ring-offset-white`}
+            className={`relative inline-flex w-full items-center justify-center gap-3 overflow-hidden rounded-2xl bg-gradient-to-r ${buttonGradient} px-5 py-4 text-lg font-semibold text-white shadow-xl transition-all duration-200 hover:scale-[1.04] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-400 focus-visible:ring-offset-2 focus-visible:ring-offset-white`}
           >
-            <Eye className="h-4 w-4" />
+            <Eye className="h-6 w-6" />
             Examine Puzzle
           </Link>
         </div>
