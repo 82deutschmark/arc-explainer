@@ -1,4 +1,22 @@
-## [4.8.37] - 2025-10-21
+## [4.8.38] - 2025-10-22
+### ?? Feature: Multi-model comparison (add/remove inline)
+
+- ModelComparisonPage now supports adding and removing models directly on the page (up to 4), no need to navigate back.
+- Reuses existing components for SRP/DRY:
+  - Per-model drilldowns via ModelPerformancePanel
+  - Matrix via NewModelComparisonResults
+- Robust state hydration: URL params, history state, and localStorage; persists latest comparison.
+- Centralized fetch to /api/metrics/compare with graceful error handling and spinners.
+
+#### Files Updated
+- client/src/pages/ModelComparisonPage.tsx
+- docs/2025-10-19-model-comparison-multi-model-plan.md (new)
+
+#### Notes
+- Max 4 models enforced to match backend capabilities (metricsController and MetricsRepository).
+- No server changes required; leverages existing model1..model4 query pattern.
+
+---## [4.8.37] - 2025-10-21
 ### 🎨 UI/UX: Amplify Puzzle Browser clarity
 
 #### Summary
@@ -5208,4 +5226,5 @@ To enable conversation chaining:
 - Actual ingestion execution with SSE streaming is prepared but awaits user testing
 - All new code follows established patterns and architectural principles
 \n### Added\n- Introduced streaming-aware analysis hook and UI panels across Puzzle Examiner, Discussion, and Model Debate pages.\n- Added reusable StreamingAnalysisPanel component for live token output with cancel support.\n- Model buttons now reflect streaming capability and status for supported models.
+
 
