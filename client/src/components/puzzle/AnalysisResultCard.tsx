@@ -8,6 +8,8 @@
  * correctly shows "Incorrect" (not "Some Incorrect") when 0/N tests are correct. Simplified fallback
  * logic to rely on multiTestAllCorrect flag when detailed validation data is unavailable.
  * ADDED: Deep linking support - each card has id="explanation-{id}" and data-explanation-id for direct URLs.
+ * UPDATED (2025-10-22T00:00:00Z) by gpt-5-codex: Reintroduced last month's aurora gradient shell, warm accent borders,
+ * and linen-inspired drawer treatments to remove the stark white regression while preserving dark mode balance.
  * SRP/DRY check: Pass - Single responsibility (orchestration), reuses child components
  * shadcn/ui: Pass - Converted to DaisyUI badge
  */
@@ -157,9 +159,9 @@ export const AnalysisResultCard = React.memo(function AnalysisResultCard({ model
   const isGroverResult = Boolean(result.groverIterations || result.groverBestProgram || result.iterationCount);
 
   return (
-    <div 
+    <div
       id={result.id ? `explanation-${result.id}` : undefined}
-      className="border rounded-lg p-4 space-y-3 scroll-mt-20 transition-all"
+      className="relative overflow-hidden rounded-3xl border border-amber-100/70 bg-[radial-gradient(circle_at_top,_rgba(254,243,199,0.92),_rgba(255,228,230,0.86)_45%,_rgba(219,234,254,0.82))] p-4 sm:p-6 space-y-5 scroll-mt-24 shadow-[0_28px_65px_-40px_rgba(146,64,14,0.55)] transition-all hover:shadow-[0_34px_78px_-42px_rgba(30,64,175,0.55)] supports-[backdrop-filter]:bg-white/80 supports-[backdrop-filter]:backdrop-blur-md dark:border-violet-800/60 dark:bg-[radial-gradient(circle_at_top,_rgba(17,24,39,0.92),_rgba(76,29,149,0.62)_45%,_rgba(15,118,110,0.54))] dark:shadow-[0_28px_70px_-40px_rgba(12,74,110,0.65)] dark:hover:shadow-[0_34px_82px_-44px_rgba(94,234,212,0.55)]"
       data-explanation-id={result.id}
     >
       <AnalysisResultHeader
@@ -178,19 +180,19 @@ export const AnalysisResultCard = React.memo(function AnalysisResultCard({ model
       />
 
       {showRawDb && (
-        <div className="bg-gray-50 border border-gray-200 rounded">
-          <div className="p-3 border-b border-gray-200 flex items-center justify-between">
-            <h5 className="font-semibold text-gray-800">Raw DB record</h5>
-            <div className="badge badge-outline text-xs bg-gray-50">
+        <div className="rounded-2xl border border-amber-200/70 bg-amber-50/80 shadow-[inset_0_12px_28px_-24px_rgba(120,53,15,0.45)] dark:border-violet-900/70 dark:bg-violet-950/40">
+          <div className="flex items-center justify-between gap-3 border-b border-amber-200/70 bg-gradient-to-r from-amber-100/70 via-rose-100/50 to-sky-100/60 px-4 py-3 dark:border-violet-900/70 dark:from-violet-950/80 dark:via-slate-900/40 dark:to-emerald-900/40">
+            <h5 className="font-semibold text-amber-900 dark:text-emerald-200">Raw DB record</h5>
+            <div className="badge badge-outline text-xs bg-white/60 text-amber-800 shadow-sm dark:bg-violet-900/60 dark:text-sky-100">
               {result.id ? `id: ${result.id}` : 'unsaved'}
             </div>
           </div>
-          <div className="p-3 max-h-64 overflow-y-auto">
-            <pre className="text-xs text-gray-700 whitespace-pre-wrap font-mono leading-relaxed">
+          <div className="max-h-64 overflow-y-auto px-4 py-3">
+            <pre className="font-mono text-xs leading-relaxed text-amber-900/90 dark:text-emerald-200 whitespace-pre-wrap">
               {JSON.stringify(result, null, 2)}
             </pre>
           </div>
-          <p className="text-xs text-gray-500 px-3 pb-3">This shows the raw explanation object as stored/returned by the backend.</p>
+          <p className="px-4 pb-4 text-xs text-amber-700/80 dark:text-emerald-300/80">This shows the raw explanation object as stored/returned by the backend.</p>
         </div>
       )}
 
@@ -226,7 +228,7 @@ export const AnalysisResultCard = React.memo(function AnalysisResultCard({ model
       {isSaturnResult && <AnalysisResultMetrics result={result} isSaturnResult={isSaturnResult} />}
 
       {/* Always show feedback actions - useful for comparison evaluation */}
-      <div className="border-t pt-3">
+      <div className="border-t border-rose-200/60 pt-4 dark:border-violet-900/60">
         <AnalysisResultActions result={result} showExistingFeedback={showExistingFeedback} />
       </div>
     </div>
