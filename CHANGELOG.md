@@ -1,3 +1,15 @@
+## [4.8.39] - 2025-10-22
+### 🎨 UI/UX: Restore aurora warmth to analysis result surfaces
+
+- Reimagined AnalysisResultCard with the September aurora gradient shell, warm linen raw data drawer, and jewel-toned accents so the card no longer feels stark white.
+- Reintroduced honeyglass backgrounds, apricot hover states, and jewel badges throughout AnalysisResultGrid to match the revived hero card styling while keeping diff controls legible.
+- Harmonized the compact AnalysisResultListCard and its collapse header with the same gradient, badge treatments, and button tints for a consistent experience across list and full views.
+
+#### Verification
+- Not run (visual change only)
+
+---
+
 ## [4.8.38] - 2025-10-22
 ### ?? Feature: Multi-model comparison (add/remove inline)
 
@@ -16,7 +28,9 @@
 - Max 4 models enforced to match backend capabilities (metricsController and MetricsRepository).
 - No server changes required; leverages existing model1..model4 query pattern.
 
----## [4.8.37] - 2025-10-21
+---
+
+## [4.8.37] - 2025-10-21
 ### 🎨 UI/UX: Amplify Puzzle Browser clarity
 
 #### Summary
