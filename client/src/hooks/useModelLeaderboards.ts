@@ -5,71 +5,15 @@
  * Provides clean data access and loading states for the main leaderboard section.
  */
 
-import { useQuery, useQueries } from '@tanstack/react-query';
+import { useQueries } from '@tanstack/react-query';
 import { apiRequest } from '@/lib/queryClient';
-
-interface AccuracyStats {
-  totalSolverAttempts: number;
-  totalCorrectPredictions: number;
-  overallAccuracyPercentage: number;
-  modelAccuracyRankings: Array<{
-    modelName: string;
-    totalAttempts: number;
-    correctPredictions: number;
-    accuracyPercentage: number;
-    singleTestAccuracy: number;
-    multiTestAccuracy: number;
-  }>;
-}
-
-interface OverconfidentModel {
-  modelName: string;
-  totalAttempts: number;
-  totalOverconfidentAttempts: number;
-  wrongOverconfidentPredictions: number;
-  overconfidenceRate: number;
-  avgConfidence: number;
-  overallAccuracy: number;
-  isHighRisk: boolean;
-}
-
-interface PerformanceLeaderboards {
-  trustworthinessLeaders: Array<{
-    modelName: string;
-    avgTrustworthiness: number;
-    avgConfidence: number;
-    avgProcessingTime: number;
-    avgCost: number;
-    totalCost: number;
-  }>;
-  speedLeaders: any[];
-  efficiencyLeaders: any[];
-  overallTrustworthiness: number;
-}
-
-interface FeedbackStats {
-  totalFeedback: number;
-  helpfulPercentage: number;
-  topModels: Array<{
-    modelName: string;
-    feedbackCount: number;
-    helpfulCount: number;
-    notHelpfulCount: number;
-    helpfulPercentage: number;
-  }>;
-  feedbackByModel: Record<string, {
-    helpful: number;
-    notHelpful: number;
-  }>;
-}
-
-interface ReliabilityStats {
-  modelName: string;
-  totalRequests: number;
-  successfulRequests: number;
-  failedRequests: number;
-  reliability: number;
-}
+import type {
+  AccuracyStats,
+  PerformanceLeaderboards,
+  FeedbackStats,
+  ReliabilityStat,
+  OverconfidentModel
+} from '@/types/leaderboards';
 
 export function useModelLeaderboards() {
   const queries = useQueries({
@@ -106,7 +50,7 @@ export function useModelLeaderboards() {
         queryFn: async () => {
           const response = await apiRequest('GET', '/api/metrics/reliability');
           const json = await response.json();
-          return json.data as ReliabilityStats[];
+          return json.data as ReliabilityStat[];
         },
         staleTime: 5 * 60 * 1000,
       },
@@ -129,7 +73,7 @@ export function useModelLeaderboards() {
     accuracyStats: accuracyQuery.data,
     performanceStats: trustworthinessQuery.data,
     feedbackStats: feedbackQuery.data,
-    reliabilityStats: reliabilityQuery.data,
+    reliabilityStats: reliabilityQuery.data as ReliabilityStat[] | undefined,
     overconfidentModels: overconfidentQuery.data,
 
     // Loading states

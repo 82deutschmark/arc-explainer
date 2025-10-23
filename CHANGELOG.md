@@ -1,3 +1,15 @@
+## [4.8.40] - 2025-10-23
+### 📊 Leaderboards: Modular metrics experience
+
+- Replaced the markdown placeholder with a fully interactive `Leaderboards` page that orchestrates accuracy, trustworthiness, reliability, and overconfidence insights sourced from `AccuracyRepository` and `MetricsRepository`.
+- Added dedicated cards and charts (`AccuracyOverviewCard`, `TrustworthinessOverviewCard`, `ReliabilitySummaryCard`, `ConfidenceDistributionCard`, `ModelTrendChart`, `ModelPerformanceTable`) to visualize real-time leaderboard data with memoized aggregation logic.
+- Introduced shared leaderboard types, constants, and the `useLeaderboardMetrics` hook to provide consistent formatting, thresholds, and data access across the new module.
+
+#### Verification
+- npm run check
+
+---
+
 ## [4.8.39] - 2025-10-22
 ### 🎨 UI/UX: Restore aurora warmth to analysis result surfaces
 
