@@ -16,8 +16,8 @@
  * shadcn/ui: Pass - Uses shadcn/ui components (Card, Badge, Tooltip, Icons)
  */
 
-import React from 'react';
-import { ThumbsUp, ThumbsDown, Users, Heart, Star, Info } from 'lucide-react';
+import React, { useMemo } from 'react';
+import { Heart, Info, ThumbsDown, ThumbsUp, Users } from 'lucide-react';
 
 interface FeedbackModelStats {
   modelName: string;
@@ -43,160 +43,129 @@ interface FeedbackLeaderboardProps {
   onModelClick?: (modelName: string) => void;
 }
 
-export function FeedbackLeaderboard({ 
-  feedbackStats, 
-  isLoading, 
-  onModelClick 
+export function FeedbackLeaderboard({
+  feedbackStats,
+  isLoading,
+  onModelClick
 }: FeedbackLeaderboardProps) {
+  const sortedModels = useMemo(() => {
+    if (!feedbackStats?.topModels) {
+      return [];
+    }
+    return [...feedbackStats.topModels].sort((a, b) => b.helpfulCount - a.helpfulCount);
+  }, [feedbackStats]);
+
+  const containerClasses = 'flex h-full flex-col rounded-md border border-gray-200 bg-white text-xs shadow-sm';
+  const rowBaseClasses = 'grid grid-cols-[auto,minmax(0,1fr),auto,auto] items-center gap-2 px-2.5 py-1.5';
+
+  const renderSkeleton = () => (
+    <ol className="divide-y divide-gray-200">
+      {[...Array(6)].map((_, index) => (
+        <li key={index} className={`${rowBaseClasses} animate-pulse`}>
+          <div className="h-3.5 w-3.5 rounded bg-gray-200" />
+          <div className="space-y-1">
+            <div className="h-3 w-32 rounded bg-gray-200" />
+            <div className="h-2.5 w-40 rounded bg-gray-100" />
+          </div>
+          <div className="h-3 w-12 rounded bg-gray-200" />
+          <div className="h-3 w-12 rounded bg-gray-200" />
+        </li>
+      ))}
+    </ol>
+  );
+
   if (isLoading) {
     return (
-      <div className="card bg-base-100 shadow">
-        <div className="card-body">
-          <h2 className="card-title flex items-center gap-2">
-            <Heart className="h-5 w-5 text-pink-600" />
-            Model Feedback Analysis
-          </h2>
-        </div>
-        <div className="card-body">
-          <div className="space-y-3">
-            {[1, 2, 3, 4, 5].map(i => (
-              <div key={i} className="animate-pulse">
-                <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 bg-gray-200 rounded-full"></div>
-                    <div className="space-y-1">
-                      <div className="h-4 bg-gray-200 rounded w-24"></div>
-                      <div className="h-3 bg-gray-200 rounded w-20"></div>
-                    </div>
-                  </div>
-                  <div className="h-6 bg-gray-200 rounded w-12"></div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
+      <section className={containerClasses}>
+        <header className="flex items-center gap-2 border-b border-gray-200 px-3 py-2 text-gray-800">
+          <Heart className="h-4 w-4 text-pink-600" />
+          <h2 className="text-[11px] font-semibold uppercase tracking-wide">Feedback leaders</h2>
+        </header>
+        <div className="flex-1 px-1.5 py-1.5">{renderSkeleton()}</div>
+      </section>
     );
   }
 
-  if (!feedbackStats || !feedbackStats.topModels?.length) {
+  if (!sortedModels.length || !feedbackStats) {
     return (
-      <div className="card bg-base-100 shadow">
-        <div className="card-body">
-          <h2 className="card-title flex items-center gap-2">
-            <Heart className="h-5 w-5 text-pink-600" />
-            Model Feedback Analysis
-          </h2>
+      <section className={containerClasses}>
+        <header className="flex items-center gap-2 border-b border-gray-200 px-3 py-2 text-gray-800">
+          <Heart className="h-4 w-4 text-pink-600" />
+          <h2 className="text-[11px] font-semibold uppercase tracking-wide">Feedback leaders</h2>
+        </header>
+        <div className="flex flex-1 items-center justify-center px-3 py-4 text-center text-[11px] text-gray-500">
+          No feedback data available.
         </div>
-        <div className="card-body">
-          <div className="text-center py-8 text-gray-500">
-            No feedback data available
-          </div>
-        </div>
-      </div>
+      </section>
     );
   }
 
-  const getRankIcon = (index: number) => {
-    if (index === 0) return <Star className="h-4 w-4 text-yellow-500 fill-current" />;
-    if (index === 1) return <Heart className="h-4 w-4 text-pink-500 fill-current" />;
-    if (index === 2) return <ThumbsUp className="h-4 w-4 text-green-600" />;
-    return <span className="w-4 h-4 flex items-center justify-center text-sm font-medium text-gray-500">#{index + 1}</span>;
+  const rankBadge = (index: number) => {
+    if (index === 0) return <Heart className="h-3.5 w-3.5 text-pink-600" />;
+    if (index === 1) return <ThumbsUp className="h-3.5 w-3.5 text-emerald-600" />;
+    if (index === 2) return <ThumbsUp className="h-3.5 w-3.5 text-sky-600" />;
+    return <span className="text-[10px] font-semibold text-gray-500">#{index + 1}</span>;
   };
 
-  const getSatisfactionColor = (percentage: number) => {
-    if (percentage >= 80) return 'bg-green-100 text-green-800 border-green-200';
-    if (percentage >= 60) return 'bg-blue-100 text-blue-800 border-blue-200';
-    if (percentage >= 40) return 'bg-yellow-100 text-yellow-800 border-yellow-200';
-    return 'bg-red-100 text-red-800 border-red-200';
-  };
-
-  const getVolumeIndicator = (count: number) => {
-    const maxCount = Math.max(...feedbackStats.topModels.map(m => m.feedbackCount));
-    const percentage = (count / maxCount) * 100;
-    
-    if (percentage >= 80) return { icon: Users, color: 'text-green-600', label: 'High volume' };
-    if (percentage >= 40) return { icon: Users, color: 'text-blue-600', label: 'Medium volume' };
-    return { icon: Users, color: 'text-gray-400', label: 'Low volume' };
-  };
-
-  // Sort models by total helpful count (most positive feedback first)
-  const sortedModels = [...feedbackStats.topModels]
-    .sort((a, b) => b.helpfulCount - a.helpfulCount); // DESC order by helpfulCount
+  const overallHelpfulText = `${feedbackStats.helpfulPercentage.toFixed(1)}% helpful · ${feedbackStats.totalFeedback.toLocaleString()} reviews`;
 
   return (
-    <div className="card bg-base-100 shadow h-full">
-      <div className="card-body">
-        <h2 className="card-title flex items-center gap-2">
-          <Heart className="h-5 w-5 text-pink-600" />
-          User Feedback Leaders
-        </h2>
-        <div className="text-sm text-gray-600">
-          Models ranked by positive feedback ({feedbackStats.totalFeedback.toLocaleString()} total ratings)
-        </div>
-      </div>
-      <div className="card-body">
-        <div className="space-y-2">
-            {sortedModels.map((model, index) => {
-              const volumeInfo = getVolumeIndicator(model.feedbackCount);
-              const VolumeIcon = volumeInfo.icon;
-              
-              return (
-                <div
-                  key={model.modelName}
-                  className={`flex items-center justify-between p-3 rounded-lg transition-colors ${
-                    onModelClick ? 'hover:bg-gray-50 cursor-pointer' : 'bg-gray-50'
-                  }`}
-                  onClick={() => onModelClick?.(model.modelName)}
-                >
-                  <div className="flex items-center gap-3 flex-1 min-w-0">
-                    {getRankIcon(index)}
-                    <div className="min-w-0 flex-1">
-                      <div className="font-medium text-sm truncate" title={model.modelName}>
-                        {model.modelName}
-                      </div>
-                      <div className="flex items-center gap-3 text-xs text-gray-500">
-                        <div className="flex items-center gap-1">
-                          <VolumeIcon className={`h-3 w-3 ${volumeInfo.color}`} />
-                          {model.feedbackCount} total
-                        </div>
-                        <div className="flex items-center gap-1 text-green-600">
-                          <ThumbsUp className="h-3 w-3" />
-                          {model.helpfulCount} helpful
-                        </div>
-                        <div className="flex items-center gap-1 text-red-600">
-                          <ThumbsDown className="h-3 w-3" />
-                          {model.notHelpfulCount} not helpful
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <div className={`badge text-xs font-medium ${getSatisfactionColor(model.helpfulPercentage)}`}>
-                      {model.helpfulPercentage.toFixed(1)}%
-                    </div>
-                    {model.feedbackCount < 10 && (
-                      <div className="badge badge-outline text-xs bg-yellow-50 border-yellow-300 text-yellow-800">
-                        <Info className="h-3 w-3 mr-1" />
-                        Low sample
-                      </div>
-                    )}
-                  </div>
-                </div>
-              );
-            })}
-        </div>
-
-        {/* Overall Stats */}
-        <div className="pt-3 border-t">
-          <div className="flex items-center justify-between text-sm">
-            <span className="text-gray-600">Overall Satisfaction:</span>
-            <div className={`badge ${getSatisfactionColor(feedbackStats.helpfulPercentage)}`}>
-              {feedbackStats.helpfulPercentage.toFixed(1)}%
-            </div>
+    <section className={containerClasses}>
+      <header className="flex items-center justify-between gap-2 border-b border-gray-200 px-3 py-2 text-gray-800">
+        <div className="flex items-center gap-2">
+          <Heart className="h-4 w-4 text-pink-600" />
+          <div>
+            <h2 className="text-[11px] font-semibold uppercase tracking-wide">Feedback leaders</h2>
+            <p className="text-[10px] text-gray-500">User-rated helpfulness density by model.</p>
           </div>
         </div>
-      </div>
-    </div>
+        <span className="text-[10px] text-gray-500">{sortedModels.length} models</span>
+      </header>
+      <ol className="flex-1 divide-y divide-gray-200">
+        {sortedModels.map((model, index) => (
+          <li
+            key={model.modelName}
+            className={`${rowBaseClasses} ${onModelClick ? 'cursor-pointer hover:bg-slate-50' : ''}`}
+            onClick={() => onModelClick?.(model.modelName)}
+          >
+            <div className="flex items-center justify-center">{rankBadge(index)}</div>
+            <div className="min-w-0 space-y-0.5">
+              <p className="truncate text-[12px] font-semibold text-gray-800" title={model.modelName}>
+                {model.modelName}
+              </p>
+              <p className="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-[10px] text-gray-500">
+                <span>
+                  <Users className="mr-1 inline h-3 w-3" />
+                  {model.feedbackCount.toLocaleString()} total
+                </span>
+                <span className="text-emerald-600">
+                  <ThumbsUp className="mr-1 inline h-3 w-3" />
+                  {model.helpfulCount.toLocaleString()} helpful
+                </span>
+                <span className="text-rose-600">
+                  <ThumbsDown className="mr-1 inline h-3 w-3" />
+                  {model.notHelpfulCount.toLocaleString()} not
+                </span>
+                {model.feedbackCount < 10 && (
+                  <span className="inline-flex items-center gap-1 text-amber-600">
+                    <Info className="h-3 w-3" />
+                    Low sample
+                  </span>
+                )}
+              </p>
+            </div>
+            <div className="text-right font-mono text-[11px] text-emerald-700" title="Helpful ratio">
+              {model.helpfulPercentage.toFixed(1)}%
+            </div>
+            <div className="text-right font-mono text-[11px] text-gray-600" title="Total reviews">
+              {model.feedbackCount.toLocaleString()}
+            </div>
+          </li>
+        ))}
+      </ol>
+      <footer className="border-t border-gray-200 px-3 py-2 text-[10px] uppercase tracking-wide text-gray-600">
+        {overallHelpfulText}
+      </footer>
+    </section>
   );
 }

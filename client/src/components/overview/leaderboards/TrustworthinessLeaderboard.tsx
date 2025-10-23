@@ -15,8 +15,8 @@
  * shadcn/ui: Pass - Uses shadcn/ui components (Card, Badge, Tooltip, Icons)
  */
 
-import React from 'react';
-import { Shield, ShieldCheck, Clock, DollarSign } from 'lucide-react';
+import React, { useMemo } from 'react';
+import { Clock, DollarSign, Shield, ShieldCheck } from 'lucide-react';
 
 interface TrustworthinessLeader {
   modelName: string;
@@ -54,73 +54,68 @@ interface TrustworthinessLeaderboardProps {
 
 export function TrustworthinessLeaderboard({
   performanceStats,
-  overconfidentModels,
   isLoading,
   onModelClick
 }: TrustworthinessLeaderboardProps) {
-  // Helper function to get ranking icon
-  const getRankingIcon = (index: number) => {
-    if (index === 0) return <ShieldCheck className="h-4 w-4 text-green-600" />;
-    if (index === 1) return <Shield className="h-4 w-4 text-blue-600" />;
-    if (index === 2) return <Shield className="h-4 w-4 text-purple-600" />;
-    return <span className="w-4 h-4 flex items-center justify-center text-sm font-medium text-gray-500">#{index + 1}</span>;
-  };
+  const leaders = useMemo(() => {
+    if (!performanceStats?.trustworthinessLeaders) {
+      return [];
+    }
+    return [...performanceStats.trustworthinessLeaders].sort(
+      (a, b) => b.avgTrustworthiness - a.avgTrustworthiness
+    );
+  }, [performanceStats]);
+
+  const containerClasses = 'flex h-full flex-col rounded-md border border-gray-200 bg-white text-xs shadow-sm';
+  const rowBaseClasses = 'grid grid-cols-[auto,minmax(0,1fr),auto,auto] items-center gap-2 px-2.5 py-1.5';
+
+  const renderSkeleton = () => (
+    <ol className="divide-y divide-gray-200">
+      {[...Array(6)].map((_, index) => (
+        <li key={index} className={`${rowBaseClasses} animate-pulse`}>
+          <div className="h-3.5 w-3.5 rounded bg-gray-200" />
+          <div className="space-y-1">
+            <div className="h-3 w-28 rounded bg-gray-200" />
+            <div className="h-2.5 w-36 rounded bg-gray-100" />
+          </div>
+          <div className="h-3 w-12 rounded bg-gray-200" />
+          <div className="h-3 w-12 rounded bg-gray-200" />
+        </li>
+      ))}
+    </ol>
+  );
 
   if (isLoading) {
     return (
-      <div className="card bg-base-100 shadow">
-        <div className="card-body">
-          <h2 className="card-title flex items-center gap-2">
-            <Shield className="h-5 w-5 text-blue-600" />
-            Trustworthiness Leaders
-          </h2>
-        </div>
-        <div className="card-body">
-          <div className="space-y-3">
-            {[1, 2, 3, 4, 5].map(i => (
-              <div key={i} className="animate-pulse">
-                <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 bg-gray-200 rounded-full"></div>
-                    <div className="space-y-1">
-                      <div className="h-4 bg-gray-200 rounded w-24"></div>
-                      <div className="h-3 bg-gray-200 rounded w-20"></div>
-                    </div>
-                  </div>
-                  <div className="h-6 bg-gray-200 rounded w-12"></div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
+      <section className={containerClasses}>
+        <header className="flex items-center gap-2 border-b border-gray-200 px-3 py-2 text-gray-800">
+          <Shield className="h-4 w-4 text-blue-600" />
+          <h2 className="text-[11px] font-semibold uppercase tracking-wide">Trustworthiness leaders</h2>
+        </header>
+        <div className="flex-1 px-1.5 py-1.5">{renderSkeleton()}</div>
+      </section>
     );
   }
 
-  if (!performanceStats || !performanceStats.trustworthinessLeaders?.length) {
+  if (!leaders.length) {
     return (
-      <div className="card bg-base-100 shadow">
-        <div className="card-body">
-          <h2 className="card-title flex items-center gap-2">
-            <Shield className="h-5 w-5 text-blue-600" />
-            Trustworthiness Leaders
-          </h2>
+      <section className={containerClasses}>
+        <header className="flex items-center gap-2 border-b border-gray-200 px-3 py-2 text-gray-800">
+          <Shield className="h-4 w-4 text-blue-600" />
+          <h2 className="text-[11px] font-semibold uppercase tracking-wide">Trustworthiness leaders</h2>
+        </header>
+        <div className="flex flex-1 items-center justify-center px-3 py-4 text-center text-[11px] text-gray-500">
+          No trustworthiness data available.
         </div>
-        <div className="card-body">
-          <div className="text-center py-8 text-gray-500">
-            No trustworthiness data available
-          </div>
-        </div>
-      </div>
+      </section>
     );
   }
 
-
-  const getTrustworthinessColor = (score: number) => {
-    if (score >= 0.8) return 'bg-green-100 text-green-800 border-green-200';
-    if (score >= 0.6) return 'bg-blue-100 text-blue-800 border-blue-200';
-    if (score >= 0.4) return 'bg-yellow-100 text-yellow-800 border-yellow-200';
-    return 'bg-red-100 text-red-800 border-red-200';
+  const rankBadge = (index: number) => {
+    if (index === 0) return <ShieldCheck className="h-3.5 w-3.5 text-emerald-600" />;
+    if (index === 1) return <Shield className="h-3.5 w-3.5 text-blue-600" />;
+    if (index === 2) return <Shield className="h-3.5 w-3.5 text-purple-600" />;
+    return <span className="text-[10px] font-semibold text-gray-500">#{index + 1}</span>;
   };
 
   const formatProcessingTime = (ms: number) => {
@@ -133,68 +128,60 @@ export function TrustworthinessLeaderboard({
     return `$${cost.toFixed(3)}`;
   };
 
-  // Show all models from highest to lowest trustworthiness
-  const allModels = performanceStats.trustworthinessLeaders;
+  const overallTrust = performanceStats?.overallTrustworthiness;
+  const overallTrustText =
+    overallTrust !== undefined && overallTrust !== null
+      ? `${(overallTrust * 100).toFixed(1)}%`
+      : '—';
 
   return (
-    <div className="card bg-base-100 shadow h-full">
-      <div className="card-body">
-        <h2 className="card-title flex items-center gap-2">
-          <Shield className="h-5 w-5 text-blue-600" />
-          🛡️ Trustworthiness Leaders
-        </h2>
-        <div className="text-sm text-gray-600">
-          Models ranked by how well their confidence predicts correctness.
-        </div>
-      </div>
-      <div className="card-body">
-        <div className="space-y-2">
-          {allModels.map((model, index) => {
-            return (
-              <div
-                key={model.modelName}
-                className={`flex items-center justify-between p-3 rounded-lg transition-colors border bg-gray-50 ${
-                  onModelClick ? 'hover:bg-opacity-70 cursor-pointer' : ''
-                }`}
-                onClick={() => onModelClick?.(model.modelName)}
-              >
-                <div className="flex items-center gap-3 flex-1 min-w-0">
-                  {getRankingIcon(index)}
-                  <div className="min-w-0 flex-1">
-                    <div className="font-medium text-sm truncate" title={model.modelName}>
-                      {model.modelName}
-                    </div>
-                    <div className="flex items-center gap-3 text-xs text-gray-500">
-                      <div className="flex items-center gap-1">
-                        <Clock className="h-3 w-3" />
-                        {formatProcessingTime(model.avgProcessingTime)}
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <DollarSign className="h-3 w-3" />
-                        {formatCost(model.avgCost)}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div className="flex items-center gap-1 flex-wrap sm:flex-nowrap">
-                  <div className={`badge text-xs font-medium ${getTrustworthinessColor(model.avgTrustworthiness)}`}>
-                    {(model.avgTrustworthiness * 100).toFixed(1)}% trust
-                  </div>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-
-        <div className="mt-4 pt-3 border-t">
-          <div className="flex items-center justify-between text-sm">
-            <span className="text-gray-600">Overall Trustworthiness:</span>
-            <div className={`badge ${getTrustworthinessColor(performanceStats.overallTrustworthiness)}`}>
-              {(performanceStats.overallTrustworthiness * 100).toFixed(1)}%
-            </div>
+    <section className={containerClasses}>
+      <header className="flex items-center justify-between gap-2 border-b border-gray-200 px-3 py-2 text-gray-800">
+        <div className="flex items-center gap-2">
+          <Shield className="h-4 w-4 text-blue-600" />
+          <div>
+            <h2 className="text-[11px] font-semibold uppercase tracking-wide">Trustworthiness leaders</h2>
+            <p className="text-[10px] text-gray-500">Confidence calibration and efficiency combined.</p>
           </div>
         </div>
-      </div>
-    </div>
+        <span className="text-[10px] text-gray-500">{leaders.length} models</span>
+      </header>
+      <ol className="flex-1 divide-y divide-gray-200">
+        {leaders.map((model, index) => (
+          <li
+            key={model.modelName}
+            className={`${rowBaseClasses} ${onModelClick ? 'cursor-pointer hover:bg-slate-50' : ''}`}
+            onClick={() => onModelClick?.(model.modelName)}
+          >
+            <div className="flex items-center justify-center">{rankBadge(index)}</div>
+            <div className="min-w-0 space-y-0.5">
+              <p className="truncate text-[12px] font-semibold text-gray-800" title={model.modelName}>
+                {model.modelName}
+              </p>
+              <p className="flex flex-wrap gap-x-2 gap-y-0.5 text-[10px] text-gray-500">
+                <span>
+                  <Clock className="mr-1 inline h-3 w-3" />
+                  {formatProcessingTime(model.avgProcessingTime)}
+                </span>
+                <span>
+                  <DollarSign className="mr-1 inline h-3 w-3" />
+                  {formatCost(model.avgCost)} avg
+                </span>
+                <span>{formatCost(model.totalCost)} total</span>
+              </p>
+            </div>
+            <div className="text-right font-mono text-[11px] text-emerald-700" title="Trustworthiness score">
+              {(model.avgTrustworthiness * 100).toFixed(1)}%
+            </div>
+            <div className="text-right font-mono text-[11px] text-gray-600" title="Average reported confidence">
+              {(model.avgConfidence * 100).toFixed(1)}%
+            </div>
+          </li>
+        ))}
+      </ol>
+      <footer className="border-t border-gray-200 px-3 py-2 text-[10px] uppercase tracking-wide text-gray-600">
+        Overall trustworthiness: {overallTrustText}
+      </footer>
+    </section>
   );
 }
