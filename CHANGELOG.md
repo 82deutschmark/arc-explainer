@@ -1,3 +1,15 @@
+## [4.8.41] - 2025-10-23
+### 🎨 UI/UX: Split training example cards eliminate scrollbars
+
+- Introduced dedicated training input and output card components with shared grid sizing so training grids fit without scrollbars.
+- Updated the training gallery and zoom modal to adopt the split cards, keeping layout proportions consistent across the experience.
+- Exposed the new card components via the examples barrel export and refreshed consumers to the revised API.
+
+#### Verification
+- npm run check
+
+---
+
 ## [4.8.40] - 2025-10-23
 ### 🎨 UI/UX: Compress leaderboards for maximal info density
 

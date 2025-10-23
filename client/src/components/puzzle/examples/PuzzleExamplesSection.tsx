@@ -52,8 +52,6 @@ export function PuzzleExamplesSection({
         {/* Training examples gallery */}
         <TrainingPairGallery
           trainExamples={trainExamples}
-          showEmojis={showEmojis}
-          emojiSet={emojiSet}
         />
 
         {/* Test cases viewer */}
