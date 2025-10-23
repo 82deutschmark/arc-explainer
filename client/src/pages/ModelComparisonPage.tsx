@@ -1,22 +1,15 @@
 /**
- * Author: GPT-5 Codex
- * Date: 2025-10-19T00:00:00Z
- * PURPOSE: Multi-model comparison dashboard that lets analysts add or remove up to four models in place while reusing shared analytics components.
+ * Author: Claude Code using Sonnet 4
+ * Date: 2025-10-22T00:00:00Z
+ * PURPOSE: Compact, info-focused multi-model comparison dashboard. Displays performance metrics in dense tables,
+ *          reuses ModelPerformancePanel and NewModelComparisonResults components. Inline model add/remove with
+ *          minimal whitespace and clear controls. No bloated summary cards or unnecessary badges.
  * SRP/DRY check: Pass - Reuses metrics endpoint, shared hooks, and visualization components without duplicating logic.
  */
 
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useLocation } from 'wouter';
-import {
-  ArrowLeft,
-  Trophy,
-  TrendingUp,
-  Target,
-  Clock,
-  DollarSign,
-  Brain,
-  AlertCircle,
-} from 'lucide-react';
+import { ArrowLeft, AlertCircle } from 'lucide-react';
 import { NewModelComparisonResults } from '@/components/analytics/NewModelComparisonResults';
 import { ModelPerformancePanel } from '@/components/analytics/ModelPerformancePanel';
 import { useAvailableModels } from '@/hooks/useModelDatasetPerformance';
@@ -62,7 +55,6 @@ export default function ModelComparisonPage() {
   const {
     models: availableModels,
     loading: loadingModels,
-    error: availableModelsError,
   } = useAvailableModels();
 
   useEffect(() => {
@@ -313,241 +305,191 @@ export default function ModelComparisonPage() {
 
   const { summary } = comparisonData;
   const modelPerformance = summary.modelPerformance ?? [];
-  const globalStats = [
-    {
-      label: 'All Correct',
-      value: summary.allCorrect,
-      description: 'All models solved correctly',
-      tone: 'text-green-600',
-    },
-    {
-      label: 'All Incorrect',
-      value: summary.allIncorrect,
-      description: 'Every model missed the puzzle',
-      tone: 'text-red-600',
-    },
-    {
-      label: 'All Not Attempted',
-      value: summary.allNotAttempted,
-      description: 'Coverage gap across all models',
-      tone: 'text-gray-600',
-    },
-    {
-      label: 'Unique Solves',
-      value: totalUniqueSolves,
-      description: 'Solved by exactly one model',
-      tone: 'text-blue-600',
-    },
-  ];
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4">
-      <div className="container mx-auto max-w-7xl space-y-4">
-        <div className="flex items-center justify-between">
+    <div className="min-h-screen bg-base-200 p-3">
+      <div className="container mx-auto max-w-7xl space-y-3">
+        <div className="flex items-center gap-3 bg-base-100 rounded-lg p-2 shadow">
           <button
             onClick={() => navigate('/analytics')}
-            className="btn btn-sm btn-ghost gap-2"
+            className="btn btn-xs btn-ghost gap-1"
           >
-            <ArrowLeft className="h-4 w-4" />
-            Analytics
+            <ArrowLeft className="h-3 w-3" />
+            Back
           </button>
-        </div>
-
-        <div className="card bg-white shadow-sm border border-gray-200">
-          <div className="card-body p-4">
-            <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-              <div>
-                <h1 className="text-2xl font-semibold text-gray-900">
-                  Model Performance Comparison
-                </h1>
-                <p className="text-sm text-gray-600">
-                  Dataset: {summary.dataset.toUpperCase()} - {summary.totalPuzzles} total puzzles -{' '}
-                  {selectedModels.length} active models
-                </p>
-              </div>
-              <div className="flex flex-wrap gap-3 text-sm text-gray-700">
-                {summary.winnerModel && (
-                  <div className="flex items-center gap-1">
-                    <Trophy className="h-4 w-4 text-green-600" />
-                    <span>Highest Accuracy: {summary.winnerModel}</span>
-                  </div>
-                )}
-                {summary.mostEfficientModel && (
-                  <div className="flex items-center gap-1">
-                    <DollarSign className="h-4 w-4 text-blue-600" />
-                    <span>Most Efficient: {summary.mostEfficientModel}</span>
-                  </div>
-                )}
-                {summary.fastestModel && (
-                  <div className="flex items-center gap-1">
-                    <Clock className="h-4 w-4 text-purple-600" />
-                    <span>Fastest: {summary.fastestModel}</span>
-                  </div>
-                )}
-              </div>
-            </div>
+          <div className="flex-1">
+            <h1 className="text-sm font-bold">
+              Model Comparison: {summary.dataset.toUpperCase()}
+            </h1>
+            <p className="text-xs opacity-70">
+              {summary.totalPuzzles} puzzles • {selectedModels.length} models
+            </p>
           </div>
         </div>
 
-        <div className="card bg-white shadow-sm border border-gray-200">
-          <div className="card-body p-4 space-y-4">
-            <div className="flex flex-col gap-1">
-              <h2 className="text-lg font-semibold text-gray-900">
-                Active models
-              </h2>
-              <p className="text-sm text-gray-600">
-                Add or remove models to refresh this comparison. Up to four models are supported.
-              </p>
-            </div>
-
+        <div className="bg-base-100 rounded-lg shadow p-3 space-y-2">
+          <div className="flex items-center justify-between">
+            <h2 className="text-xs font-bold uppercase tracking-wide opacity-70">
+              Active Models
+            </h2>
             {inlineError && (
-              <div role="alert" className="alert alert-warning">
-                <AlertCircle className="h-5 w-5" />
-                <span>{inlineError}</span>
-              </div>
+              <span className="text-xs text-error">{inlineError}</span>
             )}
+          </div>
 
-            <div className="flex flex-wrap gap-2">
-              {selectedModels.map((modelName) => (
-                <div
-                  key={modelName}
-                  className="badge badge-lg gap-2 bg-blue-50 text-blue-700 border border-blue-200"
+          <div className="flex flex-wrap gap-1.5">
+            {selectedModels.map((modelName) => (
+              <div
+                key={modelName}
+                className="badge badge-sm gap-1 bg-primary/10 text-primary border-primary/20"
+              >
+                <span className="text-xs">{modelName}</span>
+                <button
+                  type="button"
+                  className="hover:text-error text-xs px-1"
+                  onClick={() => handleRemoveModel(modelName)}
+                  disabled={isUpdating || selectedModels.length <= 1}
+                  title="Remove model"
                 >
-                  <span>{modelName}</span>
-                  <button
-                    type="button"
-                    className="btn btn-ghost btn-xs text-blue-600"
-                    onClick={() => handleRemoveModel(modelName)}
-                    disabled={isUpdating || selectedModels.length <= 1}
-                  >
-                    remove
-                  </button>
+                  ×
+                </button>
+              </div>
+            ))}
+          </div>
+
+          <div className="flex items-end gap-2 pt-1">
+            <select
+              className="select select-xs select-bordered flex-1 max-w-xs"
+              value={modelToAdd}
+              onChange={(event) => setModelToAdd(event.target.value)}
+              disabled={
+                loadingModels ||
+                !dataset ||
+                addableModels.length === 0 ||
+                selectedModels.length >= MAX_MODELS
+              }
+            >
+              <option value="">+ Add model...</option>
+              {addableModels.map((modelName) => (
+                <option key={modelName} value={modelName}>
+                  {modelName}
+                </option>
+              ))}
+            </select>
+
+            <button
+              type="button"
+              className="btn btn-xs btn-primary"
+              onClick={handleAddModel}
+              disabled={
+                !dataset ||
+                !modelToAdd ||
+                isUpdating ||
+                selectedModels.length >= MAX_MODELS
+              }
+            >
+              {isUpdating ? 'Updating...' : 'Add'}
+            </button>
+
+            {isUpdating && (
+              <span className="loading loading-spinner loading-xs ml-2" />
+            )}
+          </div>
+        </div>
+
+        {uniqueSolveByModel.length > 0 && totalUniqueSolves > 0 && (
+          <div className="bg-base-100 rounded-lg shadow p-2">
+            <h3 className="text-xs font-bold uppercase tracking-wide opacity-70 mb-2">
+              Unique Solves: {totalUniqueSolves}
+            </h3>
+            <div className="flex gap-2 flex-wrap">
+              {uniqueSolveByModel.map((entry) => (
+                <div key={entry.name} className="text-xs">
+                  <span className="font-semibold">{entry.name}:</span>{' '}
+                  <span className="text-primary font-bold">{entry.count}</span>
                 </div>
               ))}
-              {selectedModels.length === 0 && (
-                <span className="text-sm text-gray-500">
-                  No models selected.
-                </span>
-              )}
-            </div>
-
-            <div className="flex flex-col sm:flex-row sm:items-end sm:gap-3 gap-2">
-              <label className="form-control w-full sm:max-w-xs">
-                <span className="label">
-                  <span className="label-text text-sm font-medium">
-                    Add a model
-                  </span>
-                  {loadingModels && (
-                    <span className="label-text-alt text-xs text-gray-500">
-                      Loading...
-                    </span>
-                  )}
-                </span>
-                <select
-                  className="select select-bordered"
-                  value={modelToAdd}
-                  onChange={(event) => setModelToAdd(event.target.value)}
-                  disabled={
-                    loadingModels ||
-                    !dataset ||
-                    addableModels.length === 0 ||
-                    selectedModels.length >= MAX_MODELS
-                  }
-                >
-                  <option value="">Select model</option>
-                  {addableModels.map((modelName) => (
-                    <option key={modelName} value={modelName}>
-                      {modelName}
-                    </option>
-                  ))}
-                </select>
-              </label>
-
-              <button
-                type="button"
-                className="btn btn-primary"
-                onClick={handleAddModel}
-                disabled={
-                  !dataset ||
-                  !modelToAdd ||
-                  isUpdating ||
-                  selectedModels.length >= MAX_MODELS
-                }
-              >
-                {isUpdating ? 'Updating...' : 'Add model'}
-              </button>
-
-              {isUpdating && (
-                <div className="flex items-center gap-2 text-sm text-gray-600">
-                  <span className="loading loading-spinner loading-xs" />
-                  Refreshing comparison
-                </div>
-              )}
-            </div>
-
-            {availableModelsError && (
-              <p className="text-sm text-amber-600">
-                Unable to load full model list: {availableModelsError}
-              </p>
-            )}
-          </div>
-        </div>
-
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-          {globalStats.map((stat) => (
-            <div
-              key={stat.label}
-              className="card bg-white shadow-sm border border-gray-200"
-            >
-              <div className="card-body p-3">
-                <div className={`text-2xl font-bold ${stat.tone}`}>
-                  {stat.value}
-                </div>
-                <div className="text-sm font-medium text-gray-700">
-                  {stat.label}
-                </div>
-                <div className="text-xs text-gray-500 mt-1">
-                  {stat.description}
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {uniqueSolveByModel.length > 0 && (
-          <div className="card bg-white shadow-sm border border-gray-200">
-            <div className="card-body p-4">
-              <h2 className="text-lg font-semibold text-gray-900 mb-2">
-                Unique solves per model
-              </h2>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2">
-                {uniqueSolveByModel.map((entry) => (
-                  <div
-                    key={entry.name}
-                    className="border border-purple-200 rounded-lg p-3 bg-purple-50"
-                  >
-                    <div className="text-sm font-semibold text-purple-700">
-                      {entry.name}
-                    </div>
-                    <div className="text-2xl font-bold text-purple-600">
-                      {entry.count}
-                    </div>
-                    <div className="text-xs text-purple-600">
-                      Unique correct solutions
-                    </div>
-                  </div>
-                ))}
-              </div>
             </div>
           </div>
         )}
 
+        <div className="bg-base-100 rounded-lg shadow">
+          <div className="overflow-x-auto">
+            <table className="table table-xs table-zebra">
+              <thead>
+                <tr className="bg-base-300">
+                  <th className="font-bold">Model</th>
+                  <th className="text-center font-bold">Accuracy</th>
+                  <th className="text-center font-bold">Correct</th>
+                  <th className="text-center font-bold">Incorrect</th>
+                  <th className="text-center font-bold">Not Attempted</th>
+                  <th className="text-center font-bold">Coverage</th>
+                  <th className="text-center font-bold">Avg Speed</th>
+                  <th className="text-center font-bold">Total Cost</th>
+                  <th className="text-center font-bold">Cost/Correct</th>
+                  <th className="text-center font-bold">Avg Confidence</th>
+                </tr>
+              </thead>
+              <tbody>
+                {modelPerformance.map((model) => (
+                  <tr key={model.modelName} className="hover">
+                    <td className="font-semibold">
+                      {model.modelName}
+                    </td>
+                    <td className="text-center font-bold">
+                      <span
+                        className={
+                          model.accuracyPercentage >= 50
+                            ? 'text-success'
+                            : 'text-error'
+                        }
+                      >
+                        {model.accuracyPercentage.toFixed(1)}%
+                      </span>
+                    </td>
+                    <td className="text-center text-success font-semibold">
+                      {model.correctCount}
+                    </td>
+                    <td className="text-center text-error font-semibold">
+                      {model.incorrectCount}
+                    </td>
+                    <td className="text-center opacity-60">
+                      {model.notAttemptedCount}
+                    </td>
+                    <td className="text-center text-xs">
+                      {model.attempts}/{model.totalPuzzlesInDataset} ({model.coveragePercentage.toFixed(0)}%)
+                    </td>
+                    <td className="text-center text-xs">
+                      {formatTime(model.avgProcessingTime)}
+                    </td>
+                    <td className="text-center text-xs font-semibold">
+                      {formatCost(model.totalCost)}
+                    </td>
+                    <td className="text-center text-xs font-semibold text-info">
+                      {model.costPerCorrectAnswer !== null
+                        ? formatCost(model.costPerCorrectAnswer)
+                        : 'N/A'}
+                    </td>
+                    <td className="text-center text-xs">
+                      {model.avgConfidence.toFixed(1)}%
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div className="bg-base-100 rounded-lg shadow p-3">
+          <NewModelComparisonResults result={comparisonData} />
+        </div>
+
         {dataset && selectedModels.length > 0 && (
-          <div className="space-y-3">
-            <h2 className="text-lg font-semibold text-gray-900">
-              Dataset drilldown
+          <div className="space-y-2">
+            <h2 className="text-xs font-bold uppercase tracking-wide opacity-70 px-1">
+              Dataset Drilldown
             </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
               {selectedModels.map((modelName) => (
                 <ModelPerformancePanel
                   key={`${dataset}-${modelName}`}
@@ -558,126 +500,6 @@ export default function ModelComparisonPage() {
             </div>
           </div>
         )}
-
-        <div className="card bg-white shadow-sm border border-gray-200">
-          <div className="card-body p-4">
-            <h2 className="text-lg font-semibold text-gray-900 mb-3">
-              Model performance metrics
-            </h2>
-            <div className="overflow-x-auto">
-              <table className="table table-sm">
-                <thead>
-                  <tr className="bg-gray-100">
-                    <th className="font-semibold text-gray-700">Model</th>
-                    <th className="font-semibold text-gray-700 text-center">
-                      Accuracy
-                    </th>
-                    <th className="font-semibold text-gray-700 text-center">
-                      Correct
-                    </th>
-                    <th className="font-semibold text-gray-700 text-center">
-                      Incorrect
-                    </th>
-                    <th className="font-semibold text-gray-700 text-center">
-                      Not attempted
-                    </th>
-                    <th className="font-semibold text-gray-700 text-center">
-                      Coverage
-                    </th>
-                    <th className="font-semibold text-gray-700 text-center">
-                      Avg speed
-                    </th>
-                    <th className="font-semibold text-gray-700 text-center">
-                      Total cost
-                    </th>
-                    <th className="font-semibold text-gray-700 text-center">
-                      Cost per correct
-                    </th>
-                    <th className="font-semibold text-gray-700 text-center">
-                      Avg confidence
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {modelPerformance.map((model) => (
-                    <tr key={model.modelName} className="hover:bg-gray-50">
-                      <td className="font-medium text-gray-900">
-                        {model.modelName}
-                        {summary.winnerModel === model.modelName && (
-                          <span className="ml-2 text-xs font-semibold text-green-600">
-                            Highest accuracy
-                          </span>
-                        )}
-                      </td>
-                      <td className="text-center font-semibold text-lg">
-                        <span
-                          className={
-                            model.accuracyPercentage >= 50
-                              ? 'text-green-600'
-                              : 'text-red-600'
-                          }
-                        >
-                          {model.accuracyPercentage.toFixed(1)}%
-                        </span>
-                      </td>
-                      <td className="text-center text-green-600 font-medium">
-                        {model.correctCount}
-                      </td>
-                      <td className="text-center text-red-600 font-medium">
-                        {model.incorrectCount}
-                      </td>
-                      <td className="text-center text-gray-600 font-medium">
-                        {model.notAttemptedCount}
-                      </td>
-                      <td className="text-center">
-                        {model.attempts}/{model.totalPuzzlesInDataset} (
-                        {model.coveragePercentage.toFixed(0)}%)
-                      </td>
-                      <td className="text-center text-sm">
-                        {formatTime(model.avgProcessingTime)}
-                      </td>
-                      <td className="text-center text-sm font-medium">
-                        {formatCost(model.totalCost)}
-                      </td>
-                      <td className="text-center text-sm font-medium text-blue-600">
-                        {model.costPerCorrectAnswer !== null
-                          ? formatCost(model.costPerCorrectAnswer)
-                          : 'N/A'}
-                      </td>
-                      <td className="text-center text-sm">
-                        {model.avgConfidence.toFixed(1)}%
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-
-        <div className="card bg-white shadow-sm border border-gray-200">
-          <div className="card-body p-4 space-y-4">
-            <div className="flex flex-wrap gap-4 text-sm text-gray-700">
-              <div className="flex items-center gap-1">
-                <TrendingUp className="h-4 w-4 text-blue-600" />
-                <span>
-                  Fully solved puzzles: {summary.fullySolvedCount}
-                </span>
-              </div>
-              <div className="flex items-center gap-1">
-                <Target className="h-4 w-4 text-rose-600" />
-                <span>
-                  Unsolved puzzles: {summary.unsolvedCount}
-                </span>
-              </div>
-              <div className="flex items-center gap-1">
-                <Brain className="h-4 w-4 text-indigo-600" />
-                <span>Total models in comparison: {selectedModels.length}</span>
-              </div>
-            </div>
-            <NewModelComparisonResults result={comparisonData} />
-          </div>
-        </div>
       </div>
     </div>
   );

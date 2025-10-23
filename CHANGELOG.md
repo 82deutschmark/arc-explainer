@@ -1,20 +1,30 @@
 ## [4.8.38] - 2025-10-22
-### ?? Feature: Multi-model comparison (add/remove inline)
+### 🎨 UI/UX: Compact, info-focused Model Comparison redesign
 
-- ModelComparisonPage now supports adding and removing models directly on the page (up to 4), no need to navigate back.
-- Reuses existing components for SRP/DRY:
-  - Per-model drilldowns via ModelPerformancePanel
-  - Matrix via NewModelComparisonResults
-- Robust state hydration: URL params, history state, and localStorage; persists latest comparison.
-- Centralized fetch to /api/metrics/compare with graceful error handling and spinners.
+#### Summary
+- Completely redesigned ModelComparisonPage to prioritize data over whitespace
+- Removed bloated header cards with winner/efficiency badges
+- Removed four large global stat cards (All Correct, All Incorrect, etc.)
+- Condensed controls: model badges now compact with inline × remove buttons
+- Redesigned add model controls to be smaller and more obvious
+- Dense table using `table-xs` and `table-zebra` for better readability
+- Reduced padding and spacing throughout for information density
+- Background changed from white (`bg-gray-50`) to DaisyUI theme (`bg-base-200`)
+
+#### Design Philosophy
+- Info-focused: every pixel shows useful data, not decoration
+- Compact controls: smaller buttons, tighter spacing, clearer affordances
+- Visual contrast: using semantic colors (success/error) and zebra striping
+- Minimal whitespace: reduced from p-4/p-6 to p-2/p-3 consistently
 
 #### Files Updated
 - client/src/pages/ModelComparisonPage.tsx
-- docs/2025-10-19-model-comparison-multi-model-plan.md (new)
 
-#### Notes
-- Max 4 models enforced to match backend capabilities (metricsController and MetricsRepository).
-- No server changes required; leverages existing model1..model4 query pattern.
+#### Technical Notes
+- Still supports adding/removing models inline (up to 4 models)
+- Reuses ModelPerformancePanel and NewModelComparisonResults components
+- State hydration unchanged: URL params, history state, localStorage
+- No breaking changes to API or data flow
 
 ---## [4.8.37] - 2025-10-21
 ### 🎨 UI/UX: Amplify Puzzle Browser clarity
