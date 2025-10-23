@@ -32,17 +32,17 @@ export function LeaderboardPageHeader({
   const helpfulText = helpfulPercentage !== undefined ? `${helpfulPercentage.toFixed(1)}%` : '—';
 
   return (
-    <header className="rounded-3xl bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 p-8 text-white shadow-lg">
-      <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
-        <div className="space-y-4 lg:max-w-3xl">
-          <div className="flex items-center gap-3 text-sm uppercase tracking-widest text-slate-300">
-            <span className="rounded-full bg-slate-700 px-3 py-1 font-semibold">Live metrics</span>
-            <span>AccuracyRepository · MetricsRepository · FeedbackRepository</span>
+    <header className="rounded-lg border border-slate-800/70 bg-slate-950 p-3 text-slate-100 shadow-sm">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+        <div className="space-y-1.5">
+          <div className="flex flex-wrap items-center gap-1 text-[10px] font-medium uppercase tracking-[0.25em] text-slate-400">
+            <span className="rounded-sm bg-slate-900 px-1.5 py-0.5 text-[10px] font-semibold text-slate-200">Live metrics</span>
+            <span className="text-slate-500">Accuracy · Metrics · Feedback</span>
           </div>
-          <div>
-            <h1 className="text-3xl font-bold leading-tight md:text-4xl">ARC Model Leaderboards</h1>
-            <p className="mt-3 text-base text-slate-200 md:text-lg">
-              Track solver accuracy, calibrated confidence, infrastructure reliability, and user satisfaction across every model in production.
+          <div className="space-y-1">
+            <h1 className="text-lg font-semibold leading-tight">ARC model leaderboards</h1>
+            <p className="text-[12px] text-slate-400">
+              Single-screen snapshot of solver accuracy, calibration, infrastructure reliability, and human feedback.
             </p>
           </div>
         </div>
@@ -51,14 +51,14 @@ export function LeaderboardPageHeader({
             type="button"
             onClick={onRefresh}
             disabled={isRefreshing}
-            className="inline-flex items-center gap-2 self-start rounded-full border border-slate-500 bg-slate-800 px-4 py-2 text-sm font-medium text-white transition hover:bg-slate-700 disabled:cursor-not-allowed disabled:opacity-60"
+            className="inline-flex items-center gap-1 rounded border border-slate-700 bg-slate-900 px-2.5 py-1 text-[11px] font-medium text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60"
           >
-            <RefreshCw className={`h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`} />
-            Refresh data
+            <RefreshCw className={`h-3 w-3 ${isRefreshing ? 'animate-spin' : ''}`} />
+            Refresh
           </button>
         )}
       </div>
-      <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-3">
+      <div className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-3">
         {[{
           label: 'Tracked models',
           value: modelsText,
@@ -69,12 +69,12 @@ export function LeaderboardPageHeader({
           label: 'Helpful feedback ratio',
           value: helpfulText,
         }].map(stat => (
-          <div key={stat.label} className="rounded-2xl border border-white/10 bg-white/5 p-4 backdrop-blur">
-            <p className="text-xs uppercase tracking-wide text-slate-300">{stat.label}</p>
+          <div key={stat.label} className="rounded border border-white/15 bg-white/5 px-2.5 py-2">
+            <p className="text-[10px] uppercase tracking-wide text-slate-400">{stat.label}</p>
             {isLoading ? (
-              <div className="mt-2 h-7 w-20 animate-pulse rounded bg-white/30" />
+              <div className="mt-1.5 h-5 w-14 animate-pulse rounded bg-white/25" />
             ) : (
-              <p className="mt-2 text-2xl font-semibold">{stat.value}</p>
+              <p className="mt-1 text-base font-semibold text-white">{stat.value}</p>
             )}
           </div>
         ))}

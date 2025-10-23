@@ -146,12 +146,12 @@ export function LeaderboardInsights({
 
   if (isLoading) {
     return (
-      <section className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+      <section className="grid grid-cols-1 gap-2 md:grid-cols-2 xl:grid-cols-3">
         {[1, 2, 3].map(i => (
-          <div key={i} className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-            <div className="mb-3 h-5 w-5 animate-pulse rounded-full bg-slate-200" />
-            <div className="mb-2 h-5 w-40 animate-pulse rounded bg-slate-200" />
-            <div className="h-4 w-full animate-pulse rounded bg-slate-200" />
+          <div key={i} className="rounded-md border border-slate-200 bg-white px-3 py-2">
+            <div className="mb-1 h-3.5 w-3.5 animate-pulse rounded-full bg-slate-200" />
+            <div className="mb-1 h-3 w-32 animate-pulse rounded bg-slate-200" />
+            <div className="h-2.5 w-full animate-pulse rounded bg-slate-200" />
           </div>
         ))}
       </section>
@@ -163,19 +163,19 @@ export function LeaderboardInsights({
   }
 
   return (
-    <section className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+    <section className="grid grid-cols-1 gap-2 md:grid-cols-2 xl:grid-cols-3">
       {cards.map(card => (
         <div
           key={card.id}
-          className={`rounded-2xl border p-6 shadow-sm ${card.tone}`}
+          className={`rounded-md border px-3 py-2 text-[11px] leading-snug ${card.tone}`}
         >
-          <div className="mb-3 flex items-center gap-2">
-            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white/70 shadow-inner">
+          <div className="mb-1.5 flex items-center gap-2">
+            <div className="flex h-6 w-6 items-center justify-center rounded-sm bg-white/80 text-slate-700">
               {card.icon}
             </div>
-            <h3 className="text-sm font-semibold uppercase tracking-wide">{card.title}</h3>
+            <h3 className="text-[10px] font-semibold uppercase tracking-wide">{card.title}</h3>
           </div>
-          <p className="text-sm leading-relaxed">{card.detail}</p>
+          <p>{card.detail}</p>
         </div>
       ))}
     </section>

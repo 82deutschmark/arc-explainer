@@ -23,9 +23,9 @@ interface SummaryStatCardProps {
 
 const toneClasses: Record<SummaryTone, string> = {
   default: 'border-slate-200 bg-white',
-  positive: 'border-emerald-200 bg-emerald-50',
-  warning: 'border-amber-200 bg-amber-50',
-  danger: 'border-rose-200 bg-rose-50',
+  positive: 'border-emerald-200 bg-emerald-50/80',
+  warning: 'border-amber-200 bg-amber-50/80',
+  danger: 'border-rose-200 bg-rose-50/80',
 };
 
 export function SummaryStatCard({
@@ -39,30 +39,30 @@ export function SummaryStatCard({
 }: SummaryStatCardProps) {
   return (
     <div
-      className={`rounded-xl border shadow-sm transition hover:shadow-md focus-within:ring-2 focus-within:ring-primary/40 ${toneClasses[tone]}`}
+      className={`group rounded-md border text-slate-800 shadow-sm transition hover:border-slate-400 focus-within:ring-2 focus-within:ring-slate-400/30 ${toneClasses[tone]}`}
       tabIndex={0}
     >
-      <div className="flex items-start gap-3 p-5">
-        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-white text-primary shadow-inner">
+      <div className="flex items-start gap-2.5 px-3 py-2.5">
+        <div className="mt-0.5 flex h-6 w-6 items-center justify-center text-slate-600 group-hover:text-slate-900">
           {icon}
         </div>
         <div className="flex-1 space-y-1">
-          <p className="text-sm font-medium text-slate-600">{title}</p>
+          <p className="text-[11px] font-semibold uppercase tracking-wide text-slate-600">{title}</p>
           {isLoading ? (
-            <div className="space-y-2">
-              <div className="h-6 w-24 animate-pulse rounded bg-slate-200" />
-              <div className="h-4 w-32 animate-pulse rounded bg-slate-200" />
+            <div className="space-y-1.5">
+              <div className="h-4 w-16 animate-pulse rounded bg-slate-200" />
+              <div className="h-3 w-32 animate-pulse rounded bg-slate-200" />
             </div>
           ) : (
             <>
-              <p className="text-2xl font-semibold text-slate-900">{value ?? '—'}</p>
-              <p className="text-sm text-slate-600">{description}</p>
+              <p className="text-base font-semibold text-slate-900">{value ?? '—'}</p>
+              <p className="text-[11px] leading-snug text-slate-600">{description}</p>
             </>
           )}
         </div>
       </div>
       {!isLoading && footer && (
-        <div className="border-t border-white/60 px-5 py-3 text-xs font-medium text-slate-600">
+        <div className="border-t border-white/70 px-3 py-2 text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-600">
           {footer}
         </div>
       )}
