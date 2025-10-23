@@ -96,18 +96,15 @@ export function LeaderboardSection({
   onModelClick
 }: LeaderboardSectionProps) {
   return (
-    <section className="space-y-6">
-      <div className="text-center">
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">
-          Model Performance Leaderboards
-        </h2>
-        <p className="text-gray-600 max-w-3xl mx-auto">
-          Comprehensive model analysis across three key dimensions: 
-          models needing improvement (lowest accuracy), confidence reliability rankings (all models), and user feedback analysis (most appreciated vs most criticized).
+    <section className="space-y-2.5">
+      <div className="flex flex-wrap items-baseline justify-between gap-2">
+        <h2 className="text-sm font-semibold uppercase tracking-wide text-gray-800">Performance leaderboards</h2>
+        <p className="text-[11px] text-gray-500">
+          Accuracy · calibration · sentiment in one glance.
         </p>
       </div>
-      
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 lg:gap-6">
+
+      <div className="grid grid-cols-1 gap-2 md:grid-cols-2 xl:grid-cols-3">
         <AccuracyLeaderboard
           accuracyStats={accuracyStats}
           overconfidentModels={overconfidentModels}
