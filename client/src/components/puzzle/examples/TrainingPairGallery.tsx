@@ -1,37 +1,24 @@
 /**
  * TrainingPairGallery.tsx
- * 
- * Author: Cascade using Claude Sonnet 4.5
- * Date: 2025-10-12T21:22:00Z
- * PURPOSE: Responsive CSS Grid gallery of training examples.
- * Auto-fits 3-6 cards per row based on viewport width.
- * Manages zoom modal state for individual cards.
- * SRP: Single responsibility = layout and orchestrate training pair cards
- * DRY: Delegates rendering to TrainingPairCard, no duplication
- * shadcn/ui: Pass - Converted to DaisyUI badge
+ *
+ * Author: gpt-5-codex
+ * Date: 2025-02-14
+ * PURPOSE: Responsive CSS grid that orchestrates the training pair cards.
+ *          Applies the new split-card layout while handling zoom interactions.
+ * SRP/DRY check: Pass — purely responsible for gallery layout and modal state.
  */
 
 import React, { useState } from 'react';
 import { TrainingPairCard } from './TrainingPairCard';
 import { TrainingPairZoomModal } from './TrainingPairZoomModal';
-import type { EmojiSet } from '@/lib/spaceEmojis';
 
 interface TrainingPairGalleryProps {
   trainExamples: Array<{ input: number[][]; output: number[][] }>;
-  showEmojis: boolean;
-  emojiSet?: EmojiSet;
   showHeader?: boolean; // Optional header with title and count badge
 }
 
-/**
- * Gallery layout for training examples using CSS Grid.
- * Responsive auto-fit: shows 3-6 cards per row depending on viewport.
- * Click any card to open zoom modal.
- */
 export function TrainingPairGallery({
   trainExamples,
-  showEmojis,
-  emojiSet,
   showHeader = true
 }: TrainingPairGalleryProps) {
   const [zoomedIndex, setZoomedIndex] = useState<number | null>(null);
@@ -47,9 +34,9 @@ export function TrainingPairGallery({
         </div>
       )}
 
-      {/* Responsive grid: auto-fit cards, min 200px, max 1fr */}
+      {/* Responsive grid: auto-fit cards, min 320px to comfortably fit split layout */}
       <div className="grid gap-3" style={{
-        gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))'
+        gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))'
       }}>
         {trainExamples.map((example, index) => (
           <TrainingPairCard
@@ -57,8 +44,6 @@ export function TrainingPairGallery({
             input={example.input}
             output={example.output}
             index={index}
-            showEmojis={showEmojis}
-            emojiSet={emojiSet}
             onZoom={() => setZoomedIndex(index)}
           />
         ))}
@@ -72,8 +57,6 @@ export function TrainingPairGallery({
           input={trainExamples[zoomedIndex].input}
           output={trainExamples[zoomedIndex].output}
           index={zoomedIndex}
-          showEmojis={showEmojis}
-          emojiSet={emojiSet}
         />
       )}
     </div>
