@@ -96,7 +96,6 @@ export const CompactPuzzleDisplay: React.FC<CompactPuzzleDisplayProps> = ({
               <div className="pl-2">
                 <TrainingPairGallery
                   trainExamples={trainExamples}
-                  showEmojis={showEmojis}
                   showHeader={false}
                 />
               </div>
