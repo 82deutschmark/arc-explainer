@@ -1,19 +1,20 @@
 /**
  * TrainingPairZoomModal.tsx
- * 
- * Author: Cascade using Claude Sonnet 4.5
- * Date: 2025-10-12T21:28:00Z
- * PURPOSE: Full-screen modal for examining a training pair in detail.
- * Displays larger grids with full dimensions visible.
- * SRP: Single responsibility = modal zoom view for one training example
- * DRY: Reuses PuzzleGrid component
- * shadcn/ui: Pass - Converted to DaisyUI modal
+ *
+ * Author: gpt-5-codex
+ * Date: 2025-02-14
+ * PURPOSE: Full-screen modal for inspecting a training example with the new
+ *          split grid cards. Reuses the dedicated input/output card wrappers
+ *          to guarantee consistent styling and eliminate scrollbars at larger
+ *          scales.
+ * SRP/DRY check: Pass — focuses on modal presentation while delegating grid
+ *                rendering to shared card components.
  */
 
 import React from 'react';
-import { PuzzleGrid } from '@/components/puzzle/PuzzleGrid';
 import { ArrowRight } from 'lucide-react';
-import type { EmojiSet } from '@/lib/spaceEmojis';
+import { TrainingExampleInputCard } from './TrainingExampleInputCard';
+import { TrainingExampleOutputCard } from './TrainingExampleOutputCard';
 
 interface TrainingPairZoomModalProps {
   isOpen: boolean;
@@ -21,46 +22,44 @@ interface TrainingPairZoomModalProps {
   input: number[][];
   output: number[][];
   index: number;
-  showEmojis: boolean;
-  emojiSet?: EmojiSet;
 }
 
-/**
- * Modal displaying full-size training pair for detailed inspection.
- * Grids are rendered at larger scale for visibility.
- */
+const MODAL_CARD_DIMENSION = 320;
+
 export function TrainingPairZoomModal({
   isOpen,
   onClose,
   input,
   output,
-  index,
-  showEmojis,
-  emojiSet
+  index
 }: TrainingPairZoomModalProps) {
   return (
     <dialog className={`modal ${isOpen ? 'modal-open' : ''}`}>
-      <div className="modal-box max-w-5xl max-h-[90vh] overflow-y-auto">
-        <h3 className="font-bold text-lg mb-4">Training Example {index + 1} - Detailed View</h3>
-        
-        <div className="flex items-center justify-center gap-8 p-4">
-          <PuzzleGrid 
+      <div className="modal-box max-w-5xl">
+        <h3 className="font-bold text-lg mb-4">Training Example {index + 1} — Detailed View</h3>
+
+        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+          <TrainingExampleInputCard
             grid={input}
-            title="Input"
-            showEmojis={showEmojis}
-            emojiSet={emojiSet}
+            className="md:flex-1"
+            maxWidth={MODAL_CARD_DIMENSION}
+            maxHeight={MODAL_CARD_DIMENSION}
+            useIntelligentSizing
           />
-          
-          <ArrowRight className="h-8 w-8 text-gray-400" />
-          
-          <PuzzleGrid 
+
+          <div className="flex items-center justify-center text-gray-400">
+            <ArrowRight className="h-7 w-7" />
+          </div>
+
+          <TrainingExampleOutputCard
             grid={output}
-            title="Output"
-            showEmojis={showEmojis}
-            emojiSet={emojiSet}
+            className="md:flex-1"
+            maxWidth={MODAL_CARD_DIMENSION}
+            maxHeight={MODAL_CARD_DIMENSION}
+            useIntelligentSizing
           />
         </div>
-        
+
         <div className="modal-action">
           <button className="btn" onClick={onClose}>Close</button>
         </div>
