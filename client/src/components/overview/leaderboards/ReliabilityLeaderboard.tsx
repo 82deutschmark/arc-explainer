@@ -60,12 +60,12 @@ export function ReliabilityLeaderboard({
   );
 
   const reliabilityBadge = (value: number) => {
-    if (value >= 0.95) return <ShieldCheck className="h-3.5 w-3.5 text-emerald-600" />;
-    if (value >= 0.85) return <Shield className="h-3.5 w-3.5 text-amber-600" />;
+    if (value >= 95) return <ShieldCheck className="h-3.5 w-3.5 text-emerald-600" />;
+    if (value >= 85) return <Shield className="h-3.5 w-3.5 text-amber-600" />;
     return <XCircle className="h-3.5 w-3.5 text-rose-600" />;
   };
 
-  const reliabilityText = (value: number) => `${(value * 100).toFixed(2)}%`;
+  const reliabilityText = (value: number) => `${value.toFixed(2)}%`;
 
   if (isLoading) {
     return (
