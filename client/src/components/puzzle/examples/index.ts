@@ -11,5 +11,7 @@
 export { PuzzleExamplesSection } from './PuzzleExamplesSection';
 export { TrainingPairGallery } from './TrainingPairGallery';
 export { TrainingPairCard } from './TrainingPairCard';
+export { TrainingExampleInputCard } from './TrainingExampleInputCard';
+export { TrainingExampleOutputCard } from './TrainingExampleOutputCard';
 export { TrainingPairZoomModal } from './TrainingPairZoomModal';
 export { TestCaseViewer } from './TestCaseViewer';
