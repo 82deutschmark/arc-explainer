@@ -14,7 +14,7 @@
 
 import React, { useState, useMemo } from 'react';
 import { useParams } from 'wouter';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Grid3X3 } from 'lucide-react';
 import { getPuzzleName } from '@shared/utils/puzzleNames';
 import { DEFAULT_EMOJI_SET } from '@/lib/spaceEmojis';
 import type { EmojiSet } from '@/lib/spaceEmojis';
@@ -29,12 +29,13 @@ import { useAnalysisResults } from '@/hooks/useAnalysisResults';
 
 // UI Components (SRP-compliant)
 import { PuzzleHeader } from '@/components/puzzle/PuzzleHeader';
-import { PuzzleGridDisplay } from '@/components/puzzle/PuzzleGridDisplay';
 import { CompactControls } from '@/components/puzzle/CompactControls';
 import { ModelSelection } from '@/components/puzzle/ModelSelection';
 import { AnalysisResults } from '@/components/puzzle/AnalysisResults';
 import { StreamingAnalysisPanel } from '@/components/puzzle/StreamingAnalysisPanel';
 import { PromptPreviewModal } from '@/components/PromptPreviewModal';
+import { TrainingPairGallery } from '@/components/puzzle/examples/TrainingPairGallery';
+import { TestCaseGallery } from '@/components/puzzle/testcases/TestCaseGallery';
 
 // Types
 import type { CorrectnessFilter } from '@/hooks/useFilteredResults';
@@ -279,13 +280,59 @@ export default function PuzzleExaminer() {
 
       {/* Main Content Area - Full Width */}
       <div className="px-2">
-        {/* Puzzle Grid Display Component (PERFORMANCE-OPTIMIZED) */}
+        {/* Puzzle Examples Section – now uses split training cards and adaptive test gallery */}
         <div className="mb-2">
-          <PuzzleGridDisplay
-            task={task}
-            showEmojis={showEmojis}
-            emojiSet={emojiSet}
-          />
+          <div className="card bg-base-100 shadow-sm border border-base-300">
+            <div className="card-body p-4 space-y-6">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <div className="flex items-center gap-2">
+                  <Grid3X3 className="h-5 w-5 text-base-content" />
+                  <div>
+                    <h2 className="text-base font-semibold text-base-content">Puzzle Pattern</h2>
+                    <p className="text-xs text-base-content/60">
+                      {task.train.length} training · {task.test.length} test grids
+                    </p>
+                  </div>
+                </div>
+                <div className="badge badge-outline text-[10px] uppercase tracking-wide">
+                  {task.train.length + task.test.length} total grids
+                </div>
+              </div>
+
+              <div className="space-y-6">
+                <section>
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="text-[11px] font-semibold uppercase tracking-wide text-blue-600">
+                      Training Examples
+                    </span>
+                    <div className="badge badge-outline badge-sm">
+                      {task.train.length} {task.train.length === 1 ? 'example' : 'examples'}
+                    </div>
+                  </div>
+                  <TrainingPairGallery
+                    trainExamples={task.train}
+                    showHeader={false}
+                  />
+                </section>
+
+                <section>
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="text-[11px] font-semibold uppercase tracking-wide text-green-600">
+                      Test Cases
+                    </span>
+                    <div className="badge badge-outline badge-sm">
+                      {task.test.length} {task.test.length === 1 ? 'test' : 'tests'}
+                    </div>
+                  </div>
+                  <TestCaseGallery
+                    testCases={task.test}
+                    showHeader={false}
+                    showEmojis={showEmojis}
+                  />
+                </section>
+              </div>
+            </div>
+          </div>
         </div>
 
         {/* Compact Controls - Prompt & Advanced Parameters */}
