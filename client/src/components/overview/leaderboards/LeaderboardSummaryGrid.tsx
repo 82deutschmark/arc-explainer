@@ -26,7 +26,7 @@ interface LeaderboardSummaryGridProps {
 
 export function LeaderboardSummaryGrid({ items, isLoading = false }: LeaderboardSummaryGridProps) {
   return (
-    <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+    <div className="grid grid-cols-1 gap-2 md:grid-cols-2 xl:grid-cols-3">
       {items.map(item => (
         <SummaryStatCard
           key={item.id}

@@ -1,3 +1,15 @@
+## [4.8.40] - 2025-10-23
+### 🎨 UI/UX: Compress leaderboards for maximal info density
+
+- Rebuilt the leaderboards hero, summary cards, and insights with compact typography, tighter padding, and denser grid spacing so key metrics fit on a single screen.
+- Refactored accuracy, trustworthiness, feedback, and reliability tables into lightweight four-column rows with inline metadata for faster comparison.
+- Slimmed ancillary panels (warnings, reliability header) to align with the research dashboard aesthetic while retaining refresh and status affordances.
+
+#### Verification
+- Not run (visual change only)
+
+---
+
 ## [4.8.39] - 2025-10-22
 ### 🎨 UI/UX: Restore aurora warmth to analysis result surfaces
 

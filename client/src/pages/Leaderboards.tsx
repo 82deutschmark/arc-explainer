@@ -166,7 +166,7 @@ const Leaderboards: React.FC = () => {
   }, [accuracyError, performanceError, feedbackError, reliabilityError, overconfidentError]);
 
   return (
-    <div className="mx-auto flex max-w-7xl flex-col gap-10 px-4 py-8 lg:px-8">
+    <div className="mx-auto flex w-full max-w-6xl flex-col gap-4 px-3 py-3 lg:max-w-7xl lg:px-4">
       <LeaderboardPageHeader
         modelCount={accuracyStats?.modelAccuracyRankings?.length}
         totalAttempts={accuracyStats?.totalSolverAttempts}
@@ -177,9 +177,9 @@ const Leaderboards: React.FC = () => {
       />
 
       {errorMessages.length > 0 && !isLoadingAny && (
-        <div className="rounded-2xl border border-rose-200 bg-rose-50 p-5 text-rose-900">
-          <h2 className="mb-2 text-sm font-semibold uppercase tracking-wide">Data warnings</h2>
-          <ul className="list-disc space-y-1 pl-5 text-sm">
+        <div className="rounded-lg border border-rose-200 bg-rose-50 p-3 text-rose-900">
+          <h2 className="mb-1 text-[11px] font-semibold uppercase tracking-wide">Data warnings</h2>
+          <ul className="list-disc space-y-0.5 pl-4 text-[11px] leading-snug">
             {errorMessages.map(message => (
               <li key={message}>{message}</li>
             ))}
@@ -208,12 +208,10 @@ const Leaderboards: React.FC = () => {
         isLoadingOverconfident={isLoadingOverconfident}
       />
 
-      <section className="space-y-4">
-        <div>
-          <h2 className="text-2xl font-bold text-slate-900">Technical reliability</h2>
-          <p className="text-sm text-slate-600">
-            Raw uptime metrics pulled from MetricsRepository show which models keep their pipelines healthy.
-          </p>
+      <section className="space-y-2">
+        <div className="flex items-baseline justify-between gap-2">
+          <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-800">Technical reliability</h2>
+          <p className="text-[11px] text-slate-500">Raw uptime metrics from MetricsRepository.</p>
         </div>
         <ReliabilityLeaderboard
           reliabilityStats={reliabilityStats}
