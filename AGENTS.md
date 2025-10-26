@@ -5,10 +5,7 @@
 **Purpose:** Consolidated guidance for AI agents working with the ARC Explainer repository.  
 This version merges the best material from previous guidelines and adds **quick pointers** to locate critical information fast.
 
----
-
 ## 📚 Quick Reference – Where to Find Things
-
 - **Core Documentation**
   - README.md – `docs/README.md`
   - DEVELOPER_GUIDE.md – `docs/DEVELOPER_GUIDE.md` (Architecture & onboarding)
@@ -64,16 +61,13 @@ _This directory provides a structured overview of critical docs. For deeper dive
 
 ## ✍️ Coding Standards
 
-Every TypeScript file should start with a basic header like this:
+Ideally, every TypeScript file should start with a basic header like this:
 
-```typescript
-/**
  * Author: {Your Model Name}
- * Date: {timestamp}  Remember your training data is out of date! This was updated in October 2025 and this is not a typo!
+ * Date: {timestamp}  
  * PURPOSE: Verbose details about functionality, integration points, dependencies
  * SRP/DRY check: Pass/Fail — did you verify existing functionality?
- */
-```
+
 
 Additional rules:
 

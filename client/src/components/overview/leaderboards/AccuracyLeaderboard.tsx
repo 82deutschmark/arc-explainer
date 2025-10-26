@@ -19,8 +19,8 @@
  * shadcn/ui: Pass - Uses shadcn/ui components (Card, Badge, Tooltip, Icons)
  */
 
-import React from 'react';
-import { AlertTriangle, Shield, ShieldAlert, AlertCircle, Info } from 'lucide-react';
+import React, { useMemo } from 'react';
+import { AlertCircle, AlertTriangle, Shield, ShieldAlert } from 'lucide-react';
 
 interface AccuracyStats {
   totalSolverAttempts: number;
@@ -62,275 +62,189 @@ export function AccuracyLeaderboard({
   showOverconfident = true, // Default to new overconfident view
   onModelClick
 }: AccuracyLeaderboardProps) {
-  // Determine which view to show and handle loading states
   const showingOverconfident = showOverconfident && overconfidentModels !== undefined;
-  const title = showingOverconfident ? "⚠️ Overconfident Models" : "Models Needing Improvement";
-  const icon = showingOverconfident ? ShieldAlert : AlertTriangle;
+
+  const sortedOverconfident = useMemo(() => {
+    if (!overconfidentModels) {
+      return [];
+    }
+    return [...overconfidentModels].sort((a, b) => b.overconfidenceRate - a.overconfidenceRate);
+  }, [overconfidentModels]);
+
+  const accuracyRankings = useMemo(() => {
+    if (!accuracyStats?.modelAccuracyRankings) {
+      return [];
+    }
+    return [...accuracyStats.modelAccuracyRankings].sort(
+      (a, b) => a.accuracyPercentage - b.accuracyPercentage
+    );
+  }, [accuracyStats]);
+
+  const containerClasses = 'flex h-full flex-col rounded-md border border-gray-200 bg-white text-xs shadow-sm';
+  const rowBaseClasses = 'grid grid-cols-[auto,minmax(0,1fr),auto,auto] items-center gap-2 px-2.5 py-1.5';
+
+  const renderSkeleton = () => (
+    <ol className="divide-y divide-gray-200">
+      {[...Array(6)].map((_, index) => (
+        <li key={index} className={`${rowBaseClasses} animate-pulse`}>
+          <div className="h-3.5 w-3.5 rounded bg-gray-200" />
+          <div className="space-y-1">
+            <div className="h-3 w-28 rounded bg-gray-200" />
+            <div className="h-2.5 w-36 rounded bg-gray-100" />
+          </div>
+          <div className="h-3 w-14 rounded bg-gray-200" />
+          <div className="h-3 w-14 rounded bg-gray-200" />
+        </li>
+      ))}
+    </ol>
+  );
 
   if (isLoading) {
     return (
-      <div className="card bg-base-100 shadow">
-        <div className="card-body">
-          <h2 className="card-title flex items-center gap-2">
-            {React.createElement(icon, { className: "h-5 w-5 text-red-600" })}
-            {title}
+      <section className={containerClasses}>
+        <header className="flex items-center gap-2 border-b border-gray-200 px-3 py-2 text-gray-800">
+          {showingOverconfident ? (
+            <ShieldAlert className="h-4 w-4 text-rose-600" />
+          ) : (
+            <AlertTriangle className="h-4 w-4 text-amber-600" />
+          )}
+          <h2 className="text-[11px] font-semibold uppercase tracking-wide">
+            {showingOverconfident ? 'Overconfidence watchlist' : 'Low accuracy models'}
           </h2>
-          <div className="space-y-3">
-            {[1, 2, 3, 4, 5].map(i => (
-              <div key={i} className="animate-pulse">
-                <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 bg-gray-200 rounded-full"></div>
-                    <div className="space-y-1">
-                      <div className="h-4 bg-gray-200 rounded w-24"></div>
-                      <div className="h-3 bg-gray-200 rounded w-16"></div>
-                    </div>
-                  </div>
-                  <div className="h-6 bg-gray-200 rounded w-12"></div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
+        </header>
+        <div className="flex-1 px-1.5 py-1.5">{renderSkeleton()}</div>
+      </section>
     );
   }
 
-  // Handle empty states for both views
   if (showingOverconfident) {
-    if (!overconfidentModels || overconfidentModels.length === 0) {
+    if (!sortedOverconfident.length) {
       return (
-        <div className="card bg-base-100 shadow">
-          <div className="card-body">
-            <h2 className="card-title flex items-center gap-2">
-              <Shield className="h-5 w-5 text-green-600" />
-              ✅ No Overconfident Models
-            </h2>
-            <div className="text-center py-8 text-gray-500">
-              No dangerous overconfident models found with 100+ attempts.
-              <br />
-              <span className="text-sm">This is good - models are being appropriately cautious.</span>
-            </div>
+        <section className={containerClasses}>
+          <header className="flex items-center gap-2 border-b border-gray-200 px-3 py-2 text-gray-800">
+            <Shield className="h-4 w-4 text-emerald-600" />
+            <h2 className="text-[11px] font-semibold uppercase tracking-wide">Overconfidence watchlist</h2>
+          </header>
+          <div className="flex flex-1 items-center justify-center px-3 py-4 text-center text-[11px] text-gray-500">
+            All monitored models are within safe calibration thresholds.
           </div>
-        </div>
+        </section>
       );
     }
-  } else {
-    if (!accuracyStats || !accuracyStats.modelAccuracyRankings?.length) {
-      return (
-        <div className="card bg-base-100 shadow">
-          <div className="card-body">
-            <h2 className="card-title flex items-center gap-2">
-              <AlertTriangle className="h-5 w-5 text-orange-600" />
-              No Data
-            </h2>
-            <div className="text-center py-8 text-gray-500">
-              No accuracy data available
-            </div>
-          </div>
-        </div>
-      );
-    }
-  }
 
-  // Helper functions for styling
-  const getOverconfidenceColor = (rate: number, isHighRisk: boolean) => {
-    if (isHighRisk) return 'bg-red-100 text-red-800';
-    if (rate > 70) return 'bg-orange-100 text-orange-800';
-    if (rate > 50) return 'bg-yellow-100 text-yellow-800';
-    return 'bg-gray-100 text-gray-800';
-  };
-
-  const getConfidenceColor = (confidence: number) => {
-    if (confidence >= 80) return 'bg-red-100 text-red-800';
-    if (confidence >= 60) return 'bg-orange-100 text-orange-800';
-    return 'bg-gray-100 text-gray-800';
-  };
-
-  const getAccuracyColor = (accuracy: number) => {
-    if (accuracy >= 70) return 'bg-green-100 text-green-800';
-    if (accuracy >= 50) return 'bg-yellow-100 text-yellow-800';
-    return 'bg-red-100 text-red-800';
-  };
-
-  const getRiskIcon = (model: OverconfidentModel, index: number) => {
-    if (model.isHighRisk) return <ShieldAlert className="h-4 w-4 text-red-600" />;
-    if (model.overconfidenceRate > 70) return <AlertCircle className="h-4 w-4 text-orange-500" />;
-    if (model.overconfidenceRate > 50) return <AlertTriangle className="h-4 w-4 text-yellow-600" />;
-    return <span className="w-4 h-4 flex items-center justify-center text-sm font-medium text-gray-500">#{index + 1}</span>;
-  };
-
-  const getRankIcon = (index: number) => {
-    return <span className="w-4 h-4 flex items-center justify-center text-sm font-medium text-gray-500">#{index + 1}</span>;
-  };
-
-  // Render overconfident models view
-  if (showingOverconfident && overconfidentModels && overconfidentModels.length > 0) {
-    const topModels = overconfidentModels.slice(0, 15);
+    const limited = sortedOverconfident.slice(0, 18);
 
     return (
-      <div className="card bg-base-100 shadow">
-        <div className="card-body">
-          <h2 className="card-title flex items-center gap-2">
-            <ShieldAlert className="h-5 w-5 text-red-600" />
-            ⚠️ Overconfident Models
-          </h2>
-          <div className="text-sm text-gray-600">
-            Models with high confidence (≥80%) but poor accuracy (&lt;50%) - minimum 100 attempts
-            {overconfidentModels.length === 0 && (
-              <div className="text-green-600 font-medium mt-1">
-                ✅ No dangerous overconfident models found!
-              </div>
-            )}
+      <section className={containerClasses}>
+        <header className="flex items-center justify-between gap-2 border-b border-gray-200 px-3 py-2 text-gray-800">
+          <div className="flex items-center gap-2">
+            <ShieldAlert className="h-4 w-4 text-rose-600" />
+            <div>
+              <h2 className="text-[11px] font-semibold uppercase tracking-wide">Overconfidence watchlist</h2>
+              <p className="text-[10px] text-gray-500">High-confidence misses (≥80% confidence, &lt;50% accuracy).</p>
+            </div>
           </div>
-        </div>
-        <div className="card-body">
-          <div className="space-y-2">
-            {topModels.map((model, index) => (
-              <div
+          <span className="text-[10px] text-gray-500">{limited.length} / {sortedOverconfident.length} flagged</span>
+        </header>
+        <ol className="flex-1 divide-y divide-gray-200">
+          {limited.map((model, index) => {
+            const background = model.isHighRisk ? 'bg-rose-50' : 'bg-white';
+            return (
+              <li
                 key={model.modelName}
-                className={`flex items-center justify-between p-3 rounded-lg transition-colors border ${
-                  model.isHighRisk ? 'border-red-200 bg-red-50' : 'border-gray-200 bg-gray-50'
-                } ${
-                  onModelClick ? 'hover:bg-opacity-70 cursor-pointer' : ''
+                className={`${rowBaseClasses} ${background} ${
+                  onModelClick ? 'cursor-pointer hover:bg-rose-50' : ''
                 }`}
                 onClick={() => onModelClick?.(model.modelName)}
               >
-                <div className="flex items-center gap-3 flex-1 min-w-0">
-                  {getRiskIcon(model, index)}
-                  <div className="min-w-0 flex-1">
-                    <div className="font-medium text-sm truncate flex items-center gap-2" title={model.modelName}>
-                      {model.modelName}
-                      {model.isHighRisk && (
-                        <span className="text-xs bg-red-600 text-white px-1.5 py-0.5 rounded font-bold">
-                          HIGH RISK
-                        </span>
-                      )}
-                    </div>
-                    <div className="text-xs text-gray-600">
-                      {model.totalAttempts} total • {model.totalOverconfidentAttempts} overconfident • {model.wrongOverconfidentPredictions} incorrect
-                    </div>
-                  </div>
-                </div>
-                <div className="flex items-center gap-2 flex-col sm:flex-row">
-                  <div className={`badge text-xs font-medium ${getOverconfidenceColor(model.overconfidenceRate, model.isHighRisk)}`}>
-                    {model.overconfidenceRate.toFixed(1)}% overconf
-                  </div>
-                  <div className={`badge text-xs font-medium ${getConfidenceColor(model.avgConfidence)}`}>
-                    {model.avgConfidence.toFixed(0)}% conf
-                  </div>
-                  <div className={`badge text-xs font-medium ${getAccuracyColor(model.overallAccuracy)}`}>
-                    {model.overallAccuracy.toFixed(1)}% acc
-                  </div>
-                  {model.totalAttempts < 10 && (
-                    <div className="badge badge-outline text-xs bg-yellow-50 border-yellow-300 text-yellow-800">
-                      <Info className="h-3 w-3 mr-1" />
-                      Low sample
-                    </div>
+                <div className="flex items-center justify-center">
+                  {model.isHighRisk ? (
+                    <ShieldAlert className="h-3.5 w-3.5 text-rose-600" />
+                  ) : model.overconfidenceRate > 70 ? (
+                    <AlertCircle className="h-3.5 w-3.5 text-amber-600" />
+                  ) : (
+                    <span className="text-[10px] font-semibold text-gray-500">#{index + 1}</span>
                   )}
                 </div>
-              </div>
-            ))}
-          </div>
-
-          {overconfidentModels.length > 15 && (
-            <div className="mt-4 pt-3 border-t text-center">
-              <span className="text-sm text-gray-500">
-                +{overconfidentModels.length - 15} more overconfident models
-              </span>
-            </div>
-          )}
-
-          <div className="mt-4 pt-3 border-t">
-            <div className="text-sm space-y-1">
-              <div className="flex items-center justify-between">
-                <span className="text-gray-600">Total Overconfident Models:</span>
-                <div className="badge bg-orange-100 text-orange-800">
-                  {overconfidentModels.length}
+                <div className="min-w-0 space-y-0.5">
+                  <p className="truncate text-[12px] font-semibold text-gray-800" title={model.modelName}>
+                    {model.modelName}
+                  </p>
+                  <p className="flex flex-wrap gap-x-2 gap-y-0.5 text-[10px] text-gray-500">
+                    <span>{model.totalAttempts.toLocaleString()} attempts</span>
+                    <span>{model.wrongOverconfidentPredictions} wrong high-conf</span>
+                    <span>{model.avgConfidence.toFixed(1)}% avg conf</span>
+                  </p>
                 </div>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-gray-600">High Risk Models:</span>
-                <div className="badge bg-red-100 text-red-800">
-                  {overconfidentModels.filter(m => m.isHighRisk).length}
+                <div className="text-right font-mono text-[11px] text-rose-700" title="Overconfidence rate">
+                  {model.overconfidenceRate.toFixed(1)}%
                 </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+                <div className="text-right font-mono text-[11px] text-gray-600" title="Overall accuracy">
+                  {model.overallAccuracy.toFixed(1)}%
+                </div>
+              </li>
+            );
+          })}
+        </ol>
+      </section>
     );
   }
 
-  // Render legacy accuracy view (fallback)
-  if (!accuracyStats || !accuracyStats.modelAccuracyRankings) return null;
+  if (!accuracyRankings.length) {
+    return (
+      <section className={containerClasses}>
+        <header className="flex items-center gap-2 border-b border-gray-200 px-3 py-2 text-gray-800">
+          <AlertTriangle className="h-4 w-4 text-amber-600" />
+          <h2 className="text-[11px] font-semibold uppercase tracking-wide">Low accuracy models</h2>
+        </header>
+        <div className="flex flex-1 items-center justify-center px-3 py-4 text-center text-[11px] text-gray-500">
+          No accuracy data available.
+        </div>
+      </section>
+    );
+  }
 
-  const topModels = accuracyStats.modelAccuracyRankings.slice(0, 15);
+  const limitedRankings = accuracyRankings.slice(0, 18);
 
   return (
-    <div className="card bg-base-100 shadow">
-      <div className="card-body">
-        <h2 className="card-title flex items-center gap-2">
-          <AlertTriangle className="h-5 w-5 text-orange-600" />
-          Models Needing Improvement
-        </h2>
-        <div className="text-sm text-gray-600">
-          Models with lowest accuracy rates - {accuracyStats.totalSolverAttempts.toLocaleString()} solver attempts
-        </div>
-      </div>
-      <div className="card-body">
-        <div className="space-y-2">
-          {topModels.map((model, index) => (
-            <div
-              key={model.modelName}
-              className={`flex items-center justify-between p-3 rounded-lg transition-colors ${
-                onModelClick ? 'hover:bg-gray-50 cursor-pointer' : 'bg-gray-50'
-              }`}
-              onClick={() => onModelClick?.(model.modelName)}
-            >
-              <div className="flex items-center gap-3 flex-1 min-w-0">
-                {getRankIcon(index)}
-                <div className="min-w-0 flex-1">
-                  <div className="font-medium text-sm truncate" title={model.modelName}>
-                    {model.modelName}
-                  </div>
-                  <div className="text-xs text-gray-500">
-                    {model.totalAttempts} attempts • {model.correctPredictions} correct
-                  </div>
-                </div>
-              </div>
-              <div className="flex items-center gap-2">
-                <div className={`badge text-xs font-medium ${getAccuracyColor(model.accuracyPercentage)}`}>
-                  {model.accuracyPercentage.toFixed(1)}%
-                </div>
-                {model.totalAttempts < 10 && (
-                  <div className="badge badge-outline text-xs bg-yellow-50 border-yellow-300 text-yellow-800">
-                    <Info className="h-3 w-3 mr-1" />
-                    Low sample
-                  </div>
-                )}
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {accuracyStats.modelAccuracyRankings.length > 15 && (
-          <div className="mt-4 pt-3 border-t text-center">
-            <span className="text-sm text-gray-500">
-              +{accuracyStats.modelAccuracyRankings.length - 15} more models
-            </span>
-          </div>
-        )}
-
-        <div className="mt-4 pt-3 border-t">
-          <div className="flex items-center justify-between text-sm">
-            <span className="text-gray-600">Overall Accuracy:</span>
-            <div className={`badge ${getAccuracyColor(accuracyStats.overallAccuracyPercentage)}`}>
-              {accuracyStats.overallAccuracyPercentage.toFixed(1)}%
-            </div>
+    <section className={containerClasses}>
+      <header className="flex items-center justify-between gap-2 border-b border-gray-200 px-3 py-2 text-gray-800">
+        <div className="flex items-center gap-2">
+          <AlertTriangle className="h-4 w-4 text-amber-600" />
+          <div>
+            <h2 className="text-[11px] font-semibold uppercase tracking-wide">Low accuracy models</h2>
+            <p className="text-[10px] text-gray-500">Lowest performers by correctness rate.</p>
           </div>
         </div>
-      </div>
-    </div>
+        <span className="text-[10px] text-gray-500">{limitedRankings.length} shown</span>
+      </header>
+      <ol className="flex-1 divide-y divide-gray-200">
+        {limitedRankings.map((model, index) => (
+          <li
+            key={model.modelName}
+            className={`${rowBaseClasses} ${onModelClick ? 'cursor-pointer hover:bg-slate-50' : ''}`}
+            onClick={() => onModelClick?.(model.modelName)}
+          >
+            <div className="text-[10px] font-semibold text-gray-500">#{index + 1}</div>
+            <div className="min-w-0 space-y-0.5">
+              <p className="truncate text-[12px] font-semibold text-gray-800" title={model.modelName}>
+                {model.modelName}
+              </p>
+              <p className="flex flex-wrap gap-x-2 gap-y-0.5 text-[10px] text-gray-500">
+                <span>{model.totalAttempts.toLocaleString()} attempts</span>
+                <span>{model.correctPredictions.toLocaleString()} correct</span>
+                <span>{model.singleTestAccuracy.toFixed(1)}% single</span>
+              </p>
+            </div>
+            <div className="text-right font-mono text-[11px] text-gray-700" title="Overall accuracy">
+              {model.accuracyPercentage.toFixed(1)}%
+            </div>
+            <div className="text-right font-mono text-[11px] text-gray-700" title="Multi test accuracy">
+              {model.multiTestAccuracy.toFixed(1)}% M
+            </div>
+          </li>
+        ))}
+      </ol>
+    </section>
   );
 }

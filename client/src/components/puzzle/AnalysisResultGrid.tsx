@@ -8,6 +8,8 @@
  * FIXED: Removed multiTestAverageAccuracy check in fallback logic - now uses ONLY multiTestAllCorrect flag.
  * Displays "Incorrect" (not "Some Incorrect") when we can't determine exact count without validation data.
  * Handles optimistic UI states with skeleton loaders during analysis/saving.
+ * UPDATED (2025-10-22T00:00:00Z) by gpt-5-codex: Restored September's warm honeyglass panels, apricot hover states,
+ * and jewel-toned badges so nested grids inherit the aurora glow from AnalysisResultCard.
  * SRP/DRY check: Pass - Single responsibility (grid display), reuses PuzzleGrid component
  * shadcn/ui: Pass - Converted to DaisyUI badge and button
  */
@@ -37,7 +39,7 @@ interface AnalysisResultGridProps {
 
 // Skeleton loader component
 const SkeletonGrid = () => (
-  <div className="w-32 h-32 bg-gray-200 rounded animate-pulse" />
+  <div className="h-32 w-32 animate-pulse rounded-xl bg-gradient-to-br from-amber-200/70 via-rose-200/60 to-sky-200/60 shadow-[inset_0_8px_20px_-16px_rgba(146,64,14,0.45)] dark:from-violet-900/60 dark:via-slate-900/50 dark:to-emerald-900/50" />
 );
 
 export const AnalysisResultGrid: React.FC<AnalysisResultGridProps> = ({
@@ -64,16 +66,16 @@ export const AnalysisResultGrid: React.FC<AnalysisResultGridProps> = ({
   if (isOptimistic && (status === 'analyzing' || status === 'saving')) {
     return (
       <div className="space-y-3">
-        <div className="border rounded bg-gray-50 border-gray-200">
-          <div className="p-3">
-            <h5 className="font-semibold text-gray-800 mb-3">AI Prediction</h5>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
+        <div className="rounded-3xl border border-amber-100/70 bg-[radial-gradient(circle_at_top,_rgba(253,230,138,0.8),_rgba(255,237,213,0.7))] px-4 py-4 shadow-[inset_0_18px_38px_-32px_rgba(146,64,14,0.5)] dark:border-violet-900/70 dark:bg-[radial-gradient(circle_at_top,_rgba(30,41,59,0.78),_rgba(76,29,149,0.55))]">
+          <div className="pb-2">
+            <h5 className="mb-3 font-semibold text-amber-900 dark:text-emerald-200">AI Prediction</h5>
+            <div className="grid grid-cols-1 items-start gap-4 md:grid-cols-2">
               <div>
-                <h6 className="font-medium text-center mb-2">Predicted Output</h6>
+                <h6 className="mb-2 text-center font-medium text-amber-800 dark:text-emerald-200">Predicted Output</h6>
                 <SkeletonGrid />
               </div>
               <div>
-                <h6 className="font-medium text-center mb-2">Expected Output</h6>
+                <h6 className="mb-2 text-center font-medium text-amber-800 dark:text-emerald-200">Expected Output</h6>
                 <SkeletonGrid />
               </div>
             </div>
@@ -87,20 +89,20 @@ export const AnalysisResultGrid: React.FC<AnalysisResultGridProps> = ({
     <div className="space-y-2">
       {/* Single prediction display */}
       {predictedGrid && expectedOutputGrids.length === 1 && (
-        <div className="border rounded bg-gray-50 border-gray-200">
-          <button
-            onClick={() => setShowPrediction(!showPrediction)}
-            className="w-full flex items-center justify-between p-2 text-left hover:bg-gray-100 transition-colors"
-          >
-            <h5 className="font-semibold text-sm text-gray-800">AI Prediction</h5>
-            {showPrediction ? (
-              <ChevronUp className="h-4 w-4 text-gray-600" />
-            ) : (
-              <ChevronDown className="h-4 w-4 text-gray-600" />
-            )}
-          </button>
+        <div className="rounded-3xl border border-amber-100/70 bg-[radial-gradient(circle_at_top,_rgba(253,230,138,0.78),_rgba(255,237,213,0.7))] shadow-[inset_0_18px_38px_-32px_rgba(146,64,14,0.45)] dark:border-violet-900/70 dark:bg-[radial-gradient(circle_at_top,_rgba(30,41,59,0.78),_rgba(76,29,149,0.55))]">
+            <button
+              onClick={() => setShowPrediction(!showPrediction)}
+              className="flex w-full items-center justify-between rounded-t-3xl px-4 py-3 text-left transition-colors hover:bg-amber-100/70 dark:hover:bg-violet-900/40"
+            >
+              <h5 className="text-sm font-semibold text-amber-900 dark:text-emerald-200">AI Prediction</h5>
+              {showPrediction ? (
+                <ChevronUp className="h-4 w-4 text-amber-600 dark:text-emerald-300" />
+              ) : (
+                <ChevronDown className="h-4 w-4 text-amber-600 dark:text-emerald-300" />
+              )}
+            </button>
           {showPrediction && (
-            <div className={`p-2 grid grid-cols-1 ${eloMode ? '' : 'md:grid-cols-2'} gap-2 items-start`}>
+            <div className={`grid grid-cols-1 items-start gap-3 px-4 pb-4 pt-3 ${eloMode ? '' : 'md:grid-cols-2'}`}>
               <div>
                 <PuzzleGrid grid={predictedGrid} diffMask={showDiff ? diffMask : undefined} title="Predicted Output" showEmojis={false} />
               </div>
@@ -110,8 +112,8 @@ export const AnalysisResultGrid: React.FC<AnalysisResultGridProps> = ({
                 </div>
               )}
               {!eloMode && (
-                <div className="md:col-span-2 mt-1">
-                  <button className="btn btn-outline btn-sm" onClick={() => setShowDiff(!showDiff)}>
+                <div className="mt-1 md:col-span-2">
+                  <button className="btn btn-sm border-amber-300/70 bg-white/70 text-amber-800 hover:border-rose-300/70 hover:bg-rose-50/70 dark:border-violet-700/70 dark:bg-slate-900/50 dark:text-emerald-200 dark:hover:bg-violet-900/50" onClick={() => setShowDiff(!showDiff)}>
                     {showDiff ? 'Hide' : 'Show'} Mismatches
                   </button>
                 </div>
@@ -123,23 +125,23 @@ export const AnalysisResultGrid: React.FC<AnalysisResultGridProps> = ({
 
       {/* Multi-test answer display */}
       {expectedOutputGrids.length > 1 && (
-        <div className="border rounded bg-gray-50 border-gray-200">
+        <div className="rounded-3xl border border-amber-100/70 bg-[radial-gradient(circle_at_top,_rgba(253,230,138,0.78),_rgba(255,237,213,0.7))] shadow-[inset_0_18px_38px_-32px_rgba(146,64,14,0.45)] dark:border-violet-900/70 dark:bg-[radial-gradient(circle_at_top,_rgba(30,41,59,0.78),_rgba(76,29,149,0.55))]">
           <button
             onClick={() => setShowMultiTest(!showMultiTest)}
-            className="w-full flex items-center justify-between p-2 text-left hover:bg-gray-100 transition-colors"
+            className="flex w-full items-center justify-between rounded-t-3xl px-4 py-3 text-left transition-colors hover:bg-amber-100/70 dark:hover:bg-violet-900/40"
           >
-            <div className="flex items-center gap-2 flex-wrap">
-              <h5 className="font-semibold text-sm text-gray-800">Multi-Test Results ({predictedGrids?.length || 0} predictions, {expectedOutputGrids.length} tests{multiTestStats.totalCount > 0 ? ` • ${multiTestStats.correctCount}/${multiTestStats.totalCount} correct` : ''})</h5>
+            <div className="flex flex-wrap items-center gap-2">
+              <h5 className="text-sm font-semibold text-amber-900 dark:text-emerald-200">Multi-Test Results ({predictedGrids?.length || 0} predictions, {expectedOutputGrids.length} tests{multiTestStats.totalCount > 0 ? ` • ${multiTestStats.correctCount}/${multiTestStats.totalCount} correct` : ''})</h5>
               {!eloMode && (result.multiTestAllCorrect !== undefined || result.allPredictionsCorrect !== undefined || multiTestStats.totalCount > 0) && (
                 <div
                   className={`badge badge-outline flex items-center gap-1 text-xs ${
-                    multiTestStats.accuracyLevel === 'all_correct' || (!multiTestStats.totalCount && (result.multiTestAllCorrect ?? result.allPredictionsCorrect)) 
-                      ? 'bg-green-50 border-green-200 text-green-700' 
-                      : multiTestStats.accuracyLevel === 'all_incorrect' || (!multiTestStats.totalCount && result.multiTestAverageAccuracy === 0) 
-                        ? 'bg-red-50 border-red-200 text-red-700' 
-                        : multiTestStats.accuracyLevel === 'some_incorrect' 
-                          ? 'bg-orange-50 border-orange-200 text-orange-700' 
-                          : 'bg-red-50 border-red-200 text-red-700'
+                      multiTestStats.accuracyLevel === 'all_correct' || (!multiTestStats.totalCount && (result.multiTestAllCorrect ?? result.allPredictionsCorrect))
+                        ? 'bg-emerald-100/80 border-emerald-200/70 text-emerald-800'
+                        : multiTestStats.accuracyLevel === 'all_incorrect' || (!multiTestStats.totalCount && result.multiTestAverageAccuracy === 0)
+                          ? 'bg-rose-100/80 border-rose-200/70 text-rose-800'
+                          : multiTestStats.accuracyLevel === 'some_incorrect'
+                            ? 'bg-amber-100/80 border-amber-200/70 text-amber-800'
+                            : 'bg-rose-100/80 border-rose-200/70 text-rose-800'
                   }`}>
                   {(() => {
                     const isAllCorrect = multiTestStats.accuracyLevel === 'all_correct' || (!multiTestStats.totalCount && (result.multiTestAllCorrect ?? result.allPredictionsCorrect));
@@ -165,19 +167,23 @@ export const AnalysisResultGrid: React.FC<AnalysisResultGridProps> = ({
                 </div>
               )}
             </div>
-            {showMultiTest ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+            {showMultiTest ? (
+              <ChevronUp className="h-4 w-4 text-amber-600 dark:text-emerald-300" />
+            ) : (
+              <ChevronDown className="h-4 w-4 text-amber-600 dark:text-emerald-300" />
+            )}
           </button>
           {showMultiTest && (
-            <div className="p-2 space-y-2">
-              {!eloMode && (
-                <div className="md:col-span-2 mb-1">
-                  <button className="btn btn-outline btn-sm" onClick={() => setShowDiff(!showDiff)}>
-                    {showDiff ? 'Hide' : 'Show'} Mismatches
-                  </button>
-                </div>
-              )}
+            <div className="space-y-2 px-4 pb-4 pt-3">
+                {!eloMode && (
+                  <div className="mb-1 md:col-span-2">
+                    <button className="btn btn-sm border-amber-300/70 bg-white/70 text-amber-800 hover:border-rose-300/70 hover:bg-rose-50/70 dark:border-violet-700/70 dark:bg-slate-900/50 dark:text-emerald-200 dark:hover:bg-violet-900/50" onClick={() => setShowDiff(!showDiff)}>
+                      {showDiff ? 'Hide' : 'Show'} Mismatches
+                    </button>
+                  </div>
+                )}
               {expectedOutputGrids.map((expectedGrid, index) => (
-                <div key={index} className={`grid grid-cols-1 ${eloMode ? '' : 'md:grid-cols-2'} gap-2 items-start border-t pt-2 first:border-t-0 first:pt-0`}>
+                <div key={index} className={`grid grid-cols-1 items-start gap-3 border-t border-amber-100/70 pt-3 first:border-t-0 first:pt-0 dark:border-violet-900/60 ${eloMode ? '' : 'md:grid-cols-2'}`}>
                   <div>
                     {predictedGrids && predictedGrids[index] ? (
                       <PuzzleGrid
@@ -187,7 +193,7 @@ export const AnalysisResultGrid: React.FC<AnalysisResultGridProps> = ({
                         diffMask={showDiff && multiDiffMasks ? multiDiffMasks[index] : undefined}
                       />
                     ) : (
-                      <div className="text-center text-gray-500 italic text-xs">No prediction</div>
+                      <div className="text-center text-xs italic text-amber-700 dark:text-emerald-300">No prediction</div>
                     )}
                   </div>
                   {!eloMode && (

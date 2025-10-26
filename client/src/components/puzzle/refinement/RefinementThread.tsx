@@ -98,6 +98,7 @@ export const RefinementThread: React.FC<RefinementThreadProps> = ({
 }) => {
   const threadEndRef = useRef<HTMLDivElement>(null);
   const [showPromptPreview, setShowPromptPreview] = useState(false);
+  const [previewMode, setPreviewMode] = useState<'view' | 'run' | null>(null);
 
   // Auto-scroll to newest iteration when thread updates
   useEffect(() => {
@@ -285,7 +286,10 @@ export const RefinementThread: React.FC<RefinementThreadProps> = ({
                 <div className="flex justify-center">
                   <button
                     className="btn btn-outline btn-sm flex items-center gap-1 h-8 text-xs"
-                    onClick={() => setShowPromptPreview(true)}
+                    onClick={() => {
+                      setPreviewMode('view');
+                      setShowPromptPreview(true);
+                    }}
                     disabled={isProcessing}
                   >
                     <Eye className="h-3.5 w-3.5" />
@@ -317,7 +321,10 @@ export const RefinementThread: React.FC<RefinementThreadProps> = ({
               <div>
                 <button
                   className="btn w-full h-[72px] text-sm bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white"
-                  onClick={onContinueRefinement}
+                  onClick={() => {
+                    setPreviewMode('run');
+                    setShowPromptPreview(true);
+                  }}
                   disabled={isProcessing}
                 >
                   {isProcessing ? (
@@ -386,7 +393,10 @@ export const RefinementThread: React.FC<RefinementThreadProps> = ({
       {/* Prompt Preview Modal */}
       <PromptPreviewModal
         isOpen={showPromptPreview}
-        onClose={() => setShowPromptPreview(false)}
+        onClose={() => {
+          setShowPromptPreview(false);
+          setPreviewMode(null);
+        }}
         task={task}
         taskId={taskId}
         promptId={promptId}
@@ -394,6 +404,15 @@ export const RefinementThread: React.FC<RefinementThreadProps> = ({
           originalExplanation: originalExplanation,
           customChallenge: userGuidance
         }}
+        confirmMode={previewMode === 'run'}
+        onConfirm={previewMode === 'run'
+          ? async () => {
+              await Promise.resolve(onContinueRefinement());
+              setShowPromptPreview(false);
+              setPreviewMode(null);
+            }
+          : undefined}
+        confirmButtonText="Send Refinement Request"
       />
     </div>
   );

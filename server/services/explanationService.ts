@@ -119,6 +119,25 @@ export const explanationService = {
   },
 
   /**
+   * Get a single explanation by database identifier.
+   *
+   * @param explanationId - Numeric primary key for the explanation record
+   * @returns Explanation object or null when not found / DB unavailable
+   */
+  async getExplanationById(explanationId: number) {
+    if (!Number.isInteger(explanationId)) {
+      throw new AppError('Invalid explanation id', 400, 'INVALID_EXPLANATION_ID');
+    }
+
+    const explanation = await repositoryService.explanations.getExplanationById(explanationId);
+    if (explanation === null) {
+      return null;
+    }
+
+    return explanation;
+  },
+
+  /**
    * Save an explanation for a puzzle
    * 
    * @param puzzleId - The ID of the puzzle

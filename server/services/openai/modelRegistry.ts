@@ -15,5 +15,23 @@ export const MODEL_ALIASES: Record<string, string> = {
 };
 
 export function normalizeModelKey(modelKey: string): string {
-  return MODEL_ALIASES[modelKey] ?? getApiModelName(modelKey) ?? modelKey;
+  if (typeof modelKey !== "string" || modelKey.length === 0) {
+    return modelKey;
+  }
+
+  const trimmedKey = modelKey.trim();
+  const slashIndex = trimmedKey.indexOf("/");
+  const providerStrippedKey = slashIndex > -1 ? trimmedKey.slice(slashIndex + 1) : trimmedKey;
+
+  const aliasResolved = MODEL_ALIASES[providerStrippedKey];
+  if (aliasResolved) {
+    return aliasResolved;
+  }
+
+  const apiModelName = getApiModelName(providerStrippedKey);
+  if (apiModelName) {
+    return apiModelName;
+  }
+
+  return providerStrippedKey;
 }

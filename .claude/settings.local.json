@@ -7,7 +7,8 @@
       "MultiEdit",
       "Bash",
       "WebFetch",
-      "WebSearch",
+      "WebSearch(domain=*",
+      "WebFetch(domain=https://nbviewer.org/format/script/github/openai/openai-cookbook/*)",
       "Read(/D:\\1Projects\\arc-explainer\\server\\services\\base/**)",
       "Read(/D:\\1Projects\\arc-explainer\\server\\services/**)"
     ],

@@ -12,6 +12,34 @@ import { ModelLookup, MODEL_DEFINITIONS } from './ModelDefinitions.js';
 import { modelCapabilities } from './ModelCapabilities.js';
 import { ProviderAdapters } from './ProviderAdapters.js';
 
+function resolveModelDefinition(modelKey: string) {
+  if (typeof modelKey !== 'string' || modelKey.length === 0) {
+    return undefined;
+  }
+
+  const trimmedKey = modelKey.trim();
+  if (!trimmedKey) {
+    return undefined;
+  }
+
+  const directMatch = ModelLookup.getById(trimmedKey);
+  if (directMatch) {
+    return directMatch;
+  }
+
+  const slashIndex = trimmedKey.indexOf('/');
+  if (slashIndex === -1) {
+    return undefined;
+  }
+
+  const providerStripped = trimmedKey.slice(slashIndex + 1);
+  if (!providerStripped) {
+    return undefined;
+  }
+
+  return ModelLookup.getById(providerStripped);
+}
+
 // Static definitions
 export {
   MODEL_DEFINITIONS,
@@ -26,8 +54,7 @@ export {
   modelCapabilities,
   getModelCapabilities,
   isModelAvailable,
-  supportsFeature,
-  getModelHealth
+  supportsFeature
 } from './ModelCapabilities.js';
 export type { ModelCapabilityStatus } from './ModelCapabilities.js';
 
@@ -51,7 +78,7 @@ export async function getModelInfo(modelKey: string): Promise<{
   capabilities: any;
   providerConfig: any;
 } | null> {
-  const definition = ModelLookup.getById(modelKey);
+  const definition = resolveModelDefinition(modelKey);
   if (!definition) return null;
 
   const [capabilities, providerConfig] = await Promise.all([
@@ -83,7 +110,7 @@ export async function getAvailableModels(): Promise<any[]> {
  * Check if a model supports a specific capability
  */
 export async function modelSupports(modelKey: string, capability: string): Promise<boolean> {
-  const definition = ModelLookup.getById(modelKey);
+  const definition = resolveModelDefinition(modelKey);
   if (!definition) return false;
 
   // Check static definition first
@@ -117,22 +144,23 @@ export async function modelSupports(modelKey: string, capability: string): Promi
 
 // Re-export core functions from the original models.ts interface
 export function getModelConfig(modelKey: string) {
-  return ModelLookup.getById(modelKey);
+  return resolveModelDefinition(modelKey);
 }
 
 export function modelSupportsTemperature(modelKey: string): boolean {
-  const definition = ModelLookup.getById(modelKey);
+  const definition = resolveModelDefinition(modelKey);
   return definition?.supportsTemperature ?? false;
 }
 
 export function modelSupportsReasoning(modelKey: string): boolean {
-  const definition = ModelLookup.getById(modelKey);
+  const definition = resolveModelDefinition(modelKey);
   return definition?.isReasoning ?? false;
 }
 
 export function getApiModelName(modelKey: string): string {
-  const definition = ModelLookup.getById(modelKey);
-  return definition?.apiModelName ?? modelKey;
+  const definition = resolveModelDefinition(modelKey);
+  const normalizedKey = typeof modelKey === 'string' ? modelKey.trim() : modelKey;
+  return definition?.apiModelName ?? normalizedKey;
 }
 
 export function getModelsByProvider(provider: string) {

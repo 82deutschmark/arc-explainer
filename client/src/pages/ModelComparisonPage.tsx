@@ -1,148 +1,283 @@
 /**
- * Author: Cascade using Claude Sonnet 4
- * Date: 2025-10-12T14:09:00-04:00
- * PURPOSE: Professional model comparison dashboard with maximum information density.
- * Displays per-model performance metrics and detailed puzzle-by-puzzle comparison matrix.
- *
- * DESIGN PRINCIPLES:
- * - Light theme only (professional research platform)
- * - No cartoonish language ("Model Battle" removed)
- * - Information density maximized
- * - Clean tabular layouts for data comparison
- * - Emphasis on statistical accuracy and completeness
- *
- * SRP and DRY check: Pass - Single responsibility is model comparison visualization
- * DaisyUI: Pass - Uses DaisyUI components with professional styling
+ * Author: Claude Code using Sonnet 4
+ * Date: 2025-10-22T00:00:00Z
+ * PURPOSE: Compact, info-focused multi-model comparison dashboard. Displays performance metrics in dense tables,
+ *          reuses ModelPerformancePanel and NewModelComparisonResults components. Inline model add/remove with
+ *          minimal whitespace and clear controls. No bloated summary cards or unnecessary badges.
+ * SRP/DRY check: Pass - Reuses metrics endpoint, shared hooks, and visualization components without duplicating logic.
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useLocation } from 'wouter';
-import { ArrowLeft, Trophy, Zap, DollarSign, TrendingUp, Target, Clock, Brain, AlertCircle, Sun, Moon } from 'lucide-react';
+import { ArrowLeft, AlertCircle } from 'lucide-react';
 import { NewModelComparisonResults } from '@/components/analytics/NewModelComparisonResults';
+import { ModelPerformancePanel } from '@/components/analytics/ModelPerformancePanel';
+import { useAvailableModels } from '@/hooks/useModelDatasetPerformance';
 import { ModelComparisonResult } from './AnalyticsOverview';
+
+const MAX_MODELS = 4;
 
 export default function ModelComparisonPage() {
   const [, navigate] = useLocation();
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  // Force light theme for professional appearance
-  useEffect(() => {
-    document.documentElement.setAttribute('data-theme', 'light');
-  }, []);
+  const [loadingInitial, setLoadingInitial] = useState(false);
+  const [isUpdating, setIsUpdating] = useState(false);
+  const [fatalError, setFatalError] = useState<string | null>(null);
+  const [inlineError, setInlineError] = useState<string | null>(null);
+  const [selectedModels, setSelectedModels] = useState<string[]>([]);
+  const [modelToAdd, setModelToAdd] = useState('');
 
-  // Get comparison data from location state or URL params
   const [comparisonData, setComparisonData] = useState<ModelComparisonResult | null>(() => {
-    const stateData = (window.history.state?.comparisonData as ModelComparisonResult | null);
-    if (stateData) {
+    const stateData = window.history.state?.comparisonData as ModelComparisonResult | null;
+    if (stateData?.summary && Array.isArray(stateData.details)) {
       try {
         localStorage.setItem('arc-comparison-data', JSON.stringify(stateData));
-      } catch (e) {
-        console.warn('Failed to store comparison data in localStorage:', e);
+      } catch (error) {
+        console.warn('Failed to persist comparison data from history state.', error);
       }
       return stateData;
     }
 
-    const urlParams = new URLSearchParams(window.location.search);
-    const model1 = urlParams.get('model1');
-    const model2 = urlParams.get('model2');
-    const dataset = urlParams.get('dataset');
-
-    if (model1 && dataset) {
-      return null; // Will fetch below
-    }
-
     try {
-      const storedData = localStorage.getItem('arc-comparison-data');
-      if (storedData) {
-        const parsed = JSON.parse(storedData);
+      const stored = localStorage.getItem('arc-comparison-data');
+      if (stored) {
+        const parsed = JSON.parse(stored);
         if (parsed?.summary && Array.isArray(parsed.details)) {
           return parsed;
         }
       }
-    } catch (e) {
-      console.warn('Failed to retrieve comparison data from localStorage:', e);
+    } catch (error) {
+      console.warn('Failed to read comparison data from localStorage.', error);
     }
 
     return null;
   });
 
-  // Fetch comparison data when missing
+  const {
+    models: availableModels,
+    loading: loadingModels,
+  } = useAvailableModels();
+
   useEffect(() => {
-    const fetchComparisonData = async () => {
-      if (comparisonData) return;
+    document.documentElement.setAttribute('data-theme', 'light');
+  }, []);
 
-      const urlParams = new URLSearchParams(window.location.search);
-      const model1 = urlParams.get('model1');
-      const model2 = urlParams.get('model2');
-      const dataset = urlParams.get('dataset');
+  const requestComparisonData = useCallback(
+    async (
+      models: string[],
+      dataset: string,
+      mode: 'initial' | 'update' = 'update',
+    ): Promise<boolean> => {
+      const trimmed = Array.from(
+        new Set(models.filter((name) => Boolean(name && name.trim()))),
+      );
 
-      if (!model1 || !dataset) {
-        setError('Missing required parameters. Please run a comparison from the Analytics page.');
-        return;
+      if (trimmed.length === 0) {
+        const message = 'Select at least one model to compare.';
+        if (mode === 'initial') {
+          setFatalError(message);
+        } else {
+          setInlineError(message);
+        }
+        return false;
       }
 
-      setLoading(true);
-      setError(null);
+      if (mode === 'initial') {
+        setFatalError(null);
+        setLoadingInitial(true);
+      } else {
+        setInlineError(null);
+        setIsUpdating(true);
+      }
+
+      let succeeded = false;
 
       try {
-        const models = [model1, model2].filter(Boolean);
-        const queryParams = new URLSearchParams({
-          model1: models[0] || '',
-          ...(models[1] && { model2: models[1] }),
-          dataset
+        const params = new URLSearchParams({ dataset });
+        trimmed.slice(0, MAX_MODELS).forEach((modelName, index) => {
+          params.set(`model${index + 1}`, modelName);
         });
 
-        const response = await fetch(`/api/metrics/compare?${queryParams.toString()}`);
+        const response = await fetch(`/api/metrics/compare?${params.toString()}`);
         if (!response.ok) {
-          const errorData = await response.json();
-          throw new Error(errorData.message || 'Failed to fetch comparison data');
+          const errorPayload = await response.json().catch(() => null);
+          throw new Error(errorPayload?.message || 'Failed to fetch comparison data');
         }
 
         const result = await response.json();
-
         if (!result.data) {
           throw new Error('No data received from server');
         }
 
         setComparisonData(result.data);
+        succeeded = true;
 
         try {
           localStorage.setItem('arc-comparison-data', JSON.stringify(result.data));
-        } catch (e) {
-          console.warn('Failed to store comparison data in localStorage:', e);
+        } catch (storageError) {
+          console.warn('Failed to persist comparison data.', storageError);
         }
       } catch (error) {
+        const message =
+          error instanceof Error ? error.message : 'Comparison request failed';
+        if (mode === 'initial') {
+          setFatalError(message);
+        } else {
+          setInlineError(message);
+        }
         console.error('Comparison error:', error);
-        setError(error instanceof Error ? error.message : 'Failed to fetch comparison data');
       } finally {
-        setLoading(false);
+        if (mode === 'initial') {
+          setLoadingInitial(false);
+        } else {
+          setIsUpdating(false);
+        }
       }
-    };
 
-    fetchComparisonData();
+      return succeeded;
+    },
+    [],
+  );
+
+  useEffect(() => {
+    if (comparisonData) {
+      return;
+    }
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const dataset = urlParams.get('dataset');
+    const models = ['model1', 'model2', 'model3', 'model4']
+      .map((key) => urlParams.get(key))
+      .filter((name): name is string => Boolean(name && name.trim()));
+
+    if (!dataset || models.length === 0) {
+      setFatalError(
+        'Missing required parameters. Please run a comparison from the Analytics page.',
+      );
+      return;
+    }
+
+    void requestComparisonData(models, dataset, 'initial');
+  }, [comparisonData, requestComparisonData]);
+
+  useEffect(() => {
+    if (!comparisonData?.summary?.modelPerformance) {
+      return;
+    }
+    const nextSelected = comparisonData.summary.modelPerformance.map(
+      (item) => item.modelName,
+    );
+    setSelectedModels(nextSelected);
   }, [comparisonData]);
 
-  if (loading) {
+  const dataset = comparisonData?.summary?.dataset ?? null;
+
+  const addableModels = useMemo(
+    () =>
+      availableModels.filter(
+        (modelName) => !selectedModels.includes(modelName),
+      ),
+    [availableModels, selectedModels],
+  );
+
+  const uniqueSolveByModel = useMemo(() => {
+    if (!comparisonData?.summary) {
+      return [];
+    }
+
+    const { summary } = comparisonData;
+    const mapping = new Map<string, number>([
+      [summary.model1Name, summary.model1OnlyCorrect ?? 0],
+      [summary.model2Name, summary.model2OnlyCorrect ?? 0],
+      [summary.model3Name ?? '', summary.model3OnlyCorrect ?? 0],
+      [summary.model4Name ?? '', summary.model4OnlyCorrect ?? 0],
+    ]);
+
+    return selectedModels.map((name) => ({
+      name,
+      count: mapping.get(name) ?? 0,
+    }));
+  }, [comparisonData, selectedModels]);
+
+  const totalUniqueSolves = useMemo(
+    () => uniqueSolveByModel.reduce((sum, entry) => sum + entry.count, 0),
+    [uniqueSolveByModel],
+  );
+
+  const handleAddModel = async () => {
+    if (!dataset || !modelToAdd || selectedModels.includes(modelToAdd) || isUpdating) {
+      return;
+    }
+
+    const nextModels = [...selectedModels, modelToAdd].slice(0, MAX_MODELS);
+    const success = await requestComparisonData(nextModels, dataset, 'update');
+    if (success) {
+      setModelToAdd('');
+    }
+  };
+
+  const handleRemoveModel = async (modelName: string) => {
+    if (!dataset || isUpdating) {
+      return;
+    }
+
+    const nextModels = selectedModels.filter((name) => name !== modelName);
+    if (nextModels.length === 0) {
+      setInlineError('At least one model must remain in the comparison.');
+      return;
+    }
+
+    await requestComparisonData(nextModels, dataset, 'update');
+  };
+
+  const formatCost = (cost: number | null | undefined) => {
+    if (cost === null || cost === undefined || cost === 0) {
+      return 'Free';
+    }
+    if (cost < 0.01) {
+      return `${(cost * 1000).toFixed(2)} m`;
+    }
+    if (cost < 1) {
+      return `${(cost * 100).toFixed(2)} c`;
+    }
+    return `$${cost.toFixed(4)}`;
+  };
+
+  const formatTime = (ms: number | undefined) => {
+    if (!ms || ms === 0) {
+      return 'N/A';
+    }
+    if (ms < 1000) {
+      return `${Math.round(ms)} ms`;
+    }
+    return `${(ms / 1000).toFixed(2)} s`;
+  };
+
+  if (loadingInitial && !comparisonData) {
     return (
       <div className="container mx-auto p-6 max-w-7xl">
         <div className="flex items-center justify-center min-h-[400px]">
           <div className="text-center">
-            <span className="loading loading-spinner loading-lg text-primary"></span>
-            <p className="mt-4 text-base-content/70">Loading comparison data...</p>
+            <span className="loading loading-spinner loading-lg text-primary" />
+            <p className="mt-4 text-base-content/70">
+              Loading comparison data...
+            </p>
           </div>
         </div>
       </div>
     );
   }
 
-  if (error) {
+  if (fatalError) {
     return (
       <div className="container mx-auto p-6 max-w-7xl">
         <div role="alert" className="alert alert-error shadow-lg">
           <AlertCircle className="h-6 w-6" />
-          <span>{error}</span>
+          <span>{fatalError}</span>
         </div>
-        <button onClick={() => navigate('/analytics')} className="btn btn-primary mt-4">
+        <button
+          onClick={() => navigate('/analytics')}
+          className="btn btn-primary mt-4"
+        >
           <ArrowLeft className="h-5 w-5" />
           Back to Analytics
         </button>
@@ -157,7 +292,10 @@ export default function ModelComparisonPage() {
           <AlertCircle className="h-6 w-6" />
           <span>No comparison data found. Please run a comparison from the Analytics page.</span>
         </div>
-        <button onClick={() => navigate('/analytics')} className="btn btn-primary mt-4">
+        <button
+          onClick={() => navigate('/analytics')}
+          className="btn btn-primary mt-4"
+        >
           <ArrowLeft className="h-5 w-5" />
           Back to Analytics
         </button>
@@ -166,154 +304,202 @@ export default function ModelComparisonPage() {
   }
 
   const { summary } = comparisonData;
-  const modelPerf = summary.modelPerformance || [];
-
-  // Helper to format costs
-  const formatCost = (cost: number | null | undefined) => {
-    if (cost === null || cost === undefined || cost === 0) return 'Free';
-    if (cost < 0.01) return `${(cost * 1000).toFixed(2)}m`;
-    if (cost < 1) return `${(cost * 100).toFixed(2)}¢`;
-    return `$${cost.toFixed(4)}`;
-  };
-
-  // Helper to format time
-  const formatTime = (ms: number | undefined) => {
-    if (!ms || ms === 0) return 'N/A';
-    if (ms < 1000) return `${Math.round(ms)}ms`;
-    return `${(ms / 1000).toFixed(2)}s`;
-  };
+  const modelPerformance = summary.modelPerformance ?? [];
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4">
-      <div className="container mx-auto max-w-7xl space-y-4">
-
-        {/* Professional Header */}
-        <div className="flex items-center justify-between mb-2">
+    <div className="min-h-screen bg-base-200 p-3">
+      <div className="container mx-auto max-w-7xl space-y-3">
+        <div className="flex items-center gap-3 bg-base-100 rounded-lg p-2 shadow">
           <button
             onClick={() => navigate('/analytics')}
-            className="btn btn-sm btn-ghost gap-2"
+            className="btn btn-xs btn-ghost gap-1"
           >
-            <ArrowLeft className="h-4 w-4" />
-            Analytics
+            <ArrowLeft className="h-3 w-3" />
+            Back
           </button>
-        </div>
-
-        {/* Professional Header Card */}
-        <div className="card bg-white shadow-sm border border-gray-200">
-          <div className="card-body p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <h1 className="text-2xl font-semibold text-gray-900 mb-1">
-                  Model Performance Comparison
-                </h1>
-                <p className="text-sm text-gray-600">
-                  Dataset: {summary.dataset.toUpperCase()} • {summary.totalPuzzles} Total Puzzles • {summary.fullySolvedCount} Correct by ≥1 Model
-                </p>
-              </div>
-              <div className="flex gap-2">
-                {summary.winnerModel && (
-                  <div className="text-xs font-medium text-gray-700">
-                    Highest Accuracy: <span className="font-semibold text-green-700">{summary.winnerModel}</span>
-                  </div>
-                )}
-              </div>
-            </div>
+          <div className="flex-1">
+            <h1 className="text-sm font-bold">
+              Model Comparison: {summary.dataset.toUpperCase()}
+            </h1>
+            <p className="text-xs opacity-70">
+              {summary.totalPuzzles} puzzles • {selectedModels.length} models
+            </p>
           </div>
         </div>
 
-        {/* Compact Stats Grid */}
-        <div className="grid grid-cols-5 gap-2">
-          <div className="card bg-white shadow-sm border border-gray-200">
-            <div className="card-body p-3">
-              <div className="text-xs text-gray-600 mb-1">Agreement: Both Correct</div>
-              <div className="text-2xl font-bold text-green-600">{summary.allCorrect}</div>
-            </div>
+        <div className="bg-base-100 rounded-lg shadow p-3 space-y-2">
+          <div className="flex items-center justify-between">
+            <h2 className="text-xs font-bold uppercase tracking-wide opacity-70">
+              Active Models
+            </h2>
+            {inlineError && (
+              <span className="text-xs text-error">{inlineError}</span>
+            )}
           </div>
-          <div className="card bg-white shadow-sm border border-gray-200">
-            <div className="card-body p-3">
-              <div className="text-xs text-gray-600 mb-1">Agreement: Both Incorrect</div>
-              <div className="text-2xl font-bold text-red-600">{summary.allIncorrect}</div>
-            </div>
-          </div>
-          <div className="card bg-white shadow-sm border border-gray-200">
-            <div className="card-body p-3">
-              <div className="text-xs text-gray-600 mb-1">Disagreements</div>
-              <div className="text-2xl font-bold text-orange-600">
-                {summary.totalPuzzles - summary.allCorrect - summary.allIncorrect - summary.allNotAttempted}
+
+          <div className="flex flex-wrap gap-1.5">
+            {selectedModels.map((modelName) => (
+              <div
+                key={modelName}
+                className="badge badge-sm gap-1 bg-primary/10 text-primary border-primary/20"
+              >
+                <span className="text-xs">{modelName}</span>
+                <button
+                  type="button"
+                  className="hover:text-error text-xs px-1"
+                  onClick={() => handleRemoveModel(modelName)}
+                  disabled={isUpdating || selectedModels.length <= 1}
+                  title="Remove model"
+                >
+                  ×
+                </button>
               </div>
-            </div>
+            ))}
           </div>
-          <div className="card bg-white shadow-sm border border-gray-200">
-            <div className="card-body p-3">
-              <div className="text-xs text-gray-600 mb-1">Correct by ≥1 Model</div>
-              <div className="text-2xl font-bold text-blue-600">{summary.fullySolvedCount}</div>
-            </div>
-          </div>
-          <div className="card bg-white shadow-sm border border-gray-200">
-            <div className="card-body p-3">
-              <div className="text-xs text-gray-600 mb-1">Not Attempted (All Failed)</div>
-              <div className="text-2xl font-bold text-gray-600">{summary.allNotAttempted + summary.allIncorrect}</div>
-            </div>
+
+          <div className="flex items-end gap-2 pt-1">
+            <select
+              className="select select-xs select-bordered flex-1 max-w-xs"
+              value={modelToAdd}
+              onChange={(event) => setModelToAdd(event.target.value)}
+              disabled={
+                loadingModels ||
+                !dataset ||
+                addableModels.length === 0 ||
+                selectedModels.length >= MAX_MODELS
+              }
+            >
+              <option value="">+ Add model...</option>
+              {addableModels.map((modelName) => (
+                <option key={modelName} value={modelName}>
+                  {modelName}
+                </option>
+              ))}
+            </select>
+
+            <button
+              type="button"
+              className="btn btn-xs btn-primary"
+              onClick={handleAddModel}
+              disabled={
+                !dataset ||
+                !modelToAdd ||
+                isUpdating ||
+                selectedModels.length >= MAX_MODELS
+              }
+            >
+              {isUpdating ? 'Updating...' : 'Add'}
+            </button>
+
+            {isUpdating && (
+              <span className="loading loading-spinner loading-xs ml-2" />
+            )}
           </div>
         </div>
 
-        {/* Professional Data Table */}
-        <div className="card bg-white shadow-sm border border-gray-200">
-          <div className="card-body p-4">
-            <h2 className="text-lg font-semibold text-gray-900 mb-3">Model Performance Metrics</h2>
-            <div className="overflow-x-auto">
-              <table className="table table-sm table-zebra">
-                <thead>
-                  <tr className="bg-gray-100">
-                    <th className="font-semibold text-gray-700">Model</th>
-                    <th className="font-semibold text-gray-700 text-center">Accuracy</th>
-                    <th className="font-semibold text-gray-700 text-center">Correct</th>
-                    <th className="font-semibold text-gray-700 text-center">Incorrect</th>
-                    <th className="font-semibold text-gray-700 text-center">Not Attempted</th>
-                    <th className="font-semibold text-gray-700 text-center">Coverage</th>
-                    <th className="font-semibold text-gray-700 text-center">Avg Speed</th>
-                    <th className="font-semibold text-gray-700 text-center">Total Cost</th>
-                    <th className="font-semibold text-gray-700 text-center">Cost/Correct</th>
-                    <th className="font-semibold text-gray-700 text-center">Avg Confidence</th>
+        {uniqueSolveByModel.length > 0 && totalUniqueSolves > 0 && (
+          <div className="bg-base-100 rounded-lg shadow p-2">
+            <h3 className="text-xs font-bold uppercase tracking-wide opacity-70 mb-2">
+              Unique Solves: {totalUniqueSolves}
+            </h3>
+            <div className="flex gap-2 flex-wrap">
+              {uniqueSolveByModel.map((entry) => (
+                <div key={entry.name} className="text-xs">
+                  <span className="font-semibold">{entry.name}:</span>{' '}
+                  <span className="text-primary font-bold">{entry.count}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        <div className="bg-base-100 rounded-lg shadow">
+          <div className="overflow-x-auto">
+            <table className="table table-xs table-zebra">
+              <thead>
+                <tr className="bg-base-300">
+                  <th className="font-bold">Model</th>
+                  <th className="text-center font-bold">Accuracy</th>
+                  <th className="text-center font-bold">Correct</th>
+                  <th className="text-center font-bold">Incorrect</th>
+                  <th className="text-center font-bold">Not Attempted</th>
+                  <th className="text-center font-bold">Coverage</th>
+                  <th className="text-center font-bold">Avg Speed</th>
+                  <th className="text-center font-bold">Total Cost</th>
+                  <th className="text-center font-bold">Cost/Correct</th>
+                  <th className="text-center font-bold">Avg Confidence</th>
+                </tr>
+              </thead>
+              <tbody>
+                {modelPerformance.map((model) => (
+                  <tr key={model.modelName} className="hover">
+                    <td className="font-semibold">
+                      {model.modelName}
+                    </td>
+                    <td className="text-center font-bold">
+                      <span
+                        className={
+                          model.accuracyPercentage >= 50
+                            ? 'text-success'
+                            : 'text-error'
+                        }
+                      >
+                        {model.accuracyPercentage.toFixed(1)}%
+                      </span>
+                    </td>
+                    <td className="text-center text-success font-semibold">
+                      {model.correctCount}
+                    </td>
+                    <td className="text-center text-error font-semibold">
+                      {model.incorrectCount}
+                    </td>
+                    <td className="text-center opacity-60">
+                      {model.notAttemptedCount}
+                    </td>
+                    <td className="text-center text-xs">
+                      {model.attempts}/{model.totalPuzzlesInDataset} ({model.coveragePercentage.toFixed(0)}%)
+                    </td>
+                    <td className="text-center text-xs">
+                      {formatTime(model.avgProcessingTime)}
+                    </td>
+                    <td className="text-center text-xs font-semibold">
+                      {formatCost(model.totalCost)}
+                    </td>
+                    <td className="text-center text-xs font-semibold text-info">
+                      {model.costPerCorrectAnswer !== null
+                        ? formatCost(model.costPerCorrectAnswer)
+                        : 'N/A'}
+                    </td>
+                    <td className="text-center text-xs">
+                      {model.avgConfidence.toFixed(1)}%
+                    </td>
                   </tr>
-                </thead>
-                <tbody>
-                  {modelPerf.map((model) => (
-                    <tr key={model.modelName} className="hover:bg-gray-50">
-                      <td className="font-medium text-gray-900">
-                        {model.modelName}
-                        {summary.winnerModel === model.modelName && (
-                          <span className="ml-2 text-xs font-semibold text-green-600">★ Highest Accuracy</span>
-                        )}
-                      </td>
-                      <td className="text-center font-semibold text-lg">
-                        <span className={model.accuracyPercentage >= 50 ? "text-green-600" : "text-red-600"}>
-                          {model.accuracyPercentage.toFixed(1)}%
-                        </span>
-                      </td>
-                      <td className="text-center text-green-600 font-medium">✅ {model.correctCount}</td>
-                      <td className="text-center text-red-600 font-medium">❌ {model.incorrectCount}</td>
-                      <td className="text-center text-gray-500 font-medium">⏳ {model.notAttemptedCount}</td>
-                      <td className="text-center">{model.attempts}/{model.totalPuzzlesInDataset} ({model.coveragePercentage.toFixed(0)}%)</td>
-                      <td className="text-center text-sm">{formatTime(model.avgProcessingTime)}</td>
-                      <td className="text-center text-sm font-medium">{formatCost(model.totalCost)}</td>
-                      <td className="text-center text-sm font-medium text-blue-600">{formatCost(model.costPerCorrectAnswer)}</td>
-                      <td className="text-center text-sm">{model.avgConfidence.toFixed(1)}%</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div className="bg-base-100 rounded-lg shadow p-3">
+          <NewModelComparisonResults result={comparisonData} />
+        </div>
+
+        {dataset && selectedModels.length > 0 && (
+          <div className="space-y-2">
+            <h2 className="text-xs font-bold uppercase tracking-wide opacity-70 px-1">
+              Dataset Drilldown
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+              {selectedModels.map((modelName) => (
+                <ModelPerformancePanel
+                  key={`${dataset}-${modelName}`}
+                  modelName={modelName}
+                  dataset={dataset}
+                />
+              ))}
             </div>
           </div>
-        </div>
-
-        {/* Puzzle-by-Puzzle Comparison Matrix */}
-        <div className="card bg-white shadow-sm border border-gray-200">
-          <div className="card-body p-4">
-            <NewModelComparisonResults result={comparisonData} />
-          </div>
-        </div>
-
+        )}
       </div>
     </div>
   );
