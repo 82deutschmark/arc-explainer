@@ -137,13 +137,27 @@ export interface FeedbackStats {
   helpfulPercentage: number;
   notHelpfulPercentage: number;
   averageCommentLength: number;
-  topModels: Array<{ modelName: string; feedbackCount: number; helpfulCount: number; avgConfidence: number }>;
+  topModels: Array<{
+    modelName: string;
+    feedbackCount: number;
+    helpfulCount: number;
+    helpfulPercentage: number;
+    avgConfidence: number;
+  }>;
+  topPuzzles: Array<{
+    puzzleId: string;
+    feedbackCount: number;
+    helpfulCount: number;
+    notHelpfulCount: number;
+    helpfulPercentage: number;
+    latestFeedbackAt: string;
+  }>;
   feedbackTrends: {
-    daily: Array<{ date: string; count: number; helpful: number; notHelpful: number }>;
-    weekly: Array<{ date: string; count: number; helpful: number; notHelpful: number }>;
+    daily: Array<{ date: string; total: number; helpful: number; notHelpful: number }>;
+    weekly: Array<{ date: string; total: number; helpful: number; notHelpful: number }>;
   };
-  feedbackByModel: Record<string, { helpful: number; notHelpful: number }>;
-  feedbackByDay: Array<{ date: string; helpful: number; notHelpful: number }>;
+  feedbackByModel: Record<string, { helpful: number; notHelpful: number; total: number }>;
+  feedbackByDay: Array<{ date: string; total: number; helpful: number; notHelpful: number }>;
 }
 
 /**

@@ -279,6 +279,7 @@ export class FeedbackRepository extends BaseRepository {
         notHelpfulPercentage: 0,
         averageCommentLength: 0,
         topModels: [],
+        topPuzzles: [],
         feedbackTrends: {
           daily: [],
           weekly: []
@@ -315,6 +316,21 @@ export class FeedbackRepository extends BaseRepository {
         LIMIT 10
       `);
 
+      // Get top puzzles by feedback volume
+      const topPuzzles = await this.query(`
+        SELECT 
+          e.puzzle_id,
+          COUNT(*) as feedback_count,
+          SUM(CASE WHEN f.feedback_type = 'helpful' THEN 1 ELSE 0 END) as helpful_count,
+          SUM(CASE WHEN f.feedback_type = 'not_helpful' THEN 1 ELSE 0 END) as not_helpful_count,
+          MAX(f.created_at) as latest_feedback_at
+        FROM feedback f
+        JOIN explanations e ON f.explanation_id = e.id
+        GROUP BY e.puzzle_id
+        ORDER BY feedback_count DESC
+        LIMIT 10
+      `);
+
       // Get daily trends (last 30 days)
       const dailyTrends = await this.query(`
         SELECT 
@@ -341,17 +357,34 @@ export class FeedbackRepository extends BaseRepository {
         averageCommentLength: Math.round(parseFloat(stats.avg_comment_length) || 0),
         topModels: topModels.rows.map(row => ({
           modelName: row.model_name,
-          feedbackCount: parseInt(row.feedback_count),
-          helpfulCount: parseInt(row.helpful_count),
+          feedbackCount: parseInt(row.feedback_count) || 0,
+          helpfulCount: parseInt(row.helpful_count) || 0,
           helpfulPercentage: parseInt(row.feedback_count) > 0 
-            ? Math.round((parseInt(row.helpful_count) / parseInt(row.feedback_count)) * 100) 
-            : 0,
+          ? Math.round((parseInt(row.helpful_count) / parseInt(row.feedback_count)) * 100) 
+          : 0,
           avgConfidence: Math.round((parseFloat(row.avg_confidence) || 0) * 10) / 10
         })),
+        topPuzzles: topPuzzles.rows.map(row => {
+          const feedbackCount = parseInt(row.feedback_count) || 0;
+          const helpfulCountForPuzzle = parseInt(row.helpful_count) || 0;
+          const notHelpfulCountForPuzzle = parseInt(row.not_helpful_count) || 0;
+          return {
+            puzzleId: row.puzzle_id,
+            feedbackCount,
+            helpfulCount: helpfulCountForPuzzle,
+            notHelpfulCount: notHelpfulCountForPuzzle,
+            helpfulPercentage: feedbackCount > 0
+              ? Math.round((helpfulCountForPuzzle / feedbackCount) * 100)
+              : 0,
+            latestFeedbackAt: row.latest_feedback_at instanceof Date
+              ? row.latest_feedback_at.toISOString()
+              : new Date(row.latest_feedback_at).toISOString()
+          };
+        }),
         feedbackTrends: {
           daily: dailyTrends.rows.map(row => ({
             date: row.date,
-            count: parseInt(row.count),
+            total: parseInt(row.count),
             helpful: parseInt(row.helpful_count),
             notHelpful: parseInt(row.count) - parseInt(row.helpful_count)
           })),

@@ -17,8 +17,14 @@ import {
   TrendingDown, 
   BarChart3,
   MessageSquare,
-  Zap
+  Zap,
+  Puzzle,
+  Trophy,
+  ArrowUpRight,
+  FileText
 } from 'lucide-react';
+import { formatDistanceToNow } from 'date-fns';
+
 import type { FeedbackStats } from '@shared/types';
 
 interface FeedbackSummaryProps {
@@ -37,6 +43,7 @@ export function FeedbackSummary({
   className = ""
 }: FeedbackSummaryProps) {
   if (!stats || stats.totalFeedback === 0) {
+
     return (
       <Card className={className}>
         <CardContent className="p-4 text-center text-muted-foreground">
@@ -51,58 +58,157 @@ export function FeedbackSummary({
     return <CompactSummary stats={stats} className={className} />;
   }
 
+  const topPuzzles = stats.topPuzzles?.slice(0, 3) ?? [];
+  const topModels = stats.topModels?.slice(0, 3) ?? [];
+  const [latestDay, previousDay] = stats.feedbackTrends?.daily ?? [];
+  const dailyChange = latestDay && previousDay && previousDay.total > 0
+    ? ((latestDay.total - previousDay.total) / previousDay.total) * 100
+    : null;
+  const dailyChangeLabel = dailyChange === null
+    ? 'Not enough history'
+    : `${dailyChange > 0 ? '+' : ''}${Math.round(dailyChange)}% vs prior day`;
+  const changePositive = (dailyChange ?? 0) >= 0;
+
   return (
     <div className={`space-y-4 ${className}`}>
-      {/* Overall Statistics */}
-      <Card>
-        <CardHeader className="pb-3">
-          <CardTitle className="text-lg flex items-center gap-2">
-            <BarChart3 className="h-5 w-5" />
-            Feedback Overview
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="text-center">
-              <div className="text-2xl font-bold">{stats.totalFeedback}</div>
-              <div className="text-sm text-muted-foreground">Total Feedback</div>
-            </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-green-600">{stats.helpfulCount}</div>
-              <div className="text-sm text-muted-foreground">Helpful</div>
-            </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-red-600">{stats.notHelpfulCount}</div>
-              <div className="text-sm text-muted-foreground">Not Helpful</div>
-            </div>
-          </div>
-          
-          <div className="space-y-2">
-            <div className="flex justify-between text-sm">
-              <span className="flex items-center gap-1">
-                <ThumbsUp className="h-3 w-3 text-green-600" />
-                Helpful
+      <div className="grid gap-4 md:grid-cols-3">
+        <Card className="h-full">
+          <CardHeader className="pb-3">
+            <CardTitle className="flex items-center justify-between text-sm font-semibold text-muted-foreground">
+              <span className="inline-flex items-center gap-2 text-base text-foreground">
+                <BarChart3 className="h-5 w-5 text-blue-600" />
+                Feedback volume
               </span>
-              <span className="font-medium">{stats.helpfulPercentage}%</span>
-            </div>
-            <Progress value={stats.helpfulPercentage} className="h-2" />
-            
-            <div className="flex justify-between text-sm">
-              <span className="flex items-center gap-1">
-                <ThumbsDown className="h-3 w-3 text-red-600" />
-                Not Helpful
+              <span className={`inline-flex items-center gap-1 text-xs ${changePositive ? 'text-emerald-600' : 'text-rose-600'}`}>
+                {changePositive ? <TrendingUp className="h-3 w-3" /> : <TrendingDown className="h-3 w-3" />}
+                {dailyChangeLabel}
               </span>
-              <span className="font-medium">{stats.notHelpfulPercentage}%</span>
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex items-baseline justify-between">
+              <div>
+                <div className="text-3xl font-semibold">{stats.totalFeedback.toLocaleString()}</div>
+                <p className="text-xs text-muted-foreground">Total reviews captured</p>
+              </div>
+              <div className="text-right text-sm">
+                <p className="text-emerald-600 font-medium">{stats.helpfulCount.toLocaleString()} Helpful</p>
+                <p className="text-rose-600 font-medium">{stats.notHelpfulCount.toLocaleString()} Not helpful</p>
+              </div>
             </div>
-            <Progress value={stats.notHelpfulPercentage} className="h-2" />
-          </div>
-        </CardContent>
-      </Card>
+            <div className="space-y-3">
+              <div>
+                <div className="flex items-center justify-between text-xs">
+                  <span className="inline-flex items-center gap-1">
+                    <ThumbsUp className="h-3 w-3 text-emerald-600" /> Helpful ratio
+                  </span>
+                  <span className="font-medium">{stats.helpfulPercentage}%</span>
+                </div>
+                <Progress value={stats.helpfulPercentage} className="mt-1 h-2" />
+              </div>
+              <div className="flex items-center justify-between text-xs text-muted-foreground">
+                <span className="inline-flex items-center gap-1">
+                  <FileText className="h-3 w-3" /> Avg. comment length
+                </span>
+                <span>{stats.averageCommentLength.toLocaleString()} chars</span>
+              </div>
+              {latestDay && (
+                <div className="flex items-center justify-between text-xs text-muted-foreground">
+                  <span>Latest activity</span>
+                  <span>{new Date(latestDay.date).toLocaleDateString()}</span>
+                </div>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="h-full">
+          <CardHeader className="pb-3">
+            <CardTitle className="flex items-center justify-between text-sm font-semibold text-muted-foreground">
+              <span className="inline-flex items-center gap-2 text-base text-foreground">
+                <Puzzle className="h-5 w-5 text-purple-600" />
+                Most discussed puzzles
+              </span>
+              <span className="text-xs text-muted-foreground">Top {topPuzzles.length || 0}</span>
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            {topPuzzles.length === 0 ? (
+              <p className="text-sm text-muted-foreground">No puzzle feedback captured yet.</p>
+            ) : (
+              <ul className="space-y-2">
+                {topPuzzles.map((puzzle, index) => (
+                  <li key={puzzle.puzzleId} className="flex items-start justify-between gap-3 rounded-md border border-border/50 p-2">
+                    <div className="space-y-1">
+                      <div className="flex items-center gap-2 text-sm font-semibold">
+                        <Badge variant="secondary" className="font-mono text-[10px]">#{index + 1}</Badge>
+                        <span>{puzzle.puzzleId}</span>
+                      </div>
+                      <p className="text-xs text-muted-foreground">
+                        {puzzle.feedbackCount.toLocaleString()} reviews · {puzzle.helpfulPercentage}% helpful
+                      </p>
+                      <p className="text-[11px] text-muted-foreground">
+                        Last feedback {formatDistanceToNow(new Date(puzzle.latestFeedbackAt), { addSuffix: true })}
+                      </p>
+                    </div>
+                    <a
+                      href={`/puzzle/${puzzle.puzzleId}`}
+                      target="_blank"
+                      rel="noreferrer noopener"
+                      className="inline-flex items-center gap-1 text-xs font-medium text-blue-600 hover:underline"
+                    >
+                      Open <ArrowUpRight className="h-3 w-3" />
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </CardContent>
+        </Card>
+
+        <Card className="h-full">
+          <CardHeader className="pb-3">
+            <CardTitle className="flex items-center justify-between text-sm font-semibold text-muted-foreground">
+              <span className="inline-flex items-center gap-2 text-base text-foreground">
+                <Trophy className="h-5 w-5 text-amber-500" />
+                Models earning praise
+              </span>
+              <span className="text-xs text-muted-foreground">Top {topModels.length || 0}</span>
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            {topModels.length === 0 ? (
+              <p className="text-sm text-muted-foreground">No model feedback recorded yet.</p>
+            ) : (
+              <ul className="space-y-2">
+                {topModels.map((model, index) => (
+                  <li key={model.modelName} className="flex items-center justify-between gap-3 rounded-md border border-border/50 p-2">
+                    <div className="min-w-0">
+                      <div className="flex items-center gap-2 text-sm font-semibold">
+                        <Badge variant="outline" className="font-mono text-[10px]">#{index + 1}</Badge>
+                        <span className="truncate">{model.modelName}</span>
+                      </div>
+                      <p className="text-xs text-muted-foreground">
+                        {model.helpfulCount.toLocaleString()} helpful · {model.feedbackCount.toLocaleString()} total
+                      </p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-xs font-semibold text-emerald-600">{model.helpfulPercentage}% helpful</p>
+                      <p className="text-[11px] text-muted-foreground">Avg confidence {model.avgConfidence.toFixed(1)}</p>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </CardContent>
+        </Card>
+      </div>
 
       {/* Model Performance Breakdown */}
       {showModelBreakdown && Object.keys(stats.feedbackByModel).length > 0 && (
         <Card>
           <CardHeader className="pb-3">
+
             <CardTitle className="text-lg flex items-center gap-2">
               <Zap className="h-5 w-5" />
               Model Performance
