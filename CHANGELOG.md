@@ -1,3 +1,20 @@
+## [4.9.1] - 2025-10-26
+### 🔧 BUGFIX: Date-filtered feedback stays in sync
+
+- Added front-end validation in `FeedbackExplorer` so malformed date strings are never sent to the API and optional fields remain undefined when cleared.
+- Normalized date input bindings to keep React controlled inputs stable and avoid accidental range drift across pagination.
+- Preserved original date strings and null checks inside the feedback controller so server-side filtering respects the user-provided range.
+
+### ✨ Enhancement: Feedback type filters stay consistent
+
+- Introduced stricter TypeScript definitions for feedback type options and metadata, making the explorer's badge and reset logic rely on the shared `ALL_TYPES_VALUE` sentinel.
+- Limited the active type badge to specific selections so "All types" no longer appears as an active filter.
+
+#### Verification
+- Not run (UI + query wiring)
+
+---
+
 ## [4.9.0] - 2025-10-26
 ### ✨ Feature: Feedback Explorer launch & routing cleanup
 
