@@ -2,13 +2,13 @@
   "permissions": {
     "allow": [
       "Read**",
-      "Edit",
-      "Write",
-      "MultiEdit",
-      "Bash",
-      "WebFetch",
-      "WebSearch(domain=*",
-      "WebFetch(domain=https://nbviewer.org/format/script/github/openai/openai-cookbook/*)",
+      "Edit**",
+      "Write**",
+      "MultiEdit**",
+      "Bash**",
+      "WebFetch**",
+      "WebSearch**",
+      "WebFetch**",
       "Read(/D:\\1Projects\\arc-explainer\\server\\services\\base/**)",
       "Read(/D:\\1Projects\\arc-explainer\\server\\services/**)"
     ],

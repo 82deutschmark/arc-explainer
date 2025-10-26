@@ -6,6 +6,7 @@
 - Fixed `feedbackController.getAll` to rely on the module-scoped `buildFiltersFromQuery`, preventing `this` from being undefined when Express wraps the handler.
 - Restored proper error handling for `submitSolution` and split voting into a dedicated controller for cleaner routes and TypeScript safety.
 - Tightened solution vote validation so non-numeric IDs short-circuit with helpful errors instead of leaking to the repository layer.
+- Corrected Feedback Explorer deep links so "Explanation" opens `/puzzle/:puzzleId?highlight=:explanationId` in a new tab, keeping navigation consistent with the puzzle viewer.
 
 #### Verification
 - Not run (controller-only change)
