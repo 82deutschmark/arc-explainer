@@ -1,32 +1,3 @@
-## [4.9.1] - 2025-10-26
-### 🔧 BUGFIX: Date-filtered feedback stays in sync
-
-- Added front-end validation in `FeedbackExplorer` so malformed date strings are never sent to the API and optional fields remain undefined when cleared.
-- Normalized date input bindings to keep React controlled inputs stable and avoid accidental range drift across pagination.
-- Preserved original date strings and null checks inside the feedback controller so server-side filtering respects the user-provided range.
-
-### ✨ Enhancement: Feedback type filters stay consistent
-
-- Introduced stricter TypeScript definitions for feedback type options and metadata, making the explorer's badge and reset logic rely on the shared `ALL_TYPES_VALUE` sentinel.
-- Limited the active type badge to specific selections so "All types" no longer appears as an active filter.
-
-#### Verification
-- Not run (UI + query wiring)
-
----
-
-## [4.9.0] - 2025-10-26
-### ✨ Feature: Feedback Explorer launch & routing cleanup
-
-- Introduced the dedicated `/feedback` page with filtering, pagination, CSV export, and links back to puzzle discussions so researchers can triage explanation reviews in one place.
-- Re-routed the legacy Test Solution flow to `/test-solution[/::taskId]` and refreshed the navigation labels to match the new hierarchy.
-- Extended feedback queries to support `offset` alongside the larger `limit`, enabling proper server-side pagination for the explorer.
-
-#### Verification
-- Not run (UI + query wiring)
-
----
-
 ## [4.8.42] - 2025-10-26
 ### 🎨 UI/UX: Restore Aug 2025 Puzzle Examiner grid styling
 
@@ -544,6 +515,7 @@ Applied to all 5 Saturn phases: phase1, phase2, phase2.5, additional training lo
 **Fixes:**
 - Reinstated the DaisyUI `<dialog>` streaming modal so long-running analyses once again surface in the dedicated overlay without manual intervention.
 - Brought back the ModelSelection card grid so models render as the colorful badge cards from early October instead of the table rows. This keeps the prompt preview safeguards (handled in `PromptPreviewModal`) without the data-table UX regression.
+- Wired the restored `PuzzleGridDisplay` back into PuzzleExaminer so training and test examples appear in the legacy side-by-side card layout again.
 - Documented the above regressions directly in this entry for future reference.
 
 **Files Updated:** `client/src/pages/PuzzleExaminer.tsx`
