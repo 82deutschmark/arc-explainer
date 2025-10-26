@@ -1,3 +1,15 @@
+## [4.9.0] - 2025-10-26
+### ✨ Feature: Feedback Explorer launch & routing cleanup
+
+- Introduced the dedicated `/feedback` page with filtering, pagination, CSV export, and links back to puzzle discussions so researchers can triage explanation reviews in one place.
+- Re-routed the legacy Test Solution flow to `/test-solution[/::taskId]` and refreshed the navigation labels to match the new hierarchy.
+- Extended feedback queries to support `offset` alongside the larger `limit`, enabling proper server-side pagination for the explorer.
+
+#### Verification
+- Not run (UI + query wiring)
+
+---
+
 ## [4.8.42] - 2025-10-26
 ### 🎨 UI/UX: Restore Aug 2025 Puzzle Examiner grid styling
 
