@@ -22,6 +22,7 @@ import HuggingFaceIngestion from "@/pages/HuggingFaceIngestion";
 import EloComparison from "@/pages/EloComparison";
 import EloLeaderboard from "@/pages/EloLeaderboard";
 import PuzzleFeedback from "@/pages/PuzzleFeedback";
+import FeedbackExplorer from "@/pages/FeedbackExplorer";
 import ModelDebate from "@/pages/ModelDebate";
 import ModelComparisonPage from "@/pages/ModelComparisonPage";
 import About from "@/pages/About";
@@ -54,8 +55,9 @@ function Router() {
         <Route path="/elo/:taskId" component={EloComparison} />
         <Route path="/compare" component={EloComparison} />
         <Route path="/compare/:taskId" component={EloComparison} />
-        <Route path="/feedback" component={PuzzleFeedback} />
-        <Route path="/feedback/:taskId" component={PuzzleFeedback} />
+        <Route path="/feedback" component={FeedbackExplorer} />
+        <Route path="/test-solution" component={PuzzleFeedback} />
+        <Route path="/test-solution/:taskId" component={PuzzleFeedback} />
         <Route path="/debate" component={ModelDebate} />
         <Route path="/debate/:taskId" component={ModelDebate} />
         <Route path="/model-comparison" component={ModelComparisonPage} />
