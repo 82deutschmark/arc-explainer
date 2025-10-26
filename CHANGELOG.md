@@ -1,3 +1,15 @@
+## [4.8.42] - 2025-10-26
+### 🎨 UI/UX: Restore Aug 2025 Puzzle Examiner grid styling
+
+- Brought back the straightforward input→output row cards on Puzzle Examiner so training and test grids once again mirror the late-August layout.
+- Reinstated the thicker grid borders and shadowed frame inside `PuzzleGrid` while preserving the modern scaling behaviour for compact cards.
+- Documented the visual rollback so collaborators know why the grid page shifted away from the GridPair experiment.
+
+#### Verification
+- Not run (visual change only)
+
+---
+
 ## [4.8.41] - 2025-10-23
 ### 🎨 UI/UX: Split training example cards eliminate scrollbars
 
@@ -503,6 +515,7 @@ Applied to all 5 Saturn phases: phase1, phase2, phase2.5, additional training lo
 **Fixes:**
 - Reinstated the DaisyUI `<dialog>` streaming modal so long-running analyses once again surface in the dedicated overlay without manual intervention.
 - Brought back the ModelSelection card grid so models render as the colorful badge cards from early October instead of the table rows. This keeps the prompt preview safeguards (handled in `PromptPreviewModal`) without the data-table UX regression.
+- Wired the restored `PuzzleGridDisplay` back into PuzzleExaminer so training and test examples appear in the legacy side-by-side card layout again.
 - Documented the above regressions directly in this entry for future reference.
 
 **Files Updated:** `client/src/pages/PuzzleExaminer.tsx`
