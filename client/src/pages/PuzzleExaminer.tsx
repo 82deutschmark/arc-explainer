@@ -14,7 +14,7 @@
 
 import React, { useState, useMemo } from 'react';
 import { useParams } from 'wouter';
-import { Loader2, Grid3X3 } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 import { getPuzzleName } from '@shared/utils/puzzleNames';
 import { DEFAULT_EMOJI_SET } from '@/lib/spaceEmojis';
 import type { EmojiSet } from '@/lib/spaceEmojis';
@@ -34,8 +34,7 @@ import { ModelSelection } from '@/components/puzzle/ModelSelection';
 import { AnalysisResults } from '@/components/puzzle/AnalysisResults';
 import { StreamingAnalysisPanel } from '@/components/puzzle/StreamingAnalysisPanel';
 import { PromptPreviewModal } from '@/components/PromptPreviewModal';
-import { TrainingPairGallery } from '@/components/puzzle/examples/TrainingPairGallery';
-import { TestCaseGallery } from '@/components/puzzle/testcases/TestCaseGallery';
+import { PuzzleGridDisplay } from '@/components/puzzle/PuzzleGridDisplay';
 
 // Types
 import type { CorrectnessFilter } from '@/hooks/useFilteredResults';
@@ -280,62 +279,13 @@ export default function PuzzleExaminer() {
 
       {/* Main Content Area - Full Width */}
       <div className="px-2">
-        {/* Puzzle Examples Section – custom sculpted container highlighting training + tests */}
+        {/* Puzzle Examples Section – restored compact card layout */}
         <div className="mb-4">
-          <section className="relative overflow-hidden rounded-3xl border border-amber-200/70 bg-gradient-to-br from-white via-amber-50/80 to-rose-50/60 shadow-[0_24px_48px_-28px_rgba(244,114,182,0.55)]">
-            <div className="absolute inset-y-0 right-0 w-36 bg-gradient-to-br from-transparent via-rose-100/40 to-amber-100/60 opacity-70" aria-hidden="true" />
-
-            <header className="flex flex-wrap items-center justify-between gap-4 px-6 py-5 border-b border-amber-100/70 bg-white/60 backdrop-blur-sm">
-              <div className="flex items-center gap-3 text-amber-900">
-                <span className="inline-flex h-9 w-9 items-center justify-center rounded-2xl bg-amber-100/80 text-amber-600 shadow-inner">
-                  <Grid3X3 className="h-5 w-5" />
-                </span>
-                <div className="leading-tight">
-                  <h2 className="text-base font-semibold tracking-tight">Puzzle Pattern Overview</h2>
-                  <p className="text-xs font-medium text-amber-700/80">
-                    {task.train.length} training · {task.test.length} test grids
-                  </p>
-                </div>
-              </div>
-
-              <span className="inline-flex items-center rounded-full border border-amber-300/80 bg-white/70 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-amber-700">
-                {task.train.length + task.test.length} total grids
-              </span>
-            </header>
-
-            <div className="space-y-10 px-6 py-7">
-              <section className="space-y-4">
-                <div className="flex flex-wrap items-center justify-between gap-2">
-                  <span className="text-[11px] font-semibold uppercase tracking-[0.32em] text-blue-600">
-                    Training Examples
-                  </span>
-                  <span className="inline-flex items-center rounded-full border border-blue-200/80 bg-blue-50/70 px-2.5 py-1 text-[11px] font-medium text-blue-700">
-                    {task.train.length} {task.train.length === 1 ? 'example' : 'examples'}
-                  </span>
-                </div>
-                <TrainingPairGallery
-                  trainExamples={task.train}
-                  showHeader={false}
-                />
-              </section>
-
-              <section className="space-y-4">
-                <div className="flex flex-wrap items-center justify-between gap-2">
-                  <span className="text-[11px] font-semibold uppercase tracking-[0.32em] text-emerald-600">
-                    Test Inputs & Outputs
-                  </span>
-                  <span className="inline-flex items-center rounded-full border border-emerald-200/70 bg-emerald-50/70 px-2.5 py-1 text-[11px] font-medium text-emerald-700">
-                    {task.test.length} {task.test.length === 1 ? 'test' : 'tests'}
-                  </span>
-                </div>
-                <TestCaseGallery
-                  testCases={task.test}
-                  showHeader={false}
-                  showEmojis={showEmojis}
-                />
-              </section>
-            </div>
-          </section>
+          <PuzzleGridDisplay
+            task={task}
+            showEmojis={showEmojis}
+            emojiSet={emojiSet}
+          />
         </div>
 
         {/* Compact Controls - Prompt & Advanced Parameters */}
