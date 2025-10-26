@@ -1,6 +1,6 @@
 # ARC-AGI Explainer Platform
 
-**Version 4.8.3** — October 13, 2025
+**Version 4.8.41** — October 23, 2025
 
 
 A research platform for analyzing Abstract Reasoning Corpus (ARC-AGI) puzzles using state-of-the-art AI models with deep reasoning capture, conversation chaining, and comprehensive performance analytics.
@@ -9,47 +9,27 @@ A research platform for analyzing Abstract Reasoning Corpus (ARC-AGI) puzzles us
 
 ---
 
-## What's New in v4.8.3
+## What's New in v4.8.41
 
-### 🔧 OpenAI Service Compilation Fixes & Streaming Enhancements
-- **Fixed corrupted OpenAI service** - Resolved syntax errors, missing methods, and TypeScript compilation issues
-- **Corrected streaming events** - Updated to use proper OpenAI Responses API event types for real-time reasoning display
-- **Enhanced response parsing** - Improved handling of structured output, text fallbacks, and reasoning extraction
-- **Fixed method dependencies** - Resolved ordering issues that caused "method does not exist" errors
+### 🎨 Research surfaces refreshed
+- Split training example cards eliminate scrollbars and ensure consistent sizing across galleries and zoom modals.
+- Analysis results regain the aurora gradient, honeyglass backgrounds, and warm accent palette for a consistent look across layouts.
+- Leaderboards dashboard is now denser, with compact typography and inline metadata that keeps key metrics above the fold.
 
-### 🤖 Heuristic ARC Solver Integration
-- **New internal solver** - Fast, reliable baseline solver using parameterized transform primitives
-- **Modular Python package** - SRP design with grid operations, transform primitives, and program composition
-- **Sub-second performance** - Uses only numpy, no external API calls for instant results
-- **Learning strategy** - Learns transformations from training examples using primitive operations
+### ⚙️ Solver and streaming stability
+- Saturn Visual Solver no longer triggers React re-render loops thanks to a corrected effect dependency list.
+- Grover solver requests sanitize internal options before hitting the OpenAI Responses API, preventing 400 errors from unsupported fields.
+- Grid sizing utilities adapt to extreme aspect ratios so vertical and horizontal puzzles render without scrollbars.
 
-### 💰 Cost Control & UX Improvements
-- **Prompt preview confirmation** - Users must verify prompts before expensive API calls
-- **Fixed prompt ordering** - Data presented before instructions for clearer context
-- **Enhanced batch processing** - Parallel execution with real-time progress tracking
+### 📚 Traceability
+- Recent rollbacks and UI changes are documented in accompanying plans under `docs/2025-10-1x-*` for quick historical context.
 
-For complete details, see [Changelog](./CHANGELOG.md).
+For additional release notes, see [Changelog](./CHANGELOG.md).
 
-## What's New in v4.8.2 🎉
+## Previous Highlights
 
-### Conversation Chaining & Reasoning Persistence ⭐ NEW
-- **Multi-turn conversations** with full context retention across OpenAI (GPT-5, o-series) and xAI (Grok-4) models
-- **Server-side reasoning persistence** - 30-day encrypted storage means no re-sending of expensive reasoning tokens
-- **PuzzleDiscussion feature** - Models refine their own analyses iteratively with complete context
-- **Provider-aware chaining** - Automatically maintains conversation history within provider boundaries
-
-### Batch Analysis Web UI
-- **10-20x faster processing** with parallel execution (10 puzzles concurrently)
-- **Live activity logs** - Terminal-style real-time updates showing correctness validation per puzzle
-- **Resume capability** - Automatically skips already-analyzed puzzles
-- **Click-to-analyze** - ModelBrowser now supports instant analysis from "Not Attempted" lists
-- **Progress tracking** - Real-time status with pause/resume/cancel controls
-
-### Enhanced User Experience
-- **Correctness filtering** - Show only correct/incorrect results on PuzzleExaminer page
-- **Deep linking** - Share direct links to specific analyses: `/puzzle/{id}?highlight={explanationId}`
-- **Optimistic UI** - Instant feedback with progressive status updates (ANALYZING → SAVING → COMPLETED)
-- **Activity monitoring** - See exactly what's happening during batch runs with validation results
+- **v4.8.3**: Restored OpenAI service compilation, enhanced streaming event handling, and delivered the heuristic Python ARC solver with sub-second performance.
+- **v4.8.2**: Introduced conversation chaining with 30-day reasoning persistence, batch analysis controls, and richer correctness filtering across the UI.
 
 ## Core Capabilities
 
@@ -127,7 +107,7 @@ Set either variable to any of the following case-insensitive truthy values to en
 ## Architecture Overview
 
 ### Technology Stack
-**Frontend:** React 18 + TypeScript + Vite + TailwindCSS + shadcn/ui components  
+**Frontend:** React 18 + TypeScript + Vite + TailwindCSS + DaisyUI components  
 **Backend:** Express.js + TypeScript + PostgreSQL (Drizzle ORM) + in-memory fallback  
 **AI Integration:** Unified BaseAIService pattern supporting 6+ providers  
 **Real-time:** WebSocket streaming for Saturn solver and batch progress  
