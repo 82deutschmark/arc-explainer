@@ -528,7 +528,9 @@ export default function FeedbackExplorer() {
                           </Link>
                           {item.explanationId && (
                             <Link
-                              href={`/discussion/${item.puzzleId}?select=${item.explanationId}`}
+                              href={`/puzzle/${item.puzzleId}?highlight=${item.explanationId}`}
+                              target="_blank"
+                              rel="noreferrer noopener"
                               className="inline-flex items-center gap-1 text-blue-600 hover:underline"
                             >
                               Explanation <ArrowUpRight className="h-3 w-3" />
