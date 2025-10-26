@@ -1,9 +1,11 @@
 /**
  * Author: gpt-5-codex
  * Date: 2025-10-23
+ * Updated: 2025-10-26
  * PURPOSE: Composable leaderboards page consuming live statistics from the AccuracyRepository,
  *          MetricsRepository, and FeedbackRepository via `useModelLeaderboards`. Presents a concise
  *          hero, summary metrics, insights, and dedicated leaderboard components.
+ *          Updated to support expandable summary cards showing which models/puzzles drive metrics.
  * SRP/DRY check: Pass — orchestrates prebuilt components without duplicating data-fetching logic.
  */
 
@@ -16,6 +18,8 @@ import type { LeaderboardSummaryItem } from '@/components/overview/leaderboards/
 import { LeaderboardInsights } from '@/components/overview/leaderboards/LeaderboardInsights';
 import { LeaderboardSection } from '@/components/overview/leaderboards/LeaderboardSection';
 import { ReliabilityLeaderboard } from '@/components/overview/leaderboards/ReliabilityLeaderboard';
+import { HighRiskModelsList } from '@/components/overview/leaderboards/HighRiskModelsList';
+import { TopFeedbackList } from '@/components/overview/leaderboards/TopFeedbackList';
 import { useModelLeaderboards } from '@/hooks/useModelLeaderboards';
 
 function formatPercentage(value?: number, decimals = 1): string | undefined {
@@ -123,25 +127,31 @@ const Leaderboards: React.FC = () => {
         title: 'Helpful feedback',
         value: formatPercentage(helpfulRatio),
         description: 'User-rated helpful responses sourced from FeedbackRepository.',
-        icon: <ThumbsUp className="h-5 w-5" />, 
+        icon: <ThumbsUp className="h-5 w-5" />,
         tone: determineTone(helpfulRatio),
         footer: feedbackStats ? `${feedbackStats.totalFeedback.toLocaleString()} total reviews` : undefined,
+        expandableContent: feedbackStats?.topModels ? (
+          <TopFeedbackList models={feedbackStats.topModels} isLoading={false} />
+        ) : undefined,
       },
       {
         id: 'high-risk-models',
         title: 'High-risk models',
         value: highRiskCount !== undefined ? `${highRiskCount}` : undefined,
         description: 'Overconfident models flagged by AccuracyRepository for investigation.',
-        icon: <AlertTriangle className="h-5 w-5" />, 
+        icon: <AlertTriangle className="h-5 w-5" />,
         tone:
           highRiskCount === undefined
             ? 'default'
             : highRiskCount > 0
               ? 'danger'
               : 'positive',
+        expandableContent: overconfidentModels ? (
+          <HighRiskModelsList models={overconfidentModels} isLoading={false} />
+        ) : undefined,
       },
     ];
-  }, [accuracyStats, performanceStats, averageReliability, feedbackStats, highRiskCount]);
+  }, [accuracyStats, performanceStats, averageReliability, feedbackStats, highRiskCount, overconfidentModels]);
 
   const errorMessages = useMemo(() => {
     const collect: string[] = [];
