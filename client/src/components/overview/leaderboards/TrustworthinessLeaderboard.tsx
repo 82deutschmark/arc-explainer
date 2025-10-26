@@ -161,20 +161,20 @@ export function TrustworthinessLeaderboard({
               <p className="flex flex-wrap gap-x-2 gap-y-0.5 text-[10px] text-gray-500">
                 <span>
                   <Clock className="mr-1 inline h-3 w-3" />
-                  {formatProcessingTime(model.avgProcessingTime)}
+                  {formatProcessingTime(model.avgProcessingTime ?? 0)}
                 </span>
                 <span>
                   <DollarSign className="mr-1 inline h-3 w-3" />
-                  {formatCost(model.avgCost)} avg
+                  {formatCost(model.avgCost ?? 0)} avg
                 </span>
-                <span>{formatCost(model.totalCost)} total</span>
+                <span>{formatCost(model.totalCost ?? 0)} total</span>
               </p>
             </div>
             <div className="text-right font-mono text-[11px] text-emerald-700" title="Trustworthiness score">
-              {(model.avgTrustworthiness * 100).toFixed(1)}%
+              {((model.avgTrustworthiness ?? 0) * 100).toFixed(1)}%
             </div>
             <div className="text-right font-mono text-[11px] text-gray-600" title="Average reported confidence">
-              {(model.avgConfidence * 100).toFixed(1)}%
+              {((model.avgConfidence ?? 0) * 100).toFixed(1)}%
             </div>
           </li>
         ))}

@@ -14,6 +14,77 @@ import { formatResponse } from '../utils/responseFormatter.ts';
 import { repositoryService } from '../repositories/RepositoryService.ts';
 import type { FeedbackFilters } from '../../shared/types.ts';
 
+const VALID_FEEDBACK_TYPES = new Set<FeedbackFilters['feedbackType']>([
+  'helpful',
+  'not_helpful',
+  'solution_explanation',
+]);
+
+const coerceQueryString = (value: unknown): string | undefined => {
+  if (typeof value === 'string') {
+    return value;
+  }
+
+  if (Array.isArray(value) && value.length > 0 && typeof value[0] === 'string') {
+    return value[0];
+  }
+
+  return undefined;
+};
+
+const buildFiltersFromQuery = (query: Record<string, unknown>): FeedbackFilters => {
+  const filters: FeedbackFilters = {};
+
+  const puzzleId = coerceQueryString(query.puzzleId);
+  if (puzzleId) {
+    filters.puzzleId = puzzleId;
+  }
+
+  const modelName = coerceQueryString(query.modelName);
+  if (modelName) {
+    filters.modelName = modelName;
+  }
+
+  const feedbackType = coerceQueryString(query.feedbackType);
+  if (feedbackType && VALID_FEEDBACK_TYPES.has(feedbackType as FeedbackFilters['feedbackType'])) {
+    filters.feedbackType = feedbackType as FeedbackFilters['feedbackType'];
+  }
+
+  const limitString = coerceQueryString(query.limit);
+  if (limitString) {
+    const limit = parseInt(limitString, 10);
+    if (!Number.isNaN(limit) && limit > 0 && limit <= 10_000) {
+      filters.limit = limit;
+    }
+  }
+
+  const offsetString = coerceQueryString(query.offset);
+  if (offsetString) {
+    const offset = parseInt(offsetString, 10);
+    if (!Number.isNaN(offset) && offset >= 0) {
+      filters.offset = offset;
+    }
+  }
+
+  const fromDateString = coerceQueryString(query.fromDate);
+  if (fromDateString) {
+    const fromDate = new Date(fromDateString);
+    if (!Number.isNaN(fromDate.getTime())) {
+      filters.fromDate = fromDate;
+    }
+  }
+
+  const toDateString = coerceQueryString(query.toDate);
+  if (toDateString) {
+    const toDate = new Date(toDateString);
+    if (!Number.isNaN(toDate.getTime())) {
+      filters.toDate = toDate;
+    }
+  }
+
+  return filters;
+};
+
 export const feedbackController = {
   /**
    * Create new feedback for an explanation
@@ -122,10 +193,17 @@ export const feedbackController = {
   async getAll(req: Request, res: Response) {
     try {
       // Build filters object from query parameters
-      const filters: FeedbackFilters = this.buildFiltersFromQuery(req.query);
+      const filters = buildFiltersFromQuery(req.query as Record<string, unknown>);
+      if (filters.fromDate && typeof req.query.fromDate === 'string' && (!filters.startDate || filters.startDate.trim() === '')) {
+        filters.startDate = req.query.fromDate;
+      }
+      if (filters.toDate && typeof req.query.toDate === 'string' && (!filters.endDate || filters.endDate.trim() === '')) {
+        filters.endDate = req.query.toDate;
+      }
 
       // Get feedback from repository
       const feedback = await repositoryService.feedback.getAllFeedback(filters);
+      
       res.json(formatResponse.success(feedback));
     } catch (error) {
       console.error('Error getting all feedback:', error);
@@ -338,14 +416,8 @@ export const feedbackController = {
   },
 
   /**
-   * Helper method to build filters from query parameters
-   * 
-   * @param query - Express query object
-   * @returns Cleaned FeedbackFilters object
-   */
-  /**
-   * Vote on a solution (helpful or not helpful)
-   * 
+   * Vote on a user-submitted solution
+   *
    * @param req - Express request object
    * @param res - Express response object
    */
@@ -353,7 +425,7 @@ export const feedbackController = {
     try {
       const { solutionId } = req.params;
       const { voteType } = req.body;
-      
+
       if (!solutionId) {
         return res.status(400).json(formatResponse.error(
           'Invalid solution ID',
@@ -361,7 +433,14 @@ export const feedbackController = {
         ));
       }
 
-      // Validate vote type
+      const parsedSolutionId = Number.parseInt(solutionId, 10);
+      if (Number.isNaN(parsedSolutionId)) {
+        return res.status(400).json(formatResponse.error(
+          'Invalid solution ID',
+          'Solution ID must be a number'
+        ));
+      }
+
       if (!voteType || !['helpful', 'not_helpful'].includes(voteType)) {
         return res.status(400).json(formatResponse.error(
           'Invalid vote type',
@@ -369,17 +448,16 @@ export const feedbackController = {
         ));
       }
 
-      // Submit vote as feedback on the solution
       const result = await feedbackService.addFeedback({
-        puzzleId: undefined, // Will be retrieved from the solution feedback
-        explanationId: null, // No explanation ID for solution votes
+        puzzleId: undefined,
+        explanationId: null,
         feedbackType: voteType as 'helpful' | 'not_helpful',
         comment: null,
         userAgent: req.get('User-Agent'),
         sessionId: undefined,
-        referenceFeedbackId: parseInt(solutionId) // Reference to the solution being voted on
+        referenceFeedbackId: parsedSolutionId
       });
-      
+
       res.json(formatResponse.success({
         feedbackId: result.feedbackId
       }, 'Vote recorded successfully'));
@@ -419,54 +497,5 @@ export const feedbackController = {
         error instanceof Error ? error.message : 'Unknown error'
       ));
     }
-  },
-  
-  buildFiltersFromQuery(query: any): FeedbackFilters {
-    const filters: FeedbackFilters = {};
-
-    // String filters
-    if (query.puzzleId && typeof query.puzzleId === 'string') {
-      filters.puzzleId = query.puzzleId;
-    }
-    if (query.modelName && typeof query.modelName === 'string') {
-      filters.modelName = query.modelName;
-    }
-
-    // Feedback type filter with validation
-    if (query.feedbackType && ['helpful', 'not_helpful', 'solution_explanation'].includes(query.feedbackType)) {
-      filters.feedbackType = query.feedbackType as 'helpful' | 'not_helpful' | 'solution_explanation';
-    }
-
-    // Numeric filters with validation
-    if (query.limit) {
-      const limit = parseInt(query.limit as string);
-      if (!isNaN(limit) && limit > 0 && limit <= 10000) {
-        filters.limit = limit;
-      }
-    }
-    
-    if (query.offset) {
-      const offset = parseInt(query.offset as string);
-      if (!isNaN(offset) && offset >= 0) {
-        filters.offset = offset;
-      }
-    }
-
-    // Date filters with validation
-    if (query.fromDate) {
-      const fromDate = new Date(query.fromDate as string);
-      if (!isNaN(fromDate.getTime())) {
-        filters.fromDate = fromDate;
-      }
-    }
-    
-    if (query.toDate) {
-      const toDate = new Date(query.toDate as string);
-      if (!isNaN(toDate.getTime())) {
-        filters.toDate = toDate;
-      }
-    }
-
-    return filters;
   }
 };
