@@ -82,15 +82,19 @@ function buildQueryFilters(filters: FilterState): FeedbackFilters {
     query.feedbackType = filters.feedbackType;
   }
 
-  if (filters.fromDate) {
+  if (filters.fromDate && filters.fromDate.trim()) {
     const from = new Date(filters.fromDate);
-    query.fromDate = from;
+    if (!Number.isNaN(from.getTime())) {
+      query.fromDate = from;
+    }
   }
 
-  if (filters.toDate) {
+  if (filters.toDate && filters.toDate.trim()) {
     const to = new Date(filters.toDate);
-    to.setHours(23, 59, 59, 999);
-    query.toDate = to;
+    if (!Number.isNaN(to.getTime())) {
+      to.setHours(23, 59, 59, 999);
+      query.toDate = to;
+    }
   }
 
   return query;
@@ -356,8 +360,11 @@ export default function FeedbackExplorer() {
                 <Input
                   id="fromDate"
                   type="date"
-                  value={filters.fromDate}
-                  onChange={(event) => handleFilterChange('fromDate', event.target.value)}
+                  value={filters.fromDate ?? ''}
+                  onChange={(event) => {
+                    const nextValue = event.target.value;
+                    handleFilterChange('fromDate', nextValue ? nextValue : undefined);
+                  }}
                 />
               </div>
               <div className="space-y-2">
@@ -365,8 +372,11 @@ export default function FeedbackExplorer() {
                 <Input
                   id="toDate"
                   type="date"
-                  value={filters.toDate}
-                  onChange={(event) => handleFilterChange('toDate', event.target.value)}
+                  value={filters.toDate ?? ''}
+                  onChange={(event) => {
+                    const nextValue = event.target.value;
+                    handleFilterChange('toDate', nextValue ? nextValue : undefined);
+                  }}
                 />
               </div>
             </div>
