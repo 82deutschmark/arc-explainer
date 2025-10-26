@@ -123,9 +123,16 @@ export const feedbackController = {
     try {
       // Build filters object from query parameters
       const filters: FeedbackFilters = this.buildFiltersFromQuery(req.query);
+      if (filters.fromDate && typeof req.query.fromDate === 'string' && (!filters.startDate || filters.startDate.trim() === '')) {
+        filters.startDate = req.query.fromDate;
+      }
+      if (filters.toDate && typeof req.query.toDate === 'string' && (!filters.endDate || filters.endDate.trim() === '')) {
+        filters.endDate = req.query.toDate;
+      }
 
       // Get feedback from repository
       const feedback = await repositoryService.feedback.getAllFeedback(filters);
+      
       res.json(formatResponse.success(feedback));
     } catch (error) {
       console.error('Error getting all feedback:', error);
