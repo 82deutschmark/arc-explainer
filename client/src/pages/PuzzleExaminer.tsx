@@ -14,7 +14,7 @@
 
 import React, { useState, useMemo } from 'react';
 import { useParams } from 'wouter';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Grid3X3 } from 'lucide-react';
 import { getPuzzleName } from '@shared/utils/puzzleNames';
 import { DEFAULT_EMOJI_SET } from '@/lib/spaceEmojis';
 import type { EmojiSet } from '@/lib/spaceEmojis';
@@ -29,12 +29,13 @@ import { useAnalysisResults } from '@/hooks/useAnalysisResults';
 
 // UI Components (SRP-compliant)
 import { PuzzleHeader } from '@/components/puzzle/PuzzleHeader';
-import { PuzzleGridDisplay } from '@/components/puzzle/PuzzleGridDisplay';
 import { CompactControls } from '@/components/puzzle/CompactControls';
 import { ModelSelection } from '@/components/puzzle/ModelSelection';
 import { AnalysisResults } from '@/components/puzzle/AnalysisResults';
 import { StreamingAnalysisPanel } from '@/components/puzzle/StreamingAnalysisPanel';
 import { PromptPreviewModal } from '@/components/PromptPreviewModal';
+import { TrainingPairGallery } from '@/components/puzzle/examples/TrainingPairGallery';
+import { TestCaseGallery } from '@/components/puzzle/testcases/TestCaseGallery';
 
 // Types
 import type { CorrectnessFilter } from '@/hooks/useFilteredResults';
@@ -43,13 +44,33 @@ export default function PuzzleExaminer() {
   const { taskId } = useParams<{ taskId: string }>();
 
   // Check if we're in retry mode (coming from discussion page)
-  const isRetryMode = window.location.search.includes('retry=true') || document.referrer.includes('/discussion');
+  const isRetryMode = useMemo(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('retry') === 'true') {
+      return true;
+    }
+
+    if (!document.referrer) {
+      return false;
+    }
+
+    try {
+      const referrerUrl = new URL(document.referrer);
+      return (
+        referrerUrl.origin === window.location.origin &&
+        referrerUrl.pathname.startsWith('/discussion')
+      );
+    } catch {
+      return false;
+    }
+  }, []);
 
   // Local UI state
   const [showEmojis, setShowEmojis] = useState(false);
   const [emojiSet, setEmojiSet] = useState<EmojiSet>(DEFAULT_EMOJI_SET);
   const [sendAsEmojis, setSendAsEmojis] = useState(false);
-  const [showPromptPreview, setShowPromptPreview] = useState(false);
+  const [isPromptPreviewOpen, setIsPromptPreviewOpen] = useState(false);
+  const [pendingAnalysis, setPendingAnalysis] = useState<{ modelKey: string; supportsTemperature: boolean } | null>(null);
   const [omitAnswer, setOmitAnswer] = useState(true);
   const [correctnessFilter, setCorrectnessFilter] = useState<CorrectnessFilter>('all');
 
@@ -194,7 +215,25 @@ export default function PuzzleExaminer() {
   // Handle model selection
   const handleAnalyzeWithModel = (modelKey: string) => {
     const model = models?.find(m => m.key === modelKey);
-    analyzeWithModel(modelKey, model?.supportsTemperature ?? true);
+    setPendingAnalysis({
+      modelKey,
+      supportsTemperature: model?.supportsTemperature ?? true,
+    });
+    setIsPromptPreviewOpen(true);
+  };
+
+  const handleConfirmAnalysis = async () => {
+    if (!pendingAnalysis) {
+      return;
+    }
+    analyzeWithModel(pendingAnalysis.modelKey, pendingAnalysis.supportsTemperature);
+    setPendingAnalysis(null);
+    setIsPromptPreviewOpen(false);
+  };
+
+  const handleClosePromptPreview = () => {
+    setPendingAnalysis(null);
+    setIsPromptPreviewOpen(false);
   };
 
   // Loading state
@@ -226,7 +265,7 @@ export default function PuzzleExaminer() {
   if (!task) return null;
 
   return (
-    <div className="container mx-auto p-2 max-w-6xl space-y-2">
+    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-rose-50">
       {/* Header Component */}
       <PuzzleHeader
         taskId={taskId}
@@ -239,15 +278,69 @@ export default function PuzzleExaminer() {
         isAnalyzing={isAnalyzing}
       />
 
-      {/* Puzzle Grid Display Component (PERFORMANCE-OPTIMIZED) */}
-      <PuzzleGridDisplay
-        task={task}
-        showEmojis={showEmojis}
-        emojiSet={emojiSet}
-      />
+      {/* Main Content Area - Full Width */}
+      <div className="px-2">
+        {/* Puzzle Examples Section – custom sculpted container highlighting training + tests */}
+        <div className="mb-4">
+          <section className="relative overflow-hidden rounded-3xl border border-amber-200/70 bg-gradient-to-br from-white via-amber-50/80 to-rose-50/60 shadow-[0_24px_48px_-28px_rgba(244,114,182,0.55)]">
+            <div className="absolute inset-y-0 right-0 w-36 bg-gradient-to-br from-transparent via-rose-100/40 to-amber-100/60 opacity-70" aria-hidden="true" />
 
-      {/* Compact Controls - Prompt & Advanced Parameters */}
-      <CompactControls
+            <header className="flex flex-wrap items-center justify-between gap-4 px-6 py-5 border-b border-amber-100/70 bg-white/60 backdrop-blur-sm">
+              <div className="flex items-center gap-3 text-amber-900">
+                <span className="inline-flex h-9 w-9 items-center justify-center rounded-2xl bg-amber-100/80 text-amber-600 shadow-inner">
+                  <Grid3X3 className="h-5 w-5" />
+                </span>
+                <div className="leading-tight">
+                  <h2 className="text-base font-semibold tracking-tight">Puzzle Pattern Overview</h2>
+                  <p className="text-xs font-medium text-amber-700/80">
+                    {task.train.length} training · {task.test.length} test grids
+                  </p>
+                </div>
+              </div>
+
+              <span className="inline-flex items-center rounded-full border border-amber-300/80 bg-white/70 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-amber-700">
+                {task.train.length + task.test.length} total grids
+              </span>
+            </header>
+
+            <div className="space-y-10 px-6 py-7">
+              <section className="space-y-4">
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <span className="text-[11px] font-semibold uppercase tracking-[0.32em] text-blue-600">
+                    Training Examples
+                  </span>
+                  <span className="inline-flex items-center rounded-full border border-blue-200/80 bg-blue-50/70 px-2.5 py-1 text-[11px] font-medium text-blue-700">
+                    {task.train.length} {task.train.length === 1 ? 'example' : 'examples'}
+                  </span>
+                </div>
+                <TrainingPairGallery
+                  trainExamples={task.train}
+                  showHeader={false}
+                />
+              </section>
+
+              <section className="space-y-4">
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <span className="text-[11px] font-semibold uppercase tracking-[0.32em] text-emerald-600">
+                    Test Inputs & Outputs
+                  </span>
+                  <span className="inline-flex items-center rounded-full border border-emerald-200/70 bg-emerald-50/70 px-2.5 py-1 text-[11px] font-medium text-emerald-700">
+                    {task.test.length} {task.test.length === 1 ? 'test' : 'tests'}
+                  </span>
+                </div>
+                <TestCaseGallery
+                  testCases={task.test}
+                  showHeader={false}
+                  showEmojis={showEmojis}
+                />
+              </section>
+            </div>
+          </section>
+        </div>
+
+        {/* Compact Controls - Prompt & Advanced Parameters */}
+        <div className="mb-2">
+          <CompactControls
         promptId={promptId}
         onPromptChange={setPromptId}
         customPrompt={customPrompt}
@@ -257,7 +350,10 @@ export default function PuzzleExaminer() {
         onSendAsEmojisChange={setSendAsEmojis}
         omitAnswer={omitAnswer}
         onOmitAnswerChange={setOmitAnswer}
-        onPreviewClick={() => setShowPromptPreview(true)}
+        onPreviewClick={() => {
+          setPendingAnalysis(null);
+          setIsPromptPreviewOpen(true);
+        }}
         temperature={temperature}
         onTemperatureChange={setTemperature}
         topP={topP}
@@ -272,7 +368,57 @@ export default function PuzzleExaminer() {
         onReasoningVerbosityChange={setReasoningVerbosity}
         reasoningSummaryType={reasoningSummaryType}
         onReasoningSummaryTypeChange={setReasoningSummaryType}
-      />
+          />
+        </div>
+
+        {/* Model Selection - Card Grid */}
+        <div className="bg-base-100 p-2 mb-2">
+          <h3 className="font-medium text-sm mb-2 flex items-center gap-2">
+            🚀 Model Selection
+            <span className="text-xs opacity-60">Choose AI models to run analysis with</span>
+          </h3>
+          <ModelSelection
+            models={models}
+            processingModels={processingModels}
+            streamingModelKey={streamingModelKey}
+            streamingEnabled={streamingEnabled}
+            canStreamModel={canStreamModel}
+            explanations={explanations}
+            onAnalyze={handleAnalyzeWithModel}
+            analyzerErrors={analyzerErrors}
+          />
+        </div>
+
+        {/* Analysis Results (PERFORMANCE-OPTIMIZED with progressive loading) */}
+        {(allResults.length > 0 || isAnalyzing || isLoadingExplanations) && (
+          <AnalysisResults
+            allResults={allResults}
+            correctnessFilter={correctnessFilter}
+            onFilterChange={setCorrectnessFilter}
+            models={models}
+            task={task}
+            isAnalyzing={isAnalyzing}
+            currentModel={currentModel}
+          />
+        )}
+
+        {/* Loading skeleton for explanations (progressive loading UX) */}
+        {isLoadingExplanations && allResults.length === 0 && !isAnalyzing && (
+          <div className="card bg-base-100 shadow">
+            <div className="card-body">
+              <div className="flex items-center gap-2 mb-4">
+                <Loader2 className="h-4 w-4 animate-spin" />
+                <span className="text-sm opacity-70">Loading previous analyses...</span>
+              </div>
+              <div className="space-y-3">
+                {[1, 2, 3].map((i) => (
+                  <div key={i} className="skeleton h-32 w-full"></div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
 
       {/* Streaming Modal Dialog (DaisyUI) */}
       <dialog className={`modal ${isStreamingActive ? 'modal-open' : ''}`}>
@@ -314,58 +460,10 @@ export default function PuzzleExaminer() {
         </form>
       </dialog>
 
-      {/* Model Selection - Card Grid */}
-      <div className="border border-base-300 rounded-lg bg-base-100 p-3">
-        <h3 className="font-medium text-sm mb-3 flex items-center gap-2">
-          🚀 Model Selection
-          <span className="text-xs opacity-60">Choose AI models to run analysis with</span>
-        </h3>
-        <ModelSelection
-          models={models}
-          processingModels={processingModels}
-          streamingModelKey={streamingModelKey}
-          streamingEnabled={streamingEnabled}
-          canStreamModel={canStreamModel}
-          explanations={explanations}
-          onAnalyze={handleAnalyzeWithModel}
-          analyzerErrors={analyzerErrors}
-        />
-      </div>
-
-      {/* Analysis Results (PERFORMANCE-OPTIMIZED with progressive loading) */}
-      {(allResults.length > 0 || isAnalyzing || isLoadingExplanations) && (
-        <AnalysisResults
-          allResults={allResults}
-          correctnessFilter={correctnessFilter}
-          onFilterChange={setCorrectnessFilter}
-          models={models}
-          task={task}
-          isAnalyzing={isAnalyzing}
-          currentModel={currentModel}
-        />
-      )}
-
-      {/* Loading skeleton for explanations (progressive loading UX) */}
-      {isLoadingExplanations && allResults.length === 0 && !isAnalyzing && (
-        <div className="card bg-base-100 shadow">
-          <div className="card-body">
-            <div className="flex items-center gap-2 mb-4">
-              <Loader2 className="h-4 w-4 animate-spin" />
-              <span className="text-sm opacity-70">Loading previous analyses...</span>
-            </div>
-            <div className="space-y-3">
-              {[1, 2, 3].map((i) => (
-                <div key={i} className="skeleton h-32 w-full"></div>
-              ))}
-            </div>
-          </div>
-        </div>
-      )}
-
       {/* Prompt Preview Modal */}
       <PromptPreviewModal
-        isOpen={showPromptPreview}
-        onClose={() => setShowPromptPreview(false)}
+        isOpen={isPromptPreviewOpen}
+        onClose={handleClosePromptPreview}
         task={task}
         taskId={taskId}
         promptId={promptId}
@@ -375,6 +473,9 @@ export default function PuzzleExaminer() {
           omitAnswer,
           sendAsEmojis
         }}
+        confirmMode={pendingAnalysis !== null}
+        onConfirm={pendingAnalysis ? handleConfirmAnalysis : undefined}
+        confirmButtonText="Confirm & Send Analysis"
       />
     </div>
   );

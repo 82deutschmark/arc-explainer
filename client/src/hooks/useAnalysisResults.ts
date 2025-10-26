@@ -365,10 +365,23 @@ export function useAnalysisResults({
     },
   });
 
-  const isGPT5ReasoningModel = useCallback(
-    (modelKey: string) =>
-      ['gpt-5-2025-08-07', 'gpt-5-mini-2025-08-07', 'gpt-5-nano-2025-08-07'].includes(modelKey),
+  const gpt5ReasoningModels = useMemo(
+    () => new Set(['gpt-5-2025-08-07', 'gpt-5-mini-2025-08-07', 'gpt-5-nano-2025-08-07']),
     []
+  );
+
+  const normalizeModelKey = useCallback((modelKey: string) => {
+    if (!modelKey) {
+      return modelKey;
+    }
+
+    const parts = modelKey.split('/');
+    return parts[parts.length - 1] ?? modelKey;
+  }, []);
+
+  const isGPT5ReasoningModel = useCallback(
+    (modelKey: string) => gpt5ReasoningModels.has(normalizeModelKey(modelKey)),
+    [gpt5ReasoningModels, normalizeModelKey]
   );
 
   const analyzeWithModel = useCallback(

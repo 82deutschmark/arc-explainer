@@ -270,6 +270,9 @@ export function useSaturnProgress(taskId: string | undefined) {
               createdAt: string;
             };
             setSessionId(payload.sessionId);
+            if (payload.sessionId) {
+              openWebSocket(payload.sessionId);
+            }
             setState((prev) => {
               // Add init message to logLines
               let nextLogs = prev.logLines ? [...prev.logLines] : [];

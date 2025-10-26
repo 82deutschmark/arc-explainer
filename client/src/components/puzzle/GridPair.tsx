@@ -40,15 +40,14 @@ export function GridPair({
   const hasMultipleOutputs = outputs.length > 1;
 
   return (
-    <div 
-      className={`inline-block border-3 rounded-lg overflow-visible shadow-md ${
-        isTest ? 'border-green-600 bg-base-100' : 'border-blue-600 bg-base-100'
+    <div
+      className={`w-full border-2 rounded-lg overflow-hidden shadow-sm ${
+        isTest ? 'border-emerald-300 bg-base-100' : 'border-slate-300 bg-base-100'
       }`}
-      style={{ minWidth: 'fit-content' }}
     >
       {/* Title Bar */}
       <div className={`px-3 py-2 text-sm font-bold ${
-        isTest ? 'bg-green-700 text-white' : 'bg-blue-700 text-white'
+        isTest ? 'bg-emerald-600 text-white' : 'bg-slate-600 text-white'
       }`}>
         {title}
         {hasMultipleOutputs && (
@@ -59,11 +58,11 @@ export function GridPair({
       </div>
 
       {/* Grid Display Area */}
-      <div className="flex divide-x-4 divide-gray-300">
+      <div className="flex max-w-full divide-x-2 divide-gray-200 overflow-x-auto">
         {/* INPUT Section */}
-        <div className="p-3 bg-blue-200">
+        <div className="p-3 bg-slate-50 flex-shrink-0">
           <div className="flex items-center gap-2 mb-2">
-            <span className="text-xs font-bold text-blue-900 uppercase px-2 py-1 bg-blue-300 rounded">📋 Input</span>
+            <span className="text-xs font-bold text-slate-700 uppercase px-2 py-1 bg-slate-200 rounded">📋 Input</span>
           </div>
           <PuzzleGrid
             grid={input}
@@ -75,13 +74,13 @@ export function GridPair({
 
         {/* OUTPUT Section(s) */}
         {outputs.map((output, idx) => (
-          <div 
+          <div
             key={idx}
-            className={`p-3 ${isTest ? 'bg-green-200' : 'bg-yellow-200'}`}
+            className={`p-3 ${isTest ? 'bg-emerald-50' : 'bg-amber-50'} flex-shrink-0`}
           >
             <div className="flex items-center gap-2 mb-2">
               <span className={`text-xs font-bold uppercase px-2 py-1 rounded ${
-                isTest ? 'text-green-900 bg-green-300' : 'text-yellow-900 bg-yellow-300'
+                isTest ? 'text-emerald-700 bg-emerald-100' : 'text-amber-700 bg-amber-100'
               }`}>
                 🎯 Output{hasMultipleOutputs ? ` ${idx + 1}` : ''}
               </span>

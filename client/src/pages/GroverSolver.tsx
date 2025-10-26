@@ -29,9 +29,9 @@ export default function GroverSolver() {
   const [model, setModel] = React.useState<GroverModelKey>('grover-gpt-5-nano');
   const [startTime, setStartTime] = React.useState<Date | null>(null);
   const [temperature, setTemperature] = React.useState(0.2);
-  const [reasoningEffort, setReasoningEffort] = React.useState<'minimal' | 'low' | 'medium' | 'high'>('medium');
-  const [reasoningVerbosity, setReasoningVerbosity] = React.useState<'low' | 'medium' | 'high'>('medium');
-  const [reasoningSummaryType, setReasoningSummaryType] = React.useState<'auto' | 'detailed'>('auto');
+  const [reasoningEffort, setReasoningEffort] = React.useState<'minimal' | 'low' | 'medium' | 'high'>('high');
+  const [reasoningVerbosity, setReasoningVerbosity] = React.useState<'low' | 'medium' | 'high'>('high');
+  const [reasoningSummaryType, setReasoningSummaryType] = React.useState<'auto' | 'detailed'>('detailed');
 
   // Set page title
   React.useEffect(() => {
@@ -65,9 +65,11 @@ export default function GroverSolver() {
 
   if (!taskId) {
     return (
-      <div className="container mx-auto p-6 max-w-6xl">
-        <div role="alert" className="alert alert-error">
-          <span>Invalid puzzle ID</span>
+      <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-rose-50">
+        <div className="w-full px-3 sm:px-6 lg:px-10 xl:px-12 py-6">
+          <div role="alert" className="alert alert-error">
+            <span>Invalid puzzle ID</span>
+          </div>
         </div>
       </div>
     );
@@ -75,11 +77,13 @@ export default function GroverSolver() {
 
   if (isLoadingTask) {
     return (
-      <div className="container mx-auto p-6 max-w-6xl">
-        <div className="flex items-center justify-center min-h-[400px]">
-          <div className="flex items-center gap-2">
-            <Loader2 className="h-6 w-6 animate-spin" />
-            <span>Loading puzzle…</span>
+      <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-rose-50">
+        <div className="w-full px-3 sm:px-6 lg:px-10 xl:px-12 py-6">
+          <div className="flex items-center justify-center min-h-[400px]">
+            <div className="flex items-center gap-2">
+              <Loader2 className="h-6 w-6 animate-spin" />
+              <span>Loading puzzle…</span>
+            </div>
           </div>
         </div>
       </div>
@@ -88,9 +92,11 @@ export default function GroverSolver() {
 
   if (taskError || !task) {
     return (
-      <div className="container mx-auto p-6 max-w-6xl">
-        <div role="alert" className="alert alert-error">
-          <span>Failed to load puzzle: {taskError?.message || 'Puzzle not found'}</span>
+      <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-rose-50">
+        <div className="w-full px-3 sm:px-6 lg:px-10 xl:px-12 py-6">
+          <div role="alert" className="alert alert-error">
+            <span>Failed to load puzzle: {taskError?.message || 'Puzzle not found'}</span>
+          </div>
         </div>
       </div>
     );
@@ -114,9 +120,10 @@ export default function GroverSolver() {
   };
 
   return (
-    <div className="container mx-auto p-3 max-w-6xl">
+    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-rose-50">
+      <div className="w-full px-3 sm:px-6 lg:px-10 xl:px-12 py-3 space-y-3">
       {/* Header - Compact */}
-      <div className="flex items-center justify-between mb-3">
+      <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between px-3 py-3 bg-base-100 border border-base-300 shadow-sm">
         <div className="flex items-center gap-2">
           <Link href={`/puzzle/${taskId}`}>
             <button 
@@ -144,10 +151,10 @@ export default function GroverSolver() {
             <p className="text-xs text-gray-600">{taskId}</p>
           </div>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-3">
           <GroverModelSelect value={model} onChange={setModel} disabled={isRunning} />
           {isRunning ? (
-            <button 
+            <button
               onClick={cancel}
               className="btn btn-error btn-lg flex items-center gap-2 font-bold shadow-lg hover:shadow-xl transition-all px-6"
             >
@@ -155,8 +162,8 @@ export default function GroverSolver() {
               Cancel
             </button>
           ) : (
-            <button 
-              onClick={onStart} 
+            <button
+              onClick={onStart}
               className="btn btn-primary btn-lg flex items-center gap-2 font-bold shadow-lg hover:shadow-xl transition-all px-6 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
             >
               <Rocket className="h-5 w-5" />
@@ -170,104 +177,104 @@ export default function GroverSolver() {
       <CollapsibleCard
         title="Advanced Controls"
         icon={Settings}
-        defaultOpen={false}
+        defaultOpen
         headerDescription={
           <p className="text-sm text-gray-600">Fine-tune model behavior with advanced parameters</p>
         }
       >
-        <div className="space-y-3 p-2">
-            {/* Temperature Control */}
-            <div className="p-2 bg-gray-50 border border-gray-200 rounded">
-              <div className="flex items-center gap-3">
-                <label htmlFor="temperature" className="label text-sm font-medium whitespace-nowrap">
-                  Temperature: {temperature}
-                </label>
-                <div className="flex-1 max-w-xs">
-                  <input
-                    type="range"
-                    id="temperature"
-                    min="0.1"
-                    max="2.0"
-                    step="0.05"
-                    value={temperature}
-                    onChange={(e) => setTemperature(parseFloat(e.target.value))}
-                    className="range range-xs w-full"
-                    disabled={isRunning}
-                  />
-                </div>
-                <div className="text-xs text-gray-600 flex-shrink-0">
-                  <div>Controls creativity/randomness</div>
-                  <div className="text-blue-600">💡 Affects code generation diversity</div>
-                </div>
+        <div className="space-y-4 p-3 lg:p-4">
+          {/* Temperature Control */}
+          <div className="p-3 bg-gray-50 border border-gray-200 rounded">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+              <label htmlFor="temperature" className="label text-sm font-semibold whitespace-nowrap">
+                Temperature: {temperature}
+              </label>
+              <div className="flex-1">
+                <input
+                  type="range"
+                  id="temperature"
+                  min="0.1"
+                  max="2.0"
+                  step="0.05"
+                  value={temperature}
+                  onChange={(e) => setTemperature(parseFloat(e.target.value))}
+                  className="range range-xs w-full"
+                  disabled={isRunning}
+                />
+              </div>
+              <div className="text-xs text-gray-600">
+                <div>Controls creativity/randomness</div>
+                <div className="text-blue-600">💡 Affects code generation diversity</div>
               </div>
             </div>
+          </div>
 
-            {/* GPT-5 Reasoning Parameters */}
-            <div className="p-2 bg-blue-50 border border-blue-200 rounded-lg">
-              <h5 className="text-sm font-semibold text-blue-800 mb-2 flex items-center gap-2">
-                <Brain className="h-4 w-4" />
-                GPT-5 Reasoning Parameters
-              </h5>
-                
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                  {/* Effort Control */}
-                  <div>
-                    <label htmlFor="reasoning-effort" className="label text-sm font-medium text-blue-700">
-                      Effort Level
-                    </label>
-                    <select 
-                      className="select select-bordered w-full mt-1"
-                      value={reasoningEffort} 
-                      onChange={(e) => setReasoningEffort(e.target.value as 'minimal' | 'low' | 'medium' | 'high')}
-                      disabled={isRunning}
-                    >
-                      <option value="minimal">Minimal</option>
-                      <option value="low">Low</option>
-                      <option value="medium">Medium</option>
-                      <option value="high">High</option>
-                    </select>
-                  </div>
+          {/* GPT-5 Reasoning Parameters */}
+          <div className="p-3 bg-slate-50 border border-slate-200 rounded-lg">
+            <h5 className="text-sm font-semibold text-slate-700 mb-3 flex items-center gap-2">
+              <Brain className="h-4 w-4" />
+              GPT-5 Reasoning Parameters
+            </h5>
 
-                  {/* Verbosity Control */}
-                  <div>
-                    <label htmlFor="reasoning-verbosity" className="label text-sm font-medium text-blue-700">
-                      Verbosity
-                    </label>
-                    <select 
-                      className="select select-bordered w-full mt-1"
-                      value={reasoningVerbosity} 
-                      onChange={(e) => setReasoningVerbosity(e.target.value as 'low' | 'medium' | 'high')}
-                      disabled={isRunning}
-                    >
-                      <option value="low">Low</option>
-                      <option value="medium">Medium</option>
-                      <option value="high">High</option>
-                    </select>
-                  </div>
-
-                  {/* Summary Control */}
-                  <div>
-                    <label htmlFor="reasoning-summary" className="label text-sm font-medium text-blue-700">
-                      Summary
-                    </label>
-                    <select 
-                      className="select select-bordered w-full mt-1"
-                      value={reasoningSummaryType} 
-                      onChange={(e) => setReasoningSummaryType(e.target.value as 'auto' | 'detailed')}
-                      disabled={isRunning}
-                    >
-                      <option value="auto">Auto</option>
-                      <option value="detailed">Detailed</option>
-                    </select>
-                  </div>
-                </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+              {/* Effort Control */}
+              <div>
+                <label htmlFor="reasoning-effort" className="label text-sm font-medium text-slate-700">
+                  Effort Level
+                </label>
+                <select
+                  className="select select-bordered w-full mt-1"
+                  value={reasoningEffort}
+                  onChange={(e) => setReasoningEffort(e.target.value as 'minimal' | 'low' | 'medium' | 'high')}
+                  disabled={isRunning}
+                >
+                  <option value="minimal">Minimal</option>
+                  <option value="low">Low</option>
+                  <option value="medium">Medium</option>
+                  <option value="high">High</option>
+                </select>
               </div>
+
+              {/* Verbosity Control */}
+              <div>
+                <label htmlFor="reasoning-verbosity" className="label text-sm font-medium text-slate-700">
+                  Verbosity
+                </label>
+                <select
+                  className="select select-bordered w-full mt-1"
+                  value={reasoningVerbosity}
+                  onChange={(e) => setReasoningVerbosity(e.target.value as 'low' | 'medium' | 'high')}
+                  disabled={isRunning}
+                >
+                  <option value="low">Low</option>
+                  <option value="medium">Medium</option>
+                  <option value="high">High</option>
+                </select>
+              </div>
+
+              {/* Summary Control */}
+              <div>
+                <label htmlFor="reasoning-summary" className="label text-sm font-medium text-slate-700">
+                  Summary
+                </label>
+                <select
+                  className="select select-bordered w-full mt-1"
+                  value={reasoningSummaryType}
+                  onChange={(e) => setReasoningSummaryType(e.target.value as 'auto' | 'detailed')}
+                  disabled={isRunning}
+                >
+                  <option value="auto">Auto</option>
+                  <option value="detailed">Detailed</option>
+                </select>
+              </div>
+            </div>
+          </div>
         </div>
       </CollapsibleCard>
 
       {/* Visual Status Panel */}
       {isRunning && (
-        <div className="card mb-3 bg-gradient-to-r from-blue-50 to-purple-50 border-2 border-blue-300 shadow">
+        <div className="card mb-2 bg-gradient-to-r from-slate-50 to-purple-50 border border-slate-300 shadow-sm">
           <div className="card-body p-4">
             <div className="flex items-start gap-4">
               <div className="flex-shrink-0">
@@ -324,7 +331,7 @@ export default function GroverSolver() {
 
       {/* Compact Status Bar (when not running) */}
       {!isRunning && (
-        <div className="mb-2 p-2 bg-gray-50 rounded border flex items-center justify-between text-xs">
+        <div className="mb-2 p-2 bg-slate-50 rounded border flex items-center justify-between text-xs">
           <div className="flex items-center gap-3">
             <div className={`badge text-xs py-0 ${isDone ? '' : hasError ? 'badge-error' : 'badge-secondary'}`}>
               {state.status}
@@ -339,18 +346,18 @@ export default function GroverSolver() {
       )}
 
       {/* Three Column Layout - Compact & Side-by-Side */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-3 mb-3">
-        {/* LEFT: Iteration Cards - 50% width */}
-        <div className="lg:col-span-6 space-y-0">
+      <div className="grid grid-cols-1 xl:grid-cols-12 gap-3 mb-4">
+        {/* LEFT: Iteration Cards - Wider column */}
+        <div className="xl:col-span-7 2xl:col-span-8 space-y-2">
           {Array.from({ length: state.totalIterations || 5 }).map((_, idx) => {
             const iterNum = idx + 1;
             const iterData = state.iterations?.find(it => it.iteration === idx);
             const isActive = isRunning && state.iteration === iterNum;
-            
+
             const bestOverall = state.iterations
               ?.filter(it => it.iteration < idx)
               .reduce((max, it) => Math.max(max, it.best?.score || 0), 0) || 0;
-            
+
             return (
               <IterationCard
                 key={iterNum}
@@ -369,11 +376,11 @@ export default function GroverSolver() {
         </div>
 
         {/* MIDDLE: Live Activity Stream - 25% width, compact */}
-        <div className="lg:col-span-3">
+        <div className="xl:col-span-3 space-y-3">
           {(isRunning || (state.logLines && state.logLines.length > 0)) ? (
             <LiveActivityStream
               logs={state.logLines || []}
-              maxHeight="500px"
+              maxHeight="min(70vh, 560px)"
             />
           ) : (
             <div className="card h-32 flex items-center justify-center text-gray-400 text-sm bg-base-100 shadow">
@@ -383,14 +390,15 @@ export default function GroverSolver() {
         </div>
 
         {/* RIGHT: Visualizations - 25% width */}
-        <div className="lg:col-span-3 space-y-3">
+        <div className="xl:col-span-2 2xl:col-span-3 space-y-3">
           {state.iterations && state.iterations.length > 0 && (
-            <SearchVisualization 
+            <SearchVisualization
               iterations={state.iterations}
               currentIteration={state.iteration}
             />
           )}
         </div>
+      </div>
       </div>
     </div>
   );

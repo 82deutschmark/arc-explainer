@@ -147,26 +147,32 @@ export default function AnalyticsOverview() {
     }
   }, [datasetOptions, selectedDataset]);
 
-  // Auto-select Grok-4 as the model if available, fallback to first model
+  // Auto-select grok-4-fast-reasoning-attempt2 as the model if available, fallback to first model
   React.useEffect(() => {
     if (availableModels.length > 0 && !selectedModelForDataset) {
-      const grok4 = availableModels.find(m => m.includes('grok-4'));
+      const grok4 = availableModels.find(m => m === 'grok-4-fast-reasoning-attempt2');
       setSelectedModelForDataset(grok4 || availableModels[0]);
     }
   }, [availableModels, selectedModelForDataset]);
 
-  // Auto-select a second model different from primary for comparison
+  // Auto-select claude-haiku-4-5-20251001-thinking-32k-attempt2 for comparison if available, fallback to first different model
   React.useEffect(() => {
     if (availableModels.length > 0 && !selectedModelForComparison && selectedModelForDataset) {
       const availableForComparison = availableModels.filter(m => m !== selectedModelForDataset);
-      if (availableForComparison.length > 0) {
+      const claudeHaiku = availableModels.find(m => m === 'claude-haiku-4-5-20251001-thinking-32k-attempt2');
+      if (claudeHaiku) {
+        // Use a small delay to ensure the state update doesn't conflict
+        setTimeout(() => {
+          setSelectedModelForComparison(claudeHaiku);
+        }, 100);
+      } else if (availableForComparison.length > 0) {
         // Use a small delay to ensure the state update doesn't conflict
         setTimeout(() => {
           setSelectedModelForComparison(availableForComparison[0]);
         }, 100);
       }
     }
-  }, [availableModels, selectedModelForDataset]);
+  }, [availableModels, selectedModelForDataset, selectedModelForComparison]);
 
 
   // Navigate to comparison page with data

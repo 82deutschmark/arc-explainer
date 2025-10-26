@@ -109,7 +109,7 @@ export function CompactControls({
   return (
     <div className="space-y-2">
       {/* Compact Prompt Controls - Single Row */}
-      <div className="border border-base-300 rounded-lg bg-base-100 p-2">
+      <div className="bg-base-100 p-2">
         <div className="flex items-center gap-2 flex-wrap">
           {/* Prompt Dropdown */}
           <div className="flex items-center gap-2">
@@ -200,9 +200,9 @@ export function CompactControls({
       </div>
 
       {/* Advanced Parameters - Collapsible but inline */}
-      <div className="border border-base-300 rounded-lg bg-base-100">
+      <div className="bg-base-100">
         <button
-          className="w-full p-3 flex items-center justify-between hover:bg-base-200 transition-colors rounded-t-lg"
+          className="w-full p-2 flex items-center justify-between hover:bg-base-200 transition-colors"
           onClick={() => setShowAdvanced(!showAdvanced)}
         >
           <div className="flex items-center gap-2">
@@ -219,7 +219,7 @@ export function CompactControls({
         </button>
 
         {showAdvanced && (
-          <div className="p-3 border-t border-base-300 space-y-2">
+          <div className="p-2 space-y-2">
             {/* Temperature Control - Compact */}
             <div className="flex items-center gap-3 p-2 bg-base-200 rounded">
               <label className="text-xs font-medium w-24 flex-shrink-0">

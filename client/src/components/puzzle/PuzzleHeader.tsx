@@ -43,7 +43,7 @@ export function PuzzleHeader({
   const puzzleName = getPuzzleName(taskId);
 
   return (
-    <div className="flex items-center justify-between mb-1">
+    <div className="flex items-center justify-between mb-3 px-4 py-3 border-b border-base-300 bg-base-100">
       {/* Title and Badges */}
       <div>
         <h1 className="text-xl font-bold">
@@ -78,10 +78,10 @@ export function PuzzleHeader({
       </div>
 
       {/* Action Buttons */}
-      <div className="flex items-center gap-2 flex-wrap">
+      <div className="flex items-center gap-3 flex-wrap">
         {/* Emoji Toggle Button */}
         <button
-          className={`btn btn-sm transition-all duration-300 ${
+          className={`btn btn-md transition-all duration-300 ${
             showEmojis
               ? 'animate-slow-pulse bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 shadow-lg shadow-purple-500/25 border-2 border-purple-400/50 text-white'
               : 'btn-outline animate-slow-pulse border-2 border-amber-400/50 hover:border-amber-500 hover:bg-amber-50 hover:text-amber-800 shadow-lg shadow-amber-500/25'
@@ -101,7 +101,7 @@ export function PuzzleHeader({
         {/* Emoji Palette Selector */}
         {showEmojis && (
           <select
-            className="select select-bordered select-sm w-40"
+            className="select select-bordered select-md w-48"
             value={emojiSet}
             onChange={(e) => onEmojiSetChange(e.target.value as EmojiSet)}
             disabled={isAnalyzing}
@@ -119,7 +119,7 @@ export function PuzzleHeader({
 
         {/* Saturn Visual Solver Button */}
         <Link href={`/puzzle/saturn/${taskId}`}>
-          <button className="btn btn-sm transition-all duration-300 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 shadow-lg shadow-indigo-500/25 border-2 border-indigo-400/50 text-white font-semibold">
+          <button className="btn btn-md transition-all duration-300 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 shadow-lg shadow-indigo-500/25 border-2 border-indigo-400/50 text-white font-semibold rounded-lg">
             <Rocket className="h-4 w-4 mr-2" />
             🪐 Saturn Solver
           </button>
@@ -127,7 +127,7 @@ export function PuzzleHeader({
 
         {/* Grover Iterative Solver Button */}
         <Link href={`/puzzle/grover/${taskId}`}>
-          <button className="btn btn-sm transition-all duration-300 bg-gradient-to-r from-green-600 to-teal-600 hover:from-green-700 hover:to-teal-700 shadow-lg shadow-green-500/25 border-2 border-green-400/50 text-white font-semibold">
+          <button className="btn btn-md transition-all duration-300 bg-gradient-to-r from-green-600 to-teal-600 hover:from-green-700 hover:to-teal-700 shadow-lg shadow-green-500/25 border-2 border-green-400/50 text-white font-semibold rounded-lg">
             <Rocket className="h-4 w-4 mr-2" />
             🔄 Grover Solver
           </button>

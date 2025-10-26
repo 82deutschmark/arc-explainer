@@ -98,6 +98,37 @@ export function useExplanations(puzzleId: string | null) {
 }
 
 /**
+ * Fetch a single explanation by its ID.
+ */
+export function useExplanationById(explanationId: number | null) {
+  return useQuery<ExplanationData | null, Error>({
+    queryKey: ['explanation-by-id', explanationId],
+    enabled: explanationId !== null,
+    queryFn: async () => {
+      if (explanationId === null) {
+        return null;
+      }
+
+      const response = await apiRequest('GET', `/api/explanations/${explanationId}`);
+      if (response.status === 404) {
+        return null;
+      }
+
+      if (!response.ok) {
+        throw new Error(`Failed to fetch explanation ${explanationId}`);
+      }
+
+      const payload = await response.json();
+      if (payload?.success && payload.data) {
+        return payload.data as ExplanationData;
+      }
+
+      return null;
+    },
+  });
+}
+
+/**
  * Combined hook that provides explanation data for a puzzle.
  */
 export function usePuzzleWithExplanation(puzzleId: string | null) {

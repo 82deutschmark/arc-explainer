@@ -1,3 +1,234 @@
+## [4.8.41] - 2025-10-23
+### 🎨 UI/UX: Split training example cards eliminate scrollbars
+
+- Introduced dedicated training input and output card components with shared grid sizing so training grids fit without scrollbars.
+- Updated the training gallery and zoom modal to adopt the split cards, keeping layout proportions consistent across the experience.
+- Exposed the new card components via the examples barrel export and refreshed consumers to the revised API.
+
+#### Verification
+- npm run check
+
+---
+
+## [4.8.40] - 2025-10-23
+### 🎨 UI/UX: Compress leaderboards for maximal info density
+
+- Rebuilt the leaderboards hero, summary cards, and insights with compact typography, tighter padding, and denser grid spacing so key metrics fit on a single screen.
+- Refactored accuracy, trustworthiness, feedback, and reliability tables into lightweight four-column rows with inline metadata for faster comparison.
+- Slimmed ancillary panels (warnings, reliability header) to align with the research dashboard aesthetic while retaining refresh and status affordances.
+
+#### Verification
+- Not run (visual change only)
+
+---
+
+## [4.8.39] - 2025-10-22
+### 🎨 UI/UX: Restore aurora warmth to analysis result surfaces
+
+- Reimagined AnalysisResultCard with the September aurora gradient shell, warm linen raw data drawer, and jewel-toned accents so the card no longer feels stark white.
+- Reintroduced honeyglass backgrounds, apricot hover states, and jewel badges throughout AnalysisResultGrid to match the revived hero card styling while keeping diff controls legible.
+- Harmonized the compact AnalysisResultListCard and its collapse header with the same gradient, badge treatments, and button tints for a consistent experience across list and full views.
+
+#### Verification
+- Not run (visual change only)
+
+---
+
+## [4.8.38] - 2025-10-22
+### 🎨 UI/UX: Compact, info-focused Model Comparison redesign
+
+#### Summary
+- Completely redesigned ModelComparisonPage to prioritize data over whitespace
+- Removed bloated header cards with winner/efficiency badges
+- Removed four large global stat cards (All Correct, All Incorrect, etc.)
+- Condensed controls: model badges now compact with inline × remove buttons
+- Redesigned add model controls to be smaller and more obvious
+- Dense table using `table-xs` and `table-zebra` for better readability
+- Reduced padding and spacing throughout for information density
+- Background changed from white (`bg-gray-50`) to DaisyUI theme (`bg-base-200`)
+
+#### Design Philosophy
+- Info-focused: every pixel shows useful data, not decoration
+- Compact controls: smaller buttons, tighter spacing, clearer affordances
+- Visual contrast: using semantic colors (success/error) and zebra striping
+- Minimal whitespace: reduced from p-4/p-6 to p-2/p-3 consistently
+
+#### Files Updated
+- client/src/pages/ModelComparisonPage.tsx
+
+#### Technical Notes
+- Still supports adding/removing models inline (up to 4 models)
+- Reuses ModelPerformancePanel and NewModelComparisonResults components
+- State hydration unchanged: URL params, history state, localStorage
+- No breaking changes to API or data flow
+
+---
+
+## [4.8.37] - 2025-10-21
+### 🎨 UI/UX: Amplify Puzzle Browser clarity
+
+#### Summary
+- Removed page-wide gutters so the Puzzle Browser now stretches edge-to-edge against a saturated twilight gradient background.
+- Reframed the knowledge hub, filters, and instructions in glassmorphism panels with brighter call-to-action buttons for unmistakable interactivity.
+- Enlarged PuzzleCard typography, grid previews, and primary "Examine" action so each tile reads as a prominent, clickable card.
+
+---
+
+## [4.8.36] - 2025-10-20
+### 🔧 BUGFIX: Fix infinite re-render loop in Saturn solver
+
+#### Problem
+- React error #310 (Too many re-renders) occurring in SaturnVisualSolver
+- Console showing: "Uncaught Error: Minified React error #310" at line 99
+
+#### Root Cause
+- `useEffect` at lines 59-65 had `startTime` in dependency array
+- Effect calls `setStartTime()` which triggers effect to run again → infinite loop
+
+#### Fix
+- Removed `startTime` from dependency array (only `state.status` needed)
+- Added explanatory comment and eslint-disable directive
+- Effect now only runs when solver status changes (intended behavior)
+
+---
+
+## [4.8.35] - 2025-10-20
+### 🎨 UI/UX: Intelligent grid sizing for extreme aspect ratios
+
+#### Problem
+- Fixed max-w/max-h constraints (16rem) causing unnecessary scrollbars even when viewport space available
+- Grids with extreme aspect ratios (very wide or very tall) poorly sized and wasting screen real estate
+- PuzzleGridDisplay using overflow-auto containers creating scrollbars for content that could fit naturally
+- No intelligent adaptation to grid dimensions or available viewport space
+
+#### Solution
+- **New utility: `gridSizing.ts`** - Intelligent dimension calculation with aspect ratio-aware scaling
+  - `calculateGridSize()`: Scales grids based on viewport constraints and aspect ratio (handles >3:1 and <1:3 ratios specially)
+  - `calculateGridPairSize()`: Ensures uniform cell size across input/output pairs
+  - Maintains existing cell size thresholds (12px-40px based on grid dimensions)
+- **GridDisplay enhancements**: Dynamic container sizing with useMemo optimization instead of fixed Tailwind classes
+- **TestCaseCard improvements**: Calculates optimal grid pair sizes with uniform cell dimensions
+- **PuzzleGridDisplay layout**: Removed overflow-auto containers, improved flex-wrap handling for tall grids
+- **Backward compatible**: Legacy `sizeClass` prop still supported for gradual migration
+
+#### Components Updated
+- `client/src/utils/gridSizing.ts` (NEW) - Intelligent sizing algorithms
+- `client/src/components/puzzle/grids/GridDisplay.tsx` - Dynamic sizing
+- `client/src/components/puzzle/grids/InputGridDisplay.tsx` - Pass-through props
+- `client/src/components/puzzle/grids/OutputGridDisplay.tsx` - Pass-through props
+- `client/src/components/puzzle/testcases/TestCaseCard.tsx` - Grid pair sizing
+- `client/src/components/puzzle/PuzzleGridDisplay.tsx` - Layout improvements
+
+#### Verification
+- Test with puzzles containing extreme aspect ratios (e.g., 1×30, 30×1, 2×25 grids)
+- Verify no scrollbars appear when content can fit naturally
+- Confirm responsive grid layouts adapt to viewport size
+
+---
+
+## [4.8.34] - 2025-10-19
+### 🔧 BUGFIX: Sanitize Grover solver service options
+
+#### Summary
+- Strip Grover-only controls like `maxSteps` before calling the underlying OpenAI Responses API so unsupported payload fields are never forwarded.
+- Ensure Grover retains its internal iteration settings by applying the sanitized options when invoking the delegated LLM service.
+
+#### Verification
+- npm run check
+
+---
+
+## [4.8.33] - 2025-10-19
+### 🔧 BUGFIX: Remove unstable health check routines
+
+#### Summary
+- Removed the repository service health-check helper and `/api/health/database` endpoint that were crashing deploys.
+- Simplified `ModelCapabilities` by eliminating transient health monitoring fields in favor of the existing cache timestamp.
+- Documented the rollback scope in `docs/2025-10-19-remove-health-checks-plan.md` for future traceability.
+
+#### Verification
+- Not run (not requested).
+
+---
+
+## [4.8.32] - 2025-10-18
+### 🎨 UI/UX: PuzzleExaminer and GroverSolver complete redesign
+
+#### Changes
+- **Full-width responsive grid layout**: Training and test grids now use CSS Grid (1-4 columns based on screen size) to utilize full screen width instead of stacking vertically on the left
+- **Warmer color palette**: 
+  - Replaced harsh white background with warm amber→orange→rose gradient
+  - Changed bright blue/yellow grid backgrounds to soft slate-50/amber-50/emerald-50
+  - Reduced border thickness and shadow intensity for less visual noise
+- **Minimal spacing**: Removed excessive margins and padding throughout (px-2, mb-2 instead of px-4, mb-4)
+- **Compact layout**: Eliminated unnecessary borders and container constraints for tighter, more efficient use of space
+- **Button improvements**: Upgraded header buttons from btn-sm to btn-md with rounded-lg styling
+- **Modal fix**: Streaming analysis modal no longer auto-closes when clicking backdrop
+- **Regression**: Restored always-mounted streaming dialog so live output modal renders correctly on new layout
+
+#### Components Updated
+- `PuzzleExaminer.tsx` - Main layout, gradient background, spacing
+- `GroverSolver.tsx` - Same warm gradient and compact layout as PuzzleExaminer
+- `PuzzleHeader.tsx` - Full-width header, larger buttons
+- `PuzzleGridDisplay.tsx` - CSS Grid layout, reduced spacing
+- `GridPair.tsx` - Softer colors, reduced borders
+- `CompactControls.tsx` - Minimal padding, borderless design
+
+---
+
+## [4.8.31] - 2025-10-18
+### 🔧 BUGFIX: Remove max_steps from OpenAI Responses API payload
+
+#### Problem
+Grover solver failed with `400 Unknown parameter: 'max_steps'` when calling OpenAI's Responses API. The `max_steps` parameter is internal to Grover's iteration control logic but was being incorrectly passed to the OpenAI API.
+
+#### Root Cause
+`server/services/openai/payloadBuilder.ts` was including `max_steps: serviceOpts.maxSteps` in the API payload. The OpenAI Responses API doesn't support this parameter - it only accepts: `model`, `input`, `instructions`, `reasoning`, `text`, `temperature` (conditionally), `max_output_tokens`, `store`, `previous_response_id`, `stream`, `parallel_tool_calls`, `truncation`, and `metadata`.
+
+#### Fix
+- Removed `max_steps` from the OpenAI API payload builder while keeping it available in `ServiceOptions` for internal use by Grover/Saturn iteration control.
+- Added clarifying comment explaining that `max_steps` is internal only.
+- This matches the pattern established for `temperature` exclusion on GPT-5 models.
+
+#### Verification
+- Test Grover solver with GPT-5 models to confirm 400 error is resolved.
+
+---
+
+## [4.8.30] - 2025-10-18
+### 📊 Leaderboards dashboard rebuild
+
+- Replaced the deprecated Leaderboards view with a repository-backed dashboard that surfaces trustworthiness, reliability, speed, efficiency, and feedback metrics in one place.
+- Introduced summary cards, hero callouts, and operational panels that reuse the shared leaderboard and performance hooks while tightening loading and error handling.
+- Logged the refresh scope, dependencies, and follow-up questions in `docs/2025-10-18-leaderboards-refresh-plan.md` to guide future iterations.
+
+#### Fixes
+- Restored the previous safeguard that omits `temperature` and related sampling parameters when targeting any GPT-5 variant (including provider-prefixed keys), preventing unsupported parameter errors in the OpenAI Responses API payload builder.
+
+---
+
+## [4.8.29] - 2025-10-17
+### 🧠 Discussion streaming parity & reasoning controls
+
+#### Summary
+- Align the Puzzle Discussion workflow with the shared streaming handshake so session preparation, SSE start, and cancellation mirror the rest of the app's live analysis flows (`useAnalysisResults`, `PuzzleDiscussion`, streaming controller updates).
+- Surface GPT-5 reasoning effort, verbosity, and summary toggles in the discussion view, ensuring provider-prefixed model keys keep the controls available for advanced refinement sessions.
+- Capture the refactor plan and verification steps in `docs/2025-03-09-streaming-controller-plan.md` for future regression tracking.
+
+#### Verification
+- `npm run check`
+
+---
+
+## [4.8.28] - 2025-02-15
+### 🎨 Puzzle Browser layout refinements
+
+- Expanded `EmojiMosaicAccent` to support up to 12-column patterns with responsive sizing so the hero banner can showcase 3×10 emoji mosaics and other wide treatments.
+- Centered the puzzle browser hero, knowledge hub, filters, and active filter chips while slimming the results card to highlight content instead of chrome.
+- Replaced the bulky mission card with a compact badge that opens an accessible modal containing the full project background narrative.
+
+---
+
 ## [4.8.27] - 2025-10-17
 ### ✨ Enhanced Streaming Modal - Real-Time Context Display
 
@@ -5043,4 +5274,5 @@ To enable conversation chaining:
 - Actual ingestion execution with SSE streaming is prepared but awaits user testing
 - All new code follows established patterns and architectural principles
 \n### Added\n- Introduced streaming-aware analysis hook and UI panels across Puzzle Examiner, Discussion, and Model Debate pages.\n- Added reusable StreamingAnalysisPanel component for live token output with cancel support.\n- Model buttons now reflect streaming capability and status for supported models.
+
 

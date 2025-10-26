@@ -262,36 +262,8 @@ export const feedbackController = {
   },
 
   /**
-   * Health check endpoint for feedback system
-   *
-   * @param req - Express request object
-   * @param res - Express response object
-   */
-  async healthCheck(req: Request, res: Response) {
-    try {
-      const healthStatus = await repositoryService.healthCheck();
-      
-      const status = healthStatus.status === 'healthy' ? 200 : 
-                    healthStatus.status === 'degraded' ? 207 : 503;
-      
-      res.status(status).json(formatResponse.success({
-        status: healthStatus.status,
-        message: healthStatus.message,
-        details: healthStatus.details,
-        timestamp: new Date().toISOString()
-      }));
-    } catch (error) {
-      console.error('Error in feedback health check:', error);
-      res.status(503).json(formatResponse.error(
-        'Health check failed',
-        error instanceof Error ? error.message : 'Unknown error'
-      ));
-    }
-  },
-
-  /**
    * Get user-submitted solutions for a puzzle (solution_explanation feedback type)
-   * 
+   *
    * @param req - Express request object
    * @param res - Express response object
    */
