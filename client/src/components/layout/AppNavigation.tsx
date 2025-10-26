@@ -68,8 +68,14 @@ const navigationItems: NavItem[] = [
     description: 'Compare AI explanations head-to-head with ELO ratings'
   },
   {
-    title: 'Test Solution',
+    title: 'Feedback',
     href: '/feedback',
+    icon: MessageSquare,
+    description: 'Explore human feedback on model explanations'
+  },
+  {
+    title: 'Test Solution',
+    href: '/test-solution',
     icon: CheckCircle,
     description: 'Test your own predicted solutions against ARC puzzles'
   },

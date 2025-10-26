@@ -438,7 +438,6 @@ Example request body:
 ```json
 {
   "promptId": "solver",
-  "temperature": 0.2,
   "previousResponseId": "resp_abc123"
 }
 ```
@@ -656,7 +655,7 @@ The Saturn Visual Solver provides real-time updates via WebSockets:
 
 ## Real-time and Advanced Features
 
-### Saturn Visual Solver   Largely deprecated!!
+### Saturn Visual Solver  
 - `POST /api/saturn/analyze/:taskId` - Analyze puzzle with Saturn visual solver
 - `POST /api/saturn/analyze-with-reasoning/:taskId` - Saturn analysis with reasoning steps
 - `GET /api/saturn/status/:sessionId` - Get Saturn analysis progress

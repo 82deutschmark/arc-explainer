@@ -136,17 +136,17 @@ export function FeedbackLeaderboard({
               <p className="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-[10px] text-gray-500">
                 <span>
                   <Users className="mr-1 inline h-3 w-3" />
-                  {model.feedbackCount.toLocaleString()} total
+                  {(model.feedbackCount ?? 0).toLocaleString()} total
                 </span>
                 <span className="text-emerald-600">
                   <ThumbsUp className="mr-1 inline h-3 w-3" />
-                  {model.helpfulCount.toLocaleString()} helpful
+                  {(model.helpfulCount ?? 0).toLocaleString()} helpful
                 </span>
                 <span className="text-rose-600">
                   <ThumbsDown className="mr-1 inline h-3 w-3" />
-                  {model.notHelpfulCount.toLocaleString()} not
+                  {(model.notHelpfulCount ?? 0).toLocaleString()} not
                 </span>
-                {model.feedbackCount < 10 && (
+                {(model.feedbackCount ?? 0) < 10 && (
                   <span className="inline-flex items-center gap-1 text-amber-600">
                     <Info className="h-3 w-3" />
                     Low sample
@@ -155,10 +155,10 @@ export function FeedbackLeaderboard({
               </p>
             </div>
             <div className="text-right font-mono text-[11px] text-emerald-700" title="Helpful ratio">
-              {model.helpfulPercentage.toFixed(1)}%
+              {(model.helpfulPercentage ?? 0).toFixed(1)}%
             </div>
             <div className="text-right font-mono text-[11px] text-gray-600" title="Total reviews">
-              {model.feedbackCount.toLocaleString()}
+              {(model.feedbackCount ?? 0).toLocaleString()}
             </div>
           </li>
         ))}

@@ -28,11 +28,10 @@ import {
   ChevronRight,
   RefreshCw
 } from 'lucide-react';
-import { useQuery } from '@tanstack/react-query';
-import { apiRequest } from '@/lib/queryClient';
 import { FeedbackViewer } from './FeedbackViewer';
 import { FeedbackSummary } from './FeedbackSummary';
-import type { DetailedFeedback, FeedbackStats, FeedbackFilters } from '@shared/types';
+import { useFeedback, useFeedbackStats } from '@/hooks/useFeedback';
+import type { DetailedFeedback, FeedbackFilters } from '@shared/types';
 
 interface FeedbackModalProps {
   open: boolean;
@@ -51,52 +50,30 @@ export function FeedbackModal({
     puzzleId: initialPuzzleId || '',
     modelName: '',
     feedbackType: undefined,
-    limit: 20,
+    limit: 250,
     offset: 0
   });
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 20;
 
-  // Fetch feedback data
-  const { data: feedbackData, isLoading: feedbackLoading, refetch: refetchFeedback } = useQuery({
-    queryKey: ['feedback', filters],
-    queryFn: async () => {
-      const params = new URLSearchParams();
-      Object.entries(filters).forEach(([key, value]) => {
-        if (value !== undefined && value !== '') {
-          params.append(key, String(value));
-        }
-      });
-      
-      const response = await apiRequest('GET', `/api/feedback?${params.toString()}`);
-      const json = await response.json();
-      return json.data as DetailedFeedback[];
-    },
-    enabled: open
-  });
-
-  // Fetch feedback statistics
-  const { data: statsData, isLoading: statsLoading } = useQuery({
-    queryKey: ['feedback-stats'],
-    queryFn: async () => {
-      const response = await apiRequest('GET', '/api/feedback/stats');
-      const json = await response.json();
-      return json.data as FeedbackStats;
-    },
-    enabled: open
-  });
+  const { data: feedbackData, isLoading: feedbackLoading, refetch: refetchFeedback } = useFeedback(filters);
+  const { data: statsData, isLoading: statsLoading } = useFeedbackStats();
 
   // Filter feedback by search term
   const filteredFeedback = useMemo(() => {
-    if (!feedbackData || !searchTerm.trim()) return feedbackData || [];
-    
+    if (!feedbackData) return [] as DetailedFeedback[];
+
+    if (!searchTerm.trim()) {
+      return feedbackData;
+    }
+
     const term = searchTerm.toLowerCase();
-    return feedbackData.filter(feedback => 
-      feedback.comment?.toLowerCase().includes(term) ||
+    return feedbackData.filter((feedback) =>
+      (feedback.comment ?? '').toLowerCase().includes(term) ||
       feedback.puzzleId.toLowerCase().includes(term) ||
       feedback.modelName.toLowerCase().includes(term) ||
-      feedback.patternDescription?.toLowerCase().includes(term)
+      (feedback.patternDescription ?? '').toLowerCase().includes(term)
     );
   }, [feedbackData, searchTerm]);
 
@@ -109,11 +86,11 @@ export function FeedbackModal({
 
   // Get unique model names for filter dropdown
   const uniqueModels = useMemo(() => {
-    if (!feedbackData) return [];
-    return [...new Set(feedbackData.map(f => f.modelName))].sort();
+    if (!feedbackData) return [] as string[];
+    return [...new Set(feedbackData.map((f: DetailedFeedback) => f.modelName))].sort();
   }, [feedbackData]);
 
-  const handleFilterChange = (key: keyof FeedbackFilters, value: any) => {
+  const handleFilterChange = <K extends keyof FeedbackFilters>(key: K, value: FeedbackFilters[K]) => {
     setFilters(prev => ({ ...prev, [key]: value }));
     setCurrentPage(1);
   };
