@@ -237,7 +237,7 @@ export default function PuzzleFeedback() {
   const handlePuzzleIdSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (puzzleId.trim()) {
-      setLocation(`/feedback/${puzzleId.trim()}`);
+      setLocation(`/test-solution/${puzzleId.trim()}`);
     }
   };
 
