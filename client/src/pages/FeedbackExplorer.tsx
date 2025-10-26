@@ -36,6 +36,7 @@ import {
 
 const LIMIT_OPTIONS = [50, 100, 250, 500, 1000, 2500, 5000, 10000];
 const PAGE_SIZE = 50;
+const ALL_TYPES_VALUE = 'ALL_TYPES';
 
 const feedbackTypeMeta = {
   helpful: {
@@ -58,7 +59,7 @@ const feedbackTypeMeta = {
 interface FilterState {
   puzzleId: string;
   modelName: string;
-  feedbackType: '' | 'helpful' | 'not_helpful' | 'solution_explanation';
+  feedbackType: typeof ALL_TYPES_VALUE | 'helpful' | 'not_helpful' | 'solution_explanation';
   fromDate?: string;
   toDate?: string;
   limit: number;
@@ -77,7 +78,7 @@ function buildQueryFilters(filters: FilterState): FeedbackFilters {
     query.modelName = filters.modelName.trim();
   }
 
-  if (filters.feedbackType) {
+  if (filters.feedbackType && filters.feedbackType !== ALL_TYPES_VALUE) {
     query.feedbackType = filters.feedbackType;
   }
 
@@ -102,7 +103,7 @@ export default function FeedbackExplorer() {
   const [filters, setFilters] = useState<FilterState>({
     puzzleId: '',
     modelName: '',
-    feedbackType: '',
+    feedbackType: ALL_TYPES_VALUE,
     limit: 250,
   });
   const [page, setPage] = useState(1);
@@ -144,7 +145,7 @@ export default function FeedbackExplorer() {
   const hasActiveFilters = Boolean(
     filters.puzzleId.trim() ||
       filters.modelName.trim() ||
-      filters.feedbackType ||
+      filters.feedbackType !== ALL_TYPES_VALUE ||
       filters.fromDate ||
       filters.toDate
   );
@@ -164,7 +165,7 @@ export default function FeedbackExplorer() {
     setFilters((prev) => ({
       puzzleId: '',
       modelName: '',
-      feedbackType: '',
+      feedbackType: ALL_TYPES_VALUE,
       fromDate: undefined,
       toDate: undefined,
       limit: prev.limit,
@@ -176,7 +177,7 @@ export default function FeedbackExplorer() {
     setFilters({
       puzzleId: '',
       modelName: '',
-      feedbackType: '',
+      feedbackType: ALL_TYPES_VALUE,
       limit: 250,
       fromDate: undefined,
       toDate: undefined,
@@ -341,7 +342,7 @@ export default function FeedbackExplorer() {
                   <SelectValue placeholder="All types" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">All types</SelectItem>
+                  <SelectItem value={ALL_TYPES_VALUE}>All types</SelectItem>
                   <SelectItem value="helpful">Helpful</SelectItem>
                   <SelectItem value="not_helpful">Not Helpful</SelectItem>
                   <SelectItem value="solution_explanation">Solution Explanation</SelectItem>
