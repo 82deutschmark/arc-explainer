@@ -1,3 +1,15 @@
+## [4.8.42] - 2025-10-26
+### 🎨 UI/UX: Restore Aug 2025 Puzzle Examiner grid styling
+
+- Brought back the straightforward input→output row cards on Puzzle Examiner so training and test grids once again mirror the late-August layout.
+- Reinstated the thicker grid borders and shadowed frame inside `PuzzleGrid` while preserving the modern scaling behaviour for compact cards.
+- Documented the visual rollback so collaborators know why the grid page shifted away from the GridPair experiment.
+
+#### Verification
+- Not run (visual change only)
+
+---
+
 ## [4.8.41] - 2025-10-23
 ### 🎨 UI/UX: Split training example cards eliminate scrollbars
 
