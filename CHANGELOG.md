@@ -1,3 +1,42 @@
+# CHANGELOG
+
+## [4.9.2] - 2025-10-26
+### 🔧 BUGFIX: Feedback explorer endpoint stable under asyncHandler
+
+- Fixed `feedbackController.getAll` to rely on the module-scoped `buildFiltersFromQuery`, preventing `this` from being undefined when Express wraps the handler.
+- Restored proper error handling for `submitSolution` and split voting into a dedicated controller for cleaner routes and TypeScript safety.
+- Tightened solution vote validation so non-numeric IDs short-circuit with helpful errors instead of leaking to the repository layer.
+
+#### Verification
+- Not run (controller-only change)
+
+---
+
+## [4.9.1] - 2025-10-26
+### 🔧 BUGFIX: Date-filtered feedback stays in sync
+
+- Added front-end validation in `FeedbackExplorer` so malformed date strings are never sent to the API and optional fields remain undefined when cleared.
+- Normalized date input bindings to keep React controlled inputs stable and avoid accidental range drift across pagination.
+- Preserved original date strings and null checks inside the feedback controller so server-side filtering respects the user-provided range.
+
+### ✨ Enhancement: Feedback type filters stay consistent
+
+- Introduced stricter TypeScript definitions for feedback type options and metadata, making the explorer's badge and reset logic rely on the shared `ALL_TYPES_VALUE` sentinel.
+- Limited the active type badge to specific selections so "All types" no longer appears as an active filter.
+
+#### Verification
+- Not run (UI + query wiring)
+
+---
+
+## [4.9.0] - 2025-10-26
+### ✨ Feature: Feedback Explorer launch & routing cleanup
+
+- Introduced the dedicated `/feedback` page with filtering, pagination, CSV export, and links back to puzzle discussions so researchers can triage explanation reviews in one place.
+- Re-routed the legacy Test Solution flow to `/test-solution[/::taskId]` and refreshed the navigation labels to match the new hierarchy.
+- Extended feedback queries to support `offset` alongside the larger `limit`, enabling proper server-side pagination for the explorer.
+
+
 ## [4.8.42] - 2025-10-26
 ### 🎨 UI/UX: Restore Aug 2025 Puzzle Examiner grid styling
 
