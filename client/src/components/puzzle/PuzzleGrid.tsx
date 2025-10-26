@@ -19,7 +19,7 @@ import React, { useMemo } from 'react';
 import { PuzzleGridProps } from '@/types/puzzle';
 import { GridCell } from './GridCell';
 
-export const PuzzleGrid = React.memo(function PuzzleGrid({ 
+export const PuzzleGrid = React.memo(function PuzzleGrid({
   grid, 
   title, 
   showEmojis, 
@@ -122,28 +122,45 @@ export const PuzzleGrid = React.memo(function PuzzleGrid({
   }, [validGrid, showEmojis, gridMetadata.size, gridMetadata.isEmpty, emojiSet, diffMask]);
   
   // Calculate actual grid pixel dimensions (no forced scaling)
-  const { actualWidth, actualHeight } = useMemo(() => {
-    // Get cell pixel size based on size class
+  const { scaleFactor } = useMemo(() => {
     const cellSizeMap = {
-      tiny: 12,     // w-3 h-3 = 12px
-      small: 16,    // w-4 h-4 = 16px
-      normal: 24,   // w-6 h-6 = 24px
-      large: 32,    // w-8 h-8 = 32px
-      xlarge: 40    // w-10 h-10 = 40px
-    };
-    
+      tiny: 12,
+      small: 16,
+      normal: 24,
+      large: 32,
+      xlarge: 40
+    } as const;
+
     const cellSize = cellSizeMap[gridMetadata.size];
-    const actualW = gridMetadata.cols * cellSize;
-    const actualH = gridMetadata.rows * cellSize;
-    
-    return {
-      actualWidth: actualW,
-      actualHeight: actualH
-    };
-  }, [gridMetadata.rows, gridMetadata.cols, gridMetadata.size]);
+    const actualWidth = gridMetadata.cols * cellSize;
+    const actualHeight = gridMetadata.rows * cellSize;
+
+    let scale = 1;
+    if (maxWidth && actualWidth > maxWidth) {
+      scale = Math.min(scale, maxWidth / actualWidth);
+    }
+    if (maxHeight && actualHeight > maxHeight) {
+      scale = Math.min(scale, maxHeight / actualHeight);
+    }
+
+    return { scaleFactor: scale };
+  }, [gridMetadata.rows, gridMetadata.cols, gridMetadata.size, maxWidth, maxHeight]);
+
+  const containerStyle: React.CSSProperties = {
+    maxWidth: maxWidth ? `${maxWidth}px` : undefined,
+    maxHeight: maxHeight ? `${maxHeight}px` : undefined
+  };
+
+  const gridWrapperStyle: React.CSSProperties | undefined =
+    scaleFactor < 1
+      ? {
+          transform: `scale(${scaleFactor})`,
+          transformOrigin: 'top left'
+        }
+      : undefined;
 
   return (
-    <div className={`inline-block ${compact ? 'space-y-0' : 'space-y-1'}`}>
+    <div className={`inline-block ${compact ? 'space-y-0' : 'space-y-1'}`} style={containerStyle}>
       {title && (
         <div className={`flex items-center justify-center ${compact ? 'gap-0.5' : 'gap-1'} ${compact ? 'mb-0.5' : 'mb-1'}`}>
           <h3 className={`${compact ? 'text-[10px]' : 'text-xs'} font-medium text-gray-700`}>{title}</h3>
@@ -151,8 +168,9 @@ export const PuzzleGrid = React.memo(function PuzzleGrid({
         </div>
       )}
       <div className="inline-block">
-        <div 
-          className={`border-2 border-gray-600 rounded ${gridMetadata.isEmpty ? 'bg-gray-50' : 'bg-white shadow-sm'}`}
+        <div
+          className={`border-2 border-gray-600 rounded ${gridMetadata.isEmpty ? 'bg-gray-50' : 'bg-white shadow-sm'} origin-top-left`}
+          style={gridWrapperStyle}
         >
           {gridContent}
         </div>
