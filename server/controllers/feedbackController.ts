@@ -408,10 +408,24 @@ export const feedbackController = {
       }, result.message));
     } catch (error) {
       console.error('Error submitting solution:', error);
+      res.status(500).json(formatResponse.error(
+        'Failed to submit solution',
+        error instanceof Error ? error.message : 'Unknown error'
+      ));
+    }
+  },
+
+  /**
+   * Vote on a user-submitted solution
+   *
+   * @param req - Express request object
+   * @param res - Express response object
+   */
+  async voteSolution(req: Request, res: Response) {
     try {
       const { solutionId } = req.params;
       const { voteType } = req.body;
-      
+
       if (!solutionId) {
         return res.status(400).json(formatResponse.error(
           'Invalid solution ID',
@@ -419,7 +433,14 @@ export const feedbackController = {
         ));
       }
 
-      // Validate vote type
+      const parsedSolutionId = Number.parseInt(solutionId, 10);
+      if (Number.isNaN(parsedSolutionId)) {
+        return res.status(400).json(formatResponse.error(
+          'Invalid solution ID',
+          'Solution ID must be a number'
+        ));
+      }
+
       if (!voteType || !['helpful', 'not_helpful'].includes(voteType)) {
         return res.status(400).json(formatResponse.error(
           'Invalid vote type',
@@ -427,17 +448,16 @@ export const feedbackController = {
         ));
       }
 
-      // Submit vote as feedback on the solution
       const result = await feedbackService.addFeedback({
-        puzzleId: undefined, // Will be retrieved from the solution feedback
-        explanationId: null, // No explanation ID for solution votes
+        puzzleId: undefined,
+        explanationId: null,
         feedbackType: voteType as 'helpful' | 'not_helpful',
         comment: null,
         userAgent: req.get('User-Agent'),
         sessionId: undefined,
-        referenceFeedbackId: parseInt(solutionId) // Reference to the solution being voted on
+        referenceFeedbackId: parsedSolutionId
       });
-      
+
       res.json(formatResponse.success({
         feedbackId: result.feedbackId
       }, 'Vote recorded successfully'));
@@ -477,54 +497,5 @@ export const feedbackController = {
         error instanceof Error ? error.message : 'Unknown error'
       ));
     }
-  },
-  
-  buildFiltersFromQuery(query: any): FeedbackFilters {
-    const filters: FeedbackFilters = {};
-
-    // String filters
-    if (query.puzzleId && typeof query.puzzleId === 'string') {
-      filters.puzzleId = query.puzzleId;
-    }
-    if (query.modelName && typeof query.modelName === 'string') {
-      filters.modelName = query.modelName;
-    }
-
-    // Feedback type filter with validation
-    if (query.feedbackType && ['helpful', 'not_helpful', 'solution_explanation'].includes(query.feedbackType)) {
-      filters.feedbackType = query.feedbackType as 'helpful' | 'not_helpful' | 'solution_explanation';
-    }
-
-    // Numeric filters with validation
-    if (query.limit) {
-      const limit = parseInt(query.limit as string);
-      if (!isNaN(limit) && limit > 0 && limit <= 10000) {
-        filters.limit = limit;
-      }
-    }
-    
-    if (query.offset) {
-      const offset = parseInt(query.offset as string);
-      if (!isNaN(offset) && offset >= 0) {
-        filters.offset = offset;
-      }
-    }
-
-    // Date filters with validation
-    if (query.fromDate) {
-      const fromDate = new Date(query.fromDate as string);
-      if (!isNaN(fromDate.getTime())) {
-        filters.fromDate = fromDate;
-      }
-    }
-    
-    if (query.toDate) {
-      const toDate = new Date(query.toDate as string);
-      if (!isNaN(toDate.getTime())) {
-        filters.toDate = toDate;
-      }
-    }
-
-    return filters;
   }
 };
