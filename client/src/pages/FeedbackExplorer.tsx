@@ -37,8 +37,14 @@ import {
 const LIMIT_OPTIONS = [50, 100, 250, 500, 1000, 2500, 5000, 10000];
 const PAGE_SIZE = 50;
 const ALL_TYPES_VALUE = 'ALL_TYPES';
+type FeedbackTypeOption = 'helpful' | 'not_helpful' | 'solution_explanation';
+type SelectFeedbackType = typeof ALL_TYPES_VALUE | FeedbackTypeOption;
 
-const feedbackTypeMeta = {
+const feedbackTypeMeta: Record<FeedbackTypeOption, {
+  label: string;
+  icon: React.ReactNode;
+  badgeVariant: 'default' | 'destructive' | 'secondary';
+}> = {
   helpful: {
     label: 'Helpful',
     icon: <ThumbsUp className="h-3 w-3" />,
@@ -59,7 +65,7 @@ const feedbackTypeMeta = {
 interface FilterState {
   puzzleId: string;
   modelName: string;
-  feedbackType: typeof ALL_TYPES_VALUE | 'helpful' | 'not_helpful' | 'solution_explanation';
+  feedbackType: SelectFeedbackType;
   fromDate?: string;
   toDate?: string;
   limit: number;
@@ -426,13 +432,13 @@ export default function FeedbackExplorer() {
               </Badge>
             )}
 
-            {filters.feedbackType && (
+            {filters.feedbackType !== ALL_TYPES_VALUE && (
               <Badge variant="outline" className="flex items-center gap-1 text-xs">
                 Type: {feedbackTypeMeta[filters.feedbackType]?.label || filters.feedbackType}
                 <button
                   type="button"
                   className="ml-1 text-muted-foreground hover:text-foreground"
-                  onClick={() => handleFilterChange('feedbackType', '')}
+                  onClick={() => handleFilterChange('feedbackType', ALL_TYPES_VALUE)}
                 >
                   ×
                 </button>
