@@ -59,13 +59,14 @@ export function ReliabilityLeaderboard({
     </ol>
   );
 
-  const reliabilityBadge = (value: number) => {
-    if (value >= 95) return <ShieldCheck className="h-3.5 w-3.5 text-emerald-600" />;
-    if (value >= 85) return <Shield className="h-3.5 w-3.5 text-amber-600" />;
+  const reliabilityBadge = (value: number | undefined) => {
+    const val = value ?? 0;
+    if (val >= 95) return <ShieldCheck className="h-3.5 w-3.5 text-emerald-600" />;
+    if (val >= 85) return <Shield className="h-3.5 w-3.5 text-amber-600" />;
     return <XCircle className="h-3.5 w-3.5 text-rose-600" />;
   };
 
-  const reliabilityText = (value: number) => `${value.toFixed(2)}%`;
+  const reliabilityText = (value: number | undefined) => `${(value ?? 0).toFixed(2)}%`;
 
   if (isLoading) {
     return (
@@ -121,11 +122,11 @@ export function ReliabilityLeaderboard({
                   {stat.modelName}
                 </p>
                 <p className="flex flex-wrap gap-x-2 gap-y-0.5 text-[10px] text-gray-500">
-                  <span>{stat.successfulRequests.toLocaleString()} / {stat.totalRequests.toLocaleString()} success</span>
-                  {stat.failedRequests > 0 && (
+                  <span>{(stat.successfulRequests ?? 0).toLocaleString()} / {(stat.totalRequests ?? 0).toLocaleString()} success</span>
+                  {(stat.failedRequests ?? 0) > 0 && (
                     <span className="inline-flex items-center gap-1 text-rose-600">
                       <AlertTriangle className="h-3 w-3" />
-                      {stat.failedRequests.toLocaleString()} failed
+                      {(stat.failedRequests ?? 0).toLocaleString()} failed
                     </span>
                   )}
                 </p>

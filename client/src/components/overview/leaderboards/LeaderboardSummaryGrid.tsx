@@ -1,8 +1,10 @@
 /**
  * Author: gpt-5-codex
  * Date: 2025-10-23
+ * Updated: 2025-10-26
  * PURPOSE: Responsive summary grid for leaderboards page. Composes multiple SummaryStatCard components
  *          to highlight key metrics from AccuracyRepository, MetricsRepository, and FeedbackRepository.
+ *          Updated to support expandable drilldown content in cards.
  * SRP/DRY check: Pass — layout-only wrapper that keeps the page component lean.
  */
 
@@ -17,6 +19,9 @@ export interface LeaderboardSummaryItem {
   icon: React.ReactNode;
   tone?: SummaryTone;
   footer?: string;
+  // New: support expandable drilldown content
+  expandableContent?: React.ReactNode;
+  onExpandChange?: (isExpanded: boolean) => void;
 }
 
 interface LeaderboardSummaryGridProps {
@@ -37,6 +42,8 @@ export function LeaderboardSummaryGrid({ items, isLoading = false }: Leaderboard
           tone={item.tone}
           isLoading={isLoading}
           footer={item.footer}
+          expandableContent={item.expandableContent}
+          onExpandChange={item.onExpandChange}
         />
       ))}
     </div>
