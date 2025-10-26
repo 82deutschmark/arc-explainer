@@ -171,16 +171,16 @@ export function AccuracyLeaderboard({
                     {model.modelName}
                   </p>
                   <p className="flex flex-wrap gap-x-2 gap-y-0.5 text-[10px] text-gray-500">
-                    <span>{model.totalAttempts.toLocaleString()} attempts</span>
-                    <span>{model.wrongOverconfidentPredictions} wrong high-conf</span>
-                    <span>{model.avgConfidence.toFixed(1)}% avg conf</span>
+                    <span>{(model.totalAttempts ?? 0).toLocaleString()} attempts</span>
+                    <span>{(model.wrongOverconfidentPredictions ?? 0)} wrong high-conf</span>
+                    <span>{(model.avgConfidence ?? 0).toFixed(1)}% avg conf</span>
                   </p>
                 </div>
                 <div className="text-right font-mono text-[11px] text-rose-700" title="Overconfidence rate">
-                  {model.overconfidenceRate.toFixed(1)}%
+                  {(model.overconfidenceRate ?? 0).toFixed(1)}%
                 </div>
                 <div className="text-right font-mono text-[11px] text-gray-600" title="Overall accuracy">
-                  {model.overallAccuracy.toFixed(1)}%
+                  {(model.overallAccuracy ?? 0).toFixed(1)}%
                 </div>
               </li>
             );
@@ -231,16 +231,16 @@ export function AccuracyLeaderboard({
                 {model.modelName}
               </p>
               <p className="flex flex-wrap gap-x-2 gap-y-0.5 text-[10px] text-gray-500">
-                <span>{model.totalAttempts.toLocaleString()} attempts</span>
-                <span>{model.correctPredictions.toLocaleString()} correct</span>
-                <span>{model.singleTestAccuracy.toFixed(1)}% single</span>
+                <span>{(model.totalAttempts ?? 0).toLocaleString()} attempts</span>
+                <span>{(model.correctPredictions ?? 0).toLocaleString()} correct</span>
+                <span>{(model.singleTestAccuracy ?? 0).toFixed(1)}% single</span>
               </p>
             </div>
             <div className="text-right font-mono text-[11px] text-gray-700" title="Overall accuracy">
-              {model.accuracyPercentage.toFixed(1)}%
+              {(model.accuracyPercentage ?? 0).toFixed(1)}%
             </div>
             <div className="text-right font-mono text-[11px] text-gray-700" title="Multi test accuracy">
-              {model.multiTestAccuracy.toFixed(1)}% M
+              {(model.multiTestAccuracy ?? 0).toFixed(1)}% M
             </div>
           </li>
         ))}

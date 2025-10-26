@@ -243,6 +243,11 @@ export class FeedbackRepository extends BaseRepository {
       params.push(filters.limit);
     }
 
+    if (filters.offset && filters.offset > 0) {
+      query += ` OFFSET $${++paramCount}`;
+      params.push(filters.offset);
+    }
+
     const result = await this.query(query, params);
 
     return result.rows.map(row => ({

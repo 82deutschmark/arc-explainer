@@ -6,14 +6,14 @@
  * Provides convenient access to feedback data with proper loading states.
  */
 
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, UseQueryResult } from '@tanstack/react-query';
 import { apiRequest } from '@/lib/queryClient';
 import type { Feedback, DetailedFeedback, FeedbackStats, FeedbackFilters } from '@shared/types';
 
 /**
  * Hook to fetch feedback for a specific explanation
  */
-export function useFeedbackForExplanation(explanationId: number | undefined) {
+export function useFeedbackForExplanation(explanationId: number | undefined): UseQueryResult<Feedback[]> {
   return useQuery({
     queryKey: ['feedback', 'explanation', explanationId],
     queryFn: async () => {
@@ -30,7 +30,7 @@ export function useFeedbackForExplanation(explanationId: number | undefined) {
 /**
  * Hook to fetch feedback for a specific puzzle
  */
-export function useFeedbackForPuzzle(puzzleId: string | undefined) {
+export function useFeedbackForPuzzle(puzzleId: string | undefined): UseQueryResult<DetailedFeedback[]> {
   return useQuery({
     queryKey: ['feedback', 'puzzle', puzzleId],
     queryFn: async () => {
@@ -47,7 +47,7 @@ export function useFeedbackForPuzzle(puzzleId: string | undefined) {
 /**
  * Hook to fetch all feedback with optional filtering
  */
-export function useFeedback(filters?: FeedbackFilters) {
+export function useFeedback(filters?: FeedbackFilters): UseQueryResult<DetailedFeedback[]> {
   return useQuery({
     queryKey: ['feedback', 'all', filters],
     queryFn: async () => {
@@ -55,7 +55,8 @@ export function useFeedback(filters?: FeedbackFilters) {
       if (filters) {
         Object.entries(filters).forEach(([key, value]) => {
           if (value !== undefined && value !== '') {
-            params.append(key, String(value));
+            const serializedValue = value instanceof Date ? value.toISOString() : String(value);
+            params.append(key, serializedValue);
           }
         });
       }
