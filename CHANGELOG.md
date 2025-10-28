@@ -1,5 +1,15 @@
 # CHANGELOG
 
+## [4.9.3] - 2025-10-28
+### ✨ Enhancement: Puzzle Browser highlights latest ARC SOTA
+
+- Added Eric Pang's ARC-AGI repository to the Top Solutions panel so researchers can access the current SOTA reference directly from the browser.
+
+#### Verification
+- Not run (link-only UI update)
+
+---
+
 ## [4.9.2] - 2025-10-26
 ### 🔧 BUGFIX: Feedback explorer endpoint stable under asyncHandler
 
