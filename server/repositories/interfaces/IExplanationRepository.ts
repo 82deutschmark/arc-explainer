@@ -113,6 +113,17 @@ export interface ExplanationResponse {
   notHelpfulVotes?: number;
 }
 
+export interface ExplanationSummaryPage {
+  items: ExplanationResponse[];
+  total: number;
+  filteredTotal: number;
+  counts: {
+    all: number;
+    correct: number;
+    incorrect: number;
+  };
+}
+
 export interface BulkExplanationStatus {
   [puzzleId: string]: {
     hasExplanation: boolean;
@@ -174,6 +185,19 @@ export interface IExplanationRepository {
    * @param correctnessFilter - Optional filter: 'all', 'correct', or 'incorrect'
    */
   getExplanationsForPuzzle(puzzleId: string, correctnessFilter?: 'all' | 'correct' | 'incorrect'): Promise<ExplanationResponse[]>;
+
+  /**
+   * Get paginated explanation summaries for a puzzle.
+   * Returns lightweight rows (no grid JSON) with aggregate counts for filters.
+   */
+  getExplanationSummariesForPuzzle(
+    puzzleId: string,
+    options?: {
+      correctnessFilter?: 'all' | 'correct' | 'incorrect';
+      limit?: number;
+      offset?: number;
+    }
+  ): Promise<ExplanationSummaryPage>;
 
   /**
    * Get explanation by ID
