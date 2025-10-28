@@ -3,52 +3,105 @@
  *
  * Author: Cascade using Claude Sonnet 4.5
  * Date: 2025-10-12
- * PURPOSE: Displays analysis results with memoized correctness filtering.
+ * PURPOSE: Displays analysis results with paginated summaries and lazy detail loading.
  * Extracted from PuzzleExaminer lines 891-993 to follow SRP.
- * Uses useFilteredResults hook for performance-optimized filtering.
- * 
- * SRP/DRY check: Pass - Single responsibility (results display), uses shared filtering logic
+ * Handles server-side filtered counts while keeping UI responsive as the list grows.
+ *
+ * SRP/DRY check: Pass - Single responsibility (results display), coordinates pagination + lazy detail hydration
  * DaisyUI: Pass - Uses DaisyUI card, btn-group, alert components
  */
 
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Brain, Filter, CheckCircle, XCircle, Loader2 } from 'lucide-react';
-import { AnalysisResultCard } from './AnalysisResultCard';
-import { useFilteredResults, type CorrectnessFilter } from '@/hooks/useFilteredResults';
+import { AnalysisResultListCard } from './AnalysisResultListCard';
+import type { CorrectnessFilter } from '@/hooks/useFilteredResults';
 import type { ExplanationData } from '@/types/puzzle';
 import type { ModelConfig } from '@shared/types';
 import type { ARCTask } from '@shared/types';
 
 interface AnalysisResultsProps {
-  allResults: ExplanationData[];
+  results: ExplanationData[];
+  counts: { all: number; correct: number; incorrect: number };
+  total: number;
+  filteredTotal: number;
   correctnessFilter: CorrectnessFilter;
   onFilterChange: (filter: CorrectnessFilter) => void;
   models: ModelConfig[] | undefined;
   task: ARCTask;
   isAnalyzing: boolean;
   currentModel: ModelConfig | null;
+  highlightedExplanationId?: number | null;
+  highlightedExplanation?: ExplanationData | null;
+  hasMore?: boolean;
+  onLoadMore?: () => void;
+  isLoadingInitial?: boolean;
+  isFetchingMore?: boolean;
+  isFetching?: boolean;
+  loadFullResult: (explanationId: number) => Promise<ExplanationData | null>;
 }
 
-/**
- * Displays analysis results with correctness filtering
- * 
- * Performance: Uses useFilteredResults hook which memoizes correctness determination
- * and caches counts, preventing redundant calculations on every render.
- */
+const ensureNumber = (value: number | undefined | null): number => {
+  if (typeof value !== 'number' || Number.isNaN(value)) {
+    return 0;
+  }
+  return value;
+};
+
 export function AnalysisResults({
-  allResults,
+  results,
+  counts,
+  total,
+  filteredTotal,
   correctnessFilter,
   onFilterChange,
   models,
   task,
   isAnalyzing,
-  currentModel
+  currentModel,
+  highlightedExplanationId,
+  highlightedExplanation,
+  hasMore = false,
+  onLoadMore,
+  isLoadingInitial = false,
+  isFetchingMore = false,
+  isFetching = false,
+  loadFullResult
 }: AnalysisResultsProps) {
-  // PERFORMANCE FIX: Use memoized filtering hook
-  // Previously: determineCorrectness() called multiple times per render (lines 916-933)
-  const { filtered: filteredResults, counts } = useFilteredResults(allResults, correctnessFilter);
+  const highlightId = typeof highlightedExplanationId === 'number' && Number.isFinite(highlightedExplanationId)
+    ? highlightedExplanationId
+    : null;
 
-  if (allResults.length === 0 && !isAnalyzing) {
+  const highlightAlreadyPresent = highlightId !== null
+    ? results.some(result => result.id === highlightId)
+    : false;
+
+  const mergedResults = useMemo(() => {
+    if (highlightId !== null && highlightedExplanation && !highlightAlreadyPresent) {
+      return [highlightedExplanation, ...results];
+    }
+    return results;
+  }, [highlightId, highlightedExplanation, highlightAlreadyPresent, results]);
+
+  const visibleCount = results.length;
+  const totalForFilter = ensureNumber(filteredTotal);
+  const pinnedHighlight = highlightId !== null && highlightedExplanation && !highlightAlreadyPresent;
+
+  const renderCounts = {
+    all: ensureNumber(counts.all ?? total),
+    correct: ensureNumber(counts.correct),
+    incorrect: ensureNumber(counts.incorrect)
+  };
+
+  const modelsByKey = useMemo(() => {
+    if (!models) {
+      return new Map<string, ModelConfig>();
+    }
+    return new Map(models.map(model => [model.key, model]));
+  }, [models]);
+
+  const isEmpty = !isAnalyzing && totalForFilter === 0;
+
+  if (isEmpty && !isLoadingInitial) {
     return null;
   }
 
@@ -58,10 +111,9 @@ export function AnalysisResults({
         <div className="flex items-center justify-between">
           <h2 className="card-title flex items-center gap-2 text-base">
             <Brain className="h-4 w-4" />
-            Analysis Results ({counts.all})
+            Analysis Results ({renderCounts.all})
           </h2>
 
-          {/* Correctness Filter - DaisyUI btn-group */}
           <div className="flex items-center gap-2">
             <Filter className="h-4 w-4 opacity-50" />
             <div className="btn-group">
@@ -69,7 +121,7 @@ export function AnalysisResults({
                 className={`btn btn-xs ${correctnessFilter === 'all' ? 'btn-active' : 'btn-outline'}`}
                 onClick={() => onFilterChange('all')}
               >
-                All ({counts.all})
+                All ({renderCounts.all})
               </button>
               <button
                 className={`btn btn-xs ${
@@ -78,7 +130,7 @@ export function AnalysisResults({
                 onClick={() => onFilterChange('correct')}
               >
                 <CheckCircle className="h-3 w-3 mr-1" />
-                Correct ({counts.correct})
+                Correct ({renderCounts.correct})
               </button>
               <button
                 className={`btn btn-xs ${
@@ -87,20 +139,32 @@ export function AnalysisResults({
                 onClick={() => onFilterChange('incorrect')}
               >
                 <XCircle className="h-3 w-3 mr-1" />
-                Incorrect ({counts.incorrect})
+                Incorrect ({renderCounts.incorrect})
               </button>
             </div>
           </div>
         </div>
+
+        <div className="flex flex-wrap items-center justify-between text-xs text-base-content/70">
+          <p>
+            Showing {visibleCount} of {totalForFilter} explanation{totalForFilter === 1 ? '' : 's'}
+            {pinnedHighlight ? ' (+1 pinned highlight)' : ''}.
+          </p>
+          {isFetching && !isLoadingInitial && (
+            <div className="flex items-center gap-2">
+              <Loader2 className="h-3 w-3 animate-spin" />
+              Updating…
+            </div>
+          )}
+        </div>
       </div>
 
       <div className="card-body pt-2">
-        {/* Show loading state when analysis is in progress */}
         {isAnalyzing && (
           <div role="alert" className="alert alert-info mb-2">
             <Loader2 className="h-4 w-4 animate-spin" />
             <div>
-              <p className="text-xs font-medium">Analysis in progress...</p>
+              <p className="text-xs font-medium">Analysis in progress…</p>
               {currentModel && (
                 <p className="text-[10px] opacity-80">
                   Running {currentModel.name}
@@ -113,30 +177,66 @@ export function AnalysisResults({
           </div>
         )}
 
-        {/* Show existing results */}
-        {filteredResults.length > 0 && (
-          <div className="space-y-2">
-            {filteredResults.map((result) => (
-              <AnalysisResultCard
-                key={`${result.id}-${result.modelName}`}
-                modelKey={result.modelName}
-                result={result}
-                model={models?.find(m => m.key === result.modelName)}
-                testCases={task.test}
-              />
-            ))}
+        {isLoadingInitial && (
+          <div className="flex items-center justify-center py-10 text-sm text-base-content/60">
+            <Loader2 className="h-4 w-4 animate-spin mr-2" />
+            Loading explanations…
           </div>
         )}
 
-        {/* Show message when no results match filter */}
-        {filteredResults.length === 0 && allResults.length > 0 && (
+        {!isLoadingInitial && mergedResults.length > 0 && (
+          <div className="space-y-3">
+            {mergedResults.map(result => {
+              const key = `${result.id ?? result.modelName}-${result.createdAt ?? 'unknown'}`;
+              const modelConfig = result.modelName ? modelsByKey.get(result.modelName) : undefined;
+              const shouldHighlight = highlightId !== null && result.id === highlightId;
+
+              return (
+                <AnalysisResultListCard
+                  key={key}
+                  modelKey={result.modelName}
+                  result={result}
+                  model={modelConfig}
+                  testCases={task.test}
+                  eloMode={false}
+                  initiallyExpanded={shouldHighlight}
+                  highlighted={shouldHighlight}
+                  loadFullResult={typeof result.id === 'number' ? () => loadFullResult(result.id as number) : undefined}
+                />
+              );
+            })}
+
+            {hasMore && onLoadMore && (
+              <div className="flex justify-center pt-2">
+                <button
+                  type="button"
+                  className={`btn btn-sm ${isFetchingMore ? 'btn-disabled' : 'btn-outline'}`}
+                  onClick={() => {
+                    if (!isFetchingMore) {
+                      onLoadMore();
+                    }
+                  }}
+                  disabled={isFetchingMore}
+                >
+                  {isFetchingMore ? (
+                    <span className="flex items-center gap-2">
+                      <Loader2 className="h-4 w-4 animate-spin" /> Loading…
+                    </span>
+                  ) : (
+                    'Load more explanations'
+                  )}
+                </button>
+              </div>
+            )}
+          </div>
+        )}
+
+        {!isLoadingInitial && mergedResults.length === 0 && !isAnalyzing && (
           <div className="text-center py-8 opacity-60">
             <Filter className="h-8 w-8 mx-auto mb-2 opacity-40" />
-            <p>No {correctnessFilter === 'correct' ? 'correct' : 'incorrect'} results found.</p>
+            <p>No {correctnessFilter === 'correct' ? 'correct' : correctnessFilter === 'incorrect' ? 'incorrect' : ''} results found.</p>
             <p className="text-sm mt-1">
-              {correctnessFilter === 'correct'
-                ? 'Try running more analyses or switch to "All" to see all results.'
-                : 'All results appear to be correct, or switch to "All" to see all results.'}
+              Try adjusting the filter or run a new analysis to populate this list.
             </p>
           </div>
         )}
