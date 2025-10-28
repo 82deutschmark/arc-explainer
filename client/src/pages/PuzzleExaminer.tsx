@@ -14,7 +14,7 @@
 
 import React, { useState, useMemo } from 'react';
 import { useParams } from 'wouter';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Brain, Settings } from 'lucide-react';
 import { getPuzzleName } from '@shared/utils/puzzleNames';
 import { DEFAULT_EMOJI_SET } from '@/lib/spaceEmojis';
 import type { EmojiSet } from '@/lib/spaceEmojis';
@@ -29,12 +29,14 @@ import { useAnalysisResults } from '@/hooks/useAnalysisResults';
 
 // UI Components (SRP-compliant)
 import { PuzzleHeader } from '@/components/puzzle/PuzzleHeader';
-import { CompactControls } from '@/components/puzzle/CompactControls';
 import { ModelSelection } from '@/components/puzzle/ModelSelection';
 import { AnalysisResults } from '@/components/puzzle/AnalysisResults';
 import { StreamingAnalysisPanel } from '@/components/puzzle/StreamingAnalysisPanel';
 import { PromptPreviewModal } from '@/components/PromptPreviewModal';
 import { PuzzleGridDisplay } from '@/components/puzzle/PuzzleGridDisplay';
+import { CollapsibleCard } from '@/components/ui/collapsible-card';
+import { PromptConfiguration } from '@/components/puzzle/PromptConfiguration';
+import { AdvancedControls } from '@/components/puzzle/AdvancedControls';
 
 // Types
 import type { CorrectnessFilter } from '@/hooks/useFilteredResults';
@@ -288,37 +290,62 @@ export default function PuzzleExaminer() {
           />
         </div>
 
-        {/* Compact Controls - Prompt & Advanced Parameters */}
-        <div className="mb-2">
-          <CompactControls
-        promptId={promptId}
-        onPromptChange={setPromptId}
-        customPrompt={customPrompt}
-        onCustomPromptChange={setCustomPrompt}
-        disabled={isAnalyzing}
-        sendAsEmojis={sendAsEmojis}
-        onSendAsEmojisChange={setSendAsEmojis}
-        omitAnswer={omitAnswer}
-        onOmitAnswerChange={setOmitAnswer}
-        onPreviewClick={() => {
-          setPendingAnalysis(null);
-          setIsPromptPreviewOpen(true);
-        }}
-        temperature={temperature}
-        onTemperatureChange={setTemperature}
-        topP={topP}
-        onTopPChange={setTopP}
-        candidateCount={candidateCount}
-        onCandidateCountChange={setCandidateCount}
-        thinkingBudget={thinkingBudget}
-        onThinkingBudgetChange={setThinkingBudget}
-        reasoningEffort={reasoningEffort}
-        onReasoningEffortChange={setReasoningEffort}
-        reasoningVerbosity={reasoningVerbosity}
-        onReasoningVerbosityChange={setReasoningVerbosity}
-        reasoningSummaryType={reasoningSummaryType}
-        onReasoningSummaryTypeChange={setReasoningSummaryType}
-          />
+        {/* Prompt Configuration */}
+        <div className="mb-4">
+          <CollapsibleCard
+            title="Prompt Style"
+            icon={Brain}
+            defaultOpen
+            headerDescription={
+              <p className="text-sm opacity-70">
+                Choose how the AI should analyze the puzzle and preview the full instructions before sending.
+              </p>
+            }
+          >
+            <PromptConfiguration
+              promptId={promptId}
+              onPromptChange={setPromptId}
+              customPrompt={customPrompt}
+              onCustomPromptChange={setCustomPrompt}
+              disabled={isAnalyzing}
+              sendAsEmojis={sendAsEmojis}
+              onSendAsEmojisChange={setSendAsEmojis}
+              omitAnswer={omitAnswer}
+              onOmitAnswerChange={setOmitAnswer}
+              onPreviewClick={() => {
+                setPendingAnalysis(null);
+                setIsPromptPreviewOpen(true);
+              }}
+            />
+          </CollapsibleCard>
+        </div>
+
+        {/* Advanced Controls */}
+        <div className="mb-4">
+          <CollapsibleCard
+            title="Advanced Controls"
+            icon={Settings}
+            headerDescription={
+              <p className="text-sm opacity-70">Fine-tune model behavior with detailed parameter controls.</p>
+            }
+          >
+            <AdvancedControls
+              temperature={temperature}
+              onTemperatureChange={setTemperature}
+              topP={topP}
+              onTopPChange={setTopP}
+              candidateCount={candidateCount}
+              onCandidateCountChange={setCandidateCount}
+              thinkingBudget={thinkingBudget}
+              onThinkingBudgetChange={setThinkingBudget}
+              reasoningEffort={reasoningEffort}
+              onReasoningEffortChange={setReasoningEffort}
+              reasoningVerbosity={reasoningVerbosity}
+              onReasoningVerbosityChange={setReasoningVerbosity}
+              reasoningSummaryType={reasoningSummaryType}
+              onReasoningSummaryTypeChange={setReasoningSummaryType}
+            />
+          </CollapsibleCard>
         </div>
 
         {/* Model Selection - Card Grid */}
