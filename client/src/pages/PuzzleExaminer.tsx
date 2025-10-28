@@ -12,7 +12,7 @@
  *                 conventions.
  */
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import { useParams } from 'wouter';
 import { Loader2, Brain, Settings } from 'lucide-react';
 import { getPuzzleName } from '@shared/utils/puzzleNames';
@@ -22,7 +22,8 @@ import type { EmojiSet } from '@/lib/spaceEmojis';
 // Independent data fetching hooks (progressive loading for better UX)
 import { useModels } from '@/hooks/useModels';
 import { usePuzzle } from '@/hooks/usePuzzle';
-import { usePuzzleWithExplanation } from '@/hooks/useExplanation';
+import { usePaginatedExplanationSummaries, useExplanationById, fetchExplanationById } from '@/hooks/useExplanation';
+import { useQueryClient } from '@tanstack/react-query';
 
 // Analysis orchestration hook
 import { useAnalysisResults } from '@/hooks/useAnalysisResults';
@@ -74,6 +75,7 @@ export default function PuzzleExaminer() {
   const [pendingAnalysis, setPendingAnalysis] = useState<{ modelKey: string; supportsTemperature: boolean } | null>(null);
   const [omitAnswer, setOmitAnswer] = useState(true);
   const [correctnessFilter, setCorrectnessFilter] = useState<CorrectnessFilter>('all');
+  const [highlightedExplanationId, setHighlightedExplanationId] = useState<number | null>(null);
 
   // Set page title with puzzle ID
   React.useEffect(() => {
@@ -100,35 +102,27 @@ export default function PuzzleExaminer() {
   // Load puzzle immediately (don't wait for anything else)
   const { currentTask: task, isLoadingTask, taskError } = usePuzzle(taskId ?? undefined);
 
-  // Load explanations in background (don't block puzzle display)
+  const queryClient = useQueryClient();
+
+  // Load explanation summaries in background (don't block puzzle display)
   const {
-    explanations,
-    isLoading: isLoadingExplanations,
-    refetchExplanations
-  } = usePuzzleWithExplanation(taskId || null);
+    summaries,
+    counts,
+    total,
+    filteredTotal,
+    hasMore: hasMoreSummaries,
+    fetchNextPage,
+    isInitialLoading: isLoadingSummaries,
+    isFetchingNextPage,
+    isFetching: isFetchingSummaries,
+    refetch: refetchSummaries
+  } = usePaginatedExplanationSummaries(taskId || null, {
+    pageSize: 12,
+    correctness: correctnessFilter
+  });
 
   // Only block initial render if puzzle is still loading
   const isLoading = isLoadingTask;
-
-  // Handle highlight query parameter for deep linking
-  React.useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const highlightId = params.get('highlight');
-
-    if (highlightId) {
-      const timeoutId = setTimeout(() => {
-        const element = document.getElementById(`explanation-${highlightId}`);
-        if (element) {
-          element.scrollIntoView({ behavior: 'smooth', block: 'center' });
-          element.classList.add('ring-4', 'ring-blue-400', 'ring-opacity-50');
-          setTimeout(() => {
-            element.classList.remove('ring-4', 'ring-blue-400', 'ring-opacity-50');
-          }, 3000);
-        }
-      }, 500);
-      return () => clearTimeout(timeoutId);
-    }
-  }, [explanations]);
 
   // Analysis orchestration hook
   const {
@@ -172,7 +166,7 @@ export default function PuzzleExaminer() {
     setThinkingBudget,
   } = useAnalysisResults({
     taskId,
-    refetchExplanations,
+    refetchExplanations: refetchSummaries,
     emojiSetKey: sendAsEmojis ? emojiSet : undefined,
     omitAnswer,
     retryMode: isRetryMode,
@@ -181,12 +175,64 @@ export default function PuzzleExaminer() {
 
   // Sort explanations by date (newest first)
   const allResults = useMemo(() => {
-    return explanations.sort((a, b) => {
+    const sorted = [...summaries];
+    return sorted.sort((a, b) => {
       const aTime = new Date(a.createdAt).getTime();
       const bTime = new Date(b.createdAt).getTime();
       return bTime - aTime;
     });
-  }, [explanations]);
+  }, [summaries]);
+
+  const highlightMissingFromSummaries = useMemo(
+    () => highlightedExplanationId !== null && !summaries.some(result => result.id === highlightedExplanationId),
+    [highlightedExplanationId, summaries]
+  );
+
+  const { data: highlightedExplanationData } = useExplanationById(
+    highlightMissingFromSummaries ? highlightedExplanationId : null,
+    { enabled: highlightMissingFromSummaries }
+  );
+
+  const loadFullExplanation = useCallback(
+    async (explanationId: number) => {
+      const data = await queryClient.fetchQuery({
+        queryKey: ['explanation-by-id', explanationId],
+        queryFn: () => fetchExplanationById(explanationId)
+      });
+
+      return data;
+    },
+    [queryClient]
+  );
+
+  // Handle highlight query parameter for deep linking
+  React.useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const highlightParam = params.get('highlight');
+    const parsedHighlight = highlightParam ? Number.parseInt(highlightParam, 10) : NaN;
+
+    if (Number.isFinite(parsedHighlight)) {
+      setHighlightedExplanationId(parsedHighlight);
+    } else {
+      setHighlightedExplanationId(null);
+    }
+
+    if (Number.isFinite(parsedHighlight)) {
+      const timeoutId = setTimeout(() => {
+        const element = document.getElementById(`explanation-${parsedHighlight}`);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          element.classList.add('ring-4', 'ring-blue-400', 'ring-opacity-50');
+          setTimeout(() => {
+            element.classList.remove('ring-4', 'ring-blue-400', 'ring-opacity-50');
+          }, 3000);
+        }
+      }, 500);
+      return () => clearTimeout(timeoutId);
+    }
+
+    return undefined;
+  }, [summaries, highlightedExplanationData]);
 
   // Streaming state calculations
   const isStreamingActive = streamingModelKey !== null;
@@ -360,27 +406,38 @@ export default function PuzzleExaminer() {
             streamingModelKey={streamingModelKey}
             streamingEnabled={streamingEnabled}
             canStreamModel={canStreamModel}
-            explanations={explanations}
+            explanations={allResults}
             onAnalyze={handleAnalyzeWithModel}
             analyzerErrors={analyzerErrors}
           />
         </div>
 
         {/* Analysis Results (PERFORMANCE-OPTIMIZED with progressive loading) */}
-        {(allResults.length > 0 || isAnalyzing || isLoadingExplanations) && (
+        {(allResults.length > 0 || isAnalyzing || isLoadingSummaries || highlightedExplanationData) && (
           <AnalysisResults
-            allResults={allResults}
+            results={allResults}
+            counts={counts}
+            total={total}
+            filteredTotal={filteredTotal}
             correctnessFilter={correctnessFilter}
             onFilterChange={setCorrectnessFilter}
             models={models}
             task={task}
             isAnalyzing={isAnalyzing}
             currentModel={currentModel}
+            highlightedExplanationId={highlightedExplanationId}
+            highlightedExplanation={highlightedExplanationData ?? null}
+            hasMore={hasMoreSummaries}
+            onLoadMore={() => { void fetchNextPage(); }}
+            isLoadingInitial={isLoadingSummaries}
+            isFetchingMore={isFetchingNextPage}
+            isFetching={isFetchingSummaries}
+            loadFullResult={loadFullExplanation}
           />
         )}
 
         {/* Loading skeleton for explanations (progressive loading UX) */}
-        {isLoadingExplanations && allResults.length === 0 && !isAnalyzing && (
+        {isLoadingSummaries && allResults.length === 0 && !isAnalyzing && (
           <div className="card bg-base-100 shadow">
             <div className="card-body">
               <div className="flex items-center gap-2 mb-4">
