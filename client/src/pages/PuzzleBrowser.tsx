@@ -313,6 +313,15 @@ export default function PuzzleBrowser() {
                         jerber's solutions
                         <ExternalLink className="h-3 w-3" />
                       </a>
+                      <a
+                        href="https://github.com/epang080516/arc_agi"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="btn btn-sm justify-between gap-3 border-2 border-emerald-500 bg-white text-emerald-700 font-semibold transition-all hover:-translate-y-0.5 hover:bg-emerald-500 hover:text-white"
+                      >
+                        Eric Pang's SOTA solution
+                        <ExternalLink className="h-3 w-3" />
+                      </a>
                     </div>
                   </div>
 
