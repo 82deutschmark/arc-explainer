@@ -337,16 +337,17 @@ export default function PuzzleExaminer() {
         </div>
 
         {/* Prompt Configuration */}
-        <div className="mb-4">
+        <div className="mb-3">
           <CollapsibleCard
             title="Prompt Style"
             icon={Brain}
             defaultOpen
             headerDescription={
-              <p className="text-sm opacity-70">
+              <p className="text-xs leading-snug opacity-70">
                 Choose how the AI should analyze the puzzle and preview the full instructions before sending.
               </p>
             }
+            className="shadow-none border-base-200"
           >
             <PromptConfiguration
               promptId={promptId}
@@ -367,13 +368,14 @@ export default function PuzzleExaminer() {
         </div>
 
         {/* Advanced Controls */}
-        <div className="mb-4">
+        <div className="mb-3">
           <CollapsibleCard
             title="Advanced Controls"
             icon={Settings}
             headerDescription={
-              <p className="text-sm opacity-70">Fine-tune model behavior with detailed parameter controls.</p>
+              <p className="text-xs leading-snug opacity-70">Fine-tune model behavior with detailed parameter controls.</p>
             }
+            className="shadow-none border-base-200"
           >
             <AdvancedControls
               temperature={temperature}
