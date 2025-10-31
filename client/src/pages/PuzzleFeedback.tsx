@@ -19,7 +19,7 @@
  * shadcn/ui: Pass - Uses existing shadcn/ui components throughout.
  */
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useParams, useLocation } from 'wouter';
 import { usePuzzle } from '@/hooks/usePuzzle';
 import { useSolutions } from '@/hooks/useSolutions';
@@ -35,6 +35,7 @@ import { Loader2, Grid3X3, CheckCircle, XCircle, Copy, Lightbulb, Users, Message
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { PuzzleGrid } from '@/components/puzzle/PuzzleGrid';
 import { AnalysisResultCard } from '@/components/puzzle/AnalysisResultCard';
+import { AnalysisResultGrid } from '@/components/puzzle/AnalysisResultGrid';
 import { CollapsibleCard } from '@/components/ui/collapsible-card';
 import { ClickablePuzzleBadge } from '@/components/ui/ClickablePuzzleBadge';
 import { usePuzzleListAnalysis } from '@/hooks/usePuzzleListAnalysis';
@@ -45,6 +46,40 @@ import { Checkbox } from '@/components/ui/checkbox';
 const LAST_MODEL_STORAGE_KEY = 'puzzleFeedback:lastModel';
 const LAST_CUSTOM_MODEL_STORAGE_KEY = 'puzzleFeedback:lastCustomModel';
 
+type ValidationStatus = 'success' | 'error' | 'info';
+
+type ValidationFeedbackState = {
+  status: ValidationStatus;
+  message: string;
+  showExpected: boolean;
+};
+
+const FEEDBACK_STYLES: Record<ValidationStatus, {
+  container: string;
+  icon: typeof CheckCircle;
+  iconClass: string;
+  textClass: string;
+}> = {
+  success: {
+    container: 'border-green-200 bg-green-50',
+    icon: CheckCircle,
+    iconClass: 'text-green-600',
+    textClass: 'text-green-700',
+  },
+  error: {
+    container: 'border-red-200 bg-red-50',
+    icon: XCircle,
+    iconClass: 'text-red-600',
+    textClass: 'text-red-700',
+  },
+  info: {
+    container: 'border-blue-200 bg-blue-50',
+    icon: Lightbulb,
+    iconClass: 'text-blue-600',
+    textClass: 'text-blue-700',
+  },
+};
+
 export default function PuzzleFeedback() {
   const { taskId: paramTaskId } = useParams<{ taskId?: string }>();
   const [, setLocation] = useLocation();
@@ -52,6 +87,9 @@ export default function PuzzleFeedback() {
   // State for puzzle ID input and grid input
   const [puzzleId, setPuzzleId] = useState(paramTaskId || '');
   const [gridInput, setGridInput] = useState('');
+  const [showPreviewDiff, setShowPreviewDiff] = useState(false);
+  const [showPreviewPrediction, setShowPreviewPrediction] = useState(true);
+  const [showPreviewMultiTest, setShowPreviewMultiTest] = useState(true);
 
   // Structured explanation form state
   const [selectedModel, setSelectedModel] = useState<string>(() => {
@@ -208,6 +246,115 @@ export default function PuzzleFeedback() {
     return { dimensionsMatch, isCorrect, expectedGrid: expected };
   }, [task, parsedGrid]);
 
+  const validationFeedback = useMemo<ValidationFeedbackState | null>(() => {
+    if (!gridInput.trim() || !isValidFormat || !parsedGrid) {
+      return null;
+    }
+
+    if (!expectedGrid) {
+      return {
+        status: 'info',
+        message: 'Valid grid format. Load a puzzle to verify correctness.',
+        showExpected: false,
+      };
+    }
+
+    const parsedSize = `${parsedGrid.length}×${parsedGrid[0]?.length ?? 0}`;
+    const expectedSize = `${expectedGrid.length}×${expectedGrid[0]?.length ?? 0}`;
+
+    if (!dimensionsMatch) {
+      return {
+        status: 'error',
+        message: `Incorrect dimensions. Expected ${expectedSize} but received ${parsedSize}.`,
+        showExpected: true,
+      };
+    }
+
+    if (isCorrect) {
+      return {
+        status: 'success',
+        message: `Correct solution! Matches the expected ${expectedSize} grid.`,
+        showExpected: false,
+      };
+    }
+
+    return {
+      status: 'error',
+      message: 'Incorrect solution. Compare your answer with the expected output grid below.',
+      showExpected: true,
+    };
+  }, [
+    gridInput,
+    isValidFormat,
+    parsedGrid,
+    expectedGrid,
+    dimensionsMatch,
+    isCorrect,
+  ]);
+
+  const renderValidationAlert = () => {
+    if (!validationFeedback) {
+      return null;
+    }
+
+    const style = FEEDBACK_STYLES[validationFeedback.status];
+    const IconComponent = style.icon;
+
+    return (
+      <Alert className={`${style.container} py-1`}>
+        <IconComponent className={`h-3 w-3 ${style.iconClass}`} />
+        <AlertDescription className={`${style.textClass} text-xs`}>
+          {validationFeedback.message}
+        </AlertDescription>
+      </Alert>
+    );
+  };
+
+  // Automatically surface mismatches in the preview when dimensions align but the solution is wrong
+  useEffect(() => {
+    if (dimensionsMatch && !isCorrect) {
+      setShowPreviewDiff(true);
+      return;
+    }
+    if (!dimensionsMatch || isCorrect) {
+      setShowPreviewDiff(false);
+    }
+  }, [dimensionsMatch, isCorrect]);
+
+  const previewExpectedGrids = useMemo(() => (expectedGrid ? [expectedGrid] : []), [expectedGrid]);
+  const previewDiffMask = useMemo(() => {
+    if (!dimensionsMatch || !parsedGrid || !expectedGrid) {
+      return undefined;
+    }
+    return parsedGrid.map((row, r) =>
+      row.map((cell, c) => cell !== expectedGrid[r][c])
+    );
+  }, [dimensionsMatch, parsedGrid, expectedGrid]);
+
+  const previewMultiDiffMasks = useMemo(() =>
+    previewDiffMask ? [previewDiffMask] : [undefined],
+  [previewDiffMask]);
+
+  const previewMultiValidation = useMemo(() => {
+    if (!parsedGrid || !expectedGrid) {
+      return [];
+    }
+    return [
+      {
+        isPredictionCorrect: isCorrect,
+      },
+    ];
+  }, [parsedGrid, expectedGrid, isCorrect]);
+
+  const previewMultiTestStats = useMemo(
+    () => ({
+      correctCount: isCorrect ? 1 : 0,
+      totalCount: parsedGrid && expectedGrid ? 1 : 0,
+      accuracyLevel: isCorrect ? 'all_correct' : 'all_incorrect',
+    }),
+    [isCorrect, parsedGrid, expectedGrid]
+  );
+
   // Create synthetic ExplanationData for AnalysisResultCard
   const syntheticExplanation: ExplanationData | null = useMemo(() => {
     if (!task || !parsedGrid || !isValidFormat) {
@@ -229,7 +376,9 @@ export default function PuzzleFeedback() {
       predictedOutputGrid: parsedGrid,
       isPredictionCorrect: isCorrect,
       trustworthinessScore: isCorrect ? 1.0 : 0.0,
-      extractionMethod: 'user_input_direct'
+      extractionMethod: 'user_input_direct',
+      status: 'completed',
+      isOptimistic: false,
     };
   }, [task, parsedGrid, isValidFormat, puzzleId, isCorrect]);
 
@@ -790,32 +939,34 @@ export default function PuzzleFeedback() {
                     </Alert>
                   ) : isValidFormat && parsedGrid ? (
                     <div className="space-y-1">
-                      <Alert className="border-green-200 bg-green-50 py-1">
-                        <CheckCircle className="h-3 w-3 text-green-600" />
-                        <AlertDescription className="text-green-700 text-xs">
-                          Valid! {parsedGrid.length}×{parsedGrid[0]?.length || 0}
-                        </AlertDescription>
-                      </Alert>
+                      {renderValidationAlert()}
 
-                      {/* Show the parsed grid visually */}
-                      <div className="border border-gray-200 rounded p-2 bg-gray-50">
-                        <h4 className="text-xs font-medium mb-1 text-center">Your Grid</h4>
-                        <div className="flex justify-center">
-                          <PuzzleGrid
-                            grid={parsedGrid}
-                            title=""
-                            showEmojis={false}
+                      {expectedGrid && syntheticExplanation ? (
+                        <div className="rounded-3xl border border-amber-100/70 bg-[radial-gradient(circle_at_top,_rgba(253,230,138,0.78),_rgba(255,237,213,0.7))] p-3 shadow-[inset_0_18px_38px_-32px_rgba(146,64,14,0.45)] dark:border-violet-900/70 dark:bg-[radial-gradient(circle_at_top,_rgba(30,41,59,0.78),_rgba(76,29,149,0.55))]">
+                          <AnalysisResultGrid
+                            result={syntheticExplanation}
+                            expectedOutputGrids={previewExpectedGrids}
+                            predictedGrid={parsedGrid}
+                            predictedGrids={previewExpectedGrids.length > 0 ? [parsedGrid] : []}
+                            multiValidation={previewMultiValidation}
+                            multiTestStats={previewMultiTestStats}
+                            diffMask={previewDiffMask}
+                            multiDiffMasks={previewMultiDiffMasks}
+                            showDiff={showPreviewDiff}
+                            setShowDiff={setShowPreviewDiff}
+                            showMultiTest={showPreviewMultiTest}
+                            setShowMultiTest={setShowPreviewMultiTest}
+                            showPrediction={showPreviewPrediction}
+                            setShowPrediction={setShowPreviewPrediction}
                           />
                         </div>
-                      </div>
-
-                      {expectedGrid && !dimensionsMatch && (
-                        <Alert className="py-1">
-                          <XCircle className="h-3 w-3" />
-                          <AlertDescription className="text-xs">
-                            Wrong size! Expected {expectedGrid.length}×{expectedGrid[0]?.length || 0}
-                          </AlertDescription>
-                        </Alert>
+                      ) : (
+                        <div className="border border-gray-200 rounded p-2 bg-gray-50">
+                          <h4 className="text-xs font-medium mb-1 text-center">Your Grid</h4>
+                          <div className="flex justify-center">
+                            <PuzzleGrid grid={parsedGrid} title="" showEmojis={false} />
+                          </div>
+                        </div>
                       )}
 
                       {/* Structured explanation submission form */}

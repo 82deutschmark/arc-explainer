@@ -6,9 +6,10 @@
  * This hook integrates with the Railway PostgreSQL database via the API endpoints.
  */
 
-import { useQuery } from '@tanstack/react-query';
+import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
 import { apiRequest } from '@/lib/queryClient';
 import { ExplanationData } from '@/types/puzzle'; // Import the global type
+import type { CorrectnessFilter } from '@/hooks/useFilteredResults';
 
 interface ExplanationStatus {
   hasExplanation: boolean;
@@ -100,30 +101,38 @@ export function useExplanations(puzzleId: string | null) {
 /**
  * Fetch a single explanation by its ID.
  */
-export function useExplanationById(explanationId: number | null) {
+export async function fetchExplanationById(explanationId: number): Promise<ExplanationData | null> {
+  const response = await apiRequest('GET', `/api/explanations/${explanationId}`);
+  if (response.status === 404) {
+    return null;
+  }
+
+  if (!response.ok) {
+    throw new Error(`Failed to fetch explanation ${explanationId}`);
+  }
+
+  const payload = await response.json();
+  if (payload?.success && payload.data) {
+    return payload.data as ExplanationData;
+  }
+
+  return null;
+}
+
+export function useExplanationById(
+  explanationId: number | null,
+  options?: { enabled?: boolean }
+) {
+  const enabled = options?.enabled ?? explanationId !== null;
+
   return useQuery<ExplanationData | null, Error>({
     queryKey: ['explanation-by-id', explanationId],
-    enabled: explanationId !== null,
+    enabled,
     queryFn: async () => {
       if (explanationId === null) {
         return null;
       }
-
-      const response = await apiRequest('GET', `/api/explanations/${explanationId}`);
-      if (response.status === 404) {
-        return null;
-      }
-
-      if (!response.ok) {
-        throw new Error(`Failed to fetch explanation ${explanationId}`);
-      }
-
-      const payload = await response.json();
-      if (payload?.success && payload.data) {
-        return payload.data as ExplanationData;
-      }
-
-      return null;
+      return fetchExplanationById(explanationId);
     },
   });
 }
@@ -145,5 +154,98 @@ export function usePuzzleWithExplanation(puzzleId: string | null) {
     error,
     refetchExplanations: refetch,
     hasExplanation: (explanations?.length || 0) > 0,
+  };
+}
+
+const DEFAULT_PAGE_SIZE = 12;
+
+type ExplanationSummaryResponse = {
+  items: ExplanationData[];
+  total: number;
+  filteredTotal: number;
+  counts: {
+    all: number;
+    correct: number;
+    incorrect: number;
+  };
+  hasMore: boolean;
+  nextOffset: number | null;
+};
+
+const EMPTY_SUMMARY: ExplanationSummaryResponse = {
+  items: [],
+  total: 0,
+  filteredTotal: 0,
+  counts: { all: 0, correct: 0, incorrect: 0 },
+  hasMore: false,
+  nextOffset: null,
+};
+
+export function usePaginatedExplanationSummaries(
+  puzzleId: string | null,
+  options?: { pageSize?: number; correctness?: CorrectnessFilter; enabled?: boolean }
+) {
+  const pageSize = options?.pageSize ?? DEFAULT_PAGE_SIZE;
+  const correctness = options?.correctness ?? 'all';
+  const enabled = (options?.enabled ?? true) && !!puzzleId;
+
+  const query = useInfiniteQuery<ExplanationSummaryResponse, Error>({
+    queryKey: ['explanation-summaries', puzzleId, correctness, pageSize],
+    enabled,
+    initialPageParam: 0,
+    queryFn: async ({ pageParam }) => {
+      if (!puzzleId) {
+        return EMPTY_SUMMARY;
+      }
+
+      const offset = typeof pageParam === 'number' && Number.isFinite(pageParam) ? pageParam : 0;
+      const params = new URLSearchParams({
+        limit: String(pageSize),
+        offset: String(offset),
+      });
+
+      if (correctness !== 'all') {
+        params.set('correctness', correctness);
+      }
+
+      const response = await apiRequest('GET', `/api/puzzle/${puzzleId}/explanations/summary?${params.toString()}`);
+      if (!response.ok) {
+        throw new Error(`Failed to fetch explanation summaries: ${response.statusText}`);
+      }
+
+      const json = await response.json();
+      const payload = json?.data as ExplanationSummaryResponse | undefined;
+      if (!payload) {
+        return EMPTY_SUMMARY;
+      }
+
+      return payload;
+    },
+    getNextPageParam: (lastPage) => {
+      if (!lastPage) {
+        return undefined;
+      }
+      return lastPage.hasMore ? lastPage.nextOffset ?? undefined : undefined;
+    },
+  });
+
+  const summaries = query.data?.pages.flatMap(page => page.items) ?? [];
+  const counts = query.data?.pages[0]?.counts ?? EMPTY_SUMMARY.counts;
+  const total = query.data?.pages[0]?.total ?? 0;
+  const filteredTotal = query.data?.pages[0]?.filteredTotal ?? 0;
+  const lastPage = query.data?.pages ? query.data.pages[query.data.pages.length - 1] : undefined;
+  const hasMore = lastPage?.hasMore ?? false;
+  const nextOffset = lastPage?.nextOffset ?? null;
+  const isInitialLoading = !query.data && query.isLoading;
+
+  return {
+    ...query,
+    summaries,
+    counts,
+    total,
+    filteredTotal,
+    hasMore,
+    nextOffset,
+    isInitialLoading,
   };
 }

@@ -1,11 +1,96 @@
 # CHANGELOG
 
+## [4.10.1] - 2025-10-31
+### 🎨 UI/UX: Neutral, information-dense Puzzle Browser
+
+- Replaced the purple gradient hero with a centered neutral layout that surfaces live puzzle counts and keeps quick links within compact cards.
+- Aligned search and filter controls into a responsive grid, standardised neutral button treatments, and tightened active filter badges for rapid scanning.
+- Simplified the puzzle results and help panels to use consistent spacing and typography, improving readability without sacrificing functionality.
+
+#### Verification
+- Not run (visual refresh)
+
+---
+
+## [4.10.0] - 2025-10-31
+### ✨ Feature: Algorithmic emoji mosaic patterns with semantic meaning
+
+- **Pattern Generators**: Replaced static emoji arrays with algorithmic generators:
+  - `checkerboard`, `diagonalStripes`, `gradient` (horizontal/vertical)
+  - `border` (ARC-style frame with fill), `spiral` (clockwise from corner)
+  - `symmetricVertical` (mirrored patterns), `cornerAccent` (corners + center)
+  - `balanced` (seeded random with equal color distribution)
+- **Semantic Presets**: Patterns now convey meaning relevant to ARC-AGI context:
+  - Difficulty indicators: easy (checkerboard) → medium (diagonal stripes) → hard (spiral)
+  - Dataset types: training (symmetric), evaluation (corner accent), test (border)
+  - Status states: success, warning, error
+  - Visual themes: rainbow, sunset, ocean, forest
+  - ARC-inspired: transformation, pattern, logic
+- **Flexible API**: Three usage modes:
+  - Named presets: `pattern="difficultyHard"`
+  - Custom generators: `customGenerator={generators.spiral(['red', 'blue'])}`
+  - Direct cells: `customCells={['🟥', '🟦']}`
+- **Performance**: Memoized pattern generation prevents unnecessary recalculation
+- **Configurable Dimensions**: `width` and `height` props control grid size dynamically
+
+#### Verification
+- Not run (UI component enhancement)
+
+---
+
+## [4.9.5] - 2025-10-31
+### 🎨 UI/UX: Responsive puzzle grid layout + shadcn/ui migration
+
+- **Responsive Grid Layout**: Puzzle grids now utilize 70%+ of available horizontal space with multi-column layout:
+  - Grid sizing increased 70-80% (small: 220px→380px, medium: 260px→440px, large: 320px→540px)
+  - Training examples and test cases display in responsive CSS Grid (1 col on mobile, 2 cols on XL screens, 3 cols on 2XL)
+  - Dramatically reduced wasted whitespace on wide displays (2560px+)
+- **shadcn/ui Components**: Converted prompt controls from DaisyUI to shadcn/ui for design system consistency:
+  - `PromptPicker`: Now uses `Select`, `Switch`, `Label`, `Textarea`, and `Alert` components
+  - `PromptConfiguration`: Updated to use shadcn/ui `Button`
+  - Maintains compact layout with improved accessibility and type safety
+- **Prompt Controls**: Set to collapsed by default to reduce initial page height
+
+#### Verification
+- Not run (UI layout changes)
+
+---
+
+## [4.9.4] - 2025-10-31
+### ⚡ Performance: Lazy explanation loading keeps Puzzle Examiner snappy
+
+- Added `/api/puzzle/:puzzleId/explanations/summary` so the browser can fetch lightweight listings before requesting full grids, trimming initial payloads for large puzzles.
+- Refactored Puzzle Examiner to hydrate explanations on demand with a dedicated summary hook, ensuring cached rows stay in sync while deferring heavy detail calls.
+- Captured the rollout in performance playbooks so future optimizer passes can build on the same lazy-loading architecture.
+
+### 🎨 UI/UX: Prompt picker and advanced controls feel lighter
+
+- Simplified the prompt template selector, tightening copy, badges, and emoji toggles so researchers can switch instruction sets with less scrolling.
+- Reworked advanced controls into clearer sections that surface omit-answer and emoji options, maintaining validation for custom prompts.
+- Compressed model selection cards by reducing padding, typography, and metadata layout in `ModelButton`, letting the grid occupy roughly half the previous space.
+
+#### Verification
+- Not run (UI + API wiring)
+
+---
+
+## [4.9.3] - 2025-10-28
+### ✨ Enhancement: Puzzle Browser highlights latest ARC SOTA
+
+- Added Eric Pang's ARC-AGI repository to the Top Solutions panel so researchers can access the current SOTA reference directly from the browser.
+
+#### Verification
+- Not run (link-only UI update)
+
+---
+
 ## [4.9.2] - 2025-10-26
 ### 🔧 BUGFIX: Feedback explorer endpoint stable under asyncHandler
 
 - Fixed `feedbackController.getAll` to rely on the module-scoped `buildFiltersFromQuery`, preventing `this` from being undefined when Express wraps the handler.
 - Restored proper error handling for `submitSolution` and split voting into a dedicated controller for cleaner routes and TypeScript safety.
 - Tightened solution vote validation so non-numeric IDs short-circuit with helpful errors instead of leaking to the repository layer.
+- Corrected Feedback Explorer deep links so "Explanation" opens `/puzzle/:puzzleId?highlight=:explanationId` in a new tab, keeping navigation consistent with the puzzle viewer.
 
 #### Verification
 - Not run (controller-only change)

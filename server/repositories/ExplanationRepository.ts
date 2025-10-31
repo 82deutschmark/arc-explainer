@@ -9,11 +9,12 @@
  */
 
 import { BaseRepository } from './base/BaseRepository.ts';
-import { 
-  IExplanationRepository, 
-  ExplanationData, 
-  ExplanationResponse, 
-  BulkExplanationStatus 
+import {
+  IExplanationRepository,
+  ExplanationData,
+  ExplanationResponse,
+  ExplanationSummaryPage,
+  BulkExplanationStatus
 } from './interfaces/IExplanationRepository.ts';
 import { logger } from '../utils/logger.ts';
 
@@ -221,6 +222,125 @@ export class ExplanationRepository extends BaseRepository implements IExplanatio
     `, queryParams);
 
     return result.rows.map(row => this.mapRowToExplanation(row));
+  }
+
+  async getExplanationSummariesForPuzzle(
+    puzzleId: string,
+    options?: { correctnessFilter?: 'all' | 'correct' | 'incorrect'; limit?: number; offset?: number }
+  ): Promise<ExplanationSummaryPage> {
+    if (!this.isConnected()) {
+      return {
+        items: [],
+        total: 0,
+        filteredTotal: 0,
+        counts: { all: 0, correct: 0, incorrect: 0 }
+      };
+    }
+
+    const correctnessFilter = options?.correctnessFilter ?? 'all';
+    const rawLimit = options?.limit ?? 20;
+    const rawOffset = options?.offset ?? 0;
+    const limit = Math.min(Math.max(rawLimit, 1), 100);
+    const offset = Math.max(rawOffset, 0);
+
+    const countsResult = await this.query(
+      `
+        SELECT
+          COUNT(*)::int AS "all",
+          COUNT(
+            CASE
+              WHEN (has_multiple_predictions = false AND is_prediction_correct = true)
+                OR (has_multiple_predictions = true AND multi_test_all_correct = true)
+              THEN 1
+              ELSE NULL
+            END
+          )::int AS "correct",
+          COUNT(
+            CASE
+              WHEN (has_multiple_predictions = false AND is_prediction_correct = false)
+                OR (has_multiple_predictions = true AND multi_test_all_correct = false)
+              THEN 1
+              ELSE NULL
+            END
+          )::int AS "incorrect"
+        FROM explanations
+        WHERE puzzle_id = $1
+      `,
+      [puzzleId]
+    );
+
+    const countsRow = countsResult.rows[0] ?? { all: 0, correct: 0, incorrect: 0 };
+    const counts = {
+      all: Number(countsRow.all) || 0,
+      correct: Number(countsRow.correct) || 0,
+      incorrect: Number(countsRow.incorrect) || 0
+    };
+
+    let whereClause = 'WHERE puzzle_id = $1';
+    if (correctnessFilter === 'correct') {
+      whereClause += ` AND ((has_multiple_predictions = false AND is_prediction_correct = true)
+        OR (has_multiple_predictions = true AND multi_test_all_correct = true))`;
+    } else if (correctnessFilter === 'incorrect') {
+      whereClause += ` AND ((has_multiple_predictions = false AND is_prediction_correct = false)
+        OR (has_multiple_predictions = true AND multi_test_all_correct = false))`;
+    }
+
+    const filteredTotal =
+      correctnessFilter === 'correct'
+        ? counts.correct
+        : correctnessFilter === 'incorrect'
+          ? counts.incorrect
+          : counts.all;
+
+    const dataResult = await this.query(
+      `
+        SELECT
+          id,
+          puzzle_id AS "puzzleId",
+          pattern_description AS "patternDescription",
+          solving_strategy AS "solvingStrategy",
+          hints,
+          confidence,
+          alien_meaning_confidence AS "alienMeaningConfidence",
+          alien_meaning AS "alienMeaning",
+          model_name AS "modelName",
+          reasoning_log AS "reasoningLog",
+          has_reasoning_log AS "hasReasoningLog",
+          provider_response_id AS "providerResponseId",
+          api_processing_time_ms AS "apiProcessingTimeMs",
+          input_tokens AS "inputTokens",
+          output_tokens AS "outputTokens",
+          reasoning_tokens AS "reasoningTokens",
+          total_tokens AS "totalTokens",
+          estimated_cost AS "estimatedCost",
+          temperature,
+          reasoning_effort AS "reasoningEffort",
+          reasoning_verbosity AS "reasoningVerbosity",
+          reasoning_summary_type AS "reasoningSummaryType",
+          is_prediction_correct AS "isPredictionCorrect",
+          trustworthiness_score AS "trustworthinessScore",
+          has_multiple_predictions AS "hasMultiplePredictions",
+          multi_test_all_correct AS "multiTestAllCorrect",
+          multi_test_average_accuracy AS "multiTestAverageAccuracy",
+          rebutting_explanation_id AS "rebuttingExplanationId",
+          created_at AS "createdAt"
+        FROM explanations
+        ${whereClause}
+        ORDER BY created_at DESC
+        LIMIT $2
+        OFFSET $3
+      `,
+      [puzzleId, limit, offset]
+    );
+
+    const items = dataResult.rows.map(row => this.mapRowToExplanation(row));
+
+    return {
+      items,
+      total: counts.all,
+      filteredTotal,
+      counts
+    };
   }
 
   async getExplanationById(id: number): Promise<ExplanationResponse | null> {
