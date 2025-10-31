@@ -243,7 +243,7 @@ export function AdvancedControls({
         </div>
 
         <p className="text-xs text-blue-800/90">
-          Available on GPT-5 class models. Pair with temperature ≤ 0.3 for best reproducibility.
+          GPT-5 models offer reasoning controls that are not compatible with temperature.
         </p>
       </div>
     </div>
