@@ -1,5 +1,31 @@
 # CHANGELOG
 
+## [4.10.0] - 2025-10-31
+### ✨ Feature: Algorithmic emoji mosaic patterns with semantic meaning
+
+- **Pattern Generators**: Replaced static emoji arrays with algorithmic generators:
+  - `checkerboard`, `diagonalStripes`, `gradient` (horizontal/vertical)
+  - `border` (ARC-style frame with fill), `spiral` (clockwise from corner)
+  - `symmetricVertical` (mirrored patterns), `cornerAccent` (corners + center)
+  - `balanced` (seeded random with equal color distribution)
+- **Semantic Presets**: Patterns now convey meaning relevant to ARC-AGI context:
+  - Difficulty indicators: easy (checkerboard) → medium (diagonal stripes) → hard (spiral)
+  - Dataset types: training (symmetric), evaluation (corner accent), test (border)
+  - Status states: success, warning, error
+  - Visual themes: rainbow, sunset, ocean, forest
+  - ARC-inspired: transformation, pattern, logic
+- **Flexible API**: Three usage modes:
+  - Named presets: `pattern="difficultyHard"`
+  - Custom generators: `customGenerator={generators.spiral(['red', 'blue'])}`
+  - Direct cells: `customCells={['🟥', '🟦']}`
+- **Performance**: Memoized pattern generation prevents unnecessary recalculation
+- **Configurable Dimensions**: `width` and `height` props control grid size dynamically
+
+#### Verification
+- Not run (UI component enhancement)
+
+---
+
 ## [4.9.5] - 2025-10-31
 ### 🎨 UI/UX: Responsive puzzle grid layout + shadcn/ui migration
 
