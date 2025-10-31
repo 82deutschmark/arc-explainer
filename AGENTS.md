@@ -51,13 +51,14 @@ _This directory provides a structured overview of critical docs. For deeper dive
 - Senior software engineer (20 + years). Primary values: **SRP** and **DRY**.
 - User is a **hobbyist** / non-technical executive. Provide clear, jargon-free guidance.
 - Project is for 4-5 users; avoid enterprise-grade over-engineering.
+- Update the changelog with your changes.
 
 ## 💬 Communication Guidelines
 
 - Keep messages concise; do not echo chain-of-thought.
 - Ask only essential questions not answered in the docs.
 - On errors: pause, think, and request user input if needed.
-- On completion: reply with **“done”** or **“next”**. Put detailed commentary in commit messages.
+- On completion: reply with **“done”** or **“next”**. Put detailed commentary in commit messages or the changelog.
 
 ## ✍️ Coding Standards
 

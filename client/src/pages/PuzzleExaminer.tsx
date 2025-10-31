@@ -341,7 +341,7 @@ export default function PuzzleExaminer() {
           <CollapsibleCard
             title="Prompt Style"
             icon={Brain}
-            defaultOpen
+            defaultOpen={false}
             headerDescription={
               <p className="text-xs leading-snug opacity-70">
                 Choose how the AI should analyze the puzzle and preview the full instructions before sending.

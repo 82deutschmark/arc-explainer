@@ -11,6 +11,7 @@
 
 - Simplified the prompt template selector, tightening copy, badges, and emoji toggles so researchers can switch instruction sets with less scrolling.
 - Reworked advanced controls into clearer sections that surface omit-answer and emoji options, maintaining validation for custom prompts.
+- Compressed model selection cards by reducing padding, typography, and metadata layout in `ModelButton`, letting the grid occupy roughly half the previous space.
 
 #### Verification
 - Not run (UI + API wiring)
