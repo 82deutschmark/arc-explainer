@@ -45,9 +45,9 @@ export function PromptPicker({
   customPrompt,
   onCustomPromptChange,
   disabled = false,
-  sendAsEmojis,
+  sendAsEmojis = false,
   onSendAsEmojisChange,
-  omitAnswer,
+  omitAnswer = false,
   onOmitAnswerChange
 }: PromptPickerProps) {
   const [prompts, setPrompts] = useState<PromptTemplate[]>([]);
