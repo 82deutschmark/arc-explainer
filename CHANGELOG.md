@@ -1,5 +1,15 @@
 # CHANGELOG
 
+## [4.10.2] - 2025-10-31
+### 🎨 UI/UX: Larger streaming modal test grids
+
+- Enlarged the streaming analysis modal's test input/output grids to improve readability during live runs, keeping spacing responsive across breakpoints.
+
+#### Verification
+- Not run (visual change only)
+
+---
+
 ## [4.10.1] - 2025-10-31
 ### 🎨 UI/UX: Neutral, information-dense Puzzle Browser
 
@@ -5413,3 +5423,5 @@ To enable conversation chaining:
 \n### Added\n- Introduced streaming-aware analysis hook and UI panels across Puzzle Examiner, Discussion, and Model Debate pages.\n- Added reusable StreamingAnalysisPanel component for live token output with cancel support.\n- Model buttons now reflect streaming capability and status for supported models.
 
 
+## 2025-10-31
+- Docs: Added `docs/31OctDesign.md` specifying a CSS-only, look-only restyle for solver buttons (no structural/behavioral changes). Author: OpenAI Codex Agent.
