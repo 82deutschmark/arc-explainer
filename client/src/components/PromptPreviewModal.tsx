@@ -81,6 +81,7 @@ export function PromptPreviewModal({
             promptId,
             customPrompt,
             emojiSetKey: options.sendAsEmojis ? options.emojiSetKey : undefined,
+            sendAsEmojis: options.sendAsEmojis ?? false,
             omitAnswer: options.omitAnswer ?? true,
             topP: options.topP,
             candidateCount: options.candidateCount,

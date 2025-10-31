@@ -1,5 +1,15 @@
 # CHANGELOG
 
+## [4.10.4] - 2025-10-31
+### 🐞 Bugfix: Prompt preview respects emoji mode
+
+- Fixed the prompt preview pipeline to honor "Send as emojis" by wiring the flag through the frontend modal, controller, and prompt builder so previews now display emoji grids instead of raw numbers when selected.
+
+#### Verification
+- Not run (API + UI integration fix)
+
+---
+
 ## [4.10.3] - 2025-10-31
 ### 🐞 Bugfix: Restore emoji prompt toggle
 
