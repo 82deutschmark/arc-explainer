@@ -43,7 +43,7 @@ export function PromptConfiguration({
   onPreviewClick
 }: PromptConfigurationProps) {
   return (
-    <div>
+    <div className="space-y-2">
       <PromptPicker
         selectedPromptId={promptId}
         onPromptChange={onPromptChange}
@@ -56,15 +56,15 @@ export function PromptConfiguration({
         onOmitAnswerChange={onOmitAnswerChange}
       />
 
-      {/* Prompt Preview Button */}
-      <div className="mb-3 flex justify-center">
+      <div className="flex items-center justify-end gap-3 px-1 text-xs text-base-content/70">
+        <span>Preview the final prompt before running an analysis.</span>
         <button
-          className="btn btn-outline btn-sm flex items-center gap-2"
+          className="btn btn-outline btn-xs flex items-center gap-1"
           onClick={onPreviewClick}
           disabled={disabled}
         >
-          <Eye className="h-4 w-4" />
-          Preview Prompt
+          <Eye className="h-3 w-3" />
+          Preview prompt
         </button>
       </div>
     </div>

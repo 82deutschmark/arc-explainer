@@ -1,18 +1,16 @@
 /**
- * PromptPicker.tsx
- * 
- * Component for selecting AI analysis prompt templates.
- * Fetches available prompt templates from the backend and allows users to choose
- * different prompt styles for puzzle analysis.
- * Integrates with the prompt picker system to provide dynamic prompt selection.
- * 
- * @author Cascade
+ * Author: gpt-5-codex
+ * Date: 2025-10-16T00:00:00Z
+ * PURPOSE: PromptPicker fetches and renders available prompt templates with
+ *          inline advanced toggles so PuzzleExaminer can offer a compact,
+ *          information-dense configuration surface.
+ * SRP/DRY check: Pass — only responsible for listing prompt templates and
+ *                related prompt-level options. Reuses shared API client.
  */
 
-import React, { useState, useEffect } from 'react';
-import { Loader2, HelpCircle, Edit3 } from 'lucide-react';
+import React, { useState, useEffect, useMemo } from 'react';
+import { Loader2 } from 'lucide-react';
 import { apiRequest } from '@/lib/queryClient';
-import { EMOJI_SET_INFO } from '@/lib/spaceEmojis';
 
 interface PromptTemplate {
   id: string;
@@ -36,21 +34,33 @@ interface PromptPickerProps {
   // systemPromptMode removed - now using modular architecture
 }
 
-export function PromptPicker({ 
-  selectedPromptId, 
-  onPromptChange, 
-  customPrompt, 
-  onCustomPromptChange, 
+export function PromptPicker({
+  selectedPromptId,
+  onPromptChange,
+  customPrompt,
+  onCustomPromptChange,
   disabled = false,
   sendAsEmojis,
   onSendAsEmojisChange,
   omitAnswer,
   onOmitAnswerChange
-  // systemPromptMode removed - now using modular architecture
 }: PromptPickerProps) {
   const [prompts, setPrompts] = useState<PromptTemplate[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  const activePrompt = useMemo(
+    () => prompts.find((prompt) => prompt.id === selectedPromptId),
+    [prompts, selectedPromptId]
+  );
+  const promptDescription = activePrompt?.description ?? '';
+
+  const handlePromptChange = (promptId: string) => {
+    onPromptChange(promptId);
+    if (promptId !== 'custom' && onCustomPromptChange) {
+      onCustomPromptChange('');
+    }
+  };
 
   // Fetch available prompts on component mount
   useEffect(() => {
@@ -79,183 +89,142 @@ export function PromptPicker({
 
   if (loading) {
     return (
-      <div className="card mb-4 bg-base-100 shadow">
-        <div className="card-body">
-          <h2 className="card-title flex items-center gap-2">
-            <Loader2 className="h-5 w-5 animate-spin" />
-            Loading Prompt Templates...
-          </h2>
-        </div>
+      <div className="flex items-center gap-2 text-sm text-base-content/70 px-3 py-2">
+        <Loader2 className="h-4 w-4 animate-spin" />
+        Loading prompt templates…
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="card mb-4 bg-base-100 shadow border-red-200">
-        <div className="card-body">
-          <h2 className="card-title text-red-800">Error Loading Prompts</h2>
-          <p className="text-sm text-red-600">{error}</p>
-        </div>
+      <div className="alert alert-error text-sm" role="alert">
+        <span className="font-medium">Unable to load prompts.</span>
+        <span className="text-xs opacity-80">{error}</span>
       </div>
     );
   }
 
   return (
-    <div className="card mb-4 bg-base-100 shadow">
-      <div className="card-body">
-        <h2 className="card-title flex items-center gap-2">
-          🎯 Prompt Style
-          <div className="tooltip" data-tip="Choose how you want to prompt the AI to analyze the puzzle. Each style uses different instructions to guide the AI's reasoning approach and output format.">
-            <HelpCircle className="h-4 w-4 text-gray-500" />
-          </div>
-        </h2>
-        <div className="space-y-3">
-          {prompts.map((prompt) => (
-            <div key={prompt.id} className="form-control">
-              <label className="label cursor-pointer justify-start gap-2">
-                <input 
-                  type="radio"
-                  name="prompt-picker"
-                  className="radio radio-primary"
-                  value={prompt.id}
-                  checked={selectedPromptId === prompt.id}
-                  onChange={() => onPromptChange(prompt.id)}
-                  disabled={disabled}
-                />
-                <span className="label-text font-medium">{prompt.name}</span>
-                {prompt.emojiMapIncluded && (
-                  <div className="badge badge-secondary text-xs">
-                    🛸 Alien Theme
-                  </div>
-                )}
-              </label>
-                <p className="text-sm text-gray-600 mt-1">
-                  {prompt.description}
-                </p>
-                
-                {/* Custom Prompt Textarea */}
-                {prompt.id === "custom" && selectedPromptId === "custom" && onCustomPromptChange && (
-                  <div className="mt-3 ml-8">
-                    <textarea
-                      className="textarea textarea-bordered w-full min-h-[120px] resize-none text-sm"
-                      value={customPrompt || ""}
-                      onChange={(e) => onCustomPromptChange(e.target.value)}
-                      placeholder="Enter your custom prompt here... (e.g., You are an expert in pattern recognition. Analyze this ARC-AGI puzzle and explain the transformations involved.)"
-                      disabled={disabled}
-                    />
-                    <p className="text-xs text-gray-500 mt-2">
-                      Custom prompts allow for specialized analysis approaches. The system will automatically append training examples and test case data.
-                    </p>
-                  </div>
-                )}
-            </div>
-          ))}
-        </div>
-        
-        {/* Advanced Options integrated into Prompt Style */}
-        <div className="mt-6 pt-4 border-t border-gray-200">
-          <h6 className="text-sm font-semibold mb-3 text-gray-700 flex items-center gap-2">
-            ⚡ Advanced Options
-          </h6>
-          
-          {/* Active System Prompt Template */}
-          <div className="mb-4">
-            <div className="flex items-center gap-2 mb-2">
-              <label className="text-xs font-medium text-gray-600 uppercase tracking-wide flex items-center gap-1">
-                🎛️ Active System Prompt
-              </label>
-              <div className="badge text-xs bg-gradient-to-r from-blue-100 to-indigo-100 text-blue-800 border-blue-200">
-                {selectedPromptId === 'solver' ? '🎯 Solver' : 
-                 selectedPromptId === 'alienCommunication' ? '🛸 Alien' :
-                 selectedPromptId === 'educationalApproach' ? '🧠 Educational' :
-                 selectedPromptId === 'custom' ? '⚙️ Custom' : '📝 Standard'}
-              </div>
-            </div>
-            <div className="p-3 border border-blue-200 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg shadow-sm">
-              <div className="flex items-center gap-2 mb-1">
-                <span className="text-sm font-medium text-blue-700">
-                  {selectedPromptId === 'solver' ? '🎯 Answer Prediction Mode' : 
-                   selectedPromptId === 'alienCommunication' ? '🛸 Alien Communication Mode' :
-                   selectedPromptId === 'educationalApproach' ? '🧠 Educational Guide Mode' :
-                   selectedPromptId === 'custom' ? '⚙️ Custom Instructions Mode' : '📝 Pattern Analysis Mode'}
-                </span>
-              </div>
-              <p className="text-xs text-blue-700">
-                {selectedPromptId === 'solver' ? 'AI becomes a puzzle solver, predicting answers without seeing solutions' : 
-                 selectedPromptId === 'alienCommunication' ? 'AI interprets puzzles as creative alien messages using emoji symbols' :
-                 selectedPromptId === 'educationalApproach' ? 'AI teaches algorithmic thinking and step-by-step problem-solving' :
-                 selectedPromptId === 'custom' ? 'AI follows your custom instructions with full control over analysis style' :
-                 'AI provides clear, structured analysis of transformation patterns'}
-              </p>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {/* Send as Emojis Toggle */}
-            <div className="space-y-2">
-              <label className="text-xs font-medium text-gray-600 uppercase tracking-wide flex items-center gap-1">
-                🎨 Prompt Format
-              </label>
-              <div className="flex items-center gap-2 p-3 border border-green-200 bg-green-50 rounded-lg">
-                <input
-                  type="checkbox"
-                  className="toggle toggle-success"
-                  checked={sendAsEmojis || false}
-                  onChange={(e) => onSendAsEmojisChange?.(e.target.checked)}
-                  disabled={disabled}
-                  id="send-as-emojis-toggle"
-                />
-                <label htmlFor="send-as-emojis-toggle" className="text-sm select-none font-medium">
-                  🌟 Send as emojis
-                </label>
-              </div>
-              <p className="text-xs text-gray-500">Transform numbers into colorful emoji symbols for AI analysis</p>
-            </div>
-
-            {/* Omit Answer Toggle */}
-            <div className="space-y-2">
-              <label className="text-xs font-medium text-gray-600 uppercase tracking-wide flex items-center gap-1">
-                🔬 Research Mode
-              </label>
-              <div className="flex items-center gap-2 p-3 border border-orange-200 bg-orange-50 rounded-lg">
-                <input
-                  type="checkbox"
-                  className="toggle toggle-warning"
-                  checked={omitAnswer || false}
-                  onChange={(e) => onOmitAnswerChange?.(e.target.checked)}
-                  disabled={disabled}
-                  id="omit-answer-toggle"
-                />
-                <label htmlFor="omit-answer-toggle" className="text-sm select-none font-medium">
-                  🎭 Hide solution
-                </label>
-              </div>
-              <p className="text-xs text-gray-500">Challenge the AI to solve puzzles without seeing answers</p>
-            </div>
-          </div>
-        </div>
-        
-        {selectedPromptId && (
-          <div className="mt-4 p-4 bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-200 rounded-lg shadow-sm">
-            <div className="flex items-center gap-2">
-              <span className="text-emerald-600">✅</span>
-              <p className="text-sm text-emerald-800 font-medium">
-                <strong>Active Prompt:</strong> {
-                  selectedPromptId === "custom" 
-                    ? "⚙️ Custom Prompt" 
-                    : prompts.find(p => p.id === selectedPromptId)?.name
-                }
-              </p>
-            </div>
-            {selectedPromptId === "custom" && customPrompt && (
-              <p className="text-xs text-emerald-600 mt-2 flex items-center gap-1">
-                <span>📝</span>
-                Custom instructions: {customPrompt.length} characters
-              </p>
+    <div className="rounded-lg border border-base-300 bg-base-100">
+      <div className="grid gap-3 p-3 md:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)] md:gap-4">
+        <div className="space-y-2">
+          <div className="flex items-center justify-between text-xs uppercase tracking-wide text-base-content/60">
+            <span>Prompt templates</span>
+            {activePrompt ? (
+              <span className="font-semibold text-base-content/80">{activePrompt.name}</span>
+            ) : (
+              <span className="font-semibold text-base-content/80">Select a template</span>
             )}
           </div>
-        )}
+
+          <div className="rounded-md border border-base-200 divide-y divide-base-200">
+            {prompts.map((prompt) => {
+              const isActive = selectedPromptId === prompt.id;
+              return (
+                <label
+                  key={prompt.id}
+                  className={`flex cursor-pointer gap-3 p-2 transition-colors hover:bg-base-200/60 ${
+                    isActive ? 'bg-base-200/70' : ''
+                  }`}
+                >
+                  <input
+                    type="radio"
+                    name="prompt-picker"
+                    className="radio radio-xs mt-1"
+                    value={prompt.id}
+                    checked={isActive}
+                    onChange={() => handlePromptChange(prompt.id)}
+                    disabled={disabled}
+                  />
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-start justify-between gap-2">
+                      <span className="text-sm font-medium leading-tight">{prompt.name}</span>
+                      {prompt.emojiMapIncluded && (
+                        <span className="badge badge-outline badge-xs whitespace-nowrap">Emoji ready</span>
+                      )}
+                    </div>
+                    <p className="text-xs leading-snug text-base-content/70">
+                      {prompt.description}
+                    </p>
+                    {prompt.id === 'custom' && selectedPromptId === 'custom' && onCustomPromptChange && (
+                      <div className="mt-2">
+                        <textarea
+                          className="textarea textarea-bordered textarea-sm w-full text-xs"
+                          value={customPrompt || ''}
+                          onChange={(e) => onCustomPromptChange(e.target.value)}
+                          placeholder="Enter custom prompt instructions…"
+                          disabled={disabled}
+                          rows={4}
+                        />
+                        <div className="mt-1 flex items-center justify-between text-[0.7rem] text-base-content/60">
+                          <span>Custom text is appended after core puzzle context.</span>
+                          <span className="font-mono">{(customPrompt ?? '').length} chars</span>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </label>
+              );
+            })}
+          </div>
+        </div>
+
+        <div className="space-y-3 text-sm">
+          <div className="rounded-md border border-dashed border-base-200 p-2">
+            <div className="text-xs uppercase tracking-wide text-base-content/60">Active instructions</div>
+            <div className="mt-1 text-sm font-semibold text-base-content">
+              {activePrompt ? activePrompt.name : 'Choose a template'}
+            </div>
+            {promptDescription && (
+              <p className="mt-1 text-xs leading-snug text-base-content/70">{promptDescription}</p>
+            )}
+          </div>
+
+          <div className="grid gap-2 sm:grid-cols-2">
+            <div className="rounded-md border border-base-200 p-2">
+              <div className="flex items-center justify-between gap-2">
+                <span className="text-xs font-semibold uppercase tracking-wide text-base-content/70">Send as emojis</span>
+                <button
+                  type="button"
+                  className={`btn btn-xs ${sendAsEmojis ? 'btn-success' : 'btn-outline'}`}
+                  onClick={() => onSendAsEmojisChange?.(!sendAsEmojis)}
+                  disabled={disabled}
+                  aria-pressed={sendAsEmojis}
+                >
+                  {sendAsEmojis ? 'Enabled' : 'Enable'}
+                </button>
+              </div>
+              <p className="mt-1 text-[0.7rem] leading-snug text-base-content/60">
+                Converts grids to the active emoji palette (configure palette in the header) before sending to the model.
+              </p>
+            </div>
+
+            <div className="rounded-md border border-base-200 p-2">
+              <div className="flex items-center justify-between gap-2">
+                <span className="text-xs font-semibold uppercase tracking-wide text-base-content/70">Hide solutions</span>
+                <button
+                  type="button"
+                  className={`btn btn-xs ${omitAnswer ? 'btn-warning' : 'btn-outline'}`}
+                  onClick={() => onOmitAnswerChange?.(!omitAnswer)}
+                  disabled={disabled}
+                  aria-pressed={omitAnswer}
+                >
+                  {omitAnswer ? 'On' : 'Off'}
+                </button>
+              </div>
+              <p className="mt-1 text-[0.7rem] leading-snug text-base-content/60">
+                When enabled, the assistant must infer answers without being shown the provided solutions.
+              </p>
+            </div>
+          </div>
+
+          {selectedPromptId === 'custom' && !customPrompt && (
+            <p className="text-[0.7rem] text-warning">
+              Custom prompt selected — add instructions above before running an analysis.
+            </p>
+          )}
+        </div>
       </div>
     </div>
   );
