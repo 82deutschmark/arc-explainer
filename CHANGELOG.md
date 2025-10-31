@@ -1,5 +1,15 @@
 # CHANGELOG
 
+## [4.10.3] - 2025-10-31
+### 🐞 Bugfix: Restore emoji prompt toggle
+
+- Reinstated optional chaining on the Prompt Picker toggles so "Send as emojis" and related switches work even when handlers are omitted in consumers, matching the pre-shadcn defensive behavior.
+
+#### Verification
+- Not run (UI regression fix)
+
+---
+
 ## [4.10.2] - 2025-10-31
 ### 🎨 UI/UX: Larger streaming modal test grids
 

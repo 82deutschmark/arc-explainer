@@ -167,7 +167,7 @@ export function PromptPicker({
           <Switch
             id="emoji-toggle-picker"
             checked={sendAsEmojis}
-            onCheckedChange={onSendAsEmojisChange}
+            onCheckedChange={(checked) => onSendAsEmojisChange?.(checked)}
             disabled={disabled}
           />
           <Label htmlFor="emoji-toggle-picker" className="text-xs font-normal cursor-pointer">
@@ -179,7 +179,7 @@ export function PromptPicker({
           <Switch
             id="omit-toggle-picker"
             checked={omitAnswer}
-            onCheckedChange={onOmitAnswerChange}
+            onCheckedChange={(checked) => onOmitAnswerChange?.(checked)}
             disabled={disabled}
           />
           <Label htmlFor="omit-toggle-picker" className="text-xs font-normal cursor-pointer">
