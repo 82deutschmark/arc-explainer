@@ -1,26 +1,12 @@
 /**
- * AdvancedControls.tsx
- *
- * Author: Claude Code using Sonnet 4.5
+ * Author: gpt-5-codex
  * Date: 2025-10-31
- * PURPOSE: Handles all advanced model parameter controls (temperature, topP, candidates, thinking budget, GPT-5 reasoning).
- * Refactored to use shadcn/ui for compact, professional design with clear visual hierarchy.
- *
- * SRP/DRY check: Pass - Single responsibility (advanced parameter controls)
- * shadcn/ui: Pass - Uses shadcn/ui Slider, Select, and Label components for consistent, compact design
+ * PURPOSE: Provides a high-density advanced model parameter editor with compact DaisyUI controls and inline tooltips.
+ * SRP/DRY check: Pass - confirmed the component only manages control rendering while state comes from the parent container.
  */
 
 import React from 'react';
-import { Brain } from 'lucide-react';
-import { Slider } from '@/components/ui/slider';
-import { Label } from '@/components/ui/label';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+import { Brain, Info } from 'lucide-react';
 
 interface AdvancedControlsProps {
   temperature: number;
@@ -39,26 +25,68 @@ interface AdvancedControlsProps {
   onReasoningSummaryTypeChange: (value: 'auto' | 'detailed') => void;
 }
 
-const effortDescriptions = {
+type NumberCommitHandler = (
+  target: HTMLInputElement,
+  min: number,
+  max: number,
+  decimals: number,
+  onChange: (value: number) => void
+) => void;
+
+const clamp = (value: number, min: number, max: number) => Math.min(Math.max(value, min), max);
+
+const formatDecimal = (value: number, decimals: number) =>
+  decimals === 0 ? `${value}` : value.toFixed(decimals);
+
+const commitNumber: NumberCommitHandler = (target, min, max, decimals, onChange) => {
+  const parsed = parseFloat(target.value);
+  const fallback = decimals === 0 ? Math.round(min) : parseFloat(min.toFixed(decimals));
+
+  if (Number.isNaN(parsed)) {
+    onChange(fallback);
+    target.value = formatDecimal(fallback, decimals);
+    return;
+  }
+
+  const clamped = clamp(parsed, min, max);
+  const normalized = decimals === 0 ? Math.round(clamped) : parseFloat(clamped.toFixed(decimals));
+  onChange(normalized);
+  target.value = formatDecimal(normalized, decimals);
+};
+
+const THINKING_BUDGET_OPTIONS: Array<{ value: number; label: string }> = [
+  { value: -1, label: 'Dynamic (auto)' },
+  { value: 0, label: 'Disabled' },
+  { value: 512, label: '512 tokens' },
+  { value: 1024, label: '1024 tokens' },
+  { value: 2048, label: '2048 tokens' },
+  { value: 4096, label: '4096 tokens' },
+  { value: 8192, label: '8192 tokens' },
+  { value: 16384, label: '16384 tokens' },
+  { value: 24576, label: '24576 tokens (Flash max)' },
+  { value: 32768, label: '32768 tokens (Pro max)' }
+];
+
+const EFFORT_DESCRIPTIONS = {
   minimal: 'Fast heuristic checks',
   low: 'Light planning',
   medium: 'Structured reasoning',
   high: 'Max depth reasoning'
 } as const;
 
-const verbosityDescriptions = {
+const VERBOSITY_DESCRIPTIONS = {
   low: 'Concise logs',
   medium: 'Balanced detail',
   high: 'Full reasoning trace'
 } as const;
 
-const summaryDescriptions = {
+const SUMMARY_DESCRIPTIONS = {
   auto: 'Model decides summary length',
   detailed: 'Always include full recap'
 } as const;
 
 /**
- * Displays advanced model parameter controls in a compact, professional layout
+ * Displays advanced model parameters in a compact grid.
  */
 export function AdvancedControls({
   temperature,
@@ -76,175 +104,227 @@ export function AdvancedControls({
   reasoningSummaryType,
   onReasoningSummaryTypeChange
 }: AdvancedControlsProps) {
+  const sliderControls = [
+    {
+      id: 'temperature',
+      label: 'Temperature',
+      tooltip: 'Determinism versus creativity.',
+      min: 0.1,
+      max: 2.0,
+      step: 0.05,
+      decimals: 2,
+      value: temperature,
+      onChange: onTemperatureChange
+    },
+    {
+      id: 'topP',
+      label: 'Top P',
+      tooltip: 'Controls response diversity.',
+      min: 0,
+      max: 1,
+      step: 0.01,
+      decimals: 2,
+      value: topP,
+      onChange: onTopPChange
+    },
+    {
+      id: 'candidateCount',
+      label: 'Candidates',
+      tooltip: 'Parallel completions per request.',
+      min: 1,
+      max: 8,
+      step: 1,
+      decimals: 0,
+      value: candidateCount,
+      onChange: onCandidateCountChange
+    }
+  ] as const;
+
   return (
-    <div className="space-y-3">
-      {/* Temperature Control */}
-      <div className="bg-muted/30 rounded-md p-2.5 space-y-1.5">
-        <div className="flex items-center justify-between">
-          <Label htmlFor="temperature" className="text-sm font-semibold">
-            Temperature
-          </Label>
-          <span className="text-sm font-mono tabular-nums font-semibold">{temperature.toFixed(2)}</span>
-        </div>
-        <Slider
-          id="temperature"
-          min={0.1}
-          max={2.0}
-          step={0.05}
-          value={[temperature]}
-          onValueChange={([value]) => onTemperatureChange(value)}
-          className="w-full"
-        />
-        <p className="text-xs text-muted-foreground">
-          Determinism vs. creativity (Gemini · GPT-4.1)
-        </p>
-      </div>
-
-      {/* Top P Control */}
-      <div className="bg-muted/30 rounded-md p-2.5 space-y-1.5">
-        <div className="flex items-center justify-between">
-          <Label htmlFor="topP" className="text-sm font-semibold">
-            Top P
-          </Label>
-          <span className="text-sm font-mono tabular-nums font-semibold">{topP.toFixed(2)}</span>
-        </div>
-        <Slider
-          id="topP"
-          min={0.0}
-          max={1.0}
-          step={0.05}
-          value={[topP]}
-          onValueChange={([value]) => onTopPChange(value)}
-          className="w-full"
-        />
-        <p className="text-xs text-muted-foreground">
-          Controls response diversity (Gemini)
-        </p>
-      </div>
-
-      {/* Candidates Control */}
-      <div className="bg-muted/30 rounded-md p-2.5 space-y-1.5">
-        <div className="flex items-center justify-between">
-          <Label htmlFor="candidateCount" className="text-sm font-semibold">
-            Candidates
-          </Label>
-          <span className="text-sm font-mono tabular-nums font-semibold">{candidateCount}</span>
-        </div>
-        <Slider
-          id="candidateCount"
-          min={1}
-          max={8}
-          step={1}
-          value={[candidateCount]}
-          onValueChange={([value]) => onCandidateCountChange(value)}
-          className="w-full"
-        />
-        <p className="text-xs text-muted-foreground">
-          Parallel candidates (Gemini)
-        </p>
-      </div>
-
-      {/* Thinking Budget Control */}
-      <div className="bg-muted/30 rounded-md p-2.5 space-y-1.5">
-        <Label htmlFor="thinkingBudget" className="text-sm font-semibold">
-          Thinking Budget
-        </Label>
-        <Select value={thinkingBudget.toString()} onValueChange={(value) => onThinkingBudgetChange(parseInt(value))}>
-          <SelectTrigger id="thinkingBudget" className="h-9 text-sm">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="-1">Dynamic</SelectItem>
-            <SelectItem value="0">Disabled</SelectItem>
-            <SelectItem value="512">512 tokens</SelectItem>
-            <SelectItem value="1024">1024 tokens</SelectItem>
-            <SelectItem value="2048">2048 tokens</SelectItem>
-            <SelectItem value="4096">4096 tokens</SelectItem>
-            <SelectItem value="8192">8192 tokens</SelectItem>
-            <SelectItem value="16384">16384 tokens</SelectItem>
-            <SelectItem value="24576">24576 tokens (Flash max)</SelectItem>
-            <SelectItem value="32768">32768 tokens (Pro max)</SelectItem>
-          </SelectContent>
-        </Select>
-        <p className="text-xs text-muted-foreground">
-          Internal reasoning tokens (Gemini 2.5+)
-        </p>
-      </div>
-
-      {/* GPT-5 Reasoning Parameters */}
-      <div className="rounded-md border border-blue-300 bg-blue-50 p-3 space-y-2.5">
-        <div className="flex items-center gap-2">
-          <Brain className="h-4 w-4 text-blue-700" />
-          <span className="text-sm font-semibold text-blue-900">
-            GPT-5 Reasoning Parameters
-          </span>
+    <div className="space-y-3 text-xs">
+      <div className="rounded-box border border-base-200 bg-base-100/80 p-3">
+        <div className="mb-3 flex items-center justify-between">
+          <span className="uppercase tracking-wide text-[10px] text-base-content/60">Sampling</span>
+          <span className="text-[10px] font-medium text-base-content/60">Model: GPT-5, Gemini</span>
         </div>
 
-        <div className="grid grid-cols-3 gap-2.5">
-          {/* Effort */}
-          <div className="bg-white/60 rounded p-2 space-y-1.5">
-            <Label htmlFor="reasoning-effort" className="text-xs font-semibold text-blue-900">
-              Effort
-            </Label>
-            <Select value={reasoningEffort} onValueChange={(value) => onReasoningEffortChange(value as typeof reasoningEffort)}>
-              <SelectTrigger id="reasoning-effort" className="h-9 text-sm">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="minimal">Minimal</SelectItem>
-                <SelectItem value="low">Low</SelectItem>
-                <SelectItem value="medium">Medium</SelectItem>
-                <SelectItem value="high">High</SelectItem>
-              </SelectContent>
-            </Select>
-            <p className="text-xs text-blue-800">
-              {effortDescriptions[reasoningEffort]}
-            </p>
-          </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-4 gap-y-3">
+          {sliderControls.map((control) => (
+            <div key={control.id} className="form-control gap-2">
+              <label htmlFor={control.id} className="label py-0">
+                <span className="label-text flex items-center gap-1 text-xs font-semibold">
+                  {control.label}
+                  <div className="tooltip tooltip-top" data-tip={control.tooltip}>
+                    <Info className="h-3 w-3 text-base-content/50" aria-hidden="true" />
+                  </div>
+                </span>
+                <span className="text-xs font-mono tabular-nums text-base-content">
+                  {formatDecimal(control.value, control.decimals)}
+                </span>
+              </label>
+              <div className="flex items-center gap-2">
+                <input
+                  id={control.id}
+                  type="range"
+                  className="range range-primary range-xs flex-1"
+                  min={control.min}
+                  max={control.max}
+                  step={control.step}
+                  value={control.value}
+                  onChange={(event) => {
+                    const parsed = parseFloat(event.currentTarget.value);
+                    if (!Number.isNaN(parsed)) {
+                      const clamped = clamp(parsed, control.min, control.max);
+                      const normalized =
+                        control.decimals === 0
+                          ? Math.round(clamped)
+                          : parseFloat(clamped.toFixed(control.decimals));
+                      control.onChange(normalized);
+                    }
+                  }}
+                />
+                <input
+                  key={`${control.id}-${formatDecimal(control.value, control.decimals)}`}
+                  type="number"
+                  className="input input-bordered input-xs w-16 text-right"
+                  min={control.min}
+                  max={control.max}
+                  step={control.step}
+                  defaultValue={formatDecimal(control.value, control.decimals)}
+                  aria-label={`${control.label} numeric value`}
+                  onKeyDown={(event) => {
+                    if (event.key === 'Enter') {
+                      event.preventDefault();
+                      commitNumber(
+                        event.currentTarget,
+                        control.min,
+                        control.max,
+                        control.decimals,
+                        control.onChange
+                      );
+                    }
+                  }}
+                  onBlur={(event) =>
+                    commitNumber(
+                      event.currentTarget,
+                      control.min,
+                      control.max,
+                      control.decimals,
+                      control.onChange
+                    )
+                  }
+                />
+              </div>
+            </div>
+          ))}
 
-          {/* Verbosity */}
-          <div className="bg-white/60 rounded p-2 space-y-1.5">
-            <Label htmlFor="reasoning-verbosity" className="text-xs font-semibold text-blue-900">
-              Verbosity
-            </Label>
-            <Select value={reasoningVerbosity} onValueChange={(value) => onReasoningVerbosityChange(value as typeof reasoningVerbosity)}>
-              <SelectTrigger id="reasoning-verbosity" className="h-9 text-sm">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="low">Low</SelectItem>
-                <SelectItem value="medium">Medium</SelectItem>
-                <SelectItem value="high">High</SelectItem>
-              </SelectContent>
-            </Select>
-            <p className="text-xs text-blue-800">
-              {verbosityDescriptions[reasoningVerbosity]}
-            </p>
-          </div>
-
-          {/* Summary */}
-          <div className="bg-white/60 rounded p-2 space-y-1.5">
-            <Label htmlFor="reasoning-summary" className="text-xs font-semibold text-blue-900">
-              Summary
-            </Label>
-            <Select value={reasoningSummaryType} onValueChange={(value) => onReasoningSummaryTypeChange(value as typeof reasoningSummaryType)}>
-              <SelectTrigger id="reasoning-summary" className="h-9 text-sm">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="auto">Auto</SelectItem>
-                <SelectItem value="detailed">Detailed</SelectItem>
-              </SelectContent>
-            </Select>
-            <p className="text-xs text-blue-800">
-              {summaryDescriptions[reasoningSummaryType]}
-            </p>
+          <div className="form-control gap-2 sm:col-span-2 lg:col-span-3">
+            <label htmlFor="thinkingBudget" className="label py-0">
+              <span className="label-text flex items-center gap-1 text-xs font-semibold">
+                Thinking Budget
+                <div
+                  className="tooltip tooltip-top"
+                  data-tip="Internal reasoning tokens for Gemini 2.5+ models."
+                >
+                  <Info className="h-3 w-3 text-base-content/50" aria-hidden="true" />
+                </div>
+              </span>
+              <span className="text-xs font-mono uppercase tracking-wide text-base-content/60">
+                {thinkingBudget < 0 ? 'Dynamic' : `${thinkingBudget} tokens`}
+              </span>
+            </label>
+            <select
+              id="thinkingBudget"
+              className="select select-bordered select-xs w-full"
+              value={thinkingBudget.toString()}
+              onChange={(event) => onThinkingBudgetChange(parseInt(event.currentTarget.value, 10))}
+            >
+              {THINKING_BUDGET_OPTIONS.map((option) => (
+                <option key={option.value} value={option.value.toString()}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
           </div>
         </div>
+      </div>
 
-        <p className="text-xs text-blue-800/90">
-          GPT-5 models offer reasoning controls that are not compatible with temperature.
-        </p>
+      <div className="collapse collapse-arrow border border-base-200 bg-base-100/80 text-xs">
+        <input type="checkbox" className="peer" />
+        <div className="collapse-title flex items-center gap-2 py-3 text-xs font-semibold">
+          <Brain className="h-4 w-4 text-primary" aria-hidden="true" />
+          GPT-5 Reasoning Parameters
+        </div>
+        <div className="collapse-content space-y-3">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div className="form-control gap-1">
+              <label htmlFor="reasoning-effort" className="label py-0">
+                <span className="label-text text-xs font-semibold">Effort</span>
+              </label>
+              <select
+                id="reasoning-effort"
+                className="select select-bordered select-xs w-full"
+                value={reasoningEffort}
+                onChange={(event) =>
+                  onReasoningEffortChange(event.currentTarget.value as typeof reasoningEffort)
+                }
+              >
+                <option value="minimal">Minimal</option>
+                <option value="low">Low</option>
+                <option value="medium">Medium</option>
+                <option value="high">High</option>
+              </select>
+              <p className="text-[11px] text-base-content/60">{EFFORT_DESCRIPTIONS[reasoningEffort]}</p>
+            </div>
+
+            <div className="form-control gap-1">
+              <label htmlFor="reasoning-verbosity" className="label py-0">
+                <span className="label-text text-xs font-semibold">Verbosity</span>
+              </label>
+              <select
+                id="reasoning-verbosity"
+                className="select select-bordered select-xs w-full"
+                value={reasoningVerbosity}
+                onChange={(event) =>
+                  onReasoningVerbosityChange(event.currentTarget.value as typeof reasoningVerbosity)
+                }
+              >
+                <option value="low">Low</option>
+                <option value="medium">Medium</option>
+                <option value="high">High</option>
+              </select>
+              <p className="text-[11px] text-base-content/60">
+                {VERBOSITY_DESCRIPTIONS[reasoningVerbosity]}
+              </p>
+            </div>
+
+            <div className="form-control gap-1">
+              <label htmlFor="reasoning-summary" className="label py-0">
+                <span className="label-text text-xs font-semibold">Summary</span>
+              </label>
+              <select
+                id="reasoning-summary"
+                className="select select-bordered select-xs w-full"
+                value={reasoningSummaryType}
+                onChange={(event) =>
+                  onReasoningSummaryTypeChange(
+                    event.currentTarget.value as typeof reasoningSummaryType
+                  )
+                }
+              >
+                <option value="auto">Auto</option>
+                <option value="detailed">Detailed</option>
+              </select>
+              <p className="text-[11px] text-base-content/60">
+                {SUMMARY_DESCRIPTIONS[reasoningSummaryType]}
+              </p>
+            </div>
+          </div>
+          <p className="text-[11px] text-base-content/60">
+            GPT-5 reasoning modes may override temperature on eligible models. Check model docs before
+            combining aggressive sampling with high reasoning effort.
+          </p>
+        </div>
       </div>
     </div>
   );

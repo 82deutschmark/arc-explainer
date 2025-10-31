@@ -1,5 +1,19 @@
 # CHANGELOG
 
+# CHANGELOG
+
+## [4.10.5] - 2025-10-31
+### UI/UX: Puzzle Examiner prompt and controls grid
+
+- Replaced the stacked Prompt Style and Advanced Controls accordions with a responsive two-card grid so analysts can review template tweaks and sampling knobs side by side without scrolling.
+- Refactored Advanced Controls into a compact multi-column layout with numeric inputs, tooltips, and collapsible reasoning settings, trimming the vertical footprint by roughly 80%.
+- Tightened Prompt Style actions with DaisyUI buttons and helper tooltips to keep the preview workflow within a single glance.
+
+#### Verification
+- Not run (visual layout refinement)
+
+---
+
 ## [4.10.4] - 2025-10-31
 ### 🐞 Bugfix: Prompt preview respects emoji mode
 
