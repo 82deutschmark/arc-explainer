@@ -225,20 +225,37 @@ export const MOSAIC_PATTERNS = {
   active: generators.border('blue', 'green'),
   inactive: generators.checkerboard('white', 'black'),
   hover: generators.gradient(['yellow', 'orange'], 'horizontal'),
+
+  // Legacy variant names (for backward compatibility)
+  heroSunrise: generators.gradient(['red', 'orange', 'yellow', 'purple', 'black', 'green', 'blue', 'orange', 'red'], 'horizontal'),
+  heroTwilight: generators.gradient(['purple', 'blue', 'purple', 'blue', 'black', 'blue', 'purple', 'blue', 'purple'], 'horizontal'),
+  searchSignal: generators.gradient(['red', 'orange', 'yellow', 'red'], 'horizontal'),
+  sizeSignal: generators.gradient(['orange', 'yellow', 'green', 'blue'], 'horizontal'),
+  datasetSignal: generators.balanced(['blue', 'green', 'purple', 'orange', 'black', 'yellow'], 456),
+  analysisSignal: generators.diagonalStripes(['yellow', 'orange', 'purple', 'orange']),
+  statusExplained: generators.symmetricVertical(['green', 'blue', 'purple', 'blue', 'black', 'blue', 'green', 'blue', 'purple']),
+  statusUnexplained: generators.diagonalStripes(['red', 'orange', 'yellow', 'orange', 'black', 'yellow', 'red', 'orange', 'yellow']),
+  chipInactive: generators.checkerboard('white', 'black'),
 } as const;
 
 export type MosaicPattern = keyof typeof MOSAIC_PATTERNS;
+
+// Legacy type for backward compatibility
+export type MosaicVariant = MosaicPattern;
 
 // ============================================================================
 // COMPONENT
 // ============================================================================
 
 export type EmojiMosaicAccentProps = {
-  pattern?: MosaicPattern;
+  pattern?: MosaicPattern | string[]; // string[] for legacy API where pattern was an array
+  variant?: MosaicPattern; // Legacy prop name, alias for pattern
   customGenerator?: PatternGenerator;
   customCells?: string[];
   width?: number;
   height?: number;
+  columns?: number; // Legacy prop name, alias for width
+  maxColumns?: number; // Legacy prop (ignored in new API)
   size?: MosaicSize;
   framed?: boolean;
   className?: string;
@@ -260,22 +277,39 @@ const GRID_COLUMN_CLASSES: Record<number, string> = {
 
 export const EmojiMosaicAccent: React.FC<EmojiMosaicAccentProps> = ({
   pattern = 'rainbow',
+  variant, // Legacy prop
   customGenerator,
   customCells,
-  width = 3,
-  height = 3,
+  width,
+  height,
+  columns, // Legacy prop
   size = 'sm',
   framed = true,
   className,
   orientation = 'inline',
 }) => {
-  const cells = useMemo(() => {
-    if (customCells) return customCells;
-    if (customGenerator) return customGenerator(width, height);
-    return MOSAIC_PATTERNS[pattern](width, height);
-  }, [pattern, customGenerator, customCells, width, height]);
+  // Handle backward compatibility
+  const actualWidth = columns ?? width ?? 3;
+  const actualHeight = height ?? 3;
 
-  const gridColsClass = GRID_COLUMN_CLASSES[width] ?? 'grid-cols-3';
+  const cells = useMemo(() => {
+    // Priority: customCells > customGenerator > pattern/variant
+    if (customCells) return customCells;
+    if (customGenerator) return customGenerator(actualWidth, actualHeight);
+
+    // Handle legacy API where pattern was an array of emoji strings
+    if (Array.isArray(pattern)) {
+      return pattern;
+    }
+
+    // Use variant (legacy prop) if pattern is not provided, or use pattern
+    const patternName = (variant ?? pattern) as MosaicPattern;
+
+    // Generate pattern from preset
+    return MOSAIC_PATTERNS[patternName](actualWidth, actualHeight);
+  }, [pattern, variant, customGenerator, customCells, actualWidth, actualHeight]);
+
+  const gridColsClass = GRID_COLUMN_CLASSES[actualWidth] ?? 'grid-cols-3';
   const wrapperClass = orientation === 'stacked'
     ? 'flex flex-col items-center justify-center'
     : 'inline-flex items-center justify-center';
@@ -290,7 +324,7 @@ export const EmojiMosaicAccent: React.FC<EmojiMosaicAccentProps> = ({
           framed && 'rounded-sm bg-white/70 p-0.5 shadow-sm ring-1 ring-black/5 backdrop-blur-[1px]'
         )}
       >
-        {cells.map((cell, index) => (
+        {cells.map((cell: string, index: number) => (
           <span key={`${cell}-${index}`} className="select-none">
             {cell}
           </span>
