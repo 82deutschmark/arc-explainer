@@ -1,20 +1,13 @@
 /**
  * Author: gpt-5-codex
- * Date: 2025-10-16T00:00:00Z
- * PURPOSE: PuzzleExaminer orchestrates ARC puzzle inspection by coordinating data hooks,
- *          model execution workflows, and modal UIs. Restores the legacy DaisyUI streaming
- *          dialog and card-based model selection grid after recent regressions introduced a
- *          data-table layout and shadcn modal wrapper.
- * SRP/DRY check: Pass — delegates fetching, controls, and result rendering to dedicated
- *                components while handling orchestration only (verified via regression
- *                comparison against 2025-10-12 card layout commit).
- * DaisyUI: Pass — ensures modal + card primitives rely on DaisyUI components per repository
- *                 conventions.
+ * Date: 2025-10-31
+ * PURPOSE: Coordinates the Puzzle Examiner page layout, orchestrating data fetching, controls, and result surfaces.
+ * SRP/DRY check: Pass - verified the page keeps orchestration concerns separated from child components that render UI.
  */
 
 import React, { useState, useMemo, useCallback } from 'react';
 import { useParams } from 'wouter';
-import { Loader2, Brain, Settings } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 import { getPuzzleName } from '@shared/utils/puzzleNames';
 import { DEFAULT_EMOJI_SET } from '@/lib/spaceEmojis';
 import type { EmojiSet } from '@/lib/spaceEmojis';
@@ -35,7 +28,6 @@ import { AnalysisResults } from '@/components/puzzle/AnalysisResults';
 import { StreamingAnalysisPanel } from '@/components/puzzle/StreamingAnalysisPanel';
 import { PromptPreviewModal } from '@/components/PromptPreviewModal';
 import { PuzzleGridDisplay } from '@/components/puzzle/PuzzleGridDisplay';
-import { CollapsibleCard } from '@/components/ui/collapsible-card';
 import { PromptConfiguration } from '@/components/puzzle/PromptConfiguration';
 import { AdvancedControls } from '@/components/puzzle/AdvancedControls';
 
@@ -336,64 +328,65 @@ export default function PuzzleExaminer() {
           />
         </div>
 
-        {/* Prompt Configuration */}
-        <div className="mb-3">
-          <CollapsibleCard
-            title="Prompt Style"
-            icon={Brain}
-            defaultOpen={false}
-            headerDescription={
-              <p className="text-xs leading-snug opacity-70">
-                Choose how the AI should analyze the puzzle and preview the full instructions before sending.
-              </p>
-            }
-            className="shadow-none border-base-200"
-          >
-            <PromptConfiguration
-              promptId={promptId}
-              onPromptChange={setPromptId}
-              customPrompt={customPrompt}
-              onCustomPromptChange={setCustomPrompt}
-              disabled={isAnalyzing}
-              sendAsEmojis={sendAsEmojis}
-              onSendAsEmojisChange={setSendAsEmojis}
-              omitAnswer={omitAnswer}
-              onOmitAnswerChange={setOmitAnswer}
-              onPreviewClick={() => {
-                setPendingAnalysis(null);
-                setIsPromptPreviewOpen(true);
-              }}
-            />
-          </CollapsibleCard>
-        </div>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
+          <section className="card card-compact bg-base-100 shadow-sm border border-base-200">
+            <div className="card-body gap-3">
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <h3 className="card-title text-sm font-semibold">Prompt Style</h3>
+                  <p className="text-xs text-base-content/70">
+                    Select the template, tweak emoji options, and preview the compiled instructions.
+                  </p>
+                </div>
+                <span className="badge badge-outline badge-xs uppercase tracking-wide">Prompt</span>
+              </div>
+              <PromptConfiguration
+                promptId={promptId}
+                onPromptChange={setPromptId}
+                customPrompt={customPrompt}
+                onCustomPromptChange={setCustomPrompt}
+                disabled={isAnalyzing}
+                sendAsEmojis={sendAsEmojis}
+                onSendAsEmojisChange={setSendAsEmojis}
+                omitAnswer={omitAnswer}
+                onOmitAnswerChange={setOmitAnswer}
+                onPreviewClick={() => {
+                  setPendingAnalysis(null);
+                  setIsPromptPreviewOpen(true);
+                }}
+              />
+            </div>
+          </section>
 
-        {/* Advanced Controls */}
-        <div className="mb-3">
-          <CollapsibleCard
-            title="Advanced Controls"
-            icon={Settings}
-            headerDescription={
-              <p className="text-xs leading-snug opacity-70">Fine-tune model behavior with detailed parameter controls.</p>
-            }
-            className="shadow-none border-base-200"
-          >
-            <AdvancedControls
-              temperature={temperature}
-              onTemperatureChange={setTemperature}
-              topP={topP}
-              onTopPChange={setTopP}
-              candidateCount={candidateCount}
-              onCandidateCountChange={setCandidateCount}
-              thinkingBudget={thinkingBudget}
-              onThinkingBudgetChange={setThinkingBudget}
-              reasoningEffort={reasoningEffort}
-              onReasoningEffortChange={setReasoningEffort}
-              reasoningVerbosity={reasoningVerbosity}
-              onReasoningVerbosityChange={setReasoningVerbosity}
-              reasoningSummaryType={reasoningSummaryType}
-              onReasoningSummaryTypeChange={setReasoningSummaryType}
-            />
-          </CollapsibleCard>
+          <section className="card card-compact bg-base-100 shadow-sm border border-base-200">
+            <div className="card-body gap-3">
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <h3 className="card-title text-sm font-semibold">Advanced Controls</h3>
+                  <p className="text-xs text-base-content/70">
+                    Fine-tune sampling, candidate fan-out, and reasoning depth without leaving the page.
+                  </p>
+                </div>
+                <span className="text-[10px] uppercase tracking-wide text-base-content/60">GPT-5 | Gemini</span>
+              </div>
+              <AdvancedControls
+                temperature={temperature}
+                onTemperatureChange={setTemperature}
+                topP={topP}
+                onTopPChange={setTopP}
+                candidateCount={candidateCount}
+                onCandidateCountChange={setCandidateCount}
+                thinkingBudget={thinkingBudget}
+                onThinkingBudgetChange={setThinkingBudget}
+                reasoningEffort={reasoningEffort}
+                onReasoningEffortChange={setReasoningEffort}
+                reasoningVerbosity={reasoningVerbosity}
+                onReasoningVerbosityChange={setReasoningVerbosity}
+                reasoningSummaryType={reasoningSummaryType}
+                onReasoningSummaryTypeChange={setReasoningSummaryType}
+              />
+            </div>
+          </section>
         </div>
 
         {/* Model Selection - Card Grid */}
