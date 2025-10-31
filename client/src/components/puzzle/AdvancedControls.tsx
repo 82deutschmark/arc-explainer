@@ -50,180 +50,160 @@ export function AdvancedControls({
   onReasoningSummaryTypeChange
 }: AdvancedControlsProps) {
   return (
-    <div className="space-y-2">
-      {/* Temperature Control */}
-      <div className="p-2 bg-base-200 border border-base-300 rounded">
-        <div className="flex items-center gap-3">
-          <label htmlFor="temperature" className="label text-sm font-medium whitespace-nowrap">
-            Temperature: {temperature}
+    <div className="rounded-lg border border-base-300 bg-base-100">
+      <div className="space-y-3 p-3 text-sm">
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
+          <label htmlFor="temperature" className="text-xs font-semibold uppercase tracking-wide text-base-content/70">
+            Temperature
           </label>
-          <div className="flex-1 max-w-xs">
-            <input
-              type="range"
-              id="temperature"
-              min="0.1"
-              max="2.0"
-              step="0.05"
-              value={temperature}
-              onChange={(e) => onTemperatureChange(parseFloat(e.target.value))}
-              className="range range-xs w-full"
-            />
-          </div>
-          <div className="text-xs opacity-60 flex-shrink-0">
-            <div>Controls creativity • Gemini & GPT-4.1 & older only!!!</div>
-            <div className="text-blue-600">💡 Temperature and reasoning are mutually exclusive</div>
-          </div>
+          <input
+            type="range"
+            id="temperature"
+            min="0.1"
+            max="2.0"
+            step="0.05"
+            value={temperature}
+            onChange={(e) => onTemperatureChange(parseFloat(e.target.value))}
+            className="range range-xs flex-1 min-w-[160px]"
+          />
+          <span className="text-xs font-mono text-base-content/80">{temperature.toFixed(2)}</span>
+          <span className="text-[0.7rem] text-base-content/60 sm:ml-auto">
+            Determinism vs. creativity (Gemini · GPT-4.1)
+          </span>
         </div>
-      </div>
 
-      {/* Top P Control */}
-      <div className="p-2 bg-base-200 border border-base-300 rounded">
-        <div className="flex items-center gap-3">
-          <label htmlFor="topP" className="label text-sm font-medium whitespace-nowrap">
-            Top P: {topP.toFixed(2)}
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
+          <label htmlFor="topP" className="text-xs font-semibold uppercase tracking-wide text-base-content/70">
+            Top P
           </label>
-          <div className="flex-1 max-w-xs">
-            <input
-              type="range"
-              id="topP"
-              min="0.0"
-              max="1.0"
-              step="0.05"
-              value={topP}
-              onChange={(e) => onTopPChange(parseFloat(e.target.value))}
-              className="range range-xs w-full"
-            />
-          </div>
-          <div className="text-xs opacity-60 flex-shrink-0">
-            <div>Controls diversity • Gemini only</div>
-          </div>
+          <input
+            type="range"
+            id="topP"
+            min="0.0"
+            max="1.0"
+            step="0.05"
+            value={topP}
+            onChange={(e) => onTopPChange(parseFloat(e.target.value))}
+            className="range range-xs flex-1 min-w-[160px]"
+          />
+          <span className="text-xs font-mono text-base-content/80">{topP.toFixed(2)}</span>
+          <span className="text-[0.7rem] text-base-content/60 sm:ml-auto">Controls response diversity (Gemini)</span>
         </div>
-      </div>
 
-      {/* Candidate Count Control */}
-      <div className="p-2 bg-base-200 border border-base-300 rounded">
-        <div className="flex items-center gap-3">
-          <label htmlFor="candidateCount" className="label text-sm font-medium whitespace-nowrap">
-            Candidates: {candidateCount}
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
+          <label htmlFor="candidateCount" className="text-xs font-semibold uppercase tracking-wide text-base-content/70">
+            Candidates
           </label>
-          <div className="flex-1 max-w-xs">
-            <input
-              type="range"
-              id="candidateCount"
-              min="1"
-              max="8"
-              step="1"
-              value={candidateCount}
-              onChange={(e) => onCandidateCountChange(parseInt(e.target.value))}
-              className="range range-xs w-full"
-            />
-          </div>
-          <div className="text-xs opacity-60 flex-shrink-0">
-            <div>Number of responses • Gemini only</div>
-          </div>
+          <input
+            type="range"
+            id="candidateCount"
+            min="1"
+            max="8"
+            step="1"
+            value={candidateCount}
+            onChange={(e) => onCandidateCountChange(parseInt(e.target.value))}
+            className="range range-xs flex-1 min-w-[160px]"
+          />
+          <span className="text-xs font-mono text-base-content/80">{candidateCount}</span>
+          <span className="text-[0.7rem] text-base-content/60 sm:ml-auto">Parallel candidates (Gemini)</span>
         </div>
-      </div>
 
-      {/* Thinking Budget Control */}
-      <div className="p-2 bg-purple-50 border border-purple-200 rounded">
-        <div className="flex items-center gap-3">
-          <label htmlFor="thinkingBudget" className="label text-sm font-medium whitespace-nowrap">
-            Thinking Budget: {thinkingBudget === -1 ? 'Dynamic' : thinkingBudget === 0 ? 'Disabled' : thinkingBudget}
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-2 border-t border-base-200 pt-3">
+          <label htmlFor="thinkingBudget" className="text-xs font-semibold uppercase tracking-wide text-base-content/70">
+            Thinking budget
           </label>
-          <div className="flex-1 max-w-xs">
-            <select
-              className="select select-bordered w-full"
-              value={thinkingBudget.toString()}
-              onChange={(e) => onThinkingBudgetChange(parseInt(e.target.value))}
-            >
-              <option value="-1">Dynamic (Model Chooses)</option>
-              <option value="0">Disabled</option>
-              <option value="512">512 tokens</option>
-              <option value="1024">1024 tokens</option>
-              <option value="2048">2048 tokens</option>
-              <option value="4096">4096 tokens</option>
-              <option value="8192">8192 tokens</option>
-              <option value="16384">16384 tokens</option>
-              <option value="24576">24576 tokens (Max Flash)</option>
-              <option value="32768">32768 tokens (Max Pro)</option>
-            </select>
-          </div>
-          <div className="text-xs opacity-60 flex-shrink-0">
-            <div>Internal reasoning tokens • Gemini 2.5+ only</div>
-          </div>
+          <select
+            id="thinkingBudget"
+            className="select select-bordered select-sm flex-1 min-w-[160px]"
+            value={thinkingBudget.toString()}
+            onChange={(e) => onThinkingBudgetChange(parseInt(e.target.value))}
+          >
+            <option value="-1">Dynamic</option>
+            <option value="0">Disabled</option>
+            <option value="512">512 tokens</option>
+            <option value="1024">1024 tokens</option>
+            <option value="2048">2048 tokens</option>
+            <option value="4096">4096 tokens</option>
+            <option value="8192">8192 tokens</option>
+            <option value="16384">16384 tokens</option>
+            <option value="24576">24576 tokens (Flash max)</option>
+            <option value="32768">32768 tokens (Pro max)</option>
+          </select>
+          <span className="text-[0.7rem] text-base-content/60 sm:ml-auto">Internal reasoning tokens (Gemini 2.5+)</span>
         </div>
-      </div>
 
-      {/* GPT-5 Reasoning Parameters */}
-      <div className="p-2 bg-blue-50 border border-blue-200 rounded-lg">
-        <h5 className="text-sm font-semibold text-blue-800 mb-2 flex items-center gap-2">
-          <Brain className="h-4 w-4" />
-          GPT-5 Reasoning Parameters
-        </h5>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-          {/* Effort Control */}
-          <div>
-            <label htmlFor="reasoning-effort" className="label text-sm font-medium text-blue-700">
-              Effort Level
-            </label>
-            <select
-              className="select select-bordered w-full mt-1"
-              value={reasoningEffort}
-              onChange={(e) => onReasoningEffortChange(e.target.value as 'minimal' | 'low' | 'medium' | 'high')}
-            >
-              <option value="minimal">Minimal</option>
-              <option value="low">Low</option>
-              <option value="medium">Medium</option>
-              <option value="high">High</option>
-            </select>
-            <p className="text-xs text-blue-600 mt-0.5">
-              {reasoningEffort === 'minimal' && 'Basic reasoning'}
-              {reasoningEffort === 'low' && 'Light reasoning'}
-              {reasoningEffort === 'medium' && 'Moderate reasoning'}
-              {reasoningEffort === 'high' && 'Intensive reasoning'}
-            </p>
+        <div className="rounded-md border border-blue-200 bg-blue-50/40 p-3">
+          <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-blue-800">
+            <Brain className="h-3.5 w-3.5" />
+            GPT-5 reasoning parameters
           </div>
+          <div className="mt-2 grid gap-2 sm:grid-cols-3">
+            <div className="space-y-1">
+              <label htmlFor="reasoning-effort" className="text-xs font-medium text-blue-800">
+                Effort
+              </label>
+              <select
+                id="reasoning-effort"
+                className="select select-bordered select-sm w-full"
+                value={reasoningEffort}
+                onChange={(e) => onReasoningEffortChange(e.target.value as 'minimal' | 'low' | 'medium' | 'high')}
+              >
+                <option value="minimal">Minimal</option>
+                <option value="low">Low</option>
+                <option value="medium">Medium</option>
+                <option value="high">High</option>
+              </select>
+              <p className="text-[0.7rem] text-blue-700">
+                {reasoningEffort === 'minimal' && 'Fast heuristic checks'}
+                {reasoningEffort === 'low' && 'Light planning'}
+                {reasoningEffort === 'medium' && 'Structured reasoning'}
+                {reasoningEffort === 'high' && 'Max depth reasoning'}
+              </p>
+            </div>
 
-          {/* Verbosity Control */}
-          <div>
-            <label htmlFor="reasoning-verbosity" className="label text-sm font-medium text-blue-700">
-              Verbosity
-            </label>
-            <select
-              className="select select-bordered w-full mt-1"
-              value={reasoningVerbosity}
-              onChange={(e) => onReasoningVerbosityChange(e.target.value as 'low' | 'medium' | 'high')}
-            >
-              <option value="low">Low</option>
-              <option value="medium">Medium</option>
-              <option value="high">High</option>
-            </select>
-            <p className="text-xs text-blue-600 mt-0.5">
-              {reasoningVerbosity === 'low' && 'Concise reasoning logs'}
-              {reasoningVerbosity === 'medium' && 'Balanced detail'}
-              {reasoningVerbosity === 'high' && 'Detailed reasoning logs'}
-            </p>
-          </div>
+            <div className="space-y-1">
+              <label htmlFor="reasoning-verbosity" className="text-xs font-medium text-blue-800">
+                Verbosity
+              </label>
+              <select
+                id="reasoning-verbosity"
+                className="select select-bordered select-sm w-full"
+                value={reasoningVerbosity}
+                onChange={(e) => onReasoningVerbosityChange(e.target.value as 'low' | 'medium' | 'high')}
+              >
+                <option value="low">Low</option>
+                <option value="medium">Medium</option>
+                <option value="high">High</option>
+              </select>
+              <p className="text-[0.7rem] text-blue-700">
+                {reasoningVerbosity === 'low' && 'Concise logs'}
+                {reasoningVerbosity === 'medium' && 'Balanced detail'}
+                {reasoningVerbosity === 'high' && 'Full reasoning trace'}
+              </p>
+            </div>
 
-          {/* Summary Control */}
-          <div>
-            <label htmlFor="reasoning-summary" className="label text-sm font-medium text-blue-700">
-              Summary
-            </label>
-            <select
-              className="select select-bordered w-full mt-1"
-              value={reasoningSummaryType}
-              onChange={(e) => onReasoningSummaryTypeChange(e.target.value as 'auto' | 'detailed')}
-            >
-              <option value="auto">Auto</option>
-              <option value="detailed">Detailed</option>
-            </select>
-            <p className="text-xs text-blue-600 mt-0.5">
-              {reasoningSummaryType === 'auto' && 'Automatic summary generation'}
-              {reasoningSummaryType === 'detailed' && 'Comprehensive summary'}
-            </p>
+            <div className="space-y-1">
+              <label htmlFor="reasoning-summary" className="text-xs font-medium text-blue-800">
+                Summary
+              </label>
+              <select
+                id="reasoning-summary"
+                className="select select-bordered select-sm w-full"
+                value={reasoningSummaryType}
+                onChange={(e) => onReasoningSummaryTypeChange(e.target.value as 'auto' | 'detailed')}
+              >
+                <option value="auto">Auto</option>
+                <option value="detailed">Detailed</option>
+              </select>
+              <p className="text-[0.7rem] text-blue-700">
+                {reasoningSummaryType === 'auto' && 'Model decides summary length'}
+                {reasoningSummaryType === 'detailed' && 'Always include full recap'}
+              </p>
+            </div>
           </div>
+          <p className="mt-2 text-[0.7rem] text-blue-700">
+            Available on GPT-5 class models. Pair with temperature ≤ 0.3 for best reproducibility.
+          </p>
         </div>
       </div>
     </div>
