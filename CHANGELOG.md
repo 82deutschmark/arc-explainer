@@ -1,5 +1,23 @@
 # CHANGELOG
 
+## [4.9.5] - 2025-10-31
+### 🎨 UI/UX: Responsive puzzle grid layout + shadcn/ui migration
+
+- **Responsive Grid Layout**: Puzzle grids now utilize 70%+ of available horizontal space with multi-column layout:
+  - Grid sizing increased 70-80% (small: 220px→380px, medium: 260px→440px, large: 320px→540px)
+  - Training examples and test cases display in responsive CSS Grid (1 col on mobile, 2 cols on XL screens, 3 cols on 2XL)
+  - Dramatically reduced wasted whitespace on wide displays (2560px+)
+- **shadcn/ui Components**: Converted prompt controls from DaisyUI to shadcn/ui for design system consistency:
+  - `PromptPicker`: Now uses `Select`, `Switch`, `Label`, `Textarea`, and `Alert` components
+  - `PromptConfiguration`: Updated to use shadcn/ui `Button`
+  - Maintains compact layout with improved accessibility and type safety
+- **Prompt Controls**: Set to collapsed by default to reduce initial page height
+
+#### Verification
+- Not run (UI layout changes)
+
+---
+
 ## [4.9.4] - 2025-10-31
 ### ⚡ Performance: Lazy explanation loading keeps Puzzle Examiner snappy
 

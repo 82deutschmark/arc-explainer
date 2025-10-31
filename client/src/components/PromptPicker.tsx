@@ -2,15 +2,20 @@
  * Author: Claude Code using Sonnet 4.5
  * Date: 2025-10-31
  * PURPOSE: Compact PromptPicker that renders prompt template selection as a dropdown
- *          with inline toggles for emojis and hide solutions options. Simplified from
- *          two-column layout to single-column for better space efficiency.
+ *          with inline toggles for emojis and hide solutions options. Uses shadcn/ui
+ *          components for consistent design system integration.
  * SRP/DRY check: Pass — only responsible for listing prompt templates and
  *                related prompt-level options. Reuses shared API client.
  */
 
 import React, { useState, useEffect, useMemo } from 'react';
-import { Loader2 } from 'lucide-react';
+import { Loader2, AlertCircle } from 'lucide-react';
 import { apiRequest } from '@/lib/queryClient';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Switch } from '@/components/ui/switch';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 
 interface PromptTemplate {
   id: string;
@@ -98,51 +103,58 @@ export function PromptPicker({
 
   if (error) {
     return (
-      <div className="alert alert-error text-sm" role="alert">
-        <span className="font-medium">Unable to load prompts.</span>
-        <span className="text-xs opacity-80">{error}</span>
-      </div>
+      <Alert variant="destructive" className="text-sm">
+        <AlertCircle className="h-4 w-4" />
+        <AlertDescription>
+          <span className="font-medium">Unable to load prompts.</span>
+          <span className="text-xs opacity-80 ml-2">{error}</span>
+        </AlertDescription>
+      </Alert>
     );
   }
 
   return (
-    <div className="space-y-2">
+    <div className="space-y-3">
       {/* Compact prompt selector dropdown */}
-      <div className="flex items-center gap-2">
-        <label className="text-sm font-medium text-base-content/80 min-w-fit">Template:</label>
-        <select
-          className="select select-bordered select-sm flex-1"
+      <div className="flex items-center gap-3">
+        <Label htmlFor="prompt-select" className="text-sm min-w-fit">Template:</Label>
+        <Select
           value={selectedPromptId}
-          onChange={(e) => handlePromptChange(e.target.value)}
+          onValueChange={handlePromptChange}
           disabled={disabled}
         >
-          {prompts.map((prompt) => (
-            <option key={prompt.id} value={prompt.id}>
-              {prompt.name}
-            </option>
-          ))}
-        </select>
+          <SelectTrigger id="prompt-select" className="h-9">
+            <SelectValue placeholder="Select a prompt template" />
+          </SelectTrigger>
+          <SelectContent>
+            {prompts.map((prompt) => (
+              <SelectItem key={prompt.id} value={prompt.id}>
+                {prompt.name}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </div>
 
       {/* Active prompt description - compact */}
       {activePrompt && (
-        <div className="text-xs text-base-content/70 px-1">
+        <div className="text-xs text-muted-foreground px-1">
           {activePrompt.description}
         </div>
       )}
 
       {/* Custom prompt textarea (only shown when custom is selected) */}
       {selectedPromptId === 'custom' && onCustomPromptChange && (
-        <div className="space-y-1">
-          <textarea
-            className="textarea textarea-bordered textarea-sm w-full text-xs"
+        <div className="space-y-2">
+          <Textarea
             value={customPrompt || ''}
             onChange={(e) => onCustomPromptChange(e.target.value)}
             placeholder="Enter custom prompt instructions…"
             disabled={disabled}
             rows={3}
+            className="text-xs min-h-[60px]"
           />
-          <div className="flex items-center justify-between text-[0.7rem] text-base-content/60 px-1">
+          <div className="flex items-center justify-between text-[0.7rem] text-muted-foreground px-1">
             <span>Custom text is appended after core puzzle context.</span>
             <span className="font-mono">{(customPrompt ?? '').length} chars</span>
           </div>
@@ -150,40 +162,39 @@ export function PromptPicker({
       )}
 
       {/* Compact toggle controls in a single row */}
-      <div className="flex items-center gap-4 px-1">
+      <div className="flex items-center gap-6 px-1">
         <div className="flex items-center gap-2">
-          <input
-            type="checkbox"
-            className="toggle toggle-xs toggle-success"
-            checked={sendAsEmojis}
-            onChange={(e) => onSendAsEmojisChange?.(e.target.checked)}
-            disabled={disabled}
+          <Switch
             id="emoji-toggle-picker"
+            checked={sendAsEmojis}
+            onCheckedChange={onSendAsEmojisChange}
+            disabled={disabled}
           />
-          <label htmlFor="emoji-toggle-picker" className="text-xs text-base-content/70 cursor-pointer">
+          <Label htmlFor="emoji-toggle-picker" className="text-xs font-normal cursor-pointer">
             🌟 Send as emojis
-          </label>
+          </Label>
         </div>
 
         <div className="flex items-center gap-2">
-          <input
-            type="checkbox"
-            className="toggle toggle-xs toggle-warning"
-            checked={omitAnswer}
-            onChange={(e) => onOmitAnswerChange?.(e.target.checked)}
-            disabled={disabled}
+          <Switch
             id="omit-toggle-picker"
+            checked={omitAnswer}
+            onCheckedChange={onOmitAnswerChange}
+            disabled={disabled}
           />
-          <label htmlFor="omit-toggle-picker" className="text-xs text-base-content/70 cursor-pointer">
+          <Label htmlFor="omit-toggle-picker" className="text-xs font-normal cursor-pointer">
             🎭 Hide solutions
-          </label>
+          </Label>
         </div>
       </div>
 
       {selectedPromptId === 'custom' && !customPrompt && (
-        <div className="alert alert-warning alert-sm py-2 text-xs">
-          Custom prompt selected — add instructions above before running an analysis.
-        </div>
+        <Alert className="py-2 border-yellow-200 bg-yellow-50 text-yellow-800">
+          <AlertCircle className="h-4 w-4 text-yellow-600" />
+          <AlertDescription className="text-xs">
+            Custom prompt selected — add instructions above before running an analysis.
+          </AlertDescription>
+        </Alert>
       )}
     </div>
   );
