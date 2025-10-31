@@ -1,5 +1,17 @@
 # CHANGELOG
 
+## [4.10.1] - 2025-10-31
+### 🎨 UI/UX: Neutral, information-dense Puzzle Browser
+
+- Replaced the purple gradient hero with a centered neutral layout that surfaces live puzzle counts and keeps quick links within compact cards.
+- Aligned search and filter controls into a responsive grid, standardised neutral button treatments, and tightened active filter badges for rapid scanning.
+- Simplified the puzzle results and help panels to use consistent spacing and typography, improving readability without sacrificing functionality.
+
+#### Verification
+- Not run (visual refresh)
+
+---
+
 ## [4.10.0] - 2025-10-31
 ### ✨ Feature: Algorithmic emoji mosaic patterns with semantic meaning
 
