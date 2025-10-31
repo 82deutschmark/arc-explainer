@@ -1,5 +1,22 @@
 # CHANGELOG
 
+## [4.9.4] - 2025-10-31
+### ⚡ Performance: Lazy explanation loading keeps Puzzle Examiner snappy
+
+- Added `/api/puzzle/:puzzleId/explanations/summary` so the browser can fetch lightweight listings before requesting full grids, trimming initial payloads for large puzzles.
+- Refactored Puzzle Examiner to hydrate explanations on demand with a dedicated summary hook, ensuring cached rows stay in sync while deferring heavy detail calls.
+- Captured the rollout in performance playbooks so future optimizer passes can build on the same lazy-loading architecture.
+
+### 🎨 UI/UX: Prompt picker and advanced controls feel lighter
+
+- Simplified the prompt template selector, tightening copy, badges, and emoji toggles so researchers can switch instruction sets with less scrolling.
+- Reworked advanced controls into clearer sections that surface omit-answer and emoji options, maintaining validation for custom prompts.
+
+#### Verification
+- Not run (UI + API wiring)
+
+---
+
 ## [4.9.3] - 2025-10-28
 ### ✨ Enhancement: Puzzle Browser highlights latest ARC SOTA
 
