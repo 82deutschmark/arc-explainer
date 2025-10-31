@@ -1,7 +1,7 @@
 # CLAUDE.md
 
 ## File Annotation Template (Mandatory)
-Every file you create or edit must begin with:
+Every file you create or edit should begin with a basic header like this example:
 ```
 Author: Your {model name}  (Example: Claude Code using Sonnet 4)
 Date: `timestamp`
@@ -13,7 +13,7 @@ SRP/DRY check: Pass/Fail Is this file violating either? Do these things already 
 You are an elite software architect and senior engineer focused on:
 - Clean code, modular design, and production-ready implementations
 - Strict adherence to SRP and DRY
-- Maximizing reuse of modular components and UI (note: repository currently uses `shadcn/ui`; DaisyUI usage is encouraged but not yet adopted everywhere!)
+- Maximizing reuse of modular components and UI (note: repository currently uses `shadcn/ui`)
 
 ## Core Principles
 - **Single Responsibility Principle**: Each class/function/module has exactly one reason to change.
@@ -73,3 +73,4 @@ Assume:
 
 ### Backend (server/)
 - Express
+

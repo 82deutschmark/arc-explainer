@@ -49,6 +49,48 @@ export const explanationController = {
   },
 
   /**
+   * Get paginated explanation summaries for a puzzle (lightweight payload)
+   */
+  async getSummary(req: Request, res: Response) {
+    try {
+      const { puzzleId } = req.params;
+      const { correctness, limit, offset } = req.query;
+
+      const correctnessFilter = ['all', 'correct', 'incorrect'].includes((correctness as string) ?? '')
+        ? (correctness as 'all' | 'correct' | 'incorrect')
+        : 'all';
+
+      const parsedLimit = Number.parseInt(String(limit ?? ''), 10);
+      const parsedOffset = Number.parseInt(String(offset ?? ''), 10);
+      const safeLimit = Number.isFinite(parsedLimit) ? parsedLimit : undefined;
+      const safeOffset = Number.isFinite(parsedOffset) ? parsedOffset : undefined;
+
+      const summary = await explanationService.getExplanationSummariesForPuzzle(puzzleId, {
+        correctnessFilter,
+        limit: safeLimit,
+        offset: safeOffset,
+      });
+
+      const consumed = (safeOffset ?? 0) + summary.items.length;
+      const hasMore = summary.filteredTotal > consumed;
+      const nextOffset = hasMore ? consumed : null;
+
+      res.json(formatResponse.success({
+        ...summary,
+        hasMore,
+        nextOffset,
+      }));
+    } catch (error) {
+      console.error('Error in explanationController.getSummary:', error);
+      res.status(500).json(formatResponse.error(
+        'INTERNAL_ERROR',
+        'Failed to retrieve explanation summaries',
+        { error: error instanceof Error ? error.message : 'Unknown error' }
+      ));
+    }
+  },
+
+  /**
    * Get a single explanation for a puzzle
    * 
    * @param req - Express request object

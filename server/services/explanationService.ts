@@ -104,6 +104,16 @@ export const explanationService = {
   },
 
   /**
+   * Get lightweight explanation summaries for a puzzle with pagination metadata.
+   */
+  async getExplanationSummariesForPuzzle(
+    puzzleId: string,
+    options?: { correctnessFilter?: 'all' | 'correct' | 'incorrect'; limit?: number; offset?: number }
+  ) {
+    return repositoryService.explanations.getExplanationSummariesForPuzzle(puzzleId, options);
+  },
+
+  /**
    * Get a single explanation for a specific puzzle
    * 
    * @param puzzleId - The ID of the puzzle to get the explanation for

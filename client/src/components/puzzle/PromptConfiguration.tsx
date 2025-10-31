@@ -1,18 +1,19 @@
 /**
  * PromptConfiguration.tsx
  *
- * Author: Cascade using Claude Sonnet 4.5
- * Date: 2025-10-12
+ * Author: Claude Code using Sonnet 4.5
+ * Date: 2025-10-31
  * PURPOSE: Handles prompt selection and preview controls.
  * Extracted from PuzzleExaminer lines 614-646 to follow SRP.
- * 
+ * Updated to use shadcn/ui components for consistent design system.
+ *
  * SRP/DRY check: Pass - Single responsibility (prompt configuration)
- * DaisyUI: Pass - Uses DaisyUI btn component
  */
 
 import React from 'react';
 import { Eye } from 'lucide-react';
 import { PromptPicker } from '../PromptPicker';
+import { Button } from '@/components/ui/button';
 
 interface PromptConfigurationProps {
   promptId: string;
@@ -43,7 +44,7 @@ export function PromptConfiguration({
   onPreviewClick
 }: PromptConfigurationProps) {
   return (
-    <div>
+    <div className="space-y-2">
       <PromptPicker
         selectedPromptId={promptId}
         onPromptChange={onPromptChange}
@@ -56,16 +57,18 @@ export function PromptConfiguration({
         onOmitAnswerChange={onOmitAnswerChange}
       />
 
-      {/* Prompt Preview Button */}
-      <div className="mb-3 flex justify-center">
-        <button
-          className="btn btn-outline btn-sm flex items-center gap-2"
+      <div className="flex items-center justify-end gap-3 px-1 text-xs text-muted-foreground">
+        <span>Preview the final prompt before running an analysis.</span>
+        <Button
+          variant="outline"
+          size="sm"
           onClick={onPreviewClick}
           disabled={disabled}
+          className="h-8"
         >
-          <Eye className="h-4 w-4" />
-          Preview Prompt
-        </button>
+          <Eye className="h-3 w-3" />
+          Preview prompt
+        </Button>
       </div>
     </div>
   );

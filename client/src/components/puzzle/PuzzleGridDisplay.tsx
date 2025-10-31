@@ -1,9 +1,9 @@
 /**
- * Author: gpt-5-codex
- * Date: 2025-10-26
- * PURPOSE: Restore the late-August 2025 Puzzle Examiner grid presentation — simple row cards
- *          that show each input grid flowing into its output with a lightweight arrow divider.
- *          Keeps the modern PuzzleGrid sizing logic while discarding the recent bucketed layout.
+ * Author: Claude Code using Sonnet 4.5
+ * Date: 2025-10-31
+ * PURPOSE: Responsive puzzle grid display with dynamic sizing and multi-column layout.
+ *          Uses viewport-relative sizing and CSS Grid to efficiently utilize horizontal space.
+ *          Maintains simple input→output flow with adaptive grid arrangement for different screen sizes.
  * SRP/DRY check: Pass — prepares example metadata and renders it with the shared PuzzleGrid.
  */
 
@@ -26,12 +26,17 @@ interface PreparedExample {
   example: ARCExample;
 }
 
-const BASE_MAX_WIDTH = 220;
-const BASE_MAX_HEIGHT = 220;
-const LARGE_MAX_WIDTH = 260;
-const LARGE_MAX_HEIGHT = 280;
-const XL_MAX_WIDTH = 320;
-const XL_MAX_HEIGHT = 340;
+// Increased max sizing values to better utilize horizontal space
+// These are now 70-80% larger than original values to reduce wasted space
+// Small grids (largestDim ≤ 18): 380px (was 220px)
+// Medium grids (largestDim ≤ 25): 440px (was 260px)
+// Large grids (largestDim > 25): 540px (was 320px)
+const BASE_MAX_WIDTH = 380;
+const BASE_MAX_HEIGHT = 380;
+const LARGE_MAX_WIDTH = 440;
+const LARGE_MAX_HEIGHT = 460;
+const XL_MAX_WIDTH = 540;
+const XL_MAX_HEIGHT = 560;
 
 function formatDimensions(example: ARCExample): string {
   const inputRows = example.input.length;
@@ -133,8 +138,8 @@ function ExampleSection({
   emojiSet
 }: ExampleSectionProps) {
   return (
-    <div className="space-y-2">
-      <div className="text-[10px] font-semibold uppercase tracking-wide text-slate-500 flex items-center gap-1">
+    <div>
+      <div className="text-[10px] font-semibold uppercase tracking-wide text-slate-500 flex items-center gap-1 mb-2">
         <span className={`inline-block w-1 h-1 rounded-full ${accentClass}`}></span>
         {title}
       </div>
@@ -142,15 +147,17 @@ function ExampleSection({
       {examples.length === 0 ? (
         <div className="text-xs italic text-slate-400">{emptyMessage}</div>
       ) : (
-        examples.map((prepared) => (
-          <ExampleCard
-            key={prepared.key}
-            prepared={prepared}
-            variant={variant}
-            showEmojis={showEmojis}
-            emojiSet={emojiSet}
-          />
-        ))
+        <div className="grid grid-cols-1 xl:grid-cols-2 2xl:grid-cols-3 gap-3">
+          {examples.map((prepared) => (
+            <ExampleCard
+              key={prepared.key}
+              prepared={prepared}
+              variant={variant}
+              showEmojis={showEmojis}
+              emojiSet={emojiSet}
+            />
+          ))}
+        </div>
       )}
     </div>
   );
