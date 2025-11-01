@@ -183,14 +183,14 @@ export default function PuzzleBrowser() {
   }
 
   return (
-    <div className="min-h-screen w-full bg-slate-950 text-slate-100">
-      <div className="flex min-h-screen w-full flex-col gap-10 pb-12 pt-10">
+    <div className="min-h-screen w-full bg-slate-950 text-slate-100 px-1.5">
+      <div className="flex min-h-screen w-full flex-col gap-2 pb-5 pt-3">
 
-        <header className="w-full space-y-6">
-          <div className="flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">
-            <div className="space-y-3">
+        <header className="w-full space-y-2">
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
+            <div className="space-y-1">
               <p className="text-xs font-semibold uppercase tracking-[0.35em] text-slate-500">Research Overview</p>
-              <h1 className="text-3xl font-semibold text-slate-50 sm:text-4xl">
+              <h1 className="text-2xl font-semibold text-slate-50 sm:text-3xl">
                 ARC-AGI Puzzle Explorer
               </h1>
             </div>
@@ -208,16 +208,16 @@ export default function PuzzleBrowser() {
             <CollapsibleMission />
           </div>
 
-          <section className="rounded-lg border border-slate-800 bg-slate-900/60 p-6">
+          <section className="rounded-lg border border-slate-800 bg-slate-900/60 p-3">
             <div className="flex items-center gap-3 text-sm font-semibold text-slate-200">
               <Sparkles className="h-4 w-4 text-slate-300" />
               <span>Reference material</span>
             </div>
 
-            <div className="mt-4 grid gap-6 text-sm text-slate-300 sm:grid-cols-2 lg:grid-cols-4">
-              <div className="space-y-2">
+            <div className="mt-2 grid gap-3 text-xs text-slate-300 sm:grid-cols-2 lg:grid-cols-4">
+              <div className="space-y-1">
                 <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">Research Papers</p>
-                <ul className="space-y-1">
+                <ul className="space-y-0.5">
                   <li>
                     <a
                       href="https://www.arxiv.org/pdf/2505.11831"
@@ -232,9 +232,9 @@ export default function PuzzleBrowser() {
                 </ul>
               </div>
 
-              <div className="space-y-2">
+              <div className="space-y-1">
                 <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">Data Sources</p>
-                <ul className="space-y-1">
+                <ul className="space-y-0.5">
                   <li>
                     <a
                       href="https://huggingface.co/arcprize"
@@ -260,9 +260,9 @@ export default function PuzzleBrowser() {
                 </ul>
               </div>
 
-              <div className="space-y-2">
+              <div className="space-y-1">
                 <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">Solution References</p>
-                <ul className="space-y-1">
+                <ul className="space-y-0.5">
                   <li>
                     <a
                       href="https://github.com/zoecarver"
@@ -299,9 +299,9 @@ export default function PuzzleBrowser() {
                 </ul>
               </div>
 
-              <div className="space-y-2">
+              <div className="space-y-1">
                 <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">Community Notes</p>
-                <ul className="space-y-1">
+                <ul className="space-y-0.5">
                   <li>
                     <a
                       href="https://github.com/google/ARC-GEN/blob/main/task_list.py#L422"
@@ -339,7 +339,7 @@ export default function PuzzleBrowser() {
               </div>
             </div>
 
-            <p className="mt-6 text-xs text-slate-500">
+            <p className="mt-2 text-xs text-slate-500">
               Acknowledgement: Simon Strandgaard (@neoneye) continues to provide thoughtful feedback on the ARC tooling ecosystem.
             </p>
           </section>
@@ -347,9 +347,9 @@ export default function PuzzleBrowser() {
 
         {/* Filters */}
 
-        <section className="w-full rounded-lg border border-slate-800 bg-slate-900/60 p-6">
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            <div className="flex flex-col gap-1.5">
+        <section className="w-full rounded-lg border border-slate-800 bg-slate-900/60 p-3">
+          <div className="grid grid-cols-1 gap-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            <div className="flex flex-col gap-1">
               <label htmlFor="maxGridSize" className="text-xs font-semibold uppercase tracking-wide text-slate-400">Max Grid Size</label>
               <select
                 className="select select-sm select-bordered w-full border border-slate-700 bg-slate-950 text-slate-100 focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500"
@@ -365,7 +365,7 @@ export default function PuzzleBrowser() {
               </select>
             </div>
 
-            <div className="flex flex-col gap-1.5">
+            <div className="flex flex-col gap-1">
               <label htmlFor="explanationFilter" className="text-xs font-semibold uppercase tracking-wide text-slate-400">Explanation Status</label>
               <select
                 className="select select-sm select-bordered w-full border border-slate-700 bg-slate-950 text-slate-100 focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500"
@@ -378,7 +378,7 @@ export default function PuzzleBrowser() {
               </select>
             </div>
 
-            <div className="flex flex-col gap-1.5">
+            <div className="flex flex-col gap-1">
               <label htmlFor="gridConsistent" className="text-xs font-semibold uppercase tracking-wide text-slate-400">Grid Consistency</label>
               <select
                 className="select select-sm select-bordered w-full border border-slate-700 bg-slate-950 text-slate-100 focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500"
@@ -391,7 +391,7 @@ export default function PuzzleBrowser() {
               </select>
             </div>
 
-            <div className="flex flex-col gap-1.5">
+            <div className="flex flex-col gap-1">
               <label htmlFor="arcVersion" className="text-xs font-semibold uppercase tracking-wide text-slate-400">ARC Version</label>
               <select
                 className="select select-sm select-bordered w-full border border-slate-700 bg-slate-950 text-slate-100 focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500"
@@ -408,7 +408,7 @@ export default function PuzzleBrowser() {
               </select>
             </div>
 
-            <div className="flex flex-col gap-1.5">
+            <div className="flex flex-col gap-1">
               <label htmlFor="multiTestFilter" className="text-xs font-semibold uppercase tracking-wide text-slate-400">Test Cases</label>
               <select
                 className="select select-sm select-bordered w-full border border-slate-700 bg-slate-950 text-slate-100 focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500"
@@ -421,7 +421,7 @@ export default function PuzzleBrowser() {
               </select>
             </div>
 
-            <div className="flex flex-col gap-1.5">
+            <div className="flex flex-col gap-1">
               <label htmlFor="sortBy" className="text-xs font-semibold uppercase tracking-wide text-slate-400">Sort By</label>
               <select
                 className="select select-sm select-bordered w-full border border-slate-700 bg-slate-950 text-slate-100 focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500"
@@ -439,7 +439,7 @@ export default function PuzzleBrowser() {
             </div>
           </div>
 
-          <div className="mt-6 flex flex-col gap-4 border-t border-slate-800 pt-4 text-xs text-slate-400 md:flex-row md:items-center md:justify-between">
+          <div className="mt-2 flex flex-col gap-2 border-t border-slate-800 pt-2 text-xs text-slate-400 md:flex-row md:items-center md:justify-between">
             <div className="flex flex-wrap items-center gap-2">
               <span className="text-sm font-semibold text-slate-200">Active filters</span>
               {[
@@ -491,8 +491,8 @@ export default function PuzzleBrowser() {
           </div>
         </section>
         {/* Results */}
-        <section className="w-full rounded-lg border border-slate-800 bg-slate-900/60 p-6">
-          <div className="mb-4 flex flex-wrap items-center justify-between gap-3 text-slate-200">
+        <section className="w-full rounded-lg border border-slate-800 bg-slate-900/60 p-3">
+          <div className="mb-2 flex flex-wrap items-center justify-between gap-2 text-slate-200">
             <h2 className="text-base font-semibold uppercase tracking-wide text-slate-300">Puzzle results</h2>
             {!isLoading && (
               <span className="rounded-full border border-slate-700 px-3 py-1 text-xs text-slate-400">
@@ -512,7 +512,7 @@ export default function PuzzleBrowser() {
               <p className="mt-1 text-xs text-slate-500">Adjust the criteria to broaden the search.</p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
+            <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
               {filteredPuzzles.map((puzzle: EnhancedPuzzleMetadata) => (
                 <PuzzleCard
                   key={puzzle.id}
@@ -524,9 +524,9 @@ export default function PuzzleBrowser() {
           )}
         </section>
         {/* Instructions */}
-        <section className="w-full rounded-lg border border-slate-800 bg-slate-900/60 p-6">
+        <section className="w-full rounded-lg border border-slate-800 bg-slate-900/60 p-3">
           <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-300">Working notes</h2>
-          <div className="mt-3 space-y-2 text-xs leading-relaxed text-slate-400">
+          <div className="mt-2 space-y-1 text-xs leading-relaxed text-slate-400">
             <p>
               <strong className="text-slate-200">Goal:</strong> Use the browser to study puzzle structure, metadata, and historical attempts. For hands-on solving, pivot to the dedicated human challenge interface at{' '}
               <Link href="https://human-arc.gptpluspro.com/assessment" className="text-sky-300 hover:text-sky-200">Puzzle Browser</Link>.

@@ -1,5 +1,20 @@
 # CHANGELOG
 
+## [4.10.11] - 2025-11-01
+### 🎨 UI/UX: Puzzle Browser ultra-compact layout
+
+- Reduced page margins to minimal 5px (px-1.5) to maximize puzzle display space
+- Compressed all section padding from p-6 to p-3 (filters, reference material, results, working notes)
+- Reduced vertical spacing throughout: gap-10 → gap-2, header spacing reduced to space-y-2
+- Compressed filter section: gap-4 → gap-2, gap-1.5 → gap-1 on all filter controls
+- Minimized reference material section: reduced grid gaps (gap-6 → gap-3), list spacing (space-y-2 → space-y-1), and internal margins
+- Reduced title size: h1 from text-3xl/4xl to text-2xl/3xl
+- Tightened puzzle grid spacing: gap-4 → gap-2
+- Overall result: Maximum vertical space now dedicated to displaying puzzle cards
+
+#### Verification
+- Not run (visual optimization)
+
 ## [4.10.10] - 2025-11-01
 ### 🎨 UI/UX: Puzzle Browser full-width layout
 
