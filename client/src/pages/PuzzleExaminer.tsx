@@ -481,7 +481,9 @@ export default function PuzzleExaminer() {
               if (streamingPanelStatus === 'in_progress') {
                 cancelStreamingAnalysis();
               }
-              closeStreamingModal();
+              if (streamingPanelStatus !== 'completed') {
+                closeStreamingModal();
+              }
             }}
           >
             close
