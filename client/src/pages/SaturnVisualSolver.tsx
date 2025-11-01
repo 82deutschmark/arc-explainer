@@ -242,33 +242,35 @@ export default function SaturnVisualSolver() {
           </div>
         )}
 
-        <section className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-3 text-xs md:text-sm">
-          <article className="bg-white border border-gray-300 rounded-lg p-3 shadow-sm">
-            <h2 className="text-xs md:text-sm font-semibold text-gray-900 uppercase tracking-wide mb-1">Visual-first methodology</h2>
-            <p className="text-gray-700 leading-snug">
-              Saturn converts ARC grids into PNGs and stages training examples across phased prompts so GPT-5 can spot palette-driven transformations, maintain conversation history, and treat puzzles as visual pattern recognition tasks rather than symbolic manipulation.
-            </p>
-          </article>
-
-          <article className="bg-white border border-gray-300 rounded-lg p-3 shadow-sm">
-            <h2 className="text-xs md:text-sm font-semibold text-gray-900 uppercase tracking-wide mb-1">Measured performance</h2>
-            <p className="text-gray-700 leading-snug">
-              Initial testing on 40 ARC-AGI-2 evaluation samples reached a 22% success rate versus the 15.9% published state-of-the-art, with each puzzle averaging about $0.90 in token spend. The solver’s reasoning phases lean on GPT-5 Thinking with high-effort settings and tool calls for intermediate visualizations.
-            </p>
-          </article>
-
-          <article className="bg-white border border-gray-300 rounded-lg p-3 shadow-sm">
-            <h2 className="text-xs md:text-sm font-semibold text-gray-900 uppercase tracking-wide mb-1">Reproduce &amp; explore</h2>
-            <p className="text-gray-700 leading-snug">
-              To replicate the Python pipeline, export an OpenAI API key and run <code className="bg-gray-100 text-gray-800 px-1 py-0.5 rounded">python3 arc_visual_solver.py</code> against ARC task files or batch scripts. Detailed setup notes, comparative runs, and qualitative reasoning transcripts live in the solver README.
-            </p>
+        <section className="mt-2 flex flex-col gap-2 text-xs md:text-sm">
+          <div className="flex flex-wrap items-center gap-2 bg-gradient-to-r from-indigo-50 via-white to-slate-50 border border-indigo-100 rounded-lg px-3 py-2">
+            <span className="inline-flex items-center gap-1 text-[10px] md:text-xs font-semibold uppercase tracking-[0.18em] text-indigo-700">
+              Visual-first ARC methodology
+            </span>
+            <span className="hidden md:inline text-gray-700">•</span>
+            <span className="text-gray-700 leading-tight max-w-3xl">
+              Grids render as PNGs and phase prompts walk GPT-5 through palette-driven transformations while preserving conversation state—treating ARC puzzles as visual pattern tasks instead of symbolic tables.
+            </span>
+          </div>
+          <div className="flex flex-wrap items-center justify-between gap-2 bg-white border border-gray-200 rounded-lg px-3 py-2">
+            <div className="flex flex-wrap items-center gap-2 text-[10px] md:text-xs font-semibold uppercase tracking-[0.16em] text-slate-600">
+              <span>Measured Performance</span>
+              <span className="hidden md:inline">•</span>
+              <span className="text-slate-900 normal-case tracking-normal font-medium">
+                22% success on 40 ARC-AGI-2 eval samples vs 15.9% SOTA
+              </span>
+              <span className="hidden md:inline">•</span>
+              <span className="text-slate-900 normal-case tracking-normal font-medium">
+                ~$0.90 per puzzle with GPT-5 Thinking + visualization tool calls
+              </span>
+            </div>
             <a
-              className="link link-primary text-xs mt-2 inline-flex items-center gap-1"
+              className="btn btn-ghost btn-xs text-[11px] font-semibold uppercase tracking-wide text-primary"
               href="/solver/readme"
             >
-              View solver README →
+              Solver README
             </a>
-          </article>
+          </div>
         </section>
       </header>
 
