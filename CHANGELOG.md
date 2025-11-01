@@ -51,16 +51,24 @@
 - ✅ UI layout changes verified across different viewport sizes
 
 ## [4.10.13] - 2025-11-01
-### 🎨 Saturn visual solver usability polish
+### 🎨 Saturn visual solver complete redesign
 
-- Enlarged the Saturn "Start Analysis" button with uppercase styling and supporting label so the launch action is obvious even in dense layouts.
-- Defaulted reasoning effort to **Low** and grouped the reasoning controls inside a highlighted panel that only appears for non-Grok models.
-- Hid temperature controls for OpenAI reasoning models and suppressed reasoning controls for Grok families, preventing irrelevant knobs from showing.
-- Adjusted Saturn streaming start logic so temperature and reasoning options are only sent when applicable, preserving provider-specific defaults.
-- Moved the header launch controls into a dedicated Start/Stop row, trimming the informational ribbon while keeping a quick README reference.
+**Dual-layout architecture:**
+- **IDLE STATE** (before start): Giant centered "Start Visual Analysis" hero button, clean configuration cards for model/reasoning settings, expanded puzzle preview with 3 training examples visible, README-grounded context inline
+- **RUNNING STATE** (during/after): Compact header (back, title, model, stop), hidden reasoning controls (disabled anyway), monitoring-focused 3-column layout, expanded puzzle display (4 cols vs 3), custom TinyGrid-based puzzle section showing 2 training examples + all test cases with input/output pairs
+
+**Key improvements:**
+- Start button now unmissable hero action (was tiny top-right corner button)
+- Reasoning controls hide completely when running (eliminated wasted space)
+- Left sidebar expanded from 3 to 4 columns for better puzzle visibility
+- **Custom puzzle grid display** using TinyGrid directly for reliable rendering of training/test examples with clear labels
+- Training examples show input/output pairs side-by-side with proper borders and backgrounds
+- Test cases highlighted in blue with input + expected output grids visible
+- Defaulted reasoning effort to **Low** with conditional temperature/reasoning controls based on model provider
+- Adjusted Saturn streaming start logic to only send applicable parameters
 
 #### Verification
-- Not run (visual + conditional UI updates)
+- Not run (visual redesign + layout optimization)
 
 ## [4.10.12] - 2025-11-01
 ### 🛠️ Saturn streaming prompt corrections
