@@ -1,5 +1,24 @@
 # CHANGELOG
 
+## [4.10.7] - 2025-10-31
+### 🐞 Bugfix: Saturn conversation chaining system prompt conflict
+
+- **Fixed System Prompt Regeneration**: Saturn was regenerating the system prompt on EVERY phase via `buildPromptPackage()` with the same promptId "solver", creating instruction conflicts when combined with `previousResponseId` for conversation chaining
+- **Implemented System Prompt Override**: Added `systemPromptOverride` parameter to `ServiceOptions` interface and modified `BaseAIService.buildPromptPackage()` to use custom system prompts when provided
+- **Saturn Single System Prompt**: Created `getSaturnSystemPrompt()` method that generates one comprehensive system prompt covering all phases, preventing regeneration conflicts
+- **Updated All Phase Calls**: Modified Saturn phases 1, 2, 2.5, additional training examples, and phase 3 to use the system prompt override instead of regenerating prompts
+- **Root Cause**: Unlike Discussion which uses the same system prompt across all turns, Saturn was creating conflicting instructions by regenerating system prompts while also using `previousResponseId` for continuation
+
+#### Technical Details
+- Saturn now mirrors Discussion's pattern: ONE system prompt + phase-specific USER prompts = proper conversation chaining
+- Maintains efficient `previousResponseId` chaining without sending full conversation history
+- No changes to `payloadBuilder.ts` - the issue was in prompt generation, not payload construction
+
+#### Verification
+- Not run (architectural fix for conversation chaining)
+
+---
+
 ## [4.10.6] - 2025-10-31
 ### 🐞 Bugfix: Streaming modal grid sizes and auto-close behavior
 
