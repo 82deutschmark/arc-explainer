@@ -57,7 +57,7 @@
 - Defaulted reasoning effort to **Low** and grouped the reasoning controls inside a highlighted panel that only appears for non-Grok models.
 - Hid temperature controls for OpenAI reasoning models and suppressed reasoning controls for Grok families, preventing irrelevant knobs from showing.
 - Adjusted Saturn streaming start logic so temperature and reasoning options are only sent when applicable, preserving provider-specific defaults.
-- Added README-grounded context cards summarizing Saturn’s visual methodology, measured performance (22% ARC-AGI-2 success, ~$0.90 cost), and reproduction steps with a direct solver README link.
+- Added a compact README-grounded context ribbon summarizing Saturn’s visual methodology, measured performance (22% ARC-AGI-2 success, ~$0.90 cost), and reproduction steps with a direct solver README link.
 
 #### Verification
 - Not run (visual + conditional UI updates)
