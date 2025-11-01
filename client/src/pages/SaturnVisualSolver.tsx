@@ -118,24 +118,6 @@ export default function SaturnVisualSolver() {
               <h1 className="text-sm font-bold text-gray-900">🪐 Saturn Visual Solver - Puzzle {taskId}</h1>
             </div>
           </div>
-          {/* Start/Stop */}
-          {!isRunning ? (
-            <div className="flex flex-col items-end gap-1">
-              <span className="text-[10px] uppercase tracking-wide text-primary font-semibold">Ready to Start?</span>
-              <button
-                onClick={onStart}
-                className="btn btn-primary btn-lg gap-2 font-semibold uppercase tracking-wide shadow-lg shadow-primary/30"
-              >
-                <Rocket className="h-5 w-5" />
-                Start Analysis
-              </button>
-            </div>
-          ) : (
-            <button onClick={cancel} className="btn btn-error btn-lg gap-2 font-semibold uppercase tracking-wide">
-              <Square className="h-5 w-5" />
-              Stop
-            </button>
-          )}
         </div>
 
         {/* Controls - ALL visible, compact */}
@@ -241,36 +223,24 @@ export default function SaturnVisualSolver() {
             </div>
           </div>
         )}
-
-        <section className="mt-2 flex flex-col gap-2 text-xs md:text-sm">
-          <div className="flex flex-wrap items-center gap-2 bg-gradient-to-r from-indigo-50 via-white to-slate-50 border border-indigo-100 rounded-lg px-3 py-2">
-            <span className="inline-flex items-center gap-1 text-[10px] md:text-xs font-semibold uppercase tracking-[0.18em] text-indigo-700">
-              Visual-first ARC methodology
-            </span>
-            <span className="hidden md:inline text-gray-700">•</span>
-            <span className="text-gray-700 leading-tight max-w-3xl">
-              Grids render as PNGs and phase prompts walk GPT-5 through palette-driven transformations while preserving conversation state—treating ARC puzzles as visual pattern tasks instead of symbolic tables.
-            </span>
+        <section className="mt-2 flex flex-wrap items-center justify-between gap-3">
+          <div className="flex items-center gap-2 text-xs md:text-sm text-gray-600">
+            <span className="uppercase tracking-[0.18em] text-[10px] md:text-xs text-gray-500">Launch Saturn visual solver</span>
           </div>
-          <div className="flex flex-wrap items-center justify-between gap-2 bg-white border border-gray-200 rounded-lg px-3 py-2">
-            <div className="flex flex-wrap items-center gap-2 text-[10px] md:text-xs font-semibold uppercase tracking-[0.16em] text-slate-600">
-              <span>Measured Performance</span>
-              <span className="hidden md:inline">•</span>
-              <span className="text-slate-900 normal-case tracking-normal font-medium">
-                22% success on 40 ARC-AGI-2 eval samples vs 15.9% SOTA
-              </span>
-              <span className="hidden md:inline">•</span>
-              <span className="text-slate-900 normal-case tracking-normal font-medium">
-                ~$0.90 per puzzle with GPT-5 Thinking + visualization tool calls
-              </span>
-            </div>
-            <a
-              className="btn btn-ghost btn-xs text-[11px] font-semibold uppercase tracking-wide text-primary"
-              href="/solver/readme"
+          {!isRunning ? (
+            <button
+              onClick={onStart}
+              className="btn btn-primary btn-lg gap-2 font-semibold uppercase tracking-wide shadow-lg shadow-primary/30"
             >
-              Solver README
-            </a>
-          </div>
+              <Rocket className="h-5 w-5" />
+              Start Analysis
+            </button>
+          ) : (
+            <button onClick={cancel} className="btn btn-error btn-lg gap-2 font-semibold uppercase tracking-wide">
+              <Square className="h-5 w-5" />
+              Stop
+            </button>
+          )}
         </section>
       </header>
 
