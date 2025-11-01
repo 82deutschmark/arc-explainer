@@ -57,6 +57,7 @@ export interface ServiceOptions {
   sessionId?: string; // Optional WebSocket session for streaming progress
   stream?: StreamingHarness;
   systemPromptOverride?: string; // Override system prompt generation entirely
+  customUserPrompt?: string; // Override user prompt generation for specialized flows
 }
 
 export interface TokenUsage {
@@ -252,38 +253,35 @@ export abstract class BaseAIService {
     modelKey?: string
   ): PromptPackage {
     // PHASE 13: If systemPromptOverride is provided, create a custom package without calling buildAnalysisPrompt
-    if (serviceOpts.systemPromptOverride) {
-      // Build a standard package first to preserve template metadata and prompt flags
-      const basePackage = buildAnalysisPrompt(task, promptId, customPrompt, options, serviceOpts);
-
-      return {
-        ...basePackage,
-        systemPrompt: serviceOpts.systemPromptOverride,
-      };
-    }
-    
     // PHASE 12: Determine if this provider/model uses structured output
-    const useStructuredOutput = modelKey 
+    const useStructuredOutput = modelKey
       ? this.supportsStructuredOutput(modelKey)
       : false;
-    
+
     // Merge into options for prompt builder
     const enhancedOptions: PromptOptions = {
       ...options,
       useStructuredOutput: useStructuredOutput ?? options?.useStructuredOutput
     };
-    
+
     // PHASE 1-2: Pass serviceOpts to enable context-aware continuation prompts
     // PHASE 12: Pass enhancedOptions with useStructuredOutput flag
-    const promptPackage: PromptPackage = buildAnalysisPrompt(
-      task, 
-      promptId, 
-      customPrompt, 
-      enhancedOptions, 
+    const basePackage: PromptPackage = buildAnalysisPrompt(
+      task,
+      promptId,
+      customPrompt,
+      enhancedOptions,
       serviceOpts
     );
 
-    return promptPackage;
+    const systemPrompt = serviceOpts.systemPromptOverride ?? basePackage.systemPrompt;
+    const userPrompt = serviceOpts.customUserPrompt ?? basePackage.userPrompt;
+
+    return {
+      ...basePackage,
+      systemPrompt,
+      userPrompt,
+    };
   }
 
   /**
