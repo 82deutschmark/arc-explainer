@@ -427,7 +427,8 @@ export function useSaturnProgress(taskId: string | undefined) {
                     nextLogs.push(line);
                   });
                 } else if (chunk.type === 'reasoning') {
-                  recordLines('🧠 Saturn reasoning update', chunkText);
+                  // Reasoning has a dedicated panel; avoid duplicating it in the status log.
+                  // The aggregated reasoning stream remains available via state.streamingReasoning.
                 } else if (chunk.type === 'json') {
                   recordLines('📦 Structured output streaming', chunkText);
                 } else if (chunk.type === 'refusal') {
