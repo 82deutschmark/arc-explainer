@@ -1,5 +1,15 @@
 # CHANGELOG
 
+## [4.10.9] - 2025-10-31
+### 🔁 Model catalog maintenance
+
+- Removed legacy OpenRouter entries for `bytedance/seed-oss-36b-instruct` and `stepfun-ai/step3` to keep the catalog aligned with currently supported providers.
+- Added the OpenRouter-backed `amazon/nova-premier-v1` definition with updated pricing, context window, and reasoning support metadata.
+- Added the OpenRouter `minimax/minimax-m2` model with 196k token context window and refreshed cost metadata.
+
+#### Verification
+- Not run (configuration update)
+
 ## [4.10.8] - 2025-02-15
 ### UI/UX: Puzzle Browser research-first layout
 
