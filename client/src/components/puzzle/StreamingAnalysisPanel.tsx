@@ -9,6 +9,7 @@
 import React from 'react';
 import { Loader2 } from 'lucide-react';
 import { TinyGrid } from './TinyGrid';
+import { GridDisplay } from './grids/GridDisplay';
 import type { ARCTask } from '@shared/types';
 
 interface TokenUsageSummary {
@@ -120,15 +121,25 @@ export function StreamingAnalysisPanel({
             <div className="flex flex-wrap items-start gap-4">
               <div className="flex flex-col items-center gap-1">
                 <p className="text-[10px] text-blue-600 font-medium uppercase tracking-wide">Test Input</p>
-                <div className="bg-white border border-blue-200 rounded-md p-2 shadow-xs">
-                  <TinyGrid grid={testExample.input} className="w-24 h-24 md:w-32 md:h-32" />
-                </div>
+                <GridDisplay
+                  grid={testExample.input}
+                  label=""
+                  showDimensions={false}
+                  className="border border-blue-200 bg-white rounded-md shadow-xs"
+                  maxWidth={256}
+                  maxHeight={256}
+                />
               </div>
               <div className="flex flex-col items-center gap-1">
                 <p className="text-[10px] text-blue-600 font-medium uppercase tracking-wide">Test Output</p>
-                <div className="bg-white border border-blue-200 rounded-md p-2 shadow-xs">
-                  <TinyGrid grid={testExample.output} className="w-24 h-24 md:w-32 md:h-32" />
-                </div>
+                <GridDisplay
+                  grid={testExample.output}
+                  label=""
+                  showDimensions={false}
+                  className="border border-blue-200 bg-white rounded-md shadow-xs"
+                  maxWidth={256}
+                  maxHeight={256}
+                />
               </div>
               {promptPreview && (
                 <div className="flex-1 min-w-[200px]">

@@ -1,6 +1,16 @@
 # CHANGELOG
 
-# CHANGELOG
+## [4.10.6] - 2025-10-31
+### 🐞 Bugfix: Streaming modal grid sizes and auto-close behavior
+
+- **Fixed Grid Sizing**: Enlarged streaming modal test grids from 24×24/32×32 to 48×48/64×64 (mobile/desktop) by removing hard-coded small dimensions in `StreamingAnalysisPanel`
+- **Fixed Modal Auto-Close**: Prevented modal from disappearing when streaming completes by adding status check in backdrop click handler - modal now stays open with "Close" button until user manually dismisses it
+- **Root Cause**: Previous commit left fixed Tailwind classes on TinyGrid containers and DaisyUI backdrop triggered immediate close on any dialog interaction
+
+#### Verification
+- Not run (UI behavior fix)
+
+---
 
 ## [4.10.5] - 2025-10-31
 ### UI/UX: Puzzle Examiner prompt and controls grid
