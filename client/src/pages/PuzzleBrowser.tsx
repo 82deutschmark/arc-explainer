@@ -173,7 +173,7 @@ export default function PuzzleBrowser() {
   if (error) {
     return (
       <div className="min-h-screen w-full bg-slate-950 text-slate-100">
-        <div className="mx-auto flex w-full max-w-5xl flex-col gap-4 px-4 py-10 sm:px-6 lg:px-8">
+        <div className="flex w-full flex-col gap-4 py-10">
           <div role="alert" className="alert alert-error">
             <span>Failed to load puzzles. Please check your connection and try again.</span>
           </div>
@@ -184,7 +184,7 @@ export default function PuzzleBrowser() {
 
   return (
     <div className="min-h-screen w-full bg-slate-950 text-slate-100">
-      <div className="mx-auto flex min-h-screen w-full max-w-6xl flex-col gap-10 px-4 pb-12 pt-10 sm:px-6 lg:px-8">
+      <div className="flex min-h-screen w-full flex-col gap-10 pb-12 pt-10">
 
         <header className="w-full space-y-6">
           <div className="flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">
@@ -193,7 +193,7 @@ export default function PuzzleBrowser() {
               <h1 className="text-3xl font-semibold text-slate-50 sm:text-4xl">
                 ARC-AGI Puzzle Explorer
               </h1>
-              <p className="max-w-3xl text-sm leading-relaxed text-slate-300">
+              <p className="text-sm leading-relaxed text-slate-300">
                 A working surface for inspecting ARC puzzles, reviewing benchmark resources, and maintaining context on active filters. The emphasis here is clarity and access to the data, not spectacle.
               </p>
             </div>
@@ -207,7 +207,7 @@ export default function PuzzleBrowser() {
             />
           </div>
 
-          <div className="max-w-3xl">
+          <div>
             <CollapsibleMission />
           </div>
 

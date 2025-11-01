@@ -1,5 +1,13 @@
 # CHANGELOG
 
+## [4.10.10] - 2025-11-01
+### 🎨 UI/UX: Puzzle Browser full-width layout
+
+- Removed the max-width container and side padding enforcing margins on the Puzzle Browser so the page now spans the full viewport width as requested.
+
+#### Verification
+- Not run (visual change)
+
 ## [4.10.9] - 2025-10-31
 ### 🔁 Model catalog maintenance
 
