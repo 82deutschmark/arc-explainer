@@ -203,6 +203,12 @@ Always look for:
       
       // Use streaming method if harness is provided, otherwise use regular method
       // PHASE 13 FIX: Use serviceOptsWithOverride to maintain single system prompt
+      const phase1ServiceOpts: ServiceOptions = {
+        ...serviceOptsWithOverride,
+        previousResponseId,
+        customUserPrompt: phase1Prompt,
+      };
+
       const phase1Response = harness
         ? await underlyingService.analyzePuzzleWithStreaming!(
             task,
@@ -210,9 +216,9 @@ Always look for:
             taskId,
             temperature,
             promptId,
-            phase1Prompt,
+            undefined,
             { ...options, includeImages: true, imagePaths: phase1Images },
-            { ...serviceOptsWithOverride, previousResponseId }
+            phase1ServiceOpts
           )
         : await underlyingService.analyzePuzzleWithModel(
             task,
@@ -220,9 +226,9 @@ Always look for:
             taskId,
             temperature,
             promptId,
-            phase1Prompt,
+            undefined,
             { ...options, includeImages: true, imagePaths: phase1Images },
-            { ...serviceOptsWithOverride, previousResponseId }
+            phase1ServiceOpts
           );
       
       previousResponseId = phase1Response.providerResponseId;
@@ -266,6 +272,12 @@ Always look for:
         );
         
         // PHASE 13 FIX: Use serviceOptsWithOverride to maintain single system prompt
+        const phase2ServiceOpts: ServiceOptions = {
+          ...serviceOptsWithOverride,
+          previousResponseId,
+          customUserPrompt: phase2Prompt,
+        };
+
         const phase2Response = harness
           ? await underlyingService.analyzePuzzleWithStreaming!(
               task,
@@ -273,9 +285,9 @@ Always look for:
               taskId,
               temperature,
               promptId,
-              phase2Prompt,
+              undefined,
               { ...options, includeImages: true, imagePaths: phase2Images },
-              { ...serviceOptsWithOverride, previousResponseId }
+              phase2ServiceOpts
             )
           : await underlyingService.analyzePuzzleWithModel(
               task,
@@ -283,9 +295,9 @@ Always look for:
               taskId,
               temperature,
               promptId,
-              phase2Prompt,
+              undefined,
               { ...options, includeImages: true, imagePaths: phase2Images },
-              { ...serviceOptsWithOverride, previousResponseId }
+              phase2ServiceOpts
             );
         
         previousResponseId = phase2Response.providerResponseId;
@@ -328,6 +340,12 @@ Always look for:
         );
         
         // PHASE 13 FIX: Use serviceOptsWithOverride to maintain single system prompt
+        const phase25ServiceOpts: ServiceOptions = {
+          ...serviceOptsWithOverride,
+          previousResponseId,
+          customUserPrompt: phase25Prompt,
+        };
+
         const phase25Response = harness
           ? await underlyingService.analyzePuzzleWithStreaming!(
               task,
@@ -335,9 +353,9 @@ Always look for:
               taskId,
               temperature,
               promptId,
-              phase25Prompt,
+              undefined,
               { ...options, includeImages: true, imagePaths: phase25Images },
-              { ...serviceOptsWithOverride, previousResponseId }
+              phase25ServiceOpts
             )
           : await underlyingService.analyzePuzzleWithModel(
               task,
@@ -345,9 +363,9 @@ Always look for:
               taskId,
               temperature,
               promptId,
-              phase25Prompt,
+              undefined,
               { ...options, includeImages: true, imagePaths: phase25Images },
-              { ...serviceOptsWithOverride, previousResponseId }
+              phase25ServiceOpts
             );
         
         previousResponseId = phase25Response.providerResponseId;
@@ -389,6 +407,12 @@ Always look for:
         );
         
         // PHASE 13 FIX: Use serviceOptsWithOverride to maintain single system prompt
+        const additionalServiceOpts: ServiceOptions = {
+          ...serviceOptsWithOverride,
+          previousResponseId,
+          customUserPrompt: additionalPrompt,
+        };
+
         const additionalResponse = harness
           ? await underlyingService.analyzePuzzleWithStreaming!(
               task,
@@ -396,9 +420,9 @@ Always look for:
               taskId,
               temperature,
               promptId,
-              additionalPrompt,
+              undefined,
               { ...options, includeImages: true, imagePaths: additionalImages },
-              { ...serviceOptsWithOverride, previousResponseId }
+              additionalServiceOpts
             )
           : await underlyingService.analyzePuzzleWithModel(
               task,
@@ -406,9 +430,9 @@ Always look for:
               taskId,
               temperature,
               promptId,
-              additionalPrompt,
+              undefined,
               { ...options, includeImages: true, imagePaths: additionalImages },
-              { ...serviceOptsWithOverride, previousResponseId }
+              additionalServiceOpts
             );
         
         previousResponseId = additionalResponse.providerResponseId;
@@ -443,6 +467,12 @@ Always look for:
       );
       
       // PHASE 13 FIX: Use serviceOptsWithOverride to maintain single system prompt
+      const phase3ServiceOpts: ServiceOptions = {
+        ...serviceOptsWithOverride,
+        previousResponseId,
+        customUserPrompt: phase3Prompt,
+      };
+
       const phase3Response = harness
         ? await underlyingService.analyzePuzzleWithStreaming!(
             task,
@@ -450,9 +480,9 @@ Always look for:
             taskId,
             temperature,
             promptId,
-            phase3Prompt,
+            undefined,
             { ...options, includeImages: true, imagePaths: phase3Images },
-            { ...serviceOptsWithOverride, previousResponseId }
+            phase3ServiceOpts
           )
         : await underlyingService.analyzePuzzleWithModel(
             task,
@@ -460,9 +490,9 @@ Always look for:
             taskId,
             temperature,
             promptId,
-            phase3Prompt,
+            undefined,
             { ...options, includeImages: true, imagePaths: phase3Images },
-            { ...serviceOptsWithOverride, previousResponseId }
+            phase3ServiceOpts
           );
       
       phases.push({ 
