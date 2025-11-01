@@ -181,7 +181,11 @@ Always look for:
     // PHASE 13 FIX: Use Saturn system prompt override for all phases
     // This prevents prompt regeneration that breaks conversation chaining
     const saturnSystemPrompt = this.getSaturnSystemPrompt();
-    const serviceOptsWithOverride = { ...serviceOpts, systemPromptOverride: saturnSystemPrompt };
+    const serviceOptsWithOverride: ServiceOptions = {
+      ...serviceOpts,
+      systemPromptOverride: saturnSystemPrompt,
+      suppressInstructionsOnContinuation: true,
+    };
     
     try {
       // Phase 1: Analyze first training example
