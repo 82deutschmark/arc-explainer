@@ -1,5 +1,106 @@
 # CHANGELOG
 
+## [4.10.10] - 2025-11-01
+### 🎨 UI/UX: Puzzle Browser full-width layout
+
+- Removed the max-width container and side padding enforcing margins on the Puzzle Browser so the page now spans the full viewport width as requested.
+
+#### Verification
+- Not run (visual change)
+
+## [4.10.9] - 2025-10-31
+### 🔁 Model catalog maintenance
+
+- Removed legacy OpenRouter entries for `bytedance/seed-oss-36b-instruct` and `stepfun-ai/step3` to keep the catalog aligned with currently supported providers.
+- Added the OpenRouter-backed `amazon/nova-premier-v1` definition with updated pricing, context window, and reasoning support metadata.
+- Added the OpenRouter `minimax/minimax-m2` model with 196k token context window and refreshed cost metadata.
+
+#### Verification
+- Not run (configuration update)
+
+## [4.10.8] - 2025-02-15
+### UI/UX: Puzzle Browser research-first layout
+
+- Restored the previous Puzzle Browser structure and replaced the purple gradient theme with a subdued slate palette tailored for analysis work.
+- Rebuilt the header and reference section to emphasize documentation links without CTA styling, tightened spacing, and capped width to remove oversized margins.
+- Moved the ID search into a compact "Direct lookup" control beneath the filters, reduced filter control density, and refreshed results/instructions cards to match the new visual language.
+
+#### Verification
+- Not run (visual refinements)
+
+## [4.10.7] - 2025-10-31
+### 🐞 Bugfix: Saturn conversation chaining system prompt conflict
+
+- **Fixed System Prompt Regeneration**: Saturn was regenerating the system prompt on EVERY phase via `buildPromptPackage()` with the same promptId "solver", creating instruction conflicts when combined with `previousResponseId` for conversation chaining
+- **Implemented System Prompt Override**: Added `systemPromptOverride` parameter to `ServiceOptions` interface and modified `BaseAIService.buildPromptPackage()` to use custom system prompts when provided
+- **Saturn Single System Prompt**: Created `getSaturnSystemPrompt()` method that generates one comprehensive system prompt covering all phases, preventing regeneration conflicts
+- **Updated All Phase Calls**: Modified Saturn phases 1, 2, 2.5, additional training examples, and phase 3 to use the system prompt override instead of regenerating prompts
+- **Root Cause**: Unlike Discussion which uses the same system prompt across all turns, Saturn was creating conflicting instructions by regenerating system prompts while also using `previousResponseId` for continuation
+
+#### Technical Details
+- Saturn now mirrors Discussion's pattern: ONE system prompt + phase-specific USER prompts = proper conversation chaining
+- Maintains efficient `previousResponseId` chaining without sending full conversation history
+- No changes to `payloadBuilder.ts` - the issue was in prompt generation, not payload construction
+
+#### Verification
+- Not run (architectural fix for conversation chaining)
+
+---
+
+## [4.10.6] - 2025-10-31
+### 🐞 Bugfix: Streaming modal grid sizes and auto-close behavior
+
+- **Fixed Grid Sizing**: Enlarged streaming modal test grids from 24×24/32×32 to 48×48/64×64 (mobile/desktop) by removing hard-coded small dimensions in `StreamingAnalysisPanel`
+- **Fixed Modal Auto-Close**: Prevented modal from disappearing when streaming completes by adding status check in backdrop click handler - modal now stays open with "Close" button until user manually dismisses it
+- **Root Cause**: Previous commit left fixed Tailwind classes on TinyGrid containers and DaisyUI backdrop triggered immediate close on any dialog interaction
+
+#### Verification
+- Not run (UI behavior fix)
+
+---
+
+## [4.10.5] - 2025-10-31
+### UI/UX: Puzzle Examiner prompt and controls grid
+
+- Replaced the stacked Prompt Style and Advanced Controls accordions with a responsive two-card grid so analysts can review template tweaks and sampling knobs side by side without scrolling.
+- Refactored Advanced Controls into a compact multi-column layout with numeric inputs, tooltips, and collapsible reasoning settings, trimming the vertical footprint by roughly 80%.
+- Tightened Prompt Style actions with DaisyUI buttons and helper tooltips to keep the preview workflow within a single glance.
+
+#### Verification
+- Not run (visual layout refinement)
+
+---
+
+## [4.10.4] - 2025-10-31
+### 🐞 Bugfix: Prompt preview respects emoji mode
+
+- Fixed the prompt preview pipeline to honor "Send as emojis" by wiring the flag through the frontend modal, controller, and prompt builder so previews now display emoji grids instead of raw numbers when selected.
+
+#### Verification
+- Not run (API + UI integration fix)
+
+---
+
+## [4.10.3] - 2025-10-31
+### 🐞 Bugfix: Restore emoji prompt toggle
+
+- Reinstated optional chaining on the Prompt Picker toggles so "Send as emojis" and related switches work even when handlers are omitted in consumers, matching the pre-shadcn defensive behavior.
+
+#### Verification
+- Not run (UI regression fix)
+
+---
+
+## [4.10.2] - 2025-10-31
+### 🎨 UI/UX: Larger streaming modal test grids
+
+- Enlarged the streaming analysis modal's test input/output grids to improve readability during live runs, keeping spacing responsive across breakpoints.
+
+#### Verification
+- Not run (visual change only)
+
+---
+
 ## [4.10.1] - 2025-10-31
 ### 🎨 UI/UX: Neutral, information-dense Puzzle Browser
 
@@ -5413,3 +5514,5 @@ To enable conversation chaining:
 \n### Added\n- Introduced streaming-aware analysis hook and UI panels across Puzzle Examiner, Discussion, and Model Debate pages.\n- Added reusable StreamingAnalysisPanel component for live token output with cancel support.\n- Model buttons now reflect streaming capability and status for supported models.
 
 
+## 2025-10-31
+- Docs: Added `docs/31OctDesign.md` specifying a CSS-only, look-only restyle for solver buttons (no structural/behavioral changes). Author: OpenAI Codex Agent.

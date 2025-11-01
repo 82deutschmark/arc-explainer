@@ -739,58 +739,36 @@ export const MODELS: ModelConfig[] = [
     releaseDate: "2025-09"
   },
   {
-    key: 'qwen/qwen3-max',
-    name: 'Qwen3 Max',
-    color: 'bg-red-700',
-    premium: false,
-    cost: { input: '$1.20', output: '$6.00' },
-    supportsTemperature: false,
+    key: 'amazon/nova-premier-v1',
+    name: 'Amazon Nova Premier 1.0',
+    color: 'bg-amber-600',
+    premium: true,
+    cost: { input: '$2.50', output: '$12.50' },
+    supportsTemperature: true,
     provider: 'OpenRouter',
-    responseTime: { speed: 'slow', estimate: '3-5+ min' },
-    isReasoning: false,
-    apiModelName: 'qwen/qwen3-max',
+    responseTime: { speed: 'moderate', estimate: '30-60 sec' },
+    isReasoning: true,
+    apiModelName: 'amazon/nova-premier-v1',
     modelType: 'openrouter',
-    contextWindow: 256000,
-    maxOutputTokens: 31000,
-    releaseDate: "2025-09" 
+    contextWindow: 1000000,
+    maxOutputTokens: 60000,
+    releaseDate: "2025-10"
   },
 
   {
-    key: 'bytedance/seed-oss-36b-instruct',
-    name: 'Seed OSS 36B Instruct',
-    color: 'bg-green-500',
+    key: 'minimax/minimax-m2',
+    name: 'MiniMax M2',
+    color: 'bg-rose-500',
     premium: false,
-    cost: { input: '$0.104', output: '$0.415' },
-    supportsTemperature: false,
+    cost: { input: '$0.30', output: '$1.20' },
+    supportsTemperature: true,
     provider: 'OpenRouter',
-    responseTime: { speed: 'moderate', estimate: '1-2 min' },
+    responseTime: { speed: 'moderate', estimate: '30-60 sec' },
     isReasoning: false,
-    apiModelName: 'bytedance/seed-oss-36b-instruct',
+    apiModelName: 'minimax/minimax-m2',
     modelType: 'openrouter',
-    contextWindow: 131000,
-    maxOutputTokens: 30000,
-    releaseDate: "2025-09"
-
-  },
-
-
-
-{
-  key: 'stepfun-ai/step3',
-    name: 'Step3',
-    color: 'bg-green-600',
-    premium: true,
-    cost: { input: '$0.57', output: '$1.42' },
-    supportsTemperature: false,
-    provider: 'OpenRouter',
-    responseTime: { speed: 'fast', estimate: '10-30 sec' },
-    isReasoning: true,
-    apiModelName: 'stepfun-ai/step3',
-    modelType: 'openrouter',
-    contextWindow: 65000,
-    maxOutputTokens: 25000,
-    requiresPromptFormat: true,
-    releaseDate: "2025-08"
+    contextWindow: 196608,
+    releaseDate: "2025-10"
   },
 
   {

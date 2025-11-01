@@ -13,6 +13,7 @@ import { PROMPT_TEMPLATES } from '../../shared/types';
 import { formatResponse } from '../utils/responseFormatter';
 import { puzzleService } from '../services/puzzleService';
 import { buildAnalysisPrompt } from '../services/promptBuilder';
+import type { PromptOptions } from '../services/promptBuilder';
 
 export const promptController = {
   /**
@@ -39,7 +40,7 @@ export const promptController = {
    * @param res - Express response object
    */
   async preview(req: Request, res: Response) {
-    const { taskId, promptId, customPrompt, emojiSetKey, omitAnswer, topP, candidateCount, originalExplanation, customChallenge } = req.body;
+    const { taskId, promptId, customPrompt, emojiSetKey, omitAnswer, topP, candidateCount, originalExplanation, customChallenge, sendAsEmojis } = req.body;
 
     console.log(`[PromptController] Generating prompt preview for task ${taskId} with template ${promptId}`);
 
@@ -51,8 +52,8 @@ export const promptController = {
       }
 
       // Build the prompt package
-      const promptPackage = buildAnalysisPrompt(task, promptId, customPrompt, {
-        emojiSetKey,
+      const promptOptions: PromptOptions = {
+        emojiSetKey: sendAsEmojis ? emojiSetKey : undefined,
         omitAnswer: omitAnswer ?? true,
         systemPromptMode: 'ARC', // Use the new architecture
         useStructuredOutput: true,
@@ -60,7 +61,9 @@ export const promptController = {
         candidateCount,
         originalExplanation, // For debate mode
         customChallenge // For debate mode
-      });
+      };
+
+      const promptPackage = buildAnalysisPrompt(task, promptId, customPrompt, promptOptions);
 
       console.log(`[PromptController] Generated prompt preview - System: ${promptPackage.systemPrompt.length} chars, User: ${promptPackage.userPrompt.length} chars`);
 
@@ -69,7 +72,8 @@ export const promptController = {
         userPrompt: promptPackage.userPrompt,
         selectedTemplate: promptPackage.selectedTemplate,
         isAlienMode: promptPackage.isAlienMode,
-        isSolver: promptPackage.isSolver
+        isSolver: promptPackage.isSolver,
+        emojiSetKey: sendAsEmojis ? promptOptions.emojiSetKey : undefined
       }));
     } catch (error) {
       console.error('[PromptController] Error generating prompt preview:', error);

@@ -2,8 +2,7 @@
  * Author: Cascade
  * Date: 2025-10-31T00:00:00Z
  * PURPOSE: Presents a compact model selection card with status indicators, pricing, and metadata.
- *          Updated to tighten spacing and typography so the grid consumes roughly half the vertical space
- *          without sacrificing key signals like streaming readiness or error states.
+ *          Revised to balance density with readability after initial tightening made typography feel cramped.
  * SRP/DRY check: Pass — focused solely on rendering individual model cards; verified adjacent components unchanged.
  */
 
@@ -17,7 +16,7 @@ export function ModelButton({ model, isAnalyzing, isStreaming, streamingSupporte
   return (
     <Button
       variant="outline"
-      className={`h-auto p-2 flex flex-col items-start gap-1.5 relative text-left text-xs leading-tight transition-all ${
+      className={`h-auto p-2.5 flex flex-col items-stretch gap-2 relative text-left text-sm leading-snug transition-all ${
         error 
           ? 'ring-2 ring-red-500 bg-red-50 border-red-300'
           : explanationCount > 0 
@@ -37,45 +36,53 @@ export function ModelButton({ model, isAnalyzing, isStreaming, streamingSupporte
         <div className="flex flex-col items-center justify-center w-full text-red-700">
           <div className="flex items-center gap-2">
             <AlertTriangle className="h-4 w-4" />
-            <span className="text-xs font-bold">{model.name} Failed</span>
+            <span className="text-sm font-semibold">{model.name} Failed</span>
           </div>
-          <p className="text-[11px] text-center mt-2 break-words" title={error.message}>
+          <p className="text-xs text-center mt-2 break-words" title={error.message}>
             {error.message.length > 90 ? `${error.message.substring(0, 90)}...` : error.message}
           </p>
-          <p className="text-[11px] text-center mt-1 font-semibold">(Click to retry)</p>
+          <p className="text-xs text-center mt-1 font-semibold">(Click to retry)</p>
         </div>
       ) : (
         <>
-          <div className="flex items-start justify-between gap-2 w-full">
-            {isAnalyzing ? (
-              <div className="flex items-center gap-1.5">
-                <Loader2 className="h-3 w-3 animate-spin text-blue-600" />
-                <span className="text-[11px] font-semibold text-blue-600">
-                  {isStreaming ? 'Streaming…' : 'Running…'}
-                </span>
-              </div>
-            ) : (
-              <div className={`w-3 h-3 rounded-full flex-shrink-0 ${model.color}`} />
-            )}
-            <div className="flex items-center gap-1.5">
-              <span className="text-sm font-semibold leading-tight">{model.name}</span>
+          <div className="flex w-full items-start justify-between gap-2">
+            <div className="flex items-center gap-2">
+              {isAnalyzing ? (
+                <Loader2 className="h-4 w-4 animate-spin text-blue-600" />
+              ) : (
+                <div className={`w-3.5 h-3.5 rounded-full flex-shrink-0 ${model.color}`} />
+              )}
+              <span className="font-semibold leading-snug">{model.name}</span>
               {explanationCount > 0 && (
                 <div 
-                  className="text-[10px] px-1 py-0.5 bg-green-500 text-white rounded-full font-semibold"
+                  className="px-1.5 py-0.5 rounded-full bg-green-100 text-green-700 text-xs font-semibold"
                   title={`${explanationCount} ${explanationCount === 1 ? 'analysis' : 'analyses'} available in database`}
                 >
                   {explanationCount}
                 </div>
               )}
             </div>
-            {streamingSupported && (
-              <span className={`ml-auto whitespace-nowrap font-semibold ${isStreaming ? 'text-blue-600' : 'text-blue-500'}`}>
-                {isStreaming ? 'Streaming live' : 'Stream ready'}
-              </span>
-            )}
+            <div className="flex items-center gap-2">
+              {isAnalyzing && (
+                <span className="text-xs font-semibold text-blue-600">
+                  {isStreaming ? 'Streaming…' : 'Running…'}
+                </span>
+              )}
+              {streamingSupported && (
+                <span
+                  className={`rounded-full border px-2 py-0.5 text-xs font-semibold ${
+                    isStreaming
+                      ? 'border-blue-300 bg-blue-100 text-blue-700'
+                      : 'border-blue-200 bg-blue-50 text-blue-600'
+                  }`}
+                >
+                  {isStreaming ? 'Streaming live' : 'Stream ready'}
+                </span>
+              )}
+            </div>
           </div>
           
-          <div className="flex w-full flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-gray-600">
+          <div className="flex w-full flex-wrap items-center gap-x-3 gap-y-1 text-xs text-gray-600">
             <span className="whitespace-nowrap">In: {model.cost.input}/M</span>
             <span className="whitespace-nowrap">Out: {model.cost.output}/M</span>
             {model.responseTime?.estimate && (
