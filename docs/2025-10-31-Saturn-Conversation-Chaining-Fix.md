@@ -1,4 +1,4 @@
-# Saturn Conversation Chaining Architecture Fix
+# Saturn Conversation Chaining Architecture Fix  THIS IS NOT FIXED!!!!
 
 **Author:** Claude Code using Sonnet 4.5
 **Date:** 2025-10-31
@@ -7,7 +7,7 @@
 
 ---
 
-## Problem Statement
+## Problem Statement   STILL A PROBLEM!!!!
 
 Saturn solver fails after Phase 1 with error:
 ```
@@ -217,6 +217,7 @@ const payload = {
 - If system prompt is IDENTICAL to what's stored in `previous_response_id`, no conflict
 - Discussion works because it regenerates the SAME system prompt each time
 - The issue arises when different parts of the code path might generate different prompts
+- THIS MEANS YOU NEED TO ADJUST THE SATURN SERVICE!!  Or put that system prompt it wants to send in the user prompt!!
 
 **Why it BREAKS Saturn:**
 - Saturn calls `buildPromptPackage()` fresh for each phase
@@ -225,7 +226,7 @@ const payload = {
 
 ---
 
-## The Fix: Two Options
+## The Fix: Two Options  BOTH THESE ARE INCORRECT!!!!!
 
 ### Option A: Single System Prompt for All Phases (RECOMMENDED)
 
