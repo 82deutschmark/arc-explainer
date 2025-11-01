@@ -1,7 +1,9 @@
 /**
- * Author: Sonnet 4.5
- * Date: 2025-10-09
- * PURPOSE: Visualizes score evolution across iterations showing quantum search convergence.
+ * Author: Sonnet 4.5, enhanced by Cascade
+ * Date: 2025-10-09, updated 2025-11-01
+ * PURPOSE: Visualizes program scores across iterations showing Grover search convergence.
+ * Each dot represents a generated program's score (0-10). Green dots show the best
+ * program from each iteration. The green line connects best scores to show improvement.
  * SRP/DRY check: Pass
  * shadcn/ui: Pass - Uses Card
  */
@@ -17,7 +19,24 @@ interface SearchVisualizationProps {
 }
 
 export function SearchVisualization({ iterations, currentIteration }: SearchVisualizationProps) {
-  if (iterations.length === 0) return null;
+  if (iterations.length === 0) {
+    return (
+      <Card>
+        <CardHeader className="pb-2 pt-3 px-3">
+          <CardTitle className="flex items-center gap-1.5 text-xs font-semibold">
+            <TrendingUp className="h-3 w-3" />
+            Score Evolution
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="px-3 pb-3 pt-1">
+          <div className="text-center py-4 text-gray-400 text-xs">
+            <p>No data yet</p>
+            <p className="mt-1">Start analysis to see score trends</p>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
 
   const maxScore = 10;
   const width = 100; // percentage
@@ -35,8 +54,9 @@ export function SearchVisualization({ iterations, currentIteration }: SearchVisu
       <CardHeader className="pb-2 pt-3 px-3">
         <CardTitle className="flex items-center gap-1.5 text-xs font-semibold">
           <TrendingUp className="h-3 w-3" />
-          Search Space
+          Score Evolution
         </CardTitle>
+        <p className="text-xs text-gray-500 mt-1">Program scores across iterations (0-10 scale)</p>
       </CardHeader>
       <CardContent className="px-3 pb-3 pt-1">
         <div className="relative" style={{ height: `${height}px` }}>
@@ -112,11 +132,15 @@ export function SearchVisualization({ iterations, currentIteration }: SearchVisu
         <div className="mt-2 flex items-center gap-3 text-xs text-gray-600">
           <div className="flex items-center gap-1">
             <div className="w-2 h-2 rounded-full bg-blue-500 opacity-60"></div>
-            <span>Programs</span>
+            <span>All programs</span>
           </div>
           <div className="flex items-center gap-1">
             <div className="w-2 h-2 rounded-full bg-green-600"></div>
-            <span>Best per iteration</span>
+            <span>Best (per iter)</span>
+          </div>
+          <div className="flex items-center gap-1">
+            <div className="w-3 h-0.5 bg-green-600"></div>
+            <span>Best trend</span>
           </div>
         </div>
 
@@ -124,14 +148,18 @@ export function SearchVisualization({ iterations, currentIteration }: SearchVisu
         {iterations.length > 1 && (
           <div className="mt-2 p-2 bg-blue-50 rounded text-xs">
             <p className="text-gray-700">
-              <strong>Convergence:</strong> Search is {
+              <strong>Status:</strong> {
                 iterations[iterations.length - 1].best.score > iterations[0].best.score
-                  ? '↗️ improving'
-                  : '→ stable'
+                  ? '↗️ Improving'
+                  : iterations[iterations.length - 1].best.score === 10
+                  ? '✅ Perfect score achieved'
+                  : '→ Stable'
               }
             </p>
             <p className="text-gray-600 mt-1">
-              Amplitude amplification through context saturation
+              Highest: <strong>{Math.max(...iterations.map(i => i.best.score)).toFixed(1)}/10</strong>
+              {' • '}
+              {iterations.reduce((sum, i) => sum + i.programs.length, 0)} programs tested
             </p>
           </div>
         )}
