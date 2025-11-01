@@ -390,8 +390,6 @@ export function useSaturnProgress(taskId: string | undefined) {
               timestamp?: number;
             };
             setState((prev) => {
-              // Add text chunks to logLines for live display
-              let nextLogs = prev.logLines ? [...prev.logLines] : [];
               const annotationText =
                 chunk.type === 'annotation'
                   ? typeof chunk.raw === 'string'
@@ -405,54 +403,25 @@ export function useSaturnProgress(taskId: string | undefined) {
                       })()
                   : undefined;
               const chunkText = chunk.delta ?? chunk.content ?? annotationText;
-              const recordLines = (label: string, text: string) => {
-                const timestamp = new Date().toLocaleTimeString();
-                nextLogs.push(`[${timestamp}] ${label}`);
-                text.split('\n').forEach((line: string) => {
-                  if (line.trim().length > 0) {
-                    nextLogs.push(line);
-                  }
-                });
-                nextLogs.push(`[${timestamp}] ────────────────`);
-              };
 
               let nextPromptPreview = prev.promptPreview;
               let nextPromptLength = prev.promptLength;
               let nextPromptGeneratedAt = prev.promptGeneratedAt;
 
-              if (chunkText) {
-                if (chunk.type === 'text') {
-                  const lines = chunkText.split('\n').filter(line => line.trim());
-                  lines.forEach((line: string) => {
-                    nextLogs.push(line);
-                  });
-                } else if (chunk.type === 'reasoning') {
-                  // Reasoning has a dedicated panel; avoid duplicating it in the status log.
-                  // The aggregated reasoning stream remains available via state.streamingReasoning.
-                } else if (chunk.type === 'json') {
-                  recordLines('📦 Structured output streaming', chunkText);
-                } else if (chunk.type === 'refusal') {
-                  recordLines('⛔ Model refusal content', chunkText);
-                } else if (chunk.type === 'annotation') {
-                  recordLines('🔖 Annotation metadata', chunkText);
-                } else if (chunk.type === 'prompt') {
-                  if (promptLoggedRef.current !== chunkText) {
-                    recordLines('📝 Saturn prompt', chunkText);
-                    promptLoggedRef.current = chunkText;
-                  }
-                  nextPromptPreview = chunkText;
-                  const metaLength =
-                    typeof chunk.metadata?.promptLength === 'number'
-                      ? (chunk.metadata.promptLength as number)
-                      : chunkText.length;
-                  nextPromptLength = metaLength;
-                  if (typeof chunk.metadata?.promptGeneratedAt === 'string') {
-                    nextPromptGeneratedAt = chunk.metadata.promptGeneratedAt as string;
-                  }
+              if (chunkText && chunk.type === 'prompt') {
+                if (promptLoggedRef.current !== chunkText) {
+                  promptLoggedRef.current = chunkText;
+                }
+                nextPromptPreview = chunkText;
+                const metaLength =
+                  typeof chunk.metadata?.promptLength === 'number'
+                    ? (chunk.metadata.promptLength as number)
+                    : chunkText.length;
+                nextPromptLength = metaLength;
+                if (typeof chunk.metadata?.promptGeneratedAt === 'string') {
+                  nextPromptGeneratedAt = chunk.metadata.promptGeneratedAt as string;
                 }
               }
-
-              if (nextLogs.length > 500) nextLogs = nextLogs.slice(-500);
 
               return {
                 ...prev,
@@ -497,7 +466,6 @@ export function useSaturnProgress(taskId: string | undefined) {
                   typeof chunk.metadata?.promptModel === 'string'
                     ? (chunk.metadata?.promptModel as string)
                     : prev.promptModel,
-                logLines: nextLogs,
               };
             });
           } catch (error) {

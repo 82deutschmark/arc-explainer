@@ -163,10 +163,13 @@ export function buildResponsesPayload({
   const isGPT5Family = normalizedKey.startsWith("gpt-5");
   const supportsTemperature = !isGPT5Family && modelSupportsTemperature(normalizedKey);
 
+  const includeInstructions = !(isContinuation && serviceOpts.suppressInstructionsOnContinuation);
+  const instructions = includeInstructions ? promptPackage.systemPrompt || undefined : undefined;
+
   const payload = removeUndefined({
     model: modelName,
     input: messages,
-    instructions: promptPackage.systemPrompt || undefined,
+    instructions,
     reasoning: reasoningConfig,
     text: textPayload,
     temperature: supportsTemperature ? (temperature ?? 0.2) : undefined,
