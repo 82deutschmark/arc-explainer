@@ -56,6 +56,7 @@ export interface ServiceOptions {
   captureReasoning?: boolean; // Add captureReasoning property
   sessionId?: string; // Optional WebSocket session for streaming progress
   stream?: StreamingHarness;
+  systemPromptOverride?: string; // Override system prompt generation entirely
 }
 
 export interface TokenUsage {
@@ -238,6 +239,7 @@ export abstract class BaseAIService {
    * Build prompt package using centralized prompt builder
    * PHASE 1-2: Now passes serviceOpts to enable continuation detection
    * PHASE 12: Now detects structured output support and passes to prompt builder
+   * PHASE 13: Now supports systemPromptOverride for Saturn conversation chaining fix
    * 
    * @param modelKey - Optional model key to determine structured output support
    */
@@ -249,6 +251,17 @@ export abstract class BaseAIService {
     serviceOpts: ServiceOptions = {},
     modelKey?: string
   ): PromptPackage {
+    // PHASE 13: If systemPromptOverride is provided, create a custom package without calling buildAnalysisPrompt
+    if (serviceOpts.systemPromptOverride) {
+      // Build a standard package first to preserve template metadata and prompt flags
+      const basePackage = buildAnalysisPrompt(task, promptId, customPrompt, options, serviceOpts);
+
+      return {
+        ...basePackage,
+        systemPrompt: serviceOpts.systemPromptOverride,
+      };
+    }
+    
     // PHASE 12: Determine if this provider/model uses structured output
     const useStructuredOutput = modelKey 
       ? this.supportsStructuredOutput(modelKey)
