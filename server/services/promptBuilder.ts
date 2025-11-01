@@ -186,7 +186,8 @@ function buildAnalysisPromptImpl(
     const userPromptOptions: UserPromptOptions = {
       emojiSetKey: buildOptions.emojiSetKey,
       omitAnswer: buildOptions.omitAnswer ?? true,  // Default: hide answers
-      isSolverMode: isSolver
+      isSolverMode: isSolver,
+      useEmojis: Boolean(buildOptions.emojiSetKey)
     };
     
     userPrompt = buildUserPromptForTemplate(
@@ -214,7 +215,8 @@ function buildAnalysisPromptImpl(
       emojiSetKey: buildOptions.emojiSetKey,
       omitAnswer: buildOptions.omitAnswer ?? true,  // Default: hide answers
       isSolverMode: isSolver,
-      isMultiTest: testCount > 1
+      isMultiTest: testCount > 1,
+      useEmojis: Boolean(buildOptions.emojiSetKey)
     };
     
     userPrompt = buildUserPromptForTemplate(

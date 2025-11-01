@@ -40,6 +40,28 @@ export class SaturnService extends BaseAIService {
   };
 
   /**
+   * Get Saturn-specific system prompt for multi-phase visual analysis
+   * This prompt is used ONCE for all phases to ensure proper conversation chaining
+   */
+  private getSaturnSystemPrompt(): string {
+    return `You are analyzing ARC-AGI puzzles using a multi-phase visual approach with image inputs.
+
+Your analysis will proceed in phases:
+- Phase 1: Analyze the first training example to identify the core transformation pattern
+- Phase 2: Predict the output for a second training input based on your pattern
+- Phase 2.5: Refine your understanding when shown the actual output
+- Phase 3: Apply your refined pattern to solve the test case
+
+Each message will indicate which phase you're in. Visual representations of grids are provided as images.
+
+Always look for:
+- Spatial, color, size, and structural transformations
+- Properties with semantic significance
+- Compositional rules that must be applied in sequence
+- Consistent patterns across all training examples`;
+  }
+
+  /**
    * Determine whether a requested model key should be processed by the Saturn pipeline.
    */
   isSaturnModelKey(modelKey: string): boolean {
@@ -156,6 +178,11 @@ export class SaturnService extends BaseAIService {
     let totalOutputTokens = 0;
     let totalReasoningTokens = 0;
     
+    // PHASE 13 FIX: Use Saturn system prompt override for all phases
+    // This prevents prompt regeneration that breaks conversation chaining
+    const saturnSystemPrompt = this.getSaturnSystemPrompt();
+    const serviceOptsWithOverride = { ...serviceOpts, systemPromptOverride: saturnSystemPrompt };
+    
     try {
       // Phase 1: Analyze first training example
       logger.service(this.provider, `Phase 1: Analyzing first training example`);
@@ -175,6 +202,7 @@ export class SaturnService extends BaseAIService {
       );
       
       // Use streaming method if harness is provided, otherwise use regular method
+      // PHASE 13 FIX: Use serviceOptsWithOverride to maintain single system prompt
       const phase1Response = harness
         ? await underlyingService.analyzePuzzleWithStreaming!(
             task,
@@ -184,7 +212,7 @@ export class SaturnService extends BaseAIService {
             promptId,
             phase1Prompt,
             { ...options, includeImages: true, imagePaths: phase1Images },
-            { ...serviceOpts, previousResponseId }
+            { ...serviceOptsWithOverride, previousResponseId }
           )
         : await underlyingService.analyzePuzzleWithModel(
             task,
@@ -194,7 +222,7 @@ export class SaturnService extends BaseAIService {
             promptId,
             phase1Prompt,
             { ...options, includeImages: true, imagePaths: phase1Images },
-            { ...serviceOpts, previousResponseId }
+            { ...serviceOptsWithOverride, previousResponseId }
           );
       
       previousResponseId = phase1Response.providerResponseId;
@@ -237,6 +265,7 @@ export class SaturnService extends BaseAIService {
           'phase2'
         );
         
+        // PHASE 13 FIX: Use serviceOptsWithOverride to maintain single system prompt
         const phase2Response = harness
           ? await underlyingService.analyzePuzzleWithStreaming!(
               task,
@@ -246,7 +275,7 @@ export class SaturnService extends BaseAIService {
               promptId,
               phase2Prompt,
               { ...options, includeImages: true, imagePaths: phase2Images },
-              { ...serviceOpts, previousResponseId }
+              { ...serviceOptsWithOverride, previousResponseId }
             )
           : await underlyingService.analyzePuzzleWithModel(
               task,
@@ -256,7 +285,7 @@ export class SaturnService extends BaseAIService {
               promptId,
               phase2Prompt,
               { ...options, includeImages: true, imagePaths: phase2Images },
-              { ...serviceOpts, previousResponseId }
+              { ...serviceOptsWithOverride, previousResponseId }
             );
         
         previousResponseId = phase2Response.providerResponseId;
@@ -298,6 +327,7 @@ export class SaturnService extends BaseAIService {
           'phase2_actual'
         );
         
+        // PHASE 13 FIX: Use serviceOptsWithOverride to maintain single system prompt
         const phase25Response = harness
           ? await underlyingService.analyzePuzzleWithStreaming!(
               task,
@@ -307,7 +337,7 @@ export class SaturnService extends BaseAIService {
               promptId,
               phase25Prompt,
               { ...options, includeImages: true, imagePaths: phase25Images },
-              { ...serviceOpts, previousResponseId }
+              { ...serviceOptsWithOverride, previousResponseId }
             )
           : await underlyingService.analyzePuzzleWithModel(
               task,
@@ -317,7 +347,7 @@ export class SaturnService extends BaseAIService {
               promptId,
               phase25Prompt,
               { ...options, includeImages: true, imagePaths: phase25Images },
-              { ...serviceOpts, previousResponseId }
+              { ...serviceOptsWithOverride, previousResponseId }
             );
         
         previousResponseId = phase25Response.providerResponseId;
@@ -358,6 +388,7 @@ export class SaturnService extends BaseAIService {
           `train${i}`
         );
         
+        // PHASE 13 FIX: Use serviceOptsWithOverride to maintain single system prompt
         const additionalResponse = harness
           ? await underlyingService.analyzePuzzleWithStreaming!(
               task,
@@ -367,7 +398,7 @@ export class SaturnService extends BaseAIService {
               promptId,
               additionalPrompt,
               { ...options, includeImages: true, imagePaths: additionalImages },
-              { ...serviceOpts, previousResponseId }
+              { ...serviceOptsWithOverride, previousResponseId }
             )
           : await underlyingService.analyzePuzzleWithModel(
               task,
@@ -377,7 +408,7 @@ export class SaturnService extends BaseAIService {
               promptId,
               additionalPrompt,
               { ...options, includeImages: true, imagePaths: additionalImages },
-              { ...serviceOpts, previousResponseId }
+              { ...serviceOptsWithOverride, previousResponseId }
             );
         
         previousResponseId = additionalResponse.providerResponseId;
@@ -411,6 +442,7 @@ export class SaturnService extends BaseAIService {
         'test'
       );
       
+      // PHASE 13 FIX: Use serviceOptsWithOverride to maintain single system prompt
       const phase3Response = harness
         ? await underlyingService.analyzePuzzleWithStreaming!(
             task,
@@ -420,7 +452,7 @@ export class SaturnService extends BaseAIService {
             promptId,
             phase3Prompt,
             { ...options, includeImages: true, imagePaths: phase3Images },
-            { ...serviceOpts, previousResponseId }
+            { ...serviceOptsWithOverride, previousResponseId }
           )
         : await underlyingService.analyzePuzzleWithModel(
             task,
@@ -430,7 +462,7 @@ export class SaturnService extends BaseAIService {
             promptId,
             phase3Prompt,
             { ...options, includeImages: true, imagePaths: phase3Images },
-            { ...serviceOpts, previousResponseId }
+            { ...serviceOptsWithOverride, previousResponseId }
           );
       
       phases.push({ 
@@ -500,7 +532,7 @@ export class SaturnService extends BaseAIService {
         
         // Provider metadata
         providerResponseId: finalPhase.providerResponseId,
-        systemPromptUsed: 'Saturn Multi-Phase Visual Analysis',
+        systemPromptUsed: saturnSystemPrompt,
         promptTemplateId: 'saturn-multi-phase',
       };
       

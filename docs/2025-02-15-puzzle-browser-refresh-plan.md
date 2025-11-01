@@ -1,38 +1,17 @@
-# Puzzle Browser Refresh Plan
+# 2025-02-15 Puzzle Browser refresh plan
 
-## Objectives
-- Expand emoji mosaic accent component to support wider, more expressive layouts.
-- Center key hero sections (filters, knowledge hub) per UX request.
-- Remove redundant "Local Puzzles" messaging and tighten header real estate.
-- Convert mission statement into modal badge for modular layout.
+## Goal
+Revert the Puzzle Browser page to its prior structure, then restyle it to present a focused research interface that aligns with ARC-AGI analysis workflows.
 
-## Impacted Areas
-- `client/src/components/browser/EmojiMosaicAccent.tsx`
+## Target files
 - `client/src/pages/PuzzleBrowser.tsx`
-- `client/src/components/ui/collapsible-mission.tsx`
 - `CHANGELOG.md`
 
-## Implementation Notes
-1. **Emoji mosaic flexibility**
-   - Replace fixed column union with numeric input and clamp helper to keep responsive.
-   - Compute Tailwind grid class dynamically via template string and limit to practical maxima (e.g., 12).
-   - Add responsive font sizing adjustments for long strips (>=6 columns).
-2. **Hero & knowledge hub layout**
-   - Introduce narrower container (e.g., `max-w-6xl`) for header body while keeping background full width.
-   - Center knowledge hub card with `mx-auto`, add responsive width constraints.
-   - Update hero mosaics once component supports new dimensions.
-3. **Filter bar centering**
-   - Wrap filter controls in container using `justify-center`, `mx-auto`, `max-w-*` to prevent overflow.
-   - Allow wrap on smaller screens with consistent gap spacing.
-4. **Mission statement modal badge**
-   - Swap collapsible card for badge/button that opens modal with same content.
-   - Ensure modal accessible via keyboard, includes close button.
-5. **Results header clean-up**
-   - Remove "Local Puzzles" text, replace with dynamic count badge and optional context if necessary.
-   - Confirm loading/empty states still understandable.
-6. **Changelog**
-   - Document UI updates succinctly.
-
-## Testing Strategy
-- `npm run lint` (if available) or `npm run test` for regression checks.
-- Manual review in browser (not available in environment) focusing on hero alignment and modal.
+## Tasks
+1. Restore the historical implementation of `PuzzleBrowser.tsx` from the last stable commit.
+2. Replace the purple gradient and heavy visual effects with a subdued slate/graphite palette suitable for research-focused UI.
+3. Tighten layout spacing by reducing outer padding, removing decorative margins, and simplifying header composition.
+4. De-emphasize the search input by relocating it beneath the filters with compact styling while keeping direct ID lookup functionality intact.
+5. Adjust reference/resource sections to use plain text links instead of CTA-style buttons.
+6. Review the filters/results cards to ensure consistency with the new palette and low-key visual style.
+7. Update `CHANGELOG.md` with a summary of the restored layout and visual refinements.

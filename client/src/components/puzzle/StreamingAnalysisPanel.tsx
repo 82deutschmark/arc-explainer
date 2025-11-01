@@ -9,6 +9,7 @@
 import React from 'react';
 import { Loader2 } from 'lucide-react';
 import { TinyGrid } from './TinyGrid';
+import { GridDisplay } from './grids/GridDisplay';
 import type { ARCTask } from '@shared/types';
 
 interface TokenUsageSummary {
@@ -117,23 +118,33 @@ export function StreamingAnalysisPanel({
         <div className="space-y-4 text-sm text-blue-900 pt-2">
           {/* Test Grids Section - Compact */}
           {testExample && (
-            <div className="flex items-center gap-3">
-              <div>
-                <p className="text-[9px] text-blue-600 mb-0.5 font-medium">Test Input</p>
-                <div className="bg-white border border-blue-200 rounded p-1">
-                  <TinyGrid grid={testExample.input} className="w-16 h-16" />
-                </div>
+            <div className="flex flex-wrap items-start gap-4">
+              <div className="flex flex-col items-center gap-1">
+                <p className="text-[10px] text-blue-600 font-medium uppercase tracking-wide">Test Input</p>
+                <GridDisplay
+                  grid={testExample.input}
+                  label=""
+                  showDimensions={false}
+                  className="border border-blue-200 bg-white rounded-md shadow-xs"
+                  maxWidth={256}
+                  maxHeight={256}
+                />
               </div>
-              <div>
-                <p className="text-[9px] text-blue-600 mb-0.5 font-medium">Test Output</p>
-                <div className="bg-white border border-blue-200 rounded p-1">
-                  <TinyGrid grid={testExample.output} className="w-16 h-16" />
-                </div>
+              <div className="flex flex-col items-center gap-1">
+                <p className="text-[10px] text-blue-600 font-medium uppercase tracking-wide">Test Output</p>
+                <GridDisplay
+                  grid={testExample.output}
+                  label=""
+                  showDimensions={false}
+                  className="border border-blue-200 bg-white rounded-md shadow-xs"
+                  maxWidth={256}
+                  maxHeight={256}
+                />
               </div>
               {promptPreview && (
-                <div className="flex-1 ml-2">
-                  <p className="text-[9px] font-semibold text-blue-600 uppercase tracking-wide mb-1">Prompt Sent</p>
-                  <pre className="whitespace-pre-wrap bg-blue-50 border border-blue-300 rounded p-2 max-h-[80px] overflow-y-auto text-[9px] text-blue-800 leading-tight">
+                <div className="flex-1 min-w-[200px]">
+                  <p className="text-[10px] font-semibold text-blue-600 uppercase tracking-wide mb-1">Prompt Sent</p>
+                  <pre className="whitespace-pre-wrap bg-blue-50 border border-blue-300 rounded p-3 max-h-[120px] overflow-y-auto text-[10px] text-blue-800 leading-tight">
                     {promptPreview}
                   </pre>
                 </div>

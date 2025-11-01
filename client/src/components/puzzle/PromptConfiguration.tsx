@@ -1,19 +1,13 @@
 /**
- * PromptConfiguration.tsx
- *
- * Author: Claude Code using Sonnet 4.5
+ * Author: gpt-5-codex
  * Date: 2025-10-31
- * PURPOSE: Handles prompt selection and preview controls.
- * Extracted from PuzzleExaminer lines 614-646 to follow SRP.
- * Updated to use shadcn/ui components for consistent design system.
- *
- * SRP/DRY check: Pass - Single responsibility (prompt configuration)
+ * PURPOSE: Renders prompt selection, emoji flags, and preview affordances in a compact DaisyUI-friendly layout.
+ * SRP/DRY check: Pass - verified only prompt-related controls live here while orchestration stays on the page container.
  */
 
 import React from 'react';
-import { Eye } from 'lucide-react';
+import { Eye, Info } from 'lucide-react';
 import { PromptPicker } from '../PromptPicker';
-import { Button } from '@/components/ui/button';
 
 interface PromptConfigurationProps {
   promptId: string;
@@ -29,7 +23,7 @@ interface PromptConfigurationProps {
 }
 
 /**
- * Renders prompt configuration controls with preview button
+ * Compact prompt configuration card content.
  */
 export function PromptConfiguration({
   promptId,
@@ -44,7 +38,7 @@ export function PromptConfiguration({
   onPreviewClick
 }: PromptConfigurationProps) {
   return (
-    <div className="space-y-2">
+    <div className="space-y-3">
       <PromptPicker
         selectedPromptId={promptId}
         onPromptChange={onPromptChange}
@@ -57,18 +51,25 @@ export function PromptConfiguration({
         onOmitAnswerChange={onOmitAnswerChange}
       />
 
-      <div className="flex items-center justify-end gap-3 px-1 text-xs text-muted-foreground">
-        <span>Preview the final prompt before running an analysis.</span>
-        <Button
-          variant="outline"
-          size="sm"
+      <div className="flex flex-wrap items-center justify-between gap-2 rounded-box bg-base-200/60 px-3 py-2">
+        <div className="flex items-center gap-2 text-[11px] leading-tight text-base-content/70">
+          <div
+            className="tooltip tooltip-top"
+            data-tip="Check the compiled instructions before launching an analysis."
+          >
+            <Info className="h-3 w-3 text-base-content/50" aria-hidden="true" />
+          </div>
+          <span>Preview the exact prompt the solver will receive.</span>
+        </div>
+        <button
+          type="button"
+          className="btn btn-outline btn-xs gap-1"
           onClick={onPreviewClick}
           disabled={disabled}
-          className="h-8"
         >
-          <Eye className="h-3 w-3" />
-          Preview prompt
-        </Button>
+          <Eye className="h-3 w-3" aria-hidden="true" />
+          Preview
+        </button>
       </div>
     </div>
   );
