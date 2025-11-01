@@ -1,4 +1,4 @@
-# CHANGELOG
+# CHANGELOG - Uses semantic versioning (MAJOR.MINOR.PATCH)
 
 ## [4.11.0] - 2025-11-01
 ### 🚀 Major UI Enhancements & Bug Fixes
