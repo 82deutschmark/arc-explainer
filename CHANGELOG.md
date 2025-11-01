@@ -26,12 +26,13 @@
 - Removed duplicate reasoning text from Saturn status log to keep live reasoning confined to the dedicated panel
 - Resolved Saturn system prompt regeneration conflict
 
-#### 🎯 UI/UX Improvements
+#### 🎨 UI/UX Improvements
 - Implemented ultra-compact layout for Puzzle Browser to maximize puzzle display space
 - Reduced all page margins and padding (px-1.5, p-3) for optimal content density
 - Decreased vertical spacing throughout UI (gap-10 → gap-2, space-y-6 → space-y-2)
 - Compressed filter controls and reference material sections with tighter spacing
 - Reduced title and text sizes for more compact presentation
+- Adjusted Saturn UI controls for better usability and consistency
 - Expanded Puzzle Browser to full viewport width by removing max-width constraints
 
 #### 🤖 Model Catalog Updates
@@ -48,6 +49,18 @@
 - ✅ `npm run check` (passes - TypeScript errors resolved)
 - ✅ Manual testing completed on Grover search visualization improvements
 - ✅ UI layout changes verified across different viewport sizes
+
+## [4.10.13] - 2025-11-01
+### 🎨 Saturn visual solver usability polish
+
+- Enlarged the Saturn "Start Analysis" button with uppercase styling and supporting label so the launch action is obvious even in dense layouts.
+- Defaulted reasoning effort to **Low** and grouped the reasoning controls inside a highlighted panel that only appears for non-Grok models.
+- Hid temperature controls for OpenAI reasoning models and suppressed reasoning controls for Grok families, preventing irrelevant knobs from showing.
+- Adjusted Saturn streaming start logic so temperature and reasoning options are only sent when applicable, preserving provider-specific defaults.
+- Added README-grounded context cards summarizing Saturn’s visual methodology, measured performance (22% ARC-AGI-2 success, ~$0.90 cost), and reproduction steps with a direct solver README link.
+
+#### Verification
+- Not run (visual + conditional UI updates)
 
 ## [4.10.12] - 2025-11-01
 ### 🛠️ Saturn streaming prompt corrections

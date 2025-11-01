@@ -243,8 +243,10 @@ export function useSaturnProgress(taskId: string | undefined) {
         // For development, use empty string to make relative requests to same origin
         // Vite dev server proxy will forward /api/* to backend
         const query = new URLSearchParams();
-        query.set('temperature', String(options?.temperature ?? 0.2));
         query.set('promptId', 'solver');
+        if (typeof options?.temperature === 'number') {
+          query.set('temperature', String(options.temperature));
+        }
         if (options?.previousResponseId) query.set('previousResponseId', options.previousResponseId);
         if (options?.reasoningEffort) query.set('reasoningEffort', options.reasoningEffort);
         if (options?.reasoningVerbosity) query.set('reasoningVerbosity', options.reasoningVerbosity);
@@ -541,16 +543,31 @@ export function useSaturnProgress(taskId: string | undefined) {
 
       // Legacy WebSocket path
       const endpoint = `/api/saturn/analyze/${taskId}`;
-      const requestBody = {
+      const requestBody: Record<string, unknown> = {
         modelKey,
-        temperature: options?.temperature ?? 0.2,
         promptId: 'solver',
-        ...(options?.previousResponseId && { previousResponseId: options.previousResponseId }),
         captureReasoning: true,
-        reasoningEffort: options?.reasoningEffort || 'high',
-        reasoningVerbosity: options?.reasoningVerbosity || 'high',
-        reasoningSummaryType: options?.reasoningSummaryType || 'detailed',
       };
+
+      if (typeof options?.temperature === 'number') {
+        requestBody.temperature = options.temperature;
+      }
+
+      if (options?.previousResponseId) {
+        requestBody.previousResponseId = options.previousResponseId;
+      }
+
+      if (options?.reasoningEffort) {
+        requestBody.reasoningEffort = options.reasoningEffort;
+      }
+
+      if (options?.reasoningVerbosity) {
+        requestBody.reasoningVerbosity = options.reasoningVerbosity;
+      }
+
+      if (options?.reasoningSummaryType) {
+        requestBody.reasoningSummaryType = options.reasoningSummaryType;
+      }
 
       const res = await apiRequest('POST', endpoint, requestBody);
       const json = await res.json();
