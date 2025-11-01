@@ -58,6 +58,7 @@ export interface ServiceOptions {
   stream?: StreamingHarness;
   systemPromptOverride?: string; // Override system prompt generation entirely
   customUserPrompt?: string; // Override user prompt generation for specialized flows
+  suppressInstructionsOnContinuation?: boolean; // Skip instructions when chaining previous responses
 }
 
 export interface TokenUsage {
