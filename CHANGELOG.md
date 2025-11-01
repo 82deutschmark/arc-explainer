@@ -1,5 +1,45 @@
 # CHANGELOG
 
+## [4.11.0] - 2025-11-01
+### 🚀 Major UI Enhancements & Bug Fixes
+
+#### 🎨 Grover Search UI Redesign
+- Enhanced SearchVisualization component with clearer labels, empty states, and detailed status information
+- Added score trend line and improved legend to better visualize search progress
+- Redesigned advanced controls panel with more compact and organized layout
+- Added streaming modal view option during active searches for better real-time monitoring
+- Improved status display with more concise running/completed state indicators
+- Adjusted GroverModelSelect dimensions for optimal visual presentation
+
+#### 🛠️ Saturn Streaming Fixes
+- Fixed Saturn's streaming pipeline to send phase-specific prompts via the new `customUserPrompt` override
+- Each phase now only includes the intended training/test context instead of the full puzzle payload
+- Removed duplicate reasoning text from Saturn status log to keep live reasoning confined to the dedicated panel
+- Resolved Saturn system prompt regeneration conflict
+
+#### 🎯 UI/UX Improvements
+- Implemented ultra-compact layout for Puzzle Browser to maximize puzzle display space
+- Reduced all page margins and padding (px-1.5, p-3) for optimal content density
+- Decreased vertical spacing throughout UI (gap-10 → gap-2, space-y-6 → space-y-2)
+- Compressed filter controls and reference material sections with tighter spacing
+- Reduced title and text sizes for more compact presentation
+- Expanded Puzzle Browser to full viewport width by removing max-width constraints
+
+#### 🤖 Model Catalog Updates
+- Added Amazon Nova Premier v1 model with 1M token context window and reasoning capabilities
+- Added MiniMax M2 model with 196k token context window and updated pricing
+- Removed legacy models: Bytedance Seed OSS 36B and StepFun AI Step3
+- Updated model configuration metadata including pricing, context windows, and capabilities
+
+#### 🔧 TypeScript Fixes
+- Fixed Lucide icon prop typing issues in HighRiskModelsList component
+- Moved title props to wrapper divs to resolve TypeScript compilation errors
+
+#### Verification
+- ✅ `npm run check` (passes - TypeScript errors resolved)
+- ✅ Manual testing completed on Grover search visualization improvements
+- ✅ UI layout changes verified across different viewport sizes
+
 ## [4.10.12] - 2025-11-01
 ### 🛠️ Saturn streaming prompt corrections
 
