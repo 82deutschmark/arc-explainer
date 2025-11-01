@@ -50,6 +50,72 @@
 - ✅ Manual testing completed on Grover search visualization improvements
 - ✅ UI layout changes verified across different viewport sizes
 
+## [4.10.16] - 2025-11-01
+### 🚨 CRITICAL: Saturn prompt injection fix
+
+**ROOT CAUSE IDENTIFIED:** Even with Phase 2+ changes, `buildAnalysisPrompt` was STILL being called with the full task object, generating unwanted "solver" template prompts with all training examples. Then it tried to override with customUserPrompt, but the prompt builder logs showed it was using the generated template.
+
+**THE FIX:**
+- Added early return in `BaseAIService.buildPromptPackage()` when BOTH `customUserPrompt` AND `systemPromptOverride` are provided
+- Now skips `buildAnalysisPrompt()` entirely for Saturn continuation phases
+- Returns minimal PromptPackage directly with custom prompts
+- Prevents project's solver template from injecting training examples into Phase 2+ prompts
+
+**Evidence from logs:**
+```
+[Saturn] Phase 2 customUserPrompt length: 546  ← Our custom prompt
+[PromptBuilder] Building prompt for template: solver  ← UNWANTED!
+[PromptBuilder] Generated user prompt: 992 chars  ← NOT our 546 char prompt!
+```
+
+**Files changed:**
+- `server/services/base/BaseAIService.ts`: Early return for custom prompts
+
+#### Verification
+- Not run (requires live Saturn run to verify clean continuation)
+
+## [4.10.15] - 2025-11-01
+### 🔧 Saturn continuation fix + UI layout optimization
+
+**CRITICAL FIX: Phase 2+ continuation failure resolved**
+- Root cause: `systemPromptOverride` was being sent on ALL phases, but OpenAI Responses API requires continuations to send ONLY the new user message
+- Phase 1 (initial): Sends `systemPromptOverride` (Saturn's multi-phase system prompt) + `customUserPrompt` (Phase 1 specific instructions)
+- Phase 2+ (continuation): Sends ONLY `customUserPrompt` (phase-specific instructions) + `previousResponseId` + `suppressInstructionsOnContinuation: true`
+- This honors Saturn's custom phase-specific prompts while maintaining proper conversation chaining
+
+**UI Optimization:**
+- Collapsed SaturnMonitoringTable from large 6-cell grid to compact single-row status bar
+- Shows only essential info: Status badge, Phase, Progress, Images count
+- Frees up vertical space for Work Table (the critical monitoring view)
+- Removed redundant Puzzle ID and Log Lines count
+
+**Files changed:**
+- `server/services/saturnService.ts`: Conditional systemPromptOverride (Phase 1 only)
+- `client/src/components/saturn/SaturnMonitoringTable.tsx`: Compact single-row layout
+
+#### Verification
+- Not run (requires live Saturn run to verify continuation success)
+
+## [4.10.14] - 2025-11-01
+### 🐞 Saturn Phase 2 continuation debugging + temperature fix
+
+**Fixes:**
+- Frontend now only sends `temperature` parameter for Grok models (not GPT-5) - explicit conditional check prevents undefined behavior
+- Added comprehensive debug logging to Saturn service:
+  - Logs `providerResponseId` capture after Phase 1 with error if missing
+  - Logs Phase 2 continuation setup: previousResponseId, systemPromptOverride length, customUserPrompt length, suppressInstructionsOnContinuation flag
+  - Helps diagnose "Request was aborted" errors on continuation calls
+
+**Root cause investigation:**
+- Temperature parameter was being sent from frontend even for GPT-5 (though backend filtered it)
+- Phase 2 "Request was aborted" error needs diagnosis - logs will show if:
+  - providerResponseId is missing from Phase 1 response
+  - systemPromptOverride is malformed
+  - suppressInstructionsOnContinuation flag not reaching payloadBuilder
+
+#### Verification
+- Not run (requires live Saturn run to test continuation)
+
 ## [4.10.13] - 2025-11-01
 ### 🎨 Saturn visual solver complete redesign
 

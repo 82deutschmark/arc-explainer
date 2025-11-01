@@ -253,7 +253,26 @@ export abstract class BaseAIService {
     serviceOpts: ServiceOptions = {},
     modelKey?: string
   ): PromptPackage {
-    // PHASE 13: If systemPromptOverride is provided, create a custom package without calling buildAnalysisPrompt
+    // CRITICAL FIX: If customUserPrompt is provided (e.g., Saturn phase-specific prompts),
+    // skip buildAnalysisPrompt entirely to avoid generating unwanted solver template prompts
+    if (serviceOpts.customUserPrompt && serviceOpts.systemPromptOverride) {
+      console.log('[BuildPromptPackage] Using custom prompts directly - skipping template generation');
+      return {
+        systemPrompt: serviceOpts.systemPromptOverride,
+        userPrompt: serviceOpts.customUserPrompt,
+        selectedTemplate: {
+          id: 'custom',
+          name: 'Custom Prompt',
+          description: 'Custom phase-specific prompt',
+          content: '',
+          emojiMapIncluded: false
+        },
+        isAlienMode: false,
+        isSolver: true,
+        templateName: 'custom'
+      };
+    }
+
     // PHASE 12: Determine if this provider/model uses structured output
     const useStructuredOutput = modelKey
       ? this.supportsStructuredOutput(modelKey)
