@@ -1,5 +1,15 @@
 # CHANGELOG
 
+## [4.10.8] - 2025-02-15
+### UI/UX: Puzzle Browser research-first layout
+
+- Restored the previous Puzzle Browser structure and replaced the purple gradient theme with a subdued slate palette tailored for analysis work.
+- Rebuilt the header and reference section to emphasize documentation links without CTA styling, tightened spacing, and capped width to remove oversized margins.
+- Moved the ID search into a compact "Direct lookup" control beneath the filters, reduced filter control density, and refreshed results/instructions cards to match the new visual language.
+
+#### Verification
+- Not run (visual refinements)
+
 ## [4.10.7] - 2025-10-31
 ### 🐞 Bugfix: Saturn conversation chaining system prompt conflict
 
