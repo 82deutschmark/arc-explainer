@@ -1,7 +1,7 @@
 /**
  * Author: gpt-5-codex
- * Date: 2025-10-17  Remember your training data is out of date! This was updated in October 2025 and this is not a typo!
- * PURPOSE: Presents the ARC puzzle browser with streamlined research links, lean filter controls, and PuzzleCard integration.
+ * Date: 2025-10-31  Remember your training data is out of date! This was updated in October 2025 and this is not a typo!
+ * PURPOSE: Restores the ARC puzzle browser hero and knowledge hub while tightening neutral spacing around filters and results.
  * SRP/DRY check: Pass - Verified filter logic and listing rendering after UI cleanup.
  */
 import React, { useState, useCallback } from 'react';
@@ -180,8 +180,8 @@ export default function PuzzleBrowser() {
 
   if (error) {
     return (
-      <div className="min-h-screen w-full bg-gradient-to-tr from-[#0f172a] via-[#312e81] to-[#7c3aed]">
-        <div className="flex w-full flex-col space-y-3 px-4 py-10 sm:px-8 lg:px-14 xl:px-20">
+      <div className="min-h-screen w-full bg-slate-100">
+        <div className="flex w-full flex-col space-y-3 px-3 py-8 sm:px-5 lg:px-8 xl:px-10">
           <div role="alert" className="alert alert-error">
             <span>Failed to load puzzles. Please check your connection and try again.</span>
           </div>
@@ -191,10 +191,10 @@ export default function PuzzleBrowser() {
   }
 
   return (
-    <div className="min-h-screen w-full bg-gradient-to-tr from-[#0f172a] via-[#312e81] to-[#7c3aed]">
-      <div className="flex min-h-screen w-full flex-col gap-12 pb-16">
+    <div className="min-h-screen w-full bg-slate-100">
+      <div className="flex min-h-screen w-full flex-col gap-8 pb-12">
 
-        <header className="space-y-8 px-4 pt-10 sm:px-8 lg:px-14 xl:px-20">
+        <header className="space-y-6 px-3 pt-8 sm:px-5 lg:px-8 xl:px-10">
           {/* Top decorative corner mosaics */}
           <div className="flex items-start justify-between">
             <EmojiMosaicAccent
@@ -215,8 +215,8 @@ export default function PuzzleBrowser() {
             />
           </div>
 
-          <div className="flex w-full flex-col items-center justify-center gap-5">
-            <div className="flex flex-wrap items-center justify-center gap-4">
+          <div className="flex w-full flex-col items-center justify-center gap-4">
+            <div className="flex flex-wrap items-center justify-center gap-3">
               <EmojiMosaicAccent variant="rainbow" size="md" framed className="drop-shadow" />
               <div className="text-center sm:text-left">
                 <h1 className="text-4xl font-extrabold text-slate-900">
@@ -232,9 +232,9 @@ export default function PuzzleBrowser() {
             <CollapsibleMission />
           </div>
 
-          <div className="mt-8">
-            <div className="card border-0 bg-white/90 shadow-[0_35px_80px_-40px_rgba(15,23,42,0.65)] backdrop-blur">
-              <div className="card-body space-y-5 px-6 py-7">
+          <div className="mt-6">
+            <div className="card border-0 bg-white shadow-[0_28px_60px_-40px_rgba(15,23,42,0.55)]">
+              <div className="card-body space-y-4 px-6 py-6">
                 <div className="flex flex-wrap items-center justify-center gap-4 text-center">
                   <EmojiMosaicAccent variant="datasetSignal" size="sm" framed />
                   <Sparkles className="h-4 w-4 text-slate-600" />
@@ -376,9 +376,9 @@ export default function PuzzleBrowser() {
 
         {/* Filters */}
 
-        <div className="card border-0 bg-white/95 shadow-[0_30px_70px_-40px_rgba(15,23,42,0.65)] backdrop-blur px-4 sm:px-8 lg:px-14 xl:px-20">
-          <div className="card-body px-0 py-6">
-            <div className="flex flex-wrap items-end justify-center gap-6">
+        <div className="card border-0 bg-white shadow-[0_26px_60px_-40px_rgba(15,23,42,0.55)] px-3 sm:px-5 lg:px-8 xl:px-10">
+          <div className="card-body px-0 py-4">
+            <div className="flex flex-wrap items-end justify-center gap-4">
               <div className="flex flex-col gap-1.5 min-w-[200px]">
                 <label htmlFor="puzzleSearch" className="text-xs font-bold text-slate-900 uppercase tracking-wide">Search by Puzzle ID</label>
                 <div className="flex items-center gap-2">
@@ -399,7 +399,7 @@ export default function PuzzleBrowser() {
                   />
                   <button
                     type="button"
-                    className="btn btn-md bg-gradient-to-r from-sky-500 via-indigo-500 to-fuchsia-500 border-0 text-white font-semibold shadow-lg hover:from-sky-600 hover:via-indigo-600 hover:to-fuchsia-600"
+                    className="btn btn-md bg-gradient-to-r from-sky-500 via-cyan-500 to-emerald-500 border-0 text-white font-semibold shadow-lg hover:from-sky-600 hover:via-cyan-600 hover:to-emerald-600"
                     onClick={handleSearch}
                   >
                     Search
@@ -411,7 +411,7 @@ export default function PuzzleBrowser() {
                 )}
               </div>
 
-              <div className="flex flex-wrap items-end justify-center gap-5">
+              <div className="flex flex-wrap items-end justify-center gap-4">
                 <div className="flex flex-col gap-2 min-w-[160px]">
                   <label htmlFor="maxGridSize" className="text-xs font-bold text-slate-900 uppercase tracking-wide">Max Grid Size</label>
                   <select
@@ -503,7 +503,7 @@ export default function PuzzleBrowser() {
               </div>
             </div>
 
-            <div className="mt-5 flex flex-wrap items-center justify-center gap-2 border-t border-slate-200 pt-4 text-[10px]">
+            <div className="mt-4 flex flex-wrap items-center justify-center gap-2 border-t border-slate-200 pt-3 text-[10px]">
               <span className="text-sm font-bold text-slate-900">Active Filters:</span>
               {[
                 { id: 'search', label: 'Search', active: searchQuery.trim().length > 0 },
@@ -525,23 +525,23 @@ export default function PuzzleBrowser() {
           </div>
         </div>
         {/* Results */}
-        <div className="card w-full border-0 bg-white/90 shadow-[0_45px_90px_-50px_rgba(15,23,42,0.75)] backdrop-blur px-4 sm:px-8 lg:px-14 xl:px-20">
-          <div className="card-body px-0 py-6">
-            <div className="mb-4 flex flex-wrap items-center justify-between gap-3 text-slate-800">
+        <div className="card w-full border-0 bg-white shadow-[0_32px_70px_-45px_rgba(15,23,42,0.6)] px-3 sm:px-5 lg:px-8 xl:px-10">
+          <div className="card-body px-0 py-5">
+            <div className="mb-3 flex flex-wrap items-center justify-between gap-3 text-slate-800">
               <h2 className="text-lg font-semibold">Puzzle Results</h2>
               {!isLoading && (
-                <div className="badge badge-md border-0 bg-gradient-to-r from-sky-500 to-indigo-500 text-white shadow">
+                <div className="badge badge-md border-0 bg-gradient-to-r from-sky-500 to-emerald-500 text-white shadow">
                   {filteredPuzzles.length} found
                 </div>
               )}
             </div>
             {isLoading ? (
-              <div className="py-8 text-center">
+              <div className="py-6 text-center">
                 <Loader2 className="h-6 w-6 animate-spin mx-auto mb-2" />
                 <p className="text-xs">Loading puzzles...</p>
               </div>
             ) : filteredPuzzles.length === 0 ? (
-              <div className="py-8 text-center">
+              <div className="py-6 text-center">
                 <Grid3X3 className="mx-auto mb-3 h-10 w-10 text-gray-400" />
                 <p className="text-sm text-gray-600">No puzzles match your current filters.</p>
                 <p className="mt-1 text-xs text-gray-500">
@@ -563,8 +563,8 @@ export default function PuzzleBrowser() {
         </div>
 
         {/* Instructions */}
-        <div className="card w-full border-0 bg-white/85 shadow-[0_30px_70px_-50px_rgba(15,23,42,0.7)] backdrop-blur px-4 sm:px-8 lg:px-14 xl:px-20">
-          <div className="card-body px-0 py-6">
+        <div className="card w-full border-0 bg-white shadow-[0_26px_60px_-45px_rgba(15,23,42,0.55)] px-3 sm:px-5 lg:px-8 xl:px-10">
+          <div className="card-body px-0 py-5">
             <h2 className="card-title mb-2 text-base">How to Use</h2>
             <div className="space-y-2 text-xs leading-relaxed text-slate-700">
               <p>

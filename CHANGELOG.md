@@ -1,5 +1,17 @@
 # CHANGELOG
 
+## [4.10.1] - 2025-10-31
+### 🎨 UI/UX: Restore Puzzle Browser identity with denser neutral styling
+
+- Reinstated the original ARC-AGI hero, emoji mosaics, and knowledge hub layout while removing the purple page gradient in favor of a soft slate backdrop.
+- Tightened spacing, side padding, and card shadows across the hero, filters, and results panels to reclaim horizontal real estate without sacrificing readability.
+- Replaced purple gradient accents with sky/cyan/emerald blends so call-to-action controls stay vibrant but on-brand.
+
+#### Verification
+- Not run (visual adjustments only)
+
+---
+
 ## [4.10.0] - 2025-10-31
 ### ✨ Feature: Algorithmic emoji mosaic patterns with semantic meaning
 
