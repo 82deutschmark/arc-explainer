@@ -1,5 +1,14 @@
 # CHANGELOG
 
+## [4.10.12] - 2025-11-01
+### 🛠️ Saturn streaming prompt corrections
+
+- Fixed Saturn's streaming pipeline to send phase-specific prompts via the new `customUserPrompt` override so each phase only includes the intended training/test context instead of the full puzzle payload.
+- Removed duplicate reasoning text from the Saturn status log to keep live reasoning confined to the dedicated panel.
+
+#### Verification
+- ⚠️ `npm run check` (fails on pre-existing HighRiskModelsList icon prop typing)
+
 ## [4.10.11] - 2025-11-01
 ### 🎨 UI/UX: Puzzle Browser ultra-compact layout
 
