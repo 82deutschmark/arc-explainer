@@ -193,9 +193,6 @@ export default function PuzzleBrowser() {
               <h1 className="text-3xl font-semibold text-slate-50 sm:text-4xl">
                 ARC-AGI Puzzle Explorer
               </h1>
-              <p className="text-sm leading-relaxed text-slate-300">
-                A working surface for inspecting ARC puzzles, reviewing benchmark resources, and maintaining context on active filters. The emphasis here is clarity and access to the data, not spectacle.
-              </p>
             </div>
             <EmojiMosaicAccent
               pattern={HERO_STREAMER_PATTERN}
