@@ -96,13 +96,23 @@ export default function SaturnVisualSolver() {
   }
 
   const onStart = () => {
-    start({
+    const config: any = {
       model,
-      temperature: showTemperatureControl ? temperature : undefined,
-      reasoningEffort: showReasoningControls ? reasoningEffort : undefined,
-      reasoningVerbosity: showReasoningControls ? reasoningVerbosity : undefined,
-      reasoningSummaryType: showReasoningControls ? reasoningSummaryType : undefined,
-    });
+    };
+    
+    // Only send temperature for models that support it (Grok family)
+    if (showTemperatureControl) {
+      config.temperature = temperature;
+    }
+    
+    // Only send reasoning parameters for OpenAI models
+    if (showReasoningControls) {
+      config.reasoningEffort = reasoningEffort;
+      config.reasoningVerbosity = reasoningVerbosity;
+      config.reasoningSummaryType = reasoningSummaryType;
+    }
+    
+    start(config);
   };
 
   return (

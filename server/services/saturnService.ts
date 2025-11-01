@@ -178,14 +178,9 @@ Always look for:
     let totalOutputTokens = 0;
     let totalReasoningTokens = 0;
     
-    // PHASE 13 FIX: Use Saturn system prompt override for all phases
-    // This prevents prompt regeneration that breaks conversation chaining
+    // Saturn system prompt - ONLY used for Phase 1 (initial call)
+    // For continuation calls (Phase 2+), we send ONLY the customUserPrompt
     const saturnSystemPrompt = this.getSaturnSystemPrompt();
-    const serviceOptsWithOverride: ServiceOptions = {
-      ...serviceOpts,
-      systemPromptOverride: saturnSystemPrompt,
-      suppressInstructionsOnContinuation: true,
-    };
     
     try {
       // Phase 1: Analyze first training example
@@ -205,13 +200,16 @@ Always look for:
         'phase1'
       );
       
-      // Use streaming method if harness is provided, otherwise use regular method
-      // PHASE 13 FIX: Use serviceOptsWithOverride to maintain single system prompt
+      // Phase 1: Initial call - use systemPromptOverride to set Saturn's system prompt
       const phase1ServiceOpts: ServiceOptions = {
-        ...serviceOptsWithOverride,
-        previousResponseId,
+        ...serviceOpts,
+        systemPromptOverride: saturnSystemPrompt,
+        suppressInstructionsOnContinuation: true,
+        previousResponseId: undefined, // First phase has no previous response
         customUserPrompt: phase1Prompt,
       };
+      
+      logger.service(this.provider, `Phase 1: systemPromptOverride length=${saturnSystemPrompt.length}, customUserPrompt length=${phase1Prompt.length}`);
 
       const phase1Response = harness
         ? await underlyingService.analyzePuzzleWithStreaming!(
@@ -236,6 +234,10 @@ Always look for:
           );
       
       previousResponseId = phase1Response.providerResponseId;
+      logger.service(this.provider, `Phase 1 complete - providerResponseId: ${previousResponseId || 'MISSING!'}`);
+      if (!previousResponseId) {
+        logger.error(this.provider, 'Phase 1 did not return providerResponseId - continuation will fail!');
+      }
       phases.push({ 
         phase: 1, 
         name: 'First Training Example Analysis',
@@ -275,11 +277,17 @@ Always look for:
           'phase2'
         );
         
-        // PHASE 13 FIX: Use serviceOptsWithOverride to maintain single system prompt
+        // Phase 2: Continuation call - NO systemPromptOverride, ONLY customUserPrompt
+        logger.service(this.provider, `Phase 2 starting with previousResponseId: ${previousResponseId || 'NONE'}`);
+        logger.service(this.provider, `Phase 2 customUserPrompt length: ${phase2Prompt.length}`);
+        logger.service(this.provider, `Phase 2 suppressInstructionsOnContinuation: true`);
+        
         const phase2ServiceOpts: ServiceOptions = {
-          ...serviceOptsWithOverride,
+          ...serviceOpts,
+          suppressInstructionsOnContinuation: true,
           previousResponseId,
           customUserPrompt: phase2Prompt,
+          // NO systemPromptOverride for continuation!
         };
 
         const phase2Response = harness
@@ -343,9 +351,10 @@ Always look for:
           'phase2_actual'
         );
         
-        // PHASE 13 FIX: Use serviceOptsWithOverride to maintain single system prompt
+        // Phase 2.5: Continuation call - NO systemPromptOverride, ONLY customUserPrompt
         const phase25ServiceOpts: ServiceOptions = {
-          ...serviceOptsWithOverride,
+          ...serviceOpts,
+          suppressInstructionsOnContinuation: true,
           previousResponseId,
           customUserPrompt: phase25Prompt,
         };
@@ -410,9 +419,10 @@ Always look for:
           `train${i}`
         );
         
-        // PHASE 13 FIX: Use serviceOptsWithOverride to maintain single system prompt
+        // Additional training: Continuation call - NO systemPromptOverride, ONLY customUserPrompt
         const additionalServiceOpts: ServiceOptions = {
-          ...serviceOptsWithOverride,
+          ...serviceOpts,
+          suppressInstructionsOnContinuation: true,
           previousResponseId,
           customUserPrompt: additionalPrompt,
         };
@@ -470,9 +480,10 @@ Always look for:
         'test'
       );
       
-      // PHASE 13 FIX: Use serviceOptsWithOverride to maintain single system prompt
+      // Phase 3: Continuation call - NO systemPromptOverride, ONLY customUserPrompt
       const phase3ServiceOpts: ServiceOptions = {
-        ...serviceOptsWithOverride,
+        ...serviceOpts,
+        suppressInstructionsOnContinuation: true,
         previousResponseId,
         customUserPrompt: phase3Prompt,
       };
