@@ -22,6 +22,7 @@ import SaturnImageGallery from '@/components/saturn/SaturnImageGallery';
 import SaturnFinalResultPanel from '@/components/saturn/SaturnFinalResultPanel';
 import { getDefaultSaturnModel, getModelProvider, modelSupportsTemperature } from '@/lib/saturnModels';
 import { CompactPuzzleDisplay } from '@/components/puzzle/CompactPuzzleDisplay';
+import { TinyGrid } from '@/components/puzzle/TinyGrid';
 
 export default function SaturnVisualSolver() {
   const { taskId } = useParams<{ taskId: string }>();
@@ -106,185 +107,245 @@ export default function SaturnVisualSolver() {
 
   return (
     <div className="h-screen overflow-hidden bg-gray-50 text-gray-900 flex flex-col">
-      {/* Header */}
-      <header className="bg-white border-b border-gray-300 px-3 py-2">
-        <div className="flex items-start justify-between mb-3">
-          <div className="flex items-center gap-2">
-            <a href="/" className="btn btn-ghost btn-xs gap-1">
-              <ArrowLeft className="h-3 w-3" />
-              Back
-            </a>
-            <div className="border-l border-gray-300 pl-2">
-              <h1 className="text-sm font-bold text-gray-900">🪐 Saturn Visual Solver - Puzzle {taskId}</h1>
-            </div>
+      {/* Compact Header - Always visible */}
+      <header className="bg-white border-b border-gray-300 px-2 py-1.5 flex items-center justify-between gap-3">
+        <div className="flex items-center gap-2">
+          <a href="/" className="btn btn-ghost btn-xs gap-1">
+            <ArrowLeft className="h-3 w-3" />
+            Back
+          </a>
+          <div className="border-l border-gray-300 pl-2">
+            <h1 className="text-xs font-bold text-gray-900">🪐 Saturn - {taskId}</h1>
           </div>
         </div>
-
-        {/* Controls - ALL visible, compact */}
-        <div className="grid grid-cols-12 gap-3 text-xs md:text-sm items-end">
-          {/* Model */}
-          <div className="col-span-12 md:col-span-5">
-            <label className="block text-gray-600 mb-1 font-semibold uppercase text-[11px] tracking-wide">Model</label>
-            <select
-              value={model}
-              onChange={(e) => setModel(e.target.value)}
-              disabled={isRunning}
-              className="select select-bordered select-sm md:select-md w-full"
-            >
-              <option value="gpt-5-mini-2025-08-07">GPT-5 Mini</option>
-              <option value="gpt-5-nano-2025-08-07">GPT-5 Nano</option>
-              <option value="grok-4-fast-reasoning">Grok-4 Fast</option>
-              <option value="o3-mini-2025-01-31">O3 Mini</option>
-            </select>
-          </div>
-
-          {/* Temperature */}
-          {showTemperatureControl && (
-            <div className="col-span-12 md:col-span-3">
-              <label className="block text-gray-600 mb-1 font-semibold uppercase text-[11px] tracking-wide">Temperature</label>
-              <div className="flex items-center gap-2">
-                <input
-                  type="range"
-                  min="0.1"
-                  max="2.0"
-                  step="0.1"
-                  value={temperature}
-                  onChange={(e) => setTemperature(parseFloat(e.target.value))}
-                  disabled={isRunning}
-                  className="range range-sm range-primary flex-1"
-                />
-                <span className="w-12 text-center text-xs font-semibold text-gray-700">{temperature.toFixed(1)}</span>
-              </div>
+        <div className="flex items-center gap-2">
+          {isRunning && (
+            <div className="text-xs">
+              <span className="font-semibold text-gray-600">Model:</span> <span className="text-gray-900">{model.split('/').pop()?.replace('gpt-5-', 'GPT-5 ').replace('grok-', 'Grok ').replace('o3-', 'O3 ')}</span>
             </div>
           )}
-
-          {/* Status */}
-          <div className={`col-span-12 ${showTemperatureControl ? 'md:col-span-4' : 'md:col-span-5'}`}>
-            <label className="block text-gray-600 mb-1 font-semibold uppercase text-[11px] tracking-wide">Status</label>
-            <div
-              className={`px-3 py-2 rounded text-xs md:text-sm font-bold tracking-wide uppercase text-center ${
-                isRunning ? 'bg-blue-100 text-blue-800 border border-blue-200' :
-                isDone ? 'bg-green-100 text-green-800 border border-green-200' :
-                hasError ? 'bg-red-100 text-red-800 border border-red-200' :
-                'bg-gray-100 text-gray-600 border border-gray-200'
-              }`}
-            >
-              {state.status.toUpperCase()}
-            </div>
-          </div>
-        </div>
-
-        {showReasoningControls && (
-          <div className="mt-3 bg-primary/5 border border-primary/20 rounded-lg px-4 py-3">
-            <div className="flex items-center justify-between mb-3">
-              <span className="text-[10px] uppercase tracking-widest text-primary font-bold">Reasoning Controls</span>
-              <span className="text-[10px] text-primary/70">Fine-tune depth &amp; verbosity</span>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-              <div>
-                <label className="block text-gray-700 mb-1 text-xs font-semibold uppercase tracking-wide">Effort Level</label>
-                <select
-                  value={reasoningEffort}
-                  onChange={(e) => setReasoningEffort(e.target.value as any)}
-                  disabled={isRunning}
-                  className="select select-bordered select-sm md:select-md w-full"
-                >
-                  <option value="minimal">Minimal</option>
-                  <option value="low">Low</option>
-                  <option value="medium">Medium</option>
-                  <option value="high">High</option>
-                </select>
-              </div>
-              <div>
-                <label className="block text-gray-700 mb-1 text-xs font-semibold uppercase tracking-wide">Verbosity</label>
-                <select
-                  value={reasoningVerbosity}
-                  onChange={(e) => setReasoningVerbosity(e.target.value as any)}
-                  disabled={isRunning}
-                  className="select select-bordered select-sm md:select-md w-full"
-                >
-                  <option value="low">Low</option>
-                  <option value="medium">Medium</option>
-                  <option value="high">High</option>
-                </select>
-              </div>
-              <div>
-                <label className="block text-gray-700 mb-1 text-xs font-semibold uppercase tracking-wide">Summary Style</label>
-                <select
-                  value={reasoningSummaryType}
-                  onChange={(e) => setReasoningSummaryType(e.target.value as any)}
-                  disabled={isRunning}
-                  className="select select-bordered select-sm md:select-md w-full"
-                >
-                  <option value="auto">Auto</option>
-                  <option value="detailed">Detailed</option>
-                </select>
-              </div>
-            </div>
-          </div>
-        )}
-        <section className="mt-2 flex flex-wrap items-center justify-between gap-3">
-          <div className="flex items-center gap-2 text-xs md:text-sm text-gray-600">
-            <span className="uppercase tracking-[0.18em] text-[10px] md:text-xs text-gray-500">Launch Saturn visual solver</span>
-          </div>
-          {!isRunning ? (
-            <button
-              onClick={onStart}
-              className="btn btn-primary btn-lg gap-2 font-semibold uppercase tracking-wide shadow-lg shadow-primary/30"
-            >
-              <Rocket className="h-5 w-5" />
-              Start Analysis
-            </button>
-          ) : (
-            <button onClick={cancel} className="btn btn-error btn-lg gap-2 font-semibold uppercase tracking-wide">
-              <Square className="h-5 w-5" />
+          <a href="/solver/readme" className="btn btn-ghost btn-xs">README</a>
+          {isRunning && (
+            <button onClick={cancel} className="btn btn-error btn-sm gap-1">
+              <Square className="h-3.5 w-3.5" />
               Stop
             </button>
           )}
-        </section>
+        </div>
       </header>
 
-      {/* Main Content - INFO DENSE */}
-      <main className="flex-1 overflow-hidden p-2">
-        <div className="h-full grid grid-cols-12 gap-2">
-          {/* LEFT: Status + Work Table + Puzzle (3 cols) */}
-          <div className="col-span-3 flex flex-col gap-2 overflow-y-auto">
-            {/* Monitoring Status - TOP */}
-            <SaturnMonitoringTable
-              taskId={taskId}
-              state={state}
-              isRunning={isRunning}
-            />
-
-            {/* Work Table - PROMINENT */}
-            <div className="flex-1 min-h-0">
-              <SaturnWorkTable
-                state={state}
-                isRunning={isRunning}
-              />
+      {/* IDLE STATE: Configuration Screen */}
+      {!isRunning && !isDone && !hasError && (
+        <main className="flex-1 overflow-auto p-6">
+          <div className="max-w-5xl mx-auto space-y-6">
+            {/* Hero: Start Button */}
+            <div className="text-center space-y-4 py-8">
+              <h2 className="text-2xl font-bold text-gray-900">Saturn Visual ARC Solver</h2>
+              <p className="text-sm text-gray-600 max-w-2xl mx-auto">
+                Visual-first solver using GPT-5 multimodal. Converts grids to PNGs, applies phased prompts. 22% success on ARC-AGI-2 eval vs 15.9% SOTA.
+              </p>
+              <button
+                onClick={onStart}
+                className="btn btn-primary btn-lg gap-3 text-lg font-bold uppercase tracking-wide shadow-2xl shadow-primary/40 px-12 py-6"
+              >
+                <Rocket className="h-6 w-6" />
+                Start Visual Analysis
+              </button>
             </div>
 
-            {/* Puzzle Display - BOTTOM */}
-            <div className="bg-white border border-gray-300 rounded">
-              <div className="border-b border-gray-300 bg-gray-50 px-2 py-1">
-                <h2 className="text-xs font-bold text-gray-700">PUZZLE</h2>
+            {/* Configuration Grid */}
+            <div className="grid md:grid-cols-2 gap-6">
+              {/* Model Selection */}
+              <div className="card bg-white border border-gray-300 shadow-sm">
+                <div className="card-body p-4">
+                  <h3 className="card-title text-sm">Model Configuration</h3>
+                  <div className="space-y-3">
+                    <div>
+                      <label className="label py-1">
+                        <span className="label-text text-xs font-semibold">Model</span>
+                      </label>
+                      <select
+                        value={model}
+                        onChange={(e) => setModel(e.target.value)}
+                        className="select select-bordered select-sm w-full"
+                      >
+                        <option value="gpt-5-mini-2025-08-07">GPT-5 Mini (Recommended)</option>
+                        <option value="gpt-5-nano-2025-08-07">GPT-5 Nano</option>
+                        <option value="grok-4-fast-reasoning">Grok-4 Fast</option>
+                        <option value="o3-mini-2025-01-31">O3 Mini</option>
+                      </select>
+                    </div>
+                    {showTemperatureControl && (
+                      <div>
+                        <label className="label py-1">
+                          <span className="label-text text-xs font-semibold">Temperature: {temperature.toFixed(1)}</span>
+                        </label>
+                        <input
+                          type="range"
+                          min="0.1"
+                          max="2.0"
+                          step="0.1"
+                          value={temperature}
+                          onChange={(e) => setTemperature(parseFloat(e.target.value))}
+                          className="range range-primary range-sm"
+                        />
+                      </div>
+                    )}
+                  </div>
+                </div>
               </div>
-              <div className="p-2">
+
+              {/* Reasoning Controls */}
+              {showReasoningControls && (
+                <div className="card bg-white border border-gray-300 shadow-sm">
+                  <div className="card-body p-4">
+                    <h3 className="card-title text-sm">Reasoning Configuration</h3>
+                    <div className="space-y-3">
+                      <div>
+                        <label className="label py-1">
+                          <span className="label-text text-xs font-semibold">Effort Level</span>
+                        </label>
+                        <select
+                          value={reasoningEffort}
+                          onChange={(e) => setReasoningEffort(e.target.value as any)}
+                          className="select select-bordered select-sm w-full"
+                        >
+                          <option value="minimal">Minimal</option>
+                          <option value="low">Low (Recommended)</option>
+                          <option value="medium">Medium</option>
+                          <option value="high">High</option>
+                        </select>
+                      </div>
+                      <div className="grid grid-cols-2 gap-2">
+                        <div>
+                          <label className="label py-1">
+                            <span className="label-text text-xs font-semibold">Verbosity</span>
+                          </label>
+                          <select
+                            value={reasoningVerbosity}
+                            onChange={(e) => setReasoningVerbosity(e.target.value as any)}
+                            className="select select-bordered select-sm w-full"
+                          >
+                            <option value="low">Low</option>
+                            <option value="medium">Medium</option>
+                            <option value="high">High</option>
+                          </select>
+                        </div>
+                        <div>
+                          <label className="label py-1">
+                            <span className="label-text text-xs font-semibold">Summary</span>
+                          </label>
+                          <select
+                            value={reasoningSummaryType}
+                            onChange={(e) => setReasoningSummaryType(e.target.value as any)}
+                            className="select select-bordered select-sm w-full"
+                          >
+                            <option value="auto">Auto</option>
+                            <option value="detailed">Detailed</option>
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Puzzle Preview */}
+            <div className="card bg-white border border-gray-300 shadow-sm">
+              <div className="card-body p-4">
+                <h3 className="card-title text-sm mb-2">Puzzle Preview</h3>
                 <CompactPuzzleDisplay
                   trainExamples={task.train}
                   testCases={task.test}
                   showEmojis={false}
                   title=""
-                  maxTrainingExamples={1}
-                  defaultTrainingCollapsed={true}
+                  maxTrainingExamples={3}
+                  defaultTrainingCollapsed={false}
                   showTitle={false}
                 />
               </div>
             </div>
           </div>
+        </main>
+      )}
 
-          {/* CENTER: AI Output (6 cols) */}
-          <div className="col-span-6 flex flex-col gap-2 min-h-0">
+      {/* RUNNING/DONE STATE: Monitoring Screen */}
+      {(isRunning || isDone || hasError) && (
+        <main className="flex-1 overflow-hidden p-2">
+          <div className="h-full grid grid-cols-12 gap-2">
+            {/* LEFT: Status + Work Table + Puzzle (4 cols - expanded) */}
+            <div className="col-span-4 flex flex-col gap-2 overflow-y-auto">
+              {/* Monitoring Status */}
+              <SaturnMonitoringTable
+                taskId={taskId}
+                state={state}
+                isRunning={isRunning}
+              />
+
+              {/* Work Table */}
+              <div className="flex-1 min-h-0">
+                <SaturnWorkTable
+                  state={state}
+                  isRunning={isRunning}
+                />
+              </div>
+
+              {/* Puzzle Display - Training & Test Grids */}
+              <div className="bg-white border border-gray-300 rounded">
+                <div className="border-b border-gray-300 bg-gray-50 px-2 py-1">
+                  <h2 className="text-xs font-bold text-gray-700">PUZZLE GRIDS</h2>
+                </div>
+                <div className="p-2 space-y-3 max-h-[600px] overflow-y-auto">
+                  {/* Training Examples */}
+                  {task.train.slice(0, 2).map((example, idx) => (
+                    <div key={`train-${idx}`} className="space-y-1">
+                      <div className="text-[10px] font-bold text-gray-600 uppercase tracking-wide">Training {idx + 1}</div>
+                      <div className="grid grid-cols-2 gap-2">
+                        <div>
+                          <div className="text-[9px] text-gray-500 mb-0.5">Input</div>
+                          <div className="border border-gray-200 p-1 bg-gray-50">
+                            <TinyGrid grid={example.input} style={{ maxHeight: '120px' }} />
+                          </div>
+                        </div>
+                        <div>
+                          <div className="text-[9px] text-gray-500 mb-0.5">Output</div>
+                          <div className="border border-gray-200 p-1 bg-gray-50">
+                            <TinyGrid grid={example.output} style={{ maxHeight: '120px' }} />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                  
+                  {/* Test Cases */}
+                  {task.test.map((testCase, idx) => (
+                    <div key={`test-${idx}`} className="space-y-1">
+                      <div className="text-[10px] font-bold text-blue-600 uppercase tracking-wide">Test {idx + 1}</div>
+                      <div className="grid grid-cols-2 gap-2">
+                        <div>
+                          <div className="text-[9px] text-gray-500 mb-0.5">Input</div>
+                          <div className="border border-blue-200 p-1 bg-blue-50">
+                            <TinyGrid grid={testCase.input} style={{ maxHeight: '120px' }} />
+                          </div>
+                        </div>
+                        {testCase.output && (
+                          <div>
+                            <div className="text-[9px] text-gray-500 mb-0.5">Expected</div>
+                            <div className="border border-blue-200 p-1 bg-blue-50">
+                              <TinyGrid grid={testCase.output} style={{ maxHeight: '120px' }} />
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* CENTER: AI Output (5 cols) */}
+            <div className="col-span-5 flex flex-col gap-2 min-h-0">
             {/* Token Metrics - TOP */}
             <div className="bg-white border border-gray-300 rounded">
               <div className="grid grid-cols-4 divide-x divide-gray-300">
@@ -336,15 +397,16 @@ export default function SaturnVisualSolver() {
             </div>
           </div>
 
-          {/* RIGHT: Images (3 cols) */}
-          <div className="col-span-3 overflow-y-auto">
+            {/* RIGHT: Images (3 cols) */}
+            <div className="col-span-3 overflow-y-auto">
             <SaturnImageGallery
               images={state.galleryImages || []}
               isRunning={isRunning}
             />
+            </div>
           </div>
-        </div>
-      </main>
+        </main>
+      )}
     </div>
   );
 }
