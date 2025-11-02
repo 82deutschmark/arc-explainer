@@ -23,12 +23,28 @@
 - Existing `stream.complete` handler now only fires on final completion
 - EventSource lifecycle: stays open across all phases, closes only on final completion or error
 
-**Additional Changes**:
+**Validation Fix** ([systemPrompts.ts](server/services/prompts/systemPrompts.ts)):
+- Added `'saturn-multi-phase'` to `isSolverMode()` function to ensure proper validation
+- Prevents validation from being skipped if code changes to use `result.promptTemplateId`
+- Critical fix for ensuring Saturn results are always validated correctly
+
+**Multi-Test Puzzle Support** ([saturnService.ts](server/services/saturnService.ts)):
+- Extended Phase 3 to loop through **all test cases** instead of only the first one
+- Each test case gets its own prediction with continuation chaining
+- Added `multiplePredictedOutputs: true` flag when puzzles have multiple test cases
+- Added `multiTestResults` array containing predictions for all test cases
+- Maintains backward compatibility by keeping single `predictedOutput` field (uses first test)
+- Phase count calculation now includes all test cases for accurate progress tracking
+
+**UI Enhancements**:
 - Changed default Saturn model from GPT-5 Mini to **GPT-5 Nano** for cost optimization
-- Enhanced work table logging to show more detailed phase information
+- Enhanced work table with phase history tracking (accumulates across all phases)
+- Integrated detailed status log into work table component
+- Color-coded log entries (errors in red, phase info in blue, completions in green)
 
 #### Verification
 - ⚠️ Manual Saturn multi-phase execution test required (requires live API credentials)
+- Test with both single-test and multi-test puzzles to verify all predictions are generated
 
 ## [4.11.2] - 2025-11-01
 ### 🔧 Saturn Grid Display Fix
