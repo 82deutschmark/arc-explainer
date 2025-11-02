@@ -182,7 +182,7 @@ Always look for:
     const totalPhaseCount = 1 + // Phase 1
       (task.train.length > 1 ? 2 : 0) + // Phase 2 + 2.5
       Math.max(0, task.train.length - 2) + // Additional training examples
-      1; // Phase 3
+      task.test.length; // Phase 3 (one per test case)
     let currentPhaseNum = 0;
 
     // Helper to emit phase completion WITHOUT closing the stream
@@ -510,76 +510,93 @@ Always look for:
         totalReasoningTokens += additionalResponse.reasoningTokens || 0;
       }
       
-      // Phase 3: Apply to test
-      logger.service(this.provider, `Phase 3: Applying pattern to test input`);
-      sendProgress({ 
-        status: 'running', 
-        phase: 'saturn_phase3',
-        step: 3,
-        totalSteps: 3,
-        message: 'Applying pattern to test case...' 
-      });
-      
-      const phase3Prompt = this.buildPhase3Prompt(task);
-      const phase3Images = await this.generateGridImages(
-        [task.test[0].input],
-        taskId,
-        'test'
-      );
-      
-      // Phase 3: Continuation call - NO systemPromptOverride, ONLY customUserPrompt
-      const phase3ServiceOpts: ServiceOptions = {
-        ...serviceOpts,
-        stream: wrappedHarness, // Use wrapped harness
-        suppressInstructionsOnContinuation: true,
-        previousResponseId,
-        customUserPrompt: phase3Prompt,
-      };
+      // Phase 3: Apply to test (loop through all test cases for multi-test support)
+      const testPredictions: Array<{
+        testIndex: number;
+        response: AIResponse;
+        images: string[];
+      }> = [];
 
-      const phase3Response = wrappedHarness
-        ? await underlyingService.analyzePuzzleWithStreaming!(
-            task,
-            underlyingModel,
-            taskId,
-            temperature,
-            promptId,
-            undefined,
-            { ...options, includeImages: true, imagePaths: phase3Images },
-            phase3ServiceOpts
-          )
-        : await underlyingService.analyzePuzzleWithModel(
-            task,
-            underlyingModel,
-            taskId,
-            temperature,
-            promptId,
-            undefined,
-            { ...options, includeImages: true, imagePaths: phase3Images },
-            phase3ServiceOpts
-          );
-      
-      phases.push({
-        phase: 3,
-        name: 'Test Prediction',
-        response: phase3Response,
-        images: phase3Images
-      });
+      for (let testIdx = 0; testIdx < task.test.length; testIdx++) {
+        logger.service(this.provider, `Phase 3.${testIdx + 1}: Applying pattern to test ${testIdx + 1}/${task.test.length}`);
+        sendProgress({
+          status: 'running',
+          phase: `saturn_phase3_test${testIdx + 1}`,
+          step: 3,
+          totalSteps: 3,
+          message: `Applying pattern to test ${testIdx + 1}/${task.test.length}...`
+        });
 
-      // Emit phase completion for final phase
-      emitPhaseComplete('Phase 3: Test Prediction');
+        const phase3Prompt = this.buildPhase3Prompt(task, testIdx);
+        const phase3Images = await this.generateGridImages(
+          [task.test[testIdx].input],
+          taskId,
+          `test${testIdx}`
+        );
 
-      const phase3ImagesBase64 = await this.convertImagesToBase64(phase3Images);
-      sendProgress({
-        status: 'running',
-        phase: 'saturn_phase3_complete',
-        message: 'Test prediction complete',
-        images: phase3ImagesBase64
-      });
-      
-      totalCost += phase3Response.estimatedCost || 0;
-      totalInputTokens += phase3Response.inputTokens || 0;
-      totalOutputTokens += phase3Response.outputTokens || 0;
-      totalReasoningTokens += phase3Response.reasoningTokens || 0;
+        // Phase 3: Continuation call - NO systemPromptOverride, ONLY customUserPrompt
+        const phase3ServiceOpts: ServiceOptions = {
+          ...serviceOpts,
+          stream: wrappedHarness, // Use wrapped harness
+          suppressInstructionsOnContinuation: true,
+          previousResponseId,
+          customUserPrompt: phase3Prompt,
+        };
+
+        const phase3Response = wrappedHarness
+          ? await underlyingService.analyzePuzzleWithStreaming!(
+              task,
+              underlyingModel,
+              taskId,
+              temperature,
+              promptId,
+              undefined,
+              { ...options, includeImages: true, imagePaths: phase3Images },
+              phase3ServiceOpts
+            )
+          : await underlyingService.analyzePuzzleWithModel(
+              task,
+              underlyingModel,
+              taskId,
+              temperature,
+              promptId,
+              undefined,
+              { ...options, includeImages: true, imagePaths: phase3Images },
+              phase3ServiceOpts
+            );
+
+        // Update previousResponseId for next test case continuation
+        previousResponseId = phase3Response.providerResponseId;
+
+        testPredictions.push({
+          testIndex: testIdx,
+          response: phase3Response,
+          images: phase3Images
+        });
+
+        phases.push({
+          phase: 3 + testIdx * 0.1,
+          name: `Test ${testIdx + 1} Prediction`,
+          response: phase3Response,
+          images: phase3Images
+        });
+
+        // Emit phase completion
+        emitPhaseComplete(`Phase 3.${testIdx + 1}: Test ${testIdx + 1} Prediction`);
+
+        const phase3ImagesBase64 = await this.convertImagesToBase64(phase3Images);
+        sendProgress({
+          status: 'running',
+          phase: `saturn_phase3_test${testIdx + 1}_complete`,
+          message: `Test ${testIdx + 1} prediction complete`,
+          images: phase3ImagesBase64
+        });
+
+        totalCost += phase3Response.estimatedCost || 0;
+        totalInputTokens += phase3Response.inputTokens || 0;
+        totalOutputTokens += phase3Response.outputTokens || 0;
+        totalReasoningTokens += phase3Response.reasoningTokens || 0;
+      }
       
       // Aggregate all reasoning logs
       const allReasoningLogs = phases
@@ -590,30 +607,43 @@ Always look for:
         .flatMap(p => p.response.reasoningItems || [])
         .filter(Boolean);
       
-      // Build final response (using final phase's predictions)
+      // Build final response (supporting multi-test predictions)
+      const hasMultipleTests = task.test.length > 1;
       const finalPhase = phases[phases.length - 1].response;
-      
+
       const finalResponse: AIResponse = {
         model: modelKey,
         temperature,
         reasoningLog: allReasoningLogs.join('\n\n---\n\n'),
         hasReasoningLog: allReasoningLogs.length > 0,
         reasoningItems: allReasoningItems,
-        
+
         // Token usage (aggregated across all phases)
         inputTokens: totalInputTokens,
         outputTokens: totalOutputTokens,
         reasoningTokens: totalReasoningTokens,
         totalTokens: totalInputTokens + totalOutputTokens + totalReasoningTokens,
         estimatedCost: totalCost,
-        
-        // Predicted output from final phase
-        predictedOutput: finalPhase.predictedOutput,
-        solvingStrategy: finalPhase.solvingStrategy,
-        patternDescription: finalPhase.patternDescription,
-        hints: finalPhase.hints,
-        confidence: finalPhase.confidence,
-        
+
+        // Predicted output (backward compatible - uses first test)
+        predictedOutput: testPredictions[0].response.predictedOutput,
+        solvingStrategy: testPredictions[0].response.solvingStrategy,
+        patternDescription: testPredictions[0].response.patternDescription,
+        hints: testPredictions[0].response.hints,
+        confidence: testPredictions[0].response.confidence,
+
+        // Multi-test support
+        multiplePredictedOutputs: hasMultipleTests,
+        ...(hasMultipleTests && {
+          multiTestResults: testPredictions.map(pred => ({
+            testIndex: pred.testIndex,
+            predictedOutput: pred.response.predictedOutput,
+            solvingStrategy: pred.response.solvingStrategy,
+            confidence: pred.response.confidence,
+            images: pred.images
+          }))
+        }),
+
         // Saturn-specific metadata
         saturnPhases: phases.map(p => ({
           phase: p.phase,
@@ -625,7 +655,7 @@ Always look for:
             reasoningLog: p.response.reasoningLog
           }
         })),
-        
+
         // Provider metadata
         providerResponseId: finalPhase.providerResponseId,
         systemPromptUsed: saturnSystemPrompt,
@@ -803,11 +833,14 @@ Verify that this example follows the same pattern you've identified. Note any ne
   /**
    * Phase 3: Solve test input
    */
-  private buildPhase3Prompt(task: ARCTask): string {
-    return `Now apply the pattern you've learned to solve the test input:
+  private buildPhase3Prompt(task: ARCTask, testIndex: number = 0): string {
+    const testNum = testIndex + 1;
+    const testLabel = task.test.length > 1 ? ` (test ${testNum} of ${task.test.length})` : '';
+
+    return `Now apply the pattern you've learned to solve the test input${testLabel}:
 
 Test Input:
-${JSON.stringify(task.test[0].input)}
+${JSON.stringify(task.test[testIndex].input)}
 
 A visual representation is attached.
 
