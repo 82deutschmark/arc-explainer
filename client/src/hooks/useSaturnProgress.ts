@@ -475,6 +475,28 @@ export function useSaturnProgress(taskId: string | undefined) {
           }
         });
 
+        // Handle phase completion (NOT final completion - keep stream open)
+        eventSource.addEventListener('stream.phase_complete', (evt) => {
+          try {
+            const phaseData = JSON.parse((evt as MessageEvent<string>).data) as {
+              phase?: number;
+              totalPhases?: number;
+              phaseName?: string;
+              message?: string;
+            };
+            console.log(`[SaturnStream] Phase ${phaseData.phase}/${phaseData.totalPhases} complete: ${phaseData.phaseName}`);
+            setState((prev) => ({
+              ...prev,
+              streamingMessage: phaseData.message || `Phase ${phaseData.phase} complete`,
+              // DO NOT set status to 'completed' - more phases are coming!
+              // DO NOT close EventSource - need it for next phase!
+            }));
+          } catch (error) {
+            console.error('[SaturnStream] Failed to parse phase_complete payload:', error);
+          }
+          // IMPORTANT: No finally block with closeEventSource() here!
+        });
+
         eventSource.addEventListener('stream.complete', (evt) => {
           try {
             const summary = JSON.parse((evt as MessageEvent<string>).data) as {

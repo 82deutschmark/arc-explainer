@@ -17,21 +17,50 @@ interface Props {
 }
 
 export default function SaturnWorkTable({ state, isRunning, compact }: Props) {
-  // Build phase history from logs
-  const phases = React.useMemo(() => {
-    const phaseList: Array<{ phase: string; message?: string; status: string; timestamp: string }> = [];
-    
+  // Track phase history (accumulates across phases)
+  const [phaseHistory, setPhaseHistory] = React.useState<Array<{
+    phase: string;
+    message?: string;
+    status: string;
+    timestamp: string;
+  }>>([]);
+
+  // Update phase history when phase changes
+  React.useEffect(() => {
     if (state.phase) {
-      phaseList.push({
-        phase: state.phase,
-        message: state.message,
-        status: isRunning ? 'in_progress' : state.status || 'idle',
-        timestamp: new Date().toLocaleTimeString()
+      setPhaseHistory(prev => {
+        // Check if this phase already exists
+        const existingIndex = prev.findIndex(p => p.phase === state.phase);
+
+        if (existingIndex >= 0) {
+          // Update existing phase
+          const updated = [...prev];
+          updated[existingIndex] = {
+            phase: state.phase,
+            message: state.streamingMessage || state.message,
+            status: isRunning ? 'in_progress' : state.status || 'completed',
+            timestamp: new Date().toLocaleTimeString()
+          };
+          return updated;
+        } else {
+          // Add new phase
+          return [...prev, {
+            phase: state.phase,
+            message: state.streamingMessage || state.message,
+            status: isRunning ? 'in_progress' : 'completed',
+            timestamp: new Date().toLocaleTimeString()
+          }];
+        }
       });
     }
-    
-    return phaseList;
-  }, [state.phase, state.message, state.status, isRunning]);
+  }, [state.phase, state.message, state.streamingMessage, state.status, isRunning]);
+
+  // Reset history when returning to idle
+  React.useEffect(() => {
+    if (state.status === 'idle') {
+      setPhaseHistory([]);
+    }
+  }, [state.status]);
 
   return (
     <div className="min-h-0 overflow-hidden flex flex-col border border-gray-300 bg-white">
@@ -52,15 +81,15 @@ export default function SaturnWorkTable({ state, isRunning, compact }: Props) {
             </tr>
           </thead>
           <tbody>
-            {phases.length === 0 ? (
+            {phaseHistory.length === 0 ? (
               <tr>
                 <td colSpan={4} className="p-4 text-center text-gray-400">
                   NO PHASES YET
                 </td>
               </tr>
             ) : (
-              phases.map((item, idx) => (
-                <tr 
+              phaseHistory.map((item, idx) => (
+                <tr
                   key={idx}
                   className={`border-b border-gray-200 ${
                     item.status === 'in_progress' ? 'bg-amber-50' :
@@ -89,9 +118,33 @@ export default function SaturnWorkTable({ state, isRunning, compact }: Props) {
         </table>
       </div>
 
+      {/* Status Log Section */}
+      {state.logLines && state.logLines.length > 0 && (
+        <div className="border-t border-gray-300">
+          <div className="bg-gray-100 px-2 py-1 border-b border-gray-300">
+            <h3 className="text-xs font-bold text-gray-700">DETAILED STATUS LOG</h3>
+          </div>
+          <div className="max-h-32 overflow-y-auto bg-gray-50 p-2 font-mono text-[10px] leading-tight">
+            {state.logLines.map((line, idx) => (
+              <div
+                key={idx}
+                className={`${
+                  line.includes('ERROR') ? 'text-red-600 font-bold' :
+                  line.includes('Phase') ? 'text-blue-600 font-semibold' :
+                  line.includes('complete') ? 'text-emerald-600' :
+                  'text-gray-700'
+                }`}
+              >
+                {line}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* Footer Stats */}
       <div className="border-t border-gray-300 bg-gray-50 p-2 flex items-center justify-between text-xs font-mono">
-        <span className="text-gray-600">TOTAL PHASES: {phases.length}</span>
+        <span className="text-gray-600">TOTAL PHASES: {phaseHistory.length}</span>
         <span className={`font-bold ${isRunning ? 'text-blue-600' : 'text-gray-600'}`}>
           {isRunning ? '● RUNNING' : '○ IDLE'}
         </span>

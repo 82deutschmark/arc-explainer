@@ -1,5 +1,35 @@
 # CHANGELOG - Uses semantic versioning (MAJOR.MINOR.PATCH)
 
+## [4.11.3] - 2025-11-01
+### 🚀 Saturn Multi-Phase Streaming Fix
+
+**Root Cause**: Client-side EventSource was closing after EACH phase completion, treating `stream.complete` as session complete instead of phase complete. Saturn's multi-phase architecture (Phase 1 → Phase 2 → Phase 2.5 → Phase 3) requires the EventSource to remain open across all phases.
+
+**The Race Condition**:
+1. Phase 1 completes → underlying service calls `harness.end()` → `stream.complete` event fires
+2. Client closes EventSource in `stream.complete` handler
+3. Saturn service starts Phase 2 → EventSource already closed
+4. Server returns 200 but client can't receive events → "Request was aborted"
+
+**Server-Side Changes** ([saturnService.ts](server/services/saturnService.ts)):
+- Added phase tracking: calculates total phases upfront (1 + conditional Phase 2/2.5 + additional training + Phase 3)
+- Created `wrappedHarness` that intercepts `end()` calls from underlying services
+- Each phase now emits `stream.phase_complete` event (NOT `stream.complete`)
+- Only the final phase calls real `harness.end()` which emits `stream.complete`
+- All phase service calls now use `wrappedHarness` to prevent premature stream closure
+
+**Client-Side Changes** ([useSaturnProgress.ts](client/src/hooks/useSaturnProgress.ts)):
+- Added `stream.phase_complete` event handler that updates UI WITHOUT closing EventSource
+- Existing `stream.complete` handler now only fires on final completion
+- EventSource lifecycle: stays open across all phases, closes only on final completion or error
+
+**Additional Changes**:
+- Changed default Saturn model from GPT-5 Mini to **GPT-5 Nano** for cost optimization
+- Enhanced work table logging to show more detailed phase information
+
+#### Verification
+- ⚠️ Manual Saturn multi-phase execution test required (requires live API credentials)
+
 ## [4.11.2] - 2025-11-01
 ### 🔧 Saturn Grid Display Fix
 

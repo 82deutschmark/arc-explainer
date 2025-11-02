@@ -30,7 +30,7 @@ export default function SaturnVisualSolver() {
   const { currentTask: task, isLoadingTask, taskError } = usePuzzle(taskId);
   const { state, start, cancel } = useSaturnProgress(taskId);
 
-  // Settings state - GPT-5 Mini with balanced (low) reasoning depth and detailed summary by default
+  // Settings state - GPT-5 Nano with balanced (low) reasoning depth and detailed summary by default
   const defaultModel = getDefaultSaturnModel();
   const [model, setModel] = React.useState(defaultModel?.key || 'gpt-5-nano-2025-08-07');
   const [temperature, setTemperature] = React.useState(0.2);
@@ -180,8 +180,8 @@ export default function SaturnVisualSolver() {
                         onChange={(e) => setModel(e.target.value)}
                         className="select select-bordered select-sm w-full"
                       >
-                        <option value="gpt-5-mini-2025-08-07">GPT-5 Mini (Recommended)</option>
-                        <option value="gpt-5-nano-2025-08-07">GPT-5 Nano</option>
+                        <option value="gpt-5-nano-2025-08-07">GPT-5 Nano (Recommended)</option>
+                        <option value="gpt-5-mini-2025-08-07">GPT-5 Mini</option>
                         <option value="grok-4-fast-reasoning">Grok-4 Fast</option>
                         <option value="o3-mini-2025-01-31">O3 Mini</option>
                       </select>
