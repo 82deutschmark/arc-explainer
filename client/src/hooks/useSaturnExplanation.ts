@@ -20,7 +20,10 @@ export function useSaturnExplanation(
   const [error, setError] = useState<Error | null>(null);
   
   useEffect(() => {
+    console.log('[SaturnExplanation] Effect triggered:', { taskId, modelKey, shouldFetch });
+    
     if (!taskId || !modelKey || !shouldFetch) {
+      console.log('[SaturnExplanation] Skipping fetch - missing params or not ready');
       return;
     }
     
@@ -29,11 +32,13 @@ export function useSaturnExplanation(
       setError(null);
       
       try {
-        console.log(`[SaturnExplanation] Fetching saved explanation for ${taskId} / ${modelKey}`);
+        console.log(`[SaturnExplanation] ⏳ Fetching saved explanation for ${taskId} / ${modelKey}`);
         
         // Fetch all explanations for this puzzle
         const res = await apiRequest('GET', `/api/puzzle/${taskId}/explanations`);
         const data = await res.json();
+        
+        console.log('[SaturnExplanation] API response:', data);
         
         if (!data.success || !Array.isArray(data.data)) {
           throw new Error('Failed to fetch explanations');
@@ -41,6 +46,9 @@ export function useSaturnExplanation(
         
         // Find the explanation for this model (most recent if multiple)
         const explanations = data.data as ExplanationData[];
+        console.log(`[SaturnExplanation] Found ${explanations.length} total explanations`);
+        console.log('[SaturnExplanation] Available models:', explanations.map(e => e.modelName));
+        
         const matchingExplanation = explanations
           .filter((exp: ExplanationData) => exp.modelName === modelKey)
           .sort((a: ExplanationData, b: ExplanationData) => {
@@ -51,22 +59,27 @@ export function useSaturnExplanation(
           })[0];
         
         if (matchingExplanation) {
-          console.log(`[SaturnExplanation] Found explanation ID ${matchingExplanation.id}`);
+          console.log(`[SaturnExplanation] ✅ Found explanation ID ${matchingExplanation.id}`);
+          console.log('[SaturnExplanation] Explanation data:', matchingExplanation);
           setExplanation(matchingExplanation);
         } else {
-          console.warn(`[SaturnExplanation] No explanation found for model ${modelKey}`);
-          setError(new Error('Explanation not found in database'));
+          console.warn(`[SaturnExplanation] ❌ No explanation found for model ${modelKey}`);
+          console.warn('[SaturnExplanation] Expected modelKey:', modelKey);
+          console.warn('[SaturnExplanation] Available models:', explanations.map(e => e.modelName).join(', '));
+          setError(new Error(`Explanation not found for model ${modelKey}`));
         }
       } catch (err) {
-        console.error('[SaturnExplanation] Failed to fetch explanation:', err);
+        console.error('[SaturnExplanation] 💥 Failed to fetch explanation:', err);
         setError(err instanceof Error ? err : new Error('Unknown error'));
       } finally {
         setIsLoading(false);
+        console.log('[SaturnExplanation] Fetch complete');
       }
     };
     
     // Small delay to ensure database write completes
     // Backend saves to DB in saturnStreamService.ts before sending stream.complete event
+    console.log('[SaturnExplanation] Starting 300ms timer before fetch...');
     const timer = setTimeout(fetchExplanation, 300);
     return () => clearTimeout(timer);
   }, [taskId, modelKey, shouldFetch]);

@@ -399,42 +399,45 @@ export default function SaturnVisualSolver() {
               </div>
             </div>
 
-            {/* AI Streaming Output - MAIN */}
-            <div className="flex-1 min-h-0">
-              <SaturnTerminalLogs
-                streamingText={state.streamingText}
-                streamingReasoning={state.streamingReasoning}
-                logLines={state.logLines}
-                isRunning={isRunning}
-                phase={state.streamingPhase || state.phase}
-              />
-            </div>
-            {/* Saturn Final Result - Show correctness with AnalysisResultCard */}
-            <div className="max-h-[50vh] overflow-auto">
-              {state.status === 'completed' && explanation && (
-                <AnalysisResultCard
-                  modelKey={model}
-                  result={explanation}
-                  model={undefined}
-                  testCases={task.test}
-                  eloMode={false}
+            {/* AI Streaming Output - Show ONLY while running */}
+            {!isDone && (
+              <div className="flex-1 min-h-0">
+                <SaturnTerminalLogs
+                  streamingText={state.streamingText}
+                  streamingReasoning={state.streamingReasoning}
+                  logLines={state.logLines}
+                  isRunning={isRunning}
+                  phase={state.streamingPhase || state.phase}
                 />
-              )}
-              {state.status === 'completed' && isLoadingExplanation && (
-                <div className="bg-white border border-indigo-200 rounded p-6 text-center">
-                  <div className="text-indigo-600 font-semibold">Loading results...</div>
-                  <div className="text-xs text-gray-500 mt-1">Fetching saved explanation from database</div>
-                </div>
-              )}
-              {state.status === 'completed' && !explanation && !isLoadingExplanation && (
-                <div className="bg-red-50 border border-red-200 rounded p-6 text-center">
-                  <div className="text-red-600 font-semibold">Failed to load explanation</div>
-                  <div className="text-xs text-gray-600 mt-1">
-                    {explanationError?.message || 'Explanation not found in database'}
+              </div>
+            )}
+
+            {/* Saturn Final Result - Show ONLY when completed */}
+            {isDone && (
+              <div className="flex-1 overflow-auto">
+                {explanation ? (
+                  <AnalysisResultCard
+                    modelKey={model}
+                    result={explanation}
+                    model={undefined}
+                    testCases={task.test}
+                    eloMode={false}
+                  />
+                ) : isLoadingExplanation ? (
+                  <div className="bg-white border border-indigo-200 rounded p-6 text-center">
+                    <div className="text-indigo-600 font-semibold">Loading results...</div>
+                    <div className="text-xs text-gray-500 mt-1">Fetching saved explanation from database</div>
                   </div>
-                </div>
-              )}
-            </div>
+                ) : (
+                  <div className="bg-red-50 border border-red-200 rounded p-6 text-center">
+                    <div className="text-red-600 font-semibold">Failed to load explanation</div>
+                    <div className="text-xs text-gray-600 mt-1">
+                      {explanationError?.message || 'Explanation not found in database'}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
 
             {/* RIGHT: Images (3 cols) */}
