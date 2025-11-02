@@ -1,5 +1,13 @@
 # CHANGELOG - Uses semantic versioning (MAJOR.MINOR.PATCH)
 
+# [4.12.2] - 2025-11-02
+### ♻️ Saturn Reasoning Accordion Default
+
+- Collapsed the "AI Reasoning Process" section in `AnalysisResultCard` by default so Saturn Visual Solver results open in a concise state.
+
+#### Verification
+- ⚠️ Not run (UI state toggle only)
+
 # [4.12.1] - 2025-11-01
 ### 🖼️ Saturn Image Pairing & Documentation Links
 
