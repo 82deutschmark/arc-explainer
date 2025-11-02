@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """
+Author: Zoe Carver https://github.com/zoecarver/saturn-arc/tree/main
 ARC-AGI Visualizer
 Converts ARC puzzle JSON data to PNG images for visual analysis
 """

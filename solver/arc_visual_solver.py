@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """
+Author: Zoe Carver https://github.com/zoecarver/saturn-arc/tree/main
 ARC-AGI Visual Solver
 Uses a phased approach with visual representations to solve ARC puzzles
 """

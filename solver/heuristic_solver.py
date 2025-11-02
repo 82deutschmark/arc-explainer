@@ -1,4 +1,4 @@
-# Author: Max Power
+# Author: https://github.com/zoecarver/saturn-arc/tree/main ???  
 # Date: 2025-10-12
 # PURPOSE: Minimal ARC transform learner + predictor for integration with ARC Explainer.
 # SRP/DRY check: Pass

@@ -1,35 +1,61 @@
 # CHANGELOG - Uses semantic versioning (MAJOR.MINOR.PATCH)
 
-## [4.11.4] - 2025-11-01
-### ✅ Saturn Correctness Display
-**Problem**: Saturn Visual Solver showed completion status ("COMPLETED") but not correctness status (whether predictions were RIGHT or WRONG). Users couldn't tell at a glance if Saturn solved the puzzle correctly.
+# [4.12.2] - 2025-11-02
+### ♻️ Saturn Reasoning Accordion Default
 
-**Solution**: Replaced `SaturnFinalResultPanel` with standard `AnalysisResultCard` component to display correctness indicators:
-- ✅ **Green badge** for correct predictions
-- ❌ **Red badge** for incorrect predictions  
-- 📊 **Accuracy percentage** for multi-test puzzles (e.g., "2/3 Correct - 67%")
-- **Trustworthiness score** based on confidence + correctness
-- **Full metrics** including token usage, cost, and reasoning log
-
-**Implementation**:
-- Created `useSaturnExplanation` hook to fetch saved explanation from database after streaming completes
-- Database already contains validated results with `isPredictionCorrect`, `trustworthinessScore`, and `multiValidation` fields
-- Reused existing `/api/puzzle/:puzzleId/explanations` endpoint (filters by modelKey on frontend)
-- 300ms delay ensures database write completes before fetch
-
-**Files Changed**:
-- `client/src/hooks/useSaturnExplanation.ts` - New hook for fetching saved explanation
-- `client/src/pages/SaturnVisualSolver.tsx` - Replaced SaturnFinalResultPanel with AnalysisResultCard
-
-**Benefits**:
-- Consistent UI across all solvers (Saturn, Grover, standard analysis)
-- Immediate visual feedback on correctness
-- All standard features available (feedback buttons, reasoning toggle, etc.)
-- No changes to backend validation logic (already working correctly)
+- Collapsed the "AI Reasoning Process" section in `AnalysisResultCard` by default so Saturn Visual Solver results open in a concise state.
+- Enabled streaming for OpenAI o3/o4 reasoning models across service configuration so Saturn and analysis flows can use incremental deltas.
 
 #### Verification
-- ⚠️ Test with single-test puzzle → should show "Correct" or "Incorrect" badge
-- ⚠️ Test with multi-test puzzle → should show "X/Y Correct" with accuracy percentage
+- ⚠️ Not run (UI state toggle only)
+
+# [4.12.1] - 2025-11-01
+### 🖼️ Saturn Image Pairing & Documentation Links
+
+- Ensured Saturn solver streams distinct input/output image pairs for every training phase by tagging filenames with phase labels (`phase1`, `phase2_input`, `phase2_output`, etc.) and forwarding new images to the frontend gallery as they arrive.
+- Propagated optional labels through the Python visualization bridge so generated PNGs have deterministic names and are deduplicated correctly.
+- Highlighted the upstream Saturn README link directly in the solver header and idle/running states, pointing to https://github.com/zoecarver/saturn-arc/tree/main for quick reference instead of the stale `/solver/readme` route.
+
+#### Verification
+- ⚠️ Not run (requires live Saturn run with API credentials)
+
+## [4.12.0] - 2025-11-01
+### ✅ Saturn Correctness Display & Improved Streaming Layout
+**Problem**: Saturn Visual Solver showed completion status ("COMPLETED") but not correctness status (whether predictions were RIGHT or WRONG). Additionally, streaming reasoning and final output were crammed together in one scroll box, making it hard to read.
+
+**Solution**: 
+1. **Correctness indicators**: Use `AnalysisResultCard` to show ✅/❌ badges with trustworthiness scores
+2. **Separated streaming display**: Split reasoning and output into distinct, independently scrollable panels
+3. **Clean transitions**: Hide streaming output when complete, show only the final validated result card
+
+**Key Changes**:
+- **While running**: Reasoning and output shown in separate blue/green bordered scroll boxes (vertically stacked)
+- **When completed**: Streaming panels hidden, replaced with full `AnalysisResultCard` showing correctness
+- **Data flow**: Uses `state.result` directly from streaming (contains backend-validated analysis with `isPredictionCorrect`, `trustworthinessScore`, `multiValidation`)
+- **No DB fetch needed**: Transforms streaming result to `ExplanationData` format in-memory with mock database fields
+
+**Display Features**:
+- ✅ **Green "Correct" badge** for correct predictions  
+- ❌ **Red "Incorrect" badge** for incorrect predictions
+- 📊 **"X/Y Correct (Z%)"** for multi-test puzzles
+- **Trustworthiness score** (confidence × correctness)
+- **Token usage** and cost breakdown
+- **Reasoning log** (expandable)
+- **Grid diff overlay** highlighting differences
+
+**Files Changed**:
+- `client/src/pages/SaturnVisualSolver.tsx` - Split streaming display, transform state.result to ExplanationData
+- `client/src/hooks/useSaturnExplanation.ts` - Created but unused (direct state.result approach was better)
+
+**Benefits**:
+- Clear separation of reasoning vs output during streaming
+- No mixed status log clutter in AI output area
+- Consistent final result display across all solver types
+- Real-time validation data from backend streaming
+
+#### Verification
+- ⚠️ Test single-test puzzle → separate reasoning/output boxes while running, then correctness badge
+- ⚠️ Test multi-test puzzle → should show "X/Y Correct" accuracy after completion
 
 ## [4.11.3] - 2025-11-01
 ### 🚀 Saturn Multi-Phase Streaming Fix
