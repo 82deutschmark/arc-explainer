@@ -29,6 +29,8 @@ const BADGE_VARIANT_STYLES: Record<BadgeVariant, string> = {
   other: 'bg-gray-700 text-white',
 };
 
+const BADGE_BASE_CLASS = 'inline-flex w-fit items-center px-2 py-0.5 rounded text-xs font-semibold uppercase tracking-wide';
+
 export function SaturnImageGallery({
   images,
   isRunning = false
@@ -50,12 +52,6 @@ export function SaturnImageGallery({
           }))
       : []
   ), [images]);
-
-  const renderBadge = (badge: BadgeVariant, label: string) => (
-    <div className={`absolute top-1 left-1 text-xs font-semibold px-2 py-0.5 rounded ${BADGE_VARIANT_STYLES[badge]}`}>
-      {label}
-    </div>
-  );
 
   return (
     <div className="bg-white border border-gray-300 rounded h-full flex flex-col">
@@ -84,32 +80,29 @@ export function SaturnImageGallery({
           </div>
         ) : selectedImage === null ? (
           /* Grid View */
-          <div className="grid grid-cols-2 gap-2">
+          <div className="grid grid-cols-2 gap-3">
             {shown.map((im, idx) => (
-              <div
-                key={`${im.path}-${idx}`}
-                className="relative border border-gray-300 rounded cursor-pointer hover:border-blue-500 transition-colors"
-                onClick={() => setSelectedImage(idx)}
-              >
-                <img
-                  src={`data:image/png;base64,${im.base64}`}
-                  alt={im.title || `Image ${idx + 1}`}
-                  className="w-full h-auto"
-                  style={{ imageRendering: 'pixelated' }}
-                />
-                {renderBadge(im.badgeVariant ?? 'other', im.title ?? `Image ${idx + 1}`)}
-                <div className="absolute bottom-1 left-1 right-1 bg-black/60 text-white text-[10px] px-1 py-1 rounded whitespace-nowrap overflow-hidden text-ellipsis">
-                  {im.subtitle || `Sequence #${im.sequence ?? idx + 1}`}
-                </div>
+              <div key={`${im.path}-${idx}`} className="space-y-2">
                 <button
-                  className="absolute top-1 right-1 bg-black/70 text-white p-1 rounded hover:bg-black/90"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setSelectedImage(idx);
-                  }}
+                  type="button"
+                  className="block w-full border border-gray-300 rounded overflow-hidden bg-white hover:border-blue-500 focus:border-blue-500 focus:outline-none transition-colors"
+                  onClick={() => setSelectedImage(idx)}
                 >
-                  <ZoomIn className="w-3 h-3" />
+                  <img
+                    src={`data:image/png;base64,${im.base64}`}
+                    alt={im.title || `Image ${idx + 1}`}
+                    className="w-full h-auto"
+                    style={{ imageRendering: 'pixelated' }}
+                  />
                 </button>
+                <div className="flex flex-col text-left">
+                  <span className={`${BADGE_BASE_CLASS} ${BADGE_VARIANT_STYLES[im.badgeVariant ?? 'other']}`}>
+                    {im.title}
+                  </span>
+                  <span className="text-[11px] text-gray-600 leading-tight">
+                    {im.subtitle || `Sequence #${im.sequence ?? idx + 1}`}
+                  </span>
+                </div>
               </div>
             ))}
           </div>
@@ -117,9 +110,16 @@ export function SaturnImageGallery({
           /* Detail View */
           <div className="flex flex-col h-full">
             <div className="flex items-center justify-between mb-2 pb-2 border-b border-gray-200">
-              <span className="text-sm font-bold text-gray-700">
-                {shown[selectedImage].title || `Image ${selectedImage + 1}`} ({selectedImage + 1} of {shown.length})
-              </span>
+              <div className="flex flex-col text-left">
+                <span className={`${BADGE_BASE_CLASS} ${BADGE_VARIANT_STYLES[shown[selectedImage].badgeVariant ?? 'other']}`}>
+                  {shown[selectedImage].title || `Image ${selectedImage + 1}`} ({selectedImage + 1} of {shown.length})
+                </span>
+                {shown[selectedImage].subtitle && (
+                  <span className="text-[11px] text-gray-600 leading-tight">
+                    {shown[selectedImage].subtitle}
+                  </span>
+                )}
+              </div>
               <button
                 onClick={() => setSelectedImage(null)}
                 className="btn btn-ghost btn-xs"
@@ -135,11 +135,6 @@ export function SaturnImageGallery({
                 style={{ imageRendering: 'pixelated' }}
               />
             </div>
-            {shown[selectedImage].subtitle && (
-              <div className="mt-2 text-xs text-gray-500 text-center">
-                {shown[selectedImage].subtitle}
-              </div>
-            )}
             <div className="flex items-center justify-center gap-2 mt-2">
               <button
                 onClick={() => setSelectedImage(Math.max(0, selectedImage - 1))}
