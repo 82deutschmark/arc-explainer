@@ -1,5 +1,15 @@
 # CHANGELOG - Uses semantic versioning (MAJOR.MINOR.PATCH)
 
+# [4.12.1] - 2025-11-01
+### 🖼️ Saturn Image Pairing & Documentation Links
+
+- Ensured Saturn solver streams distinct input/output image pairs for every training phase by tagging filenames with phase labels (`phase1`, `phase2_input`, `phase2_output`, etc.) and forwarding new images to the frontend gallery as they arrive.
+- Propagated optional labels through the Python visualization bridge so generated PNGs have deterministic names and are deduplicated correctly.
+- Highlighted the upstream Saturn README link directly in the solver header and idle/running states, pointing to https://github.com/zoecarver/saturn-arc/tree/main for quick reference instead of the stale `/solver/readme` route.
+
+#### Verification
+- ⚠️ Not run (requires live Saturn run with API credentials)
+
 ## [4.12.0] - 2025-11-01
 ### ✅ Saturn Correctness Display & Improved Streaming Layout
 **Problem**: Saturn Visual Solver showed completion status ("COMPLETED") but not correctness status (whether predictions were RIGHT or WRONG). Additionally, streaming reasoning and final output were crammed together in one scroll box, making it hard to read.
