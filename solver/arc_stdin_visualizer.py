@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """
+Author: Zoe Carver https://github.com/zoecarver/saturn-arc/tree/main
 ARC-AGI Stdin Visualizer
 Converts grid data from stdin to PNG images for visual analysis
 """
