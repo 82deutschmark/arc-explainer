@@ -154,7 +154,14 @@ export default function SaturnVisualSolver() {
               <span className="font-semibold text-gray-600">Model:</span> <span className="text-gray-900">{model.split('/').pop()?.replace('gpt-5-', 'GPT-5 ').replace('grok-', 'Grok ').replace('o3-', 'O3 ')}</span>
             </div>
           )}
-          <a href="/solver/readme" className="btn btn-ghost btn-xs">README</a>
+          <a
+            href="https://github.com/zoecarver/saturn-arc/tree/main"
+            target="_blank"
+            rel="noreferrer"
+            className="btn btn-primary btn-xs gap-1"
+          >
+            <span className="font-semibold">Open Saturn README</span>
+          </a>
           {isRunning && (
             <button onClick={cancel} className="btn btn-error btn-sm gap-1">
               <Square className="h-3.5 w-3.5" />
@@ -174,13 +181,23 @@ export default function SaturnVisualSolver() {
               <p className="text-sm text-gray-600 max-w-2xl mx-auto">
                 Visual-first solver using GPT-5 multimodal. Converts grids to PNGs, applies phased prompts. 22% success on ARC-AGI-2 eval vs 15.9% SOTA.
               </p>
-              <button
-                onClick={onStart}
-                className="btn btn-primary btn-lg gap-3 text-lg font-bold uppercase tracking-wide shadow-2xl shadow-primary/40 px-12 py-6"
-              >
-                <Rocket className="h-6 w-6" />
-                Start Visual Analysis
-              </button>
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+                <a
+                  href="https://github.com/zoecarver/saturn-arc/tree/main"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="btn btn-outline btn-primary btn-sm"
+                >
+                  View Original Saturn README ↗
+                </a>
+                <button
+                  onClick={onStart}
+                  className="btn btn-primary btn-lg gap-3 text-lg font-bold uppercase tracking-wide shadow-2xl shadow-primary/40 px-12 py-6"
+                >
+                  <Rocket className="h-6 w-6" />
+                  Start Visual Analysis
+                </button>
+              </div>
             </div>
 
             {/* Configuration Grid */}
@@ -299,6 +316,19 @@ export default function SaturnVisualSolver() {
           <div className="h-full grid grid-cols-12 gap-2">
             {/* LEFT: Status + Work Table + Puzzle (4 cols - expanded) */}
             <div className="col-span-4 flex flex-col gap-2 overflow-y-auto">
+              {/* Reference Link */}
+              <div className="bg-blue-50 border border-blue-200 rounded px-3 py-2 text-xs text-blue-900 flex items-center justify-between gap-2">
+                <div className="font-semibold">Need solver context or troubleshooting tips?</div>
+                <a
+                  href="https://github.com/zoecarver/saturn-arc/tree/main"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="btn btn-ghost btn-xs text-blue-700 hover:text-blue-900"
+                >
+                  Open README ↗
+                </a>
+              </div>
+
               {/* Monitoring Status */}
               <SaturnMonitoringTable
                 taskId={taskId}

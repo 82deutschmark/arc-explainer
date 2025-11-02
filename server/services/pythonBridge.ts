@@ -431,12 +431,14 @@ export class PythonBridge {
    * @param grids - Array of 2D grids to visualize
    * @param taskId - Task identifier for file naming
    * @param cellSize - Size of each cell in pixels (default: 30)
+   * @param label - Optional descriptive label to prefix generated filenames
    * @returns Object with imagePaths and base64Images arrays
    */
   async runGridVisualization(
     grids: number[][][],
     taskId: string,
-    cellSize: number = 30
+    cellSize: number = 30,
+    label?: string
   ): Promise<{ imagePaths: string[]; base64Images: string[] }> {
     return new Promise((resolve, reject) => {
       const pythonBin = this.resolvePythonBin();
@@ -500,7 +502,7 @@ export class PythonBridge {
       });
 
       // Send payload
-      const payload = JSON.stringify({ grids, taskId, cellSize });
+      const payload = JSON.stringify({ grids, taskId, cellSize, label });
       child.stdin.write(payload);
       child.stdin.end();
     });
