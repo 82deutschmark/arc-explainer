@@ -94,9 +94,6 @@
 - Stopped Saturn's status log from ingesting streaming reasoning/output chunks so the panel now reports only Python bridge events.
 - Added a `suppressInstructionsOnContinuation` flag to the Responses payload builder and enabled it for Saturn to keep Phase 2 requests from being aborted by duplicate instructions.
 
-#### Verification
-- ⚠️ Manual Saturn stream inspection via `test-saturn-streaming.mjs` (requires live API credentials, not available in CI sandbox)
-
 ## [4.11.0] - 2025-11-01
 ### 🚀 Major UI Enhancements & Bug Fixes
 
