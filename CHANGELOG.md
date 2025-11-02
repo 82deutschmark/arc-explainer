@@ -1,5 +1,14 @@
 # CHANGELOG - Uses semantic versioning (MAJOR.MINOR.PATCH)
 
+# [4.12.3] - 2025-11-02
+### 🖼️ Saturn Gallery Context Labels
+
+- Derived Saturn gallery metadata on the client by parsing existing filename conventions and grid dimensions, enabling precise Training/Test/Prediction tagging without backend changes.
+- Updated `SaturnImageGallery` to surface variant badges and subtitles so users can immediately see which puzzle grid each generated image corresponds to.
+
+#### Verification
+- ⚠️ Not run (UI labeling only)
+
 # [4.12.2] - 2025-11-02
 ### ♻️ Saturn Reasoning Accordion Default
 

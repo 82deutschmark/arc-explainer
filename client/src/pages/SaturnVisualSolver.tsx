@@ -24,6 +24,133 @@ import { getDefaultSaturnModel, getModelProvider, modelSupportsTemperature } fro
 import { PuzzleGridDisplay } from '@/components/puzzle/PuzzleGridDisplay';
 import { PuzzleGrid } from '@/components/puzzle/PuzzleGrid';
 import { DEFAULT_EMOJI_SET } from '@/lib/spaceEmojis';
+import type { SaturnImage as SaturnGalleryImage } from '@/components/saturn/SaturnImageGallery';
+
+type GridLike = number[][] | undefined | null;
+
+interface TaskLike {
+  train?: Array<{ input?: GridLike; output?: GridLike }>;
+  test?: Array<{ input?: GridLike; output?: GridLike }>;
+}
+
+type ImageVariant = NonNullable<SaturnGalleryImage['badgeVariant']>;
+
+interface DerivedImageMeta {
+  title: string;
+  subtitle?: string;
+  badgeVariant: ImageVariant;
+  sequence: number;
+}
+
+function formatGridSize(grid: GridLike): string | null {
+  if (!Array.isArray(grid) || grid.length === 0 || !Array.isArray(grid[0])) {
+    return null;
+  }
+  const rows = grid.length;
+  const cols = Array.isArray(grid[0]) ? grid[0].length : 0;
+  if (!rows || !cols) {
+    return null;
+  }
+  return `${rows}×${cols}`;
+}
+
+function humanizeKey(key: string): string {
+  return key
+    .split(/[_\-]+/)
+    .filter(Boolean)
+    .map((chunk) => chunk.charAt(0).toUpperCase() + chunk.slice(1))
+    .join(' ');
+}
+
+function deriveSaturnImageMetadata(
+  path: string,
+  index: number,
+  taskId: string | undefined,
+  task: TaskLike | undefined
+): DerivedImageMeta {
+  const fileName = path.split(/[\\/]/).pop() ?? '';
+  const withoutExt = fileName.replace(/\.png$/i, '');
+  const sequenceMatch = withoutExt.match(/_(\d{3})$/);
+  const sequence = sequenceMatch ? Number.parseInt(sequenceMatch[1], 10) : index + 1;
+  const baseName = sequenceMatch ? withoutExt.slice(0, -4) : withoutExt;
+
+  const normalizedTaskId = (taskId ?? '').toLowerCase();
+  const lowerBase = baseName.toLowerCase();
+  let candidate = baseName;
+  if (normalizedTaskId && lowerBase.startsWith(`${normalizedTaskId}_`)) {
+    candidate = baseName.slice((taskId ?? '').length + 1);
+  } else if (normalizedTaskId && lowerBase.startsWith(normalizedTaskId)) {
+    candidate = baseName.slice((taskId ?? '').length);
+  }
+
+  const labelKey = candidate.toLowerCase();
+
+  const trainingMatch = labelKey.match(/^train(\d+)_(input|output)$/);
+  if (trainingMatch) {
+    const exampleIndex = Number.parseInt(trainingMatch[1], 10);
+    const role = trainingMatch[2];
+    const example = task?.train && task.train[exampleIndex - 1];
+    const grid = role === 'input' ? example?.input : example?.output;
+    const size = formatGridSize(grid);
+    const subtitle = `${role === 'input' ? 'Input grid' : 'Expected output'}${size ? ` • ${size}` : ''}`;
+    return {
+      title: `Training ${exampleIndex}`,
+      subtitle,
+      badgeVariant: 'training',
+      sequence,
+    };
+  }
+
+  const testMatch = labelKey.match(/^test(?:(\d+))?_(input|output)$/);
+  if (testMatch) {
+    const exampleIndex = testMatch[1] ? Number.parseInt(testMatch[1], 10) : 1;
+    const role = testMatch[2];
+    const example = task?.test && task.test[exampleIndex - 1];
+    const grid = role === 'input' ? example?.input : example?.output;
+    const size = formatGridSize(grid);
+    const subtitle = `${role === 'input' ? 'Input grid' : 'Expected output'}${size ? ` • ${size}` : ''}`;
+    return {
+      title: `Test ${exampleIndex}`,
+      subtitle,
+      badgeVariant: 'test',
+      sequence,
+    };
+  }
+
+  if (labelKey === 'final_prediction' || labelKey === 'prediction') {
+    return {
+      title: 'Model Prediction',
+      subtitle: 'Saturn-generated output grid',
+      badgeVariant: 'prediction',
+      sequence,
+    };
+  }
+
+  if (labelKey.startsWith('tool')) {
+    return {
+      title: 'Visualization Tool',
+      subtitle: 'Intermediate image created during reasoning',
+      badgeVariant: 'tool',
+      sequence,
+    };
+  }
+
+  if (/^phase\d+/.test(labelKey)) {
+    return {
+      title: humanizeKey(labelKey),
+      subtitle: 'Phase output',
+      badgeVariant: 'tool',
+      sequence,
+    };
+  }
+
+  return {
+    title: humanizeKey(labelKey) || `Image ${sequence}`,
+    subtitle: undefined,
+    badgeVariant: 'other',
+    sequence,
+  };
+}
 
 export default function SaturnVisualSolver() {
   const { taskId } = useParams<{ taskId: string }>();
@@ -81,6 +208,32 @@ export default function SaturnVisualSolver() {
   const isGrokFamily = React.useMemo(() => (modelProvider ?? '').toLowerCase() === 'xai', [modelProvider]);
   const showTemperatureControl = React.useMemo(() => isGrokFamily && modelSupportsTemperature(model), [isGrokFamily, model]);
   const showReasoningControls = React.useMemo(() => !isGrokFamily, [isGrokFamily]);
+
+  const taskSlice = React.useMemo<TaskLike | undefined>(() => {
+    if (!task) {
+      return undefined;
+    }
+    return {
+      train: task.train,
+      test: task.test,
+    };
+  }, [task]);
+
+  const decoratedGalleryImages = React.useMemo(() => {
+    if (!Array.isArray(state.galleryImages)) {
+      return [] as SaturnGalleryImage[];
+    }
+
+    return state.galleryImages
+      .filter((img): img is SaturnGalleryImage => Boolean(img && img.path))
+      .map((img, index) => {
+        const meta = deriveSaturnImageMetadata(img.path, index, taskId, taskSlice);
+        return {
+          ...img,
+          ...meta,
+        } as SaturnGalleryImage;
+      });
+  }, [state.galleryImages, taskId, taskSlice]);
 
 
   // Error states
@@ -517,7 +670,7 @@ export default function SaturnVisualSolver() {
             {/* RIGHT: Images (3 cols) */}
             <div className="col-span-3 overflow-y-auto">
             <SaturnImageGallery
-              images={state.galleryImages || []}
+              images={decoratedGalleryImages}
               isRunning={isRunning}
             />
             </div>
