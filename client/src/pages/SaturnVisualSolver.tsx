@@ -19,7 +19,8 @@ import SaturnMonitoringTable from '@/components/saturn/SaturnMonitoringTable';
 import SaturnWorkTable from '@/components/saturn/SaturnWorkTable';
 import SaturnTerminalLogs from '@/components/saturn/SaturnTerminalLogs';
 import SaturnImageGallery from '@/components/saturn/SaturnImageGallery';
-import SaturnFinalResultPanel from '@/components/saturn/SaturnFinalResultPanel';
+import { AnalysisResultCard } from '@/components/puzzle/AnalysisResultCard';
+import { useSaturnExplanation } from '@/hooks/useSaturnExplanation';
 import { getDefaultSaturnModel, getModelProvider, modelSupportsTemperature } from '@/lib/saturnModels';
 import { PuzzleGridDisplay } from '@/components/puzzle/PuzzleGridDisplay';
 import { PuzzleGrid } from '@/components/puzzle/PuzzleGrid';
@@ -37,6 +38,14 @@ export default function SaturnVisualSolver() {
   const [reasoningEffort, setReasoningEffort] = React.useState<'minimal' | 'low' | 'medium' | 'high'>('low');
   const [reasoningVerbosity, setReasoningVerbosity] = React.useState<'low' | 'medium' | 'high'>('high');
   const [reasoningSummaryType, setReasoningSummaryType] = React.useState<'auto' | 'detailed'>('detailed');
+
+  // Fetch saved explanation from database after streaming completes
+  const { explanation, isLoading: isLoadingExplanation, error: explanationError } = useSaturnExplanation(
+    taskId,
+    model,
+    state.status === 'completed'
+  );
+
   // Track running state
   const isRunning = state.status === 'running';
   const isDone = state.status === 'completed';
@@ -47,22 +56,6 @@ export default function SaturnVisualSolver() {
   const showTemperatureControl = React.useMemo(() => isGrokFamily && modelSupportsTemperature(model), [isGrokFamily, model]);
   const showReasoningControls = React.useMemo(() => !isGrokFamily, [isGrokFamily]);
 
-  const finalAnalysis = React.useMemo(() => {
-    if (!state.result || typeof state.result !== 'object') {
-      return null;
-    }
-
-    const analysis = (state.result as { analysis?: Record<string, unknown> }).analysis;
-    if (analysis && typeof analysis === 'object') {
-      return analysis as Record<string, unknown>;
-    }
-
-    return state.result as Record<string, unknown>;
-  }, [state.result]);
-
-  const expectedOutputs = React.useMemo(() => {
-    return (task?.test ?? []).map((testCase) => testCase.output);
-  }, [task]);
 
   // Error states
   if (!taskId) {
@@ -416,12 +409,31 @@ export default function SaturnVisualSolver() {
                 phase={state.streamingPhase || state.phase}
               />
             </div>
+            {/* Saturn Final Result - Show correctness with AnalysisResultCard */}
             <div className="max-h-[50vh] overflow-auto">
-              <SaturnFinalResultPanel
-                analysis={finalAnalysis}
-                expectedOutputs={expectedOutputs}
-                status={state.status}
-              />
+              {state.status === 'completed' && explanation && (
+                <AnalysisResultCard
+                  modelKey={model}
+                  result={explanation}
+                  model={undefined}
+                  testCases={task.test}
+                  eloMode={false}
+                />
+              )}
+              {state.status === 'completed' && isLoadingExplanation && (
+                <div className="bg-white border border-indigo-200 rounded p-6 text-center">
+                  <div className="text-indigo-600 font-semibold">Loading results...</div>
+                  <div className="text-xs text-gray-500 mt-1">Fetching saved explanation from database</div>
+                </div>
+              )}
+              {state.status === 'completed' && !explanation && !isLoadingExplanation && (
+                <div className="bg-red-50 border border-red-200 rounded p-6 text-center">
+                  <div className="text-red-600 font-semibold">Failed to load explanation</div>
+                  <div className="text-xs text-gray-600 mt-1">
+                    {explanationError?.message || 'Explanation not found in database'}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
 
