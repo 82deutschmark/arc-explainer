@@ -21,8 +21,9 @@ import SaturnTerminalLogs from '@/components/saturn/SaturnTerminalLogs';
 import SaturnImageGallery from '@/components/saturn/SaturnImageGallery';
 import SaturnFinalResultPanel from '@/components/saturn/SaturnFinalResultPanel';
 import { getDefaultSaturnModel, getModelProvider, modelSupportsTemperature } from '@/lib/saturnModels';
-import { CompactPuzzleDisplay } from '@/components/puzzle/CompactPuzzleDisplay';
-import { TinyGrid } from '@/components/puzzle/TinyGrid';
+import { PuzzleGridDisplay } from '@/components/puzzle/PuzzleGridDisplay';
+import { PuzzleGrid } from '@/components/puzzle/PuzzleGrid';
+import { DEFAULT_EMOJI_SET } from '@/lib/spaceEmojis';
 
 export default function SaturnVisualSolver() {
   const { taskId } = useParams<{ taskId: string }>();
@@ -31,7 +32,7 @@ export default function SaturnVisualSolver() {
 
   // Settings state - GPT-5 Mini with balanced (low) reasoning depth and detailed summary by default
   const defaultModel = getDefaultSaturnModel();
-  const [model, setModel] = React.useState(defaultModel?.key || 'gpt-5-mini-2025-08-07');
+  const [model, setModel] = React.useState(defaultModel?.key || 'gpt-5-nano-2025-08-07');
   const [temperature, setTemperature] = React.useState(0.2);
   const [reasoningEffort, setReasoningEffort] = React.useState<'minimal' | 'low' | 'medium' | 'high'>('low');
   const [reasoningVerbosity, setReasoningVerbosity] = React.useState<'low' | 'medium' | 'high'>('high');
@@ -262,19 +263,12 @@ export default function SaturnVisualSolver() {
             </div>
 
             {/* Puzzle Preview */}
-            <div className="card bg-white border border-gray-300 shadow-sm">
-              <div className="card-body p-4">
-                <h3 className="card-title text-sm mb-2">Puzzle Preview</h3>
-                <CompactPuzzleDisplay
-                  trainExamples={task.train}
-                  testCases={task.test}
-                  showEmojis={false}
-                  title=""
-                  maxTrainingExamples={3}
-                  defaultTrainingCollapsed={false}
-                  showTitle={false}
-                />
-              </div>
+            <div>
+              <PuzzleGridDisplay
+                task={task}
+                showEmojis={false}
+                emojiSet={DEFAULT_EMOJI_SET}
+              />
             </div>
           </div>
         </main>
@@ -311,40 +305,64 @@ export default function SaturnVisualSolver() {
                   {task.train.slice(0, 2).map((example, idx) => (
                     <div key={`train-${idx}`} className="space-y-1">
                       <div className="text-[10px] font-bold text-gray-600 uppercase tracking-wide">Training {idx + 1}</div>
-                      <div className="grid grid-cols-2 gap-2">
+                      <div className="space-y-2">
                         <div>
                           <div className="text-[9px] text-gray-500 mb-0.5">Input</div>
-                          <div className="border border-gray-200 p-1 bg-gray-50">
-                            <TinyGrid grid={example.input} style={{ maxHeight: '120px' }} />
-                          </div>
+                          <PuzzleGrid
+                            grid={example.input}
+                            title="Input"
+                            showEmojis={false}
+                            emojiSet={DEFAULT_EMOJI_SET}
+                            compact
+                            maxWidth={200}
+                            maxHeight={200}
+                          />
                         </div>
                         <div>
                           <div className="text-[9px] text-gray-500 mb-0.5">Output</div>
-                          <div className="border border-gray-200 p-1 bg-gray-50">
-                            <TinyGrid grid={example.output} style={{ maxHeight: '120px' }} />
-                          </div>
+                          <PuzzleGrid
+                            grid={example.output}
+                            title="Output"
+                            showEmojis={false}
+                            emojiSet={DEFAULT_EMOJI_SET}
+                            compact
+                            maxWidth={200}
+                            maxHeight={200}
+                          />
                         </div>
                       </div>
                     </div>
                   ))}
-                  
+
                   {/* Test Cases */}
                   {task.test.map((testCase, idx) => (
                     <div key={`test-${idx}`} className="space-y-1">
                       <div className="text-[10px] font-bold text-blue-600 uppercase tracking-wide">Test {idx + 1}</div>
-                      <div className="grid grid-cols-2 gap-2">
+                      <div className="space-y-2">
                         <div>
                           <div className="text-[9px] text-gray-500 mb-0.5">Input</div>
-                          <div className="border border-blue-200 p-1 bg-blue-50">
-                            <TinyGrid grid={testCase.input} style={{ maxHeight: '120px' }} />
-                          </div>
+                          <PuzzleGrid
+                            grid={testCase.input}
+                            title="Test Input"
+                            showEmojis={false}
+                            emojiSet={DEFAULT_EMOJI_SET}
+                            compact
+                            maxWidth={200}
+                            maxHeight={200}
+                          />
                         </div>
                         {testCase.output && (
                           <div>
                             <div className="text-[9px] text-gray-500 mb-0.5">Expected</div>
-                            <div className="border border-blue-200 p-1 bg-blue-50">
-                              <TinyGrid grid={testCase.output} style={{ maxHeight: '120px' }} />
-                            </div>
+                            <PuzzleGrid
+                              grid={testCase.output}
+                              title="Expected Output"
+                              showEmojis={false}
+                              emojiSet={DEFAULT_EMOJI_SET}
+                              compact
+                              maxWidth={200}
+                              maxHeight={200}
+                            />
                           </div>
                         )}
                       </div>

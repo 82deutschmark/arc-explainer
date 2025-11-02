@@ -1,5 +1,16 @@
 # CHANGELOG - Uses semantic versioning (MAJOR.MINOR.PATCH)
 
+## [4.11.2] - 2025-11-01
+### 🔧 Saturn Grid Display Fix
+
+- Fixed Saturn Visual Solver to display grids correctly using `PuzzleGrid` component
+- **IDLE state**: Replaced `CompactPuzzleDisplay` with `PuzzleGridDisplay` for proper grid rendering
+- **RUNNING/DONE state**: Replaced `TinyGrid` with `PuzzleGrid` component with compact mode
+- Grids now render consistently with PuzzleExaminer using battle-tested components
+
+#### Verification
+- ✅ `npm run test` (build successful, no TypeScript errors)
+
 ## [4.11.1] - 2025-11-01
 ### 🛠️ Saturn streaming hardening
 
