@@ -137,11 +137,11 @@ export class ModelCapabilities {
         limits: { maxConcurrentRequests: 1 } // Reasoning models have lower limits
       },
       'o3-mini-2025-01-31': {
-        features: { isReasoning: true, supportsStreaming: false },
+        features: { isReasoning: true, supportsStreaming: true },
         limits: { maxConcurrentRequests: 1 }
       },
       'o4-mini-2025-04-16': {
-        features: { isReasoning: true, supportsStreaming: false },
+        features: { isReasoning: true, supportsStreaming: true },
         limits: { maxConcurrentRequests: 1 }
       },
       

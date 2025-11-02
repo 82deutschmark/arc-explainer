@@ -48,7 +48,10 @@ const STREAMING_MODEL_KEYS = [
   "gpt-5-2025-08-07",
   "gpt-5-mini-2025-08-07",
   "gpt-5-nano-2025-08-07",
-  "gpt-5-chat-latest"
+  "gpt-5-chat-latest",
+  "o3-mini-2025-01-31",
+  "o4-mini-2025-04-16",
+  "o3-2025-04-16"
 ];
 
 export class OpenAIService extends BaseAIService {

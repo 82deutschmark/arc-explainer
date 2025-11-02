@@ -4,6 +4,7 @@
 ### ♻️ Saturn Reasoning Accordion Default
 
 - Collapsed the "AI Reasoning Process" section in `AnalysisResultCard` by default so Saturn Visual Solver results open in a concise state.
+- Enabled streaming for OpenAI o3/o4 reasoning models across service configuration so Saturn and analysis flows can use incremental deltas.
 
 #### Verification
 - ⚠️ Not run (UI state toggle only)
