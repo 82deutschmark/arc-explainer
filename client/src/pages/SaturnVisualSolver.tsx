@@ -20,7 +20,6 @@ import SaturnWorkTable from '@/components/saturn/SaturnWorkTable';
 import SaturnTerminalLogs from '@/components/saturn/SaturnTerminalLogs';
 import SaturnImageGallery from '@/components/saturn/SaturnImageGallery';
 import { AnalysisResultCard } from '@/components/puzzle/AnalysisResultCard';
-import { useSaturnExplanation } from '@/hooks/useSaturnExplanation';
 import { getDefaultSaturnModel, getModelProvider, modelSupportsTemperature } from '@/lib/saturnModels';
 import { PuzzleGridDisplay } from '@/components/puzzle/PuzzleGridDisplay';
 import { PuzzleGrid } from '@/components/puzzle/PuzzleGrid';
@@ -39,12 +38,39 @@ export default function SaturnVisualSolver() {
   const [reasoningVerbosity, setReasoningVerbosity] = React.useState<'low' | 'medium' | 'high'>('high');
   const [reasoningSummaryType, setReasoningSummaryType] = React.useState<'auto' | 'detailed'>('detailed');
 
-  // Fetch saved explanation from database after streaming completes
-  const { explanation, isLoading: isLoadingExplanation, error: explanationError } = useSaturnExplanation(
-    taskId,
-    model,
-    state.status === 'completed'
-  );
+  // Transform state.result to ExplanationData format for AnalysisResultCard
+  const explanation = React.useMemo(() => {
+    if (!state.result || state.status !== 'completed') {
+      return null;
+    }
+
+    console.log('[Saturn] Raw state.result:', state.result);
+
+    // state.result contains responseSummary from stream.complete event
+    // responseSummary should have .analysis field from backend validation
+    const analysis = typeof state.result === 'object' && 'analysis' in state.result
+      ? (state.result as any).analysis
+      : state.result;
+
+    console.log('[Saturn] Extracted analysis:', analysis);
+    console.log('[Saturn] Has isPredictionCorrect?', 'isPredictionCorrect' in analysis);
+    console.log('[Saturn] Has trustworthinessScore?', 'trustworthinessScore' in analysis);
+    console.log('[Saturn] Has multiValidation?', 'multiValidation' in analysis);
+
+    // Transform to ExplanationData format (add database fields)
+    const transformed = {
+      ...analysis,
+      id: 0, // Temporary ID (not saved to DB yet in this view)
+      puzzleId: taskId!,
+      modelName: model,
+      createdAt: new Date().toISOString(),
+      helpfulVotes: null,
+      notHelpfulVotes: null,
+    };
+
+    console.log('[Saturn] Transformed explanation for AnalysisResultCard:', transformed);
+    return transformed;
+  }, [state.result, state.status, taskId, model]);
 
   // Track running state
   const isRunning = state.status === 'running';
@@ -401,41 +427,59 @@ export default function SaturnVisualSolver() {
 
             {/* AI Streaming Output - Show ONLY while running */}
             {!isDone && (
-              <div className="flex-1 min-h-0">
-                <SaturnTerminalLogs
-                  streamingText={state.streamingText}
-                  streamingReasoning={state.streamingReasoning}
-                  logLines={state.logLines}
-                  isRunning={isRunning}
-                  phase={state.streamingPhase || state.phase}
-                />
+              <div className="flex-1 min-h-0 flex flex-col gap-2">
+                {/* Reasoning Box */}
+                {state.streamingReasoning && (
+                  <div className="flex-1 bg-white border border-blue-300 rounded flex flex-col min-h-0">
+                    <div className="border-b border-blue-300 bg-blue-50 px-3 py-2 flex items-center justify-between">
+                      <h3 className="text-sm font-bold text-blue-700">AI REASONING</h3>
+                      {isRunning && <span className="text-xs text-blue-600 font-bold">● STREAMING</span>}
+                    </div>
+                    <div className="flex-1 overflow-auto p-3 bg-blue-50">
+                      <div className="text-sm font-mono text-gray-800 whitespace-pre-wrap leading-relaxed">
+                        {state.streamingReasoning}
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Output Box */}
+                {state.streamingText && (
+                  <div className="flex-1 bg-white border border-green-300 rounded flex flex-col min-h-0">
+                    <div className="border-b border-green-300 bg-green-50 px-3 py-2 flex items-center justify-between">
+                      <h3 className="text-sm font-bold text-green-700">AI OUTPUT</h3>
+                      {isRunning && <span className="text-xs text-green-600 font-bold">● STREAMING</span>}
+                    </div>
+                    <div className="flex-1 overflow-auto p-3 bg-green-50">
+                      <div className="text-sm font-mono text-gray-800 whitespace-pre-wrap leading-relaxed">
+                        {state.streamingText}
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Fallback if no content yet */}
+                {!state.streamingReasoning && !state.streamingText && (
+                  <div className="flex-1 bg-white border border-gray-300 rounded flex items-center justify-center">
+                    <div className="text-center p-6">
+                      <p className="text-sm text-gray-500">Waiting for AI output...</p>
+                      <p className="text-xs text-gray-400 mt-1">Reasoning and output will appear here</p>
+                    </div>
+                  </div>
+                )}
               </div>
             )}
 
             {/* Saturn Final Result - Show ONLY when completed */}
-            {isDone && (
+            {isDone && explanation && (
               <div className="flex-1 overflow-auto">
-                {explanation ? (
-                  <AnalysisResultCard
-                    modelKey={model}
-                    result={explanation}
-                    model={undefined}
-                    testCases={task.test}
-                    eloMode={false}
-                  />
-                ) : isLoadingExplanation ? (
-                  <div className="bg-white border border-indigo-200 rounded p-6 text-center">
-                    <div className="text-indigo-600 font-semibold">Loading results...</div>
-                    <div className="text-xs text-gray-500 mt-1">Fetching saved explanation from database</div>
-                  </div>
-                ) : (
-                  <div className="bg-red-50 border border-red-200 rounded p-6 text-center">
-                    <div className="text-red-600 font-semibold">Failed to load explanation</div>
-                    <div className="text-xs text-gray-600 mt-1">
-                      {explanationError?.message || 'Explanation not found in database'}
-                    </div>
-                  </div>
-                )}
+                <AnalysisResultCard
+                  modelKey={model}
+                  result={explanation}
+                  model={undefined}
+                  testCases={task.test}
+                  eloMode={false}
+                />
               </div>
             )}
           </div>
