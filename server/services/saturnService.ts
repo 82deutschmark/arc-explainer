@@ -309,7 +309,7 @@ Always look for:
         const phase2Images = await this.generateGridImages(
           [task.train[1].input],
           taskId,
-          'phase2'
+          'phase2_input'
         );
         
         // Phase 2: Continuation call - NO systemPromptOverride, ONLY customUserPrompt
@@ -387,7 +387,7 @@ Always look for:
         const phase25Images = await this.generateGridImages(
           [task.train[1].output],
           taskId,
-          'phase2_actual'
+          'phase2_output'
         );
         
         // Phase 2.5: Continuation call - NO systemPromptOverride, ONLY customUserPrompt
@@ -501,6 +501,16 @@ Always look for:
           images: additionalImages
         });
 
+        const additionalImagesBase64 = await this.convertImagesToBase64(additionalImages);
+        if (additionalImagesBase64.length > 0) {
+          sendProgress({
+            status: 'running',
+            phase: `saturn_phase_train${i}_complete`,
+            message: `Training example ${i + 1} visual pair ready`,
+            images: additionalImagesBase64,
+          });
+        }
+
         // Emit phase completion
         emitPhaseComplete(`Additional Training: Example ${i + 1}`);
 
@@ -531,7 +541,7 @@ Always look for:
         const phase3Images = await this.generateGridImages(
           [task.test[testIdx].input],
           taskId,
-          `test${testIdx}`
+          `test${testIdx}_input`
         );
 
         // Phase 3: Continuation call - NO systemPromptOverride, ONLY customUserPrompt
@@ -721,7 +731,7 @@ Always look for:
     label: string
   ): Promise<string[]> {
     try {
-      const result = await pythonBridge.runGridVisualization(grids, taskId, 30);
+      const result = await pythonBridge.runGridVisualization(grids, taskId, 30, label);
       logger.service(this.provider, `Generated ${result.imagePaths.length} images for ${label}`);
       return result.imagePaths;
     } catch (error) {

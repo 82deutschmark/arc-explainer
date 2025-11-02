@@ -115,6 +115,7 @@ def main():
         grids = payload.get('grids', [])
         task_id = payload.get('taskId', 'unknown')
         cell_size = payload.get('cellSize', 30)
+        label = payload.get('label')
         
         if not grids:
             raise ValueError("No grids provided in payload")
@@ -144,7 +145,8 @@ def main():
                 img = grid_to_image(grid, cell_size)
                 
                 # Save to file with unique name
-                img_filename = f"saturn_{task_id}_grid_{idx:03d}.png"
+                suffix = f"_{label}" if label else ""
+                img_filename = f"saturn_{task_id}{suffix}_grid_{idx:03d}.png"
                 img_path = os.path.join(temp_dir, img_filename)
                 img.save(img_path)
                 
