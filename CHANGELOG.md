@@ -1,5 +1,36 @@
 # CHANGELOG - Uses semantic versioning (MAJOR.MINOR.PATCH)
 
+## [4.11.4] - 2025-11-01
+### ✅ Saturn Correctness Display
+**Problem**: Saturn Visual Solver showed completion status ("COMPLETED") but not correctness status (whether predictions were RIGHT or WRONG). Users couldn't tell at a glance if Saturn solved the puzzle correctly.
+
+**Solution**: Replaced `SaturnFinalResultPanel` with standard `AnalysisResultCard` component to display correctness indicators:
+- ✅ **Green badge** for correct predictions
+- ❌ **Red badge** for incorrect predictions  
+- 📊 **Accuracy percentage** for multi-test puzzles (e.g., "2/3 Correct - 67%")
+- **Trustworthiness score** based on confidence + correctness
+- **Full metrics** including token usage, cost, and reasoning log
+
+**Implementation**:
+- Created `useSaturnExplanation` hook to fetch saved explanation from database after streaming completes
+- Database already contains validated results with `isPredictionCorrect`, `trustworthinessScore`, and `multiValidation` fields
+- Reused existing `/api/puzzle/:puzzleId/explanations` endpoint (filters by modelKey on frontend)
+- 300ms delay ensures database write completes before fetch
+
+**Files Changed**:
+- `client/src/hooks/useSaturnExplanation.ts` - New hook for fetching saved explanation
+- `client/src/pages/SaturnVisualSolver.tsx` - Replaced SaturnFinalResultPanel with AnalysisResultCard
+
+**Benefits**:
+- Consistent UI across all solvers (Saturn, Grover, standard analysis)
+- Immediate visual feedback on correctness
+- All standard features available (feedback buttons, reasoning toggle, etc.)
+- No changes to backend validation logic (already working correctly)
+
+#### Verification
+- ⚠️ Test with single-test puzzle → should show "Correct" or "Incorrect" badge
+- ⚠️ Test with multi-test puzzle → should show "X/Y Correct" with accuracy percentage
+
 ## [4.11.3] - 2025-11-01
 ### 🚀 Saturn Multi-Phase Streaming Fix
 
