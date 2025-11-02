@@ -11,7 +11,7 @@
  */
 
 import { ARCTask } from "../../shared/types.js";
-import { BaseAIService, ServiceOptions, TokenUsage, AIResponse, PromptPreview, ModelInfo } from "./base/BaseAIService.js";
+import { BaseAIService, ServiceOptions, TokenUsage, AIResponse, PromptPreview, ModelInfo, StreamingHarness } from "./base/BaseAIService.js";
 import { getDefaultPromptId, PromptOptions, PromptPackage } from "./promptBuilder.js";
 import { aiServiceFactory } from "./aiServiceFactory.js";
 import { pythonBridge } from "./pythonBridge.js";
@@ -177,7 +177,38 @@ Always look for:
     let totalInputTokens = 0;
     let totalOutputTokens = 0;
     let totalReasoningTokens = 0;
-    
+
+    // Calculate total phases upfront for multi-phase streaming coordination
+    const totalPhaseCount = 1 + // Phase 1
+      (task.train.length > 1 ? 2 : 0) + // Phase 2 + 2.5
+      Math.max(0, task.train.length - 2) + // Additional training examples
+      1; // Phase 3
+    let currentPhaseNum = 0;
+
+    // Helper to emit phase completion WITHOUT closing the stream
+    const emitPhaseComplete = (phaseName: string) => {
+      currentPhaseNum++;
+      if (harness?.emitEvent) {
+        harness.emitEvent('stream.phase_complete', {
+          phase: currentPhaseNum,
+          totalPhases: totalPhaseCount,
+          phaseName,
+          message: `${phaseName} complete (${currentPhaseNum}/${totalPhaseCount})`
+        });
+      }
+    };
+
+    // Create a wrapped harness that intercepts end() calls
+    // This prevents underlying services from closing the stream after each phase
+    const wrappedHarness: StreamingHarness | undefined = harness ? {
+      ...harness,
+      end: async (summary) => {
+        // Don't call the real harness.end() here - just emit phase complete
+        // The real end() will be called only after ALL phases complete
+        logger.debug(`[Saturn] Phase ${currentPhaseNum + 1} completed, continuing to next phase...`, 'Saturn');
+      }
+    } : undefined;
+
     // Saturn system prompt - ONLY used for Phase 1 (initial call)
     // For continuation calls (Phase 2+), we send ONLY the customUserPrompt
     const saturnSystemPrompt = this.getSaturnSystemPrompt();
@@ -203,6 +234,7 @@ Always look for:
       // Phase 1: Initial call - use systemPromptOverride to set Saturn's system prompt
       const phase1ServiceOpts: ServiceOptions = {
         ...serviceOpts,
+        stream: wrappedHarness, // Use wrapped harness to prevent premature stream closure
         systemPromptOverride: saturnSystemPrompt,
         suppressInstructionsOnContinuation: true,
         previousResponseId: undefined, // First phase has no previous response
@@ -211,7 +243,7 @@ Always look for:
       
       logger.service(this.provider, `Phase 1: systemPromptOverride length=${saturnSystemPrompt.length}, customUserPrompt length=${phase1Prompt.length}`);
 
-      const phase1Response = harness
+      const phase1Response = wrappedHarness
         ? await underlyingService.analyzePuzzleWithStreaming!(
             task,
             underlyingModel,
@@ -238,13 +270,16 @@ Always look for:
       if (!previousResponseId) {
         logger.error(this.provider, 'Phase 1 did not return providerResponseId - continuation will fail!');
       }
-      phases.push({ 
-        phase: 1, 
+      phases.push({
+        phase: 1,
         name: 'First Training Example Analysis',
         response: phase1Response,
         images: phase1Images
       });
-      
+
+      // Emit phase completion event (NOT stream.complete)
+      emitPhaseComplete('Phase 1: First Training Example Analysis');
+
       // Broadcast completion with images (converted to base64 for frontend)
       const phase1ImagesBase64 = await this.convertImagesToBase64(phase1Images);
       sendProgress({
@@ -281,16 +316,17 @@ Always look for:
         logger.service(this.provider, `Phase 2 starting with previousResponseId: ${previousResponseId || 'NONE'}`);
         logger.service(this.provider, `Phase 2 customUserPrompt length: ${phase2Prompt.length}`);
         logger.service(this.provider, `Phase 2 suppressInstructionsOnContinuation: true`);
-        
+
         const phase2ServiceOpts: ServiceOptions = {
           ...serviceOpts,
+          stream: wrappedHarness, // Use wrapped harness
           suppressInstructionsOnContinuation: true,
           previousResponseId,
           customUserPrompt: phase2Prompt,
           // NO systemPromptOverride for continuation!
         };
 
-        const phase2Response = harness
+        const phase2Response = wrappedHarness
           ? await underlyingService.analyzePuzzleWithStreaming!(
               task,
               underlyingModel,
@@ -313,14 +349,17 @@ Always look for:
             );
         
         previousResponseId = phase2Response.providerResponseId;
-        phases.push({ 
-          phase: 2, 
+        phases.push({
+          phase: 2,
           name: 'Second Training Prediction',
           response: phase2Response,
           images: phase2Images,
           expectedOutput: task.train[1].output
         });
-        
+
+        // Emit phase completion
+        emitPhaseComplete('Phase 2: Second Training Prediction');
+
         const phase2ImagesBase64 = await this.convertImagesToBase64(phase2Images);
         sendProgress({
           status: 'running',
@@ -354,12 +393,13 @@ Always look for:
         // Phase 2.5: Continuation call - NO systemPromptOverride, ONLY customUserPrompt
         const phase25ServiceOpts: ServiceOptions = {
           ...serviceOpts,
+          stream: wrappedHarness, // Use wrapped harness
           suppressInstructionsOnContinuation: true,
           previousResponseId,
           customUserPrompt: phase25Prompt,
         };
 
-        const phase25Response = harness
+        const phase25Response = wrappedHarness
           ? await underlyingService.analyzePuzzleWithStreaming!(
               task,
               underlyingModel,
@@ -382,13 +422,16 @@ Always look for:
             );
         
         previousResponseId = phase25Response.providerResponseId;
-        phases.push({ 
-          phase: 2.5, 
+        phases.push({
+          phase: 2.5,
           name: 'Pattern Refinement',
           response: phase25Response,
           images: phase25Images
         });
-        
+
+        // Emit phase completion
+        emitPhaseComplete('Phase 2.5: Pattern Refinement');
+
         const phase25ImagesBase64 = await this.convertImagesToBase64(phase25Images);
         sendProgress({
           status: 'running',
@@ -422,12 +465,13 @@ Always look for:
         // Additional training: Continuation call - NO systemPromptOverride, ONLY customUserPrompt
         const additionalServiceOpts: ServiceOptions = {
           ...serviceOpts,
+          stream: wrappedHarness, // Use wrapped harness
           suppressInstructionsOnContinuation: true,
           previousResponseId,
           customUserPrompt: additionalPrompt,
         };
 
-        const additionalResponse = harness
+        const additionalResponse = wrappedHarness
           ? await underlyingService.analyzePuzzleWithStreaming!(
               task,
               underlyingModel,
@@ -450,13 +494,16 @@ Always look for:
             );
         
         previousResponseId = additionalResponse.providerResponseId;
-        phases.push({ 
-          phase: 2 + i * 0.1, 
+        phases.push({
+          phase: 2 + i * 0.1,
           name: `Training Example ${i + 1}`,
           response: additionalResponse,
           images: additionalImages
         });
-        
+
+        // Emit phase completion
+        emitPhaseComplete(`Additional Training: Example ${i + 1}`);
+
         totalCost += additionalResponse.estimatedCost || 0;
         totalInputTokens += additionalResponse.inputTokens || 0;
         totalOutputTokens += additionalResponse.outputTokens || 0;
@@ -483,12 +530,13 @@ Always look for:
       // Phase 3: Continuation call - NO systemPromptOverride, ONLY customUserPrompt
       const phase3ServiceOpts: ServiceOptions = {
         ...serviceOpts,
+        stream: wrappedHarness, // Use wrapped harness
         suppressInstructionsOnContinuation: true,
         previousResponseId,
         customUserPrompt: phase3Prompt,
       };
 
-      const phase3Response = harness
+      const phase3Response = wrappedHarness
         ? await underlyingService.analyzePuzzleWithStreaming!(
             task,
             underlyingModel,
@@ -510,13 +558,16 @@ Always look for:
             phase3ServiceOpts
           );
       
-      phases.push({ 
-        phase: 3, 
+      phases.push({
+        phase: 3,
         name: 'Test Prediction',
         response: phase3Response,
         images: phase3Images
       });
-      
+
+      // Emit phase completion for final phase
+      emitPhaseComplete('Phase 3: Test Prediction');
+
       const phase3ImagesBase64 = await this.convertImagesToBase64(phase3Images);
       sendProgress({
         status: 'running',
