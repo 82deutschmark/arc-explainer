@@ -41,15 +41,15 @@ export function getSaturnCompatibleModels(): ModelConfig[] {
 
 /**
  * Get the default model for Saturn Visual Solver
- * Uses GPT-5 Mini as primary default (best balance of speed/quality for visual reasoning)
+ * Uses GPT-5 Nano as primary default (best cost/performance balance for visual reasoning)
  */
 export function getDefaultSaturnModel(): ModelConfig | null {
   const compatibleModels = getSaturnCompatibleModels();
 
-  // Prefer GPT-5 Mini as primary default for Saturn (optimal for visual reasoning)
+  // Prefer GPT-5 Nano as primary default for Saturn (cost-optimized for visual analysis)
   const preferredOrder = [
-    'gpt-5-mini-2025-08-07',  // PRIMARY: GPT-5 Mini - best for Saturn visual analysis
-    'gpt-5-nano-2025-08-07',  // Fallback: GPT-5 Nano - faster but less capable
+    'gpt-5-nano-2025-08-07',  // PRIMARY: GPT-5 Nano - cost-optimized for Saturn visual analysis
+    'gpt-5-mini-2025-08-07',  // Fallback: GPT-5 Mini - more capable but higher cost
     'grok-4-fast-reasoning',  // Alternative: Grok-4 Fast
     'o4-mini-2025-04-16',     // Alternative: o4-mini
     'o3-mini-2025-01-31',     // Alternative: o3-mini
