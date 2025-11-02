@@ -57,6 +57,8 @@ export interface ServiceOptions {
   sessionId?: string; // Optional WebSocket session for streaming progress
   stream?: StreamingHarness;
   systemPromptOverride?: string; // Override system prompt generation entirely
+  customUserPrompt?: string; // Override user prompt generation for specialized flows
+  suppressInstructionsOnContinuation?: boolean; // Skip instructions when chaining previous responses
 }
 
 export interface TokenUsage {
@@ -251,39 +253,55 @@ export abstract class BaseAIService {
     serviceOpts: ServiceOptions = {},
     modelKey?: string
   ): PromptPackage {
-    // PHASE 13: If systemPromptOverride is provided, create a custom package without calling buildAnalysisPrompt
-    if (serviceOpts.systemPromptOverride) {
-      // Build a standard package first to preserve template metadata and prompt flags
-      const basePackage = buildAnalysisPrompt(task, promptId, customPrompt, options, serviceOpts);
-
+    // CRITICAL FIX: If customUserPrompt is provided (e.g., Saturn phase-specific prompts),
+    // skip buildAnalysisPrompt entirely to avoid generating unwanted solver template prompts
+    if (serviceOpts.customUserPrompt && serviceOpts.systemPromptOverride) {
+      console.log('[BuildPromptPackage] Using custom prompts directly - skipping template generation');
       return {
-        ...basePackage,
         systemPrompt: serviceOpts.systemPromptOverride,
+        userPrompt: serviceOpts.customUserPrompt,
+        selectedTemplate: {
+          id: 'custom',
+          name: 'Custom Prompt',
+          description: 'Custom phase-specific prompt',
+          content: '',
+          emojiMapIncluded: false
+        },
+        isAlienMode: false,
+        isSolver: true,
+        templateName: 'custom'
       };
     }
-    
+
     // PHASE 12: Determine if this provider/model uses structured output
-    const useStructuredOutput = modelKey 
+    const useStructuredOutput = modelKey
       ? this.supportsStructuredOutput(modelKey)
       : false;
-    
+
     // Merge into options for prompt builder
     const enhancedOptions: PromptOptions = {
       ...options,
       useStructuredOutput: useStructuredOutput ?? options?.useStructuredOutput
     };
-    
+
     // PHASE 1-2: Pass serviceOpts to enable context-aware continuation prompts
     // PHASE 12: Pass enhancedOptions with useStructuredOutput flag
-    const promptPackage: PromptPackage = buildAnalysisPrompt(
-      task, 
-      promptId, 
-      customPrompt, 
-      enhancedOptions, 
+    const basePackage: PromptPackage = buildAnalysisPrompt(
+      task,
+      promptId,
+      customPrompt,
+      enhancedOptions,
       serviceOpts
     );
 
-    return promptPackage;
+    const systemPrompt = serviceOpts.systemPromptOverride ?? basePackage.systemPrompt;
+    const userPrompt = serviceOpts.customUserPrompt ?? basePackage.userPrompt;
+
+    return {
+      ...basePackage,
+      systemPrompt,
+      userPrompt,
+    };
   }
 
   /**

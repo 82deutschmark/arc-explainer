@@ -61,13 +61,13 @@ export function HighRiskModelsList({ models, isLoading }: HighRiskModelsListProp
           className="flex flex-wrap items-center gap-2 text-[10px]"
         >
           {/* Risk Icon */}
-          <div className="flex-shrink-0">
+          <div className="flex-shrink-0" title={model.isHighRisk ? "High risk" : model.overconfidenceRate > 70 ? "Elevated risk" : "Monitored"}>
             {model.isHighRisk ? (
-              <ShieldAlert className="h-3.5 w-3.5 text-rose-600" title="High risk" />
+              <ShieldAlert className="h-3.5 w-3.5 text-rose-600" />
             ) : model.overconfidenceRate > 70 ? (
-              <AlertCircle className="h-3.5 w-3.5 text-amber-600" title="Elevated risk" />
+              <AlertCircle className="h-3.5 w-3.5 text-amber-600" />
             ) : (
-              <BadgeIcon className="h-3.5 w-3.5 text-slate-400" title="Monitored" />
+              <BadgeIcon className="h-3.5 w-3.5 text-slate-400" />
             )}
           </div>
 

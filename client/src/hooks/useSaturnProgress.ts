@@ -243,8 +243,10 @@ export function useSaturnProgress(taskId: string | undefined) {
         // For development, use empty string to make relative requests to same origin
         // Vite dev server proxy will forward /api/* to backend
         const query = new URLSearchParams();
-        query.set('temperature', String(options?.temperature ?? 0.2));
         query.set('promptId', 'solver');
+        if (typeof options?.temperature === 'number') {
+          query.set('temperature', String(options.temperature));
+        }
         if (options?.previousResponseId) query.set('previousResponseId', options.previousResponseId);
         if (options?.reasoningEffort) query.set('reasoningEffort', options.reasoningEffort);
         if (options?.reasoningVerbosity) query.set('reasoningVerbosity', options.reasoningVerbosity);
@@ -390,8 +392,6 @@ export function useSaturnProgress(taskId: string | undefined) {
               timestamp?: number;
             };
             setState((prev) => {
-              // Add text chunks to logLines for live display
-              let nextLogs = prev.logLines ? [...prev.logLines] : [];
               const annotationText =
                 chunk.type === 'annotation'
                   ? typeof chunk.raw === 'string'
@@ -405,53 +405,25 @@ export function useSaturnProgress(taskId: string | undefined) {
                       })()
                   : undefined;
               const chunkText = chunk.delta ?? chunk.content ?? annotationText;
-              const recordLines = (label: string, text: string) => {
-                const timestamp = new Date().toLocaleTimeString();
-                nextLogs.push(`[${timestamp}] ${label}`);
-                text.split('\n').forEach((line: string) => {
-                  if (line.trim().length > 0) {
-                    nextLogs.push(line);
-                  }
-                });
-                nextLogs.push(`[${timestamp}] ────────────────`);
-              };
 
               let nextPromptPreview = prev.promptPreview;
               let nextPromptLength = prev.promptLength;
               let nextPromptGeneratedAt = prev.promptGeneratedAt;
 
-              if (chunkText) {
-                if (chunk.type === 'text') {
-                  const lines = chunkText.split('\n').filter(line => line.trim());
-                  lines.forEach((line: string) => {
-                    nextLogs.push(line);
-                  });
-                } else if (chunk.type === 'reasoning') {
-                  recordLines('🧠 Saturn reasoning update', chunkText);
-                } else if (chunk.type === 'json') {
-                  recordLines('📦 Structured output streaming', chunkText);
-                } else if (chunk.type === 'refusal') {
-                  recordLines('⛔ Model refusal content', chunkText);
-                } else if (chunk.type === 'annotation') {
-                  recordLines('🔖 Annotation metadata', chunkText);
-                } else if (chunk.type === 'prompt') {
-                  if (promptLoggedRef.current !== chunkText) {
-                    recordLines('📝 Saturn prompt', chunkText);
-                    promptLoggedRef.current = chunkText;
-                  }
-                  nextPromptPreview = chunkText;
-                  const metaLength =
-                    typeof chunk.metadata?.promptLength === 'number'
-                      ? (chunk.metadata.promptLength as number)
-                      : chunkText.length;
-                  nextPromptLength = metaLength;
-                  if (typeof chunk.metadata?.promptGeneratedAt === 'string') {
-                    nextPromptGeneratedAt = chunk.metadata.promptGeneratedAt as string;
-                  }
+              if (chunkText && chunk.type === 'prompt') {
+                if (promptLoggedRef.current !== chunkText) {
+                  promptLoggedRef.current = chunkText;
+                }
+                nextPromptPreview = chunkText;
+                const metaLength =
+                  typeof chunk.metadata?.promptLength === 'number'
+                    ? (chunk.metadata.promptLength as number)
+                    : chunkText.length;
+                nextPromptLength = metaLength;
+                if (typeof chunk.metadata?.promptGeneratedAt === 'string') {
+                  nextPromptGeneratedAt = chunk.metadata.promptGeneratedAt as string;
                 }
               }
-
-              if (nextLogs.length > 500) nextLogs = nextLogs.slice(-500);
 
               return {
                 ...prev,
@@ -496,12 +468,33 @@ export function useSaturnProgress(taskId: string | undefined) {
                   typeof chunk.metadata?.promptModel === 'string'
                     ? (chunk.metadata?.promptModel as string)
                     : prev.promptModel,
-                logLines: nextLogs,
               };
             });
           } catch (error) {
             console.error('[SaturnStream] Failed to parse chunk payload:', error);
           }
+        });
+
+        // Handle phase completion (NOT final completion - keep stream open)
+        eventSource.addEventListener('stream.phase_complete', (evt) => {
+          try {
+            const phaseData = JSON.parse((evt as MessageEvent<string>).data) as {
+              phase?: number;
+              totalPhases?: number;
+              phaseName?: string;
+              message?: string;
+            };
+            console.log(`[SaturnStream] Phase ${phaseData.phase}/${phaseData.totalPhases} complete: ${phaseData.phaseName}`);
+            setState((prev) => ({
+              ...prev,
+              streamingMessage: phaseData.message || `Phase ${phaseData.phase} complete`,
+              // DO NOT set status to 'completed' - more phases are coming!
+              // DO NOT close EventSource - need it for next phase!
+            }));
+          } catch (error) {
+            console.error('[SaturnStream] Failed to parse phase_complete payload:', error);
+          }
+          // IMPORTANT: No finally block with closeEventSource() here!
         });
 
         eventSource.addEventListener('stream.complete', (evt) => {
@@ -572,16 +565,31 @@ export function useSaturnProgress(taskId: string | undefined) {
 
       // Legacy WebSocket path
       const endpoint = `/api/saturn/analyze/${taskId}`;
-      const requestBody = {
+      const requestBody: Record<string, unknown> = {
         modelKey,
-        temperature: options?.temperature ?? 0.2,
         promptId: 'solver',
-        ...(options?.previousResponseId && { previousResponseId: options.previousResponseId }),
         captureReasoning: true,
-        reasoningEffort: options?.reasoningEffort || 'high',
-        reasoningVerbosity: options?.reasoningVerbosity || 'high',
-        reasoningSummaryType: options?.reasoningSummaryType || 'detailed',
       };
+
+      if (typeof options?.temperature === 'number') {
+        requestBody.temperature = options.temperature;
+      }
+
+      if (options?.previousResponseId) {
+        requestBody.previousResponseId = options.previousResponseId;
+      }
+
+      if (options?.reasoningEffort) {
+        requestBody.reasoningEffort = options.reasoningEffort;
+      }
+
+      if (options?.reasoningVerbosity) {
+        requestBody.reasoningVerbosity = options.reasoningVerbosity;
+      }
+
+      if (options?.reasoningSummaryType) {
+        requestBody.reasoningSummaryType = options.reasoningSummaryType;
+      }
 
       const res = await apiRequest('POST', endpoint, requestBody);
       const json = await res.json();

@@ -249,13 +249,13 @@ export function AdvancedControls({
         </div>
       </div>
 
-      <div className="collapse collapse-arrow border border-base-200 bg-base-100/80 text-xs">
-        <input type="checkbox" className="peer" />
-        <div className="collapse-title flex items-center gap-2 py-3 text-xs font-semibold">
+      <div className="rounded-box border border-base-200 bg-base-100/80 p-3">
+        <div className="mb-3 flex items-center gap-2">
           <Brain className="h-4 w-4 text-primary" aria-hidden="true" />
-          GPT-5 Reasoning Parameters
+          <span className="uppercase tracking-wide text-[10px] text-base-content/60">GPT-5 Reasoning Parameters</span>
         </div>
-        <div className="collapse-content space-y-3">
+
+        <div className="space-y-3">
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <div className="form-control gap-1">
               <label htmlFor="reasoning-effort" className="label py-0">
