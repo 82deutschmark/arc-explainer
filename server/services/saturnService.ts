@@ -11,7 +11,7 @@
  */
 
 import { ARCTask } from "../../shared/types.js";
-import { BaseAIService, ServiceOptions, TokenUsage, AIResponse, PromptPreview, ModelInfo } from "./base/BaseAIService.js";
+import { BaseAIService, ServiceOptions, TokenUsage, AIResponse, PromptPreview, ModelInfo, StreamingHarness } from "./base/BaseAIService.js";
 import { getDefaultPromptId, PromptOptions, PromptPackage } from "./promptBuilder.js";
 import { aiServiceFactory } from "./aiServiceFactory.js";
 import { pythonBridge } from "./pythonBridge.js";
@@ -177,11 +177,41 @@ Always look for:
     let totalInputTokens = 0;
     let totalOutputTokens = 0;
     let totalReasoningTokens = 0;
-    
-    // PHASE 13 FIX: Use Saturn system prompt override for all phases
-    // This prevents prompt regeneration that breaks conversation chaining
+
+    // Calculate total phases upfront for multi-phase streaming coordination
+    const totalPhaseCount = 1 + // Phase 1
+      (task.train.length > 1 ? 2 : 0) + // Phase 2 + 2.5
+      Math.max(0, task.train.length - 2) + // Additional training examples
+      task.test.length; // Phase 3 (one per test case)
+    let currentPhaseNum = 0;
+
+    // Helper to emit phase completion WITHOUT closing the stream
+    const emitPhaseComplete = (phaseName: string) => {
+      currentPhaseNum++;
+      if (harness?.emitEvent) {
+        harness.emitEvent('stream.phase_complete', {
+          phase: currentPhaseNum,
+          totalPhases: totalPhaseCount,
+          phaseName,
+          message: `${phaseName} complete (${currentPhaseNum}/${totalPhaseCount})`
+        });
+      }
+    };
+
+    // Create a wrapped harness that intercepts end() calls
+    // This prevents underlying services from closing the stream after each phase
+    const wrappedHarness: StreamingHarness | undefined = harness ? {
+      ...harness,
+      end: async (summary) => {
+        // Don't call the real harness.end() here - just emit phase complete
+        // The real end() will be called only after ALL phases complete
+        logger.debug(`[Saturn] Phase ${currentPhaseNum + 1} completed, continuing to next phase...`, 'Saturn');
+      }
+    } : undefined;
+
+    // Saturn system prompt - ONLY used for Phase 1 (initial call)
+    // For continuation calls (Phase 2+), we send ONLY the customUserPrompt
     const saturnSystemPrompt = this.getSaturnSystemPrompt();
-    const serviceOptsWithOverride = { ...serviceOpts, systemPromptOverride: saturnSystemPrompt };
     
     try {
       // Phase 1: Analyze first training example
@@ -201,18 +231,28 @@ Always look for:
         'phase1'
       );
       
-      // Use streaming method if harness is provided, otherwise use regular method
-      // PHASE 13 FIX: Use serviceOptsWithOverride to maintain single system prompt
-      const phase1Response = harness
+      // Phase 1: Initial call - use systemPromptOverride to set Saturn's system prompt
+      const phase1ServiceOpts: ServiceOptions = {
+        ...serviceOpts,
+        stream: wrappedHarness, // Use wrapped harness to prevent premature stream closure
+        systemPromptOverride: saturnSystemPrompt,
+        suppressInstructionsOnContinuation: true,
+        previousResponseId: undefined, // First phase has no previous response
+        customUserPrompt: phase1Prompt,
+      };
+      
+      logger.service(this.provider, `Phase 1: systemPromptOverride length=${saturnSystemPrompt.length}, customUserPrompt length=${phase1Prompt.length}`);
+
+      const phase1Response = wrappedHarness
         ? await underlyingService.analyzePuzzleWithStreaming!(
             task,
             underlyingModel,
             taskId,
             temperature,
             promptId,
-            phase1Prompt,
+            undefined,
             { ...options, includeImages: true, imagePaths: phase1Images },
-            { ...serviceOptsWithOverride, previousResponseId }
+            phase1ServiceOpts
           )
         : await underlyingService.analyzePuzzleWithModel(
             task,
@@ -220,19 +260,26 @@ Always look for:
             taskId,
             temperature,
             promptId,
-            phase1Prompt,
+            undefined,
             { ...options, includeImages: true, imagePaths: phase1Images },
-            { ...serviceOptsWithOverride, previousResponseId }
+            phase1ServiceOpts
           );
       
       previousResponseId = phase1Response.providerResponseId;
-      phases.push({ 
-        phase: 1, 
+      logger.service(this.provider, `Phase 1 complete - providerResponseId: ${previousResponseId || 'MISSING!'}`);
+      if (!previousResponseId) {
+        logger.error(this.provider, 'Phase 1 did not return providerResponseId - continuation will fail!');
+      }
+      phases.push({
+        phase: 1,
         name: 'First Training Example Analysis',
         response: phase1Response,
         images: phase1Images
       });
-      
+
+      // Emit phase completion event (NOT stream.complete)
+      emitPhaseComplete('Phase 1: First Training Example Analysis');
+
       // Broadcast completion with images (converted to base64 for frontend)
       const phase1ImagesBase64 = await this.convertImagesToBase64(phase1Images);
       sendProgress({
@@ -265,17 +312,30 @@ Always look for:
           'phase2'
         );
         
-        // PHASE 13 FIX: Use serviceOptsWithOverride to maintain single system prompt
-        const phase2Response = harness
+        // Phase 2: Continuation call - NO systemPromptOverride, ONLY customUserPrompt
+        logger.service(this.provider, `Phase 2 starting with previousResponseId: ${previousResponseId || 'NONE'}`);
+        logger.service(this.provider, `Phase 2 customUserPrompt length: ${phase2Prompt.length}`);
+        logger.service(this.provider, `Phase 2 suppressInstructionsOnContinuation: true`);
+
+        const phase2ServiceOpts: ServiceOptions = {
+          ...serviceOpts,
+          stream: wrappedHarness, // Use wrapped harness
+          suppressInstructionsOnContinuation: true,
+          previousResponseId,
+          customUserPrompt: phase2Prompt,
+          // NO systemPromptOverride for continuation!
+        };
+
+        const phase2Response = wrappedHarness
           ? await underlyingService.analyzePuzzleWithStreaming!(
               task,
               underlyingModel,
               taskId,
               temperature,
               promptId,
-              phase2Prompt,
+              undefined,
               { ...options, includeImages: true, imagePaths: phase2Images },
-              { ...serviceOptsWithOverride, previousResponseId }
+              phase2ServiceOpts
             )
           : await underlyingService.analyzePuzzleWithModel(
               task,
@@ -283,20 +343,23 @@ Always look for:
               taskId,
               temperature,
               promptId,
-              phase2Prompt,
+              undefined,
               { ...options, includeImages: true, imagePaths: phase2Images },
-              { ...serviceOptsWithOverride, previousResponseId }
+              phase2ServiceOpts
             );
         
         previousResponseId = phase2Response.providerResponseId;
-        phases.push({ 
-          phase: 2, 
+        phases.push({
+          phase: 2,
           name: 'Second Training Prediction',
           response: phase2Response,
           images: phase2Images,
           expectedOutput: task.train[1].output
         });
-        
+
+        // Emit phase completion
+        emitPhaseComplete('Phase 2: Second Training Prediction');
+
         const phase2ImagesBase64 = await this.convertImagesToBase64(phase2Images);
         sendProgress({
           status: 'running',
@@ -327,17 +390,25 @@ Always look for:
           'phase2_actual'
         );
         
-        // PHASE 13 FIX: Use serviceOptsWithOverride to maintain single system prompt
-        const phase25Response = harness
+        // Phase 2.5: Continuation call - NO systemPromptOverride, ONLY customUserPrompt
+        const phase25ServiceOpts: ServiceOptions = {
+          ...serviceOpts,
+          stream: wrappedHarness, // Use wrapped harness
+          suppressInstructionsOnContinuation: true,
+          previousResponseId,
+          customUserPrompt: phase25Prompt,
+        };
+
+        const phase25Response = wrappedHarness
           ? await underlyingService.analyzePuzzleWithStreaming!(
               task,
               underlyingModel,
               taskId,
               temperature,
               promptId,
-              phase25Prompt,
+              undefined,
               { ...options, includeImages: true, imagePaths: phase25Images },
-              { ...serviceOptsWithOverride, previousResponseId }
+              phase25ServiceOpts
             )
           : await underlyingService.analyzePuzzleWithModel(
               task,
@@ -345,19 +416,22 @@ Always look for:
               taskId,
               temperature,
               promptId,
-              phase25Prompt,
+              undefined,
               { ...options, includeImages: true, imagePaths: phase25Images },
-              { ...serviceOptsWithOverride, previousResponseId }
+              phase25ServiceOpts
             );
         
         previousResponseId = phase25Response.providerResponseId;
-        phases.push({ 
-          phase: 2.5, 
+        phases.push({
+          phase: 2.5,
           name: 'Pattern Refinement',
           response: phase25Response,
           images: phase25Images
         });
-        
+
+        // Emit phase completion
+        emitPhaseComplete('Phase 2.5: Pattern Refinement');
+
         const phase25ImagesBase64 = await this.convertImagesToBase64(phase25Images);
         sendProgress({
           status: 'running',
@@ -388,17 +462,25 @@ Always look for:
           `train${i}`
         );
         
-        // PHASE 13 FIX: Use serviceOptsWithOverride to maintain single system prompt
-        const additionalResponse = harness
+        // Additional training: Continuation call - NO systemPromptOverride, ONLY customUserPrompt
+        const additionalServiceOpts: ServiceOptions = {
+          ...serviceOpts,
+          stream: wrappedHarness, // Use wrapped harness
+          suppressInstructionsOnContinuation: true,
+          previousResponseId,
+          customUserPrompt: additionalPrompt,
+        };
+
+        const additionalResponse = wrappedHarness
           ? await underlyingService.analyzePuzzleWithStreaming!(
               task,
               underlyingModel,
               taskId,
               temperature,
               promptId,
-              additionalPrompt,
+              undefined,
               { ...options, includeImages: true, imagePaths: additionalImages },
-              { ...serviceOptsWithOverride, previousResponseId }
+              additionalServiceOpts
             )
           : await underlyingService.analyzePuzzleWithModel(
               task,
@@ -406,84 +488,115 @@ Always look for:
               taskId,
               temperature,
               promptId,
-              additionalPrompt,
+              undefined,
               { ...options, includeImages: true, imagePaths: additionalImages },
-              { ...serviceOptsWithOverride, previousResponseId }
+              additionalServiceOpts
             );
         
         previousResponseId = additionalResponse.providerResponseId;
-        phases.push({ 
-          phase: 2 + i * 0.1, 
+        phases.push({
+          phase: 2 + i * 0.1,
           name: `Training Example ${i + 1}`,
           response: additionalResponse,
           images: additionalImages
         });
-        
+
+        // Emit phase completion
+        emitPhaseComplete(`Additional Training: Example ${i + 1}`);
+
         totalCost += additionalResponse.estimatedCost || 0;
         totalInputTokens += additionalResponse.inputTokens || 0;
         totalOutputTokens += additionalResponse.outputTokens || 0;
         totalReasoningTokens += additionalResponse.reasoningTokens || 0;
       }
       
-      // Phase 3: Apply to test
-      logger.service(this.provider, `Phase 3: Applying pattern to test input`);
-      sendProgress({ 
-        status: 'running', 
-        phase: 'saturn_phase3',
-        step: 3,
-        totalSteps: 3,
-        message: 'Applying pattern to test case...' 
-      });
-      
-      const phase3Prompt = this.buildPhase3Prompt(task);
-      const phase3Images = await this.generateGridImages(
-        [task.test[0].input],
-        taskId,
-        'test'
-      );
-      
-      // PHASE 13 FIX: Use serviceOptsWithOverride to maintain single system prompt
-      const phase3Response = harness
-        ? await underlyingService.analyzePuzzleWithStreaming!(
-            task,
-            underlyingModel,
-            taskId,
-            temperature,
-            promptId,
-            phase3Prompt,
-            { ...options, includeImages: true, imagePaths: phase3Images },
-            { ...serviceOptsWithOverride, previousResponseId }
-          )
-        : await underlyingService.analyzePuzzleWithModel(
-            task,
-            underlyingModel,
-            taskId,
-            temperature,
-            promptId,
-            phase3Prompt,
-            { ...options, includeImages: true, imagePaths: phase3Images },
-            { ...serviceOptsWithOverride, previousResponseId }
-          );
-      
-      phases.push({ 
-        phase: 3, 
-        name: 'Test Prediction',
-        response: phase3Response,
-        images: phase3Images
-      });
-      
-      const phase3ImagesBase64 = await this.convertImagesToBase64(phase3Images);
-      sendProgress({
-        status: 'running',
-        phase: 'saturn_phase3_complete',
-        message: 'Test prediction complete',
-        images: phase3ImagesBase64
-      });
-      
-      totalCost += phase3Response.estimatedCost || 0;
-      totalInputTokens += phase3Response.inputTokens || 0;
-      totalOutputTokens += phase3Response.outputTokens || 0;
-      totalReasoningTokens += phase3Response.reasoningTokens || 0;
+      // Phase 3: Apply to test (loop through all test cases for multi-test support)
+      const testPredictions: Array<{
+        testIndex: number;
+        response: AIResponse;
+        images: string[];
+      }> = [];
+
+      for (let testIdx = 0; testIdx < task.test.length; testIdx++) {
+        logger.service(this.provider, `Phase 3.${testIdx + 1}: Applying pattern to test ${testIdx + 1}/${task.test.length}`);
+        sendProgress({
+          status: 'running',
+          phase: `saturn_phase3_test${testIdx + 1}`,
+          step: 3,
+          totalSteps: 3,
+          message: `Applying pattern to test ${testIdx + 1}/${task.test.length}...`
+        });
+
+        const phase3Prompt = this.buildPhase3Prompt(task, testIdx);
+        const phase3Images = await this.generateGridImages(
+          [task.test[testIdx].input],
+          taskId,
+          `test${testIdx}`
+        );
+
+        // Phase 3: Continuation call - NO systemPromptOverride, ONLY customUserPrompt
+        const phase3ServiceOpts: ServiceOptions = {
+          ...serviceOpts,
+          stream: wrappedHarness, // Use wrapped harness
+          suppressInstructionsOnContinuation: true,
+          previousResponseId,
+          customUserPrompt: phase3Prompt,
+        };
+
+        const phase3Response = wrappedHarness
+          ? await underlyingService.analyzePuzzleWithStreaming!(
+              task,
+              underlyingModel,
+              taskId,
+              temperature,
+              promptId,
+              undefined,
+              { ...options, includeImages: true, imagePaths: phase3Images },
+              phase3ServiceOpts
+            )
+          : await underlyingService.analyzePuzzleWithModel(
+              task,
+              underlyingModel,
+              taskId,
+              temperature,
+              promptId,
+              undefined,
+              { ...options, includeImages: true, imagePaths: phase3Images },
+              phase3ServiceOpts
+            );
+
+        // Update previousResponseId for next test case continuation
+        previousResponseId = phase3Response.providerResponseId;
+
+        testPredictions.push({
+          testIndex: testIdx,
+          response: phase3Response,
+          images: phase3Images
+        });
+
+        phases.push({
+          phase: 3 + testIdx * 0.1,
+          name: `Test ${testIdx + 1} Prediction`,
+          response: phase3Response,
+          images: phase3Images
+        });
+
+        // Emit phase completion
+        emitPhaseComplete(`Phase 3.${testIdx + 1}: Test ${testIdx + 1} Prediction`);
+
+        const phase3ImagesBase64 = await this.convertImagesToBase64(phase3Images);
+        sendProgress({
+          status: 'running',
+          phase: `saturn_phase3_test${testIdx + 1}_complete`,
+          message: `Test ${testIdx + 1} prediction complete`,
+          images: phase3ImagesBase64
+        });
+
+        totalCost += phase3Response.estimatedCost || 0;
+        totalInputTokens += phase3Response.inputTokens || 0;
+        totalOutputTokens += phase3Response.outputTokens || 0;
+        totalReasoningTokens += phase3Response.reasoningTokens || 0;
+      }
       
       // Aggregate all reasoning logs
       const allReasoningLogs = phases
@@ -494,30 +607,43 @@ Always look for:
         .flatMap(p => p.response.reasoningItems || [])
         .filter(Boolean);
       
-      // Build final response (using final phase's predictions)
+      // Build final response (supporting multi-test predictions)
+      const hasMultipleTests = task.test.length > 1;
       const finalPhase = phases[phases.length - 1].response;
-      
+
       const finalResponse: AIResponse = {
         model: modelKey,
         temperature,
         reasoningLog: allReasoningLogs.join('\n\n---\n\n'),
         hasReasoningLog: allReasoningLogs.length > 0,
         reasoningItems: allReasoningItems,
-        
+
         // Token usage (aggregated across all phases)
         inputTokens: totalInputTokens,
         outputTokens: totalOutputTokens,
         reasoningTokens: totalReasoningTokens,
         totalTokens: totalInputTokens + totalOutputTokens + totalReasoningTokens,
         estimatedCost: totalCost,
-        
-        // Predicted output from final phase
-        predictedOutput: finalPhase.predictedOutput,
-        solvingStrategy: finalPhase.solvingStrategy,
-        patternDescription: finalPhase.patternDescription,
-        hints: finalPhase.hints,
-        confidence: finalPhase.confidence,
-        
+
+        // Predicted output (backward compatible - uses first test)
+        predictedOutput: testPredictions[0].response.predictedOutput,
+        solvingStrategy: testPredictions[0].response.solvingStrategy,
+        patternDescription: testPredictions[0].response.patternDescription,
+        hints: testPredictions[0].response.hints,
+        confidence: testPredictions[0].response.confidence,
+
+        // Multi-test support
+        multiplePredictedOutputs: hasMultipleTests,
+        ...(hasMultipleTests && {
+          multiTestResults: testPredictions.map(pred => ({
+            testIndex: pred.testIndex,
+            predictedOutput: pred.response.predictedOutput,
+            solvingStrategy: pred.response.solvingStrategy,
+            confidence: pred.response.confidence,
+            images: pred.images
+          }))
+        }),
+
         // Saturn-specific metadata
         saturnPhases: phases.map(p => ({
           phase: p.phase,
@@ -529,7 +655,7 @@ Always look for:
             reasoningLog: p.response.reasoningLog
           }
         })),
-        
+
         // Provider metadata
         providerResponseId: finalPhase.providerResponseId,
         systemPromptUsed: saturnSystemPrompt,
@@ -707,11 +833,14 @@ Verify that this example follows the same pattern you've identified. Note any ne
   /**
    * Phase 3: Solve test input
    */
-  private buildPhase3Prompt(task: ARCTask): string {
-    return `Now apply the pattern you've learned to solve the test input:
+  private buildPhase3Prompt(task: ARCTask, testIndex: number = 0): string {
+    const testNum = testIndex + 1;
+    const testLabel = task.test.length > 1 ? ` (test ${testNum} of ${task.test.length})` : '';
+
+    return `Now apply the pattern you've learned to solve the test input${testLabel}:
 
 Test Input:
-${JSON.stringify(task.test[0].input)}
+${JSON.stringify(task.test[testIndex].input)}
 
 A visual representation is attached.
 

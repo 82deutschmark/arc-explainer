@@ -13,7 +13,7 @@
 
 import React from 'react';
 import { useParams, Link } from 'wouter';
-import { Loader2, ArrowLeft, Rocket, Settings, Brain, XCircle } from 'lucide-react';
+import { Loader2, ArrowLeft, Rocket, Settings, Brain, XCircle, Eye } from 'lucide-react';
 import { usePuzzle } from '@/hooks/usePuzzle';
 import { useGroverProgress } from '@/hooks/useGroverProgress';
 import GroverModelSelect, { type GroverModelKey } from '@/components/grover/GroverModelSelect';
@@ -21,6 +21,7 @@ import { IterationCard } from '@/components/grover/IterationCard';
 import { LiveActivityStream } from '@/components/grover/LiveActivityStream';
 import { SearchVisualization } from '@/components/grover/SearchVisualization';
 import { CollapsibleCard } from '@/components/ui/collapsible-card';
+import GroverStreamingModal from '@/components/grover/GroverStreamingModal';
 
 export default function GroverSolver() {
   const { taskId } = useParams<{ taskId: string }>();
@@ -28,6 +29,7 @@ export default function GroverSolver() {
   const { state, start, cancel, sessionId } = useGroverProgress(taskId);
   const [model, setModel] = React.useState<GroverModelKey>('grover-gpt-5-nano');
   const [startTime, setStartTime] = React.useState<Date | null>(null);
+  const [showStreamingModal, setShowStreamingModal] = React.useState(false);
   const [temperature, setTemperature] = React.useState(0.2);
   const [reasoningEffort, setReasoningEffort] = React.useState<'minimal' | 'low' | 'medium' | 'high'>('high');
   const [reasoningVerbosity, setReasoningVerbosity] = React.useState<'low' | 'medium' | 'high'>('high');
@@ -151,175 +153,184 @@ export default function GroverSolver() {
             <p className="text-xs text-gray-600">{taskId}</p>
           </div>
         </div>
-        <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+        <div className="flex flex-row items-center gap-2">
           <GroverModelSelect value={model} onChange={setModel} disabled={isRunning} />
           {isRunning ? (
-            <button
-              onClick={cancel}
-              className="btn btn-error btn-lg flex items-center gap-2 font-bold shadow-lg hover:shadow-xl transition-all px-6"
-            >
-              <XCircle className="h-5 w-5" />
-              Cancel
-            </button>
+            <>
+              <button
+                onClick={() => setShowStreamingModal(true)}
+                className="btn btn-info btn-sm flex items-center gap-1 shadow-sm hover:shadow-md transition-all"
+              >
+                <Eye className="h-4 w-4" />
+                View Stream
+              </button>
+              <button
+                onClick={cancel}
+                className="btn btn-error btn-sm flex items-center gap-1 shadow-sm hover:shadow-md transition-all"
+              >
+                <XCircle className="h-4 w-4" />
+                Cancel
+              </button>
+            </>
           ) : (
             <button
               onClick={onStart}
-              className="btn btn-primary btn-lg flex items-center gap-2 font-bold shadow-lg hover:shadow-xl transition-all px-6 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
+              className="btn btn-primary btn-sm flex items-center gap-1 shadow-sm hover:shadow-md transition-all"
             >
-              <Rocket className="h-5 w-5" />
-              Start Grover Search
+              <Rocket className="h-4 w-4" />
+              Start Grover
             </button>
           )}
         </div>
       </div>
 
-      {/* Advanced Controls */}
+      {/* Advanced Controls - Compact Version */}
       <CollapsibleCard
         title="Advanced Controls"
         icon={Settings}
-        defaultOpen
+        defaultOpen={false}
         headerDescription={
-          <p className="text-sm text-gray-600">Fine-tune model behavior with advanced parameters</p>
+          <p className="text-xs text-gray-500">Fine-tune model parameters</p>
         }
       >
-        <div className="space-y-4 p-3 lg:p-4">
-          {/* Temperature Control */}
-          <div className="p-3 bg-gray-50 border border-gray-200 rounded">
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-              <label htmlFor="temperature" className="label text-sm font-semibold whitespace-nowrap">
+        <div className="p-2">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-2 text-xs">
+            {/* Temperature Control */}
+            <div>
+              <label htmlFor="temperature" className="block text-gray-600 mb-1 font-medium">
                 Temperature: {temperature}
               </label>
-              <div className="flex-1">
-                <input
-                  type="range"
-                  id="temperature"
-                  min="0.1"
-                  max="2.0"
-                  step="0.05"
-                  value={temperature}
-                  onChange={(e) => setTemperature(parseFloat(e.target.value))}
-                  className="range range-xs w-full"
-                  disabled={isRunning}
-                />
-              </div>
-              <div className="text-xs text-gray-600">
-                <div>Controls creativity/randomness</div>
-                <div className="text-blue-600">💡 Affects code generation diversity</div>
-              </div>
+              <input
+                type="range"
+                id="temperature"
+                min="0.1"
+                max="2.0"
+                step="0.05"
+                value={temperature}
+                onChange={(e) => setTemperature(parseFloat(e.target.value))}
+                className="range range-xs w-full"
+                disabled={isRunning}
+              />
+              <p className="text-xs text-gray-500 mt-1">Code diversity</p>
             </div>
-          </div>
 
-          {/* GPT-5 Reasoning Parameters */}
-          <div className="p-3 bg-slate-50 border border-slate-200 rounded-lg">
-            <h5 className="text-sm font-semibold text-slate-700 mb-3 flex items-center gap-2">
-              <Brain className="h-4 w-4" />
-              GPT-5 Reasoning Parameters
-            </h5>
+            {/* Max Iterations */}
+            <div>
+              <label className="block text-gray-600 mb-1 font-medium">Max Iterations</label>
+              <input
+                type="number"
+                min="1"
+                max="10"
+                value={5}
+                className="input input-bordered input-xs w-full"
+                disabled={isRunning}
+                readOnly
+              />
+              <p className="text-xs text-gray-500 mt-1">Fixed at 5</p>
+            </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-              {/* Effort Control */}
-              <div>
-                <label htmlFor="reasoning-effort" className="label text-sm font-medium text-slate-700">
-                  Effort Level
-                </label>
-                <select
-                  className="select select-bordered w-full mt-1"
-                  value={reasoningEffort}
-                  onChange={(e) => setReasoningEffort(e.target.value as 'minimal' | 'low' | 'medium' | 'high')}
-                  disabled={isRunning}
-                >
-                  <option value="minimal">Minimal</option>
-                  <option value="low">Low</option>
-                  <option value="medium">Medium</option>
-                  <option value="high">High</option>
-                </select>
-              </div>
+            {/* Effort Control */}
+            <div>
+              <label htmlFor="reasoning-effort" className="block text-gray-600 mb-1 font-medium">
+                Reasoning Effort
+              </label>
+              <select
+                className="select select-bordered select-xs w-full"
+                value={reasoningEffort}
+                onChange={(e) => setReasoningEffort(e.target.value as 'minimal' | 'low' | 'medium' | 'high')}
+                disabled={isRunning}
+              >
+                <option value="minimal">Minimal</option>
+                <option value="low">Low</option>
+                <option value="medium">Medium</option>
+                <option value="high">High</option>
+              </select>
+              <p className="text-xs text-gray-500 mt-1">GPT-5 only</p>
+            </div>
 
-              {/* Verbosity Control */}
-              <div>
-                <label htmlFor="reasoning-verbosity" className="label text-sm font-medium text-slate-700">
-                  Verbosity
-                </label>
-                <select
-                  className="select select-bordered w-full mt-1"
-                  value={reasoningVerbosity}
-                  onChange={(e) => setReasoningVerbosity(e.target.value as 'low' | 'medium' | 'high')}
-                  disabled={isRunning}
-                >
-                  <option value="low">Low</option>
-                  <option value="medium">Medium</option>
-                  <option value="high">High</option>
-                </select>
-              </div>
+            {/* Verbosity Control */}
+            <div>
+              <label htmlFor="reasoning-verbosity" className="block text-gray-600 mb-1 font-medium">
+                Verbosity
+              </label>
+              <select
+                className="select select-bordered select-xs w-full"
+                value={reasoningVerbosity}
+                onChange={(e) => setReasoningVerbosity(e.target.value as 'low' | 'medium' | 'high')}
+                disabled={isRunning}
+              >
+                <option value="low">Low</option>
+                <option value="medium">Medium</option>
+                <option value="high">High</option>
+              </select>
+              <p className="text-xs text-gray-500 mt-1">GPT-5 only</p>
+            </div>
 
-              {/* Summary Control */}
-              <div>
-                <label htmlFor="reasoning-summary" className="label text-sm font-medium text-slate-700">
-                  Summary
-                </label>
-                <select
-                  className="select select-bordered w-full mt-1"
-                  value={reasoningSummaryType}
-                  onChange={(e) => setReasoningSummaryType(e.target.value as 'auto' | 'detailed')}
-                  disabled={isRunning}
-                >
-                  <option value="auto">Auto</option>
-                  <option value="detailed">Detailed</option>
-                </select>
-              </div>
+            {/* Summary Control */}
+            <div>
+              <label htmlFor="reasoning-summary" className="block text-gray-600 mb-1 font-medium">
+                Summary Type
+              </label>
+              <select
+                className="select select-bordered select-xs w-full"
+                value={reasoningSummaryType}
+                onChange={(e) => setReasoningSummaryType(e.target.value as 'auto' | 'detailed')}
+                disabled={isRunning}
+              >
+                <option value="auto">Auto</option>
+                <option value="detailed">Detailed</option>
+              </select>
+              <p className="text-xs text-gray-500 mt-1">GPT-5 only</p>
             </div>
           </div>
         </div>
       </CollapsibleCard>
 
-      {/* Visual Status Panel */}
+      {/* Visual Status Panel - Compact */}
       {isRunning && (
         <div className="card mb-2 bg-gradient-to-r from-slate-50 to-purple-50 border border-slate-300 shadow-sm">
-          <div className="card-body p-4">
-            <div className="flex items-start gap-4">
+          <div className="card-body p-2">
+            <div className="flex items-center gap-3">
               <div className="flex-shrink-0">
                 <div className="relative">
-                  <Loader2 className="h-12 w-12 text-blue-600 animate-spin" />
+                  <Loader2 className="h-8 w-8 text-blue-600 animate-spin" />
                   <div className="absolute inset-0 flex items-center justify-center">
-                    <span className="text-xl font-bold text-blue-800">{state.iteration || 0}</span>
+                    <span className="text-sm font-bold text-blue-800">{state.iteration || 0}</span>
                   </div>
                 </div>
               </div>
-              <div className="flex-1">
-                <div className="flex items-center justify-between mb-2">
-                  <h3 className="text-sm font-bold text-blue-900">
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center justify-between mb-1">
+                  <h3 className="text-xs font-bold text-blue-900 truncate">
                     {state.phase === 'initializing' && '🔄 Initializing'}
                     {state.phase === 'iteration_start' && '🔁 Starting Iteration'}
                     {state.phase === 'prompt_ready' && '📤 Sending Prompt'}
-                    {state.phase === 'waiting_llm' && '⏳ Waiting for AI Response'}
+                    {state.phase === 'waiting_llm' && '⏳ Waiting for AI'}
                     {state.phase === 'response_received' && '✅ Response Received'}
                     {state.phase === 'programs_extracted' && '📝 Extracting Programs'}
                     {state.phase === 'execution' && '🐍 Executing Programs'}
                     {state.phase === 'iteration_complete' && '🎯 Iteration Complete'}
-                    {state.phase === 'finalizing' && '✨ Finalizing Results'}
+                    {state.phase === 'finalizing' && '✨ Finalizing'}
                     {state.phase === 'complete' && '🎉 Complete!'}
                     {!state.phase && 'Processing...'}
                   </h3>
-                  <div className="flex items-center gap-2">
-                    <div className="badge badge-outline text-xs">
-                      Iteration {state.iteration}/{state.totalIterations || 5}
+                  <div className="flex items-center gap-1 flex-shrink-0">
+                    <div className="badge badge-outline badge-xs">
+                      {state.iteration}/{state.totalIterations || 5}
                     </div>
                     {state.bestScore !== undefined && (
-                      <div className="badge bg-green-600 text-xs">
-                        Best: {state.bestScore.toFixed(1)}/10
+                      <div className="badge bg-green-600 badge-xs text-white">
+                        {state.bestScore.toFixed(1)}/10
                       </div>
                     )}
                     {startTime && (
-                      <div className="badge badge-outline text-xs">{getElapsedTime()}</div>
+                      <div className="badge badge-outline badge-xs">{getElapsedTime()}</div>
                     )}
                   </div>
                 </div>
-                {state.message && (
-                  <p className="text-sm text-gray-700 mb-2">{state.message}</p>
-                )}
-                <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
+                <div className="w-full bg-gray-200 rounded-full h-1.5 overflow-hidden">
                   <div 
-                    className="bg-gradient-to-r from-blue-500 to-purple-500 h-2 transition-all duration-500 ease-out"
+                    className="bg-gradient-to-r from-blue-500 to-purple-500 h-1.5 transition-all duration-500 ease-out"
                     style={{ width: `${((state.iteration || 0) / (state.totalIterations || 5)) * 100}%` }}
                   />
                 </div>
@@ -330,16 +341,21 @@ export default function GroverSolver() {
       )}
 
       {/* Compact Status Bar (when not running) */}
-      {!isRunning && (
-        <div className="mb-2 p-2 bg-slate-50 rounded border flex items-center justify-between text-xs">
-          <div className="flex items-center gap-3">
-            <div className={`badge text-xs py-0 ${isDone ? '' : hasError ? 'badge-error' : 'badge-secondary'}`}>
+      {!isRunning && state.status !== 'idle' && (
+        <div className="mb-2 px-2 py-1 bg-slate-50 rounded border flex items-center justify-between text-xs">
+          <div className="flex items-center gap-2">
+            <div className={`badge badge-xs ${isDone ? 'badge-success' : hasError ? 'badge-error' : 'badge-secondary'}`}>
               {state.status}
             </div>
             {state.bestScore !== undefined && (
-              <div className="badge bg-green-600 text-xs py-0">
+              <div className="badge bg-green-600 badge-xs text-white">
                 Best: {state.bestScore.toFixed(1)}/10
               </div>
+            )}
+            {state.iterations && state.iterations.length > 0 && (
+              <span className="text-gray-600">
+                {state.iterations.length} iterations completed
+              </span>
             )}
           </div>
         </div>
@@ -400,6 +416,13 @@ export default function GroverSolver() {
         </div>
       </div>
       </div>
+
+      {/* Streaming Modal */}
+      <GroverStreamingModal
+        isOpen={showStreamingModal}
+        onClose={() => setShowStreamingModal(false)}
+        state={state}
+      />
     </div>
   );
 }

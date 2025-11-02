@@ -27,7 +27,7 @@ export default function GroverModelSelect({ value, onChange, disabled }: GroverM
       onValueChange={(v) => onChange(v as GroverModelKey)}
       disabled={disabled}
     >
-      <SelectTrigger className="w-[220px]">
+      <SelectTrigger className="w-[180px] h-9 text-sm">
         <SelectValue placeholder="Select model" />
       </SelectTrigger>
       <SelectContent>

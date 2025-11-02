@@ -1,9 +1,255 @@
-# CHANGELOG
+# CHANGELOG - Uses semantic versioning (MAJOR.MINOR.PATCH)
+
+## [4.11.4] - 2025-11-01
+### ✅ Saturn Correctness Display
+**Problem**: Saturn Visual Solver showed completion status ("COMPLETED") but not correctness status (whether predictions were RIGHT or WRONG). Users couldn't tell at a glance if Saturn solved the puzzle correctly.
+
+**Solution**: Replaced `SaturnFinalResultPanel` with standard `AnalysisResultCard` component to display correctness indicators:
+- ✅ **Green badge** for correct predictions
+- ❌ **Red badge** for incorrect predictions  
+- 📊 **Accuracy percentage** for multi-test puzzles (e.g., "2/3 Correct - 67%")
+- **Trustworthiness score** based on confidence + correctness
+- **Full metrics** including token usage, cost, and reasoning log
+
+**Implementation**:
+- Created `useSaturnExplanation` hook to fetch saved explanation from database after streaming completes
+- Database already contains validated results with `isPredictionCorrect`, `trustworthinessScore`, and `multiValidation` fields
+- Reused existing `/api/puzzle/:puzzleId/explanations` endpoint (filters by modelKey on frontend)
+- 300ms delay ensures database write completes before fetch
+
+**Files Changed**:
+- `client/src/hooks/useSaturnExplanation.ts` - New hook for fetching saved explanation
+- `client/src/pages/SaturnVisualSolver.tsx` - Replaced SaturnFinalResultPanel with AnalysisResultCard
+
+**Benefits**:
+- Consistent UI across all solvers (Saturn, Grover, standard analysis)
+- Immediate visual feedback on correctness
+- All standard features available (feedback buttons, reasoning toggle, etc.)
+- No changes to backend validation logic (already working correctly)
+
+#### Verification
+- ⚠️ Test with single-test puzzle → should show "Correct" or "Incorrect" badge
+- ⚠️ Test with multi-test puzzle → should show "X/Y Correct" with accuracy percentage
+
+## [4.11.3] - 2025-11-01
+### 🚀 Saturn Multi-Phase Streaming Fix
+
+**Root Cause**: Client-side EventSource was closing after EACH phase completion, treating `stream.complete` as session complete instead of phase complete. Saturn's multi-phase architecture (Phase 1 → Phase 2 → Phase 2.5 → Phase 3) requires the EventSource to remain open across all phases.
+
+**The Race Condition**:
+1. Phase 1 completes → underlying service calls `harness.end()` → `stream.complete` event fires
+2. Client closes EventSource in `stream.complete` handler
+3. Saturn service starts Phase 2 → EventSource already closed
+4. Server returns 200 but client can't receive events → "Request was aborted"
+
+**Server-Side Changes** ([saturnService.ts](server/services/saturnService.ts)):
+- Added phase tracking: calculates total phases upfront (1 + conditional Phase 2/2.5 + additional training + Phase 3)
+- Created `wrappedHarness` that intercepts `end()` calls from underlying services
+- Each phase now emits `stream.phase_complete` event (NOT `stream.complete`)
+- Only the final phase calls real `harness.end()` which emits `stream.complete`
+- All phase service calls now use `wrappedHarness` to prevent premature stream closure
+
+**Client-Side Changes** ([useSaturnProgress.ts](client/src/hooks/useSaturnProgress.ts)):
+- Added `stream.phase_complete` event handler that updates UI WITHOUT closing EventSource
+- Existing `stream.complete` handler now only fires on final completion
+- EventSource lifecycle: stays open across all phases, closes only on final completion or error
+
+**Validation Fix** ([systemPrompts.ts](server/services/prompts/systemPrompts.ts)):
+- Added `'saturn-multi-phase'` to `isSolverMode()` function to ensure proper validation
+- Prevents validation from being skipped if code changes to use `result.promptTemplateId`
+- Critical fix for ensuring Saturn results are always validated correctly
+
+**Multi-Test Puzzle Support** ([saturnService.ts](server/services/saturnService.ts)):
+- Extended Phase 3 to loop through **all test cases** instead of only the first one
+- Each test case gets its own prediction with continuation chaining
+- Added `multiplePredictedOutputs: true` flag when puzzles have multiple test cases
+- Added `multiTestResults` array containing predictions for all test cases
+- Maintains backward compatibility by keeping single `predictedOutput` field (uses first test)
+- Phase count calculation now includes all test cases for accurate progress tracking
+
+**UI Enhancements**:
+- Changed default Saturn model from GPT-5 Mini to **GPT-5 Nano** for cost optimization
+- Enhanced work table with phase history tracking (accumulates across all phases)
+- Integrated detailed status log into work table component
+- Color-coded log entries (errors in red, phase info in blue, completions in green)
+
+#### Verification
+- ⚠️ Manual Saturn multi-phase execution test required (requires live API credentials)
+- Test with both single-test and multi-test puzzles to verify all predictions are generated
+
+## [4.11.2] - 2025-11-01
+### 🔧 Saturn Grid Display Fix
+
+- Fixed Saturn Visual Solver to display grids correctly using `PuzzleGrid` component
+- **IDLE state**: Replaced `CompactPuzzleDisplay` with `PuzzleGridDisplay` for proper grid rendering
+- **RUNNING/DONE state**: Replaced `TinyGrid` with `PuzzleGrid` component with compact mode
+- Grids now render consistently with PuzzleExaminer using battle-tested components
+
+#### Verification
+- ✅ `npm run test` (build successful, no TypeScript errors)
+
+## [4.11.1] - 2025-11-01
+### 🛠️ Saturn streaming hardening
+
+- Stopped Saturn's status log from ingesting streaming reasoning/output chunks so the panel now reports only Python bridge events.
+- Added a `suppressInstructionsOnContinuation` flag to the Responses payload builder and enabled it for Saturn to keep Phase 2 requests from being aborted by duplicate instructions.
+
+## [4.11.0] - 2025-11-01
+### 🚀 Major UI Enhancements & Bug Fixes
+
+#### 🎨 Grover Search UI Redesign
+- Enhanced SearchVisualization component with clearer labels, empty states, and detailed status information
+- Added score trend line and improved legend to better visualize search progress
+- Redesigned advanced controls panel with more compact and organized layout
+- Added streaming modal view option during active searches for better real-time monitoring
+- Improved status display with more concise running/completed state indicators
+- Adjusted GroverModelSelect dimensions for optimal visual presentation
+
+#### 🛠️ Saturn Streaming Fixes
+- Fixed Saturn's streaming pipeline to send phase-specific prompts via the new `customUserPrompt` override
+- Each phase now only includes the intended training/test context instead of the full puzzle payload
+- Removed duplicate reasoning text from Saturn status log to keep live reasoning confined to the dedicated panel
+- Resolved Saturn system prompt regeneration conflict
+
+#### 🎨 UI/UX Improvements
+- Implemented ultra-compact layout for Puzzle Browser to maximize puzzle display space
+- Reduced all page margins and padding (px-1.5, p-3) for optimal content density
+- Decreased vertical spacing throughout UI (gap-10 → gap-2, space-y-6 → space-y-2)
+- Compressed filter controls and reference material sections with tighter spacing
+- Reduced title and text sizes for more compact presentation
+- Adjusted Saturn UI controls for better usability and consistency
+- Expanded Puzzle Browser to full viewport width by removing max-width constraints
+
+#### 🤖 Model Catalog Updates
+- Added Amazon Nova Premier v1 model with 1M token context window and reasoning capabilities
+- Added MiniMax M2 model with 196k token context window and updated pricing
+- Removed legacy models: Bytedance Seed OSS 36B and StepFun AI Step3
+- Updated model configuration metadata including pricing, context windows, and capabilities
+
+#### 🔧 TypeScript Fixes
+- Fixed Lucide icon prop typing issues in HighRiskModelsList component
+- Moved title props to wrapper divs to resolve TypeScript compilation errors
+
+#### Verification
+- ✅ `npm run check` (passes - TypeScript errors resolved)
+- ✅ Manual testing completed on Grover search visualization improvements
+- ✅ UI layout changes verified across different viewport sizes
+
+## [4.10.16] - 2025-11-01
+### 🚨 CRITICAL: Saturn prompt injection fix
+
+**ROOT CAUSE IDENTIFIED:** Even with Phase 2+ changes, `buildAnalysisPrompt` was STILL being called with the full task object, generating unwanted "solver" template prompts with all training examples. Then it tried to override with customUserPrompt, but the prompt builder logs showed it was using the generated template.
+
+**THE FIX:**
+- Added early return in `BaseAIService.buildPromptPackage()` when BOTH `customUserPrompt` AND `systemPromptOverride` are provided
+- Now skips `buildAnalysisPrompt()` entirely for Saturn continuation phases
+- Returns minimal PromptPackage directly with custom prompts
+- Prevents project's solver template from injecting training examples into Phase 2+ prompts
+
+**Evidence from logs:**
+```
+[Saturn] Phase 2 customUserPrompt length: 546  ← Our custom prompt
+[PromptBuilder] Building prompt for template: solver  ← UNWANTED!
+[PromptBuilder] Generated user prompt: 992 chars  ← NOT our 546 char prompt!
+```
+
+**Files changed:**
+- `server/services/base/BaseAIService.ts`: Early return for custom prompts
+
+#### Verification
+- Not run (requires live Saturn run to verify clean continuation)
+
+## [4.10.15] - 2025-11-01
+### 🔧 Saturn continuation fix + UI layout optimization
+
+**CRITICAL FIX: Phase 2+ continuation failure resolved**
+- Root cause: `systemPromptOverride` was being sent on ALL phases, but OpenAI Responses API requires continuations to send ONLY the new user message
+- Phase 1 (initial): Sends `systemPromptOverride` (Saturn's multi-phase system prompt) + `customUserPrompt` (Phase 1 specific instructions)
+- Phase 2+ (continuation): Sends ONLY `customUserPrompt` (phase-specific instructions) + `previousResponseId` + `suppressInstructionsOnContinuation: true`
+- This honors Saturn's custom phase-specific prompts while maintaining proper conversation chaining
+
+**UI Optimization:**
+- Collapsed SaturnMonitoringTable from large 6-cell grid to compact single-row status bar
+- Shows only essential info: Status badge, Phase, Progress, Images count
+- Frees up vertical space for Work Table (the critical monitoring view)
+- Removed redundant Puzzle ID and Log Lines count
+
+**Files changed:**
+- `server/services/saturnService.ts`: Conditional systemPromptOverride (Phase 1 only)
+- `client/src/components/saturn/SaturnMonitoringTable.tsx`: Compact single-row layout
+
+#### Verification
+- Not run (requires live Saturn run to verify continuation success)
+
+## [4.10.14] - 2025-11-01
+### 🐞 Saturn Phase 2 continuation debugging + temperature fix
+
+**Fixes:**
+- Frontend now only sends `temperature` parameter for Grok models (not GPT-5) - explicit conditional check prevents undefined behavior
+- Added comprehensive debug logging to Saturn service:
+  - Logs `providerResponseId` capture after Phase 1 with error if missing
+  - Logs Phase 2 continuation setup: previousResponseId, systemPromptOverride length, customUserPrompt length, suppressInstructionsOnContinuation flag
+  - Helps diagnose "Request was aborted" errors on continuation calls
+
+**Root cause investigation:**
+- Temperature parameter was being sent from frontend even for GPT-5 (though backend filtered it)
+- Phase 2 "Request was aborted" error needs diagnosis - logs will show if:
+  - providerResponseId is missing from Phase 1 response
+  - systemPromptOverride is malformed
+  - suppressInstructionsOnContinuation flag not reaching payloadBuilder
+
+#### Verification
+- Not run (requires live Saturn run to test continuation)
+
+## [4.10.13] - 2025-11-01
+### 🎨 Saturn visual solver complete redesign
+
+**Dual-layout architecture:**
+- **IDLE STATE** (before start): Giant centered "Start Visual Analysis" hero button, clean configuration cards for model/reasoning settings, expanded puzzle preview with 3 training examples visible, README-grounded context inline
+- **RUNNING STATE** (during/after): Compact header (back, title, model, stop), hidden reasoning controls (disabled anyway), monitoring-focused 3-column layout, expanded puzzle display (4 cols vs 3), custom TinyGrid-based puzzle section showing 2 training examples + all test cases with input/output pairs
+
+**Key improvements:**
+- Start button now unmissable hero action (was tiny top-right corner button)
+- Reasoning controls hide completely when running (eliminated wasted space)
+- Left sidebar expanded from 3 to 4 columns for better puzzle visibility
+- **Custom puzzle grid display** using TinyGrid directly for reliable rendering of training/test examples with clear labels
+- Training examples show input/output pairs side-by-side with proper borders and backgrounds
+- Test cases highlighted in blue with input + expected output grids visible
+- Defaulted reasoning effort to **Low** with conditional temperature/reasoning controls based on model provider
+- Adjusted Saturn streaming start logic to only send applicable parameters
+
+#### Verification
+- Not run (visual redesign + layout optimization)
+
+## [4.10.12] - 2025-11-01
+### 🛠️ Saturn streaming prompt corrections
+
+- Fixed Saturn's streaming pipeline to send phase-specific prompts via the new `customUserPrompt` override so each phase only includes the intended training/test context instead of the full puzzle payload.
+- Removed duplicate reasoning text from the Saturn status log to keep live reasoning confined to the dedicated panel.
+
+#### Verification
+- ⚠️ `npm run check` (fails on pre-existing HighRiskModelsList icon prop typing)
+
+## [4.10.11] - 2025-11-01
+### 🎨 UI/UX: Puzzle Browser ultra-compact layout
+
+- Reduced page margins to minimal 5px (px-1.5) to maximize puzzle display space
+- Compressed all section padding from p-6 to p-3 (filters, reference material, results, working notes)
+- Reduced vertical spacing throughout: gap-10 → gap-2, header spacing reduced to space-y-2
+- Compressed filter section: gap-4 → gap-2, gap-1.5 → gap-1 on all filter controls
+- Minimized reference material section: reduced grid gaps (gap-6 → gap-3), list spacing (space-y-2 → space-y-1), and internal margins
+- Reduced title size: h1 from text-3xl/4xl to text-2xl/3xl
+- Tightened puzzle grid spacing: gap-4 → gap-2
+- Overall result: Maximum vertical space now dedicated to displaying puzzle cards
+
+#### Verification
+- Not run (visual optimization)
 
 ## [4.10.10] - 2025-11-01
 ### 🎨 UI/UX: Puzzle Browser full-width layout
 
 - Removed the max-width container and side padding enforcing margins on the Puzzle Browser so the page now spans the full viewport width as requested.
+- Removed inappropriate description text that leaked from internal instructions.
 
 #### Verification
 - Not run (visual change)
