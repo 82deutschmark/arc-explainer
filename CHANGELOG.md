@@ -1,5 +1,14 @@
 # CHANGELOG - Uses semantic versioning (MAJOR.MINOR.PATCH)
 
+# [4.12.7] - 2025-11-03
+### 🧮 Puzzle Examiner Correctness Filtering
+
+- Normalized boolean persistence in `ExplanationRepository` so correct/incorrect filters compute counts reliably even when legacy records omit flags.
+- Updated backend summary queries to treat nullable correctness fields consistently, restoring the "Correct"/"Incorrect" toggles on Puzzle Examiner and related views.
+
+#### Verification
+- ⚠️ Not run (backend persistence/query change)
+
 # [4.12.6] - 2025-11-02
 ### 🔄 Model Comparison Auto-Refresh
 
