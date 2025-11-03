@@ -1,5 +1,14 @@
 # CHANGELOG - Uses semantic versioning (MAJOR.MINOR.PATCH)
 
+# [4.12.6] - 2025-11-02
+### 🔄 Model Comparison Auto-Refresh
+
+- Added versioned caching and automatic refresh for the Model Comparison page so cached snapshots are invalidated and a new `/api/metrics/compare` request runs after deployment.
+- Cleared persisted comparison data on errors to prevent stale/mismatched metrics from reloading.
+
+#### Verification
+- ⚠️ Not run (frontend behaviour change)
+
 # [4.12.5] - 2025-11-02
 ### 🧮 Model Comparison Latest-Attempt Alignment
 
