@@ -26,13 +26,21 @@ export function normalizeModelName(modelName: string): string {
 
   let normalized = modelName.trim();
 
+  // Preserve attempt-level variants. Temporarily strip the suffix so we can
+  // normalize the base model identifier, then restore it afterwards.
+  const attemptSuffixMatch = normalized.match(/-attempt\d+$/i);
+  const attemptSuffix = attemptSuffixMatch ? attemptSuffixMatch[0] : '';
+  if (attemptSuffix) {
+    normalized = normalized.slice(0, -attemptSuffix.length);
+  }
+
   // Remove common suffixes that don't affect the core model identity
   // Handle both colon-style (:free) and hyphen-style (-alpha) suffixes
-  normalized = normalized.replace(/:free$/, '');
-  normalized = normalized.replace(/:beta$/, '');
-  normalized = normalized.replace(/:alpha$/, '');
-  normalized = normalized.replace(/-beta$/, '');
-  normalized = normalized.replace(/-alpha$/, '');
+  normalized = normalized.replace(/:free$/i, '');
+  normalized = normalized.replace(/:beta$/i, '');
+  normalized = normalized.replace(/:alpha$/i, '');
+  normalized = normalized.replace(/-beta$/i, '');
+  normalized = normalized.replace(/-alpha$/i, '');
 
   // Handle specific model name aliases and variants
 
@@ -47,7 +55,7 @@ export function normalizeModelName(modelName: string): string {
     normalized = 'x-ai/grok-4-fast';
   }
 
-  return normalized;
+  return attemptSuffix ? `${normalized}${attemptSuffix}` : normalized;
 }
 
 /**

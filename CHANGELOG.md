@@ -6,6 +6,11 @@
 - Derived Saturn gallery metadata on the client by parsing existing filename conventions and grid dimensions, enabling precise Training/Test/Prediction tagging without backend changes.
 - Updated `SaturnImageGallery` to surface variant badges and subtitles so users can immediately see which puzzle grid each generated image corresponds to.
 
+### ♻️ Saturn Structured Output Deferral
+
+- Added `structuredOutputDisabled` option to shared `ServiceOptions` so callers can bypass schema enforcement when needed.
+- Saturn now disables JSON schema requirements during analysis phases and re-enables them for Phase 3 predictions, preventing conflicts between qualitative prompts and strict `arc_analysis` output.
+
 #### Verification
 - ⚠️ Not run (UI labeling only)
 

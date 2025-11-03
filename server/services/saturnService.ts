@@ -239,6 +239,7 @@ Always look for:
         suppressInstructionsOnContinuation: true,
         previousResponseId: undefined, // First phase has no previous response
         customUserPrompt: phase1Prompt,
+        structuredOutputDisabled: true,
       };
       
       logger.service(this.provider, `Phase 1: systemPromptOverride length=${saturnSystemPrompt.length}, customUserPrompt length=${phase1Prompt.length}`);
@@ -323,6 +324,7 @@ Always look for:
           suppressInstructionsOnContinuation: true,
           previousResponseId,
           customUserPrompt: phase2Prompt,
+          structuredOutputDisabled: true,
           // NO systemPromptOverride for continuation!
         };
 
@@ -397,6 +399,7 @@ Always look for:
           suppressInstructionsOnContinuation: true,
           previousResponseId,
           customUserPrompt: phase25Prompt,
+          structuredOutputDisabled: true,
         };
 
         const phase25Response = wrappedHarness
@@ -469,6 +472,7 @@ Always look for:
           suppressInstructionsOnContinuation: true,
           previousResponseId,
           customUserPrompt: additionalPrompt,
+          structuredOutputDisabled: true,
         };
 
         const additionalResponse = wrappedHarness
@@ -551,6 +555,7 @@ Always look for:
           suppressInstructionsOnContinuation: true,
           previousResponseId,
           customUserPrompt: phase3Prompt,
+          structuredOutputDisabled: false,
         };
 
         const phase3Response = wrappedHarness
