@@ -1,5 +1,28 @@
 # CHANGELOG - Uses semantic versioning (MAJOR.MINOR.PATCH)
 
+# [4.12.4] - 2025-11-02
+### 🧮 Model Comparison Accuracy Fix
+
+- Preserved attempt-specific suffixes during model name normalization so variants like `gpt-5-pro-2025-10-06-attempt1` remain distinct in analytics.
+- Updated model comparison aggregation to respect raw model names, preventing cross-attempt stat merging and aligning top-level accuracy with dataset drilldowns.
+
+#### Verification
+- ⚠️ Not run (logic-only backend patch)
+
+# [4.12.3] - 2025-11-02
+### 🖼️ Saturn Gallery Context Labels
+
+- Derived Saturn gallery metadata on the client by parsing existing filename conventions and grid dimensions, enabling precise Training/Test/Prediction tagging without backend changes.
+- Updated `SaturnImageGallery` to surface variant badges and subtitles so users can immediately see which puzzle grid each generated image corresponds to.
+
+### ♻️ Saturn Structured Output Deferral
+
+- Added `structuredOutputDisabled` option to shared `ServiceOptions` so callers can bypass schema enforcement when needed.
+- Saturn now disables JSON schema requirements during analysis phases and re-enables them for Phase 3 predictions, preventing conflicts between qualitative prompts and strict `arc_analysis` output.
+
+#### Verification
+- ⚠️ Not run (UI labeling only)
+
 # [4.12.2] - 2025-11-02
 ### ♻️ Saturn Reasoning Accordion Default
 
