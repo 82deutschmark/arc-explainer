@@ -1,4 +1,3 @@
-  const [hasRefreshedFromCache, setHasRefreshedFromCache] = useState(false);
 /**
  * Author: Claude Code using Sonnet 4
  * Date: 2025-10-22T00:00:00Z
