@@ -467,10 +467,10 @@ export class MetricsRepository extends BaseRepository {
     feedbackMap: ModelFeedbackMap,
     costMap: ModelCostMap
   ): ComprehensiveDashboard['modelComparisons'] {
-    const normalizedAccuracy = this.normalizeAccuracyMap(accuracyMap);
-    const normalizedTrustworthiness = this.normalizeTrustworthinessMap(trustworthinessMap);
-    const normalizedFeedback = this.normalizeFeedbackMap(feedbackMap);
-    const normalizedCost = this.normalizeCostMap(costMap);
+    const normalizedAccuracy = this.normalizeAccuracyMap(accuracyMap, true);
+    const normalizedTrustworthiness = this.normalizeTrustworthinessMap(trustworthinessMap, true);
+    const normalizedFeedback = this.normalizeFeedbackMap(feedbackMap, true);
+    const normalizedCost = this.normalizeCostMap(costMap, true);
 
     const allModelNames = new Set<string>([
       ...normalizedAccuracy.keys(),
@@ -514,12 +514,13 @@ export class MetricsRepository extends BaseRepository {
   }
 
   private normalizeAccuracyMap(
-    accuracyMap: ModelAccuracyMap
+    accuracyMap: ModelAccuracyMap,
+    preserveRawNames: boolean = false
   ): Map<string, { accuracy: number; attempts: number; correctPredictions: number }> {
     const normalized = new Map<string, { accuracy: number; attempts: number; correctPredictions: number }>();
 
     for (const [rawName, stats] of Object.entries(accuracyMap)) {
-      const modelName = normalizeModelName(rawName);
+      const modelName = preserveRawNames ? rawName : normalizeModelName(rawName);
       const attempts = stats?.attempts ?? 0;
       const correctPredictions = stats?.correctPredictions ?? 0;
 
@@ -546,12 +547,13 @@ export class MetricsRepository extends BaseRepository {
   }
 
   private normalizeTrustworthinessMap(
-    trustworthinessMap: ModelTrustworthinessMap
+    trustworthinessMap: ModelTrustworthinessMap,
+    preserveRawNames: boolean = false
   ): Map<string, { trustworthiness: number; attempts: number; avgConfidence: number }> {
     const normalized = new Map<string, { trustworthiness: number; attempts: number; avgConfidence: number }>();
 
     for (const [rawName, stats] of Object.entries(trustworthinessMap)) {
-      const modelName = normalizeModelName(rawName);
+      const modelName = preserveRawNames ? rawName : normalizeModelName(rawName);
       const attempts = stats?.attempts ?? 0;
       const trustworthiness = stats?.trustworthiness ?? 0;
       const avgConfidence = stats?.avgConfidence ?? 0;
@@ -586,7 +588,8 @@ export class MetricsRepository extends BaseRepository {
   }
 
   private normalizeFeedbackMap(
-    feedbackMap: ModelFeedbackMap
+    feedbackMap: ModelFeedbackMap,
+    preserveRawNames: boolean = false
   ): Map<string, { userSatisfaction: number; feedbackCount: number; helpfulCount: number; notHelpfulCount: number }> {
     const normalized = new Map<
       string,
@@ -594,7 +597,7 @@ export class MetricsRepository extends BaseRepository {
     >();
 
     for (const [rawName, stats] of Object.entries(feedbackMap)) {
-      const modelName = normalizeModelName(rawName);
+      const modelName = preserveRawNames ? rawName : normalizeModelName(rawName);
       const feedbackCount = stats?.feedbackCount ?? 0;
       const helpfulCount = stats?.helpfulCount ?? 0;
       const notHelpfulCount = stats?.notHelpfulCount ?? 0;
@@ -625,12 +628,13 @@ export class MetricsRepository extends BaseRepository {
   }
 
   private normalizeCostMap(
-    costMap: ModelCostMap
+    costMap: ModelCostMap,
+    preserveRawNames: boolean = false
   ): Map<string, { totalCost: number; avgCost: number; attempts: number }> {
     const normalized = new Map<string, { totalCost: number; avgCost: number; attempts: number }>();
 
     for (const [rawName, stats] of Object.entries(costMap)) {
-      const modelName = normalizeModelName(rawName);
+      const modelName = preserveRawNames ? rawName : normalizeModelName(rawName);
       const attempts = stats?.attempts ?? 0;
       const totalCost = stats?.totalCost ?? 0;
       const avgCost = stats?.avgCost ?? 0;
