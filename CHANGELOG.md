@@ -1,5 +1,14 @@
 # CHANGELOG - Uses semantic versioning (MAJOR.MINOR.PATCH)
 
+# [4.12.5] - 2025-11-02
+### 🧮 Model Comparison Latest-Attempt Alignment
+
+- Updated `/api/metrics/compare` to mirror drilldown behavior by aggregating only the most recent attempt per puzzle/model, producing 1:1 accuracy figures between the Model table and dataset drilldown cards.
+- Recomputed per-model averages (cost, speed, confidence) from that deduped attempt set so retry history no longer skews analytics.
+
+#### Verification
+- ⚠️ Not run (backend aggregation change)
+
 # [4.12.4] - 2025-11-02
 ### 🧮 Model Comparison Accuracy Fix
 

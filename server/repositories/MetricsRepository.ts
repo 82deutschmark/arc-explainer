@@ -985,36 +985,92 @@ export class MetricsRepository extends BaseRepository {
     try {
       const totalPuzzlesInDataset = puzzleIds.length;
 
-      // Query per-model stats using MetricsQueryBuilder patterns
-      const query = `
-        SELECT
+      // Fetch the most recent attempt per puzzle/model (matches drilldown logic)
+      const attemptQuery = `
+        SELECT DISTINCT ON (e.puzzle_id, e.model_name)
+          e.puzzle_id,
           e.model_name,
-          COUNT(DISTINCT e.puzzle_id) as attempts,
-          ${MetricsQueryBuilder.correctPredictionsCount()} as correct_count,
-          COUNT(*) FILTER (WHERE NOT (${MetricsQueryBuilder.correctnessCalculation()} = 1)) as incorrect_count,
-          ${MetricsQueryBuilder.accuracyPercentage(
-            MetricsQueryBuilder.correctPredictionsCount(),
-            'COUNT(DISTINCT e.puzzle_id)'
-          )} as accuracy_percentage,
-          AVG(e.api_processing_time_ms) as avg_processing_time,
-          SUM(e.estimated_cost) as total_cost,
-          AVG(e.estimated_cost) as avg_cost_per_attempt,
-          AVG(e.confidence) as avg_confidence,
-          AVG(CASE WHEN (${MetricsQueryBuilder.correctnessCalculation()} = 1) THEN e.confidence END) as confidence_when_correct
+          (e.is_prediction_correct = TRUE OR e.multi_test_all_correct = TRUE) as is_correct,
+          e.api_processing_time_ms,
+          e.estimated_cost,
+          e.confidence
         FROM explanations e
         WHERE e.model_name = ANY($1::text[])
           AND e.puzzle_id = ANY($2::text[])
           AND ${MetricsQueryBuilder.modelFilter()}
           AND ${MetricsQueryBuilder.solverAttemptFilter()}
-        GROUP BY e.model_name
+        ORDER BY e.puzzle_id, e.model_name, e.created_at DESC
       `;
 
-      const result = await this.query(query, [models, puzzleIds]);
+      const attemptResult = await this.query(attemptQuery, [models, puzzleIds]);
+
+      type ModelAccumulator = {
+        attempts: number;
+        correct: number;
+        incorrect: number;
+        totalCost: number;
+        processingTimeSum: number;
+        processingTimeCount: number;
+        confidenceSum: number;
+        confidenceCount: number;
+        correctConfidenceSum: number;
+        correctConfidenceCount: number;
+      };
+
+      const statsByModel = new Map<string, ModelAccumulator>();
+
+      for (const row of attemptResult.rows) {
+        const modelName: string = row.model_name;
+        const isCorrect = row.is_correct === true;
+        const processingTime = row.api_processing_time_ms !== null ? parseFloat(row.api_processing_time_ms) || 0 : 0;
+        const cost = row.estimated_cost !== null ? parseFloat(row.estimated_cost) || 0 : 0;
+        const confidence = row.confidence !== null ? parseFloat(row.confidence) : null;
+
+        if (!statsByModel.has(modelName)) {
+          statsByModel.set(modelName, {
+            attempts: 0,
+            correct: 0,
+            incorrect: 0,
+            totalCost: 0,
+            processingTimeSum: 0,
+            processingTimeCount: 0,
+            confidenceSum: 0,
+            confidenceCount: 0,
+            correctConfidenceSum: 0,
+            correctConfidenceCount: 0
+          });
+        }
+
+        const stats = statsByModel.get(modelName)!;
+        stats.attempts += 1;
+        if (isCorrect) {
+          stats.correct += 1;
+        } else {
+          stats.incorrect += 1;
+        }
+
+        stats.totalCost += cost;
+
+        if (!Number.isNaN(processingTime)) {
+          stats.processingTimeSum += processingTime;
+          stats.processingTimeCount += 1;
+        }
+
+        if (confidence !== null && !Number.isNaN(confidence)) {
+          stats.confidenceSum += confidence;
+          stats.confidenceCount += 1;
+
+          if (isCorrect) {
+            stats.correctConfidenceSum += confidence;
+            stats.correctConfidenceCount += 1;
+          }
+        }
+      }
 
       return models.map(modelName => {
-        const row = result.rows.find(r => r.model_name === modelName);
+        const stats = statsByModel.get(modelName);
 
-        if (!row) {
+        if (!stats) {
           // Model has no attempts on this dataset
           return {
             modelName,
@@ -1034,11 +1090,20 @@ export class MetricsRepository extends BaseRepository {
           };
         }
 
-        const attempts = parseInt(row.attempts) || 0;
-        const correctCount = parseInt(row.correct_count) || 0;
-        const incorrectCount = parseInt(row.incorrect_count) || 0;
-        const totalCost = parseFloat(row.total_cost) || 0;
+        const attempts = stats.attempts;
+        const correctCount = stats.correct;
+        const incorrectCount = stats.incorrect;
+        const totalCost = stats.totalCost;
         const costPerCorrect = correctCount > 0 ? totalCost / correctCount : null;
+        const avgProcessingTime = stats.processingTimeCount > 0
+          ? stats.processingTimeSum / stats.processingTimeCount
+          : 0;
+        const avgConfidence = stats.confidenceCount > 0
+          ? stats.confidenceSum / stats.confidenceCount
+          : 0;
+        const confidenceWhenCorrect = stats.correctConfidenceCount > 0
+          ? stats.correctConfidenceSum / stats.correctConfidenceCount
+          : null;
 
         return {
           modelName,
@@ -1048,15 +1113,13 @@ export class MetricsRepository extends BaseRepository {
           correctCount,
           incorrectCount,
           notAttemptedCount: totalPuzzlesInDataset - attempts,
-          accuracyPercentage: this.round(parseFloat(row.accuracy_percentage) || 0, 2),
-          avgProcessingTime: this.round(parseFloat(row.avg_processing_time) || 0, 0),
+          accuracyPercentage: attempts > 0 ? this.round((correctCount / attempts) * 100, 2) : 0,
+          avgProcessingTime: this.round(avgProcessingTime, 0),
           totalCost: this.round(totalCost, 6),
-          avgCostPerAttempt: this.round(parseFloat(row.avg_cost_per_attempt) || 0, 6),
+          avgCostPerAttempt: attempts > 0 ? this.round(totalCost / attempts, 6) : 0,
           costPerCorrectAnswer: costPerCorrect !== null ? this.round(costPerCorrect, 6) : null,
-          avgConfidence: this.round(parseFloat(row.avg_confidence) || 0, 2),
-          confidenceWhenCorrect: row.confidence_when_correct
-            ? this.round(parseFloat(row.confidence_when_correct), 2)
-            : null
+          avgConfidence: this.round(avgConfidence, 2),
+          confidenceWhenCorrect: confidenceWhenCorrect !== null ? this.round(confidenceWhenCorrect, 2) : null
         };
       });
     } catch (error) {
