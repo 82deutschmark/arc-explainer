@@ -59,6 +59,7 @@ export interface ServiceOptions {
   systemPromptOverride?: string; // Override system prompt generation entirely
   customUserPrompt?: string; // Override user prompt generation for specialized flows
   suppressInstructionsOnContinuation?: boolean; // Skip instructions when chaining previous responses
+  structuredOutputDisabled?: boolean; // Allow callers to suppress schema enforcement
 }
 
 export interface TokenUsage {
@@ -274,14 +275,17 @@ export abstract class BaseAIService {
     }
 
     // PHASE 12: Determine if this provider/model uses structured output
-    const useStructuredOutput = modelKey
+    const supportsStructuredOutput = modelKey
       ? this.supportsStructuredOutput(modelKey)
       : false;
+    const useStructuredOutput = serviceOpts.structuredOutputDisabled
+      ? false
+      : supportsStructuredOutput;
 
     // Merge into options for prompt builder
     const enhancedOptions: PromptOptions = {
       ...options,
-      useStructuredOutput: useStructuredOutput ?? options?.useStructuredOutput
+      useStructuredOutput
     };
 
     // PHASE 1-2: Pass serviceOpts to enable context-aware continuation prompts
