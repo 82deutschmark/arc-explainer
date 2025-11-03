@@ -1,3 +1,4 @@
+  const [hasRefreshedFromCache, setHasRefreshedFromCache] = useState(false);
 /**
  * Author: Claude Code using Sonnet 4
  * Date: 2025-10-22T00:00:00Z
@@ -16,6 +17,13 @@ import { useAvailableModels } from '@/hooks/useModelDatasetPerformance';
 import { ModelComparisonResult } from './AnalyticsOverview';
 
 const MAX_MODELS = 4;
+const COMPARISON_CACHE_KEY = 'arc-comparison-data';
+const COMPARISON_CACHE_VERSION = '2025-11-02-model-comparison-refresh';
+
+interface CachedComparisonEnvelope {
+  version: string;
+  data: ModelComparisonResult;
+}
 
 export default function ModelComparisonPage() {
   const [, navigate] = useLocation();
@@ -25,28 +33,43 @@ export default function ModelComparisonPage() {
   const [inlineError, setInlineError] = useState<string | null>(null);
   const [selectedModels, setSelectedModels] = useState<string[]>([]);
   const [modelToAdd, setModelToAdd] = useState('');
+  const [hasRefreshedFromCache, setHasRefreshedFromCache] = useState(false);
 
   const [comparisonData, setComparisonData] = useState<ModelComparisonResult | null>(() => {
-    const stateData = window.history.state?.comparisonData as ModelComparisonResult | null;
-    if (stateData?.summary && Array.isArray(stateData.details)) {
-      try {
-        localStorage.setItem('arc-comparison-data', JSON.stringify(stateData));
-      } catch (error) {
-        console.warn('Failed to persist comparison data from history state.', error);
+    const envelopeFromHistory = window.history.state?.comparisonData as CachedComparisonEnvelope | null;
+    if (envelopeFromHistory?.version === COMPARISON_CACHE_VERSION) {
+      const stateData = envelopeFromHistory.data;
+      if (stateData?.summary && Array.isArray(stateData.details)) {
+        try {
+          localStorage.setItem(
+            COMPARISON_CACHE_KEY,
+            JSON.stringify({ version: COMPARISON_CACHE_VERSION, data: stateData })
+          );
+        } catch (error) {
+          console.warn('Failed to persist comparison data from history state.', error);
+        }
+        return stateData;
       }
-      return stateData;
     }
 
     try {
-      const stored = localStorage.getItem('arc-comparison-data');
+      const stored = localStorage.getItem(COMPARISON_CACHE_KEY);
       if (stored) {
-        const parsed = JSON.parse(stored);
-        if (parsed?.summary && Array.isArray(parsed.details)) {
-          return parsed;
+        const parsed = JSON.parse(stored) as CachedComparisonEnvelope | null;
+        if (
+          parsed?.version === COMPARISON_CACHE_VERSION &&
+          parsed.data?.summary &&
+          Array.isArray(parsed.data.details)
+        ) {
+          return parsed.data;
         }
+
+        // Version mismatch – clear stale cache
+        localStorage.removeItem(COMPARISON_CACHE_KEY);
       }
     } catch (error) {
       console.warn('Failed to read comparison data from localStorage.', error);
+      localStorage.removeItem(COMPARISON_CACHE_KEY);
     }
 
     return null;
@@ -112,7 +135,15 @@ export default function ModelComparisonPage() {
         succeeded = true;
 
         try {
-          localStorage.setItem('arc-comparison-data', JSON.stringify(result.data));
+          const envelope: CachedComparisonEnvelope = {
+            version: COMPARISON_CACHE_VERSION,
+            data: result.data,
+          };
+          localStorage.setItem(COMPARISON_CACHE_KEY, JSON.stringify(envelope));
+          window.history.replaceState(
+            { ...window.history.state, comparisonData: envelope },
+            document.title
+          );
         } catch (storageError) {
           console.warn('Failed to persist comparison data.', storageError);
         }
@@ -125,6 +156,15 @@ export default function ModelComparisonPage() {
           setInlineError(message);
         }
         console.error('Comparison error:', error);
+        try {
+          localStorage.removeItem(COMPARISON_CACHE_KEY);
+          window.history.replaceState(
+            { ...window.history.state, comparisonData: null },
+            document.title
+          );
+        } catch (cleanupError) {
+          console.warn('Failed to clear cached comparison data after error.', cleanupError);
+        }
       } finally {
         if (mode === 'initial') {
           setLoadingInitial(false);
@@ -170,6 +210,25 @@ export default function ModelComparisonPage() {
   }, [comparisonData]);
 
   const dataset = comparisonData?.summary?.dataset ?? null;
+
+  useEffect(() => {
+    if (!comparisonData || hasRefreshedFromCache) {
+      return;
+    }
+
+    const datasetName = comparisonData.summary?.dataset;
+    const modelsToRefresh = comparisonData.summary?.modelPerformance
+      ?.map((item) => item.modelName)
+      .filter((name): name is string => Boolean(name && name.trim())) ?? [];
+
+    if (!datasetName || modelsToRefresh.length === 0) {
+      setHasRefreshedFromCache(true);
+      return;
+    }
+
+    setHasRefreshedFromCache(true);
+    void requestComparisonData(modelsToRefresh, datasetName, 'update');
+  }, [comparisonData, hasRefreshedFromCache, requestComparisonData]);
 
   const addableModels = useMemo(
     () =>
