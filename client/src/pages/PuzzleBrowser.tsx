@@ -351,7 +351,7 @@ export default function PuzzleBrowser() {
             </div>
 
             <p className="mt-2 text-xs text-slate-500">
-              Acknowledgement: Simon Strandgaard (@neoneye) continues to provide thoughtful feedback on the ARC tooling ecosystem.
+              Special Acknowledgement: Simon Strandgaard (@neoneye) for his invaluable support, feedback, and collection of resources.
             </p>
           </section>
         </header>
