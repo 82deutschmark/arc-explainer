@@ -11,6 +11,9 @@
 ### 🪪 Metadata Refresh
 - Updated global title and social preview descriptions to position ARC Explainer as the go-to hub for ARC 1 & 2 knowledge with freshly added ARC-AGI-3 coverage.
 
+### 🐳 Docker Build Diagnostics
+- Hardened post-build verification in the Dockerfile to tolerate missing standalone CSS assets while still inspecting generated bundles.
+
 ### ℹ️ Developer Note
 - After clone or pull: run `git submodule update --init --recursive`.
 
