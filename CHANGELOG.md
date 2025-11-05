@@ -5829,3 +5829,9 @@ To enable conversation chaining:
 
 ## 2025-10-31
 - Docs: Added `docs/31OctDesign.md` specifying a CSS-only, look-only restyle for solver buttons (no structural/behavioral changes). Author: OpenAI Codex Agent.
+
+## 2025-11-05
+- Added Git submodule `external/ARC3-solution` pointing to https://github.com/82deutschmark/ARC3-solution branch `nov4`. Purpose: read-only reference for ARC3 solver code.
+
+## 2025-11-05
+- Added Git submodule `external/ARC-AGI-3-ClaudeCode-SDK` pointing to https://github.com/ThariqS/ARC-AGI-3-ClaudeCode-SDK. Purpose: read-only SDK for ARC-AGI-3 CLI interactions and Claude Code automation.
