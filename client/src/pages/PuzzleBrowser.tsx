@@ -315,6 +315,17 @@ export default function PuzzleBrowser() {
                   </li>
                   <li>
                     <a
+                      href="https://cdg.openai.nl/"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="group inline-flex items-center gap-2 text-slate-200 hover:text-sky-300"
+                    >
+                      Synthetic Data
+                      <ExternalLink className="h-3 w-3 text-slate-500 group-hover:text-sky-300" />
+                    </a>
+                  </li>
+                  <li>
+                    <a
                       href="https://github.com/neoneye/arc-notes"
                       target="_blank"
                       rel="noopener noreferrer"
