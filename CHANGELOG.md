@@ -1,5 +1,71 @@
 # CHANGELOG - Uses semantic versioning (MAJOR.MINOR.PATCH)
 
+# [5.0.1] - 2025-11-05
+### 🔗 External Integrations (Submodules)
+- Added Git submodule `external/ARC3-solution` (branch `nov4`) — read-only reference for ARC3 solver code; nested submodule initialized.
+- Added Git submodule `external/ARC-AGI-3-ClaudeCode-SDK` — read-only SDK for ARC‑AGI‑3 CLI interactions and Claude Code automation.
+
+### 🎯 ARC-AGI-3 Landing Page
+- Highlighted preview champion **StochasticGoose** with quick links to the recap article, public repository, and HOW_IT_WORKS explainer so researchers can jump straight into top-performing strategies.
+
+### ℹ️ Developer Note
+- After clone or pull: run `git submodule update --init --recursive`.
+
+
+# [5.0.0] - 2025-11-05
+## 🎮 Major Feature: ARC-AGI-3 Integration
+
+**Breaking Paradigm**: Introduced support for ARC-AGI-3, the Interactive Reasoning Benchmark for AI agents. Unlike ARC 1 & 2's static puzzle-solving, ARC-AGI-3 is a game-based, agent-driven evaluation system where AI systems learn through exploration and interaction.
+
+### New Features
+
+- **New Route**: Added `/arc3` route for ARC-AGI-3 landing page
+- **ARC3Browser Component**: Created comprehensive landing page with:
+  - Educational content explaining ARC-AGI-3 vs ARC 1/2 differences
+  - Links to official resources (three.arcprize.org, docs.arcprize.org, arcprize.org/arc-agi/3/)
+  - Future-ready placeholders for:
+    - Games Browser (list available games)
+    - Leaderboard (agent rankings)
+    - Scorecard Viewer (performance metrics)
+    - Replay Viewer (step-by-step playback)
+  - Reference materials and documentation links
+- **Navigation**: Added "ARC-AGI-3" link to main navigation menu with Gamepad2 icon
+
+### Architecture
+
+- **Complete Isolation**: ARC-AGI-3 features are intentionally separated from ARC 1/2 puzzle code
+- **No Shared Components**: Uses only layout components (PageLayout, AppHeader), no puzzle-related components
+- **SRP Compliance**: Single responsibility - dedicated page for ARC-AGI-3 information
+- **Extensible Design**: Clear placeholder structure for upcoming API integration features
+
+### Files Created
+
+- `client/src/pages/ARC3Browser.tsx` - Main ARC-AGI-3 landing page with CLAUDE.md header
+
+### Files Modified
+
+- `client/src/App.tsx` - Added `/arc3` route and import
+- `client/src/components/layout/AppNavigation.tsx` - Added navigation item with Gamepad2 icon
+
+### Why Major Version (5.0.0)?
+
+This represents a fundamental expansion of the application's scope beyond static puzzle analysis into interactive agent-based benchmarking. While backward compatible with existing functionality, it introduces a new paradigm and feature category that warrants major version bump.
+
+### Future Development
+
+Upcoming features for ARC-AGI-3 integration:
+- API client for three.arcprize.org
+- Game visualization (64×64 grids, 16 colors)
+- Action recording and playback
+- Scorecard tracking and display
+- Leaderboard integration
+
+#### Verification
+- ✅ Build successful (no errors)
+- ✅ Route accessible at `/arc3`
+- ✅ Navigation link functional
+- ⚠️ Manual testing recommended for UI/UX validation
+
 # [4.12.6] - 2025-11-02
 ### 🔄 Model Comparison Auto-Refresh
 
@@ -5830,8 +5896,3 @@ To enable conversation chaining:
 ## 2025-10-31
 - Docs: Added `docs/31OctDesign.md` specifying a CSS-only, look-only restyle for solver buttons (no structural/behavioral changes). Author: OpenAI Codex Agent.
 
-## 2025-11-05
-- Added Git submodule `external/ARC3-solution` pointing to https://github.com/82deutschmark/ARC3-solution branch `nov4`. Purpose: read-only reference for ARC3 solver code.
-
-## 2025-11-05
-- Added Git submodule `external/ARC-AGI-3-ClaudeCode-SDK` pointing to https://github.com/ThariqS/ARC-AGI-3-ClaudeCode-SDK. Purpose: read-only SDK for ARC-AGI-3 CLI interactions and Claude Code automation.
