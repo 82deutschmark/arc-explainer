@@ -8,6 +8,9 @@
 ### 🎯 ARC-AGI-3 Landing Page
 - Highlighted preview champion **StochasticGoose** with quick links to the recap article, public repository, and HOW_IT_WORKS explainer so researchers can jump straight into top-performing strategies.
 
+### 🪪 Metadata Refresh
+- Updated global title and social preview descriptions to position ARC Explainer as the go-to hub for ARC 1 & 2 knowledge with freshly added ARC-AGI-3 coverage.
+
 ### ℹ️ Developer Note
 - After clone or pull: run `git submodule update --init --recursive`.
 
