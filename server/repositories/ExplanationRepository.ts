@@ -57,52 +57,52 @@ export class ExplanationRepository extends BaseRepository implements IExplanatio
         data.solvingStrategy || '',
         Array.isArray(data.hints) ? data.hints : [],
         this.normalizeConfidence(data.confidence),
-        data.modelName || null,
+        data.modelName ?? null,
         this.processReasoningLog(data.reasoningLog),
         !!data.reasoningLog,
         this.safeJsonStringify(data.reasoningItems),
-        data.apiProcessingTimeMs || null,
-        data.estimatedCost || null,
-        data.temperature || null,
-        data.reasoningEffort || null,
-        data.reasoningVerbosity || null,
-        data.reasoningSummaryType || null,
-        data.inputTokens || null,
-        data.outputTokens || null,
-        data.reasoningTokens || null,
-        data.totalTokens || null,
+        data.apiProcessingTimeMs ?? null,
+        data.estimatedCost ?? null,
+        data.temperature ?? null,
+        data.reasoningEffort ?? null,
+        data.reasoningVerbosity ?? null,
+        data.reasoningSummaryType ?? null,
+        data.inputTokens ?? null,
+        data.outputTokens ?? null,
+        data.reasoningTokens ?? null,
+        data.totalTokens ?? null,
         this.safeJsonStringify(this.sanitizeGridData(data.predictedOutputGrid)),
         this.safeJsonStringify(data.multiplePredictedOutputs),
         this.safeJsonStringify(data.multiTestResults),
-        data.saturnSuccess || null,
+        data.saturnSuccess ?? null,
         this.safeJsonStringify(data.saturnImages),
         this.safeJsonStringify(data.saturnLog),
         this.safeJsonStringify(data.saturnEvents),
         // Alien communication fields
-        data.alienMeaning || null,
-        data.alienMeaningConfidence || null,
+        data.alienMeaning ?? null,
+        data.alienMeaningConfidence ?? null,
         // Validation fields using actual schema column names
-        data.isPredictionCorrect || null,
-        data.trustworthinessScore || null,
+        data.isPredictionCorrect ?? null,
+        data.trustworthinessScore ?? null,
         // Multi-test fields using actual schema column names
-        data.multiTestAllCorrect || null,
-        data.multiTestAverageAccuracy || null,
-        data.hasMultiplePredictions || null,
+        data.multiTestAllCorrect ?? null,
+        data.multiTestAverageAccuracy ?? null,
+        data.hasMultiplePredictions ?? null,
         // NEW: Prompt tracking fields for full traceability
-        data.systemPromptUsed || null,
-        data.userPromptUsed || null,
-        data.promptTemplateId || null,
-        data.customPromptText || null,
+        data.systemPromptUsed ?? null,
+        data.userPromptUsed ?? null,
+        data.promptTemplateId ?? null,
+        data.customPromptText ?? null,
         // CRITICAL: Raw API response fields for debugging expensive failures
-        data.providerResponseId || null,
+        data.providerResponseId ?? null,
         this.safeJsonStringify(data.providerRawResponse),
         this.safeJsonStringify(this.sanitizeMultipleGrids(data.multiTestPredictionGrids) || []),
         // Rebuttal tracking
-        data.rebuttingExplanationId || null,
+        data.rebuttingExplanationId ?? null,
         // NEW: Grover iterative solver fields
         this.safeJsonStringify(data.groverIterations),
-        data.groverBestProgram || null,
-        data.iterationCount || null
+        data.groverBestProgram ?? null,
+        data.iterationCount ?? null
       ], client);
 
       if (result.rows.length === 0) {
@@ -140,9 +140,9 @@ export class ExplanationRepository extends BaseRepository implements IExplanatio
         saturn_images AS "saturnImages", saturn_log AS "saturnLog",
         saturn_events AS "saturnEvents", saturn_success AS "saturnSuccess",
         predicted_output_grid AS "predictedOutputGrid",
-        is_prediction_correct AS "isPredictionCorrect",
+        COALESCE(is_prediction_correct, false) AS "isPredictionCorrect",
         trustworthiness_score AS "trustworthinessScore",
-        has_multiple_predictions AS "hasMultiplePredictions",
+        COALESCE(has_multiple_predictions, false) AS "hasMultiplePredictions",
         multiple_predicted_outputs AS "multiplePredictedOutputs",
         multi_test_results AS "multiTestResults",
         multi_test_all_correct AS "multiTestAllCorrect",
@@ -173,14 +173,14 @@ export class ExplanationRepository extends BaseRepository implements IExplanatio
       if (correctnessFilter === 'correct') {
         // Explanation is correct if single test is correct OR multi-test all correct
         whereClause += ` AND (
-          (has_multiple_predictions = false AND is_prediction_correct = true) OR
-          (has_multiple_predictions = true AND multi_test_all_correct = true)
+          (COALESCE(has_multiple_predictions, false) = false AND COALESCE(is_prediction_correct, false) = true) OR
+          (COALESCE(has_multiple_predictions, false) = true AND COALESCE(multi_test_all_correct, false) = true)
         )`;
       } else if (correctnessFilter === 'incorrect') {
         // Explanation is incorrect if single test is incorrect OR multi-test has some incorrect
         whereClause += ` AND (
-          (has_multiple_predictions = false AND is_prediction_correct = false) OR
-          (has_multiple_predictions = true AND multi_test_all_correct = false)
+          (COALESCE(has_multiple_predictions, false) = false AND COALESCE(is_prediction_correct, false) = false) OR
+          (COALESCE(has_multiple_predictions, false) = true AND COALESCE(multi_test_all_correct, false) = false)
         )`;
       }
     }
@@ -202,9 +202,9 @@ export class ExplanationRepository extends BaseRepository implements IExplanatio
         saturn_images AS "saturnImages", saturn_log AS "saturnLog",
         saturn_events AS "saturnEvents", saturn_success AS "saturnSuccess",
         predicted_output_grid AS "predictedOutputGrid",
-        is_prediction_correct AS "isPredictionCorrect",
+        COALESCE(is_prediction_correct, false) AS "isPredictionCorrect",
         trustworthiness_score AS "trustworthinessScore",
-        has_multiple_predictions AS "hasMultiplePredictions",
+        COALESCE(has_multiple_predictions, false) AS "hasMultiplePredictions",
         multiple_predicted_outputs AS "multiplePredictedOutputs",
         multi_test_results AS "multiTestResults",
         multi_test_all_correct AS "multiTestAllCorrect",
@@ -249,18 +249,16 @@ export class ExplanationRepository extends BaseRepository implements IExplanatio
           COUNT(*)::int AS "all",
           COUNT(
             CASE
-              WHEN (has_multiple_predictions = false AND is_prediction_correct = true)
-                OR (has_multiple_predictions = true AND multi_test_all_correct = true)
+              WHEN (COALESCE(has_multiple_predictions, false) = false AND COALESCE(is_prediction_correct, false) = true)
+                OR (COALESCE(has_multiple_predictions, false) = true AND COALESCE(multi_test_all_correct, false) = true)
               THEN 1
-              ELSE NULL
             END
           )::int AS "correct",
           COUNT(
             CASE
-              WHEN (has_multiple_predictions = false AND is_prediction_correct = false)
-                OR (has_multiple_predictions = true AND multi_test_all_correct = false)
+              WHEN (COALESCE(has_multiple_predictions, false) = false AND COALESCE(is_prediction_correct, false) = false)
+                OR (COALESCE(has_multiple_predictions, false) = true AND COALESCE(multi_test_all_correct, false) = false)
               THEN 1
-              ELSE NULL
             END
           )::int AS "incorrect"
         FROM explanations
@@ -278,11 +276,11 @@ export class ExplanationRepository extends BaseRepository implements IExplanatio
 
     let whereClause = 'WHERE puzzle_id = $1';
     if (correctnessFilter === 'correct') {
-      whereClause += ` AND ((has_multiple_predictions = false AND is_prediction_correct = true)
-        OR (has_multiple_predictions = true AND multi_test_all_correct = true))`;
+      whereClause += ` AND ((COALESCE(has_multiple_predictions, false) = false AND COALESCE(is_prediction_correct, false) = true)
+        OR (COALESCE(has_multiple_predictions, false) = true AND COALESCE(multi_test_all_correct, false) = true))`;
     } else if (correctnessFilter === 'incorrect') {
-      whereClause += ` AND ((has_multiple_predictions = false AND is_prediction_correct = false)
-        OR (has_multiple_predictions = true AND multi_test_all_correct = false))`;
+      whereClause += ` AND ((COALESCE(has_multiple_predictions, false) = false AND COALESCE(is_prediction_correct, false) = false)
+        OR (COALESCE(has_multiple_predictions, false) = true AND COALESCE(multi_test_all_correct, false) = false))`;
     }
 
     const filteredTotal =
@@ -317,9 +315,9 @@ export class ExplanationRepository extends BaseRepository implements IExplanatio
           reasoning_effort AS "reasoningEffort",
           reasoning_verbosity AS "reasoningVerbosity",
           reasoning_summary_type AS "reasoningSummaryType",
-          is_prediction_correct AS "isPredictionCorrect",
+          COALESCE(is_prediction_correct, false) AS "isPredictionCorrect",
           trustworthiness_score AS "trustworthinessScore",
-          has_multiple_predictions AS "hasMultiplePredictions",
+          COALESCE(has_multiple_predictions, false) AS "hasMultiplePredictions",
           multi_test_all_correct AS "multiTestAllCorrect",
           multi_test_average_accuracy AS "multiTestAverageAccuracy",
           rebutting_explanation_id AS "rebuttingExplanationId",
@@ -689,7 +687,11 @@ export class ExplanationRepository extends BaseRepository implements IExplanatio
       saturnImages: this.safeJsonParse(row.saturnImages, 'saturnImages', []),
       // CRITICAL FIX: Sanitize grid data on READ to filter out null rows from legacy/corrupt data
       predictedOutputGrid: this.sanitizeGridData(this.safeJsonParse(row.predictedOutputGrid, 'predictedOutputGrid')),
-      multiplePredictedOutputs: row.multiplePredictedOutputs, // Boolean flag, not JSON data
+      // CRITICAL FIX: Parse multiplePredictedOutputs JSONB field - contains predictedOutput1, predictedOutput2, etc.
+      // Author: Claude Code using Sonnet 4.5
+      // Date: 2025-11-04
+      // Previous comment said "Boolean flag" but this is actually JSONB containing prediction objects
+      multiplePredictedOutputs: this.safeJsonParse(row.multiplePredictedOutputs, 'multiplePredictedOutputs'),
       multiTestResults: this.safeJsonParse(row.multiTestResults, 'multiTestResults'),
       // CRITICAL FIX: Sanitize multi-test prediction grids on READ as well
       multiTestPredictionGrids: this.sanitizeMultipleGrids(this.safeJsonParse(row.multiTestPredictionGrids, 'multiTestPredictionGrids')),
@@ -698,11 +700,11 @@ export class ExplanationRepository extends BaseRepository implements IExplanatio
       groverIterations: this.safeJsonParse(row.groverIterations, 'groverIterations', null),
       
       // Ensure boolean fields are properly typed
-      hasReasoningLog: !!row.hasReasoningLog,
-      saturnSuccess: row.saturnSuccess,
-      isPredictionCorrect: row.isPredictionCorrect,
-      multiTestAllCorrect: row.multiTestAllCorrect,
-      hasMultiplePredictions: row.hasMultiplePredictions
+      hasReasoningLog: typeof row.hasReasoningLog === 'boolean' ? row.hasReasoningLog : false,
+      saturnSuccess: row.saturnSuccess ?? null,
+      isPredictionCorrect: typeof row.isPredictionCorrect === 'boolean' ? row.isPredictionCorrect : false,
+      multiTestAllCorrect: typeof row.multiTestAllCorrect === 'boolean' ? row.multiTestAllCorrect : null,
+      hasMultiplePredictions: typeof row.hasMultiplePredictions === 'boolean' ? row.hasMultiplePredictions : false
     };
   }
 

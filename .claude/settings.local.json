@@ -11,6 +11,8 @@
       "WebFetch**",
       "Read(/D:\\1Projects\\arc-explainer\\server\\services\\base/**)",
       "Read(/D:\\1Projects\\arc-explainer\\server\\services/**)",
+      "Read(/D:\\1Projects\\planexe**)",
+      "Read(/D:\\1Projects\\modelcompare**)",
       "Bash(cat:*)"
     ],
     "defaultMode": "bypassPermissions"
