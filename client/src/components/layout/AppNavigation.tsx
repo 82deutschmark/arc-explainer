@@ -20,7 +20,8 @@ import {
   CheckCircle,
   MessageSquare,
   Info,
-  Award
+  Award,
+  Gamepad2
 } from 'lucide-react';
 
 interface NavItem {
@@ -90,6 +91,12 @@ const navigationItems: NavItem[] = [
     href: '/about',
     icon: Info,
     description: 'Learn about this project and acknowledgments'
+  },
+  {
+    title: 'ARC-AGI-3',
+    href: '/arc3',
+    icon: Gamepad2,
+    description: 'Interactive reasoning benchmark for AI agents (game-based, not puzzles)'
   }
 ];
 
