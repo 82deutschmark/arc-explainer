@@ -57,10 +57,12 @@ RUN echo "=== CHECKING BUILD OUTPUT ===" && \
     ls -la dist/public/ && \
     echo "=== CHECKING index.html ===" && \
     ls -la dist/public/index.html && \
-    echo "=== CHECKING CSS ===" && \
+    echo "=== CHECKING ASSETS DIRECTORY ===" && \
     ls -la dist/public/assets/ && \
-    echo "=== INSPECTING CSS CONTENT ===" && \
-    head -n 20 dist/public/assets/*.css
+    echo "=== INSPECTING CSS CONTENT (IF PRESENT) ===" && \
+    if ls dist/public/assets/*.css 1> /dev/null 2>&1; then head -n 20 dist/public/assets/*.css; else echo "No standalone CSS assets produced (styles likely injected via JS bundle)."; fi && \
+    echo "=== INSPECTING JS BUNDLE ===" && \
+    head -n 20 dist/public/assets/*.js
 
 EXPOSE 5000
 CMD ["node", "dist/index.js"]
