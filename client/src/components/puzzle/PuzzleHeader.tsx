@@ -12,8 +12,9 @@
 
 import React from 'react';
 import { Link } from 'wouter';
-import { Hash, Eye, Rocket, RefreshCw } from 'lucide-react';
+import { Hash, Eye, Rocket, RefreshCw, ExternalLink } from 'lucide-react';
 import { getPuzzleName } from '@shared/utils/puzzleNames';
+import { getSynapsomorphyArcUrl } from '@shared/utils/synapsomorphy';
 import { EMOJI_SET_INFO, type EmojiSet } from '@/lib/spaceEmojis';
 
 interface PuzzleHeaderProps {
@@ -41,6 +42,12 @@ export function PuzzleHeader({
   isAnalyzing
 }: PuzzleHeaderProps) {
   const puzzleName = getPuzzleName(taskId);
+  const synapsomorphyUrl = getSynapsomorphyArcUrl(
+    taskId,
+    source && ['ARC1', 'ARC1-Eval', 'ARC2', 'ARC2-Eval'].includes(source as string)
+      ? (source as 'ARC1' | 'ARC1-Eval' | 'ARC2' | 'ARC2-Eval')
+      : undefined
+  );
 
   return (
     <div className="flex items-center justify-between mb-3 px-4 py-3 border-b border-base-300 bg-base-100">
@@ -132,6 +139,18 @@ export function PuzzleHeader({
             🔄 Grover Solver
           </button>
         </Link>
+
+        {synapsomorphyUrl && (
+          <a
+            href={synapsomorphyUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="btn btn-md btn-outline border-2 border-sky-400/60 hover:border-sky-500 hover:bg-sky-50 text-sky-700 font-semibold rounded-lg flex items-center"
+          >
+            <ExternalLink className="h-4 w-4 mr-2" />
+            🌐 Explore on Synapsomorphy
+          </a>
+        )}
       </div>
     </div>
   );

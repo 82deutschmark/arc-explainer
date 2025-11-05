@@ -1,5 +1,24 @@
 # CHANGELOG - Uses semantic versioning (MAJOR.MINOR.PATCH)
 
+# [4.12.9] - 2025-11-05
+### 🌐 Puzzle Examiner External Resources
+
+- Added Synapsomorphy ARC explorer helper and surfaced dataset-specific external links alongside Saturn and Grover solver buttons on the Puzzle Examiner header.
+
+# [4.12.8] - 2025-11-05
+### 🔗 Puzzle Browser Community Link
+
+- Added "Synthetic Data" link pointing to https://cdg.openai.nl/ under Reference material → Community Notes for quick access to community-generated datasets.
+
+# [4.12.7] - 2025-11-03
+### 🧮 Puzzle Examiner Correctness Filtering
+
+- Normalized boolean persistence in `ExplanationRepository` so correct/incorrect filters compute counts reliably even when legacy records omit flags.
+- Updated backend summary queries to treat nullable correctness fields consistently, restoring the "Correct"/"Incorrect" toggles on Puzzle Examiner and related views.
+
+#### Verification
+- ⚠️ Not run (backend persistence/query change)
+
 # [4.12.6] - 2025-11-02
 ### 🔄 Model Comparison Auto-Refresh
 
