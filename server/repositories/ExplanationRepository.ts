@@ -687,7 +687,11 @@ export class ExplanationRepository extends BaseRepository implements IExplanatio
       saturnImages: this.safeJsonParse(row.saturnImages, 'saturnImages', []),
       // CRITICAL FIX: Sanitize grid data on READ to filter out null rows from legacy/corrupt data
       predictedOutputGrid: this.sanitizeGridData(this.safeJsonParse(row.predictedOutputGrid, 'predictedOutputGrid')),
-      multiplePredictedOutputs: row.multiplePredictedOutputs, // Boolean flag, not JSON data
+      // CRITICAL FIX: Parse multiplePredictedOutputs JSONB field - contains predictedOutput1, predictedOutput2, etc.
+      // Author: Claude Code using Sonnet 4.5
+      // Date: 2025-11-04
+      // Previous comment said "Boolean flag" but this is actually JSONB containing prediction objects
+      multiplePredictedOutputs: this.safeJsonParse(row.multiplePredictedOutputs, 'multiplePredictedOutputs'),
       multiTestResults: this.safeJsonParse(row.multiTestResults, 'multiTestResults'),
       // CRITICAL FIX: Sanitize multi-test prediction grids on READ as well
       multiTestPredictionGrids: this.sanitizeMultipleGrids(this.safeJsonParse(row.multiTestPredictionGrids, 'multiTestPredictionGrids')),
