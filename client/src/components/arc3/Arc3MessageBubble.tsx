@@ -8,7 +8,7 @@ SRP/DRY check: Pass — isolates message rendering logic from timeline managemen
 import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Bot, Tool, Brain, MessageSquare, Clock } from 'lucide-react';
+import { Bot, Wrench, Brain, MessageSquare, Clock } from 'lucide-react';
 
 interface Arc3MessageBubbleProps {
   entry: {
@@ -29,7 +29,7 @@ export const Arc3MessageBubble: React.FC<Arc3MessageBubbleProps> = ({
       case 'assistant_message':
         return <MessageSquare className="h-4 w-4" />;
       case 'tool_call':
-        return <Tool className="h-4 w-4" />;
+        return <Wrench className="h-4 w-4" />;
       case 'tool_result':
         return <Bot className="h-4 w-4" />;
       case 'reasoning':

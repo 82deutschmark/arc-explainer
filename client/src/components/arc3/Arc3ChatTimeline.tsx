@@ -9,7 +9,7 @@ import React, { useEffect, useRef } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { MessageSquare, Bot, Tool, Brain, ChevronDown, ChevronUp, ClearAll } from 'lucide-react';
+import { MessageSquare, Bot, Wrench, Brain, ChevronDown, ChevronUp, Trash2 } from 'lucide-react';
 import { Arc3MessageBubble } from './Arc3MessageBubble';
 
 interface TimelineEntry {
@@ -110,7 +110,7 @@ export const Arc3ChatTimeline: React.FC<Arc3ChatTimelineProps> = ({
               )}
               {counts.toolCalls > 0 && (
                 <Badge variant="outline" className="text-xs">
-                  <Tool className="h-3 w-3 mr-1" />
+                  <Wrench className="h-3 w-3 mr-1" />
                   {counts.toolCalls}
                 </Badge>
               )}
@@ -130,7 +130,7 @@ export const Arc3ChatTimeline: React.FC<Arc3ChatTimelineProps> = ({
                 onClick={onClear}
                 className="h-8 px-2"
               >
-                <ClearAll className="h-3 w-3" />
+                <Trash2 className="h-3 w-3" />
               </Button>
             )}
 
