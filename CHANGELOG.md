@@ -1,5 +1,36 @@
 # CHANGELOG - Uses semantic versioning (MAJOR.MINOR.PATCH)
 
+# [5.2.1] - 2025-11-06
+### 🐛 ARC3 Integration Bug Fixes
+**Fixed critical TypeScript errors in Arc3RealGameRunner after comprehensive review**
+
+#### Issues Resolved
+- **Wrong Object Property Access**: Fixed accessing `state`, `score`, `action_counter` on `result` (StreamedRunResult) instead of `currentFrame` (FrameData)
+  - Lines 229-231, 569-571: Now correctly access `currentFrame.state`, `currentFrame.score`, `currentFrame.action_counter`
+- **State Type Mapping**: Added `mapState()` function to properly convert ARC3 API state strings ("NOT_PLAYED", "IN_PROGRESS", "WIN", "GAME_OVER") to Arc3GameState type
+- **Config Property Name**: Fixed `config.scenarioId` → `config.game_id` in streaming method (line 266)
+- **Missing runId Generation**: StreamedRunResult doesn't have `runId` property - now generating UUID with `randomUUID()`
+- **Frame Array Type**: Cast `frames` to `any[]` since Arc3AgentRunResult.frames accepts `any[]` not `Arc3FrameSnapshot[]`
+
+#### Documentation Added
+- Created comprehensive guide: `docs/reference/arc3/ARC3_Integration_Guide.md`
+  - Documents correct ARC3 API integration patterns
+  - Explains OpenAI Agents SDK streaming with `for await` loops
+  - Details Python reference implementation structure
+  - Includes common pitfalls and solutions
+  - Provides testing checklist
+
+#### Root Cause Analysis
+Previous developer misunderstood:
+1. OpenAI Agents SDK return types - `StreamedRunResult` vs `FrameData` confusion
+2. ARC3 API response format - string states need mapping to TypeScript enums
+3. Config schema differences - `game_id` vs `scenarioId` property names
+
+#### References
+- Python agents: `external/ARC3-solution/ARC-AGI-3-Agents/agents/templates/reasoning_agent.py`
+- Streaming reference: `server/services/streaming/saturnStreamService.ts`
+- ARC3 structs: `external/ARC3-solution/ARC-AGI-3-Agents/agents/structs.py`
+
 # [5.2.0] - 2025-11-06
 ### 🎮 ARC3 Agent Playground - REAL GAME INTEGRATION
 **Complete implementation following 5-phase plan in `docs/plans/2025-11-06-arc3-agent-playground-implementation.md`**

@@ -24,6 +24,7 @@ export default function ARC3AgentPlayground() {
   const [agentName, setAgentName] = useState('ARC3 Explorer');
   const [model, setModel] = useState('gpt-5-nano');
   const [maxTurns, setMaxTurns] = useState(24);
+  const [reasoningEffort, setReasoningEffort] = useState<'minimal' | 'low' | 'medium' | 'high'>('low');
   const [instructions, setInstructions] = useState(
     'Explore the game systematically. Start by using RESET to initialize, then use inspect_game_state to observe the grid. Try different actions to learn the rules. Be methodical and document your observations.'
   );
@@ -33,11 +34,12 @@ export default function ARC3AgentPlayground() {
 
   const handleStart = () => {
     start({
-      gameId,
+      game_id: gameId,  // Match API property name
       agentName,
       instructions,
       model,
       maxTurns,
+      reasoningEffort,
     });
   };
 
@@ -98,10 +100,11 @@ export default function ARC3AgentPlayground() {
             <div className="text-sm text-blue-900 dark:text-blue-100 space-y-1">
               <p className="font-medium">How this works:</p>
               <ul className="list-disc list-inside space-y-1 text-blue-800 dark:text-blue-200">
-                <li>Select a game and configure your agent's instructions below</li>
-                <li>The agent will play the real game via the ARC-AGI-3 API at three.arcprize.org</li>
-                <li>Watch the grid update in real-time as the agent explores and learns</li>
-                <li>See the agent's reasoning and actions in the chat timeline</li>
+                <li><strong>Configure your agent:</strong> Choose a model (default: gpt-5-nano), select a game, write custom instructions, and set max turns</li>
+                <li><strong>Start the agent:</strong> Click "Start Agent Run" to begin playing the real ARC-AGI-3 game</li>
+                <li><strong>Watch in real-time:</strong> The agent connects to three.arcprize.org and plays the actual game</li>
+                <li><strong>See the reasoning:</strong> View the agent's thought process, actions, and grid updates as it learns the puzzle</li>
+                <li><strong>Default game:</strong> LockSmith (ls20) - agents explore grid mechanics systematically</li>
               </ul>
             </div>
           </div>
@@ -125,6 +128,8 @@ export default function ARC3AgentPlayground() {
             setModel={setModel}
             maxTurns={maxTurns}
             setMaxTurns={setMaxTurns}
+            reasoningEffort={reasoningEffort}
+            setReasoningEffort={setReasoningEffort}
             instructions={instructions}
             setInstructions={setInstructions}
             isRunning={isPlaying}

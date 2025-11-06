@@ -1,7 +1,8 @@
 /*
-Author: Claude (Windsurf Cascade)
+Author: Claude Code using Sonnet 4.5
 Date: 2025-11-06
 PURPOSE: Component for selecting ARC-AGI-3 games by fetching real game data from /api/arc3/games.
+Matches ARC-AGI-3 API response structure (game_id, title).
 SRP/DRY check: Pass — isolates game selection logic from agent configuration and execution.
 */
 
@@ -14,11 +15,8 @@ import { Gamepad2, AlertCircle, RefreshCw, ExternalLink } from 'lucide-react';
 import { apiRequest } from '@/lib/queryClient';
 
 interface GameInfo {
-  id: string;
-  name: string;
-  description: string;
-  difficulty?: string;
-  category?: string;
+  game_id: string;  // ARC3 API uses game_id (e.g., "ls20", "zz34")
+  title: string;     // ARC3 API uses title for display name
 }
 
 interface Arc3GameSelectorProps {
@@ -48,9 +46,10 @@ export const Arc3GameSelector: React.FC<Arc3GameSelectorProps> = ({
       
       if (data.success && data.data && Array.isArray(data.data)) {
         setGames(data.data);
-        // Auto-select first game if none selected
+        // Auto-select first game if none selected (default to ls20)
         if (!selectedGameId && data.data.length > 0) {
-          onGameSelect(data.data[0].id);
+          const defaultGame = data.data.find(g => g.game_id === 'ls20') || data.data[0];
+          onGameSelect(defaultGame.game_id);
         }
       } else {
         throw new Error('Invalid response format from /api/arc3/games');
@@ -68,20 +67,7 @@ export const Arc3GameSelector: React.FC<Arc3GameSelectorProps> = ({
     fetchGames();
   }, []);
 
-  const selectedGame = games.find(game => game.id === selectedGameId);
-
-  const getDifficultyColor = (difficulty?: string) => {
-    switch (difficulty?.toLowerCase()) {
-      case 'easy':
-        return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200';
-      case 'medium':
-        return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200';
-      case 'hard':
-        return 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200';
-      default:
-        return 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200';
-    }
-  };
+  const selectedGame = games.find(game => game.game_id === selectedGameId);
 
   if (loading) {
     return (
@@ -175,9 +161,9 @@ export const Arc3GameSelector: React.FC<Arc3GameSelectorProps> = ({
               <SelectValue placeholder="Select a game">
                 {selectedGame && (
                   <div className="flex items-center gap-2">
-                    <span>{selectedGame.name}</span>
+                    <span>{selectedGame.title}</span>
                     <Badge variant="outline" className="text-xs">
-                      {selectedGame.id}
+                      {selectedGame.game_id}
                     </Badge>
                   </div>
                 )}
@@ -185,19 +171,10 @@ export const Arc3GameSelector: React.FC<Arc3GameSelectorProps> = ({
             </SelectTrigger>
             <SelectContent>
               {games.map((game) => (
-                <SelectItem key={game.id} value={game.id}>
-                  <div className="flex flex-col items-start py-1">
-                    <div className="flex items-center gap-2">
-                      <span className="font-medium">{game.name}</span>
-                      {game.difficulty && (
-                        <Badge className={`text-xs ${getDifficultyColor(game.difficulty)}`}>
-                          {game.difficulty}
-                        </Badge>
-                      )}
-                    </div>
-                    <span className="text-sm text-muted-foreground">
-                      {game.description}
-                    </span>
+                <SelectItem key={game.game_id} value={game.game_id}>
+                  <div className="flex items-center gap-2">
+                    <span className="font-medium">{game.title}</span>
+                    <Badge variant="outline" className="text-xs">{game.game_id}</Badge>
                   </div>
                 </SelectItem>
               ))}
@@ -209,21 +186,9 @@ export const Arc3GameSelector: React.FC<Arc3GameSelectorProps> = ({
           <div className="rounded-lg border bg-muted/50 p-3 space-y-2">
             <div className="flex items-start justify-between">
               <div>
-                <h4 className="font-semibold text-sm">{selectedGame.name}</h4>
-                <p className="text-sm text-muted-foreground mt-1">{selectedGame.description}</p>
+                <h4 className="font-semibold text-sm">{selectedGame.title}</h4>
+                <p className="text-xs text-muted-foreground">Game ID: {selectedGame.game_id}</p>
               </div>
-            </div>
-            
-            <div className="flex items-center gap-2 pt-2">
-              <Badge variant="outline" className="text-xs">{selectedGame.id}</Badge>
-              {selectedGame.category && (
-                <Badge variant="secondary" className="text-xs">{selectedGame.category}</Badge>
-              )}
-              {selectedGame.difficulty && (
-                <Badge className={`text-xs ${getDifficultyColor(selectedGame.difficulty)}`}>
-                  {selectedGame.difficulty}
-                </Badge>
-              )}
             </div>
 
             <Button
@@ -233,7 +198,7 @@ export const Arc3GameSelector: React.FC<Arc3GameSelectorProps> = ({
               asChild
             >
               <a
-                href={`https://three.arcprize.org/games/${selectedGame.id}`}
+                href={`https://three.arcprize.org/games/${selectedGame.game_id}`}
                 target="_blank"
                 rel="noopener noreferrer"
               >
