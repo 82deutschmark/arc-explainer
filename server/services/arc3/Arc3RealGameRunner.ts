@@ -1,0 +1,616 @@
+/*
+Author: Claude (Windsurf Cascade)
+Date: 2025-11-06
+PURPOSE: Runs OpenAI Agents SDK workflows against the real ARC-AGI-3 API, returning structured logs for the web UI.
+SRP/DRY check: Pass — isolates agent orchestration from HTTP routing and API client implementation.
+*/
+
+import { randomUUID } from 'node:crypto';
+import { Agent, run, tool, extractAllTextOutput } from '@openai/agents';
+import { z } from 'zod';
+import { Arc3ApiClient, type FrameData, type GameAction } from './Arc3ApiClient';
+import type { Arc3AgentRunConfig, Arc3AgentRunResult, Arc3RunTimelineEntry } from './types';
+
+const DEFAULT_MODEL = 'o4-mini';
+const DEFAULT_MAX_TURNS = 24;
+
+export interface Arc3StreamHarness {
+  sessionId: string;
+  emit: (chunk: any) => void;
+  emitEvent: (event: string, data: any) => void;
+  end: (summary: any) => void;
+  metadata: {
+    gameId: string;
+    agentName: string;
+  };
+}
+
+export class Arc3RealGameRunner {
+  constructor(private readonly apiClient: Arc3ApiClient) {}
+
+  async run(config: Arc3AgentRunConfig): Promise<Arc3AgentRunResult> {
+    const agentName = config.agentName?.trim() || 'ARC3 Real Game Operator';
+    const maxTurns = Math.max(2, Math.min(config.maxTurns ?? DEFAULT_MAX_TURNS, 400));
+    const gameId = config.scenarioId ?? 'ls20';  // Default to LockSmith game
+
+    let gameGuid: string | null = null;
+    let currentFrame: FrameData | null = null;
+    const frames: FrameData[] = [];
+    const timeline: Arc3RunTimelineEntry[] = [];
+
+    const inspectTool = tool({
+      name: 'inspect_game_state',
+      description: 'Inspect the current game state including frame data, score, remaining actions, and game status. Always call before making decisions.',
+      parameters: z.object({
+        note: z
+          .string()
+          .max(240)
+          .optional()
+          .describe('Optional reason for requesting a snapshot (used in the activity log).'),
+      }),
+      execute: async (input) => {
+        if (!gameGuid) {
+          throw new Error('Game not started. Call reset_game first.');
+        }
+        
+        const status = await this.apiClient.getStatus(gameGuid);
+        const frameData = await this.apiClient.getFrameData(gameGuid);
+        currentFrame = frameData;
+        
+        return {
+          gameGuid,
+          gameId,
+          status,
+          frameData,
+          note: input.note,
+        };
+      },
+    });
+
+    const actionTool = tool({
+      name: 'execute_game_action',
+      description: 'Execute a game action. Use RESET to start a new game, ACTION1-ACTION5 for simple actions, or ACTION6 with coordinates for targeted actions.',
+      parameters: z.object({
+        action: z.enum(['RESET', 'ACTION1', 'ACTION2', 'ACTION3', 'ACTION4', 'ACTION5', 'ACTION6']),
+        coordinates: z.tuple([z.number(), z.number()]).optional().describe('Required only for ACTION6: [x, y] coordinates'),
+      }),
+      execute: async ({ action, coordinates }) => {
+        if (!gameGuid && action !== 'RESET') {
+          throw new Error('Game not started. Call RESET action first.');
+        }
+
+        let gameAction: GameAction = { action };
+
+        if (action === 'ACTION6' && coordinates) {
+          gameAction.coordinates = coordinates;
+        }
+
+        try {
+          if (action === 'RESET' || !gameGuid) {
+            // Start new game
+            const result = await this.apiClient.startGame(gameId);
+            gameGuid = result.guid;
+            currentFrame = result.frame_data;
+          } else {
+            // Execute action in existing game
+            currentFrame = await this.apiClient.executeAction(gameGuid, gameAction);
+          }
+
+          frames.push(currentFrame);
+          return currentFrame;
+        } catch (error) {
+          throw new Error(`Action ${action} failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+        }
+      },
+    });
+
+    const baseInstructions = [
+      'You are playing a real ARC-AGI-3 game from the competition at https://three.arcprize.org/',
+      'Game rules:',
+      '- The game uses a grid-based interface with colors represented by integers 0-15',
+      '- Each action you take affects the game state and may change the grid',
+      '- Use inspect_game_state first to understand the current situation',
+      '- RESET starts a new game session',
+      '- ACTION1-ACTION5 perform various game-specific actions',
+      '- ACTION6 requires coordinates [x, y] for targeted actions',
+      '- Your goal is to understand the game mechanics and achieve the objective',
+      'Strategy:',
+      '- Start with RESET to initialize the game',
+      '- Use inspect_game_state to observe the grid and understand patterns',
+      '- Experiment with actions to learn the rules',
+      '- Track how the grid changes with each action',
+      '- Stop when you achieve WIN or when no useful actions remain',
+      'Return a concise summary of what you learned about the game mechanics and your final outcome.',
+    ].join('\n');
+
+    const operatorGuidance = config.instructions?.trim();
+    const combinedInstructions = operatorGuidance
+      ? `${baseInstructions}\n\nOperator guidance: ${operatorGuidance}`
+      : baseInstructions;
+
+    const agent = new Agent({
+      name: agentName,
+      instructions: combinedInstructions,
+      handoffDescription: 'Operates the ARC-AGI-3 real game interface.',
+      model: config.model ?? DEFAULT_MODEL,
+      tools: [inspectTool, actionTool],
+    });
+
+    const result = await run(
+      agent,
+      `Start playing the ARC-AGI-3 game "${gameId}". Begin with a RESET action, then explore the game mechanics. Report your findings and end with a summary of what you learned.`,
+      {
+        maxTurns,
+      },
+    );
+
+    // Process timeline entries
+    for (const [index, item] of result.newItems.entries()) {
+      switch (item.type) {
+        case 'message_output_item':
+          timeline.push({
+            index,
+            type: 'assistant_message',
+            label: `${item.agent.name} → user`,
+            content: item.content,
+          });
+          break;
+        case 'tool_call_item':
+          {
+            const rawItem = item.rawItem;
+            let content = '';
+            const args = 'arguments' in rawItem ? rawItem.arguments : undefined;
+            if (typeof args === 'string') {
+              try {
+                content = JSON.stringify(JSON.parse(args), null, 2);
+              } catch {
+                content = args;
+              }
+            } else if (args) {
+              content = JSON.stringify(args, null, 2);
+            }
+
+            const label = `${item.agent.name} called ${'name' in rawItem ? rawItem.name : rawItem.type}`;
+            timeline.push({
+              index,
+              type: 'tool_call',
+              label,
+              content,
+            });
+          }
+          break;
+        case 'tool_call_output_item':
+          {
+            const rawItem = item.rawItem;
+            let content = '';
+            if (typeof item.output === 'string') {
+              content = item.output;
+            } else if (item.output) {
+              content = JSON.stringify(item.output, null, 2);
+            } else if ('output' in rawItem && typeof rawItem.output === 'string') {
+              content = rawItem.output;
+            } else {
+              content = JSON.stringify(rawItem, null, 2);
+            }
+            timeline.push({
+              index,
+              type: 'tool_result',
+              label: `${item.agent.name} received ${rawItem.type}`,
+              content,
+            });
+          }
+          break;
+        case 'reasoning_item':
+          timeline.push({
+            index,
+            type: 'reasoning',
+            label: `${item.agent.name} reasoning`,
+            content: JSON.stringify(item.rawItem, null, 2),
+          });
+          break;
+        default:
+          timeline.push({
+            index,
+            type: 'assistant_message',
+            label: 'Unknown item',
+            content: JSON.stringify(item.toJSON(), null, 2),
+          });
+      }
+    }
+
+    const usage = result.state._context.usage;
+    const finalOutputCandidate = result.finalOutput;
+    const finalOutput = typeof finalOutputCandidate === 'string'
+      ? finalOutputCandidate
+      : extractAllTextOutput(result.newItems);
+
+    // Create summary from the last frame if available
+    const summary = frames.length > 0 && currentFrame ? {
+      state: currentFrame.state as 'NOT_PLAYED' | 'IN_PROGRESS' | 'WIN' | 'GAME_OVER',
+      score: currentFrame.score,
+      stepsTaken: currentFrame.action_counter,
+      simpleActionsUsed: [] as string[],  // ARC3 doesn't track this the same way
+      coordinateGuesses: 0,  // ARC3 doesn't track this separately
+      scenarioId: gameId,
+      scenarioName: gameId,  // Use gameId as name for now
+    } : {
+      state: 'NOT_STARTED' as const,
+      score: 0,
+      stepsTaken: 0,
+      simpleActionsUsed: [] as string[],
+      coordinateGuesses: 0,
+      scenarioId: gameId,
+      scenarioName: gameId,
+    };
+
+    return {
+      runId: randomUUID(),
+      finalOutput: finalOutput?.trim() ? finalOutput.trim() : undefined,
+      timeline,
+      frames,
+      summary,
+      usage: {
+        requests: usage.requests,
+        inputTokens: usage.inputTokens,
+        outputTokens: usage.outputTokens,
+        totalTokens: usage.totalTokens,
+      },
+    };
+  }
+
+  async runWithStreaming(config: Arc3AgentRunConfig, streamHarness: Arc3StreamHarness): Promise<Arc3AgentRunResult> {
+    const agentName = config.agentName?.trim() || 'ARC3 Real Game Operator';
+    const maxTurns = Math.max(2, Math.min(config.maxTurns ?? DEFAULT_MAX_TURNS, 400));
+    const gameId = config.scenarioId ?? 'ls20';  // Default to LockSmith game
+
+    let gameGuid: string | null = null;
+    let currentFrame: FrameData | null = null;
+    const frames: FrameData[] = [];
+    const timeline: Arc3RunTimelineEntry[] = [];
+
+    // Emit agent starting event
+    streamHarness.emitEvent("agent.starting", {
+      gameId,
+      agentName,
+      maxTurns,
+      timestamp: Date.now(),
+    });
+
+    const inspectTool = tool({
+      name: 'inspect_game_state',
+      description: 'Inspect the current game state including frame data, score, remaining actions, and game status. Always call before making decisions.',
+      parameters: z.object({
+        note: z
+          .string()
+          .max(240)
+          .optional()
+          .describe('Optional reason for requesting a snapshot (used in the activity log).'),
+      }),
+      execute: async (input) => {
+        if (!gameGuid) {
+          throw new Error('Game not started. Call reset_game first.');
+        }
+        
+        // Emit tool call event
+        streamHarness.emitEvent("agent.tool_call", {
+          tool: 'inspect_game_state',
+          arguments: input,
+          timestamp: Date.now(),
+        });
+        
+        const status = await this.apiClient.getStatus(gameGuid);
+        const frameData = await this.apiClient.getFrameData(gameGuid);
+        currentFrame = frameData;
+        
+        // Emit tool result event
+        streamHarness.emitEvent("agent.tool_result", {
+          tool: 'inspect_game_state',
+          result: { gameGuid, gameId, status, frameData, note: input.note },
+          timestamp: Date.now(),
+        });
+        
+        return {
+          gameGuid,
+          gameId,
+          status,
+          frameData,
+          note: input.note,
+        };
+      },
+    });
+
+    const actionTool = tool({
+      name: 'execute_game_action',
+      description: 'Execute a game action. Use RESET to start a new game, ACTION1-ACTION5 for simple actions, or ACTION6 with coordinates for targeted actions.',
+      parameters: z.object({
+        action: z.enum(['RESET', 'ACTION1', 'ACTION2', 'ACTION3', 'ACTION4', 'ACTION5', 'ACTION6']),
+        coordinates: z.tuple([z.number(), z.number()]).optional().describe('Required only for ACTION6: [x, y] coordinates'),
+      }),
+      execute: async ({ action, coordinates }) => {
+        if (!gameGuid && action !== 'RESET') {
+          throw new Error('Game not started. Call RESET action first.');
+        }
+
+        // Emit tool call event
+        streamHarness.emitEvent("agent.tool_call", {
+          tool: 'execute_game_action',
+          arguments: { action, coordinates },
+          timestamp: Date.now(),
+        });
+
+        let gameAction: GameAction = { action };
+
+        if (action === 'ACTION6' && coordinates) {
+          gameAction.coordinates = coordinates;
+        }
+
+        try {
+          if (action === 'RESET' || !gameGuid) {
+            // Start new game
+            const result = await this.apiClient.startGame(gameId);
+            gameGuid = result.guid;
+            currentFrame = result.frame_data;
+            
+            // Emit game started event
+            streamHarness.emitEvent("game.started", {
+              gameGuid,
+              gameId,
+              initialFrame: result.frame_data,
+              timestamp: Date.now(),
+            });
+          } else {
+            // Execute action in existing game
+            currentFrame = await this.apiClient.executeAction(gameGuid, gameAction);
+            
+            // Emit action executed event
+            streamHarness.emitEvent("game.action_executed", {
+              gameGuid,
+              action,
+              coordinates,
+              newFrame: currentFrame,
+              timestamp: Date.now(),
+            });
+          }
+
+          frames.push(currentFrame);
+          
+          // Emit frame update event
+          streamHarness.emitEvent("game.frame_update", {
+            frameIndex: frames.length - 1,
+            frameData: currentFrame,
+            timestamp: Date.now(),
+          });
+          
+          return currentFrame;
+        } catch (error) {
+          const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+          
+          // Emit error event
+          streamHarness.emitEvent("game.error", {
+            action,
+            error: errorMessage,
+            timestamp: Date.now(),
+          });
+          
+          throw new Error(`Action ${action} failed: ${errorMessage}`);
+        }
+      },
+    });
+
+    const baseInstructions = [
+      'You are playing a real ARC-AGI-3 game from the competition at https://three.arcprize.org/',
+      'Game rules:',
+      '- The game uses a grid-based interface with colors represented by integers 0-15',
+      '- Each action you take affects the game state and may change the grid',
+      '- Use inspect_game_state first to understand the current situation',
+      '- RESET starts a new game session',
+      '- ACTION1-ACTION5 perform various game-specific actions',
+      '- ACTION6 requires coordinates [x, y] for targeted actions',
+      '- Your goal is to understand the game mechanics and achieve the objective',
+      'Strategy:',
+      '- Start with RESET to initialize the game',
+      '- Use inspect_game_state to observe the grid and understand patterns',
+      '- Experiment with actions to learn the rules',
+      '- Track how the grid changes with each action',
+      '- Stop when you achieve WIN or when no useful actions remain',
+      'Return a concise summary of what you learned about the game mechanics and your final outcome.',
+    ].join('\n');
+
+    const operatorGuidance = config.instructions?.trim();
+    const combinedInstructions = operatorGuidance
+      ? `${baseInstructions}\n\nOperator guidance: ${operatorGuidance}`
+      : baseInstructions;
+
+    const agent = new Agent({
+      name: agentName,
+      instructions: combinedInstructions,
+      handoffDescription: 'Operates the ARC-AGI-3 real game interface.',
+      model: config.model ?? DEFAULT_MODEL,
+      tools: [inspectTool, actionTool],
+    });
+
+    // Emit agent ready event
+    streamHarness.emitEvent("agent.ready", {
+      agentName,
+      model: config.model ?? DEFAULT_MODEL,
+      instructions: combinedInstructions,
+      timestamp: Date.now(),
+    });
+
+    // Use streaming mode for the agent run
+    const result = await run(
+      agent,
+      `Start playing the ARC-AGI-3 game "${gameId}". Begin with a RESET action, then explore the game mechanics. Report your findings and end with a summary of what you learned.`,
+      {
+        maxTurns,
+        stream: true,
+      },
+    );
+
+    // Process streaming events
+    for await (const event of result) {
+      switch (event.type) {
+        case 'raw_model_stream_event':
+          // Forward raw model events
+          streamHarness.emitEvent("model.stream_event", {
+            eventType: event.data.type,
+            data: event.data,
+            timestamp: Date.now(),
+          });
+          break;
+        case 'run_item_stream_event':
+          // Process run items (messages, tool calls, etc.)
+          streamHarness.emitEvent("agent.run_item", {
+            itemName: event.name,
+            item: event.item,
+            timestamp: Date.now(),
+          });
+          break;
+        case 'agent_updated_stream_event':
+          // Forward agent updates
+          streamHarness.emitEvent("agent.updated", {
+            agent: event.agent,
+            timestamp: Date.now(),
+          });
+          break;
+      }
+    }
+
+    // Wait for completion
+    await result.completed;
+
+    // Process final timeline entries
+    for (const [index, item] of result.newItems.entries()) {
+      switch (item.type) {
+        case 'message_output_item':
+          timeline.push({
+            index,
+            type: 'assistant_message',
+            label: `${item.agent.name} → user`,
+            content: item.content,
+          });
+          streamHarness.emitEvent("agent.message", {
+            agentName: item.agent.name,
+            content: item.content,
+            timestamp: Date.now(),
+          });
+          break;
+        case 'tool_call_item':
+          {
+            const rawItem = item.rawItem;
+            let content = '';
+            const args = 'arguments' in rawItem ? rawItem.arguments : undefined;
+            if (typeof args === 'string') {
+              try {
+                content = JSON.stringify(JSON.parse(args), null, 2);
+              } catch {
+                content = args;
+              }
+            } else if (args) {
+              content = JSON.stringify(args, null, 2);
+            }
+
+            const label = `${item.agent.name} called ${'name' in rawItem ? rawItem.name : rawItem.type}`;
+            timeline.push({
+              index,
+              type: 'tool_call',
+              label,
+              content,
+            });
+          }
+          break;
+        case 'tool_call_output_item':
+          {
+            const rawItem = item.rawItem;
+            let content = '';
+            if (typeof item.output === 'string') {
+              content = item.output;
+            } else if (item.output) {
+              content = JSON.stringify(item.output, null, 2);
+            } else if ('output' in rawItem && typeof rawItem.output === 'string') {
+              content = rawItem.output;
+            } else {
+              content = JSON.stringify(rawItem, null, 2);
+            }
+            timeline.push({
+              index,
+              type: 'tool_result',
+              label: `${item.agent.name} received ${rawItem.type}`,
+              content,
+            });
+          }
+          break;
+        case 'reasoning_item':
+          timeline.push({
+            index,
+            type: 'reasoning',
+            label: `${item.agent.name} reasoning`,
+            content: JSON.stringify(item.rawItem, null, 2),
+          });
+          break;
+        default:
+          timeline.push({
+            index,
+            type: 'assistant_message',
+            label: 'Unknown item',
+            content: JSON.stringify(item.toJSON(), null, 2),
+          });
+      }
+    }
+
+    const usage = result.state._context.usage;
+    const finalOutputCandidate = result.finalOutput;
+    const finalOutput = typeof finalOutputCandidate === 'string'
+      ? finalOutputCandidate
+      : extractAllTextOutput(result.newItems);
+
+    // Create summary from the last frame if available
+    const summary = frames.length > 0 && currentFrame ? {
+      state: currentFrame.state as 'NOT_PLAYED' | 'IN_PROGRESS' | 'WIN' | 'GAME_OVER',
+      score: currentFrame.score,
+      stepsTaken: currentFrame.action_counter,
+      simpleActionsUsed: [] as string[],  // ARC3 doesn't track this the same way
+      coordinateGuesses: 0,  // ARC3 doesn't track this separately
+      scenarioId: gameId,
+      scenarioName: gameId,  // Use gameId as name for now
+    } : {
+      state: 'NOT_STARTED' as const,
+      score: 0,
+      stepsTaken: 0,
+      simpleActionsUsed: [] as string[],
+      coordinateGuesses: 0,
+      scenarioId: gameId,
+      scenarioName: gameId,
+    };
+
+    // Emit completion event
+    streamHarness.emitEvent("agent.completed", {
+      runId: result.runId || randomUUID(),
+      finalOutput,
+      summary,
+      usage: {
+        requests: usage.requests,
+        inputTokens: usage.inputTokens,
+        outputTokens: usage.outputTokens,
+        totalTokens: usage.totalTokens,
+      },
+      timelineLength: timeline.length,
+      frameCount: frames.length,
+      timestamp: Date.now(),
+    });
+
+    return {
+      runId: result.runId || randomUUID(),
+      finalOutput: finalOutput?.trim() ? finalOutput.trim() : undefined,
+      timeline,
+      frames,
+      summary,
+      usage: {
+        requests: usage.requests,
+        inputTokens: usage.inputTokens,
+        outputTokens: usage.outputTokens,
+        totalTokens: usage.totalTokens,
+      },
+    };
+  }
+}
