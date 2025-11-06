@@ -5,36 +5,56 @@
 - Keep the streaming analysis modal open after completion so reviewers can read results and dismiss manually.
 
 # [5.0.3] - 2025-11-05
-### 🐛 CRITICAL: Multi-Test Predicted Grid Extraction Bug
+### 🐛 CRITICAL: Multi-Test Streaming Validation Not Running
 
-**Root Cause**: All components were using strict boolean check `multiplePredictedOutputs === true`, but the database returns this field as a different type (likely string `"true"` or number `1`), causing the check to fail and predicted grids to not be extracted at all.
+**Root Cause**: Non-Saturn streaming analysis (Gemini, Claude, GPT, etc.) was NOT running validation before sending completion summary to client. This caused `hasMultiplePredictions`, `multiTestAllCorrect`, and `multiTestAverageAccuracy` to be **NULL in the database**.
 
-**Symptom**: Multi-test results showed "(0 predictions, 2 tests)" with "No prediction" displayed, even though the data existed in the database with `predictedOutput1`, `predictedOutput2` fields populated.
+**Symptom**: Multi-test results showed "(0 predictions, 2 tests)" with "No prediction" displayed. Database records had:
+```json
+"hasMultiplePredictions": null,
+"multiTestAllCorrect": null,
+"multiTestAverageAccuracy": null
+```
 
-**Solution**: Changed all components to check directly for `predictedOutput1 !== undefined` instead of relying on the boolean flag. This is more defensive and matches the server-side detection pattern.
+**Why It Happened**:
+- Saturn streaming: Had validation harness that validates before completion ✅
+- Non-Saturn streaming: Sent raw AI response to client without validation ❌
+- Client saved unvalidated data directly to DB → NULL validation fields
 
-**Components Fixed**:
+**Solution (Server-Side - PRIMARY FIX)**:
 
-1. **AnalysisResultCard.tsx** (line 51-66)
+1. **analysisStreamService.ts** (lines 24-25, 154, 185-213)
+   - Added imports for `puzzleService` and `validateStreamingResult`
+   - Load puzzle before creating stream harness (line 154)
+   - Wrap base harness with validation harness (lines 185-213)
+   - Call `validateStreamingResult()` in `end()` callback before sending completion
+   - Impact: All streaming analysis now validates before saving to DB ✅
+
+**Solution (Client-Side - Defensive)**:
+
+Changed all frontend components to check directly for `predictedOutput1 !== undefined` instead of relying on `multiplePredictedOutputs` boolean flag (which may serialize incorrectly from DB):
+
+2. **AnalysisResultCard.tsx** (line 51-66)
    - Changed from `multiplePredictedOutputs === true` to `predictedOutput1 !== undefined`
-   - Impact: Multi-test predicted grids now extract correctly on PuzzleExaminer
 
-2. **SaturnFinalResultPanel.tsx** (line 60-69)
+3. **SaturnFinalResultPanel.tsx** (line 60-69)
    - Changed from `multiplePredictedOutputs === true` to `predictedOutput1 !== undefined`
-   - Impact: Saturn visual solver results now display all predicted grids for multi-test puzzles
 
-3. **AnalysisResultContent.tsx** (line 117-124)
+4. **AnalysisResultContent.tsx** (line 117-124)
    - Removed redundant boolean flag check, kept only `predictedOutput1` check
-   - Impact: Multi-test results no longer incorrectly appear as "empty"
 
-4. **ChatIterationCard.tsx** (line 53-71)
+5. **ChatIterationCard.tsx** (line 53-71)
    - Changed from `multiplePredictedOutputs === true` to direct `predictedOutput1` check
-   - Impact: Chat refinement threads now correctly display multi-test predicted grids
 
-**Test Case**: Puzzle ID `6ea4a07e` (multi-test puzzle with predictions in database)
+**Test Case**: Puzzle ID `6ea4a07e` (multi-test puzzle)
+
+**Impact**:
+- Fixes: All non-Saturn streaming models (Gemini, Claude, GPT, Grok, Deepseek, etc.)
+- Fixes: Multi-test validation, correctness indicators, analytics, leaderboards
+- Does NOT affect: Non-streaming analysis (already worked), Saturn streaming (already worked)
 
 #### Verification
-- ⚠️ Manual testing required with multi-test puzzles on PuzzleExaminer page
+- ⚠️ Manual testing required: Run streaming analysis with multi-test puzzle and verify DB fields populated
 
 # [5.0.2] - 2025-11-05
 ### 🧩 Puzzle Examiner
