@@ -3470,6 +3470,10 @@ app.get("/api/model-dataset/metrics/:modelName/:datasetName", asyncHandler(model
 ## [Unreleased]
 
 ### Added
+- Added Git submodule  pointing to https://github.com/82deutschmark/openai-chatkit-advanced-samples to include advanced OpenAI ChatKit samples for reference and integration (2025-11-06).
+
+
+### Added
 - Added `external/openai-agents-js` as a git submodule pointing to https://github.com/82deutschmark/openai-agents-js to keep agent streaming SDK in sync with upstream. No build/runtime wiring changed.
 
 ### Notes
