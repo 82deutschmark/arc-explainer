@@ -6,3 +6,6 @@
 [submodule "external/ARC-AGI-3-ClaudeCode-SDK"]
 	path = external/ARC-AGI-3-ClaudeCode-SDK
 	url = https://github.com/ThariqS/ARC-AGI-3-ClaudeCode-SDK
+[submodule "external/openai-agents-js"]
+	path = external/openai-agents-js
+	url = https://github.com/82deutschmark/openai-agents-js
