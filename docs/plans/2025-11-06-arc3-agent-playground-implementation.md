@@ -150,30 +150,28 @@ ARC3_API_KEY="de61d386-c2e7-4c0f-9546-511c505a4381"  is in .env.example already!
 ✨ NEW: client/src/utils/arc3Colors.ts
 ```
 
-### Phase 4: Streaming Chat UI (3 hours)  
+### Phase 4: Streaming Chat UI (Needs to be sourced directly from the openai-chatkit-advanced-samples project)
 **Tasks**:
-1. Create `useArc3Streaming.ts` - EventSource hook
-2. Create `StreamingChat.tsx` - Message list
+1. ????
+2. ????
 3. Add message types (reasoning, tool calls, results)
 
 **Files**:
 ```
-✨ NEW: client/src/hooks/useArc3Streaming.ts
-✨ NEW: client/src/components/arc3/StreamingChat.tsx
-✨ NEW: client/src/components/arc3/MessageBubble.tsx
+???
 ```
 
 ### Phase 5: Complete Page Rewrite (3 hours)
 **Tasks**:
-1. DELETE old `ARC3AgentPlayground.tsx`
+1. ????
 2. Create NEW page with all components
-3. Add game selection and config panel
+3. Add game selection and config panel (config panel should reuse existing logic or components from elsewhere in the project!!!)
 
 **Files**:
 ```
-🗑️  DEL: client/src/pages/ARC3AgentPlayground.tsx (OLD)
+
 ✨ NEW: client/src/pages/ARC3AgentPlayground.tsx (NEW)
-✨ NEW: client/src/components/arc3/AgentConfigPanel.tsx
+✨ NEW: client/src/components/arc3/AgentConfigPanel.tsx (Code Already exists elsewhere!!!)
 ✨ NEW: client/src/components/arc3/GameBrowser.tsx
 ```
 
@@ -191,12 +189,12 @@ ARC3_API_KEY="de61d386-c2e7-4c0f-9546-511c505a4381"  is in .env.example already!
 - ✅ One-way server → client
 - ✅ Auto-reconnection
 
-### Use Responses API for Reasoning
+### Use Responses API for Reasoning  YOU WILL NEED TO REREAD THE DOCS ON THE RESPONSES API AND THE AGENTS SDK TO UNDERSTAND HOW TO USE IT PROPERLY!!!  DO NOT PROCEED WITH THIS TASK UNLESS YOU HAVE READ AND UNDERSTOOD THE DOCS and have the user confirm that you understand how to use it!!!
 ```typescript
 const response = await openai.responses.create({
-  model: "o4-mini",
+  model: "gpt-5-nano",
   input: messages,
-  reasoning: { effort: "high", summary: "auto" },
+  reasoning: { effort: "high", verbosity: "high", summary: "detailed" },
   previous_response_id: lastResponseId,  // Stateful!
   stream: true
 });
@@ -206,7 +204,7 @@ const response = await openai.responses.create({
 
 ---
 
-## 6. Environment Setup
+## 6. Environment Setup  (THINK HARDER!!  This is a production app, we store env vars on railway)
 
 ```bash
 # .env
@@ -221,14 +219,7 @@ OPENAI_API_KEY=your_openai_key
 ### Files to Create (14 new files)
 ```
 server/services/arc3/Arc3ApiClient.ts
-server/services/arc3/Arc3RealGameRunner.ts
-server/services/arc3/Arc3StreamingService.ts
-client/src/components/arc3/GridVisualization.tsx
-client/src/components/arc3/StreamingChat.tsx
-client/src/components/arc3/AgentConfigPanel.tsx
-client/src/components/arc3/GameBrowser.tsx
-client/src/components/arc3/MessageBubble.tsx
-client/src/hooks/useArc3Streaming.ts
+?????
 client/src/utils/arc3Colors.ts
 ```
 
@@ -253,32 +244,11 @@ client/src/pages/ARC3AgentPlayground.tsx  # COMPLETE REWRITE
 - ✅ Agent executes actions
 - ✅ Grid renders correctly
 - ✅ Chat shows output
-
-### Full Feature
 - ✅ Streaming works
-- ✅ Users customize instructions
+- ✅ Users can start and customize instructions
 - ✅ Multiple games supported
-- ✅ Beautiful UI with DaisyUI
+- ✅ Beautiful UI with Shadcn/UI
 
----
-
-## 9. Testing Plan
-
-```typescript
-// Test real API connection
-it('should start ls20 game', async () => {
-  const frame = await client.startGame('ls20');
-  expect(frame.state).toBe('IN_PROGRESS');
-});
-
-// Test full agent run
-it('should complete game', async () => {
-  const result = await runner.run({ gameId: 'ls20', ... });
-  expect(result.summary.state).toBeOneOf(['WIN', 'GAME_OVER']);
-});
-```
-
----
 
 ## 10. Reference Documentation
 
@@ -287,7 +257,8 @@ it('should complete game', async () => {
 - Responses API: `docs/reference/api/ResponsesAPI.md`
 - How Agents Work: `docs/reference/HowAgentsWork.md`
 - Python Reference: `external/ARC3-solution/`
+- OpenAI ChatKit Advanced Samples: `external/openai-chatkit-advanced-samples/`
+- Python Agent Template: `external/ARC3-solution/ARC-AGI-3-Agents/agents/templates/reasoning_agent.py` 
+- Python Agent Template: `external/ARC3-solution/ARC-AGI-3-Agents/agents/templates/llm_agent.py` 
 
----
 
-**END OF PLAN**
