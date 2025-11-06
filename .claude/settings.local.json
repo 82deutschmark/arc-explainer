@@ -11,7 +11,8 @@
       "WebFetch**",
       "Read(/D:\\1Projects\\arc-explainer\\server\\services\\base/**)",
       "Read(/D:\\1Projects\\arc-explainer\\server\\services/**)",
-      "Bash(cat:*)"
+      "Bash(cat:*)",
+      "Bash(git submodule:*)"
     ],
     "defaultMode": "bypassPermissions"
   },
