@@ -1,5 +1,32 @@
 # CHANGELOG - Uses semantic versioning (MAJOR.MINOR.PATCH)
 
+# [5.0.3] - 2025-11-05
+### 🐛 Multi-Test Predicted Grid Display Fixes
+
+**Problem**: Several components were incorrectly treating `multiplePredictedOutputs` as an array when it's actually a boolean flag. The actual predicted grids are stored in individual fields (`predictedOutput1`, `predictedOutput2`, etc.).
+
+**Components Fixed**:
+
+1. **AnalysisResultContent.tsx** (line 117-125)
+   - Fixed empty result check that was incorrectly using `Array.isArray(result.multiplePredictedOutputs)`
+   - Now checks for `predictedOutput1` existence and `multiplePredictedOutputs === true` boolean flag
+   - Impact: Multi-test results will no longer incorrectly appear as "empty" on PuzzleExaminer
+
+2. **ChatIterationCard.tsx** (line 53-70)
+   - Fixed predicted grid extraction logic to check boolean flag first, then look for `predictedOutput1`
+   - Replaced incorrect `multiplePredictedOutputs?.[0]` array access with proper field lookup
+   - Impact: Chat refinement threads now correctly display multi-test predicted grids
+
+3. **SaturnFinalResultPanel.tsx** (line 45-109)
+   - Reordered `collectPredictedGrids` function to check `multiplePredictedOutputs === true` flag FIRST
+   - Then collects numbered fields (`predictedOutput1`, `predictedOutput2`, etc.) before other fallbacks
+   - Impact: Saturn visual solver results correctly display all predicted grids for multi-test puzzles
+
+**Test Case**: Puzzle ID `6ea4a07e` (multi-test puzzle with predictions in database)
+
+#### Verification
+- ⚠️ Manual testing required with multi-test puzzles on PuzzleExaminer page
+
 # [5.0.2] - 2025-11-05
 ### 🧩 Puzzle Examiner
 - Moved streaming reasoning to the top of the analysis panel and relabeled the streamed answer section as **Final Reply** so reviewers see thoughts before the concluding output.
