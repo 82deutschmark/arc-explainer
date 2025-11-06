@@ -101,7 +101,6 @@ export function useAnalysisResults({
 
   const resetStreamingState = useCallback(() => {
     streamingContextRef.current = null;
-    setStreamingModelKey(null);
     setStreamingPhase(undefined);
     setStreamingMessage(undefined);
     setStreamingTokenUsage({});
@@ -166,8 +165,7 @@ export function useAnalysisResults({
           next.delete(modelKey);
           return next;
         });
-        // Don't reset streaming state immediately - let user see final result
-        // resetStreamingState() will be called when user closes modal manually
+        // Don't reset streaming state immediately — keep modal open for review
         closeStream();
         await refetchExplanations();
       } catch (err) {
