@@ -9,3 +9,6 @@
 [submodule "external/openai-agents-js"]
 	path = external/openai-agents-js
 	url = https://github.com/82deutschmark/openai-agents-js
+[submodule "external/openai-chatkit-advanced-samples"]
+	path = external/openai-chatkit-advanced-samples
+	url = https://github.com/82deutschmark/openai-chatkit-advanced-samples
