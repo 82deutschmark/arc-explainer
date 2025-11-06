@@ -57,8 +57,9 @@ const collectPredictedGrids = (analysis?: Record<string, unknown> | null): numbe
     grids.push(parsed);
   };
 
-  // PRIMARY: Check for individual predictedOutputN fields (actual DB format)
-  if ((analysis as any).multiplePredictedOutputs === true) {
+  // PRIMARY: Check for individual predictedOutputN fields directly (most defensive approach)
+  // Don't rely on boolean flag which may be serialized as string/number from DB
+  if ((analysis as any).predictedOutput1 !== undefined) {
     let index = 1;
     while ((analysis as any)[`predictedOutput${index}`] !== undefined) {
       addGrid((analysis as any)[`predictedOutput${index}`]);

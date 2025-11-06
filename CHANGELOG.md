@@ -1,26 +1,35 @@
 # CHANGELOG - Uses semantic versioning (MAJOR.MINOR.PATCH)
 
-# [5.0.3] - 2025-11-05
-### 🐛 Multi-Test Predicted Grid Display Fixes
+# [5.0.4] - 2025-11-05
+### 🧵 Streaming Experience
+- Keep the streaming analysis modal open after completion so reviewers can read results and dismiss manually.
 
-**Problem**: Several components were incorrectly treating `multiplePredictedOutputs` as an array when it's actually a boolean flag. The actual predicted grids are stored in individual fields (`predictedOutput1`, `predictedOutput2`, etc.).
+# [5.0.3] - 2025-11-05
+### 🐛 CRITICAL: Multi-Test Predicted Grid Extraction Bug
+
+**Root Cause**: All components were using strict boolean check `multiplePredictedOutputs === true`, but the database returns this field as a different type (likely string `"true"` or number `1`), causing the check to fail and predicted grids to not be extracted at all.
+
+**Symptom**: Multi-test results showed "(0 predictions, 2 tests)" with "No prediction" displayed, even though the data existed in the database with `predictedOutput1`, `predictedOutput2` fields populated.
+
+**Solution**: Changed all components to check directly for `predictedOutput1 !== undefined` instead of relying on the boolean flag. This is more defensive and matches the server-side detection pattern.
 
 **Components Fixed**:
 
-1. **AnalysisResultContent.tsx** (line 117-125)
-   - Fixed empty result check that was incorrectly using `Array.isArray(result.multiplePredictedOutputs)`
-   - Now checks for `predictedOutput1` existence and `multiplePredictedOutputs === true` boolean flag
-   - Impact: Multi-test results will no longer incorrectly appear as "empty" on PuzzleExaminer
+1. **AnalysisResultCard.tsx** (line 51-66)
+   - Changed from `multiplePredictedOutputs === true` to `predictedOutput1 !== undefined`
+   - Impact: Multi-test predicted grids now extract correctly on PuzzleExaminer
 
-2. **ChatIterationCard.tsx** (line 53-70)
-   - Fixed predicted grid extraction logic to check boolean flag first, then look for `predictedOutput1`
-   - Replaced incorrect `multiplePredictedOutputs?.[0]` array access with proper field lookup
+2. **SaturnFinalResultPanel.tsx** (line 60-69)
+   - Changed from `multiplePredictedOutputs === true` to `predictedOutput1 !== undefined`
+   - Impact: Saturn visual solver results now display all predicted grids for multi-test puzzles
+
+3. **AnalysisResultContent.tsx** (line 117-124)
+   - Removed redundant boolean flag check, kept only `predictedOutput1` check
+   - Impact: Multi-test results no longer incorrectly appear as "empty"
+
+4. **ChatIterationCard.tsx** (line 53-71)
+   - Changed from `multiplePredictedOutputs === true` to direct `predictedOutput1` check
    - Impact: Chat refinement threads now correctly display multi-test predicted grids
-
-3. **SaturnFinalResultPanel.tsx** (line 45-109)
-   - Reordered `collectPredictedGrids` function to check `multiplePredictedOutputs === true` flag FIRST
-   - Then collects numbered fields (`predictedOutput1`, `predictedOutput2`, etc.) before other fallbacks
-   - Impact: Saturn visual solver results correctly display all predicted grids for multi-test puzzles
 
 **Test Case**: Puzzle ID `6ea4a07e` (multi-test puzzle with predictions in database)
 
