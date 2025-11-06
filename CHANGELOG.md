@@ -1,5 +1,9 @@
 # CHANGELOG - Uses semantic versioning (MAJOR.MINOR.PATCH)
 
+# [5.0.2] - 2025-11-05
+### 🧩 Puzzle Examiner
+- Moved streaming reasoning to the top of the analysis panel and relabeled the streamed answer section as **Final Reply** so reviewers see thoughts before the concluding output.
+
 # [5.0.1] - 2025-11-05
 ### 🔗 External Integrations (Submodules)
 - Added Git submodule `external/ARC3-solution` (branch `nov4`) — read-only reference for ARC3 solver code; nested submodule initialized.
