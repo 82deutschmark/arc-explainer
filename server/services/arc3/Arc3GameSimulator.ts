@@ -157,16 +157,23 @@ export class Arc3GameSimulator {
   }
 
   applyAction(action: Arc3Action): Arc3FrameSnapshot {
+    // Always allow reset, even after terminal states
+    switch (action.kind) {
+      case 'reset':
+        return this.reset();
+      default:
+        break;
+    }
+
+    // For non-reset actions, block if the game already concluded
     if (this.state === 'GAME_OVER' || this.state === 'WIN') {
       return this.recordSnapshot(
         'NO_OP',
-        'Game already concluded. Reset to start a new attempt.',
+        'Game already concluded. Use reset to start a new attempt.',
       );
     }
 
     switch (action.kind) {
-      case 'reset':
-        return this.reset();
       case 'simple':
         return this.handleSimpleAction(action.id);
       case 'coordinate':

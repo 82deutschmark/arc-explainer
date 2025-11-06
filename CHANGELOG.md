@@ -5981,3 +5981,4 @@ To enable conversation chaining:
 
 ## 2025-10-31
 - Docs: Added `docs/31OctDesign.md` specifying a CSS-only, look-only restyle for solver buttons (no structural/behavioral changes). Author: OpenAI Codex Agent.
+- Allow reset after WIN/GAME_OVER: Fixed a logic bug in `server/services/arc3/Arc3GameSimulator.ts` where `applyAction` returned `NO_OP` once a run reached `WIN` or `GAME_OVER`, blocking the `reset_simulation` tool. Reordered handling so `reset` is always honored, and non‑reset actions remain blocked post‑terminal. Agents can now restart games without server restarts.
