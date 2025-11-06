@@ -12,13 +12,13 @@ A research platform for analyzing Abstract Reasoning Corpus (ARC-AGI) puzzles us
 ## What's New in v5.1.0
 
 ### 🎮 ARC3 Agent Playground (Beta)
-- `/arc3/playground` introduces an interactive lab powered by the new OpenAI Agents SDK. Configure instructions, pick a model, and watch the agent drive the local "Color Hunt" ARC-AGI-3 simulator step-by-step.
-- Real-time simulator playback with color-coded 8×8 grids, action history, and token usage telemetry makes debugging agent behavior straightforward.
+- `/arc3/playground` introduces an interactive lab powered by the new OpenAI Agents SDK. Configure instructions, pick a model, and watch the agent attempt to solve a real ARC-AGI-3 game.
+- SOME SIMULATED GARBAGE SLOP IN THE PROCESS OF BEING REMOVED.
 - Global navigation and the ARC3 landing page now link directly to the playground for quick access.
 
 ### 🧠 Backend Agent Runner
-- Deterministic "Color Hunt" mini-game simulator emulates ARC-AGI-3 interactions (reset, scanner actions, ACTION6 coordinate probes) without requiring a remote ARC API key.
-- Express route `/api/arc3/agent-playground/run` validates payloads with Zod, orchestrates the OpenAI agent, and returns timeline, frame snapshots, and token usage for the UI.
+- Deterministic "Color Hunt" mini-game simulator emulates ARC-AGI-3 interactions (reset, scanner actions, ACTION6 coordinate probes) without requiring a remote ARC API key.   THIS WAS TOTAL GARBAGE THAT VIOLATES THE CORE PRINCIPLES OF THE PROJECT AND IS BEING REMOVED.
+- Express route `/api/arc3/agent-playground/run` validates payloads with Zod, orchestrates the OpenAI agent, and returns timeline, frame snapshots, and token usage for the UI.  NEEDS TO BE AUDITED TO BE SURE IT IS NOT SLOP!!!
 
 ### 🧹 Type Safety Improvements
 - Hardened Saturn work table state transitions to satisfy strict TypeScript checks after the new build pass.
