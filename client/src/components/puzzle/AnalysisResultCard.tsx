@@ -49,18 +49,19 @@ export const AnalysisResultCard = React.memo(function AnalysisResultCard({ model
   }, [result.predictedOutputGrid]);
 
   const predictedGrids = useMemo(() => {
-    // Check for individual predictedOutputN fields (the actual format we store)
-    if ((result as any).multiplePredictedOutputs === true) {
+    // Check for individual predictedOutputN fields directly (most defensive approach)
+    // Don't rely on boolean flag which may be serialized as string/number from DB
+    if ((result as any).predictedOutput1 !== undefined) {
       const grids: number[][][] = [];
       let index = 1;
-      
+
       // Collect predictedOutput1, predictedOutput2, etc.
       while ((result as any)[`predictedOutput${index}`] !== undefined) {
         const grid = (result as any)[`predictedOutput${index}`];
         grids.push(grid && Array.isArray(grid) && grid.length > 0 ? grid : []);
         index++;
       }
-      
+
       return grids;
     }
 
