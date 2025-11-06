@@ -11,11 +11,12 @@ import { apiRequest } from '@/lib/queryClient';
 import { isStreamingEnabled } from '@shared/config/streaming';
 
 export interface Arc3AgentOptions {
-  gameId?: string;
+  game_id?: string;  // Match API property name
   agentName?: string;
   instructions: string;
   model?: string;
   maxTurns?: number;
+  reasoningEffort?: 'minimal' | 'low' | 'medium' | 'high';
 }
 
 export interface Arc3AgentStreamState {
@@ -94,7 +95,7 @@ export function useArc3AgentStream() {
         // Set initial state
         setState({
           status: 'running',
-          gameId: options.gameId || 'ls20',
+          gameId: options.game_id || 'ls20',
           agentName: options.agentName || 'ARC3 Agent',
           frames: [],
           currentFrameIndex: 0,
@@ -106,11 +107,12 @@ export function useArc3AgentStream() {
         if (streamingEnabled) {
           // Step 1: Prepare streaming session
           const prepareResponse = await apiRequest('POST', '/api/arc3/stream/prepare', {
-            gameId: options.gameId || 'ls20',
+            game_id: options.game_id || 'ls20',  // Match API property name
             agentName: options.agentName,
             instructions: options.instructions,
             model: options.model,
             maxTurns: options.maxTurns,
+            reasoningEffort: options.reasoningEffort || 'low',
           });
 
           const prepareData = await prepareResponse.json();
@@ -401,11 +403,12 @@ export function useArc3AgentStream() {
         } else {
           // Non-streaming fallback
           const response = await apiRequest('POST', '/api/arc3/real-game/run', {
-            gameId: options.gameId || 'ls20',
+            game_id: options.game_id || 'ls20',  // Match API property name
             agentName: options.agentName,
             instructions: options.instructions,
             model: options.model,
             maxTurns: options.maxTurns,
+            reasoningEffort: options.reasoningEffort || 'low',
           });
 
           const result = await response.json();

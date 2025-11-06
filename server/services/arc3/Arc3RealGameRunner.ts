@@ -1,7 +1,8 @@
 /*
-Author: Claude (Windsurf Cascade)
+Author: Claude Code using Sonnet 4.5
 Date: 2025-11-06
 PURPOSE: Runs OpenAI Agents SDK workflows against the real ARC-AGI-3 API, returning structured logs for the web UI.
+Matches ARC-AGI-3-ClaudeCode-SDK patterns. Uses gpt-5-nano as default model.
 SRP/DRY check: Pass — isolates agent orchestration from HTTP routing and API client implementation.
 */
 
@@ -9,9 +10,9 @@ import { randomUUID } from 'node:crypto';
 import { Agent, run, tool, extractAllTextOutput } from '@openai/agents';
 import { z } from 'zod';
 import { Arc3ApiClient, type FrameData, type GameAction } from './Arc3ApiClient';
-import type { Arc3AgentRunConfig, Arc3AgentRunResult, Arc3RunTimelineEntry } from './types';
+import type { Arc3AgentRunConfig, Arc3AgentRunResult, Arc3RunTimelineEntry, Arc3RunSummary, Arc3GameState } from './types';
 
-const DEFAULT_MODEL = 'o4-mini';
+const DEFAULT_MODEL = 'gpt-5-nano';  // Per user requirement
 const DEFAULT_MAX_TURNS = 24;
 
 export interface Arc3StreamHarness {
@@ -20,7 +21,7 @@ export interface Arc3StreamHarness {
   emitEvent: (event: string, data: any) => void;
   end: (summary: any) => void;
   metadata: {
-    gameId: string;
+    game_id: string;  // Match API property name
     agentName: string;
   };
 }
@@ -31,7 +32,7 @@ export class Arc3RealGameRunner {
   async run(config: Arc3AgentRunConfig): Promise<Arc3AgentRunResult> {
     const agentName = config.agentName?.trim() || 'ARC3 Real Game Operator';
     const maxTurns = Math.max(2, Math.min(config.maxTurns ?? DEFAULT_MAX_TURNS, 400));
-    const gameId = config.scenarioId ?? 'ls20';  // Default to LockSmith game
+    const gameId = config.game_id ?? 'ls20';  // Default to LockSmith game (ls20)
 
     let gameGuid: string | null = null;
     let currentFrame: FrameData | null = null;
@@ -49,19 +50,20 @@ export class Arc3RealGameRunner {
           .describe('Optional reason for requesting a snapshot (used in the activity log).'),
       }),
       execute: async (input) => {
-        if (!gameGuid) {
-          throw new Error('Game not started. Call reset_game first.');
+        if (!currentFrame) {
+          throw new Error('Game not started. Call execute_game_action with RESET first.');
         }
-        
-        const status = await this.apiClient.getStatus(gameGuid);
-        const frameData = await this.apiClient.getFrameData(gameGuid);
-        currentFrame = frameData;
-        
+
+        // Return cached frame state (ARC3 API doesn't have separate status/frame endpoints)
         return {
-          gameGuid,
-          gameId,
-          status,
-          frameData,
+          gameGuid: currentFrame.guid,
+          gameId: currentFrame.game_id,
+          frame: currentFrame.frame,
+          score: currentFrame.score,
+          state: currentFrame.state,
+          action_counter: currentFrame.action_counter,
+          max_actions: currentFrame.max_actions,
+          win_score: currentFrame.win_score,
           note: input.note,
         };
       },
@@ -90,7 +92,7 @@ export class Arc3RealGameRunner {
             // Start new game
             const result = await this.apiClient.startGame(gameId);
             gameGuid = result.guid;
-            currentFrame = result.frame_data;
+            currentFrame = result;  // startGame returns FrameData directly
           } else {
             // Execute action in existing game
             currentFrame = await this.apiClient.executeAction(gameGuid, gameAction);
@@ -224,30 +226,45 @@ export class Arc3RealGameRunner {
       ? finalOutputCandidate
       : extractAllTextOutput(result.newItems);
 
-    // Create summary from the last frame if available
-    const summary = frames.length > 0 && currentFrame ? {
-      state: currentFrame.state as 'NOT_PLAYED' | 'IN_PROGRESS' | 'WIN' | 'GAME_OVER',
-      score: currentFrame.score,
-      stepsTaken: currentFrame.action_counter,
-      simpleActionsUsed: [] as string[],  // ARC3 doesn't track this the same way
-      coordinateGuesses: 0,  // ARC3 doesn't track this separately
-      scenarioId: gameId,
-      scenarioName: gameId,  // Use gameId as name for now
-    } : {
-      state: 'NOT_STARTED' as const,
-      score: 0,
-      stepsTaken: 0,
-      simpleActionsUsed: [] as string[],
-      coordinateGuesses: 0,
-      scenarioId: gameId,
-      scenarioName: gameId,
+    // Map ARC3 API state strings to Arc3GameState type
+    const mapState = (state: string): Arc3GameState => {
+      if (state === 'NOT_PLAYED') return 'NOT_PLAYED';
+      if (state === 'IN_PROGRESS') return 'IN_PROGRESS';
+      if (state === 'WIN') return 'WIN';
+      if (state === 'GAME_OVER') return 'GAME_OVER';
+      return 'NOT_STARTED';  // Default fallback
     };
+
+    // Create summary from the last frame if available (explicit narrowing)
+    let summary: Arc3RunSummary;
+    if (currentFrame !== null) {
+      const cf = currentFrame as FrameData;
+      summary = {
+        state: mapState(cf.state),
+        score: cf.score,
+        stepsTaken: cf.action_counter,
+        simpleActionsUsed: [],  // ARC3 doesn't track this the same way
+        coordinateGuesses: 0,  // ARC3 doesn't track this separately
+        scenarioId: gameId,
+        scenarioName: gameId,  // Use gameId as name for now
+      };
+    } else {
+      summary = {
+        state: 'NOT_STARTED',
+        score: 0,
+        stepsTaken: 0,
+        simpleActionsUsed: [],
+        coordinateGuesses: 0,
+        scenarioId: gameId,
+        scenarioName: gameId,
+      };
+    }
 
     return {
       runId: randomUUID(),
       finalOutput: finalOutput?.trim() ? finalOutput.trim() : undefined,
       timeline,
-      frames,
+      frames: frames as any[],  // Arc3AgentRunResult accepts any[] for frames
       summary,
       usage: {
         requests: usage.requests,
@@ -261,7 +278,7 @@ export class Arc3RealGameRunner {
   async runWithStreaming(config: Arc3AgentRunConfig, streamHarness: Arc3StreamHarness): Promise<Arc3AgentRunResult> {
     const agentName = config.agentName?.trim() || 'ARC3 Real Game Operator';
     const maxTurns = Math.max(2, Math.min(config.maxTurns ?? DEFAULT_MAX_TURNS, 400));
-    const gameId = config.scenarioId ?? 'ls20';  // Default to LockSmith game
+    const gameId = config.game_id ?? 'ls20';  // Default to LockSmith game
 
     let gameGuid: string | null = null;
     let currentFrame: FrameData | null = null;
@@ -287,35 +304,38 @@ export class Arc3RealGameRunner {
           .describe('Optional reason for requesting a snapshot (used in the activity log).'),
       }),
       execute: async (input) => {
-        if (!gameGuid) {
-          throw new Error('Game not started. Call reset_game first.');
+        if (!currentFrame) {
+          throw new Error('Game not started. Call execute_game_action with RESET first.');
         }
-        
+
         // Emit tool call event
         streamHarness.emitEvent("agent.tool_call", {
           tool: 'inspect_game_state',
           arguments: input,
           timestamp: Date.now(),
         });
-        
-        const status = await this.apiClient.getStatus(gameGuid);
-        const frameData = await this.apiClient.getFrameData(gameGuid);
-        currentFrame = frameData;
-        
+
+        // Return cached frame state (ARC3 API doesn't have separate status/frame endpoints)
+        const result = {
+          gameGuid: currentFrame.guid,
+          gameId: currentFrame.game_id,
+          frame: currentFrame.frame,
+          score: currentFrame.score,
+          state: currentFrame.state,
+          action_counter: currentFrame.action_counter,
+          max_actions: currentFrame.max_actions,
+          win_score: currentFrame.win_score,
+          note: input.note,
+        };
+
         // Emit tool result event
         streamHarness.emitEvent("agent.tool_result", {
           tool: 'inspect_game_state',
-          result: { gameGuid, gameId, status, frameData, note: input.note },
+          result,
           timestamp: Date.now(),
         });
-        
-        return {
-          gameGuid,
-          gameId,
-          status,
-          frameData,
-          note: input.note,
-        };
+
+        return result;
       },
     });
 
@@ -349,19 +369,19 @@ export class Arc3RealGameRunner {
             // Start new game
             const result = await this.apiClient.startGame(gameId);
             gameGuid = result.guid;
-            currentFrame = result.frame_data;
-            
+            currentFrame = result;  // startGame returns FrameData directly
+
             // Emit game started event
             streamHarness.emitEvent("game.started", {
               gameGuid,
               gameId,
-              initialFrame: result.frame_data,
+              initialFrame: result,  // result IS the FrameData
               timestamp: Date.now(),
             });
           } else {
             // Execute action in existing game
             currentFrame = await this.apiClient.executeAction(gameGuid, gameAction);
-            
+
             // Emit action executed event
             streamHarness.emitEvent("game.action_executed", {
               gameGuid,
@@ -564,28 +584,45 @@ export class Arc3RealGameRunner {
       ? finalOutputCandidate
       : extractAllTextOutput(result.newItems);
 
-    // Create summary from the last frame if available
-    const summary = frames.length > 0 && currentFrame ? {
-      state: currentFrame.state as 'NOT_PLAYED' | 'IN_PROGRESS' | 'WIN' | 'GAME_OVER',
-      score: currentFrame.score,
-      stepsTaken: currentFrame.action_counter,
-      simpleActionsUsed: [] as string[],  // ARC3 doesn't track this the same way
-      coordinateGuesses: 0,  // ARC3 doesn't track this separately
-      scenarioId: gameId,
-      scenarioName: gameId,  // Use gameId as name for now
-    } : {
-      state: 'NOT_STARTED' as const,
-      score: 0,
-      stepsTaken: 0,
-      simpleActionsUsed: [] as string[],
-      coordinateGuesses: 0,
-      scenarioId: gameId,
-      scenarioName: gameId,
+    // Map ARC3 API state strings to Arc3GameState type
+    const mapState = (state: string): Arc3GameState => {
+      if (state === 'NOT_PLAYED') return 'NOT_PLAYED';
+      if (state === 'IN_PROGRESS') return 'IN_PROGRESS';
+      if (state === 'WIN') return 'WIN';
+      if (state === 'GAME_OVER') return 'GAME_OVER';
+      return 'NOT_STARTED';  // Default fallback
     };
+
+    // Create summary from the last frame if available (explicit narrowing)
+    let summary: Arc3RunSummary;
+    if (currentFrame !== null) {
+      const cf = currentFrame as FrameData;
+      summary = {
+        state: mapState(cf.state),
+        score: cf.score,
+        stepsTaken: cf.action_counter,
+        simpleActionsUsed: [],  // ARC3 doesn't track this the same way
+        coordinateGuesses: 0,  // ARC3 doesn't track this separately
+        scenarioId: gameId,
+        scenarioName: gameId,  // Use gameId as name for now
+      };
+    } else {
+      summary = {
+        state: 'NOT_STARTED',
+        score: 0,
+        stepsTaken: 0,
+        simpleActionsUsed: [],
+        coordinateGuesses: 0,
+        scenarioId: gameId,
+        scenarioName: gameId,
+      };
+    }
+
+    const generatedRunId = randomUUID();
 
     // Emit completion event
     streamHarness.emitEvent("agent.completed", {
-      runId: result.runId || randomUUID(),
+      runId: generatedRunId,
       finalOutput,
       summary,
       usage: {
@@ -600,10 +637,10 @@ export class Arc3RealGameRunner {
     });
 
     return {
-      runId: result.runId || randomUUID(),
+      runId: generatedRunId,
       finalOutput: finalOutput?.trim() ? finalOutput.trim() : undefined,
       timeline,
-      frames,
+      frames: frames as any[],  // Arc3AgentRunResult accepts any[] for frames
       summary,
       usage: {
         requests: usage.requests,

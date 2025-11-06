@@ -18,7 +18,8 @@ export type Arc3SimpleActionId = (typeof ARC3_SIMPLE_ACTIONS)[number];
 export type Arc3ActionKind = 'reset' | 'simple' | 'coordinate';
 
 export type Arc3GameState =
-  | 'NOT_STARTED'
+  | 'NOT_STARTED'  // Simulator-specific
+  | 'NOT_PLAYED'   // Real ARC3 API
   | 'IN_PROGRESS'
   | 'WIN'
   | 'GAME_OVER';
@@ -60,6 +61,18 @@ export interface Arc3FrameSnapshot {
   remainingSteps: number;
 }
 
+// Real ARC3 API frame data (from FrameData in Arc3ApiClient)
+export interface Arc3RealFrameSnapshot {
+  guid: string;
+  game_id: string;
+  frame: number[][][];
+  score: number;
+  state: string;
+  action_counter: number;
+  max_actions: number;
+  win_score: number;
+}
+
 export interface Arc3RunSummary {
   state: Arc3GameState;
   score: number;
@@ -81,7 +94,7 @@ export interface Arc3AgentRunResult {
   runId: string;
   finalOutput?: string;
   timeline: Arc3RunTimelineEntry[];
-  frames: Arc3FrameSnapshot[];
+  frames: Arc3FrameSnapshot[] | any[];  // Can be simulated frames or real ARC3 frames
   summary: Arc3RunSummary;
   usage: {
     requests: number;
@@ -96,5 +109,6 @@ export interface Arc3AgentRunConfig {
   instructions: string;
   model?: string;
   maxTurns?: number;
-  scenarioId?: string;
+  game_id?: string;  // ARC3 game ID (e.g., "ls20")
+  reasoningEffort?: 'minimal' | 'low' | 'medium' | 'high';
 }

@@ -39,6 +39,8 @@ interface Arc3AgentConfigPanelProps {
   setModel: (value: string) => void;
   maxTurns: number;
   setMaxTurns: (value: number) => void;
+  reasoningEffort: 'minimal' | 'low' | 'medium' | 'high';
+  setReasoningEffort: (value: 'minimal' | 'low' | 'medium' | 'high') => void;
   instructions: string;
   setInstructions: (value: string) => void;
   isRunning: boolean;
@@ -54,6 +56,8 @@ export const Arc3AgentConfigPanel: React.FC<Arc3AgentConfigPanelProps> = ({
   setModel,
   maxTurns,
   setMaxTurns,
+  reasoningEffort,
+  setReasoningEffort,
   instructions,
   setInstructions,
   isRunning,
@@ -225,6 +229,52 @@ export const Arc3AgentConfigPanel: React.FC<Arc3AgentConfigPanelProps> = ({
             <span>10 (quick exploration)</span>
             <span>100 (thorough gameplay)</span>
           </div>
+        </div>
+
+        {/* Reasoning Effort */}
+        <div className="space-y-2">
+          <Label htmlFor="reasoning-effort" className="flex items-center gap-2">
+            <Brain className="h-4 w-4" />
+            Reasoning Effort
+          </Label>
+          <Select
+            value={reasoningEffort}
+            onValueChange={setReasoningEffort}
+            disabled={isRunning}
+          >
+            <SelectTrigger id="reasoning-effort">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="minimal">
+                <div className="flex flex-col items-start">
+                  <span className="font-medium">Minimal</span>
+                  <span className="text-xs text-muted-foreground">Quick responses, basic reasoning</span>
+                </div>
+              </SelectItem>
+              <SelectItem value="low">
+                <div className="flex flex-col items-start">
+                  <span className="font-medium">Low</span>
+                  <span className="text-xs text-muted-foreground">Balanced speed and reasoning</span>
+                </div>
+              </SelectItem>
+              <SelectItem value="medium">
+                <div className="flex flex-col items-start">
+                  <span className="font-medium">Medium</span>
+                  <span className="text-xs text-muted-foreground">Moderate reasoning depth</span>
+                </div>
+              </SelectItem>
+              <SelectItem value="high">
+                <div className="flex flex-col items-start">
+                  <span className="font-medium">High</span>
+                  <span className="text-xs text-muted-foreground">Deep analysis, thorough reasoning</span>
+                </div>
+              </SelectItem>
+            </SelectContent>
+          </Select>
+          <p className="text-xs text-muted-foreground">
+            Controls how much computational effort the agent spends on reasoning. Higher effort = better analysis but slower responses.
+          </p>
         </div>
 
         {/* Instructions */}

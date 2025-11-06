@@ -16,11 +16,12 @@ import { Arc3RealGameRunner } from "./Arc3RealGameRunner";
 import type { Arc3AgentRunConfig } from "./types";
 
 export interface StreamArc3Payload {
-  gameId: string;
+  game_id: string;  // Match ARC3 API property naming
   agentName?: string;
   instructions: string;
   model?: string;
   maxTurns?: number;
+  reasoningEffort?: 'minimal' | 'low' | 'medium' | 'high';
   sessionId?: string;
   createdAt?: number;
   expiresAt?: number;
@@ -110,12 +111,12 @@ export class Arc3StreamService {
         return sessionId;
       }
 
-      const { gameId, agentName, instructions, model, maxTurns } = payload;
+      const { game_id, agentName, instructions, model, maxTurns, reasoningEffort } = payload;
 
       // Send initial status
       sseStreamManager.sendEvent(sessionId, "stream.init", {
         state: "starting",
-        gameId,
+        game_id,
         agentName: agentName || 'ARC3 Agent',
         timestamp: Date.now(),
       });
@@ -128,7 +129,7 @@ export class Arc3StreamService {
             ...(chunk ?? {}),
             metadata: {
               ...(chunk?.metadata ?? {}),
-              gameId,
+              game_id,
               agentName: agentName || 'ARC3 Agent',
             },
           };
@@ -140,29 +141,30 @@ export class Arc3StreamService {
         emitEvent: (event: string, data: any) => {
           const enrichedEvent =
             data && typeof data === "object"
-              ? { ...data, gameId, agentName: agentName || 'ARC3 Agent' }
-              : { gameId, agentName: agentName || 'ARC3 Agent' };
+              ? { ...data, game_id, agentName: agentName || 'ARC3 Agent' }
+              : { game_id, agentName: agentName || 'ARC3 Agent' };
           sseStreamManager.sendEvent(sessionId, event, enrichedEvent);
         },
         metadata: {
-          gameId,
+          game_id,
           agentName: agentName || 'ARC3 Agent',
         },
       };
 
       // Run the agent with streaming
       const runConfig: Arc3AgentRunConfig = {
-        gameId,
+        game_id,
         agentName,
         instructions,
         model,
         maxTurns,
+        reasoningEffort,
       };
 
       // Send status update
       sseStreamManager.sendEvent(sessionId, "stream.status", {
         state: "running",
-        gameId,
+        game_id,
         message: "Agent is starting to play the game...",
         timestamp: Date.now(),
       });

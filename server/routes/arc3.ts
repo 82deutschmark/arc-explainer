@@ -1,7 +1,8 @@
 /*
-Author: gpt-5-codex
+Author: Claude Code using Sonnet 4.5
 Date: 2025-11-06
 PURPOSE: Express router exposing the ARC3 agent playground API backed by the OpenAI Agents SDK runner.
+Manages scorecard lifecycle for the real ARC3 API integration.
 SRP/DRY check: Pass — isolates HTTP contract and validation for ARC3 playground endpoints.
 */
 
@@ -21,6 +22,21 @@ const runner = new Arc3AgentRunner();
 // Real ARC3 API client and runner
 const arc3ApiClient = new Arc3ApiClient(process.env.ARC3_API_KEY || '');
 const realGameRunner = new Arc3RealGameRunner(arc3ApiClient);
+
+// Initialize scorecard on server startup (required before any game operations)
+let scorecardInitialized = false;
+async function ensureScorecard() {
+  if (!scorecardInitialized) {
+    try {
+      await arc3ApiClient.openScorecard(['arc-explainer', 'web-ui'], 'https://github.com/yourusername/arc-explainer');
+      scorecardInitialized = true;
+      console.log('✅ ARC3 scorecard opened:', arc3ApiClient.getCardId());
+    } catch (error) {
+      console.error('❌ Failed to open ARC3 scorecard:', error);
+      throw error;
+    }
+  }
+}
 
 const runSchema = z.object({
   agentName: z.string().trim().max(60).optional(),
@@ -56,6 +72,7 @@ router.post(
 router.get(
   '/games',
   asyncHandler(async (req: Request, res: Response) => {
+    await ensureScorecard();  // Ensure scorecard is open before any operations
     const games = await arc3ApiClient.listGames();
     res.json(formatResponse.success(games));
   }),
@@ -68,6 +85,7 @@ router.get(
 router.post(
   '/real-game/run',
   asyncHandler(async (req: Request, res: Response) => {
+    await ensureScorecard();  // Ensure scorecard is open before starting game
     const payload = runSchema.parse(req.body);
     const result = await realGameRunner.run(payload);
     res.json(formatResponse.success(result));
@@ -77,7 +95,7 @@ router.post(
 // NEW: Streaming endpoints for ARC3
 
 const streamRunSchema = z.object({
-  gameId: z.string().trim().max(120).default('ls20'),
+  game_id: z.string().trim().max(120).default('ls20'),  // Match API property name
   agentName: z.string().trim().max(60).optional(),
   instructions: z
     .string({ required_error: 'instructions is required' })
@@ -90,6 +108,7 @@ const streamRunSchema = z.object({
     .min(2)
     .max(400)
     .optional(),
+  reasoningEffort: z.enum(['minimal', 'low', 'medium', 'high']).optional(),
 });
 
 /**
@@ -112,9 +131,10 @@ router.post(
 router.get(
   '/stream/:sessionId',
   asyncHandler(async (req: Request, res: Response) => {
+    await ensureScorecard();  // Ensure scorecard is open before starting stream
     const { sessionId } = req.params;
     const payload = arc3StreamService.getPendingPayload(sessionId);
-    
+
     if (!payload) {
       return res
         .status(404)
