@@ -3456,6 +3456,12 @@ app.get("/api/model-dataset/metrics/:modelName/:datasetName", asyncHandler(model
 ## [Unreleased]
 
 ### Added
+- Added `external/openai-agents-js` as a git submodule pointing to https://github.com/82deutschmark/openai-agents-js to keep agent streaming SDK in sync with upstream. No build/runtime wiring changed.
+
+### Notes
+- Submodule requires cloning with `--recurse-submodules` or running `git submodule update --init --recursive` after checkout.
+
+### Added
 - **SSE Streaming Scaffold (Needs Audit)**
   - Introduced `/api/stream/analyze/:taskId/:modelKey` endpoint guarded by `STREAMING_ENABLED` feature flag.
   - Added frontend EventSource helper (`createAnalysisStream`) and hook (`useAnalysisStreaming`) currently wired into the dormant Model Browser page.
@@ -5961,4 +5967,3 @@ To enable conversation chaining:
 
 ## 2025-10-31
 - Docs: Added `docs/31OctDesign.md` specifying a CSS-only, look-only restyle for solver buttons (no structural/behavioral changes). Author: OpenAI Codex Agent.
-
