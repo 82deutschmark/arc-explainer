@@ -126,54 +126,113 @@ POST /api/arc3/agent-playground/stream        # NEW: SSE streaming
 ARC3_API_KEY="de61d386-c2e7-4c0f-9546-511c505a4381"  is in .env.example already!!!
 ```
 
-### Phase 2: Streaming Infrastructure ALREADY EXISTS IN THE PROJECT!!!  Look at how the other Streaming services are implemented and match their logic exactly!!!!
+### Phase 2: Integrate with Existing Streaming Infrastructure (1-2 hours)
+**Pattern**: Follow `analysisStreamService.ts` + `SSEStreamManager.ts` pattern
+
 **Tasks**:
-1. Create `Arc3StreamingService.ts` - SSE events
-2. Add streaming to runner - OpenAI Agents SDK streaming
-3. Add `/stream` endpoint
+1. Create `arc3StreamService.ts` matching `analysisStreamService.ts` structure
+   - Use existing `SSEStreamManager` singleton (no new manager needed!)
+   - Implement prepare/start pattern: POST creates session → GET streams via sessionId
+   - Use same event types: `stream.init`, `stream.chunk`, `stream.status`, `stream.complete`
+2. Update `Arc3RealGameRunner.ts` to emit events via `sseStreamManager.sendEvent()`
+3. Add routes matching existing pattern:
+   - POST `/api/arc3/stream/prepare` → returns sessionId
+   - GET `/api/arc3/stream/:gameId/:sessionId` → SSE stream
+   - POST `/api/arc3/stream/cancel/:sessionId` → abort
 
 **Files**:
 ```
-✨ NEW: server/services/arc3/Arc3StreamingService.ts
+✨ NEW: server/services/arc3/arc3StreamService.ts
 🔧 MOD: server/services/arc3/Arc3RealGameRunner.ts
+🔧 MOD: server/routes/arc3.ts
 ```
 
-### Phase 3: POORLY NAMED!!  MUST REFERENCE ARC3  These grids are totally different from the ARC 1&2 grids!!!
+**Reference Files** (DO NOT MODIFY, STUDY ONLY):
+```
+server/services/streaming/SSEStreamManager.ts
+server/services/streaming/analysisStreamService.ts
+server/controllers/streamController.ts
+```
+
+### Phase 3: ARC3 Grid Visualization (1-2 hours)
+**Important**: ARC-AGI-3 grids are different from ARC1/2! Use different color palette.
+
 **Tasks**:
-1. Create `ARC3GridVisualization.tsx` - Canvas renderer
-2. Port color mapping from Python reference
-3. Add legend and stats
+1. Create `Arc3GridVisualization.tsx` - Canvas-based renderer for 0-15 integer cells
+2. Port color mapping from `external/ARC3-solution/custom_agents/view_utils.py` (lines 7-24)
+3. Add `Arc3GridLegend.tsx` showing color meanings
+4. Add game stats display (score, actions, state)
 
 **Files**:
 ```
-✨ NEW: client/src/components/arc3/GridVisualization.tsx
+✨ NEW: client/src/components/arc3/Arc3GridVisualization.tsx
+✨ NEW: client/src/components/arc3/Arc3GridLegend.tsx
 ✨ NEW: client/src/utils/arc3Colors.ts
 ```
 
-### Phase 4: Streaming Chat UI (Needs to be sourced directly from the openai-chatkit-advanced-samples project)
+**Color Palette** (from Python reference):
+```typescript
+export const ARC3_COLORS: Record<number, string> = {
+  0: '#FFFFFF', 1: '#CCCCCC', 2: '#999999', 3: '#666666',
+  4: '#333333', 5: '#000000', 6: '#E53AA3', 7: '#FF7BCC',
+  8: '#F93C31', 9: '#1E93FF', 10: '#88D8F1', 11: '#FFDC00',
+  12: '#FF851B', 13: '#921231', 14: '#4FCC30', 15: '#A356D6'
+};
+```
+
+### Phase 4: Client-Side Streaming Hook (2 hours)
+**Pattern**: Follow `useSaturnProgress.ts` pattern exactly
+
 **Tasks**:
-1. ????
-2. ????
-3. Add message types (reasoning, tool calls, results)
+1. Create `useArc3AgentStream.ts` hook matching `useSaturnProgress` structure:
+   - State management for status, messages, frames, errors
+   - SSE connection via EventSource
+   - Event handlers for init/chunk/status/complete/error
+   - Cleanup on unmount
+2. Use existing `client/src/lib/streaming/analysisStream.ts` helpers
+3. Handle OpenAI Agents SDK event types:
+   - `agent_thinking` → reasoning display
+   - `tool_call` → action execution
+   - `tool_result` → game response
+   - `frame_update` → grid state change
 
 **Files**:
 ```
-???
+✨ NEW: client/src/hooks/useArc3AgentStream.ts
 ```
 
-### Phase 5: Complete Page Rewrite (3 hours)
+**Reference Files** (STUDY PATTERN):
+```
+client/src/hooks/useSaturnProgress.ts (lines 1-200)
+client/src/lib/streaming/analysisStream.ts
+```
+
+### Phase 5: Frontend Integration (3-4 hours)
 **Tasks**:
-1. ????
-2. Create NEW page with all components
-3. Add game selection and config panel (config panel should reuse existing logic or components from elsewhere in the project!!!)
+1. Rewrite `ARC3AgentPlayground.tsx` with proper integration:
+   - Use `useArc3AgentStream` hook
+   - Render `Arc3GridVisualization` with live game state
+   - Display streaming chat messages
+   - Show agent configuration panel
+2. Create `Arc3AgentConfigPanel.tsx` adapting patterns from:
+   - `components/model-examiner/ExaminerConfigPanel.tsx` (model selection)
+   - `components/puzzle/PromptConfiguration.tsx` (instructions)
+3. Create `Arc3GameSelector.tsx` for game browsing
+4. Create `Arc3ChatTimeline.tsx` for message display
 
 **Files**:
 ```
-
-✨ NEW: client/src/pages/ARC3AgentPlayground.tsx (NEW)
-✨ NEW: client/src/components/arc3/AgentConfigPanel.tsx (Code Already exists elsewhere!!!)
-✨ NEW: client/src/components/arc3/GameBrowser.tsx
+🔧 REWRITE: client/src/pages/ARC3AgentPlayground.tsx
+✨ NEW: client/src/components/arc3/Arc3AgentConfigPanel.tsx
+✨ NEW: client/src/components/arc3/Arc3GameSelector.tsx
+✨ NEW: client/src/components/arc3/Arc3ChatTimeline.tsx
+✨ NEW: client/src/components/arc3/Arc3MessageBubble.tsx
 ```
+
+**UI Layout** (Use DaisyUI/shadcn components):
+- Left sidebar: Game selector + Config panel
+- Center: Arc3GridVisualization + Game stats
+- Right: Arc3ChatTimeline with streaming messages
 
 ---
 
@@ -189,49 +248,109 @@ ARC3_API_KEY="de61d386-c2e7-4c0f-9546-511c505a4381"  is in .env.example already!
 - ✅ One-way server → client
 - ✅ Auto-reconnection
 
-### Use Responses API for Reasoning  YOU WILL NEED TO REREAD THE DOCS ON THE RESPONSES API AND THE AGENTS SDK TO UNDERSTAND HOW TO USE IT PROPERLY!!!  DO NOT PROCEED WITH THIS TASK UNLESS YOU HAVE READ AND UNDERSTOOD THE DOCS and have the user confirm that you understand how to use it!!!
+### Use Responses API for Reasoning
+
+**CRITICAL**: OpenAI Agents SDK uses Responses API internally. We must:
+1. Configure agent with proper reasoning settings
+2. Capture `response.id` from SDK events for conversation chaining
+3. Pass `previous_response_id` via SDK configuration
+
+**SDK Configuration** (NOT direct API calls):
 ```typescript
-const response = await openai.responses.create({
-  model: "gpt-5-nano",
-  input: messages,
-  reasoning: { effort: "high", verbosity: "high", summary: "detailed" },
-  previous_response_id: lastResponseId,  // Stateful!
-  stream: true
+const agent = new Agent({
+  name: 'ARC3 Player',
+  model: 'gpt-5-nano',
+  instructions: userInstructions,
+  tools: [inspectTool, actionTools...],
+});
+
+const result = await run(agent, initialPrompt, {
+  maxTurns: 24,
+  stream: true,
+  // Responses API settings passed through SDK:
+  modelOptions: {
+    reasoning: {
+      effort: 'high',
+      verbosity: 'high',
+      summary: 'detailed'
+    },
+    previous_response_id: lastResponseId,
+    max_output_tokens: 16920
+  }
 });
 ```
 
-**Why**: Preserves reasoning state between turns (critical for multi-turn games)
+**Why Critical**: 
+- Preserves reasoning state between turns (essential for multi-turn puzzles)
+- Allows agent to build on previous observations
+- Captures reasoning tokens separately for cost tracking
+
+**Required Reading Before Implementation**:
+- `docs/reference/api/ResponsesAPI.md` (complete file)
+- `docs/reference/api/OpenAI_Responses_API_Streaming_Implementation.md`
+- `external/openai-agents-js/README.md` (streaming section)
+- `docs/reference/HowAgentsWork.md` (ReasoningAgent section, lines 217-254)
 
 ---
 
-## 6. Environment Setup  (THINK HARDER!!  This is a production app, we store env vars on railway)
+## 6. Environment Setup
 
+**Development** (.env.local):
 ```bash
-# .env
-ARC_API_KEY=your_key_from_three.arcprize.org
+ARC3_API_KEY=de61d386-c2e7-4c0f-9546-511c505a4381  # Already in .env.example
 OPENAI_API_KEY=your_openai_key
+STREAMING_ENABLED=true  # Already configured
 ```
+
+**Production** (Railway):
+- Environment variables already configured on Railway
+- No .env file changes needed for deployment
+- `ARC3_API_KEY` already set in Railway dashboard
 
 ---
 
 ## 7. File Structure Summary
 
-### Files to Create (14 new files)
+### Files to Create (~10-12 new files)
+**Backend**:
 ```
 server/services/arc3/Arc3ApiClient.ts
-?????
+server/services/arc3/Arc3RealGameRunner.ts
+server/services/arc3/arc3StreamService.ts
+```
+
+**Frontend**:
+```
+client/src/hooks/useArc3AgentStream.ts
+client/src/components/arc3/Arc3GridVisualization.tsx
+client/src/components/arc3/Arc3GridLegend.tsx
+client/src/components/arc3/Arc3AgentConfigPanel.tsx
+client/src/components/arc3/Arc3GameSelector.tsx
+client/src/components/arc3/Arc3ChatTimeline.tsx
+client/src/components/arc3/Arc3MessageBubble.tsx
 client/src/utils/arc3Colors.ts
 ```
 
-### Files to Modify (2 files)
+### Files to Modify
 ```
-server/routes/arc3.ts
-.env.example
+server/routes/arc3.ts (add streaming routes)
+client/src/pages/ARC3AgentPlayground.tsx (complete rewrite)
 ```
 
-### Files to Rewrite (1 file)
+### Reference Files (DO NOT MODIFY - STUDY ONLY)
+**Streaming Patterns**:
 ```
-client/src/pages/ARC3AgentPlayground.tsx  # COMPLETE REWRITE
+server/services/streaming/SSEStreamManager.ts
+server/services/streaming/analysisStreamService.ts
+server/controllers/streamController.ts
+client/src/hooks/useSaturnProgress.ts
+client/src/lib/streaming/analysisStream.ts
+```
+
+**Config Panel Patterns**:
+```
+client/src/components/model-examiner/ExaminerConfigPanel.tsx
+client/src/components/puzzle/PromptConfiguration.tsx
 ```
 
 ---

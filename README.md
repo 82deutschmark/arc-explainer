@@ -1,9 +1,9 @@
-# ARC-AGI Explainer Platform
+# ARC-AGI Explainer Platform - A Fan Site for ARC-AGI-3
 
 **Version 5.1.0** — November 6, 2025
 
 
-A research platform for analyzing Abstract Reasoning Corpus (ARC-AGI) puzzles using state-of-the-art AI models with deep reasoning capture, conversation chaining, and comprehensive performance analytics.
+A hobby platform for analyzing Abstract Reasoning Corpus (ARC-AGI) puzzles using state-of-the-art LLMs with reasoning capture, conversation chaining, and comprehensive performance analytics.
 
 **[Live Production Environment](https://arc.markbarney.net) • [Technical Docs](./CLAUDE.md) • [API Reference](./docs/EXTERNAL_API.md) • [Changelog](./CHANGELOG.md)**
 
@@ -11,14 +11,17 @@ A research platform for analyzing Abstract Reasoning Corpus (ARC-AGI) puzzles us
 
 ## What's New in v5.1.0
 
-### 🎮 ARC3 Agent Playground (Beta)
-- `/arc3/playground` introduces an interactive lab powered by the new OpenAI Agents SDK. Configure instructions, pick a model, and watch the agent attempt to solve a real ARC-AGI-3 game.
-- SOME SIMULATED GARBAGE SLOP IN THE PROCESS OF BEING REMOVED.
+### 🎮 ARC3 Agent Playground (In Development)
+- `/arc3/playground` introduces an interactive lab powered by the OpenAI Agents SDK where users can watch agents attempt to solve real ARC-AGI-3 competition games (like ls20 "LockSmith").
+- Features real-time streaming, grid visualization, customizable agent instructions, and performance metrics.
+- Integrates with the official ARC-AGI-3 API at three.arcprize.org for authentic game scenarios.
 - Global navigation and the ARC3 landing page now link directly to the playground for quick access.
 
 ### 🧠 Backend Agent Runner
-- Deterministic "Color Hunt" mini-game simulator emulates ARC-AGI-3 interactions (reset, scanner actions, ACTION6 coordinate probes) without requiring a remote ARC API key.   THIS WAS TOTAL GARBAGE THAT VIOLATES THE CORE PRINCIPLES OF THE PROJECT AND IS BEING REMOVED.
-- Express route `/api/arc3/agent-playground/run` validates payloads with Zod, orchestrates the OpenAI agent, and returns timeline, frame snapshots, and token usage for the UI.  NEEDS TO BE AUDITED TO BE SURE IT IS NOT SLOP!!!
+- Real ARC-AGI-3 game integration via `Arc3ApiClient` connects to the official competition API.
+- OpenAI Agents SDK orchestration with Responses API for stateful reasoning across multi-turn puzzle solving.
+- SSE-based streaming infrastructure (matching existing analysis streaming patterns) provides real-time agent progress.
+- Express routes handle game listing, agent configuration, and streaming gameplay sessions.
 
 ### 🧹 Type Safety Improvements
 - Hardened Saturn work table state transitions to satisfy strict TypeScript checks after the new build pass.
