@@ -45,6 +45,11 @@ export default function ARC3Browser() {
           A groundbreaking benchmark that tests AI systems through game-based environments,
           evaluating exploration, memory, planning, and goal acquisition—not static puzzle solving.
         </p>
+        <div className="mt-6 flex justify-center">
+          <Button asChild>
+            <Link href="/arc3/playground">Launch ARC3 Playground</Link>
+          </Button>
+        </div>
       </div>
 
       {/* Key Difference Alert */}

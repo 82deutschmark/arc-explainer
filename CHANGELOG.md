@@ -1,5 +1,19 @@
 # CHANGELOG - Uses semantic versioning (MAJOR.MINOR.PATCH)
 
+# [5.1.0] - 2025-11-06
+### 🎮 ARC3 Agent Playground
+- Added `/arc3/playground` React page with configurable agent instructions, model selection, and live simulator playback driven by the OpenAI Agents SDK.
+- Introduced `useArc3AgentRun` hook plus typed payload/response models to integrate the playground with React Query.
+- Updated navigation and the ARC3 landing page with quick links to the playground.
+
+### 🧠 Backend Agent Runner & Simulator
+- Created deterministic ARC3 "Color Hunt" simulator with scanner actions, coordinate probes, history snapshots, and scoring.
+- Implemented `Arc3AgentRunner` service that wires the simulator to the OpenAI Agents SDK, capturing timeline, usage, and frames for the client.
+- Added `/api/arc3/agent-playground/run` route with Zod validation returning formatted responses for the UI.
+
+### 🧹 Type Safety
+- Adjusted Saturn work table phase tracking to satisfy strict TypeScript inference after the new build run.
+
 # [5.0.4] - 2025-11-05
 ### 🧵 Streaming Experience
 - Keep the streaming analysis modal open after completion so reviewers can read results and dismiss manually.
