@@ -21,7 +21,8 @@ import {
   MessageSquare,
   Info,
   Award,
-  Gamepad2
+  Gamepad2,
+  FlaskConical
 } from 'lucide-react';
 
 interface NavItem {
@@ -97,6 +98,12 @@ const navigationItems: NavItem[] = [
     href: '/arc3',
     icon: Gamepad2,
     description: 'Interactive reasoning benchmark for AI agents (game-based, not puzzles)'
+  },
+  {
+    title: 'ARC3 Playground',
+    href: '/arc3/playground',
+    icon: FlaskConical,
+    description: 'Launch the Color Hunt simulator powered by the OpenAI Agents SDK'
   }
 ];
 
