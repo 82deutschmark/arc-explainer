@@ -59,8 +59,9 @@ export const ChatIterationCard: React.FC<ChatIterationCardProps> = ({
         : explanation.predictedOutputGrid;
     }
 
-    // Then try multi-prediction (check for predictedOutput1)
-    if ((explanation as any).multiplePredictedOutputs === true && (explanation as any).predictedOutput1) {
+    // Then try multi-prediction (check for predictedOutput1 directly)
+    // Don't rely on boolean flag which may be serialized as string/number from DB
+    if ((explanation as any).predictedOutput1) {
       const grid = (explanation as any).predictedOutput1;
       return Array.isArray(grid) ? grid : [[0]];
     }

@@ -101,6 +101,7 @@ export function useAnalysisResults({
 
   const resetStreamingState = useCallback(() => {
     streamingContextRef.current = null;
+    setStreamingModelKey(null);
     setStreamingPhase(undefined);
     setStreamingMessage(undefined);
     setStreamingTokenUsage({});
@@ -166,7 +167,7 @@ export function useAnalysisResults({
           return next;
         });
         // Don't reset streaming state immediately — keep modal open for review
-        closeStream();
+        closeStream({ resetState: false });
         await refetchExplanations();
       } catch (err) {
         const message = err instanceof Error ? err.message : 'Streaming completion failed';
