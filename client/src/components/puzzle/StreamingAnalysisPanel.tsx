@@ -162,8 +162,16 @@ export function StreamingAnalysisPanel({
             </div>
           )}
 
+          {reasoning && reasoning.trim().length > 0 && (
+            <div>
+              <p className="text-xs font-semibold text-blue-600 uppercase tracking-wide mb-1">Reasoning</p>
+              <pre className="whitespace-pre-wrap bg-white border border-blue-200 rounded-md p-3 max-h-[400px] overflow-y-auto text-xs text-blue-700 font-mono">
+                {reasoning}
+              </pre>
+            </div>
+          )}
           <div>
-            <p className="text-xs font-semibold text-blue-600 uppercase tracking-wide mb-1">Current Output</p>
+            <p className="text-xs font-semibold text-blue-600 uppercase tracking-wide mb-1">Final Reply</p>
             <pre className="whitespace-pre-wrap bg-white border border-blue-200 rounded-md p-3 max-h-[500px] overflow-y-auto font-mono text-xs">
               {visibleOutput && visibleOutput.length > 0 ? visibleOutput : 'Waiting for output\u2026'}
             </pre>
@@ -173,14 +181,6 @@ export function StreamingAnalysisPanel({
               <p className="text-xs font-semibold text-blue-600 uppercase tracking-wide mb-1">Raw Text Stream</p>
               <pre className="whitespace-pre-wrap bg-white border border-blue-200 rounded-md p-3 max-h-[300px] overflow-y-auto font-mono text-xs">
                 {text.trim()}
-              </pre>
-            </div>
-          )}
-          {reasoning && reasoning.trim().length > 0 && (
-            <div>
-              <p className="text-xs font-semibold text-blue-600 uppercase tracking-wide mb-1">Reasoning</p>
-              <pre className="whitespace-pre-wrap bg-white border border-blue-200 rounded-md p-3 max-h-[400px] overflow-y-auto text-xs text-blue-700 font-mono">
-                {reasoning}
               </pre>
             </div>
           )}
