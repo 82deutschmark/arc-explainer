@@ -27,6 +27,7 @@ import ModelDebate from "@/pages/ModelDebate";
 import ModelComparisonPage from "@/pages/ModelComparisonPage";
 import About from "@/pages/About";
 import ARC3Browser from "@/pages/ARC3Browser";
+import ARC3AgentPlayground from "@/pages/ARC3AgentPlayground";
 
 function Router() {
   return (
@@ -64,6 +65,7 @@ function Router() {
         <Route path="/model-comparison" component={ModelComparisonPage} />
         <Route path="/about" component={About} />
         <Route path="/arc3" component={ARC3Browser} />
+        <Route path="/arc3/playground" component={ARC3AgentPlayground} />
         <Route path="/puzzle/:taskId" component={PuzzleExaminer} />
         <Route path="/examine/:taskId" component={PuzzleExaminer} />
         <Route component={NotFound} />
