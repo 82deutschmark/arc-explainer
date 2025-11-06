@@ -23,6 +23,8 @@ The `docs/` directory is now organized around active focus areas. Use the table 
 
 > Tip: Each folder contains the most recent (≤ 7 days old) documentation for that topic so you can jump straight to the current state of work.
 
+📌 For the ARC-AGI-3 playground rollout, see the standalone plan `docs/2025-11-06-arc3-agent-ui-plan.md`.
+
 ## Reference material (`docs/reference/`)
 
 - `api/` – External and internal API contracts, streaming guides, and integration notes.

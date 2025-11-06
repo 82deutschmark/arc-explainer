@@ -1,6 +1,6 @@
 # ARC-AGI Explainer Platform
 
-**Version 4.8.41** — October 25, 2025
+**Version 5.1.0** — November 6, 2025
 
 
 A research platform for analyzing Abstract Reasoning Corpus (ARC-AGI) puzzles using state-of-the-art AI models with deep reasoning capture, conversation chaining, and comprehensive performance analytics.
@@ -9,20 +9,19 @@ A research platform for analyzing Abstract Reasoning Corpus (ARC-AGI) puzzles us
 
 ---
 
-## What's New in v4.8.41
+## What's New in v5.1.0
 
-### 🎨 Research surfaces refreshed
-- Split training example cards eliminate scrollbars and ensure consistent sizing across galleries and zoom modals.
-- Analysis results regain the aurora gradient, honeyglass backgrounds, and warm accent palette for a consistent look across layouts.
-- Leaderboards dashboard is now denser, with compact typography and inline metadata that keeps key metrics above the fold.
+### 🎮 ARC3 Agent Playground (Beta)
+- `/arc3/playground` introduces an interactive lab powered by the new OpenAI Agents SDK. Configure instructions, pick a model, and watch the agent drive the local "Color Hunt" ARC-AGI-3 simulator step-by-step.
+- Real-time simulator playback with color-coded 8×8 grids, action history, and token usage telemetry makes debugging agent behavior straightforward.
+- Global navigation and the ARC3 landing page now link directly to the playground for quick access.
 
-### ⚙️ Solver and streaming stability
-- Saturn Visual Solver no longer triggers React re-render loops thanks to a corrected effect dependency list.
-- Grover solver requests sanitize internal options before hitting the OpenAI Responses API, preventing 400 errors from unsupported fields.
-- Grid sizing utilities adapt to extreme aspect ratios so vertical and horizontal puzzles render without scrollbars.
+### 🧠 Backend Agent Runner
+- Deterministic "Color Hunt" mini-game simulator emulates ARC-AGI-3 interactions (reset, scanner actions, ACTION6 coordinate probes) without requiring a remote ARC API key.
+- Express route `/api/arc3/agent-playground/run` validates payloads with Zod, orchestrates the OpenAI agent, and returns timeline, frame snapshots, and token usage for the UI.
 
-### 📚 Traceability
-- Recent rollbacks and UI changes are documented in accompanying plans under `docs/2025-10-1x-*` for quick historical context.
+### 🧹 Type Safety Improvements
+- Hardened Saturn work table state transitions to satisfy strict TypeScript checks after the new build pass.
 
 For additional release notes, see [Changelog](./CHANGELOG.md).
 

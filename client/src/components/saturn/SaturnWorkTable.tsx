@@ -27,32 +27,36 @@ export default function SaturnWorkTable({ state, isRunning, compact }: Props) {
 
   // Update phase history when phase changes
   React.useEffect(() => {
-    if (state.phase) {
-      setPhaseHistory(prev => {
-        // Check if this phase already exists
-        const existingIndex = prev.findIndex(p => p.phase === state.phase);
-
-        if (existingIndex >= 0) {
-          // Update existing phase
-          const updated = [...prev];
-          updated[existingIndex] = {
-            phase: state.phase,
-            message: state.streamingMessage || state.message,
-            status: isRunning ? 'in_progress' : state.status || 'completed',
-            timestamp: new Date().toLocaleTimeString()
-          };
-          return updated;
-        } else {
-          // Add new phase
-          return [...prev, {
-            phase: state.phase,
-            message: state.streamingMessage || state.message,
-            status: isRunning ? 'in_progress' : 'completed',
-            timestamp: new Date().toLocaleTimeString()
-          }];
-        }
-      });
+    const nextPhase = state.phase;
+    if (!nextPhase) {
+      return;
     }
+
+    setPhaseHistory(prev => {
+      const existingIndex = prev.findIndex(p => p.phase === nextPhase);
+      const baseEntry = {
+        phase: nextPhase,
+        message: state.streamingMessage || state.message,
+        timestamp: new Date().toLocaleTimeString()
+      } as const;
+
+      if (existingIndex >= 0) {
+        const updated = [...prev];
+        updated[existingIndex] = {
+          ...baseEntry,
+          status: isRunning ? 'in_progress' : state.status || 'completed'
+        };
+        return updated;
+      }
+
+      return [
+        ...prev,
+        {
+          ...baseEntry,
+          status: isRunning ? 'in_progress' : 'completed'
+        }
+      ];
+    });
   }, [state.phase, state.message, state.streamingMessage, state.status, isRunning]);
 
   // Reset history when returning to idle
