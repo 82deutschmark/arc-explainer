@@ -62,7 +62,7 @@ RUN echo "=== CHECKING BUILD OUTPUT ===" && \
     echo "=== INSPECTING CSS CONTENT (IF PRESENT) ===" && \
     if ls dist/public/assets/*.css 1> /dev/null 2>&1; then head -n 20 dist/public/assets/*.css; else echo "No standalone CSS assets produced (styles likely injected via JS bundle)."; fi && \
     echo "=== INSPECTING JS BUNDLE ===" && \
-    head -n 20 dist/public/assets/*.js
+    if ls dist/public/assets/*.js 1> /dev/null 2>&1; then head -n 20 dist/public/assets/*.js; else echo "No JS bundles present in assets directory (unexpected for Vite build)."; fi
 
 EXPOSE 5000
 CMD ["node", "dist/index.js"]
