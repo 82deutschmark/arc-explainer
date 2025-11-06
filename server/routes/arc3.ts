@@ -116,7 +116,9 @@ router.get(
     const payload = arc3StreamService.getPendingPayload(sessionId);
     
     if (!payload) {
-      return res.status(404).json(formatResponse.error('Session not found or expired'));
+      return res
+        .status(404)
+        .json(formatResponse.error('SESSION_NOT_FOUND', 'Session not found or expired'));
     }
 
     // Register SSE connection
