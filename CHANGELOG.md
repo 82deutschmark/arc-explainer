@@ -1,5 +1,27 @@
 # CHANGELOG - Uses semantic versioning (MAJOR.MINOR.PATCH)
 
+# [5.3.2] - 2025-11-06
+### 🐛 ARC3 Playground: Critical UX Fixes
+**Added game grid loading on selection, error display, and server restart requirement**
+
+#### Frontend Improvements
+- **Game grid loading**: Selecting a game now fetches and displays initial grid from `/api/arc3/start-game`
+- **Error display**: Streaming errors now shown in red box above grid (no more silent failures)
+- **Auto-load default game**: On page load, fetches ls20 (or first available) grid automatically
+- **Model auto-select**: Sets gpt-5-nano-2025-08-07 as default when models load
+
+#### Backend Additions
+- **NEW endpoint**: `POST /api/arc3/start-game` - Returns initial FrameData for a game_id
+- Enables preview of game grid before starting agent run
+
+#### Critical Note
+**SERVER RESTART REQUIRED**: The schema error (`execute_game_action` not found) indicates the old code is still running. The individual tool definitions (RESET, ACTION1-6) with correct `{x, y}` object schema are in the code but not yet active. Restart the dev server to pick up the new tool definitions.
+
+#### Files Modified
+- `client/src/pages/ARC3AgentPlayground.tsx`: Added fetchGameGrid(), error display, initialGrid state
+- `server/routes/arc3.ts`: Added POST /api/arc3/start-game endpoint
+- `CHANGELOG.md`: Documented v5.3.2 fixes
+
 # [5.3.1] - 2025-11-06
 ### 🎨 ARC3 Playground: PROPER Ultra-Compact Rebuild
 **Completely rebuilt to match real ARC-AGI-3 site with game selector above grid**

@@ -42,6 +42,7 @@ export default function ARC3AgentPlayground() {
   // Fetch games
   const [games, setGames] = useState<GameInfo[]>([]);
   const [gamesLoading, setGamesLoading] = useState(true);
+  const [initialGrid, setInitialGrid] = useState<number[][] | null>(null);
 
   // Fetch models
   const [models, setModels] = useState<ModelInfo[]>([]);
@@ -54,6 +55,12 @@ export default function ARC3AgentPlayground() {
       const data = await response.json();
       if (data.success && Array.isArray(data.data)) {
         setGames(data.data);
+        // Auto-load first game's grid
+        if (data.data.length > 0) {
+          const firstGame = data.data.find((g: GameInfo) => g.game_id === 'ls20') || data.data[0];
+          setGameId(firstGame.game_id);
+          await fetchGameGrid(firstGame.game_id);
+        }
       }
     } catch (error) {
       console.error('[ARC3] Failed to fetch games:', error);
@@ -69,11 +76,28 @@ export default function ARC3AgentPlayground() {
       const data = await response.json();
       if (Array.isArray(data)) {
         setModels(data);
+        // Set default model if available
+        const defaultModel = data.find((m: ModelInfo) => m.key === 'gpt-5-nano-2025-08-07');
+        if (defaultModel) {
+          setModel(defaultModel.key);
+        }
       }
     } catch (error) {
       console.error('[ARC3] Failed to fetch models:', error);
     } finally {
       setModelsLoading(false);
+    }
+  };
+
+  const fetchGameGrid = async (gameId: string) => {
+    try {
+      const response = await apiRequest('POST', '/api/arc3/start-game', { game_id: gameId });
+      const data = await response.json();
+      if (data.success && data.data?.frame) {
+        setInitialGrid(data.data.frame);
+      }
+    } catch (error) {
+      console.error('[ARC3] Failed to fetch game grid:', error);
     }
   };
 
@@ -85,7 +109,7 @@ export default function ARC3AgentPlayground() {
   // Agent config
   const [gameId, setGameId] = useState('ls20');
   const [agentName, setAgentName] = useState('ARC3 Explorer');
-  const [model, setModel] = useState('gpt-5-nano-2025-08-07');
+  const [model, setModel] = useState<string>('');
   const [maxTurns, setMaxTurns] = useState(10);
   const [reasoningEffort, setReasoningEffort] = useState<'minimal' | 'low' | 'medium' | 'high'>('low');
   const [instructions, setInstructions] = useState(
@@ -395,7 +419,14 @@ ${instructions}`}
                     Loading...
                   </div>
                 ) : (
-                  <Select value={gameId} onValueChange={setGameId} disabled={isPlaying}>
+                  <Select 
+                    value={gameId} 
+                    onValueChange={(newGameId) => {
+                      setGameId(newGameId);
+                      fetchGameGrid(newGameId);
+                    }} 
+                    disabled={isPlaying}
+                  >
                     <SelectTrigger className="h-7 text-xs flex-1">
                       <SelectValue>
                         {games.find(g => g.game_id === gameId)?.title || gameId}
@@ -438,6 +469,14 @@ ${instructions}`}
               </div>
             </CardHeader>
             <CardContent className="px-3 pb-3">
+              {/* Show error if present */}
+              {state.error && (
+                <div className="mb-3 p-2 bg-red-50 border border-red-200 rounded text-xs text-red-700">
+                  <p className="font-semibold">Error:</p>
+                  <pre className="text-[10px] whitespace-pre-wrap mt-1">{state.error}</pre>
+                </div>
+              )}
+              
               {currentFrame ? (
                 <div className="space-y-2">
                   <div className="flex justify-center">
@@ -490,11 +529,23 @@ ${instructions}`}
                     ))}
                   </div>
                 </div>
+              ) : initialGrid ? (
+                <div className="space-y-2">
+                  <div className="flex justify-center">
+                    <Arc3GridVisualization
+                      grid={[initialGrid]}
+                      frameIndex={0}
+                      cellSize={20}
+                      showGrid={true}
+                    />
+                  </div>
+                  <p className="text-center text-[10px] text-muted-foreground">Initial state - press Start to begin</p>
+                </div>
               ) : (
                 <div className="flex flex-col items-center justify-center py-12 text-center">
                   <Gamepad2 className="h-10 w-10 text-muted-foreground opacity-50 mb-2" />
                   <p className="text-xs text-muted-foreground">
-                    {state.status === 'running' ? 'Waiting for game...' : 'Start agent to see grid'}
+                    {state.status === 'running' ? 'Waiting for game...' : gamesLoading ? 'Loading games...' : 'Select a game to see grid'}
                   </p>
                 </div>
               )}
