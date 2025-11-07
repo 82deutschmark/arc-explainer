@@ -42,7 +42,7 @@ export default function ARC3AgentPlayground() {
   // Fetch games
   const [games, setGames] = useState<GameInfo[]>([]);
   const [gamesLoading, setGamesLoading] = useState(true);
-  const [initialGrid, setInitialGrid] = useState<number[][] | null>(null);
+  const [initialGrid, setInitialGrid] = useState<number[][][] | null>(null);
 
   // Fetch models
   const [models, setModels] = useState<ModelInfo[]>([]);
@@ -156,6 +156,13 @@ export default function ARC3AgentPlayground() {
     !m.key.startsWith('grover-') &&
     !m.color.includes('slate')
   );
+
+  const resolveFrameLayers = (frameData: { frame: number[][][] } | null) => {
+    if (!frameData) return null;
+    return frameData.frame as number[][][];
+  };
+
+  const resolvedCurrentFrame = resolveFrameLayers(currentFrame);
 
   return (
     <div className="min-h-screen bg-background">
@@ -477,11 +484,11 @@ ${instructions}`}
                 </div>
               )}
               
-              {currentFrame ? (
+              {resolvedCurrentFrame ? (
                 <div className="space-y-2">
                   <div className="flex justify-center">
                     <Arc3GridVisualization
-                      grid={[currentFrame.frame]}
+                      grid={resolvedCurrentFrame}
                       frameIndex={0}
                       cellSize={20}
                       showGrid={true}
@@ -533,7 +540,7 @@ ${instructions}`}
                 <div className="space-y-2">
                   <div className="flex justify-center">
                     <Arc3GridVisualization
-                      grid={[initialGrid]}
+                      grid={initialGrid as number[][][]}
                       frameIndex={0}
                       cellSize={20}
                       showGrid={true}

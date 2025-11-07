@@ -26,7 +26,7 @@ export interface Arc3AgentStreamState {
   message?: string;
   finalOutput?: string;
   frames: Array<{
-    frame: number[][];
+    frame: number[][][];
     score: number;
     state: string;
     action_counter: number;
@@ -419,7 +419,7 @@ export function useArc3AgentStream() {
             gameId: data.summary?.scenarioId,
             agentName: options.agentName,
             finalOutput: data.finalOutput,
-            frames: data.frames || [],
+            frames: (data.frames as Arc3AgentStreamState['frames']) || [],
             currentFrameIndex: 0,
             timeline: data.timeline || [],
             summary: data.summary,

@@ -137,12 +137,12 @@ export const Arc3GridVisualization: React.FC<Arc3GridVisualizationProps> = ({
 
   return (
     <div className={`arc3-grid-visualization ${className}`}>
-      <div className="relative inline-block">
+      <div className="relative inline-block max-w-full">
         <canvas
           ref={canvasRef}
           width={canvasWidth}
           height={canvasHeight}
-          className="border border-gray-300 cursor-crosshair"
+          className="border border-gray-300 cursor-crosshair max-w-full h-auto"
           onMouseMove={handleMouseMove}
           onMouseLeave={handleMouseLeave}
           onClick={handleCanvasClick}
