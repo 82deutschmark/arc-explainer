@@ -1,5 +1,59 @@
 # CHANGELOG - Uses semantic versioning (MAJOR.MINOR.PATCH)
 
+# [5.3.3] - 2025-11-06
+### 🔧 ARC3 Agent System: Fixed Reset Loop, Grid Rendering, and Streaming Reasoning
+**Removed RESET from system prompt, added editable system prompt UI, fixed grid overflow, enabled real-time reasoning streaming**
+
+#### Critical Fixes
+- **RESET loop bug**: Removed "Start with RESET" and "RESET starts a new game session" from default system prompt (agents were stuck calling RESET repeatedly)
+- **Grid rendering overflow**: Added `max-w-full h-auto` to canvas element to constrain grid within center column layout
+- **Missing streaming reasoning**: Now emits `agent.reasoning` events when `run_item_stream_event` contains `reasoning_item` type
+
+#### New Features
+- **Editable system prompt**: Full system prompt now visible and editable in Configuration panel (collapsible, 132px textarea, monospace font)
+- **systemPrompt parameter**: Added support throughout stack (types, Arc3StreamService, Arc3RealGameRunner, useArc3AgentStream hook)
+- **Real-time reasoning display**: Streaming reasoning now shows in UI as `state.streamingReasoning` accumulates
+
+#### UI Improvements
+- **Configuration panel reorganized**: System Prompt (top, collapsible) → User Prompt → Model/Reasoning (compact 2-column grid) → Max Actions
+- **Renamed "Instructions" to "User Prompt"**: Clarifies it's operator guidance, not system instructions
+- **Compact model controls**: Model and Reasoning selectors now horizontal 2-column layout with reduced padding
+- **Show/Hide System toggle**: Button in config header to collapse/expand system prompt textarea
+
+#### Backend Changes
+- `server/services/arc3/types.ts`: Added `systemPrompt?: string` to Arc3AgentRunConfig
+- `server/services/arc3/Arc3StreamService.ts`: Added systemPrompt to StreamArc3Payload, passes to runner
+- `server/services/arc3/Arc3RealGameRunner.ts`:
+  - Renamed `baseInstructions` to `defaultSystemPrompt`
+  - Removed RESET mentions from default prompt
+  - Uses `config.systemPrompt` if provided, else falls back to default
+  - Emits `agent.reasoning` events during streaming when reasoning_item detected
+
+#### Frontend Changes
+- `client/src/hooks/useArc3AgentStream.ts`:
+  - Added `streamingReasoning?: string` to Arc3AgentStreamState
+  - Added systemPrompt to Arc3AgentOptions interface
+  - Passes systemPrompt to API in prepare request
+  - Accumulates reasoning content in `agent.reasoning` event handler
+- `client/src/pages/ARC3AgentPlayground.tsx`:
+  - Added systemPrompt state with RESET-free default
+  - Added showSystemPrompt toggle state (defaults true)
+  - Passes systemPrompt to start() function
+  - Reorganized Configuration UI with collapsible system prompt at top
+  - Displays `state.streamingReasoning` in streaming panel when available
+- `client/src/components/arc3/Arc3GridVisualization.tsx`:
+  - Added `max-w-full` to container div
+  - Added `max-w-full h-auto` to canvas element for responsive sizing
+
+#### Files Modified
+- `server/services/arc3/types.ts`
+- `server/services/arc3/Arc3StreamService.ts`
+- `server/services/arc3/Arc3RealGameRunner.ts`
+- `client/src/hooks/useArc3AgentStream.ts`
+- `client/src/pages/ARC3AgentPlayground.tsx`
+- `client/src/components/arc3/Arc3GridVisualization.tsx`
+- `CHANGELOG.md`
+
 # [5.3.2] - 2025-11-06
 ### 🐛 ARC3 Playground: Critical UX Fixes
 **Added game grid loading on selection, error display, and server restart requirement**

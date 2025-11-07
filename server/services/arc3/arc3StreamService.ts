@@ -18,7 +18,8 @@ import type { Arc3AgentRunConfig } from "./types";
 export interface StreamArc3Payload {
   game_id: string;  // Match ARC3 API property naming
   agentName?: string;
-  instructions: string;
+  systemPrompt?: string;  // Base system instructions (overrides default)
+  instructions: string;   // User/operator guidance
   model?: string;
   maxTurns?: number;
   reasoningEffort?: 'minimal' | 'low' | 'medium' | 'high';
@@ -111,7 +112,7 @@ export class Arc3StreamService {
         return sessionId;
       }
 
-      const { game_id, agentName, instructions, model, maxTurns, reasoningEffort } = payload;
+      const { game_id, agentName, systemPrompt, instructions, model, maxTurns, reasoningEffort } = payload;
 
       // Send initial status
       sseStreamManager.sendEvent(sessionId, "stream.init", {
@@ -155,6 +156,7 @@ export class Arc3StreamService {
       const runConfig: Arc3AgentRunConfig = {
         game_id,
         agentName,
+        systemPrompt,
         instructions,
         model,
         maxTurns,

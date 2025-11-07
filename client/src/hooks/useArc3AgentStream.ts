@@ -13,7 +13,8 @@ import { isStreamingEnabled } from '@shared/config/streaming';
 export interface Arc3AgentOptions {
   game_id?: string;  // Match API property name
   agentName?: string;
-  instructions: string;
+  systemPrompt?: string;  // Base system instructions (overrides default)
+  instructions: string;   // User/operator guidance
   model?: string;
   maxTurns?: number;
   reasoningEffort?: 'minimal' | 'low' | 'medium' | 'high';
@@ -25,6 +26,7 @@ export interface Arc3AgentStreamState {
   agentName?: string;
   message?: string;
   finalOutput?: string;
+  streamingReasoning?: string;  // Accumulates reasoning content during streaming
   frames: Array<{
     frame: number[][][];
     score: number;
@@ -109,6 +111,7 @@ export function useArc3AgentStream() {
           const prepareResponse = await apiRequest('POST', '/api/arc3/stream/prepare', {
             game_id: options.game_id || 'ls20',  // Match API property name
             agentName: options.agentName,
+            systemPrompt: options.systemPrompt,
             instructions: options.instructions,
             model: options.model,
             maxTurns: options.maxTurns,
@@ -239,14 +242,17 @@ export function useArc3AgentStream() {
               const data = JSON.parse((evt as MessageEvent<string>).data);
               console.log('[ARC3 Stream] Agent reasoning:', data);
 
+              const reasoningContent = data.content || JSON.stringify(data, null, 2);
+
               setState((prev) => ({
                 ...prev,
                 streamingMessage: 'Agent is reasoning...',
+                streamingReasoning: reasoningContent,
                 timeline: [...prev.timeline, {
                   index: prev.timeline.length,
                   type: 'reasoning' as const,
                   label: 'Agent reasoning',
-                  content: JSON.stringify(data.reasoning, null, 2),
+                  content: reasoningContent,
                 }],
               }));
             } catch (error) {

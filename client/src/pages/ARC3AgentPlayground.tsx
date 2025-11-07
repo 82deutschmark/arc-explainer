@@ -112,10 +112,26 @@ export default function ARC3AgentPlayground() {
   const [model, setModel] = useState<string>('');
   const [maxTurns, setMaxTurns] = useState(10);
   const [reasoningEffort, setReasoningEffort] = useState<'minimal' | 'low' | 'medium' | 'high'>('low');
-  const [instructions, setInstructions] = useState(
-    'Explore the game systematically. Start by using RESET to initialize, then inspect_game_state. Try different actions to learn the rules.'
+  const [systemPrompt, setSystemPrompt] = useState(
+    `You are playing a real ARC-AGI-3 game from the competition at https://three.arcprize.org/
+Game rules:
+- The game uses a grid-based interface with colors represented by integers 0-15
+- Each action you take affects the game state and may change the grid
+- Use inspect_game_state first to understand the current situation
+- ACTION1-ACTION5 perform various game-specific actions
+- ACTION6 requires coordinates [x, y] for targeted actions
+- Your goal is to understand the game mechanics and achieve the objective
+Strategy:
+- Use inspect_game_state to observe the grid and understand patterns
+- Experiment with different actions to learn the rules
+- Track how the grid changes with each action
+- Stop when you achieve WIN or when no useful actions remain
+Return a concise summary of what you learned about the game mechanics and your final outcome.`
   );
-  const [showSystemPrompt, setShowSystemPrompt] = useState(false);
+  const [showSystemPrompt, setShowSystemPrompt] = useState(true);
+  const [instructions, setInstructions] = useState(
+    'Explore the game systematically. Inspect the game state and try different actions to learn the rules.'
+  );
   const [userMessage, setUserMessage] = useState('');
   const [showUserInput, setShowUserInput] = useState(false);
 
@@ -126,6 +142,7 @@ export default function ARC3AgentPlayground() {
     start({
       game_id: gameId,
       agentName,
+      systemPrompt,
       instructions,
       model,
       maxTurns,
@@ -194,55 +211,93 @@ export default function ARC3AgentPlayground() {
           {/* Config */}
           <Card className="text-xs">
             <CardHeader className="pb-2 pt-3 px-3">
-              <CardTitle className="text-sm">Configuration</CardTitle>
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-sm">Configuration</CardTitle>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setShowSystemPrompt(!showSystemPrompt)}
+                  className="h-6 px-2 text-[10px]"
+                >
+                  {showSystemPrompt ? <EyeOff className="h-3 w-3 mr-1" /> : <Eye className="h-3 w-3 mr-1" />}
+                  {showSystemPrompt ? 'Hide' : 'Show'} System
+                </Button>
+              </div>
             </CardHeader>
             <CardContent className="space-y-2 text-[11px] px-3 pb-3">
-              
-              {/* Model */}
+
+              {/* System Prompt - EDITABLE, at top */}
+              {showSystemPrompt && (
+                <div className="space-y-0.5">
+                  <label className="font-medium text-[10px]">System Prompt</label>
+                  <Textarea
+                    value={systemPrompt}
+                    onChange={(e) => setSystemPrompt(e.target.value)}
+                    disabled={isPlaying}
+                    className="text-[10px] h-32 resize-none font-mono"
+                    placeholder="Base system instructions..."
+                  />
+                </div>
+              )}
+
+              {/* User Prompt (formerly "Instructions") */}
               <div className="space-y-0.5">
-                <label className="font-medium text-[10px]">Model</label>
-                {modelsLoading ? (
-                  <div className="flex items-center gap-2 h-7 px-2 text-[11px] text-muted-foreground">
-                    <RefreshCw className="h-3 w-3 animate-spin" />
-                    Loading...
-                  </div>
-                ) : (
-                  <Select value={model} onValueChange={setModel} disabled={isPlaying}>
-                    <SelectTrigger className="h-7 text-[11px]">
+                <label className="font-medium text-[10px]">User Prompt</label>
+                <Textarea
+                  value={instructions}
+                  onChange={(e) => setInstructions(e.target.value)}
+                  disabled={isPlaying}
+                  className="text-[11px] h-16 resize-none"
+                  placeholder="Additional operator guidance..."
+                />
+              </div>
+
+              {/* Model & Reasoning - Compact horizontal layout */}
+              <div className="grid grid-cols-2 gap-1.5">
+                <div className="space-y-0.5">
+                  <label className="font-medium text-[10px]">Model</label>
+                  {modelsLoading ? (
+                    <div className="flex items-center gap-1 h-7 px-2 text-[10px] text-muted-foreground">
+                      <RefreshCw className="h-3 w-3 animate-spin" />
+                      Loading...
+                    </div>
+                  ) : (
+                    <Select value={model} onValueChange={setModel} disabled={isPlaying}>
+                      <SelectTrigger className="h-7 text-[10px] px-2">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {availableModels.map((m: ModelInfo) => (
+                          <SelectItem key={m.key} value={m.key} className="text-[10px]">
+                            {m.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  )}
+                </div>
+
+                <div className="space-y-0.5">
+                  <label className="font-medium text-[10px]">Reasoning</label>
+                  <Select
+                    value={reasoningEffort}
+                    onValueChange={(v) => setReasoningEffort(v as any)}
+                    disabled={isPlaying}
+                  >
+                    <SelectTrigger className="h-7 text-[10px] px-2">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      {availableModels.map((m: ModelInfo) => (
-                        <SelectItem key={m.key} value={m.key} className="text-[11px]">
-                          {m.name}
-                        </SelectItem>
-                      ))}
+                      <SelectItem value="minimal" className="text-[10px]">Minimal</SelectItem>
+                      <SelectItem value="low" className="text-[10px]">Low</SelectItem>
+                      <SelectItem value="medium" className="text-[10px]">Medium</SelectItem>
+                      <SelectItem value="high" className="text-[10px]">High</SelectItem>
                     </SelectContent>
                   </Select>
-                )}
+                </div>
               </div>
 
-              {/* Reasoning */}
-              <div className="space-y-0.5">
-                <label className="font-medium text-[10px]">Reasoning</label>
-                <Select 
-                  value={reasoningEffort} 
-                  onValueChange={(v) => setReasoningEffort(v as any)}
-                  disabled={isPlaying}
-                >
-                  <SelectTrigger className="h-7 text-[11px]">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="minimal" className="text-[11px]">Minimal</SelectItem>
-                    <SelectItem value="low" className="text-[11px]">Low</SelectItem>
-                    <SelectItem value="medium" className="text-[11px]">Medium</SelectItem>
-                    <SelectItem value="high" className="text-[11px]">High</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              {/* Max Actions */}
+              {/* Max Actions - Smaller */}
               <div className="space-y-0.5">
                 <label className="font-medium text-[10px]">Max Actions</label>
                 <Input
@@ -255,46 +310,6 @@ export default function ARC3AgentPlayground() {
                   className="h-7 text-[11px]"
                 />
               </div>
-
-              {/* Instructions */}
-              <div className="space-y-0.5">
-                <label className="font-medium text-[10px]">Instructions</label>
-                <Textarea
-                  value={instructions}
-                  onChange={(e) => setInstructions(e.target.value)}
-                  disabled={isPlaying}
-                  className="text-[11px] h-16 resize-none"
-                />
-              </div>
-
-              {/* System Prompt Toggle */}
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setShowSystemPrompt(!showSystemPrompt)}
-                className="w-full h-6 text-[10px]"
-              >
-                {showSystemPrompt ? <EyeOff className="h-3 w-3 mr-1" /> : <Eye className="h-3 w-3 mr-1" />}
-                {showSystemPrompt ? 'Hide' : 'Show'} System Prompt
-              </Button>
-
-              {showSystemPrompt && (
-                <div className="p-2 bg-muted rounded text-[10px] max-h-32 overflow-y-auto">
-                  <pre className="whitespace-pre-wrap">
-{`You are an AI agent playing ARC-AGI-3 games.
-
-Use the provided tools to:
-- RESET: Start/restart the game
-- inspect_game_state: View current grid
-- execute_game_action: Perform ACTION1-6
-
-Each action changes the grid. Learn patterns.
-Win by reaching the goal state.
-
-${instructions}`}
-                  </pre>
-                </div>
-              )}
 
               {/* Start/Stop */}
               <div className="flex gap-1.5 pt-1">
@@ -592,9 +607,16 @@ ${instructions}`}
                     ))}
                     
                     {isPlaying && (
-                      <div className="flex items-center gap-1.5 text-muted-foreground p-2 border-l-2 border-blue-200 bg-blue-50 dark:bg-blue-950">
-                        <div className="w-1.5 h-1.5 bg-blue-500 rounded-full animate-pulse" />
-                        <span className="text-[10px]">{state.streamingMessage || 'Thinking...'}</span>
+                      <div className="p-2 border-l-2 border-blue-200 bg-blue-50 dark:bg-blue-950">
+                        <div className="flex items-center gap-1.5 text-muted-foreground mb-1">
+                          <div className="w-1.5 h-1.5 bg-blue-500 rounded-full animate-pulse" />
+                          <span className="text-[10px]">{state.streamingMessage || 'Thinking...'}</span>
+                        </div>
+                        {state.streamingReasoning && (
+                          <pre className="text-[9px] text-muted-foreground whitespace-pre-wrap mt-1">
+                            {state.streamingReasoning}
+                          </pre>
+                        )}
                       </div>
                     )}
                   </>

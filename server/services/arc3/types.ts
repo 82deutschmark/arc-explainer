@@ -106,7 +106,8 @@ export interface Arc3AgentRunResult {
 
 export interface Arc3AgentRunConfig {
   agentName?: string;
-  instructions: string;
+  systemPrompt?: string;  // Base system instructions (overrides default)
+  instructions: string;   // User/operator guidance appended to system prompt
   model?: string;
   maxTurns?: number;
   game_id?: string;  // ARC3 game ID (e.g., "ls20")
