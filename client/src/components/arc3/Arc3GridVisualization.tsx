@@ -16,6 +16,10 @@ interface Arc3GridVisualizationProps {
   showGrid?: boolean;
   className?: string;
   onCellClick?: (x: number, y: number, value: number) => void;
+  lastAction?: {
+    type: string;
+    coordinates?: [number, number];
+  };
 }
 
 interface FrameData {
@@ -35,6 +39,7 @@ export const Arc3GridVisualization: React.FC<Arc3GridVisualizationProps> = ({
   showGrid = true,
   className = '',
   onCellClick,
+  lastAction,
 }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [hoveredCell, setHoveredCell] = useState<{ x: number; y: number; value: number } | null>(null);
@@ -159,6 +164,38 @@ export const Arc3GridVisualization: React.FC<Arc3GridVisualizationProps> = ({
             }}
           >
             ({hoveredCell.x}, {hoveredCell.y}): {hoveredCell.value}
+          </div>
+        )}
+
+        {/* Agent click indicator - cell highlight */}
+        {lastAction?.type === 'ACTION6' && lastAction.coordinates && (
+          <div
+            className="absolute z-5 border-2 border-orange-400 rounded pointer-events-none animate-pulse"
+            style={{
+              left: `${lastAction.coordinates[0] * cellSize}px`,
+              top: `${lastAction.coordinates[1] * cellSize}px`,
+              width: `${cellSize}px`,
+              height: `${cellSize}px`,
+              boxShadow: '0 0 10px rgba(255, 133, 27, 0.5)',
+            }}
+          />
+        )}
+
+        {/* Agent click indicator - label badge */}
+        {lastAction?.type === 'ACTION6' && lastAction.coordinates && (
+          <div
+            className="absolute z-10 bg-orange-500 text-white font-bold text-xs px-2 py-1 rounded shadow-lg pointer-events-none flex items-center gap-1"
+            style={{
+              left: `${lastAction.coordinates[0] * cellSize + cellSize / 2}px`,
+              top: `${lastAction.coordinates[1] * cellSize - 30}px`,
+              transform: 'translateX(-50%)',
+            }}
+          >
+            <svg className="w-4 h-4 fill-white" viewBox="0 0 256 256">
+              <path d="M162.35,138.35a8,8,0,0,1,2.46-13l46.41-17.82a8,8,0,0,0-.71-14.85L50.44,40.41a8,8,0,0,0-10,10L92.68,210.51a8,8,0,0,0,14.85.71l17.82-46.41a8,8,0,0,1,13-2.46l51.31,51.31a8,8,0,0,0,11.31,0L213.66,201a8,8,0,0,0,0-11.31Z"
+                    strokeLinecap="round" strokeLinejoin="round" strokeWidth="16"/>
+            </svg>
+            <span>Agent Click ({lastAction.coordinates[0]}, {lastAction.coordinates[1]})</span>
           </div>
         )}
       </div>
