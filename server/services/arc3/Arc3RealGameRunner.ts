@@ -117,20 +117,20 @@ export class Arc3RealGameRunner {
       instructions: combinedInstructions,
       handoffDescription: 'Operates the ARC-AGI-3 real game interface.',
       model: config.model ?? DEFAULT_MODEL,
+      modelSettings: {
+        reasoning: {
+          effort: (config.reasoningEffort ?? 'high') as 'minimal' | 'low' | 'medium' | 'high',
+          summary: 'detailed',
+        },
+        text: { verbosity: 'high' },
+      },
       tools: [inspectTool, simpleAction('ACTION1'), simpleAction('ACTION2'), simpleAction('ACTION3'), simpleAction('ACTION4'), simpleAction('ACTION5'), action6Tool],
     });
 
     const result = await run(
       agent,
       `Start playing the ARC-AGI-3 game "${gameId}". Narrate before every tool call, then execute it. Keep using the What I see / What it means / Next move format until you deliver the Final Report.`,
-      {
-        maxTurns,
-        reasoning: {
-          effort: (config.reasoningEffort ?? 'high') as 'minimal' | 'low' | 'medium' | 'high',
-          verbosity: 'high',
-          summary: 'detailed',
-        },
-      },
+      { maxTurns },
     );
 
     // Process timeline entries
@@ -384,6 +384,13 @@ export class Arc3RealGameRunner {
       instructions: combinedInstructions,
       handoffDescription: 'Operates the ARC-AGI-3 real game interface.',
       model: config.model ?? DEFAULT_MODEL,
+      modelSettings: {
+        reasoning: {
+          effort: (config.reasoningEffort ?? 'high') as 'minimal' | 'low' | 'medium' | 'high',
+          summary: 'detailed',
+        },
+        text: { verbosity: 'high' },
+      },
       tools: [inspectTool, simpleAction('ACTION1'), simpleAction('ACTION2'), simpleAction('ACTION3'), simpleAction('ACTION4'), simpleAction('ACTION5'), action6Tool],
     });
 
@@ -399,15 +406,7 @@ export class Arc3RealGameRunner {
     const result = await run(
       agent,
       `Start playing the ARC-AGI-3 game "${gameId}". Narrate before every tool call, then execute it. Keep using the What I see / What it means / Next move format until you deliver the Final Report.`,
-      {
-        maxTurns,
-        stream: true,
-        reasoning: {
-          effort: (config.reasoningEffort ?? 'high') as 'minimal' | 'low' | 'medium' | 'high',
-          verbosity: 'high',
-          summary: 'detailed',
-        },
-      },
+      { maxTurns, stream: true },
     );
 
     // Process streaming events

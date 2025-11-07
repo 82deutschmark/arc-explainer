@@ -3746,14 +3746,15 @@ app.get("/api/model-dataset/metrics/:modelName/:datasetName", asyncHandler(model
 
 ## [Unreleased]
 
-### Added
-- Enforce OpenAI Responses reasoning controls for all ARC3 agent runs.
-
 ### Changed
-- server/services/arc3/Arc3AgentRunner.ts and server/services/arc3/Arc3RealGameRunner.ts now explicitly set `reasoning.verbosity` to `high` and `reasoning.summary` to `detailed` on every Agents SDK `run(...)` call. `reasoning.effort` defaults to the provided `config.reasoningEffort` or `high`.
+- Enforce OpenAI reasoning/text settings at the Agent level for all ARC3 runs.
+- server/services/arc3/Arc3AgentRunner.ts and server/services/arc3/Arc3RealGameRunner.ts now set `modelSettings` on the `Agent`:
+  - `reasoning.effort`: `config.reasoningEffort ?? 'high'`
+  - `reasoning.summary`: `'detailed'`
+  - `text.verbosity`: `'high'`
 
 ### Rationale
-- ARC3 workflows require maximum verbosity and detailed summaries for correct parsing and UI streaming.
+- ARC3 requires high verbosity and detailed reasoning summaries; configuring `modelSettings` ensures every underlying API call includes them (including streaming).
 
 ### Fixed
 - ARC3 streaming: Resolved OpenAI Responses API structured outputs error by updating `inspect_game_state` tool schema in `server/services/arc3/Arc3RealGameRunner.ts` to use `z.string().nullable()` for the `note` field and normalizing outputs to `null`. This removes the `.optional()` usage that the Responses API rejects, unblocking `/api/arc3/stream/*` sessions.
