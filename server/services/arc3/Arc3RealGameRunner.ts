@@ -69,47 +69,43 @@ export class Arc3RealGameRunner {
       },
     });
 
-    const actionTool = tool({
-      name: 'execute_game_action',
-      description: 'Execute a game action. Use RESET to start a new game, ACTION1-ACTION5 for simple actions, or ACTION6 with coordinates for targeted actions.',
-      parameters: z.object({
-        action: z.enum(['RESET', 'ACTION1', 'ACTION2', 'ACTION3', 'ACTION4', 'ACTION5', 'ACTION6']),
-        coordinates: z
-          .tuple([z.number(), z.number()])
-          .nullable()
-          .describe('Required only for ACTION6: [x, y] coordinates. Use null to omit for other actions.'),
-      }),
-      execute: async ({ action, coordinates }) => {
-        if (!gameGuid && action !== 'RESET') {
-          throw new Error('Game not started. Call RESET action first.');
-        }
-
-        let gameAction: GameAction = { action };
-
-        if (action === 'ACTION6') {
-          if (coordinates == null) {
-            throw new Error('coordinates must be provided for ACTION6 as [x, y]');
-          }
-          gameAction.coordinates = coordinates;
-        }
-
-        try {
-          if (action === 'RESET' || !gameGuid) {
-            // Start new game
-            const result = await this.apiClient.startGame(gameId);
-            gameGuid = result.guid;
-            currentFrame = result;  // startGame returns FrameData directly
-          } else {
-            // Execute action in existing game
-            currentFrame = await this.apiClient.executeAction(gameGuid, gameAction);
-          }
-
-          frames.push(currentFrame);
-          return currentFrame;
-        } catch (error) {
-          throw new Error(`Action ${action} failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
-        }
+    // Define individual action tools to match ARC3 reference (RESET, ACTION1-6)
+    const resetTool = tool({
+      name: 'RESET',
+      description: 'Start or restart a game. Must be called first when NOT_PLAYED or after GAME_OVER to play again.',
+      parameters: z.object({}),
+      execute: async () => {
+        // Start new game
+        const result = await this.apiClient.startGame(gameId);
+        gameGuid = result.guid;
+        currentFrame = result;
+        frames.push(currentFrame);
+        return currentFrame;
       },
+    });
+
+    const simpleAction = (name: 'ACTION1'|'ACTION2'|'ACTION3'|'ACTION4'|'ACTION5') => tool({
+      name,
+      description: `Send simple input ${name}.`,
+      parameters: z.object({}),
+      execute: async () => {
+        if (!gameGuid) throw new Error('Game not started. Call RESET first.');
+        currentFrame = await this.apiClient.executeAction(gameGuid, { action: name });
+        frames.push(currentFrame);
+        return currentFrame;
+      }
+    });
+
+    const action6Tool = tool({
+      name: 'ACTION6',
+      description: 'Send complex input with coordinates (Click/Point).',
+      parameters: z.object({ x: z.number().int(), y: z.number().int() }),
+      execute: async ({ x, y }) => {
+        if (!gameGuid) throw new Error('Game not started. Call RESET first.');
+        currentFrame = await this.apiClient.executeAction(gameGuid, { action: 'ACTION6', coordinates: [x, y] });
+        frames.push(currentFrame);
+        return currentFrame;
+      }
     });
 
     const baseInstructions = [
@@ -141,7 +137,7 @@ export class Arc3RealGameRunner {
       instructions: combinedInstructions,
       handoffDescription: 'Operates the ARC-AGI-3 real game interface.',
       model: config.model ?? DEFAULT_MODEL,
-      tools: [inspectTool, actionTool],
+      tools: [inspectTool, resetTool, simpleAction('ACTION1'), simpleAction('ACTION2'), simpleAction('ACTION3'), simpleAction('ACTION4'), simpleAction('ACTION5'), action6Tool],
     });
 
     const result = await run(
@@ -345,88 +341,48 @@ export class Arc3RealGameRunner {
       },
     });
 
-    const actionTool = tool({
-      name: 'execute_game_action',
-      description: 'Execute a game action. Use RESET to start a new game, ACTION1-ACTION5 for simple actions, or ACTION6 with coordinates for targeted actions.',
-      parameters: z.object({
-        action: z.enum(['RESET', 'ACTION1', 'ACTION2', 'ACTION3', 'ACTION4', 'ACTION5', 'ACTION6']),
-        coordinates: z
-          .tuple([z.number(), z.number()])
-          .nullable()
-          .describe('Required only for ACTION6: [x, y] coordinates. Use null to omit for other actions.'),
-      }),
-      execute: async ({ action, coordinates }) => {
-        if (!gameGuid && action !== 'RESET') {
-          throw new Error('Game not started. Call RESET action first.');
-        }
-
-        // Emit tool call event
-        streamHarness.emitEvent("agent.tool_call", {
-          tool: 'execute_game_action',
-          arguments: { action, coordinates: coordinates ?? null },
-          timestamp: Date.now(),
-        });
-
-        let gameAction: GameAction = { action };
-
-        if (action === 'ACTION6') {
-          if (coordinates == null) {
-            throw new Error('coordinates must be provided for ACTION6 as [x, y]');
-          }
-          gameAction.coordinates = coordinates;
-        }
-
-        try {
-          if (action === 'RESET' || !gameGuid) {
-            // Start new game
-            const result = await this.apiClient.startGame(gameId);
-            gameGuid = result.guid;
-            currentFrame = result;  // startGame returns FrameData directly
-
-            // Emit game started event
-            streamHarness.emitEvent("game.started", {
-              gameGuid,
-              gameId,
-              initialFrame: result,  // result IS the FrameData
-              timestamp: Date.now(),
-            });
-          } else {
-            // Execute action in existing game
-            currentFrame = await this.apiClient.executeAction(gameGuid, gameAction);
-
-            // Emit action executed event
-            streamHarness.emitEvent("game.action_executed", {
-              gameGuid,
-              action,
-              coordinates,
-              newFrame: currentFrame,
-              timestamp: Date.now(),
-            });
-          }
-
-          frames.push(currentFrame);
-          
-          // Emit frame update event
-          streamHarness.emitEvent("game.frame_update", {
-            frameIndex: frames.length - 1,
-            frameData: currentFrame,
-            timestamp: Date.now(),
-          });
-          
-          return currentFrame;
-        } catch (error) {
-          const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-          
-          // Emit error event
-          streamHarness.emitEvent("game.error", {
-            action,
-            error: errorMessage,
-            timestamp: Date.now(),
-          });
-          
-          throw new Error(`Action ${action} failed: ${errorMessage}`);
-        }
+    // Streaming: individual action tools
+    const resetTool = tool({
+      name: 'RESET',
+      description: 'Start or restart a game. Must be called first when NOT_PLAYED or after GAME_OVER to play again.',
+      parameters: z.object({}),
+      execute: async () => {
+        streamHarness.emitEvent("agent.tool_call", { tool: 'RESET', arguments: {}, timestamp: Date.now() });
+        const result = await this.apiClient.startGame(gameId);
+        gameGuid = result.guid;
+        currentFrame = result;
+        frames.push(currentFrame);
+        streamHarness.emitEvent("game.frame_update", { frameIndex: frames.length - 1, frameData: currentFrame, timestamp: Date.now() });
+        return currentFrame;
       },
+    });
+
+    const simpleAction = (name: 'ACTION1'|'ACTION2'|'ACTION3'|'ACTION4'|'ACTION5') => tool({
+      name,
+      description: `Send simple input ${name}.`,
+      parameters: z.object({}),
+      execute: async () => {
+        if (!gameGuid) throw new Error('Game not started. Call RESET first.');
+        streamHarness.emitEvent("agent.tool_call", { tool: name, arguments: {}, timestamp: Date.now() });
+        currentFrame = await this.apiClient.executeAction(gameGuid, { action: name });
+        frames.push(currentFrame);
+        streamHarness.emitEvent("game.frame_update", { frameIndex: frames.length - 1, frameData: currentFrame, timestamp: Date.now() });
+        return currentFrame;
+      }
+    });
+
+    const action6Tool = tool({
+      name: 'ACTION6',
+      description: 'Send complex input with coordinates (Click/Point).',
+      parameters: z.object({ x: z.number().int(), y: z.number().int() }),
+      execute: async ({ x, y }) => {
+        if (!gameGuid) throw new Error('Game not started. Call RESET first.');
+        streamHarness.emitEvent("agent.tool_call", { tool: 'ACTION6', arguments: { x, y }, timestamp: Date.now() });
+        currentFrame = await this.apiClient.executeAction(gameGuid, { action: 'ACTION6', coordinates: [x, y] });
+        frames.push(currentFrame);
+        streamHarness.emitEvent("game.frame_update", { frameIndex: frames.length - 1, frameData: currentFrame, timestamp: Date.now() });
+        return currentFrame;
+      }
     });
 
     const baseInstructions = [
@@ -458,7 +414,7 @@ export class Arc3RealGameRunner {
       instructions: combinedInstructions,
       handoffDescription: 'Operates the ARC-AGI-3 real game interface.',
       model: config.model ?? DEFAULT_MODEL,
-      tools: [inspectTool, actionTool],
+      tools: [inspectTool, resetTool, simpleAction('ACTION1'), simpleAction('ACTION2'), simpleAction('ACTION3'), simpleAction('ACTION4'), simpleAction('ACTION5'), action6Tool],
     });
 
     // Emit agent ready event
