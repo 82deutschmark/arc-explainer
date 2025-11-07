@@ -1,5 +1,26 @@
 # CHANGELOG - Uses semantic versioning (MAJOR.MINOR.PATCH)
 
+# [5.6.0] - 2025-11-07
+### 🎯 ARC3 Agent Click Visualization
+**Added SDK-style cursor and click indicators to show where the agent is interacting with the grid.**
+
+#### Features
+- **Visual click indicators**: Orange badge with cursor icon appears when agent uses ACTION6
+- **Cell highlighting**: Pulsing orange border highlights the clicked cell with glow effect
+- **Coordinate display**: Badge shows "Agent Click (x, y)" above the target cell
+- **Action metadata flow**: Backend emits action data with frame updates, frontend merges into state
+
+#### Files Changed
+- [Arc3RealGameRunner.ts](server/services/arc3/Arc3RealGameRunner.ts:366,401) - Added action metadata to game.frame_update events
+- [useArc3AgentStream.ts](client/src/hooks/useArc3AgentStream.ts:37-40,324-328) - Updated frame type and event handler to include action data
+- [Arc3GridVisualization.tsx](client/src/components/arc3/Arc3GridVisualization.tsx:19-22,170-200) - Added click indicator overlays
+- [ARC3AgentPlayground.tsx](client/src/pages/ARC3AgentPlayground.tsx:510) - Wired up lastAction prop
+
+#### Implementation
+- Follows [ARC-AGI-3-ClaudeCode-SDK](external/ARC-AGI-3-ClaudeCode-SDK/visualizer.html:180-202) best practices
+- Non-intrusive overlays with pointer-events disabled
+- Only shows for ACTION6 (coordinate-based actions)
+
 # [5.5.0] - 2025-11-07
 ### ♻️ ARC3 Architecture Refactor: Clean Separation of Concerns
 **Major refactoring following ClaudeCode SDK patterns with PostgreSQL frame persistence and helper utilities.**
