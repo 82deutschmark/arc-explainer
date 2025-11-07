@@ -33,10 +33,10 @@ export class Arc3AgentRunner {
         note: z
           .string()
           .max(240)
-          .optional()
-          .describe('Optional reason for requesting a snapshot (used in the activity log).'),
+          .nullable()
+          .describe('Optional reason for requesting a snapshot (used in the activity log). Use null to omit.'),
       }),
-      execute: async (input) => simulator.inspect(input.note),
+      execute: async (input) => simulator.inspect(input.note ?? null),
     });
 
     const scannerTool = tool({
