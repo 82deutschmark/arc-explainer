@@ -275,6 +275,12 @@ export class Arc3RealGameRunner {
     const frames: FrameData[] = [];
     const timeline: Arc3RunTimelineEntry[] = [];
 
+    // Add reasoning accumulator to track incremental reasoning content
+    const streamState = {
+      accumulatedReasoning: "",
+      reasoningSequence: 0,
+    };
+
     // Emit agent starting event
     streamHarness.emitEvent("agent.starting", {
       gameId,
@@ -413,12 +419,48 @@ export class Arc3RealGameRunner {
     for await (const event of result) {
       switch (event.type) {
         case 'raw_model_stream_event':
-          // Forward raw model events
-          streamHarness.emitEvent("model.stream_event", {
-            eventType: event.data.type,
-            data: event.data,
-            timestamp: Date.now(),
-          });
+          {
+            const eventData = event.data;
+
+            // The Agents SDK wraps Responses API events in event.data.event
+            // when event.data.type === 'model'
+            if (eventData.type === 'model') {
+              const modelEvent = (eventData as any).event;
+
+              // Handle reasoning deltas - extract from nested event structure
+              if (modelEvent?.type === 'response.reasoning_text.delta') {
+                const delta = modelEvent.delta ?? "";
+                streamState.accumulatedReasoning += delta;
+                streamState.reasoningSequence++;
+
+                streamHarness.emitEvent("agent.reasoning", {
+                  delta,
+                  content: streamState.accumulatedReasoning,
+                  sequence: streamState.reasoningSequence,
+                  contentIndex: modelEvent.content_index,
+                  timestamp: Date.now(),
+                });
+              }
+
+              // Handle reasoning completion
+              if (modelEvent?.type === 'response.reasoning_text.done') {
+                const finalContent = modelEvent.text ?? streamState.accumulatedReasoning;
+                streamState.accumulatedReasoning = finalContent;
+
+                streamHarness.emitEvent("agent.reasoning_complete", {
+                  finalContent,
+                  timestamp: Date.now(),
+                });
+              }
+            }
+
+            // Forward raw model events (for debugging/logging)
+            streamHarness.emitEvent("model.stream_event", {
+              eventType: event.data.type,
+              data: event.data,
+              timestamp: Date.now(),
+            });
+          }
           break;
         case 'run_item_stream_event':
           // Process run items (messages, tool calls, etc.)
@@ -427,15 +469,7 @@ export class Arc3RealGameRunner {
             item: event.item,
             timestamp: Date.now(),
           });
-
-          // Emit reasoning items as they stream
-          if (event.item.type === 'reasoning_item') {
-            const reasoningContent = JSON.stringify(event.item.rawItem, null, 2);
-            streamHarness.emitEvent("agent.reasoning", {
-              content: reasoningContent,
-              timestamp: Date.now(),
-            });
-          }
+          // Note: reasoning_item no longer processed here - deltas come from raw_model_stream_event
           break;
         case 'agent_updated_stream_event':
           // Forward agent updates
@@ -512,11 +546,13 @@ export class Arc3RealGameRunner {
           }
           break;
         case 'reasoning_item':
+          // Reasoning was already streamed in real-time with actual content
+          // For the timeline, use the accumulated reasoning content
           timeline.push({
             index,
             type: 'reasoning',
             label: `${item.agent.name} reasoning`,
-            content: JSON.stringify(item.rawItem, null, 2),
+            content: streamState.accumulatedReasoning || '(Reasoning streamed in real-time)',
           });
           break;
         default:
