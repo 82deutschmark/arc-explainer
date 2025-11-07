@@ -363,6 +363,7 @@ export class Arc3RealGameRunner {
           frameIndex: frames.length - 1,
           frameData: currentFrame,
           caption,
+          action: { type: name },
           timestamp: Date.now()
         });
         return currentFrame;
@@ -397,6 +398,7 @@ export class Arc3RealGameRunner {
           frameIndex: frames.length - 1,
           frameData: currentFrame,
           caption,
+          action: { type: 'ACTION6', coordinates: [x, y] },
           timestamp: Date.now()
         });
         return currentFrame;

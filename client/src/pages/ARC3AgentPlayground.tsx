@@ -507,6 +507,7 @@ Return a concise summary of what you learned about the game mechanics and your f
                       frameIndex={0}
                       cellSize={20}
                       showGrid={true}
+                      lastAction={currentFrame?.action}
                     />
                   </div>
 

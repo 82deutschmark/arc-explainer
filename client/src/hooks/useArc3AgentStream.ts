@@ -34,6 +34,10 @@ export interface Arc3AgentStreamState {
     action_counter: number;
     max_actions: number;
     full_reset: boolean;
+    action?: {
+      type: string;
+      coordinates?: [number, number];
+    };
   }>;
   currentFrameIndex: number;
   timeline: Array<{
@@ -317,12 +321,18 @@ export function useArc3AgentStream() {
               const data = JSON.parse((evt as MessageEvent<string>).data);
               console.log('[ARC3 Stream] Frame update:', data);
 
+              // Merge action data into frameData
+              const frameWithAction = {
+                ...data.frameData,
+                action: data.action // Add action metadata from event
+              };
+
               setState((prev) => ({
                 ...prev,
-                frames: data.frameIndex === prev.frames.length 
-                  ? [...prev.frames, data.frameData]
-                  : prev.frames.map((frame, index) => 
-                      index === data.frameIndex ? data.frameData : frame
+                frames: data.frameIndex === prev.frames.length
+                  ? [...prev.frames, frameWithAction]
+                  : prev.frames.map((frame, index) =>
+                      index === data.frameIndex ? frameWithAction : frame
                     ),
                 currentFrameIndex: data.frameIndex,
               }));
