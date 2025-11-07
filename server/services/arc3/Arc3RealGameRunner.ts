@@ -457,13 +457,48 @@ export class Arc3RealGameRunner {
           }
           break;
         case 'run_item_stream_event':
-          // Process run items (messages, tool calls, etc.)
-          streamHarness.emitEvent("agent.run_item", {
-            itemName: event.name,
-            item: event.item,
-            timestamp: Date.now(),
-          });
-          // Note: reasoning_item no longer processed here - deltas come from raw_model_stream_event
+          {
+            const { item } = event;
+            const timestamp = Date.now();
+
+            switch (item.type) {
+              case 'message_output_item':
+                streamHarness.emitEvent('agent.message', {
+                  agentName: item.agent.name,
+                  content: item.content,
+                  timestamp,
+                });
+                break;
+              case 'reasoning_item':
+                // Reasoning deltas already handled via raw_model_stream_event; keep UI updated with latest aggregate
+                streamHarness.emitEvent('agent.reasoning', {
+                  content: streamState.accumulatedReasoning,
+                  timestamp,
+                });
+                break;
+              case 'tool_call_item':
+                streamHarness.emitEvent('agent.tool_call', {
+                  tool: 'name' in item.rawItem ? item.rawItem.name : item.rawItem.type,
+                  arguments: 'arguments' in item.rawItem ? item.rawItem.arguments : undefined,
+                  timestamp,
+                });
+                break;
+              case 'tool_call_output_item':
+                streamHarness.emitEvent('agent.tool_result', {
+                  tool: item.rawItem.type,
+                  result: item.output ?? item.rawItem.output ?? item.rawItem,
+                  timestamp,
+                });
+                break;
+              default:
+                streamHarness.emitEvent('agent.run_item', {
+                  itemName: event.name,
+                  item,
+                  timestamp,
+                });
+                break;
+            }
+          }
           break;
         case 'agent_updated_stream_event':
           // Forward agent updates
