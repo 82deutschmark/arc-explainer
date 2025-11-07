@@ -37,6 +37,7 @@ export class Arc3RealGameRunner {
 
     let gameGuid: string | null = null;
     let currentFrame: FrameData | null = null;
+    let resetUsed = false;
     const frames: FrameData[] = [];
     const timeline: Arc3RunTimelineEntry[] = [];
 
@@ -73,11 +74,14 @@ export class Arc3RealGameRunner {
     // Define individual action tools to match ARC3 reference (RESET, ACTION1-6)
     const resetTool = tool({
       name: 'RESET',
-      description: 'Start or restart a game. Must be called first when NOT_PLAYED or after GAME_OVER to play again.',
+      description: 'Start a game session. Use exactly once at the beginning of the run; subsequent calls will fail.',
       parameters: z.object({}),
       execute: async () => {
-        // Start new game
+        if (resetUsed) {
+          throw new Error('RESET already used for this run. Continue with inspect_game_state and ACTION1–ACTION6.');
+        }
         const result = await this.apiClient.startGame(gameId);
+        resetUsed = true;
         gameGuid = result.guid;
         currentFrame = result;
         frames.push(currentFrame);
@@ -267,6 +271,7 @@ export class Arc3RealGameRunner {
 
     let gameGuid: string | null = null;
     let currentFrame: FrameData | null = null;
+    let resetUsed = false;
     const frames: FrameData[] = [];
     const timeline: Arc3RunTimelineEntry[] = [];
 
@@ -327,11 +332,15 @@ export class Arc3RealGameRunner {
     // Streaming: individual action tools
     const resetTool = tool({
       name: 'RESET',
-      description: 'Start or restart a game. Must be called first when NOT_PLAYED or after GAME_OVER to play again.',
+      description: 'Start a game session. Use exactly once at the beginning of the run; subsequent calls will fail.',
       parameters: z.object({}),
       execute: async () => {
+        if (resetUsed) {
+          throw new Error('RESET already used for this run. Continue with inspect_game_state and ACTION1–ACTION6.');
+        }
         streamHarness.emitEvent("agent.tool_call", { tool: 'RESET', arguments: {}, timestamp: Date.now() });
         const result = await this.apiClient.startGame(gameId);
+        resetUsed = true;
         gameGuid = result.guid;
         currentFrame = result;
         frames.push(currentFrame);
