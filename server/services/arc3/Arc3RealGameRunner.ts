@@ -38,18 +38,31 @@ export class Arc3RealGameRunner {
   async run(config: Arc3AgentRunConfig): Promise<Arc3AgentRunResult> {
     const agentName = config.agentName?.trim() || 'ARC3 Real Game Operator';
     const maxTurns = Math.max(2, Math.min(config.maxTurns ?? DEFAULT_MAX_TURNS, 400));
-    const gameId = config.game_id ?? 'ls20';  // Default to LockSmith game (ls20)
+    const gameId = config.game_id ?? DEFAULT_GAME_ID;
 
     let gameGuid: string | null = null;
     let currentFrame: FrameData | null = null;
+    let prevFrame: FrameData | null = null;
     const frames: FrameData[] = [];
-    const timeline: Arc3RunTimelineEntry[] = [];
+    let dbSessionId: number | null = null;
 
     // Start a fresh session up front so the agent only needs inspect + ACTION tools
     const initialFrame = await this.apiClient.startGame(gameId);
     gameGuid = initialFrame.guid;
     currentFrame = initialFrame;
     frames.push(initialFrame);
+
+    // Create database session for frame persistence
+    try {
+      dbSessionId = await createSession(gameId, gameGuid, initialFrame.win_score);
+
+      // Save initial frame
+      const initialCaption = generateActionCaption({ action: 'RESET' }, null, initialFrame);
+      await saveFrame(dbSessionId, 0, initialFrame, { action: 'RESET' }, initialCaption, 0);
+      logger.info(`Created session ${dbSessionId} for game ${gameId}`, 'arc3');
+    } catch (error) {
+      logger.warn(`Failed to create database session: ${error instanceof Error ? error.message : String(error)}`, 'arc3');
+    }
 
     const inspectTool = tool({
       name: 'inspect_game_state',
@@ -88,8 +101,21 @@ export class Arc3RealGameRunner {
       parameters: z.object({}),
       execute: async () => {
         if (!gameGuid) throw new Error('Game session not initialized yet.');
+        prevFrame = currentFrame;
         currentFrame = await this.apiClient.executeAction(gameGuid, { action: name });
         frames.push(currentFrame);
+
+        // Save frame with auto-generated caption
+        if (dbSessionId && prevFrame) {
+          try {
+            const caption = generateActionCaption({ action: name }, prevFrame, currentFrame);
+            const pixelsChanged = countChangedPixels(prevFrame, currentFrame);
+            await saveFrame(dbSessionId, frames.length - 1, currentFrame, { action: name }, caption, pixelsChanged);
+          } catch (error) {
+            logger.warn(`Failed to save frame: ${error instanceof Error ? error.message : String(error)}`, 'arc3');
+          }
+        }
+
         return currentFrame;
       }
     });
@@ -100,8 +126,21 @@ export class Arc3RealGameRunner {
       parameters: z.object({ x: z.number().int(), y: z.number().int() }),
       execute: async ({ x, y }) => {
         if (!gameGuid) throw new Error('Game session not initialized yet.');
+        prevFrame = currentFrame;
         currentFrame = await this.apiClient.executeAction(gameGuid, { action: 'ACTION6', coordinates: [x, y] });
         frames.push(currentFrame);
+
+        // Save frame with auto-generated caption
+        if (dbSessionId && prevFrame) {
+          try {
+            const caption = generateActionCaption({ action: 'ACTION6', coordinates: [x, y] }, prevFrame, currentFrame);
+            const pixelsChanged = countChangedPixels(prevFrame, currentFrame);
+            await saveFrame(dbSessionId, frames.length - 1, currentFrame, { action: 'ACTION6', coordinates: [x, y] }, caption, pixelsChanged);
+          } catch (error) {
+            logger.warn(`Failed to save frame: ${error instanceof Error ? error.message : String(error)}`, 'arc3');
+          }
+        }
+
         return currentFrame;
       }
     });
@@ -133,77 +172,16 @@ export class Arc3RealGameRunner {
       { maxTurns },
     );
 
-    // Process timeline entries
-    for (const [index, item] of result.newItems.entries()) {
-      switch (item.type) {
-        case 'message_output_item':
-          timeline.push({
-            index,
-            type: 'assistant_message',
-            label: `${item.agent.name} → user`,
-            content: item.content,
-          });
-          break;
-        case 'tool_call_item':
-          {
-            const rawItem = item.rawItem;
-            let content = '';
-            const args = 'arguments' in rawItem ? rawItem.arguments : undefined;
-            if (typeof args === 'string') {
-              try {
-                content = JSON.stringify(JSON.parse(args), null, 2);
-              } catch {
-                content = args;
-              }
-            } else if (args) {
-              content = JSON.stringify(args, null, 2);
-            }
+    // Process timeline entries using extracted utility (eliminates duplication)
+    const timeline = processRunItems(result.newItems, agentName);
 
-            const label = `${item.agent.name} called ${'name' in rawItem ? rawItem.name : rawItem.type}`;
-            timeline.push({
-              index,
-              type: 'tool_call',
-              label,
-              content,
-            });
-          }
-          break;
-        case 'tool_call_output_item':
-          {
-            const rawItem = item.rawItem;
-            let content = '';
-            if (typeof item.output === 'string') {
-              content = item.output;
-            } else if (item.output) {
-              content = JSON.stringify(item.output, null, 2);
-            } else if ('output' in rawItem && typeof rawItem.output === 'string') {
-              content = rawItem.output;
-            } else {
-              content = JSON.stringify(rawItem, null, 2);
-            }
-            timeline.push({
-              index,
-              type: 'tool_result',
-              label: `${item.agent.name} received ${rawItem.type}`,
-              content,
-            });
-          }
-          break;
-        case 'reasoning_item':
-          timeline.push({
-            index,
-            type: 'reasoning',
-            label: `${item.agent.name} reasoning`,
-            content: JSON.stringify(item.rawItem, null, 2),
-          });
-          break;
-        default:
-          timeline.push({
-            index,
-            type: 'assistant_message',
-            label: 'Unknown item',
-            content: JSON.stringify(item.toJSON(), null, 2),
-          });
+    // End session in database
+    if (dbSessionId && currentFrame) {
+      try {
+        await endSession(dbSessionId, currentFrame.state, currentFrame.score);
+        logger.info(`Ended session ${dbSessionId} with state ${currentFrame.state}`, 'arc3');
+      } catch (error) {
+        logger.warn(`Failed to end session: ${error instanceof Error ? error.message : String(error)}`, 'arc3');
       }
     }
 
@@ -265,11 +243,13 @@ export class Arc3RealGameRunner {
   async runWithStreaming(config: Arc3AgentRunConfig, streamHarness: Arc3StreamHarness): Promise<Arc3AgentRunResult> {
     const agentName = config.agentName?.trim() || 'ARC3 Real Game Operator';
     const maxTurns = Math.max(2, Math.min(config.maxTurns ?? DEFAULT_MAX_TURNS, 400));
-    const gameId = config.game_id ?? 'ls20';  // Default to LockSmith game
+    const gameId = config.game_id ?? DEFAULT_GAME_ID;
 
     let gameGuid: string | null = null;
     let currentFrame: FrameData | null = null;
+    let prevFrame: FrameData | null = null;
     const frames: FrameData[] = [];
+    let dbSessionId: number | null = null;
 
     // Start a fresh session before the agent takes control so the toolset never needs RESET
     const initialFrame = await this.apiClient.startGame(gameId);
@@ -277,13 +257,23 @@ export class Arc3RealGameRunner {
     currentFrame = initialFrame;
     frames.push(initialFrame);
 
+    // Create database session for frame persistence
+    try {
+      dbSessionId = await createSession(gameId, gameGuid, initialFrame.win_score);
+      const initialCaption = generateActionCaption({ action: 'RESET' }, null, initialFrame);
+      await saveFrame(dbSessionId, 0, initialFrame, { action: 'RESET' }, initialCaption, 0);
+      logger.info(`Created streaming session ${dbSessionId} for game ${gameId}`, 'arc3');
+    } catch (error) {
+      logger.warn(`Failed to create database session: ${error instanceof Error ? error.message : String(error)}`, 'arc3');
+    }
+
     // Emit initial frame to streaming clients
     streamHarness.emitEvent("game.started", {
       initialFrame,
       frameIndex: 0,
+      caption: generateActionCaption({ action: 'RESET' }, null, initialFrame),
       timestamp: Date.now(),
     });
-    const timeline: Arc3RunTimelineEntry[] = [];
 
     // Add reasoning accumulator to track incremental reasoning content
     const streamState = {
@@ -352,9 +342,29 @@ export class Arc3RealGameRunner {
       execute: async () => {
         if (!gameGuid) throw new Error('Game session not initialized yet.');
         streamHarness.emitEvent("agent.tool_call", { tool: name, arguments: {}, timestamp: Date.now() });
+
+        prevFrame = currentFrame;
         currentFrame = await this.apiClient.executeAction(gameGuid, { action: name });
         frames.push(currentFrame);
-        streamHarness.emitEvent("game.frame_update", { frameIndex: frames.length - 1, frameData: currentFrame, timestamp: Date.now() });
+
+        // Generate caption and save frame
+        let caption = '';
+        if (dbSessionId && prevFrame) {
+          try {
+            caption = generateActionCaption({ action: name }, prevFrame, currentFrame);
+            const pixelsChanged = countChangedPixels(prevFrame, currentFrame);
+            await saveFrame(dbSessionId, frames.length - 1, currentFrame, { action: name }, caption, pixelsChanged);
+          } catch (error) {
+            logger.warn(`Failed to save frame: ${error instanceof Error ? error.message : String(error)}`, 'arc3');
+          }
+        }
+
+        streamHarness.emitEvent("game.frame_update", {
+          frameIndex: frames.length - 1,
+          frameData: currentFrame,
+          caption,
+          timestamp: Date.now()
+        });
         return currentFrame;
       }
     });
@@ -366,9 +376,29 @@ export class Arc3RealGameRunner {
       execute: async ({ x, y }) => {
         if (!gameGuid) throw new Error('Game session not initialized yet.');
         streamHarness.emitEvent("agent.tool_call", { tool: 'ACTION6', arguments: { x, y }, timestamp: Date.now() });
+
+        prevFrame = currentFrame;
         currentFrame = await this.apiClient.executeAction(gameGuid, { action: 'ACTION6', coordinates: [x, y] });
         frames.push(currentFrame);
-        streamHarness.emitEvent("game.frame_update", { frameIndex: frames.length - 1, frameData: currentFrame, timestamp: Date.now() });
+
+        // Generate caption and save frame
+        let caption = '';
+        if (dbSessionId && prevFrame) {
+          try {
+            caption = generateActionCaption({ action: 'ACTION6', coordinates: [x, y] }, prevFrame, currentFrame);
+            const pixelsChanged = countChangedPixels(prevFrame, currentFrame);
+            await saveFrame(dbSessionId, frames.length - 1, currentFrame, { action: 'ACTION6', coordinates: [x, y] }, caption, pixelsChanged);
+          } catch (error) {
+            logger.warn(`Failed to save frame: ${error instanceof Error ? error.message : String(error)}`, 'arc3');
+          }
+        }
+
+        streamHarness.emitEvent("game.frame_update", {
+          frameIndex: frames.length - 1,
+          frameData: currentFrame,
+          caption,
+          timestamp: Date.now()
+        });
         return currentFrame;
       }
     });
@@ -513,84 +543,16 @@ export class Arc3RealGameRunner {
     // Wait for completion
     await result.completed;
 
-    // Process final timeline entries
-    for (const [index, item] of result.newItems.entries()) {
-      switch (item.type) {
-        case 'message_output_item':
-          timeline.push({
-            index,
-            type: 'assistant_message',
-            label: `${item.agent.name} → user`,
-            content: item.content,
-          });
-          streamHarness.emitEvent("agent.message", {
-            agentName: item.agent.name,
-            content: item.content,
-            timestamp: Date.now(),
-          });
-          break;
-        case 'tool_call_item':
-          {
-            const rawItem = item.rawItem;
-            let content = '';
-            const args = 'arguments' in rawItem ? rawItem.arguments : undefined;
-            if (typeof args === 'string') {
-              try {
-                content = JSON.stringify(JSON.parse(args), null, 2);
-              } catch {
-                content = args;
-              }
-            } else if (args) {
-              content = JSON.stringify(args, null, 2);
-            }
+    // Process final timeline entries using extracted utility (eliminates duplication)
+    const timeline = processRunItemsWithReasoning(result.newItems, agentName, streamState.accumulatedReasoning);
 
-            const label = `${item.agent.name} called ${'name' in rawItem ? rawItem.name : rawItem.type}`;
-            timeline.push({
-              index,
-              type: 'tool_call',
-              label,
-              content,
-            });
-          }
-          break;
-        case 'tool_call_output_item':
-          {
-            const rawItem = item.rawItem;
-            let content = '';
-            if (typeof item.output === 'string') {
-              content = item.output;
-            } else if (item.output) {
-              content = JSON.stringify(item.output, null, 2);
-            } else if ('output' in rawItem && typeof rawItem.output === 'string') {
-              content = rawItem.output;
-            } else {
-              content = JSON.stringify(rawItem, null, 2);
-            }
-            timeline.push({
-              index,
-              type: 'tool_result',
-              label: `${item.agent.name} received ${rawItem.type}`,
-              content,
-            });
-          }
-          break;
-        case 'reasoning_item':
-          // Reasoning was already streamed in real-time with actual content
-          // For the timeline, use the accumulated reasoning content
-          timeline.push({
-            index,
-            type: 'reasoning',
-            label: `${item.agent.name} reasoning`,
-            content: streamState.accumulatedReasoning || '(Reasoning streamed in real-time)',
-          });
-          break;
-        default:
-          timeline.push({
-            index,
-            type: 'assistant_message',
-            label: 'Unknown item',
-            content: JSON.stringify(item.toJSON(), null, 2),
-          });
+    // End session in database
+    if (dbSessionId && currentFrame) {
+      try {
+        await endSession(dbSessionId, currentFrame.state, currentFrame.score);
+        logger.info(`Ended streaming session ${dbSessionId} with state ${currentFrame.state}`, 'arc3');
+      } catch (error) {
+        logger.warn(`Failed to end session: ${error instanceof Error ? error.message : String(error)}`, 'arc3');
       }
     }
 
