@@ -79,6 +79,23 @@ router.get(
 );
 
 /**
+ * POST /api/arc3/start-game
+ * Start a game to get initial grid state
+ */
+router.post(
+  '/start-game',
+  asyncHandler(async (req: Request, res: Response) => {
+    await ensureScorecard();  // Ensure scorecard is open before any operations
+    const { game_id } = req.body;
+    if (!game_id) {
+      return res.status(400).json(formatResponse.error('MISSING_GAME_ID', 'game_id is required'));
+    }
+    const frameData = await arc3ApiClient.startGame(game_id);
+    res.json(formatResponse.success(frameData));
+  }),
+);
+
+/**
  * POST /api/arc3/real-game/run
  * Run agent against real ARC3 game
  */
