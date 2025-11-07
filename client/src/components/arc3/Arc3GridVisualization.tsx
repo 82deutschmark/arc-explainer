@@ -44,6 +44,7 @@ export const Arc3GridVisualization: React.FC<Arc3GridVisualizationProps> = ({
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [hoveredCell, setHoveredCell] = useState<{ x: number; y: number; value: number } | null>(null);
   const [colorDistribution, setColorDistribution] = useState<Arc3ColorEntry[]>([]);
+  const [canvasScale, setCanvasScale] = useState({ x: 1, y: 1 });
 
   // Get the current frame to display
   const currentFrame = grid[frameIndex] || grid[0] || [];
@@ -54,12 +55,46 @@ export const Arc3GridVisualization: React.FC<Arc3GridVisualizationProps> = ({
   const canvasWidth = width * cellSize;
   const canvasHeight = height * cellSize;
 
+  const scaledCellWidth = cellSize * canvasScale.x;
+  const scaledCellHeight = cellSize * canvasScale.y;
+
   // Update color distribution when grid changes
   useEffect(() => {
     if (currentFrame.length > 0) {
       setColorDistribution(getColorDistribution(currentFrame));
     }
   }, [currentFrame]);
+
+  useEffect(() => {
+    const computeScale = () => {
+      const canvas = canvasRef.current;
+      if (!canvas) return;
+
+      const clientWidth = canvas.clientWidth || canvasWidth || 1;
+      const clientHeight = canvas.clientHeight || canvasHeight || 1;
+
+      setCanvasScale({
+        x: canvasWidth > 0 ? clientWidth / canvasWidth : 1,
+        y: canvasHeight > 0 ? clientHeight / canvasHeight : 1,
+      });
+    };
+
+    computeScale();
+
+    const canvas = canvasRef.current;
+    if (!canvas) {
+      return;
+    }
+
+    if (typeof ResizeObserver !== 'undefined') {
+      const observer = new ResizeObserver(() => computeScale());
+      observer.observe(canvas);
+      return () => observer.disconnect();
+    }
+
+    window.addEventListener('resize', computeScale);
+    return () => window.removeEventListener('resize', computeScale);
+  }, [canvasWidth, canvasHeight]);
 
   // Draw the grid on canvas
   useEffect(() => {
@@ -108,8 +143,11 @@ export const Arc3GridVisualization: React.FC<Arc3GridVisualizationProps> = ({
     if (!canvas) return;
 
     const rect = canvas.getBoundingClientRect();
-    const x = Math.floor((e.clientX - rect.left) / cellSize);
-    const y = Math.floor((e.clientY - rect.top) / cellSize);
+    const displayCellWidth = width > 0 ? (canvas.clientWidth || canvasWidth || cellSize) / width : cellSize;
+    const displayCellHeight = height > 0 ? (canvas.clientHeight || canvasHeight || cellSize) / height : cellSize;
+
+    const x = Math.floor((e.clientX - rect.left) / displayCellWidth);
+    const y = Math.floor((e.clientY - rect.top) / displayCellHeight);
     
     if (x >= 0 && x < width && y >= 0 && y < height) {
       const value = currentFrame[y]?.[x] ?? 0;
@@ -158,8 +196,8 @@ export const Arc3GridVisualization: React.FC<Arc3GridVisualizationProps> = ({
           <div
             className="absolute z-10 px-2 py-1 text-xs bg-black bg-opacity-75 text-white pointer-events-none rounded"
             style={{
-              left: `${hoveredCell.x * cellSize + cellSize / 2}px`,
-              top: `${hoveredCell.y * cellSize - 25}px`,
+              left: `${hoveredCell.x * scaledCellWidth + scaledCellWidth / 2}px`,
+              top: `${hoveredCell.y * scaledCellHeight - 25}px`,
               transform: 'translateX(-50%)',
             }}
           >
@@ -167,35 +205,38 @@ export const Arc3GridVisualization: React.FC<Arc3GridVisualizationProps> = ({
           </div>
         )}
 
-        {/* Agent click indicator - cell highlight */}
+        {/* Agent click indicator - PROMINENT cell highlight with glow */}
         {lastAction?.type === 'ACTION6' && lastAction.coordinates && (
           <div
-            className="absolute z-5 border-2 border-orange-400 rounded pointer-events-none animate-pulse"
+            className="absolute z-5 border-4 border-orange-500 rounded-lg pointer-events-none"
             style={{
-              left: `${lastAction.coordinates[0] * cellSize}px`,
-              top: `${lastAction.coordinates[1] * cellSize}px`,
-              width: `${cellSize}px`,
-              height: `${cellSize}px`,
-              boxShadow: '0 0 10px rgba(255, 133, 27, 0.5)',
+              left: `${lastAction.coordinates[0] * scaledCellWidth}px`,
+              top: `${lastAction.coordinates[1] * scaledCellHeight}px`,
+              width: `${scaledCellWidth}px`,
+              height: `${scaledCellHeight}px`,
+              boxShadow: '0 0 20px rgba(255, 133, 27, 0.9), 0 0 40px rgba(255, 133, 27, 0.6), inset 0 0 20px rgba(255, 133, 27, 0.3)',
+              animation: 'pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+              backgroundColor: 'rgba(255, 133, 27, 0.15)',
             }}
           />
         )}
 
-        {/* Agent click indicator - label badge */}
+        {/* Agent click indicator - PROMINENT label badge with animation */}
         {lastAction?.type === 'ACTION6' && lastAction.coordinates && (
           <div
-            className="absolute z-10 bg-orange-500 text-white font-bold text-xs px-2 py-1 rounded shadow-lg pointer-events-none flex items-center gap-1"
+            className="absolute z-10 bg-gradient-to-r from-orange-500 to-orange-600 text-white font-bold text-sm px-3 py-2 rounded-lg shadow-2xl pointer-events-none flex items-center gap-2 animate-bounce"
             style={{
-              left: `${lastAction.coordinates[0] * cellSize + cellSize / 2}px`,
-              top: `${lastAction.coordinates[1] * cellSize - 30}px`,
+              left: `${lastAction.coordinates[0] * scaledCellWidth + scaledCellWidth / 2}px`,
+              top: `${lastAction.coordinates[1] * scaledCellHeight - 45}px`,
               transform: 'translateX(-50%)',
+              border: '2px solid rgba(255, 255, 255, 0.5)',
             }}
           >
-            <svg className="w-4 h-4 fill-white" viewBox="0 0 256 256">
+            <svg className="w-5 h-5 fill-white" viewBox="0 0 256 256">
               <path d="M162.35,138.35a8,8,0,0,1,2.46-13l46.41-17.82a8,8,0,0,0-.71-14.85L50.44,40.41a8,8,0,0,0-10,10L92.68,210.51a8,8,0,0,0,14.85.71l17.82-46.41a8,8,0,0,1,13-2.46l51.31,51.31a8,8,0,0,0,11.31,0L213.66,201a8,8,0,0,0,0-11.31Z"
                     strokeLinecap="round" strokeLinejoin="round" strokeWidth="16"/>
             </svg>
-            <span>Agent Click ({lastAction.coordinates[0]}, {lastAction.coordinates[1]})</span>
+            <span>AGENT CLICKED ({lastAction.coordinates[0]}, {lastAction.coordinates[1]})</span>
           </div>
         )}
       </div>
