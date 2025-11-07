@@ -1,5 +1,74 @@
 # CHANGELOG - Uses semantic versioning (MAJOR.MINOR.PATCH)
 
+# [5.3.1] - 2025-11-06
+### 🎨 ARC3 Playground PROPER Redesign (BLACK THEME)
+**Complete rewrite to match real ARC-AGI-3 site: compact, dark, controls ABOVE grid**
+
+#### What Changed (FIXED)
+- **Black theme**: Dark background matching three.arcprize.org
+- **Tiny controls**: All text 9-11px, buttons h-6, inputs h-6 (not 20% of screen!)
+- **Game controls ABOVE grid**: Middle column has selector/model/reasoning/start button ABOVE game grid
+- **Models from config**: Uses `MODELS` from `server/config/models.ts`, NOT hardcoded
+- **Default model**: `gpt-5-nano-2025-08-07` (NOT gpt-4o-mini)
+- **System prompt display**: Collapsible card showing agent's system prompt
+- **Proper layout**:
+  - Left (3 cols): Tiny "How it Works" + System Prompt + Stats + Actions summary
+  - Middle (6 cols): Compact game controls ABOVE grid (all in one card)
+  - Right (3 cols): Streaming reasoning (dark cards, tiny text)
+- **Collapsible instructions**: Don't take up space when collapsed
+- **Grid sizing**: cellSize=16 (compact, matching real site)
+
+#### Files Modified
+- `client/src/pages/ARC3AgentPlayground.tsx`: Complete rewrite (335 lines)
+  - Import MODELS from server config
+  - Black theme (bg-black, bg-gray-900, bg-gray-800)
+  - All controls tiny (text-[9px] to text-[11px])
+  - Game selector in middle column ABOVE grid
+  - System prompt collapsible display
+  - No more giant white page
+
+#### Why This ACTUALLY Matters
+- **User was right**: Previous version was identical to old bloated white page
+- **Matches real UX**: Now looks like three.arcprize.org (dark, compact, efficient)
+- **Space efficient**: Controls don't waste 20% of screen
+- **Config-driven**: Models from centralized config, respects defaults
+
+# [5.3.0] - 2025-11-06
+### 🎨 ARC3 Agent Playground Complete Redesign
+**Redesigned playground to match the real ARC-AGI-3 site layout and user experience**
+
+#### What Changed
+- **Removed bloated header**: Deleted giant title, subtitle, and description section (58 lines removed)
+- **Compact three-column layout**: 
+  - Left: "How it Works" + embedded config (game selector, model, reasoning effort, instructions, start/stop) + Stats + Actions/Tools summary
+  - Center: Game grid with proper ARC3 sizing (cellSize=20, matching real site)
+  - Right: Streaming reasoning output (not full timeline)
+- **Integrated game selector**: Now properly fetches real games from `/api/arc3/games` endpoint
+  - Displays loading state, error handling, retry button
+  - Auto-selects ls20 by default
+  - Shows game title and game_id in dropdown
+- **User message injection**: After maxTurns actions without win, UI presents input to inject message into responses chain
+- **Actions = Turns**: Each action updates the grid, matching ARC3 game mechanics
+- **Compact stats display**: Token usage, score, action counter inline in left column
+
+#### Files Modified
+- `client/src/pages/ARC3AgentPlayground.tsx`: Complete rewrite (443 lines, was 307)
+  - Added `fetchGames()` to call `/api/arc3/games`
+  - Game selector now dynamic from API
+  - Added user message injection UI after max actions
+  - Removed `Arc3ChatTimeline` component (replaced with inline reasoning display)
+  - Removed standalone `Arc3AgentConfigPanel` and `Arc3GameSelector` (embedded in compact "How it Works" card)
+
+#### Why This Matters
+- **Matches real ARC3 UX**: Users familiar with three.arcprize.org will recognize the layout
+- **Compact & focused**: No wasted space, everything visible at once
+- **Real game data**: No more hardcoded game list
+- **Better reasoning display**: Streaming reasoning shown in dedicated column (not buried in timeline)
+
+#### References
+- User-provided screenshot of three.arcprize.org game interface
+- ARC3 API endpoint: `/api/arc3/games` (from `server/routes/arc3.ts`)
+
 # [5.2.1] - 2025-11-06
 ### 🐛 ARC3 Integration Bug Fixes
 **Fixed critical TypeScript errors in Arc3RealGameRunner after comprehensive review**
@@ -3551,6 +3620,14 @@ app.get("/api/model-dataset/metrics/:modelName/:datasetName", asyncHandler(model
 ---
 
 ## [Unreleased]
+
+### Fixed
+- ARC3 streaming: Resolved OpenAI Responses API structured outputs error by updating `inspect_game_state` tool schema in `server/services/arc3/Arc3RealGameRunner.ts` to use `z.string().nullable()` for the `note` field and normalizing outputs to `null`. This removes the `.optional()` usage that the Responses API rejects, unblocking `/api/arc3/stream/*` sessions.
+- ARC3 streaming: Updated `execute_game_action.coordinates` to `z.tuple([...]).nullable()` and added runtime validation for ACTION6. Mirrored fix in streaming path and event arguments to emit `coordinates: null` when omitted.
+- ARC3 simulator: Updated `inspect_board.note` in `server/services/arc3/Arc3AgentRunner.ts` to use `nullable()` and pass `null` through to simulator.
+
+### Author
+- Assistant (OpenAI Codex CLI) — 2025-11-06
 
 ### Added
 - Added Git submodule  pointing to https://github.com/82deutschmark/openai-chatkit-advanced-samples to include advanced OpenAI ChatKit samples for reference and integration (2025-11-06).
