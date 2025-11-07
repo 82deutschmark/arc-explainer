@@ -1,5 +1,14 @@
 # CHANGELOG - Uses semantic versioning (MAJOR.MINOR.PATCH)
 
+# [5.4.0] - 2025-11-06
+### 🎙️ ARC3 Prompt Transparency Pass
+**Centralized real-game prompt builder and enforced plain-language narration for every move.**
+
+#### Highlights
+- Added `server/services/arc3/prompts.ts` with `buildArc3DefaultPrompt()` so runners share the same friendly instructions.
+- Updated `Arc3RealGameRunner` (sync + streaming) to use the helper and reinforce RESET-first flow, inspect narration, and the "What I see → What it means → Next move" template.
+- Documented the changes here so operators know why the agent now talks like a streamer.
+
 # [5.3.3] - 2025-11-06
 ### 🔧 ARC3 Agent System: Fixed Reset Loop, Grid Rendering, and Streaming Reasoning
 **Removed RESET from system prompt, added editable system prompt UI, fixed grid overflow, enabled real-time reasoning streaming**

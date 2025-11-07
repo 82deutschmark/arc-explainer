@@ -11,6 +11,7 @@ import { Agent, run, tool, extractAllTextOutput } from '@openai/agents';
 import { z } from 'zod';
 import { Arc3ApiClient, type FrameData, type GameAction } from './Arc3ApiClient';
 import type { Arc3AgentRunConfig, Arc3AgentRunResult, Arc3RunTimelineEntry, Arc3RunSummary, Arc3GameState } from './types';
+import { buildArc3DefaultPrompt } from './prompts';
 
 const DEFAULT_MODEL = 'gpt-5-nano';  // Per user requirement
 const DEFAULT_MAX_TURNS = 24;
@@ -108,24 +109,7 @@ export class Arc3RealGameRunner {
       }
     });
 
-    const defaultSystemPrompt = [
-      'You are playing a real ARC-AGI-3 game from the competition at https://three.arcprize.org/',
-      'Game rules:',
-      '- The game uses a grid-based interface with colors represented by integers 0-15',
-      '- Each action you take affects the game state and may change the grid',
-      '- Use inspect_game_state first to understand the current situation',
-      '- ACTION1-ACTION5 perform various game-specific actions',
-      '- ACTION6 requires coordinates [x, y] for targeted actions',
-      '- Your goal is to understand the game mechanics and achieve the objective',
-      'Strategy:',
-      '- Use inspect_game_state to observe the grid and understand patterns',
-      '- Experiment with different actions to learn the rules',
-      '- Track how the grid changes with each action',
-      '- Stop when you achieve WIN or when no useful actions remain',
-      'Return a concise summary of what you learned about the game mechanics and your final outcome.',
-    ].join('\n');
-
-    const systemPrompt = config.systemPrompt?.trim() || defaultSystemPrompt;
+    const systemPrompt = config.systemPrompt?.trim() || buildArc3DefaultPrompt();
     const operatorGuidance = config.instructions?.trim();
     const combinedInstructions = operatorGuidance
       ? `${systemPrompt}\n\nOperator guidance: ${operatorGuidance}`
@@ -141,7 +125,7 @@ export class Arc3RealGameRunner {
 
     const result = await run(
       agent,
-      `Start playing the ARC-AGI-3 game "${gameId}". Begin with a RESET action, then explore the game mechanics. Report your findings and end with a summary of what you learned.`,
+      `Start playing the ARC-AGI-3 game "${gameId}". Narrate before every tool call, then execute it. Keep using the What I see / What it means / Next move format until you deliver the Final Report.`,
       {
         maxTurns,
       },
@@ -384,24 +368,7 @@ export class Arc3RealGameRunner {
       }
     });
 
-    const defaultSystemPrompt = [
-      'You are playing a real ARC-AGI-3 game from the competition at https://three.arcprize.org/',
-      'Game rules:',
-      '- The game uses a grid-based interface with colors represented by integers 0-15',
-      '- Each action you take affects the game state and may change the grid',
-      '- Use inspect_game_state first to understand the current situation',
-      '- ACTION1-ACTION5 perform various game-specific actions',
-      '- ACTION6 requires coordinates [x, y] for targeted actions',
-      '- Your goal is to understand the game mechanics and achieve the objective',
-      'Strategy:',
-      '- Use inspect_game_state to observe the grid and understand patterns',
-      '- Experiment with different actions to learn the rules',
-      '- Track how the grid changes with each action',
-      '- Stop when you achieve WIN or when no useful actions remain',
-      'Return a concise summary of what you learned about the game mechanics and your final outcome.',
-    ].join('\n');
-
-    const systemPrompt = config.systemPrompt?.trim() || defaultSystemPrompt;
+    const systemPrompt = config.systemPrompt?.trim() || buildArc3DefaultPrompt();
     const operatorGuidance = config.instructions?.trim();
     const combinedInstructions = operatorGuidance
       ? `${systemPrompt}\n\nOperator guidance: ${operatorGuidance}`
@@ -426,7 +393,7 @@ export class Arc3RealGameRunner {
     // Use streaming mode for the agent run
     const result = await run(
       agent,
-      `Start playing the ARC-AGI-3 game "${gameId}". Begin with a RESET action, then explore the game mechanics. Report your findings and end with a summary of what you learned.`,
+      `Start playing the ARC-AGI-3 game "${gameId}". Narrate before every tool call, then execute it. Keep using the What I see / What it means / Next move format until you deliver the Final Report.`,
       {
         maxTurns,
         stream: true,
