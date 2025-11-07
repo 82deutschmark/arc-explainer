@@ -96,6 +96,11 @@ export class Arc3AgentRunner {
       'Begin the Color Hunt session. Report status updates and end with a final mission summary.',
       {
         maxTurns,
+        reasoning: {
+          effort: (config.reasoningEffort ?? 'high') as 'minimal' | 'low' | 'medium' | 'high',
+          verbosity: 'high',
+          summary: 'detailed',
+        },
       },
     );
 

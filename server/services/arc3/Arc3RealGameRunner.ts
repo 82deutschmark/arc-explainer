@@ -125,6 +125,11 @@ export class Arc3RealGameRunner {
       `Start playing the ARC-AGI-3 game "${gameId}". Narrate before every tool call, then execute it. Keep using the What I see / What it means / Next move format until you deliver the Final Report.`,
       {
         maxTurns,
+        reasoning: {
+          effort: (config.reasoningEffort ?? 'high') as 'minimal' | 'low' | 'medium' | 'high',
+          verbosity: 'high',
+          summary: 'detailed',
+        },
       },
     );
 
@@ -397,6 +402,11 @@ export class Arc3RealGameRunner {
       {
         maxTurns,
         stream: true,
+        reasoning: {
+          effort: (config.reasoningEffort ?? 'high') as 'minimal' | 'low' | 'medium' | 'high',
+          verbosity: 'high',
+          summary: 'detailed',
+        },
       },
     );
 
