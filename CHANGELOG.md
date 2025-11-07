@@ -1,5 +1,30 @@
 # CHANGELOG - Uses semantic versioning (MAJOR.MINOR.PATCH)
 
+# [5.4.1] - 2025-11-06
+### 🧠 ARC3 Reasoning Streaming Fix: Empty Content Resolved
+**Fixed empty reasoning content arrays by extracting deltas from raw Responses API events.**
+
+#### Critical Fix
+- **Empty reasoning content**: ARC3 was streaming reasoning blocks with `content: []` arrays
+- **Root cause**: Attempted to extract reasoning from `reasoning_item.rawItem` (has metadata, NO text)
+- **Solution**: Extract reasoning deltas from `raw_model_stream_event.data.event` (nested Responses API events)
+- **Pattern adopted from Saturn**: Uses same `response.reasoning_text.delta` extraction that works in Saturn Solver
+
+#### Implementation Details
+- Added `streamState.accumulatedReasoning` accumulator to track incremental reasoning
+- Process `raw_model_stream_event` when `event.data.type === 'model'`
+- Extract underlying `response.reasoning_text.delta` events from `event.data.event`
+- Emit `agent.reasoning` with both `delta` and accumulated `content`
+- Handle `response.reasoning_text.done` for completion events
+- Timeline now uses accumulated reasoning instead of empty rawItem JSON
+
+#### Files Changed
+- [Arc3RealGameRunner.ts](server/services/arc3/Arc3RealGameRunner.ts:278-457) - Added reasoning extraction logic
+
+#### References
+- **Plan document**: [2025-11-06-fix-arc3-reasoning-streaming.md](docs/2025-11-06-fix-arc3-reasoning-streaming.md)
+- **Working reference**: Saturn's proven pattern in [streaming.ts](server/services/openai/streaming.ts:271-294)
+
 # [5.4.0] - 2025-11-06
 ### 🎙️ ARC3 Prompt Transparency Pass
 **Centralized real-game prompt builder and enforced plain-language narration for every move.**
