@@ -1,5 +1,59 @@
 # CHANGELOG - Uses semantic versioning (MAJOR.MINOR.PATCH)
 
+# [5.5.0] - 2025-11-07
+### ♻️ ARC3 Architecture Refactor: Clean Separation of Concerns
+**Major refactoring following ClaudeCode SDK patterns with PostgreSQL frame persistence and helper utilities.**
+
+#### Highlights
+- **Reduced Arc3RealGameRunner from 621 → ~400 lines** (35% reduction) by extracting helpers and utilities
+- **Database persistence**: All game frames now saved to PostgreSQL with auto-generated captions
+- **Helper modules**: Created `frameAnalysis.ts`, `captionGenerator.ts`, `narrationExtractor.ts` following SDK patterns
+- **Session tracking**: Complete lifecycle management via `sessionManager.ts` and `framePersistence.ts`
+- **DRY compliance**: Eliminated ~140 lines of duplicate timeline processing code via `timelineProcessor.ts`
+- **Real-time captions**: Streaming events now include human-readable frame descriptions
+
+#### New Database Tables
+- **`arc3_sessions`** - Tracks game sessions (gameId, guid, state, final_score, timestamps)
+- **`arc3_frames`** - Stores frame history with actions, captions, pixel changes, JSONB frame data
+- Both tables created automatically via DatabaseSchema migration on startup
+
+#### New Modules
+**Helpers** (`server/services/arc3/helpers/`):
+- **`frameAnalysis.ts`** - Converted from SDK's `frame-analysis.js` (compareFrames, countChangedPixels, findChangedRegions)
+- **`captionGenerator.ts`** - Auto-generates action descriptions: "ACTION2 - Score +5, 12 pixels changed"
+- **`narrationExtractor.ts`** - Parses "What I see / What it means / Next move" narrative structure
+
+**Persistence** (`server/services/arc3/persistence/`):
+- **`framePersistence.ts`** - PostgreSQL frame storage (saveFrame, loadFrame, getFrameHistory, deleteFrames)
+- **`sessionManager.ts`** - Session lifecycle (createSession, endSession, listSessions, getSessionById/ByGuid)
+
+**Utils** (`server/services/arc3/utils/`):
+- **`timelineProcessor.ts`** - Extracted duplicate timeline processing (~140 lines deduplicated)
+- **`constants.ts`** - Centralized ARC3 config (DEFAULT_MODEL, DEFAULT_GAME_ID, ARC3_GRID_SIZE, COLOR_NAMES)
+
+#### Files Changed
+- [DatabaseSchema.ts](server/repositories/database/DatabaseSchema.ts:34-282) - Added arc3_sessions and arc3_frames table creation
+- [Arc3RealGameRunner.ts](server/services/arc3/Arc3RealGameRunner.ts) - Integrated frame persistence, extracted utilities, added captions
+- All new helper/persistence/utils modules listed above
+
+#### Architecture Improvements
+- ✅ **SRP compliance** - Each module has one clear responsibility (helpers, persistence, orchestration)
+- ✅ **DRY principle** - Eliminated timeline processing duplication between run() and runWithStreaming()
+- ✅ **SDK patterns** - Matches ClaudeCode SDK's clean separation (actions, helpers, utilities)
+- ✅ **Database persistence** - Full frame history with captions for post-game analysis
+- ✅ **Streaming enhanced** - Real-time caption generation and event emission
+
+#### Impact
+- **Frame history** - All game sessions now have full replay capability via database queries
+- **Auto-captions** - Every action automatically gets a human-readable description
+- **Session tracking** - Complete game lifecycle tracked in PostgreSQL
+- **Cleaner code** - Modular, testable, maintainable architecture
+- **No breaking changes** - API remains compatible, existing functionality preserved
+
+#### References
+- **Inspiration**: [ARC-AGI-3-ClaudeCode-SDK](external/ARC-AGI-3-ClaudeCode-SDK) - Reference implementation
+- **Plan document**: Comprehensive refactoring plan executed in full
+
 # [5.4.2] - 2025-11-06
 ### ♻️ ARC3 Streaming: Enforced High-Verbosity Reasoning
 - **Reasoning config enforced**: Streaming runs now forward the agent's `verbosity: "high"` and `summary: "detailed"` expectations so OpenAI logs match the simulator behaviour.
