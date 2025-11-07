@@ -39,6 +39,9 @@ interface ModelInfo {
 }
 
 export default function ARC3AgentPlayground() {
+  // Auto-scroll ref for streaming panel
+  const reasoningContainerRef = React.useRef<HTMLDivElement>(null);
+
   // Fetch games
   const [games, setGames] = useState<GameInfo[]>([]);
   const [gamesLoading, setGamesLoading] = useState(true);
@@ -156,6 +159,17 @@ Return a concise summary of what you learned about the game mechanics and your f
       setShowUserInput(true);
     }
   }, [state.status, state.streamingStatus]);
+
+  // Auto-scroll streaming panel to bottom when new content arrives
+  React.useEffect(() => {
+    if (reasoningContainerRef.current) {
+      setTimeout(() => {
+        if (reasoningContainerRef.current) {
+          reasoningContainerRef.current.scrollTop = reasoningContainerRef.current.scrollHeight;
+        }
+      }, 0);
+    }
+  }, [state.timeline, state.streamingReasoning]);
 
   const handleUserMessageSubmit = () => {
     console.log('User message:', userMessage);
@@ -568,7 +582,7 @@ Return a concise summary of what you learned about the game mechanics and your f
 
         {/* RIGHT: Streaming Reasoning - Auto-advance, larger text */}
         <div className="lg:col-span-4">
-          <Card className="h-full" ref={React.useRef<HTMLDivElement>(null)}>
+          <Card className="h-full">
             <CardHeader className="pb-2 pt-3 px-3">
               <CardTitle className="text-base font-bold flex items-center gap-1.5">
                 <Brain className="h-4 w-4" />
@@ -577,7 +591,7 @@ Return a concise summary of what you learned about the game mechanics and your f
               </CardTitle>
             </CardHeader>
             <CardContent className="px-3 pb-3">
-              <div className="space-y-2 max-h-[calc(100vh-10rem)] overflow-y-auto text-sm">
+              <div ref={reasoningContainerRef} className="space-y-2 max-h-[calc(100vh-10rem)] overflow-y-auto text-sm">
                 {reasoningEntries.length === 0 && assistantMessages.length === 0 && !isPlaying ? (
                   <div className="text-center text-muted-foreground py-10">
                     <Brain className="h-8 w-8 mx-auto mb-2 opacity-50" />
@@ -592,31 +606,31 @@ Return a concise summary of what you learned about the game mechanics and your f
                       .map((entry, idx) => (
                         <div
                           key={idx}
-                          className={`p-2 rounded border ${
+                          className={`p-3 rounded-lg border-l-4 ${
                             entry.type === 'reasoning'
-                              ? 'bg-blue-50 dark:bg-blue-950 border-blue-200'
-                              : 'bg-green-50 dark:bg-green-950 border-green-200'
+                              ? 'bg-blue-50 dark:bg-blue-950 border-l-blue-500 border-r border-t border-b border-blue-200'
+                              : 'bg-green-50 dark:bg-green-950 border-l-green-500 border-r border-t border-b border-green-200'
                           }`}
                         >
-                          <p className={`font-medium text-[10px] mb-0.5 ${
-                            entry.type === 'reasoning' ? 'text-blue-600' : 'text-green-600'
+                          <p className={`font-bold text-sm mb-1 ${
+                            entry.type === 'reasoning' ? 'text-blue-700' : 'text-green-700'
                           }`}>
                             {entry.label}
                           </p>
-                          <pre className="text-[9px] text-muted-foreground whitespace-pre-wrap">
+                          <pre className="text-sm text-foreground whitespace-pre-wrap font-mono leading-relaxed">
                             {entry.content}
                           </pre>
                         </div>
                       ))}
-                    
+
                     {isPlaying && (
-                      <div className="p-2 border-l-2 border-blue-200 bg-blue-50 dark:bg-blue-950">
-                        <div className="flex items-center gap-1.5 text-muted-foreground mb-1">
-                          <div className="w-1.5 h-1.5 bg-blue-500 rounded-full animate-pulse" />
-                          <span className="text-[10px]">{state.streamingMessage || 'Thinking...'}</span>
+                      <div className="p-3 rounded-lg border-l-4 border-l-blue-500 bg-blue-50 dark:bg-blue-950 border-r border-t border-b border-blue-200 animate-pulse">
+                        <div className="flex items-center gap-2 text-blue-700 mb-2 font-bold text-sm">
+                          <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse" />
+                          <span>{state.streamingMessage || 'Agent thinking...'}</span>
                         </div>
                         {state.streamingReasoning && (
-                          <pre className="text-[9px] text-muted-foreground whitespace-pre-wrap mt-1">
+                          <pre className="text-sm text-foreground whitespace-pre-wrap font-mono mt-2 leading-relaxed">
                             {state.streamingReasoning}
                           </pre>
                         )}
