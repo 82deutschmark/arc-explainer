@@ -1,5 +1,39 @@
 # CHANGELOG - Uses semantic versioning (MAJOR.MINOR.PATCH)
 
+# [5.6.4] - 2025-11-07
+### 🎨 UX Improvements: Visual Feedback & Reasoning Display
+**Fixed reasoning display and added prominent visual indicators for agent actions.**
+
+#### Problems Addressed
+1. **Reasoning content empty/duplicated** - Hook appended timeline entry on every delta instead of accumulating
+2. **No visual feedback for API calls** - Users couldn't see when agent was calling ARC3 API
+3. **ACTION6 clicks not prominent** - Cursor indicator was too subtle
+
+#### Changes - Reasoning Fix
+- **useArc3AgentStream.ts** (lines 244-284): Fixed reasoning accumulation
+  - `agent.reasoning` now only updates `streamingReasoning` state (no timeline entry)
+  - Added listener for `agent.reasoning_complete` to add final content to timeline
+  - Eliminates duplicate/empty reasoning entries
+
+#### Changes - Visual Feedback
+- **ARC3AgentPlayground.tsx** (lines 200-224): Added action pill bar to header
+  - Shows A1-A6 pills that pulse green when active, display usage counts
+- **ARC3AgentPlayground.tsx** (lines 387-392): "Calling ARC3 API..." indicator with spinning icon
+- **Arc3GridVisualization.tsx** (lines 208-241): Enhanced ACTION6 indicators
+  - Thicker border (4px), stronger glow, pulsing animation, semi-transparent fill
+  - Larger bouncing badge with gradient background and "AGENT CLICKED" label
+
+#### Impact
+- ✅ Reasoning displays complete content instead of empty JSON
+- ✅ Real-time feedback when agent calls API
+- ✅ Action usage visible in header pill bar
+- ✅ ACTION6 clicks impossible to miss
+
+# [5.6.3] - 2025-11-07
+### 🎯 ARC3 Agent Click Alignment
+- **Arc3GridVisualization.tsx**: Scales hover tooltip and ACTION6 highlight overlays with the rendered canvas size so the orange click marker stays aligned to the grid at any responsive width.
+- Ensures coordinate badge and pulse effect track the actual cell even when the canvas is resized.
+
 # [5.6.2] - 2025-11-07
 ### 🐛 Critical Fixes: ARC3 API Actions + UI Display
 **Fixed 400 Bad Request error and missing assistant messages in UI.**
