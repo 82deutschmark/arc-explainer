@@ -234,7 +234,7 @@ Return a concise summary of what you learned about the game mechanics and your f
                     value={systemPrompt}
                     onChange={(e) => setSystemPrompt(e.target.value)}
                     disabled={isPlaying}
-                    className="text-[10px] h-32 resize-none font-mono"
+                    className="text-[10px] min-h-[8rem] max-h-[60vh] resize-y font-mono"
                     placeholder="Base system instructions..."
                   />
                 </div>
@@ -247,7 +247,7 @@ Return a concise summary of what you learned about the game mechanics and your f
                   value={instructions}
                   onChange={(e) => setInstructions(e.target.value)}
                   disabled={isPlaying}
-                  className="text-[11px] h-16 resize-none"
+                  className="text-[11px] min-h-[6rem] max-h-[50vh] resize-y"
                   placeholder="Additional operator guidance..."
                 />
               </div>
