@@ -92,6 +92,19 @@ export default function ARC3AgentPlayground() {
     }
   };
 
+  const fetchDefaultPrompt = async () => {
+    try {
+      const response = await apiRequest('GET', '/api/arc3/default-prompt');
+      const data = await response.json();
+      if (data.success && data.data?.prompt) {
+        setSystemPrompt(data.data.prompt);
+      }
+    } catch (error) {
+      console.error('[ARC3] Failed to fetch default prompt:', error);
+      // Fall back to what we have
+    }
+  };
+
   const fetchGameGrid = async (gameId: string) => {
     try {
       const response = await apiRequest('POST', '/api/arc3/start-game', { game_id: gameId });
@@ -107,6 +120,7 @@ export default function ARC3AgentPlayground() {
   useEffect(() => {
     fetchGames();
     fetchModels();
+    fetchDefaultPrompt();
   }, []);
 
   // Agent config
@@ -115,50 +129,7 @@ export default function ARC3AgentPlayground() {
   const [model, setModel] = useState<string>('');
   const [maxTurns, setMaxTurns] = useState(10);
   const [reasoningEffort, setReasoningEffort] = useState<'minimal' | 'low' | 'medium' | 'high'>('low');
-  const [systemPrompt, setSystemPrompt] = useState(
-    `You are wacky Gen-Z live host streaming a first look for the hottest new video game on Twitch, it is a real ARC-AGI-3 puzzle run for curious onlookers.
-These viewers do not understand agents, so explain every thought in simple language.
-
-Ground rules:
-- The game session is already open. Keep it running with inspect_game_state and ACTION1–ACTION6.
-- Remember that the numbers map to these very specific colors:
-  0: White
-  1: Light Gray
-  2: Gray
-  3: Dark Gray
-  4: Darker Gray
-  5: Black
-  6: Pink
-  7: Light Pink
-  8: Red
-  9: Blue
- 10: Light Blue
- 11: Yellow
- 12: Orange
- 13: Dark Red
- 14: Green
- 15: Purple
-- After every inspect, speak to the audience using this template:
-  What I see: describe the important tiles, scores, or changes you notice. Remember that the audience sees the numbers as mapping to specific colors.
-  What it means: share the simple takeaway or guess about what is going on in the game.
-  Next move: state the exact action you plan to try next and why.
-- Keep a short running log such as "Log: ACTION2 → {result}, " Update it every time you act.
-
-Action calls:
-- When you decide to press ACTION1–ACTION5 or ACTION6, say it in plain words first (e.g., "Trying ACTION2 to move down.").
-- Never chain actions silently. Narrate the choice, then call the tool.
-- If you need coordinates, spell them out before using ACTION6.
-- Action 1 is up, Action 2 is down, Action 3 is left, Action 4 is right, Action 5 is activate, Action 6 is click on coordinate. The grid is 64x64 and generally interesting areas will not be on the edges.
-
-Tone and style:
-- Talk like a Gen-Z Twitch streamer hyping up chat: punchy sentences, playful energy, zero complex math.
-- Keep calling out "chat" when you explain discoveries or next moves.
-- Celebrate wins, groan at setbacks, and keep the vibe upbeat even when you guess wrong.
-- If you are unsure, say it out loud and explain what you are about to test.
-
-Final report:
-- Summarize what has happened and ask the audience for advice.`
-  );
+  const [systemPrompt, setSystemPrompt] = useState('Loading default prompt...');
   const [showSystemPrompt, setShowSystemPrompt] = useState(true);
   const [instructions, setInstructions] = useState(
     'Explore the game systematically. Inspect the game state and try different actions to learn the rules.'
@@ -167,7 +138,7 @@ Final report:
   const [showUserInput, setShowUserInput] = useState(false);
 
   // Streaming
-  const { state, start, cancel, setCurrentFrame, currentFrame, isPlaying } = useArc3AgentStream();
+  const { state, start, cancel, continueWithMessage, setCurrentFrame, currentFrame, isPlaying } = useArc3AgentStream();
 
   const handleStart = () => {
     start({
@@ -181,12 +152,24 @@ Final report:
     });
   };
 
-  // Show user input after agent completes
+  // Show user input after agent pauses (at maxTurns) or completes
   React.useEffect(() => {
-    if (state.status === 'completed' && state.streamingStatus === 'completed') {
+    if (state.status === 'paused' || (state.status === 'completed' && state.streamingStatus === 'completed')) {
       setShowUserInput(true);
     }
   }, [state.status, state.streamingStatus]);
+
+  const handleUserMessageSubmit = async () => {
+    if (!userMessage.trim()) return;
+
+    try {
+      await continueWithMessage(userMessage);
+      setUserMessage('');
+      setShowUserInput(false);
+    } catch (error) {
+      console.error('[ARC3] Failed to continue:', error);
+    }
+  };
 
   // Auto-scroll streaming panel to bottom when new content arrives
   React.useEffect(() => {
@@ -198,12 +181,6 @@ Final report:
       }, 0);
     }
   }, [state.timeline, state.streamingReasoning]);
-
-  const handleUserMessageSubmit = () => {
-    console.log('User message:', userMessage);
-    setUserMessage('');
-    setShowUserInput(false);
-  };
 
   // Filter timeline entries by type
   const reasoningEntries = state.timeline.filter(entry => entry.type === 'reasoning');

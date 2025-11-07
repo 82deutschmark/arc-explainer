@@ -14,6 +14,8 @@ import { Arc3ApiClient } from '../services/arc3/Arc3ApiClient';
 import { arc3StreamService, type StreamArc3Payload } from '../services/arc3/Arc3StreamService';
 import { sseStreamManager } from '../services/streaming/SSEStreamManager';
 import { formatResponse } from '../utils/responseFormatter';
+import { buildArc3DefaultPrompt } from '../services/arc3/prompts';
+import { logger } from '../utils/logger';
 
 const router = Router();
 
@@ -54,6 +56,18 @@ const runSchema = z.object({
 });
 
 // NEW: Real ARC3 API endpoints
+
+/**
+ * GET /api/arc3/default-prompt
+ * Fetch the default system prompt for ARC3 agent (server-side, not hardcoded in UI)
+ */
+router.get(
+  '/default-prompt',
+  asyncHandler(async (req: Request, res: Response) => {
+    const prompt = buildArc3DefaultPrompt();
+    res.json(formatResponse.success({ prompt }));
+  }),
+);
 
 /**
  * GET /api/arc3/games
@@ -166,6 +180,44 @@ router.post(
     const { sessionId } = req.params;
     arc3StreamService.cancelSession(sessionId);
     res.json(formatResponse.success({ cancelled: true }));
+  }),
+);
+
+/**
+ * POST /api/arc3/stream/:sessionId/continue
+ * Continue a paused agent session with a new user message (message chaining with Responses API)
+ */
+const continueSessionSchema = z.object({
+  userMessage: z.string().trim().min(1, 'userMessage must not be empty'),
+  previousResponseId: z.string().optional(), // From last response (stored in DB)
+});
+
+router.post(
+  '/stream/:sessionId/continue',
+  asyncHandler(async (req: Request, res: Response) => {
+    const { sessionId } = req.params;
+    const { userMessage, previousResponseId } = continueSessionSchema.parse(req.body);
+
+    logger.info(`[ARC3 Continue] Starting continuation with sessionId=${sessionId}, hasResponseId=${!!previousResponseId}`, 'arc3');
+
+    // Get the session payload
+    const payload = arc3StreamService.getPendingPayload(sessionId);
+    if (!payload) {
+      return res
+        .status(404)
+        .json(formatResponse.error('SESSION_NOT_FOUND', 'Session not found or expired'));
+    }
+
+    // Register SSE connection for continued streaming
+    sseStreamManager.register(sessionId, res);
+
+    // Start continuation streaming
+    await arc3StreamService.continueStreaming(req, {
+      ...payload,
+      sessionId,
+      userMessage,
+      previousResponseId,
+    });
   }),
 );
 

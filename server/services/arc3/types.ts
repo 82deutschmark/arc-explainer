@@ -5,7 +5,7 @@ PURPOSE: Shared type definitions for the ARC-AGI-3 playground simulator and agen
 SRP/DRY check: Pass — centralizes enums and interfaces used by the new ARC3 backend modules.
 */
 
-export type Arc3GameState = 'NOT_PLAYED' | 'IN_PROGRESS' | 'WIN' | 'GAME_OVER';
+export type Arc3GameState = 'NOT_PLAYED' | 'IN_PROGRESS' | 'WIN' | 'GAME_OVER' | 'NOT_FINISHED';
 
 export interface Arc3RunTimelineEntry {
   index: number;
