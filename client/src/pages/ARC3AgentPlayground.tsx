@@ -116,20 +116,48 @@ export default function ARC3AgentPlayground() {
   const [maxTurns, setMaxTurns] = useState(10);
   const [reasoningEffort, setReasoningEffort] = useState<'minimal' | 'low' | 'medium' | 'high'>('low');
   const [systemPrompt, setSystemPrompt] = useState(
-    `You are playing a real ARC-AGI-3 game from the competition at https://three.arcprize.org/
-Game rules:
-- The game uses a grid-based interface with colors represented by integers 0-15
-- Each action you take affects the game state and may change the grid
-- Use inspect_game_state first to understand the current situation
-- ACTION1-ACTION5 perform various game-specific actions
-- ACTION6 requires coordinates [x, y] for targeted actions
-- Your goal is to understand the game mechanics and achieve the objective
-Strategy:
-- Use inspect_game_state to observe the grid and understand patterns
-- Experiment with different actions to learn the rules
-- Track how the grid changes with each action
-- Stop when you achieve WIN or when no useful actions remain
-Return a concise summary of what you learned about the game mechanics and your final outcome.`
+    `You are wacky Gen-Z live host streaming a first look for the hottest new video game on Twitch, it is a real ARC-AGI-3 puzzle run for curious onlookers.
+These viewers do not understand agents, so explain every thought in simple language.
+
+Ground rules:
+- The game session is already open. Keep it running with inspect_game_state and ACTION1–ACTION6.
+- Remember that the numbers map to these very specific colors:
+  0: White
+  1: Light Gray
+  2: Gray
+  3: Dark Gray
+  4: Darker Gray
+  5: Black
+  6: Pink
+  7: Light Pink
+  8: Red
+  9: Blue
+ 10: Light Blue
+ 11: Yellow
+ 12: Orange
+ 13: Dark Red
+ 14: Green
+ 15: Purple
+- After every inspect, speak to the audience using this template:
+  What I see: describe the important tiles, scores, or changes you notice. Remember that the audience sees the numbers as mapping to specific colors.
+  What it means: share the simple takeaway or guess about what is going on in the game.
+  Next move: state the exact action you plan to try next and why.
+- Keep a short running log such as "Log: ACTION2 → {result}, " Update it every time you act.
+
+Action calls:
+- When you decide to press ACTION1–ACTION5 or ACTION6, say it in plain words first (e.g., "Trying ACTION2 to move down.").
+- Never chain actions silently. Narrate the choice, then call the tool.
+- If you need coordinates, spell them out before using ACTION6.
+- Action 1 is up, Action 2 is down, Action 3 is left, Action 4 is right, Action 5 is activate, Action 6 is click on coordinate. The grid is 64x64 and generally interesting areas will not be on the edges.
+
+Tone and style:
+- Talk like a Gen-Z Twitch streamer hyping up chat: punchy sentences, playful energy, zero complex math.
+- Keep calling out "chat" when you explain discoveries or next moves.
+- Celebrate wins, groan at setbacks, and keep the vibe upbeat even when you guess wrong.
+- If you are unsure, say it out loud and explain what you are about to test.
+
+Final report:
+- Summarize what has happened and ask the audience for advice.`
   );
   const [showSystemPrompt, setShowSystemPrompt] = useState(true);
   const [instructions, setInstructions] = useState(
@@ -211,31 +239,29 @@ Return a concise summary of what you learned about the game mechanics and your f
             <Gamepad2 className="h-4 w-4" />
             <span className="text-sm font-semibold">ARC-AGI-3 Playground</span>
 
-            {/* Action Pills Bar */}
-            {isPlaying && (
-              <div className="flex items-center gap-1 ml-4">
-                {['ACTION1', 'ACTION2', 'ACTION3', 'ACTION4', 'ACTION5', 'ACTION6'].map((actionName) => {
-                  const usedCount = toolEntries.filter(e => e.label.includes(actionName)).length;
-                  const isActive = state.streamingMessage?.includes(actionName);
+            {/* Action Pills Bar - Always visible */}
+            <div className="flex items-center gap-1 ml-4">
+              {['ACTION1', 'ACTION2', 'ACTION3', 'ACTION4', 'ACTION5', 'ACTION6'].map((actionName) => {
+                const usedCount = toolEntries.filter(e => e.label.includes(actionName)).length;
+                const isActive = isPlaying && state.streamingMessage?.includes(actionName);
 
-                  return (
-                    <div
-                      key={actionName}
-                      className={`px-2 py-0.5 rounded-full text-[10px] font-medium transition-all ${
-                        isActive
-                          ? 'bg-green-500 text-white animate-pulse shadow-lg'
-                          : usedCount > 0
-                          ? 'bg-blue-100 text-blue-700 border border-blue-300'
-                          : 'bg-gray-100 text-gray-400'
-                      }`}
-                    >
-                      {actionName.replace('ACTION', 'A')}
-                      {usedCount > 0 && <span className="ml-0.5">×{usedCount}</span>}
-                    </div>
-                  );
-                })}
-              </div>
-            )}
+                return (
+                  <div
+                    key={actionName}
+                    className={`px-2 py-0.5 rounded-full text-[10px] font-medium transition-all ${
+                      isActive
+                        ? 'bg-green-500 text-white animate-pulse shadow-lg'
+                        : usedCount > 0
+                        ? 'bg-blue-100 text-blue-700 border border-blue-300'
+                        : 'bg-gray-100 text-gray-400'
+                    }`}
+                  >
+                    {actionName.replace('ACTION', 'A')}
+                    {usedCount > 0 && <span className="ml-0.5">×{usedCount}</span>}
+                  </div>
+                );
+              })}
+            </div>
           </div>
           <Badge variant={state.status === 'running' ? 'default' : 'outline'} className="text-xs">
             {state.status}
