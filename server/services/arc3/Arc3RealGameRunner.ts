@@ -46,8 +46,8 @@ export class Arc3RealGameRunner {
         note: z
           .string()
           .max(240)
-          .optional()
-          .describe('Optional reason for requesting a snapshot (used in the activity log).'),
+          .nullable()
+          .describe('Optional reason for requesting a snapshot (used in the activity log). Use null to omit.'),
       }),
       execute: async (input) => {
         if (!currentFrame) {
@@ -64,8 +64,8 @@ export class Arc3RealGameRunner {
           action_counter: currentFrame.action_counter,
           max_actions: currentFrame.max_actions,
           win_score: currentFrame.win_score,
-          note: input.note,
-        };
+          note: input.note ?? null,
+      };
       },
     });
 
@@ -74,7 +74,10 @@ export class Arc3RealGameRunner {
       description: 'Execute a game action. Use RESET to start a new game, ACTION1-ACTION5 for simple actions, or ACTION6 with coordinates for targeted actions.',
       parameters: z.object({
         action: z.enum(['RESET', 'ACTION1', 'ACTION2', 'ACTION3', 'ACTION4', 'ACTION5', 'ACTION6']),
-        coordinates: z.tuple([z.number(), z.number()]).optional().describe('Required only for ACTION6: [x, y] coordinates'),
+        coordinates: z
+          .tuple([z.number(), z.number()])
+          .nullable()
+          .describe('Required only for ACTION6: [x, y] coordinates. Use null to omit for other actions.'),
       }),
       execute: async ({ action, coordinates }) => {
         if (!gameGuid && action !== 'RESET') {
@@ -83,7 +86,10 @@ export class Arc3RealGameRunner {
 
         let gameAction: GameAction = { action };
 
-        if (action === 'ACTION6' && coordinates) {
+        if (action === 'ACTION6') {
+          if (coordinates == null) {
+            throw new Error('coordinates must be provided for ACTION6 as [x, y]');
+          }
           gameAction.coordinates = coordinates;
         }
 
@@ -300,8 +306,8 @@ export class Arc3RealGameRunner {
         note: z
           .string()
           .max(240)
-          .optional()
-          .describe('Optional reason for requesting a snapshot (used in the activity log).'),
+          .nullable()
+          .describe('Optional reason for requesting a snapshot (used in the activity log). Use null to omit.'),
       }),
       execute: async (input) => {
         if (!currentFrame) {
@@ -325,7 +331,7 @@ export class Arc3RealGameRunner {
           action_counter: currentFrame.action_counter,
           max_actions: currentFrame.max_actions,
           win_score: currentFrame.win_score,
-          note: input.note,
+          note: input.note ?? null,
         };
 
         // Emit tool result event
@@ -344,7 +350,10 @@ export class Arc3RealGameRunner {
       description: 'Execute a game action. Use RESET to start a new game, ACTION1-ACTION5 for simple actions, or ACTION6 with coordinates for targeted actions.',
       parameters: z.object({
         action: z.enum(['RESET', 'ACTION1', 'ACTION2', 'ACTION3', 'ACTION4', 'ACTION5', 'ACTION6']),
-        coordinates: z.tuple([z.number(), z.number()]).optional().describe('Required only for ACTION6: [x, y] coordinates'),
+        coordinates: z
+          .tuple([z.number(), z.number()])
+          .nullable()
+          .describe('Required only for ACTION6: [x, y] coordinates. Use null to omit for other actions.'),
       }),
       execute: async ({ action, coordinates }) => {
         if (!gameGuid && action !== 'RESET') {
@@ -354,13 +363,16 @@ export class Arc3RealGameRunner {
         // Emit tool call event
         streamHarness.emitEvent("agent.tool_call", {
           tool: 'execute_game_action',
-          arguments: { action, coordinates },
+          arguments: { action, coordinates: coordinates ?? null },
           timestamp: Date.now(),
         });
 
         let gameAction: GameAction = { action };
 
-        if (action === 'ACTION6' && coordinates) {
+        if (action === 'ACTION6') {
+          if (coordinates == null) {
+            throw new Error('coordinates must be provided for ACTION6 as [x, y]');
+          }
           gameAction.coordinates = coordinates;
         }
 
