@@ -3636,6 +3636,8 @@ app.get("/api/model-dataset/metrics/:modelName/:datasetName", asyncHandler(model
 ### Fixed
 - ARC3 streaming: Resolved OpenAI Responses API structured outputs error by updating `inspect_game_state` tool schema in `server/services/arc3/Arc3RealGameRunner.ts` to use `z.string().nullable()` for the `note` field and normalizing outputs to `null`. This removes the `.optional()` usage that the Responses API rejects, unblocking `/api/arc3/stream/*` sessions.
 - ARC3 streaming: Updated `execute_game_action.coordinates` to `z.tuple([...]).nullable()` and added runtime validation for ACTION6. Mirrored fix in streaming path and event arguments to emit `coordinates: null` when omitted.
+  - Follow-up: Replaced tuple with object `{ x, y }` in tool schema (tuples are not accepted by the Responses API tool schema). Internally mapped to `[x, y]` when calling `Arc3ApiClient`.
+ - ARC3 actions alignment: Replaced monolithic `execute_game_action` tool with individual tools `RESET`, `ACTION1`-`ACTION6` (with `{x,y}` params for `ACTION6`) to match the official ARC3 agents reference and avoid schema pitfalls.
 - ARC3 simulator: Updated `inspect_board.note` in `server/services/arc3/Arc3AgentRunner.ts` to use `nullable()` and pass `null` through to simulator.
 
 ### Author
