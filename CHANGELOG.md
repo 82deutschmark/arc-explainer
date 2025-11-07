@@ -8,6 +8,7 @@
 - Added `server/services/arc3/prompts.ts` with `buildArc3DefaultPrompt()` so runners share the same friendly instructions.
 - Updated `Arc3RealGameRunner` (sync + streaming) to use the helper and reinforce RESET-first flow, inspect narration, and the "What I see → What it means → Next move" template.
 - Documented the changes here so operators know why the agent now talks like a streamer.
+- Made both system and user prompt text areas vertically resizable so long instructions stay usable on screen.
 
 # [5.3.3] - 2025-11-06
 ### 🔧 ARC3 Agent System: Fixed Reset Loop, Grid Rendering, and Streaming Reasoning
