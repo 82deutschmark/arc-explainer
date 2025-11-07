@@ -108,29 +108,28 @@ export class Arc3RealGameRunner {
       }
     });
 
-    const baseInstructions = [
+    const defaultSystemPrompt = [
       'You are playing a real ARC-AGI-3 game from the competition at https://three.arcprize.org/',
       'Game rules:',
       '- The game uses a grid-based interface with colors represented by integers 0-15',
       '- Each action you take affects the game state and may change the grid',
       '- Use inspect_game_state first to understand the current situation',
-      '- RESET starts a new game session',
       '- ACTION1-ACTION5 perform various game-specific actions',
       '- ACTION6 requires coordinates [x, y] for targeted actions',
       '- Your goal is to understand the game mechanics and achieve the objective',
       'Strategy:',
-      '- Start with RESET to initialize the game',
       '- Use inspect_game_state to observe the grid and understand patterns',
-      '- Experiment with actions to learn the rules',
+      '- Experiment with different actions to learn the rules',
       '- Track how the grid changes with each action',
       '- Stop when you achieve WIN or when no useful actions remain',
       'Return a concise summary of what you learned about the game mechanics and your final outcome.',
     ].join('\n');
 
+    const systemPrompt = config.systemPrompt?.trim() || defaultSystemPrompt;
     const operatorGuidance = config.instructions?.trim();
     const combinedInstructions = operatorGuidance
-      ? `${baseInstructions}\n\nOperator guidance: ${operatorGuidance}`
-      : baseInstructions;
+      ? `${systemPrompt}\n\nOperator guidance: ${operatorGuidance}`
+      : systemPrompt;
 
     const agent = new Agent({
       name: agentName,
@@ -385,29 +384,28 @@ export class Arc3RealGameRunner {
       }
     });
 
-    const baseInstructions = [
+    const defaultSystemPrompt = [
       'You are playing a real ARC-AGI-3 game from the competition at https://three.arcprize.org/',
       'Game rules:',
       '- The game uses a grid-based interface with colors represented by integers 0-15',
       '- Each action you take affects the game state and may change the grid',
       '- Use inspect_game_state first to understand the current situation',
-      '- RESET starts a new game session',
       '- ACTION1-ACTION5 perform various game-specific actions',
       '- ACTION6 requires coordinates [x, y] for targeted actions',
       '- Your goal is to understand the game mechanics and achieve the objective',
       'Strategy:',
-      '- Start with RESET to initialize the game',
       '- Use inspect_game_state to observe the grid and understand patterns',
-      '- Experiment with actions to learn the rules',
+      '- Experiment with different actions to learn the rules',
       '- Track how the grid changes with each action',
       '- Stop when you achieve WIN or when no useful actions remain',
       'Return a concise summary of what you learned about the game mechanics and your final outcome.',
     ].join('\n');
 
+    const systemPrompt = config.systemPrompt?.trim() || defaultSystemPrompt;
     const operatorGuidance = config.instructions?.trim();
     const combinedInstructions = operatorGuidance
-      ? `${baseInstructions}\n\nOperator guidance: ${operatorGuidance}`
-      : baseInstructions;
+      ? `${systemPrompt}\n\nOperator guidance: ${operatorGuidance}`
+      : systemPrompt;
 
     const agent = new Agent({
       name: agentName,
@@ -453,6 +451,15 @@ export class Arc3RealGameRunner {
             item: event.item,
             timestamp: Date.now(),
           });
+
+          // Emit reasoning items as they stream
+          if (event.item.type === 'reasoning_item') {
+            const reasoningContent = JSON.stringify(event.item.rawItem, null, 2);
+            streamHarness.emitEvent("agent.reasoning", {
+              content: reasoningContent,
+              timestamp: Date.now(),
+            });
+          }
           break;
         case 'agent_updated_stream_event':
           // Forward agent updates
