@@ -1,5 +1,11 @@
 # CHANGELOG - Uses semantic versioning (MAJOR.MINOR.PATCH)
 
+# [5.4.2] - 2025-11-06
+### ♻️ ARC3 Streaming: Enforced High-Verbosity Reasoning
+- **Reasoning config enforced**: Streaming runs now forward the agent's `verbosity: "high"` and `summary: "detailed"` expectations so OpenAI logs match the simulator behaviour.
+- **Live event surfacing**: While streaming, the backend now emits `agent.message`, `agent.reasoning`, `agent.tool_call`, and `agent.tool_result` events so the UI shows narration and thought process in real time.
+- **UI parity**: The frontend hook accumulates these events, keeping the ARC3 playground timeline and reasoning panel in sync with the live run.
+
 # [5.4.1] - 2025-11-06
 ### 🧠 ARC3 Reasoning Streaming Fix: Empty Content Resolved
 **Fixed empty reasoning content arrays by extracting deltas from raw Responses API events.**
