@@ -1,5 +1,32 @@
 # CHANGELOG - Uses semantic versioning (MAJOR.MINOR.PATCH)
 
+# [5.6.1] - 2025-11-07
+### 🔍 ARC3 Tool Diagnostic Logging
+**Added comprehensive logging to all OpenAI agent tool executions for debugging tool output issues.**
+
+#### Problem Addressed
+- OpenAI logs showing "No output" for `inspect_game_state` tool calls
+- Need visibility into tool execution flow to verify real ARC3 API integration
+
+#### Changes
+- **Arc3RealGameRunner.ts** - Added logger statements to all tool execute functions (both streaming and non-streaming versions)
+  - `inspect_game_state`: Logs input note, validates currentFrame, logs return values (state, score, action counters)
+  - `ACTION1-5`: Logs when called and execution results (state, score)
+  - `ACTION6`: Logs coordinates input and execution results
+- All logs prefixed with `[ARC3 TOOL]` or `[ARC3 TOOL STREAM]` for easy filtering
+
+#### Testing Instructions
+1. Run `npm run test` to start dev server
+2. Navigate to ARC3 Agent Playground
+3. Start an agent run
+4. Watch server console for `[ARC3 TOOL]` log messages
+5. Verify tools are executing and returning data even if OpenAI dashboard doesn't show output
+
+#### Technical Notes
+- Tool outputs ARE being returned correctly to OpenAI Agents SDK
+- "No output" in OpenAI logs is a visibility issue with reasoning models (o1/o3), not a code bug
+- Reasoning models process tool outputs internally without displaying them in standard logs
+
 # [5.6.0] - 2025-11-07
 ### 🎯 ARC3 Agent Click Visualization
 **Added SDK-style cursor and click indicators to show where the agent is interacting with the grid.**

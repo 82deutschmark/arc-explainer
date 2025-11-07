@@ -5,83 +5,7 @@ PURPOSE: Shared type definitions for the ARC-AGI-3 playground simulator and agen
 SRP/DRY check: Pass — centralizes enums and interfaces used by the new ARC3 backend modules.
 */
 
-export const ARC3_SIMPLE_ACTIONS = [
-  'ACTION1',
-  'ACTION2',
-  'ACTION3',
-  'ACTION4',
-  'ACTION5',
-] as const;
-
-export type Arc3SimpleActionId = (typeof ARC3_SIMPLE_ACTIONS)[number];
-
-export type Arc3ActionKind = 'reset' | 'simple' | 'coordinate';
-
-export type Arc3GameState =
-  | 'NOT_STARTED'  // Simulator-specific
-  | 'NOT_PLAYED'   // Real ARC3 API
-  | 'IN_PROGRESS'
-  | 'WIN'
-  | 'GAME_OVER';
-
-export interface Arc3CoordinateAction {
-  kind: 'coordinate';
-  x: number;
-  y: number;
-}
-
-export interface Arc3SimpleAction {
-  kind: 'simple';
-  id: Arc3SimpleActionId;
-}
-
-export interface Arc3ResetAction {
-  kind: 'reset';
-}
-
-export type Arc3Action = Arc3CoordinateAction | Arc3SimpleAction | Arc3ResetAction;
-
-export interface Arc3ScenarioDefinition {
-  id: string;
-  name: string;
-  description: string;
-  target: { x: number; y: number };
-  baseGrid: number[][];
-  textHint: string;
-  legend: Record<number, string>;
-}
-
-export interface Arc3FrameSnapshot {
-  step: number;
-  state: Arc3GameState;
-  score: number;
-  board: number[][];
-  actionLabel: string;
-  narrative: string;
-  remainingSteps: number;
-}
-
-// Real ARC3 API frame data (from FrameData in Arc3ApiClient)
-export interface Arc3RealFrameSnapshot {
-  guid: string;
-  game_id: string;
-  frame: number[][][];
-  score: number;
-  state: string;
-  action_counter: number;
-  max_actions: number;
-  win_score: number;
-}
-
-export interface Arc3RunSummary {
-  state: Arc3GameState;
-  score: number;
-  stepsTaken: number;
-  simpleActionsUsed: Arc3SimpleActionId[];
-  coordinateGuesses: number;
-  scenarioId: string;
-  scenarioName: string;
-}
+export type Arc3GameState = 'NOT_PLAYED' | 'IN_PROGRESS' | 'WIN' | 'GAME_OVER';
 
 export interface Arc3RunTimelineEntry {
   index: number;
@@ -94,7 +18,7 @@ export interface Arc3AgentRunResult {
   runId: string;
   finalOutput?: string;
   timeline: Arc3RunTimelineEntry[];
-  frames: Arc3FrameSnapshot[] | any[];  // Can be simulated frames or real ARC3 frames
+  frames: any[];
   summary: Arc3RunSummary;
   usage: {
     requests: number;
@@ -104,12 +28,22 @@ export interface Arc3AgentRunResult {
   };
 }
 
+export interface Arc3RunSummary {
+  state: Arc3GameState;
+  score: number;
+  stepsTaken: number;
+  simpleActionsUsed: string[];
+  coordinateGuesses: number;
+  scenarioId: string;
+  scenarioName: string;
+}
+
 export interface Arc3AgentRunConfig {
   agentName?: string;
-  systemPrompt?: string;  // Base system instructions (overrides default)
-  instructions: string;   // User/operator guidance appended to system prompt
+  systemPrompt?: string;
+  instructions: string;
   model?: string;
   maxTurns?: number;
-  game_id?: string;  // ARC3 game ID (e.g., "ls20")
+  game_id?: string;
   reasoningEffort?: 'minimal' | 'low' | 'medium' | 'high';
 }
