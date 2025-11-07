@@ -109,7 +109,7 @@ export class Arc3RealGameRunner {
         logger.info(`[ARC3 TOOL] ${name} called`, 'arc3');
         if (!gameGuid) throw new Error('Game session not initialized yet.');
         prevFrame = currentFrame;
-        currentFrame = await this.apiClient.executeAction(gameGuid, { action: name });
+        currentFrame = await this.apiClient.executeAction(gameId, gameGuid, { action: name });
         frames.push(currentFrame);
         logger.info(`[ARC3 TOOL] ${name} executed: state=${currentFrame.state}, score=${currentFrame.score}`, 'arc3');
 
@@ -136,7 +136,7 @@ export class Arc3RealGameRunner {
         logger.info(`[ARC3 TOOL] ACTION6 called with coordinates: (${x}, ${y})`, 'arc3');
         if (!gameGuid) throw new Error('Game session not initialized yet.');
         prevFrame = currentFrame;
-        currentFrame = await this.apiClient.executeAction(gameGuid, { action: 'ACTION6', coordinates: [x, y] });
+        currentFrame = await this.apiClient.executeAction(gameId, gameGuid, { action: 'ACTION6', coordinates: [x, y] });
         frames.push(currentFrame);
         logger.info(`[ARC3 TOOL] ACTION6 executed: state=${currentFrame.state}, score=${currentFrame.score}`, 'arc3');
 
@@ -352,7 +352,7 @@ export class Arc3RealGameRunner {
         streamHarness.emitEvent("agent.tool_call", { tool: name, arguments: {}, timestamp: Date.now() });
 
         prevFrame = currentFrame;
-        currentFrame = await this.apiClient.executeAction(gameGuid, { action: name });
+        currentFrame = await this.apiClient.executeAction(gameId, gameGuid, { action: name });
         frames.push(currentFrame);
         logger.info(`[ARC3 TOOL STREAM] ${name} executed: state=${currentFrame.state}, score=${currentFrame.score}`, 'arc3');
 
@@ -389,7 +389,7 @@ export class Arc3RealGameRunner {
         streamHarness.emitEvent("agent.tool_call", { tool: 'ACTION6', arguments: { x, y }, timestamp: Date.now() });
 
         prevFrame = currentFrame;
-        currentFrame = await this.apiClient.executeAction(gameGuid, { action: 'ACTION6', coordinates: [x, y] });
+        currentFrame = await this.apiClient.executeAction(gameId, gameGuid, { action: 'ACTION6', coordinates: [x, y] });
         frames.push(currentFrame);
         logger.info(`[ARC3 TOOL STREAM] ACTION6 executed: state=${currentFrame.state}, score=${currentFrame.score}`, 'arc3');
 

@@ -141,21 +141,12 @@ export class Arc3ApiClient {
 
   /**
    * Execute an action in a game session
-   * Reference: Based on ARC-AGI-3-ClaudeCode-SDK action patterns
+   * Reference: ARC-AGI-3-ClaudeCode-SDK/actions/action.js lines 92-95
    */
-  async executeAction(guid: string, action: GameAction): Promise<FrameData> {
-    // Map action to numeric ID
-    const actionId = action.action === 'RESET' ? 0 :
-                     action.action === 'ACTION1' ? 1 :
-                     action.action === 'ACTION2' ? 2 :
-                     action.action === 'ACTION3' ? 3 :
-                     action.action === 'ACTION4' ? 4 :
-                     action.action === 'ACTION5' ? 5 :
-                     action.action === 'ACTION6' ? 6 : 0;
-
+  async executeAction(gameId: string, guid: string, action: GameAction): Promise<FrameData> {
     const body: any = {
+      game_id: gameId,  // Required by ARC3 API
       guid,
-      id: actionId,
     };
 
     // ACTION6 includes coordinates

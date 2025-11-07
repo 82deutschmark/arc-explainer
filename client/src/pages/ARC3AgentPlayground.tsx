@@ -163,8 +163,9 @@ Return a concise summary of what you learned about the game mechanics and your f
     setShowUserInput(false);
   };
 
-  // Filter reasoning entries
+  // Filter timeline entries by type
   const reasoningEntries = state.timeline.filter(entry => entry.type === 'reasoning');
+  const assistantMessages = state.timeline.filter(entry => entry.type === 'assistant_message');
   const toolEntries = state.timeline.filter(entry => entry.type === 'tool_call' || entry.type === 'tool_result');
 
   // Get available models (OpenAI only for ARC3 Agents SDK)
@@ -383,6 +384,12 @@ Return a concise summary of what you learned about the game mechanics and your f
               <CardTitle className="text-sm flex items-center gap-1.5">
                 <Wrench className="h-3.5 w-3.5" />
                 Actions
+                {isPlaying && state.streamingMessage?.includes('called') && (
+                  <div className="flex items-center gap-1">
+                    <RefreshCw className="h-3 w-3 animate-spin text-blue-500" />
+                    <span className="text-[9px] text-blue-600">Calling ARC3 API...</span>
+                  </div>
+                )}
               </CardTitle>
             </CardHeader>
             <CardContent className="px-3 pb-3">
@@ -391,7 +398,11 @@ Return a concise summary of what you learned about the game mechanics and your f
                   <p className="text-muted-foreground text-center py-3">No actions yet</p>
                 ) : (
                   toolEntries.map((entry, idx) => (
-                    <div key={idx} className="p-1.5 rounded border bg-muted/30">
+                    <div key={idx} className={`p-1.5 rounded border ${
+                      idx === toolEntries.length - 1 && isPlaying && state.streamingMessage?.includes('called')
+                        ? 'bg-blue-50 border-blue-300 animate-pulse'
+                        : 'bg-muted/30'
+                    }`}>
                       <p className="font-medium text-[10px]">{entry.label}</p>
                       <pre className="text-[9px] text-muted-foreground mt-0.5 overflow-x-auto">
                         {entry.content.substring(0, 80)}...
@@ -588,7 +599,7 @@ Return a concise summary of what you learned about the game mechanics and your f
             </CardHeader>
             <CardContent className="px-3 pb-3">
               <div className="space-y-1.5 max-h-[calc(100vh-10rem)] overflow-y-auto text-[10px]">
-                {reasoningEntries.length === 0 && !isPlaying ? (
+                {reasoningEntries.length === 0 && assistantMessages.length === 0 && !isPlaying ? (
                   <div className="text-center text-muted-foreground py-10">
                     <Brain className="h-8 w-8 mx-auto mb-2 opacity-50" />
                     <p className="text-xs">No reasoning yet</p>
@@ -596,16 +607,28 @@ Return a concise summary of what you learned about the game mechanics and your f
                   </div>
                 ) : (
                   <>
-                    {reasoningEntries.map((entry, idx) => (
-                      <div key={idx} className="p-2 rounded border bg-blue-50 dark:bg-blue-950">
-                        <p className="font-medium text-[10px] text-blue-600 mb-0.5">
-                          Step {idx + 1}
-                        </p>
-                        <pre className="text-[9px] text-muted-foreground whitespace-pre-wrap">
-                          {entry.content}
-                        </pre>
-                      </div>
-                    ))}
+                    {/* Display all entries in chronological order */}
+                    {state.timeline
+                      .filter(entry => entry.type === 'reasoning' || entry.type === 'assistant_message')
+                      .map((entry, idx) => (
+                        <div
+                          key={idx}
+                          className={`p-2 rounded border ${
+                            entry.type === 'reasoning'
+                              ? 'bg-blue-50 dark:bg-blue-950 border-blue-200'
+                              : 'bg-green-50 dark:bg-green-950 border-green-200'
+                          }`}
+                        >
+                          <p className={`font-medium text-[10px] mb-0.5 ${
+                            entry.type === 'reasoning' ? 'text-blue-600' : 'text-green-600'
+                          }`}>
+                            {entry.label}
+                          </p>
+                          <pre className="text-[9px] text-muted-foreground whitespace-pre-wrap">
+                            {entry.content}
+                          </pre>
+                        </div>
+                      ))}
                     
                     {isPlaying && (
                       <div className="p-2 border-l-2 border-blue-200 bg-blue-50 dark:bg-blue-950">
