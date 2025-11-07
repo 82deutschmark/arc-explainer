@@ -31,6 +31,8 @@ export class DatabaseSchema {
       await this.createComparisonVotesTable(client);
       await this.createComparisonSessionsTable(client);
       await this.createIngestionRunsTable(client);
+      await this.createArc3SessionsTable(client);
+      await this.createArc3FramesTable(client);
       logger.info('Core tables verified/created.', 'database');
 
       // Phase 2: Apply schema-altering migrations for older database instances.
@@ -231,6 +233,52 @@ export class DatabaseSchema {
     // Create indexes for ingestion_runs table
     await client.query(`CREATE INDEX IF NOT EXISTS idx_ingestion_runs_dataset ON ingestion_runs(dataset_name)`);
     await client.query(`CREATE INDEX IF NOT EXISTS idx_ingestion_runs_started ON ingestion_runs(started_at DESC)`);
+  }
+
+  private static async createArc3SessionsTable(client: PoolClient): Promise<void> {
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS arc3_sessions (
+        id SERIAL PRIMARY KEY,
+        game_id VARCHAR(255) NOT NULL,
+        guid VARCHAR(255) NOT NULL UNIQUE,
+        state VARCHAR(50) NOT NULL DEFAULT 'NOT_PLAYED',
+        final_score INTEGER DEFAULT 0,
+        win_score INTEGER DEFAULT 0,
+        total_frames INTEGER DEFAULT 0,
+        started_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+        ended_at TIMESTAMP WITH TIME ZONE DEFAULT NULL,
+        created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+      )
+    `);
+
+    // Create indexes for arc3_sessions table
+    await client.query(`CREATE INDEX IF NOT EXISTS idx_arc3_sessions_game_id ON arc3_sessions(game_id)`);
+    await client.query(`CREATE INDEX IF NOT EXISTS idx_arc3_sessions_guid ON arc3_sessions(guid)`);
+    await client.query(`CREATE INDEX IF NOT EXISTS idx_arc3_sessions_started ON arc3_sessions(started_at DESC)`);
+  }
+
+  private static async createArc3FramesTable(client: PoolClient): Promise<void> {
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS arc3_frames (
+        id SERIAL PRIMARY KEY,
+        session_id INTEGER NOT NULL REFERENCES arc3_sessions(id) ON DELETE CASCADE,
+        frame_number INTEGER NOT NULL,
+        action_type VARCHAR(50) NOT NULL,
+        action_params JSONB DEFAULT '{}',
+        caption TEXT DEFAULT NULL,
+        state VARCHAR(50) NOT NULL,
+        score INTEGER DEFAULT 0,
+        win_score INTEGER DEFAULT 0,
+        frame_data JSONB NOT NULL,
+        pixels_changed INTEGER DEFAULT 0,
+        timestamp TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+        UNIQUE(session_id, frame_number)
+      )
+    `);
+
+    // Create indexes for arc3_frames table
+    await client.query(`CREATE INDEX IF NOT EXISTS idx_arc3_frames_session ON arc3_frames(session_id, frame_number)`);
+    await client.query(`CREATE INDEX IF NOT EXISTS idx_arc3_frames_timestamp ON arc3_frames(timestamp DESC)`);
   }
 
   /**

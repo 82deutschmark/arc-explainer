@@ -1,20 +1,25 @@
 /*
 Author: Claude Code using Sonnet 4.5
 Date: 2025-11-06
-PURPOSE: Runs OpenAI Agents SDK workflows against the real ARC-AGI-3 API, returning structured logs for the web UI.
-Matches ARC-AGI-3-ClaudeCode-SDK patterns. Uses gpt-5-nano as default model.
-SRP/DRY check: Pass — isolates agent orchestration from HTTP routing and API client implementation.
+PURPOSE: Runs OpenAI Agents SDK workflows against the real ARC-AGI-3 API with PostgreSQL frame persistence.
+Refactored to use helpers (frameAnalysis, captionGenerator) and persistence layer following SDK patterns.
+Eliminates duplication via timelineProcessor utility. Tracks sessions and generates frame captions.
+SRP/DRY check: Pass — agent orchestration only, delegates persistence/analysis to specialized modules (350 lines, down from 621).
 */
 
 import { randomUUID } from 'node:crypto';
 import { Agent, run, tool, extractAllTextOutput } from '@openai/agents';
 import { z } from 'zod';
-import { Arc3ApiClient, type FrameData } from './Arc3ApiClient';
-import type { Arc3AgentRunConfig, Arc3AgentRunResult, Arc3RunTimelineEntry, Arc3RunSummary, Arc3GameState } from './types';
-import { buildArc3DefaultPrompt } from './prompts';
-
-const DEFAULT_MODEL = 'gpt-5-nano';  // Per user requirement
-const DEFAULT_MAX_TURNS = 24;
+import { Arc3ApiClient, type FrameData, type GameAction } from './Arc3ApiClient.ts';
+import type { Arc3AgentRunConfig, Arc3AgentRunResult, Arc3RunTimelineEntry, Arc3RunSummary, Arc3GameState } from './types.ts';
+import { buildArc3DefaultPrompt } from './prompts.ts';
+import { DEFAULT_MODEL, DEFAULT_MAX_TURNS, DEFAULT_GAME_ID } from './utils/constants.ts';
+import { processRunItems, processRunItemsWithReasoning } from './utils/timelineProcessor.ts';
+import { generateActionCaption, generateInspectCaption } from './helpers/captionGenerator.ts';
+import { countChangedPixels } from './helpers/frameAnalysis.ts';
+import { createSession, endSession } from './persistence/sessionManager.ts';
+import { saveFrame } from './persistence/framePersistence.ts';
+import { logger } from '../../utils/logger.ts';
 
 export interface Arc3StreamHarness {
   sessionId: string;
@@ -259,8 +264,20 @@ export class Arc3RealGameRunner {
 
     let gameGuid: string | null = null;
     let currentFrame: FrameData | null = null;
-    let resetUsed = false;
     const frames: FrameData[] = [];
+
+    // Start a fresh session before the agent takes control so the toolset never needs RESET
+    const initialFrame = await this.apiClient.startGame(gameId);
+    gameGuid = initialFrame.guid;
+    currentFrame = initialFrame;
+    frames.push(initialFrame);
+
+    // Emit initial frame to streaming clients
+    streamHarness.emitEvent("game.started", {
+      initialFrame,
+      frameIndex: 0,
+      timestamp: Date.now(),
+    });
     const timeline: Arc3RunTimelineEntry[] = [];
 
     // Add reasoning accumulator to track incremental reasoning content
