@@ -361,6 +361,7 @@ export type ModelName =
 
   // Other open source models
   | 'moonshotai/kimi-k2'
+  | 'moonshotai/kimi-k2-thinking'
   | 'moonshotai/kimi-k2:nitro'
   | 'z-ai/glm-4.5'
   | 'z-ai/glm-4.5:nitro'

@@ -34,6 +34,7 @@ const ALL_OPENROUTER_MODELS = [
   'qwen/qwen3-coder',
   'moonshotai/kimi-k2',
   'moonshotai/kimi-k2-0905',
+  'moonshotai/kimi-k2-thinking',
   'moonshotai/kimi-dev-72b:free',
   'x-ai/grok-3',
   'x-ai/grok-3-mini',
@@ -41,6 +42,7 @@ const ALL_OPENROUTER_MODELS = [
   'qwen/qwen3-max',
   'bytedance/seed-oss-36b-instruct',
 
+  // Previously failed models (testing again on different puzzle)
   // ❌ Previously failed models (testing again on different puzzle)
   'qwen/qwen3-235b-a22b-thinking-2507', // server error on 253bf280
   'x-ai/grok-4', // server error on 253bf280

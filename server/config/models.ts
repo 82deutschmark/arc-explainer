@@ -576,6 +576,24 @@ export const MODELS: ModelConfig[] = [
     
 
   {
+    key: 'moonshotai/kimi-k2-thinking',
+    name: 'Moonshot Kimi K2 Thinking',
+    color: 'bg-slate-700',
+    premium: true,
+    cost: { input: '$0.60', output: '$2.50' },
+    supportsTemperature: true,
+    provider: 'OpenRouter',
+    responseTime: { speed: 'slow', estimate: '2-4 min' },
+    isReasoning: true,
+    apiModelName: 'moonshotai/kimi-k2-thinking',
+    modelType: 'openrouter',
+    contextWindow: 262144,
+    maxOutputTokens: 31000,
+    releaseDate: "2025-11",
+  },
+  
+
+  {
     key: 'moonshotai/kimi-dev-72b:free',
     name: 'Kimi Dev 72B (Free)',
     color: 'bg-slate-400',

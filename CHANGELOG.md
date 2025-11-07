@@ -1,5 +1,11 @@
 # CHANGELOG - Uses semantic versioning (MAJOR.MINOR.PATCH)
 
+# [5.6.5] - 2025-11-07
+### 🧠 Model Catalog Update
+- Added **Moonshot Kimi K2 Thinking** to the central model registry with 262,144 token context window and premium pricing metadata, making it selectable across the app.
+- Updated OpenRouter diagnostic scripts to exercise the new thinking variant alongside existing Kimi models.
+- Extended agent model typings so custom agents can target the new reasoning model.
+
 # [5.6.4] - 2025-11-07
 ### 🎨 UX Improvements: Visual Feedback & Reasoning Display
 **Fixed reasoning display and added prominent visual indicators for agent actions.**
