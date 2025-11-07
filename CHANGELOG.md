@@ -9,6 +9,7 @@
 - **Error display**: Streaming errors now shown in red box above grid (no more silent failures)
 - **Auto-load default game**: On page load, fetches ls20 (or first available) grid automatically
 - **Model auto-select**: Sets gpt-5-nano-2025-08-07 as default when models load
+- **Frame rendering fix**: Pass real 3D frame data (no extra wrapper) so grid matches ARC visuals
 
 #### Backend Additions
 - **NEW endpoint**: `POST /api/arc3/start-game` - Returns initial FrameData for a game_id
