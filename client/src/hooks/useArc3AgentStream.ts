@@ -244,23 +244,42 @@ export function useArc3AgentStream() {
           eventSource.addEventListener('agent.reasoning', (evt) => {
             try {
               const data = JSON.parse((evt as MessageEvent<string>).data);
-              console.log('[ARC3 Stream] Agent reasoning:', data);
+              console.log('[ARC3 Stream] Agent reasoning delta:', data);
 
-              const reasoningContent = data.content || JSON.stringify(data, null, 2);
+              // Only update the accumulating reasoning, don't add to timeline yet
+              // Timeline entry will be added when reasoning completes
+              const reasoningContent = data.content || "";
 
               setState((prev) => ({
                 ...prev,
                 streamingMessage: 'Agent is reasoning...',
                 streamingReasoning: reasoningContent,
-                timeline: [...prev.timeline, {
-                  index: prev.timeline.length,
-                  type: 'reasoning' as const,
-                  label: 'Agent reasoning',
-                  content: reasoningContent,
-                }],
               }));
             } catch (error) {
               console.error('[ARC3 Stream] Failed to parse agent.reasoning payload:', error);
+            }
+          });
+
+          eventSource.addEventListener('agent.reasoning_complete', (evt) => {
+            try {
+              const data = JSON.parse((evt as MessageEvent<string>).data);
+              console.log('[ARC3 Stream] Agent reasoning complete:', data);
+
+              // Now add the final reasoning to timeline
+              const finalContent = data.finalContent || "";
+
+              setState((prev) => ({
+                ...prev,
+                streamingReasoning: finalContent,
+                timeline: [...prev.timeline, {
+                  index: prev.timeline.length,
+                  type: 'reasoning' as const,
+                  label: 'Agent Reasoning',
+                  content: finalContent,
+                }],
+              }));
+            } catch (error) {
+              console.error('[ARC3 Stream] Failed to parse agent.reasoning_complete payload:', error);
             }
           });
 

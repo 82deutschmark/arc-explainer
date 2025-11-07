@@ -1,5 +1,47 @@
 # CHANGELOG - Uses semantic versioning (MAJOR.MINOR.PATCH)
 
+# [5.6.2] - 2025-11-07
+### 🐛 Critical Fixes: ARC3 API Actions + UI Display
+**Fixed 400 Bad Request error and missing assistant messages in UI.**
+
+#### Problem 1: API Actions Failing
+- Agent tools (ACTION1-6) were failing with "400 Bad Request - game_id not provided"
+- Arc3ApiClient.executeAction() was only sending `guid` to the API
+- ARC3 API requires **both** `game_id` AND `guid` in request body (per SDK reference)
+
+#### Problem 2: Assistant Messages Not Displayed
+- Hook was capturing `agent.message` events but UI only showed reasoning
+- Agent narration/observations were invisible to users
+- Only reasoning entries were being rendered in the RIGHT column
+
+#### Changes - API Fix
+- **Arc3ApiClient.ts** (line 146): Updated `executeAction()` signature to accept `gameId` parameter
+  - Changed from: `executeAction(guid, action)`
+  - Changed to: `executeAction(gameId, guid, action)`
+  - Added `game_id: gameId` to request body (line 147-150)
+- **Arc3RealGameRunner.ts**: Updated all 4 `executeAction()` call sites to pass `gameId`:
+  - Non-streaming ACTION1-5 (line 112)
+  - Non-streaming ACTION6 (line 139)
+  - Streaming ACTION1-5 (line 355)
+  - Streaming ACTION6 (line 392)
+
+#### Changes - UI Fix
+- **ARC3AgentPlayground.tsx** (line 168): Added `assistantMessages` filter from timeline
+- **ARC3AgentPlayground.tsx** (lines 601-621): Display both reasoning AND assistant messages chronologically
+  - Reasoning: Blue background with "Agent reasoning" label
+  - Assistant messages: Green background with agent name label
+  - Maintains chronological order from timeline
+
+#### Verification
+Reference: ARC-AGI-3-ClaudeCode-SDK/actions/action.js lines 92-95 confirms request body format
+
+#### Impact
+- ✅ Agent can now successfully execute all actions (ACTION1-6)
+- ✅ Diagnostic logs will show actual API responses instead of errors
+- ✅ Games can proceed beyond initial inspect_game_state call
+- ✅ Users now see full agent communication (reasoning + messages)
+- ✅ Better visibility into agent decision-making process
+
 # [5.6.1] - 2025-11-07
 ### 🔍 ARC3 Tool Diagnostic Logging
 **Added comprehensive logging to all OpenAI agent tool executions for debugging tool output issues.**
