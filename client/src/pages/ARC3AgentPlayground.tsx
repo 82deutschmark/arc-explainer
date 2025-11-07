@@ -150,12 +150,12 @@ Return a concise summary of what you learned about the game mechanics and your f
     });
   };
 
-  // Show user input after max actions without win
+  // Show user input after agent completes
   React.useEffect(() => {
-    if (currentFrame && currentFrame.action_counter >= maxTurns && currentFrame.state !== 'WIN') {
+    if (state.status === 'completed' && state.streamingStatus === 'completed') {
       setShowUserInput(true);
     }
-  }, [currentFrame, maxTurns]);
+  }, [state.status, state.streamingStatus]);
 
   const handleUserMessageSubmit = () => {
     console.log('User message:', userMessage);
@@ -231,11 +231,12 @@ Return a concise summary of what you learned about the game mechanics and your f
 
       {/* Three-column layout */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-3 p-3 max-w-[1800px] mx-auto">
-        
+
         {/* LEFT: Ultra-compact controls */}
         <div className="lg:col-span-3 space-y-3">
-          
-          {/* Config */}
+
+          {/* Config - Hidden when playing */}
+          {!isPlaying && (
           <Card className="text-xs">
             <CardHeader className="pb-2 pt-3 px-3">
               <div className="flex items-center justify-between">
@@ -354,52 +355,27 @@ Return a concise summary of what you learned about the game mechanics and your f
               </div>
             </CardContent>
           </Card>
+          )}
 
-          {/* Stats */}
-          {currentFrame && (
-            <Card className="text-xs">
+          {/* User Message Injection - shown when agent completes */}
+          {showUserInput && (
+            <Card className="border-orange-500">
               <CardHeader className="pb-2 pt-3 px-3">
-                <CardTitle className="text-sm">Stats</CardTitle>
+                <CardTitle className="text-sm text-orange-600">Send Message</CardTitle>
               </CardHeader>
-              <CardContent className="space-y-1.5 px-3 pb-3">
-                <div className="grid grid-cols-2 gap-2 text-[11px]">
-                  <div>
-                    <p className="text-muted-foreground text-[10px]">Score</p>
-                    <p className="text-base font-bold">{currentFrame.score}</p>
-                  </div>
-                  <div>
-                    <p className="text-muted-foreground text-[10px]">Actions</p>
-                    <p className="text-base font-bold">
-                      {currentFrame.action_counter} / {currentFrame.max_actions}
-                    </p>
-                  </div>
-                  <div className="col-span-2">
-                    <p className="text-muted-foreground text-[10px]">State</p>
-                    <Badge className="mt-0.5 text-[10px]" variant={currentFrame.state === 'WIN' ? 'default' : 'outline'}>
-                      {currentFrame.state}
-                    </Badge>
-                  </div>
-                </div>
-
-                {state.usage && (
-                  <div className="pt-1.5 border-t text-[10px]">
-                    <p className="text-muted-foreground mb-1">Tokens</p>
-                    <div className="grid grid-cols-3 gap-1">
-                      <div>
-                        <p className="text-muted-foreground text-[9px]">In</p>
-                        <p className="font-mono text-[10px]">{(state.usage.inputTokens / 1000).toFixed(1)}k</p>
-                      </div>
-                      <div>
-                        <p className="text-muted-foreground text-[9px]">Out</p>
-                        <p className="font-mono text-[10px]">{(state.usage.outputTokens / 1000).toFixed(1)}k</p>
-                      </div>
-                      <div>
-                        <p className="text-muted-foreground text-[9px]">Total</p>
-                        <p className="font-mono text-[10px]">{(state.usage.totalTokens / 1000).toFixed(1)}k</p>
-                      </div>
-                    </div>
-                  </div>
-                )}
+              <CardContent className="space-y-2 px-3 pb-3">
+                <p className="text-[10px] text-muted-foreground">
+                  Chain your message to the agent for continued exploration:
+                </p>
+                <Textarea
+                  value={userMessage}
+                  onChange={(e) => setUserMessage(e.target.value)}
+                  className="text-[11px] h-20 resize-none"
+                  placeholder="Send new guidance or observation..."
+                />
+                <Button onClick={handleUserMessageSubmit} size="sm" className="w-full h-7 text-[10px]">
+                  Send
+                </Button>
               </CardContent>
             </Card>
           )}
@@ -439,29 +415,6 @@ Return a concise summary of what you learned about the game mechanics and your f
               </div>
             </CardContent>
           </Card>
-
-          {/* User Message Injection */}
-          {showUserInput && (
-            <Card className="border-orange-500">
-              <CardHeader className="pb-2 pt-3 px-3">
-                <CardTitle className="text-sm text-orange-600">Inject Message</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-1.5 px-3 pb-3">
-                <p className="text-[10px] text-muted-foreground">
-                  {maxTurns} actions without win. Add guidance:
-                </p>
-                <Textarea
-                  value={userMessage}
-                  onChange={(e) => setUserMessage(e.target.value)}
-                  className="text-[11px] h-16 resize-none"
-                  placeholder="Hint or instruction..."
-                />
-                <Button onClick={handleUserMessageSubmit} size="sm" className="w-full h-7 text-[10px]">
-                  Send
-                </Button>
-              </CardContent>
-            </Card>
-          )}
         </div>
 
         {/* CENTER: Game selector ABOVE grid */}
@@ -613,18 +566,18 @@ Return a concise summary of what you learned about the game mechanics and your f
           </Card>
         </div>
 
-        {/* RIGHT: Streaming Reasoning */}
+        {/* RIGHT: Streaming Reasoning - Auto-advance, larger text */}
         <div className="lg:col-span-4">
-          <Card className="h-full">
+          <Card className="h-full" ref={React.useRef<HTMLDivElement>(null)}>
             <CardHeader className="pb-2 pt-3 px-3">
-              <CardTitle className="text-sm flex items-center gap-1.5">
-                <Brain className="h-3.5 w-3.5" />
-                Streaming Reasoning
-                {isPlaying && <div className="w-1.5 h-1.5 bg-blue-500 rounded-full animate-pulse" />}
+              <CardTitle className="text-base font-bold flex items-center gap-1.5">
+                <Brain className="h-4 w-4" />
+                Agent Reasoning
+                {isPlaying && <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse" />}
               </CardTitle>
             </CardHeader>
             <CardContent className="px-3 pb-3">
-              <div className="space-y-1.5 max-h-[calc(100vh-10rem)] overflow-y-auto text-[10px]">
+              <div className="space-y-2 max-h-[calc(100vh-10rem)] overflow-y-auto text-sm">
                 {reasoningEntries.length === 0 && assistantMessages.length === 0 && !isPlaying ? (
                   <div className="text-center text-muted-foreground py-10">
                     <Brain className="h-8 w-8 mx-auto mb-2 opacity-50" />
