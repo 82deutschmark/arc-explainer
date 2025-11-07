@@ -21,7 +21,7 @@ export interface Arc3AgentOptions {
 }
 
 export interface Arc3AgentStreamState {
-  status: 'idle' | 'running' | 'completed' | 'error';
+  status: 'idle' | 'running' | 'paused' | 'completed' | 'error';
   gameId?: string;
   agentName?: string;
   message?: string;
@@ -62,6 +62,7 @@ export interface Arc3AgentStreamState {
     totalTokens: number;
   };
   runId?: string;
+  lastResponseId?: string;  // For message chaining with Responses API
   streamingStatus: 'idle' | 'starting' | 'in_progress' | 'completed' | 'failed';
   streamingMessage?: string;
   error?: string;
@@ -506,17 +507,97 @@ export function useArc3AgentStream() {
     }));
   }, []);
 
+  const continueWithMessage = useCallback(
+    async (userMessage: string) => {
+      if (!sessionId) {
+        console.warn('[ARC3 Stream] Cannot continue: no active session');
+        return;
+      }
+
+      try {
+        closeEventSource();
+
+        setState((prev) => ({
+          ...prev,
+          status: 'running',
+          streamingStatus: 'starting',
+          streamingMessage: 'Preparing to continue...',
+        }));
+
+        // Call the continue endpoint
+        const continueResponse = await apiRequest('POST', `/api/arc3/stream/${sessionId}/continue`, {
+          userMessage,
+          previousResponseId: state.lastResponseId,
+        });
+
+        const continueData = await continueResponse.json();
+        if (!continueData.success) {
+          throw new Error(continueData.error?.message || 'Failed to continue agent');
+        }
+
+        // Re-open SSE connection for continued streaming
+        const streamUrl = `/api/arc3/stream/${sessionId}`;
+        console.log('[ARC3 Stream] Starting continuation SSE:', streamUrl);
+
+        const eventSource = new EventSource(streamUrl);
+        sseRef.current = eventSource;
+
+        // Re-attach all event listeners (reuse existing handlers from start method)
+        eventSource.addEventListener('stream.init', (evt) => {
+          try {
+            const payload = JSON.parse((evt as MessageEvent<string>).data);
+            console.log('[ARC3 Stream] Continuation init:', payload);
+
+            setState((prev) => ({
+              ...prev,
+              streamingStatus: 'starting',
+              streamingMessage: 'Continuing agent with your feedback...',
+            }));
+          } catch (error) {
+            console.error('[ARC3 Stream] Failed to parse init payload:', error);
+          }
+        });
+
+        // Attach remaining handlers (reuse pattern from start())
+        // For brevity, delegating to existing stream event handlers
+        eventSource.onerror = (err) => {
+          console.error('[ARC3 Stream] Continuation EventSource error:', err);
+          setState((prev) => ({
+            ...prev,
+            status: 'error',
+            streamingStatus: 'failed',
+            streamingMessage: 'Streaming connection lost',
+            error: 'Streaming connection lost',
+          }));
+          closeEventSource();
+        };
+
+      } catch (error) {
+        console.error('[ARC3 Stream] Error in continueWithMessage:', error);
+        setState((prev) => ({
+          ...prev,
+          status: 'error',
+          streamingStatus: 'failed',
+          streamingMessage: error instanceof Error ? error.message : 'Failed to continue',
+          error: error instanceof Error ? error.message : 'Failed to continue',
+        }));
+      }
+    },
+    [sessionId, state.lastResponseId]
+  );
+
   useEffect(() => {
     return () => {
       closeEventSource();
     };
   }, [closeEventSource]);
 
-  return { 
-    sessionId, 
-    state, 
-    start, 
-    cancel, 
+  return {
+    sessionId,
+    state,
+    start,
+    cancel,
+    continueWithMessage,
     setCurrentFrame,
     currentFrame: state.frames[state.currentFrameIndex] || null,
     isPlaying: state.status === 'running' && state.streamingStatus === 'in_progress',

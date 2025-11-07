@@ -207,6 +207,7 @@ export class Arc3RealGameRunner {
       if (state === 'IN_PROGRESS') return 'IN_PROGRESS';
       if (state === 'WIN') return 'WIN';
       if (state === 'GAME_OVER') return 'GAME_OVER';
+      if (state === 'NOT_FINISHED') return 'NOT_FINISHED';  // Game incomplete but not over
       // If we get an unexpected state, throw an error
       throw new Error(`Unexpected game state from ARC3 API: ${state}`);
     };
@@ -581,6 +582,7 @@ export class Arc3RealGameRunner {
       if (state === 'IN_PROGRESS') return 'IN_PROGRESS';
       if (state === 'WIN') return 'WIN';
       if (state === 'GAME_OVER') return 'GAME_OVER';
+      if (state === 'NOT_FINISHED') return 'NOT_FINISHED';  // Game incomplete but not over
       // If we get an unexpected state, throw an error
       throw new Error(`Unexpected game state from ARC3 API: ${state}`);
     };

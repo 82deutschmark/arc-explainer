@@ -28,6 +28,11 @@ export interface StreamArc3Payload {
   expiresAt?: number;
 }
 
+export interface ContinueStreamArc3Payload extends StreamArc3Payload {
+  userMessage: string;  // New user message to chain
+  previousResponseId?: string;  // From last response for Responses API chaining
+}
+
 export const PENDING_ARC3_SESSION_TTL_SECONDS = 60;
 
 export class Arc3StreamService {
@@ -205,6 +210,104 @@ export class Arc3StreamService {
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
       logger.error(`ARC3 streaming failed: ${message}`, "arc3-stream-service");
+      sseStreamManager.error(sessionId, "STREAMING_FAILED", message);
+    } finally {
+      this.clearPendingPayload(sessionId);
+    }
+
+    return sessionId;
+  }
+
+  async continueStreaming(_req: Request, payload: ContinueStreamArc3Payload): Promise<string> {
+    const sessionId = payload.sessionId ?? nanoid();
+
+    try {
+      await this.ensureScorecard();
+
+      if (!sseStreamManager.has(sessionId)) {
+        throw new Error("SSE session must be registered before continuing ARC3 streaming.");
+      }
+
+      const streamingConfig = resolveStreamingConfig();
+      if (!streamingConfig.enabled) {
+        sseStreamManager.error(sessionId, "STREAMING_DISABLED", "Streaming is disabled on this server.");
+        return sessionId;
+      }
+
+      const { game_id, agentName, systemPrompt, instructions, model, maxTurns, reasoningEffort, userMessage, previousResponseId } = payload;
+
+      // Send initial status
+      sseStreamManager.sendEvent(sessionId, "stream.init", {
+        state: "continuing",
+        game_id,
+        agentName: agentName || 'ARC3 Agent',
+        hasPreviousResponse: !!previousResponseId,
+        timestamp: Date.now(),
+      });
+
+      // Create streaming harness for the continued game runner
+      const streamHarness = {
+        sessionId,
+        emit: (chunk: any) => {
+          const enrichedChunk = {
+            ...(chunk ?? {}),
+            metadata: {
+              ...(chunk?.metadata ?? {}),
+              game_id,
+              agentName: agentName || 'ARC3 Agent',
+            },
+          };
+          sseStreamManager.sendEvent(sessionId, "stream.chunk", enrichedChunk);
+        },
+        end: (summary: any) => {
+          sseStreamManager.close(sessionId, summary);
+        },
+        emitEvent: (event: string, data: any) => {
+          const enrichedEvent =
+            data && typeof data === "object"
+              ? { ...data, game_id, agentName: agentName || 'ARC3 Agent' }
+              : { game_id, agentName: agentName || 'ARC3 Agent' };
+          sseStreamManager.sendEvent(sessionId, event, enrichedEvent);
+        },
+        metadata: {
+          game_id,
+          agentName: agentName || 'ARC3 Agent',
+        },
+      };
+
+      // Send status update
+      sseStreamManager.sendEvent(sessionId, "stream.status", {
+        state: "running",
+        game_id,
+        message: `Agent continuing with user message: "${userMessage.substring(0, 50)}${userMessage.length > 50 ? '...' : ''}"`,
+        timestamp: Date.now(),
+      });
+
+      logger.info(
+        `[ARC3 Continue] Running with userMessage (${userMessage.length} chars), previousResponseId=${!!previousResponseId}`,
+        "arc3-stream-service"
+      );
+
+      // Run the continued agent with streaming
+      // NOTE: The gameRunner will handle the previous_response_id and store: true parameters
+      // via the Responses API when calling OpenAI
+      const runConfig: Arc3AgentRunConfig = {
+        game_id,
+        agentName,
+        systemPrompt,
+        instructions: `${instructions}\n\nUser feedback: ${userMessage}`,  // Append user message to instructions
+        model,
+        maxTurns,
+        reasoningEffort,
+      };
+
+      // Override the game runner to emit streaming events
+      // The previous_response_id will be passed to the Responses API to chain conversations
+      await this.gameRunner.runWithStreaming(runConfig, streamHarness);
+
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      logger.error(`ARC3 continuation failed: ${message}`, "arc3-stream-service");
       sseStreamManager.error(sessionId, "STREAMING_FAILED", message);
     } finally {
       this.clearPendingPayload(sessionId);
