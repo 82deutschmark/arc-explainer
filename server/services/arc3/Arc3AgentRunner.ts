@@ -88,20 +88,20 @@ export class Arc3AgentRunner {
       instructions: combinedInstructions,
       handoffDescription: 'Operates the ARC3 Color Hunt simulator.',
       model: config.model ?? DEFAULT_MODEL,
+      modelSettings: {
+        reasoning: {
+          effort: (config.reasoningEffort ?? 'high') as 'minimal' | 'low' | 'medium' | 'high',
+          summary: 'detailed',
+        },
+        text: { verbosity: 'high' },
+      },
       tools: [inspectTool, scannerTool, coordinateTool, resetTool],
     });
 
     const result = await run(
       agent,
       'Begin the Color Hunt session. Report status updates and end with a final mission summary.',
-      {
-        maxTurns,
-        reasoning: {
-          effort: (config.reasoningEffort ?? 'high') as 'minimal' | 'low' | 'medium' | 'high',
-          verbosity: 'high',
-          summary: 'detailed',
-        },
-      },
+      { maxTurns },
     );
 
     const timeline: Arc3RunTimelineEntry[] = result.newItems.map((item, index) => {
