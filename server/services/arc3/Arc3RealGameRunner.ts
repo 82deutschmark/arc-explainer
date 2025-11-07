@@ -75,12 +75,15 @@ export class Arc3RealGameRunner {
           .describe('Optional reason for requesting a snapshot (used in the activity log). Use null to omit.'),
       }),
       execute: async (input) => {
+        logger.info(`[ARC3 TOOL] inspect_game_state called with note: "${input.note}"`, 'arc3');
+
         if (!currentFrame) {
+          logger.error('[ARC3 TOOL] ERROR: currentFrame is null!', 'arc3');
           throw new Error('Game session not initialized yet.');
         }
 
         // Return cached frame state (ARC3 API doesn't have separate status/frame endpoints)
-        return {
+        const result = {
           gameGuid: currentFrame.guid,
           gameId: currentFrame.game_id,
           frame: currentFrame.frame,
@@ -90,7 +93,10 @@ export class Arc3RealGameRunner {
           max_actions: currentFrame.max_actions,
           win_score: currentFrame.win_score,
           note: input.note ?? null,
-      };
+        };
+
+        logger.info(`[ARC3 TOOL] inspect_game_state returning: state=${result.state}, score=${result.score}, actions=${result.action_counter}/${result.max_actions}`, 'arc3');
+        return result;
       },
     });
 
@@ -100,10 +106,12 @@ export class Arc3RealGameRunner {
       description: `Send simple input ${name}.`,
       parameters: z.object({}),
       execute: async () => {
+        logger.info(`[ARC3 TOOL] ${name} called`, 'arc3');
         if (!gameGuid) throw new Error('Game session not initialized yet.');
         prevFrame = currentFrame;
         currentFrame = await this.apiClient.executeAction(gameGuid, { action: name });
         frames.push(currentFrame);
+        logger.info(`[ARC3 TOOL] ${name} executed: state=${currentFrame.state}, score=${currentFrame.score}`, 'arc3');
 
         // Save frame with auto-generated caption
         if (dbSessionId && prevFrame) {
@@ -125,10 +133,12 @@ export class Arc3RealGameRunner {
       description: 'Send complex input with coordinates (Click/Point).',
       parameters: z.object({ x: z.number().int(), y: z.number().int() }),
       execute: async ({ x, y }) => {
+        logger.info(`[ARC3 TOOL] ACTION6 called with coordinates: (${x}, ${y})`, 'arc3');
         if (!gameGuid) throw new Error('Game session not initialized yet.');
         prevFrame = currentFrame;
         currentFrame = await this.apiClient.executeAction(gameGuid, { action: 'ACTION6', coordinates: [x, y] });
         frames.push(currentFrame);
+        logger.info(`[ARC3 TOOL] ACTION6 executed: state=${currentFrame.state}, score=${currentFrame.score}`, 'arc3');
 
         // Save frame with auto-generated caption
         if (dbSessionId && prevFrame) {
@@ -197,33 +207,25 @@ export class Arc3RealGameRunner {
       if (state === 'IN_PROGRESS') return 'IN_PROGRESS';
       if (state === 'WIN') return 'WIN';
       if (state === 'GAME_OVER') return 'GAME_OVER';
-      return 'NOT_STARTED';  // Default fallback
+      // If we get an unexpected state, throw an error
+      throw new Error(`Unexpected game state from ARC3 API: ${state}`);
     };
 
-    // Create summary from the last frame if available (explicit narrowing)
-    let summary: Arc3RunSummary;
-    if (currentFrame !== null) {
-      const cf = currentFrame as FrameData;
-      summary = {
-        state: mapState(cf.state),
-        score: cf.score,
-        stepsTaken: cf.action_counter,
-        simpleActionsUsed: [],  // ARC3 doesn't track this the same way
-        coordinateGuesses: 0,  // ARC3 doesn't track this separately
-        scenarioId: gameId,
-        scenarioName: gameId,  // Use gameId as name for now
-      };
-    } else {
-      summary = {
-        state: 'NOT_STARTED',
-        score: 0,
-        stepsTaken: 0,
-        simpleActionsUsed: [],
-        coordinateGuesses: 0,
-        scenarioId: gameId,
-        scenarioName: gameId,
-      };
+    // Create summary from the last frame (should always exist since we start the game before agent runs)
+    if (currentFrame === null) {
+      throw new Error('No frame data available - game did not start properly');
     }
+
+    const cf = currentFrame as FrameData;
+    const summary: Arc3RunSummary = {
+      state: mapState(cf.state),
+      score: cf.score,
+      stepsTaken: cf.action_counter,
+      simpleActionsUsed: [],  // ARC3 doesn't track this the same way
+      coordinateGuesses: 0,  // ARC3 doesn't track this separately
+      scenarioId: gameId,
+      scenarioName: gameId,  // Use gameId as name for now
+    };
 
     return {
       runId: randomUUID(),
@@ -300,7 +302,10 @@ export class Arc3RealGameRunner {
           .describe('Optional reason for requesting a snapshot (used in the activity log). Use null to omit.'),
       }),
       execute: async (input) => {
+        logger.info(`[ARC3 TOOL STREAM] inspect_game_state called with note: "${input.note}"`, 'arc3');
+
         if (!currentFrame) {
+          logger.error('[ARC3 TOOL STREAM] ERROR: currentFrame is null!', 'arc3');
           throw new Error('Game session not initialized yet.');
         }
 
@@ -324,6 +329,8 @@ export class Arc3RealGameRunner {
           note: input.note ?? null,
         };
 
+        logger.info(`[ARC3 TOOL STREAM] inspect_game_state returning: state=${result.state}, score=${result.score}, actions=${result.action_counter}/${result.max_actions}`, 'arc3');
+
         // Emit tool result event
         streamHarness.emitEvent("agent.tool_result", {
           tool: 'inspect_game_state',
@@ -340,12 +347,14 @@ export class Arc3RealGameRunner {
       description: `Send simple input ${name}.`,
       parameters: z.object({}),
       execute: async () => {
+        logger.info(`[ARC3 TOOL STREAM] ${name} called`, 'arc3');
         if (!gameGuid) throw new Error('Game session not initialized yet.');
         streamHarness.emitEvent("agent.tool_call", { tool: name, arguments: {}, timestamp: Date.now() });
 
         prevFrame = currentFrame;
         currentFrame = await this.apiClient.executeAction(gameGuid, { action: name });
         frames.push(currentFrame);
+        logger.info(`[ARC3 TOOL STREAM] ${name} executed: state=${currentFrame.state}, score=${currentFrame.score}`, 'arc3');
 
         // Generate caption and save frame
         let caption = '';
@@ -375,12 +384,14 @@ export class Arc3RealGameRunner {
       description: 'Send complex input with coordinates (Click/Point).',
       parameters: z.object({ x: z.number().int(), y: z.number().int() }),
       execute: async ({ x, y }) => {
+        logger.info(`[ARC3 TOOL STREAM] ACTION6 called with coordinates: (${x}, ${y})`, 'arc3');
         if (!gameGuid) throw new Error('Game session not initialized yet.');
         streamHarness.emitEvent("agent.tool_call", { tool: 'ACTION6', arguments: { x, y }, timestamp: Date.now() });
 
         prevFrame = currentFrame;
         currentFrame = await this.apiClient.executeAction(gameGuid, { action: 'ACTION6', coordinates: [x, y] });
         frames.push(currentFrame);
+        logger.info(`[ARC3 TOOL STREAM] ACTION6 executed: state=${currentFrame.state}, score=${currentFrame.score}`, 'arc3');
 
         // Generate caption and save frame
         let caption = '';
@@ -570,33 +581,25 @@ export class Arc3RealGameRunner {
       if (state === 'IN_PROGRESS') return 'IN_PROGRESS';
       if (state === 'WIN') return 'WIN';
       if (state === 'GAME_OVER') return 'GAME_OVER';
-      return 'NOT_STARTED';  // Default fallback
+      // If we get an unexpected state, throw an error
+      throw new Error(`Unexpected game state from ARC3 API: ${state}`);
     };
 
-    // Create summary from the last frame if available (explicit narrowing)
-    let summary: Arc3RunSummary;
-    if (currentFrame !== null) {
-      const cf = currentFrame as FrameData;
-      summary = {
-        state: mapState(cf.state),
-        score: cf.score,
-        stepsTaken: cf.action_counter,
-        simpleActionsUsed: [],  // ARC3 doesn't track this the same way
-        coordinateGuesses: 0,  // ARC3 doesn't track this separately
-        scenarioId: gameId,
-        scenarioName: gameId,  // Use gameId as name for now
-      };
-    } else {
-      summary = {
-        state: 'NOT_STARTED',
-        score: 0,
-        stepsTaken: 0,
-        simpleActionsUsed: [],
-        coordinateGuesses: 0,
-        scenarioId: gameId,
-        scenarioName: gameId,
-      };
+    // Create summary from the last frame (should always exist since we start the game before agent runs)
+    if (currentFrame === null) {
+      throw new Error('No frame data available - game did not start properly');
     }
+
+    const cf = currentFrame as FrameData;
+    const summary: Arc3RunSummary = {
+      state: mapState(cf.state),
+      score: cf.score,
+      stepsTaken: cf.action_counter,
+      simpleActionsUsed: [],  // ARC3 doesn't track this the same way
+      coordinateGuesses: 0,  // ARC3 doesn't track this separately
+      scenarioId: gameId,
+      scenarioName: gameId,  // Use gameId as name for now
+    };
 
     const generatedRunId = randomUUID();
 
