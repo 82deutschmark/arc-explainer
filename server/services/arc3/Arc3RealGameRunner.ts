@@ -9,7 +9,7 @@ SRP/DRY check: Pass — isolates agent orchestration from HTTP routing and API c
 import { randomUUID } from 'node:crypto';
 import { Agent, run, tool, extractAllTextOutput } from '@openai/agents';
 import { z } from 'zod';
-import { Arc3ApiClient, type FrameData, type GameAction } from './Arc3ApiClient';
+import { Arc3ApiClient, type FrameData } from './Arc3ApiClient';
 import type { Arc3AgentRunConfig, Arc3AgentRunResult, Arc3RunTimelineEntry, Arc3RunSummary, Arc3GameState } from './types';
 import { buildArc3DefaultPrompt } from './prompts';
 
@@ -37,9 +37,14 @@ export class Arc3RealGameRunner {
 
     let gameGuid: string | null = null;
     let currentFrame: FrameData | null = null;
-    let resetUsed = false;
     const frames: FrameData[] = [];
     const timeline: Arc3RunTimelineEntry[] = [];
+
+    // Start a fresh session up front so the agent only needs inspect + ACTION tools
+    const initialFrame = await this.apiClient.startGame(gameId);
+    gameGuid = initialFrame.guid;
+    currentFrame = initialFrame;
+    frames.push(initialFrame);
 
     const inspectTool = tool({
       name: 'inspect_game_state',
@@ -53,7 +58,7 @@ export class Arc3RealGameRunner {
       }),
       execute: async (input) => {
         if (!currentFrame) {
-          throw new Error('Game not started. Call execute_game_action with RESET first.');
+          throw new Error('Game session not initialized yet.');
         }
 
         // Return cached frame state (ARC3 API doesn't have separate status/frame endpoints)
@@ -71,30 +76,13 @@ export class Arc3RealGameRunner {
       },
     });
 
-    // Define individual action tools to match ARC3 reference (RESET, ACTION1-6)
-    const resetTool = tool({
-      name: 'RESET',
-      description: 'Start a game session. Use exactly once at the beginning of the run; subsequent calls will fail.',
-      parameters: z.object({}),
-      execute: async () => {
-        if (resetUsed) {
-          throw new Error('RESET already used for this run. Continue with inspect_game_state and ACTION1–ACTION6.');
-        }
-        const result = await this.apiClient.startGame(gameId);
-        resetUsed = true;
-        gameGuid = result.guid;
-        currentFrame = result;
-        frames.push(currentFrame);
-        return currentFrame;
-      },
-    });
-
+    // Define individual action tools to match ARC3 reference (ACTION1-6)
     const simpleAction = (name: 'ACTION1'|'ACTION2'|'ACTION3'|'ACTION4'|'ACTION5') => tool({
       name,
       description: `Send simple input ${name}.`,
       parameters: z.object({}),
       execute: async () => {
-        if (!gameGuid) throw new Error('Game not started. Call RESET first.');
+        if (!gameGuid) throw new Error('Game session not initialized yet.');
         currentFrame = await this.apiClient.executeAction(gameGuid, { action: name });
         frames.push(currentFrame);
         return currentFrame;
@@ -106,7 +94,7 @@ export class Arc3RealGameRunner {
       description: 'Send complex input with coordinates (Click/Point).',
       parameters: z.object({ x: z.number().int(), y: z.number().int() }),
       execute: async ({ x, y }) => {
-        if (!gameGuid) throw new Error('Game not started. Call RESET first.');
+        if (!gameGuid) throw new Error('Game session not initialized yet.');
         currentFrame = await this.apiClient.executeAction(gameGuid, { action: 'ACTION6', coordinates: [x, y] });
         frames.push(currentFrame);
         return currentFrame;
@@ -124,7 +112,7 @@ export class Arc3RealGameRunner {
       instructions: combinedInstructions,
       handoffDescription: 'Operates the ARC-AGI-3 real game interface.',
       model: config.model ?? DEFAULT_MODEL,
-      tools: [inspectTool, resetTool, simpleAction('ACTION1'), simpleAction('ACTION2'), simpleAction('ACTION3'), simpleAction('ACTION4'), simpleAction('ACTION5'), action6Tool],
+      tools: [inspectTool, simpleAction('ACTION1'), simpleAction('ACTION2'), simpleAction('ACTION3'), simpleAction('ACTION4'), simpleAction('ACTION5'), action6Tool],
     });
 
     const result = await run(
@@ -301,7 +289,7 @@ export class Arc3RealGameRunner {
       }),
       execute: async (input) => {
         if (!currentFrame) {
-          throw new Error('Game not started. Call execute_game_action with RESET first.');
+          throw new Error('Game session not initialized yet.');
         }
 
         // Emit tool call event
@@ -335,32 +323,12 @@ export class Arc3RealGameRunner {
       },
     });
 
-    // Streaming: individual action tools
-    const resetTool = tool({
-      name: 'RESET',
-      description: 'Start a game session. Use exactly once at the beginning of the run; subsequent calls will fail.',
-      parameters: z.object({}),
-      execute: async () => {
-        if (resetUsed) {
-          throw new Error('RESET already used for this run. Continue with inspect_game_state and ACTION1–ACTION6.');
-        }
-        streamHarness.emitEvent("agent.tool_call", { tool: 'RESET', arguments: {}, timestamp: Date.now() });
-        const result = await this.apiClient.startGame(gameId);
-        resetUsed = true;
-        gameGuid = result.guid;
-        currentFrame = result;
-        frames.push(currentFrame);
-        streamHarness.emitEvent("game.frame_update", { frameIndex: frames.length - 1, frameData: currentFrame, timestamp: Date.now() });
-        return currentFrame;
-      },
-    });
-
     const simpleAction = (name: 'ACTION1'|'ACTION2'|'ACTION3'|'ACTION4'|'ACTION5') => tool({
       name,
       description: `Send simple input ${name}.`,
       parameters: z.object({}),
       execute: async () => {
-        if (!gameGuid) throw new Error('Game not started. Call RESET first.');
+        if (!gameGuid) throw new Error('Game session not initialized yet.');
         streamHarness.emitEvent("agent.tool_call", { tool: name, arguments: {}, timestamp: Date.now() });
         currentFrame = await this.apiClient.executeAction(gameGuid, { action: name });
         frames.push(currentFrame);
@@ -374,7 +342,7 @@ export class Arc3RealGameRunner {
       description: 'Send complex input with coordinates (Click/Point).',
       parameters: z.object({ x: z.number().int(), y: z.number().int() }),
       execute: async ({ x, y }) => {
-        if (!gameGuid) throw new Error('Game not started. Call RESET first.');
+        if (!gameGuid) throw new Error('Game session not initialized yet.');
         streamHarness.emitEvent("agent.tool_call", { tool: 'ACTION6', arguments: { x, y }, timestamp: Date.now() });
         currentFrame = await this.apiClient.executeAction(gameGuid, { action: 'ACTION6', coordinates: [x, y] });
         frames.push(currentFrame);
@@ -394,7 +362,7 @@ export class Arc3RealGameRunner {
       instructions: combinedInstructions,
       handoffDescription: 'Operates the ARC-AGI-3 real game interface.',
       model: config.model ?? DEFAULT_MODEL,
-      tools: [inspectTool, resetTool, simpleAction('ACTION1'), simpleAction('ACTION2'), simpleAction('ACTION3'), simpleAction('ACTION4'), simpleAction('ACTION5'), action6Tool],
+      tools: [inspectTool, simpleAction('ACTION1'), simpleAction('ACTION2'), simpleAction('ACTION3'), simpleAction('ACTION4'), simpleAction('ACTION5'), action6Tool],
     });
 
     // Emit agent ready event

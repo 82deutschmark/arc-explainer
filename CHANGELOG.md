@@ -9,6 +9,7 @@
 - **Root cause**: Attempted to extract reasoning from `reasoning_item.rawItem` (has metadata, NO text)
 - **Solution**: Extract reasoning deltas from `raw_model_stream_event.data.event` (nested Responses API events)
 - **Pattern adopted from Saturn**: Uses same `response.reasoning_text.delta` extraction that works in Saturn Solver
+- **No more RESET loops**: Server now starts the game before orchestrating the agent and removes RESET from exposed tools, so the model can only call inspect + ACTION1–ACTION6.
 
 #### Implementation Details
 - Added `streamState.accumulatedReasoning` accumulator to track incremental reasoning
