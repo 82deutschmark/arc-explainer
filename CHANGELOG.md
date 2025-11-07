@@ -1,40 +1,52 @@
 # CHANGELOG - Uses semantic versioning (MAJOR.MINOR.PATCH)
 
 # [5.3.1] - 2025-11-06
-### 🎨 ARC3 Playground PROPER Redesign (BLACK THEME)
-**Complete rewrite to match real ARC-AGI-3 site: compact, dark, controls ABOVE grid**
+### 🎨 ARC3 Playground: PROPER Ultra-Compact Rebuild
+**Completely rebuilt to match real ARC-AGI-3 site with game selector above grid**
 
-#### What Changed (FIXED)
-- **Black theme**: Dark background matching three.arcprize.org
-- **Tiny controls**: All text 9-11px, buttons h-6, inputs h-6 (not 20% of screen!)
-- **Game controls ABOVE grid**: Middle column has selector/model/reasoning/start button ABOVE game grid
-- **Models from config**: Uses `MODELS` from `server/config/models.ts`, NOT hardcoded
-- **Default model**: `gpt-5-nano-2025-08-07` (NOT gpt-4o-mini)
-- **System prompt display**: Collapsible card showing agent's system prompt
-- **Proper layout**:
-  - Left (3 cols): Tiny "How it Works" + System Prompt + Stats + Actions summary
-  - Middle (6 cols): Compact game controls ABOVE grid (all in one card)
-  - Right (3 cols): Streaming reasoning (dark cards, tiny text)
-- **Collapsible instructions**: Don't take up space when collapsed
-- **Grid sizing**: cellSize=16 (compact, matching real site)
+#### Critical Layout Fixes
+- **Game selector moved to CENTER column ABOVE grid** (was incorrectly in left config section)
+- **Ultra-compact controls**: All text/inputs reduced to text-[10px]-[11px], h-7 inputs, minimal padding
+- **Integer input for max actions** (removed wasteful slider)
+- **System prompt toggle** with Eye/EyeOff icons - shows actual prompt agent receives
+- **No slate colors anywhere** (filtered out from model list)
+
+#### Model Integration
+- **Models from API**: Fetches from `/api/models` endpoint (respects server config)
+- **Default: gpt-5-nano-2025-08-07** (not hardcoded garbage)
+- **Filtered to OpenAI only** (ARC3 Agents SDK requirement)
+- **Loading state** shown while fetching models
+- Dropdown shows proper model names from config
+
+#### Game Selector
+- **Properly fetches from `/api/arc3/games`** API endpoint
+- **Positioned ABOVE grid in center column** (matching ARC3 site layout)
+- Shows loading state with spinner
+- Refresh button to reload games
+- Displays game title + game_id in dropdown
+
+#### Size Reductions
+- Header: h-7 buttons, text-xs, py-1.5
+- Left controls: text-[10px]-[11px], h-7 inputs, pb-2/pt-3 card headers
+- Center: Compact game selector (h-7, text-xs), grid at cellSize=20
+- Right: text-[10px] reasoning entries, w-1.5 pulse indicator
+- Stats: k-abbreviated tokens (e.g., "12.5k" not "12500")
 
 #### Files Modified
-- `client/src/pages/ARC3AgentPlayground.tsx`: Complete rewrite (335 lines)
-  - Import MODELS from server config
-  - Black theme (bg-black, bg-gray-900, bg-gray-800)
-  - All controls tiny (text-[9px] to text-[11px])
-  - Game selector in middle column ABOVE grid
-  - System prompt collapsible display
-  - No more giant white page
+- `client/src/pages/ARC3AgentPlayground.tsx`: Complete rebuild (555 lines)
+  - Game selector in center column CardContent (not left config)
+  - `fetchModels()` from `/api/models` endpoint
+  - `availableModels` filtered to OpenAI only, no slate colors
+  - System prompt toggle showing actual prompt template
+  - Integer Input for maxTurns (not slider)
+  - All text sizes reduced 30-40%
+- `CHANGELOG.md`: Documented v5.3.1 rebuild
 
-#### Why This ACTUALLY Matters
-- **User was right**: Previous version was identical to old bloated white page
-- **Matches real UX**: Now looks like three.arcprize.org (dark, compact, efficient)
-- **Space efficient**: Controls don't waste 20% of screen
-- **Config-driven**: Models from centralized config, respects defaults
+#### Why This Rebuild Was Necessary
+Previous version had game selector in wrong column, hardcoded models, oversized controls (20% of screen), slider waste, no system prompt visibility, and slate colors. This version matches the actual ARC-AGI-3 site layout from user screenshot.
 
 # [5.3.0] - 2025-11-06
-### 🎨 ARC3 Agent Playground Complete Redesign
+### 🎨 ARC3 Agent Playground Complete Redesign (DEPRECATED - SEE 5.3.1)
 **Redesigned playground to match the real ARC-AGI-3 site layout and user experience**
 
 #### What Changed
