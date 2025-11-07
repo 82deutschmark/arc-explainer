@@ -9,15 +9,13 @@ SRP/DRY check: Pass — isolates HTTP contract and validation for ARC3 playgroun
 import { Router, type Request, type Response } from 'express';
 import { z } from 'zod';
 import { asyncHandler } from '../middleware/asyncHandler';
-import { Arc3AgentRunner } from '../services/arc3/Arc3AgentRunner';
 import { Arc3RealGameRunner } from '../services/arc3/Arc3RealGameRunner';
 import { Arc3ApiClient } from '../services/arc3/Arc3ApiClient';
-import { arc3StreamService, type StreamArc3Payload } from '../services/arc3/arc3StreamService';
+import { arc3StreamService, type StreamArc3Payload } from '../services/arc3/Arc3StreamService';
 import { sseStreamManager } from '../services/streaming/SSEStreamManager';
 import { formatResponse } from '../utils/responseFormatter';
 
 const router = Router();
-const runner = new Arc3AgentRunner();
 
 // Real ARC3 API client and runner
 const arc3ApiClient = new Arc3ApiClient(process.env.ARC3_API_KEY || '');
@@ -49,19 +47,11 @@ const runSchema = z.object({
     .coerce.number()
     .int()
     .min(2)
-    .max(24)
+    .max(400)
     .optional(),
-  scenarioId: z.string().trim().max(120).optional(),
+  game_id: z.string().trim().max(120).optional(),
+  reasoningEffort: z.enum(['minimal', 'low', 'medium', 'high']).optional(),
 });
-
-router.post(
-  '/agent-playground/run',
-  asyncHandler(async (req: Request, res: Response) => {
-    const payload = runSchema.parse(req.body);
-    const result = await runner.run(payload);
-    res.json(formatResponse.success(result));
-  }),
-);
 
 // NEW: Real ARC3 API endpoints
 
