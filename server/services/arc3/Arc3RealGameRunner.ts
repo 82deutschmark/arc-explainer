@@ -204,15 +204,8 @@ export class Arc3RealGameRunner {
     // Process timeline entries using extracted utility (eliminates duplication)
     const timeline = processRunItems(result.newItems, agentName);
 
-    // End session in database
-    if (dbSessionId && currentFrame) {
-      try {
-        await endSession(dbSessionId, currentFrame.state, currentFrame.score);
-        logger.info(`Ended session ${dbSessionId} with state ${currentFrame.state}`, 'arc3');
-      } catch (error) {
-        logger.warn(`Failed to end session: ${error instanceof Error ? error.message : String(error)}`, 'arc3');
-      }
-    }
+    // NOTE: Do NOT end the session here. Sessions remain open for continuations.
+    // The session ends naturally when the game reaches WIN or GAME_OVER state.
 
     const usage = result.state._context.usage;
     const finalOutputCandidate = result.finalOutput;
