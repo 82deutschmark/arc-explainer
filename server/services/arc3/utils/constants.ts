@@ -12,9 +12,9 @@ SRP/DRY check: Pass — single source of truth for ARC3 configuration constants.
 export const DEFAULT_MODEL = 'gpt-5-nano';
 
 /**
- * Default maximum turns for agent execution (unlimited)
+ * Default maximum turns for agent execution
  */
-export const DEFAULT_MAX_TURNS = 999999;
+export const DEFAULT_MAX_TURNS = 100;
 
 /**
  * Default game ID if not specified
