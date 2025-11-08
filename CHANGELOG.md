@@ -1,5 +1,11 @@
 # CHANGELOG - Uses semantic versioning (MAJOR.MINOR.PATCH)
 
+# [5.7.3] - 2025-11-08
+### 🧠 Model Catalog Update
+- Added **OpenRouter Polaris (temporary alias)** to the shared model registry with 256k token context window, zero-cost pricing, and reasoning flag so it is selectable immediately.
+- Tagged the entry with a cloaked-name note to revisit once the official model identity is published.
+- Updated OpenRouter diagnostics and agent type definitions to include the Polaris alias for validation and custom agent use.
+
 # [5.7.2] - 2025-11-08
 ### 🚀 Enhancement
 **Removed maxTurns limit to allow unlimited agent execution and fixed UI terminology confusion.**
