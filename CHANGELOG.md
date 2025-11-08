@@ -17,17 +17,25 @@
 - **useArc3AgentStream** hook stores retrieved gameGuid and sends it back on user message submission
 
 #### Implementation Details
-- **Arc3RealGameRunner.ts**: Added private `continuGameSession()` method that fetches current state without starting fresh
+- **Arc3RealGameRunner.ts**: Added private `continuGameSession()` method that executes ACTION1 to fetch current state without losing progress
 - **Arc3RealGameRunner.ts**: Both `run()` and `runWithStreaming()` return game session guid for tracking
+- **Arc3RealGameRunner.ts**: **CRITICAL FIX** - Removed all `endSession()` calls; sessions now stay open for continuations and end naturally only on WIN/GAME_OVER
 - **Arc3StreamService.ts**: `continueStreaming()` now extracts and passes `existingGameGuid` to game runner
 - **server/routes/arc3.ts**: Continue endpoint schema accepts and validates `existingGameGuid` parameter
+- **useArc3AgentStream.ts**: Added `attachEventListeners()` helper function extracted from duplicated listener code
+- **useArc3AgentStream.ts**: Both initial `start()` and `continueWithMessage()` now use the same `attachEventListeners()` to ensure listeners are registered on all connections
 - **useArc3AgentStream.ts**: Stores `gameGuid` from `agent.completed` event; passes it back via `continueWithMessage()`
+
+#### Critical Fixes
+1. **Session ending bug** - Removed premature `endSession()` calls that were killing active game sessions
+2. **Missing event listeners on continuation** - `continueWithMessage()` now properly registers all SSE listeners including the critical `agent.completed` listener that captures gameGuid
 
 #### Impact
 - ✅ Same game session (guid/scorecard) persists across all agent continuations
-- ✅ User feedback loops no longer lose game state or scorecard
+- ✅ Database sessions stay active and properly reflect game progression
+- ✅ User feedback loops no longer lose game state, scorecard, or session connection
 - ✅ Proper session lifecycle: initial run → pause → user feedback → continue same session
-- ✅ Frontend can retrieve and display active game guid for transparency
+- ✅ Frontend properly receives gameGuid on all agent completions and sends it on continuation requests
 
 # [5.6.5] - 2025-11-07
 ### 🧠 Model Catalog Update
