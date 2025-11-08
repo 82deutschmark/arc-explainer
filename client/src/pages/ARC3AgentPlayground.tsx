@@ -127,7 +127,7 @@ export default function ARC3AgentPlayground() {
   const [gameId, setGameId] = useState('ls20');
   const [agentName, setAgentName] = useState('ARC3 Explorer');
   const [model, setModel] = useState<string>('');
-  const [maxTurns, setMaxTurns] = useState(10);
+  const [maxTurns, setMaxTurns] = useState(999999);
   const [reasoningEffort, setReasoningEffort] = useState<'minimal' | 'low' | 'medium' | 'high'>('low');
   const [systemPrompt, setSystemPrompt] = useState('Loading default prompt...');
   const [showSystemPrompt, setShowSystemPrompt] = useState(true);
@@ -204,45 +204,48 @@ export default function ARC3AgentPlayground() {
   return (
     <div className="min-h-screen bg-background">
       {/* Minimal header with action pill bar */}
-      <div className="border-b px-3 py-1.5">
-        <div className="flex items-center justify-between max-w-[1800px] mx-auto">
-          <div className="flex items-center gap-2">
-            <Button variant="ghost" size="sm" className="h-7 px-2 text-xs" asChild>
-              <Link href="/arc3">
-                <ArrowLeft className="h-3 w-3 mr-1" />
-                Back
-              </Link>
-            </Button>
-            <Gamepad2 className="h-4 w-4" />
-            <span className="text-sm font-semibold">ARC-AGI-3 Playground</span>
-
-            {/* Action Pills Bar - Always visible */}
-            <div className="flex items-center gap-1 ml-4">
-              {['ACTION1', 'ACTION2', 'ACTION3', 'ACTION4', 'ACTION5', 'ACTION6'].map((actionName) => {
-                const usedCount = toolEntries.filter(e => e.label.includes(actionName)).length;
-                const isActive = isPlaying && state.streamingMessage?.includes(actionName);
-
-                return (
-                  <div
-                    key={actionName}
-                    className={`px-2 py-0.5 rounded-full text-[10px] font-medium transition-all ${
-                      isActive
-                        ? 'bg-green-500 text-white animate-pulse shadow-lg'
-                        : usedCount > 0
-                        ? 'bg-blue-100 text-blue-700 border border-blue-300'
-                        : 'bg-gray-100 text-gray-400'
-                    }`}
-                  >
-                    {actionName.replace('ACTION', 'A')}
-                    {usedCount > 0 && <span className="ml-0.5">×{usedCount}</span>}
-                  </div>
-                );
-              })}
+      <div className="border-b px-3 py-2">
+        <div className="max-w-[1800px] mx-auto flex flex-col gap-2">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Button variant="ghost" size="sm" className="h-7 px-2 text-xs" asChild>
+                <Link href="/arc3">
+                  <ArrowLeft className="h-3 w-3 mr-1" />
+                  Back
+                </Link>
+              </Button>
+              <Gamepad2 className="h-4 w-4" />
+              <span className="text-sm font-semibold">ARC-AGI-3 Playground</span>
             </div>
+            <Badge variant={state.status === 'running' ? 'default' : 'outline'} className="text-xs">
+              {state.status}
+            </Badge>
           </div>
-          <Badge variant={state.status === 'running' ? 'default' : 'outline'} className="text-xs">
-            {state.status}
-          </Badge>
+
+          {/* Action Pills Bar - Always visible */}
+          <div className="flex flex-wrap items-center justify-center gap-2">
+            {['ACTION1', 'ACTION2', 'ACTION3', 'ACTION4', 'ACTION5', 'ACTION6'].map((actionName) => {
+              const usedCount = toolEntries.filter(e => e.label.includes(actionName)).length;
+              const isActive = isPlaying && state.streamingMessage?.includes(actionName);
+              const displayName = actionName.replace('ACTION', 'Action ');
+
+              return (
+                <div
+                  key={actionName}
+                  className={`px-4 py-1.5 rounded-full text-xs sm:text-sm font-semibold transition-all shadow-sm ${
+                    isActive
+                      ? 'bg-green-500 text-white animate-pulse shadow-lg'
+                      : usedCount > 0
+                      ? 'bg-blue-100 text-blue-700 border border-blue-300'
+                      : 'bg-gray-100 text-gray-500 border border-gray-200'
+                  }`}
+                >
+                  {displayName}
+                  {usedCount > 0 && <span className="ml-1 text-[11px] sm:text-xs">×{usedCount}</span>}
+                </div>
+              );
+            })}
+          </div>
         </div>
       </div>
 
