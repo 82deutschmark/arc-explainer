@@ -17,7 +17,7 @@ import { DEFAULT_MODEL, DEFAULT_MAX_TURNS, DEFAULT_GAME_ID } from './utils/const
 import { processRunItems, processRunItemsWithReasoning } from './utils/timelineProcessor.ts';
 import { generateActionCaption, generateInspectCaption } from './helpers/captionGenerator.ts';
 import { countChangedPixels } from './helpers/frameAnalysis.ts';
-import { createSession, endSession } from './persistence/sessionManager.ts';
+import { createSession } from './persistence/sessionManager.ts';
 import { saveFrame } from './persistence/framePersistence.ts';
 import { logger } from '../../utils/logger.ts';
 
@@ -65,20 +65,27 @@ export class Arc3RealGameRunner {
     const frames: FrameData[] = [];
     let dbSessionId: number | null = null;
 
-    // Start a fresh session up front so the agent only needs inspect + ACTION tools
-    const initialFrame = await this.apiClient.startGame(gameId);
+    // Start a fresh session OR continue an existing one
+    const initialFrame = config.existingGameGuid
+      ? await this.continuGameSession(gameId, config.existingGameGuid)
+      : await this.apiClient.startGame(gameId);
+
     gameGuid = initialFrame.guid;
     currentFrame = initialFrame;
     frames.push(initialFrame);
 
-    // Create database session for frame persistence
+    // Create database session for frame persistence (only for new games)
     try {
-      dbSessionId = await createSession(gameId, gameGuid, initialFrame.win_score);
+      if (!config.existingGameGuid) {
+        dbSessionId = await createSession(gameId, gameGuid, initialFrame.win_score);
 
-      // Save initial frame
-      const initialCaption = generateActionCaption({ action: 'RESET' }, null, initialFrame);
-      await saveFrame(dbSessionId, 0, initialFrame, { action: 'RESET' }, initialCaption, 0);
-      logger.info(`Created session ${dbSessionId} for game ${gameId}`, 'arc3');
+        // Save initial frame
+        const initialCaption = generateActionCaption({ action: 'RESET' }, null, initialFrame);
+        await saveFrame(dbSessionId, 0, initialFrame, { action: 'RESET' }, initialCaption, 0);
+        logger.info(`Created session ${dbSessionId} for game ${gameId}`, 'arc3');
+      } else {
+        logger.info(`[ARC3] Continuing game session ${gameGuid} on game ${gameId}`, 'arc3');
+      }
     } catch (error) {
       logger.warn(`Failed to create database session: ${error instanceof Error ? error.message : String(error)}`, 'arc3');
     }
@@ -583,15 +590,8 @@ export class Arc3RealGameRunner {
     // Process final timeline entries using extracted utility (eliminates duplication)
     const timeline = processRunItemsWithReasoning(result.newItems, agentName, streamState.accumulatedReasoning);
 
-    // End session in database
-    if (dbSessionId && currentFrame) {
-      try {
-        await endSession(dbSessionId, currentFrame.state, currentFrame.score);
-        logger.info(`Ended streaming session ${dbSessionId} with state ${currentFrame.state}`, 'arc3');
-      } catch (error) {
-        logger.warn(`Failed to end session: ${error instanceof Error ? error.message : String(error)}`, 'arc3');
-      }
-    }
+    // NOTE: Do NOT end the session here. Sessions remain open for continuations.
+    // The session ends naturally when the game reaches WIN or GAME_OVER state.
 
     const usage = result.state._context.usage;
     const finalOutputCandidate = result.finalOutput;
