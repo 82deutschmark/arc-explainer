@@ -140,303 +140,8 @@ export function useArc3AgentStream() {
           const eventSource = new EventSource(streamUrl);
           sseRef.current = eventSource;
 
-          eventSource.addEventListener('stream.init', (evt) => {
-            try {
-              const payload = JSON.parse((evt as MessageEvent<string>).data);
-              console.log('[ARC3 Stream] Received init:', payload);
-              
-              setState((prev) => ({
-                ...prev,
-                streamingStatus: 'starting',
-                streamingMessage: 'Agent initialized, starting gameplay...',
-                gameId: payload.gameId,
-                agentName: payload.agentName,
-              }));
-            } catch (error) {
-              console.error('[ARC3 Stream] Failed to parse init payload:', error);
-            }
-          });
-
-          eventSource.addEventListener('stream.status', (evt) => {
-            try {
-              const status = JSON.parse((evt as MessageEvent<string>).data);
-              console.log('[ARC3 Stream] Received status:', status);
-
-              setState((prev) => ({
-                ...prev,
-                streamingStatus: status.state || prev.streamingStatus,
-                streamingMessage: status.message || prev.streamingMessage,
-              }));
-            } catch (error) {
-              console.error('[ARC3 Stream] Failed to parse status payload:', error);
-            }
-          });
-
-          eventSource.addEventListener('agent.starting', (evt) => {
-            try {
-              const data = JSON.parse((evt as MessageEvent<string>).data);
-              console.log('[ARC3 Stream] Agent starting:', data);
-
-              setState((prev) => ({
-                ...prev,
-                streamingStatus: 'in_progress',
-                streamingMessage: 'Agent is analyzing the game...',
-                gameId: data.gameId,
-                agentName: data.agentName,
-              }));
-            } catch (error) {
-              console.error('[ARC3 Stream] Failed to parse agent.starting payload:', error);
-            }
-          });
-
-          eventSource.addEventListener('agent.ready', (evt) => {
-            try {
-              const data = JSON.parse((evt as MessageEvent<string>).data);
-              console.log('[ARC3 Stream] Agent ready:', data);
-
-              setState((prev) => ({
-                ...prev,
-                streamingMessage: 'Agent ready, beginning gameplay...',
-              }));
-            } catch (error) {
-              console.error('[ARC3 Stream] Failed to parse agent.ready payload:', error);
-            }
-          });
-
-          eventSource.addEventListener('agent.tool_call', (evt) => {
-            try {
-              const data = JSON.parse((evt as MessageEvent<string>).data);
-              console.log('[ARC3 Stream] Agent tool call:', data);
-
-              setState((prev) => ({
-                ...prev,
-                streamingMessage: `Agent called ${data.tool}...`,
-                timeline: [...prev.timeline, {
-                  index: prev.timeline.length,
-                  type: 'tool_call' as const,
-                  label: `Agent called ${data.tool}`,
-                  content: JSON.stringify(data.arguments, null, 2),
-                }],
-              }));
-            } catch (error) {
-              console.error('[ARC3 Stream] Failed to parse agent.tool_call payload:', error);
-            }
-          });
-
-          eventSource.addEventListener('agent.tool_result', (evt) => {
-            try {
-              const data = JSON.parse((evt as MessageEvent<string>).data);
-              console.log('[ARC3 Stream] Agent tool result:', data);
-
-              setState((prev) => ({
-                ...prev,
-                streamingMessage: `Received result from ${data.tool}...`,
-                timeline: [...prev.timeline, {
-                  index: prev.timeline.length,
-                  type: 'tool_result' as const,
-                  label: `Result from ${data.tool}`,
-                  content: JSON.stringify(data.result, null, 2),
-                }],
-              }));
-            } catch (error) {
-              console.error('[ARC3 Stream] Failed to parse agent.tool_result payload:', error);
-            }
-          });
-
-          eventSource.addEventListener('agent.reasoning', (evt) => {
-            try {
-              const data = JSON.parse((evt as MessageEvent<string>).data);
-              console.log('[ARC3 Stream] Agent reasoning delta:', data);
-
-              // Only update the accumulating reasoning, don't add to timeline yet
-              // Timeline entry will be added when reasoning completes
-              const reasoningContent = data.content || "";
-
-              setState((prev) => ({
-                ...prev,
-                streamingMessage: 'Agent is reasoning...',
-                streamingReasoning: reasoningContent,
-              }));
-            } catch (error) {
-              console.error('[ARC3 Stream] Failed to parse agent.reasoning payload:', error);
-            }
-          });
-
-          eventSource.addEventListener('agent.reasoning_complete', (evt) => {
-            try {
-              const data = JSON.parse((evt as MessageEvent<string>).data);
-              console.log('[ARC3 Stream] Agent reasoning complete:', data);
-
-              // Now add the final reasoning to timeline
-              const finalContent = data.finalContent || "";
-
-              setState((prev) => ({
-                ...prev,
-                streamingReasoning: finalContent,
-                timeline: [...prev.timeline, {
-                  index: prev.timeline.length,
-                  type: 'reasoning' as const,
-                  label: 'Agent Reasoning',
-                  content: finalContent,
-                }],
-              }));
-            } catch (error) {
-              console.error('[ARC3 Stream] Failed to parse agent.reasoning_complete payload:', error);
-            }
-          });
-
-          eventSource.addEventListener('agent.message', (evt) => {
-            try {
-              const data = JSON.parse((evt as MessageEvent<string>).data);
-              console.log('[ARC3 Stream] Agent message:', data);
-
-              setState((prev) => ({
-                ...prev,
-                streamingMessage: 'Agent shared insights...',
-                timeline: [...prev.timeline, {
-                  index: prev.timeline.length,
-                  type: 'assistant_message' as const,
-                  label: `${data.agentName} → user`,
-                  content: data.content,
-                }],
-              }));
-            } catch (error) {
-              console.error('[ARC3 Stream] Failed to parse agent.message payload:', error);
-            }
-          });
-
-          eventSource.addEventListener('game.started', (evt) => {
-            try {
-              const data = JSON.parse((evt as MessageEvent<string>).data);
-              console.log('[ARC3 Stream] Game started:', data);
-
-              setState((prev) => ({
-                ...prev,
-                streamingMessage: 'Game session started...',
-                frames: [...prev.frames, data.initialFrame],
-                currentFrameIndex: prev.frames.length,
-              }));
-            } catch (error) {
-              console.error('[ARC3 Stream] Failed to parse game.started payload:', error);
-            }
-          });
-
-          eventSource.addEventListener('game.action_executed', (evt) => {
-            try {
-              const data = JSON.parse((evt as MessageEvent<string>).data);
-              console.log('[ARC3 Stream] Action executed:', data);
-
-              setState((prev) => ({
-                ...prev,
-                streamingMessage: `Executed ${data.action}...`,
-                frames: [...prev.frames, data.newFrame],
-                currentFrameIndex: prev.frames.length,
-              }));
-            } catch (error) {
-              console.error('[ARC3 Stream] Failed to parse game.action_executed payload:', error);
-            }
-          });
-
-          eventSource.addEventListener('game.frame_update', (evt) => {
-            try {
-              const data = JSON.parse((evt as MessageEvent<string>).data);
-              console.log('[ARC3 Stream] Frame update:', data);
-
-              // Merge action data into frameData
-              const frameWithAction = {
-                ...data.frameData,
-                action: data.action // Add action metadata from event
-              };
-
-              setState((prev) => ({
-                ...prev,
-                frames: data.frameIndex === prev.frames.length
-                  ? [...prev.frames, frameWithAction]
-                  : prev.frames.map((frame, index) =>
-                      index === data.frameIndex ? frameWithAction : frame
-                    ),
-                currentFrameIndex: data.frameIndex,
-              }));
-            } catch (error) {
-              console.error('[ARC3 Stream] Failed to parse game.frame_update payload:', error);
-            }
-          });
-
-          eventSource.addEventListener('agent.completed', (evt) => {
-            try {
-              const data = JSON.parse((evt as MessageEvent<string>).data);
-              console.log('[ARC3 Stream] Agent completed:', data);
-
-              setState((prev) => ({
-                ...prev,
-                status: 'completed',
-                streamingStatus: 'completed',
-                streamingMessage: 'Agent completed successfully!',
-                runId: data.runId,
-                gameGuid: data.gameGuid,  // Store the game session guid for continuation
-                finalOutput: data.finalOutput,
-                summary: data.summary,
-                usage: data.usage,
-              }));
-            } catch (error) {
-              console.error('[ARC3 Stream] Failed to parse agent.completed payload:', error);
-            } finally {
-              closeEventSource();
-            }
-          });
-
-          eventSource.addEventListener('stream.complete', (evt) => {
-            try {
-              const summary = JSON.parse((evt as MessageEvent<string>).data);
-              console.log('[ARC3 Stream] Stream completed:', summary);
-
-              setState((prev) => ({
-                ...prev,
-                status: 'completed',
-                streamingStatus: 'completed',
-                streamingMessage: 'Game session completed!',
-                runId: summary.runId,
-                finalOutput: summary.finalOutput,
-                summary: summary.summary,
-                usage: summary.usage,
-              }));
-            } catch (error) {
-              console.error('[ARC3 Stream] Failed to parse completion payload:', error);
-            } finally {
-              closeEventSource();
-            }
-          });
-
-          eventSource.addEventListener('stream.error', (evt) => {
-            try {
-              const payload = JSON.parse((evt as MessageEvent<string>).data);
-              console.error('[ARC3 Stream] Stream error:', payload);
-
-              setState((prev) => ({
-                ...prev,
-                status: 'error',
-                streamingStatus: 'failed',
-                streamingMessage: payload.message || 'Streaming error',
-                error: payload.message || 'Unknown streaming error',
-              }));
-            } catch (error) {
-              console.error('[ARC3 Stream] Failed to parse error payload:', error);
-            } finally {
-              closeEventSource();
-            }
-          });
-
-          eventSource.onerror = (err) => {
-            console.error('[ARC3 Stream] EventSource error:', err);
-            setState((prev) => ({
-              ...prev,
-              status: 'error',
-              streamingStatus: 'failed',
-              streamingMessage: 'Streaming connection lost',
-              error: 'Streaming connection lost',
-            }));
-            closeEventSource();
-          };
+          // Attach all event listeners
+          attachEventListeners(eventSource);
 
         } else {
           // Non-streaming fallback
@@ -509,6 +214,305 @@ export function useArc3AgentStream() {
     }));
   }, []);
 
+  // Helper function to attach all SSE event listeners to an EventSource
+  const attachEventListeners = useCallback((eventSource: EventSource) => {
+    eventSource.addEventListener('stream.init', (evt) => {
+      try {
+        const payload = JSON.parse((evt as MessageEvent<string>).data);
+        console.log('[ARC3 Stream] Received init:', payload);
+
+        setState((prev) => ({
+          ...prev,
+          streamingStatus: 'starting',
+          streamingMessage: 'Agent initialized, starting gameplay...',
+          gameId: payload.gameId,
+          agentName: payload.agentName,
+        }));
+      } catch (error) {
+        console.error('[ARC3 Stream] Failed to parse init payload:', error);
+      }
+    });
+
+    eventSource.addEventListener('stream.status', (evt) => {
+      try {
+        const status = JSON.parse((evt as MessageEvent<string>).data);
+        console.log('[ARC3 Stream] Received status:', status);
+
+        setState((prev) => ({
+          ...prev,
+          streamingStatus: status.state || prev.streamingStatus,
+          streamingMessage: status.message || prev.streamingMessage,
+        }));
+      } catch (error) {
+        console.error('[ARC3 Stream] Failed to parse status payload:', error);
+      }
+    });
+
+    eventSource.addEventListener('agent.starting', (evt) => {
+      try {
+        const data = JSON.parse((evt as MessageEvent<string>).data);
+        console.log('[ARC3 Stream] Agent starting:', data);
+
+        setState((prev) => ({
+          ...prev,
+          streamingStatus: 'in_progress',
+          streamingMessage: 'Agent is analyzing the game...',
+          gameId: data.gameId,
+          agentName: data.agentName,
+        }));
+      } catch (error) {
+        console.error('[ARC3 Stream] Failed to parse agent.starting payload:', error);
+      }
+    });
+
+    eventSource.addEventListener('agent.ready', (evt) => {
+      try {
+        const data = JSON.parse((evt as MessageEvent<string>).data);
+        console.log('[ARC3 Stream] Agent ready:', data);
+
+        setState((prev) => ({
+          ...prev,
+          streamingMessage: 'Agent ready, beginning gameplay...',
+        }));
+      } catch (error) {
+        console.error('[ARC3 Stream] Failed to parse agent.ready payload:', error);
+      }
+    });
+
+    eventSource.addEventListener('agent.tool_call', (evt) => {
+      try {
+        const data = JSON.parse((evt as MessageEvent<string>).data);
+        console.log('[ARC3 Stream] Agent tool call:', data);
+
+        setState((prev) => ({
+          ...prev,
+          streamingMessage: `Agent called ${data.tool}...`,
+          timeline: [...prev.timeline, {
+            index: prev.timeline.length,
+            type: 'tool_call' as const,
+            label: `Agent called ${data.tool}`,
+            content: JSON.stringify(data.arguments, null, 2),
+          }],
+        }));
+      } catch (error) {
+        console.error('[ARC3 Stream] Failed to parse agent.tool_call payload:', error);
+      }
+    });
+
+    eventSource.addEventListener('agent.tool_result', (evt) => {
+      try {
+        const data = JSON.parse((evt as MessageEvent<string>).data);
+        console.log('[ARC3 Stream] Agent tool result:', data);
+
+        setState((prev) => ({
+          ...prev,
+          streamingMessage: `Received result from ${data.tool}...`,
+          timeline: [...prev.timeline, {
+            index: prev.timeline.length,
+            type: 'tool_result' as const,
+            label: `Result from ${data.tool}`,
+            content: JSON.stringify(data.result, null, 2),
+          }],
+        }));
+      } catch (error) {
+        console.error('[ARC3 Stream] Failed to parse agent.tool_result payload:', error);
+      }
+    });
+
+    eventSource.addEventListener('agent.reasoning', (evt) => {
+      try {
+        const data = JSON.parse((evt as MessageEvent<string>).data);
+        console.log('[ARC3 Stream] Agent reasoning delta:', data);
+
+        // Only update the accumulating reasoning, don't add to timeline yet
+        // Timeline entry will be added when reasoning completes
+        const reasoningContent = data.content || "";
+
+        setState((prev) => ({
+          ...prev,
+          streamingMessage: 'Agent is reasoning...',
+          streamingReasoning: reasoningContent,
+        }));
+      } catch (error) {
+        console.error('[ARC3 Stream] Failed to parse agent.reasoning payload:', error);
+      }
+    });
+
+    eventSource.addEventListener('agent.reasoning_complete', (evt) => {
+      try {
+        const data = JSON.parse((evt as MessageEvent<string>).data);
+        console.log('[ARC3 Stream] Agent reasoning complete:', data);
+
+        // Now add the final reasoning to timeline
+        const finalContent = data.finalContent || "";
+
+        setState((prev) => ({
+          ...prev,
+          streamingReasoning: finalContent,
+          timeline: [...prev.timeline, {
+            index: prev.timeline.length,
+            type: 'reasoning' as const,
+            label: 'Agent Reasoning',
+            content: finalContent,
+          }],
+        }));
+      } catch (error) {
+        console.error('[ARC3 Stream] Failed to parse agent.reasoning_complete payload:', error);
+      }
+    });
+
+    eventSource.addEventListener('agent.message', (evt) => {
+      try {
+        const data = JSON.parse((evt as MessageEvent<string>).data);
+        console.log('[ARC3 Stream] Agent message:', data);
+
+        setState((prev) => ({
+          ...prev,
+          streamingMessage: 'Agent shared insights...',
+          timeline: [...prev.timeline, {
+            index: prev.timeline.length,
+            type: 'assistant_message' as const,
+            label: `${data.agentName} → user`,
+            content: data.content,
+          }],
+        }));
+      } catch (error) {
+        console.error('[ARC3 Stream] Failed to parse agent.message payload:', error);
+      }
+    });
+
+    eventSource.addEventListener('game.started', (evt) => {
+      try {
+        const data = JSON.parse((evt as MessageEvent<string>).data);
+        console.log('[ARC3 Stream] Game started:', data);
+
+        setState((prev) => ({
+          ...prev,
+          streamingMessage: 'Game session started...',
+          frames: [...prev.frames, data.initialFrame],
+          currentFrameIndex: prev.frames.length,
+        }));
+      } catch (error) {
+        console.error('[ARC3 Stream] Failed to parse game.started payload:', error);
+      }
+    });
+
+    eventSource.addEventListener('game.action_executed', (evt) => {
+      try {
+        const data = JSON.parse((evt as MessageEvent<string>).data);
+        console.log('[ARC3 Stream] Action executed:', data);
+
+        setState((prev) => ({
+          ...prev,
+          streamingMessage: `Executed ${data.action}...`,
+          frames: [...prev.frames, data.newFrame],
+          currentFrameIndex: prev.frames.length,
+        }));
+      } catch (error) {
+        console.error('[ARC3 Stream] Failed to parse game.action_executed payload:', error);
+      }
+    });
+
+    eventSource.addEventListener('game.frame_update', (evt) => {
+      try {
+        const data = JSON.parse((evt as MessageEvent<string>).data);
+        console.log('[ARC3 Stream] Frame update:', data);
+
+        // Merge action data into frameData
+        const frameWithAction = {
+          ...data.frameData,
+          action: data.action // Add action metadata from event
+        };
+
+        setState((prev) => ({
+          ...prev,
+          frames: data.frameIndex === prev.frames.length
+            ? [...prev.frames, frameWithAction]
+            : prev.frames.map((frame, index) =>
+                index === data.frameIndex ? frameWithAction : frame
+              ),
+          currentFrameIndex: data.frameIndex,
+        }));
+      } catch (error) {
+        console.error('[ARC3 Stream] Failed to parse game.frame_update payload:', error);
+      }
+    });
+
+    eventSource.addEventListener('agent.completed', (evt) => {
+      try {
+        const data = JSON.parse((evt as MessageEvent<string>).data);
+        console.log('[ARC3 Stream] Agent completed:', data);
+
+        setState((prev) => ({
+          ...prev,
+          status: 'completed',
+          streamingStatus: 'completed',
+          streamingMessage: 'Agent completed successfully!',
+          runId: data.runId,
+          gameGuid: data.gameGuid,  // Store the game session guid for continuation
+          finalOutput: data.finalOutput,
+          summary: data.summary,
+          usage: data.usage,
+        }));
+      } catch (error) {
+        console.error('[ARC3 Stream] Failed to parse agent.completed payload:', error);
+      } finally {
+        closeEventSource();
+      }
+    });
+
+    eventSource.addEventListener('stream.complete', (evt) => {
+      try {
+        const summary = JSON.parse((evt as MessageEvent<string>).data);
+        console.log('[ARC3 Stream] Stream completed:', summary);
+
+        setState((prev) => ({
+          ...prev,
+          status: 'completed',
+          streamingStatus: 'completed',
+          streamingMessage: 'Game session completed!',
+          runId: summary.runId,
+          finalOutput: summary.finalOutput,
+          summary: summary.summary,
+          usage: summary.usage,
+        }));
+      } catch (error) {
+        console.error('[ARC3 Stream] Failed to parse completion payload:', error);
+      } finally {
+        closeEventSource();
+      }
+    });
+
+    eventSource.addEventListener('stream.error', (evt) => {
+      try {
+        const payload = JSON.parse((evt as MessageEvent<string>).data);
+        console.error('[ARC3 Stream] Stream error:', payload);
+
+        setState((prev) => ({
+          ...prev,
+          status: 'error',
+          streamingStatus: 'failed',
+          streamingMessage: payload.message || 'Streaming error',
+          error: payload.message || 'Unknown streaming error',
+        }));
+      } catch (error) {
+        console.error('[ARC3 Stream] Failed to parse error payload:', error);
+      }
+    });
+
+    eventSource.onerror = (err) => {
+      console.error('[ARC3 Stream] EventSource error:', err);
+      setState((prev) => ({
+        ...prev,
+        status: 'error',
+        streamingStatus: 'failed',
+        streamingMessage: 'Streaming connection lost',
+        error: 'Streaming connection lost',
+      }));
+      closeEventSource();
+    };
+  }, [closeEventSource]);
+
   const continueWithMessage = useCallback(
     async (userMessage: string) => {
       if (!sessionId) {
@@ -545,35 +549,8 @@ export function useArc3AgentStream() {
         const eventSource = new EventSource(streamUrl);
         sseRef.current = eventSource;
 
-        // Re-attach all event listeners (reuse existing handlers from start method)
-        eventSource.addEventListener('stream.init', (evt) => {
-          try {
-            const payload = JSON.parse((evt as MessageEvent<string>).data);
-            console.log('[ARC3 Stream] Continuation init:', payload);
-
-            setState((prev) => ({
-              ...prev,
-              streamingStatus: 'starting',
-              streamingMessage: 'Continuing agent with your feedback...',
-            }));
-          } catch (error) {
-            console.error('[ARC3 Stream] Failed to parse init payload:', error);
-          }
-        });
-
-        // Attach remaining handlers (reuse pattern from start())
-        // For brevity, delegating to existing stream event handlers
-        eventSource.onerror = (err) => {
-          console.error('[ARC3 Stream] Continuation EventSource error:', err);
-          setState((prev) => ({
-            ...prev,
-            status: 'error',
-            streamingStatus: 'failed',
-            streamingMessage: 'Streaming connection lost',
-            error: 'Streaming connection lost',
-          }));
-          closeEventSource();
-        };
+        // Attach all event listeners to the new connection
+        attachEventListeners(eventSource);
 
       } catch (error) {
         console.error('[ARC3 Stream] Error in continueWithMessage:', error);
