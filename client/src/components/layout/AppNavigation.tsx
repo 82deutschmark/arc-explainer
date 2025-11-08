@@ -2,20 +2,16 @@ import React from 'react';
 import { Link, useLocation } from 'wouter';
 import {
   NavigationMenu,
-  NavigationMenuContent,
   NavigationMenuItem,
   NavigationMenuLink,
   NavigationMenuList,
-  NavigationMenuTrigger,
   navigationMenuTriggerStyle,
 } from '@/components/ui/navigation-menu';
-import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import {
   Grid3X3,
   Database,
   Brain,
-  Github,
   Trophy,
   CheckCircle,
   MessageSquare,
@@ -118,48 +114,30 @@ export function AppNavigation() {
   };
 
   return (
-    <div className="flex w-full items-center gap-4">
-      <div className="flex flex-1 justify-center">
-        <NavigationMenu className="w-full">
-          <NavigationMenuList className="flex items-center justify-center gap-1">
-          {navigationItems.map((item) => {
-            const Icon = item.icon;
-            return (
-              <NavigationMenuItem key={item.href}>
-                <NavigationMenuLink asChild>
-                  <Link 
-                    href={item.href}
-                    className={cn(
-                      navigationMenuTriggerStyle(),
-                      "flex items-center gap-2 font-medium",
-                      isActiveRoute(item.href) && "bg-accent text-accent-foreground"
-                    )}
-                  >
-                    <Icon className="h-4 w-4" />
-                    <span className="hidden sm:inline">{item.title}</span>
-                  </Link>
-                </NavigationMenuLink>
-              </NavigationMenuItem>
-            );
-          })}
-          </NavigationMenuList>
-        </NavigationMenu>
-      </div>
-
-      <div className="flex shrink-0 items-center justify-end gap-2">
-        <a
-          href="https://github.com/82deutschmark/arc-explainer" 
-          target="_blank"
-          rel="noopener noreferrer"
-          className="hidden sm:flex"
-        >
-          <Button variant="ghost" size="sm" className="flex items-center gap-2">
-            <Github className="h-4 w-4" />
-            <span className="text-xs">Open Source</span>
-          </Button>
-        </a>
-      </div>
-    </div>
+    <NavigationMenu className="w-full justify-center">
+      <NavigationMenuList className="flex flex-wrap items-center justify-center gap-1">
+        {navigationItems.map((item) => {
+          const Icon = item.icon;
+          return (
+            <NavigationMenuItem key={item.href}>
+              <NavigationMenuLink asChild>
+                <Link
+                  href={item.href}
+                  className={cn(
+                    navigationMenuTriggerStyle(),
+                    'flex items-center gap-2 font-medium',
+                    isActiveRoute(item.href) && 'bg-accent text-accent-foreground'
+                  )}
+                >
+                  <Icon className="h-4 w-4" />
+                  <span className="hidden sm:inline">{item.title}</span>
+                </Link>
+              </NavigationMenuLink>
+            </NavigationMenuItem>
+          );
+        })}
+      </NavigationMenuList>
+    </NavigationMenu>
   );
 }
 

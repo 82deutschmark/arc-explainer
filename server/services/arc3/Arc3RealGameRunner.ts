@@ -56,7 +56,7 @@ export class Arc3RealGameRunner {
 
   async run(config: Arc3AgentRunConfig): Promise<Arc3AgentRunResult> {
     const agentName = config.agentName?.trim() || 'ARC3 Real Game Operator';
-    const maxTurns = Math.max(2, Math.min(config.maxTurns ?? DEFAULT_MAX_TURNS, 400));
+    const maxTurns = config.maxTurns ?? DEFAULT_MAX_TURNS;
     const gameId = config.game_id ?? DEFAULT_GAME_ID;
 
     let gameGuid: string | null = null;
@@ -265,7 +265,7 @@ export class Arc3RealGameRunner {
 
   async runWithStreaming(config: Arc3AgentRunConfig, streamHarness: Arc3StreamHarness): Promise<Arc3AgentRunResult> {
     const agentName = config.agentName?.trim() || 'ARC3 Real Game Operator';
-    const maxTurns = Math.max(2, Math.min(config.maxTurns ?? DEFAULT_MAX_TURNS, 400));
+    const maxTurns = config.maxTurns ?? DEFAULT_MAX_TURNS;
     const gameId = config.game_id ?? DEFAULT_GAME_ID;
 
     let gameGuid: string | null = null;

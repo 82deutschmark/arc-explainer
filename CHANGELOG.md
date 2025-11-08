@@ -3991,6 +3991,8 @@ app.get("/api/model-dataset/metrics/:modelName/:datasetName", asyncHandler(model
 ---
 
 ## [Unreleased]
+### 💄 UI Tweaks
+- **ARC3AgentPlayground.tsx**: Enlarged and centered sub-header action pills, labeling them "Action 1"–"Action 6" for clarity.
 
 ### Changed
 - Enforce OpenAI reasoning/text settings at the Agent level for all ARC3 runs.

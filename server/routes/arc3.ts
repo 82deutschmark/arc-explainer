@@ -49,7 +49,6 @@ const runSchema = z.object({
     .coerce.number()
     .int()
     .min(2)
-    .max(400)
     .optional(),
   game_id: z.string().trim().max(120).optional(),
   reasoningEffort: z.enum(['minimal', 'low', 'medium', 'high']).optional(),
@@ -127,7 +126,6 @@ const streamRunSchema = z.object({
     .coerce.number()
     .int()
     .min(2)
-    .max(400)
     .optional(),
   reasoningEffort: z.enum(['minimal', 'low', 'medium', 'high']).optional(),
 });
