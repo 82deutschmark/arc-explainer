@@ -223,7 +223,7 @@ export default function ARC3AgentPlayground() {
           </div>
 
           {/* Action Pills Bar - Always visible */}
-          <div className="flex flex-wrap items-center justify-center gap-2">
+          <div className="flex flex-wrap items-center justify-center gap-1.5">
             {['ACTION1', 'ACTION2', 'ACTION3', 'ACTION4', 'ACTION5', 'ACTION6'].map((actionName) => {
               const usedCount = toolEntries.filter(e => e.label.includes(actionName)).length;
               const isActive = isPlaying && state.streamingMessage?.includes(actionName);
@@ -232,7 +232,7 @@ export default function ARC3AgentPlayground() {
               return (
                 <div
                   key={actionName}
-                  className={`px-4 py-1.5 rounded-full text-xs sm:text-sm font-semibold transition-all shadow-sm ${
+                  className={`px-3 py-1 rounded-full text-[11px] sm:text-xs font-semibold transition-all shadow-sm ${
                     isActive
                       ? 'bg-green-500 text-white animate-pulse shadow-lg'
                       : usedCount > 0
@@ -241,7 +241,7 @@ export default function ARC3AgentPlayground() {
                   }`}
                 >
                   {displayName}
-                  {usedCount > 0 && <span className="ml-1 text-[11px] sm:text-xs">×{usedCount}</span>}
+                  {usedCount > 0 && <span className="ml-1 text-[10px] sm:text-[11px]">×{usedCount}</span>}
                 </div>
               );
             })}
@@ -345,18 +345,19 @@ export default function ARC3AgentPlayground() {
                 </div>
               </div>
 
-              {/* Max Actions - Smaller */}
+              {/* Max Turns - Unlimited */}
               <div className="space-y-0.5">
-                <label className="font-medium text-[10px]">Max Actions</label>
+                <label className="font-medium text-[10px]">Max Turns</label>
                 <Input
                   type="number"
-                  min="5"
-                  max="24"
+                  min="1"
                   value={maxTurns}
                   onChange={(e) => setMaxTurns(Number(e.target.value))}
                   disabled={isPlaying}
                   className="h-7 text-[11px]"
+                  placeholder="999999 (unlimited)"
                 />
+                <p className="text-[9px] text-muted-foreground">Agent loop iterations (not tool calls)</p>
               </div>
 
               {/* Start/Stop */}
