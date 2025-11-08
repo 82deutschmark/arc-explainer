@@ -13,6 +13,7 @@ import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Gamepad2, Play, Square, Brain, Wrench, ArrowLeft, RefreshCw, Eye, EyeOff } from 'lucide-react';
 import { Link } from 'wouter';
 import { useArc3AgentStream } from '@/hooks/useArc3AgentStream';
@@ -138,7 +139,10 @@ export default function ARC3AgentPlayground() {
   const [showUserInput, setShowUserInput] = useState(false);
 
   // Streaming
-  const { state, start, cancel, continueWithMessage, setCurrentFrame, currentFrame, isPlaying } = useArc3AgentStream();
+  const { state, start, cancel, continueWithMessage, executeManualAction, setCurrentFrame, currentFrame, isPlaying } = useArc3AgentStream();
+
+  // Manual action state
+  const [showCoordinatePicker, setShowCoordinatePicker] = useState(false);
 
   const handleStart = () => {
     start({
@@ -203,35 +207,25 @@ export default function ARC3AgentPlayground() {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Minimal header with action pill bar */}
-      <div className="border-b px-3 py-2">
-        <div className="max-w-[1800px] mx-auto flex flex-col gap-2">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Button variant="ghost" size="sm" className="h-7 px-2 text-xs" asChild>
-                <Link href="/arc3">
-                  <ArrowLeft className="h-3 w-3 mr-1" />
-                  Back
-                </Link>
-              </Button>
-              <Gamepad2 className="h-4 w-4" />
-              <span className="text-sm font-semibold">ARC-AGI-3 Playground</span>
-            </div>
-            <Badge variant={state.status === 'running' ? 'default' : 'outline'} className="text-xs">
-              {state.status}
-            </Badge>
+      {/* Ultra-compact single-line header */}
+      <div className="border-b px-3 py-1">
+        <div className="max-w-[1800px] mx-auto flex items-center justify-between gap-3">
+          <div className="flex items-center gap-2">
+            <Button variant="ghost" size="sm" className="h-6 px-1.5 text-[10px]" asChild>
+              <Link href="/arc3">
+                <ArrowLeft className="h-2.5 w-2.5 mr-0.5" />
+                Back
+              </Link>
+            </Button>
+            <Gamepad2 className="h-3 w-3" />
+            <span className="text-xs font-semibold">ARC3 Playground</span>
           </div>
 
-          {/* Game Selector Bar now lives in the subheader */}
-          <div className="flex flex-wrap items-center justify-center gap-2">
-            <label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-              Game
-            </label>
+          {/* Inline game selector */}
+          <div className="flex items-center gap-1.5">
+            <span className="text-[10px] text-muted-foreground">Game:</span>
             {gamesLoading ? (
-              <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                <RefreshCw className="h-3 w-3 animate-spin" />
-                Loading...
-              </div>
+              <RefreshCw className="h-2.5 w-2.5 animate-spin text-muted-foreground" />
             ) : (
               <Select
                 value={gameId}
@@ -241,7 +235,7 @@ export default function ARC3AgentPlayground() {
                 }}
                 disabled={isPlaying}
               >
-                <SelectTrigger className="h-7 text-xs min-w-[160px]">
+                <SelectTrigger className="h-6 text-[10px] min-w-[120px] py-0">
                   <SelectValue>
                     {games.find(g => g.game_id === gameId)?.title || gameId}
                   </SelectValue>
@@ -259,11 +253,15 @@ export default function ARC3AgentPlayground() {
               variant="ghost"
               size="sm"
               onClick={fetchGames}
-              className="h-7 w-7 p-0"
+              className="h-6 w-6 p-0"
             >
-              <RefreshCw className="h-3 w-3" />
+              <RefreshCw className="h-2.5 w-2.5" />
             </Button>
           </div>
+
+          <Badge variant={state.status === 'running' ? 'default' : 'outline'} className="text-[10px] px-1.5 py-0">
+            {state.status}
+          </Badge>
         </div>
       </div>
 
@@ -461,25 +459,48 @@ export default function ARC3AgentPlayground() {
           <Card>
             <CardContent className="p-3">
               <div className="flex flex-wrap items-center justify-center gap-1.5">
-                {['ACTION1', 'ACTION2', 'ACTION3', 'ACTION4', 'ACTION5', 'ACTION6'].map((actionName) => {
+                {['ACTION1', 'ACTION2', 'ACTION3', 'ACTION4', 'ACTION5', 'ACTION6', 'ACTION7'].map((actionName) => {
                   const usedCount = toolEntries.filter(e => e.label.includes(actionName)).length;
                   const isActive = isPlaying && state.streamingMessage?.includes(actionName);
                   const displayName = actionName.replace('ACTION', 'Action ');
 
+                  // Check if action is available according to the API
+                  const availableActions = currentFrame?.available_actions;
+                  const isAvailable = !availableActions || availableActions.length === 0 || availableActions.includes(actionName);
+
+                  const handleActionClick = async () => {
+                    if (actionName === 'ACTION6') {
+                      setShowCoordinatePicker(true);
+                    } else {
+                      try {
+                        await executeManualAction(actionName);
+                      } catch (error) {
+                        console.error(`Failed to execute ${actionName}:`, error);
+                      }
+                    }
+                  };
+
+                  const isDisabled = !state.gameGuid || !state.gameId || !isAvailable;
+
                   return (
-                    <div
+                    <button
                       key={actionName}
+                      onClick={handleActionClick}
+                      disabled={isDisabled}
+                      title={!isAvailable ? `${actionName} is not available in this game state` : `Execute ${actionName}`}
                       className={`px-3 py-1 rounded-full text-[11px] sm:text-xs font-semibold transition-all shadow-sm ${
                         isActive
                           ? 'bg-green-500 text-white animate-pulse shadow-lg'
+                          : !isAvailable
+                          ? 'bg-red-50 text-red-400 border border-red-200 line-through opacity-60 cursor-not-allowed'
                           : usedCount > 0
-                          ? 'bg-blue-100 text-blue-700 border border-blue-300'
-                          : 'bg-gray-100 text-gray-500 border border-gray-200'
-                      }`}
+                          ? 'bg-blue-100 text-blue-700 border border-blue-300 hover:bg-blue-200 cursor-pointer'
+                          : 'bg-gray-100 text-gray-500 border border-gray-200 hover:bg-gray-200 cursor-pointer'
+                      } ${isDisabled && isAvailable ? 'opacity-50 cursor-not-allowed' : ''}`}
                     >
                       {displayName}
                       {usedCount > 0 && <span className="ml-1 text-[10px] sm:text-[11px]">×{usedCount}</span>}
-                    </div>
+                    </button>
                   );
                 })}
               </div>
@@ -650,6 +671,64 @@ export default function ARC3AgentPlayground() {
           </Card>
         </div>
       </div>
+
+      {/* ACTION6 Coordinate Picker Dialog */}
+      <Dialog open={showCoordinatePicker} onOpenChange={setShowCoordinatePicker}>
+        <DialogContent className="max-w-3xl">
+          <DialogHeader>
+            <DialogTitle>Action 6: Select Coordinates</DialogTitle>
+            <DialogDescription>
+              Click on any cell in the grid to execute ACTION6 at that position
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="flex justify-center py-4">
+            {resolvedCurrentFrame && (
+              <div className="relative inline-block">
+                <Arc3GridVisualization
+                  grid={resolvedCurrentFrame}
+                  frameIndex={0}
+                  cellSize={20}
+                  showGrid={true}
+                  lastAction={currentFrame?.action}
+                />
+                {/* Clickable overlay */}
+                <div
+                  className="absolute inset-0 grid"
+                  style={{
+                    gridTemplateColumns: `repeat(${resolvedCurrentFrame[0]?.length || 64}, 1fr)`,
+                    gridTemplateRows: `repeat(${resolvedCurrentFrame.length || 64}, 1fr)`,
+                  }}
+                >
+                  {Array.from({ length: resolvedCurrentFrame.length || 64 }).map((_, y) =>
+                    Array.from({ length: resolvedCurrentFrame[0]?.length || 64 }).map((_, x) => (
+                      <button
+                        key={`${x}-${y}`}
+                        onClick={async () => {
+                          try {
+                            await executeManualAction('ACTION6', [x, y]);
+                            setShowCoordinatePicker(false);
+                          } catch (error) {
+                            console.error('Failed to execute ACTION6:', error);
+                          }
+                        }}
+                        className="hover:bg-white/30 hover:ring-2 hover:ring-blue-500 transition-all cursor-pointer"
+                        title={`Execute ACTION6 at (${x}, ${y})`}
+                      />
+                    ))
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
+
+          <div className="flex justify-end gap-2">
+            <Button variant="outline" onClick={() => setShowCoordinatePicker(false)}>
+              Cancel
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

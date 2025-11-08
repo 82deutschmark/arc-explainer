@@ -98,6 +98,38 @@ router.post(
   }),
 );
 
+const manualActionSchema = z.object({
+  game_id: z.string().trim().max(120),
+  guid: z.string().trim(),
+  action: z.enum(['RESET', 'ACTION1', 'ACTION2', 'ACTION3', 'ACTION4', 'ACTION5', 'ACTION6', 'ACTION7']),
+  coordinates: z.tuple([z.number().int().min(0).max(63), z.number().int().min(0).max(63)]).optional(),
+});
+
+/**
+ * POST /api/arc3/manual-action
+ * Execute a single manual action (for hybrid manual/autonomous mode)
+ */
+router.post(
+  '/manual-action',
+  asyncHandler(async (req: Request, res: Response) => {
+    await ensureScorecard();  // Ensure scorecard is open before any operations
+
+    const { game_id, guid, action, coordinates } = manualActionSchema.parse(req.body);
+
+    // Validate ACTION6 requires coordinates
+    if (action === 'ACTION6' && !coordinates) {
+      return res.status(400).json(
+        formatResponse.error('MISSING_COORDINATES', 'ACTION6 requires coordinates [x, y]')
+      );
+    }
+
+    // Execute action via API client
+    const frameData = await arc3ApiClient.executeAction(game_id, guid, { action, coordinates });
+
+    res.json(formatResponse.success(frameData));
+  }),
+);
+
 /**
  * POST /api/arc3/real-game/run
  * Run agent against real ARC3 game
