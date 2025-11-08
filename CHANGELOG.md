@@ -1,5 +1,28 @@
 # CHANGELOG - Uses semantic versioning (MAJOR.MINOR.PATCH)
 
+# [5.7.2] - 2025-11-08
+### 🚀 Enhancement
+**Removed maxTurns limit to allow unlimited agent execution and fixed UI terminology confusion.**
+
+#### Changes
+- Removed 400-turn cap from backend validation schemas (both `runSchema` and `streamRunSchema`)
+- Removed `Math.min(..., 400)` caps in Arc3RealGameRunner methods
+- Changed `DEFAULT_MAX_TURNS` from 24 to 999999 (effectively unlimited)
+- Updated frontend default from 10 to 999999 turns
+- **Fixed UI confusion**: Label changed from "Max Actions" to "Max Turns" for accuracy
+- Removed `max="24"` HTML constraint on input field
+- Added helper text explaining turns vs actions: "Agent loop iterations (not tool calls)"
+
+#### Terminology Clarification
+- **Turn** = One iteration of the agent's run loop (what maxTurns controls)
+- **Action** = A single tool call like ACTION1, ACTION2, ACTION6, etc. (multiple per turn)
+
+#### Files Changed
+- **server/routes/arc3.ts**: Removed `.max(400)` from maxTurns validation
+- **server/services/arc3/Arc3RealGameRunner.ts**: Removed hardcoded 400 ceiling
+- **server/services/arc3/utils/constants.ts**: Changed DEFAULT_MAX_TURNS to 999999
+- **client/src/pages/ARC3AgentPlayground.tsx**: Changed initial maxTurns to 999999, fixed label from "Max Actions" to "Max Turns", removed max="24" constraint, added clarifying text
+
 # [5.7.1] - 2025-11-08
 ### 🐛 Bug Fixes
 **Fixed ARC3 session continuation 404 error by preserving session payloads after streaming completes.**
@@ -3992,7 +4015,8 @@ app.get("/api/model-dataset/metrics/:modelName/:datasetName", asyncHandler(model
 
 ## [Unreleased]
 ### 💄 UI Tweaks
-- **ARC3AgentPlayground.tsx**: Enlarged and centered sub-header action pills, labeling them "Action 1"–"Action 6" for clarity.
+- **ARC3AgentPlayground.tsx**: Resized action pills for a balanced sub-header chip row while keeping usage counts visible.
+- **AppHeader.tsx**, **AppNavigation.tsx**: Compressed header spacing with left-aligned navigation and a compact GitHub link on the right.
 
 ### Changed
 - Enforce OpenAI reasoning/text settings at the Agent level for all ARC3 runs.

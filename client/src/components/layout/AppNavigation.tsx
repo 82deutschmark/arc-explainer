@@ -114,8 +114,8 @@ export function AppNavigation() {
   };
 
   return (
-    <NavigationMenu className="w-full justify-center">
-      <NavigationMenuList className="flex flex-wrap items-center justify-center gap-1">
+    <NavigationMenu className="flex-none justify-start">
+      <NavigationMenuList className="flex flex-wrap items-center justify-start gap-0.5">
         {navigationItems.map((item) => {
           const Icon = item.icon;
           return (
@@ -125,7 +125,7 @@ export function AppNavigation() {
                   href={item.href}
                   className={cn(
                     navigationMenuTriggerStyle(),
-                    'flex items-center gap-2 font-medium',
+                    'flex items-center gap-2 font-medium h-9 px-3 py-1 text-sm',
                     isActiveRoute(item.href) && 'bg-accent text-accent-foreground'
                   )}
                 >
