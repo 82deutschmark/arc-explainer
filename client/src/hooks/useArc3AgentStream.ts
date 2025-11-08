@@ -24,6 +24,7 @@ export interface Arc3AgentStreamState {
   status: 'idle' | 'running' | 'paused' | 'completed' | 'error';
   gameId?: string;
   agentName?: string;
+  gameGuid?: string;  // Current game session identifier for continuation
   message?: string;
   finalOutput?: string;
   streamingReasoning?: string;  // Accumulates reasoning content during streaming
@@ -372,6 +373,7 @@ export function useArc3AgentStream() {
                 streamingStatus: 'completed',
                 streamingMessage: 'Agent completed successfully!',
                 runId: data.runId,
+                gameGuid: data.gameGuid,  // Store the game session guid for continuation
                 finalOutput: data.finalOutput,
                 summary: data.summary,
                 usage: data.usage,
@@ -524,10 +526,11 @@ export function useArc3AgentStream() {
           streamingMessage: 'Preparing to continue...',
         }));
 
-        // Call the continue endpoint
+        // Call the continue endpoint with existing game guid if available
         const continueResponse = await apiRequest('POST', `/api/arc3/stream/${sessionId}/continue`, {
           userMessage,
           previousResponseId: state.lastResponseId,
+          existingGameGuid: state.gameGuid,  // Pass the existing game session guid to continue same scorecard
         });
 
         const continueData = await continueResponse.json();

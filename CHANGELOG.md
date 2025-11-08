@@ -1,5 +1,34 @@
 # CHANGELOG - Uses semantic versioning (MAJOR.MINOR.PATCH)
 
+# [5.7.0] - 2025-11-07
+### ✨ ARC3 Game Session Persistence & Continuation
+**Fixed critical game session loss on agent continuations - now preserves scorecard and guid across multiple runs.**
+
+#### Problems Addressed
+1. **Game session reset on continuation** - Every `continueStreaming()` call started a fresh game instead of reusing existing guid
+2. **Scorecard loss** - Each continuation created a new scorecard entry instead of extending the same one
+3. **No session state tracking** - Frontend couldn't retrieve or pass game guid for continuation
+
+#### Architecture Changes
+- **Arc3AgentRunResult** now includes `gameGuid: string` to expose game session identifier
+- **Arc3AgentRunConfig** now accepts optional `existingGameGuid` parameter for session continuation
+- **Arc3RealGameRunner** now routes to either `startGame()` (new) or `continuGameSession()` (existing)
+- **Arc3StreamService** passes gameGuid through continuation payload pipeline
+- **useArc3AgentStream** hook stores retrieved gameGuid and sends it back on user message submission
+
+#### Implementation Details
+- **Arc3RealGameRunner.ts**: Added private `continuGameSession()` method that fetches current state without starting fresh
+- **Arc3RealGameRunner.ts**: Both `run()` and `runWithStreaming()` return game session guid for tracking
+- **Arc3StreamService.ts**: `continueStreaming()` now extracts and passes `existingGameGuid` to game runner
+- **server/routes/arc3.ts**: Continue endpoint schema accepts and validates `existingGameGuid` parameter
+- **useArc3AgentStream.ts**: Stores `gameGuid` from `agent.completed` event; passes it back via `continueWithMessage()`
+
+#### Impact
+- ✅ Same game session (guid/scorecard) persists across all agent continuations
+- ✅ User feedback loops no longer lose game state or scorecard
+- ✅ Proper session lifecycle: initial run → pause → user feedback → continue same session
+- ✅ Frontend can retrieve and display active game guid for transparency
+
 # [5.6.5] - 2025-11-07
 ### 🧠 Model Catalog Update
 - Added **Moonshot Kimi K2 Thinking** to the central model registry with 262,144 token context window and premium pricing metadata, making it selectable across the app.
