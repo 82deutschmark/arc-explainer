@@ -39,6 +39,8 @@ export const PENDING_ARC3_SESSION_TTL_SECONDS = 60;
 export class Arc3StreamService {
   private readonly pendingSessions: Map<string, StreamArc3Payload> = new Map();
   private readonly pendingSessionTimers: Map<string, ReturnType<typeof setTimeout>> = new Map();
+  private readonly continuationSessions: Map<string, ContinueStreamArc3Payload> = new Map();
+  private readonly continuationSessionTimers: Map<string, ReturnType<typeof setTimeout>> = new Map();
   private readonly apiClient: Arc3ApiClient;
   private readonly gameRunner: Arc3RealGameRunner;
   private scorecardInitialized = false;
@@ -101,6 +103,73 @@ export class Arc3StreamService {
       clearTimeout(timer);
       this.pendingSessionTimers.delete(sessionId);
     }
+  }
+
+  saveContinuationPayload(
+    sessionId: string,
+    basePayload: StreamArc3Payload,
+    continuationData: {
+      userMessage: string;
+      previousResponseId?: string;
+      existingGameGuid?: string;
+    },
+    ttlMs: number = PENDING_ARC3_SESSION_TTL_SECONDS * 1000
+  ): void {
+    const now = Date.now();
+    const expirationTimestamp = ttlMs > 0 ? now + ttlMs : now;
+
+    const continuationPayload: ContinueStreamArc3Payload = {
+      ...basePayload,
+      sessionId,
+      userMessage: continuationData.userMessage,
+      previousResponseId: continuationData.previousResponseId,
+      existingGameGuid: continuationData.existingGameGuid,
+      createdAt: now,
+      expiresAt: expirationTimestamp,
+    };
+
+    this.continuationSessions.set(sessionId, continuationPayload);
+    this.scheduleContinuationExpiration(sessionId, ttlMs);
+  }
+
+  getContinuationPayload(sessionId: string): ContinueStreamArc3Payload | undefined {
+    return this.continuationSessions.get(sessionId);
+  }
+
+  clearContinuationPayload(sessionId: string): void {
+    this.continuationSessions.delete(sessionId);
+    const timer = this.continuationSessionTimers.get(sessionId);
+    if (timer) {
+      clearTimeout(timer);
+      this.continuationSessionTimers.delete(sessionId);
+    }
+  }
+
+  private scheduleContinuationExpiration(sessionId: string, ttlMs: number): void {
+    const existingTimer = this.continuationSessionTimers.get(sessionId);
+    if (existingTimer) {
+      clearTimeout(existingTimer);
+    }
+
+    if (ttlMs <= 0) {
+      this.clearContinuationPayload(sessionId);
+      return;
+    }
+
+    const timer = setTimeout(() => {
+      this.continuationSessions.delete(sessionId);
+      this.continuationSessionTimers.delete(sessionId);
+      logger.debug(
+        `[ARC3 Streaming] Continuation payload for session ${sessionId} expired after ${ttlMs}ms`,
+        "arc3-stream-service"
+      );
+    }, ttlMs);
+
+    if (typeof (timer as any).unref === "function") {
+      (timer as any).unref();
+    }
+
+    this.continuationSessionTimers.set(sessionId, timer);
   }
 
   private scheduleExpiration(sessionId: string, ttlMs: number): void {
@@ -208,11 +277,20 @@ export class Arc3StreamService {
       // Override the game runner to emit streaming events
       await this.gameRunner.runWithStreaming(runConfig, streamHarness);
 
+      // After successful streaming, extend the session TTL to allow continuation
+      // This gives the user time to send a follow-up message
+      const extendedTTL = 300000; // 5 minutes
+      this.scheduleExpiration(sessionId, extendedTTL);
+      logger.info(
+        `[ARC3 Streaming] Session ${sessionId} completed, extended TTL to ${extendedTTL}ms for potential continuation`,
+        "arc3-stream-service"
+      );
+
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
       logger.error(`ARC3 streaming failed: ${message}`, "arc3-stream-service");
       sseStreamManager.error(sessionId, "STREAMING_FAILED", message);
-    } finally {
+      // Clear payload on error since continuation won't be possible
       this.clearPendingPayload(sessionId);
     }
 
@@ -310,12 +388,23 @@ export class Arc3StreamService {
       // The previous_response_id will be passed to the Responses API to chain conversations
       await this.gameRunner.runWithStreaming(runConfig, streamHarness);
 
+      // After successful continuation, extend the base session TTL again for potential further continuation
+      const extendedTTL = 300000; // 5 minutes
+      this.scheduleExpiration(sessionId, extendedTTL);
+      logger.info(
+        `[ARC3 Streaming] Continuation ${sessionId} completed, extended TTL to ${extendedTTL}ms for potential further continuation`,
+        "arc3-stream-service"
+      );
+
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
       logger.error(`ARC3 continuation failed: ${message}`, "arc3-stream-service");
       sseStreamManager.error(sessionId, "STREAMING_FAILED", message);
-    } finally {
+      // Clear both payloads on error
       this.clearPendingPayload(sessionId);
+    } finally {
+      // Always clear the continuation payload after use (but keep the base payload for further continuations)
+      this.clearContinuationPayload(sessionId);
     }
 
     return sessionId;
