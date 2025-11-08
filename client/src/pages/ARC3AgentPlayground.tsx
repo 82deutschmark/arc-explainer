@@ -492,7 +492,7 @@ export default function ARC3AgentPlayground() {
                         isActive
                           ? 'bg-green-500 text-white animate-pulse shadow-lg'
                           : !isAvailable
-                          ? 'bg-red-50 text-red-400 border border-red-200 line-through opacity-60 cursor-not-allowed'
+                          ? 'bg-red-50 text-red-400 border border-red-200 opacity-60 cursor-not-allowed'
                           : usedCount > 0
                           ? 'bg-blue-100 text-blue-700 border border-blue-300 hover:bg-blue-200 cursor-pointer'
                           : 'bg-gray-100 text-gray-500 border border-gray-200 hover:bg-gray-200 cursor-pointer'
