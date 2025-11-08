@@ -35,6 +35,7 @@ export interface Arc3AgentStreamState {
     action_counter: number;
     max_actions: number;
     full_reset: boolean;
+    available_actions?: string[];  // List of available action names from API
     action?: {
       type: string;
       coordinates?: [number, number];
@@ -566,6 +567,69 @@ export function useArc3AgentStream() {
     [sessionId, state.lastResponseId, state.gameGuid, closeEventSource]
   );
 
+  const executeManualAction = useCallback(
+    async (action: string, coordinates?: [number, number]) => {
+      if (!state.gameGuid || !state.gameId) {
+        throw new Error('No active game session. Start a game first.');
+      }
+
+      try {
+        setState(prev => ({
+          ...prev,
+          streamingMessage: `Executing ${action}...`,
+        }));
+
+        const response = await apiRequest('POST', '/api/arc3/manual-action', {
+          game_id: state.gameId,
+          guid: state.gameGuid,
+          action,
+          coordinates,
+        });
+
+        const result = await response.json();
+
+        if (!result.success) {
+          throw new Error(result.error?.message || 'Failed to execute action');
+        }
+
+        const frameData = result.data;
+
+        // Add action metadata to frame
+        const frameWithAction = {
+          ...frameData,
+          action: {
+            type: action,
+            coordinates,
+          },
+        };
+
+        // Update state with new frame
+        setState(prev => ({
+          ...prev,
+          frames: [...prev.frames, frameWithAction],
+          currentFrameIndex: prev.frames.length,
+          streamingMessage: `${action} completed`,
+          timeline: [...prev.timeline, {
+            index: prev.timeline.length,
+            type: 'tool_call' as const,
+            label: `Manual ${action}${coordinates ? ` at (${coordinates[0]}, ${coordinates[1]})` : ''}`,
+            content: JSON.stringify({ action, coordinates, manual: true }, null, 2),
+          }],
+        }));
+
+        return frameData;
+      } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : 'Failed to execute action';
+        setState(prev => ({
+          ...prev,
+          streamingMessage: errorMessage,
+        }));
+        throw error;
+      }
+    },
+    [state.gameGuid, state.gameId]
+  );
+
   useEffect(() => {
     return () => {
       closeEventSource();
@@ -578,6 +642,7 @@ export function useArc3AgentStream() {
     start,
     cancel,
     continueWithMessage,
+    executeManualAction,
     setCurrentFrame,
     currentFrame: state.frames[state.currentFrameIndex] || null,
     isPlaying: state.status === 'running' && state.streamingStatus === 'in_progress',

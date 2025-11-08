@@ -28,13 +28,15 @@ export interface FrameData {
   action_counter: number;
   max_actions: number;
   win_score: number;
+  full_reset?: boolean;
+  available_actions?: string[];  // List of available action names (e.g., ['RESET', 'ACTION1', 'ACTION2'])
 }
 
 /**
  * Game action request structure
  */
 export interface GameAction {
-  action: 'RESET' | 'ACTION1' | 'ACTION2' | 'ACTION3' | 'ACTION4' | 'ACTION5' | 'ACTION6';
+  action: 'RESET' | 'ACTION1' | 'ACTION2' | 'ACTION3' | 'ACTION4' | 'ACTION5' | 'ACTION6' | 'ACTION7';
   coordinates?: [number, number];  // For ACTION6 only (x, y)
 }
 

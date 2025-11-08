@@ -59,6 +59,7 @@ export const ARC3_ACTIONS = {
   ACTION4: 'ACTION4',
   ACTION5: 'ACTION5',
   ACTION6: 'ACTION6',
+  ACTION7: 'ACTION7',
 } as const;
 
 /**
