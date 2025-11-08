@@ -118,9 +118,10 @@ export function AppNavigation() {
   };
 
   return (
-    <div className="flex items-center justify-between w-full">
-      <NavigationMenu>
-        <NavigationMenuList>
+    <div className="flex w-full items-center gap-4">
+      <div className="flex flex-1 justify-center">
+        <NavigationMenu className="w-full">
+          <NavigationMenuList className="flex items-center justify-center gap-1">
           {navigationItems.map((item) => {
             const Icon = item.icon;
             return (
@@ -141,10 +142,11 @@ export function AppNavigation() {
               </NavigationMenuItem>
             );
           })}
-        </NavigationMenuList>
-      </NavigationMenu>
+          </NavigationMenuList>
+        </NavigationMenu>
+      </div>
 
-      <div className="flex items-center gap-2">
+      <div className="flex shrink-0 items-center justify-end gap-2">
         <a
           href="https://github.com/82deutschmark/arc-explainer" 
           target="_blank"
