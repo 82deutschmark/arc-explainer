@@ -222,29 +222,47 @@ export default function ARC3AgentPlayground() {
             </Badge>
           </div>
 
-          {/* Action Pills Bar - Always visible */}
-          <div className="flex flex-wrap items-center justify-center gap-1.5">
-            {['ACTION1', 'ACTION2', 'ACTION3', 'ACTION4', 'ACTION5', 'ACTION6'].map((actionName) => {
-              const usedCount = toolEntries.filter(e => e.label.includes(actionName)).length;
-              const isActive = isPlaying && state.streamingMessage?.includes(actionName);
-              const displayName = actionName.replace('ACTION', 'Action ');
-
-              return (
-                <div
-                  key={actionName}
-                  className={`px-3 py-1 rounded-full text-[11px] sm:text-xs font-semibold transition-all shadow-sm ${
-                    isActive
-                      ? 'bg-green-500 text-white animate-pulse shadow-lg'
-                      : usedCount > 0
-                      ? 'bg-blue-100 text-blue-700 border border-blue-300'
-                      : 'bg-gray-100 text-gray-500 border border-gray-200'
-                  }`}
-                >
-                  {displayName}
-                  {usedCount > 0 && <span className="ml-1 text-[10px] sm:text-[11px]">×{usedCount}</span>}
-                </div>
-              );
-            })}
+          {/* Game Selector Bar now lives in the subheader */}
+          <div className="flex flex-wrap items-center justify-center gap-2">
+            <label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+              Game
+            </label>
+            {gamesLoading ? (
+              <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                <RefreshCw className="h-3 w-3 animate-spin" />
+                Loading...
+              </div>
+            ) : (
+              <Select
+                value={gameId}
+                onValueChange={(newGameId) => {
+                  setGameId(newGameId);
+                  fetchGameGrid(newGameId);
+                }}
+                disabled={isPlaying}
+              >
+                <SelectTrigger className="h-7 text-xs min-w-[160px]">
+                  <SelectValue>
+                    {games.find(g => g.game_id === gameId)?.title || gameId}
+                  </SelectValue>
+                </SelectTrigger>
+                <SelectContent>
+                  {games.map((game) => (
+                    <SelectItem key={game.game_id} value={game.game_id} className="text-xs">
+                      {game.title} ({game.game_id})
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={fetchGames}
+              className="h-7 w-7 p-0"
+            >
+              <RefreshCw className="h-3 w-3" />
+            </Button>
           </div>
         </div>
       </div>
@@ -438,50 +456,32 @@ export default function ARC3AgentPlayground() {
           </Card>
         </div>
 
-        {/* CENTER: Game selector ABOVE grid */}
+        {/* CENTER: Action pills now occupy former game selector spot */}
         <div className="lg:col-span-5 space-y-3">
-          
-          {/* Game Selector */}
           <Card>
             <CardContent className="p-3">
-              <div className="flex items-center gap-2">
-                <label className="text-xs font-medium whitespace-nowrap">Game:</label>
-                {gamesLoading ? (
-                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                    <RefreshCw className="h-3 w-3 animate-spin" />
-                    Loading...
-                  </div>
-                ) : (
-                  <Select 
-                    value={gameId} 
-                    onValueChange={(newGameId) => {
-                      setGameId(newGameId);
-                      fetchGameGrid(newGameId);
-                    }} 
-                    disabled={isPlaying}
-                  >
-                    <SelectTrigger className="h-7 text-xs flex-1">
-                      <SelectValue>
-                        {games.find(g => g.game_id === gameId)?.title || gameId}
-                      </SelectValue>
-                    </SelectTrigger>
-                    <SelectContent>
-                      {games.map((game) => (
-                        <SelectItem key={game.game_id} value={game.game_id} className="text-xs">
-                          {game.title} ({game.game_id})
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                )}
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={fetchGames}
-                  className="h-7 w-7 p-0"
-                >
-                  <RefreshCw className="h-3 w-3" />
-                </Button>
+              <div className="flex flex-wrap items-center justify-center gap-1.5">
+                {['ACTION1', 'ACTION2', 'ACTION3', 'ACTION4', 'ACTION5', 'ACTION6'].map((actionName) => {
+                  const usedCount = toolEntries.filter(e => e.label.includes(actionName)).length;
+                  const isActive = isPlaying && state.streamingMessage?.includes(actionName);
+                  const displayName = actionName.replace('ACTION', 'Action ');
+
+                  return (
+                    <div
+                      key={actionName}
+                      className={`px-3 py-1 rounded-full text-[11px] sm:text-xs font-semibold transition-all shadow-sm ${
+                        isActive
+                          ? 'bg-green-500 text-white animate-pulse shadow-lg'
+                          : usedCount > 0
+                          ? 'bg-blue-100 text-blue-700 border border-blue-300'
+                          : 'bg-gray-100 text-gray-500 border border-gray-200'
+                      }`}
+                    >
+                      {displayName}
+                      {usedCount > 0 && <span className="ml-1 text-[10px] sm:text-[11px]">×{usedCount}</span>}
+                    </div>
+                  );
+                })}
               </div>
             </CardContent>
           </Card>

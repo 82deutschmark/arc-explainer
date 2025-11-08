@@ -1,5 +1,9 @@
 # CHANGELOG - Uses semantic versioning (MAJOR.MINOR.PATCH)
 
+# [5.7.4] - 2025-11-08
+### 🎨 UI Tweaks
+- Repositioned ARC3 playground game selector into the subheader and moved action pills into the main content so layout matches latest mockups.
+
 # [5.7.3] - 2025-11-08
 ### 🧠 Model Catalog Update
 - Added **OpenRouter Polaris (temporary alias)** to the shared model registry with 256k token context window, zero-cost pricing, and reasoning flag so it is selectable immediately.
