@@ -127,7 +127,7 @@ export default function ARC3AgentPlayground() {
   const [gameId, setGameId] = useState('ls20');
   const [agentName, setAgentName] = useState('ARC3 Explorer');
   const [model, setModel] = useState<string>('');
-  const [maxTurns, setMaxTurns] = useState(999999);
+  const [maxTurns, setMaxTurns] = useState(100);
   const [reasoningEffort, setReasoningEffort] = useState<'minimal' | 'low' | 'medium' | 'high'>('low');
   const [systemPrompt, setSystemPrompt] = useState('Loading default prompt...');
   const [showSystemPrompt, setShowSystemPrompt] = useState(true);
@@ -355,7 +355,7 @@ export default function ARC3AgentPlayground() {
                   onChange={(e) => setMaxTurns(Number(e.target.value))}
                   disabled={isPlaying}
                   className="h-7 text-[11px]"
-                  placeholder="999999 (unlimited)"
+                  placeholder="100 (default)"
                 />
                 <p className="text-[9px] text-muted-foreground">Agent loop iterations (not tool calls)</p>
               </div>
