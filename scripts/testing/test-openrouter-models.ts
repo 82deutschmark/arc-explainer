@@ -52,6 +52,8 @@ const OPENROUTER_MODELS_TO_TEST = [
   'moonshotai/kimi-k2-0905',
   'moonshotai/kimi-k2-thinking',
   'moonshotai/kimi-dev-72b:free',
+  'openrouter/polaris-alpha',
+  'nvidia/nemotron-nano-12b-v2-vl:free',
   
   'x-ai/grok-3',
   'x-ai/grok-3-mini',

@@ -363,6 +363,8 @@ export type ModelName =
   | 'moonshotai/kimi-k2'
   | 'moonshotai/kimi-k2-thinking'
   | 'moonshotai/kimi-k2:nitro'
+  | 'openrouter/polaris-alpha'
+  | 'nvidia/nemotron-nano-12b-v2-vl:free'
   | 'z-ai/glm-4.5'
   | 'z-ai/glm-4.5:nitro'
   | (string & {})
