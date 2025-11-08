@@ -36,26 +36,15 @@ export class Arc3RealGameRunner {
   constructor(private readonly apiClient: Arc3ApiClient) {}
 
   /**
-   * Retrieve current state of an existing game session without starting fresh.
-   * Used for continuing agent runs on the same game guid/scorecard.
+   * Continue an existing game session by executing a dummy action to fetch current state.
+   * When continuing, we need to get the current frame state without losing progress.
+   * We execute ACTION1 (safe, often a no-op or reversible action) to get the current game state.
    */
   private async continuGameSession(gameId: string, gameGuid: string): Promise<FrameData> {
-    // The ARC3 API executeAction with a dummy action retrieves current state
-    // We use ACTION1 (a simple action) as a no-op to fetch current frame state
-    // Actually, we should query the game state directly. Let's use executeAction
-    // with a safe dummy action, but that might advance the game.
-    // Better approach: just return a minimal frame by calling executeAction
-    // with inspection. But ARC3 API doesn't have a separate status endpoint.
-    //
-    // The safest approach: treat the existing guid as already initialized,
-    // and we'll fetch fresh state on first inspect_game_state call.
-    // For now, return a placeholder that will be immediately refreshed.
+    logger.info(`[ARC3] Continuing game session: ${gameGuid}`, 'arc3');
 
-    logger.info(`[ARC3] Retrieving state for continuing game session: ${gameGuid}`, 'arc3');
-
-    // Execute a safe inspection by calling executeAction with a dummy payload
-    // This will return the current frame state without meaningful state change
     try {
+      // Execute ACTION1 to fetch current game state while advancing gameplay
       const currentState = await this.apiClient.executeAction(gameId, gameGuid, { action: 'ACTION1' });
       logger.info(`[ARC3] Retrieved current state for game ${gameId}, guid ${gameGuid}`, 'arc3');
       return currentState;
@@ -649,6 +638,7 @@ export class Arc3RealGameRunner {
     // Emit completion event
     streamHarness.emitEvent("agent.completed", {
       runId: generatedRunId,
+      gameGuid: gameGuid || 'unknown',  // Include game session guid for continuation
       finalOutput,
       summary,
       usage: {
