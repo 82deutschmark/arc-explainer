@@ -1,5 +1,24 @@
 # CHANGELOG - Uses semantic versioning (MAJOR.MINOR.PATCH)
 
+# [5.7.1] - 2025-11-08
+### 🐛 Bug Fixes
+**Fixed ARC3 session continuation 404 error by preserving session payloads after streaming completes.**
+
+#### Problem
+- Session payloads were immediately cleared after streaming finished, causing 404 errors when attempting to continue sessions
+- Users couldn't send follow-up messages to agents after initial run completed
+
+#### Solution
+- Extended session TTL to 5 minutes after successful streaming completion instead of immediate cleanup
+- Session payloads now persist to allow continuation requests
+- Each successful continuation re-extends the TTL for additional 5 minutes
+- Added separate continuation payload management with proper lifecycle
+
+#### Files Changed
+- **server/services/arc3/Arc3StreamService.ts**: Modified session lifecycle to extend TTL instead of clearing payloads on success
+- **server/routes/arc3.ts**: Refactored continuation endpoints to use prepare-then-stream pattern
+- **client/src/hooks/useArc3AgentStream.ts**: Updated to use new `/continue-stream` endpoint
+
 # [5.7.0] - 2025-11-07
 ### ✨ ARC3 Game Session Persistence & Continuation
 **Fixed critical game session loss on agent continuations - now preserves scorecard and guid across multiple runs.**

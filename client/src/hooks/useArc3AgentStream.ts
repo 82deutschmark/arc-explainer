@@ -530,20 +530,20 @@ export function useArc3AgentStream() {
           streamingMessage: 'Preparing to continue...',
         }));
 
-        // Call the continue endpoint with existing game guid if available
+        // Step 1: POST to /continue to prepare the continuation payload
         const continueResponse = await apiRequest('POST', `/api/arc3/stream/${sessionId}/continue`, {
           userMessage,
           previousResponseId: state.lastResponseId,
-          existingGameGuid: state.gameGuid,  // Pass the existing game session guid to continue same scorecard
+          existingGameGuid: state.gameGuid,
         });
 
         const continueData = await continueResponse.json();
         if (!continueData.success) {
-          throw new Error(continueData.error?.message || 'Failed to continue agent');
+          throw new Error(continueData.error?.message || 'Failed to prepare continuation');
         }
 
-        // Re-open SSE connection for continued streaming
-        const streamUrl = `/api/arc3/stream/${sessionId}`;
+        // Step 2: Open SSE connection to the continue-stream endpoint
+        const streamUrl = `/api/arc3/stream/${sessionId}/continue-stream`;
         console.log('[ARC3 Stream] Starting continuation SSE:', streamUrl);
 
         const eventSource = new EventSource(streamUrl);

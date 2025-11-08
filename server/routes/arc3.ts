@@ -185,7 +185,7 @@ router.post(
 
 /**
  * POST /api/arc3/stream/:sessionId/continue
- * Continue a paused agent session with a new user message (message chaining with Responses API)
+ * Prepare a continuation session (similar to /prepare, but updates existing payload)
  */
 const continueSessionSchema = z.object({
   userMessage: z.string().trim().min(1, 'userMessage must not be empty'),
@@ -199,9 +199,9 @@ router.post(
     const { sessionId } = req.params;
     const { userMessage, previousResponseId, existingGameGuid } = continueSessionSchema.parse(req.body);
 
-    logger.info(`[ARC3 Continue] Starting continuation with sessionId=${sessionId}, hasResponseId=${!!previousResponseId}, existingGameGuid=${existingGameGuid}`, 'arc3');
+    logger.info(`[ARC3 Continue] Preparing continuation with sessionId=${sessionId}, hasResponseId=${!!previousResponseId}, existingGameGuid=${existingGameGuid}`, 'arc3');
 
-    // Get the session payload
+    // Get the existing session payload
     const payload = arc3StreamService.getPendingPayload(sessionId);
     if (!payload) {
       return res
@@ -209,17 +209,38 @@ router.post(
         .json(formatResponse.error('SESSION_NOT_FOUND', 'Session not found or expired'));
     }
 
+    // Update the payload with continuation data
+    arc3StreamService.saveContinuationPayload(sessionId, payload, {
+      userMessage,
+      previousResponseId,
+      existingGameGuid,
+    });
+
+    res.json(formatResponse.success({ sessionId, ready: true }));
+  }),
+);
+
+/**
+ * GET /api/arc3/stream/:sessionId/continue-stream
+ * Start SSE streaming for a prepared continuation session
+ */
+router.get(
+  '/stream/:sessionId/continue-stream',
+  asyncHandler(async (req: Request, res: Response) => {
+    const { sessionId } = req.params;
+    const continuationPayload = arc3StreamService.getContinuationPayload(sessionId);
+
+    if (!continuationPayload) {
+      return res
+        .status(404)
+        .json(formatResponse.error('SESSION_NOT_FOUND', 'Continuation session not found or expired'));
+    }
+
     // Register SSE connection for continued streaming
     sseStreamManager.register(sessionId, res);
 
     // Start continuation streaming
-    await arc3StreamService.continueStreaming(req, {
-      ...payload,
-      sessionId,
-      userMessage,
-      previousResponseId,
-      existingGameGuid,  // Pass the existing game guid for session continuation
-    });
+    await arc3StreamService.continueStreaming(req, continuationPayload);
   }),
 );
 
