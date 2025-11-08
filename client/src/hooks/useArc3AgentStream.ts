@@ -563,7 +563,7 @@ export function useArc3AgentStream() {
         }));
       }
     },
-    [sessionId, state.lastResponseId]
+    [sessionId, state.lastResponseId, state.gameGuid, closeEventSource]
   );
 
   useEffect(() => {
