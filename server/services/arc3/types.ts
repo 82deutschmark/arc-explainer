@@ -16,6 +16,7 @@ export interface Arc3RunTimelineEntry {
 
 export interface Arc3AgentRunResult {
   runId: string;
+  gameGuid: string;  // Game session identifier for continuation
   finalOutput?: string;
   timeline: Arc3RunTimelineEntry[];
   frames: any[];
@@ -46,4 +47,5 @@ export interface Arc3AgentRunConfig {
   maxTurns?: number;
   game_id?: string;
   reasoningEffort?: 'minimal' | 'low' | 'medium' | 'high';
+  existingGameGuid?: string;  // For continuing existing game sessions
 }

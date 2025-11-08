@@ -31,6 +31,7 @@ export interface StreamArc3Payload {
 export interface ContinueStreamArc3Payload extends StreamArc3Payload {
   userMessage: string;  // New user message to chain
   previousResponseId?: string;  // From last response for Responses API chaining
+  existingGameGuid?: string;  // Game session guid to continue (from previous run)
 }
 
 export const PENDING_ARC3_SESSION_TTL_SECONDS = 60;
@@ -234,7 +235,7 @@ export class Arc3StreamService {
         return sessionId;
       }
 
-      const { game_id, agentName, systemPrompt, instructions, model, maxTurns, reasoningEffort, userMessage, previousResponseId } = payload;
+      const { game_id, agentName, systemPrompt, instructions, model, maxTurns, reasoningEffort, userMessage, previousResponseId, existingGameGuid } = payload;
 
       // Send initial status
       sseStreamManager.sendEvent(sessionId, "stream.init", {
@@ -242,6 +243,7 @@ export class Arc3StreamService {
         game_id,
         agentName: agentName || 'ARC3 Agent',
         hasPreviousResponse: !!previousResponseId,
+        isContinuingGame: !!existingGameGuid,
         timestamp: Date.now(),
       });
 
@@ -279,12 +281,14 @@ export class Arc3StreamService {
       sseStreamManager.sendEvent(sessionId, "stream.status", {
         state: "running",
         game_id,
-        message: `Agent continuing with user message: "${userMessage.substring(0, 50)}${userMessage.length > 50 ? '...' : ''}"`,
+        message: existingGameGuid
+          ? `Agent continuing existing game ${existingGameGuid} with user message: "${userMessage.substring(0, 50)}${userMessage.length > 50 ? '...' : ''}"`
+          : `Agent continuing with user message: "${userMessage.substring(0, 50)}${userMessage.length > 50 ? '...' : ''}"`,
         timestamp: Date.now(),
       });
 
       logger.info(
-        `[ARC3 Continue] Running with userMessage (${userMessage.length} chars), previousResponseId=${!!previousResponseId}`,
+        `[ARC3 Continue] Running with userMessage (${userMessage.length} chars), previousResponseId=${!!previousResponseId}, existingGameGuid=${existingGameGuid}`,
         "arc3-stream-service"
       );
 
@@ -299,6 +303,7 @@ export class Arc3StreamService {
         model,
         maxTurns,
         reasoningEffort,
+        existingGameGuid,  // Pass the game session guid to continue
       };
 
       // Override the game runner to emit streaming events

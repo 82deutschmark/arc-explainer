@@ -190,15 +190,16 @@ router.post(
 const continueSessionSchema = z.object({
   userMessage: z.string().trim().min(1, 'userMessage must not be empty'),
   previousResponseId: z.string().optional(), // From last response (stored in DB)
+  existingGameGuid: z.string().optional(), // Game session guid to continue (from previous run)
 });
 
 router.post(
   '/stream/:sessionId/continue',
   asyncHandler(async (req: Request, res: Response) => {
     const { sessionId } = req.params;
-    const { userMessage, previousResponseId } = continueSessionSchema.parse(req.body);
+    const { userMessage, previousResponseId, existingGameGuid } = continueSessionSchema.parse(req.body);
 
-    logger.info(`[ARC3 Continue] Starting continuation with sessionId=${sessionId}, hasResponseId=${!!previousResponseId}`, 'arc3');
+    logger.info(`[ARC3 Continue] Starting continuation with sessionId=${sessionId}, hasResponseId=${!!previousResponseId}, existingGameGuid=${existingGameGuid}`, 'arc3');
 
     // Get the session payload
     const payload = arc3StreamService.getPendingPayload(sessionId);
@@ -217,6 +218,7 @@ router.post(
       sessionId,
       userMessage,
       previousResponseId,
+      existingGameGuid,  // Pass the existing game guid for session continuation
     });
   }),
 );
