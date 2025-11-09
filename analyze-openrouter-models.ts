@@ -2,13 +2,12 @@
  * Author: Claude Code using Sonnet 4.5
  * Date: 2025-11-09
  * PURPOSE: Analyze specific puzzles using multiple Open Router models (nvidia/nemotron-nano-12b-v2-vl:free,
- * openrouter/polaris-alpha, minimax/minimax-m2:free). Each model processes all puzzles with 5-second delays
- * between requests to respect rate limits. Uses the API endpoints following the same pattern as other
- * analyze-puzzle scripts.
+ * openrouter/polaris-alpha, minimax/minimax-m2:free). For each puzzle, sends it to all three models sequentially
+ * with no delays. Uses the API endpoints following the same pattern as other analyze-puzzle scripts.
  * SRP/DRY check: Pass - Follows established patterns from analyze-puzzles-by-id.ts and analyze-unsolved-puzzles.ts
  *
  * USAGE:
- *   ts-node analyze-openrouter-models.ts
+ *   node --import tsx analyze-openrouter-models.ts
  *
  * The script will analyze each puzzle with all three models and save results to the database.
  */
@@ -49,9 +48,6 @@ const PUZZLE_IDS = [
   '6d75e8bb',
   '7b6016b9'
 ];
-
-// Rate limit delay (5 seconds between requests per model)
-const RATE_LIMIT_DELAY_MS = 5000; // 5 seconds
 
 // Timeout per puzzle in milliseconds (10 minutes for vision models)
 const PUZZLE_TIMEOUT_MS = 10 * 60 * 1000; // 10 minutes
@@ -162,42 +158,17 @@ async function analyzePuzzle(puzzleId: string, modelKey: string): Promise<Analys
 }
 
 /**
- * Analyze all puzzles with a specific model (with rate limiting)
+ * Analyze a single puzzle with all models
  */
-async function analyzeWithModel(puzzleIds: string[], modelKey: string): Promise<AnalysisResult[]> {
-  console.log(`\n📊 Starting analysis with model: ${modelKey}`);
-  console.log(`   Processing ${puzzleIds.length} puzzles with ${RATE_LIMIT_DELAY_MS / 1000}s delay between requests`);
+async function analyzePuzzleWithAllModels(puzzleId: string, models: string[]): Promise<AnalysisResult[]> {
+  console.log(`\n📊 Processing puzzle: ${puzzleId}`);
   console.log('='.repeat(80));
 
   const results: AnalysisResult[] = [];
 
-  for (let i = 0; i < puzzleIds.length; i++) {
-    const puzzleId = puzzleIds[i];
-
-    // Analyze the puzzle
+  for (const modelKey of models) {
     const result = await analyzePuzzle(puzzleId, modelKey);
     results.push(result);
-
-    // Wait before next request (respect rate limits)
-    if (i < puzzleIds.length - 1) {
-      console.log(`⏳ Waiting ${RATE_LIMIT_DELAY_MS / 1000}s before next request...`);
-      await new Promise(resolve => setTimeout(resolve, RATE_LIMIT_DELAY_MS));
-    }
-  }
-
-  // Model summary
-  const successful = results.filter(r => r.success).length;
-  const failed = results.filter(r => !r.success).length;
-
-  console.log(`\n✅ ${modelKey} COMPLETE:`);
-  console.log(`   Successful: ${successful}/${puzzleIds.length} (${((successful / puzzleIds.length) * 100).toFixed(1)}%)`);
-  console.log(`   Failed: ${failed}/${puzzleIds.length} (${((failed / puzzleIds.length) * 100).toFixed(1)}%)`);
-
-  if (successful > 0) {
-    const avgTime = results
-      .filter(r => r.success && r.responseTime)
-      .reduce((sum, r) => sum + (r.responseTime || 0), 0) / successful;
-    console.log(`   Average response time: ${Math.round(avgTime)}s`);
   }
 
   return results;
@@ -213,29 +184,27 @@ async function main(): Promise<void> {
     console.log(`Models to test: ${MODELS.length}`);
     MODELS.forEach((model, i) => console.log(`  ${i + 1}. ${model}`));
     console.log(`\nPuzzles to analyze: ${PUZZLE_IDS.length}`);
-    console.log(`Rate limit: ${RATE_LIMIT_DELAY_MS / 1000}s between requests per model`);
     console.log(`API Base URL: ${API_BASE_URL}`);
     console.log(`Timeout per puzzle: ${PUZZLE_TIMEOUT_MS / 60000} minutes`);
     console.log('='.repeat(80));
     console.log('💾 Results are immediately saved to database via API');
-    console.log('⚡ Each model processes all puzzles sequentially with rate limiting');
-    console.log('🔄 Models run one after another to avoid overwhelming the API');
+    console.log('⚡ Each puzzle sent to all 3 models sequentially');
+    console.log('🔄 Processing: Puzzle 1→all models (1s delay) → Puzzle 2→all models, etc.');
     console.log('='.repeat(80));
 
     const allResults: AnalysisResult[] = [];
 
-    // Process each model sequentially
-    for (let i = 0; i < MODELS.length; i++) {
-      const modelKey = MODELS[i];
+    // Process each puzzle with all models
+    for (let i = 0; i < PUZZLE_IDS.length; i++) {
+      const puzzleId = PUZZLE_IDS[i];
 
-      console.log(`\n🔧 MODEL ${i + 1}/${MODELS.length}: ${modelKey}`);
-      const modelResults = await analyzeWithModel(PUZZLE_IDS, modelKey);
-      allResults.push(...modelResults);
+      console.log(`\n🔧 PUZZLE ${i + 1}/${PUZZLE_IDS.length}: ${puzzleId}`);
+      const puzzleResults = await analyzePuzzleWithAllModels(puzzleId, MODELS);
+      allResults.push(...puzzleResults);
 
-      // Brief pause between models
-      if (i < MODELS.length - 1) {
-        console.log(`\n⏸️  Pausing 3 seconds before starting next model...\n`);
-        await new Promise(resolve => setTimeout(resolve, 3000));
+      // 1 second delay before next puzzle
+      if (i < PUZZLE_IDS.length - 1) {
+        await new Promise(resolve => setTimeout(resolve, 1000));
       }
     }
 
