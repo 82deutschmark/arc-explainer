@@ -14,7 +14,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
-import { Gamepad2, Play, Square, Brain, Wrench, ArrowLeft, RefreshCw, Eye, EyeOff } from 'lucide-react';
+import { Gamepad2, Play, Square, Brain, Wrench, ArrowLeft, RefreshCw, Eye, EyeOff, HelpCircle } from 'lucide-react';
 import { Link } from 'wouter';
 import { useArc3AgentStream } from '@/hooks/useArc3AgentStream';
 import { Arc3GridVisualization } from '@/components/arc3/Arc3GridVisualization';
@@ -201,6 +201,7 @@ export default function ARC3AgentPlayground() {
 
   // Manual action state
   const [showCoordinatePicker, setShowCoordinatePicker] = useState(false);
+  const [showHelpModal, setShowHelpModal] = useState(false);
 
   const handleStart = () => {
     start({
@@ -340,9 +341,20 @@ export default function ARC3AgentPlayground() {
             </Button>
           </div>
 
-          <Badge variant={state.status === 'running' ? 'default' : 'outline'} className="text-[10px] px-1.5 py-0">
-            {state.status}
-          </Badge>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setShowHelpModal(true)}
+              className="h-6 w-6 p-0"
+              title="Help & Guide"
+            >
+              <HelpCircle className="h-3 w-3" />
+            </Button>
+            <Badge variant={state.status === 'running' ? 'default' : 'outline'} className="text-[10px] px-1.5 py-0">
+              {state.status}
+            </Badge>
+          </div>
         </div>
       </div>
 
@@ -805,6 +817,137 @@ export default function ARC3AgentPlayground() {
           <div className="flex justify-end gap-2">
             <Button variant="outline" onClick={() => setShowCoordinatePicker(false)}>
               Cancel
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Help/Guide Modal */}
+      <Dialog open={showHelpModal} onOpenChange={setShowHelpModal}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <HelpCircle className="h-5 w-5" />
+              ARC3 Playground Guide
+            </DialogTitle>
+            <DialogDescription>
+              Learn how to use the playground to train and optimize AI agents for ARC-AGI-3 challenges
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4 max-h-[60vh] overflow-y-auto pr-2">
+            {/* What is this? */}
+            <div className="space-y-2">
+              <h3 className="text-sm font-semibold text-foreground">🎮 What is the ARC3 Playground?</h3>
+              <p className="text-sm text-muted-foreground">
+                The ARC3 Playground is an interactive environment where you can train AI agents to solve
+                ARC-AGI-3 puzzles. ARC-AGI-3 is a benchmark test for artificial general intelligence that
+                challenges AI systems to learn and apply abstract reasoning skills.
+              </p>
+            </div>
+
+            {/* The Goal */}
+            <div className="space-y-2">
+              <h3 className="text-sm font-semibold text-foreground">🎯 Your Goal</h3>
+              <p className="text-sm text-muted-foreground">
+                <strong>Craft the best possible prompts to help your agent succeed!</strong> Your task is to:
+              </p>
+              <ul className="list-disc list-inside text-sm text-muted-foreground space-y-1 ml-2">
+                <li><strong>System Prompt</strong>: Define the agent's core behavior, reasoning approach, and capabilities</li>
+                <li><strong>Instructions (User Prompt)</strong>: Provide specific guidance for solving the current puzzle</li>
+                <li><strong>Model Selection</strong>: Choose the AI model that best fits the task complexity and your needs</li>
+              </ul>
+              <p className="text-sm text-muted-foreground mt-2">
+                The better your prompts, the more effective your agent will be at understanding patterns,
+                making logical deductions, and solving puzzles!
+              </p>
+            </div>
+
+            {/* How to Use */}
+            <div className="space-y-2">
+              <h3 className="text-sm font-semibold text-foreground">🚀 How to Use</h3>
+              <ol className="list-decimal list-inside text-sm text-muted-foreground space-y-2 ml-2">
+                <li>
+                  <strong>Select a Game</strong>: Choose an ARC-AGI-3 puzzle from the dropdown
+                </li>
+                <li>
+                  <strong>Configure Your Agent</strong>:
+                  <ul className="list-disc list-inside ml-6 mt-1 space-y-1">
+                    <li>Write a system prompt that defines how the agent thinks and reasons</li>
+                    <li>Provide specific instructions for the current puzzle</li>
+                    <li>Select an AI model (reasoning models work best for complex puzzles)</li>
+                    <li>Set max turns to limit agent actions (default: 100)</li>
+                  </ul>
+                </li>
+                <li>
+                  <strong>Run the Agent</strong>: Click "Start Agent" and watch it attempt the puzzle
+                </li>
+                <li>
+                  <strong>Manual Control</strong>: Click action pills (ACTION1-7) to manually execute actions
+                  <ul className="list-disc list-inside ml-6 mt-1">
+                    <li>Click ACTION6 to open a grid picker for coordinate-based actions</li>
+                  </ul>
+                </li>
+                <li>
+                  <strong>Iterate & Improve</strong>: Analyze the agent's reasoning and adjust your prompts to improve performance
+                </li>
+              </ol>
+            </div>
+
+            {/* Understanding Actions */}
+            <div className="space-y-2">
+              <h3 className="text-sm font-semibold text-foreground">🎬 Action Pills</h3>
+              <p className="text-sm text-muted-foreground">
+                Action pills show the agent's available actions and their usage:
+              </p>
+              <ul className="list-disc list-inside text-sm text-muted-foreground space-y-1 ml-2">
+                <li><span className="text-green-600 font-semibold">Green (pulsing)</span>: Currently executing</li>
+                <li><span className="text-blue-600 font-semibold">Blue</span>: Already used (shows count)</li>
+                <li><span className="text-gray-600 font-semibold">Gray</span>: Available but not yet used</li>
+                <li><span className="text-red-600 font-semibold">Red (strikethrough)</span>: Not available in current game state</li>
+              </ul>
+            </div>
+
+            {/* Pro Tips */}
+            <div className="space-y-2">
+              <h3 className="text-sm font-semibold text-foreground">💡 Pro Tips</h3>
+              <ul className="list-disc list-inside text-sm text-muted-foreground space-y-1 ml-2">
+                <li>Use <strong>reasoning models</strong> (like GPT-4.5 or o1) for better abstract thinking</li>
+                <li>Write clear, specific instructions that explain what patterns to look for</li>
+                <li>Encourage the agent to <strong>reason step-by-step</strong> before taking actions</li>
+                <li>Use the <strong>system prompt</strong> to define problem-solving strategies</li>
+                <li>Watch the reasoning panel to understand how the agent thinks</li>
+                <li>Try <strong>hybrid mode</strong>: let the agent explore, then manually guide it when stuck</li>
+              </ul>
+            </div>
+
+            {/* Example Prompts */}
+            <div className="space-y-2">
+              <h3 className="text-sm font-semibold text-foreground">📝 Example Prompt Strategy</h3>
+              <div className="bg-muted p-3 rounded-md text-xs font-mono space-y-2">
+                <div>
+                  <div className="text-foreground font-semibold mb-1">System Prompt:</div>
+                  <div className="text-muted-foreground">
+                    "You are an expert pattern recognition system. Always analyze the game state carefully,
+                    identify repeating patterns, and reason through cause-and-effect relationships before
+                    taking actions. Think step-by-step and explain your reasoning."
+                  </div>
+                </div>
+                <div className="mt-2">
+                  <div className="text-foreground font-semibold mb-1">Instructions:</div>
+                  <div className="text-muted-foreground">
+                    "Explore the puzzle systematically. Try each action type to understand what they do.
+                    Look for patterns in how the grid changes. Once you understand the rules, use that
+                    knowledge to reach the win condition."
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="flex justify-end gap-2 pt-4 border-t">
+            <Button onClick={() => setShowHelpModal(false)}>
+              Got it!
             </Button>
           </div>
         </DialogContent>

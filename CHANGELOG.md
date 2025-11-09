@@ -1,6 +1,9 @@
 # CHANGELOG - Uses semantic versioning (MAJOR.MINOR.PATCH)
 
 # [5.8.3] - 2025-11-09
+### ✨ Features
+- **ARC3 Playground Help Modal**: Added comprehensive help/guide modal accessible via help icon (?) in header. Explains the playground's purpose, how to craft effective prompts, action pill meanings, pro tips, and example prompt strategies. Helps users understand that the goal is to craft the best possible system and user prompts to make their agent succeed.
+
 ### 🐞 Fixes
 - **ARC3 ACTION6 Coordinate Selection**: Fixed coordinate mapping in ACTION6 coordinate picker. Renamed loop variables from (x, y) to (row, col) for clarity and ensured coordinates are sent as [col, row] which correctly maps to [x, y]. Added clearer tooltip showing both (col, row) and [x=col, y=row] format.
 
