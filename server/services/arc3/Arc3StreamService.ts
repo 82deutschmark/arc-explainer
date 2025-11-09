@@ -264,6 +264,7 @@ export class Arc3StreamService {
         model,
         maxTurns,
         reasoningEffort,
+        storeResponse: true,
       };
 
       // Send status update
@@ -382,6 +383,8 @@ export class Arc3StreamService {
         maxTurns,
         reasoningEffort,
         existingGameGuid,  // Pass the game session guid to continue
+        previousResponseId,
+        storeResponse: true,
       };
 
       // Override the game runner to emit streaming events
