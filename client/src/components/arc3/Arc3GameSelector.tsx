@@ -48,7 +48,7 @@ export const Arc3GameSelector: React.FC<Arc3GameSelectorProps> = ({
         setGames(data.data);
         // Auto-select first game if none selected (default to ls20)
         if (!selectedGameId && data.data.length > 0) {
-          const defaultGame = data.data.find(g => g.game_id === 'ls20') || data.data[0];
+          const defaultGame = data.data.find((g: any) => g.game_id === 'ls20') || data.data[0];
           onGameSelect(defaultGame.game_id);
         }
       } else {
