@@ -27,6 +27,7 @@ export interface Arc3AgentRunResult {
     outputTokens: number;
     totalTokens: number;
   };
+  providerResponseId?: string | null;
 }
 
 export interface Arc3RunSummary {
@@ -48,4 +49,6 @@ export interface Arc3AgentRunConfig {
   game_id?: string;
   reasoningEffort?: 'minimal' | 'low' | 'medium' | 'high';
   existingGameGuid?: string;  // For continuing existing game sessions
+  previousResponseId?: string; // Responses API chaining support
+  storeResponse?: boolean; // Whether to persist the response server-side
 }

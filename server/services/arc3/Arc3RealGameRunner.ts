@@ -187,6 +187,8 @@ export class Arc3RealGameRunner {
       ? `${systemPrompt}\n\nOperator guidance: ${operatorGuidance}`
       : systemPrompt;
 
+    const storeResponse = config.storeResponse ?? true;
+
     const agent = new Agent({
       name: agentName,
       instructions: combinedInstructions,
@@ -198,6 +200,7 @@ export class Arc3RealGameRunner {
           summary: 'detailed',
         },
         text: { verbosity: 'high' },
+        store: storeResponse,
       },
       tools: [inspectTool, simpleAction('ACTION1'), simpleAction('ACTION2'), simpleAction('ACTION3'), simpleAction('ACTION4'), simpleAction('ACTION5'), action6Tool],
     });
@@ -205,7 +208,10 @@ export class Arc3RealGameRunner {
     const result = await run(
       agent,
       `Start playing the ARC-AGI-3 game "${gameId}". Narrate before every tool call, then execute it. Keep using the What I see / What it means / Next move format until you deliver the Final Report.`,
-      { maxTurns },
+      {
+        maxTurns,
+        previousResponseId: config.previousResponseId,
+      },
     );
 
     // Process timeline entries using extracted utility (eliminates duplication)
@@ -215,6 +221,7 @@ export class Arc3RealGameRunner {
     // The session ends naturally when the game reaches WIN or GAME_OVER state.
 
     const usage = result.state._context.usage;
+    const providerResponseId = result.lastResponseId ?? null;
     const finalOutputCandidate = result.finalOutput;
     const finalOutput = typeof finalOutputCandidate === 'string'
       ? finalOutputCandidate
@@ -260,6 +267,7 @@ export class Arc3RealGameRunner {
         outputTokens: usage.outputTokens,
         totalTokens: usage.totalTokens,
       },
+      providerResponseId,
     };
   }
 
@@ -453,6 +461,8 @@ export class Arc3RealGameRunner {
       ? `${systemPrompt}\n\nOperator guidance: ${operatorGuidance}`
       : systemPrompt;
 
+    const storeResponse = config.storeResponse ?? true;
+
     const agent = new Agent({
       name: agentName,
       instructions: combinedInstructions,
@@ -464,6 +474,7 @@ export class Arc3RealGameRunner {
           summary: 'detailed',
         },
         text: { verbosity: 'high' },
+        store: storeResponse,
       },
       tools: [inspectTool, simpleAction('ACTION1'), simpleAction('ACTION2'), simpleAction('ACTION3'), simpleAction('ACTION4'), simpleAction('ACTION5'), action6Tool],
     });
@@ -480,7 +491,11 @@ export class Arc3RealGameRunner {
     const result = await run(
       agent,
       `Start playing the ARC-AGI-3 game "${gameId}". Narrate before every tool call, then execute it. Keep using the What I see / What it means / Next move format until you deliver the Final Report.`,
-      { maxTurns, stream: true },
+      {
+        maxTurns,
+        stream: true,
+        previousResponseId: config.previousResponseId,
+      },
     );
 
     // Process streaming events
@@ -584,9 +599,6 @@ export class Arc3RealGameRunner {
       }
     }
 
-    // Wait for completion
-    await result.completed;
-
     // Process final timeline entries using extracted utility (eliminates duplication)
     const timeline = processRunItemsWithReasoning(result.newItems, agentName, streamState.accumulatedReasoning);
 
@@ -627,6 +639,7 @@ export class Arc3RealGameRunner {
     };
 
     const generatedRunId = randomUUID();
+    const providerResponseId = result.lastResponseId ?? null;
 
     // Emit completion event
     streamHarness.emitEvent("agent.completed", {
@@ -642,6 +655,7 @@ export class Arc3RealGameRunner {
       },
       timelineLength: timeline.length,
       frameCount: frames.length,
+      providerResponseId,
       timestamp: Date.now(),
     });
 
@@ -658,6 +672,7 @@ export class Arc3RealGameRunner {
         outputTokens: usage.outputTokens,
         totalTokens: usage.totalTokens,
       },
+      providerResponseId,
     };
   }
 }
