@@ -20,7 +20,9 @@ import {
   CheckCircle,
   MessageSquare,
   Info,
-  Award
+  Award,
+  Gamepad2,
+  FlaskConical
 } from 'lucide-react';
 
 interface NavItem {
@@ -90,6 +92,18 @@ const navigationItems: NavItem[] = [
     href: '/about',
     icon: Info,
     description: 'Learn about this project and acknowledgments'
+  },
+  {
+    title: 'ARC-AGI-3',
+    href: '/arc3',
+    icon: Gamepad2,
+    description: 'Interactive reasoning benchmark for AI agents (game-based, not puzzles)'
+  },
+  {
+    title: 'ARC3 Playground',
+    href: '/arc3/playground',
+    icon: FlaskConical,
+    description: 'Launch the Color Hunt simulator powered by the OpenAI Agents SDK'
   }
 ];
 
@@ -112,7 +126,7 @@ export function AppNavigation() {
             return (
               <NavigationMenuItem key={item.href}>
                 <NavigationMenuLink asChild>
-                  <Link 
+                  <Link
                     href={item.href}
                     className={cn(
                       navigationMenuTriggerStyle(),
@@ -132,7 +146,7 @@ export function AppNavigation() {
 
       <div className="flex items-center gap-2">
         <a
-          href="https://github.com/82deutschmark/arc-explainer" 
+          href="https://github.com/82deutschmark/arc-explainer"
           target="_blank"
           rel="noopener noreferrer"
           className="hidden sm:flex"
@@ -146,4 +160,3 @@ export function AppNavigation() {
     </div>
   );
 }
-

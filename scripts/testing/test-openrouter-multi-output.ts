@@ -34,13 +34,17 @@ const ALL_OPENROUTER_MODELS = [
   'qwen/qwen3-coder',
   'moonshotai/kimi-k2',
   'moonshotai/kimi-k2-0905',
+  'moonshotai/kimi-k2-thinking',
   'moonshotai/kimi-dev-72b:free',
+  'openrouter/polaris-alpha',
+  'nvidia/nemotron-nano-12b-v2-vl:free',
   'x-ai/grok-3',
   'x-ai/grok-3-mini',
   'nvidia/nemotron-nano-9b-v2',
   'qwen/qwen3-max',
   'bytedance/seed-oss-36b-instruct',
 
+  // Previously failed models (testing again on different puzzle)
   // ❌ Previously failed models (testing again on different puzzle)
   'qwen/qwen3-235b-a22b-thinking-2507', // server error on 253bf280
   'x-ai/grok-4', // server error on 253bf280
@@ -85,7 +89,7 @@ async function testOpenRouterModel(modelKey: string): Promise<ModelTestResult> {
     'meta-llama/llama-3.3-70b-instruct', 'x-ai/grok-4-fast:free', 'x-ai/grok-code-fast-1',
     'openai/gpt-oss-120b', 'mistralai/codestral-2508', 'qwen/qwen3-30b-a3b-instruct-2507',
     'qwen/qwen3-coder', 'moonshotai/kimi-k2', 'moonshotai/kimi-k2-0905',
-    'moonshotai/kimi-dev-72b:free', 'x-ai/grok-3', 'x-ai/grok-3-mini',
+    'moonshotai/kimi-dev-72b:free', 'openrouter/polaris-alpha', 'nvidia/nemotron-nano-12b-v2-vl:free', 'x-ai/grok-3', 'x-ai/grok-3-mini',
     'nvidia/nemotron-nano-9b-v2', 'qwen/qwen3-max', 'bytedance/seed-oss-36b-instruct'
   ].includes(modelKey);
 

@@ -1,28 +1,30 @@
-# ARC-AGI Explainer Platform
+# ARC-AGI Explainer Platform - A Fan Site for ARC-AGI-3
 
-**Version 4.8.41** — October 25, 2025
+**Version 5.1.0** — November 6, 2025
 
 
-A research platform for analyzing Abstract Reasoning Corpus (ARC-AGI) puzzles using state-of-the-art AI models with deep reasoning capture, conversation chaining, and comprehensive performance analytics.
+A hobby platform for analyzing Abstract Reasoning Corpus (ARC-AGI) puzzles using state-of-the-art LLMs with reasoning capture, conversation chaining, and comprehensive performance analytics.
 
 **[Live Production Environment](https://arc.markbarney.net) • [Technical Docs](./CLAUDE.md) • [API Reference](./docs/EXTERNAL_API.md) • [Changelog](./CHANGELOG.md)**
 
 ---
 
-## What's New in v4.8.41
+## What's New in v5.1.0
 
-### 🎨 Research surfaces refreshed
-- Split training example cards eliminate scrollbars and ensure consistent sizing across galleries and zoom modals.
-- Analysis results regain the aurora gradient, honeyglass backgrounds, and warm accent palette for a consistent look across layouts.
-- Leaderboards dashboard is now denser, with compact typography and inline metadata that keeps key metrics above the fold.
+### 🎮 ARC3 Agent Playground (In Development)
+- `/arc3/playground` introduces an interactive lab powered by the OpenAI Agents SDK where users can watch agents attempt to solve real ARC-AGI-3 competition games (like ls20 "LockSmith").
+- Features real-time streaming, grid visualization, customizable agent instructions, and performance metrics.
+- Integrates with the official ARC-AGI-3 API at three.arcprize.org for authentic game scenarios.
+- Global navigation and the ARC3 landing page now link directly to the playground for quick access.
 
-### ⚙️ Solver and streaming stability
-- Saturn Visual Solver no longer triggers React re-render loops thanks to a corrected effect dependency list.
-- Grover solver requests sanitize internal options before hitting the OpenAI Responses API, preventing 400 errors from unsupported fields.
-- Grid sizing utilities adapt to extreme aspect ratios so vertical and horizontal puzzles render without scrollbars.
+### 🧠 Backend Agent Runner
+- Real ARC-AGI-3 game integration via `Arc3ApiClient` connects to the official competition API.
+- OpenAI Agents SDK orchestration with Responses API for stateful reasoning across multi-turn puzzle solving.
+- SSE-based streaming infrastructure (matching existing analysis streaming patterns) provides real-time agent progress.
+- Express routes handle game listing, agent configuration, and streaming gameplay sessions.
 
-### 📚 Traceability
-- Recent rollbacks and UI changes are documented in accompanying plans under `docs/2025-10-1x-*` for quick historical context.
+### 🧹 Type Safety Improvements
+- Hardened Saturn work table state transitions to satisfy strict TypeScript checks after the new build pass.
 
 For additional release notes, see [Changelog](./CHANGELOG.md).
 

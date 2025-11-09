@@ -166,9 +166,8 @@ export function useAnalysisResults({
           next.delete(modelKey);
           return next;
         });
-        // Don't reset streaming state immediately - let user see final result
-        // resetStreamingState() will be called when user closes modal manually
-        closeStream();
+        // Don't reset streaming state immediately — keep modal open for review
+        closeStream({ resetState: false });
         await refetchExplanations();
       } catch (err) {
         const message = err instanceof Error ? err.message : 'Streaming completion failed';

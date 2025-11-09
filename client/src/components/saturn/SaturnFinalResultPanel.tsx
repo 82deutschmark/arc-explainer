@@ -57,24 +57,48 @@ const collectPredictedGrids = (analysis?: Record<string, unknown> | null): numbe
     grids.push(parsed);
   };
 
-  if (Array.isArray((analysis as any).predictedOutputs)) {
-    for (const grid of (analysis as any).predictedOutputs as unknown[]) {
-      addGrid(grid);
+  // PRIMARY: Check for individual predictedOutputN fields directly (most defensive approach)
+  // Don't rely on boolean flag which may be serialized as string/number from DB
+  if ((analysis as any).predictedOutput1 !== undefined) {
+    let index = 1;
+    while ((analysis as any)[`predictedOutput${index}`] !== undefined) {
+      addGrid((analysis as any)[`predictedOutput${index}`]);
+      index += 1;
+    }
+    return grids;
+  }
+
+  // FALLBACK: Check multiTestPredictionGrids
+  if ((analysis as any).multiTestPredictionGrids) {
+    try {
+      const gridData = (analysis as any).multiTestPredictionGrids;
+      const parsed = Array.isArray(gridData) ? gridData : JSON.parse(gridData);
+      for (const grid of parsed) {
+        addGrid(grid);
+      }
+      if (grids.length > 0) return grids;
+    } catch (e) {
+      // Continue to next fallback
     }
   }
 
+  // FALLBACK: Check if multiplePredictedOutputs is an array
   if (Array.isArray((analysis as any).multiplePredictedOutputs)) {
     for (const grid of (analysis as any).multiplePredictedOutputs as unknown[]) {
       addGrid(grid);
     }
+    if (grids.length > 0) return grids;
   }
 
-  let index = 1;
-  while ((analysis as any)[`predictedOutput${index}`] !== undefined) {
-    addGrid((analysis as any)[`predictedOutput${index}`]);
-    index += 1;
+  // FALLBACK: Check predictedOutputs array
+  if (Array.isArray((analysis as any).predictedOutputs)) {
+    for (const grid of (analysis as any).predictedOutputs as unknown[]) {
+      addGrid(grid);
+    }
+    if (grids.length > 0) return grids;
   }
 
+  // FALLBACK: Check single field candidates
   const singleFieldCandidates = ['predictedOutputGrid', 'predictedOutput', 'output', 'solution', 'result'];
   for (const key of singleFieldCandidates) {
     if (Object.prototype.hasOwnProperty.call(analysis, key)) {

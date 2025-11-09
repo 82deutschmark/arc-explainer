@@ -145,7 +145,7 @@ export function AdvancedControls({
       <div className="rounded-box border border-base-200 bg-base-100/80 p-3">
         <div className="mb-3 flex items-center justify-between">
           <span className="uppercase tracking-wide text-[10px] text-base-content/60">Sampling</span>
-          <span className="text-[10px] font-medium text-base-content/60">Model: GPT-5, Gemini</span>
+          <span className="text-[10px] font-medium text-base-content/60">Model: GPT-4x only, Gemini</span>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-4 gap-y-3">
@@ -321,8 +321,7 @@ export function AdvancedControls({
             </div>
           </div>
           <p className="text-[11px] text-base-content/60">
-            GPT-5 reasoning modes may override temperature on eligible models. Check model docs before
-            combining aggressive sampling with high reasoning effort.
+            GPT-5 is NOT compatible with temperature settings. These controls are ignored.
           </p>
         </div>
       </div>
