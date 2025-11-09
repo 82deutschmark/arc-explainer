@@ -35,7 +35,7 @@ export interface Arc3AgentStreamState {
     action_counter: number;
     max_actions: number;
     full_reset: boolean;
-    available_actions?: string[];  // List of available action names from API
+    available_actions?: Array<string | number>;  // List of available action identifiers from API
     action?: {
       type: string;
       coordinates?: [number, number];
@@ -630,6 +630,24 @@ export function useArc3AgentStream() {
     [state.gameGuid, state.gameId]
   );
 
+  const initializeGameSession = useCallback((frameData: any) => {
+    setState(prev => ({
+      ...prev,
+      gameGuid: frameData.guid,
+      gameId: frameData.game_id,
+      frames: [{
+        frame: frameData.frame,
+        score: frameData.score,
+        state: frameData.state,
+        action_counter: frameData.action_counter,
+        max_actions: frameData.max_actions,
+        full_reset: frameData.full_reset || false,
+        available_actions: frameData.available_actions,
+      }],
+      currentFrameIndex: 0,
+    }));
+  }, []);
+
   useEffect(() => {
     return () => {
       closeEventSource();
@@ -643,6 +661,7 @@ export function useArc3AgentStream() {
     cancel,
     continueWithMessage,
     executeManualAction,
+    initializeGameSession,
     setCurrentFrame,
     currentFrame: state.frames[state.currentFrameIndex] || null,
     isPlaying: state.status === 'running' && state.streamingStatus === 'in_progress',

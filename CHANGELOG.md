@@ -1,5 +1,9 @@
 # CHANGELOG - Uses semantic versioning (MAJOR.MINOR.PATCH)
 
+# [5.8.1] - 2025-11-08
+### 🐞 Fixes
+- **ARC3 Playground Action Pills**: Normalized `available_actions` tokens from the ARC3 API so the UI keeps every manual action enabled when the backend does not impose explicit restrictions, restoring expected behavior after game initialization.
+
 # [5.8.0] - 2025-11-08
 ### 🎮 Major Feature: Hybrid Manual/Autonomous ARC3 Gameplay
 **Added manual action execution to ARC3 playground, enabling hybrid mode where users can click action pills to manually execute actions alongside or during autonomous agent runs.**
