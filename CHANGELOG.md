@@ -1,4 +1,7 @@
-# CHANGELOG - Uses semantic versioning (MAJOR.MINOR.PATCH)
+# CHANGELOG - Uses semantic versioning (MAJOR.MINOR.PATCH)`r`n
+# [Unreleased] - 2025-11-11
+### ??? Scripts
+- **analyze-openrouter-models.ts**: Now pulls the full ARC1-Eval and ARC2-Eval puzzle lists via /api/puzzle/list, runs each configured OpenRouter model sequentially with rate limiting, and saves explanations through /api/puzzle/save-explained/:id after every analysis.
 
 # [5.8.2] - 2025-11-09
 ### 🐞 Fixes
@@ -6632,3 +6635,4 @@ To enable conversation chaining:
 ## 2025-10-31
 - Docs: Added `docs/31OctDesign.md` specifying a CSS-only, look-only restyle for solver buttons (no structural/behavioral changes). Author: OpenAI Codex Agent.
 - Allow reset after WIN/GAME_OVER: Fixed a logic bug in `server/services/arc3/Arc3GameSimulator.ts` where `applyAction` returned `NO_OP` once a run reached `WIN` or `GAME_OVER`, blocking the `reset_simulation` tool. Reordered handling so `reset` is always honored, and non‑reset actions remain blocked post‑terminal. Agents can now restart games without server restarts.
+

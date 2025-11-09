@@ -756,7 +756,7 @@ export const MODELS: ModelConfig[] = [
     apiModelName: 'anthropic/claude-haiku-4.5',
     modelType: 'openrouter',
     contextWindow: 200000,
-    maxOutputTokens: 16000,
+    maxOutputTokens: 116000,
     releaseDate: "2025-10"
   },
 
@@ -773,7 +773,7 @@ export const MODELS: ModelConfig[] = [
     apiModelName: 'nvidia/nemotron-nano-9b-v2',
     modelType: 'openrouter',
     contextWindow: 128000,
-    maxOutputTokens: 24000,
+    maxOutputTokens: 124000,
     releaseDate: "2025-09"
   },
   {
@@ -790,7 +790,7 @@ export const MODELS: ModelConfig[] = [
     apiModelName: 'nvidia/nemotron-nano-12b-v2-vl:free',
     modelType: 'openrouter',
     contextWindow: 128000,
-    maxOutputTokens: 24000,
+    maxOutputTokens: 124000,
     releaseDate: "2025-10",
     notes: 'Vision-language variant; zero-cost promotional access.'
   },
