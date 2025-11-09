@@ -1,5 +1,11 @@
 # CHANGELOG - Uses semantic versioning (MAJOR.MINOR.PATCH)
 
+# [5.8.2] - 2025-11-09
+### 🐞 Fixes
+- **Multi-Test Display on PuzzleExaminer**: Fixed AnalysisResultCard not displaying predicted grids for puzzles with multiple test cases. The Summary API endpoint was missing critical JSONB fields (`multiplePredictedOutputs`, `multiTestResults`, `multiTestPredictionGrids`). Data was correctly stored in the database but not being returned by the API.
+- **StreamingAnalysisPanel Multi-Test Support**: Enhanced StreamingAnalysisPanel to extract and display multi-test prediction grids from the streaming response. Uses the same three-level fallback strategy as AnalysisResultCard (individual `predictedOutputN` fields → `multiTestPredictionGrids` → `multiplePredictedOutputs`).
+- **TypeScript Error in Arc3GameSelector**: Added type annotation to callback parameter in Array.find() to resolve implicit 'any' type error.
+
 # [5.8.1] - 2025-11-08
 ### 🐞 Fixes
 - **ARC3 Playground Action Pills**: Normalized `available_actions` tokens from the ARC3 API so the UI keeps every manual action enabled when the backend does not impose explicit restrictions, restoring expected behavior after game initialization.
