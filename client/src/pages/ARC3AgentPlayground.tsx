@@ -780,20 +780,20 @@ export default function ARC3AgentPlayground() {
                     gridTemplateRows: `repeat(${resolvedCurrentFrame.length || 64}, 1fr)`,
                   }}
                 >
-                  {Array.from({ length: resolvedCurrentFrame.length || 64 }).map((_, y) =>
-                    Array.from({ length: resolvedCurrentFrame[0]?.length || 64 }).map((_, x) => (
+                  {Array.from({ length: resolvedCurrentFrame.length || 64 }).map((_, row) =>
+                    Array.from({ length: resolvedCurrentFrame[0]?.length || 64 }).map((_, col) => (
                       <button
-                        key={`${x}-${y}`}
+                        key={`${col}-${row}`}
                         onClick={async () => {
                           try {
-                            await executeManualAction('ACTION6', [x, y]);
+                            await executeManualAction('ACTION6', [col, row]);
                             setShowCoordinatePicker(false);
                           } catch (error) {
                             console.error('Failed to execute ACTION6:', error);
                           }
                         }}
                         className="hover:bg-white/30 hover:ring-2 hover:ring-blue-500 transition-all cursor-pointer"
-                        title={`Execute ACTION6 at (${x}, ${y})`}
+                        title={`Execute ACTION6 at (${col}, ${row}) [x=${col}, y=${row}]`}
                       />
                     ))
                   )}
