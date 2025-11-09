@@ -1,5 +1,11 @@
 # CHANGELOG - Uses semantic versioning (MAJOR.MINOR.PATCH)`r`n
-# [Unreleased] - 2025-11-11
+# [5.8.4] - 2025-11-09 17:05 EST
+### 🔄 ARC3 Conversation Chaining
+- **Arc3RealGameRunner** now forwards `previousResponseId` into the OpenAI Agents SDK and captures the returned `response.id`, enabling seamless continuation runs.
+- **Arc3StreamService / types** pass `previousResponseId` & `storeResponse` through initial and continuation payloads so Responses API context stays persisted between turns.
+- Streaming completion metadata emits `providerResponseId`, allowing downstream services and UI to route chained follow-ups reliably.
+
+# [5.8.3] - 2025-11-09 16:40 EST
 ### ??? Scripts
 - **analyze-openrouter-models.ts**: Now pulls the full ARC1-Eval and ARC2-Eval puzzle lists via /api/puzzle/list, runs each configured OpenRouter model sequentially with rate limiting, and saves explanations through /api/puzzle/save-explained/:id after every analysis.
 
