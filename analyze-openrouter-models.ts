@@ -17,14 +17,16 @@ type SourceKey = 'ARC1-Eval' | 'ARC2-Eval';
 type ModelKey =
   | 'nvidia/nemotron-nano-12b-v2-vl:free'
   | 'openrouter/polaris-alpha'
-  | 'minimax/minimax-m2:free';
+  | 'minimax/minimax-m2:free'
+  | 'moonshotai/kimi-k2-thinking';
 
 const API_BASE_URL = process.env.API_BASE_URL || 'http://localhost:5000';
 const SOURCES: SourceKey[] = ['ARC1-Eval', 'ARC2-Eval'];
 const MODEL_KEYS: ModelKey[] = [
   'nvidia/nemotron-nano-12b-v2-vl:free',
   'openrouter/polaris-alpha',
-  'minimax/minimax-m2:free'
+  'minimax/minimax-m2:free',
+  'moonshotai/kimi-k2-thinking'
 ];
 
 const RATE_LIMIT_DELAY_MS = Number(process.env.OPENROUTER_RATE_LIMIT_MS) || 5000;
