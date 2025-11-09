@@ -90,6 +90,54 @@ export function StreamingAnalysisPanel({
 
   const visibleOutput = (formattedStructuredJson ?? text)?.trim();
 
+  // Extract multi-test prediction grids from structuredJson
+  const predictedGrids: number[][][] = React.useMemo(() => {
+    if (!structuredJson || typeof structuredJson !== 'object') {
+      return [];
+    }
+
+    const obj = structuredJson as Record<string, any>;
+
+    // Check for individual predictedOutputN fields (most defensive approach)
+    if (obj.predictedOutput1 !== undefined) {
+      const grids: number[][][] = [];
+      let index = 1;
+
+      while (obj[`predictedOutput${index}`] !== undefined) {
+        const grid = obj[`predictedOutput${index}`];
+        if (grid && Array.isArray(grid) && grid.length > 0) {
+          grids.push(grid);
+        }
+        index++;
+      }
+
+      if (grids.length > 0) {
+        return grids;
+      }
+    }
+
+    // Fallback: Check multiTestPredictionGrids
+    if (obj.multiTestPredictionGrids) {
+      try {
+        const gridData = obj.multiTestPredictionGrids;
+        if (Array.isArray(gridData)) {
+          return gridData.filter((g: any) => Array.isArray(g) && g.length > 0);
+        } else if (typeof gridData === 'string') {
+          return JSON.parse(gridData);
+        }
+      } catch (e) {
+        // Failed to parse - continue
+      }
+    }
+
+    // Fallback: Check multiplePredictedOutputs
+    if (Array.isArray(obj.multiplePredictedOutputs)) {
+      return obj.multiplePredictedOutputs.filter((g: any) => Array.isArray(g) && g.length > 0);
+    }
+
+    return [];
+  }, [structuredJson]);
+
   // Get test grids
   const testExample = task?.test?.[0];
 
@@ -149,6 +197,30 @@ export function StreamingAnalysisPanel({
                   </pre>
                 </div>
               )}
+            </div>
+          )}
+
+          {/* Multi-Test Prediction Grids Section */}
+          {predictedGrids && predictedGrids.length > 0 && status === 'completed' && (
+            <div className="space-y-2">
+              <p className="text-xs font-semibold text-blue-600 uppercase tracking-wide">
+                Predicted Outputs ({predictedGrids.length} tests)
+              </p>
+              <div className="flex flex-wrap gap-3 p-2 bg-blue-50/50 rounded-md border border-blue-150/50">
+                {predictedGrids.map((grid, index) => (
+                  <div key={index} className="flex flex-col items-center gap-1">
+                    <p className="text-[10px] text-blue-500 font-medium">Test {index + 1}</p>
+                    <GridDisplay
+                      grid={grid}
+                      label=""
+                      showDimensions={false}
+                      className="border border-blue-200 bg-white rounded-md shadow-xs"
+                      maxWidth={200}
+                      maxHeight={200}
+                    />
+                  </div>
+                ))}
+              </div>
             </div>
           )}
 
