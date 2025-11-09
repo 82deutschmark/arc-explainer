@@ -139,7 +139,7 @@ export default function ARC3AgentPlayground() {
   const [showUserInput, setShowUserInput] = useState(false);
 
   // Streaming
-  const { state, start, cancel, continueWithMessage, executeManualAction, setCurrentFrame, currentFrame, isPlaying } = useArc3AgentStream();
+  const { state, start, cancel, continueWithMessage, executeManualAction, setCurrentFrame, isPlaying } = useArc3AgentStream();
 
   // Manual action state
   const [showCoordinatePicker, setShowCoordinatePicker] = useState(false);
@@ -203,6 +203,8 @@ export default function ARC3AgentPlayground() {
     return frameData.frame as number[][][];
   };
 
+  // Compute currentFrame directly from state to ensure re-renders trigger updates
+  const currentFrame = state.frames[state.currentFrameIndex] || null;
   const resolvedCurrentFrame = resolveFrameLayers(currentFrame);
 
   return (
