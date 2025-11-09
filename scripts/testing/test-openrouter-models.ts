@@ -48,8 +48,6 @@ const OPENROUTER_MODELS_TO_TEST = [
   'qwen/qwen3-30b-a3b-instruct',
   'qwen/qwen3-235b-a22b-thinking',
   'qwen/qwen3-coder',
-  'moonshotai/kimi-k2',
-  'moonshotai/kimi-k2-0905',
   'moonshotai/kimi-k2-thinking',
   'moonshotai/kimi-dev-72b:free',
   'openrouter/polaris-alpha',

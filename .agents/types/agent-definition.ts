@@ -360,9 +360,8 @@ export type ModelName =
   | 'deepseek/deepseek-r1-0528:nitro'
 
   // Other open source models
-  | 'moonshotai/kimi-k2'
   | 'moonshotai/kimi-k2-thinking'
-  | 'moonshotai/kimi-k2:nitro'
+  | 'moonshotai/kimi-k2-thinking:nitro'
   | 'openrouter/polaris-alpha'
   | 'nvidia/nemotron-nano-12b-v2-vl:free'
   | 'z-ai/glm-4.5'
