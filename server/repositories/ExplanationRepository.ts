@@ -318,8 +318,12 @@ export class ExplanationRepository extends BaseRepository implements IExplanatio
           COALESCE(is_prediction_correct, false) AS "isPredictionCorrect",
           trustworthiness_score AS "trustworthinessScore",
           COALESCE(has_multiple_predictions, false) AS "hasMultiplePredictions",
+          predicted_output_grid AS "predictedOutputGrid",
+          multiple_predicted_outputs AS "multiplePredictedOutputs",
+          multi_test_results AS "multiTestResults",
           multi_test_all_correct AS "multiTestAllCorrect",
           multi_test_average_accuracy AS "multiTestAverageAccuracy",
+          multi_test_prediction_grids AS "multiTestPredictionGrids",
           rebutting_explanation_id AS "rebuttingExplanationId",
           created_at AS "createdAt"
         FROM explanations
