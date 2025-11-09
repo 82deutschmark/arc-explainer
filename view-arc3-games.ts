@@ -5,8 +5,7 @@
  * SRP/DRY check: Pass - Single purpose script for exploring ARC3 game states
  */
 
-const ARC3_API_KEY = "de61d386-c2e7-4c0f-9546-511c505a4381";
-const BASE_URL = "https://three.arcprize.org";
+const BASE_URL = "http://localhost:5000";
 
 interface GameInfo {
   game_id: string;
@@ -27,7 +26,6 @@ async function makeRequest<T>(endpoint: string, options: RequestInit = {}): Prom
   const url = `${BASE_URL}${endpoint}`;
   const headers = {
     'Content-Type': 'application/json',
-    'X-API-Key': ARC3_API_KEY,
     ...options.headers,
   };
 
@@ -38,32 +36,25 @@ async function makeRequest<T>(endpoint: string, options: RequestInit = {}): Prom
 
   if (!response.ok) {
     const errorText = await response.text();
-    throw new Error(`ARC3 API request failed: ${response.status} ${response.statusText} - ${errorText}`);
+    throw new Error(`API request failed: ${response.status} ${response.statusText} - ${errorText}`);
   }
 
   return await response.json() as T;
 }
 
-async function openScorecard(): Promise<string> {
-  const response = await makeRequest<{ card_id: string }>('/api/scorecard/open', {
-    method: 'POST',
-    body: JSON.stringify({}),
-  });
-  return response.card_id;
-}
-
 async function listGames(): Promise<GameInfo[]> {
-  return makeRequest<GameInfo[]>('/api/games');
+  const response = await makeRequest<{ success: boolean; data: GameInfo[] }>('/api/arc3/games');
+  return response.data;
 }
 
-async function startGame(gameId: string, cardId: string): Promise<FrameData> {
-  return makeRequest<FrameData>('/api/cmd/RESET', {
+async function startGame(gameId: string): Promise<FrameData> {
+  const response = await makeRequest<{ success: boolean; data: FrameData }>('/api/arc3/start-game', {
     method: 'POST',
     body: JSON.stringify({
       game_id: gameId,
-      card_id: cardId,
     }),
   });
+  return response.data;
 }
 
 function visualizeGrid(frame: number[][][]): string {
@@ -107,12 +98,7 @@ function visualizeGrid(frame: number[][][]): string {
 async function main() {
   console.log('🎮 ARC3 GAMES EXPLORER');
   console.log('='.repeat(80));
-  console.log('Fetching all available games and their initial states...\n');
-
-  // Open a scorecard (required before starting games)
-  console.log('📋 Opening scorecard...');
-  const cardId = await openScorecard();
-  console.log(`✓ Scorecard opened: ${cardId}\n`);
+  console.log('Fetching all available games and their initial states via local server...\n');
 
   // Get list of games
   console.log('📜 Fetching games list...');
@@ -126,7 +112,7 @@ async function main() {
     console.log('-'.repeat(80));
 
     try {
-      const frameData = await startGame(game.game_id, cardId);
+      const frameData = await startGame(game.game_id);
 
       console.log(`   State: ${frameData.state}`);
       console.log(`   Score: ${frameData.score}`);
