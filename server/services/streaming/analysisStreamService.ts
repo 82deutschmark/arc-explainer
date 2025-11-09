@@ -21,6 +21,8 @@ import { aiServiceFactory, canonicalizeModelKey } from "../aiServiceFactory";
 import type { PromptOptions } from "../promptBuilder";
 import type { ServiceOptions } from "../base/BaseAIService";
 import { resolveStreamingConfig } from "@shared/config/streaming";
+import { puzzleService } from "../puzzleService";
+import { validateStreamingResult } from "../streamingValidator";
 
 export interface StreamAnalysisPayload {
   taskId: string;
@@ -147,7 +149,11 @@ export class AnalysisStreamService {
       const customPrompt = payload.customPrompt;
       const captureReasoning = payload.captureReasoning ?? true;
       const retryMode = payload.retryMode ?? false;
-      const streamHarness = {
+
+      // Load puzzle for validation
+      const puzzle = await puzzleService.getPuzzleById(taskId);
+
+      const baseHarness = {
         sessionId,
         emit: (chunk: any) => {
           const enrichedChunk = {
@@ -173,6 +179,36 @@ export class AnalysisStreamService {
         metadata: {
           taskId,
           modelKey: originalModelKey,
+        },
+      };
+
+      // Wrap base harness with validation (matches Saturn pattern)
+      const streamHarness = {
+        sessionId: baseHarness.sessionId,
+        emit: baseHarness.emit,
+        emitEvent: baseHarness.emitEvent,
+        metadata: baseHarness.metadata,
+        end: async (summary: any) => {
+          // Validate streaming result before sending completion
+          if (summary?.responseSummary?.analysis) {
+            try {
+              logger.debug('[AnalysisStream] Validating streaming result before completion', 'stream-service');
+              const validatedAnalysis = validateStreamingResult(
+                summary.responseSummary.analysis,
+                puzzle,
+                promptId
+              );
+              summary.responseSummary.analysis = validatedAnalysis;
+            } catch (validationError) {
+              const message = validationError instanceof Error ? validationError.message : String(validationError);
+              logger.logError(
+                `[AnalysisStream] Validation failed, sending unvalidated result: ${message}`,
+                { error: validationError, context: 'stream-service' }
+              );
+            }
+          }
+
+          await baseHarness.end(summary);
         },
       };
 

@@ -50,10 +50,25 @@ export const ChatIterationCard: React.FC<ChatIterationCardProps> = ({
     ? explanation.multiTestAllCorrect === true
     : explanation.isPredictionCorrect === true;
 
-  // Get predicted grid
-  const predictedGrid = explanation.predictedOutputGrid || 
-    explanation.multiplePredictedOutputs?.[0] || 
-    [[0]];
+  // Get predicted grid - handle both single and multi-test predictions
+  const predictedGrid = React.useMemo(() => {
+    // First try single prediction
+    if (explanation.predictedOutputGrid) {
+      return Array.isArray(explanation.predictedOutputGrid)
+        ? explanation.predictedOutputGrid
+        : explanation.predictedOutputGrid;
+    }
+
+    // Then try multi-prediction (check for predictedOutput1 directly)
+    // Don't rely on boolean flag which may be serialized as string/number from DB
+    if ((explanation as any).predictedOutput1) {
+      const grid = (explanation as any).predictedOutput1;
+      return Array.isArray(grid) ? grid : [[0]];
+    }
+
+    // Fallback
+    return [[0]];
+  }, [explanation]);
 
   // Get confidence
   const confidence = explanation.confidence || 0;

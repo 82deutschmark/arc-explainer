@@ -115,12 +115,12 @@ export const AnalysisResultContent: React.FC<AnalysisResultContentProps> = ({
   
   
   const isEmptyResult = !result || (
-    (!result.patternDescription || result.patternDescription.trim() === '') && 
-    (!result.solvingStrategy || result.solvingStrategy.trim() === '') && 
-    (!result.alienMeaning || result.alienMeaning.trim() === '') && 
+    (!result.patternDescription || result.patternDescription.trim() === '') &&
+    (!result.solvingStrategy || result.solvingStrategy.trim() === '') &&
+    (!result.alienMeaning || result.alienMeaning.trim() === '') &&
     (!result.hints || result.hints.length === 0) &&
-    !result.predictedOutputGrid && 
-    (!result.multiplePredictedOutputs || (Array.isArray(result.multiplePredictedOutputs) && result.multiplePredictedOutputs.length === 0))
+    !result.predictedOutputGrid &&
+    !(result as any).predictedOutput1 // Check for multi-prediction grids directly
   );
 
   if (isEmptyResult) {

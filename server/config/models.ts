@@ -576,6 +576,24 @@ export const MODELS: ModelConfig[] = [
     
 
   {
+    key: 'moonshotai/kimi-k2-thinking',
+    name: 'Moonshot Kimi K2 Thinking',
+    color: 'bg-slate-700',
+    premium: true,
+    cost: { input: '$0.60', output: '$2.50' },
+    supportsTemperature: true,
+    provider: 'OpenRouter',
+    responseTime: { speed: 'slow', estimate: '2-4 min' },
+    isReasoning: true,
+    apiModelName: 'moonshotai/kimi-k2-thinking',
+    modelType: 'openrouter',
+    contextWindow: 262144,
+    maxOutputTokens: 31000,
+    releaseDate: "2025-11",
+  },
+  
+
+  {
     key: 'moonshotai/kimi-dev-72b:free',
     name: 'Kimi Dev 72B (Free)',
     color: 'bg-slate-400',
@@ -590,6 +608,23 @@ export const MODELS: ModelConfig[] = [
     contextWindow: 131072,
     maxOutputTokens: 31000
 
+  },
+  {
+    key: 'openrouter/polaris-alpha',
+    name: 'OpenRouter Polaris (Temporary Alias)',
+    color: 'bg-sky-700',
+    premium: false,
+    cost: { input: '$0.00', output: '$0.00' },
+    supportsTemperature: true,
+    provider: 'OpenRouter',
+    responseTime: { speed: 'moderate', estimate: '30-90 sec' },
+    isReasoning: true,
+    apiModelName: 'openrouter/polaris-alpha',
+    modelType: 'openrouter',
+    contextWindow: 256000,
+    maxOutputTokens: 60000,
+    releaseDate: "2025-11",
+    notes: 'Temporary cloaked model name; rename once official alias announced.'
   },
   // xAI Grok Models (Direct API via Responses API)
   {
@@ -740,6 +775,24 @@ export const MODELS: ModelConfig[] = [
     contextWindow: 128000,
     maxOutputTokens: 24000,
     releaseDate: "2025-09"
+  },
+  {
+    key: 'nvidia/nemotron-nano-12b-v2-vl:free',
+    name: 'Nemotron Nano 12B V2 VL (Free)',
+    color: 'bg-yellow-500',
+    premium: false,
+    cost: { input: '$0.00', output: '$0.00' },
+    supportsTemperature: false,
+    supportsVision: true,
+    provider: 'OpenRouter',
+    responseTime: { speed: 'moderate', estimate: '1-2 min' },
+    isReasoning: false,
+    apiModelName: 'nvidia/nemotron-nano-12b-v2-vl:free',
+    modelType: 'openrouter',
+    contextWindow: 128000,
+    maxOutputTokens: 24000,
+    releaseDate: "2025-10",
+    notes: 'Vision-language variant; zero-cost promotional access.'
   },
   {
     key: 'amazon/nova-premier-v1',

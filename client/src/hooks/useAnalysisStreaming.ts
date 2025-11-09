@@ -143,12 +143,14 @@ export function useAnalysisStreaming() {
     []
   );
 
-  const closeStream = useCallback(() => {
+  const closeStream = useCallback((options?: { resetState?: boolean }) => {
     if (streamHandleRef.current) {
       streamHandleRef.current.close();
       streamHandleRef.current = null;
     }
-    setState(INITIAL_STATE);
+    if (options?.resetState !== false) {
+      setState(INITIAL_STATE);
+    }
   }, []);
 
   useEffect(() => {
