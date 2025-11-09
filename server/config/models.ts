@@ -541,41 +541,6 @@ export const MODELS: ModelConfig[] = [
     maxOutputTokens: 31000
   },
   {
-    key: 'moonshotai/kimi-k2',
-    name: 'Moonshot Kimi K2',
-    color: 'bg-slate-600',
-    premium: true,
-    cost: { input: '$0.14', output: '$2.49' },
-    supportsTemperature: true,
-    provider: 'OpenRouter',
-    responseTime: { speed: 'moderate', estimate: '1-2 min' },
-    isReasoning: true,
-    apiModelName: 'moonshotai/kimi-k2',
-    modelType: 'openrouter',
-    contextWindow: 63000,
-    maxOutputTokens: 31000,
-    releaseDate: "2025-08",
-  },
-// New September 2025 Model
-  {
-    key: 'moonshotai/kimi-k2-0905',
-    name: 'Moonshot Kimi K2 (Sep 2025)',
-    color: 'bg-slate-600',
-    premium: true,
-    cost: { input: '$1.00', output: '$3.00' },
-    supportsTemperature: false,
-    provider: 'OpenRouter',
-    responseTime: { speed: 'moderate', estimate: '1-2 min' },
-    isReasoning: true,
-    apiModelName: 'moonshotai/kimi-k2-0905',
-    modelType: 'openrouter',
-    contextWindow: 63000,
-    maxOutputTokens: 31000,
-    releaseDate: "2025-09",
-  },
-    
-
-  {
     key: 'moonshotai/kimi-k2-thinking',
     name: 'Moonshot Kimi K2 Thinking',
     color: 'bg-slate-700',
