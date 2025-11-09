@@ -39,6 +39,58 @@ interface ModelInfo {
   releaseDate?: string;
 }
 
+const normalizeAvailableActionName = (token: string | number | null | undefined): string | null => {
+  if (token === null || token === undefined) {
+    return null;
+  }
+
+  if (typeof token === 'number' && Number.isFinite(token)) {
+    if (token === 0) {
+      return 'RESET';
+    }
+    return `ACTION${token}`;
+  }
+
+  if (typeof token === 'string') {
+    const trimmed = token.trim();
+    if (!trimmed) {
+      return null;
+    }
+
+    const upper = trimmed.toUpperCase();
+    const canonical = upper.replace(/[\s_-]+/g, '');
+
+    if (canonical === 'RESET') {
+      return 'RESET';
+    }
+
+    if (canonical.startsWith('ACTION')) {
+      const suffix = canonical.slice(6);
+      if (!suffix) {
+        return null;
+      }
+      const parsed = parseInt(suffix, 10);
+      if (Number.isNaN(parsed)) {
+        return null;
+      }
+      if (parsed === 0) {
+        return 'RESET';
+      }
+      return `ACTION${parsed}`;
+    }
+
+    if (/^\d+$/.test(canonical)) {
+      const parsed = parseInt(canonical, 10);
+      if (parsed === 0) {
+        return 'RESET';
+      }
+      return `ACTION${parsed}`;
+    }
+  }
+
+  return null;
+};
+
 export default function ARC3AgentPlayground() {
   // Auto-scroll ref for streaming panel
   const reasoningContainerRef = React.useRef<HTMLDivElement>(null);
@@ -111,7 +163,13 @@ export default function ARC3AgentPlayground() {
       const response = await apiRequest('POST', '/api/arc3/start-game', { game_id: gameId });
       const data = await response.json();
       if (data.success && data.data?.frame) {
-        setInitialGrid(data.data.frame);
+        const frameData = data.data;
+        console.log('[ARC3] Initial frame data from API:', frameData);
+        console.log('[ARC3] Available actions from API:', frameData.available_actions);
+        setInitialGrid(frameData.frame);
+
+        // Initialize the hook state with the game session so manual actions work immediately
+        initializeGameSession(frameData);
       }
     } catch (error) {
       console.error('[ARC3] Failed to fetch game grid:', error);
@@ -139,7 +197,7 @@ export default function ARC3AgentPlayground() {
   const [showUserInput, setShowUserInput] = useState(false);
 
   // Streaming
-  const { state, start, cancel, continueWithMessage, executeManualAction, setCurrentFrame, isPlaying } = useArc3AgentStream();
+  const { state, start, cancel, continueWithMessage, executeManualAction, initializeGameSession, setCurrentFrame, isPlaying } = useArc3AgentStream();
 
   // Manual action state
   const [showCoordinatePicker, setShowCoordinatePicker] = useState(false);
@@ -206,6 +264,27 @@ export default function ARC3AgentPlayground() {
   // Compute currentFrame directly from state to ensure re-renders trigger updates
   const currentFrame = state.frames[state.currentFrameIndex] || null;
   const resolvedCurrentFrame = resolveFrameLayers(currentFrame);
+  const normalizedAvailableActions = React.useMemo(() => {
+    const tokens = currentFrame?.available_actions;
+    if (!tokens || tokens.length === 0) {
+      return null;
+    }
+
+    const normalized = new Set<string>();
+    let fallbackAllowAll = false;
+
+    for (const token of tokens) {
+      const normalizedToken = normalizeAvailableActionName(token);
+      if (normalizedToken) {
+        normalized.add(normalizedToken);
+      } else if (token !== null && token !== undefined) {
+        fallbackAllowAll = true;
+        break;
+      }
+    }
+
+    return fallbackAllowAll ? null : normalized;
+  }, [currentFrame]);
 
   return (
     <div className="min-h-screen bg-background">
@@ -467,8 +546,7 @@ export default function ARC3AgentPlayground() {
                   const displayName = actionName.replace('ACTION', 'Action ');
 
                   // Check if action is available according to the API
-                  const availableActions = currentFrame?.available_actions;
-                  const isAvailable = !availableActions || availableActions.length === 0 || availableActions.includes(actionName);
+                  const isAvailable = !normalizedAvailableActions || normalizedAvailableActions.has(actionName);
 
                   const handleActionClick = async () => {
                     if (actionName === 'ACTION6') {
