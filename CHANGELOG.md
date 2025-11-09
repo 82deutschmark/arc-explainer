@@ -1,5 +1,9 @@
 # CHANGELOG - Uses semantic versioning (MAJOR.MINOR.PATCH)
 
+# [5.8.3] - 2025-11-09
+### 🐞 Fixes
+- **ARC3 ACTION6 Coordinate Selection**: Fixed coordinate mapping in ACTION6 coordinate picker. Renamed loop variables from (x, y) to (row, col) for clarity and ensured coordinates are sent as [col, row] which correctly maps to [x, y]. Added clearer tooltip showing both (col, row) and [x=col, y=row] format.
+
 # [5.8.2] - 2025-11-09
 ### 🐞 Fixes
 - **Multi-Test Display on PuzzleExaminer**: Fixed AnalysisResultCard not displaying predicted grids for puzzles with multiple test cases. The Summary API endpoint was missing critical JSONB fields (`multiplePredictedOutputs`, `multiTestResults`, `multiTestPredictionGrids`). Data was correctly stored in the database but not being returned by the API.
