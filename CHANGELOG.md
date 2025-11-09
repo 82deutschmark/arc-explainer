@@ -1,5 +1,62 @@
 # CHANGELOG - Uses semantic versioning (MAJOR.MINOR.PATCH)
 
+# [5.8.0] - 2025-11-08
+### 🎮 Major Feature: Hybrid Manual/Autonomous ARC3 Gameplay
+**Added manual action execution to ARC3 playground, enabling hybrid mode where users can click action pills to manually execute actions alongside or during autonomous agent runs.**
+
+#### New Features
+- **Clickable Action Pills**: All action pills (ACTION1-7) are now interactive buttons
+  - Click any action to manually execute it immediately
+  - Pills preserve all existing visual states (green=active, blue=used, gray=unused, red=unavailable)
+  - Disabled when no active game session exists
+- **ACTION7 Support**: Added missing ACTION7 action to both backend and UI
+- **ACTION6 Coordinate Picker**: Visual grid overlay for selecting coordinates
+  - Click ACTION6 to open modal with clickable grid
+  - Each cell is clickable to execute ACTION6 at that position
+  - Hover effects and tooltips show coordinates
+- **Action Availability Filtering**: Pills respect API's `available_actions` field
+  - Unavailable actions shown in red and disabled
+  - Tooltips explain why actions are unavailable
+  - Dynamic updates based on game state
+- **True Hybrid Mode**: No mode switching needed - manually inject actions anytime
+  - Works during autonomous agent runs
+  - Works before/after agent runs
+  - All actions recorded in timeline with "Manual" prefix
+- **Ultra-Compact Header**: Reduced header from ~20% screen height to single 10px line
+  - Inline game selector with smaller fonts
+  - Minimal spacing and padding throughout
+
+#### Backend Changes
+- **New Endpoint**: `POST /api/arc3/manual-action`
+  - Accepts: `game_id`, `guid`, `action` (ACTION1-7), optional `coordinates`
+  - Validates ACTION6 requires coordinates (0-63 range)
+  - Returns updated FrameData
+- **Updated Types**: Added ACTION7 to GameAction interface and constants
+- **Enhanced FrameData**: Added `available_actions?: string[]` field
+
+#### Frontend Changes
+- **New Hook Method**: `executeManualAction(action, coordinates?)` in useArc3AgentStream
+  - Makes API call to manual-action endpoint
+  - Updates frame state and timeline
+  - Handles errors gracefully
+- **Fixed Grid Updates**: Compute currentFrame directly from state to trigger re-renders
+- **Coordinate Picker Dialog**: Modal with clickable grid overlay for ACTION6
+- **Action Pill Enhancement**: Convert from div to button with click handlers
+
+#### Files Changed
+- `server/routes/arc3.ts`: Added manual-action endpoint with validation
+- `server/services/arc3/Arc3ApiClient.ts`: Added ACTION7, available_actions field
+- `server/services/arc3/utils/constants.ts`: Added ACTION7 constant
+- `client/src/hooks/useArc3AgentStream.ts`: Added executeManualAction method, available_actions to state
+- `client/src/pages/ARC3AgentPlayground.tsx`: Made pills clickable, added ACTION7, coordinate picker, ultra-compact header, fixed grid update reactivity
+
+#### Visual States
+- **Green + Pulsing**: Action currently executing (agent)
+- **Blue with count**: Action has been used (×N)
+- **Gray**: Action available but not yet used
+- **Red**: Action not available in current game state
+- **Disabled/Faded**: No active game session
+
 # [5.7.4] - 2025-11-08
 ### 🎨 UI Tweaks
 - Repositioned ARC3 playground game selector into the subheader and moved action pills into the main content so layout matches latest mockups.
