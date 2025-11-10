@@ -1,4 +1,14 @@
 # CHANGELOG - Uses semantic versioning (MAJOR.MINOR.PATCH)`r`n
+# [5.8.5] - 2025-11-10
+### 🧩 ARC3 Reset Compliance Fix
+- Manual RESET now includes `card_id` in the backend request body, matching the official ARC-AGI-3 API and the ClaudeCode SDK reference. This fixes intermittent reset failures when using the Reset pill in the playground.
+
+#### Details
+- `server/services/arc3/Arc3ApiClient.ts`: `executeAction()` adds `card_id` when `action === 'RESET'`. Throws a clear error if a scorecard hasn’t been opened yet.
+- Behavior aligns with docs: providing `guid` resets the current session; two consecutive RESETs guarantee a full game reset.
+
+> Note: Continuation currently fetches a frame by issuing a first action to reconstruct state. A future improvement is to pass the last known frame from the client to avoid a side-effectful call.
+
 # [5.8.4] - 2025-11-09 17:05 EST
 ### 🔄 ARC3 Conversation Chaining
 - **Arc3RealGameRunner** now forwards `previousResponseId` into the OpenAI Agents SDK and captures the returned `response.id`, enabling seamless continuation runs.
