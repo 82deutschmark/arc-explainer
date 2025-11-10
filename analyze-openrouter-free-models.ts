@@ -1,13 +1,11 @@
 /**
- * Author: Codex
- * Date: 2025-11-11
- * PURPOSE: Analyze ARC Eval puzzles by firing requests to one OpenRouter model
- * (kimi-k2-thinking) spaced by 1s between submissions. It fetches puzzle IDs
- * with `/api/puzzle/list?source=...`, initiates analysis for each puzzle via
- * `/api/puzzle/analyze/:id/:model`, and saves explanations with
- * `/api/puzzle/save-explained/:id`. Requests are launched sequentially with a
- * 1s gap between starts but resolve concurrently in the background.
- * SRP/DRY check: Pass — API helpers are encapsulated; sequencing logic isolated.
+ * Author: Cascade
+ * Date: 2025-11-09
+ * PURPOSE: Analyze ARC Eval puzzles using the free Minimax M2 model. Pulls ARC1 / ARC2 evaluation puzzle IDs,
+ * runs the configured model with rate-limited launch spacing, and persists explanations through
+ * the existing analysis + save endpoints.
+ * SRP/DRY check: Pass — shared helpers are reused from the paid-model script with
+ * model iteration generalized.
  */
 
 import axios from 'axios';
@@ -17,18 +15,41 @@ dotenv.config();
 
 type SourceKey = 'ARC1-Eval' | 'ARC2-Eval';
 
-type ModelKey =
-  | 'moonshotai/kimi-k2-thinking';
+type ModelKey = 'minimax/minimax-m2:free';
 
 const API_BASE_URL = process.env.API_BASE_URL || 'http://localhost:5000';
-const SOURCES: SourceKey[] = ['ARC1-Eval', 'ARC2-Eval'];
-const MODEL_KEY: ModelKey = 'moonshotai/kimi-k2-thinking';
+const SOURCES: SourceKey[] = ['ARC2-Eval', 'ARC1-Eval'];
 
-const RATE_LIMIT_DELAY_MS = Number(process.env.OPENROUTER_RATE_LIMIT_MS) || 1000;
-// Not used now, but retained for clarity if future models are added.
+const DEFAULT_MODEL_KEYS: ModelKey[] = ['minimax/minimax-m2:free'];
+
+const RATE_LIMIT_DELAY_MS = Number(process.env.OPENROUTER_RATE_LIMIT_MS) || 5000;
 const MODEL_SWITCH_DELAY_MS = Number(process.env.OPENROUTER_MODEL_SWITCH_DELAY_MS) || 3000;
-const PUZZLE_TIMEOUT_MS = 10 * 60 * 1000; // 10 minutes
+const PUZZLE_TIMEOUT_MS = 30 * 60 * 1000; // 10 minutes
 const SAVE_TIMEOUT_MS = 30 * 1000; // 30 seconds
+
+const knownModelKeys = new Set<ModelKey>(DEFAULT_MODEL_KEYS);
+
+function parseModelKeys(raw?: string): ModelKey[] {
+  if (!raw) {
+    return DEFAULT_MODEL_KEYS;
+  }
+
+  const parsed = raw
+    .split(',')
+    .map(entry => entry.trim())
+    .filter((entry): entry is ModelKey => knownModelKeys.has(entry as ModelKey));
+
+  if (parsed.length === 0) {
+    console.warn(
+      'OPENROUTER_FREE_MODELS provided but contained no recognized model keys; falling back to defaults.'
+    );
+    return DEFAULT_MODEL_KEYS;
+  }
+
+  return parsed;
+}
+
+const MODEL_KEYS: ModelKey[] = parseModelKeys(process.env.OPENROUTER_FREE_MODELS);
 
 interface AnalysisRequest {
   temperature: number;
@@ -134,27 +155,29 @@ async function analyzePuzzleWithModel(
   } catch (error: any) {
     const duration = Math.round((Date.now() - startTime) / 1000);
     const message =
-      error.response?.data?.message || error.response?.data?.error || error.message || 'Unknown failure';
+      error.response?.data?.message ||
+      error.response?.data?.error ||
+      error.message ||
+      'Unknown failure';
     console.error(`Error for ${puzzleId} [${modelKey}]: ${message}`);
     return { puzzleId, modelKey, source, success: false, responseTime: duration, error: message };
   }
 }
 
-// Fires analyses to kimi with a 1s gap between starts; does not wait for each
-// to finish before launching the next. Collects results when all settle.
-async function fireKimiWithSpacing(
+async function fireModelWithSpacing(
+  modelKey: ModelKey,
   source: SourceKey,
   puzzleIds: string[]
 ): Promise<AnalysisResult[]> {
-  console.log(`Firing ${MODEL_KEY} across ${puzzleIds.length} puzzles from ${source} (1s spacing)`);
+  console.log(`Firing ${modelKey} across ${puzzleIds.length} puzzles from ${source} (1s spacing)`);
 
   const pending: Promise<AnalysisResult>[] = [];
 
   for (let index = 0; index < puzzleIds.length; index++) {
     const puzzleId = puzzleIds[index];
-    // Launch without awaiting completion
-    const p = analyzePuzzleWithModel(puzzleId, MODEL_KEY, source);
-    pending.push(p);
+    const promise = analyzePuzzleWithModel(puzzleId, modelKey, source);
+    pending.push(promise);
+
     if (index < puzzleIds.length - 1) {
       await delay(RATE_LIMIT_DELAY_MS);
     }
@@ -168,18 +191,48 @@ async function fireKimiWithSpacing(
   const successCount = results.filter(r => r.success).length;
   const failureCount = results.length - successCount;
   console.log(
-    `${MODEL_KEY} on ${source} completed: ${successCount}/${results.length} succeeded, ${failureCount} failed`
+    `${modelKey} on ${source} completed: ${successCount}/${results.length} succeeded, ${failureCount} failed`
   );
 
   return results;
 }
 
+function summarizeByModel(results: AnalysisResult[]): void {
+  const byModel = new Map<ModelKey, { total: number; success: number; failures: number }>();
+
+  for (const modelKey of MODEL_KEYS) {
+    byModel.set(modelKey, { total: 0, success: 0, failures: 0 });
+  }
+
+  for (const result of results) {
+    const entry = byModel.get(result.modelKey);
+    if (!entry) {
+      continue;
+    }
+
+    entry.total += 1;
+    if (result.success) {
+      entry.success += 1;
+    } else {
+      entry.failures += 1;
+    }
+  }
+
+  console.log('\nPer-model summary');
+  console.log('='.repeat(60));
+  byModel.forEach((stats, modelKey) => {
+    console.log(
+      `${modelKey}: ${stats.success}/${stats.total} succeeded, ${stats.failures} failed`
+    );
+  });
+}
+
 async function main(): Promise<void> {
   try {
-    console.log('OpenRouter ARC Eval Analyzer');
+    console.log('OpenRouter Free Model ARC Eval Analyzer');
     console.log('='.repeat(60));
     console.log(`API base URL: ${API_BASE_URL}`);
-    console.log(`Model: ${MODEL_KEY}`);
+    console.log(`Models: ${MODEL_KEYS.join(', ')}`);
     console.log(`Sources: ${SOURCES.join(', ')}`);
     console.log('='.repeat(60));
 
@@ -190,8 +243,18 @@ async function main(): Promise<void> {
       const puzzleIds = await fetchPuzzleIds(source);
       console.log(`Loaded ${puzzleIds.length} puzzles (${source})`);
 
-      const modelResults = await fireKimiWithSpacing(source, puzzleIds);
-      allResults.push(...modelResults);
+      for (let modelIndex = 0; modelIndex < MODEL_KEYS.length; modelIndex++) {
+        const modelKey = MODEL_KEYS[modelIndex];
+        console.log(`\nLaunching model ${modelKey} for ${source}`);
+        const modelResults = await fireModelWithSpacing(modelKey, source, puzzleIds);
+        allResults.push(...modelResults);
+
+        const nextModelExists = modelIndex < MODEL_KEYS.length - 1;
+        if (nextModelExists) {
+          console.log(`Waiting ${MODEL_SWITCH_DELAY_MS}ms before next model...`);
+          await delay(MODEL_SWITCH_DELAY_MS);
+        }
+      }
     }
 
     const total = allResults.length;
@@ -203,6 +266,8 @@ async function main(): Promise<void> {
     console.log(`Total analyses performed: ${total}`);
     console.log(`Successes: ${successes}`);
     console.log(`Failures: ${failures}`);
+
+    summarizeByModel(allResults);
 
     if (failures > 0) {
       console.log('Failed analyses:');
@@ -229,5 +294,3 @@ process.on('SIGTERM', () => {
 });
 
 main();
-
-
