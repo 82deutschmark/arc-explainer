@@ -25,6 +25,7 @@ import { BaseRepository } from './base/BaseRepository.ts';
 import { logger } from '../utils/logger.ts';
 import fs from 'fs';
 import path from 'path';
+import { MODELS } from '../config/models.ts';
 
 interface ModelDatasetPerformance {
   modelName: string;
@@ -265,7 +266,31 @@ export class ModelDatasetRepository extends BaseRepository {
       `;
 
       const result = await this.query(query);
-      const models = result.rows.map(row => row.model_name);
+      const models = result.rows.map(row => row.model_name as string);
+
+      const releaseDateByModel = new Map<string, number>();
+      for (const modelConfig of MODELS) {
+        const date = modelConfig.releaseDate;
+        if (!date) {
+          continue;
+        }
+
+        const parsed = Date.parse(`${date}-01`);
+        if (!Number.isNaN(parsed)) {
+          releaseDateByModel.set(modelConfig.key, parsed);
+        }
+      }
+
+      models.sort((a, b) => {
+        const releaseA = releaseDateByModel.get(a) ?? 0;
+        const releaseB = releaseDateByModel.get(b) ?? 0;
+
+        if (releaseA !== releaseB) {
+          return releaseB - releaseA; // most recent first
+        }
+
+        return a.localeCompare(b);
+      });
 
       logger.info(`Found ${models.length} models with database entries`, 'dataset');
       return models;
