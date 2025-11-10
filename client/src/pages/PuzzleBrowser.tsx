@@ -1,14 +1,16 @@
 /**
- * Author: gpt-5-codex
- * Date: 2025-02-15
- * PURPOSE: Restores the research-focused Puzzle Browser layout with muted slate styling, compact filters, and plain-text resource references.
- * SRP/DRY check: Pass - Verified filter logic, navigation, and rendering after UI refinements.
+ * Author: Claude Code using Haiku 4.5
+ * Date: 2025-11-10
+ * PURPOSE: Research-focused Puzzle Browser page with filters, puzzle results, and light-themed reference materials.
+ *          Extracted Reference Material section into a reusable component for better maintainability.
+ * SRP/DRY check: Pass - Verified filter logic, navigation, rendering, and delegated reference material to ReferenceMaterial component.
  */
 import React, { useState, useCallback } from 'react';
 import { Link, useLocation } from 'wouter';
 import { usePuzzleList } from '@/hooks/usePuzzle';
-import { Loader2, Grid3X3, ExternalLink, Sparkles } from 'lucide-react';
+import { Loader2, Grid3X3 } from 'lucide-react';
 import { EmojiMosaicAccent } from '@/components/browser/EmojiMosaicAccent';
+import { ReferenceMaterial } from '@/components/browser/ReferenceMaterial';
 import type { PuzzleMetadata } from '@shared/types';
 import { CollapsibleMission } from '@/components/ui/collapsible-mission';
 import { PuzzleCard } from '@/components/puzzle/PuzzleCard';
@@ -208,152 +210,7 @@ export default function PuzzleBrowser() {
             <CollapsibleMission />
           </div>
 
-          <section className="rounded-lg border border-slate-800 bg-slate-900/60 p-3">
-            <div className="flex items-center gap-3 text-sm font-semibold text-slate-200">
-              <Sparkles className="h-4 w-4 text-slate-300" />
-              <span>Reference material</span>
-            </div>
-
-            <div className="mt-2 grid gap-3 text-xs text-slate-300 sm:grid-cols-2 lg:grid-cols-4">
-              <div className="space-y-1">
-                <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">Research Papers</p>
-                <ul className="space-y-0.5">
-                  <li>
-                    <a
-                      href="https://www.arxiv.org/pdf/2505.11831"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="group inline-flex items-center gap-2 text-slate-200 hover:text-sky-300"
-                    >
-                      ARC-AGI-2 Technical Report
-                      <ExternalLink className="h-3 w-3 text-slate-500 group-hover:text-sky-300" />
-                    </a>
-                  </li>
-                </ul>
-              </div>
-
-              <div className="space-y-1">
-                <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">Data Sources</p>
-                <ul className="space-y-0.5">
-                  <li>
-                    <a
-                      href="https://huggingface.co/arcprize"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="group inline-flex items-center gap-2 text-slate-200 hover:text-sky-300"
-                    >
-                      HuggingFace datasets
-                      <ExternalLink className="h-3 w-3 text-slate-500 group-hover:text-sky-300" />
-                    </a>
-                  </li>
-                  <li>
-                    <a
-                      href="https://github.com/fchollet/ARC-AGI"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="group inline-flex items-center gap-2 text-slate-200 hover:text-sky-300"
-                    >
-                      Official repository
-                      <ExternalLink className="h-3 w-3 text-slate-500 group-hover:text-sky-300" />
-                    </a>
-                  </li>
-                </ul>
-              </div>
-
-              <div className="space-y-1">
-                <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">Solution References</p>
-                <ul className="space-y-0.5">
-                  <li>
-                    <a
-                      href="https://github.com/zoecarver"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="group inline-flex items-center gap-2 text-slate-200 hover:text-sky-300"
-                    >
-                      zoecarver's approach
-                      <ExternalLink className="h-3 w-3 text-slate-500 group-hover:text-sky-300" />
-                    </a>
-                  </li>
-                  <li>
-                    <a
-                      href="https://github.com/jerber"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="group inline-flex items-center gap-2 text-slate-200 hover:text-sky-300"
-                    >
-                      jerber's solutions
-                      <ExternalLink className="h-3 w-3 text-slate-500 group-hover:text-sky-300" />
-                    </a>
-                  </li>
-                  <li>
-                    <a
-                      href="https://github.com/epang080516/arc_agi"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="group inline-flex items-center gap-2 text-slate-200 hover:text-sky-300"
-                    >
-                      Eric Pang's SOTA solution
-                      <ExternalLink className="h-3 w-3 text-slate-500 group-hover:text-sky-300" />
-                    </a>
-                  </li>
-                </ul>
-              </div>
-
-              <div className="space-y-1">
-                <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">Community Notes</p>
-                <ul className="space-y-0.5">
-                  <li>
-                    <a
-                      href="https://github.com/google/ARC-GEN/blob/main/task_list.py#L422"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="group inline-flex items-center gap-2 text-slate-200 hover:text-sky-300"
-                    >
-                      Puzzle nomenclature
-                      <ExternalLink className="h-3 w-3 text-slate-500 group-hover:text-sky-300" />
-                    </a>
-                  </li>
-                  <li>
-                    <a
-                      href="https://cdg.openai.nl/"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="group inline-flex items-center gap-2 text-slate-200 hover:text-sky-300"
-                    >
-                      Synthetic Data
-                      <ExternalLink className="h-3 w-3 text-slate-500 group-hover:text-sky-300" />
-                    </a>
-                  </li>
-                  <li>
-                    <a
-                      href="https://github.com/neoneye/arc-notes"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="group inline-flex items-center gap-2 text-slate-200 hover:text-sky-300"
-                    >
-                      ARC notes by @neoneye
-                      <ExternalLink className="h-3 w-3 text-slate-500 group-hover:text-sky-300" />
-                    </a>
-                  </li>
-                  <li>
-                    <a
-                      href="https://github.com/cristianoc/arc-agi-2-abstraction-dataset"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="group inline-flex items-center gap-2 text-slate-200 hover:text-sky-300"
-                    >
-                      Abstraction dataset
-                      <ExternalLink className="h-3 w-3 text-slate-500 group-hover:text-sky-300" />
-                    </a>
-                  </li>
-                </ul>
-              </div>
-            </div>
-
-            <p className="mt-2 text-xs text-slate-500">
-              Special Acknowledgement: Simon Strandgaard (@neoneye) for his invaluable support, feedback, and collection of resources.
-            </p>
-          </section>
+          <ReferenceMaterial />
         </header>
 
         {/* Filters */}
