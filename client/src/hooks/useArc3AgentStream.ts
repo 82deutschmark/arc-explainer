@@ -623,6 +623,7 @@ export function useArc3AgentStream() {
         setState(prev => ({
           ...prev,
           streamingMessage: errorMessage,
+          error: errorMessage,
         }));
         throw error;
       }
