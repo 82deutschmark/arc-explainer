@@ -125,7 +125,11 @@ export class Arc3ApiClient {
    * Start a new game session using RESET command
    * Reference: ARC-AGI-3-ClaudeCode-SDK/actions/start-game.js lines 40-48
    */
-  async startGame(gameId: string): Promise<FrameData> {
+  async startGame(gameId: string, seedFrame?: FrameData): Promise<FrameData> {
+    if (seedFrame && seedFrame.game_id === gameId) {
+      return seedFrame;
+    }
+
     if (!this.cardId) {
       throw new Error('Must open scorecard before starting game. Call openScorecard() first.');
     }
@@ -155,6 +159,15 @@ export class Arc3ApiClient {
     if (action.coordinates && action.action === 'ACTION6') {
       body.x = action.coordinates[0];
       body.y = action.coordinates[1];
+    }
+
+    // RESET requires the active scorecard id
+    // Reference: ARC-AGI-3-ClaudeCode-SDK/actions/reset-game.js
+    if (action.action === 'RESET') {
+      if (!this.cardId) {
+        throw new Error('Must open scorecard before resetting game. Call openScorecard() first.');
+      }
+      body.card_id = this.cardId;
     }
 
     return this.makeRequest<FrameData>(`/api/cmd/${action.action}`, {

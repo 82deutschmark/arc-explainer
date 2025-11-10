@@ -12,6 +12,7 @@ import { sseStreamManager } from "../streaming/SSEStreamManager";
 import { logger } from "../../utils/logger";
 import { resolveStreamingConfig } from "@shared/config/streaming";
 import { Arc3ApiClient } from "./Arc3ApiClient";
+import type { FrameData } from "./Arc3ApiClient";
 import { Arc3RealGameRunner } from "./Arc3RealGameRunner";
 import type { Arc3AgentRunConfig } from "./types";
 
@@ -32,6 +33,7 @@ export interface ContinueStreamArc3Payload extends StreamArc3Payload {
   userMessage: string;  // New user message to chain
   previousResponseId?: string;  // From last response for Responses API chaining
   existingGameGuid?: string;  // Game session guid to continue (from previous run)
+  lastFrame?: FrameData; // Cached frame from client to seed continuation state
 }
 
 export const PENDING_ARC3_SESSION_TTL_SECONDS = 60;
@@ -112,6 +114,7 @@ export class Arc3StreamService {
       userMessage: string;
       previousResponseId?: string;
       existingGameGuid?: string;
+      lastFrame?: FrameData;
     },
     ttlMs: number = PENDING_ARC3_SESSION_TTL_SECONDS * 1000
   ): void {
@@ -124,6 +127,7 @@ export class Arc3StreamService {
       userMessage: continuationData.userMessage,
       previousResponseId: continuationData.previousResponseId,
       existingGameGuid: continuationData.existingGameGuid,
+      lastFrame: continuationData.lastFrame,
       createdAt: now,
       expiresAt: expirationTimestamp,
     };
