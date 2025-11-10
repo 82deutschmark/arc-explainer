@@ -201,6 +201,7 @@ export default function ARC3AgentPlayground() {
 
   // Manual action state
   const [showCoordinatePicker, setShowCoordinatePicker] = useState(false);
+  const [actionError, setActionError] = useState<string | null>(null);
 
   const handleStart = () => {
     start({
@@ -537,13 +538,21 @@ export default function ARC3AgentPlayground() {
 
         {/* CENTER: Action pills now occupy former game selector spot */}
         <div className="lg:col-span-5 space-y-3">
+          {/* Action Error Display */}
+          {actionError && (
+            <div className="p-2 bg-red-50 border border-red-200 rounded text-xs text-red-700">
+              <p className="font-semibold">Action Error:</p>
+              <p className="text-[10px] mt-1">{actionError}</p>
+            </div>
+          )}
+
           <Card>
             <CardContent className="p-3">
               <div className="flex flex-wrap items-center justify-center gap-1.5">
-                {['ACTION1', 'ACTION2', 'ACTION3', 'ACTION4', 'ACTION5', 'ACTION6', 'ACTION7'].map((actionName) => {
+                {['RESET', 'ACTION1', 'ACTION2', 'ACTION3', 'ACTION4', 'ACTION5', 'ACTION6', 'ACTION7'].map((actionName) => {
                   const usedCount = toolEntries.filter(e => e.label.includes(actionName)).length;
                   const isActive = isPlaying && state.streamingMessage?.includes(actionName);
-                  const displayName = actionName.replace('ACTION', 'Action ');
+                  const displayName = actionName === 'RESET' ? 'Reset' : actionName.replace('ACTION', 'Action ');
 
                   // Check if action is available according to the API
                   const isAvailable = !normalizedAvailableActions || normalizedAvailableActions.has(actionName);
@@ -553,8 +562,11 @@ export default function ARC3AgentPlayground() {
                       setShowCoordinatePicker(true);
                     } else {
                       try {
+                        setActionError(null);
                         await executeManualAction(actionName);
                       } catch (error) {
+                        const msg = error instanceof Error ? error.message : 'Failed to execute action';
+                        setActionError(msg);
                         console.error(`Failed to execute ${actionName}:`, error);
                       }
                     }
