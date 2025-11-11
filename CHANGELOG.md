@@ -1,4 +1,8 @@
 # CHANGELOG - Uses semantic versioning (MAJOR.MINOR.PATCH)`r`n
+# [5.10.3] - 2025-11-11
+### 🎨 UI Improvements
+- Integrated ReferenceMaterial component into About page with refreshed community messaging, Simon Strandgaard acknowledgment, and official ARC Discord link.
+
 # [5.10.2] - 2025-11-11
 ### 🔒 ARC3 Conversation Chaining Hardening
 - Enforce mandatory `previousResponseId` payloads for all ARC3 continuation requests so Responses API threads remain stateful.
