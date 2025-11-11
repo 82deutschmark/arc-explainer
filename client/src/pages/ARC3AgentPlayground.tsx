@@ -662,6 +662,7 @@ export default function ARC3AgentPlayground() {
                 <div className="space-y-2">
                   <div className="flex justify-center">
                     <Arc3GridVisualization
+                      key={`frame-${state.currentFrameIndex}-${currentLayerIndex}-${currentFrame?.score}`}
                       grid={resolvedCurrentFrame}
                       frameIndex={currentLayerIndex}
                       cellSize={20}
@@ -735,6 +736,7 @@ export default function ARC3AgentPlayground() {
                 <div className="space-y-2">
                   <div className="flex justify-center">
                     <Arc3GridVisualization
+                      key={`initial-grid-${gameId}`}
                       grid={initialGrid as number[][][]}
                       frameIndex={Math.max(0, (initialGrid as number[][][]).length - 1)}
                       cellSize={20}
@@ -840,6 +842,7 @@ export default function ARC3AgentPlayground() {
               return (
                 <div className="relative inline-block">
                   <Arc3GridVisualization
+                    key={`picker-frame-${state.currentFrameIndex}`}
                     grid={resolvedCurrentFrame}
                     frameIndex={lastLayerIndex}
                     cellSize={20}
