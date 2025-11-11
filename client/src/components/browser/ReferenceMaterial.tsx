@@ -94,16 +94,20 @@ const REFERENCE_SECTIONS: ReferenceSectionProps[] = [
     title: 'Tools',
     links: [
       {
-        label: 'arckit',
+        label: 'Useful tool kit for ARC',
         href: 'https://github.com/mxbi/arckit',
       },
       {
-        label: 'objarc',
+        label: 'objarc (Patrick Spencer)',
         href: 'https://github.com/pwspen/objarc',
       },
       {
-        label: 'Synapsomorphy ARC',
+        label: 'Synapsomorphy ARC (Patrick Spencer)',
         href: 'https://synapsomorphy.com/arc/',
+      },
+      {
+        label: 'CAPEd - Game/Tool (Viktor Ferenczi)',
+        href: 'https://caped.ferenczi.eu/',
       },
     ],
   },
