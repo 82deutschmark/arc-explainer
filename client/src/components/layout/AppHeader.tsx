@@ -35,20 +35,8 @@ export function AppHeader() {
           </div>
         </Link>
 
-        <div className="flex gap-0.5 text-xs">
-          <span>🟨</span>
-          <span>🟩</span>
-          <span>🟦</span>
-        </div>
-
         <div className="flex flex-1 items-center justify-end overflow-hidden">
           <AppNavigation />
-        </div>
-
-        <div className="flex gap-0.5 text-xs">
-          <span>🟪</span>
-          <span>🟥</span>
-          <span>🟧</span>
         </div>
       </div>
     </header>

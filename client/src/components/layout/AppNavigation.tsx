@@ -1,8 +1,8 @@
 /**
  * Author: Claude Code using Sonnet 4.5
  * Date: 2025-11-11
- * PURPOSE: Simple navigation with all items displayed horizontally without dropdowns.
- * Displays all 12 navigation items as individual links for direct access.
+ * PURPOSE: Simple navigation with all items displayed horizontally with colorful emoji dividers.
+ * Displays all 12 navigation items as individual links with single emoji squares between them.
  * Uses shadcn/ui NavigationMenu for consistent styling and active state management.
  * SRP/DRY check: Pass - Single responsibility (navigation structure), reuses shadcn components
  */
@@ -113,6 +113,9 @@ const navigationItems: NavItem[] = [
   }
 ];
 
+// ARC color palette for dividers
+const dividerEmojis = ['🟥', '🟧', '🟨', '🟩', '🟦', '🟪'];
+
 export function AppNavigation() {
   const [location] = useLocation();
 
@@ -127,24 +130,34 @@ export function AppNavigation() {
     <div className="flex items-center justify-between w-full">
       <NavigationMenu>
         <NavigationMenuList>
-          {navigationItems.map((item) => {
+          {navigationItems.map((item, index) => {
             const Icon = item.icon;
+            const showDivider = index < navigationItems.length - 1;
+            const dividerEmoji = dividerEmojis[index % dividerEmojis.length];
+
             return (
-              <NavigationMenuItem key={item.href}>
-                <NavigationMenuLink asChild>
-                  <Link
-                    href={item.href}
-                    className={cn(
-                      navigationMenuTriggerStyle(),
-                      "flex items-center gap-2 font-medium",
-                      isActiveRoute(item.href) && "bg-accent text-accent-foreground"
-                    )}
-                  >
-                    <Icon className="h-4 w-4" />
-                    <span className="hidden sm:inline">{item.title}</span>
-                  </Link>
-                </NavigationMenuLink>
-              </NavigationMenuItem>
+              <React.Fragment key={item.href}>
+                <NavigationMenuItem>
+                  <NavigationMenuLink asChild>
+                    <Link
+                      href={item.href}
+                      className={cn(
+                        navigationMenuTriggerStyle(),
+                        "flex items-center gap-2 font-medium",
+                        isActiveRoute(item.href) && "bg-accent text-accent-foreground"
+                      )}
+                    >
+                      <Icon className="h-4 w-4" />
+                      <span className="hidden sm:inline">{item.title}</span>
+                    </Link>
+                  </NavigationMenuLink>
+                </NavigationMenuItem>
+                {showDivider && (
+                  <span className="text-xs mx-1 select-none" aria-hidden="true">
+                    {dividerEmoji}
+                  </span>
+                )}
+              </React.Fragment>
             );
           })}
         </NavigationMenuList>
