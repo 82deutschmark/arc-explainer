@@ -280,26 +280,34 @@ export default function ARC3AgentPlayground() {
   });
 
   // State for managing which layer/timestep to display within the current frame
-  const [currentLayerIndex, setCurrentLayerIndex] = useState(0);
+  // Start with null to indicate "not manually set by user"
+  const [manualLayerIndex, setManualLayerIndex] = useState<number | null>(null);
 
-  // When currentFrame changes, default to showing the LAST layer (final state after action)
-  // CRITICAL: Use currentFrame as dependency to ensure effect runs when frame data changes
+  // CRITICAL FIX: Compute currentLayerIndex directly, don't use useEffect
+  // This ensures we ALWAYS show the correct layer immediately, no flash of wrong layer
+  const currentLayerIndex = React.useMemo(() => {
+    // If user manually selected a layer via the slider, use that
+    if (manualLayerIndex !== null && resolvedCurrentFrame && manualLayerIndex < resolvedCurrentFrame.length) {
+      return manualLayerIndex;
+    }
+    // Otherwise, default to the LAST layer (final state after action)
+    if (resolvedCurrentFrame && resolvedCurrentFrame.length > 0) {
+      return resolvedCurrentFrame.length - 1;
+    }
+    return 0;
+  }, [manualLayerIndex, resolvedCurrentFrame, resolvedCurrentFrame?.length]);
+
+  // Reset manual layer selection when frame changes
   React.useEffect(() => {
-    console.log('[ARC3 Playground] Frame changed:', {
+    console.log('[ARC3 Playground] Frame changed, resetting manual layer selection:', {
       currentFrameIndex: state.currentFrameIndex,
       hasFrame: !!currentFrame,
       resolvedFrameLayers: resolvedCurrentFrame?.length || 0,
-      currentLayerIndex,
+      computedLayerIndex: currentLayerIndex,
     });
-
-    if (resolvedCurrentFrame && resolvedCurrentFrame.length > 0) {
-      const lastLayerIndex = resolvedCurrentFrame.length - 1;
-      console.log('[ARC3 Playground] Setting layer index to:', lastLayerIndex);
-      setCurrentLayerIndex(lastLayerIndex);
-    } else {
-      console.log('[ARC3 Playground] No resolved frame available');
-    }
-  }, [state.currentFrameIndex, currentFrame, resolvedCurrentFrame?.length]);
+    // Reset to auto (null) so we default to last layer of new frame
+    setManualLayerIndex(null);
+  }, [state.currentFrameIndex]); // ONLY depend on frame index, not derived objects
   const normalizedAvailableActions = React.useMemo(() => {
     const tokens = currentFrame?.available_actions;
     if (!tokens || tokens.length === 0) {
@@ -685,7 +693,7 @@ export default function ARC3AgentPlayground() {
                         min="0"
                         max={resolvedCurrentFrame.length - 1}
                         value={currentLayerIndex}
-                        onChange={(e) => setCurrentLayerIndex(Number(e.target.value))}
+                        onChange={(e) => setManualLayerIndex(Number(e.target.value))}
                         className="w-full h-1 bg-amber-300 rounded-lg appearance-none cursor-pointer"
                       />
                     </div>

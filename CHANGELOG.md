@@ -1,4 +1,32 @@
 # CHANGELOG - Uses semantic versioning (MAJOR.MINOR.PATCH)`r`n
+# [5.10.1] - 2025-11-11
+### 🐞 Critical Fixes
+- **ARC3 Playground Layer Rendering Bug (Complete Fix)**: Resolved the final layer display issues that were partially addressed in v5.8.5. The previous fix still had timing problems causing brief flashes of incorrect layers.
+
+#### Root Causes Found:
+1. **useEffect Timing Issue**: Using `useState` + `useEffect` to manage `currentLayerIndex` created a two-render problem where the grid briefly showed the wrong layer before the effect ran to update it
+2. **Over-Specified Dependencies**: The useEffect dependency array `[state.currentFrameIndex, currentFrame, resolvedCurrentFrame?.length]` included object references (`currentFrame`) that React compares by reference, making it unreliable
+3. **Initial State Always 0**: `useState(0)` meant the component always started by showing layer 0, then had to update to the last layer
+
+#### Complete Solution:
+- **Replaced useState with useMemo**: Changed from storing `currentLayerIndex` in state to computing it directly via `useMemo`. This eliminates the two-render problem - the correct layer is shown immediately on first render
+- **Introduced Manual Override**: Added `manualLayerIndex` state (nullable) to track when user manually selects a layer via the timestep slider
+- **Smart Layer Selection Logic**:
+  - If user manually selected a layer: use that (until frame changes)
+  - Otherwise: default to last layer (final state after action)
+  - If no frame available: default to 0
+- **Simplified useEffect**: Now only depends on `state.currentFrameIndex` (not derived objects), resets manual selection when frame changes
+
+#### Technical Impact:
+- ✅ Grid ALWAYS shows correct layer immediately (no flash/flicker)
+- ✅ Manual timestep slider still works for scrubbing through intermediate states
+- ✅ Automatically resets to last layer when frame changes
+- ✅ More reliable dependency tracking (only primitives, no objects)
+- ✅ Consistent behavior across manual actions and agent actions
+
+#### Files Changed:
+- `client/src/pages/ARC3AgentPlayground.tsx`: Replaced useState/useEffect pattern with useMemo for currentLayerIndex computation
+
 # [5.10.0] - 2025-11-11
 ### ✨ Features
 - **Colorful Navigation Emoji Dividers**: Added single colorful emoji squares between each navigation item using the full ARC color palette (🟥 🟧 🟨 🟩 🟦 🟪). Emojis rotate through the palette colors for visual interest while maintaining clean separation between nav items.
