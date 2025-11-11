@@ -265,6 +265,16 @@ export default function ARC3AgentPlayground() {
   // Compute currentFrame directly from state to ensure re-renders trigger updates
   const currentFrame = state.frames[state.currentFrameIndex] || null;
   const resolvedCurrentFrame = resolveFrameLayers(currentFrame);
+
+  // State for managing which layer/timestep to display within the current frame
+  const [currentLayerIndex, setCurrentLayerIndex] = useState(0);
+
+  // When currentFrame changes, default to showing the LAST layer (final state after action)
+  React.useEffect(() => {
+    if (resolvedCurrentFrame && resolvedCurrentFrame.length > 0) {
+      setCurrentLayerIndex(resolvedCurrentFrame.length - 1);
+    }
+  }, [state.currentFrameIndex, resolvedCurrentFrame?.length]);
   const normalizedAvailableActions = React.useMemo(() => {
     const tokens = currentFrame?.available_actions;
     if (!tokens || tokens.length === 0) {
@@ -628,12 +638,32 @@ export default function ARC3AgentPlayground() {
                   <div className="flex justify-center">
                     <Arc3GridVisualization
                       grid={resolvedCurrentFrame}
-                      frameIndex={0}
+                      frameIndex={currentLayerIndex}
                       cellSize={20}
                       showGrid={true}
                       lastAction={currentFrame?.action}
                     />
                   </div>
+
+                  {/* Layer/Timestep Navigation - shown when current frame has multiple layers */}
+                  {resolvedCurrentFrame.length > 1 && (
+                    <div className="space-y-0.5 p-2 bg-amber-50 border border-amber-200 rounded">
+                      <label className="text-[10px] font-medium text-amber-800">
+                        Timestep: {currentLayerIndex + 1} / {resolvedCurrentFrame.length}
+                        <span className="ml-2 text-[9px] font-normal text-amber-600">
+                          (Action created {resolvedCurrentFrame.length} intermediate states)
+                        </span>
+                      </label>
+                      <input
+                        type="range"
+                        min="0"
+                        max={resolvedCurrentFrame.length - 1}
+                        value={currentLayerIndex}
+                        onChange={(e) => setCurrentLayerIndex(Number(e.target.value))}
+                        className="w-full h-1 bg-amber-300 rounded-lg appearance-none cursor-pointer"
+                      />
+                    </div>
+                  )}
 
                   {/* Frame Navigation */}
                   {state.frames.length > 1 && (
@@ -681,7 +711,7 @@ export default function ARC3AgentPlayground() {
                   <div className="flex justify-center">
                     <Arc3GridVisualization
                       grid={initialGrid as number[][][]}
-                      frameIndex={0}
+                      frameIndex={Math.max(0, (initialGrid as number[][][]).length - 1)}
                       cellSize={20}
                       showGrid={true}
                     />
@@ -776,8 +806,9 @@ export default function ARC3AgentPlayground() {
 
           <div className="flex justify-center py-4">
             {resolvedCurrentFrame && (() => {
-              // Extract the 2D frame from the 3D grid
-              const frame2D = resolvedCurrentFrame[0] || [];
+              // Extract the 2D frame from the 3D grid - use LAST layer (final state)
+              const lastLayerIndex = resolvedCurrentFrame.length - 1;
+              const frame2D = resolvedCurrentFrame[lastLayerIndex] || [];
               const height = frame2D.length;
               const width = height > 0 ? frame2D[0]?.length || 0 : 0;
 
@@ -785,7 +816,7 @@ export default function ARC3AgentPlayground() {
                 <div className="relative inline-block">
                   <Arc3GridVisualization
                     grid={resolvedCurrentFrame}
-                    frameIndex={0}
+                    frameIndex={lastLayerIndex}
                     cellSize={20}
                     showGrid={true}
                     lastAction={currentFrame?.action}
