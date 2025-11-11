@@ -269,7 +269,7 @@ const frameSeedSchema = z.object({
 
 const continueSessionSchema = z.object({
   userMessage: z.string().trim().min(1, 'userMessage must not be empty'),
-  previousResponseId: z.string().optional(), // From last response (stored in DB)
+  previousResponseId: z.string().trim().min(1, 'previousResponseId is required for chained runs'),
   existingGameGuid: z.string().optional(), // Game session guid to continue (from previous run)
   lastFrame: frameSeedSchema.optional(),
 });

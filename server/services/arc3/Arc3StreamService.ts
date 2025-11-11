@@ -27,12 +27,13 @@ export interface StreamArc3Payload {
   sessionId?: string;
   createdAt?: number;
   expiresAt?: number;
+  existingGameGuid?: string;
+  providerResponseId?: string | null;
 }
 
 export interface ContinueStreamArc3Payload extends StreamArc3Payload {
   userMessage: string;  // New user message to chain
-  previousResponseId?: string;  // From last response for Responses API chaining
-  existingGameGuid?: string;  // Game session guid to continue (from previous run)
+  previousResponseId: string;  // From last response for Responses API chaining
   lastFrame?: FrameData; // Cached frame from client to seed continuation state
 }
 
@@ -107,17 +108,38 @@ export class Arc3StreamService {
     }
   }
 
+  updatePendingPayload(sessionId: string, updates: Partial<StreamArc3Payload>): void {
+    const existingPayload = this.pendingSessions.get(sessionId);
+    if (!existingPayload) {
+      return;
+    }
+
+    const mergedPayload: StreamArc3Payload = {
+      ...existingPayload,
+      ...updates,
+      sessionId: existingPayload.sessionId,
+      createdAt: existingPayload.createdAt,
+      expiresAt: updates.expiresAt ?? existingPayload.expiresAt,
+    };
+
+    this.pendingSessions.set(sessionId, mergedPayload);
+  }
+
   saveContinuationPayload(
     sessionId: string,
     basePayload: StreamArc3Payload,
     continuationData: {
       userMessage: string;
-      previousResponseId?: string;
+      previousResponseId: string;
       existingGameGuid?: string;
       lastFrame?: FrameData;
     },
     ttlMs: number = PENDING_ARC3_SESSION_TTL_SECONDS * 1000
   ): void {
+    if (!continuationData.previousResponseId) {
+      throw new Error('Continuation payload requires a previousResponseId.');
+    }
+
     const now = Date.now();
     const expirationTimestamp = ttlMs > 0 ? now + ttlMs : now;
 
@@ -280,7 +302,13 @@ export class Arc3StreamService {
       });
 
       // Override the game runner to emit streaming events
-      await this.gameRunner.runWithStreaming(runConfig, streamHarness);
+      const runResult = await this.gameRunner.runWithStreaming(runConfig, streamHarness);
+
+      // Persist response metadata for future continuations
+      this.updatePendingPayload(sessionId, {
+        existingGameGuid: runResult.gameGuid,
+        providerResponseId: runResult.providerResponseId ?? null,
+      });
 
       // After successful streaming, extend the session TTL to allow continuation
       // This gives the user time to send a follow-up message
@@ -319,6 +347,10 @@ export class Arc3StreamService {
       }
 
       const { game_id, agentName, systemPrompt, instructions, model, maxTurns, reasoningEffort, userMessage, previousResponseId, existingGameGuid } = payload;
+
+      if (!previousResponseId) {
+        throw new Error('ARC3 continuation requires a previousResponseId to maintain conversation state.');
+      }
 
       // Send initial status
       sseStreamManager.sendEvent(sessionId, "stream.init", {
@@ -393,7 +425,12 @@ export class Arc3StreamService {
 
       // Override the game runner to emit streaming events
       // The previous_response_id will be passed to the Responses API to chain conversations
-      await this.gameRunner.runWithStreaming(runConfig, streamHarness);
+      const runResult = await this.gameRunner.runWithStreaming(runConfig, streamHarness);
+
+      this.updatePendingPayload(sessionId, {
+        existingGameGuid: runResult.gameGuid,
+        providerResponseId: runResult.providerResponseId ?? null,
+      });
 
       // After successful continuation, extend the base session TTL again for potential further continuation
       const extendedTTL = 300000; // 5 minutes

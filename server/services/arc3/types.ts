@@ -51,7 +51,7 @@ export interface Arc3AgentRunConfig {
   game_id?: string;
   reasoningEffort?: 'minimal' | 'low' | 'medium' | 'high';
   existingGameGuid?: string;  // For continuing existing game sessions
-  previousResponseId?: string; // Responses API chaining support
-  storeResponse?: boolean; // Whether to persist the response server-side
+  previousResponseId?: string; // Responses API chaining support (must be provided by GPT-5 class callers)
+  storeResponse?: boolean; // Whether to persist the response server-side (mandatory for GPT-5)
   seedFrame?: FrameData; // Optional cached frame to seed continuations without extra API calls
 }
