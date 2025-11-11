@@ -1,4 +1,11 @@
 # CHANGELOG - Uses semantic versioning (MAJOR.MINOR.PATCH)`r`n
+# [5.10.2] - 2025-11-11
+### 🔒 ARC3 Conversation Chaining Hardening
+- Enforce mandatory `previousResponseId` payloads for all ARC3 continuation requests so Responses API threads remain stateful.
+- Persist `providerResponseId` from initial streaming runs onto session payloads, letting clients resume without manually supplying IDs.
+- Always set `storeResponse: true` for ARC3 streaming runs to guarantee GPT-5 class models keep conversation history.
+- Update type definitions and session storage utilities to reflect the stricter chaining guarantees.
+
 # [5.10.1] - 2025-11-11
 ### 🐞 Critical Fixes
 - **ARC3 Playground Layer Rendering Bug (Complete Fix)**: Resolved the final layer display issues that were partially addressed in v5.8.5. The previous fix still had timing problems causing brief flashes of incorrect layers.
