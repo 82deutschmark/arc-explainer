@@ -7,6 +7,7 @@
 - Update type definitions and session storage utilities to reflect the stricter chaining guarantees.
 ### 🔧 Maintenance
 - Added SnakeBench repository as a submodule under `external/SnakeBench` for new benchmarking utilities.
+- Reordered AppNavigation links so Debate appears directly beside Discussion and Compare, keeping related collaboration tools grouped, and moved About to the end of the list to emphasize ARC3 navigation entries.
 
 # [5.10.1] - 2025-11-11
 ### 🐞 Critical Fixes
