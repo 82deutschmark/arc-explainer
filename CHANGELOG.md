@@ -1,10 +1,17 @@
 # CHANGELOG - Uses semantic versioning (MAJOR.MINOR.PATCH)`r`n
+# [5.10.3] - 2025-11-11
+### 🎨 UI Improvements
+- Integrated ReferenceMaterial component into About page with refreshed community messaging, Simon Strandgaard acknowledgment, and official ARC Discord link.
+
 # [5.10.2] - 2025-11-11
 ### 🔒 ARC3 Conversation Chaining Hardening
 - Enforce mandatory `previousResponseId` payloads for all ARC3 continuation requests so Responses API threads remain stateful.
 - Persist `providerResponseId` from initial streaming runs onto session payloads, letting clients resume without manually supplying IDs.
 - Always set `storeResponse: true` for ARC3 streaming runs to guarantee GPT-5 class models keep conversation history.
 - Update type definitions and session storage utilities to reflect the stricter chaining guarantees.
+### 🔧 Maintenance
+- Added SnakeBench repository as a submodule under `external/SnakeBench` for new benchmarking utilities.
+- Reordered AppNavigation links so Debate appears directly beside Discussion and Compare, keeping related collaboration tools grouped, and moved About to the end of the list to emphasize ARC3 navigation entries.
 
 # [5.10.1] - 2025-11-11
 ### 🐞 Critical Fixes
