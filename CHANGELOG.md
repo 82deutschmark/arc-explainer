@@ -1,4 +1,19 @@
 # CHANGELOG - Uses semantic versioning (MAJOR.MINOR.PATCH)`r`n
+# [5.10.0] - 2025-11-11
+### ✨ Features
+- **Colorful Navigation Emoji Dividers**: Added single colorful emoji squares between each navigation item using the full ARC color palette (🟥 🟧 🟨 🟩 🟦 🟪). Emojis rotate through the palette colors for visual interest while maintaining clean separation between nav items.
+
+### 🎨 UI Improvements
+- **Compact App Header**: Reduced header height from h-16 to h-12 with minimal padding (px-2) for a more streamlined look with zero margins for edge-to-edge layout.
+- **Simplified PuzzleBrowser Layout**: Removed redundant "Research Overview / ARC-AGI Puzzle Explorer" header text, reduced excessive padding throughout (p-3 → p-2, gap-2 → gap-1.5) for a more compact information-dense layout.
+- **Enhanced Mission Statement Modal**: Added link to Human ARC Challenge (https://human-arc.gptpluspro.com/) alongside the existing Fluid Intelligence Game link to showcase related projects.
+- **Redesigned About Page**: Complete overhaul with creative mosaic grid decorations using EmojiMosaicAccent components throughout, rewritten text for authenticity and clarity, new 3-column responsive grid layout, and dark theme (slate-950) to match the rest of the app. Mosaic patterns used as actual design elements at corners and edges of content cards.
+
+### 🔧 Technical Details
+- AppNavigation component now maps through navigation items and inserts emoji dividers between each item using modulo operator to cycle through the ARC color palette
+- All emoji dividers include `aria-hidden="true"` and `select-none` for proper accessibility
+- Maintained SRP/DRY principles by reusing existing EmojiMosaicAccent component throughout redesigned About page
+
 # [5.9.0] - 2025-11-11
 ### ✨ Features
 - **Enhanced App Header Design**: Added ARC-inspired colorful branding to the app header with a 3x2 grid of colored emoji squares (🟥🟧🟨🟩🟦🟪) that captures the essence of ARC puzzles. Includes subtle hover animation and "Abstraction & Reasoning" subtitle for better brand identity.
