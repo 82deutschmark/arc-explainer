@@ -1,4 +1,31 @@
 # CHANGELOG - Uses semantic versioning (MAJOR.MINOR.PATCH)`r`n
+# [5.9.0] - 2025-11-11
+### ✨ Features
+- **Enhanced App Header Design**: Added ARC-inspired colorful branding to the app header with a 3x2 grid of colored emoji squares (🟥🟧🟨🟩🟦🟪) that captures the essence of ARC puzzles. Includes subtle hover animation and "Abstraction & Reasoning" subtitle for better brand identity.
+- **Categorized Navigation Menu**: Reorganized 12 navigation items into 5 logical dropdown categories (Puzzles 🟥, AI Analysis 🟧, Performance 🟨, ARC-AGI-3 🟩, About 🟦) with emoji indicators for quick visual scanning. Uses shadcn/ui NavigationMenu components to prevent horizontal overflow while maintaining accessibility. Each category includes descriptive tooltips.
+
+### 🐞 Critical Fixes
+- **ARC3 Playground Grid Visualization Not Updating**: Fixed critical bug where the grid visualization didn't update after executing manual actions. Root cause: React's shallow comparison of array props didn't detect when frame data changed, only when array references changed. Solution implemented in three parts:
+  1. **Force Component Remount**: Added unique `key` props to all Arc3GridVisualization instances based on frameIndex, layerIndex, and score. This forces React to recognize frame changes and remount the component with fresh canvas state.
+  2. **Grid Signature Tracking**: Created `gridSignature` useMemo that generates a stable string signature from grid dimensions and sample data (`${layers}-${index}-${h}x${w}-${sample}`). Added to canvas drawing useEffect dependencies for reliable change detection.
+  3. **GUID Synchronization**: Fixed executeManualAction to update `state.gameGuid` after each action. The ARC-AGI-3 API returns new GUIDs for each action, and failing to update caused subsequent actions to use stale session IDs, resulting in API errors or state desynchronization.
+
+### 🔧 Improvements
+- **Comprehensive Debug Logging**: Added extensive console logging throughout the ARC3 action execution flow:
+  - Request/response validation at each API call
+  - Frame data structure verification (3D array dimensions)
+  - State transition tracking
+  - Component re-render confirmation
+  - Grid signature changes
+  - Complete audit trail for production debugging
+- **Enhanced Error Handling**: Clear error state on successful actions, improved error messages with context, better timeline entries showing action results (state, score)
+
+### 📚 Technical Details
+- Frame structure confirmed as 3D: `frame[timestep/layer][row][column]` per ARC-AGI-3 documentation
+- API response includes new GUID after each action for session state management
+- React key props ensure grid updates even when array reference appears unchanged
+- gridSignature provides fallback change detection for useEffect dependencies
+
 # [5.8.5] - 2025-11-10
 ### 🧩 ARC3 Reset Compliance Fix
 - Manual RESET now includes `card_id` in the backend request body, matching the official ARC-AGI-3 API and the ClaudeCode SDK reference. This fixes intermittent reset failures when using the Reset pill in the playground.
