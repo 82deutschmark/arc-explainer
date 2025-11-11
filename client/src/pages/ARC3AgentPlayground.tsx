@@ -265,6 +265,16 @@ export default function ARC3AgentPlayground() {
   // Compute currentFrame directly from state to ensure re-renders trigger updates
   const currentFrame = state.frames[state.currentFrameIndex] || null;
   const resolvedCurrentFrame = resolveFrameLayers(currentFrame);
+
+  // State for managing which layer/timestep to display within the current frame
+  const [currentLayerIndex, setCurrentLayerIndex] = useState(0);
+
+  // When currentFrame changes, default to showing the LAST layer (final state after action)
+  React.useEffect(() => {
+    if (resolvedCurrentFrame && resolvedCurrentFrame.length > 0) {
+      setCurrentLayerIndex(resolvedCurrentFrame.length - 1);
+    }
+  }, [state.currentFrameIndex, resolvedCurrentFrame?.length]);
   const normalizedAvailableActions = React.useMemo(() => {
     const tokens = currentFrame?.available_actions;
     if (!tokens || tokens.length === 0) {
@@ -628,12 +638,32 @@ export default function ARC3AgentPlayground() {
                   <div className="flex justify-center">
                     <Arc3GridVisualization
                       grid={resolvedCurrentFrame}
-                      frameIndex={0}
+                      frameIndex={currentLayerIndex}
                       cellSize={20}
                       showGrid={true}
                       lastAction={currentFrame?.action}
                     />
                   </div>
+
+                  {/* Layer/Timestep Navigation - shown when current frame has multiple layers */}
+                  {resolvedCurrentFrame.length > 1 && (
+                    <div className="space-y-0.5 p-2 bg-amber-50 border border-amber-200 rounded">
+                      <label className="text-[10px] font-medium text-amber-800">
+                        Timestep: {currentLayerIndex + 1} / {resolvedCurrentFrame.length}
+                        <span className="ml-2 text-[9px] font-normal text-amber-600">
+                          (Action created {resolvedCurrentFrame.length} intermediate states)
+                        </span>
+                      </label>
+                      <input
+                        type="range"
+                        min="0"
+                        max={resolvedCurrentFrame.length - 1}
+                        value={currentLayerIndex}
+                        onChange={(e) => setCurrentLayerIndex(Number(e.target.value))}
+                        className="w-full h-1 bg-amber-300 rounded-lg appearance-none cursor-pointer"
+                      />
+                    </div>
+                  )}
 
                   {/* Frame Navigation */}
                   {state.frames.length > 1 && (
@@ -681,7 +711,7 @@ export default function ARC3AgentPlayground() {
                   <div className="flex justify-center">
                     <Arc3GridVisualization
                       grid={initialGrid as number[][][]}
-                      frameIndex={0}
+                      frameIndex={Math.max(0, (initialGrid as number[][][]).length - 1)}
                       cellSize={20}
                       showGrid={true}
                     />
@@ -775,43 +805,51 @@ export default function ARC3AgentPlayground() {
           </DialogHeader>
 
           <div className="flex justify-center py-4">
-            {resolvedCurrentFrame && (
-              <div className="relative inline-block">
-                <Arc3GridVisualization
-                  grid={resolvedCurrentFrame}
-                  frameIndex={0}
-                  cellSize={20}
-                  showGrid={true}
-                  lastAction={currentFrame?.action}
-                />
-                {/* Clickable overlay */}
-                <div
-                  className="absolute inset-0 grid"
-                  style={{
-                    gridTemplateColumns: `repeat(${resolvedCurrentFrame[0]?.length || 64}, 1fr)`,
-                    gridTemplateRows: `repeat(${resolvedCurrentFrame.length || 64}, 1fr)`,
-                  }}
-                >
-                  {Array.from({ length: resolvedCurrentFrame.length || 64 }).map((_, y) =>
-                    Array.from({ length: resolvedCurrentFrame[0]?.length || 64 }).map((_, x) => (
-                      <button
-                        key={`${x}-${y}`}
-                        onClick={async () => {
-                          try {
-                            await executeManualAction('ACTION6', [x, y]);
-                            setShowCoordinatePicker(false);
-                          } catch (error) {
-                            console.error('Failed to execute ACTION6:', error);
-                          }
-                        }}
-                        className="hover:bg-white/30 hover:ring-2 hover:ring-blue-500 transition-all cursor-pointer"
-                        title={`Execute ACTION6 at (${x}, ${y})`}
-                      />
-                    ))
-                  )}
+            {resolvedCurrentFrame && (() => {
+              // Extract the 2D frame from the 3D grid - use LAST layer (final state)
+              const lastLayerIndex = resolvedCurrentFrame.length - 1;
+              const frame2D = resolvedCurrentFrame[lastLayerIndex] || [];
+              const height = frame2D.length;
+              const width = height > 0 ? frame2D[0]?.length || 0 : 0;
+
+              return (
+                <div className="relative inline-block">
+                  <Arc3GridVisualization
+                    grid={resolvedCurrentFrame}
+                    frameIndex={lastLayerIndex}
+                    cellSize={20}
+                    showGrid={true}
+                    lastAction={currentFrame?.action}
+                  />
+                  {/* Clickable overlay */}
+                  <div
+                    className="absolute inset-0 grid"
+                    style={{
+                      gridTemplateColumns: `repeat(${width}, 1fr)`,
+                      gridTemplateRows: `repeat(${height}, 1fr)`,
+                    }}
+                  >
+                    {Array.from({ length: height }).map((_, y) =>
+                      Array.from({ length: width }).map((_, x) => (
+                        <button
+                          key={`${x}-${y}`}
+                          onClick={async () => {
+                            try {
+                              await executeManualAction('ACTION6', [x, y]);
+                              setShowCoordinatePicker(false);
+                            } catch (error) {
+                              console.error('Failed to execute ACTION6:', error);
+                            }
+                          }}
+                          className="hover:bg-white/30 hover:ring-2 hover:ring-blue-500 transition-all cursor-pointer"
+                          title={`Execute ACTION6 at (${x}, ${y})`}
+                        />
+                      ))
+                    )}
+                  </div>
                 </div>
-              </div>
-            )}
+              );
+            })()}
           </div>
 
           <div className="flex justify-end gap-2">

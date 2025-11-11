@@ -8,6 +8,16 @@
 - Behavior aligns with docs: providing `guid` resets the current session; two consecutive RESETs guarantee a full game reset.
 
 > Note: Continuation currently fetches a frame by issuing a first action to reconstruct state. A future improvement is to pass the last known frame from the client to avoid a side-effectful call.
+# [5.8.5] - 2025-11-11
+### 🐞 Fixes
+- **ACTION6 Coordinate Picker Y Coordinate Bug**: Fixed critical bug where clicking on grid cells in the ACTION6 coordinate picker dialog always recorded Y coordinate as 0. The issue was caused by incorrectly accessing the 3D grid array dimensions - treating `resolvedCurrentFrame.length` (number of frames in time dimension) as height and `resolvedCurrentFrame[0]?.length` (actual height) as width. Now correctly extracts the 2D frame first (`frame2D = resolvedCurrentFrame[0]`) and uses proper dimensions (`height = frame2D.length`, `width = frame2D[0]?.length`). Clicking at position (21, 35) now correctly records as (21, 35) instead of (21, 0).
+
+- **Grid Timestep/Layer Display Bug**: Fixed critical issue where grid visualization only showed the first timestep/layer of multi-layer frames instead of the final state. The ARC3 API returns frames as 3D arrays `[layer/timestep][height][width]` where actions that cause cascading changes include multiple intermediate states. Previously, the UI always displayed `frameIndex={0}` (first state) instead of the final result. Changes:
+  - Now displays the **last layer** (final state after action) by default
+  - Added timestep navigator slider when frames have multiple layers (shows as amber-colored control)
+  - Users can now step through all intermediate states to see how actions evolved
+  - Applied fix to main grid display, ACTION6 coordinate picker, and initial grid
+  - Example: If an action creates 5 intermediate states, users now see state 5/5 by default instead of 1/5
 
 # [5.8.4] - 2025-11-09 17:05 EST
 ### 🔄 ARC3 Conversation Chaining
