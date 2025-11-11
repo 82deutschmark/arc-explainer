@@ -270,11 +270,23 @@ export default function ARC3AgentPlayground() {
   const [currentLayerIndex, setCurrentLayerIndex] = useState(0);
 
   // When currentFrame changes, default to showing the LAST layer (final state after action)
+  // CRITICAL: Use currentFrame as dependency to ensure effect runs when frame data changes
   React.useEffect(() => {
+    console.log('[ARC3 Playground] Frame changed:', {
+      currentFrameIndex: state.currentFrameIndex,
+      hasFrame: !!currentFrame,
+      resolvedFrameLayers: resolvedCurrentFrame?.length || 0,
+      currentLayerIndex,
+    });
+
     if (resolvedCurrentFrame && resolvedCurrentFrame.length > 0) {
-      setCurrentLayerIndex(resolvedCurrentFrame.length - 1);
+      const lastLayerIndex = resolvedCurrentFrame.length - 1;
+      console.log('[ARC3 Playground] Setting layer index to:', lastLayerIndex);
+      setCurrentLayerIndex(lastLayerIndex);
+    } else {
+      console.log('[ARC3 Playground] No resolved frame available');
     }
-  }, [state.currentFrameIndex, resolvedCurrentFrame?.length]);
+  }, [state.currentFrameIndex, currentFrame, resolvedCurrentFrame?.length]);
   const normalizedAvailableActions = React.useMemo(() => {
     const tokens = currentFrame?.available_actions;
     if (!tokens || tokens.length === 0) {
