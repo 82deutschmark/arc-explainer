@@ -5,6 +5,8 @@
 - Persist `providerResponseId` from initial streaming runs onto session payloads, letting clients resume without manually supplying IDs.
 - Always set `storeResponse: true` for ARC3 streaming runs to guarantee GPT-5 class models keep conversation history.
 - Update type definitions and session storage utilities to reflect the stricter chaining guarantees.
+### 🔧 Maintenance
+- Added SnakeBench repository as a submodule under `external/SnakeBench` for new benchmarking utilities.
 
 # [5.10.1] - 2025-11-11
 ### 🐞 Critical Fixes
