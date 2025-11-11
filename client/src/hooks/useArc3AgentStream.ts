@@ -29,12 +29,15 @@ export interface Arc3AgentStreamState {
   finalOutput?: string;
   streamingReasoning?: string;  // Accumulates reasoning content during streaming
   frames: Array<{
+    guid?: string;
+    game_id?: string;
     frame: number[][][];
     score: number;
     state: string;
     action_counter: number;
     max_actions: number;
     full_reset: boolean;
+    win_score?: number;
     available_actions?: Array<string | number>;  // List of available action identifiers from API
     action?: {
       type: string;
@@ -531,11 +534,28 @@ export function useArc3AgentStream() {
           streamingMessage: 'Preparing to continue...',
         }));
 
+        const latestFrame = state.frames[state.frames.length - 1];
+        const seedFrame = latestFrame && state.gameGuid && state.gameId
+          ? {
+              guid: latestFrame.guid ?? state.gameGuid,
+              game_id: latestFrame.game_id ?? state.gameId,
+              frame: latestFrame.frame,
+              score: latestFrame.score,
+              state: latestFrame.state,
+              action_counter: latestFrame.action_counter,
+              max_actions: latestFrame.max_actions,
+              win_score: latestFrame.win_score,
+              full_reset: latestFrame.full_reset ?? false,
+              available_actions: latestFrame.available_actions,
+            }
+          : undefined;
+
         // Step 1: POST to /continue to prepare the continuation payload
         const continueResponse = await apiRequest('POST', `/api/arc3/stream/${sessionId}/continue`, {
           userMessage,
           previousResponseId: state.lastResponseId,
           existingGameGuid: state.gameGuid,
+          lastFrame: seedFrame,
         });
 
         const continueData = await continueResponse.json();
@@ -564,7 +584,7 @@ export function useArc3AgentStream() {
         }));
       }
     },
-    [sessionId, state.lastResponseId, state.gameGuid, closeEventSource]
+    [sessionId, state.lastResponseId, state.gameGuid, state.frames, state.gameId, closeEventSource]
   );
 
   const executeManualAction = useCallback(
@@ -637,12 +657,15 @@ export function useArc3AgentStream() {
       gameGuid: frameData.guid,
       gameId: frameData.game_id,
       frames: [{
+        guid: frameData.guid,
+        game_id: frameData.game_id,
         frame: frameData.frame,
         score: frameData.score,
         state: frameData.state,
         action_counter: frameData.action_counter,
         max_actions: frameData.max_actions,
         full_reset: frameData.full_reset || false,
+        win_score: frameData.win_score,
         available_actions: frameData.available_actions,
       }],
       currentFrameIndex: 0,
