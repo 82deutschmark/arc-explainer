@@ -66,9 +66,11 @@ export class Arc3RealGameRunner {
     let dbSessionId: number | null = null;
 
     // Start a fresh session OR continue an existing one
-    const initialFrame = config.existingGameGuid
-      ? await this.continuGameSession(gameId, config.existingGameGuid)
-      : await this.apiClient.startGame(gameId);
+    const initialFrame = config.seedFrame
+      ? config.seedFrame
+      : config.existingGameGuid
+        ? await this.continuGameSession(gameId, config.existingGameGuid)
+        : await this.apiClient.startGame(gameId);
 
     gameGuid = initialFrame.guid;
     currentFrame = initialFrame;
@@ -124,6 +126,35 @@ export class Arc3RealGameRunner {
         logger.info(`[ARC3 TOOL] inspect_game_state returning: state=${result.state}, score=${result.score}, actions=${result.action_counter}/${result.max_actions}`, 'arc3');
         return result;
       },
+    });
+
+    const resetGameTool = tool({
+      name: 'reset_game',
+      description: 'Reset the current ARC3 game session by issuing the RESET command. Use to restart a level or recover from GAME_OVER states.',
+      parameters: z.object({}),
+      execute: async () => {
+        logger.info('[ARC3 TOOL] reset_game called', 'arc3');
+        if (!gameGuid) throw new Error('Game session not initialized yet.');
+
+        prevFrame = currentFrame;
+        const resetFrame = await this.apiClient.executeAction(gameId, gameGuid, { action: 'RESET' });
+        currentFrame = resetFrame;
+        gameGuid = resetFrame.guid;
+        frames.push(resetFrame);
+        logger.info(`[ARC3 TOOL] reset_game executed: state=${resetFrame.state}, score=${resetFrame.score}`, 'arc3');
+
+        if (dbSessionId) {
+          try {
+            const caption = generateActionCaption({ action: 'RESET' }, prevFrame, resetFrame);
+            const pixelsChanged = prevFrame ? countChangedPixels(prevFrame, resetFrame) : 0;
+            await saveFrame(dbSessionId, frames.length - 1, resetFrame, { action: 'RESET' }, caption, pixelsChanged);
+          } catch (error) {
+            logger.warn(`Failed to save frame after reset: ${error instanceof Error ? error.message : String(error)}`, 'arc3');
+          }
+        }
+
+        return resetFrame;
+      }
     });
 
     // Define individual action tools to match ARC3 reference (ACTION1-6)
@@ -202,7 +233,7 @@ export class Arc3RealGameRunner {
         text: { verbosity: 'high' },
         store: storeResponse,
       },
-      tools: [inspectTool, simpleAction('ACTION1'), simpleAction('ACTION2'), simpleAction('ACTION3'), simpleAction('ACTION4'), simpleAction('ACTION5'), action6Tool],
+      tools: [inspectTool, resetGameTool, simpleAction('ACTION1'), simpleAction('ACTION2'), simpleAction('ACTION3'), simpleAction('ACTION4'), simpleAction('ACTION5'), action6Tool],
     });
 
     const result = await run(

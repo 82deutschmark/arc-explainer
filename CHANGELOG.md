@@ -1,4 +1,13 @@
 # CHANGELOG - Uses semantic versioning (MAJOR.MINOR.PATCH)`r`n
+# [5.8.5] - 2025-11-10
+### 🧩 ARC3 Reset Compliance Fix
+- Manual RESET now includes `card_id` in the backend request body, matching the official ARC-AGI-3 API and the ClaudeCode SDK reference. This fixes intermittent reset failures when using the Reset pill in the playground.
+
+#### Details
+- `server/services/arc3/Arc3ApiClient.ts`: `executeAction()` adds `card_id` when `action === 'RESET'`. Throws a clear error if a scorecard hasn’t been opened yet.
+- Behavior aligns with docs: providing `guid` resets the current session; two consecutive RESETs guarantee a full game reset.
+
+> Note: Continuation currently fetches a frame by issuing a first action to reconstruct state. A future improvement is to pass the last known frame from the client to avoid a side-effectful call.
 # [5.8.5] - 2025-11-11
 ### 🐞 Fixes
 - **ACTION6 Coordinate Picker Y Coordinate Bug**: Fixed critical bug where clicking on grid cells in the ACTION6 coordinate picker dialog always recorded Y coordinate as 0. The issue was caused by incorrectly accessing the 3D grid array dimensions - treating `resolvedCurrentFrame.length` (number of frames in time dimension) as height and `resolvedCurrentFrame[0]?.length` (actual height) as width. Now correctly extracts the 2D frame first (`frame2D = resolvedCurrentFrame[0]`) and uses proper dimensions (`height = frame2D.length`, `width = frame2D[0]?.length`). Clicking at position (21, 35) now correctly records as (21, 35) instead of (21, 0).
@@ -15,6 +24,9 @@
 - **Arc3RealGameRunner** now forwards `previousResponseId` into the OpenAI Agents SDK and captures the returned `response.id`, enabling seamless continuation runs.
 - **Arc3StreamService / types** pass `previousResponseId` & `storeResponse` through initial and continuation payloads so Responses API context stays persisted between turns.
 - Streaming completion metadata emits `providerResponseId`, allowing downstream services and UI to route chained follow-ups reliably.
+
+### 📊 Analytics Improvements
+- **ModelDatasetRepository** now sorts available models by `releaseDate` (newest first) so the Analytics dashboard highlights recent additions when rendering model lists.
 
 # [5.8.3] - 2025-11-09 16:40 EST
 ### ??? Scripts

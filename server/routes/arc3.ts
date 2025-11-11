@@ -11,6 +11,7 @@ import { z } from 'zod';
 import { asyncHandler } from '../middleware/asyncHandler';
 import { Arc3RealGameRunner } from '../services/arc3/Arc3RealGameRunner';
 import { Arc3ApiClient } from '../services/arc3/Arc3ApiClient';
+import type { FrameData } from '../services/arc3/Arc3ApiClient';
 import { arc3StreamService, type StreamArc3Payload } from '../services/arc3/Arc3StreamService';
 import { sseStreamManager } from '../services/streaming/SSEStreamManager';
 import { formatResponse } from '../utils/responseFormatter';
@@ -213,21 +214,71 @@ router.post(
   }),
 );
 
+const normalizeAvailableActions = (tokens?: Array<string | number>): string[] | undefined => {
+  if (!tokens || tokens.length === 0) {
+    return undefined;
+  }
+
+  const normalized = tokens
+    .map((token) => {
+      if (typeof token === 'number') {
+        return token === 0 ? 'RESET' : `ACTION${token}`;
+      }
+
+      const trimmed = token.trim();
+      if (!trimmed) {
+        return null;
+      }
+
+      const upper = trimmed.toUpperCase();
+      if (upper === 'RESET') {
+        return 'RESET';
+      }
+
+      if (/^ACTION\d+$/.test(upper)) {
+        return upper;
+      }
+
+      if (/^\d+$/.test(upper)) {
+        return upper === '0' ? 'RESET' : `ACTION${upper}`;
+      }
+
+      return upper;
+    })
+    .filter((value): value is string => value !== null);
+
+  return normalized.length > 0 ? normalized : undefined;
+};
+
 /**
  * POST /api/arc3/stream/:sessionId/continue
  * Prepare a continuation session (similar to /prepare, but updates existing payload)
  */
+const frameSeedSchema = z.object({
+  guid: z.string().trim(),
+  game_id: z.string().trim(),
+  frame: z.array(z.array(z.array(z.number().int()))),
+  score: z.number().int(),
+  state: z.string().trim(),
+  action_counter: z.number().int(),
+  max_actions: z.number().int(),
+  win_score: z.number().int(),
+  full_reset: z.boolean().optional(),
+  available_actions: z.array(z.union([z.string(), z.number()])).optional(),
+});
+
 const continueSessionSchema = z.object({
   userMessage: z.string().trim().min(1, 'userMessage must not be empty'),
   previousResponseId: z.string().optional(), // From last response (stored in DB)
   existingGameGuid: z.string().optional(), // Game session guid to continue (from previous run)
+  lastFrame: frameSeedSchema.optional(),
 });
 
 router.post(
   '/stream/:sessionId/continue',
   asyncHandler(async (req: Request, res: Response) => {
     const { sessionId } = req.params;
-    const { userMessage, previousResponseId, existingGameGuid } = continueSessionSchema.parse(req.body);
+    const { userMessage, previousResponseId, existingGameGuid, lastFrame } = continueSessionSchema.parse(req.body);
 
     logger.info(`[ARC3 Continue] Preparing continuation with sessionId=${sessionId}, hasResponseId=${!!previousResponseId}, existingGameGuid=${existingGameGuid}`, 'arc3');
 
@@ -240,10 +291,26 @@ router.post(
     }
 
     // Update the payload with continuation data
+    const normalizedLastFrame: FrameData | undefined = lastFrame
+      ? {
+          guid: lastFrame.guid,
+          game_id: lastFrame.game_id,
+          frame: lastFrame.frame,
+          score: lastFrame.score,
+          state: lastFrame.state,
+          action_counter: lastFrame.action_counter,
+          max_actions: lastFrame.max_actions,
+          win_score: lastFrame.win_score,
+          full_reset: lastFrame.full_reset,
+          available_actions: normalizeAvailableActions(lastFrame.available_actions),
+        }
+      : undefined;
+
     arc3StreamService.saveContinuationPayload(sessionId, payload, {
       userMessage,
       previousResponseId,
       existingGameGuid,
+      lastFrame: normalizedLastFrame,
     });
 
     res.json(formatResponse.success({ sessionId, ready: true }));
