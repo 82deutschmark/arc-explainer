@@ -32,7 +32,7 @@ export function AppHeader() {
               </div>
               <div className="flex flex-col">
                 <div className="font-bold text-lg leading-tight">ARC Explainer</div>
-                <div className="text-[10px] text-muted-foreground leading-none">Abstraction & Reasoning</div>
+                <div className="text-[10px] text-muted-foreground leading-none">ARC 1 🟥 ARC 2 🟨 ARC 3 🟦</div>
               </div>
             </div>
           </Link>
