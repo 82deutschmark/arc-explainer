@@ -51,6 +51,14 @@ export const Arc3GridVisualization: React.FC<Arc3GridVisualizationProps> = ({
   const height = currentFrame.length;
   const width = height > 0 ? currentFrame[0].length : 0;
 
+  // Debug logging for grid updates
+  console.log('[Arc3GridVisualization] Render:', {
+    gridLayers: grid?.length || 0,
+    frameIndex,
+    currentFrameSize: `${height}x${width}`,
+    lastAction: lastAction?.type,
+  });
+
   // Calculate canvas dimensions
   const canvasWidth = width * cellSize;
   const canvasHeight = height * cellSize;
