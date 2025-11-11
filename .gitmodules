@@ -12,3 +12,6 @@
 [submodule "external/openai-chatkit-advanced-samples"]
 	path = external/openai-chatkit-advanced-samples
 	url = https://github.com/82deutschmark/openai-chatkit-advanced-samples
+[submodule "external/SnakeBench"]
+	path = external/SnakeBench
+	url = https://github.com/82deutschmark/SnakeBench
