@@ -39,7 +39,7 @@ export function AppHeader() {
           </div>
         </Link>
 
-        <span className="text-sm">🟨</span>
+        <span className="text-sm">🟧</span>
 
         {/* ARC3 Playground Icon - prominently featured */}
         <Link href="/arc3/playground">
@@ -53,7 +53,7 @@ export function AppHeader() {
           </Button>
         </Link>
 
-        <span className="text-sm">🟨</span>
+        <span className="text-sm">🟦</span>
 
         <a
           href="https://github.com/82deutschmark/arc-explainer"
