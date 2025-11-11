@@ -70,7 +70,13 @@ const navigationItems: NavItem[] = [
     description: 'Uses the Responses API to do iterative self-conversation'
   },
   {
-    title: 'ELO Arena',
+    title: 'Debate',
+    href: '/debate',
+    icon: MessageSquare,
+    description: 'Watch AI models challenge each other\'s explanations'
+  },
+  {
+    title: 'Compare',
     href: '/elo',
     icon: Trophy,
     description: 'Compare AI explanations head-to-head with ELO ratings'
@@ -82,22 +88,10 @@ const navigationItems: NavItem[] = [
     description: 'Explore human feedback on model explanations'
   },
   {
-    title: 'Test Solution',
+    title: 'Test',
     href: '/test-solution',
     icon: CheckCircle,
     description: 'Test your own predicted solutions against ARC puzzles'
-  },
-  {
-    title: 'Model Debate',
-    href: '/debate',
-    icon: MessageSquare,
-    description: 'Watch AI models challenge each other\'s explanations'
-  },
-  {
-    title: 'About',
-    href: '/about',
-    icon: Info,
-    description: 'Learn about this project and acknowledgments'
   },
   {
     title: 'ARC-AGI-3',
@@ -109,7 +103,13 @@ const navigationItems: NavItem[] = [
     title: 'ARC3 Playground',
     href: '/arc3/playground',
     icon: FlaskConical,
-    description: 'Launch the Color Hunt simulator powered by the OpenAI Agents SDK'
+    description: 'ARC-3 Games'
+  },
+  {
+    title: 'About',
+    href: '/about',
+    icon: Info,
+    description: 'Learn about this project and acknowledgments'
   }
 ];
 
