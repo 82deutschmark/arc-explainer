@@ -594,6 +594,8 @@ export function useArc3AgentStream() {
       }
 
       try {
+        console.log('[ARC3 Manual Action] Executing:', { action, coordinates, currentGuid: state.gameGuid, gameId: state.gameId });
+
         setState(prev => ({
           ...prev,
           streamingMessage: `Executing ${action}...`,
@@ -607,12 +609,34 @@ export function useArc3AgentStream() {
         });
 
         const result = await response.json();
+        console.log('[ARC3 Manual Action] API Response:', result);
 
         if (!result.success) {
           throw new Error(result.error?.message || 'Failed to execute action');
         }
 
         const frameData = result.data;
+        console.log('[ARC3 Manual Action] Frame data received:', {
+          guid: frameData.guid,
+          state: frameData.state,
+          score: frameData.score,
+          frameShape: frameData.frame ? `[${frameData.frame.length}][${frameData.frame[0]?.length}][${frameData.frame[0]?.[0]?.length}]` : 'null',
+          available_actions: frameData.available_actions,
+        });
+
+        // CRITICAL DEBUG: Log the actual frame structure
+        console.log('[ARC3 Manual Action] RAW frameData object:', frameData);
+        console.log('[ARC3 Manual Action] frameData.frame type:', typeof frameData.frame);
+        console.log('[ARC3 Manual Action] frameData.frame is Array?', Array.isArray(frameData.frame));
+        if (frameData.frame && Array.isArray(frameData.frame)) {
+          console.log('[ARC3 Manual Action] frameData.frame[0] type:', typeof frameData.frame[0]);
+          console.log('[ARC3 Manual Action] frameData.frame[0] is Array?', Array.isArray(frameData.frame[0]));
+          if (frameData.frame[0] && Array.isArray(frameData.frame[0])) {
+            console.log('[ARC3 Manual Action] frameData.frame[0][0] type:', typeof frameData.frame[0][0]);
+            console.log('[ARC3 Manual Action] frameData.frame[0][0] is Array?', Array.isArray(frameData.frame[0][0]));
+            console.log('[ARC3 Manual Action] frameData.frame[0][0] sample:', frameData.frame[0][0]?.slice(0, 5));
+          }
+        }
 
         // Add action metadata to frame
         const frameWithAction = {
@@ -623,22 +647,35 @@ export function useArc3AgentStream() {
           },
         };
 
-        // Update state with new frame
-        setState(prev => ({
-          ...prev,
-          frames: [...prev.frames, frameWithAction],
-          currentFrameIndex: prev.frames.length,
-          streamingMessage: `${action} completed`,
-          timeline: [...prev.timeline, {
-            index: prev.timeline.length,
-            type: 'tool_call' as const,
-            label: `Manual ${action}${coordinates ? ` at (${coordinates[0]}, ${coordinates[1]})` : ''}`,
-            content: JSON.stringify({ action, coordinates, manual: true }, null, 2),
-          }],
-        }));
+        // Update state with new frame AND update gameGuid if it changed
+        setState(prev => {
+          const newFrameIndex = prev.frames.length;
+          console.log('[ARC3 Manual Action] Updating state:', {
+            newFrameIndex,
+            newGuid: frameData.guid,
+            previousGuid: prev.gameGuid,
+            guidChanged: frameData.guid !== prev.gameGuid,
+          });
+
+          return {
+            ...prev,
+            gameGuid: frameData.guid,  // CRITICAL: Update the guid for next action
+            frames: [...prev.frames, frameWithAction],
+            currentFrameIndex: newFrameIndex,
+            streamingMessage: `${action} completed`,
+            error: undefined,  // Clear any previous errors
+            timeline: [...prev.timeline, {
+              index: prev.timeline.length,
+              type: 'tool_call' as const,
+              label: `Manual ${action}${coordinates ? ` at (${coordinates[0]}, ${coordinates[1]})` : ''}`,
+              content: JSON.stringify({ action, coordinates, manual: true, newState: frameData.state, newScore: frameData.score }, null, 2),
+            }],
+          };
+        });
 
         return frameData;
       } catch (error) {
+        console.error('[ARC3 Manual Action] Error:', error);
         const errorMessage = error instanceof Error ? error.message : 'Failed to execute action';
         setState(prev => ({
           ...prev,
@@ -652,6 +689,18 @@ export function useArc3AgentStream() {
   );
 
   const initializeGameSession = useCallback((frameData: any) => {
+    console.log('[ARC3] initializeGameSession called with frameData:', frameData);
+    console.log('[ARC3] frameData.frame structure:', {
+      type: typeof frameData.frame,
+      isArray: Array.isArray(frameData.frame),
+      length: frameData.frame?.length,
+      firstElement: frameData.frame?.[0] ? {
+        type: typeof frameData.frame[0],
+        isArray: Array.isArray(frameData.frame[0]),
+        length: frameData.frame[0]?.length,
+      } : null,
+    });
+
     setState(prev => ({
       ...prev,
       gameGuid: frameData.guid,

@@ -266,15 +266,40 @@ export default function ARC3AgentPlayground() {
   const currentFrame = state.frames[state.currentFrameIndex] || null;
   const resolvedCurrentFrame = resolveFrameLayers(currentFrame);
 
+  // CRITICAL DEBUG: Log what we're about to render
+  console.log('[ARC3 Playground] Current render state:', {
+    totalFrames: state.frames.length,
+    currentFrameIndex: state.currentFrameIndex,
+    hasCurrentFrame: !!currentFrame,
+    currentFrameKeys: currentFrame ? Object.keys(currentFrame) : null,
+    resolvedCurrentFrame: resolvedCurrentFrame ? `Array[${resolvedCurrentFrame.length}]` : null,
+    resolvedSample: resolvedCurrentFrame ? {
+      layerCount: resolvedCurrentFrame.length,
+      firstLayerSize: resolvedCurrentFrame[0] ? `${resolvedCurrentFrame[0].length}x${resolvedCurrentFrame[0][0]?.length}` : 'null',
+    } : null,
+  });
+
   // State for managing which layer/timestep to display within the current frame
   const [currentLayerIndex, setCurrentLayerIndex] = useState(0);
 
   // When currentFrame changes, default to showing the LAST layer (final state after action)
+  // CRITICAL: Use currentFrame as dependency to ensure effect runs when frame data changes
   React.useEffect(() => {
+    console.log('[ARC3 Playground] Frame changed:', {
+      currentFrameIndex: state.currentFrameIndex,
+      hasFrame: !!currentFrame,
+      resolvedFrameLayers: resolvedCurrentFrame?.length || 0,
+      currentLayerIndex,
+    });
+
     if (resolvedCurrentFrame && resolvedCurrentFrame.length > 0) {
-      setCurrentLayerIndex(resolvedCurrentFrame.length - 1);
+      const lastLayerIndex = resolvedCurrentFrame.length - 1;
+      console.log('[ARC3 Playground] Setting layer index to:', lastLayerIndex);
+      setCurrentLayerIndex(lastLayerIndex);
+    } else {
+      console.log('[ARC3 Playground] No resolved frame available');
     }
-  }, [state.currentFrameIndex, resolvedCurrentFrame?.length]);
+  }, [state.currentFrameIndex, currentFrame, resolvedCurrentFrame?.length]);
   const normalizedAvailableActions = React.useMemo(() => {
     const tokens = currentFrame?.available_actions;
     if (!tokens || tokens.length === 0) {
@@ -637,6 +662,7 @@ export default function ARC3AgentPlayground() {
                 <div className="space-y-2">
                   <div className="flex justify-center">
                     <Arc3GridVisualization
+                      key={`frame-${state.currentFrameIndex}-${currentLayerIndex}-${currentFrame?.score}`}
                       grid={resolvedCurrentFrame}
                       frameIndex={currentLayerIndex}
                       cellSize={20}
@@ -710,6 +736,7 @@ export default function ARC3AgentPlayground() {
                 <div className="space-y-2">
                   <div className="flex justify-center">
                     <Arc3GridVisualization
+                      key={`initial-grid-${gameId}`}
                       grid={initialGrid as number[][][]}
                       frameIndex={Math.max(0, (initialGrid as number[][][]).length - 1)}
                       cellSize={20}
@@ -815,6 +842,7 @@ export default function ARC3AgentPlayground() {
               return (
                 <div className="relative inline-block">
                   <Arc3GridVisualization
+                    key={`picker-frame-${state.currentFrameIndex}`}
                     grid={resolvedCurrentFrame}
                     frameIndex={lastLayerIndex}
                     cellSize={20}
