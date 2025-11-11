@@ -93,17 +93,29 @@ export function CollapsibleMission() {
                 and accessibility matters.
               </p>
 
-              <p className="mb-2 text-sm text-red-800">
-                I also made this game based on ARC puzzles to help humans develop their fluid intelligence.
-              </p>
-              <a
-                href="https://sfmc.markbarney.net"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-sm font-medium text-blue-700 underline hover:text-blue-900"
-              >
-                Check out my experiment here →
-              </a>
+              <div className="space-y-2 mb-2">
+                <p className="text-sm text-gray-800">
+                  I also made these projects to help humans develop their fluid intelligence:
+                </p>
+                <div className="flex flex-col gap-1.5">
+                  <a
+                    href="https://human-arc.gptpluspro.com/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-sm font-medium text-blue-700 underline hover:text-blue-900"
+                  >
+                    Human ARC Challenge →
+                  </a>
+                  <a
+                    href="https://sfmc.markbarney.net"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-sm font-medium text-blue-700 underline hover:text-blue-900"
+                  >
+                    Fluid Intelligence Game →
+                  </a>
+                </div>
+              </div>
             </div>
           </div>
         </div>
