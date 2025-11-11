@@ -185,38 +185,27 @@ export default function PuzzleBrowser() {
   }
 
   return (
-    <div className="min-h-screen w-full bg-slate-950 text-slate-100 px-1.5">
-      <div className="flex min-h-screen w-full flex-col gap-2 pb-5 pt-3">
+    <div className="min-h-screen w-full bg-slate-950 text-slate-100">
+      <div className="flex min-h-screen w-full flex-col gap-1.5 pb-3 pt-2 px-2">
 
-        <header className="w-full space-y-2">
-          <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
-            <div className="space-y-1">
-              <p className="text-xs font-semibold uppercase tracking-[0.35em] text-slate-500">Research Overview</p>
-              <h1 className="text-2xl font-semibold text-slate-50 sm:text-3xl">
-                ARC-AGI Puzzle Explorer
-              </h1>
-            </div>
-            <EmojiMosaicAccent
-              pattern={HERO_STREAMER_PATTERN}
-              columns={10}
-              maxColumns={10}
-              size="sm"
-              framed
-              className="self-start opacity-70"
-            />
-          </div>
-
-          <div>
-            <CollapsibleMission />
-          </div>
-
-          <ReferenceMaterial />
+        <header className="w-full flex items-center justify-between gap-2">
+          <CollapsibleMission />
+          <EmojiMosaicAccent
+            pattern={HERO_STREAMER_PATTERN}
+            columns={10}
+            maxColumns={10}
+            size="sm"
+            framed
+            className="opacity-70"
+          />
         </header>
+
+        <ReferenceMaterial />
 
         {/* Filters */}
 
-        <section className="w-full rounded-lg border border-slate-800 bg-slate-900/60 p-3">
-          <div className="grid grid-cols-1 gap-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        <section className="w-full rounded-lg border border-slate-800 bg-slate-900/60 p-2">
+          <div className="grid grid-cols-1 gap-1.5 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             <div className="flex flex-col gap-1">
               <label htmlFor="maxGridSize" className="text-xs font-semibold uppercase tracking-wide text-slate-400">Max Grid Size</label>
               <select
@@ -307,7 +296,7 @@ export default function PuzzleBrowser() {
             </div>
           </div>
 
-          <div className="mt-2 flex flex-col gap-2 border-t border-slate-800 pt-2 text-xs text-slate-400 md:flex-row md:items-center md:justify-between">
+          <div className="mt-1.5 flex flex-col gap-1.5 border-t border-slate-800 pt-1.5 text-xs text-slate-400 md:flex-row md:items-center md:justify-between">
             <div className="flex flex-wrap items-center gap-2">
               <span className="text-sm font-semibold text-slate-200">Active filters</span>
               {[
@@ -359,8 +348,8 @@ export default function PuzzleBrowser() {
           </div>
         </section>
         {/* Results */}
-        <section className="w-full rounded-lg border border-slate-800 bg-slate-900/60 p-3">
-          <div className="mb-2 flex flex-wrap items-center justify-between gap-2 text-slate-200">
+        <section className="w-full rounded-lg border border-slate-800 bg-slate-900/60 p-2">
+          <div className="mb-1.5 flex flex-wrap items-center justify-between gap-1.5 text-slate-200">
             <h2 className="text-base font-semibold uppercase tracking-wide text-slate-300">Puzzle results</h2>
             {!isLoading && (
               <span className="rounded-full border border-slate-700 px-3 py-1 text-xs text-slate-400">
@@ -392,7 +381,7 @@ export default function PuzzleBrowser() {
           )}
         </section>
         {/* Instructions */}
-        <section className="w-full rounded-lg border border-slate-800 bg-slate-900/60 p-3">
+        <section className="w-full rounded-lg border border-slate-800 bg-slate-900/60 p-2">
           <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-300">Working notes</h2>
           <div className="mt-2 space-y-1 text-xs leading-relaxed text-slate-400">
             <p>
