@@ -51,6 +51,20 @@ export const Arc3GridVisualization: React.FC<Arc3GridVisualizationProps> = ({
   const height = currentFrame.length;
   const width = height > 0 ? currentFrame[0].length : 0;
 
+  // Create a stable signature for the grid data to track changes
+  const gridSignature = React.useMemo(() => {
+    return `${grid?.length || 0}-${frameIndex}-${height}-${width}-${currentFrame?.[0]?.[0]?.[0] || 0}`;
+  }, [grid?.length, frameIndex, height, width, currentFrame]);
+
+  // Debug logging for grid updates
+  console.log('[Arc3GridVisualization] Render:', {
+    gridLayers: grid?.length || 0,
+    frameIndex,
+    currentFrameSize: `${height}x${width}`,
+    lastAction: lastAction?.type,
+    gridSignature,
+  });
+
   // Calculate canvas dimensions
   const canvasWidth = width * cellSize;
   const canvasHeight = height * cellSize;
@@ -135,7 +149,7 @@ export const Arc3GridVisualization: React.FC<Arc3GridVisualizationProps> = ({
         }
       }
     }
-  }, [currentFrame, cellSize, showGrid, showCoordinates, canvasWidth, canvasHeight, height, width]);
+  }, [gridSignature, currentFrame, cellSize, showGrid, showCoordinates, canvasWidth, canvasHeight, height, width]);
 
   // Handle mouse move for hover effects
   const handleMouseMove = (e: React.MouseEvent<HTMLCanvasElement>) => {
