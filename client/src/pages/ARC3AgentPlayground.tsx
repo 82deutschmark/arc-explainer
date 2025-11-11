@@ -266,6 +266,19 @@ export default function ARC3AgentPlayground() {
   const currentFrame = state.frames[state.currentFrameIndex] || null;
   const resolvedCurrentFrame = resolveFrameLayers(currentFrame);
 
+  // CRITICAL DEBUG: Log what we're about to render
+  console.log('[ARC3 Playground] Current render state:', {
+    totalFrames: state.frames.length,
+    currentFrameIndex: state.currentFrameIndex,
+    hasCurrentFrame: !!currentFrame,
+    currentFrameKeys: currentFrame ? Object.keys(currentFrame) : null,
+    resolvedCurrentFrame: resolvedCurrentFrame ? `Array[${resolvedCurrentFrame.length}]` : null,
+    resolvedSample: resolvedCurrentFrame ? {
+      layerCount: resolvedCurrentFrame.length,
+      firstLayerSize: resolvedCurrentFrame[0] ? `${resolvedCurrentFrame[0].length}x${resolvedCurrentFrame[0][0]?.length}` : 'null',
+    } : null,
+  });
+
   // State for managing which layer/timestep to display within the current frame
   const [currentLayerIndex, setCurrentLayerIndex] = useState(0);
 

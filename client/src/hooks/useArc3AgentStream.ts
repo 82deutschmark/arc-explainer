@@ -624,6 +624,20 @@ export function useArc3AgentStream() {
           available_actions: frameData.available_actions,
         });
 
+        // CRITICAL DEBUG: Log the actual frame structure
+        console.log('[ARC3 Manual Action] RAW frameData object:', frameData);
+        console.log('[ARC3 Manual Action] frameData.frame type:', typeof frameData.frame);
+        console.log('[ARC3 Manual Action] frameData.frame is Array?', Array.isArray(frameData.frame));
+        if (frameData.frame && Array.isArray(frameData.frame)) {
+          console.log('[ARC3 Manual Action] frameData.frame[0] type:', typeof frameData.frame[0]);
+          console.log('[ARC3 Manual Action] frameData.frame[0] is Array?', Array.isArray(frameData.frame[0]));
+          if (frameData.frame[0] && Array.isArray(frameData.frame[0])) {
+            console.log('[ARC3 Manual Action] frameData.frame[0][0] type:', typeof frameData.frame[0][0]);
+            console.log('[ARC3 Manual Action] frameData.frame[0][0] is Array?', Array.isArray(frameData.frame[0][0]));
+            console.log('[ARC3 Manual Action] frameData.frame[0][0] sample:', frameData.frame[0][0]?.slice(0, 5));
+          }
+        }
+
         // Add action metadata to frame
         const frameWithAction = {
           ...frameData,
@@ -675,6 +689,18 @@ export function useArc3AgentStream() {
   );
 
   const initializeGameSession = useCallback((frameData: any) => {
+    console.log('[ARC3] initializeGameSession called with frameData:', frameData);
+    console.log('[ARC3] frameData.frame structure:', {
+      type: typeof frameData.frame,
+      isArray: Array.isArray(frameData.frame),
+      length: frameData.frame?.length,
+      firstElement: frameData.frame?.[0] ? {
+        type: typeof frameData.frame[0],
+        isArray: Array.isArray(frameData.frame[0]),
+        length: frameData.frame[0]?.length,
+      } : null,
+    });
+
     setState(prev => ({
       ...prev,
       gameGuid: frameData.guid,
