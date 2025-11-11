@@ -2,6 +2,8 @@
 # [5.10.3] - 2025-11-11
 ### 🎨 UI Improvements
 - Integrated ReferenceMaterial component into About page with refreshed community messaging, Simon Strandgaard acknowledgment, and official ARC Discord link.
+### 🔧 Maintenance
+- Removed legacy `external/` git submodules (`ARC3-solution`, `ARC-AGI-3-ClaudeCode-SDK`, `SnakeBench`, `openai-agents-js`, `openai-chatkit-advanced-samples`) now that their contents live in dedicated upstream repositories.
 
 # [5.10.2] - 2025-11-11
 ### 🔒 ARC3 Conversation Chaining Hardening
