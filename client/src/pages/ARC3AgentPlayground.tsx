@@ -775,43 +775,50 @@ export default function ARC3AgentPlayground() {
           </DialogHeader>
 
           <div className="flex justify-center py-4">
-            {resolvedCurrentFrame && (
-              <div className="relative inline-block">
-                <Arc3GridVisualization
-                  grid={resolvedCurrentFrame}
-                  frameIndex={0}
-                  cellSize={20}
-                  showGrid={true}
-                  lastAction={currentFrame?.action}
-                />
-                {/* Clickable overlay */}
-                <div
-                  className="absolute inset-0 grid"
-                  style={{
-                    gridTemplateColumns: `repeat(${resolvedCurrentFrame[0]?.length || 64}, 1fr)`,
-                    gridTemplateRows: `repeat(${resolvedCurrentFrame.length || 64}, 1fr)`,
-                  }}
-                >
-                  {Array.from({ length: resolvedCurrentFrame.length || 64 }).map((_, y) =>
-                    Array.from({ length: resolvedCurrentFrame[0]?.length || 64 }).map((_, x) => (
-                      <button
-                        key={`${x}-${y}`}
-                        onClick={async () => {
-                          try {
-                            await executeManualAction('ACTION6', [x, y]);
-                            setShowCoordinatePicker(false);
-                          } catch (error) {
-                            console.error('Failed to execute ACTION6:', error);
-                          }
-                        }}
-                        className="hover:bg-white/30 hover:ring-2 hover:ring-blue-500 transition-all cursor-pointer"
-                        title={`Execute ACTION6 at (${x}, ${y})`}
-                      />
-                    ))
-                  )}
+            {resolvedCurrentFrame && (() => {
+              // Extract the 2D frame from the 3D grid
+              const frame2D = resolvedCurrentFrame[0] || [];
+              const height = frame2D.length;
+              const width = height > 0 ? frame2D[0]?.length || 0 : 0;
+
+              return (
+                <div className="relative inline-block">
+                  <Arc3GridVisualization
+                    grid={resolvedCurrentFrame}
+                    frameIndex={0}
+                    cellSize={20}
+                    showGrid={true}
+                    lastAction={currentFrame?.action}
+                  />
+                  {/* Clickable overlay */}
+                  <div
+                    className="absolute inset-0 grid"
+                    style={{
+                      gridTemplateColumns: `repeat(${width}, 1fr)`,
+                      gridTemplateRows: `repeat(${height}, 1fr)`,
+                    }}
+                  >
+                    {Array.from({ length: height }).map((_, y) =>
+                      Array.from({ length: width }).map((_, x) => (
+                        <button
+                          key={`${x}-${y}`}
+                          onClick={async () => {
+                            try {
+                              await executeManualAction('ACTION6', [x, y]);
+                              setShowCoordinatePicker(false);
+                            } catch (error) {
+                              console.error('Failed to execute ACTION6:', error);
+                            }
+                          }}
+                          className="hover:bg-white/30 hover:ring-2 hover:ring-blue-500 transition-all cursor-pointer"
+                          title={`Execute ACTION6 at (${x}, ${y})`}
+                        />
+                      ))
+                    )}
+                  </div>
                 </div>
-              </div>
-            )}
+              );
+            })()}
           </div>
 
           <div className="flex justify-end gap-2">
