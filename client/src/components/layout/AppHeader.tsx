@@ -1,19 +1,15 @@
 /**
  * Author: Claude Code using Sonnet 4.5
  * Date: 2025-11-11
- * PURPOSE: Compact app header with ARC-inspired colorful branding, yellow square dividers,
- * and prominent ARC3 playground icon. Zero margins for edge-to-edge layout.
- * Integrates with AppNavigation for main navigation structure.
+ * PURPOSE: Compact app header with ARC-inspired colorful branding and colorful emoji dividers.
+ * Zero margins for edge-to-edge layout. Includes full AppNavigation component.
  * SRP/DRY check: Pass - Single responsibility (header layout), reuses AppNavigation component
  */
 import React from 'react';
-import { Link, useLocation } from 'wouter';
-import { Button } from '@/components/ui/button';
-import { Github, FlaskConical } from 'lucide-react';
+import { Link } from 'wouter';
+import { AppNavigation } from './AppNavigation';
 
 export function AppHeader() {
-  const [location] = useLocation();
-
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="flex h-12 items-center justify-between gap-2 px-2">
@@ -42,37 +38,15 @@ export function AppHeader() {
         <div className="flex gap-0.5 text-xs">
           <span>🟨</span>
           <span>🟩</span>
-        </div>
-
-        {/* ARC3 Playground Icon - prominently featured */}
-        <Link href="/arc3/playground">
-          <Button
-            variant={location === '/arc3/playground' ? 'default' : 'ghost'}
-            size="sm"
-            className="flex items-center gap-1.5 h-8 px-2"
-          >
-            <FlaskConical className="h-4 w-4" />
-            <span className="text-xs font-medium hidden sm:inline">ARC3 Playground</span>
-          </Button>
-        </Link>
-
-        <div className="flex gap-0.5 text-xs">
           <span>🟦</span>
-          <span>🟪</span>
         </div>
 
-        <a
-          href="https://github.com/82deutschmark/arc-explainer"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Button variant="ghost" size="sm" className="flex items-center gap-1.5 h-8 px-2">
-            <Github className="h-4 w-4" />
-            <span className="text-xs hidden sm:inline">GitHub</span>
-          </Button>
-        </a>
+        <div className="flex flex-1 items-center justify-end overflow-hidden">
+          <AppNavigation />
+        </div>
 
         <div className="flex gap-0.5 text-xs">
+          <span>🟪</span>
           <span>🟥</span>
           <span>🟧</span>
         </div>
