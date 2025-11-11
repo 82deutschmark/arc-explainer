@@ -39,7 +39,10 @@ export function AppHeader() {
           </div>
         </Link>
 
-        <span className="text-sm">🟧</span>
+        <div className="flex gap-0.5 text-xs">
+          <span>🟨</span>
+          <span>🟩</span>
+        </div>
 
         {/* ARC3 Playground Icon - prominently featured */}
         <Link href="/arc3/playground">
@@ -53,7 +56,10 @@ export function AppHeader() {
           </Button>
         </Link>
 
-        <span className="text-sm">🟦</span>
+        <div className="flex gap-0.5 text-xs">
+          <span>🟦</span>
+          <span>🟪</span>
+        </div>
 
         <a
           href="https://github.com/82deutschmark/arc-explainer"
@@ -65,6 +71,11 @@ export function AppHeader() {
             <span className="text-xs hidden sm:inline">GitHub</span>
           </Button>
         </a>
+
+        <div className="flex gap-0.5 text-xs">
+          <span>🟥</span>
+          <span>🟧</span>
+        </div>
       </div>
     </header>
   );
