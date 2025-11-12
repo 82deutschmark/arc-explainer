@@ -1,4 +1,24 @@
 # CHANGELOG - Uses semantic versioning (MAJOR.MINOR.PATCH)`r`n
+# [5.10.6] - 2025-11-12
+### 🐞 Critical Fixes
+- **ARC3 ACTION7 and RESET Support**: Restored ACTION7 support and improved RESET handling:
+  1. **Re-added ACTION7** - User confirmed ACTION7 is valid in ARC3 API (correcting previous incorrect removal)
+  2. **Enhanced Action Normalization** - Improved `normalizeAvailableActionName` to properly handle all action formats:
+     - Numeric: `0` (RESET), `1-7` (ACTION1-ACTION7)
+     - String: `'RESET'`, `'ACTION1'` through `'ACTION7'`
+     - Better validation and warnings for unexpected tokens
+  3. **Improved Debugging** - Added clearer console warnings for unexpected action token formats
+
+#### Technical Details:
+- ARC3 API returns `available_actions` as integers: `[0, 1, 2, 3, 4, 5, 6, 7]` where 0=RESET
+- Normalization converts to strings: `['RESET', 'ACTION1', 'ACTION2', ..., 'ACTION7']`
+- Validation now explicitly checks for valid ranges (0-7) with warnings for out-of-range values
+
+#### Files Changed:
+- `client/src/pages/ARC3AgentPlayground.tsx`: Re-added ACTION7, improved normalization with range validation
+- `server/routes/arc3.ts`: Re-added ACTION7 to validation schema
+- `server/services/arc3/Arc3ApiClient.ts`: Re-added ACTION7 to GameAction type
+
 # [5.10.5] - 2025-11-12
 ### 🐞 Critical Fixes
 - **ARC3 Playground API Alignment**: Fixed multiple mismatches between frontend expectations and ARC3 API specification:
