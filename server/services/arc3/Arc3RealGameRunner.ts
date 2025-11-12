@@ -36,22 +36,33 @@ export class Arc3RealGameRunner {
   constructor(private readonly apiClient: Arc3ApiClient) {}
 
   /**
-   * Continue an existing game session by executing a dummy action to fetch current state.
-   * When continuing, we need to get the current frame state without losing progress.
-   * We execute ACTION1 (safe, often a no-op or reversible action) to get the current game state.
+   * Continue an existing game session WITHOUT executing any actions.
+   * CRITICAL: We must NOT execute actions just to "fetch" state - that changes the game!
+   * Instead, we rely on the cached frame passed from the frontend.
+   * If no cached frame is provided, we throw an error rather than corrupting game state.
    */
-  private async continuGameSession(gameId: string, gameGuid: string): Promise<FrameData> {
-    logger.info(`[ARC3] Continuing game session: ${gameGuid}`, 'arc3');
-
-    try {
-      // Execute ACTION1 to fetch current game state while advancing gameplay
-      const currentState = await this.apiClient.executeAction(gameId, gameGuid, { action: 'ACTION1' });
-      logger.info(`[ARC3] Retrieved current state for game ${gameId}, guid ${gameGuid}`, 'arc3');
-      return currentState;
-    } catch (error) {
-      logger.error(`[ARC3] Failed to retrieve game session state: ${error instanceof Error ? error.message : String(error)}`, 'arc3');
-      throw error;
+  private validateContinuationFrame(seedFrame: FrameData | undefined, gameId: string, gameGuid: string): FrameData {
+    if (!seedFrame) {
+      throw new Error(
+        `[ARC3] Cannot continue game session ${gameGuid} without a seed frame. ` +
+        `The frontend must provide the last known frame state when continuing. ` +
+        `Executing actions to "fetch" state would corrupt the game!`
+      );
     }
+
+    if (seedFrame.guid !== gameGuid) {
+      logger.warn(
+        `[ARC3] Seed frame guid (${seedFrame.guid}) doesn't match expected guid (${gameGuid}). Using seed frame anyway.`,
+        'arc3'
+      );
+    }
+
+    logger.info(
+      `[ARC3] Continuing game session: ${gameGuid} at state=${seedFrame.state}, score=${seedFrame.score}, actions=${seedFrame.action_counter}/${seedFrame.max_actions}`,
+      'arc3'
+    );
+
+    return seedFrame;
   }
 
   async run(config: Arc3AgentRunConfig): Promise<Arc3AgentRunResult> {
@@ -66,10 +77,11 @@ export class Arc3RealGameRunner {
     let dbSessionId: number | null = null;
 
     // Start a fresh session OR continue an existing one
-    const initialFrame = config.seedFrame
-      ? config.seedFrame
-      : config.existingGameGuid
-        ? await this.continuGameSession(gameId, config.existingGameGuid)
+    // CRITICAL: When continuing, we MUST have a seed frame - we can't execute actions to "fetch" state
+    const initialFrame = config.existingGameGuid
+      ? this.validateContinuationFrame(config.seedFrame, gameId, config.existingGameGuid)
+      : config.seedFrame
+        ? config.seedFrame
         : await this.apiClient.startGame(gameId);
 
     gameGuid = initialFrame.guid;
@@ -315,8 +327,9 @@ export class Arc3RealGameRunner {
     let isContinuation = false;
 
     // Start a fresh session OR continue an existing one
+    // CRITICAL: When continuing, we MUST have a seed frame - we can't execute actions to "fetch" state
     const initialFrame = config.existingGameGuid
-      ? await this.continuGameSession(gameId, config.existingGameGuid)
+      ? this.validateContinuationFrame(config.seedFrame, gameId, config.existingGameGuid)
       : await this.apiClient.startGame(gameId);
 
     gameGuid = initialFrame.guid;

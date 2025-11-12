@@ -1,4 +1,30 @@
 # CHANGELOG - Uses semantic versioning (MAJOR.MINOR.PATCH)`r`n
+# [5.10.4] - 2025-11-12
+### 🐞 Critical Fixes
+- **ARC3 Agent Feedback Submission 500 Error**: Fixed critical bug where submitting feedback after an agent run failed with `500 SERVICE_UNAVAILABLE` error. Root cause was a field name mismatch between frontend and backend - backend sends `providerResponseId` in the `agent.completed` event, but frontend was expecting `lastResponseId`, leaving it `undefined`. When user tried to send feedback, `previousResponseId: undefined` was sent to the API, causing Zod validation failure. Fixed by correctly mapping `data.providerResponseId` to `state.lastResponseId` in the event handler (`client/src/hooks/useArc3AgentStream.ts:457`).
+
+- **Game Continuation Executes Unwanted Actions**: Fixed critical bug where continuing a game session would execute an unexpected ACTION1, corrupting the game state and causing grid visualization mismatches. The `continuGameSession()` method was attempting to "fetch" current state by executing ACTION1, but **executing an action changes the game state** - you can't retrieve state without side effects! This caused:
+  - Unexpected grid changes that confused users
+  - Potential 500 errors if ACTION1 wasn't available
+  - Game state corruption between continuation attempts
+
+  **Solution**: Completely replaced the broken approach with a stateless continuation pattern:
+  - **Removed** `continuGameSession()` method that executed actions
+  - **Added** `validateContinuationFrame()` method that validates cached frames from the frontend
+  - **Never executes actions during continuation** - only validates and returns the cached frame
+  - Frontend already sends `lastFrame` in continuation requests; now backend correctly uses it
+  - Throws clear error if frame missing (fail-fast design)
+
+  Files changed:
+  - `server/services/arc3/Arc3RealGameRunner.ts`: New `validateContinuationFrame()` method (lines 44-66), updated both `run()` and `runWithStreaming()` methods to use cached frames
+  - `server/services/arc3/Arc3StreamService.ts`: Pass `seedFrame: payload.lastFrame` when continuing (line 424)
+
+### 📚 Technical Details
+- Backend already had `seedFrame` type support in `Arc3AgentRunConfig`
+- Frontend already sends `lastFrame` in continuation requests
+- Fixes required zero API schema changes - just wiring them together correctly
+- Follows stateful game engine pattern: cache state client-side, pass forward (never "refresh" via actions)
+
 # [5.10.3] - 2025-11-11
 ### 🎨 UI Improvements
 - Integrated ReferenceMaterial component into About page with refreshed community messaging, Simon Strandgaard acknowledgment, and official ARC Discord link.
