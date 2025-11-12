@@ -39,18 +39,26 @@ interface ModelInfo {
   releaseDate?: string;
 }
 
+// Normalize available_actions tokens from the API
+// API can send: integers (0=RESET, 1-7=ACTION1-7) or strings ('RESET', 'ACTION1', etc)
 const normalizeAvailableActionName = (token: string | number | null | undefined): string | null => {
   if (token === null || token === undefined) {
     return null;
   }
 
+  // Handle numeric tokens: 0 = RESET, 1-7 = ACTION1-ACTION7
   if (typeof token === 'number' && Number.isFinite(token)) {
     if (token === 0) {
       return 'RESET';
     }
-    return `ACTION${token}`;
+    if (token >= 1 && token <= 7) {
+      return `ACTION${token}`;
+    }
+    console.warn('[ARC3] Unexpected numeric action token:', token);
+    return null;
   }
 
+  // Handle string tokens
   if (typeof token === 'string') {
     const trimmed = token.trim();
     if (!trimmed) {
@@ -76,7 +84,11 @@ const normalizeAvailableActionName = (token: string | number | null | undefined)
       if (parsed === 0) {
         return 'RESET';
       }
-      return `ACTION${parsed}`;
+      if (parsed >= 1 && parsed <= 7) {
+        return `ACTION${parsed}`;
+      }
+      console.warn('[ARC3] Unexpected ACTION number in string:', parsed);
+      return null;
     }
 
     if (/^\d+$/.test(canonical)) {
@@ -84,7 +96,11 @@ const normalizeAvailableActionName = (token: string | number | null | undefined)
       if (parsed === 0) {
         return 'RESET';
       }
-      return `ACTION${parsed}`;
+      if (parsed >= 1 && parsed <= 7) {
+        return `ACTION${parsed}`;
+      }
+      console.warn('[ARC3] Unexpected numeric string token:', parsed);
+      return null;
     }
   }
 
@@ -605,7 +621,7 @@ export default function ARC3AgentPlayground() {
           <Card>
             <CardContent className="p-3">
               <div className="flex flex-wrap items-center justify-center gap-1.5">
-                {['RESET', 'ACTION1', 'ACTION2', 'ACTION3', 'ACTION4', 'ACTION5', 'ACTION6'].map((actionName) => {
+                {['RESET', 'ACTION1', 'ACTION2', 'ACTION3', 'ACTION4', 'ACTION5', 'ACTION6', 'ACTION7'].map((actionName) => {
                   const usedCount = toolEntries.filter(e => e.label.includes(actionName)).length;
                   const isActive = isPlaying && state.streamingMessage?.includes(actionName);
                   const displayName = actionName === 'RESET' ? 'Reset' : actionName.replace('ACTION', 'Action ');
