@@ -1,4 +1,25 @@
 # CHANGELOG - Uses semantic versioning (MAJOR.MINOR.PATCH)`r`n
+# [5.10.5] - 2025-11-12
+### 🐞 Critical Fixes
+- **ARC3 Playground API Alignment**: Fixed multiple mismatches between frontend expectations and ARC3 API specification:
+  1. **Removed ACTION7** - The ARC3 API only supports actions 1-6 (plus RESET/0), but ACTION7 was incorrectly included in the UI causing confusion and potential errors
+  2. **Fixed Game State Names** - Changed `IN_PROGRESS` to `NOT_FINISHED` to match actual API response values (`NOT_STARTED`, `NOT_FINISHED`, `WIN`, `GAME_OVER`)
+  3. **Simplified ACTION6 Coordinate Picker** - Replaced complex overlay with 4,096+ individual button elements with a single efficient `onCellClick` handler on the canvas, drastically improving performance and reducing DOM complexity
+  4. **Fixed Click Coordinate Calculation** - ACTION6 coordinate picker now uses same cell dimension calculation as hover tooltip for consistency, fixing potential misalignment when canvas is scaled
+  5. **Enhanced available_actions Debugging** - Added comprehensive console logging for action availability normalization to help diagnose API response mismatches
+
+#### Technical Details:
+- The ARC3 API returns `available_actions` as an array of integers `[1, 2, 3, 4, 5, 6]`, which our normalization converts to `['ACTION1', 'ACTION2', 'ACTION3', 'ACTION4', 'ACTION5', 'ACTION6']`
+- Previous ACTION6 picker created a CSS grid overlay with individual buttons for each cell (up to 64×64 = 4,096 buttons). New implementation uses the existing `Arc3GridVisualization.onCellClick` handler
+- Click coordinate calculation now accounts for canvas scaling to ensure accurate cell selection
+
+#### Files Changed:
+- `client/src/pages/ARC3AgentPlayground.tsx`: Removed ACTION7 from action pills, simplified ACTION6 picker, added debugging
+- `client/src/types/arc3.ts`: Changed `IN_PROGRESS` to `NOT_FINISHED` in Arc3GameState type
+- `client/src/components/arc3/Arc3GridVisualization.tsx`: Fixed click coordinate calculation for scaled canvases
+- `server/routes/arc3.ts`: Removed ACTION7 from validation schema
+- `server/services/arc3/Arc3ApiClient.ts`: Removed ACTION7 from GameAction type, added documentation
+
 # [5.10.4] - 2025-11-12
 ### 🐞 Critical Fixes
 - **ARC3 Agent Feedback Submission 500 Error**: Fixed critical bug where submitting feedback after an agent run failed with `500 SERVICE_UNAVAILABLE` error. Root cause was a field name mismatch between frontend and backend - backend sends `providerResponseId` in the `agent.completed` event, but frontend was expecting `lastResponseId`, leaving it `undefined`. When user tried to send feedback, `previousResponseId: undefined` was sent to the API, causing Zod validation failure. Fixed by correctly mapping `data.providerResponseId` to `state.lastResponseId` in the event handler (`client/src/hooks/useArc3AgentStream.ts:457`).

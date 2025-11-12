@@ -5,7 +5,8 @@ PURPOSE: Shared frontend TypeScript types mirroring the ARC3 playground API payl
 SRP/DRY check: Pass — isolates API contracts from UI components for reuse.
 */
 
-export type Arc3GameState = 'NOT_STARTED' | 'IN_PROGRESS' | 'WIN' | 'GAME_OVER';
+// States returned by ARC3 API (see docs/reference/arc3/arc3apicommands.md)
+export type Arc3GameState = 'NOT_STARTED' | 'NOT_FINISHED' | 'WIN' | 'GAME_OVER';
 
 export interface Arc3FrameSnapshot {
   step: number;

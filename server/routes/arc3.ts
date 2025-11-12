@@ -102,7 +102,7 @@ router.post(
 const manualActionSchema = z.object({
   game_id: z.string().trim().max(120),
   guid: z.string().trim(),
-  action: z.enum(['RESET', 'ACTION1', 'ACTION2', 'ACTION3', 'ACTION4', 'ACTION5', 'ACTION6', 'ACTION7']),
+  action: z.enum(['RESET', 'ACTION1', 'ACTION2', 'ACTION3', 'ACTION4', 'ACTION5', 'ACTION6']),
   coordinates: z.tuple([z.number().int().min(0).max(63), z.number().int().min(0).max(63)]).optional(),
 });
 
