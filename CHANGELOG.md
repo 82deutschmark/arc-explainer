@@ -1,4 +1,14 @@
 # CHANGELOG - Uses semantic versioning (MAJOR.MINOR.PATCH)`r`n
+# [5.10.7] - 2025-11-13
+### 🐞 Critical Fixes
+- **ELO Leaderboard Only Showing 2 Models**: Fixed critical bug where the ELO leaderboard was filtering out models with fewer than 5 total games. The `getModelEloStats()` query in `EloRepository.ts` had an unnecessary `HAVING SUM(er.games_played) >= 5` clause that excluded most models from the leaderboard display. Removed this filter so all models with at least 1 game played now appear on the leaderboard, regardless of total game count.
+
+- **ELO Comparison Page Width Constraints (Complete Fix)**: Completed the fix from commit ffac6c5f which removed container constraints from the main content area but missed the loading and error states. The loading and error divs still had `container mx-auto p-6 max-w-7xl` classes, causing inconsistent page width depending on component state. All three states (loading, error, main content) now consistently use only `mx-auto` for alignment, allowing grids to display with proper spacing across the full viewport width.
+
+#### Files Changed:
+- `server/repositories/EloRepository.ts`: Removed `HAVING SUM(er.games_played) >= 5` filter from getModelEloStats query (line 413)
+- `client/src/pages/EloComparison.tsx`: Removed `container p-6 max-w-7xl` classes from loading state (line 150) and error state (line 164)
+
 # [5.10.6] - 2025-11-12
 ### 🐞 Critical Fixes
 - **ARC3 ACTION7 and RESET Support**: Restored ACTION7 support and improved RESET handling:
