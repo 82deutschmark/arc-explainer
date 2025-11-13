@@ -39,18 +39,26 @@ interface ModelInfo {
   releaseDate?: string;
 }
 
+// Normalize available_actions tokens from the API
+// API can send: integers (0=RESET, 1-7=ACTION1-7) or strings ('RESET', 'ACTION1', etc)
 const normalizeAvailableActionName = (token: string | number | null | undefined): string | null => {
   if (token === null || token === undefined) {
     return null;
   }
 
+  // Handle numeric tokens: 0 = RESET, 1-7 = ACTION1-ACTION7
   if (typeof token === 'number' && Number.isFinite(token)) {
     if (token === 0) {
       return 'RESET';
     }
-    return `ACTION${token}`;
+    if (token >= 1 && token <= 7) {
+      return `ACTION${token}`;
+    }
+    console.warn('[ARC3] Unexpected numeric action token:', token);
+    return null;
   }
 
+  // Handle string tokens
   if (typeof token === 'string') {
     const trimmed = token.trim();
     if (!trimmed) {
@@ -76,7 +84,11 @@ const normalizeAvailableActionName = (token: string | number | null | undefined)
       if (parsed === 0) {
         return 'RESET';
       }
-      return `ACTION${parsed}`;
+      if (parsed >= 1 && parsed <= 7) {
+        return `ACTION${parsed}`;
+      }
+      console.warn('[ARC3] Unexpected ACTION number in string:', parsed);
+      return null;
     }
 
     if (/^\d+$/.test(canonical)) {
@@ -84,7 +96,11 @@ const normalizeAvailableActionName = (token: string | number | null | undefined)
       if (parsed === 0) {
         return 'RESET';
       }
-      return `ACTION${parsed}`;
+      if (parsed >= 1 && parsed <= 7) {
+        return `ACTION${parsed}`;
+      }
+      console.warn('[ARC3] Unexpected numeric string token:', parsed);
+      return null;
     }
   }
 
@@ -308,9 +324,14 @@ export default function ARC3AgentPlayground() {
     // Reset to auto (null) so we default to last layer of new frame
     setManualLayerIndex(null);
   }, [state.currentFrameIndex]); // ONLY depend on frame index, not derived objects
+  // Normalize available_actions from the API
+  // API returns integers [1, 2, 3, 4, 5, 6] but we use strings like 'ACTION1', 'ACTION2'
   const normalizedAvailableActions = React.useMemo(() => {
     const tokens = currentFrame?.available_actions;
+
+    // If no available_actions field or empty array, allow all actions (no restrictions)
     if (!tokens || tokens.length === 0) {
+      console.log('[ARC3] No action restrictions (available_actions is empty or missing)');
       return null;
     }
 
@@ -322,12 +343,20 @@ export default function ARC3AgentPlayground() {
       if (normalizedToken) {
         normalized.add(normalizedToken);
       } else if (token !== null && token !== undefined) {
+        // If we encounter an unexpected token format, log it and allow all actions
+        console.warn('[ARC3] Unexpected action token format:', token);
         fallbackAllowAll = true;
         break;
       }
     }
 
-    return fallbackAllowAll ? null : normalized;
+    const result = fallbackAllowAll ? null : normalized;
+    console.log('[ARC3] Available actions:', {
+      raw: tokens,
+      normalized: result ? Array.from(result) : 'ALL',
+    });
+
+    return result;
   }, [currentFrame]);
 
   return (
@@ -829,7 +858,7 @@ export default function ARC3AgentPlayground() {
         </div>
       </div>
 
-      {/* ACTION6 Coordinate Picker Dialog */}
+      {/* ACTION6 Coordinate Picker Dialog - SIMPLIFIED: uses built-in onCellClick */}
       <Dialog open={showCoordinatePicker} onOpenChange={setShowCoordinatePicker}>
         <DialogContent className="max-w-3xl">
           <DialogHeader>
@@ -840,52 +869,27 @@ export default function ARC3AgentPlayground() {
           </DialogHeader>
 
           <div className="flex justify-center py-4">
-            {resolvedCurrentFrame && (() => {
-              // Extract the 2D frame from the 3D grid - use LAST layer (final state)
-              const lastLayerIndex = resolvedCurrentFrame.length - 1;
-              const frame2D = resolvedCurrentFrame[lastLayerIndex] || [];
-              const height = frame2D.length;
-              const width = height > 0 ? frame2D[0]?.length || 0 : 0;
-
-              return (
-                <div className="relative inline-block">
-                  <Arc3GridVisualization
-                    key={`picker-frame-${state.currentFrameIndex}`}
-                    grid={resolvedCurrentFrame}
-                    frameIndex={lastLayerIndex}
-                    cellSize={20}
-                    showGrid={true}
-                    lastAction={currentFrame?.action}
-                  />
-                  {/* Clickable overlay */}
-                  <div
-                    className="absolute inset-0 grid"
-                    style={{
-                      gridTemplateColumns: `repeat(${width}, 1fr)`,
-                      gridTemplateRows: `repeat(${height}, 1fr)`,
-                    }}
-                  >
-                    {Array.from({ length: height }).map((_, y) =>
-                      Array.from({ length: width }).map((_, x) => (
-                        <button
-                          key={`${x}-${y}`}
-                          onClick={async () => {
-                            try {
-                              await executeManualAction('ACTION6', [x, y]);
-                              setShowCoordinatePicker(false);
-                            } catch (error) {
-                              console.error('Failed to execute ACTION6:', error);
-                            }
-                          }}
-                          className="hover:bg-white/30 hover:ring-2 hover:ring-blue-500 transition-all cursor-pointer"
-                          title={`Execute ACTION6 at (${x}, ${y})`}
-                        />
-                      ))
-                    )}
-                  </div>
-                </div>
-              );
-            })()}
+            {resolvedCurrentFrame && (
+              <Arc3GridVisualization
+                key={`picker-frame-${state.currentFrameIndex}`}
+                grid={resolvedCurrentFrame}
+                frameIndex={Math.max(0, resolvedCurrentFrame.length - 1)}
+                cellSize={20}
+                showGrid={true}
+                lastAction={currentFrame?.action}
+                onCellClick={async (x, y) => {
+                  try {
+                    setActionError(null);
+                    await executeManualAction('ACTION6', [x, y]);
+                    setShowCoordinatePicker(false);
+                  } catch (error) {
+                    const msg = error instanceof Error ? error.message : 'Failed to execute ACTION6';
+                    setActionError(msg);
+                    console.error('Failed to execute ACTION6:', error);
+                  }
+                }}
+              />
+            )}
           </div>
 
           <div className="flex justify-end gap-2">

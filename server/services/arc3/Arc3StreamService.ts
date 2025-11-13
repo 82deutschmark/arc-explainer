@@ -410,6 +410,7 @@ export class Arc3StreamService {
       // Run the continued agent with streaming
       // NOTE: The gameRunner will handle the previous_response_id and store: true parameters
       // via the Responses API when calling OpenAI
+      // CRITICAL: Pass the lastFrame as seedFrame to avoid executing unwanted actions
       const runConfig: Arc3AgentRunConfig = {
         game_id,
         agentName,
@@ -420,6 +421,7 @@ export class Arc3StreamService {
         reasoningEffort,
         existingGameGuid,  // Pass the game session guid to continue
         previousResponseId,
+        seedFrame: payload.lastFrame,  // CRITICAL FIX: Pass cached frame to avoid executing actions
         storeResponse: true,
       };
 

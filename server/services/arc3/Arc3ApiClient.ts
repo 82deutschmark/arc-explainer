@@ -34,6 +34,7 @@ export interface FrameData {
 
 /**
  * Game action request structure
+ * Actions 1-7 are supported by the ARC3 API (plus RESET which is action 0)
  */
 export interface GameAction {
   action: 'RESET' | 'ACTION1' | 'ACTION2' | 'ACTION3' | 'ACTION4' | 'ACTION5' | 'ACTION6' | 'ACTION7';

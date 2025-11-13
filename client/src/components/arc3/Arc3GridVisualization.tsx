@@ -179,9 +179,13 @@ export const Arc3GridVisualization: React.FC<Arc3GridVisualizationProps> = ({
     if (!canvas) return;
 
     const rect = canvas.getBoundingClientRect();
-    const x = Math.floor((e.clientX - rect.left) / cellSize);
-    const y = Math.floor((e.clientY - rect.top) / cellSize);
-    
+    // Use the same calculation as handleMouseMove for consistency
+    const displayCellWidth = width > 0 ? (canvas.clientWidth || canvasWidth || cellSize) / width : cellSize;
+    const displayCellHeight = height > 0 ? (canvas.clientHeight || canvasHeight || cellSize) / height : cellSize;
+
+    const x = Math.floor((e.clientX - rect.left) / displayCellWidth);
+    const y = Math.floor((e.clientY - rect.top) / displayCellHeight);
+
     if (x >= 0 && x < width && y >= 0 && y < height) {
       const value = currentFrame[y]?.[x] ?? 0;
       onCellClick(x, y, value);

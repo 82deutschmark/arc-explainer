@@ -1,4 +1,71 @@
 # CHANGELOG - Uses semantic versioning (MAJOR.MINOR.PATCH)`r`n
+# [5.10.6] - 2025-11-12
+### 🐞 Critical Fixes
+- **ARC3 ACTION7 and RESET Support**: Restored ACTION7 support and improved RESET handling:
+  1. **Re-added ACTION7** - User confirmed ACTION7 is valid in ARC3 API (correcting previous incorrect removal)
+  2. **Enhanced Action Normalization** - Improved `normalizeAvailableActionName` to properly handle all action formats:
+     - Numeric: `0` (RESET), `1-7` (ACTION1-ACTION7)
+     - String: `'RESET'`, `'ACTION1'` through `'ACTION7'`
+     - Better validation and warnings for unexpected tokens
+  3. **Improved Debugging** - Added clearer console warnings for unexpected action token formats
+
+#### Technical Details:
+- ARC3 API returns `available_actions` as integers: `[0, 1, 2, 3, 4, 5, 6, 7]` where 0=RESET
+- Normalization converts to strings: `['RESET', 'ACTION1', 'ACTION2', ..., 'ACTION7']`
+- Validation now explicitly checks for valid ranges (0-7) with warnings for out-of-range values
+
+#### Files Changed:
+- `client/src/pages/ARC3AgentPlayground.tsx`: Re-added ACTION7, improved normalization with range validation
+- `server/routes/arc3.ts`: Re-added ACTION7 to validation schema
+- `server/services/arc3/Arc3ApiClient.ts`: Re-added ACTION7 to GameAction type
+
+# [5.10.5] - 2025-11-12
+### 🐞 Critical Fixes
+- **ARC3 Playground API Alignment**: Fixed multiple mismatches between frontend expectations and ARC3 API specification:
+  1. **Removed ACTION7** - The ARC3 API only supports actions 1-6 (plus RESET/0), but ACTION7 was incorrectly included in the UI causing confusion and potential errors
+  2. **Fixed Game State Names** - Changed `IN_PROGRESS` to `NOT_FINISHED` to match actual API response values (`NOT_STARTED`, `NOT_FINISHED`, `WIN`, `GAME_OVER`)
+  3. **Simplified ACTION6 Coordinate Picker** - Replaced complex overlay with 4,096+ individual button elements with a single efficient `onCellClick` handler on the canvas, drastically improving performance and reducing DOM complexity
+  4. **Fixed Click Coordinate Calculation** - ACTION6 coordinate picker now uses same cell dimension calculation as hover tooltip for consistency, fixing potential misalignment when canvas is scaled
+  5. **Enhanced available_actions Debugging** - Added comprehensive console logging for action availability normalization to help diagnose API response mismatches
+
+#### Technical Details:
+- The ARC3 API returns `available_actions` as an array of integers `[1, 2, 3, 4, 5, 6]`, which our normalization converts to `['ACTION1', 'ACTION2', 'ACTION3', 'ACTION4', 'ACTION5', 'ACTION6']`
+- Previous ACTION6 picker created a CSS grid overlay with individual buttons for each cell (up to 64×64 = 4,096 buttons). New implementation uses the existing `Arc3GridVisualization.onCellClick` handler
+- Click coordinate calculation now accounts for canvas scaling to ensure accurate cell selection
+
+#### Files Changed:
+- `client/src/pages/ARC3AgentPlayground.tsx`: Removed ACTION7 from action pills, simplified ACTION6 picker, added debugging
+- `client/src/types/arc3.ts`: Changed `IN_PROGRESS` to `NOT_FINISHED` in Arc3GameState type
+- `client/src/components/arc3/Arc3GridVisualization.tsx`: Fixed click coordinate calculation for scaled canvases
+- `server/routes/arc3.ts`: Removed ACTION7 from validation schema
+- `server/services/arc3/Arc3ApiClient.ts`: Removed ACTION7 from GameAction type, added documentation
+
+# [5.10.4] - 2025-11-12
+### 🐞 Critical Fixes
+- **ARC3 Agent Feedback Submission 500 Error**: Fixed critical bug where submitting feedback after an agent run failed with `500 SERVICE_UNAVAILABLE` error. Root cause was a field name mismatch between frontend and backend - backend sends `providerResponseId` in the `agent.completed` event, but frontend was expecting `lastResponseId`, leaving it `undefined`. When user tried to send feedback, `previousResponseId: undefined` was sent to the API, causing Zod validation failure. Fixed by correctly mapping `data.providerResponseId` to `state.lastResponseId` in the event handler (`client/src/hooks/useArc3AgentStream.ts:457`).
+
+- **Game Continuation Executes Unwanted Actions**: Fixed critical bug where continuing a game session would execute an unexpected ACTION1, corrupting the game state and causing grid visualization mismatches. The `continuGameSession()` method was attempting to "fetch" current state by executing ACTION1, but **executing an action changes the game state** - you can't retrieve state without side effects! This caused:
+  - Unexpected grid changes that confused users
+  - Potential 500 errors if ACTION1 wasn't available
+  - Game state corruption between continuation attempts
+
+  **Solution**: Completely replaced the broken approach with a stateless continuation pattern:
+  - **Removed** `continuGameSession()` method that executed actions
+  - **Added** `validateContinuationFrame()` method that validates cached frames from the frontend
+  - **Never executes actions during continuation** - only validates and returns the cached frame
+  - Frontend already sends `lastFrame` in continuation requests; now backend correctly uses it
+  - Throws clear error if frame missing (fail-fast design)
+
+  Files changed:
+  - `server/services/arc3/Arc3RealGameRunner.ts`: New `validateContinuationFrame()` method (lines 44-66), updated both `run()` and `runWithStreaming()` methods to use cached frames
+  - `server/services/arc3/Arc3StreamService.ts`: Pass `seedFrame: payload.lastFrame` when continuing (line 424)
+
+### 📚 Technical Details
+- Backend already had `seedFrame` type support in `Arc3AgentRunConfig`
+- Frontend already sends `lastFrame` in continuation requests
+- Fixes required zero API schema changes - just wiring them together correctly
+- Follows stateful game engine pattern: cache state client-side, pass forward (never "refresh" via actions)
+
 # [5.10.3] - 2025-11-11
 ### 🎨 UI Improvements
 - Integrated ReferenceMaterial component into About page with refreshed community messaging, Simon Strandgaard acknowledgment, and official ARC Discord link.
