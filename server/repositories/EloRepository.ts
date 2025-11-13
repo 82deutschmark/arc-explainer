@@ -410,7 +410,6 @@ export class EloRepository extends BaseRepository {
       JOIN elo_ratings er ON e.id = er.explanation_id
       WHERE er.games_played > 0
       GROUP BY e.model_name
-      HAVING SUM(er.games_played) >= 5
       ORDER BY AVG(er.current_rating) DESC
     `;
 
