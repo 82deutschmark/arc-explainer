@@ -147,7 +147,7 @@ export default function EloComparison() {
   // Loading state
   if (isLoading) {
     return (
-      <div className="container mx-auto p-6 max-w-7xl">
+      <div className="mx-auto">
         <div className="flex items-center justify-center min-h-[400px]">
           <div className="flex items-center gap-2">
             <Loader2 className="h-6 w-6 animate-spin" />
@@ -161,7 +161,7 @@ export default function EloComparison() {
   // Error state
   if (error || !comparisonData) {
     return (
-      <div className="container mx-auto p-6 max-w-7xl">
+      <div className="mx-auto">
         <Alert>
           <AlertDescription>
             {error?.message || 'Failed to load comparison. Please try again.'}
