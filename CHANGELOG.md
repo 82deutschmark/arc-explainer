@@ -5,9 +5,12 @@
 
 - **ELO Comparison Page Width Constraints (Complete Fix)**: Completed the fix from commit ffac6c5f which removed container constraints from the main content area but missed the loading and error states. The loading and error divs still had `container mx-auto p-6 max-w-7xl` classes, causing inconsistent page width depending on component state. All three states (loading, error, main content) now consistently use only `mx-auto` for alignment, allowing grids to display with proper spacing across the full viewport width.
 
+- **ELO Vote Results Modal Grid Smooshing**: Fixed puzzle grids being compressed in the vote results modal. Expanded modal from `max-w-[95vw]` to `max-w-[98vw]`, changed grid breakpoint from `md` (768px) to `lg` (1024px), increased gap from 6 to 8, and added overflow-x-auto wrapper with min-w-fit container. Grid items now have proper spacing and won't be squeezed together, with horizontal scroll fallback on smaller screens.
+
 #### Files Changed:
 - `server/repositories/EloRepository.ts`: Removed `HAVING SUM(er.games_played) >= 5` filter from getModelEloStats query (line 413)
 - `client/src/pages/EloComparison.tsx`: Removed `container p-6 max-w-7xl` classes from loading state (line 150) and error state (line 164)
+- `client/src/components/elo/EloVoteResultsModal.tsx`: Expanded modal width, improved grid layout with better spacing and responsive breakpoints
 
 # [5.10.6] - 2025-11-12
 ### 🐞 Critical Fixes
