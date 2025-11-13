@@ -454,6 +454,7 @@ export function useArc3AgentStream() {
           streamingMessage: 'Agent completed successfully!',
           runId: data.runId,
           gameGuid: data.gameGuid,  // Store the game session guid for continuation
+          lastResponseId: data.providerResponseId,  // CRITICAL FIX: Backend sends providerResponseId, not lastResponseId
           finalOutput: data.finalOutput,
           summary: data.summary,
           usage: data.usage,

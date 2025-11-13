@@ -178,7 +178,7 @@ export default function EloComparison() {
   }
 
   return (
-    <div className="container mx-auto p-3 max-w-7xl space-y-4">
+    <div className="mx-auto space-y-4">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
