@@ -575,21 +575,21 @@ export const MODELS: ModelConfig[] = [
 
   },
   {
-    key: 'openrouter/polaris-alpha',
-    name: 'OpenRouter Polaris (Temporary Alias)',
+    key: 'openai/gpt-5.1',
+    name: 'OpenAI: GPT-5.1',
     color: 'bg-sky-700',
-    premium: false,
-    cost: { input: '$0.00', output: '$0.00' },
+    premium: true,
+    cost: { input: '$1.25', output: '$10.00' },
     supportsTemperature: true,
     provider: 'OpenRouter',
     responseTime: { speed: 'moderate', estimate: '30-90 sec' },
     isReasoning: true,
     apiModelName: 'openrouter/polaris-alpha',
     modelType: 'openrouter',
-    contextWindow: 256000,
+    contextWindow: 400000,
     maxOutputTokens: 60000,
     releaseDate: "2025-11",
-    notes: 'Temporary cloaked model name; rename once official alias announced.'
+    notes: 'GPT-5.1 via OpenRouter (model identifier: openrouter/polaris-alpha). Will be migrated to OpenAI provider when officially released.'
   },
   // xAI Grok Models (Direct API via Responses API)
   {
