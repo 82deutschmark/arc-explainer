@@ -1,5 +1,22 @@
 # CHANGELOG - Uses semantic versioning (MAJOR.MINOR.PATCH)`r`n
 # [5.10.9] - 2025-11-14
+### ✨ New Features
+- **Intelligent ELO Matchmaking**: Dramatically improved comparison quality with smart scoring system that prefers:
+  - **At least one correct answer** (+100 points) - avoids "both are terrible" scenarios
+  - **One correct vs one incorrect** (+50 bonus) - most informative matchups with clear winners
+  - **ARC1/ARC2 over ARC-Heavy** (+50 points) - user preference for standard puzzles
+  - **Smaller grids** (+30 for <10×10, +20 for <20×20, +10 for <30×30) - easier to evaluate
+  - **Different models** (+10 points) - more interesting comparisons
+
+  **Two-Stage Selection**:
+  1. **Puzzle Selection**: Evaluates 20 random candidates, picks best based on preferences
+  2. **Pair Selection**: Evaluates all possible explanation pairs for chosen puzzle, picks optimal matchup
+
+  **Impact**: Much higher quality comparisons for users. Still works if no ideal matches exist (fallback to any pair). Detailed logging shows puzzle source, grid size, and match quality scores.
+
+  #### Files Changed:
+  - `server/repositories/EloRepository.ts`: Added `selectBestExplanationPair()` method (lines 171-266) and smart puzzle selection logic (lines 275-349)
+
 ### 🐞 Critical Fixes
 - **ELO Comparison Multi-Test Display Bug**: Fixed critical bug where page only showed first test case (`test[0]`), completely ignoring 597+ puzzles with 2-3 test cases. Page now properly:
   - Displays **ALL test cases** in `puzzle.test` array (not just index 0)
