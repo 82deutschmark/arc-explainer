@@ -28,6 +28,7 @@ import ModelComparisonPage from "@/pages/ModelComparisonPage";
 import About from "@/pages/About";
 import ARC3Browser from "@/pages/ARC3Browser";
 import ARC3AgentPlayground from "@/pages/ARC3AgentPlayground";
+import PuzzleTradingCards from "@/pages/PuzzleTradingCards";
 
 function Router() {
   return (
@@ -35,6 +36,7 @@ function Router() {
       <Switch>
         <Route path="/" component={PuzzleBrowser} />
         <Route path="/browser" component={PuzzleBrowser} />
+        <Route path="/trading-cards" component={PuzzleTradingCards} />
         <Route path="/discussion" component={PuzzleDiscussion} />
         <Route path="/discussion/:taskId" component={PuzzleDiscussion} />
         <Route path="/analytics" component={AnalyticsOverview} />
