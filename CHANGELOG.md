@@ -1,5 +1,19 @@
 # CHANGELOG - Uses semantic versioning (MAJOR.MINOR.PATCH)`r`n
 # [5.10.9] - 2025-11-14
+### 🐞 Critical Fixes
+- **ELO Comparison Multi-Test Display Bug**: Fixed critical bug where page only showed first test case (`test[0]`), completely ignoring 597+ puzzles with 2-3 test cases. Page now properly:
+  - Displays **ALL test cases** in `puzzle.test` array (not just index 0)
+  - Extracts correct prediction for each test case from multiple storage formats:
+    - `multiplePredictedOutputs` object: `{predictedOutput1, predictedOutput2, predictedOutput3}`
+    - `multiplePredictedOutputs` array: `[grid1[][], grid2[][], grid3[][]]`
+    - `multiTestPredictionGrids` array
+    - Falls back to single `predictedOutputGrid` for single-test puzzles
+  - Shows test case number badge when multiple tests exist ("Test Case 1 of 3")
+  - Updates header dynamically: "Test Question" (singular) vs "Test Questions" (plural)
+  - Displays clear count: "This puzzle has 3 test cases. Here's what each AI predicted for each one."
+
+  **Impact**: 597 multi-test puzzles (mostly ARC-Heavy) now display correctly instead of showing only partial data.
+
 ### 🎨 UI/UX Improvements
 - **ELO Comparison Page Visual Hierarchy Overhaul**: Comprehensive redesign addressing 5 critical UX issues to improve scannability, visual hierarchy, grouping, whitespace balance, and task affordance:
 
