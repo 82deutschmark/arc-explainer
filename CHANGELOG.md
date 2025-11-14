@@ -1,4 +1,16 @@
 # CHANGELOG - Uses semantic versioning (MAJOR.MINOR.PATCH)`r`n
+# [5.10.8] - 2025-11-13
+### 🔧 Model Updates
+- **Polaris Alpha Revealed as GPT-5.1**: Updated model configuration to reflect that the cloaked "Polaris Alpha" model was officially revealed as OpenAI GPT-5.1 on November 13, 2025:
+  - Updated model key from `openrouter/polaris-alpha` to `openai/gpt-5.1`
+  - Updated pricing: $1.25/M input tokens, $10/M output tokens
+  - Updated context window: 400,000 tokens
+  - Added model name normalization mapping in `modelNormalizer.ts` to ensure existing database entries with `openrouter/polaris-alpha` automatically resolve to `openai/gpt-5.1`
+
+#### Files Changed:
+- `server/config/models.ts`: Updated model configuration with correct key, pricing, and specs
+- `server/utils/modelNormalizer.ts`: Added Polaris Alpha → GPT-5.1 mapping (lines 58-61)
+
 # [5.10.7] - 2025-11-13
 ### 🐞 Critical Fixes
 - **ELO Leaderboard Only Showing 2 Models**: Fixed critical bug where the ELO leaderboard was filtering out models with fewer than 5 total games. The `getModelEloStats()` query in `EloRepository.ts` had an unnecessary `HAVING SUM(er.games_played) >= 5` clause that excluded most models from the leaderboard display. Removed this filter so all models with at least 1 game played now appear on the leaderboard, regardless of total game count.
