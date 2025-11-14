@@ -192,13 +192,12 @@ export default function EloComparison() {
             )}
           </h1>
           <p className="text-gray-600">
-            As of September 2025, state of the art LLMs will still very confidently assert 
+            State of the art LLMs will still very confidently assert 
             that they understand the puzzle, even when they don't. They will tell you something that
             sounds smart, but is actually wrong. 
             <br />
             <br />
-            This is where you come in. Can you tell the difference between 
-            correct and incorrect explanations? 
+            Can you spot slop?  
           </p>
         </div>
 
