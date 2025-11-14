@@ -178,250 +178,295 @@ export default function EloComparison() {
   }
 
   return (
-    <div className="mx-auto space-y-4">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold flex items-center gap-2">
-            <Users className="h-6 w-6" />
-            Compare Explanations
-            {comparisonData.puzzleId && (
-              <Badge variant="outline" className="ml-2">
-                Puzzle {comparisonData.puzzleId}
-              </Badge>
-            )}
-          </h1>
-          <p className="text-gray-600">
-            State of the art LLMs will still very confidently assert 
-            that they understand the puzzle, even when they don't. They will tell you something that
-            sounds smart, but is actually wrong. 
-            <br />
-            <br />
-            Can you spot slop?  
+    <div className="mx-auto space-y-8">
+      {/* Header - Strong Visual Hierarchy */}
+      <div className="space-y-6">
+        {/* Page Title */}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <Users className="h-10 w-10 text-blue-600" />
+            <div>
+              <h1 className="text-4xl font-bold">Compare Explanations</h1>
+              {comparisonData.puzzleId && (
+                <Badge variant="outline" className="mt-1">
+                  Puzzle {comparisonData.puzzleId}
+                </Badge>
+              )}
+            </div>
+          </div>
+
+          {/* Utility buttons - less prominent */}
+          <div className="flex items-center gap-2">
+            <Link href="/elo/leaderboard">
+              <Button variant="outline" size="sm">
+                <Trophy className="h-4 w-4 mr-2" />
+                Leaderboard
+              </Button>
+            </Link>
+            <Button variant="outline" size="sm" onClick={handleNextComparison}>
+              <RotateCcw className="h-4 w-4 mr-2" />
+              Next
+            </Button>
+          </div>
+        </div>
+
+        {/* Hook - Clear, Scannable Message */}
+        <div className="text-center py-8 bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl border-2 border-blue-100">
+          <h2 className="text-3xl font-bold text-blue-700 mb-3">
+            Can you spot slop?
+          </h2>
+          <p className="text-lg text-gray-700 max-w-3xl mx-auto">
+            State-of-the-art LLMs confidently claim they understand puzzles—even when they don't.
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
-          <Link href="/elo/leaderboard">
-            <Button variant="outline" size="sm">
-              <Trophy className="h-4 w-4 mr-2" />
-              Leaderboard
-            </Button>
-          </Link>
-          
-          {/* Search functionality */}
-          <form onSubmit={handlePuzzleIdSubmit} className="flex items-center gap-2">
-            <input
-              type="text"
-              value={inputPuzzleId}
-              onChange={(e) => setInputPuzzleId(e.target.value)}
-              placeholder="Enter puzzle ID..."
-              className="px-3 py-1 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-            <Button type="submit" variant="outline" size="sm" disabled={!inputPuzzleId.trim()}>
-              Search
-            </Button>
-          </form>
-          
-          <Button variant="outline" size="sm" onClick={() => window.location.href = '/elo'}>
-            <RotateCcw className="h-4 w-4 mr-2" />
-            Random Puzzle
+        {/* Instructions - Collapsible/Scannable */}
+        <Alert className="bg-blue-50 border-blue-200">
+          <AlertDescription className="text-base">
+            <strong className="text-blue-900">Your task:</strong> Study the training examples below, then decide which AI explanation is better.
+            Look for clarity, accuracy, and whether the model truly understands the pattern.
+          </AlertDescription>
+        </Alert>
+
+        {/* Search functionality - subtle */}
+        <form onSubmit={handlePuzzleIdSubmit} className="flex items-center justify-center gap-2">
+          <input
+            type="text"
+            value={inputPuzzleId}
+            onChange={(e) => setInputPuzzleId(e.target.value)}
+            placeholder="Jump to puzzle ID..."
+            className="px-4 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          />
+          <Button type="submit" variant="outline" size="sm" disabled={!inputPuzzleId.trim()}>
+            Go
           </Button>
-          <Button variant="outline" size="sm" onClick={handleNextComparison}>
+          <Button variant="ghost" size="sm" onClick={() => window.location.href = '/elo'}>
             <RotateCcw className="h-4 w-4 mr-2" />
-            New Comparison
+            Random
           </Button>
-        </div>
+        </form>
       </div>
 
-      {/* Puzzle Display - Answer Hidden */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Star className="h-5 w-5" />
-            Puzzle Pattern
-          </CardTitle>
-          <p className="text-sm text-gray-600">
-            Study the examples to understand the pattern, then evaluate which explanation is better
+      {/* Training Examples - Properly Grouped Cards */}
+      <div className="space-y-6">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold flex items-center justify-center gap-2 mb-2">
+            <Star className="h-6 w-6 text-yellow-500" />
+            Training Examples
+          </h2>
+          <p className="text-gray-600">
+            Study these {comparisonData.puzzle.train.length} examples to understand the pattern
           </p>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-6">
-            {/* Training Examples */}
-            <div>
-              <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
-                Training Examples
-                <Badge variant="outline">{comparisonData.puzzle.train.length} examples</Badge>
-              </h3>
-              <div className="space-y-4">
-                {comparisonData.puzzle.train.map((example: ARCExample, index: number) => (
-                  <div key={index} className="border border-gray-200 rounded-lg p-3">
-                    <h4 className="text-sm font-medium mb-2 text-center">Example {index + 1}</h4>
-                    <div className="flex items-center justify-center gap-6">
-                      <PuzzleGrid
-                        grid={example.input}
-                        title="This"
-                        showEmojis={false}
-                      />
-                      <div className="text-3xl text-gray-400">→</div>
-                      <PuzzleGrid
-                        grid={example.output}
-                        title="gets turned into this!"
-                        showEmojis={false}
-                      />
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
+        </div>
 
-            {/* Test Case - Input + Predicted Outputs */}
-            <div className="border-t pt-4">
-              <h3 className="text-lg font-semibold mb-3 text-center">Test Question & AI Predictions</h3>
-
-              {/* Responsive grid container with horizontal scroll fallback */}
-              <div className="overflow-x-auto">
-                <div className="grid grid-cols-1 lg:grid-cols-2 2xl:grid-cols-3 gap-6 min-w-fit">
-                  {/* Test Input */}
-                  <div className="flex flex-col items-center min-w-0">
+        <div className="grid gap-6">
+          {comparisonData.puzzle.train.map((example: ARCExample, index: number) => (
+            <Card key={index} className="bg-gradient-to-br from-gray-50 to-blue-50/30 border-2">
+              <CardContent className="p-8">
+                <div className="text-center mb-6">
+                  <Badge variant="secondary" className="text-base px-4 py-1">
+                    Example {index + 1}
+                  </Badge>
+                </div>
+                <div className="flex items-center justify-center gap-8 flex-wrap">
+                  <div className="text-center">
                     <PuzzleGrid
-                      grid={comparisonData.puzzle.test[0].input}
-                      title="This gets turned into...?"
+                      grid={example.input}
+                      title={`Input (${example.input[0]?.length || 0}×${example.input.length || 0})`}
                       showEmojis={false}
                     />
                   </div>
-
-                  {/* Prediction A */}
-                  <div className="flex flex-col items-center min-w-0">
-                    {comparisonData.explanationA.predictedOutputGrid ? (
-                      <PuzzleGrid
-                        grid={comparisonData.explanationA.predictedOutputGrid}
-                        title="Prediction A"
-                        showEmojis={false}
-                      />
-                    ) : (
-                      <div className="p-4 border border-gray-300 rounded text-center text-gray-500 min-w-[200px]">
-                        No prediction available
-                      </div>
-                    )}
+                  <div className="flex flex-col items-center gap-2">
+                    <ArrowRight className="h-8 w-8 text-blue-500" />
+                    <span className="text-sm font-medium text-gray-600">transforms to</span>
                   </div>
-
-                  {/* Prediction B */}
-                  <div className="flex flex-col items-center min-w-0">
-                    {comparisonData.explanationB.predictedOutputGrid ? (
-                      <PuzzleGrid
-                        grid={comparisonData.explanationB.predictedOutputGrid}
-                        title="Prediction B"
-                        showEmojis={false}
-                      />
-                    ) : (
-                      <div className="p-4 border border-gray-300 rounded text-center text-gray-500 min-w-[200px]">
-                        No prediction available
-                      </div>
-                    )}
+                  <div className="text-center">
+                    <PuzzleGrid
+                      grid={example.output}
+                      title={`Output (${example.output[0]?.length || 0}×${example.output.length || 0})`}
+                      showEmojis={false}
+                    />
                   </div>
                 </div>
-              </div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </div>
 
-      {/* Explanation Comparison */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        {/* Explanation A */}
-        <div className="space-y-2">
-          <div className="flex items-center justify-between">
-            <h3 className="text-lg font-semibold">Explanation A</h3>
-            <Badge variant="outline" className="bg-blue-50 text-blue-700">
-              AI Model
-            </Badge>
-          </div>
-          <AnalysisResultCard
-            modelKey={comparisonData.explanationA.modelName}
-            result={comparisonData.explanationA}
-            model={undefined} // We don't need model config for ELO mode
-            testCases={comparisonData.puzzle.test}
-            eloMode={true} // Hide model identifying info for double-blind A/B testing
-          />
+      {/* Test Question & AI Predictions - Clear Grouping */}
+      <div className="space-y-6">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold mb-2">Test Question</h2>
+          <p className="text-gray-600">
+            Here's the test input and what each AI predicted as the output
+          </p>
         </div>
 
-        {/* Voting Interface */}
-        <div className="flex items-center justify-center">
-          <div className="text-center space-y-4">
-            {votingState === 'ready' && (
-              <div className="p-6 border border-gray-200 rounded-lg bg-gray-50 space-y-4">
-                <div className="text-center">
-                  <h4 className="font-semibold mb-2">Which explanation is better?</h4>
-                  <p className="text-sm text-gray-600 mb-4">
-                    Consider the clarity, accuracy, and helpfulness of each explanation
-                  </p>
-                  <div className="text-4xl mb-4">⚖️</div>
+        <Card className="border-2 border-purple-200 bg-gradient-to-br from-purple-50/30 to-pink-50/30">
+          <CardContent className="p-8">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+              {/* Test Input */}
+              <div className="flex flex-col items-center">
+                <div className="mb-4">
+                  <Badge className="bg-gray-700 text-white text-sm px-3 py-1">
+                    Test Input
+                  </Badge>
                 </div>
-                
-                {/* Three-button voting interface */}
-                <div className="space-y-3">
+                <PuzzleGrid
+                  grid={comparisonData.puzzle.test[0].input}
+                  title={`${comparisonData.puzzle.test[0].input[0]?.length || 0}×${comparisonData.puzzle.test[0].input.length || 0} grid`}
+                  showEmojis={false}
+                />
+                <p className="mt-3 text-sm text-gray-600 font-medium">What does this become?</p>
+              </div>
+
+              {/* Prediction A */}
+              <div className="flex flex-col items-center">
+                <div className="mb-4">
+                  <Badge className="bg-blue-600 text-white text-sm px-3 py-1">
+                    AI Prediction A
+                  </Badge>
+                </div>
+                {comparisonData.explanationA.predictedOutputGrid ? (
+                  <PuzzleGrid
+                    grid={comparisonData.explanationA.predictedOutputGrid}
+                    title={`${comparisonData.explanationA.predictedOutputGrid[0]?.length || 0}×${comparisonData.explanationA.predictedOutputGrid.length || 0} grid`}
+                    showEmojis={false}
+                  />
+                ) : (
+                  <div className="p-8 border-2 border-dashed border-gray-300 rounded-lg text-center text-gray-500 bg-white">
+                    No prediction available
+                  </div>
+                )}
+              </div>
+
+              {/* Prediction B */}
+              <div className="flex flex-col items-center">
+                <div className="mb-4">
+                  <Badge className="bg-purple-600 text-white text-sm px-3 py-1">
+                    AI Prediction B
+                  </Badge>
+                </div>
+                {comparisonData.explanationB.predictedOutputGrid ? (
+                  <PuzzleGrid
+                    grid={comparisonData.explanationB.predictedOutputGrid}
+                    title={`${comparisonData.explanationB.predictedOutputGrid[0]?.length || 0}×${comparisonData.explanationB.predictedOutputGrid.length || 0} grid`}
+                    showEmojis={false}
+                  />
+                ) : (
+                  <div className="p-8 border-2 border-dashed border-gray-300 rounded-lg text-center text-gray-500 bg-white">
+                    No prediction available
+                  </div>
+                )}
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* NOW IT'S YOUR TURN - Clear Call to Action */}
+      <div className="space-y-6">
+        <div className="text-center">
+          <h2 className="text-3xl font-bold mb-2">Now It's Your Turn</h2>
+          <p className="text-lg text-gray-600">
+            Read both AI explanations, then vote for which one is better
+          </p>
+        </div>
+
+        {/* Voting Interface - THE STAR OF THE SHOW */}
+        <Card className="border-4 border-blue-400 shadow-2xl bg-gradient-to-br from-blue-50 via-white to-purple-50">
+          <CardContent className="p-10">
+            {votingState === 'ready' && (
+              <div className="space-y-8">
+                <div className="text-center">
+                  <div className="text-6xl mb-4">⚖️</div>
+                  <h3 className="text-2xl font-bold mb-3">Which explanation is better?</h3>
+                  <p className="text-gray-600 text-base max-w-2xl mx-auto">
+                    Consider clarity, accuracy, and whether the AI truly understands the pattern
+                  </p>
+                </div>
+
+                {/* Three-button voting interface - PROMINENT */}
+                <div className="space-y-4 max-w-xl mx-auto">
                   <Button
                     onClick={() => handleVote('A_WINS')}
                     disabled={isSubmitting}
-                    className="w-full bg-blue-600 hover:bg-blue-700 text-white"
-                    size="lg"
+                    className="w-full bg-blue-600 hover:bg-blue-700 text-white shadow-lg hover:shadow-xl transition-all py-6 text-lg font-semibold"
                   >
-                    <span className="text-base">👍 Explanation A is Better</span>
+                    👍 Explanation A is Better
                   </Button>
-                  
+
                   <Button
                     onClick={() => handleVote('BOTH_BAD')}
                     disabled={isSubmitting}
                     variant="outline"
-                    className="w-full border-red-300 text-red-700 hover:bg-red-50"
-                    size="lg"
+                    className="w-full border-2 border-red-400 text-red-700 hover:bg-red-50 shadow-md hover:shadow-lg transition-all py-6 text-lg font-semibold"
                   >
-                    <span className="text-base">👎 Both Are Bad</span>
+                    👎 Both Are Bad
                   </Button>
-                  
+
                   <Button
                     onClick={() => handleVote('B_WINS')}
                     disabled={isSubmitting}
-                    className="w-full bg-purple-600 hover:bg-purple-700 text-white"
-                    size="lg"
+                    className="w-full bg-purple-600 hover:bg-purple-700 text-white shadow-lg hover:shadow-xl transition-all py-6 text-lg font-semibold"
                   >
-                    <span className="text-base">👍 Explanation B is Better</span>
+                    👍 Explanation B is Better
                   </Button>
                 </div>
               </div>
             )}
 
             {votingState === 'submitting' && (
-              <div className="p-6 border border-blue-200 rounded-lg bg-blue-50">
-                <Loader2 className="h-8 w-8 animate-spin mx-auto mb-2" />
-                <p className="text-sm text-blue-700">Recording your vote...</p>
+              <div className="py-12 text-center">
+                <Loader2 className="h-12 w-12 animate-spin mx-auto mb-4 text-blue-600" />
+                <p className="text-lg text-blue-700 font-medium">Recording your vote...</p>
               </div>
             )}
 
             {votingState === 'voted' && (
-              <div className="p-6 border border-green-200 rounded-lg bg-green-50">
-                <div className="text-2xl">✅</div>
-                <h4 className="font-semibold text-green-800">Vote Recorded!</h4>
-                <p className="text-sm text-green-700">Results will be displayed in a moment...</p>
+              <div className="py-12 text-center">
+                <div className="text-6xl mb-4">✅</div>
+                <h4 className="text-2xl font-bold text-green-800 mb-2">Vote Recorded!</h4>
+                <p className="text-lg text-green-700">Results will be displayed in a moment...</p>
               </div>
             )}
 
             {voteError && (
-              <Alert className="border-red-200 bg-red-50">
-                <AlertDescription className="text-red-700">
+              <Alert className="border-red-400 bg-red-50">
+                <AlertDescription className="text-red-800 text-base">
                   Failed to record vote: {voteError.message}
                 </AlertDescription>
               </Alert>
             )}
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Explanations Side by Side */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        {/* Explanation A */}
+        <div className="space-y-4">
+          <div className="flex items-center justify-center gap-3 bg-blue-100 py-3 rounded-lg">
+            <h3 className="text-xl font-bold text-blue-900">Explanation A</h3>
+            <Badge className="bg-blue-600 text-white">
+              AI Model
+            </Badge>
           </div>
+          <AnalysisResultCard
+            modelKey={comparisonData.explanationA.modelName}
+            result={comparisonData.explanationA}
+            model={undefined}
+            testCases={comparisonData.puzzle.test}
+            eloMode={true}
+          />
         </div>
 
         {/* Explanation B */}
-        <div className="space-y-2">
-          <div className="flex items-center justify-between">
-            <h3 className="text-lg font-semibold">Explanation B</h3>
-            <Badge variant="outline" className="bg-purple-50 text-purple-700">
+        <div className="space-y-4">
+          <div className="flex items-center justify-center gap-3 bg-purple-100 py-3 rounded-lg">
+            <h3 className="text-xl font-bold text-purple-900">Explanation B</h3>
+            <Badge className="bg-purple-600 text-white">
               AI Model
             </Badge>
           </div>
@@ -430,7 +475,7 @@ export default function EloComparison() {
             result={comparisonData.explanationB}
             model={undefined}
             testCases={comparisonData.puzzle.test}
-            eloMode={true} // Hide model identifying info for double-blind A/B testing
+            eloMode={true}
           />
         </div>
       </div>
