@@ -1,4 +1,29 @@
 # CHANGELOG - Uses semantic versioning (MAJOR.MINOR.PATCH)`r`n
+# [5.10.8] - 2025-11-13
+### 🔧 Model Updates
+- **Polaris Alpha Revealed as GPT-5.1**: Updated model configuration to reflect that the cloaked "Polaris Alpha" model was officially revealed as OpenAI GPT-5.1 on November 13, 2025:
+  - Updated model key from `openrouter/polaris-alpha` to `openai/gpt-5.1`
+  - Updated pricing: $1.25/M input tokens, $10/M output tokens
+  - Updated context window: 400,000 tokens
+  - Added model name normalization mapping in `modelNormalizer.ts` to ensure existing database entries with `openrouter/polaris-alpha` automatically resolve to `openai/gpt-5.1`
+
+#### Files Changed:
+- `server/config/models.ts`: Updated model configuration with correct key, pricing, and specs
+- `server/utils/modelNormalizer.ts`: Added Polaris Alpha → GPT-5.1 mapping (lines 58-61)
+
+# [5.10.7] - 2025-11-13
+### 🐞 Critical Fixes
+- **ELO Leaderboard Only Showing 2 Models**: Fixed critical bug where the ELO leaderboard was filtering out models with fewer than 5 total games. The `getModelEloStats()` query in `EloRepository.ts` had an unnecessary `HAVING SUM(er.games_played) >= 5` clause that excluded most models from the leaderboard display. Removed this filter so all models with at least 1 game played now appear on the leaderboard, regardless of total game count.
+
+- **ELO Comparison Page Width Constraints (Complete Fix)**: Completed the fix from commit ffac6c5f which removed container constraints from the main content area but missed the loading and error states. The loading and error divs still had `container mx-auto p-6 max-w-7xl` classes, causing inconsistent page width depending on component state. All three states (loading, error, main content) now consistently use only `mx-auto` for alignment, allowing grids to display with proper spacing across the full viewport width.
+
+- **ELO Vote Results Modal Grid Smooshing**: Fixed puzzle grids being compressed in the vote results modal. Expanded modal from `max-w-[95vw]` to `max-w-[98vw]`, changed grid breakpoint from `md` (768px) to `lg` (1024px), increased gap from 6 to 8, and added overflow-x-auto wrapper with min-w-fit container. Grid items now have proper spacing and won't be squeezed together, with horizontal scroll fallback on smaller screens.
+
+#### Files Changed:
+- `server/repositories/EloRepository.ts`: Removed `HAVING SUM(er.games_played) >= 5` filter from getModelEloStats query (line 413)
+- `client/src/pages/EloComparison.tsx`: Removed `container p-6 max-w-7xl` classes from loading state (line 150) and error state (line 164)
+- `client/src/components/elo/EloVoteResultsModal.tsx`: Expanded modal width, improved grid layout with better spacing and responsive breakpoints
+
 # [5.10.6] - 2025-11-12
 ### 🐞 Critical Fixes
 - **ARC3 ACTION7 and RESET Support**: Restored ACTION7 support and improved RESET handling:
@@ -69,6 +94,8 @@
 # [5.10.3] - 2025-11-11
 ### 🎨 UI Improvements
 - Integrated ReferenceMaterial component into About page with refreshed community messaging, Simon Strandgaard acknowledgment, and official ARC Discord link.
+### 🔧 Maintenance
+- Removed legacy `external/` git submodules (`ARC3-solution`, `ARC-AGI-3-ClaudeCode-SDK`, `SnakeBench`, `openai-agents-js`, `openai-chatkit-advanced-samples`) now that their contents live in dedicated upstream repositories.
 
 # [5.10.2] - 2025-11-11
 ### 🔒 ARC3 Conversation Chaining Hardening
