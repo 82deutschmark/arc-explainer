@@ -50,6 +50,39 @@ Assume:
 - External APIs are functional.
 - Bugs stem from your code; debug and fix logic/integration issues directly.
 
+## Handling Revealed Cloaked Models
+When a model provider reveals the identity of a previously cloaked/anonymous model, follow this pattern:
+
+### Step 1: Update Model Configuration (`server/config/models.ts`)
+- Change `key` from old identifier to new official identifier (e.g., `openrouter/polaris-alpha` → `openai/gpt-5.1`)
+- Change `apiModelName` to match the new endpoint name
+- Update `name` to display the official model name
+- Update pricing, context window, and other specs based on official announcement
+- Remove any temporary notes about cloaking
+
+### Step 2: Add Normalization Mapping (`server/utils/modelNormalizer.ts`)
+Add a mapping in the `normalizeModelName()` function so existing database entries continue to work:
+```typescript
+// [Model Name] was revealed to be [Official Name] on [Date]
+if (normalized === 'old/model-name' || normalized.startsWith('old/model-name')) {
+  normalized = 'new/model-name';
+}
+```
+
+**Example**: See lines 58-61 for Polaris Alpha → GPT-5.1 mapping, or lines 53-56 for Sonoma-sky → Grok-4-fast mapping.
+
+### Step 3: Update CHANGELOG.md
+Add a PATCH version entry documenting:
+- The reveal announcement with date
+- Old model identifier → New model identifier
+- Updated pricing and specs
+- Files changed with line numbers
+
+### Why This Pattern?
+- **Preserves data integrity**: Old database entries automatically resolve to new model names via normalization
+- **Zero downtime**: No database migration needed
+- **Analytics continuity**: Historical data seamlessly merges with new data under the official model name
+
 ---
 
 ## Architecture Overview
