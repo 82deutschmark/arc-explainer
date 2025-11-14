@@ -147,7 +147,7 @@ export default function EloComparison() {
   // Loading state
   if (isLoading) {
     return (
-      <div className="container mx-auto p-6 max-w-7xl">
+      <div className="mx-auto">
         <div className="flex items-center justify-center min-h-[400px]">
           <div className="flex items-center gap-2">
             <Loader2 className="h-6 w-6 animate-spin" />
@@ -161,7 +161,7 @@ export default function EloComparison() {
   // Error state
   if (error || !comparisonData) {
     return (
-      <div className="container mx-auto p-6 max-w-7xl">
+      <div className="mx-auto">
         <Alert>
           <AlertDescription>
             {error?.message || 'Failed to load comparison. Please try again.'}
@@ -192,13 +192,12 @@ export default function EloComparison() {
             )}
           </h1>
           <p className="text-gray-600">
-            As of September 2025, state of the art LLMs will still very confidently assert 
+            State of the art LLMs will still very confidently assert 
             that they understand the puzzle, even when they don't. They will tell you something that
             sounds smart, but is actually wrong. 
             <br />
             <br />
-            This is where you come in. Can you tell the difference between 
-            correct and incorrect explanations? 
+            Can you spot slop?  
           </p>
         </div>
 

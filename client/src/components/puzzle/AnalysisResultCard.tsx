@@ -26,7 +26,7 @@ import { AnalysisResultActions } from './AnalysisResultActions';
 export const AnalysisResultCard = React.memo(function AnalysisResultCard({ modelKey, result, model, testCases, eloMode = false }: AnalysisResultCardProps) {
   const expectedOutputGrids = useMemo(() => testCases.map(tc => tc.output), [testCases]);
   const hasFeedback = (result.helpfulVotes ?? 0) > 0 || (result.notHelpfulVotes ?? 0) > 0;
-  const [showReasoning, setShowReasoning] = useState(false);
+  const [showReasoning, setShowReasoning] = useState(true); // Always expanded by default for better UX
   const [showAlienMeaning, setShowAlienMeaning] = useState(false);
   const [showExistingFeedback, setShowExistingFeedback] = useState(false);
   const [showRawDb, setShowRawDb] = useState(false);

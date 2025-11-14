@@ -78,7 +78,7 @@ export const EloVoteResultsModal: React.FC<EloVoteResultsModalProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-[95vw] max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-[98vw] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <CheckCircle className="h-5 w-5 text-green-600" />
@@ -109,9 +109,10 @@ export const EloVoteResultsModal: React.FC<EloVoteResultsModalProps> = ({
           {/* Actual vs Predicted Results */}
           <div>
             <h3 className="font-semibold mb-4">Actual vs Predicted Results</h3>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="overflow-x-auto">
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 min-w-fit">
               {/* Correct Answer */}
-              <div className="text-center">
+              <div className="text-center min-w-0 flex flex-col items-center">
                 <h4 className="font-medium mb-2">Correct Answer</h4>
                 <PuzzleGrid
                   grid={correctAnswerGrid}
@@ -121,7 +122,7 @@ export const EloVoteResultsModal: React.FC<EloVoteResultsModalProps> = ({
               </div>
 
               {/* Prediction A */}
-              <div className="text-center">
+              <div className="text-center min-w-0 flex flex-col items-center">
                 <div className="flex items-center justify-center gap-2 mb-2">
                   <h4 className="font-medium">Model A Prediction</h4>
                   {isACorrect ? (
@@ -144,7 +145,7 @@ export const EloVoteResultsModal: React.FC<EloVoteResultsModalProps> = ({
               </div>
 
               {/* Prediction B */}
-              <div className="text-center">
+              <div className="text-center min-w-0 flex flex-col items-center">
                 <div className="flex items-center justify-center gap-2 mb-2">
                   <h4 className="font-medium">Model B Prediction</h4>
                   {isBCorrect ? (
@@ -165,6 +166,7 @@ export const EloVoteResultsModal: React.FC<EloVoteResultsModalProps> = ({
                   {isBCorrect ? 'Correct' : 'Incorrect'}
                 </Badge>
               </div>
+            </div>
             </div>
           </div>
 

@@ -55,6 +55,11 @@ export function normalizeModelName(modelName: string): string {
     normalized = 'x-ai/grok-4-fast';
   }
 
+  // Polaris Alpha was revealed to be GPT-5.1 on Nov 13, 2025
+  if (normalized === 'openrouter/polaris-alpha' || normalized.startsWith('openrouter/polaris-alpha')) {
+    normalized = 'openai/gpt-5.1';
+  }
+
   return attemptSuffix ? `${normalized}${attemptSuffix}` : normalized;
 }
 
