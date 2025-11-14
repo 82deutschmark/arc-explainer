@@ -584,12 +584,11 @@ export const MODELS: ModelConfig[] = [
     provider: 'OpenRouter',
     responseTime: { speed: 'moderate', estimate: '30-90 sec' },
     isReasoning: true,
-    apiModelName: 'openrouter/polaris-alpha',
+    apiModelName: 'openai/gpt-5.1',
     modelType: 'openrouter',
     contextWindow: 400000,
     maxOutputTokens: 60000,
-    releaseDate: "2025-11",
-    notes: 'GPT-5.1 via OpenRouter (model identifier: openrouter/polaris-alpha). Will be migrated to OpenAI provider when officially released.'
+    releaseDate: "2025-11"
   },
   // xAI Grok Models (Direct API via Responses API)
   {
