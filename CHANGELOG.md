@@ -1,4 +1,60 @@
 # CHANGELOG - Uses semantic versioning (MAJOR.MINOR.PATCH)`r`n
+# [5.10.9] - 2025-11-14
+### 🎨 UI/UX Improvements
+- **ELO Comparison Page Visual Hierarchy Overhaul**: Comprehensive redesign addressing 5 critical UX issues to improve scannability, visual hierarchy, grouping, whitespace balance, and task affordance:
+
+  **1. Visual Hierarchy**
+  - Upgraded page title from `text-2xl` to `text-4xl` for clear page identification
+  - Created prominent "Can you spot slop?" hook (`text-3xl`, blue gradient card) as attention-grabbing tagline
+  - Established clear information hierarchy: Title (4xl) → Hook (3xl) → Sections (2xl) → Call-to-Action (3xl) → Body (base)
+  - Icons sized appropriately (h-10 w-10 for page title, h-6 w-6 for sections)
+
+  **2. Text Scannability**
+  - Moved key message "Can you spot slop?" from buried paragraph ending to prominent centered section with gradient background
+  - Converted dense paragraph into scannable Alert component with bold "Your task:" label
+  - Reduced word count from 3 sentences to 2 short, punchy statements
+  - Progressive disclosure: Hook → Instruction → Content
+
+  **3. Grouping & Alignment**
+  - Each training example now in proper Card component (not floating border div) with gradient background (`from-gray-50 to-blue-50/30`)
+  - Example labels upgraded from small text to Badges (`text-base px-4 py-1`)
+  - Added grid dimensions to all titles (e.g., "Input (16×16)", "Output (12×8)")
+  - Used ArrowRight icon with "transforms to" label for clarity
+  - Consistent center alignment throughout all example cards
+  - Test predictions in color-coded Badges (gray/blue/purple) for clear visual separation
+
+  **4. Whitespace Balance**
+  - Root container: `space-y-4` → `space-y-8` (major sections)
+  - Section internal spacing: consistent `space-y-6`
+  - Card padding: increased from `p-3` to `p-8` for breathing room
+  - Grid gaps: `gap-6` → `gap-8` for visual separation
+  - Eliminated unbalanced spacing (was sparse between sections, cramped within)
+
+  **5. Task Affordance - Voting is Now THE STAR**
+  - Added "Now It's Your Turn" section heading (`text-3xl font-bold`)
+  - Voting card gets `border-4 border-blue-400` with `shadow-2xl` for prominence
+  - Increased emoji size from `text-4xl` to `text-6xl` (⚖️)
+  - Enlarged voting buttons: `py-6 text-lg font-semibold` with shadow effects
+  - Moved voting to dedicated section above explanations (removed from 3-column squeeze)
+  - Explanations now side-by-side in clean 2-column layout with colored headers
+  - Added gradient background to voting panel (`from-blue-50 via-white to-purple-50`)
+
+  **Visual Flow Now**: Title → Hook → Instructions → Training Examples → Test Question → **VOTING (most prominent)** → Explanations
+
+  **Success Criteria Met**:
+  ✅ User identifies page purpose in < 2 seconds
+  ✅ User identifies task in < 3 seconds
+  ✅ Clear visual hierarchy guides eye through content
+  ✅ Each example properly grouped and aligned
+  ✅ Whitespace balanced and intentional
+  ✅ Voting interface is most prominent element
+  ✅ Text is scannable with clear hierarchy
+  ✅ Consistent center alignment with proper grouping
+
+#### Files Changed:
+- `client/src/pages/EloComparison.tsx`: Comprehensive redesign (~250 lines changed, lines 180-481)
+- `docs/2025-01-14-elo-comparison-ux-improvements.md`: Detailed implementation plan and analysis
+
 # [5.10.8] - 2025-11-13
 ### 🔧 Model Updates
 - **Polaris Alpha Revealed as GPT-5.1**: Updated model configuration to reflect that the cloaked "Polaris Alpha" model was officially revealed as OpenAI GPT-5.1 on November 13, 2025:
