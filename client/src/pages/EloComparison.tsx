@@ -294,75 +294,123 @@ export default function EloComparison() {
         </div>
       </div>
 
-      {/* Test Question & AI Predictions - Clear Grouping */}
+      {/* Test Questions & AI Predictions - Handle Multiple Tests */}
       <div className="space-y-6">
         <div className="text-center">
-          <h2 className="text-2xl font-bold mb-2">Test Question</h2>
+          <h2 className="text-2xl font-bold mb-2">
+            {comparisonData.puzzle.test.length > 1 ? 'Test Questions' : 'Test Question'}
+          </h2>
           <p className="text-gray-600">
-            Here's the test input and what each AI predicted as the output
+            {comparisonData.puzzle.test.length > 1
+              ? `This puzzle has ${comparisonData.puzzle.test.length} test cases. Here's what each AI predicted for each one.`
+              : "Here's the test input and what each AI predicted as the output"
+            }
           </p>
         </div>
 
-        <Card className="border-2 border-purple-200 bg-gradient-to-br from-purple-50/30 to-pink-50/30">
-          <CardContent className="p-8">
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-              {/* Test Input */}
-              <div className="flex flex-col items-center">
-                <div className="mb-4">
-                  <Badge className="bg-gray-700 text-white text-sm px-3 py-1">
-                    Test Input
-                  </Badge>
-                </div>
-                <PuzzleGrid
-                  grid={comparisonData.puzzle.test[0].input}
-                  title={`${comparisonData.puzzle.test[0].input[0]?.length || 0}×${comparisonData.puzzle.test[0].input.length || 0} grid`}
-                  showEmojis={false}
-                />
-                <p className="mt-3 text-sm text-gray-600 font-medium">What does this become?</p>
-              </div>
+        {comparisonData.puzzle.test.map((testCase: ARCExample, testIndex: number) => {
+          // Extract predictions for this test case
+          const getPredictionForTest = (explanation: any, testIdx: number) => {
+            // Check for multi-test predictions first
+            if (explanation.multiplePredictedOutputs) {
+              // Try JSONB object format: {predictedOutput1: [[...]], predictedOutput2: [[...]]}
+              if (typeof explanation.multiplePredictedOutputs === 'object' && !Array.isArray(explanation.multiplePredictedOutputs)) {
+                const key = `predictedOutput${testIdx + 1}`;
+                if (explanation.multiplePredictedOutputs[key]) {
+                  return explanation.multiplePredictedOutputs[key];
+                }
+              }
+              // Try array format: [[[...]], [[...]]]
+              if (Array.isArray(explanation.multiplePredictedOutputs) && explanation.multiplePredictedOutputs[testIdx]) {
+                return explanation.multiplePredictedOutputs[testIdx];
+              }
+            }
+            // Check multiTestPredictionGrids array
+            if (explanation.multiTestPredictionGrids && Array.isArray(explanation.multiTestPredictionGrids)) {
+              if (explanation.multiTestPredictionGrids[testIdx]) {
+                return explanation.multiTestPredictionGrids[testIdx];
+              }
+            }
+            // Fallback to single prediction (only valid for single test case)
+            if (testIdx === 0 && explanation.predictedOutputGrid) {
+              return explanation.predictedOutputGrid;
+            }
+            return null;
+          };
 
-              {/* Prediction A */}
-              <div className="flex flex-col items-center">
-                <div className="mb-4">
-                  <Badge className="bg-blue-600 text-white text-sm px-3 py-1">
-                    AI Prediction A
-                  </Badge>
-                </div>
-                {comparisonData.explanationA.predictedOutputGrid ? (
-                  <PuzzleGrid
-                    grid={comparisonData.explanationA.predictedOutputGrid}
-                    title={`${comparisonData.explanationA.predictedOutputGrid[0]?.length || 0}×${comparisonData.explanationA.predictedOutputGrid.length || 0} grid`}
-                    showEmojis={false}
-                  />
-                ) : (
-                  <div className="p-8 border-2 border-dashed border-gray-300 rounded-lg text-center text-gray-500 bg-white">
-                    No prediction available
+          const predictionA = getPredictionForTest(comparisonData.explanationA, testIndex);
+          const predictionB = getPredictionForTest(comparisonData.explanationB, testIndex);
+
+          return (
+            <Card key={testIndex} className="border-2 border-purple-200 bg-gradient-to-br from-purple-50/30 to-pink-50/30">
+              <CardContent className="p-8">
+                {comparisonData.puzzle.test.length > 1 && (
+                  <div className="text-center mb-6">
+                    <Badge className="bg-purple-700 text-white text-lg px-4 py-1">
+                      Test Case {testIndex + 1} of {comparisonData.puzzle.test.length}
+                    </Badge>
                   </div>
                 )}
-              </div>
-
-              {/* Prediction B */}
-              <div className="flex flex-col items-center">
-                <div className="mb-4">
-                  <Badge className="bg-purple-600 text-white text-sm px-3 py-1">
-                    AI Prediction B
-                  </Badge>
-                </div>
-                {comparisonData.explanationB.predictedOutputGrid ? (
-                  <PuzzleGrid
-                    grid={comparisonData.explanationB.predictedOutputGrid}
-                    title={`${comparisonData.explanationB.predictedOutputGrid[0]?.length || 0}×${comparisonData.explanationB.predictedOutputGrid.length || 0} grid`}
-                    showEmojis={false}
-                  />
-                ) : (
-                  <div className="p-8 border-2 border-dashed border-gray-300 rounded-lg text-center text-gray-500 bg-white">
-                    No prediction available
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                  {/* Test Input */}
+                  <div className="flex flex-col items-center">
+                    <div className="mb-4">
+                      <Badge className="bg-gray-700 text-white text-sm px-3 py-1">
+                        Test Input
+                      </Badge>
+                    </div>
+                    <PuzzleGrid
+                      grid={testCase.input}
+                      title={`${testCase.input[0]?.length || 0}×${testCase.input.length || 0} grid`}
+                      showEmojis={false}
+                    />
+                    <p className="mt-3 text-sm text-gray-600 font-medium">What does this become?</p>
                   </div>
-                )}
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+
+                  {/* Prediction A */}
+                  <div className="flex flex-col items-center">
+                    <div className="mb-4">
+                      <Badge className="bg-blue-600 text-white text-sm px-3 py-1">
+                        AI Prediction A
+                      </Badge>
+                    </div>
+                    {predictionA ? (
+                      <PuzzleGrid
+                        grid={predictionA}
+                        title={`${predictionA[0]?.length || 0}×${predictionA.length || 0} grid`}
+                        showEmojis={false}
+                      />
+                    ) : (
+                      <div className="p-8 border-2 border-dashed border-gray-300 rounded-lg text-center text-gray-500 bg-white">
+                        No prediction available
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Prediction B */}
+                  <div className="flex flex-col items-center">
+                    <div className="mb-4">
+                      <Badge className="bg-purple-600 text-white text-sm px-3 py-1">
+                        AI Prediction B
+                      </Badge>
+                    </div>
+                    {predictionB ? (
+                      <PuzzleGrid
+                        grid={predictionB}
+                        title={`${predictionB[0]?.length || 0}×${predictionB.length || 0} grid`}
+                        showEmojis={false}
+                      />
+                    ) : (
+                      <div className="p-8 border-2 border-dashed border-gray-300 rounded-lg text-center text-gray-500 bg-white">
+                        No prediction available
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          );
+        })}
       </div>
 
       {/* NOW IT'S YOUR TURN - Clear Call to Action */}
