@@ -1,0 +1,177 @@
+/**
+ * Author: Claude Code using Sonnet 4.5
+ * Date: 2025-11-14T00:00:00Z
+ * PURPOSE: Helper utilities for Puzzle Trading Card feature.
+ * Provides functions for calculating win/loss records, determining dataset colors,
+ * and formatting puzzle card data for display.
+ *
+ * SRP/DRY check: Pass - Single responsibility for trading card data formatting
+ */
+
+import type { PuzzleStatsRecord } from '@/hooks/usePuzzleStats';
+
+/**
+ * Calculate win/loss record for a puzzle against LLMs
+ * Win = LLM failed (wrongCount)
+ * Loss = LLM succeeded (totalExplanations - wrongCount)
+ */
+export function calculateWinLossRecord(performanceData?: {
+  wrongCount: number;
+  totalExplanations: number;
+}): { wins: number; losses: number; record: string } {
+  if (!performanceData || performanceData.totalExplanations === 0) {
+    return { wins: 0, losses: 0, record: '0-0' };
+  }
+
+  const wins = performanceData.wrongCount;
+  const losses = performanceData.totalExplanations - performanceData.wrongCount;
+
+  return {
+    wins,
+    losses,
+    record: `${wins}-${losses}`
+  };
+}
+
+/**
+ * Get dataset display name (team name for trading card)
+ */
+export function getDatasetDisplayName(source?: string): string {
+  if (!source) return 'Unknown';
+
+  const displayNames: Record<string, string> = {
+    'training': 'ARC Training',
+    'training2': 'ARC Training 2',
+    'evaluation': 'ARC Evaluation',
+    'evaluation2': 'ARC Evaluation 2',
+    'arc-heavy': 'ARC Heavy',
+    'concept-arc': 'Concept ARC',
+    'explained': 'Explained'
+  };
+
+  return displayNames[source.toLowerCase()] || source;
+}
+
+/**
+ * Get vibrant, crisp gradient colors for dataset "team colors"
+ * Returns gradient classes for card styling
+ */
+export function getDatasetGradient(source?: string): {
+  borderGradient: string;
+  backgroundGradient: string;
+  teamColor: string;
+  accentColor: string;
+} {
+  if (!source) {
+    return {
+      borderGradient: 'from-gray-400 via-gray-500 to-gray-600',
+      backgroundGradient: 'from-gray-50 to-gray-100',
+      teamColor: 'text-gray-700',
+      accentColor: 'bg-gray-500'
+    };
+  }
+
+  const sourceKey = source.toLowerCase();
+
+  // Crisp, vibrant, colorful gradients (no brown!)
+  const gradients: Record<string, {
+    borderGradient: string;
+    backgroundGradient: string;
+    teamColor: string;
+    accentColor: string;
+  }> = {
+    'training': {
+      borderGradient: 'from-blue-500 via-indigo-500 to-purple-500',
+      backgroundGradient: 'from-blue-50 via-indigo-50 to-purple-50',
+      teamColor: 'text-blue-700',
+      accentColor: 'bg-blue-500'
+    },
+    'training2': {
+      borderGradient: 'from-cyan-500 via-teal-500 to-emerald-500',
+      backgroundGradient: 'from-cyan-50 via-teal-50 to-emerald-50',
+      teamColor: 'text-teal-700',
+      accentColor: 'bg-teal-500'
+    },
+    'evaluation': {
+      borderGradient: 'from-rose-500 via-pink-500 to-fuchsia-500',
+      backgroundGradient: 'from-rose-50 via-pink-50 to-fuchsia-50',
+      teamColor: 'text-rose-700',
+      accentColor: 'bg-rose-500'
+    },
+    'evaluation2': {
+      borderGradient: 'from-orange-500 via-amber-500 to-yellow-500',
+      backgroundGradient: 'from-orange-50 via-amber-50 to-yellow-50',
+      teamColor: 'text-orange-700',
+      accentColor: 'bg-orange-500'
+    },
+    'arc-heavy': {
+      borderGradient: 'from-violet-500 via-purple-500 to-fuchsia-500',
+      backgroundGradient: 'from-violet-50 via-purple-50 to-fuchsia-50',
+      teamColor: 'text-violet-700',
+      accentColor: 'bg-violet-500'
+    },
+    'concept-arc': {
+      borderGradient: 'from-lime-500 via-green-500 to-emerald-500',
+      backgroundGradient: 'from-lime-50 via-green-50 to-emerald-50',
+      teamColor: 'text-green-700',
+      accentColor: 'bg-green-500'
+    }
+  };
+
+  return gradients[sourceKey] || gradients['training'];
+}
+
+/**
+ * Get badge variant based on win percentage
+ */
+export function getPerformanceBadgeVariant(wins: number, losses: number): 'default' | 'secondary' | 'destructive' {
+  const total = wins + losses;
+  if (total === 0) return 'secondary';
+
+  const winPercentage = (wins / total) * 100;
+
+  // Puzzle "dominance" levels
+  if (winPercentage >= 70) return 'destructive'; // Puzzle is crushing LLMs
+  if (winPercentage >= 40) return 'default'; // Competitive puzzle
+  return 'secondary'; // LLMs are doing well
+}
+
+/**
+ * Get performance description for the puzzle
+ */
+export function getPerformanceDescription(wins: number, losses: number): string {
+  const total = wins + losses;
+  if (total === 0) return 'Untested';
+
+  const winPercentage = (wins / total) * 100;
+
+  if (winPercentage >= 90) return 'Legendary Difficulty';
+  if (winPercentage >= 70) return 'Elite Challenge';
+  if (winPercentage >= 50) return 'Tough Puzzle';
+  if (winPercentage >= 30) return 'Moderate Challenge';
+  return 'Learner Friendly';
+}
+
+/**
+ * Format puzzle stats for trading card display
+ */
+export function formatPuzzleStats(puzzle: PuzzleStatsRecord) {
+  const { wins, losses, record } = calculateWinLossRecord(puzzle.performanceData);
+  const teamName = getDatasetDisplayName(puzzle.source);
+  const colors = getDatasetGradient(puzzle.source);
+  const badgeVariant = getPerformanceBadgeVariant(wins, losses);
+  const performanceDesc = getPerformanceDescription(wins, losses);
+
+  return {
+    record,
+    wins,
+    losses,
+    teamName,
+    colors,
+    badgeVariant,
+    performanceDesc,
+    avgAccuracy: puzzle.performanceData?.avgAccuracy ?? 0,
+    totalAttempts: puzzle.performanceData?.totalExplanations ?? 0,
+    modelsAttempted: puzzle.performanceData?.modelsAttempted ?? []
+  };
+}
