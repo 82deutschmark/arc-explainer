@@ -251,7 +251,7 @@ export const PuzzleTradingCard: React.FC<PuzzleTradingCardProps> = ({ puzzle }) 
                       <div className="flex justify-between">
                         <span className="text-gray-600">Avg Confidence:</span>
                         <span className="font-semibold">
-                          {(puzzle.performanceData.avgConfidence * 100).toFixed(1)}%
+                          {puzzle.performanceData.avgConfidence.toFixed(1)}%
                         </span>
                       </div>
                     )}

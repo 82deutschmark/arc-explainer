@@ -1,4 +1,13 @@
 # CHANGELOG - Uses semantic versioning (MAJOR.MINOR.PATCH)`r`n
+# [5.10.10] - 2025-11-14
+### 🐞 Bug Fixes
+- **Puzzle Trading Cards avgConfidence Display**: Fixed critical bug in `PuzzleTradingCard.tsx:254` where average confidence was incorrectly multiplied by 100, displaying impossible values like "8000%" instead of "80%". The `avgConfidence` field is already stored as a 0-100 percentage value in the database (consistent with usage in `PuzzleDBViewer`, `ModelComparisonPage`, `AccuracyLeaderboard`, and other components). Changed display from `(puzzle.performanceData.avgConfidence * 100).toFixed(1)%` to `puzzle.performanceData.avgConfidence.toFixed(1)%`.
+
+  **Impact**: Trading cards now correctly display model confidence percentages, accurately representing model performance instead of misleading users with mathematically impossible confidence values.
+
+  #### Files Changed:
+  - `client/src/components/puzzle/PuzzleTradingCard.tsx:254`: Removed incorrect `* 100` multiplication
+
 # [5.10.9] - 2025-11-15
 ### ✨ New Features
 - **ARC Puzzle Trading Cards**: Added new feature that displays named ARC puzzles as collectible trading cards inspired by 1980s Topps baseball cards, with crisp, vibrant, and colorful styling:
