@@ -1,4 +1,179 @@
 # CHANGELOG - Uses semantic versioning (MAJOR.MINOR.PATCH)`r`n
+# [5.10.10] - 2025-11-14
+### 🐞 Bug Fixes
+- **Puzzle Trading Cards avgConfidence Display**: Fixed critical bug in `PuzzleTradingCard.tsx:254` where average confidence was incorrectly multiplied by 100, displaying impossible values like "8000%" instead of "80%". The `avgConfidence` field is already stored as a 0-100 percentage value in the database (consistent with usage in `PuzzleDBViewer`, `ModelComparisonPage`, `AccuracyLeaderboard`, and other components). Changed display from `(puzzle.performanceData.avgConfidence * 100).toFixed(1)%` to `puzzle.performanceData.avgConfidence.toFixed(1)%`.
+
+  **Impact**: Trading cards now correctly display model confidence percentages, accurately representing model performance instead of misleading users with mathematically impossible confidence values.
+
+### 🎨 UI/UX Improvements
+- **Puzzle Browser Trading Cards Discovery**: Added prominent callout banner on Puzzle Browser page linking to the Trading Cards feature. The banner features:
+  - Eye-catching gradient background (purple → blue → teal) with amber accents
+  - Wallet and Sparkles icons for visual appeal
+  - Clear description: "Browse named puzzles as collectible 1980s-style baseball cards with win/loss records & difficulty ratings"
+  - Hover effects with shadow glow and border color changes
+  - "View Collection →" call-to-action button (visible on larger screens)
+  - Positioned prominently between Reference Material and Filters sections for easy discovery
+
+  **Impact**: Improves discoverability of the Trading Cards feature for users browsing puzzles, providing a natural navigation path between the two related features.
+
+- **Trading Cards Retro Hero Images**: Added stunning 1980s-style retro sci-fi hero banner to Trading Cards page featuring two promotional images:
+  - "ARC RAIDER" image with dramatic 80s aesthetic, neon gradients, and space explorer theme
+  - "ARC PRIZE RAIDERS" image with bold typography and retro-futuristic styling
+  - Responsive 2-column grid layout (single column on mobile, side-by-side on desktop)
+  - Amber border glow effects matching the trading card theme
+  - Hover animations with scale effect and enhanced border glow
+  - Purple and blue shadow effects for depth
+  - Images placed prominently at page top before the header for maximum visual impact
+
+  **Impact**: Dramatically enhances the retro/collectible aesthetic of the Trading Cards page, creating an immersive 1980s nostalgia experience that aligns perfectly with the baseball card theme.
+
+  #### Files Changed:
+  - `client/src/components/puzzle/PuzzleTradingCard.tsx:254`: Removed incorrect `* 100` multiplication
+  - `client/src/pages/PuzzleBrowser.tsx`: Added Trading Cards callout banner with gradient styling, icons (Wallet, Sparkles), and link to `/trading-cards`
+  - `client/src/pages/PuzzleTradingCards.tsx`: Added retro hero images banner section with hover effects and responsive grid
+  - `client/public/arcraiders1.png`: Added retro sci-fi promotional image "ARC RAIDER"
+  - `client/public/arcraiders2.png`: Added retro sci-fi promotional image "ARC PRIZE RAIDERS"
+
+# [5.10.9] - 2025-11-15
+### ✨ New Features
+- **ARC Puzzle Trading Cards**: Added new feature that displays named ARC puzzles as collectible trading cards inspired by 1980s Topps baseball cards, with crisp, vibrant, and colorful styling:
+  - **Trading Card Component** (`PuzzleTradingCard.tsx`): Individual cards with baseball-style design featuring:
+    - Prominent puzzle grid display using `TinyGrid` component
+    - Puzzle nickname in large bold text with official ID below
+    - Dataset name as "team name" with color-coded gradient borders
+    - Win/Loss record format (e.g., "14-4") where puzzles "win" when LLMs fail to solve them
+    - Quick stats showing Wins, Losses, and Total Attempts
+    - Expandable detailed stats showing all models attempted, average accuracy/confidence, and difficulty metrics
+    - Lazy loading pattern with intersection observer for performance
+    - Vibrant color schemes by dataset: Blue/Purple (Training), Teal/Emerald (Training2), Rose/Pink (Evaluation), Orange/Yellow (Evaluation2), Violet/Purple (ARC-Heavy), Lime/Green (ConceptARC)
+
+  - **Trading Cards Page** (`PuzzleTradingCards.tsx`): Main gallery page with:
+    - Hero header with trophy icons and gradient title
+    - Advanced filtering: Dataset, Difficulty level (Legendary/Elite/Tough/Moderate/Easy/Untested), Search by ID
+    - Sort options: Win percentage (high/low), Total attempts, Puzzle ID
+    - Responsive grid layout (1-4 columns based on screen size)
+    - Summary badges showing total cards, puzzles, and analyzed count
+    - Info footer explaining trading card mechanics
+    - Only displays named puzzles from `puzzleNames.ts`
+
+  - **Helper Utilities** (`puzzleCardHelpers.ts`): Utility functions for card data formatting:
+    - `calculateWinLossRecord()`: Converts performance data to baseball-style W-L format
+    - `getDatasetGradient()`: Returns crisp, vibrant color gradient schemes by dataset (no brown!)
+    - `getDatasetDisplayName()`: Formats dataset names for display
+    - `getPerformanceBadgeVariant()`: Determines badge color based on win percentage
+    - `getPerformanceDescription()`: Generates difficulty ratings (Legendary/Elite/Tough/Moderate/Easy/Untested)
+    - `formatPuzzleStats()`: Complete stats formatter combining all helpers
+
+  - **Navigation Integration**: Added "Trading Cards" menu item with Wallet icon to main navigation, positioned after "Home"
+
+#### Design Principles:
+- **Crisp & Colorful**: Vibrant gradients throughout (Blue, Purple, Pink, Teal, Rose, Orange, Violet, Green)
+- **No brown colors**: Fresh, modern aesthetic as requested
+- **Pills and badges**: Extensive use of existing Badge component for stats and filters
+- **Responsive**: Mobile-friendly with adaptive grid layouts
+- **Performance**: Lazy loading, intersection observers, reuses existing hooks
+
+#### Technical Implementation:
+- Reuses existing components: `TinyGrid`, `Badge`, `usePuzzleStats`, `puzzleNames.ts`
+- Follows SRP/DRY principles with modular helper functions
+- Data source: `/api/puzzles/stats?includeRichMetrics=true` endpoint (no new backend needed)
+- Win/Loss calculation: `wrongCount` = puzzle wins (LLM failures), `totalExplanations - wrongCount` = puzzle losses
+
+#### Files Changed:
+- **Created**:
+  - `client/src/components/puzzle/PuzzleTradingCard.tsx`: Trading card component (288 lines)
+  - `client/src/pages/PuzzleTradingCards.tsx`: Main trading cards page (343 lines)
+  - `client/src/utils/puzzleCardHelpers.ts`: Helper utilities (158 lines)
+- **Modified**:
+  - `client/src/App.tsx`: Added `/trading-cards` route
+  - `client/src/components/layout/AppNavigation.tsx`: Added "Trading Cards" nav item with Wallet icon
+# [5.10.9] - 2025-11-14
+### ✨ New Features
+- **Intelligent ELO Matchmaking**: Dramatically improved comparison quality with smart scoring system that prefers:
+  - **At least one correct answer** (+100 points) - avoids "both are terrible" scenarios
+  - **One correct vs one incorrect** (+50 bonus) - most informative matchups with clear winners
+  - **ARC1/ARC2 over ARC-Heavy** (+50 points) - user preference for standard puzzles
+  - **Smaller grids** (+30 for <10×10, +20 for <20×20, +10 for <30×30) - easier to evaluate
+  - **Different models** (+10 points) - more interesting comparisons
+
+  **Two-Stage Selection**:
+  1. **Puzzle Selection**: Evaluates 20 random candidates, picks best based on preferences
+  2. **Pair Selection**: Evaluates all possible explanation pairs for chosen puzzle, picks optimal matchup
+
+  **Impact**: Much higher quality comparisons for users. Still works if no ideal matches exist (fallback to any pair). Detailed logging shows puzzle source, grid size, and match quality scores.
+
+  #### Files Changed:
+  - `server/repositories/EloRepository.ts`: Added `selectBestExplanationPair()` method (lines 171-266) and smart puzzle selection logic (lines 275-349)
+
+### 🐞 Critical Fixes
+- **ELO Comparison Multi-Test Display Bug**: Fixed critical bug where page only showed first test case (`test[0]`), completely ignoring 597+ puzzles with 2-3 test cases. Page now properly:
+  - Displays **ALL test cases** in `puzzle.test` array (not just index 0)
+  - Extracts correct prediction for each test case from multiple storage formats:
+    - `multiplePredictedOutputs` object: `{predictedOutput1, predictedOutput2, predictedOutput3}`
+    - `multiplePredictedOutputs` array: `[grid1[][], grid2[][], grid3[][]]`
+    - `multiTestPredictionGrids` array
+    - Falls back to single `predictedOutputGrid` for single-test puzzles
+  - Shows test case number badge when multiple tests exist ("Test Case 1 of 3")
+  - Updates header dynamically: "Test Question" (singular) vs "Test Questions" (plural)
+  - Displays clear count: "This puzzle has 3 test cases. Here's what each AI predicted for each one."
+
+  **Impact**: 597 multi-test puzzles (mostly ARC-Heavy) now display correctly instead of showing only partial data.
+
+### 🎨 UI/UX Improvements
+- **ELO Comparison Page Visual Hierarchy Overhaul**: Comprehensive redesign addressing 5 critical UX issues to improve scannability, visual hierarchy, grouping, whitespace balance, and task affordance:
+
+  **1. Visual Hierarchy**
+  - Upgraded page title from `text-2xl` to `text-4xl` for clear page identification
+  - Created prominent "Can you spot slop?" hook (`text-3xl`, blue gradient card) as attention-grabbing tagline
+  - Established clear information hierarchy: Title (4xl) → Hook (3xl) → Sections (2xl) → Call-to-Action (3xl) → Body (base)
+  - Icons sized appropriately (h-10 w-10 for page title, h-6 w-6 for sections)
+
+  **2. Text Scannability**
+  - Moved key message "Can you spot slop?" from buried paragraph ending to prominent centered section with gradient background
+  - Converted dense paragraph into scannable Alert component with bold "Your task:" label
+  - Reduced word count from 3 sentences to 2 short, punchy statements
+  - Progressive disclosure: Hook → Instruction → Content
+
+  **3. Grouping & Alignment**
+  - Each training example now in proper Card component (not floating border div) with gradient background (`from-gray-50 to-blue-50/30`)
+  - Example labels upgraded from small text to Badges (`text-base px-4 py-1`)
+  - Added grid dimensions to all titles (e.g., "Input (16×16)", "Output (12×8)")
+  - Used ArrowRight icon with "transforms to" label for clarity
+  - Consistent center alignment throughout all example cards
+  - Test predictions in color-coded Badges (gray/blue/purple) for clear visual separation
+
+  **4. Whitespace Balance**
+  - Root container: `space-y-4` → `space-y-8` (major sections)
+  - Section internal spacing: consistent `space-y-6`
+  - Card padding: increased from `p-3` to `p-8` for breathing room
+  - Grid gaps: `gap-6` → `gap-8` for visual separation
+  - Eliminated unbalanced spacing (was sparse between sections, cramped within)
+
+  **5. Task Affordance - Voting is Now THE STAR**
+  - Added "Now It's Your Turn" section heading (`text-3xl font-bold`)
+  - Voting card gets `border-4 border-blue-400` with `shadow-2xl` for prominence
+  - Increased emoji size from `text-4xl` to `text-6xl` (⚖️)
+  - Enlarged voting buttons: `py-6 text-lg font-semibold` with shadow effects
+  - Moved voting to dedicated section above explanations (removed from 3-column squeeze)
+  - Explanations now side-by-side in clean 2-column layout with colored headers
+  - Added gradient background to voting panel (`from-blue-50 via-white to-purple-50`)
+
+  **Visual Flow Now**: Title → Hook → Instructions → Training Examples → Test Question → **VOTING (most prominent)** → Explanations
+
+  **Success Criteria Met**:
+  ✅ User identifies page purpose in < 2 seconds
+  ✅ User identifies task in < 3 seconds
+  ✅ Clear visual hierarchy guides eye through content
+  ✅ Each example properly grouped and aligned
+  ✅ Whitespace balanced and intentional
+  ✅ Voting interface is most prominent element
+  ✅ Text is scannable with clear hierarchy
+  ✅ Consistent center alignment with proper grouping
+
+#### Files Changed:
+- `client/src/pages/EloComparison.tsx`: Comprehensive redesign (~250 lines changed, lines 180-481)
+- `docs/2025-01-14-elo-comparison-ux-improvements.md`: Detailed implementation plan and analysis
+
 # [5.10.8] - 2025-11-13
 ### 🔧 Model Updates
 - **Polaris Alpha Revealed as GPT-5.1**: Updated model configuration to reflect that the cloaked "Polaris Alpha" model was officially revealed as OpenAI GPT-5.1 on November 13, 2025:
