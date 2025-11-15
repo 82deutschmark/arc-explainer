@@ -5,8 +5,34 @@
 
   **Impact**: Trading cards now correctly display model confidence percentages, accurately representing model performance instead of misleading users with mathematically impossible confidence values.
 
+### 🎨 UI/UX Improvements
+- **Puzzle Browser Trading Cards Discovery**: Added prominent callout banner on Puzzle Browser page linking to the Trading Cards feature. The banner features:
+  - Eye-catching gradient background (purple → blue → teal) with amber accents
+  - Wallet and Sparkles icons for visual appeal
+  - Clear description: "Browse named puzzles as collectible 1980s-style baseball cards with win/loss records & difficulty ratings"
+  - Hover effects with shadow glow and border color changes
+  - "View Collection →" call-to-action button (visible on larger screens)
+  - Positioned prominently between Reference Material and Filters sections for easy discovery
+
+  **Impact**: Improves discoverability of the Trading Cards feature for users browsing puzzles, providing a natural navigation path between the two related features.
+
+- **Trading Cards Retro Hero Images**: Added stunning 1980s-style retro sci-fi hero banner to Trading Cards page featuring two promotional images:
+  - "ARC RAIDER" image with dramatic 80s aesthetic, neon gradients, and space explorer theme
+  - "ARC PRIZE RAIDERS" image with bold typography and retro-futuristic styling
+  - Responsive 2-column grid layout (single column on mobile, side-by-side on desktop)
+  - Amber border glow effects matching the trading card theme
+  - Hover animations with scale effect and enhanced border glow
+  - Purple and blue shadow effects for depth
+  - Images placed prominently at page top before the header for maximum visual impact
+
+  **Impact**: Dramatically enhances the retro/collectible aesthetic of the Trading Cards page, creating an immersive 1980s nostalgia experience that aligns perfectly with the baseball card theme.
+
   #### Files Changed:
   - `client/src/components/puzzle/PuzzleTradingCard.tsx:254`: Removed incorrect `* 100` multiplication
+  - `client/src/pages/PuzzleBrowser.tsx`: Added Trading Cards callout banner with gradient styling, icons (Wallet, Sparkles), and link to `/trading-cards`
+  - `client/src/pages/PuzzleTradingCards.tsx`: Added retro hero images banner section with hover effects and responsive grid
+  - `client/public/arcraiders1.png`: Added retro sci-fi promotional image "ARC RAIDER"
+  - `client/public/arcraiders2.png`: Added retro sci-fi promotional image "ARC PRIZE RAIDERS"
 
 # [5.10.9] - 2025-11-15
 ### ✨ New Features
