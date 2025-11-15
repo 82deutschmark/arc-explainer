@@ -1,9 +1,9 @@
 /**
- * Author: Cascade
- * Date: 2025-11-09
- * PURPOSE: Analyze ARC Eval puzzles using the free Minimax M2 model. Pulls ARC1 / ARC2 evaluation puzzle IDs,
- * runs the configured model with rate-limited launch spacing, and persists explanations through
- * the existing analysis + save endpoints.
+ * Author: Claude Code using Sonnet 4.5
+ * Date: 2025-11-15
+ * PURPOSE: Analyze ARC Eval puzzles using the free Sherlock Think Alpha cloaked model from OpenRouter.
+ * Pulls ARC1 / ARC2 evaluation puzzle IDs, runs Sherlock Think Alpha with rate-limited launch spacing,
+ * and persists explanations through the existing analysis + save endpoints.
  * SRP/DRY check: Pass — shared helpers are reused from the paid-model script with
  * model iteration generalized.
  */
@@ -15,16 +15,16 @@ dotenv.config();
 
 type SourceKey = 'ARC1-Eval' | 'ARC2-Eval';
 
-type ModelKey = 'minimax/minimax-m2:free';
+type ModelKey = 'openrouter/sherlock-think-alpha';
 
 const API_BASE_URL = process.env.API_BASE_URL || 'http://localhost:5000';
 const SOURCES: SourceKey[] = ['ARC2-Eval', 'ARC1-Eval'];
 
-const DEFAULT_MODEL_KEYS: ModelKey[] = ['minimax/minimax-m2:free'];
+const DEFAULT_MODEL_KEYS: ModelKey[] = ['openrouter/sherlock-think-alpha'];
 
 const RATE_LIMIT_DELAY_MS = Number(process.env.OPENROUTER_RATE_LIMIT_MS) || 5000;
 const MODEL_SWITCH_DELAY_MS = Number(process.env.OPENROUTER_MODEL_SWITCH_DELAY_MS) || 3000;
-const PUZZLE_TIMEOUT_MS = 30 * 60 * 1000; // 10 minutes
+const PUZZLE_TIMEOUT_MS = 30 * 60 * 1000; // 30 minutes timeout for reasoning model
 const SAVE_TIMEOUT_MS = 30 * 1000; // 30 seconds
 
 const knownModelKeys = new Set<ModelKey>(DEFAULT_MODEL_KEYS);
@@ -41,7 +41,7 @@ function parseModelKeys(raw?: string): ModelKey[] {
 
   if (parsed.length === 0) {
     console.warn(
-      'OPENROUTER_FREE_MODELS provided but contained no recognized model keys; falling back to defaults.'
+      'OPENROUTER_FREE_MODELS provided but contained no recognized model keys; falling back to Sherlock Think Alpha.'
     );
     return DEFAULT_MODEL_KEYS;
   }
@@ -169,7 +169,7 @@ async function fireModelWithSpacing(
   source: SourceKey,
   puzzleIds: string[]
 ): Promise<AnalysisResult[]> {
-  console.log(`Firing ${modelKey} across ${puzzleIds.length} puzzles from ${source} (1s spacing)`);
+  console.log(`Firing ${modelKey} across ${puzzleIds.length} puzzles from ${source} (5s spacing)`);
 
   const pending: Promise<AnalysisResult>[] = [];
 
@@ -229,11 +229,12 @@ function summarizeByModel(results: AnalysisResult[]): void {
 
 async function main(): Promise<void> {
   try {
-    console.log('OpenRouter Free Model ARC Eval Analyzer');
+    console.log('Sherlock Think Alpha - ARC Eval Analyzer');
     console.log('='.repeat(60));
     console.log(`API base URL: ${API_BASE_URL}`);
-    console.log(`Models: ${MODEL_KEYS.join(', ')}`);
+    console.log(`Model: ${MODEL_KEYS.join(', ')}`);
     console.log(`Sources: ${SOURCES.join(', ')}`);
+    console.log(`Note: Sherlock Think Alpha is a CLOAKED model - identity TBD`);
     console.log('='.repeat(60));
 
     const allResults: AnalysisResult[] = [];
@@ -270,7 +271,7 @@ async function main(): Promise<void> {
     summarizeByModel(allResults);
 
     if (failures > 0) {
-      console.log('Failed analyses:');
+      console.log('\nFailed analyses:');
       allResults.filter(r => !r.success).forEach(result => {
         console.log(`  - ${result.puzzleId} [${result.modelKey}] (${result.source}): ${result.error}`);
       });
