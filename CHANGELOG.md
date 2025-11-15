@@ -52,6 +52,92 @@
 - **Modified**:
   - `client/src/App.tsx`: Added `/trading-cards` route
   - `client/src/components/layout/AppNavigation.tsx`: Added "Trading Cards" nav item with Wallet icon
+# [5.10.9] - 2025-11-14
+### ✨ New Features
+- **Intelligent ELO Matchmaking**: Dramatically improved comparison quality with smart scoring system that prefers:
+  - **At least one correct answer** (+100 points) - avoids "both are terrible" scenarios
+  - **One correct vs one incorrect** (+50 bonus) - most informative matchups with clear winners
+  - **ARC1/ARC2 over ARC-Heavy** (+50 points) - user preference for standard puzzles
+  - **Smaller grids** (+30 for <10×10, +20 for <20×20, +10 for <30×30) - easier to evaluate
+  - **Different models** (+10 points) - more interesting comparisons
+
+  **Two-Stage Selection**:
+  1. **Puzzle Selection**: Evaluates 20 random candidates, picks best based on preferences
+  2. **Pair Selection**: Evaluates all possible explanation pairs for chosen puzzle, picks optimal matchup
+
+  **Impact**: Much higher quality comparisons for users. Still works if no ideal matches exist (fallback to any pair). Detailed logging shows puzzle source, grid size, and match quality scores.
+
+  #### Files Changed:
+  - `server/repositories/EloRepository.ts`: Added `selectBestExplanationPair()` method (lines 171-266) and smart puzzle selection logic (lines 275-349)
+
+### 🐞 Critical Fixes
+- **ELO Comparison Multi-Test Display Bug**: Fixed critical bug where page only showed first test case (`test[0]`), completely ignoring 597+ puzzles with 2-3 test cases. Page now properly:
+  - Displays **ALL test cases** in `puzzle.test` array (not just index 0)
+  - Extracts correct prediction for each test case from multiple storage formats:
+    - `multiplePredictedOutputs` object: `{predictedOutput1, predictedOutput2, predictedOutput3}`
+    - `multiplePredictedOutputs` array: `[grid1[][], grid2[][], grid3[][]]`
+    - `multiTestPredictionGrids` array
+    - Falls back to single `predictedOutputGrid` for single-test puzzles
+  - Shows test case number badge when multiple tests exist ("Test Case 1 of 3")
+  - Updates header dynamically: "Test Question" (singular) vs "Test Questions" (plural)
+  - Displays clear count: "This puzzle has 3 test cases. Here's what each AI predicted for each one."
+
+  **Impact**: 597 multi-test puzzles (mostly ARC-Heavy) now display correctly instead of showing only partial data.
+
+### 🎨 UI/UX Improvements
+- **ELO Comparison Page Visual Hierarchy Overhaul**: Comprehensive redesign addressing 5 critical UX issues to improve scannability, visual hierarchy, grouping, whitespace balance, and task affordance:
+
+  **1. Visual Hierarchy**
+  - Upgraded page title from `text-2xl` to `text-4xl` for clear page identification
+  - Created prominent "Can you spot slop?" hook (`text-3xl`, blue gradient card) as attention-grabbing tagline
+  - Established clear information hierarchy: Title (4xl) → Hook (3xl) → Sections (2xl) → Call-to-Action (3xl) → Body (base)
+  - Icons sized appropriately (h-10 w-10 for page title, h-6 w-6 for sections)
+
+  **2. Text Scannability**
+  - Moved key message "Can you spot slop?" from buried paragraph ending to prominent centered section with gradient background
+  - Converted dense paragraph into scannable Alert component with bold "Your task:" label
+  - Reduced word count from 3 sentences to 2 short, punchy statements
+  - Progressive disclosure: Hook → Instruction → Content
+
+  **3. Grouping & Alignment**
+  - Each training example now in proper Card component (not floating border div) with gradient background (`from-gray-50 to-blue-50/30`)
+  - Example labels upgraded from small text to Badges (`text-base px-4 py-1`)
+  - Added grid dimensions to all titles (e.g., "Input (16×16)", "Output (12×8)")
+  - Used ArrowRight icon with "transforms to" label for clarity
+  - Consistent center alignment throughout all example cards
+  - Test predictions in color-coded Badges (gray/blue/purple) for clear visual separation
+
+  **4. Whitespace Balance**
+  - Root container: `space-y-4` → `space-y-8` (major sections)
+  - Section internal spacing: consistent `space-y-6`
+  - Card padding: increased from `p-3` to `p-8` for breathing room
+  - Grid gaps: `gap-6` → `gap-8` for visual separation
+  - Eliminated unbalanced spacing (was sparse between sections, cramped within)
+
+  **5. Task Affordance - Voting is Now THE STAR**
+  - Added "Now It's Your Turn" section heading (`text-3xl font-bold`)
+  - Voting card gets `border-4 border-blue-400` with `shadow-2xl` for prominence
+  - Increased emoji size from `text-4xl` to `text-6xl` (⚖️)
+  - Enlarged voting buttons: `py-6 text-lg font-semibold` with shadow effects
+  - Moved voting to dedicated section above explanations (removed from 3-column squeeze)
+  - Explanations now side-by-side in clean 2-column layout with colored headers
+  - Added gradient background to voting panel (`from-blue-50 via-white to-purple-50`)
+
+  **Visual Flow Now**: Title → Hook → Instructions → Training Examples → Test Question → **VOTING (most prominent)** → Explanations
+
+  **Success Criteria Met**:
+  ✅ User identifies page purpose in < 2 seconds
+  ✅ User identifies task in < 3 seconds
+  ✅ Clear visual hierarchy guides eye through content
+  ✅ Each example properly grouped and aligned
+  ✅ Whitespace balanced and intentional
+  ✅ Voting interface is most prominent element
+  ✅ Text is scannable with clear hierarchy
+  ✅ Consistent center alignment with proper grouping
+
+#### Files Changed:
+- `client/src/pages/EloComparison.tsx`: Comprehensive redesign (~250 lines changed, lines 180-481)
+- `docs/2025-01-14-elo-comparison-ux-improvements.md`: Detailed implementation plan and analysis
 
 # [5.10.8] - 2025-11-13
 ### 🔧 Model Updates
