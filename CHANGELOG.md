@@ -1,4 +1,58 @@
 # CHANGELOG - Uses semantic versioning (MAJOR.MINOR.PATCH)`r`n
+# [5.10.9] - 2025-11-15
+### ✨ New Features
+- **ARC Puzzle Trading Cards**: Added new feature that displays named ARC puzzles as collectible trading cards inspired by 1980s Topps baseball cards, with crisp, vibrant, and colorful styling:
+  - **Trading Card Component** (`PuzzleTradingCard.tsx`): Individual cards with baseball-style design featuring:
+    - Prominent puzzle grid display using `TinyGrid` component
+    - Puzzle nickname in large bold text with official ID below
+    - Dataset name as "team name" with color-coded gradient borders
+    - Win/Loss record format (e.g., "14-4") where puzzles "win" when LLMs fail to solve them
+    - Quick stats showing Wins, Losses, and Total Attempts
+    - Expandable detailed stats showing all models attempted, average accuracy/confidence, and difficulty metrics
+    - Lazy loading pattern with intersection observer for performance
+    - Vibrant color schemes by dataset: Blue/Purple (Training), Teal/Emerald (Training2), Rose/Pink (Evaluation), Orange/Yellow (Evaluation2), Violet/Purple (ARC-Heavy), Lime/Green (ConceptARC)
+
+  - **Trading Cards Page** (`PuzzleTradingCards.tsx`): Main gallery page with:
+    - Hero header with trophy icons and gradient title
+    - Advanced filtering: Dataset, Difficulty level (Legendary/Elite/Tough/Moderate/Easy/Untested), Search by ID
+    - Sort options: Win percentage (high/low), Total attempts, Puzzle ID
+    - Responsive grid layout (1-4 columns based on screen size)
+    - Summary badges showing total cards, puzzles, and analyzed count
+    - Info footer explaining trading card mechanics
+    - Only displays named puzzles from `puzzleNames.ts`
+
+  - **Helper Utilities** (`puzzleCardHelpers.ts`): Utility functions for card data formatting:
+    - `calculateWinLossRecord()`: Converts performance data to baseball-style W-L format
+    - `getDatasetGradient()`: Returns crisp, vibrant color gradient schemes by dataset (no brown!)
+    - `getDatasetDisplayName()`: Formats dataset names for display
+    - `getPerformanceBadgeVariant()`: Determines badge color based on win percentage
+    - `getPerformanceDescription()`: Generates difficulty ratings (Legendary/Elite/Tough/Moderate/Easy/Untested)
+    - `formatPuzzleStats()`: Complete stats formatter combining all helpers
+
+  - **Navigation Integration**: Added "Trading Cards" menu item with Wallet icon to main navigation, positioned after "Home"
+
+#### Design Principles:
+- **Crisp & Colorful**: Vibrant gradients throughout (Blue, Purple, Pink, Teal, Rose, Orange, Violet, Green)
+- **No brown colors**: Fresh, modern aesthetic as requested
+- **Pills and badges**: Extensive use of existing Badge component for stats and filters
+- **Responsive**: Mobile-friendly with adaptive grid layouts
+- **Performance**: Lazy loading, intersection observers, reuses existing hooks
+
+#### Technical Implementation:
+- Reuses existing components: `TinyGrid`, `Badge`, `usePuzzleStats`, `puzzleNames.ts`
+- Follows SRP/DRY principles with modular helper functions
+- Data source: `/api/puzzles/stats?includeRichMetrics=true` endpoint (no new backend needed)
+- Win/Loss calculation: `wrongCount` = puzzle wins (LLM failures), `totalExplanations - wrongCount` = puzzle losses
+
+#### Files Changed:
+- **Created**:
+  - `client/src/components/puzzle/PuzzleTradingCard.tsx`: Trading card component (288 lines)
+  - `client/src/pages/PuzzleTradingCards.tsx`: Main trading cards page (343 lines)
+  - `client/src/utils/puzzleCardHelpers.ts`: Helper utilities (158 lines)
+- **Modified**:
+  - `client/src/App.tsx`: Added `/trading-cards` route
+  - `client/src/components/layout/AppNavigation.tsx`: Added "Trading Cards" nav item with Wallet icon
+
 # [5.10.8] - 2025-11-13
 ### 🔧 Model Updates
 - **Polaris Alpha Revealed as GPT-5.1**: Updated model configuration to reflect that the cloaked "Polaris Alpha" model was officially revealed as OpenAI GPT-5.1 on November 13, 2025:
