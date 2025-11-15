@@ -1,9 +1,11 @@
 /**
  * Author: Claude Code using Sonnet 4.5
- * Date: 2025-11-14T00:00:00Z
+ * Date: 2025-11-14T00:00:00Z / Updated 2025-11-14
  * PURPOSE: Puzzle Trading Cards page - displays ARC puzzles as 1980s-style baseball trading cards.
  * Shows named puzzles with their grids, nicknames, win/loss records against LLMs, and detailed stats.
  * Based on PuzzleBrowser page structure but focused on trading card display.
+ * ADDED: Retro sci-fi hero banner images (arcraiders1.png, arcraiders2.png) with 1980s aesthetic,
+ * border glow effects, hover animations, and responsive 2-column grid layout.
  * SRP/DRY check: Pass - Reuses usePuzzleStats hook, PuzzleTradingCard component, and existing UI patterns
  */
 
@@ -134,6 +136,24 @@ export default function PuzzleTradingCards() {
   return (
     <div className="min-h-screen w-full bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-slate-100">
       <div className="container mx-auto px-4 py-8 space-y-6">
+
+        {/* Retro Hero Images Banner */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+          <div className="rounded-xl overflow-hidden border-4 border-amber-500/30 shadow-2xl shadow-purple-500/20 hover:border-amber-500/50 transition-all duration-300 hover:scale-105">
+            <img
+              src="/arcraiders1.png"
+              alt="ARC Raider - Retro Sci-Fi Challenge"
+              className="w-full h-auto"
+            />
+          </div>
+          <div className="rounded-xl overflow-hidden border-4 border-amber-500/30 shadow-2xl shadow-blue-500/20 hover:border-amber-500/50 transition-all duration-300 hover:scale-105">
+            <img
+              src="/arcraiders2.png"
+              alt="ARC Prize Raiders - A Retro Sci-Fi Challenge"
+              className="w-full h-auto"
+            />
+          </div>
+        </div>
 
         {/* Hero Header */}
         <header className="text-center space-y-4 py-8">
