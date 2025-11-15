@@ -169,6 +169,103 @@ export class EloRepository extends BaseRepository {
   }
 
   /**
+   * Smart matchmaking: Select the best pair of explanations based on preferences
+   *
+   * Scoring criteria (higher is better):
+   * 1. Prefer at least one correct answer (+100 points) - avoid both incorrect
+   * 2. Prefer ARC1/ARC2 over ARC-Heavy (+50 points)
+   * 3. Prefer smaller grids (+30 points for <10x10, +20 for <20x20, +10 for <30x30)
+   * 4. Prefer different models (+10 points) - more interesting comparison
+   *
+   * Falls back to any pair if no ideal match exists.
+   */
+  private async selectBestExplanationPair(
+    explanations: ExplanationData[],
+    puzzleId: string
+  ): Promise<{ explanationA: ExplanationData; explanationB: ExplanationData; score: number }> {
+    // Load puzzle metadata to get source and grid size
+    const puzzleService = await import('../services/puzzleService.ts');
+    const puzzle = await puzzleService.puzzleService.getPuzzleById(puzzleId);
+
+    const puzzleSource = puzzle?.source || '';
+    const maxGridSize = puzzle?.test?.[0]?.input?.length || 30; // Max dimension
+    const gridCols = puzzle?.test?.[0]?.input?.[0]?.length || 30;
+    const actualMaxSize = Math.max(maxGridSize, gridCols);
+
+    // Score function for a pair
+    const scorePair = (a: ExplanationData, b: ExplanationData): number => {
+      let score = 0;
+
+      // Criterion 1: Prefer at least one correct answer (avoid both wrong)
+      const aCorrect = a.isPredictionCorrect || a.multiTestAllCorrect;
+      const bCorrect = b.isPredictionCorrect || b.multiTestAllCorrect;
+
+      if (aCorrect || bCorrect) {
+        score += 100; // Strong preference - avoid both incorrect
+      }
+
+      // Bonus for one correct vs one incorrect (most informative)
+      if ((aCorrect && !bCorrect) || (!aCorrect && bCorrect)) {
+        score += 50; // Even better - clear winner
+      }
+
+      // Criterion 2: Prefer ARC1/ARC2 over ARC-Heavy
+      if (puzzleSource && !puzzleSource.toLowerCase().includes('heavy')) {
+        score += 50; // ARC1 or ARC2
+      }
+
+      // Criterion 3: Prefer smaller grids
+      if (actualMaxSize < 10) {
+        score += 30; // Small grid
+      } else if (actualMaxSize < 20) {
+        score += 20; // Medium grid
+      } else if (actualMaxSize < 30) {
+        score += 10; // Largish grid
+      }
+      // >30 gets 0 points (very large)
+
+      // Criterion 4: Prefer different models
+      if (a.modelName !== b.modelName) {
+        score += 10; // More interesting comparison
+      }
+
+      // Add small random factor to break ties
+      score += Math.random() * 2;
+
+      return score;
+    };
+
+    // Generate all possible pairs and score them
+    interface ScoredPair {
+      explanationA: ExplanationData;
+      explanationB: ExplanationData;
+      score: number;
+    }
+
+    const scoredPairs: ScoredPair[] = [];
+
+    for (let i = 0; i < explanations.length; i++) {
+      for (let j = i + 1; j < explanations.length; j++) {
+        const score = scorePair(explanations[i], explanations[j]);
+        scoredPairs.push({
+          explanationA: explanations[i],
+          explanationB: explanations[j],
+          score
+        });
+      }
+    }
+
+    // Sort by score (descending) and pick the best
+    scoredPairs.sort((a, b) => b.score - a.score);
+
+    const bestPair = scoredPairs[0];
+
+    logger.info(`Smart matchmaking: Evaluated ${scoredPairs.length} possible pairs, best score=${bestPair.score.toFixed(1)}, puzzleSource=${puzzleSource}, gridSize=${actualMaxSize}`, 'elo');
+
+    return bestPair;
+  }
+
+  /**
    * Get a random pair of explanations for comparison
    * Filters for explanations with predicted_output_grid and avoids recent comparisons
    */
@@ -176,15 +273,20 @@ export class EloRepository extends BaseRepository {
     let targetPuzzleId = puzzleId;
 
     // For random comparisons, first find a puzzle that has 2+ explanations
+    // Prefer puzzles with at least one correct answer, ARC1/ARC2, and smaller grids
     if (!puzzleId) {
+      // Get multiple candidate puzzles and score them
       const puzzleQuery = `
-        SELECT e.puzzle_id, COUNT(*) as explanation_count
+        SELECT
+          e.puzzle_id,
+          COUNT(*) as explanation_count,
+          SUM(CASE WHEN e.is_prediction_correct = true OR e.multi_test_all_correct = true THEN 1 ELSE 0 END) as correct_count
         FROM explanations e
         WHERE e.predicted_output_grid IS NOT NULL
         GROUP BY e.puzzle_id
         HAVING COUNT(*) >= 2
         ORDER BY RANDOM()
-        LIMIT 1
+        LIMIT 20
       `;
 
       const puzzleResult = await this.query(puzzleQuery);
@@ -193,8 +295,57 @@ export class EloRepository extends BaseRepository {
         return null;
       }
 
-      targetPuzzleId = puzzleResult.rows[0].puzzle_id;
-      logger.info(`Selected random puzzle ${targetPuzzleId} for comparison (${puzzleResult.rows[0].explanation_count} explanations)`, 'elo');
+      // Score candidate puzzles
+      const scoredPuzzles = await Promise.all(
+        puzzleResult.rows.map(async (row: any) => {
+          const puzzleService = await import('../services/puzzleService.ts');
+          const puzzle = await puzzleService.puzzleService.getPuzzleById(row.puzzle_id);
+
+          let score = 0;
+
+          // Prefer at least one correct answer
+          if (row.correct_count > 0) {
+            score += 100;
+          }
+
+          // Prefer ARC1/ARC2 over ARC-Heavy
+          const source = puzzle?.source || '';
+          if (source && !source.toLowerCase().includes('heavy')) {
+            score += 50;
+          }
+
+          // Prefer smaller grids
+          const maxGridSize = puzzle?.test?.[0]?.input?.length || 30;
+          const gridCols = puzzle?.test?.[0]?.input?.[0]?.length || 30;
+          const actualMaxSize = Math.max(maxGridSize, gridCols);
+
+          if (actualMaxSize < 10) {
+            score += 30;
+          } else if (actualMaxSize < 20) {
+            score += 20;
+          } else if (actualMaxSize < 30) {
+            score += 10;
+          }
+
+          // Random tiebreaker
+          score += Math.random() * 5;
+
+          return {
+            puzzle_id: row.puzzle_id,
+            explanation_count: row.explanation_count,
+            score,
+            source,
+            maxGridSize: actualMaxSize
+          };
+        })
+      );
+
+      // Sort by score and pick the best
+      scoredPuzzles.sort((a, b) => b.score - a.score);
+      const bestPuzzle = scoredPuzzles[0];
+
+      targetPuzzleId = bestPuzzle.puzzle_id;
+      logger.info(`Smart puzzle selection: ${targetPuzzleId} (${bestPuzzle.explanation_count} explanations, source=${bestPuzzle.source}, gridSize=${bestPuzzle.maxGridSize}, score=${bestPuzzle.score.toFixed(1)})`, 'elo');
     }
 
     // Now get explanations for the target puzzle
@@ -227,7 +378,7 @@ export class EloRepository extends BaseRepository {
 
       // Convert to explanations (no ELO ratings needed yet)
       const explanations = result.rows.map(row => this.mapExplanation(row));
-      
+
       logger.info(`Mapped ${explanations.length} explanations successfully`, 'elo');
 
       if (explanations.length < 2) {
@@ -235,11 +386,10 @@ export class EloRepository extends BaseRepository {
         return null;
       }
 
-      // Just pick the first two explanations - keep it simple!
-      let explanationA = explanations[0];
-      let explanationB = explanations[1];
-      
-      logger.info(`Selected explanations: A=${explanationA.id} (${explanationA.modelName}), B=${explanationB.id} (${explanationB.modelName})`, 'elo');
+      // Smart matchmaking: Score all possible pairs and pick the best one
+      const pair = await this.selectBestExplanationPair(explanations, targetPuzzleId);
+
+      logger.info(`Selected explanations: A=${pair.explanationA.id} (${pair.explanationA.modelName}, ${pair.explanationA.isPredictionCorrect ? 'correct' : 'incorrect'}), B=${pair.explanationB.id} (${pair.explanationB.modelName}, ${pair.explanationB.isPredictionCorrect ? 'correct' : 'incorrect'}), score=${pair.score}`, 'elo');
 
       // targetPuzzleId is guaranteed to be defined here since we return null if no puzzle found
       if (!targetPuzzleId) {
@@ -247,8 +397,8 @@ export class EloRepository extends BaseRepository {
       }
 
       return {
-        explanationA,
-        explanationB,
+        explanationA: pair.explanationA,
+        explanationB: pair.explanationB,
         puzzleId: targetPuzzleId
       };
 
