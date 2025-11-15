@@ -1,8 +1,9 @@
 /*
  *
- * Author: AI Agent using GPT-5-Codex
- * Date: 2025-09-28T19:05:00Z
- * PURPOSE: Centralized AI model configuration list consumed by ModelDefinitions and provider lookup utilities; updated to drop deprecated Command R entries.
+ * Author: Claude Code using Sonnet 4.5
+ * Date: 2025-11-15
+ * PURPOSE: Centralized AI model configuration list consumed by ModelDefinitions and provider lookup utilities.
+ *          Added Sherlock Think Alpha (cloaked OpenRouter model) - will need normalization when revealed.
  * SRP/DRY check: Pass - file encapsulates shared model metadata without duplication.
  * shadcn/ui: Pass - configuration only.
  */
@@ -825,54 +826,22 @@ export const MODELS: ModelConfig[] = [
     releaseDate: "2025-09"
   },
 
-  // Grover Iterative Solver Models (wraps underlying models with iterative execution)
   {
-    key: 'grover-grok-4-fast-reasoning',
-    name: 'Grover (Grok 4 Fast Reasoning)',
-    color: 'bg-lime-600',
+    key: 'openrouter/sherlock-think-alpha',
+    name: 'Sherlock Think Alpha',
+    color: 'bg-fuchsia-600',
     premium: false,
-    cost: { input: '$0.20', output: '$0.40' },
+    cost: { input: '$0.00', output: '$0.00' },
     supportsTemperature: true,
-    provider: 'Grover',
-    responseTime: { speed: 'slow', estimate: '5-10 min' },
+    provider: 'OpenRouter',
+    responseTime: { speed: 'moderate', estimate: '1-2 min' },
     isReasoning: true,
-    apiModelName: 'grover-grok-4-fast-reasoning',
-    modelType: 'grover',
-    contextWindow: 128000,
-    maxOutputTokens: 30000,
-    releaseDate: "2025-10"
-  },
-  {
-    key: 'grover-gpt-5-nano',
-    name: 'Grover (GPT-5 Nano)',
-    color: 'bg-lime-700',
-    premium: false,
-    cost: { input: '$0.20', output: '$0.60' },
-    supportsTemperature: false,
-    provider: 'Grover',
-    responseTime: { speed: 'slow', estimate: '3-8 min' },
-    isReasoning: true,
-    apiModelName: 'grover-gpt-5-nano',
-    modelType: 'grover',
-    contextWindow: 400000,
-    maxOutputTokens: 30000,
-    releaseDate: "2025-10"
-  },
-  {
-    key: 'grover-gpt-5-mini',
-    name: 'Grover (GPT-5 Mini)',
-    color: 'bg-lime-800',
-    premium: false,
-    cost: { input: '$0.40', output: '$1.20' },
-    supportsTemperature: false,
-    provider: 'Grover',
-    responseTime: { speed: 'slow', estimate: '4-9 min' },
-    isReasoning: true,
-    apiModelName: 'grover-gpt-5-mini',
-    modelType: 'grover',
-    contextWindow: 400000,
-    maxOutputTokens: 30000,
-    releaseDate: "2025-10"
+    apiModelName: 'openrouter/sherlock-think-alpha',
+    modelType: 'openrouter',
+    contextWindow: 1840000,
+    maxOutputTokens: 32000,
+    releaseDate: "2025-11",
+    notes: 'CLOAKED MODEL - identity will be revealed soon. Free promotional access.'
   },
 
 ];
