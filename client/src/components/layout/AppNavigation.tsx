@@ -29,7 +29,8 @@ import {
   Award,
   Gamepad2,
   FlaskConical,
-  Wallet
+  Wallet,
+  Users
 } from 'lucide-react';
 
 interface NavItem {
@@ -51,6 +52,12 @@ const navigationItems: NavItem[] = [
     href: '/trading-cards',
     icon: Wallet,
     description: 'Named puzzles as collectible trading cards with performance stats'
+  },
+  {
+    title: 'Hall of Fame',
+    href: '/human-cards',
+    icon: Users,
+    description: 'Notable ARC contributors and researchers as trading cards'
   },
   {
     title: 'Analytics',

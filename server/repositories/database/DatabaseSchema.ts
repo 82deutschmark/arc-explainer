@@ -33,6 +33,7 @@ export class DatabaseSchema {
       await this.createIngestionRunsTable(client);
       await this.createArc3SessionsTable(client);
       await this.createArc3FramesTable(client);
+      await this.createArcContributorsTable(client);
       logger.info('Core tables verified/created.', 'database');
 
       // Phase 2: Apply schema-altering migrations for older database instances.
@@ -279,6 +280,35 @@ export class DatabaseSchema {
     // Create indexes for arc3_frames table
     await client.query(`CREATE INDEX IF NOT EXISTS idx_arc3_frames_session ON arc3_frames(session_id, frame_number)`);
     await client.query(`CREATE INDEX IF NOT EXISTS idx_arc3_frames_timestamp ON arc3_frames(timestamp DESC)`);
+  }
+
+  private static async createArcContributorsTable(client: PoolClient): Promise<void> {
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS arc_contributors (
+        id SERIAL PRIMARY KEY,
+        full_name VARCHAR(255) NOT NULL,
+        handle VARCHAR(100),
+        affiliation TEXT,
+        achievement TEXT NOT NULL,
+        description TEXT NOT NULL,
+        year_start INTEGER,
+        year_end INTEGER,
+        score VARCHAR(50),
+        approach TEXT,
+        unique_technique TEXT,
+        links JSONB DEFAULT '{}',
+        team_name VARCHAR(100),
+        category VARCHAR(50) NOT NULL,
+        image_url VARCHAR(500),
+        rank INTEGER,
+        created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+      )
+    `);
+
+    // Create indexes for arc_contributors table
+    await client.query(`CREATE INDEX IF NOT EXISTS idx_arc_contributors_category ON arc_contributors(category)`);
+    await client.query(`CREATE INDEX IF NOT EXISTS idx_arc_contributors_year ON arc_contributors(year_start DESC)`);
+    await client.query(`CREATE INDEX IF NOT EXISTS idx_arc_contributors_rank ON arc_contributors(rank) WHERE rank IS NOT NULL`);
   }
 
   /**

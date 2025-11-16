@@ -29,6 +29,7 @@ import About from "@/pages/About";
 import ARC3Browser from "@/pages/ARC3Browser";
 import ARC3AgentPlayground from "@/pages/ARC3AgentPlayground";
 import PuzzleTradingCards from "@/pages/PuzzleTradingCards";
+import HumanTradingCards from "@/pages/HumanTradingCards";
 
 function Router() {
   return (
@@ -37,6 +38,7 @@ function Router() {
         <Route path="/" component={PuzzleBrowser} />
         <Route path="/browser" component={PuzzleBrowser} />
         <Route path="/trading-cards" component={PuzzleTradingCards} />
+        <Route path="/human-cards" component={HumanTradingCards} />
         <Route path="/discussion" component={PuzzleDiscussion} />
         <Route path="/discussion/:taskId" component={PuzzleDiscussion} />
         <Route path="/analytics" component={AnalyticsOverview} />
