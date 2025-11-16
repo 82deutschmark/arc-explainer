@@ -294,7 +294,7 @@ export default function ModelBrowser() {
                   <div className="card bg-base-100 shadow">
                     <div className="card-body">
                       <h2 className="card-title text-green-700 flex items-center gap-2">✅ Correct ({performance.correct.length})</h2>
-                      <p className="text-xs text-muted-foreground">is_prediction_correct = true OR multi_test_all_correct = true</p>
+                      <p className="text-xs text-muted-foreground">Conditional logic based on prediction type (see CORRECTNESS_LOGIC_PATTERN.md)</p>
                     </div>
                     <div className="card-body max-h-60 overflow-y-auto">
                       <div className="grid grid-cols-2 gap-1 text-xs">

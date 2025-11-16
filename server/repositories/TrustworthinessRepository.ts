@@ -250,32 +250,58 @@ export class TrustworthinessRepository extends BaseRepository {
     }
 
     try {
-      // Get overall confidence patterns
+      // Get overall confidence patterns (FIXED: v5.10.13 - uses conditional logic)
       const overallStats = await this.query(`
-        SELECT 
+        SELECT
           COUNT(*) as total_entries_with_confidence,
           AVG(confidence) as overall_avg_confidence,
-          AVG(CASE WHEN (is_prediction_correct = true OR multi_test_all_correct = true) THEN confidence END) as avg_confidence_when_correct,
-          AVG(CASE WHEN (is_prediction_correct = false AND multi_test_all_correct = false) THEN confidence END) as avg_confidence_when_incorrect
+          AVG(CASE
+            WHEN (COALESCE(has_multiple_predictions, false) = false AND COALESCE(is_prediction_correct, false) = true)
+              OR (COALESCE(has_multiple_predictions, false) = true AND COALESCE(multi_test_all_correct, false) = true)
+            THEN confidence
+          END) as avg_confidence_when_correct,
+          AVG(CASE
+            WHEN (COALESCE(has_multiple_predictions, false) = false AND COALESCE(is_prediction_correct, false) = false)
+              OR (COALESCE(has_multiple_predictions, false) = true AND COALESCE(multi_test_all_correct, false) = false)
+            THEN confidence
+          END) as avg_confidence_when_incorrect
         FROM explanations
         WHERE confidence IS NOT NULL
           AND (predicted_output_grid IS NOT NULL OR multi_test_prediction_grids IS NOT NULL)
       `);
 
-      // Get confidence analysis by model
+      // Get confidence analysis by model (FIXED: v5.10.13 - uses conditional logic)
       const modelConfidence = await this.query(`
-        SELECT 
+        SELECT
           e.model_name,
           COUNT(*) as total_entries,
           AVG(e.confidence) as avg_confidence,
-          AVG(CASE WHEN (e.is_prediction_correct = true OR e.multi_test_all_correct = true) THEN e.confidence END) as avg_confidence_when_correct,
-          AVG(CASE WHEN (e.is_prediction_correct = false AND e.multi_test_all_correct = false) THEN e.confidence END) as avg_confidence_when_incorrect,
+          AVG(CASE
+            WHEN (COALESCE(e.has_multiple_predictions, false) = false AND COALESCE(e.is_prediction_correct, false) = true)
+              OR (COALESCE(e.has_multiple_predictions, false) = true AND COALESCE(e.multi_test_all_correct, false) = true)
+            THEN e.confidence
+          END) as avg_confidence_when_correct,
+          AVG(CASE
+            WHEN (COALESCE(e.has_multiple_predictions, false) = false AND COALESCE(e.is_prediction_correct, false) = false)
+              OR (COALESCE(e.has_multiple_predictions, false) = true AND COALESCE(e.multi_test_all_correct, false) = false)
+            THEN e.confidence
+          END) as avg_confidence_when_incorrect,
           MIN(e.confidence) as min_confidence,
           MAX(e.confidence) as max_confidence,
-          SUM(CASE WHEN (e.is_prediction_correct = true OR e.multi_test_all_correct = true) THEN 1 ELSE 0 END) as correct_predictions,
-          SUM(CASE WHEN (e.is_prediction_correct = false AND e.multi_test_all_correct = false) THEN 1 ELSE 0 END) as incorrect_predictions
+          SUM(CASE
+            WHEN (COALESCE(e.has_multiple_predictions, false) = false AND COALESCE(e.is_prediction_correct, false) = true)
+              OR (COALESCE(e.has_multiple_predictions, false) = true AND COALESCE(e.multi_test_all_correct, false) = true)
+            THEN 1
+            ELSE 0
+          END) as correct_predictions,
+          SUM(CASE
+            WHEN (COALESCE(e.has_multiple_predictions, false) = false AND COALESCE(e.is_prediction_correct, false) = false)
+              OR (COALESCE(e.has_multiple_predictions, false) = true AND COALESCE(e.multi_test_all_correct, false) = false)
+            THEN 1
+            ELSE 0
+          END) as incorrect_predictions
         FROM explanations e
-        WHERE e.model_name IS NOT NULL 
+        WHERE e.model_name IS NOT NULL
           AND e.confidence IS NOT NULL
           AND (e.predicted_output_grid IS NOT NULL OR e.multi_test_prediction_grids IS NOT NULL)
         GROUP BY e.model_name

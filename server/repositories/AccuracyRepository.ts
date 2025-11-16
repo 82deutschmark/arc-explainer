@@ -389,42 +389,58 @@ export class AccuracyRepository extends BaseRepository {
 
     try {
       const result = await this.query(`
-        SELECT 
+        SELECT
           e.model_name,
-          
+
           -- High confidence attempts (≥90%)
           COUNT(CASE WHEN e.confidence >= 90 THEN 1 END) as total_high_confidence_attempts,
-          
-          -- Wrong high confidence predictions
-          COUNT(CASE 
-            WHEN e.confidence >= ${CONFIDENCE_THRESHOLDS.HIGH_CONFIDENCE} 
-            AND (e.is_prediction_correct = false OR e.multi_test_all_correct = false)
-            THEN 1 
+
+          -- Wrong high confidence predictions (FIXED: v5.10.13 - uses conditional logic)
+          COUNT(CASE
+            WHEN e.confidence >= ${CONFIDENCE_THRESHOLDS.HIGH_CONFIDENCE}
+            AND (
+              (COALESCE(e.has_multiple_predictions, false) = false AND COALESCE(e.is_prediction_correct, false) = false)
+              OR (COALESCE(e.has_multiple_predictions, false) = true AND COALESCE(e.multi_test_all_correct, false) = false)
+            )
+            THEN 1
           END) as wrong_high_confidence_predictions,
-          
+
           -- Danger level: percentage of high-confidence attempts that were wrong
-          CASE 
+          CASE
             WHEN COUNT(CASE WHEN e.confidence >= 90 THEN 1 END) > 0
-            THEN (COUNT(CASE 
-              WHEN e.confidence >= ${CONFIDENCE_THRESHOLDS.HIGH_CONFIDENCE} 
-              AND (e.is_prediction_correct = false OR e.multi_test_all_correct = false)
-              THEN 1 
+            THEN (COUNT(CASE
+              WHEN e.confidence >= ${CONFIDENCE_THRESHOLDS.HIGH_CONFIDENCE}
+              AND (
+                (COALESCE(e.has_multiple_predictions, false) = false AND COALESCE(e.is_prediction_correct, false) = false)
+                OR (COALESCE(e.has_multiple_predictions, false) = true AND COALESCE(e.multi_test_all_correct, false) = false)
+              )
+              THEN 1
             END) * 100.0 / COUNT(CASE WHEN e.confidence >= 90 THEN 1 END))
             ELSE 0
           END as danger_level,
-          
+
           -- Average confidence for this model
           AVG(CASE WHEN e.confidence IS NOT NULL THEN e.confidence END) as avg_confidence,
-          
-          -- Overall stats for context
+
+          -- Overall stats for context (FIXED: v5.10.13 - uses conditional logic)
           COUNT(e.id) as total_attempts,
-          SUM(CASE WHEN e.is_prediction_correct = true OR e.multi_test_all_correct = true THEN 1 ELSE 0 END) as total_correct,
-          
+          SUM(CASE
+            WHEN (COALESCE(e.has_multiple_predictions, false) = false AND COALESCE(e.is_prediction_correct, false) = true)
+              OR (COALESCE(e.has_multiple_predictions, false) = true AND COALESCE(e.multi_test_all_correct, false) = true)
+            THEN 1
+            ELSE 0
+          END) as total_correct,
+
           -- Overall accuracy percentage
-          CASE 
-            WHEN COUNT(e.id) > 0 
-            THEN (SUM(CASE WHEN e.is_prediction_correct = true OR e.multi_test_all_correct = true THEN 1 ELSE 0 END) * 100.0 / COUNT(e.id))
-            ELSE 0 
+          CASE
+            WHEN COUNT(e.id) > 0
+            THEN (SUM(CASE
+              WHEN (COALESCE(e.has_multiple_predictions, false) = false AND COALESCE(e.is_prediction_correct, false) = true)
+                OR (COALESCE(e.has_multiple_predictions, false) = true AND COALESCE(e.multi_test_all_correct, false) = true)
+              THEN 1
+              ELSE 0
+            END) * 100.0 / COUNT(e.id))
+            ELSE 0
           END as overall_accuracy_percentage
           
         FROM explanations e
@@ -434,10 +450,13 @@ export class AccuracyRepository extends BaseRepository {
           AND e.rebutting_explanation_id IS NULL
         GROUP BY e.model_name
         HAVING COUNT(CASE WHEN e.confidence >= ${CONFIDENCE_THRESHOLDS.HIGH_CONFIDENCE} THEN 1 END) >= ${ANALYSIS_CRITERIA.HIGH_CONFIDENCE_ANALYSIS.minAttempts}  -- At least 3 high-confidence attempts
-          AND COUNT(CASE 
-            WHEN e.confidence >= ${CONFIDENCE_THRESHOLDS.HIGH_CONFIDENCE} 
-            AND (e.is_prediction_correct = false OR e.multi_test_all_correct = false)
-            THEN 1 
+          AND COUNT(CASE
+            WHEN e.confidence >= ${CONFIDENCE_THRESHOLDS.HIGH_CONFIDENCE}
+            AND (
+              (COALESCE(e.has_multiple_predictions, false) = false AND COALESCE(e.is_prediction_correct, false) = false)
+              OR (COALESCE(e.has_multiple_predictions, false) = true AND COALESCE(e.multi_test_all_correct, false) = false)
+            )
+            THEN 1
           END) > 0  -- At least 1 wrong high-confidence prediction
         ORDER BY wrong_high_confidence_predictions DESC, danger_level DESC, total_high_confidence_attempts DESC
         LIMIT $1
@@ -607,10 +626,13 @@ export class AccuracyRepository extends BaseRepository {
           -- Overconfident attempts (≥80% confidence)
           COUNT(CASE WHEN e.confidence >= ${ANALYSIS_CRITERIA.MODEL_FAILURE_ANALYSIS.minConfidence} THEN 1 END) as total_overconfident_attempts,
 
-          -- Wrong overconfident predictions
+          -- Wrong overconfident predictions (FIXED: v5.10.13 - uses conditional logic)
           COUNT(CASE
             WHEN e.confidence >= ${ANALYSIS_CRITERIA.MODEL_FAILURE_ANALYSIS.minConfidence}
-            AND (e.is_prediction_correct = false OR e.multi_test_all_correct = false)
+            AND (
+              (COALESCE(e.has_multiple_predictions, false) = false AND COALESCE(e.is_prediction_correct, false) = false)
+              OR (COALESCE(e.has_multiple_predictions, false) = true AND COALESCE(e.multi_test_all_correct, false) = false)
+            )
             THEN 1
           END) as wrong_overconfident_predictions,
 
@@ -619,7 +641,10 @@ export class AccuracyRepository extends BaseRepository {
             WHEN COUNT(CASE WHEN e.confidence >= ${ANALYSIS_CRITERIA.MODEL_FAILURE_ANALYSIS.minConfidence} THEN 1 END) > 0
             THEN (COUNT(CASE
               WHEN e.confidence >= ${ANALYSIS_CRITERIA.MODEL_FAILURE_ANALYSIS.minConfidence}
-              AND (e.is_prediction_correct = false OR e.multi_test_all_correct = false)
+              AND (
+                (COALESCE(e.has_multiple_predictions, false) = false AND COALESCE(e.is_prediction_correct, false) = false)
+                OR (COALESCE(e.has_multiple_predictions, false) = true AND COALESCE(e.multi_test_all_correct, false) = false)
+              )
               THEN 1
             END) * 100.0 / COUNT(CASE WHEN e.confidence >= ${ANALYSIS_CRITERIA.MODEL_FAILURE_ANALYSIS.minConfidence} THEN 1 END))
             ELSE 0
@@ -628,10 +653,15 @@ export class AccuracyRepository extends BaseRepository {
           -- Average confidence for this model
           AVG(CASE WHEN e.confidence IS NOT NULL THEN e.confidence END) as avg_confidence,
 
-          -- Overall accuracy
+          -- Overall accuracy (FIXED: v5.10.13 - uses conditional logic)
           CASE
             WHEN COUNT(e.id) > 0
-            THEN (SUM(CASE WHEN e.is_prediction_correct = true OR e.multi_test_all_correct = true THEN 1 ELSE 0 END) * 100.0 / COUNT(e.id))
+            THEN (SUM(CASE
+              WHEN (COALESCE(e.has_multiple_predictions, false) = false AND COALESCE(e.is_prediction_correct, false) = true)
+                OR (COALESCE(e.has_multiple_predictions, false) = true AND COALESCE(e.multi_test_all_correct, false) = true)
+              THEN 1
+              ELSE 0
+            END) * 100.0 / COUNT(e.id))
             ELSE 0
           END as overall_accuracy_percentage
 
@@ -661,7 +691,12 @@ export class AccuracyRepository extends BaseRepository {
         ORDER BY
           -- First sort by high-risk models (poor accuracy + overconfident)
           CASE WHEN (
-            (SUM(CASE WHEN e.is_prediction_correct = true OR e.multi_test_all_correct = true THEN 1 ELSE 0 END) * 100.0 / COUNT(e.id)) < ${ANALYSIS_CRITERIA.MODEL_FAILURE_ANALYSIS.maxAccuracy}
+            (SUM(CASE
+              WHEN (COALESCE(e.has_multiple_predictions, false) = false AND COALESCE(e.is_prediction_correct, false) = true)
+                OR (COALESCE(e.has_multiple_predictions, false) = true AND COALESCE(e.multi_test_all_correct, false) = true)
+              THEN 1
+              ELSE 0
+            END) * 100.0 / COUNT(e.id)) < ${ANALYSIS_CRITERIA.MODEL_FAILURE_ANALYSIS.maxAccuracy}
             AND AVG(CASE WHEN e.confidence IS NOT NULL THEN e.confidence END) >= ${ANALYSIS_CRITERIA.MODEL_FAILURE_ANALYSIS.minConfidence}
           ) THEN 1 ELSE 2 END,
           -- Then by number of wrong overconfident predictions (descending)

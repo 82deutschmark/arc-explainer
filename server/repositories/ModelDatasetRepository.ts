@@ -181,13 +181,16 @@ export class ModelDatasetRepository extends BaseRepository {
         };
       }
       // SIMPLIFIED: Just two categories for attempts - correct or incorrect
+      // FIXED: v5.10.13 - uses conditional logic based on has_multiple_predictions
       const attemptedQuery = `
         SELECT DISTINCT
           puzzle_id,
           CASE
-            -- CORRECT: Either field is explicitly true
-            WHEN is_prediction_correct = true OR multi_test_all_correct = true THEN 'correct'
-            
+            -- CORRECT: Check prediction type first, then appropriate correctness field
+            WHEN (COALESCE(has_multiple_predictions, false) = false AND COALESCE(is_prediction_correct, false) = true)
+              OR (COALESCE(has_multiple_predictions, false) = true AND COALESCE(multi_test_all_correct, false) = true)
+            THEN 'correct'
+
             -- INCORRECT: Everything else (false OR null) - all count as failures
             ELSE 'incorrect'
           END as result,
@@ -344,19 +347,49 @@ export class ModelDatasetRepository extends BaseRepository {
           COALESCE(AVG(total_tokens), 0) as avg_tokens_all,
           COALESCE(SUM(total_tokens), 0) as total_tokens_all,
           
-          -- Correct subset (matches getModelDatasetPerformance logic)
-          COUNT(*) FILTER (WHERE is_prediction_correct = true OR multi_test_all_correct = true) as count_correct,
-          COALESCE(AVG(estimated_cost) FILTER (WHERE is_prediction_correct = true OR multi_test_all_correct = true), 0) as avg_cost_correct,
-          COALESCE(SUM(estimated_cost) FILTER (WHERE is_prediction_correct = true OR multi_test_all_correct = true), 0) as total_cost_correct,
-          COALESCE(AVG(api_processing_time_ms) FILTER (WHERE is_prediction_correct = true OR multi_test_all_correct = true), 0) as avg_time_correct,
-          COALESCE(AVG(total_tokens) FILTER (WHERE is_prediction_correct = true OR multi_test_all_correct = true), 0) as avg_tokens_correct,
-          
-          -- Incorrect subset (everything else that was attempted)
-          COUNT(*) FILTER (WHERE NOT (is_prediction_correct = true OR multi_test_all_correct = true)) as count_incorrect,
-          COALESCE(AVG(estimated_cost) FILTER (WHERE NOT (is_prediction_correct = true OR multi_test_all_correct = true)), 0) as avg_cost_incorrect,
-          COALESCE(SUM(estimated_cost) FILTER (WHERE NOT (is_prediction_correct = true OR multi_test_all_correct = true)), 0) as total_cost_incorrect,
-          COALESCE(AVG(api_processing_time_ms) FILTER (WHERE NOT (is_prediction_correct = true OR multi_test_all_correct = true)), 0) as avg_time_incorrect,
-          COALESCE(AVG(total_tokens) FILTER (WHERE NOT (is_prediction_correct = true OR multi_test_all_correct = true)), 0) as avg_tokens_incorrect
+          -- Correct subset (FIXED: v5.10.13 - uses conditional logic)
+          COUNT(*) FILTER (WHERE
+            (COALESCE(has_multiple_predictions, false) = false AND COALESCE(is_prediction_correct, false) = true)
+            OR (COALESCE(has_multiple_predictions, false) = true AND COALESCE(multi_test_all_correct, false) = true)
+          ) as count_correct,
+          COALESCE(AVG(estimated_cost) FILTER (WHERE
+            (COALESCE(has_multiple_predictions, false) = false AND COALESCE(is_prediction_correct, false) = true)
+            OR (COALESCE(has_multiple_predictions, false) = true AND COALESCE(multi_test_all_correct, false) = true)
+          ), 0) as avg_cost_correct,
+          COALESCE(SUM(estimated_cost) FILTER (WHERE
+            (COALESCE(has_multiple_predictions, false) = false AND COALESCE(is_prediction_correct, false) = true)
+            OR (COALESCE(has_multiple_predictions, false) = true AND COALESCE(multi_test_all_correct, false) = true)
+          ), 0) as total_cost_correct,
+          COALESCE(AVG(api_processing_time_ms) FILTER (WHERE
+            (COALESCE(has_multiple_predictions, false) = false AND COALESCE(is_prediction_correct, false) = true)
+            OR (COALESCE(has_multiple_predictions, false) = true AND COALESCE(multi_test_all_correct, false) = true)
+          ), 0) as avg_time_correct,
+          COALESCE(AVG(total_tokens) FILTER (WHERE
+            (COALESCE(has_multiple_predictions, false) = false AND COALESCE(is_prediction_correct, false) = true)
+            OR (COALESCE(has_multiple_predictions, false) = true AND COALESCE(multi_test_all_correct, false) = true)
+          ), 0) as avg_tokens_correct,
+
+          -- Incorrect subset (FIXED: v5.10.13 - uses conditional logic)
+          COUNT(*) FILTER (WHERE
+            (COALESCE(has_multiple_predictions, false) = false AND COALESCE(is_prediction_correct, false) = false)
+            OR (COALESCE(has_multiple_predictions, false) = true AND COALESCE(multi_test_all_correct, false) = false)
+          ) as count_incorrect,
+          COALESCE(AVG(estimated_cost) FILTER (WHERE
+            (COALESCE(has_multiple_predictions, false) = false AND COALESCE(is_prediction_correct, false) = false)
+            OR (COALESCE(has_multiple_predictions, false) = true AND COALESCE(multi_test_all_correct, false) = false)
+          ), 0) as avg_cost_incorrect,
+          COALESCE(SUM(estimated_cost) FILTER (WHERE
+            (COALESCE(has_multiple_predictions, false) = false AND COALESCE(is_prediction_correct, false) = false)
+            OR (COALESCE(has_multiple_predictions, false) = true AND COALESCE(multi_test_all_correct, false) = false)
+          ), 0) as total_cost_incorrect,
+          COALESCE(AVG(api_processing_time_ms) FILTER (WHERE
+            (COALESCE(has_multiple_predictions, false) = false AND COALESCE(is_prediction_correct, false) = false)
+            OR (COALESCE(has_multiple_predictions, false) = true AND COALESCE(multi_test_all_correct, false) = false)
+          ), 0) as avg_time_incorrect,
+          COALESCE(AVG(total_tokens) FILTER (WHERE
+            (COALESCE(has_multiple_predictions, false) = false AND COALESCE(is_prediction_correct, false) = false)
+            OR (COALESCE(has_multiple_predictions, false) = true AND COALESCE(multi_test_all_correct, false) = false)
+          ), 0) as avg_tokens_incorrect
         FROM explanations
         WHERE model_name ILIKE $1
         AND puzzle_id = ANY($2)
