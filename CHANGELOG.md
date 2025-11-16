@@ -1,4 +1,28 @@
 # CHANGELOG - Uses semantic versioning (MAJOR.MINOR.PATCH)`r`n
+# [5.10.12] - 2025-11-16
+### 🎨 New Features
+- **ARC Puzzle GIF Generator**: Added utility script to create animated Slack GIFs for any ARC puzzle
+  - **Script**: `.claude/skills/slack-gif-creator/create_arc_puzzle_gif.py`
+  - **Command**: `python create_arc_puzzle_gif.py <puzzle_id>`
+  - **Features**:
+    - Automatically searches both training and evaluation directories for puzzle
+    - Generates animated GIF showing all grids (training inputs/outputs + test inputs/outputs)
+    - Displays puzzle ID at bottom of each frame
+    - 2.5 seconds per grid at 15fps (37 frames per grid)
+    - Uses authentic ARC color palette (10 colors)
+    - Output filename: `arc_puzzle_<puzzle_id>.gif`
+    - Validates against Slack's 2MB size limit
+  - **Usage Example**:
+    ```bash
+    cd .claude/skills/slack-gif-creator
+    python create_arc_puzzle_gif.py 08573cc6
+    ```
+  - **Dependencies**: PIL (Pillow), imageio, numpy
+  - **Reuses**: Existing GIF builder, typography, and validator components from slack-gif-creator skill
+
+  **Files Changed**:
+  - `.claude/skills/slack-gif-creator/create_arc_puzzle_gif.py:1-183`: Created parameterized script with command-line argument support and automatic puzzle discovery
+
 # [5.10.11] - 2025-11-15
 ### ✨ New Features
 - **OpenRouter Model Addition**: Added Sherlock Think Alpha (`openrouter/sherlock-think-alpha`) to available models
