@@ -97,6 +97,33 @@ npm run test  # Allow ~10s to warm up, then open localhost:5173
 
 **For detailed setup, deployment, and technical documentation, see [CLAUDE.md](./CLAUDE.md)**
 
+## Utilities
+
+### ARC Puzzle GIF Generator
+
+Create animated GIFs for any ARC puzzle to share on Slack or other platforms:
+
+```bash
+# Navigate to the skill directory
+cd .claude/skills/slack-gif-creator
+
+# Generate a GIF for any puzzle
+python create_arc_puzzle_gif.py <puzzle_id>
+
+# Examples
+python create_arc_puzzle_gif.py 08573cc6
+python create_arc_puzzle_gif.py 6855a6e4
+```
+
+**Features:**
+- Automatically finds puzzles in training or evaluation directories
+- Shows all grids: training inputs/outputs + test inputs/outputs
+- 2.5 seconds per grid with authentic ARC color palette
+- Displays puzzle ID at bottom of each frame
+- Output: `arc_puzzle_<puzzle_id>.gif` (validated for Slack's 2MB limit)
+
+**Requirements:** `pip install pillow imageio numpy`
+
 ### Streaming feature flag values
 
 - **Server:** `ENABLE_SSE_STREAMING`

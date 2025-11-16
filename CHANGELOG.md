@@ -1,4 +1,68 @@
 # CHANGELOG - Uses semantic versioning (MAJOR.MINOR.PATCH)`r`n
+# [5.10.13] - 2025-11-16
+### 🐛 Critical Bug Fixes
+- **Puzzle Trading Cards - Fixed Incorrect Win/Loss Calculations**: Fixed critical bugs in puzzle statistics that were causing impossible values (negative losses, >100% win rates)
+
+  **Issues Fixed**:
+  1. **Incorrect Correctness Logic**: The SQL query was using simple OR logic (`is_prediction_correct = false OR multi_test_all_correct = false`) which doesn't properly check prediction type
+     - **Correct Logic**: Must check `has_multiple_predictions` flag first, then check the appropriate correctness field
+     - **Reference**: PuzzleExaminer uses the correct conditional logic pattern
+
+  2. **JOIN Duplication Bug**: The LEFT JOIN with feedback table was creating duplicate rows, causing COUNT to inflate
+     - **Problem**: `COUNT(CASE ... THEN 1 END)` was counting duplicated rows from the JOIN
+     - **Solution**: Changed to `COUNT(DISTINCT e.id) FILTER (WHERE ...)` to count unique explanations only
+     - **Result**: This caused impossible statistics like 41 wins, -2 losses, 105.1% win rate
+
+  3. **Removed # Symbol from Puzzle IDs**: Removed unnecessary # prefix from puzzle ID display on trading cards
+
+  4. **Replaced Difficulty Labels with Win Rate Percentages**:
+     - **Before**: "Tough Puzzle", "Elite Challenge", "Legendary Difficulty"
+     - **After**: Actual win rate percentages (e.g., "97.7% win rate", "43.2% win rate")
+     - Provides more useful, concrete information about puzzle difficulty
+
+  **Example Fix (Puzzle 00d62c1b "honeypots")**:
+  - **Before (WRONG)**: 19-25 record (19 wins, 25 losses) - didn't match PuzzleExaminer showing 1 correct
+  - **After (CORRECT)**: 43-1 record (43 puzzle wins = LLM failures, 1 puzzle loss = LLM success) with 97.7% win rate
+
+  **Scoring System Clarification**:
+  - **Puzzle Win** = LLM got the puzzle INCORRECT (LLM failed)
+  - **Puzzle Loss** = LLM got the puzzle CORRECT (LLM succeeded)
+  - **Win Rate** = (Puzzle Wins / Total Attempts) × 100
+
+  **Files Changed**:
+  - `server/repositories/ExplanationRepository.ts:857-938`: Fixed wrongCount calculation using COUNT(DISTINCT) with FILTER clause
+  - `client/src/utils/puzzleCardHelpers.ts:142-151`: Changed getPerformanceDescription() to return win rate percentages
+  - `client/src/components/puzzle/PuzzleTradingCard.tsx:135,139`: Removed # prefix from puzzle IDs
+
+  **Technical Details**:
+  - The query now properly uses `COUNT(DISTINCT e.id) FILTER (WHERE ...)` to avoid JOIN duplication
+  - Correctness determination now matches PuzzleExaminer's conditional logic pattern
+  - Both single-test and multi-test predictions are correctly evaluated based on `has_multiple_predictions` flag
+
+# [5.10.12] - 2025-11-16
+### 🎨 New Features
+- **ARC Puzzle GIF Generator**: Added utility script to create animated Slack GIFs for any ARC puzzle
+  - **Script**: `.claude/skills/slack-gif-creator/create_arc_puzzle_gif.py`
+  - **Command**: `python create_arc_puzzle_gif.py <puzzle_id>`
+  - **Features**:
+    - Automatically searches both training and evaluation directories for puzzle
+    - Generates animated GIF showing all grids (training inputs/outputs + test inputs/outputs)
+    - Displays puzzle ID at bottom of each frame
+    - 2.5 seconds per grid at 15fps (37 frames per grid)
+    - Uses authentic ARC color palette (10 colors)
+    - Output filename: `arc_puzzle_<puzzle_id>.gif`
+    - Validates against Slack's 2MB size limit
+  - **Usage Example**:
+    ```bash
+    cd .claude/skills/slack-gif-creator
+    python create_arc_puzzle_gif.py 08573cc6
+    ```
+  - **Dependencies**: PIL (Pillow), imageio, numpy
+  - **Reuses**: Existing GIF builder, typography, and validator components from slack-gif-creator skill
+
+  **Files Changed**:
+  - `.claude/skills/slack-gif-creator/create_arc_puzzle_gif.py:1-183`: Created parameterized script with command-line argument support and automatic puzzle discovery
+
 # [5.10.11] - 2025-11-15
 ### ✨ New Features
 - **OpenRouter Model Addition**: Added Sherlock Think Alpha (`openrouter/sherlock-think-alpha`) to available models

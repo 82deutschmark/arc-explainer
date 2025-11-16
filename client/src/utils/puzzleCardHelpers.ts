@@ -138,6 +138,7 @@ export function getPerformanceBadgeVariant(wins: number, losses: number): 'defau
 
 /**
  * Get performance description for the puzzle
+ * Returns win rate percentage (puzzle wins = LLM failures)
  */
 export function getPerformanceDescription(wins: number, losses: number): string {
   const total = wins + losses;
@@ -145,11 +146,8 @@ export function getPerformanceDescription(wins: number, losses: number): string 
 
   const winPercentage = (wins / total) * 100;
 
-  if (winPercentage >= 90) return 'Legendary Difficulty';
-  if (winPercentage >= 70) return 'Elite Challenge';
-  if (winPercentage >= 50) return 'Tough Puzzle';
-  if (winPercentage >= 30) return 'Moderate Challenge';
-  return 'Learner Friendly';
+  // Return actual win rate percentage with 1 decimal place
+  return `${winPercentage.toFixed(1)}% win rate`;
 }
 
 /**
