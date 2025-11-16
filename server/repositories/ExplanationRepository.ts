@@ -854,7 +854,10 @@ export class ExplanationRepository extends BaseRepository implements IExplanatio
           } else {
             // Original filter logic for other sort types
             havingConditions.push(`(
-              COUNT(CASE WHEN e.is_prediction_correct = false OR e.multi_test_all_correct = false THEN 1 END) > 0 OR
+              COUNT(DISTINCT e.id) FILTER (
+                WHERE (COALESCE(e.has_multiple_predictions, false) = false AND COALESCE(e.is_prediction_correct, false) = false)
+                  OR (COALESCE(e.has_multiple_predictions, false) = true AND COALESCE(e.multi_test_all_correct, false) = false)
+              ) > 0 OR
               AVG(COALESCE(e.trustworthiness_score, e.multi_test_average_accuracy, 0)) < 0.5 OR
               COUNT(f.id) FILTER (WHERE f.feedback_type = 'not_helpful') > 0
             )`);
@@ -903,18 +906,29 @@ export class ExplanationRepository extends BaseRepository implements IExplanatio
       const result = await this.query(`
         SELECT *
         FROM (
-          SELECT 
+          SELECT
             e.puzzle_id,
-            COUNT(CASE WHEN e.is_prediction_correct = false OR e.multi_test_all_correct = false THEN 1 END) as wrong_count,
+            -- CORRECT logic: Use COUNT(DISTINCT) with FILTER to avoid JOIN duplication
+            -- Count unique incorrect explanations (puzzle wins = LLM failures)
+            COUNT(DISTINCT e.id) FILTER (
+              WHERE (COALESCE(e.has_multiple_predictions, false) = false AND COALESCE(e.is_prediction_correct, false) = false)
+                OR (COALESCE(e.has_multiple_predictions, false) = true AND COALESCE(e.multi_test_all_correct, false) = false)
+            ) as wrong_count,
             AVG(COALESCE(e.trustworthiness_score, e.multi_test_average_accuracy, 0)) as avg_accuracy,
             AVG(e.confidence) as avg_confidence,
             COUNT(DISTINCT e.id) as total_explanations,
             COUNT(f.id) FILTER (WHERE f.feedback_type = 'not_helpful') as negative_feedback,
             COUNT(f.id) as total_feedback,
             MAX(e.created_at) as latest_analysis,
-            MIN(CASE WHEN e.is_prediction_correct = false OR e.multi_test_all_correct = false THEN e.id END) as worst_explanation_id,${richMetricsColumns}
+            MIN(e.id) FILTER (
+              WHERE (COALESCE(e.has_multiple_predictions, false) = false AND COALESCE(e.is_prediction_correct, false) = false)
+                OR (COALESCE(e.has_multiple_predictions, false) = true AND COALESCE(e.multi_test_all_correct, false) = false)
+            ) as worst_explanation_id,${richMetricsColumns}
             (
-              COUNT(CASE WHEN e.is_prediction_correct = false OR e.multi_test_all_correct = false THEN 1 END) * 5.0 +
+              COUNT(DISTINCT e.id) FILTER (
+                WHERE (COALESCE(e.has_multiple_predictions, false) = false AND COALESCE(e.is_prediction_correct, false) = false)
+                  OR (COALESCE(e.has_multiple_predictions, false) = true AND COALESCE(e.multi_test_all_correct, false) = false)
+              ) * 5.0 +
               CASE WHEN AVG(COALESCE(e.trustworthiness_score, e.multi_test_average_accuracy, 0)) < 0.6 THEN 10.0 ELSE 0.0 END +
               CASE WHEN AVG(e.confidence) < 50 THEN 3.0 ELSE 0.0 END +
               COUNT(f.id) FILTER (WHERE f.feedback_type = 'not_helpful') * 2.0
