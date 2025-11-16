@@ -108,14 +108,29 @@ async function hasExistingExplanation(puzzleId: string, modelKey: ModelKey): Pro
     );
 
     if (!response.data?.success) {
+      console.log(`🔍 Debug: API returned success=false for ${puzzleId}`);
       return false;
     }
 
     const explanations: ExplanationRecord[] = response.data.data || [];
-    return explanations.some(exp => exp.modelKey === modelKey);
+
+    // Debug logging
+    if (explanations.length > 0) {
+      const modelKeys = explanations.map(exp => exp.modelKey);
+      console.log(`🔍 Debug: ${puzzleId} has ${explanations.length} explanation(s) from: ${modelKeys.join(', ')}`);
+      console.log(`🔍 Debug: Looking for: ${modelKey}`);
+
+      const hasMatch = explanations.some(exp => exp.modelKey === modelKey);
+      console.log(`🔍 Debug: Match found? ${hasMatch}`);
+      return hasMatch;
+    }
+
+    console.log(`🔍 Debug: ${puzzleId} has no explanations yet`);
+    return false;
   } catch (error) {
     // If we can't fetch explanations, assume it doesn't exist and try to analyze
-    console.warn(`Warning: Could not check existing explanations for ${puzzleId}, will attempt analysis`);
+    console.warn(`⚠️  Warning: Could not check existing explanations for ${puzzleId}, will attempt analysis`);
+    console.warn(`⚠️  Error: ${error instanceof Error ? error.message : String(error)}`);
     return false;
   }
 }
