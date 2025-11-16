@@ -218,34 +218,93 @@ async function fireModelWithSpacing(
   source: SourceKey,
   puzzleIds: string[]
 ): Promise<AnalysisResult[]> {
-  console.log(`\n🚀 Firing ${modelKey} across ${puzzleIds.length} puzzles from ${source} (5s spacing)`);
+  console.log(`\n🚀 Firing ${modelKey} across ${puzzleIds.length} puzzles from ${source}`);
+  console.log(`⚡ Phase 1: Checking all puzzles for existing explanations (parallel, fast)...`);
 
-  const pending: Promise<AnalysisResult>[] = [];
+  // Phase 1: Check ALL puzzles for existing explanations in parallel (FAST!)
+  const existenceChecks = await Promise.allSettled(
+    puzzleIds.map(async (puzzleId) => ({
+      puzzleId,
+      hasExplanation: await hasExistingExplanation(puzzleId, modelKey)
+    }))
+  );
 
-  for (let index = 0; index < puzzleIds.length; index++) {
-    const puzzleId = puzzleIds[index];
-    const promise = analyzePuzzleWithModel(puzzleId, modelKey, source);
-    pending.push(promise);
+  const puzzlesToAnalyze: string[] = [];
+  const skippedResults: AnalysisResult[] = [];
 
-    if (index < puzzleIds.length - 1) {
+  for (let i = 0; i < existenceChecks.length; i++) {
+    const check = existenceChecks[i];
+    const puzzleId = puzzleIds[i];
+
+    if (check.status === 'fulfilled' && check.value.hasExplanation) {
+      console.log(`⏭️  Skipping ${puzzleId} - already has explanation`);
+      skippedResults.push({
+        puzzleId,
+        modelKey,
+        source,
+        success: true,
+        skipped: true
+      });
+    } else {
+      puzzlesToAnalyze.push(puzzleId);
+    }
+  }
+
+  console.log(`\n⚡ Phase 2: Analyzing ${puzzlesToAnalyze.length} puzzles (with 5s rate limiting)...`);
+
+  // Phase 2: Only analyze puzzles that need it (with rate limiting)
+  const analysisResults: AnalysisResult[] = [];
+
+  for (let index = 0; index < puzzlesToAnalyze.length; index++) {
+    const puzzleId = puzzlesToAnalyze[index];
+    const startTime = Date.now();
+
+    try {
+      console.log(`🔍 Analyzing ${puzzleId} with ${modelKey} (${index + 1}/${puzzlesToAnalyze.length})`);
+      await analyzeAndSave(puzzleId, modelKey);
+      const duration = Math.round((Date.now() - startTime) / 1000);
+      console.log(`✅ Completed ${puzzleId} in ${duration}s`);
+      analysisResults.push({
+        puzzleId,
+        modelKey,
+        source,
+        success: true,
+        responseTime: duration
+      });
+    } catch (error: any) {
+      const duration = Math.round((Date.now() - startTime) / 1000);
+      const message =
+        error.response?.data?.message ||
+        error.response?.data?.error ||
+        error.message ||
+        'Unknown failure';
+      console.error(`❌ Error for ${puzzleId}: ${message}`);
+      analysisResults.push({
+        puzzleId,
+        modelKey,
+        source,
+        success: false,
+        responseTime: duration,
+        error: message
+      });
+    }
+
+    // Rate limit between analysis calls
+    if (index < puzzlesToAnalyze.length - 1) {
       await delay(RATE_LIMIT_DELAY_MS);
     }
   }
 
-  const settled = await Promise.allSettled(pending);
-  const results: AnalysisResult[] = settled.map(s =>
-    s.status === 'fulfilled' ? s.value : ({ ...s.reason, success: false } as AnalysisResult)
-  );
-
-  const successCount = results.filter(r => r.success && !r.skipped).length;
-  const skippedCount = results.filter(r => r.skipped).length;
-  const failureCount = results.filter(r => !r.success).length;
+  const allResults = [...skippedResults, ...analysisResults];
+  const successCount = analysisResults.filter(r => r.success).length;
+  const skippedCount = skippedResults.length;
+  const failureCount = analysisResults.filter(r => !r.success).length;
 
   console.log(
-    `\n📊 ${modelKey} on ${source}: ${successCount} analyzed, ${skippedCount} skipped (already exists), ${failureCount} failed`
+    `\n📊 ${modelKey} on ${source}: ${successCount} analyzed, ${skippedCount} skipped, ${failureCount} failed`
   );
 
-  return results;
+  return allResults;
 }
 
 function summarizeByModel(results: AnalysisResult[]): void {
