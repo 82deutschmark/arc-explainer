@@ -839,7 +839,7 @@ export const MODELS: ModelConfig[] = [
     apiModelName: 'openrouter/sherlock-think-alpha',
     modelType: 'openrouter',
     contextWindow: 1840000,
-    maxOutputTokens: 32000,
+    maxOutputTokens: 120000,
     releaseDate: "2025-11",
     notes: 'CLOAKED MODEL - identity will be revealed soon. Free promotional access.'
   },
