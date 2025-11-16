@@ -132,11 +132,11 @@ export const PuzzleTradingCard: React.FC<PuzzleTradingCardProps> = ({ puzzle }) 
                 <h3 className="text-3xl font-black uppercase tracking-tight bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
                   {puzzleName}
                 </h3>
-                <code className="text-xs font-mono text-purple-600 font-bold">#{puzzle.id}</code>
+                <code className="text-xs font-mono text-purple-600 font-bold">{puzzle.id}</code>
               </div>
             ) : (
               <div className="text-center">
-                <code className="text-xl font-mono font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">#{puzzle.id}</code>
+                <code className="text-xl font-mono font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">{puzzle.id}</code>
               </div>
             )}
 
