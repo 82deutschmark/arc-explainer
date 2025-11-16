@@ -3,15 +3,15 @@
  * Date: 2025-11-16
  * PURPOSE: Repository for managing ARC contributor data in the database.
  * Handles CRUD operations for notable human contributors to the ARC-AGI challenge.
+ * Extends BaseRepository for consistent database access patterns.
  * SRP/DRY check: Pass - Single responsibility for contributor database operations
  */
 
-import { Pool } from 'pg';
+import { BaseRepository } from './base/BaseRepository.ts';
 import type { ArcContributor, CreateContributorRequest } from '@shared/types/contributor.ts';
 import { logger } from '../utils/logger.ts';
 
-export class ContributorRepository {
-  constructor(private pool: Pool) {}
+export class ContributorRepository extends BaseRepository {
 
   /**
    * Get all contributors with optional filtering
@@ -65,7 +65,7 @@ export class ContributorRepository {
         params.push(filters.limit);
       }
 
-      const result = await this.pool.query(query, params);
+      const result = await this.query(query, params);
       return result.rows.map(this.mapRowToContributor);
     } catch (error) {
       logger.error(`Failed to get contributors: ${error instanceof Error ? error.message : String(error)}`, 'contributor-repository');
@@ -78,7 +78,7 @@ export class ContributorRepository {
    */
   async getContributorById(id: number): Promise<ArcContributor | null> {
     try {
-      const result = await this.pool.query(
+      const result = await this.query(
         `SELECT * FROM arc_contributors WHERE id = $1`,
         [id]
       );
@@ -99,7 +99,7 @@ export class ContributorRepository {
    */
   async createContributor(data: CreateContributorRequest): Promise<ArcContributor> {
     try {
-      const result = await this.pool.query(
+      const result = await this.query(
         `
         INSERT INTO arc_contributors (
           full_name,
@@ -221,7 +221,7 @@ export class ContributorRepository {
       }
 
       values.push(id);
-      const result = await this.pool.query(
+      const result = await this.query(
         `UPDATE arc_contributors SET ${updates.join(', ')} WHERE id = $${paramCount} RETURNING *`,
         values
       );
@@ -242,7 +242,7 @@ export class ContributorRepository {
    */
   async deleteContributor(id: number): Promise<boolean> {
     try {
-      const result = await this.pool.query(
+      const result = await this.query(
         `DELETE FROM arc_contributors WHERE id = $1`,
         [id]
       );
@@ -259,7 +259,7 @@ export class ContributorRepository {
    */
   async getCountsByCategory(): Promise<Record<string, number>> {
     try {
-      const result = await this.pool.query(
+      const result = await this.query(
         `SELECT category, COUNT(*) as count FROM arc_contributors GROUP BY category`
       );
 
