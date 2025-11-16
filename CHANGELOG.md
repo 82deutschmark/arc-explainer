@@ -1,43 +1,98 @@
 # CHANGELOG - Uses semantic versioning (MAJOR.MINOR.PATCH)`r`n
 # [5.10.13] - 2025-11-16
-### 🐛 Critical Bug Fixes
-- **Puzzle Trading Cards - Fixed Incorrect Win/Loss Calculations**: Fixed critical bugs in puzzle statistics that were causing impossible values (negative losses, >100% win rates)
+### 🐛 Critical Bug Fixes - Correctness Logic Overhaul
+- **Fixed Systematic Correctness Logic Bugs Across 4 Repositories**: Comprehensive fix for incorrect OR logic that was causing inflated wrong prediction counts, negative losses, and >100% win rates
 
-  **Issues Fixed**:
-  1. **Incorrect Correctness Logic**: The SQL query was using simple OR logic (`is_prediction_correct = false OR multi_test_all_correct = false`) which doesn't properly check prediction type
-     - **Correct Logic**: Must check `has_multiple_predictions` flag first, then check the appropriate correctness field
-     - **Reference**: PuzzleExaminer uses the correct conditional logic pattern
+  **Root Cause**:
+  Simple OR logic (`is_prediction_correct = false OR multi_test_all_correct = false`) doesn't check prediction type first, causing:
+  1. **NULL Mishandling**: When `has_multiple_predictions = false`, `multi_test_all_correct` is NULL, and `NULL = false` evaluates to FALSE, not TRUE
+  2. **Cross-Contamination**: Single-test and multi-test predictions get mixed together, skewing all statistics
+  3. **JOIN Duplication**: LEFT JOINs with feedback table create duplicate rows, inflating COUNT operations
 
-  2. **JOIN Duplication Bug**: The LEFT JOIN with feedback table was creating duplicate rows, causing COUNT to inflate
-     - **Problem**: `COUNT(CASE ... THEN 1 END)` was counting duplicated rows from the JOIN
-     - **Solution**: Changed to `COUNT(DISTINCT e.id) FILTER (WHERE ...)` to count unique explanations only
-     - **Result**: This caused impossible statistics like 41 wins, -2 losses, 105.1% win rate
+  **The Fix**:
+  All aggregation queries now use conditional logic that checks `has_multiple_predictions` first:
+  ```sql
+  -- CORRECT Pattern (now used everywhere)
+  COUNT(DISTINCT e.id) FILTER (
+    WHERE (COALESCE(has_multiple_predictions, false) = false AND COALESCE(is_prediction_correct, false) = true)
+      OR (COALESCE(has_multiple_predictions, false) = true AND COALESCE(multi_test_all_correct, false) = true)
+  )
+  ```
 
-  3. **Removed # Symbol from Puzzle IDs**: Removed unnecessary # prefix from puzzle ID display on trading cards
+  **Files Fixed (15 locations across 4 files)**:
 
-  4. **Replaced Difficulty Labels with Win Rate Percentages**:
-     - **Before**: "Tough Puzzle", "Elite Challenge", "Legendary Difficulty"
-     - **After**: Actual win rate percentages (e.g., "97.7% win rate", "43.2% win rate")
-     - Provides more useful, concrete information about puzzle difficulty
+  1. **AccuracyRepository.ts** (7 instances)
+     - Lines 398-460: `getModelsWithHighConfidenceWrongPredictions()` - High confidence wrong predictions, danger level, overall accuracy
+     - Lines 629-704: `getOverconfidentModels()` - Wrong overconfident predictions, overconfidence rate, overall accuracy in SELECT and ORDER BY
+     - **Impact**: Analytics badges now show accurate counts instead of inflated values
 
-  **Example Fix (Puzzle 00d62c1b "honeypots")**:
-  - **Before (WRONG)**: 19-25 record (19 wins, 25 losses) - didn't match PuzzleExaminer showing 1 correct
-  - **After (CORRECT)**: 43-1 record (43 puzzle wins = LLM failures, 1 puzzle loss = LLM success) with 97.7% win rate
+  2. **TrustworthinessRepository.ts** (6 instances)
+     - Lines 253-271: `getConfidenceAnalysis()` overall stats - Average confidence when correct/incorrect
+     - Lines 273-310: `getConfidenceAnalysis()` per-model stats - Confidence analysis, correct/incorrect prediction counts
+     - **Impact**: Confidence calibration metrics now correctly separated by prediction type
+
+  3. **ModelDatasetRepository.ts** (10 instances)
+     - Lines 184-202: `getModelDatasetPerformance()` - CASE statement for correctness determination
+     - Lines 350-392: `getModelDatasetMetrics()` - FILTER clauses for correct/incorrect subsets (cost, time, tokens)
+     - **Impact**: Model Browser dataset performance cards now show accurate win rates
+
+  4. **MetricsQueryBuilder.ts** (2 utility functions)
+     - Lines 84-91: `correctnessCalculation()` - Shared utility used 15+ times across repositories
+     - Lines 123-129: `confidenceStats()` - Shared utility used 6+ times
+     - **Impact**: All consumers of these utilities automatically inherit the fix
+
+  5. **ExplanationRepository.ts** (already fixed in previous commit)
+     - Lines 857-938: `getWorstPerformingPuzzles()` - Trading cards wrong count calculation
+     - **Impact**: Trading cards show correct win/loss records
+
+  **Additional Fixes**:
+  - **Removed # Symbol from Puzzle IDs**: `client/src/components/puzzle/PuzzleTradingCard.tsx:135,139`
+  - **Replaced Difficulty Labels with Win Rate Percentages**: `client/src/utils/puzzleCardHelpers.ts:142-151`
+    - Before: "Tough Puzzle", "Elite Challenge", "Legendary Difficulty"
+    - After: "73.5% win rate", "97.7% win rate", etc.
+  - **Updated Documentation**: `client/src/pages/ModelBrowser.tsx:297` - Updated comment to reference new pattern
+  - **Created Developer Guide**: `docs/reference/database/CORRECTNESS_LOGIC_PATTERN.md` - Comprehensive pattern guide with examples
+
+  **Example Impact (Puzzle 00d62c1b "honeypots")**:
+  - **Before (WRONG)**: 19-25 record, then 41-(-2) record with 105.1% win rate (impossible!)
+  - **After (CORRECT)**: 43-1 record with 97.7% win rate (matches PuzzleExaminer)
+  - **Explanation**: PuzzleExaminer shows 1 correct out of 44 total, so puzzle should have 43 wins (LLM failures) and 1 loss (LLM success)
 
   **Scoring System Clarification**:
   - **Puzzle Win** = LLM got the puzzle INCORRECT (LLM failed)
   - **Puzzle Loss** = LLM got the puzzle CORRECT (LLM succeeded)
   - **Win Rate** = (Puzzle Wins / Total Attempts) × 100
 
-  **Files Changed**:
-  - `server/repositories/ExplanationRepository.ts:857-938`: Fixed wrongCount calculation using COUNT(DISTINCT) with FILTER clause
-  - `client/src/utils/puzzleCardHelpers.ts:142-151`: Changed getPerformanceDescription() to return win rate percentages
-  - `client/src/components/puzzle/PuzzleTradingCard.tsx:135,139`: Removed # prefix from puzzle IDs
+  **Technical Pattern**:
+  ```sql
+  -- For aggregation (COUNT, SUM, AVG) - REQUIRED
+  CASE
+    WHEN (COALESCE(has_multiple_predictions, false) = false AND COALESCE(is_prediction_correct, false) = true)
+      OR (COALESCE(has_multiple_predictions, false) = true AND COALESCE(multi_test_all_correct, false) = true)
+    THEN 1
+  END
 
-  **Technical Details**:
-  - The query now properly uses `COUNT(DISTINCT e.id) FILTER (WHERE ...)` to avoid JOIN duplication
-  - Correctness determination now matches PuzzleExaminer's conditional logic pattern
-  - Both single-test and multi-test predictions are correctly evaluated based on `has_multiple_predictions` flag
+  -- With JOINs - ALWAYS use DISTINCT
+  COUNT(DISTINCT e.id) FILTER (WHERE ...) -- Prevents JOIN duplication
+
+  -- For boolean filtering (WHERE, HAVING) - ACCEPTABLE as-is
+  WHERE is_prediction_correct = true OR multi_test_all_correct = true
+  ```
+
+  **Reference Implementation**: `ExplanationRepository.ts:246-268` (used by PuzzleExaminer, known correct)
+
+  **Testing Completed**:
+  - ✅ Build successful with no errors
+  - ✅ All SQL syntax validated
+  - ✅ Pattern matches reference implementation
+  - ✅ Comprehensive developer guide created
+
+  **Developer Reference**: See `docs/reference/database/CORRECTNESS_LOGIC_PATTERN.md` for:
+  - Complete pattern explanation
+  - When to use DISTINCT
+  - Examples and anti-patterns
+  - Quick reference checklist
+  - Testing guidelines
 
 # [5.10.12] - 2025-11-16
 ### 🎨 New Features
