@@ -1,4 +1,32 @@
 # CHANGELOG - Uses semantic versioning (MAJOR.MINOR.PATCH)`r`n
+# [5.10.11] - 2025-11-15
+### ✨ New Features
+- **OpenRouter Model Addition**: Added Sherlock Think Alpha (`openrouter/sherlock-think-alpha`) to available models
+  - **Context**: 1.84M tokens (1,840,000)
+  - **Pricing**: Free ($0.00/M input, $0.00/M output) - promotional access
+  - **Type**: Chat model with reasoning capabilities
+  - **Status**: CLOAKED MODEL - true identity to be revealed soon
+  - **Color**: Fuchsia gradient (`bg-fuchsia-600`)
+  - **Release**: November 2025
+
+  **Important**: This is a cloaked model. When the true identity is revealed, we will need to:
+  1. Update model configuration in `server/config/models.ts` with official name
+  2. Add normalization mapping in `server/utils/modelNormalizer.ts` to preserve database integrity
+
+### 🗑️ Removed
+- **Grover Solver Models Removed**: Removed Grover iterative solver wrapper models from the models list
+  - Removed: `grover-grok-4-fast-reasoning`, `grover-gpt-5-nano`, `grover-gpt-5-mini`
+  - **Reason**: Grover is a solver framework that wraps underlying models with iterative execution, not a standalone model provider. These entries were causing confusion in the model selection UI.
+  - Users should select the underlying models directly (e.g., `grok-4-fast-reasoning`, `gpt-5-nano`, `gpt-5-mini`)
+
+### ✅ Verification
+- **Anthropic Haiku 4.5 Configuration**: Verified that Claude Haiku 4.5 is properly configured in `server/services/anthropic.ts:80-83` with correct 16k token generation limit
+
+  **Files Changed**:
+  - `server/config/models.ts:828-845`: Added Sherlock Think Alpha model configuration with notes about cloaked status
+  - `server/config/models.ts:846-877`: Removed Grover solver model entries (3 models removed)
+  - `server/config/models.ts:3-6`: Updated file header to reflect changes
+
 # [5.10.10] - 2025-11-14
 ### 🐞 Bug Fixes
 - **Puzzle Trading Cards avgConfidence Display**: Fixed critical bug in `PuzzleTradingCard.tsx:254` where average confidence was incorrectly multiplied by 100, displaying impossible values like "8000%" instead of "80%". The `avgConfidence` field is already stored as a 0-100 percentage value in the database (consistent with usage in `PuzzleDBViewer`, `ModelComparisonPage`, `AccuracyLeaderboard`, and other components). Changed display from `(puzzle.performanceData.avgConfidence * 100).toFixed(1)%` to `puzzle.performanceData.avgConfidence.toFixed(1)%`.
