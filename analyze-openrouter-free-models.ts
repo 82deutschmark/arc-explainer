@@ -78,7 +78,7 @@ interface PuzzleListRecord {
 }
 
 interface ExplanationRecord {
-  modelKey: string;
+  modelName: string;  // Database uses modelName, not modelKey
   id?: number;
 }
 
@@ -116,11 +116,11 @@ async function hasExistingExplanation(puzzleId: string, modelKey: ModelKey): Pro
 
     // Debug logging
     if (explanations.length > 0) {
-      const modelKeys = explanations.map(exp => exp.modelKey);
-      console.log(`🔍 Debug: ${puzzleId} has ${explanations.length} explanation(s) from: ${modelKeys.join(', ')}`);
+      const modelNames = explanations.map(exp => exp.modelName);
+      console.log(`🔍 Debug: ${puzzleId} has ${explanations.length} explanation(s) from: ${modelNames.join(', ')}`);
       console.log(`🔍 Debug: Looking for: ${modelKey}`);
 
-      const hasMatch = explanations.some(exp => exp.modelKey === modelKey);
+      const hasMatch = explanations.some(exp => exp.modelName === modelKey);
       console.log(`🔍 Debug: Match found? ${hasMatch}`);
       return hasMatch;
     }
