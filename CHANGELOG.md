@@ -1,4 +1,62 @@
 # CHANGELOG - Uses semantic versioning (MAJOR.MINOR.PATCH)`r`n
+# [5.10.14] - 2025-11-16
+### 🐛 Bug Fixes - Contributor Repository Architecture
+- **Fixed ContributorRepository Crash**: Resolved "Cannot read properties of undefined (reading 'query')" error on all `/api/contributors` endpoints
+
+  **Root Cause**:
+  - `server/routes.ts:66` passed `repositoryService.pool` to `createContributorRoutes()`
+  - `RepositoryService` has NO `pool` property (only a `db` getter)
+  - This passed `undefined` to `ContributorRepository` constructor
+  - Every call to `this.pool.query(...)` crashed with undefined error
+
+  **Architectural Mismatch**:
+  - All other repositories extend `BaseRepository` and use shared pool via `this.query()`
+  - `ContributorRepository` used constructor injection pattern instead
+  - Routes used factory function pattern instead of controller pattern
+
+  **The Fix**:
+  1. **ContributorRepository.ts**: Refactored to extend `BaseRepository` instead of constructor injection
+     - Removed `Pool` import and constructor parameter
+     - Changed `export class ContributorRepository extends BaseRepository`
+     - Replaced all 6 instances of `this.pool.query()` with `this.query()`
+
+  2. **RepositoryService.ts**: Integrated ContributorRepository following standard pattern
+     - Added import: `ContributorRepository.ts`
+     - Added private field: `contributorRepository: ContributorRepository`
+     - Added initialization in constructor
+     - Added getter: `get contributors(): ContributorRepository`
+
+  3. **contributorController.ts**: Created new controller following standard pattern (NEW FILE)
+     - Uses `repositoryService.contributors` instead of Pool injection
+     - Follows pattern from `explanationController`, `feedbackController`
+     - Uses `asyncHandler` middleware for error handling
+
+  4. **routes.ts**: Switched from factory function to controller pattern
+     - Removed: `import { createContributorRoutes } from './routes/contributorRoutes.ts'`
+     - Added: `import { contributorController } from './controllers/contributorController.ts'`
+     - Changed: `app.use("/api/contributors", contributorController)`
+
+  5. **contributorRoutes.ts**: Deleted obsolete factory pattern file
+
+  **Benefits**:
+  - ✅ Architectural consistency with all other repositories
+  - ✅ Fallback mode support (respects `isConnected()` checks)
+  - ✅ SRP/DRY compliance (controller handles HTTP, repository handles data)
+  - ✅ No special cases or constructor injection outliers
+
+  **Files Changed**:
+  - Modified: `server/repositories/ContributorRepository.ts` (~7 lines)
+  - Modified: `server/repositories/RepositoryService.ts` (~4 lines)
+  - Modified: `server/routes.ts` (~2 lines)
+  - Created: `server/controllers/contributorController.ts` (~95 lines)
+  - Deleted: `server/routes/contributorRoutes.ts`
+
+  **Testing Verified**:
+  - ✅ `GET /api/contributors` returns `{"contributors":[],"total":0}`
+  - ✅ `GET /api/contributors/stats` returns `{"total":0,"categoryCounts":{},"latestYear":null}`
+  - ✅ Server starts with no errors
+  - ✅ No more "Cannot read properties of undefined" crashes
+
 # [5.10.13] - 2025-11-16
 ### 🐛 Critical Bug Fixes - Correctness Logic Overhaul
 - **Fixed Systematic Correctness Logic Bugs Across 4 Repositories**: Comprehensive fix for incorrect OR logic that was causing inflated wrong prediction counts, negative losses, and >100% win rates
