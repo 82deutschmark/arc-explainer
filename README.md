@@ -1,4 +1,6 @@
 # ARC-AGI Explainer Platform - A Fan Site for ARC-AGI-3
+ 
+![ARC Puzzle 08573cc6](.claude/skills/slack-gif-creator/arc_puzzle_08573cc6.gif)
 
 **Version 5.1.0** — November 6, 2025
 
