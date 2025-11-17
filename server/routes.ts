@@ -33,6 +33,7 @@ import modelDatasetController from "./controllers/modelDatasetController.ts";
 import modelsRouter from "./routes/models.js";
 import metricsRouter from './routes/metricsRoutes.ts';
 import arc3Router from "./routes/arc3";
+import { contributorController } from './controllers/contributorController.ts';
 
 // Import middleware
 import { errorHandler } from "./middleware/errorHandler";
@@ -60,6 +61,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // ARC3 playground routes
   app.use("/api/arc3", arc3Router);
+
+  // Contributor trading cards routes
+  app.use("/api/contributors", contributorController);
   
   // Model Management GUI API routes
   app.get("/api/model-management/list", asyncHandler(modelManagementController.listModels));

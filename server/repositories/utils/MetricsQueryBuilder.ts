@@ -79,9 +79,15 @@ export class MetricsQueryBuilder {
   /**
    * Correctness calculation - used 15 times across repositories
    * Determines if prediction was correct (single or multiple tests)
+   * FIXED: v5.10.13 - uses conditional logic based on has_multiple_predictions
    */
   static correctnessCalculation(tableAlias: string = 'e'): string {
-    return `CASE WHEN ${tableAlias}.is_prediction_correct = true OR ${tableAlias}.multi_test_all_correct = true THEN 1 ELSE 0 END`;
+    return `CASE
+      WHEN (COALESCE(${tableAlias}.has_multiple_predictions, false) = false AND COALESCE(${tableAlias}.is_prediction_correct, false) = true)
+        OR (COALESCE(${tableAlias}.has_multiple_predictions, false) = true AND COALESCE(${tableAlias}.multi_test_all_correct, false) = true)
+      THEN 1
+      ELSE 0
+    END`;
   }
 
   /**
@@ -112,9 +118,14 @@ export class MetricsQueryBuilder {
 
   /**
    * Confidence statistics for trustworthiness analysis - used 6 times
+   * FIXED: v5.10.13 - uses conditional logic based on has_multiple_predictions
    */
   static confidenceStats(tableAlias: string = 'e'): string {
-    return `AVG(CASE WHEN (${tableAlias}.is_prediction_correct = true OR ${tableAlias}.multi_test_all_correct = true) THEN ${tableAlias}.confidence END)`;
+    return `AVG(CASE
+      WHEN (COALESCE(${tableAlias}.has_multiple_predictions, false) = false AND COALESCE(${tableAlias}.is_prediction_correct, false) = true)
+        OR (COALESCE(${tableAlias}.has_multiple_predictions, false) = true AND COALESCE(${tableAlias}.multi_test_all_correct, false) = true)
+      THEN ${tableAlias}.confidence
+    END)`;
   }
 
   // ==================== COMMON AGGREGATIONS ====================

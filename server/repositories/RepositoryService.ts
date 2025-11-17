@@ -45,6 +45,7 @@ import { MetricsRepository } from './MetricsRepository.ts';
 import { CostRepository } from './CostRepository.ts';
 import { EloRepository } from './EloRepository.ts';
 import { ModelDatasetRepository } from './ModelDatasetRepository.ts';
+import { ContributorRepository } from './ContributorRepository.ts';
 import { DatabaseSchema } from './database/DatabaseSchema.ts';
 import { logger } from '../utils/logger.ts';
 
@@ -58,6 +59,7 @@ export class RepositoryService {
   private metricsRepository: MetricsRepository;
   private costRepository: CostRepository;
   private eloRepository: EloRepository;
+  private contributorRepository: ContributorRepository;
   private initialized = false;
 
   constructor() {
@@ -70,6 +72,7 @@ export class RepositoryService {
     this.metricsRepository = new MetricsRepository();
     this.costRepository = new CostRepository();
     this.eloRepository = new EloRepository();
+    this.contributorRepository = new ContributorRepository();
   }
 
   /**
@@ -171,6 +174,13 @@ export class RepositoryService {
    */
   get modelDataset(): ModelDatasetRepository {
     return this.modelDatasetRepository;
+  }
+
+  /**
+   * Get contributor repository (human contributor trading cards)
+   */
+  get contributors(): ContributorRepository {
+    return this.contributorRepository;
   }
 
   /**
