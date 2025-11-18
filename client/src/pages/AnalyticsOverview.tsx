@@ -147,11 +147,11 @@ export default function AnalyticsOverview() {
     }
   }, [datasetOptions, selectedDataset]);
 
-  // Auto-select grok-4-fast-reasoning-attempt2 as the model if available, fallback to first model
+  // Auto-select gpt-5-1-2025-11-13-thinking-high-attempt2 as the model if available, fallback to first model
   React.useEffect(() => {
     if (availableModels.length > 0 && !selectedModelForDataset) {
-      const grok4 = availableModels.find(m => m === 'grok-4-fast-reasoning-attempt2');
-      setSelectedModelForDataset(grok4 || availableModels[0]);
+      const gpt5 = availableModels.find(m => m === 'gpt-5-1-2025-11-13-thinking-high-attempt2');
+      setSelectedModelForDataset(gpt5 || availableModels[0]);
     }
   }, [availableModels, selectedModelForDataset]);
 
