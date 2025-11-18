@@ -1,4 +1,11 @@
 # CHANGELOG - Uses semantic versioning (MAJOR.MINOR.PATCH)`r`n
+# [5.10.15] - 2025-11-18
+### ✨ UI - Analytics Dashboard Defaults
+- Updated Analytics Dashboard primary/comparison model defaults to prefer latest Gemini runs when available:
+  - Primary model now prefers `gemini-3-pro-preview-attempt1` (then `gemini-3-deep-think-preview-attempt1`, then previous GPT-5 default, then any available model).
+  - Compare-with model now prefers `gemini-3-deep-think-preview-attempt1`, then `gemini-3-pro-preview-attempt1`, then the previous Claude Haiku default, falling back to any other available model.
+- Behavior is conditional: if the Gemini models are not present in `/api/model-dataset/models`, the previous fallback logic still applies.
+
 # [5.10.14] - 2025-11-16
 ### 🐛 Bug Fixes - Contributor Repository Architecture
 - **Fixed ContributorRepository Crash**: Resolved "Cannot read properties of undefined (reading 'query')" error on all `/api/contributors` endpoints

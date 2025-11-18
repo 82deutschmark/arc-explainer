@@ -150,8 +150,10 @@ export default function AnalyticsOverview() {
   // Auto-select gpt-5-1-2025-11-13-thinking-high-attempt2 as the model if available, fallback to first model
   React.useEffect(() => {
     if (availableModels.length > 0 && !selectedModelForDataset) {
+      const geminiPro = availableModels.find(m => m === 'gemini-3-pro-preview-attempt1');
+      const geminiDeepThink = availableModels.find(m => m === 'gemini-3-deep-think-preview-attempt1');
       const gpt5 = availableModels.find(m => m === 'gpt-5-1-2025-11-13-thinking-high-attempt2');
-      setSelectedModelForDataset(gpt5 || availableModels[0]);
+      setSelectedModelForDataset(geminiPro || geminiDeepThink || gpt5 || availableModels[0]);
     }
   }, [availableModels, selectedModelForDataset]);
 
@@ -159,16 +161,22 @@ export default function AnalyticsOverview() {
   React.useEffect(() => {
     if (availableModels.length > 0 && !selectedModelForComparison && selectedModelForDataset) {
       const availableForComparison = availableModels.filter(m => m !== selectedModelForDataset);
-      const claudeHaiku = availableModels.find(m => m === 'claude-haiku-4-5-20251001-thinking-32k-attempt2');
-      if (claudeHaiku) {
+      const preferredOrder = [
+        'gemini-3-deep-think-preview-attempt1',
+        'gemini-3-pro-preview-attempt1',
+        'claude-haiku-4-5-20251001-thinking-32k-attempt2',
+      ];
+
+      const preferredModel = preferredOrder
+        .map(name => availableForComparison.find(m => m === name))
+        .find(Boolean);
+
+      const modelToUse = preferredModel || availableForComparison[0];
+
+      if (modelToUse) {
         // Use a small delay to ensure the state update doesn't conflict
         setTimeout(() => {
-          setSelectedModelForComparison(claudeHaiku);
-        }, 100);
-      } else if (availableForComparison.length > 0) {
-        // Use a small delay to ensure the state update doesn't conflict
-        setTimeout(() => {
-          setSelectedModelForComparison(availableForComparison[0]);
+          setSelectedModelForComparison(modelToUse);
         }, 100);
       }
     }
