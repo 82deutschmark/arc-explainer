@@ -7233,6 +7233,15 @@ To enable conversation chaining:
 \n### Added\n- Introduced streaming-aware analysis hook and UI panels across Puzzle Examiner, Discussion, and Model Debate pages.\n- Added reusable StreamingAnalysisPanel component for live token output with cancel support.\n- Model buttons now reflect streaming capability and status for supported models.
 
 
+## 2025-11-18
+- **Hall of Fame Redesign:**
+  - Updated color theme to a professional "Dark Slate" aesthetic.
+  - Removed filter/sort complexity for a cleaner, minimal interface.
+  - Implemented "View Full Profile" modal for detailed contributor information.
+  - Added lightbox functionality for full-size profile images.
+  - Updated Jean-François Puget's profile with correct image and 2025 rank.
+  - Fixed clipping issues on trading cards to ensure buttons are always visible.
+
 ## 2025-10-31
 - Docs: Added `docs/31OctDesign.md` specifying a CSS-only, look-only restyle for solver buttons (no structural/behavioral changes). Author: OpenAI Codex Agent.
 - Allow reset after WIN/GAME_OVER: Fixed a logic bug in `server/services/arc3/Arc3GameSimulator.ts` where `applyAction` returned `NO_OP` once a run reached `WIN` or `GAME_OVER`, blocking the `reset_simulation` tool. Reordered handling so `reset` is always honored, and non‑reset actions remain blocked post‑terminal. Agents can now restart games without server restarts.
