@@ -40,6 +40,7 @@ import { DifficultPuzzlesSection } from '@/components/analytics/DifficultPuzzles
 
 // Import hooks that follow proper repository pattern
 import { useModelDatasetPerformance, useAvailableModels, useAvailableDatasets, useModelDatasetMetrics, DatasetInfo } from '@/hooks/useModelDatasetPerformance';
+import { usePageMeta } from '@/hooks/usePageMeta';
 
 // Types for the new Model Comparison feature
 export interface PuzzleComparisonDetail {
@@ -114,6 +115,13 @@ const DATASET_DISPLAY_NAME_MAP: Record<string, string> = {
 type DatasetOption = DatasetInfo & { displayName: string };
 
 export default function AnalyticsOverview() {
+
+  usePageMeta({
+    title: 'ARC Explainer – Analytics Dashboard',
+    description:
+      'Analyze model accuracy, coverage, cost, and reliability across ARC1, ARC2, ARC-Heavy, and ConceptARC datasets.',
+    canonicalPath: '/analytics',
+  });
 
   // Model dataset performance state
   const [selectedModelForDataset, setSelectedModelForDataset] = useState<string>('');
@@ -231,7 +239,6 @@ export default function AnalyticsOverview() {
   };
 
   React.useEffect(() => {
-    document.title = 'Analytics Dashboard - ARC Explainer';
     window.scrollTo(0, 0);
   }, []);
 

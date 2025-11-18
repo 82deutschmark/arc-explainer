@@ -1,4 +1,16 @@
 # CHANGELOG - Uses semantic versioning (MAJOR.MINOR.PATCH)
+# [5.10.20] - 2025-11-18
+### 🔗 SEO & AEO - Canonical Domain & Page Metadata
+- Switched canonical domain from `https://arc.gptpluspro.com` to `https://arc.markbarney.net` in Open Graph, Twitter, robots, sitemap, and llms configuration.
+- Added `<link rel="canonical" href="https://arc.markbarney.net/" />` and site-level JSON-LD `WebSite` schema in `index.html` for better search/LLM understanding.
+- Introduced a shared `usePageMeta` hook and wired it into key pages (home browser, analytics, leaderboards, ARC3 browser, ARC3 playground, about, model comparison) to provide per-route titles, descriptions, and canonical paths.
+
+# [5.10.19] - 2025-11-18
+### 🤖 AEO - LLM Discoverability Enhancements
+- Generated `sitemap.xml` at `/sitemap.xml` with the main public routes to help crawlers discover key ARC/ARC-AGI pages.
+- Updated `robots.txt` to advertise the sitemap via `Sitemap: https://arc.gptpluspro.com/sitemap.xml`.
+- Expanded `llms.txt` to describe LLM crawling policy, highlight key navigation hubs, and point directly to the sitemap.
+
 # [5.10.18] - 2025-11-18
 ### 🔍 SEO & AEO - Crawler Access
 - Added fully permissive `robots.txt` at `/robots.txt` to allow all crawlers and search engines to index the site.
