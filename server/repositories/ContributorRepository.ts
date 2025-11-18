@@ -255,6 +255,19 @@ export class ContributorRepository extends BaseRepository {
   }
 
   /**
+   * Delete all contributors (for seeding)
+   */
+  async deleteAllContributors(): Promise<void> {
+    try {
+      await this.query(`TRUNCATE TABLE arc_contributors RESTART IDENTITY`);
+      logger.info('Cleared all contributors from database', 'contributor-repository');
+    } catch (error) {
+      logger.error(`Failed to delete all contributors: ${error instanceof Error ? error.message : String(error)}`, 'contributor-repository');
+      throw error;
+    }
+  }
+
+  /**
    * Get count of contributors by category
    */
   async getCountsByCategory(): Promise<Record<string, number>> {
