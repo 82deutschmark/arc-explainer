@@ -178,24 +178,51 @@ export default function ModelComparisonPage() {
   );
 
   useEffect(() => {
-    if (comparisonData) {
-      return;
-    }
-
     const urlParams = new URLSearchParams(window.location.search);
-    const dataset = urlParams.get('dataset');
-    const models = ['model1', 'model2', 'model3', 'model4']
+    const datasetFromUrl = urlParams.get('dataset');
+    const modelsFromUrl = ['model1', 'model2', 'model3', 'model4']
       .map((key) => urlParams.get(key))
       .filter((name): name is string => Boolean(name && name.trim()));
 
-    if (!dataset || models.length === 0) {
-      setFatalError(
-        'Missing required parameters. Please run a comparison from the Analytics page.',
-      );
+    // If no URL params but we already have comparison data, keep showing cached results.
+    if (!datasetFromUrl || modelsFromUrl.length === 0) {
+      if (!comparisonData) {
+        setFatalError(
+          'Missing required parameters. Please run a comparison from the Analytics page.',
+        );
+      }
       return;
     }
 
-    void requestComparisonData(models, dataset, 'initial');
+    const currentDataset = comparisonData?.summary?.dataset ?? null;
+    const currentModels =
+      comparisonData?.summary?.modelPerformance?.map((item) => item.modelName) ?? [];
+
+    const setsDiffer = () => {
+      if (currentModels.length !== modelsFromUrl.length) {
+        return true;
+      }
+      const currentSet = new Set(currentModels);
+      for (const name of modelsFromUrl) {
+        if (!currentSet.has(name)) {
+          return true;
+        }
+      }
+      return false;
+    };
+
+    const datasetChanged = !currentDataset || currentDataset !== datasetFromUrl;
+    const modelsChanged = setsDiffer();
+
+    if (!datasetChanged && !modelsChanged) {
+      return;
+    }
+
+    void requestComparisonData(
+      modelsFromUrl,
+      datasetFromUrl,
+      comparisonData ? 'update' : 'initial',
+    );
   }, [comparisonData, requestComparisonData]);
 
   useEffect(() => {
@@ -211,7 +238,12 @@ export default function ModelComparisonPage() {
   const dataset = comparisonData?.summary?.dataset ?? null;
 
   useEffect(() => {
-    if (!comparisonData || hasRefreshedFromCache) {
+    const urlParams = new URLSearchParams(window.location.search);
+    const hasDatasetParam = Boolean(urlParams.get('dataset'));
+
+    // When a dataset is specified in the URL, we let the URL drive the data
+    // and skip the cache refresh behavior.
+    if (!comparisonData || hasRefreshedFromCache || hasDatasetParam) {
       return;
     }
 
@@ -229,13 +261,13 @@ export default function ModelComparisonPage() {
     void requestComparisonData(modelsToRefresh, datasetName, 'update');
   }, [comparisonData, hasRefreshedFromCache, requestComparisonData]);
 
-  const addableModels = useMemo(
-    () =>
-      availableModels.filter(
-        (modelName) => !selectedModels.includes(modelName),
-      ),
-    [availableModels, selectedModels],
-  );
+  const addableModels = useMemo(() => {
+    const filtered = availableModels.filter(
+      (modelName) => !selectedModels.includes(modelName),
+    );
+    // Prefer newest models first based on the order returned from the backend.
+    return [...filtered].reverse();
+  }, [availableModels, selectedModels]);
 
   const uniqueSolveByModel = useMemo(() => {
     if (!comparisonData?.summary) {

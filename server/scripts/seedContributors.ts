@@ -7,7 +7,7 @@
  * SRP/DRY check: Pass - Single responsibility for database seeding
  */
 
-import { Pool } from 'pg';
+import { initializeDatabase, getPool } from '../repositories/base/BaseRepository.ts';
 import { ContributorRepository } from '../repositories/ContributorRepository.ts';
 import type { CreateContributorRequest } from '@shared/types/contributor.ts';
 import { logger } from '../utils/logger.ts';
@@ -23,8 +23,9 @@ const contributors: CreateContributorRequest[] = [
     affiliation: 'Independent Researcher',
     achievement: 'New SOTA: 79.6% on ARC v1, 29.4% on ARC v2',
     description: 'Achieved record-breaking scores using evolutionary test-time compute with Claude Sonnet 3.5, pioneering natural language programming as an alternative to code-based approaches.',
-    yearStart: 2024,
-    yearEnd: null,
+    imageUrl: '/jberARC.png',
+    yearStart: 2025,
+    yearEnd: undefined,
     score: '79.6% SOTA',
     approach: 'Evolutionary Test-Time Compute with Claude Sonnet 3.5 generating Python transform functions (v1) and plain English instructions with Grok-4 (v2). Uses up to 500 candidate functions with 31-36 dynamic prompts per challenge.',
     uniqueTechnique: 'Pioneered using natural language as a programming medium instead of code; evolutionary approach with diversity preservation',
@@ -33,15 +34,15 @@ const contributors: CreateContributorRequest[] = [
       substack: 'https://jeremyberman.substack.com/',
       website: 'https://params.com/@jeremy-berman/arc-agi'
     },
-    teamName: null,
+    teamName: undefined,
     category: 'competition_winner',
-    rank: 1
+    rank: 2
   },
 
   // 2024 ARC Prize Winners
   {
     fullName: 'Daniel Franzen',
-    handle: null,
+    handle: undefined,
     affiliation: 'Johannes Gutenberg University Mainz (JGU Mainz), Germany',
     achievement: '1st Place ARC Prize 2024 - 53.5% accuracy',
     description: 'Led ARChitects team to victory using innovative LLM-based approach with Mistral-Nemo-Minitron-8B model, depth-first search for token selection, and test-time training.',
@@ -56,28 +57,29 @@ const contributors: CreateContributorRequest[] = [
     },
     teamName: 'ARChitects',
     category: 'competition_winner',
-    rank: 1
+    rank: 2
   },
 
   {
     fullName: 'Jean-François Puget',
     handle: 'JFPuget',
-    affiliation: 'NVIDIA Distinguished Engineer, 3x Kaggle Grandmaster',
-    achievement: 'Preliminary 1st Place on ARC Prize 2024 Kaggle leaderboard',
-    description: 'NVIDIA Distinguished Engineer and 3x Kaggle Grandmaster who achieved preliminary first place with innovative 2D nGPT model approach.',
-    yearStart: 2024,
-    yearEnd: 2024,
+    affiliation: 'Machine Learning at NVIDIA, 6x Kaggle Grandmaster',
+    achievement: 'Preliminary 1st Place on ARC Prize 2025 Kaggle leaderboard',
+    description: 'Machine Learning at NVIDIA, 6x Kaggle Grandmaster (CPMP). ENS Ulm alumni, ML PhD. Formerly at ILOG CPLEX and IBM. Achieved preliminary first place on Kaggle 2025 ARC Prize.',
+    imageUrl: '/jfPuget.png',
+    yearStart: 2025,
+    yearEnd: 2025,
     score: '1st Place (Preliminary)',
-    approach: 'A 2D nGPT Model for ARC Prize - innovative neural approach combining neural networks with program synthesis',
-    uniqueTechnique: '2D neural GPT architecture specifically designed for grid-based reasoning tasks',
+    approach: 'TBA',
+    uniqueTechnique: 'TBA',
     links: {
-      github: 'https://github.com/jfpuget/ARC-AGI-Challenge-2024',
+      github: 'https://github.com/jfpuget',
       twitter: 'https://x.com/JFPuget',
       kaggle: 'https://www.kaggle.com/cpmpml'
     },
-    teamName: 'CPMP',
+    teamName: 'NVARC',
     category: 'competition_winner',
-    rank: 2
+    rank: 1
   },
 
   {
@@ -103,7 +105,7 @@ const contributors: CreateContributorRequest[] = [
   // 2024 Paper Award Winners
   {
     fullName: 'Wen-Ding Li',
-    handle: null,
+    handle: undefined,
     affiliation: 'Cornell University (PhD student with Kevin Ellis)',
     achievement: '1st Place Paper Award - Combined team achieved 47.5% on public leaderboard',
     description: 'Cornell PhD student who investigated whether it\'s better to infer latent functions (induction) or directly predict outputs (transduction) for ARC tasks.',
@@ -118,7 +120,7 @@ const contributors: CreateContributorRequest[] = [
     },
     teamName: 'MIT & Cornell',
     category: 'paper_award',
-    rank: null
+    rank: undefined
   },
 
   {
@@ -138,7 +140,7 @@ const contributors: CreateContributorRequest[] = [
     },
     teamName: 'MIT & Cornell',
     category: 'paper_award',
-    rank: null
+    rank: undefined
   },
 
   {
@@ -160,12 +162,12 @@ const contributors: CreateContributorRequest[] = [
     },
     teamName: 'MIT CSAIL',
     category: 'paper_award',
-    rank: null
+    rank: undefined
   },
 
   {
     fullName: 'Clément Bonnet',
-    handle: null,
+    handle: undefined,
     affiliation: 'Independent Researcher',
     achievement: '3rd Place Paper Award - Latent Program Network',
     description: 'Created Latent Program Network (LPN) that builds test-time search directly into neural models, searching through compact latent space without pre-defined DSLs.',
@@ -178,15 +180,15 @@ const contributors: CreateContributorRequest[] = [
       github: 'https://github.com/clement-bonnet/lpn',
       papers: ['https://arxiv.org/abs/2411.08706']
     },
-    teamName: null,
+    teamName: undefined,
     category: 'paper_award',
-    rank: null
+    rank: undefined
   },
 
   // MindsAI Team
   {
     fullName: 'MindsAI Team',
-    handle: null,
+    handle: undefined,
     affiliation: 'MindsAI Research Lab',
     achievement: 'Highest score of 55.5% on private evaluation set (ineligible for prize)',
     description: 'Pioneered test-time training (TTT) for ARC-AGI beginning in 2023, inspiring many subsequent approaches. Chose not to open source solution.',
@@ -198,12 +200,12 @@ const contributors: CreateContributorRequest[] = [
     links: {},
     teamName: 'MindsAI',
     category: 'researcher',
-    rank: null
+    rank: undefined
   },
 
   {
     fullName: 'Jack Cole',
-    handle: null,
+    handle: undefined,
     affiliation: 'MindsAI Team',
     achievement: '1st Place ARCathon 2023 (tied), Early 2024 world record of 39%',
     description: 'Pioneered test-time training for ARC-AGI in 2023, first to successfully apply TTT to ARC-AGI, inspiring the dominant approach in 2024 competition.',
@@ -215,7 +217,7 @@ const contributors: CreateContributorRequest[] = [
     links: {},
     teamName: 'MindsAI',
     category: 'pioneer',
-    rank: null
+    rank: undefined
   },
 
   // 2020 Kaggle Winners
@@ -234,14 +236,14 @@ const contributors: CreateContributorRequest[] = [
       github: 'https://github.com/top-quarks/ARC-solution',
       kaggle: 'https://www.kaggle.com/competitions/abstraction-and-reasoning-challenge/discussion/154597'
     },
-    teamName: null,
+    teamName: undefined,
     category: 'pioneer',
-    rank: null
+    rank: undefined
   },
 
   {
     fullName: 'Michael Hodel',
-    handle: null,
+    handle: undefined,
     affiliation: 'ETH Zurich (Master\'s student in Computer Science)',
     achievement: 'Winner ARCathon 2022, set world record of 39% in 2024',
     description: 'Created one of the best ARC-AGI domain-specific languages (DSLs) to date, won ARCathon 2022 and continued improving ARC solutions.',
@@ -251,55 +253,38 @@ const contributors: CreateContributorRequest[] = [
     approach: 'Domain-specific language design for ARC puzzle solving',
     uniqueTechnique: 'Optimized DSL and program search process for better performance',
     links: {},
-    teamName: null,
+    teamName: undefined,
     category: 'pioneer',
-    rank: null
+    rank: undefined
   },
 
   // Founders
   {
-    fullName: 'François Chollet',
-    handle: 'fchollet',
-    affiliation: 'Creator of Keras, now Ndea (AGI research lab)',
-    achievement: 'Created ARC-AGI benchmark in 2019',
-    description: 'Creator of Keras (2.5M+ developers) and former Google AI researcher (9+ years). Created ARC-AGI benchmark and published "On the Measure of Intelligence" paper.',
+    fullName: 'François Chollet & Mike Knoop',
+    handle: 'fchollet & mikeknoop',
+    affiliation: 'Creators of ARC-AGI & ARC Prize',
+    achievement: 'Created ARC-AGI benchmark (2019) & Launched ARC Prize (2024)',
+    description: 'François Chollet (Creator of Keras) defined the ARC-AGI benchmark in 2019 to measure general intelligence. Mike Knoop (Co-founder Zapier) launched the $1M+ ARC Prize in 2024 to accelerate progress toward AGI.',
+    imageUrl: '/arc founders.png',
     yearStart: 2019,
-    yearEnd: null,
-    score: 'Creator of ARC',
-    approach: 'Designed ARC as a measure of intelligence based on skill-acquisition efficiency rather than skill itself',
-    uniqueTechnique: 'Created benchmark that remained unsolved from 2019-2024, recognized as one of the toughest AGI benchmarks',
+    yearEnd: undefined,
+    score: 'Founders',
+    approach: 'Designed ARC as a measure of intelligence based on skill-acquisition efficiency rather than skill itself. Organized competitions to guide research.',
+    uniqueTechnique: 'Created a benchmark that remained unsolved for 5+ years and a prize structure that incentivized open-source breakthroughs.',
     links: {
       github: 'https://github.com/fchollet/ARC-AGI',
-      twitter: 'https://x.com/fchollet'
-    },
-    teamName: 'Ndea',
-    category: 'founder',
-    rank: null
-  },
-
-  {
-    fullName: 'Mike Knoop',
-    handle: 'mikeknoop',
-    affiliation: 'Co-founder of Zapier, Co-founder of ARC Prize Foundation',
-    achievement: 'Launched ARC Prize in June 2024 with $1M+ in prizes',
-    description: 'Co-founder of Zapier who left executive role in 2022 to research AGI path. Co-founded ARC Prize Foundation with François Chollet.',
-    yearStart: 2024,
-    yearEnd: null,
-    score: 'Founder ARC Prize',
-    approach: 'Organizing competitions and prizes to guide researchers toward AGI through enduring benchmarks',
-    uniqueTechnique: 'Created prize structure to incentivize open-source solutions and accelerate ARC progress',
-    links: {
-      twitter: 'https://x.com/mikeknoop'
+      twitter: 'https://x.com/fchollet',
+      website: 'https://arcprize.org'
     },
     teamName: 'ARC Prize Foundation',
     category: 'founder',
-    rank: null
+    rank: 0
   },
 
   // Additional Notable Contributors
   {
     fullName: 'Ryan Greenblatt',
-    handle: null,
+    handle: undefined,
     affiliation: 'Redwood Research',
     achievement: '42-43% on ARC-AGI-Pub leaderboard',
     description: 'Achieved strong results using LLM-guided program synthesis with GPT-4o generating ~8,000 Python programs per task, deterministically verified against demonstrations.',
@@ -311,12 +296,12 @@ const contributors: CreateContributorRequest[] = [
     links: {},
     teamName: 'Redwood Research',
     category: 'researcher',
-    rank: null
+    rank: undefined
   },
 
   {
     fullName: 'Paul Fletcher-Hill',
-    handle: null,
+    handle: undefined,
     affiliation: 'Independent Researcher',
     achievement: 'Runner-Up Paper Award - Mini-ARC',
     description: 'Achieved 41% on subset of 114 puzzles using small 67M parameter transformer models trained exclusively on ARC puzzles.',
@@ -329,21 +314,28 @@ const contributors: CreateContributorRequest[] = [
       website: 'https://www.paulfletcherhill.com/arcprize',
       papers: ['https://www.paulfletcherhill.com/mini-arc.pdf']
     },
-    teamName: null,
+    teamName: undefined,
     category: 'paper_award',
-    rank: null
+    rank: undefined
   }
 ];
 
 async function seedDatabase() {
-  const pool = new Pool({
-    connectionString: process.env.DATABASE_URL,
-  });
+  // Initialize the database connection
+  const initialized = await initializeDatabase();
+  
+  if (!initialized) {
+    logger.error('Failed to initialize database connection', 'seed');
+    process.exit(1);
+  }
 
-  const repo = new ContributorRepository(pool);
+  const repo = new ContributorRepository();
 
   try {
     logger.info('Starting contributor database seeding...', 'seed');
+
+    // Clear existing data first to ensure updates are applied
+    await repo.deleteAllContributors();
 
     for (const contributor of contributors) {
       try {
@@ -367,7 +359,11 @@ async function seedDatabase() {
     logger.error(`Seeding failed: ${error}`, 'seed');
     throw error;
   } finally {
-    await pool.end();
+    // Close the pool
+    const pool = getPool();
+    if (pool) {
+      await pool.end();
+    }
   }
 }
 

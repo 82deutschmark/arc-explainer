@@ -7,84 +7,58 @@
  * SRP/DRY check: Pass - Reuses useArcContributors hook, HumanTradingCard component, and existing UI patterns
  */
 
-import React, { useState, useMemo, useEffect } from 'react';
-import { useArcContributors, useContributorStats } from '@/hooks/useArcContributors';
+import React, { useEffect, useMemo } from 'react';
+import { useArcContributors } from '@/hooks/useArcContributors';
 import { HumanTradingCard } from '@/components/human/HumanTradingCard';
-import { Loader2, Trophy, Filter, Users } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
-import type { ContributorCategory } from '@shared/types/contributor';
+import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
+import { Loader2, Users, Trophy, ScrollText, History, Star, ExternalLink } from 'lucide-react';
 
 export default function HumanTradingCards() {
-  const [categoryFilter, setCategoryFilter] = useState<string>('all');
-  const [sortBy, setSortBy] = useState<string>('rank_asc');
-  const [searchQuery, setSearchQuery] = useState<string>('');
-
   const { data, isLoading, error } = useArcContributors();
-  const { data: stats } = useContributorStats();
 
   // Set page title
   useEffect(() => {
-    document.title = 'ARC Human Contributor Trading Cards';
+    document.title = 'ARC Hall of Fame';
   }, []);
 
-  // Filter and sort contributors
-  const filteredContributors = useMemo(() => {
-    if (!data?.contributors) return [];
+  // Categorize contributors
+  const { founders, leaderboard2025, winners2024, researchers, pioneers } = useMemo(() => {
+    if (!data?.contributors) return { founders: [], leaderboard2025: [], winners2024: [], researchers: [], pioneers: [] };
+    
+    const contributors = [...data.contributors];
+    
+    // Founders hero card (category 'founder')
+    const founders = contributors.filter(c => c.category === 'founder');
+    
+    // 2025 Leaderboard (Year 2025)
+    const leaderboard2025 = contributors
+      .filter(c => c.yearStart === 2025 && c.rank !== 0)
+      .sort((a, b) => (a.rank || 999) - (b.rank || 999));
 
-    let filtered = data.contributors;
+    // 2024 Winners (Year 2024, Competition Winner category)
+    const winners2024 = contributors
+      .filter(c => c.yearStart === 2024 && c.category === 'competition_winner' && c.rank !== 0)
+      .sort((a, b) => (a.rank || 999) - (b.rank || 999));
 
-    // Apply search filter
-    if (searchQuery.trim()) {
-      const query = searchQuery.toLowerCase();
-      filtered = filtered.filter(
-        contributor =>
-          contributor.fullName.toLowerCase().includes(query) ||
-          contributor.handle?.toLowerCase().includes(query) ||
-          contributor.affiliation?.toLowerCase().includes(query)
-      );
-    }
+    // Researchers & Paper Awards
+    const researchers = contributors
+      .filter(c => ['paper_award', 'researcher'].includes(c.category) && c.rank !== 0)
+      .sort((a, b) => b.yearStart! - a.yearStart!); // Newest first
 
-    // Apply category filter
-    if (categoryFilter !== 'all') {
-      filtered = filtered.filter(contributor => contributor.category === categoryFilter);
-    }
+    // Pioneers (Old categories or explicit pioneers)
+    const pioneers = contributors
+      .filter(c => c.category === 'pioneer' || (c.yearStart && c.yearStart < 2024 && c.rank !== 0 && c.category !== 'founder'))
+      .sort((a, b) => b.yearStart! - a.yearStart!);
 
-    // Apply sorting
-    filtered = [...filtered].sort((a, b) => {
-      switch (sortBy) {
-        case 'rank_asc':
-          // Nulls last
-          if (a.rank === null && b.rank === null) return 0;
-          if (a.rank === null) return 1;
-          if (b.rank === null) return -1;
-          return a.rank - b.rank;
-        case 'year_desc':
-          return (b.yearStart || 0) - (a.yearStart || 0);
-        case 'year_asc':
-          return (a.yearStart || 0) - (b.yearStart || 0);
-        case 'name_asc':
-          return a.fullName.localeCompare(b.fullName);
-        default:
-          return 0;
-      }
-    });
-
-    return filtered;
-  }, [data?.contributors, categoryFilter, sortBy, searchQuery]);
-
-  // Get unique categories for filter
-  const availableCategories = useMemo(() => {
-    if (!data?.contributors) return [];
-    const categories = new Set(data.contributors.map(c => c.category));
-    return Array.from(categories).sort();
+    return { founders, leaderboard2025, winners2024, researchers, pioneers };
   }, [data?.contributors]);
 
   if (error) {
     return (
-      <div className="min-h-screen w-full bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-slate-100">
+      <div className="min-h-screen w-full bg-slate-950 text-slate-100">
         <div className="container mx-auto px-4 py-10">
-          <div className="rounded-lg border-2 border-red-500 bg-red-500/10 p-6">
-            <span className="text-red-200">Failed to load contributor data. Please check your connection and try again.</span>
+          <div className="rounded-md border border-red-900 bg-red-950/30 p-6">
+            <span className="text-red-200">Failed to load data. Please try again later.</span>
           </div>
         </div>
       </div>
@@ -92,169 +66,164 @@ export default function HumanTradingCards() {
   }
 
   return (
-    <div className="min-h-screen w-full bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-slate-100">
-      <div className="container mx-auto px-4 py-8 space-y-6">
+    <div className="min-h-screen w-full bg-slate-950 text-slate-200">
+      <div className="container mx-auto px-6 py-10 space-y-10">
 
-        {/* Hero Header */}
-        <header className="text-center space-y-4 py-8">
+        {/* Header */}
+        <header className="text-center max-w-4xl mx-auto space-y-4">
           <div className="flex items-center justify-center gap-3">
-            <Users className="h-12 w-12 text-yellow-500" />
-            <h1 className="text-5xl font-black uppercase tracking-tight bg-gradient-to-r from-yellow-400 via-orange-400 to-pink-400 bg-clip-text text-transparent">
+            <Users className="h-10 w-10 text-amber-500" />
+            <h1 className="text-4xl md:text-5xl font-bold text-slate-100 tracking-tight">
               ARC Hall of Fame
             </h1>
-            <Trophy className="h-12 w-12 text-yellow-500" />
           </div>
-          <p className="text-lg text-slate-300">
-            Celebrating the brilliant minds pushing the boundaries of AI reasoning and abstraction
+          <p className="text-xl text-slate-400">
+            Honoring the researchers, engineers, and pioneers pushing the boundaries of AGI.
           </p>
-          {stats && (
-            <div className="flex items-center justify-center gap-4 text-sm flex-wrap">
-              <Badge className="bg-yellow-500 text-white px-4 py-2">
-                {data?.total || 0} Contributors
-              </Badge>
-              {stats.categoryCounts && Object.entries(stats.categoryCounts).map(([category, count]) => (
-                <Badge key={category} className="bg-purple-500 text-white px-4 py-2">
-                  {count} {category.replace('_', ' ')}
-                </Badge>
-              ))}
-            </div>
-          )}
         </header>
 
-        {/* Filters Section */}
-        <section className="rounded-xl border-2 border-slate-700 bg-slate-800/60 backdrop-blur-sm p-6 space-y-4">
-          <div className="flex items-center gap-2 mb-4">
-            <Filter className="h-5 w-5 text-blue-400" />
-            <h2 className="text-xl font-bold text-slate-200">Filter & Sort</h2>
+        {isLoading ? (
+          <div className="py-32 text-center">
+            <Loader2 className="mx-auto mb-4 h-10 w-10 animate-spin text-amber-500" />
+            <p className="text-lg text-slate-500">Loading profiles...</p>
           </div>
+        ) : (
+          <>
+            {/* Founders Hero Section */}
+            {founders.length > 0 && (
+              <section className="max-w-6xl mx-auto relative">
+                <div className="absolute -inset-4 bg-gradient-to-r from-amber-500/20 to-purple-600/20 blur-3xl -z-10 rounded-full opacity-50" />
+                {founders.map(founder => (
+                  <Dialog key={founder.id}>
+                    <div className="border border-slate-800 bg-slate-900/80 backdrop-blur-md rounded-xl px-5 py-3 shadow-2xl flex flex-col md:flex-row md:items-center gap-4 md:h-[10vh] overflow-hidden">
+                      <DialogTrigger asChild>
+                        <button
+                          type="button"
+                          className="flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden border border-slate-700 bg-black hover:border-amber-400/60 transition-colors"
+                        >
+                          {founder.imageUrl && (
+                            <img
+                              src={founder.imageUrl}
+                              alt={founder.fullName}
+                              className="w-full h-full object-cover"
+                            />
+                          )}
+                        </button>
+                      </DialogTrigger>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {/* Search */}
-            <div className="flex flex-col gap-2">
-              <label htmlFor="search" className="text-xs font-semibold uppercase tracking-wide text-slate-400">
-                Search by Name
-              </label>
-              <input
-                id="search"
-                type="text"
-                className="px-3 py-2 rounded-lg border-2 border-slate-600 bg-slate-900 text-slate-100 placeholder:text-slate-500 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
-                placeholder="e.g. Jeremy Berman"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
-            </div>
+                      <div className="flex-1 min-w-0 space-y-1">
+                        <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-amber-400 flex items-center gap-2">
+                          <Users className="w-4 h-4" />
+                          Founders & organizers
+                        </p>
+                        <h2 className="text-xl md:text-2xl font-bold text-slate-100 truncate">
+                          {founder.fullName}
+                        </h2>
+                        {founder.achievement && (
+                          <p className="text-sm text-slate-400 line-clamp-1">
+                            {founder.achievement}
+                          </p>
+                        )}
+                      </div>
 
-            {/* Category Filter */}
-            <div className="flex flex-col gap-2">
-              <label htmlFor="category" className="text-xs font-semibold uppercase tracking-wide text-slate-400">
-                Category
-              </label>
-              <select
-                id="category"
-                className="px-3 py-2 rounded-lg border-2 border-slate-600 bg-slate-900 text-slate-100 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
-                value={categoryFilter}
-                onChange={(e) => setCategoryFilter(e.target.value)}
-              >
-                <option value="all">All Categories</option>
-                {availableCategories.map(category => (
-                  <option key={category} value={category}>
-                    {category.replace('_', ' ').toUpperCase()}
-                  </option>
+                      <div className="flex flex-col items-start md:items-end gap-2">
+                        <div className="text-xs text-slate-400">
+                          <span className="mr-1 text-slate-500">Active:</span>
+                          <span className="font-mono text-slate-200">
+                            {founder.yearStart}
+                            {founder.yearEnd ? `–${founder.yearEnd}` : '–Present'}
+                          </span>
+                        </div>
+                        <DialogTrigger asChild>
+                          <button
+                            type="button"
+                            className="inline-flex items-center gap-1.5 rounded-md border border-amber-500/40 bg-amber-500/10 px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.16em] text-amber-300 hover:bg-amber-500/20 hover:text-amber-100 transition-colors"
+                          >
+                            View full profile
+                            <ExternalLink className="w-3 h-3" />
+                          </button>
+                        </DialogTrigger>
+                      </div>
+                    </div>
+
+                    <DialogContent className="bg-slate-950 border-slate-800 text-slate-200 max-w-3xl max-h-[90vh] overflow-y-auto">
+                      <HumanTradingCard contributor={founder} />
+                    </DialogContent>
+                  </Dialog>
                 ))}
-              </select>
-            </div>
-
-            {/* Sort */}
-            <div className="flex flex-col gap-2">
-              <label htmlFor="sort" className="text-xs font-semibold uppercase tracking-wide text-slate-400">
-                Sort By
-              </label>
-              <select
-                id="sort"
-                className="px-3 py-2 rounded-lg border-2 border-slate-600 bg-slate-900 text-slate-100 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
-                value={sortBy}
-                onChange={(e) => setSortBy(e.target.value)}
-              >
-                <option value="rank_asc">Rank (Highest First)</option>
-                <option value="year_desc">Year (Newest First)</option>
-                <option value="year_asc">Year (Oldest First)</option>
-                <option value="name_asc">Name (A-Z)</option>
-              </select>
-            </div>
-          </div>
-
-          {/* Active Filters Display */}
-          <div className="flex flex-wrap items-center gap-2 pt-4 border-t border-slate-700">
-            <span className="text-sm font-semibold text-slate-300">Active Filters:</span>
-            {[
-              { id: 'search', label: 'Search', active: searchQuery.trim().length > 0 },
-              { id: 'category', label: categoryFilter !== 'all' ? categoryFilter.replace('_', ' ').toUpperCase() : 'Category', active: categoryFilter !== 'all' },
-              { id: 'sort', label: 'Sort', active: sortBy !== 'rank_asc' },
-            ].map((filter) => (
-              <Badge
-                key={filter.id}
-                variant={filter.active ? 'default' : 'secondary'}
-                className={filter.active ? 'border-blue-500 bg-blue-500/20 text-blue-200' : ''}
-              >
-                {filter.label}
-              </Badge>
-            ))}
-          </div>
-        </section>
-
-        {/* Cards Grid */}
-        <section className="space-y-4">
-          <div className="flex items-center justify-between">
-            <h2 className="text-2xl font-bold text-slate-200">Hall of Fame Members</h2>
-            {!isLoading && (
-              <Badge className="bg-slate-700 text-slate-200 px-4 py-2 text-sm">
-                {filteredContributors.length} {filteredContributors.length === 1 ? 'Contributor' : 'Contributors'}
-              </Badge>
+              </section>
             )}
-          </div>
 
-          {isLoading ? (
-            <div className="py-20 text-center">
-              <Loader2 className="mx-auto mb-4 h-12 w-12 animate-spin text-blue-400" />
-              <p className="text-lg text-slate-300">Loading trading cards...</p>
-            </div>
-          ) : filteredContributors.length === 0 ? (
-            <div className="py-20 text-center">
-              <Users className="mx-auto mb-4 h-16 w-16 text-slate-600" />
-              <p className="text-xl text-slate-300">No contributors match your filters.</p>
-              <p className="mt-2 text-sm text-slate-500">Try adjusting the filters to see more contributors.</p>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {filteredContributors.map((contributor) => (
-                <HumanTradingCard key={contributor.id} contributor={contributor} />
-              ))}
-            </div>
-          )}
-        </section>
+            {/* 2025 Leaderboard */}
+            {leaderboard2025.length > 0 && (
+              <section className="space-y-6">
+                <div className="flex items-center gap-3 border-b border-slate-800 pb-4">
+                  <Trophy className="h-6 w-6 text-amber-400" />
+                  <h2 className="text-2xl font-bold text-slate-100">2025 Leaderboard</h2>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                  {leaderboard2025.map(contributor => (
+                    <div key={contributor.id} className="h-full">
+                      <HumanTradingCard contributor={contributor} />
+                    </div>
+                  ))}
+                </div>
+              </section>
+            )}
 
-        {/* Info Footer */}
-        <footer className="rounded-xl border-2 border-slate-700 bg-slate-800/60 backdrop-blur-sm p-6 space-y-3">
-          <h3 className="text-lg font-bold text-slate-200">About the ARC Hall of Fame</h3>
-          <div className="space-y-2 text-sm text-slate-400">
-            <p>
-              <strong className="text-slate-300">Competition Winners:</strong> Top performers in official ARC-AGI competitions,
-              achieving breakthrough scores and advancing the state of the art.
-            </p>
-            <p>
-              <strong className="text-slate-300">Paper Awards:</strong> Researchers who published significant findings about
-              solving ARC puzzles, including novel techniques like test-time training and program synthesis.
-            </p>
-            <p>
-              <strong className="text-slate-300">Pioneers:</strong> Early contributors who established the foundation for
-              modern ARC-AGI solving approaches, including DSL-based program search and neural methods.
-            </p>
-            <p>
-              <strong className="text-slate-300">Founders & Organizers:</strong> The visionaries who created and organize
-              the ARC challenge, driving progress toward artificial general intelligence.
-            </p>
-          </div>
-        </footer>
+            {/* 2024 Winners */}
+            {winners2024.length > 0 && (
+              <section className="space-y-6">
+                 <div className="flex items-center gap-3 border-b border-slate-800 pb-4">
+                  <Star className="h-6 w-6 text-blue-400" />
+                  <h2 className="text-2xl font-bold text-slate-100">2024 ARC Prize Winners</h2>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                  {winners2024.map(contributor => (
+                    <div key={contributor.id} className="h-full">
+                      <HumanTradingCard contributor={contributor} />
+                    </div>
+                  ))}
+                </div>
+              </section>
+            )}
+
+            {/* Research & Papers */}
+            {researchers.length > 0 && (
+              <section className="space-y-6">
+                 <div className="flex items-center gap-3 border-b border-slate-800 pb-4">
+                  <ScrollText className="h-6 w-6 text-emerald-400" />
+                  <h2 className="text-2xl font-bold text-slate-100">Research & Awards</h2>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                  {researchers.map(contributor => (
+                    <div key={contributor.id} className="h-full">
+                      <HumanTradingCard contributor={contributor} />
+                    </div>
+                  ))}
+                </div>
+              </section>
+            )}
+
+            {/* Pioneers */}
+            {pioneers.length > 0 && (
+              <section className="space-y-6">
+                 <div className="flex items-center gap-3 border-b border-slate-800 pb-4">
+                  <History className="h-6 w-6 text-purple-400" />
+                  <h2 className="text-2xl font-bold text-slate-100">Pioneers</h2>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                  {pioneers.map(contributor => (
+                    <div key={contributor.id} className="h-full">
+                      <HumanTradingCard contributor={contributor} />
+                    </div>
+                  ))}
+                </div>
+              </section>
+            )}
+          </>
+        )}
+
       </div>
     </div>
   );
