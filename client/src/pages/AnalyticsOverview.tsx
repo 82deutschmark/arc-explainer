@@ -255,7 +255,7 @@ export default function AnalyticsOverview() {
                 Analytics Dashboard
               </h1>
               <p className="text-lg text-gray-600">
-                Model performance analysis on ARC datasets
+                We ingest the ARC Prize team's official results which are posted at https://huggingface.co/arcprize and try to make them more visually appealing and interactive.
               </p>
             </div>
           </div>
@@ -265,14 +265,12 @@ export default function AnalyticsOverview() {
         <Card className="border-blue-200 bg-blue-50/70">
           <CardContent className="p-3 text-sm text-left text-gray-700 space-y-1">
             <p className="font-semibold text-gray-900">
-              How these analytics are generated
+              How it works:
             </p>
             <p>
-              We ingest the ARC Prize team's official results which are posted at https://huggingface.co/arcprize and try to make them more visually appealing and interactive.
-              
               For each puzzle in those datasets, the harness feeds the same input grids and prompt scaffolding into
               each LLM, then parses the model's output and scores it with the same rules before storing the
-              results, costs, and timings in a shared database that this dashboard queries.
+              results, costs, and timings.
             </p>
             <p>
               The ARC Prize team uses this scaffolding to test all LLMs on the public HuggingFace ARC datasets.
