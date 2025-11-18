@@ -45,11 +45,17 @@ export function useArcContributors(options?: UseContributorsOptions) {
   });
 }
 
+export interface ContributorStats {
+  total: number;
+  categoryCounts: Record<string, number>;
+  latestYear: number;
+}
+
 /**
  * Hook to fetch contributor statistics
  */
 export function useContributorStats() {
-  return useQuery({
+  return useQuery<ContributorStats>({
     queryKey: ['contributor-stats'],
     queryFn: async () => {
       const response = await apiRequest('GET', '/api/contributors/stats');
