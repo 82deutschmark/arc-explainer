@@ -10,7 +10,8 @@
 import React, { useEffect, useMemo } from 'react';
 import { useArcContributors } from '@/hooks/useArcContributors';
 import { HumanTradingCard } from '@/components/human/HumanTradingCard';
-import { Loader2, Users, Trophy, ScrollText, History, Star } from 'lucide-react';
+import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
+import { Loader2, Users, Trophy, ScrollText, History, Star, ExternalLink } from 'lucide-react';
 
 export default function HumanTradingCards() {
   const { data, isLoading, error } = useArcContributors();
@@ -26,8 +27,8 @@ export default function HumanTradingCards() {
     
     const contributors = [...data.contributors];
     
-    // Founders (Rank 0)
-    const founders = contributors.filter(c => c.rank === 0);
+    // Founders hero card (category 'founder')
+    const founders = contributors.filter(c => c.category === 'founder');
     
     // 2025 Leaderboard (Year 2025)
     const leaderboard2025 = contributors
@@ -66,7 +67,7 @@ export default function HumanTradingCards() {
 
   return (
     <div className="min-h-screen w-full bg-slate-950 text-slate-200">
-      <div className="container mx-auto px-6 py-12 space-y-16">
+      <div className="container mx-auto px-6 py-10 space-y-10">
 
         {/* Header */}
         <header className="text-center max-w-4xl mx-auto space-y-4">
@@ -90,15 +91,66 @@ export default function HumanTradingCards() {
           <>
             {/* Founders Hero Section */}
             {founders.length > 0 && (
-              <section className="max-w-5xl mx-auto relative">
+              <section className="max-w-6xl mx-auto relative">
                 <div className="absolute -inset-4 bg-gradient-to-r from-amber-500/20 to-purple-600/20 blur-3xl -z-10 rounded-full opacity-50" />
-                <div className="border border-slate-800 bg-slate-900/50 backdrop-blur-sm rounded-2xl p-1 shadow-2xl">
-                   {founders.map(founder => (
-                     <div key={founder.id} className="h-[500px]">
-                       <HumanTradingCard contributor={founder} />
-                     </div>
-                   ))}
-                </div>
+                {founders.map(founder => (
+                  <Dialog key={founder.id}>
+                    <div className="border border-slate-800 bg-slate-900/80 backdrop-blur-md rounded-xl px-5 py-3 shadow-2xl flex flex-col md:flex-row md:items-center gap-4 md:h-[10vh] overflow-hidden">
+                      <DialogTrigger asChild>
+                        <button
+                          type="button"
+                          className="flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden border border-slate-700 bg-black hover:border-amber-400/60 transition-colors"
+                        >
+                          {founder.imageUrl && (
+                            <img
+                              src={founder.imageUrl}
+                              alt={founder.fullName}
+                              className="w-full h-full object-cover"
+                            />
+                          )}
+                        </button>
+                      </DialogTrigger>
+
+                      <div className="flex-1 min-w-0 space-y-1">
+                        <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-amber-400 flex items-center gap-2">
+                          <Users className="w-4 h-4" />
+                          Founders & organizers
+                        </p>
+                        <h2 className="text-xl md:text-2xl font-bold text-slate-100 truncate">
+                          {founder.fullName}
+                        </h2>
+                        {founder.achievement && (
+                          <p className="text-sm text-slate-400 line-clamp-1">
+                            {founder.achievement}
+                          </p>
+                        )}
+                      </div>
+
+                      <div className="flex flex-col items-start md:items-end gap-2">
+                        <div className="text-xs text-slate-400">
+                          <span className="mr-1 text-slate-500">Active:</span>
+                          <span className="font-mono text-slate-200">
+                            {founder.yearStart}
+                            {founder.yearEnd ? `–${founder.yearEnd}` : '–Present'}
+                          </span>
+                        </div>
+                        <DialogTrigger asChild>
+                          <button
+                            type="button"
+                            className="inline-flex items-center gap-1.5 rounded-md border border-amber-500/40 bg-amber-500/10 px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.16em] text-amber-300 hover:bg-amber-500/20 hover:text-amber-100 transition-colors"
+                          >
+                            View full profile
+                            <ExternalLink className="w-3 h-3" />
+                          </button>
+                        </DialogTrigger>
+                      </div>
+                    </div>
+
+                    <DialogContent className="bg-slate-950 border-slate-800 text-slate-200 max-w-3xl max-h-[90vh] overflow-y-auto">
+                      <HumanTradingCard contributor={founder} />
+                    </DialogContent>
+                  </Dialog>
+                ))}
               </section>
             )}
 
