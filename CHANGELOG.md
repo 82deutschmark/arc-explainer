@@ -1,4 +1,10 @@
 # CHANGELOG - Uses semantic versioning (MAJOR.MINOR.PATCH)
+# [5.10.18] - 2025-11-18
+### 🔍 SEO & AEO - Crawler Access
+- Added fully permissive `robots.txt` at `/robots.txt` to allow all crawlers and search engines to index the site.
+- Added `llms.txt` at `/llms.txt` explicitly allowing language models to crawl and index all public content.
+- Added explicit `<meta name="robots" content="index,follow,max-snippet:-1,max-image-preview:large,max-video-preview:-1" />` to the main HTML shell.
+
 # [5.10.17] - 2025-11-18
 ### 🧩 Meta - Social Preview Image
 - Switched Open Graph and Twitter preview image to animated ARC puzzle GIF at `/images/decoration/arc_puzzle_0ca9ddb6_twinkle.gif` for richer link previews.
