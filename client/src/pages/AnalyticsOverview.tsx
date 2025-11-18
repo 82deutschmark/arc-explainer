@@ -112,6 +112,35 @@ const DATASET_DISPLAY_NAME_MAP: Record<string, string> = {
   'concept-arc': 'ConceptARC'
 };
 
+const isHuggingFaceOfficial = (modelName: string | null | undefined): boolean => {
+  if (!modelName) return false;
+  return modelName.endsWith('-attempt1') || modelName.endsWith('-attempt2');
+};
+
+const getModelOriginInfo = (modelName: string | null | undefined) => {
+  if (!modelName) {
+    return {
+      isOfficial: false,
+      label: '',
+      description: '',
+      shortLabel: '',
+    };
+  }
+
+  const isOfficial = isHuggingFaceOfficial(modelName);
+
+  return {
+    isOfficial,
+    label: isOfficial
+      ? 'HuggingFace ARC Prize (official)'
+      : 'ARC Explainer / community run (unofficial)',
+    description: isOfficial
+      ? 'This model\'s results come from the ARC Prize HuggingFace leaderboard ingestion.'
+      : 'This model\'s results come from ARC Explainer / community runs and are not an official leaderboard score.',
+    shortLabel: isOfficial ? 'HF official' : 'ARC Explainer',
+  };
+};
+
 type DatasetOption = DatasetInfo & { displayName: string };
 
 export default function AnalyticsOverview() {
@@ -146,6 +175,16 @@ export default function AnalyticsOverview() {
       displayName: DATASET_DISPLAY_NAME_MAP[dataset.name] ?? dataset.name
     }));
   }, [availableDatasets]);
+
+  const { officialModels, communityModels } = useMemo(() => {
+    const official = availableModels.filter((model) => isHuggingFaceOfficial(model));
+    const community = availableModels.filter((model) => !isHuggingFaceOfficial(model));
+    return { officialModels: official, communityModels: community };
+  }, [availableModels]);
+
+  const selectedModelOrigin = modelDatasetPerformance
+    ? getModelOriginInfo(modelDatasetPerformance.modelName)
+    : null;
 
   // Prefer ARC2 evaluation dataset by default; fall back to first available directory
   React.useEffect(() => {
@@ -334,11 +373,22 @@ export default function AnalyticsOverview() {
                     <SelectValue placeholder={loadingModels ? "Loading..." : "Choose model"} />
                   </SelectTrigger>
                   <SelectContent>
-                    {availableModels.map((model) => (
-                      <SelectItem key={model} value={model}>
-                        {model}
-                      </SelectItem>
-                    ))}
+                    {officialModels.map((model) => {
+                      const origin = getModelOriginInfo(model);
+                      return (
+                        <SelectItem key={model} value={model}>
+                          {model} {origin.shortLabel && `(${origin.shortLabel})`}
+                        </SelectItem>
+                      );
+                    })}
+                    {communityModels.map((model) => {
+                      const origin = getModelOriginInfo(model);
+                      return (
+                        <SelectItem key={model} value={model}>
+                          {model} {origin.shortLabel && `(${origin.shortLabel})`}
+                        </SelectItem>
+                      );
+                    })}
                   </SelectContent>
                 </Select>
               </div>
@@ -354,14 +404,44 @@ export default function AnalyticsOverview() {
                     <SelectValue placeholder="Compare model" />
                   </SelectTrigger>
                   <SelectContent>
-                    {availableModels.filter(m => m !== selectedModelForDataset).map((model) => (
-                      <SelectItem key={model} value={model}>
-                        {model}
-                      </SelectItem>
-                    ))}
+                    {officialModels
+                      .filter((model) => model !== selectedModelForDataset)
+                      .map((model) => {
+                        const origin = getModelOriginInfo(model);
+                        return (
+                          <SelectItem key={model} value={model}>
+                            {model} {origin.shortLabel && `(${origin.shortLabel})`}
+                          </SelectItem>
+                        );
+                      })}
+                    {communityModels
+                      .filter((model) => model !== selectedModelForDataset)
+                      .map((model) => {
+                        const origin = getModelOriginInfo(model);
+                        return (
+                          <SelectItem key={model} value={model}>
+                            {model} {origin.shortLabel && `(${origin.shortLabel})`}
+                          </SelectItem>
+                        );
+                      })}
                   </SelectContent>
                 </Select>
               </div>
+            </div>
+
+            <div className="space-y-1 text-xs text-muted-foreground">
+              {selectedModelForDataset && (
+                <p>
+                  <span className="font-semibold">Primary model:</span>{' '}
+                  {getModelOriginInfo(selectedModelForDataset).description}
+                </p>
+              )}
+              {selectedModelForComparison && (
+                <p>
+                  <span className="font-semibold">Compare model:</span>{' '}
+                  {getModelOriginInfo(selectedModelForComparison).description}
+                </p>
+              )}
             </div>
 
             <div className="flex justify-center">
@@ -406,6 +486,18 @@ export default function AnalyticsOverview() {
                           <span className="text-sm px-2 py-0.5 bg-blue-100 text-blue-700 rounded-md font-medium">
                             {DATASET_DISPLAY_NAME_MAP[modelDatasetPerformance.dataset] || modelDatasetPerformance.dataset}
                           </span>
+                          {selectedModelOrigin && selectedModelOrigin.label && (
+                            <Badge
+                              variant={selectedModelOrigin.isOfficial ? 'secondary' : 'outline'}
+                              className={
+                                selectedModelOrigin.isOfficial
+                                  ? 'text-[11px] bg-green-50 text-green-700 border-green-200'
+                                  : 'text-[11px] bg-amber-50 text-amber-700 border-amber-200'
+                              }
+                            >
+                              {selectedModelOrigin.label}
+                            </Badge>
+                          )}
                           <span className="text-sm text-gray-500">({modelDatasetPerformance.summary.totalPuzzles} puzzles)</span>
                         </div>
                         <div className="flex items-center gap-4 text-sm text-gray-600">
