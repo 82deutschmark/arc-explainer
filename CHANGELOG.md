@@ -1,10 +1,17 @@
 # CHANGELOG - Uses semantic versioning (MAJOR.MINOR.PATCH)`r`n
 # [5.10.15] - 2025-11-18
-### ✨ UI - Analytics Dashboard Defaults
-- Updated Analytics Dashboard primary/comparison model defaults to prefer latest Gemini runs when available:
-  - Primary model now prefers `gemini-3-pro-preview-attempt1` (then `gemini-3-deep-think-preview-attempt1`, then previous GPT-5 default, then any available model).
-  - Compare-with model now prefers `gemini-3-deep-think-preview-attempt1`, then `gemini-3-pro-preview-attempt1`, then the previous Claude Haiku default, falling back to any other available model.
-- Behavior is conditional: if the Gemini models are not present in `/api/model-dataset/models`, the previous fallback logic still applies.
+### ✨ UI - Analytics & Model Comparison Defaults
+- **Analytics Dashboard**
+  - Updated primary/comparison model defaults to prefer latest Gemini runs when available:
+    - Primary model now prefers `gemini-3-pro-preview-attempt1` (then `gemini-3-deep-think-preview-attempt1`, then previous GPT-5 default, then any available model).
+    - Compare-with model now prefers `gemini-3-deep-think-preview-attempt1`, then `gemini-3-pro-preview-attempt1`, then the previous Claude Haiku default, falling back to any other available model.
+  - Behavior is conditional: if the Gemini models are not present in `/api/model-dataset/models`, the previous fallback logic still applies.
+
+- **Model Comparison Page**
+  - URL parameters for `dataset` and `model1..model4` now override any cached comparison data.
+    - Fixes bug where the page could appear "stuck" on ARC1 results even when navigating from Analytics with ARC2 selected.
+  - When no URL parameters are present but cache exists, the page still loads the cached comparison for convenience.
+  - The "+ Add model…" dropdown now prefers the newest models first by reversing the filtered `availableModels` list.
 
 # [5.10.14] - 2025-11-16
 ### 🐛 Bug Fixes - Contributor Repository Architecture
