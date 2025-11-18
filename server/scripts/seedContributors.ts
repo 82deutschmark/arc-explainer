@@ -23,6 +23,7 @@ const contributors: CreateContributorRequest[] = [
     affiliation: 'Independent Researcher',
     achievement: 'New SOTA: 79.6% on ARC v1, 29.4% on ARC v2',
     description: 'Achieved record-breaking scores using evolutionary test-time compute with Claude Sonnet 3.5, pioneering natural language programming as an alternative to code-based approaches.',
+    imageUrl: '/jberARC.png',
     yearStart: 2024,
     yearEnd: undefined,
     score: '79.6% SOTA',
@@ -259,42 +260,25 @@ const contributors: CreateContributorRequest[] = [
 
   // Founders
   {
-    fullName: 'François Chollet',
-    handle: 'fchollet',
-    affiliation: 'Creator of Keras, now Ndea (AGI research lab)',
-    achievement: 'Created ARC-AGI benchmark in 2019',
-    description: 'Creator of Keras (2.5M+ developers) and former Google AI researcher (9+ years). Created ARC-AGI benchmark and published "On the Measure of Intelligence" paper.',
+    fullName: 'François Chollet & Mike Knoop',
+    handle: 'fchollet & mikeknoop',
+    affiliation: 'Creators of ARC-AGI & ARC Prize',
+    achievement: 'Created ARC-AGI benchmark (2019) & Launched ARC Prize (2024)',
+    description: 'François Chollet (Creator of Keras) defined the ARC-AGI benchmark in 2019 to measure general intelligence. Mike Knoop (Co-founder Zapier) launched the $1M+ ARC Prize in 2024 to accelerate progress toward AGI.',
+    imageUrl: '/arc founders.png',
     yearStart: 2019,
     yearEnd: undefined,
-    score: 'Creator of ARC',
-    approach: 'Designed ARC as a measure of intelligence based on skill-acquisition efficiency rather than skill itself',
-    uniqueTechnique: 'Created benchmark that remained unsolved from 2019-2024, recognized as one of the toughest AGI benchmarks',
+    score: 'Founders',
+    approach: 'Designed ARC as a measure of intelligence based on skill-acquisition efficiency rather than skill itself. Organized competitions to guide research.',
+    uniqueTechnique: 'Created a benchmark that remained unsolved for 5+ years and a prize structure that incentivized open-source breakthroughs.',
     links: {
       github: 'https://github.com/fchollet/ARC-AGI',
-      twitter: 'https://x.com/fchollet'
-    },
-    teamName: 'Ndea',
-    category: 'founder',
-    rank: undefined
-  },
-
-  {
-    fullName: 'Mike Knoop',
-    handle: 'mikeknoop',
-    affiliation: 'Co-founder of Zapier, Co-founder of ARC Prize Foundation',
-    achievement: 'Launched ARC Prize in June 2024 with $1M+ in prizes',
-    description: 'Co-founder of Zapier. Co-founded ARC Prize Foundation with François Chollet.',
-    yearStart: 2024,
-    yearEnd: undefined,
-    score: 'Founder ARC Prize',
-    approach: 'Organizing competitions and prizes to guide researchers toward AGI through enduring benchmarks',
-    uniqueTechnique: 'Created prize structure to incentivize open-source solutions and accelerate ARC progress',
-    links: {
-      twitter: 'https://x.com/mikeknoop'
+      twitter: 'https://x.com/fchollet',
+      website: 'https://arcprize.org'
     },
     teamName: 'ARC Prize Foundation',
     category: 'founder',
-    rank: undefined
+    rank: 0
   },
 
   // Additional Notable Contributors

@@ -25,6 +25,13 @@ export default function HumanTradingCards() {
     if (!data?.contributors) return [];
     
     return [...data.contributors].sort((a, b) => {
+      // 0. Special Case: Rank 0 always comes first (Founders)
+      const rankA = a.rank ?? 999;
+      const rankB = b.rank ?? 999;
+      
+      if (rankA === 0 && rankB !== 0) return -1;
+      if (rankB === 0 && rankA !== 0) return 1;
+
       // 1. Year Descending (newest first)
       const yearA = a.yearStart || 0;
       const yearB = b.yearStart || 0;
@@ -32,8 +39,6 @@ export default function HumanTradingCards() {
 
       // 2. Rank Ascending (1 is better than 2)
       // Treat null rank as Infinity (bottom of list)
-      const rankA = a.rank ?? 999;
-      const rankB = b.rank ?? 999;
       if (rankA !== rankB) return rankA - rankB;
 
       // 3. Name tie-breaker
