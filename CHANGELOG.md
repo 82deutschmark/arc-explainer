@@ -1,4 +1,8 @@
 # CHANGELOG - Uses semantic versioning (MAJOR.MINOR.PATCH)
+# [5.10.17] - 2025-11-18
+### 🧩 Meta - Social Preview Image
+- Switched Open Graph and Twitter preview image to animated ARC puzzle GIF at `/images/decoration/arc_puzzle_0ca9ddb6_twinkle.gif` for richer link previews.
+
 # [5.10.16] - 2025-11-18
 ### ✨ UI - Hall of Fame Redesign
 - **Hall of Fame Redesign:**
