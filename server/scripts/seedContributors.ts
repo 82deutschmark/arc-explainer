@@ -24,7 +24,7 @@ const contributors: CreateContributorRequest[] = [
     achievement: 'New SOTA: 79.6% on ARC v1, 29.4% on ARC v2',
     description: 'Achieved record-breaking scores using evolutionary test-time compute with Claude Sonnet 3.5, pioneering natural language programming as an alternative to code-based approaches.',
     imageUrl: '/jberARC.png',
-    yearStart: 2024,
+    yearStart: 2025,
     yearEnd: undefined,
     score: '79.6% SOTA',
     approach: 'Evolutionary Test-Time Compute with Claude Sonnet 3.5 generating Python transform functions (v1) and plain English instructions with Grok-4 (v2). Uses up to 500 candidate functions with 31-36 dynamic prompts per challenge.',
