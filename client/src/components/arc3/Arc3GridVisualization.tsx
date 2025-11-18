@@ -53,7 +53,7 @@ export const Arc3GridVisualization: React.FC<Arc3GridVisualizationProps> = ({
 
   // Create a stable signature for the grid data to track changes
   const gridSignature = React.useMemo(() => {
-    return `${grid?.length || 0}-${frameIndex}-${height}-${width}-${currentFrame?.[0]?.[0]?.[0] || 0}`;
+    return `${grid?.length || 0}-${frameIndex}-${height}-${width}-${currentFrame?.[0]?.[0] || 0}`;
   }, [grid?.length, frameIndex, height, width, currentFrame]);
 
   // Debug logging for grid updates

@@ -25,34 +25,34 @@ export function getCategoryGradient(category: ContributorCategory): {
     textColor: string;
   }> = {
     'competition_winner': {
-      borderGradient: 'from-yellow-500 via-amber-500 to-orange-500',
-      backgroundGradient: 'from-yellow-50 via-amber-50 to-orange-50',
-      accentColor: 'bg-yellow-500',
-      textColor: 'text-yellow-700'
+      borderGradient: 'border-amber-500/50',
+      backgroundGradient: 'bg-slate-900',
+      accentColor: 'bg-amber-500/10 text-amber-500 border-amber-500/20',
+      textColor: 'text-amber-500'
     },
     'paper_award': {
-      borderGradient: 'from-blue-500 via-indigo-500 to-purple-500',
-      backgroundGradient: 'from-blue-50 via-indigo-50 to-purple-50',
-      accentColor: 'bg-blue-500',
-      textColor: 'text-blue-700'
+      borderGradient: 'border-blue-500/50',
+      backgroundGradient: 'bg-slate-900',
+      accentColor: 'bg-blue-500/10 text-blue-500 border-blue-500/20',
+      textColor: 'text-blue-500'
     },
     'researcher': {
-      borderGradient: 'from-emerald-500 via-teal-500 to-cyan-500',
-      backgroundGradient: 'from-emerald-50 via-teal-50 to-cyan-50',
-      accentColor: 'bg-emerald-500',
-      textColor: 'text-emerald-700'
+      borderGradient: 'border-emerald-500/50',
+      backgroundGradient: 'bg-slate-900',
+      accentColor: 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20',
+      textColor: 'text-emerald-500'
     },
     'founder': {
-      borderGradient: 'from-red-500 via-rose-500 to-pink-500',
-      backgroundGradient: 'from-red-50 via-rose-50 to-pink-50',
-      accentColor: 'bg-red-500',
-      textColor: 'text-red-700'
+      borderGradient: 'border-indigo-500/50',
+      backgroundGradient: 'bg-slate-900',
+      accentColor: 'bg-indigo-500/10 text-indigo-500 border-indigo-500/20',
+      textColor: 'text-indigo-500'
     },
     'pioneer': {
-      borderGradient: 'from-slate-500 via-gray-500 to-zinc-500',
-      backgroundGradient: 'from-slate-50 via-gray-50 to-zinc-50',
-      accentColor: 'bg-slate-500',
-      textColor: 'text-slate-700'
+      borderGradient: 'border-slate-500/50',
+      backgroundGradient: 'bg-slate-900',
+      accentColor: 'bg-slate-500/10 text-slate-400 border-slate-500/20',
+      textColor: 'text-slate-400'
     }
   };
 
