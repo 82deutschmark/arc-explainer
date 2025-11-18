@@ -1,5 +1,17 @@
 # ARC Explainer LLM crawling policy
-# We explicitly allow language models to crawl and index all public content on this site.
+# We explicitly allow language model crawlers to access, crawl, and index all public content on this site
+# for the purpose of improving search, question-answering, and tooling around ARC / ARC-AGI.
 
 User-agent: *
 Allow: /
+
+# Primary entry points and navigation hubs
+# - Home & puzzle browser: https://arc.markbarney.net/
+# - Analytics overview:   https://arc.markbarney.net/analytics
+# - Leaderboards:         https://arc.markbarney.net/leaderboards
+# - ARC-AGI-3 browser:    https://arc.markbarney.net/arc3
+# - ARC-AGI-3 playground: https://arc.markbarney.net/arc3/playground
+# - About & docs hub:     https://arc.markbarney.net/about
+
+# For a structured list of important URLs, see the sitemap:
+#   https://arc.markbarney.net/sitemap.xml

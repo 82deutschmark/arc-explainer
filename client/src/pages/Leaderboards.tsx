@@ -21,6 +21,7 @@ import { ReliabilityLeaderboard } from '@/components/overview/leaderboards/Relia
 import { HighRiskModelsList } from '@/components/overview/leaderboards/HighRiskModelsList';
 import { TopFeedbackList } from '@/components/overview/leaderboards/TopFeedbackList';
 import { useModelLeaderboards } from '@/hooks/useModelLeaderboards';
+import { usePageMeta } from '@/hooks/usePageMeta';
 
 function formatPercentage(value?: number, decimals = 1): string | undefined {
   if (value === undefined || Number.isNaN(value)) {
@@ -43,6 +44,12 @@ const determineTone = (value?: number, positiveThreshold = 70, warningThreshold 
 };
 
 const Leaderboards: React.FC = () => {
+  usePageMeta({
+    title: 'ARC Explainer – Model Leaderboards',
+    description:
+      'View accuracy, trustworthiness, reliability, and feedback-based rankings for ARC solvers and LLM models.',
+    canonicalPath: '/leaderboards',
+  });
   const {
     accuracyStats,
     performanceStats,
@@ -66,7 +73,7 @@ const Leaderboards: React.FC = () => {
   const [isRefreshing, setIsRefreshing] = useState(false);
 
   useEffect(() => {
-    document.title = 'Model Leaderboards - ARC Explainer';
+    // Keep any future side effects here if needed; title is managed by usePageMeta.
   }, []);
 
   const handleRefresh = useCallback(() => {

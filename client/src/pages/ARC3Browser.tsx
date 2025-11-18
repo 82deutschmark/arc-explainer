@@ -26,8 +26,15 @@ import {
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { usePageMeta } from '@/hooks/usePageMeta';
 
 export default function ARC3Browser() {
+  usePageMeta({
+    title: 'ARC Explainer – ARC-AGI-3 Browser',
+    description:
+      'Learn how ARC-AGI-3 interactive reasoning benchmarks differ from ARC 1 & 2 and explore agents, games, and resources.',
+    canonicalPath: '/arc3',
+  });
   return (
     <div className="container mx-auto px-4 py-8 max-w-6xl">
       {/* Hero Section */}

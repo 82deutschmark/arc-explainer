@@ -14,6 +14,7 @@ import { NewModelComparisonResults } from '@/components/analytics/NewModelCompar
 import { ModelPerformancePanel } from '@/components/analytics/ModelPerformancePanel';
 import { useAvailableModels } from '@/hooks/useModelDatasetPerformance';
 import { ModelComparisonResult } from './AnalyticsOverview';
+import { usePageMeta } from '@/hooks/usePageMeta';
 
 const MAX_MODELS = 4;
 const COMPARISON_CACHE_KEY = 'arc-comparison-data';
@@ -25,6 +26,12 @@ interface CachedComparisonEnvelope {
 }
 
 export default function ModelComparisonPage() {
+  usePageMeta({
+    title: 'ARC Explainer – Model Comparison',
+    description:
+      'Compare ARC solver models head-to-head on accuracy, coverage, cost, and latency across ARC datasets.',
+    canonicalPath: '/model-comparison',
+  });
   const [, navigate] = useLocation();
   const [loadingInitial, setLoadingInitial] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
