@@ -1,4 +1,16 @@
 # CHANGELOG - Uses semantic versioning (MAJOR.MINOR.PATCH)
+# [5.11.0] - 2025-11-18
+### 🚀 Release Summary – Analytics & Discoverability
+- Added clear model origin indicators on the Analytics Dashboard (HuggingFace ARC Prize leaderboard vs ARC Explainer / community runs).
+- Improved SEO/AEO surface with sitemap, robots, llms configuration, canonical metadata, and structured page metadata.
+- Refined evaluation harness explanation copy to better describe how analytics are generated from the ARC Prize benchmarking harness.
+
+# [5.10.23] - 2025-11-18
+### 📊 Analytics – Model Origin Badges & Labels
+- Added lightweight client-side classifier in `AnalyticsOverview` to distinguish ARC Prize HuggingFace leaderboard runs from ARC Explainer / community runs using the `-attempt1` / `-attempt2` suffix convention.
+- Displayed an explicit origin badge in the analytics header card so users can immediately see whether results are official HF leaderboard numbers or community/private runs.
+- Updated the Primary/Compare model dropdowns to group official models first with short "HF official" labels and show an inline explanatory note under the selects describing the origin of each selected model in plain language.
+
 # [5.10.22] - 2025-11-18
 ### 📊 Analytics – Evaluation Harness Copy Clarification
 - Refined the Analytics Dashboard "How these analytics are generated" card to explicitly reference the HuggingFace ARC datasets and describe the process in terms of the ARC Prize team (instead of "we"), while keeping the link to the open-source harness at https://github.com/arcprize/arc-agi-benchmarking.
