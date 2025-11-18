@@ -84,7 +84,7 @@ export default function HumanTradingCards() {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
               {sortedContributors.map((contributor) => (
-                <div key={contributor.id} className="h-[420px]">
+                <div key={contributor.id} className="h-full">
                   <HumanTradingCard contributor={contributor} />
                 </div>
               ))}

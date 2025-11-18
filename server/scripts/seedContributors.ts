@@ -62,9 +62,9 @@ const contributors: CreateContributorRequest[] = [
   {
     fullName: 'Jean-François Puget',
     handle: 'JFPuget',
-    affiliation: 'NVIDIA Distinguished Engineer, 3x Kaggle Grandmaster',
+    affiliation: 'Machine Learning at NVIDIA, 6x Kaggle Grandmaster',
     achievement: 'Preliminary 1st Place on ARC Prize 2025 Kaggle leaderboard',
-    description: 'NVIDIA Distinguished Engineer and 3x Kaggle Grandmaster who achieved preliminary first place with innovative 2D nGPT model approach.',
+    description: 'Machine Learning at NVIDIA, 6x Kaggle Grandmaster (CPMP). ENS Ulm alumni, ML PhD. Formerly at ILOG CPLEX and IBM. Achieved preliminary first place on Kaggle 2025 ARC Prize.',
     imageUrl: '/jfPuget.png',
     yearStart: 2025,
     yearEnd: 2025,
