@@ -1,9 +1,13 @@
-# CHANGELOG - Uses semantic versioning (MAJOR.MINOR.PATCH)`r`n
-# [5.10.15] - 2025-11-18
-### ✨ UI - Analytics & Model Comparison Defaults
-- **Analytics Dashboard**
-  - Updated primary/comparison model defaults to prefer latest Gemini runs when available:
-    - Primary model now prefers `gemini-3-pro-preview-attempt1` (then `gemini-3-deep-think-preview-attempt1`, then previous GPT-5 default, then any available model).
+# CHANGELOG - Uses semantic versioning (MAJOR.MINOR.PATCH)
+# [5.10.16] - 2025-11-18
+### ✨ UI - Hall of Fame Redesign
+- **Hall of Fame Redesign:**
+  - Updated color theme to a professional "Dark Slate" aesthetic.
+  - Removed filter/sort complexity for a cleaner, minimal interface.
+  - Implemented "View Full Profile" modal for detailed contributor information.
+  - Added lightbox functionality for full-size profile images.
+  - Updated Jean-François Puget's profile with correct image and 2025 rank.
+  - Fixed clipping issues on trading cards to ensure buttons are always visible.
     - Compare-with model now prefers `gemini-3-deep-think-preview-attempt1`, then `gemini-3-pro-preview-attempt1`, then the previous Claude Haiku default, falling back to any other available model.
   - Behavior is conditional: if the Gemini models are not present in `/api/model-dataset/models`, the previous fallback logic still applies.
 
