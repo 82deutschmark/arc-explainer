@@ -10,7 +10,7 @@
 import React, { useEffect, useMemo } from 'react';
 import { useArcContributors } from '@/hooks/useArcContributors';
 import { HumanTradingCard } from '@/components/human/HumanTradingCard';
-import { Loader2, Users } from 'lucide-react';
+import { Loader2, Users, Trophy, ScrollText, History, Star } from 'lucide-react';
 
 export default function HumanTradingCards() {
   const { data, isLoading, error } = useArcContributors();
@@ -20,30 +20,36 @@ export default function HumanTradingCards() {
     document.title = 'ARC Hall of Fame';
   }, []);
 
-  // Sort contributors: Year (Desc) -> Rank (Asc) -> Name (Asc)
-  const sortedContributors = useMemo(() => {
-    if (!data?.contributors) return [];
+  // Categorize contributors
+  const { founders, leaderboard2025, winners2024, researchers, pioneers } = useMemo(() => {
+    if (!data?.contributors) return { founders: [], leaderboard2025: [], winners2024: [], researchers: [], pioneers: [] };
     
-    return [...data.contributors].sort((a, b) => {
-      // 0. Special Case: Rank 0 always comes first (Founders)
-      const rankA = a.rank ?? 999;
-      const rankB = b.rank ?? 999;
-      
-      if (rankA === 0 && rankB !== 0) return -1;
-      if (rankB === 0 && rankA !== 0) return 1;
+    const contributors = [...data.contributors];
+    
+    // Founders (Rank 0)
+    const founders = contributors.filter(c => c.rank === 0);
+    
+    // 2025 Leaderboard (Year 2025)
+    const leaderboard2025 = contributors
+      .filter(c => c.yearStart === 2025 && c.rank !== 0)
+      .sort((a, b) => (a.rank || 999) - (b.rank || 999));
 
-      // 1. Year Descending (newest first)
-      const yearA = a.yearStart || 0;
-      const yearB = b.yearStart || 0;
-      if (yearA !== yearB) return yearB - yearA;
+    // 2024 Winners (Year 2024, Competition Winner category)
+    const winners2024 = contributors
+      .filter(c => c.yearStart === 2024 && c.category === 'competition_winner' && c.rank !== 0)
+      .sort((a, b) => (a.rank || 999) - (b.rank || 999));
 
-      // 2. Rank Ascending (1 is better than 2)
-      // Treat null rank as Infinity (bottom of list)
-      if (rankA !== rankB) return rankA - rankB;
+    // Researchers & Paper Awards
+    const researchers = contributors
+      .filter(c => ['paper_award', 'researcher'].includes(c.category) && c.rank !== 0)
+      .sort((a, b) => b.yearStart! - a.yearStart!); // Newest first
 
-      // 3. Name tie-breaker
-      return a.fullName.localeCompare(b.fullName);
-    });
+    // Pioneers (Old categories or explicit pioneers)
+    const pioneers = contributors
+      .filter(c => c.category === 'pioneer' || (c.yearStart && c.yearStart < 2024 && c.rank !== 0 && c.category !== 'founder'))
+      .sort((a, b) => b.yearStart! - a.yearStart!);
+
+    return { founders, leaderboard2025, winners2024, researchers, pioneers };
   }, [data?.contributors]);
 
   if (error) {
@@ -60,42 +66,111 @@ export default function HumanTradingCards() {
 
   return (
     <div className="min-h-screen w-full bg-slate-950 text-slate-200">
-      <div className="container mx-auto px-6 py-12 space-y-10">
+      <div className="container mx-auto px-6 py-12 space-y-16">
 
-        {/* Minimal Header */}
-        <header className="border-b border-slate-800 pb-8">
-          <div className="flex items-center gap-3 mb-3">
-            <Users className="h-8 w-8 text-slate-400" />
-            <h1 className="text-3xl font-semibold text-slate-100 tracking-tight">
-              Hall of Fame
+        {/* Header */}
+        <header className="text-center max-w-4xl mx-auto space-y-4">
+          <div className="flex items-center justify-center gap-3">
+            <Users className="h-10 w-10 text-amber-500" />
+            <h1 className="text-4xl md:text-5xl font-bold text-slate-100 tracking-tight">
+              ARC Hall of Fame
             </h1>
           </div>
-          <p className="text-lg text-slate-400 max-w-3xl">
-            Recognizing the humans involved in the ARC-AGI challenge.
+          <p className="text-xl text-slate-400">
+            Honoring the researchers, engineers, and pioneers pushing the boundaries of AGI.
           </p>
         </header>
 
-        {/* Content Grid */}
-        <section>
-          {isLoading ? (
-            <div className="py-20 text-center">
-              <Loader2 className="mx-auto mb-4 h-8 w-8 animate-spin text-slate-600" />
-              <p className="text-sm text-slate-500">Loading profiles...</p>
-            </div>
-          ) : !sortedContributors.length ? (
-            <div className="py-20 text-center border border-dashed border-slate-800 rounded-lg">
-              <p className="text-slate-500">No contributors found.</p>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {sortedContributors.map((contributor) => (
-                <div key={contributor.id} className="h-full">
-                  <HumanTradingCard contributor={contributor} />
+        {isLoading ? (
+          <div className="py-32 text-center">
+            <Loader2 className="mx-auto mb-4 h-10 w-10 animate-spin text-amber-500" />
+            <p className="text-lg text-slate-500">Loading profiles...</p>
+          </div>
+        ) : (
+          <>
+            {/* Founders Hero Section */}
+            {founders.length > 0 && (
+              <section className="max-w-5xl mx-auto relative">
+                <div className="absolute -inset-4 bg-gradient-to-r from-amber-500/20 to-purple-600/20 blur-3xl -z-10 rounded-full opacity-50" />
+                <div className="border border-slate-800 bg-slate-900/50 backdrop-blur-sm rounded-2xl p-1 shadow-2xl">
+                   {founders.map(founder => (
+                     <div key={founder.id} className="h-[500px]">
+                       <HumanTradingCard contributor={founder} />
+                     </div>
+                   ))}
                 </div>
-              ))}
-            </div>
-          )}
-        </section>
+              </section>
+            )}
+
+            {/* 2025 Leaderboard */}
+            {leaderboard2025.length > 0 && (
+              <section className="space-y-6">
+                <div className="flex items-center gap-3 border-b border-slate-800 pb-4">
+                  <Trophy className="h-6 w-6 text-amber-400" />
+                  <h2 className="text-2xl font-bold text-slate-100">2025 Leaderboard</h2>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                  {leaderboard2025.map(contributor => (
+                    <div key={contributor.id} className="h-full">
+                      <HumanTradingCard contributor={contributor} />
+                    </div>
+                  ))}
+                </div>
+              </section>
+            )}
+
+            {/* 2024 Winners */}
+            {winners2024.length > 0 && (
+              <section className="space-y-6">
+                 <div className="flex items-center gap-3 border-b border-slate-800 pb-4">
+                  <Star className="h-6 w-6 text-blue-400" />
+                  <h2 className="text-2xl font-bold text-slate-100">2024 ARC Prize Winners</h2>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                  {winners2024.map(contributor => (
+                    <div key={contributor.id} className="h-full">
+                      <HumanTradingCard contributor={contributor} />
+                    </div>
+                  ))}
+                </div>
+              </section>
+            )}
+
+            {/* Research & Papers */}
+            {researchers.length > 0 && (
+              <section className="space-y-6">
+                 <div className="flex items-center gap-3 border-b border-slate-800 pb-4">
+                  <ScrollText className="h-6 w-6 text-emerald-400" />
+                  <h2 className="text-2xl font-bold text-slate-100">Research & Awards</h2>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                  {researchers.map(contributor => (
+                    <div key={contributor.id} className="h-full">
+                      <HumanTradingCard contributor={contributor} />
+                    </div>
+                  ))}
+                </div>
+              </section>
+            )}
+
+            {/* Pioneers */}
+            {pioneers.length > 0 && (
+              <section className="space-y-6">
+                 <div className="flex items-center gap-3 border-b border-slate-800 pb-4">
+                  <History className="h-6 w-6 text-purple-400" />
+                  <h2 className="text-2xl font-bold text-slate-100">Pioneers</h2>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                  {pioneers.map(contributor => (
+                    <div key={contributor.id} className="h-full">
+                      <HumanTradingCard contributor={contributor} />
+                    </div>
+                  ))}
+                </div>
+              </section>
+            )}
+          </>
+        )}
 
       </div>
     </div>
