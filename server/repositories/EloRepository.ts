@@ -386,15 +386,14 @@ export class EloRepository extends BaseRepository {
         return null;
       }
 
+      if (!targetPuzzleId) {
+        throw new Error('Puzzle ID is undefined after selection process');
+      }
+
       // Smart matchmaking: Score all possible pairs and pick the best one
       const pair = await this.selectBestExplanationPair(explanations, targetPuzzleId);
 
       logger.info(`Selected explanations: A=${pair.explanationA.id} (${pair.explanationA.modelName}, ${pair.explanationA.isPredictionCorrect ? 'correct' : 'incorrect'}), B=${pair.explanationB.id} (${pair.explanationB.modelName}, ${pair.explanationB.isPredictionCorrect ? 'correct' : 'incorrect'}), score=${pair.score}`, 'elo');
-
-      // targetPuzzleId is guaranteed to be defined here since we return null if no puzzle found
-      if (!targetPuzzleId) {
-        throw new Error('Puzzle ID is undefined after selection process');
-      }
 
       return {
         explanationA: pair.explanationA,
