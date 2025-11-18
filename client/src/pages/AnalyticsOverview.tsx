@@ -261,6 +261,37 @@ export default function AnalyticsOverview() {
           </div>
         </header>
 
+        {/* Evaluation harness explanation */}
+        <Card className="border-blue-200 bg-blue-50/70">
+          <CardContent className="p-3 text-sm text-left text-gray-700 space-y-1">
+            <p className="font-semibold text-gray-900">
+              How these analytics are generated
+            </p>
+            <p>
+              We ingest the ARC Prize team's official results which are posted at https://huggingface.co/arcprize and try to make them more visually appealing and interactive.
+              
+              For each puzzle in those datasets, the harness feeds the same input grids and prompt scaffolding into
+              each LLM, then parses the model's output and scores it with the same rules before storing the
+              results, costs, and timings in a shared database that this dashboard queries.
+            </p>
+            <p>
+              The ARC Prize team uses this scaffolding to test all LLMs on the public HuggingFace ARC datasets.
+              You can inspect or reuse the exact evaluation code in the open-source harness here:
+              {" "}
+              <a
+                href="https://github.com/arcprize/arc-agi-benchmarking"
+                target="_blank"
+                rel="noreferrer"
+                className="text-blue-700 underline font-medium"
+              >
+                arc-agi-benchmarking on GitHub
+
+              </a>
+              .
+            </p>
+          </CardContent>
+        </Card>
+
         {/* REAL Model Dataset Performance - Database Query Tool */}
         <Card>
           <CardHeader>
@@ -269,7 +300,7 @@ export default function AnalyticsOverview() {
               Examine a Model's Performance on ARC Datasets
             </CardTitle>
             <p className="text-sm text-muted-foreground">
-              Select a model to see which ARC puzzles it got right, got incorrect, or hasn't attempted yet. Uses real database queries.
+              Select a model to see which ARC puzzles it got right, got incorrect, or did not attempt.
             </p>
           </CardHeader>
           <CardContent className="space-y-3">

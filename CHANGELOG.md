@@ -1,4 +1,12 @@
 # CHANGELOG - Uses semantic versioning (MAJOR.MINOR.PATCH)
+# [5.10.22] - 2025-11-18
+### 📊 Analytics – Evaluation Harness Copy Clarification
+- Refined the Analytics Dashboard "How these analytics are generated" card to explicitly reference the HuggingFace ARC datasets and describe the process in terms of the ARC Prize team (instead of "we"), while keeping the link to the open-source harness at https://github.com/arcprize/arc-agi-benchmarking.
+
+# [5.10.21] - 2025-11-18
+### 📊 Analytics – Evaluation Harness Transparency
+- Added a "How these analytics are generated" explanation card to the Analytics Dashboard clarifying that all LLMs share the same ARC-AGI benchmarking harness and linking to the open-source repo at https://github.com/arcprize/arc-agi-benchmarking.
+
 # [5.10.20] - 2025-11-18
 ### 🔗 SEO & AEO - Canonical Domain & Page Metadata
 - Switched canonical domain from `https://arc.gptpluspro.com` to `https://arc.markbarney.net` in Open Graph, Twitter, robots, sitemap, and llms configuration.
