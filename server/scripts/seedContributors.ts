@@ -350,6 +350,9 @@ async function seedDatabase() {
   try {
     logger.info('Starting contributor database seeding...', 'seed');
 
+    // Clear existing data first to ensure updates are applied
+    await repo.deleteAllContributors();
+
     for (const contributor of contributors) {
       try {
         await repo.createContributor(contributor);
