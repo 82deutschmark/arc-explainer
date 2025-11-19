@@ -40,7 +40,7 @@ function Router() {
         <Route path="/" component={PuzzleBrowser} />
         <Route path="/browser" component={PuzzleBrowser} />
         <Route path="/trading-cards" component={PuzzleTradingCards} />
-        <Route path="/human-cards" component={HumanTradingCards} />
+        <Route path="/hall-of-fame" component={HumanTradingCards} />
         <Route path="/discussion" component={PuzzleDiscussion} />
         <Route path="/discussion/:taskId" component={PuzzleDiscussion} />
         <Route path="/analytics" component={AnalyticsOverview} />
