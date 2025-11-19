@@ -219,7 +219,7 @@ export function AnalysisResults({
                   model={modelConfig}
                   testCases={task.test}
                   eloMode={false}
-                  initiallyExpanded={shouldHighlight}
+                  initiallyExpanded={shouldHighlight || correctnessFilter === 'correct'}
                   highlighted={shouldHighlight}
                   loadFullResult={typeof result.id === 'number' ? () => loadFullResult(result.id as number) : undefined}
                 />
