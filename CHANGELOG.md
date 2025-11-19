@@ -1,7 +1,12 @@
 # CHANGELOG - Uses semantic versioning (MAJOR.MINOR.PATCH)
+# [5.11.5] - 2025-11-19
+### 🐛 Bug Fix – App Navigation Dropdown Visibility
+- Removed an `overflow-hidden` wrapper around the `AppNavigation` header section so shadcn `NavigationMenu` dropdown content and viewport are no longer clipped below the header on desktop and small screens.
+
 # [5.11.4] - 2025-11-19
 ### 🧩 Meta - Social Preview Image
 - Reverted Open Graph and Twitter preview image from animated ARC puzzle GIF back to static `/og-preview.svg` illustration for clearer, more consistent link previews across social platforms.
+- Updated the `/og-preview.svg` artwork itself to better reflect the ARC Explainer platform rather than a single puzzle screenshot.
 
 # [5.11.3] - 2025-11-19
 ### ✨ UI – Navigation Menu Grouping for ARC & ARC-3
