@@ -1,4 +1,12 @@
 # CHANGELOG - Uses semantic versioning (MAJOR.MINOR.PATCH)
+# [5.11.9] - 2025-11-19
+### ✨ UX – Click-to-Open ARC-3 & Misc Dropdowns
+- Replaced hover-based shadcn `NavigationMenu` dropdowns for the ARC-3 and Misc nav groups with click-to-open `DropdownMenu` components so the menus stay open while users explore links and only close on selection or click-away.
+
+# [5.11.8] - 2025-11-19
+### 🐛 Bug Fix – App Navigation Dropdown Final Alignment
+- Updated `AppNavigation` so `NavigationMenuList` contains only `NavigationMenuItem` children by rendering ARC emoji dividers inside each item instead of as separate `<li>` siblings, fixing the ARC-3/Misc dropdown viewport so it anchors directly under the correct tab.
+
 # [5.11.7] - 2025-11-19
 ### 🧠 Docs – LLM Reasoning Explainer Page
 - Added a dedicated "LLM Reasoning" explainer page under the Misc navigation dropdown, providing a plain-language overview of how AI language models use pattern matching rather than true understanding.
