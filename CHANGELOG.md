@@ -1,4 +1,46 @@
 # CHANGELOG - Uses semantic versioning (MAJOR.MINOR.PATCH)
+# [5.11.0] - 2025-11-18
+### 🚀 Release Summary – Analytics & Discoverability
+- Added clear model origin indicators on the Analytics Dashboard (HuggingFace ARC Prize leaderboard vs ARC Explainer / community runs).
+- Improved SEO/AEO surface with sitemap, robots, llms configuration, canonical metadata, and structured page metadata.
+- Refined evaluation harness explanation copy to better describe how analytics are generated from the ARC Prize benchmarking harness.
+
+# [5.10.23] - 2025-11-18
+### 📊 Analytics – Model Origin Badges & Labels
+- Added lightweight client-side classifier in `AnalyticsOverview` to distinguish ARC Prize HuggingFace leaderboard runs from ARC Explainer / community runs using the `-attempt1` / `-attempt2` suffix convention.
+- Displayed an explicit origin badge in the analytics header card so users can immediately see whether results are official HF leaderboard numbers or community/private runs.
+- Updated the Primary/Compare model dropdowns to group official models first with short "HF official" labels and show an inline explanatory note under the selects describing the origin of each selected model in plain language.
+
+# [5.10.22] - 2025-11-18
+### 📊 Analytics – Evaluation Harness Copy Clarification
+- Refined the Analytics Dashboard "How these analytics are generated" card to explicitly reference the HuggingFace ARC datasets and describe the process in terms of the ARC Prize team (instead of "we"), while keeping the link to the open-source harness at https://github.com/arcprize/arc-agi-benchmarking.
+
+# [5.10.21] - 2025-11-18
+### 📊 Analytics – Evaluation Harness Transparency
+- Added a "How these analytics are generated" explanation card to the Analytics Dashboard clarifying that all LLMs share the same ARC-AGI benchmarking harness and linking to the open-source repo at https://github.com/arcprize/arc-agi-benchmarking.
+
+# [5.10.20] - 2025-11-18
+### 🔗 SEO & AEO - Canonical Domain & Page Metadata
+- Switched canonical domain from `https://arc.gptpluspro.com` to `https://arc.markbarney.net` in Open Graph, Twitter, robots, sitemap, and llms configuration.
+- Added `<link rel="canonical" href="https://arc.markbarney.net/" />` and site-level JSON-LD `WebSite` schema in `index.html` for better search/LLM understanding.
+- Introduced a shared `usePageMeta` hook and wired it into key pages (home browser, analytics, leaderboards, ARC3 browser, ARC3 playground, about, model comparison) to provide per-route titles, descriptions, and canonical paths.
+
+# [5.10.19] - 2025-11-18
+### 🤖 AEO - LLM Discoverability Enhancements
+- Generated `sitemap.xml` at `/sitemap.xml` with the main public routes to help crawlers discover key ARC/ARC-AGI pages.
+- Updated `robots.txt` to advertise the sitemap via `Sitemap: https://arc.gptpluspro.com/sitemap.xml`.
+- Expanded `llms.txt` to describe LLM crawling policy, highlight key navigation hubs, and point directly to the sitemap.
+
+# [5.10.18] - 2025-11-18
+### 🔍 SEO & AEO - Crawler Access
+- Added fully permissive `robots.txt` at `/robots.txt` to allow all crawlers and search engines to index the site.
+- Added `llms.txt` at `/llms.txt` explicitly allowing language models to crawl and index all public content.
+- Added explicit `<meta name="robots" content="index,follow,max-snippet:-1,max-image-preview:large,max-video-preview:-1" />` to the main HTML shell.
+
+# [5.10.17] - 2025-11-18
+### 🧩 Meta - Social Preview Image
+- Switched Open Graph and Twitter preview image to animated ARC puzzle GIF at `/images/decoration/arc_puzzle_0ca9ddb6_twinkle.gif` for richer link previews.
+
 # [5.10.16] - 2025-11-18
 ### ✨ UI - Hall of Fame Redesign
 - **Hall of Fame Redesign:**
