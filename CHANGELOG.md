@@ -1,5 +1,28 @@
 # CHANGELOG - Uses semantic versioning (MAJOR.MINOR.PATCH)
-# [5.12.0] - 2025-11-19
+# [5.14.0] - 2025-01-19
+### 🚀 Release Summary – Benchmarking Tools & Discussion UX
+- Added arc-agi-benchmarking repository as git submodule for standardized evaluation capabilities
+- Introduced Ivan Sorokin hero card with random profile image switching feature
+- Comprehensive Discussion endpoint improvements including Responses API continuation mode, modal streaming pattern, and auto-selection flow
+
+### 🔧 Infrastructure
+- **Submodule Integration**: Added official ARC-AGI benchmarking tools (https://github.com/arcprize/arc-agi-benchmarking) at repository root to enable standardized evaluation workflows
+
+### ✨ Features
+- **Ivan Sorokin Hero Card**: Added NVIDIA ML researcher and Kaggle Grandmaster as featured contributor with randomized profile image display (switches between two variants on page load)
+  - Files: `client/src/components/cards/HumanTradingCard.tsx:29-33`, `server/scripts/seedContributors.ts:91`
+
+### 🐛 Bug Fixes & Improvements
+- **Discussion Streaming Pattern**: Moved streaming analysis from inline display to modal overlay (matches PuzzleExaminer pattern)
+  - Files: `client/src/pages/PuzzleDiscussion.tsx:738-786`
+- **Prompt Preview Continuation**: Added previousResponseId support for OpenAI Responses API 30-day conversation retention
+  - Files: `client/src/components/PromptPreviewModal.tsx:25,94,184-204`, `server/controllers/promptController.ts:55,84-93`
+- **Refinement UI Polish**: Removed tiny text (8px/9px), improved stat cards with color coding, added breadcrumb navigation
+  - Files: `client/src/components/puzzle/refinement/RefinementThread.tsx`
+- **Auto-Selection Flow**: Enhanced with loading indicators, success toasts, and better error handling
+  - Files: `client/src/pages/PuzzleDiscussion.tsx:49,378-394,405-411`
+
+# [5.12.0] - 2025-01-19
 ### 🚀 Release Summary – LLM Reasoning & Navigation UX
 - Introduced a two-tier LLM reasoning explainer (plain-language page plus advanced formal article) to clarify how pattern-matching models differ from human thinking.
 - Improved top navigation UX with grouped ARC-3/Misc menus, click-to-open dropdowns, and better alignment so key tools and docs are easier to discover.
