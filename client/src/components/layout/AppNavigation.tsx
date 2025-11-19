@@ -16,11 +16,14 @@ import {
   NavigationMenuItem,
   NavigationMenuLink,
   NavigationMenuList,
-  NavigationMenuTrigger,
-  NavigationMenuContent,
-  NavigationMenuViewport,
   navigationMenuTriggerStyle,
 } from '@/components/ui/navigation-menu';
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+} from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import {
@@ -218,78 +221,77 @@ export function AppNavigation() {
             const key = item.type === 'link' ? item.href : item.title;
 
             return (
-              <React.Fragment key={key}>
-                <NavigationMenuItem>
-                  {item.type === 'link' ? (
-                    <NavigationMenuLink asChild>
-                      <Link
-                        href={item.href}
-                        className={cn(
-                          navigationMenuTriggerStyle(),
-                          "flex items-center gap-2 font-medium",
-                          isActiveRoute(item.href) && "bg-accent text-accent-foreground"
-                        )}
-                      >
-                        <item.icon className="h-4 w-4" />
-                        <span className="hidden sm:inline">{item.title}</span>
-                      </Link>
-                    </NavigationMenuLink>
-                  ) : (
-                    <>
-                      <NavigationMenuTrigger
-                        className={cn(
-                          "flex items-center gap-2 font-medium",
-                          isDropdownActive(item) && "bg-accent text-accent-foreground"
-                        )}
-                      >
-                        <item.icon className="h-4 w-4" />
-                        <span className="hidden sm:inline">{item.title}</span>
-                      </NavigationMenuTrigger>
-                      <NavigationMenuContent>
-                        <div className="flex flex-col min-w-[250px] p-2 gap-1">
-                          {item.children.map((child) => {
-                            const isChildActive = isActiveRoute(child.href);
-                            return (
-                              <NavigationMenuLink key={child.href} asChild>
-                                <Link
-                                  href={child.href}
-                                  className={cn(
-                                    "block select-none rounded-md px-3 py-2 text-sm leading-none no-underline outline-none transition-colors",
-                                    "hover:bg-accent hover:text-accent-foreground",
-                                    "focus:bg-accent focus:text-accent-foreground",
-                                    isChildActive && "bg-accent text-accent-foreground font-semibold"
+              <NavigationMenuItem key={key} className="flex items-center">
+                {item.type === 'link' ? (
+                  <NavigationMenuLink asChild>
+                    <Link
+                      href={item.href}
+                      className={cn(
+                        navigationMenuTriggerStyle(),
+                        "flex items-center gap-2 font-medium",
+                        isActiveRoute(item.href) && "bg-accent text-accent-foreground"
+                      )}
+                    >
+                      <item.icon className="h-4 w-4" />
+                      <span className="hidden sm:inline">{item.title}</span>
+                    </Link>
+                  </NavigationMenuLink>
+                ) : (
+                  <DropdownMenu>
+                    <DropdownMenuTrigger
+                      className={cn(
+                        navigationMenuTriggerStyle(),
+                        "flex items-center gap-2 font-medium",
+                        isDropdownActive(item) && "bg-accent text-accent-foreground"
+                      )}
+                    >
+                      <item.icon className="h-4 w-4" />
+                      <span className="hidden sm:inline">{item.title}</span>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent
+                      align="start"
+                      className="min-w-[250px] p-1"
+                    >
+                      {item.children.map((child) => {
+                        const isChildActive = isActiveRoute(child.href);
+                        return (
+                          <DropdownMenuItem key={child.href} asChild>
+                            <Link
+                              href={child.href}
+                              className={cn(
+                                "block select-none rounded-md px-3 py-2 text-sm leading-none no-underline outline-none transition-colors",
+                                "hover:bg-accent hover:text-accent-foreground",
+                                "focus:bg-accent focus:text-accent-foreground",
+                                isChildActive && "bg-accent text-accent-foreground font-semibold"
+                              )}
+                            >
+                              <div className="flex items-center gap-2">
+                                <child.icon className="h-4 w-4" />
+                                <div>
+                                  <div className="font-medium">{child.title}</div>
+                                  {child.description && (
+                                    <p className="text-xs text-muted-foreground line-clamp-2 mt-1">
+                                      {child.description}
+                                    </p>
                                   )}
-                                >
-                                  <div className="flex items-center gap-2">
-                                    <child.icon className="h-4 w-4" />
-                                    <div>
-                                      <div className="font-medium">{child.title}</div>
-                                      {child.description && (
-                                        <p className="text-xs text-muted-foreground line-clamp-2 mt-1">
-                                          {child.description}
-                                        </p>
-                                      )}
-                                    </div>
-                                  </div>
-                                </Link>
-                              </NavigationMenuLink>
-                            );
-                          })}
-                        </div>
-                      </NavigationMenuContent>
-                    </>
-                  )}
-                </NavigationMenuItem>
-                {showDivider && (
-                  <li className="flex items-center pointer-events-none select-none" aria-hidden="true">
-                    <span className="text-xs mx-1">{dividerEmoji}</span>
-                  </li>
+                                </div>
+                              </div>
+                            </Link>
+                          </DropdownMenuItem>
+                        );
+                      })}
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                 )}
-              </React.Fragment>
+                {showDivider && (
+                  <span className="text-xs mx-1 select-none" aria-hidden="true">
+                    {dividerEmoji}
+                  </span>
+                )}
+              </NavigationMenuItem>
             );
           })}
         </NavigationMenuList>
-        <NavigationMenuViewport />
       </NavigationMenu>
 
       <div className="flex items-center gap-2">
