@@ -83,6 +83,27 @@ const contributors: CreateContributorRequest[] = [
   },
 
   {
+    fullName: 'Ivan Sorokin',
+    handle: 'lytic',
+    affiliation: 'Machine Learning Researcher at NVIDIA, Kaggle Grandmaster',
+    achievement: 'Preliminary 1st Place on ARC Prize 2025 Kaggle leaderboard (with JF Puget)',
+    description: 'Machine Learning Researcher at NVIDIA based in Finland. Kaggle Grandmaster, one of only ~350 worldwide. Member of NVIDIA\'s KGMON team (Kaggle Grandmasters of NVIDIA). Won Math Olympiad Competition 2025 with team NemoSkills ($262,144 prize). Achieved preliminary first place on Kaggle 2025 ARC Prize alongside teammate JF Puget.',
+    imageUrl: undefined,
+    yearStart: 2025,
+    yearEnd: 2025,
+    score: '1st Place (Preliminary)',
+    approach: 'TBA',
+    uniqueTechnique: 'TBA',
+    links: {
+      github: 'https://github.com/1ytic',
+      linkedin: 'https://www.linkedin.com/in/lytic/'
+    },
+    teamName: 'NVARC',
+    category: 'competition_winner',
+    rank: 1
+  },
+
+  {
     fullName: 'Guillermo Barbadillo',
     handle: 'guille_bar',
     affiliation: 'Independent Researcher',
