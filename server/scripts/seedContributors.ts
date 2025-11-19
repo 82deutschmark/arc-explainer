@@ -35,8 +35,8 @@ const contributors: CreateContributorRequest[] = [
       website: 'https://params.com/@jeremy-berman/arc-agi'
     },
     teamName: undefined,
-    category: 'competition_winner',
-    rank: 2
+    category: 'researcher',
+    rank: undefined
   },
 
   // 2024 ARC Prize Winners
