@@ -35,7 +35,7 @@ export function AppHeader() {
           </div>
         </Link>
 
-        <div className="flex flex-1 items-center justify-end overflow-hidden">
+        <div className="flex flex-1 items-center justify-end">
           <AppNavigation />
         </div>
       </div>
