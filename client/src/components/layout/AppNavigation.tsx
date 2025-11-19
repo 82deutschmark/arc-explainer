@@ -3,8 +3,10 @@
  * Date: 2025-11-19
  * PURPOSE: Hierarchical navigation with grouped dropdown menus and colorful emoji dividers.
  * Organizes navigation items into regular links and dropdown groups for better scannability.
- * Groups: ARC-3 (games + playground), Misc (leaderboards, puzzle DB, test).
- * Uses shadcn/ui NavigationMenu with triggers and content for dropdown functionality.
+ * Groups: ARC-3 (games + playground), Misc (leaderboards, puzzle DB, test, LLM reasoning, kaggle readiness).
+ * Uses shadcn/ui NavigationMenu with triggers, content, and viewport for dropdown functionality.
+ * CRITICAL: NavigationMenuViewport is required for dropdown content to render properly!
+ * Emoji dividers are rendered INSIDE each menu item to maintain proper Radix UI hierarchy.
  * SRP/DRY check: Pass - Single responsibility (navigation structure), reuses shadcn components
  */
 import React from 'react';
@@ -16,6 +18,7 @@ import {
   NavigationMenuList,
   NavigationMenuTrigger,
   NavigationMenuContent,
+  NavigationMenuViewport,
   navigationMenuTriggerStyle,
 } from '@/components/ui/navigation-menu';
 import { Button } from '@/components/ui/button';
@@ -34,7 +37,8 @@ import {
   FlaskConical,
   Wallet,
   Users,
-  MoreHorizontal
+  MoreHorizontal,
+  FileCheck
 } from 'lucide-react';
 
 // Type definitions for discriminated union
@@ -154,6 +158,13 @@ const navigationItems: NavItem[] = [
         href: '/llm-reasoning',
         icon: Brain,
         description: 'Plain-language explainer of how AI pattern matching differs from human thinking'
+      },
+      {
+        type: 'link',
+        title: 'Kaggle Readiness',
+        href: '/kaggle-readiness',
+        icon: FileCheck,
+        description: 'Validate your ARC Kaggle competition readiness'
       }
     ]
   },
@@ -200,82 +211,85 @@ export function AppNavigation() {
   return (
     <div className="flex items-center justify-between w-full">
       <NavigationMenu>
-        <NavigationMenuList>
+        <NavigationMenuList className="flex items-center">
           {navigationItems.map((item, index) => {
             const showDivider = index < navigationItems.length - 1;
             const dividerEmoji = dividerEmojis[index % dividerEmojis.length];
             const key = item.type === 'link' ? item.href : item.title;
 
             return (
-              <NavigationMenuItem key={key}>
-                {item.type === 'link' ? (
-                  <NavigationMenuLink asChild>
-                    <Link
-                      href={item.href}
-                      className={cn(
-                        navigationMenuTriggerStyle(),
-                        "flex items-center gap-2 font-medium",
-                        isActiveRoute(item.href) && "bg-accent text-accent-foreground"
-                      )}
-                    >
-                      <item.icon className="h-4 w-4" />
-                      <span className="hidden sm:inline">{item.title}</span>
-                    </Link>
-                  </NavigationMenuLink>
-                ) : (
-                  <NavigationMenuTrigger
-                    className={cn(
-                      "flex items-center gap-2 font-medium",
-                      isDropdownActive(item) && "bg-accent text-accent-foreground"
-                    )}
-                  >
-                    <item.icon className="h-4 w-4" />
-                    <span className="hidden sm:inline">{item.title}</span>
-                  </NavigationMenuTrigger>
-                )}
-                {showDivider && (
-                  <span className="text-xs mx-1 select-none" aria-hidden="true">
-                    {dividerEmoji}
-                  </span>
-                )}
-                {item.type === 'dropdown' && (
-                  <NavigationMenuContent>
-                    <div className="flex flex-col min-w-[250px] p-2 gap-1">
-                      {item.children.map((child) => {
-                        const isChildActive = isActiveRoute(child.href);
-                        return (
-                          <NavigationMenuLink key={child.href} asChild>
-                            <Link
-                              href={child.href}
-                              className={cn(
-                                "block select-none rounded-md px-3 py-2 text-sm leading-none no-underline outline-none transition-colors",
-                                "hover:bg-accent hover:text-accent-foreground",
-                                "focus:bg-accent focus:text-accent-foreground",
-                                isChildActive && "bg-accent text-accent-foreground font-semibold"
-                              )}
-                            >
-                              <div className="flex items-center gap-2">
-                                <child.icon className="h-4 w-4" />
-                                <div>
-                                  <div className="font-medium">{child.title}</div>
-                                  {child.description && (
-                                    <p className="text-xs text-muted-foreground line-clamp-2 mt-1">
-                                      {child.description}
-                                    </p>
+              <React.Fragment key={key}>
+                <NavigationMenuItem>
+                  {item.type === 'link' ? (
+                    <NavigationMenuLink asChild>
+                      <Link
+                        href={item.href}
+                        className={cn(
+                          navigationMenuTriggerStyle(),
+                          "flex items-center gap-2 font-medium",
+                          isActiveRoute(item.href) && "bg-accent text-accent-foreground"
+                        )}
+                      >
+                        <item.icon className="h-4 w-4" />
+                        <span className="hidden sm:inline">{item.title}</span>
+                      </Link>
+                    </NavigationMenuLink>
+                  ) : (
+                    <>
+                      <NavigationMenuTrigger
+                        className={cn(
+                          "flex items-center gap-2 font-medium",
+                          isDropdownActive(item) && "bg-accent text-accent-foreground"
+                        )}
+                      >
+                        <item.icon className="h-4 w-4" />
+                        <span className="hidden sm:inline">{item.title}</span>
+                      </NavigationMenuTrigger>
+                      <NavigationMenuContent>
+                        <div className="flex flex-col min-w-[250px] p-2 gap-1">
+                          {item.children.map((child) => {
+                            const isChildActive = isActiveRoute(child.href);
+                            return (
+                              <NavigationMenuLink key={child.href} asChild>
+                                <Link
+                                  href={child.href}
+                                  className={cn(
+                                    "block select-none rounded-md px-3 py-2 text-sm leading-none no-underline outline-none transition-colors",
+                                    "hover:bg-accent hover:text-accent-foreground",
+                                    "focus:bg-accent focus:text-accent-foreground",
+                                    isChildActive && "bg-accent text-accent-foreground font-semibold"
                                   )}
-                                </div>
-                              </div>
-                            </Link>
-                          </NavigationMenuLink>
-                        );
-                      })}
-                    </div>
-                  </NavigationMenuContent>
+                                >
+                                  <div className="flex items-center gap-2">
+                                    <child.icon className="h-4 w-4" />
+                                    <div>
+                                      <div className="font-medium">{child.title}</div>
+                                      {child.description && (
+                                        <p className="text-xs text-muted-foreground line-clamp-2 mt-1">
+                                          {child.description}
+                                        </p>
+                                      )}
+                                    </div>
+                                  </div>
+                                </Link>
+                              </NavigationMenuLink>
+                            );
+                          })}
+                        </div>
+                      </NavigationMenuContent>
+                    </>
+                  )}
+                </NavigationMenuItem>
+                {showDivider && (
+                  <li className="flex items-center pointer-events-none select-none" aria-hidden="true">
+                    <span className="text-xs mx-1">{dividerEmoji}</span>
+                  </li>
                 )}
-              </NavigationMenuItem>
+              </React.Fragment>
             );
           })}
         </NavigationMenuList>
+        <NavigationMenuViewport />
       </NavigationMenu>
 
       <div className="flex items-center gap-2">
