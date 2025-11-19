@@ -217,74 +217,72 @@ export function AppNavigation() {
             const key = item.type === 'link' ? item.href : item.title;
 
             return (
-              <React.Fragment key={key}>
+              <NavigationMenuItem key={key}>
                 {item.type === 'link' ? (
-                  <NavigationMenuItem>
-                    <NavigationMenuLink asChild>
-                      <Link
-                        href={item.href}
-                        className={cn(
-                          navigationMenuTriggerStyle(),
-                          "flex items-center gap-2 font-medium",
-                          isActiveRoute(item.href) && "bg-accent text-accent-foreground"
-                        )}
-                      >
-                        <item.icon className="h-4 w-4" />
-                        <span className="hidden sm:inline">{item.title}</span>
-                      </Link>
-                    </NavigationMenuLink>
-                  </NavigationMenuItem>
-                ) : (
-                  <NavigationMenuItem>
-                    <NavigationMenuTrigger
+                  <NavigationMenuLink asChild>
+                    <Link
+                      href={item.href}
                       className={cn(
+                        navigationMenuTriggerStyle(),
                         "flex items-center gap-2 font-medium",
-                        isDropdownActive(item) && "bg-accent text-accent-foreground"
+                        isActiveRoute(item.href) && "bg-accent text-accent-foreground"
                       )}
                     >
                       <item.icon className="h-4 w-4" />
                       <span className="hidden sm:inline">{item.title}</span>
-                    </NavigationMenuTrigger>
-                    <NavigationMenuContent>
-                      <div className="flex flex-col min-w-[250px] p-2 gap-1">
-                        {item.children.map((child) => {
-                          const isChildActive = isActiveRoute(child.href);
-                          return (
-                            <NavigationMenuLink key={child.href} asChild>
-                              <Link
-                                href={child.href}
-                                className={cn(
-                                  "block select-none rounded-md px-3 py-2 text-sm leading-none no-underline outline-none transition-colors",
-                                  "hover:bg-accent hover:text-accent-foreground",
-                                  "focus:bg-accent focus:text-accent-foreground",
-                                  isChildActive && "bg-accent text-accent-foreground font-semibold"
-                                )}
-                              >
-                                <div className="flex items-center gap-2">
-                                  <child.icon className="h-4 w-4" />
-                                  <div>
-                                    <div className="font-medium">{child.title}</div>
-                                    {child.description && (
-                                      <p className="text-xs text-muted-foreground line-clamp-2 mt-1">
-                                        {child.description}
-                                      </p>
-                                    )}
-                                  </div>
-                                </div>
-                              </Link>
-                            </NavigationMenuLink>
-                          );
-                        })}
-                      </div>
-                    </NavigationMenuContent>
-                  </NavigationMenuItem>
+                    </Link>
+                  </NavigationMenuLink>
+                ) : (
+                  <NavigationMenuTrigger
+                    className={cn(
+                      "flex items-center gap-2 font-medium",
+                      isDropdownActive(item) && "bg-accent text-accent-foreground"
+                    )}
+                  >
+                    <item.icon className="h-4 w-4" />
+                    <span className="hidden sm:inline">{item.title}</span>
+                  </NavigationMenuTrigger>
                 )}
                 {showDivider && (
                   <span className="text-xs mx-1 select-none" aria-hidden="true">
                     {dividerEmoji}
                   </span>
                 )}
-              </React.Fragment>
+                {item.type === 'dropdown' && (
+                  <NavigationMenuContent>
+                    <div className="flex flex-col min-w-[250px] p-2 gap-1">
+                      {item.children.map((child) => {
+                        const isChildActive = isActiveRoute(child.href);
+                        return (
+                          <NavigationMenuLink key={child.href} asChild>
+                            <Link
+                              href={child.href}
+                              className={cn(
+                                "block select-none rounded-md px-3 py-2 text-sm leading-none no-underline outline-none transition-colors",
+                                "hover:bg-accent hover:text-accent-foreground",
+                                "focus:bg-accent focus:text-accent-foreground",
+                                isChildActive && "bg-accent text-accent-foreground font-semibold"
+                              )}
+                            >
+                              <div className="flex items-center gap-2">
+                                <child.icon className="h-4 w-4" />
+                                <div>
+                                  <div className="font-medium">{child.title}</div>
+                                  {child.description && (
+                                    <p className="text-xs text-muted-foreground line-clamp-2 mt-1">
+                                      {child.description}
+                                    </p>
+                                  )}
+                                </div>
+                              </div>
+                            </Link>
+                          </NavigationMenuLink>
+                        );
+                      })}
+                    </div>
+                  </NavigationMenuContent>
+                )}
+              </NavigationMenuItem>
             );
           })}
         </NavigationMenuList>
