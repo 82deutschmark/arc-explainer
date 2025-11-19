@@ -1,9 +1,10 @@
 /**
  * Author: Claude Code using Sonnet 4.5
- * Date: 2025-11-11
- * PURPOSE: Simple navigation with all items displayed horizontally with colorful emoji dividers.
- * Displays all 12 navigation items as individual links with single emoji squares between them.
- * Uses shadcn/ui NavigationMenu for consistent styling and active state management.
+ * Date: 2025-11-19
+ * PURPOSE: Hierarchical navigation with grouped dropdown menus and colorful emoji dividers.
+ * Organizes navigation items into regular links and dropdown groups for better scannability.
+ * Groups: ARC-3 (games + playground), Misc (leaderboards, puzzle DB, test).
+ * Uses shadcn/ui NavigationMenu with triggers and content for dropdown functionality.
  * SRP/DRY check: Pass - Single responsibility (navigation structure), reuses shadcn components
  */
 import React from 'react';
@@ -13,6 +14,8 @@ import {
   NavigationMenuItem,
   NavigationMenuLink,
   NavigationMenuList,
+  NavigationMenuTrigger,
+  NavigationMenuContent,
   navigationMenuTriggerStyle,
 } from '@/components/ui/navigation-menu';
 import { Button } from '@/components/ui/button';
@@ -30,100 +33,143 @@ import {
   Gamepad2,
   FlaskConical,
   Wallet,
-  Users
+  Users,
+  MoreHorizontal
 } from 'lucide-react';
 
-interface NavItem {
+// Type definitions for discriminated union
+interface NavLink {
+  type: 'link';
   title: string;
   href: string;
   icon: React.ComponentType<{ className?: string }>;
   description?: string;
 }
 
+interface NavDropdown {
+  type: 'dropdown';
+  title: string;
+  icon: React.ComponentType<{ className?: string }>;
+  description?: string;
+  children: NavLink[];
+}
+
+type NavItem = NavLink | NavDropdown;
+
 const navigationItems: NavItem[] = [
   {
+    type: 'link',
     title: 'Home',
     href: '/',
     icon: Grid3X3,
     description: 'Browse ARC puzzles and start analysis'
   },
   {
-    title: 'Trading Cards',
-    href: '/trading-cards',
-    icon: Wallet,
-    description: 'Named puzzles as collectible trading cards with performance stats'
-  },
-  {
-    title: 'Hall of Fame',
-    href: '/human-cards',
-    icon: Users,
-    description: 'Notable ARC contributors and researchers as trading cards'
-  },
-  {
+    type: 'link',
     title: 'Analytics',
     href: '/analytics',
     icon: Database,
     description: 'Model performance analytics and leaderboards'
   },
   {
-    title: 'Leaderboards',
-    href: '/leaderboards',
-    icon: Award,
-    description: 'Model performance rankings across accuracy, trustworthiness, and feedback'
-  },
-  {
-    title: 'Puzzle DB',
-    href: '/puzzles/database',
-    icon: Database,
-    description: 'Individual puzzles with DB record counts and difficulty analysis'
-  },
-  {
+    type: 'link',
     title: 'Discussion',
     href: '/discussion',
     icon: Brain,
     description: 'Uses the Responses API to do iterative self-conversation'
   },
   {
+    type: 'link',
     title: 'Debate',
     href: '/debate',
     icon: MessageSquare,
     description: 'Watch AI models challenge each other\'s explanations'
   },
   {
+    type: 'link',
     title: 'Compare',
     href: '/elo',
     icon: Trophy,
     description: 'Compare AI explanations head-to-head with ELO ratings'
   },
   {
+    type: 'link',
     title: 'Feedback',
     href: '/feedback',
     icon: MessageSquare,
     description: 'Explore human feedback on model explanations'
   },
   {
-    title: 'Test',
-    href: '/test-solution',
-    icon: CheckCircle,
-    description: 'Test your own predicted solutions against ARC puzzles'
-  },
-  {
-    title: 'ARC-AGI-3',
-    href: '/arc3',
+    type: 'dropdown',
+    title: 'ARC-3',
     icon: Gamepad2,
-    description: 'Interactive reasoning benchmark for AI agents (game-based, not puzzles)'
+    description: 'ARC-3 Games and Playground',
+    children: [
+      {
+        type: 'link',
+        title: 'ARC-AGI-3',
+        href: '/arc3',
+        icon: Gamepad2,
+        description: 'Interactive reasoning benchmark for AI agents (game-based, not puzzles)'
+      },
+      {
+        type: 'link',
+        title: 'Playground',
+        href: '/arc3/playground',
+        icon: FlaskConical,
+        description: 'Experiment with ARC-3 games'
+      }
+    ]
   },
   {
-    title: 'ARC3 Playground',
-    href: '/arc3/playground',
-    icon: FlaskConical,
-    description: 'ARC-3 Games'
+    type: 'dropdown',
+    title: 'Misc',
+    icon: MoreHorizontal,
+    description: 'Additional resources and tools',
+    children: [
+      {
+        type: 'link',
+        title: 'Leaderboards',
+        href: '/leaderboards',
+        icon: Award,
+        description: 'Model performance rankings across accuracy, trustworthiness, and feedback'
+      },
+      {
+        type: 'link',
+        title: 'Puzzle DB',
+        href: '/puzzles/database',
+        icon: Database,
+        description: 'Individual puzzles with DB record counts and difficulty analysis'
+      },
+      {
+        type: 'link',
+        title: 'Test',
+        href: '/test-solution',
+        icon: CheckCircle,
+        description: 'Test your own predicted solutions against ARC puzzles'
+      }
+    ]
   },
   {
+    type: 'link',
     title: 'About',
     href: '/about',
     icon: Info,
     description: 'Learn about this project and acknowledgments'
+  },
+  {
+    type: 'link',
+    title: 'Cards',
+    href: '/trading-cards',
+    icon: Wallet,
+    description: 'Named puzzles as collectible trading cards with performance stats'
+  },
+  {
+    type: 'link',
+    title: 'People',
+    href: '/human-cards',
+    icon: Users,
+    description: 'Notable ARC contributors and researchers as trading cards'
   }
 ];
 
@@ -140,32 +186,82 @@ export function AppNavigation() {
     return location.startsWith(href);
   };
 
+  const isDropdownActive = (dropdown: NavDropdown): boolean => {
+    return dropdown.children.some(child => isActiveRoute(child.href));
+  };
+
   return (
     <div className="flex items-center justify-between w-full">
       <NavigationMenu>
         <NavigationMenuList>
           {navigationItems.map((item, index) => {
-            const Icon = item.icon;
             const showDivider = index < navigationItems.length - 1;
             const dividerEmoji = dividerEmojis[index % dividerEmojis.length];
+            const key = item.type === 'link' ? item.href : item.title;
 
             return (
-              <React.Fragment key={item.href}>
-                <NavigationMenuItem>
-                  <NavigationMenuLink asChild>
-                    <Link
-                      href={item.href}
+              <React.Fragment key={key}>
+                {item.type === 'link' ? (
+                  <NavigationMenuItem>
+                    <NavigationMenuLink asChild>
+                      <Link
+                        href={item.href}
+                        className={cn(
+                          navigationMenuTriggerStyle(),
+                          "flex items-center gap-2 font-medium",
+                          isActiveRoute(item.href) && "bg-accent text-accent-foreground"
+                        )}
+                      >
+                        <item.icon className="h-4 w-4" />
+                        <span className="hidden sm:inline">{item.title}</span>
+                      </Link>
+                    </NavigationMenuLink>
+                  </NavigationMenuItem>
+                ) : (
+                  <NavigationMenuItem>
+                    <NavigationMenuTrigger
                       className={cn(
-                        navigationMenuTriggerStyle(),
                         "flex items-center gap-2 font-medium",
-                        isActiveRoute(item.href) && "bg-accent text-accent-foreground"
+                        isDropdownActive(item) && "bg-accent text-accent-foreground"
                       )}
                     >
-                      <Icon className="h-4 w-4" />
+                      <item.icon className="h-4 w-4" />
                       <span className="hidden sm:inline">{item.title}</span>
-                    </Link>
-                  </NavigationMenuLink>
-                </NavigationMenuItem>
+                    </NavigationMenuTrigger>
+                    <NavigationMenuContent>
+                      <div className="flex flex-col min-w-[250px] p-2 gap-1">
+                        {item.children.map((child) => {
+                          const isChildActive = isActiveRoute(child.href);
+                          return (
+                            <NavigationMenuLink key={child.href} asChild>
+                              <Link
+                                href={child.href}
+                                className={cn(
+                                  "block select-none rounded-md px-3 py-2 text-sm leading-none no-underline outline-none transition-colors",
+                                  "hover:bg-accent hover:text-accent-foreground",
+                                  "focus:bg-accent focus:text-accent-foreground",
+                                  isChildActive && "bg-accent text-accent-foreground font-semibold"
+                                )}
+                              >
+                                <div className="flex items-center gap-2">
+                                  <child.icon className="h-4 w-4" />
+                                  <div>
+                                    <div className="font-medium">{child.title}</div>
+                                    {child.description && (
+                                      <p className="text-xs text-muted-foreground line-clamp-2 mt-1">
+                                        {child.description}
+                                      </p>
+                                    )}
+                                  </div>
+                                </div>
+                              </Link>
+                            </NavigationMenuLink>
+                          );
+                        })}
+                      </div>
+                    </NavigationMenuContent>
+                  </NavigationMenuItem>
+                )}
                 {showDivider && (
                   <span className="text-xs mx-1 select-none" aria-hidden="true">
                     {dividerEmoji}
