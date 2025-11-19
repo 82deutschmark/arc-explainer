@@ -147,6 +147,13 @@ const navigationItems: NavItem[] = [
         href: '/test-solution',
         icon: CheckCircle,
         description: 'Test your own predicted solutions against ARC puzzles'
+      },
+      {
+        type: 'link',
+        title: 'LLM Reasoning',
+        href: '/llm-reasoning',
+        icon: Brain,
+        description: 'Plain-language explainer of how AI pattern matching differs from human thinking'
       }
     ]
   },

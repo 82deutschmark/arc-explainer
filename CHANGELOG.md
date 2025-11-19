@@ -1,4 +1,8 @@
 # CHANGELOG - Uses semantic versioning (MAJOR.MINOR.PATCH)
+# [5.11.7] - 2025-11-19
+### 🧠 Docs – LLM Reasoning Explainer Page
+- Added a dedicated "LLM Reasoning" explainer page under the Misc navigation dropdown, providing a plain-language overview of how AI language models use pattern matching rather than true understanding.
+
 # [5.11.6] - 2025-11-19
 ### 🐛 Bug Fix – App Navigation Dropdown Alignment
 - Updated `AppNavigation` so the shadcn `NavigationMenuList` only contains `NavigationMenuItem` children and moved emoji dividers inside each item, ensuring ARC-3 and Misc dropdowns open directly under their corresponding tabs instead of drifting left.
