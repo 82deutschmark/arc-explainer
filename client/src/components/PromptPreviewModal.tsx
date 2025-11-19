@@ -2,13 +2,16 @@
  * PromptPreviewModal.tsx
  * Modal component for previewing prompts that will be sent to AI models.
  * Uses the server-side /api/prompt-preview endpoint to get actual system and user prompts.
- * 
- * @author Cascade using Claude Sonnet 4.5
- * @date 2025-10-12T21:32:00Z
+ *
+ * Author: Cascade using Claude Sonnet 4.5
+ * Date: 2025-11-19
+ * PURPOSE: Preview system and user prompts before sending to AI models.
+ *          Supports continuation mode to show minimal prompts when chaining conversations.
+ * SRP/DRY check: Pass - Single responsibility: prompt preview display
  */
 
 import React, { useState, useEffect } from 'react';
-import { Copy, Check, Loader2 } from 'lucide-react';
+import { Copy, Check, Loader2, Link2 } from 'lucide-react';
 import { ARCTask } from '@shared/types';
 
 interface PromptOptions {
@@ -18,7 +21,8 @@ interface PromptOptions {
   topP?: number;
   candidateCount?: number;
   originalExplanation?: any; // For debate mode
-  customChallenge?: string; // For debate mode
+  customChallenge?: string; // For debate/discussion mode
+  previousResponseId?: string; // For conversation chaining (Responses API)
 }
 
 interface PromptPreviewModalProps {
@@ -86,7 +90,8 @@ export function PromptPreviewModal({
             topP: options.topP,
             candidateCount: options.candidateCount,
             originalExplanation: options.originalExplanation, // For debate mode
-            customChallenge: options.customChallenge // For debate mode
+            customChallenge: options.customChallenge, // For debate/discussion mode
+            previousResponseId: options.previousResponseId // For conversation chaining
           }),
         });
 
@@ -110,7 +115,7 @@ export function PromptPreviewModal({
     };
 
     fetchPromptPreview();
-  }, [isOpen, taskId, promptId, customPrompt, options.emojiSetKey, options.omitAnswer, options.topP, options.candidateCount, options.originalExplanation, options.customChallenge]);
+  }, [isOpen, taskId, promptId, customPrompt, options.emojiSetKey, options.omitAnswer, options.topP, options.candidateCount, options.originalExplanation, options.customChallenge, options.previousResponseId]);
 
   const copyToClipboard = async (text: string, section: string) => {
     try {
@@ -175,6 +180,29 @@ export function PromptPreviewModal({
 
           {promptPreview && !isLoading && (
             <>
+              {/* Continuation Mode Indicator */}
+              {options.previousResponseId && (
+                <div className="bg-purple-50 border-2 border-purple-300 rounded-lg p-4">
+                  <div className="flex items-start gap-3">
+                    <Link2 className="h-5 w-5 text-purple-600 mt-0.5 flex-shrink-0" />
+                    <div className="flex-1">
+                      <h4 className="text-sm font-semibold text-purple-900 mb-1">
+                        🔗 Continuation Mode - Server-Side Memory Active
+                      </h4>
+                      <p className="text-xs text-purple-700 mb-2">
+                        This is a <strong>continuation prompt</strong> that leverages OpenAI's Responses API server-side state.
+                        The model already has full context from previous iterations - this prompt only sends new instructions.
+                      </p>
+                      <div className="bg-purple-100 rounded px-2 py-1 inline-block">
+                        <span className="text-xs font-mono text-purple-800">
+                          Response ID: {options.previousResponseId.substring(0, 24)}...
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
               {/* Template Info */}
               {promptPreview.selectedTemplate && (
                 <div className="bg-blue-50 border border-blue-200 rounded p-3">

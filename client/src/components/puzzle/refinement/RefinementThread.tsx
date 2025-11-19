@@ -2,10 +2,10 @@
  * RefinementThread.tsx
  *
  * Author: Cascade using Claude Sonnet 4.5
- * Date: 2025-10-12T22:00:00Z
+ * Date: 2025-11-19
  * PURPOSE: Main component for displaying progressive refinement thread.
  * Shows original analysis followed by linear progression of refinement iterations.
- * Replaces IndividualDebate with refinement-focused UI and terminology.
+ * Supports continuation mode for Responses API conversation chaining.
  * Single responsibility: Manage refinement thread display and coordination.
  * SRP/DRY check: Pass - Single responsibility (thread coordination), reuses OriginalExplanationCard and delegates to IterationCard
  * shadcn/ui: Pass - Converted to DaisyUI card, badge, button, textarea, alert, select
@@ -133,63 +133,79 @@ export const RefinementThread: React.FC<RefinementThreadProps> = ({
     ? originalExplanation.multiTestAllCorrect === true
     : originalExplanation.isPredictionCorrect === true;
 
+  // Get last response ID for continuation
+  const getLastResponseId = (): string | undefined => {
+    if (iterations.length === 0) return undefined;
+    const lastIteration = iterations[iterations.length - 1];
+    return lastIteration.content.providerResponseId || undefined;
+  };
+
   return (
     <div className="space-y-1">
-      {/* Ultra-Compact Header */}
-      <div className="card border-purple-200 bg-gradient-to-r from-purple-50 to-blue-50">
-        <div className="card-body p-1 space-y-0.5">
+      {/* Improved Header - Better Readability */}
+      <div className="card border-2 border-purple-200 bg-white shadow-sm">
+        <div className="card-body p-4 space-y-3">
           {/* Title Row */}
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-1">
-              <Brain className="h-3 w-3 text-purple-600" />
+            <div className="flex items-center gap-2">
+              <Brain className="h-5 w-5 text-purple-600" />
               <div>
-                <h2 className="text-sm font-semibold">Reasoning Evolution</h2>
-                <p className="text-[9px] text-gray-600">
-                  {iterations.length} stage{iterations.length !== 1 ? 's' : ''}
+                <h2 className="text-base font-semibold text-gray-900">Progressive Reasoning</h2>
+                <p className="text-xs text-gray-600">
+                  {iterations.length} iteration{iterations.length !== 1 ? 's' : ''} • {modelDisplayName}
                 </p>
               </div>
             </div>
 
-            <div className="flex items-center gap-1">
+            <div className="flex items-center gap-2">
               <button
-                className="btn btn-outline text-[9px] h-5 px-2 py-0"
+                className="btn btn-outline btn-sm text-xs h-8"
                 onClick={onResetRefinement}
                 disabled={iterations.length <= 1 || isProcessing}
               >
-                <RotateCcw className="h-2.5 w-2.5 mr-1" />
+                <RotateCcw className="h-3.5 w-3.5 mr-1" />
                 Reset
               </button>
-              <button className="btn btn-outline text-[9px] h-5 px-2 py-0" onClick={onBackToList}>
-                <ArrowLeft className="h-2.5 w-2.5 mr-1" />
+              <button className="btn btn-outline btn-sm text-xs h-8" onClick={onBackToList}>
+                <ArrowLeft className="h-3.5 w-3.5 mr-1" />
                 Back
               </button>
             </div>
           </div>
 
-          {/* Stats Row - Ultra Compact */}
-          <div className="pt-0.5 border-t border-purple-200">
-            <div className="grid grid-cols-3 gap-1 text-[8px]">
+          {/* Stats Row - Readable Sizes with Color Backgrounds */}
+          <div className="pt-3 border-t border-purple-200">
+            <div className="grid grid-cols-3 gap-3">
               {/* Active Model */}
-              <div className="flex items-center gap-0.5">
-                <Brain className="h-2.5 w-2.5 text-purple-600" />
-                <div className="badge badge-outline bg-purple-100 text-purple-900 border-purple-300 font-mono text-[8px] px-1 py-0">
+              <div className="bg-purple-50 rounded-lg p-2 border border-purple-200">
+                <div className="flex items-center gap-2 mb-1">
+                  <Brain className="h-3.5 w-3.5 text-purple-600" />
+                  <span className="text-xs font-medium text-purple-900">Model</span>
+                </div>
+                <div className="text-xs font-mono text-purple-700">
                   {modelDisplayName}
                 </div>
               </div>
 
               {/* Total Reasoning */}
-              <div className="flex items-center gap-0.5">
-                <Sparkles className="h-2.5 w-2.5 text-blue-600" />
-                <span className="text-[8px] font-semibold text-blue-900">
-                  {totalReasoningTokens.toLocaleString()}t
-                </span>
+              <div className="bg-blue-50 rounded-lg p-2 border border-blue-200">
+                <div className="flex items-center gap-2 mb-1">
+                  <Sparkles className="h-3.5 w-3.5 text-blue-600" />
+                  <span className="text-xs font-medium text-blue-900">Reasoning</span>
+                </div>
+                <div className="text-xs font-semibold text-blue-700">
+                  {totalReasoningTokens.toLocaleString()} tokens
+                </div>
               </div>
 
               {/* Current Iteration */}
-              <div className="flex items-center gap-0.5">
-                <TrendingUp className="h-2.5 w-2.5 text-purple-600" />
-                <div className="badge badge-secondary text-[8px] font-mono px-1 py-0">
-                  #{iterations.length - 1}
+              <div className="bg-indigo-50 rounded-lg p-2 border border-indigo-200">
+                <div className="flex items-center gap-2 mb-1">
+                  <TrendingUp className="h-3.5 w-3.5 text-indigo-600" />
+                  <span className="text-xs font-medium text-indigo-900">Current</span>
+                </div>
+                <div className="text-xs font-mono font-semibold text-indigo-700">
+                  Iteration #{iterations.length - 1}
                 </div>
               </div>
             </div>
@@ -402,7 +418,8 @@ export const RefinementThread: React.FC<RefinementThreadProps> = ({
         promptId={promptId}
         options={{
           originalExplanation: originalExplanation,
-          customChallenge: userGuidance
+          customChallenge: userGuidance,
+          previousResponseId: getLastResponseId() // ✅ CRITICAL FIX: Pass for continuation mode
         }}
         confirmMode={previewMode === 'run'}
         onConfirm={previewMode === 'run'

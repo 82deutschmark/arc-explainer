@@ -46,6 +46,7 @@ export default function PuzzleDiscussion() {
   const [location, navigate] = useLocation();
   const [searchPuzzleId, setSearchPuzzleId] = useState('');
   const [recentProviderFilter, setRecentProviderFilter] = useState<'all' | string>('all');
+  const [isAutoSelecting, setIsAutoSelecting] = useState(false); // Track auto-selection state
 
   // Parse ?select=123 query parameter for auto-selection
   const selectId = useMemo(() => {
@@ -129,7 +130,8 @@ export default function PuzzleDiscussion() {
     streamingTokenUsage,
     streamingPromptPreview,
     streamError,
-    cancelStreamingAnalysis
+    cancelStreamingAnalysis,
+    closeStreamingModal // ✅ ADD: For proper modal management
   } = useAnalysisResults({
     taskId: taskId || '',
     refetchExplanations,
@@ -363,36 +365,53 @@ export default function PuzzleDiscussion() {
     // 1. We have a selectId from URL
     // 2. Explanations are loaded (not loading and exists)
     // 3. Refinement is not already active (prevent double-activation)
-    if (selectId && explanations && explanations.length > 0 && !isLoadingExplanations && !refinementState.isRefinementActive) {
-      console.log(`[PuzzleDiscussion] 🔍 Auto-select check: selectId=${selectId}, explanations=${explanations.length}, loading=${isLoadingExplanations}, active=${refinementState.isRefinementActive}`);
-      
+    // 4. Not already auto-selecting (prevent double-trigger)
+    if (selectId && explanations && explanations.length > 0 && !isLoadingExplanations && !refinementState.isRefinementActive && !isAutoSelecting) {
+      console.log(`[PuzzleDiscussion] 🔍 Auto-select initiating for ID ${selectId}...`);
+      setIsAutoSelecting(true);
+
       const explanation = explanations.find(e => e.id === selectId);
       if (explanation) {
-        console.log(`[PuzzleDiscussion] ✅ Found explanation #${selectId}, starting refinement...`);
-        console.log(`[PuzzleDiscussion] Explanation details: model=${explanation.modelName}, provider=${explanation.providerResponseId ? 'has response ID' : 'NO response ID'}`);
-        handleStartRefinement(selectId);
+        console.log(`[PuzzleDiscussion] ✅ Found explanation #${selectId}`);
+        console.log(`[PuzzleDiscussion] Model: ${explanation.modelName}, Has Response ID: ${!!explanation.providerResponseId}`);
+
+        // Small delay to ensure state updates have propagated
+        setTimeout(() => {
+          handleStartRefinement(selectId);
+          setIsAutoSelecting(false);
+          toast({
+            title: "Refinement loaded",
+            description: `Starting refinement for explanation #${selectId}`,
+          });
+        }, 100);
       } else {
-        console.error(`[PuzzleDiscussion] ❌ Explanation #${selectId} not found in ${explanations.length} loaded explanations`);
+        console.error(`[PuzzleDiscussion] ❌ Explanation #${selectId} not found`);
         console.error(`[PuzzleDiscussion] Available IDs: ${explanations.map(e => e.id).join(', ')}`);
+        setIsAutoSelecting(false);
         toast({
           title: "Explanation not found",
           description: `Could not find explanation #${selectId}. It may have been deleted or is not eligible for refinement.`,
           variant: "destructive"
         });
       }
-    } else {
-      console.log(`[PuzzleDiscussion] 🚫 Auto-select skipped: selectId=${selectId}, hasExplanations=${!!explanations}, explanationCount=${explanations?.length ?? 0}, loading=${isLoadingExplanations}, active=${refinementState.isRefinementActive}`);
     }
-  }, [selectId, explanations, isLoadingExplanations, refinementState.isRefinementActive, toast]);
+  }, [selectId, explanations, isLoadingExplanations, refinementState.isRefinementActive, isAutoSelecting, toast, handleStartRefinement]);
 
   // Loading states
-  if (isLoadingTask || isLoadingExplanations) {
+  if (isLoadingTask || isLoadingExplanations || isAutoSelecting) {
     return (
       <div className="w-full">
         <div className="flex items-center justify-center min-h-[400px]">
-          <div className="flex items-center gap-2">
-            <Loader2 className="h-6 w-6 animate-spin" />
-            <span>Loading puzzle and explanations...</span>
+          <div className="flex flex-col items-center gap-3">
+            <Loader2 className="h-8 w-8 animate-spin text-purple-600" />
+            <div className="text-center">
+              <p className="font-medium text-gray-900">
+                {isAutoSelecting ? `Preparing to load explanation #${selectId}...` : 'Loading puzzle and explanations...'}
+              </p>
+              <p className="text-sm text-gray-600 mt-1">
+                {isAutoSelecting ? 'Setting up refinement interface' : 'Please wait'}
+              </p>
+            </div>
           </div>
         </div>
       </div>
@@ -528,6 +547,23 @@ export default function PuzzleDiscussion() {
   // Main interface
   return (
     <div className="w-full space-y-4">
+      {/* Breadcrumb Navigation */}
+      <div className="text-sm breadcrumbs">
+        <ul>
+          <li><Link href="/discussion">Discussion</Link></li>
+          {taskId && (
+            <li>
+              <Link href={`/discussion/${taskId}`}>{formatPuzzleDisplay(taskId)}</Link>
+            </li>
+          )}
+          {refinementState.isRefinementActive && refinementState.originalExplanationId && (
+            <li className="text-purple-600 font-semibold">
+              Refinement #{refinementState.originalExplanationId}
+            </li>
+          )}
+        </ul>
+      </div>
+
       {/* Header - consistent with other pages */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
@@ -612,32 +648,6 @@ export default function PuzzleDiscussion() {
 
           return (
             <>
-              {isStreamingActive && refinementState.activeModel && (
-                <StreamingAnalysisPanel
-                  title={`Streaming ${streamingModel?.name ?? streamingModelKey ?? 'Refinement'}`}
-                  status={streamingPanelStatus}
-                  phase={typeof streamingPhase === 'string' ? streamingPhase : undefined}
-                  message={
-                    streamingPanelStatus === 'failed'
-                      ? streamError?.message ?? streamingMessage ?? 'Streaming failed'
-                      : streamingMessage
-                  }
-                  text={streamingText}
-                  structuredJsonText={streamingStructuredJsonText}
-                  structuredJson={streamingStructuredJson}
-                  reasoning={streamingReasoning}
-                  tokenUsage={streamingTokenUsage}
-                  promptPreview={streamingPromptPreview}
-                  onCancel={
-                    streamingPanelStatus === 'in_progress'
-                      ? () => {
-                          cancelStreamingAnalysis();
-                          setPendingStream(null);
-                        }
-                      : undefined
-                  }
-                />
-              )}
               <ProfessionalRefinementUI
                 iterations={refinementState.iterations}
                 taskId={taskId}
@@ -707,19 +717,73 @@ export default function PuzzleDiscussion() {
           </AlertDescription>
         </Alert>
       ) : (
-        <Card>
-          <CardContent className="text-center py-8">
-            <Brain className="h-12 w-12 mx-auto mb-4 text-purple-400" />
-            <p className="text-gray-500 mb-4">No explanations for this puzzle yet.</p>
-            <p className="text-sm text-gray-400 mb-4">Generate an AI explanation first, then refine it here.</p>
+        <Card className="border-2 border-purple-200">
+          <CardContent className="text-center py-12">
+            <Brain className="h-16 w-16 mx-auto mb-4 text-purple-400" />
+            <h3 className="text-lg font-semibold mb-2 text-gray-900">No Explanations Yet</h3>
+            <p className="text-gray-600 mb-2">This puzzle hasn't been analyzed yet.</p>
+            <p className="text-sm text-gray-500 mb-6">
+              Generate an AI explanation first to unlock progressive reasoning refinement.
+            </p>
             <Link href={`/puzzle/${taskId}`}>
-              <Button className="bg-gradient-to-r from-purple-600 to-blue-600">
+              <Button className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700">
+                <Sparkles className="h-4 w-4 mr-2" />
                 Generate First Explanation
               </Button>
             </Link>
           </CardContent>
         </Card>
       )}
+
+      {/* Streaming Modal Dialog (like PuzzleExaminer) */}
+      <dialog className={`modal ${isStreamingActive ? 'modal-open' : ''}`}>
+        <div className="modal-box max-w-[95vw] max-h-[90vh] overflow-y-auto">
+          <h3 className="font-bold text-lg mb-4">
+            {`Streaming ${streamingModel?.name ?? streamingModelKey ?? 'Refinement'}`}
+          </h3>
+          <StreamingAnalysisPanel
+            title={`${streamingModel?.name ?? streamingModelKey ?? 'Refinement'}`}
+            status={streamingPanelStatus}
+            phase={typeof streamingPhase === 'string' ? streamingPhase : undefined}
+            message={
+              streamingPanelStatus === 'failed'
+                ? streamError?.message ?? streamingMessage ?? 'Streaming failed'
+                : streamingMessage
+            }
+            text={streamingText}
+            structuredJsonText={streamingStructuredJsonText}
+            structuredJson={streamingStructuredJson}
+            reasoning={streamingReasoning}
+            tokenUsage={streamingTokenUsage}
+            promptPreview={streamingPromptPreview}
+            task={task!}
+            onCancel={
+              streamingPanelStatus === 'in_progress'
+                ? () => {
+                    cancelStreamingAnalysis();
+                    setPendingStream(null);
+                  }
+                : undefined
+            }
+            onClose={closeStreamingModal}
+          />
+        </div>
+        <form method="dialog" className="modal-backdrop">
+          <button
+            onClick={() => {
+              if (streamingPanelStatus === 'in_progress') {
+                cancelStreamingAnalysis();
+                setPendingStream(null);
+              }
+              if (streamingPanelStatus !== 'completed') {
+                closeStreamingModal();
+              }
+            }}
+          >
+            close
+          </button>
+        </form>
+      </dialog>
     </div>
   );
 }
