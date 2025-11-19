@@ -108,44 +108,64 @@ export function AnalysisResults({
   return (
     <div className="card bg-base-100 shadow">
       <div className="card-body pb-2">
-        <div className="flex items-center justify-between">
-          <h2 className="card-title flex items-center gap-2 text-base">
-            <Brain className="h-4 w-4" />
-            Analysis Results ({renderCounts.all})
-          </h2>
+        <div className="flex flex-col gap-3">
+          <div className="flex items-center justify-between">
+            <h2 className="card-title flex items-center gap-2 text-base">
+              <Brain className="h-4 w-4" />
+              Analysis Results ({renderCounts.all})
+            </h2>
 
-          <div className="flex items-center gap-2">
-            <Filter className="h-4 w-4 opacity-50" />
-            <div className="btn-group">
+            <div className="hidden sm:flex flex-col items-end text-xs text-base-content/70">
+              <span className="font-semibold">
+                {renderCounts.correct} correct | {renderCounts.incorrect} incorrect
+              </span>
+              <span className="opacity-70">{renderCounts.all} total runs</span>
+            </div>
+          </div>
+
+          <div className="flex flex-col items-center gap-2">
+            <div className="flex items-center gap-2 text-[11px] uppercase tracking-wide text-base-content/60">
+              <Filter className="h-4 w-4 opacity-60" />
+              <span>Filter by correctness</span>
+            </div>
+            <div className="flex flex-wrap items-center justify-center gap-3 w-full">
               <button
-                className={`btn btn-xs ${correctnessFilter === 'all' ? 'btn-active' : 'btn-outline'}`}
-                onClick={() => onFilterChange('all')}
-              >
-                All ({renderCounts.all})
-              </button>
-              <button
-                className={`btn btn-xs ${
-                  correctnessFilter === 'correct' ? 'btn-active btn-success' : 'btn-outline'
-                } text-green-700`}
+                className={`btn btn-lg px-6 text-lg font-semibold uppercase tracking-wide border-2 ${
+                  correctnessFilter === 'correct'
+                    ? 'btn-success text-white border-success shadow-md'
+                    : 'btn-outline text-green-700 border-green-500 bg-green-50/60'
+                }`}
                 onClick={() => onFilterChange('correct')}
               >
-                <CheckCircle className="h-3 w-3 mr-1" />
+                <CheckCircle className="h-5 w-5 mr-2" />
                 Correct ({renderCounts.correct})
               </button>
               <button
-                className={`btn btn-xs ${
-                  correctnessFilter === 'incorrect' ? 'btn-active btn-error' : 'btn-outline'
-                } text-red-700`}
+                className={`btn btn-lg px-6 text-lg font-semibold uppercase tracking-wide border-2 ${
+                  correctnessFilter === 'incorrect'
+                    ? 'btn-error text-white border-error shadow-md'
+                    : 'btn-outline text-red-700 border-red-500 bg-red-50/60'
+                }`}
                 onClick={() => onFilterChange('incorrect')}
               >
-                <XCircle className="h-3 w-3 mr-1" />
+                <XCircle className="h-5 w-5 mr-2" />
                 Incorrect ({renderCounts.incorrect})
+              </button>
+              <button
+                className={`btn btn-sm ml-1 ${
+                  correctnessFilter === 'all'
+                    ? 'btn-ghost border border-base-300 font-semibold'
+                    : 'btn-ghost text-base-content/70'
+                }`}
+                onClick={() => onFilterChange('all')}
+              >
+                All ({renderCounts.all})
               </button>
             </div>
           </div>
         </div>
 
-        <div className="flex flex-wrap items-center justify-between text-xs text-base-content/70">
+        <div className="mt-3 flex flex-wrap items-center justify-between text-xs text-base-content/70">
           <p>
             Showing {visibleCount} of {totalForFilter} explanation{totalForFilter === 1 ? '' : 's'}
             {pinnedHighlight ? ' (+1 pinned highlight)' : ''}.
@@ -199,7 +219,7 @@ export function AnalysisResults({
                   model={modelConfig}
                   testCases={task.test}
                   eloMode={false}
-                  initiallyExpanded={shouldHighlight}
+                  initiallyExpanded={shouldHighlight || correctnessFilter === 'correct'}
                   highlighted={shouldHighlight}
                   loadFullResult={typeof result.id === 'number' ? () => loadFullResult(result.id as number) : undefined}
                 />

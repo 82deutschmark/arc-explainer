@@ -1,4 +1,27 @@
 # CHANGELOG - Uses semantic versioning (MAJOR.MINOR.PATCH)
+# [5.11.5] - 2025-11-19
+### 🐛 Bug Fix – App Navigation Dropdown Visibility
+- Removed an `overflow-hidden` wrapper around the `AppNavigation` header section so shadcn `NavigationMenu` dropdown content and viewport are no longer clipped below the header on desktop and small screens.
+
+# [5.11.4] - 2025-11-19
+### 🧩 Meta - Social Preview Image
+- Reverted Open Graph and Twitter preview image from animated ARC puzzle GIF back to static `/og-preview.svg` illustration for clearer, more consistent link previews across social platforms.
+- Updated the `/og-preview.svg` artwork itself to better reflect the ARC Explainer platform rather than a single puzzle screenshot.
+
+# [5.11.3] - 2025-11-19
+### ✨ UI – Navigation Menu Grouping for ARC & ARC-3
+- Reorganized the top navigation into grouped dropdown menus for ARC-3 experiences (ARC-AGI-3 games and Playground) and miscellaneous tools (Leaderboards, Puzzle DB, Test Solution) to reduce clutter and make key flows easier to discover.
+- Improved active route highlighting for dropdown items and root-level pages so the current context is clearly indicated across ARC and ARC-3 views.
+- Added subtle ARC-themed emoji dividers between navigation items to visually separate groups while keeping the header compact.
+
+# [5.11.2] - 2025-11-18
+### ✨ UX – Auto-Expand Correct Explanations on Puzzle Examiner
+- When the "Correct" filter is selected in the Puzzle Examiner Analysis Results bar, all visible explanation cards now open expanded by default (while still allowing users to manually collapse them).
+
+# [5.11.1] - 2025-11-18
+### ✨ UI – Puzzle Examiner Correctness Filter Bar
+- Centered and enlarged the Correct / Incorrect filter buttons in the Puzzle Examiner Analysis Results bar so they are front-and-center with big typography, while keeping the All filter available as a secondary option and preserving existing filtering behavior.
+
 # [5.11.0] - 2025-11-18
 ### 🚀 Release Summary – Analytics & Discoverability
 - Added clear model origin indicators on the Analytics Dashboard (HuggingFace ARC Prize leaderboard vs ARC Explainer / community runs).
@@ -62,7 +85,6 @@
 # [5.10.14] - 2025-11-16
 ### 🐛 Bug Fixes - Contributor Repository Architecture
 - **Fixed ContributorRepository Crash**: Resolved "Cannot read properties of undefined (reading 'query')" error on all `/api/contributors` endpoints
-
   **Root Cause**:
   - `server/routes.ts:66` passed `repositoryService.pool` to `createContributorRoutes()`
   - `RepositoryService` has NO `pool` property (only a `db` getter)
