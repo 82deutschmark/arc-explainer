@@ -15,6 +15,7 @@ import { ReferenceMaterial } from '@/components/browser/ReferenceMaterial';
 import type { PuzzleMetadata } from '@shared/types';
 import { CollapsibleMission } from '@/components/ui/collapsible-mission';
 import { PuzzleCard } from '@/components/puzzle/PuzzleCard';
+import { usePageMeta } from '@/hooks/usePageMeta';
 
 const HERO_STREAMER_PATTERN = [
   '🟥', '🟧', '🟨', '🟩', '🟦', '🟪', '⬛', '🟥', '🟧', '🟨',
@@ -51,10 +52,12 @@ export default function PuzzleBrowser() {
   const [searchError, setSearchError] = useState<string | null>(null);
   const [location, setLocation] = useLocation();
 
-  // Set page title
-  React.useEffect(() => {
-    document.title = 'ARC Puzzle Browser';
-  }, []);
+  usePageMeta({
+    title: 'ARC Explainer – Puzzle Browser',
+    description:
+      'Browse ARC 1, ARC 2, ARC-Heavy, and ConceptARC puzzles with filters, metadata, and explanation attempts.',
+    canonicalPath: '/',
+  });
 
   // Create filters object for the hook
   const filters = React.useMemo(() => {

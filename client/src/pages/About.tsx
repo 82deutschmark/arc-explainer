@@ -10,12 +10,15 @@ import React from 'react';
 import { Github, Heart, ExternalLink, Sparkles } from 'lucide-react';
 import { EmojiMosaicAccent } from '@/components/browser/EmojiMosaicAccent';
 import { ReferenceMaterial } from '@/components/browser/ReferenceMaterial';
+import { usePageMeta } from '@/hooks/usePageMeta';
 
 export default function About() {
-  // Set page title
-  React.useEffect(() => {
-    document.title = 'About - ARC Puzzle Explorer';
-  }, []);
+  usePageMeta({
+    title: 'About – ARC Explainer',
+    description:
+      'Learn the story, accessibility goals, and community behind ARC Explainer, plus links to related reasoning projects.',
+    canonicalPath: '/about',
+  });
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100">

@@ -40,6 +40,7 @@ import { DifficultPuzzlesSection } from '@/components/analytics/DifficultPuzzles
 
 // Import hooks that follow proper repository pattern
 import { useModelDatasetPerformance, useAvailableModels, useAvailableDatasets, useModelDatasetMetrics, DatasetInfo } from '@/hooks/useModelDatasetPerformance';
+import { usePageMeta } from '@/hooks/usePageMeta';
 
 // Types for the new Model Comparison feature
 export interface PuzzleComparisonDetail {
@@ -111,9 +112,45 @@ const DATASET_DISPLAY_NAME_MAP: Record<string, string> = {
   'concept-arc': 'ConceptARC'
 };
 
+const isHuggingFaceOfficial = (modelName: string | null | undefined): boolean => {
+  if (!modelName) return false;
+  return modelName.endsWith('-attempt1') || modelName.endsWith('-attempt2');
+};
+
+const getModelOriginInfo = (modelName: string | null | undefined) => {
+  if (!modelName) {
+    return {
+      isOfficial: false,
+      label: '',
+      description: '',
+      shortLabel: '',
+    };
+  }
+
+  const isOfficial = isHuggingFaceOfficial(modelName);
+
+  return {
+    isOfficial,
+    label: isOfficial
+      ? 'HuggingFace ARC Prize (official)'
+      : 'ARC Explainer / community run (unofficial)',
+    description: isOfficial
+      ? 'This model\'s results come from the ARC Prize HuggingFace leaderboard ingestion.'
+      : 'This model\'s results come from ARC Explainer / community runs and are not an official leaderboard score.',
+    shortLabel: isOfficial ? 'HF official' : 'ARC Explainer',
+  };
+};
+
 type DatasetOption = DatasetInfo & { displayName: string };
 
 export default function AnalyticsOverview() {
+
+  usePageMeta({
+    title: 'ARC Explainer – Analytics Dashboard',
+    description:
+      'Analyze model accuracy, coverage, cost, and reliability across ARC1, ARC2, ARC-Heavy, and ConceptARC datasets.',
+    canonicalPath: '/analytics',
+  });
 
   // Model dataset performance state
   const [selectedModelForDataset, setSelectedModelForDataset] = useState<string>('');
@@ -138,6 +175,16 @@ export default function AnalyticsOverview() {
       displayName: DATASET_DISPLAY_NAME_MAP[dataset.name] ?? dataset.name
     }));
   }, [availableDatasets]);
+
+  const { officialModels, communityModels } = useMemo(() => {
+    const official = availableModels.filter((model) => isHuggingFaceOfficial(model));
+    const community = availableModels.filter((model) => !isHuggingFaceOfficial(model));
+    return { officialModels: official, communityModels: community };
+  }, [availableModels]);
+
+  const selectedModelOrigin = modelDatasetPerformance
+    ? getModelOriginInfo(modelDatasetPerformance.modelName)
+    : null;
 
   // Prefer ARC2 evaluation dataset by default; fall back to first available directory
   React.useEffect(() => {
@@ -231,7 +278,6 @@ export default function AnalyticsOverview() {
   };
 
   React.useEffect(() => {
-    document.title = 'Analytics Dashboard - ARC Explainer';
     window.scrollTo(0, 0);
   }, []);
 
@@ -248,11 +294,40 @@ export default function AnalyticsOverview() {
                 Analytics Dashboard
               </h1>
               <p className="text-lg text-gray-600">
-                Model performance analysis on ARC datasets
+                We ingest the ARC Prize team's official results which are posted at https://huggingface.co/arcprize and try to make them more visually appealing and interactive.
               </p>
             </div>
           </div>
         </header>
+
+        {/* Evaluation harness explanation */}
+        <Card className="border-blue-200 bg-blue-50/70">
+          <CardContent className="p-3 text-sm text-left text-gray-700 space-y-1">
+            <p className="font-semibold text-gray-900">
+              How it works:
+            </p>
+            <p>
+              For each puzzle in those datasets, the harness feeds the same input grids and prompt scaffolding into
+              each LLM, then parses the model's output and scores it with the same rules before storing the
+              results, costs, and timings.
+            </p>
+            <p>
+              The ARC Prize team uses this scaffolding to test all LLMs on the public HuggingFace ARC datasets.
+              You can inspect or reuse the exact evaluation code in the open-source harness here:
+              {" "}
+              <a
+                href="https://github.com/arcprize/arc-agi-benchmarking"
+                target="_blank"
+                rel="noreferrer"
+                className="text-blue-700 underline font-medium"
+              >
+                arc-agi-benchmarking on GitHub
+
+              </a>
+              .
+            </p>
+          </CardContent>
+        </Card>
 
         {/* REAL Model Dataset Performance - Database Query Tool */}
         <Card>
@@ -262,7 +337,7 @@ export default function AnalyticsOverview() {
               Examine a Model's Performance on ARC Datasets
             </CardTitle>
             <p className="text-sm text-muted-foreground">
-              Select a model to see which ARC puzzles it got right, got incorrect, or hasn't attempted yet. Uses real database queries.
+              Select a model to see which ARC puzzles it got right, got incorrect, or did not attempt.
             </p>
           </CardHeader>
           <CardContent className="space-y-3">
@@ -298,11 +373,22 @@ export default function AnalyticsOverview() {
                     <SelectValue placeholder={loadingModels ? "Loading..." : "Choose model"} />
                   </SelectTrigger>
                   <SelectContent>
-                    {availableModels.map((model) => (
-                      <SelectItem key={model} value={model}>
-                        {model}
-                      </SelectItem>
-                    ))}
+                    {officialModels.map((model) => {
+                      const origin = getModelOriginInfo(model);
+                      return (
+                        <SelectItem key={model} value={model}>
+                          {model} {origin.shortLabel && `(${origin.shortLabel})`}
+                        </SelectItem>
+                      );
+                    })}
+                    {communityModels.map((model) => {
+                      const origin = getModelOriginInfo(model);
+                      return (
+                        <SelectItem key={model} value={model}>
+                          {model} {origin.shortLabel && `(${origin.shortLabel})`}
+                        </SelectItem>
+                      );
+                    })}
                   </SelectContent>
                 </Select>
               </div>
@@ -318,14 +404,44 @@ export default function AnalyticsOverview() {
                     <SelectValue placeholder="Compare model" />
                   </SelectTrigger>
                   <SelectContent>
-                    {availableModels.filter(m => m !== selectedModelForDataset).map((model) => (
-                      <SelectItem key={model} value={model}>
-                        {model}
-                      </SelectItem>
-                    ))}
+                    {officialModels
+                      .filter((model) => model !== selectedModelForDataset)
+                      .map((model) => {
+                        const origin = getModelOriginInfo(model);
+                        return (
+                          <SelectItem key={model} value={model}>
+                            {model} {origin.shortLabel && `(${origin.shortLabel})`}
+                          </SelectItem>
+                        );
+                      })}
+                    {communityModels
+                      .filter((model) => model !== selectedModelForDataset)
+                      .map((model) => {
+                        const origin = getModelOriginInfo(model);
+                        return (
+                          <SelectItem key={model} value={model}>
+                            {model} {origin.shortLabel && `(${origin.shortLabel})`}
+                          </SelectItem>
+                        );
+                      })}
                   </SelectContent>
                 </Select>
               </div>
+            </div>
+
+            <div className="space-y-1 text-xs text-muted-foreground">
+              {selectedModelForDataset && (
+                <p>
+                  <span className="font-semibold">Primary model:</span>{' '}
+                  {getModelOriginInfo(selectedModelForDataset).description}
+                </p>
+              )}
+              {selectedModelForComparison && (
+                <p>
+                  <span className="font-semibold">Compare model:</span>{' '}
+                  {getModelOriginInfo(selectedModelForComparison).description}
+                </p>
+              )}
             </div>
 
             <div className="flex justify-center">
@@ -370,6 +486,18 @@ export default function AnalyticsOverview() {
                           <span className="text-sm px-2 py-0.5 bg-blue-100 text-blue-700 rounded-md font-medium">
                             {DATASET_DISPLAY_NAME_MAP[modelDatasetPerformance.dataset] || modelDatasetPerformance.dataset}
                           </span>
+                          {selectedModelOrigin && selectedModelOrigin.label && (
+                            <Badge
+                              variant={selectedModelOrigin.isOfficial ? 'secondary' : 'outline'}
+                              className={
+                                selectedModelOrigin.isOfficial
+                                  ? 'text-[11px] bg-green-50 text-green-700 border-green-200'
+                                  : 'text-[11px] bg-amber-50 text-amber-700 border-amber-200'
+                              }
+                            >
+                              {selectedModelOrigin.label}
+                            </Badge>
+                          )}
                           <span className="text-sm text-gray-500">({modelDatasetPerformance.summary.totalPuzzles} puzzles)</span>
                         </div>
                         <div className="flex items-center gap-4 text-sm text-gray-600">

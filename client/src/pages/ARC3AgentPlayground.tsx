@@ -19,6 +19,7 @@ import { Link } from 'wouter';
 import { useArc3AgentStream } from '@/hooks/useArc3AgentStream';
 import { Arc3GridVisualization } from '@/components/arc3/Arc3GridVisualization';
 import { apiRequest } from '@/lib/queryClient';
+import { usePageMeta } from '@/hooks/usePageMeta';
 
 interface GameInfo {
   game_id: string;
@@ -108,6 +109,12 @@ const normalizeAvailableActionName = (token: string | number | null | undefined)
 };
 
 export default function ARC3AgentPlayground() {
+  usePageMeta({
+    title: 'ARC Explainer – ARC3 Agent Playground',
+    description:
+      'Watch real ARC-AGI-3 agents explore interactive games, stream reasoning traces, and inspect grid state transitions.',
+    canonicalPath: '/arc3/playground',
+  });
   // Auto-scroll ref for streaming panel
   const reasoningContainerRef = React.useRef<HTMLDivElement>(null);
 
