@@ -1,4 +1,8 @@
 # CHANGELOG - Uses semantic versioning (MAJOR.MINOR.PATCH)
+# [5.11.10] - 2025-11-19
+### 🧠 Docs – Advanced LLM Reasoning Article
+- Added an "Advanced explanation" page at `/llm-reasoning/advanced` with a formal, research-style discussion of LLM reasoning (functional competence vs. cognitive process), and linked to it from the basic LLM reasoning explainer header.
+
 # [5.11.9] - 2025-11-19
 ### ✨ UX – Click-to-Open ARC-3 & Misc Dropdowns
 - Replaced hover-based shadcn `NavigationMenu` dropdowns for the ARC-3 and Misc nav groups with click-to-open `DropdownMenu` components so the menus stay open while users explore links and only close on selection or click-away.

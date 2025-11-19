@@ -6,6 +6,7 @@
  */
 
 import React from 'react';
+import { Link } from 'wouter';
 import { EmojiMosaicAccent } from '@/components/browser/EmojiMosaicAccent';
 import { usePageMeta } from '@/hooks/usePageMeta';
 
@@ -37,8 +38,14 @@ export default function LLMReasoning() {
             </p>
           </div>
 
-          <div className="flex items-center justify-center mt-2">
+          <div className="flex items-center justify-center gap-3 mt-2">
             <EmojiMosaicAccent pattern="logic" width={9} height={2} size="sm" framed />
+            <Link
+              href="/llm-reasoning/advanced"
+              className="text-xs sm:text-sm font-medium text-blue-300 hover:text-blue-200 underline-offset-4 hover:underline"
+            >
+              Advanced explanation
+            </Link>
           </div>
         </header>
 
@@ -46,7 +53,7 @@ export default function LLMReasoning() {
           <h2 className="text-xl font-semibold text-slate-100">What This Article Is About</h2>
           <p className="text-slate-300 leading-relaxed">
             You&apos;ve probably used ChatGPT or similar AI programs. They can answer questions, write stories, and
-            even solve math problems. But are they actually <em>thinking</em>, or are they doing something
+            even solve simple math problems. But are they actually <em>thinking</em>, or are they doing something
             different? Let&apos;s find out.
           </p>
         </section>

@@ -31,6 +31,7 @@ import ARC3AgentPlayground from "@/pages/ARC3AgentPlayground";
 import PuzzleTradingCards from "@/pages/PuzzleTradingCards";
 import HumanTradingCards from "@/pages/HumanTradingCards";
 import LLMReasoning from "@/pages/LLMReasoning";
+import LLMReasoningAdvanced from "@/pages/LLMReasoningAdvanced";
 
 function Router() {
   return (
@@ -70,6 +71,7 @@ function Router() {
         <Route path="/model-comparison" component={ModelComparisonPage} />
         <Route path="/about" component={About} />
         <Route path="/llm-reasoning" component={LLMReasoning} />
+        <Route path="/llm-reasoning/advanced" component={LLMReasoningAdvanced} />
         <Route path="/arc3" component={ARC3Browser} />
         <Route path="/arc3/playground" component={ARC3AgentPlayground} />
         <Route path="/puzzle/:taskId" component={PuzzleExaminer} />
