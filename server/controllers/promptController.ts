@@ -1,11 +1,11 @@
 /**
  * promptController.ts
- * 
- * Controller for prompt template-related routes.
- * Handles HTTP requests and responses for prompt template operations.
- * Provides access to the available prompt templates for the prompt picker system.
- * 
- * @author Cascade
+ *
+ * Author: Cascade
+ * Date: 2025-11-19
+ * PURPOSE: Controller for prompt template operations and previews.
+ *          Supports continuation mode for Responses API conversation chaining.
+ * SRP/DRY check: Pass - Single responsibility: HTTP handling for prompt operations
  */
 
 import { Request, Response } from 'express';
@@ -14,6 +14,7 @@ import { formatResponse } from '../utils/responseFormatter';
 import { puzzleService } from '../services/puzzleService';
 import { buildAnalysisPrompt } from '../services/promptBuilder';
 import type { PromptOptions } from '../services/promptBuilder';
+import type { ServiceOptions } from '../services/base/BaseAIService';
 
 export const promptController = {
   /**
@@ -40,9 +41,25 @@ export const promptController = {
    * @param res - Express response object
    */
   async preview(req: Request, res: Response) {
-    const { taskId, promptId, customPrompt, emojiSetKey, omitAnswer, topP, candidateCount, originalExplanation, customChallenge, sendAsEmojis } = req.body;
+    const {
+      taskId,
+      promptId,
+      customPrompt,
+      emojiSetKey,
+      omitAnswer,
+      topP,
+      candidateCount,
+      originalExplanation,
+      customChallenge,
+      sendAsEmojis,
+      previousResponseId // For conversation chaining in discussion/debate mode
+    } = req.body;
 
-    console.log(`[PromptController] Generating prompt preview for task ${taskId} with template ${promptId}`);
+    const isContinuation = Boolean(previousResponseId);
+    console.log(`[PromptController] Generating prompt preview for task ${taskId} with template ${promptId}${isContinuation ? ' (CONTINUATION MODE)' : ''}`);
+    if (isContinuation) {
+      console.log(`[PromptController] Previous response ID: ${previousResponseId.substring(0, 24)}...`);
+    }
 
     try {
       // Get the task data
@@ -60,12 +77,21 @@ export const promptController = {
         topP,
         candidateCount,
         originalExplanation, // For debate mode
-        customChallenge // For debate mode
+        customChallenge // For debate/discussion mode
       };
 
-      const promptPackage = buildAnalysisPrompt(task, promptId, customPrompt, promptOptions);
+      // Service options for continuation mode
+      const serviceOpts: ServiceOptions = {
+        previousResponseId, // Enables continuation prompt building
+        suppressInstructionsOnContinuation: isContinuation // Skip full instructions on continuation
+      };
+
+      const promptPackage = buildAnalysisPrompt(task, promptId, customPrompt, promptOptions, serviceOpts);
 
       console.log(`[PromptController] Generated prompt preview - System: ${promptPackage.systemPrompt.length} chars, User: ${promptPackage.userPrompt.length} chars`);
+      if (isContinuation) {
+        console.log(`[PromptController] ✅ Continuation prompt successfully built with minimal system instructions`);
+      }
 
       res.json(formatResponse.success({
         systemPrompt: promptPackage.systemPrompt,

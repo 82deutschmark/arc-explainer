@@ -3,8 +3,10 @@
  * Date: 2025-11-19
  * PURPOSE: Hierarchical navigation with grouped dropdown menus and colorful emoji dividers.
  * Organizes navigation items into regular links and dropdown groups for better scannability.
- * Groups: ARC-3 (games + playground), Misc (leaderboards, puzzle DB, test).
- * Uses shadcn/ui NavigationMenu with triggers and content for dropdown functionality.
+ * Groups: ARC-3 (games + playground), Misc (leaderboards, puzzle DB, test, LLM reasoning, kaggle readiness).
+ * Uses shadcn/ui NavigationMenu with triggers, content, and viewport for dropdown functionality.
+ * CRITICAL: NavigationMenuViewport is required for dropdown content to render properly!
+ * Emoji dividers are rendered INSIDE each menu item to maintain proper Radix UI hierarchy.
  * SRP/DRY check: Pass - Single responsibility (navigation structure), reuses shadcn components
  */
 import React from 'react';
@@ -14,10 +16,14 @@ import {
   NavigationMenuItem,
   NavigationMenuLink,
   NavigationMenuList,
-  NavigationMenuTrigger,
-  NavigationMenuContent,
   navigationMenuTriggerStyle,
 } from '@/components/ui/navigation-menu';
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+} from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import {
@@ -34,7 +40,8 @@ import {
   FlaskConical,
   Wallet,
   Users,
-  MoreHorizontal
+  MoreHorizontal,
+  FileCheck
 } from 'lucide-react';
 
 // Type definitions for discriminated union
@@ -147,6 +154,20 @@ const navigationItems: NavItem[] = [
         href: '/test-solution',
         icon: CheckCircle,
         description: 'Test your own predicted solutions against ARC puzzles'
+      },
+      {
+        type: 'link',
+        title: 'LLM Reasoning',
+        href: '/llm-reasoning',
+        icon: Brain,
+        description: 'Plain-language explainer of how AI pattern matching differs from human thinking'
+      },
+      {
+        type: 'link',
+        title: 'Kaggle Readiness',
+        href: '/kaggle-readiness',
+        icon: FileCheck,
+        description: 'Validate your ARC Kaggle competition readiness'
       }
     ]
   },
@@ -193,81 +214,81 @@ export function AppNavigation() {
   return (
     <div className="flex items-center justify-between w-full">
       <NavigationMenu>
-        <NavigationMenuList>
+        <NavigationMenuList className="flex items-center">
           {navigationItems.map((item, index) => {
             const showDivider = index < navigationItems.length - 1;
             const dividerEmoji = dividerEmojis[index % dividerEmojis.length];
             const key = item.type === 'link' ? item.href : item.title;
 
             return (
-              <React.Fragment key={key}>
+              <NavigationMenuItem key={key} className="flex items-center">
                 {item.type === 'link' ? (
-                  <NavigationMenuItem>
-                    <NavigationMenuLink asChild>
-                      <Link
-                        href={item.href}
-                        className={cn(
-                          navigationMenuTriggerStyle(),
-                          "flex items-center gap-2 font-medium",
-                          isActiveRoute(item.href) && "bg-accent text-accent-foreground"
-                        )}
-                      >
-                        <item.icon className="h-4 w-4" />
-                        <span className="hidden sm:inline">{item.title}</span>
-                      </Link>
-                    </NavigationMenuLink>
-                  </NavigationMenuItem>
-                ) : (
-                  <NavigationMenuItem>
-                    <NavigationMenuTrigger
+                  <NavigationMenuLink asChild>
+                    <Link
+                      href={item.href}
                       className={cn(
+                        navigationMenuTriggerStyle(),
+                        "flex items-center gap-2 font-medium",
+                        isActiveRoute(item.href) && "bg-accent text-accent-foreground"
+                      )}
+                    >
+                      <item.icon className="h-4 w-4" />
+                      <span className="hidden sm:inline">{item.title}</span>
+                    </Link>
+                  </NavigationMenuLink>
+                ) : (
+                  <DropdownMenu>
+                    <DropdownMenuTrigger
+                      className={cn(
+                        navigationMenuTriggerStyle(),
                         "flex items-center gap-2 font-medium",
                         isDropdownActive(item) && "bg-accent text-accent-foreground"
                       )}
                     >
                       <item.icon className="h-4 w-4" />
                       <span className="hidden sm:inline">{item.title}</span>
-                    </NavigationMenuTrigger>
-                    <NavigationMenuContent>
-                      <div className="flex flex-col min-w-[250px] p-2 gap-1">
-                        {item.children.map((child) => {
-                          const isChildActive = isActiveRoute(child.href);
-                          return (
-                            <NavigationMenuLink key={child.href} asChild>
-                              <Link
-                                href={child.href}
-                                className={cn(
-                                  "block select-none rounded-md px-3 py-2 text-sm leading-none no-underline outline-none transition-colors",
-                                  "hover:bg-accent hover:text-accent-foreground",
-                                  "focus:bg-accent focus:text-accent-foreground",
-                                  isChildActive && "bg-accent text-accent-foreground font-semibold"
-                                )}
-                              >
-                                <div className="flex items-center gap-2">
-                                  <child.icon className="h-4 w-4" />
-                                  <div>
-                                    <div className="font-medium">{child.title}</div>
-                                    {child.description && (
-                                      <p className="text-xs text-muted-foreground line-clamp-2 mt-1">
-                                        {child.description}
-                                      </p>
-                                    )}
-                                  </div>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent
+                      align="start"
+                      className="min-w-[250px] p-1"
+                    >
+                      {item.children.map((child) => {
+                        const isChildActive = isActiveRoute(child.href);
+                        return (
+                          <DropdownMenuItem key={child.href} asChild>
+                            <Link
+                              href={child.href}
+                              className={cn(
+                                "block select-none rounded-md px-3 py-2 text-sm leading-none no-underline outline-none transition-colors",
+                                "hover:bg-accent hover:text-accent-foreground",
+                                "focus:bg-accent focus:text-accent-foreground",
+                                isChildActive && "bg-accent text-accent-foreground font-semibold"
+                              )}
+                            >
+                              <div className="flex items-center gap-2">
+                                <child.icon className="h-4 w-4" />
+                                <div>
+                                  <div className="font-medium">{child.title}</div>
+                                  {child.description && (
+                                    <p className="text-xs text-muted-foreground line-clamp-2 mt-1">
+                                      {child.description}
+                                    </p>
+                                  )}
                                 </div>
-                              </Link>
-                            </NavigationMenuLink>
-                          );
-                        })}
-                      </div>
-                    </NavigationMenuContent>
-                  </NavigationMenuItem>
+                              </div>
+                            </Link>
+                          </DropdownMenuItem>
+                        );
+                      })}
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                 )}
                 {showDivider && (
                   <span className="text-xs mx-1 select-none" aria-hidden="true">
                     {dividerEmoji}
                   </span>
                 )}
-              </React.Fragment>
+              </NavigationMenuItem>
             );
           })}
         </NavigationMenuList>
