@@ -20,7 +20,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Brain, ArrowLeft, Send, Loader2, RotateCcw, TrendingUp, Sparkles, Target, Settings, Eye, FileText, ChevronDown, ChevronUp } from 'lucide-react';
+import { Brain, ArrowLeft, Send, Loader2, RotateCcw, TrendingUp, Sparkles, Target, Settings, Eye } from 'lucide-react';
 import { CollapsibleCard } from '@/components/ui/collapsible-card';
 import { IterationDataTable } from './IterationDataTable';
 import { PromptPicker } from '@/components/PromptPicker';
@@ -114,9 +114,6 @@ export const ProfessionalRefinementUI: React.FC<ProfessionalRefinementUIProps> =
 }) => {
   const [showPromptPreview, setShowPromptPreview] = React.useState(false);
   const [previewMode, setPreviewMode] = React.useState<'view' | 'run' | null>(null);
-  const [showInlinePreview, setShowInlinePreview] = React.useState(false);
-  const [promptPreviewData, setPromptPreviewData] = React.useState<any>(null);
-  const [isLoadingPreview, setIsLoadingPreview] = React.useState(false);
   const currentModel = models?.find(m => m.key === activeModel);
   const modelDisplayName = currentModel?.name || activeModel;
   const showTemperature = currentModel?.supportsTemperature && !isGPT5ReasoningModel(activeModel);
@@ -151,50 +148,6 @@ export const ProfessionalRefinementUI: React.FC<ProfessionalRefinementUIProps> =
     const lastIteration = iterations[iterations.length - 1];
     return lastIteration.content.providerResponseId || undefined;
   };
-
-  // Fetch inline prompt preview when user expands preview
-  const fetchInlinePromptPreview = React.useCallback(async () => {
-    if (promptPreviewData || isLoadingPreview) return;
-
-    setIsLoadingPreview(true);
-    try {
-      const previousResponseId = getLastResponseId();
-      console.log(`[ProfessionalRefinementUI] Fetching preview${previousResponseId ? ' (CONTINUATION MODE)' : ''}`);
-
-      const response = await fetch('/api/prompt-preview', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          provider: 'openai',
-          taskId,
-          promptId,
-          customPrompt,
-          omitAnswer: true,
-          customChallenge: userGuidance,
-          previousResponseId // ✅ CRITICAL FIX: Pass for continuation mode
-        })
-      });
-
-      if (response.ok) {
-        const result = await response.json();
-        if (result.success && result.data) {
-          setPromptPreviewData(result.data);
-        }
-      }
-    } catch (err) {
-      console.error('Failed to fetch prompt preview:', err);
-    } finally {
-      setIsLoadingPreview(false);
-    }
-  }, [taskId, promptId, customPrompt, userGuidance, promptPreviewData, isLoadingPreview, iterations]);
-
-  // Auto-refresh preview when user guidance changes
-  React.useEffect(() => {
-    if (showInlinePreview) {
-      setPromptPreviewData(null);
-      fetchInlinePromptPreview();
-    }
-  }, [userGuidance]);
 
   return (
     <div className="space-y-4">
@@ -271,117 +224,6 @@ export const ProfessionalRefinementUI: React.FC<ProfessionalRefinementUIProps> =
             </div>
           </div>
         </CardContent>
-      </Card>
-
-      {/* Prompt Preview - Prominent and Inline */}
-      <Card className="bg-gradient-to-r from-blue-50 to-purple-50 border-blue-200 border-2">
-        <CardHeader className="pb-2">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <FileText className="h-5 w-5 text-blue-600" />
-              <div>
-                <CardTitle className="text-base">Prompt Configuration</CardTitle>
-                <p className="text-xs text-gray-600 mt-0.5">Review what will be sent to the AI model</p>
-              </div>
-            </div>
-            <div className="flex items-center gap-2">
-              <Badge variant="outline" className="bg-white font-mono text-xs">
-                {promptId}
-              </Badge>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => {
-                  setShowInlinePreview(!showInlinePreview);
-                  if (!showInlinePreview && !promptPreviewData) {
-                    fetchInlinePromptPreview();
-                  }
-                }}
-                disabled={isProcessing}
-                className="text-xs h-8"
-              >
-                {showInlinePreview ? (
-                  <><ChevronUp className="h-3 w-3 mr-1" />Hide Preview</>
-                ) : (
-                  <><ChevronDown className="h-3 w-3 mr-1" />Show Preview</>
-                )}
-              </Button>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => {
-                  setPreviewMode('view');
-                  setShowPromptPreview(true);
-                }}
-                disabled={isProcessing}
-                className="text-xs h-8"
-              >
-                <Eye className="h-3 w-3 mr-1" />
-                Full Modal
-              </Button>
-            </div>
-          </div>
-        </CardHeader>
-        
-        {/* Inline Preview */}
-        {showInlinePreview && (
-          <CardContent className="pt-2 pb-3">
-            {isLoadingPreview ? (
-              <div className="flex items-center justify-center py-4">
-                <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                <span className="text-sm text-gray-500">Loading preview...</span>
-              </div>
-            ) : promptPreviewData ? (
-              <div className="space-y-3">
-                {/* Template Info */}
-                {promptPreviewData.selectedTemplate && (
-                  <div className="bg-white rounded p-2 border border-blue-200">
-                    <div className="text-xs font-semibold text-blue-800">
-                      {promptPreviewData.selectedTemplate.emoji} {promptPreviewData.selectedTemplate.name}
-                    </div>
-                    <div className="text-xs text-gray-600 mt-0.5">
-                      {promptPreviewData.selectedTemplate.description}
-                    </div>
-                  </div>
-                )}
-                
-                {/* System Prompt Preview */}
-                <div className="space-y-1">
-                  <div className="text-xs font-semibold text-gray-700">System Prompt ({promptPreviewData.systemPrompt?.length || 0} chars)</div>
-                  <pre className="text-xs bg-white p-2 rounded border border-gray-200 overflow-auto max-h-32 whitespace-pre-wrap">
-                    {promptPreviewData.systemPrompt || '(No system prompt)'}
-                  </pre>
-                </div>
-                
-                {/* User Prompt Preview */}
-                <div className="space-y-1">
-                  <div className="text-xs font-semibold text-gray-700">User Prompt ({promptPreviewData.userPrompt?.length || 0} chars)</div>
-                  <pre className="text-xs bg-white p-2 rounded border border-gray-200 overflow-auto max-h-48 whitespace-pre-wrap">
-                    {promptPreviewData.userPrompt || '(No user prompt)'}
-                  </pre>
-                </div>
-                
-                {/* Stats Summary */}
-                <div className="bg-white rounded p-2 border border-gray-200 text-xs text-gray-600">
-                  <strong>Total:</strong> {(promptPreviewData.systemPrompt?.length || 0) + (promptPreviewData.userPrompt?.length || 0)} characters (~{Math.ceil(((promptPreviewData.systemPrompt?.length || 0) + (promptPreviewData.userPrompt?.length || 0)) / 4)} tokens)
-                </div>
-              </div>
-            ) : (
-              <div className="text-sm text-gray-500 text-center py-4">
-                Click "Show Preview" to load prompt details
-              </div>
-            )}
-          </CardContent>
-        )}
-        
-        {/* Quick Info When Collapsed */}
-        {!showInlinePreview && (
-          <CardContent className="pt-0 pb-3">
-            <div className="bg-yellow-50 border border-yellow-200 rounded p-2 text-xs text-yellow-800">
-              <strong>⚠️ Important:</strong> Always review the prompt before sending. Click "Show Preview" to see what will be sent to the AI model.
-            </div>
-          </CardContent>
-        )}
       </Card>
 
       {/* Advanced Controls - Only show relevant parameters */}

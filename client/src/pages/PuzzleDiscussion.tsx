@@ -130,7 +130,8 @@ export default function PuzzleDiscussion() {
     streamingTokenUsage,
     streamingPromptPreview,
     streamError,
-    cancelStreamingAnalysis
+    cancelStreamingAnalysis,
+    closeStreamingModal // ✅ ADD: For proper modal management
   } = useAnalysisResults({
     taskId: taskId || '',
     refetchExplanations,
@@ -647,32 +648,6 @@ export default function PuzzleDiscussion() {
 
           return (
             <>
-              {isStreamingActive && refinementState.activeModel && (
-                <StreamingAnalysisPanel
-                  title={`Streaming ${streamingModel?.name ?? streamingModelKey ?? 'Refinement'}`}
-                  status={streamingPanelStatus}
-                  phase={typeof streamingPhase === 'string' ? streamingPhase : undefined}
-                  message={
-                    streamingPanelStatus === 'failed'
-                      ? streamError?.message ?? streamingMessage ?? 'Streaming failed'
-                      : streamingMessage
-                  }
-                  text={streamingText}
-                  structuredJsonText={streamingStructuredJsonText}
-                  structuredJson={streamingStructuredJson}
-                  reasoning={streamingReasoning}
-                  tokenUsage={streamingTokenUsage}
-                  promptPreview={streamingPromptPreview}
-                  onCancel={
-                    streamingPanelStatus === 'in_progress'
-                      ? () => {
-                          cancelStreamingAnalysis();
-                          setPendingStream(null);
-                        }
-                      : undefined
-                  }
-                />
-              )}
               <ProfessionalRefinementUI
                 iterations={refinementState.iterations}
                 taskId={taskId}
@@ -759,6 +734,56 @@ export default function PuzzleDiscussion() {
           </CardContent>
         </Card>
       )}
+
+      {/* Streaming Modal Dialog (like PuzzleExaminer) */}
+      <dialog className={`modal ${isStreamingActive ? 'modal-open' : ''}`}>
+        <div className="modal-box max-w-[95vw] max-h-[90vh] overflow-y-auto">
+          <h3 className="font-bold text-lg mb-4">
+            {`Streaming ${streamingModel?.name ?? streamingModelKey ?? 'Refinement'}`}
+          </h3>
+          <StreamingAnalysisPanel
+            title={`${streamingModel?.name ?? streamingModelKey ?? 'Refinement'}`}
+            status={streamingPanelStatus}
+            phase={typeof streamingPhase === 'string' ? streamingPhase : undefined}
+            message={
+              streamingPanelStatus === 'failed'
+                ? streamError?.message ?? streamingMessage ?? 'Streaming failed'
+                : streamingMessage
+            }
+            text={streamingText}
+            structuredJsonText={streamingStructuredJsonText}
+            structuredJson={streamingStructuredJson}
+            reasoning={streamingReasoning}
+            tokenUsage={streamingTokenUsage}
+            promptPreview={streamingPromptPreview}
+            task={task!}
+            onCancel={
+              streamingPanelStatus === 'in_progress'
+                ? () => {
+                    cancelStreamingAnalysis();
+                    setPendingStream(null);
+                  }
+                : undefined
+            }
+            onClose={closeStreamingModal}
+          />
+        </div>
+        <form method="dialog" className="modal-backdrop">
+          <button
+            onClick={() => {
+              if (streamingPanelStatus === 'in_progress') {
+                cancelStreamingAnalysis();
+                setPendingStream(null);
+              }
+              if (streamingPanelStatus !== 'completed') {
+                closeStreamingModal();
+              }
+            }}
+          >
+            close
+          </button>
+        </form>
+      </dialog>
     </div>
   );
 }
