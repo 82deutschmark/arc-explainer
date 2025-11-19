@@ -1,4 +1,8 @@
 # CHANGELOG - Uses semantic versioning (MAJOR.MINOR.PATCH)
+# [5.11.1] - 2025-11-18
+### ✨ UI – Puzzle Examiner Correctness Filter Bar
+- Centered and enlarged the Correct / Incorrect filter buttons in the Puzzle Examiner Analysis Results bar so they are front-and-center with big typography, while keeping the All filter available as a secondary option and preserving existing filtering behavior.
+
 # [5.11.0] - 2025-11-18
 ### 🚀 Release Summary – Analytics & Discoverability
 - Added clear model origin indicators on the Analytics Dashboard (HuggingFace ARC Prize leaderboard vs ARC Explainer / community runs).
