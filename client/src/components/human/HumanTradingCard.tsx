@@ -21,16 +21,23 @@ interface HumanTradingCardProps {
 
 export const HumanTradingCard: React.FC<HumanTradingCardProps> = ({ contributor }) => {
   const cardData = formatContributorCard(contributor);
-  
+
   // Get a stable random GIF for this contributor
   const gifUrl = useMemo(() => getRandomGif(contributor.id), [contributor.id]);
+
+  // Handle multiple image URLs (comma-separated) - randomly pick one per render
+  const selectedImageUrl = useMemo(() => {
+    if (!contributor.imageUrl) return null;
+    const imageUrls = contributor.imageUrl.split(',').map(url => url.trim());
+    return imageUrls[Math.floor(Math.random() * imageUrls.length)];
+  }, [contributor.imageUrl]);
 
   const ProfileImage = ({ className, showFeatured = false }: { className?: string, showFeatured?: boolean }) => (
     <div className={`relative group ${className}`}>
       <div className={`w-full h-full overflow-hidden rounded-lg border-2 ${cardData.colors.borderGradient} bg-slate-950 shadow-inner`}>
-        {contributor.imageUrl ? (
+        {selectedImageUrl ? (
           <img
-            src={contributor.imageUrl}
+            src={selectedImageUrl}
             alt={contributor.fullName}
             className="w-full h-full object-cover"
           />
@@ -108,9 +115,9 @@ export const HumanTradingCard: React.FC<HumanTradingCardProps> = ({ contributor 
                 </DialogTrigger>
                 <DialogContent className="bg-transparent border-none shadow-none p-0 flex items-center justify-center max-w-[90vw] max-h-[90vh]">
                   <div className="relative">
-                    {contributor.imageUrl ? (
+                    {selectedImageUrl ? (
                        <img
-                         src={contributor.imageUrl}
+                         src={selectedImageUrl}
                          alt={contributor.fullName}
                          className="max-w-[85vw] max-h-[85vh] object-contain rounded-lg shadow-2xl border-2 border-slate-700 bg-black"
                        />
