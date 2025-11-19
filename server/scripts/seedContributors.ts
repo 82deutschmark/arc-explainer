@@ -57,7 +57,7 @@ const contributors: CreateContributorRequest[] = [
     },
     teamName: 'ARChitects',
     category: 'competition_winner',
-    rank: 2
+    rank: undefined
   },
 
   {
@@ -120,7 +120,7 @@ const contributors: CreateContributorRequest[] = [
     },
     teamName: 'Omni-ARC',
     category: 'competition_winner',
-    rank: 3
+    rank: undefined
   },
 
   // 2024 Paper Award Winners
