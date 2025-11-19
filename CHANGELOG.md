@@ -1,4 +1,9 @@
 # CHANGELOG - Uses semantic versioning (MAJOR.MINOR.PATCH)
+# [5.12.0] - 2025-11-19
+### 🚀 Release Summary – LLM Reasoning & Navigation UX
+- Introduced a two-tier LLM reasoning explainer (plain-language page plus advanced formal article) to clarify how pattern-matching models differ from human thinking.
+- Improved top navigation UX with grouped ARC-3/Misc menus, click-to-open dropdowns, and better alignment so key tools and docs are easier to discover.
+
 # [5.11.10] - 2025-11-19
 ### 🧠 Docs – Advanced LLM Reasoning Article
 - Added an "Advanced explanation" page at `/llm-reasoning/advanced` with a formal, research-style discussion of LLM reasoning (functional competence vs. cognitive process), and linked to it from the basic LLM reasoning explainer header.
