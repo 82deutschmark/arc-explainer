@@ -3,7 +3,7 @@
  * Date: 2025-11-19
  * PURPOSE: Hierarchical navigation with grouped dropdown menus and colorful emoji dividers.
  * Organizes navigation items into regular links and dropdown groups for better scannability.
- * Groups: ARC-3 (games + playground), Misc (leaderboards, puzzle DB, test, kaggle readiness).
+ * Groups: ARC-3 (games + playground), Misc (leaderboards, puzzle DB, test, LLM reasoning, kaggle readiness).
  * Uses shadcn/ui NavigationMenu with triggers, content, and viewport for dropdown functionality.
  * CRITICAL: NavigationMenuViewport is required for dropdown content to render properly!
  * SRP/DRY check: Pass - Single responsibility (navigation structure), reuses shadcn components
@@ -150,6 +150,13 @@ const navigationItems: NavItem[] = [
         href: '/test-solution',
         icon: CheckCircle,
         description: 'Test your own predicted solutions against ARC puzzles'
+      },
+      {
+        type: 'link',
+        title: 'LLM Reasoning',
+        href: '/llm-reasoning',
+        icon: Brain,
+        description: 'Plain-language explainer of how AI pattern matching differs from human thinking'
       },
       {
         type: 'link',
