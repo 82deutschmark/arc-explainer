@@ -1,4 +1,8 @@
 # CHANGELOG - Uses semantic versioning (MAJOR.MINOR.PATCH)
+# [5.11.4] - 2025-11-19
+### 🧩 Meta - Social Preview Image
+- Reverted Open Graph and Twitter preview image from animated ARC puzzle GIF back to static `/og-preview.svg` illustration for clearer, more consistent link previews across social platforms.
+
 # [5.11.3] - 2025-11-19
 ### ✨ UI – Navigation Menu Grouping for ARC & ARC-3
 - Reorganized the top navigation into grouped dropdown menus for ARC-3 experiences (ARC-AGI-3 games and Playground) and miscellaneous tools (Leaderboards, Puzzle DB, Test Solution) to reduce clutter and make key flows easier to discover.
