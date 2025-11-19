@@ -3,8 +3,9 @@
  * Date: 2025-11-19
  * PURPOSE: Hierarchical navigation with grouped dropdown menus and colorful emoji dividers.
  * Organizes navigation items into regular links and dropdown groups for better scannability.
- * Groups: ARC-3 (games + playground), Misc (leaderboards, puzzle DB, test).
- * Uses shadcn/ui NavigationMenu with triggers and content for dropdown functionality.
+ * Groups: ARC-3 (games + playground), Misc (leaderboards, puzzle DB, test, LLM reasoning, kaggle readiness).
+ * Uses shadcn/ui NavigationMenu with triggers, content, and viewport for dropdown functionality.
+ * CRITICAL: NavigationMenuViewport is required for dropdown content to render properly!
  * SRP/DRY check: Pass - Single responsibility (navigation structure), reuses shadcn components
  */
 import React from 'react';
@@ -16,6 +17,7 @@ import {
   NavigationMenuList,
   NavigationMenuTrigger,
   NavigationMenuContent,
+  NavigationMenuViewport,
   navigationMenuTriggerStyle,
 } from '@/components/ui/navigation-menu';
 import { Button } from '@/components/ui/button';
@@ -34,7 +36,8 @@ import {
   FlaskConical,
   Wallet,
   Users,
-  MoreHorizontal
+  MoreHorizontal,
+  FileCheck
 } from 'lucide-react';
 
 // Type definitions for discriminated union
@@ -154,6 +157,13 @@ const navigationItems: NavItem[] = [
         href: '/llm-reasoning',
         icon: Brain,
         description: 'Plain-language explainer of how AI pattern matching differs from human thinking'
+      },
+      {
+        type: 'link',
+        title: 'Kaggle Readiness',
+        href: '/kaggle-readiness',
+        icon: FileCheck,
+        description: 'Validate your ARC Kaggle competition readiness'
       }
     ]
   },
@@ -276,6 +286,7 @@ export function AppNavigation() {
             );
           })}
         </NavigationMenuList>
+        <NavigationMenuViewport />
       </NavigationMenu>
 
       <div className="flex items-center gap-2">
