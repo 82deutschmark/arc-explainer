@@ -48,18 +48,6 @@ const navigationItems: NavItem[] = [
     description: 'Browse ARC puzzles and start analysis'
   },
   {
-    title: 'Trading Cards',
-    href: '/trading-cards',
-    icon: Wallet,
-    description: 'Named puzzles as collectible trading cards with performance stats'
-  },
-  {
-    title: 'Hall of Fame',
-    href: '/human-cards',
-    icon: Users,
-    description: 'Notable ARC contributors and researchers as trading cards'
-  },
-  {
     title: 'Analytics',
     href: '/analytics',
     icon: Database,
@@ -124,6 +112,18 @@ const navigationItems: NavItem[] = [
     href: '/about',
     icon: Info,
     description: 'Learn about this project and acknowledgments'
+  },
+  {
+    title: 'Cards',
+    href: '/trading-cards',
+    icon: Wallet,
+    description: 'Named puzzles as collectible trading cards with performance stats'
+  },
+  {
+    title: 'People',
+    href: '/human-cards',
+    icon: Users,
+    description: 'Notable ARC contributors and researchers as trading cards'
   }
 ];
 
