@@ -2,11 +2,11 @@
  * ProfessionalRefinementUI.tsx
  *
  * Author: Cascade using Sonnet 4.5
- * Date: 2025-10-11
+ * Date: 2025-11-19
  * PURPOSE: Professional research interface for progressive reasoning analysis.
  * Data-dense tabular presentation similar to financial terminals and research platforms.
- * Matches the design pattern of PuzzleExaminer for consistency.
- * 
+ * Supports continuation mode for Responses API conversation chaining.
+ *
  * SRP/DRY check: Pass - Orchestrates refinement UI with professional data presentation
  * shadcn/ui: Pass - Uses shadcn/ui components throughout
  */
@@ -145,12 +145,22 @@ export const ProfessionalRefinementUI: React.FC<ProfessionalRefinementUIProps> =
       : latest.content.isPredictionCorrect === true
   );
 
+  // Get the last response ID for continuation
+  const getLastResponseId = (): string | undefined => {
+    if (iterations.length === 0) return undefined;
+    const lastIteration = iterations[iterations.length - 1];
+    return lastIteration.content.providerResponseId || undefined;
+  };
+
   // Fetch inline prompt preview when user expands preview
   const fetchInlinePromptPreview = React.useCallback(async () => {
     if (promptPreviewData || isLoadingPreview) return;
-    
+
     setIsLoadingPreview(true);
     try {
+      const previousResponseId = getLastResponseId();
+      console.log(`[ProfessionalRefinementUI] Fetching preview${previousResponseId ? ' (CONTINUATION MODE)' : ''}`);
+
       const response = await fetch('/api/prompt-preview', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -160,10 +170,11 @@ export const ProfessionalRefinementUI: React.FC<ProfessionalRefinementUIProps> =
           promptId,
           customPrompt,
           omitAnswer: true,
-          customChallenge: userGuidance
+          customChallenge: userGuidance,
+          previousResponseId // ✅ CRITICAL FIX: Pass for continuation mode
         })
       });
-      
+
       if (response.ok) {
         const result = await response.json();
         if (result.success && result.data) {
@@ -175,7 +186,7 @@ export const ProfessionalRefinementUI: React.FC<ProfessionalRefinementUIProps> =
     } finally {
       setIsLoadingPreview(false);
     }
-  }, [taskId, promptId, customPrompt, userGuidance, promptPreviewData, isLoadingPreview]);
+  }, [taskId, promptId, customPrompt, userGuidance, promptPreviewData, isLoadingPreview, iterations]);
 
   // Auto-refresh preview when user guidance changes
   React.useEffect(() => {
@@ -471,7 +482,8 @@ export const ProfessionalRefinementUI: React.FC<ProfessionalRefinementUIProps> =
         taskId={taskId}
         promptId={promptId}
         options={{
-          customChallenge: userGuidance
+          customChallenge: userGuidance,
+          previousResponseId: getLastResponseId() // ✅ CRITICAL FIX: Pass for continuation mode
         }}
         confirmMode={previewMode === 'run'}
         onConfirm={previewMode === 'run'

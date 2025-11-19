@@ -193,6 +193,16 @@ export function buildResponsesPayload({
   }
   console.log(`[OpenAI-PayloadBuilder] max_output_tokens: ${payload.max_output_tokens}`);
 
+  // ✅ VERIFICATION: Log conversation chaining configuration
+  console.log(`[OpenAI-PayloadBuilder] Store: ${payload.store} (${isContinuation ? 'CONTINUATION' : 'INITIAL'})`);
+  if (isContinuation) {
+    if (serviceOpts.previousResponseId) {
+      console.log(`[OpenAI-PayloadBuilder] ✅ Previous response ID: ${serviceOpts.previousResponseId.substring(0, 24)}...`);
+    } else {
+      console.warn(`[OpenAI-PayloadBuilder] ⚠️ WARNING: Continuation mode but no previousResponseId provided!`);
+    }
+  }
+
   return {
     body: payload,
     isContinuation,
