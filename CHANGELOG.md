@@ -1,6 +1,11 @@
 ## ARC Explainer  
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top!!!
 
+### Version 5.14.1
+
+- Docs
+  - Added `docs/reference/database/MULTI_TEST_CORRECTNESS_GUIDE.md` describing the multi-test correctness pipeline, field semantics, and UI/display patterns for future maintainers.
+
 ### Version 5.14.0
 
 - LLM Reasoning docs
