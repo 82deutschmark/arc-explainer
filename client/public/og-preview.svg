@@ -72,22 +72,21 @@
       <!-- Title -->
       <text x="0" y="0" fill="white" font-family="Arial, sans-serif" font-size="64" font-weight="800" letter-spacing="-1px">
         <tspan x="0" dy="0">ARC-AGI</tspan>
-        <tspan x="0" dy="80">Analysis</tspan>
-        <tspan x="0" dy="80">Platform</tspan>
+        <tspan x="0" dy="80">Explainer</tspan>
       </text>
 
       <!-- Subtitle -->
-      <text x="0" y="280" fill="white" font-family="Arial, sans-serif" font-size="28" font-weight="400" opacity="0.9">
-        <tspan x="0" dy="0">Professional research platform</tspan>
-        <tspan x="0" dy="40">for abstract reasoning puzzles</tspan>
+      <text x="0" y="220" fill="white" font-family="Arial, sans-serif" font-size="28" font-weight="400" opacity="0.9">
+        <tspan x="0" dy="0">Making AI's hardest challenge</tspan>
+        <tspan x="0" dy="40">accessible to everyone</tspan>
       </text>
 
       <!-- Features -->
-      <g transform="translate(0, 360)">
+      <g transform="translate(0, 310)">
         <text fill="white" font-family="Arial, sans-serif" font-size="20" opacity="0.8">
-          <tspan x="0" dy="0">🤖 Multi-AI Model Analysis</tspan>
-          <tspan x="0" dy="35">📊 Performance Metrics</tspan>
-          <tspan x="0" dy="35">🧠 Reasoning Extraction</tspan>
+          <tspan x="0" dy="0">🧩 Explore Abstract Puzzles</tspan>
+          <tspan x="0" dy="35">🤖 See How AI Models Think</tspan>
+          <tspan x="0" dy="35">💡 Understand the ARC Prize</tspan>
         </text>
       </g>
     </g>
@@ -95,7 +94,7 @@
     <!-- Bottom branding -->
     <g transform="translate(0, 420)">
       <text x="0" y="0" fill="white" font-family="Arial, sans-serif" font-size="18" opacity="0.7">
-        Research • Analysis • Pattern Recognition
+        Explore • Learn • Understand
       </text>
     </g>
 
