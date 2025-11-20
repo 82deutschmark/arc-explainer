@@ -60,6 +60,11 @@ export function normalizeModelName(modelName: string): string {
     normalized = 'openai/gpt-5.1';
   }
 
+  // Sherlock Think Alpha was revealed to be Grok 4.1 Fast Reasoning on Nov 20, 2025
+  if (normalized === 'openrouter/sherlock-think-alpha' || normalized.startsWith('openrouter/sherlock-think-alpha')) {
+    normalized = 'x-ai/grok-4.1-fast';
+  }
+
   return attemptSuffix ? `${normalized}${attemptSuffix}` : normalized;
 }
 
