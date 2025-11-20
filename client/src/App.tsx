@@ -32,6 +32,7 @@ import PuzzleTradingCards from "@/pages/PuzzleTradingCards";
 import HumanTradingCards from "@/pages/HumanTradingCards";
 import LLMReasoning from "@/pages/LLMReasoning";
 import LLMReasoningAdvanced from "@/pages/LLMReasoningAdvanced";
+import Redirect from "@/components/Redirect";
 
 function Router() {
   return (
@@ -41,6 +42,7 @@ function Router() {
         <Route path="/browser" component={PuzzleBrowser} />
         <Route path="/trading-cards" component={PuzzleTradingCards} />
         <Route path="/hall-of-fame" component={HumanTradingCards} />
+        <Route path="/human-cards" component={() => <Redirect to="/hall-of-fame" />} />
         <Route path="/discussion" component={PuzzleDiscussion} />
         <Route path="/discussion/:taskId" component={PuzzleDiscussion} />
         <Route path="/analytics" component={AnalyticsOverview} />
