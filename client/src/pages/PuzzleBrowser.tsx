@@ -39,6 +39,7 @@ interface EnhancedPuzzleMetadata extends PuzzleMetadata {
   multiTestAverageAccuracy?: number;
   hasMultiplePredictions?: boolean;
   multiTestPredictionGrids?: any;
+  isSolved?: boolean; // Whether any model has produced a correct prediction for this puzzle
 }
 
 export default function PuzzleBrowser() {
@@ -47,7 +48,7 @@ export default function PuzzleBrowser() {
   const [explanationFilter, setExplanationFilter] = useState<string>('unexplained'); // 'all', 'unexplained', 'explained' - Default to unexplained puzzles for analysis
   const [arcVersion, setArcVersion] = useState<string>('any'); // 'any', 'ARC1', 'ARC2', or 'ARC2-Eval' - Show all datasets by default
   const [multiTestFilter, setMultiTestFilter] = useState<string>('single'); // 'any', 'single', 'multi'
-  const [sortBy, setSortBy] = useState<string>('unexplained_first'); // 'default', 'processing_time', 'confidence', 'cost', 'created_at', 'least_analysis_data', 'unexplained_first'
+  const [sortBy, setSortBy] = useState<string>('unsolved_first'); // 'default', 'unsolved_first', 'unexplained_first', 'processing_time', 'confidence', 'cost', 'created_at', 'least_analysis_data'
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [searchError, setSearchError] = useState<string | null>(null);
   const [location, setLocation] = useLocation();
@@ -94,6 +95,21 @@ export default function PuzzleBrowser() {
     if (sortBy !== 'default') {
       filtered = [...filtered].sort((a, b) => {
         switch (sortBy) {
+          case 'unsolved_first':
+            // Priority 1: Attempted but unsolved (hasExplanation=true, isSolved=false)
+            // Priority 2: Solved (hasExplanation=true, isSolved=true)
+            // Priority 3: Never attempted (hasExplanation=false)
+            const getPriority = (puzzle: EnhancedPuzzleMetadata) => {
+              if (puzzle.hasExplanation && !puzzle.isSolved) return 1; // Attempted but unsolved
+              if (puzzle.hasExplanation && puzzle.isSolved) return 2;  // Solved
+              return 3; // Never attempted
+            };
+            const aPriority = getPriority(a);
+            const bPriority = getPriority(b);
+            if (aPriority !== bPriority) {
+              return aPriority - bPriority; // Lower priority number comes first
+            }
+            return a.id.localeCompare(b.id); // Secondary sort by puzzle ID
           case 'unexplained_first':
             // Sort unexplained puzzles first, then by puzzle ID
             const aHasExplanation = a.hasExplanation ? 1 : 0;
@@ -314,7 +330,8 @@ export default function PuzzleBrowser() {
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
               >
-                <option value="unexplained_first">Unexplained first (recommended)</option>
+                <option value="unsolved_first">Unsolved first (attempted) - recommended</option>
+                <option value="unexplained_first">Unexplained first (never attempted)</option>
                 <option value="default">Default order</option>
                 <option value="least_analysis_data">Analysis data (fewest first)</option>
                 <option value="processing_time">Processing time</option>
@@ -335,7 +352,7 @@ export default function PuzzleBrowser() {
                 { id: 'explanationFilter', label: 'Explanation', active: explanationFilter !== 'unexplained' },
                 { id: 'arcVersion', label: 'ARC version', active: arcVersion !== 'any' },
                 { id: 'multiTestFilter', label: 'Test cases', active: multiTestFilter !== 'single' },
-                { id: 'sortBy', label: 'Sort', active: sortBy !== 'unexplained_first' },
+                { id: 'sortBy', label: 'Sort', active: sortBy !== 'unsolved_first' },
               ].map((item) => (
                 <div
                   key={item.id}

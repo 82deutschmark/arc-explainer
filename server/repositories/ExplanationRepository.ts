@@ -446,7 +446,8 @@ export class ExplanationRepository extends BaseRepository implements IExplanatio
         multiTestAllCorrect: null,
         multiTestAverageAccuracy: null,
         hasMultiplePredictions: null,
-        multiTestPredictionGrids: null
+        multiTestPredictionGrids: null,
+        isSolved: false // Default to false, will be updated if any correct prediction exists
       };
     });
 
@@ -490,7 +491,22 @@ export class ExplanationRepository extends BaseRepository implements IExplanatio
           e.multi_test_average_accuracy,
           e.has_multiple_predictions,
           e.multi_test_prediction_grids,
-          COALESCE(f.feedback_count, 0)::integer as feedback_count
+          COALESCE(f.feedback_count, 0)::integer as feedback_count,
+          CASE
+            WHEN EXISTS (
+              SELECT 1
+              FROM explanations e2
+              WHERE e2.puzzle_id = e.puzzle_id
+              AND (
+                (COALESCE(e2.has_multiple_predictions, false) = false
+                 AND COALESCE(e2.is_prediction_correct, false) = true)
+                OR
+                (COALESCE(e2.has_multiple_predictions, false) = true
+                 AND COALESCE(e2.multi_test_all_correct, false) = true)
+              )
+            ) THEN true
+            ELSE false
+          END as is_solved
         FROM explanations e
         LEFT JOIN (
           SELECT explanation_id, COUNT(*) as feedback_count
@@ -540,7 +556,8 @@ export class ExplanationRepository extends BaseRepository implements IExplanatio
             multiTestAllCorrect: row.multi_test_all_correct,
             multiTestAverageAccuracy: row.multi_test_average_accuracy,
             hasMultiplePredictions: row.has_multiple_predictions,
-            multiTestPredictionGrids: row.multi_test_prediction_grids
+            multiTestPredictionGrids: row.multi_test_prediction_grids,
+            isSolved: row.is_solved || false
           };
         }
       });
