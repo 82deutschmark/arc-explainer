@@ -188,7 +188,7 @@ const navigationItems: NavItem[] = [
   {
     type: 'link',
     title: 'People',
-    href: '/human-cards',
+    href: '/hall-of-fame',
     icon: Users,
     description: 'Notable ARC contributors and researchers as trading cards'
   }

@@ -3,6 +3,14 @@
 
 ### Version 5.14.1
 
+- Bug fixes
+  - Fixed Jeremy Berman contributor card to display "High Score" badge without rank indicator
+  - Removed rank display from 2024 ARC Prize winner cards (Daniel Franzen, Guillermo Barbadillo) for cleaner card presentation
+
+- Refactoring
+  - Renamed `/human-cards` endpoint to `/hall-of-fame` for better semantic clarity
+  - Updated navigation, routes, and sitemap to reflect new endpoint URL
+
 - Docs
   - Added `docs/reference/database/MULTI_TEST_CORRECTNESS_GUIDE.md` describing the multi-test correctness pipeline, field semantics, and UI/display patterns for future maintainers.
 
