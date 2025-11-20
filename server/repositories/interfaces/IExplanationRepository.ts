@@ -162,6 +162,7 @@ export interface BulkExplanationStatus {
     multiTestAverageAccuracy: number | null;
     hasMultiplePredictions: boolean | null;
     multiTestPredictionGrids: any | null;
+    isSolved?: boolean; // Whether any model has produced a correct prediction for this puzzle
   };
 }
 
