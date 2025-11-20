@@ -33,6 +33,7 @@ interface EnhancedPuzzleMetadata extends PuzzleMetadata {
   createdAt: Date | null;
   confidence: number | null;
   estimatedCost: number | null;
+  isSolved?: boolean; // Whether any model has produced a correct prediction for this puzzle
 }
 
 // Remove local interface and use the imported one from shared types
@@ -72,7 +73,8 @@ export const puzzleService = {
       modelName: null as string | null,
       createdAt: null as Date | null,
       confidence: null as number | null,
-      estimatedCost: null as number | null
+      estimatedCost: null as number | null,
+      isSolved: false // Will be updated if any model solved this puzzle
     }));
     
     try {
@@ -92,6 +94,7 @@ export const puzzleService = {
           puzzle.createdAt = status.createdAt;
           puzzle.confidence = status.confidence;
           puzzle.estimatedCost = status.estimatedCost;
+          puzzle.isSolved = status.isSolved || false;
         }
       });
       
