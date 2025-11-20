@@ -1,12 +1,19 @@
 Author: Claude Code using Sonnet 4.5
 Date: 2025-11-20
-PURPOSE: Implementation plan for adding "solved status" filter to PuzzleBrowser page. This filter will allow users to see puzzles that have never been solved by any LLM, or only those that have been solved.
-SRP/DRY check: Pass - Following existing filter patterns from PuzzleBrowser, reusing filter UI patterns
+PURPOSE: Implementation plan for adding "solved status" tracking and changing default sort behavior on PuzzleBrowser page. The primary goal is to show puzzles that have been ATTEMPTED but NEVER SOLVED first (highest priority for research), with never-attempted puzzles showing last.
+SRP/DRY check: Pass - Following existing sort patterns from PuzzleBrowser, reusing sort logic patterns
 
-# Implementation Plan: Add Solved Status Filter to PuzzleBrowser
+# Implementation Plan: Add Solved Status Tracking and Change Default Sort
 
 ## Overview
-Add a new filter option to the PuzzleBrowser page that allows users to filter puzzles based on whether they have been solved by any LLM model.
+Add solved status tracking to puzzle metadata and change the default sort behavior to prioritize puzzles that are most interesting for research:
+
+**NEW DEFAULT PRIORITY ORDER:**
+1. **HIGHEST**: Attempted but unsolved (has explanations, but all are incorrect)
+2. **MEDIUM**: Solved by at least one LLM (has explanations, at least one correct)
+3. **LOWEST**: Never attempted (no explanations at all)
+
+**Current Problem**: Default sort is `'unexplained_first'` (line 50 of PuzzleBrowser.tsx), which shows never-attempted puzzles first - the OPPOSITE of what we want!
 
 **Definition of "Solved"**: A puzzle is considered "solved" if at least one AI model has produced a correct prediction for it (matching the logic in MetricsRepository.ts:897-901).
 
@@ -130,14 +137,117 @@ puzzleList.forEach(puzzle => {
 
 ---
 
-### Step 4: Add Filter UI Component
+### Step 4: Create New Sort Option 'unsolved_first'
+**File**: `/client/src/pages/PuzzleBrowser.tsx`
+
+**Location**: Add new case to sort switch statement (after line 104)
+
+**Action**: Add new sort logic that prioritizes attempted-but-unsolved puzzles
+
+**Current Context** (lines 94-104):
+```typescript
+// Apply sorting
+if (sortBy !== 'default') {
+  filtered = [...filtered].sort((a, b) => {
+    switch (sortBy) {
+      case 'unexplained_first':
+        // Sort unexplained puzzles first, then by puzzle ID
+        const aHasExplanation = a.hasExplanation ? 1 : 0;
+        const bHasExplanation = b.hasExplanation ? 1 : 0;
+        if (aHasExplanation !== bHasExplanation) {
+          return aHasExplanation - bHasExplanation; // Unexplained (0) comes before explained (1)
+        }
+        return a.id.localeCompare(b.id);
+```
+
+**New Sort Case** (add after 'unexplained_first'):
+```typescript
+case 'unsolved_first':
+  // Priority 1: Attempted but unsolved (hasExplanation=true, isSolved=false)
+  // Priority 2: Solved (hasExplanation=true, isSolved=true)
+  // Priority 3: Never attempted (hasExplanation=false)
+
+  // Calculate priority score (lower is higher priority)
+  const getPriority = (puzzle: EnhancedPuzzleMetadata) => {
+    if (puzzle.hasExplanation && !puzzle.isSolved) return 1; // Attempted but unsolved
+    if (puzzle.hasExplanation && puzzle.isSolved) return 2;  // Solved
+    return 3; // Never attempted
+  };
+
+  const aPriority = getPriority(a);
+  const bPriority = getPriority(b);
+
+  if (aPriority !== bPriority) {
+    return aPriority - bPriority; // Lower priority number comes first
+  }
+  return a.id.localeCompare(b.id); // Secondary sort by puzzle ID
+```
+
+**SRP/DRY**:
+- Pass: Follows existing sort pattern structure
+- Pass: Reuses same switch/case organization
+
+---
+
+### Step 5: Change Default Sort to 'unsolved_first'
+**File**: `/client/src/pages/PuzzleBrowser.tsx`
+
+**Location**: Line 50
+
+**Action**: Change default sortBy from 'unexplained_first' to 'unsolved_first'
+
+**Current Code** (line 50):
+```typescript
+const [sortBy, setSortBy] = useState<string>('unexplained_first');
+```
+
+**Updated Code**:
+```typescript
+const [sortBy, setSortBy] = useState<string>('unsolved_first');
+```
+
+**Impact**: This immediately changes the default behavior to show attempted-but-unsolved puzzles first!
+
+**SRP/DRY**: Pass - Simple config change, no duplication
+
+---
+
+### Step 6: Add 'Unsolved First' to Sort Dropdown UI
+**File**: `/client/src/pages/PuzzleBrowser.tsx`
+
+**Location**: Find the sort dropdown SelectContent (around lines 310-324)
+
+**Action**: Add new option for 'unsolved_first' sort
+
+**Example Pattern**:
+```typescript
+<SelectContent>
+  <SelectItem value="unsolved_first">Unsolved First (Attempted)</SelectItem>  {/* ← NEW */}
+  <SelectItem value="unexplained_first">Unexplained First</SelectItem>
+  <SelectItem value="processing_time">Processing Time</SelectItem>
+  <SelectItem value="confidence">Confidence</SelectItem>
+  <SelectItem value="cost">Cost</SelectItem>
+  <SelectItem value="created_at">Created At</SelectItem>
+  <SelectItem value="least_analysis_data">Least Analysis Data</SelectItem>
+</SelectContent>
+```
+
+**Label**: Use "Unsolved First (Attempted)" to clarify it prioritizes puzzles that have been tried but not solved
+
+**SRP/DRY**: Pass - Adds new option to existing dropdown, follows pattern
+
+---
+
+### Step 7: (Optional) Add Solved Status Filter for Manual Filtering
 **File**: `/client/src/pages/PuzzleBrowser.tsx`
 
 **Location**: After "Explanation Status" filter (after line 264)
 
-**Action**: Add new filter dropdown following exact same pattern
+**Action**: Optionally add filter dropdown for users who want to manually filter
 
-**Code Template** (based on lines 254-264):
+**Note**: This is **optional** since the new default sort already prioritizes unsolved puzzles. However, it could be useful for users who want to see ONLY unsolved or ONLY solved puzzles.
+
+**Code Template** (same as original plan):
 ```typescript
 <div className="space-y-2">
   <Label className="text-sm font-medium">Solved Status</Label>
@@ -157,34 +267,9 @@ puzzleList.forEach(puzzle => {
 </div>
 ```
 
-**State Management**:
+**Filter Logic** (add after line 91):
 ```typescript
-const [solvedFilter, setSolvedFilter] = useState<'all' | 'unsolved' | 'solved'>('all');
-```
-
-**SRP/DRY**:
-- Pass: Reuses existing Select component from shadcn/ui
-- Pass: Follows exact same pattern as explanationFilter
-
----
-
-### Step 5: Add Client-Side Filtering Logic
-**File**: `/client/src/pages/PuzzleBrowser.tsx`
-
-**Location**: After explanation filter logic (after line 91)
-
-**Action**: Add solved status filtering
-
-**Code** (based on lines 86-91):
-```typescript
-// Apply explanation filter
-if (explanationFilter === 'unexplained') {
-  filtered = filtered.filter(puzzle => !puzzle.hasExplanation);
-} else if (explanationFilter === 'explained') {
-  filtered = filtered.filter(puzzle => puzzle.hasExplanation);
-}
-
-// Apply solved status filter ← NEW
+// Apply solved status filter (if implemented)
 if (solvedFilter === 'unsolved') {
   filtered = filtered.filter(puzzle => !puzzle.isSolved);
 } else if (solvedFilter === 'solved') {
@@ -192,59 +277,45 @@ if (solvedFilter === 'unsolved') {
 }
 ```
 
-**SRP/DRY**: Pass - Uses same filter pattern, no code duplication
+**SRP/DRY**: Pass - Reuses existing filter patterns
 
 ---
 
-### Step 6: Update Active Filters Display
-**File**: `/client/src/pages/PuzzleBrowser.tsx`
+### Step 8: Testing Plan
+1. **Default Sort Behavior** (MOST IMPORTANT):
+   - Load PuzzleBrowser page (should default to 'unsolved_first' sort)
+   - Verify first puzzles shown have `hasExplanation=true` and `isSolved=false` (attempted but unsolved)
+   - Scroll down to verify solved puzzles appear next
+   - Scroll further to verify never-attempted puzzles appear last
+   - **Expected Order**: Attempted-but-unsolved → Solved → Never-attempted
 
-**Location**: Active filters section (lines 328-346)
+2. **Sort Dropdown Testing**:
+   - Select "Unsolved First (Attempted)" - should maintain new priority order
+   - Select "Unexplained First" - should show old behavior (never-attempted first)
+   - Switch between different sort options to verify they all work
+   - Verify secondary sort by puzzle ID works within each priority group
 
-**Action**: Add badge for solved filter when active
-
-**Code** (following existing badge pattern):
-```typescript
-{solvedFilter !== 'all' && (
-  <Badge variant="secondary" className="flex items-center gap-1">
-    {solvedFilter === 'unsolved' ? 'Never Solved' : 'Solved by LLM'}
-    <Button
-      variant="ghost"
-      size="sm"
-      className="h-4 w-4 p-0 hover:bg-transparent"
-      onClick={() => setSolvedFilter('all')}
-    >
-      <X className="h-3 w-3" />
-    </Button>
-  </Badge>
-)}
-```
-
-**SRP/DRY**: Pass - Reuses Badge and Button components, follows existing pattern
-
----
-
-### Step 7: Testing Plan
-1. **Manual Testing**:
-   - Verify "All Puzzles" shows everything
-   - Filter by "Never Solved by LLM" - should show only unsolved
-   - Filter by "Solved by at Least One LLM" - should show only solved
-   - Combine with other filters (explanation status, grid size, etc.)
-   - Verify active filter badges work correctly
-
-2. **Data Verification**:
+3. **Data Verification**:
    - Check database for known solved puzzles (correctness = true)
-   - Verify those puzzles appear when "Solved" filter is active
-   - Check that puzzles with no correct predictions appear in "Unsolved"
+   - Verify those puzzles appear in "Priority 2" group
+   - Check puzzles with only incorrect explanations appear in "Priority 1" group
+   - Verify puzzles with no explanations appear in "Priority 3" group
 
-3. **Performance**:
+4. **Performance**:
    - Monitor query performance with `getBulkExplanationStatus()` changes
-   - Ensure client-side filtering remains fast with new field
+   - Ensure client-side sorting remains fast with new field
+   - Test with full dataset to ensure no lag
 
-4. **Edge Cases**:
-   - Puzzles with no explanations at all (should be "unsolved")
-   - Puzzles with multiple explanations, only some correct (should be "solved")
-   - Puzzles with only incorrect explanations (should be "unsolved")
+5. **Edge Cases**:
+   - Puzzle with no explanations → should be Priority 3 (never attempted)
+   - Puzzle with multiple explanations, all incorrect → Priority 1 (attempted but unsolved)
+   - Puzzle with multiple explanations, at least one correct → Priority 2 (solved)
+   - Puzzle with single correct explanation → Priority 2 (solved)
+
+6. **(Optional) Filter Testing** (if Step 7 implemented):
+   - Filter by "Never Solved by LLM" - should show only Priority 1 + Priority 3
+   - Filter by "Solved by at Least One LLM" - should show only Priority 2
+   - Combine with other filters (explanation status, grid size, etc.)
 
 ---
 
@@ -254,10 +325,17 @@ if (solvedFilter === 'unsolved') {
 |------|---------|------------------------|
 | `server/repositories/ExplanationRepository.ts` | Add solved status query | ~20 lines |
 | `server/services/puzzleService.ts` | Map isSolved field | ~5 lines |
-| `client/src/pages/PuzzleBrowser.tsx` | Add filter UI and logic | ~30 lines |
+| `client/src/pages/PuzzleBrowser.tsx` | Add sort logic + change default | ~25 lines |
 | `shared/types/` or service file | Add isSolved to type def | ~1 line |
+| `client/src/pages/PuzzleBrowser.tsx` (optional) | Add filter UI for manual filtering | ~30 lines (optional) |
 
-**Total Estimated Changes**: ~60 lines across 4 files
+**Total Estimated Changes**: ~51 lines across 4 files (core), +30 optional for filter UI
+
+**Key Changes**:
+1. **Backend**: Add `isSolved` status to puzzle metadata
+2. **Frontend**: New 'unsolved_first' sort option with 3-tier priority
+3. **Default Behavior**: Change from 'unexplained_first' to 'unsolved_first' (1 line change!)
+4. **(Optional)**: Add manual filter UI for solved status
 
 ---
 
@@ -278,13 +356,16 @@ if (solvedFilter === 'unsolved') {
 ---
 
 ## Success Criteria
-- [ ] Users can filter for "Never Solved by LLM" puzzles
-- [ ] Users can filter for "Solved by at Least One LLM" puzzles
-- [ ] Filter combines correctly with existing filters
-- [ ] Active filter badge displays when solved filter is active
+- [ ] **Primary**: Default sort shows attempted-but-unsolved puzzles first
+- [ ] **Primary**: Solved puzzles appear in middle (Priority 2)
+- [ ] **Primary**: Never-attempted puzzles appear last (Priority 3)
+- [ ] New 'unsolved_first' sort option appears in dropdown
+- [ ] Sort option labeled clearly: "Unsolved First (Attempted)"
+- [ ] Users can still select other sort options (processing time, confidence, etc.)
 - [ ] No performance degradation on puzzle list page
 - [ ] TypeScript compiles without errors
-- [ ] Manual testing confirms correct filtering behavior
+- [ ] Manual testing confirms correct 3-tier priority ordering
+- [ ] **(Optional)**: Manual filter UI for solved status (if Step 7 implemented)
 
 ---
 
@@ -292,12 +373,16 @@ if (solvedFilter === 'unsolved') {
 - Add "Solve Rate %" to puzzle cards (requires additional aggregation)
 - Show which specific model(s) solved each puzzle
 - Add "Difficulty Score" based on solve rate and model confidence
-- Server-side filtering option for better performance with large datasets
+- Add visual indicators (badges, colors) for solved vs unsolved puzzles
+- Server-side sorting option for better performance with large datasets
+- Analytics: track which puzzles are most commonly attempted but never solved
 
 ---
 
 ## Notes
-- This filter is particularly valuable for researchers wanting to focus on unsolved puzzles
+- This new default sort is particularly valuable for researchers wanting to focus on challenging unsolved puzzles
+- The 3-tier priority system automatically surfaces the most interesting puzzles
 - Could be extended to show "solve rate" or "number of models that solved"
-- The client-side filtering approach keeps the implementation simple and consistent with existing patterns
+- The client-side sorting approach keeps the implementation simple and consistent with existing patterns
 - Query pattern follows established correctness logic from CORRECTNESS_LOGIC_PATTERN.md
+- **Key Insight**: Attempted-but-unsolved puzzles are more valuable than never-attempted ones for research purposes!
