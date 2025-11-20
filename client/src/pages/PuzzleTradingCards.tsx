@@ -1,11 +1,18 @@
 /**
  * Author: Claude Code using Sonnet 4.5
- * Date: 2025-11-14T00:00:00Z / Updated 2025-11-14
+ * Date: 2025-11-14T00:00:00Z / Updated 2025-11-20
  * PURPOSE: Puzzle Trading Cards page - displays ARC puzzles as 1980s-style baseball trading cards.
  * Shows named puzzles with their grids, nicknames, win/loss records against LLMs, and detailed stats.
  * Based on PuzzleBrowser page structure but focused on trading card display.
- * ADDED: Retro sci-fi hero banner images (arcraiders1.png, arcraiders2.png) with 1980s aesthetic,
- * border glow effects, hover animations, and responsive 2-column grid layout.
+ *
+ * UPDATES 2025-11-20:
+ * - REMOVED imaginary "Legendary/Elite/Tough/Moderate/Easy" difficulty ratings
+ * - REPLACED with actual LLM accuracy-based performance filters (Unbeatable, Very Hard, Hard, etc.)
+ * - FIXED sort logic to show puzzles that defeat LLMs most (lowest LLM accuracy = hardest)
+ * - ADDED "Most LLM Defeats" sort option (based on wrongCount)
+ * - CLARIFIED filter labels and footer descriptions with accurate terminology
+ * - Default sort now shows hardest puzzles first (those that defeat LLMs most often)
+ *
  * SRP/DRY check: Pass - Reuses usePuzzleStats hook, PuzzleTradingCard component, and existing UI patterns
  */
 
@@ -19,7 +26,7 @@ import { Badge } from '@/components/ui/badge';
 export default function PuzzleTradingCards() {
   const [datasetFilter, setDatasetFilter] = useState<string>('all');
   const [performanceFilter, setPerformanceFilter] = useState<string>('all');
-  const [sortBy, setSortBy] = useState<string>('win_percentage_desc');
+  const [sortBy, setSortBy] = useState<string>('hardest_first');
   const [searchQuery, setSearchQuery] = useState<string>('');
 
   const { data, isLoading, error, summary } = usePuzzleStats();
@@ -48,25 +55,29 @@ export default function PuzzleTradingCards() {
       filtered = filtered.filter(puzzle => puzzle.source === datasetFilter);
     }
 
-    // Apply performance filter
+    // Apply performance filter based on LLM accuracy
     if (performanceFilter !== 'all') {
       filtered = filtered.filter(puzzle => {
         if (!puzzle.performanceData) return performanceFilter === 'untested';
 
-        const { wrongCount, totalExplanations } = puzzle.performanceData;
-        const winPercentage = totalExplanations > 0 ? (wrongCount / totalExplanations) * 100 : 0;
+        const { avgAccuracy, totalExplanations } = puzzle.performanceData;
+        const llmAccuracyPct = avgAccuracy * 100; // Convert 0-1 to 0-100%
 
         switch (performanceFilter) {
-          case 'legendary': // 90%+ win rate
-            return winPercentage >= 90;
-          case 'elite': // 70-89% win rate
-            return winPercentage >= 70 && winPercentage < 90;
-          case 'tough': // 50-69% win rate
-            return winPercentage >= 50 && winPercentage < 70;
-          case 'moderate': // 30-49% win rate
-            return winPercentage >= 30 && winPercentage < 50;
-          case 'easy': // <30% win rate
-            return winPercentage < 30;
+          case 'unbeatable': // 0% LLM accuracy - puzzle always defeats LLMs
+            return llmAccuracyPct === 0 && totalExplanations > 0;
+          case 'very_hard': // 1-20% LLM accuracy
+            return llmAccuracyPct > 0 && llmAccuracyPct <= 20;
+          case 'hard': // 21-40% LLM accuracy
+            return llmAccuracyPct > 20 && llmAccuracyPct <= 40;
+          case 'medium': // 41-60% LLM accuracy
+            return llmAccuracyPct > 40 && llmAccuracyPct <= 60;
+          case 'easy': // 61-80% LLM accuracy
+            return llmAccuracyPct > 60 && llmAccuracyPct <= 80;
+          case 'very_easy': // 81-99% LLM accuracy
+            return llmAccuracyPct > 80 && llmAccuracyPct < 100;
+          case 'always_solved': // 100% LLM accuracy - puzzle never defeats LLMs
+            return llmAccuracyPct === 100;
           case 'untested':
             return totalExplanations === 0;
           default:
@@ -81,23 +92,23 @@ export default function PuzzleTradingCards() {
       const bPerf = b.performanceData;
 
       switch (sortBy) {
-        case 'win_percentage_desc': {
-          const aWinPct = aPerf && aPerf.totalExplanations > 0
-            ? (aPerf.wrongCount / aPerf.totalExplanations) * 100
-            : 0;
-          const bWinPct = bPerf && bPerf.totalExplanations > 0
-            ? (bPerf.wrongCount / bPerf.totalExplanations) * 100
-            : 0;
-          return bWinPct - aWinPct;
+        case 'hardest_first': {
+          // Hardest = Lowest LLM accuracy (defeats LLMs most often)
+          const aAccuracy = aPerf?.avgAccuracy ?? 1; // Default to 1 (easiest) if no data
+          const bAccuracy = bPerf?.avgAccuracy ?? 1;
+          return aAccuracy - bAccuracy; // Lower accuracy first
         }
-        case 'win_percentage_asc': {
-          const aWinPct = aPerf && aPerf.totalExplanations > 0
-            ? (aPerf.wrongCount / aPerf.totalExplanations) * 100
-            : 0;
-          const bWinPct = bPerf && bPerf.totalExplanations > 0
-            ? (bPerf.wrongCount / bPerf.totalExplanations) * 100
-            : 0;
-          return aWinPct - bWinPct;
+        case 'easiest_first': {
+          // Easiest = Highest LLM accuracy (LLMs solve it most often)
+          const aAccuracy = aPerf?.avgAccuracy ?? 0; // Default to 0 (hardest) if no data
+          const bAccuracy = bPerf?.avgAccuracy ?? 0;
+          return bAccuracy - aAccuracy; // Higher accuracy first
+        }
+        case 'most_defeats': {
+          // Most times this puzzle has defeated LLMs
+          const aWrong = aPerf?.wrongCount || 0;
+          const bWrong = bPerf?.wrongCount || 0;
+          return bWrong - aWrong; // Higher wrong count first
         }
         case 'total_attempts': {
           const aAttempts = aPerf?.totalExplanations || 0;
@@ -226,7 +237,7 @@ export default function PuzzleTradingCards() {
             {/* Performance Filter */}
             <div className="flex flex-col gap-2">
               <label htmlFor="performance" className="text-xs font-semibold uppercase tracking-wide text-slate-400">
-                Difficulty
+                LLM Performance
               </label>
               <select
                 id="performance"
@@ -234,12 +245,14 @@ export default function PuzzleTradingCards() {
                 value={performanceFilter}
                 onChange={(e) => setPerformanceFilter(e.target.value)}
               >
-                <option value="all">All Difficulties</option>
-                <option value="legendary">Legendary (90%+ win rate)</option>
-                <option value="elite">Elite (70-89% win rate)</option>
-                <option value="tough">Tough (50-69% win rate)</option>
-                <option value="moderate">Moderate (30-49% win rate)</option>
-                <option value="easy">Easy (&lt;30% win rate)</option>
+                <option value="all">All Performance Levels</option>
+                <option value="unbeatable">Unbeatable (0% LLM accuracy)</option>
+                <option value="very_hard">Very Hard (1-20% LLM accuracy)</option>
+                <option value="hard">Hard (21-40% LLM accuracy)</option>
+                <option value="medium">Medium (41-60% LLM accuracy)</option>
+                <option value="easy">Easy (61-80% LLM accuracy)</option>
+                <option value="very_easy">Very Easy (81-99% LLM accuracy)</option>
+                <option value="always_solved">Always Solved (100% LLM accuracy)</option>
                 <option value="untested">Untested</option>
               </select>
             </div>
@@ -255,8 +268,9 @@ export default function PuzzleTradingCards() {
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
               >
-                <option value="win_percentage_desc">Highest Win % First</option>
-                <option value="win_percentage_asc">Lowest Win % First</option>
+                <option value="hardest_first">Hardest First (Defeats LLMs Most)</option>
+                <option value="easiest_first">Easiest First (LLMs Solve Most)</option>
+                <option value="most_defeats">Most LLM Defeats</option>
                 <option value="total_attempts">Most Attempted</option>
                 <option value="id">Puzzle ID</option>
               </select>
@@ -269,8 +283,8 @@ export default function PuzzleTradingCards() {
             {[
               { id: 'search', label: 'Search', active: searchQuery.trim().length > 0 },
               { id: 'dataset', label: datasetFilter !== 'all' ? datasetFilter : 'Dataset', active: datasetFilter !== 'all' },
-              { id: 'performance', label: 'Difficulty', active: performanceFilter !== 'all' },
-              { id: 'sort', label: 'Sort', active: sortBy !== 'win_percentage_desc' },
+              { id: 'performance', label: 'Performance', active: performanceFilter !== 'all' },
+              { id: 'sort', label: 'Sort', active: sortBy !== 'hardest_first' },
             ].map((filter) => (
               <Badge
                 key={filter.id}
@@ -320,15 +334,19 @@ export default function PuzzleTradingCards() {
           <div className="space-y-2 text-sm text-slate-400">
             <p>
               <strong className="text-slate-300">Win/Loss Record:</strong> Puzzles "win" when AI models fail to solve them correctly.
-              A record of 14-4 means the puzzle stumped AI 14 times and was solved correctly 4 times.
+              A record of 14-4 means the puzzle defeated LLMs 14 times and was solved correctly 4 times.
             </p>
             <p>
               <strong className="text-slate-300">Dataset as Team:</strong> Each puzzle belongs to a dataset (like a sports team),
               shown with colorful team colors and badges.
             </p>
             <p>
-              <strong className="text-slate-300">Difficulty Ratings:</strong> Based on the puzzle's win percentage against AI models.
-              Higher percentages indicate tougher puzzles that challenge even the most advanced models.
+              <strong className="text-slate-300">LLM Accuracy:</strong> Shows how often large language models successfully solve each puzzle.
+              0% accuracy means unbeatable (puzzle always defeats LLMs), 100% means always solved by LLMs.
+            </p>
+            <p>
+              <strong className="text-slate-300">Filtering by Performance:</strong> Use the "LLM Performance" filter to find puzzles
+              that have the best record of defeating LLMs (Unbeatable/Very Hard) or those that LLMs solve easily (Easy/Always Solved).
             </p>
           </div>
         </footer>
