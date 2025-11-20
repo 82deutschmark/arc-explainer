@@ -9,7 +9,7 @@
  * DaisyUI: Pass - Converted to pure DaisyUI components
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'wouter';
 import { Database, Filter, Grid, AlertTriangle, CheckCircle, XCircle, ChevronDown, ChevronUp, Copy, BarChart3, Loader2, Target, TrendingUp, TrendingDown, DollarSign, Clock, X } from 'lucide-react';
 import { useLocation } from 'wouter';
@@ -18,6 +18,15 @@ import { useLocation } from 'wouter';
 import { usePuzzleDBStats, PuzzleDBStats, PuzzlePerformanceData } from '@/hooks/usePuzzleDBStats';
 import { usePuzzleListAnalysis } from '@/hooks/usePuzzleListAnalysis';
 
+// Import TinyGrid for puzzle preview
+import { TinyGrid } from '@/components/puzzle/TinyGrid';
+
+// ARCTask type for puzzle data
+interface ARCTask {
+  train: Array<{ input: number[][], output: number[][] }>;
+  test: Array<{ input: number[][], output?: number[][] }>;
+}
+
 
 // Helper functions for puzzle categorization based on AI confidence patterns
 function getPuzzleInterestLevel(performanceData: PuzzlePerformanceData) {
@@ -25,55 +34,44 @@ function getPuzzleInterestLevel(performanceData: PuzzlePerformanceData) {
   
   // Most Dangerous: High confidence + Wrong answers
   if (avgConfidence >= 80 && avgAccuracy <= 0.3) {
-    return { 
-      variant: 'destructive' as const, 
-      text: 'DANGEROUS', 
+    return {
+      variant: 'destructive' as const,
+      text: 'DANGEROUS',
       icon: AlertTriangle,
       description: 'Overconfident failures',
       priority: 1
     };
   }
-  
-  // Amazing: Any confidence under 80%
-  if (avgConfidence < 80) {
-    return { 
-      variant: 'default' as const, 
-      text: 'HUMBLE AI', 
-      icon: CheckCircle,
-      description: 'Rare AI uncertainty',
-      priority: 2
-    };
-  }
-  
+
   // Research Hotspots: High activity
   if (totalExplanations >= 15) {
-    return { 
-      variant: 'secondary' as const, 
-      text: 'HOTSPOT', 
+    return {
+      variant: 'secondary' as const,
+      text: 'HOTSPOT',
       icon: Grid,
       description: 'High research activity',
-      priority: 3
+      priority: 2
     };
   }
   
   // Unexplored
   if (totalExplanations === 0) {
-    return { 
-      variant: 'outline' as const, 
-      text: 'UNEXPLORED', 
+    return {
+      variant: 'outline' as const,
+      text: 'UNEXPLORED',
       icon: XCircle,
       description: 'No attempts yet',
-      priority: 4
+      priority: 3
     };
   }
-  
+
   // Regular puzzles
-  return { 
-    variant: 'outline' as const, 
-    text: 'REGULAR', 
+  return {
+    variant: 'outline' as const,
+    text: 'REGULAR',
     icon: Grid,
     description: 'Standard puzzle',
-    priority: 5
+    priority: 4
   };
 }
 
@@ -98,6 +96,150 @@ function formatDuration(milliseconds: number) {
   return `${minutes}m ${remainingSeconds}s`;
 }
 
+// Compact puzzle card component with lazy-loaded TinyGrid preview
+interface CompactPuzzleCardProps {
+  puzzle: PuzzleDBStats;
+  interestLevel: ReturnType<typeof getPuzzleInterestLevel>;
+}
+
+function CompactPuzzleCard({ puzzle, interestLevel }: CompactPuzzleCardProps) {
+  const [taskData, setTaskData] = useState<ARCTask | null>(null);
+  const [isVisible, setIsVisible] = useState(false);
+  const cardRef = useRef<HTMLDivElement>(null);
+  const InterestIcon = interestLevel.icon;
+
+  const correctAttempts = getCorrectAttempts(puzzle.performanceData.totalExplanations, puzzle.performanceData.avgAccuracy);
+  const totalCost = puzzle.performanceData.avgCost ? puzzle.performanceData.avgCost * puzzle.performanceData.totalExplanations : 0;
+
+  // Lazy loading with IntersectionObserver
+  useEffect(() => {
+    if (!cardRef.current) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            setIsVisible(true);
+            observer.disconnect();
+          }
+        });
+      },
+      { rootMargin: '100px' }
+    );
+
+    observer.observe(cardRef.current);
+    return () => observer.disconnect();
+  }, []);
+
+  // Load puzzle data when visible
+  useEffect(() => {
+    if (!isVisible || taskData) return;
+
+    fetch(`/api/puzzle/task/${puzzle.id}`)
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          setTaskData(data.data);
+        }
+      })
+      .catch(() => {
+        // Silently fail - preview just won't show
+      });
+  }, [isVisible, puzzle.id, taskData]);
+
+  const firstTrainingExample = taskData?.train?.[0]?.input;
+
+  return (
+    <div
+      ref={cardRef}
+      className={`card shadow-lg hover:shadow-xl transition-shadow ${
+        interestLevel.priority === 1 ? 'border border-error bg-error/5' :
+        interestLevel.priority === 2 ? 'border border-info bg-info/5' :
+        'bg-base-100'
+      }`}
+    >
+      <div className="card-body p-2">
+        <div className="flex items-start justify-between mb-1 gap-2">
+          <div className="flex-1 min-w-0">
+            <h3 className="text-xs font-mono flex items-center gap-1 flex-wrap">
+              <span className="truncate">{puzzle.id}</span>
+              <div className="badge badge-outline badge-xs">
+                {puzzle.source}
+              </div>
+            </h3>
+          </div>
+          <div className={`badge badge-sm ${
+            interestLevel.priority === 1 ? 'badge-error' :
+            interestLevel.priority === 2 ? 'badge-info' :
+            'badge-outline'
+          } gap-1 shrink-0`}>
+            <InterestIcon className="h-3 w-3" />
+            {interestLevel.text}
+          </div>
+        </div>
+
+        <p className="text-xs text-base-content/70 mb-2">{interestLevel.description}</p>
+
+        <div className="flex gap-2">
+          {/* TinyGrid Preview */}
+          {firstTrainingExample && (
+            <div className="shrink-0" style={{ width: '64px', height: '64px' }}>
+              <TinyGrid
+                grid={firstTrainingExample}
+                style={{ width: '64px', height: '64px' }}
+              />
+            </div>
+          )}
+
+          {/* Compact Metrics */}
+          <div className="flex-1 min-w-0">
+            {puzzle.performanceData.totalExplanations > 0 ? (
+              <div className="grid grid-cols-2 gap-1 text-xs">
+                <div>
+                  <div className="font-bold">{Math.round(puzzle.performanceData.avgConfidence)}%</div>
+                  <div className="text-base-content/60">Conf</div>
+                </div>
+                <div>
+                  <div className="font-bold">{Math.round(puzzle.performanceData.avgAccuracy * 100)}%</div>
+                  <div className="text-base-content/60">Acc</div>
+                </div>
+                <div>
+                  <div className="font-semibold">{correctAttempts}/{puzzle.performanceData.totalExplanations}</div>
+                  <div className="text-base-content/60">Attempts</div>
+                </div>
+                {puzzle.performanceData.modelsAttempted && (
+                  <div>
+                    <div className="font-semibold">{puzzle.performanceData.modelsAttempted.length}</div>
+                    <div className="text-base-content/60">Models</div>
+                  </div>
+                )}
+                {totalCost > 0 && (
+                  <div className="col-span-2">
+                    <div className="font-semibold">{formatCurrency(totalCost)}</div>
+                    <div className="text-base-content/60">Total Cost</div>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div className="text-center py-2">
+                <div className="text-sm font-bold text-base-content/50">No Attempts</div>
+                <div className="text-xs text-base-content/60">Untested puzzle</div>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Action Button */}
+        <Link href={`/puzzle/${puzzle.id}`}>
+          <button className="btn btn-outline btn-xs w-full mt-2">
+            {puzzle.performanceData.totalExplanations === 0 ? 'Analyze First' : 'View Analysis'}
+          </button>
+        </Link>
+      </div>
+    </div>
+  );
+}
+
 export default function PuzzleDBViewer() {
   // Set page title
   React.useEffect(() => {
@@ -105,10 +247,9 @@ export default function PuzzleDBViewer() {
   }, []);
 
   // Filter state - comprehensive filtering like other pages
-  const [sortBy, setSortBy] = useState<'dangerous' | 'humble' | 'research' | 'unexplored' | 'accuracy' | 'confidence'>('dangerous');
+  const [sortBy, setSortBy] = useState<'dangerous' | 'research' | 'unexplored' | 'accuracy' | 'confidence'>('dangerous');
   const [showZeroOnly, setShowZeroOnly] = useState(false);
   const [dangerousOnly, setDangerousOnly] = useState(false);
-  const [humbleOnly, setHumbleOnly] = useState(false);
   const [confidenceRange, setConfidenceRange] = useState<[number, number]>([0, 100]);
   const [accuracyRange, setAccuracyRange] = useState<[number, number]>([0, 100]);
   const [attemptRange, setAttemptRange] = useState<[number, number]>([0, 100]);
@@ -147,15 +288,11 @@ export default function PuzzleDBViewer() {
     }
     
     if (dangerousOnly) {
-      filtered = filtered.filter(p => 
+      filtered = filtered.filter(p =>
         p.performanceData.avgConfidence >= 80 && p.performanceData.avgAccuracy <= 0.3
       );
     }
-    
-    if (humbleOnly) {
-      filtered = filtered.filter(p => p.performanceData.avgConfidence < 80);
-    }
-    
+
     // Apply range filters
     filtered = filtered.filter(p => {
       const confidence = p.performanceData.avgConfidence || 0;
@@ -180,13 +317,9 @@ export default function PuzzleDBViewer() {
           const aDangerous = a.performanceData.avgConfidence >= 80 && a.performanceData.avgAccuracy <= 0.3;
           const bDangerous = b.performanceData.avgConfidence >= 80 && b.performanceData.avgAccuracy <= 0.3;
           if (aDangerous !== bDangerous) return bDangerous ? 1 : -1;
-          return (b.performanceData.avgConfidence - b.performanceData.avgAccuracy) - 
+          return (b.performanceData.avgConfidence - b.performanceData.avgAccuracy) -
                  (a.performanceData.avgConfidence - a.performanceData.avgAccuracy);
-        
-        case 'humble':
-          // Sort by lowest confidence first (most humble)
-          return a.performanceData.avgConfidence - b.performanceData.avgConfidence;
-        
+
         case 'research':
           // Sort by research activity (attempts + model diversity)
           const aResearch = a.performanceData.totalExplanations + (a.performanceData.modelsAttempted?.length || 0);
@@ -212,7 +345,7 @@ export default function PuzzleDBViewer() {
           return aLevel.priority - bLevel.priority;
       }
     });
-  }, [puzzles, showZeroOnly, dangerousOnly, humbleOnly, confidenceRange, accuracyRange, attemptRange, sourceFilter, sortBy, searchQuery]);
+  }, [puzzles, showZeroOnly, dangerousOnly, confidenceRange, accuracyRange, attemptRange, sourceFilter, sortBy, searchQuery]);
 
   // Handle puzzle search by ID (matching Browser page functionality)
   const handleSearch = React.useCallback(() => {
@@ -281,7 +414,6 @@ export default function PuzzleDBViewer() {
 
     // Difficulty distribution
     const dangerous = selectedPuzzles.filter(p => p.performanceData.avgConfidence >= 80 && p.performanceData.avgAccuracy <= 0.3).length;
-    const humble = selectedPuzzles.filter(p => p.performanceData.avgConfidence < 80).length;
     const hotspot = selectedPuzzles.filter(p => p.performanceData.totalExplanations >= 15).length;
     const unexplored = selectedPuzzles.filter(p => p.performanceData.totalExplanations === 0).length;
 
@@ -311,10 +443,6 @@ export default function PuzzleDBViewer() {
       const maxGap = max.performanceData.avgConfidence - (max.performanceData.avgAccuracy * 100);
       return pGap > maxGap ? p : max;
     }, selectedPuzzles[0]);
-    
-    const mostHumble = selectedPuzzles.reduce((min, p) => 
-      p.performanceData.avgConfidence < min.performanceData.avgConfidence ? p : min
-    , selectedPuzzles[0]);
 
     // Model diversity
     const allModels = new Set<string>();
@@ -329,9 +457,9 @@ export default function PuzzleDBViewer() {
       avgConfidence,
       avgAccuracy,
       avgProcessingTime,
-      difficulty: { dangerous, humble, hotspot, unexplored },
+      difficulty: { dangerous, hotspot, unexplored },
       datasets,
-      highlights: { hardest, easiest, mostExpensive, mostDangerous, mostHumble },
+      highlights: { hardest, easiest, mostExpensive, mostDangerous },
       modelDiversity: allModels.size
     };
   }, [selectedPuzzles]);
@@ -508,11 +636,6 @@ Or one per line:
                   <p className="text-xs text-gray-600">Overconfident failures</p>
                 </div>
                 <div className="space-y-1">
-                  <p className="text-sm font-medium text-blue-700">Humble AI</p>
-                  <p className="text-2xl font-bold text-blue-600">{aggregateStats.difficulty.humble}</p>
-                  <p className="text-xs text-gray-600">&lt;80% confidence</p>
-                </div>
-                <div className="space-y-1">
                   <p className="text-sm font-medium text-orange-700">Hotspot</p>
                   <p className="text-2xl font-bold text-orange-600">{aggregateStats.difficulty.hotspot}</p>
                   <p className="text-xs text-gray-600">High activity (15+ attempts)</p>
@@ -670,22 +793,6 @@ Or one per line:
                   </p>
                 </div>
 
-                {/* Most Humble */}
-                <div className="bg-base-100 p-3 rounded border border-info">
-                  <div className="flex items-center gap-2 mb-2">
-                    <CheckCircle className="h-4 w-4 text-info" />
-                    <p className="text-sm font-semibold text-info">Most Humble</p>
-                  </div>
-                  <Link href={`/puzzle/${aggregateStats.highlights.mostHumble.id}`}>
-                    <div className="badge badge-outline font-mono cursor-pointer hover:bg-base-200">
-                      {aggregateStats.highlights.mostHumble.id}
-                    </div>
-                  </Link>
-                  <p className="text-xs text-base-content/60 mt-1">
-                    Confidence: {Math.round(aggregateStats.highlights.mostHumble.performanceData.avgConfidence)}%
-                  </p>
-                </div>
-
                 {/* Fastest */}
                 <div className="bg-base-100 p-3 rounded border border-success">
                   <div className="flex items-center gap-2 mb-2">
@@ -816,91 +923,57 @@ Or one per line:
             Filters & Sorting
           </h2>
           {/* Search Bar */}
-          <div className="mb-6">
-            <div className="flex flex-col md:flex-row gap-4 items-start md:items-end">
-              <div className="w-full md:flex-1 space-y-2">
-                <label htmlFor="puzzleSearch" className="label label-text">Search by Puzzle ID</label>
-                <div className="relative">
-                  <input
-                    id="puzzleSearch"
-                    placeholder="Enter puzzle ID (e.g., 1ae2feb7)"
-                    value={searchQuery}
-                    onChange={(e) => {
-                      setSearchQuery(e.target.value);
-                      setSearchError(null);
-                    }}
-                    className="input input-bordered w-full"
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter') {
-                        handleSearch();
-                      }
-                    }}
-                  />
-                </div>
-                {searchError && (
-                  <p className="text-sm text-error">{searchError}</p>
-                )}
-              </div>
-              <button 
-                onClick={handleSearch}
-                className="btn btn-primary min-w-[120px]"
-              >
-                Search
-              </button>
-            </div>
+          <div className="flex gap-2 mb-4">
+            <input
+              id="puzzleSearch"
+              placeholder="Search puzzle ID (e.g., 1ae2feb7)"
+              value={searchQuery}
+              onChange={(e) => {
+                setSearchQuery(e.target.value);
+                setSearchError(null);
+              }}
+              className="input input-sm input-bordered flex-1"
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  handleSearch();
+                }
+              }}
+            />
+            <button
+              onClick={handleSearch}
+              className="btn btn-sm btn-primary"
+            >
+              Search
+            </button>
           </div>
+          {searchError && (
+            <p className="text-xs text-error mb-2">{searchError}</p>
+          )}
           
-          <div className="flex flex-wrap items-center gap-4">
-            <div className="flex items-center space-x-2">
-              <label htmlFor="sort-by" className="label label-text text-sm font-medium">Sort by:</label>
-              <select 
+          <div className="flex flex-wrap items-center gap-3 text-sm">
+            <div className="flex items-center gap-2">
+              <label htmlFor="sort-by" className="font-medium">Sort:</label>
+              <select
                 id="sort-by"
-                value={sortBy} 
+                value={sortBy}
                 onChange={(e) => setSortBy(e.target.value as any)}
-                className="select select-bordered w-40"
+                className="select select-sm select-bordered w-36"
               >
                 <option value="dangerous">Dangerous</option>
-                <option value="humble">Humble</option>
                 <option value="research">Research</option>
                 <option value="unexplored">Unexplored</option>
-                <option value="accuracy">Accuracy (Low to High)</option>
+                <option value="accuracy">Accuracy</option>
                 <option value="confidence">Confidence</option>
               </select>
             </div>
-            
-            <div className="form-control">
-              <label className="label cursor-pointer gap-2">
-                <input 
-                  type="checkbox"
-                  id="zero-only" 
-                  checked={showZeroOnly} 
-                  onChange={(e) => setShowZeroOnly(e.target.checked)}
-                  className="checkbox checkbox-primary"
-                />
-                <span className="label-text">Show only UNEXPLORED puzzles (0 explanations)</span>
-              </label>
-            </div>
-            
-            <div className="form-control">
-              <label className="label cursor-pointer gap-2">
-                <input 
-                  type="checkbox"
-                  id="dangerous-only" 
-                  checked={dangerousOnly} 
-                  onChange={(e) => setDangerousOnly(e.target.checked)}
-                  className="checkbox checkbox-error"
-                />
-                <span className="label-text">Show dangerous overconfident failures only</span>
-              </label>
-            </div>
-            
-            <div className="flex items-center space-x-2">
-              <label htmlFor="source-filter" className="label label-text text-sm font-medium">Dataset:</label>
-              <select 
+
+            <div className="flex items-center gap-2">
+              <label htmlFor="source-filter" className="font-medium">Dataset:</label>
+              <select
                 id="source-filter"
-                value={sourceFilter} 
+                value={sourceFilter}
                 onChange={(e) => setSourceFilter(e.target.value)}
-                className="select select-bordered w-40"
+                className="select select-sm select-bordered w-36"
               >
                 <option value="all">All Datasets</option>
                 <option value="training">Training (400)</option>
@@ -911,6 +984,28 @@ Or one per line:
                 <option value="ConceptARC">ConceptARC</option>
               </select>
             </div>
+
+            <label className="flex items-center gap-1.5 cursor-pointer">
+              <input
+                type="checkbox"
+                id="zero-only"
+                checked={showZeroOnly}
+                onChange={(e) => setShowZeroOnly(e.target.checked)}
+                className="checkbox checkbox-xs checkbox-primary"
+              />
+              <span className="text-sm">Unexplored Only</span>
+            </label>
+
+            <label className="flex items-center gap-1.5 cursor-pointer">
+              <input
+                type="checkbox"
+                id="dangerous-only"
+                checked={dangerousOnly}
+                onChange={(e) => setDangerousOnly(e.target.checked)}
+                className="checkbox checkbox-xs checkbox-error"
+              />
+              <span className="text-sm">Dangerous Only</span>
+            </label>
           </div>
         </div>
       </div>
@@ -925,42 +1020,6 @@ Or one per line:
         </div>
       )}
 
-      {/* Summary Stats */}
-      <div className="card bg-base-100 shadow-xl">
-        <div className="card-body">
-          <h2 className="card-title">Database Overview</h2>
-          <p className="text-sm text-base-content/70">
-            Individual puzzle analysis attempts and binary accuracy statistics
-          </p>
-          <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 gap-4">
-            <div className="space-y-1">
-              <p className="text-sm font-medium text-gray-700">Total Puzzles</p>
-              <p className="text-2xl font-bold text-gray-900">
-                {filteredPuzzles.length}
-              </p>
-            </div>
-            <div className="space-y-1">
-              <p className="text-sm font-medium text-red-700">Dangerous (Overconfident)</p>
-              <p className="text-2xl font-bold text-red-600">
-                {filteredPuzzles.filter(p => p.performanceData.avgConfidence >= 80 && p.performanceData.avgAccuracy <= 0.3).length}
-              </p>
-            </div>
-            <div className="space-y-1">
-              <p className="text-sm font-medium text-blue-700">Humble AI (&lt;80% confidence)</p>
-              <p className="text-2xl font-bold text-blue-600">
-                {filteredPuzzles.filter(p => p.performanceData.avgConfidence < 80).length}
-              </p>
-            </div>
-            <div className="space-y-1">
-              <p className="text-sm font-medium text-gray-700">Unexplored</p>
-              <p className="text-2xl font-bold text-gray-600">
-                {filteredPuzzles.filter(p => p.performanceData.totalExplanations === 0).length}
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-
       {/* Puzzle Cards Grid */}
       {isLoading ? (
         <div className="flex justify-center items-center py-12">
@@ -970,117 +1029,15 @@ Or one per line:
           </div>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
           {filteredPuzzles.map((puzzle) => {
             const interestLevel = getPuzzleInterestLevel(puzzle.performanceData);
-            const correctAttempts = getCorrectAttempts(puzzle.performanceData.totalExplanations, puzzle.performanceData.avgAccuracy);
-            const InterestIcon = interestLevel.icon;
-            const totalCost = puzzle.performanceData.avgCost ? puzzle.performanceData.avgCost * puzzle.performanceData.totalExplanations : 0;
-            
             return (
-              <div key={puzzle.id} className={`card shadow-lg hover:shadow-xl transition-shadow ${
-                interestLevel.priority === 1 ? 'border border-error bg-error/5' :
-                interestLevel.priority === 2 ? 'border border-info bg-info/5' :
-                'bg-base-100'
-              }`}>
-                <div className="card-body p-4">
-                  <div className="flex items-center justify-between mb-2">
-                    <h3 className="card-title text-sm font-mono flex items-center gap-2">
-                      {puzzle.id}
-                      <div className="badge badge-outline text-xs">
-                        {puzzle.source}
-                      </div>
-                    </h3>
-                    <div className={`badge ${
-                      interestLevel.priority === 1 ? 'badge-error' :
-                      interestLevel.priority === 2 ? 'badge-info' :
-                      'badge-outline'
-                    } gap-1`}>
-                      <InterestIcon className="h-3 w-3" />
-                      {interestLevel.text}
-                    </div>
-                  </div>
-                  <p className="text-xs text-base-content/70">{interestLevel.description}</p>
-                  <div className="space-y-3">
-                  {/* Key Metrics Display */}
-                  {puzzle.performanceData.totalExplanations > 0 ? (
-                    <>
-                      <div className="grid grid-cols-2 gap-4 text-center">
-                        <div className="p-2 bg-gray-50 rounded-lg">
-                          <div className="text-lg font-bold">
-                            {Math.round(puzzle.performanceData.avgConfidence)}%
-                          </div>
-                          <div className="text-xs text-gray-600">Confidence</div>
-                        </div>
-                        <div className="p-2 bg-gray-50 rounded-lg">
-                          <div className="text-lg font-bold">
-                            {Math.round(puzzle.performanceData.avgAccuracy * 100)}%
-                          </div>
-                          <div className="text-xs text-gray-600">Accuracy</div>
-                        </div>
-                      </div>
-                      
-                      <div className="space-y-2 text-sm">
-                        <div className="flex justify-between">
-                          <span className="text-gray-600">Attempts:</span>
-                          <span className="font-semibold">
-                            {correctAttempts}/{puzzle.performanceData.totalExplanations}
-                          </span>
-                        </div>
-                        
-                        {puzzle.performanceData.modelsAttempted && (
-                          <div className="flex justify-between">
-                            <span className="text-gray-600">Models:</span>
-                            <span className="font-semibold">
-                              {puzzle.performanceData.modelsAttempted.length}
-                            </span>
-                          </div>
-                        )}
-                        
-                        {totalCost > 0 && (
-                          <div className="flex justify-between">
-                            <span className="text-gray-600">Cost:</span>
-                            <span className="font-semibold">
-                              {formatCurrency(totalCost)}
-                            </span>
-                          </div>
-                        )}
-                        
-                        {puzzle.performanceData.avgProcessingTime && (
-                          <div className="flex justify-between">
-                            <span className="text-gray-600">Avg Time:</span>
-                            <span className="font-semibold">
-                              {formatDuration(puzzle.performanceData.avgProcessingTime)}
-                            </span>
-                          </div>
-                        )}
-                        
-                        {puzzle.performanceData.lowestNonZeroConfidence && puzzle.performanceData.lowestNonZeroConfidence < 50 && (
-                          <div className="flex justify-between">
-                            <span className="text-gray-600">Lowest Confidence:</span>
-                            <span className="font-semibold text-blue-600">
-                              {puzzle.performanceData.lowestNonZeroConfidence}%
-                            </span>
-                          </div>
-                        )}
-                      </div>
-                    </>
-                  ) : (
-                    <div className="text-center p-4 bg-gray-50 rounded-lg">
-                      <div className="text-lg font-bold text-gray-500">No Attempts</div>
-                      <div className="text-sm text-gray-600">Untested puzzle</div>
-                    </div>
-                  )}
-                  
-                  {/* Action Button */}
-                  <Link href={`/puzzle/${puzzle.id}`}>
-                    <button className="btn btn-outline btn-sm w-full">
-                      {puzzle.performanceData.totalExplanations === 0 ? 'Analyze First' : 'View Analysis'}
-                    </button>
-                  </Link>
-                  </div>
-                </div>
-              </div>
+              <CompactPuzzleCard
+                key={puzzle.id}
+                puzzle={puzzle}
+                interestLevel={interestLevel}
+              />
             );
           })}
         </div>
