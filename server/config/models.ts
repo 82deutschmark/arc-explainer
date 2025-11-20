@@ -1,9 +1,9 @@
 /*
  *
  * Author: Claude Code using Sonnet 4.5
- * Date: 2025-11-15
+ * Date: 2025-11-20
  * PURPOSE: Centralized AI model configuration list consumed by ModelDefinitions and provider lookup utilities.
- *          Added Sherlock Think Alpha (cloaked OpenRouter model) - will need normalization when revealed.
+ *          Updated Sherlock Think Alpha → Grok 4.1 Fast Reasoning (revealed Nov 20, 2025).
  * SRP/DRY check: Pass - file encapsulates shared model metadata without duplication.
  * shadcn/ui: Pass - configuration only.
  */
@@ -827,21 +827,20 @@ export const MODELS: ModelConfig[] = [
   },
 
   {
-    key: 'openrouter/sherlock-think-alpha',
-    name: 'Sherlock Think Alpha',
+    key: 'x-ai/grok-4.1-fast',
+    name: 'Grok 4.1 Fast Reasoning',
     color: 'bg-fuchsia-600',
     premium: false,
-    cost: { input: '$0.00', output: '$0.00' },
+    cost: { input: '$0.20', output: '$0.50' },
     supportsTemperature: true,
     provider: 'OpenRouter',
     responseTime: { speed: 'moderate', estimate: '1-2 min' },
     isReasoning: true,
-    apiModelName: 'openrouter/sherlock-think-alpha',
+    apiModelName: 'x-ai/grok-4.1-fast',
     modelType: 'openrouter',
-    contextWindow: 1840000,
-    maxOutputTokens: 120000,
-    releaseDate: "2025-11",
-    notes: 'CLOAKED MODEL - identity will be revealed soon. Free promotional access.'
+    contextWindow: 2000000,
+    maxOutputTokens: 50000,
+    releaseDate: "2025-11"
   },
 
 ];

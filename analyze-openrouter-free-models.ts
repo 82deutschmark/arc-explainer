@@ -1,10 +1,10 @@
 /**
  * Author: Claude Code using Sonnet 4.5
- * Date: 2025-11-15
- * PURPOSE: Analyze ARC Eval puzzles using the free Sherlock Think Alpha cloaked model from OpenRouter.
- * Pulls ARC1 / ARC2 evaluation puzzle IDs, runs Sherlock Think Alpha with rate-limited launch spacing,
+ * Date: 2025-11-20
+ * PURPOSE: Analyze ARC Eval puzzles using the Grok 4.1 Fast Reasoning model from OpenRouter.
+ * Pulls ARC1 / ARC2 evaluation puzzle IDs, runs Grok 4.1 Fast Reasoning with rate-limited launch spacing,
  * and persists explanations through the existing analysis + save endpoints.
- * UPDATED: Now skips puzzles that already have explanations from Sherlock Think Alpha.
+ * UPDATED: Now skips puzzles that already have explanations from Grok 4.1 Fast Reasoning.
  * SRP/DRY check: Pass — shared helpers are reused from the paid-model script with
  * model iteration generalized.
  */
@@ -16,12 +16,12 @@ dotenv.config();
 
 type SourceKey = 'ARC1-Eval' | 'ARC2-Eval';
 
-type ModelKey = 'openrouter/sherlock-think-alpha';
+type ModelKey = 'x-ai/grok-4.1-fast';
 
 const API_BASE_URL = process.env.API_BASE_URL || 'http://localhost:5000';
 const SOURCES: SourceKey[] = ['ARC2-Eval', 'ARC1-Eval'];
 
-const DEFAULT_MODEL_KEYS: ModelKey[] = ['openrouter/sherlock-think-alpha'];
+const DEFAULT_MODEL_KEYS: ModelKey[] = ['x-ai/grok-4.1-fast'];
 
 const RATE_LIMIT_DELAY_MS = Number(process.env.OPENROUTER_RATE_LIMIT_MS) || 5000;
 const MODEL_SWITCH_DELAY_MS = Number(process.env.OPENROUTER_MODEL_SWITCH_DELAY_MS) || 3000;
@@ -42,7 +42,7 @@ function parseModelKeys(raw?: string): ModelKey[] {
 
   if (parsed.length === 0) {
     console.warn(
-      'OPENROUTER_FREE_MODELS provided but contained no recognized model keys; falling back to Sherlock Think Alpha.'
+      'OPENROUTER_FREE_MODELS provided but contained no recognized model keys; falling back to Grok 4.1 Fast Reasoning.'
     );
     return DEFAULT_MODEL_KEYS;
   }
@@ -345,12 +345,11 @@ function summarizeByModel(results: AnalysisResult[]): void {
 
 async function main(): Promise<void> {
   try {
-    console.log('🔬 Sherlock Think Alpha - ARC Eval Analyzer');
+    console.log('🔬 Grok 4.1 Fast Reasoning - ARC Eval Analyzer');
     console.log('='.repeat(60));
     console.log(`🌐 API base URL: ${API_BASE_URL}`);
     console.log(`🤖 Model: ${MODEL_KEYS.join(', ')}`);
     console.log(`📚 Sources: ${SOURCES.join(', ')}`);
-    console.log(`🎭 Note: Sherlock Think Alpha is a CLOAKED model - identity TBD`);
     console.log(`⏭️  Strategy: Skip puzzles with existing explanations`);
     console.log('='.repeat(60));
 
