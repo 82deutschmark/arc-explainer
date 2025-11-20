@@ -1,5 +1,10 @@
-## ARC Explainer  
+## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top!!!
+
+### Version 5.14.2
+
+- Refactoring
+  - Added client-side redirect component from `/human-cards` to `/hall-of-fame` to prevent broken links and preserve backwards compatibility
 
 ### Version 5.14.1
 
