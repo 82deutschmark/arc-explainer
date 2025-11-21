@@ -118,23 +118,23 @@ export default function PuzzleBrowser() {
               return aHasExplanation - bHasExplanation; // Unexplained (0) comes before explained (1)
             }
             return a.id.localeCompare(b.id); // Secondary sort by puzzle ID
-          case 'processing_time':
+          case 'processing_time':  
             const aTime = a.apiProcessingTimeMs || 0;
             const bTime = b.apiProcessingTimeMs || 0;
             return bTime - aTime;
-          case 'confidence':
+          case 'confidence':  // THIS IS BULLSHIT!!!!  WE NEVER WANT TO SORT BY CONFIDENCE
             const aConf = a.confidence || 0;
             const bConf = b.confidence || 0;
             return bConf - aConf;
-          case 'cost':
+          case 'cost':   // THIS ALSO SEEMS LIKE A BULLSHIT METRIC???  NEEDS TO BE CHECKED!!!
             const aCost = a.estimatedCost || 0;
             const bCost = b.estimatedCost || 0;
             return bCost - aCost;
-          case 'created_at':
+          case 'created_at':  // THIS ALSO SEEMS LIKE A BULLSHIT METRIC!!!  USELESS!!  REMOVE IT!!
             const aDate = a.createdAt || '1970-01-01';
             const bDate = b.createdAt || '1970-01-01';
             return bDate.localeCompare(aDate);
-          case 'least_analysis_data':
+          case 'least_analysis_data':  // USEFUL!!!!  This is good!!
             const countAnalysisFields = (puzzle: EnhancedPuzzleMetadata) => {
               let count = 0;
               if (puzzle.isPredictionCorrect !== null && puzzle.isPredictionCorrect !== undefined) count++;
