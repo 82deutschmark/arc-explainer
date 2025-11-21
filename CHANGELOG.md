@@ -1,6 +1,11 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top!!!
 
+### Version 5.16.3
+
+- Bug Fixes
+  - **Grok 4.1 Fast visibility & dedupe in analytics**: Fixed `normalizeModelName` so historical Grok 4 / Grok 4.1 aliases (including OpenRouter-specific names with `-attemptN` suffixes) correctly normalize to their canonical keys (`x-ai/grok-4-fast`, `x-ai/grok-4.1-fast`) without dropping the attempt suffix, and updated `MetricsRepository.combineModelComparisons()` to use the normalized accuracy/trustworthiness/feedback/cost maps. This makes Grok 4 / Grok 4.1 appear under single, consistent rows in the model comparison dashboards instead of being split or disappearing.
+
 ### Version 5.16.2
 
 - Bug Fixes
