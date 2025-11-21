@@ -1,6 +1,6 @@
 {
   "name": "rest-express",
-  "version": "5.14.2",
+  "version": "5.15.1",
   "type": "module",
   "license": "MIT",
   "scripts": {
@@ -11,6 +11,7 @@
     "test": "npm run build && npm run dev",
     "prod": "npm run build && npm start",
     "db:push": "drizzle-kit push",
+    "db:maintenance": "node --import tsx server/scripts/run-maintenance.ts",
     "windows-dev": "set NODE_ENV=development&&tsx server/index.ts",
     "windows-start": "set NODE_ENV=production&&node dist/index.js",
     "recover": "node --import tsx server/dataRecovery.ts",

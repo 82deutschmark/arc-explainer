@@ -224,8 +224,8 @@ export class PuzzleOverviewService {
           multiTestCount: performanceData.multiTestCount,
           singleTestCount: performanceData.singleTestCount,
           lowestNonZeroConfidence: performanceData.lowestNonZeroConfidence,
-          modelsAttempted: performanceData.modelsAttempted,
-          reasoningEfforts: performanceData.reasoningEfforts
+          modelsAttemptedCount: performanceData.modelsAttemptedCount,
+          reasoningEffortsCount: performanceData.reasoningEffortsCount
         } : {};
 
         return {
@@ -259,8 +259,8 @@ export class PuzzleOverviewService {
               multiTestCount: 0,
               singleTestCount: 0,
               lowestNonZeroConfidence: null,
-              modelsAttempted: [],
-              reasoningEfforts: []
+              modelsAttemptedCount: 0,
+              reasoningEffortsCount: 0
             } : {})
           }
         };
@@ -344,8 +344,8 @@ export class PuzzleOverviewService {
             multiTestCount: puzzleData.multiTestCount,
             singleTestCount: puzzleData.singleTestCount,
             lowestNonZeroConfidence: puzzleData.lowestNonZeroConfidence,
-            modelsAttempted: puzzleData.modelsAttempted,
-            reasoningEfforts: puzzleData.reasoningEfforts
+            modelsAttemptedCount: puzzleData.modelsAttemptedCount,
+            reasoningEffortsCount: puzzleData.reasoningEffortsCount
           } : {};
 
           return {
