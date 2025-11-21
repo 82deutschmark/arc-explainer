@@ -1,9 +1,12 @@
 /**
  * Author: Claude Code using Sonnet 4.5
- * Date: 2025-11-20
+ * Date: 2025-11-20 / Updated 2025-11-21
  * PURPOSE: Presents ARC puzzle summary cards with status-driven gradients,
  *          lazy-loaded grid previews, and information-dense performance metrics.
- *          Replaces useless "Analyzed" status with actionable solve rate, attempts, model count, and cost data.
+ *          FIXED: Replaces misleading "Solve Rate: 0%" for unsolved puzzles with binary correctness:
+ *                 - "Status: Never Tried" for puzzles with no attempts
+ *                 - "Correctness: ❌ Unsolved" for puzzles with failed attempts
+ *                 - "Solve Rate: X%" only shown when puzzle has some success (accuracy > 0)
  * SRP/DRY check: Pass — Verified lazy loading and navigation remain intact, single responsibility (puzzle card display).
  */
 
@@ -165,15 +168,42 @@ export const PuzzleCard: React.FC<PuzzleCardProps> = ({
 
         {/* Performance Metrics - Information Dense */}
         <div className="space-y-3">
-          {/* Row 1: Solve Rate & Attempts */}
+          {/* Row 1: Correctness & Attempts */}
           <div className="flex items-center justify-between gap-4">
             <div className="flex-1">
-              <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Solve Rate</p>
-              <p className="text-2xl font-bold text-gray-900">
-                {puzzle.performanceData && puzzle.performanceData.totalExplanations > 0
-                  ? `${Math.min(100, Math.max(0, puzzle.performanceData.avgAccuracy * 100)).toFixed(1)}%`
-                  : 'Unsolved'}
-              </p>
+              {/* Show different label based on whether puzzle has been solved */}
+              {(() => {
+                const hasAttempts = puzzle.performanceData && puzzle.performanceData.totalExplanations > 0;
+                const accuracy = puzzle.performanceData?.avgAccuracy || 0;
+                const isSolved = accuracy > 0;
+
+                if (!hasAttempts) {
+                  return (
+                    <>
+                      <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Status</p>
+                      <p className="text-2xl font-bold text-gray-900">Never Tried</p>
+                    </>
+                  );
+                } else if (!isSolved) {
+                  // Unsolved but has attempts - show binary failure status
+                  return (
+                    <>
+                      <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Correctness</p>
+                      <p className="text-2xl font-bold text-red-600">❌ Unsolved</p>
+                    </>
+                  );
+                } else {
+                  // Has some success - show actual solve rate
+                  return (
+                    <>
+                      <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Solve Rate</p>
+                      <p className="text-2xl font-bold text-gray-900">
+                        {Math.min(100, Math.max(0, accuracy * 100)).toFixed(1)}%
+                      </p>
+                    </>
+                  );
+                }
+              })()}
             </div>
             <div className="flex-1">
               <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Attempts</p>

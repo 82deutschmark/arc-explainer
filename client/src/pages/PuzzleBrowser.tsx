@@ -1,9 +1,11 @@
 /**
  * Author: Claude Code using Haiku 4.5 / Updated by Claude Code using Sonnet 4.5
- * Date: 2025-11-10 / Updated 2025-11-14
+ * Date: 2025-11-10 / Updated 2025-11-21
  * PURPOSE: Research-focused Puzzle Browser page with filters, puzzle results, and light-themed reference materials.
  *          Extracted Reference Material section into a reusable component for better maintainability.
  *          ADDED: Prominent Trading Cards callout banner with gradient styling and icons linking to /trading-cards page.
+ *          CLEANED: Removed junk sort modes (confidence, cost, created_at) that had no basis in aggregated metrics.
+ *                   Kept useful sorts: unsolved_first, unexplained_first, least_analysis_data, processing_time.
  * SRP/DRY check: Pass - Verified filter logic, navigation, rendering, and delegated reference material to ReferenceMaterial component.
  */
 import React, { useState, useCallback } from 'react';
@@ -118,22 +120,10 @@ export default function PuzzleBrowser() {
               return aHasExplanation - bHasExplanation; // Unexplained (0) comes before explained (1)
             }
             return a.id.localeCompare(b.id); // Secondary sort by puzzle ID
-          case 'processing_time':  
+          case 'processing_time':
             const aTime = a.apiProcessingTimeMs || 0;
             const bTime = b.apiProcessingTimeMs || 0;
             return bTime - aTime;
-          case 'confidence':  // THIS IS BULLSHIT!!!!  WE NEVER WANT TO SORT BY CONFIDENCE!  REMOVE IT!!!
-            const aConf = a.confidence || 0;
-            const bConf = b.confidence || 0;
-            return bConf - aConf;
-          case 'cost':   // THIS ALSO SEEMS LIKE A BULLSHIT METRIC???  NEEDS TO BE CHECKED!!!
-            const aCost = a.estimatedCost || 0;
-            const bCost = b.estimatedCost || 0;
-            return bCost - aCost;
-          case 'created_at':  // THIS ALSO SEEMS LIKE A BULLSHIT METRIC!!!  USELESS!!  REMOVE IT!!
-            const aDate = a.createdAt || '1970-01-01';
-            const bDate = b.createdAt || '1970-01-01';
-            return bDate.localeCompare(aDate);
           case 'least_analysis_data':  // USEFUL!!!!  This is good!!
             const countAnalysisFields = (puzzle: EnhancedPuzzleMetadata) => {
               let count = 0;
@@ -335,9 +325,6 @@ export default function PuzzleBrowser() {
                 <option value="default">Default order</option>
                 <option value="least_analysis_data">Analysis data (fewest first)</option>
                 <option value="processing_time">Processing time</option>
-                <option value="confidence">Confidence</option>
-                <option value="cost">Cost</option>
-                <option value="created_at">Analysis date</option>
               </select>
             </div>
           </div>
