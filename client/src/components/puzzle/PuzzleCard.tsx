@@ -1,9 +1,10 @@
 /**
- * Author: gpt-5-codex
- * Date: 2025-10-17
+ * Author: Claude Code using Sonnet 4.5
+ * Date: 2025-11-20
  * PURPOSE: Presents ARC puzzle summary cards with status-driven gradients,
- *          emoji mosaics, and lazy-loaded grid previews for the browser page.
- * SRP/DRY check: Pass — Verified lazy loading and navigation remain intact.
+ *          lazy-loaded grid previews, and information-dense performance metrics.
+ *          Replaces useless "Analyzed" status with actionable solve rate, attempts, model count, and cost data.
+ * SRP/DRY check: Pass — Verified lazy loading and navigation remain intact, single responsibility (puzzle card display).
  */
 
 import React, { useState, useEffect, useRef } from 'react';
@@ -21,6 +22,18 @@ interface PuzzleCardProps {
     gridSizeConsistent: boolean;
     hasExplanation?: boolean;
     modelName?: string;
+    hasMultiplePredictions?: boolean;
+
+    // Performance data (may be optional in some contexts)
+    performanceData?: {
+      avgAccuracy: number;           // 0.0 - 1.0
+      totalExplanations: number;     // Total attempts
+      modelsAttempted?: string[];    // List of model names
+      avgCost?: number;              // Average cost per attempt
+      avgConfidence?: number;        // Average confidence (0-1)
+      avgProcessingTime?: number;    // Milliseconds
+      wrongCount?: number;           // Number of incorrect attempts
+    };
   };
   showGridPreview?: boolean;
 }
@@ -148,18 +161,72 @@ export const PuzzleCard: React.FC<PuzzleCardProps> = ({
           </div>
         )}
 
-        {/* Analysis Status */}
-        <div className="flex items-center gap-2 text-lg">
-          {isExplained ? (
-            <>
-              <span className="font-semibold text-emerald-600">✓ Analyzed</span>
-              {puzzle.modelName && (
-                <span className="text-gray-500">by {puzzle.modelName.split('/').pop()}</span>
-              )}
-            </>
-          ) : (
-            <span className="font-medium text-gray-500">Awaiting explanation</span>
-          )}
+        {/* Performance Metrics - Information Dense */}
+        <div className="space-y-3">
+          {/* Row 1: Solve Rate & Attempts */}
+          <div className="flex items-center justify-between gap-4">
+            <div className="flex-1">
+              <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Solve Rate</p>
+              <p className="text-2xl font-bold text-gray-900">
+                {puzzle.performanceData && puzzle.performanceData.totalExplanations > 0
+                  ? `${(puzzle.performanceData.avgAccuracy * 100).toFixed(1)}%`
+                  : 'Unsolved'}
+              </p>
+            </div>
+            <div className="flex-1">
+              <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Attempts</p>
+              <p className="text-2xl font-bold text-gray-900">
+                {puzzle.performanceData?.totalExplanations || 0}
+              </p>
+            </div>
+          </div>
+
+          {/* Row 2: Models & Test Cases */}
+          <div className="flex items-center justify-between gap-4">
+            <div className="flex-1">
+              <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Models Tested</p>
+              <p className="text-lg font-bold text-gray-900">
+                {puzzle.performanceData?.modelsAttempted?.length || 0}
+              </p>
+            </div>
+            <div className="flex-1">
+              <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Test Cases</p>
+              <p className="text-lg font-bold text-gray-900">
+                {puzzle.hasMultiplePredictions ? 'Multi' : 'Single'}
+              </p>
+            </div>
+          </div>
+
+          {/* Row 3: Status Badges */}
+          <div className="flex flex-wrap gap-2">
+            {/* Unsolved Badge - Highest Priority */}
+            {puzzle.performanceData?.avgAccuracy === 0 && puzzle.performanceData?.totalExplanations > 0 && (
+              <span className="rounded-full bg-red-100 px-3 py-1 text-xs font-bold text-red-800">
+                🔥 UNSOLVED - 0% Success
+              </span>
+            )}
+
+            {/* Solved by All Badge */}
+            {puzzle.performanceData?.avgAccuracy === 1.0 && puzzle.performanceData?.totalExplanations > 0 && (
+              <span className="rounded-full bg-green-100 px-3 py-1 text-xs font-bold text-green-800">
+                ✅ Solved by all models
+              </span>
+            )}
+
+            {/* Cost Badge */}
+            {puzzle.performanceData?.avgCost && (
+              <span className="rounded-full bg-blue-100 px-3 py-1 text-xs font-semibold text-blue-800">
+                💰 ${puzzle.performanceData.avgCost.toFixed(3)} avg
+              </span>
+            )}
+
+            {/* Confidence Badge */}
+            {puzzle.performanceData?.avgConfidence && (
+              <span className="rounded-full bg-purple-100 px-3 py-1 text-xs font-semibold text-purple-800">
+                🎯 {(puzzle.performanceData.avgConfidence * 100).toFixed(0)}% confidence
+              </span>
+            )}
+          </div>
         </div>
 
         {/* Grid Info */}
