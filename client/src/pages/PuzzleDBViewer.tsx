@@ -15,17 +15,18 @@
  * shadcn/ui: Pass - Uses shadcn/ui components (Card, Badge, Select, Button, Input, Alert)
  */
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { Link } from 'wouter';
-import { Database, Filter, Grid, AlertTriangle, CheckCircle, XCircle, ChevronDown, ChevronUp, Copy, BarChart3, Loader2, Target, TrendingUp, TrendingDown, DollarSign, Clock, X } from 'lucide-react';
-import { useLocation } from 'wouter';
-
-// Import puzzle DB hooks
-import { usePuzzleDBStats, PuzzleDBStats, PuzzlePerformanceData } from '@/hooks/usePuzzleDBStats';
-import { usePuzzleListAnalysis } from '@/hooks/usePuzzleListAnalysis';
-
-// Import TinyGrid for puzzle preview
+import { Database, Grid, AlertTriangle, XCircle, Loader2, Search, AlertCircle } from 'lucide-react';
+import type { PuzzleDBStats, PuzzlePerformanceData } from '@/hooks/usePuzzleDBStats';
+import { useWorstPerformingPuzzles } from '@/hooks/usePuzzle';
 import { TinyGrid } from '@/components/puzzle/TinyGrid';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
+import { Input } from '@/components/ui/input';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { ClickablePuzzleBadge } from '@/components/ui/ClickablePuzzleBadge';
 
 // ARCTask type for puzzle data
 interface ARCTask {
@@ -306,32 +307,9 @@ export default function PuzzleDBViewer() {
     return filtered;
   }, [arc2EvalUnsolved, searchQuery]);
 
-        case 'research':
-          // Sort by research activity (attempts + model diversity)
-          const aResearch = a.performanceData.totalExplanations + (a.performanceData.modelsAttemptedCount || 0);
-          const bResearch = b.performanceData.totalExplanations + (b.performanceData.modelsAttemptedCount || 0);
-          return bResearch - aResearch;
-        
-        case 'unexplored':
-          // Sort unexplored first, then by other criteria
-          if (a.performanceData.totalExplanations === 0 && b.performanceData.totalExplanations > 0) return -1;
-          if (b.performanceData.totalExplanations === 0 && a.performanceData.totalExplanations > 0) return 1;
-          return b.performanceData.totalExplanations - a.performanceData.totalExplanations;
-        
-        case 'accuracy':
-          return a.performanceData.avgAccuracy - b.performanceData.avgAccuracy;
-        
-        case 'confidence':
-          return a.performanceData.avgConfidence - b.performanceData.avgConfidence;
-        
-        default:
-          // Default to interest level priority
-          const aLevel = getPuzzleInterestLevel(a.performanceData);
-          const bLevel = getPuzzleInterestLevel(b.performanceData);
-          return aLevel.priority - bLevel.priority;
-      }
-    });
-  }, [puzzles, showZeroOnly, dangerousOnly, confidenceRange, accuracyRange, attemptRange, sourceFilter, sortBy, searchQuery]);
+  const filteredArc1 = useMemo(() => {
+    if (!arc1EvalUnsolved) return [];
+    let filtered = arc1EvalUnsolved;
 
     if (searchQuery.trim()) {
       filtered = filtered.filter(p =>
