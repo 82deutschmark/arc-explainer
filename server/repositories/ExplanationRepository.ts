@@ -972,10 +972,15 @@ export class ExplanationRepository extends BaseRepository implements IExplanatio
       `, queryParams);
 
       return result.rows.map(row => {
+        const rawAvgAccuracy = parseFloat(row.avg_accuracy);
+        const clampedAvgAccuracy = isNaN(rawAvgAccuracy)
+          ? 0
+          : Math.min(1, Math.max(0, rawAvgAccuracy));
+
         const baseData = {
           puzzleId: row.puzzle_id,
           wrongCount: parseInt(row.wrong_count) || 0,
-          avgAccuracy: parseFloat(row.avg_accuracy) || 0,
+          avgAccuracy: clampedAvgAccuracy,
           avgConfidence: parseFloat(row.avg_confidence) || 0,
           totalExplanations: parseInt(row.total_explanations) || 0,
           negativeFeedback: parseInt(row.negative_feedback) || 0,
