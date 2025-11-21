@@ -1,6 +1,45 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top!!!
 
+### Version 5.16.7
+
+- Bug Fixes
+  - **Puzzle Examiner color-only toggle now fully hides digits**: Fixed the memoization dependencies in `PuzzleGrid` so `showColorOnly` is included in the `gridContent` `useMemo`. This ensures grid cells re-render when color-only mode is toggled, allowing `GridCell` to correctly render transparent text and `null` content without stray numeric glyphs leaking through the UI (`client/src/components/puzzle/PuzzleGrid.tsx`).
+
+### Version 5.16.6
+
+- UI/UX & Metrics
+  - **PuzzleDBViewer white theme**: Replaced the dark slate layout with a clean white page, light borders, and compact spacing so unsolved ARC evaluation puzzles are easier to scan at a glance (PuzzleDBViewer.tsx). Header, filters, and ARC2/ARC1 sections now match the rest of the app’s light styling while keeping ARC2-Eval as the clearly marked primary focus.
+  - **Puzzle preview stats cleanup**: Simplified PuzzleCard metrics to only show grounded, research-relevant stats: solve rate (clamped 0–100%), total attempts, unique models tested, test-case mode (single vs multi), grid size, dataset, and optional cost badge (PuzzleCard.tsx). Removed confidence/trustworthiness badges and any paths that could surface >100% style percentages.
+  - **Backend accuracy clamp**: Normalized aggregated `avgAccuracy` in the worst-performing puzzles query to always live in [0,1] before sending to the UI, so no combination of database state can produce impossible solve rates (ExplanationRepository.getWorstPerformingPuzzles).
+
+### Version 5.16.6
+
+- Bug Tracking
+  - **Puzzle Examiner color-only toggle still leaking digits**: Despite routing `showColorOnly` through `PuzzleGrid`/`GridCell`, the rendered cells continue to display numeric glyphs in the browser. Latest attempt hides the React content in `GridCell.tsx` (returns `null` + accessibility label), but the UI still shows numbers. Needs follow-up to inspect any inherited styles or additional layers painting the digits (e.g., CSS pseudo-elements, DaisyUI utilities) before the feature can ship.
+
+### Version 5.16.5
+
+- Features
+  - **Puzzle Examiner color-only grids**: Added a dedicated “Show Colors Only” toggle beside the emoji button so users can hide numeric labels and focus on raw palette comparisons (PuzzleExaminer.tsx, PuzzleHeader.tsx). The button automatically disables while in emoji mode, and the new state propagates through PuzzleGridDisplay → PuzzleGrid → GridCell so every training/test grid now supports color-only rendering plus accessible screen reader labels. Updated PuzzleGrid props/types to keep Saturn Visual Solver and other consumers compiling cleanly.
+
+### Version 5.16.4
+
+- UI/UX Improvements
+  - **PuzzleDBViewer major UI overhaul**: Drastically reduced wasted vertical space (~400-450px saved) by redesigning the entire page layout
+    - Replaced massive gradient header Card (~200px) with compact dark theme header (~50px) matching PuzzleBrowser style (PuzzleDBViewer.tsx:335-353)
+    - Condensed bloated filter Card (~120px) into single compact inline row with minimal padding (PuzzleDBViewer.tsx:355-378)
+    - Removed all gradient backgrounds from ARC2/ARC1 section Cards, replaced with clean dark theme borders (lines 402-428, 450-492)
+    - Reduced section header text from `text-2xl` to `text-sm uppercase` and badge sizes from `text-base px-4 py-2` to `text-xs px-2 py-0.5`
+    - Changed container padding from `p-6 space-y-6` to `pb-3 pt-2 px-2 gap-2` for consistency with PuzzleBrowser
+    - Reduced grid gaps from `gap-3` to `gap-2` throughout
+  - **PuzzleDBViewer new features**: Added visual puzzle grid cards below pill lists
+    - Imported and integrated PuzzleCard component from PuzzleBrowser (PuzzleDBViewer.tsx:30)
+    - Added PuzzleCard grid display (first 12 puzzles) below ARC2 evaluation pills with lazy-loaded TinyGrid previews (lines 430-442)
+    - Added PuzzleCard grid display (first 12 puzzles) below ARC1 evaluation pills (lines 477-489)
+    - Provides visual puzzle structure inspection without leaving the database browser
+  - **PuzzleDBViewer navigation improvements**: All ClickablePuzzleBadge components now open puzzles in new tabs via explicit `openInNewTab={true}` prop (lines 425, 472) for better research workflow
+
 ### Version 5.16.3
 
 - Bug Fixes

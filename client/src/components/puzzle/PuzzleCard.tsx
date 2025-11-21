@@ -26,13 +26,15 @@ interface PuzzleCardProps {
 
     // Performance data (may be optional in some contexts)
     performanceData?: {
-      avgAccuracy: number;           // 0.0 - 1.0
-      totalExplanations: number;     // Total attempts
-      modelsAttempted?: string[];    // List of model names
-      avgCost?: number;              // Average cost per attempt
-      avgConfidence?: number;        // Average confidence (0-1)
-      avgProcessingTime?: number;    // Milliseconds
-      wrongCount?: number;           // Number of incorrect attempts
+      avgAccuracy: number;            // 0.0 - 1.0, server-clamped
+      totalExplanations: number;      // Total attempts (explanations)
+      // Prefer counts from server-side aggregation when present
+      modelsAttemptedCount?: number;  // Distinct models that attempted this puzzle
+      // Backwards-compat: some callers may still pass an array
+      modelsAttempted?: string[];     // Legacy list of model names
+      avgCost?: number;               // Average cost per attempt
+      avgProcessingTime?: number;     // Milliseconds
+      wrongCount?: number;            // Number of incorrect attempts
     };
   };
   showGridPreview?: boolean;
@@ -169,7 +171,7 @@ export const PuzzleCard: React.FC<PuzzleCardProps> = ({
               <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Solve Rate</p>
               <p className="text-2xl font-bold text-gray-900">
                 {puzzle.performanceData && puzzle.performanceData.totalExplanations > 0
-                  ? `${(puzzle.performanceData.avgAccuracy * 100).toFixed(1)}%`
+                  ? `${Math.min(100, Math.max(0, puzzle.performanceData.avgAccuracy * 100)).toFixed(1)}%`
                   : 'Unsolved'}
               </p>
             </div>
@@ -186,7 +188,14 @@ export const PuzzleCard: React.FC<PuzzleCardProps> = ({
             <div className="flex-1">
               <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Models Tested</p>
               <p className="text-lg font-bold text-gray-900">
-                {puzzle.performanceData?.modelsAttempted?.length || 0}
+                {(() => {
+                  const perf = puzzle.performanceData;
+                  if (!perf) return 0;
+                  if (typeof perf.modelsAttemptedCount === 'number') {
+                    return perf.modelsAttemptedCount;
+                  }
+                  return perf.modelsAttempted?.length || 0;
+                })()}
               </p>
             </div>
             <div className="flex-1">
@@ -217,13 +226,6 @@ export const PuzzleCard: React.FC<PuzzleCardProps> = ({
             {puzzle.performanceData?.avgCost && (
               <span className="rounded-full bg-blue-100 px-3 py-1 text-xs font-semibold text-blue-800">
                 💰 ${puzzle.performanceData.avgCost.toFixed(3)} avg
-              </span>
-            )}
-
-            {/* Confidence Badge */}
-            {puzzle.performanceData?.avgConfidence && (
-              <span className="rounded-full bg-purple-100 px-3 py-1 text-xs font-semibold text-purple-800">
-                🎯 {(puzzle.performanceData.avgConfidence * 100).toFixed(0)}% confidence
               </span>
             )}
           </div>

@@ -61,6 +61,7 @@ export default function PuzzleExaminer() {
 
   // Local UI state
   const [showEmojis, setShowEmojis] = useState(false);
+  const [showColorOnly, setShowColorOnly] = useState(false);
   const [emojiSet, setEmojiSet] = useState<EmojiSet>(DEFAULT_EMOJI_SET);
   const [sendAsEmojis, setSendAsEmojis] = useState(false);
   const [isPromptPreviewOpen, setIsPromptPreviewOpen] = useState(false);
@@ -75,6 +76,13 @@ export default function PuzzleExaminer() {
     const title = puzzleName ? `${taskId} - ${puzzleName}` : `ARC Puzzle ${taskId}`;
     document.title = taskId ? title : 'ARC Puzzle Examiner';
   }, [taskId]);
+
+  // Emoji view overrides color-only mode
+  React.useEffect(() => {
+    if (showEmojis && showColorOnly) {
+      setShowColorOnly(false);
+    }
+  }, [showEmojis, showColorOnly]);
 
   // Early return if no taskId
   if (!taskId) {
@@ -312,6 +320,9 @@ export default function PuzzleExaminer() {
         isRetryMode={isRetryMode}
         showEmojis={showEmojis}
         onToggleEmojis={() => setShowEmojis(!showEmojis)}
+        showColorOnly={showColorOnly}
+        onToggleColorOnly={() => setShowColorOnly(!showColorOnly)}
+        isColorOnlyDisabled={showEmojis}
         emojiSet={emojiSet}
         onEmojiSetChange={setEmojiSet}
         isAnalyzing={isAnalyzing}
@@ -324,6 +335,7 @@ export default function PuzzleExaminer() {
           <PuzzleGridDisplay
             task={task}
             showEmojis={showEmojis}
+            showColorOnly={showColorOnly}
             emojiSet={emojiSet}
           />
         </div>

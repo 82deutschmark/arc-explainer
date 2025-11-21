@@ -46,6 +46,7 @@ export const SIZE_CLASSES = {
 export interface GridCellProps {
   value: number;
   showEmojis: boolean;
+  showColorOnly?: boolean;
   size?: keyof typeof SIZE_CLASSES;
   emojiSet?: EmojiSet;
   mismatch?: boolean; // Compact diff overlay indicator
@@ -58,6 +59,7 @@ export interface PuzzleGridProps {
   grid: number[][];
   title: string;
   showEmojis: boolean;
+  showColorOnly?: boolean;
   highlight?: boolean;
   emojiSet?: EmojiSet;
   diffMask?: boolean[][]; // Optional mask to highlight mismatched cells
