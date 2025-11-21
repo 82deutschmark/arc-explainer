@@ -1,6 +1,11 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top!!!
 
+### Version 5.16.7
+
+- Bug Fixes
+  - **Puzzle Examiner color-only toggle now fully hides digits**: Fixed the memoization dependencies in `PuzzleGrid` so `showColorOnly` is included in the `gridContent` `useMemo`. This ensures grid cells re-render when color-only mode is toggled, allowing `GridCell` to correctly render transparent text and `null` content without stray numeric glyphs leaking through the UI (`client/src/components/puzzle/PuzzleGrid.tsx`).
+
 ### Version 5.16.6
 
 - UI/UX & Metrics
