@@ -12,6 +12,9 @@
  * - ADDED "Most LLM Defeats" sort option (based on wrongCount)
  * - CLARIFIED filter labels and footer descriptions with accurate terminology
  * - Default sort now shows hardest puzzles first (those that defeat LLMs most often)
+ * - PRIORITIZED dataset filter: ARC2-Eval and ARC1-Eval shown first with ⭐ markers
+ * - ADDED "All Evaluation" combined filter option (shows both ARC1-Eval + ARC2-Eval)
+ * - Datasets now ordered by importance: Eval datasets first, then training datasets
  *
  * SRP/DRY check: Pass - Reuses usePuzzleStats hook, PuzzleTradingCard component, and existing UI patterns
  */
@@ -51,7 +54,13 @@ export default function PuzzleTradingCards() {
     }
 
     // Apply dataset filter
-    if (datasetFilter !== 'all') {
+    if (datasetFilter === 'all_evaluation') {
+      // Show both evaluation datasets
+      filtered = filtered.filter(puzzle =>
+        puzzle.source === 'ARC2-Eval' || puzzle.source === 'ARC1-Eval'
+      );
+    } else if (datasetFilter !== 'all') {
+      // Show specific dataset
       filtered = filtered.filter(puzzle => puzzle.source === datasetFilter);
     }
 
@@ -125,11 +134,29 @@ export default function PuzzleTradingCards() {
     return filtered;
   }, [data?.puzzles, datasetFilter, performanceFilter, sortBy, searchQuery]);
 
-  // Get unique datasets for filter
+  // Get unique datasets for filter with priority ordering
   const availableDatasets = useMemo(() => {
     if (!data?.puzzles) return [];
     const datasets = new Set(data.puzzles.map(p => p.source).filter(Boolean));
-    return Array.from(datasets).sort();
+    const datasetArray = Array.from(datasets);
+
+    // Define priority order - Evaluation datasets first!
+    const priorityOrder = ['ARC2-Eval', 'ARC1-Eval', 'ARC2', 'ARC1', 'ARC-Heavy', 'ConceptARC'];
+
+    // Sort: priority datasets first, then alphabetically for any others
+    return datasetArray.sort((a, b) => {
+      const aIndex = priorityOrder.indexOf(a);
+      const bIndex = priorityOrder.indexOf(b);
+
+      // Both in priority list - sort by priority order
+      if (aIndex !== -1 && bIndex !== -1) return aIndex - bIndex;
+      // Only a is in priority list - a comes first
+      if (aIndex !== -1) return -1;
+      // Only b is in priority list - b comes first
+      if (bIndex !== -1) return 1;
+      // Neither in priority list - alphabetical
+      return a.localeCompare(b);
+    });
   }, [data?.puzzles]);
 
   if (error) {
@@ -228,8 +255,12 @@ export default function PuzzleTradingCards() {
                 onChange={(e) => setDatasetFilter(e.target.value)}
               >
                 <option value="all">All Datasets</option>
+                <option value="all_evaluation">🏆 All Evaluation (ARC1-Eval + ARC2-Eval)</option>
+                <option disabled>───────────────</option>
                 {availableDatasets.map(dataset => (
-                  <option key={dataset} value={dataset}>{dataset}</option>
+                  <option key={dataset} value={dataset}>
+                    {dataset === 'ARC2-Eval' || dataset === 'ARC1-Eval' ? `⭐ ${dataset}` : dataset}
+                  </option>
                 ))}
               </select>
             </div>
@@ -282,7 +313,12 @@ export default function PuzzleTradingCards() {
             <span className="text-sm font-semibold text-slate-300">Active Filters:</span>
             {[
               { id: 'search', label: 'Search', active: searchQuery.trim().length > 0 },
-              { id: 'dataset', label: datasetFilter !== 'all' ? datasetFilter : 'Dataset', active: datasetFilter !== 'all' },
+              {
+                id: 'dataset',
+                label: datasetFilter === 'all_evaluation' ? '🏆 All Evaluation' :
+                       datasetFilter !== 'all' ? datasetFilter : 'Dataset',
+                active: datasetFilter !== 'all'
+              },
               { id: 'performance', label: 'Performance', active: performanceFilter !== 'all' },
               { id: 'sort', label: 'Sort', active: sortBy !== 'hardest_first' },
             ].map((filter) => (
