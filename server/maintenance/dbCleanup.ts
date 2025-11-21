@@ -1,14 +1,19 @@
 /**
  * Author: Claude Code using Sonnet 4.5
  * Date: 2025-11-21T01:30:00Z
+ * Updated: 2025-11-21 - Fixed repositoryService.query() calls to use getPool()
  * PURPOSE: Automated database maintenance tasks including temp file cleanup,
  *          vacuum operations, and index maintenance. Runs on startup and can be
  *          scheduled via cron or called manually.
  * SRP/DRY check: Pass - Single responsibility for database maintenance
+ *
+ * NOTE: Uses getPool() directly instead of repositoryService.query() because
+ * RepositoryService doesn't expose a query() method (only a db getter).
  */
 
 import { logger } from '../utils/logger.js';
 import { repositoryService } from '../repositories/RepositoryService.js';
+import { getPool } from '../repositories/base/BaseRepository.js';
 
 export class DatabaseMaintenance {
   /**
@@ -50,7 +55,13 @@ export class DatabaseMaintenance {
    */
   private async logTempFileStats(): Promise<void> {
     try {
-      const result = await repositoryService.query(`
+      const pool = getPool();
+      if (!pool) {
+        logger.debug('Database pool not available - skipping temp file stats', 'db-maintenance');
+        return;
+      }
+
+      const result = await pool.query(`
         SELECT
           pg_size_pretty(sum(size)) as total_temp_size,
           count(*) as temp_file_count
@@ -73,7 +84,13 @@ export class DatabaseMaintenance {
    */
   private async terminateIdleQueries(): Promise<void> {
     try {
-      const result = await repositoryService.query(`
+      const pool = getPool();
+      if (!pool) {
+        logger.debug('Database pool not available - skipping idle query termination', 'db-maintenance');
+        return;
+      }
+
+      const result = await pool.query(`
         SELECT
           pg_terminate_backend(pid),
           query,
@@ -99,12 +116,18 @@ export class DatabaseMaintenance {
    */
   private async cleanupOrphanedTempFiles(): Promise<void> {
     try {
+      const pool = getPool();
+      if (!pool) {
+        logger.debug('Database pool not available - skipping cleanup operations', 'db-maintenance');
+        return;
+      }
+
       // Force a checkpoint to ensure temp files from finished transactions are cleaned
-      await repositoryService.query('CHECKPOINT');
+      await pool.query('CHECKPOINT');
       logger.debug('Executed CHECKPOINT to trigger temp file cleanup', 'db-maintenance');
 
       // Get and log temp tablespace usage
-      const result = await repositoryService.query(`
+      const result = await pool.query(`
         SELECT
           pg_size_pretty(pg_database_size(current_database())) as db_size,
           pg_size_pretty(pg_total_relation_size('pg_temp_1')) as temp_size
@@ -124,11 +147,17 @@ export class DatabaseMaintenance {
    */
   private async vacuumAnalyze(): Promise<void> {
     try {
+      const pool = getPool();
+      if (!pool) {
+        logger.debug('Database pool not available - skipping vacuum operations', 'db-maintenance');
+        return;
+      }
+
       const tables = ['explanations', 'feedback', 'puzzles'];
 
       for (const table of tables) {
         try {
-          await repositoryService.query(`VACUUM ANALYZE ${table}`);
+          await pool.query(`VACUUM ANALYZE ${table}`);
           logger.debug(`Vacuumed and analyzed table: ${table}`, 'db-maintenance');
         } catch (error) {
           // Table might not exist yet, skip it
@@ -149,7 +178,13 @@ export class DatabaseMaintenance {
     }
 
     try {
-      const result = await repositoryService.query(`
+      const pool = getPool();
+      if (!pool) {
+        logger.debug('Database pool not available - skipping database stats', 'db-maintenance');
+        return null;
+      }
+
+      const result = await pool.query(`
         SELECT
           pg_database_size(current_database()) as db_size_bytes,
           pg_size_pretty(pg_database_size(current_database())) as db_size,
