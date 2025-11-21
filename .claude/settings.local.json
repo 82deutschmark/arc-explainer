@@ -13,7 +13,7 @@
       "Read(/D:\\1Projects\\arc-explainer\\server\\services/**)",
       "Bash(cat:*)",
       "Bash(git submodule:*)",
-      "Bash(npx tsc:*)"
+      "Bash(npx tsc:*)",
       "Read(/D:\\1Projects\\planexe**)",
       "Read(/D:\\1Projects\\modelcompare**)",
       "Bash(cat:*)"
