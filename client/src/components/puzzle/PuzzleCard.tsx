@@ -32,8 +32,9 @@ interface PuzzleCardProps {
       modelsAttemptedCount?: number;  // Distinct models that attempted this puzzle
       // Backwards-compat: some callers may still pass an array
       modelsAttempted?: string[];     // Legacy list of model names
-      avgCost?: number;               // Average cost per attempt
-      avgProcessingTime?: number;     // Milliseconds
+      avgCost?: number;               // Average cost per attempt (USD)
+      avgProcessingTime?: number;     // Average processing time (milliseconds)
+      avgTotalTokens?: number;        // Average total tokens per attempt
       wrongCount?: number;            // Number of incorrect attempts
     };
   };
@@ -144,7 +145,7 @@ export const PuzzleCard: React.FC<PuzzleCardProps> = ({
             <div className="flex items-start gap-4">
               <div className="flex-1 min-w-0">
                 <p className="mb-1 text-sm font-semibold text-gray-500">Input</p>
-                <div className="w-full max-w-[140px]">
+                <div className="w-full max-w-[140px] max-h-[140px]">
                   <TinyGrid grid={firstTrainingExample.input} />
                 </div>
               </div>
@@ -155,7 +156,7 @@ export const PuzzleCard: React.FC<PuzzleCardProps> = ({
               </div>
               <div className="flex-1 min-w-0">
                 <p className="mb-1 text-sm font-semibold text-gray-500">Output</p>
-                <div className="w-full max-w-[140px]">
+                <div className="w-full max-w-[140px] max-h-[140px]">
                   <TinyGrid grid={firstTrainingExample.output} />
                 </div>
               </div>
@@ -206,29 +207,51 @@ export const PuzzleCard: React.FC<PuzzleCardProps> = ({
             </div>
           </div>
 
-          {/* Row 3: Status Badges */}
-          <div className="flex flex-wrap gap-2">
-            {/* Unsolved Badge - Highest Priority */}
-            {puzzle.performanceData?.avgAccuracy === 0 && puzzle.performanceData?.totalExplanations > 0 && (
+          {/* Row 3: Resources (Cost, Tokens, Latency) */}
+          {puzzle.performanceData && puzzle.performanceData.totalExplanations > 0 && (
+            <div className="rounded-xl bg-gradient-to-br from-blue-50 via-indigo-50 to-violet-50 p-3 ring-1 ring-indigo-100">
+              <p className="text-[10px] font-bold text-indigo-600 uppercase tracking-wider mb-2">Resources per Attempt</p>
+              <div className="grid grid-cols-3 gap-2 text-center">
+                {puzzle.performanceData.avgCost != null && puzzle.performanceData.avgCost > 0 && (
+                  <div>
+                    <p className="text-xs font-semibold text-gray-500">Cost</p>
+                    <p className="text-sm font-bold text-gray-900">
+                      ${puzzle.performanceData.avgCost.toFixed(3)}
+                    </p>
+                  </div>
+                )}
+                {puzzle.performanceData.avgTotalTokens != null && puzzle.performanceData.avgTotalTokens > 0 && (
+                  <div>
+                    <p className="text-xs font-semibold text-gray-500">Tokens</p>
+                    <p className="text-sm font-bold text-gray-900">
+                      {puzzle.performanceData.avgTotalTokens >= 1000
+                        ? `${(puzzle.performanceData.avgTotalTokens / 1000).toFixed(1)}K`
+                        : Math.round(puzzle.performanceData.avgTotalTokens)}
+                    </p>
+                  </div>
+                )}
+                {puzzle.performanceData.avgProcessingTime != null && puzzle.performanceData.avgProcessingTime > 0 && (
+                  <div>
+                    <p className="text-xs font-semibold text-gray-500">Time</p>
+                    <p className="text-sm font-bold text-gray-900">
+                      {puzzle.performanceData.avgProcessingTime >= 1000
+                        ? `${(puzzle.performanceData.avgProcessingTime / 1000).toFixed(1)}s`
+                        : `${Math.round(puzzle.performanceData.avgProcessingTime)}ms`}
+                    </p>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* Row 4: Status Badges */}
+          {puzzle.performanceData?.avgAccuracy === 0 && puzzle.performanceData?.totalExplanations > 0 && (
+            <div className="flex flex-wrap gap-2">
               <span className="rounded-full bg-red-100 px-3 py-1 text-xs font-bold text-red-800">
                 🔥 UNSOLVED - 0% Success
               </span>
-            )}
-
-            {/* Solved by All Badge */}
-            {puzzle.performanceData?.avgAccuracy === 1.0 && puzzle.performanceData?.totalExplanations > 0 && (
-              <span className="rounded-full bg-green-100 px-3 py-1 text-xs font-bold text-green-800">
-                ✅ Solved by all models
-              </span>
-            )}
-
-            {/* Cost Badge */}
-            {puzzle.performanceData?.avgCost && (
-              <span className="rounded-full bg-blue-100 px-3 py-1 text-xs font-semibold text-blue-800">
-                💰 ${puzzle.performanceData.avgCost.toFixed(3)} avg
-              </span>
-            )}
-          </div>
+            </div>
+          )}
         </div>
 
         {/* Grid Info */}

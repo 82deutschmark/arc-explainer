@@ -151,6 +151,63 @@ export function getPerformanceDescription(wins: number, losses: number): string 
 }
 
 /**
+ * Calculate approximate total spend for a puzzle
+ * totalSpendApprox = avgCost × totalExplanations
+ */
+export function calculateTotalSpendApprox(performanceData?: {
+  avgCost?: number | null;
+  totalExplanations: number;
+}): number {
+  if (!performanceData || !performanceData.avgCost || performanceData.totalExplanations === 0) {
+    return 0;
+  }
+  return performanceData.avgCost * performanceData.totalExplanations;
+}
+
+/**
+ * Calculate approximate total tokens used for a puzzle
+ * totalTokensApprox = avgTotalTokens × totalExplanations
+ */
+export function calculateTotalTokensApprox(performanceData?: {
+  avgTotalTokens?: number | null;
+  totalExplanations: number;
+}): number {
+  if (!performanceData || !performanceData.avgTotalTokens || performanceData.totalExplanations === 0) {
+    return 0;
+  }
+  return performanceData.avgTotalTokens * performanceData.totalExplanations;
+}
+
+/**
+ * Format cost in USD for display
+ */
+export function formatCostUSD(cost: number): string {
+  if (cost === 0) return '$0.00';
+  if (cost < 0.01) return `$${cost.toFixed(4)}`;
+  return `$${cost.toFixed(2)}`;
+}
+
+/**
+ * Format tokens for display (with K/M suffix for large numbers)
+ */
+export function formatTokens(tokens: number): string {
+  if (tokens === 0) return '0';
+  if (tokens >= 1000000) return `${(tokens / 1000000).toFixed(1)}M`;
+  if (tokens >= 1000) return `${(tokens / 1000).toFixed(1)}K`;
+  return tokens.toFixed(0);
+}
+
+/**
+ * Format latency in seconds for display
+ */
+export function formatLatencySeconds(ms: number): string {
+  if (ms === 0) return '0s';
+  const seconds = ms / 1000;
+  if (seconds < 1) return `${ms}ms`;
+  return `${seconds.toFixed(1)}s`;
+}
+
+/**
  * Format puzzle stats for trading card display
  */
 export function formatPuzzleStats(puzzle: PuzzleStatsRecord) {

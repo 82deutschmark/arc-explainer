@@ -116,17 +116,20 @@ function formatDuration(milliseconds: number) {
 // Compact puzzle card component with lazy-loaded TinyGrid preview
 interface CompactPuzzleCardProps {
   puzzle: PuzzleDBStats;
-  interestLevel: ReturnType<typeof getPuzzleInterestLevel>;
 }
 
-function CompactPuzzleCard({ puzzle, interestLevel }: CompactPuzzleCardProps) {
+function CompactPuzzleCard({ puzzle }: CompactPuzzleCardProps) {
   const [taskData, setTaskData] = useState<ARCTask | null>(null);
   const [isVisible, setIsVisible] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
-  const InterestIcon = interestLevel.icon;
 
-  const correctAttempts = getCorrectAttempts(puzzle.performanceData.totalExplanations, puzzle.performanceData.avgAccuracy);
-  const totalCost = puzzle.performanceData.avgCost ? puzzle.performanceData.avgCost * puzzle.performanceData.totalExplanations : 0;
+  // Cost and resource metrics
+  const totalSpend = puzzle.performanceData.avgCost && puzzle.performanceData.totalExplanations
+    ? puzzle.performanceData.avgCost * puzzle.performanceData.totalExplanations
+    : 0;
+  const totalTokens = puzzle.performanceData.avgTotalTokens && puzzle.performanceData.totalExplanations
+    ? puzzle.performanceData.avgTotalTokens * puzzle.performanceData.totalExplanations
+    : 0;
 
   // Lazy loading with IntersectionObserver
   useEffect(() => {
@@ -169,11 +172,7 @@ function CompactPuzzleCard({ puzzle, interestLevel }: CompactPuzzleCardProps) {
   return (
     <div
       ref={cardRef}
-      className={`card shadow-lg hover:shadow-xl transition-shadow ${
-        interestLevel.priority === 1 ? 'border border-error bg-error/5' :
-        interestLevel.priority === 2 ? 'border border-info bg-info/5' :
-        'bg-base-100'
-      }`}
+      className="card shadow-lg hover:shadow-xl transition-shadow bg-base-100"
     >
       <div className="card-body p-2">
         <div className="flex items-start justify-between mb-1 gap-2">
@@ -185,17 +184,7 @@ function CompactPuzzleCard({ puzzle, interestLevel }: CompactPuzzleCardProps) {
               </div>
             </h3>
           </div>
-          <div className={`badge badge-sm ${
-            interestLevel.priority === 1 ? 'badge-error' :
-            interestLevel.priority === 2 ? 'badge-info' :
-            'badge-outline'
-          } gap-1 shrink-0`}>
-            <InterestIcon className="h-3 w-3" />
-            {interestLevel.text}
-          </div>
         </div>
-
-        <p className="text-xs text-base-content/70 mb-2">{interestLevel.description}</p>
 
         <div className="flex gap-2">
           {/* TinyGrid Preview */}
@@ -208,32 +197,50 @@ function CompactPuzzleCard({ puzzle, interestLevel }: CompactPuzzleCardProps) {
             </div>
           )}
 
-          {/* Compact Metrics */}
+          {/* Cost & Resource Metrics */}
           <div className="flex-1 min-w-0">
             {puzzle.performanceData.totalExplanations > 0 ? (
               <div className="grid grid-cols-2 gap-1 text-xs">
-                <div>
-                  <div className="font-bold">{Math.round(puzzle.performanceData.avgConfidence)}%</div>
-                  <div className="text-base-content/60">Conf</div>
-                </div>
-                <div>
-                  <div className="font-bold">{Math.round(puzzle.performanceData.avgAccuracy * 100)}%</div>
-                  <div className="text-base-content/60">Acc</div>
-                </div>
-                <div>
-                  <div className="font-semibold">{correctAttempts}/{puzzle.performanceData.totalExplanations}</div>
-                  <div className="text-base-content/60">Attempts</div>
-                </div>
-                {puzzle.performanceData.modelsAttemptedCount && (
+                {/* Total Spend */}
+                {totalSpend > 0 && (
+                  <div>
+                    <div className="font-bold">{formatCurrency(totalSpend)}</div>
+                    <div className="text-base-content/60">Total $</div>
+                  </div>
+                )}
+                {/* Avg Cost per Attempt */}
+                {puzzle.performanceData.avgCost && puzzle.performanceData.avgCost > 0 && (
+                  <div>
+                    <div className="font-semibold">{formatCurrency(puzzle.performanceData.avgCost)}</div>
+                    <div className="text-base-content/60">$/Attempt</div>
+                  </div>
+                )}
+                {/* Avg Tokens per Attempt */}
+                {puzzle.performanceData.avgTotalTokens && puzzle.performanceData.avgTotalTokens > 0 && (
+                  <div>
+                    <div className="font-semibold">{formatNumber(Math.round(puzzle.performanceData.avgTotalTokens))}</div>
+                    <div className="text-base-content/60">Tok/Attempt</div>
+                  </div>
+                )}
+                {/* Total Tokens */}
+                {totalTokens > 0 && (
+                  <div>
+                    <div className="font-semibold">{formatNumber(Math.round(totalTokens))}</div>
+                    <div className="text-base-content/60">Total Tok</div>
+                  </div>
+                )}
+                {/* Models Tested */}
+                {puzzle.performanceData.modelsAttemptedCount && puzzle.performanceData.modelsAttemptedCount > 0 && (
                   <div>
                     <div className="font-semibold">{puzzle.performanceData.modelsAttemptedCount}</div>
                     <div className="text-base-content/60">Models</div>
                   </div>
                 )}
-                {totalCost > 0 && (
-                  <div className="col-span-2">
-                    <div className="font-semibold">{formatCurrency(totalCost)}</div>
-                    <div className="text-base-content/60">Total Cost</div>
+                {/* Avg Latency */}
+                {puzzle.performanceData.avgProcessingTime && puzzle.performanceData.avgProcessingTime > 0 && (
+                  <div>
+                    <div className="font-semibold">{formatTime(Math.round(puzzle.performanceData.avgProcessingTime / 1000))}</div>
+                    <div className="text-base-content/60">Avg Time</div>
                   </div>
                 )}
               </div>
@@ -280,7 +287,7 @@ export default function PuzzleDBViewer() {
     true,          // zeroAccuracyOnly = TRUE (critical!)
     'ARC2-Eval',   // evaluation2 dataset - TOP PRIORITY!
     undefined,     // No multi-test filter
-    false          // Don't need rich metrics
+    true           // Include rich metrics (cost, tokens, models tested)
   );
 
   // Fetch ARC1-Eval unsolved puzzles (SECOND PRIORITY - 400 puzzles)
@@ -296,7 +303,7 @@ export default function PuzzleDBViewer() {
     true,          // zeroAccuracyOnly = TRUE
     'ARC1-Eval',   // evaluation dataset - SECOND PRIORITY
     undefined,
-    false
+    true           // Include rich metrics (cost, tokens, models tested)
   );
 
   // Combined loading and error states
