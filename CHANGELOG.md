@@ -1,6 +1,43 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top!!!
 
+### Version 5.15.1
+
+- Bug Fixes / Performance
+  - **Database Query Optimization**: Fixed PostgreSQL temporary disk space overflow on `/api/puzzles/stats` endpoint
+    - Replaced expensive `STRING_AGG` operations with `COUNT(DISTINCT)` for model aggregation (ExplanationRepository.ts:908-1000)
+    - Changed `modelsAttempted` from string array to `modelsAttemptedCount` number across frontend/backend
+    - Changed `reasoningEfforts` from string array to `reasoningEffortsCount` number
+    - Updated TypeScript interfaces: `PuzzlePerformanceSnapshot` (usePuzzleStats.ts:34-37), `PuzzlePerformanceData` (usePuzzleDBStats.ts:32-34)
+    - Updated UI components to display counts instead of badges: PuzzleTradingCard, DifficultPuzzlesSection, PuzzleDBViewer
+    - Dramatically reduced temp disk usage - query now processes 4000+ puzzles without overflow
+    - Files modified: ExplanationRepository.ts, puzzleOverviewService.ts, usePuzzleStats.ts, usePuzzleDBStats.ts, puzzleCardHelpers.ts, PuzzleTradingCard.tsx, DifficultPuzzlesSection.tsx, PuzzleDBViewer.tsx
+
+- Features
+  - **Automated Database Maintenance**: Added comprehensive maintenance system with zero manual intervention required
+    - Created `DatabaseMaintenance` class with automated cleanup tasks (server/maintenance/dbCleanup.ts):
+      * Logs temp file statistics (count & size via `pg_ls_tmpdir()`)
+      * Terminates idle queries stuck >5 minutes (`pg_terminate_backend`)
+      * Forces PostgreSQL CHECKPOINT to clean orphaned temp files
+      * Runs VACUUM ANALYZE on key tables (explanations, feedback, puzzles)
+      * Reports database size, connection statistics, and space reclaimed
+    - Integrated maintenance into server lifecycle (server/index.ts:117-136):
+      * Runs automatically on startup after database initialization
+      * Scheduled to run every 6 hours via `setInterval`
+      * Non-blocking error handling (won't crash server)
+    - Added manual execution script with detailed reporting (server/scripts/run-maintenance.ts)
+    - Added npm script: `npm run db:maintenance` (package.json:14)
+    - Deployment: No SSH access needed - maintenance runs automatically on every deploy
+    - Monitoring: Check logs for `db-maintenance` and `maintenance-script` tags
+
+- Documentation
+  - Created comprehensive implementation guide: `docs/2025-11-21-postgres-temp-disk-fix.md`
+    - Root cause analysis of temp disk overflow
+    - Before/after query comparisons
+    - All file changes with line numbers
+    - Automated maintenance system documentation
+    - Monitoring and troubleshooting guide
+
 ### Version 5.15.0
 
 - Features
