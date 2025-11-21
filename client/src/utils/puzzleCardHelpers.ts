@@ -170,6 +170,7 @@ export function formatPuzzleStats(puzzle: PuzzleStatsRecord) {
     performanceDesc,
     avgAccuracy: puzzle.performanceData?.avgAccuracy ?? 0,
     totalAttempts: puzzle.performanceData?.totalExplanations ?? 0,
-    modelsAttempted: puzzle.performanceData?.modelsAttempted ?? []
+    // OPTIMIZATION: Changed from array to count to prevent PostgreSQL temp disk overflow
+    modelsAttemptedCount: puzzle.performanceData?.modelsAttemptedCount ?? 0
   };
 }

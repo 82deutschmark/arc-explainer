@@ -15,15 +15,236 @@
  * shadcn/ui: Pass - Uses shadcn/ui components (Card, Badge, Select, Button, Input, Alert)
  */
 
-import React, { useState, useMemo } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { ClickablePuzzleBadge } from '@/components/ui/ClickablePuzzleBadge';
-import { useWorstPerformingPuzzles } from '@/hooks/usePuzzle';
-import { Database, Search, Loader2, AlertCircle } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { Link } from 'wouter';
+import { Database, Filter, Grid, AlertTriangle, CheckCircle, XCircle, ChevronDown, ChevronUp, Copy, BarChart3, Loader2, Target, TrendingUp, TrendingDown, DollarSign, Clock, X } from 'lucide-react';
+import { useLocation } from 'wouter';
+
+// Import puzzle DB hooks
+import { usePuzzleDBStats, PuzzleDBStats, PuzzlePerformanceData } from '@/hooks/usePuzzleDBStats';
+import { usePuzzleListAnalysis } from '@/hooks/usePuzzleListAnalysis';
+
+// Import TinyGrid for puzzle preview
+import { TinyGrid } from '@/components/puzzle/TinyGrid';
+
+// ARCTask type for puzzle data
+interface ARCTask {
+  train: Array<{ input: number[][], output: number[][] }>;
+  test: Array<{ input: number[][], output?: number[][] }>;
+}
+
+
+// Helper functions for puzzle categorization based on AI confidence patterns
+function getPuzzleInterestLevel(performanceData: PuzzlePerformanceData) {
+  const { avgConfidence, avgAccuracy, totalExplanations } = performanceData;
+  
+  // Most Dangerous: High confidence + Wrong answers
+  if (avgConfidence >= 80 && avgAccuracy <= 0.3) {
+    return {
+      variant: 'destructive' as const,
+      text: 'DANGEROUS',
+      icon: AlertTriangle,
+      description: 'Overconfident failures',
+      priority: 1
+    };
+  }
+
+  // Research Hotspots: High activity
+  if (totalExplanations >= 15) {
+    return {
+      variant: 'secondary' as const,
+      text: 'HOTSPOT',
+      icon: Grid,
+      description: 'High research activity',
+      priority: 2
+    };
+  }
+  
+  // Unexplored
+  if (totalExplanations === 0) {
+    return {
+      variant: 'outline' as const,
+      text: 'UNEXPLORED',
+      icon: XCircle,
+      description: 'No attempts yet',
+      priority: 3
+    };
+  }
+
+  // Regular puzzles
+  return {
+    variant: 'outline' as const,
+    text: 'REGULAR',
+    icon: Grid,
+    description: 'Standard puzzle',
+    priority: 4
+  };
+}
+
+function getCorrectAttempts(totalExplanations: number, avgAccuracy: number) {
+  return Math.round(totalExplanations * avgAccuracy);
+}
+
+function formatCurrency(amount: number) {
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 3
+  }).format(amount);
+}
+
+function formatDuration(milliseconds: number) {
+  const seconds = Math.round(milliseconds / 1000);
+  if (seconds < 60) return `${seconds}s`;
+  const minutes = Math.floor(seconds / 60);
+  const remainingSeconds = seconds % 60;
+  return `${minutes}m ${remainingSeconds}s`;
+}
+
+// Compact puzzle card component with lazy-loaded TinyGrid preview
+interface CompactPuzzleCardProps {
+  puzzle: PuzzleDBStats;
+  interestLevel: ReturnType<typeof getPuzzleInterestLevel>;
+}
+
+function CompactPuzzleCard({ puzzle, interestLevel }: CompactPuzzleCardProps) {
+  const [taskData, setTaskData] = useState<ARCTask | null>(null);
+  const [isVisible, setIsVisible] = useState(false);
+  const cardRef = useRef<HTMLDivElement>(null);
+  const InterestIcon = interestLevel.icon;
+
+  const correctAttempts = getCorrectAttempts(puzzle.performanceData.totalExplanations, puzzle.performanceData.avgAccuracy);
+  const totalCost = puzzle.performanceData.avgCost ? puzzle.performanceData.avgCost * puzzle.performanceData.totalExplanations : 0;
+
+  // Lazy loading with IntersectionObserver
+  useEffect(() => {
+    if (!cardRef.current) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            setIsVisible(true);
+            observer.disconnect();
+          }
+        });
+      },
+      { rootMargin: '100px' }
+    );
+
+    observer.observe(cardRef.current);
+    return () => observer.disconnect();
+  }, []);
+
+  // Load puzzle data when visible
+  useEffect(() => {
+    if (!isVisible || taskData) return;
+
+    fetch(`/api/puzzle/task/${puzzle.id}`)
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          setTaskData(data.data);
+        }
+      })
+      .catch(() => {
+        // Silently fail - preview just won't show
+      });
+  }, [isVisible, puzzle.id, taskData]);
+
+  const firstTrainingExample = taskData?.train?.[0]?.input;
+
+  return (
+    <div
+      ref={cardRef}
+      className={`card shadow-lg hover:shadow-xl transition-shadow ${
+        interestLevel.priority === 1 ? 'border border-error bg-error/5' :
+        interestLevel.priority === 2 ? 'border border-info bg-info/5' :
+        'bg-base-100'
+      }`}
+    >
+      <div className="card-body p-2">
+        <div className="flex items-start justify-between mb-1 gap-2">
+          <div className="flex-1 min-w-0">
+            <h3 className="text-xs font-mono flex items-center gap-1 flex-wrap">
+              <span className="truncate">{puzzle.id}</span>
+              <div className="badge badge-outline badge-xs">
+                {puzzle.source}
+              </div>
+            </h3>
+          </div>
+          <div className={`badge badge-sm ${
+            interestLevel.priority === 1 ? 'badge-error' :
+            interestLevel.priority === 2 ? 'badge-info' :
+            'badge-outline'
+          } gap-1 shrink-0`}>
+            <InterestIcon className="h-3 w-3" />
+            {interestLevel.text}
+          </div>
+        </div>
+
+        <p className="text-xs text-base-content/70 mb-2">{interestLevel.description}</p>
+
+        <div className="flex gap-2">
+          {/* TinyGrid Preview */}
+          {firstTrainingExample && (
+            <div className="shrink-0" style={{ width: '64px', height: '64px' }}>
+              <TinyGrid
+                grid={firstTrainingExample}
+                style={{ width: '64px', height: '64px' }}
+              />
+            </div>
+          )}
+
+          {/* Compact Metrics */}
+          <div className="flex-1 min-w-0">
+            {puzzle.performanceData.totalExplanations > 0 ? (
+              <div className="grid grid-cols-2 gap-1 text-xs">
+                <div>
+                  <div className="font-bold">{Math.round(puzzle.performanceData.avgConfidence)}%</div>
+                  <div className="text-base-content/60">Conf</div>
+                </div>
+                <div>
+                  <div className="font-bold">{Math.round(puzzle.performanceData.avgAccuracy * 100)}%</div>
+                  <div className="text-base-content/60">Acc</div>
+                </div>
+                <div>
+                  <div className="font-semibold">{correctAttempts}/{puzzle.performanceData.totalExplanations}</div>
+                  <div className="text-base-content/60">Attempts</div>
+                </div>
+                {puzzle.performanceData.modelsAttemptedCount && (
+                  <div>
+                    <div className="font-semibold">{puzzle.performanceData.modelsAttemptedCount}</div>
+                    <div className="text-base-content/60">Models</div>
+                  </div>
+                )}
+                {totalCost > 0 && (
+                  <div className="col-span-2">
+                    <div className="font-semibold">{formatCurrency(totalCost)}</div>
+                    <div className="text-base-content/60">Total Cost</div>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div className="text-center py-2">
+                <div className="text-sm font-bold text-base-content/50">No Attempts</div>
+                <div className="text-xs text-base-content/60">Untested puzzle</div>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Action Button */}
+        <Link href={`/puzzle/${puzzle.id}`}>
+          <button className="btn btn-outline btn-xs w-full mt-2">
+            {puzzle.performanceData.totalExplanations === 0 ? 'Analyze First' : 'View Analysis'}
+          </button>
+        </Link>
+      </div>
+    </div>
+  );
+}
 
 export default function PuzzleDBViewer() {
   // Set page title
@@ -85,9 +306,32 @@ export default function PuzzleDBViewer() {
     return filtered;
   }, [arc2EvalUnsolved, searchQuery]);
 
-  const filteredArc1 = useMemo(() => {
-    if (!arc1EvalUnsolved) return [];
-    let filtered = arc1EvalUnsolved;
+        case 'research':
+          // Sort by research activity (attempts + model diversity)
+          const aResearch = a.performanceData.totalExplanations + (a.performanceData.modelsAttemptedCount || 0);
+          const bResearch = b.performanceData.totalExplanations + (b.performanceData.modelsAttemptedCount || 0);
+          return bResearch - aResearch;
+        
+        case 'unexplored':
+          // Sort unexplored first, then by other criteria
+          if (a.performanceData.totalExplanations === 0 && b.performanceData.totalExplanations > 0) return -1;
+          if (b.performanceData.totalExplanations === 0 && a.performanceData.totalExplanations > 0) return 1;
+          return b.performanceData.totalExplanations - a.performanceData.totalExplanations;
+        
+        case 'accuracy':
+          return a.performanceData.avgAccuracy - b.performanceData.avgAccuracy;
+        
+        case 'confidence':
+          return a.performanceData.avgConfidence - b.performanceData.avgConfidence;
+        
+        default:
+          // Default to interest level priority
+          const aLevel = getPuzzleInterestLevel(a.performanceData);
+          const bLevel = getPuzzleInterestLevel(b.performanceData);
+          return aLevel.priority - bLevel.priority;
+      }
+    });
+  }, [puzzles, showZeroOnly, dangerousOnly, confidenceRange, accuracyRange, attemptRange, sourceFilter, sortBy, searchQuery]);
 
     if (searchQuery.trim()) {
       filtered = filtered.filter(p =>

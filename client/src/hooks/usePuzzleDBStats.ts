@@ -29,8 +29,9 @@ export interface PuzzlePerformanceData {
   multiTestCount?: number;
   singleTestCount?: number;
   lowestNonZeroConfidence?: number;
-  modelsAttempted?: string[];
-  reasoningEfforts?: string[];
+  // OPTIMIZATION: Changed from arrays to counts to prevent PostgreSQL temp disk overflow
+  modelsAttemptedCount?: number;
+  reasoningEffortsCount?: number;
 }
 
 export interface PuzzleDBStats {

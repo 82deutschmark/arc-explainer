@@ -218,26 +218,25 @@ export const PuzzleTradingCard: React.FC<PuzzleTradingCardProps> = ({ puzzle }) 
                 <div className="bg-white rounded-lg p-3 shadow-sm border-2 border-purple-200">
                   <div className="text-xs text-fuchsia-600 uppercase tracking-wide mb-1 font-black">Total Models</div>
                   <div className="text-2xl font-black text-purple-600">
-                    {stats.modelsAttempted.length}
+                    {stats.modelsAttemptedCount}
                   </div>
                 </div>
               </div>
 
-              {/* Models That Failed */}
-              {stats.modelsAttempted.length > 0 && (
+              {/* Models Attempted Count - Optimized to show count instead of individual badges */}
+              {stats.modelsAttemptedCount > 0 && (
                 <div className="bg-white rounded-lg p-4 shadow-sm border-2 border-orange-200">
-                  <div className="flex items-center gap-2 mb-3">
+                  <div className="flex items-center gap-2 mb-2">
                     <Target className="h-4 w-4 text-orange-600" />
                     <h5 className="text-sm font-black text-orange-600 uppercase tracking-wide">
-                      Models Attempted ({stats.modelsAttempted.length})
+                      Models Attempted
                     </h5>
                   </div>
-                  <div className="flex flex-wrap gap-2">
-                    {stats.modelsAttempted.map((modelName, idx) => (
-                      <Badge key={idx} variant="outline" className="text-xs">
-                        {modelName}
-                      </Badge>
-                    ))}
+                  <div className="text-2xl font-black text-purple-600">
+                    {stats.modelsAttemptedCount} unique models tested
+                  </div>
+                  <div className="text-xs text-gray-600 mt-1">
+                    View puzzle details for full model list
                   </div>
                 </div>
               )}

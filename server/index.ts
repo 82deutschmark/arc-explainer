@@ -17,6 +17,7 @@ import { attach as attachWs } from './services/wsService';
 import { repositoryService } from './repositories/RepositoryService.ts';
 import { logger } from './utils/logger.ts';
 import { resolveStreamingConfig } from '@shared/config/streaming';
+import { databaseMaintenance } from './maintenance/dbCleanup.js';
 
 // Fix for ES modules and bundled code - get the actual current directory
 const __filename = fileURLToPath(import.meta.url);
@@ -112,6 +113,27 @@ const initServer = async () => {
   if (repoInitialized) {
     const stats = await repositoryService.getDatabaseStats();
     logger.info(`Database stats: ${stats.totalExplanations} explanations, ${stats.totalFeedback} feedback entries`, 'startup');
+
+    // Run database maintenance on startup to clean up temp files and optimize
+    try {
+      logger.info('Running database maintenance tasks on startup...', 'startup');
+      await databaseMaintenance.performMaintenance();
+
+      // Schedule periodic maintenance every 6 hours
+      const maintenanceInterval = 6 * 60 * 60 * 1000; // 6 hours in ms
+      setInterval(async () => {
+        logger.info('Running scheduled database maintenance...', 'maintenance');
+        try {
+          await databaseMaintenance.performMaintenance();
+        } catch (error) {
+          logger.error(`Scheduled maintenance failed: ${error instanceof Error ? error.message : String(error)}`, 'maintenance');
+        }
+      }, maintenanceInterval);
+
+      logger.info(`Scheduled database maintenance to run every 6 hours`, 'startup');
+    } catch (error) {
+      logger.warn(`Initial database maintenance failed (non-fatal): ${error instanceof Error ? error.message : String(error)}`, 'startup');
+    }
   }
   // Register API routes FIRST
   const server = await registerRoutes(app);
