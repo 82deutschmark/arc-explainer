@@ -847,8 +847,11 @@ export class ExplanationRepository extends BaseRepository implements IExplanatio
       let paramIndex = 3;
 
       if (filters?.zeroAccuracyOnly) {
-        // Only show puzzles with 0% accuracy
-        havingConditions.push('AVG(COALESCE(e.trustworthiness_score, e.multi_test_average_accuracy, 0)) = 0');
+        // Only show puzzles with zero correct explanations (binary correctness check)
+        havingConditions.push(`COUNT(DISTINCT e.id) FILTER (
+          WHERE (COALESCE(e.has_multiple_predictions, false) = false AND COALESCE(e.is_prediction_correct, false) = true)
+            OR (COALESCE(e.has_multiple_predictions, false) = true AND COALESCE(e.multi_test_all_correct, false) = true)
+        ) = 0`);
       } else {
         // Apply accuracy range filters if provided
         if (filters?.minAccuracy !== undefined) {
