@@ -27,43 +27,52 @@ export function normalizeModelName(modelName: string): string {
   let normalized = modelName.trim();
 
   // Preserve attempt-level variants. Temporarily strip the suffix so we can
-  // normalize the base model identifier, then restore it afterwards.
+  // normalize the base model identifier, then optionally restore it afterwards.
   const attemptSuffixMatch = normalized.match(/-attempt\d+$/i);
   const attemptSuffix = attemptSuffixMatch ? attemptSuffixMatch[0] : '';
-  if (attemptSuffix) {
-    normalized = normalized.slice(0, -attemptSuffix.length);
-  }
+  let base = attemptSuffix ? normalized.slice(0, -attemptSuffix.length) : normalized;
 
-  // Remove common suffixes that don't affect the core model identity
-  // Handle both colon-style (:free) and hyphen-style (-alpha) suffixes
-  normalized = normalized.replace(/:free$/i, '');
-  normalized = normalized.replace(/:beta$/i, '');
-  normalized = normalized.replace(/:alpha$/i, '');
-  normalized = normalized.replace(/-beta$/i, '');
-  normalized = normalized.replace(/-alpha$/i, '');
-
-  // Handle specific model name aliases and variants
+  // Handle specific model name aliases and variants on the base name BEFORE
+  // we strip generic -alpha/-beta suffixes, so we don't lose identifiers like
+  // "sherlock-think-alpha" that are required for correct mapping.
 
   // GLM case: z-ai/glm-4.5-air:free → z-ai/glm-4.5
   // This maps the air variant to the base GLM 4.5 model
-  if (normalized.startsWith('z-ai/glm-4.5-air')) {
-    normalized = 'z-ai/glm-4.5';
+  if (base.startsWith('z-ai/glm-4.5-air')) {
+    base = 'z-ai/glm-4.5';
   }
 
   // Sonoma-sky was actually grok-4-fast under a different name
-  if (normalized === 'openrouter/sonoma-sky' || normalized.startsWith('openrouter/sonoma-sky')) {
-    normalized = 'x-ai/grok-4-fast';
+  if (base === 'openrouter/sonoma-sky' || base.startsWith('openrouter/sonoma-sky')) {
+    base = 'x-ai/grok-4-fast';
   }
 
   // Polaris Alpha was revealed to be GPT-5.1 on Nov 13, 2025
-  if (normalized === 'openrouter/polaris-alpha' || normalized.startsWith('openrouter/polaris-alpha')) {
-    normalized = 'openai/gpt-5.1';
+  if (base === 'openrouter/polaris-alpha' || base.startsWith('openrouter/polaris-alpha')) {
+    base = 'openai/gpt-5.1';
   }
 
   // Sherlock Think Alpha was revealed to be Grok 4.1 Fast Reasoning on Nov 20, 2025
-  if (normalized === 'openrouter/sherlock-think-alpha' || normalized.startsWith('openrouter/sherlock-think-alpha')) {
-    normalized = 'x-ai/grok-4.1-fast';
+  // HF ingests typically use names like "openrouter/sherlock-think-alpha-attempt1";
+  // we must match both the full "-alpha" form and the trimmed "sherlock-think" base.
+  if (
+    base === 'openrouter/sherlock-think-alpha' ||
+    base.startsWith('openrouter/sherlock-think-alpha') ||
+    base === 'openrouter/sherlock-think' ||
+    base.startsWith('openrouter/sherlock-think')
+  ) {
+    base = 'x-ai/grok-4.1-fast';
   }
+
+  // Remove common suffixes that don't affect the core model identity from the
+  // canonical base name. Handle both colon-style (:free) and hyphen-style (-alpha) suffixes.
+  base = base.replace(/:free$/i, '');
+  base = base.replace(/:beta$/i, '');
+  base = base.replace(/:alpha$/i, '');
+  base = base.replace(/-beta$/i, '');
+  base = base.replace(/-alpha$/i, '');
+
+  normalized = base;
 
   return attemptSuffix ? `${normalized}${attemptSuffix}` : normalized;
 }

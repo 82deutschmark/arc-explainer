@@ -847,8 +847,11 @@ export class ExplanationRepository extends BaseRepository implements IExplanatio
       let paramIndex = 3;
 
       if (filters?.zeroAccuracyOnly) {
-        // Only show puzzles with 0% accuracy
-        havingConditions.push('AVG(COALESCE(e.trustworthiness_score, e.multi_test_average_accuracy, 0)) = 0');
+        // Only show puzzles with zero correct explanations (binary correctness check)
+        havingConditions.push(`COUNT(DISTINCT e.id) FILTER (
+          WHERE (COALESCE(e.has_multiple_predictions, false) = false AND COALESCE(e.is_prediction_correct, false) = true)
+            OR (COALESCE(e.has_multiple_predictions, false) = true AND COALESCE(e.multi_test_all_correct, false) = true)
+        ) = 0`);
       } else {
         // Apply accuracy range filters if provided
         if (filters?.minAccuracy !== undefined) {
@@ -905,6 +908,8 @@ export class ExplanationRepository extends BaseRepository implements IExplanatio
       }
 
       // Build rich metrics selection based on flag
+      // OPTIMIZATION: Use COUNT(DISTINCT) instead of STRING_AGG to avoid temp disk overflow
+      // STRING_AGG creates large temporary files when aggregating across 4000+ puzzles
       const richMetricsColumns = filters?.includeRichMetrics ? `
         AVG(e.estimated_cost) as avg_cost,
         AVG(e.api_processing_time_ms) as avg_processing_time,
@@ -915,8 +920,8 @@ export class ExplanationRepository extends BaseRepository implements IExplanatio
         COUNT(CASE WHEN e.has_multiple_predictions = true THEN 1 END) as multi_test_count,
         COUNT(CASE WHEN e.has_multiple_predictions = false OR e.has_multiple_predictions IS NULL THEN 1 END) as single_test_count,
         MIN(CASE WHEN e.confidence > 0 THEN e.confidence END) as lowest_non_zero_confidence,
-        STRING_AGG(DISTINCT e.model_name, ', ' ORDER BY e.model_name) as models_attempted,
-        STRING_AGG(DISTINCT e.reasoning_effort, ', ' ORDER BY e.reasoning_effort) FILTER (WHERE e.reasoning_effort IS NOT NULL) as reasoning_efforts,` : `
+        COUNT(DISTINCT e.model_name) as models_attempted_count,
+        COUNT(DISTINCT e.reasoning_effort) FILTER (WHERE e.reasoning_effort IS NOT NULL) as reasoning_efforts_count,` : `
         NULL as avg_cost,
         NULL as avg_processing_time,`;
 
@@ -993,8 +998,8 @@ export class ExplanationRepository extends BaseRepository implements IExplanatio
             multiTestCount: parseInt(row.multi_test_count) || 0,
             singleTestCount: parseInt(row.single_test_count) || 0,
             lowestNonZeroConfidence: parseFloat(row.lowest_non_zero_confidence) || null,
-            modelsAttempted: row.models_attempted ? row.models_attempted.split(', ') : [],
-            reasoningEfforts: row.reasoning_efforts ? row.reasoning_efforts.split(', ') : []
+            modelsAttemptedCount: parseInt(row.models_attempted_count) || 0,
+            reasoningEffortsCount: parseInt(row.reasoning_efforts_count) || 0
           };
         }
 

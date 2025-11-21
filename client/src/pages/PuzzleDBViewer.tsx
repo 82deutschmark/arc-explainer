@@ -15,15 +15,237 @@
  * shadcn/ui: Pass - Uses shadcn/ui components (Card, Badge, Select, Button, Input, Alert)
  */
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
+import { Link } from 'wouter';
+import { Database, Grid, AlertTriangle, XCircle, Loader2, Search, AlertCircle } from 'lucide-react';
+import type { PuzzleDBStats, PuzzlePerformanceData } from '@/hooks/usePuzzleDBStats';
+import { useWorstPerformingPuzzles } from '@/hooks/usePuzzle';
+import { TinyGrid } from '@/components/puzzle/TinyGrid';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
+import { Input } from '@/components/ui/input';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { ClickablePuzzleBadge } from '@/components/ui/ClickablePuzzleBadge';
-import { useWorstPerformingPuzzles } from '@/hooks/usePuzzle';
-import { Database, Search, Loader2, AlertCircle } from 'lucide-react';
+
+// ARCTask type for puzzle data
+interface ARCTask {
+  train: Array<{ input: number[][], output: number[][] }>;
+  test: Array<{ input: number[][], output?: number[][] }>;
+}
+
+
+// Helper functions for puzzle categorization based on AI confidence patterns
+function getPuzzleInterestLevel(performanceData: PuzzlePerformanceData) {
+  const { avgConfidence, avgAccuracy, totalExplanations } = performanceData;
+  
+  // Most Dangerous: High confidence + Wrong answers
+  if (avgConfidence >= 80 && avgAccuracy <= 0.3) {
+    return {
+      variant: 'destructive' as const,
+      text: 'DANGEROUS',
+      icon: AlertTriangle,
+      description: 'Overconfident failures',
+      priority: 1
+    };
+  }
+
+  // Research Hotspots: High activity
+  if (totalExplanations >= 15) {
+    return {
+      variant: 'secondary' as const,
+      text: 'HOTSPOT',
+      icon: Grid,
+      description: 'High research activity',
+      priority: 2
+    };
+  }
+  
+  // Unexplored
+  if (totalExplanations === 0) {
+    return {
+      variant: 'outline' as const,
+      text: 'UNEXPLORED',
+      icon: XCircle,
+      description: 'No attempts yet',
+      priority: 3
+    };
+  }
+
+  // Regular puzzles
+  return {
+    variant: 'outline' as const,
+    text: 'REGULAR',
+    icon: Grid,
+    description: 'Standard puzzle',
+    priority: 4
+  };
+}
+
+function getCorrectAttempts(totalExplanations: number, avgAccuracy: number) {
+  return Math.round(totalExplanations * avgAccuracy);
+}
+
+function formatCurrency(amount: number) {
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 3
+  }).format(amount);
+}
+
+function formatDuration(milliseconds: number) {
+  const seconds = Math.round(milliseconds / 1000);
+  if (seconds < 60) return `${seconds}s`;
+  const minutes = Math.floor(seconds / 60);
+  const remainingSeconds = seconds % 60;
+  return `${minutes}m ${remainingSeconds}s`;
+}
+
+// Compact puzzle card component with lazy-loaded TinyGrid preview
+interface CompactPuzzleCardProps {
+  puzzle: PuzzleDBStats;
+  interestLevel: ReturnType<typeof getPuzzleInterestLevel>;
+}
+
+function CompactPuzzleCard({ puzzle, interestLevel }: CompactPuzzleCardProps) {
+  const [taskData, setTaskData] = useState<ARCTask | null>(null);
+  const [isVisible, setIsVisible] = useState(false);
+  const cardRef = useRef<HTMLDivElement>(null);
+  const InterestIcon = interestLevel.icon;
+
+  const correctAttempts = getCorrectAttempts(puzzle.performanceData.totalExplanations, puzzle.performanceData.avgAccuracy);
+  const totalCost = puzzle.performanceData.avgCost ? puzzle.performanceData.avgCost * puzzle.performanceData.totalExplanations : 0;
+
+  // Lazy loading with IntersectionObserver
+  useEffect(() => {
+    if (!cardRef.current) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            setIsVisible(true);
+            observer.disconnect();
+          }
+        });
+      },
+      { rootMargin: '100px' }
+    );
+
+    observer.observe(cardRef.current);
+    return () => observer.disconnect();
+  }, []);
+
+  // Load puzzle data when visible
+  useEffect(() => {
+    if (!isVisible || taskData) return;
+
+    fetch(`/api/puzzle/task/${puzzle.id}`)
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          setTaskData(data.data);
+        }
+      })
+      .catch(() => {
+        // Silently fail - preview just won't show
+      });
+  }, [isVisible, puzzle.id, taskData]);
+
+  const firstTrainingExample = taskData?.train?.[0]?.input;
+
+  return (
+    <div
+      ref={cardRef}
+      className={`card shadow-lg hover:shadow-xl transition-shadow ${
+        interestLevel.priority === 1 ? 'border border-error bg-error/5' :
+        interestLevel.priority === 2 ? 'border border-info bg-info/5' :
+        'bg-base-100'
+      }`}
+    >
+      <div className="card-body p-2">
+        <div className="flex items-start justify-between mb-1 gap-2">
+          <div className="flex-1 min-w-0">
+            <h3 className="text-xs font-mono flex items-center gap-1 flex-wrap">
+              <span className="truncate">{puzzle.id}</span>
+              <div className="badge badge-outline badge-xs">
+                {puzzle.source}
+              </div>
+            </h3>
+          </div>
+          <div className={`badge badge-sm ${
+            interestLevel.priority === 1 ? 'badge-error' :
+            interestLevel.priority === 2 ? 'badge-info' :
+            'badge-outline'
+          } gap-1 shrink-0`}>
+            <InterestIcon className="h-3 w-3" />
+            {interestLevel.text}
+          </div>
+        </div>
+
+        <p className="text-xs text-base-content/70 mb-2">{interestLevel.description}</p>
+
+        <div className="flex gap-2">
+          {/* TinyGrid Preview */}
+          {firstTrainingExample && (
+            <div className="shrink-0" style={{ width: '64px', height: '64px' }}>
+              <TinyGrid
+                grid={firstTrainingExample}
+                style={{ width: '64px', height: '64px' }}
+              />
+            </div>
+          )}
+
+          {/* Compact Metrics */}
+          <div className="flex-1 min-w-0">
+            {puzzle.performanceData.totalExplanations > 0 ? (
+              <div className="grid grid-cols-2 gap-1 text-xs">
+                <div>
+                  <div className="font-bold">{Math.round(puzzle.performanceData.avgConfidence)}%</div>
+                  <div className="text-base-content/60">Conf</div>
+                </div>
+                <div>
+                  <div className="font-bold">{Math.round(puzzle.performanceData.avgAccuracy * 100)}%</div>
+                  <div className="text-base-content/60">Acc</div>
+                </div>
+                <div>
+                  <div className="font-semibold">{correctAttempts}/{puzzle.performanceData.totalExplanations}</div>
+                  <div className="text-base-content/60">Attempts</div>
+                </div>
+                {puzzle.performanceData.modelsAttemptedCount && (
+                  <div>
+                    <div className="font-semibold">{puzzle.performanceData.modelsAttemptedCount}</div>
+                    <div className="text-base-content/60">Models</div>
+                  </div>
+                )}
+                {totalCost > 0 && (
+                  <div className="col-span-2">
+                    <div className="font-semibold">{formatCurrency(totalCost)}</div>
+                    <div className="text-base-content/60">Total Cost</div>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div className="text-center py-2">
+                <div className="text-sm font-bold text-base-content/50">No Attempts</div>
+                <div className="text-xs text-base-content/60">Untested puzzle</div>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Action Button */}
+        <Link href={`/puzzle/${puzzle.id}`}>
+          <button className="btn btn-outline btn-xs w-full mt-2">
+            {puzzle.performanceData.totalExplanations === 0 ? 'Analyze First' : 'View Analysis'}
+          </button>
+        </Link>
+      </div>
+    </div>
+  );
+}
 
 export default function PuzzleDBViewer() {
   // Set page title

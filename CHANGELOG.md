@@ -1,6 +1,71 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top!!!
 
+### Version 5.16.3
+
+- Bug Fixes
+  - **Grok 4.1 Fast visibility & dedupe in analytics**: Fixed `normalizeModelName` so historical Grok 4 / Grok 4.1 aliases (including OpenRouter-specific names with `-attemptN` suffixes) correctly normalize to their canonical keys (`x-ai/grok-4-fast`, `x-ai/grok-4.1-fast`) without dropping the attempt suffix, and updated `MetricsRepository.combineModelComparisons()` to use the normalized accuracy/trustworthiness/feedback/cost maps. This makes Grok 4 / Grok 4.1 appear under single, consistent rows in the model comparison dashboards instead of being split or disappearing.
+
+### Version 5.16.2
+
+- Bug Fixes
+  - **PuzzleDB Viewer build failure**: Repaired `client/src/pages/PuzzleDBViewer.tsx` by restoring the missing ARC1 filter memo plus the required UI/icon imports, eliminating the stray switch `case` that esbuild flagged so the Vite build can complete again.
+
+### Version 5.16.1
+
+- Bug Fixes
+  - **Grok model normalization for analytics dashboards**: Updated `MetricsRepository.combineModelComparisons()` to rely on the shared `normalizeModelName` helper instead of preserving raw model names, and tightened `normalizeModelName` itself so OpenRouter aliases like `openrouter/sonoma-sky` and historical `openrouter/sherlock-think-alpha*` entries all collapse into their canonical Grok counterparts (`x-ai/grok-4-fast`, `x-ai/grok-4.1-fast`) in the cross-model matrix and comprehensive dashboard. This removes duplicate or missing Grok rows from analytics views while keeping underlying database rows unchanged.
+
+### Version 5.16.0
+
+- Features
+  - **PuzzleDB Viewer & PuzzleCard refresh**: rebuilt `client/src/pages/PuzzleDBViewer.tsx` around unsolved ARC evaluation puzzles using shadcn/ui cards/badges, dataset badges, search + lazy TinyGrid previews, and a simpler action flow, while `client/src/components/puzzle/PuzzleCard.tsx` now surfaces many performance metrics (models attempted, cost, accuracy/correctness signals) so researchers can spot hard puzzles at a glance.
+  - **PuzzleTradingCards filters & sorts**: prioritized ARC2/ARC1 evaluation sources, added the "All Evaluation" combined filter, and replaced imaginary "difficulty" labels with accuracy-based performance buckets plus new sorts tuned to LLM defeats (`client/src/pages/PuzzleTradingCards.tsx`).
+
+- Bug Fixes
+  - **Binary correctness for zero-accuracy filters**: `server/repositories/ExplanationRepository.ts` now counts explanations using `is_prediction_correct`/`multi_test_all_correct` so PuzzleDB Viewer reliably surfaces puzzles with zero correct explanations, aligning with the documented correctness pattern.
+
+- Documentation
+  - Added the PuzzleDB Viewer & PuzzleCard redesign plan so future contributors understand the intended research-focused UX (`docs/2025-11-20-puzzledb-and-puzzlecard-redesign-plan.md`).
+  - Captured the Correctness Logic Pattern guide that explains how to aggregate single- and multi-test correctness flags without mixing metrics (`docs/reference/database/CORRECTNESS_LOGIC_PATTERN.md`).
+
+### Version 5.15.1
+
+- Bug Fixes / Performance
+  - **Database Query Optimization**: Fixed PostgreSQL temporary disk space overflow on `/api/puzzles/stats` endpoint
+    - Replaced expensive `STRING_AGG` operations with `COUNT(DISTINCT)` for model aggregation (ExplanationRepository.ts:908-1000)
+    - Changed `modelsAttempted` from string array to `modelsAttemptedCount` number across frontend/backend
+    - Changed `reasoningEfforts` from string array to `reasoningEffortsCount` number
+    - Updated TypeScript interfaces: `PuzzlePerformanceSnapshot` (usePuzzleStats.ts:34-37), `PuzzlePerformanceData` (usePuzzleDBStats.ts:32-34)
+    - Updated UI components to display counts instead of badges: PuzzleTradingCard, DifficultPuzzlesSection, PuzzleDBViewer
+    - Dramatically reduced temp disk usage - query now processes 4000+ puzzles without overflow
+    - Files modified: ExplanationRepository.ts, puzzleOverviewService.ts, usePuzzleStats.ts, usePuzzleDBStats.ts, puzzleCardHelpers.ts, PuzzleTradingCard.tsx, DifficultPuzzlesSection.tsx, PuzzleDBViewer.tsx
+
+- Features
+  - **Automated Database Maintenance**: Added comprehensive maintenance system with zero manual intervention required
+    - Created `DatabaseMaintenance` class with automated cleanup tasks (server/maintenance/dbCleanup.ts):
+      * Logs temp file statistics (count & size via `pg_ls_tmpdir()`)
+      * Terminates idle queries stuck >5 minutes (`pg_terminate_backend`)
+      * Forces PostgreSQL CHECKPOINT to clean orphaned temp files
+      * Runs VACUUM ANALYZE on key tables (explanations, feedback, puzzles)
+      * Reports database size, connection statistics, and space reclaimed
+    - Integrated maintenance into server lifecycle (server/index.ts:117-136):
+      * Runs automatically on startup after database initialization
+      * Scheduled to run every 6 hours via `setInterval`
+      * Non-blocking error handling (won't crash server)
+    - Added manual execution script with detailed reporting (server/scripts/run-maintenance.ts)
+    - Added npm script: `npm run db:maintenance` (package.json:14)
+    - Deployment: No SSH access needed - maintenance runs automatically on every deploy
+    - Monitoring: Check logs for `db-maintenance` and `maintenance-script` tags
+
+- Documentation
+  - Created comprehensive implementation guide: `docs/2025-11-21-postgres-temp-disk-fix.md`
+    - Root cause analysis of temp disk overflow
+    - Before/after query comparisons
+    - All file changes with line numbers
+    - Automated maintenance system documentation
+    - Monitoring and troubleshooting guide
+
 ### Version 5.15.0
 
 - Features

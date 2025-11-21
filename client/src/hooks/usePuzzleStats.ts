@@ -31,8 +31,10 @@ export interface PuzzlePerformanceSnapshot {
   multiTestCount?: number | null;
   singleTestCount?: number | null;
   lowestNonZeroConfidence?: number | null;
-  modelsAttempted?: string[];
-  reasoningEfforts?: string[];
+  // OPTIMIZATION: Changed from arrays to counts to prevent PostgreSQL temp disk overflow
+  // STRING_AGG operations on 4000+ puzzles were creating massive temp files
+  modelsAttemptedCount?: number | null;
+  reasoningEffortsCount?: number | null;
 }
 
 export interface PuzzleStatsRecord {
