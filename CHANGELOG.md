@@ -1,6 +1,19 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top!!!
 
+### Version 5.17.0
+
+- Features
+  - **PuzzleDBViewer cost/resource metrics**: Replaced misleading confidence/difficulty metrics with concrete cost and resource usage data. PuzzleDBViewer now shows total spend, avg cost/attempt, tokens, models tested, and latency. Removed "dangerous" / "overconfident" badges (PuzzleDBViewer.tsx, CompactPuzzleCard).
+  - **PuzzleCard resource metrics**: Added compact Resources strip displaying avg cost, tokens, and latency per attempt (PuzzleCard.tsx:209-244).
+  - **PuzzleTradingCard cost block**: Added Cost & Resources section to expanded back view showing total spend, avg cost, and token usage (PuzzleTradingCard.tsx:244-304).
+  - **Helper functions for cost calculations**: Added `calculateTotalSpendApprox`, `calculateTotalTokensApprox`, and formatting utilities (puzzleCardHelpers.ts:153-208).
+
+- Bug Fixes
+  - **Models tested now displays correctly**: Fixed PuzzleDBViewer to pass `includeRichMetrics=true` so modelsAttemptedCount is populated from backend (PuzzleDBViewer.tsx:283, 299).
+  - **Grid overflow prevention**: Added max-height constraints to TinyGrid containers and updated height calculation to prevent tall/wide grids from overflowing cards (TinyGrid.tsx:71, PuzzleCard.tsx:148, 159).
+  - **Removed logically flawed badge**: Removed misleading "Solved by all models" badge which incorrectly implied universal success (PuzzleCard.tsx:247-254).
+
 ### Version 5.16.8
 
 - Planning
