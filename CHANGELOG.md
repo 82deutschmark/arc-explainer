@@ -8,6 +8,11 @@
   - **Puzzle preview stats cleanup**: Simplified PuzzleCard metrics to only show grounded, research-relevant stats: solve rate (clamped 0–100%), total attempts, unique models tested, test-case mode (single vs multi), grid size, dataset, and optional cost badge (PuzzleCard.tsx). Removed confidence/trustworthiness badges and any paths that could surface >100% style percentages.
   - **Backend accuracy clamp**: Normalized aggregated `avgAccuracy` in the worst-performing puzzles query to always live in [0,1] before sending to the UI, so no combination of database state can produce impossible solve rates (ExplanationRepository.getWorstPerformingPuzzles).
 
+### Version 5.16.6
+
+- Bug Tracking
+  - **Puzzle Examiner color-only toggle still leaking digits**: Despite routing `showColorOnly` through `PuzzleGrid`/`GridCell`, the rendered cells continue to display numeric glyphs in the browser. Latest attempt hides the React content in `GridCell.tsx` (returns `null` + accessibility label), but the UI still shows numbers. Needs follow-up to inspect any inherited styles or additional layers painting the digits (e.g., CSS pseudo-elements, DaisyUI utilities) before the feature can ship.
+
 ### Version 5.16.5
 
 - Features
