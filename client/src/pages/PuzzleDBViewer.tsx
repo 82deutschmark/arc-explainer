@@ -340,52 +340,53 @@ export default function PuzzleDBViewer() {
   const showArc1 = datasetFilter === 'all' || datasetFilter === 'ARC1-Eval';
 
   return (
-    <div className="container mx-auto pb-3 pt-2 px-2 max-w-7xl flex flex-col gap-2">
-      {/* Header - Compact */}
-      <div className="w-full rounded-lg border border-slate-800 bg-slate-900/60 p-2">
-        <div className="flex items-center justify-between gap-2 flex-wrap">
-          <div className="flex items-center gap-2">
-            <Database className="h-5 w-5 text-sky-400" />
-            <h1 className="text-lg font-semibold text-slate-200">Unsolved ARC Evaluation Puzzles</h1>
-          </div>
-          <div className="flex flex-wrap gap-2 items-center">
-            <span className="rounded-full border border-purple-500 bg-purple-500/10 px-2 py-0.5 text-xs font-semibold text-purple-300">
-              ARC2: {arc2Total}
-            </span>
-            <span className="rounded-full border border-blue-500 bg-blue-500/10 px-2 py-0.5 text-xs font-semibold text-blue-300">
-              ARC1: {arc1Total}
-            </span>
-            <span className="rounded-full border border-slate-500 bg-slate-500/10 px-2 py-0.5 text-xs font-semibold text-slate-300">
-              Total: {grandTotal}
-            </span>
+    <div className="min-h-screen w-full bg-white text-slate-900">
+      <div className="mx-auto max-w-7xl px-4 py-4 space-y-3">
+        {/* Header - Compact, White Theme */}
+        <div className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 shadow-sm">
+          <div className="flex items-center justify-between gap-2 flex-wrap">
+            <div className="flex items-center gap-2">
+              <Database className="h-5 w-5 text-sky-500" />
+              <h1 className="text-base font-semibold text-slate-900">Unsolved ARC Evaluation Puzzles</h1>
+            </div>
+            <div className="flex flex-wrap gap-2 items-center text-xs">
+              <span className="rounded-full border border-purple-200 bg-purple-50 px-2 py-0.5 font-semibold text-purple-700">
+                ARC2: {arc2Total}
+              </span>
+              <span className="rounded-full border border-blue-200 bg-blue-50 px-2 py-0.5 font-semibold text-blue-700">
+                ARC1: {arc1Total}
+              </span>
+              <span className="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 font-semibold text-slate-700">
+                Total: {grandTotal}
+              </span>
+            </div>
           </div>
         </div>
-      </div>
 
-      {/* Compact Filters */}
-      <div className="w-full rounded-lg border border-slate-800 bg-slate-900/60 p-1.5 flex flex-wrap gap-2 items-center text-xs">
-        <label className="text-slate-400 font-semibold uppercase tracking-wide">Filter:</label>
-        <Select value={datasetFilter} onValueChange={(value: any) => setDatasetFilter(value)}>
-          <SelectTrigger className="w-36 h-7 text-xs bg-slate-950 border-slate-700 text-slate-100">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All Datasets</SelectItem>
-            <SelectItem value="ARC2-Eval">ARC2-Eval</SelectItem>
-            <SelectItem value="ARC1-Eval">ARC1-Eval</SelectItem>
-          </SelectContent>
-        </Select>
-        <div className="relative flex-1 min-w-[200px]">
-          <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 h-3 w-3 text-slate-500" />
-          <Input
-            type="text"
-            placeholder="Search puzzle ID..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-7 h-7 text-xs bg-slate-950 border-slate-700 text-slate-100 placeholder:text-slate-500"
-          />
+        {/* Compact Filters - White Theme */}
+        <div className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 flex flex-wrap gap-2 items-center text-xs">
+          <label className="text-slate-700 font-semibold uppercase tracking-wide">Filter:</label>
+          <Select value={datasetFilter} onValueChange={(value: any) => setDatasetFilter(value)}>
+            <SelectTrigger className="w-36 h-8 text-xs bg-white border-slate-300 text-slate-900">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Datasets</SelectItem>
+              <SelectItem value="ARC2-Eval">ARC2-Eval</SelectItem>
+              <SelectItem value="ARC1-Eval">ARC1-Eval</SelectItem>
+            </SelectContent>
+          </Select>
+          <div className="relative flex-1 min-w-[200px]">
+            <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-3 w-3 text-slate-400" />
+            <Input
+              type="text"
+              placeholder="Search puzzle ID..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-7 h-8 text-xs bg-white border-slate-300 text-slate-900 placeholder:text-slate-400"
+            />
+          </div>
         </div>
-      </div>
 
       {/* Error State */}
       {error && (
@@ -407,110 +408,111 @@ export default function PuzzleDBViewer() {
         </div>
       )}
 
-      {/* ARC2 Evaluation Section (PRIMARY - shown first) */}
-      {!isLoading && showArc2 && (
-        <div className="w-full rounded-lg border border-purple-500/50 bg-slate-900/60 p-2">
-          <div className="flex items-center justify-between mb-1.5">
-            <h2 className="text-sm font-semibold uppercase tracking-wide text-purple-300 flex items-center gap-1">
-              ⭐ ARC2 Evaluation - PRIMARY FOCUS
-            </h2>
-            <span className="rounded-full border border-purple-500 bg-purple-500/10 px-2 py-0.5 text-xs font-semibold text-purple-300">
-              {arc2Total} / 120 unsolved
-            </span>
-          </div>
-          {filteredArc2.length === 0 ? (
-            <div className="text-center py-6 text-slate-400 text-sm">
-              {searchQuery ? 'No puzzles match your search.' : 'No unsolved puzzles found.'}
+        {/* ARC2 Evaluation Section (PRIMARY - shown first) */}
+        {!isLoading && showArc2 && (
+          <div className="w-full rounded-lg border border-purple-200 bg-white px-3 py-2">
+            <div className="flex items-center justify-between mb-1.5">
+              <h2 className="text-sm font-semibold uppercase tracking-wide text-purple-700 flex items-center gap-1">
+                ⭐ ARC2 Evaluation - PRIMARY FOCUS
+              </h2>
+              <span className="rounded-full border border-purple-200 bg-purple-50 px-2 py-0.5 text-xs font-semibold text-purple-700">
+                {arc2Total} / 120 unsolved
+              </span>
             </div>
-          ) : (
-            <>
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2">
-                {filteredArc2.map((puzzle) => (
-                  <ClickablePuzzleBadge
-                    key={puzzle.id as string}
-                    puzzleId={puzzle.id as string}
-                    variant="error"
-                    className="text-sm font-mono"
-                    openInNewTab={true}
-                  />
-                ))}
+            {filteredArc2.length === 0 ? (
+              <div className="text-center py-6 text-slate-500 text-sm">
+                {searchQuery ? 'No puzzles match your search.' : 'No unsolved puzzles found.'}
               </div>
-
-              {/* Puzzle Card Grid Display */}
-              <div className="mt-3 pt-3 border-t border-purple-500/30">
-                <h3 className="text-xs font-semibold text-slate-400 uppercase tracking-wide mb-2">Puzzle Previews (First 12)</h3>
-                <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-3">
-                  {filteredArc2.slice(0, 12).map((puzzle) => (
-                    <PuzzleCard
-                      key={`card-${puzzle.id as string}`}
-                      puzzle={puzzle}
-                      showGridPreview={true}
+            ) : (
+              <>
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2">
+                  {filteredArc2.map((puzzle) => (
+                    <ClickablePuzzleBadge
+                      key={puzzle.id as string}
+                      puzzleId={puzzle.id as string}
+                      variant="error"
+                      className="text-sm font-mono"
+                      openInNewTab={true}
                     />
                   ))}
                 </div>
-              </div>
-            </>
-          )}
-        </div>
-      )}
 
-      {/* ARC1 Evaluation Section (SECONDARY - shown below) */}
-      {!isLoading && showArc1 && (
-        <div className="w-full rounded-lg border border-blue-500/50 bg-slate-900/60 p-2">
-          <div className="flex items-center justify-between mb-1.5">
-            <h2 className="text-sm font-semibold uppercase tracking-wide text-blue-300 flex items-center gap-1">
-              ✨ ARC1 Evaluation - SECONDARY
-            </h2>
-            <span className="rounded-full border border-blue-500 bg-blue-500/10 px-2 py-0.5 text-xs font-semibold text-blue-300">
-              {arc1Total} / 400 unsolved
-            </span>
+                {/* Puzzle Card Grid Display */}
+                <div className="mt-3 pt-3 border-t border-purple-100">
+                  <h3 className="text-xs font-semibold text-slate-600 uppercase tracking-wide mb-2">Puzzle Previews (First 12)</h3>
+                  <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-3">
+                    {filteredArc2.slice(0, 12).map((puzzle) => (
+                      <PuzzleCard
+                        key={`card-${puzzle.id as string}`}
+                        puzzle={puzzle as any}
+                        showGridPreview={true}
+                      />
+                    ))}
+                  </div>
+                </div>
+              </>
+            )}
           </div>
-          {filteredArc1.length === 0 ? (
-            <div className="text-center py-6 text-slate-400 text-sm">
-              {searchQuery ? 'No puzzles match your search.' : 'No unsolved puzzles found.'}
-            </div>
-          ) : (
-            <>
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2">
-                {filteredArc1.map((puzzle) => (
-                  <ClickablePuzzleBadge
-                    key={puzzle.id as string}
-                    puzzleId={puzzle.id as string}
-                    variant="error"
-                    className="text-sm font-mono"
-                    openInNewTab={true}
-                  />
-                ))}
-              </div>
+        )}
 
-              {/* Puzzle Card Grid Display */}
-              <div className="mt-3 pt-3 border-t border-blue-500/30">
-                <h3 className="text-xs font-semibold text-slate-400 uppercase tracking-wide mb-2">Puzzle Previews (First 12)</h3>
-                <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-3">
-                  {filteredArc1.slice(0, 12).map((puzzle) => (
-                    <PuzzleCard
-                      key={`card-${puzzle.id as string}`}
-                      puzzle={puzzle}
-                      showGridPreview={true}
+        {/* ARC1 Evaluation Section (SECONDARY - shown below) */}
+        {!isLoading && showArc1 && (
+          <div className="w-full rounded-lg border border-blue-200 bg-white px-3 py-2">
+            <div className="flex items-center justify-between mb-1.5">
+              <h2 className="text-sm font-semibold uppercase tracking-wide text-blue-700 flex items-center gap-1">
+                ✨ ARC1 Evaluation - SECONDARY
+              </h2>
+              <span className="rounded-full border border-blue-200 bg-blue-50 px-2 py-0.5 text-xs font-semibold text-blue-700">
+                {arc1Total} / 400 unsolved
+              </span>
+            </div>
+            {filteredArc1.length === 0 ? (
+              <div className="text-center py-6 text-slate-500 text-sm">
+                {searchQuery ? 'No puzzles match your search.' : 'No unsolved puzzles found.'}
+              </div>
+            ) : (
+              <>
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2">
+                  {filteredArc1.map((puzzle) => (
+                    <ClickablePuzzleBadge
+                      key={puzzle.id as string}
+                      puzzleId={puzzle.id as string}
+                      variant="error"
+                      className="text-sm font-mono"
+                      openInNewTab={true}
                     />
                   ))}
                 </div>
-              </div>
-            </>
-          )}
-        </div>
-      )}
 
-      {/* Empty State */}
-      {!isLoading && !error && grandTotal === 0 && (
-        <div className="text-center py-12">
-          <div className="text-6xl mb-4">🎉</div>
-          <h3 className="text-2xl font-bold text-gray-900 mb-2">All Puzzles Solved!</h3>
-          <p className="text-gray-600">
-            Congratulations! All evaluation puzzles have been solved by at least one model.
-          </p>
-        </div>
-      )}
+                {/* Puzzle Card Grid Display */}
+                <div className="mt-3 pt-3 border-t border-blue-100">
+                  <h3 className="text-xs font-semibold text-slate-600 uppercase tracking-wide mb-2">Puzzle Previews (First 12)</h3>
+                  <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-3">
+                    {filteredArc1.slice(0, 12).map((puzzle) => (
+                      <PuzzleCard
+                        key={`card-${puzzle.id as string}`}
+                        puzzle={puzzle as any}
+                        showGridPreview={true}
+                      />
+                    ))}
+                  </div>
+                </div>
+              </>
+            )}
+          </div>
+        )}
+
+        {/* Empty State */}
+        {!isLoading && !error && grandTotal === 0 && (
+          <div className="text-center py-12">
+            <div className="text-6xl mb-4">🎉</div>
+            <h3 className="text-2xl font-bold text-slate-900 mb-2">All Puzzles Solved!</h3>
+            <p className="text-slate-600">
+              Congratulations! All evaluation puzzles have been solved by at least one model.
+            </p>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

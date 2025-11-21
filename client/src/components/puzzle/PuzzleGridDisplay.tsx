@@ -16,6 +16,7 @@ import type { EmojiSet } from '@/lib/spaceEmojis';
 interface PuzzleGridDisplayProps {
   task: ARCTask;
   showEmojis: boolean;
+  showColorOnly: boolean;
   emojiSet: EmojiSet;
 }
 
@@ -78,6 +79,7 @@ interface ExampleSectionProps {
   examples: PreparedExample[];
   variant: 'train' | 'test';
   showEmojis: boolean;
+  showColorOnly: boolean;
   emojiSet: EmojiSet;
 }
 
@@ -85,10 +87,11 @@ interface ExampleCardProps {
   prepared: PreparedExample;
   variant: 'train' | 'test';
   showEmojis: boolean;
+  showColorOnly: boolean;
   emojiSet: EmojiSet;
 }
 
-function ExampleCard({ prepared, variant, showEmojis, emojiSet }: ExampleCardProps) {
+function ExampleCard({ prepared, variant, showEmojis, showColorOnly, emojiSet }: ExampleCardProps) {
   const { example, label, dimensions } = prepared;
   const bounds = determineBounds(example);
   const inputTitle = variant === 'train' ? 'Input' : 'Test Input';
@@ -106,6 +109,7 @@ function ExampleCard({ prepared, variant, showEmojis, emojiSet }: ExampleCardPro
           grid={example.input}
           title={inputTitle}
           showEmojis={showEmojis}
+          showColorOnly={showColorOnly}
           emojiSet={emojiSet}
           compact
           maxWidth={bounds.maxWidth}
@@ -118,6 +122,7 @@ function ExampleCard({ prepared, variant, showEmojis, emojiSet }: ExampleCardPro
           grid={example.output}
           title={outputTitle}
           showEmojis={showEmojis}
+          showColorOnly={showColorOnly}
           emojiSet={emojiSet}
           compact
           maxWidth={bounds.maxWidth}
@@ -135,6 +140,7 @@ function ExampleSection({
   examples,
   variant,
   showEmojis,
+  showColorOnly,
   emojiSet
 }: ExampleSectionProps) {
   return (
@@ -154,6 +160,7 @@ function ExampleSection({
               prepared={prepared}
               variant={variant}
               showEmojis={showEmojis}
+              showColorOnly={showColorOnly}
               emojiSet={emojiSet}
             />
           ))}
@@ -163,7 +170,7 @@ function ExampleSection({
   );
 }
 
-export function PuzzleGridDisplay({ task, showEmojis, emojiSet }: PuzzleGridDisplayProps) {
+export function PuzzleGridDisplay({ task, showEmojis, showColorOnly, emojiSet }: PuzzleGridDisplayProps) {
   const trainingExamples = useMemo(() => prepareExamples(task.train, 'train'), [task.train]);
   const testExamples = useMemo(() => prepareExamples(task.test, 'test'), [task.test]);
 
@@ -184,6 +191,7 @@ export function PuzzleGridDisplay({ task, showEmojis, emojiSet }: PuzzleGridDisp
         examples={trainingExamples}
         variant="train"
         showEmojis={showEmojis}
+        showColorOnly={showColorOnly}
         emojiSet={emojiSet}
       />
 
@@ -194,6 +202,7 @@ export function PuzzleGridDisplay({ task, showEmojis, emojiSet }: PuzzleGridDisp
         examples={testExamples}
         variant="test"
         showEmojis={showEmojis}
+        showColorOnly={showColorOnly}
         emojiSet={emojiSet}
       />
     </div>
