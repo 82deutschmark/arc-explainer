@@ -12,7 +12,7 @@
 
 import React from 'react';
 import { Link } from 'wouter';
-import { Hash, Eye, Rocket, RefreshCw, ExternalLink } from 'lucide-react';
+import { Hash, Eye, Rocket, RefreshCw, ExternalLink, Palette } from 'lucide-react';
 import { getPuzzleName } from '@shared/utils/puzzleNames';
 import { getSynapsomorphyArcUrl } from '@shared/utils/synapsomorphy';
 import { EMOJI_SET_INFO, type EmojiSet } from '@/lib/spaceEmojis';
@@ -23,6 +23,9 @@ interface PuzzleHeaderProps {
   isRetryMode: boolean;
   showEmojis: boolean;
   onToggleEmojis: () => void;
+  showColorOnly: boolean;
+  onToggleColorOnly: () => void;
+  isColorOnlyDisabled?: boolean;
   emojiSet: EmojiSet;
   onEmojiSetChange: (set: EmojiSet) => void;
   isAnalyzing: boolean;
@@ -37,6 +40,9 @@ export function PuzzleHeader({
   isRetryMode,
   showEmojis,
   onToggleEmojis,
+  showColorOnly,
+  onToggleColorOnly,
+  isColorOnlyDisabled = false,
   emojiSet,
   onEmojiSetChange,
   isAnalyzing
@@ -102,6 +108,23 @@ export function PuzzleHeader({
           )}
           <span className={showEmojis ? 'text-white font-semibold' : 'text-amber-700 font-semibold'}>
             {showEmojis ? '🔢 Show Numbers' : '🛸 Show Emojis'}
+          </span>
+        </button>
+
+        {/* Color-only toggle */}
+        <button
+          className={`btn btn-md transition-all duration-300 border-2 ${
+            showColorOnly
+              ? 'border-emerald-400/60 bg-gradient-to-r from-emerald-500 to-teal-500 text-white shadow-lg shadow-emerald-500/25'
+              : 'btn-outline border-slate-300 text-slate-700 hover:border-emerald-400 hover:text-emerald-700 hover:bg-emerald-50'
+          } ${isColorOnlyDisabled ? 'btn-disabled opacity-60 cursor-not-allowed' : ''}`}
+          onClick={onToggleColorOnly}
+          disabled={isColorOnlyDisabled}
+          title={isColorOnlyDisabled ? 'Color-only view is unavailable while emojis are enabled.' : undefined}
+        >
+          <Palette className={`h-4 w-4 mr-2 ${showColorOnly ? 'text-white' : 'text-emerald-600'}`} />
+          <span className="font-semibold">
+            {showColorOnly ? 'Show Numbers' : 'Show Colors Only'}
           </span>
         </button>
 

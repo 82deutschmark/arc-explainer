@@ -456,6 +456,7 @@ export default function SaturnVisualSolver() {
               <PuzzleGridDisplay
                 task={task}
                 showEmojis={false}
+                showColorOnly={false}
                 emojiSet={DEFAULT_EMOJI_SET}
               />
             </div>
