@@ -646,14 +646,14 @@ export function DifficultPuzzlesSection() {
                                 <span className="font-medium text-xs">{Math.round(puzzle.performanceData.avgTotalTokens).toLocaleString()}</span>
                               </div>
                             )}
-                            {puzzle.performanceData?.modelsAttempted?.length > 0 && (
+                            {puzzle.performanceData?.modelsAttemptedCount > 0 && (
                               <div className="flex justify-between items-center">
                                 <span className="flex items-center gap-1">
                                   <Target className="h-3 w-3 text-purple-600" />
                                   Models:
                                 </span>
-                                <span className="font-medium text-xs" title={puzzle.performanceData.modelsAttempted.join(', ')}>
-                                  {puzzle.performanceData.modelsAttempted.length} tried
+                                <span className="font-medium text-xs">
+                                  {puzzle.performanceData.modelsAttemptedCount} tried
                                 </span>
                               </div>
                             )}
