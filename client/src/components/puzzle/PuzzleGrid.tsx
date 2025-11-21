@@ -121,7 +121,7 @@ export const PuzzleGrid = React.memo(function PuzzleGrid({
         ))}
       </div>
     ));
-  }, [validGrid, showEmojis, gridMetadata.size, gridMetadata.isEmpty, emojiSet, diffMask]);
+  }, [validGrid, showEmojis, showColorOnly, gridMetadata.size, gridMetadata.isEmpty, emojiSet, diffMask]);
   
   // Calculate actual grid pixel dimensions (no forced scaling)
   const { scaleFactor } = useMemo(() => {
