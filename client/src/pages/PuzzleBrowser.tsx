@@ -3,15 +3,15 @@
  * Date: 2025-11-10 / Updated 2025-11-21
  * PURPOSE: Research-focused Puzzle Browser page with filters, puzzle results, and light-themed reference materials.
  *          Extracted Reference Material section into a reusable component for better maintainability.
- *          ADDED: Prominent Trading Cards callout banner with gradient styling and icons linking to /trading-cards page.
  *          CLEANED: Removed junk sort modes (confidence, cost, created_at) that had no basis in aggregated metrics.
  *                   Kept useful sorts: unsolved_first, unexplained_first, least_analysis_data, processing_time.
+ *                   Removed Trading Cards promotional banner for cleaner, focused research interface.
  * SRP/DRY check: Pass - Verified filter logic, navigation, rendering, and delegated reference material to ReferenceMaterial component.
  */
 import React, { useState, useCallback } from 'react';
 import { Link, useLocation } from 'wouter';
 import { usePuzzleList } from '@/hooks/usePuzzle';
-import { Loader2, Grid3X3, Wallet, Sparkles } from 'lucide-react';
+import { Loader2, Grid3X3 } from 'lucide-react';
 import { EmojiMosaicAccent } from '@/components/browser/EmojiMosaicAccent';
 import { ReferenceMaterial } from '@/components/browser/ReferenceMaterial';
 import type { PuzzleMetadata } from '@shared/types';
@@ -211,31 +211,6 @@ export default function PuzzleBrowser() {
         </header>
 
         <ReferenceMaterial />
-
-        {/* Trading Cards Callout */}
-        <Link href="/trading-cards">
-          <section className="w-full rounded-lg border border-amber-400/30 bg-gradient-to-r from-purple-900/40 via-blue-900/40 to-teal-900/40 p-4 transition-all hover:border-amber-400/50 hover:shadow-lg hover:shadow-purple-500/20 cursor-pointer">
-            <div className="flex items-center justify-between gap-4">
-              <div className="flex items-center gap-3">
-                <div className="rounded-lg bg-gradient-to-br from-purple-500 to-blue-500 p-2">
-                  <Wallet className="h-6 w-6 text-white" />
-                </div>
-                <div>
-                  <h3 className="text-lg font-bold text-white flex items-center gap-2">
-                    Puzzle Trading Cards
-                    <Sparkles className="h-4 w-4 text-amber-400" />
-                  </h3>
-                  <p className="text-sm text-slate-300">
-                    Browse named puzzles as collectible 1980s-style baseball cards with win/loss records & difficulty ratings
-                  </p>
-                </div>
-              </div>
-              <div className="hidden sm:flex items-center gap-2 rounded-full bg-white/10 px-4 py-2 text-sm font-semibold text-amber-300">
-                View Collection →
-              </div>
-            </div>
-          </section>
-        </Link>
 
         {/* Filters */}
 
