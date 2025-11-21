@@ -1,6 +1,11 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top!!!
 
+### Version 5.16.8
+
+- Planning
+  - **PuzzleDBViewer metrics + grid fix plan**: Captured the backend/frontend steps to replace the hallucinated solve rate with binary correctness, surface real model counts, and keep TinyGrid previews readable for extreme aspect ratios (`docs/2025-11-20-puzzledbviewer-metrics-fix-plan.md`).
+
 ### Version 5.16.7
 
 - Bug Fixes
