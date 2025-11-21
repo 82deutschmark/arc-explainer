@@ -207,9 +207,9 @@ function CompactPuzzleCard({ puzzle, interestLevel }: CompactPuzzleCardProps) {
                   <div className="font-semibold">{correctAttempts}/{puzzle.performanceData.totalExplanations}</div>
                   <div className="text-base-content/60">Attempts</div>
                 </div>
-                {puzzle.performanceData.modelsAttempted && (
+                {puzzle.performanceData.modelsAttemptedCount && (
                   <div>
-                    <div className="font-semibold">{puzzle.performanceData.modelsAttempted.length}</div>
+                    <div className="font-semibold">{puzzle.performanceData.modelsAttemptedCount}</div>
                     <div className="text-base-content/60">Models</div>
                   </div>
                 )}
@@ -322,8 +322,8 @@ export default function PuzzleDBViewer() {
 
         case 'research':
           // Sort by research activity (attempts + model diversity)
-          const aResearch = a.performanceData.totalExplanations + (a.performanceData.modelsAttempted?.length || 0);
-          const bResearch = b.performanceData.totalExplanations + (b.performanceData.modelsAttempted?.length || 0);
+          const aResearch = a.performanceData.totalExplanations + (a.performanceData.modelsAttemptedCount || 0);
+          const bResearch = b.performanceData.totalExplanations + (b.performanceData.modelsAttemptedCount || 0);
           return bResearch - aResearch;
         
         case 'unexplored':
