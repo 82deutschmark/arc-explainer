@@ -122,7 +122,7 @@ export default function PuzzleBrowser() {
             const aTime = a.apiProcessingTimeMs || 0;
             const bTime = b.apiProcessingTimeMs || 0;
             return bTime - aTime;
-          case 'confidence':  // THIS IS BULLSHIT!!!!  WE NEVER WANT TO SORT BY CONFIDENCE
+          case 'confidence':  // THIS IS BULLSHIT!!!!  WE NEVER WANT TO SORT BY CONFIDENCE!  REMOVE IT!!!
             const aConf = a.confidence || 0;
             const bConf = b.confidence || 0;
             return bConf - aConf;
