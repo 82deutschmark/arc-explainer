@@ -467,10 +467,10 @@ export class MetricsRepository extends BaseRepository {
     feedbackMap: ModelFeedbackMap,
     costMap: ModelCostMap
   ): ComprehensiveDashboard['modelComparisons'] {
-    const normalizedAccuracy = this.normalizeAccuracyMap(accuracyMap, true);
-    const normalizedTrustworthiness = this.normalizeTrustworthinessMap(trustworthinessMap, true);
-    const normalizedFeedback = this.normalizeFeedbackMap(feedbackMap, true);
-    const normalizedCost = this.normalizeCostMap(costMap, true);
+    const normalizedAccuracy = this.normalizeAccuracyMap(accuracyMap);
+    const normalizedTrustworthiness = this.normalizeTrustworthinessMap(trustworthinessMap);
+    const normalizedFeedback = this.normalizeFeedbackMap(feedbackMap);
+    const normalizedCost = this.normalizeCostMap(costMap);
 
     const allModelNames = new Set<string>([
       ...normalizedAccuracy.keys(),
