@@ -1,6 +1,11 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top!!!
 
+### Version 5.17.9
+
+- Puzzle Browser
+  - **Tweet-aligned featured gallery + Mike annotations**: Expanded the Puzzle Browser featured gallery to include every puzzle ID explicitly mentioned in Mike Knoop's ARC v2/v1 tweet (`65b59efc`, `e3721c99`, `dd6b8c4b`, `2ba387bc`, `14754a24`, `b457fec5`, `891232d6`, `7b5033c1`, `981571dc`) plus `136b0064`, and added a short "Mike note" under each featured card summarizing why that task is interesting for complexity/efficiency analysis. Also embedded his four open research questions about complexity scaling, time-on-task, search coverage, and unsolved v2 tasks into the advanced view "Working notes" section so the browser doubles as a lightweight reading list for ARC reasoning research (`client/src/pages/PuzzleBrowser.tsx`).
+
 ### Version 5.17.8
 
 - Puzzle Browser
