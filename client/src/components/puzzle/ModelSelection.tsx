@@ -1,17 +1,18 @@
 /**
  * ModelSelection.tsx
  *
- * Author: Cascade using Claude Sonnet 4.5
- * Date: 2025-10-12
- * PURPOSE: Renders the grid of model buttons for analysis selection.
- * Extracted from PuzzleExaminer lines 859-889 to follow SRP.
- * 
- * SRP/DRY check: Pass - Single responsibility (model selection UI)
- * DaisyUI: Pass - Uses DaisyUI grid system
+ * Author: Claude Code using Sonnet 4.5
+ * Date: 2025-11-22
+ * PURPOSE: Renders organized model selection with provider grouping and filters.
+ *          Updated to use hierarchical provider/family structure for better organization.
+ *
+ * SRP/DRY check: Pass - Single responsibility (model selection UI orchestration)
  */
 
 import React from 'react';
-import { ModelButton } from './ModelButton';
+import { ModelProviderGroup } from './ModelProviderGroup';
+import { ModelSelectionControls } from './ModelSelectionControls';
+import { useModelGrouping } from '@/hooks/useModelGrouping';
 import type { ExplanationData } from '@/types/puzzle';
 import type { ModelConfig } from '@shared/types';
 
@@ -27,7 +28,7 @@ interface ModelSelectionProps {
 }
 
 /**
- * Displays a responsive grid of model selection buttons
+ * Displays organized model selection with provider grouping, filters, and collapsible sections
  */
 export function ModelSelection({
   models,
@@ -39,33 +40,63 @@ export function ModelSelection({
   onAnalyze,
   analyzerErrors
 }: ModelSelectionProps) {
-  const isStreamingActive = streamingModelKey !== null;
+  const {
+    expandedProviders,
+    toggleProvider,
+    expandAll,
+    collapseAll,
+    filters,
+    setFilters,
+    groupedModels,
+    hasActiveFilters
+  } = useModelGrouping(models);
 
   if (!models) {
     return null;
   }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2">
-      {models.map((model) => {
-        const isProcessing = processingModels.has(model.key);
-        const isStreamingThisModel = streamingModelKey === model.key;
-        const disableDueToStreaming = isStreamingActive && !isStreamingThisModel;
+    <div>
+      {/* Controls: Filters and Expand/Collapse */}
+      <ModelSelectionControls
+        filters={filters}
+        onFilterChange={setFilters}
+        onExpandAll={expandAll}
+        onCollapseAll={collapseAll}
+        hasActiveFilters={hasActiveFilters}
+      />
 
-        return (
-          <ModelButton
-            key={model.key}
-            model={model}
-            isAnalyzing={isProcessing}
-            isStreaming={isStreamingThisModel}
-            streamingSupported={streamingEnabled && canStreamModel(model.key)}
-            explanationCount={explanations.filter(explanation => explanation.modelName === model.key).length}
+      {/* Provider Groups */}
+      <div className="space-y-3">
+        {groupedModels.map((provider) => (
+          <ModelProviderGroup
+            key={provider.id}
+            provider={provider}
+            isExpanded={expandedProviders.has(provider.id)}
+            onToggle={() => toggleProvider(provider.id)}
+            processingModels={processingModels}
+            streamingModelKey={streamingModelKey}
+            streamingEnabled={streamingEnabled}
+            canStreamModel={canStreamModel}
+            explanations={explanations}
             onAnalyze={onAnalyze}
-            disabled={isProcessing || disableDueToStreaming}
-            error={analyzerErrors.get(model.key)}
+            analyzerErrors={analyzerErrors}
           />
-        );
-      })}
+        ))}
+      </div>
+
+      {/* Empty State */}
+      {groupedModels.length === 0 && hasActiveFilters && (
+        <div className="text-center py-8 text-base-content/60">
+          <p className="text-sm">No models match the selected filters.</p>
+          <button
+            onClick={() => setFilters({ premium: false, reasoning: false, fast: false })}
+            className="btn btn-sm btn-ghost mt-2"
+          >
+            Clear filters
+          </button>
+        </div>
+      )}
     </div>
   );
 }
