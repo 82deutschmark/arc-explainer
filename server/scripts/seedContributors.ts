@@ -328,7 +328,7 @@ const contributors: CreateContributorRequest[] = [
     achievement: 'Created ARC-AGI benchmark (2019) & Launched ARC Prize (2024)',
     description: 'François Chollet (Creator of Keras) defined the ARC-AGI benchmark in 2019 to measure general intelligence. Mike Knoop (Co-founder Zapier) launched the $1M+ ARC Prize in 2024 to accelerate progress toward AGI.',
     imageUrl: '/arc founders.png',
-    yearStart: 2019,
+    yearStart: undefined,
     yearEnd: undefined,
     score: 'Founders',
     approach: 'Designed ARC as a measure of intelligence based on skill-acquisition efficiency rather than skill itself. Organized competitions to guide research.',

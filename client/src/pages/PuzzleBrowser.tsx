@@ -44,6 +44,8 @@ interface EnhancedPuzzleMetadata extends PuzzleMetadata {
   isSolved?: boolean; // Whether any model has produced a correct prediction for this puzzle
 }
 
+const FEATURED_PUZZLE_IDS = ['14754a24', 'b457fec5', '891232d6', '136b0064'];
+
 export default function PuzzleBrowser() {
   const [maxGridSize, setMaxGridSize] = useState<string>('any');
   const [gridSizeConsistent, setGridSizeConsistent] = useState<string>('any');
@@ -54,6 +56,7 @@ export default function PuzzleBrowser() {
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [searchError, setSearchError] = useState<string | null>(null);
   const [location, setLocation] = useLocation();
+  const [showAdvancedBrowser, setShowAdvancedBrowser] = useState<boolean>(false);
 
   usePageMeta({
     title: 'ARC Explainer – Puzzle Browser',
@@ -76,8 +79,16 @@ export default function PuzzleBrowser() {
   }, [maxGridSize, gridSizeConsistent, arcVersion, multiTestFilter]);
 
   const { puzzles, isLoading, error } = usePuzzleList(filters);
-  
-  // Apply explanation filtering and sorting after getting puzzles from the hook
+
+  // Build curated featured set in a specific order for the landing view
+  const featuredPuzzles = React.useMemo(() => {
+    const all = (puzzles || []) as unknown as EnhancedPuzzleMetadata[];
+    return FEATURED_PUZZLE_IDS
+      .map(id => all.find(p => p.id === id))
+      .filter((puzzle): puzzle is EnhancedPuzzleMetadata => Boolean(puzzle));
+  }, [puzzles]);
+
+  // Apply explanation filtering and sorting after getting puzzles from the hook (advanced browser only)
   const filteredPuzzles = React.useMemo(() => {
     let filtered = (puzzles || []) as unknown as EnhancedPuzzleMetadata[];
 
@@ -212,8 +223,63 @@ export default function PuzzleBrowser() {
 
         <ReferenceMaterial />
 
-        {/* Filters */}
+        {/* Featured Gallery - Lightweight default view */}
+        <section className="w-full rounded-lg border border-slate-800 bg-slate-900/60 p-2">
+          <div className="mb-2 flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <h2 className="text-base font-semibold uppercase tracking-wide text-slate-300">Featured ARC puzzles</h2>
+              <p className="text-xs text-slate-500">
+                A small curated set of visually interesting puzzles for quick browsing. Use the full research browser for heavy filtering.
+              </p>
+            </div>
+            {!isLoading && (
+              <span className="rounded-full border border-slate-700 px-3 py-1 text-xs text-slate-400">
+                {featuredPuzzles.length} featured
+              </span>
+            )}
+          </div>
 
+          {isLoading ? (
+            <div className="py-6 text-center text-slate-400">
+              <Loader2 className="mx-auto mb-2 h-5 w-5 animate-spin" />
+              <p className="text-xs">Loading featured puzzles…</p>
+            </div>
+          ) : featuredPuzzles.length === 0 ? (
+            <div className="py-6 text-center text-slate-400">
+              <Grid3X3 className="mx-auto mb-3 h-8 w-8 text-slate-600" />
+              <p className="text-sm text-slate-300">Featured puzzles are temporarily unavailable.</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4">
+              {featuredPuzzles.map((puzzle: EnhancedPuzzleMetadata) => (
+                <PuzzleCard
+                  key={puzzle.id}
+                  puzzle={puzzle}
+                  showGridPreview={true}
+                />
+              ))}
+            </div>
+          )}
+        </section>
+
+        {/* Advanced Browser Toggle */}
+        <section className="w-full rounded-lg border border-slate-800 bg-slate-900/60 p-2 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+          <div className="text-xs text-slate-400">
+            <p className="font-semibold text-slate-200">Need the full research browser?</p>
+            <p>Open the advanced view to run heavy filters and scan the entire ARC dataset with rich metrics.</p>
+          </div>
+          <button
+            type="button"
+            onClick={() => setShowAdvancedBrowser(prev => !prev)}
+            className="btn btn-sm border border-slate-600 bg-slate-900 text-slate-200 hover:border-sky-500 hover:text-sky-300"
+          >
+            {showAdvancedBrowser ? 'Hide full research browser' : 'Open full research browser'}
+          </button>
+        </section>
+
+        {/* Advanced Filters + Results */}
+        {showAdvancedBrowser && (
+          <>
         <section className="w-full rounded-lg border border-slate-800 bg-slate-900/60 p-2">
           <div className="grid grid-cols-1 gap-1.5 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             <div className="flex flex-col gap-1">
@@ -388,8 +454,8 @@ export default function PuzzleBrowser() {
             </div>
           )}
         </section>
-        {/* Instructions */}
-        <section className="w-full rounded-lg border border-slate-800 bg-slate-900/60 p-2">
+        {/* Instructions */
+        }<section className="w-full rounded-lg border border-slate-800 bg-slate-900/60 p-2">
           <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-300">Working notes</h2>
           <div className="mt-2 space-y-1 text-xs leading-relaxed text-slate-400">
             <p>
