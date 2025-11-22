@@ -1,6 +1,11 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top!!!
 
+### Version 5.17.2
+
+- Bug Fixes
+  - **Restored visibility for dynamically managed and new provider models**: Updated the Puzzle Examiner model grouping hook so that all models returned from `/api/models` are surfaced in the selection UI. Known models still use the static provider/family groupings from `shared/modelGroups.ts`, while any additional models are automatically placed into per-provider "Other models" buckets or synthetic provider groups instead of being dropped (`client/src/hooks/useModelGrouping.ts`).
+
 ### Version 5.17.1
 
 - Data
