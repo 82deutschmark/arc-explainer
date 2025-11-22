@@ -66,7 +66,7 @@ const contributors: CreateContributorRequest[] = [
     affiliation: 'Machine Learning at NVIDIA, 6x Kaggle Grandmaster',
     achievement: 'Preliminary 1st Place on ARC Prize 2025 Kaggle leaderboard; Runner-Up ARC Prize 2024 Paper Award for "A 2D nGPT Model For ARC Prize"',
     description: 'Machine Learning at NVIDIA, 6x Kaggle Grandmaster (CPMP). ENS Ulm alumni, ML PhD. Formerly at ILOG CPLEX and IBM. Achieved preliminary first place on Kaggle 2025 ARC Prize, and earlier authored the 2024 ARC Prize paper "A 2D nGPT Model For ARC Prize" which received a runner-up paper award.',
-    imageUrl: '/jfPuget.png',
+    imageUrl: '/jfPuget.png,/jfPuget2.png',
     yearStart: 2024,
     yearEnd: 2025,
     score: '1st Place (Preliminary)',
