@@ -231,3 +231,91 @@ export function formatPuzzleStats(puzzle: PuzzleStatsRecord) {
     modelsAttemptedCount: puzzle.performanceData?.modelsAttemptedCount ?? 0
   };
 }
+
+/**
+ * Format processing time for compact card display
+ * - If < 1000ms: "850ms"
+ * - If >= 1000ms: "2.3s"
+ */
+export function formatProcessingTime(ms: number | null | undefined): string {
+  if (!ms || ms === 0) return '0ms';
+  if (ms < 1000) return `${Math.round(ms)}ms`;
+  return `${(ms / 1000).toFixed(1)}s`;
+}
+
+/**
+ * Compact metric for display on puzzle cards
+ */
+export interface CompactMetric {
+  label: string;
+  value: string;
+  type: 'cost' | 'tokens' | 'time' | 'reasoning';
+}
+
+/**
+ * Get the most important metrics for compact card display.
+ * Prioritizes: cost > total tokens > processing time > reasoning tokens
+ * Returns up to maxMetrics most relevant metrics (default: 2)
+ *
+ * @param performanceData - Performance data from puzzle
+ * @param maxMetrics - Maximum number of metrics to return (default: 2)
+ * @returns Array of compact metrics, prioritized by importance
+ */
+export function getCompactMetrics(
+  performanceData: {
+    avgCost?: number | null;
+    avgTotalTokens?: number | null;
+    avgProcessingTime?: number | null;
+    avgReasoningTokens?: number | null;
+  } | null | undefined,
+  maxMetrics: number = 2
+): CompactMetric[] {
+  if (!performanceData) return [];
+
+  const metrics: CompactMetric[] = [];
+
+  // Priority 1: Cost (if > 0)
+  if (performanceData.avgCost && performanceData.avgCost > 0) {
+    metrics.push({
+      label: 'Cost',
+      value: formatCostUSD(performanceData.avgCost),
+      type: 'cost'
+    });
+  }
+
+  // Priority 2: Total Tokens (if > 0)
+  if (performanceData.avgTotalTokens && performanceData.avgTotalTokens > 0) {
+    metrics.push({
+      label: 'Tokens',
+      value: formatTokens(performanceData.avgTotalTokens),
+      type: 'tokens'
+    });
+  }
+
+  // Priority 3: Processing Time (if > 0)
+  if (performanceData.avgProcessingTime && performanceData.avgProcessingTime > 0) {
+    metrics.push({
+      label: 'Time',
+      value: formatProcessingTime(performanceData.avgProcessingTime),
+      type: 'time'
+    });
+  }
+
+  // Priority 4: Reasoning Tokens (if > 0 AND significant portion of total)
+  if (performanceData.avgReasoningTokens && performanceData.avgReasoningTokens > 0) {
+    const totalTokens = performanceData.avgTotalTokens || 0;
+    const reasoningPercentage = totalTokens > 0 ? (performanceData.avgReasoningTokens / totalTokens) : 0;
+
+    // Only show reasoning tokens if they're > 10% of total (indicates o-series model usage)
+    if (reasoningPercentage > 0.1) {
+      metrics.push({
+        label: 'Reasoning',
+        value: formatTokens(performanceData.avgReasoningTokens),
+        type: 'reasoning'
+      });
+    }
+  }
+
+  // Return up to maxMetrics
+  return metrics.slice(0, maxMetrics);
+}

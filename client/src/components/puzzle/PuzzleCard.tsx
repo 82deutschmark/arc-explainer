@@ -8,12 +8,14 @@
  *         shadcn/ui Card + Badge components for consistent styling across light/dark modes.
  * FIXES (2025-11-22):
  *   - REMOVED fabricated "% Solved" metric (was displaying avgAccuracy as solve percentage - WRONG!)
- *   - Changed to "Avg Accuracy" with percentage display (accurate representation of avgAccuracy metric)
- *   - Fixed layout collision: grid → flex to grid with explicit [80px_1fr] columns
+ *   - REMOVED avgAccuracy metric entirely (useless metric, not actionable)
+ *   - ADDED rich metrics display (cost, tokens, processing time) using getCompactMetrics utility
+ *   - REFACTORED to use utility functions: getGridSizeDisplay, getCompactMetrics, hasRichMetrics
+ *   - Fixed layout collision: changed from flex to grid with explicit [80px_1fr] columns
  *   - Added overflow-hidden and max-width/max-height constraints to TinyGrid container
  *   - Fixed null check for maxGridSize (now shows 'N/A' instead of stray 'x')
  *   - Improved visual hierarchy: increased label font from text-[10px] to text-[11px]
- * SRP/DRY check: Pass — Single responsibility (puzzle card display), reuses shadcn/ui primitives.
+ * SRP/DRY check: Pass — Single responsibility (puzzle card display), reuses utilities and shadcn/ui primitives.
  */
 
 import React, { useState, useEffect, useRef } from 'react';
@@ -24,6 +26,9 @@ import { getPuzzleName, hasPuzzleName } from '@shared/utils/puzzleNames';
 import type { ARCTask } from '@shared/types';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { getGridSizeDisplay } from '@/utils/puzzleMetadata';
+import { getCompactMetrics } from '@/utils/puzzleCardHelpers';
+import { hasRichMetrics } from '@/utils/performanceDataValidator';
 
 interface PuzzleCardProps {
   puzzle: {
@@ -103,24 +108,10 @@ export const PuzzleCard: React.FC<PuzzleCardProps> = ({
   const firstTrainingExample = taskData?.train?.[0];
   const isExplained = Boolean(puzzle.hasExplanation);
 
-  // Calculate actual grid dimensions from loaded task data
-  const actualGridSize = React.useMemo(() => {
-    if (!firstTrainingExample?.input) return null;
-    const rows = firstTrainingExample.input.length;
-    const cols = firstTrainingExample.input[0]?.length || 0;
-    return { rows, cols };
-  }, [firstTrainingExample]);
-
   // Calculate metrics
   const hasAttempts = puzzle.performanceData && puzzle.performanceData.totalExplanations > 0;
-  const accuracy = puzzle.performanceData?.avgAccuracy || 0;
-  const isSolved = accuracy > 0;
-  const modelsCount = (() => {
-    const perf = puzzle.performanceData;
-    if (!perf) return 0;
-    if (typeof perf.modelsAttemptedCount === 'number') return perf.modelsAttemptedCount;
-    return perf.modelsAttempted?.length || 0;
-  })();
+  const showRichMetrics = hasRichMetrics(puzzle.performanceData);
+  const compactMetrics = getCompactMetrics(puzzle.performanceData, 2);
 
   return (
     <Link href={`/puzzle/${puzzle.id}`}>
@@ -178,15 +169,17 @@ export const PuzzleCard: React.FC<PuzzleCardProps> = ({
 
             {/* Metrics Table - Right Side */}
             <div className="flex-1 min-w-0 grid grid-cols-2 gap-x-2 gap-y-1.5 text-xs">
-              {/* Status/Correctness */}
-              <div className="col-span-2">
-                <div className="text-[11px] font-medium text-muted-foreground uppercase tracking-wide">
-                  {!hasAttempts ? "Status" : "Avg Accuracy"}
+              {/* Rich Metrics Row - Only show if available */}
+              {showRichMetrics && compactMetrics.length > 0 && compactMetrics.map((metric) => (
+                <div key={metric.label}>
+                  <div className="text-[11px] font-medium text-muted-foreground uppercase tracking-wide">
+                    {metric.label}
+                  </div>
+                  <div className="text-sm font-semibold text-card-foreground">
+                    {metric.value}
+                  </div>
                 </div>
-                <div className="text-sm font-semibold text-card-foreground">
-                  {!hasAttempts ? "Never Attempted" : `${(accuracy * 100).toFixed(0)}%`}
-                </div>
-              </div>
+              ))}
 
               {/* Attempts */}
               <div>
@@ -208,7 +201,7 @@ export const PuzzleCard: React.FC<PuzzleCardProps> = ({
               <div>
                 <div className="text-[11px] font-medium text-muted-foreground uppercase tracking-wide">Grid</div>
                 <div className="text-sm font-semibold text-card-foreground">
-                  {actualGridSize ? `${actualGridSize.rows}×${actualGridSize.cols}` : (puzzle.maxGridSize ? `${puzzle.maxGridSize}×${puzzle.maxGridSize}` : 'N/A')}
+                  {getGridSizeDisplay(taskData, puzzle.maxGridSize)}
                 </div>
               </div>
 
