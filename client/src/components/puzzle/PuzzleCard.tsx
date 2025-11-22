@@ -36,8 +36,9 @@ interface PuzzleCardProps {
       modelsAttemptedCount?: number;  // Distinct models that attempted this puzzle
       // Backwards-compat: some callers may still pass an array
       modelsAttempted?: string[];     // Legacy list of model names
-      avgCost?: number;               // Average cost per attempt
-      avgProcessingTime?: number;     // Milliseconds
+      avgCost?: number;               // Average cost per attempt (USD)
+      avgProcessingTime?: number;     // Average processing time (milliseconds)
+      avgTotalTokens?: number;        // Average total tokens per attempt
       wrongCount?: number;            // Number of incorrect attempts
     };
   };

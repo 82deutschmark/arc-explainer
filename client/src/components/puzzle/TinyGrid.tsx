@@ -52,18 +52,23 @@ export const TinyGrid: React.FC<TinyGridProps> = ({
   // Flatten grid for CSS Grid rendering
   const cells = grid.flat();
 
+  // Calculate aspect ratio and apply constraints to prevent overflow
+  // For very tall grids (ratio < 0.5) or very wide grids (ratio > 2), use object-fit logic
+  const aspectRatio = cols / rows;
+
   return (
-    <div 
+    <div
       className={className}
       style={{
         display: 'grid',
         gridTemplateColumns: `repeat(${cols}, 1fr)`,
         gridTemplateRows: `repeat(${rows}, 1fr)`,
         width: '100%',
-        height: '100%',
         aspectRatio: `${cols} / ${rows}`,
         maxWidth: '100%',
         maxHeight: '100%',
+        // Allow height to be auto-calculated from aspect ratio, but constrained by maxHeight
+        height: 'auto',
         ...style
       }}
     >

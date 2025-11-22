@@ -241,6 +241,68 @@ export const PuzzleTradingCard: React.FC<PuzzleTradingCardProps> = ({ puzzle }) 
                 </div>
               )}
 
+              {/* Cost & Resources Block */}
+              {puzzle.performanceData && stats.totalAttempts > 0 && (
+                puzzle.performanceData.avgCost !== undefined ||
+                puzzle.performanceData.avgTotalTokens !== undefined ||
+                puzzle.performanceData.avgProcessingTime !== undefined
+              ) && (
+                <div className="bg-white rounded-lg p-4 shadow-sm border-2 border-green-200">
+                  <h5 className="text-sm font-black text-emerald-600 uppercase tracking-wide mb-3">
+                    💰 Cost & Resources
+                  </h5>
+                  <div className="grid grid-cols-2 gap-3 text-sm">
+                    {/* Total Spend Approx */}
+                    {puzzle.performanceData.avgCost !== undefined && puzzle.performanceData.avgCost > 0 && (
+                      <div className="bg-green-50 rounded-lg p-2">
+                        <div className="text-xs text-emerald-600 font-bold mb-0.5">Total Spend</div>
+                        <div className="text-lg font-black text-green-700">
+                          ${(puzzle.performanceData.avgCost * stats.totalAttempts).toFixed(2)}
+                        </div>
+                        <div className="text-xs text-gray-500">≈ {stats.totalAttempts} attempts</div>
+                      </div>
+                    )}
+                    {/* Avg Cost per Attempt */}
+                    {puzzle.performanceData.avgCost !== undefined && puzzle.performanceData.avgCost > 0 && (
+                      <div className="bg-blue-50 rounded-lg p-2">
+                        <div className="text-xs text-blue-600 font-bold mb-0.5">Avg Cost</div>
+                        <div className="text-lg font-black text-blue-700">
+                          ${puzzle.performanceData.avgCost.toFixed(3)}
+                        </div>
+                        <div className="text-xs text-gray-500">per attempt</div>
+                      </div>
+                    )}
+                    {/* Avg Total Tokens per Attempt */}
+                    {puzzle.performanceData.avgTotalTokens !== undefined && puzzle.performanceData.avgTotalTokens > 0 && (
+                      <div className="bg-indigo-50 rounded-lg p-2">
+                        <div className="text-xs text-indigo-600 font-bold mb-0.5">Avg Tokens</div>
+                        <div className="text-lg font-black text-indigo-700">
+                          {puzzle.performanceData.avgTotalTokens >= 1000
+                            ? `${(puzzle.performanceData.avgTotalTokens / 1000).toFixed(1)}K`
+                            : Math.round(puzzle.performanceData.avgTotalTokens)}
+                        </div>
+                        <div className="text-xs text-gray-500">per attempt</div>
+                      </div>
+                    )}
+                    {/* Avg Processing Time */}
+                    {puzzle.performanceData.avgProcessingTime !== undefined && puzzle.performanceData.avgProcessingTime > 0 && (
+                      <div className="bg-violet-50 rounded-lg p-2">
+                        <div className="text-xs text-violet-600 font-bold mb-0.5">Avg Time</div>
+                        <div className="text-lg font-black text-violet-700">
+                          {puzzle.performanceData.avgProcessingTime >= 1000
+                            ? `${(puzzle.performanceData.avgProcessingTime / 1000).toFixed(1)}s`
+                            : `${Math.round(puzzle.performanceData.avgProcessingTime)}ms`}
+                        </div>
+                        <div className="text-xs text-gray-500">per attempt</div>
+                      </div>
+                    )}
+                  </div>
+                  <div className="mt-2 text-xs text-gray-500 text-center">
+                    Resource usage metrics · Not difficulty scores
+                  </div>
+                </div>
+              )}
+
               {/* Additional Metrics if Available */}
               {puzzle.performanceData && (
                 <div className="bg-white rounded-lg p-4 shadow-sm border-2 border-pink-200">
