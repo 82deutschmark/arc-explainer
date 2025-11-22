@@ -1,6 +1,11 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top!!!
 
+### Version 5.17.10
+
+- Hall of Fame / Human Trading Cards
+  - **More prominent, clearly clickable portraits**: Enlarged contributor portraits on `HumanTradingCard` and added a subtle hover hint plus stronger cursor/hover styling so it’s visually obvious that the images can be clicked to open a zoomed-in view, without changing the existing dialog/profile routing (`client/src/components/human/HumanTradingCard.tsx`).
+
 ### Version 5.17.9
 
 - Puzzle Browser

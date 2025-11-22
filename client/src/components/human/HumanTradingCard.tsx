@@ -49,6 +49,12 @@ export const HumanTradingCard: React.FC<HumanTradingCardProps> = ({ contributor 
           />
         )}
       </div>
+      {/* Hover hint so it’s obvious the portrait is interactive */}
+      <div className="pointer-events-none absolute inset-0 flex items-end justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+        <div className="mb-1 rounded-full bg-black/75 px-2 py-0.5 text-[10px] font-semibold tracking-wide text-amber-200 border border-amber-400/70 shadow-md">
+          Click portrait to zoom
+        </div>
+      </div>
       {showFeatured && cardData.featured && (
         <div className="absolute -top-2 -right-2 bg-amber-500 text-slate-900 rounded-full p-1 shadow-lg animate-pulse z-10">
           <Sparkles className="w-3 h-3" />
@@ -109,8 +115,12 @@ export const HumanTradingCard: React.FC<HumanTradingCardProps> = ({ contributor 
               {/* Avatar / GIF - Click to view full size */}
               <Dialog>
                 <DialogTrigger asChild>
-                  <div className="flex-shrink-0 cursor-pointer hover:opacity-80 transition-opacity">
-                    <ProfileImage className="w-20 h-20" showFeatured={true} />
+                  <div
+                    className="flex-shrink-0 cursor-pointer hover:opacity-90 hover:scale-[1.03] transition"
+                    aria-label={`Open large portrait of ${contributor.fullName}`}
+                    title="Click portrait to zoom"
+                  >
+                    <ProfileImage className="w-24 h-24" showFeatured={true} />
                   </div>
                 </DialogTrigger>
                 <DialogContent className="bg-transparent border-none shadow-none p-0 flex items-center justify-center max-w-[90vw] max-h-[90vh]">
