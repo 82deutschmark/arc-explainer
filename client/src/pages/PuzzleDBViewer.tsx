@@ -113,6 +113,17 @@ function formatDuration(milliseconds: number) {
   return `${minutes}m ${remainingSeconds}s`;
 }
 
+function formatNumber(num: number): string {
+  return new Intl.NumberFormat('en-US').format(num);
+}
+
+function formatTime(seconds: number): string {
+  if (seconds < 60) return `${seconds}s`;
+  const minutes = Math.floor(seconds / 60);
+  const remainingSeconds = seconds % 60;
+  return remainingSeconds > 0 ? `${minutes}m ${remainingSeconds}s` : `${minutes}m`;
+}
+
 // Compact puzzle card component with lazy-loaded TinyGrid preview
 interface CompactPuzzleCardProps {
   puzzle: PuzzleDBStats;

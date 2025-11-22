@@ -52,6 +52,20 @@ interface PuzzleCardProps {
       avgProcessingTime?: number;     // Average processing time (milliseconds)
       avgTotalTokens?: number;        // Average total tokens per attempt
       wrongCount?: number;            // Number of incorrect attempts
+      // Fields from worst-performing endpoint (when includeRichMetrics=true)
+      avgConfidence?: number;         // Average AI confidence (0-100 scale)
+      negativeFeedback?: number;      // Count of "not helpful" feedback
+      totalFeedback?: number;         // Total feedback count
+      latestAnalysis?: string;        // ISO timestamp of latest attempt
+      compositeScore?: number;        // Weighted composite score
+      avgReasoningTokens?: number;    // Average reasoning tokens (o-series)
+      avgInputTokens?: number;        // Average input tokens
+      avgOutputTokens?: number;       // Average output tokens
+      multiTestCount?: number;        // Count of multi-test attempts
+      singleTestCount?: number;       // Count of single-test attempts
+      lowestNonZeroConfidence?: number | null; // Minimum non-zero confidence
+      reasoningEffortsCount?: number; // Distinct reasoning effort levels
+      worstExplanationId?: number;    // ID of worst-performing explanation
     };
   };
   showGridPreview?: boolean;
@@ -110,8 +124,8 @@ export const PuzzleCard: React.FC<PuzzleCardProps> = ({
 
   // Calculate metrics
   const hasAttempts = puzzle.performanceData && puzzle.performanceData.totalExplanations > 0;
-  const showRichMetrics = hasRichMetrics(puzzle.performanceData);
-  const compactMetrics = getCompactMetrics(puzzle.performanceData, 2);
+  const showRichMetrics = hasRichMetrics(puzzle.performanceData as any);
+  const compactMetrics = getCompactMetrics(puzzle.performanceData as any, 2);
 
   return (
     <Link href={`/puzzle/${puzzle.id}`}>
