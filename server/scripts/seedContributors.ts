@@ -64,8 +64,8 @@ const contributors: CreateContributorRequest[] = [
     fullName: 'Jean-François Puget',
     handle: 'JFPuget',
     affiliation: 'Machine Learning at NVIDIA, 6x Kaggle Grandmaster',
-    achievement: 'Preliminary 1st Place on ARC Prize 2025 Kaggle leaderboard',
-    description: 'Machine Learning at NVIDIA, 6x Kaggle Grandmaster (CPMP). ENS Ulm alumni, ML PhD. Formerly at ILOG CPLEX and IBM. Achieved preliminary first place on Kaggle 2025 ARC Prize.',
+    achievement: 'Preliminary 1st Place on ARC Prize 2025 Kaggle leaderboard; Runner-Up ARC Prize 2024 Paper Award for "A 2D nGPT Model For ARC Prize"',
+    description: 'Machine Learning at NVIDIA, 6x Kaggle Grandmaster (CPMP). ENS Ulm alumni, ML PhD. Formerly at ILOG CPLEX and IBM. Achieved preliminary first place on Kaggle 2025 ARC Prize, and earlier authored the 2024 ARC Prize paper "A 2D nGPT Model For ARC Prize" which received a runner-up paper award.',
     imageUrl: '/jfPuget.png',
     yearStart: 2025,
     yearEnd: 2025,
@@ -75,7 +75,9 @@ const contributors: CreateContributorRequest[] = [
     links: {
       github: 'https://github.com/jfpuget',
       twitter: 'https://x.com/JFPuget',
-      kaggle: 'https://www.kaggle.com/cpmpml'
+      kaggle: 'https://www.kaggle.com/cpmpml',
+      website: 'https://www.kaggle.com/competitions/arc-prize-2024/discussion/545844',
+      papers: ['https://github.com/jfpuget/ARC-AGI-Challenge-2024/blob/main/arc.pdf']
     },
     teamName: 'NVARC',
     category: 'competition_winner',
@@ -202,6 +204,26 @@ const contributors: CreateContributorRequest[] = [
       papers: ['https://arxiv.org/abs/2411.08706']
     },
     teamName: undefined,
+    category: 'paper_award',
+    rank: undefined
+  },
+
+  {
+    fullName: 'Jean-François Puget',
+    handle: 'JFPuget',
+    affiliation: 'Machine Learning at NVIDIA, 6x Kaggle Grandmaster',
+    achievement: 'Runner-Up ARC Prize 2024 Paper Award - A 2D nGPT Model For ARC Prize',
+    description: 'Authored A 2D nGPT Model For ARC Prize, a 2D-aware nGPT-style model tailored to ARC-AGI grids that was recognized as a runner-up paper in the ARC Prize 2024 paper awards.',
+    yearStart: 2024,
+    yearEnd: 2024,
+    score: 'Runner-Up (Paper Award, $2.5k)',
+    approach: '2D-aware nGPT-style model that tokenizes ARC grids as 2D structures and uses an autoregressive transformer to predict output grids.',
+    uniqueTechnique: 'Emphasizes explicit 2D spatial structure in tokenization and attention so the model can reason over local and global patterns on ARC grids more naturally than 1D sequence models.',
+    links: {
+      kaggle: 'https://www.kaggle.com/competitions/arc-prize-2024/discussion/545844',
+      papers: ['https://github.com/jfpuget/ARC-AGI-Challenge-2024/blob/main/arc.pdf']
+    },
+    teamName: 'NVIDIA',
     category: 'paper_award',
     rank: undefined
   },
