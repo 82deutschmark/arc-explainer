@@ -1,6 +1,17 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top!!!
 
+### Version 5.17.4
+
+- Bug Fixes
+  - **PuzzleCard & PuzzleDBViewer TypeScript alignment**: Extended `PuzzleCardProps.performanceData` to include the full set of rich metrics returned by the worst-performing puzzles API (confidence, feedback, composite score, token/cost fields, etc.) and added `formatNumber` / `formatTime` helpers to `PuzzleDBViewer` so unsolved puzzle metrics render correctly without TS build errors (`client/src/components/puzzle/PuzzleCard.tsx`, `client/src/pages/PuzzleDBViewer.tsx`).
+
+- Models
+  - **Gemini 3 Pro Preview streaming disabled for reasoning safety**: Changed `supportsStreaming` from `true` to `false` for `google/gemini-3-pro-preview` so the app no longer attempts streaming calls that can truncate reasoning tokens in multi-turn tool-calling scenarios, keeping behavior consistent with the existing `supportsStructuredOutput: false` safeguard (`server/config/models.ts`).
+
+- Data
+  - **Jean-François Puget Hall of Fame imagery update**: Updated contributor seed data to support a second profile image for JF Puget so Human Trading Cards can rotate between multiple assets without manual database edits (`server/scripts/seedContributors.ts`).
+
 ### Version 5.17.3
 
 - Unsolved Puzzle Viewer
