@@ -151,7 +151,7 @@ export const PuzzleCard: React.FC<PuzzleCardProps> = ({
           )}
 
           {/* Main Content: Grid + Metrics Side-by-Side */}
-          <div className="grid grid-cols-[80px_1fr] gap-4 flex-1">
+          <div className="grid grid-cols-[80px_1fr] gap-3 flex-1">
             {/* Grid Preview - Left Side */}
             {showGridPreview && firstTrainingExample && (
               <div className="w-20 h-20 flex items-center justify-center bg-white rounded border overflow-hidden">
