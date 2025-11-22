@@ -154,7 +154,7 @@ export function PromptPreviewModal({
   }, [isOpen]);
 
   return (
-    <dialog className={`modal ${isOpen ? 'modal-open' : ''}`}>
+    <dialog className={`modal ${isOpen ? 'modal-open' : ''}`} style={{ zIndex: 9999 }}>
       <div className="modal-box max-w-4xl max-h-[80vh] overflow-hidden flex flex-col">
         <h3 className="font-bold text-lg mb-4">
           Prompt Preview - {promptId}
