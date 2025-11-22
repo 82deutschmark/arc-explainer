@@ -1,11 +1,12 @@
 /**
- * Author: Claude Code using Haiku 4.5
- * Date: 2025-11-10
- * PURPOSE: Renders Reference Material section with light theme for PuzzleBrowser page.
- *          Provides reusable ReferenceLink and ReferenceSection components to avoid duplication.
- *          Includes Research Papers, Data Sources, Tools, Solution References, and Community Notes.
+ * Author: Claude Code using Sonnet 4.5
+ * Date: 2025-11-22
+ * PURPOSE: Renders Reference Material section with dark theme matching the app's overall design.
+ *          Features colorful section headers (amber, emerald, cyan, violet, rose) with micro-containers,
+ *          pill hover effects on links, and structured visual hierarchy. Provides reusable
+ *          ReferenceLink and ReferenceSection components to avoid duplication.
  * SRP/DRY check: Pass - Extracted link rendering and section layout into reusable components.
- *                      Reduced code duplication in PuzzleBrowser and centralizes styling.
+ *                      Centralized styling with color mapping for visual consistency.
  */
 import React from 'react';
 import { ExternalLink, Sparkles } from 'lucide-react';
@@ -25,12 +26,48 @@ interface ReferenceSectionProps {
 }
 
 // ============================================================================
+// COLOR THEME CONFIGURATION
+// ============================================================================
+
+/**
+ * Color mapping for section headers
+ * Each section has unique colorful accents to create visual hierarchy
+ */
+const SECTION_COLORS = {
+  'Research Papers': {
+    text: 'text-amber-400',
+    icon: 'bg-amber-500',
+    border: 'border-amber-500/30',
+  },
+  'Data Sources': {
+    text: 'text-emerald-400',
+    icon: 'bg-emerald-500',
+    border: 'border-emerald-500/30',
+  },
+  'Tools': {
+    text: 'text-cyan-400',
+    icon: 'bg-cyan-500',
+    border: 'border-cyan-500/30',
+  },
+  'Solution References': {
+    text: 'text-violet-400',
+    icon: 'bg-violet-500',
+    border: 'border-violet-500/30',
+  },
+  'Community Notes': {
+    text: 'text-rose-400',
+    icon: 'bg-rose-500',
+    border: 'border-rose-500/30',
+  },
+} as const;
+
+// ============================================================================
 // REUSABLE COMPONENTS
 // ============================================================================
 
 /**
- * ReferenceLink - Individual link with external link icon
- * Provides consistent styling for all reference links
+ * ReferenceLink - Individual link with external link icon and pill hover effect
+ * Provides consistent dark theme styling for all reference links
  */
 const ReferenceLink: React.FC<{ link: ReferenceLink }> = ({ link }) => (
   <li>
@@ -38,30 +75,37 @@ const ReferenceLink: React.FC<{ link: ReferenceLink }> = ({ link }) => (
       href={link.href}
       target="_blank"
       rel="noopener noreferrer"
-      className="group inline-flex items-center gap-2 text-slate-700 hover:text-sky-600 transition-colors"
+      className="group inline-flex items-center gap-1.5 px-2 py-1 -mx-2 rounded-md text-slate-300 hover:text-sky-200 hover:bg-sky-500/10 transition-all"
     >
-      {link.label}
-      <ExternalLink className="h-3 w-3 text-slate-400 group-hover:text-sky-600" />
+      <span className="text-xs">{link.label}</span>
+      <ExternalLink className="h-3 w-3 text-slate-500 group-hover:text-sky-400 transition-colors" />
     </a>
   </li>
 );
 
 /**
- * ReferenceSection - Category of reference links
- * Displays a section title and list of links
+ * ReferenceSection - Category of reference links with colorful header
+ * Each section is contained in a micro-container with color-coded border
  */
-const ReferenceSection: React.FC<ReferenceSectionProps> = ({ title, links }) => (
-  <div className="space-y-1">
-    <p className="text-xs font-semibold uppercase tracking-wide text-slate-600">
-      {title}
-    </p>
-    <ul className="space-y-0.5">
-      {links.map((link) => (
-        <ReferenceLink key={link.href} link={link} />
-      ))}
-    </ul>
-  </div>
-);
+const ReferenceSection: React.FC<ReferenceSectionProps> = ({ title, links }) => {
+  const colors = SECTION_COLORS[title as keyof typeof SECTION_COLORS] || SECTION_COLORS['Research Papers'];
+
+  return (
+    <div className={`space-y-2 p-2.5 rounded-lg border ${colors.border} bg-slate-800/30`}>
+      <div className="flex items-center gap-1.5">
+        <div className={`h-1 w-1 rounded-full ${colors.icon}`}></div>
+        <p className={`text-xs font-bold uppercase tracking-wider ${colors.text}`}>
+          {title}
+        </p>
+      </div>
+      <ul className="space-y-1">
+        {links.map((link) => (
+          <ReferenceLink key={link.href} link={link} />
+        ))}
+      </ul>
+    </div>
+  );
+};
 
 // ============================================================================
 // REFERENCE DATA
@@ -156,20 +200,20 @@ const REFERENCE_SECTIONS: ReferenceSectionProps[] = [
 // ============================================================================
 
 /**
- * ReferenceMaterial - Main section component with light theme
- * Displays all reference materials organized by category
+ * ReferenceMaterial - Main section component with dark theme
+ * Displays all reference materials organized by category with colorful headers
  */
 export const ReferenceMaterial: React.FC = () => {
   return (
-    <section className="rounded-lg border border-slate-200 bg-white p-3">
+    <section className="rounded-lg border border-slate-700 bg-slate-900/60 p-3">
       {/* Header */}
-      <div className="flex items-center gap-3 text-sm font-semibold text-slate-900">
-        <Sparkles className="h-4 w-4 text-slate-600" />
-        <span>Reference material</span>
+      <div className="flex items-center gap-2 pb-2 border-b border-slate-700/50">
+        <Sparkles className="h-4 w-4 text-sky-400" />
+        <span className="text-sm font-semibold uppercase tracking-wide text-slate-300">Reference Material</span>
       </div>
 
       {/* Grid of reference sections */}
-      <div className="mt-2 grid gap-3 text-xs text-slate-600 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+      <div className="mt-3 grid gap-2 text-xs sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
         {REFERENCE_SECTIONS.map((section) => (
           <ReferenceSection
             key={section.title}
@@ -180,7 +224,7 @@ export const ReferenceMaterial: React.FC = () => {
       </div>
 
       {/* Footer acknowledgement */}
-      <p className="mt-2 text-xs text-slate-500">
+      <p className="mt-3 pt-2 border-t border-slate-700/50 text-xs text-slate-400 italic">
         Special Acknowledgement: Simon Strandgaard (@neoneye) for his invaluable
         support, feedback, and collection of resources.
       </p>
