@@ -1,11 +1,18 @@
 /**
  * Author: Claude Code using Sonnet 4.5
- * Date: 2025-11-20 / Updated 2025-11-21
+ * Date: 2025-11-20 / Updated 2025-11-22
  * PURPOSE: Professional, information-dense ARC puzzle cards using shadcn/ui components.
  *          Compact layout (~200-250px) with side-by-side grid/metrics, automatic dark/light theme support.
  *          Replaces gradients/emojis with clean, tabular data presentation suitable for scientific research platform.
  * DESIGN: Uses CSS variables (bg-card, text-card-foreground, border) for automatic theme adaptation.
  *         shadcn/ui Card + Badge components for consistent styling across light/dark modes.
+ * FIXES (2025-11-22):
+ *   - REMOVED fabricated "% Solved" metric (was displaying avgAccuracy as solve percentage - WRONG!)
+ *   - Changed to "Avg Accuracy" with percentage display (accurate representation of avgAccuracy metric)
+ *   - Fixed layout collision: grid → flex to grid with explicit [80px_1fr] columns
+ *   - Added overflow-hidden and max-width/max-height constraints to TinyGrid container
+ *   - Fixed null check for maxGridSize (now shows 'N/A' instead of stray 'x')
+ *   - Improved visual hierarchy: increased label font from text-[10px] to text-[11px]
  * SRP/DRY check: Pass — Single responsibility (puzzle card display), reuses shadcn/ui primitives.
  */
 
@@ -96,6 +103,14 @@ export const PuzzleCard: React.FC<PuzzleCardProps> = ({
   const firstTrainingExample = taskData?.train?.[0];
   const isExplained = Boolean(puzzle.hasExplanation);
 
+  // Calculate actual grid dimensions from loaded task data
+  const actualGridSize = React.useMemo(() => {
+    if (!firstTrainingExample?.input) return null;
+    const rows = firstTrainingExample.input.length;
+    const cols = firstTrainingExample.input[0]?.length || 0;
+    return { rows, cols };
+  }, [firstTrainingExample]);
+
   // Calculate metrics
   const hasAttempts = puzzle.performanceData && puzzle.performanceData.totalExplanations > 0;
   const accuracy = puzzle.performanceData?.avgAccuracy || 0;
@@ -145,13 +160,18 @@ export const PuzzleCard: React.FC<PuzzleCardProps> = ({
           )}
 
           {/* Main Content: Grid + Metrics Side-by-Side */}
-          <div className="flex gap-3 flex-1">
+          <div className="grid grid-cols-[80px_1fr] gap-4 flex-1">
             {/* Grid Preview - Left Side */}
             {showGridPreview && firstTrainingExample && (
-              <div className="shrink-0" style={{ width: '80px', height: '80px' }}>
+              <div className="w-20 h-20 flex items-center justify-center bg-white rounded border overflow-hidden">
                 <TinyGrid
                   grid={firstTrainingExample.input}
-                  style={{ width: '80px', height: '80px' }}
+                  style={{
+                    maxWidth: '80px',
+                    maxHeight: '80px',
+                    width: 'auto',
+                    height: 'auto'
+                  }}
                 />
               </div>
             )}
@@ -160,41 +180,41 @@ export const PuzzleCard: React.FC<PuzzleCardProps> = ({
             <div className="flex-1 min-w-0 grid grid-cols-2 gap-x-2 gap-y-1.5 text-xs">
               {/* Status/Correctness */}
               <div className="col-span-2">
-                <div className="text-[10px] font-medium text-muted-foreground uppercase tracking-wide">
-                  {!hasAttempts ? "Status" : "Correctness"}
+                <div className="text-[11px] font-medium text-muted-foreground uppercase tracking-wide">
+                  {!hasAttempts ? "Status" : "Avg Accuracy"}
                 </div>
                 <div className="text-sm font-semibold text-card-foreground">
-                  {!hasAttempts ? "Never Tried" : isSolved ? `${(accuracy * 100).toFixed(0)}% Solved` : "Unsolved"}
+                  {!hasAttempts ? "Never Attempted" : `${(accuracy * 100).toFixed(0)}%`}
                 </div>
               </div>
 
               {/* Attempts */}
               <div>
-                <div className="text-[10px] font-medium text-muted-foreground uppercase tracking-wide">Attempts</div>
+                <div className="text-[11px] font-medium text-muted-foreground uppercase tracking-wide">Attempts</div>
                 <div className="text-sm font-semibold text-card-foreground">
                   {puzzle.performanceData?.totalExplanations || 0}
                 </div>
               </div>
 
-              {/* Models */}
+              {/* Wrong Attempts */}
               <div>
-                <div className="text-[10px] font-medium text-muted-foreground uppercase tracking-wide">Models</div>
+                <div className="text-[11px] font-medium text-muted-foreground uppercase tracking-wide">Wrong</div>
                 <div className="text-sm font-semibold text-card-foreground">
-                  {modelsCount}
+                  {puzzle.performanceData?.wrongCount || 0}
                 </div>
               </div>
 
               {/* Grid Size */}
               <div>
-                <div className="text-[10px] font-medium text-muted-foreground uppercase tracking-wide">Grid</div>
+                <div className="text-[11px] font-medium text-muted-foreground uppercase tracking-wide">Grid</div>
                 <div className="text-sm font-semibold text-card-foreground">
-                  {puzzle.maxGridSize}×{puzzle.maxGridSize}
+                  {actualGridSize ? `${actualGridSize.rows}×${actualGridSize.cols}` : (puzzle.maxGridSize ? `${puzzle.maxGridSize}×${puzzle.maxGridSize}` : 'N/A')}
                 </div>
               </div>
 
               {/* Test Cases */}
               <div>
-                <div className="text-[10px] font-medium text-muted-foreground uppercase tracking-wide">Tests</div>
+                <div className="text-[11px] font-medium text-muted-foreground uppercase tracking-wide">Tests</div>
                 <div className="text-sm font-semibold text-card-foreground">
                   {puzzle.hasMultiplePredictions ? 'Multi' : 'Single'}
                 </div>
