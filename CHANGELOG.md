@@ -1,6 +1,14 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top!!!
 
+### Version 5.17.2
+
+- Models
+  - **Added Google Gemini 3 Pro Preview via OpenRouter**: Integrated the newest Gemini model (released Nov 18, 2025) with 1,048,576 token context window and tiered pricing structure ($2-$4/M input tokens, $12-$18/M output tokens based on context length ≤200K vs >200K).
+    - Added model configuration to `server/config/models.ts:812-828` with `google/gemini-3-pro-preview` key, premium tier designation, reasoning capabilities, and special note about preserving reasoning details in multi-turn tool calling (OpenRouter docs: reasoning-tokens#preserving-reasoning-blocks)
+    - Created dedicated "Google Gemini" family within OpenRouter provider group in `shared/modelGroups.ts:227-235` (id: `or-gemini`)
+    - Reorganized existing `google/gemini-2.5-flash-preview-09-2025` model from `or-other` family into new `or-gemini` family for better UI organization
+
 ### Version 5.17.1
 
 - Data
