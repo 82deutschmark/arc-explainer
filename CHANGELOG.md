@@ -3,8 +3,32 @@
 
 ### Version 5.17.2
 
+- Models
+  - **Added Google Gemini 3 Pro Preview via OpenRouter**: Integrated the newest Gemini model (released Nov 18, 2025) with 1,048,576 token context window and tiered pricing structure ($2-$4/M input tokens, $12-$18/M output tokens based on context length ≤200K vs >200K).
+    - **Model Configuration** (`server/config/models.ts:812-830`)
+      - Key: `google/gemini-3-pro-preview`, premium tier, reasoning-capable
+      - **Critical fields**: `supportsStructuredOutput: false` (prevents JSON mode conflicts with reasoning), `supportsStreaming: true`
+      - Special note about preserving `reasoning_details` in multi-turn tool calling per OpenRouter docs
+    - **UI Organization** (`shared/modelGroups.ts:227-235`)
+      - Created dedicated "Google Gemini" family within OpenRouter provider group (id: `or-gemini`)
+      - Reorganized existing `google/gemini-2.5-flash-preview-09-2025` from `or-other` into new `or-gemini` family
+
+- Infrastructure Fixes (Critical for Reasoning Models)
+  - **OpenRouter Service: Reasoning Token Extraction** (`server/services/openrouter.ts:300-330`)
+    - **Fixed missing reasoning token metrics**: Now extracts `usage.output_tokens_details.reasoning_tokens` from API responses (was previously discarded)
+    - Accumulates reasoning tokens across continuation calls for truncated responses
+    - Logs reasoning token usage for accurate cost tracking and analytics
+  - **OpenRouter Service: Multi-Turn Reasoning Preservation** (`server/services/openrouter.ts:322-330`)
+    - **Added `reasoning_details` extraction**: Captures structured reasoning blocks required for multi-turn tool calling conversations
+    - Preserves reasoning continuity across tool use and conversation turns (per OpenRouter documentation requirement)
+    - Enables proper context maintenance for Gemini 3 Pro and other reasoning models
+  - **OpenRouter Service: Token Usage Pipeline** (`server/services/openrouter.ts:75-80, 348-354, 540-561`)
+    - Added `usage` parameter throughout API call → parser → response pipeline
+    - Returns actual API usage data (input/output/reasoning tokens) instead of estimates
+    - Fixes token tracking accuracy for all OpenRouter models
+
 - Bug Fixes
-  - **Restored visibility for dynamically managed and new provider models**: Updated the Puzzle Examiner model grouping hook so that all models returned from `/api/models` are surfaced in the selection UI. Known models still use the static provider/family groupings from `shared/modelGroups.ts`, while any additional models are automatically placed into per-provider "Other models" buckets or synthetic provider groups instead of being dropped (`client/src/hooks/useModelGrouping.ts`).
+  - **Reasoning models + JSON mode conflict**: Setting `supportsStructuredOutput: false` prevents schema enforcement from truncating reasoning tokens (matches Qwen thinking model pattern at line 430)
 
 ### Version 5.17.1
 
