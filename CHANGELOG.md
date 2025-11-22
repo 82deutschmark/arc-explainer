@@ -1,6 +1,11 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top!!!
 
+### Version 5.17.8
+
+- Puzzle Browser
+  - **Curated featured gallery + gated research view**: Updated `PuzzleBrowser` so the default experience shows a small curated gallery of four visually interesting puzzles (`14754a24`, `b457fec5`, `891232d6`, `136b0064`) using the new professional `PuzzleCard` layout, while the full heavy filter/search browser (with hundreds of cards and rich metrics) is now behind an explicit "Open full research browser" toggle. This keeps the new card design but prevents the landing page from trying to render thousands of cards at once (`client/src/pages/PuzzleBrowser.tsx`).
+
 ### Version 5.17.7
 
 - Data
