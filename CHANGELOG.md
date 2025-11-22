@@ -1,6 +1,12 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top!!!
 
+### Version 5.17.1
+
+- Data
+  - Extended Jean-François Puget Hall of Fame contributor entry to mention his ARC Prize 2024 runner-up paper award for "A 2D nGPT Model For ARC Prize" and added Kaggle discussion + PDF links in the contributors seed script (`server/scripts/seedContributors.ts`).
+  - Added a separate 2024 paper-award contributor card for Jean-François Puget so his 2D nGPT ARC Prize paper appears in the Research & Awards section.
+
 ### Version 5.17.0
 
 - UI/UX Major Redesign - Professional Research Platform Transformation
