@@ -277,7 +277,7 @@ export function getCompactMetrics(
   // Priority 1: Cost (if > 0)
   if (performanceData.avgCost && performanceData.avgCost > 0) {
     metrics.push({
-      label: 'Cost',
+      label: 'Avg Cost',
       value: formatCostUSD(performanceData.avgCost),
       type: 'cost'
     });

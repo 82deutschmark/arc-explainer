@@ -159,9 +159,7 @@ export const PuzzleCard: React.FC<PuzzleCardProps> = ({
                   grid={firstTrainingExample.input}
                   style={{
                     maxWidth: '80px',
-                    maxHeight: '80px',
-                    width: 'auto',
-                    height: 'auto'
+                    maxHeight: '80px'
                   }}
                 />
               </div>
