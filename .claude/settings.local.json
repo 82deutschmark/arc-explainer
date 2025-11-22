@@ -16,7 +16,9 @@
       "Bash(npx tsc:*)",
       "Read(/D:\\1Projects\\planexe**)",
       "Read(/D:\\1Projects\\modelcompare**)",
-      "Bash(cat:*)"
+      "Bash(cat:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)"
     ],
     "defaultMode": "bypassPermissions"
   },
