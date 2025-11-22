@@ -17,10 +17,10 @@ export function ModelButton({ model, isAnalyzing, isStreaming, streamingSupporte
     <Button
       variant="outline"
       className={`h-auto p-2.5 flex flex-col items-stretch gap-2 relative text-left text-sm leading-snug transition-all ${
-        error 
+        error
           ? 'ring-2 ring-red-500 bg-red-50 border-red-300'
-          : explanationCount > 0 
-          ? 'ring-2 ring-green-500' 
+          : explanationCount > 0
+          ? 'ring-2 ring-green-500'
           : ''
       } ${model.premium && !error ? 'border-amber-300 bg-amber-50' : ''}`}
       onClick={() => onAnalyze(model.key)}
