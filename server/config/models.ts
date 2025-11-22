@@ -824,7 +824,7 @@ export const MODELS: ModelConfig[] = [
     contextWindow: 1048576,
     maxOutputTokens: 65536,
     releaseDate: "2025-11",
-    supportsStreaming: true,
+    supportsStreaming: false,
     supportsStructuredOutput: false, // Reasoning models have issues with JSON mode enforcement
     notes: 'Reasoning details must be preserved when using multi-turn tool calling. See: https://openrouter.ai/docs/use-cases/reasoning-tokens#preserving-reasoning-blocks'
   },
