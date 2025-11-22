@@ -1,6 +1,34 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top!!!
 
+### Version 5.17.0
+
+- UI/UX Major Redesign - Professional Research Platform Transformation
+  - **PuzzleCard complete redesign**: Transformed from "purple cartoon nightmare" to professional, information-dense scientific research platform (`client/src/components/puzzle/PuzzleCard.tsx`)
+    - **Removed**: 5 rainbow gradients, 4 emojis (❌🔥✅💰), 36px border radius, heavy animations, 28px padding
+    - **Added**: shadcn/ui Card + Badge components, automatic dark/light theme support via CSS variables
+    - **Layout**: Compact side-by-side grid+metrics (~200-250px tall, down from ~500px = 2.5x information density)
+    - **Metrics**: 6-point tabular display (Correctness, Attempts, Models, Grid, Tests) with `text-[10px]` labels
+    - **Theme support**: Uses CSS variables (`bg-card`, `text-card-foreground`, `border`, `text-muted-foreground`) for automatic theme adaptation
+    - **Design inspiration**: arXiv.org, Google Scholar, GitHub, Nature Journal (professional scientific platforms)
+  - **PuzzleBrowser grid improvements**: Updated responsive breakpoints for compact cards (`client/src/pages/PuzzleBrowser.tsx:418`)
+    - Mobile: 1 column | sm: 2 | md: 3 | xl: 4 | 2xl: 5 columns (new!)
+    - Gap increased to 12px (`gap-3`) for compact card spacing
+    - Shows 2.5x more puzzles per viewport
+  - **Scalability**: Design pattern reusable across PuzzleExaminer and other puzzle list views using shadcn/ui primitives
+
+- Bug Fixes
+  - **PuzzleCard correctness display for unsolved puzzles**: Fixed misleading "Solve Rate: 0%" on PuzzleDBViewer (which shows only unsolved puzzles) by implementing context-aware display (`client/src/components/puzzle/PuzzleCard.tsx:157-167`)
+    - Shows "Never Tried" for puzzles with 0 attempts
+    - Shows "Unsolved" for puzzles with failed attempts (0% accuracy)
+    - Shows "X% Solved" only when accuracy > 0
+  - **PuzzleBrowser junk sort modes removed**: Deleted confidence, cost, and created_at sort options that had no basis in aggregated metrics (`client/src/pages/PuzzleBrowser.tsx:121-125, 333-338`)
+    - Kept useful sorts: unsolved_first (recommended), unexplained_first, least_analysis_data, processing_time
+  - **PuzzleBrowser Trading Cards banner removed**: Deleted promotional banner for cleaner, focused research interface (`client/src/pages/PuzzleBrowser.tsx`)
+
+- Documentation
+  - **Professional redesign plan**: Created comprehensive 1,301-line design specification documenting transformation from cartoon to scientific aesthetic (`docs/2025-11-21-puzzlecard-professional-redesign-plan.md`)
+
 ### Version 5.16.8
 
 - Planning
