@@ -401,11 +401,11 @@ export default function PuzzleExaminer() {
           </section>
         </div>
 
-        {/* Model Selection - Card Grid */}
-        <div className="bg-base-100 p-2 mb-2">
-          <h3 className="font-medium text-sm mb-2 flex items-center gap-2">
+        {/* Model Selection - Organized by Provider */}
+        <div className="bg-base-100 p-4 mb-4 rounded-lg">
+          <h3 className="font-medium text-lg mb-3 flex items-center gap-2">
             🚀 Model Selection
-            <span className="text-xs opacity-60">Choose AI models to run analysis with</span>
+            <span className="text-sm opacity-60 font-normal">Choose AI models to run analysis with</span>
           </h3>
           <ModelSelection
             models={models}
