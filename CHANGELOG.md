@@ -1,6 +1,12 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top!!!
 
+### Version 5.17.3
+
+- Unsolved Puzzle Viewer
+  - **Always load ALL unsolved evaluation puzzles**: Increased the `GET /api/puzzle/worst-performing` limit cap from 50 to 500 so `PuzzleDBViewer` can request the full ARC2-Eval (≈120) and ARC1-Eval (≈400) zero-accuracy sets in one shot (`server/controllers/puzzleController.ts:getWorstPerformingPuzzles`).
+  - **Removed infinite cache on worst-performing hook**: Dropped `staleTime: Infinity` from `useWorstPerformingPuzzles` so each visit to the Unsolved ARC Evaluation Puzzles page triggers a fresh worst-performing calculation while still disabling noisy refetch-on-focus/interval (`client/src/hooks/usePuzzle.ts`).
+
 ### Version 5.17.2
 
 - UI/UX - Model Selection Density Overhaul

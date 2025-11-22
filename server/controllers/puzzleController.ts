@@ -409,8 +409,10 @@ export const puzzleController = {
         multiTestFilter,
         includeRichMetrics
       } = req.query;
-      
-      const limitNum = puzzleFilterService.validateLimit(limit, 20, 50);
+
+      // Allow higher limits (up to 500) so callers like PuzzleDBViewer can
+      // reliably fetch ALL unsolved evaluation puzzles in a single request.
+      const limitNum = puzzleFilterService.validateLimit(limit, 20, 500);
       const sortOption = puzzleFilterService.validateWorstPuzzleSortParameters(sortBy as string);
 
       // Parse accuracy range parameters and new filters
