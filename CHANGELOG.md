@@ -1,6 +1,21 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top!!!
 
+### Version 5.17.7
+
+- Data
+  - **Jack Cole Hall of Fame imagery update**: Added multiple profile images (`/jackcole.jpeg`, `/jackCole2.png`) to both Jack Cole contributor entries so Human Trading Cards can rotate between his assets without manual database edits (`server/scripts/seedContributors.ts`).
+
+### Version 5.17.6
+
+- Data
+  - **Separated JF Puget 2024 vs 2025 achievements in Hall of Fame seed data**: Cleaned up the Jean-François Puget `competition_winner` entry so it is a 2025-only card for the preliminary ARC Prize 2025 Kaggle leaderboard, leaving the 2024 runner-up paper recognized solely by his dedicated `paper_award` card. This avoids mixing paper-award and competition contexts in a single entry (`server/scripts/seedContributors.ts`).
+
+### Version 5.17.5
+
+- Hall of Fame
+  - **2025 Leaderboard now respects year ranges**: Updated `HumanTradingCards` leaderboard logic so contributors whose active range spans 2025 (e.g., yearStart 2024, yearEnd 2025) are included in the "2025 Leaderboard" section instead of being omitted. This ensures Jean-François Puget appears in the 2025 row alongside other preliminary ARC Prize 2025 leaders while still retaining his 2024 entries (`client/src/pages/HumanTradingCards.tsx`).
+
 ### Version 5.17.4
 
 - Bug Fixes
