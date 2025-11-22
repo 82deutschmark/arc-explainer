@@ -3,8 +3,9 @@
  *
  * Author: Claude Code using Sonnet 4.5
  * Date: 2025-11-22
- * PURPOSE: Renders organized model selection with provider grouping and filters.
+ * PURPOSE: Renders organized model selection with provider grouping.
  *          Updated to use hierarchical provider/family structure for better organization.
+ *          Removed filtering for professional research platform density.
  *
  * SRP/DRY check: Pass - Single responsibility (model selection UI orchestration)
  */
@@ -28,7 +29,7 @@ interface ModelSelectionProps {
 }
 
 /**
- * Displays organized model selection with provider grouping, filters, and collapsible sections
+ * Displays organized model selection with provider grouping and collapsible sections
  */
 export function ModelSelection({
   models,
@@ -45,10 +46,7 @@ export function ModelSelection({
     toggleProvider,
     expandAll,
     collapseAll,
-    filters,
-    setFilters,
-    groupedModels,
-    hasActiveFilters
+    groupedModels
   } = useModelGrouping(models);
 
   if (!models) {
@@ -57,17 +55,14 @@ export function ModelSelection({
 
   return (
     <div>
-      {/* Controls: Filters and Expand/Collapse */}
+      {/* Controls: Expand/Collapse Only */}
       <ModelSelectionControls
-        filters={filters}
-        onFilterChange={setFilters}
         onExpandAll={expandAll}
         onCollapseAll={collapseAll}
-        hasActiveFilters={hasActiveFilters}
       />
 
       {/* Provider Groups */}
-      <div className="space-y-3">
+      <div className="space-y-2">
         {groupedModels.map((provider) => (
           <ModelProviderGroup
             key={provider.id}
@@ -86,15 +81,9 @@ export function ModelSelection({
       </div>
 
       {/* Empty State */}
-      {groupedModels.length === 0 && hasActiveFilters && (
+      {groupedModels.length === 0 && (
         <div className="text-center py-8 text-base-content/60">
-          <p className="text-sm">No models match the selected filters.</p>
-          <button
-            onClick={() => setFilters({ premium: false, reasoning: false, fast: false })}
-            className="btn btn-sm btn-ghost mt-2"
-          >
-            Clear filters
-          </button>
+          <p className="text-sm">No models available.</p>
         </div>
       )}
     </div>

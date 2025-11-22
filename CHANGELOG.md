@@ -3,6 +3,15 @@
 
 ### Version 5.17.2
 
+- UI/UX - Model Selection Density Overhaul
+  - **Fixed "ping-pong effect" and wasted space**: Constrained Model Selection container width with `max-w-4xl mx-auto` to eliminate excessive horizontal stretching that forced users' eyes to travel across the full viewport (`client/src/pages/PuzzleExaminer.tsx:405`).
+  - **Removed filter UI completely**: Eliminated Premium, Fast, and Reasoning filter toggles per user feedback - this is a research platform, not an e-commerce site (`client/src/components/puzzle/ModelSelectionControls.tsx`, `client/src/components/puzzle/ModelSelection.tsx`).
+  - **Professional research platform density**: Systematically tightened spacing throughout the model selection hierarchy:
+    - Reduced provider header padding from `p-4` to `p-3`, icon size from `text-2xl` to `text-xl`, title from `text-lg` to `text-base`
+    - Reduced vertical spacing: `space-y-3` → `space-y-2`, `space-y-6` → `space-y-3`, `mt-3` → `mt-2`
+    - Tightened model grid gaps from `gap-2` to `gap-1.5` and family dividers from `gap-3` to `gap-2`
+    - All changes focused on eliminating the "empty ribbon" effect and improving information density
+
 - Models
   - **Added Google Gemini 3 Pro Preview via OpenRouter**: Integrated the newest Gemini model (released Nov 18, 2025) with 1,048,576 token context window and tiered pricing structure ($2-$4/M input tokens, $12-$18/M output tokens based on context length ≤200K vs >200K).
     - **Model Configuration** (`server/config/models.ts:812-830`)
