@@ -9,7 +9,7 @@
  *  - Parsing the Gemini response structure, which separates `thought` parts from the main answer.
  *  - Using the centralized `jsonParser` for robust JSON extraction from the response text.
  *  - Extending the BaseAIService for a consistent analysis workflow.
- *
+ * NEEDS UPDATING!!
  * @assessed_by Gemini 2.5 Pro
  * @assessed_on 2025-09-09
  */
