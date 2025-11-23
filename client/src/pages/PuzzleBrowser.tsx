@@ -122,18 +122,24 @@ export default function PuzzleBrowser() {
 
   // Fetch featured puzzles directly by ID to guarantee they show up for presentation
   // Each puzzle is fetched individually using the /api/puzzle/task/:taskId endpoint
-  const featuredQueries = FEATURED_PUZZLE_IDS.map(id =>
-    // eslint-disable-next-line react-hooks/rules-of-hooks
-    useQuery<{ success: boolean; data: EnhancedPuzzleMetadata }>({
-      queryKey: [`/api/puzzle/task/${id}`],
-    })
-  );
+  const featured0 = useQuery<{ success: boolean; data: EnhancedPuzzleMetadata }>({ queryKey: [`/api/puzzle/task/${FEATURED_PUZZLE_IDS[0]}`] });
+  const featured1 = useQuery<{ success: boolean; data: EnhancedPuzzleMetadata }>({ queryKey: [`/api/puzzle/task/${FEATURED_PUZZLE_IDS[1]}`] });
+  const featured2 = useQuery<{ success: boolean; data: EnhancedPuzzleMetadata }>({ queryKey: [`/api/puzzle/task/${FEATURED_PUZZLE_IDS[2]}`] });
+  const featured3 = useQuery<{ success: boolean; data: EnhancedPuzzleMetadata }>({ queryKey: [`/api/puzzle/task/${FEATURED_PUZZLE_IDS[3]}`] });
+  const featured4 = useQuery<{ success: boolean; data: EnhancedPuzzleMetadata }>({ queryKey: [`/api/puzzle/task/${FEATURED_PUZZLE_IDS[4]}`] });
+  const featured5 = useQuery<{ success: boolean; data: EnhancedPuzzleMetadata }>({ queryKey: [`/api/puzzle/task/${FEATURED_PUZZLE_IDS[5]}`] });
+  const featured6 = useQuery<{ success: boolean; data: EnhancedPuzzleMetadata }>({ queryKey: [`/api/puzzle/task/${FEATURED_PUZZLE_IDS[6]}`] });
+  const featured7 = useQuery<{ success: boolean; data: EnhancedPuzzleMetadata }>({ queryKey: [`/api/puzzle/task/${FEATURED_PUZZLE_IDS[7]}`] });
+  const featured8 = useQuery<{ success: boolean; data: EnhancedPuzzleMetadata }>({ queryKey: [`/api/puzzle/task/${FEATURED_PUZZLE_IDS[8]}`] });
+  const featured9 = useQuery<{ success: boolean; data: EnhancedPuzzleMetadata }>({ queryKey: [`/api/puzzle/task/${FEATURED_PUZZLE_IDS[9]}`] });
+
+  const featuredQueries = [featured0, featured1, featured2, featured3, featured4, featured5, featured6, featured7, featured8, featured9];
 
   const featuredPuzzles = React.useMemo(() => {
     return featuredQueries
       .map(q => q.data?.success ? q.data.data : null)
       .filter((p): p is EnhancedPuzzleMetadata => p !== null);
-  }, featuredQueries.map(q => q.data));
+  }, [featured0.data, featured1.data, featured2.data, featured3.data, featured4.data, featured5.data, featured6.data, featured7.data, featured8.data, featured9.data]);
 
   const isFeaturedLoading = featuredQueries.some(q => q.isLoading);
 
