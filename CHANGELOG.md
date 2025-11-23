@@ -1,6 +1,13 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top!!!
 
+### Version 5.18.3
+
+- Puzzle Browser - Critical Presentation Fixes
+  - **Fixed header alignment**: Changed header layout from `justify-between` to centered flex column so the CollapsibleMission component (mission button + Discord/YouTube links) and EmojiMosaicAccent are properly aligned and centered for cleaner presentation layout (`client/src/pages/PuzzleBrowser.tsx:251`).
+  - **Guaranteed exact 10 featured puzzles**: Removed filtering logic that could hide featured puzzles when API doesn't return them - now always shows all 10 featured puzzle IDs (`65b59efc`, `e3721c99`, `dd6b8c4b`, `2ba387bc`, `14754a24`, `b457fec5`, `891232d6`, `7b5033c1`, `981571dc`, `136b0064`) by creating minimal stubs for missing puzzles. Critical for presentation accuracy (`client/src/pages/PuzzleBrowser.tsx:122-142`).
+  - **Team attribution update**: Renamed `MIKE_NOTES` to `TEAM_NOTES` and updated all puzzle annotations to credit "the team" instead of individual attribution. Changed note header from "Team note" to "Team Notes" for consistency (`client/src/pages/PuzzleBrowser.tsx:65-86, 313-320, 535`).
+
 ### Version 5.18.1
 
 - Puzzle Examiner
