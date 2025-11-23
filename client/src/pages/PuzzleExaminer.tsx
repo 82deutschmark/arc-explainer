@@ -7,7 +7,7 @@
 
 import React, { useState, useMemo, useCallback } from 'react';
 import { useParams } from 'wouter';
-import { Loader2 } from 'lucide-react';
+import { Loader2, ChevronDown } from 'lucide-react';
 import { getPuzzleName } from '@shared/utils/puzzleNames';
 import { DEFAULT_EMOJI_SET } from '@/lib/spaceEmojis';
 import type { EmojiSet } from '@/lib/spaceEmojis';
@@ -69,6 +69,16 @@ export default function PuzzleExaminer() {
   const [omitAnswer, setOmitAnswer] = useState(true);
   const [correctnessFilter, setCorrectnessFilter] = useState<CorrectnessFilter>('all');
   const [highlightedExplanationId, setHighlightedExplanationId] = useState<number | null>(null);
+  const [isModelSelectorExpanded, setIsModelSelectorExpanded] = useState(() => {
+    // Default to COLLAPSED - users want to see results first
+    const saved = localStorage.getItem('puzzleExaminer.modelSelector.expanded');
+    return saved ? JSON.parse(saved) : false;
+  });
+
+  // Persist model selector state
+  React.useEffect(() => {
+    localStorage.setItem('puzzleExaminer.modelSelector.expanded', JSON.stringify(isModelSelectorExpanded));
+  }, [isModelSelectorExpanded]);
 
   // Set page title with puzzle ID
   React.useEffect(() => {
@@ -261,12 +271,16 @@ export default function PuzzleExaminer() {
 
   // Handle model selection
   const handleAnalyzeWithModel = (modelKey: string) => {
+    console.log('[PuzzleExaminer] handleAnalyzeWithModel called with:', modelKey);
     const model = models?.find(m => m.key === modelKey);
+    console.log('[PuzzleExaminer] Found model:', model?.name);
+    console.log('[PuzzleExaminer] Setting pendingAnalysis and opening modal');
     setPendingAnalysis({
       modelKey,
       supportsTemperature: model?.supportsTemperature ?? true,
     });
     setIsPromptPreviewOpen(true);
+    console.log('[PuzzleExaminer] Modal should now be open');
   };
 
   const handleConfirmAnalysis = async () => {
@@ -401,22 +415,47 @@ export default function PuzzleExaminer() {
           </section>
         </div>
 
-        {/* Model Selection - Organized by Provider */}
-        <div className="bg-base-100 p-4 mb-4 rounded-lg max-w-4xl mx-auto">
-          <h3 className="font-medium text-lg mb-3 flex items-center gap-2">
-            🚀 Model Selection
-            <span className="text-sm opacity-60 font-normal">Choose AI models to run analysis with</span>
-          </h3>
-          <ModelSelection
-            models={models}
-            processingModels={processingModels}
-            streamingModelKey={streamingModelKey}
-            streamingEnabled={streamingEnabled}
-            canStreamModel={canStreamModel}
-            explanations={allResults}
-            onAnalyze={handleAnalyzeWithModel}
-            analyzerErrors={analyzerErrors}
-          />
+        {/* Model Selection - Collapsible to save vertical space */}
+        <div className="bg-base-100 mb-4 rounded-lg max-w-4xl mx-auto border border-base-300">
+          {/* Compact Header - Always Visible */}
+          <button
+            onClick={() => setIsModelSelectorExpanded(!isModelSelectorExpanded)}
+            className="w-full p-3 flex items-center justify-between hover:bg-base-200 transition-colors rounded-lg"
+          >
+            <div className="flex items-center gap-3">
+              <span className="text-2xl">🚀</span>
+              <div className="text-left">
+                <h3 className="font-semibold text-base">Model Selection</h3>
+                <p className="text-xs text-base-content/60">
+                  {models?.length || 0} models available • {allResults.length} analyses on this puzzle
+                </p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              {isAnalyzing && (
+                <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded">
+                  Running analysis...
+                </span>
+              )}
+              <ChevronDown className={`h-5 w-5 transition-transform ${isModelSelectorExpanded ? 'rotate-180' : ''}`} />
+            </div>
+          </button>
+
+          {/* Expanded Content */}
+          {isModelSelectorExpanded && (
+            <div className="p-4 pt-2 border-t border-base-300">
+              <ModelSelection
+                models={models}
+                processingModels={processingModels}
+                streamingModelKey={streamingModelKey}
+                streamingEnabled={streamingEnabled}
+                canStreamModel={canStreamModel}
+                explanations={allResults}
+                onAnalyze={handleAnalyzeWithModel}
+                analyzerErrors={analyzerErrors}
+              />
+            </div>
+          )}
         </div>
 
         {/* Analysis Results (PERFORMANCE-OPTIMIZED with progressive loading) */}

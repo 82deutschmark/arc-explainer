@@ -13,6 +13,16 @@ import { Loader2, AlertTriangle } from 'lucide-react';
 import { ModelProgressIndicator } from './ModelProgressIndicator';
 
 export function ModelButton({ model, isAnalyzing, isStreaming, streamingSupported, explanationCount, onAnalyze, disabled, error }: ModelButtonProps) {
+  const handleClick = () => {
+    console.log('[ModelButton] Clicked:', model.key, 'disabled:', disabled);
+    if (disabled) {
+      console.log('[ModelButton] Button is disabled, not calling onAnalyze');
+      return;
+    }
+    console.log('[ModelButton] Calling onAnalyze for:', model.key);
+    onAnalyze(model.key);
+  };
+
   return (
     <Button
       variant="outline"
@@ -23,7 +33,7 @@ export function ModelButton({ model, isAnalyzing, isStreaming, streamingSupporte
           ? 'ring-2 ring-green-500'
           : ''
       } ${model.premium && !error ? 'border-amber-300 bg-amber-50' : ''}`}
-      onClick={() => onAnalyze(model.key)}
+      onClick={handleClick}
       disabled={disabled}
     >
       {model.premium && (
