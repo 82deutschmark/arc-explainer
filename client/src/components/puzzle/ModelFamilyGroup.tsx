@@ -44,20 +44,29 @@ export function ModelFamilyGroup({
   }
 
   return (
-    <div className="space-y-2">
-      {/* Family Label Divider */}
-      <div className="flex items-center gap-2">
-        <div className="h-px flex-1 bg-base-300" />
-        <div className="text-center">
-          <h4 className="text-xs font-semibold text-base-content/70">
-            {family.name}
-          </h4>
-          {family.description && (
-            <p className="text-xs text-base-content/50">{family.description}</p>
-          )}
+    <div className="space-y-1.5">
+      {/* Only show divider for families with >3 models */}
+      {family.models.length > 3 ? (
+        <div className="flex items-center gap-2 my-1.5">
+          <div className="h-px flex-1 bg-base-300/50" />
+          <div className="text-center">
+            <h4 className="text-xs font-medium text-base-content/60 px-2">
+              {family.name}
+            </h4>
+            {family.description && (
+              <p className="text-xs text-base-content/40">{family.description}</p>
+            )}
+          </div>
+          <div className="h-px flex-1 bg-base-300/50" />
         </div>
-        <div className="h-px flex-1 bg-base-300" />
-      </div>
+      ) : (
+        // Inline label for small families
+        <div className="mb-1">
+          <span className="text-xs font-medium text-base-content/50 bg-base-200 px-2 py-0.5 rounded-md inline-block">
+            {family.name}
+          </span>
+        </div>
+      )}
 
       {/* Model Grid - preserves existing 4-column layout */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-1.5">

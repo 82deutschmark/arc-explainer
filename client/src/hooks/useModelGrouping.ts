@@ -104,6 +104,16 @@ export function useModelGrouping(models: ModelConfig[] | undefined) {
     return filtered;
   }, [models, filters]);
 
+  // Helper: Determine if family needs full divider or inline label
+  const shouldUseInlineLabel = (family: { models: ModelConfig[] }): boolean => {
+    return family.models.length <= 3;
+  };
+
+  // Helper: Determine if provider should skip family grouping
+  const shouldFlattenFamilies = (families: any[]): boolean => {
+    return families.length === 1;
+  };
+
   // Group filtered models by provider
   const groupedModels = useMemo(() => {
     if (!filteredModels.length) {
@@ -179,7 +189,11 @@ export function useModelGrouping(models: ModelConfig[] | undefined) {
 
       result.push({
         ...provider,
-        families,
+        families: families.map(f => ({
+          ...f,
+          useInlineLabel: shouldUseInlineLabel(f)
+        })),
+        shouldFlatten: shouldFlattenFamilies(families),
         modelCount: providerModels.length,
         totalModelCount: providerModels.length
       });
@@ -203,20 +217,24 @@ export function useModelGrouping(models: ModelConfig[] | undefined) {
       Object.entries(modelsByProvider).forEach(([providerName, modelsForProvider]) => {
         const id = providerName.toLowerCase().replace(/\s+/g, '-');
 
+        const syntheticFamilies = [
+          {
+            id: `${id}-all`,
+            name: 'All models',
+            description: undefined,
+            modelKeys: [],
+            models: modelsForProvider,
+            useInlineLabel: shouldUseInlineLabel({ models: modelsForProvider })
+          }
+        ];
+
         result.push({
           id,
           name: providerName,
           icon: '🧪',
           defaultOpen: false,
-          families: [
-            {
-              id: `${id}-all`,
-              name: 'All models',
-              description: undefined,
-              modelKeys: [],
-              models: modelsForProvider
-            }
-          ],
+          families: syntheticFamilies,
+          shouldFlatten: shouldFlattenFamilies(syntheticFamilies),
           modelCount: modelsForProvider.length,
           totalModelCount: modelsForProvider.length
         });
