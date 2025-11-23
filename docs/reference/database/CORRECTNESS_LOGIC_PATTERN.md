@@ -265,7 +265,7 @@ The following files were fixed to use correct conditional logic:
 | `TrustworthinessRepository.ts` | `getConfidenceAnalysis()` | Confidence calibration stats are now correct |
 | `ModelDatasetRepository.ts` | `getModelDatasetPerformance()`, `getModelDatasetMetrics()` | Model Browser dataset cards show accurate metrics |
 | `MetricsQueryBuilder.ts` | `correctnessCalculation()`, `confidenceStats()` | All consumers of these utilities now use correct logic |
-| `ExplanationRepository.ts` | `getWorstPerformingPuzzles()` | Trading cards show accurate win/loss records |
+| `MetricsRepository.ts` | `getWorstPerformingPuzzles()` *(moved from ExplanationRepository in v5.19.0)* | Trading cards show accurate win/loss records |
 
 ## Quick Reference Checklist
 
@@ -295,13 +295,14 @@ Compare results with PuzzleExaminer page for the same puzzle. They should match 
 
 ## Related Documentation
 
-- `CHANGELOG.md` - v5.10.13 for detailed fix explanation
-- `server/repositories/ExplanationRepository.ts:246-268` - Reference implementation
+- `CHANGELOG.md` - v5.10.13 for detailed fix explanation, v5.19.0 for Phase 2 architectural refactoring
+- `server/repositories/ExplanationRepository.ts:246-268` - Reference implementation (CRUD methods)
+- `server/repositories/MetricsRepository.ts:1252+` - Analytics methods using correctness patterns
 - `server/repositories/utils/MetricsQueryBuilder.ts` - Shared utility functions
 - `server/repositories/AccuracyRepository.ts` - Example usage in production code
 
 ---
 
-**Last Updated**: 2025-11-16 (v5.10.13)
+**Last Updated**: 2025-11-23 (v5.19.0 - Phase 2 architectural refactoring)
 **Author**: Claude Code using Sonnet 4.5
 **Purpose**: Prevent correctness logic bugs by providing clear patterns and examples
