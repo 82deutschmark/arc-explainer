@@ -1,18 +1,17 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top!!!
 
-### Version 5.18.5 - BROKEN (DO NOT USE)
+### Version 5.18.5
 
-- Puzzle Browser - **CRITICAL BUG - FEATURED PUZZLES NOT DISPLAYING**
-  - **ISSUE**: The landing page is completely broken and shows ZERO featured puzzles.
-  - **ROOT CAUSE**: AI assistant (Claude Code using Sonnet 4.5) completely botched a simple task. Was asked to fetch 10 specific puzzle IDs (`65b59efc`, `e3721c99`, `dd6b8c4b`, `2ba387bc`, `14754a24`, `b457fec5`, `891232d6`, `7b5033c1`, `981571dc`, `136b0064`) and display them on the landing page. Instead of using the existing `/api/puzzle/task/:taskId` endpoint (documented in `docs/reference/api/EXTERNAL_API.md` line 57-60), the AI hallucinated a non-existent `POST /api/puzzle/list` endpoint that accepts `puzzleIds` in the request body.
-  - **CURRENT BROKEN CODE**: `client/src/pages/PuzzleBrowser.tsx:125-127` is calling `apiRequest('/api/puzzle/list', 'POST', { puzzleIds: FEATURED_PUZZLE_IDS })` which doesn't exist in the API.
-  - **THE FIX IS TRIVIAL**: Next dev should:
-    1. Read `docs/reference/api/EXTERNAL_API.md` (lines 57-60) - shows the correct endpoint is `GET /api/puzzle/task/:taskId`
-    2. Open `client/src/pages/PuzzleBrowser.tsx` (lines 123-134)
-    3. Replace the broken single `useQuery` call with 10 individual `useQuery` calls (one per puzzle ID) using the correct `/api/puzzle/task/:taskId` endpoint
-    4. See version 5.18.4 changelog above for reference - this was working before today's catastrophic changes
-  - **WHY THIS HAPPENED**: AI assistant kept overthinking, hallucinating endpoints, and couldn't execute a simple "fetch 10 specific puzzles by ID" task that should take 30 seconds.
+- Puzzle Browser - **FIXED Critical Featured Puzzles Bug**
+  - **FIXED**: Landing page now correctly displays all 10 featured puzzles (`65b59efc`, `e3721c99`, `dd6b8c4b`, `2ba387bc`, `14754a24`, `b457fec5`, `891232d6`, `7b5033c1`, `981571dc`, `136b0064`).
+  - **What was broken**: Previous commits hallucinated a non-existent `POST /api/puzzle/list` endpoint that accepts `puzzleIds` in request body. This endpoint doesn't exist in the API (see `docs/reference/api/EXTERNAL_API.md` lines 57-60).
+  - **The fix**: Replaced hallucinated endpoint with 10 individual `useQuery` calls using the correct `GET /api/puzzle/task/:taskId` endpoint. Each query explicitly fetches one puzzle with proper `queryFn` implementation (`client/src/pages/PuzzleBrowser.tsx:123-171`).
+  - **Technical details**:
+    - 10 individual hooks: `featured0` through `featured9`
+    - Each uses `fetch('/api/puzzle/task/:taskId')` with error handling
+    - Proper loading state: `featuredQueries.some(q => q.isLoading)`
+    - Proper data extraction: `.map(q => q.data?.success ? q.data.data : null).filter(...)`
 
 ### Version 5.18.4
 
