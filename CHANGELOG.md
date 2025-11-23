@@ -1,6 +1,11 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top!!!
 
+### Version 5.20.1
+
+- ELO Arena
+  - Added a "Review 10 featured puzzles" entrypoint to the Compare Explanations page, exposing the curated featured set (Mike/TEAM tweet-aligned IDs) directly in the ELO arena header. New `FeaturedPuzzlesEloEntry` component uses the shared `shared/featuredPuzzles.ts` source-of-truth and provides quick links to `/elo/:taskId` for each featured puzzle (`client/src/components/elo/FeaturedPuzzlesEloEntry.tsx`, `client/src/pages/EloComparison.tsx`).
+
 ### Version 5.20.0
 
 - Shared
