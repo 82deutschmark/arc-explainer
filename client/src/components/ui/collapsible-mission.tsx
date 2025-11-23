@@ -40,17 +40,17 @@ export function CollapsibleMission() {
           ML Street Talk
           <ExternalLink className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity" />
         </a>
-      </div>
 
-      {/* Mission Button */}
-      <button
-        type="button"
-        className="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-slate-900/60 border border-slate-700 text-sm font-semibold text-slate-200 hover:bg-slate-800 hover:border-slate-600 transition-all shadow-sm"
-        onClick={handleOpen}
-      >
-        <Info className="h-4 w-4" />
-        Mission &amp; Project Background
-      </button>
+        {/* Mission Button */}
+        <button
+          type="button"
+          className="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-slate-900/60 border border-slate-700 text-sm font-semibold text-slate-200 hover:bg-slate-800 hover:border-slate-600 transition-all shadow-sm"
+          onClick={handleOpen}
+        >
+          <Info className="h-4 w-4" />
+          Mission &amp; Project Background
+        </button>
+      </div>
 
       {/* Modal */}
       <dialog
