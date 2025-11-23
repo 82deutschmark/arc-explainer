@@ -12,11 +12,10 @@ import React, { useState, useCallback } from 'react';
 import { Link, useLocation } from 'wouter';
 import { usePuzzleList } from '@/hooks/usePuzzle';
 import { useQuery } from '@tanstack/react-query';
-import { Loader2, Grid3X3 } from 'lucide-react';
+import { Loader2, Grid3X3, MessageSquare, Youtube, ExternalLink, ListVideo } from 'lucide-react';
 import { EmojiMosaicAccent } from '@/components/browser/EmojiMosaicAccent';
 import { ReferenceMaterial } from '@/components/browser/ReferenceMaterial';
 import type { PuzzleMetadata } from '@shared/types';
-import { CollapsibleMission } from '@/components/ui/collapsible-mission';
 import { PuzzleCard } from '@/components/puzzle/PuzzleCard';
 import { usePageMeta } from '@/hooks/usePageMeta';
 
@@ -254,8 +253,42 @@ export default function PuzzleBrowser() {
     <div className="min-h-screen w-full bg-slate-950 text-slate-100">
       <div className="flex min-h-screen w-full flex-col gap-1.5 pb-3 pt-2 px-2">
 
-        <header className="w-full flex flex-col items-center gap-2 sm:flex-row sm:items-center sm:justify-between">
-          <CollapsibleMission />
+        <header className="w-full flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex flex-wrap items-center justify-center gap-2">
+            <a
+              href="https://discord.gg/9b77dPAmcA"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-900/60 border border-slate-700 text-xs font-medium text-slate-300 hover:bg-indigo-500/20 hover:border-indigo-400 hover:text-indigo-300 transition-all"
+            >
+              <MessageSquare className="h-3.5 w-3.5" />
+              Discord Community
+              <ExternalLink className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity" />
+            </a>
+
+            <a
+              href="https://www.youtube.com/c/machinelearningstreettalk"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-900/60 border border-slate-700 text-xs font-medium text-slate-300 hover:bg-rose-500/20 hover:border-rose-400 hover:text-rose-300 transition-all"
+            >
+              <Youtube className="h-3.5 w-3.5" />
+              ML Street Talk
+              <ExternalLink className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity" />
+            </a>
+
+            <a
+              href="https://www.twitch.tv/professormaxhammer"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-900/60 border border-slate-700 text-xs font-medium text-slate-300 hover:bg-purple-500/20 hover:border-purple-400 hover:text-purple-200 transition-all"
+            >
+              <ListVideo className="h-3.5 w-3.5" />
+              ARC Discord Weekly Meeting
+              <ExternalLink className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity" />
+            </a>
+          </div>
+
           <EmojiMosaicAccent
             pattern={HERO_STREAMER_PATTERN}
             columns={10}
