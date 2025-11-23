@@ -11,11 +11,11 @@
 import React, { useState, useCallback } from 'react';
 import { Link, useLocation } from 'wouter';
 import { usePuzzleList } from '@/hooks/usePuzzle';
-import { Loader2, Grid3X3 } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
+import { Loader2, Grid3X3, MessageSquare, Youtube, ExternalLink, ListVideo } from 'lucide-react';
 import { EmojiMosaicAccent } from '@/components/browser/EmojiMosaicAccent';
 import { ReferenceMaterial } from '@/components/browser/ReferenceMaterial';
 import type { PuzzleMetadata } from '@shared/types';
-import { CollapsibleMission } from '@/components/ui/collapsible-mission';
 import { PuzzleCard } from '@/components/puzzle/PuzzleCard';
 import { usePageMeta } from '@/hooks/usePageMeta';
 
@@ -62,21 +62,21 @@ const FEATURED_PUZZLE_IDS = [
   '136b0064',
 ];
 
-const MIKE_NOTES: Record<string, string> = {
+const TEAM_NOTES: Record<string, string> = {
   '65b59efc':
-    'ARC v2 task highlighted by Mike as evidence of clear complexity scaling over ARC v1.',
+    'ARC v2 task highlighted by the team as evidence of clear complexity scaling over ARC v1.',
   'e3721c99':
-    'ARC v2 task highlighted by Mike as evidence of clear complexity scaling over ARC v1.',
+    'ARC v2 task highlighted by the team as evidence of clear complexity scaling over ARC v1.',
   'dd6b8c4b':
-    'ARC v2 task highlighted by Mike as evidence of clear complexity scaling over ARC v1.',
+    'ARC v2 task highlighted by the team as evidence of clear complexity scaling over ARC v1.',
   '2ba387bc':
-    'Fastest ARC v2 task in Mike’s write‑up: Gemini 3 Pro solved it with ~772 tokens in 188 seconds vs humans at ~147 seconds.',
+    'Fastest ARC v2 task in the team\'s write‑up: Gemini 3 Pro solved it with ~772 tokens in 188 seconds vs humans at ~147 seconds.',
   '14754a24':
     'ARC v1 task that DeepThinker still gets wrong despite strong v2 performance — used as a surprising failure example.',
   'b457fec5':
-    'ARC v1 task that DeepThinker still gets wrong — one of Mike’s canonical “obvious miss” examples.',
+    'ARC v1 task that DeepThinker still gets wrong — one of the team\'s canonical "obvious miss" examples.',
   '891232d6':
-    'Another ARC v1 task called out by Mike where reasoning systems still fail, even though it is simpler than many v2 solves.',
+    'Another ARC v1 task called out by the team where reasoning systems still fail, even though it is simpler than many v2 solves.',
   '7b5033c1':
     'Case where Gemini 3 Pro reasoning solved the task with ~2,000 tokens while DeepThinker failed after ~300,000 tokens.',
   '981571dc':
@@ -119,13 +119,18 @@ export default function PuzzleBrowser() {
 
   const { puzzles, isLoading, error } = usePuzzleList(filters);
 
-  // Build curated featured set in a specific order for the landing view
+  // Fetch ALL puzzles with NO filters for featured section
+  const { puzzles: allPuzzles, isLoading: allPuzzlesLoading } = usePuzzleList({});
+
+  // Build curated featured set from unfiltered puzzle list
   const featuredPuzzles = React.useMemo(() => {
-    const all = (puzzles || []) as unknown as EnhancedPuzzleMetadata[];
+    const all = (allPuzzles || []) as unknown as EnhancedPuzzleMetadata[];
     return FEATURED_PUZZLE_IDS
       .map(id => all.find(p => p.id === id))
       .filter((puzzle): puzzle is EnhancedPuzzleMetadata => Boolean(puzzle));
-  }, [puzzles]);
+  }, [allPuzzles]);
+
+  const isFeaturedLoading = allPuzzlesLoading;
 
   // Apply explanation filtering and sorting after getting puzzles from the hook (advanced browser only)
   const filteredPuzzles = React.useMemo(() => {
@@ -248,8 +253,42 @@ export default function PuzzleBrowser() {
     <div className="min-h-screen w-full bg-slate-950 text-slate-100">
       <div className="flex min-h-screen w-full flex-col gap-1.5 pb-3 pt-2 px-2">
 
-        <header className="w-full flex items-center justify-between gap-2">
-          <CollapsibleMission />
+        <header className="w-full flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex flex-wrap items-center justify-center gap-2">
+            <a
+              href="https://discord.gg/9b77dPAmcA"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-900/60 border border-slate-700 text-xs font-medium text-slate-300 hover:bg-indigo-500/20 hover:border-indigo-400 hover:text-indigo-300 transition-all"
+            >
+              <MessageSquare className="h-3.5 w-3.5" />
+              Discord Community
+              <ExternalLink className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity" />
+            </a>
+
+            <a
+              href="https://www.youtube.com/c/machinelearningstreettalk"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-900/60 border border-slate-700 text-xs font-medium text-slate-300 hover:bg-rose-500/20 hover:border-rose-400 hover:text-rose-300 transition-all"
+            >
+              <Youtube className="h-3.5 w-3.5" />
+              ML Street Talk
+              <ExternalLink className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity" />
+            </a>
+
+            <a
+              href="https://www.twitch.tv/professormaxhammer"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-900/60 border border-slate-700 text-xs font-medium text-slate-300 hover:bg-purple-500/20 hover:border-purple-400 hover:text-purple-200 transition-all"
+            >
+              <ListVideo className="h-3.5 w-3.5" />
+              ARC Discord Weekly Meeting
+              <ExternalLink className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity" />
+            </a>
+          </div>
+
           <EmojiMosaicAccent
             pattern={HERO_STREAMER_PATTERN}
             columns={10}
@@ -271,14 +310,14 @@ export default function PuzzleBrowser() {
                 A small curated set of visually interesting puzzles for quick browsing. Use the full research browser for heavy filtering.
               </p>
             </div>
-            {!isLoading && (
+            {!isFeaturedLoading && (
               <span className="rounded-full border border-slate-700 px-3 py-1 text-xs text-slate-400">
                 {featuredPuzzles.length} featured
               </span>
             )}
           </div>
 
-          {isLoading ? (
+          {isFeaturedLoading ? (
             <div className="py-6 text-center text-slate-400">
               <Loader2 className="mx-auto mb-2 h-5 w-5 animate-spin" />
               <p className="text-xs">Loading featured puzzles…</p>
@@ -296,12 +335,12 @@ export default function PuzzleBrowser() {
                     puzzle={puzzle}
                     showGridPreview={true}
                   />
-                  {MIKE_NOTES[puzzle.id] && (
+                  {TEAM_NOTES[puzzle.id] && (
                     <div className="rounded-md border border-slate-800 bg-slate-950/80 px-3 py-2 text-xs sm:text-sm leading-relaxed text-slate-200">
                       <div className="text-[11px] font-semibold uppercase tracking-wide text-sky-300 mb-0.5">
-                        Team note
+                        Team Notes
                       </div>
-                      <p>{MIKE_NOTES[puzzle.id]}</p>
+                      <p>{TEAM_NOTES[puzzle.id]}</p>
                     </div>
                   )}
                 </div>
@@ -518,13 +557,13 @@ export default function PuzzleBrowser() {
                 </p>
 
                 <div className="mt-2 space-y-1">
-                  <p className="font-semibold text-slate-200">Open questions from Mike’s ARC thread:</p>
+                  <p className="font-semibold text-slate-200">Open questions from the team's ARC thread:</p>
                   <ol className="list-decimal list-inside space-y-1 text-slate-400">
                     <li>
                       What is the exact relationship between task complexity scaling and "time on task" scaling for AI reasoning systems (e.g., METR-style analyses)?
                     </li>
                     <li>
-                      We’ve seen &gt;100× efficiency improvements this year that should translate into full reasoning search coverage for easy problems. Why isn’t this happening?
+                      We've seen &gt;100× efficiency improvements this year that should translate into full reasoning search coverage for easy problems. Why isn't this happening?
                     </li>
                     <li>
                       Can we demonstrate the empirical search coverage percentage of current AI reasoning systems?
