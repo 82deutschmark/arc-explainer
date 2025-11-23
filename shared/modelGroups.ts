@@ -126,8 +126,7 @@ export const PROVIDER_GROUPS: ProviderGroup[] = [
     families: [
       {
         id: 'grok4',
-        name: 'Grok 4 Series',
-        description: 'Latest Grok models',
+        name: 'All Models',
         modelKeys: [
           'grok-4',
           'grok-4-fast-reasoning',
@@ -144,7 +143,7 @@ export const PROVIDER_GROUPS: ProviderGroup[] = [
     families: [
       {
         id: 'deepseek-main',
-        name: 'DeepSeek Models',
+        name: 'All Models',
         modelKeys: [
           'deepseek-chat',
           'deepseek-reasoner'
@@ -160,8 +159,7 @@ export const PROVIDER_GROUPS: ProviderGroup[] = [
     families: [
       {
         id: 'or-grok',
-        name: 'xAI Grok Family',
-        description: 'Grok models via OpenRouter',
+        name: 'Grok',
         modelKeys: [
           'x-ai/grok-4.1-fast',
           'x-ai/grok-3',
@@ -172,8 +170,7 @@ export const PROVIDER_GROUPS: ProviderGroup[] = [
       },
       {
         id: 'or-deepseek',
-        name: 'DeepSeek Family',
-        description: 'DeepSeek models via OpenRouter',
+        name: 'DeepSeek',
         modelKeys: [
           'deepseek/deepseek-chat-v3.1',
           'deepseek/deepseek-v3.1-terminus'
@@ -181,7 +178,7 @@ export const PROVIDER_GROUPS: ProviderGroup[] = [
       },
       {
         id: 'or-qwen',
-        name: 'Qwen Family',
+        name: 'Qwen',
         description: 'Alibaba Qwen models',
         modelKeys: [
           'qwen/qwen-plus-2025-07-28:thinking',
@@ -199,7 +196,7 @@ export const PROVIDER_GROUPS: ProviderGroup[] = [
       },
       {
         id: 'or-mistral',
-        name: 'Mistral Family',
+        name: 'Mistral',
         description: 'Mistral AI models',
         modelKeys: [
           'mistralai/mistral-large',
@@ -217,8 +214,7 @@ export const PROVIDER_GROUPS: ProviderGroup[] = [
       },
       {
         id: 'or-openai',
-        name: 'OpenAI via OpenRouter',
-        description: 'OpenAI models through OpenRouter',
+        name: 'OpenAI',
         modelKeys: [
           'openai/gpt-5.1',
           'openai/gpt-oss-120b'
@@ -226,8 +222,7 @@ export const PROVIDER_GROUPS: ProviderGroup[] = [
       },
       {
         id: 'or-gemini',
-        name: 'Google Gemini',
-        description: 'Google Gemini models via OpenRouter',
+        name: 'Gemini',
         modelKeys: [
           'google/gemini-3-pro-preview',
           'google/gemini-2.5-flash-preview-09-2025'
