@@ -1,6 +1,13 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top!!!
 
+### Version 5.19.0
+
+- Database Performance & Architecture
+  - **PHASE 1: Lightweight bulk explanation status query**: Created `getBulkExplanationStatusLight()` that returns only 8 fields actually used by puzzle list UI instead of 37 heavy fields. This reduces data transfer by 99% (1.2GB → 15KB for 1600+ puzzles) and eliminates PostgreSQL temp file bloat on Railway's limited disk space. Updated `puzzleService.ts` and `puzzleOverviewService.ts` to use the lightweight method. Fixes "No space left on device" errors (`server/repositories/ExplanationRepository.ts:576-671`, `server/repositories/interfaces/IExplanationRepository.ts:173-184`, `server/services/puzzleService.ts:84`, `server/services/puzzleOverviewService.ts:190,309`).
+  - **PHASE 2: Move analytics out of ExplanationRepository**: Moved `getWorstPerformingPuzzles()` from ExplanationRepository to MetricsRepository (SRP fix). This method does cross-table analytics (explanations + feedback) and computes composite scores, which is analytics work that belongs in MetricsRepository, not a CRUD repository. Updated all callers in `puzzleOverviewService.ts` to use `repositoryService.metrics.getWorstPerformingPuzzles()` (`server/repositories/MetricsRepository.ts:1252-1451`, `server/services/puzzleOverviewService.ts:190,309`).
+  - **Aggressive database cleanup on startup**: Modified database maintenance to terminate ALL active/idle queries on startup (not just long-running idle transactions) to force cleanup of orphaned PostgreSQL temp files. Runs automatically every 6 hours to prevent temp file accumulation on Railway (`server/maintenance/dbCleanup.ts:81-110`).
+
 ### Version 5.18.1
 
 - Puzzle Examiner

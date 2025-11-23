@@ -186,7 +186,8 @@ export class PuzzleOverviewService {
     logger.debug(`Found ${allPuzzles.length} total puzzles from all datasets`, 'puzzle-overview-service');
 
     // Get performance data for puzzles that have been analyzed (this only gets puzzles WITH explanations)
-    const analyzedPuzzleData = await repositoryService.explanations.getWorstPerformingPuzzles(10000, 'composite', filters);
+    // PHASE 2 FIX: getWorstPerformingPuzzles moved to MetricsRepository (analytics work, not CRUD)
+    const analyzedPuzzleData = await repositoryService.metrics.getWorstPerformingPuzzles(10000, 'composite', filters);
     
     // Create a map of performance data by puzzle ID
     const performanceMap = new Map();
@@ -304,7 +305,8 @@ export class PuzzleOverviewService {
       }
     }
 
-    const worstPuzzles = await repositoryService.explanations.getWorstPerformingPuzzles(limit * 3, sortBy, filters);
+    // PHASE 2 FIX: getWorstPerformingPuzzles moved to MetricsRepository (analytics work, not CRUD)
+    const worstPuzzles = await repositoryService.metrics.getWorstPerformingPuzzles(limit * 3, sortBy, filters);
     
     // Filter by source if needed and enrich with metadata
     let puzzlesToProcess = worstPuzzles;
