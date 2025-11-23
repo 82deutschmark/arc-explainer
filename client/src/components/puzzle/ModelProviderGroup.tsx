@@ -23,9 +23,11 @@ interface ModelProviderGroupProps {
       name: string;
       description?: string;
       models: ModelConfig[];
+      useInlineLabel?: boolean;
     }>;
     modelCount: number;
     totalModelCount: number;
+    shouldFlatten: boolean;
   };
   isExpanded: boolean;
   onToggle: () => void;
