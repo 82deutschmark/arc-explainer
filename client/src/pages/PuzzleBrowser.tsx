@@ -289,18 +289,20 @@ export default function PuzzleBrowser() {
               <p className="text-sm text-slate-300">Featured puzzles are temporarily unavailable.</p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4">
               {featuredPuzzles.map((puzzle: EnhancedPuzzleMetadata) => (
-                <div key={puzzle.id} className="space-y-1">
+                <div key={puzzle.id} className="flex flex-col gap-2">
                   <PuzzleCard
                     puzzle={puzzle}
                     showGridPreview={true}
                   />
                   {MIKE_NOTES[puzzle.id] && (
-                    <p className="text-[11px] text-slate-400 leading-snug">
-                      <span className="font-semibold text-slate-200">Team note:</span>{' '}
-                      {MIKE_NOTES[puzzle.id]}
-                    </p>
+                    <div className="rounded-md border border-slate-800 bg-slate-950/80 px-3 py-2 text-xs sm:text-sm leading-relaxed text-slate-200">
+                      <div className="text-[11px] font-semibold uppercase tracking-wide text-sky-300 mb-0.5">
+                        Team note
+                      </div>
+                      <p>{MIKE_NOTES[puzzle.id]}</p>
+                    </div>
                   )}
                 </div>
               ))}
