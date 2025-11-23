@@ -5,7 +5,7 @@
 
 - Puzzle Browser
   - **Simplified featured puzzle loading**: Removed the over-engineered 10-hook `useQuery` system and reverted to a single `usePuzzleList({})` call for the featured gallery, then deriving the curated set purely in memory from `FEATURED_PUZZLE_IDS`. This guarantees all 10 desired IDs show up when present in the global list while keeping network traffic and state minimal (`client/src/pages/PuzzleBrowser.tsx:123-135`).
-  - **Header layout fix (non-stacked controls)**: Updated the top header to keep the CollapsibleMission pill row (Discord, ML Street Talk, Mission button) and the EmojiMosaicAccent banner aligned horizontally on a single line on larger screens instead of stacking awkwardly (`client/src/pages/PuzzleBrowser.tsx:257-267`, `client/src/components/ui/collapsible-mission.tsx:19-53`).
+  - **Header layout + community links**: Removed the CollapsibleMission header component entirely and inlined three community pills (Discord Community, ML Street Talk, and **ARC Discord Weekly Meeting** linking to `https://www.twitch.tv/professormaxhammer`) directly into the PuzzleBrowser header, aligned horizontally beside the EmojiMosaicAccent banner (`client/src/pages/PuzzleBrowser.tsx:256-299`).
 
 ### Version 5.18.5
 
