@@ -71,13 +71,13 @@ export class OpenRouterService extends BaseAIService {
     const testCount = task.test.length;
 
     try {
-      // 1. Get the raw response and structured reasoning from the provider
-      const { fullResponseText, fullReasoning } = await this.callProviderAPI(promptPackage, modelKey, temperature, serviceOpts, testCount, taskId);
+      // 1. Get the raw response, structured reasoning, and usage from the provider
+      const { fullResponseText, fullReasoning, usage } = await this.callProviderAPI(promptPackage, modelKey, temperature, serviceOpts, testCount, taskId);
 
       // 2. Let the robust parser handle the raw text and reasoning
       const captureReasoning = serviceOpts.captureReasoning || false;
-      const { result, tokenUsage, reasoningLog, reasoningItems } = 
-        this.parseProviderResponse(fullResponseText, modelKey, captureReasoning, taskId, fullReasoning);
+      const { result, tokenUsage, reasoningLog, reasoningItems } =
+        this.parseProviderResponse(fullResponseText, modelKey, captureReasoning, taskId, fullReasoning, usage);
 
       // 3. Build the standard response
       return this.buildStandardResponse(
@@ -108,7 +108,7 @@ export class OpenRouterService extends BaseAIService {
     serviceOpts: ServiceOptions,
     testCount: number,
     taskId?: string
-  ): Promise<{ fullResponseText: string; fullReasoning: any; }>  {
+  ): Promise<{ fullResponseText: string; fullReasoning: any; usage: any; }>  {
     const modelName = getApiModelName(modelKey);
     
     logger.service('OpenRouter', `Making API call to model: ${modelName}`);
@@ -294,8 +294,23 @@ export class OpenRouterService extends BaseAIService {
 
         const completionText = chunkData.choices?.[0]?.message?.content || '';
         const finishReason = chunkData.choices?.[0]?.finish_reason;
-        const reasoning = chunkData.choices?.[0]?.message?.reasoning; // Extract reasoning
+        const reasoning = chunkData.choices?.[0]?.message?.reasoning; // Extract reasoning content
+        const reasoningDetails = chunkData.choices?.[0]?.message?.reasoning_details; // Extract reasoning_details for multi-turn
 
+        // Extract and accumulate usage statistics including reasoning tokens
+        if (chunkData.usage) {
+          finalUsage.prompt_tokens = chunkData.usage.prompt_tokens || finalUsage.prompt_tokens;
+          finalUsage.completion_tokens = (finalUsage.completion_tokens || 0) + (chunkData.usage.completion_tokens || 0);
+          finalUsage.total_tokens = (finalUsage.total_tokens || 0) + (chunkData.usage.total_tokens || 0);
+
+          // Extract reasoning tokens from OpenRouter's output_tokens_details
+          if (chunkData.usage.output_tokens_details?.reasoning_tokens) {
+            finalUsage.reasoning_tokens = (finalUsage.reasoning_tokens || 0) + chunkData.usage.output_tokens_details.reasoning_tokens;
+            logger.service('OpenRouter', `Captured reasoning tokens: ${chunkData.usage.output_tokens_details.reasoning_tokens}`);
+          }
+        }
+
+        // Accumulate reasoning content (for display)
         if (reasoning) {
           if (!fullReasoning) {
             fullReasoning = reasoning;
@@ -303,7 +318,17 @@ export class OpenRouterService extends BaseAIService {
             fullReasoning.push(...reasoning); // Append reasoning steps if both are arrays
           }
         }
-        
+
+        // Preserve reasoning_details for multi-turn conversations (for tool calling)
+        if (reasoningDetails) {
+          if (!fullReasoning) {
+            fullReasoning = { reasoning_details: reasoningDetails };
+          } else if (typeof fullReasoning === 'object' && !Array.isArray(fullReasoning)) {
+            fullReasoning.reasoning_details = reasoningDetails;
+          }
+          logger.service('OpenRouter', `Captured reasoning_details for multi-turn preservation (${reasoningDetails.length} blocks)`);
+        }
+
         fullResponseText += completionText;
         
         if (finishReason === 'length') {
@@ -327,13 +352,18 @@ export class OpenRouterService extends BaseAIService {
       throw new Error(`Empty response from ${modelKey} after ${continuationStep + 1} attempts. Check model availability and API configuration.`);
     }
     
-    const contentPreview = fullResponseText.length > 200 
-      ? `${fullResponseText.substring(0, 200)}...` 
+    const contentPreview = fullResponseText.length > 200
+      ? `${fullResponseText.substring(0, 200)}...`
       : fullResponseText;
     logger.service('OpenRouter', `Final assembled response preview: ${contentPreview.replace(/\n/g, '\\n')}`);
-    
-    // Return the raw text, as it's already been processed by the robust parser
-    return { fullResponseText, fullReasoning };
+
+    // Log final token usage including reasoning tokens
+    if (finalUsage.reasoning_tokens) {
+      logger.service('OpenRouter', `Total usage - Input: ${finalUsage.prompt_tokens}, Output: ${finalUsage.completion_tokens}, Reasoning: ${finalUsage.reasoning_tokens}`);
+    }
+
+    // Return the raw text, usage, and reasoning data
+    return { fullResponseText, fullReasoning, usage: finalUsage };
   }
 
   /**
@@ -438,7 +468,8 @@ export class OpenRouterService extends BaseAIService {
     modelKey: string,
     captureReasoning: boolean,
     puzzleId?: string,
-    fullReasoning?: any // NEW: Receive structured reasoning
+    fullReasoning?: any, // Receive structured reasoning
+    usage?: any // Receive usage statistics including reasoning tokens
   ): { result: any; tokenUsage: TokenUsage; reasoningLog?: any; reasoningItems?: any[] } {
     logger.service('OpenRouter', `Processing response for ${modelKey}`);
     // Log the raw text, not a stringified object
@@ -517,7 +548,15 @@ export class OpenRouterService extends BaseAIService {
     });
 
     logger.service('OpenRouter', `JSON parsing successful for ${modelKey}`);
-    logger.tokenUsage('OpenRouter', modelKey, processedResponse.tokenUsage.input, processedResponse.tokenUsage.output, processedResponse.tokenUsage.reasoning);
+
+    // Build accurate token usage from actual API usage data
+    const tokenUsage: TokenUsage = usage ? {
+      input: usage.prompt_tokens || 0,
+      output: usage.completion_tokens || 0,
+      reasoning: usage.reasoning_tokens || 0
+    } : processedResponse.tokenUsage;
+
+    logger.tokenUsage('OpenRouter', modelKey, tokenUsage.input, tokenUsage.output, tokenUsage.reasoning);
 
     // Merge reasoning: prioritize extracted reasoning from sanitization, then processedResponse reasoning
     const finalReasoningLog = extractedReasoningLog || processedResponse.reasoningLog;
@@ -528,7 +567,7 @@ export class OpenRouterService extends BaseAIService {
 
     return {
         result: processedResponse.result,
-        tokenUsage: processedResponse.tokenUsage,
+        tokenUsage,
         reasoningLog: finalReasoningLog,
         reasoningItems: processedResponse.reasoningItems
     };

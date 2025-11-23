@@ -1,6 +1,91 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top!!!
 
+### Version 5.17.10
+
+- Hall of Fame / Human Trading Cards
+  - **More prominent, clearly clickable portraits**: Enlarged contributor portraits on `HumanTradingCard` and added a subtle hover hint plus stronger cursor/hover styling so it’s visually obvious that the images can be clicked to open a zoomed-in view, without changing the existing dialog/profile routing (`client/src/components/human/HumanTradingCard.tsx`).
+
+### Version 5.17.9
+
+- Puzzle Browser
+  - **Tweet-aligned featured gallery + Mike annotations**: Expanded the Puzzle Browser featured gallery to include every puzzle ID explicitly mentioned in Mike Knoop's ARC v2/v1 tweet (`65b59efc`, `e3721c99`, `dd6b8c4b`, `2ba387bc`, `14754a24`, `b457fec5`, `891232d6`, `7b5033c1`, `981571dc`) plus `136b0064`, and added a short "Mike note" under each featured card summarizing why that task is interesting for complexity/efficiency analysis. Also embedded his four open research questions about complexity scaling, time-on-task, search coverage, and unsolved v2 tasks into the advanced view "Working notes" section so the browser doubles as a lightweight reading list for ARC reasoning research (`client/src/pages/PuzzleBrowser.tsx`).
+
+### Version 5.17.8
+
+- Puzzle Browser
+  - **Curated featured gallery + gated research view**: Updated `PuzzleBrowser` so the default experience shows a small curated gallery of four visually interesting puzzles (`14754a24`, `b457fec5`, `891232d6`, `136b0064`) using the new professional `PuzzleCard` layout, while the full heavy filter/search browser (with hundreds of cards and rich metrics) is now behind an explicit "Open full research browser" toggle. This keeps the new card design but prevents the landing page from trying to render thousands of cards at once (`client/src/pages/PuzzleBrowser.tsx`).
+
+### Version 5.17.7
+
+- Data
+  - **Jack Cole Hall of Fame imagery update**: Added multiple profile images (`/jackcole.jpeg`, `/jackCole2.png`) to both Jack Cole contributor entries so Human Trading Cards can rotate between his assets without manual database edits (`server/scripts/seedContributors.ts`).
+
+### Version 5.17.6
+
+- Data
+  - **Separated JF Puget 2024 vs 2025 achievements in Hall of Fame seed data**: Cleaned up the Jean-François Puget `competition_winner` entry so it is a 2025-only card for the preliminary ARC Prize 2025 Kaggle leaderboard, leaving the 2024 runner-up paper recognized solely by his dedicated `paper_award` card. This avoids mixing paper-award and competition contexts in a single entry (`server/scripts/seedContributors.ts`).
+
+### Version 5.17.5
+
+- Hall of Fame
+  - **2025 Leaderboard now respects year ranges**: Updated `HumanTradingCards` leaderboard logic so contributors whose active range spans 2025 (e.g., yearStart 2024, yearEnd 2025) are included in the "2025 Leaderboard" section instead of being omitted. This ensures Jean-François Puget appears in the 2025 row alongside other preliminary ARC Prize 2025 leaders while still retaining his 2024 entries (`client/src/pages/HumanTradingCards.tsx`).
+
+### Version 5.17.4
+
+- Bug Fixes
+  - **PuzzleCard & PuzzleDBViewer TypeScript alignment**: Extended `PuzzleCardProps.performanceData` to include the full set of rich metrics returned by the worst-performing puzzles API (confidence, feedback, composite score, token/cost fields, etc.) and added `formatNumber` / `formatTime` helpers to `PuzzleDBViewer` so unsolved puzzle metrics render correctly without TS build errors (`client/src/components/puzzle/PuzzleCard.tsx`, `client/src/pages/PuzzleDBViewer.tsx`).
+
+- Models
+  - **Gemini 3 Pro Preview streaming disabled for reasoning safety**: Changed `supportsStreaming` from `true` to `false` for `google/gemini-3-pro-preview` so the app no longer attempts streaming calls that can truncate reasoning tokens in multi-turn tool-calling scenarios, keeping behavior consistent with the existing `supportsStructuredOutput: false` safeguard (`server/config/models.ts`).
+
+- Data
+  - **Jean-François Puget Hall of Fame imagery update**: Updated contributor seed data to support a second profile image for JF Puget so Human Trading Cards can rotate between multiple assets without manual database edits (`server/scripts/seedContributors.ts`).
+
+### Version 5.17.3
+
+- Unsolved Puzzle Viewer
+  - **Always load ALL unsolved evaluation puzzles**: Increased the `GET /api/puzzle/worst-performing` limit cap from 50 to 500 so `PuzzleDBViewer` can request the full ARC2-Eval (≈120) and ARC1-Eval (≈400) zero-accuracy sets in one shot (`server/controllers/puzzleController.ts:getWorstPerformingPuzzles`).
+  - **Removed infinite cache on worst-performing hook**: Dropped `staleTime: Infinity` from `useWorstPerformingPuzzles` so each visit to the Unsolved ARC Evaluation Puzzles page triggers a fresh worst-performing calculation while still disabling noisy refetch-on-focus/interval (`client/src/hooks/usePuzzle.ts`).
+
+### Version 5.17.2
+
+- UI/UX - Model Selection Density Overhaul
+  - **Fixed "ping-pong effect" and wasted space**: Constrained Model Selection container width with `max-w-4xl mx-auto` to eliminate excessive horizontal stretching that forced users' eyes to travel across the full viewport (`client/src/pages/PuzzleExaminer.tsx:405`).
+  - **Removed filter UI completely**: Eliminated Premium, Fast, and Reasoning filter toggles per user feedback - this is a research platform, not an e-commerce site (`client/src/components/puzzle/ModelSelectionControls.tsx`, `client/src/components/puzzle/ModelSelection.tsx`).
+  - **Professional research platform density**: Systematically tightened spacing throughout the model selection hierarchy:
+    - Reduced provider header padding from `p-4` to `p-3`, icon size from `text-2xl` to `text-xl`, title from `text-lg` to `text-base`
+    - Reduced vertical spacing: `space-y-3` → `space-y-2`, `space-y-6` → `space-y-3`, `mt-3` → `mt-2`
+    - Tightened model grid gaps from `gap-2` to `gap-1.5` and family dividers from `gap-3` to `gap-2`
+    - All changes focused on eliminating the "empty ribbon" effect and improving information density
+
+- Models
+  - **Added Google Gemini 3 Pro Preview via OpenRouter**: Integrated the newest Gemini model (released Nov 18, 2025) with 1,048,576 token context window and tiered pricing structure ($2-$4/M input tokens, $12-$18/M output tokens based on context length ≤200K vs >200K).
+    - **Model Configuration** (`server/config/models.ts:812-830`)
+      - Key: `google/gemini-3-pro-preview`, premium tier, reasoning-capable
+      - **Critical fields**: `supportsStructuredOutput: false` (prevents JSON mode conflicts with reasoning), `supportsStreaming: true`
+      - Special note about preserving `reasoning_details` in multi-turn tool calling per OpenRouter docs
+    - **UI Organization** (`shared/modelGroups.ts:227-235`)
+      - Created dedicated "Google Gemini" family within OpenRouter provider group (id: `or-gemini`)
+      - Reorganized existing `google/gemini-2.5-flash-preview-09-2025` from `or-other` into new `or-gemini` family
+
+- Infrastructure Fixes (Critical for Reasoning Models)
+  - **OpenRouter Service: Reasoning Token Extraction** (`server/services/openrouter.ts:300-330`)
+    - **Fixed missing reasoning token metrics**: Now extracts `usage.output_tokens_details.reasoning_tokens` from API responses (was previously discarded)
+    - Accumulates reasoning tokens across continuation calls for truncated responses
+    - Logs reasoning token usage for accurate cost tracking and analytics
+  - **OpenRouter Service: Multi-Turn Reasoning Preservation** (`server/services/openrouter.ts:322-330`)
+    - **Added `reasoning_details` extraction**: Captures structured reasoning blocks required for multi-turn tool calling conversations
+    - Preserves reasoning continuity across tool use and conversation turns (per OpenRouter documentation requirement)
+    - Enables proper context maintenance for Gemini 3 Pro and other reasoning models
+  - **OpenRouter Service: Token Usage Pipeline** (`server/services/openrouter.ts:75-80, 348-354, 540-561`)
+    - Added `usage` parameter throughout API call → parser → response pipeline
+    - Returns actual API usage data (input/output/reasoning tokens) instead of estimates
+    - Fixes token tracking accuracy for all OpenRouter models
+
+- Bug Fixes
+  - **Reasoning models + JSON mode conflict**: Setting `supportsStructuredOutput: false` prevents schema enforcement from truncating reasoning tokens (matches Qwen thinking model pattern at line 430)
+
 ### Version 5.17.1
 
 - Data

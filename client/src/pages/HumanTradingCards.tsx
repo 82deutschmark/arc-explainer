@@ -30,9 +30,13 @@ export default function HumanTradingCards() {
     // Founders hero card (category 'founder')
     const founders = contributors.filter(c => c.category === 'founder');
     
-    // 2025 Leaderboard (Year 2025)
+    // 2025 Leaderboard (contributors active in 2025 based on year range)
     const leaderboard2025 = contributors
-      .filter(c => c.yearStart === 2025 && c.rank !== 0)
+      .filter(c => {
+        if (!c.yearStart) return false;
+        const endYear = c.yearEnd ?? 9999; // treat null/undefined as ongoing
+        return c.yearStart <= 2025 && endYear >= 2025 && c.rank !== 0;
+      })
       .sort((a, b) => (a.rank || 999) - (b.rank || 999));
 
     // 2024 Winners (Year 2024, Competition Winner category)

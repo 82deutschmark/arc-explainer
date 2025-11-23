@@ -180,9 +180,11 @@ export function useWorstPerformingPuzzles(
       const response = await apiRequest('GET', url);
       return await response.json();
     },
-    refetchInterval: 60000, // Refetch every 60 seconds
-    refetchOnWindowFocus: true, // Also refetch when window regains focus
-    staleTime: 30000, // Consider data fresh for 30 seconds
+    // NOTE: We intentionally disable noisy background refetching, but
+    // rely on the default staleTime so each mount of a view like
+    // PuzzleDBViewer triggers a fresh run of the expensive aggregation.
+    refetchInterval: false,
+    refetchOnWindowFocus: false,
   });
 
   // Extract puzzles from the response format { success: boolean, data: { puzzles: [...], total: number } }

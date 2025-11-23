@@ -810,6 +810,26 @@ export const MODELS: ModelConfig[] = [
   },
 
   {
+    key: 'google/gemini-3-pro-preview',
+    name: 'Gemini 3 Pro Preview',
+    color: 'bg-teal-700',
+    premium: true,
+    cost: { input: '$2.00 - $4.00', output: '$12.00 - $18.00' },
+    supportsTemperature: true,
+    provider: 'OpenRouter',
+    responseTime: { speed: 'moderate', estimate: '1-2 min' },
+    isReasoning: true,
+    apiModelName: 'google/gemini-3-pro-preview',
+    modelType: 'openrouter',
+    contextWindow: 1048576,
+    maxOutputTokens: 65536,
+    releaseDate: "2025-11",
+    supportsStreaming: false,
+    supportsStructuredOutput: false, // Reasoning models have issues with JSON mode enforcement
+    notes: 'Reasoning details must be preserved when using multi-turn tool calling. See: https://openrouter.ai/docs/use-cases/reasoning-tokens#preserving-reasoning-blocks'
+  },
+
+  {
     key: 'z-ai/glm-4.6',
     name: 'GLM 4.6',
     color: 'bg-sky-500',
