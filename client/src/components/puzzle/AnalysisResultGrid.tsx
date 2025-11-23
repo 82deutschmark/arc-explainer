@@ -202,7 +202,6 @@ export const AnalysisResultGrid: React.FC<AnalysisResultGridProps> = ({
                         grid={expectedGrid}
                         title={`Expected Output ${index + 1}`}
                         showEmojis={false}
-                        diffMask={showDiff && multiDiffMasks ? multiDiffMasks[index] : undefined}
                       />
                     </div>
                   )}

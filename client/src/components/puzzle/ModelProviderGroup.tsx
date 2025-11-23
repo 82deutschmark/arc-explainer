@@ -9,6 +9,7 @@
 import React from 'react';
 import { ChevronDown } from 'lucide-react';
 import { ModelFamilyGroup } from './ModelFamilyGroup';
+import { ModelButton } from './ModelButton';
 import type { ExplanationData } from '@/types/puzzle';
 import type { ModelConfig } from '@shared/types';
 
@@ -22,9 +23,11 @@ interface ModelProviderGroupProps {
       name: string;
       description?: string;
       models: ModelConfig[];
+      useInlineLabel?: boolean;
     }>;
     modelCount: number;
     totalModelCount: number;
+    shouldFlatten: boolean;
   };
   isExpanded: boolean;
   onToggle: () => void;
@@ -62,17 +65,17 @@ export function ModelProviderGroup({
   );
 
   return (
-    <div className="mb-4">
+    <div className="mb-2">
       {/* Provider Header - Clickable to expand/collapse */}
       <button
         onClick={onToggle}
-        className="w-full flex items-center justify-between p-3 bg-base-200 rounded-lg hover:bg-base-300 transition-colors text-left"
+        className="w-full flex items-center justify-between p-2 bg-base-200 rounded-lg hover:bg-base-300 transition-colors text-left"
       >
         <div className="flex items-center gap-2">
-          <span className="text-xl">{provider.icon}</span>
+          <span className="text-lg">{provider.icon}</span>
           <div>
             <div className="flex items-center gap-2">
-              <h3 className="text-base font-semibold">{provider.name}</h3>
+              <h3 className="text-sm font-semibold">{provider.name}</h3>
               {hasPremium && (
                 <span className="text-xs bg-amber-500 text-white px-2 py-0.5 rounded-full">
                   💰
@@ -94,20 +97,40 @@ export function ModelProviderGroup({
 
       {/* Provider Content - Family Groups */}
       {isExpanded && (
-        <div className="mt-2 p-3 space-y-3">
-          {provider.families.map((family) => (
-            <ModelFamilyGroup
-              key={family.id}
-              family={family}
-              processingModels={processingModels}
-              streamingModelKey={streamingModelKey}
-              streamingEnabled={streamingEnabled}
-              canStreamModel={canStreamModel}
-              explanations={explanations}
-              onAnalyze={onAnalyze}
-              analyzerErrors={analyzerErrors}
-            />
-          ))}
+        <div className="mt-2 p-2 space-y-2">
+          {provider.shouldFlatten ? (
+            // Single family - skip divider, show models directly
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-1.5">
+              {provider.families[0].models.map((model) => (
+                <ModelButton
+                  key={model.key}
+                  model={model}
+                  isAnalyzing={processingModels.has(model.key)}
+                  isStreaming={streamingModelKey === model.key}
+                  streamingSupported={streamingEnabled && canStreamModel(model.key)}
+                  explanationCount={explanations.filter(exp => exp.modelName === model.key).length}
+                  onAnalyze={onAnalyze}
+                  disabled={processingModels.has(model.key) || (streamingModelKey !== null && streamingModelKey !== model.key)}
+                  error={analyzerErrors.get(model.key)}
+                />
+              ))}
+            </div>
+          ) : (
+            // Multiple families - use intelligent grouping
+            provider.families.map((family) => (
+              <ModelFamilyGroup
+                key={family.id}
+                family={family}
+                processingModels={processingModels}
+                streamingModelKey={streamingModelKey}
+                streamingEnabled={streamingEnabled}
+                canStreamModel={canStreamModel}
+                explanations={explanations}
+                onAnalyze={onAnalyze}
+                analyzerErrors={analyzerErrors}
+              />
+            ))
+          )}
         </div>
       )}
     </div>
