@@ -62,21 +62,21 @@ const FEATURED_PUZZLE_IDS = [
   '136b0064',
 ];
 
-const MIKE_NOTES: Record<string, string> = {
+const TEAM_NOTES: Record<string, string> = {
   '65b59efc':
-    'ARC v2 task highlighted by Mike as evidence of clear complexity scaling over ARC v1.',
+    'ARC v2 task highlighted by the team as evidence of clear complexity scaling over ARC v1.',
   'e3721c99':
-    'ARC v2 task highlighted by Mike as evidence of clear complexity scaling over ARC v1.',
+    'ARC v2 task highlighted by the team as evidence of clear complexity scaling over ARC v1.',
   'dd6b8c4b':
-    'ARC v2 task highlighted by Mike as evidence of clear complexity scaling over ARC v1.',
+    'ARC v2 task highlighted by the team as evidence of clear complexity scaling over ARC v1.',
   '2ba387bc':
-    'Fastest ARC v2 task in Mike’s write‑up: Gemini 3 Pro solved it with ~772 tokens in 188 seconds vs humans at ~147 seconds.',
+    'Fastest ARC v2 task in the team\'s write‑up: Gemini 3 Pro solved it with ~772 tokens in 188 seconds vs humans at ~147 seconds.',
   '14754a24':
     'ARC v1 task that DeepThinker still gets wrong despite strong v2 performance — used as a surprising failure example.',
   'b457fec5':
-    'ARC v1 task that DeepThinker still gets wrong — one of Mike’s canonical “obvious miss” examples.',
+    'ARC v1 task that DeepThinker still gets wrong — one of the team\'s canonical "obvious miss" examples.',
   '891232d6':
-    'Another ARC v1 task called out by Mike where reasoning systems still fail, even though it is simpler than many v2 solves.',
+    'Another ARC v1 task called out by the team where reasoning systems still fail, even though it is simpler than many v2 solves.',
   '7b5033c1':
     'Case where Gemini 3 Pro reasoning solved the task with ~2,000 tokens while DeepThinker failed after ~300,000 tokens.',
   '981571dc':
@@ -120,11 +120,25 @@ export default function PuzzleBrowser() {
   const { puzzles, isLoading, error } = usePuzzleList(filters);
 
   // Build curated featured set in a specific order for the landing view
+  // CRITICAL: Always show ALL 10 featured puzzles by ID, no filtering
   const featuredPuzzles = React.useMemo(() => {
     const all = (puzzles || []) as unknown as EnhancedPuzzleMetadata[];
-    return FEATURED_PUZZLE_IDS
-      .map(id => all.find(p => p.id === id))
-      .filter((puzzle): puzzle is EnhancedPuzzleMetadata => Boolean(puzzle));
+    // Map to find puzzles, but DON'T filter out missing ones - keep the IDs
+    return FEATURED_PUZZLE_IDS.map(id => {
+      const found = all.find(p => p.id === id);
+      // If not found in API response, create a minimal stub with the ID
+      // This ensures we always show exactly 10 puzzles
+      if (!found) {
+        return {
+          id,
+          source: 'Unknown',
+          maxGridSize: 0,
+          gridSizeConsistent: false,
+          hasExplanation: false,
+        } as EnhancedPuzzleMetadata;
+      }
+      return found;
+    });
   }, [puzzles]);
 
   // Apply explanation filtering and sorting after getting puzzles from the hook (advanced browser only)
@@ -248,7 +262,7 @@ export default function PuzzleBrowser() {
     <div className="min-h-screen w-full bg-slate-950 text-slate-100">
       <div className="flex min-h-screen w-full flex-col gap-1.5 pb-3 pt-2 px-2">
 
-        <header className="w-full flex items-center justify-between gap-2">
+        <header className="w-full flex flex-col items-center gap-2">
           <CollapsibleMission />
           <EmojiMosaicAccent
             pattern={HERO_STREAMER_PATTERN}
@@ -296,12 +310,12 @@ export default function PuzzleBrowser() {
                     puzzle={puzzle}
                     showGridPreview={true}
                   />
-                  {MIKE_NOTES[puzzle.id] && (
+                  {TEAM_NOTES[puzzle.id] && (
                     <div className="rounded-md border border-slate-800 bg-slate-950/80 px-3 py-2 text-xs sm:text-sm leading-relaxed text-slate-200">
                       <div className="text-[11px] font-semibold uppercase tracking-wide text-sky-300 mb-0.5">
-                        Team note
+                        Team Notes
                       </div>
-                      <p>{MIKE_NOTES[puzzle.id]}</p>
+                      <p>{TEAM_NOTES[puzzle.id]}</p>
                     </div>
                   )}
                 </div>
@@ -518,13 +532,13 @@ export default function PuzzleBrowser() {
                 </p>
 
                 <div className="mt-2 space-y-1">
-                  <p className="font-semibold text-slate-200">Open questions from Mike’s ARC thread:</p>
+                  <p className="font-semibold text-slate-200">Open questions from the team's ARC thread:</p>
                   <ol className="list-decimal list-inside space-y-1 text-slate-400">
                     <li>
                       What is the exact relationship between task complexity scaling and "time on task" scaling for AI reasoning systems (e.g., METR-style analyses)?
                     </li>
                     <li>
-                      We’ve seen &gt;100× efficiency improvements this year that should translate into full reasoning search coverage for easy problems. Why isn’t this happening?
+                      We've seen &gt;100× efficiency improvements this year that should translate into full reasoning search coverage for easy problems. Why isn't this happening?
                     </li>
                     <li>
                       Can we demonstrate the empirical search coverage percentage of current AI reasoning systems?
