@@ -14,7 +14,8 @@ import {
   ExplanationData,
   ExplanationResponse,
   ExplanationSummaryPage,
-  BulkExplanationStatus
+  BulkExplanationStatus,
+  BulkExplanationStatusLight
 } from './interfaces/IExplanationRepository.ts';
 import { logger } from '../utils/logger.ts';
 
@@ -565,6 +566,107 @@ export class ExplanationRepository extends BaseRepository implements IExplanatio
       return status;
     } catch (error) {
       logger.error(`Error getting bulk explanation status: ${error instanceof Error ? error.message : String(error)}`, 'database');
+      return status; // Return default status on error
+    }
+  }
+
+  /**
+   * Get lightweight bulk explanation status - returns ONLY fields used by puzzle list views
+   * Reduces data transfer by 99% and prevents PostgreSQL temp file bloat on Railway
+   */
+  async getBulkExplanationStatusLight(puzzleIds: string[]): Promise<BulkExplanationStatusLight> {
+    if (!this.isConnected() || puzzleIds.length === 0) {
+      return {};
+    }
+
+    // AUTOMATIC CHUNKING: Process in batches to prevent temp file bloat
+    const CHUNK_SIZE = 500;
+
+    if (puzzleIds.length > CHUNK_SIZE) {
+      const chunks: string[][] = [];
+      for (let i = 0; i < puzzleIds.length; i += CHUNK_SIZE) {
+        chunks.push(puzzleIds.slice(i, i + CHUNK_SIZE));
+      }
+
+      const results = await Promise.all(
+        chunks.map(chunk => this.getBulkExplanationStatusLight(chunk))
+      );
+
+      return results.reduce((acc, result) => ({ ...acc, ...result }), {});
+    }
+
+    // Initialize all puzzles with default lightweight status
+    const status: BulkExplanationStatusLight = {};
+    puzzleIds.forEach(puzzleId => {
+      status[puzzleId] = {
+        hasExplanation: false,
+        explanationId: null,
+        modelName: null,
+        createdAt: null,
+        confidence: null,
+        estimatedCost: null,
+        feedbackCount: 0,
+        isSolved: false
+      };
+    });
+
+    try {
+      const placeholders = puzzleIds.map((_, i) => `$${i + 1}`).join(', ');
+
+      // LIGHTWEIGHT QUERY: Select ONLY the 8 fields actually used by UI
+      // Avoids fetching heavy JSONB/TEXT fields (reasoningLog, saturnImages, etc.)
+      const result = await this.query(`
+        WITH solved_puzzles AS (
+          SELECT DISTINCT puzzle_id
+          FROM explanations
+          WHERE puzzle_id IN (${placeholders})
+          AND (
+            (COALESCE(has_multiple_predictions, false) = false
+             AND COALESCE(is_prediction_correct, false) = true)
+            OR
+            (COALESCE(has_multiple_predictions, false) = true
+             AND COALESCE(multi_test_all_correct, false) = true)
+          )
+        )
+        SELECT DISTINCT ON (e.puzzle_id)
+          e.puzzle_id,
+          e.id as explanation_id,
+          e.model_name,
+          e.created_at,
+          e.confidence,
+          e.estimated_cost,
+          COALESCE(f.feedback_count, 0)::integer as feedback_count,
+          COALESCE(sp.puzzle_id IS NOT NULL, false) as is_solved
+        FROM explanations e
+        LEFT JOIN (
+          SELECT explanation_id, COUNT(*) as feedback_count
+          FROM feedback
+          GROUP BY explanation_id
+        ) f ON e.id = f.explanation_id
+        LEFT JOIN solved_puzzles sp ON sp.puzzle_id = e.puzzle_id
+        WHERE e.puzzle_id IN (${placeholders})
+        ORDER BY e.puzzle_id, e.created_at DESC
+      `, puzzleIds);
+
+      // Update status for puzzles that have explanations
+      result.rows.forEach(row => {
+        if (status[row.puzzle_id]) {
+          status[row.puzzle_id] = {
+            hasExplanation: true,
+            explanationId: row.explanation_id,
+            modelName: row.model_name,
+            createdAt: row.created_at,
+            confidence: row.confidence,
+            estimatedCost: row.estimated_cost,
+            feedbackCount: parseInt(row.feedback_count) || 0,
+            isSolved: row.is_solved || false
+          };
+        }
+      });
+
+      return status;
+    } catch (error) {
+      logger.error(`Error getting lightweight bulk explanation status: ${error instanceof Error ? error.message : String(error)}`, 'database');
       return status; // Return default status on error
     }
   }
