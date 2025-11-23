@@ -1249,6 +1249,205 @@ export class MetricsRepository extends BaseRepository {
     };
   }
 
+  /**
+   * MOVED FROM ExplanationRepository (Phase 2 architectural fix)
+   * Get worst-performing puzzles based on composite scoring
+   * Prioritizes incorrect predictions, low accuracy scores, and negative feedback
+   * Supports accuracy range filtering
+   *
+   * This is ANALYTICS work that aggregates across explanations + feedback,
+   * not CRUD operations on explanations. Belongs in MetricsRepository.
+   */
+  async getWorstPerformingPuzzles(
+    limit: number = 20,
+    sortBy: string = 'composite',
+    filters?: {
+      minAccuracy?: number;
+      maxAccuracy?: number;
+      zeroAccuracyOnly?: boolean;
+      source?: 'ARC1' | 'ARC1-Eval' | 'ARC2' | 'ARC2-Eval' | 'ARC-Heavy' | 'ConceptARC';
+      multiTestFilter?: 'single' | 'multi';
+      includeRichMetrics?: boolean;
+    }
+  ): Promise<any[]> {
+    if (!this.isConnected()) {
+      return [];
+    }
 
+    try {
+      // Build the HAVING clause based on filters
+      let havingConditions = ['COUNT(DISTINCT e.id) > 0'];
+      const queryParams = [limit, sortBy];
+      let paramIndex = 3;
+
+      if (filters?.zeroAccuracyOnly) {
+        // Only show puzzles with zero correct explanations (binary correctness check)
+        havingConditions.push(`COUNT(DISTINCT e.id) FILTER (
+          WHERE (COALESCE(e.has_multiple_predictions, false) = false AND COALESCE(e.is_prediction_correct, false) = true)
+            OR (COALESCE(e.has_multiple_predictions, false) = true AND COALESCE(e.multi_test_all_correct, false) = true)
+        ) = 0`);
+      } else {
+        // Apply accuracy range filters if provided
+        if (filters?.minAccuracy !== undefined) {
+          havingConditions.push(`AVG(COALESCE(e.trustworthiness_score, e.multi_test_average_accuracy, 0)) >= $${paramIndex}`);
+          queryParams.push(filters.minAccuracy);
+          paramIndex++;
+        }
+
+        if (filters?.maxAccuracy !== undefined) {
+          havingConditions.push(`AVG(COALESCE(e.trustworthiness_score, e.multi_test_average_accuracy, 0)) <= $${paramIndex}`);
+          queryParams.push(filters.maxAccuracy);
+          paramIndex++;
+        }
+
+        // If no specific filters, apply different filter logic based on sort type
+        if (filters?.minAccuracy === undefined && filters?.maxAccuracy === undefined) {
+          if (sortBy === 'confidence') {
+            // For confidence sorting, show puzzles with low confidence (1-25%) and exclude 0/null
+            havingConditions.push('AVG(e.confidence) > 0 AND AVG(e.confidence) <= 25');
+          } else {
+            // Original filter logic for other sort types
+            havingConditions.push(`(
+              COUNT(DISTINCT e.id) FILTER (
+                WHERE (COALESCE(e.has_multiple_predictions, false) = false AND COALESCE(e.is_prediction_correct, false) = false)
+                  OR (COALESCE(e.has_multiple_predictions, false) = true AND COALESCE(e.multi_test_all_correct, false) = false)
+              ) > 0 OR
+              AVG(COALESCE(e.trustworthiness_score, e.multi_test_average_accuracy, 0)) < 0.5 OR
+              COUNT(f.id) FILTER (WHERE f.feedback_type = 'not_helpful') > 0
+            )`);
+          }
+        }
+      }
+
+      // Add source filtering and rich metrics to the query
+      let whereConditions = ['e.puzzle_id IS NOT NULL'];
+
+      if (filters?.source) {
+        // We need to join with puzzle metadata to filter by source
+        // For now, we'll use a subquery to get puzzles from the puzzle service
+        // This is a temporary approach until we have puzzle metadata in the database
+        whereConditions.push(`e.puzzle_id IN (
+          SELECT DISTINCT puzzle_id
+          FROM explanations
+          WHERE puzzle_id IS NOT NULL
+        )`);
+      }
+
+      if (filters?.multiTestFilter) {
+        if (filters.multiTestFilter === 'single') {
+          whereConditions.push('e.has_multiple_predictions = false OR e.has_multiple_predictions IS NULL');
+        } else if (filters.multiTestFilter === 'multi') {
+          whereConditions.push('e.has_multiple_predictions = true');
+        }
+      }
+
+      // Build rich metrics selection based on flag
+      // OPTIMIZATION: Use COUNT(DISTINCT) instead of STRING_AGG to avoid temp disk overflow
+      // STRING_AGG creates large temporary files when aggregating across 4000+ puzzles
+      const richMetricsColumns = filters?.includeRichMetrics ? `
+        AVG(e.estimated_cost) as avg_cost,
+        AVG(e.api_processing_time_ms) as avg_processing_time,
+        AVG(e.reasoning_tokens) as avg_reasoning_tokens,
+        AVG(e.input_tokens) as avg_input_tokens,
+        AVG(e.output_tokens) as avg_output_tokens,
+        AVG(e.total_tokens) as avg_total_tokens,
+        COUNT(CASE WHEN e.has_multiple_predictions = true THEN 1 END) as multi_test_count,
+        COUNT(CASE WHEN e.has_multiple_predictions = false OR e.has_multiple_predictions IS NULL THEN 1 END) as single_test_count,
+        MIN(CASE WHEN e.confidence > 0 THEN e.confidence END) as lowest_non_zero_confidence,
+        COUNT(DISTINCT e.model_name) as models_attempted_count,
+        COUNT(DISTINCT e.reasoning_effort) FILTER (WHERE e.reasoning_effort IS NOT NULL) as reasoning_efforts_count,` : `
+        NULL as avg_cost,
+        NULL as avg_processing_time,`;
+
+      const result = await this.query(`
+        SELECT *
+        FROM (
+          SELECT
+            e.puzzle_id,
+            -- CORRECT logic: Use COUNT(DISTINCT) with FILTER to avoid JOIN duplication
+            -- Count unique incorrect explanations (puzzle wins = LLM failures)
+            COUNT(DISTINCT e.id) FILTER (
+              WHERE (COALESCE(e.has_multiple_predictions, false) = false AND COALESCE(e.is_prediction_correct, false) = false)
+                OR (COALESCE(e.has_multiple_predictions, false) = true AND COALESCE(e.multi_test_all_correct, false) = false)
+            ) as wrong_count,
+            AVG(COALESCE(e.trustworthiness_score, e.multi_test_average_accuracy, 0)) as avg_accuracy,
+            AVG(e.confidence) as avg_confidence,
+            COUNT(DISTINCT e.id) as total_explanations,
+            COUNT(f.id) FILTER (WHERE f.feedback_type = 'not_helpful') as negative_feedback,
+            COUNT(f.id) as total_feedback,
+            MAX(e.created_at) as latest_analysis,
+            MIN(e.id) FILTER (
+              WHERE (COALESCE(e.has_multiple_predictions, false) = false AND COALESCE(e.is_prediction_correct, false) = false)
+                OR (COALESCE(e.has_multiple_predictions, false) = true AND COALESCE(e.multi_test_all_correct, false) = false)
+            ) as worst_explanation_id,${richMetricsColumns}
+            (
+              COUNT(DISTINCT e.id) FILTER (
+                WHERE (COALESCE(e.has_multiple_predictions, false) = false AND COALESCE(e.is_prediction_correct, false) = false)
+                  OR (COALESCE(e.has_multiple_predictions, false) = true AND COALESCE(e.multi_test_all_correct, false) = false)
+              ) * 5.0 +
+              CASE WHEN AVG(COALESCE(e.trustworthiness_score, e.multi_test_average_accuracy, 0)) < 0.6 THEN 10.0 ELSE 0.0 END +
+              CASE WHEN AVG(e.confidence) < 50 THEN 3.0 ELSE 0.0 END +
+              COUNT(f.id) FILTER (WHERE f.feedback_type = 'not_helpful') * 2.0
+            ) as composite_score
+          FROM explanations e
+          LEFT JOIN feedback f ON e.id = f.explanation_id
+          WHERE ${whereConditions.join(' AND ')}
+          GROUP BY e.puzzle_id
+          HAVING ${havingConditions.join(' AND ')}
+        ) as performance_data
+        ORDER BY
+          CASE WHEN $2 = 'composite' THEN performance_data.composite_score END DESC,
+          CASE WHEN $2 = 'accuracy' THEN performance_data.avg_accuracy END ASC NULLS LAST,
+          CASE WHEN $2 = 'confidence' THEN performance_data.avg_confidence END ASC NULLS LAST,
+          CASE WHEN $2 = 'feedback' THEN performance_data.negative_feedback END DESC NULLS LAST,
+          CASE WHEN $2 = 'cost' THEN performance_data.avg_cost END DESC NULLS LAST,
+          CASE WHEN $2 = 'processing_time' THEN performance_data.avg_processing_time END DESC NULLS LAST
+        LIMIT $1
+      `, queryParams);
+
+      return result.rows.map(row => {
+        const rawAvgAccuracy = parseFloat(row.avg_accuracy);
+        const clampedAvgAccuracy = isNaN(rawAvgAccuracy)
+          ? 0
+          : Math.min(1, Math.max(0, rawAvgAccuracy));
+
+        const baseData = {
+          puzzleId: row.puzzle_id,
+          wrongCount: parseInt(row.wrong_count) || 0,
+          avgAccuracy: clampedAvgAccuracy,
+          avgConfidence: parseFloat(row.avg_confidence) || 0,
+          totalExplanations: parseInt(row.total_explanations) || 0,
+          negativeFeedback: parseInt(row.negative_feedback) || 0,
+          totalFeedback: parseInt(row.total_feedback) || 0,
+          latestAnalysis: row.latest_analysis,
+          worstExplanationId: row.worst_explanation_id,
+          compositeScore: parseFloat(row.composite_score) || 0
+        };
+
+        // Add rich metrics if requested
+        if (filters?.includeRichMetrics) {
+          return {
+            ...baseData,
+            avgCost: parseFloat(row.avg_cost) || 0,
+            avgProcessingTime: parseInt(row.avg_processing_time) || 0,
+            avgReasoningTokens: parseInt(row.avg_reasoning_tokens) || 0,
+            avgInputTokens: parseInt(row.avg_input_tokens) || 0,
+            avgOutputTokens: parseInt(row.avg_output_tokens) || 0,
+            avgTotalTokens: parseInt(row.avg_total_tokens) || 0,
+            multiTestCount: parseInt(row.multi_test_count) || 0,
+            singleTestCount: parseInt(row.single_test_count) || 0,
+            lowestNonZeroConfidence: parseFloat(row.lowest_non_zero_confidence) || null,
+            modelsAttemptedCount: parseInt(row.models_attempted_count) || 0,
+            reasoningEffortsCount: parseInt(row.reasoning_efforts_count) || 0
+          };
+        }
+
+        return baseData;
+      });
+    } catch (error) {
+      logger.error(`Error getting worst-performing puzzles: ${error instanceof Error ? error.message : String(error)}`, 'metrics-repository');
+      return [];
+    }
+  }
 
 }
