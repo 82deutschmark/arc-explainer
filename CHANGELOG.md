@@ -1,6 +1,12 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top!!!
 
+### Version 5.18.6
+
+- Puzzle Browser
+  - **Simplified featured puzzle loading**: Removed the over-engineered 10-hook `useQuery` system and reverted to a single `usePuzzleList({})` call for the featured gallery, then deriving the curated set purely in memory from `FEATURED_PUZZLE_IDS`. This guarantees all 10 desired IDs show up when present in the global list while keeping network traffic and state minimal (`client/src/pages/PuzzleBrowser.tsx:123-135`).
+  - **Header layout fix (non-stacked controls)**: Updated the top header to keep the CollapsibleMission pill row (Discord, ML Street Talk, Mission button) and the EmojiMosaicAccent banner aligned horizontally on a single line on larger screens instead of stacking awkwardly (`client/src/pages/PuzzleBrowser.tsx:257-267`, `client/src/components/ui/collapsible-mission.tsx:19-53`).
+
 ### Version 5.18.5
 
 - Puzzle Browser - **FIXED Critical Featured Puzzles Bug**

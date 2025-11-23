@@ -254,7 +254,7 @@ export default function PuzzleBrowser() {
     <div className="min-h-screen w-full bg-slate-950 text-slate-100">
       <div className="flex min-h-screen w-full flex-col gap-1.5 pb-3 pt-2 px-2">
 
-        <header className="w-full flex flex-col items-center gap-2">
+        <header className="w-full flex flex-col items-center gap-2 sm:flex-row sm:items-center sm:justify-between">
           <CollapsibleMission />
           <EmojiMosaicAccent
             pattern={HERO_STREAMER_PATTERN}
