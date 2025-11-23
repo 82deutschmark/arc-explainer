@@ -44,12 +44,12 @@ export function ModelFamilyGroup({
   }
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-2">
       {/* Family Label Divider */}
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-2">
         <div className="h-px flex-1 bg-base-300" />
         <div className="text-center">
-          <h4 className="text-sm font-semibold text-base-content/70">
+          <h4 className="text-xs font-semibold text-base-content/70">
             {family.name}
           </h4>
           {family.description && (
@@ -60,7 +60,7 @@ export function ModelFamilyGroup({
       </div>
 
       {/* Model Grid - preserves existing 4-column layout */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-1.5">
         {family.models.map((model) => {
           const isProcessing = processingModels.has(model.key);
           const isStreamingThisModel = streamingModelKey === model.key;

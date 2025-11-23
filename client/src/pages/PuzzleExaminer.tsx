@@ -402,7 +402,7 @@ export default function PuzzleExaminer() {
         </div>
 
         {/* Model Selection - Organized by Provider */}
-        <div className="bg-base-100 p-4 mb-4 rounded-lg">
+        <div className="bg-base-100 p-4 mb-4 rounded-lg max-w-4xl mx-auto">
           <h3 className="font-medium text-lg mb-3 flex items-center gap-2">
             🚀 Model Selection
             <span className="text-sm opacity-60 font-normal">Choose AI models to run analysis with</span>

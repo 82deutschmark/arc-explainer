@@ -113,6 +113,17 @@ function formatDuration(milliseconds: number) {
   return `${minutes}m ${remainingSeconds}s`;
 }
 
+function formatNumber(num: number): string {
+  return new Intl.NumberFormat('en-US').format(num);
+}
+
+function formatTime(seconds: number): string {
+  if (seconds < 60) return `${seconds}s`;
+  const minutes = Math.floor(seconds / 60);
+  const remainingSeconds = seconds % 60;
+  return remainingSeconds > 0 ? `${minutes}m ${remainingSeconds}s` : `${minutes}m`;
+}
+
 // Compact puzzle card component with lazy-loaded TinyGrid preview
 interface CompactPuzzleCardProps {
   puzzle: PuzzleDBStats;
@@ -348,7 +359,7 @@ export default function PuzzleDBViewer() {
 
   return (
     <div className="min-h-screen w-full bg-white text-slate-900">
-      <div className="mx-auto max-w-7xl px-4 py-4 space-y-3">
+      <div className="w-full px-4 py-4 space-y-3">
         {/* Header - Compact, White Theme */}
         <div className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 shadow-sm">
           <div className="flex items-center justify-between gap-2 flex-wrap">
@@ -417,12 +428,12 @@ export default function PuzzleDBViewer() {
 
         {/* ARC2 Evaluation Section (PRIMARY - shown first) */}
         {!isLoading && showArc2 && (
-          <div className="w-full rounded-lg border border-purple-200 bg-white px-3 py-2">
-            <div className="flex items-center justify-between mb-1.5">
+          <div className="w-full rounded-lg border border-purple-200 bg-white px-3 py-3">
+            <div className="flex items-center justify-between gap-3 mb-3">
               <h2 className="text-sm font-semibold uppercase tracking-wide text-purple-700 flex items-center gap-1">
                 ⭐ ARC2 Evaluation - PRIMARY FOCUS
               </h2>
-              <span className="rounded-full border border-purple-200 bg-purple-50 px-2 py-0.5 text-xs font-semibold text-purple-700">
+              <span className="rounded-full border border-purple-300 bg-purple-100 px-3 py-1 text-sm font-bold text-purple-800 whitespace-nowrap">
                 {arc2Total} / 120 unsolved
               </span>
             </div>
@@ -447,7 +458,7 @@ export default function PuzzleDBViewer() {
                 {/* Puzzle Card Grid Display */}
                 <div className="mt-3 pt-3 border-t border-purple-100">
                   <h3 className="text-xs font-semibold text-slate-600 uppercase tracking-wide mb-2">Puzzle Previews (First 12)</h3>
-                  <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-3">
+                  <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                     {filteredArc2.slice(0, 12).map((puzzle) => (
                       <PuzzleCard
                         key={`card-${puzzle.id as string}`}
@@ -464,12 +475,12 @@ export default function PuzzleDBViewer() {
 
         {/* ARC1 Evaluation Section (SECONDARY - shown below) */}
         {!isLoading && showArc1 && (
-          <div className="w-full rounded-lg border border-blue-200 bg-white px-3 py-2">
-            <div className="flex items-center justify-between mb-1.5">
+          <div className="w-full rounded-lg border border-blue-200 bg-white px-3 py-3">
+            <div className="flex items-center justify-between gap-3 mb-3">
               <h2 className="text-sm font-semibold uppercase tracking-wide text-blue-700 flex items-center gap-1">
                 ✨ ARC1 Evaluation - SECONDARY
               </h2>
-              <span className="rounded-full border border-blue-200 bg-blue-50 px-2 py-0.5 text-xs font-semibold text-blue-700">
+              <span className="rounded-full border border-blue-300 bg-blue-100 px-3 py-1 text-sm font-bold text-blue-800 whitespace-nowrap">
                 {arc1Total} / 400 unsolved
               </span>
             </div>
@@ -494,7 +505,7 @@ export default function PuzzleDBViewer() {
                 {/* Puzzle Card Grid Display */}
                 <div className="mt-3 pt-3 border-t border-blue-100">
                   <h3 className="text-xs font-semibold text-slate-600 uppercase tracking-wide mb-2">Puzzle Previews (First 12)</h3>
-                  <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-3">
+                  <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                     {filteredArc1.slice(0, 12).map((puzzle) => (
                       <PuzzleCard
                         key={`card-${puzzle.id as string}`}

@@ -225,6 +225,15 @@ export const PROVIDER_GROUPS: ProviderGroup[] = [
         ]
       },
       {
+        id: 'or-gemini',
+        name: 'Google Gemini',
+        description: 'Google Gemini models via OpenRouter',
+        modelKeys: [
+          'google/gemini-3-pro-preview',
+          'google/gemini-2.5-flash-preview-09-2025'
+        ]
+      },
+      {
         id: 'or-other',
         name: 'Other Models',
         description: 'Additional models available via OpenRouter',
@@ -234,7 +243,6 @@ export const PROVIDER_GROUPS: ProviderGroup[] = [
           'nousresearch/hermes-4-70b',
           'amazon/nova-premier-v1',
           'minimax/minimax-m2',
-          'google/gemini-2.5-flash-preview-09-2025',
           'z-ai/glm-4.6'
         ]
       }

@@ -8,7 +8,7 @@
 
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import type { ModelConfig } from '@shared/types';
-import { PROVIDER_GROUPS, type ProviderGroup } from '@shared/modelGroups';
+import { PROVIDER_GROUPS } from '@shared/modelGroups';
 
 interface FilterState {
   premium: boolean;
@@ -106,38 +106,124 @@ export function useModelGrouping(models: ModelConfig[] | undefined) {
 
   // Group filtered models by provider
   const groupedModels = useMemo(() => {
-    const filteredModelKeys = new Set(filteredModels.map(m => m.key));
+    if (!filteredModels.length) {
+      return [];
+    }
 
-    return PROVIDER_GROUPS.map(provider => {
-      const providerModels = filteredModels.filter(model => {
-        // Check if model is in any of this provider's families
-        return provider.families.some(family =>
-          family.modelKeys.includes(model.key)
-        );
+    const providerIdByName: Record<ModelConfig['provider'], string> = {
+      OpenAI: 'openai',
+      Anthropic: 'anthropic',
+      xAI: 'xai',
+      Gemini: 'gemini',
+      DeepSeek: 'deepseek',
+      OpenRouter: 'openrouter',
+      Grover: 'grover',
+      Saturn: 'saturn'
+    };
+
+    const assignedKeys = new Set<string>();
+    const result: any[] = [];
+
+    // First, build groups for statically configured providers using PROVIDER_GROUPS
+    PROVIDER_GROUPS.forEach(provider => {
+      const providerNames = Object.entries(providerIdByName)
+        .filter(([, id]) => id === provider.id)
+        .map(([name]) => name);
+
+      const providerModels = filteredModels.filter(model =>
+        providerNames.includes(model.provider)
+      );
+
+      if (providerModels.length === 0) {
+        return;
+      }
+
+      const familiesWithModels = provider.families.map(family => {
+        const familyModels = providerModels.filter(model => family.modelKeys.includes(model.key));
+        familyModels.forEach(model => assignedKeys.add(model.key));
+        return {
+          ...family,
+          models: familyModels
+        };
       });
 
-      const families = provider.families
-        .map(family => {
-          const familyModels = providerModels.filter(model =>
-            family.modelKeys.includes(model.key)
-          );
-          return {
-            ...family,
-            models: familyModels
-          };
-        })
-        .filter(family => family.models.length > 0); // Only show families with models
+      let families = familiesWithModels.filter(family => family.models.length > 0);
 
-      return {
+      const ungroupedModels = providerModels.filter(model => !assignedKeys.has(model.key));
+
+      if (ungroupedModels.length > 0) {
+        ungroupedModels.forEach(model => assignedKeys.add(model.key));
+
+        const existingOtherIndex = families.findIndex(family =>
+          family.id === 'or-other' ||
+          family.id === `${provider.id}-other` ||
+          family.name.toLowerCase().includes('other')
+        );
+
+        if (existingOtherIndex >= 0) {
+          const existingFamily = families[existingOtherIndex];
+          families[existingOtherIndex] = {
+            ...existingFamily,
+            models: [...existingFamily.models, ...ungroupedModels]
+          };
+        } else {
+          families.push({
+            id: `${provider.id}-other`,
+            name: 'Other models',
+            description: families.length > 0 ? 'Additional models from this provider' : undefined,
+            modelKeys: [],
+            models: ungroupedModels
+          });
+        }
+      }
+
+      result.push({
         ...provider,
         families,
         modelCount: providerModels.length,
-        totalModelCount: provider.families.reduce(
-          (sum, family) => sum + family.modelKeys.length,
-          0
-        )
-      };
-    }).filter(provider => provider.modelCount > 0); // Only show providers with models
+        totalModelCount: providerModels.length
+      });
+    });
+
+    // Then, create synthetic provider groups for any remaining models so they stay visible
+    const remainingModels = filteredModels.filter(model => !assignedKeys.has(model.key));
+
+    if (remainingModels.length > 0) {
+      const modelsByProvider: Record<string, ModelConfig[]> = remainingModels.reduce(
+        (acc, model) => {
+          if (!acc[model.provider]) {
+            acc[model.provider] = [];
+          }
+          acc[model.provider].push(model);
+          return acc;
+        },
+        {} as Record<string, ModelConfig[]>
+      );
+
+      Object.entries(modelsByProvider).forEach(([providerName, modelsForProvider]) => {
+        const id = providerName.toLowerCase().replace(/\s+/g, '-');
+
+        result.push({
+          id,
+          name: providerName,
+          icon: '🧪',
+          defaultOpen: false,
+          families: [
+            {
+              id: `${id}-all`,
+              name: 'All models',
+              description: undefined,
+              modelKeys: [],
+              models: modelsForProvider
+            }
+          ],
+          modelCount: modelsForProvider.length,
+          totalModelCount: modelsForProvider.length
+        });
+      });
+    }
+
+    return result;
   }, [filteredModels]);
 
   return {

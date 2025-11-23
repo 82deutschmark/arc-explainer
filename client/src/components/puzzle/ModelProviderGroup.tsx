@@ -66,27 +66,27 @@ export function ModelProviderGroup({
       {/* Provider Header - Clickable to expand/collapse */}
       <button
         onClick={onToggle}
-        className="w-full flex items-center justify-between p-4 bg-base-200 rounded-lg hover:bg-base-300 transition-colors text-left"
+        className="w-full flex items-center justify-between p-3 bg-base-200 rounded-lg hover:bg-base-300 transition-colors text-left"
       >
-        <div className="flex items-center gap-3">
-          <span className="text-2xl">{provider.icon}</span>
+        <div className="flex items-center gap-2">
+          <span className="text-xl">{provider.icon}</span>
           <div>
             <div className="flex items-center gap-2">
-              <h3 className="text-lg font-semibold">{provider.name}</h3>
+              <h3 className="text-base font-semibold">{provider.name}</h3>
               {hasPremium && (
                 <span className="text-xs bg-amber-500 text-white px-2 py-0.5 rounded-full">
                   💰
                 </span>
               )}
             </div>
-            <p className="text-sm text-base-content/60">
+            <p className="text-xs text-base-content/60">
               {provider.modelCount} model{provider.modelCount !== 1 ? 's' : ''}
               {analysisCount > 0 && ` • ${analysisCount} analysis${analysisCount !== 1 ? 'es' : ''}`}
             </p>
           </div>
         </div>
         <ChevronDown
-          className={`h-5 w-5 transition-transform duration-200 ${
+          className={`h-4 w-4 transition-transform duration-200 ${
             isExpanded ? 'rotate-180' : ''
           }`}
         />
@@ -94,7 +94,7 @@ export function ModelProviderGroup({
 
       {/* Provider Content - Family Groups */}
       {isExpanded && (
-        <div className="mt-3 p-4 space-y-6">
+        <div className="mt-2 p-3 space-y-3">
           {provider.families.map((family) => (
             <ModelFamilyGroup
               key={family.id}
