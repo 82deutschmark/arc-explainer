@@ -11,6 +11,7 @@
 import React, { useState, useCallback } from 'react';
 import { Link, useLocation } from 'wouter';
 import { usePuzzleList } from '@/hooks/usePuzzle';
+import { useQuery } from '@tanstack/react-query';
 import { Loader2, Grid3X3 } from 'lucide-react';
 import { EmojiMosaicAccent } from '@/components/browser/EmojiMosaicAccent';
 import { ReferenceMaterial } from '@/components/browser/ReferenceMaterial';
@@ -119,27 +120,22 @@ export default function PuzzleBrowser() {
 
   const { puzzles, isLoading, error } = usePuzzleList(filters);
 
-  // Build curated featured set in a specific order for the landing view
-  // CRITICAL: Always show ALL 10 featured puzzles by ID, no filtering
+  // Fetch featured puzzles directly by ID to guarantee they show up for presentation
+  // Each puzzle is fetched individually using the /api/puzzle/task/:taskId endpoint
+  const featuredQueries = FEATURED_PUZZLE_IDS.map(id =>
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    useQuery<{ success: boolean; data: EnhancedPuzzleMetadata }>({
+      queryKey: [`/api/puzzle/task/${id}`],
+    })
+  );
+
   const featuredPuzzles = React.useMemo(() => {
-    const all = (puzzles || []) as unknown as EnhancedPuzzleMetadata[];
-    // Map to find puzzles, but DON'T filter out missing ones - keep the IDs
-    return FEATURED_PUZZLE_IDS.map(id => {
-      const found = all.find(p => p.id === id);
-      // If not found in API response, create a minimal stub with the ID
-      // This ensures we always show exactly 10 puzzles THIS IS FFUCKING INCORRECT AND NOT ALLOWED!!!!!
-      if (!found) {
-        return {
-          id,
-          source: 'Unknown',
-          maxGridSize: 0,
-          gridSizeConsistent: false,
-          hasExplanation: false,
-        } as EnhancedPuzzleMetadata;
-      }
-      return found;
-    });
-  }, [puzzles]);
+    return featuredQueries
+      .map(q => q.data?.success ? q.data.data : null)
+      .filter((p): p is EnhancedPuzzleMetadata => p !== null);
+  }, featuredQueries.map(q => q.data));
+
+  const isFeaturedLoading = featuredQueries.some(q => q.isLoading);
 
   // Apply explanation filtering and sorting after getting puzzles from the hook (advanced browser only)
   const filteredPuzzles = React.useMemo(() => {
@@ -285,14 +281,14 @@ export default function PuzzleBrowser() {
                 A small curated set of visually interesting puzzles for quick browsing. Use the full research browser for heavy filtering.
               </p>
             </div>
-            {!isLoading && (
+            {!isFeaturedLoading && (
               <span className="rounded-full border border-slate-700 px-3 py-1 text-xs text-slate-400">
                 {featuredPuzzles.length} featured
               </span>
             )}
           </div>
 
-          {isLoading ? (
+          {isFeaturedLoading ? (
             <div className="py-6 text-center text-slate-400">
               <Loader2 className="mx-auto mb-2 h-5 w-5 animate-spin" />
               <p className="text-xs">Loading featured puzzles…</p>
