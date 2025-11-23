@@ -82,15 +82,15 @@ Additional rules:
 2. **Plan architecture** – create `{date}-{goal}-plan.md` in `docs/` (list files & todos).  
 3. **Implement modularly** – follow project patterns and SRP.  
 4. **Verify integration** – ensure APIs & dependencies work with real implementations.  
-5. **Version control** – commit every touched file with an informative message detailing  
-   what/why/how and your model name as author.
+5. **Version control** – in the changelog document every touched file with a brief informative message detailing  
+   what/why/how and your model name as author. Use advancing semantic versioning and put your changes at the top!
 
 ## 🗄️ Repository Architecture (High-level)
 
 - Monorepo: `client/`, `server/`, `shared/`, `data/`, `solver/`, `dist/`.
 - Strict **domain separation** in repositories:
   - `AccuracyRepository` → correctness
-  - `TrustworthinessRepository` → confidence reliability
+  - `TrustworthinessRepository` → HAS A CONFUSING NAME do not make assumptions about its purpose and consult the user.
   - `CostRepository` → cost calculations
   - `MetricsRepository` → aggregation
 
@@ -106,7 +106,9 @@ See `docs/DEVELOPER_GUIDE.md` for full diagrams and table of key files.
 
 - No time estimates or premature celebration.
 - No shortcuts sacrificing code quality.
-- No custom UI when DaisyUI provides a component.
+- No custom UI when shadcn/ui provides a component.
+- No placeholders or mock data or simulations!!!
+- No complex explanations or overly technical jargon in your output to the user.  BE BRIEF.  Do not show code or other complex output to the user as a means of explaining your work!!!
 
 ---
 
