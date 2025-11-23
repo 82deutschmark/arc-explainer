@@ -261,12 +261,16 @@ export default function PuzzleExaminer() {
 
   // Handle model selection
   const handleAnalyzeWithModel = (modelKey: string) => {
+    console.log('[PuzzleExaminer] handleAnalyzeWithModel called with:', modelKey);
     const model = models?.find(m => m.key === modelKey);
+    console.log('[PuzzleExaminer] Found model:', model?.name);
+    console.log('[PuzzleExaminer] Setting pendingAnalysis and opening modal');
     setPendingAnalysis({
       modelKey,
       supportsTemperature: model?.supportsTemperature ?? true,
     });
     setIsPromptPreviewOpen(true);
+    console.log('[PuzzleExaminer] Modal should now be open');
   };
 
   const handleConfirmAnalysis = async () => {
