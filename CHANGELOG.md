@@ -1,6 +1,13 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top!!!
 
+### Version 5.18.4
+
+- Puzzle Browser - Critical Presentation Fix
+  - **FIXED featured puzzle loading for presentation**: The 5.18.3 implementation was creating stub/fake puzzles when featured puzzles weren't found in filtered results. Now properly fetches all 10 featured puzzles directly by ID using individual `useQuery` calls to `/api/puzzle/task/:taskId` endpoint, guaranteeing they display reliably regardless of filter state. Removed stub puzzle creation logic entirely (`client/src/pages/PuzzleBrowser.tsx:123-144`).
+  - **Fixed React hooks violation**: Changed from calling `useQuery` in a loop to 10 individual hook declarations (`featured0` through `featured9`) to comply with React rules of hooks.
+  - **Added dedicated loading state**: New `isFeaturedLoading` state tracks when featured puzzles are loading, independent of the advanced browser's filter results.
+
 ### Version 5.18.3
 
 - Puzzle Browser - Critical Presentation Fixes
