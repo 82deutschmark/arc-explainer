@@ -127,7 +127,7 @@ export default function PuzzleBrowser() {
     return FEATURED_PUZZLE_IDS.map(id => {
       const found = all.find(p => p.id === id);
       // If not found in API response, create a minimal stub with the ID
-      // This ensures we always show exactly 10 puzzles
+      // This ensures we always show exactly 10 puzzles THIS IS FFUCKING INCORRECT AND NOT ALLOWED!!!!!
       if (!found) {
         return {
           id,
