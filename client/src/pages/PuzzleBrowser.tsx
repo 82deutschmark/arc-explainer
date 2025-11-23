@@ -120,25 +120,52 @@ export default function PuzzleBrowser() {
 
   const { puzzles, isLoading, error } = usePuzzleList(filters);
 
-  // Fetch featured puzzles directly by ID to guarantee they show up for presentation
-  // Each puzzle is fetched individually using the /api/puzzle/task/:taskId endpoint
-  const featured0 = useQuery<{ success: boolean; data: EnhancedPuzzleMetadata }>({ queryKey: [`/api/puzzle/task/${FEATURED_PUZZLE_IDS[0]}`] });
-  const featured1 = useQuery<{ success: boolean; data: EnhancedPuzzleMetadata }>({ queryKey: [`/api/puzzle/task/${FEATURED_PUZZLE_IDS[1]}`] });
-  const featured2 = useQuery<{ success: boolean; data: EnhancedPuzzleMetadata }>({ queryKey: [`/api/puzzle/task/${FEATURED_PUZZLE_IDS[2]}`] });
-  const featured3 = useQuery<{ success: boolean; data: EnhancedPuzzleMetadata }>({ queryKey: [`/api/puzzle/task/${FEATURED_PUZZLE_IDS[3]}`] });
-  const featured4 = useQuery<{ success: boolean; data: EnhancedPuzzleMetadata }>({ queryKey: [`/api/puzzle/task/${FEATURED_PUZZLE_IDS[4]}`] });
-  const featured5 = useQuery<{ success: boolean; data: EnhancedPuzzleMetadata }>({ queryKey: [`/api/puzzle/task/${FEATURED_PUZZLE_IDS[5]}`] });
-  const featured6 = useQuery<{ success: boolean; data: EnhancedPuzzleMetadata }>({ queryKey: [`/api/puzzle/task/${FEATURED_PUZZLE_IDS[6]}`] });
-  const featured7 = useQuery<{ success: boolean; data: EnhancedPuzzleMetadata }>({ queryKey: [`/api/puzzle/task/${FEATURED_PUZZLE_IDS[7]}`] });
-  const featured8 = useQuery<{ success: boolean; data: EnhancedPuzzleMetadata }>({ queryKey: [`/api/puzzle/task/${FEATURED_PUZZLE_IDS[8]}`] });
-  const featured9 = useQuery<{ success: boolean; data: EnhancedPuzzleMetadata }>({ queryKey: [`/api/puzzle/task/${FEATURED_PUZZLE_IDS[9]}`] });
+  // Fetch featured puzzles directly by ID - 10 individual API calls
+  const featured0 = useQuery<{ success: boolean; data: EnhancedPuzzleMetadata }>({
+    queryKey: [`/api/puzzle/task/${FEATURED_PUZZLE_IDS[0]}`],
+    queryFn: async () => { const res = await fetch(`/api/puzzle/task/${FEATURED_PUZZLE_IDS[0]}`); if (!res.ok) throw new Error('Failed'); return res.json(); }
+  });
+  const featured1 = useQuery<{ success: boolean; data: EnhancedPuzzleMetadata }>({
+    queryKey: [`/api/puzzle/task/${FEATURED_PUZZLE_IDS[1]}`],
+    queryFn: async () => { const res = await fetch(`/api/puzzle/task/${FEATURED_PUZZLE_IDS[1]}`); if (!res.ok) throw new Error('Failed'); return res.json(); }
+  });
+  const featured2 = useQuery<{ success: boolean; data: EnhancedPuzzleMetadata }>({
+    queryKey: [`/api/puzzle/task/${FEATURED_PUZZLE_IDS[2]}`],
+    queryFn: async () => { const res = await fetch(`/api/puzzle/task/${FEATURED_PUZZLE_IDS[2]}`); if (!res.ok) throw new Error('Failed'); return res.json(); }
+  });
+  const featured3 = useQuery<{ success: boolean; data: EnhancedPuzzleMetadata }>({
+    queryKey: [`/api/puzzle/task/${FEATURED_PUZZLE_IDS[3]}`],
+    queryFn: async () => { const res = await fetch(`/api/puzzle/task/${FEATURED_PUZZLE_IDS[3]}`); if (!res.ok) throw new Error('Failed'); return res.json(); }
+  });
+  const featured4 = useQuery<{ success: boolean; data: EnhancedPuzzleMetadata }>({
+    queryKey: [`/api/puzzle/task/${FEATURED_PUZZLE_IDS[4]}`],
+    queryFn: async () => { const res = await fetch(`/api/puzzle/task/${FEATURED_PUZZLE_IDS[4]}`); if (!res.ok) throw new Error('Failed'); return res.json(); }
+  });
+  const featured5 = useQuery<{ success: boolean; data: EnhancedPuzzleMetadata }>({
+    queryKey: [`/api/puzzle/task/${FEATURED_PUZZLE_IDS[5]}`],
+    queryFn: async () => { const res = await fetch(`/api/puzzle/task/${FEATURED_PUZZLE_IDS[5]}`); if (!res.ok) throw new Error('Failed'); return res.json(); }
+  });
+  const featured6 = useQuery<{ success: boolean; data: EnhancedPuzzleMetadata }>({
+    queryKey: [`/api/puzzle/task/${FEATURED_PUZZLE_IDS[6]}`],
+    queryFn: async () => { const res = await fetch(`/api/puzzle/task/${FEATURED_PUZZLE_IDS[6]}`); if (!res.ok) throw new Error('Failed'); return res.json(); }
+  });
+  const featured7 = useQuery<{ success: boolean; data: EnhancedPuzzleMetadata }>({
+    queryKey: [`/api/puzzle/task/${FEATURED_PUZZLE_IDS[7]}`],
+    queryFn: async () => { const res = await fetch(`/api/puzzle/task/${FEATURED_PUZZLE_IDS[7]}`); if (!res.ok) throw new Error('Failed'); return res.json(); }
+  });
+  const featured8 = useQuery<{ success: boolean; data: EnhancedPuzzleMetadata }>({
+    queryKey: [`/api/puzzle/task/${FEATURED_PUZZLE_IDS[8]}`],
+    queryFn: async () => { const res = await fetch(`/api/puzzle/task/${FEATURED_PUZZLE_IDS[8]}`); if (!res.ok) throw new Error('Failed'); return res.json(); }
+  });
+  const featured9 = useQuery<{ success: boolean; data: EnhancedPuzzleMetadata }>({
+    queryKey: [`/api/puzzle/task/${FEATURED_PUZZLE_IDS[9]}`],
+    queryFn: async () => { const res = await fetch(`/api/puzzle/task/${FEATURED_PUZZLE_IDS[9]}`); if (!res.ok) throw new Error('Failed'); return res.json(); }
+  });
 
   const featuredQueries = [featured0, featured1, featured2, featured3, featured4, featured5, featured6, featured7, featured8, featured9];
 
   const featuredPuzzles = React.useMemo(() => {
-    return featuredQueries
-      .map(q => q.data?.success ? q.data.data : null)
-      .filter((p): p is EnhancedPuzzleMetadata => p !== null);
+    return featuredQueries.map(q => q.data?.success ? q.data.data : null).filter((p): p is EnhancedPuzzleMetadata => p !== null);
   }, [featured0.data, featured1.data, featured2.data, featured3.data, featured4.data, featured5.data, featured6.data, featured7.data, featured8.data, featured9.data]);
 
   const isFeaturedLoading = featuredQueries.some(q => q.isLoading);
