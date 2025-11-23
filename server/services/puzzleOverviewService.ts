@@ -100,7 +100,8 @@ export class PuzzleOverviewService {
    */
   async buildPuzzleMap(puzzles: any[]): Promise<Map<string, any>> {
     const puzzleIds = puzzles.map(p => p.id);
-    const explanationStatusMap = await repositoryService.explanations.getBulkExplanationStatus(puzzleIds);
+    // Use lightweight query to prevent temp file bloat
+    const explanationStatusMap = await repositoryService.explanations.getBulkExplanationStatusLight(puzzleIds);
     
     const puzzleMap = new Map();
     puzzles.forEach(puzzle => {
