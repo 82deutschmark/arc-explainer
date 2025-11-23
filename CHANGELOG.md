@@ -1,7 +1,12 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top!!!
 
-### Version 5.17.10
+### Version 5.18.1
+
+- Puzzle Examiner
+  - **Multi-test mismatch overlay now only marks model outputs**: Updated the multi-test grid rendering in `AnalysisResultGrid` so the "Show Mismatches" toggle applies the high-contrast diff mask only to the model’s predicted grids, never to the expected answer grids. This brings multi-test behavior in line with the single-test card, where the bullseye markers appear exclusively on the AI output for easier visual debugging (`client/src/components/puzzle/AnalysisResultGrid.tsx`).
+
+### Version 5.18.0
 
 - Hall of Fame / Human Trading Cards
   - **More prominent, clearly clickable portraits**: Enlarged contributor portraits on `HumanTradingCard` and added a subtle hover hint plus stronger cursor/hover styling so it’s visually obvious that the images can be clicked to open a zoomed-in view, without changing the existing dialog/profile routing (`client/src/components/human/HumanTradingCard.tsx`).
