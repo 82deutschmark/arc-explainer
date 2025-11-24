@@ -239,6 +239,10 @@ export default function HuggingFaceUnionAccuracy() {
     }
   };
 
+  useEffect(() => {
+    handleFetchSystemPrompts();
+  }, []);
+
   return (
     <div className="min-h-screen bg-gray-50 p-2">
       <div className="max-w-7xl mx-auto space-y-2">
@@ -564,7 +568,7 @@ export default function HuggingFaceUnionAccuracy() {
         {!loading && !unionMetrics && !error && (
           <Card className="shadow-sm">
             <CardContent className="p-4 text-center">
-              <p className="text-base text-gray-500">Select a dataset and a model pair above to see their performance on the public evaluation set. By default, it has been set to Claude Sonnet 4.5 with maximum thinking enabled. That was the same model who coded this page and put a little smiley face 😊.</p>
+              <p className="text-base text-gray-500">Select a dataset and a model pair above to see their performance on the public evaluation set. By default, it has been set to Claude Sonnet 4.5 with maximum thinking enabled. That was the same model who coded this page. (With a LOT of human oversight!)</p>
             </CardContent>
           </Card>
         )}
@@ -777,19 +781,14 @@ export default function HuggingFaceUnionAccuracy() {
                     </span>
                   </div>
 
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <Button size="sm" onClick={handleFetchSystemPrompts} disabled={systemPromptsLoading}>
-                      {systemPromptsLoading ? 'Loading system prompts…' : 'Fetch latest provider system prompts'}
-                    </Button>
-                    <span className="text-xs text-gray-600">
-                      Gemini, OpenAI, Anthropic, Grok (latest versions from CL4R1T4S)
-                    </span>
-                  </div>
-
                   {systemPromptsError && (
                     <div className="text-xs text-red-600 bg-red-50 border border-red-200 rounded p-2">
                       {systemPromptsError}
                     </div>
+                  )}
+
+                  {systemPromptsLoading && !systemPromptsVisible && (
+                    <div className="text-xs text-gray-600">Loading latest provider prompts…</div>
                   )}
 
                   {systemPromptsVisible && (
