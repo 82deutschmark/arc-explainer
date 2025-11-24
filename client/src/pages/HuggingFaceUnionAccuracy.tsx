@@ -11,7 +11,7 @@
  */
 
 import React, { useState, useMemo, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -118,11 +118,11 @@ export default function HuggingFaceUnionAccuracy() {
       });
   }, [attemptGroups]);
 
-  // Auto-select 21st pair if available, otherwise first pair
+  // Auto-select 9th pair if available, otherwise first pair
   useEffect(() => {
     if (!selectedAttemptPair && attemptPairOptions.length > 0) {
-      const twentyFirstPair = attemptPairOptions.length >= 21 ? attemptPairOptions[20] : attemptPairOptions[0];
-      setSelectedAttemptPair(twentyFirstPair.value);
+      const ninthPair = attemptPairOptions.length >= 9 ? attemptPairOptions[8] : attemptPairOptions[0];
+      setSelectedAttemptPair(ninthPair.value);
     }
   }, [attemptPairOptions, selectedAttemptPair]);
 
@@ -512,7 +512,7 @@ export default function HuggingFaceUnionAccuracy() {
         {!loading && !unionMetrics && !error && (
           <Card className="shadow-sm">
             <CardContent className="p-4 text-center">
-              <p className="text-xs text-gray-500">Select a dataset and model pair above to calculate union accuracy</p>
+              <p className="text-xs text-gray-500">Select a dataset and a model pair above to see their performance on the public evaluation set. By default, it has been set to Claude Sonnet 4.5 with maximum thinking enabled. That was the same model who coded this page and put a little smiley face 😊.</p>
             </CardContent>
           </Card>
         )}
@@ -609,7 +609,13 @@ export default function HuggingFaceUnionAccuracy() {
 
               <div className="border-t border-purple-200 pt-2 mt-2 text-xs text-gray-500">
                 <p>
-                  <strong>About this explanation:</strong> All text on this page was written by Claude Sonnet 4.5 after researching the actual Arc-AGI-Benchmarking source code, reading system prompts, and analyzing the implementation. The content was refined through iterative feedback, and several corrections were made along the way to ensure accuracy. If you find any errors or missing information, please report them on our{' '}
+                  <strong>About this explanation:</strong> All text on this page was written by Claude Sonnet 4.5 after researching the actual Arc-AGI-Benchmarking source code, reading system prompts, and analyzing the implementation. The content was refined through iterative feedback, and several corrections were made along the way to ensure accuracy.
+                </p>
+                <p className="mt-2 text-gray-600">
+                  <strong>Note on data leakage:</strong> This AI was trained on public ARC-AGI materials and learned that the numbers in ARC tasks represent colors (0=black, 1=blue, 2=red, etc.). However, this information is NOT documented in the official evaluation harness code—the harness is completely agnostic to what the integers mean. This is an example of how information about the structure of ARC tasks has leaked into public training data, which is precisely why the semi-private and fully-private evaluation sets exist and remain secret.
+                </p>
+                <p className="mt-2">
+                  If you find any errors or missing information, please report them on our{' '}
                   <a
                     href="https://discord.gg/9b77dPAmcA"
                     target="_blank"
