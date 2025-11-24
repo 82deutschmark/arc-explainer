@@ -26,6 +26,7 @@ import { Loader2, Users, ArrowRight, RotateCcw, Star, Trophy } from 'lucide-reac
 import { PuzzleGrid } from '@/components/puzzle/PuzzleGrid';
 import { AnalysisResultCard } from '@/components/puzzle/AnalysisResultCard';
 import { EloVoteResultsModal } from '@/components/elo/EloVoteResultsModal';
+import { FeaturedPuzzlesEloEntry } from '@/components/elo/FeaturedPuzzlesEloEntry';
 
 // Hooks for comparison functionality
 import { useEloComparison } from '@/hooks/useEloComparison';
@@ -197,6 +198,7 @@ export default function EloComparison() {
 
           {/* Utility buttons - less prominent */}
           <div className="flex items-center gap-2">
+            <FeaturedPuzzlesEloEntry />
             <Link href="/elo/leaderboard">
               <Button variant="outline" size="sm">
                 <Trophy className="h-4 w-4 mr-2" />

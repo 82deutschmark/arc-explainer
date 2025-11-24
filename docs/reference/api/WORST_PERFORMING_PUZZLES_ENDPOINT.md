@@ -163,10 +163,12 @@ COUNT(DISTINCT e.id)
 ## Database Query Architecture
 
 ### **Source Files**
-- **Repository:** `/server/repositories/ExplanationRepository.ts:827`
+- **Repository:** `/server/repositories/MetricsRepository.ts:1252` *(moved from ExplanationRepository in v5.19.0 - SRP fix)*
 - **Service:** `/server/services/puzzleOverviewService.ts:277`
 - **Controller:** `/server/controllers/puzzleController.ts:400`
 - **Routes:** `/server/routes.ts:123`
+
+**Architecture Note (v5.19.0):** The `getWorstPerformingPuzzles()` method was moved from ExplanationRepository to MetricsRepository as part of Phase 2 architectural refactoring. This method performs cross-table analytics (explanations + feedback) and composite scoring, which is analytics work that belongs in the MetricsRepository orchestration layer, not in a CRUD repository.
 
 ### **SQL Query Structure**
 
