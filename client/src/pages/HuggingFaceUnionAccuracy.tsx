@@ -335,10 +335,10 @@ export default function HuggingFaceUnionAccuracy() {
         <Card className="shadow-sm border-teal-200 bg-teal-50/80">
           <button
             onClick={() => setShowEvaluationSetDetails(!showEvaluationSetDetails)}
-            className="w-full text-left p-3 flex items-center justify-between hover:bg-teal-100/50 transition-colors"
+            className="w-full p-3 flex items-center justify-center gap-2 text-center hover:bg-teal-100/50 transition-colors"
           >
             <h3 className="text-base font-semibold text-teal-900">
-              📚 Learn about the three different datasets
+              📚 Click here to learn about the three different datasets
             </h3>
             {showEvaluationSetDetails ? (
               <ChevronUp className="h-4 w-4 text-teal-700" />
@@ -410,7 +410,7 @@ export default function HuggingFaceUnionAccuracy() {
                   <strong>Why scores differ:</strong> These two puzzle sets contain <strong>completely different puzzles</strong>. That's why you'll see different scores on this page (public set) compared to the official ARC Prize leaderboard (semi-private set). Sometimes scores are higher here, sometimes lower—it all depends on how well each particular set of puzzles matches the model's strengths.
                 </p>
                 <p className="text-teal-700 mt-1">
-                  💡 The key point: <strong>Different datasets = Different puzzles = Different results</strong>. You can't directly compare scores between these pages because you're looking at two separate evaluation datasets.
+                  💡 The key point: 
                 </p>
               </div>
             </CardContent>

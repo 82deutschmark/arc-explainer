@@ -1,6 +1,11 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top!!!
 
+### Version 5.22.11
+
+- Official Scoring Page Dataset Header (Author: Cascade)
+  - Clarified and centered the "Learn about the three different datasets" collapsible header on the Official Scoring page so it now reads "Click here to learn about the three different datasets" with a centered layout, making the affordance to expand the explainer more obvious to non-technical readers (`client/src/pages/HuggingFaceUnionAccuracy.tsx:335-348`).
+
 ### Version 5.22.10
 
 - Official Scoring Page Dataset Docs (Author: Cascade)
