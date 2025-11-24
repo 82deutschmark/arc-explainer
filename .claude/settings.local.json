@@ -18,7 +18,8 @@
       "Read(/D:\\1Projects\\modelcompare**)",
       "Bash(cat:*)",
       "Bash(git add:*)",
-      "Bash(git commit:*)"
+      "Bash(git commit:*)",
+      "Bash(npm run build:*)"
     ],
     "defaultMode": "bypassPermissions"
   },
