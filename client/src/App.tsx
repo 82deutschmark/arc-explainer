@@ -72,7 +72,7 @@ function Router() {
         <Route path="/debate" component={ModelDebate} />
         <Route path="/debate/:taskId" component={ModelDebate} />
         <Route path="/model-comparison" component={ModelComparisonPage} />
-        <Route path="/hf-union-accuracy" component={HuggingFaceUnionAccuracy} />
+        <Route path="/scoring" component={HuggingFaceUnionAccuracy} />
         <Route path="/about" component={About} />
         <Route path="/llm-reasoning" component={LLMReasoning} />
         <Route path="/llm-reasoning/advanced" component={LLMReasoningAdvanced} />
