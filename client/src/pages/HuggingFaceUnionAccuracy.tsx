@@ -274,7 +274,7 @@ export default function HuggingFaceUnionAccuracy() {
                   </SelectTrigger>
                   <SelectContent>
                     {attemptPairOptions.length === 0 ? (
-                      <SelectItem value="" disabled className="text-xs">
+                      <SelectItem value="no-models" disabled className="text-xs">
                         No models with 2+ attempts
                       </SelectItem>
                     ) : (
