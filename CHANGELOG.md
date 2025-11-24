@@ -1,6 +1,12 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top!!!
 
+### Version 5.22.7
+
+- Official Scoring Page Automatic Calculation
+  - **Auto-calculate results on page load**: Changed Official Scoring page to automatically fetch and display results when the page loads, eliminating the need for users to manually click the "Calculate" button. The default model selection has been changed from the 9th pair to the 4th pair in the model list. When both the dataset and model selections are ready, the calculation triggers automatically via a new `useEffect` hook (`client/src/pages/HuggingFaceUnionAccuracy.tsx:143-149, 214-219`).
+  - **Updated default model selection logic**: Changed the auto-selection from the 9th model pair to the 4th model pair (index 3). If fewer than 4 pairs are available, it defaults to the first pair as a fallback (`client/src/pages/HuggingFaceUnionAccuracy.tsx:143-149`).
+
 ### Version 5.22.6
 
 - Official Scoring Page Polish & Readability
