@@ -244,7 +244,7 @@ export default function HuggingFaceUnionAccuracy() {
       <div className="max-w-7xl mx-auto space-y-2">
         {/* Header - Compact */}
         <div className="bg-blue-50 border-l-4 border-blue-600 p-3 rounded">
-          <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
+          <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-2">
             <BarChart3 className="h-6 w-6 text-blue-600" />
             Official Scoring: Public Evaluation
           </h1>
@@ -680,7 +680,7 @@ export default function HuggingFaceUnionAccuracy() {
                 <strong className="text-purple-900">4️⃣ How the Message is Sent</strong>
                 <p className="text-gray-700 mt-1">
                   Everything — the instructions, all training examples, and the test input — is packaged into <strong>one single USER message</strong> sent to the model.
-                  <strong>No system prompt is sent.</strong> The model uses the provider's default system prompt (if any) plus the user message. This is a critical distinction because instructions in a user message have less influence than the same instructions in a system prompt. Researchers replicating this harness might see different results if they add or change the system prompt.
+                  <strong> No system prompt is sent.</strong> The model uses the provider's default system prompt (if any) plus the user message. This is a critical distinction because instructions in a user message have less influence than the same instructions in a system prompt. Researchers replicating this harness might see different results if they add or change the system prompt.
                 </p>
                 <p className="text-gray-700 mt-1">
                   The model receives this complete context in one go and must respond with its predicted output grid. This happens twice per puzzle (attempt 1 and attempt 2)
@@ -777,13 +777,13 @@ export default function HuggingFaceUnionAccuracy() {
                     <Button size="sm" onClick={handleFetchSystemPrompts} disabled={systemPromptsLoading}>
                       {systemPromptsLoading ? 'Loading system prompts…' : 'Fetch latest provider system prompts'}
                     </Button>
-                    <span className="text-[11px] text-gray-600">
+                    <span className="text-xs text-gray-600">
                       Gemini, OpenAI, Anthropic, Grok (latest versions from CL4R1T4S)
                     </span>
                   </div>
 
                   {systemPromptsError && (
-                    <div className="text-[11px] text-red-600 bg-red-50 border border-red-200 rounded p-2">
+                    <div className="text-xs text-red-600 bg-red-50 border border-red-200 rounded p-2">
                       {systemPromptsError}
                     </div>
                   )}
@@ -801,12 +801,12 @@ export default function HuggingFaceUnionAccuracy() {
                                 href={src.url.replace('raw.githubusercontent.com', 'github.com').replace('/main/', '/blob/main/')}
                                 target="_blank"
                                 rel="noreferrer"
-                                className="text-[11px] text-purple-700 underline"
+                                className="text-xs text-purple-700 underline"
                               >
                                 View on GitHub
                               </a>
                             </div>
-                            <pre className="text-[11px] text-gray-700 bg-gray-50 rounded p-2 overflow-x-auto max-h-52 whitespace-pre-wrap">
+                            <pre className="text-xs text-gray-700 bg-gray-50 rounded p-2 overflow-x-auto max-h-52 whitespace-pre-wrap">
                               {preview}
                               {content.length > preview.length ? ' …' : ''}
                             </pre>
