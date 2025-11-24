@@ -1,6 +1,11 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top!!!
 
+### Version 5.22.9
+
+- Official Scoring Page Default Model Pair (Author: Cascade)
+  - Changed the Official Scoring page auto-selection logic to default to the 9th model pair in the list (index 8) when available, matching the intended Claude Sonnet 4.5 max-thinking configuration as the default example. If fewer than 9 pairs exist, the page now falls back to the first available pair while still auto-calculating results on load (`client/src/pages/HuggingFaceUnionAccuracy.tsx:127-149`).
+
 ### Version 5.22.8
 
 - Infrastructure & ingestion safety notes (Author: GPT-5 Codex)
