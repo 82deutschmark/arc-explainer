@@ -508,71 +508,76 @@ export default function ModelComparisonPage() {
         </div>
 
         <div className="bg-base-100 rounded-lg shadow p-3 space-y-2">
-          <div className="flex items-center justify-between">
-            <h2 className="text-xs font-bold uppercase tracking-wide opacity-70">
-              Active Models
-            </h2>
-            {inlineError && (
-              <span className="text-xs text-error">{inlineError}</span>
-            )}
+          <div>
+            <h2 className="text-sm font-bold text-gray-800">Comparing Models</h2>
+            <p className="text-xs text-gray-500 mt-1">Click the × button to remove a model or select a new one to add (max 4)</p>
           </div>
 
-          <div className="flex flex-wrap gap-1.5">
-            {selectedModels.map((modelName) => (
-              <div
-                key={modelName}
-                className="badge badge-sm gap-1 bg-primary/10 text-primary border-primary/20"
-              >
-                <span className="text-xs">{modelName}</span>
-                <button
-                  type="button"
-                  className="hover:text-error text-xs px-1"
-                  onClick={() => handleRemoveModel(modelName)}
-                  disabled={isUpdating || selectedModels.length <= 1}
-                  title="Remove model"
-                >
-                  ×
-                </button>
+          <div className="space-y-2">
+            {/* Currently selected models */}
+            <div>
+              <p className="text-xs font-semibold text-gray-700 mb-1">Active ({selectedModels.length}/{MAX_MODELS}):</p>
+              {selectedModels.length === 0 ? (
+                <p className="text-xs text-gray-400 italic">No models selected</p>
+              ) : (
+                <div className="flex flex-wrap gap-2">
+                  {selectedModels.map((modelName) => (
+                    <div
+                      key={modelName}
+                      className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-blue-100 text-blue-900 text-xs font-medium border border-blue-200 hover:bg-blue-200 transition-colors"
+                    >
+                      <span>{modelName}</span>
+                      <button
+                        type="button"
+                        className="ml-1 font-bold hover:text-blue-600 focus:outline-none"
+                        onClick={() => handleRemoveModel(modelName)}
+                        disabled={isUpdating || selectedModels.length <= 1}
+                        title="Remove model"
+                      >
+                        ✕
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+              {inlineError && (
+                <p className="text-xs text-error font-semibold mt-1">{inlineError}</p>
+              )}
+            </div>
+
+            {/* Add new model controls */}
+            {selectedModels.length < MAX_MODELS && addableModels.length > 0 && (
+              <div>
+                <p className="text-xs font-semibold text-gray-700 mb-1">Add Another:</p>
+                <div className="flex items-end gap-2">
+                  <select
+                    className="select select-xs select-bordered flex-1 max-w-sm"
+                    value={modelToAdd}
+                    onChange={(event) => setModelToAdd(event.target.value)}
+                    disabled={loadingModels || !dataset}
+                  >
+                    <option value="">Select a model...</option>
+                    {addableModels.map((modelName) => (
+                      <option key={modelName} value={modelName}>
+                        {modelName}
+                      </option>
+                    ))}
+                  </select>
+
+                  <button
+                    type="button"
+                    className="btn btn-xs btn-primary"
+                    onClick={handleAddModel}
+                    disabled={!dataset || !modelToAdd || isUpdating}
+                  >
+                    {isUpdating ? 'Adding...' : 'Add'}
+                  </button>
+
+                  {isUpdating && (
+                    <span className="loading loading-spinner loading-xs" />
+                  )}
+                </div>
               </div>
-            ))}
-          </div>
-
-          <div className="flex items-end gap-2 pt-1">
-            <select
-              className="select select-xs select-bordered flex-1 max-w-xs"
-              value={modelToAdd}
-              onChange={(event) => setModelToAdd(event.target.value)}
-              disabled={
-                loadingModels ||
-                !dataset ||
-                addableModels.length === 0 ||
-                selectedModels.length >= MAX_MODELS
-              }
-            >
-              <option value="">+ Add model...</option>
-              {addableModels.map((modelName) => (
-                <option key={modelName} value={modelName}>
-                  {modelName}
-                </option>
-              ))}
-            </select>
-
-            <button
-              type="button"
-              className="btn btn-xs btn-primary"
-              onClick={handleAddModel}
-              disabled={
-                !dataset ||
-                !modelToAdd ||
-                isUpdating ||
-                selectedModels.length >= MAX_MODELS
-              }
-            >
-              {isUpdating ? 'Updating...' : 'Add'}
-            </button>
-
-            {isUpdating && (
-              <span className="loading loading-spinner loading-xs ml-2" />
             )}
           </div>
         </div>
