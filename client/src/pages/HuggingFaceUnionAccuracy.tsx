@@ -360,6 +360,16 @@ export default function HuggingFaceUnionAccuracy() {
                   official ARC Prize policy
                   <ExternalLink className="inline h-3 w-3 ml-0.5" />
                 </a>
+                {' '}and the{' '}
+                <a
+                  href="https://arxiv.org/html/2412.04604v2"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="font-semibold text-teal-700 underline hover:text-teal-800"
+                >
+                  ARC Prize 2025 evaluation overview (arXiv)
+                  <ExternalLink className="inline h-3 w-3 ml-0.5" />
+                </a>
                 .
               </p>
 
