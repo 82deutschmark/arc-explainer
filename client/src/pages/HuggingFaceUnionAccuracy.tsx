@@ -380,7 +380,7 @@ export default function HuggingFaceUnionAccuracy() {
                   <ul className="list-disc list-inside space-y-0.5 text-teal-900 text-base">
                     <li>Not published anywhere—only the ARC team has them</li>
                     <li>Used to rank models fairly on the official leaderboard</li>
-                    <li>Models haven't trained on these (hopefully!)</li>
+                    <li>These are intended for testing remotely-hosted commercial models with low leakage probability. They are calibrated to the same human difficulty as public eval.</li>
                   </ul>
                 </div>
 
@@ -389,7 +389,7 @@ export default function HuggingFaceUnionAccuracy() {
                   <p className="mb-1 text-teal-900">Super secret puzzles for the competition.</p>
                   <ul className="list-disc list-inside space-y-0.5 text-teal-900 text-base">
                     <li>Only used during the ARC Prize contest</li>
-                    <li>Completely hidden until after the contest ends</li>
+                    <li>Intended for testing self-contained models during the competition with “near-zero leakage probability”</li>
                     <li>No one can study these puzzles beforehand</li>
                   </ul>
                 </div>
