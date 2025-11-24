@@ -15,6 +15,7 @@ import { ModelPerformancePanel } from '@/components/analytics/ModelPerformancePa
 import { useAvailableModels } from '@/hooks/useModelDatasetPerformance';
 import { ModelComparisonResult } from './AnalyticsOverview';
 import { usePageMeta } from '@/hooks/usePageMeta';
+import { computeAttemptUnionAccuracy, parseAttemptModelName } from '@/utils/modelComparison';
 
 const MAX_MODELS = 4;
 const COMPARISON_CACHE_KEY = 'arc-comparison-data';
@@ -300,6 +301,59 @@ export default function ModelComparisonPage() {
     [uniqueSolveByModel],
   );
 
+  // Attempt union detection and metrics computation
+  const attemptUnionMetrics = useMemo(() => {
+    const summary = comparisonData?.summary;
+    const attemptUnionStats = summary?.attemptUnionStats;
+
+    // Prefer backend-provided attempt union stats if available
+    if (summary && Array.isArray(attemptUnionStats) && attemptUnionStats.length > 0) {
+      return attemptUnionStats[0];
+    }
+
+    // Fallback to frontend computation for backward compatibility
+    if (!summary || selectedModels.length < 2) {
+      return null;
+    }
+
+    // Parse model names to identify attempt groups
+    const attemptGroups = new Map<string, { modelName: string; attemptNumber: number; index: number }[]>();
+    
+    selectedModels.forEach((modelName, index) => {
+      const parsed = parseAttemptModelName(modelName);
+      if (parsed) {
+        if (!attemptGroups.has(parsed.baseModelName)) {
+          attemptGroups.set(parsed.baseModelName, []);
+        }
+        attemptGroups.get(parsed.baseModelName)!.push({
+          modelName,
+          attemptNumber: parsed.attemptNumber,
+          index,
+        });
+      }
+    });
+
+    // Find the first base model group with at least 2 attempts
+    for (const [baseModelName, attempts] of attemptGroups) {
+      if (attempts.length >= 2) {
+        // Sort by attempt number to ensure consistent ordering
+        attempts.sort((a, b) => a.attemptNumber - b.attemptNumber);
+        
+        // Use the first two attempts for union calculation
+        const modelIndices = attempts.slice(0, 2).map(a => a.index);
+        const unionMetrics = computeAttemptUnionAccuracy(comparisonData, modelIndices);
+        
+        return {
+          baseModelName,
+          attemptModelNames: attempts.slice(0, 2).map(a => a.modelName),
+          ...unionMetrics,
+        };
+      }
+    }
+
+    return null;
+  }, [comparisonData, selectedModels]);
+
   const handleAddModel = async () => {
     if (!dataset || !modelToAdd || selectedModels.includes(modelToAdd) || isUpdating) {
       return;
@@ -506,6 +560,50 @@ export default function ModelComparisonPage() {
                   <span className="text-primary font-bold">{entry.count}</span>
                 </div>
               ))}
+            </div>
+          </div>
+        )}
+
+        {attemptUnionMetrics && attemptUnionMetrics.totalPuzzles > 0 && (
+          <div className="bg-base-100 rounded-lg shadow p-2">
+            <h3 className="text-xs font-bold uppercase tracking-wide opacity-70 mb-2">
+              Attempt Union Accuracy
+            </h3>
+            <div className="space-y-1">
+              <div className="text-xs">
+                <span className="font-semibold">Base Model:</span>{' '}
+                <span className="text-primary">{attemptUnionMetrics.baseModelName}</span>
+              </div>
+              <div className="text-xs">
+                <span className="font-semibold">Attempts:</span>{' '}
+                <span className="opacity-80">
+                  {attemptUnionMetrics.attemptModelNames.join(' + ')}
+                </span>
+              </div>
+              <div className="flex gap-3 flex-wrap">
+                <div className="text-xs">
+                  <span className="font-semibold">Union Correct:</span>{' '}
+                  <span className="text-success font-bold">
+                    {attemptUnionMetrics.unionCorrectCount}
+                  </span>
+                </div>
+                <div className="text-xs">
+                  <span className="font-semibold">Total:</span>{' '}
+                  <span className="opacity-80">{attemptUnionMetrics.totalPuzzles}</span>
+                </div>
+                <div className="text-xs">
+                  <span className="font-semibold">Union Accuracy:</span>{' '}
+                  <span
+                    className={
+                      attemptUnionMetrics.unionAccuracyPercentage >= 50
+                        ? 'text-success font-bold'
+                        : 'text-error font-bold'
+                    }
+                  >
+                    {attemptUnionMetrics.unionAccuracyPercentage.toFixed(1)}%
+                  </span>
+                </div>
+              </div>
             </div>
           </div>
         )}

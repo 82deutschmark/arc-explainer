@@ -1,6 +1,17 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top!!!
 
+### Version 5.21.0
+
+- Model Comparison
+  - **Implemented attempt union accuracy metrics**: Added comprehensive support for computing union-of-correct accuracy across attempt1/attempt2 model pairs (e.g., "gemini-3-deep-think-preview-attempt1" + "gemini-3-deep-think-preview-attempt2"). Features include:
+    - Frontend utilities: `computeAttemptUnionAccuracy()` and `parseAttemptModelName()` in `client/src/utils/modelComparison.ts` for deriving union metrics from existing comparison details
+    - Backend extension: New `AttemptUnionStats` interface and `computeAttemptUnionStats()` method in `MetricsRepository.ts` that parses model names, groups attempts by base model, and computes union correctness by iterating through puzzle results
+    - UI integration: Union metrics display blocks in both `ModelComparisonPage.tsx` and `ModelComparisonDialog.tsx` showing base model name, attempt models, union correct count, total puzzles, and union accuracy percentage with blue styling
+    - Graceful fallback: Frontend components prefer backend-provided `attemptUnionStats[0]` when available, with frontend computation as fallback for backward compatibility
+    - Type safety: Extended `ModelComparisonSummary` interfaces on both client and server to include `attemptUnionStats: AttemptUnionStats[]` array
+    - Edge case handling: Supports models in any position (model1-4), validates attempt numbers, and handles missing attempts gracefully. (Author: Cascade)
+
 ### Version 5.20.3
 
 - Bug Fixes
