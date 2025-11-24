@@ -1,6 +1,19 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top!!!
 
+### Version 5.22.0
+
+- Analytics
+  - **New Official Scoring Page (Public Evaluation)**: Created dedicated `/hf-union-accuracy` page visualizing official ARC Prize team evaluation results on the public evaluation set. The page prominently clarifies that these are **official results from the ARC Prize team's evaluation harness**, posted on Hugging Face—not personal or custom evaluations. ARC Explainer is a visualization tool that makes the raw JSON data published on Hugging Face more human-readable, searchable, and visual. Explains the official scoring method: models are tested twice per puzzle independently, and a puzzle counts as solved if **either attempt produces the correct answer**. This shows each model's best-case performance when given multiple chances.
+    - **Clear Attribution**: Prominent amber disclaimer with prominent link to Hugging Face stating that results are official from the ARC Prize team (posted on Hugging Face), explaining ARC Explainer is a visualization tool for that raw data, with all credits and ownership belonging to the ARC Prize team
+    - **Plain Language Explanation**: Describes the official evaluation harness methodology in student-friendly terms with visible formula: `Best-Case Score = (Puzzles correct in attempt 1 or attempt 2) ÷ Total puzzles`
+    - **Important Dataset Note**: Clearly states results are from the **public** evaluation set (different from semi-private set on official ARC Prize website), explaining why scores differ from official leaderboard
+    - **Interactive Results**: Select dataset + model pair, view score with progress bar, inspect individual puzzle IDs via clickable badges
+    - **Compact Design**: Maximum information density (minimal padding, p-2/p-3 spacing, text-xs fonts) matching Analytics/Comparison page patterns
+    - **Reusable Logic**: Composes existing union accuracy utilities (`computeAttemptUnionAccuracy()`, `parseAttemptModelName()`, `/api/metrics/compare`) with zero duplication
+    - **Auto-Filtering**: Automatically filters to official HF submissions (model names ending with `-attempt1`/`-attempt2`)
+    - **Navigation**: Added "Official Scoring" link in main header with Zap icon (`client/src/pages/HuggingFaceUnionAccuracy.tsx`, `client/src/App.tsx:28,75`, `client/src/components/layout/AppNavigation.tsx:82-88`).
+
 ### Version 5.21.1
 
 - Model Comparison
