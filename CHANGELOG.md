@@ -1,6 +1,16 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top!!!
 
+### Version 5.20.3
+
+- Bug Fixes
+  - **Fixed TypeScript type mismatch in BulkExplanationStatusLight**: The lightweight explanation status query was being read by `puzzleService.getPuzzleList()` and `puzzleOverviewService.buildPuzzleMap()` which expected `apiProcessingTimeMs`, but the type definition omitted this field. Added `apiProcessingTimeMs: number | null` to `BulkExplanationStatusLight` interface, added it to the initialization defaults, included `e.api_processing_time_ms` in the SQL SELECT clause, and mapped it to the status object. This resolves strict TypeScript mode compilation errors and preserves processing-time data for service-layer enrichment. Single numeric field has negligible impact on the 99% data transfer reduction (which omits large JSONB fields like saturnImages and providerRawResponse) (`server/repositories/interfaces/IExplanationRepository.ts:173-190`, `server/repositories/ExplanationRepository.ts:608,640,664`).
+
+### Version 5.20.2
+
+- Documentation
+  - Added `docs/2025-11-23-model-comparison-union-attempts-plan.md` outlining a two-phase implementation to compute union-of-correct accuracy across attempt1/attempt2 model pairs on ARC datasets. Plan covers a frontend utility for deriving union metrics from existing comparison details plus a backend `MetricsRepository` summary extension to expose canonical attempt union stats for reuse across analytics views. (Author: Cascade)
+
 ### Version 5.20.1
 
 - ELO Arena

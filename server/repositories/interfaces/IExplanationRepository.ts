@@ -169,6 +169,11 @@ export interface BulkExplanationStatus {
 /**
  * Lightweight bulk explanation status - returns only fields used by puzzle list views
  * Reduces data transfer by 99% compared to full BulkExplanationStatus
+ *
+ * Includes apiProcessingTimeMs because:
+ * - puzzleService.getPuzzleList() and puzzleOverviewService.buildPuzzleMap() both read it
+ * - Single numeric field has negligible impact on payload size
+ * - Omitted fields are large JSONB blobs (saturnImages, providerRawResponse, etc.)
  */
 export interface BulkExplanationStatusLight {
   [puzzleId: string]: {
@@ -178,6 +183,7 @@ export interface BulkExplanationStatusLight {
     createdAt: Date | null;
     confidence: number | null;
     estimatedCost: number | null;
+    apiProcessingTimeMs: number | null;
     feedbackCount: number;
     isSolved: boolean;
   };
