@@ -68,6 +68,14 @@ export interface ModelPerformanceOnDataset {
   confidenceWhenCorrect: number | null;
 }
 
+export interface AttemptUnionStats {
+  baseModelName: string;
+  attemptModelNames: string[];
+  totalPuzzles: number;
+  unionCorrectCount: number;
+  unionAccuracyPercentage: number;
+}
+
 export interface ModelComparisonSummary {
   totalPuzzles: number;
   model1Name: string;
@@ -96,6 +104,9 @@ export interface ModelComparisonSummary {
   winnerModel: string | null;
   mostEfficientModel: string | null;
   fastestModel: string | null;
+  accuracyLeaderModel: string | null;
+  // NEW: Attempt union stats for comparing attempts of the same base model
+  attemptUnionStats: AttemptUnionStats[];
 }
 
 export interface ModelComparisonResult {

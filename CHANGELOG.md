@@ -1,6 +1,33 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top!!!
 
+### Version 5.21.1
+
+- Model Comparison
+  - **Enhanced Union Accuracy transparency with interactive puzzle exploration**: Added explicit puzzle ID display showing exactly which puzzles contribute to union accuracy calculation. New `unionPuzzleIds` computed value extracts all puzzle IDs solved correctly in either attempt and displays them as interactive `ClickablePuzzleBadge` components (shadcn/ui Badge with success variant) that open Puzzle Examiner in new tab on click. Shows `Puzzles solved (N) — click to explore` section with full list of contributing puzzle IDs. Users can now directly inspect any puzzle that contributed to the union accuracy score, providing complete calculation transparency with actionable exploration (`client/src/pages/ModelComparisonPage.tsx:16,361-384,608-626`).
+  - **Overhauled ModelComparisonPage UI/UX for clarity**: Restructured entire page layout with clear section headers and explanatory subtitles for each section: "Comparing Models" (with improved model badge styling and "Active (2/4)" counter), "Differentiation" (puzzles solved by exactly one model), "Attempt Union Accuracy" (union metrics with blue left border accent), "Performance Comparison" (detailed metrics table), "Puzzle-by-Puzzle Breakdown" (matrix view), and "Individual Model Deep Dive" (drilldown panels). Added helpful instructions for each section. Reduced page padding (p-3→p-2, space-y-3→space-y-2) for data density. Improved Active Models control UI with separated "Active" and "Add Another" sections, better visual model badges with hover effects, and clearer conditional rendering (`client/src/pages/ModelComparisonPage.tsx:464-717`).
+  - **Redesigned Attempt Union Accuracy UI**: Replaced basic blue box display with comprehensive `AttemptUnionCard` component featuring ShadCN/UI Card patterns, visual progress bar, and detailed explanation section. Added plain-language description of union accuracy metric and mathematical formula showing how it's calculated (puzzles correct by any attempt ÷ total puzzles) for full research transparency. Improved visual hierarchy with prominent metric percentage, model badges, and accessibility labels (`client/src/components/analytics/ModelComparisonDialog.tsx`).
+
+
+- Model Comparison
+  - **Implemented attempt union accuracy metrics**: Added comprehensive support for computing union-of-correct accuracy across attempt1/attempt2 model pairs (e.g., "gemini-3-deep-think-preview-attempt1" + "gemini-3-deep-think-preview-attempt2"). Features include:
+    - Frontend utilities: `computeAttemptUnionAccuracy()` and `parseAttemptModelName()` in `client/src/utils/modelComparison.ts` for deriving union metrics from existing comparison details
+    - Backend extension: New `AttemptUnionStats` interface and `computeAttemptUnionStats()` method in `MetricsRepository.ts` that parses model names, groups attempts by base model, and computes union correctness by iterating through puzzle results
+    - UI integration: Union metrics display blocks in both `ModelComparisonPage.tsx` and `ModelComparisonDialog.tsx` showing base model name, attempt models, union correct count, total puzzles, and union accuracy percentage with blue styling
+    - Graceful fallback: Frontend components prefer backend-provided `attemptUnionStats[0]` when available, with frontend computation as fallback for backward compatibility
+    - Type safety: Extended `ModelComparisonSummary` interfaces on both client and server to include `attemptUnionStats: AttemptUnionStats[]` array
+    - Edge case handling: Supports models in any position (model1-4), validates attempt numbers, and handles missing attempts gracefully. (Author: Cascade)
+
+### Version 5.20.3
+
+- Bug Fixes
+  - **Fixed TypeScript type mismatch in BulkExplanationStatusLight**: The lightweight explanation status query was being read by `puzzleService.getPuzzleList()` and `puzzleOverviewService.buildPuzzleMap()` which expected `apiProcessingTimeMs`, but the type definition omitted this field. Added `apiProcessingTimeMs: number | null` to `BulkExplanationStatusLight` interface, added it to the initialization defaults, included `e.api_processing_time_ms` in the SQL SELECT clause, and mapped it to the status object. This resolves strict TypeScript mode compilation errors and preserves processing-time data for service-layer enrichment. Single numeric field has negligible impact on the 99% data transfer reduction (which omits large JSONB fields like saturnImages and providerRawResponse) (`server/repositories/interfaces/IExplanationRepository.ts:173-190`, `server/repositories/ExplanationRepository.ts:608,640,664`).
+
+### Version 5.20.2
+
+- Documentation
+  - Added `docs/2025-11-23-model-comparison-union-attempts-plan.md` outlining a two-phase implementation to compute union-of-correct accuracy across attempt1/attempt2 model pairs on ARC datasets. Plan covers a frontend utility for deriving union metrics from existing comparison details plus a backend `MetricsRepository` summary extension to expose canonical attempt union stats for reuse across analytics views. (Author: Cascade)
+
 ### Version 5.20.1
 
 - ELO Arena

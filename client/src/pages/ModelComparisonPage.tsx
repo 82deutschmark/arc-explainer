@@ -9,12 +9,15 @@
 
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useLocation } from 'wouter';
-import { ArrowLeft, AlertCircle } from 'lucide-react';
+import { ArrowLeft, AlertCircle, Zap } from 'lucide-react';
 import { NewModelComparisonResults } from '@/components/analytics/NewModelComparisonResults';
 import { ModelPerformancePanel } from '@/components/analytics/ModelPerformancePanel';
+import { ModelComparisonDialog } from '@/components/analytics/ModelComparisonDialog';
+import { ClickablePuzzleBadge } from '@/components/ui/ClickablePuzzleBadge';
 import { useAvailableModels } from '@/hooks/useModelDatasetPerformance';
 import { ModelComparisonResult } from './AnalyticsOverview';
 import { usePageMeta } from '@/hooks/usePageMeta';
+import { computeAttemptUnionAccuracy, parseAttemptModelName } from '@/utils/modelComparison';
 
 const MAX_MODELS = 4;
 const COMPARISON_CACHE_KEY = 'arc-comparison-data';
@@ -40,6 +43,7 @@ export default function ModelComparisonPage() {
   const [selectedModels, setSelectedModels] = useState<string[]>([]);
   const [modelToAdd, setModelToAdd] = useState('');
   const [hasRefreshedFromCache, setHasRefreshedFromCache] = useState(false);
+  const [showUnionDialog, setShowUnionDialog] = useState(false);
 
   const [comparisonData, setComparisonData] = useState<ModelComparisonResult | null>(() => {
     const envelopeFromHistory = window.history.state?.comparisonData as CachedComparisonEnvelope | null;
@@ -276,29 +280,85 @@ export default function ModelComparisonPage() {
     return [...filtered].reverse();
   }, [availableModels, selectedModels]);
 
-  const uniqueSolveByModel = useMemo(() => {
-    if (!comparisonData?.summary) {
+  // Attempt union detection and metrics computation
+  const attemptUnionMetrics = useMemo(() => {
+    const summary = comparisonData?.summary;
+    const attemptUnionStats = summary?.attemptUnionStats;
+
+    // Prefer backend-provided attempt union stats if available
+    if (summary && Array.isArray(attemptUnionStats) && attemptUnionStats.length > 0) {
+      return attemptUnionStats[0];
+    }
+
+    // Fallback to frontend computation for backward compatibility
+    if (!summary || selectedModels.length < 2) {
+      return null;
+    }
+
+    // Parse model names to identify attempt groups
+    const attemptGroups = new Map<string, { modelName: string; attemptNumber: number; index: number }[]>();
+
+    selectedModels.forEach((modelName, index) => {
+      const parsed = parseAttemptModelName(modelName);
+      if (parsed) {
+        if (!attemptGroups.has(parsed.baseModelName)) {
+          attemptGroups.set(parsed.baseModelName, []);
+        }
+        attemptGroups.get(parsed.baseModelName)!.push({
+          modelName,
+          attemptNumber: parsed.attemptNumber,
+          index,
+        });
+      }
+    });
+
+    // Find the first base model group with at least 2 attempts
+    for (const [baseModelName, attempts] of attemptGroups) {
+      if (attempts.length >= 2) {
+        // Sort by attempt number to ensure consistent ordering
+        attempts.sort((a, b) => a.attemptNumber - b.attemptNumber);
+
+        // Use the first two attempts for union calculation
+        const modelIndices = attempts.slice(0, 2).map(a => a.index);
+        const unionMetrics = computeAttemptUnionAccuracy(comparisonData, modelIndices);
+
+        return {
+          baseModelName,
+          attemptModelNames: attempts.slice(0, 2).map(a => a.modelName),
+          ...unionMetrics,
+          modelIndices, // Store indices for puzzle extraction
+        };
+      }
+    }
+
+    return null;
+  }, [comparisonData, selectedModels]);
+
+  // Extract puzzle IDs that are in the union accuracy
+  const unionPuzzleIds = useMemo(() => {
+    if (!attemptUnionMetrics || !comparisonData?.details) {
       return [];
     }
 
-    const { summary } = comparisonData;
-    const mapping = new Map<string, number>([
-      [summary.model1Name, summary.model1OnlyCorrect ?? 0],
-      [summary.model2Name, summary.model2OnlyCorrect ?? 0],
-      [summary.model3Name ?? '', summary.model3OnlyCorrect ?? 0],
-      [summary.model4Name ?? '', summary.model4OnlyCorrect ?? 0],
-    ]);
+    const modelIndices = (attemptUnionMetrics as any).modelIndices || [0, 1];
+    const unionIds: string[] = [];
 
-    return selectedModels.map((name) => ({
-      name,
-      count: mapping.get(name) ?? 0,
-    }));
-  }, [comparisonData, selectedModels]);
+    comparisonData.details.forEach((detail) => {
+      const results = [
+        detail.model1Result,
+        detail.model2Result,
+        detail.model3Result,
+        detail.model4Result,
+      ];
 
-  const totalUniqueSolves = useMemo(
-    () => uniqueSolveByModel.reduce((sum, entry) => sum + entry.count, 0),
-    [uniqueSolveByModel],
-  );
+      // Check if any of the selected attempt models got it correct
+      if (modelIndices.some((idx: number) => results[idx] === 'correct')) {
+        unionIds.push(detail.puzzleId);
+      }
+    });
+
+    return unionIds;
+  }, [attemptUnionMetrics, comparisonData?.details]);
 
   const handleAddModel = async () => {
     if (!dataset || !modelToAdd || selectedModels.includes(modelToAdd) || isUpdating) {
@@ -404,8 +464,8 @@ export default function ModelComparisonPage() {
   const modelPerformance = summary.modelPerformance ?? [];
 
   return (
-    <div className="min-h-screen bg-base-200 p-3">
-      <div className="container mx-auto max-w-7xl space-y-3">
+    <div className="min-h-screen bg-base-200 p-2">
+      <div className="container mx-auto max-w-7xl space-y-2">
         <div className="flex items-center gap-3 bg-base-100 rounded-lg p-2 shadow">
           <button
             onClick={() => navigate('/analytics')}
@@ -425,92 +485,149 @@ export default function ModelComparisonPage() {
         </div>
 
         <div className="bg-base-100 rounded-lg shadow p-3 space-y-2">
-          <div className="flex items-center justify-between">
-            <h2 className="text-xs font-bold uppercase tracking-wide opacity-70">
-              Active Models
-            </h2>
-            {inlineError && (
-              <span className="text-xs text-error">{inlineError}</span>
-            )}
+          <div>
+            <h2 className="text-sm font-bold text-gray-800">Comparing Models</h2>
+            <p className="text-xs text-gray-500 mt-1">Click the × button to remove a model or select a new one to add (max 4)</p>
           </div>
 
-          <div className="flex flex-wrap gap-1.5">
-            {selectedModels.map((modelName) => (
-              <div
-                key={modelName}
-                className="badge badge-sm gap-1 bg-primary/10 text-primary border-primary/20"
-              >
-                <span className="text-xs">{modelName}</span>
-                <button
-                  type="button"
-                  className="hover:text-error text-xs px-1"
-                  onClick={() => handleRemoveModel(modelName)}
-                  disabled={isUpdating || selectedModels.length <= 1}
-                  title="Remove model"
-                >
-                  ×
-                </button>
+          <div className="space-y-2">
+            {/* Currently selected models */}
+            <div>
+              <p className="text-xs font-semibold text-gray-700 mb-1">Active ({selectedModels.length}/{MAX_MODELS}):</p>
+              {selectedModels.length === 0 ? (
+                <p className="text-xs text-gray-400 italic">No models selected</p>
+              ) : (
+                <div className="flex flex-wrap gap-2">
+                  {selectedModels.map((modelName) => (
+                    <div
+                      key={modelName}
+                      className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-blue-100 text-blue-900 text-xs font-medium border border-blue-200 hover:bg-blue-200 transition-colors"
+                    >
+                      <span>{modelName}</span>
+                      <button
+                        type="button"
+                        className="ml-1 font-bold hover:text-blue-600 focus:outline-none"
+                        onClick={() => handleRemoveModel(modelName)}
+                        disabled={isUpdating || selectedModels.length <= 1}
+                        title="Remove model"
+                      >
+                        ✕
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+              {inlineError && (
+                <p className="text-xs text-error font-semibold mt-1">{inlineError}</p>
+              )}
+            </div>
+
+            {/* Add new model controls */}
+            {selectedModels.length < MAX_MODELS && addableModels.length > 0 && (
+              <div>
+                <p className="text-xs font-semibold text-gray-700 mb-1">Add Another:</p>
+                <div className="flex items-end gap-2">
+                  <select
+                    className="select select-xs select-bordered flex-1 max-w-sm"
+                    value={modelToAdd}
+                    onChange={(event) => setModelToAdd(event.target.value)}
+                    disabled={loadingModels || !dataset}
+                  >
+                    <option value="">Select a model...</option>
+                    {addableModels.map((modelName) => (
+                      <option key={modelName} value={modelName}>
+                        {modelName}
+                      </option>
+                    ))}
+                  </select>
+
+                  <button
+                    type="button"
+                    className="btn btn-xs btn-primary"
+                    onClick={handleAddModel}
+                    disabled={!dataset || !modelToAdd || isUpdating}
+                  >
+                    {isUpdating ? 'Adding...' : 'Add'}
+                  </button>
+
+                  {isUpdating && (
+                    <span className="loading loading-spinner loading-xs" />
+                  )}
+                </div>
               </div>
-            ))}
-          </div>
-
-          <div className="flex items-end gap-2 pt-1">
-            <select
-              className="select select-xs select-bordered flex-1 max-w-xs"
-              value={modelToAdd}
-              onChange={(event) => setModelToAdd(event.target.value)}
-              disabled={
-                loadingModels ||
-                !dataset ||
-                addableModels.length === 0 ||
-                selectedModels.length >= MAX_MODELS
-              }
-            >
-              <option value="">+ Add model...</option>
-              {addableModels.map((modelName) => (
-                <option key={modelName} value={modelName}>
-                  {modelName}
-                </option>
-              ))}
-            </select>
-
-            <button
-              type="button"
-              className="btn btn-xs btn-primary"
-              onClick={handleAddModel}
-              disabled={
-                !dataset ||
-                !modelToAdd ||
-                isUpdating ||
-                selectedModels.length >= MAX_MODELS
-              }
-            >
-              {isUpdating ? 'Updating...' : 'Add'}
-            </button>
-
-            {isUpdating && (
-              <span className="loading loading-spinner loading-xs ml-2" />
             )}
           </div>
         </div>
 
-        {uniqueSolveByModel.length > 0 && totalUniqueSolves > 0 && (
-          <div className="bg-base-100 rounded-lg shadow p-2">
-            <h3 className="text-xs font-bold uppercase tracking-wide opacity-70 mb-2">
-              Unique Solves: {totalUniqueSolves}
-            </h3>
-            <div className="flex gap-2 flex-wrap">
-              {uniqueSolveByModel.map((entry) => (
-                <div key={entry.name} className="text-xs">
-                  <span className="font-semibold">{entry.name}:</span>{' '}
-                  <span className="text-primary font-bold">{entry.count}</span>
+        {attemptUnionMetrics && attemptUnionMetrics.totalPuzzles > 0 && (
+          <div className="bg-base-100 rounded-lg shadow p-3 border-l-4 border-blue-500">
+            <div className="flex items-center justify-between gap-3 mb-2">
+              <h3 className="text-sm font-bold text-gray-800">Attempt Union Accuracy</h3>
+              <button
+                onClick={() => setShowUnionDialog(true)}
+                className="btn btn-sm btn-outline btn-primary"
+                aria-label="View union accuracy details"
+              >
+                View Details
+              </button>
+            </div>
+            <p className="text-xs text-gray-600 mb-3 leading-relaxed">
+              If the model solved a puzzle correctly in <strong>either attempt 1 or attempt 2</strong>, it counts as correct.
+            </p>
+            <div className="space-y-2">
+              <div className="text-xs">
+                <span className="font-semibold">Base Model:</span>{' '}
+                <span className="text-primary">{attemptUnionMetrics.baseModelName}</span>
+              </div>
+              <div className="text-xs">
+                <span className="font-semibold">Attempts:</span>{' '}
+                <span className="opacity-80">
+                  {attemptUnionMetrics.attemptModelNames.join(' + ')}
+                </span>
+              </div>
+              <div className="flex gap-4 flex-wrap pt-1">
+                <div>
+                  <div className="text-3xl font-bold text-blue-600">
+                    {attemptUnionMetrics.unionAccuracyPercentage.toFixed(1)}%
+                  </div>
+                  <p className="text-xs text-gray-500">Union Accuracy</p>
                 </div>
-              ))}
+                <div className="text-xs">
+                  <span className="font-semibold">Puzzles Correct:</span>{' '}
+                  <span className="text-success font-bold">
+                    {attemptUnionMetrics.unionCorrectCount}/{attemptUnionMetrics.totalPuzzles}
+                  </span>
+                </div>
+              </div>
+
+              {/* Show puzzle IDs that make up the union */}
+              {unionPuzzleIds.length > 0 && (
+                <div className="pt-2 border-t border-gray-300">
+                  <p className="text-xs font-semibold text-gray-700 mb-2">
+                    Puzzles solved ({unionPuzzleIds.length}) — click to explore:
+                  </p>
+                  <div className="flex flex-wrap gap-2">
+                    {unionPuzzleIds.map((puzzleId) => (
+                      <ClickablePuzzleBadge
+                        key={puzzleId}
+                        puzzleId={puzzleId}
+                        variant="success"
+                        showName={true}
+                        openInNewTab={true}
+                      />
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         )}
 
-        <div className="bg-base-100 rounded-lg shadow">
+        <div className="bg-base-100 rounded-lg shadow p-3 space-y-2">
+          <div>
+            <h3 className="text-sm font-bold text-gray-800">Performance Comparison</h3>
+            <p className="text-xs text-gray-600">Detailed metrics for each model on the {summary.dataset.toUpperCase()} dataset</p>
+          </div>
           <div className="overflow-x-auto">
             <table className="table table-xs table-zebra">
               <thead>
@@ -577,15 +694,22 @@ export default function ModelComparisonPage() {
           </div>
         </div>
 
-        <div className="bg-base-100 rounded-lg shadow p-3">
-          <NewModelComparisonResults result={comparisonData} />
+        <div className="bg-base-100 rounded-lg shadow p-3 space-y-2">
+          <div>
+            <h3 className="text-sm font-bold text-gray-800">Puzzle-by-Puzzle Breakdown</h3>
+            <p className="text-xs text-gray-600">See how each model performed on every puzzle</p>
+          </div>
+          <div>
+            <NewModelComparisonResults result={comparisonData} />
+          </div>
         </div>
 
         {dataset && selectedModels.length > 0 && (
-          <div className="space-y-2">
-            <h2 className="text-xs font-bold uppercase tracking-wide opacity-70 px-1">
-              Dataset Drilldown
-            </h2>
+          <div className="space-y-3">
+            <div>
+              <h2 className="text-sm font-bold text-gray-800">Individual Model Deep Dive</h2>
+              <p className="text-xs text-gray-600">Detailed performance analysis for each model on this dataset</p>
+            </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
               {selectedModels.map((modelName) => (
                 <ModelPerformancePanel
@@ -597,6 +721,14 @@ export default function ModelComparisonPage() {
             </div>
           </div>
         )}
+
+        <ModelComparisonDialog
+          open={showUnionDialog}
+          onOpenChange={setShowUnionDialog}
+          comparisonResult={comparisonData}
+          loading={false}
+          error={null}
+        />
       </div>
     </div>
   );

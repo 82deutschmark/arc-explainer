@@ -162,6 +162,14 @@ export interface ModelPerformanceOnDataset {
   confidenceWhenCorrect: number | null; // trustworthiness metric
 }
 
+export interface AttemptUnionStats {
+  baseModelName: string;
+  attemptModelNames: string[];
+  totalPuzzles: number;
+  unionCorrectCount: number;
+  unionAccuracyPercentage: number;
+}
+
 export interface ModelComparisonSummary {
   totalPuzzles: number;
   model1Name: string;
@@ -191,6 +199,8 @@ export interface ModelComparisonSummary {
   mostEfficientModel: string | null; // model with best cost per correct
   fastestModel: string | null; // model with lowest avg processing time
   accuracyLeaderModel: string | null; // model with highest accuracy
+  // NEW: Attempt union stats for comparing attempts of the same base model
+  attemptUnionStats: AttemptUnionStats[];
 }
 
 export interface ModelComparisonResult {
@@ -726,6 +736,104 @@ export class MetricsRepository extends BaseRepository {
   async getModelComparison(models: string[], dataset: string): Promise<ModelComparisonResult> {
     return this.getMultiModelComparison(models, dataset);
   }
+  /**
+   * Parse a model name to extract base model name and attempt number.
+   * Returns null if the model name doesn't follow the attempt pattern.
+   */
+  private parseAttemptModelName(
+    modelName: string,
+  ): { baseModelName: string; attemptNumber: number } | null {
+    const match = modelName.match(/^(.+)-attempt(\d+)$/);
+    if (!match) return null;
+
+    const [, baseModelName, attemptNumberStr] = match;
+    const attemptNumber = parseInt(attemptNumberStr, 10);
+    
+    if (isNaN(attemptNumber) || attemptNumber < 1) return null;
+
+    return { baseModelName, attemptNumber };
+  }
+
+  /**
+   * Compute attempt union statistics for models that follow the attempt pattern.
+   * Returns an array of AttemptUnionStats for each base model with multiple attempts.
+   */
+  private computeAttemptUnionStats(
+    details: PuzzleComparisonDetail[],
+    models: string[],
+    totalPuzzles: number,
+  ): AttemptUnionStats[] {
+    if (details.length === 0 || models.length < 2) {
+      return [];
+    }
+
+    // Parse model names to identify attempt groups
+    const attemptGroups = new Map<string, { modelName: string; attemptNumber: number; index: number }[]>();
+    
+    models.forEach((modelName, index) => {
+      const parsed = this.parseAttemptModelName(modelName);
+      if (parsed) {
+        if (!attemptGroups.has(parsed.baseModelName)) {
+          attemptGroups.set(parsed.baseModelName, []);
+        }
+        attemptGroups.get(parsed.baseModelName)!.push({
+          modelName,
+          attemptNumber: parsed.attemptNumber,
+          index,
+        });
+      }
+    });
+
+    const attemptUnionStats: AttemptUnionStats[] = [];
+
+    // For each base model group with at least 2 attempts, compute union metrics
+    for (const [baseModelName, attempts] of attemptGroups) {
+      if (attempts.length >= 2) {
+        // Sort by attempt number to ensure consistent ordering
+        attempts.sort((a, b) => a.attemptNumber - b.attemptNumber);
+        
+        // Use the first two attempts for union calculation
+        const modelIndices = attempts.slice(0, 2).map(a => a.index);
+        const attemptModelNames = attempts.slice(0, 2).map(a => a.modelName);
+        
+        let unionCorrectCount = 0;
+
+        // Iterate through each puzzle and check if any selected model solved it
+        for (const detail of details) {
+          const modelResults = [
+            detail.model1Result,
+            detail.model2Result,
+            detail.model3Result,
+            detail.model4Result,
+          ];
+
+          // Check if any of the selected models has 'correct' result
+          const isCorrectByAnyAttempt = modelIndices
+            .map(index => modelResults[index])
+            .some(result => result === 'correct');
+
+          if (isCorrectByAnyAttempt) {
+            unionCorrectCount++;
+          }
+        }
+
+        const unionAccuracyPercentage = totalPuzzles > 0 
+          ? Math.round((unionCorrectCount / totalPuzzles) * 10000) / 100  // Round to 2 decimal places
+          : 0;
+
+        attemptUnionStats.push({
+          baseModelName,
+          attemptModelNames,
+          totalPuzzles,
+          unionCorrectCount,
+          unionAccuracyPercentage,
+        });
+      }
+    }
+
+    return attemptUnionStats;
+  }
+
   private async getMultiModelComparison(models: string[], dataset: string): Promise<ModelComparisonResult> {
     if (!this.isConnected()) {
       logger.warn('Database not connected - returning empty model comparison.', 'database');
@@ -749,6 +857,7 @@ export class MetricsRepository extends BaseRepository {
           mostEfficientModel: null,
           fastestModel: null,
           accuracyLeaderModel: null,
+          attemptUnionStats: [],
         },
         details: [],
       };
@@ -778,6 +887,7 @@ export class MetricsRepository extends BaseRepository {
             mostEfficientModel: null,
             fastestModel: null,
             accuracyLeaderModel: null,
+            attemptUnionStats: [],
           },
           details: []
         };
@@ -890,6 +1000,9 @@ export class MetricsRepository extends BaseRepository {
 
       logger.info(`Comparison complete: ${summary.allCorrect} all correct, ${summary.allIncorrect} all incorrect, ${summary.allNotAttempted} not attempted`, 'metrics');
 
+      // Compute attempt union statistics for attempt models
+      const attemptUnionStats = this.computeAttemptUnionStats(details, models, puzzleIds.length);
+
       // Compute enriched per-model performance metrics
       const modelPerformance = await this.getModelPerformanceOnDataset(models, puzzleIds);
 
@@ -943,6 +1056,7 @@ export class MetricsRepository extends BaseRepository {
           mostEfficientModel,
           fastestModel,
           accuracyLeaderModel: winnerModel,
+          attemptUnionStats,
         },
         details
       };
