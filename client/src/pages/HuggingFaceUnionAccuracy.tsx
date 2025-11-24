@@ -25,6 +25,29 @@ import { computeAttemptUnionAccuracy, parseAttemptModelName } from '@/utils/mode
 import { ModelComparisonResult } from './AnalyticsOverview';
 import { TinyGrid } from '@/components/puzzle/TinyGrid';
 
+const SYSTEM_PROMPT_SOURCES = [
+  {
+    key: 'gemini',
+    label: 'Gemini 2.5 Pro (Apr 18, 2025)',
+    url: 'https://raw.githubusercontent.com/elder-plinius/CL4R1T4S/main/GOOGLE/Gemini-2.5-Pro-04-18-2025.md',
+  },
+  {
+    key: 'anthropic',
+    label: 'Claude Sonnet 4.5 (Sep 29, 2025)',
+    url: 'https://raw.githubusercontent.com/elder-plinius/CL4R1T4S/main/ANTHROPIC/Claude_Sonnet-4.5_Sep-29-2025.txt',
+  },
+  {
+    key: 'openai',
+    label: 'OpenAI ChatGPT5 (Aug 7, 2025)',
+    url: 'https://raw.githubusercontent.com/elder-plinius/CL4R1T4S/main/OPENAI/ChatGPT5-08-07-2025.mkd',
+  },
+  {
+    key: 'grok',
+    label: 'Grok 4.1 (Nov 17, 2025)',
+    url: 'https://raw.githubusercontent.com/elder-plinius/CL4R1T4S/main/XAI/GROK-4.1_Nov-17-2025.txt',
+  },
+];
+
 const DATASET_DISPLAY_NAME_MAP: Record<string, string> = {
   evaluation: 'ARC1-Eval',
   training: 'ARC1-Train',
@@ -64,6 +87,10 @@ export default function HuggingFaceUnionAccuracy() {
   const [unionPuzzleIds, setUnionPuzzleIds] = useState<string[]>([]);
   const [showHarnessDetails, setShowHarnessDetails] = useState(true);
   const [showEvaluationSetDetails, setShowEvaluationSetDetails] = useState(false);
+  const [systemPromptsVisible, setSystemPromptsVisible] = useState(false);
+  const [systemPromptsLoading, setSystemPromptsLoading] = useState(false);
+  const [systemPromptsError, setSystemPromptsError] = useState<string | null>(null);
+  const [systemPromptsData, setSystemPromptsData] = useState<Record<string, string>>({});
 
   const { models: availableModels, loading: loadingModels } = useAvailableModels();
 
@@ -188,6 +215,30 @@ export default function HuggingFaceUnionAccuracy() {
     window.scrollTo(0, 0);
   }, []);
 
+  const handleFetchSystemPrompts = async () => {
+    setSystemPromptsError(null);
+    setSystemPromptsLoading(true);
+    try {
+      const entries = await Promise.all(
+        SYSTEM_PROMPT_SOURCES.map(async (src) => {
+          const resp = await fetch(src.url);
+          if (!resp.ok) {
+            throw new Error(`Failed to fetch ${src.label}`);
+          }
+          const text = await resp.text();
+          return [src.key, text] as const;
+        })
+      );
+      setSystemPromptsData(Object.fromEntries(entries));
+      setSystemPromptsVisible(true);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Failed to load system prompts';
+      setSystemPromptsError(message);
+    } finally {
+      setSystemPromptsLoading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 p-2">
       <div className="max-w-7xl mx-auto space-y-2">
@@ -197,7 +248,7 @@ export default function HuggingFaceUnionAccuracy() {
             <BarChart3 className="h-6 w-6 text-blue-600" />
             Official Scoring: Public Evaluation
           </h1>
-          <p className="text-xs text-gray-600 mt-1">
+          <p className="text-base text-gray-600 mt-1">
             Official results from the ARC Prize evaluation harness on the public evaluation set (not semi-private)
           </p>
         </div>
@@ -205,7 +256,7 @@ export default function HuggingFaceUnionAccuracy() {
         {/* Important Disclaimer */}
         <Alert className="border-amber-300 bg-amber-50 p-2 border-l-4 border-l-amber-600">
           <AlertTriangle className="h-4 w-4 text-amber-700" />
-          <AlertDescription className="text-sm text-amber-900 ml-2 space-y-1">
+          <AlertDescription className="text-xl text-amber-900 ml-2 space-y-1">
             <div>
               <strong>📢 Important:</strong> These are <strong>OFFICIAL results from the ARC Prize team's evaluation harness</strong> — not personal evaluations.
               The ARC Prize team conducted these official tests and posted the results on{' '}
@@ -252,7 +303,7 @@ export default function HuggingFaceUnionAccuracy() {
         {/* What This Page Shows */}
         <Alert className="border-blue-200 bg-blue-50/80 p-2">
           <AlertCircle className="h-4 w-4 text-blue-600" />
-          <AlertDescription className="text-sm text-blue-900 ml-2">
+          <AlertDescription className="text-xl text-blue-900 ml-2">
             <strong>What is this page?</strong> This page visualizes official test results from the ARC Prize team's evaluation harness using the <strong>public</strong> evaluation set
             (different from the semi-private set used on the official ARC Prize website). Each model was run twice per puzzle.
             This shows the <strong>best-case score</strong>: how many puzzles each model solves <strong>if we count a puzzle correct whenever either attempt was correct</strong>.
@@ -275,7 +326,7 @@ export default function HuggingFaceUnionAccuracy() {
             onClick={() => setShowEvaluationSetDetails(!showEvaluationSetDetails)}
             className="w-full text-left p-3 flex items-center justify-between hover:bg-teal-100/50 transition-colors"
           >
-            <h3 className="text-sm font-semibold text-teal-900">
+            <h3 className="text-base font-semibold text-teal-900">
               📚 Learn about the three different datasets
             </h3>
             {showEvaluationSetDetails ? (
@@ -287,7 +338,7 @@ export default function HuggingFaceUnionAccuracy() {
 
           {showEvaluationSetDetails && (
             <CardContent className="p-3 space-y-2 border-t border-teal-200">
-              <p className="text-sm text-teal-800 mb-2">
+              <p className="text-base text-teal-800 mb-2">
                 This is a <strong>friendly, simple explanation</strong>. For the official details, see the{' '}
                 <a
                   href="https://arcprize.org/policy"
@@ -301,11 +352,11 @@ export default function HuggingFaceUnionAccuracy() {
                 .
               </p>
 
-              <div className="space-y-2 text-xs text-teal-900">
+              <div className="space-y-2 text-base text-teal-900">
                 <div className="bg-white rounded p-2 border border-teal-100">
                   <div className="font-semibold text-teal-700 mb-1">📊 Public Set (This Page)</div>
                   <p className="mb-1 text-teal-900">Everyone can see these puzzles.</p>
-                  <ul className="list-disc list-inside space-y-0.5 text-teal-900 text-xs">
+                  <ul className="list-disc list-inside space-y-0.5 text-teal-900 text-base">
                     <li>Shared on GitHub and Hugging Face for anyone to use</li>
                     <li>Major AI companies (like OpenAI, Google, Anthropic, Grok) can study and learn from these puzzles</li>
                     <li>No secrets—everyone knows what they are</li>
@@ -315,7 +366,7 @@ export default function HuggingFaceUnionAccuracy() {
                 <div className="bg-white rounded p-2 border border-teal-100">
                   <div className="font-semibold text-teal-700 mb-1">🔒 Semi-Private Set (Official Leaderboard)</div>
                   <p className="mb-1 text-teal-900">The ARC team keeps these secret.</p>
-                  <ul className="list-disc list-inside space-y-0.5 text-teal-900 text-xs">
+                  <ul className="list-disc list-inside space-y-0.5 text-teal-900 text-base">
                     <li>Not published anywhere—only the ARC team has them</li>
                     <li>Used to rank models fairly on the official leaderboard</li>
                     <li>Models haven't trained on these (hopefully!)</li>
@@ -325,7 +376,7 @@ export default function HuggingFaceUnionAccuracy() {
                 <div className="bg-white rounded p-2 border border-teal-100">
                   <div className="font-semibold text-teal-700 mb-1">🏆 Private Set (Contest)</div>
                   <p className="mb-1 text-teal-900">Super secret puzzles for the competition.</p>
-                  <ul className="list-disc list-inside space-y-0.5 text-teal-900 text-xs">
+                  <ul className="list-disc list-inside space-y-0.5 text-teal-900 text-base">
                     <li>Only used during the ARC Prize contest</li>
                     <li>Completely hidden until after the contest ends</li>
                     <li>No one can study these puzzles beforehand</li>
@@ -333,7 +384,7 @@ export default function HuggingFaceUnionAccuracy() {
                 </div>
               </div>
 
-              <div className="bg-white rounded p-2 border border-teal-100 text-xs text-teal-800">
+              <div className="bg-white rounded p-2 border border-teal-100 text-base text-teal-800">
                 <p className="mb-1">
                   <strong>Why scores differ:</strong> These two puzzle sets contain <strong>completely different puzzles</strong>. That's why you'll see different scores on this page (public set) compared to the official ARC Prize leaderboard (semi-private set). Sometimes scores are higher here, sometimes lower—it all depends on how well each particular set of puzzles matches the model's strengths.
                 </p>
@@ -350,14 +401,14 @@ export default function HuggingFaceUnionAccuracy() {
           <CardContent className="p-3 space-y-2">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
               <div>
-                <label className="text-sm font-semibold mb-1 block text-gray-700">Dataset:</label>
+                <label className="text-base font-semibold mb-1 block text-gray-700">Dataset:</label>
                 <Select value={selectedDataset} onValueChange={setSelectedDataset} disabled={loading}>
-                  <SelectTrigger className="h-8 text-xs">
+                  <SelectTrigger className="h-8 text-base">
                     <SelectValue placeholder="Choose..." />
                   </SelectTrigger>
                   <SelectContent>
                     {['evaluation2', 'evaluation', 'training2', 'training'].map((key) => (
-                      <SelectItem key={key} value={key} className="text-xs">
+                      <SelectItem key={key} value={key} className="text-base">
                         {DATASET_DISPLAY_NAME_MAP[key] || key}
                       </SelectItem>
                     ))}
@@ -366,19 +417,19 @@ export default function HuggingFaceUnionAccuracy() {
               </div>
 
               <div>
-                <label className="text-sm font-semibold mb-1 block text-gray-700">Model (Attempt 1 + 2):</label>
+                <label className="text-base font-semibold mb-1 block text-gray-700">Model (Attempt 1 + 2):</label>
                 <Select value={selectedAttemptPair || ''} onValueChange={setSelectedAttemptPair} disabled={loading}>
-                  <SelectTrigger className="h-8 text-xs">
+                  <SelectTrigger className="h-8 text-base">
                     <SelectValue placeholder={loadingModels ? 'Loading...' : 'Choose...'} />
                   </SelectTrigger>
                   <SelectContent>
                     {attemptPairOptions.length === 0 ? (
-                      <SelectItem value="no-models" disabled className="text-xs">
+                      <SelectItem value="no-models" disabled className="text-base">
                         No models with 2+ attempts
                       </SelectItem>
                     ) : (
                       attemptPairOptions.map((pair) => (
-                        <SelectItem key={pair.value} value={pair.value} className="text-xs">
+                        <SelectItem key={pair.value} value={pair.value} className="text-base">
                           {pair.label}
                         </SelectItem>
                       ))
@@ -392,7 +443,7 @@ export default function HuggingFaceUnionAccuracy() {
                   onClick={handleFetchUnionAccuracy}
                   disabled={!selectedDataset || !selectedAttemptPair || loading || attemptPairOptions.length === 0}
                   size="sm"
-                  className="w-full h-8 text-xs"
+                  className="w-full h-8 text-base"
                 >
                   {loading ? 'Computing...' : 'Calculate'}
                 </Button>
@@ -402,7 +453,7 @@ export default function HuggingFaceUnionAccuracy() {
             {error && (
               <Alert variant="destructive" className="p-2">
                 <AlertCircle className="h-3 w-3" />
-                <AlertDescription className="text-xs ml-2">{error}</AlertDescription>
+                <AlertDescription className="text-base ml-2">{error}</AlertDescription>
               </Alert>
             )}
           </CardContent>
@@ -413,7 +464,7 @@ export default function HuggingFaceUnionAccuracy() {
           <Card className="shadow-sm">
             <CardContent className="p-4 text-center">
               <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary mx-auto"></div>
-              <p className="text-xs text-gray-600 mt-2">Computing...</p>
+              <p className="text-base text-gray-600 mt-2">Computing...</p>
             </CardContent>
           </Card>
         )}
@@ -426,10 +477,10 @@ export default function HuggingFaceUnionAccuracy() {
                 {/* Big Number with Puzzle Badges on same line */}
                 <div className="flex items-start justify-between mb-2 gap-3">
                   <div>
-                    <div className="text-3xl font-bold text-blue-700">
+                    <div className="text-4xl font-bold text-blue-700">
                       {unionMetrics.unionAccuracyPercentage.toFixed(1)}%
                     </div>
-                    <p className="text-xs text-gray-600 mt-0.5">Score (either attempt correct)</p>
+                    <p className="text-base text-gray-600 mt-0.5">Score (either attempt correct)</p>
                   </div>
                   <div className="flex items-start gap-2">
                     {unionPuzzleIds.length > 0 && (
@@ -450,7 +501,7 @@ export default function HuggingFaceUnionAccuracy() {
                 </div>
 
                 {/* The Equation - Shown Clearly */}
-                <div className="bg-white rounded p-2 mb-2 border border-blue-100 text-xs space-y-1">
+                <div className="bg-white rounded p-2 mb-2 border border-blue-100 text-base space-y-1">
                   <div className="text-gray-700">
                     <span className="font-bold">Best-Case Score</span> = (Puzzles correct in attempt 1 <strong>or</strong> attempt 2) ÷ Total puzzles
                   </div>
@@ -458,7 +509,7 @@ export default function HuggingFaceUnionAccuracy() {
                     = <span className="font-semibold">{unionMetrics.unionCorrectCount} puzzles</span> ÷ <span className="font-semibold">{unionMetrics.totalPuzzles} total</span>
                   </div>
                   <div className="text-blue-700 font-bold">
-                    = <span className="text-lg">{unionMetrics.unionAccuracyPercentage.toFixed(1)}%</span>
+                    = <span className="text-xl">{unionMetrics.unionAccuracyPercentage.toFixed(1)}%</span>
                   </div>
                 </div>
 
@@ -467,14 +518,14 @@ export default function HuggingFaceUnionAccuracy() {
                   value={(unionMetrics.unionCorrectCount / unionMetrics.totalPuzzles) * 100}
                   className="h-2 mb-1"
                 />
-                <p className="text-xs text-gray-700">
+                <p className="text-base text-gray-700">
                   <strong>{unionMetrics.unionCorrectCount}</strong> of <strong>{unionMetrics.totalPuzzles}</strong> puzzles solved
                 </p>
 
                 {/* Model Names */}
                 <div className="border-t border-blue-100 pt-2 flex flex-wrap gap-1">
                   {unionMetrics.attemptModelNames.map((name) => (
-                    <Badge key={name} variant="outline" className="text-xs py-0.5">
+                    <Badge key={name} variant="outline" className="text-base py-0.5">
                       {name}
                     </Badge>
                   ))}
@@ -485,7 +536,7 @@ export default function HuggingFaceUnionAccuracy() {
             {/* Explanation in Simple Terms */}
             <Card className="shadow-sm">
               <CardContent className="p-2">
-                <div className="text-sm text-gray-700 leading-relaxed space-y-1">
+                <div className="text-base text-gray-700 leading-relaxed space-y-1">
                   <div>
                     <strong>📊 Official Scoring Method:</strong>
                   </div>
@@ -513,7 +564,7 @@ export default function HuggingFaceUnionAccuracy() {
         {!loading && !unionMetrics && !error && (
           <Card className="shadow-sm">
             <CardContent className="p-4 text-center">
-              <p className="text-xs text-gray-500">Select a dataset and a model pair above to see their performance on the public evaluation set. By default, it has been set to Claude Sonnet 4.5 with maximum thinking enabled. That was the same model who coded this page and put a little smiley face 😊.</p>
+              <p className="text-base text-gray-500">Select a dataset and a model pair above to see their performance on the public evaluation set. By default, it has been set to Claude Sonnet 4.5 with maximum thinking enabled. That was the same model who coded this page and put a little smiley face 😊.</p>
             </CardContent>
           </Card>
         )}
@@ -525,7 +576,7 @@ export default function HuggingFaceUnionAccuracy() {
             className="p-2 cursor-pointer hover:bg-purple-50 transition-colors flex items-center justify-between"
           >
             <div className="flex items-center gap-2">
-              <div className="text-sm font-semibold text-purple-700">🔬 How the Official Testing Harness Works</div>
+              <div className="text-base font-semibold text-purple-700">🔬 How the Official Testing Harness Works</div>
             </div>
             {showHarnessDetails ? (
               <ChevronUp className="h-4 w-4 text-purple-600" />
@@ -535,13 +586,16 @@ export default function HuggingFaceUnionAccuracy() {
           </div>
 
           {showHarnessDetails && (
-            <CardContent className="p-3 border-t border-purple-100 text-xs text-gray-700 leading-relaxed space-y-2">
+            <CardContent className="p-3 border-t border-purple-100 text-base text-gray-700 leading-relaxed space-y-2">
               <div className="bg-purple-50 p-2 rounded">
-                <strong className="text-purple-900">1️⃣ The System Prompt</strong>
+                <strong className="text-purple-900">1️⃣ The User Message (No Explicit System Prompt)</strong>
                 <p className="text-gray-700 mt-1">
-                  Every model receives the same instructions: <em>"You are participating in a puzzle solving competition. You are an expert at solving puzzles."</em>
+                  <strong>Critical distinction:</strong> The harness does NOT send a separate system prompt. Instead, all instructions are embedded in the USER message. The model uses whatever DEFAULT system prompt the provider (OpenAI, Google, Anthropic, etc.) has configured.
+                </p>
+                <p className="text-gray-700 mt-1">
+                  The user message begins with: <em>"You are participating in a puzzle solving competition. You are an expert at solving puzzles."</em>
                   Then: <em>"Below is a list of input and output pairs with a pattern. Your goal is to identify the pattern or transformation in the training examples that maps the input to the output, then apply that pattern to the test input to give a final output."</em>
-                  The prompt also says: <em>"Respond in the format of the training output examples."</em> This tells the model exactly what it needs to do and how to format its answer.
+                  And: <em>"Respond in the format of the training output examples."</em> These instructions are part of the USER message, not a system prompt, which means they carry less weight than if they were sent as a system-level instruction. This is important for reproducibility: researchers replicating this harness with a different system prompt may see different results.
                 </p>
               </div>
 
@@ -550,7 +604,7 @@ export default function HuggingFaceUnionAccuracy() {
                 <p className="text-gray-700 mt-1">
                   Next, the harness sends the model several training examples. Each example shows:
                 </p>
-                <ul className="list-disc list-inside text-gray-700 ml-1 mt-1 text-sm">
+                <ul className="list-disc list-inside text-gray-700 ml-1 mt-1 text-base">
                   <li>An <strong>input</strong> grid of numbers</li>
                   <li>The corresponding <strong>output</strong> grid</li>
                 </ul>
@@ -560,11 +614,11 @@ export default function HuggingFaceUnionAccuracy() {
 
                 {/* Visual vs Text Representation */}
                 <div className="bg-white rounded p-2 border border-purple-200 mt-2">
-                  <div className="text-xs text-gray-600 font-semibold mb-2">What humans see vs what the model sees:</div>
+                  <div className="text-base text-gray-600 font-semibold mb-2">What humans see vs what the model sees:</div>
                   <div className="grid grid-cols-2 gap-2">
                     {/* Human View */}
                     <div>
-                      <div className="text-xs font-semibold text-gray-700 mb-1">👁️ What YOU see (colored grid):</div>
+                      <div className="text-base font-semibold text-gray-700 mb-1">👁️ What YOU see (colored grid):</div>
                       <div style={{ maxWidth: '120px', margin: '0 auto' }}>
                         <TinyGrid grid={[[0, 1, 2], [3, 4, 5], [6, 7, 8]]} />
                       </div>
@@ -572,8 +626,8 @@ export default function HuggingFaceUnionAccuracy() {
 
                     {/* Model View */}
                     <div>
-                      <div className="text-xs font-semibold text-gray-700 mb-1">🤖 What the MODEL sees (text):</div>
-                      <code className="block bg-gray-900 text-green-400 p-2 rounded text-xs font-mono overflow-x-auto">
+                      <div className="text-base font-semibold text-gray-700 mb-1">🤖 What the MODEL sees (text):</div>
+                      <code className="block bg-gray-900 text-green-400 p-2 rounded text-base font-mono overflow-x-auto">
                         {`[[0, 1, 2],
  [3, 4, 5],
  [6, 7, 8]]`}
@@ -581,21 +635,21 @@ export default function HuggingFaceUnionAccuracy() {
                     </div>
                   </div>
 
-                  <div className="bg-amber-50 border border-amber-200 rounded p-2 mt-2 text-xs text-amber-900">
-                    <strong>⚠️ Critical insight:</strong> While humans interpret this colored grid intuitively, the model sees <strong>only plain text</strong>—numbers in brackets. The model has <strong>no visual understanding</strong> of colors. It treats 0, 1, 2, etc. as abstract symbols.
+                  <div className="bg-amber-50 border border-amber-200 rounded p-2 mt-2 text-base text-amber-900">
+                    <strong>⚠️ Critical insight:</strong> While humans interpret this colored grid intuitively, the model sees <strong>only plain text</strong>—numbers in brackets. 
                   </div>
 
-                  <div className="mt-2 text-xs text-gray-700 leading-relaxed">
+                  <div className="mt-2 text-base text-gray-700 leading-relaxed">
                     <p><strong>What information does the model actually receive?</strong></p>
                     <ul className="list-disc list-inside mt-1 space-y-1">
-                      <li>The system prompt tells it there's a "pattern" to find</li>
+                      <li>The user message tells it there's a "pattern" to find</li>
                       <li>It sees training input/output pairs as JSON arrays</li>
                       <li>It sees a test input without an answer</li>
                       <li>That's <strong>it</strong>. No information about colors, no hints about geometry, no explanation of what the numbers represent.</li>
                     </ul>
                   </div>
 
-                  <div className="bg-blue-50 border border-blue-200 rounded p-2 mt-2 text-xs text-blue-900">
+                  <div className="bg-blue-50 border border-blue-200 rounded p-2 mt-2 text-base text-blue-900">
                     <strong>💡 Why this matters:</strong> This is the sort of thing we discuss in our Discord server. Please come visit us at {' '}
                     <a
                       href="https://discord.gg/9b77dPAmcA"
@@ -603,7 +657,7 @@ export default function HuggingFaceUnionAccuracy() {
                       rel="noreferrer"
                       className="font-semibold text-blue-700 underline hover:text-blue-800"
                     >
-                      Discord server
+                      The Offical ARC-AGI Prize Discord server
                     </a>
                     .
                   </div>
@@ -625,7 +679,10 @@ export default function HuggingFaceUnionAccuracy() {
               <div className="bg-purple-50 p-2 rounded">
                 <strong className="text-purple-900">4️⃣ How the Message is Sent</strong>
                 <p className="text-gray-700 mt-1">
-                  Everything — the initial prompt, all training examples, and the test input — is packaged into <strong>one single message</strong> sent to the model.
+                  Everything — the instructions, all training examples, and the test input — is packaged into <strong>one single USER message</strong> sent to the model.
+                  <strong>No system prompt is sent.</strong> The model uses the provider's default system prompt (if any) plus the user message. This is a critical distinction because instructions in a user message have less influence than the same instructions in a system prompt. Researchers replicating this harness might see different results if they add or change the system prompt.
+                </p>
+                <p className="text-gray-700 mt-1">
                   The model receives this complete context in one go and must respond with its predicted output grid. This happens twice per puzzle (attempt 1 and attempt 2)
                   with fresh, independent runs so the model can try different reasoning strategies.
                 </p>
@@ -644,7 +701,7 @@ export default function HuggingFaceUnionAccuracy() {
                 <p className="text-gray-700 mt-1">
                   For each puzzle, the harness checks:
                 </p>
-                <ul className="list-disc list-inside text-gray-700 ml-1 mt-1 text-sm">
+                <ul className="list-disc list-inside text-gray-700 ml-1 mt-1 text-base">
                   <li>Does the model's <strong>attempt 1 output exactly match</strong> the ground truth? ✓</li>
                   <li>Does the model's <strong>attempt 2 output exactly match</strong> the ground truth? ✓</li>
                 </ul>
@@ -654,32 +711,32 @@ export default function HuggingFaceUnionAccuracy() {
               </div>
 
               <div className="border-t border-purple-200 pt-2 mt-2 bg-gray-50 rounded p-2">
-                <div className="text-xs space-y-2">
+                <div className="text-base space-y-2">
                   <strong className="text-gray-900 block">📋 TL;DR: How It Actually Works (For Developers)</strong>
-                  <div className="bg-white rounded p-1.5 border border-gray-200 font-mono text-gray-700 text-xs space-y-1">
-                    <div><span className="text-blue-600">1.</span> <span className="font-semibold">Build prompt:</span> Load training pairs from task JSON</div>
-                    <div><span className="text-blue-600">2.</span> <span className="font-semibold">Convert to text:</span> Turn each grid into JSON array string via json.dumps()</div>
-                    <div><span className="text-blue-600">3.</span> <span className="font-semibold">Embed in prompt:</span> Substitute arrays into system prompt template</div>
-                    <div><span className="text-blue-600">4.</span> <span className="font-semibold">One API call:</span> Send entire prompt string in ONE request</div>
+                  <div className="bg-white rounded p-1.5 border border-gray-200 font-mono text-gray-700 text-base space-y-1">
+                    <div><span className="text-blue-600">1.</span> <span className="font-semibold">Load data:</span> Read training pairs & test input from task JSON</div>
+                    <div><span className="text-blue-600">2.</span> <span className="font-semibold">Convert grids:</span> Turn each grid into JSON array via json.dumps()</div>
+                    <div><span className="text-blue-600">3.</span> <span className="font-semibold">Build user message:</span> Substitute arrays + instructions into template → ONE text string</div>
+                    <div><span className="text-blue-600">4.</span> <span className="font-semibold">Send to API:</span> messages=[{'{role: "user", content: prompt}'}] ← NO system prompt sent; model uses provider's default system prompt + user message</div>
                     <div><span className="text-blue-600">5.</span> <span className="font-semibold">Get response:</span> Model returns text (usually containing JSON array)</div>
                     <div><span className="text-blue-600">6.</span> <span className="font-semibold">Extract answer:</span> Parse JSON from response text</div>
-                    <div><span className="text-blue-606">7.</span> <span className="font-semibold">Compare:</span> Check if extracted array matches ground truth</div>
+                    <div><span className="text-blue-606">7.</span> <span className="font-semibold">Compare:</span> Check if extracted array exactly matches ground truth</div>
                   </div>
-                  <div className="text-gray-600 text-xs italic mt-1">
-                    <strong>NOT:</strong> Multiple API calls ❌ | Images/binary ❌ | Streaming puzzles ❌ | Multi-turn ❌
+                  <div className="text-gray-600 text-base italic mt-1">
+                    <strong>Critical distinction:</strong> NO system prompt is sent to the API. Instructions are embedded in the USER message, so they compete with the provider's default system prompt. This affects reproducibility—researchers adding their own system prompt may get different results.
                   </div>
                 </div>
               </div>
 
               <div className="border-t border-purple-200 pt-2 mt-2">
-                <p className="text-gray-600 text-xs">
+                <p className="text-gray-600 text-base">
                   <strong>Bottom line:</strong> The official evaluation harness is a simple, fair system: it gives each model the same puzzle, the same training examples,
                   and two independent attempts to solve it. This process repeats for every puzzle in the dataset, and the results shown on this page are exactly
                   what the ARC Prize team posted on Hugging Face — no modifications or custom scoring.
                 </p>
               </div>
 
-              <div className="border-t border-purple-200 pt-2 mt-2 text-xs text-gray-500">
+              <div className="border-t border-purple-200 pt-2 mt-2 text-base text-gray-500">
                 <p>
                   <strong>About this explanation:</strong> All text on this page was written by either Claude Sonnet 4.5 or Haiku 4.5 after researching the actual ARC-AGI-Benchmarking source code, reading system prompts, and analyzing the implementation. The content was refined through iterative feedback with an actual human familiar with ARC, and several corrections were made along the way to ensure accuracy.
                 </p>
@@ -698,6 +755,67 @@ export default function HuggingFaceUnionAccuracy() {
                   </a>
                   .
                 </p>
+
+                <div className="border-t border-purple-200 pt-3 mt-3 space-y-2">
+                  <div className="flex flex-col gap-1">
+                    <span className="text-base font-semibold text-gray-800">Provider system prompts (developer note)</span>
+                    <span className="text-base text-gray-600">
+                      All major provider system prompts can be read at{' '}
+                      <a
+                        className="text-purple-700 underline font-semibold"
+                        href="https://github.com/elder-plinius/CL4R1T4S/tree/main"
+                        target="_blank"
+                        rel="noreferrer"
+                      >
+                        github.com/elder-plinius/CL4R1T4S
+                      </a>
+                      . These are the defaults providers may apply when no custom system prompt is supplied. Grok notes that system messages take precedence over user messages; the impact on ARC harness testing is unknown.
+                    </span>
+                  </div>
+
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <Button size="sm" onClick={handleFetchSystemPrompts} disabled={systemPromptsLoading}>
+                      {systemPromptsLoading ? 'Loading system prompts…' : 'Fetch latest provider system prompts'}
+                    </Button>
+                    <span className="text-[11px] text-gray-600">
+                      Gemini, OpenAI, Anthropic, Grok (latest versions from CL4R1T4S)
+                    </span>
+                  </div>
+
+                  {systemPromptsError && (
+                    <div className="text-[11px] text-red-600 bg-red-50 border border-red-200 rounded p-2">
+                      {systemPromptsError}
+                    </div>
+                  )}
+
+                  {systemPromptsVisible && (
+                    <div className="grid gap-2 md:grid-cols-2">
+                      {SYSTEM_PROMPT_SOURCES.map((src) => {
+                        const content = systemPromptsData[src.key] || 'Not loaded';
+                        const preview = content.slice(0, 1200);
+                        return (
+                          <div key={src.key} className="border border-gray-200 rounded p-2 bg-white">
+                            <div className="flex items-center justify-between gap-2 mb-1">
+                              <span className="text-base font-semibold text-gray-800">{src.label}</span>
+                              <a
+                                href={src.url.replace('raw.githubusercontent.com', 'github.com').replace('/main/', '/blob/main/')}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="text-[11px] text-purple-700 underline"
+                              >
+                                View on GitHub
+                              </a>
+                            </div>
+                            <pre className="text-[11px] text-gray-700 bg-gray-50 rounded p-2 overflow-x-auto max-h-52 whitespace-pre-wrap">
+                              {preview}
+                              {content.length > preview.length ? ' …' : ''}
+                            </pre>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
               </div>
             </CardContent>
           )}
