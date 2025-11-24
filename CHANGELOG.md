@@ -1,6 +1,13 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top!!!
 
+### Version 5.22.2
+
+- Official Scoring Page UI Refinements
+  - **Repositioned puzzle ID badges higher in score card**: Moved puzzle ID badges section from bottom of result card to appear immediately after "X of Y puzzles solved" progress line, making puzzle exploration more prominent and visible without scrolling. This improves information hierarchy by placing the most actionable results (which puzzles were solved) before less important metadata (model names). Removed border-top separator and added border-top to model names section instead (`client/src/pages/HuggingFaceUnionAccuracy.tsx:454-481`).
+  - **Made testing harness explanation always visible on page load**: Moved "How the Official Testing Harness Works" expandable card section completely outside of the results conditional block. Previously only displayed after user calculated results; now displays immediately when page loads, providing educational context before any user interactions. Remains fully collapsed/expandable for users familiar with the harness (`client/src/pages/HuggingFaceUnionAccuracy.tsx:313-404`).
+  - **Changed default model selection to 21st pair**: Updated auto-selection logic to default to the 21st model pair in the attempt pair options list when available. Falls back to first available option if fewer than 21 pairs are available (`client/src/pages/HuggingFaceUnionAccuracy.tsx:121-127`).
+
 ### Version 5.22.1
 
 - Official Scoring Page Polish
