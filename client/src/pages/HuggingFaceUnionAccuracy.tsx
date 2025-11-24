@@ -140,11 +140,11 @@ export default function HuggingFaceUnionAccuracy() {
       });
   }, [attemptGroups]);
 
-  // Auto-select 4th pair if available, otherwise first pair
+  // Auto-select 9th pair if available, otherwise first pair
   useEffect(() => {
     if (!selectedAttemptPair && attemptPairOptions.length > 0) {
-      const fourthPair = attemptPairOptions.length >= 4 ? attemptPairOptions[3] : attemptPairOptions[0];
-      setSelectedAttemptPair(fourthPair.value);
+      const ninthPair = attemptPairOptions.length >= 9 ? attemptPairOptions[8] : attemptPairOptions[0];
+      setSelectedAttemptPair(ninthPair.value);
     }
   }, [attemptPairOptions, selectedAttemptPair]);
 
