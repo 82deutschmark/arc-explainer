@@ -79,34 +79,33 @@ export class DatabaseMaintenance {
   }
 
   /**
-   * Terminate idle queries that have been running for more than 5 minutes
-   * These might be holding temp files or blocking cleanup
+   * Terminate ALL active queries to force cleanup of temp files
+   * Aggressive cleanup for Railway deployment with limited disk space
    */
   private async terminateIdleQueries(): Promise<void> {
     try {
       const pool = getPool();
       if (!pool) {
-        logger.debug('Database pool not available - skipping idle query termination', 'db-maintenance');
+        logger.debug('Database pool not available - skipping query termination', 'db-maintenance');
         return;
       }
 
+      // AGGRESSIVE: Kill ALL active queries except our own to free temp files
       const result = await pool.query(`
         SELECT
           pg_terminate_backend(pid),
           query,
-          state,
-          state_change
+          state
         FROM pg_stat_activity
-        WHERE state = 'idle in transaction'
-          AND state_change < NOW() - INTERVAL '5 minutes'
+        WHERE state IN ('active', 'idle in transaction')
           AND pid != pg_backend_pid()
       `);
 
       if (result.rowCount && result.rowCount > 0) {
-        logger.info(`Terminated ${result.rowCount} long-running idle queries`, 'db-maintenance');
+        logger.info(`Terminated ${result.rowCount} active/idle queries to free temp files`, 'db-maintenance');
       }
     } catch (error) {
-      logger.warn(`Could not terminate idle queries: ${error instanceof Error ? error.message : String(error)}`, 'db-maintenance');
+      logger.warn(`Could not terminate queries: ${error instanceof Error ? error.message : String(error)}`, 'db-maintenance');
     }
   }
 

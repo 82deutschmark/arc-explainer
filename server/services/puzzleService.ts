@@ -78,9 +78,10 @@ export const puzzleService = {
     }));
     
     try {
-      // Use bulk query to get explanation status for all puzzles at once - optimizes performance
+      // Use LIGHTWEIGHT bulk query to get only the fields actually used by UI
+      // This prevents PostgreSQL temp file bloat on Railway by avoiding heavy JSONB/TEXT fields
       const puzzleIds = enhancedPuzzles.map(p => p.id);
-      const explanationStatusMap = await repositoryService.explanations.getBulkExplanationStatus(puzzleIds);
+      const explanationStatusMap = await repositoryService.explanations.getBulkExplanationStatusLight(puzzleIds);
       
       // Update each puzzle with its explanation status and metadata
       enhancedPuzzles.forEach(puzzle => {
