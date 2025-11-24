@@ -82,7 +82,7 @@ const navigationItems: NavItem[] = [
   {
     type: 'link',
     title: 'Official Scoring',
-    href: '/hf-union-accuracy',
+    href: '/scoring',
     icon: Zap,
     description: 'Official test results on public evaluation set with 2 attempts per puzzle'
   },

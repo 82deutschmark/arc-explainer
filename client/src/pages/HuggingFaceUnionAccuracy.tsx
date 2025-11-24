@@ -59,7 +59,7 @@ export default function HuggingFaceUnionAccuracy() {
     title: 'Official Results: Multiple Attempts – ARC Explainer',
     description:
       'Official Hugging Face test results showing model performance with 2 independent attempts per puzzle. View best-case accuracy across ARC-AGI evaluation datasets.',
-    canonicalPath: '/hf-union-accuracy',
+    canonicalPath: '/scoring',
   });
 
   const [selectedDataset, setSelectedDataset] = useState<string>('evaluation2'); // Default to ARC2-Eval
@@ -210,20 +210,47 @@ export default function HuggingFaceUnionAccuracy() {
         {/* Important Disclaimer */}
         <Alert className="border-amber-300 bg-amber-50 p-2 border-l-4 border-l-amber-600">
           <AlertTriangle className="h-4 w-4 text-amber-700" />
-          <AlertDescription className="text-xs text-amber-900 ml-2">
-            <strong>📢 Important:</strong> These are <strong>OFFICIAL results from the ARC Prize team's evaluation harness</strong> — not personal evaluations.
-            The ARC Prize team conducted these official tests and posted the results on{' '}
-            <a
-              href="https://huggingface.co/datasets/arcprize/arc_agi_v2_public_eval"
-              target="_blank"
-              rel="noreferrer"
-              className="font-semibold text-amber-700 underline hover:text-amber-800"
-            >
-              Hugging Face
-              <ExternalLink className="inline h-3 w-3 ml-0.5" />
-            </a>
-            {' '}in raw JSON format.
-            ARC Explainer is simply a visualization tool that makes this official raw data more human-readable, searchable, and visual. All credits and data ownership belong to the ARC Prize team.
+          <AlertDescription className="text-xs text-amber-900 ml-2 space-y-1">
+            <div>
+              <strong>📢 Important:</strong> These are <strong>OFFICIAL results from the ARC Prize team's evaluation harness</strong> — not personal evaluations.
+              The ARC Prize team conducted these official tests and posted the results on{' '}
+              <a
+                href="https://huggingface.co/datasets/arcprize/arc_agi_v2_public_eval"
+                target="_blank"
+                rel="noreferrer"
+                className="font-semibold text-amber-700 underline hover:text-amber-800"
+              >
+                Hugging Face
+                <ExternalLink className="inline h-3 w-3 ml-0.5" />
+              </a>
+              {' '}in raw JSON format.
+            </div>
+            <div>
+              ⚠️ <strong>Key difference:</strong> Scores here are from the <strong>public evaluation set</strong> and will <strong>NOT match the official{' '}
+              <a
+                href="https://arcprize.org/leaderboard"
+                target="_blank"
+                rel="noreferrer"
+                className="font-semibold text-amber-700 underline hover:text-amber-800"
+              >
+                ARC Prize leaderboard
+                <ExternalLink className="inline h-3 w-3 ml-0.5" />
+              </a>
+              </strong>, which uses the semi-private evaluation set. The two datasets contain different puzzles, so models score differently on each.
+            </div>
+            <div>
+              ARC Explainer is simply a visualization tool that makes this official raw data more human-readable, searchable, and visual. All credits and data ownership belong to the{' '}
+              <a
+                href="https://arcprize.org"
+                target="_blank"
+                rel="noreferrer"
+                className="font-semibold text-amber-700 underline hover:text-amber-800"
+              >
+                ARC Prize team
+                <ExternalLink className="inline h-3 w-3 ml-0.5" />
+              </a>
+              .
+            </div>
           </AlertDescription>
         </Alert>
 
@@ -246,6 +273,71 @@ export default function HuggingFaceUnionAccuracy() {
             </a>
           </AlertDescription>
         </Alert>
+
+        {/* Public vs Semi-Private Explainer - Simple Version */}
+        <Card className="shadow-sm border-teal-200 bg-teal-50/80">
+          <CardContent className="p-3 space-y-2">
+            <div>
+              <h3 className="text-sm font-semibold text-teal-900 mb-2">
+                🎓 Three Types of Puzzle Sets
+              </h3>
+              <p className="text-xs text-teal-800 mb-2">
+                This is a <strong>friendly, simple explanation</strong>. For the official details, see the{' '}
+                <a
+                  href="https://arcprize.org/policy"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="font-semibold text-teal-700 underline hover:text-teal-800"
+                >
+                  official ARC Prize policy
+                  <ExternalLink className="inline h-3 w-3 ml-0.5" />
+                </a>
+                .
+              </p>
+            </div>
+
+            <div className="space-y-2 text-xs text-teal-900">
+              <div className="bg-white rounded p-2 border border-teal-100">
+                <div className="font-semibold text-teal-700 mb-1">📊 Public Set (This Page)</div>
+                <p className="mb-1 text-teal-900">Everyone can see these puzzles.</p>
+                <ul className="list-disc list-inside space-y-0.5 text-teal-900 text-xs">
+                  <li>Shared on GitHub and Hugging Face for anyone to use</li>
+                  <li>Major AI companies (like OpenAI, Google, Anthropic, Grok) can study and learn from these puzzles</li>
+                  <li>No secrets—everyone knows what they are</li>
+                </ul>
+              </div>
+
+              <div className="bg-white rounded p-2 border border-teal-100">
+                <div className="font-semibold text-teal-700 mb-1">🔒 Semi-Private Set (Official Leaderboard)</div>
+                <p className="mb-1 text-teal-900">The ARC team keeps these secret.</p>
+                <ul className="list-disc list-inside space-y-0.5 text-teal-900 text-xs">
+                  <li>Not published anywhere—only the ARC team has them</li>
+                  <li>Used to rank models fairly on the official leaderboard</li>
+                  <li>Models haven't trained on these (hopefully!)</li>
+                </ul>
+              </div>
+
+              <div className="bg-white rounded p-2 border border-teal-100">
+                <div className="font-semibold text-teal-700 mb-1">🏆 Private Set (Contest)</div>
+                <p className="mb-1 text-teal-900">Super secret puzzles for the competition.</p>
+                <ul className="list-disc list-inside space-y-0.5 text-teal-900 text-xs">
+                  <li>Only used during the ARC Prize contest</li>
+                  <li>Completely hidden until after the contest ends</li>
+                  <li>No one can study these puzzles beforehand</li>
+                </ul>
+              </div>
+            </div>
+
+            <div className="bg-white rounded p-2 border border-teal-100 text-xs text-teal-800">
+              <p className="mb-1">
+                <strong>Why scores here are higher:</strong> Scores on this page show how well models do on puzzles everyone can see. When major AI companies (like OpenAI, Google, Anthropic, Grok) can study the puzzles first, their models do better on those puzzles. That's why scores here are higher than on the secret leaderboard—the models haven't seen those puzzles before!
+              </p>
+              <p className="text-teal-700 mt-1">
+                💡 Think of it like this: If you study the practice test, you'll score higher on it than on a surprise test you've never seen.
+              </p>
+            </div>
+          </CardContent>
+        </Card>
 
         {/* Controls - Compact */}
         <Card className="shadow-sm">
@@ -446,9 +538,9 @@ export default function HuggingFaceUnionAccuracy() {
               <div className="bg-purple-50 p-2 rounded">
                 <strong className="text-purple-900">1️⃣ The System Prompt</strong>
                 <p className="text-gray-700 mt-1">
-                  Every model receives the same starting instructions: <em>"You are participating in a puzzle solving competition. You are an expert at solving puzzles."</em>
-                  The prompt then tells the model: <em>"Below is a list of input and output pairs showing a pattern. Your goal is to identify the pattern or transformation in the training examples,
-                  then apply that pattern to the test input to give a final output."</em> This sets the context for what the model needs to do.
+                  Every model receives the same instructions: <em>"You are participating in a puzzle solving competition. You are an expert at solving puzzles."</em>
+                  Then: <em>"Below is a list of input and output pairs with a pattern. Your goal is to identify the pattern or transformation in the training examples that maps the input to the output, then apply that pattern to the test input to give a final output."</em>
+                  The prompt also says: <em>"Respond in the format of the training output examples."</em> This tells the model exactly what it needs to do and how to format its answer.
                 </p>
               </div>
 
@@ -458,11 +550,11 @@ export default function HuggingFaceUnionAccuracy() {
                   Next, the harness sends the model several training examples. Each example shows:
                 </p>
                 <ul className="list-disc list-inside text-gray-700 ml-1 mt-1">
-                  <li>An <strong>input</strong> grid (represented as a grid of colored numbers)</li>
+                  <li>An <strong>input</strong> grid of numbers</li>
                   <li>The corresponding <strong>output</strong> grid (what the pattern produces)</li>
                 </ul>
                 <p className="text-gray-700 mt-1">
-                  All of this is formatted as clean <strong>JSON</strong> (structured data). For example, a 3×3 grid might look like: <code className="bg-white px-1 py-0.5 rounded border border-gray-300">{`[[0, 1, 2], [3, 4, 5], [6, 7, 8]]`}</code>.
+                  Both are formatted as <strong>raw JSON arrays</strong> (structured data). The numbers are integers, and the model receives them purely as data. For example, a 3×3 grid looks like: <code className="bg-white px-1 py-0.5 rounded border border-gray-300">{`[[0, 1, 2], [3, 4, 5], [6, 7, 8]]`}</code>
                   Each training example gives the model more clues about what transformation rule to discover.
                 </p>
               </div>
@@ -512,6 +604,21 @@ export default function HuggingFaceUnionAccuracy() {
                   <strong>Bottom line:</strong> The official evaluation harness is a simple, fair system: it gives each model the same puzzle, the same training examples,
                   and two independent attempts to solve it. This process repeats for every puzzle in the dataset, and the results shown on this page are exactly
                   what the ARC Prize team posted on Hugging Face — no modifications or custom scoring.
+                </p>
+              </div>
+
+              <div className="border-t border-purple-200 pt-2 mt-2 text-xs text-gray-500">
+                <p>
+                  <strong>About this explanation:</strong> All text on this page was written by Claude Sonnet 4.5 after researching the actual Arc-AGI-Benchmarking source code, reading system prompts, and analyzing the implementation. The content was refined through iterative feedback, and several corrections were made along the way to ensure accuracy. If you find any errors or missing information, please report them on our{' '}
+                  <a
+                    href="https://discord.gg/9b77dPAmcA"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="font-semibold text-purple-600 underline hover:text-purple-700"
+                  >
+                    Discord server
+                  </a>
+                  .
                 </p>
               </div>
             </CardContent>
