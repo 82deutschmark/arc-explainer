@@ -13,6 +13,7 @@ import { ArrowLeft, AlertCircle, Zap } from 'lucide-react';
 import { NewModelComparisonResults } from '@/components/analytics/NewModelComparisonResults';
 import { ModelPerformancePanel } from '@/components/analytics/ModelPerformancePanel';
 import { ModelComparisonDialog } from '@/components/analytics/ModelComparisonDialog';
+import { ClickablePuzzleBadge } from '@/components/ui/ClickablePuzzleBadge';
 import { useAvailableModels } from '@/hooks/useModelDatasetPerformance';
 import { ModelComparisonResult } from './AnalyticsOverview';
 import { usePageMeta } from '@/hooks/usePageMeta';
@@ -583,15 +584,14 @@ export default function ModelComparisonPage() {
         </div>
 
         {uniqueSolveByModel.length > 0 && totalUniqueSolves > 0 && (
-          <div className="bg-base-100 rounded-lg shadow p-2">
-            <h3 className="text-xs font-bold uppercase tracking-wide opacity-70 mb-2">
-              Unique Solves: {totalUniqueSolves}
-            </h3>
-            <div className="flex gap-2 flex-wrap">
+          <div className="bg-base-100 rounded-lg shadow p-3">
+            <h3 className="text-sm font-bold text-gray-800 mb-2">Differentiation</h3>
+            <p className="text-xs text-gray-600 mb-3">Puzzles solved by exactly one model (total: {totalUniqueSolves})</p>
+            <div className="space-y-2">
               {uniqueSolveByModel.map((entry) => (
-                <div key={entry.name} className="text-xs">
-                  <span className="font-semibold">{entry.name}:</span>{' '}
-                  <span className="text-primary font-bold">{entry.count}</span>
+                <div key={entry.name} className="flex items-center justify-between">
+                  <span className="text-xs font-medium text-gray-700">{entry.name}</span>
+                  <span className="text-sm font-bold text-blue-600">{entry.count}</span>
                 </div>
               ))}
             </div>
@@ -651,7 +651,11 @@ export default function ModelComparisonPage() {
           </div>
         )}
 
-        <div className="bg-base-100 rounded-lg shadow">
+        <div className="bg-base-100 rounded-lg shadow p-3 space-y-2">
+          <div>
+            <h3 className="text-sm font-bold text-gray-800">Performance Comparison</h3>
+            <p className="text-xs text-gray-600">Detailed metrics for each model on the {summary.dataset.toUpperCase()} dataset</p>
+          </div>
           <div className="overflow-x-auto">
             <table className="table table-xs table-zebra">
               <thead>
@@ -718,15 +722,22 @@ export default function ModelComparisonPage() {
           </div>
         </div>
 
-        <div className="bg-base-100 rounded-lg shadow p-3">
-          <NewModelComparisonResults result={comparisonData} />
+        <div className="bg-base-100 rounded-lg shadow p-3 space-y-2">
+          <div>
+            <h3 className="text-sm font-bold text-gray-800">Puzzle-by-Puzzle Breakdown</h3>
+            <p className="text-xs text-gray-600">See how each model performed on every puzzle</p>
+          </div>
+          <div>
+            <NewModelComparisonResults result={comparisonData} />
+          </div>
         </div>
 
         {dataset && selectedModels.length > 0 && (
-          <div className="space-y-2">
-            <h2 className="text-xs font-bold uppercase tracking-wide opacity-70 px-1">
-              Dataset Drilldown
-            </h2>
+          <div className="space-y-3">
+            <div>
+              <h2 className="text-sm font-bold text-gray-800">Individual Model Deep Dive</h2>
+              <p className="text-xs text-gray-600">Detailed performance analysis for each model on this dataset</p>
+            </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
               {selectedModels.map((modelName) => (
                 <ModelPerformancePanel
