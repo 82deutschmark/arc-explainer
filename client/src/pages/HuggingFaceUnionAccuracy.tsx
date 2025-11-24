@@ -375,7 +375,7 @@ export default function HuggingFaceUnionAccuracy() {
                 </div>
 
                 <div className="bg-white rounded p-2 border border-teal-100">
-                  <div className="font-semibold text-teal-700 mb-1">🔒 Semi-Private Set (Official Leaderboard)</div>
+                  <div className="font-semibold text-teal-700 mb-1">🔒 Semi-Private Set (Official Leaderboard - Used for testing closed source models like OpenAI, Gemini, Anthropic, etc)</div>
                   <p className="mb-1 text-teal-900">The ARC team keeps these secret.</p>
                   <ul className="list-disc list-inside space-y-0.5 text-teal-900 text-base">
                     <li>Not published anywhere—only the ARC team has them</li>
