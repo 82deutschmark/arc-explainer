@@ -626,6 +626,22 @@ export default function ModelComparisonPage() {
                   </span>
                 </div>
               </div>
+
+              {/* Show puzzle IDs that make up the union */}
+              {unionPuzzleIds.length > 0 && (
+                <div className="pt-2 border-t border-gray-300">
+                  <p className="text-xs font-semibold text-gray-700 mb-1">
+                    Puzzles solved ({unionPuzzleIds.length}):
+                  </p>
+                  <div className="flex flex-wrap gap-1">
+                    {unionPuzzleIds.map((puzzleId) => (
+                      <span key={puzzleId} className="badge badge-sm bg-blue-100 text-blue-800 border-0">
+                        {puzzleId}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         )}
