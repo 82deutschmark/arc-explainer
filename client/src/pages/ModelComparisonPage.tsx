@@ -9,9 +9,10 @@
 
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useLocation } from 'wouter';
-import { ArrowLeft, AlertCircle } from 'lucide-react';
+import { ArrowLeft, AlertCircle, Zap } from 'lucide-react';
 import { NewModelComparisonResults } from '@/components/analytics/NewModelComparisonResults';
 import { ModelPerformancePanel } from '@/components/analytics/ModelPerformancePanel';
+import { ModelComparisonDialog } from '@/components/analytics/ModelComparisonDialog';
 import { useAvailableModels } from '@/hooks/useModelDatasetPerformance';
 import { ModelComparisonResult } from './AnalyticsOverview';
 import { usePageMeta } from '@/hooks/usePageMeta';
@@ -41,6 +42,7 @@ export default function ModelComparisonPage() {
   const [selectedModels, setSelectedModels] = useState<string[]>([]);
   const [modelToAdd, setModelToAdd] = useState('');
   const [hasRefreshedFromCache, setHasRefreshedFromCache] = useState(false);
+  const [showUnionDialog, setShowUnionDialog] = useState(false);
 
   const [comparisonData, setComparisonData] = useState<ModelComparisonResult | null>(() => {
     const envelopeFromHistory = window.history.state?.comparisonData as CachedComparisonEnvelope | null;
@@ -566,9 +568,19 @@ export default function ModelComparisonPage() {
 
         {attemptUnionMetrics && attemptUnionMetrics.totalPuzzles > 0 && (
           <div className="bg-base-100 rounded-lg shadow p-2">
-            <h3 className="text-xs font-bold uppercase tracking-wide opacity-70 mb-2">
-              Attempt Union Accuracy
-            </h3>
+            <div className="flex items-center justify-between mb-2">
+              <h3 className="text-xs font-bold uppercase tracking-wide opacity-70">
+                Attempt Union Accuracy
+              </h3>
+              <button
+                onClick={() => setShowUnionDialog(true)}
+                className="btn btn-xs btn-primary gap-1"
+                title="View detailed union accuracy analysis"
+              >
+                <Zap className="h-3 w-3" />
+                Details
+              </button>
+            </div>
             <div className="space-y-1">
               <div className="text-xs">
                 <span className="font-semibold">Base Model:</span>{' '}
@@ -695,6 +707,14 @@ export default function ModelComparisonPage() {
             </div>
           </div>
         )}
+
+        <ModelComparisonDialog
+          open={showUnionDialog}
+          onOpenChange={setShowUnionDialog}
+          comparisonResult={comparisonData}
+          loading={false}
+          error={null}
+        />
       </div>
     </div>
   );
