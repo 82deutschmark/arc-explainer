@@ -600,12 +600,19 @@ export default function ModelComparisonPage() {
 
         {attemptUnionMetrics && attemptUnionMetrics.totalPuzzles > 0 && (
           <div className="bg-base-100 rounded-lg shadow p-3 border-l-4 border-blue-500">
-            <div>
-              <h3 className="text-sm font-bold text-gray-800 mb-2">Attempt Union Accuracy</h3>
-              <p className="text-xs text-gray-600 mb-3 leading-relaxed">
-                If the model solved a puzzle correctly in <strong>either attempt 1 or attempt 2</strong>, it counts as correct.
-              </p>
+            <div className="flex items-center justify-between gap-3 mb-2">
+              <h3 className="text-sm font-bold text-gray-800">Attempt Union Accuracy</h3>
+              <button
+                onClick={() => setShowUnionDialog(true)}
+                className="btn btn-sm btn-outline btn-primary"
+                aria-label="View union accuracy details"
+              >
+                View Details
+              </button>
             </div>
+            <p className="text-xs text-gray-600 mb-3 leading-relaxed">
+              If the model solved a puzzle correctly in <strong>either attempt 1 or attempt 2</strong>, it counts as correct.
+            </p>
             <div className="space-y-2">
               <div className="text-xs">
                 <span className="font-semibold">Base Model:</span>{' '}
