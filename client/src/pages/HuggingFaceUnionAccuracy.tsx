@@ -23,6 +23,7 @@ import { useAvailableModels } from '@/hooks/useModelDatasetPerformance';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import { computeAttemptUnionAccuracy, parseAttemptModelName } from '@/utils/modelComparison';
 import { ModelComparisonResult } from './AnalyticsOverview';
+import { TinyGrid } from '@/components/puzzle/TinyGrid';
 
 const DATASET_DISPLAY_NAME_MAP: Record<string, string> = {
   evaluation: 'ARC1-Eval',
@@ -204,7 +205,7 @@ export default function HuggingFaceUnionAccuracy() {
         {/* Important Disclaimer */}
         <Alert className="border-amber-300 bg-amber-50 p-2 border-l-4 border-l-amber-600">
           <AlertTriangle className="h-4 w-4 text-amber-700" />
-          <AlertDescription className="text-xs text-amber-900 ml-2 space-y-1">
+          <AlertDescription className="text-sm text-amber-900 ml-2 space-y-1">
             <div>
               <strong>📢 Important:</strong> These are <strong>OFFICIAL results from the ARC Prize team's evaluation harness</strong> — not personal evaluations.
               The ARC Prize team conducted these official tests and posted the results on{' '}
@@ -251,7 +252,7 @@ export default function HuggingFaceUnionAccuracy() {
         {/* What This Page Shows */}
         <Alert className="border-blue-200 bg-blue-50/80 p-2">
           <AlertCircle className="h-4 w-4 text-blue-600" />
-          <AlertDescription className="text-xs text-blue-900 ml-2">
+          <AlertDescription className="text-sm text-blue-900 ml-2">
             <strong>What is this page?</strong> This page visualizes official test results from the ARC Prize team's evaluation harness using the <strong>public</strong> evaluation set
             (different from the semi-private set used on the official ARC Prize website). Each model was run twice per puzzle.
             This shows the <strong>best-case score</strong>: how many puzzles each model solves <strong>if we count a puzzle correct whenever either attempt was correct</strong>.
@@ -286,7 +287,7 @@ export default function HuggingFaceUnionAccuracy() {
 
           {showEvaluationSetDetails && (
             <CardContent className="p-3 space-y-2 border-t border-teal-200">
-              <p className="text-xs text-teal-800 mb-2">
+              <p className="text-sm text-teal-800 mb-2">
                 This is a <strong>friendly, simple explanation</strong>. For the official details, see the{' '}
                 <a
                   href="https://arcprize.org/policy"
@@ -349,7 +350,7 @@ export default function HuggingFaceUnionAccuracy() {
           <CardContent className="p-3 space-y-2">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
               <div>
-                <label className="text-xs font-semibold mb-1 block text-gray-700">Dataset:</label>
+                <label className="text-sm font-semibold mb-1 block text-gray-700">Dataset:</label>
                 <Select value={selectedDataset} onValueChange={setSelectedDataset} disabled={loading}>
                   <SelectTrigger className="h-8 text-xs">
                     <SelectValue placeholder="Choose..." />
@@ -365,7 +366,7 @@ export default function HuggingFaceUnionAccuracy() {
               </div>
 
               <div>
-                <label className="text-xs font-semibold mb-1 block text-gray-700">Model (Attempt 1 + 2):</label>
+                <label className="text-sm font-semibold mb-1 block text-gray-700">Model (Attempt 1 + 2):</label>
                 <Select value={selectedAttemptPair || ''} onValueChange={setSelectedAttemptPair} disabled={loading}>
                   <SelectTrigger className="h-8 text-xs">
                     <SelectValue placeholder={loadingModels ? 'Loading...' : 'Choose...'} />
@@ -484,7 +485,7 @@ export default function HuggingFaceUnionAccuracy() {
             {/* Explanation in Simple Terms */}
             <Card className="shadow-sm">
               <CardContent className="p-2">
-                <div className="text-xs text-gray-700 leading-relaxed space-y-1">
+                <div className="text-sm text-gray-700 leading-relaxed space-y-1">
                   <div>
                     <strong>📊 Official Scoring Method:</strong>
                   </div>
@@ -549,12 +550,66 @@ export default function HuggingFaceUnionAccuracy() {
                 <p className="text-gray-700 mt-1">
                   Next, the harness sends the model several training examples. Each example shows:
                 </p>
-                <ul className="list-disc list-inside text-gray-700 ml-1 mt-1">
+                <ul className="list-disc list-inside text-gray-700 ml-1 mt-1 text-sm">
                   <li>An <strong>input</strong> grid of numbers</li>
                   <li>The corresponding <strong>output</strong> grid</li>
                 </ul>
                 <p className="text-gray-700 mt-1">
                   Both are formatted as <strong>raw JSON arrays</strong> (structured data). The numbers are integers, and the model receives them purely as data. For example, a 3×3 grid looks like: <code className="bg-white px-1 py-0.5 rounded border border-gray-300">{`[[0, 1, 2], [3, 4, 5], [6, 7, 8]]`}</code>
+                </p>
+
+                {/* Visual vs Text Representation */}
+                <div className="bg-white rounded p-2 border border-purple-200 mt-2">
+                  <div className="text-xs text-gray-600 font-semibold mb-2">What humans see vs what the model sees:</div>
+                  <div className="grid grid-cols-2 gap-2">
+                    {/* Human View */}
+                    <div>
+                      <div className="text-xs font-semibold text-gray-700 mb-1">👁️ What YOU see (colored grid):</div>
+                      <div style={{ maxWidth: '120px', margin: '0 auto' }}>
+                        <TinyGrid grid={[[0, 1, 2], [3, 4, 5], [6, 7, 8]]} />
+                      </div>
+                    </div>
+
+                    {/* Model View */}
+                    <div>
+                      <div className="text-xs font-semibold text-gray-700 mb-1">🤖 What the MODEL sees (text):</div>
+                      <code className="block bg-gray-900 text-green-400 p-2 rounded text-xs font-mono overflow-x-auto">
+                        {`[[0, 1, 2],
+ [3, 4, 5],
+ [6, 7, 8]]`}
+                      </code>
+                    </div>
+                  </div>
+
+                  <div className="bg-amber-50 border border-amber-200 rounded p-2 mt-2 text-xs text-amber-900">
+                    <strong>⚠️ Critical insight:</strong> While humans interpret this colored grid intuitively, the model sees <strong>only plain text</strong>—numbers in brackets. The model has <strong>no visual understanding</strong> of colors. It treats 0, 1, 2, etc. as abstract symbols.
+                  </div>
+
+                  <div className="mt-2 text-xs text-gray-700 leading-relaxed">
+                    <p><strong>What information does the model actually receive?</strong></p>
+                    <ul className="list-disc list-inside mt-1 space-y-1">
+                      <li>The system prompt tells it there's a "pattern" to find</li>
+                      <li>It sees training input/output pairs as JSON arrays</li>
+                      <li>It sees a test input without an answer</li>
+                      <li>That's <strong>it</strong>. No information about colors, no hints about geometry, no explanation of what the numbers represent.</li>
+                    </ul>
+                  </div>
+
+                  <div className="bg-blue-50 border border-blue-200 rounded p-2 mt-2 text-xs text-blue-900">
+                    <strong>💡 Why this matters:</strong> This is the sort of thing we discuss in our Discord server. Please come visit us at {' '}
+                    <a
+                      href="https://discord.gg/9b77dPAmcA"
+                      target="_blank"
+                      rel="noreferrer"
+                      className="font-semibold text-blue-700 underline hover:text-blue-800"
+                    >
+                      Discord server
+                    </a>
+                    .
+                  </div>
+                </div>
+
+                <p className="text-gray-700 mt-2">
                   Each training example shows the model how inputs map to outputs.
                 </p>
               </div>
@@ -589,14 +644,31 @@ export default function HuggingFaceUnionAccuracy() {
                 <p className="text-gray-700 mt-1">
                   For each puzzle, the harness checks:
                 </p>
-                <ul className="list-disc list-inside text-gray-700 ml-1 mt-1">
+                <ul className="list-disc list-inside text-gray-700 ml-1 mt-1 text-sm">
                   <li>Does the model's <strong>attempt 1 output exactly match</strong> the ground truth? ✓</li>
                   <li>Does the model's <strong>attempt 2 output exactly match</strong> the ground truth? ✓</li>
                 </ul>
                 <p className="text-gray-700 mt-1">
-                  <strong>The puzzle is marked correct if EITHER attempt is correct.</strong> This is the union accuracy you see on this page.
-                  This scoring method is fair because it shows what a model can achieve when given multiple chances — realistic for many real-world applications.
+                  <strong>The puzzle is then recorded as correct if EITHER attempt is correct.</strong> 
                 </p>
+              </div>
+
+              <div className="border-t border-purple-200 pt-2 mt-2 bg-gray-50 rounded p-2">
+                <div className="text-xs space-y-2">
+                  <strong className="text-gray-900 block">📋 TL;DR: How It Actually Works (For Developers)</strong>
+                  <div className="bg-white rounded p-1.5 border border-gray-200 font-mono text-gray-700 text-xs space-y-1">
+                    <div><span className="text-blue-600">1.</span> <span className="font-semibold">Build prompt:</span> Load training pairs from task JSON</div>
+                    <div><span className="text-blue-600">2.</span> <span className="font-semibold">Convert to text:</span> Turn each grid into JSON array string via json.dumps()</div>
+                    <div><span className="text-blue-600">3.</span> <span className="font-semibold">Embed in prompt:</span> Substitute arrays into system prompt template</div>
+                    <div><span className="text-blue-600">4.</span> <span className="font-semibold">One API call:</span> Send entire prompt string in ONE request</div>
+                    <div><span className="text-blue-600">5.</span> <span className="font-semibold">Get response:</span> Model returns text (usually containing JSON array)</div>
+                    <div><span className="text-blue-600">6.</span> <span className="font-semibold">Extract answer:</span> Parse JSON from response text</div>
+                    <div><span className="text-blue-606">7.</span> <span className="font-semibold">Compare:</span> Check if extracted array matches ground truth</div>
+                  </div>
+                  <div className="text-gray-600 text-xs italic mt-1">
+                    <strong>NOT:</strong> Multiple API calls ❌ | Images/binary ❌ | Streaming puzzles ❌ | Multi-turn ❌
+                  </div>
+                </div>
               </div>
 
               <div className="border-t border-purple-200 pt-2 mt-2">
@@ -609,10 +681,10 @@ export default function HuggingFaceUnionAccuracy() {
 
               <div className="border-t border-purple-200 pt-2 mt-2 text-xs text-gray-500">
                 <p>
-                  <strong>About this explanation:</strong> All text on this page was written by either Claude Sonnet 4.5 or Haiku 4.5 after researching the actual Arc-AGI-Benchmarking source code, reading system prompts, and analyzing the implementation. The content was refined through iterative feedback with an actual human familiar with ARC, and several corrections were made along the way to ensure accuracy.
+                  <strong>About this explanation:</strong> All text on this page was written by either Claude Sonnet 4.5 or Haiku 4.5 after researching the actual ARC-AGI-Benchmarking source code, reading system prompts, and analyzing the implementation. The content was refined through iterative feedback with an actual human familiar with ARC, and several corrections were made along the way to ensure accuracy.
                 </p>
                 <p className="mt-2 text-gray-600">
-                  <strong>Note on data leakage:</strong> This AI was trained on public ARC-AGI materials and learned that the numbers in ARC tasks represent colors (0=black, 1=blue, 2=red, etc.). However, this information is NOT documented in the official evaluation harness code—the harness is completely agnostic to what the integers mean. This is an example of how information about the structure of ARC tasks has leaked into public training data, which is precisely why the semi-private and fully-private evaluation sets exist and remain secret.
+                  <strong>Note on data leakage from human reviewer:</strong> The AI used to generate this page and these explanations was trained on public ARC-AGI materials and learned that the numbers in ARC tasks represent colors (0=black, 1=blue, 2=red, etc.). However, this information is NOT documented in the official evaluation harness code—the harness is completely agnostic to what the integers mean. This is an example of how information about the structure of ARC tasks has leaked into public training data, which is precisely why the semi-private and fully-private evaluation sets exist and remain secret. 
                 </p>
                 <p className="mt-2">
                   If you find any errors or missing information, please report them on our{' '}
