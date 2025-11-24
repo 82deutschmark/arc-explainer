@@ -2,6 +2,11 @@
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top!!!
 
 ### Version 5.21.0
+### Version 5.21.1
+
+- Model Comparison
+  - **Redesigned Attempt Union Accuracy UI**: Replaced basic blue box display with comprehensive `AttemptUnionCard` component featuring ShadCN/UI Card patterns, visual progress bar, and detailed explanation section. Added plain-language description of union accuracy metric and mathematical formula showing how it's calculated (puzzles correct by any attempt ÷ total puzzles) for full research transparency. Improved visual hierarchy with prominent metric percentage, model badges, and accessibility labels (`client/src/components/analytics/ModelComparisonDialog.tsx`).
+
 
 - Model Comparison
   - **Implemented attempt union accuracy metrics**: Added comprehensive support for computing union-of-correct accuracy across attempt1/attempt2 model pairs (e.g., "gemini-3-deep-think-preview-attempt1" + "gemini-3-deep-think-preview-attempt2"). Features include:
