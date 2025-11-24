@@ -590,7 +590,11 @@ export default function HuggingFaceUnionAccuracy() {
               <div className="bg-purple-50 p-2 rounded">
                 <strong className="text-purple-900">1️⃣ The User Message (No Explicit System Prompt)</strong>
                 <p className="text-gray-700 mt-1">
-                  <strong>Critical distinction:</strong> The harness does NOT send a separate system prompt. Instead, all instructions are embedded in the USER message. The model uses whatever DEFAULT system prompt the provider (OpenAI, Google, Anthropic, etc.) has configured.
+                  <strong>Critical distinction:</strong> The harness does NOT send a separate system prompt. Instead, all instructions are embedded in the USER message. The model uses whatever DEFAULT system prompt the provider (OpenAI, Google, Anthropic, etc.) has configured. ({' '}
+                  <a href="#provider-system-prompts" className="text-purple-600 underline hover:text-purple-700 font-medium">
+                    view provider system prompts
+                  </a>
+                  {' '})
                 </p>
                 <p className="text-gray-700 mt-1">
                   The user message begins with: <em>"You are participating in a puzzle solving competition. You are an expert at solving puzzles."</em>
@@ -756,7 +760,7 @@ export default function HuggingFaceUnionAccuracy() {
                   .
                 </p>
 
-                <div className="border-t border-purple-200 pt-3 mt-3 space-y-2">
+                <div id="provider-system-prompts" className="border-t border-purple-200 pt-3 mt-3 space-y-2">
                   <div className="flex flex-col gap-1">
                     <span className="text-base font-semibold text-gray-800">Provider system prompts (developer note)</span>
                     <span className="text-base text-gray-600">
@@ -792,7 +796,6 @@ export default function HuggingFaceUnionAccuracy() {
                     <div className="grid gap-2 md:grid-cols-2">
                       {SYSTEM_PROMPT_SOURCES.map((src) => {
                         const content = systemPromptsData[src.key] || 'Not loaded';
-                        const preview = content.slice(0, 1200);
                         return (
                           <div key={src.key} className="border border-gray-200 rounded p-2 bg-white">
                             <div className="flex items-center justify-between gap-2 mb-1">
@@ -807,8 +810,7 @@ export default function HuggingFaceUnionAccuracy() {
                               </a>
                             </div>
                             <pre className="text-xs text-gray-700 bg-gray-50 rounded p-2 overflow-x-auto max-h-52 whitespace-pre-wrap">
-                              {preview}
-                              {content.length > preview.length ? ' …' : ''}
+                              {content}
                             </pre>
                           </div>
                         );

@@ -1,11 +1,19 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top!!!
 
+### Version 5.22.6
+
+- Official Scoring Page Polish & Readability
+  - **Fixed JSX syntax error in TL;DR code block**: Escaped braces in the API message format (`messages=[{'{role: "user", content: prompt}'}]`) in step 4 of the developer TL;DR section to prevent TypeScript compilation errors about undefined `role` variable. The braces are now properly rendered as literal text (`client/src/pages/HuggingFaceUnionAccuracy.tsx:720`).
+  - **Increased all text sizes by two font levels for readability**: Systematically increased font sizes throughout the Official Scoring page by two Tailwind size steps for better readability on all device sizes. Changes: `text-xs` → `text-sm`, `text-sm` → `text-base`, `text-base` → `text-lg`, `text-lg` → `text-xl`, `text-2xl` → `text-3xl`, `text-3xl` → `text-4xl`, and `text-[11px]` → `text-xs`. Affects all body text, labels, alerts, metrics, and explanatory content across the page (`client/src/pages/HuggingFaceUnionAccuracy.tsx`).
+  - **Added anchor link from user message explanation to provider system prompts**: Added a quick inline link ("view provider system prompts") in point 1 "The User Message (No Explicit System Prompt)" that scrolls users directly to the "Provider system prompts (developer note)" section at the bottom of the page. This improves navigation for users who want to understand what default system prompts various providers apply when no custom system prompt is sent (`client/src/pages/HuggingFaceUnionAccuracy.tsx:593-597, 759`).
+
 ### Version 5.22.5
 
 - Official Scoring Page – Provider System Prompts
   - **Linked canonical provider system prompts for context**: Added a concise developer-note section at the bottom of the HuggingFace Union accuracy page explaining that default system prompts for major providers (Gemini, OpenAI, Anthropic, Grok) are publicly documented in the CL4R1T4S repository, with a direct link to `https://github.com/elder-plinius/CL4R1T4S/tree/main`. Clarifies that these are provider defaults that may apply when no custom system prompt is sent, and that Grok explicitly states system messages take precedence over user messages, with unknown impact on ARC harness testing (`client/src/pages/HuggingFaceUnionAccuracy.tsx`).
   - **Added inline “Fetch latest provider system prompts” tool**: Introduced a small developer-oriented button in the same footer section that, when clicked, fetches the latest system prompt text for Gemini 2.5 Pro, Claude Sonnet 4.5, OpenAI ChatGPT5, and Grok 4.1 directly from their CL4R1T4S raw GitHub URLs. The UI shows a compact preview (truncated text) for each provider plus a “View on GitHub” link back to the source file, with basic loading/error handling. This keeps the main educational content unchanged while giving advanced users a fast way to inspect the exact default system instructions those providers document (`client/src/pages/HuggingFaceUnionAccuracy.tsx`).
+  - **Full prompt display**: Removed truncation so the fetched system prompt panels now show the entire text (scrollable) instead of the first 1200 characters, making the fetched data genuinely useful for deep review (`client/src/pages/HuggingFaceUnionAccuracy.tsx`).
 
 ### Version 5.22.4
 
