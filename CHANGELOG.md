@@ -5,6 +5,7 @@
 ### Version 5.21.1
 
 - Model Comparison
+  - **Enhanced Union Accuracy transparency and data density**: Added explicit puzzle ID display showing exactly which puzzles contribute to union accuracy calculation. New `unionPuzzleIds` computed value extracts and displays all puzzle IDs that were solved correctly in either attempt as compact badges (blue pills), directly answering "how did you get to 40%?" for researchers. Shows `Puzzles solved (N)` section with full list of contributing puzzle IDs for complete calculation transparency. Also reduced page margins/padding (p-3→p-2, space-y-3→space-y-2) for tighter, more data-dense layout (`client/src/pages/ModelComparisonPage.tsx:361-384,604-618,464-465,491`).
   - **Redesigned Attempt Union Accuracy UI**: Replaced basic blue box display with comprehensive `AttemptUnionCard` component featuring ShadCN/UI Card patterns, visual progress bar, and detailed explanation section. Added plain-language description of union accuracy metric and mathematical formula showing how it's calculated (puzzles correct by any attempt ÷ total puzzles) for full research transparency. Improved visual hierarchy with prominent metric percentage, model badges, and accessibility labels (`client/src/components/analytics/ModelComparisonDialog.tsx`).
 
 
