@@ -140,11 +140,11 @@ export default function HuggingFaceUnionAccuracy() {
       });
   }, [attemptGroups]);
 
-  // Auto-select 9th pair if available, otherwise first pair
+  // Auto-select 4th pair if available, otherwise first pair
   useEffect(() => {
     if (!selectedAttemptPair && attemptPairOptions.length > 0) {
-      const ninthPair = attemptPairOptions.length >= 9 ? attemptPairOptions[8] : attemptPairOptions[0];
-      setSelectedAttemptPair(ninthPair.value);
+      const fourthPair = attemptPairOptions.length >= 4 ? attemptPairOptions[3] : attemptPairOptions[0];
+      setSelectedAttemptPair(fourthPair.value);
     }
   }, [attemptPairOptions, selectedAttemptPair]);
 
@@ -210,6 +210,13 @@ export default function HuggingFaceUnionAccuracy() {
       setLoading(false);
     }
   };
+
+  // Auto-fetch results when default model is selected
+  useEffect(() => {
+    if (selectedDataset && selectedAttemptPair && !unionMetrics && !loading) {
+      handleFetchUnionAccuracy();
+    }
+  }, [selectedAttemptPair, selectedDataset]);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -568,7 +575,7 @@ export default function HuggingFaceUnionAccuracy() {
         {!loading && !unionMetrics && !error && (
           <Card className="shadow-sm">
             <CardContent className="p-4 text-center">
-              <p className="text-base text-gray-500">Select a dataset and a model pair above to see their performance on the public evaluation set. By default, it has been set to Claude Sonnet 4.5 with maximum thinking enabled. That was the same model who coded this page. (With a LOT of human oversight!)</p>
+              <p className="text-base text-gray-500">Select a dataset and a model pair above to see their performance on the public evaluation set. By default, it has been set to Claude Haiku 4.5 with maximum thinking enabled. That was the same model who coded this page. (With a LOT of human oversight!)</p>
             </CardContent>
           </Card>
         )}
@@ -746,7 +753,7 @@ export default function HuggingFaceUnionAccuracy() {
 
               <div className="border-t border-purple-200 pt-2 mt-2 text-base text-gray-500">
                 <p>
-                  <strong>About this explanation:</strong> All text on this page was written by either Claude Sonnet 4.5 or Haiku 4.5 after researching the actual ARC-AGI-Benchmarking source code, reading system prompts, and analyzing the implementation. The content was refined through iterative feedback with an actual human familiar with ARC, and several corrections were made along the way to ensure accuracy.
+                  <strong>About this explanation:</strong> Most text this page was written by Claude Haiku 4.5 after A lot of back-and-forth with the human who maintains this project.  It involved researching the actual ARC-AGI-Benchmarking source code, reading system prompts, and analyzing the implementation. The content was refined through iterative feedback and several corrections were made along the way to ensure accuracy.
                 </p>
                 <p className="mt-2 text-gray-600">
                   <strong>Note on data leakage from human reviewer:</strong> The AI used to generate this page and these explanations was trained on public ARC-AGI materials and learned that the numbers in ARC tasks represent colors (0=black, 1=blue, 2=red, etc.). However, this information is NOT documented in the official evaluation harness code—the harness is completely agnostic to what the integers mean. I had to personally review every word written on this page and request changes multiple times to correct inaccuracies that my large-language model coding assistant was inferring from its training data. This is an example of how information about the structure of ARC tasks has leaked into public training data, which is precisely why the semi-private and fully-private evaluation sets exist and remain secret. 
