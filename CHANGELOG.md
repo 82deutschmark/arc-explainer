@@ -1,6 +1,12 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top!!!
 
+### Version 5.22.8
+
+- Infrastructure & ingestion safety notes (Author: GPT-5 Codex)
+  - Documented storage expansion by +250 GB to unblock PostgreSQL `No space left on device` errors during Hugging Face ingestions (CHANGELOG.md).
+  - Clarified ingestion dedupe behavior: default mode skips existing `datasetName-attempt#` explanations per puzzle; enabling “Force Overwrite” deletes the existing attempt rows before re-importing, so reruns won’t double-ingest unless overwrite is explicitly toggled (CHANGELOG.md).
+
 ### Version 5.22.7
 
 - Official Scoring Page Automatic Calculation
