@@ -605,6 +605,7 @@ export class ExplanationRepository extends BaseRepository implements IExplanatio
         createdAt: null,
         confidence: null,
         estimatedCost: null,
+        apiProcessingTimeMs: null,
         feedbackCount: 0,
         isSolved: false
       };
@@ -613,7 +614,8 @@ export class ExplanationRepository extends BaseRepository implements IExplanatio
     try {
       const placeholders = puzzleIds.map((_, i) => `$${i + 1}`).join(', ');
 
-      // LIGHTWEIGHT QUERY: Select ONLY the 8 fields actually used by UI
+      // LIGHTWEIGHT QUERY: Select ONLY the 9 fields actually used by UI
+      // Includes apiProcessingTimeMs for service-layer enrichment and potential sorting
       // Avoids fetching heavy JSONB/TEXT fields (reasoningLog, saturnImages, etc.)
       const result = await this.query(`
         WITH solved_puzzles AS (
@@ -635,6 +637,7 @@ export class ExplanationRepository extends BaseRepository implements IExplanatio
           e.created_at,
           e.confidence,
           e.estimated_cost,
+          e.api_processing_time_ms,
           COALESCE(f.feedback_count, 0)::integer as feedback_count,
           COALESCE(sp.puzzle_id IS NOT NULL, false) as is_solved
         FROM explanations e
@@ -658,6 +661,7 @@ export class ExplanationRepository extends BaseRepository implements IExplanatio
             createdAt: row.created_at,
             confidence: row.confidence,
             estimatedCost: row.estimated_cost,
+            apiProcessingTimeMs: row.api_processing_time_ms,
             feedbackCount: parseInt(row.feedback_count) || 0,
             isSolved: row.is_solved || false
           };

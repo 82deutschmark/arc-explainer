@@ -46,3 +46,84 @@ export const hasComparisonSummary = (
   result: ModelComparisonResult | null,
 ): result is ModelComparisonResult & { summary: NonNullable<ModelComparisonResult['summary']> } =>
   Boolean(result?.summary);
+
+/**
+ * Computes union-of-correct metrics for a set of attempt models.
+ * Returns the count of puzzles solved correctly by at least one of the specified models.
+ */
+export const computeAttemptUnionAccuracy = (
+  result: ModelComparisonResult,
+  modelIndices: number[],
+): {
+  unionCorrectCount: number;
+  totalPuzzles: number;
+  unionAccuracyPercentage: number;
+} => {
+  // Validate inputs
+  if (!result?.summary || !result?.details || modelIndices.length === 0) {
+    return {
+      unionCorrectCount: 0,
+      totalPuzzles: 0,
+      unionAccuracyPercentage: 0,
+    };
+  }
+
+  const totalPuzzles = result.summary.totalPuzzles;
+  
+  // Dev warning if details length doesn't match expected total
+  if (process.env.NODE_ENV === 'development' && result.details.length !== totalPuzzles) {
+    console.warn(
+      `computeAttemptUnionAccuracy: details length (${result.details.length}) ` +
+      `does not match totalPuzzles (${totalPuzzles})`
+    );
+  }
+
+  let unionCorrectCount = 0;
+
+  // Iterate through each puzzle and check if any selected model solved it
+  for (const detail of result.details) {
+    const modelResults = [
+      detail.model1Result,
+      detail.model2Result,
+      detail.model3Result,
+      detail.model4Result,
+    ];
+
+    // Check if any of the selected models has 'correct' result
+    const isCorrectByAnyAttempt = modelIndices
+      .map(index => modelResults[index])
+      .some(result => result === 'correct');
+
+    if (isCorrectByAnyAttempt) {
+      unionCorrectCount++;
+    }
+  }
+
+  const unionAccuracyPercentage = totalPuzzles > 0 
+    ? Math.round((unionCorrectCount / totalPuzzles) * 10000) / 100  // Round to 2 decimal places
+    : 0;
+
+  return {
+    unionCorrectCount,
+    totalPuzzles,
+    unionAccuracyPercentage,
+  };
+};
+
+/**
+ * Parses a model name to extract base model name and attempt number.
+ * Returns null if the model name doesn't follow the attempt pattern.
+ */
+export const parseAttemptModelName = (
+  modelName: string,
+): { baseModelName: string; attemptNumber: number } | null => {
+  const match = modelName.match(/^(.+)-attempt(\d+)$/);
+  if (!match) return null;
+
+  const [, baseModelName, attemptNumberStr] = match;
+  const attemptNumber = parseInt(attemptNumberStr, 10);
+  
+  if (isNaN(attemptNumber) || attemptNumber < 1) return null;
+
+  return { baseModelName, attemptNumber };
+};
