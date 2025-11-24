@@ -280,30 +280,6 @@ export default function ModelComparisonPage() {
     return [...filtered].reverse();
   }, [availableModels, selectedModels]);
 
-  const uniqueSolveByModel = useMemo(() => {
-    if (!comparisonData?.summary) {
-      return [];
-    }
-
-    const { summary } = comparisonData;
-    const mapping = new Map<string, number>([
-      [summary.model1Name, summary.model1OnlyCorrect ?? 0],
-      [summary.model2Name, summary.model2OnlyCorrect ?? 0],
-      [summary.model3Name ?? '', summary.model3OnlyCorrect ?? 0],
-      [summary.model4Name ?? '', summary.model4OnlyCorrect ?? 0],
-    ]);
-
-    return selectedModels.map((name) => ({
-      name,
-      count: mapping.get(name) ?? 0,
-    }));
-  }, [comparisonData, selectedModels]);
-
-  const totalUniqueSolves = useMemo(
-    () => uniqueSolveByModel.reduce((sum, entry) => sum + entry.count, 0),
-    [uniqueSolveByModel],
-  );
-
   // Attempt union detection and metrics computation
   const attemptUnionMetrics = useMemo(() => {
     const summary = comparisonData?.summary;
@@ -582,21 +558,6 @@ export default function ModelComparisonPage() {
             )}
           </div>
         </div>
-
-        {uniqueSolveByModel.length > 0 && totalUniqueSolves > 0 && (
-          <div className="bg-base-100 rounded-lg shadow p-3">
-            <h3 className="text-sm font-bold text-gray-800 mb-2">Differentiation</h3>
-            <p className="text-xs text-gray-600 mb-3">Puzzles solved by exactly one model (total: {totalUniqueSolves})</p>
-            <div className="space-y-2">
-              {uniqueSolveByModel.map((entry) => (
-                <div key={entry.name} className="flex items-center justify-between">
-                  <span className="text-xs font-medium text-gray-700">{entry.name}</span>
-                  <span className="text-sm font-bold text-blue-600">{entry.count}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
 
         {attemptUnionMetrics && attemptUnionMetrics.totalPuzzles > 0 && (
           <div className="bg-base-100 rounded-lg shadow p-3 border-l-4 border-blue-500">
