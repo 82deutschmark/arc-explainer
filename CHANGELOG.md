@@ -1,7 +1,6 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top!!!
 
-### Version 5.21.0
 ### Version 5.21.1
 
 - Model Comparison
