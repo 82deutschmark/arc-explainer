@@ -25,7 +25,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { ModelComparisonResult } from '@/pages/AnalyticsOverview';
-import { Loader2, Zap } from 'lucide-react';
+import { Loader2, XCircle, Zap } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';

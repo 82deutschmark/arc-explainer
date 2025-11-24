@@ -1,6 +1,14 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top!!!
 
+### Version 5.22.1
+
+- Official Scoring Page Polish
+  - **Fixed Radix UI SelectItem validation error**: SelectItem with empty string value (`value=""`) was throwing Radix UI validation error. Changed to non-empty value (`value="no-models"`) to comply with Radix UI requirement that SelectItem values cannot be empty strings. This prevented Official Scoring page from rendering (`client/src/pages/HuggingFaceUnionAccuracy.tsx:276`).
+  - **Consolidated puzzle badges into score card**: Moved puzzle ID badges from separate bottom card into the main score card component, utilizing the wasted whitespace between the score percentage and lightning bolt icon. Added border-top separator and kept the "✓ Solved X puzzles" label for clarity. This improves information hierarchy and creates a unified, focused card layout (`client/src/pages/HuggingFaceUnionAccuracy.tsx:369-387`).
+  - **Made testing harness explanation expanded by default**: Changed `showHarnessDetails` initial state from `false` to `true` so that "How the Official Testing Harness Works" section is expanded on page load. Makes the educational content immediately visible to users without requiring them to click to expand (`client/src/pages/HuggingFaceUnionAccuracy.tsx:71`).
+  - **Set fifth model pair as default**: Enhanced auto-selection logic to default to the fifth model pair in the attempt pair options list when available. Falls back to first available option if fewer than five pairs are available (`client/src/pages/HuggingFaceUnionAccuracy.tsx:121-127`).
+
 ### Version 5.22.0
 
 - Analytics

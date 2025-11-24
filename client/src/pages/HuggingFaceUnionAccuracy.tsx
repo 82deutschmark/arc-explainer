@@ -68,7 +68,7 @@ export default function HuggingFaceUnionAccuracy() {
   const [error, setError] = useState<string | null>(null);
   const [unionMetrics, setUnionMetrics] = useState<UnionMetrics | null>(null);
   const [unionPuzzleIds, setUnionPuzzleIds] = useState<string[]>([]);
-  const [showHarnessDetails, setShowHarnessDetails] = useState(false);
+  const [showHarnessDetails, setShowHarnessDetails] = useState(true);
 
   const { models: availableModels, loading: loadingModels } = useAvailableModels();
 
@@ -118,10 +118,11 @@ export default function HuggingFaceUnionAccuracy() {
       });
   }, [attemptGroups]);
 
-  // Auto-select first pair if available
+  // Auto-select fifth pair if available, otherwise first pair
   useEffect(() => {
     if (!selectedAttemptPair && attemptPairOptions.length > 0) {
-      setSelectedAttemptPair(attemptPairOptions[0].value);
+      const fifthPair = attemptPairOptions.length >= 5 ? attemptPairOptions[4] : attemptPairOptions[0];
+      setSelectedAttemptPair(fifthPair.value);
     }
   }, [attemptPairOptions, selectedAttemptPair]);
 
@@ -358,13 +359,33 @@ export default function HuggingFaceUnionAccuracy() {
                 </p>
 
                 {/* Model Names */}
-                <div className="flex flex-wrap gap-1 mt-2">
+                <div className="flex flex-wrap gap-1 mt-2 mb-2">
                   {unionMetrics.attemptModelNames.map((name) => (
                     <Badge key={name} variant="outline" className="text-xs py-0.5">
                       {name}
                     </Badge>
                   ))}
                 </div>
+
+                {/* Puzzle IDs - Moved into card to use whitespace */}
+                {unionPuzzleIds.length > 0 && (
+                  <div className="border-t border-blue-100 pt-2">
+                    <p className="text-xs font-semibold text-gray-700 mb-1">
+                      ✓ Solved {unionPuzzleIds.length} puzzles (click to inspect):
+                    </p>
+                    <div className="flex flex-wrap gap-1">
+                      {unionPuzzleIds.map((puzzleId) => (
+                        <ClickablePuzzleBadge
+                          key={puzzleId}
+                          puzzleId={puzzleId}
+                          variant="success"
+                          showName={true}
+                          openInNewTab={true}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                )}
               </CardContent>
             </Card>
 
@@ -485,27 +506,6 @@ export default function HuggingFaceUnionAccuracy() {
               )}
             </Card>
 
-            {/* Puzzle List - Dense Grid */}
-            {unionPuzzleIds.length > 0 && (
-              <Card className="shadow-sm">
-                <CardContent className="p-2">
-                  <p className="text-xs font-semibold text-gray-700 mb-1">
-                    ✓ Solved {unionPuzzleIds.length} puzzles (click to inspect):
-                  </p>
-                  <div className="flex flex-wrap gap-1">
-                    {unionPuzzleIds.map((puzzleId) => (
-                      <ClickablePuzzleBadge
-                        key={puzzleId}
-                        puzzleId={puzzleId}
-                        variant="success"
-                        showName={true}
-                        openInNewTab={true}
-                      />
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-            )}
           </div>
         )}
 
