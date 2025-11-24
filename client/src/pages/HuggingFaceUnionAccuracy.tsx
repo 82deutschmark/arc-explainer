@@ -62,6 +62,7 @@ export default function HuggingFaceUnionAccuracy() {
   const [unionMetrics, setUnionMetrics] = useState<UnionMetrics | null>(null);
   const [unionPuzzleIds, setUnionPuzzleIds] = useState<string[]>([]);
   const [showHarnessDetails, setShowHarnessDetails] = useState(true);
+  const [showEvaluationSetDetails, setShowEvaluationSetDetails] = useState(false);
 
   const { models: availableModels, loading: loadingModels } = useAvailableModels();
 
@@ -267,13 +268,24 @@ export default function HuggingFaceUnionAccuracy() {
           </AlertDescription>
         </Alert>
 
-        {/* Public vs Semi-Private Explainer - Simple Version */}
+        {/* Public vs Semi-Private Explainer - Collapsible */}
         <Card className="shadow-sm border-teal-200 bg-teal-50/80">
-          <CardContent className="p-3 space-y-2">
-            <div>
-              <h3 className="text-sm font-semibold text-teal-900 mb-2">
-                🎓 Three Types of Puzzle Sets
-              </h3>
+          <button
+            onClick={() => setShowEvaluationSetDetails(!showEvaluationSetDetails)}
+            className="w-full text-left p-3 flex items-center justify-between hover:bg-teal-100/50 transition-colors"
+          >
+            <h3 className="text-sm font-semibold text-teal-900">
+              📚 Learn about the three different datasets
+            </h3>
+            {showEvaluationSetDetails ? (
+              <ChevronUp className="h-4 w-4 text-teal-700" />
+            ) : (
+              <ChevronDown className="h-4 w-4 text-teal-700" />
+            )}
+          </button>
+
+          {showEvaluationSetDetails && (
+            <CardContent className="p-3 space-y-2 border-t border-teal-200">
               <p className="text-xs text-teal-800 mb-2">
                 This is a <strong>friendly, simple explanation</strong>. For the official details, see the{' '}
                 <a
@@ -287,49 +299,49 @@ export default function HuggingFaceUnionAccuracy() {
                 </a>
                 .
               </p>
-            </div>
 
-            <div className="space-y-2 text-xs text-teal-900">
-              <div className="bg-white rounded p-2 border border-teal-100">
-                <div className="font-semibold text-teal-700 mb-1">📊 Public Set (This Page)</div>
-                <p className="mb-1 text-teal-900">Everyone can see these puzzles.</p>
-                <ul className="list-disc list-inside space-y-0.5 text-teal-900 text-xs">
-                  <li>Shared on GitHub and Hugging Face for anyone to use</li>
-                  <li>Major AI companies (like OpenAI, Google, Anthropic, Grok) can study and learn from these puzzles</li>
-                  <li>No secrets—everyone knows what they are</li>
-                </ul>
+              <div className="space-y-2 text-xs text-teal-900">
+                <div className="bg-white rounded p-2 border border-teal-100">
+                  <div className="font-semibold text-teal-700 mb-1">📊 Public Set (This Page)</div>
+                  <p className="mb-1 text-teal-900">Everyone can see these puzzles.</p>
+                  <ul className="list-disc list-inside space-y-0.5 text-teal-900 text-xs">
+                    <li>Shared on GitHub and Hugging Face for anyone to use</li>
+                    <li>Major AI companies (like OpenAI, Google, Anthropic, Grok) can study and learn from these puzzles</li>
+                    <li>No secrets—everyone knows what they are</li>
+                  </ul>
+                </div>
+
+                <div className="bg-white rounded p-2 border border-teal-100">
+                  <div className="font-semibold text-teal-700 mb-1">🔒 Semi-Private Set (Official Leaderboard)</div>
+                  <p className="mb-1 text-teal-900">The ARC team keeps these secret.</p>
+                  <ul className="list-disc list-inside space-y-0.5 text-teal-900 text-xs">
+                    <li>Not published anywhere—only the ARC team has them</li>
+                    <li>Used to rank models fairly on the official leaderboard</li>
+                    <li>Models haven't trained on these (hopefully!)</li>
+                  </ul>
+                </div>
+
+                <div className="bg-white rounded p-2 border border-teal-100">
+                  <div className="font-semibold text-teal-700 mb-1">🏆 Private Set (Contest)</div>
+                  <p className="mb-1 text-teal-900">Super secret puzzles for the competition.</p>
+                  <ul className="list-disc list-inside space-y-0.5 text-teal-900 text-xs">
+                    <li>Only used during the ARC Prize contest</li>
+                    <li>Completely hidden until after the contest ends</li>
+                    <li>No one can study these puzzles beforehand</li>
+                  </ul>
+                </div>
               </div>
 
-              <div className="bg-white rounded p-2 border border-teal-100">
-                <div className="font-semibold text-teal-700 mb-1">🔒 Semi-Private Set (Official Leaderboard)</div>
-                <p className="mb-1 text-teal-900">The ARC team keeps these secret.</p>
-                <ul className="list-disc list-inside space-y-0.5 text-teal-900 text-xs">
-                  <li>Not published anywhere—only the ARC team has them</li>
-                  <li>Used to rank models fairly on the official leaderboard</li>
-                  <li>Models haven't trained on these (hopefully!)</li>
-                </ul>
+              <div className="bg-white rounded p-2 border border-teal-100 text-xs text-teal-800">
+                <p className="mb-1">
+                  <strong>Why scores differ:</strong> These two puzzle sets contain <strong>completely different puzzles</strong>. That's why you'll see different scores on this page (public set) compared to the official ARC Prize leaderboard (semi-private set). Sometimes scores are higher here, sometimes lower—it all depends on how well each particular set of puzzles matches the model's strengths.
+                </p>
+                <p className="text-teal-700 mt-1">
+                  💡 The key point: <strong>Different datasets = Different puzzles = Different results</strong>. You can't directly compare scores between these pages because you're looking at two separate evaluation datasets.
+                </p>
               </div>
-
-              <div className="bg-white rounded p-2 border border-teal-100">
-                <div className="font-semibold text-teal-700 mb-1">🏆 Private Set (Contest)</div>
-                <p className="mb-1 text-teal-900">Super secret puzzles for the competition.</p>
-                <ul className="list-disc list-inside space-y-0.5 text-teal-900 text-xs">
-                  <li>Only used during the ARC Prize contest</li>
-                  <li>Completely hidden until after the contest ends</li>
-                  <li>No one can study these puzzles beforehand</li>
-                </ul>
-              </div>
-            </div>
-
-            <div className="bg-white rounded p-2 border border-teal-100 text-xs text-teal-800">
-              <p className="mb-1">
-                <strong>Why scores here are higher:</strong> Scores on this page show how well models do on puzzles everyone can see. When major AI companies (like OpenAI, Google, Anthropic, Grok) can study the puzzles first, their models do better on those puzzles. That's why scores here are higher than on the secret leaderboard—the models haven't seen those puzzles before!
-              </p>
-              <p className="text-teal-700 mt-1">
-                💡 Think of it like this: If you study the practice test, you'll score higher on it than on a surprise test you've never seen.
-              </p>
-            </div>
-          </CardContent>
+            </CardContent>
+          )}
         </Card>
 
         {/* Controls - Compact */}
