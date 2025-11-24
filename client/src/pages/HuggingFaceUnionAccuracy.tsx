@@ -39,13 +39,6 @@ interface AttemptGroup {
   }>;
 }
 
-interface AttemptPairOption {
-  label: string;
-  value: string;
-  baseModelName: string;
-  modelNames: string[];
-}
-
 interface UnionMetrics {
   baseModelName: string;
   attemptModelNames: string[];
