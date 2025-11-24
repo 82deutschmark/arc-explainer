@@ -320,7 +320,7 @@ export default function ModelComparisonPage() {
 
     // Parse model names to identify attempt groups
     const attemptGroups = new Map<string, { modelName: string; attemptNumber: number; index: number }[]>();
-    
+
     selectedModels.forEach((modelName, index) => {
       const parsed = parseAttemptModelName(modelName);
       if (parsed) {
@@ -340,21 +340,48 @@ export default function ModelComparisonPage() {
       if (attempts.length >= 2) {
         // Sort by attempt number to ensure consistent ordering
         attempts.sort((a, b) => a.attemptNumber - b.attemptNumber);
-        
+
         // Use the first two attempts for union calculation
         const modelIndices = attempts.slice(0, 2).map(a => a.index);
         const unionMetrics = computeAttemptUnionAccuracy(comparisonData, modelIndices);
-        
+
         return {
           baseModelName,
           attemptModelNames: attempts.slice(0, 2).map(a => a.modelName),
           ...unionMetrics,
+          modelIndices, // Store indices for puzzle extraction
         };
       }
     }
 
     return null;
   }, [comparisonData, selectedModels]);
+
+  // Extract puzzle IDs that are in the union accuracy
+  const unionPuzzleIds = useMemo(() => {
+    if (!attemptUnionMetrics || !comparisonData?.details) {
+      return [];
+    }
+
+    const modelIndices = (attemptUnionMetrics as any).modelIndices || [0, 1];
+    const unionIds: string[] = [];
+
+    comparisonData.details.forEach((detail) => {
+      const results = [
+        detail.model1Result,
+        detail.model2Result,
+        detail.model3Result,
+        detail.model4Result,
+      ];
+
+      // Check if any of the selected attempt models got it correct
+      if (modelIndices.some((idx: number) => results[idx] === 'correct')) {
+        unionIds.push(detail.puzzleId);
+      }
+    });
+
+    return unionIds;
+  }, [attemptUnionMetrics, comparisonData?.details]);
 
   const handleAddModel = async () => {
     if (!dataset || !modelToAdd || selectedModels.includes(modelToAdd) || isUpdating) {
@@ -460,8 +487,8 @@ export default function ModelComparisonPage() {
   const modelPerformance = summary.modelPerformance ?? [];
 
   return (
-    <div className="min-h-screen bg-base-200 p-3">
-      <div className="container mx-auto max-w-7xl space-y-3">
+    <div className="min-h-screen bg-base-200 p-2">
+      <div className="container mx-auto max-w-7xl space-y-2">
         <div className="flex items-center gap-3 bg-base-100 rounded-lg p-2 shadow">
           <button
             onClick={() => navigate('/analytics')}
@@ -567,21 +594,14 @@ export default function ModelComparisonPage() {
         )}
 
         {attemptUnionMetrics && attemptUnionMetrics.totalPuzzles > 0 && (
-          <div className="bg-base-100 rounded-lg shadow p-2">
-            <div className="flex items-center justify-between mb-2">
-              <h3 className="text-xs font-bold uppercase tracking-wide opacity-70">
-                Attempt Union Accuracy
-              </h3>
-              <button
-                onClick={() => setShowUnionDialog(true)}
-                className="btn btn-xs btn-primary gap-1"
-                title="View detailed union accuracy analysis"
-              >
-                <Zap className="h-3 w-3" />
-                Details
-              </button>
+          <div className="bg-base-100 rounded-lg shadow p-3 border-l-4 border-blue-500">
+            <div>
+              <h3 className="text-sm font-bold text-gray-800 mb-2">Attempt Union Accuracy</h3>
+              <p className="text-xs text-gray-600 mb-3 leading-relaxed">
+                If the model solved a puzzle correctly in <strong>either attempt 1 or attempt 2</strong>, it counts as correct.
+              </p>
             </div>
-            <div className="space-y-1">
+            <div className="space-y-2">
               <div className="text-xs">
                 <span className="font-semibold">Base Model:</span>{' '}
                 <span className="text-primary">{attemptUnionMetrics.baseModelName}</span>
@@ -592,27 +612,17 @@ export default function ModelComparisonPage() {
                   {attemptUnionMetrics.attemptModelNames.join(' + ')}
                 </span>
               </div>
-              <div className="flex gap-3 flex-wrap">
-                <div className="text-xs">
-                  <span className="font-semibold">Union Correct:</span>{' '}
-                  <span className="text-success font-bold">
-                    {attemptUnionMetrics.unionCorrectCount}
-                  </span>
-                </div>
-                <div className="text-xs">
-                  <span className="font-semibold">Total:</span>{' '}
-                  <span className="opacity-80">{attemptUnionMetrics.totalPuzzles}</span>
-                </div>
-                <div className="text-xs">
-                  <span className="font-semibold">Union Accuracy:</span>{' '}
-                  <span
-                    className={
-                      attemptUnionMetrics.unionAccuracyPercentage >= 50
-                        ? 'text-success font-bold'
-                        : 'text-error font-bold'
-                    }
-                  >
+              <div className="flex gap-4 flex-wrap pt-1">
+                <div>
+                  <div className="text-3xl font-bold text-blue-600">
                     {attemptUnionMetrics.unionAccuracyPercentage.toFixed(1)}%
+                  </div>
+                  <p className="text-xs text-gray-500">Union Accuracy</p>
+                </div>
+                <div className="text-xs">
+                  <span className="font-semibold">Puzzles Correct:</span>{' '}
+                  <span className="text-success font-bold">
+                    {attemptUnionMetrics.unionCorrectCount}/{attemptUnionMetrics.totalPuzzles}
                   </span>
                 </div>
               </div>
