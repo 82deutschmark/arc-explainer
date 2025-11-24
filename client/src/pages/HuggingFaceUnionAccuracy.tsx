@@ -260,7 +260,7 @@ export default function HuggingFaceUnionAccuracy() {
             Official Scoring: Public Evaluation
           </h1>
           <p className="text-base text-gray-600 mt-1">
-            A community authored guide to the official results from the ARC Prize evaluation harness on the public evaluation set (not semi-private)
+            A community authored guide to the official results from the ARC Prize evaluation harness on the public evaluation set
           </p>
         </div>
 
