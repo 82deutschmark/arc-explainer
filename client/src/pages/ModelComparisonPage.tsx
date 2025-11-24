@@ -560,21 +560,30 @@ export default function ModelComparisonPage() {
         </div>
 
         {attemptUnionMetrics && attemptUnionMetrics.totalPuzzles > 0 && (
-          <div className="bg-base-100 rounded-lg shadow p-3 border-l-4 border-blue-500">
-            <div className="flex items-center justify-between gap-3 mb-2">
+          <div className="bg-base-100 rounded-lg shadow p-2 border-l-4 border-blue-500 space-y-1">
+            <div className="flex items-center justify-between gap-2">
               <h3 className="text-sm font-bold text-gray-800">Attempt Union Accuracy</h3>
-              <button
-                onClick={() => setShowUnionDialog(true)}
-                className="btn btn-sm btn-outline btn-primary"
-                aria-label="View union accuracy details"
-              >
-                View Details
-              </button>
+              <div className="flex gap-1">
+                <button
+                  onClick={() => setShowUnionDialog(true)}
+                  className="px-2 py-1 text-xs border border-blue-500 text-blue-600 rounded hover:bg-blue-50 hover:font-semibold transition-colors"
+                  aria-label="View union accuracy details"
+                >
+                  View Details
+                </button>
+                <button
+                  onClick={() => navigate('/hf-union-accuracy')}
+                  className="px-2 py-1 text-xs border border-green-500 text-green-600 rounded hover:bg-green-50 hover:font-semibold transition-colors"
+                  aria-label="View official scoring results"
+                >
+                  Official Scoring
+                </button>
+              </div>
             </div>
-            <p className="text-xs text-gray-600 mb-3 leading-relaxed">
+            <p className="text-xs text-gray-600 leading-tight">
               If the model solved a puzzle correctly in <strong>either attempt 1 or attempt 2</strong>, it counts as correct.
             </p>
-            <div className="space-y-2">
+            <div className="space-y-1">
               <div className="text-xs">
                 <span className="font-semibold">Base Model:</span>{' '}
                 <span className="text-primary">{attemptUnionMetrics.baseModelName}</span>
@@ -585,7 +594,7 @@ export default function ModelComparisonPage() {
                   {attemptUnionMetrics.attemptModelNames.join(' + ')}
                 </span>
               </div>
-              <div className="flex gap-4 flex-wrap pt-1">
+              <div className="flex gap-4 flex-wrap pt-0.5">
                 <div>
                   <div className="text-3xl font-bold text-blue-600">
                     {attemptUnionMetrics.unionAccuracyPercentage.toFixed(1)}%
@@ -602,11 +611,11 @@ export default function ModelComparisonPage() {
 
               {/* Show puzzle IDs that make up the union */}
               {unionPuzzleIds.length > 0 && (
-                <div className="pt-2 border-t border-gray-300">
-                  <p className="text-xs font-semibold text-gray-700 mb-2">
+                <div className="pt-1 border-t border-gray-300">
+                  <p className="text-xs font-semibold text-gray-700 mb-1">
                     Puzzles solved ({unionPuzzleIds.length}) — click to explore:
                   </p>
-                  <div className="flex flex-wrap gap-2">
+                  <div className="flex flex-wrap gap-1">
                     {unionPuzzleIds.map((puzzleId) => (
                       <ClickablePuzzleBadge
                         key={puzzleId}
