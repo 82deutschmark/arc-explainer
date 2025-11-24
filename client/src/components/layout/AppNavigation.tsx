@@ -41,7 +41,8 @@ import {
   Wallet,
   Users,
   MoreHorizontal,
-  FileCheck
+  FileCheck,
+  Zap
 } from 'lucide-react';
 
 // Type definitions for discriminated union
@@ -77,6 +78,13 @@ const navigationItems: NavItem[] = [
     href: '/analytics',
     icon: Database,
     description: 'Model performance analytics and leaderboards'
+  },
+  {
+    type: 'link',
+    title: 'Official Scoring',
+    href: '/hf-union-accuracy',
+    icon: Zap,
+    description: 'Official test results on public evaluation set with 2 attempts per puzzle'
   },
   {
     type: 'link',
