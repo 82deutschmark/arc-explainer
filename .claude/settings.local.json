@@ -22,7 +22,8 @@
       "Bash(npm run build:*)",
       "Bash(git checkout:*)",
       "Bash(git restore:*)",
-      "Bash(python3 -c:*)"
+      "Bash(python3 -c:*)",
+      "Bash(/tmp/huggingface_file.tsx)"
     ],
     "defaultMode": "bypassPermissions"
   },

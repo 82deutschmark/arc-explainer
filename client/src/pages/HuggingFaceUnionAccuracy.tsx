@@ -422,15 +422,30 @@ export default function HuggingFaceUnionAccuracy() {
             {/* Main Result Card - Compact */}
             <Card className="border-blue-200 bg-gradient-to-br from-blue-50 to-blue-50/50 shadow-sm">
               <CardContent className="p-3">
-                {/* Big Number */}
-                <div className="flex items-start justify-between mb-2">
+                {/* Big Number with Puzzle Badges on same line */}
+                <div className="flex items-start justify-between mb-2 gap-3">
                   <div>
                     <div className="text-3xl font-bold text-blue-700">
                       {unionMetrics.unionAccuracyPercentage.toFixed(1)}%
                     </div>
                     <p className="text-xs text-gray-600 mt-0.5">Score (either attempt correct)</p>
                   </div>
-                  <Zap className="h-6 w-6 text-blue-500" />
+                  <div className="flex items-start gap-2">
+                    {unionPuzzleIds.length > 0 && (
+                      <div className="flex flex-wrap gap-1 max-w-xs justify-end">
+                        {unionPuzzleIds.map((puzzleId) => (
+                          <ClickablePuzzleBadge
+                            key={puzzleId}
+                            puzzleId={puzzleId}
+                            variant="success"
+                            showName={true}
+                            openInNewTab={true}
+                          />
+                        ))}
+                      </div>
+                    )}
+                    <Zap className="h-6 w-6 text-blue-500 flex-shrink-0" />
+                  </div>
                 </div>
 
                 {/* The Equation - Shown Clearly */}
@@ -454,26 +469,6 @@ export default function HuggingFaceUnionAccuracy() {
                 <p className="text-xs text-gray-700">
                   <strong>{unionMetrics.unionCorrectCount}</strong> of <strong>{unionMetrics.totalPuzzles}</strong> puzzles solved
                 </p>
-
-                {/* Puzzle IDs - Moved into card to use whitespace */}
-                {unionPuzzleIds.length > 0 && (
-                  <div className="mt-2 mb-2">
-                    <p className="text-xs font-semibold text-gray-700 mb-1">
-                      ✓ Solved {unionPuzzleIds.length} puzzles (click to inspect):
-                    </p>
-                    <div className="flex flex-wrap gap-1">
-                      {unionPuzzleIds.map((puzzleId) => (
-                        <ClickablePuzzleBadge
-                          key={puzzleId}
-                          puzzleId={puzzleId}
-                          variant="success"
-                          showName={true}
-                          openInNewTab={true}
-                        />
-                      ))}
-                    </div>
-                  </div>
-                )}
 
                 {/* Model Names */}
                 <div className="border-t border-blue-100 pt-2 flex flex-wrap gap-1">
@@ -550,25 +545,25 @@ export default function HuggingFaceUnionAccuracy() {
               </div>
 
               <div className="bg-purple-50 p-2 rounded">
-                <strong className="text-purple-900">2️⃣ Training Examples (Your Pattern Clues)</strong>
+                <strong className="text-purple-900">2️⃣ Training Examples</strong>
                 <p className="text-gray-700 mt-1">
                   Next, the harness sends the model several training examples. Each example shows:
                 </p>
                 <ul className="list-disc list-inside text-gray-700 ml-1 mt-1">
                   <li>An <strong>input</strong> grid of numbers</li>
-                  <li>The corresponding <strong>output</strong> grid (what the pattern produces)</li>
+                  <li>The corresponding <strong>output</strong> grid</li>
                 </ul>
                 <p className="text-gray-700 mt-1">
                   Both are formatted as <strong>raw JSON arrays</strong> (structured data). The numbers are integers, and the model receives them purely as data. For example, a 3×3 grid looks like: <code className="bg-white px-1 py-0.5 rounded border border-gray-300">{`[[0, 1, 2], [3, 4, 5], [6, 7, 8]]`}</code>
-                  Each training example gives the model more clues about what transformation rule to discover.
+                  Each training example shows the model how inputs map to outputs.
                 </p>
               </div>
 
               <div className="bg-purple-50 p-2 rounded">
-                <strong className="text-purple-900">3️⃣ The Test Input (Your Challenge)</strong>
+                <strong className="text-purple-900">3️⃣ The Test Input</strong>
                 <p className="text-gray-700 mt-1">
                   After showing the training examples, the harness presents a <strong>test input</strong> — a single grid (also in JSON format) with no answer attached.
-                  The model must look at the training examples, figure out the pattern, and predict what the output grid should be.
+                  The model must look at the training examples and predict what the output grid should be.
                 </p>
               </div>
 
@@ -614,7 +609,7 @@ export default function HuggingFaceUnionAccuracy() {
 
               <div className="border-t border-purple-200 pt-2 mt-2 text-xs text-gray-500">
                 <p>
-                  <strong>About this explanation:</strong> All text on this page was written by Claude Sonnet 4.5 after researching the actual Arc-AGI-Benchmarking source code, reading system prompts, and analyzing the implementation. The content was refined through iterative feedback, and several corrections were made along the way to ensure accuracy.
+                  <strong>About this explanation:</strong> All text on this page was written by either Claude Sonnet 4.5 or Haiku 4.5 after researching the actual Arc-AGI-Benchmarking source code, reading system prompts, and analyzing the implementation. The content was refined through iterative feedback with an actual human familiar with ARC, and several corrections were made along the way to ensure accuracy.
                 </p>
                 <p className="mt-2 text-gray-600">
                   <strong>Note on data leakage:</strong> This AI was trained on public ARC-AGI materials and learned that the numbers in ARC tasks represent colors (0=black, 1=blue, 2=red, etc.). However, this information is NOT documented in the official evaluation harness code—the harness is completely agnostic to what the integers mean. This is an example of how information about the structure of ARC tasks has leaked into public training data, which is precisely why the semi-private and fully-private evaluation sets exist and remain secret.
