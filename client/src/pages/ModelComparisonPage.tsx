@@ -563,13 +563,22 @@ export default function ModelComparisonPage() {
           <div className="bg-base-100 rounded-lg shadow p-3 border-l-4 border-blue-500">
             <div className="flex items-center justify-between gap-3 mb-2">
               <h3 className="text-sm font-bold text-gray-800">Attempt Union Accuracy</h3>
-              <button
-                onClick={() => setShowUnionDialog(true)}
-                className="btn btn-sm btn-outline btn-primary"
-                aria-label="View union accuracy details"
-              >
-                View Details
-              </button>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => setShowUnionDialog(true)}
+                  className="btn btn-sm btn-outline btn-primary"
+                  aria-label="View union accuracy details"
+                >
+                  View Details
+                </button>
+                <button
+                  onClick={() => navigate('/hf-union-accuracy')}
+                  className="btn btn-sm btn-outline btn-secondary"
+                  aria-label="View official scoring results"
+                >
+                  Official Scoring
+                </button>
+              </div>
             </div>
             <p className="text-xs text-gray-600 mb-3 leading-relaxed">
               If the model solved a puzzle correctly in <strong>either attempt 1 or attempt 2</strong>, it counts as correct.

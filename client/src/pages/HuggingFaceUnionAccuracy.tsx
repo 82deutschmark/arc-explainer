@@ -17,7 +17,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { BarChart3, ExternalLink, AlertCircle, Zap, AlertTriangle } from 'lucide-react';
+import { BarChart3, ExternalLink, AlertCircle, Zap, AlertTriangle, ChevronDown, ChevronUp } from 'lucide-react';
 import { ClickablePuzzleBadge } from '@/components/ui/ClickablePuzzleBadge';
 import { useAvailableModels } from '@/hooks/useModelDatasetPerformance';
 import { usePageMeta } from '@/hooks/usePageMeta';
@@ -68,6 +68,7 @@ export default function HuggingFaceUnionAccuracy() {
   const [error, setError] = useState<string | null>(null);
   const [unionMetrics, setUnionMetrics] = useState<UnionMetrics | null>(null);
   const [unionPuzzleIds, setUnionPuzzleIds] = useState<string[]>([]);
+  const [showHarnessDetails, setShowHarnessDetails] = useState(false);
 
   const { models: availableModels, loading: loadingModels } = useAvailableModels();
 
@@ -389,6 +390,99 @@ export default function HuggingFaceUnionAccuracy() {
                   </div>
                 </div>
               </CardContent>
+            </Card>
+
+            {/* How the Testing Harness Works - Expandable */}
+            <Card className="shadow-sm border-purple-100">
+              <div
+                onClick={() => setShowHarnessDetails(!showHarnessDetails)}
+                className="p-2 cursor-pointer hover:bg-purple-50 transition-colors flex items-center justify-between"
+              >
+                <div className="flex items-center gap-2">
+                  <div className="text-sm font-semibold text-purple-700">🔬 How the Official Testing Harness Works</div>
+                </div>
+                {showHarnessDetails ? (
+                  <ChevronUp className="h-4 w-4 text-purple-600" />
+                ) : (
+                  <ChevronDown className="h-4 w-4 text-purple-600" />
+                )}
+              </div>
+
+              {showHarnessDetails && (
+                <CardContent className="p-3 border-t border-purple-100 text-xs text-gray-700 leading-relaxed space-y-2">
+                  <div className="bg-purple-50 p-2 rounded">
+                    <strong className="text-purple-900">1️⃣ The System Prompt</strong>
+                    <p className="text-gray-700 mt-1">
+                      Every model receives the same starting instructions: <em>"You are participating in a puzzle solving competition. You are an expert at solving puzzles."</em>
+                      The prompt then tells the model: <em>"Below is a list of input and output pairs showing a pattern. Your goal is to identify the pattern or transformation in the training examples,
+                      then apply that pattern to the test input to give a final output."</em> This sets the context for what the model needs to do.
+                    </p>
+                  </div>
+
+                  <div className="bg-purple-50 p-2 rounded">
+                    <strong className="text-purple-900">2️⃣ Training Examples (Your Pattern Clues)</strong>
+                    <p className="text-gray-700 mt-1">
+                      Next, the harness sends the model several training examples. Each example shows:
+                    </p>
+                    <ul className="list-disc list-inside text-gray-700 ml-1 mt-1">
+                      <li>An <strong>input</strong> grid (represented as a grid of colored numbers)</li>
+                      <li>The corresponding <strong>output</strong> grid (what the pattern produces)</li>
+                    </ul>
+                    <p className="text-gray-700 mt-1">
+                      All of this is formatted as clean <strong>JSON</strong> (structured data). For example, a 3×3 grid might look like: <code className="bg-white px-1 py-0.5 rounded border border-gray-300">{`[[0, 1, 2], [3, 4, 5], [6, 7, 8]]`}</code>.
+                      Each training example gives the model more clues about what transformation rule to discover.
+                    </p>
+                  </div>
+
+                  <div className="bg-purple-50 p-2 rounded">
+                    <strong className="text-purple-900">3️⃣ The Test Input (Your Challenge)</strong>
+                    <p className="text-gray-700 mt-1">
+                      After showing the training examples, the harness presents a <strong>test input</strong> — a single grid (also in JSON format) with no answer attached.
+                      The model must look at the training examples, figure out the pattern, and predict what the output grid should be.
+                    </p>
+                  </div>
+
+                  <div className="bg-purple-50 p-2 rounded">
+                    <strong className="text-purple-900">4️⃣ How the Message is Sent</strong>
+                    <p className="text-gray-700 mt-1">
+                      Everything — the initial prompt, all training examples, and the test input — is packaged into <strong>one single message</strong> sent to the model.
+                      The model receives this complete context in one go and must respond with its predicted output grid. This happens twice per puzzle (attempt 1 and attempt 2)
+                      with fresh, independent runs so the model can try different reasoning strategies.
+                    </p>
+                  </div>
+
+                  <div className="bg-purple-50 p-2 rounded">
+                    <strong className="text-purple-900">5️⃣ The Model's Response</strong>
+                    <p className="text-gray-700 mt-1">
+                      The model generates its predicted output as a grid in JSON format. The harness then <strong>extracts this grid answer</strong> from the model's response
+                      and compares it exactly to the ground truth answer for that puzzle.
+                    </p>
+                  </div>
+
+                  <div className="bg-purple-50 p-2 rounded">
+                    <strong className="text-purple-900">6️⃣ Scoring: Did the Model Get It Right?</strong>
+                    <p className="text-gray-700 mt-1">
+                      For each puzzle, the harness checks:
+                    </p>
+                    <ul className="list-disc list-inside text-gray-700 ml-1 mt-1">
+                      <li>Does the model's <strong>attempt 1 output exactly match</strong> the ground truth? ✓</li>
+                      <li>Does the model's <strong>attempt 2 output exactly match</strong> the ground truth? ✓</li>
+                    </ul>
+                    <p className="text-gray-700 mt-1">
+                      <strong>The puzzle is marked correct if EITHER attempt is correct.</strong> This is the union accuracy you see on this page.
+                      This scoring method is fair because it shows what a model can achieve when given multiple chances — realistic for many real-world applications.
+                    </p>
+                  </div>
+
+                  <div className="border-t border-purple-200 pt-2 mt-2">
+                    <p className="text-gray-600 text-xs">
+                      <strong>Bottom line:</strong> The official evaluation harness is a simple, fair system: it gives each model the same puzzle, the same training examples,
+                      and two independent attempts to solve it. This process repeats for every puzzle in the dataset, and the results shown on this page are exactly
+                      what the ARC Prize team posted on Hugging Face — no modifications or custom scoring.
+                    </p>
+                  </div>
+                </CardContent>
+              )}
             </Card>
 
             {/* Puzzle List - Dense Grid */}
