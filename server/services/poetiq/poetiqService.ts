@@ -284,7 +284,8 @@ export class PoetiqService {
 
     return {
       puzzleId: result.puzzleId,
-      modelName: `poetiq-${(result.config?.model || 'gemini-3-pro').replace(/\//g, '-')}`,
+      // Extract clean model name: "gemini/gemini-3-pro-preview" -> "poetiq-gemini-3-pro-preview"
+      modelName: `poetiq-${(result.config?.model || 'gemini-3-pro').split('/').pop()?.replace(/\//g, '-') || 'unknown'}`,
       patternDescription,
       solvingStrategy,
       hints,

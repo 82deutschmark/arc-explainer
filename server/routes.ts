@@ -198,6 +198,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Poetiq iterative code-generation solver routes
   // https://github.com/82deutschmark/poetiq-arc-agi-solver
   app.post("/api/poetiq/solve/:taskId", asyncHandler(poetiqController.solve));
+  app.post("/api/poetiq/batch", asyncHandler(poetiqController.startBatch));
+  app.get("/api/poetiq/batch/:sessionId", asyncHandler(poetiqController.getBatchStatus));
   app.get("/api/poetiq/status/:sessionId", asyncHandler(poetiqController.getStatus));
   app.get("/api/poetiq/models", asyncHandler(poetiqController.getModels));
 
