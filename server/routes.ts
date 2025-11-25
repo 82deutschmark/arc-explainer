@@ -20,6 +20,7 @@ import { feedbackController } from "./controllers/feedbackController";
 import { promptController } from "./controllers/promptController";
 import { saturnController } from "./controllers/saturnController";
 import { groverController } from "./controllers/groverController.js";
+import { poetiqController } from "./controllers/poetiqController.js";
 import adminController, * as adminControllerFns from './controllers/adminController.js';
 import * as modelManagementController from './controllers/modelManagementController.js';
 import * as discussionController from './controllers/discussionController.js';
@@ -193,6 +194,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/puzzle/grover/:taskId/:modelKey", asyncHandler(groverController.analyze));
   app.get("/api/stream/grover/:taskId/:modelKey", asyncHandler(groverController.streamAnalyze));
   app.get("/api/grover/status/:sessionId", asyncHandler(groverController.getStatus));
+
+  // Poetiq iterative code-generation solver routes
+  // https://github.com/82deutschmark/poetiq-arc-agi-solver
+  app.post("/api/poetiq/solve/:taskId", asyncHandler(poetiqController.solve));
+  app.get("/api/poetiq/status/:sessionId", asyncHandler(poetiqController.getStatus));
+  app.get("/api/poetiq/models", asyncHandler(poetiqController.getModels));
 
   // Batch analysis routes
   app.post("/api/batch/start", asyncHandler(batchController.startBatch));
