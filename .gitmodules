@@ -1,3 +1,6 @@
 [submodule "arc-agi-benchmarking"]
 	path = arc-agi-benchmarking
 	url = https://github.com/82deutschmark/arc-agi-benchmarking
+[submodule "poetiq-solver"]
+	path = poetiq-solver
+	url = https://github.com/82deutschmark/poetiq-arc-agi-solver
