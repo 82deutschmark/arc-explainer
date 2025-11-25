@@ -272,16 +272,21 @@ export const poetiqController = {
    * Get the list of supported Poetiq models.
    */
   async getModels(_req: Request, res: Response) {
-    // These are the models supported by Poetiq via LiteLLM
+    // Models supported by Poetiq via LiteLLM
+    // OpenRouter models are recommended to avoid direct API rate limits
     const models = [
-      { id: 'gemini/gemini-3-pro-preview', name: 'Gemini 3 Pro Preview', provider: 'Google' },
-      { id: 'gemini/gemini-2.5-pro', name: 'Gemini 2.5 Pro', provider: 'Google' },
-      { id: 'openai/gpt-5', name: 'GPT-5', provider: 'OpenAI' },
-      { id: 'openai/gpt-5.1', name: 'GPT-5.1', provider: 'OpenAI' },
-      { id: 'anthropic/claude-sonnet-4-5', name: 'Claude Sonnet 4.5', provider: 'Anthropic' },
-      { id: 'anthropic/claude-haiku-4-5', name: 'Claude Haiku 4.5', provider: 'Anthropic' },
-      { id: 'xai/grok-4', name: 'Grok 4', provider: 'xAI' },
-      { id: 'xai/grok-4-fast', name: 'Grok 4 Fast', provider: 'xAI' },
+      // OpenRouter models (recommended - avoids rate limits)
+      { id: 'openrouter/google/gemini-3-pro-preview', name: 'Gemini 3 Pro (via OpenRouter)', provider: 'OpenRouter', recommended: true },
+      { id: 'openrouter/google/gemini-2.5-flash-preview-09-2025', name: 'Gemini 2.5 Flash (via OpenRouter)', provider: 'OpenRouter', recommended: true },
+      { id: 'openrouter/anthropic/claude-sonnet-4', name: 'Claude Sonnet 4 (via OpenRouter)', provider: 'OpenRouter', recommended: false },
+      { id: 'openrouter/openai/gpt-5.1', name: 'GPT-5.1 (via OpenRouter)', provider: 'OpenRouter', recommended: false },
+      // Direct API models (may hit rate limits)
+      { id: 'gemini/gemini-3-pro-preview', name: 'Gemini 3 Pro Preview (Direct)', provider: 'Google', recommended: false },
+      { id: 'gemini/gemini-2.5-pro', name: 'Gemini 2.5 Pro (Direct)', provider: 'Google', recommended: false },
+      { id: 'openai/gpt-5', name: 'GPT-5 (Direct)', provider: 'OpenAI', recommended: false },
+      { id: 'openai/gpt-5.1', name: 'GPT-5.1 (Direct)', provider: 'OpenAI', recommended: false },
+      { id: 'anthropic/claude-sonnet-4-5', name: 'Claude Sonnet 4.5 (Direct)', provider: 'Anthropic', recommended: false },
+      { id: 'xai/grok-4', name: 'Grok 4 (Direct)', provider: 'xAI', recommended: false },
     ];
 
     return res.json(formatResponse.success({ models }));
