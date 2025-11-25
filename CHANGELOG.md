@@ -1,6 +1,17 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top!!!
 
+### Version 5.24.0
+
+- **Poetiq OpenRouter Support & UI** (Author: Cascade using Claude Sonnet 4)
+  - **OpenRouter integration**: Added support for routing Poetiq solver through OpenRouter to avoid Gemini direct API rate limits
+  - **Updated Poetiq solver files**: `arc_agi/types.py`, `arc_agi/llm.py`, `arc_agi/config.py` now support OpenRouter model IDs
+  - **Environment variable**: Set `USE_OPENROUTER=true` to automatically use OpenRouter
+  - **Created PoetiqSolver.tsx UI page**: New page at `/puzzle/poetiq/:taskId` for running the Poetiq solver with model selection
+  - **Created usePoetiqProgress hook**: WebSocket-based progress tracking hook
+  - **Rate limit mitigation plan**: Created `docs/plans/2025-11-25-poetiq-rate-limit-plan.md`
+  - **94 untested puzzles**: From ARC Prize 2025 evaluation set ready to run via OpenRouter
+
 ### Version 5.23.0
 
 - **Poetiq ARC-AGI Solver Integration** (Author: Cascade using Claude Sonnet 4)

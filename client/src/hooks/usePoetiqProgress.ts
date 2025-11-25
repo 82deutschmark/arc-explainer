@@ -1,0 +1,205 @@
+/**
+ * Author: Cascade (Claude Sonnet 4)
+ * Date: 2025-11-25
+ * PURPOSE: React hook for Poetiq solver progress tracking via WebSocket.
+ *          Manages solver state, progress updates, and result handling.
+ * 
+ * SRP/DRY check: Pass - Single responsibility for Poetiq progress orchestration.
+ */
+
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { apiRequest } from '@/lib/queryClient';
+
+export interface PoetiqOptions {
+  model?: string;
+  maxIterations?: number;
+  numExperts?: number;
+  temperature?: number;
+}
+
+export interface PoetiqProgressState {
+  status: 'idle' | 'running' | 'completed' | 'error';
+  phase?: string;
+  iteration?: number;
+  totalIterations?: number;
+  message?: string;
+  result?: {
+    success: boolean;
+    isPredictionCorrect: boolean;
+    accuracy?: number;
+    iterationCount?: number;
+    bestTrainScore?: number;
+    generatedCode?: string;
+    elapsedMs?: number;
+  };
+  config?: {
+    model: string;
+    maxIterations: number;
+    numExperts: number;
+    temperature: number;
+  };
+}
+
+const initialState: PoetiqProgressState = {
+  status: 'idle',
+};
+
+/**
+ * Hook for managing Poetiq solver progress
+ */
+export function usePoetiqProgress(taskId: string | undefined) {
+  const [state, setState] = useState<PoetiqProgressState>(initialState);
+  const [sessionId, setSessionId] = useState<string | null>(null);
+  const wsRef = useRef<WebSocket | null>(null);
+  const pollingRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (wsRef.current) {
+        wsRef.current.close();
+      }
+      if (pollingRef.current) {
+        clearInterval(pollingRef.current);
+      }
+    };
+  }, []);
+
+  // Connect to WebSocket for progress updates
+  const connectWebSocket = useCallback((sid: string) => {
+    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+    const wsUrl = `${protocol}//${window.location.host}/ws?sessionId=${sid}`;
+    
+    const ws = new WebSocket(wsUrl);
+    wsRef.current = ws;
+
+    ws.onmessage = (event) => {
+      try {
+        const data = JSON.parse(event.data);
+        
+        setState(prev => ({
+          ...prev,
+          phase: data.phase || prev.phase,
+          iteration: data.iteration ?? prev.iteration,
+          totalIterations: data.totalIterations ?? prev.totalIterations,
+          message: data.message || prev.message,
+          status: data.status === 'completed' ? 'completed' 
+                : data.status === 'error' ? 'error' 
+                : 'running',
+          result: data.result || prev.result,
+          config: data.config || prev.config,
+        }));
+
+        if (data.status === 'completed' || data.status === 'error') {
+          ws.close();
+        }
+      } catch (err) {
+        console.error('[Poetiq WS] Parse error:', err);
+      }
+    };
+
+    ws.onerror = (err) => {
+      console.error('[Poetiq WS] Error:', err);
+    };
+
+    ws.onclose = () => {
+      wsRef.current = null;
+    };
+  }, []);
+
+  // Start the solver
+  const start = useCallback(async (options: PoetiqOptions = {}) => {
+    if (!taskId) return;
+
+    setState({
+      status: 'running',
+      phase: 'starting',
+      message: 'Initializing Poetiq solver...',
+      config: {
+        model: options.model || 'openrouter/google/gemini-3-pro-preview',
+        maxIterations: options.maxIterations || 10,
+        numExperts: options.numExperts || 1,
+        temperature: options.temperature || 1.0,
+      },
+    });
+
+    try {
+      const res = await apiRequest('POST', `/api/poetiq/solve/${taskId}`, {
+        model: options.model || 'openrouter/google/gemini-3-pro-preview',
+        maxIterations: options.maxIterations || 10,
+        numExperts: options.numExperts || 1,
+        temperature: options.temperature || 1.0,
+      });
+      const response = await res.json();
+
+      if (response.success && response.data?.sessionId) {
+        const sid = response.data.sessionId;
+        setSessionId(sid);
+        connectWebSocket(sid);
+        
+        // Also start polling as backup
+        pollingRef.current = setInterval(async () => {
+          try {
+            const statusRes = await apiRequest('GET', `/api/poetiq/status/${sid}`);
+            const status = await statusRes.json();
+            if (status.success && status.data?.snapshot) {
+              const snap = status.data.snapshot;
+              if (snap.status === 'completed' || snap.status === 'error') {
+                setState(prev => ({
+                  ...prev,
+                  status: snap.status,
+                  result: snap.result,
+                  message: snap.message,
+                }));
+                if (pollingRef.current) {
+                  clearInterval(pollingRef.current);
+                  pollingRef.current = null;
+                }
+              }
+            }
+          } catch (err) {
+            console.error('[Poetiq] Polling error:', err);
+          }
+        }, 5000);
+      } else {
+        setState({
+          status: 'error',
+          message: response.message || 'Failed to start solver',
+        });
+      }
+    } catch (err) {
+      setState({
+        status: 'error',
+        message: err instanceof Error ? err.message : 'Unknown error',
+      });
+    }
+  }, [taskId, connectWebSocket]);
+
+  // Cancel the solver (not implemented yet)
+  const cancel = useCallback(() => {
+    if (wsRef.current) {
+      wsRef.current.close();
+    }
+    if (pollingRef.current) {
+      clearInterval(pollingRef.current);
+    }
+    setState({
+      status: 'idle',
+      message: 'Cancelled',
+    });
+  }, []);
+
+  // Reset state
+  const reset = useCallback(() => {
+    setState(initialState);
+    setSessionId(null);
+  }, []);
+
+  return {
+    state,
+    sessionId,
+    start,
+    cancel,
+    reset,
+  };
+}
