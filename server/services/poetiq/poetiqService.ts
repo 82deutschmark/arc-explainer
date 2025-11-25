@@ -91,10 +91,10 @@ export interface PoetiqExplanationData {
   patternDescription: string;
   solvingStrategy: string;
   hints: string[];
-  confidence: number;
+  confidence: number | null;  // Poetiq does NOT return confidence - always null
   predictedOutputGrid: number[][] | null;
   isPredictionCorrect: boolean;
-  trustworthinessScore: number;
+  trustworthinessScore: number | null;  // Only set if test accuracy is known
   hasMultiplePredictions: boolean;
   multiplePredictedOutputs: number[][][] | null;
   multiTestResults: any | null;
@@ -276,11 +276,13 @@ export class PoetiqService {
       hints.push(`Model used: ${result.config.model}`);
     }
 
-    // Calculate confidence based on training performance
-    const confidence = Math.round((result.bestTrainScore || 0) * 100);
+    // NOTE: Poetiq does NOT return a confidence value.
+    // We set confidence to null to avoid misleading data.
+    // The bestTrainScore is training accuracy, NOT prediction confidence.
+    const confidence = null;
 
-    // Calculate trustworthiness (based on actual test accuracy if available)
-    const trustworthiness = result.accuracy !== undefined ? result.accuracy * 100 : 0;
+    // Trustworthiness based on actual test accuracy if available
+    const trustworthiness = result.accuracy !== undefined ? result.accuracy * 100 : null;
 
     return {
       puzzleId: result.puzzleId,
