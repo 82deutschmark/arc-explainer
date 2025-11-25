@@ -260,7 +260,7 @@ export default function HuggingFaceUnionAccuracy() {
             Official Scoring: Public Evaluation
           </h1>
           <p className="text-base text-gray-600 mt-1">
-            A community authored guide to the official results from the ARC Prize evaluation harness on the public evaluation set (not semi-private)
+            A community authored guide to the official results from the ARC Prize evaluation harness on the public evaluation set
           </p>
         </div>
 
@@ -335,10 +335,10 @@ export default function HuggingFaceUnionAccuracy() {
         <Card className="shadow-sm border-teal-200 bg-teal-50/80">
           <button
             onClick={() => setShowEvaluationSetDetails(!showEvaluationSetDetails)}
-            className="w-full text-left p-3 flex items-center justify-between hover:bg-teal-100/50 transition-colors"
+            className="w-full p-3 flex items-center justify-center gap-2 text-center hover:bg-teal-100/50 transition-colors"
           >
             <h3 className="text-base font-semibold text-teal-900">
-              📚 Learn about the three different datasets
+              📚 Click here to learn about the three different datasets
             </h3>
             {showEvaluationSetDetails ? (
               <ChevronUp className="h-4 w-4 text-teal-700" />
@@ -360,6 +360,16 @@ export default function HuggingFaceUnionAccuracy() {
                   official ARC Prize policy
                   <ExternalLink className="inline h-3 w-3 ml-0.5" />
                 </a>
+                {' '}and the{' '}
+                <a
+                  href="https://arxiv.org/html/2412.04604v2"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="font-semibold text-teal-700 underline hover:text-teal-800"
+                >
+                  ARC Prize 2025 evaluation overview (arXiv)
+                  <ExternalLink className="inline h-3 w-3 ml-0.5" />
+                </a>
                 .
               </p>
 
@@ -375,12 +385,12 @@ export default function HuggingFaceUnionAccuracy() {
                 </div>
 
                 <div className="bg-white rounded p-2 border border-teal-100">
-                  <div className="font-semibold text-teal-700 mb-1">🔒 Semi-Private Set (Official Leaderboard)</div>
+                  <div className="font-semibold text-teal-700 mb-1">🔒 Semi-Private Set (Official Leaderboard - Used for testing closed source models like OpenAI, Gemini, Anthropic, etc)</div>
                   <p className="mb-1 text-teal-900">The ARC team keeps these secret.</p>
                   <ul className="list-disc list-inside space-y-0.5 text-teal-900 text-base">
                     <li>Not published anywhere—only the ARC team has them</li>
                     <li>Used to rank models fairly on the official leaderboard</li>
-                    <li>Models haven't trained on these (hopefully!)</li>
+                    <li>These are intended for testing remotely-hosted commercial models with low leakage probability. They are calibrated to the same human difficulty as public eval.</li>
                   </ul>
                 </div>
 
@@ -389,7 +399,7 @@ export default function HuggingFaceUnionAccuracy() {
                   <p className="mb-1 text-teal-900">Super secret puzzles for the competition.</p>
                   <ul className="list-disc list-inside space-y-0.5 text-teal-900 text-base">
                     <li>Only used during the ARC Prize contest</li>
-                    <li>Completely hidden until after the contest ends</li>
+                    <li>Intended for testing self-contained models during the competition with “near-zero leakage probability”</li>
                     <li>No one can study these puzzles beforehand</li>
                   </ul>
                 </div>
@@ -400,7 +410,7 @@ export default function HuggingFaceUnionAccuracy() {
                   <strong>Why scores differ:</strong> These two puzzle sets contain <strong>completely different puzzles</strong>. That's why you'll see different scores on this page (public set) compared to the official ARC Prize leaderboard (semi-private set). Sometimes scores are higher here, sometimes lower—it all depends on how well each particular set of puzzles matches the model's strengths.
                 </p>
                 <p className="text-teal-700 mt-1">
-                  💡 The key point: <strong>Different datasets = Different puzzles = Different results</strong>. You can't directly compare scores between these pages because you're looking at two separate evaluation datasets.
+                  💡 The key point: 
                 </p>
               </div>
             </CardContent>
