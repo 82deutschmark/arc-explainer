@@ -1,6 +1,16 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top!!!
 
+### Version 5.22.11
+
+- Official Scoring Page Dataset Header (Author: Cascade)
+  - Clarified and centered the "Learn about the three different datasets" collapsible header on the Official Scoring page so it now reads "Click here to learn about the three different datasets" with a centered layout, making the affordance to expand the explainer more obvious to non-technical readers (`client/src/pages/HuggingFaceUnionAccuracy.tsx:335-348`).
+
+### Version 5.22.10
+
+- Official Scoring Page Dataset Docs (Author: Cascade)
+  - Updated the three-dataset explainer on the Official Scoring page to include a direct link to the ARC Prize 2025 evaluation overview on arXiv (HTML view: `https://arxiv.org/html/2412.04604v2`), alongside the existing ARC Prize policy link. This gives readers a primary-source description of how public, semi-private, and private sets are designed and used (`client/src/pages/HuggingFaceUnionAccuracy.tsx:352-405`).
+
 ### Version 5.22.9
 
 - Official Scoring Page Default Model Pair (Author: Cascade)
