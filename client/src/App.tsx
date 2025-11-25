@@ -13,6 +13,7 @@ import Leaderboards from "@/pages/Leaderboards";
 import PuzzleDiscussion from "@/pages/PuzzleDiscussion";
 import SaturnVisualSolver from "@/pages/SaturnVisualSolver";
 import GroverSolver from "@/pages/GroverSolver";
+import PoetiqSolver from "@/pages/PoetiqSolver";
 import KaggleReadinessValidation from "@/pages/KaggleReadinessValidation";
 import PuzzleDBViewer from "@/pages/PuzzleDBViewer";
 import ModelBrowser from "@/pages/ModelBrowser";
@@ -52,6 +53,7 @@ function Router() {
         <Route path="/kaggle-readiness" component={KaggleReadinessValidation} />
         <Route path="/puzzle/saturn/:taskId" component={SaturnVisualSolver} />
         <Route path="/puzzle/grover/:taskId" component={GroverSolver} />
+        <Route path="/puzzle/poetiq/:taskId" component={PoetiqSolver} />
         <Route path="/puzzles/database" component={PuzzleDBViewer} />
         <Route path="/models" component={ModelBrowser} />
         <Route path="/model-config" component={ModelManagement} />
