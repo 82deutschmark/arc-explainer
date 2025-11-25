@@ -1,6 +1,21 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top!!!
 
+### Version 5.23.0
+
+- **Poetiq ARC-AGI Solver Integration** (Author: Cascade using Claude Sonnet 4)
+  - **Added Poetiq solver as git submodule**: Integrated the Poetiq ARC-AGI solver (https://github.com/82deutschmark/poetiq-arc-agi-solver) as a submodule at `poetiq-solver/`. This solver claims SOTA results using iterative code generation with LiteLLM.
+  - **Created Python bridge wrapper** (`server/python/poetiq_wrapper.py`): NDJSON-streaming bridge that runs the Poetiq solver via subprocess, emitting progress events for WebSocket broadcasting and capturing iteration data, generated code, and predictions.
+  - **Created PoetiqService** (`server/services/poetiq/poetiqService.ts`): TypeScript service wrapping Python execution, transforming Poetiq results to standard explanation format for database storage. Stores Poetiq-specific data (iterations, generated code, config) in `providerRawResponse` JSONB field.
+  - **Created PoetiqController** (`server/controllers/poetiqController.ts`): API controller with endpoints:
+    - `POST /api/poetiq/solve/:taskId` - Run Poetiq solver on a single puzzle (async with WebSocket progress)
+    - `POST /api/poetiq/batch` - Run Poetiq solver on entire dataset (arc1, arc2, arc2-eval, arc-heavy, concept-arc)
+    - `GET /api/poetiq/batch/:sessionId` - Get batch progress and results
+    - `GET /api/poetiq/status/:sessionId` - Get single solver progress
+    - `GET /api/poetiq/models` - List supported Poetiq models (Gemini, GPT-5, Claude, Grok via LiteLLM)
+  - **Integration plan document** (`docs/plans/2025-11-25-poetiq-integration-plan.md`): Critical assessment of Poetiq methodology including architecture analysis, concerns for reproducibility, and integration strategy.
+  - **Key differences from other solvers**: Poetiq uses iterative code generation (generates Python `transform()` functions) rather than direct grid prediction, with sandboxed execution and voting across parallel experts. Results include generated code and iteration history alongside predictions.
+
 ### Version 5.22.11
 
 - Official Scoring Page Dataset Header (Author: Cascade)
