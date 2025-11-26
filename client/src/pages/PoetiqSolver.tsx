@@ -1,9 +1,9 @@
 /**
  * Author: Cascade (Claude Sonnet 4)
  * Date: 2025-11-25
- * PURPOSE: Poetiq Iterative Code-Generation Solver page.
- *          Shows puzzle, model selection, and real-time solver progress.
- *          Uses OpenRouter to avoid direct API rate limits.
+ * PURPOSE: Poetiq Iterative Code-Generation Solver page with BYO API key support.
+ *          Users can bring their own Gemini or OpenRouter key to run the solver.
+ *          Supports configurable expert count (1, 2, 4, 8).
  * 
  * SRP/DRY check: Pass - UI only, delegates to usePoetiqProgress hook
  * shadcn/ui: Pass - Uses shadcn components
@@ -13,7 +13,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'wouter';
 import { 
   Loader2, ArrowLeft, Play, Square, CheckCircle, XCircle, 
-  Code, Settings, Zap, Clock 
+  Code, Settings, Zap, Clock, Key, Users, AlertTriangle
 } from 'lucide-react';
 import { usePuzzle } from '@/hooks/usePuzzle';
 import { usePoetiqProgress } from '@/hooks/usePoetiqProgress';
@@ -23,21 +23,31 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { Label } from '@/components/ui/label';
+import { Input } from '@/components/ui/input';
 
-// Available models
-const MODELS = [
-  { id: 'openrouter/google/gemini-3-pro-preview', name: 'Gemini 3 Pro (OpenRouter)', recommended: true },
-  { id: 'openrouter/google/gemini-2.5-flash-preview-09-2025', name: 'Gemini 2.5 Flash (OpenRouter)', recommended: true },
-  { id: 'openrouter/anthropic/claude-sonnet-4', name: 'Claude Sonnet 4 (OpenRouter)', recommended: false },
-  { id: 'gemini/gemini-3-pro-preview', name: 'Gemini 3 Pro (Direct - may rate limit)', recommended: false },
+// Expert configuration presets (from Poetiq docs)
+const EXPERT_OPTIONS = [
+  { value: '1', label: '1 Expert (Gemini-3-a)', description: 'Fastest, lowest cost' },
+  { value: '2', label: '2 Experts (Gemini-3-b)', description: 'Default, good balance' },
+  { value: '4', label: '4 Experts', description: 'Better accuracy' },
+  { value: '8', label: '8 Experts (Gemini-3-c)', description: 'Best accuracy, slowest' },
+];
+
+// Provider options
+const PROVIDERS = [
+  { value: 'gemini', label: 'Gemini Direct', description: 'Use your Google AI Studio API key' },
+  { value: 'openrouter', label: 'OpenRouter', description: 'Use your OpenRouter API key' },
 ];
 
 export default function PoetiqSolver() {
   const { taskId } = useParams<{ taskId: string }>();
   const { currentTask: task, isLoadingTask, taskError } = usePuzzle(taskId);
-  const { state, start, cancel, sessionId } = usePoetiqProgress(taskId);
+  const { state, start, cancel } = usePoetiqProgress(taskId);
   
-  const [model, setModel] = useState(MODELS[0].id);
+  // Configuration state
+  const [apiKey, setApiKey] = useState('');
+  const [provider, setProvider] = useState<'gemini' | 'openrouter'>('gemini');
+  const [numExperts, setNumExperts] = useState('2'); // Default: 2 experts (Gemini-3-b)
   const [startTime, setStartTime] = useState<Date | null>(null);
   const [elapsed, setElapsed] = useState(0);
 
@@ -49,6 +59,7 @@ export default function PoetiqSolver() {
   const isRunning = state.status === 'running';
   const isDone = state.status === 'completed';
   const hasError = state.status === 'error';
+  const canStart = apiKey.trim().length > 10 && !isRunning;
 
   // Track elapsed time
   useEffect(() => {
@@ -69,7 +80,11 @@ export default function PoetiqSolver() {
   }, [isRunning, startTime]);
 
   const handleStart = () => {
-    start({ model });
+    start({
+      apiKey,
+      provider,
+      numExperts: parseInt(numExperts, 10),
+    });
   };
 
   if (!taskId) {
@@ -124,53 +139,136 @@ export default function PoetiqSolver() {
           </div>
         </div>
 
-        {/* Configuration Card */}
-        <Card>
+        {/* BYO API Key Card */}
+        <Card className="border-2 border-purple-200 bg-gradient-to-br from-white to-purple-50">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Settings className="h-5 w-5" />
-              Configuration
+              <Key className="h-5 w-5 text-purple-600" />
+              Bring Your Own API Key
             </CardTitle>
             <CardDescription>
-              Select model and start the iterative code-generation solver
+              Your API key is used only for this run and is <strong>never stored</strong>.
             </CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent className="space-y-6">
+            {/* Provider Selection */}
             <div className="space-y-2">
-              <Label>Model</Label>
-              <Select value={model} onValueChange={setModel} disabled={isRunning}>
+              <Label className="flex items-center gap-2">
+                Provider
+              </Label>
+              <Select 
+                value={provider} 
+                onValueChange={(v) => setProvider(v as 'gemini' | 'openrouter')} 
+                disabled={isRunning}
+              >
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  {MODELS.map(m => (
-                    <SelectItem key={m.id} value={m.id}>
-                      {m.name}
-                      {m.recommended && (
-                        <Badge variant="secondary" className="ml-2 text-xs">Recommended</Badge>
-                      )}
+                  {PROVIDERS.map(p => (
+                    <SelectItem key={p.value} value={p.value}>
+                      <div className="flex flex-col">
+                        <span className="font-medium">{p.label}</span>
+                        <span className="text-xs text-gray-500">{p.description}</span>
+                      </div>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* API Key Input */}
+            <div className="space-y-2">
+              <Label className="flex items-center gap-2">
+                {provider === 'gemini' ? 'Gemini API Key' : 'OpenRouter API Key'}
+              </Label>
+              <Input
+                type="password"
+                placeholder={provider === 'gemini' 
+                  ? 'AIza... (from Google AI Studio)' 
+                  : 'sk-or-... (from OpenRouter)'}
+                value={apiKey}
+                onChange={(e) => setApiKey(e.target.value)}
+                disabled={isRunning}
+                className="font-mono"
+              />
+              <p className="text-xs text-gray-500">
+                {provider === 'gemini' 
+                  ? 'Get your key from Google AI Studio → aistudio.google.com' 
+                  : 'Get your key from OpenRouter → openrouter.ai/keys'}
+              </p>
+            </div>
+
+            <Separator />
+
+            {/* Expert Count Selection */}
+            <div className="space-y-2">
+              <Label className="flex items-center gap-2">
+                <Users className="h-4 w-4" />
+                Number of Experts
+              </Label>
+              <Select 
+                value={numExperts} 
+                onValueChange={setNumExperts}
+                disabled={isRunning}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {EXPERT_OPTIONS.map(opt => (
+                    <SelectItem key={opt.value} value={opt.value}>
+                      <div className="flex flex-col">
+                        <span className="font-medium">{opt.label}</span>
+                        <span className="text-xs text-gray-500">{opt.description}</span>
+                      </div>
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
               <p className="text-xs text-gray-500">
-                OpenRouter models avoid direct API rate limits
+                More experts = better accuracy but longer runtime and higher cost.
               </p>
             </div>
 
-            <div className="flex gap-2">
+            {/* Warning for 8 experts */}
+            {numExperts === '8' && (
+              <div className="flex items-start gap-2 p-3 bg-amber-50 border border-amber-200 rounded-lg">
+                <AlertTriangle className="h-4 w-4 text-amber-600 mt-0.5 shrink-0" />
+                <p className="text-xs text-amber-800">
+                  8 experts will make many parallel API calls. This may take 15-30+ minutes per puzzle
+                  and consume significant API quota.
+                </p>
+              </div>
+            )}
+
+            <Separator />
+
+            {/* Start/Cancel Button */}
+            <div className="flex gap-3">
               {!isRunning ? (
-                <Button onClick={handleStart} disabled={isRunning}>
-                  <Play className="h-4 w-4 mr-2" />
-                  Start Solver
+                <Button 
+                  onClick={handleStart} 
+                  disabled={!canStart}
+                  className="flex-1 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
+                  size="lg"
+                >
+                  <Play className="h-5 w-5 mr-2" />
+                  Start Poetiq Solver
                 </Button>
               ) : (
-                <Button onClick={cancel} variant="destructive">
-                  <Square className="h-4 w-4 mr-2" />
+                <Button onClick={cancel} variant="destructive" className="flex-1" size="lg">
+                  <Square className="h-5 w-5 mr-2" />
                   Cancel
                 </Button>
               )}
             </div>
+
+            {!canStart && !isRunning && (
+              <p className="text-center text-sm text-gray-500">
+                Enter your API key to start the solver.
+              </p>
+            )}
           </CardContent>
         </Card>
 
@@ -286,19 +384,43 @@ export default function PoetiqSolver() {
         )}
 
         {/* Info Card */}
-        <Card className="bg-blue-50 border-blue-200">
-          <CardContent className="pt-6">
+        <Card className="bg-gradient-to-br from-blue-50 to-indigo-50 border-blue-200">
+          <CardContent className="pt-6 space-y-4">
             <div className="flex items-start gap-3">
-              <Zap className="h-5 w-5 text-blue-600 mt-0.5" />
+              <Zap className="h-5 w-5 text-blue-600 mt-0.5 shrink-0" />
               <div className="text-sm text-blue-800">
-                <p className="font-medium">About Poetiq Solver</p>
+                <p className="font-medium">How Poetiq Works</p>
                 <p className="mt-1">
                   Poetiq uses iterative code generation to solve ARC puzzles. It generates Python 
                   <code className="mx-1 bg-blue-100 px-1 rounded">transform()</code>
                   functions, tests them on training examples, and refines until successful.
                 </p>
-                <p className="mt-2">
-                  <strong>94 puzzles</strong> from the ARC-AGI 2025 evaluation set remain untested.
+              </div>
+            </div>
+
+            <Separator className="bg-blue-200" />
+
+            <div className="flex items-start gap-3">
+              <Users className="h-5 w-5 text-blue-600 mt-0.5 shrink-0" />
+              <div className="text-sm text-blue-800">
+                <p className="font-medium">Expert Configurations</p>
+                <ul className="mt-1 space-y-1">
+                  <li><strong>Gemini-3-a (1 expert):</strong> Fast, ~5-15 min per puzzle</li>
+                  <li><strong>Gemini-3-b (2 experts):</strong> Default, balanced accuracy</li>
+                  <li><strong>Gemini-3-c (8 experts):</strong> Best accuracy, 15-30+ min</li>
+                </ul>
+              </div>
+            </div>
+
+            <Separator className="bg-blue-200" />
+
+            <div className="flex items-start gap-3">
+              <Key className="h-5 w-5 text-blue-600 mt-0.5 shrink-0" />
+              <div className="text-sm text-blue-800">
+                <p className="font-medium">Your API Key is Safe</p>
+                <p className="mt-1">
+                  Your key is passed directly to the solver process and is <strong>never logged, 
+                  stored, or transmitted</strong> anywhere else. Each run is isolated.
                 </p>
               </div>
             </div>
