@@ -9,6 +9,7 @@
  * Supports multiple solver paths:
  * - /api/saturn/progress?sessionId=... (Saturn Visual Solver)
  * - /api/grover/progress?sessionId=... (Grover Iterative Solver)
+ * - /api/poetiq/progress?sessionId=... (Poetiq Code-Generation Solver)
  *
  * Exposes:
  * - attach(server): initialize ws server and URL routing
@@ -17,6 +18,7 @@
  *
  * Author: Cascade (model: Cascade)
  * Updated: Sonnet 4.5 (2025-10-09) - Added Grover support
+ * Updated: Claude Sonnet 4 (2025-11-25) - Added Poetiq support
  */
 
 import type { Server } from 'http';
@@ -31,7 +33,7 @@ let wss: WebSocketServer | null = null;
 function parseSessionId(url?: string | null): string | null {
   if (!url) return null;
   try {
-    // Expect URL like /api/saturn/progress?sessionId=... or /api/grover/progress?sessionId=...
+    // Expect URL like /api/saturn/progress?sessionId=..., /api/grover/progress?sessionId=..., or /api/poetiq/progress?sessionId=...
     const qs = url.split('?')[1] || '';
     const params = new URLSearchParams(qs);
     const sid = params.get('sessionId');
@@ -42,15 +44,19 @@ function parseSessionId(url?: string | null): string | null {
 
 export function attach(server: Server) {
   if (wss) return wss;
-  // Attach without path restriction - handles both /api/saturn/progress and /api/grover/progress
+  // Attach without path restriction - handles Saturn, Grover, and Poetiq solver progress endpoints
   // Clients connect to ws(s)://host/api/{solver}/progress?sessionId=...
   wss = new WebSocketServer({ 
     server,
     // No path restriction - verifyClient will check the URL
     verifyClient: (info, cb) => {
       const url = info.req.url || '';
-      // Accept both /api/saturn/progress and /api/grover/progress
-      if (url.startsWith('/api/saturn/progress') || url.startsWith('/api/grover/progress')) {
+      // Accept Saturn, Grover, and Poetiq progress WebSocket paths
+      if (
+        url.startsWith('/api/saturn/progress') || 
+        url.startsWith('/api/grover/progress') ||
+        url.startsWith('/api/poetiq/progress')
+      ) {
         cb(true);
       } else {
         cb(false, 404, 'WebSocket path not found');
