@@ -1,6 +1,17 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top!!!
 
+### Version 5.27.3
+
+- **Fix Poetiq Community Page UX - Actually Start Solver** (Author: Cascade using Claude Sonnet 4)
+  - **Bug**: "Run Solver" button just navigated to another page, losing user's API key and settings
+  - **Root Cause**: `handleRunNext()` only called `navigate()` instead of starting the solver
+  - **Fix**: Button now starts solver directly on the community page with inline progress display
+  - **Added**: Live progress panel showing status, iteration progress bar, and results
+  - **Added**: Auto-refresh of puzzle grid after solver completes
+  - **Added**: Visual feedback with spinner during solving, checkmark/x on completion
+  - **Impact**: Users can now enter API key once and watch solver progress without leaving the page
+
 ### Version 5.27.2
 
 - **Fix Poetiq Community Progress Data Accuracy** (Author: Cascade using Claude Sonnet 4)
