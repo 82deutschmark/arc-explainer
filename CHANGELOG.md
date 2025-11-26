@@ -1,6 +1,20 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top!!!
 
+### Version 5.27.0
+
+- **Poetiq Community Solver Page** (Author: Cascade using Claude Sonnet 4)
+  - **New Landing Page**: Created `/poetiq` page explaining Poetiq code-generation methodology in plain language
+  - **Visual Progress Grid**: Shows all 120 ARC2-eval puzzles with color-coded status (solved/attempted/unattempted)
+  - **Community Quick Start**: BYO API key configuration for Gemini Direct or OpenRouter providers
+  - **Progress Dashboard**: Real-time stats showing completion percentage and remaining puzzles
+  - **Collapsible Explainer**: Detailed comparison of direct prediction vs code generation approaches
+  - **Navigation Integration**: Added "Poetiq Solver" link under Misc dropdown in navigation
+  - **Enhanced Hook**: `usePoetiqCommunityProgress` fetches all puzzle statuses with filtering capabilities
+  - **Reusable Components**: `PoetiqExplainer` and `PuzzleProgressGrid` components for modular design
+  - **Community Pooling**: Enables 20 people × 6 puzzles approach to complete full dataset
+  - **Model Support**: Multiple OpenRouter models with speed/cost indicators (Gemini 2.5 Pro/Flash, Claude Sonnet 4, GPT-4o)
+
 ### Version 5.26.1
 
 - **Fix Poetiq WebSocket Connection** (Author: Cascade using Claude Sonnet 4)
