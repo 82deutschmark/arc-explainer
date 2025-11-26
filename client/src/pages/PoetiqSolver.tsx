@@ -13,10 +13,12 @@ import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'wouter';
 import { 
   Loader2, ArrowLeft, Play, Square, CheckCircle, XCircle, 
-  Code, Settings, Zap, Clock, Key, Users, AlertTriangle
+  Code, Settings, Zap, Clock, Key, Users, AlertTriangle, 
+  BarChart3, RefreshCw, Target
 } from 'lucide-react';
 import { usePuzzle } from '@/hooks/usePuzzle';
 import { usePoetiqProgress } from '@/hooks/usePoetiqProgress';
+import { useArc2EvalProgress } from '@/hooks/useArc2EvalProgress';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -43,6 +45,7 @@ export default function PoetiqSolver() {
   const { taskId } = useParams<{ taskId: string }>();
   const { currentTask: task, isLoadingTask, taskError } = usePuzzle(taskId);
   const { state, start, cancel } = usePoetiqProgress(taskId);
+  const arc2EvalProgress = useArc2EvalProgress();
   
   // Configuration state
   const [apiKey, setApiKey] = useState('');
