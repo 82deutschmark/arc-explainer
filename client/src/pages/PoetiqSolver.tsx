@@ -194,6 +194,7 @@ export default function PoetiqSolver() {
                 onChange={(e) => setApiKey(e.target.value)}
                 disabled={isRunning}
                 className="font-mono"
+                autoComplete="new-password"
               />
               <p className="text-xs text-gray-500">
                 {provider === 'gemini' 

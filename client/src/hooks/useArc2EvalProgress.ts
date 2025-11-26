@@ -50,12 +50,12 @@ export function useArc2EvalProgress() {
       const listRes = await apiRequest('GET', '/api/puzzle/list?source=ARC2-Eval&limit=200');
       const listData = await listRes.json();
       
-      if (!listData.success || !listData.data?.puzzles) {
+      if (!listData.success || !Array.isArray(listData.data)) {
         console.error('[Arc2EvalProgress] List response:', listData);
         throw new Error('Failed to fetch ARC2-eval puzzle list');
       }
 
-      const puzzleIds = listData.data.puzzles.map((p: any) => p.puzzleId);
+      const puzzleIds = listData.data.map((p: any) => p.puzzleId);
       console.log(`[Arc2EvalProgress] Found ${puzzleIds.length} ARC2-eval puzzles`);
 
       // Then get explanation status for those puzzles
