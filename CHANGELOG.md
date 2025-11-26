@@ -1,6 +1,38 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top!!!
 
+### Version 5.28.5
+
+- **Fix Poetiq Control Panel - Use Actual Config** (Author: Cascade using Claude Sonnet 4)
+  - **Problem**: Control panel had hallucinated model lists (GPT-5, etc.) instead of actual Poetiq config
+  - **Fix**: 
+    - Poetiq ONLY uses `google/gemini-3-pro-preview` via OpenRouter (hardcoded in config.py)
+    - Expert options fixed to 1, 2, 8 ONLY (Gemini-3-a, Gemini-3-b, Gemini-3-c) - removed invalid "4 experts"
+    - Removed fake provider/model dropdowns - model is fixed
+    - Simplified control panel to: API key (optional), Expert config, Max iterations
+  - **Files**: `PoetiqControlPanel.tsx`, `PoetiqSolver.tsx`
+
+### Version 5.28.4
+
+- **GPT-5.1 Codex Mini Support** (Author: Codex (GPT-5))
+  - `server/config/models.ts`: Added the OpenAI listing for `gpt-5.1-codex-mini` with cost ($0.25 / $2 per million tokens), 400k context, 128k max output, reasoning-token note, and preview release metadata so UI+server selectors surface it like other GPT-5-class models.
+  - `server/services/openai.ts`: Registered the new key for routing plus streaming support, ensuring Responses API streaming + schema lookup flows treat GPT-5.1 Codex Mini identically to other GPT-5 reasoning models.
+
+### Version 5.28.3
+
+- **Gemini 3 Pro Preview (Direct) Enablement** (Author: Codex (GPT-5))
+  - `docs/2025-11-26-gemini-3-pro-preview-plan.md`: Captured the direct-Gemini rollout goal, impacted files, and risk notes for adding `gemini-3-pro-preview`.
+  - `server/config/models.ts`: Added a first-party `Gemini` provider entry for `gemini-3-pro-preview` (maps to `models/gemini-3-pro-preview`, reasoning-capable, structured-output disabled, streaming turned off) so UI + routing logic can surface the direct Google option beside the existing OpenRouter variant.
+  - `server/services/gemini.ts`: Registered the new key and generalized the reasoning/thinking detection + generation config helpers so Gemini 3 models inherit the same thinking budget handling and capability reporting as 2.5-series models.
+
+### Version 5.28.2
+
+- **Poetiq ARC2 Batch Runner Update** (Author: Codex (GPT-5))
+  - Script now targets the first 20 ARC2-Eval puzzles automatically so batch runs match the latest request volume.
+  - Default expert count increased to two, aligning with the desired Poetiq multi-expert configuration.
+  - Logging is ASCII-only and progress/summary metrics now derive from the actual puzzle count (no more hard-coded `/10` output).
+  - Added guardrails for missing `sessionId` and failed status polls to surface actionable errors instead of silent hangs.
+
 ### Version 5.28.1
 
 - **Poetiq API Key Fallback & Streaming Fields** (Author: Cascade using Claude Sonnet 4)
