@@ -22,10 +22,16 @@ import { BaseAIService, ServiceOptions, TokenUsage, AIResponse, PromptPreview, M
 import { MODELS as MODEL_CONFIGS, getApiModelName } from "../config/models/index.js";
 import { jsonParser } from '../utils/JsonParser.js';
 
-// Helper function to check if model supports temperature
+// Helper functions scoped to Gemini models
 function modelSupportsTemperature(modelKey: string): boolean {
   const modelConfig = MODEL_CONFIGS.find(m => m.key === modelKey);
   return modelConfig?.supportsTemperature ?? true; // Most Gemini models support temperature
+}
+
+function isAdvancedGeminiModel(modelIdentifier?: string): boolean {
+  if (!modelIdentifier) return false;
+  const normalized = modelIdentifier.toLowerCase();
+  return normalized.includes('gemini-2.5') || normalized.includes('gemini-3');
 }
 
 const genai = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
@@ -33,6 +39,7 @@ const genai = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
 export class GeminiService extends BaseAIService {
   protected provider = "Gemini";
   protected models = {
+    "gemini-3-pro-preview": "gemini-3-pro-preview",
     "gemini-2.5-pro": "gemini-2.5-pro",
     "gemini-2.5-flash": "gemini-2.5-flash",
     "gemini-2.5-flash-lite": "gemini-2.5-flash-lite",
@@ -100,17 +107,17 @@ export class GeminiService extends BaseAIService {
     const modelName = apiModelName || modelKey;
     
     // Check if it's a thinking model (Gemini 2.5 Pro/Flash have thinking capabilities)
-    const isThinking = modelName.includes('2.5');
+    const isThinking = isAdvancedGeminiModel(`${modelKey} ${modelName}`);
     
     return {
       name: modelName,
-      isReasoning: isThinking, // Gemini 2.5+ models have thinking capabilities
+      isReasoning: modelConfig?.isReasoning ?? isThinking, // Gemini 2.5+/3 models have thinking capabilities
       supportsTemperature: modelSupportsTemperature(modelKey),
       contextWindow: modelConfig?.contextWindow, // Use actual model context window, no artificial limit
       supportsFunctionCalling: true,
       supportsSystemPrompts: true,
-      supportsStructuredOutput: true, // Gemini supports native JSON output
-      supportsVision: true // Most Gemini models support vision 
+      supportsStructuredOutput: modelConfig?.supportsStructuredOutput ?? true,
+      supportsVision: modelConfig?.supportsVision ?? true
     };
   }
 
@@ -195,7 +202,7 @@ export class GeminiService extends BaseAIService {
       ...(options?.candidateCount && { candidateCount: options.candidateCount })
     };
 
-    if (modelKey.includes('2.5')) {
+    if (isAdvancedGeminiModel(modelKey)) {
       if ((options as any)?.thinkingBudget !== undefined) {
         generationConfig.thinking_config = {
           thinking_budget: (options as any).thinkingBudget
@@ -270,11 +277,11 @@ export class GeminiService extends BaseAIService {
     const { reasoningLog, reasoningItems } = this._parseReasoning(
       result,
       reasoningParts,
-      captureReasoning && modelKey.includes('2.5')
+      captureReasoning && isAdvancedGeminiModel(modelKey)
     );
 
     // Store thoughtSignatures for potential continuation
-    if (thoughtSignature && modelKey.includes('2.5')) {
+    if (thoughtSignature && isAdvancedGeminiModel(modelKey)) {
       (response as any)._thoughtSignatures = [thoughtSignature];
     }
 

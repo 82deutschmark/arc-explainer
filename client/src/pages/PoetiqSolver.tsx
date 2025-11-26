@@ -28,19 +28,18 @@ export default function PoetiqSolver() {
   const { currentTask: task, isLoadingTask, taskError } = usePuzzle(taskId);
   const { state, start, cancel } = usePoetiqProgress(taskId);
   
-  // Configuration state
+  // Configuration state - Poetiq ONLY uses Gemini 3 Pro via OpenRouter
   const [apiKey, setApiKey] = useState('');
-  const [provider, setProvider] = useState<'gemini' | 'openrouter' | 'openai'>('openrouter');
-  const [model, setModel] = useState('openrouter/openai/gpt-5-nano');
-  const [numExperts, setNumExperts] = useState(2);
+  const [numExperts, setNumExperts] = useState(2);  // 1, 2, or 8 only (Gemini-3-a/b/c)
   const [maxIterations, setMaxIterations] = useState(10);
-  const [temperature, setTemperature] = useState(1.0);
-  const [reasoningEffort, setReasoningEffort] = useState<'minimal' | 'low' | 'medium' | 'high'>('low');
   const [executions, setExecutions] = useState<any[]>([]);
+  
+  // Fixed model - Poetiq only uses this model
+  const POETIQ_MODEL = 'google/gemini-3-pro-preview';
 
   // Set page title
   useEffect(() => {
-    document.title = taskId ? `Poetiq Solver - ${taskId}` : 'Poetiq Code-Generation Solver';
+    document.title = taskId ? `Poetiq Solver - ${taskId}` : 'Poetiq Solver';
   }, [taskId]);
 
   const isRunning = state.status === 'running';
@@ -75,15 +74,14 @@ export default function PoetiqSolver() {
   }, [state.iteration, state.message, isRunning]);
 
   const handleStart = () => {
-    // Cast provider to expected type for Poetiq (which only supports gemini/openrouter)
-    const poetiqProvider = provider === 'openai' ? 'openrouter' : provider;
+    // Poetiq always uses OpenRouter with Gemini 3 Pro Preview
     start({
       apiKey,
-      provider: poetiqProvider,
-      model,
+      provider: 'openrouter',
+      model: POETIQ_MODEL,
       numExperts,
       maxIterations,
-      temperature,
+      temperature: 1.0,  // Fixed at 1.0 per config.py
     });
   };
 
@@ -172,18 +170,10 @@ export default function PoetiqSolver() {
               isRunning={isRunning}
               apiKey={apiKey}
               setApiKey={setApiKey}
-              provider={provider}
-              setProvider={setProvider}
-              model={model}
-              setModel={setModel}
               numExperts={numExperts}
               setNumExperts={setNumExperts}
               maxIterations={maxIterations}
               setMaxIterations={setMaxIterations}
-              temperature={temperature}
-              setTemperature={setTemperature}
-              reasoningEffort={reasoningEffort}
-              setReasoningEffort={setReasoningEffort}
               onStart={handleStart}
               onCancel={cancel}
             />
