@@ -1,8 +1,10 @@
 /**
  * Author: Cascade (Claude Sonnet 4)
  * Date: 2025-11-25
+ * Updated: Claude Sonnet 4 (2025-11-25) - Fixed WebSocket URL to match Saturn/Grover pattern
  * PURPOSE: React hook for Poetiq solver progress tracking via WebSocket.
  *          Manages solver state, progress updates, and result handling.
+ *          Uses same WebSocket connection pattern as Saturn and Grover solvers.
  * 
  * SRP/DRY check: Pass - Single responsibility for Poetiq progress orchestration.
  */
@@ -71,16 +73,37 @@ export function usePoetiqProgress(taskId: string | undefined) {
   }, []);
 
   // Connect to WebSocket for progress updates
+  // Uses same URL pattern as Saturn/Grover: /api/poetiq/progress?sessionId=...
   const connectWebSocket = useCallback((sid: string) => {
-    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-    const wsUrl = `${protocol}//${window.location.host}/ws?sessionId=${sid}`;
+    // Close any existing connection first
+    if (wsRef.current) {
+      try {
+        wsRef.current.close();
+      } catch {
+        // Ignore cleanup errors
+      }
+      wsRef.current = null;
+    }
+
+    const wsProtocol = location.protocol === 'https:' ? 'wss' : 'ws';
+    const isDev = import.meta.env.DEV;
+    const wsHost = isDev ? 'localhost:5000' : location.host;
+    const wsUrl = `${wsProtocol}://${wsHost}/api/poetiq/progress?sessionId=${encodeURIComponent(sid)}`;
     
+    console.log('[Poetiq WS] Connecting to:', wsUrl);
     const ws = new WebSocket(wsUrl);
     wsRef.current = ws;
 
+    ws.onopen = () => {
+      console.log('[Poetiq WS] Connected successfully');
+    };
+
     ws.onmessage = (event) => {
       try {
-        const data = JSON.parse(event.data);
+        const payload = JSON.parse(event.data);
+        // Server sends { type: 'progress' | 'snapshot', data: {...} }
+        const data = payload?.data;
+        if (!data) return;
         
         setState(prev => ({
           ...prev,
@@ -107,7 +130,8 @@ export function usePoetiqProgress(taskId: string | undefined) {
       console.error('[Poetiq WS] Error:', err);
     };
 
-    ws.onclose = () => {
+    ws.onclose = (evt) => {
+      console.log('[Poetiq WS] Connection closed:', evt.reason || 'No reason provided');
       wsRef.current = null;
     };
   }, []);
