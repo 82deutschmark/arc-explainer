@@ -26,9 +26,7 @@ COPY client/package*.json ./client/
 
 # Copy Python requirements for Saturn and Poetiq and install them
 COPY requirements.txt ./
-COPY poetiq-solver/requirements.txt ./poetiq-requirements.txt
 RUN python3 -m pip install --no-cache-dir --break-system-packages -r requirements.txt
-RUN python3 -m pip install --no-cache-dir --break-system-packages -r poetiq-requirements.txt
 
 # Install dependencies
 RUN npm ci
