@@ -254,9 +254,16 @@ export default function PoetiqCommunity() {
                   autoComplete="new-password"
                 />
               </form>
-              <p className="text-xs text-gray-500">
-                Your key is passed directly to the solver and is <strong>never stored or logged</strong>.
-              </p>
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mt-2">
+                <h4 className="font-medium text-blue-800 text-sm mb-1">🔐 API Key Security</h4>
+                <ul className="text-xs text-blue-700 space-y-1">
+                  <li>• Key is passed directly to Python subprocess environment</li>
+                  <li>• Never stored in database, files, or server memory</li>
+                  <li>• Process terminates → key is permanently destroyed</li>
+                  <li>• No logging or persistence of any kind</li>
+                  <li>• HTTPS required for key transmission</li>
+                </ul>
+              </div>
             </div>
 
             {/* Expert Count */}

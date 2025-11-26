@@ -134,6 +134,15 @@ export const poetiqController = {
     // Generate session ID for progress tracking
     const sessionId = randomUUID();
 
+    // Extract and validate BYO API key
+    const apiKey = req.body?.apiKey as string | undefined;
+    const provider = req.body?.provider as 'gemini' | 'openrouter' | undefined;
+    
+    // Basic key validation
+    if (apiKey && (apiKey.length < 10 || !apiKey.match(/^[A-Za-z0-9_-]+$/))) {
+      return res.status(400).json(formatResponse.error('bad_request', 'Invalid API key format'));
+    }
+
     // Extract options from request body
     const options = {
       model: req.body?.model as string | undefined,               // LiteLLM model ID
@@ -141,6 +150,8 @@ export const poetiqController = {
       numExperts: typeof req.body?.numExperts === 'number' ? req.body.numExperts : 1,
       temperature: typeof req.body?.temperature === 'number' ? req.body.temperature : 1.0,
       sessionId,
+      apiKey,           // BYO API key (never stored)
+      provider,         // Which provider the key is for
     };
 
     // Broadcast initial state immediately
@@ -236,7 +247,7 @@ export const poetiqController = {
       }
     });
 
-    // Return session info immediately
+    // Return session info immediately (never include API key in response)
     return res.json(formatResponse.success({
       sessionId,
       message: 'Poetiq solver started',
@@ -246,6 +257,7 @@ export const poetiqController = {
         maxIterations: options.maxIterations,
         numExperts: options.numExperts,
         temperature: options.temperature,
+        provider: options.provider || 'gemini',
       }
     }));
   },
