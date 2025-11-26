@@ -85,13 +85,11 @@ export function useArc2EvalProgress() {
         };
       });
 
-      // Filter for Poetiq explanations only (model name contains 'poetiq' or is from specific models)
+      // Filter for Poetiq explanations only (model name starts with 'poetiq-')
       const poetiqPuzzles = puzzles.filter(p => {
         if (!p.hasExplanation) return false;
         // Check if model name indicates Poetiq solver
-        return p.modelName?.toLowerCase().includes('poetiq') || 
-               p.modelName?.toLowerCase().includes('gemini') ||
-               p.modelName?.toLowerCase().includes('openrouter');
+        return p.modelName?.toLowerCase().startsWith('poetiq-');
       });
 
       const solved = poetiqPuzzles.filter(p => p.isSolved).length;
