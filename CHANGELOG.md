@@ -1,6 +1,19 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top!!!
 
+### Version 5.26.0
+
+- **ARC2-Eval Progress Tracking & Bug Fixes** (Author: Cascade using Claude Sonnet 4)
+  - **ARC2-Eval Progress Dashboard**: Added `useArc2EvalProgress` hook and progress card showing total/attempted/solved puzzles
+  - **Bulk Status Endpoint**: Created `POST /api/puzzle/bulk-status` for efficient explanation status lookup across multiple puzzles
+  - **Poetiq Filtering**: Progress tracking filters for Poetiq solver results only (models starting with 'poetiq-')
+  - **Current Puzzle Status**: Shows whether current ARC2-eval puzzle is solved/attempted with previous model info
+  - **Fixed API Parameter**: Changed from `dataset=ARC2-Eval` to `source=ARC2-Eval` for correct puzzle list endpoint
+  - **Fixed Response Structure**: Updated hook to handle array directly in response data, not nested under `puzzles`
+  - **Fixed TypeScript Error**: Corrected `formatResponse.error()` call to provide required error and message parameters
+  - **Fixed DOM Warnings**: Added `autoComplete="new-password"` to API key input and wrapped in form element
+  - **Better Error Handling**: Added console logging for debugging ARC2-eval progress issues
+
 ### Version 5.25.0
 
 - **Poetiq BYO API Key & Expert Configuration** (Author: Cascade using Claude Sonnet 4)
