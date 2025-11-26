@@ -386,6 +386,103 @@ export default function PoetiqSolver() {
           </Card>
         )}
 
+        {/* ARC2-Eval Progress Card */}
+        <Card className="bg-gradient-to-br from-green-50 to-emerald-50 border-green-200">
+          <CardHeader>
+            <CardTitle className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <BarChart3 className="h-5 w-5 text-green-600" />
+                ARC2-Eval Progress
+              </div>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={arc2EvalProgress.refetch}
+                disabled={arc2EvalProgress.isLoading}
+              >
+                <RefreshCw className={`h-4 w-4 ${arc2EvalProgress.isLoading ? 'animate-spin' : ''}`} />
+              </Button>
+            </CardTitle>
+            <CardDescription>
+              Track which ARC2-eval puzzles have been solved with Poetiq
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {arc2EvalProgress.isLoading ? (
+              <div className="flex items-center gap-2 text-sm text-gray-600">
+                <Loader2 className="h-4 w-4 animate-spin" />
+                Loading ARC2-eval progress...
+              </div>
+            ) : arc2EvalProgress.error ? (
+              <div className="text-sm text-red-600">
+                Error loading progress: {arc2EvalProgress.error}
+              </div>
+            ) : (
+              <>
+                {/* Summary Stats */}
+                <div className="grid grid-cols-3 gap-4 text-center">
+                  <div className="bg-white rounded-lg p-3 border border-green-200">
+                    <div className="text-2xl font-bold text-green-600">{arc2EvalProgress.total}</div>
+                    <div className="text-xs text-gray-600">Total Puzzles</div>
+                  </div>
+                  <div className="bg-white rounded-lg p-3 border border-blue-200">
+                    <div className="text-2xl font-bold text-blue-600">{arc2EvalProgress.attempted}</div>
+                    <div className="text-xs text-gray-600">Attempted</div>
+                  </div>
+                  <div className="bg-white rounded-lg p-3 border border-emerald-200">
+                    <div className="text-2xl font-bold text-emerald-600">{arc2EvalProgress.solved}</div>
+                    <div className="text-xs text-gray-600">Solved</div>
+                  </div>
+                </div>
+
+                {/* Progress Bar */}
+                <div className="space-y-2">
+                  <div className="flex justify-between text-sm">
+                    <span>Completion</span>
+                    <span>{Math.round((arc2EvalProgress.solved / arc2EvalProgress.total) * 100)}%</span>
+                  </div>
+                  <div className="h-3 bg-gray-200 rounded-full overflow-hidden">
+                    <div 
+                      className="h-full bg-gradient-to-r from-green-500 to-emerald-500 transition-all"
+                      style={{ width: `${(arc2EvalProgress.solved / arc2EvalProgress.total) * 100}%` }}
+                    />
+                  </div>
+                </div>
+
+                {/* Current Puzzle Status */}
+                {taskId && (
+                  <div className="bg-white rounded-lg p-3 border border-gray-200">
+                    <div className="flex items-center gap-2 text-sm">
+                      <Target className="h-4 w-4 text-gray-600" />
+                      <span className="font-medium">Current Puzzle:</span>
+                      <Badge variant={arc2EvalProgress.puzzles.find(p => p.puzzleId === taskId)?.isSolved ? 'default' : 'secondary'}>
+                        {taskId}
+                      </Badge>
+                      {arc2EvalProgress.puzzles.find(p => p.puzzleId === taskId)?.isSolved ? (
+                        <CheckCircle className="h-4 w-4 text-green-600" />
+                      ) : (
+                        <XCircle className="h-4 w-4 text-gray-400" />
+                      )}
+                    </div>
+                    {arc2EvalProgress.puzzles.find(p => p.puzzleId === taskId)?.hasExplanation && (
+                      <p className="text-xs text-gray-500 mt-1">
+                        Previously attempted with {arc2EvalProgress.puzzles.find(p => p.puzzleId === taskId)?.modelName}
+                      </p>
+                    )}
+                  </div>
+                )}
+
+                {/* Unsolved Puzzles Count */}
+                {arc2EvalProgress.total > arc2EvalProgress.solved && (
+                  <div className="text-center text-sm text-amber-700 bg-amber-50 rounded-lg p-3 border border-amber-200">
+                    <strong>{arc2EvalProgress.total - arc2EvalProgress.solved}</strong> puzzles remain unsolved
+                  </div>
+                )}
+              </>
+            )}
+          </CardContent>
+        </Card>
+
         {/* Info Card */}
         <Card className="bg-gradient-to-br from-blue-50 to-indigo-50 border-blue-200">
           <CardContent className="pt-6 space-y-4">
