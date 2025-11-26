@@ -42,7 +42,8 @@ import {
   Users,
   MoreHorizontal,
   FileCheck,
-  Zap
+  Zap,
+  Code
 } from 'lucide-react';
 
 // Type definitions for discriminated union
@@ -176,6 +177,13 @@ const navigationItems: NavItem[] = [
         href: '/kaggle-readiness',
         icon: FileCheck,
         description: 'Validate your ARC Kaggle competition readiness'
+      },
+      {
+        type: 'link',
+        title: 'Poetiq Solver',
+        href: '/poetiq',
+        icon: Code,
+        description: 'Help verify the Poetiq code-generation solver with your API key'
       }
     ]
   },
