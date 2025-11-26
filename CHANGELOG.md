@@ -1,6 +1,17 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top!!!
 
+### Version 5.25.0
+
+- **Poetiq BYO API Key & Expert Configuration** (Author: Cascade using Claude Sonnet 4)
+  - **Bring Your Own Key**: Users can now paste their own Gemini or OpenRouter API key directly in the UI
+  - **Key never stored**: API key is passed only to the solver process environment, never logged or persisted
+  - **Expert count selector**: Choose 1, 2, 4, or 8 parallel experts (default: 2 = Gemini-3-b config)
+  - **Provider selection**: Choose between Gemini Direct or OpenRouter
+  - **Default changed to 2 experts**: Updated `poetiq-solver/arc_agi/config.py` to use NUM_EXPERTS=2 by default
+  - **Dynamic config**: Python wrapper now builds per-request CONFIG_LIST based on user options
+  - **Beautiful UI**: Redesigned PoetiqSolver.tsx with clear BYO key messaging and expert explanations
+
 ### Version 5.24.0
 
 - **Poetiq OpenRouter Support & UI** (Author: Cascade using Claude Sonnet 4)

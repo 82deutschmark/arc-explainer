@@ -41,10 +41,17 @@ export interface PoetiqStartMetadata {
 }
 
 export interface PoetiqOptions {
+  // BYO (Bring Your Own) API key - used for this run only, never stored
+  apiKey?: string;          // User's API key (Gemini or OpenRouter)
+  provider?: 'gemini' | 'openrouter';  // Which provider the key is for (default: gemini)
+  
+  // Model configuration
   model?: string;           // LiteLLM model identifier (e.g., "gemini/gemini-3-pro-preview")
+  numExperts?: number;      // Number of parallel experts: 1, 2, 4, or 8 (default: 2)
   maxIterations?: number;   // Max iterations per expert (default: 10)
-  numExperts?: number;      // Number of parallel experts (default: 1)
   temperature?: number;     // LLM temperature (default: 1.0)
+  
+  // Internal
   sessionId?: string;       // WebSocket session for progress updates
 }
 
@@ -127,6 +134,9 @@ export class PoetiqService {
 
   /**
    * Run Poetiq solver on a puzzle
+   * 
+   * Supports BYO (Bring Your Own) API key - the key is passed only to
+   * the Python child process environment and is NOT stored anywhere.
    */
   async solvePuzzle(
     puzzleId: string,
@@ -135,13 +145,28 @@ export class PoetiqService {
     onEvent?: (event: PoetiqBridgeEvent) => void
   ): Promise<PoetiqResult> {
     return new Promise((resolve, reject) => {
+      // Build environment with optional BYO API key
+      // Key is passed ONLY to this child process, never stored
+      const childEnv: NodeJS.ProcessEnv = {
+        ...process.env,
+        PYTHONIOENCODING: 'utf-8',
+        PYTHONUTF8: '1',
+      };
+
+      // Handle BYO API key based on provider
+      if (options.apiKey) {
+        const provider = options.provider || 'gemini';
+        if (provider === 'openrouter') {
+          childEnv.OPENROUTER_API_KEY = options.apiKey;
+        } else {
+          // Default to Gemini direct
+          childEnv.GEMINI_API_KEY = options.apiKey;
+        }
+      }
+
       const spawnOpts: SpawnOptions = {
         cwd: path.dirname(this.wrapperPath),
-        env: {
-          ...process.env,
-          PYTHONIOENCODING: 'utf-8',
-          PYTHONUTF8: '1',
-        } as NodeJS.ProcessEnv,
+        env: childEnv,
         stdio: ['pipe', 'pipe', 'pipe'],
       };
 

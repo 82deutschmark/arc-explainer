@@ -11,10 +11,15 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { apiRequest } from '@/lib/queryClient';
 
 export interface PoetiqOptions {
+  // BYO (Bring Your Own) API key - used for this run only, never stored
+  apiKey?: string;
+  provider?: 'gemini' | 'openrouter';
+  
+  // Model configuration
   model?: string;
-  maxIterations?: number;
-  numExperts?: number;
-  temperature?: number;
+  numExperts?: number;      // 1, 2, 4, or 8 (default: 2)
+  maxIterations?: number;   // default: 10
+  temperature?: number;     // default: 1.0
 }
 
 export interface PoetiqProgressState {
@@ -111,24 +116,35 @@ export function usePoetiqProgress(taskId: string | undefined) {
   const start = useCallback(async (options: PoetiqOptions = {}) => {
     if (!taskId) return;
 
+    // Defaults: Gemini direct, 2 experts (Gemini-3-b config)
+    const provider = options.provider || 'gemini';
+    const model = options.model || (provider === 'openrouter' 
+      ? 'openrouter/google/gemini-3-pro-preview' 
+      : 'gemini/gemini-3-pro-preview');
+    const numExperts = options.numExperts || 2;
+    const maxIterations = options.maxIterations || 10;
+    const temperature = options.temperature || 1.0;
+
     setState({
       status: 'running',
       phase: 'starting',
-      message: 'Initializing Poetiq solver...',
+      message: `Initializing Poetiq solver with ${numExperts} expert(s)...`,
       config: {
-        model: options.model || 'openrouter/google/gemini-3-pro-preview',
-        maxIterations: options.maxIterations || 10,
-        numExperts: options.numExperts || 1,
-        temperature: options.temperature || 1.0,
+        model,
+        maxIterations,
+        numExperts,
+        temperature,
       },
     });
 
     try {
       const res = await apiRequest('POST', `/api/poetiq/solve/${taskId}`, {
-        model: options.model || 'openrouter/google/gemini-3-pro-preview',
-        maxIterations: options.maxIterations || 10,
-        numExperts: options.numExperts || 1,
-        temperature: options.temperature || 1.0,
+        apiKey: options.apiKey,
+        provider,
+        model,
+        numExperts,
+        maxIterations,
+        temperature,
       });
       const response = await res.json();
 

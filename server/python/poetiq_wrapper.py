@@ -41,6 +41,40 @@ def log(message: str, level: str = "info"):
     emit({"type": "log", "level": level, "message": message})
 
 
+def build_config_list(num_experts: int, model: str, max_iterations: int, temperature: float):
+    """
+    Build a dynamic CONFIG_LIST for this run based on user options.
+    This allows per-request expert count without modifying global state.
+    """
+    from arc_agi.prompts import FEEDBACK_PROMPT, SOLVER_PROMPT_1
+    
+    base_config = {
+        'solver_prompt': SOLVER_PROMPT_1,
+        'feedback_prompt': FEEDBACK_PROMPT,
+        'llm_id': model,
+        'solver_temperature': temperature,
+        'request_timeout': 60 * 60,  # 1 hour
+        'max_total_timeouts': 15,
+        'max_total_time': None,
+        'per_iteration_retries': 2,
+        'num_experts': num_experts,
+        'max_iterations': max_iterations,
+        'max_solutions': 5,
+        'selection_probability': 1.0,
+        'seed': 0,
+        'shuffle_examples': True,
+        'improving_order': True,
+        'return_best_result': True,
+        'use_new_voting': True,
+        'count_failed_matches': True,
+        'iters_tiebreak': False,
+        'low_to_high_iters': False,
+    }
+    
+    # Create list of configs, one per expert
+    return [base_config.copy() for _ in range(num_experts)]
+
+
 async def run_poetiq_solver(puzzle_id: str, task: dict, options: dict) -> dict:
     """
     Run the Poetiq solver on a single puzzle.
@@ -48,12 +82,15 @@ async def run_poetiq_solver(puzzle_id: str, task: dict, options: dict) -> dict:
     Args:
         puzzle_id: Unique identifier for the puzzle
         task: ARC task with 'train' and 'test' arrays
-        options: Solver configuration options
+        options: Solver configuration options including:
+            - model: LLM model ID (e.g., 'gemini/gemini-3-pro-preview')
+            - numExperts: Number of parallel experts (1, 2, 4, or 8)
+            - maxIterations: Max code refinement iterations per expert
+            - temperature: LLM temperature
         
     Returns:
         Result dictionary with predictions and metadata
     """
-    from arc_agi.config import CONFIG_LIST
     from arc_agi.solve import solve
     from arc_agi.io import build_kaggle_two_attempts
     from arc_agi.scoring import score_task
@@ -66,21 +103,20 @@ async def run_poetiq_solver(puzzle_id: str, task: dict, options: dict) -> dict:
     train_out = [ex["output"] for ex in train]
     test_in = [ex["input"] for ex in test]
     
-    # Override config if options provided
-    model_override = options.get("model")
+    # Get config from options with sensible defaults
+    # Default: 2 experts, Gemini direct, 10 iterations
+    model = options.get("model", "gemini/gemini-3-pro-preview")
+    num_experts = options.get("numExperts", 2)
     max_iterations = options.get("maxIterations", 10)
-    num_experts = options.get("numExperts", 1)
     temperature = options.get("temperature", 1.0)
     
-    # Modify CONFIG_LIST based on options
-    if model_override or max_iterations or num_experts != 1 or temperature != 1.0:
-        for cfg in CONFIG_LIST:
-            if model_override:
-                cfg["llm_id"] = model_override
-            if max_iterations:
-                cfg["max_iterations"] = max_iterations
-            if temperature:
-                cfg["solver_temperature"] = temperature
+    # Build dynamic config list for this run
+    config_list = build_config_list(num_experts, model, max_iterations, temperature)
+    
+    # Patch the global CONFIG_LIST so solve() uses our config
+    import arc_agi.config as config_module
+    config_module.CONFIG_LIST = config_list
+    config_module.NUM_EXPERTS = num_experts
     
     emit({
         "type": "progress",
