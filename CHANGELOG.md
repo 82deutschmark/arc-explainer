@@ -1,6 +1,15 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top!!!
 
+### Version 5.27.1
+
+- **Poetiq API Key Security Enhancements** (Author: Cascade using Claude Sonnet 4)
+  - **HTTPS Enforcement**: Production servers now require HTTPS for API key submissions to prevent plaintext transmission
+  - **Key Validation**: Added basic format validation (minimum length, character set) to reject malformed keys before processing
+  - **Enhanced User Communication**: Added detailed security explanation box on community page with clear bullet points
+  - **Response Safety**: Ensured API keys are never included in any API responses, only provider type
+  - **Security Documentation**: Updated UI to explain zero-persistence security model (process isolation, no storage, immediate destruction)
+
 ### Version 5.27.0
 
 - **Poetiq Community Solver Page** (Author: Cascade using Claude Sonnet 4)
