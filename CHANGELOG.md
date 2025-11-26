@@ -1,6 +1,15 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top!!!
 
+### Version 5.27.4
+
+- **Fix Poetiq Railway Deployment - Add Python Dependencies** (Author: Cascade using Claude Sonnet 4)
+  - **Issue**: Poetiq solver would fail on Railway due to missing Python dependencies (litellm, asynciolimiter)
+  - **Root Cause**: Dockerfile only installed Saturn dependencies, not Poetiq's requirements.txt
+  - **Fix**: Added poetiq-solver/requirements.txt installation and copy poetiq-solver/ directory
+  - **Added**: Python subprocess support already works in Railway containers
+  - **Impact**: Poetiq solver now works in production on Railway with full functionality
+
 ### Version 5.27.3
 
 - **Fix Poetiq Community Page UX - Actually Start Solver** (Author: Cascade using Claude Sonnet 4)
