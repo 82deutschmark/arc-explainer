@@ -1,6 +1,15 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top!!!
 
+### Version 5.26.1
+
+- **Fix Poetiq WebSocket Connection** (Author: Cascade using Claude Sonnet 4)
+  - **Root Cause**: Poetiq solver was trying to connect to `/ws?sessionId=...` which was rejected by the wsService verifyClient whitelist that only allowed Saturn and Grover paths
+  - **Server Fix**: Added `/api/poetiq/progress` to WebSocket whitelist in `server/services/wsService.ts` alongside `/api/saturn/progress` and `/api/grover/progress`
+  - **Client Fix**: Updated `client/src/hooks/usePoetiqProgress.ts` to use the correct URL pattern `/api/poetiq/progress?sessionId=...` with proper dev host detection (`localhost:5000` in dev, `location.host` in prod)
+  - **Payload Fix**: Fixed message parsing to handle the `{ type, data }` payload structure that wsService broadcasts
+  - **Logging**: Added connection lifecycle logging for debugging
+
 ### Version 5.26.0
 
 - **ARC2-Eval Progress Tracking & Bug Fixes** (Author: Cascade using Claude Sonnet 4)
