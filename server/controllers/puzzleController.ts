@@ -58,7 +58,7 @@ export const puzzleController = {
     const { puzzleIds } = req.body;
     
     if (!Array.isArray(puzzleIds) || puzzleIds.length === 0) {
-      return res.status(400).json(formatResponse.error('puzzleIds must be a non-empty array'));
+      return res.status(400).json(formatResponse.error('Invalid request', 'puzzleIds must be a non-empty array'));
     }
 
     const statusMap = await repositoryService.explanations.getBulkExplanationStatusLight(puzzleIds);
