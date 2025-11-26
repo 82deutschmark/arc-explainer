@@ -134,13 +134,17 @@ export const poetiqController = {
     // Generate session ID for progress tracking
     const sessionId = randomUUID();
 
-    // Extract and validate BYO API key
-    const apiKey = req.body?.apiKey as string | undefined;
+    // Extract BYO API key (optional - falls back to env vars)
+    let apiKey = req.body?.apiKey as string | undefined;
     const provider = req.body?.provider as 'gemini' | 'openrouter' | undefined;
     
-    // Basic key validation
-    if (apiKey && (apiKey.length < 10 || !apiKey.match(/^[A-Za-z0-9_-]+$/))) {
-      return res.status(400).json(formatResponse.error('bad_request', 'Invalid API key format'));
+    // Check if API key is valid - if not, fall back to server env vars
+    let usingFallback = false;
+    if (!apiKey || apiKey.trim().length < 10 || !apiKey.match(/^[A-Za-z0-9_-]+$/)) {
+      // Invalid or missing API key - use server's environment variables
+      apiKey = undefined;  // Clear it so poetiqService uses env vars
+      usingFallback = true;
+      console.log('[Poetiq] No valid BYO API key provided - using server environment variables');
     }
 
     // Extract options from request body
@@ -155,14 +159,17 @@ export const poetiqController = {
     };
 
     // Broadcast initial state immediately
-    console.log('[Poetiq] Broadcasting initial state for sessionId:', sessionId);
+    console.log('[Poetiq] Broadcasting initial state for sessionId:', sessionId, usingFallback ? '(using fallback API key)' : '');
     broadcast(sessionId, {
       status: 'running',
       phase: 'initializing',
       iteration: 0,
       totalIterations: options.maxIterations,
-      message: 'Starting Poetiq solver...',
+      message: usingFallback 
+        ? 'Starting Poetiq solver (using server API key)...' 
+        : 'Starting Poetiq solver...',
       taskId,
+      usingFallback,
       config: {
         model: options.model || 'gemini/gemini-3-pro-preview',
         maxIterations: options.maxIterations,
@@ -250,8 +257,11 @@ export const poetiqController = {
     // Return session info immediately (never include API key in response)
     return res.json(formatResponse.success({
       sessionId,
-      message: 'Poetiq solver started',
+      message: usingFallback 
+        ? 'Poetiq solver started (using server API key)' 
+        : 'Poetiq solver started',
       taskId,
+      usingFallback,
       config: {
         model: options.model || 'gemini/gemini-3-pro-preview',
         maxIterations: options.maxIterations,

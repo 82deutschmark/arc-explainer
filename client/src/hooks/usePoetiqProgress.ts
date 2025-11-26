@@ -1,10 +1,11 @@
 /**
  * Author: Cascade (Claude Sonnet 4)
  * Date: 2025-11-25
- * Updated: Claude Sonnet 4 (2025-11-25) - Fixed WebSocket URL to match Saturn/Grover pattern
+ * Updated: 2025-11-26 - Added streaming fields like Saturn's hook, API key fallback support
  * PURPOSE: React hook for Poetiq solver progress tracking via WebSocket.
  *          Manages solver state, progress updates, and result handling.
  *          Uses same WebSocket connection pattern as Saturn and Grover solvers.
+ *          Supports fallback to server API key when user key is missing/invalid.
  * 
  * SRP/DRY check: Pass - Single responsibility for Poetiq progress orchestration.
  */
@@ -13,7 +14,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { apiRequest } from '@/lib/queryClient';
 
 export interface PoetiqOptions {
-  // BYO (Bring Your Own) API key - used for this run only, never stored
+  // BYO (Bring Your Own) API key - optional, falls back to server env vars
   apiKey?: string;
   provider?: 'gemini' | 'openrouter';
   
@@ -30,6 +31,8 @@ export interface PoetiqProgressState {
   iteration?: number;
   totalIterations?: number;
   message?: string;
+  
+  // Result fields
   result?: {
     success: boolean;
     isPredictionCorrect: boolean;
@@ -39,16 +42,28 @@ export interface PoetiqProgressState {
     generatedCode?: string;
     elapsedMs?: number;
   };
+  
+  // Config
   config?: {
     model: string;
     maxIterations: number;
     numExperts: number;
     temperature: number;
   };
+  
+  // Streaming fields (like Saturn)
+  streamingText?: string;
+  streamingReasoning?: string;
+  streamingCode?: string;
+  logLines?: string[];
+  
+  // Fallback indicator
+  usingFallback?: boolean;
 }
 
 const initialState: PoetiqProgressState = {
   status: 'idle',
+  logLines: [],
 };
 
 /**
@@ -105,18 +120,37 @@ export function usePoetiqProgress(taskId: string | undefined) {
         const data = payload?.data;
         if (!data) return;
         
-        setState(prev => ({
-          ...prev,
-          phase: data.phase || prev.phase,
-          iteration: data.iteration ?? prev.iteration,
-          totalIterations: data.totalIterations ?? prev.totalIterations,
-          message: data.message || prev.message,
-          status: data.status === 'completed' ? 'completed' 
-                : data.status === 'error' ? 'error' 
-                : 'running',
-          result: data.result || prev.result,
-          config: data.config || prev.config,
-        }));
+        setState(prev => {
+          // Accumulate log lines
+          const newLogLines = [...(prev.logLines || [])];
+          if (data.message && data.message !== prev.message) {
+            newLogLines.push(`[${new Date().toLocaleTimeString()}] ${data.message}`);
+          }
+          
+          // Build streaming text from messages (simulate reasoning)
+          const streamingReasoning = data.message || prev.streamingReasoning;
+          
+          // Get generated code if available
+          const streamingCode = data.result?.generatedCode || prev.streamingCode;
+          
+          return {
+            ...prev,
+            phase: data.phase || prev.phase,
+            iteration: data.iteration ?? prev.iteration,
+            totalIterations: data.totalIterations ?? prev.totalIterations,
+            message: data.message || prev.message,
+            status: data.status === 'completed' ? 'completed' 
+                  : data.status === 'error' ? 'error' 
+                  : 'running',
+            result: data.result || prev.result,
+            config: data.config || prev.config,
+            usingFallback: data.usingFallback ?? prev.usingFallback,
+            logLines: newLogLines,
+            streamingReasoning,
+            streamingCode,
+            streamingText: data.message || prev.streamingText,
+          };
+        });
 
         if (data.status === 'completed' || data.status === 'error') {
           ws.close();

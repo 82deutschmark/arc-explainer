@@ -88,7 +88,8 @@ export default function PoetiqControlPanel({
   onStart,
   onCancel,
 }: PoetiqControlPanelProps) {
-  const canStart = apiKey.trim().length > 10 && !isRunning;
+  // API key is now optional - can start without it (falls back to server env vars)
+  const canStart = !isRunning;
   
   // Get models based on provider
   const models = provider === 'openrouter' 
@@ -124,15 +125,10 @@ export default function PoetiqControlPanel({
           ) : (
             <>
               <Rocket className="h-5 w-5" />
-              Start Visual Analysis
+              Start Code Generation
             </>
           )}
         </button>
-        {!canStart && !isRunning && (
-          <p className="text-center text-xs text-gray-500 mt-2">
-            Enter API key to start
-          </p>
-        )}
       </div>
 
       {/* API Key Card */}
@@ -140,9 +136,15 @@ export default function PoetiqControlPanel({
         <div className="card-body p-4">
           <h3 className="card-title text-sm flex items-center gap-2">
             <Key className="w-4 h-4" />
-            API Key
+            API Key (Optional)
           </h3>
           <div className="space-y-3">
+            <div className="bg-blue-50 border border-blue-200 rounded p-2">
+              <p className="text-[10px] text-blue-700">
+                <strong>Optional:</strong> Leave blank to use server API key (limited usage).
+                Provide your own key for unlimited access.
+              </p>
+            </div>
             <div>
               <label className="label py-1">
                 <span className="label-text text-xs font-semibold">Provider</span>
@@ -171,7 +173,7 @@ export default function PoetiqControlPanel({
                 value={apiKey}
                 onChange={(e) => setApiKey(e.target.value)}
                 disabled={isRunning}
-                placeholder={provider === 'openai' ? 'sk-...' : provider === 'gemini' ? 'AIza...' : 'sk-or-...'}
+                placeholder={provider === 'openai' ? 'sk-... (optional)' : provider === 'gemini' ? 'AIza... (optional)' : 'sk-or-... (optional)'}
                 className="input input-bordered input-sm w-full font-mono"
                 autoComplete="new-password"
               />
