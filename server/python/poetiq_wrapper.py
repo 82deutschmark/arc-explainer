@@ -28,6 +28,15 @@ from pathlib import Path
 
 # Add poetiq-solver to path
 POETIQ_PATH = Path(__file__).parent.parent.parent / "poetiq-solver"
+
+# Check if Poetiq solver is available
+if not POETIQ_PATH.exists() or not (POETIQ_PATH / "arc_agi" / "solve.py").exists():
+    emit({
+        "type": "error", 
+        "message": "Poetiq solver not available. The git submodule needs to be initialized with: git submodule update --init --recursive"
+    })
+    sys.exit(1)
+
 sys.path.insert(0, str(POETIQ_PATH))
 
 

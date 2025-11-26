@@ -3,12 +3,13 @@
 
 ### Version 5.27.4
 
-- **Fix Poetiq Railway Deployment - Add Python Dependencies** (Author: Cascade using Claude Sonnet 4)
-  - **Issue**: Poetiq solver would fail on Railway due to missing Python dependencies (litellm, asynciolimiter)
-  - **Root Cause**: Dockerfile only installed Saturn dependencies, not Poetiq's requirements.txt
-  - **Fix**: Added poetiq-solver/requirements.txt installation and copy poetiq-solver/ directory
-  - **Added**: Python subprocess support already works in Railway containers
-  - **Impact**: Poetiq solver now works in production on Railway with full functionality
+- **Fix Poetiq Railway Deployment - Handle Missing Submodule** (Author: Cascade using Claude Sonnet 4)
+  - **Issue**: Railway build fails because git submodule (poetiq-solver) not included in build context
+  - **Root Cause**: Railway's Docker build doesn't automatically include git submodules
+  - **Fix 1**: Added Poetiq dependencies to main requirements.txt (litellm, asynciolimiter, scipy)
+  - **Fix 2**: Added graceful error handling in poetiq_wrapper.py for missing submodule
+  - **Fix 3**: Clear error message to users when Poetiq not available
+  - **Impact**: Build now succeeds, Poetiq shows helpful error if submodule missing
 
 ### Version 5.27.3
 
