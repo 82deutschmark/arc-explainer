@@ -11,4 +11,5 @@ export { default as PoetiqControlPanel } from './PoetiqControlPanel';
 export { default as PoetiqStreamingVisualizer } from './PoetiqStreamingVisualizer';
 export { default as PoetiqStreamingModal } from './PoetiqStreamingModal';
 export { default as PoetiqLiveActivityStream, PoetiqLiveActivityStream as LiveActivityStream } from './PoetiqLiveActivityStream';
+export { default as PoetiqPythonTerminal } from './PoetiqPythonTerminal';
 export { PoetiqExplainer } from './PoetiqExplainer';

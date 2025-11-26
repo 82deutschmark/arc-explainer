@@ -3,34 +3,31 @@
 
 ### Version 5.28.0
 
-- **Major Poetiq UI Overhaul - Saturn/Grover Hybrid Pattern** (Author: Cascade using Claude Sonnet 4)
-  - **Problem**: Poetiq implementation was significantly less mature than Saturn/Grover solvers (1 component vs 21 for Saturn)
-  - **Solution**: Borrowed proven UI patterns from Saturn and Grover to create feature-rich Poetiq interface
+- **Major Poetiq UI Overhaul - Saturn's Exact Layout Pattern** (Author: Cascade using Claude Sonnet 4)
+  - **Goal**: Match Saturn's information density with Python terminal output instead of image gallery
+  - **Layout**: Saturn's exact 12-column grid: LEFT (4 cols) + CENTER (5 cols) + RIGHT (3 cols)
   
   **New Components Created:**
-  - `PoetiqControlPanel.tsx` - Saturn/Grover hybrid control panel with BYO API key, provider selection, expert presets, advanced settings (collapsible)
-  - `PoetiqStreamingVisualizer.tsx` - Saturn-style streaming display with phase indicators, progress bar, iteration history, generated code preview
-  - `PoetiqStreamingModal.tsx` - Grover-style pop-out modal for detailed full-screen streaming view with split-panel layout
-  - `PoetiqLiveActivityStream.tsx` - Grover-style real-time activity log with color-coded entries, pause/play, export functionality
-  - `client/src/components/poetiq/index.ts` - Barrel export for all Poetiq components
+  - `PoetiqControlPanel.tsx` - Saturn-style visible controls (NO collapsing), GPT-5 Nano/Mini options, reasoning effort settings
+  - `PoetiqPythonTerminal.tsx` - Python execution terminal showing test results, errors, generated code (replaces Saturn's image gallery)
+  - `PoetiqStreamingVisualizer.tsx` - Saturn-style streaming display
+  - `PoetiqStreamingModal.tsx` - Grover-style pop-out modal
+  - `PoetiqLiveActivityStream.tsx` - Activity log with color-coded entries
   
-  **PoetiqSolver.tsx Complete Redesign:**
-  - **New Layout**: Saturn-style 3-column responsive grid (3-6-3 ratio)
-  - **Left Sidebar**: Control panel, training examples preview, test input, puzzle status
-  - **Center**: Streaming visualizer with real-time progress and code display
-  - **Right Sidebar**: Activity log, community progress summary, quick info
-  - **Header Bar**: Live timer, status badges, expand-view button, puzzle link
-  - **Background**: Saturn-style glass-morphism with gradient overlays
+  **PoetiqSolver.tsx - Saturn's Exact Layout:**
+  - **LEFT (4 cols)**: Control panel cards + puzzle grids (training/test)
+  - **CENTER (5 cols)**: Token metrics bar + AI REASONING (blue box) + GENERATED CODE (green box)
+  - **RIGHT (3 cols)**: Python execution terminal with iteration results
   
-  **Key Features Added:**
-  - Live timer in header during solving (like Saturn/Grover)
-  - Status badges with SOLVED/UNSOLVED indicators
-  - Puzzle preview grids showing training examples
-  - Pop-out streaming modal for detailed view
-  - Model/temperature/iteration controls with advanced settings
-  - Cost/time estimates and 8-expert warnings
+  **Key Features Matching Saturn:**
+  - Token/metrics bar at top of center column
+  - Dual streaming boxes: AI REASONING (blue) + AI OUTPUT (green)
+  - All controls visible by default (no collapse)
+  - GPT-5 Nano (Recommended) and GPT-5 Mini model options
+  - Reasoning effort configuration for GPT-5 models
+  - OpenAI Direct, OpenRouter, and Gemini Direct providers
   
-  **Plan Document**: Created `docs/plans/2025-11-26-poetiq-improvement-plan.md` with full gap analysis and implementation roadmap
+  **Plan Document**: `docs/plans/2025-11-26-poetiq-improvement-plan.md`
 
 ### Version 5.27.4
 

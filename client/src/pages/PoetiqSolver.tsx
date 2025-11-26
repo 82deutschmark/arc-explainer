@@ -1,50 +1,42 @@
 /**
  * Author: Cascade (Claude Sonnet 4)
  * Date: 2025-11-25
- * Updated: 2025-11-26 - Major refactor with Saturn/Grover patterns
- * PURPOSE: Poetiq Iterative Code-Generation Solver page with BYO API key support.
- *          Uses Saturn-style visual workbench layout with streaming visualizer,
- *          Grover-style iteration tracking, and live activity stream.
+ * Updated: 2025-11-26 - Saturn-style exact layout with streaming boxes
+ * PURPOSE: Poetiq Iterative Code-Generation Solver page.
+ *          EXACTLY matches Saturn's layout:
+ *          - LEFT (4 cols): Control panel + puzzle grids
+ *          - CENTER (5 cols): Token metrics + AI REASONING + AI OUTPUT streaming
+ *          - RIGHT (3 cols): Python execution terminal (replaces image gallery)
  * 
  * SRP/DRY check: Pass - UI orchestration, delegates to specialized components
- * Components: PoetiqControlPanel, PoetiqStreamingVisualizer, PoetiqStreamingModal, PoetiqLiveActivityStream
  */
 
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'wouter';
-import { 
-  Loader2, ArrowLeft, Eye, ExternalLink, Clock, CheckCircle, XCircle
-} from 'lucide-react';
+import { Loader2, ArrowLeft, Square } from 'lucide-react';
 import { usePuzzle } from '@/hooks/usePuzzle';
 import { usePoetiqProgress } from '@/hooks/usePoetiqProgress';
-import { usePoetiqCommunityProgress } from '@/hooks/usePoetiqCommunityProgress';
 import { PuzzleGrid } from '@/components/puzzle/PuzzleGrid';
 import { DEFAULT_EMOJI_SET } from '@/lib/spaceEmojis';
-import { Badge } from '@/components/ui/badge';
 
-// Import new Poetiq components (Saturn/Grover hybrid patterns)
+// Poetiq components
 import PoetiqControlPanel from '@/components/poetiq/PoetiqControlPanel';
-import PoetiqStreamingVisualizer from '@/components/poetiq/PoetiqStreamingVisualizer';
-import PoetiqStreamingModal from '@/components/poetiq/PoetiqStreamingModal';
-import { PoetiqLiveActivityStream } from '@/components/poetiq/PoetiqLiveActivityStream';
+import PoetiqPythonTerminal from '@/components/poetiq/PoetiqPythonTerminal';
 
 export default function PoetiqSolver() {
   const { taskId } = useParams<{ taskId: string }>();
   const { currentTask: task, isLoadingTask, taskError } = usePuzzle(taskId);
   const { state, start, cancel } = usePoetiqProgress(taskId);
-  const communityProgress = usePoetiqCommunityProgress();
   
   // Configuration state
   const [apiKey, setApiKey] = useState('');
-  const [provider, setProvider] = useState<'gemini' | 'openrouter'>('openrouter');
-  const [model, setModel] = useState('openrouter/google/gemini-2.5-flash-preview');
+  const [provider, setProvider] = useState<'gemini' | 'openrouter' | 'openai'>('openrouter');
+  const [model, setModel] = useState('openrouter/openai/gpt-5-nano');
   const [numExperts, setNumExperts] = useState(2);
   const [maxIterations, setMaxIterations] = useState(10);
   const [temperature, setTemperature] = useState(1.0);
-  const [startTime, setStartTime] = useState<Date | null>(null);
-  const [elapsed, setElapsed] = useState(0);
-  const [showStreamingModal, setShowStreamingModal] = useState(false);
-  const [logs, setLogs] = useState<string[]>([]);
+  const [reasoningEffort, setReasoningEffort] = useState<'minimal' | 'low' | 'medium' | 'high'>('low');
+  const [executions, setExecutions] = useState<any[]>([]);
 
   // Set page title
   useEffect(() => {
@@ -55,42 +47,39 @@ export default function PoetiqSolver() {
   const isDone = state.status === 'completed';
   const hasError = state.status === 'error';
 
-  // Track elapsed time
+  // Clear executions on new run
   useEffect(() => {
-    if (isRunning && !startTime) {
-      setStartTime(new Date());
-      setLogs([]); // Clear logs on new run
-    } else if (!isRunning && startTime) {
-      setStartTime(null);
+    if (isRunning) {
+      setExecutions([]);
     }
-  }, [isRunning, startTime]);
+  }, [isRunning]);
 
+  // Track iteration results for Python terminal
   useEffect(() => {
-    if (isRunning && startTime) {
-      const interval = setInterval(() => {
-        setElapsed(Math.floor((Date.now() - startTime.getTime()) / 1000));
-      }, 1000);
-      return () => clearInterval(interval);
+    if (state.iteration !== undefined && isRunning) {
+      setExecutions(prev => {
+        // Add new execution result
+        const newExec = {
+          iteration: state.iteration,
+          success: false,
+          output: state.message,
+          code: state.result?.generatedCode,
+        };
+        // Don't add duplicates
+        if (prev.some(e => e.iteration === state.iteration)) {
+          return prev.map(e => e.iteration === state.iteration ? newExec : e);
+        }
+        return [...prev, newExec];
+      });
     }
-  }, [isRunning, startTime]);
-
-  // Simulate log updates from state changes
-  useEffect(() => {
-    if (state.message && isRunning) {
-      setLogs(prev => [...prev, `[${new Date().toLocaleTimeString()}] ${state.message}`]);
-    }
-  }, [state.message, isRunning]);
-
-  useEffect(() => {
-    if (state.phase && isRunning) {
-      setLogs(prev => [...prev, `🔁 Phase: ${state.phase}`]);
-    }
-  }, [state.phase, isRunning]);
+  }, [state.iteration, state.message, isRunning]);
 
   const handleStart = () => {
+    // Cast provider to expected type for Poetiq (which only supports gemini/openrouter)
+    const poetiqProvider = provider === 'openai' ? 'openrouter' : provider;
     start({
       apiKey,
-      provider,
+      provider: poetiqProvider,
       model,
       numExperts,
       maxIterations,
@@ -98,23 +87,14 @@ export default function PoetiqSolver() {
     });
   };
 
-  const formatTime = (seconds: number) => {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${mins}:${secs.toString().padStart(2, '0')}`;
-  };
-
-  // Get current puzzle status from community progress
-  const currentPuzzleStatus = communityProgress.puzzles?.find(p => p.puzzleId === taskId);
-
   // Loading states
   if (!taskId) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-indigo-900 flex items-center justify-center">
-        <div className="text-center text-white/70 p-8 bg-white/10 backdrop-blur-md rounded-xl">
-          <p className="text-red-400">Invalid puzzle ID</p>
+      <div className="min-h-screen bg-gray-100 flex items-center justify-center">
+        <div className="text-center p-8 bg-white rounded shadow">
+          <p className="text-red-600">Invalid puzzle ID</p>
           <Link href="/poetiq">
-            <a className="text-cyan-400 hover:text-cyan-300 text-sm mt-2 block">← Back to Community</a>
+            <a className="text-blue-600 hover:text-blue-800 text-sm mt-2 block">← Back to Community</a>
           </Link>
         </div>
       </div>
@@ -123,9 +103,9 @@ export default function PoetiqSolver() {
 
   if (isLoadingTask) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-indigo-900 flex items-center justify-center">
-        <div className="flex items-center gap-3 text-white">
-          <Loader2 className="h-6 w-6 animate-spin" />
+      <div className="min-h-screen bg-gray-100 flex items-center justify-center">
+        <div className="flex items-center gap-3">
+          <Loader2 className="h-6 w-6 animate-spin text-blue-600" />
           <span>Loading puzzle {taskId}...</span>
         </div>
       </div>
@@ -134,104 +114,58 @@ export default function PoetiqSolver() {
 
   if (taskError || !task) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-indigo-900 flex items-center justify-center">
-        <div className="text-center text-white/70 p-8 bg-white/10 backdrop-blur-md rounded-xl">
-          <p className="text-red-400">Failed to load puzzle: {taskError?.message || 'Not found'}</p>
+      <div className="min-h-screen bg-gray-100 flex items-center justify-center">
+        <div className="text-center p-8 bg-white rounded shadow">
+          <p className="text-red-600">Failed to load puzzle: {taskError?.message || 'Not found'}</p>
           <Link href="/poetiq">
-            <a className="text-cyan-400 hover:text-cyan-300 text-sm mt-2 block">← Back to Community</a>
+            <a className="text-blue-600 hover:text-blue-800 text-sm mt-2 block">← Back to Community</a>
           </Link>
         </div>
       </div>
     );
   }
 
-  // Get training/test grids from task
-  const trainingPairs = task.train || [];
-  const testPair = task.test?.[0];
+  // For result display when done
+  const resultSummary = isDone && state.result ? {
+    success: state.result.isPredictionCorrect,
+    code: state.result.generatedCode,
+    iterations: state.result.iterationCount,
+    trainScore: state.result.bestTrainScore,
+  } : null;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-indigo-900">
-      {/* Background effects */}
-      <div className="absolute inset-0 opacity-30 bg-gradient-to-br from-slate-800/50 to-slate-900/50" />
-      <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-purple-400/30 to-transparent" />
-      </div>
-
-      {/* Main Content */}
-      <div className="relative z-10 h-screen overflow-hidden">
-        {/* Header Bar */}
-        <header className="flex items-center justify-between px-6 py-3 border-b border-white/10 bg-black/20">
-          <div className="flex items-center gap-4">
-            <Link href="/poetiq">
-              <a className="flex items-center gap-2 text-white/70 hover:text-white transition-colors">
-                <ArrowLeft className="h-4 w-4" />
-                <span className="text-sm">Community</span>
-              </a>
-            </Link>
-            <div className="h-4 w-px bg-white/20" />
-            <div>
-              <h1 className="text-lg font-bold text-white flex items-center gap-2">
-                Poetiq Solver
-                {isRunning && (
-                  <span className="flex items-center gap-1 px-2 py-0.5 bg-cyan-500/20 rounded-full text-xs text-cyan-300 font-mono">
-                    <span className="w-2 h-2 bg-cyan-400 rounded-full animate-pulse" />
-                    LIVE
-                  </span>
-                )}
-              </h1>
-              <p className="text-xs text-white/50 font-mono">{taskId}</p>
-            </div>
+    <div className="h-screen flex flex-col bg-gray-100">
+      {/* Header */}
+      <header className="flex items-center justify-between px-4 py-2 border-b bg-white">
+        <div className="flex items-center gap-4">
+          <Link href="/poetiq">
+            <a className="flex items-center gap-1 text-gray-600 hover:text-gray-900">
+              <ArrowLeft className="h-4 w-4" />
+              <span className="text-sm">Back</span>
+            </a>
+          </Link>
+          <div className="h-4 w-px bg-gray-300" />
+          <div>
+            <h1 className="text-lg font-bold text-gray-800">Poetiq Code Generator</h1>
+            <p className="text-xs text-gray-500 font-mono">{taskId}</p>
           </div>
-          
-          <div className="flex items-center gap-4">
-            {/* Timer */}
-            {isRunning && (
-              <div className="flex items-center gap-2 px-3 py-1 bg-white/10 rounded-full">
-                <Clock className="w-4 h-4 text-white/70" />
-                <span className="text-white/90 font-mono">{formatTime(elapsed)}</span>
-              </div>
-            )}
-            
-            {/* Status Badge */}
-            {isDone && (
-              <Badge className={state.result?.isPredictionCorrect 
-                ? 'bg-green-500/20 text-green-300 border-green-400/30' 
-                : 'bg-red-500/20 text-red-300 border-red-400/30'
-              }>
-                {state.result?.isPredictionCorrect ? (
-                  <><CheckCircle className="w-3 h-3 mr-1" /> SOLVED</>
-                ) : (
-                  <><XCircle className="w-3 h-3 mr-1" /> UNSOLVED</>
-                )}
-              </Badge>
-            )}
-            
-            {/* Streaming Modal Toggle */}
-            {(isRunning || isDone) && (
-              <button
-                onClick={() => setShowStreamingModal(true)}
-                className="flex items-center gap-2 px-3 py-1 bg-purple-500/20 hover:bg-purple-500/30 border border-purple-400/30 rounded-lg text-purple-300 text-sm transition-colors"
-              >
-                <Eye className="w-4 h-4" />
-                Expand View
-              </button>
-            )}
+        </div>
+        <div className="flex items-center gap-2">
+          {isRunning && (
+            <button onClick={cancel} className="btn btn-error btn-sm">
+              <Square className="h-4 w-4" />
+              Stop
+            </button>
+          )}
+        </div>
+      </header>
 
-            {/* Puzzle Link */}
-            <Link href={`/puzzle/${taskId}`}>
-              <a className="flex items-center gap-1 text-white/60 hover:text-white text-sm">
-                <ExternalLink className="w-4 h-4" />
-                View Puzzle
-              </a>
-            </Link>
-          </div>
-        </header>
-
-        {/* 3-Column Layout */}
-        <div className="grid grid-cols-12 gap-4 p-4 h-[calc(100vh-57px)] overflow-hidden">
+      {/* Main Content - Saturn's exact 12-column grid */}
+      <main className="flex-1 overflow-hidden p-2">
+        <div className="h-full grid grid-cols-12 gap-2">
           
-          {/* LEFT SIDEBAR - Control Panel & Puzzle Preview */}
-          <aside className="col-span-3 space-y-4 overflow-y-auto">
+          {/* LEFT: Control Panel + Puzzle Grids (4 cols) */}
+          <div className="col-span-4 flex flex-col gap-2 overflow-y-auto">
             {/* Control Panel */}
             <PoetiqControlPanel
               state={state}
@@ -248,158 +182,191 @@ export default function PoetiqSolver() {
               setMaxIterations={setMaxIterations}
               temperature={temperature}
               setTemperature={setTemperature}
+              reasoningEffort={reasoningEffort}
+              setReasoningEffort={setReasoningEffort}
               onStart={handleStart}
               onCancel={cancel}
             />
 
-            {/* Puzzle Preview - Training Examples */}
-            <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl p-4 space-y-3">
-              <h3 className="text-sm font-semibold text-white/90">Training Examples</h3>
-              <div className="space-y-2">
-                {trainingPairs.slice(0, 2).map((pair, idx) => (
-                  <div key={idx} className="flex gap-2">
-                    <div className="flex-1">
-                      <div className="text-[10px] text-white/50 mb-1">Input</div>
-                      <PuzzleGrid
-                        grid={pair.input}
-                        title="Input"
-                        showEmojis={true}
-                        emojiSet={DEFAULT_EMOJI_SET}
-                        compact={true}
-                      />
+            {/* Puzzle Display - Training & Test Grids (Saturn style) */}
+            <div className="bg-white border border-gray-300 rounded">
+              <div className="border-b border-gray-300 bg-gray-50 px-2 py-1">
+                <h2 className="text-xs font-bold text-gray-700">PUZZLE GRIDS</h2>
+              </div>
+              <div className="p-2 space-y-3 max-h-[400px] overflow-y-auto">
+                {/* Training Examples */}
+                {task.train.slice(0, 2).map((example, idx) => (
+                  <div key={`train-${idx}`} className="space-y-1">
+                    <div className="text-[10px] font-bold text-gray-600 uppercase tracking-wide">Training {idx + 1}</div>
+                    <div className="flex gap-2">
+                      <div className="flex-1">
+                        <div className="text-[9px] text-gray-500 mb-0.5">Input</div>
+                        <PuzzleGrid
+                          grid={example.input}
+                          title="Input"
+                          showEmojis={false}
+                          emojiSet={DEFAULT_EMOJI_SET}
+                          compact
+                        />
+                      </div>
+                      <div className="flex-1">
+                        <div className="text-[9px] text-gray-500 mb-0.5">Output</div>
+                        <PuzzleGrid
+                          grid={example.output}
+                          title="Output"
+                          showEmojis={false}
+                          emojiSet={DEFAULT_EMOJI_SET}
+                          compact
+                        />
+                      </div>
                     </div>
-                    <div className="flex items-center text-white/30">→</div>
-                    <div className="flex-1">
-                      <div className="text-[10px] text-white/50 mb-1">Output</div>
-                      <PuzzleGrid
-                        grid={pair.output}
-                        title="Output"
-                        showEmojis={true}
-                        emojiSet={DEFAULT_EMOJI_SET}
-                        compact={true}
-                      />
+                  </div>
+                ))}
+
+                {/* Test Cases */}
+                {task.test.map((testCase, idx) => (
+                  <div key={`test-${idx}`} className="space-y-1">
+                    <div className="text-[10px] font-bold text-blue-600 uppercase tracking-wide">Test {idx + 1}</div>
+                    <div className="flex gap-2">
+                      <div className="flex-1">
+                        <div className="text-[9px] text-gray-500 mb-0.5">Input</div>
+                        <PuzzleGrid
+                          grid={testCase.input}
+                          title="Test Input"
+                          showEmojis={false}
+                          emojiSet={DEFAULT_EMOJI_SET}
+                          compact
+                        />
+                      </div>
+                      {testCase.output && (
+                        <div className="flex-1">
+                          <div className="text-[9px] text-gray-500 mb-0.5">Expected</div>
+                          <PuzzleGrid
+                            grid={testCase.output}
+                            title="Expected Output"
+                            showEmojis={false}
+                            emojiSet={DEFAULT_EMOJI_SET}
+                            compact
+                          />
+                        </div>
+                      )}
                     </div>
                   </div>
                 ))}
               </div>
-              {trainingPairs.length > 2 && (
-                <p className="text-xs text-white/50 text-center">
-                  +{trainingPairs.length - 2} more examples
-                </p>
-              )}
+            </div>
+          </div>
+
+          {/* CENTER: AI Streaming Output (5 cols) - Saturn's exact layout */}
+          <div className="col-span-5 flex flex-col gap-2 min-h-0">
+            {/* Token Metrics - TOP */}
+            <div className="bg-white border border-gray-300 rounded">
+              <div className="grid grid-cols-4 divide-x divide-gray-300">
+                <div className="p-2">
+                  <div className="text-xs text-gray-600">Iteration</div>
+                  <div className="text-sm font-bold text-gray-900">
+                    {state.iteration ?? 0} / {state.totalIterations ?? maxIterations}
+                  </div>
+                </div>
+                <div className="p-2">
+                  <div className="text-xs text-gray-600">Experts</div>
+                  <div className="text-sm font-bold text-gray-900">{numExperts}</div>
+                </div>
+                <div className="p-2">
+                  <div className="text-xs text-gray-600">Phase</div>
+                  <div className="text-sm font-bold text-gray-900 truncate">
+                    {state.phase || 'Ready'}
+                  </div>
+                </div>
+                <div className="p-2">
+                  <div className="text-xs text-gray-600">Status</div>
+                  <div className={`text-sm font-bold ${
+                    isRunning ? 'text-blue-600' : isDone ? 'text-green-600' : hasError ? 'text-red-600' : 'text-gray-900'
+                  }`}>
+                    {state.status.toUpperCase()}
+                  </div>
+                </div>
+              </div>
             </div>
 
-            {/* Test Input */}
-            {testPair && (
-              <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl p-4">
-                <h3 className="text-sm font-semibold text-white/90 mb-3">Test Input</h3>
-                <PuzzleGrid
-                  grid={testPair.input}
-                  title="Test Input"
-                  showEmojis={true}
-                  emojiSet={DEFAULT_EMOJI_SET}
-                  compact={true}
-                />
-              </div>
-            )}
+            {/* AI Streaming Output - Show ONLY while running */}
+            {!isDone && (
+              <div className="flex-1 min-h-0 flex flex-col gap-2">
+                {/* Reasoning Box (blue) */}
+                <div className="flex-1 bg-white border border-blue-300 rounded flex flex-col min-h-0">
+                  <div className="border-b border-blue-300 bg-blue-50 px-3 py-2 flex items-center justify-between">
+                    <h3 className="text-sm font-bold text-blue-700">AI REASONING</h3>
+                    {isRunning && <span className="text-xs text-blue-600 font-bold">● STREAMING</span>}
+                  </div>
+                  <div className="flex-1 overflow-auto p-3 bg-blue-50">
+                    <div className="text-sm font-mono text-gray-800 whitespace-pre-wrap leading-relaxed">
+                      {state.message || 'Waiting for AI reasoning...'}
+                    </div>
+                  </div>
+                </div>
 
-            {/* Current Puzzle Status */}
-            {currentPuzzleStatus && (
-              <div className={`p-3 rounded-lg border ${
-                currentPuzzleStatus.status === 'solved' 
-                  ? 'bg-green-500/20 border-green-400/30' 
-                  : 'bg-white/5 border-white/10'
-              }`}>
-                <div className="flex items-center gap-2 text-sm text-white/80">
-                  {currentPuzzleStatus.status === 'solved' 
-                    ? <CheckCircle className="w-4 h-4 text-green-400" />
-                    : <XCircle className="w-4 h-4 text-white/40" />
-                  }
-                  <span>
-                    {currentPuzzleStatus.status === 'solved' 
-                      ? 'Previously solved' 
-                      : currentPuzzleStatus.status === 'attempted' 
-                      ? 'Previously attempted' 
-                      : 'Not yet attempted'
-                    }
-                  </span>
+                {/* Output Box (green) - Generated Code */}
+                <div className="flex-1 bg-white border border-green-300 rounded flex flex-col min-h-0">
+                  <div className="border-b border-green-300 bg-green-50 px-3 py-2 flex items-center justify-between">
+                    <h3 className="text-sm font-bold text-green-700">GENERATED CODE</h3>
+                    {isRunning && state.result?.generatedCode && <span className="text-xs text-green-600 font-bold">● STREAMING</span>}
+                  </div>
+                  <div className="flex-1 overflow-auto p-3 bg-green-50">
+                    <pre className="text-xs font-mono text-gray-800 whitespace-pre-wrap leading-relaxed">
+                      {state.result?.generatedCode || 'Waiting for code generation...'}
+                    </pre>
+                  </div>
                 </div>
               </div>
             )}
-          </aside>
 
-          {/* CENTER - Streaming Visualizer */}
-          <main className="col-span-6 flex flex-col min-h-0">
-            <PoetiqStreamingVisualizer
-              state={state}
+            {/* Final Result - Show ONLY when completed */}
+            {isDone && resultSummary && (
+              <div className="flex-1 overflow-auto">
+                <div className={`bg-white border-2 rounded p-4 ${
+                  resultSummary.success ? 'border-green-500' : 'border-red-500'
+                }`}>
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className={`w-12 h-12 rounded-full flex items-center justify-center ${
+                      resultSummary.success ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600'
+                    }`}>
+                      <span className="text-2xl">{resultSummary.success ? '✓' : '✗'}</span>
+                    </div>
+                    <div>
+                      <div className={`text-xl font-bold ${
+                        resultSummary.success ? 'text-green-700' : 'text-red-700'
+                      }`}>
+                        {resultSummary.success ? 'PUZZLE SOLVED!' : 'NOT SOLVED'}
+                      </div>
+                      <div className="text-sm text-gray-600">
+                        {resultSummary.iterations} iterations
+                        {resultSummary.trainScore !== undefined && ` • ${(resultSummary.trainScore * 100).toFixed(0)}% train accuracy`}
+                      </div>
+                    </div>
+                  </div>
+                  {resultSummary.code && (
+                    <div>
+                      <h4 className="text-sm font-bold text-gray-700 mb-2">Generated Code:</h4>
+                      <pre className="bg-gray-900 text-green-400 p-3 rounded text-xs overflow-auto max-h-64">
+                        {resultSummary.code}
+                      </pre>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* RIGHT: Python Execution Terminal (3 cols) */}
+          <div className="col-span-3 overflow-y-auto">
+            <PoetiqPythonTerminal
+              executions={executions}
+              currentCode={isRunning ? state.result?.generatedCode : undefined}
               isRunning={isRunning}
-              logs={logs}
-              generatedCode={state.result?.generatedCode}
-              onExpand={() => setShowStreamingModal(true)}
             />
-          </main>
-
-          {/* RIGHT SIDEBAR - Activity Stream & Stats */}
-          <aside className="col-span-3 space-y-4 overflow-y-auto">
-            {/* Activity Log */}
-            <PoetiqLiveActivityStream 
-              logs={logs} 
-              maxHeight="300px"
-              onClear={() => setLogs([])}
-            />
-
-            {/* Community Progress Summary */}
-            {communityProgress.total > 0 && (
-              <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl p-4 space-y-3">
-                <h3 className="text-sm font-semibold text-white/90">Community Progress</h3>
-                <div className="grid grid-cols-3 gap-2 text-center">
-                  <div className="bg-white/5 rounded p-2">
-                    <div className="text-lg font-bold text-white">{communityProgress.total}</div>
-                    <div className="text-[10px] text-white/50">Total</div>
-                  </div>
-                  <div className="bg-white/5 rounded p-2">
-                    <div className="text-lg font-bold text-blue-400">{communityProgress.attempted}</div>
-                    <div className="text-[10px] text-white/50">Attempted</div>
-                  </div>
-                  <div className="bg-white/5 rounded p-2">
-                    <div className="text-lg font-bold text-green-400">{communityProgress.solved}</div>
-                    <div className="text-[10px] text-white/50">Solved</div>
-                  </div>
-                </div>
-                <div className="h-2 bg-black/30 rounded-full overflow-hidden">
-                  <div 
-                    className="h-full bg-gradient-to-r from-green-500 to-emerald-500"
-                    style={{ width: `${(communityProgress.solved / communityProgress.total) * 100}%` }}
-                  />
-                </div>
-                <p className="text-xs text-white/50 text-center">
-                  {Math.round((communityProgress.solved / communityProgress.total) * 100)}% solved
-                </p>
-              </div>
-            )}
-
-            {/* Quick Info */}
-            <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-4">
-              <h3 className="text-sm font-semibold text-white/70 mb-2">How Poetiq Works</h3>
-              <ul className="text-xs text-white/50 space-y-1">
-                <li>1. AI generates Python transform() code</li>
-                <li>2. Code runs on training examples</li>
-                <li>3. Iterates until tests pass</li>
-                <li>4. Multiple experts vote on best solution</li>
-              </ul>
-            </div>
-          </aside>
+          </div>
         </div>
-      </div>
-
-      {/* Streaming Modal */}
-      <PoetiqStreamingModal
-        isOpen={showStreamingModal}
-        onClose={() => setShowStreamingModal(false)}
-        state={state}
-        logs={logs}
-        elapsedSeconds={elapsed}
-      />
+      </main>
     </div>
   );
 }
