@@ -24,9 +24,11 @@ WORKDIR /app
 COPY package*.json ./
 COPY client/package*.json ./client/
 
-# Copy Python requirements for Saturn and install them
+# Copy Python requirements for Saturn and Poetiq and install them
 COPY requirements.txt ./
+COPY poetiq-solver/requirements.txt ./poetiq-requirements.txt
 RUN python3 -m pip install --no-cache-dir --break-system-packages -r requirements.txt
+RUN python3 -m pip install --no-cache-dir --break-system-packages -r poetiq-requirements.txt
 
 # Install dependencies
 RUN npm ci
@@ -37,6 +39,7 @@ COPY server/ ./server/
 COPY shared/ ./shared/
 COPY solver/ ./solver/
 COPY data/ ./data/
+COPY poetiq-solver/ ./poetiq-solver/
 COPY tsconfig.json ./
 COPY vite.config.ts ./
 COPY tailwind.config.ts ./
