@@ -181,7 +181,7 @@ export default function PoetiqSolver() {
             </div>
 
             {/* API Key Input */}
-            <div className="space-y-2">
+            <form onSubmit={(e) => e.preventDefault()} className="space-y-2">
               <Label className="flex items-center gap-2">
                 {provider === 'gemini' ? 'Gemini API Key' : 'OpenRouter API Key'}
               </Label>
@@ -200,7 +200,7 @@ export default function PoetiqSolver() {
                   ? 'Get your key from Google AI Studio → aistudio.google.com' 
                   : 'Get your key from OpenRouter → openrouter.ai/keys'}
               </p>
-            </div>
+            </form>
 
             <Separator />
 

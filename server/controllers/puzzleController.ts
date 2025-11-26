@@ -49,6 +49,23 @@ export const puzzleController = {
   },
 
   /**
+   * Get bulk explanation status for multiple puzzle IDs
+   * 
+   * @param req - Express request object with puzzleIds array in body
+   * @param res - Express response object
+   */
+  async bulkStatus(req: Request, res: Response) {
+    const { puzzleIds } = req.body;
+    
+    if (!Array.isArray(puzzleIds) || puzzleIds.length === 0) {
+      return res.status(400).json(formatResponse.error('puzzleIds must be a non-empty array'));
+    }
+
+    const statusMap = await repositoryService.explanations.getBulkExplanationStatusLight(puzzleIds);
+    res.json(formatResponse.success(statusMap));
+  },
+
+  /**
    * Analyze a puzzle with a specific AI model
    * Supports both predefined prompt templates (via promptId) and custom user prompts (via customPrompt)
    * 

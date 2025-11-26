@@ -47,22 +47,27 @@ export function useArc2EvalProgress() {
       setProgress(prev => ({ ...prev, isLoading: true, error: null }));
 
       // First, get all ARC2-eval puzzle IDs
-      const listRes = await apiRequest('GET', '/api/puzzle/list?dataset=ARC2-Eval&limit=200');
+      const listRes = await apiRequest('GET', '/api/puzzle/list?source=ARC2-Eval&limit=200');
       const listData = await listRes.json();
       
       if (!listData.success || !listData.data?.puzzles) {
+        console.error('[Arc2EvalProgress] List response:', listData);
         throw new Error('Failed to fetch ARC2-eval puzzle list');
       }
 
       const puzzleIds = listData.data.puzzles.map((p: any) => p.puzzleId);
+      console.log(`[Arc2EvalProgress] Found ${puzzleIds.length} ARC2-eval puzzles`);
 
-      // Then get Poetiq explanations for those puzzles
+      // Then get explanation status for those puzzles
       const statusRes = await apiRequest('POST', '/api/puzzle/bulk-status', { puzzleIds });
       const statusData = await statusRes.json();
 
       if (!statusData.success) {
+        console.error('[Arc2EvalProgress] Status response:', statusData);
         throw new Error('Failed to fetch puzzle status');
       }
+
+      console.log('[Arc2EvalProgress] Status data keys:', Object.keys(statusData.data || {}));
 
       const puzzles: Arc2EvalPuzzle[] = puzzleIds.map((id: string) => {
         const status = statusData.data[id];
@@ -80,12 +85,23 @@ export function useArc2EvalProgress() {
         };
       });
 
-      const solved = puzzles.filter(p => p.isSolved).length;
-      const attempted = puzzles.filter(p => p.hasExplanation).length;
+      // Filter for Poetiq explanations only (model name contains 'poetiq' or is from specific models)
+      const poetiqPuzzles = puzzles.filter(p => {
+        if (!p.hasExplanation) return false;
+        // Check if model name indicates Poetiq solver
+        return p.modelName?.toLowerCase().includes('poetiq') || 
+               p.modelName?.toLowerCase().includes('gemini') ||
+               p.modelName?.toLowerCase().includes('openrouter');
+      });
+
+      const solved = poetiqPuzzles.filter(p => p.isSolved).length;
+      const attempted = poetiqPuzzles.filter(p => p.hasExplanation).length;
+
+      console.log(`[Arc2EvalProgress] Poetiq stats: ${attempted} attempted, ${solved} solved out of ${poetiqPuzzles.length}`);
 
       setProgress({
-        puzzles,
-        total: puzzles.length,
+        puzzles: poetiqPuzzles,
+        total: poetiqPuzzles.length,
         solved,
         attempted,
         isLoading: false,
