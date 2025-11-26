@@ -289,6 +289,13 @@ export default function PoetiqSolver() {
               </div>
             </div>
 
+            {/* Fallback API Key Notice */}
+            {state.usingFallback && (
+              <div className="bg-amber-50 border border-amber-300 rounded px-3 py-2 text-xs text-amber-800">
+                <strong>Note:</strong> Using server API key (no BYO key provided)
+              </div>
+            )}
+
             {/* AI Streaming Output - Show ONLY while running */}
             {!isDone && (
               <div className="flex-1 min-h-0 flex flex-col gap-2">
@@ -300,7 +307,7 @@ export default function PoetiqSolver() {
                   </div>
                   <div className="flex-1 overflow-auto p-3 bg-blue-50">
                     <div className="text-sm font-mono text-gray-800 whitespace-pre-wrap leading-relaxed">
-                      {state.message || 'Waiting for AI reasoning...'}
+                      {state.streamingReasoning || state.message || 'Waiting for AI reasoning...'}
                     </div>
                   </div>
                 </div>
@@ -309,11 +316,13 @@ export default function PoetiqSolver() {
                 <div className="flex-1 bg-white border border-green-300 rounded flex flex-col min-h-0">
                   <div className="border-b border-green-300 bg-green-50 px-3 py-2 flex items-center justify-between">
                     <h3 className="text-sm font-bold text-green-700">GENERATED CODE</h3>
-                    {isRunning && state.result?.generatedCode && <span className="text-xs text-green-600 font-bold">● STREAMING</span>}
+                    {isRunning && (state.streamingCode || state.result?.generatedCode) && (
+                      <span className="text-xs text-green-600 font-bold">● STREAMING</span>
+                    )}
                   </div>
                   <div className="flex-1 overflow-auto p-3 bg-green-50">
                     <pre className="text-xs font-mono text-gray-800 whitespace-pre-wrap leading-relaxed">
-                      {state.result?.generatedCode || 'Waiting for code generation...'}
+                      {state.streamingCode || state.result?.generatedCode || 'Waiting for code generation...'}
                     </pre>
                   </div>
                 </div>

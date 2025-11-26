@@ -1,6 +1,21 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top!!!
 
+### Version 5.28.1
+
+- **Poetiq API Key Fallback & Streaming Fields** (Author: Cascade using Claude Sonnet 4)
+  - **API Key Now Optional**: Users can start solver without providing an API key
+  - **Fallback Behavior**: When API key is missing/invalid, server uses its environment variables
+  - **UI Updates**: 
+    - Control panel shows "API Key (Optional)" with explanation
+    - Fallback notice shown in streaming panel when using server key
+    - Placeholder text indicates "(optional)" in all API key fields
+  - **Hook Updates**: Added streaming fields to `usePoetiqProgress`:
+    - `streamingText`, `streamingReasoning`, `streamingCode`
+    - `logLines` array for activity tracking
+    - `usingFallback` indicator
+  - **Server Updates**: `poetiqController` validates API key format, falls back gracefully
+
 ### Version 5.28.0
 
 - **Major Poetiq UI Overhaul - Saturn's Exact Layout Pattern** (Author: Cascade using Claude Sonnet 4)
