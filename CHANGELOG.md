@@ -1,6 +1,37 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top!!!
 
+### Version 5.28.0
+
+- **Major Poetiq UI Overhaul - Saturn/Grover Hybrid Pattern** (Author: Cascade using Claude Sonnet 4)
+  - **Problem**: Poetiq implementation was significantly less mature than Saturn/Grover solvers (1 component vs 21 for Saturn)
+  - **Solution**: Borrowed proven UI patterns from Saturn and Grover to create feature-rich Poetiq interface
+  
+  **New Components Created:**
+  - `PoetiqControlPanel.tsx` - Saturn/Grover hybrid control panel with BYO API key, provider selection, expert presets, advanced settings (collapsible)
+  - `PoetiqStreamingVisualizer.tsx` - Saturn-style streaming display with phase indicators, progress bar, iteration history, generated code preview
+  - `PoetiqStreamingModal.tsx` - Grover-style pop-out modal for detailed full-screen streaming view with split-panel layout
+  - `PoetiqLiveActivityStream.tsx` - Grover-style real-time activity log with color-coded entries, pause/play, export functionality
+  - `client/src/components/poetiq/index.ts` - Barrel export for all Poetiq components
+  
+  **PoetiqSolver.tsx Complete Redesign:**
+  - **New Layout**: Saturn-style 3-column responsive grid (3-6-3 ratio)
+  - **Left Sidebar**: Control panel, training examples preview, test input, puzzle status
+  - **Center**: Streaming visualizer with real-time progress and code display
+  - **Right Sidebar**: Activity log, community progress summary, quick info
+  - **Header Bar**: Live timer, status badges, expand-view button, puzzle link
+  - **Background**: Saturn-style glass-morphism with gradient overlays
+  
+  **Key Features Added:**
+  - Live timer in header during solving (like Saturn/Grover)
+  - Status badges with SOLVED/UNSOLVED indicators
+  - Puzzle preview grids showing training examples
+  - Pop-out streaming modal for detailed view
+  - Model/temperature/iteration controls with advanced settings
+  - Cost/time estimates and 8-expert warnings
+  
+  **Plan Document**: Created `docs/plans/2025-11-26-poetiq-improvement-plan.md` with full gap analysis and implementation roadmap
+
 ### Version 5.27.4
 
 - **Fix Poetiq Railway Deployment - Handle Missing Submodule** (Author: Cascade using Claude Sonnet 4)
