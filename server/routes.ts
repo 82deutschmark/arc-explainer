@@ -203,6 +203,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/poetiq/batch/:sessionId", asyncHandler(poetiqController.getBatchStatus));
   app.get("/api/poetiq/status/:sessionId", asyncHandler(poetiqController.getStatus));
   app.get("/api/poetiq/models", asyncHandler(poetiqController.getModels));
+  // Community progress: shows ALL 120 ARC2-Eval puzzles with Poetiq-specific status
+  app.get("/api/poetiq/community-progress", asyncHandler(poetiqController.getCommunityProgress));
 
   // Batch analysis routes
   app.post("/api/batch/start", asyncHandler(batchController.startBatch));

@@ -2,8 +2,12 @@
  * Author: Cascade (Claude Sonnet 4)
  * Date: 2025-11-26
  * PURPOSE: Hook to fetch community progress on ARC2-eval puzzles for the Poetiq solver.
- *          Returns ALL puzzles with their status (solved/attempted/unattempted by Poetiq).
+ *          Returns ALL 120 puzzles with their status (solved/attempted/unattempted by Poetiq).
  *          Used by the PoetiqCommunity landing page to show the visual progress grid.
+ * 
+ *          Uses dedicated /api/poetiq/community-progress endpoint which:
+ *          1. Reads ALL 120 puzzle IDs directly from file system (not deduplicated)
+ *          2. Queries only Poetiq-specific explanations (model_name LIKE 'poetiq-%')
  * 
  * SRP/DRY check: Pass - Single responsibility for community Poetiq progress tracking
  */
@@ -56,68 +60,17 @@ export function usePoetiqCommunityProgress() {
     try {
       setProgress(prev => ({ ...prev, isLoading: true, error: null }));
 
-      // Get all ARC2-eval puzzle IDs
-      const listRes = await apiRequest('GET', '/api/puzzle/list?source=ARC2-Eval&limit=200');
-      const listData = await listRes.json();
+      // Use dedicated endpoint that:
+      // 1. Reads ALL 120 puzzle IDs from file system (not deduplicated by puzzle loader)
+      // 2. Queries ONLY Poetiq-specific explanations (model_name LIKE 'poetiq-%')
+      const res = await apiRequest('GET', '/api/poetiq/community-progress');
+      const data = await res.json();
       
-      if (!listData.success || !Array.isArray(listData.data)) {
-        throw new Error('Failed to fetch ARC2-eval puzzle list');
+      if (!data.success) {
+        throw new Error(data.message || 'Failed to fetch Poetiq community progress');
       }
 
-      const allPuzzleIds: string[] = listData.data.map((p: any) => p.puzzleId);
-      const total = allPuzzleIds.length;
-
-      // Get explanation status for all puzzles
-      const statusRes = await apiRequest('POST', '/api/puzzle/bulk-status', { 
-        puzzleIds: allPuzzleIds,
-        // Request Poetiq-specific filtering
-        modelPrefix: 'poetiq-'
-      });
-      const statusData = await statusRes.json();
-
-      if (!statusData.success) {
-        throw new Error('Failed to fetch puzzle status');
-      }
-
-      // Build puzzle status array for ALL puzzles
-      const puzzles: PoetiqPuzzleStatus[] = allPuzzleIds.map((puzzleId: string) => {
-        const status = statusData.data?.[puzzleId];
-        
-        // Check if this puzzle has a Poetiq explanation
-        const hasPoetiqExplanation = status?.hasExplanation && 
-          status?.modelName?.toLowerCase().startsWith('poetiq-');
-        
-        if (!hasPoetiqExplanation) {
-          return {
-            puzzleId,
-            status: 'unattempted' as PuzzleStatus,
-            modelName: null,
-            createdAt: null,
-            isPredictionCorrect: null,
-            iterationCount: null,
-            elapsedMs: null,
-          };
-        }
-
-        // Has Poetiq explanation - check if solved
-        const isSolved = status?.isSolved === true || status?.isPredictionCorrect === true;
-        
-        return {
-          puzzleId,
-          status: isSolved ? 'solved' as PuzzleStatus : 'attempted' as PuzzleStatus,
-          modelName: status?.modelName || null,
-          createdAt: status?.createdAt || null,
-          isPredictionCorrect: status?.isPredictionCorrect ?? null,
-          iterationCount: status?.iterationCount ?? null,
-          elapsedMs: status?.apiProcessingTimeMs ?? null,
-        };
-      });
-
-      // Calculate stats
-      const solved = puzzles.filter(p => p.status === 'solved').length;
-      const attempted = puzzles.filter(p => p.status === 'attempted').length;
-      const unattempted = puzzles.filter(p => p.status === 'unattempted').length;
-      const completionPercentage = total > 0 ? Math.round((solved / total) * 100) : 0;
+      const { puzzles, total, solved, attempted, unattempted, completionPercentage } = data.data;
 
       setProgress({
         puzzles,

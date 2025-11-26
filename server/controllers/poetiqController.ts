@@ -502,4 +502,88 @@ export const poetiqController = {
       results: session.results.slice(0, 100),
     }));
   },
+
+  /**
+   * GET /api/poetiq/community-progress
+   * 
+   * Get community progress on ARC2-Eval puzzles for the Poetiq solver.
+   * Returns ALL 120 puzzles from the evaluation2 directory (not deduplicated by puzzle loader)
+   * with their Poetiq-specific status (solved/attempted/unattempted).
+   * 
+   * This endpoint directly reads from file system to get all 120 puzzle IDs,
+   * then queries the database for Poetiq-specific explanations only.
+   */
+  async getCommunityProgress(_req: Request, res: Response) {
+    try {
+      // Read ALL puzzle IDs directly from evaluation2 directory (all 120)
+      const arc2EvalDir = path.join(process.cwd(), 'data', 'evaluation2');
+      
+      if (!fs.existsSync(arc2EvalDir)) {
+        return res.status(500).json(formatResponse.error('server_error', 'ARC2-Eval directory not found'));
+      }
+
+      const files = fs.readdirSync(arc2EvalDir);
+      const allPuzzleIds = files
+        .filter(f => f.endsWith('.json'))
+        .map(f => f.replace('.json', ''));
+
+      // Query database for Poetiq-specific explanations only
+      // Using raw SQL to filter by model_name LIKE 'poetiq-%'
+      const { repositoryService } = await import('../repositories/RepositoryService.js');
+      
+      // Get all Poetiq explanations for these puzzles
+      const poetiqExplanations = await repositoryService.explanations.getPoetiqExplanationsForPuzzles(allPuzzleIds);
+
+      // Build status map
+      const puzzleStatuses = allPuzzleIds.map(puzzleId => {
+        const poetiqExp = poetiqExplanations.find(e => e.puzzleId === puzzleId);
+        
+        if (!poetiqExp) {
+          return {
+            puzzleId,
+            status: 'unattempted' as const,
+            modelName: null,
+            createdAt: null,
+            isPredictionCorrect: null,
+            iterationCount: null,
+            elapsedMs: null,
+          };
+        }
+
+        // Check if solved (correct prediction)
+        const isSolved = poetiqExp.isPredictionCorrect === true || poetiqExp.multiTestAllCorrect === true;
+
+        return {
+          puzzleId,
+          status: isSolved ? 'solved' as const : 'attempted' as const,
+          modelName: poetiqExp.modelName,
+          createdAt: poetiqExp.createdAt,
+          isPredictionCorrect: poetiqExp.isPredictionCorrect,
+          iterationCount: poetiqExp.iterationCount || null,
+          elapsedMs: poetiqExp.apiProcessingTimeMs || null,
+        };
+      });
+
+      // Calculate stats
+      const solved = puzzleStatuses.filter(p => p.status === 'solved').length;
+      const attempted = puzzleStatuses.filter(p => p.status === 'attempted').length;
+      const unattempted = puzzleStatuses.filter(p => p.status === 'unattempted').length;
+      const total = allPuzzleIds.length;
+      const completionPercentage = total > 0 ? Math.round((solved / total) * 100) : 0;
+
+      return res.json(formatResponse.success({
+        puzzles: puzzleStatuses,
+        total,
+        solved,
+        attempted,
+        unattempted,
+        completionPercentage,
+      }));
+
+    } catch (error) {
+      console.error('[Poetiq] Community progress error:', error);
+      return res.status(500).json(formatResponse.error('server_error', 
+        error instanceof Error ? error.message : 'Failed to get community progress'));
+    }
+  },
 };

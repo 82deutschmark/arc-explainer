@@ -1,6 +1,16 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top!!!
 
+### Version 5.27.2
+
+- **Fix Poetiq Community Progress Data Accuracy** (Author: Cascade using Claude Sonnet 4)
+  - **Bug #1 - Wrong Puzzle Count**: Page showed 114 puzzles instead of 120 because puzzle loader deduplicates overlapping ARC1/ARC2 IDs
+    - **Fix**: Created dedicated `/api/poetiq/community-progress` endpoint that reads ALL 120 puzzle IDs directly from file system
+  - **Bug #2 - Incorrect Status**: All puzzles showed as "attempted" because `/api/puzzle/bulk-status` returns most recent explanation regardless of model
+    - **Fix**: New endpoint queries only `WHERE model_name LIKE 'poetiq-%'` to get Poetiq-specific explanations
+  - **New Repository Method**: Added `getPoetiqExplanationsForPuzzles()` to `ExplanationRepository` for Poetiq-filtered queries
+  - **Updated Hook**: `usePoetiqCommunityProgress` now uses dedicated endpoint instead of incorrect bulk-status approach
+
 ### Version 5.27.1
 
 - **Poetiq API Key Security Enhancements** (Author: Cascade using Claude Sonnet 4)

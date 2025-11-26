@@ -1217,4 +1217,59 @@ export class ExplanationRepository extends BaseRepository implements IExplanatio
     }
   }
 
+  /**
+   * Get Poetiq-specific explanations for a list of puzzle IDs
+   * Returns only explanations where model_name starts with 'poetiq-'
+   * Used by the Poetiq Community Progress page to show accurate status
+   * 
+   * @author Cascade using Claude Sonnet 4
+   * @date 2025-11-26
+   */
+  async getPoetiqExplanationsForPuzzles(puzzleIds: string[]): Promise<Array<{
+    puzzleId: string;
+    modelName: string;
+    createdAt: Date;
+    isPredictionCorrect: boolean | null;
+    multiTestAllCorrect: boolean | null;
+    iterationCount: number | null;
+    apiProcessingTimeMs: number | null;
+  }>> {
+    if (!this.isConnected() || puzzleIds.length === 0) {
+      return [];
+    }
+
+    try {
+      const placeholders = puzzleIds.map((_, i) => `$${i + 1}`).join(', ');
+
+      // Query for Poetiq explanations only (model_name LIKE 'poetiq-%')
+      // Get the most recent Poetiq explanation per puzzle
+      const result = await this.query(`
+        SELECT DISTINCT ON (puzzle_id)
+          puzzle_id,
+          model_name,
+          created_at,
+          is_prediction_correct,
+          multi_test_all_correct,
+          api_processing_time_ms
+        FROM explanations
+        WHERE puzzle_id IN (${placeholders})
+        AND model_name LIKE 'poetiq-%'
+        ORDER BY puzzle_id, created_at DESC
+      `, puzzleIds);
+
+      return result.rows.map(row => ({
+        puzzleId: row.puzzle_id,
+        modelName: row.model_name,
+        createdAt: row.created_at,
+        isPredictionCorrect: row.is_prediction_correct,
+        multiTestAllCorrect: row.multi_test_all_correct,
+        iterationCount: null, // TODO: Extract from provider_raw_response if needed
+        apiProcessingTimeMs: row.api_processing_time_ms,
+      }));
+    } catch (error) {
+      logger.error(`Error getting Poetiq explanations: ${error instanceof Error ? error.message : String(error)}`, 'explanation-repository');
+      return [];
+    }
+  }
+
 }
