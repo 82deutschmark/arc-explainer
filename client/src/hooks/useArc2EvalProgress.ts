@@ -64,7 +64,7 @@ export function useArc2EvalProgress() {
         throw new Error('Failed to fetch puzzle status');
       }
 
-      const puzzles: Arc2EvalPuzzle[] = puzzleIds.map(id => {
+      const puzzles: Arc2EvalPuzzle[] = puzzleIds.map((id: string) => {
         const status = statusData.data[id];
         return {
           puzzleId: id,

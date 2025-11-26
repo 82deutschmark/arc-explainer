@@ -11,6 +11,8 @@
   - **Default changed to 2 experts**: Updated `poetiq-solver/arc_agi/config.py` to use NUM_EXPERTS=2 by default
   - **Dynamic config**: Python wrapper now builds per-request CONFIG_LIST based on user options
   - **Beautiful UI**: Redesigned PoetiqSolver.tsx with clear BYO key messaging and expert explanations
+  - **ARC2-Eval Progress Tracking**: Added `useArc2EvalProgress` hook to show which ARC2-eval puzzles have been solved/attempted
+  - **Progress Dashboard**: New ARC2-Eval Progress card shows total/attempted/solved counts, completion percentage, and current puzzle status
 
 ### Version 5.24.0
 
