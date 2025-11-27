@@ -1,6 +1,17 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top!!!
 
+### Version 5.31.2
+
+- **Poetiq Deployment Fix - Remove Submodule Cloning** (Author: Cascade using Claude Sonnet 4)
+  - **CRITICAL BUG**: Dockerfile was still cloning the old `poetiq-solver` submodule, but `poetiq_wrapper.py` now expects `solver/poetiq/`. This would cause deployment failures.
+  - **Fixes**:
+    - `Dockerfile` - Removed `git clone` of old submodule, added verification of internalized solver at `solver/poetiq/`
+    - `.gitmodules` - Removed poetiq-solver submodule entry (with historical note)
+    - `setup-poetiq.sh` - Updated to check for `solver/poetiq/` instead of old `poetiq-solver/arc_agi/`
+    - `solver/poetiq/__init__.py` - Fixed docstring to correctly describe litellm usage
+  - **Note**: The old `poetiq-solver/` directory may still exist locally. It can be safely deleted with `git rm -r poetiq-solver` and `rm -rf poetiq-solver`.
+
 ### Version 5.31.1
 
 - **Poetiq Community & Solver Page Layout Improvements** (Author: Claude Code using Haiku 4.5)
