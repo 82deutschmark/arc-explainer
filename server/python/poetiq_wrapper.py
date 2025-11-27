@@ -75,6 +75,13 @@ async def instrumented_solve_coding(
         llm_kwargs["reasoning_effort"] = config["reasoning_effort"]
     if "thinking" in config:
         llm_kwargs["thinking"] = config["thinking"]
+    
+    # Hardcode verbosity and reasoning_summary for GPT-5/o3 models
+    # These are always "high" and "detailed" per project standards (see SaturnVisualSolver)
+    model_lower = llm_model.lower()
+    if "gpt-5" in model_lower or "o3" in model_lower or "gpt5" in model_lower:
+        llm_kwargs["verbosity"] = "high"
+        llm_kwargs["reasoning_summary"] = "detailed"
 
     max_solutions = int(config.get("max_solutions"))
     selection_probability = float(config.get("selection_probability"))
@@ -138,6 +145,7 @@ async def instrumented_solve_coding(
                 max_remaining_timeouts=max_total_timeouts,
                 problem_id=problem_id,
                 retries=per_iteration_retries,
+                **llm_kwargs,  # Pass reasoning_effort, verbosity, reasoning_summary etc.
             )
         except Exception as e:
             if "Exceeded timeouts allotted to the request" in str(e) or "Exceeded time allotted to the request" in str(e):
