@@ -54,6 +54,9 @@ interface PoetiqControlPanelProps {
   temperature: number;
   setTemperature: (temp: number) => void;
   
+  reasoningEffort: 'low' | 'medium' | 'high';
+  setReasoningEffort: (effort: 'low' | 'medium' | 'high') => void;
+
   onStart: () => void;
   onCancel: () => void;
 }
@@ -73,6 +76,8 @@ export default function PoetiqControlPanel({
   setMaxIterations,
   temperature,
   setTemperature,
+  reasoningEffort,
+  setReasoningEffort,
   onStart,
   onCancel,
 }: PoetiqControlPanelProps) {
@@ -275,13 +280,12 @@ export default function PoetiqControlPanel({
               </p>
             </div>
             <input
-              type="password"
+              type="text"
               value={apiKey}
               onChange={(e) => setApiKey(e.target.value)}
               disabled={isRunning}
               placeholder={keyPlaceholder}
               className="input input-bordered input-sm w-full font-mono text-xs"
-              autoComplete="new-password"
             />
           </div>
         </div>

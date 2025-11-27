@@ -143,7 +143,7 @@ export default function PoetiqCommunity() {
                 Independent Audit of Poetiq's SOTA Results
               </h1>
               <p className="text-base text-gray-600">
-                Verifying the "Meta-System" claims and Pareto frontiers on ARC-AGI-1 & 2.
+                Community-driven verification of claimed performance on ARC-AGI-1 & 2 benchmarks.
               </p>
             </div>
             <div className="flex gap-2">
@@ -219,7 +219,7 @@ export default function PoetiqCommunity() {
                 <div className="space-y-1">
                   <Label className="text-xs font-semibold text-gray-500">API Key (Optional)</Label>
                   <Input
-                    type="password"
+                    type="text"
                     placeholder={selectedModel.keyPlaceholder}
                     value={apiKey}
                     onChange={(e) => setApiKey(e.target.value)}
@@ -266,6 +266,47 @@ export default function PoetiqCommunity() {
 
         <Separator className="my-8" />
 
+        {/* Definitions Section */}
+        <Card className="bg-amber-50 border-amber-200">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-lg flex items-center gap-2 text-amber-900">
+              <AlertCircle className="h-5 w-5" />
+              Technical Definitions
+            </CardTitle>
+            <CardDescription className="text-amber-800">
+              We are independent community auditors providing a visual explainer for Poetiq's claims. Here are the key technical terms:
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div>
+              <h3 className="font-semibold text-amber-900 mb-1">Pareto Frontier (Pareto Optimal)</h3>
+              <p className="text-sm text-gray-700">
+                In optimization, a <strong>Pareto frontier</strong> is the set of solutions where improving one metric (e.g., accuracy)
+                necessarily worsens another (e.g., cost). A solution is Pareto optimal if no other solution can improve one dimension
+                without degrading another. In this context, Poetiq claims their configurations achieve better accuracy-to-cost ratios
+                than existing systems across multiple operating points.
+              </p>
+            </div>
+            <div>
+              <h3 className="font-semibold text-amber-900 mb-1">Recursive Self-Improving Meta-System</h3>
+              <p className="text-sm text-gray-700">
+                A <strong>meta-system</strong> is a system that operates on other systems. "Recursive self-improving" means the system
+                can analyze its own outputs, identify failures, and generate improved versions iteratively. In Poetiq's case, the
+                meta-system orchestrates multiple LLM calls to generate code, test it, analyze failures, and refine—repeating until
+                convergence. "LLM-agnostic" means the architecture can work with different underlying models (Gemini, GPT, Grok, etc.)
+                without fundamental redesign.
+              </p>
+            </div>
+            <div className="bg-white border border-amber-200 rounded p-3">
+              <p className="text-xs text-amber-900 font-medium">
+                <strong>Our Role:</strong> We are not affiliated with Poetiq. We are independent community members auditing their
+                claims by running their open-source solver on ARC-AGI puzzles and documenting the results. This page serves as
+                a visual explainer and data collection tool.
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+
         {/* Deep Dive Section - Merged from PoetiqExplainer */}
         <div className="grid lg:grid-cols-2 gap-8">
           
@@ -277,8 +318,9 @@ export default function PoetiqCommunity() {
                 The Poetiq Meta-System
               </h2>
               <p className="text-gray-700 leading-relaxed">
-                Unlike traditional solvers that rely on a single prompt, Poetiq uses a <strong>recursive, self-improving meta-system</strong>. 
-                It doesn't just ask for an answer; it orchestrates a team of LLM "experts" to write code, test it, and iterate.
+                According to their documentation, Poetiq implements a <strong>recursive, self-improving meta-system</strong>.
+                Rather than single-prompt prediction, the system orchestrates multiple LLM calls to generate code, test it against
+                training examples, and iteratively refine based on execution feedback.
               </p>
             </div>
 
@@ -308,7 +350,8 @@ export default function PoetiqCommunity() {
                </h2>
                <div className="bg-green-50 border border-green-200 rounded-lg p-4">
                   <p className="text-sm text-green-900 mb-3">
-                     Poetiq claims to redraw the "Pareto frontier" — delivering higher accuracy at lower cost than any previous system.
+                     Poetiq claims their system establishes a new Pareto frontier, achieving better accuracy-to-cost ratios
+                     than prior reported results across multiple operating points.
                   </p>
                   <div className="grid grid-cols-2 gap-3">
                      <div className="bg-white p-3 rounded border border-green-100">
@@ -332,32 +375,33 @@ export default function PoetiqCommunity() {
                   LLM-Agnostic Architecture
                </h2>
                <p className="text-gray-700 text-sm mb-3">
-                  The meta-system is not tied to one model. It adapts to the underlying LLM's strengths. 
-                  We are auditing the following configurations:
+                  Poetiq's architecture is designed to work with multiple LLM providers. Their blog post claims the system
+                  was adapted on open-source models and then applied to various commercial models. We are testing the following
+                  configurations:
                </p>
                <div className="grid gap-2">
-                  <ModelCard 
-                     name="Gemini 3" 
-                     variant="Pro Preview" 
-                     role="Primary reasoning engine for SOTA results." 
+                  <ModelCard
+                     name="Gemini 3"
+                     variant="Pro Preview"
+                     role="Latest Google model used in reported SOTA configurations."
                      color="bg-blue-50 border-blue-200 text-blue-800"
                   />
-                  <ModelCard 
-                     name="GPT-5.1" 
-                     variant="Preview" 
-                     role="High-performance alternative used in 'Mix' config." 
+                  <ModelCard
+                     name="GPT-5.1"
+                     variant=""
+                     role="OpenAI model used in mixed-model configurations."
                      color="bg-gray-100 border-gray-200 text-gray-800"
                   />
-                  <ModelCard 
-                     name="Grok 4" 
-                     variant="Fast" 
-                     role="Cost-optimized reasoning (Poetiq Grok-4-Fast)." 
+                  <ModelCard
+                     name="Grok 4"
+                     variant="Fast"
+                     role="xAI's fast reasoning model for cost-optimized configs."
                      color="bg-slate-100 border-slate-200 text-slate-800"
                   />
-                  <ModelCard 
-                     name="GPT-OSS" 
-                     variant="120B" 
-                     role="Open weights model showing extreme cost efficiency." 
+                  <ModelCard
+                     name="GPT-OSS"
+                     variant="120B"
+                     role="Open-weights model used for low-cost benchmarking."
                      color="bg-orange-50 border-orange-200 text-orange-800"
                   />
                </div>
