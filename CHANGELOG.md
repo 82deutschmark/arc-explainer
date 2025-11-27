@@ -1,6 +1,442 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top!!!
 
+### Version 5.29.14
+
+- **Poetiq Parser Alignment** (Author: Codex (GPT-5))
+  - `poetiqService.transformToExplanationData` now feeds results plus the loaded `ARCTask` through the shared `responseValidator`, so the same grid parser/cleaner used by Saturn/Grover sanitizes Poetiq predictions (fixes stray newline artifacts and ensures multi-test arrays match our schema).
+  - Stored provider metadata now includes validator traces and normalized raw predictions for future audits; controllers pass puzzle context into the transformer to unlock this validation.
+  - Added a short plan doc covering the parser alignment work.
+  - **Files**: `server/services/poetiq/poetiqService.ts`, `server/controllers/poetiqController.ts`, `docs/2025-11-27-poetiq-parser-alignment-plan.md`
+
+### Version 5.29.13
+
+- **Poetiq Confidence Suppression** (Author: Codex (GPT-5))
+  - Hard-coded Poetiq explanation transforms to store `confidence = 0` and `trustworthinessScore = null` so UI cards stop surfacing misleading metrics for meta-system runs.
+  - Added accompanying implementation plan to document why these fields are intentionally blanked.
+  - **Files**: `server/services/poetiq/poetiqService.ts`, `docs/2025-11-27-poetiq-confidence-suppression-plan.md`
+
+### Version 5.29.12
+
+- **Poetiq Model Metadata Persistence** (Author: Codex (GPT-5))
+  - Ensured every Poetiq run stores the actual selected model/provider combination just like Saturn/Grover: Python wrapper now reports its in-memory config without relying on undefined globals, and the TypeScript service enriches final results with sanitized run options before persisting.
+  - `transformToExplanationData` now slugs the full model id (`openrouter/google/gemini-3-pro-preview` → `poetiq-openrouter-google-gemini-3-pro-preview`) so analytics can differentiate OpenRouter vs direct calls, and providerRawResponse keeps the enriched config blob.
+  - Added a focused implementation plan record for this fix under `docs/`.
+  - **Files**: `server/python/poetiq_wrapper.py`, `server/services/poetiq/poetiqService.ts`, `docs/2025-11-27-poetiq-model-agnostic-plan.md`
+
+### Version 5.29.11
+
+- **Poetiq Solver UI Redesign** (Author: Cascade using Claude Sonnet 4)
+  - **Problem**: User feedback identified several UX issues:
+    1. Tiny gear icon hid valuable configuration settings
+    2. Top header bar was wasted space showing only title
+    3. "Python Execution" terminal label was confusing
+    4. Model selection showed misleading routing info ("Direct" when using OpenRouter)
+    5. Start button looked like plain text, not clickable
+  - **Header Redesign**: 
+    - Gradient indigo/purple header with key metrics inline (Status, Iteration, Elapsed, Phase)
+    - Stop button integrated into header when running
+    - No more wasted space
+  - **Controls Always Visible**: Removed collapsible gear icon - settings are now always shown prominently
+  - **Prominent Start Button**:
+    - Large green gradient button with Rocket + Zap icons
+    - Clear visual weight, not mistakable for plain text
+    - Red variant when stopping
+  - **Clear Routing Indicators**:
+    - Blue badge: "Via OpenRouter (Uses Server Key)"
+    - Amber badge: "Direct API to [Provider] (Requires Your API Key)"
+    - Models marked with "(BYO Key)" in dropdown when direct API required
+  - **Renamed Terminal Panel**:
+    - Changed "PYTHON EXECUTION" → "ITERATION PROGRESS"
+    - Added subtitle: "Code generation & testing results per iteration"
+    - Clearer purpose without technical jargon
+  - **Backend Model List Updated** (`poetiqController.ts`):
+    - Added `routing` and `requiresBYO` fields to model definitions
+    - Removed misleading "(Direct)" labels from model names
+  - **Files Modified**:
+    - `client/src/pages/PoetiqSolver.tsx` - Header, layout, controls visibility
+    - `client/src/components/poetiq/PoetiqControlPanel.tsx` - Start button, routing indicators
+    - `client/src/components/poetiq/PoetiqPythonTerminal.tsx` - Renamed and clarified
+    - `server/controllers/poetiqController.ts` - Model metadata with routing info
+    - `docs/plans/2025-11-27-poetiq-visibility-debug-plan.md` - Added UI redesign section
+
+### Version 5.29.10
+
+- **Poetiq UI Timing & Event Visibility** (Author: Cascade using Claude Sonnet 4)
+  - **Metrics bar expanded** to 6 columns: Iteration, Phase, Status, Elapsed Time, Last Update, Event Count
+  - **Elapsed time** shows running clock (MM:SS format) while solver is active
+  - **Last Update** shows how long since last event - turns orange if >30s (potential hang indicator)
+  - **Event Log panel** - collapsible panel showing all timestamped events in real-time
+  - **LIVE indicator** pulses green when events are streaming
+  - Helps diagnose if solver is hanging vs. just slow
+  - **Files**: `client/src/pages/PoetiqSolver.tsx`
+
+### Version 5.29.9
+
+- **Dockerfile Fix for Poetiq Submodule** (Author: Cascade using Claude Sonnet 4)
+  - **Problem**: Poetiq solver failed on Railway with "arc_agi/solve.py not found" because git submodules don't work with Docker COPY
+  - **Solution**: Added `git` to Alpine packages and replaced `COPY poetiq-solver/` with `git clone` of the submodule repo
+  - Added verification step to fail build early if `solve.py` is missing
+  - **Files**: `Dockerfile`
+
+### Version 5.29.8
+
+- **Poetiq UI Fixes** (Author: Cascade using Claude Sonnet 4)
+  - **Fixed nested `<a>` tags** in `PoetiqSolver.tsx` - wouter `Link` already renders an anchor, so nested `<a>` was causing React DOM warning
+  - **Fixed undefined phase issue** - Log events now include `phase: 'log'` to prevent frontend state corruption
+  - **Improved debug logging** - WebSocket handler now logs both wrapper type and actual data type
+  - **Files**: `client/src/pages/PoetiqSolver.tsx`, `server/services/poetiq/poetiqService.ts`, `client/src/hooks/usePoetiqProgress.ts`
+
+### Version 5.29.7
+
+- **Poetiq Visibility Parity with Saturn** (Author: Cascade using Claude Sonnet 4)
+  - **Problem**: Poetiq UI stayed blank after clicking "Run" because events weren't reaching the frontend properly.
+  - **Frontend Hook Fixes** (`usePoetiqProgress.ts`):
+    - Seed UI state synchronously BEFORE network calls (Saturn pattern) for immediate visual feedback
+    - Initialize all buffers (logLines, reasoningHistory, pythonLogLines, streamingReasoning, streamingCode)
+    - Fixed WebSocket handler to accumulate content properly instead of relying on message changes
+    - Handle ALL event types (progress, log, start, error) not just progress
+    - Cap buffers (500 log lines, 100 reasoning entries) to prevent memory bloat
+  - **Python Wrapper Fixes** (`poetiq_wrapper.py`):
+    - Moved `emit()` and `log()` functions to top of file (were called before definition)
+    - Added detailed preflight error messages with remediation hints
+    - Enhanced start event with model/experts/iterations metadata
+    - Added initializing progress event for immediate UI feedback
+  - **Backend Service Fixes** (`poetiqService.ts`):
+    - Broadcast ALL event types (start, progress, log, error) to WebSocket, not just progress
+    - Forward non-JSON stdout as log events so AI model responses appear in UI
+    - Forward stderr as error log events
+    - Added eventTrace collection like Saturn for debugging
+  - **Controller Cleanup** (`poetiqController.ts`):
+    - Removed duplicate WebSocket broadcasting (service now handles it)
+    - Controller callback now only logs to console for all event types
+  - **Files**: `client/src/hooks/usePoetiqProgress.ts`, `server/python/poetiq_wrapper.py`, `server/services/poetiq/poetiqService.ts`, `server/controllers/poetiqController.ts`
+
+### Version 5.29.6
+
+- **Poetiq WebSocket Debug Logging** (Author: Cascade using Claude Sonnet 4.5)
+  - Added detailed error logging to `usePoetiqProgress.ts` to show error data when Python process fails (line 169)
+  - Added WebSocket close event logging with close code and current state (line 183)
+  - Added environment variable debugging in `poetiqService.ts` to verify API keys are reaching Python subprocess (line 177-178)
+  - These logs will help diagnose why WebSocket closes immediately after connecting
+  - **Files**: `client/src/hooks/usePoetiqProgress.ts`, `server/services/poetiq/poetiqService.ts`
+
+### Version 5.29.5
+
+- **Poetiq Visibility & Streaming Debug Plan** (Author: Codex / GPT-5)
+  - Added detailed recovery plan to surface all Poetiq solver signals (reasoning/code/logs/errors) end-to-end, using SaturnVisualSolver as the gold-standard reference.
+  - Documents chokepoints (Python preflight, WebSocket forwarding, session plumbing, UI expectations) and phased fixes plus acceptance criteria to avoid silent failures.
+  - **Files**: `docs/plans/2025-11-27-poetiq-visibility-debug-plan.md`
+
+### Version 5.29.4
+
+- **Poetiq UI/UX Fixes & Content Audit** (Author: Cascade using Claude Sonnet 4.5)
+  - **API Key Input Type Fix**: Changed from `type="password"` to `type="text"` in both `PoetiqCommunity.tsx:221` and `PoetiqControlPanel.tsx:283` to eliminate browser password field warnings (API keys are not passwords)
+  - **Missing State Variable**: Added `reasoningEffort` state variable in `PoetiqSolver.tsx:39` that was previously undefined, preventing solver from starting
+  - **API Key Security**: Removed all validation logic in `poetiqController.ts:143-146` - now accepts any user-provided key without validation or modification. Security measures confirmed:
+    - API key passed only via environment variables to Python subprocess (never logged, never stored, never broadcast via WebSocket)
+    - Only `usingFallback` flag sent to client (boolean indicating if server key is used)
+    - Key exists only in memory for duration of Python process execution
+  - **Content Audit**: Updated `PoetiqCommunity.tsx` to maintain professional, educational tone as independent community auditors:
+    - Added "Technical Definitions" card (lines 269-308) with clear explanations of "Pareto Frontier" and "Recursive Self-Improving Meta-System"
+    - Clarified auditor role: "We are not affiliated with Poetiq. We are independent community members auditing their claims..."
+    - Removed marketing language: Changed "delivering higher accuracy" → "achieving better accuracy-to-cost ratios than prior reported results"
+    - Fixed GPT-5.1 label: Removed "Preview" variant (line 347) - it's not a preview model
+    - Updated all model descriptions to factual statements (e.g., "Latest Google model used in reported SOTA configurations")
+  - **Files**: `client/src/pages/PoetiqCommunity.tsx`, `client/src/pages/PoetiqSolver.tsx`, `client/src/components/poetiq/PoetiqControlPanel.tsx`, `server/controllers/poetiqController.ts`
+
+### Version 5.29.3
+
+- **Poetiq Solver "Saturn-Grade" Live Feedback** (Author: Cascade using Claude Sonnet 4.5)
+  - **Goal**: Match Saturn's dynamic information density for the Poetiq Meta-System.
+  - **Backend Instrumentation**: Monkey-patched `poetiq_wrapper.py` to emit real-time events from inside the solver loop (reasoning, code generation, training eval results).
+  - **Rich WebSocket Protocol**: Forwarding `expert_id`, full `reasoning` trace, parsed `code`, and granular `trainResults` to frontend.
+  - **Dynamic Terminal UI**:
+    - **Real-Time Expert Tracking**: Shows "Iter X | Exp Y" updates as they happen.
+    - **Live Training Results**: Visual "traffic light" indicators (green/red dots) for each training example.
+    - **Code Inspection**: Collapsible code blocks to view the actual Python code generated by each expert.
+    - **Stable Log**: Uses upsert logic to update cards in-place rather than spamming the log.
+  - **Files**: `poetiq_wrapper.py`, `poetiqService.ts`, `usePoetiqProgress.ts`, `PoetiqPythonTerminal.tsx`, `PoetiqSolver.tsx`
+
+### Version 5.29.2
+
+- **Poetiq Integration Audit & Meta-System Update** (Author: Cascade using Claude Sonnet 4.5)
+  - **Deep Dive Audit**: Verified Poetiq's "Meta-System" claims and "LLM-agnostic" architecture against open-source code and blog post.
+  - **Merged Community Page**: Merged `PoetiqExplainer` into `PoetiqCommunity` for a single, comprehensive audit landing page.
+  - **New SOTA Models**: Added Grok 4 Fast (xAI), GPT-OSS 120B (OpenRouter), and GPT-5.1 (OpenRouter) to the solver's model list, reflecting the blog post's specific configurations.
+  - **Terminology Update**: Updated `PoetiqSolver` to use "Meta-System" terminology and clarified Expert configurations (Config A/B/C) instead of model-specific names.
+  - **Verification**: Ensured all models use verified keys from `models.ts` - no placeholders.
+  - **Files**: `PoetiqCommunity.tsx`, `PoetiqSolver.tsx`, `PoetiqControlPanel.tsx`, `poetiqController.ts`
+
+### Version 5.29.1
+
+- **HTTPS Security Fix for Poetiq Solver** (Author: Cascade using Claude Sonnet 4)
+  - **Problem**: Railway's reverse proxy terminates SSL, causing `req.protocol` to report `http` even when client used HTTPS
+  - **Solution**: Added `app.set('trust proxy', 1)` and fallback to check `X-Forwarded-Proto` header
+  - **File**: `server/index.ts` - middleware now correctly detects HTTPS through proxy
+  - **Impact**: Fixes 400 "HTTPS required" error when passing API keys from community to solver page
+
+- **Improved Poetiq Solver UX - Collapsible Controls** (Author: Cascade using Claude Sonnet 4)
+  - **Problem**: Users auto-starting from community page had to see large control panel they already configured
+  - **Solution**: Compact status header with settings toggle, auto-hide controls when coming from community
+  - **Features**:
+    - Always-visible compact status (READY/RUNNING/COMPLETED/ERROR) with iteration counter
+    - Settings gear button to toggle full control panel
+    - Auto-start message "Auto-starting with community settings..."
+    - API key now truly optional - server falls back to project key
+  - **File**: `client/src/pages/PoetiqSolver.tsx`
+
+### Version 5.29.0
+
+- **Poetiq solver defaults to OpenRouter** (Author: Codex (GPT-5))
+  - `server/python/poetiq_wrapper.py`: now treats `OPENROUTER_API_KEY` as a first-class credential, logs its availability, and defaults the LiteLLM model id to `openrouter/google/gemini-3-pro-preview` so BYO keys and server keys hit the proxy instead of direct Gemini.
+  - `run-poetiq-batch.js`: batch runs log the OpenRouter model and no longer hardcode the direct Gemini variant.
+- **UI + hooks send the correct LiteLLM ids** (Author: Codex (GPT-5))
+  - `client/src/hooks/usePoetiqModels.ts`: new hook that calls `/api/poetiq/models` so the control panel always gets solver-ready ids.
+  - `client/src/components/poetiq/PoetiqControlPanel.tsx`, `client/src/hooks/usePoetiqProgress.ts`, `client/src/pages/PoetiqSolver.tsx`: default provider/model now point at the OpenRouter Gemini proxy and provider switching reuses the new hook data.
+  - `client/src/pages/PoetiqCommunity.tsx`: sessionStorage auto-start config stores the OpenRouter id (`openrouter/google/gemini-3-pro-preview`) and the direct fallback (`gemini/gemini-3-pro-preview`) so solver runs align with LiteLLM expectations.
+- **Docs**
+  - `poetiq-solver/README.md`: documents `OPENROUTER_API_KEY` + `USE_OPENROUTER=true` as the recommended setup, with Gemini/OpenAI keys kept as fallbacks.
+
+### Version 5.28.9
+
+- **Poetiq UX - Navigate to Solver for Full Feedback** (Author: Cascade using Claude Sonnet 4)
+  - **Problem**: Community page had minimal feedback - no Python terminal, no streaming boxes
+  - **Solution**: Community page now navigates to full solver page for rich feedback
+    - Saves config to sessionStorage (apiKey, provider, model, experts)
+    - Solver page auto-reads config and auto-starts
+    - User sees full Python execution terminal, AI reasoning streaming, code generation
+  - **Renamed**: "Poetiq Code Generator" → "Poetiq Solver" (header title)
+  - **Files**: `PoetiqCommunity.tsx`, `PoetiqSolver.tsx`
+
+### Version 5.28.8
+
+- **Fix Poetiq Pages - Dynamic Models from API** (Author: Cascade using Claude Sonnet 4)
+  - **Solver page** (`/puzzle/poetiq/:taskId`):
+    - Uses `useModels()` hook to fetch ALL models from `/api/models` endpoint
+    - Groups by provider (OpenRouter, OpenAI, Gemini)
+    - No hardcoded model lists - uses actual server config
+    - Shows 🧠 for reasoning models
+  - **Community page** (`/poetiq`):
+    - Locked to Gemini 3 Pro Preview model
+    - Now allows BOTH OpenRouter AND Gemini Direct providers
+    - Added provider dropdown (same model, choice of API)
+  - **Both pages**: Expert options 1, 2, 8 only (Gemini-3-a/b/c)
+  - **Files**: `PoetiqControlPanel.tsx`, `PoetiqCommunity.tsx`
+
+### Version 5.28.7
+
+- **Differentiate Poetiq Pages - Community vs Solver** (Author: Cascade using Claude Sonnet 4)
+  - **Clarification**: Two different Poetiq pages with different purposes:
+    - `/poetiq` (Community) - Locked to Gemini 3 Pro Preview via OpenRouter only
+    - `/puzzle/poetiq/:taskId` (Solver) - Allows ANY provider/model selection
+  - **Solver page restored**: Full provider/model/temperature selection
+  - **Community page**: Stays locked to Gemini 3 Pro Preview
+  - **Both pages**: Expert options 1, 2, 8 only (Gemini-3-a/b/c)
+  - **Files**: `PoetiqControlPanel.tsx`, `PoetiqSolver.tsx`
+
+### Version 5.28.6
+
+- **Fix PoetiqCommunity Page - Use Actual Config** (Author: Cascade using Claude Sonnet 4)
+  - **Problem**: Community page (/poetiq) still had wrong models and "4 experts" option
+  - **Fix**: 
+    - Locked to `google/gemini-3-pro-preview` via OpenRouter (same as control panel)
+    - Expert options: 1, 2, 8 ONLY (Gemini-3-a, Gemini-3-b, Gemini-3-c)
+    - Removed provider selector (was showing Gemini Direct option)
+    - Removed model selector (was showing outdated models)
+    - Added teal info card showing fixed model
+  - **Files**: `PoetiqCommunity.tsx`
+
+### Version 5.28.5
+
+- **Fix Poetiq Control Panel - Use Actual Config** (Author: Cascade using Claude Sonnet 4)
+  - **Problem**: Control panel had hallucinated model lists (GPT-5, etc.) instead of actual Poetiq config
+  - **Fix**: 
+    - Poetiq ONLY uses `google/gemini-3-pro-preview` via OpenRouter (hardcoded in config.py)
+    - Expert options fixed to 1, 2, 8 ONLY (Gemini-3-a, Gemini-3-b, Gemini-3-c) - removed invalid "4 experts"
+    - Removed fake provider/model dropdowns - model is fixed
+    - Simplified control panel to: API key (optional), Expert config, Max iterations
+  - **Files**: `PoetiqControlPanel.tsx`, `PoetiqSolver.tsx`
+
+### Version 5.28.4
+
+- **GPT-5.1 Codex Mini Support** (Author: Codex (GPT-5))
+  - `server/config/models.ts`: Added the OpenAI listing for `gpt-5.1-codex-mini` with cost ($0.25 / $2 per million tokens), 400k context, 128k max output, reasoning-token note, and preview release metadata so UI+server selectors surface it like other GPT-5-class models.
+  - `server/services/openai.ts`: Registered the new key for routing plus streaming support, ensuring Responses API streaming + schema lookup flows treat GPT-5.1 Codex Mini identically to other GPT-5 reasoning models.
+
+### Version 5.28.3
+
+- **Gemini 3 Pro Preview (Direct) Enablement** (Author: Codex (GPT-5))
+  - `docs/2025-11-26-gemini-3-pro-preview-plan.md`: Captured the direct-Gemini rollout goal, impacted files, and risk notes for adding `gemini-3-pro-preview`.
+  - `server/config/models.ts`: Added a first-party `Gemini` provider entry for `gemini-3-pro-preview` (maps to `models/gemini-3-pro-preview`, reasoning-capable, structured-output disabled, streaming turned off) so UI + routing logic can surface the direct Google option beside the existing OpenRouter variant.
+  - `server/services/gemini.ts`: Registered the new key and generalized the reasoning/thinking detection + generation config helpers so Gemini 3 models inherit the same thinking budget handling and capability reporting as 2.5-series models.
+
+### Version 5.28.2
+
+- **Poetiq ARC2 Batch Runner Update** (Author: Codex (GPT-5))
+  - Script now targets the first 20 ARC2-Eval puzzles automatically so batch runs match the latest request volume.
+  - Default expert count increased to two, aligning with the desired Poetiq multi-expert configuration.
+  - Logging is ASCII-only and progress/summary metrics now derive from the actual puzzle count (no more hard-coded `/10` output).
+  - Added guardrails for missing `sessionId` and failed status polls to surface actionable errors instead of silent hangs.
+
+### Version 5.28.1
+
+- **Poetiq API Key Fallback & Streaming Fields** (Author: Cascade using Claude Sonnet 4)
+  - **API Key Now Optional**: Users can start solver without providing an API key
+  - **Fallback Behavior**: When API key is missing/invalid, server uses its environment variables
+  - **UI Updates**: 
+    - Control panel shows "API Key (Optional)" with explanation
+    - Fallback notice shown in streaming panel when using server key
+    - Placeholder text indicates "(optional)" in all API key fields
+  - **Hook Updates**: Added streaming fields to `usePoetiqProgress`:
+    - `streamingText`, `streamingReasoning`, `streamingCode`
+    - `logLines` array for activity tracking
+    - `usingFallback` indicator
+  - **Server Updates**: `poetiqController` validates API key format, falls back gracefully
+
+### Version 5.28.0
+
+- **Major Poetiq UI Overhaul - Saturn's Exact Layout Pattern** (Author: Cascade using Claude Sonnet 4)
+  - **Goal**: Match Saturn's information density with Python terminal output instead of image gallery
+  - **Layout**: Saturn's exact 12-column grid: LEFT (4 cols) + CENTER (5 cols) + RIGHT (3 cols)
+  
+  **New Components Created:**
+  - `PoetiqControlPanel.tsx` - Saturn-style visible controls (NO collapsing), GPT-5 Nano/Mini options, reasoning effort settings
+  - `PoetiqPythonTerminal.tsx` - Python execution terminal showing test results, errors, generated code (replaces Saturn's image gallery)
+  - `PoetiqStreamingVisualizer.tsx` - Saturn-style streaming display
+  - `PoetiqStreamingModal.tsx` - Grover-style pop-out modal
+  - `PoetiqLiveActivityStream.tsx` - Activity log with color-coded entries
+  
+  **PoetiqSolver.tsx - Saturn's Exact Layout:**
+  - **LEFT (4 cols)**: Control panel cards + puzzle grids (training/test)
+  - **CENTER (5 cols)**: Token metrics bar + AI REASONING (blue box) + GENERATED CODE (green box)
+  - **RIGHT (3 cols)**: Python execution terminal with iteration results
+  
+  **Key Features Matching Saturn:**
+  - Token/metrics bar at top of center column
+  - Dual streaming boxes: AI REASONING (blue) + AI OUTPUT (green)
+  - All controls visible by default (no collapse)
+  - GPT-5 Nano (Recommended) and GPT-5 Mini model options
+  - Reasoning effort configuration for GPT-5 models
+  - OpenAI Direct, OpenRouter, and Gemini Direct providers
+  
+  **Plan Document**: `docs/plans/2025-11-26-poetiq-improvement-plan.md`
+
+### Version 5.27.4
+
+- **Fix Poetiq Railway Deployment - Handle Missing Submodule** (Author: Cascade using Claude Sonnet 4)
+  - **Issue**: Railway build fails because git submodule (poetiq-solver) not included in build context
+  - **Root Cause**: Railway's Docker build doesn't automatically include git submodules
+  - **Fix 1**: Added Poetiq dependencies to main requirements.txt (litellm, asynciolimiter, scipy)
+  - **Fix 2**: Added graceful error handling in poetiq_wrapper.py for missing submodule
+  - **Fix 3**: Clear error message to users when Poetiq not available
+  - **Impact**: Build now succeeds, Poetiq shows helpful error if submodule missing
+
+### Version 5.27.3
+
+- **Fix Poetiq Community Page UX - Actually Start Solver** (Author: Cascade using Claude Sonnet 4)
+  - **Bug**: "Run Solver" button just navigated to another page, losing user's API key and settings
+  - **Root Cause**: `handleRunNext()` only called `navigate()` instead of starting the solver
+  - **Fix**: Button now starts solver directly on the community page with inline progress display
+  - **Added**: Live progress panel showing status, iteration progress bar, and results
+  - **Added**: Auto-refresh of puzzle grid after solver completes
+  - **Added**: Visual feedback with spinner during solving, checkmark/x on completion
+  - **Impact**: Users can now enter API key once and watch solver progress without leaving the page
+
+### Version 5.27.2
+
+- **Fix Poetiq Community Progress Data Accuracy** (Author: Cascade using Claude Sonnet 4)
+  - **Bug #1 - Wrong Puzzle Count**: Page showed 114 puzzles instead of 120 because puzzle loader deduplicates overlapping ARC1/ARC2 IDs
+    - **Fix**: Created dedicated `/api/poetiq/community-progress` endpoint that reads ALL 120 puzzle IDs directly from file system
+  - **Bug #2 - Incorrect Status**: All puzzles showed as "attempted" because `/api/puzzle/bulk-status` returns most recent explanation regardless of model
+    - **Fix**: New endpoint queries only `WHERE model_name LIKE 'poetiq-%'` to get Poetiq-specific explanations
+  - **New Repository Method**: Added `getPoetiqExplanationsForPuzzles()` to `ExplanationRepository` for Poetiq-filtered queries
+  - **Updated Hook**: `usePoetiqCommunityProgress` now uses dedicated endpoint instead of incorrect bulk-status approach
+
+### Version 5.27.1
+
+- **Poetiq API Key Security Enhancements** (Author: Cascade using Claude Sonnet 4)
+  - **HTTPS Enforcement**: Production servers now require HTTPS for API key submissions to prevent plaintext transmission
+  - **Key Validation**: Added basic format validation (minimum length, character set) to reject malformed keys before processing
+  - **Enhanced User Communication**: Added detailed security explanation box on community page with clear bullet points
+  - **Response Safety**: Ensured API keys are never included in any API responses, only provider type
+  - **Security Documentation**: Updated UI to explain zero-persistence security model (process isolation, no storage, immediate destruction)
+
+### Version 5.27.0
+
+- **Poetiq Community Solver Page** (Author: Cascade using Claude Sonnet 4)
+  - **New Landing Page**: Created `/poetiq` page explaining Poetiq code-generation methodology in plain language
+  - **Visual Progress Grid**: Shows all 120 ARC2-eval puzzles with color-coded status (solved/attempted/unattempted)
+  - **Community Quick Start**: BYO API key configuration for Gemini Direct or OpenRouter providers
+  - **Progress Dashboard**: Real-time stats showing completion percentage and remaining puzzles
+  - **Collapsible Explainer**: Detailed comparison of direct prediction vs code generation approaches
+  - **Navigation Integration**: Added "Poetiq Solver" link under Misc dropdown in navigation
+  - **Enhanced Hook**: `usePoetiqCommunityProgress` fetches all puzzle statuses with filtering capabilities
+  - **Reusable Components**: `PoetiqExplainer` and `PuzzleProgressGrid` components for modular design
+  - **Community Pooling**: Enables 20 people × 6 puzzles approach to complete full dataset
+  - **Model Support**: Multiple OpenRouter models with speed/cost indicators (Gemini 2.5 Pro/Flash, Claude Sonnet 4, GPT-4o)
+
+### Version 5.26.1
+
+- **Fix Poetiq WebSocket Connection** (Author: Cascade using Claude Sonnet 4)
+  - **Root Cause**: Poetiq solver was trying to connect to `/ws?sessionId=...` which was rejected by the wsService verifyClient whitelist that only allowed Saturn and Grover paths
+  - **Server Fix**: Added `/api/poetiq/progress` to WebSocket whitelist in `server/services/wsService.ts` alongside `/api/saturn/progress` and `/api/grover/progress`
+  - **Client Fix**: Updated `client/src/hooks/usePoetiqProgress.ts` to use the correct URL pattern `/api/poetiq/progress?sessionId=...` with proper dev host detection (`localhost:5000` in dev, `location.host` in prod)
+  - **Payload Fix**: Fixed message parsing to handle the `{ type, data }` payload structure that wsService broadcasts
+  - **Logging**: Added connection lifecycle logging for debugging
+
+### Version 5.26.0
+
+- **ARC2-Eval Progress Tracking & Bug Fixes** (Author: Cascade using Claude Sonnet 4)
+  - **ARC2-Eval Progress Dashboard**: Added `useArc2EvalProgress` hook and progress card showing total/attempted/solved puzzles
+  - **Bulk Status Endpoint**: Created `POST /api/puzzle/bulk-status` for efficient explanation status lookup across multiple puzzles
+  - **Poetiq Filtering**: Progress tracking filters for Poetiq solver results only (models starting with 'poetiq-')
+  - **Current Puzzle Status**: Shows whether current ARC2-eval puzzle is solved/attempted with previous model info
+  - **Fixed API Parameter**: Changed from `dataset=ARC2-Eval` to `source=ARC2-Eval` for correct puzzle list endpoint
+  - **Fixed Response Structure**: Updated hook to handle array directly in response data, not nested under `puzzles`
+  - **Fixed TypeScript Error**: Corrected `formatResponse.error()` call to provide required error and message parameters
+  - **Fixed DOM Warnings**: Added `autoComplete="new-password"` to API key input and wrapped in form element
+  - **Better Error Handling**: Added console logging for debugging ARC2-eval progress issues
+
+### Version 5.25.0
+
+- **Poetiq BYO API Key & Expert Configuration** (Author: Cascade using Claude Sonnet 4)
+  - **Bring Your Own Key**: Users can now paste their own Gemini or OpenRouter API key directly in the UI
+  - **Key never stored**: API key is passed only to the solver process environment, never logged or persisted
+  - **Expert count selector**: Choose 1, 2, 4, or 8 parallel experts (default: 2 = Gemini-3-b config)
+  - **Provider selection**: Choose between Gemini Direct or OpenRouter
+  - **Default changed to 2 experts**: Updated `poetiq-solver/arc_agi/config.py` to use NUM_EXPERTS=2 by default
+  - **Dynamic config**: Python wrapper now builds per-request CONFIG_LIST based on user options
+  - **Beautiful UI**: Redesigned PoetiqSolver.tsx with clear BYO key messaging and expert explanations
+  - **ARC2-Eval Progress Tracking**: Added `useArc2EvalProgress` hook to show which ARC2-eval puzzles have been solved/attempted
+  - **Progress Dashboard**: New ARC2-Eval Progress card shows total/attempted/solved counts, completion percentage, and current puzzle status
+
+### Version 5.24.0
+
+- **Poetiq OpenRouter Support & UI** (Author: Cascade using Claude Sonnet 4)
+  - **OpenRouter integration**: Added support for routing Poetiq solver through OpenRouter to avoid Gemini direct API rate limits
+  - **Updated Poetiq solver files**: `arc_agi/types.py`, `arc_agi/llm.py`, `arc_agi/config.py` now support OpenRouter model IDs
+  - **Environment variable**: Set `USE_OPENROUTER=true` to automatically use OpenRouter
+  - **Created PoetiqSolver.tsx UI page**: New page at `/puzzle/poetiq/:taskId` for running the Poetiq solver with model selection
+  - **Created usePoetiqProgress hook**: WebSocket-based progress tracking hook
+  - **Rate limit mitigation plan**: Created `docs/plans/2025-11-25-poetiq-rate-limit-plan.md`
+  - **94 untested puzzles**: From ARC Prize 2025 evaluation set ready to run via OpenRouter
+
+### Version 5.23.0
+
+- **Poetiq ARC-AGI Solver Integration** (Author: Cascade using Claude Sonnet 4)
+  - **Added Poetiq solver as git submodule**: Integrated the Poetiq ARC-AGI solver (https://github.com/82deutschmark/poetiq-arc-agi-solver) as a submodule at `poetiq-solver/`. This solver claims SOTA results using iterative code generation with LiteLLM.
+  - **Created Python bridge wrapper** (`server/python/poetiq_wrapper.py`): NDJSON-streaming bridge that runs the Poetiq solver via subprocess, emitting progress events for WebSocket broadcasting and capturing iteration data, generated code, and predictions.
+  - **Created PoetiqService** (`server/services/poetiq/poetiqService.ts`): TypeScript service wrapping Python execution, transforming Poetiq results to standard explanation format for database storage. Stores Poetiq-specific data (iterations, generated code, config) in `providerRawResponse` JSONB field.
+  - **Created PoetiqController** (`server/controllers/poetiqController.ts`): API controller with endpoints:
+    - `POST /api/poetiq/solve/:taskId` - Run Poetiq solver on a single puzzle (async with WebSocket progress)
+    - `POST /api/poetiq/batch` - Run Poetiq solver on entire dataset (arc1, arc2, arc2-eval, arc-heavy, concept-arc)
+    - `GET /api/poetiq/batch/:sessionId` - Get batch progress and results
+    - `GET /api/poetiq/status/:sessionId` - Get single solver progress
+    - `GET /api/poetiq/models` - List supported Poetiq models (Gemini, GPT-5, Claude, Grok via LiteLLM)
+  - **Integration plan document** (`docs/plans/2025-11-25-poetiq-integration-plan.md`): Critical assessment of Poetiq methodology including architecture analysis, concerns for reproducibility, and integration strategy.
+  - **Key differences from other solvers**: Poetiq uses iterative code generation (generates Python `transform()` functions) rather than direct grid prediction, with sandboxed execution and voting across parallel experts. Results include generated code and iteration history alongside predictions.
+
 ### Version 5.22.11
 
 - Official Scoring Page Dataset Header (Author: Cascade)

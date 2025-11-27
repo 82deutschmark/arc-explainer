@@ -1,9 +1,9 @@
 /*
  *
- * Author: Claude Code using Sonnet 4.5
- * Date: 2025-11-20
+ * Author: Cascade using Claude Sonnet 4
+ * Date: 2025-11-26
  * PURPOSE: Centralized AI model configuration list consumed by ModelDefinitions and provider lookup utilities.
- *          Updated Sherlock Think Alpha → Grok 4.1 Fast Reasoning (revealed Nov 20, 2025).
+ *          Added openrouter/bert-nebulon-alpha cloaked model (Nov 24, 2025).
  * SRP/DRY check: Pass - file encapsulates shared model metadata without duplication.
  * shadcn/ui: Pass - configuration only.
  */
@@ -181,6 +181,24 @@ export const MODELS: ModelConfig[] = [
     contextWindow: 400000,
     releaseDate: "2025-08"
   },
+  { 
+    key: 'gpt-5.1-codex-mini', 
+    name: 'GPT-5.1 Codex Mini', 
+    color: 'bg-amber-600', 
+    premium: true,
+    cost: { input: '$0.25', output: '$2.00' },
+    supportsTemperature: false,
+    supportsStreaming: true,
+    provider: 'OpenAI',
+    responseTime: { speed: 'moderate', estimate: '30-60 sec' },
+    isReasoning: true,
+    apiModelName: 'gpt-5.1-codex-mini',
+    modelType: 'gpt5',
+    contextWindow: 400000,
+    maxOutputTokens: 128000,
+    releaseDate: "2025-11",
+    notes: 'Sep 30, 2024 knowledge cutoff; reasoning token support.'
+  },
 
   // Anthropic Models
   {
@@ -291,6 +309,26 @@ export const MODELS: ModelConfig[] = [
   },
 
   
+  {
+    key: 'gemini-3-pro-preview',
+    name: 'Gemini 3 Pro Preview',
+    color: 'bg-teal-700',
+    premium: true,
+    cost: { input: '$2.00 - $4.00', output: '$12.00 - $18.00' },
+    supportsTemperature: true,
+    provider: 'Gemini',
+    responseTime: { speed: 'moderate', estimate: '1-2 min' },
+    isReasoning: true,
+    apiModelName: 'models/gemini-3-pro-preview',
+    modelType: 'gemini',
+    contextWindow: 1048576,
+    maxOutputTokens: 65536,
+    releaseDate: "2025-11",
+    supportsStreaming: false,
+    supportsStructuredOutput: false,
+    supportsVision: true,
+    notes: 'Direct Gemini API (preview). Keep JSON-mode disabled to preserve reasoning traces.'
+  },
   {
     key: 'gemini-2.5-pro',
     name: 'Gemini 2.5 Pro',
@@ -861,6 +899,24 @@ export const MODELS: ModelConfig[] = [
     contextWindow: 2000000,
     maxOutputTokens: 50000,
     releaseDate: "2025-11"
+  },
+
+  // Cloaked Models (OpenRouter Arena - identity TBD)
+  {
+    key: 'openrouter/bert-nebulon-alpha',
+    name: 'Bert Nebulon Alpha',
+    color: 'bg-slate-500',
+    premium: false,
+    cost: { input: '$0.00', output: '$0.00' },
+    supportsTemperature: true,
+    provider: 'OpenRouter',
+    responseTime: { speed: 'moderate', estimate: '1-2 min' },
+    isReasoning: false,
+    apiModelName: 'openrouter/bert-nebulon-alpha',
+    modelType: 'openrouter',
+    contextWindow: 256000,
+    releaseDate: "2025-11",
+    notes: 'Cloaked model (Nov 24, 2025). Identity TBD. Add normalizer mapping when revealed.'
   },
 
 ];

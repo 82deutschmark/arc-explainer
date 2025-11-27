@@ -67,6 +67,24 @@ const corsOptions = {
 // Apply CORS middleware first before any other middleware
 app.use(cors(corsOptions));
 
+// Trust proxy headers from Railway/nginx/etc (required for req.protocol to work behind reverse proxy)
+app.set('trust proxy', 1);
+
+// Enforce HTTPS for API key submissions in production
+if (app.get("env") === "production") {
+  app.use('/api/poetiq/solve', (req, res, next) => {
+    // Check both req.protocol (with trust proxy) and X-Forwarded-Proto header
+    const isHttps = req.protocol === 'https' || req.get('X-Forwarded-Proto') === 'https';
+    if (!isHttps) {
+      return res.status(400).json({
+        error: 'HTTPS required',
+        message: 'API keys must be transmitted over HTTPS for security'
+      });
+    }
+    next();
+  });
+}
+
 // CORS middleware handles all headers automatically - no manual headers needed
 
 // Increase body parser limit to handle large AI responses (reasoning_items, etc.)

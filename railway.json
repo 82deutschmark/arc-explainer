@@ -9,15 +9,15 @@
     "startCommand": "node dist/index.js",
     "healthcheckPath": "/api/health",
     "healthcheckTimeout": 300,
-    "numReplicas": 1,
-    "env": {
-      "STREAMING_ENABLED": "true"
-    },
-    "volumes": [
-      {
-        "name": "arc_explainer_data",
-        "mountPoint": "/app/data"
-      }
-    ]
-  }
+    "numReplicas": 1
+  },
+  "env": {
+    "STREAMING_ENABLED": "true"
+  },
+  "volumes": [
+    {
+      "name": "arc_explainer_data",
+      "mountPoint": "/app/data"
+    }
+  ]
 }

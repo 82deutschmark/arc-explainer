@@ -36,7 +36,7 @@
     "@jridgewell/trace-mapping": "^0.3.25",
     "@modelcontextprotocol/sdk": "^1.21.0",
     "@neondatabase/serverless": "^0.10.4",
-    "@openai/agents": "^0.1.9",
+    "@openai/agents": "^0.1.11",
     "@radix-ui/react-accordion": "^1.2.4",
     "@radix-ui/react-alert-dialog": "^1.1.7",
     "@radix-ui/react-aspect-ratio": "^1.1.3",
