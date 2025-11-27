@@ -13,7 +13,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'wouter';
-import { Loader2, ArrowLeft, Square } from 'lucide-react';
+import { Loader2, ArrowLeft, Square, ChevronDown, ChevronUp, Settings } from 'lucide-react';
 import { usePuzzle } from '@/hooks/usePuzzle';
 import { usePoetiqProgress } from '@/hooks/usePoetiqProgress';
 import { PuzzleGrid } from '@/components/puzzle/PuzzleGrid';
@@ -37,6 +37,8 @@ export default function PoetiqSolver() {
   const [temperature, setTemperature] = useState(1.0);
   const [executions, setExecutions] = useState<any[]>([]);
   const [autoStartTriggered, setAutoStartTriggered] = useState(false);
+  const [cameFromCommunity, setCameFromCommunity] = useState(false);
+  const [showControls, setShowControls] = useState(true);
 
   // Set page title
   useEffect(() => {
@@ -61,14 +63,18 @@ export default function PoetiqSolver() {
         if (config.numExperts) setNumExperts(config.numExperts);
         if (config.temperature) setTemperature(config.temperature);
         
-        // Auto-start if configured
-        if (config.autoStart && config.apiKey && task) {
+        // Auto-start if configured and task is loaded
+        // API key is optional - server falls back to project key
+        if (config.autoStart && task) {
           setAutoStartTriggered(true);
+          setCameFromCommunity(true);
+          setShowControls(false); // Hide controls when auto-starting
+          
           // Small delay to let state settle
           setTimeout(() => {
             const poetiqProvider = config.provider === 'openai' ? 'openrouter' : config.provider;
             start({
-              apiKey: config.apiKey,
+              apiKey: config.apiKey || '', // Empty string uses server key
               provider: poetiqProvider,
               model: config.model,
               numExperts: config.numExperts || 2,
@@ -207,25 +213,59 @@ export default function PoetiqSolver() {
           
           {/* LEFT: Control Panel + Puzzle Grids (4 cols) */}
           <div className="col-span-4 flex flex-col gap-2 overflow-y-auto">
-            {/* Control Panel */}
-            <PoetiqControlPanel
-              state={state}
-              isRunning={isRunning}
-              apiKey={apiKey}
-              setApiKey={setApiKey}
-              provider={provider}
-              setProvider={setProvider}
-              model={model}
-              setModel={setModel}
-              numExperts={numExperts}
-              setNumExperts={setNumExperts}
-              maxIterations={maxIterations}
-              setMaxIterations={setMaxIterations}
-              temperature={temperature}
-              setTemperature={setTemperature}
-              onStart={handleStart}
-              onCancel={cancel}
-            />
+            {/* Compact Status Header (always visible) */}
+            <div className="bg-white border border-gray-300 rounded p-2">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <div className={`w-2 h-2 rounded-full ${isRunning ? 'bg-green-500 animate-pulse' : isDone ? 'bg-blue-500' : hasError ? 'bg-red-500' : 'bg-gray-400'}`} />
+                  <span className="text-xs font-bold text-gray-700">
+                    {isRunning ? 'RUNNING' : isDone ? 'COMPLETED' : hasError ? 'ERROR' : 'READY'}
+                  </span>
+                  {isRunning && state.iteration !== undefined && (
+                    <span className="text-xs text-gray-500">• Iteration {state.iteration}/{state.totalIterations || '?'}</span>
+                  )}
+                </div>
+                <div className="flex items-center gap-1">
+                  {isRunning && (
+                    <button onClick={cancel} className="btn btn-error btn-xs">
+                      <Square className="h-3 w-3" /> Stop
+                    </button>
+                  )}
+                  <button
+                    onClick={() => setShowControls(!showControls)}
+                    className="btn btn-ghost btn-xs"
+                  >
+                    <Settings className="h-3 w-3" />
+                    {showControls ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
+                  </button>
+                </div>
+              </div>
+              {cameFromCommunity && !showControls && !isRunning && !isDone && (
+                <p className="text-xs text-gray-500 mt-1">Auto-starting with community settings...</p>
+              )}
+            </div>
+
+            {/* Full Control Panel (collapsible) */}
+            {showControls && (
+              <PoetiqControlPanel
+                state={state}
+                isRunning={isRunning}
+                apiKey={apiKey}
+                setApiKey={setApiKey}
+                provider={provider}
+                setProvider={setProvider}
+                model={model}
+                setModel={setModel}
+                numExperts={numExperts}
+                setNumExperts={setNumExperts}
+                maxIterations={maxIterations}
+                setMaxIterations={setMaxIterations}
+                temperature={temperature}
+                setTemperature={setTemperature}
+                onStart={handleStart}
+                onCancel={cancel}
+              />
+            )}
 
             {/* Puzzle Display - Training & Test Grids (Saturn style) */}
             <div className="bg-white border border-gray-300 rounded">
