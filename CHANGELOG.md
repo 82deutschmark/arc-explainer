@@ -1,6 +1,21 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top!!!
 
+### Version 5.28.8
+
+- **Fix Poetiq Pages - Dynamic Models from API** (Author: Cascade using Claude Sonnet 4)
+  - **Solver page** (`/puzzle/poetiq/:taskId`):
+    - Uses `useModels()` hook to fetch ALL models from `/api/models` endpoint
+    - Groups by provider (OpenRouter, OpenAI, Gemini)
+    - No hardcoded model lists - uses actual server config
+    - Shows 🧠 for reasoning models
+  - **Community page** (`/poetiq`):
+    - Locked to Gemini 3 Pro Preview model
+    - Now allows BOTH OpenRouter AND Gemini Direct providers
+    - Added provider dropdown (same model, choice of API)
+  - **Both pages**: Expert options 1, 2, 8 only (Gemini-3-a/b/c)
+  - **Files**: `PoetiqControlPanel.tsx`, `PoetiqCommunity.tsx`
+
 ### Version 5.28.7
 
 - **Differentiate Poetiq Pages - Community vs Solver** (Author: Cascade using Claude Sonnet 4)
