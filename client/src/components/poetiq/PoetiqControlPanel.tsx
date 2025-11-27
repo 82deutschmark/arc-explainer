@@ -11,7 +11,7 @@
  */
 
 import React, { useMemo, useEffect } from 'react';
-import { Rocket, Square, Key, Users, AlertTriangle, Loader2, Cpu, Cloud, Server, Zap } from 'lucide-react';
+import { Key, Users, AlertTriangle, Loader2, Cpu, Cloud, Server } from 'lucide-react';
 import type { PoetiqProgressState } from '@/hooks/usePoetiqProgress';
 import { usePoetiqModels } from '@/hooks/usePoetiqModels';
 
@@ -147,38 +147,8 @@ export default function PoetiqControlPanel({
     : 'API Key...';
 
   return (
-    <div className="space-y-2">
-      {/* Start Button - HERO SECTION */}
-      <div className={`rounded-lg p-4 border-2 transition-all ${isRunning ? 'bg-red-50 border-red-400' : 'bg-gradient-to-r from-green-50 to-emerald-50 border-green-400'}`}>
-        <div className="flex items-center gap-3 mb-3">
-          <div className={`w-4 h-4 rounded-full ${isRunning ? 'bg-red-500 animate-pulse' : 'bg-green-500 animate-pulse'}`} />
-          <span className="text-base font-bold text-gray-800">
-            {isRunning ? 'POETIQ RUNNING' : 'READY TO START'}
-          </span>
-        </div>
-        <button
-          onClick={isRunning ? onCancel : onStart}
-          disabled={!canStart && !isRunning}
-          className={`w-full py-4 px-6 rounded-lg font-bold text-lg flex items-center justify-center gap-3 transition-all shadow-lg hover:shadow-xl ${isRunning 
-            ? 'bg-red-600 hover:bg-red-700 text-white' 
-            : 'bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white'} disabled:opacity-50 disabled:cursor-not-allowed`}
-        >
-          {isRunning ? (
-            <>
-              <Square className="h-6 w-6" />
-              Stop Solver
-            </>
-          ) : (
-            <>
-              <Rocket className="h-6 w-6" />
-              <span>Start Poetiq Meta-System</span>
-              <Zap className="h-5 w-5 text-yellow-300" />
-            </>
-          )}
-        </button>
-      </div>
-
-      {/* Reasoning Engine Selection (LLM-Agnostic) */}
+    <div className="space-y-3">
+      {/* Reasoning Engine Selection (LLM-Agnostic) - Start button is now in header */}
       <div className="card bg-white border border-gray-300 shadow-sm">
         <div className="card-body p-4">
           <h3 className="card-title text-sm flex items-center gap-2 text-indigo-900">

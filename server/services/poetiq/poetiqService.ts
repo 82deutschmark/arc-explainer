@@ -95,6 +95,7 @@ export interface PoetiqResult {
     maxIterations?: number;
     temperature?: number;
     numExperts?: number;
+    provider?: 'gemini' | 'openrouter';
   };
   error?: string;
   traceback?: string;
@@ -141,6 +142,54 @@ export class PoetiqService {
   constructor() {
     this.pythonBin = process.env.PYTHON_BIN || (process.platform === 'win32' ? 'python' : 'python3');
     this.wrapperPath = path.join(process.cwd(), 'server', 'python', 'poetiq_wrapper.py');
+  }
+
+  private getDefaultModelForProvider(provider?: 'gemini' | 'openrouter'): string {
+    if (provider === 'gemini') {
+      return 'gemini/gemini-3-pro-preview';
+    }
+    return 'openrouter/google/gemini-3-pro-preview';
+  }
+
+  private resolveProvider(options: PoetiqOptions, existing?: PoetiqResult['config']): 'gemini' | 'openrouter' | undefined {
+    if (existing?.provider === 'gemini' || existing?.provider === 'openrouter') {
+      return existing.provider;
+    }
+    if (options.provider === 'gemini' || options.provider === 'openrouter') {
+      return options.provider;
+    }
+    const candidate = existing?.model || options.model;
+    if (candidate?.startsWith('gemini/')) {
+      return 'gemini';
+    }
+    if (candidate?.startsWith('openrouter/')) {
+      return 'openrouter';
+    }
+    return undefined;
+  }
+
+  private enrichResultWithConfig(result: PoetiqResult, options: PoetiqOptions): PoetiqResult {
+    const providerGuess = this.resolveProvider(options, result.config);
+    const resolvedModel = result.config?.model || options.model || this.getDefaultModelForProvider(providerGuess);
+    const normalizedProvider =
+      providerGuess ??
+      (resolvedModel.startsWith('gemini/')
+        ? 'gemini'
+        : resolvedModel.startsWith('openrouter/')
+          ? 'openrouter'
+          : undefined);
+
+    return {
+      ...result,
+      config: {
+        ...result.config,
+        model: resolvedModel,
+        maxIterations: result.config?.maxIterations ?? options.maxIterations ?? 10,
+        numExperts: result.config?.numExperts ?? options.numExperts ?? 2,
+        temperature: result.config?.temperature ?? options.temperature ?? 1.0,
+        provider: normalizedProvider,
+      },
+    };
   }
 
   /**
@@ -264,9 +313,9 @@ export class PoetiqService {
             }
           }
 
-          // Capture final result
+          // Capture final result with sanitized config metadata
           if (event.type === 'final') {
-            finalResult = event.result;
+            finalResult = this.enrichResultWithConfig(event.result, options);
           }
 
           // Log errors to console
@@ -340,6 +389,22 @@ export class PoetiqService {
     });
   }
 
+  private slugifyModelId(modelId?: string | null): string {
+    if (!modelId || typeof modelId !== 'string') {
+      return 'unknown';
+    }
+
+    const cleaned = modelId
+      .trim()
+      .toLowerCase()
+      .replace(/[^a-z0-9\/_.-]/g, '-')
+      .replace(/[\/\.]+/g, '-')
+      .replace(/-+/g, '-')
+      .replace(/^-|-$/g, '');
+
+    return cleaned || 'unknown';
+  }
+
   /**
    * Transform Poetiq result to standard explanation format for database storage
    */
@@ -385,10 +450,13 @@ export class PoetiqService {
     // Trustworthiness based on actual test accuracy if available
     const trustworthiness = result.accuracy !== undefined ? result.accuracy * 100 : null;
 
+    const resolvedModelId = result.config?.model || 'unknown';
+    const modelSlug = this.slugifyModelId(resolvedModelId);
+
     return {
       puzzleId: result.puzzleId,
-      // Extract clean model name: "gemini/gemini-3-pro-preview" -> "poetiq-gemini-3-pro-preview"
-      modelName: `poetiq-${(result.config?.model || 'gemini-3-pro').split('/').pop()?.replace(/\//g, '-') || 'unknown'}`,
+      // Preserve entire routing path so OpenRouter vs direct runs stay distinct
+      modelName: `poetiq-${modelSlug}`,
       patternDescription,
       solvingStrategy,
       hints,

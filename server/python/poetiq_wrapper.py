@@ -440,7 +440,8 @@ async def run_poetiq_solver(puzzle_id: str, task: dict, options: dict) -> dict:
                     break
             
             iteration_data.append(iteration_info)
-        
+        resolved_config = config_list[0] if config_list else {}
+
         return {
             "success": True,
             "puzzleId": puzzle_id,
@@ -454,10 +455,10 @@ async def run_poetiq_solver(puzzle_id: str, task: dict, options: dict) -> dict:
             "bestTrainScore": best_train_score,
             "elapsedMs": int(elapsed * 1000),
             "config": {
-                "model": CONFIG_LIST[0].get("llm_id") if CONFIG_LIST else None,
-                "maxIterations": CONFIG_LIST[0].get("max_iterations") if CONFIG_LIST else None,
-                "temperature": CONFIG_LIST[0].get("solver_temperature") if CONFIG_LIST else None,
-                "numExperts": len(CONFIG_LIST),
+                "model": resolved_config.get("llm_id"),
+                "maxIterations": resolved_config.get("max_iterations"),
+                "temperature": resolved_config.get("solver_temperature"),
+                "numExperts": len(config_list) if config_list else 0,
             }
         }
         

@@ -13,7 +13,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'wouter';
-import { Loader2, ArrowLeft, Square, ChevronDown, ChevronUp, Clock, Activity, Timer, Gauge, Layers } from 'lucide-react';
+import { Loader2, ArrowLeft, Square, ChevronDown, ChevronUp, Activity, Timer, Gauge, Layers, Copy, Check, Rocket } from 'lucide-react';
 import { usePuzzle } from '@/hooks/usePuzzle';
 import { usePoetiqProgress } from '@/hooks/usePoetiqProgress';
 import { PuzzleGrid } from '@/components/puzzle/PuzzleGrid';
@@ -40,8 +40,8 @@ export default function PoetiqSolver() {
   const [executions, setExecutions] = useState<any[]>([]);
   const [autoStartTriggered, setAutoStartTriggered] = useState(false);
   const [cameFromCommunity, setCameFromCommunity] = useState(false);
-  // Controls are always visible now (removed collapsible behavior per user feedback)
   const [showLogs, setShowLogs] = useState(true);  // Show event log panel
+  const [copied, setCopied] = useState(false);  // For copy button feedback
   
   // Timing state for visibility
   const [startTime, setStartTime] = useState<Date | null>(null);
@@ -265,218 +265,200 @@ export default function PoetiqSolver() {
 
   return (
     <div className="h-screen flex flex-col bg-gray-100">
-      {/* Header - Information Dense */}
-      <header className="flex items-center justify-between px-4 py-2 border-b bg-gradient-to-r from-indigo-900 to-purple-900 text-white">
-        <div className="flex items-center gap-4">
-          <Link href="/poetiq" className="flex items-center gap-1 text-indigo-200 hover:text-white transition-colors">
-            <ArrowLeft className="h-4 w-4" />
-            <span className="text-sm">Back</span>
+      {/* Header - Spacious with inline controls when not running */}
+      <header className="flex items-center justify-between px-6 py-3 border-b bg-gradient-to-r from-indigo-900 to-purple-900 text-white">
+        <div className="flex items-center gap-6">
+          <Link href="/poetiq" className="flex items-center gap-2 text-indigo-200 hover:text-white transition-colors">
+            <ArrowLeft className="h-5 w-5" />
+            <span>Back</span>
           </Link>
-          <div className="h-6 w-px bg-indigo-600" />
+          <div className="h-8 w-px bg-indigo-600" />
           <div>
-            <h1 className="text-lg font-bold">Poetiq Meta-System</h1>
-            <p className="text-xs text-indigo-300 font-mono">{taskId}</p>
+            <h1 className="text-xl font-bold">Poetiq Meta-System</h1>
+            <p className="text-sm text-indigo-300 font-mono">{taskId}</p>
           </div>
         </div>
         
-        {/* Key Metrics in Header (no wasted space) */}
-        <div className="flex items-center gap-4">
+        {/* Right side: Status + Metrics + Controls */}
+        <div className="flex items-center gap-6">
           {/* Status Indicator */}
-          <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10">
-            <div className={`w-2.5 h-2.5 rounded-full ${isRunning ? 'bg-green-400 animate-pulse' : isDone ? 'bg-blue-400' : hasError ? 'bg-red-400' : 'bg-gray-400'}`} />
-            <span className="text-sm font-medium">
+          <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/10">
+            <div className={`w-3 h-3 rounded-full ${isRunning ? 'bg-green-400 animate-pulse' : isDone ? 'bg-blue-400' : hasError ? 'bg-red-400' : 'bg-gray-400'}`} />
+            <span className="font-medium">
               {isRunning ? 'RUNNING' : isDone ? 'DONE' : hasError ? 'ERROR' : 'READY'}
             </span>
           </div>
           
-          {/* Iteration Counter */}
-          <div className="flex items-center gap-1.5 px-3 py-1.5 rounded bg-white/10">
-            <Layers className="h-4 w-4 text-indigo-300" />
-            <span className="text-sm font-mono">
-              {state.iteration ?? 0}/{state.totalIterations ?? maxIterations}
-            </span>
-          </div>
+          {/* Metrics - only show when running/done */}
+          {(isRunning || isDone) && (
+            <>
+              <div className="flex items-center gap-2 px-4 py-2 rounded bg-white/10">
+                <Layers className="h-5 w-5 text-indigo-300" />
+                <span className="font-mono">
+                  {state.iteration ?? 0}/{state.totalIterations ?? maxIterations}
+                </span>
+              </div>
+              
+              <div className="flex items-center gap-2 px-4 py-2 rounded bg-white/10">
+                <Timer className="h-5 w-5 text-indigo-300" />
+                <span className="font-mono">{formatElapsed(elapsedSeconds)}</span>
+              </div>
+              
+              <div className="flex items-center gap-2 px-4 py-2 rounded bg-white/10">
+                <Gauge className="h-5 w-5 text-indigo-300" />
+                <span className="truncate max-w-[120px]">{state.phase || 'Ready'}</span>
+              </div>
+            </>
+          )}
           
-          {/* Elapsed Time */}
-          <div className="flex items-center gap-1.5 px-3 py-1.5 rounded bg-white/10">
-            <Timer className="h-4 w-4 text-indigo-300" />
-            <span className="text-sm font-mono">{formatElapsed(elapsedSeconds)}</span>
-          </div>
-          
-          {/* Phase */}
-          <div className="flex items-center gap-1.5 px-3 py-1.5 rounded bg-white/10">
-            <Gauge className="h-4 w-4 text-indigo-300" />
-            <span className="text-sm truncate max-w-[100px]">{state.phase || 'Ready'}</span>
-          </div>
-          
-          {/* Stop Button */}
-          {isRunning && (
-            <button onClick={cancel} className="flex items-center gap-1.5 px-3 py-1.5 rounded bg-red-600 hover:bg-red-700 transition-colors">
-              <Square className="h-4 w-4" />
-              <span className="text-sm font-medium">Stop</span>
+          {/* Start/Stop Button */}
+          {isRunning ? (
+            <button onClick={cancel} className="flex items-center gap-2 px-5 py-2.5 rounded-lg bg-red-600 hover:bg-red-700 transition-colors font-bold">
+              <Square className="h-5 w-5" />
+              Stop
+            </button>
+          ) : !isDone && (
+            <button onClick={handleStart} className="flex items-center gap-2 px-5 py-2.5 rounded-lg bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 transition-colors font-bold">
+              <Rocket className="h-5 w-5" />
+              Start
             </button>
           )}
         </div>
       </header>
 
-      {/* Main Content - Saturn's exact 12-column grid */}
-      <main className="flex-1 overflow-hidden p-2">
-        <div className="h-full grid grid-cols-12 gap-2">
+      {/* Main Content - Dynamic layout based on state */}
+      <main className="flex-1 overflow-hidden p-4">
+        <div className="h-full grid grid-cols-12 gap-4">
           
-          {/* LEFT: Control Panel + Puzzle Grids (4 cols) */}
-          <div className="col-span-4 flex flex-col gap-2 overflow-y-auto">
-            {/* Auto-start notice */}
-            {cameFromCommunity && !isRunning && !isDone && (
-              <div className="bg-blue-50 border border-blue-200 rounded p-2">
-                <p className="text-xs text-blue-700">Auto-starting with community settings...</p>
-              </div>
-            )}
+          {/* LEFT: Control Panel + Puzzle Grids - HIDE when running/done */}
+          {!isRunning && !isDone && (
+            <div className="col-span-4 flex flex-col gap-3 overflow-y-auto">
+              {/* Auto-start notice */}
+              {cameFromCommunity && (
+                <div className="bg-blue-50 border border-blue-200 rounded p-3">
+                  <p className="text-sm text-blue-700">Auto-starting with community settings...</p>
+                </div>
+              )}
 
-            {/* Control Panel - Always Visible (no hidden gear icon) */}
-            <PoetiqControlPanel
-                state={state}
-                isRunning={isRunning}
-                apiKey={apiKey}
-                setApiKey={setApiKey}
-                provider={provider}
-                setProvider={setProvider}
-                model={model}
-                setModel={setModel}
-                numExperts={numExperts}
-                setNumExperts={setNumExperts}
-                maxIterations={maxIterations}
-                setMaxIterations={setMaxIterations}
-                temperature={temperature}
-                setTemperature={setTemperature}
-                reasoningEffort={reasoningEffort}
-                setReasoningEffort={setReasoningEffort}
-                onStart={handleStart}
-                onCancel={cancel}
-            />
+              {/* Control Panel */}
+              <PoetiqControlPanel
+                  state={state}
+                  isRunning={isRunning}
+                  apiKey={apiKey}
+                  setApiKey={setApiKey}
+                  provider={provider}
+                  setProvider={setProvider}
+                  model={model}
+                  setModel={setModel}
+                  numExperts={numExperts}
+                  setNumExperts={setNumExperts}
+                  maxIterations={maxIterations}
+                  setMaxIterations={setMaxIterations}
+                  temperature={temperature}
+                  setTemperature={setTemperature}
+                  reasoningEffort={reasoningEffort}
+                  setReasoningEffort={setReasoningEffort}
+                  onStart={handleStart}
+                  onCancel={cancel}
+              />
 
-            {/* Info Card - Explains Meta-System Architecture */}
-            <PoetiqInfoCard />
+              {/* Info Card */}
+              <PoetiqInfoCard />
 
-            {/* Puzzle Display - Training & Test Grids (Saturn style) */}
-            <div className="bg-white border border-gray-300 rounded">
-              <div className="border-b border-gray-300 bg-gray-50 px-2 py-1">
-                <h2 className="text-xs font-bold text-gray-700">PUZZLE GRIDS</h2>
-              </div>
-              <div className="p-2 space-y-3 max-h-[400px] overflow-y-auto">
-                {/* Training Examples */}
-                {task.train.slice(0, 2).map((example, idx) => (
-                  <div key={`train-${idx}`} className="space-y-1">
-                    <div className="text-[10px] font-bold text-gray-600 uppercase tracking-wide">Training {idx + 1}</div>
-                    <div className="flex gap-2">
-                      <div className="flex-1">
-                        <div className="text-[9px] text-gray-500 mb-0.5">Input</div>
-                        <PuzzleGrid
-                          grid={example.input}
-                          title="Input"
-                          showEmojis={false}
-                          emojiSet={DEFAULT_EMOJI_SET}
-                          compact
-                        />
-                      </div>
-                      <div className="flex-1">
-                        <div className="text-[9px] text-gray-500 mb-0.5">Output</div>
-                        <PuzzleGrid
-                          grid={example.output}
-                          title="Output"
-                          showEmojis={false}
-                          emojiSet={DEFAULT_EMOJI_SET}
-                          compact
-                        />
-                      </div>
-                    </div>
-                  </div>
-                ))}
-
-                {/* Test Cases */}
-                {task.test.map((testCase, idx) => (
-                  <div key={`test-${idx}`} className="space-y-1">
-                    <div className="text-[10px] font-bold text-blue-600 uppercase tracking-wide">Test {idx + 1}</div>
-                    <div className="flex gap-2">
-                      <div className="flex-1">
-                        <div className="text-[9px] text-gray-500 mb-0.5">Input</div>
-                        <PuzzleGrid
-                          grid={testCase.input}
-                          title="Test Input"
-                          showEmojis={false}
-                          emojiSet={DEFAULT_EMOJI_SET}
-                          compact
-                        />
-                      </div>
-                      {testCase.output && (
+              {/* Puzzle Grids */}
+              <div className="bg-white border border-gray-300 rounded">
+                <div className="border-b border-gray-300 bg-gray-50 px-3 py-2">
+                  <h2 className="text-sm font-bold text-gray-700">PUZZLE GRIDS</h2>
+                </div>
+                <div className="p-3 space-y-4 max-h-[500px] overflow-y-auto">
+                  {task.train.slice(0, 2).map((example, idx) => (
+                    <div key={`train-${idx}`} className="space-y-2">
+                      <div className="text-xs font-bold text-gray-600 uppercase tracking-wide">Training {idx + 1}</div>
+                      <div className="flex gap-3">
                         <div className="flex-1">
-                          <div className="text-[9px] text-gray-500 mb-0.5">Expected</div>
-                          <PuzzleGrid
-                            grid={testCase.output}
-                            title="Expected Output"
-                            showEmojis={false}
-                            emojiSet={DEFAULT_EMOJI_SET}
-                            compact
-                          />
+                          <div className="text-xs text-gray-500 mb-1">Input</div>
+                          <PuzzleGrid grid={example.input} title="Input" showEmojis={false} emojiSet={DEFAULT_EMOJI_SET} compact />
                         </div>
-                      )}
+                        <div className="flex-1">
+                          <div className="text-xs text-gray-500 mb-1">Output</div>
+                          <PuzzleGrid grid={example.output} title="Output" showEmojis={false} emojiSet={DEFAULT_EMOJI_SET} compact />
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  ))}
+                  {task.test.map((testCase, idx) => (
+                    <div key={`test-${idx}`} className="space-y-2">
+                      <div className="text-xs font-bold text-blue-600 uppercase tracking-wide">Test {idx + 1}</div>
+                      <div className="flex gap-3">
+                        <div className="flex-1">
+                          <div className="text-xs text-gray-500 mb-1">Input</div>
+                          <PuzzleGrid grid={testCase.input} title="Test Input" showEmojis={false} emojiSet={DEFAULT_EMOJI_SET} compact />
+                        </div>
+                        {testCase.output && (
+                          <div className="flex-1">
+                            <div className="text-xs text-gray-500 mb-1">Expected</div>
+                            <PuzzleGrid grid={testCase.output} title="Expected Output" showEmojis={false} emojiSet={DEFAULT_EMOJI_SET} compact />
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
-          </div>
+          )}
 
-          {/* CENTER: AI Streaming Output (5 cols) - Saturn's exact layout */}
-          <div className="col-span-5 flex flex-col gap-2 min-h-0">
-            {/* Compact event count + last update (main metrics now in header) */}
-            <div className="bg-white border border-gray-300 rounded">
-              <div className="flex items-center justify-between px-3 py-2">
-                <div className="flex items-center gap-4 text-xs">
-                  <span className="text-gray-600">Last Update: <strong className={lastUpdateTime && (Date.now() - lastUpdateTime.getTime()) > 30000 ? 'text-orange-600' : 'text-gray-900'}>{formatLastUpdate()}</strong></span>
-                  <span className="text-gray-600">Events: <strong className="text-gray-900">{state.logLines?.length ?? 0}</strong></span>
-                </div>
-                <div className="text-xs text-gray-500">
-                  {numExperts > 1 && `${numExperts} experts`}
-                </div>
-              </div>
-            </div>
-
+          {/* CENTER: Output - Expands when running */}
+          <div className={`${isRunning || isDone ? 'col-span-8' : 'col-span-5'} flex flex-col gap-3 min-h-0`}>
             {/* Fallback API Key Notice */}
             {state.usingFallback && (
-              <div className="bg-amber-50 border border-amber-300 rounded px-3 py-2 text-xs text-amber-800">
+              <div className="bg-amber-50 border border-amber-300 rounded px-4 py-2 text-sm text-amber-800">
                 <strong>Note:</strong> Using server API key (no BYO key provided)
               </div>
             )}
 
-            {/* Event Log Panel - Timestamped events for visibility */}
-            {(isRunning || (state.logLines?.length ?? 0) > 0) && (
-              <div className="bg-white border border-gray-300 rounded">
-                <button
-                  onClick={() => setShowLogs(!showLogs)}
-                  className="w-full flex items-center justify-between px-3 py-2 bg-gray-50 border-b border-gray-300 hover:bg-gray-100 transition-colors"
-                >
-                  <div className="flex items-center gap-2">
-                    <Activity className="w-4 h-4 text-gray-600" />
-                    <span className="text-sm font-bold text-gray-700">EVENT LOG</span>
-                    <span className="text-xs text-gray-500">({state.logLines?.length ?? 0} events)</span>
-                  </div>
-                  <div className="flex items-center gap-2">
+            {/* Event Log Panel - Central, with Copy button, more vertical space */}
+            {(isRunning || isDone || (state.logLines?.length ?? 0) > 0) && (
+              <div className="bg-white border border-gray-300 rounded flex-1 min-h-0 flex flex-col">
+                <div className="flex items-center justify-between px-4 py-3 bg-gray-50 border-b border-gray-300">
+                  <div className="flex items-center gap-3">
+                    <Activity className="w-5 h-5 text-gray-600" />
+                    <span className="text-base font-bold text-gray-700">EVENT LOG</span>
+                    <span className="text-sm text-gray-500">({state.logLines?.length ?? 0} events)</span>
                     {isRunning && (
-                      <span className="text-xs text-green-600 font-bold flex items-center gap-1">
+                      <span className="text-sm text-green-600 font-bold flex items-center gap-1">
                         <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
                         LIVE
                       </span>
                     )}
-                    {showLogs ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
                   </div>
-                </button>
+                  <div className="flex items-center gap-2">
+                    {/* Copy Button */}
+                    <button
+                      onClick={() => {
+                        const text = state.logLines?.join('\n') || '';
+                        navigator.clipboard.writeText(text);
+                        setCopied(true);
+                        setTimeout(() => setCopied(false), 2000);
+                      }}
+                      className="flex items-center gap-1.5 px-3 py-1.5 rounded bg-gray-200 hover:bg-gray-300 text-gray-700 text-sm font-medium transition-colors"
+                      title="Copy all events"
+                    >
+                      {copied ? <Check className="w-4 h-4 text-green-600" /> : <Copy className="w-4 h-4" />}
+                      {copied ? 'Copied!' : 'Copy'}
+                    </button>
+                    <button onClick={() => setShowLogs(!showLogs)} className="p-1.5 rounded hover:bg-gray-200">
+                      {showLogs ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
+                    </button>
+                  </div>
+                </div>
                 {showLogs && (
-                  <div className="max-h-32 overflow-y-auto p-2 bg-gray-900 font-mono text-xs">
+                  <div className="flex-1 overflow-y-auto p-3 bg-gray-900 font-mono text-sm">
                     {state.logLines?.length === 0 ? (
-                      <div className="text-gray-500 text-center py-2">Waiting for events...</div>
+                      <div className="text-gray-500 text-center py-8">Waiting for events...</div>
                     ) : (
-                      state.logLines?.slice(-50).map((line, idx) => (
-                        <div key={idx} className="text-gray-300 py-0.5 border-b border-gray-800 last:border-0">
+                      state.logLines?.map((line, idx) => (
+                        <div key={idx} className="text-gray-300 py-1 border-b border-gray-800 last:border-0">
                           {line}
                         </div>
                       ))
@@ -556,8 +538,8 @@ export default function PoetiqSolver() {
             )}
           </div>
 
-          {/* RIGHT: Python Execution Terminal (3 cols) */}
-          <div className="col-span-3 overflow-y-auto">
+          {/* RIGHT: Iteration Progress - Expands when running */}
+          <div className={`${isRunning || isDone ? 'col-span-4' : 'col-span-3'} overflow-y-auto`}>
             <PoetiqPythonTerminal
               executions={executions}
               currentCode={isRunning ? state.result?.generatedCode : undefined}
