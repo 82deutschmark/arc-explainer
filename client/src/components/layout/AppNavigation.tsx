@@ -96,24 +96,10 @@ const navigationItems: NavItem[] = [
   },
   {
     type: 'link',
-    title: 'Debate',
-    href: '/debate',
-    icon: MessageSquare,
-    description: 'Watch AI models challenge each other\'s explanations'
-  },
-  {
-    type: 'link',
     title: 'Compare',
     href: '/elo',
     icon: Trophy,
     description: 'Compare AI explanations head-to-head with ELO ratings'
-  },
-  {
-    type: 'link',
-    title: 'Feedback',
-    href: '/feedback',
-    icon: MessageSquare,
-    description: 'Explore human feedback on model explanations'
   },
   {
     type: 'dropdown',
@@ -143,6 +129,20 @@ const navigationItems: NavItem[] = [
     icon: MoreHorizontal,
     description: 'Additional resources and tools',
     children: [
+      {
+        type: 'link',
+        title: 'Debate',
+        href: '/debate',
+        icon: MessageSquare,
+        description: 'Watch AI models challenge each other\'s explanations'
+      },
+      {
+        type: 'link',
+        title: 'Feedback',
+        href: '/feedback',
+        icon: MessageSquare,
+        description: 'Explore human feedback on model explanations'
+      },
       {
         type: 'link',
         title: 'Leaderboards',
