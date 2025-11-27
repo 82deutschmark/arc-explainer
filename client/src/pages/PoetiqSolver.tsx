@@ -193,7 +193,7 @@ export default function PoetiqSolver() {
           </Link>
           <div className="h-4 w-px bg-gray-300" />
           <div>
-            <h1 className="text-lg font-bold text-gray-800">Poetiq Solver</h1>
+            <h1 className="text-lg font-bold text-gray-800">Poetiq Meta-System Solver</h1>
             <p className="text-xs text-gray-500 font-mono">{taskId}</p>
           </div>
         </div>

@@ -1,6 +1,16 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top!!!
 
+### Version 5.29.2
+
+- **Poetiq Integration Audit & Meta-System Update** (Author: Cascade using Claude Sonnet 4.5)
+  - **Deep Dive Audit**: Verified Poetiq's "Meta-System" claims and "LLM-agnostic" architecture against open-source code and blog post.
+  - **Merged Community Page**: Merged `PoetiqExplainer` into `PoetiqCommunity` for a single, comprehensive audit landing page.
+  - **New SOTA Models**: Added Grok 4 Fast (xAI), GPT-OSS 120B (OpenRouter), and GPT-5.1 (OpenRouter) to the solver's model list, reflecting the blog post's specific configurations.
+  - **Terminology Update**: Updated `PoetiqSolver` to use "Meta-System" terminology and clarified Expert configurations (Config A/B/C) instead of model-specific names.
+  - **Verification**: Ensured all models use verified keys from `models.ts` - no placeholders.
+  - **Files**: `PoetiqCommunity.tsx`, `PoetiqSolver.tsx`, `PoetiqControlPanel.tsx`, `poetiqController.ts`
+
 ### Version 5.29.1
 
 - **HTTPS Security Fix for Poetiq Solver** (Author: Cascade using Claude Sonnet 4)
