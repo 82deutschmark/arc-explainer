@@ -1,6 +1,36 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top!!!
 
+### Version 5.30.0
+
+- **Poetiq Solver Internalization - Removed litellm Dependency** (Author: Cascade using Claude Sonnet 4)
+  - **Major Architecture Change**: Moved Poetiq solver from git submodule (`poetiq-solver/`) into `solver/poetiq/`, following the Saturn solver pattern.
+  - **Removed litellm**: Replaced the litellm abstraction layer with direct `google-generativeai` SDK calls.
+  - **Token Tracking Added**: The new `llm.py` now captures and returns token usage (`input_tokens`, `output_tokens`, `total_tokens`) for cost analysis - this data was previously discarded by litellm integration.
+  - **Files Created in `solver/poetiq/`**:
+    - `__init__.py` - Package exports
+    - `types.py` - TypedDict definitions (ExpertConfig, ARCAGIResult, etc.)
+    - `utils.py` - Utility functions
+    - `sandbox.py` - Sandboxed code execution
+    - `scoring.py` - Kaggle-format scoring
+    - `io.py` - I/O utilities
+    - `prompts.py` - Solver prompt templates
+    - `config.py` - Default configuration
+    - `llm.py` - **New** direct Google Generative AI SDK implementation
+    - `solve_coding.py` - Iterative code generation loop
+    - `solve_parallel_coding.py` - Parallel expert orchestration and voting
+    - `solve.py` - Main entry point
+  - **Updated Files**:
+    - `server/python/poetiq_wrapper.py` - Now imports from `solver.poetiq` instead of submodule
+    - `requirements.txt` - Replaced `litellm==1.78.2` with `google-generativeai>=0.8.0`
+  - **Benefits**:
+    - No external submodule dependency
+    - Consistent with Saturn/Grover architecture pattern
+    - Token usage tracking for cost analysis (previously unavailable)
+    - Uses project's existing API key infrastructure
+    - Removes unnecessary abstraction layer
+  - **Plan Document**: `docs/plans/2025-11-27-poetiq-internalization-plan.md`
+
 ### Version 5.29.15
 
 - **Poetiq LLM Temperature Guidance** (Author: Codex (GPT-5))
