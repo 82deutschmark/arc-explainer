@@ -1,6 +1,20 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top!!!
 
+### Version 5.29.4
+
+- **Poetiq UI/UX Fixes & Content Audit** (Author: Cascade using Claude Sonnet 4.5)
+  - **API Key Input Type Fix**: Changed from `type="password"` to `type="text"` in both `PoetiqCommunity.tsx:221` and `PoetiqControlPanel.tsx:283` to eliminate browser password field warnings (API keys are not passwords)
+  - **Missing State Variable**: Added `reasoningEffort` state variable in `PoetiqSolver.tsx:39` that was previously undefined, preventing solver from starting
+  - **API Key Validation Fix**: Removed overly restrictive regex pattern in `poetiqController.ts:144` that rejected valid API keys containing periods, slashes, or other special characters
+  - **Content Audit**: Updated `PoetiqCommunity.tsx` to maintain professional, educational tone as independent community auditors:
+    - Added "Technical Definitions" card (lines 269-308) with clear explanations of "Pareto Frontier" and "Recursive Self-Improving Meta-System"
+    - Clarified auditor role: "We are not affiliated with Poetiq. We are independent community members auditing their claims..."
+    - Removed marketing language: Changed "delivering higher accuracy" → "achieving better accuracy-to-cost ratios than prior reported results"
+    - Fixed GPT-5.1 label: Removed "Preview" variant (line 347) - it's not a preview model
+    - Updated all model descriptions to factual statements (e.g., "Latest Google model used in reported SOTA configurations")
+  - **Files**: `client/src/pages/PoetiqCommunity.tsx`, `client/src/pages/PoetiqSolver.tsx`, `client/src/components/poetiq/PoetiqControlPanel.tsx`, `server/controllers/poetiqController.ts`
+
 ### Version 5.29.3
 
 - **Poetiq Solver "Saturn-Grade" Live Feedback** (Author: Cascade using Claude Sonnet 4.5)

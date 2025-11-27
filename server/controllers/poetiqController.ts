@@ -136,16 +136,13 @@ export const poetiqController = {
     const sessionId = randomUUID();
 
     // Extract BYO API key (optional - falls back to env vars)
-    let apiKey = req.body?.apiKey as string | undefined;
+    const apiKey = req.body?.apiKey as string | undefined;
     const provider = req.body?.provider as 'gemini' | 'openrouter' | undefined;
-    
-    // Check if API key is valid - if not, fall back to server env vars
-    let usingFallback = false;
-    if (!apiKey || apiKey.trim().length < 10 || !apiKey.match(/^[A-Za-z0-9_-]+$/)) {
-      // Invalid or missing API key - use server's environment variables
-      apiKey = undefined;  // Clear it so poetiqService uses env vars
-      usingFallback = true;
-      console.log('[Poetiq] No valid BYO API key provided - using server environment variables');
+
+    // Determine if using fallback (no API key provided)
+    const usingFallback = !apiKey || apiKey.trim().length === 0;
+    if (usingFallback) {
+      console.log('[Poetiq] No BYO API key provided - using server environment variables');
     }
 
     // Extract options from request body
