@@ -442,13 +442,9 @@ export class PoetiqService {
       hints.push(`Model used: ${result.config.model}`);
     }
 
-    // NOTE: Poetiq does NOT return a confidence value.
-    // We set confidence to null to avoid misleading data.
-    // The bestTrainScore is training accuracy, NOT prediction confidence.
-    const confidence = null;
-
-    // Trustworthiness based on actual test accuracy if available
-    const trustworthiness = result.accuracy !== undefined ? result.accuracy * 100 : null;
+    // Explicitly suppress confidence/trustworthiness for Poetiq entries
+    const confidence = 0;
+    const trustworthiness = null;
 
     const resolvedModelId = result.config?.model || 'unknown';
     const modelSlug = this.slugifyModelId(resolvedModelId);
