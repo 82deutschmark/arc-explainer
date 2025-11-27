@@ -10,7 +10,7 @@
  */
 
 import React, { useEffect, useRef } from 'react';
-import { Terminal, CheckCircle, XCircle, Code, Play, User } from 'lucide-react';
+import { Repeat, CheckCircle, XCircle, Code, Play, User, Sparkles } from 'lucide-react';
 
 interface ExecutionResult {
   iteration: number;
@@ -47,18 +47,21 @@ export default function PoetiqPythonTerminal({
 
   return (
     <div className="bg-white border border-gray-300 rounded flex flex-col h-full">
-      {/* Header */}
-      <div className="border-b border-gray-300 bg-gray-900 px-3 py-2 flex items-center justify-between rounded-t">
-        <h3 className="text-sm font-bold text-green-400 flex items-center gap-2">
-          <Terminal className="w-4 h-4" />
-          PYTHON EXECUTION
-        </h3>
-        {isRunning && (
-          <span className="text-xs text-green-400 font-bold flex items-center gap-1">
-            <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
-            RUNNING
-          </span>
-        )}
+      {/* Header - Clarified purpose */}
+      <div className="border-b border-gray-300 bg-gradient-to-r from-indigo-900 to-purple-900 px-3 py-2 rounded-t">
+        <div className="flex items-center justify-between">
+          <h3 className="text-sm font-bold text-white flex items-center gap-2">
+            <Repeat className="w-4 h-4 text-indigo-300" />
+            ITERATION PROGRESS
+          </h3>
+          {isRunning && (
+            <span className="text-xs text-green-400 font-bold flex items-center gap-1">
+              <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
+              LIVE
+            </span>
+          )}
+        </div>
+        <p className="text-[10px] text-indigo-300 mt-1">Code generation & testing results per iteration</p>
       </div>
 
       {/* Terminal Content */}
@@ -68,9 +71,9 @@ export default function PoetiqPythonTerminal({
       >
         {executions.length === 0 && !currentCode && (
           <div className="text-gray-500 text-center py-8">
-            <Terminal className="w-8 h-8 mx-auto mb-2 opacity-50" />
-            <p>Python execution results will appear here</p>
-            <p className="text-[10px] mt-1">Generated code will be tested on training examples</p>
+            <Sparkles className="w-8 h-8 mx-auto mb-2 opacity-50" />
+            <p>Iteration results will appear here</p>
+            <p className="text-[10px] mt-1">Each iteration: AI generates code → Tests on training → Shows pass/fail</p>
           </div>
         )}
 

@@ -1,6 +1,42 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top!!!
 
+### Version 5.29.11
+
+- **Poetiq Solver UI Redesign** (Author: Cascade using Claude Sonnet 4)
+  - **Problem**: User feedback identified several UX issues:
+    1. Tiny gear icon hid valuable configuration settings
+    2. Top header bar was wasted space showing only title
+    3. "Python Execution" terminal label was confusing
+    4. Model selection showed misleading routing info ("Direct" when using OpenRouter)
+    5. Start button looked like plain text, not clickable
+  - **Header Redesign**: 
+    - Gradient indigo/purple header with key metrics inline (Status, Iteration, Elapsed, Phase)
+    - Stop button integrated into header when running
+    - No more wasted space
+  - **Controls Always Visible**: Removed collapsible gear icon - settings are now always shown prominently
+  - **Prominent Start Button**:
+    - Large green gradient button with Rocket + Zap icons
+    - Clear visual weight, not mistakable for plain text
+    - Red variant when stopping
+  - **Clear Routing Indicators**:
+    - Blue badge: "Via OpenRouter (Uses Server Key)"
+    - Amber badge: "Direct API to [Provider] (Requires Your API Key)"
+    - Models marked with "(BYO Key)" in dropdown when direct API required
+  - **Renamed Terminal Panel**:
+    - Changed "PYTHON EXECUTION" → "ITERATION PROGRESS"
+    - Added subtitle: "Code generation & testing results per iteration"
+    - Clearer purpose without technical jargon
+  - **Backend Model List Updated** (`poetiqController.ts`):
+    - Added `routing` and `requiresBYO` fields to model definitions
+    - Removed misleading "(Direct)" labels from model names
+  - **Files Modified**:
+    - `client/src/pages/PoetiqSolver.tsx` - Header, layout, controls visibility
+    - `client/src/components/poetiq/PoetiqControlPanel.tsx` - Start button, routing indicators
+    - `client/src/components/poetiq/PoetiqPythonTerminal.tsx` - Renamed and clarified
+    - `server/controllers/poetiqController.ts` - Model metadata with routing info
+    - `docs/plans/2025-11-27-poetiq-visibility-debug-plan.md` - Added UI redesign section
+
 ### Version 5.29.10
 
 - **Poetiq UI Timing & Event Visibility** (Author: Cascade using Claude Sonnet 4)

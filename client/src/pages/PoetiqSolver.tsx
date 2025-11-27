@@ -13,7 +13,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'wouter';
-import { Loader2, ArrowLeft, Square, ChevronDown, ChevronUp, Settings, Clock, Activity } from 'lucide-react';
+import { Loader2, ArrowLeft, Square, ChevronDown, ChevronUp, Clock, Activity, Timer, Gauge, Layers } from 'lucide-react';
 import { usePuzzle } from '@/hooks/usePuzzle';
 import { usePoetiqProgress } from '@/hooks/usePoetiqProgress';
 import { PuzzleGrid } from '@/components/puzzle/PuzzleGrid';
@@ -40,7 +40,7 @@ export default function PoetiqSolver() {
   const [executions, setExecutions] = useState<any[]>([]);
   const [autoStartTriggered, setAutoStartTriggered] = useState(false);
   const [cameFromCommunity, setCameFromCommunity] = useState(false);
-  const [showControls, setShowControls] = useState(true);
+  // Controls are always visible now (removed collapsible behavior per user feedback)
   const [showLogs, setShowLogs] = useState(true);  // Show event log panel
   
   // Timing state for visibility
@@ -76,7 +76,7 @@ export default function PoetiqSolver() {
         if (config.autoStart && task) {
           setAutoStartTriggered(true);
           setCameFromCommunity(true);
-          setShowControls(false); // Hide controls when auto-starting
+          // Controls are now always visible
           
           // Small delay to let state settle
           setTimeout(() => {
@@ -265,24 +265,55 @@ export default function PoetiqSolver() {
 
   return (
     <div className="h-screen flex flex-col bg-gray-100">
-      {/* Header */}
-      <header className="flex items-center justify-between px-4 py-2 border-b bg-white">
+      {/* Header - Information Dense */}
+      <header className="flex items-center justify-between px-4 py-2 border-b bg-gradient-to-r from-indigo-900 to-purple-900 text-white">
         <div className="flex items-center gap-4">
-          <Link href="/poetiq" className="flex items-center gap-1 text-gray-600 hover:text-gray-900">
+          <Link href="/poetiq" className="flex items-center gap-1 text-indigo-200 hover:text-white transition-colors">
             <ArrowLeft className="h-4 w-4" />
             <span className="text-sm">Back</span>
           </Link>
-          <div className="h-4 w-px bg-gray-300" />
+          <div className="h-6 w-px bg-indigo-600" />
           <div>
-            <h1 className="text-lg font-bold text-gray-800">Poetiq Meta-System Solver</h1>
-            <p className="text-xs text-gray-500 font-mono">{taskId}</p>
+            <h1 className="text-lg font-bold">Poetiq Meta-System</h1>
+            <p className="text-xs text-indigo-300 font-mono">{taskId}</p>
           </div>
         </div>
-        <div className="flex items-center gap-2">
+        
+        {/* Key Metrics in Header (no wasted space) */}
+        <div className="flex items-center gap-4">
+          {/* Status Indicator */}
+          <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10">
+            <div className={`w-2.5 h-2.5 rounded-full ${isRunning ? 'bg-green-400 animate-pulse' : isDone ? 'bg-blue-400' : hasError ? 'bg-red-400' : 'bg-gray-400'}`} />
+            <span className="text-sm font-medium">
+              {isRunning ? 'RUNNING' : isDone ? 'DONE' : hasError ? 'ERROR' : 'READY'}
+            </span>
+          </div>
+          
+          {/* Iteration Counter */}
+          <div className="flex items-center gap-1.5 px-3 py-1.5 rounded bg-white/10">
+            <Layers className="h-4 w-4 text-indigo-300" />
+            <span className="text-sm font-mono">
+              {state.iteration ?? 0}/{state.totalIterations ?? maxIterations}
+            </span>
+          </div>
+          
+          {/* Elapsed Time */}
+          <div className="flex items-center gap-1.5 px-3 py-1.5 rounded bg-white/10">
+            <Timer className="h-4 w-4 text-indigo-300" />
+            <span className="text-sm font-mono">{formatElapsed(elapsedSeconds)}</span>
+          </div>
+          
+          {/* Phase */}
+          <div className="flex items-center gap-1.5 px-3 py-1.5 rounded bg-white/10">
+            <Gauge className="h-4 w-4 text-indigo-300" />
+            <span className="text-sm truncate max-w-[100px]">{state.phase || 'Ready'}</span>
+          </div>
+          
+          {/* Stop Button */}
           {isRunning && (
-            <button onClick={cancel} className="btn btn-error btn-sm">
+            <button onClick={cancel} className="flex items-center gap-1.5 px-3 py-1.5 rounded bg-red-600 hover:bg-red-700 transition-colors">
               <Square className="h-4 w-4" />
-              Stop
+              <span className="text-sm font-medium">Stop</span>
             </button>
           )}
         </div>
@@ -294,41 +325,15 @@ export default function PoetiqSolver() {
           
           {/* LEFT: Control Panel + Puzzle Grids (4 cols) */}
           <div className="col-span-4 flex flex-col gap-2 overflow-y-auto">
-            {/* Compact Status Header (always visible) */}
-            <div className="bg-white border border-gray-300 rounded p-2">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <div className={`w-2 h-2 rounded-full ${isRunning ? 'bg-green-500 animate-pulse' : isDone ? 'bg-blue-500' : hasError ? 'bg-red-500' : 'bg-gray-400'}`} />
-                  <span className="text-xs font-bold text-gray-700">
-                    {isRunning ? 'RUNNING' : isDone ? 'COMPLETED' : hasError ? 'ERROR' : 'READY'}
-                  </span>
-                  {isRunning && state.iteration !== undefined && (
-                    <span className="text-xs text-gray-500">• Iteration {state.iteration}/{state.totalIterations || '?'}</span>
-                  )}
-                </div>
-                <div className="flex items-center gap-1">
-                  {isRunning && (
-                    <button onClick={cancel} className="btn btn-error btn-xs">
-                      <Square className="h-3 w-3" /> Stop
-                    </button>
-                  )}
-                  <button
-                    onClick={() => setShowControls(!showControls)}
-                    className="btn btn-ghost btn-xs"
-                  >
-                    <Settings className="h-3 w-3" />
-                    {showControls ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
-                  </button>
-                </div>
+            {/* Auto-start notice */}
+            {cameFromCommunity && !isRunning && !isDone && (
+              <div className="bg-blue-50 border border-blue-200 rounded p-2">
+                <p className="text-xs text-blue-700">Auto-starting with community settings...</p>
               </div>
-              {cameFromCommunity && !showControls && !isRunning && !isDone && (
-                <p className="text-xs text-gray-500 mt-1">Auto-starting with community settings...</p>
-              )}
-            </div>
+            )}
 
-            {/* Full Control Panel (collapsible) */}
-            {showControls && (
-              <PoetiqControlPanel
+            {/* Control Panel - Always Visible (no hidden gear icon) */}
+            <PoetiqControlPanel
                 state={state}
                 isRunning={isRunning}
                 apiKey={apiKey}
@@ -347,8 +352,7 @@ export default function PoetiqSolver() {
                 setReasoningEffort={setReasoningEffort}
                 onStart={handleStart}
                 onCancel={cancel}
-              />
-            )}
+            />
 
             {/* Info Card - Explains Meta-System Architecture */}
             <PoetiqInfoCard />
@@ -424,50 +428,15 @@ export default function PoetiqSolver() {
 
           {/* CENTER: AI Streaming Output (5 cols) - Saturn's exact layout */}
           <div className="col-span-5 flex flex-col gap-2 min-h-0">
-            {/* Token Metrics - TOP (6 columns for better visibility) */}
+            {/* Compact event count + last update (main metrics now in header) */}
             <div className="bg-white border border-gray-300 rounded">
-              <div className="grid grid-cols-6 divide-x divide-gray-300">
-                <div className="p-2">
-                  <div className="text-xs text-gray-600">Iteration</div>
-                  <div className="text-sm font-bold text-gray-900">
-                    {state.iteration ?? 0} / {state.totalIterations ?? maxIterations}
-                  </div>
+              <div className="flex items-center justify-between px-3 py-2">
+                <div className="flex items-center gap-4 text-xs">
+                  <span className="text-gray-600">Last Update: <strong className={lastUpdateTime && (Date.now() - lastUpdateTime.getTime()) > 30000 ? 'text-orange-600' : 'text-gray-900'}>{formatLastUpdate()}</strong></span>
+                  <span className="text-gray-600">Events: <strong className="text-gray-900">{state.logLines?.length ?? 0}</strong></span>
                 </div>
-                <div className="p-2">
-                  <div className="text-xs text-gray-600">Phase</div>
-                  <div className="text-sm font-bold text-gray-900 truncate">
-                    {state.phase || 'Ready'}
-                  </div>
-                </div>
-                <div className="p-2">
-                  <div className="text-xs text-gray-600">Status</div>
-                  <div className={`text-sm font-bold ${
-                    isRunning ? 'text-blue-600' : isDone ? 'text-green-600' : hasError ? 'text-red-600' : 'text-gray-900'
-                  }`}>
-                    {state.status.toUpperCase()}
-                  </div>
-                </div>
-                <div className="p-2">
-                  <div className="text-xs text-gray-600">Elapsed</div>
-                  <div className={`text-sm font-bold font-mono ${isRunning ? 'text-blue-600' : 'text-gray-900'}`}>
-                    {formatElapsed(elapsedSeconds)}
-                  </div>
-                </div>
-                <div className="p-2">
-                  <div className="text-xs text-gray-600">Last Update</div>
-                  <div className={`text-sm font-bold ${
-                    lastUpdateTime && (Date.now() - lastUpdateTime.getTime()) > 30000 
-                      ? 'text-orange-600' 
-                      : 'text-gray-900'
-                  }`}>
-                    {formatLastUpdate()}
-                  </div>
-                </div>
-                <div className="p-2">
-                  <div className="text-xs text-gray-600">Events</div>
-                  <div className="text-sm font-bold text-gray-900">
-                    {state.logLines?.length ?? 0}
-                  </div>
+                <div className="text-xs text-gray-500">
+                  {numExperts > 1 && `${numExperts} experts`}
                 </div>
               </div>
             </div>
