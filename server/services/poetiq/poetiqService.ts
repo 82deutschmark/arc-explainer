@@ -173,6 +173,10 @@ export class PoetiqService {
         }
       }
 
+      // Debug: Log environment keys (not values) to verify they're present
+      const envKeys = Object.keys(childEnv).filter(k => k.includes('API_KEY'));
+      console.log('[Poetiq] Environment API keys available:', envKeys.length > 0 ? envKeys : 'NONE');
+
       const spawnOpts: SpawnOptions = {
         cwd: path.dirname(this.wrapperPath),
         env: childEnv,

@@ -165,6 +165,9 @@ export function usePoetiqProgress(taskId: string | undefined) {
         });
 
         if (data.status === 'completed' || data.status === 'error') {
+          if (data.status === 'error') {
+            console.error('[Poetiq WS] Error received:', data);
+          }
           ws.close();
         }
       } catch (err) {
@@ -177,7 +180,7 @@ export function usePoetiqProgress(taskId: string | undefined) {
     };
 
     ws.onclose = (evt) => {
-      console.log('[Poetiq WS] Connection closed:', evt.reason || 'No reason provided');
+      console.log('[Poetiq WS] Connection closed:', evt.reason || 'No reason provided', 'Code:', evt.code, 'Current state:', state.status);
       wsRef.current = null;
     };
   }, []);
