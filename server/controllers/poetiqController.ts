@@ -203,7 +203,7 @@ export const poetiqController = {
         );
 
         // Transform result to explanation format
-        const explanationData = poetiqService.transformToExplanationData(result);
+        const explanationData = poetiqService.transformToExplanationData(result, task);
 
         // Save to database
         const { explanationService } = await import('../services/explanationService.js');
@@ -413,7 +413,7 @@ export const poetiqController = {
           const elapsedMs = Date.now() - startTime;
 
           // Save to database
-          const explanationData = poetiqService.transformToExplanationData(result);
+          const explanationData = poetiqService.transformToExplanationData(result, task);
           const { explanationService } = await import('../services/explanationService.js');
           await explanationService.saveExplanation(puzzleId, {
             [explanationData.modelName]: {

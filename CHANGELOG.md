@@ -1,6 +1,14 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top!!!
 
+### Version 5.29.14
+
+- **Poetiq Parser Alignment** (Author: Codex (GPT-5))
+  - `poetiqService.transformToExplanationData` now feeds results plus the loaded `ARCTask` through the shared `responseValidator`, so the same grid parser/cleaner used by Saturn/Grover sanitizes Poetiq predictions (fixes stray newline artifacts and ensures multi-test arrays match our schema).
+  - Stored provider metadata now includes validator traces and normalized raw predictions for future audits; controllers pass puzzle context into the transformer to unlock this validation.
+  - Added a short plan doc covering the parser alignment work.
+  - **Files**: `server/services/poetiq/poetiqService.ts`, `server/controllers/poetiqController.ts`, `docs/2025-11-27-poetiq-parser-alignment-plan.md`
+
 ### Version 5.29.13
 
 - **Poetiq Confidence Suppression** (Author: Codex (GPT-5))
