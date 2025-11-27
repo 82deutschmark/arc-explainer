@@ -17,9 +17,9 @@ import { usePoetiqModels } from '@/hooks/usePoetiqModels';
 
 // Provider options with key placeholders
 const PROVIDERS = [
-  { value: 'openrouter', label: 'OpenRouter', icon: 'ðŸ”€', keyPlaceholder: 'sk-or-...', apiProvider: 'OpenRouter' },
-  { value: 'openai', label: 'OpenAI Direct', icon: 'ðŸŸ¢', keyPlaceholder: 'sk-...', apiProvider: 'OpenAI' },
-  { value: 'gemini', label: 'Gemini Direct', icon: 'ðŸ”·', keyPlaceholder: 'AIza...', apiProvider: 'Google' },
+  { value: 'openrouter', label: 'OpenRouter', icon: '', keyPlaceholder: 'sk-or-...', apiProvider: 'OpenRouter' },
+  { value: 'openai', label: 'OpenAI Direct', icon: '', keyPlaceholder: 'sk-...', apiProvider: 'OpenAI' },
+  { value: 'gemini', label: 'Gemini Direct', icon: '', keyPlaceholder: 'AIza...', apiProvider: 'Google' },
 ] as const;
 
 // Expert configs - 1, 2, 8 ONLY (from config.py)
@@ -301,7 +301,7 @@ export default function PoetiqControlPanel({
           <div className="flex items-start gap-2">
             <AlertTriangle className="w-4 h-4 text-amber-600 mt-0.5 shrink-0" />
             <p className="text-xs text-amber-800">
-              <strong>Gemini-3-c (8 experts)</strong> makes 8Ã— parallel API calls. 
+              <strong>Gemini-3-c (8 experts)</strong> makes 8x parallel API calls. 
               This provides best accuracy but may take 25-45+ minutes and consume significant API quota.
             </p>
           </div>
