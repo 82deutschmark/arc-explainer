@@ -1,6 +1,14 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top!!!
 
+### Version 5.29.9
+
+- **Dockerfile Fix for Poetiq Submodule** (Author: Cascade using Claude Sonnet 4)
+  - **Problem**: Poetiq solver failed on Railway with "arc_agi/solve.py not found" because git submodules don't work with Docker COPY
+  - **Solution**: Added `git` to Alpine packages and replaced `COPY poetiq-solver/` with `git clone` of the submodule repo
+  - Added verification step to fail build early if `solve.py` is missing
+  - **Files**: `Dockerfile`
+
 ### Version 5.29.8
 
 - **Poetiq UI Fixes** (Author: Cascade using Claude Sonnet 4)
