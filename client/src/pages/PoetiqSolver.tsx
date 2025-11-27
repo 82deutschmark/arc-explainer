@@ -28,14 +28,14 @@ export default function PoetiqSolver() {
   const { currentTask: task, isLoadingTask, taskError } = usePuzzle(taskId);
   const { state, start, cancel } = usePoetiqProgress(taskId);
   
-  // Configuration state - Poetiq ONLY uses Gemini 3 Pro via OpenRouter
+  // Configuration state - Solver page allows any provider/model
   const [apiKey, setApiKey] = useState('');
+  const [provider, setProvider] = useState<'gemini' | 'openrouter' | 'openai'>('openrouter');
+  const [model, setModel] = useState('google/gemini-3-pro-preview');
   const [numExperts, setNumExperts] = useState(2);  // 1, 2, or 8 only (Gemini-3-a/b/c)
   const [maxIterations, setMaxIterations] = useState(10);
+  const [temperature, setTemperature] = useState(1.0);
   const [executions, setExecutions] = useState<any[]>([]);
-  
-  // Fixed model - Poetiq only uses this model
-  const POETIQ_MODEL = 'google/gemini-3-pro-preview';
 
   // Set page title
   useEffect(() => {
@@ -74,14 +74,16 @@ export default function PoetiqSolver() {
   }, [state.iteration, state.message, isRunning]);
 
   const handleStart = () => {
-    // Poetiq always uses OpenRouter with Gemini 3 Pro Preview
+    // Solver page allows any provider/model selection
+    // Cast provider for hook (which expects gemini|openrouter)
+    const poetiqProvider = provider === 'openai' ? 'openrouter' : provider;
     start({
       apiKey,
-      provider: 'openrouter',
-      model: POETIQ_MODEL,
+      provider: poetiqProvider,
+      model,
       numExperts,
       maxIterations,
-      temperature: 1.0,  // Fixed at 1.0 per config.py
+      temperature,
     });
   };
 
@@ -170,10 +172,16 @@ export default function PoetiqSolver() {
               isRunning={isRunning}
               apiKey={apiKey}
               setApiKey={setApiKey}
+              provider={provider}
+              setProvider={setProvider}
+              model={model}
+              setModel={setModel}
               numExperts={numExperts}
               setNumExperts={setNumExperts}
               maxIterations={maxIterations}
               setMaxIterations={setMaxIterations}
+              temperature={temperature}
+              setTemperature={setTemperature}
               onStart={handleStart}
               onCancel={cancel}
             />
