@@ -1,6 +1,14 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top!!!
 
+### Version 5.29.12
+
+- **Poetiq Model Metadata Persistence** (Author: Codex (GPT-5))
+  - Ensured every Poetiq run stores the actual selected model/provider combination just like Saturn/Grover: Python wrapper now reports its in-memory config without relying on undefined globals, and the TypeScript service enriches final results with sanitized run options before persisting.
+  - `transformToExplanationData` now slugs the full model id (`openrouter/google/gemini-3-pro-preview` → `poetiq-openrouter-google-gemini-3-pro-preview`) so analytics can differentiate OpenRouter vs direct calls, and providerRawResponse keeps the enriched config blob.
+  - Added a focused implementation plan record for this fix under `docs/`.
+  - **Files**: `server/python/poetiq_wrapper.py`, `server/services/poetiq/poetiqService.ts`, `docs/2025-11-27-poetiq-model-agnostic-plan.md`
+
 ### Version 5.29.11
 
 - **Poetiq Solver UI Redesign** (Author: Cascade using Claude Sonnet 4)
