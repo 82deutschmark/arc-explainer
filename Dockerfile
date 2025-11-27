@@ -3,14 +3,13 @@ FROM node:20-alpine
 # Dockerfile for ARC Explainer app runtime and build
 # - Builds the client and server
 # - Adds Python 3 for Saturn Visual Solver and Poetiq Meta-System Solver
-# - Clones poetiq-solver submodule directly (submodules don't copy in Docker context)
+# - Poetiq solver is now INTERNALIZED at solver/poetiq/ (no submodule needed)
 # Author: Cascade (Claude Sonnet 4)
-# Updated: 2025-11-27 - Added git for submodule cloning
+# Updated: 2025-11-27 - Poetiq internalized, removed submodule cloning
 
-# Add Python3, git, and canvas dependencies
+# Add Python3 and canvas dependencies (git no longer needed - no submodules)
 RUN apk add --no-cache \
     python3 py3-pip \
-    git \
     pkgconf \
     cairo-dev \
     pango-dev \
@@ -45,14 +44,12 @@ COPY vite.config.ts ./
 COPY tailwind.config.ts ./
 COPY postcss.config.js ./
 
-# Clone poetiq-solver submodule directly (submodules don't work with COPY)
-# This is a public repo so no auth needed
-RUN echo "=== CLONING POETIQ-SOLVER SUBMODULE ===" && \
-    git clone --depth 1 https://github.com/82deutschmark/poetiq-arc-agi-solver.git poetiq-solver && \
-    echo "=== VERIFYING POETIQ-SOLVER ===" && \
-    ls -la poetiq-solver/ && \
-    ls -la poetiq-solver/arc_agi/ && \
-    test -f poetiq-solver/arc_agi/solve.py && echo "✓ solve.py exists" || (echo "✗ solve.py NOT FOUND" && exit 1)
+# Poetiq solver is now internalized at solver/poetiq/ (copied above)
+# Verify the internalized solver exists
+RUN echo "=== VERIFYING INTERNALIZED POETIQ SOLVER ===" && \
+    ls -la solver/poetiq/ && \
+    test -f solver/poetiq/solve.py && echo "✓ solver/poetiq/solve.py exists" || (echo "✗ solver/poetiq/solve.py NOT FOUND" && exit 1) && \
+    test -f solver/poetiq/llm.py && echo "✓ solver/poetiq/llm.py exists" || (echo "✗ solver/poetiq/llm.py NOT FOUND" && exit 1)
 
 # Debug what files exist
 RUN ls -la
