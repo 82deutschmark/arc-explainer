@@ -24,9 +24,9 @@ const PROVIDERS = [
 
 // Expert configs - 1, 2, 8 ONLY (from config.py)
 const EXPERT_OPTIONS = [
-  { value: 1, label: 'Gemini-3-a (1 Expert)', description: 'Fastest, ~5-15 min' },
-  { value: 2, label: 'Gemini-3-b (2 Experts)', description: 'Default, ~10-20 min' },
-  { value: 8, label: 'Gemini-3-c (8 Experts)', description: 'Best accuracy, ~25-45+ min' },
+  { value: 1, label: '1 Expert (Config A)', description: 'Fastest, ~5-15 min' },
+  { value: 2, label: '2 Experts (Config B)', description: 'Default, ~10-20 min' },
+  { value: 8, label: '8 Experts (Config C)', description: 'Best accuracy, ~25-45+ min' },
 ] as const;
 
 interface PoetiqControlPanelProps {
@@ -301,7 +301,7 @@ export default function PoetiqControlPanel({
           <div className="flex items-start gap-2">
             <AlertTriangle className="w-4 h-4 text-amber-600 mt-0.5 shrink-0" />
             <p className="text-xs text-amber-800">
-              <strong>Gemini-3-c (8 experts)</strong> makes 8x parallel API calls. 
+              <strong>Config C (8 experts)</strong> makes 8x parallel API calls. 
               This provides best accuracy but may take 25-45+ minutes and consume significant API quota.
             </p>
           </div>

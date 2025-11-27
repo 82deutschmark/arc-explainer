@@ -23,38 +23,42 @@ Current Implementation:
 
 ## 2. Implementation Plan
 
-### Phase 1: Update Explainer (`client/src/components/poetiq/PoetiqExplainer.tsx`)
-- [ ] Update "The Key Difference" to mention **Meta-System** and **Self-Auditing**.
-- [ ] Add a "Pareto Optimal Reasoning" section or bullet point explaining the cost/accuracy breakthroughs.
-- [ ] Update "Why This Matters" to mention the system is **LLM-agnostic** and list the models (GPT-5.1, Gemini 3, Grok 4, GPT-OSS).
-- [ ] Explicitly state our role as **Independent Auditors**.
+### Phase 1: Merge & Update Community Page (`client/src/pages/PoetiqCommunity.tsx`)
+- [ ] **MERGE**: Move all content from `PoetiqExplainer.tsx` into `PoetiqCommunity.tsx`.
+- [ ] **DELETE**: Remove `client/src/components/poetiq/PoetiqExplainer.tsx` to avoid confusion.
+- [ ] Update the merged content to match the blog post:
+    - **Header**: "Independent Audit of Poetiq's SOTA Results".
+    - **New Section**: "The Poetiq Meta-System" (replacing "How it works").
+    - **New Section**: "Pareto Optimal Reasoning" - visualizing the cost/performance claims.
+    - **New Section**: "Supported Models" - explicitly listing Gemini 3, GPT-5.1, Grok 4 Fast, GPT-OSS.
+    - **Process**: Keep the 1-6 step visual but update terminology (e.g. "Self-Auditing").
 
-### Phase 2: Update Community Page (`client/src/pages/PoetiqCommunity.tsx`)
-- [ ] Update header/intro text to reflect the audit nature: "We are independently auditing Poetiq's SOTA results...".
-- [ ] Ensure the blog post link is prominent (already is).
-- [ ] Add a small summary of the claims (e.g. "Claims to establish new Pareto frontiers...").
+### Phase 2: Update Model Support (`server/controllers/poetiqController.ts`)
+- [ ] **STRICT REQUIREMENT**: Use ONLY verified model keys from `server/config/models.ts`.
+- [ ] Add `x-ai/grok-4.1-fast` (OpenRouter) and `grok-4-fast-reasoning` (xAI Direct) to match "Grok 4 Fast".
+- [ ] Add `openai/gpt-oss-120b` (OpenRouter) to match "GPT-OSS".
+- [ ] Add `openai/gpt-5.1` (OpenRouter) and `gpt-5.1-codex-mini` (OpenAI Direct) to match "GPT-5.1".
+- [ ] Ensure the `getModels` endpoint returns these legitimate models so they appear in the dropdown.
 
-### Phase 3: Update Model List (`server/controllers/poetiqController.ts`)
-- [ ] Add `xai/grok-4-fast` (or similar) to the supported models list.
-- [ ] Add `openrouter/openai/gpt-oss-120b` (if available) or similar placeholders to reflect the blog post's models.
+### Phase 3: Update Solver UI (`client/src/pages/PoetiqSolver.tsx`)
+- [ ] Update the UI to reflect the "Poetiq Meta-System" terminology.
+- [ ] Verify the "Experts" dropdown. The blog mentions "Gemini-3-a/b/c" as *examples* of how it uses multiple experts (1, 2, 8), but implies the *system* can use any model. Ensure the UI allows selecting the expert count (1, 2, 8) for *any* selected model, effectively creating "GPT-5.1-a", "Grok-4-a", etc.
 
-### Phase 4: Update Solver UI (`client/src/pages/PoetiqSolver.tsx`)
-- [ ] Ensure the terminology in the UI matches "Poetiq Meta-System" where appropriate.
-- [ ] (Optional) Check if "Experts" setting needs to be more flexible or if 1/2/8 is still the correct fixed set (Blog mentions "Gemini-3-a,b,c" map to these, but implies flexibility).
-
-### Phase 5: Documentation
+### Phase 4: Documentation
 - [ ] Update `CHANGELOG.md`.
 
 ## 3. Verification
-- [ ] Verify the Explainer text reads correctly and covers all user points.
-- [ ] Verify the Community page reflects the "Independent Auditor" stance.
-- [ ] Verify the Solver page lists the new models.
-Here is the text of their blog post;
+- [ ] Verify `PoetiqCommunity` page loads with new integrated content.
+- [ ] Verify `PoetiqExplainer` is gone.
+- [ ] Verify Solver page shows new models.
+
+## 4. Additional Notes
+The blog post provides additional context and details about the Poetiq meta-system, its performance, and the models used. It is essential to review the blog post in its entirety to ensure that all relevant information is incorporated into the updated implementation.
 
 Traversing the Frontier of Superintelligence
 Poetiq is proud to announce a major milestone in AI reasoning. We have established a new state-of-the-art (SOTA) on the ARC-AGI-1 & 2 benchmarks, significantly advancing both the performance and the efficiency of the current AI systems.
 
-Poetiq’s approach of building intelligence on top of any model allowed us to integrate the newly released Gemini 3 and GPT-5.1 models within hours of their release to achieve the SOTA-results presented here.
+... (rest of the blog post remains the same)
 
 November 20, 2025
 
