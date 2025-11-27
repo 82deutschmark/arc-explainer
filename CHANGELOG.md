@@ -1,6 +1,31 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top!!!
 
+### Version 5.29.7
+
+- **Poetiq Visibility Parity with Saturn** (Author: Cascade using Claude Sonnet 4)
+  - **Problem**: Poetiq UI stayed blank after clicking "Run" because events weren't reaching the frontend properly.
+  - **Frontend Hook Fixes** (`usePoetiqProgress.ts`):
+    - Seed UI state synchronously BEFORE network calls (Saturn pattern) for immediate visual feedback
+    - Initialize all buffers (logLines, reasoningHistory, pythonLogLines, streamingReasoning, streamingCode)
+    - Fixed WebSocket handler to accumulate content properly instead of relying on message changes
+    - Handle ALL event types (progress, log, start, error) not just progress
+    - Cap buffers (500 log lines, 100 reasoning entries) to prevent memory bloat
+  - **Python Wrapper Fixes** (`poetiq_wrapper.py`):
+    - Moved `emit()` and `log()` functions to top of file (were called before definition)
+    - Added detailed preflight error messages with remediation hints
+    - Enhanced start event with model/experts/iterations metadata
+    - Added initializing progress event for immediate UI feedback
+  - **Backend Service Fixes** (`poetiqService.ts`):
+    - Broadcast ALL event types (start, progress, log, error) to WebSocket, not just progress
+    - Forward non-JSON stdout as log events so AI model responses appear in UI
+    - Forward stderr as error log events
+    - Added eventTrace collection like Saturn for debugging
+  - **Controller Cleanup** (`poetiqController.ts`):
+    - Removed duplicate WebSocket broadcasting (service now handles it)
+    - Controller callback now only logs to console for all event types
+  - **Files**: `client/src/hooks/usePoetiqProgress.ts`, `server/python/poetiq_wrapper.py`, `server/services/poetiq/poetiqService.ts`, `server/controllers/poetiqController.ts`
+
 ### Version 5.29.6
 
 - **Poetiq WebSocket Debug Logging** (Author: Cascade using Claude Sonnet 4.5)
