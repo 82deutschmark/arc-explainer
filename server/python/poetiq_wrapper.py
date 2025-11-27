@@ -2,21 +2,21 @@
 """
 Author: Cascade (Claude Sonnet 4)
 Date: 2025-11-25
-Updated: 2025-11-27 - Internalized Poetiq solver, removed submodule dependency, uses direct Google SDK
+Updated: 2025-11-27 - Internalized Poetiq solver, added token/cost tracking
 PURPOSE: Python bridge wrapper for Poetiq ARC-AGI solver integration.
          Receives puzzle data via stdin, runs Poetiq solver, streams progress as NDJSON.
-         Now uses internalized solver from solver/poetiq/ (no litellm dependency).
-         
+         Now uses internalized solver from solver/poetiq/ with token/cost tracking.
+
 SRP and DRY check: Pass - Single responsibility is bridging Node.js to Poetiq solver.
-                   Does not duplicate Poetiq logic, only wraps it.
+                   Does not duplicate Poetiq logic, only wraps and instruments it.
 
 Protocol:
   Node -> Python (stdin): { "puzzleId": str, "task": { train: [...], test: [...] }, "options": {...} }
   Python -> Node (stdout): NDJSON events:
     { "type": "start", "metadata": {...} }
-    { "type": "progress", "phase": str, "iteration": int, "message": str }
+    { "type": "progress", "phase": str, "iteration": int, "message": str, "tokenUsage"?: {...}, "cost"?: {...} }
     { "type": "log", "level": str, "message": str }
-    { "type": "final", "success": bool, "result": {...} }
+    { "type": "final", "success": bool, "result": {..., "tokenUsage": {...}, "cost": {...}} }
     { "type": "error", "message": str }
 """
 
@@ -27,6 +27,7 @@ import sys
 import time
 import traceback
 from pathlib import Path
+from typing import Dict
 
 
 # ==========================================
@@ -40,6 +41,159 @@ def emit(event: dict):
 def log(message: str, level: str = "info"):
     """Emit a log event."""
     emit({"type": "log", "level": level, "message": message})
+
+
+# ==========================================
+# COST TRACKING UTILITIES
+# ==========================================
+# Model pricing per 1M tokens (from server/config/models.ts)
+# This mirrors our centralized pricing config
+MODEL_PRICING: Dict[str, Dict[str, float]] = {
+    # OpenAI models
+    "gpt-4.1-nano": {"input": 0.10, "output": 0.40},
+    "gpt-4.1-mini": {"input": 0.40, "output": 1.60},
+    "gpt-4o-mini": {"input": 0.15, "output": 0.60},
+    "o3-mini": {"input": 1.10, "output": 4.40},
+    "o4-mini": {"input": 1.10, "output": 4.40},
+    "o3": {"input": 2.00, "output": 8.00},
+    "gpt-4.1": {"input": 2.00, "output": 8.00},
+    "gpt-5": {"input": 1.25, "output": 10.00},
+    "gpt-5-chat": {"input": 1.25, "output": 10.00},
+    "gpt-5-mini": {"input": 0.25, "output": 2.00},
+    "gpt-5.1": {"input": 0.35, "output": 1.40},
+
+    # Anthropic models
+    "claude-3-5-sonnet": {"input": 3.00, "output": 15.00},
+    "claude-sonnet-4": {"input": 3.00, "output": 15.00},
+    "claude-sonnet-4-5": {"input": 3.00, "output": 15.00},
+    "claude-haiku-4": {"input": 0.80, "output": 4.00},
+    "claude-haiku-4-5": {"input": 0.80, "output": 4.00},
+    "claude-opus-4": {"input": 15.00, "output": 75.00},
+
+    # Google Gemini models
+    "gemini-2.0-flash": {"input": 0.075, "output": 0.30},
+    "gemini-2.5-pro": {"input": 1.25, "output": 5.00},
+    "gemini-2.5-flash": {"input": 0.075, "output": 0.30},
+    "gemini-3-pro": {"input": 1.25, "output": 5.00},
+    "gemini-exp-1206": {"input": 0.00, "output": 0.00},
+
+    # xAI models
+    "grok-4": {"input": 5.00, "output": 15.00},
+    "grok-4-fast": {"input": 0.50, "output": 1.50},
+}
+
+
+def normalize_model_name(model_id: str) -> str:
+    """
+    Normalize model ID to match our pricing lookup keys.
+    Handles litellm prefixes (openai/, gemini/, anthropic/, etc.)
+    """
+    # Remove provider prefix (openai/, gemini/, anthropic/, openrouter/, etc.)
+    parts = model_id.split("/")
+    if len(parts) > 1:
+        model_name = parts[-1]  # Take last part after final slash
+    else:
+        model_name = model_id
+
+    # Normalize common patterns
+    model_lower = model_name.lower()
+
+    # GPT models
+    if "gpt-5.1" in model_lower:
+        return "gpt-5.1"
+    if "gpt-5-mini" in model_lower:
+        return "gpt-5-mini"
+    if "gpt-5-chat" in model_lower:
+        return "gpt-5-chat"
+    if "gpt-5" in model_lower:
+        return "gpt-5"
+    if "gpt-4.1-nano" in model_lower:
+        return "gpt-4.1-nano"
+    if "gpt-4.1-mini" in model_lower:
+        return "gpt-4.1-mini"
+    if "gpt-4.1" in model_lower:
+        return "gpt-4.1"
+    if "gpt-4o-mini" in model_lower:
+        return "gpt-4o-mini"
+    if "o4-mini" in model_lower:
+        return "o4-mini"
+    if "o3-mini" in model_lower:
+        return "o3-mini"
+    if model_lower.startswith("o3"):
+        return "o3"
+
+    # Claude models
+    if "claude-sonnet-4-5" in model_lower or "claude-sonnet-4.5" in model_lower:
+        return "claude-sonnet-4-5"
+    if "claude-sonnet-4" in model_lower:
+        return "claude-sonnet-4"
+    if "claude-3-5-sonnet" in model_lower or "claude-3.5-sonnet" in model_lower:
+        return "claude-3-5-sonnet"
+    if "claude-haiku-4-5" in model_lower or "claude-haiku-4.5" in model_lower:
+        return "claude-haiku-4-5"
+    if "claude-haiku-4" in model_lower:
+        return "claude-haiku-4"
+    if "claude-opus-4" in model_lower:
+        return "claude-opus-4"
+
+    # Gemini models
+    if "gemini-3-pro" in model_lower:
+        return "gemini-3-pro"
+    if "gemini-2.5-pro" in model_lower:
+        return "gemini-2.5-pro"
+    if "gemini-2.5-flash" in model_lower:
+        return "gemini-2.5-flash"
+    if "gemini-2.0-flash" in model_lower or "gemini-2-flash" in model_lower:
+        return "gemini-2.0-flash"
+    if "gemini-exp-1206" in model_lower:
+        return "gemini-exp-1206"
+
+    # Grok models
+    if "grok-4-fast" in model_lower:
+        return "grok-4-fast"
+    if "grok-4" in model_lower:
+        return "grok-4"
+
+    # Fallback: return as-is
+    return model_name
+
+
+def calculate_cost(model_id: str, token_usage: Dict) -> Dict[str, float]:
+    """
+    Calculate cost from token usage using our pricing model.
+    Mirrors logic from server/utils/costCalculator.ts
+
+    Args:
+        model_id: Model identifier (e.g., "gemini/gemini-3-pro-preview")
+        token_usage: Dict with input_tokens, output_tokens, total_tokens
+
+    Returns:
+        Dict with input_cost, output_cost, total_cost
+    """
+    if not token_usage:
+        return {"input": 0.0, "output": 0.0, "total": 0.0}
+
+    input_tokens = token_usage.get("input_tokens", 0)
+    output_tokens = token_usage.get("output_tokens", 0)
+
+    # Look up pricing
+    normalized_name = normalize_model_name(model_id)
+    pricing = MODEL_PRICING.get(normalized_name)
+
+    if not pricing:
+        log(f"No pricing found for model '{normalized_name}' (from '{model_id}'), cost will be $0", "warn")
+        return {"input": 0.0, "output": 0.0, "total": 0.0}
+
+    # Calculate costs (pricing is per 1M tokens)
+    input_cost = (input_tokens / 1_000_000) * pricing["input"]
+    output_cost = (output_tokens / 1_000_000) * pricing["output"]
+    total_cost = input_cost + output_cost
+
+    return {
+        "input": input_cost,
+        "output": output_cost,
+        "total": total_cost,
+    }
 
 
 # ==========================================
@@ -68,10 +222,17 @@ import numpy as np
 from solver.poetiq.types import ARCAGIResult, ARCAGISolution, ExpertConfig, RunResult
 import solver.poetiq.solve_parallel_coding
 from solver.poetiq.solve_coding import (
-    _make_example, format_problem, _build_prompt, create_examples, 
+    _make_example, format_problem, _build_prompt, create_examples,
     _parse_code_from_llm, _eval_on_train_and_test, _build_feedback
 )
 from solver.poetiq.llm import llm
+
+# Global tracker for token/cost data across all experts
+# Reset at the start of each puzzle run
+_token_cost_tracker = {
+    "experts": {},  # expert_id -> {tokens, cost}
+    "total": {"tokens": {"input_tokens": 0, "output_tokens": 0, "total_tokens": 0}, "cost": {"input": 0.0, "output": 0.0, "total": 0.0}}
+}
 
 async def instrumented_solve_coding(
     *,
@@ -82,7 +243,7 @@ async def instrumented_solve_coding(
     problem_id: str | None = None,
 ) -> ARCAGIResult:
     """
-    Instrumented version of solve_coding that emits progress events.
+    Instrumented version of solve_coding that emits progress events WITH token/cost tracking.
     """
     expert_id = config.get("expert_id", 0)
     solver_prompt = config["solver_prompt"]
@@ -90,7 +251,11 @@ async def instrumented_solve_coding(
     llm_model = config["llm_id"]
     max_iterations = int(config["max_iterations"])
     solver_temperature = float(config["solver_temperature"])
-    
+
+    # Token/cost tracking accumulators (per expert)
+    expert_tokens = {"input_tokens": 0, "output_tokens": 0, "total_tokens": 0}
+    expert_cost = {"input": 0.0, "output": 0.0, "total": 0.0}
+
     # Extract extra LLM params
     llm_kwargs = {}
     if "reasoning_effort" in config:
@@ -158,7 +323,8 @@ async def instrumented_solve_coding(
             message += "\n\n" + _build_prompt(feedback_prompt, feedback=examples_block)
 
         try:
-            response, duration, max_total_time, max_total_timeouts = await llm(
+            # ENHANCED: llm() now returns token_usage as 5th element
+            response, duration, max_total_time, max_total_timeouts, token_usage = await llm(
                 llm_model,
                 message=message,
                 temperature=solver_temperature,
@@ -169,6 +335,27 @@ async def instrumented_solve_coding(
                 retries=per_iteration_retries,
                 **llm_kwargs,  # Pass reasoning_effort, verbosity, reasoning_summary etc.
             )
+
+            # Accumulate token usage for this expert
+            if token_usage:
+                expert_tokens["input_tokens"] += token_usage.get("input_tokens", 0)
+                expert_tokens["output_tokens"] += token_usage.get("output_tokens", 0)
+                expert_tokens["total_tokens"] += token_usage.get("total_tokens", 0)
+
+                # Calculate and accumulate cost
+                iteration_cost = calculate_cost(llm_model, token_usage)
+                expert_cost["input"] += iteration_cost["input"]
+                expert_cost["output"] += iteration_cost["output"]
+                expert_cost["total"] += iteration_cost["total"]
+
+                # Update global tracker
+                _token_cost_tracker["total"]["tokens"]["input_tokens"] += token_usage.get("input_tokens", 0)
+                _token_cost_tracker["total"]["tokens"]["output_tokens"] += token_usage.get("output_tokens", 0)
+                _token_cost_tracker["total"]["tokens"]["total_tokens"] += token_usage.get("total_tokens", 0)
+                _token_cost_tracker["total"]["cost"]["input"] += iteration_cost["input"]
+                _token_cost_tracker["total"]["cost"]["output"] += iteration_cost["output"]
+                _token_cost_tracker["total"]["cost"]["total"] += iteration_cost["total"]
+
         except Exception as e:
             if "Exceeded timeouts allotted to the request" in str(e) or "Exceeded time allotted to the request" in str(e):
                 print("Exiting early due to exceeding allotted time or timeouts on problem", problem_id)
@@ -177,6 +364,7 @@ async def instrumented_solve_coding(
 
         code = _parse_code_from_llm(response)
         
+        # Emit progress with token/cost data
         emit({
             "type": "progress",
             "phase": "evaluating",
@@ -184,7 +372,13 @@ async def instrumented_solve_coding(
             "expert": expert_id,
             "message": f"Expert {expert_id}: Evaluating generated code...",
             "reasoning": response, # Send full reasoning/code block
-            "code": code
+            "code": code,
+            "tokenUsage": token_usage if token_usage else None,
+            "cost": iteration_cost if token_usage else None,
+            "expertCumulativeTokens": dict(expert_tokens),
+            "expertCumulativeCost": dict(expert_cost),
+            "globalTokens": dict(_token_cost_tracker["total"]["tokens"]),
+            "globalCost": dict(_token_cost_tracker["total"]["cost"])
         })
 
         if not code:
@@ -229,6 +423,12 @@ async def instrumented_solve_coding(
             best_result = ARCAGIResult(
                 train_results=train_res, results=test_res, iteration=it + 1
             )
+
+    # Store this expert's final token/cost data in global tracker
+    _token_cost_tracker["experts"][expert_id] = {
+        "tokens": dict(expert_tokens),
+        "cost": dict(expert_cost)
+    }
 
     if return_best and best_result is not None:
         return best_result
