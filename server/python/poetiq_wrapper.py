@@ -511,8 +511,8 @@ def build_config_list(num_experts: int, model: str, max_iterations: int, tempera
 
 async def run_poetiq_solver(puzzle_id: str, task: dict, options: dict) -> dict:
     """
-    Run the Poetiq solver on a single puzzle.
-    
+    Run the Poetiq solver on a single puzzle with comprehensive token/cost tracking.
+
     Args:
         puzzle_id: Unique identifier for the puzzle
         task: ARC task with 'train' and 'test' arrays
@@ -521,10 +521,17 @@ async def run_poetiq_solver(puzzle_id: str, task: dict, options: dict) -> dict:
             - numExperts: Number of parallel experts (1, 2, 4, or 8)
             - maxIterations: Max code refinement iterations per expert
             - temperature: LLM temperature
-        
+
     Returns:
-        Result dictionary with predictions and metadata
+        Result dictionary with predictions, metadata, AND token/cost data
     """
+    # Reset global token/cost tracker for this puzzle
+    global _token_cost_tracker
+    _token_cost_tracker = {
+        "experts": {},
+        "total": {"tokens": {"input_tokens": 0, "output_tokens": 0, "total_tokens": 0}, "cost": {"input": 0.0, "output": 0.0, "total": 0.0}}
+    }
+
     # CRITICAL: We call solve_parallel_coding DIRECTLY instead of solve()
     # This is because solve.py imports CONFIG_LIST at module load time,
     # so patching config.CONFIG_LIST after importing solve.py has no effect.
@@ -661,6 +668,16 @@ async def run_poetiq_solver(puzzle_id: str, task: dict, options: dict) -> dict:
                 "maxIterations": resolved_config.get("max_iterations"),
                 "temperature": resolved_config.get("solver_temperature"),
                 "numExperts": len(config_list) if config_list else 0,
+            },
+            # TOKEN AND COST TRACKING - Key addition for independent audit
+            "tokenUsage": dict(_token_cost_tracker["total"]["tokens"]),
+            "cost": dict(_token_cost_tracker["total"]["cost"]),
+            "expertBreakdown": {
+                str(expert_id): {
+                    "tokens": data["tokens"],
+                    "cost": data["cost"]
+                }
+                for expert_id, data in _token_cost_tracker["experts"].items()
             }
         }
         
@@ -672,6 +689,16 @@ async def run_poetiq_solver(puzzle_id: str, task: dict, options: dict) -> dict:
             "error": str(e),
             "traceback": traceback.format_exc(),
             "elapsedMs": int(elapsed * 1000),
+            # Include partial token/cost data even on failure
+            "tokenUsage": dict(_token_cost_tracker["total"]["tokens"]),
+            "cost": dict(_token_cost_tracker["total"]["cost"]),
+            "expertBreakdown": {
+                str(expert_id): {
+                    "tokens": data["tokens"],
+                    "cost": data["cost"]
+                }
+                for expert_id, data in _token_cost_tracker["experts"].items()
+            }
         }
 
 
