@@ -11,7 +11,7 @@
  * SRP/DRY check: Pass - UI orchestration, delegates to specialized components
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useParams, Link } from 'wouter';
 import { Loader2, ArrowLeft, Square, ChevronDown, ChevronUp, Activity, Timer, Gauge, Layers, Copy, Check, Rocket } from 'lucide-react';
 import { usePuzzle } from '@/hooks/usePuzzle';
@@ -42,6 +42,7 @@ export default function PoetiqSolver() {
   const [cameFromCommunity, setCameFromCommunity] = useState(false);
   const [showLogs, setShowLogs] = useState(true);  // Show event log panel
   const [copied, setCopied] = useState(false);  // For copy button feedback
+  const eventLogRef = useRef<HTMLDivElement>(null);  // For auto-scroll
   
   // Timing state for visibility
   const [startTime, setStartTime] = useState<Date | null>(null);
@@ -136,6 +137,13 @@ export default function PoetiqSolver() {
       setExecutions([]);
     }
   }, [isRunning]);
+
+  // Auto-scroll event log to bottom when new events arrive
+  useEffect(() => {
+    if (eventLogRef.current && state.logLines?.length) {
+      eventLogRef.current.scrollTop = eventLogRef.current.scrollHeight;
+    }
+  }, [state.logLines]);
 
   // Track iteration results for Python terminal
   useEffect(() => {
@@ -408,102 +416,24 @@ export default function PoetiqSolver() {
             </div>
           )}
 
-          {/* CENTER: Output - Expands when running */}
-          <div className={`${isRunning || isDone ? 'col-span-8' : 'col-span-5'} flex flex-col gap-3 min-h-0`}>
+          {/* LEFT-CENTER: Iteration Progress (was on right) - Expands when running */}
+          <div className={`${isRunning || isDone ? 'col-span-4' : 'col-span-5'} overflow-y-auto`}>
             {/* Fallback API Key Notice */}
             {state.usingFallback && (
-              <div className="bg-amber-50 border border-amber-300 rounded px-4 py-2 text-sm text-amber-800">
+              <div className="bg-amber-50 border border-amber-300 rounded px-4 py-2 text-sm text-amber-800 mb-3">
                 <strong>Note:</strong> Using server API key (no BYO key provided)
               </div>
             )}
-
-            {/* Event Log Panel - Central, with Copy button, more vertical space */}
-            {(isRunning || isDone || (state.logLines?.length ?? 0) > 0) && (
-              <div className="bg-white border border-gray-300 rounded flex-1 min-h-0 flex flex-col">
-                <div className="flex items-center justify-between px-4 py-3 bg-gray-50 border-b border-gray-300">
-                  <div className="flex items-center gap-3">
-                    <Activity className="w-5 h-5 text-gray-600" />
-                    <span className="text-base font-bold text-gray-700">EVENT LOG</span>
-                    <span className="text-sm text-gray-500">({state.logLines?.length ?? 0} events)</span>
-                    {isRunning && (
-                      <span className="text-sm text-green-600 font-bold flex items-center gap-1">
-                        <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
-                        LIVE
-                      </span>
-                    )}
-                  </div>
-                  <div className="flex items-center gap-2">
-                    {/* Copy Button */}
-                    <button
-                      onClick={() => {
-                        const text = state.logLines?.join('\n') || '';
-                        navigator.clipboard.writeText(text);
-                        setCopied(true);
-                        setTimeout(() => setCopied(false), 2000);
-                      }}
-                      className="flex items-center gap-1.5 px-3 py-1.5 rounded bg-gray-200 hover:bg-gray-300 text-gray-700 text-sm font-medium transition-colors"
-                      title="Copy all events"
-                    >
-                      {copied ? <Check className="w-4 h-4 text-green-600" /> : <Copy className="w-4 h-4" />}
-                      {copied ? 'Copied!' : 'Copy'}
-                    </button>
-                    <button onClick={() => setShowLogs(!showLogs)} className="p-1.5 rounded hover:bg-gray-200">
-                      {showLogs ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
-                    </button>
-                  </div>
-                </div>
-                {showLogs && (
-                  <div className="flex-1 overflow-y-auto p-3 bg-gray-900 font-mono text-sm">
-                    {state.logLines?.length === 0 ? (
-                      <div className="text-gray-500 text-center py-8">Waiting for events...</div>
-                    ) : (
-                      state.logLines?.map((line, idx) => (
-                        <div key={idx} className="text-gray-300 py-1 border-b border-gray-800 last:border-0">
-                          {line}
-                        </div>
-                      ))
-                    )}
-                  </div>
-                )}
-              </div>
-            )}
-
-            {/* AI Streaming Output - Show ONLY while running */}
-            {!isDone && (
-              <div className="flex-1 min-h-0 flex flex-col gap-2">
-                {/* Reasoning Box (blue) */}
-                <div className="flex-1 bg-white border border-blue-300 rounded flex flex-col min-h-0">
-                  <div className="border-b border-blue-300 bg-blue-50 px-3 py-2 flex items-center justify-between">
-                    <h3 className="text-sm font-bold text-blue-700">AI REASONING</h3>
-                    {isRunning && <span className="text-xs text-blue-600 font-bold">● STREAMING</span>}
-                  </div>
-                  <div className="flex-1 overflow-auto p-3 bg-blue-50">
-                    <div className="text-sm font-mono text-gray-800 whitespace-pre-wrap leading-relaxed">
-                      {state.streamingReasoning || state.message || 'Waiting for AI reasoning...'}
-                    </div>
-                  </div>
-                </div>
-
-                {/* Output Box (green) - Generated Code */}
-                <div className="flex-1 bg-white border border-green-300 rounded flex flex-col min-h-0">
-                  <div className="border-b border-green-300 bg-green-50 px-3 py-2 flex items-center justify-between">
-                    <h3 className="text-sm font-bold text-green-700">GENERATED CODE</h3>
-                    {isRunning && (state.streamingCode || state.result?.generatedCode) && (
-                      <span className="text-xs text-green-600 font-bold">● STREAMING</span>
-                    )}
-                  </div>
-                  <div className="flex-1 overflow-auto p-3 bg-green-50">
-                    <pre className="text-xs font-mono text-gray-800 whitespace-pre-wrap leading-relaxed">
-                      {state.streamingCode || state.result?.generatedCode || 'Waiting for code generation...'}
-                    </pre>
-                  </div>
-                </div>
-              </div>
-            )}
+            
+            <PoetiqPythonTerminal
+              executions={executions}
+              currentCode={isRunning ? state.result?.generatedCode : undefined}
+              isRunning={isRunning}
+            />
 
             {/* Final Result - Show ONLY when completed */}
             {isDone && resultSummary && (
-              <div className="flex-1 overflow-auto">
+              <div className="mt-3">
                 <div className={`bg-white border-2 rounded p-4 ${
                   resultSummary.success ? 'border-green-500' : 'border-red-500'
                 }`}>
@@ -538,13 +468,60 @@ export default function PoetiqSolver() {
             )}
           </div>
 
-          {/* RIGHT: Iteration Progress - Expands when running */}
-          <div className={`${isRunning || isDone ? 'col-span-4' : 'col-span-3'} overflow-y-auto`}>
-            <PoetiqPythonTerminal
-              executions={executions}
-              currentCode={isRunning ? state.result?.generatedCode : undefined}
-              isRunning={isRunning}
-            />
+          {/* RIGHT: Event Log (was in center) - Expands when running, with auto-scroll */}
+          <div className={`${isRunning || isDone ? 'col-span-8' : 'col-span-3'} flex flex-col min-h-0`}>
+            {(isRunning || isDone || (state.logLines?.length ?? 0) > 0) && (
+              <div className="bg-white border border-gray-300 rounded flex-1 min-h-0 flex flex-col h-full">
+                <div className="flex items-center justify-between px-4 py-3 bg-gray-50 border-b border-gray-300">
+                  <div className="flex items-center gap-3">
+                    <Activity className="w-5 h-5 text-gray-600" />
+                    <span className="text-base font-bold text-gray-700">EVENT LOG</span>
+                    <span className="text-sm text-gray-500">({state.logLines?.length ?? 0} events)</span>
+                    {isRunning && (
+                      <span className="text-sm text-green-600 font-bold flex items-center gap-1">
+                        <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+                        LIVE
+                      </span>
+                    )}
+                  </div>
+                  <div className="flex items-center gap-2">
+                    {/* Copy Button */}
+                    <button
+                      onClick={() => {
+                        const text = state.logLines?.join('\n') || '';
+                        navigator.clipboard.writeText(text);
+                        setCopied(true);
+                        setTimeout(() => setCopied(false), 2000);
+                      }}
+                      className="flex items-center gap-1.5 px-3 py-1.5 rounded bg-gray-200 hover:bg-gray-300 text-gray-700 text-sm font-medium transition-colors"
+                      title="Copy all events"
+                    >
+                      {copied ? <Check className="w-4 h-4 text-green-600" /> : <Copy className="w-4 h-4" />}
+                      {copied ? 'Copied!' : 'Copy'}
+                    </button>
+                    <button onClick={() => setShowLogs(!showLogs)} className="p-1.5 rounded hover:bg-gray-200">
+                      {showLogs ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
+                    </button>
+                  </div>
+                </div>
+                {showLogs && (
+                  <div 
+                    ref={eventLogRef}
+                    className="flex-1 overflow-y-auto p-3 bg-gray-900 font-mono text-sm"
+                  >
+                    {state.logLines?.length === 0 ? (
+                      <div className="text-gray-500 text-center py-8">Waiting for events...</div>
+                    ) : (
+                      state.logLines?.map((line, idx) => (
+                        <div key={idx} className="text-gray-300 py-1 border-b border-gray-800 last:border-0">
+                          {line}
+                        </div>
+                      ))
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         </div>
       </main>
