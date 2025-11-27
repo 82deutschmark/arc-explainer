@@ -1,6 +1,14 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top!!!
 
+### Version 5.29.8
+
+- **Poetiq UI Fixes** (Author: Cascade using Claude Sonnet 4)
+  - **Fixed nested `<a>` tags** in `PoetiqSolver.tsx` - wouter `Link` already renders an anchor, so nested `<a>` was causing React DOM warning
+  - **Fixed undefined phase issue** - Log events now include `phase: 'log'` to prevent frontend state corruption
+  - **Improved debug logging** - WebSocket handler now logs both wrapper type and actual data type
+  - **Files**: `client/src/pages/PoetiqSolver.tsx`, `server/services/poetiq/poetiqService.ts`, `client/src/hooks/usePoetiqProgress.ts`
+
 ### Version 5.29.7
 
 - **Poetiq Visibility Parity with Saturn** (Author: Cascade using Claude Sonnet 4)

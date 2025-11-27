@@ -245,9 +245,11 @@ export class PoetiqService {
               });
             } else if (event.type === 'log') {
               // Forward log events so UI can display them
+              // Include phase: 'log' so frontend state doesn't get corrupted
               broadcast(options.sessionId, {
                 type: 'log',
                 status: 'running',
+                phase: 'log',  // Prevent undefined phase issues
                 level: event.level,
                 message: event.message,
               });
@@ -283,6 +285,7 @@ export class PoetiqService {
             broadcast(options.sessionId, {
               type: 'log',
               status: 'running',
+              phase: 'log',  // Prevent undefined phase issues
               level: 'info',
               message: trimmed,
             });
@@ -300,6 +303,7 @@ export class PoetiqService {
           broadcast(options.sessionId, {
             type: 'log',
             status: 'running',
+            phase: 'log',  // Prevent undefined phase issues
             level: 'error',
             message: `[stderr] ${line}`,
           });

@@ -133,7 +133,7 @@ export function usePoetiqProgress(taskId: string | undefined) {
         
         if (!data) return;
         
-        console.log('[Poetiq WS] Received event:', eventType, 'phase:', data.phase, 'status:', data.status);
+        console.log('[Poetiq WS] Received event:', eventType, 'dataType:', data.type, 'phase:', data.phase, 'status:', data.status);
         
         setState(prev => {
           const timestamp = new Date().toLocaleTimeString();
