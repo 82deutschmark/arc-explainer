@@ -1,49 +1,26 @@
 /**
  * Author: Cascade using Claude Sonnet 4
  * Date: 2025-11-26
- * Updated: 2025-11-26 - Full provider/model selection for solver page (unlike locked community page)
+ * Updated: 2025-11-26 - Dynamic model loading from API (no hardcoded lists)
  * PURPOSE: Control panel for Poetiq solver page (/puzzle/poetiq/:taskId).
- *          Allows any provider/model (unlike community page which is locked to Gemini 3 Pro).
+ *          Fetches all models from /api/models and groups by provider.
  *          Expert configs: 1, 2, 8 only (from config.py).
  *
  * SRP/DRY check: Pass - Single responsibility for solver control interface
  * DaisyUI: Pass - Uses DaisyUI components
  */
 
-import React from 'react';
-import { Rocket, Square, Key, Users, AlertTriangle, Settings } from 'lucide-react';
+import React, { useMemo } from 'react';
+import { Rocket, Square, Key, Users, AlertTriangle, Settings, Loader2 } from 'lucide-react';
 import type { PoetiqProgressState } from '@/hooks/usePoetiqProgress';
+import { useModels } from '@/hooks/useModels';
 
-// Provider options
+// Provider options with key placeholders
 const PROVIDERS = [
-  { value: 'openrouter', label: 'OpenRouter', icon: '🔀', keyPlaceholder: 'sk-or-...' },
-  { value: 'openai', label: 'OpenAI Direct', icon: '🟢', keyPlaceholder: 'sk-...' },
-  { value: 'gemini', label: 'Gemini Direct', icon: '🔷', keyPlaceholder: 'AIza...' },
+  { value: 'openrouter', label: 'OpenRouter', icon: '🔀', keyPlaceholder: 'sk-or-...', apiProvider: 'OpenRouter' },
+  { value: 'openai', label: 'OpenAI Direct', icon: '🟢', keyPlaceholder: 'sk-...', apiProvider: 'OpenAI' },
+  { value: 'gemini', label: 'Gemini Direct', icon: '🔷', keyPlaceholder: 'AIza...', apiProvider: 'Gemini' },
 ] as const;
-
-// OpenRouter models - from server/config/models.ts (OpenRouter entries)
-const OPENROUTER_MODELS = [
-  { id: 'google/gemini-3-pro-preview', name: 'Gemini 3 Pro Preview', recommended: true },
-  { id: 'google/gemini-2.5-pro-preview', name: 'Gemini 2.5 Pro' },
-  { id: 'google/gemini-2.5-flash-preview', name: 'Gemini 2.5 Flash' },
-  { id: 'anthropic/claude-sonnet-4', name: 'Claude Sonnet 4' },
-  { id: 'openai/gpt-4.1-mini', name: 'GPT-4.1 Mini' },
-];
-
-// OpenAI Direct models - from server/config/models.ts
-const OPENAI_MODELS = [
-  { id: 'gpt-5-nano-2025-08-07', name: 'GPT-5 Nano', recommended: true },
-  { id: 'gpt-5-mini-2025-08-07', name: 'GPT-5 Mini' },
-  { id: 'gpt-4.1-mini-2025-04-14', name: 'GPT-4.1 Mini' },
-  { id: 'o4-mini-2025-04-16', name: 'o4-mini' },
-];
-
-// Gemini Direct models - from server/config/models.ts
-const GEMINI_MODELS = [
-  { id: 'gemini-3-pro-preview', name: 'Gemini 3 Pro Preview', recommended: true },
-  { id: 'gemini-2.5-pro-preview', name: 'Gemini 2.5 Pro' },
-  { id: 'gemini-2.5-flash', name: 'Gemini 2.5 Flash' },
-];
 
 // Expert configs - 1, 2, 8 ONLY (from config.py)
 const EXPERT_OPTIONS = [
@@ -101,18 +78,21 @@ export default function PoetiqControlPanel({
   onStart,
   onCancel,
 }: PoetiqControlPanelProps) {
-  // Can always start (API key is optional - falls back to server env vars)
-  const canStart = !isRunning;
+  // Fetch all models from API
+  const { data: allModels, isLoading: modelsLoading } = useModels();
   
-  // Get models based on provider
-  const models = provider === 'openrouter' 
-    ? OPENROUTER_MODELS 
-    : provider === 'openai' 
-    ? OPENAI_MODELS 
-    : GEMINI_MODELS;
+  // Can always start (API key is optional - falls back to server env vars)
+  const canStart = !isRunning && !modelsLoading;
   
   // Get selected provider info
   const selectedProvider = PROVIDERS.find(p => p.value === provider);
+  
+  // Filter models by provider
+  const models = useMemo(() => {
+    if (!allModels) return [];
+    const providerMapping = selectedProvider?.apiProvider;
+    return allModels.filter(m => m.provider === providerMapping);
+  }, [allModels, selectedProvider]);
 
   return (
     <div className="space-y-2">
@@ -161,10 +141,14 @@ export default function PoetiqControlPanel({
                 onChange={(e) => {
                   const newProvider = e.target.value as 'gemini' | 'openrouter' | 'openai';
                   setProvider(newProvider);
-                  // Set default model for new provider
-                  const defaultModels = newProvider === 'openrouter' ? OPENROUTER_MODELS 
-                    : newProvider === 'openai' ? OPENAI_MODELS : GEMINI_MODELS;
-                  setModel(defaultModels[0].id);
+                  // Set default model for new provider from filtered list
+                  const providerInfo = PROVIDERS.find(p => p.value === newProvider);
+                  if (allModels && providerInfo) {
+                    const providerModels = allModels.filter(m => m.provider === providerInfo.apiProvider);
+                    if (providerModels.length > 0) {
+                      setModel(providerModels[0].key);
+                    }
+                  }
                 }}
                 disabled={isRunning}
                 className="select select-bordered select-sm w-full"
@@ -181,18 +165,25 @@ export default function PoetiqControlPanel({
               <label className="label py-1">
                 <span className="label-text text-xs font-semibold">Model</span>
               </label>
-              <select
-                value={model}
-                onChange={(e) => setModel(e.target.value)}
-                disabled={isRunning}
-                className="select select-bordered select-sm w-full"
-              >
-                {models.map(m => (
-                  <option key={m.id} value={m.id}>
-                    {m.name} {m.recommended ? '⭐' : ''}
-                  </option>
-                ))}
-              </select>
+              {modelsLoading ? (
+                <div className="flex items-center gap-2 px-3 py-2 border rounded">
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  <span className="text-xs">Loading models...</span>
+                </div>
+              ) : (
+                <select
+                  value={model}
+                  onChange={(e) => setModel(e.target.value)}
+                  disabled={isRunning}
+                  className="select select-bordered select-sm w-full"
+                >
+                  {models.map(m => (
+                    <option key={m.key} value={m.key}>
+                      {m.name} {m.isReasoning ? '🧠' : ''}
+                    </option>
+                  ))}
+                </select>
+              )}
             </div>
             {/* Temperature */}
             <div>

@@ -36,15 +36,26 @@ import { PoetiqExplainer } from '@/components/poetiq/PoetiqExplainer';
 import { PuzzleProgressGrid } from '@/components/poetiq/PuzzleProgressGrid';
 import { usePoetiqCommunityProgress } from '@/hooks/usePoetiqCommunityProgress';
 
-// Poetiq ONLY uses Gemini 3 Pro Preview via OpenRouter
-// This is hardcoded in poetiq-solver/arc_agi/config.py
-const POETIQ_MODEL = {
-  id: 'google/gemini-3-pro-preview',
-  name: 'Gemini 3 Pro Preview',
-  provider: 'OpenRouter',
-  keyUrl: 'https://openrouter.ai/keys',
-  keyPlaceholder: 'sk-or-... (from openrouter.ai/keys)',
-};
+// Poetiq community page is locked to Gemini 3 Pro Preview
+// Can use EITHER OpenRouter OR Gemini Direct API
+const POETIQ_PROVIDERS = [
+  { 
+    value: 'openrouter', 
+    label: 'OpenRouter', 
+    modelId: 'google/gemini-3-pro-preview',
+    keyUrl: 'https://openrouter.ai/keys',
+    keyPlaceholder: 'sk-or-... (from openrouter.ai/keys)'
+  },
+  { 
+    value: 'gemini', 
+    label: 'Gemini Direct', 
+    modelId: 'gemini-3-pro-preview',
+    keyUrl: 'https://aistudio.google.com/app/apikey',
+    keyPlaceholder: 'AIza... (from aistudio.google.com)'
+  },
+] as const;
+
+const POETIQ_MODEL_NAME = 'Gemini 3 Pro Preview';
 
 // Expert count options - ONLY 1, 2, 8 (from config.py)
 // Gemini-3-a: 1 expert, Gemini-3-b: 2 experts, Gemini-3-c: 8 experts
@@ -58,13 +69,17 @@ export default function PoetiqCommunity() {
   const [, navigate] = useLocation();
   const progress = usePoetiqCommunityProgress();
   
-  // Configuration state - Poetiq always uses OpenRouter with Gemini 3 Pro
+  // Configuration state - provider choice (OpenRouter or Gemini Direct), both locked to Gemini 3 Pro
+  const [provider, setProvider] = useState<'openrouter' | 'gemini'>('openrouter');
   const [apiKey, setApiKey] = useState('');
   const [numExperts, setNumExperts] = useState('2');
   
   // Active solver state - which puzzle are we currently solving?
   const [activePuzzle, setActivePuzzle] = useState<string | null>(null);
   const solverProgress = usePoetiqProgress(activePuzzle || undefined);
+  
+  // Get selected provider config
+  const selectedProvider = POETIQ_PROVIDERS.find(p => p.value === provider)!;
 
   // Set page title
   useEffect(() => {
@@ -82,11 +97,11 @@ export default function PoetiqCommunity() {
     
     // Set active puzzle and start solver directly
     setActivePuzzle(nextPuzzle);
-    // Poetiq always uses OpenRouter with Gemini 3 Pro Preview
+    // Use selected provider with Gemini 3 Pro Preview
     solverProgress.start({
       apiKey,
-      provider: 'openrouter',
-      model: POETIQ_MODEL.id,
+      provider,
+      model: selectedProvider.modelId,
       numExperts: parseInt(numExperts, 10),
       temperature: 1.0,  // Fixed per config.py
     });
@@ -197,23 +212,42 @@ export default function PoetiqCommunity() {
               <div className="flex items-center gap-2">
                 <Code className="h-5 w-5 text-teal-600" />
                 <div>
-                  <span className="font-medium text-teal-800">Model: {POETIQ_MODEL.name}</span>
-                  <span className="text-xs text-teal-600 ml-2">via {POETIQ_MODEL.provider}</span>
+                  <span className="font-medium text-teal-800">Model: {POETIQ_MODEL_NAME}</span>
+                  <span className="text-xs text-teal-600 ml-2">(locked for community)</span>
                 </div>
               </div>
               <p className="text-xs text-teal-700 mt-1">
-                Poetiq uses {POETIQ_MODEL.id} - the model is fixed per the solver configuration.
+                Community page uses Gemini 3 Pro Preview only. Choose your API provider below.
               </p>
+            </div>
+
+            {/* Provider Selection */}
+            <div className="grid md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label>API Provider</Label>
+                <Select value={provider} onValueChange={(v) => setProvider(v as 'openrouter' | 'gemini')}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {POETIQ_PROVIDERS.map(p => (
+                      <SelectItem key={p.value} value={p.value}>
+                        {p.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
 
             <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <Label className="flex items-center gap-2">
                   <Key className="h-4 w-4" />
-                  OpenRouter API Key
+                  {selectedProvider.label} API Key
                 </Label>
                 <a 
-                  href={POETIQ_MODEL.keyUrl}
+                  href={selectedProvider.keyUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-xs text-indigo-600 hover:underline flex items-center gap-1"
@@ -224,7 +258,7 @@ export default function PoetiqCommunity() {
               <form onSubmit={(e) => e.preventDefault()}>
                 <Input
                   type="password"
-                  placeholder={POETIQ_MODEL.keyPlaceholder}
+                  placeholder={selectedProvider.keyPlaceholder}
                   value={apiKey}
                   onChange={(e) => setApiKey(e.target.value)}
                   className="font-mono"
