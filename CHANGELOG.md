@@ -1,12 +1,31 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top!!!
 
+### Version 5.29.6
+
+- **Poetiq WebSocket Debug Logging** (Author: Cascade using Claude Sonnet 4.5)
+  - Added detailed error logging to `usePoetiqProgress.ts` to show error data when Python process fails (line 169)
+  - Added WebSocket close event logging with close code and current state (line 183)
+  - Added environment variable debugging in `poetiqService.ts` to verify API keys are reaching Python subprocess (line 177-178)
+  - These logs will help diagnose why WebSocket closes immediately after connecting
+  - **Files**: `client/src/hooks/usePoetiqProgress.ts`, `server/services/poetiq/poetiqService.ts`
+
+### Version 5.29.5
+
+- **Poetiq Visibility & Streaming Debug Plan** (Author: Codex / GPT-5)
+  - Added detailed recovery plan to surface all Poetiq solver signals (reasoning/code/logs/errors) end-to-end, using SaturnVisualSolver as the gold-standard reference.
+  - Documents chokepoints (Python preflight, WebSocket forwarding, session plumbing, UI expectations) and phased fixes plus acceptance criteria to avoid silent failures.
+  - **Files**: `docs/plans/2025-11-27-poetiq-visibility-debug-plan.md`
+
 ### Version 5.29.4
 
 - **Poetiq UI/UX Fixes & Content Audit** (Author: Cascade using Claude Sonnet 4.5)
   - **API Key Input Type Fix**: Changed from `type="password"` to `type="text"` in both `PoetiqCommunity.tsx:221` and `PoetiqControlPanel.tsx:283` to eliminate browser password field warnings (API keys are not passwords)
   - **Missing State Variable**: Added `reasoningEffort` state variable in `PoetiqSolver.tsx:39` that was previously undefined, preventing solver from starting
-  - **API Key Validation Fix**: Removed overly restrictive regex pattern in `poetiqController.ts:144` that rejected valid API keys containing periods, slashes, or other special characters
+  - **API Key Security**: Removed all validation logic in `poetiqController.ts:143-146` - now accepts any user-provided key without validation or modification. Security measures confirmed:
+    - API key passed only via environment variables to Python subprocess (never logged, never stored, never broadcast via WebSocket)
+    - Only `usingFallback` flag sent to client (boolean indicating if server key is used)
+    - Key exists only in memory for duration of Python process execution
   - **Content Audit**: Updated `PoetiqCommunity.tsx` to maintain professional, educational tone as independent community auditors:
     - Added "Technical Definitions" card (lines 269-308) with clear explanations of "Pareto Frontier" and "Recursive Self-Improving Meta-System"
     - Clarified auditor role: "We are not affiliated with Poetiq. We are independent community members auditing their claims..."
