@@ -1,6 +1,13 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top!!!
 
+### Version 5.29.15
+
+- **Poetiq LLM Temperature Guidance** (Author: Codex (GPT-5))
+  - Added a lightweight plan plus a full write-up explaining how the Poetiq integration keeps LiteLLM-based requests provider-agnostic, why the solver defaults to `temperature = 1.0`, and how each vendor clamps randomness (Gemini, GPT-5, Grok, Anthropic, OpenRouter mirrors).
+  - Document answers the “isn’t that high?” question from the Poetiq audit notes and calls out the relevant code paths (`PoetiqSolver.tsx`, `poetiqController.ts`, `poetiq_wrapper.py`, `arc_agi/llm.py`, `openai/payloadBuilder.ts`, and `server/config/models.ts`).
+  - **Files**: `docs/2025-11-27-llm-temperature-doc-plan.md`, `docs/poetiq-llm-agnostic-temperature-guide.md`
+
 ### Version 5.29.14
 
 - **Poetiq Parser Alignment** (Author: Codex (GPT-5))
