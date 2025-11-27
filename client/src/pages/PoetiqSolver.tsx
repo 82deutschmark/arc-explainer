@@ -13,7 +13,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, Link } from 'wouter';
-import { Loader2, ArrowLeft, Square, ChevronDown, ChevronUp, Activity, Timer, Gauge, Layers, Copy, Check, Rocket } from 'lucide-react';
+import { Loader2, Square, ChevronDown, ChevronUp, Activity, Timer, Layers, Copy, Check, Rocket } from 'lucide-react';
 import { usePuzzle } from '@/hooks/usePuzzle';
 import { usePoetiqProgress } from '@/hooks/usePoetiqProgress';
 import { PuzzleGrid } from '@/components/puzzle/PuzzleGrid';
@@ -273,22 +273,37 @@ export default function PoetiqSolver() {
 
   return (
     <div className="h-screen flex flex-col bg-gray-100">
-      {/* Header - Spacious with inline controls when not running */}
+      {/* Header - Informative with clear status */}
       <header className="flex items-center justify-between px-6 py-3 border-b bg-gradient-to-r from-indigo-900 to-purple-900 text-white">
+        {/* Left: Title + Explanation */}
         <div className="flex items-center gap-6">
-          <Link href="/poetiq" className="flex items-center gap-2 text-indigo-200 hover:text-white transition-colors">
-            <ArrowLeft className="h-5 w-5" />
-            <span>Back</span>
-          </Link>
-          <div className="h-8 w-px bg-indigo-600" />
           <div>
             <h1 className="text-xl font-bold">Poetiq Meta-System</h1>
             <p className="text-sm text-indigo-300 font-mono">{taskId}</p>
           </div>
+          <div className="h-8 w-px bg-indigo-600" />
+          {/* Explanatory text - always visible */}
+          <div className="max-w-md text-sm text-indigo-200">
+            {isRunning ? (
+              <span>
+                <strong className="text-white">{numExperts} AI experts</strong> are generating Python code in parallel. 
+                Each expert iterates until the code solves all training examples, then applies it to the test case.
+              </span>
+            ) : isDone ? (
+              <span>
+                Solver finished. The generated code was tested against the puzzle's test case.
+              </span>
+            ) : (
+              <span>
+                Configure the solver below, then click <strong className="text-white">Start</strong> to run 
+                parallel code generation using the selected LLM.
+              </span>
+            )}
+          </div>
         </div>
         
         {/* Right side: Status + Metrics + Controls */}
-        <div className="flex items-center gap-6">
+        <div className="flex items-center gap-4">
           {/* Status Indicator */}
           <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/10">
             <div className={`w-3 h-3 rounded-full ${isRunning ? 'bg-green-400 animate-pulse' : isDone ? 'bg-blue-400' : hasError ? 'bg-red-400' : 'bg-gray-400'}`} />
@@ -300,21 +315,16 @@ export default function PoetiqSolver() {
           {/* Metrics - only show when running/done */}
           {(isRunning || isDone) && (
             <>
-              <div className="flex items-center gap-2 px-4 py-2 rounded bg-white/10">
+              <div className="flex items-center gap-2 px-4 py-2 rounded bg-white/10" title="Current iteration out of maximum iterations per expert">
                 <Layers className="h-5 w-5 text-indigo-300" />
-                <span className="font-mono">
-                  {state.iteration ?? 0}/{state.totalIterations ?? maxIterations}
+                <span className="font-mono text-sm">
+                  Iteration {state.iteration ?? 0} of {state.totalIterations ?? maxIterations}
                 </span>
               </div>
               
-              <div className="flex items-center gap-2 px-4 py-2 rounded bg-white/10">
+              <div className="flex items-center gap-2 px-4 py-2 rounded bg-white/10" title="Elapsed time">
                 <Timer className="h-5 w-5 text-indigo-300" />
                 <span className="font-mono">{formatElapsed(elapsedSeconds)}</span>
-              </div>
-              
-              <div className="flex items-center gap-2 px-4 py-2 rounded bg-white/10">
-                <Gauge className="h-5 w-5 text-indigo-300" />
-                <span className="truncate max-w-[120px]">{state.phase || 'Ready'}</span>
               </div>
             </>
           )}

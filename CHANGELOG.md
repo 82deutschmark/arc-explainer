@@ -1,6 +1,13 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top!!!
 
+### Version 5.29.13
+
+- **Poetiq Confidence Suppression** (Author: Codex (GPT-5))
+  - Hard-coded Poetiq explanation transforms to store `confidence = 0` and `trustworthinessScore = null` so UI cards stop surfacing misleading metrics for meta-system runs.
+  - Added accompanying implementation plan to document why these fields are intentionally blanked.
+  - **Files**: `server/services/poetiq/poetiqService.ts`, `docs/2025-11-27-poetiq-confidence-suppression-plan.md`
+
 ### Version 5.29.12
 
 - **Poetiq Model Metadata Persistence** (Author: Codex (GPT-5))

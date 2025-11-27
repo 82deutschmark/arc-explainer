@@ -148,12 +148,12 @@ export default function PoetiqControlPanel({
 
   return (
     <div className="space-y-3">
-      {/* Reasoning Engine Selection (LLM-Agnostic) - Start button is now in header */}
+      {/* LLM Selection - Start button is now in header */}
       <div className="card bg-white border border-gray-300 shadow-sm">
         <div className="card-body p-4">
           <h3 className="card-title text-sm flex items-center gap-2 text-indigo-900">
             <Cpu className="w-4 h-4" />
-            Reasoning Engine
+            Select Large Language Model
           </h3>
           <div className="space-y-3">
             
@@ -161,7 +161,7 @@ export default function PoetiqControlPanel({
             <div>
               <label className="label py-1">
                 <span className="label-text text-xs font-semibold text-gray-600">
-                  Select Underlying Model
+                  Choose the AI model that will generate code
                 </span>
               </label>
               {modelsLoading ? (
