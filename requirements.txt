@@ -9,8 +9,9 @@ pillow>=9.0.0
 numpy>=1.20.0
 python-dotenv>=1.0.0
 
-# Poetiq Code-Generation Solver dependencies
+# Poetiq Code-Generation Solver dependencies (internalized from poetiq-solver submodule)
+# Uses direct Google Generative AI SDK instead of litellm
 asynciolimiter==1.2.0
-litellm==1.78.2
-numpy==2.3.4
-scipy==1.16.3
+google-generativeai>=0.8.0
+numpy>=1.20.0
+scipy>=1.10.0

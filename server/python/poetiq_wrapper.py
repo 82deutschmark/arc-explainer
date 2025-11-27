@@ -2,9 +2,10 @@
 """
 Author: Cascade (Claude Sonnet 4)
 Date: 2025-11-25
-Updated: 2025-11-27 - Fixed emit function order, added richer event emissions for visibility
+Updated: 2025-11-27 - Internalized Poetiq solver, removed submodule dependency, uses direct Google SDK
 PURPOSE: Python bridge wrapper for Poetiq ARC-AGI solver integration.
          Receives puzzle data via stdin, runs Poetiq solver, streams progress as NDJSON.
+         Now uses internalized solver from solver/poetiq/ (no litellm dependency).
          
 SRP and DRY check: Pass - Single responsibility is bridging Node.js to Poetiq solver.
                    Does not duplicate Poetiq logic, only wraps it.
@@ -44,40 +45,33 @@ def log(message: str, level: str = "info"):
 # ==========================================
 # PREFLIGHT CHECKS
 # ==========================================
-# Add poetiq-solver to path
-POETIQ_PATH = Path(__file__).parent.parent.parent / "poetiq-solver"
+# Add solver directory to path (internalized Poetiq solver)
+PROJECT_ROOT = Path(__file__).parent.parent.parent
+SOLVER_PATH = PROJECT_ROOT / "solver"
 
-# Check if Poetiq solver is available with structured error
-if not POETIQ_PATH.exists():
+# Check if internalized solver is available
+if not (SOLVER_PATH / "poetiq" / "solve.py").exists():
     emit({
         "type": "error", 
-        "message": "Poetiq solver not found. Initialize submodule with: git submodule update --init --recursive",
-        "remediation": "Run 'git submodule update --init --recursive' in the project root"
+        "message": f"Poetiq solver not found at {SOLVER_PATH / 'poetiq'}",
+        "remediation": "Ensure solver/poetiq/ directory exists with all Python files"
     })
     sys.exit(1)
 
-if not (POETIQ_PATH / "arc_agi" / "solve.py").exists():
-    emit({
-        "type": "error", 
-        "message": f"Poetiq solver incomplete - arc_agi/solve.py not found at {POETIQ_PATH}",
-        "remediation": "Ensure the poetiq-solver submodule is fully checked out"
-    })
-    sys.exit(1)
-
-sys.path.insert(0, str(POETIQ_PATH))
-log(f"Poetiq solver loaded from: {POETIQ_PATH}")
+sys.path.insert(0, str(SOLVER_PATH.parent))  # Add project root so 'solver.poetiq' imports work
+log(f"Poetiq solver loaded from: {SOLVER_PATH / 'poetiq'}")
 
 # ==========================================
 # INSTRUMENTATION - Monkey patch to get live updates
 # ==========================================
 import numpy as np
-from arc_agi.types import ARCAGIResult, ARCAGISolution, ExpertConfig, RunResult
-import arc_agi.solve_parallel_coding
-from arc_agi.solve_coding import (
+from solver.poetiq.types import ARCAGIResult, ARCAGISolution, ExpertConfig, RunResult
+import solver.poetiq.solve_parallel_coding
+from solver.poetiq.solve_coding import (
     _make_example, format_problem, _build_prompt, create_examples, 
     _parse_code_from_llm, _eval_on_train_and_test, _build_feedback
 )
-from arc_agi.llm import llm
+from solver.poetiq.llm import llm
 
 async def instrumented_solve_coding(
     *,
@@ -253,7 +247,7 @@ async def instrumented_solve_coding(
     )
 
 # Apply monkey patch
-arc_agi.solve_parallel_coding.solve_coding = instrumented_solve_coding
+solver.poetiq.solve_parallel_coding.solve_coding = instrumented_solve_coding
 # ==========================================
 
 
@@ -265,7 +259,7 @@ def build_config_list(num_experts: int, model: str, max_iterations: int, tempera
     Build a dynamic CONFIG_LIST for this run based on user options.
     This allows per-request expert count without modifying global state.
     """
-    from arc_agi.prompts import FEEDBACK_PROMPT, SOLVER_PROMPT_1
+    from solver.poetiq.prompts import FEEDBACK_PROMPT, SOLVER_PROMPT_1
     
     base_config = {
         'solver_prompt': SOLVER_PROMPT_1,
@@ -335,9 +329,9 @@ async def run_poetiq_solver(puzzle_id: str, task: dict, options: dict) -> dict:
     # This is because solve.py imports CONFIG_LIST at module load time,
     # so patching config.CONFIG_LIST after importing solve.py has no effect.
     # By calling solve_parallel_coding directly, we pass our own config list.
-    from arc_agi.solve_parallel_coding import solve_parallel_coding
-    from arc_agi.io import build_kaggle_two_attempts
-    from arc_agi.scoring import score_task
+    from solver.poetiq.solve_parallel_coding import solve_parallel_coding
+    from solver.poetiq.io import build_kaggle_two_attempts
+    from solver.poetiq.scoring import score_task
     
     # Extract train/test data in Poetiq format
     train = task.get("train", [])
@@ -348,8 +342,8 @@ async def run_poetiq_solver(puzzle_id: str, task: dict, options: dict) -> dict:
     test_in = [ex["input"] for ex in test]
     
     # Get config from options with sensible defaults
-    # Default: 2 experts, OpenRouter Gemini, 10 iterations
-    model = options.get("model", "openrouter/google/gemini-3-pro-preview")
+    # Default: 2 experts, Gemini 3 Pro Preview (direct API), 10 iterations
+    model = options.get("model", "gemini-3-pro-preview")
     num_experts = options.get("numExperts", 2)
     max_iterations = options.get("maxIterations", 10)
     temperature = options.get("temperature", 1.0)
