@@ -22,6 +22,7 @@ import { DEFAULT_EMOJI_SET } from '@/lib/spaceEmojis';
 // Poetiq components
 import PoetiqControlPanel from '@/components/poetiq/PoetiqControlPanel';
 import PoetiqPythonTerminal from '@/components/poetiq/PoetiqPythonTerminal';
+import { PoetiqInfoCard } from '@/components/poetiq/PoetiqInfoCard';
 
 export default function PoetiqSolver() {
   const { taskId } = useParams<{ taskId: string }>();
@@ -266,6 +267,9 @@ export default function PoetiqSolver() {
                 onCancel={cancel}
               />
             )}
+
+            {/* Info Card - Explains Meta-System Architecture */}
+            <PoetiqInfoCard />
 
             {/* Puzzle Display - Training & Test Grids (Saturn style) */}
             <div className="bg-white border border-gray-300 rounded">

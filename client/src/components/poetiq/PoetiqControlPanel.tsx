@@ -11,16 +11,9 @@
  */
 
 import React, { useMemo, useEffect } from 'react';
-import { Rocket, Square, Key, Users, AlertTriangle, Settings, Loader2 } from 'lucide-react';
+import { Rocket, Square, Key, Users, AlertTriangle, Settings, Loader2, Cpu, Network } from 'lucide-react';
 import type { PoetiqProgressState } from '@/hooks/usePoetiqProgress';
 import { usePoetiqModels } from '@/hooks/usePoetiqModels';
-
-// Provider options with key placeholders
-const PROVIDERS = [
-  { value: 'openrouter', label: 'OpenRouter', icon: '', keyPlaceholder: 'sk-or-...', apiProvider: 'OpenRouter' },
-  { value: 'openai', label: 'OpenAI Direct', icon: '', keyPlaceholder: 'sk-...', apiProvider: 'OpenAI' },
-  { value: 'gemini', label: 'Gemini Direct', icon: '', keyPlaceholder: 'AIza...', apiProvider: 'Google' },
-] as const;
 
 // Expert configs - 1, 2, 8 ONLY (from config.py)
 const EXPERT_OPTIONS = [
@@ -29,33 +22,38 @@ const EXPERT_OPTIONS = [
   { value: 8, label: '8 Experts (Config C)', description: 'Best accuracy, ~25-45+ min' },
 ] as const;
 
+// API Key placeholders by provider
+const KEY_PLACEHOLDERS: Record<string, string> = {
+  'OpenAI': 'sk-...',
+  'Google': 'AIza...',
+  'Anthropic': 'sk-ant-...',
+  'xAI': 'xai-...',
+  'OpenRouter': 'sk-or-...',
+};
+
 interface PoetiqControlPanelProps {
   state: PoetiqProgressState;
   isRunning: boolean;
   
-  // API Key (optional - falls back to server env vars)
   apiKey: string;
   setApiKey: (key: string) => void;
   
-  // Provider and model selection
+  // Provider is now derived from model
   provider: 'gemini' | 'openrouter' | 'openai';
   setProvider: (provider: 'gemini' | 'openrouter' | 'openai') => void;
+  
   model: string;
   setModel: (model: string) => void;
   
-  // Expert configuration (1, 2, or 8)
   numExperts: number;
   setNumExperts: (num: number) => void;
   
-  // Max iterations per expert
   maxIterations: number;
   setMaxIterations: (iterations: number) => void;
   
-  // Temperature
   temperature: number;
   setTemperature: (temp: number) => void;
   
-  // Actions
   onStart: () => void;
   onCancel: () => void;
 }
@@ -65,7 +63,7 @@ export default function PoetiqControlPanel({
   isRunning,
   apiKey,
   setApiKey,
-  provider,
+  provider, // Still needed for parent state, but auto-managed
   setProvider,
   model,
   setModel,
@@ -83,28 +81,65 @@ export default function PoetiqControlPanel({
   
   // Can always start (API key is optional - falls back to server env vars)
   const canStart = !isRunning && !modelsLoading;
-  
-  // Get selected provider info
-  const selectedProvider = PROVIDERS.find(p => p.value === provider);
-  
-  // Filter models by provider
-  const models = useMemo(() => {
-    if (!poetiqModels) return [];
-    const providerMapping = selectedProvider?.apiProvider;
-    return poetiqModels.filter(m => !providerMapping || m.provider === providerMapping);
-  }, [poetiqModels, selectedProvider]);
 
-  // Sync model state when models load - ensure selected model is valid for provider
+  // Group models by family for the dropdown
+  const groupedModels = useMemo(() => {
+    if (!poetiqModels) return {};
+    
+    const groups: Record<string, typeof poetiqModels> = {
+      'Recommended (SOTA)': [],
+      'Gemini Family': [],
+      'GPT Family': [],
+      'Grok Family': [],
+      'Claude Family': [],
+      'Open Source & Other': []
+    };
+
+    poetiqModels.forEach(m => {
+      if (m.recommended) {
+        groups['Recommended (SOTA)'].push(m);
+      }
+      
+      // Also add to specific families
+      const name = m.name.toLowerCase();
+      if (name.includes('gemini')) groups['Gemini Family'].push(m);
+      else if (name.includes('gpt')) groups['GPT Family'].push(m);
+      else if (name.includes('grok')) groups['Grok Family'].push(m);
+      else if (name.includes('claude')) groups['Claude Family'].push(m);
+      else groups['Open Source & Other'].push(m);
+    });
+
+    // Remove empty groups and recommended duplicates from families if desired (optional)
+    // For now keeping duplicates in families is fine for discoverability
+    
+    return groups;
+  }, [poetiqModels]);
+
+  // Find current model object to determine provider/placeholder
+  const selectedModelObj = useMemo(() => 
+    poetiqModels?.find(m => m.id === model), 
+  [poetiqModels, model]);
+
+  // Auto-update provider when model changes
   useEffect(() => {
-    if (models.length > 0 && !isRunning) {
-      // Check if current model is in the filtered list
-      const currentModelExists = models.some(m => m.id === model);
-      if (!currentModelExists) {
-        // Set to first model for this provider
-        setModel(models[0].id);
+    if (selectedModelObj) {
+      // Map API provider to internal provider state
+      let newProvider: 'gemini' | 'openrouter' | 'openai' = 'openrouter';
+      if (selectedModelObj.provider === 'Google') newProvider = 'gemini';
+      if (selectedModelObj.provider === 'OpenAI') newProvider = 'openai';
+      // Note: xAI and others go through OpenRouter or specialized handlers in backend, 
+      // but for this simple state we default to openrouter if not explicit direct Google/OpenAI
+      
+      if (provider !== newProvider) {
+        setProvider(newProvider);
       }
     }
-  }, [models, model, setModel, isRunning]);
+  }, [selectedModelObj, provider, setProvider]);
+
+  // Placeholder based on selected model's provider
+  const keyPlaceholder = selectedModelObj 
+    ? KEY_PLACEHOLDERS[selectedModelObj.provider] || 'API Key...'
+    : 'API Key...';
 
   return (
     <div className="space-y-2">
@@ -129,74 +164,63 @@ export default function PoetiqControlPanel({
           ) : (
             <>
               <Rocket className="h-5 w-5" />
-              Start Poetiq Solver
+              Start Poetiq Meta-System
             </>
           )}
         </button>
       </div>
 
-      {/* Provider & Model Selection */}
+      {/* Reasoning Engine Selection (LLM-Agnostic) */}
       <div className="card bg-white border border-gray-300 shadow-sm">
         <div className="card-body p-4">
-          <h3 className="card-title text-sm flex items-center gap-2">
-            <Settings className="w-4 h-4" />
-            Provider & Model
+          <h3 className="card-title text-sm flex items-center gap-2 text-indigo-900">
+            <Cpu className="w-4 h-4" />
+            Reasoning Engine
           </h3>
           <div className="space-y-3">
-            {/* Provider */}
+            
+            {/* Model Dropdown - Flattened & Grouped */}
             <div>
               <label className="label py-1">
-                <span className="label-text text-xs font-semibold">Provider</span>
-              </label>
-              <select
-                value={provider}
-                onChange={(e) => {
-                  const newProvider = e.target.value as 'gemini' | 'openrouter' | 'openai';
-                  setProvider(newProvider);
-                  // Set default model for new provider from filtered list
-                  const providerInfo = PROVIDERS.find(p => p.value === newProvider);
-                  if (poetiqModels && providerInfo) {
-                    const providerModels = poetiqModels.filter(m => m.provider === providerInfo.apiProvider);
-                    if (providerModels.length > 0) {
-                      setModel(providerModels[0].id);
-                    }
-                  }
-                }}
-                disabled={isRunning}
-                className="select select-bordered select-sm w-full"
-              >
-                {PROVIDERS.map(p => (
-                  <option key={p.value} value={p.value}>
-                    {p.icon} {p.label}
-                  </option>
-                ))}
-              </select>
-            </div>
-            {/* Model */}
-            <div>
-              <label className="label py-1">
-                <span className="label-text text-xs font-semibold">Model</span>
+                <span className="label-text text-xs font-semibold text-gray-600">
+                  Select Underlying Model
+                </span>
               </label>
               {modelsLoading ? (
-                <div className="flex items-center gap-2 px-3 py-2 border rounded">
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                  <span className="text-xs">Loading models...</span>
+                <div className="flex items-center gap-2 px-3 py-2 border rounded bg-gray-50">
+                  <Loader2 className="h-4 w-4 animate-spin text-gray-400" />
+                  <span className="text-xs text-gray-500">Loading compatible models...</span>
                 </div>
               ) : (
-                <select
-                  value={model}
-                  onChange={(e) => setModel(e.target.value)}
-                  disabled={isRunning}
-                  className="select select-bordered select-sm w-full"
-                >
-                  {models.map(m => (
-                    <option key={m.id} value={m.id}>
-                      {m.name}{m.recommended ? ' (recommended)' : ''}
-                    </option>
-                  ))}
-                </select>
+                <div className="space-y-1">
+                  <select
+                    value={model}
+                    onChange={(e) => setModel(e.target.value)}
+                    disabled={isRunning}
+                    className="select select-bordered select-sm w-full font-medium text-gray-800"
+                  >
+                    {Object.entries(groupedModels).map(([group, models]) => (
+                      models.length > 0 && (
+                        <optgroup key={group} label={group}>
+                          {models.map(m => (
+                            <option key={m.id} value={m.id}>
+                              {m.name}
+                            </option>
+                          ))}
+                        </optgroup>
+                      )
+                    ))}
+                  </select>
+                  <div className="flex items-center gap-1 text-[10px] text-gray-500 px-1">
+                    <Network className="h-3 w-3" />
+                    <span>
+                      Provider: <strong>{selectedModelObj?.provider || 'Unknown'}</strong>
+                    </span>
+                  </div>
+                </div>
               )}
             </div>
+
             {/* Temperature */}
             <div>
               <label className="label py-1">
@@ -217,18 +241,17 @@ export default function PoetiqControlPanel({
         </div>
       </div>
 
-      {/* API Key Card (Optional) */}
+      {/* API Key Card (Dynamic) */}
       <div className="card bg-white border border-gray-300 shadow-sm">
         <div className="card-body p-4">
           <h3 className="card-title text-sm flex items-center gap-2">
             <Key className="w-4 h-4" />
             API Key (Optional)
           </h3>
-          <div className="space-y-3">
+          <div className="space-y-2">
             <div className="bg-blue-50 border border-blue-200 rounded p-2">
-              <p className="text-[10px] text-blue-700">
-                <strong>Optional:</strong> Leave blank to use server API key.
-                Provide your own key for unlimited access.
+              <p className="text-[10px] text-blue-700 leading-tight">
+                Leave blank to use server key. Provide your own <strong>{selectedModelObj?.provider}</strong> key for unlimited access.
               </p>
             </div>
             <input
@@ -236,13 +259,10 @@ export default function PoetiqControlPanel({
               value={apiKey}
               onChange={(e) => setApiKey(e.target.value)}
               disabled={isRunning}
-              placeholder={selectedProvider?.keyPlaceholder || 'API key (optional)'}
-              className="input input-bordered input-sm w-full font-mono"
+              placeholder={keyPlaceholder}
+              className="input input-bordered input-sm w-full font-mono text-xs"
               autoComplete="new-password"
             />
-            <p className="text-[10px] text-gray-500">
-              Never stored. Used only for this run.
-            </p>
           </div>
         </div>
       </div>
@@ -252,13 +272,13 @@ export default function PoetiqControlPanel({
         <div className="card-body p-4">
           <h3 className="card-title text-sm flex items-center gap-2">
             <Users className="w-4 h-4" />
-            Expert Configuration
+            Meta-System Configuration
           </h3>
           <div className="space-y-3">
-            {/* Experts - 1, 2, or 8 ONLY */}
+            {/* Experts */}
             <div>
               <label className="label py-1">
-                <span className="label-text text-xs font-semibold">Configuration</span>
+                <span className="label-text text-xs font-semibold">Parallel Experts</span>
               </label>
               <select
                 value={numExperts}
@@ -276,7 +296,7 @@ export default function PoetiqControlPanel({
             {/* Max Iterations */}
             <div>
               <label className="label py-1">
-                <span className="label-text text-xs font-semibold">Max Iterations per Expert</span>
+                <span className="label-text text-xs font-semibold">Self-Audit Limit (Iterations)</span>
               </label>
               <input
                 type="number"
@@ -288,7 +308,7 @@ export default function PoetiqControlPanel({
                 className="input input-bordered input-sm w-full"
               />
               <p className="text-[10px] text-gray-500 mt-1">
-                Default: 10. Higher = more attempts but longer runtime.
+                Max refinement cycles before giving up.
               </p>
             </div>
           </div>
