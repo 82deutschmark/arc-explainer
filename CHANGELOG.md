@@ -1,6 +1,29 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top!!!
 
+### Version 5.31.1
+
+- **Poetiq Community & Solver Page Layout Improvements** (Author: Claude Code using Haiku 4.5)
+  - **Purpose**: Improve user experience by showing training grids upfront and reorganizing Community page layout
+  - **Changes**:
+    1. **PoetiqCommunity.tsx Layout Reorganization**:
+       - Moved explanations (Technical Definitions + Deep Dive sections) to top of page
+       - Moved Community Progress puzzle grid to bottom of page
+       - Clearer information hierarchy: understand the system → verify progress
+    2. **PuzzleProgressGrid.tsx Navigation Update**:
+       - Changed puzzle badge click destination from `/puzzle/poetiq/{puzzleId}` to `/puzzle/{puzzleId}`
+       - Users now navigate to regular Puzzle Explainer page instead of Poetiq solver
+       - Allows independent exploration of puzzle structure before running Poetiq verification
+    3. **PoetiqSolver.tsx Training Grid Display**:
+       - Added training examples preview section above control bar
+       - Shows all input→output pairs with arrow indicators
+       - Auto-hides when solver starts to maximize output space
+       - Helps users understand puzzle requirements before starting solver
+  - **Files Changed**:
+    - `client/src/pages/PoetiqCommunity.tsx` (reorganized sections)
+    - `client/src/components/poetiq/PuzzleProgressGrid.tsx` (navigation target)
+    - `client/src/pages/PoetiqSolver.tsx` (added TinyGrid import, training examples section)
+
 ### Version 5.31.0
 
 - **Poetiq Solver - Comprehensive Token & Cost Tracking** (Author: Cascade using Claude Sonnet 4)
