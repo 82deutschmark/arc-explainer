@@ -295,24 +295,24 @@ export const poetiqController = {
    */
   async getModels(_req: Request, res: Response) {
     // Models supported by Poetiq via LiteLLM
-    // OpenRouter models are recommended to avoid direct API rate limits
+    // All models route through OpenRouter (server key) or require BYO API key for direct access
+    // Label format: "Model Name" + routing info to avoid confusion
     const models = [
-      // SOTA Models (Featured in Blog)
-      { id: 'openrouter/google/gemini-3-pro-preview', name: 'Gemini 3 Pro (via OpenRouter)', provider: 'OpenRouter', recommended: true },
-      { id: 'gemini/gemini-3-pro-preview', name: 'Gemini 3 Pro Preview (Direct)', provider: 'Google', recommended: false },
-      
-      { id: 'openai/gpt-5.1', name: 'GPT-5.1 (via OpenRouter)', provider: 'OpenRouter', recommended: true },
-      { id: 'gpt-5.1-codex-mini', name: 'GPT-5.1 Codex Mini (Direct)', provider: 'OpenAI', recommended: false },
+      // SOTA Models (Featured in Blog) - via OpenRouter
+      { id: 'openrouter/google/gemini-3-pro-preview', name: 'Gemini 3 Pro', provider: 'OpenRouter', recommended: true, routing: 'openrouter' },
+      { id: 'openai/gpt-5.1', name: 'GPT-5.1', provider: 'OpenRouter', recommended: true, routing: 'openrouter' },
+      { id: 'x-ai/grok-4.1-fast', name: 'Grok 4.1 Fast', provider: 'OpenRouter', recommended: true, routing: 'openrouter' },
+      { id: 'openai/gpt-oss-120b', name: 'GPT-OSS 120B', provider: 'OpenRouter', recommended: true, routing: 'openrouter' },
 
-      { id: 'grok-4-fast-reasoning', name: 'Grok 4 Fast Reasoning (Direct)', provider: 'xAI', recommended: true },
-      { id: 'x-ai/grok-4.1-fast', name: 'Grok 4.1 Fast (via OpenRouter)', provider: 'OpenRouter', recommended: false },
-      
-      { id: 'openai/gpt-oss-120b', name: 'GPT-OSS 120B (via OpenRouter)', provider: 'OpenRouter', recommended: true },
+      // Direct API access (requires BYO API key)
+      { id: 'gemini/gemini-3-pro-preview', name: 'Gemini 3 Pro', provider: 'Google', recommended: false, routing: 'direct', requiresBYO: true },
+      { id: 'gpt-5.1-codex-mini', name: 'GPT-5.1 Codex Mini', provider: 'OpenAI', recommended: false, routing: 'direct', requiresBYO: true },
+      { id: 'grok-4-fast-reasoning', name: 'Grok 4 Fast Reasoning', provider: 'xAI', recommended: false, routing: 'direct', requiresBYO: true },
+      { id: 'anthropic/claude-sonnet-4-5', name: 'Claude Sonnet 4.5', provider: 'Anthropic', recommended: false, routing: 'direct', requiresBYO: true },
 
-      // Other capable models
-      { id: 'openrouter/google/gemini-2.5-flash-preview-09-2025', name: 'Gemini 2.5 Flash (via OpenRouter)', provider: 'OpenRouter', recommended: false },
-      { id: 'openrouter/anthropic/claude-sonnet-4', name: 'Claude Sonnet 4 (via OpenRouter)', provider: 'OpenRouter', recommended: false },
-      { id: 'anthropic/claude-sonnet-4-5', name: 'Claude Sonnet 4.5 (Direct)', provider: 'Anthropic', recommended: false },
+      // Other via OpenRouter
+      { id: 'openrouter/google/gemini-2.5-flash-preview-09-2025', name: 'Gemini 2.5 Flash', provider: 'OpenRouter', recommended: false, routing: 'openrouter' },
+      { id: 'openrouter/anthropic/claude-sonnet-4', name: 'Claude Sonnet 4', provider: 'OpenRouter', recommended: false, routing: 'openrouter' },
     ];
 
     return res.json(formatResponse.success({ models }));

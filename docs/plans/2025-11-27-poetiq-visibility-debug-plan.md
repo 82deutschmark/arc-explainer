@@ -66,3 +66,49 @@ Poetiq's UI stays blank after clicking **Run** because it only emits sparse WebS
 - Reasoning/code payloads can explode; mimic Saturn's truncation rules (cap log lines to 500, reasoning history to 100, append ellipses).
 - BYO API keys must remain server-side; only broadcast `usingFallback` booleans and scrub `options` objects.
 - Python watcher threads must stop cleanly on Windows to avoid orphaned handles; gate them with events/timeouts like Saturn's watcher.
+
+---
+
+## UI Redesign (Nov 27, 2025 Addendum)
+
+Based on user feedback from testing the Poetiq Solver page:
+
+### Issues Identified
+
+1. **Gear icon hides valuable info**: Settings are collapsed behind a tiny gear button. User must expand to see controls.
+
+2. **Wasted header bar**: Top header only shows "Back | Poetiq Meta-System Solver | taskId | Stop" - could display key metrics here.
+
+3. **Python Execution terminal is confusing**: Panel labeled "PYTHON EXECUTION" but actually shows iteration results. The name implies a terminal where Python runs, but it's showing code generation results.
+
+4. **Model routing confusion**: When selecting "GPT-5.1 Codex Mini (Direct)", UI shows "Provider: OpenAI" but the backend may route through OpenRouter when using server keys. The "(Direct)" label is misleading.
+
+5. **Start button not obvious**: The "Start Poetiq Meta-System" button looks like plain text on white. Needs stronger visual treatment.
+
+### Fixes to Implement
+
+#### A. Remove Collapsible Gear Icon
+- Always show control panel settings prominently
+- Remove the collapsible behavior (showControls state)
+- Keep compact but visible
+
+#### B. Redesign Header Bar
+- Move key stats (Iteration, Phase, Status, Elapsed) to header
+- Make header more information-dense like Saturn
+
+#### C. Rename Python Panel
+- Change "PYTHON EXECUTION" to "ITERATION PROGRESS"
+- Add subtitle: "Code generation & testing results per iteration"
+- Make the purpose clearer
+
+#### D. Fix Model Provider Labels
+- Update model list to clarify routing:
+  - "GPT-5.1 (via OpenRouter)" instead of "GPT-5.1 Codex Mini (Direct)"
+  - Show actual routing path, not just the model vendor
+- Add tooltip explaining OpenRouter vs Direct routing
+
+#### E. Make Start Button Prominent
+- Use gradient background (green)
+- Add pulsing animation when ready
+- Increase size and visual weight
+- Add icon emphasis

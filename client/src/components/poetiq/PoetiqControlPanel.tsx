@@ -11,7 +11,7 @@
  */
 
 import React, { useMemo, useEffect } from 'react';
-import { Rocket, Square, Key, Users, AlertTriangle, Settings, Loader2, Cpu, Network } from 'lucide-react';
+import { Rocket, Square, Key, Users, AlertTriangle, Loader2, Cpu, Cloud, Server, Zap } from 'lucide-react';
 import type { PoetiqProgressState } from '@/hooks/usePoetiqProgress';
 import { usePoetiqModels } from '@/hooks/usePoetiqModels';
 
@@ -148,28 +148,31 @@ export default function PoetiqControlPanel({
 
   return (
     <div className="space-y-2">
-      {/* Start Button - TOP */}
-      <div className="bg-white border border-gray-300 rounded p-3">
+      {/* Start Button - HERO SECTION */}
+      <div className={`rounded-lg p-4 border-2 transition-all ${isRunning ? 'bg-red-50 border-red-400' : 'bg-gradient-to-r from-green-50 to-emerald-50 border-green-400'}`}>
         <div className="flex items-center gap-3 mb-3">
-          <div className={`w-3 h-3 rounded-full ${isRunning ? 'bg-green-500 animate-pulse' : 'bg-gray-400'}`} />
-          <span className="text-sm font-bold text-gray-800">
+          <div className={`w-4 h-4 rounded-full ${isRunning ? 'bg-red-500 animate-pulse' : 'bg-green-500 animate-pulse'}`} />
+          <span className="text-base font-bold text-gray-800">
             {isRunning ? 'POETIQ RUNNING' : 'READY TO START'}
           </span>
         </div>
         <button
           onClick={isRunning ? onCancel : onStart}
           disabled={!canStart && !isRunning}
-          className={`btn w-full ${isRunning ? 'btn-error' : 'btn-success'}`}
+          className={`w-full py-4 px-6 rounded-lg font-bold text-lg flex items-center justify-center gap-3 transition-all shadow-lg hover:shadow-xl ${isRunning 
+            ? 'bg-red-600 hover:bg-red-700 text-white' 
+            : 'bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white'} disabled:opacity-50 disabled:cursor-not-allowed`}
         >
           {isRunning ? (
             <>
-              <Square className="h-5 w-5" />
+              <Square className="h-6 w-6" />
               Stop Solver
             </>
           ) : (
             <>
-              <Rocket className="h-5 w-5" />
-              Start Poetiq Meta-System
+              <Rocket className="h-6 w-6" />
+              <span>Start Poetiq Meta-System</span>
+              <Zap className="h-5 w-5 text-yellow-300" />
             </>
           )}
         </button>
@@ -197,7 +200,7 @@ export default function PoetiqControlPanel({
                   <span className="text-xs text-gray-500">Loading compatible models...</span>
                 </div>
               ) : (
-                <div className="space-y-1">
+                <div className="space-y-2">
                   <select
                     value={model}
                     onChange={(e) => setModel(e.target.value)}
@@ -209,18 +212,30 @@ export default function PoetiqControlPanel({
                         <optgroup key={group} label={group}>
                           {models.map(m => (
                             <option key={m.id} value={m.id}>
-                              {m.name}
+                              {m.name} {(m as any).requiresBYO ? '(BYO Key)' : ''}
                             </option>
                           ))}
                         </optgroup>
                       )
                     ))}
                   </select>
-                  <div className="flex items-center gap-1 text-[10px] text-gray-500 px-1">
-                    <Network className="h-3 w-3" />
-                    <span>
-                      Provider: <strong>{selectedModelObj?.provider || 'Unknown'}</strong>
-                    </span>
+                  {/* Routing indicator - clear visual distinction */}
+                  <div className={`flex items-center gap-2 px-2 py-1.5 rounded text-xs font-medium ${(selectedModelObj as any)?.routing === 'direct' 
+                    ? 'bg-amber-100 text-amber-800 border border-amber-300'
+                    : 'bg-blue-100 text-blue-800 border border-blue-300'}`}>
+                    {(selectedModelObj as any)?.routing === 'direct' ? (
+                      <>
+                        <Server className="h-3.5 w-3.5" />
+                        <span>Direct API to <strong>{selectedModelObj?.provider}</strong></span>
+                        <span className="ml-auto text-[10px] opacity-80">(Requires Your API Key)</span>
+                      </>
+                    ) : (
+                      <>
+                        <Cloud className="h-3.5 w-3.5" />
+                        <span>Via <strong>OpenRouter</strong></span>
+                        <span className="ml-auto text-[10px] opacity-80">(Uses Server Key)</span>
+                      </>
+                    )}
                   </div>
                 </div>
               )}
