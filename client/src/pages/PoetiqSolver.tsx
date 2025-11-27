@@ -1,7 +1,7 @@
 /**
  * Author: Cascade (Claude Sonnet 4)
  * Date: 2025-11-25
- * Updated: 2025-11-27 - Fixed nested anchor tags (wouter Link already renders <a>)
+ * Updated: 2025-11-27 - Fixed nested anchors, added timing/event visibility
  * PURPOSE: Poetiq Iterative Code-Generation Solver page.
  *          EXACTLY matches Saturn's layout:
  *          - LEFT (4 cols): Control panel + puzzle grids
@@ -13,7 +13,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'wouter';
-import { Loader2, ArrowLeft, Square, ChevronDown, ChevronUp, Settings } from 'lucide-react';
+import { Loader2, ArrowLeft, Square, ChevronDown, ChevronUp, Settings, Clock, Activity } from 'lucide-react';
 import { usePuzzle } from '@/hooks/usePuzzle';
 import { usePoetiqProgress } from '@/hooks/usePoetiqProgress';
 import { PuzzleGrid } from '@/components/puzzle/PuzzleGrid';
@@ -41,6 +41,12 @@ export default function PoetiqSolver() {
   const [autoStartTriggered, setAutoStartTriggered] = useState(false);
   const [cameFromCommunity, setCameFromCommunity] = useState(false);
   const [showControls, setShowControls] = useState(true);
+  const [showLogs, setShowLogs] = useState(true);  // Show event log panel
+  
+  // Timing state for visibility
+  const [startTime, setStartTime] = useState<Date | null>(null);
+  const [elapsedSeconds, setElapsedSeconds] = useState(0);
+  const [lastUpdateTime, setLastUpdateTime] = useState<Date | null>(null);
 
   // Set page title
   useEffect(() => {
@@ -94,6 +100,35 @@ export default function PoetiqSolver() {
   const isRunning = state.status === 'running';
   const isDone = state.status === 'completed';
   const hasError = state.status === 'error';
+
+  // Track start time when solver begins
+  useEffect(() => {
+    if (isRunning && !startTime) {
+      setStartTime(new Date());
+      setLastUpdateTime(new Date());
+    }
+    if (!isRunning && (isDone || hasError)) {
+      // Keep the final elapsed time, don't reset
+    }
+  }, [isRunning, isDone, hasError, startTime]);
+
+  // Update elapsed time every second while running
+  useEffect(() => {
+    if (!isRunning || !startTime) return;
+    
+    const interval = setInterval(() => {
+      setElapsedSeconds(Math.floor((Date.now() - startTime.getTime()) / 1000));
+    }, 1000);
+    
+    return () => clearInterval(interval);
+  }, [isRunning, startTime]);
+
+  // Track last update time when state changes
+  useEffect(() => {
+    if (isRunning && (state.message || state.phase || state.iteration)) {
+      setLastUpdateTime(new Date());
+    }
+  }, [state.message, state.phase, state.iteration, isRunning]);
 
   // Clear executions on new run
   useEffect(() => {
@@ -161,6 +196,29 @@ export default function PoetiqSolver() {
       temperature,
       reasoningEffort,
     });
+    // Reset timing on new run
+    setStartTime(null);
+    setElapsedSeconds(0);
+  };
+
+  // Format elapsed time as MM:SS or HH:MM:SS
+  const formatElapsed = (seconds: number) => {
+    const hrs = Math.floor(seconds / 3600);
+    const mins = Math.floor((seconds % 3600) / 60);
+    const secs = seconds % 60;
+    if (hrs > 0) {
+      return `${hrs}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    }
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+  };
+
+  // Format last update as relative time
+  const formatLastUpdate = () => {
+    if (!lastUpdateTime) return 'Never';
+    const secondsAgo = Math.floor((Date.now() - lastUpdateTime.getTime()) / 1000);
+    if (secondsAgo < 5) return 'Just now';
+    if (secondsAgo < 60) return `${secondsAgo}s ago`;
+    return `${Math.floor(secondsAgo / 60)}m ago`;
   };
 
   // Loading states
@@ -366,18 +424,14 @@ export default function PoetiqSolver() {
 
           {/* CENTER: AI Streaming Output (5 cols) - Saturn's exact layout */}
           <div className="col-span-5 flex flex-col gap-2 min-h-0">
-            {/* Token Metrics - TOP */}
+            {/* Token Metrics - TOP (6 columns for better visibility) */}
             <div className="bg-white border border-gray-300 rounded">
-              <div className="grid grid-cols-4 divide-x divide-gray-300">
+              <div className="grid grid-cols-6 divide-x divide-gray-300">
                 <div className="p-2">
                   <div className="text-xs text-gray-600">Iteration</div>
                   <div className="text-sm font-bold text-gray-900">
                     {state.iteration ?? 0} / {state.totalIterations ?? maxIterations}
                   </div>
-                </div>
-                <div className="p-2">
-                  <div className="text-xs text-gray-600">Experts</div>
-                  <div className="text-sm font-bold text-gray-900">{numExperts}</div>
                 </div>
                 <div className="p-2">
                   <div className="text-xs text-gray-600">Phase</div>
@@ -393,6 +447,28 @@ export default function PoetiqSolver() {
                     {state.status.toUpperCase()}
                   </div>
                 </div>
+                <div className="p-2">
+                  <div className="text-xs text-gray-600">Elapsed</div>
+                  <div className={`text-sm font-bold font-mono ${isRunning ? 'text-blue-600' : 'text-gray-900'}`}>
+                    {formatElapsed(elapsedSeconds)}
+                  </div>
+                </div>
+                <div className="p-2">
+                  <div className="text-xs text-gray-600">Last Update</div>
+                  <div className={`text-sm font-bold ${
+                    lastUpdateTime && (Date.now() - lastUpdateTime.getTime()) > 30000 
+                      ? 'text-orange-600' 
+                      : 'text-gray-900'
+                  }`}>
+                    {formatLastUpdate()}
+                  </div>
+                </div>
+                <div className="p-2">
+                  <div className="text-xs text-gray-600">Events</div>
+                  <div className="text-sm font-bold text-gray-900">
+                    {state.logLines?.length ?? 0}
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -400,6 +476,44 @@ export default function PoetiqSolver() {
             {state.usingFallback && (
               <div className="bg-amber-50 border border-amber-300 rounded px-3 py-2 text-xs text-amber-800">
                 <strong>Note:</strong> Using server API key (no BYO key provided)
+              </div>
+            )}
+
+            {/* Event Log Panel - Timestamped events for visibility */}
+            {(isRunning || (state.logLines?.length ?? 0) > 0) && (
+              <div className="bg-white border border-gray-300 rounded">
+                <button
+                  onClick={() => setShowLogs(!showLogs)}
+                  className="w-full flex items-center justify-between px-3 py-2 bg-gray-50 border-b border-gray-300 hover:bg-gray-100 transition-colors"
+                >
+                  <div className="flex items-center gap-2">
+                    <Activity className="w-4 h-4 text-gray-600" />
+                    <span className="text-sm font-bold text-gray-700">EVENT LOG</span>
+                    <span className="text-xs text-gray-500">({state.logLines?.length ?? 0} events)</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    {isRunning && (
+                      <span className="text-xs text-green-600 font-bold flex items-center gap-1">
+                        <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+                        LIVE
+                      </span>
+                    )}
+                    {showLogs ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+                  </div>
+                </button>
+                {showLogs && (
+                  <div className="max-h-32 overflow-y-auto p-2 bg-gray-900 font-mono text-xs">
+                    {state.logLines?.length === 0 ? (
+                      <div className="text-gray-500 text-center py-2">Waiting for events...</div>
+                    ) : (
+                      state.logLines?.slice(-50).map((line, idx) => (
+                        <div key={idx} className="text-gray-300 py-0.5 border-b border-gray-800 last:border-0">
+                          {line}
+                        </div>
+                      ))
+                    )}
+                  </div>
+                )}
               </div>
             )}
 
