@@ -10,8 +10,12 @@ numpy>=1.20.0
 python-dotenv>=1.0.0
 
 # Poetiq Code-Generation Solver dependencies (internalized from poetiq-solver submodule)
-# Uses direct Google Generative AI SDK instead of litellm
-asynciolimiter==1.2.0
+# litellm for multi-provider routing (faithful to original Poetiq)
+# SDK backends so litellm can route to each provider
+litellm>=1.50.0
 google-generativeai>=0.8.0
+openai>=1.0.0
+anthropic>=0.40.0
+asynciolimiter>=1.2.0
 numpy>=1.20.0
 scipy>=1.10.0
