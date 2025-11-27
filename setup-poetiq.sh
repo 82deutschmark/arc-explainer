@@ -1,29 +1,30 @@
 #!/bin/bash
 # Setup script for Poetiq solver dependencies
-# This script ensures Poetiq is available even if git submodule isn't initialized
+# Updated 2025-11-27: Poetiq is now INTERNALIZED at solver/poetiq/ (no submodule)
+# Author: Cascade (Claude Sonnet 4)
 
 echo "Setting up Poetiq solver..."
 
-# Check if poetiq-solver directory exists and has the essential files
-if [ ! -d "poetiq-solver/arc_agi" ] || [ ! -f "poetiq-solver/arc_agi/solve.py" ]; then
-    echo "Poetiq submodule not found, creating minimal structure..."
-    
-    # Create the essential directory structure
-    mkdir -p poetiq-solver/arc_agi
-    
-    # Create a simple placeholder that indicates Poetiq isn't available
-    cat > poetiq-solver/arc_agi/__init__.py << 'EOF'
-"""
-Poetiq ARC-AGI Solver
-This submodule should be initialized via: git submodule update --init --recursive
-"""
-
-__version__ = "1.0.0"
-EOF
-    
-    echo "Created placeholder structure. Poetiq solver requires full submodule."
+# Check if INTERNALIZED solver exists at solver/poetiq/
+if [ ! -d "solver/poetiq" ] || [ ! -f "solver/poetiq/solve.py" ]; then
+    echo "ERROR: Poetiq solver not found at solver/poetiq/"
+    echo "The Poetiq solver should be internalized at solver/poetiq/"
+    echo "Required files: solve.py, llm.py, types.py, config.py, etc."
+    exit 1
 else
-    echo "Poetiq solver found at poetiq-solver/"
+    echo "✓ Poetiq solver found at solver/poetiq/"
+    ls -la solver/poetiq/*.py
 fi
 
+# Verify Python dependencies
+echo ""
+echo "Checking Python dependencies..."
+if python3 -c "import litellm; import asynciolimiter" 2>/dev/null; then
+    echo "✓ litellm and asynciolimiter available"
+else
+    echo "Installing Python dependencies from requirements.txt..."
+    pip install -r requirements.txt
+fi
+
+echo ""
 echo "Poetiq setup complete."
