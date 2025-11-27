@@ -1,6 +1,17 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top!!!
 
+### Version 5.29.10
+
+- **Poetiq UI Timing & Event Visibility** (Author: Cascade using Claude Sonnet 4)
+  - **Metrics bar expanded** to 6 columns: Iteration, Phase, Status, Elapsed Time, Last Update, Event Count
+  - **Elapsed time** shows running clock (MM:SS format) while solver is active
+  - **Last Update** shows how long since last event - turns orange if >30s (potential hang indicator)
+  - **Event Log panel** - collapsible panel showing all timestamped events in real-time
+  - **LIVE indicator** pulses green when events are streaming
+  - Helps diagnose if solver is hanging vs. just slow
+  - **Files**: `client/src/pages/PoetiqSolver.tsx`
+
 ### Version 5.29.9
 
 - **Dockerfile Fix for Poetiq Submodule** (Author: Cascade using Claude Sonnet 4)
