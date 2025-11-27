@@ -231,7 +231,7 @@ def log(message: str, level: str = "info"):
     emit({"type": "log", "level": level, "message": message})
 
 
-def build_config_list(num_experts: int, model: str, max_iterations: int, temperature: float, reasoning_effort: str = None):
+def build_config_list(num_experts: int, model: str, max_iterations: int, temperature: float, reasoning_effort: str = None, verbosity: str = None, reasoning_summary: str = None):
     """
     Build a dynamic CONFIG_LIST for this run based on user options.
     This allows per-request expert count without modifying global state.
@@ -269,6 +269,12 @@ def build_config_list(num_experts: int, model: str, max_iterations: int, tempera
         # (This is a simple heuristic, ideally should be explicit)
         if 'claude' in model.lower() and reasoning_effort in ['high', 'medium']:
              base_config['thinking'] = {"type": "enabled", "budget_tokens": 16000}
+             
+    # Add GPT-5 specific params
+    if verbosity:
+        base_config['verbosity'] = verbosity
+    if reasoning_summary:
+        base_config['reasoning_summary'] = reasoning_summary
 
     
     # Create list of configs, one per expert
@@ -314,9 +320,12 @@ async def run_poetiq_solver(puzzle_id: str, task: dict, options: dict) -> dict:
     num_experts = options.get("numExperts", 2)
     max_iterations = options.get("maxIterations", 10)
     temperature = options.get("temperature", 1.0)
+    reasoning_effort = options.get("reasoningEffort")
+    verbosity = options.get("verbosity")
+    reasoning_summary = options.get("reasoningSummary")
     
     # Build dynamic config list for this run
-    config_list = build_config_list(num_experts, model, max_iterations, temperature)
+    config_list = build_config_list(num_experts, model, max_iterations, temperature, reasoning_effort, verbosity, reasoning_summary)
     
     # Patch the global CONFIG_LIST so solve() uses our config
     import arc_agi.config as config_module

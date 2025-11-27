@@ -36,6 +36,7 @@ export default function PoetiqSolver() {
   const [numExperts, setNumExperts] = useState(2);  // 1, 2, or 8 only (Gemini-3-a/b/c)
   const [maxIterations, setMaxIterations] = useState(10);
   const [temperature, setTemperature] = useState(1.0);
+  const [reasoningEffort, setReasoningEffort] = useState<'low' | 'medium' | 'high'>('medium');
   const [executions, setExecutions] = useState<any[]>([]);
   const [autoStartTriggered, setAutoStartTriggered] = useState(false);
   const [cameFromCommunity, setCameFromCommunity] = useState(false);
