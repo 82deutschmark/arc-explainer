@@ -1,6 +1,8 @@
 /**
  * Author: Cascade (Claude Sonnet 4)
  * Date: 2025-11-25
+ * Updated: 2025-11-27 - Removed duplicate WebSocket broadcasting (now handled by poetiqService)
+ *                       Controller callback now only logs to console for all event types.
  * PURPOSE: Poetiq solver API controller - handles HTTP requests for running the 
  *          Poetiq ARC-AGI solver and storing results in the database.
  * 
@@ -186,16 +188,16 @@ export const poetiqController = {
           task,
           options,
           (event) => {
-            // Forward events to WebSocket
+            // WebSocket broadcasting is now handled directly by poetiqService
+            // This callback is for controller-level logging only
             if (event.type === 'progress') {
-              broadcast(sessionId, {
-                status: 'running',
-                phase: event.phase,
-                iteration: event.iteration,
-                message: event.message,
-              });
+              console.log(`[Poetiq] Phase: ${event.phase}, Iteration: ${event.iteration}, Message: ${event.message}`);
             } else if (event.type === 'log') {
               console.log(`[Poetiq ${event.level}] ${event.message}`);
+            } else if (event.type === 'start') {
+              console.log(`[Poetiq] Solver started with metadata:`, (event as any).metadata);
+            } else if (event.type === 'error') {
+              console.error(`[Poetiq] Error: ${event.message}`);
             }
           }
         );

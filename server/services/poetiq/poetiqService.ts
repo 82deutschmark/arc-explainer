@@ -1,6 +1,8 @@
 /**
  * Author: Cascade (Claude Sonnet 4)
  * Date: 2025-11-25
+ * Updated: 2025-11-27 - Enhanced WebSocket broadcasting to forward ALL event types (start, progress, log, error)
+ *                       Added eventTrace collection like Saturn. Broadcasts stderr as log events.
  * PURPOSE: TypeScript service wrapping the Poetiq ARC-AGI solver.
  *          Executes Python subprocess, captures iteration data, maps results to standard
  *          explanation format for database storage.
@@ -197,32 +199,67 @@ export class PoetiqService {
       let finalResult: PoetiqResult | null = null;
       const logBuffer: string[] = [];
 
+      // Track event trace for debugging (capped like Saturn)
+      const eventTrace: any[] = [];
+      const pushEvent = (evt: any) => {
+        if (eventTrace.length < 500) eventTrace.push(evt);
+      };
+
       // Process stdout as NDJSON
       const rl = readline.createInterface({ input: child.stdout });
       rl.on('line', (line) => {
         const trimmed = line.trim();
         if (!trimmed) return;
 
+        // Always buffer stdout for verbose log
         logBuffer.push(trimmed);
 
         try {
           const event = JSON.parse(trimmed) as PoetiqBridgeEvent;
+          pushEvent(event);
           
           // Forward to callback if provided
           onEvent?.(event);
 
-          // Broadcast progress to WebSocket if session provided
-          if (options.sessionId && event.type === 'progress') {
-            broadcast(options.sessionId, {
-              status: 'running',
-              phase: event.phase,
-              iteration: event.iteration,
-              message: event.message,
-              expert: event.expert,
-              code: event.code,
-              reasoning: event.reasoning,
-              trainResults: event.trainResults,
-            });
+          // Broadcast ALL event types to WebSocket if session provided (Saturn pattern)
+          if (options.sessionId) {
+            if (event.type === 'start') {
+              broadcast(options.sessionId, {
+                type: 'start',
+                status: 'running',
+                phase: 'starting',
+                message: `Poetiq solver starting for ${puzzleId}...`,
+                metadata: (event as any).metadata,
+              });
+            } else if (event.type === 'progress') {
+              broadcast(options.sessionId, {
+                type: 'progress',
+                status: 'running',
+                phase: event.phase,
+                iteration: event.iteration,
+                message: event.message,
+                expert: event.expert,
+                code: event.code,
+                reasoning: event.reasoning,
+                trainResults: event.trainResults,
+              });
+            } else if (event.type === 'log') {
+              // Forward log events so UI can display them
+              broadcast(options.sessionId, {
+                type: 'log',
+                status: 'running',
+                level: event.level,
+                message: event.message,
+              });
+            } else if (event.type === 'error') {
+              broadcast(options.sessionId, {
+                type: 'error',
+                status: 'error',
+                phase: 'error',
+                message: event.message,
+                traceback: event.traceback,
+              });
+            }
           }
 
           // Capture final result
@@ -230,7 +267,7 @@ export class PoetiqService {
             finalResult = event.result;
           }
 
-          // Log errors
+          // Log errors to console
           if (event.type === 'error') {
             console.error(`[Poetiq] Error: ${event.message}`);
             if (event.traceback) {
@@ -239,16 +276,34 @@ export class PoetiqService {
           }
 
         } catch {
-          // Non-JSON output - log it
+          // Non-JSON output - still forward as log event
           console.log(`[Poetiq] ${trimmed}`);
+          // Broadcast as log so UI can see it
+          if (options.sessionId) {
+            broadcast(options.sessionId, {
+              type: 'log',
+              status: 'running',
+              level: 'info',
+              message: trimmed,
+            });
+          }
         }
       });
 
-      // Forward stderr
+      // Forward stderr as error logs
       const rlErr = readline.createInterface({ input: child.stderr });
       rlErr.on('line', (line) => {
         logBuffer.push(`[stderr] ${line}`);
         console.error(`[Poetiq stderr] ${line}`);
+        // Also broadcast stderr to UI
+        if (options.sessionId) {
+          broadcast(options.sessionId, {
+            type: 'log',
+            status: 'running',
+            level: 'error',
+            message: `[stderr] ${line}`,
+          });
+        }
       });
 
       // Send payload to Python

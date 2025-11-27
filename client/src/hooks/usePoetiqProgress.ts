@@ -1,11 +1,12 @@
 /**
  * Author: Cascade (Claude Sonnet 4)
  * Date: 2025-11-25
- * Updated: 2025-11-26 - Added streaming fields like Saturn's hook, API key fallback support
+ * Updated: 2025-11-27 - Fixed synchronous state seeding and buffer accumulation for visibility parity with Saturn
  * PURPOSE: React hook for Poetiq solver progress tracking via WebSocket.
  *          Manages solver state, progress updates, and result handling.
  *          Uses same WebSocket connection pattern as Saturn and Grover solvers.
  *          Supports fallback to server API key when user key is missing/invalid.
+ *          Now seeds UI state synchronously BEFORE network calls (Saturn pattern).
  * 
  * SRP/DRY check: Pass - Single responsibility for Poetiq progress orchestration.
  */
@@ -32,6 +33,7 @@ export interface PoetiqProgressState {
   iteration?: number;
   totalIterations?: number;
   message?: string;
+  expert?: number;  // Current expert ID
   
   // Result fields
   result?: {
@@ -58,6 +60,8 @@ export interface PoetiqProgressState {
   streamingReasoning?: string;
   streamingCode?: string;
   logLines?: string[];
+  reasoningHistory?: string[];  // Accumulated reasoning blocks per iteration
+  pythonLogLines?: string[];    // Python execution output (sandbox/stdout/stderr)
   
   // Fallback indicator
   usingFallback?: boolean;
@@ -66,6 +70,11 @@ export interface PoetiqProgressState {
 const initialState: PoetiqProgressState = {
   status: 'idle',
   logLines: [],
+  reasoningHistory: [],
+  pythonLogLines: [],
+  streamingReasoning: '',
+  streamingCode: '',
+  streamingText: '',
 };
 
 /**
@@ -118,29 +127,80 @@ export function usePoetiqProgress(taskId: string | undefined) {
     ws.onmessage = (event) => {
       try {
         const payload = JSON.parse(event.data);
-        // Server sends { type: 'progress' | 'snapshot', data: {...} }
+        // Server sends { type: 'progress' | 'log' | 'snapshot', data: {...} }
         const data = payload?.data;
+        const eventType = payload?.type;  // 'progress', 'log', 'snapshot'
+        
         if (!data) return;
         
+        console.log('[Poetiq WS] Received event:', eventType, 'phase:', data.phase, 'status:', data.status);
+        
         setState(prev => {
-          // Accumulate log lines
-          const newLogLines = [...(prev.logLines || [])];
-          if (data.message && data.message !== prev.message) {
-            newLogLines.push(`[${new Date().toLocaleTimeString()}] ${data.message}`);
+          const timestamp = new Date().toLocaleTimeString();
+          
+          // Accumulate log lines - ALWAYS add if message exists (don't skip duplicates)
+          let nextLogLines = prev.logLines ? [...prev.logLines] : [];
+          
+          // Handle different event types
+          if (eventType === 'log' || data.type === 'log') {
+            // Log events always get added
+            const logMsg = data.message || data.data?.message;
+            if (logMsg) {
+              const level = data.level || 'info';
+              const prefix = level === 'error' ? '❌' : level === 'warn' ? '⚠️' : '📝';
+              nextLogLines.push(`[${timestamp}] ${prefix} ${logMsg}`);
+            }
+          } else if (data.message) {
+            // Progress events with messages
+            nextLogLines.push(`[${timestamp}] ${data.message}`);
           }
           
-          // Update streaming fields if present
-          // Note: Poetiq sends full reasoning/code block for the current step
-          const streamingReasoning = (prev.streamingReasoning || '') + (data.reasoning || '');
-          const streamingCode = data.code || prev.streamingCode;
+          // Cap log lines to prevent memory bloat (Saturn uses 500)
+          if (nextLogLines.length > 500) {
+            nextLogLines = nextLogLines.slice(-500);
+          }
+          
+          // Accumulate reasoning history per iteration
+          let nextReasoningHistory = prev.reasoningHistory ? [...prev.reasoningHistory] : [];
+          if (data.reasoning && typeof data.reasoning === 'string') {
+            // Add iteration marker if we have iteration info
+            const iterMarker = data.iteration ? `[Iteration ${data.iteration}] ` : '';
+            const expertMarker = data.expert ? `[Expert ${data.expert}] ` : '';
+            nextReasoningHistory.push(`${iterMarker}${expertMarker}${data.reasoning}`);
+            // Cap to 100 entries
+            if (nextReasoningHistory.length > 100) {
+              nextReasoningHistory = nextReasoningHistory.slice(-100);
+            }
+          }
+          
+          // Python execution logs (for terminal panel)
+          let nextPythonLogLines = prev.pythonLogLines ? [...prev.pythonLogLines] : [];
+          if (data.trainResults && Array.isArray(data.trainResults)) {
+            // Log train results as Python execution output
+            data.trainResults.forEach((r: any, idx: number) => {
+              const status = r.success ? '✅' : '❌';
+              const err = r.error ? ` (${r.error.substring(0, 50)}...)` : '';
+              nextPythonLogLines.push(`Train ${idx + 1}: ${status}${err}`);
+            });
+          }
+          
+          // Streaming reasoning - accumulate or replace based on phase
+          // During 'reasoning' phase, this is the AI thinking
+          // During 'evaluating' phase, we might get code
+          let nextStreamingReasoning = prev.streamingReasoning || '';
+          if (data.reasoning && data.phase === 'reasoning') {
+            // Append new reasoning (may be delta or full block)
+            nextStreamingReasoning = data.reasoning;
+          }
+          
+          // Streaming code - replace with latest
+          const nextStreamingCode = data.code || prev.streamingCode;
           
           // Track latest iteration result details if available
           const currentResult = prev.result || {
             success: false,
             isPredictionCorrect: false
           };
-          
-          // If we have new training results, update them
           if (data.trainResults) {
             currentResult.trainResults = data.trainResults;
           }
@@ -151,15 +211,18 @@ export function usePoetiqProgress(taskId: string | undefined) {
             iteration: data.iteration ?? prev.iteration,
             totalIterations: data.totalIterations ?? prev.totalIterations,
             message: data.message || prev.message,
+            expert: data.expert ?? prev.expert,
             status: data.status === 'completed' ? 'completed' 
                   : data.status === 'error' ? 'error' 
                   : 'running',
             result: data.result || currentResult,
             config: data.config || prev.config,
             usingFallback: data.usingFallback ?? prev.usingFallback,
-            logLines: newLogLines,
-            streamingReasoning,
-            streamingCode,
+            logLines: nextLogLines,
+            reasoningHistory: nextReasoningHistory,
+            pythonLogLines: nextPythonLogLines,
+            streamingReasoning: nextStreamingReasoning,
+            streamingCode: nextStreamingCode,
             streamingText: data.message || prev.streamingText,
           };
         });
@@ -198,9 +261,14 @@ export function usePoetiqProgress(taskId: string | undefined) {
     const maxIterations = options.maxIterations || 10;
     const temperature = options.temperature || 1.0;
 
+    // IMMEDIATE UI FEEDBACK - Set state synchronously FIRST (Saturn pattern)
+    // This ensures UI shows "starting" immediately before any network call
+    console.log('[Poetiq] Setting initial state to running...');
     setState({
       status: 'running',
-      phase: 'starting',
+      phase: 'initializing',
+      iteration: 0,
+      totalIterations: maxIterations,
       message: `Initializing Poetiq solver with ${numExperts} expert(s)...`,
       config: {
         model,
@@ -208,6 +276,14 @@ export function usePoetiqProgress(taskId: string | undefined) {
         numExperts,
         temperature,
       },
+      // Initialize all buffers synchronously so UI has something to display
+      logLines: [`🚀 Poetiq Meta-System Solver starting...`, `📋 Task: ${taskId}`, `🤖 Model: ${model}`, `👥 Experts: ${numExperts}`, '---'],
+      reasoningHistory: [],
+      pythonLogLines: [],
+      streamingReasoning: '',
+      streamingCode: '',
+      streamingText: '',
+      usingFallback: !options.apiKey,
     });
 
     try {

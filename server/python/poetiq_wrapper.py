@@ -2,6 +2,7 @@
 """
 Author: Cascade (Claude Sonnet 4)
 Date: 2025-11-25
+Updated: 2025-11-27 - Fixed emit function order, added richer event emissions for visibility
 PURPOSE: Python bridge wrapper for Poetiq ARC-AGI solver integration.
          Receives puzzle data via stdin, runs Poetiq solver, streams progress as NDJSON.
          
@@ -26,18 +27,45 @@ import time
 import traceback
 from pathlib import Path
 
+
+# ==========================================
+# NDJSON EVENT EMISSION (must be defined FIRST)
+# ==========================================
+def emit(event: dict):
+    """Emit NDJSON event to stdout for Node.js consumption."""
+    print(json.dumps(event, default=str), flush=True)
+
+
+def log(message: str, level: str = "info"):
+    """Emit a log event."""
+    emit({"type": "log", "level": level, "message": message})
+
+
+# ==========================================
+# PREFLIGHT CHECKS
+# ==========================================
 # Add poetiq-solver to path
 POETIQ_PATH = Path(__file__).parent.parent.parent / "poetiq-solver"
 
-# Check if Poetiq solver is available
-if not POETIQ_PATH.exists() or not (POETIQ_PATH / "arc_agi" / "solve.py").exists():
+# Check if Poetiq solver is available with structured error
+if not POETIQ_PATH.exists():
     emit({
         "type": "error", 
-        "message": "Poetiq solver not available. The git submodule needs to be initialized with: git submodule update --init --recursive"
+        "message": "Poetiq solver not found. Initialize submodule with: git submodule update --init --recursive",
+        "remediation": "Run 'git submodule update --init --recursive' in the project root"
+    })
+    sys.exit(1)
+
+if not (POETIQ_PATH / "arc_agi" / "solve.py").exists():
+    emit({
+        "type": "error", 
+        "message": f"Poetiq solver incomplete - arc_agi/solve.py not found at {POETIQ_PATH}",
+        "remediation": "Ensure the poetiq-solver submodule is fully checked out"
     })
     sys.exit(1)
 
 sys.path.insert(0, str(POETIQ_PATH))
+log(f"Poetiq solver loaded from: {POETIQ_PATH}")
 
 # ==========================================
 # INSTRUMENTATION - Monkey patch to get live updates
@@ -229,14 +257,7 @@ arc_agi.solve_parallel_coding.solve_coding = instrumented_solve_coding
 # ==========================================
 
 
-def emit(event: dict):
-    """Emit NDJSON event to stdout for Node.js consumption."""
-    print(json.dumps(event, default=str), flush=True)
-
-
-def log(message: str, level: str = "info"):
-    """Emit a log event."""
-    emit({"type": "log", "level": level, "message": message})
+# NOTE: emit() and log() are defined at the top of the file
 
 
 def build_config_list(num_experts: int, model: str, max_iterations: int, temperature: float, reasoning_effort: str = None, verbosity: str = None, reasoning_summary: str = None):
@@ -469,12 +490,22 @@ async def main():
             emit({"type": "error", "message": "No task data provided"})
             sys.exit(1)
         
+        # Extract config for rich start event
+        model = options.get("model", "openrouter/google/gemini-3-pro-preview")
+        num_experts = options.get("numExperts", 2)
+        max_iterations = options.get("maxIterations", 10)
+        temperature = options.get("temperature", 1.0)
+        
         emit({
             "type": "start",
             "metadata": {
                 "puzzleId": puzzle_id,
                 "trainCount": len(task.get("train", [])),
                 "testCount": len(task.get("test", [])),
+                "model": model,
+                "numExperts": num_experts,
+                "maxIterations": max_iterations,
+                "temperature": temperature,
                 "options": options,
             }
         })
@@ -489,7 +520,11 @@ async def main():
         openrouter_key = os.environ.get("OPENROUTER_API_KEY")
         
         if not gemini_key and not openai_key and not openrouter_key:
-            emit({"type": "error", "message": "No API keys found. Set OPENROUTER_API_KEY, GEMINI_API_KEY, or OPENAI_API_KEY"})
+            emit({
+                "type": "error", 
+                "message": "No API keys found. Set OPENROUTER_API_KEY, GEMINI_API_KEY, or OPENAI_API_KEY",
+                "remediation": "Provide an API key in the UI or set environment variables on the server"
+            })
             sys.exit(1)
         
         log(
@@ -498,6 +533,14 @@ async def main():
             f"Gemini={'yes' if gemini_key else 'no'}, "
             f"OpenAI={'yes' if openai_key else 'no'}"
         )
+        
+        # Emit progress event before solver starts (for immediate UI feedback)
+        emit({
+            "type": "progress",
+            "phase": "initializing",
+            "iteration": 0,
+            "message": f"Initializing Poetiq solver with {num_experts} expert(s) using {model}..."
+        })
         
         # Run the solver
         result = await run_poetiq_solver(puzzle_id, task, options)
