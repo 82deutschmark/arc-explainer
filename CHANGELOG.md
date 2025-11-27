@@ -1,6 +1,17 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top!!!
 
+### Version 5.28.7
+
+- **Differentiate Poetiq Pages - Community vs Solver** (Author: Cascade using Claude Sonnet 4)
+  - **Clarification**: Two different Poetiq pages with different purposes:
+    - `/poetiq` (Community) - Locked to Gemini 3 Pro Preview via OpenRouter only
+    - `/puzzle/poetiq/:taskId` (Solver) - Allows ANY provider/model selection
+  - **Solver page restored**: Full provider/model/temperature selection
+  - **Community page**: Stays locked to Gemini 3 Pro Preview
+  - **Both pages**: Expert options 1, 2, 8 only (Gemini-3-a/b/c)
+  - **Files**: `PoetiqControlPanel.tsx`, `PoetiqSolver.tsx`
+
 ### Version 5.28.6
 
 - **Fix PoetiqCommunity Page - Use Actual Config** (Author: Cascade using Claude Sonnet 4)

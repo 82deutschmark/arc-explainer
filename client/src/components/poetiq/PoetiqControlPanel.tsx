@@ -1,36 +1,56 @@
 /**
  * Author: Cascade using Claude Sonnet 4
  * Date: 2025-11-26
- * Updated: 2025-11-26 - Fixed to match actual Poetiq config (Gemini 3 Pro only, experts 1/2/8)
- * PURPOSE: Control panel for Poetiq solver.
- *          Poetiq ONLY uses Gemini 3 Pro Preview via OpenRouter. Expert configs: 1, 2, 8.
- *          Based on poetiq-solver/arc_agi/config.py
+ * Updated: 2025-11-26 - Full provider/model selection for solver page (unlike locked community page)
+ * PURPOSE: Control panel for Poetiq solver page (/puzzle/poetiq/:taskId).
+ *          Allows any provider/model (unlike community page which is locked to Gemini 3 Pro).
+ *          Expert configs: 1, 2, 8 only (from config.py).
  *
  * SRP/DRY check: Pass - Single responsibility for solver control interface
  * DaisyUI: Pass - Uses DaisyUI components
  */
 
 import React from 'react';
-import { Rocket, Square, Key, Users, AlertTriangle, Info } from 'lucide-react';
+import { Rocket, Square, Key, Users, AlertTriangle, Settings } from 'lucide-react';
 import type { PoetiqProgressState } from '@/hooks/usePoetiqProgress';
 
-// Poetiq ONLY supports these expert configurations (from config.py):
-// - Gemini-3-a: 1 expert (fastest, lowest cost)
-// - Gemini-3-b: 2 experts (default, good balance)
-// - Gemini-3-c: 8 experts (best accuracy, slowest)
+// Provider options
+const PROVIDERS = [
+  { value: 'openrouter', label: 'OpenRouter', icon: '🔀', keyPlaceholder: 'sk-or-...' },
+  { value: 'openai', label: 'OpenAI Direct', icon: '🟢', keyPlaceholder: 'sk-...' },
+  { value: 'gemini', label: 'Gemini Direct', icon: '🔷', keyPlaceholder: 'AIza...' },
+] as const;
+
+// OpenRouter models - from server/config/models.ts (OpenRouter entries)
+const OPENROUTER_MODELS = [
+  { id: 'google/gemini-3-pro-preview', name: 'Gemini 3 Pro Preview', recommended: true },
+  { id: 'google/gemini-2.5-pro-preview', name: 'Gemini 2.5 Pro' },
+  { id: 'google/gemini-2.5-flash-preview', name: 'Gemini 2.5 Flash' },
+  { id: 'anthropic/claude-sonnet-4', name: 'Claude Sonnet 4' },
+  { id: 'openai/gpt-4.1-mini', name: 'GPT-4.1 Mini' },
+];
+
+// OpenAI Direct models - from server/config/models.ts
+const OPENAI_MODELS = [
+  { id: 'gpt-5-nano-2025-08-07', name: 'GPT-5 Nano', recommended: true },
+  { id: 'gpt-5-mini-2025-08-07', name: 'GPT-5 Mini' },
+  { id: 'gpt-4.1-mini-2025-04-14', name: 'GPT-4.1 Mini' },
+  { id: 'o4-mini-2025-04-16', name: 'o4-mini' },
+];
+
+// Gemini Direct models - from server/config/models.ts
+const GEMINI_MODELS = [
+  { id: 'gemini-3-pro-preview', name: 'Gemini 3 Pro Preview', recommended: true },
+  { id: 'gemini-2.5-pro-preview', name: 'Gemini 2.5 Pro' },
+  { id: 'gemini-2.5-flash', name: 'Gemini 2.5 Flash' },
+];
+
+// Expert configs - 1, 2, 8 ONLY (from config.py)
 const EXPERT_OPTIONS = [
   { value: 1, label: 'Gemini-3-a (1 Expert)', description: 'Fastest, ~5-15 min' },
   { value: 2, label: 'Gemini-3-b (2 Experts)', description: 'Default, ~10-20 min' },
   { value: 8, label: 'Gemini-3-c (8 Experts)', description: 'Best accuracy, ~25-45+ min' },
 ] as const;
-
-// Poetiq model - ONLY Gemini 3 Pro Preview via OpenRouter
-// This is hardcoded in poetiq-solver/arc_agi/config.py
-const POETIQ_MODEL = {
-  id: 'google/gemini-3-pro-preview',
-  name: 'Gemini 3 Pro Preview',
-  provider: 'OpenRouter',
-};
 
 interface PoetiqControlPanelProps {
   state: PoetiqProgressState;
@@ -40,6 +60,12 @@ interface PoetiqControlPanelProps {
   apiKey: string;
   setApiKey: (key: string) => void;
   
+  // Provider and model selection
+  provider: 'gemini' | 'openrouter' | 'openai';
+  setProvider: (provider: 'gemini' | 'openrouter' | 'openai') => void;
+  model: string;
+  setModel: (model: string) => void;
+  
   // Expert configuration (1, 2, or 8)
   numExperts: number;
   setNumExperts: (num: number) => void;
@@ -47,6 +73,10 @@ interface PoetiqControlPanelProps {
   // Max iterations per expert
   maxIterations: number;
   setMaxIterations: (iterations: number) => void;
+  
+  // Temperature
+  temperature: number;
+  setTemperature: (temp: number) => void;
   
   // Actions
   onStart: () => void;
@@ -58,15 +88,31 @@ export default function PoetiqControlPanel({
   isRunning,
   apiKey,
   setApiKey,
+  provider,
+  setProvider,
+  model,
+  setModel,
   numExperts,
   setNumExperts,
   maxIterations,
   setMaxIterations,
+  temperature,
+  setTemperature,
   onStart,
   onCancel,
 }: PoetiqControlPanelProps) {
   // Can always start (API key is optional - falls back to server env vars)
   const canStart = !isRunning;
+  
+  // Get models based on provider
+  const models = provider === 'openrouter' 
+    ? OPENROUTER_MODELS 
+    : provider === 'openai' 
+    ? OPENAI_MODELS 
+    : GEMINI_MODELS;
+  
+  // Get selected provider info
+  const selectedProvider = PROVIDERS.find(p => p.value === provider);
 
   return (
     <div className="space-y-2">
@@ -97,16 +143,74 @@ export default function PoetiqControlPanel({
         </button>
       </div>
 
-      {/* Model Info Card - Fixed to Gemini 3 Pro Preview */}
-      <div className="card bg-teal-50 border border-teal-300 shadow-sm">
-        <div className="card-body p-3">
-          <div className="flex items-center gap-2">
-            <Info className="w-4 h-4 text-teal-600" />
-            <span className="text-sm font-semibold text-teal-800">Model: {POETIQ_MODEL.name}</span>
+      {/* Provider & Model Selection */}
+      <div className="card bg-white border border-gray-300 shadow-sm">
+        <div className="card-body p-4">
+          <h3 className="card-title text-sm flex items-center gap-2">
+            <Settings className="w-4 h-4" />
+            Provider & Model
+          </h3>
+          <div className="space-y-3">
+            {/* Provider */}
+            <div>
+              <label className="label py-1">
+                <span className="label-text text-xs font-semibold">Provider</span>
+              </label>
+              <select
+                value={provider}
+                onChange={(e) => {
+                  const newProvider = e.target.value as 'gemini' | 'openrouter' | 'openai';
+                  setProvider(newProvider);
+                  // Set default model for new provider
+                  const defaultModels = newProvider === 'openrouter' ? OPENROUTER_MODELS 
+                    : newProvider === 'openai' ? OPENAI_MODELS : GEMINI_MODELS;
+                  setModel(defaultModels[0].id);
+                }}
+                disabled={isRunning}
+                className="select select-bordered select-sm w-full"
+              >
+                {PROVIDERS.map(p => (
+                  <option key={p.value} value={p.value}>
+                    {p.icon} {p.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+            {/* Model */}
+            <div>
+              <label className="label py-1">
+                <span className="label-text text-xs font-semibold">Model</span>
+              </label>
+              <select
+                value={model}
+                onChange={(e) => setModel(e.target.value)}
+                disabled={isRunning}
+                className="select select-bordered select-sm w-full"
+              >
+                {models.map(m => (
+                  <option key={m.id} value={m.id}>
+                    {m.name} {m.recommended ? '⭐' : ''}
+                  </option>
+                ))}
+              </select>
+            </div>
+            {/* Temperature */}
+            <div>
+              <label className="label py-1">
+                <span className="label-text text-xs font-semibold">Temperature: {temperature.toFixed(1)}</span>
+              </label>
+              <input
+                type="range"
+                min="0.1"
+                max="2.0"
+                step="0.1"
+                value={temperature}
+                onChange={(e) => setTemperature(parseFloat(e.target.value))}
+                disabled={isRunning}
+                className="range range-primary range-sm"
+              />
+            </div>
           </div>
-          <p className="text-[10px] text-teal-700 mt-1">
-            via {POETIQ_MODEL.provider} ({POETIQ_MODEL.id})
-          </p>
         </div>
       </div>
 
@@ -115,13 +219,13 @@ export default function PoetiqControlPanel({
         <div className="card-body p-4">
           <h3 className="card-title text-sm flex items-center gap-2">
             <Key className="w-4 h-4" />
-            OpenRouter API Key (Optional)
+            API Key (Optional)
           </h3>
           <div className="space-y-3">
             <div className="bg-blue-50 border border-blue-200 rounded p-2">
               <p className="text-[10px] text-blue-700">
                 <strong>Optional:</strong> Leave blank to use server API key.
-                Provide your own OpenRouter key for unlimited access.
+                Provide your own key for unlimited access.
               </p>
             </div>
             <input
@@ -129,7 +233,7 @@ export default function PoetiqControlPanel({
               value={apiKey}
               onChange={(e) => setApiKey(e.target.value)}
               disabled={isRunning}
-              placeholder="sk-or-... (optional)"
+              placeholder={selectedProvider?.keyPlaceholder || 'API key (optional)'}
               className="input input-bordered input-sm w-full font-mono"
               autoComplete="new-password"
             />
