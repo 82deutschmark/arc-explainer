@@ -1,19 +1,19 @@
 /**
- * Author: Cascade (Claude Sonnet 4)
+ * Author: Claude Code using Sonnet 4.5
  * Date: 2025-11-26
- * PURPOSE: Poetiq Community Solver landing page - explains what Poetiq is, shows progress,
- *          and enables community contribution via BYO API keys.
- *          Goal: Let the community collectively verify Poetiq's claims on the ARC2-Eval dataset.
- * 
+ * PURPOSE: Poetiq Community Solver landing page - redesigned with Modern Scientific Dashboard aesthetic.
+ *          Dark theme with electric cyan/lime accents, glowing effects, and technical typography.
+ *          Enables community contribution via BYO API keys for ARC puzzle solving verification.
+ *
  * SRP/DRY check: Pass - Page orchestration only, delegates to components and hooks
  */
 
 import React, { useEffect, useState } from 'react';
 import { Link, useLocation } from 'wouter';
-import { 
-  Users, 
-  Zap, 
-  ArrowRight, 
+import {
+  Users,
+  Zap,
+  ArrowRight,
   ExternalLink,
   RefreshCw,
   Play,
@@ -21,7 +21,9 @@ import {
   Loader2,
   CheckCircle,
   Target,
-  Code
+  Code,
+  Activity,
+  Sparkles
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -38,17 +40,17 @@ import { usePoetiqCommunityProgress } from '@/hooks/usePoetiqCommunityProgress';
 // Poetiq community page is locked to Gemini 3 Pro Preview
 // Can use EITHER OpenRouter OR Gemini Direct API
 const POETIQ_PROVIDERS = [
-  { 
-    value: 'openrouter', 
-    label: 'OpenRouter', 
-    modelId: 'google/gemini-3-pro-preview',
+  {
+    value: 'openrouter',
+    label: 'OpenRouter',
+    modelId: 'openrouter/google/gemini-3-pro-preview',
     keyUrl: 'https://openrouter.ai/keys',
     keyPlaceholder: 'sk-or-... (from openrouter.ai/keys)'
   },
-  { 
-    value: 'gemini', 
-    label: 'Gemini Direct', 
-    modelId: 'gemini-3-pro-preview',
+  {
+    value: 'gemini',
+    label: 'Gemini Direct',
+    modelId: 'gemini/gemini-3-pro-preview',
     keyUrl: 'https://aistudio.google.com/app/apikey',
     keyPlaceholder: 'AIza... (from aistudio.google.com)'
   },
@@ -67,12 +69,12 @@ const EXPERT_OPTIONS = [
 export default function PoetiqCommunity() {
   const [, navigate] = useLocation();
   const progress = usePoetiqCommunityProgress();
-  
+
   // Configuration state - provider choice (OpenRouter or Gemini Direct), both locked to Gemini 3 Pro
   const [provider, setProvider] = useState<'openrouter' | 'gemini'>('openrouter');
   const [apiKey, setApiKey] = useState('');
   const [numExperts, setNumExperts] = useState('2');
-  
+
   // Get selected provider config
   const selectedProvider = POETIQ_PROVIDERS.find(p => p.value === provider)!;
 
@@ -88,7 +90,7 @@ export default function PoetiqCommunity() {
 
   const handleRunNext = () => {
     if (!nextPuzzle) return;
-    
+
     // Store config in sessionStorage for the solver page to use
     sessionStorage.setItem('poetiq_config', JSON.stringify({
       apiKey,
@@ -98,295 +100,468 @@ export default function PoetiqCommunity() {
       temperature: 1.0,
       autoStart: true,
     }));
-    
+
     // Navigate to full solver page with rich feedback UI
     navigate(`/puzzle/poetiq/${nextPuzzle}`);
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50">
-      <div className="max-w-5xl mx-auto p-6 space-y-6">
-        
-        {/* Hero Section */}
-        <div className="text-center space-y-4 py-6">
-          <div className="flex items-center justify-center gap-3">
-            <Code className="h-10 w-10 text-indigo-600" />
-            <h1 className="text-4xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
-              Poetiq Community Solver
+    <div className="min-h-screen relative overflow-hidden" style={{
+      background: 'linear-gradient(135deg, #0f1419 0%, #1a2332 50%, #0f1922 100%)',
+    }}>
+      {/* Animated background grid */}
+      <div className="absolute inset-0 opacity-20" style={{
+        backgroundImage: `
+          linear-gradient(rgba(0, 217, 255, 0.1) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(0, 217, 255, 0.1) 1px, transparent 1px)
+        `,
+        backgroundSize: '50px 50px',
+        animation: 'gridMove 20s linear infinite',
+      }}></div>
+
+      {/* Noise texture overlay */}
+      <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{
+        backgroundImage: 'url("data:image/svg+xml,%3Csvg viewBox=\'0 0 400 400\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'noiseFilter\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.9\' numOctaves=\'4\' /%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23noiseFilter)\' /%3E%3C/svg%3E")',
+      }}></div>
+
+      <style>{`
+        @keyframes gridMove {
+          0% { transform: translateY(0); }
+          100% { transform: translateY(50px); }
+        }
+
+        @keyframes glow {
+          0%, 100% { box-shadow: 0 0 20px rgba(0, 217, 255, 0.3), 0 0 40px rgba(0, 217, 255, 0.1); }
+          50% { box-shadow: 0 0 30px rgba(0, 217, 255, 0.5), 0 0 60px rgba(0, 217, 255, 0.2); }
+        }
+
+        @keyframes pulse {
+          0%, 100% { opacity: 1; }
+          50% { opacity: 0.6; }
+        }
+
+        @keyframes slideInUp {
+          from { transform: translateY(30px); opacity: 0; }
+          to { transform: translateY(0); opacity: 1; }
+        }
+
+        .animate-slide-in-up {
+          animation: slideInUp 0.6s ease-out forwards;
+        }
+
+        .glow-border {
+          position: relative;
+          border: 1px solid rgba(0, 217, 255, 0.3);
+        }
+
+        .glow-border::before {
+          content: '';
+          position: absolute;
+          inset: -1px;
+          border-radius: inherit;
+          padding: 1px;
+          background: linear-gradient(135deg, rgba(0, 217, 255, 0.4), rgba(180, 255, 57, 0.4));
+          -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+          -webkit-mask-composite: xor;
+          mask-composite: exclude;
+          opacity: 0;
+          transition: opacity 0.3s;
+        }
+
+        .glow-border:hover::before {
+          opacity: 1;
+        }
+
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=IBM+Plex+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+        .font-orbitron { font-family: 'Orbitron', sans-serif; }
+        .font-ibm { font-family: 'IBM Plex Sans', sans-serif; }
+        .font-jetbrains { font-family: 'JetBrains Mono', monospace; }
+      `}</style>
+
+      <div className="max-w-7xl mx-auto px-6 py-12 relative z-10">
+
+        {/* Hero Section - Asymmetric Layout */}
+        <div className="mb-16 grid md:grid-cols-12 gap-8 items-center animate-slide-in-up">
+          <div className="md:col-span-7 space-y-6">
+            <div className="inline-flex items-center gap-3 px-4 py-2 rounded-full bg-cyan-500/10 border border-cyan-500/30" style={{
+              boxShadow: '0 0 20px rgba(0, 217, 255, 0.2)',
+            }}>
+              <Activity className="h-4 w-4 text-cyan-400" style={{ animation: 'pulse 2s ease-in-out infinite' }} />
+              <span className="text-cyan-300 text-sm font-jetbrains font-medium tracking-wide">LIVE RESEARCH STATION</span>
+            </div>
+
+            <h1 className="text-6xl md:text-7xl font-orbitron font-black tracking-tight" style={{
+              background: 'linear-gradient(135deg, #00d9ff 0%, #b4ff39 100%)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              backgroundClip: 'text',
+              lineHeight: '1.1',
+            }}>
+              POETIQ<br/>COMMUNITY<br/>SOLVER
             </h1>
+
+            <p className="text-xl font-ibm text-gray-300 leading-relaxed max-w-xl">
+              Join the distributed research effort. Donate your API quota to help verify
+              state-of-the-art ARC puzzle solving capabilities.
+            </p>
+
+            <div className="flex gap-4 pt-4">
+              <a
+                href="https://poetiq.ai/posts/arcagi_announcement/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-cyan-500/10 border border-cyan-500/30 text-cyan-300 hover:bg-cyan-500/20 transition-all duration-300 font-ibm font-medium"
+                style={{ boxShadow: '0 0 15px rgba(0, 217, 255, 0.15)' }}
+              >
+                <ExternalLink className="h-4 w-4" />
+                Research Blog
+              </a>
+              <a
+                href="https://github.com/82deutschmark/poetiq-arc-agi-solver"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-white/5 border border-white/10 text-gray-300 hover:bg-white/10 transition-all duration-300 font-ibm font-medium"
+              >
+                <Code className="h-4 w-4" />
+                Source Code
+              </a>
+            </div>
           </div>
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            Help verify state-of-the-art ARC solving by donating your API quota
-          </p>
-          
-          {/* Quick Stats */}
-          <div className="flex items-center justify-center gap-8 pt-4">
-            <div className="text-center">
-              <div className="text-3xl font-bold text-indigo-600">
-                {progress.isLoading ? '...' : progress.total}
+
+          {/* Stats Dashboard */}
+          <div className="md:col-span-5 grid grid-cols-2 gap-4">
+            <div className="col-span-2 p-6 rounded-xl glow-border transition-all duration-300" style={{
+              background: 'linear-gradient(135deg, rgba(0, 217, 255, 0.05) 0%, rgba(180, 255, 57, 0.05) 100%)',
+              backdropFilter: 'blur(10px)',
+            }}>
+              <div className="flex items-center gap-2 mb-3">
+                <Target className="h-5 w-5 text-cyan-400" />
+                <span className="text-sm font-jetbrains text-cyan-300 uppercase tracking-wider">Progress</span>
               </div>
-              <div className="text-sm text-gray-500">Total Puzzles</div>
-            </div>
-            <div className="h-12 w-px bg-gray-300" />
-            <div className="text-center">
-              <div className="text-3xl font-bold text-green-600">
-                {progress.isLoading ? '...' : progress.solved}
-              </div>
-              <div className="text-sm text-gray-500">Solved</div>
-            </div>
-            <div className="h-12 w-px bg-gray-300" />
-            <div className="text-center">
-              <div className="text-3xl font-bold text-amber-600">
-                {progress.isLoading ? '...' : progress.unattempted}
-              </div>
-              <div className="text-sm text-gray-500">Need Help</div>
-            </div>
-            <div className="h-12 w-px bg-gray-300" />
-            <div className="text-center">
-              <div className="text-3xl font-bold text-purple-600">
+              <div className="text-5xl font-orbitron font-black text-white mb-2">
                 {progress.isLoading ? '...' : `${progress.completionPercentage}%`}
               </div>
-              <div className="text-sm text-gray-500">Complete</div>
+              <Progress
+                value={progress.completionPercentage}
+                className="h-2 bg-gray-800"
+                style={{
+                  background: 'rgba(31, 41, 55, 0.5)',
+                }}
+              />
+              <div className="text-sm text-gray-400 mt-2 font-ibm">
+                {progress.solved} / {progress.total} puzzles verified
+              </div>
+            </div>
+
+            <div className="p-6 rounded-xl glow-border transition-all duration-300" style={{
+              background: 'rgba(180, 255, 57, 0.05)',
+              backdropFilter: 'blur(10px)',
+            }}>
+              <div className="text-3xl font-orbitron font-black text-lime-400 mb-1">
+                {progress.isLoading ? '...' : progress.solved}
+              </div>
+              <div className="text-xs font-jetbrains text-lime-300/80 uppercase tracking-wider">
+                Solved
+              </div>
+            </div>
+
+            <div className="p-6 rounded-xl glow-border transition-all duration-300" style={{
+              background: 'rgba(255, 149, 0, 0.05)',
+              backdropFilter: 'blur(10px)',
+            }}>
+              <div className="text-3xl font-orbitron font-black text-amber-400 mb-1">
+                {progress.isLoading ? '...' : progress.unattempted}
+              </div>
+              <div className="text-xs font-jetbrains text-amber-300/80 uppercase tracking-wider">
+                Pending
+              </div>
             </div>
           </div>
-
-          {/* Progress Bar */}
-          {!progress.isLoading && (
-            <div className="max-w-md mx-auto pt-2">
-              <Progress 
-                value={progress.completionPercentage} 
-                className="h-3"
-              />
-            </div>
-          )}
         </div>
 
-        {/* Quick Start Card */}
-        <Card className="border-2 border-green-200 bg-gradient-to-br from-white to-green-50">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Zap className="h-5 w-5 text-green-600" />
-              Quick Start — Run the Next Puzzle
-            </CardTitle>
-            <CardDescription>
-              Enter your API key and click to immediately help with the next unsolved puzzle
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {/* Next Puzzle Info */}
-            {nextPuzzle ? (
-              <div className="flex items-center gap-3 bg-green-100 rounded-lg p-3">
-                <Target className="h-5 w-5 text-green-600" />
+        {/* Quick Start Launch Pad */}
+        <div className="mb-12 animate-slide-in-up" style={{ animationDelay: '0.2s' }}>
+          <div className="p-8 rounded-2xl relative overflow-hidden" style={{
+            background: 'linear-gradient(135deg, rgba(0, 217, 255, 0.08) 0%, rgba(180, 255, 57, 0.08) 100%)',
+            border: '1px solid rgba(0, 217, 255, 0.2)',
+            boxShadow: '0 0 40px rgba(0, 217, 255, 0.15), inset 0 0 60px rgba(0, 217, 255, 0.03)',
+          }}>
+            {/* Diagonal accent line */}
+            <div className="absolute top-0 right-0 w-1 h-full bg-gradient-to-b from-cyan-400 to-lime-400 opacity-50" style={{
+              transform: 'skewX(-10deg)',
+              transformOrigin: 'top',
+            }}></div>
+
+            <div className="relative z-10">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="p-3 rounded-lg bg-cyan-500/20 border border-cyan-500/30" style={{
+                  animation: 'glow 3s ease-in-out infinite',
+                }}>
+                  <Zap className="h-6 w-6 text-cyan-400" />
+                </div>
                 <div>
-                  <span className="text-sm text-green-800">Next puzzle needing help:</span>
-                  <Badge variant="outline" className="ml-2 font-mono">
+                  <h2 className="text-2xl font-orbitron font-bold text-white">Launch Mission Control</h2>
+                  <p className="text-sm font-ibm text-gray-400">Configure and deploy solver on next priority target</p>
+                </div>
+              </div>
+
+              {/* Next Puzzle Target */}
+              {nextPuzzle ? (
+                <div className="mb-6 p-4 rounded-lg flex items-center gap-3" style={{
+                  background: 'rgba(180, 255, 57, 0.1)',
+                  border: '1px solid rgba(180, 255, 57, 0.3)',
+                }}>
+                  <Target className="h-5 w-5 text-lime-400" />
+                  <div className="flex-1">
+                    <span className="text-sm font-ibm text-lime-300">Next Priority Target</span>
+                  </div>
+                  <Badge className="font-jetbrains bg-lime-500/20 text-lime-300 border-lime-500/30 hover:bg-lime-500/30">
                     {nextPuzzle}
                   </Badge>
                 </div>
-              </div>
-            ) : (
-              <div className="flex items-center gap-3 bg-gray-100 rounded-lg p-3">
-                <CheckCircle className="h-5 w-5 text-gray-500" />
-                <span className="text-sm text-gray-600">
-                  {progress.isLoading ? 'Loading puzzles...' : 'All puzzles have been attempted!'}
-                </span>
-              </div>
-            )}
+              ) : (
+                <div className="mb-6 p-4 rounded-lg flex items-center gap-3" style={{
+                  background: 'rgba(107, 114, 128, 0.1)',
+                  border: '1px solid rgba(107, 114, 128, 0.3)',
+                }}>
+                  <CheckCircle className="h-5 w-5 text-gray-400" />
+                  <span className="text-sm font-ibm text-gray-400">
+                    {progress.isLoading ? 'Scanning database...' : 'All targets have been engaged'}
+                  </span>
+                </div>
+              )}
 
-            {/* Model Info - Fixed to Gemini 3 Pro Preview */}
-            <div className="bg-teal-50 border border-teal-200 rounded-lg p-3">
-              <div className="flex items-center gap-2">
-                <Code className="h-5 w-5 text-teal-600" />
-                <div>
-                  <span className="font-medium text-teal-800">Model: {POETIQ_MODEL_NAME}</span>
-                  <span className="text-xs text-teal-600 ml-2">(locked for community)</span>
+              {/* Model Lock Info */}
+              <div className="mb-6 p-4 rounded-lg" style={{
+                background: 'rgba(0, 217, 255, 0.05)',
+                border: '1px solid rgba(0, 217, 255, 0.2)',
+              }}>
+                <div className="flex items-center gap-2 mb-2">
+                  <Code className="h-4 w-4 text-cyan-400" />
+                  <span className="font-jetbrains text-cyan-300 text-sm uppercase tracking-wider">System Configuration</span>
+                </div>
+                <div className="text-white font-ibm font-semibold">{POETIQ_MODEL_NAME}</div>
+                <p className="text-xs text-gray-400 mt-1 font-ibm">
+                  Community verification locked to Gemini 3 Pro Preview for consistency
+                </p>
+              </div>
+
+              <div className="grid md:grid-cols-2 gap-6 mb-6">
+                {/* Provider Selection */}
+                <div className="space-y-3">
+                  <Label className="text-gray-300 font-ibm font-medium flex items-center gap-2">
+                    <Activity className="h-4 w-4 text-cyan-400" />
+                    API Provider
+                  </Label>
+                  <Select value={provider} onValueChange={(v) => setProvider(v as 'openrouter' | 'gemini')}>
+                    <SelectTrigger className="bg-gray-900/50 border-gray-700 text-white font-ibm hover:border-cyan-500/50 transition-colors">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="bg-gray-900 border-gray-700">
+                      {POETIQ_PROVIDERS.map(p => (
+                        <SelectItem key={p.value} value={p.value} className="text-white font-ibm">
+                          {p.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {/* Expert Count */}
+                <div className="space-y-3">
+                  <Label className="text-gray-300 font-ibm font-medium flex items-center gap-2">
+                    <Users className="h-4 w-4 text-lime-400" />
+                    Expert Configuration
+                  </Label>
+                  <Select value={numExperts} onValueChange={setNumExperts}>
+                    <SelectTrigger className="bg-gray-900/50 border-gray-700 text-white font-ibm hover:border-lime-500/50 transition-colors">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="bg-gray-900 border-gray-700">
+                      {EXPERT_OPTIONS.map(opt => (
+                        <SelectItem key={opt.value} value={opt.value} className="text-white font-ibm">
+                          {opt.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
               </div>
-              <p className="text-xs text-teal-700 mt-1">
-                Community page uses Gemini 3 Pro Preview only. Choose your API provider below.
-              </p>
-            </div>
 
-            {/* Provider Selection */}
-            <div className="grid md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label>API Provider</Label>
-                <Select value={provider} onValueChange={(v) => setProvider(v as 'openrouter' | 'gemini')}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {POETIQ_PROVIDERS.map(p => (
-                      <SelectItem key={p.value} value={p.value}>
-                        {p.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <Label className="flex items-center gap-2">
-                  <Key className="h-4 w-4" />
-                  {selectedProvider.label} API Key (Optional)
-                </Label>
-                <a 
-                  href={selectedProvider.keyUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-xs text-indigo-600 hover:underline flex items-center gap-1"
-                >
-                  Get your key <ExternalLink className="h-3 w-3" />
-                </a>
-              </div>
-              <form onSubmit={(e) => e.preventDefault()}>
+              {/* API Key Input */}
+              <div className="space-y-3 mb-6">
+                <div className="flex items-center justify-between">
+                  <Label className="text-gray-300 font-ibm font-medium flex items-center gap-2">
+                    <Key className="h-4 w-4 text-amber-400" />
+                    {selectedProvider.label} API Key (Optional)
+                  </Label>
+                  <a
+                    href={selectedProvider.keyUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-xs text-cyan-400 hover:text-cyan-300 flex items-center gap-1 font-ibm transition-colors"
+                  >
+                    Obtain Credentials <ExternalLink className="h-3 w-3" />
+                  </a>
+                </div>
                 <Input
                   type="password"
                   placeholder={selectedProvider.keyPlaceholder}
                   value={apiKey}
                   onChange={(e) => setApiKey(e.target.value)}
-                  className="font-mono"
+                  className="bg-gray-900/50 border-gray-700 text-white font-jetbrains placeholder:text-gray-600 focus:border-cyan-500 focus:ring-cyan-500/20"
                   autoComplete="new-password"
                 />
-              </form>
-              
-              {/* Info box changes based on whether user entered key */}
-              {usingProjectKey ? (
-                <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 mt-2">
-                  <h4 className="font-medium text-amber-800 text-sm mb-1">⚡ Using Project API Key</h4>
-                  <p className="text-xs text-amber-700">
-                    Leave blank to use the project's shared API key. 
-                    <strong> Note:</strong> The shared key may hit rate limits during busy periods.
-                    For guaranteed access, enter your own key above.
-                  </p>
-                </div>
-              ) : (
-                <div className="bg-green-50 border border-green-200 rounded-lg p-3 mt-2">
-                  <h4 className="font-medium text-green-800 text-sm mb-1">✓ Using Your API Key</h4>
-                  <ul className="text-xs text-green-700 space-y-1">
-                    <li>• Key is passed directly to Python subprocess</li>
-                    <li>• Never stored - destroyed when process ends</li>
-                    <li>• No rate limit conflicts with other users</li>
-                  </ul>
-                </div>
-              )}
-            </div>
 
-            {/* Expert Count */}
-            <div className="space-y-2">
-              <Label className="flex items-center gap-2">
-                <Users className="h-4 w-4" />
-                Expert Count
-              </Label>
-              <Select value={numExperts} onValueChange={setNumExperts}>
-                <SelectTrigger className="w-full md:w-64">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {EXPERT_OPTIONS.map(opt => (
-                    <SelectItem key={opt.value} value={opt.value}>
-                      <div className="flex flex-col">
-                        <span className="font-medium">{opt.label}</span>
-                        <span className="text-xs text-gray-500">{opt.description}</span>
+                {/* Security Info */}
+                {usingProjectKey ? (
+                  <div className="p-3 rounded-lg" style={{
+                    background: 'rgba(255, 149, 0, 0.08)',
+                    border: '1px solid rgba(255, 149, 0, 0.3)',
+                  }}>
+                    <div className="flex items-start gap-2">
+                      <Sparkles className="h-4 w-4 text-amber-400 mt-0.5 flex-shrink-0" />
+                      <div className="text-xs text-amber-300 font-ibm leading-relaxed">
+                        <strong className="text-amber-200">Using Project API Key:</strong> Shared key may experience rate limits during peak usage.
+                        For guaranteed access, provide your own key above.
                       </div>
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="p-3 rounded-lg" style={{
+                    background: 'rgba(180, 255, 57, 0.08)',
+                    border: '1px solid rgba(180, 255, 57, 0.3)',
+                  }}>
+                    <div className="flex items-start gap-2">
+                      <CheckCircle className="h-4 w-4 text-lime-400 mt-0.5 flex-shrink-0" />
+                      <div className="text-xs text-lime-300 font-ibm leading-relaxed">
+                        <strong className="text-lime-200">Zero-Persistence Protocol:</strong> Key transmitted via HTTPS, injected into subprocess,
+                        never logged. Process termination = permanent destruction.
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
 
-            <Separator />
+              <Separator className="my-6 bg-gray-700/50" />
 
-            {/* Run Button - Navigates to full solver page */}
-            <Button
-              onClick={handleRunNext}
-              disabled={!canStart}
-              className="w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700"
-              size="lg"
-            >
-              <Play className="h-5 w-5 mr-2" />
-              Run Solver on {nextPuzzle || 'Next Puzzle'}
-              <ArrowRight className="h-5 w-5 ml-2" />
-            </Button>
+              {/* Launch Button */}
+              <Button
+                onClick={handleRunNext}
+                disabled={!canStart}
+                size="lg"
+                className="w-full font-orbitron font-bold text-lg tracking-wide transition-all duration-300 disabled:opacity-50"
+                style={{
+                  background: canStart
+                    ? 'linear-gradient(135deg, #00d9ff 0%, #b4ff39 100%)'
+                    : 'rgba(107, 114, 128, 0.3)',
+                  color: canStart ? '#0f1419' : '#6b7280',
+                  boxShadow: canStart
+                    ? '0 0 30px rgba(0, 217, 255, 0.4), 0 4px 20px rgba(0, 0, 0, 0.3)'
+                    : 'none',
+                }}
+              >
+                {canStart ? (
+                  <>
+                    <Play className="h-5 w-5 mr-2" />
+                    INITIATE SOLVER — {nextPuzzle}
+                    <ArrowRight className="h-5 w-5 ml-2" />
+                  </>
+                ) : (
+                  <>
+                    <Loader2 className="h-5 w-5 mr-2 animate-spin" />
+                    SCANNING FOR TARGETS
+                  </>
+                )}
+              </Button>
 
-            {usingProjectKey && (
-              <p className="text-center text-sm text-amber-600">
-                Using project API key (may be rate limited)
+              {usingProjectKey && canStart && (
+                <p className="text-center text-sm text-amber-400 mt-3 font-ibm">
+                  Using shared project key (may encounter rate limits)
+                </p>
+              )}
+
+              <p className="text-center text-xs text-gray-500 mt-4 font-ibm">
+                Launches full solver interface with live Python execution, reasoning stream, and code generation
               </p>
-            )}
-
-            <p className="text-center text-xs text-gray-400">
-              Opens the full solver page with Python terminal, AI reasoning, and code generation.
-            </p>
-          </CardContent>
-        </Card>
-
-        {/* How It Works Explainer */}
-        <PoetiqExplainer defaultOpen={false} />
-
-        {/* Puzzle Progress Grid */}
-        <div className="flex items-center justify-between mb-2">
-          <h2 className="text-xl font-semibold text-gray-800">All Puzzles</h2>
-          <Button 
-            variant="outline" 
-            size="sm" 
-            onClick={progress.refetch}
-            disabled={progress.isLoading}
-          >
-            <RefreshCw className={`h-4 w-4 mr-2 ${progress.isLoading ? 'animate-spin' : ''}`} />
-            Refresh
-          </Button>
+            </div>
+          </div>
         </div>
-        
-        <PuzzleProgressGrid 
-          puzzles={progress.puzzles}
-          isLoading={progress.isLoading}
-        />
+
+        {/* Explainer Section */}
+        <div className="mb-12 animate-slide-in-up" style={{ animationDelay: '0.4s' }}>
+          <PoetiqExplainer defaultOpen={false} />
+        </div>
+
+        {/* Puzzle Grid */}
+        <div className="animate-slide-in-up" style={{ animationDelay: '0.6s' }}>
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-2xl font-orbitron font-bold text-white flex items-center gap-3">
+              <div className="w-1 h-8 bg-gradient-to-b from-cyan-400 to-lime-400 rounded-full"></div>
+              Mission Database
+            </h2>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={progress.refetch}
+              disabled={progress.isLoading}
+              className="bg-gray-900/50 border-gray-700 text-gray-300 hover:bg-gray-800 hover:text-white hover:border-cyan-500/50 font-ibm transition-all"
+            >
+              <RefreshCw className={`h-4 w-4 mr-2 ${progress.isLoading ? 'animate-spin' : ''}`} />
+              Refresh
+            </Button>
+          </div>
+
+          <PuzzleProgressGrid
+            puzzles={progress.puzzles}
+            isLoading={progress.isLoading}
+          />
+        </div>
 
         {/* Footer Links */}
-        <Card className="bg-gradient-to-br from-gray-50 to-gray-100">
-          <CardContent className="py-6">
-            <div className="flex flex-wrap items-center justify-center gap-6 text-sm">
-              <a 
-                href="https://poetiq.ai/posts/arcagi_announcement/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-indigo-600 hover:underline flex items-center gap-1"
-              >
-                Poetiq Blog Post <ExternalLink className="h-3 w-3" />
-              </a>
-              <span className="text-gray-300">|</span>
-              <a 
-                href="https://github.com/82deutschmark/poetiq-arc-agi-solver"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-indigo-600 hover:underline flex items-center gap-1"
-              >
-                Poetiq Solver Repo <ExternalLink className="h-3 w-3" />
-              </a>
-              <span className="text-gray-300">|</span>
-              <a 
-                href="https://arcprize.org/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-indigo-600 hover:underline flex items-center gap-1"
-              >
-                ARC Prize <ExternalLink className="h-3 w-3" />
-              </a>
-              <span className="text-gray-300">|</span>
-              <a 
-                href="https://discord.gg/9b77dPAmcA"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-indigo-600 hover:underline flex items-center gap-1"
-              >
-                Our Discord <ExternalLink className="h-3 w-3" />
-              </a>
-            </div>
-          </CardContent>
-        </Card>
+        <div className="mt-12 p-6 rounded-xl" style={{
+          background: 'rgba(255, 255, 255, 0.02)',
+          border: '1px solid rgba(255, 255, 255, 0.05)',
+        }}>
+          <div className="flex flex-wrap items-center justify-center gap-6 text-sm font-ibm">
+            <a
+              href="https://poetiq.ai/posts/arcagi_announcement/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-cyan-400 hover:text-cyan-300 flex items-center gap-1 transition-colors"
+            >
+              Research Publication <ExternalLink className="h-3 w-3" />
+            </a>
+            <span className="text-gray-700">|</span>
+            <a
+              href="https://github.com/82deutschmark/poetiq-arc-agi-solver"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-cyan-400 hover:text-cyan-300 flex items-center gap-1 transition-colors"
+            >
+              Solver Repository <ExternalLink className="h-3 w-3" />
+            </a>
+            <span className="text-gray-700">|</span>
+            <a
+              href="https://arcprize.org/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-cyan-400 hover:text-cyan-300 flex items-center gap-1 transition-colors"
+            >
+              ARC Prize Foundation <ExternalLink className="h-3 w-3" />
+            </a>
+            <span className="text-gray-700">|</span>
+            <a
+              href="https://discord.gg/9b77dPAmcA"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-cyan-400 hover:text-cyan-300 flex items-center gap-1 transition-colors"
+            >
+              Community Discord <ExternalLink className="h-3 w-3" />
+            </a>
+          </div>
+        </div>
       </div>
     </div>
   );

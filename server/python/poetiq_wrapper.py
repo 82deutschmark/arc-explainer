@@ -113,8 +113,8 @@ async def run_poetiq_solver(puzzle_id: str, task: dict, options: dict) -> dict:
     test_in = [ex["input"] for ex in test]
     
     # Get config from options with sensible defaults
-    # Default: 2 experts, Gemini direct, 10 iterations
-    model = options.get("model", "gemini/gemini-3-pro-preview")
+    # Default: 2 experts, OpenRouter Gemini, 10 iterations
+    model = options.get("model", "openrouter/google/gemini-3-pro-preview")
     num_experts = options.get("numExperts", 2)
     max_iterations = options.get("maxIterations", 10)
     temperature = options.get("temperature", 1.0)
@@ -273,12 +273,18 @@ async def main():
         # Verify API keys are available
         gemini_key = os.environ.get("GEMINI_API_KEY")
         openai_key = os.environ.get("OPENAI_API_KEY")
+        openrouter_key = os.environ.get("OPENROUTER_API_KEY")
         
-        if not gemini_key and not openai_key:
-            emit({"type": "error", "message": "No API keys found. Set GEMINI_API_KEY or OPENAI_API_KEY"})
+        if not gemini_key and not openai_key and not openrouter_key:
+            emit({"type": "error", "message": "No API keys found. Set OPENROUTER_API_KEY, GEMINI_API_KEY, or OPENAI_API_KEY"})
             sys.exit(1)
         
-        log(f"API keys available: Gemini={'yes' if gemini_key else 'no'}, OpenAI={'yes' if openai_key else 'no'}")
+        log(
+            "API keys available: "
+            f"OpenRouter={'yes' if openrouter_key else 'no'}, "
+            f"Gemini={'yes' if gemini_key else 'no'}, "
+            f"OpenAI={'yes' if openai_key else 'no'}"
+        )
         
         # Run the solver
         result = await run_poetiq_solver(puzzle_id, task, options)
