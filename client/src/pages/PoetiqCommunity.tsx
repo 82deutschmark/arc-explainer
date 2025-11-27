@@ -82,10 +82,12 @@ export default function PoetiqCommunity() {
   }, []);
 
   const nextPuzzle = progress.getNextRecommended();
-  const canStart = apiKey.trim().length > 10 && nextPuzzle;
+  // API key is optional - falls back to project key if not provided
+  const canStart = !!nextPuzzle;
+  const usingProjectKey = !apiKey.trim();
 
   const handleRunNext = () => {
-    if (!nextPuzzle || !apiKey.trim()) return;
+    if (!nextPuzzle) return;
     
     // Store config in sessionStorage for the solver page to use
     sessionStorage.setItem('poetiq_config', JSON.stringify({
@@ -228,7 +230,7 @@ export default function PoetiqCommunity() {
               <div className="flex items-center justify-between">
                 <Label className="flex items-center gap-2">
                   <Key className="h-4 w-4" />
-                  {selectedProvider.label} API Key
+                  {selectedProvider.label} API Key (Optional)
                 </Label>
                 <a 
                   href={selectedProvider.keyUrl}
@@ -249,16 +251,27 @@ export default function PoetiqCommunity() {
                   autoComplete="new-password"
                 />
               </form>
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mt-2">
-                <h4 className="font-medium text-blue-800 text-sm mb-1">🔐 API Key Security</h4>
-                <ul className="text-xs text-blue-700 space-y-1">
-                  <li>• Key is passed directly to Python subprocess environment</li>
-                  <li>• Never stored in database, files, or server memory</li>
-                  <li>• Process terminates → key is permanently destroyed</li>
-                  <li>• No logging or persistence of any kind</li>
-                  <li>• HTTPS required for key transmission</li>
-                </ul>
-              </div>
+              
+              {/* Info box changes based on whether user entered key */}
+              {usingProjectKey ? (
+                <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 mt-2">
+                  <h4 className="font-medium text-amber-800 text-sm mb-1">⚡ Using Project API Key</h4>
+                  <p className="text-xs text-amber-700">
+                    Leave blank to use the project's shared API key. 
+                    <strong> Note:</strong> The shared key may hit rate limits during busy periods.
+                    For guaranteed access, enter your own key above.
+                  </p>
+                </div>
+              ) : (
+                <div className="bg-green-50 border border-green-200 rounded-lg p-3 mt-2">
+                  <h4 className="font-medium text-green-800 text-sm mb-1">✓ Using Your API Key</h4>
+                  <ul className="text-xs text-green-700 space-y-1">
+                    <li>• Key is passed directly to Python subprocess</li>
+                    <li>• Never stored - destroyed when process ends</li>
+                    <li>• No rate limit conflicts with other users</li>
+                  </ul>
+                </div>
+              )}
             </div>
 
             {/* Expert Count */}
@@ -298,14 +311,14 @@ export default function PoetiqCommunity() {
               <ArrowRight className="h-5 w-5 ml-2" />
             </Button>
 
-            {!apiKey && (
-              <p className="text-center text-sm text-gray-500">
-                Enter your API key to start helping
+            {usingProjectKey && (
+              <p className="text-center text-sm text-amber-600">
+                Using project API key (may be rate limited)
               </p>
             )}
 
             <p className="text-center text-xs text-gray-400">
-              Opens the full solver page with Python execution terminal, AI reasoning, and code generation.
+              Opens the full solver page with Python terminal, AI reasoning, and code generation.
             </p>
           </CardContent>
         </Card>
