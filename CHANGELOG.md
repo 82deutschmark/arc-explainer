@@ -1,6 +1,40 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top!!!
 
+### Version 5.31.0
+
+- **Poetiq Solver - Comprehensive Token & Cost Tracking** (Author: Cascade using Claude Sonnet 4)
+  - **Purpose**: Independent audit capability for Poetiq's Pareto Frontier cost claims
+  - **Implementation**: Enhanced `server/python/poetiq_wrapper.py` with full token/cost tracking
+    - **Cost Calculator**: Added MODEL_PRICING table mirroring `server/config/models.ts` (per-1M-token pricing)
+    - **Model Normalizer**: Handles litellm provider prefixes (openai/, gemini/, anthropic/, openrouter/)
+    - **Per-Iteration Tracking**: Captures token usage from every LLM API call via `llm()` function
+    - **Per-Expert Aggregation**: Each expert's total tokens/cost tracked separately
+    - **Global Aggregation**: Sum across all experts for puzzle-level totals
+  - **Enhanced llm.py**: Modified `solver/poetiq/llm.py` to return token_usage as 5th tuple element
+    - Original Poetiq discarded `resp.usage` - we now capture: `input_tokens`, `output_tokens`, `total_tokens`
+    - Backward-compatible wrapper (`llm_compat`) for code expecting old 4-element return
+  - **Progress Events**: Real-time token/cost streaming to frontend
+    - `tokenUsage`: Per-iteration token counts
+    - `cost`: Per-iteration cost breakdown (input/output/total)
+    - `expertCumulativeTokens`/`expertCumulativeCost`: Running totals for this expert
+    - `globalTokens`/`globalCost`: Running totals across all experts
+  - **Final Result Schema**: Added to `run_poetiq_solver()` return value:
+    - `tokenUsage`: {input_tokens, output_tokens, total_tokens}
+    - `cost`: {input, output, total} in USD
+    - `expertBreakdown`: Per-expert token/cost data for multi-expert runs
+  - **Audit Documentation**: Created `docs/2025-11-27-arc-agi-token-cost-tracking-analysis.md`
+    - Compares ARC-AGI benchmarking framework's token tracking (gold standard)
+    - Documents Poetiq's dashboard-only approach (no programmatic tracking)
+    - Identifies verification gaps in Poetiq's Pareto Frontier claims
+    - Proposes audit methodology using our instrumented wrapper
+  - **Benefits**:
+    - ✅ Verifiable per-puzzle cost attribution (unlike Poetiq's dashboard approach)
+    - ✅ Per-expert cost breakdowns (critical for multi-expert configs)
+    - ✅ Real-time cost visibility during execution
+    - ✅ Programmatic validation of cost claims
+    - ✅ Independent audit trail for research/publication
+
 ### Version 5.30.0
 
 - **Poetiq Solver Internalization - Enhanced Token Tracking** (Author: Cascade using Claude Sonnet 4)
