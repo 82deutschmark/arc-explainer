@@ -299,14 +299,16 @@ export const poetiqController = {
     const models = [
       // OpenRouter models (recommended - avoids rate limits)
       { id: 'openrouter/google/gemini-3-pro-preview', name: 'Gemini 3 Pro (via OpenRouter)', provider: 'OpenRouter', recommended: true },
-      { id: 'openrouter/google/gemini-2.5-flash-preview-09-2025', name: 'Gemini 2.5 Flash (via OpenRouter)', provider: 'OpenRouter', recommended: true },
+      { id: 'openrouter/google/gemini-2.5-flash-preview-09-2025', name: 'Gemini 2.5 Flash (via OpenRouter)', provider: 'OpenRouter', recommended: false },
       { id: 'openrouter/anthropic/claude-sonnet-4', name: 'Claude Sonnet 4 (via OpenRouter)', provider: 'OpenRouter', recommended: false },
       { id: 'openrouter/openai/gpt-5.1', name: 'GPT-5.1 (via OpenRouter)', provider: 'OpenRouter', recommended: false },
+      { id: 'openrouter/openai/codex-mini', name: 'GPT-5.1 Codex Mini (via OpenRouter)', provider: 'OpenRouter', recommended: true },
       // Direct API models (may hit rate limits)
       { id: 'gemini/gemini-3-pro-preview', name: 'Gemini 3 Pro Preview (Direct)', provider: 'Google', recommended: false },
       { id: 'gemini/gemini-2.5-pro', name: 'Gemini 2.5 Pro (Direct)', provider: 'Google', recommended: false },
       { id: 'openai/gpt-5', name: 'GPT-5 (Direct)', provider: 'OpenAI', recommended: false },
       { id: 'openai/gpt-5.1', name: 'GPT-5.1 (Direct)', provider: 'OpenAI', recommended: false },
+      { id: 'openai/codex-mini', name: 'GPT-5.1 Codex Mini (Direct)', provider: 'OpenAI', recommended: false },
       { id: 'anthropic/claude-sonnet-4-5', name: 'Claude Sonnet 4.5 (Direct)', provider: 'Anthropic', recommended: false },
       { id: 'xai/grok-4', name: 'Grok 4 (Direct)', provider: 'xAI', recommended: false },
     ];
