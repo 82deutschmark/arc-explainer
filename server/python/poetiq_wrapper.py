@@ -342,8 +342,8 @@ async def run_poetiq_solver(puzzle_id: str, task: dict, options: dict) -> dict:
     test_in = [ex["input"] for ex in test]
     
     # Get config from options with sensible defaults
-    # Default: 2 experts, Gemini 3 Pro Preview (direct API), 10 iterations
-    model = options.get("model", "gemini-3-pro-preview")
+    # Default: 2 experts, Gemini 3 Pro Preview via OpenRouter, 10 iterations
+    model = options.get("model", "openrouter/google/gemini-3-pro-preview")
     num_experts = options.get("numExperts", 2)
     max_iterations = options.get("maxIterations", 10)
     temperature = options.get("temperature", 1.0)

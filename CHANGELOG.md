@@ -3,33 +3,38 @@
 
 ### Version 5.30.0
 
-- **Poetiq Solver Internalization - Removed litellm Dependency** (Author: Cascade using Claude Sonnet 4)
-  - **Major Architecture Change**: Moved Poetiq solver from git submodule (`poetiq-solver/`) into `solver/poetiq/`, following the Saturn solver pattern.
-  - **Removed litellm**: Replaced the litellm abstraction layer with direct `google-generativeai` SDK calls.
-  - **Token Tracking Added**: The new `llm.py` now captures and returns token usage (`input_tokens`, `output_tokens`, `total_tokens`) for cost analysis - this data was previously discarded by litellm integration.
+- **Poetiq Solver Internalization - Enhanced Token Tracking** (Author: Cascade using Claude Sonnet 4)
+  - **Architecture**: Moved Poetiq solver from git submodule (`poetiq-solver/`) into `solver/poetiq/`, keeping litellm for multi-provider routing (faithful to original Poetiq).
+  - **KEY FIX**: Original Poetiq discarded `resp.usage` token data - we now capture and return it! This enables cost tracking without changing the underlying architecture.
+  - **SDK Backends Installed**: Added all SDK backends that litellm needs:
+    - `litellm>=1.50.0` - Multi-provider router (kept from original)
+    - `google-generativeai>=0.8.0` - Gemini backend
+    - `openai>=1.0.0` - OpenAI/GPT backend  
+    - `anthropic>=0.40.0` - Claude backend
   - **Files Created in `solver/poetiq/`**:
     - `__init__.py` - Package exports
-    - `types.py` - TypedDict definitions (ExpertConfig, ARCAGIResult, etc.)
+    - `types.py` - TypedDict definitions (ExpertConfig, ARCAGIResult, TokenUsage)
     - `utils.py` - Utility functions
     - `sandbox.py` - Sandboxed code execution
     - `scoring.py` - Kaggle-format scoring
     - `io.py` - I/O utilities
     - `prompts.py` - Solver prompt templates
     - `config.py` - Default configuration
-    - `llm.py` - **New** direct Google Generative AI SDK implementation
-    - `solve_coding.py` - Iterative code generation loop
+    - `llm.py` - **Enhanced** litellm-based implementation with token usage capture
+    - `solve_coding.py` - Iterative code generation loop (accumulates token usage)
     - `solve_parallel_coding.py` - Parallel expert orchestration and voting
     - `solve.py` - Main entry point
   - **Updated Files**:
     - `server/python/poetiq_wrapper.py` - Now imports from `solver.poetiq` instead of submodule
-    - `requirements.txt` - Replaced `litellm==1.78.2` with `google-generativeai>=0.8.0`
+    - `requirements.txt` - Added all SDK backends
   - **Benefits**:
+    - **Faithful replication** of original Poetiq behavior via litellm
+    - **Token usage tracking** for cost analysis (previously discarded!)
+    - **Multi-provider support** - works with Gemini, OpenAI, Anthropic, xAI, OpenRouter
     - No external submodule dependency
-    - Consistent with Saturn/Grover architecture pattern
-    - Token usage tracking for cost analysis (previously unavailable)
-    - Uses project's existing API key infrastructure
-    - Removes unnecessary abstraction layer
-  - **Plan Document**: `docs/plans/2025-11-27-poetiq-internalization-plan.md`
+  - **Plan Documents**: 
+    - `docs/plans/2025-11-27-poetiq-internalization-plan.md`
+    - `docs/plans/2025-11-27-poetiq-internalization-revised-plan.md`
 
 ### Version 5.29.15
 
