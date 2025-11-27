@@ -1,6 +1,18 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top!!!
 
+### Version 5.28.6
+
+- **Fix PoetiqCommunity Page - Use Actual Config** (Author: Cascade using Claude Sonnet 4)
+  - **Problem**: Community page (/poetiq) still had wrong models and "4 experts" option
+  - **Fix**: 
+    - Locked to `google/gemini-3-pro-preview` via OpenRouter (same as control panel)
+    - Expert options: 1, 2, 8 ONLY (Gemini-3-a, Gemini-3-b, Gemini-3-c)
+    - Removed provider selector (was showing Gemini Direct option)
+    - Removed model selector (was showing outdated models)
+    - Added teal info card showing fixed model
+  - **Files**: `PoetiqCommunity.tsx`
+
 ### Version 5.28.5
 
 - **Fix Poetiq Control Panel - Use Actual Config** (Author: Cascade using Claude Sonnet 4)

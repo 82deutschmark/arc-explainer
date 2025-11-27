@@ -19,7 +19,6 @@ import {
   RefreshCw,
   Play,
   Key,
-  Settings,
   Loader2,
   CheckCircle,
   Target,
@@ -37,46 +36,29 @@ import { PoetiqExplainer } from '@/components/poetiq/PoetiqExplainer';
 import { PuzzleProgressGrid } from '@/components/poetiq/PuzzleProgressGrid';
 import { usePoetiqCommunityProgress } from '@/hooks/usePoetiqCommunityProgress';
 
-// Provider options with descriptions
-const PROVIDERS = [
-  { 
-    value: 'gemini', 
-    label: 'Gemini Direct', 
-    description: 'Use your Google AI Studio API key',
-    keyPlaceholder: 'AIza... (from aistudio.google.com)',
-    keyUrl: 'https://aistudio.google.com/app/apikey'
-  },
-  { 
-    value: 'openrouter', 
-    label: 'OpenRouter', 
-    description: 'Use your OpenRouter API key (multiple models)',
-    keyPlaceholder: 'sk-or-... (from openrouter.ai/keys)',
-    keyUrl: 'https://openrouter.ai/keys'
-  },
-];
+// Poetiq ONLY uses Gemini 3 Pro Preview via OpenRouter
+// This is hardcoded in poetiq-solver/arc_agi/config.py
+const POETIQ_MODEL = {
+  id: 'google/gemini-3-pro-preview',
+  name: 'Gemini 3 Pro Preview',
+  provider: 'OpenRouter',
+  keyUrl: 'https://openrouter.ai/keys',
+  keyPlaceholder: 'sk-or-... (from openrouter.ai/keys)',
+};
 
-// Model options for OpenRouter
-const OPENROUTER_MODELS = [
-  { value: 'openrouter/google/gemini-2.5-pro-preview', label: 'Gemini 2.5 Pro', speed: 'Medium', cost: '$$' },
-  { value: 'openrouter/google/gemini-2.5-flash-preview', label: 'Gemini 2.5 Flash', speed: 'Fast', cost: '$' },
-  { value: 'openrouter/anthropic/claude-sonnet-4', label: 'Claude Sonnet 4', speed: 'Medium', cost: '$$' },
-  { value: 'openrouter/openai/gpt-4o', label: 'GPT-4o', speed: 'Medium', cost: '$$' },
-];
-
-// Expert count options
+// Expert count options - ONLY 1, 2, 8 (from config.py)
+// Gemini-3-a: 1 expert, Gemini-3-b: 2 experts, Gemini-3-c: 8 experts
 const EXPERT_OPTIONS = [
-  { value: '1', label: '1 Expert', description: 'Fastest, lowest cost' },
-  { value: '2', label: '2 Experts (Recommended)', description: 'Good balance of speed and accuracy' },
-  { value: '4', label: '4 Experts', description: 'Higher accuracy, more API calls' },
+  { value: '1', label: 'Gemini-3-a (1 Expert)', description: 'Fastest, lowest cost' },
+  { value: '2', label: 'Gemini-3-b (2 Experts)', description: 'Default, good balance' },
+  { value: '8', label: 'Gemini-3-c (8 Experts)', description: 'Best accuracy, highest cost' },
 ];
 
 export default function PoetiqCommunity() {
   const [, navigate] = useLocation();
   const progress = usePoetiqCommunityProgress();
   
-  // Configuration state
-  const [provider, setProvider] = useState<'gemini' | 'openrouter'>('gemini');
-  const [model, setModel] = useState(OPENROUTER_MODELS[0].value);
+  // Configuration state - Poetiq always uses OpenRouter with Gemini 3 Pro
   const [apiKey, setApiKey] = useState('');
   const [numExperts, setNumExperts] = useState('2');
   
@@ -89,7 +71,6 @@ export default function PoetiqCommunity() {
     document.title = 'Poetiq Community Solver - Help Verify the Benchmark';
   }, []);
 
-  const selectedProvider = PROVIDERS.find(p => p.value === provider)!;
   const nextPuzzle = progress.getNextRecommended();
   const isRunning = solverProgress.state.status === 'running';
   const isDone = solverProgress.state.status === 'completed';
@@ -101,11 +82,13 @@ export default function PoetiqCommunity() {
     
     // Set active puzzle and start solver directly
     setActivePuzzle(nextPuzzle);
+    // Poetiq always uses OpenRouter with Gemini 3 Pro Preview
     solverProgress.start({
       apiKey,
-      provider,
-      model: provider === 'openrouter' ? model : undefined,
+      provider: 'openrouter',
+      model: POETIQ_MODEL.id,
       numExperts: parseInt(numExperts, 10),
+      temperature: 1.0,  // Fixed per config.py
     });
   };
 
@@ -209,58 +192,28 @@ export default function PoetiqCommunity() {
               </div>
             )}
 
-            {/* Provider and Key Input */}
-            <div className="grid md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label>Provider</Label>
-                <Select value={provider} onValueChange={(v) => setProvider(v as 'gemini' | 'openrouter')}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {PROVIDERS.map(p => (
-                      <SelectItem key={p.value} value={p.value}>
-                        <div className="flex flex-col">
-                          <span className="font-medium">{p.label}</span>
-                          <span className="text-xs text-gray-500">{p.description}</span>
-                        </div>
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              {provider === 'openrouter' && (
-                <div className="space-y-2">
-                  <Label>Model</Label>
-                  <Select value={model} onValueChange={setModel}>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {OPENROUTER_MODELS.map(m => (
-                        <SelectItem key={m.value} value={m.value}>
-                          <div className="flex items-center gap-2">
-                            <span className="font-medium">{m.label}</span>
-                            <Badge variant="outline" className="text-xs">{m.speed}</Badge>
-                            <Badge variant="secondary" className="text-xs">{m.cost}</Badge>
-                          </div>
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+            {/* Model Info - Fixed to Gemini 3 Pro Preview */}
+            <div className="bg-teal-50 border border-teal-200 rounded-lg p-3">
+              <div className="flex items-center gap-2">
+                <Code className="h-5 w-5 text-teal-600" />
+                <div>
+                  <span className="font-medium text-teal-800">Model: {POETIQ_MODEL.name}</span>
+                  <span className="text-xs text-teal-600 ml-2">via {POETIQ_MODEL.provider}</span>
                 </div>
-              )}
+              </div>
+              <p className="text-xs text-teal-700 mt-1">
+                Poetiq uses {POETIQ_MODEL.id} - the model is fixed per the solver configuration.
+              </p>
             </div>
 
             <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <Label className="flex items-center gap-2">
                   <Key className="h-4 w-4" />
-                  API Key
+                  OpenRouter API Key
                 </Label>
                 <a 
-                  href={selectedProvider.keyUrl}
+                  href={POETIQ_MODEL.keyUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-xs text-indigo-600 hover:underline flex items-center gap-1"
@@ -271,7 +224,7 @@ export default function PoetiqCommunity() {
               <form onSubmit={(e) => e.preventDefault()}>
                 <Input
                   type="password"
-                  placeholder={selectedProvider.keyPlaceholder}
+                  placeholder={POETIQ_MODEL.keyPlaceholder}
                   value={apiKey}
                   onChange={(e) => setApiKey(e.target.value)}
                   className="font-mono"
