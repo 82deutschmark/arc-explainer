@@ -24,9 +24,9 @@ Current Implementation:
 ## 2. Implementation Plan
 
 ### Phase 1: Merge & Update Community Page (`client/src/pages/PoetiqCommunity.tsx`)
-- [ ] **MERGE**: Move all content from `PoetiqExplainer.tsx` into `PoetiqCommunity.tsx`.
-- [ ] **DELETE**: Remove `client/src/components/poetiq/PoetiqExplainer.tsx` to avoid confusion.
-- [ ] Update the merged content to match the blog post:
+- [x] **MERGE**: Move all content from `PoetiqExplainer.tsx` into `PoetiqCommunity.tsx`.
+- [x] **DELETE**: Remove `client/src/components/poetiq/PoetiqExplainer.tsx` to avoid confusion.
+- [x] Update the merged content to match the blog post:
     - **Header**: "Independent Audit of Poetiq's SOTA Results".
     - **New Section**: "The Poetiq Meta-System" (replacing "How it works").
     - **New Section**: "Pareto Optimal Reasoning" - visualizing the cost/performance claims.
@@ -34,23 +34,27 @@ Current Implementation:
     - **Process**: Keep the 1-6 step visual but update terminology (e.g. "Self-Auditing").
 
 ### Phase 2: Update Model Support (`server/controllers/poetiqController.ts`)
-- [ ] **STRICT REQUIREMENT**: Use ONLY verified model keys from `server/config/models.ts`.
-- [ ] Add `x-ai/grok-4.1-fast` (OpenRouter) and `grok-4-fast-reasoning` (xAI Direct) to match "Grok 4 Fast".
-- [ ] Add `openai/gpt-oss-120b` (OpenRouter) to match "GPT-OSS".
-- [ ] Add `openai/gpt-5.1` (OpenRouter) and `gpt-5.1-codex-mini` (OpenAI Direct) to match "GPT-5.1".
-- [ ] Ensure the `getModels` endpoint returns these legitimate models so they appear in the dropdown.
+- [x] **STRICT REQUIREMENT**: Use ONLY verified model keys from `server/config/models.ts`.
+- [x] Add `x-ai/grok-4.1-fast` (OpenRouter) and `grok-4-fast-reasoning` (xAI Direct) to match "Grok 4 Fast".
+- [x] Add `openai/gpt-oss-120b` (OpenRouter) to match "GPT-OSS".
+- [x] Add `openai/gpt-5.1` (OpenRouter) and `gpt-5.1-codex-mini` (OpenAI Direct) to match "GPT-5.1".
+- [x] Ensure the `getModels` endpoint returns these legitimate models so they appear in the dropdown.
 
 ### Phase 3: Update Solver UI (`client/src/pages/PoetiqSolver.tsx`)
-- [ ] Update the UI to reflect the "Poetiq Meta-System" terminology.
-- [ ] Verify the "Experts" dropdown. The blog mentions "Gemini-3-a/b/c" as *examples* of how it uses multiple experts (1, 2, 8), but implies the *system* can use any model. Ensure the UI allows selecting the expert count (1, 2, 8) for *any* selected model, effectively creating "GPT-5.1-a", "Grok-4-a", etc.
+- [x] Update the UI to reflect the "Poetiq Meta-System" terminology.
+- [x] Verify the "Experts" dropdown aligns with the "Gemini-3-a (1), b (2), c (8)" terminology from the blog. Think more deeply about what the blog post is saying. Isn't it saying that you could use any model with this?
+- [x] Flatten the model selection in `PoetiqControlPanel.tsx` to a single "Reasoning Engine" dropdown grouped by family, removing the provider filter to demonstrate LLM-agnosticism.
+- [x] Add `PoetiqInfoCard` to define "Meta-System", "Self-Auditing", and "Pareto Optimal" directly on the solver page.
 
 ### Phase 4: Documentation
-- [ ] Update `CHANGELOG.md`.
+- [x] Update `CHANGELOG.md`.
 
 ## 3. Verification
-- [ ] Verify `PoetiqCommunity` page loads with new integrated content.
-- [ ] Verify `PoetiqExplainer` is gone.
-- [ ] Verify Solver page shows new models.
+- [x] Verify `PoetiqCommunity` page loads with new integrated content.
+- [x] Verify `PoetiqExplainer` is gone.
+- [x] Verify Solver page shows new models.
+- [x] Verify Solver page visually demonstrates LLM-agnosticism (single unified list).
+- [x] Verify definitions are present on the Solver page.
 
 ## 4. Additional Notes
 The blog post provides additional context and details about the Poetiq meta-system, its performance, and the models used. It is essential to review the blog post in its entirety to ensure that all relevant information is incorporated into the updated implementation.
