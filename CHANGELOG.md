@@ -1,6 +1,18 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top!!!
 
+### Version 5.29.0
+
+- **Poetiq solver defaults to OpenRouter** (Author: Codex (GPT-5))
+  - `server/python/poetiq_wrapper.py`: now treats `OPENROUTER_API_KEY` as a first-class credential, logs its availability, and defaults the LiteLLM model id to `openrouter/google/gemini-3-pro-preview` so BYO keys and server keys hit the proxy instead of direct Gemini.
+  - `run-poetiq-batch.js`: batch runs log the OpenRouter model and no longer hardcode the direct Gemini variant.
+- **UI + hooks send the correct LiteLLM ids** (Author: Codex (GPT-5))
+  - `client/src/hooks/usePoetiqModels.ts`: new hook that calls `/api/poetiq/models` so the control panel always gets solver-ready ids.
+  - `client/src/components/poetiq/PoetiqControlPanel.tsx`, `client/src/hooks/usePoetiqProgress.ts`, `client/src/pages/PoetiqSolver.tsx`: default provider/model now point at the OpenRouter Gemini proxy and provider switching reuses the new hook data.
+  - `client/src/pages/PoetiqCommunity.tsx`: sessionStorage auto-start config stores the OpenRouter id (`openrouter/google/gemini-3-pro-preview`) and the direct fallback (`gemini/gemini-3-pro-preview`) so solver runs align with LiteLLM expectations.
+- **Docs**
+  - `poetiq-solver/README.md`: documents `OPENROUTER_API_KEY` + `USE_OPENROUTER=true` as the recommended setup, with Gemini/OpenAI keys kept as fallbacks.
+
 ### Version 5.28.9
 
 - **Poetiq UX - Navigate to Solver for Full Feedback** (Author: Cascade using Claude Sonnet 4)

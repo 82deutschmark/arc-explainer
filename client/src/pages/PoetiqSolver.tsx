@@ -31,7 +31,7 @@ export default function PoetiqSolver() {
   // Configuration state - Solver page allows any provider/model
   const [apiKey, setApiKey] = useState('');
   const [provider, setProvider] = useState<'gemini' | 'openrouter' | 'openai'>('openrouter');
-  const [model, setModel] = useState('google/gemini-3-pro-preview');
+  const [model, setModel] = useState('openrouter/google/gemini-3-pro-preview');
   const [numExperts, setNumExperts] = useState(2);  // 1, 2, or 8 only (Gemini-3-a/b/c)
   const [maxIterations, setMaxIterations] = useState(10);
   const [temperature, setTemperature] = useState(1.0);

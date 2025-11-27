@@ -174,8 +174,8 @@ export function usePoetiqProgress(taskId: string | undefined) {
   const start = useCallback(async (options: PoetiqOptions = {}) => {
     if (!taskId) return;
 
-    // Defaults: Gemini direct, 2 experts (Gemini-3-b config)
-    const provider = options.provider || 'gemini';
+    // Defaults: OpenRouter Gemini proxy, 2 experts (Gemini-3-b config)
+    const provider = options.provider || 'openrouter';
     const model = options.model || (provider === 'openrouter' 
       ? 'openrouter/google/gemini-3-pro-preview' 
       : 'gemini/gemini-3-pro-preview');

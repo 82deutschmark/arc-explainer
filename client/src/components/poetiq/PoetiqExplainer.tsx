@@ -1,21 +1,21 @@
 /**
- * Author: Cascade (Claude Sonnet 4)
+ * Author: Claude Code using Sonnet 4.5
  * Date: 2025-11-26
  * PURPOSE: Collapsible explainer component that describes how the Poetiq solver works
- *          in plain, accessible language. Used on the Poetiq Community landing page.
- * 
+ *          in plain, accessible language. Redesigned with dark theme to match modern scientific aesthetic.
+ *
  * SRP/DRY check: Pass - Single responsibility for Poetiq methodology explanation
  */
 
 import React, { useState } from 'react';
-import { 
-  ChevronDown, 
-  ChevronUp, 
-  Brain, 
-  Code, 
-  TestTube, 
-  RefreshCw, 
-  CheckCircle, 
+import {
+  ChevronDown,
+  ChevronUp,
+  Brain,
+  Code,
+  TestTube,
+  RefreshCw,
+  CheckCircle,
   Users,
   Zap,
   Target
@@ -32,236 +32,331 @@ export function PoetiqExplainer({ defaultOpen = false }: PoetiqExplainerProps) {
   const [isOpen, setIsOpen] = useState(defaultOpen);
 
   return (
-    <Card className="border-2 border-indigo-200 bg-gradient-to-br from-white to-indigo-50">
-      <CardHeader 
-        className="cursor-pointer select-none"
+    <div
+      className="rounded-2xl overflow-hidden"
+      style={{
+        background: 'linear-gradient(135deg, rgba(0, 217, 255, 0.05) 0%, rgba(180, 255, 57, 0.05) 100%)',
+        border: '1px solid rgba(0, 217, 255, 0.2)',
+      }}
+    >
+      <div
+        className="cursor-pointer select-none p-6"
         onClick={() => setIsOpen(!isOpen)}
       >
-        <CardTitle className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Brain className="h-5 w-5 text-indigo-600" />
-            <span>How Does Poetiq Work?</span>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="p-2 rounded-lg bg-cyan-500/20 border border-cyan-500/30">
+              <Brain className="h-5 w-5 text-cyan-400" />
+            </div>
+            <div>
+              <h2 className="text-xl font-orbitron font-bold text-white">System Documentation</h2>
+              {!isOpen && (
+                <p className="text-sm text-gray-400 font-ibm mt-0.5">
+                  Learn how code generation differs from direct prediction
+                </p>
+              )}
+            </div>
           </div>
-          <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+          <Button
+            variant="ghost"
+            size="sm"
+            className="h-10 w-10 p-0 text-cyan-400 hover:text-cyan-300 hover:bg-cyan-500/10"
+          >
             {isOpen ? (
-              <ChevronUp className="h-4 w-4" />
+              <ChevronUp className="h-5 w-5" />
             ) : (
-              <ChevronDown className="h-4 w-4" />
+              <ChevronDown className="h-5 w-5" />
             )}
           </Button>
-        </CardTitle>
-        {!isOpen && (
-          <p className="text-sm text-gray-600">
-            Click to learn how Poetiq uses code generation instead of direct prediction
-          </p>
-        )}
-      </CardHeader>
+        </div>
+      </div>
 
       {isOpen && (
-        <CardContent className="space-y-6">
+        <div className="p-6 pt-0 space-y-8 font-ibm">
           {/* The Key Difference */}
-          <div className="space-y-3">
-            <h3 className="font-semibold text-lg flex items-center gap-2">
-              <Target className="h-5 w-5 text-indigo-600" />
-              The Key Difference
+          <div className="space-y-4">
+            <h3 className="font-orbitron font-bold text-lg flex items-center gap-2 text-cyan-300">
+              <Target className="h-5 w-5" />
+              Core Methodology Comparison
             </h3>
-            
+
             <div className="grid md:grid-cols-2 gap-4">
               {/* Direct Prediction */}
-              <div className="bg-gray-100 rounded-lg p-4 space-y-2">
-                <h4 className="font-medium text-gray-700">Most AI Solvers (Direct Prediction)</h4>
-                <p className="text-sm text-gray-600 italic">
+              <div
+                className="rounded-lg p-5 space-y-3"
+                style={{
+                  background: 'rgba(107, 114, 128, 0.1)',
+                  border: '1px solid rgba(107, 114, 128, 0.3)',
+                }}
+              >
+                <h4 className="font-semibold text-gray-300 font-jetbrains text-sm uppercase tracking-wider">
+                  Standard AI Solvers
+                </h4>
+                <p className="text-sm text-gray-400 italic">
                   "Look at the examples. Now guess what the output grid should be."
                 </p>
-                <ul className="text-sm text-gray-600 space-y-1 mt-2">
-                  <li>• AI looks at patterns</li>
-                  <li>• Directly outputs a grid of numbers</li>
-                  <li>• One shot — no feedback loop</li>
+                <ul className="text-sm text-gray-300 space-y-2 mt-3">
+                  <li className="flex items-start gap-2">
+                    <span className="text-gray-500">▸</span>
+                    <span>AI analyzes visual patterns</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-gray-500">▸</span>
+                    <span>Directly outputs grid of numbers</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-gray-500">▸</span>
+                    <span>Single-shot prediction, no iteration</span>
+                  </li>
                 </ul>
               </div>
 
               {/* Code Generation */}
-              <div className="bg-indigo-100 rounded-lg p-4 space-y-2 ring-2 ring-indigo-300">
-                <h4 className="font-medium text-indigo-700">Poetiq (Code Generation)</h4>
-                <p className="text-sm text-indigo-700 italic">
+              <div
+                className="rounded-lg p-5 space-y-3"
+                style={{
+                  background: 'linear-gradient(135deg, rgba(0, 217, 255, 0.08) 0%, rgba(180, 255, 57, 0.08) 100%)',
+                  border: '1px solid rgba(0, 217, 255, 0.4)',
+                  boxShadow: '0 0 20px rgba(0, 217, 255, 0.1)',
+                }}
+              >
+                <h4 className="font-semibold text-cyan-300 font-jetbrains text-sm uppercase tracking-wider flex items-center gap-2">
+                  <Zap className="h-4 w-4" />
+                  Poetiq Approach
+                </h4>
+                <p className="text-sm text-cyan-200 italic">
                   "Write a Python function that transforms ANY input into the correct output."
                 </p>
-                <ul className="text-sm text-indigo-700 space-y-1 mt-2">
-                  <li>• AI writes actual code</li>
-                  <li>• Code is tested on training examples</li>
-                  <li>• Iterates until code works</li>
+                <ul className="text-sm text-lime-300 space-y-2 mt-3">
+                  <li className="flex items-start gap-2">
+                    <span className="text-lime-400">▸</span>
+                    <span>AI generates executable Python code</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-lime-400">▸</span>
+                    <span>Code tested on training examples</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-lime-400">▸</span>
+                    <span>Iterative refinement until successful</span>
+                  </li>
                 </ul>
               </div>
             </div>
           </div>
 
-          <Separator />
+          <Separator className="bg-gray-700/50" />
 
           {/* The Process */}
-          <div className="space-y-3">
-            <h3 className="font-semibold text-lg flex items-center gap-2">
-              <RefreshCw className="h-5 w-5 text-indigo-600" />
-              The Poetiq Process (Step by Step)
+          <div className="space-y-4">
+            <h3 className="font-orbitron font-bold text-lg flex items-center gap-2 text-cyan-300">
+              <RefreshCw className="h-5 w-5" />
+              Execution Pipeline
             </h3>
-            
+
             <div className="grid gap-3">
-              <ProcessStep 
+              <ProcessStep
                 number={1}
                 icon={Brain}
-                title="Analyze"
-                description="AI studies the training input→output pairs to understand the pattern"
+                title="Pattern Analysis"
+                description="System analyzes training input→output pairs to identify transformation logic"
               />
-              <ProcessStep 
+              <ProcessStep
                 number={2}
                 icon={Code}
-                title="Generate Code"
-                description="AI writes a Python transform() function that should reproduce the pattern"
+                title="Code Synthesis"
+                description="Generates Python transform() function implementing discovered pattern"
               />
-              <ProcessStep 
+              <ProcessStep
                 number={3}
                 icon={TestTube}
-                title="Test"
-                description="The code runs on all training examples in a secure sandbox"
+                title="Validation"
+                description="Executes code against all training examples in sandboxed environment"
               />
-              <ProcessStep 
+              <ProcessStep
                 number={4}
                 icon={RefreshCw}
-                title="Iterate"
-                description="If the code fails, AI gets detailed feedback and tries again (up to 10 times)"
+                title="Iteration"
+                description="On failure, detailed feedback enables refinement (max 10 iterations)"
               />
-              <ProcessStep 
+              <ProcessStep
                 number={5}
                 icon={CheckCircle}
-                title="Success"
-                description="When code passes ALL training examples, it's applied to the test input"
+                title="Deployment"
+                description="Validated code applied to test input for final solution"
               />
-              <ProcessStep 
+              <ProcessStep
                 number={6}
                 icon={Users}
-                title="Vote"
-                description="Multiple parallel 'experts' vote on the best solution"
+                title="Consensus"
+                description="Multiple parallel expert agents vote on optimal solution"
               />
             </div>
           </div>
 
-          <Separator />
+          <Separator className="bg-gray-700/50" />
 
           {/* Why Code Generation Matters */}
-          <div className="space-y-3">
-            <h3 className="font-semibold text-lg flex items-center gap-2">
-              <Zap className="h-5 w-5 text-indigo-600" />
-              Why This Matters
+          <div className="space-y-4">
+            <h3 className="font-orbitron font-bold text-lg flex items-center gap-2 text-cyan-300">
+              <Zap className="h-5 w-5" />
+              Technical Advantages
             </h3>
-            
-            <div className="bg-gradient-to-r from-indigo-50 to-purple-50 rounded-lg p-4">
-              <p className="text-sm text-gray-700 leading-relaxed">
-                <strong>If the code works on training examples, it proves the AI understood the pattern.</strong>
-                {' '}Direct prediction can get lucky with a single guess, but code generation 
-                must actually reproduce the transformation logic. Plus, we can read the code 
-                to see exactly what the AI "thinks" the pattern is!
+
+            <div
+              className="rounded-lg p-5"
+              style={{
+                background: 'linear-gradient(135deg, rgba(0, 217, 255, 0.05) 0%, rgba(180, 255, 57, 0.05) 100%)',
+                border: '1px solid rgba(0, 217, 255, 0.2)',
+              }}
+            >
+              <p className="text-sm text-gray-300 leading-relaxed">
+                <strong className="text-white">Proof of Understanding:</strong>
+                {' '}If code successfully transforms all training examples, it demonstrates genuine pattern
+                comprehension rather than statistical correlation. Code generation provides verifiable,
+                deterministic transformation logic — unlike black-box prediction which can succeed through
+                probabilistic luck.
               </p>
             </div>
 
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="border-b">
-                    <th className="text-left py-2 px-3 font-medium text-gray-600">Aspect</th>
-                    <th className="text-left py-2 px-3 font-medium text-gray-600">Direct Prediction</th>
-                    <th className="text-left py-2 px-3 font-medium text-indigo-600">Code Generation</th>
+                  <tr style={{ borderBottom: '1px solid rgba(107, 114, 128, 0.3)' }}>
+                    <th className="text-left py-3 px-4 font-jetbrains text-xs uppercase tracking-wider text-gray-400">Metric</th>
+                    <th className="text-left py-3 px-4 font-jetbrains text-xs uppercase tracking-wider text-gray-400">Direct Prediction</th>
+                    <th className="text-left py-3 px-4 font-jetbrains text-xs uppercase tracking-wider text-cyan-400">Code Generation</th>
                   </tr>
                 </thead>
-                <tbody className="text-gray-700">
-                  <tr className="border-b">
-                    <td className="py-2 px-3">Verification</td>
-                    <td className="py-2 px-3">Can only check final answer</td>
-                    <td className="py-2 px-3 text-indigo-700">Tests on all training examples</td>
+                <tbody className="text-gray-300">
+                  <tr style={{ borderBottom: '1px solid rgba(107, 114, 128, 0.2)' }}>
+                    <td className="py-3 px-4 text-gray-400">Verification</td>
+                    <td className="py-3 px-4">Final output only</td>
+                    <td className="py-3 px-4 text-cyan-300">All training examples</td>
                   </tr>
-                  <tr className="border-b">
-                    <td className="py-2 px-3">Learning</td>
-                    <td className="py-2 px-3">Single attempt</td>
-                    <td className="py-2 px-3 text-indigo-700">Iterates with feedback</td>
+                  <tr style={{ borderBottom: '1px solid rgba(107, 114, 128, 0.2)' }}>
+                    <td className="py-3 px-4 text-gray-400">Feedback Loop</td>
+                    <td className="py-3 px-4">None (single attempt)</td>
+                    <td className="py-3 px-4 text-cyan-300">Iterative refinement</td>
                   </tr>
-                  <tr className="border-b">
-                    <td className="py-2 px-3">Explainability</td>
-                    <td className="py-2 px-3">Black box</td>
-                    <td className="py-2 px-3 text-indigo-700">Readable Python code</td>
+                  <tr style={{ borderBottom: '1px solid rgba(107, 114, 128, 0.2)' }}>
+                    <td className="py-3 px-4 text-gray-400">Transparency</td>
+                    <td className="py-3 px-4">Opaque neural net</td>
+                    <td className="py-3 px-4 text-cyan-300">Readable Python source</td>
                   </tr>
                   <tr>
-                    <td className="py-2 px-3">Luck Factor</td>
-                    <td className="py-2 px-3">Can guess correctly</td>
-                    <td className="py-2 px-3 text-indigo-700">Must understand pattern</td>
+                    <td className="py-3 px-4 text-gray-400">Reliability</td>
+                    <td className="py-3 px-4">Probabilistic guess</td>
+                    <td className="py-3 px-4 text-cyan-300">Deterministic logic</td>
                   </tr>
                 </tbody>
               </table>
             </div>
           </div>
 
-          <Separator />
+          <Separator className="bg-gray-700/50" />
 
           {/* Why We Need Help */}
-          <div className="space-y-3">
-            <h3 className="font-semibold text-lg flex items-center gap-2">
-              <Users className="h-5 w-5 text-indigo-600" />
-              Why We Need Your Help
+          <div className="space-y-4">
+            <h3 className="font-orbitron font-bold text-lg flex items-center gap-2 text-cyan-300">
+              <Users className="h-5 w-5" />
+              Distributed Verification Model
             </h3>
-            
-            <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 space-y-2">
-              <p className="text-sm text-amber-800">
-                <strong>The Problem:</strong> Each API key has daily rate limits. 
-                Running Poetiq on one puzzle can require 20-80+ API calls. 
-                One person can't run all 120 puzzles in a day.
+
+            <div
+              className="rounded-lg p-5 space-y-3"
+              style={{
+                background: 'rgba(255, 149, 0, 0.08)',
+                border: '1px solid rgba(255, 149, 0, 0.3)',
+              }}
+            >
+              <p className="text-sm text-amber-300">
+                <strong className="text-amber-200">Resource Constraint:</strong> API rate limits restrict single-user
+                throughput. Each puzzle requires 20-80+ API calls. Complete dataset verification exceeds
+                individual daily quotas.
               </p>
-              <p className="text-sm text-amber-800">
-                <strong>The Solution:</strong> Community pooling! If 20 people each run 6 puzzles, 
-                we complete the entire dataset together.
+              <p className="text-sm text-amber-300">
+                <strong className="text-amber-200">Community Solution:</strong> Distributed execution model.
+                20 participants × 6 puzzles = full dataset coverage within 24 hours. Collective verification
+                validates benchmark claims transparently.
               </p>
             </div>
 
             <div className="grid grid-cols-3 gap-3 text-center">
-              <div className="bg-white rounded-lg p-3 border">
-                <div className="text-2xl font-bold text-indigo-600">120</div>
-                <div className="text-xs text-gray-600">Puzzles Total</div>
+              <div
+                className="rounded-lg p-4"
+                style={{
+                  background: 'rgba(0, 217, 255, 0.05)',
+                  border: '1px solid rgba(0, 217, 255, 0.2)',
+                }}
+              >
+                <div className="text-3xl font-orbitron font-black text-cyan-400">120</div>
+                <div className="text-xs font-jetbrains text-gray-400 mt-1 uppercase tracking-wider">Total Puzzles</div>
               </div>
-              <div className="bg-white rounded-lg p-3 border">
-                <div className="text-2xl font-bold text-amber-600">~50</div>
-                <div className="text-xs text-gray-600">API Calls/Puzzle</div>
+              <div
+                className="rounded-lg p-4"
+                style={{
+                  background: 'rgba(255, 149, 0, 0.05)',
+                  border: '1px solid rgba(255, 149, 0, 0.2)',
+                }}
+              >
+                <div className="text-3xl font-orbitron font-black text-amber-400">~50</div>
+                <div className="text-xs font-jetbrains text-gray-400 mt-1 uppercase tracking-wider">Calls/Puzzle</div>
               </div>
-              <div className="bg-white rounded-lg p-3 border">
-                <div className="text-2xl font-bold text-green-600">6</div>
-                <div className="text-xs text-gray-600">Puzzles/Person</div>
+              <div
+                className="rounded-lg p-4"
+                style={{
+                  background: 'rgba(180, 255, 57, 0.05)',
+                  border: '1px solid rgba(180, 255, 57, 0.2)',
+                }}
+              >
+                <div className="text-3xl font-orbitron font-black text-lime-400">6</div>
+                <div className="text-xs font-jetbrains text-gray-400 mt-1 uppercase tracking-wider">Per Contributor</div>
               </div>
             </div>
           </div>
-        </CardContent>
+        </div>
       )}
-    </Card>
+    </div>
   );
 }
 
 // Helper component for process steps
-function ProcessStep({ 
-  number, 
-  icon: Icon, 
-  title, 
-  description 
-}: { 
-  number: number; 
-  icon: React.ComponentType<{ className?: string }>; 
-  title: string; 
+function ProcessStep({
+  number,
+  icon: Icon,
+  title,
+  description
+}: {
+  number: number;
+  icon: React.ComponentType<{ className?: string }>;
+  title: string;
   description: string;
 }) {
   return (
-    <div className="flex items-start gap-3 bg-white rounded-lg p-3 border">
-      <div className="flex items-center justify-center w-8 h-8 rounded-full bg-indigo-100 text-indigo-600 font-bold text-sm shrink-0">
+    <div
+      className="flex items-start gap-4 rounded-lg p-4"
+      style={{
+        background: 'rgba(0, 217, 255, 0.03)',
+        border: '1px solid rgba(0, 217, 255, 0.15)',
+      }}
+    >
+      <div
+        className="flex items-center justify-center w-10 h-10 rounded-lg shrink-0 font-orbitron font-black text-sm"
+        style={{
+          background: 'linear-gradient(135deg, rgba(0, 217, 255, 0.15) 0%, rgba(180, 255, 57, 0.15) 100%)',
+          border: '1px solid rgba(0, 217, 255, 0.3)',
+          color: '#00d9ff',
+        }}
+      >
         {number}
       </div>
-      <div className="flex-1">
-        <div className="flex items-center gap-2">
-          <Icon className="h-4 w-4 text-indigo-600" />
-          <span className="font-medium">{title}</span>
+      <div className="flex-1 min-w-0">
+        <div className="flex items-center gap-2 mb-1">
+          <Icon className="h-4 w-4 text-cyan-400 shrink-0" />
+          <span className="font-semibold text-white font-ibm">{title}</span>
         </div>
-        <p className="text-sm text-gray-600 mt-0.5">{description}</p>
+        <p className="text-sm text-gray-400 leading-relaxed">{description}</p>
       </div>
     </div>
   );

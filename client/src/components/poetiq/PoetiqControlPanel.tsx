@@ -1,9 +1,9 @@
-/**
+﻿/**
  * Author: Cascade using Claude Sonnet 4
  * Date: 2025-11-26
  * Updated: 2025-11-26 - Dynamic model loading from API (no hardcoded lists)
  * PURPOSE: Control panel for Poetiq solver page (/puzzle/poetiq/:taskId).
- *          Fetches all models from /api/models and groups by provider.
+ *          Fetches Poetiq-specific models from /api/poetiq/models and groups by provider.
  *          Expert configs: 1, 2, 8 only (from config.py).
  *
  * SRP/DRY check: Pass - Single responsibility for solver control interface
@@ -13,13 +13,13 @@
 import React, { useMemo, useEffect } from 'react';
 import { Rocket, Square, Key, Users, AlertTriangle, Settings, Loader2 } from 'lucide-react';
 import type { PoetiqProgressState } from '@/hooks/usePoetiqProgress';
-import { useModels } from '@/hooks/useModels';
+import { usePoetiqModels } from '@/hooks/usePoetiqModels';
 
 // Provider options with key placeholders
 const PROVIDERS = [
-  { value: 'openrouter', label: 'OpenRouter', icon: '🔀', keyPlaceholder: 'sk-or-...', apiProvider: 'OpenRouter' },
-  { value: 'openai', label: 'OpenAI Direct', icon: '🟢', keyPlaceholder: 'sk-...', apiProvider: 'OpenAI' },
-  { value: 'gemini', label: 'Gemini Direct', icon: '🔷', keyPlaceholder: 'AIza...', apiProvider: 'Gemini' },
+  { value: 'openrouter', label: 'OpenRouter', icon: 'ðŸ”€', keyPlaceholder: 'sk-or-...', apiProvider: 'OpenRouter' },
+  { value: 'openai', label: 'OpenAI Direct', icon: 'ðŸŸ¢', keyPlaceholder: 'sk-...', apiProvider: 'OpenAI' },
+  { value: 'gemini', label: 'Gemini Direct', icon: 'ðŸ”·', keyPlaceholder: 'AIza...', apiProvider: 'Google' },
 ] as const;
 
 // Expert configs - 1, 2, 8 ONLY (from config.py)
@@ -79,7 +79,7 @@ export default function PoetiqControlPanel({
   onCancel,
 }: PoetiqControlPanelProps) {
   // Fetch all models from API
-  const { data: allModels, isLoading: modelsLoading } = useModels();
+  const { data: poetiqModels, isLoading: modelsLoading } = usePoetiqModels();
   
   // Can always start (API key is optional - falls back to server env vars)
   const canStart = !isRunning && !modelsLoading;
@@ -89,19 +89,19 @@ export default function PoetiqControlPanel({
   
   // Filter models by provider
   const models = useMemo(() => {
-    if (!allModels) return [];
+    if (!poetiqModels) return [];
     const providerMapping = selectedProvider?.apiProvider;
-    return allModels.filter(m => m.provider === providerMapping);
-  }, [allModels, selectedProvider]);
+    return poetiqModels.filter(m => !providerMapping || m.provider === providerMapping);
+  }, [poetiqModels, selectedProvider]);
 
   // Sync model state when models load - ensure selected model is valid for provider
   useEffect(() => {
     if (models.length > 0 && !isRunning) {
       // Check if current model is in the filtered list
-      const currentModelExists = models.some(m => m.key === model);
+      const currentModelExists = models.some(m => m.id === model);
       if (!currentModelExists) {
         // Set to first model for this provider
-        setModel(models[0].key);
+        setModel(models[0].id);
       }
     }
   }, [models, model, setModel, isRunning]);
@@ -155,10 +155,10 @@ export default function PoetiqControlPanel({
                   setProvider(newProvider);
                   // Set default model for new provider from filtered list
                   const providerInfo = PROVIDERS.find(p => p.value === newProvider);
-                  if (allModels && providerInfo) {
-                    const providerModels = allModels.filter(m => m.provider === providerInfo.apiProvider);
+                  if (poetiqModels && providerInfo) {
+                    const providerModels = poetiqModels.filter(m => m.provider === providerInfo.apiProvider);
                     if (providerModels.length > 0) {
-                      setModel(providerModels[0].key);
+                      setModel(providerModels[0].id);
                     }
                   }
                 }}
@@ -190,8 +190,8 @@ export default function PoetiqControlPanel({
                   className="select select-bordered select-sm w-full"
                 >
                   {models.map(m => (
-                    <option key={m.key} value={m.key}>
-                      {m.name} {m.isReasoning ? '🧠' : ''}
+                    <option key={m.id} value={m.id}>
+                      {m.name}{m.recommended ? ' (recommended)' : ''}
                     </option>
                   ))}
                 </select>
@@ -301,7 +301,7 @@ export default function PoetiqControlPanel({
           <div className="flex items-start gap-2">
             <AlertTriangle className="w-4 h-4 text-amber-600 mt-0.5 shrink-0" />
             <p className="text-xs text-amber-800">
-              <strong>Gemini-3-c (8 experts)</strong> makes 8× parallel API calls. 
+              <strong>Gemini-3-c (8 experts)</strong> makes 8Ã— parallel API calls. 
               This provides best accuracy but may take 25-45+ minutes and consume significant API quota.
             </p>
           </div>

@@ -1,7 +1,7 @@
 /**
  * Author: Codex (GPT-5)
  * Date: 2025-11-26
- * PURPOSE: Run Poetiq solver on 20 ARC2-Eval puzzles sequentially using Direct Gemini API with two experts.
+ * PURPOSE: Run Poetiq solver on 20 ARC2-Eval puzzles sequentially using the OpenRouter Gemini proxy with two experts.
  * SRP and DRY check: Pass - Single purpose script coordinating Poetiq batch execution.
  */
 
@@ -30,7 +30,7 @@ const puzzleIds = [
 
 const TOTAL_PUZZLES = puzzleIds.length;
 const API_BASE = 'http://localhost:5000';
-const MODEL = 'gemini/gemini-3-pro-preview'; // Direct Gemini API
+const MODEL = 'openrouter/google/gemini-3-pro-preview'; // OpenRouter Gemini proxy
 const MAX_ITERATIONS = 10;
 const NUM_EXPERTS = 2;
 const POLL_INTERVAL_MS = 10_000;
@@ -131,7 +131,7 @@ async function main() {
   console.log(`POETIQ SOLVER BATCH RUN - ${TOTAL_PUZZLES} ARC2-EVAL PUZZLES`);
   console.log('='.repeat(70));
   console.log(`Started: ${new Date().toLocaleString()}`);
-  console.log(`Model: ${MODEL} (Direct Gemini API)`);
+  console.log(`Model: ${MODEL} (OpenRouter proxy)`);
   console.log(`Puzzles: ${TOTAL_PUZZLES}`);
   console.log('='.repeat(70) + '\n');
 
