@@ -10,7 +10,7 @@
  * DaisyUI: Pass - Uses DaisyUI components
  */
 
-import React, { useMemo } from 'react';
+import React, { useMemo, useEffect } from 'react';
 import { Rocket, Square, Key, Users, AlertTriangle, Settings, Loader2 } from 'lucide-react';
 import type { PoetiqProgressState } from '@/hooks/usePoetiqProgress';
 import { useModels } from '@/hooks/useModels';
@@ -93,6 +93,18 @@ export default function PoetiqControlPanel({
     const providerMapping = selectedProvider?.apiProvider;
     return allModels.filter(m => m.provider === providerMapping);
   }, [allModels, selectedProvider]);
+
+  // Sync model state when models load - ensure selected model is valid for provider
+  useEffect(() => {
+    if (models.length > 0 && !isRunning) {
+      // Check if current model is in the filtered list
+      const currentModelExists = models.some(m => m.key === model);
+      if (!currentModelExists) {
+        // Set to first model for this provider
+        setModel(models[0].key);
+      }
+    }
+  }, [models, model, setModel, isRunning]);
 
   return (
     <div className="space-y-2">
