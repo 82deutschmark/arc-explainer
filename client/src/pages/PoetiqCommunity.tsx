@@ -250,22 +250,6 @@ export default function PoetiqCommunity() {
           </Card>
         )}
 
-        {/* Main Content: Puzzle Grid */}
-        <div className="space-y-2">
-           <div className="flex items-center justify-between">
-              <h2 className="text-lg font-semibold text-gray-800">Community Progress</h2>
-              <div className="text-sm text-gray-600">
-                 {progress.solved}/{progress.total} solved ({progress.completionPercentage}%)
-              </div>
-           </div>
-           <PuzzleProgressGrid
-             puzzles={progress.puzzles}
-             isLoading={progress.isLoading}
-           />
-        </div>
-
-        <Separator className="my-8" />
-
         {/* Definitions Section */}
         <Card className="bg-amber-50 border-amber-200">
           <CardHeader className="pb-3">
@@ -408,6 +392,22 @@ export default function PoetiqCommunity() {
             </div>
           </div>
 
+        </div>
+
+        <Separator className="my-8" />
+
+        {/* Main Content: Puzzle Grid */}
+        <div className="space-y-2">
+           <div className="flex items-center justify-between">
+              <h2 className="text-lg font-semibold text-gray-800">Community Progress</h2>
+              <div className="text-sm text-gray-600">
+                 {progress.solved}/{progress.total} solved ({progress.completionPercentage}%)
+              </div>
+           </div>
+           <PuzzleProgressGrid
+             puzzles={progress.puzzles}
+             isLoading={progress.isLoading}
+           />
         </div>
 
         {/* Footer Links */}
