@@ -237,6 +237,26 @@ export default function PoetiqControlPanel({
                 className="range range-primary range-sm"
               />
             </div>
+
+            {/* Reasoning Effort */}
+            <div>
+              <label className="label py-1">
+                <span className="label-text text-xs font-semibold">Reasoning Effort</span>
+              </label>
+              <select
+                value={reasoningEffort}
+                onChange={(e) => setReasoningEffort(e.target.value as 'low' | 'medium' | 'high')}
+                disabled={isRunning}
+                className="select select-bordered select-sm w-full"
+              >
+                <option value="low">Low (Faster)</option>
+                <option value="medium">Medium (Balanced)</option>
+                <option value="high">High (Deep Thinking)</option>
+              </select>
+              <p className="text-[10px] text-gray-500 mt-1">
+                Controls model thinking budget (where supported).
+              </p>
+            </div>
           </div>
         </div>
       </div>
