@@ -1,11 +1,9 @@
 /**
  * Author: Claude Code using Sonnet 4.5
  * Date: 2025-11-26
- * PURPOSE: Visual grid showing the status of all ARC2-eval puzzles for Poetiq solver.
- *          Redesigned to use ClickablePuzzleBadge pattern like analytics page with dark theme styling.
- *          Clicking a puzzle navigates to the solver page.
  * PURPOSE: Visual grid showing status of all ARC2-eval puzzles for Poetiq solver.
  *          Matches analytics page pattern with readable badge cells.
+ *          Clicking a puzzle navigates to the solver page.
  *
  * SRP/DRY check: Pass - Single responsibility for puzzle progress visualization, reuses ClickablePuzzleBadge
  */
@@ -111,7 +109,6 @@ export function PuzzleProgressGrid({
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-1.5 text-xs">
             {filteredPuzzles.map((puzzle) => (
               <PuzzleBadgeCell
-              <PuzzleBadgeCell
                 key={puzzle.puzzleId}
                 puzzle={puzzle}
                 onClick={() => onPuzzleClick?.(puzzle.puzzleId)}
@@ -148,15 +145,8 @@ function PuzzleBadgeCell({
     solved: <CheckCircle className="h-3 w-3" />,
     attempted: <XCircle className="h-3 w-3" />,
     unattempted: <Circle className="h-3 w-3" />,
-    solved: <CheckCircle className="h-3 w-3" />,
-    attempted: <XCircle className="h-3 w-3" />,
-    unattempted: <Circle className="h-3 w-3" />,
   };
 
-  const handleClick = () => {
-    onClick?.();
-    window.open(`/puzzle/poetiq/${puzzle.puzzleId}`, '_blank');
-  };
   const handleClick = () => {
     onClick?.();
     window.open(`/puzzle/poetiq/${puzzle.puzzleId}`, '_blank');
