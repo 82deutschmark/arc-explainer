@@ -1,28 +1,25 @@
 /**
  * Author: Cascade (Claude Sonnet 4)
  * Date: 2025-11-25
- * Updated: 2025-11-27 - Fixed nested anchors, added timing/event visibility
+ * Updated: 2025-11-27 - Horizontal control bar, simplified layout
  * PURPOSE: Poetiq Iterative Code-Generation Solver page.
- *          EXACTLY matches Saturn's layout:
- *          - LEFT (4 cols): Control panel + puzzle grids
- *          - CENTER (5 cols): Token metrics + AI REASONING + AI OUTPUT streaming
- *          - RIGHT (3 cols): Python execution terminal (replaces image gallery)
+ *          Single horizontal control bar at top, full-width content below.
+ *          Controls disappear when running to maximize output visibility.
  * 
  * SRP/DRY check: Pass - UI orchestration, delegates to specialized components
  */
 
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, Link } from 'wouter';
-import { Loader2, Square, ChevronDown, ChevronUp, Activity, Timer, Layers, Copy, Check, Rocket } from 'lucide-react';
+import { Loader2, Square, ChevronDown, ChevronUp, Activity, Timer, Layers, Copy, Check, Rocket, Key } from 'lucide-react';
 import { usePuzzle } from '@/hooks/usePuzzle';
 import { usePoetiqProgress } from '@/hooks/usePoetiqProgress';
+import { usePoetiqModels, type PoetiqModelOption } from '@/hooks/usePoetiqModels';
 import { PuzzleGrid } from '@/components/puzzle/PuzzleGrid';
 import { DEFAULT_EMOJI_SET } from '@/lib/spaceEmojis';
 
 // Poetiq components
-import PoetiqControlPanel from '@/components/poetiq/PoetiqControlPanel';
 import PoetiqPythonTerminal from '@/components/poetiq/PoetiqPythonTerminal';
-import { PoetiqInfoCard } from '@/components/poetiq/PoetiqInfoCard';
 
 export default function PoetiqSolver() {
   const { taskId } = useParams<{ taskId: string }>();
@@ -33,7 +30,7 @@ export default function PoetiqSolver() {
   const [apiKey, setApiKey] = useState('');
   const [provider, setProvider] = useState<'gemini' | 'openrouter' | 'openai'>('openrouter');
   const [model, setModel] = useState('openrouter/google/gemini-3-pro-preview');
-  const [numExperts, setNumExperts] = useState(2);  // 1, 2, or 8 only (Gemini-3-a/b/c)
+  const [numExperts, setNumExperts] = useState(8);  // Default to 8 experts for best accuracy
   const [maxIterations, setMaxIterations] = useState(10);
   const [temperature, setTemperature] = useState(1.0);
   const [reasoningEffort, setReasoningEffort] = useState<'low' | 'medium' | 'high'>('medium');
@@ -43,6 +40,10 @@ export default function PoetiqSolver() {
   const [showLogs, setShowLogs] = useState(true);  // Show event log panel
   const [copied, setCopied] = useState(false);  // For copy button feedback
   const eventLogRef = useRef<HTMLDivElement>(null);  // For auto-scroll
+  const [showApiKey, setShowApiKey] = useState(false);  // Toggle API key input visibility
+  
+  // Fetch available models for dropdown
+  const { data: models = [], isLoading: modelsLoading } = usePoetiqModels();
   
   // Timing state for visibility
   const [startTime, setStartTime] = useState<Date | null>(null);
@@ -295,8 +296,8 @@ export default function PoetiqSolver() {
               </span>
             ) : (
               <span>
-                Configure the solver below, then click <strong className="text-white">Start</strong> to run 
-                parallel code generation using the selected LLM.
+                Click <strong className="text-white">Start</strong> to run {numExperts} AI experts in parallel. 
+                Each expert generates Python code, tests it, and iterates until it solves the puzzle.
               </span>
             )}
           </div>
@@ -344,89 +345,109 @@ export default function PoetiqSolver() {
         </div>
       </header>
 
-      {/* Main Content - Dynamic layout based on state */}
+      {/* Horizontal Control Bar - Only show when NOT running */}
+      {!isRunning && !isDone && (
+        <div className="bg-white border-b border-gray-300 px-4 py-3">
+          <div className="flex items-center gap-4 flex-wrap">
+            {/* Model Selector */}
+            <div className="flex items-center gap-2">
+              <label className="text-xs font-semibold text-gray-600 whitespace-nowrap">Model:</label>
+              {modelsLoading ? (
+                <div className="flex items-center gap-1 text-xs text-gray-400">
+                  <Loader2 className="h-3 w-3 animate-spin" />
+                  Loading...
+                </div>
+              ) : (
+                <select
+                  value={model}
+                  onChange={(e) => setModel(e.target.value)}
+                  className="select select-bordered select-xs text-xs min-w-[180px]"
+                >
+                  {models.map((m) => (
+                    <option key={m.id} value={m.id}>{m.name}</option>
+                  ))}
+                </select>
+              )}
+            </div>
+
+            {/* Experts */}
+            <div className="flex items-center gap-2">
+              <label className="text-xs font-semibold text-gray-600 whitespace-nowrap">Experts:</label>
+              <select
+                value={numExperts}
+                onChange={(e) => setNumExperts(parseInt(e.target.value))}
+                className="select select-bordered select-xs text-xs w-20"
+              >
+                <option value={1}>1</option>
+                <option value={2}>2</option>
+                <option value={8}>8</option>
+              </select>
+            </div>
+
+            {/* Max Iterations */}
+            <div className="flex items-center gap-2">
+              <label className="text-xs font-semibold text-gray-600 whitespace-nowrap">Max Iter:</label>
+              <input
+                type="number"
+                value={maxIterations}
+                onChange={(e) => setMaxIterations(parseInt(e.target.value) || 10)}
+                className="input input-bordered input-xs text-xs w-16 text-center"
+                min={1}
+                max={50}
+              />
+            </div>
+
+            {/* Temperature */}
+            <div className="flex items-center gap-2">
+              <label className="text-xs font-semibold text-gray-600 whitespace-nowrap">Temp:</label>
+              <input
+                type="number"
+                value={temperature}
+                onChange={(e) => setTemperature(parseFloat(e.target.value) || 1.0)}
+                className="input input-bordered input-xs text-xs w-16 text-center"
+                min={0.1}
+                max={2.0}
+                step={0.1}
+              />
+            </div>
+
+            {/* API Key Toggle */}
+            <button
+              onClick={() => setShowApiKey(!showApiKey)}
+              className={`flex items-center gap-1 text-xs px-2 py-1 rounded ${showApiKey ? 'bg-indigo-100 text-indigo-700' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
+            >
+              <Key className="h-3 w-3" />
+              {apiKey ? 'Key Set' : 'Add Key'}
+            </button>
+
+            {/* API Key Input (conditional) */}
+            {showApiKey && (
+              <input
+                type="text"
+                value={apiKey}
+                onChange={(e) => setApiKey(e.target.value)}
+                placeholder="sk-... (optional)"
+                className="input input-bordered input-xs text-xs w-40 font-mono"
+              />
+            )}
+
+            {/* Spacer */}
+            <div className="flex-1" />
+
+            {/* Puzzle preview thumbnails */}
+            <div className="flex items-center gap-2 text-xs text-gray-500">
+              <span>{task.train.length} train</span>
+              <span>•</span>
+              <span>{task.test.length} test</span>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Main Content - Two-column layout, full width */}
       <main className="flex-1 overflow-hidden p-4">
         <div className="h-full grid grid-cols-12 gap-4">
-          
-          {/* LEFT: Control Panel + Puzzle Grids - HIDE when running/done */}
-          {!isRunning && !isDone && (
-            <div className="col-span-4 flex flex-col gap-3 overflow-y-auto">
-              {/* Auto-start notice */}
-              {cameFromCommunity && (
-                <div className="bg-blue-50 border border-blue-200 rounded p-3">
-                  <p className="text-sm text-blue-700">Auto-starting with community settings...</p>
-                </div>
-              )}
-
-              {/* Control Panel */}
-              <PoetiqControlPanel
-                  state={state}
-                  isRunning={isRunning}
-                  apiKey={apiKey}
-                  setApiKey={setApiKey}
-                  provider={provider}
-                  setProvider={setProvider}
-                  model={model}
-                  setModel={setModel}
-                  numExperts={numExperts}
-                  setNumExperts={setNumExperts}
-                  maxIterations={maxIterations}
-                  setMaxIterations={setMaxIterations}
-                  temperature={temperature}
-                  setTemperature={setTemperature}
-                  reasoningEffort={reasoningEffort}
-                  setReasoningEffort={setReasoningEffort}
-                  onStart={handleStart}
-                  onCancel={cancel}
-              />
-
-              {/* Info Card */}
-              <PoetiqInfoCard />
-
-              {/* Puzzle Grids */}
-              <div className="bg-white border border-gray-300 rounded">
-                <div className="border-b border-gray-300 bg-gray-50 px-3 py-2">
-                  <h2 className="text-sm font-bold text-gray-700">PUZZLE GRIDS</h2>
-                </div>
-                <div className="p-3 space-y-4 max-h-[500px] overflow-y-auto">
-                  {task.train.slice(0, 2).map((example, idx) => (
-                    <div key={`train-${idx}`} className="space-y-2">
-                      <div className="text-xs font-bold text-gray-600 uppercase tracking-wide">Training {idx + 1}</div>
-                      <div className="flex gap-3">
-                        <div className="flex-1">
-                          <div className="text-xs text-gray-500 mb-1">Input</div>
-                          <PuzzleGrid grid={example.input} title="Input" showEmojis={false} emojiSet={DEFAULT_EMOJI_SET} compact />
-                        </div>
-                        <div className="flex-1">
-                          <div className="text-xs text-gray-500 mb-1">Output</div>
-                          <PuzzleGrid grid={example.output} title="Output" showEmojis={false} emojiSet={DEFAULT_EMOJI_SET} compact />
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                  {task.test.map((testCase, idx) => (
-                    <div key={`test-${idx}`} className="space-y-2">
-                      <div className="text-xs font-bold text-blue-600 uppercase tracking-wide">Test {idx + 1}</div>
-                      <div className="flex gap-3">
-                        <div className="flex-1">
-                          <div className="text-xs text-gray-500 mb-1">Input</div>
-                          <PuzzleGrid grid={testCase.input} title="Test Input" showEmojis={false} emojiSet={DEFAULT_EMOJI_SET} compact />
-                        </div>
-                        {testCase.output && (
-                          <div className="flex-1">
-                            <div className="text-xs text-gray-500 mb-1">Expected</div>
-                            <PuzzleGrid grid={testCase.output} title="Expected Output" showEmojis={false} emojiSet={DEFAULT_EMOJI_SET} compact />
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* LEFT-CENTER: Iteration Progress (was on right) - Expands when running */}
+          {/* LEFT: Iteration Progress (5 cols normally, 4 when running) */}
           <div className={`${isRunning || isDone ? 'col-span-4' : 'col-span-5'} overflow-y-auto`}>
             {/* Fallback API Key Notice */}
             {state.usingFallback && (
@@ -478,8 +499,8 @@ export default function PoetiqSolver() {
             )}
           </div>
 
-          {/* RIGHT: Event Log (was in center) - Expands when running, with auto-scroll */}
-          <div className={`${isRunning || isDone ? 'col-span-8' : 'col-span-3'} flex flex-col min-h-0`}>
+          {/* RIGHT: Event Log - Expands when running */}
+          <div className={`${isRunning || isDone ? 'col-span-8' : 'col-span-7'} flex flex-col min-h-0`}>
             {(isRunning || isDone || (state.logLines?.length ?? 0) > 0) && (
               <div className="bg-white border border-gray-300 rounded flex-1 min-h-0 flex flex-col h-full">
                 <div className="flex items-center justify-between px-4 py-3 bg-gray-50 border-b border-gray-300">

@@ -281,7 +281,7 @@ export default function PoetiqControlPanel({
         <div className="card-body p-4">
           <h3 className="card-title text-sm flex items-center gap-2">
             <Users className="w-4 h-4" />
-            Meta-System Configuration
+            Solver Settings
           </h3>
           <div className="space-y-3">
             {/* Experts */}
