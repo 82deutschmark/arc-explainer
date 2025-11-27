@@ -1,9 +1,9 @@
 /*
  *
- * Author: Claude Code using Sonnet 4.5
- * Date: 2025-11-20
+ * Author: Cascade using Claude Sonnet 4
+ * Date: 2025-11-26
  * PURPOSE: Centralized AI model configuration list consumed by ModelDefinitions and provider lookup utilities.
- *          Updated Sherlock Think Alpha → Grok 4.1 Fast Reasoning (revealed Nov 20, 2025).
+ *          Added openrouter/bert-nebulon-alpha cloaked model (Nov 24, 2025).
  * SRP/DRY check: Pass - file encapsulates shared model metadata without duplication.
  * shadcn/ui: Pass - configuration only.
  */
@@ -899,6 +899,24 @@ export const MODELS: ModelConfig[] = [
     contextWindow: 2000000,
     maxOutputTokens: 50000,
     releaseDate: "2025-11"
+  },
+
+  // Cloaked Models (OpenRouter Arena - identity TBD)
+  {
+    key: 'openrouter/bert-nebulon-alpha',
+    name: 'Bert Nebulon Alpha',
+    color: 'bg-slate-500',
+    premium: false,
+    cost: { input: '$0.00', output: '$0.00' },
+    supportsTemperature: true,
+    provider: 'OpenRouter',
+    responseTime: { speed: 'moderate', estimate: '1-2 min' },
+    isReasoning: false,
+    apiModelName: 'openrouter/bert-nebulon-alpha',
+    modelType: 'openrouter',
+    contextWindow: 256000,
+    releaseDate: "2025-11",
+    notes: 'Cloaked model (Nov 24, 2025). Identity TBD. Add normalizer mapping when revealed.'
   },
 
 ];
