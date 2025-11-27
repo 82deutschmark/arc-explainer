@@ -10,12 +10,14 @@
  */
 
 import React, { useEffect, useRef } from 'react';
-import { Terminal, CheckCircle, XCircle, Code, Play } from 'lucide-react';
+import { Terminal, CheckCircle, XCircle, Code, Play, User } from 'lucide-react';
 
 interface ExecutionResult {
   iteration: number;
+  expert?: number;
   success: boolean;
   trainScore?: number;
+  trainResults?: { success: boolean; error?: string }[];
   testCorrect?: boolean;
   error?: string;
   output?: string;
@@ -101,8 +103,13 @@ export default function PoetiqPythonTerminal({
             <div className="flex items-center justify-between mb-1">
               <div className="flex items-center gap-2">
                 <span className="text-[10px] font-bold text-gray-400">
-                  ITERATION {exec.iteration}
+                  ITER {exec.iteration}
                 </span>
+                {exec.expert && (
+                  <span className="text-[10px] text-blue-400 flex items-center gap-0.5 bg-blue-900/30 px-1 rounded">
+                    <User className="w-3 h-3" /> Exp {exec.expert}
+                  </span>
+                )}
                 {exec.success ? (
                   <CheckCircle className="w-3 h-3 text-green-400" />
                 ) : exec.error ? (
@@ -121,24 +128,28 @@ export default function PoetiqPythonTerminal({
                     Train: {(exec.trainScore * 100).toFixed(0)}%
                   </span>
                 )}
-                {exec.testCorrect !== undefined && (
-                  <span className={`px-1 rounded ${
-                    exec.testCorrect ? 'bg-green-800 text-green-200' : 'bg-red-800 text-red-200'
-                  }`}>
-                    Test: {exec.testCorrect ? 'PASS' : 'FAIL'}
-                  </span>
-                )}
-                {exec.elapsedMs && (
-                  <span className="text-gray-500">
-                    {(exec.elapsedMs / 1000).toFixed(1)}s
-                  </span>
-                )}
               </div>
             </div>
 
+            {/* Training Results Details */}
+            {exec.trainResults && exec.trainResults.length > 0 && (
+              <div className="flex flex-wrap gap-1 my-1.5">
+                {exec.trainResults.map((res, resIdx) => (
+                  <div 
+                    key={resIdx}
+                    className={`w-2 h-2 rounded-full ${res.success ? 'bg-green-500' : 'bg-red-500'}`}
+                    title={`Training Example ${resIdx + 1}: ${res.success ? 'Pass' : 'Fail'}${res.error ? ` - ${res.error}` : ''}`}
+                  />
+                ))}
+                <span className="text-[9px] text-gray-500 ml-1">
+                   ({exec.trainResults.filter(r => r.success).length}/{exec.trainResults.length} pass)
+                </span>
+              </div>
+            )}
+
             {/* Error Output */}
             {exec.error && (
-              <div className="text-red-300 text-[10px] mt-1 whitespace-pre-wrap">
+              <div className="text-red-300 text-[10px] mt-1 whitespace-pre-wrap border-t border-red-500/20 pt-1">
                 <span className="text-red-500 font-bold">ERROR: </span>
                 {exec.error}
               </div>
@@ -154,7 +165,7 @@ export default function PoetiqPythonTerminal({
             {/* Generated Code (collapsed by default, show first few lines) */}
             {exec.code && (
               <details className="mt-2">
-                <summary className="text-[10px] text-blue-400 cursor-pointer hover:text-blue-300">
+                <summary className="text-[10px] text-blue-400 cursor-pointer hover:text-blue-300 select-none">
                   View generated code ({exec.code.split('\n').length} lines)
                 </summary>
                 <pre className="text-green-300 text-[10px] mt-1 whitespace-pre-wrap max-h-40 overflow-y-auto bg-black/30 p-2 rounded">

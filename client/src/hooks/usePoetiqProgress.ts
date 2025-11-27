@@ -41,6 +41,7 @@ export interface PoetiqProgressState {
     bestTrainScore?: number;
     generatedCode?: string;
     elapsedMs?: number;
+    trainResults?: any[];
   };
   
   // Config
@@ -127,11 +128,21 @@ export function usePoetiqProgress(taskId: string | undefined) {
             newLogLines.push(`[${new Date().toLocaleTimeString()}] ${data.message}`);
           }
           
-          // Build streaming text from messages (simulate reasoning)
-          const streamingReasoning = data.message || prev.streamingReasoning;
+          // Update streaming fields if present
+          // Note: Poetiq sends full reasoning/code block for the current step
+          const streamingReasoning = (prev.streamingReasoning || '') + (data.reasoning || '');
+          const streamingCode = data.code || prev.streamingCode;
           
-          // Get generated code if available
-          const streamingCode = data.result?.generatedCode || prev.streamingCode;
+          // Track latest iteration result details if available
+          const currentResult = prev.result || {
+            success: false,
+            isPredictionCorrect: false
+          };
+          
+          // If we have new training results, update them
+          if (data.trainResults) {
+            currentResult.trainResults = data.trainResults;
+          }
           
           return {
             ...prev,
@@ -142,7 +153,7 @@ export function usePoetiqProgress(taskId: string | undefined) {
             status: data.status === 'completed' ? 'completed' 
                   : data.status === 'error' ? 'error' 
                   : 'running',
-            result: data.result || prev.result,
+            result: data.result || currentResult,
             config: data.config || prev.config,
             usingFallback: data.usingFallback ?? prev.usingFallback,
             logLines: newLogLines,
