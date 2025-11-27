@@ -105,21 +105,47 @@ export default function PoetiqSolver() {
   useEffect(() => {
     if (state.iteration !== undefined && isRunning) {
       setExecutions(prev => {
-        // Add new execution result
+        // Determine expert ID (default to 1 if missing)
+        const expertId = (state as any).expert;
+        
+        // Check if we already have an entry for this iteration/expert
+        const existingIndex = prev.findIndex(e => 
+          e.iteration === state.iteration && 
+          e.expert === expertId
+        );
+        
+        const trainResults = state.result?.trainResults;
+        const success = trainResults ? trainResults.every((r: any) => r.success) : false;
+        const trainScore = trainResults ? trainResults.filter((r: any) => r.success).length / trainResults.length : undefined;
+
         const newExec = {
           iteration: state.iteration,
-          success: false,
+          expert: expertId,
+          success,
+          trainScore,
+          trainResults,
           output: state.message,
           code: state.result?.generatedCode,
+          error: state.status === 'error' ? state.message : undefined
         };
-        // Don't add duplicates
-        if (prev.some(e => e.iteration === state.iteration)) {
-          return prev.map(e => e.iteration === state.iteration ? newExec : e);
+
+        if (existingIndex >= 0) {
+          // Update existing entry
+          const newPrev = [...prev];
+          newPrev[existingIndex] = {
+            ...newPrev[existingIndex],
+            ...newExec,
+            // Preserve code if current update doesn't have it but previous did
+            code: newExec.code || newPrev[existingIndex].code, 
+          };
+          return newPrev;
+        } else {
+          // Append new entry
+          return [...prev, newExec];
         }
-        return [...prev, newExec];
       });
     }
-  }, [state.iteration, state.message, isRunning]);
+  }, [state.iteration, state.message, isRunning, (state as any).expert, state.result?.trainResults, state.status]);
 
   const handleStart = () => {
     // Solver page allows any provider/model selection

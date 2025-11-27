@@ -28,7 +28,16 @@ import { broadcast } from '../wsService.js';
  */
 export type PoetiqBridgeEvent =
   | { type: 'start'; metadata: PoetiqStartMetadata }
-  | { type: 'progress'; phase: string; iteration: number; message: string }
+  | { 
+      type: 'progress'; 
+      phase: string; 
+      iteration: number; 
+      message: string;
+      expert?: number;
+      code?: string;
+      reasoning?: string;
+      trainResults?: any[];
+    }
   | { type: 'log'; level: 'info' | 'warn' | 'error'; message: string }
   | { type: 'final'; success: boolean; result: PoetiqResult }
   | { type: 'error'; message: string; traceback?: string };
@@ -205,6 +214,10 @@ export class PoetiqService {
               phase: event.phase,
               iteration: event.iteration,
               message: event.message,
+              expert: event.expert,
+              code: event.code,
+              reasoning: event.reasoning,
+              trainResults: event.trainResults,
             });
           }
 

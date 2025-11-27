@@ -39,6 +39,179 @@ if not POETIQ_PATH.exists() or not (POETIQ_PATH / "arc_agi" / "solve.py").exists
 
 sys.path.insert(0, str(POETIQ_PATH))
 
+# ==========================================
+# INSTRUMENTATION - Monkey patch to get live updates
+# ==========================================
+import numpy as np
+from arc_agi.types import ARCAGIResult, ARCAGISolution, ExpertConfig, RunResult
+import arc_agi.solve_parallel_coding
+from arc_agi.solve_coding import (
+    _make_example, format_problem, _build_prompt, create_examples, 
+    _parse_code_from_llm, _eval_on_train_and_test, _build_feedback
+)
+from arc_agi.llm import llm
+
+async def instrumented_solve_coding(
+    *,
+    train_in: list[list[list[int]]],
+    train_out: list[list[list[int]]],
+    test_in: list[list[list[int]]],
+    config: ExpertConfig,
+    problem_id: str | None = None,
+) -> ARCAGIResult:
+    """
+    Instrumented version of solve_coding that emits progress events.
+    """
+    expert_id = config.get("expert_id", 0)
+    solver_prompt = config["solver_prompt"]
+    feedback_prompt = config["feedback_prompt"]
+    llm_model = config["llm_id"]
+    max_iterations = int(config["max_iterations"])
+    solver_temperature = float(config["solver_temperature"])
+    max_solutions = int(config.get("max_solutions"))
+    selection_probability = float(config.get("selection_probability"))
+    seed = int(config.get("seed"))
+    timeout_sandbox = float(config.get("timeout_s", 5))
+    shuffle_examples = bool(config.get("shuffle_examples"))
+    improving_order = bool(config.get("improving_order"))
+    return_best = bool(config.get("return_best_result"))
+    request_timeout = config.get("request_timeout")
+    max_total_timeouts = config.get("max_total_timeouts")
+    max_total_time = config.get("max_total_time")
+    per_iteration_retries = config.get("per_iteration_retries")
+
+    best_train_score = -1.0
+    best_result = None
+    last_train = [
+        RunResult(
+            success=False,
+            output="",
+            soft_score=0.0,
+            error="Unexpected use of initial empty train result",
+            code="",
+        )
+    ]
+    last_test = None
+
+    rng = np.random.default_rng(seed)
+    solutions = []
+
+    for it in range(max_iterations):
+        emit({
+            "type": "progress",
+            "phase": "reasoning",
+            "iteration": it + 1,
+            "expert": expert_id,
+            "message": f"Expert {expert_id}: Reasoning for iteration {it + 1}..."
+        })
+
+        example = _make_example(train_in, train_out, test_in)
+        problem_str = format_problem(example, shuffle_examples, seed + it)
+        message = _build_prompt(solver_prompt, problem=problem_str)
+
+        selected = []
+        if solutions:
+            mask = rng.uniform(size=len(solutions)) < selection_probability
+            selected = [s for s, keep in zip(solutions, mask) if keep]
+
+        if selected:
+            examples_block = create_examples(
+                selected, max_examples=max_solutions, improving_order=improving_order
+            )
+            message += "\n\n" + _build_prompt(feedback_prompt, feedback=examples_block)
+
+        try:
+            response, duration, max_total_time, max_total_timeouts = await llm(
+                llm_model,
+                message=message,
+                temperature=solver_temperature,
+                request_timeout=request_timeout,
+                max_remaining_time=max_total_time,
+                max_remaining_timeouts=max_total_timeouts,
+                problem_id=problem_id,
+                retries=per_iteration_retries,
+            )
+        except Exception as e:
+            if "Exceeded timeouts allotted to the request" in str(e) or "Exceeded time allotted to the request" in str(e):
+                print("Exiting early due to exceeding allotted time or timeouts on problem", problem_id)
+                break
+            continue
+
+        code = _parse_code_from_llm(response)
+        
+        emit({
+            "type": "progress",
+            "phase": "evaluating",
+            "iteration": it + 1,
+            "expert": expert_id,
+            "message": f"Expert {expert_id}: Evaluating generated code...",
+            "reasoning": response, # Send full reasoning/code block
+            "code": code
+        })
+
+        if not code:
+            continue
+
+        train_res, test_res = await _eval_on_train_and_test(
+            code, train_in, train_out, test_in, timeout_s=timeout_sandbox
+        )
+
+        last_train, last_test = train_res, test_res
+        
+        # Calculate score for reporting
+        current_score = sum(1 for r in train_res if r["success"]) / len(train_res) if train_res else 0
+        
+        # Emit evaluation results
+        clean_results = []
+        for r in train_res:
+             clean_results.append({
+                 "success": r.get("success", False),
+                 "error": str(r.get("error", ""))[:200] if r.get("error") else None 
+             })
+             
+        emit({
+            "type": "progress",
+            "phase": "feedback",
+            "iteration": it + 1,
+            "expert": expert_id,
+            "message": f"Expert {expert_id}: Iteration {it + 1} complete (Score: {current_score:.0%})",
+            "trainResults": clean_results
+        })
+
+        if all(r["success"] for r in train_res):
+            return ARCAGIResult(
+                train_results=train_res, results=test_res, iteration=it + 1
+            )
+
+        feedback, score = _build_feedback(train_res, train_in, train_out)
+        solutions.append(ARCAGISolution(code=code, feedback=feedback, score=score))
+
+        if score >= best_train_score:
+            best_train_score = score
+            best_result = ARCAGIResult(
+                train_results=train_res, results=test_res, iteration=it + 1
+            )
+
+    if return_best and best_result is not None:
+        return best_result
+    if last_test is None:
+        last_test = [
+            RunResult(
+                success=False,
+                output="",
+                soft_score=0.0,
+                error="Failed to generate any valid solutions.",
+                code="",
+            )
+        ]
+    return ARCAGIResult(
+        train_results=last_train, results=last_test, iteration=max_iterations
+    )
+
+# Apply monkey patch
+arc_agi.solve_parallel_coding.solve_coding = instrumented_solve_coding
+# ==========================================
+
 
 def emit(event: dict):
     """Emit NDJSON event to stdout for Node.js consumption."""
@@ -81,7 +254,12 @@ def build_config_list(num_experts: int, model: str, max_iterations: int, tempera
     }
     
     # Create list of configs, one per expert
-    return [base_config.copy() for _ in range(num_experts)]
+    configs = []
+    for i in range(num_experts):
+        config = base_config.copy()
+        config['expert_id'] = i + 1
+        configs.append(config)
+    return configs
 
 
 async def run_poetiq_solver(puzzle_id: str, task: dict, options: dict) -> dict:
