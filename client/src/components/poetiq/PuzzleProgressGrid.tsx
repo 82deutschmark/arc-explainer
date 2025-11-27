@@ -2,10 +2,10 @@
  * Author: Claude Code using Sonnet 4.5
  * Date: 2025-11-26
  * PURPOSE: Visual grid showing the status of all ARC2-eval puzzles for Poetiq solver.
- *          Redesigned with dark theme: cyan (solved), amber (attempted), gray (unattempted).
+ *          Redesigned to use ClickablePuzzleBadge pattern like analytics page with dark theme styling.
  *          Clicking a puzzle navigates to the solver page.
  *
- * SRP/DRY check: Pass - Single responsibility for puzzle progress visualization
+ * SRP/DRY check: Pass - Single responsibility for puzzle progress visualization, reuses ClickablePuzzleBadge
  */
 
 import React, { useState, useMemo } from 'react';
@@ -20,7 +20,6 @@ import {
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { cn } from '@/lib/utils';
 import type { PoetiqPuzzleStatus, PuzzleStatus } from '@/hooks/usePoetiqCommunityProgress';
@@ -85,33 +84,15 @@ export function PuzzleProgressGrid({
           {/* Legend */}
           <div className="flex items-center gap-6 text-sm font-ibm">
             <div className="flex items-center gap-2">
-              <div
-                className="w-5 h-5 rounded"
-                style={{
-                  background: 'linear-gradient(135deg, #00d9ff 0%, #00a8cc 100%)',
-                  boxShadow: '0 0 10px rgba(0, 217, 255, 0.3)',
-                }}
-              />
+              <CheckCircle className="h-4 w-4 text-cyan-400" />
               <span className="text-cyan-300">Solved ({counts.solved})</span>
             </div>
             <div className="flex items-center gap-2">
-              <div
-                className="w-5 h-5 rounded"
-                style={{
-                  background: 'linear-gradient(135deg, #ff9500 0%, #cc7700 100%)',
-                  boxShadow: '0 0 10px rgba(255, 149, 0, 0.3)',
-                }}
-              />
+              <XCircle className="h-4 w-4 text-amber-400" />
               <span className="text-amber-300">Failed ({counts.attempted})</span>
             </div>
             <div className="flex items-center gap-2">
-              <div
-                className="w-5 h-5 rounded"
-                style={{
-                  background: 'rgba(107, 114, 128, 0.3)',
-                  border: '1px solid rgba(107, 114, 128, 0.5)',
-                }}
-              />
+              <Circle className="h-4 w-4 text-gray-400" />
               <span className="text-gray-400">Pending ({counts.unattempted})</span>
             </div>
           </div>
@@ -153,15 +134,15 @@ export function PuzzleProgressGrid({
           </div>
         </div>
 
-        {/* Puzzle Grid */}
+        {/* Puzzle Badge Grid */}
         {filteredPuzzles.length === 0 ? (
           <div className="py-12 text-center text-gray-500 font-ibm">
             No missions match the selected filter
           </div>
         ) : (
-          <div className="grid grid-cols-10 sm:grid-cols-12 md:grid-cols-15 lg:grid-cols-20 gap-1.5">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 text-xs">
             {filteredPuzzles.map((puzzle) => (
-              <PuzzleCell
+              <PuzzleBadgeCell
                 key={puzzle.puzzleId}
                 puzzle={puzzle}
                 onClick={() => onPuzzleClick?.(puzzle.puzzleId)}
@@ -181,102 +162,42 @@ export function PuzzleProgressGrid({
   );
 }
 
-// Individual puzzle cell
-function PuzzleCell({
+// Individual puzzle badge cell with dark theme styling
+function PuzzleBadgeCell({
   puzzle,
   onClick
 }: {
   puzzle: PoetiqPuzzleStatus;
   onClick?: () => void;
 }) {
-  const statusStyles: Record<PuzzleStatus, { background: string; border: string; shadow: string; hoverShadow: string }> = {
-    solved: {
-      background: 'linear-gradient(135deg, #00d9ff 0%, #00a8cc 100%)',
-      border: '1px solid rgba(0, 217, 255, 0.5)',
-      shadow: '0 0 8px rgba(0, 217, 255, 0.3)',
-      hoverShadow: '0 0 16px rgba(0, 217, 255, 0.6)',
-    },
-    attempted: {
-      background: 'linear-gradient(135deg, #ff9500 0%, #cc7700 100%)',
-      border: '1px solid rgba(255, 149, 0, 0.5)',
-      shadow: '0 0 8px rgba(255, 149, 0, 0.3)',
-      hoverShadow: '0 0 16px rgba(255, 149, 0, 0.6)',
-    },
-    unattempted: {
-      background: 'rgba(107, 114, 128, 0.2)',
-      border: '1px solid rgba(107, 114, 128, 0.4)',
-      shadow: 'none',
-      hoverShadow: '0 0 12px rgba(107, 114, 128, 0.5)',
-    },
+  const statusStyles: Record<PuzzleStatus, string> = {
+    solved: 'text-cyan-300 border-cyan-500/50 bg-cyan-500/10 hover:bg-cyan-500/20',
+    attempted: 'text-amber-300 border-amber-500/50 bg-amber-500/10 hover:bg-amber-500/20',
+    unattempted: 'text-gray-400 border-gray-600 bg-gray-800/30 hover:bg-gray-700/50',
   };
 
   const statusIcons: Record<PuzzleStatus, React.ReactNode> = {
-    solved: <CheckCircle className="h-3 w-3 text-white" />,
-    attempted: <XCircle className="h-3 w-3 text-white" />,
-    unattempted: null,
+    solved: <CheckCircle className="h-3 w-3" />,
+    attempted: <XCircle className="h-3 w-3" />,
+    unattempted: <Circle className="h-3 w-3" />,
   };
 
-  const style = statusStyles[puzzle.status];
+  const handleClick = () => {
+    onClick?.();
+    window.open(`/puzzle/poetiq/${puzzle.puzzleId}`, '_blank');
+  };
 
   return (
-    <Tooltip>
-      <TooltipTrigger asChild>
-        <Link href={`/puzzle/poetiq/${puzzle.puzzleId}`}>
-          <button
-            onClick={onClick}
-            className="w-7 h-7 rounded flex items-center justify-center transition-all duration-200 hover:scale-125"
-            style={{
-              background: style.background,
-              border: style.border,
-              boxShadow: style.shadow,
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.boxShadow = style.hoverShadow;
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.boxShadow = style.shadow;
-            }}
-            aria-label={`Puzzle ${puzzle.puzzleId}: ${puzzle.status}`}
-          >
-            {statusIcons[puzzle.status]}
-          </button>
-        </Link>
-      </TooltipTrigger>
-      <TooltipContent
-        side="top"
-        className="max-w-xs bg-gray-900 border-gray-700 font-ibm"
-      >
-        <div className="space-y-2">
-          <div className="font-jetbrains font-bold text-cyan-300">{puzzle.puzzleId}</div>
-          <div className="flex items-center gap-2">
-            <Badge
-              className={cn(
-                'text-xs font-jetbrains',
-                puzzle.status === 'solved' && 'bg-cyan-500/20 text-cyan-300 border-cyan-500/30',
-                puzzle.status === 'attempted' && 'bg-amber-500/20 text-amber-300 border-amber-500/30',
-                puzzle.status === 'unattempted' && 'bg-gray-500/20 text-gray-400 border-gray-500/30'
-              )}
-            >
-              {puzzle.status === 'solved' ? '✓ SOLVED' :
-               puzzle.status === 'attempted' ? '✗ FAILED' :
-               '○ PENDING'}
-            </Badge>
-          </div>
-          {puzzle.modelName && (
-            <div className="text-xs text-gray-400">
-              Model: <span className="text-gray-300">{puzzle.modelName}</span>
-            </div>
-          )}
-          {puzzle.elapsedMs && (
-            <div className="text-xs text-gray-400">
-              Runtime: <span className="text-gray-300">{Math.round(puzzle.elapsedMs / 1000)}s</span>
-            </div>
-          )}
-          <div className="text-xs text-cyan-400 font-medium pt-1 border-t border-gray-700">
-            Click to open solver →
-          </div>
-        </div>
-      </TooltipContent>
-    </Tooltip>
+    <Badge
+      variant="outline"
+      className={cn(
+        'cursor-pointer transition-all duration-200 font-jetbrains justify-start gap-1.5 px-2 py-1.5 h-auto',
+        statusStyles[puzzle.status]
+      )}
+      onClick={handleClick}
+    >
+      {statusIcons[puzzle.status]}
+      <span className="truncate">{puzzle.puzzleId}</span>
+    </Badge>
   );
 }
