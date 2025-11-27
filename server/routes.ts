@@ -20,6 +20,7 @@ import { feedbackController } from "./controllers/feedbackController";
 import { promptController } from "./controllers/promptController";
 import { saturnController } from "./controllers/saturnController";
 import { groverController } from "./controllers/groverController.js";
+import { poetiqController } from "./controllers/poetiqController.js";
 import adminController, * as adminControllerFns from './controllers/adminController.js';
 import * as modelManagementController from './controllers/modelManagementController.js';
 import * as discussionController from './controllers/discussionController.js';
@@ -81,6 +82,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/puzzle/list", asyncHandler(puzzleController.list));
   app.get("/api/puzzle/overview", asyncHandler(puzzleController.overview));
   app.get("/api/puzzle/task/:taskId", asyncHandler(puzzleController.getById));
+  app.post("/api/puzzle/bulk-status", asyncHandler(puzzleController.bulkStatus));
   app.post("/api/puzzle/analyze/:taskId/:model", validation.puzzleAnalysis, asyncHandler(puzzleController.analyze));
   app.post("/api/puzzle/analyze-list", asyncHandler(puzzleController.analyzeList));
   app.get("/api/puzzle/:puzzleId/has-explanation", asyncHandler(puzzleController.hasExplanation));
@@ -193,6 +195,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/puzzle/grover/:taskId/:modelKey", asyncHandler(groverController.analyze));
   app.get("/api/stream/grover/:taskId/:modelKey", asyncHandler(groverController.streamAnalyze));
   app.get("/api/grover/status/:sessionId", asyncHandler(groverController.getStatus));
+
+  // Poetiq iterative code-generation solver routes
+  // https://github.com/82deutschmark/poetiq-arc-agi-solver
+  app.post("/api/poetiq/solve/:taskId", asyncHandler(poetiqController.solve));
+  app.post("/api/poetiq/batch", asyncHandler(poetiqController.startBatch));
+  app.get("/api/poetiq/batch/:sessionId", asyncHandler(poetiqController.getBatchStatus));
+  app.get("/api/poetiq/status/:sessionId", asyncHandler(poetiqController.getStatus));
+  app.get("/api/poetiq/models", asyncHandler(poetiqController.getModels));
+  // Community progress: shows ALL 120 ARC2-Eval puzzles with Poetiq-specific status
+  app.get("/api/poetiq/community-progress", asyncHandler(poetiqController.getCommunityProgress));
 
   // Batch analysis routes
   app.post("/api/batch/start", asyncHandler(batchController.startBatch));

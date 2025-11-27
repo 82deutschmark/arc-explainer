@@ -163,6 +163,14 @@ export function PuzzleHeader({
           </button>
         </Link>
 
+        {/* Poetiq Code-Gen Solver Button */}
+        <Link href={`/puzzle/poetiq/${taskId}`}>
+          <button className="btn btn-md transition-all duration-300 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 shadow-lg shadow-purple-500/25 border-2 border-purple-400/50 text-white font-semibold rounded-lg">
+            <Rocket className="h-4 w-4 mr-2" />
+            🧬 Poetiq Solver
+          </button>
+        </Link>
+
         {synapsomorphyUrl && (
           <a
             href={synapsomorphyUrl}
