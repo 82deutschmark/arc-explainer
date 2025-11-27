@@ -24,6 +24,12 @@ import * as readline from 'node:readline';
 import * as path from 'path';
 import { ARCTask } from '../../../shared/types.js';
 import { broadcast } from '../wsService.js';
+import {
+  validateSolverResponse,
+  validateSolverResponseMulti,
+  type ValidationResult,
+  type MultiValidationResult,
+} from '../responseValidator.js';
 
 /**
  * Event types emitted by the Poetiq Python wrapper
@@ -129,6 +135,11 @@ export interface PoetiqExplanationData {
     generatedCode: string | null;
     bestTrainScore: number;
     config: any;
+    validation?: {
+      single?: ValidationResult | null;
+      multi?: MultiValidationResult | null;
+    };
+    rawPredictions?: (number[][] | null)[];
   };
 }
 
@@ -408,9 +419,10 @@ export class PoetiqService {
   /**
    * Transform Poetiq result to standard explanation format for database storage
    */
-  transformToExplanationData(result: PoetiqResult): PoetiqExplanationData {
-    const predictions = result.predictions || [];
-    const hasMultiple = predictions.length > 1;
+  transformToExplanationData(result: PoetiqResult, task?: ARCTask): PoetiqExplanationData {
+    const rawPredictions = Array.isArray(result.predictions) ? result.predictions : [];
+    const normalizedPredictions = rawPredictions.map(pred => this.normalizePredictionGrid(pred));
+    const hasMultiple = normalizedPredictions.filter(Boolean).length > 1;
     
     // Build pattern description from generated code
     const patternDescription = result.generatedCode
@@ -449,6 +461,70 @@ export class PoetiqService {
     const resolvedModelId = result.config?.model || 'unknown';
     const modelSlug = this.slugifyModelId(resolvedModelId);
 
+    const validatorPayload: any = {
+      result: {
+        predictedOutput: normalizedPredictions[0] ?? null,
+        predictedOutputs: normalizedPredictions,
+        hasMultiplePredictions: hasMultiple,
+        solvingStrategy,
+        patternDescription,
+      },
+      _rawResponse: result.generatedCode ? `Generated transform():\n${result.generatedCode}` : null,
+    };
+
+    const correctAnswers = this.collectGroundTruth(task);
+    let singleValidation: ValidationResult | null = null;
+    let multiValidation: MultiValidationResult | null = null;
+
+    if (correctAnswers && correctAnswers.length > 1) {
+      try {
+        multiValidation = validateSolverResponseMulti(
+          validatorPayload,
+          correctAnswers,
+          'solver',
+          null
+        );
+      } catch (err) {
+        console.error('[Poetiq] Multi-test validation failed:', err);
+      }
+    } else if (correctAnswers && correctAnswers.length === 1) {
+      try {
+        singleValidation = validateSolverResponse(
+          validatorPayload,
+          correctAnswers[0],
+          'solver',
+          null
+        );
+      } catch (err) {
+        console.error('[Poetiq] Single-test validation failed:', err);
+      }
+    }
+
+    const hasValidatedMulti = Boolean(multiValidation && multiValidation.hasMultiplePredictions);
+    const predictedOutputGrid =
+      singleValidation?.predictedGrid ??
+      normalizedPredictions.find(grid => grid !== null) ??
+      null;
+    const isPredictionCorrect =
+      singleValidation?.isPredictionCorrect ?? (result.isPredictionCorrect || false);
+
+    const multiplePredictedOutputs = hasValidatedMulti
+      ? multiValidation?.multiplePredictedOutputs ?? []
+      : hasMultiple
+        ? normalizedPredictions
+        : null;
+    const multiTestResults = hasValidatedMulti ? multiValidation?.multiTestResults ?? [] : null;
+    const multiTestAllCorrect = hasValidatedMulti
+      ? multiValidation?.multiTestAllCorrect ?? false
+      : hasMultiple
+        ? result.isPredictionCorrect || false
+        : null;
+    const multiTestAverageAccuracy = hasValidatedMulti
+      ? multiValidation?.multiTestAverageAccuracy ?? null
+      : hasMultiple
+        ? (typeof result.accuracy === 'number' ? result.accuracy : null)
+        : null;
+
     return {
       puzzleId: result.puzzleId,
       // Preserve entire routing path so OpenRouter vs direct runs stay distinct
@@ -457,14 +533,14 @@ export class PoetiqService {
       solvingStrategy,
       hints,
       confidence,
-      predictedOutputGrid: predictions.length > 0 ? predictions[0] : null,
-      isPredictionCorrect: result.isPredictionCorrect || false,
+      predictedOutputGrid,
+      isPredictionCorrect,
       trustworthinessScore: trustworthiness,
-      hasMultiplePredictions: hasMultiple,
-      multiplePredictedOutputs: hasMultiple ? predictions : null,
-      multiTestResults: hasMultiple ? result.kagglePreds : null,
-      multiTestAllCorrect: hasMultiple ? result.isPredictionCorrect || false : null,
-      multiTestAverageAccuracy: hasMultiple ? (result.accuracy || 0) * 100 : null,
+      hasMultiplePredictions: hasMultiple || hasValidatedMulti,
+      multiplePredictedOutputs,
+      multiTestResults,
+      multiTestAllCorrect,
+      multiTestAverageAccuracy,
       reasoningLog: JSON.stringify({
         iterations: result.iterations,
         config: result.config,
@@ -477,8 +553,42 @@ export class PoetiqService {
         generatedCode: result.generatedCode || null,
         bestTrainScore: result.bestTrainScore || 0,
         config: result.config || {},
+        validation: {
+          single: singleValidation,
+          multi: multiValidation,
+        },
+        rawPredictions: normalizedPredictions,
       },
     };
+  }
+
+  private collectGroundTruth(task?: ARCTask): number[][][] | null {
+    if (!task?.test || task.test.length === 0) {
+      return null;
+    }
+
+    const outputs: number[][][] = [];
+    for (const example of task.test) {
+      if (!example.output || !this.isGrid(example.output)) {
+        return null;
+      }
+      outputs.push(example.output);
+    }
+    return outputs;
+  }
+
+  private normalizePredictionGrid(grid: any): number[][] | null {
+    if (!this.isGrid(grid)) {
+      return null;
+    }
+    return grid.map(row => row.map(cell => (typeof cell === 'number' ? cell : Number(cell)))) as number[][];
+  }
+
+  private isGrid(value: any): value is number[][] {
+    if (!Array.isArray(value)) return false;
+    return value.every(
+      row => Array.isArray(row) && row.every(cell => typeof cell === 'number' || typeof cell === 'string')
+    );
   }
 }
 
