@@ -1,6 +1,24 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top!!!
 
+### Version 5.29.1
+
+- **HTTPS Security Fix for Poetiq Solver** (Author: Cascade using Claude Sonnet 4)
+  - **Problem**: Railway's reverse proxy terminates SSL, causing `req.protocol` to report `http` even when client used HTTPS
+  - **Solution**: Added `app.set('trust proxy', 1)` and fallback to check `X-Forwarded-Proto` header
+  - **File**: `server/index.ts` - middleware now correctly detects HTTPS through proxy
+  - **Impact**: Fixes 400 "HTTPS required" error when passing API keys from community to solver page
+
+- **Improved Poetiq Solver UX - Collapsible Controls** (Author: Cascade using Claude Sonnet 4)
+  - **Problem**: Users auto-starting from community page had to see large control panel they already configured
+  - **Solution**: Compact status header with settings toggle, auto-hide controls when coming from community
+  - **Features**:
+    - Always-visible compact status (READY/RUNNING/COMPLETED/ERROR) with iteration counter
+    - Settings gear button to toggle full control panel
+    - Auto-start message "Auto-starting with community settings..."
+    - API key now truly optional - server falls back to project key
+  - **File**: `client/src/pages/PoetiqSolver.tsx`
+
 ### Version 5.29.0
 
 - **Poetiq solver defaults to OpenRouter** (Author: Codex (GPT-5))
