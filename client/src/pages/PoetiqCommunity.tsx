@@ -10,7 +10,6 @@
 
 import React, { useEffect, useState } from 'react';
 import { Link, useLocation } from 'wouter';
-import { usePoetiqProgress } from '@/hooks/usePoetiqProgress';
 import { 
   Users, 
   Zap, 
@@ -74,10 +73,6 @@ export default function PoetiqCommunity() {
   const [apiKey, setApiKey] = useState('');
   const [numExperts, setNumExperts] = useState('2');
   
-  // Active solver state - which puzzle are we currently solving?
-  const [activePuzzle, setActivePuzzle] = useState<string | null>(null);
-  const solverProgress = usePoetiqProgress(activePuzzle || undefined);
-  
   // Get selected provider config
   const selectedProvider = POETIQ_PROVIDERS.find(p => p.value === provider)!;
 
@@ -87,35 +82,24 @@ export default function PoetiqCommunity() {
   }, []);
 
   const nextPuzzle = progress.getNextRecommended();
-  const isRunning = solverProgress.state.status === 'running';
-  const isDone = solverProgress.state.status === 'completed';
-  const hasError = solverProgress.state.status === 'error';
-  const canStart = apiKey.trim().length > 10 && nextPuzzle && !isRunning;
+  const canStart = apiKey.trim().length > 10 && nextPuzzle;
 
   const handleRunNext = () => {
     if (!nextPuzzle || !apiKey.trim()) return;
     
-    // Set active puzzle and start solver directly
-    setActivePuzzle(nextPuzzle);
-    // Use selected provider with Gemini 3 Pro Preview
-    solverProgress.start({
+    // Store config in sessionStorage for the solver page to use
+    sessionStorage.setItem('poetiq_config', JSON.stringify({
       apiKey,
       provider,
       model: selectedProvider.modelId,
       numExperts: parseInt(numExperts, 10),
-      temperature: 1.0,  // Fixed per config.py
-    });
+      temperature: 1.0,
+      autoStart: true,
+    }));
+    
+    // Navigate to full solver page with rich feedback UI
+    navigate(`/puzzle/poetiq/${nextPuzzle}`);
   };
-
-  // When solver completes, refresh progress and clear active puzzle after delay
-  useEffect(() => {
-    if (isDone || hasError) {
-      // Refresh progress grid after completion
-      setTimeout(() => {
-        progress.refetch();
-      }, 2000);
-    }
-  }, [isDone, hasError, progress]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50">
@@ -302,106 +286,27 @@ export default function PoetiqCommunity() {
 
             <Separator />
 
-            {/* Run Button */}
+            {/* Run Button - Navigates to full solver page */}
             <Button
               onClick={handleRunNext}
               disabled={!canStart}
               className="w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700"
               size="lg"
             >
-              {isRunning ? (
-                <>
-                  <Loader2 className="h-5 w-5 mr-2 animate-spin" />
-                  Running on {activePuzzle}...
-                </>
-              ) : (
-                <>
-                  <Play className="h-5 w-5 mr-2" />
-                  Run Solver on {nextPuzzle || 'Next Puzzle'}
-                  <ArrowRight className="h-5 w-5 ml-2" />
-                </>
-              )}
+              <Play className="h-5 w-5 mr-2" />
+              Run Solver on {nextPuzzle || 'Next Puzzle'}
+              <ArrowRight className="h-5 w-5 ml-2" />
             </Button>
 
-            {!apiKey && !isRunning && (
+            {!apiKey && (
               <p className="text-center text-sm text-gray-500">
                 Enter your API key to start helping
               </p>
             )}
 
-            {/* Live Progress Display */}
-            {(isRunning || isDone || hasError) && activePuzzle && (
-              <div className="mt-4 p-4 bg-white rounded-lg border border-gray-200">
-                <div className="flex items-center justify-between mb-2">
-                  <div className="flex items-center gap-2">
-                    {isRunning && <Loader2 className="h-4 w-4 animate-spin text-blue-500" />}
-                    {isDone && solverProgress.state.result?.isPredictionCorrect && (
-                      <CheckCircle className="h-4 w-4 text-green-500" />
-                    )}
-                    {isDone && !solverProgress.state.result?.isPredictionCorrect && (
-                      <Target className="h-4 w-4 text-amber-500" />
-                    )}
-                    {hasError && <Target className="h-4 w-4 text-red-500" />}
-                    <span className="font-medium">Puzzle: {activePuzzle}</span>
-                  </div>
-                  <Badge variant={isRunning ? 'default' : isDone ? 'secondary' : 'destructive'}>
-                    {solverProgress.state.status.toUpperCase()}
-                  </Badge>
-                </div>
-                
-                {/* Progress message */}
-                {solverProgress.state.message && (
-                  <p className="text-sm text-gray-600 mb-2">{solverProgress.state.message}</p>
-                )}
-                
-                {/* Iteration progress bar */}
-                {isRunning && solverProgress.state.iteration !== undefined && solverProgress.state.totalIterations && (
-                  <div className="space-y-1">
-                    <div className="flex justify-between text-xs text-gray-500">
-                      <span>Iteration {solverProgress.state.iteration}</span>
-                      <span>{solverProgress.state.totalIterations} max</span>
-                    </div>
-                    <Progress 
-                      value={(solverProgress.state.iteration / solverProgress.state.totalIterations) * 100}
-                      className="h-2"
-                    />
-                  </div>
-                )}
-                
-                {/* Result display */}
-                {isDone && solverProgress.state.result && (
-                  <div className="mt-2 p-2 rounded bg-gray-50">
-                    <div className="flex items-center gap-2 text-sm">
-                      {solverProgress.state.result.isPredictionCorrect ? (
-                        <span className="text-green-700 font-medium">✓ Correct!</span>
-                      ) : (
-                        <span className="text-amber-700 font-medium">✗ Incorrect</span>
-                      )}
-                      <span className="text-gray-500">•</span>
-                      <span className="text-gray-600">
-                        {solverProgress.state.result.iterationCount} iterations
-                      </span>
-                      <span className="text-gray-500">•</span>
-                      <span className="text-gray-600">
-                        {Math.round((solverProgress.state.result.elapsedMs || 0) / 1000)}s
-                      </span>
-                    </div>
-                    <Link href={`/puzzle/poetiq/${activePuzzle}`}>
-                      <Button variant="link" size="sm" className="p-0 h-auto mt-1">
-                        View full details →
-                      </Button>
-                    </Link>
-                  </div>
-                )}
-                
-                {/* Error display */}
-                {hasError && (
-                  <div className="mt-2 p-2 rounded bg-red-50 text-red-700 text-sm">
-                    {solverProgress.state.message || 'Solver failed'}
-                  </div>
-                )}
-              </div>
-            )}
+            <p className="text-center text-xs text-gray-400">
+              Opens the full solver page with Python execution terminal, AI reasoning, and code generation.
+            </p>
           </CardContent>
         </Card>
 

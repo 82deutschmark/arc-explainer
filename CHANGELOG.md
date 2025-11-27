@@ -1,6 +1,17 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top!!!
 
+### Version 5.28.9
+
+- **Poetiq UX - Navigate to Solver for Full Feedback** (Author: Cascade using Claude Sonnet 4)
+  - **Problem**: Community page had minimal feedback - no Python terminal, no streaming boxes
+  - **Solution**: Community page now navigates to full solver page for rich feedback
+    - Saves config to sessionStorage (apiKey, provider, model, experts)
+    - Solver page auto-reads config and auto-starts
+    - User sees full Python execution terminal, AI reasoning streaming, code generation
+  - **Renamed**: "Poetiq Code Generator" → "Poetiq Solver" (header title)
+  - **Files**: `PoetiqCommunity.tsx`, `PoetiqSolver.tsx`
+
 ### Version 5.28.8
 
 - **Fix Poetiq Pages - Dynamic Models from API** (Author: Cascade using Claude Sonnet 4)

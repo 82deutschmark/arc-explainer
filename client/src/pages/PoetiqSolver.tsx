@@ -36,11 +36,52 @@ export default function PoetiqSolver() {
   const [maxIterations, setMaxIterations] = useState(10);
   const [temperature, setTemperature] = useState(1.0);
   const [executions, setExecutions] = useState<any[]>([]);
+  const [autoStartTriggered, setAutoStartTriggered] = useState(false);
 
   // Set page title
   useEffect(() => {
     document.title = taskId ? `Poetiq Solver - ${taskId}` : 'Poetiq Solver';
   }, [taskId]);
+
+  // Check for auto-start config from community page (sessionStorage)
+  useEffect(() => {
+    if (autoStartTriggered) return; // Don't re-trigger
+    
+    try {
+      const savedConfig = sessionStorage.getItem('poetiq_config');
+      if (savedConfig) {
+        const config = JSON.parse(savedConfig);
+        // Clear it immediately so refresh doesn't re-trigger
+        sessionStorage.removeItem('poetiq_config');
+        
+        // Apply saved config
+        if (config.apiKey) setApiKey(config.apiKey);
+        if (config.provider) setProvider(config.provider);
+        if (config.model) setModel(config.model);
+        if (config.numExperts) setNumExperts(config.numExperts);
+        if (config.temperature) setTemperature(config.temperature);
+        
+        // Auto-start if configured
+        if (config.autoStart && config.apiKey && task) {
+          setAutoStartTriggered(true);
+          // Small delay to let state settle
+          setTimeout(() => {
+            const poetiqProvider = config.provider === 'openai' ? 'openrouter' : config.provider;
+            start({
+              apiKey: config.apiKey,
+              provider: poetiqProvider,
+              model: config.model,
+              numExperts: config.numExperts || 2,
+              maxIterations: 10,
+              temperature: config.temperature || 1.0,
+            });
+          }, 500);
+        }
+      }
+    } catch (e) {
+      console.error('Failed to parse poetiq_config:', e);
+    }
+  }, [task, autoStartTriggered, start]);
 
   const isRunning = state.status === 'running';
   const isDone = state.status === 'completed';
@@ -146,7 +187,7 @@ export default function PoetiqSolver() {
           </Link>
           <div className="h-4 w-px bg-gray-300" />
           <div>
-            <h1 className="text-lg font-bold text-gray-800">Poetiq Code Generator</h1>
+            <h1 className="text-lg font-bold text-gray-800">Poetiq Solver</h1>
             <p className="text-xs text-gray-500 font-mono">{taskId}</p>
           </div>
         </div>
