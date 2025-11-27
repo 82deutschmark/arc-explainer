@@ -1,7 +1,7 @@
 /**
  * Author: Cascade (Claude Sonnet 4)
  * Date: 2025-11-25
- * Updated: 2025-11-26 - Saturn-style exact layout with streaming boxes
+ * Updated: 2025-11-27 - Fixed nested anchor tags (wouter Link already renders <a>)
  * PURPOSE: Poetiq Iterative Code-Generation Solver page.
  *          EXACTLY matches Saturn's layout:
  *          - LEFT (4 cols): Control panel + puzzle grids
@@ -169,9 +169,7 @@ export default function PoetiqSolver() {
       <div className="min-h-screen bg-gray-100 flex items-center justify-center">
         <div className="text-center p-8 bg-white rounded shadow">
           <p className="text-red-600">Invalid puzzle ID</p>
-          <Link href="/poetiq">
-            <a className="text-blue-600 hover:text-blue-800 text-sm mt-2 block">← Back to Community</a>
-          </Link>
+          <Link href="/poetiq" className="text-blue-600 hover:text-blue-800 text-sm mt-2 block">← Back to Community</Link>
         </div>
       </div>
     );
@@ -193,9 +191,7 @@ export default function PoetiqSolver() {
       <div className="min-h-screen bg-gray-100 flex items-center justify-center">
         <div className="text-center p-8 bg-white rounded shadow">
           <p className="text-red-600">Failed to load puzzle: {taskError?.message || 'Not found'}</p>
-          <Link href="/poetiq">
-            <a className="text-blue-600 hover:text-blue-800 text-sm mt-2 block">← Back to Community</a>
-          </Link>
+          <Link href="/poetiq" className="text-blue-600 hover:text-blue-800 text-sm mt-2 block">← Back to Community</Link>
         </div>
       </div>
     );
@@ -214,11 +210,9 @@ export default function PoetiqSolver() {
       {/* Header */}
       <header className="flex items-center justify-between px-4 py-2 border-b bg-white">
         <div className="flex items-center gap-4">
-          <Link href="/poetiq">
-            <a className="flex items-center gap-1 text-gray-600 hover:text-gray-900">
-              <ArrowLeft className="h-4 w-4" />
-              <span className="text-sm">Back</span>
-            </a>
+          <Link href="/poetiq" className="flex items-center gap-1 text-gray-600 hover:text-gray-900">
+            <ArrowLeft className="h-4 w-4" />
+            <span className="text-sm">Back</span>
           </Link>
           <div className="h-4 w-px bg-gray-300" />
           <div>
