@@ -19,6 +19,7 @@ import { formatResponse } from '../utils/responseFormatter.js';
 import { poetiqService } from '../services/poetiq/poetiqService.js';
 import { puzzleLoader } from '../services/puzzleLoader.js';
 import { broadcast, getSessionSnapshot } from '../services/wsService.js';
+import { MODELS } from '../config/models.js';
 import { randomUUID } from 'crypto';
 import fs from 'fs';
 import path from 'path';

@@ -158,6 +158,7 @@ export default function PoetiqSolver() {
       numExperts,
       maxIterations,
       temperature,
+      reasoningEffort,
     });
   };
 
@@ -289,6 +290,8 @@ export default function PoetiqSolver() {
                 setMaxIterations={setMaxIterations}
                 temperature={temperature}
                 setTemperature={setTemperature}
+                reasoningEffort={reasoningEffort}
+                setReasoningEffort={setReasoningEffort}
                 onStart={handleStart}
                 onCancel={cancel}
               />

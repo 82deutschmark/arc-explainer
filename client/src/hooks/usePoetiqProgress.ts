@@ -23,6 +23,7 @@ export interface PoetiqOptions {
   numExperts?: number;      // 1, 2, 4, or 8 (default: 2)
   maxIterations?: number;   // default: 10
   temperature?: number;     // default: 1.0
+  reasoningEffort?: 'low' | 'medium' | 'high'; // Optional reasoning effort
 }
 
 export interface PoetiqProgressState {

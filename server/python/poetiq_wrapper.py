@@ -68,6 +68,14 @@ async def instrumented_solve_coding(
     llm_model = config["llm_id"]
     max_iterations = int(config["max_iterations"])
     solver_temperature = float(config["solver_temperature"])
+    
+    # Extract extra LLM params
+    llm_kwargs = {}
+    if "reasoning_effort" in config:
+        llm_kwargs["reasoning_effort"] = config["reasoning_effort"]
+    if "thinking" in config:
+        llm_kwargs["thinking"] = config["thinking"]
+
     max_solutions = int(config.get("max_solutions"))
     selection_probability = float(config.get("selection_probability"))
     seed = int(config.get("seed"))
@@ -223,7 +231,7 @@ def log(message: str, level: str = "info"):
     emit({"type": "log", "level": level, "message": message})
 
 
-def build_config_list(num_experts: int, model: str, max_iterations: int, temperature: float):
+def build_config_list(num_experts: int, model: str, max_iterations: int, temperature: float, reasoning_effort: str = None):
     """
     Build a dynamic CONFIG_LIST for this run based on user options.
     This allows per-request expert count without modifying global state.
@@ -252,6 +260,16 @@ def build_config_list(num_experts: int, model: str, max_iterations: int, tempera
         'iters_tiebreak': False,
         'low_to_high_iters': False,
     }
+    
+    # Add reasoning effort if specified
+    if reasoning_effort:
+        base_config['reasoning_effort'] = reasoning_effort
+        
+        # Auto-configure thinking budget for Claude/Gemini if implied by reasoning level
+        # (This is a simple heuristic, ideally should be explicit)
+        if 'claude' in model.lower() and reasoning_effort in ['high', 'medium']:
+             base_config['thinking'] = {"type": "enabled", "budget_tokens": 16000}
+
     
     # Create list of configs, one per expert
     configs = []
