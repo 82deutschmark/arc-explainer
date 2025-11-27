@@ -346,31 +346,6 @@ export default function PoetiqSolver() {
         </div>
       </header>
 
-      {/* Training Grids Preview - Only show before running */}
-      {!isRunning && !isDone && task && (
-        <div className="bg-white border-b border-gray-200 px-4 py-4">
-          <div className="space-y-3">
-            <h3 className="text-sm font-semibold text-gray-700">Training Examples</h3>
-            <div className="flex flex-wrap gap-6">
-              {task.train.map((example, idx) => (
-                <div key={idx} className="space-y-2">
-                  <div className="text-xs text-gray-500 font-medium">Example {idx + 1}</div>
-                  <div className="flex gap-3 items-start">
-                    <div className="border border-gray-300 rounded p-2 bg-gray-50">
-                      <TinyGrid grid={example.input} />
-                    </div>
-                    <div className="text-gray-400 text-lg leading-none mt-2">→</div>
-                    <div className="border border-gray-300 rounded p-2 bg-gray-50">
-                      <TinyGrid grid={example.output} />
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      )}
-
       {/* Horizontal Control Bar - Only show when NOT running */}
       {!isRunning && !isDone && (
         <div className="bg-white border-b border-gray-300 px-4 py-3">
@@ -525,8 +500,34 @@ export default function PoetiqSolver() {
             )}
           </div>
 
-          {/* RIGHT: Event Log - Expands when running */}
+          {/* RIGHT: Training Grids (before running) or Event Log (during/after running) */}
           <div className={`${isRunning || isDone ? 'col-span-8' : 'col-span-7'} flex flex-col min-h-0`}>
+            {/* Training Grids - Show before running */}
+            {!isRunning && !isDone && task && (
+              <div className="bg-white border border-gray-300 rounded flex-1 min-h-0 flex flex-col h-full overflow-y-auto">
+                <div className="px-4 py-3 bg-gray-50 border-b border-gray-300 sticky top-0">
+                  <span className="text-base font-bold text-gray-700">Training Examples</span>
+                </div>
+                <div className="p-4 space-y-4 overflow-y-auto">
+                  {task.train.map((example, idx) => (
+                    <div key={idx} className="space-y-2">
+                      <div className="text-xs text-gray-500 font-medium">Example {idx + 1}</div>
+                      <div className="flex gap-3 items-start">
+                        <div className="border border-gray-300 rounded p-2 bg-gray-50">
+                          <TinyGrid grid={example.input} />
+                        </div>
+                        <div className="text-gray-400 text-lg leading-none mt-2">→</div>
+                        <div className="border border-gray-300 rounded p-2 bg-gray-50">
+                          <TinyGrid grid={example.output} />
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Event Log - Show when running or after completion */}
             {(isRunning || isDone || (state.logLines?.length ?? 0) > 0) && (
               <div className="bg-white border border-gray-300 rounded flex-1 min-h-0 flex flex-col h-full">
                 <div className="flex items-center justify-between px-4 py-3 bg-gray-50 border-b border-gray-300">
