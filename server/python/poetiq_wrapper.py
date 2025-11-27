@@ -331,7 +331,11 @@ async def run_poetiq_solver(puzzle_id: str, task: dict, options: dict) -> dict:
     Returns:
         Result dictionary with predictions and metadata
     """
-    from arc_agi.solve import solve
+    # CRITICAL: We call solve_parallel_coding DIRECTLY instead of solve()
+    # This is because solve.py imports CONFIG_LIST at module load time,
+    # so patching config.CONFIG_LIST after importing solve.py has no effect.
+    # By calling solve_parallel_coding directly, we pass our own config list.
+    from arc_agi.solve_parallel_coding import solve_parallel_coding
     from arc_agi.io import build_kaggle_two_attempts
     from arc_agi.scoring import score_task
     
@@ -356,11 +360,6 @@ async def run_poetiq_solver(puzzle_id: str, task: dict, options: dict) -> dict:
     # Build dynamic config list for this run
     config_list = build_config_list(num_experts, model, max_iterations, temperature, reasoning_effort, verbosity, reasoning_summary)
     
-    # Patch the global CONFIG_LIST so solve() uses our config
-    import arc_agi.config as config_module
-    config_module.CONFIG_LIST = config_list
-    config_module.NUM_EXPERTS = num_experts
-    
     emit({
         "type": "progress",
         "phase": "solver_start",
@@ -368,11 +367,20 @@ async def run_poetiq_solver(puzzle_id: str, task: dict, options: dict) -> dict:
         "message": f"Starting Poetiq solver for {puzzle_id} with {len(train)} training examples and {len(test)} test inputs"
     })
     
+    log(f"Running with {len(config_list)} expert configs: {[c.get('expert_id') for c in config_list]}")
+    
     start_time = time.time()
     
     try:
-        # Run the solver
-        results = await solve(train_in, train_out, test_in, problem_id=puzzle_id)
+        # CRITICAL: Call solve_parallel_coding DIRECTLY with our config list
+        # This bypasses solve() which has a stale reference to CONFIG_LIST
+        results = await solve_parallel_coding(
+            train_in=train_in,
+            train_out=train_out,
+            test_in=test_in,
+            expert_configs=config_list,
+            problem_id=puzzle_id,
+        )
         
         elapsed = time.time() - start_time
         
