@@ -326,27 +326,31 @@ export default function PoetiqCommunity() {
           {/* Right Col: Pareto & Models */}
           <div className="space-y-6">
             
-            {/* Pareto Frontier */}
+            {/* Measured Results */}
             <div className="space-y-2">
                <h2 className="text-xl font-bold flex items-center gap-2 text-green-800 mb-2">
                   <TrendingUp className="h-6 w-6" />
-                  Pareto Optimal Reasoning
+                  Measured Results
                </h2>
                <div className="bg-green-50 border border-green-200 rounded-lg p-4">
                   <p className="text-sm text-green-900 mb-3">
-                     Poetiq claims their system establishes a new Pareto frontier, achieving better accuracy-to-cost ratios
-                     than prior reported results across multiple operating points.
+                     Community audit results from independent testing. Poetiq claims their system establishes a Pareto frontier
+                     with better accuracy-to-cost ratios than prior systems.
                   </p>
                   <div className="grid grid-cols-2 gap-3">
                      <div className="bg-white p-3 rounded border border-green-100">
-                        <div className="text-xs text-gray-500 uppercase font-bold">Cost Efficiency</div>
-                        <div className="text-lg font-bold text-green-700">&lt; $0.01</div>
-                        <div className="text-xs text-gray-600">per problem (GPT-OSS-b)</div>
+                        <div className="text-xs text-gray-500 uppercase font-bold">Cost / Solve</div>
+                        <div className="text-lg font-bold text-green-700">
+                          {progress.avgCostPerSolve ? `$${progress.avgCostPerSolve.toFixed(3)}` : 'No data'}
+                        </div>
+                        <div className="text-xs text-gray-600">measured average</div>
                      </div>
                      <div className="bg-white p-3 rounded border border-green-100">
-                        <div className="text-xs text-gray-500 uppercase font-bold">SOTA Accuracy</div>
-                        <div className="text-lg font-bold text-green-700">&gt; 60%</div>
-                        <div className="text-xs text-gray-600">on ARC-AGI-2 (Human Level)</div>
+                        <div className="text-xs text-gray-500 uppercase font-bold">Success Rate</div>
+                        <div className="text-lg font-bold text-green-700">
+                          {progress.attempted > 0 ? `${progress.successRateOnAttempted}%` : 'No data'}
+                        </div>
+                        <div className="text-xs text-gray-600">on attempted ({progress.attempted} tests)</div>
                      </div>
                   </div>
                </div>
