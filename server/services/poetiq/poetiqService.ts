@@ -582,7 +582,9 @@ export class PoetiqService {
       : hasMultiple
         ? (() => {
             const filtered = normalizedPredictions.filter((g): g is number[][] => g !== null);
-            return filtered.length > 0 ? filtered : null;
+            // Explicit assertion that filter removed all nulls
+            const gridsWithoutNulls = filtered as number[][][];
+            return gridsWithoutNulls.length > 0 ? gridsWithoutNulls : null;
           })()
         : null;
     const multiTestResults = hasValidatedMulti ? multiValidation?.multiTestResults ?? [] : null;
