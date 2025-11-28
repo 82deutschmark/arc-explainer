@@ -27,13 +27,26 @@ export interface PoetiqPuzzleStatus {
   elapsedMs: number | null;
 }
 
+export interface ModelStats {
+  modelName: string;
+  attempts: number;
+  solved: number;
+  successRate: number;
+}
+
 export interface PoetiqCommunityProgress {
   puzzles: PoetiqPuzzleStatus[];
   total: number;
   solved: number;
   attempted: number;
   unattempted: number;
+  failed: number;
   completionPercentage: number;
+  attemptedPercentage: number;
+  successRateOnAttempted: number;
+  avgIterationsSolved: number | null;
+  avgIterationsFailed: number | null;
+  modelStats: ModelStats[];
   isLoading: boolean;
   error: string | null;
 }
@@ -44,7 +57,13 @@ const initialState: PoetiqCommunityProgress = {
   solved: 0,
   attempted: 0,
   unattempted: 0,
+  failed: 0,
   completionPercentage: 0,
+  attemptedPercentage: 0,
+  successRateOnAttempted: 0,
+  avgIterationsSolved: null,
+  avgIterationsFailed: null,
+  modelStats: [],
   isLoading: true,
   error: null,
 };
@@ -72,13 +91,55 @@ export function usePoetiqCommunityProgress() {
 
       const { puzzles, total, solved, attempted, unattempted, completionPercentage } = data.data;
 
+      // Calculate derived metrics
+      const failed = attempted - solved;
+      const attemptedPercentage = total > 0 ? Math.round((attempted / total) * 100) : 0;
+      const successRateOnAttempted = attempted > 0 ? Math.round((solved / attempted) * 100) : 0;
+
+      // Calculate average iterations for solved vs failed
+      const solvedPuzzles = puzzles.filter((p: PoetiqPuzzleStatus) => p.status === 'solved' && p.iterationCount !== null);
+      const failedPuzzles = puzzles.filter((p: PoetiqPuzzleStatus) => p.status === 'attempted' && p.iterationCount !== null);
+
+      const avgIterationsSolved = solvedPuzzles.length > 0
+        ? solvedPuzzles.reduce((sum: number, p: PoetiqPuzzleStatus) => sum + (p.iterationCount || 0), 0) / solvedPuzzles.length
+        : null;
+
+      const avgIterationsFailed = failedPuzzles.length > 0
+        ? failedPuzzles.reduce((sum: number, p: PoetiqPuzzleStatus) => sum + (p.iterationCount || 0), 0) / failedPuzzles.length
+        : null;
+
+      // Calculate per-model stats
+      const modelMap = new Map<string, { attempts: number; solved: number }>();
+      puzzles.forEach((p: PoetiqPuzzleStatus) => {
+        if (p.status === 'attempted' || p.status === 'solved') {
+          const modelName = p.modelName || 'unknown';
+          const current = modelMap.get(modelName) || { attempts: 0, solved: 0 };
+          current.attempts += 1;
+          if (p.status === 'solved') current.solved += 1;
+          modelMap.set(modelName, current);
+        }
+      });
+
+      const modelStats: ModelStats[] = Array.from(modelMap.entries()).map(([modelName, stats]) => ({
+        modelName,
+        attempts: stats.attempts,
+        solved: stats.solved,
+        successRate: stats.attempts > 0 ? Math.round((stats.solved / stats.attempts) * 100) : 0,
+      }));
+
       setProgress({
         puzzles,
         total,
         solved,
         attempted,
         unattempted,
+        failed,
         completionPercentage,
+        attemptedPercentage,
+        successRateOnAttempted,
+        avgIterationsSolved: avgIterationsSolved ? Math.round(avgIterationsSolved * 10) / 10 : null,
+        avgIterationsFailed: avgIterationsFailed ? Math.round(avgIterationsFailed * 10) / 10 : null,
+        modelStats,
         isLoading: false,
         error: null,
       });
