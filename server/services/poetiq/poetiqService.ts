@@ -490,7 +490,7 @@ export class PoetiqService {
    */
   transformToExplanationData(result: PoetiqResult, task?: ARCTask): PoetiqExplanationData {
     const rawPredictions = Array.isArray(result.predictions) ? result.predictions : [];
-    const normalizedPredictions = rawPredictions.map(pred => this.normalizePredictionGrid(pred));
+    const normalizedPredictions: (number[][] | null)[] = rawPredictions.map(pred => this.normalizePredictionGrid(pred));
     const hasMultiple = normalizedPredictions.filter(Boolean).length > 1;
     
     // Build pattern description from generated code
