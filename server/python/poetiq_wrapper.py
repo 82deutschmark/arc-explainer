@@ -250,13 +250,13 @@ async def llm_openai_responses(
     reasoning_summary: str = "detailed",
     max_output_tokens: int = 128000,
     problem_id: Optional[str] = None,
-) -> Tuple[str, dict]:
+) -> Tuple[str, dict, str]:
     """
     Call OpenAI via Responses API (POST /v1/responses).
     Uses proper reasoning parameters for GPT-5.x models.
     
     Returns:
-        Tuple of (response_text, token_usage_dict)
+        Tuple of (response_text, token_usage_dict, reasoning_summary)
     """
     # Get API key from environment
     api_key = os.environ.get("OPENAI_API_KEY")
@@ -322,7 +322,11 @@ async def llm_openai_responses(
         
         log(f"[Responses API] Tokens: input={token_usage['input_tokens']}, output={token_usage['output_tokens']}")
         
-        return output_text, token_usage
+        # Log reasoning summary if present
+        if reasoning_summary_text:
+            log(f"[Responses API] Reasoning summary available ({len(reasoning_summary_text)} chars)")
+        
+        return output_text, token_usage, reasoning_summary_text
         
     except openai.APIError as e:
         log(f"[Responses API] API Error: {e}", level="error")
@@ -488,12 +492,15 @@ async def instrumented_solve_coding(
             }
         })
 
+        # Track reasoning summary from Responses API (GPT-5.x only)
+        reasoning_summary_text = ""
+        
         try:
             # Route to appropriate API based on model
             if api_routing["type"] == "direct_openai":
                 # Use OpenAI Responses API directly for GPT-5.x, o3, o4 models
                 log(f"[Direct OpenAI] Using Responses API for {llm_model}")
-                response, token_usage = await llm_openai_responses(
+                response, token_usage, reasoning_summary_text = await llm_openai_responses(
                     model=llm_model,
                     message=message,
                     system_prompt=solver_prompt,
@@ -504,7 +511,7 @@ async def instrumented_solve_coding(
                     max_output_tokens=128000,
                     problem_id=problem_id,
                 )
-                # Responses API returns (text, usage) - no timing info
+                # Responses API returns (text, usage, reasoning_summary) - no timing info
                 duration = 0  # Not tracked for Responses API
             else:
                 # Use litellm for OpenRouter and other providers
@@ -548,14 +555,15 @@ async def instrumented_solve_coding(
 
         code = _parse_code_from_llm(response)
         
-        # Emit progress with token/cost data
+        # Emit progress with token/cost data and reasoning summary
         emit({
             "type": "progress",
             "phase": "evaluating",
             "iteration": it + 1,
             "expert": expert_id,
             "message": f"Expert {expert_id}: Evaluating generated code...",
-            "reasoning": response, # Send full reasoning/code block
+            "reasoning": response,  # Send full reasoning/code block (LLM output)
+            "reasoningSummary": reasoning_summary_text if reasoning_summary_text else None,  # Responses API reasoning summary
             "code": code,
             "tokenUsage": token_usage if token_usage else None,
             "cost": iteration_cost if token_usage else None,
