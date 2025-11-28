@@ -7,7 +7,7 @@
  * SRP/DRY check: Pass - Single page for community progress and methodology explanation
  */
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useLocation } from 'wouter';
 import {
   ExternalLink,
@@ -25,61 +25,14 @@ import {
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { PuzzleProgressGrid } from '@/components/poetiq/PuzzleProgressGrid';
 import { usePoetiqCommunityProgress } from '@/hooks/usePoetiqCommunityProgress';
-
-// Verified models from server/config/models.ts
-const POETIQ_MODELS = [
-  {
-    id: 'gemini-3-pro',
-    name: 'Gemini 3 Pro Preview',
-    provider: 'openrouter',
-    modelId: 'openrouter/google/gemini-3-pro-preview',
-    keyPlaceholder: 'sk-or-...',
-    keyUrl: 'https://openrouter.ai/keys',
-    description: 'Primary reasoning engine (SOTA)'
-  },
-  {
-    id: 'gemini-3-pro-direct',
-    name: 'Gemini 3 Pro Preview (Direct)',
-    provider: 'gemini',
-    modelId: 'gemini/gemini-3-pro-preview',
-    keyPlaceholder: 'AIza...',
-    keyUrl: 'https://aistudio.google.com/app/apikey',
-    description: 'Direct Google API'
-  },
-  {
-    id: 'gpt-5.1',
-    name: 'GPT-5.1',
-    provider: 'openrouter',
-    modelId: 'openai/gpt-5.1',
-    keyPlaceholder: 'sk-or-...',
-    keyUrl: 'https://openrouter.ai/keys',
-    description: 'High-performance alternative'
-  },
-  {
-    id: 'grok-4-fast',
-    name: 'Grok 4 Fast (via Grok 4.1)',
-    provider: 'openrouter',
-    modelId: 'x-ai/grok-4.1-fast', // Closest match in OpenRouter for Grok 4 Fast
-    keyPlaceholder: 'sk-or-...',
-    keyUrl: 'https://openrouter.ai/keys',
-    description: 'Cost-optimized reasoning'
-  },
-  {
-    id: 'gpt-oss-120b',
-    name: 'GPT-OSS 120B',
-    provider: 'openrouter',
-    modelId: 'openai/gpt-oss-120b',
-    keyPlaceholder: 'sk-or-...',
-    keyUrl: 'https://openrouter.ai/keys',
-    description: 'Extreme cost efficiency (<1¢)'
-  }
-] as const;
+import { usePoetiqModels } from '@/hooks/usePoetiqModels';
 
 const EXPERT_OPTIONS = [
   { value: '1', label: '1 Expert (Poetiq-a)' },
@@ -87,37 +40,88 @@ const EXPERT_OPTIONS = [
   { value: '8', label: '8 Experts (Poetiq-c)' },
 ];
 
+const MODEL_CARD_COLORS = [
+  'bg-blue-50 border-blue-200 text-blue-800',
+  'bg-gray-100 border-gray-200 text-gray-800',
+  'bg-amber-50 border-amber-200 text-amber-800',
+];
+
+const ROUTING_LABELS: Record<string, string> = {
+  direct: 'Direct API',
+  openrouter: 'OpenRouter Relay',
+};
+
+const mapProviderToSlug = (provider?: string): 'openrouter' | 'gemini' | 'openai' => {
+  if (!provider) return 'openrouter';
+  const normalized = provider.toLowerCase();
+  if (normalized.includes('google')) return 'gemini';
+  if (normalized.includes('openai')) return 'openai';
+  if (normalized.includes('openrouter')) return 'openrouter';
+  return 'openrouter';
+};
+
+const getRoutingLabel = (routing?: string) => {
+  if (!routing) return ROUTING_LABELS.openrouter;
+  return ROUTING_LABELS[routing] ?? ROUTING_LABELS.openrouter;
+};
+
+const KEY_PLACEHOLDERS: Record<'openrouter' | 'gemini' | 'openai', string> = {
+  openrouter: 'sk-or-...',
+  gemini: 'AIza...',
+  openai: 'sk-...',
+};
+
+const PROVIDER_KEY_URLS: Record<'openrouter' | 'gemini' | 'openai', string> = {
+  openrouter: 'https://openrouter.ai/keys',
+  gemini: 'https://aistudio.google.com/app/apikey',
+  openai: 'https://platform.openai.com/account/api-keys',
+};
+
 export default function PoetiqCommunity() {
   const [, navigate] = useLocation();
   const progress = usePoetiqCommunityProgress();
+  const { data: models = [], isLoading: modelsLoading } = usePoetiqModels();
   const [showSettings, setShowSettings] = useState(false);
 
   // Configuration state
-  const [selectedModelId, setSelectedModelId] = useState<string>('gemini-3-pro');
+  const [selectedModelId, setSelectedModelId] = useState('');
   const [apiKey, setApiKey] = useState('');
   const [numExperts, setNumExperts] = useState('2');
-
-  const selectedModel = POETIQ_MODELS.find(m => m.id === selectedModelId)!;
 
   useEffect(() => {
     document.title = 'Poetiq Integration Audit';
   }, []);
 
+  useEffect(() => {
+    if (!selectedModelId && models.length > 0) {
+      const defaultModel = models.find(m => m.recommended) ?? models[0];
+      setSelectedModelId(defaultModel.id);
+    }
+  }, [models, selectedModelId]);
+
+  const selectedModel = models.find(m => m.id === selectedModelId) ?? null;
+  const providerSlug = mapProviderToSlug(selectedModel?.provider);
+  const requiresByo = selectedModel?.requiresBYO ?? false;
+  const routingLabel = getRoutingLabel(selectedModel?.routing);
+  const recommendedModels = useMemo(() => models.filter(m => m.recommended), [models]);
+  const keyPlaceholder = KEY_PLACEHOLDERS[providerSlug];
+  const providerKeyUrl = PROVIDER_KEY_URLS[providerSlug];
+
   const nextPuzzle = progress.getNextRecommended();
-  const canStart = !!nextPuzzle;
+  const canStart = !!nextPuzzle && !!selectedModel && !modelsLoading && (!requiresByo || !!apiKey.trim());
   const usingProjectKey = !apiKey.trim();
-  const requiresApiKey = selectedModel.provider === 'gemini' || selectedModel.provider === 'openrouter';
 
   const handleRunNext = () => {
-    if (!nextPuzzle) return;
+    if (!nextPuzzle || !selectedModel) return;
 
     sessionStorage.setItem('poetiq_config', JSON.stringify({
       apiKey,
-      provider: selectedModel.provider,
-      model: selectedModel.modelId,
+      provider: providerSlug,
+      model: selectedModel.id,
       numExperts: parseInt(numExperts, 10),
       temperature: 1.0,
       autoStart: true,
+      routing: selectedModel.routing,
     }));
 
     navigate(`/puzzle/poetiq/${nextPuzzle}`);
@@ -180,19 +184,44 @@ export default function PoetiqCommunity() {
               <div className="grid md:grid-cols-3 gap-4">
                 <div className="space-y-1">
                   <Label className="text-xs font-semibold text-gray-500">Model Configuration</Label>
-                  <Select value={selectedModelId} onValueChange={setSelectedModelId}>
+                  <Select
+                    value={selectedModelId}
+                    onValueChange={setSelectedModelId}
+                    disabled={modelsLoading || !selectedModel}
+                  >
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      {POETIQ_MODELS.map(m => (
-                        <SelectItem key={m.id} value={m.id}>
-                          {m.name}
+                      {models.length === 0 ? (
+                        <SelectItem value="loading" disabled>
+                          Loading models...
                         </SelectItem>
-                      ))}
+                      ) : (
+                        models.map(m => (
+                          <SelectItem key={m.id} value={m.id}>
+                            {`${m.name} · ${m.provider} · ${getRoutingLabel(m.routing)}`}
+                          </SelectItem>
+                        ))
+                      )}
                     </SelectContent>
                   </Select>
-                  <p className="text-[10px] text-gray-500">{selectedModel.description}</p>
+                  <p className="text-[10px] text-gray-500 font-mono">
+                    {selectedModel ? selectedModel.id : 'Model metadata will appear once loaded.'}
+                  </p>
+                  <div className="flex flex-wrap gap-2">
+                    {selectedModel ? (
+                      <>
+                        <Badge variant="outline">{selectedModel.provider}</Badge>
+                        <Badge variant="secondary">{routingLabel}</Badge>
+                        {selectedModel.requiresBYO && (
+                          <Badge variant="destructive">BYO Key Required</Badge>
+                        )}
+                      </>
+                    ) : (
+                      <Badge variant="outline">Loading model info…</Badge>
+                    )}
+                  </div>
                 </div>
 
                 <div className="space-y-1">
