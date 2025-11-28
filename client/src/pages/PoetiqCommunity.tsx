@@ -8,21 +8,15 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import { Link, useLocation } from 'wouter';
+import { useLocation } from 'wouter';
 import {
-  Users,
-  Zap,
-  ArrowRight,
   ExternalLink,
   RefreshCw,
   Play,
-  Key,
   CheckCircle,
   Target,
   Code,
   AlertCircle,
-  ChevronDown,
-  ChevronUp,
   Brain,
   TestTube,
   TrendingUp,
@@ -31,9 +25,7 @@ import {
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { Progress } from '@/components/ui/progress';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -379,18 +371,6 @@ export default function PoetiqCommunity() {
                      variant=""
                      role="OpenAI model used in mixed-model configurations."
                      color="bg-gray-100 border-gray-200 text-gray-800"
-                  />
-                  <ModelCard
-                     name="Grok 4"
-                     variant="Fast"
-                     role="xAI's fast reasoning model for cost-optimized configs."
-                     color="bg-slate-100 border-slate-200 text-slate-800"
-                  />
-                  <ModelCard
-                     name="GPT-OSS"
-                     variant="120B"
-                     role="Open-weights model used for low-cost benchmarking."
-                     color="bg-orange-50 border-orange-200 text-orange-800"
                   />
                </div>
             </div>
