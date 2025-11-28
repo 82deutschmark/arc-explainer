@@ -76,6 +76,7 @@ export interface PoetiqProgressState {
   streamingCode?: string;
   logLines?: string[];
   reasoningHistory?: string[];  // Accumulated reasoning blocks per iteration
+  reasoningSummaryHistory?: string[];  // Responses API reasoning summaries (GPT-5.x)
   pythonLogLines?: string[];    // Python execution output (sandbox/stdout/stderr)
   
   // Fallback indicator
@@ -90,6 +91,7 @@ const initialState: PoetiqProgressState = {
   status: 'idle',
   logLines: [],
   reasoningHistory: [],
+  reasoningSummaryHistory: [],
   pythonLogLines: [],
   streamingReasoning: '',
   streamingCode: '',
@@ -194,6 +196,19 @@ export function usePoetiqProgress(taskId: string | undefined) {
             }
           }
           
+          // Accumulate reasoning SUMMARIES from Responses API (GPT-5.x)
+          // These are the human-readable chain-of-thought summaries
+          let nextReasoningSummaryHistory = prev.reasoningSummaryHistory ? [...prev.reasoningSummaryHistory] : [];
+          if (data.reasoningSummary && typeof data.reasoningSummary === 'string') {
+            const iterMarker = data.iteration ? `[Iteration ${data.iteration}] ` : '';
+            const expertMarker = data.expert ? `[Expert ${data.expert}] ` : '';
+            nextReasoningSummaryHistory.push(`${iterMarker}${expertMarker}${data.reasoningSummary}`);
+            // Cap to 50 entries
+            if (nextReasoningSummaryHistory.length > 50) {
+              nextReasoningSummaryHistory = nextReasoningSummaryHistory.slice(-50);
+            }
+          }
+          
           // Python execution logs (for terminal panel)
           let nextPythonLogLines = prev.pythonLogLines ? [...prev.pythonLogLines] : [];
           if (data.trainResults && Array.isArray(data.trainResults)) {
@@ -260,6 +275,7 @@ export function usePoetiqProgress(taskId: string | undefined) {
             usingFallback: data.usingFallback ?? prev.usingFallback,
             logLines: nextLogLines,
             reasoningHistory: nextReasoningHistory,
+            reasoningSummaryHistory: nextReasoningSummaryHistory,
             pythonLogLines: nextPythonLogLines,
             streamingReasoning: nextStreamingReasoning,
             streamingCode: nextStreamingCode,

@@ -1,6 +1,25 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top!!!
 
+### Version 5.31.6
+
+- **Poetiq Solver: Reasoning Traces Display** (Author: Cascade using Claude Sonnet 4)
+  - **Feature**: Display reasoning summaries from OpenAI Responses API in the UI
+  - **Changes**:
+    1. `llm_openai_responses()` now returns reasoning summary as third tuple element
+    2. Progress events include `reasoningSummary` field for GPT-5.x models
+    3. New `reasoningSummaryHistory` state in `usePoetiqProgress` hook
+    4. **Reasoning Traces panel** in UI (amber-themed, collapsible):
+       - Shows chain-of-thought summaries from GPT-5.x
+       - Button appears only when summaries are available
+       - Displays iteration/expert markers with summary content
+    5. WebSocket service forwards `reasoningSummary` to frontend
+  - **Files Modified**:
+    - `server/python/poetiq_wrapper.py` - Return and emit reasoning summary
+    - `server/services/poetiq/poetiqService.ts` - Forward reasoningSummary in broadcasts
+    - `client/src/hooks/usePoetiqProgress.ts` - Add reasoningSummaryHistory state
+    - `client/src/pages/PoetiqSolver.tsx` - Reasoning Traces toggle and panel
+
 ### Version 5.31.5
 
 - **Poetiq Solver: Direct OpenAI Responses API Integration** (Author: Cascade using Claude Sonnet 4)

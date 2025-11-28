@@ -44,6 +44,7 @@ export type PoetiqBridgeEvent =
       expert?: number;
       code?: string;
       reasoning?: string;
+      reasoningSummary?: string;  // Responses API reasoning summary (GPT-5.x)
       trainResults?: any[];
       promptData?: PoetiqPromptData;  // Added for prompt visibility
     }
@@ -367,6 +368,7 @@ export class PoetiqService {
                 expert: event.expert,
                 code: event.code,
                 reasoning: event.reasoning,
+                reasoningSummary: event.reasoningSummary,  // Responses API reasoning summary
                 trainResults: event.trainResults,
                 promptData: event.promptData,  // Forward prompt data to frontend
               });

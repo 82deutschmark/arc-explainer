@@ -11,7 +11,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, Link } from 'wouter';
-import { Loader2, Square, ChevronDown, ChevronUp, Activity, Timer, Layers, Copy, Check, Rocket, Key, Eye, EyeOff, Code2, Server } from 'lucide-react';
+import { Loader2, Square, ChevronDown, ChevronUp, Activity, Timer, Layers, Copy, Check, Rocket, Key, Eye, EyeOff, Code2, Server, Brain } from 'lucide-react';
 import { usePuzzle } from '@/hooks/usePuzzle';
 import { usePoetiqProgress } from '@/hooks/usePoetiqProgress';
 import { usePoetiqModels, type PoetiqModelOption } from '@/hooks/usePoetiqModels';
@@ -42,6 +42,7 @@ export default function PoetiqSolver() {
   const eventLogRef = useRef<HTMLDivElement>(null);  // For auto-scroll
   const [showApiKey, setShowApiKey] = useState(false);  // Toggle API key input visibility
   const [showPromptInspector, setShowPromptInspector] = useState(false);  // Toggle prompt inspector visibility
+  const [showReasoningTraces, setShowReasoningTraces] = useState(false);  // Toggle reasoning traces visibility
   
   // Fetch available models for dropdown
   const { data: models = [], isLoading: modelsLoading } = usePoetiqModels();
@@ -466,6 +467,21 @@ export default function PoetiqSolver() {
               </button>
             )}
 
+            {/* Reasoning Traces Toggle - Only show when we have summaries (GPT-5.x) */}
+            {(state.reasoningSummaryHistory?.length ?? 0) > 0 && (
+              <button
+                onClick={() => setShowReasoningTraces(!showReasoningTraces)}
+                className={`flex items-center gap-1.5 text-xs px-2 py-1 rounded transition-colors ${
+                  showReasoningTraces 
+                    ? 'bg-amber-100 text-amber-700' 
+                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                }`}
+              >
+                <Brain className="h-3 w-3" />
+                Reasoning ({state.reasoningSummaryHistory?.length})
+              </button>
+            )}
+
             {/* Spacer */}
             <div className="flex-1" />
 
@@ -637,6 +653,32 @@ export default function PoetiqSolver() {
                       <span> • <span className="font-bold">Summary:</span> {state.currentPromptData.reasoningParams.summary}</span>
                     )}
                   </div>
+                </div>
+              </div>
+            )}
+
+            {/* Reasoning Traces - Chain-of-thought summaries from GPT-5.x Responses API */}
+            {showReasoningTraces && (state.reasoningSummaryHistory?.length ?? 0) > 0 && (
+              <div className="bg-white border border-amber-300 rounded mb-3 max-h-64 overflow-hidden flex flex-col">
+                <div className="flex items-center justify-between px-4 py-2 bg-amber-50 border-b border-amber-300 sticky top-0">
+                  <div className="flex items-center gap-2">
+                    <Brain className="w-4 h-4 text-amber-600" />
+                    <span className="text-sm font-bold text-amber-700">REASONING TRACES</span>
+                    <span className="text-xs text-amber-500">({state.reasoningSummaryHistory?.length} summaries)</span>
+                  </div>
+                  <span className="text-xs text-amber-600">GPT-5.x chain-of-thought</span>
+                </div>
+                <div className="overflow-y-auto p-3 text-xs font-mono bg-amber-50/50 flex-1 space-y-3">
+                  {state.reasoningSummaryHistory?.map((summary, idx) => (
+                    <div key={idx} className="bg-white border border-amber-200 rounded p-3">
+                      <div className="text-amber-700 font-bold text-xs mb-1">
+                        {summary.match(/^\[.*?\]/)?.[0] || `Summary ${idx + 1}`}
+                      </div>
+                      <pre className="whitespace-pre-wrap text-gray-700 text-xs leading-relaxed">
+                        {summary.replace(/^\[.*?\]\s*/, '')}
+                      </pre>
+                    </div>
+                  ))}
                 </div>
               </div>
             )}
