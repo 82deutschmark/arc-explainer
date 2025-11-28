@@ -1,8 +1,8 @@
 /**
  * Author: Cascade (Claude Sonnet 4)
  * Date: 2025-11-25
- * Updated: 2025-11-27 - Removed duplicate WebSocket broadcasting (now handled by poetiqService)
- *                       Controller callback now only logs to console for all event types.
+ * Updated: 2025-11-28 - BYO Key requirement enforced (no server key fallback)
+ *                       Removed duplicate WebSocket broadcasting (now handled by poetiqService)
  * PURPOSE: Poetiq solver API controller - handles HTTP requests for running the 
  *          Poetiq ARC-AGI solver and storing results in the database.
  * 
@@ -137,14 +137,16 @@ export const poetiqController = {
     // Generate session ID for progress tracking
     const sessionId = randomUUID();
 
-    // Extract BYO API key (optional - falls back to env vars)
+    // Extract BYO API key (REQUIRED - no fallback to server keys)
     const apiKey = req.body?.apiKey as string | undefined;
-    const provider = req.body?.provider as 'gemini' | 'openrouter' | undefined;
+    const provider = req.body?.provider as 'gemini' | 'openrouter' | 'openai' | 'anthropic' | 'xai' | undefined;
 
-    // Determine if using fallback (no API key provided)
-    const usingFallback = !apiKey || apiKey.trim().length === 0;
-    if (usingFallback) {
-      console.log('[Poetiq] No BYO API key provided - using server environment variables');
+    // Validate: Bring Your Own Key is required for Poetiq
+    if (!apiKey || apiKey.trim().length === 0) {
+      return res.status(400).json(formatResponse.error(
+        'api_key_required',
+        'Bring Your Own Key required: Please provide your API key for the selected provider. Your key is used for this session only and is never stored.'
+      ));
     }
 
     // Extract options from request body
@@ -160,17 +162,14 @@ export const poetiqController = {
     };
 
     // Broadcast initial state immediately
-    console.log('[Poetiq] Broadcasting initial state for sessionId:', sessionId, usingFallback ? '(using fallback API key)' : '');
+    console.log('[Poetiq] Broadcasting initial state for sessionId:', sessionId);
     broadcast(sessionId, {
       status: 'running',
       phase: 'initializing',
       iteration: 0,
       totalIterations: options.maxIterations,
-      message: usingFallback 
-        ? 'Starting Poetiq solver (using server API key)...' 
-        : 'Starting Poetiq solver...',
+      message: 'Starting Poetiq solver with your API key...',
       taskId,
-      usingFallback,
       config: {
         model: options.model || 'gemini/gemini-3-pro-preview',
         maxIterations: options.maxIterations,
@@ -258,11 +257,8 @@ export const poetiqController = {
     // Return session info immediately (never include API key in response)
     return res.json(formatResponse.success({
       sessionId,
-      message: usingFallback 
-        ? 'Poetiq solver started (using server API key)' 
-        : 'Poetiq solver started',
+      message: 'Poetiq solver started',
       taskId,
-      usingFallback,
       config: {
         model: options.model || 'gemini/gemini-3-pro-preview',
         maxIterations: options.maxIterations,

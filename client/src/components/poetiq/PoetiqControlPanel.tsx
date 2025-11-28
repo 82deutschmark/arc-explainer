@@ -1,7 +1,7 @@
 ﻿/**
  * Author: Cascade using Claude Sonnet 4
  * Date: 2025-11-26
- * Updated: 2025-11-26 - Dynamic model loading from API (no hardcoded lists)
+ * Updated: 2025-11-28 - BYO Key requirement (no server fallback), dynamic model loading
  * PURPOSE: Control panel for Poetiq solver page (/puzzle/poetiq/:taskId).
  *          Fetches Poetiq-specific models from /api/poetiq/models and groups by provider.
  *          Expert configs: 1, 2, 8 only (from config.py).
@@ -84,8 +84,9 @@ export default function PoetiqControlPanel({
   // Fetch all models from API
   const { data: poetiqModels, isLoading: modelsLoading } = usePoetiqModels();
   
-  // Can always start (API key is optional - falls back to server env vars)
-  const canStart = !isRunning && !modelsLoading;
+  // Bring Your Own Key is REQUIRED - no fallback to server keys
+  const hasApiKey = apiKey.trim().length > 0;
+  const canStart = !isRunning && !modelsLoading && hasApiKey;
 
   // Group models by family for the dropdown
   const groupedModels = useMemo(() => {
@@ -197,13 +198,11 @@ export default function PoetiqControlPanel({
                       <>
                         <Server className="h-3.5 w-3.5" />
                         <span>Direct API to <strong>{selectedModelObj?.provider}</strong></span>
-                        <span className="ml-auto text-[10px] opacity-80">(Requires Your API Key)</span>
                       </>
                     ) : (
                       <>
                         <Cloud className="h-3.5 w-3.5" />
                         <span>Via <strong>OpenRouter</strong></span>
-                        <span className="ml-auto text-[10px] opacity-80">(Uses Server Key)</span>
                       </>
                     )}
                   </div>
@@ -251,27 +250,38 @@ export default function PoetiqControlPanel({
         </div>
       </div>
 
-      {/* API Key Card (Dynamic) */}
-      <div className="card bg-white border border-gray-300 shadow-sm">
+      {/* Bring Your Own Key Card - REQUIRED */}
+      <div className={`card bg-white border shadow-sm ${hasApiKey ? 'border-green-300' : 'border-amber-400'}`}>
         <div className="card-body p-4">
           <h3 className="card-title text-sm flex items-center gap-2">
-            <Key className="w-4 h-4" />
-            API Key (Optional)
+            <Key className={`w-4 h-4 ${hasApiKey ? 'text-green-600' : 'text-amber-600'}`} />
+            Bring Your Own Key
+            <span className="badge badge-sm badge-warning">Required</span>
           </h3>
           <div className="space-y-2">
-            <div className="bg-blue-50 border border-blue-200 rounded p-2">
-              <p className="text-[10px] text-blue-700 leading-tight">
-                Leave blank to use server key. Provide your own <strong>{selectedModelObj?.provider}</strong> key for unlimited access.
+            <div className={`rounded p-2 ${hasApiKey ? 'bg-green-50 border border-green-200' : 'bg-amber-50 border border-amber-200'}`}>
+              <p className={`text-[10px] leading-tight ${hasApiKey ? 'text-green-700' : 'text-amber-700'}`}>
+                {hasApiKey 
+                  ? <>✓ Your <strong>{selectedModelObj?.provider}</strong> key is set. It's used for this session only and never stored.</>
+                  : <>Provide your <strong>{selectedModelObj?.provider}</strong> API key to run Poetiq. Your key is used for this session only and never stored.</>}
               </p>
             </div>
             <input
-              type="text"
+              type="password"
               value={apiKey}
               onChange={(e) => setApiKey(e.target.value)}
               disabled={isRunning}
               placeholder={keyPlaceholder}
-              className="input input-bordered input-sm w-full font-mono text-xs"
+              className={`input input-bordered input-sm w-full font-mono text-xs ${!hasApiKey && 'input-warning'}`}
             />
+            {!hasApiKey && (
+              <p className="text-[10px] text-amber-600">
+                Get your API key from: 
+                <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener noreferrer" className="link link-primary ml-1">Google AI Studio</a> | 
+                <a href="https://platform.openai.com/api-keys" target="_blank" rel="noopener noreferrer" className="link link-primary ml-1">OpenAI</a> | 
+                <a href="https://openrouter.ai/keys" target="_blank" rel="noopener noreferrer" className="link link-primary ml-1">OpenRouter</a>
+              </p>
+            )}
           </div>
         </div>
       </div>
