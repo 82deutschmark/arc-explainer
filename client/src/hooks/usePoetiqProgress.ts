@@ -27,6 +27,21 @@ export interface PoetiqOptions {
   reasoningEffort?: 'low' | 'medium' | 'high'; // Optional reasoning effort
 }
 
+// Prompt data from the Python wrapper - shows what's being sent to the AI
+export interface PromptData {
+  systemPrompt?: string;
+  userPrompt?: string;
+  model?: string;
+  temperature?: number;
+  provider?: string;        // "OpenAI", "OpenRouter", "Google Gemini", etc.
+  apiStyle?: string;        // "Responses API" or "ChatCompletions API"
+  reasoningParams?: {
+    effort?: string;        // "low", "medium", "high", or "default"
+    verbosity?: string;     // "high" or "default"
+    summary?: string;       // "detailed", "auto", or "default"
+  } | null;
+}
+
 export interface PoetiqProgressState {
   status: 'idle' | 'running' | 'completed' | 'error';
   phase?: string;
@@ -65,6 +80,10 @@ export interface PoetiqProgressState {
   
   // Fallback indicator
   usingFallback?: boolean;
+  
+  // Prompt visibility - shows what's being sent to the AI
+  currentPromptData?: PromptData;
+  promptHistory?: PromptData[];  // All prompts sent during this run
 }
 
 const initialState: PoetiqProgressState = {
@@ -75,6 +94,8 @@ const initialState: PoetiqProgressState = {
   streamingReasoning: '',
   streamingCode: '',
   streamingText: '',
+  currentPromptData: undefined,
+  promptHistory: [],
 };
 
 /**
@@ -196,6 +217,25 @@ export function usePoetiqProgress(taskId: string | undefined) {
           // Streaming code - replace with latest
           const nextStreamingCode = data.code || prev.streamingCode;
           
+          // Prompt data - track current and accumulate history
+          let nextCurrentPromptData = prev.currentPromptData;
+          let nextPromptHistory = prev.promptHistory ? [...prev.promptHistory] : [];
+          if (data.promptData) {
+            nextCurrentPromptData = data.promptData as PromptData;
+            // Add to history if it's a new prompt (different iteration or expert)
+            const isDuplicate = nextPromptHistory.some(p => 
+              p.userPrompt === data.promptData.userPrompt && 
+              p.model === data.promptData.model
+            );
+            if (!isDuplicate) {
+              nextPromptHistory.push(data.promptData as PromptData);
+            }
+            // Cap history to 50 entries
+            if (nextPromptHistory.length > 50) {
+              nextPromptHistory = nextPromptHistory.slice(-50);
+            }
+          }
+          
           // Track latest iteration result details if available
           const currentResult = prev.result || {
             success: false,
@@ -224,6 +264,8 @@ export function usePoetiqProgress(taskId: string | undefined) {
             streamingReasoning: nextStreamingReasoning,
             streamingCode: nextStreamingCode,
             streamingText: data.message || prev.streamingText,
+            currentPromptData: nextCurrentPromptData,
+            promptHistory: nextPromptHistory,
           };
         });
 
@@ -294,6 +336,7 @@ export function usePoetiqProgress(taskId: string | undefined) {
         numExperts,
         maxIterations,
         temperature,
+        reasoningEffort: options.reasoningEffort || 'high',  // Default to high for best results
       });
       const response = await res.json();
 

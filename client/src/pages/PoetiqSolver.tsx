@@ -11,7 +11,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, Link } from 'wouter';
-import { Loader2, Square, ChevronDown, ChevronUp, Activity, Timer, Layers, Copy, Check, Rocket, Key } from 'lucide-react';
+import { Loader2, Square, ChevronDown, ChevronUp, Activity, Timer, Layers, Copy, Check, Rocket, Key, Eye, EyeOff, Code2, Server } from 'lucide-react';
 import { usePuzzle } from '@/hooks/usePuzzle';
 import { usePoetiqProgress } from '@/hooks/usePoetiqProgress';
 import { usePoetiqModels, type PoetiqModelOption } from '@/hooks/usePoetiqModels';
@@ -41,6 +41,7 @@ export default function PoetiqSolver() {
   const [copied, setCopied] = useState(false);  // For copy button feedback
   const eventLogRef = useRef<HTMLDivElement>(null);  // For auto-scroll
   const [showApiKey, setShowApiKey] = useState(false);  // Toggle API key input visibility
+  const [showPromptInspector, setShowPromptInspector] = useState(false);  // Toggle prompt inspector visibility
   
   // Fetch available models for dropdown
   const { data: models = [], isLoading: modelsLoading } = usePoetiqModels();
@@ -305,6 +306,25 @@ export default function PoetiqSolver() {
         
         {/* Right side: Status + Metrics + Controls */}
         <div className="flex items-center gap-4">
+          {/* Provider Badge - Shows if using Direct API or OpenRouter */}
+          {(isRunning || isDone) && state.currentPromptData?.provider && (
+            <div className="flex items-center gap-2 px-3 py-1.5 rounded bg-white/10" title={`API: ${state.currentPromptData.apiStyle || 'Unknown'}`}>
+              <Server className="h-4 w-4" />
+              <span className="text-sm font-medium">
+                {state.currentPromptData.provider === 'OpenAI' ? (
+                  <span className="text-green-400">🔗 Direct OpenAI</span>
+                ) : state.currentPromptData.provider === 'OpenRouter' ? (
+                  <span className="text-amber-400">🔀 OpenRouter</span>
+                ) : (
+                  <span className="text-blue-400">{state.currentPromptData.provider}</span>
+                )}
+              </span>
+              {state.currentPromptData.apiStyle && (
+                <span className="text-xs text-indigo-300">({state.currentPromptData.apiStyle})</span>
+              )}
+            </div>
+          )}
+          
           {/* Status Indicator */}
           <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/10">
             <div className={`w-3 h-3 rounded-full ${isRunning ? 'bg-green-400 animate-pulse' : isDone ? 'bg-blue-400' : hasError ? 'bg-red-400' : 'bg-gray-400'}`} />
@@ -431,6 +451,21 @@ export default function PoetiqSolver() {
               />
             )}
 
+            {/* Prompt Inspector Toggle */}
+            {(isRunning || isDone || state.promptHistory?.length) && (
+              <button
+                onClick={() => setShowPromptInspector(!showPromptInspector)}
+                className={`flex items-center gap-1.5 text-xs px-2 py-1 rounded transition-colors ${
+                  showPromptInspector 
+                    ? 'bg-purple-100 text-purple-700' 
+                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                }`}
+              >
+                {showPromptInspector ? <EyeOff className="h-3 w-3" /> : <Eye className="h-3 w-3" />}
+                Prompts
+              </button>
+            )}
+
             {/* Spacer */}
             <div className="flex-1" />
 
@@ -544,6 +579,68 @@ export default function PoetiqSolver() {
               </div>
             )}
 
+            {/* Prompt Inspector - Shows what's being sent to the AI */}
+            {showPromptInspector && state.currentPromptData && (
+              <div className="bg-white border border-purple-300 rounded mb-3 max-h-64 overflow-hidden flex flex-col">
+                <div className="flex items-center justify-between px-4 py-2 bg-purple-50 border-b border-purple-300 sticky top-0">
+                  <div className="flex items-center gap-2">
+                    <Code2 className="w-4 h-4 text-purple-600" />
+                    <span className="text-sm font-bold text-purple-700">PROMPT INSPECTOR</span>
+                    <span className="text-xs text-purple-500">(Iteration {state.iteration || 1})</span>
+                  </div>
+                  <div className="flex items-center gap-3 text-xs">
+                    {state.currentPromptData.provider && (
+                      <span className={`px-2 py-0.5 rounded ${
+                        state.currentPromptData.provider === 'OpenAI' 
+                          ? 'bg-green-100 text-green-700' 
+                          : 'bg-amber-100 text-amber-700'
+                      }`}>
+                        {state.currentPromptData.provider}
+                      </span>
+                    )}
+                    {state.currentPromptData.apiStyle && (
+                      <span className="px-2 py-0.5 rounded bg-blue-100 text-blue-700">
+                        {state.currentPromptData.apiStyle}
+                      </span>
+                    )}
+                    {state.currentPromptData.reasoningParams?.effort && state.currentPromptData.reasoningParams.effort !== 'default' && (
+                      <span className="px-2 py-0.5 rounded bg-indigo-100 text-indigo-700">
+                        Reasoning: {state.currentPromptData.reasoningParams.effort}
+                      </span>
+                    )}
+                  </div>
+                </div>
+                <div className="overflow-y-auto p-3 text-xs font-mono bg-gray-50 flex-1">
+                  {/* User Prompt (most important - show first) */}
+                  <div className="mb-3">
+                    <div className="text-purple-600 font-bold mb-1">User Prompt (sent to AI):</div>
+                    <pre className="bg-white border border-gray-200 rounded p-2 whitespace-pre-wrap overflow-x-auto max-h-32 overflow-y-auto text-gray-800">
+                      {state.currentPromptData.userPrompt?.substring(0, 2000) || 'No user prompt'}
+                      {state.currentPromptData.userPrompt && state.currentPromptData.userPrompt.length > 2000 && '...'}
+                    </pre>
+                  </div>
+                  {/* System Prompt */}
+                  <details className="mb-2">
+                    <summary className="text-purple-600 font-bold cursor-pointer hover:text-purple-800">System Prompt (click to expand)</summary>
+                    <pre className="bg-white border border-gray-200 rounded p-2 mt-1 whitespace-pre-wrap overflow-x-auto max-h-24 overflow-y-auto text-gray-600">
+                      {state.currentPromptData.systemPrompt || 'No system prompt'}
+                    </pre>
+                  </details>
+                  {/* Model & Config */}
+                  <div className="text-gray-500 mt-2">
+                    <span className="font-bold">Model:</span> {state.currentPromptData.model} • 
+                    <span className="font-bold"> Temp:</span> {state.currentPromptData.temperature}
+                    {state.currentPromptData.reasoningParams?.verbosity && state.currentPromptData.reasoningParams.verbosity !== 'default' && (
+                      <span> • <span className="font-bold">Verbosity:</span> {state.currentPromptData.reasoningParams.verbosity}</span>
+                    )}
+                    {state.currentPromptData.reasoningParams?.summary && state.currentPromptData.reasoningParams.summary !== 'default' && (
+                      <span> • <span className="font-bold">Summary:</span> {state.currentPromptData.reasoningParams.summary}</span>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
+            
             {/* Event Log - Show when running or after completion */}
             {(isRunning || isDone || (state.logLines?.length ?? 0) > 0) && (
               <div className="bg-white border border-gray-300 rounded flex-1 min-h-0 flex flex-col h-full">
