@@ -580,7 +580,7 @@ export class PoetiqService {
     const multiplePredictedOutputs: number[][][] | null = hasValidatedMulti
       ? (multiValidation?.multiplePredictedOutputs ?? [])
       : hasMultiple
-        ? normalizedPredictions.filter((g): g is number[][] => g !== null)
+        ? (normalizedPredictions.filter((g): g is number[][] => g !== null) as number[][])
         : null;
     const multiTestResults = hasValidatedMulti ? multiValidation?.multiTestResults ?? [] : null;
     const multiTestAllCorrect = hasValidatedMulti
