@@ -1,6 +1,18 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top!!!
 
+### Version 5.31.3
+
+- **Poetiq Solver Training Examples Display Fix** (Author: Cascade using Claude Sonnet 4)
+  - **Problem**: Training examples section in PoetiqSolver showed empty space instead of actual grid content
+  - **Root Cause**: PoetiqSolver was using `TinyGrid` component instead of the project's standard `PuzzleGrid` component
+  - **Fix**: 
+    - Replaced `TinyGrid` with `PuzzleGrid` component to match rest of project
+    - Added required props: `title`, `compact`, `maxWidth`, `maxHeight`, `showEmojis`, `showColorOnly`, `emojiSet`
+    - Fixed TypeScript errors by adding missing `title` prop to both input and output grids
+  - **Files Modified**: `client/src/pages/PoetiqSolver.tsx`
+  - **Impact**: Training examples now properly display input→output grid pairs in the right-side panel before solver starts
+
 ### Version 5.31.2
 
 - **Poetiq Deployment Fix - Remove Submodule Cloning** (Author: Cascade using Claude Sonnet 4)
