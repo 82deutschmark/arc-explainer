@@ -321,12 +321,8 @@ export class PoetiqService {
         }
       }
       
-      // For direct OpenAI models, ensure OPENAI_API_KEY is available
-      // (either from BYO key or server environment)
-      if (this.isDirectOpenAIModel(options.model) && !childEnv.OPENAI_API_KEY) {
-        // Will use process.env.OPENAI_API_KEY inherited from parent
-        console.log('[Poetiq] Direct OpenAI model detected, using server OPENAI_API_KEY');
-      }
+      // For direct OpenAI models, the BYO key should already be set above
+      // No fallback to server environment - user must provide their own key
 
       // Debug: Log environment keys (not values) to verify they're present
       const envKeys = Object.keys(childEnv).filter(k => k.includes('API_KEY'));

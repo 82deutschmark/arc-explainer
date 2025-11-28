@@ -1,7 +1,7 @@
 /**
  * Author: Cascade (Claude Sonnet 4)
  * Date: 2025-11-25
- * Updated: 2025-11-27 - Horizontal control bar, simplified layout
+ * Updated: 2025-11-28 - BYO Key requirement (no server fallback)
  * PURPOSE: Poetiq Iterative Code-Generation Solver page.
  *          Single horizontal control bar at top, full-width content below.
  *          Controls disappear when running to maximize output visibility.
@@ -40,7 +40,7 @@ export default function PoetiqSolver() {
   const [showLogs, setShowLogs] = useState(true);  // Show event log panel
   const [copied, setCopied] = useState(false);  // For copy button feedback
   const eventLogRef = useRef<HTMLDivElement>(null);  // For auto-scroll
-  const [showApiKey, setShowApiKey] = useState(false);  // Toggle API key input visibility
+  // showApiKey state removed - BYO key input always visible since it's required
   const [showPromptInspector, setShowPromptInspector] = useState(false);  // Toggle prompt inspector visibility
   const [showReasoningTraces, setShowReasoningTraces] = useState(false);  // Toggle reasoning traces visibility
   
@@ -75,9 +75,8 @@ export default function PoetiqSolver() {
         if (config.numExperts) setNumExperts(config.numExperts);
         if (config.temperature) setTemperature(config.temperature);
         
-        // Auto-start if configured and task is loaded
-        // API key is optional - server falls back to project key
-        if (config.autoStart && task) {
+        // Auto-start if configured AND has API key (now required)
+        if (config.autoStart && task && config.apiKey) {
           setAutoStartTriggered(true);
           setCameFromCommunity(true);
           // Controls are now always visible
@@ -358,9 +357,18 @@ export default function PoetiqSolver() {
               Stop
             </button>
           ) : !isDone && (
-            <button onClick={handleStart} className="flex items-center gap-2 px-5 py-2.5 rounded-lg bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 transition-colors font-bold">
+            <button 
+              onClick={handleStart} 
+              disabled={!apiKey.trim()}
+              className={`flex items-center gap-2 px-5 py-2.5 rounded-lg font-bold transition-colors ${
+                apiKey.trim() 
+                  ? 'bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700' 
+                  : 'bg-gray-400 cursor-not-allowed'
+              }`}
+              title={!apiKey.trim() ? 'Enter your API key to start' : 'Start the Poetiq solver'}
+            >
               <Rocket className="h-5 w-5" />
-              Start
+              {apiKey.trim() ? 'Start' : 'Need API Key'}
             </button>
           )}
         </div>
@@ -432,25 +440,20 @@ export default function PoetiqSolver() {
               />
             </div>
 
-            {/* API Key Toggle */}
-            <button
-              onClick={() => setShowApiKey(!showApiKey)}
-              className={`flex items-center gap-1 text-xs px-2 py-1 rounded ${showApiKey ? 'bg-indigo-100 text-indigo-700' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
-            >
-              <Key className="h-3 w-3" />
-              {apiKey ? 'Key Set' : 'Add Key'}
-            </button>
-
-            {/* API Key Input (conditional) */}
-            {showApiKey && (
+            {/* Bring Your Own Key - REQUIRED */}
+            <div className={`flex items-center gap-2 px-2 py-1 rounded border ${apiKey.trim() ? 'bg-green-50 border-green-300' : 'bg-amber-50 border-amber-300'}`}>
+              <Key className={`h-3.5 w-3.5 ${apiKey.trim() ? 'text-green-600' : 'text-amber-600'}`} />
+              <span className={`text-xs font-medium ${apiKey.trim() ? 'text-green-700' : 'text-amber-700'}`}>
+                {apiKey.trim() ? 'BYO Key Set' : 'BYO Key Required'}
+              </span>
               <input
-                type="text"
+                type="password"
                 value={apiKey}
                 onChange={(e) => setApiKey(e.target.value)}
-                placeholder="sk-... (optional)"
-                className="input input-bordered input-xs text-xs w-40 font-mono"
+                placeholder="Enter your API key..."
+                className={`input input-bordered input-xs text-xs w-36 font-mono ${!apiKey.trim() && 'input-warning'}`}
               />
-            )}
+            </div>
 
             {/* Prompt Inspector Toggle */}
             {(isRunning || isDone || state.promptHistory?.length) && (
@@ -500,10 +503,10 @@ export default function PoetiqSolver() {
         <div className="h-full grid grid-cols-12 gap-4">
           {/* LEFT: Iteration Progress (5 cols normally, 4 when running) */}
           <div className={`${isRunning || isDone ? 'col-span-4' : 'col-span-5'} overflow-y-auto`}>
-            {/* Fallback API Key Notice */}
-            {state.usingFallback && (
-              <div className="bg-amber-50 border border-amber-300 rounded px-4 py-2 text-sm text-amber-800 mb-3">
-                <strong>Note:</strong> Using server API key (no BYO key provided)
+            {/* Error Display - Including API key required error */}
+            {hasError && state.message && (
+              <div className="bg-red-50 border border-red-300 rounded px-4 py-2 text-sm text-red-800 mb-3">
+                <strong>Error:</strong> {state.message}
               </div>
             )}
             
