@@ -14,26 +14,36 @@
 
 ### Version 5.31.1
 
-- **Poetiq Community & Solver Page Layout Improvements** (Author: Claude Code using Haiku 4.5)
-  - **Purpose**: Improve user experience by showing training grids upfront and reorganizing Community page layout
+- **Poetiq Community Page: Scientific Metrics & Layout Redesign** (Author: Claude Code using Haiku 4.5)
+  - **Purpose**: Reorganize Community page with scientifically rigorous test coverage metrics and training grids on solver page
   - **Changes**:
-    1. **PoetiqCommunity.tsx Layout Reorganization**:
-       - Moved explanations (Technical Definitions + Deep Dive sections) to top of page
-       - Moved Community Progress puzzle grid to bottom of page
-       - Clearer information hierarchy: understand the system → verify progress
-    2. **PuzzleProgressGrid.tsx Navigation Update**:
-       - Changed puzzle badge click destination from `/puzzle/poetiq/{puzzleId}` to `/puzzle/{puzzleId}`
-       - Users now navigate to regular Puzzle Explainer page instead of Poetiq solver
-       - Allows independent exploration of puzzle structure before running Poetiq verification
-    3. **PoetiqSolver.tsx Training Grid Display**:
-       - Added training examples preview section above control bar
-       - Shows all input→output pairs with arrow indicators
-       - Auto-hides when solver starts to maximize output space
-       - Helps users understand puzzle requirements before starting solver
+    1. **New Scientific Metrics Display**:
+       - **Attempted Coverage**: `attempted / total` showing % of dataset tested
+       - **Success Rate**: `solved / attempted` showing effectiveness on tested puzzles
+       - **Failed Attempts**: Count of unsuccessful tests
+       - **Iteration Efficiency**: Average iterations for solved vs failed attempts (convergence quality)
+       - **Per-Model Breakdown**: Success rate by model (Gemini, GPT, Grok, etc.)
+    2. **Hook Enhancements** (`usePoetiqCommunityProgress.ts`):
+       - Added `ModelStats` interface for per-model statistics
+       - Calculate `attemptedPercentage` and `successRateOnAttempted` from raw counts
+       - Calculate `avgIterationsSolved` and `avgIterationsFailed` comparing solve efficiency
+       - Generate `modelStats` array with per-model success rates
+    3. **PoetiqCommunity.tsx Redesign**:
+       - Moved explanations (Technical Definitions + Deep Dive sections) to top
+       - Replaced simple counter with 5-card metrics panel (coverage, success rate, failures, iterations)
+       - Added per-model performance table
+       - Moved puzzle grid to bottom as "Puzzle Status"
+    4. **PuzzleProgressGrid.tsx Navigation Fix**:
+       - Changed puzzle badge destination from `/puzzle/poetiq/{puzzleId}` to `/puzzle/{puzzleId}`
+       - Users navigate to Puzzle Explainer instead of Poetiq solver
+    5. **PoetiqSolver.tsx Training Grid Display**:
+       - Added training examples to right-side panel
+       - Shows input→output pairs before running, replaced by event log when solver starts
   - **Files Changed**:
-    - `client/src/pages/PoetiqCommunity.tsx` (reorganized sections)
-    - `client/src/components/poetiq/PuzzleProgressGrid.tsx` (navigation target)
-    - `client/src/pages/PoetiqSolver.tsx` (added TinyGrid import, training examples section)
+    - `client/src/hooks/usePoetiqCommunityProgress.ts` (metrics calculations)
+    - `client/src/pages/PoetiqCommunity.tsx` (complete metrics redesign)
+    - `client/src/components/poetiq/PuzzleProgressGrid.tsx` (navigation fix)
+    - `client/src/pages/PoetiqSolver.tsx` (training grid display)
 
 ### Version 5.31.0
 
