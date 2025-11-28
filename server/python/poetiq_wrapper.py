@@ -27,7 +27,10 @@ import sys
 import time
 import traceback
 from pathlib import Path
-from typing import Dict
+from typing import Dict, Tuple, Optional
+
+# OpenAI SDK for direct Responses API calls
+import openai
 
 
 # ==========================================
@@ -234,6 +237,101 @@ _token_cost_tracker = {
     "total": {"tokens": {"input_tokens": 0, "output_tokens": 0, "total_tokens": 0}, "cost": {"input": 0.0, "output": 0.0, "total": 0.0}}
 }
 
+# ==========================================
+# DIRECT OPENAI RESPONSES API CALL
+# ==========================================
+async def llm_openai_responses(
+    model: str,
+    message: str,
+    system_prompt: str,
+    temperature: float = 1.0,
+    reasoning_effort: str = "high",
+    verbosity: str = "high",
+    reasoning_summary: str = "detailed",
+    max_output_tokens: int = 128000,
+    problem_id: Optional[str] = None,
+) -> Tuple[str, dict]:
+    """
+    Call OpenAI via Responses API (POST /v1/responses).
+    Uses proper reasoning parameters for GPT-5.x models.
+    
+    Returns:
+        Tuple of (response_text, token_usage_dict)
+    """
+    # Get API key from environment
+    api_key = os.environ.get("OPENAI_API_KEY")
+    if not api_key:
+        raise ValueError("OPENAI_API_KEY environment variable not set for direct OpenAI call")
+    
+    client = openai.AsyncOpenAI(api_key=api_key)
+    
+    log(f"[Responses API] Calling {model} with reasoning_effort={reasoning_effort}, verbosity={verbosity}, summary={reasoning_summary}")
+    
+    start_time = time.time()
+    
+    try:
+        # Build the Responses API request
+        # See: docs/reference/api/ResponsesAPI.md
+        response = await client.responses.create(
+            model=model,
+            input=[{"role": "user", "content": message}],
+            instructions=system_prompt,
+            reasoning={
+                "effort": reasoning_effort,
+                "summary": reasoning_summary,  # "detailed" for GPT-5.x
+            },
+            text={
+                "verbosity": verbosity,  # "high" for GPT-5.x
+            },
+            max_output_tokens=max_output_tokens,
+            store=True,
+            # Include for stateful chaining if needed
+            include=["reasoning.encrypted_content"],
+        )
+        
+        elapsed = time.time() - start_time
+        log(f"[Responses API] Response received in {elapsed:.2f}s, response_id={response.id}")
+        
+        # Extract text from response.output[]
+        output_text = ""
+        reasoning_summary_text = ""
+        
+        for item in response.output:
+            if item.type == "message":
+                for content in item.content:
+                    if hasattr(content, 'type') and content.type == "output_text":
+                        output_text += content.text
+            elif item.type == "reasoning":
+                # Capture reasoning summary if available
+                if hasattr(item, 'summary') and item.summary:
+                    reasoning_summary_text = item.summary
+        
+        # Build token usage dict matching our format
+        token_usage = {
+            "input_tokens": response.usage.input_tokens if response.usage else 0,
+            "output_tokens": response.usage.output_tokens if response.usage else 0,
+            "total_tokens": (response.usage.input_tokens + response.usage.output_tokens) if response.usage else 0,
+        }
+        
+        # Extract reasoning tokens if available
+        if response.usage and hasattr(response.usage, 'output_tokens_details'):
+            details = response.usage.output_tokens_details
+            if hasattr(details, 'reasoning_tokens'):
+                token_usage["reasoning_tokens"] = details.reasoning_tokens
+                log(f"[Responses API] Reasoning tokens: {details.reasoning_tokens}")
+        
+        log(f"[Responses API] Tokens: input={token_usage['input_tokens']}, output={token_usage['output_tokens']}")
+        
+        return output_text, token_usage
+        
+    except openai.APIError as e:
+        log(f"[Responses API] API Error: {e}", level="error")
+        raise
+    except Exception as e:
+        log(f"[Responses API] Unexpected error: {e}", level="error")
+        raise
+
+
 # Determine API routing based on model
 def get_api_routing(model_id: str) -> dict:
     """
@@ -391,18 +489,36 @@ async def instrumented_solve_coding(
         })
 
         try:
-            # ENHANCED: llm() now returns token_usage as 5th element
-            response, duration, max_total_time, max_total_timeouts, token_usage = await llm(
-                llm_model,
-                message=message,
-                temperature=solver_temperature,
-                request_timeout=request_timeout,
-                max_remaining_time=max_total_time,
-                max_remaining_timeouts=max_total_timeouts,
-                problem_id=problem_id,
-                retries=per_iteration_retries,
-                **llm_kwargs,  # Pass reasoning_effort, verbosity, reasoning_summary etc.
-            )
+            # Route to appropriate API based on model
+            if api_routing["type"] == "direct_openai":
+                # Use OpenAI Responses API directly for GPT-5.x, o3, o4 models
+                log(f"[Direct OpenAI] Using Responses API for {llm_model}")
+                response, token_usage = await llm_openai_responses(
+                    model=llm_model,
+                    message=message,
+                    system_prompt=solver_prompt,
+                    temperature=solver_temperature,
+                    reasoning_effort=llm_kwargs.get("reasoning_effort", "high"),
+                    verbosity=llm_kwargs.get("verbosity", "high"),
+                    reasoning_summary=llm_kwargs.get("reasoning_summary", "detailed"),
+                    max_output_tokens=128000,
+                    problem_id=problem_id,
+                )
+                # Responses API returns (text, usage) - no timing info
+                duration = 0  # Not tracked for Responses API
+            else:
+                # Use litellm for OpenRouter and other providers
+                response, duration, max_total_time, max_total_timeouts, token_usage = await llm(
+                    llm_model,
+                    message=message,
+                    temperature=solver_temperature,
+                    request_timeout=request_timeout,
+                    max_remaining_time=max_total_time,
+                    max_remaining_timeouts=max_total_timeouts,
+                    problem_id=problem_id,
+                    retries=per_iteration_retries,
+                    **llm_kwargs,  # Pass reasoning_effort, verbosity, reasoning_summary etc.
+                )
 
             # Accumulate token usage for this expert
             if token_usage:
