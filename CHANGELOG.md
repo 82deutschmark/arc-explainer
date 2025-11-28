@@ -1,6 +1,50 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top!!!
 
+### Version 5.31.5
+
+- **Poetiq Solver: Prompt Visibility & Provider Routing Transparency** (Author: Cascade using Claude Sonnet 4)
+  - **Problem**: Users could not see what prompts were being sent to the AI, and it wasn't clear whether OpenAI models were calling OpenAI directly or going through OpenRouter.
+  - **Changes**:
+    1. **Prompt Inspector UI** (new feature):
+       - Added collapsible "Prompts" button in control bar when running/completed
+       - Shows real-time system prompt and user prompt being sent to the AI
+       - Displays model, temperature, provider, API style, and reasoning parameters
+       - Purple-themed panel distinguishes it from the event log
+    2. **Provider Badge in Header**:
+       - Shows "🔗 Direct OpenAI" (green) or "🔀 OpenRouter" (amber) during runs
+       - Displays API style ("Responses API" vs "ChatCompletions API")
+       - Helps users understand routing at a glance
+    3. **API Routing Detection** (`poetiq_wrapper.py`):
+       - Added `get_api_routing()` function to detect provider from model ID
+       - Identifies direct OpenAI models (gpt-5.1-codex-mini, o3-mini, etc.)
+       - Correctly labels OpenRouter, Gemini, Anthropic, and xAI models
+    4. **Prompt Data in WebSocket Events**:
+       - Python wrapper now emits `promptData` with each iteration
+       - Includes: systemPrompt, userPrompt, model, temperature, provider, apiStyle, reasoningParams
+       - Frontend hook accumulates prompt history (capped at 50)
+    5. **Reasoning Parameters for GPT-5.x**:
+       - Ensures `verbosity: "high"` and `reasoning_summary: "detailed"` for all GPT-5/o3 models
+       - Added `reasoningEffort` passthrough from UI → controller → wrapper → llm
+  - **Files Modified**:
+    - `server/python/poetiq_wrapper.py` - API routing detection, prompt emission
+    - `server/services/poetiq/poetiqService.ts` - PoetiqPromptData interface, WebSocket forwarding
+    - `server/controllers/poetiqController.ts` - reasoningEffort extraction
+    - `client/src/hooks/usePoetiqProgress.ts` - PromptData interface, state tracking
+    - `client/src/pages/PoetiqSolver.tsx` - Prompt Inspector UI, Provider Badge
+  - **Note**: Poetiq still uses litellm (ChatCompletions API) for actual calls. Direct Responses API integration is documented but requires additional work to implement.
+  - **Plan Document**: `docs/plans/2025-11-27-poetiq-api-improvements-plan.md`
+
+### Version 5.31.4
+
+- **Plan: Enforce User-Provided API Keys for Third-Party Providers** (Author: GPT-5.1 via Codex)
+  - **Purpose**: Define a safe path to require users to enter their own API keys (e.g., Gemini, OpenRouter) instead of silently falling back to project-level keys, while preserving all existing secure behavior and flows that already work.
+  - **Scope**:
+    - Backend: Remove silent project-key fallback for user-facing requests, introduce explicit "API key required" errors, and keep project keys only for system-level tasks.
+    - Frontend: Show clear prompts when a user key is missing and guide users to the existing API key/settings screen to add or update their keys.
+    - Testing & Docs: Add coverage and documentation updates so the new requirement is clearly specified and verifiable.
+  - **Plan Doc**: See `docs/2025-11-28-require-user-api-key-plan.md` for detailed steps, assumptions, and test strategy.
+
 ### Version 5.31.3
 
 - **Poetiq Solver Training Examples Display Fix** (Author: Cascade using Claude Sonnet 4)

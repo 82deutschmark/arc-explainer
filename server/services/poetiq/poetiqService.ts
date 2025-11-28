@@ -45,10 +45,26 @@ export type PoetiqBridgeEvent =
       code?: string;
       reasoning?: string;
       trainResults?: any[];
+      promptData?: PoetiqPromptData;  // Added for prompt visibility
     }
   | { type: 'log'; level: 'info' | 'warn' | 'error'; message: string }
   | { type: 'final'; success: boolean; result: PoetiqResult }
   | { type: 'error'; message: string; traceback?: string };
+
+// Prompt data emitted by Python wrapper for UI visibility
+export interface PoetiqPromptData {
+  systemPrompt?: string;
+  userPrompt?: string;
+  model?: string;
+  temperature?: number;
+  provider?: string;        // "OpenAI", "OpenRouter", "Google Gemini", etc.
+  apiStyle?: string;        // "Responses API" or "ChatCompletions API"
+  reasoningParams?: {
+    effort?: string;
+    verbosity?: string;
+    summary?: string;
+  } | null;
+}
 
 export interface PoetiqStartMetadata {
   puzzleId: string;
@@ -67,6 +83,7 @@ export interface PoetiqOptions {
   numExperts?: number;      // Number of parallel experts: 1, 2, 4, or 8 (default: 2)
   maxIterations?: number;   // Max iterations per expert (default: 10)
   temperature?: number;     // LLM temperature (default: 1.0)
+  reasoningEffort?: 'low' | 'medium' | 'high';  // Reasoning effort for GPT-5.x models
   
   // Internal
   sessionId?: string;       // WebSocket session for progress updates
@@ -302,6 +319,7 @@ export class PoetiqService {
                 code: event.code,
                 reasoning: event.reasoning,
                 trainResults: event.trainResults,
+                promptData: event.promptData,  // Forward prompt data to frontend
               });
             } else if (event.type === 'log') {
               // Forward log events so UI can display them
@@ -508,10 +526,10 @@ export class PoetiqService {
     const isPredictionCorrect =
       singleValidation?.isPredictionCorrect ?? (result.isPredictionCorrect || false);
 
-    const multiplePredictedOutputs = hasValidatedMulti
-      ? multiValidation?.multiplePredictedOutputs ?? []
+    const multiplePredictedOutputs: number[][][] | null = hasValidatedMulti
+      ? (multiValidation?.multiplePredictedOutputs ?? [])
       : hasMultiple
-        ? normalizedPredictions
+        ? normalizedPredictions.filter((g): g is number[][] => g !== null)
         : null;
     const multiTestResults = hasValidatedMulti ? multiValidation?.multiTestResults ?? [] : null;
     const multiTestAllCorrect = hasValidatedMulti

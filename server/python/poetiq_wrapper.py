@@ -234,6 +234,54 @@ _token_cost_tracker = {
     "total": {"tokens": {"input_tokens": 0, "output_tokens": 0, "total_tokens": 0}, "cost": {"input": 0.0, "output": 0.0, "total": 0.0}}
 }
 
+# Determine API routing based on model
+def get_api_routing(model_id: str) -> dict:
+    """
+    Determine which API to use for a given model.
+    Returns: {"type": "direct_openai" | "litellm", "provider": str, "apiStyle": str}
+    """
+    model_lower = model_id.lower()
+    
+    # Direct OpenAI models (use Responses API)
+    DIRECT_OPENAI_MODELS = [
+        'gpt-5.1-codex-mini', 'gpt-5-mini', 'gpt-5-nano', 'gpt-5-',
+        'o3-mini', 'o4-mini', 'o3-2025', 'gpt-4.1'
+    ]
+    
+    # Check if it's a direct OpenAI model (not via openrouter)
+    if 'openrouter' not in model_lower:
+        for direct_model in DIRECT_OPENAI_MODELS:
+            if direct_model in model_lower:
+                return {
+                    "type": "direct_openai",
+                    "provider": "OpenAI",
+                    "apiStyle": "Responses API"
+                }
+    
+    # OpenRouter routes
+    if 'openrouter' in model_lower:
+        return {
+            "type": "litellm",
+            "provider": "OpenRouter",
+            "apiStyle": "ChatCompletions API"
+        }
+    
+    # Default to litellm
+    provider = "Unknown"
+    if 'gemini' in model_lower:
+        provider = "Google Gemini"
+    elif 'claude' in model_lower or 'anthropic' in model_lower:
+        provider = "Anthropic"
+    elif 'grok' in model_lower:
+        provider = "xAI"
+    
+    return {
+        "type": "litellm",
+        "provider": provider,
+        "apiStyle": "ChatCompletions API"
+    }
+
+
 async def instrumented_solve_coding(
     *,
     train_in: list[list[list[int]]],
@@ -244,6 +292,7 @@ async def instrumented_solve_coding(
 ) -> ARCAGIResult:
     """
     Instrumented version of solve_coding that emits progress events WITH token/cost tracking.
+    Also emits prompt data for UI visibility.
     """
     expert_id = config.get("expert_id", 0)
     solver_prompt = config["solver_prompt"]
@@ -252,6 +301,9 @@ async def instrumented_solve_coding(
     max_iterations = int(config["max_iterations"])
     solver_temperature = float(config["solver_temperature"])
 
+    # Determine API routing for this model
+    api_routing = get_api_routing(llm_model)
+    
     # Token/cost tracking accumulators (per expert)
     expert_tokens = {"input_tokens": 0, "output_tokens": 0, "total_tokens": 0}
     expert_cost = {"input": 0.0, "output": 0.0, "total": 0.0}
@@ -299,14 +351,7 @@ async def instrumented_solve_coding(
     solutions = []
 
     for it in range(max_iterations):
-        emit({
-            "type": "progress",
-            "phase": "reasoning",
-            "iteration": it + 1,
-            "expert": expert_id,
-            "message": f"Expert {expert_id}: Reasoning for iteration {it + 1}..."
-        })
-
+        # Build the prompt FIRST so we can show it to users
         example = _make_example(train_in, train_out, test_in)
         problem_str = format_problem(example, shuffle_examples, seed + it)
         message = _build_prompt(solver_prompt, problem=problem_str)
@@ -321,6 +366,29 @@ async def instrumented_solve_coding(
                 selected, max_examples=max_solutions, improving_order=improving_order
             )
             message += "\n\n" + _build_prompt(feedback_prompt, feedback=examples_block)
+
+        # Emit progress with PROMPT DATA for UI visibility
+        # This is the key change - users can now see what's being sent to the AI
+        emit({
+            "type": "progress",
+            "phase": "prompting",
+            "iteration": it + 1,
+            "expert": expert_id,
+            "message": f"Expert {expert_id}: Sending prompt to {llm_model}...",
+            "promptData": {
+                "systemPrompt": solver_prompt[:500] + "..." if len(solver_prompt) > 500 else solver_prompt,
+                "userPrompt": message,
+                "model": llm_model,
+                "temperature": solver_temperature,
+                "provider": api_routing["provider"],
+                "apiStyle": api_routing["apiStyle"],
+                "reasoningParams": {
+                    "effort": llm_kwargs.get("reasoning_effort", "default"),
+                    "verbosity": llm_kwargs.get("verbosity", "default"),
+                    "summary": llm_kwargs.get("reasoning_summary", "default"),
+                } if llm_kwargs else None
+            }
+        })
 
         try:
             # ENHANCED: llm() now returns token_usage as 5th element

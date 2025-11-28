@@ -153,6 +153,7 @@ export const poetiqController = {
       maxIterations: typeof req.body?.maxIterations === 'number' ? req.body.maxIterations : 10,
       numExperts: typeof req.body?.numExperts === 'number' ? req.body.numExperts : 1,
       temperature: typeof req.body?.temperature === 'number' ? req.body.temperature : 1.0,
+      reasoningEffort: req.body?.reasoningEffort as 'low' | 'medium' | 'high' | undefined,  // For GPT-5.x models
       sessionId,
       apiKey,           // BYO API key (never stored)
       provider,         // Which provider the key is for
