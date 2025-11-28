@@ -452,6 +452,51 @@ export default function PoetiqCommunity() {
               </div>
            </div>
 
+           {/* Iteration Efficiency */}
+           {(progress.avgIterationsSolved !== null || progress.avgIterationsFailed !== null) && (
+             <div>
+               <h3 className="text-base font-semibold text-gray-800 mb-2">Iteration Efficiency</h3>
+               <div className="grid grid-cols-2 gap-3">
+                 <Card>
+                   <CardContent className="pt-6">
+                     <div className="text-xs text-gray-500 font-semibold uppercase mb-1">Avg Iterations (Solved)</div>
+                     <div className="text-2xl font-bold text-emerald-600">{progress.avgIterationsSolved ?? '—'}</div>
+                     <div className="text-xs text-gray-600">iterations to solve</div>
+                   </CardContent>
+                 </Card>
+                 <Card>
+                   <CardContent className="pt-6">
+                     <div className="text-xs text-gray-500 font-semibold uppercase mb-1">Avg Iterations (Failed)</div>
+                     <div className="text-2xl font-bold text-orange-600">{progress.avgIterationsFailed ?? '—'}</div>
+                     <div className="text-xs text-gray-600">iterations before giving up</div>
+                   </CardContent>
+                 </Card>
+               </div>
+             </div>
+           )}
+
+           {/* Per-Model Breakdown */}
+           {progress.modelStats.length > 0 && (
+             <div>
+               <h3 className="text-base font-semibold text-gray-800 mb-2">Model Performance</h3>
+               <Card>
+                 <CardContent className="pt-4">
+                   <div className="space-y-2">
+                     {progress.modelStats.map((stat) => (
+                       <div key={stat.modelName} className="flex items-center justify-between py-2 px-3 bg-gray-50 rounded text-sm">
+                         <div className="font-mono text-gray-700 flex-1">{stat.modelName}</div>
+                         <div className="flex items-center gap-4">
+                           <div className="text-gray-600">{stat.solved}/{stat.attempts} solved</div>
+                           <div className="font-bold text-gray-800 min-w-12 text-right">{stat.successRate}%</div>
+                         </div>
+                       </div>
+                     ))}
+                   </div>
+                 </CardContent>
+               </Card>
+             </div>
+           )}
+
            {/* Puzzle Grid */}
            <div>
               <h3 className="text-base font-semibold text-gray-800 mb-2">Puzzle Status</h3>
