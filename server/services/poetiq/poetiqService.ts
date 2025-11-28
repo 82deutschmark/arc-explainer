@@ -1,8 +1,9 @@
 /**
  * Author: Cascade (Claude Sonnet 4)
  * Date: 2025-11-25
- * Updated: 2025-11-27 - Enhanced WebSocket broadcasting to forward ALL event types (start, progress, log, error)
- *                       Added eventTrace collection like Saturn. Broadcasts stderr as log events.
+ * Updated: 2025-11-27 - Migrated to direct SDK calls (NO LiteLLM)
+ *                       Added support for all 5 providers: OpenAI, Anthropic, Gemini, OpenRouter, xAI
+ *                       BYO API key handling now supports all providers
  * PURPOSE: TypeScript service wrapping the Poetiq ARC-AGI solver.
  *          Executes Python subprocess, captures iteration data, maps results to standard
  *          explanation format for database storage.
@@ -17,6 +18,7 @@
  * - Code is executed in sandbox to validate against training examples
  * - Multiple "experts" can run in parallel with voting
  * - Results need special handling for database storage
+ * - Python solver uses direct SDK calls for: OpenAI (Responses API), Anthropic, Gemini, OpenRouter, xAI
  */
 
 import { spawn, SpawnOptions } from 'child_process';
@@ -76,11 +78,11 @@ export interface PoetiqStartMetadata {
 
 export interface PoetiqOptions {
   // BYO (Bring Your Own) API key - used for this run only, never stored
-  apiKey?: string;          // User's API key (Gemini, OpenRouter, or OpenAI)
-  provider?: 'gemini' | 'openrouter' | 'openai';  // Which provider the key is for
+  apiKey?: string;          // User's API key for the selected provider
+  provider?: 'gemini' | 'openrouter' | 'openai' | 'anthropic' | 'xai';  // All 5 supported providers
   
   // Model configuration
-  model?: string;           // LiteLLM model identifier (e.g., "gemini/gemini-3-pro-preview")
+  model?: string;           // Model identifier (e.g., "gemini-3-pro-preview", "gpt-5.1-codex-mini")
   numExperts?: number;      // Number of parallel experts: 1, 2, 4, or 8 (default: 2)
   maxIterations?: number;   // Max iterations per expert (default: 10)
   temperature?: number;     // LLM temperature (default: 1.0)
@@ -225,14 +227,27 @@ export class PoetiqService {
 
   /**
    * Infer provider from model ID
+   * Matches the provider detection in solver/poetiq/llm.py get_provider()
    */
-  private inferProviderFromModel(model?: string): 'gemini' | 'openrouter' | 'openai' {
+  private inferProviderFromModel(model?: string): 'gemini' | 'openrouter' | 'openai' | 'anthropic' | 'xai' {
     if (!model) return 'gemini';  // Default
     
     const modelLower = model.toLowerCase();
-    if (modelLower.includes('openrouter/')) return 'openrouter';
+    
+    // OpenRouter first (can proxy any model)
+    if (modelLower.includes('openrouter/') || modelLower.includes('openrouter')) return 'openrouter';
+    
+    // Direct OpenAI (GPT-5.x, o3, o4, gpt-4.1)
     if (this.isDirectOpenAIModel(model)) return 'openai';
+    
+    // Anthropic (Claude models)
+    if (modelLower.includes('claude') || modelLower.includes('anthropic')) return 'anthropic';
+    
+    // Google Gemini
     if (modelLower.includes('gemini')) return 'gemini';
+    
+    // xAI (Grok models)
+    if (modelLower.includes('grok') || modelLower.includes('xai')) return 'xai';
     
     return 'openrouter';  // Default for unknown models
   }
@@ -283,15 +298,26 @@ export class PoetiqService {
       };
 
       // Handle BYO API key based on provider
+      // All 5 providers are supported: openai, anthropic, gemini, openrouter, xai
       if (options.apiKey) {
         const provider = options.provider || this.inferProviderFromModel(options.model);
-        if (provider === 'openrouter') {
-          childEnv.OPENROUTER_API_KEY = options.apiKey;
-        } else if (provider === 'openai') {
-          childEnv.OPENAI_API_KEY = options.apiKey;
-        } else {
-          // Default to Gemini direct
-          childEnv.GEMINI_API_KEY = options.apiKey;
+        switch (provider) {
+          case 'openrouter':
+            childEnv.OPENROUTER_API_KEY = options.apiKey;
+            break;
+          case 'openai':
+            childEnv.OPENAI_API_KEY = options.apiKey;
+            break;
+          case 'anthropic':
+            childEnv.ANTHROPIC_API_KEY = options.apiKey;
+            break;
+          case 'xai':
+            childEnv.XAI_API_KEY = options.apiKey;
+            break;
+          case 'gemini':
+          default:
+            childEnv.GEMINI_API_KEY = options.apiKey;
+            break;
         }
       }
       
