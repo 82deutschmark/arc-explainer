@@ -139,7 +139,7 @@ export interface PoetiqExplanationData {
   isPredictionCorrect: boolean;
   trustworthinessScore: number | null;  // Only set if test accuracy is known
   hasMultiplePredictions: boolean;
-  multiplePredictedOutputs: number[][][] | null;
+  multiplePredictedOutputs: (number[][] | null)[] | null;
   multiTestResults: any | null;
   multiTestAllCorrect: boolean | null;
   multiTestAverageAccuracy: number | null;
@@ -577,15 +577,10 @@ export class PoetiqService {
     const isPredictionCorrect =
       singleValidation?.isPredictionCorrect ?? (result.isPredictionCorrect || false);
 
-    const multiplePredictedOutputs: number[][][] | null = hasValidatedMulti
+    const multiplePredictedOutputs: (number[][] | null)[] | null = hasValidatedMulti
       ? (multiValidation?.multiplePredictedOutputs ?? [])
       : hasMultiple
-        ? (() => {
-            const filtered = normalizedPredictions.filter((g): g is number[][] => g !== null);
-            // Explicit assertion that filter removed all nulls
-            const gridsWithoutNulls = filtered as number[][][];
-            return gridsWithoutNulls.length > 0 ? gridsWithoutNulls : null;
-          })()
+        ? normalizedPredictions
         : null;
     const multiTestResults = hasValidatedMulti ? multiValidation?.multiTestResults ?? [] : null;
     const multiTestAllCorrect = hasValidatedMulti
