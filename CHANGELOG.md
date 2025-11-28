@@ -14,34 +14,39 @@
 
 ### Version 5.31.1
 
-- **Poetiq Community Page: Scientific Metrics & Layout Redesign** (Author: Claude Code using Haiku 4.5)
-  - **Purpose**: Reorganize Community page with scientifically rigorous test coverage metrics and training grids on solver page
+- **Poetiq Community Page: Cost Efficiency Metrics & Layout Redesign** (Author: Claude Code using Haiku 4.5)
+  - **Purpose**: Add cost tracking to validate Poetiq's Pareto Frontier claims about accuracy-to-cost ratios
   - **Changes**:
-    1. **New Scientific Metrics Display**:
-       - **Attempted Coverage**: `attempted / total` showing % of dataset tested
+    1. **Cost Efficiency Metrics** (validates Pareto claims):
+       - **Coverage**: `attempted / total` showing % of dataset tested
        - **Success Rate**: `solved / attempted` showing effectiveness on tested puzzles
-       - **Failed Attempts**: Count of unsuccessful tests
-       - **Iteration Efficiency**: Average iterations for solved vs failed attempts (convergence quality)
-       - **Per-Model Breakdown**: Success rate by model (Gemini, GPT, Grok, etc.)
-    2. **Hook Enhancements** (`usePoetiqCommunityProgress.ts`):
-       - Added `ModelStats` interface for per-model statistics
-       - Calculate `attemptedPercentage` and `successRateOnAttempted` from raw counts
-       - Calculate `avgIterationsSolved` and `avgIterationsFailed` comparing solve efficiency
-       - Generate `modelStats` array with per-model success rates
-    3. **PoetiqCommunity.tsx Redesign**:
+       - **Total Cost**: Cumulative cost across all attempts
+       - **Cost per Solve**: Average cost for successful solves (accuracy-to-cost ratio)
+       - **Cost per Attempt**: Average cost including failures
+    2. **Backend Enhancement**:
+       - Updated `ExplanationRepository.getPoetiqExplanationsForPuzzles()` to return cost data
+       - Added `inputTokens`, `outputTokens`, `totalTokens`, `estimatedCost` to query results
+       - Modified `poetiqController.getCommunityProgress()` to pass cost data to frontend
+    3. **Hook Enhancements** (`usePoetiqCommunityProgress.ts`):
+       - Added cost fields to `PoetiqPuzzleStatus` interface
+       - Calculate `totalCost`, `avgCostPerSolve`, `avgCostPerAttempt` from puzzle data
+       - Removed useless `modelStats` breakdown (no expert count metadata available)
+    4. **PoetiqCommunity.tsx Redesign**:
        - Moved explanations (Technical Definitions + Deep Dive sections) to top
-       - Replaced simple counter with 5-card metrics panel (coverage, success rate, failures, iterations)
-       - Added per-model performance table
+       - Replaced simple counter with 5-card metrics panel showing cost efficiency
+       - Removed per-model stats table (replaced with cost metrics)
        - Moved puzzle grid to bottom as "Puzzle Status"
-    4. **PuzzleProgressGrid.tsx Navigation Fix**:
+    5. **PuzzleProgressGrid.tsx Navigation Fix**:
        - Changed puzzle badge destination from `/puzzle/poetiq/{puzzleId}` to `/puzzle/{puzzleId}`
        - Users navigate to Puzzle Explainer instead of Poetiq solver
-    5. **PoetiqSolver.tsx Training Grid Display**:
+    6. **PoetiqSolver.tsx Training Grid Display**:
        - Added training examples to right-side panel
        - Shows input→output pairs before running, replaced by event log when solver starts
   - **Files Changed**:
-    - `client/src/hooks/usePoetiqCommunityProgress.ts` (metrics calculations)
-    - `client/src/pages/PoetiqCommunity.tsx` (complete metrics redesign)
+    - `server/repositories/ExplanationRepository.ts` (cost data query)
+    - `server/controllers/poetiqController.ts` (cost data passthrough)
+    - `client/src/hooks/usePoetiqCommunityProgress.ts` (cost calculations)
+    - `client/src/pages/PoetiqCommunity.tsx` (cost metrics display)
     - `client/src/components/poetiq/PuzzleProgressGrid.tsx` (navigation fix)
     - `client/src/pages/PoetiqSolver.tsx` (training grid display)
 
