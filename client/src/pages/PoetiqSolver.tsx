@@ -16,7 +16,6 @@ import { usePuzzle } from '@/hooks/usePuzzle';
 import { usePoetiqProgress } from '@/hooks/usePoetiqProgress';
 import { usePoetiqModels, type PoetiqModelOption } from '@/hooks/usePoetiqModels';
 import { PuzzleGrid } from '@/components/puzzle/PuzzleGrid';
-import { TinyGrid } from '@/components/puzzle/TinyGrid';
 import { DEFAULT_EMOJI_SET } from '@/lib/spaceEmojis';
 
 // Poetiq components
@@ -514,11 +513,29 @@ export default function PoetiqSolver() {
                       <div className="text-xs text-gray-500 font-medium">Example {idx + 1}</div>
                       <div className="flex gap-3 items-start">
                         <div className="border border-gray-300 rounded p-2 bg-gray-50">
-                          <TinyGrid grid={example.input} />
+                          <PuzzleGrid
+                            grid={example.input}
+                            title="Input"
+                            compact
+                            maxWidth={200}
+                            maxHeight={200}
+                            showEmojis={false}
+                            showColorOnly={false}
+                            emojiSet={DEFAULT_EMOJI_SET}
+                          />
                         </div>
                         <div className="text-gray-400 text-lg leading-none mt-2">→</div>
                         <div className="border border-gray-300 rounded p-2 bg-gray-50">
-                          <TinyGrid grid={example.output} />
+                          <PuzzleGrid
+                            grid={example.output}
+                            title="Output"
+                            compact
+                            maxWidth={200}
+                            maxHeight={200}
+                            showEmojis={false}
+                            showColorOnly={false}
+                            emojiSet={DEFAULT_EMOJI_SET}
+                          />
                         </div>
                       </div>
                     </div>
