@@ -1,94 +1,530 @@
 """
  * Author: Cascade (Claude Sonnet 4)
  * Date: 2025-11-27
- * PURPOSE: LLM interface for Poetiq solver using litellm (faithful to original Poetiq).
- *          Enhanced to capture token usage data that was previously discarded.
- *          litellm handles multi-provider routing (Gemini, OpenAI, Anthropic, xAI, etc.)
- * SRP and DRY check: Pass - LLM interface only.
+ * Updated: 2025-11-27 - REMOVED LiteLLM, now uses direct SDK calls for all providers
+ * PURPOSE: LLM interface for Poetiq solver using DIRECT SDK calls.
+ *          NO LiteLLM dependency - we use OpenAI, Anthropic, and Google SDKs directly.
+ *          This matches the pattern used in our main TypeScript services.
  * 
- * KEY FIX: Original Poetiq discarded resp.usage - we now capture and return it!
- * This enables cost tracking without changing the underlying architecture.
+ * SRP and DRY check: Pass - LLM interface only, delegates to provider-specific functions.
+ * 
+ * MIGRATION NOTES:
+ * - OpenAI models: Use OpenAI SDK Responses API (POST /v1/responses)
+ * - Anthropic models: Use Anthropic SDK Messages API  
+ * - Google Gemini models: Use Google Generative AI SDK
+ * - OpenRouter models: Use OpenAI SDK pointed at OpenRouter base URL
+ * - xAI models: Use OpenAI SDK pointed at xAI base URL
 """
 
 import asyncio
-from typing import Any
+import os
+import time
+from typing import Any, Optional, Tuple
 
-import litellm
+# Direct SDK imports - NO LiteLLM
+import openai
+import anthropic
+import google.generativeai as genai
+
 from asynciolimiter import Limiter
-from litellm import acompletion
-from litellm import exceptions as litellm_exceptions
-
 from solver.poetiq.types import Models, TokenUsage
-
-# Silence unnecessary litellm logs
-litellm.suppress_debug_info = True
 
 RETRIES = 3
 RETRY_DELAY_SEC = 5
 
 # Rate limiters per model (requests per second)
-# Kept from original Poetiq implementation
-limiters: dict[Models, Limiter] = {
-    # Direct API models
-    "groq/openai/gpt-oss-120b": Limiter(1.0),
+limiters: dict[str, Limiter] = {
+    # Direct OpenAI API models
     "openai/gpt-5": Limiter(1.0),
     "openai/gpt-5.1": Limiter(1.0),
-    "xai/grok-4-fast": Limiter(1.0),
-    "xai/grok-4": Limiter(1.0),
+    "gpt-5.1-codex-mini": Limiter(1.0),
+    "gpt-5-mini": Limiter(1.0),
+    "gpt-5-nano": Limiter(1.0),
+    "o3-mini": Limiter(1.0),
+    "o4-mini": Limiter(1.0),
+    "o3-2025-04-16": Limiter(1.0),
+    # Direct Anthropic models
     "anthropic/claude-sonnet-4-5": Limiter(1.0),
     "anthropic/claude-haiku-4-5": Limiter(1.0),
+    "claude-sonnet-4": Limiter(1.0),
+    "claude-sonnet-4-5": Limiter(1.0),
+    # Direct Gemini models
     "gemini/gemini-2.5-pro": Limiter(2.0),
     "gemini/gemini-3-pro-preview": Limiter(1.0),
-    # OpenRouter models - more generous limits since paid API
+    "gemini-3-pro-preview": Limiter(1.0),
+    "gemini-2.5-pro": Limiter(2.0),
+    # xAI models (OpenAI-compatible)
+    "xai/grok-4-fast": Limiter(1.0),
+    "xai/grok-4": Limiter(1.0),
+    # OpenRouter models
     "openrouter/google/gemini-3-pro-preview": Limiter(2.0),
     "openrouter/google/gemini-2.5-flash-preview-09-2025": Limiter(3.0),
     "openrouter/anthropic/claude-sonnet-4": Limiter(2.0),
     "openrouter/openai/gpt-5.1": Limiter(2.0),
 }
 
-# Model-specific properties (reasoning_effort, thinking config, etc.)
-# Kept from original Poetiq implementation
-props: dict[Models, dict] = {
-    # Direct API models
-    "groq/openai/gpt-oss-120b": {},
-    "openai/gpt-5": {"reasoning_effort": "high"},
-    "openai/gpt-5.1": {"reasoning_effort": "high"},
-    "xai/grok-4-fast": {},
-    "xai/grok-4": {},
-    "anthropic/claude-sonnet-4-5": {"thinking": {"type": "enabled", "budget_tokens": 32_000}},
-    "anthropic/claude-haiku-4-5": {"thinking": {"type": "enabled", "budget_tokens": 32_000}},
-    "gemini/gemini-2.5-pro": {"thinking": {"type": "enabled", "budget_tokens": 16_000}},
-    "gemini/gemini-3-pro-preview": {},
-    # OpenRouter models
-    "openrouter/google/gemini-3-pro-preview": {},
-    "openrouter/google/gemini-2.5-flash-preview-09-2025": {},
-    "openrouter/anthropic/claude-sonnet-4": {"thinking": {"type": "enabled", "budget_tokens": 32_000}},
-    "openrouter/openai/gpt-5.1": {"reasoning_effort": "high"},
-}
-
-# Default limiter for unknown models (conservative 1 req/sec)
 default_limiter = Limiter(1.0)
 
 
+# ==========================================
+# PROVIDER DETECTION
+# ==========================================
+def get_provider(model: str) -> str:
+    """
+    Determine which provider/SDK to use for a given model ID.
+    Returns: 'openai', 'anthropic', 'gemini', 'openrouter', 'xai'
+    """
+    model_lower = model.lower()
+    
+    # Check for OpenRouter first (it can proxy any model)
+    if 'openrouter' in model_lower:
+        return 'openrouter'
+    
+    # Direct OpenAI models (use Responses API)
+    if any(x in model_lower for x in ['gpt-5', 'o3-', 'o4-', 'gpt-4.1']):
+        return 'openai'
+    
+    # Anthropic models
+    if any(x in model_lower for x in ['claude', 'anthropic']):
+        return 'anthropic'
+    
+    # Google Gemini models
+    if 'gemini' in model_lower:
+        return 'gemini'
+    
+    # xAI Grok models (OpenAI-compatible API)
+    if any(x in model_lower for x in ['grok', 'xai']):
+        return 'xai'
+    
+    # Default to OpenRouter for unknown models
+    return 'openrouter'
+
+
+def extract_model_name(model: str) -> str:
+    """
+    Extract the actual model name from a prefixed model ID.
+    E.g., "gemini/gemini-3-pro-preview" -> "gemini-3-pro-preview"
+          "openrouter/google/gemini-3-pro" -> "google/gemini-3-pro"
+    """
+    parts = model.split('/')
+    if len(parts) >= 2:
+        # For openrouter, keep the last two parts (org/model)
+        if parts[0].lower() == 'openrouter' and len(parts) >= 3:
+            return '/'.join(parts[1:])
+        # For other prefixes, just take the last part
+        return parts[-1]
+    return model
+
+
+# ==========================================
+# OPENAI RESPONSES API (GPT-5.x, o3, o4)
+# ==========================================
+async def llm_openai(
+    model: str,
+    message: str,
+    system_prompt: Optional[str] = None,
+    temperature: float = 1.0,
+    timeout: int = 900,
+    problem_id: Optional[str] = None,
+    **kwargs,
+) -> Tuple[str, TokenUsage, str]:
+    """
+    Call OpenAI via Responses API (POST /v1/responses).
+    Uses proper reasoning parameters for GPT-5.x models.
+    
+    Returns: (response_text, token_usage, reasoning_summary)
+    """
+    api_key = os.environ.get("OPENAI_API_KEY")
+    if not api_key:
+        raise ValueError("OPENAI_API_KEY environment variable not set")
+    
+    client = openai.AsyncOpenAI(api_key=api_key)
+    model_name = extract_model_name(model)
+    
+    # Build reasoning params for GPT-5.x and o3/o4 models
+    reasoning_effort = kwargs.get('reasoning_effort', 'high')
+    verbosity = kwargs.get('verbosity', 'high')
+    reasoning_summary = kwargs.get('reasoning_summary', 'detailed')
+    
+    print(f"[OpenAI Responses API] Calling {model_name} with reasoning_effort={reasoning_effort}")
+    
+    try:
+        response = await client.responses.create(
+            model=model_name,
+            input=[{"role": "user", "content": message}],
+            instructions=system_prompt or "You are a helpful AI assistant.",
+            reasoning={
+                "effort": reasoning_effort,
+                "summary": reasoning_summary,
+            },
+            text={
+                "verbosity": verbosity,
+            },
+            max_output_tokens=128000,
+            store=True,
+            include=["reasoning.encrypted_content"],
+        )
+        
+        # Extract text from response.output[]
+        output_text = ""
+        reasoning_summary_text = ""
+        
+        for item in response.output:
+            if item.type == "message":
+                for content in item.content:
+                    if hasattr(content, 'type') and content.type == "output_text":
+                        output_text += content.text
+            elif item.type == "reasoning":
+                if hasattr(item, 'summary') and item.summary:
+                    reasoning_summary_text = item.summary
+        
+        # Build token usage dict
+        token_usage: TokenUsage = {
+            "input_tokens": response.usage.input_tokens if response.usage else 0,
+            "output_tokens": response.usage.output_tokens if response.usage else 0,
+            "total_tokens": (response.usage.input_tokens + response.usage.output_tokens) if response.usage else 0,
+        }
+        
+        # Extract reasoning tokens if available
+        if response.usage and hasattr(response.usage, 'output_tokens_details'):
+            details = response.usage.output_tokens_details
+            if hasattr(details, 'reasoning_tokens'):
+                token_usage["reasoning_tokens"] = details.reasoning_tokens
+        
+        return output_text, token_usage, reasoning_summary_text
+        
+    except openai.APIError as e:
+        print(f"[OpenAI Responses API] Error: {e}")
+        raise
+
+
+# ==========================================
+# ANTHROPIC MESSAGES API (Claude models)
+# ==========================================
+async def llm_anthropic(
+    model: str,
+    message: str,
+    system_prompt: Optional[str] = None,
+    temperature: float = 1.0,
+    timeout: int = 900,
+    problem_id: Optional[str] = None,
+    **kwargs,
+) -> Tuple[str, TokenUsage, str]:
+    """
+    Call Anthropic via Messages API.
+    Supports extended thinking for Claude Sonnet 4.x models.
+    
+    Returns: (response_text, token_usage, reasoning_summary)
+    """
+    api_key = os.environ.get("ANTHROPIC_API_KEY")
+    if not api_key:
+        raise ValueError("ANTHROPIC_API_KEY environment variable not set")
+    
+    client = anthropic.AsyncAnthropic(api_key=api_key)
+    model_name = extract_model_name(model)
+    
+    # Map model names to Anthropic's expected format
+    model_mapping = {
+        "claude-sonnet-4-5": "claude-sonnet-4-5-20250514",
+        "claude-sonnet-4": "claude-sonnet-4-20250514",
+        "claude-haiku-4-5": "claude-haiku-4-5-20250514",
+        "claude-haiku-4": "claude-haiku-4-20250514",
+    }
+    api_model = model_mapping.get(model_name, model_name)
+    
+    print(f"[Anthropic Messages API] Calling {api_model}")
+    
+    # Check if extended thinking is supported/requested
+    thinking_config = kwargs.get('thinking')
+    
+    try:
+        request_params = {
+            "model": api_model,
+            "max_tokens": 64000,
+            "messages": [{"role": "user", "content": message}],
+        }
+        
+        if system_prompt:
+            request_params["system"] = system_prompt
+        
+        # Only add temperature if thinking is not enabled
+        # (Anthropic doesn't allow temperature with extended thinking)
+        if not thinking_config:
+            request_params["temperature"] = temperature
+        
+        # Add extended thinking if configured
+        if thinking_config and thinking_config.get("type") == "enabled":
+            budget = thinking_config.get("budget_tokens", 32000)
+            # For Claude 4.x, use the thinking parameter
+            request_params["thinking"] = {
+                "type": "enabled",
+                "budget_tokens": budget
+            }
+        
+        response = await client.messages.create(**request_params)
+        
+        # Extract response text
+        output_text = ""
+        reasoning_text = ""
+        
+        for block in response.content:
+            if block.type == "text":
+                output_text += block.text
+            elif block.type == "thinking":
+                reasoning_text += block.thinking
+        
+        # Build token usage
+        token_usage: TokenUsage = {
+            "input_tokens": response.usage.input_tokens if response.usage else 0,
+            "output_tokens": response.usage.output_tokens if response.usage else 0,
+            "total_tokens": (response.usage.input_tokens + response.usage.output_tokens) if response.usage else 0,
+        }
+        
+        return output_text, token_usage, reasoning_text
+        
+    except anthropic.APIError as e:
+        print(f"[Anthropic Messages API] Error: {e}")
+        raise
+
+
+# ==========================================
+# GOOGLE GEMINI API
+# ==========================================
+async def llm_gemini(
+    model: str,
+    message: str,
+    system_prompt: Optional[str] = None,
+    temperature: float = 1.0,
+    timeout: int = 900,
+    problem_id: Optional[str] = None,
+    **kwargs,
+) -> Tuple[str, TokenUsage, str]:
+    """
+    Call Google Gemini via Generative AI SDK.
+    Supports thinking for Gemini 2.5+ models.
+    
+    Returns: (response_text, token_usage, reasoning_summary)
+    """
+    api_key = os.environ.get("GEMINI_API_KEY")
+    if not api_key:
+        raise ValueError("GEMINI_API_KEY environment variable not set")
+    
+    genai.configure(api_key=api_key)
+    model_name = extract_model_name(model)
+    
+    print(f"[Google Gemini API] Calling {model_name}")
+    
+    # Build generation config
+    generation_config = {
+        "temperature": temperature,
+        "response_mime_type": "application/json",  # For structured output
+    }
+    
+    # Add thinking config for Gemini 2.5+ models
+    thinking_config = kwargs.get('thinking')
+    if thinking_config and thinking_config.get("type") == "enabled":
+        budget = thinking_config.get("budget_tokens", 16000)
+        generation_config["thinking_config"] = {
+            "thinking_budget": budget
+        }
+    elif "2.5" in model_name or "3" in model_name:
+        # Default to dynamic thinking for advanced models
+        generation_config["thinking_config"] = {
+            "thinking_budget": -1
+        }
+    
+    try:
+        genai_model = genai.GenerativeModel(
+            model_name=model_name,
+            generation_config=generation_config,
+            system_instruction=system_prompt if system_prompt else None,
+        )
+        
+        # Use asyncio to run the sync API
+        loop = asyncio.get_event_loop()
+        response = await loop.run_in_executor(
+            None,
+            lambda: genai_model.generate_content(message)
+        )
+        
+        # Extract response text and reasoning
+        output_text = ""
+        reasoning_text = ""
+        
+        if response.candidates:
+            candidate = response.candidates[0]
+            if candidate.content and candidate.content.parts:
+                for part in candidate.content.parts:
+                    if hasattr(part, 'thought') and part.thought:
+                        if hasattr(part, 'text'):
+                            reasoning_text += part.text
+                    elif hasattr(part, 'text'):
+                        output_text += part.text
+        
+        # Build token usage
+        token_usage: TokenUsage = {}
+        if hasattr(response, 'usage_metadata') and response.usage_metadata:
+            usage = response.usage_metadata
+            token_usage = {
+                "input_tokens": getattr(usage, 'prompt_token_count', 0) or 0,
+                "output_tokens": getattr(usage, 'candidates_token_count', 0) or 0,
+                "total_tokens": getattr(usage, 'total_token_count', 0) or 0,
+            }
+        
+        return output_text, token_usage, reasoning_text
+        
+    except Exception as e:
+        print(f"[Google Gemini API] Error: {e}")
+        raise
+
+
+# ==========================================
+# OPENROUTER API (OpenAI-compatible)
+# ==========================================
+async def llm_openrouter(
+    model: str,
+    message: str,
+    system_prompt: Optional[str] = None,
+    temperature: float = 1.0,
+    timeout: int = 900,
+    problem_id: Optional[str] = None,
+    **kwargs,
+) -> Tuple[str, TokenUsage, str]:
+    """
+    Call OpenRouter using OpenAI SDK with custom base URL.
+    OpenRouter provides access to many models via a unified API.
+    
+    Returns: (response_text, token_usage, reasoning_summary)
+    """
+    api_key = os.environ.get("OPENROUTER_API_KEY")
+    if not api_key:
+        raise ValueError("OPENROUTER_API_KEY environment variable not set")
+    
+    # OpenRouter uses OpenAI-compatible API
+    client = openai.AsyncOpenAI(
+        api_key=api_key,
+        base_url="https://openrouter.ai/api/v1"
+    )
+    
+    model_name = extract_model_name(model)
+    
+    print(f"[OpenRouter API] Calling {model_name}")
+    
+    messages = []
+    if system_prompt:
+        messages.append({"role": "system", "content": system_prompt})
+    messages.append({"role": "user", "content": message})
+    
+    try:
+        response = await client.chat.completions.create(
+            model=model_name,
+            messages=messages,
+            temperature=temperature,
+            max_tokens=128000,
+        )
+        
+        # Extract response text
+        output_text = response.choices[0].message.content.strip() if response.choices else ""
+        
+        # Build token usage
+        token_usage: TokenUsage = {}
+        if response.usage:
+            token_usage = {
+                "input_tokens": response.usage.prompt_tokens or 0,
+                "output_tokens": response.usage.completion_tokens or 0,
+                "total_tokens": response.usage.total_tokens or 0,
+            }
+        
+        return output_text, token_usage, ""
+        
+    except openai.APIError as e:
+        print(f"[OpenRouter API] Error: {e}")
+        raise
+
+
+# ==========================================
+# XAI API (OpenAI-compatible)
+# ==========================================
+async def llm_xai(
+    model: str,
+    message: str,
+    system_prompt: Optional[str] = None,
+    temperature: float = 1.0,
+    timeout: int = 900,
+    problem_id: Optional[str] = None,
+    **kwargs,
+) -> Tuple[str, TokenUsage, str]:
+    """
+    Call xAI (Grok) using OpenAI SDK with custom base URL.
+    
+    Returns: (response_text, token_usage, reasoning_summary)
+    """
+    api_key = os.environ.get("XAI_API_KEY")
+    if not api_key:
+        raise ValueError("XAI_API_KEY environment variable not set")
+    
+    client = openai.AsyncOpenAI(
+        api_key=api_key,
+        base_url="https://api.x.ai/v1"
+    )
+    
+    model_name = extract_model_name(model)
+    
+    print(f"[xAI API] Calling {model_name}")
+    
+    messages = []
+    if system_prompt:
+        messages.append({"role": "system", "content": system_prompt})
+    messages.append({"role": "user", "content": message})
+    
+    try:
+        response = await client.chat.completions.create(
+            model=model_name,
+            messages=messages,
+            temperature=temperature,
+            max_tokens=128000,
+        )
+        
+        output_text = response.choices[0].message.content.strip() if response.choices else ""
+        
+        token_usage: TokenUsage = {}
+        if response.usage:
+            token_usage = {
+                "input_tokens": response.usage.prompt_tokens or 0,
+                "output_tokens": response.usage.completion_tokens or 0,
+                "total_tokens": response.usage.total_tokens or 0,
+            }
+        
+        return output_text, token_usage, ""
+        
+    except openai.APIError as e:
+        print(f"[xAI API] Error: {e}")
+        raise
+
+
+# ==========================================
+# MAIN ROUTER FUNCTION
+# ==========================================
 async def llm(
     model: str,
     message: str,
-    temperature,
-    request_timeout: int | None,
-    max_remaining_time: float | None,
-    max_remaining_timeouts: int | None,
+    temperature: float = 1.0,
+    request_timeout: int | None = None,
+    max_remaining_time: float | None = None,
+    max_remaining_timeouts: int | None = None,
     problem_id: str | None = None,
     retries: int = RETRIES,
-    **kwargs,  # Accept extra parameters like reasoning_effort
+    system_prompt: str | None = None,
+    **kwargs,
 ) -> tuple[str, float, float | None, int | None, TokenUsage]:
     """
-    Call the LLM via litellm and return (response_text, duration, remaining_time, remaining_timeouts, token_usage).
+    Main LLM router - dispatches to the appropriate provider SDK.
     
-    This implementation uses litellm for multi-provider routing (faithful to original Poetiq).
-    ENHANCED: Now captures token usage from resp.usage (original Poetiq discarded this!)
+    This function maintains the same signature as the original Poetiq llm() 
+    for backward compatibility, but now uses direct SDK calls instead of LiteLLM.
     
     Args:
-        model: Model identifier in litellm format (e.g., "gemini/gemini-3-pro-preview")
+        model: Model identifier (e.g., "gemini/gemini-3-pro-preview", "gpt-5.1-codex-mini")
         message: The prompt to send
         temperature: Sampling temperature
         request_timeout: Maximum time for this request (seconds)
@@ -96,118 +532,107 @@ async def llm(
         max_remaining_timeouts: Timeout budget remaining
         problem_id: Optional identifier for logging
         retries: Number of retry attempts
-        **kwargs: Additional parameters (reasoning_effort, verbosity, etc.)
+        system_prompt: Optional system prompt
+        **kwargs: Additional parameters (reasoning_effort, thinking, etc.)
     
     Returns:
         Tuple of (response_text, duration_seconds, remaining_time, remaining_timeouts, token_usage)
     """
+    timeout = request_timeout or 15 * 60  # Default 15 min
+    if max_remaining_time is not None:
+        timeout = min(timeout, int(max_remaining_time))
+    
     attempt = 1
     while attempt <= retries:
-        # Use specific limiter or default
+        # Apply rate limiting
         limiter = limiters.get(model, default_limiter)
         await limiter.wait()
-
-        current_request_timeout = request_timeout or 15 * 60  # Default 15 min
-        if max_remaining_time is not None:
-            current_request_timeout = min(current_request_timeout, max_remaining_time)
-
-        # Merge static props with dynamic kwargs
-        model_props = props.get(model, {}).copy()
-        model_props.update(kwargs)
-
-        start_time = asyncio.get_event_loop().time()
+        
+        start_time = time.time()
+        
         try:
-            resp: Any = await acompletion(
-                model=model,
-                messages=[{"role": "user", "content": message}],
-                temperature=temperature,
-                timeout=current_request_timeout,
-                num_retries=0,
-                **model_props,
-            )
-            end_time = asyncio.get_event_loop().time()
-            duration = end_time - start_time
+            provider = get_provider(model)
+            
+            # Route to appropriate SDK
+            if provider == 'openai':
+                response_text, token_usage, reasoning_summary = await llm_openai(
+                    model, message, system_prompt, temperature, timeout, problem_id, **kwargs
+                )
+            elif provider == 'anthropic':
+                response_text, token_usage, reasoning_summary = await llm_anthropic(
+                    model, message, system_prompt, temperature, timeout, problem_id, **kwargs
+                )
+            elif provider == 'gemini':
+                response_text, token_usage, reasoning_summary = await llm_gemini(
+                    model, message, system_prompt, temperature, timeout, problem_id, **kwargs
+                )
+            elif provider == 'xai':
+                response_text, token_usage, reasoning_summary = await llm_xai(
+                    model, message, system_prompt, temperature, timeout, problem_id, **kwargs
+                )
+            else:  # openrouter or unknown
+                response_text, token_usage, reasoning_summary = await llm_openrouter(
+                    model, message, system_prompt, temperature, timeout, problem_id, **kwargs
+                )
+            
+            duration = time.time() - start_time
             
             if max_remaining_time is not None:
                 max_remaining_time -= duration
-            
-            # Extract response text (same as original)
-            response_text = resp["choices"][0]["message"]["content"].strip()
-            
-            # ENHANCED: Extract token usage from litellm response
-            # Original Poetiq discarded this data - we now capture it!
-            token_usage: TokenUsage = {}
-            if hasattr(resp, 'usage') and resp.usage:
-                token_usage = {
-                    "input_tokens": getattr(resp.usage, 'prompt_tokens', 0) or 0,
-                    "output_tokens": getattr(resp.usage, 'completion_tokens', 0) or 0,
-                    "total_tokens": getattr(resp.usage, 'total_tokens', 0) or 0,
-                }
             
             return (
                 response_text,
                 duration,
                 max_remaining_time,
                 max_remaining_timeouts,
-                token_usage,  # NEW: token usage data
+                token_usage,
             )
-
-        except (
-            litellm_exceptions.RateLimitError,
-            litellm_exceptions.InternalServerError,
-            litellm_exceptions.ServiceUnavailableError,
-            litellm_exceptions.APIConnectionError,
-            litellm_exceptions.APIError,
-        ) as e:
-            # None of these exceptions should prevent the problem from being solved,
-            # so don't let them count against the allotted retries.
-            print(f"{problem_id or ''} Ignoring {type(e).__name__} and retrying attempt {attempt}: {e}")
-            await asyncio.sleep(RETRY_DELAY_SEC)
-            continue
-
+            
         except Exception as e:
-            end_time = asyncio.get_event_loop().time()
-            duration = end_time - start_time
+            duration = time.time() - start_time
+            
             if max_remaining_time is not None:
                 max_remaining_time -= duration
-
-            if "Timeout" in str(e):
+            
+            error_str = str(e)
+            
+            # Handle timeout
+            if "Timeout" in error_str or "timeout" in error_str.lower():
                 if max_remaining_timeouts is not None:
                     max_remaining_timeouts -= 1
-                    print(
-                        f"{problem_id or ''} Timed out. Remaining timeouts: {max_remaining_timeouts}"
-                    )
+                    print(f"{problem_id or ''} Timed out. Remaining timeouts: {max_remaining_timeouts}")
+                
                 if max_remaining_timeouts is not None and max_remaining_timeouts <= 0:
                     raise RuntimeError("Exceeded timeouts allotted to the request")
-
+                
                 if attempt == retries:
-                    return (
-                        "Timeout",
-                        duration,
-                        max_remaining_time,
-                        max_remaining_timeouts,
-                        {},  # Empty token usage on timeout
-                    )
-                    
+                    return ("Timeout", duration, max_remaining_time, max_remaining_timeouts, {})
+            
+            # Check time budget
             if max_remaining_time is not None and max_remaining_time <= 0:
                 raise RuntimeError("Exceeded time allotted to the request")
-
+            
+            # Final attempt failed
             if attempt == retries:
-                print(f"{problem_id or ''} Max retry limit reached. Last exception during call:")
-                print(str(e))
+                print(f"{problem_id or ''} Max retry limit reached. Last exception: {e}")
                 raise e
-
-            print(str(e))
-            print(f"Exception during request for problem: {problem_id or ''}. Retry number {attempt}.")
+            
+            # Retry on transient errors
+            if any(x in error_str for x in ['rate', 'limit', 'overload', '429', '503', '500']):
+                print(f"{problem_id or ''} Retrying after transient error (attempt {attempt}): {e}")
+                await asyncio.sleep(RETRY_DELAY_SEC)
+                attempt += 1
+                continue
+            
+            # Retry on other errors
+            print(f"{problem_id or ''} Retrying after error (attempt {attempt}): {e}")
             await asyncio.sleep(RETRY_DELAY_SEC)
-
-            # Increment attempt at the end of the loop.
             attempt += 1
-
+    
     raise RuntimeError("Retries exceeded")
 
 
-# Backward compatibility: wrapper that drops token_usage for code expecting old signature
+# Backward compatibility wrapper
 async def llm_compat(
     model: str,
     message: str,
@@ -228,5 +653,4 @@ async def llm_compat(
         max_remaining_time, max_remaining_timeouts,
         problem_id, retries, **kwargs
     )
-    # Return first 4 elements, dropping token_usage
     return result[:4]

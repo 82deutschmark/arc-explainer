@@ -1,10 +1,14 @@
 """
  * Author: Cascade (Claude Sonnet 4)
  * Date: 2025-11-27
+ * Updated: 2025-11-27 - MIGRATED TO DIRECT SDK CALLS (NO LiteLLM)
  * PURPOSE: Poetiq solver package - internalized from poetiq-solver submodule.
  *          This package implements iterative code generation for ARC puzzle solving.
- *          Uses litellm for multi-provider routing (faithful to original Poetiq).
- *          ENHANCED: Now captures token usage that original Poetiq discarded.
+ *          Uses direct SDK calls for all providers:
+ *          - OpenAI: Responses API (GPT-5.x, o3, o4)
+ *          - Anthropic: Messages API (Claude)
+ *          - Google: Generative AI SDK (Gemini)
+ *          - OpenRouter/xAI: OpenAI SDK with custom base_url
  * SRP and DRY check: Pass - Package init only, exports main solve function.
 """
 
