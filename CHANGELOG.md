@@ -3,36 +3,42 @@
 
 ### Version 5.31.5
 
-- **Poetiq Solver: Prompt Visibility & Provider Routing Transparency** (Author: Cascade using Claude Sonnet 4)
-  - **Problem**: Users could not see what prompts were being sent to the AI, and it wasn't clear whether OpenAI models were calling OpenAI directly or going through OpenRouter.
+- **Poetiq Solver: Direct OpenAI Responses API Integration** (Author: Cascade using Claude Sonnet 4)
+  - **Problem**: Users could not see what prompts were being sent to the AI, and GPT-5.1 Codex Mini was incorrectly using litellm's ChatCompletions API instead of OpenAI's Responses API with proper reasoning parameters.
+  - **Critical Fix**: 
+    - **Direct OpenAI Responses API** implemented for GPT-5.x, o3, o4 models
+    - Now uses `client.responses.create()` with proper parameters:
+      - `input` (not `messages`) for Responses API format
+      - `reasoning: { effort: "high", summary: "detailed" }` for GPT-5.x
+      - `text: { verbosity: "high" }` for detailed output
+      - `max_output_tokens: 128000` for full reasoning capacity
+      - `store: true` and `include: ["reasoning.encrypted_content"]` for state preservation
   - **Changes**:
-    1. **Prompt Inspector UI** (new feature):
-       - Added collapsible "Prompts" button in control bar when running/completed
-       - Shows real-time system prompt and user prompt being sent to the AI
-       - Displays model, temperature, provider, API style, and reasoning parameters
-       - Purple-themed panel distinguishes it from the event log
-    2. **Provider Badge in Header**:
-       - Shows "🔗 Direct OpenAI" (green) or "🔀 OpenRouter" (amber) during runs
+    1. **`llm_openai_responses()` function** (new in `poetiq_wrapper.py`):
+       - Calls OpenAI Responses API directly via `openai.AsyncOpenAI()`
+       - Properly parses `response.output[]` array for message content
+       - Extracts reasoning tokens from `usage.output_tokens_details`
+       - Logs response_id for potential chaining
+    2. **API Routing** in `instrumented_solve_coding()`:
+       - Detects if model should use direct OpenAI (`get_api_routing()`)
+       - Routes GPT-5.1-codex-mini, o3-mini, o4-mini to Responses API
+       - Routes OpenRouter and other models to litellm (ChatCompletions)
+    3. **Prompt Inspector UI** (new feature):
+       - Collapsible "Prompts" button shows system/user prompts
+       - Displays model, temperature, provider, API style, reasoning params
+    4. **Provider Badge in Header**:
+       - Shows "🔗 Direct OpenAI" (green) or "🔀 OpenRouter" (amber)
        - Displays API style ("Responses API" vs "ChatCompletions API")
-       - Helps users understand routing at a glance
-    3. **API Routing Detection** (`poetiq_wrapper.py`):
-       - Added `get_api_routing()` function to detect provider from model ID
-       - Identifies direct OpenAI models (gpt-5.1-codex-mini, o3-mini, etc.)
-       - Correctly labels OpenRouter, Gemini, Anthropic, and xAI models
-    4. **Prompt Data in WebSocket Events**:
-       - Python wrapper now emits `promptData` with each iteration
-       - Includes: systemPrompt, userPrompt, model, temperature, provider, apiStyle, reasoningParams
-       - Frontend hook accumulates prompt history (capped at 50)
-    5. **Reasoning Parameters for GPT-5.x**:
-       - Ensures `verbosity: "high"` and `reasoning_summary: "detailed"` for all GPT-5/o3 models
-       - Added `reasoningEffort` passthrough from UI → controller → wrapper → llm
+    5. **Service Updates** (`poetiqService.ts`):
+       - Added `'openai'` as valid provider type
+       - Added `isDirectOpenAIModel()` and `inferProviderFromModel()` methods
+       - Ensures `OPENAI_API_KEY` is passed to Python subprocess
   - **Files Modified**:
-    - `server/python/poetiq_wrapper.py` - API routing detection, prompt emission
-    - `server/services/poetiq/poetiqService.ts` - PoetiqPromptData interface, WebSocket forwarding
+    - `server/python/poetiq_wrapper.py` - `llm_openai_responses()`, API routing
+    - `server/services/poetiq/poetiqService.ts` - OpenAI provider support
     - `server/controllers/poetiqController.ts` - reasoningEffort extraction
-    - `client/src/hooks/usePoetiqProgress.ts` - PromptData interface, state tracking
-    - `client/src/pages/PoetiqSolver.tsx` - Prompt Inspector UI, Provider Badge
-  - **Note**: Poetiq still uses litellm (ChatCompletions API) for actual calls. Direct Responses API integration is documented but requires additional work to implement.
+    - `client/src/hooks/usePoetiqProgress.ts` - PromptData interface
+    - `client/src/pages/PoetiqSolver.tsx` - Prompt Inspector, Provider Badge
   - **Plan Document**: `docs/plans/2025-11-27-poetiq-api-improvements-plan.md`
 
 ### Version 5.31.4

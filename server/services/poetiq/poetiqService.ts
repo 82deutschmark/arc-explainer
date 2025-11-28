@@ -75,8 +75,8 @@ export interface PoetiqStartMetadata {
 
 export interface PoetiqOptions {
   // BYO (Bring Your Own) API key - used for this run only, never stored
-  apiKey?: string;          // User's API key (Gemini or OpenRouter)
-  provider?: 'gemini' | 'openrouter';  // Which provider the key is for (default: gemini)
+  apiKey?: string;          // User's API key (Gemini, OpenRouter, or OpenAI)
+  provider?: 'gemini' | 'openrouter' | 'openai';  // Which provider the key is for
   
   // Model configuration
   model?: string;           // LiteLLM model identifier (e.g., "gemini/gemini-3-pro-preview")
@@ -118,7 +118,7 @@ export interface PoetiqResult {
     maxIterations?: number;
     temperature?: number;
     numExperts?: number;
-    provider?: 'gemini' | 'openrouter';
+    provider?: 'gemini' | 'openrouter' | 'openai';
   };
   error?: string;
   traceback?: string;
@@ -172,18 +172,21 @@ export class PoetiqService {
     this.wrapperPath = path.join(process.cwd(), 'server', 'python', 'poetiq_wrapper.py');
   }
 
-  private getDefaultModelForProvider(provider?: 'gemini' | 'openrouter'): string {
+  private getDefaultModelForProvider(provider?: 'gemini' | 'openrouter' | 'openai'): string {
     if (provider === 'gemini') {
       return 'gemini/gemini-3-pro-preview';
+    }
+    if (provider === 'openai') {
+      return 'gpt-5.1-codex-mini';  // Default OpenAI model
     }
     return 'openrouter/google/gemini-3-pro-preview';
   }
 
-  private resolveProvider(options: PoetiqOptions, existing?: PoetiqResult['config']): 'gemini' | 'openrouter' | undefined {
-    if (existing?.provider === 'gemini' || existing?.provider === 'openrouter') {
-      return existing.provider;
+  private resolveProvider(options: PoetiqOptions, existing?: PoetiqResult['config']): 'gemini' | 'openrouter' | 'openai' | undefined {
+    if (existing?.provider === 'gemini' || existing?.provider === 'openrouter' || existing?.provider === 'openai') {
+      return existing.provider as 'gemini' | 'openrouter' | 'openai';
     }
-    if (options.provider === 'gemini' || options.provider === 'openrouter') {
+    if (options.provider === 'gemini' || options.provider === 'openrouter' || options.provider === 'openai') {
       return options.provider;
     }
     const candidate = existing?.model || options.model;
@@ -193,7 +196,44 @@ export class PoetiqService {
     if (candidate?.startsWith('openrouter/')) {
       return 'openrouter';
     }
+    // Check for direct OpenAI models
+    if (this.isDirectOpenAIModel(candidate)) {
+      return 'openai';
+    }
     return undefined;
+  }
+
+  /**
+   * Check if a model should use direct OpenAI Responses API
+   */
+  private isDirectOpenAIModel(model?: string): boolean {
+    if (!model) return false;
+    const modelLower = model.toLowerCase();
+    
+    // Don't use direct API if routed through OpenRouter
+    if (modelLower.includes('openrouter')) return false;
+    
+    // Direct OpenAI models that should use Responses API
+    const directModels = [
+      'gpt-5.1-codex-mini', 'gpt-5-mini', 'gpt-5-nano', 'gpt-5-',
+      'o3-mini', 'o4-mini', 'o3-2025', 'gpt-4.1'
+    ];
+    
+    return directModels.some(dm => modelLower.includes(dm));
+  }
+
+  /**
+   * Infer provider from model ID
+   */
+  private inferProviderFromModel(model?: string): 'gemini' | 'openrouter' | 'openai' {
+    if (!model) return 'gemini';  // Default
+    
+    const modelLower = model.toLowerCase();
+    if (modelLower.includes('openrouter/')) return 'openrouter';
+    if (this.isDirectOpenAIModel(model)) return 'openai';
+    if (modelLower.includes('gemini')) return 'gemini';
+    
+    return 'openrouter';  // Default for unknown models
   }
 
   private enrichResultWithConfig(result: PoetiqResult, options: PoetiqOptions): PoetiqResult {
@@ -243,13 +283,22 @@ export class PoetiqService {
 
       // Handle BYO API key based on provider
       if (options.apiKey) {
-        const provider = options.provider || 'gemini';
+        const provider = options.provider || this.inferProviderFromModel(options.model);
         if (provider === 'openrouter') {
           childEnv.OPENROUTER_API_KEY = options.apiKey;
+        } else if (provider === 'openai') {
+          childEnv.OPENAI_API_KEY = options.apiKey;
         } else {
           // Default to Gemini direct
           childEnv.GEMINI_API_KEY = options.apiKey;
         }
+      }
+      
+      // For direct OpenAI models, ensure OPENAI_API_KEY is available
+      // (either from BYO key or server environment)
+      if (this.isDirectOpenAIModel(options.model) && !childEnv.OPENAI_API_KEY) {
+        // Will use process.env.OPENAI_API_KEY inherited from parent
+        console.log('[Poetiq] Direct OpenAI model detected, using server OPENAI_API_KEY');
       }
 
       // Debug: Log environment keys (not values) to verify they're present
