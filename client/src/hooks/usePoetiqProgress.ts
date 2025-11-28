@@ -312,8 +312,8 @@ export function usePoetiqProgress(taskId: string | undefined) {
 
     // Defaults: OpenRouter Gemini proxy, 2 experts (Gemini-3-b config)
     const provider = options.provider || 'openrouter';
-    const model = options.model || (provider === 'openrouter' 
-      ? 'openrouter/google/gemini-3-pro-preview' 
+    const model = options.model || (provider === 'openrouter'
+      ? 'openrouter/google/gemini-3-pro-preview'
       : 'gemini/gemini-3-pro-preview');
     const numExperts = options.numExperts || 2;
     const maxIterations = options.maxIterations || 10;
@@ -345,15 +345,22 @@ export function usePoetiqProgress(taskId: string | undefined) {
     });
 
     try {
-      const res = await apiRequest('POST', `/api/poetiq/solve/${taskId}`, {
+      // Build request payload; only send provider for OpenRouter models.
+      const isOpenRouterModel = model.toLowerCase().startsWith('openrouter/');
+      const payload: any = {
         apiKey: options.apiKey,
-        provider,
         model,
         numExperts,
         maxIterations,
         temperature,
         reasoningEffort: options.reasoningEffort || 'high',  // Default to high for best results
-      });
+      };
+
+      if (isOpenRouterModel) {
+        payload.provider = provider;
+      }
+
+      const res = await apiRequest('POST', `/api/poetiq/solve/${taskId}`, payload);
       const response = await res.json();
 
       if (response.success && response.data?.sessionId) {

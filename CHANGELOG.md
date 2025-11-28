@@ -1,6 +1,16 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top!!!
 
+### Version 5.32.2
+
+- **Poetiq Solver: Direct SDK Routing Fix + Submodule Restore** (Author: Cascade using Cascade)
+  - **Problem**: On the `arc3` branch, Poetiq runs with direct SDK integration were not hitting external APIs (especially OpenAI GPT-5.1 Codex Mini). BYO keys were being routed as `OPENROUTER_API_KEY` even for direct models like `gpt-5.1-codex-mini`, while the Python solver expected `OPENAI_API_KEY` for those models. This prevented real network calls and accurate token/cost tracking.
+  - **Fix**:
+    1. Updated `usePoetiqProgress.start()` so that the frontend only sends `provider: 'openrouter'` for models whose ID starts with `openrouter/`, and omits `provider` for direct models (OpenAI, Gemini, Anthropic, xAI). The backend now relies on `inferProviderFromModel(model)` to map BYO keys to the correct `*_API_KEY` env vars for the Python child process.
+    2. Confirmed that `solver/poetiq/llm.py` and `server/python/poetiq_wrapper.py` correctly route GPT-5.x models to the OpenAI Responses API (`client.responses.create`) with reasoning parameters, and that token usage and cost are emitted back to the Node service.
+    3. Restored the `poetiq-solver` git submodule as a **read-only reference** while keeping the internalized solver under `solver/poetiq/` as the execution path.
+  - **Result**: Poetiq now correctly issues direct SDK calls for models like `gpt-5.1-codex-mini` using the caller's BYO key, and the UI/metrics pipeline once again receives accurate token and cost data. The original Poetiq repo is available as an in-repo reference via the submodule.
+
 ### Version 5.32.1
 
 - **Poetiq Community Progress: Fix Iteration Count Metrics** (Author: Cascade using Claude Sonnet 4.5)
