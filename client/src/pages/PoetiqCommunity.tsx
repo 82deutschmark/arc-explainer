@@ -404,9 +404,9 @@ export default function PoetiqCommunity() {
                 {/* Attempted Coverage */}
                 <Card>
                   <CardContent className="pt-6">
-                    <div className="text-xs text-gray-500 font-semibold uppercase mb-1">Attempted</div>
+                    <div className="text-xs text-gray-500 font-semibold uppercase mb-1">Coverage</div>
                     <div className="text-2xl font-bold text-blue-600">{progress.attemptedPercentage}%</div>
-                    <div className="text-xs text-gray-600">{progress.attempted}/{progress.total}</div>
+                    <div className="text-xs text-gray-600">{progress.attempted}/{progress.total} tested</div>
                   </CardContent>
                 </Card>
 
@@ -415,60 +415,38 @@ export default function PoetiqCommunity() {
                   <CardContent className="pt-6">
                     <div className="text-xs text-gray-500 font-semibold uppercase mb-1">Success Rate</div>
                     <div className="text-2xl font-bold text-green-600">{progress.successRateOnAttempted}%</div>
-                    <div className="text-xs text-gray-600">{progress.solved}/{progress.attempted}</div>
+                    <div className="text-xs text-gray-600">{progress.solved}/{progress.attempted} solved</div>
                   </CardContent>
                 </Card>
 
-                {/* Failed Attempts */}
+                {/* Total Cost */}
                 <Card>
                   <CardContent className="pt-6">
-                    <div className="text-xs text-gray-500 font-semibold uppercase mb-1">Failed</div>
-                    <div className="text-2xl font-bold text-red-600">{progress.failed}</div>
-                    <div className="text-xs text-gray-600">attempts</div>
+                    <div className="text-xs text-gray-500 font-semibold uppercase mb-1">Total Cost</div>
+                    <div className="text-2xl font-bold text-purple-600">${progress.totalCost.toFixed(2)}</div>
+                    <div className="text-xs text-gray-600">{progress.attempted} attempts</div>
                   </CardContent>
                 </Card>
 
-                {/* Avg Iterations Solved */}
+                {/* Avg Cost per Solve */}
                 <Card>
                   <CardContent className="pt-6">
-                    <div className="text-xs text-gray-500 font-semibold uppercase mb-1">Avg Iter (Solved)</div>
-                    <div className="text-2xl font-bold text-emerald-600">{progress.avgIterationsSolved ?? '—'}</div>
-                    <div className="text-xs text-gray-600">iterations</div>
+                    <div className="text-xs text-gray-500 font-semibold uppercase mb-1">Cost / Solve</div>
+                    <div className="text-2xl font-bold text-emerald-600">{progress.avgCostPerSolve ? `$${progress.avgCostPerSolve.toFixed(3)}` : '—'}</div>
+                    <div className="text-xs text-gray-600">per success</div>
                   </CardContent>
                 </Card>
 
-                {/* Avg Iterations Failed */}
+                {/* Avg Cost per Attempt */}
                 <Card>
                   <CardContent className="pt-6">
-                    <div className="text-xs text-gray-500 font-semibold uppercase mb-1">Avg Iter (Failed)</div>
-                    <div className="text-2xl font-bold text-orange-600">{progress.avgIterationsFailed ?? '—'}</div>
-                    <div className="text-xs text-gray-600">iterations</div>
+                    <div className="text-xs text-gray-500 font-semibold uppercase mb-1">Cost / Attempt</div>
+                    <div className="text-2xl font-bold text-orange-600">{progress.avgCostPerAttempt ? `$${progress.avgCostPerAttempt.toFixed(3)}` : '—'}</div>
+                    <div className="text-xs text-gray-600">all attempts</div>
                   </CardContent>
                 </Card>
               </div>
            </div>
-
-           {/* Per-Model Stats */}
-           {progress.modelStats.length > 0 && (
-             <div>
-               <h3 className="text-base font-semibold text-gray-800 mb-2">Performance by Model</h3>
-               <Card>
-                 <CardContent className="pt-4">
-                   <div className="space-y-2">
-                     {progress.modelStats.map((stat) => (
-                       <div key={stat.modelName} className="flex items-center justify-between py-2 px-3 bg-gray-50 rounded text-sm">
-                         <div className="font-mono text-gray-700">{stat.modelName}</div>
-                         <div className="flex items-center gap-4">
-                           <div className="text-gray-600">{stat.solved}/{stat.attempts}</div>
-                           <div className="font-bold text-gray-800 min-w-12 text-right">{stat.successRate}%</div>
-                         </div>
-                       </div>
-                     ))}
-                   </div>
-                 </CardContent>
-               </Card>
-             </div>
-           )}
 
            {/* Puzzle Grid */}
            <div>
