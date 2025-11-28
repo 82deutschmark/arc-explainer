@@ -1,6 +1,32 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top!!!
 
+### Version 5.32.0 (BREAKING CHANGE)
+
+- **Poetiq Solver: Complete Migration from LiteLLM to Direct SDK Calls** (Author: Cascade using Claude Sonnet 4)
+  - **BREAKING CHANGE**: Removed LiteLLM dependency entirely from Poetiq solver
+  - **Purpose**: Align Poetiq with main TypeScript services which already use direct SDK integration
+  - **What Changed**:
+    1. **OpenAI models** (GPT-5.x, o3, o4): Use Responses API (`POST /v1/responses`) with:
+       - `reasoning: { effort, summary }` for chain-of-thought
+       - `text: { verbosity }` for output control
+    2. **Anthropic models** (Claude): Use Messages API via `@anthropic-ai/sdk` with:
+       - Extended thinking support (`thinking: { type: "enabled", budget_tokens }`)
+    3. **Google Gemini models**: Use Generative AI SDK via `google-generativeai` with:
+       - Thinking config (`thinking_budget`) for Gemini 2.5+/3.x models
+    4. **OpenRouter models**: Use OpenAI SDK with custom `base_url`
+    5. **xAI (Grok) models**: Use OpenAI SDK with custom `base_url`
+  - **Files Modified**:
+    - `solver/poetiq/llm.py` - Complete rewrite with provider-specific functions (`llm_openai`, `llm_anthropic`, `llm_gemini`, `llm_openrouter`, `llm_xai`)
+    - `solver/poetiq/__init__.py` - Updated documentation
+    - `server/python/poetiq_wrapper.py` - Simplified to use unified `llm()` router, removed duplicate `llm_openai_responses`
+    - `requirements.txt` - Removed `litellm>=1.50.0`
+  - **Benefits**:
+    - No more dependency on LiteLLM (simpler dependency tree)
+    - Consistent architecture with TypeScript services
+    - Better control over provider-specific features (reasoning, thinking)
+    - Easier debugging with direct SDK calls
+
 ### Version 5.31.6
 
 - **Poetiq Solver: Reasoning Traces Display** (Author: Cascade using Claude Sonnet 4)
