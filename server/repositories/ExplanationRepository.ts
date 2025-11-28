@@ -1233,6 +1233,10 @@ export class ExplanationRepository extends BaseRepository implements IExplanatio
     multiTestAllCorrect: boolean | null;
     iterationCount: number | null;
     apiProcessingTimeMs: number | null;
+    inputTokens: number | null;
+    outputTokens: number | null;
+    totalTokens: number | null;
+    estimatedCost: number | null;
   }>> {
     if (!this.isConnected() || puzzleIds.length === 0) {
       return [];
@@ -1250,7 +1254,11 @@ export class ExplanationRepository extends BaseRepository implements IExplanatio
           created_at,
           is_prediction_correct,
           multi_test_all_correct,
-          api_processing_time_ms
+          api_processing_time_ms,
+          input_tokens,
+          output_tokens,
+          total_tokens,
+          estimated_cost
         FROM explanations
         WHERE puzzle_id IN (${placeholders})
         AND model_name LIKE 'poetiq-%'
@@ -1265,6 +1273,10 @@ export class ExplanationRepository extends BaseRepository implements IExplanatio
         multiTestAllCorrect: row.multi_test_all_correct,
         iterationCount: null, // TODO: Extract from provider_raw_response if needed
         apiProcessingTimeMs: row.api_processing_time_ms,
+        inputTokens: row.input_tokens,
+        outputTokens: row.output_tokens,
+        totalTokens: row.total_tokens,
+        estimatedCost: row.estimated_cost,
       }));
     } catch (error) {
       logger.error(`Error getting Poetiq explanations: ${error instanceof Error ? error.message : String(error)}`, 'explanation-repository');

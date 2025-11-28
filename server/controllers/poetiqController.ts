@@ -561,6 +561,10 @@ export const poetiqController = {
             isPredictionCorrect: null,
             iterationCount: null,
             elapsedMs: null,
+            inputTokens: null,
+            outputTokens: null,
+            totalTokens: null,
+            estimatedCost: null,
           };
         }
 
@@ -575,6 +579,10 @@ export const poetiqController = {
           isPredictionCorrect: poetiqExp.isPredictionCorrect,
           iterationCount: poetiqExp.iterationCount || null,
           elapsedMs: poetiqExp.apiProcessingTimeMs || null,
+          inputTokens: poetiqExp.inputTokens || null,
+          outputTokens: poetiqExp.outputTokens || null,
+          totalTokens: poetiqExp.totalTokens || null,
+          estimatedCost: poetiqExp.estimatedCost || null,
         };
       });
 

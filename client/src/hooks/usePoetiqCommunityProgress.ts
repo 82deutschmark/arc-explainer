@@ -25,6 +25,10 @@ export interface PoetiqPuzzleStatus {
   isPredictionCorrect: boolean | null;
   iterationCount: number | null;
   elapsedMs: number | null;
+  inputTokens: number | null;
+  outputTokens: number | null;
+  totalTokens: number | null;
+  estimatedCost: number | null;
 }
 
 export interface ModelStats {
@@ -46,6 +50,9 @@ export interface PoetiqCommunityProgress {
   successRateOnAttempted: number;
   avgIterationsSolved: number | null;
   avgIterationsFailed: number | null;
+  totalCost: number;
+  avgCostPerSolve: number | null;
+  avgCostPerAttempt: number | null;
   modelStats: ModelStats[];
   isLoading: boolean;
   error: string | null;
@@ -63,6 +70,9 @@ const initialState: PoetiqCommunityProgress = {
   successRateOnAttempted: 0,
   avgIterationsSolved: null,
   avgIterationsFailed: null,
+  totalCost: 0,
+  avgCostPerSolve: null,
+  avgCostPerAttempt: null,
   modelStats: [],
   isLoading: true,
   error: null,
@@ -127,6 +137,18 @@ export function usePoetiqCommunityProgress() {
         successRate: stats.attempts > 0 ? Math.round((stats.solved / stats.attempts) * 100) : 0,
       }));
 
+      // Calculate cost metrics
+      const attemptedPuzzles = puzzles.filter((p: PoetiqPuzzleStatus) => p.status === 'attempted' || p.status === 'solved');
+      const totalCost = attemptedPuzzles.reduce((sum: number, p: PoetiqPuzzleStatus) => sum + (p.estimatedCost || 0), 0);
+
+      const avgCostPerSolve = solvedPuzzles.length > 0
+        ? solvedPuzzles.reduce((sum: number, p: PoetiqPuzzleStatus) => sum + (p.estimatedCost || 0), 0) / solvedPuzzles.length
+        : null;
+
+      const avgCostPerAttempt = attemptedPuzzles.length > 0
+        ? totalCost / attemptedPuzzles.length
+        : null;
+
       setProgress({
         puzzles,
         total,
@@ -139,6 +161,9 @@ export function usePoetiqCommunityProgress() {
         successRateOnAttempted,
         avgIterationsSolved: avgIterationsSolved ? Math.round(avgIterationsSolved * 10) / 10 : null,
         avgIterationsFailed: avgIterationsFailed ? Math.round(avgIterationsFailed * 10) / 10 : null,
+        totalCost: Math.round(totalCost * 100) / 100,
+        avgCostPerSolve: avgCostPerSolve ? Math.round(avgCostPerSolve * 1000) / 1000 : null,
+        avgCostPerAttempt: avgCostPerAttempt ? Math.round(avgCostPerAttempt * 1000) / 1000 : null,
         modelStats,
         isLoading: false,
         error: null,
