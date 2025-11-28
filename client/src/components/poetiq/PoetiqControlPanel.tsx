@@ -84,7 +84,7 @@ export default function PoetiqControlPanel({
   // Fetch all models from API
   const { data: poetiqModels, isLoading: modelsLoading } = usePoetiqModels();
   
-  // Bring Your Own Key is REQUIRED - no fallback to server keys
+  // Bring Your Own Key requirement depends on selected model
   const hasApiKey = apiKey.trim().length > 0;
   const canStart = !isRunning && !modelsLoading && hasApiKey;
 
@@ -125,6 +125,8 @@ export default function PoetiqControlPanel({
   const selectedModelObj = useMemo(() => 
     poetiqModels?.find(m => m.id === model), 
   [poetiqModels, model]);
+
+  const requiresApiKey = !!(selectedModelObj as any)?.requiresBYO;
 
   // Auto-update provider when model changes
   useEffect(() => {
@@ -250,20 +252,43 @@ export default function PoetiqControlPanel({
         </div>
       </div>
 
-      {/* Bring Your Own Key Card - REQUIRED */}
-      <div className={`card bg-white border shadow-sm ${hasApiKey ? 'border-green-300' : 'border-amber-400'}`}>
+      {/* Bring Your Own Key Card - required only for some providers (Gemini/OpenRouter) */}
+      <div className={`card bg-white border shadow-sm ${
+        requiresApiKey
+          ? hasApiKey ? 'border-green-300' : 'border-amber-400'
+          : hasApiKey ? 'border-green-300' : 'border-gray-300'
+      }`}>
         <div className="card-body p-4">
           <h3 className="card-title text-sm flex items-center gap-2">
-            <Key className={`w-4 h-4 ${hasApiKey ? 'text-green-600' : 'text-amber-600'}`} />
+            <Key className={`w-4 h-4 ${
+              requiresApiKey
+                ? hasApiKey ? 'text-green-600' : 'text-amber-600'
+                : hasApiKey ? 'text-green-600' : 'text-gray-500'
+            }`} />
             Bring Your Own Key
-            <span className="badge badge-sm badge-warning">Required</span>
+            <span className="badge badge-sm badge-warning">{requiresApiKey ? 'Required' : 'Optional'}</span>
           </h3>
           <div className="space-y-2">
-            <div className={`rounded p-2 ${hasApiKey ? 'bg-green-50 border border-green-200' : 'bg-amber-50 border border-amber-200'}`}>
-              <p className={`text-[10px] leading-tight ${hasApiKey ? 'text-green-700' : 'text-amber-700'}`}>
-                {hasApiKey 
-                  ? <>✓ Your <strong>{selectedModelObj?.provider}</strong> key is set. It's used for this session only and never stored.</>
-                  : <>Provide your <strong>{selectedModelObj?.provider}</strong> API key to run Poetiq. Your key is used for this session only and never stored.</>}
+            <div className={`rounded p-2 ${
+              requiresApiKey
+                ? hasApiKey ? 'bg-green-50 border border-green-200' : 'bg-amber-50 border border-amber-200'
+                : hasApiKey ? 'bg-green-50 border border-green-200' : 'bg-gray-50 border border-gray-200'
+            }`}>
+              <p className={`text-[10px] leading-tight ${
+                requiresApiKey
+                  ? hasApiKey ? 'text-green-700' : 'text-amber-700'
+                  : hasApiKey ? 'text-green-700' : 'text-gray-700'
+              }`}>
+                {requiresApiKey
+                  ? (
+                    hasApiKey
+                      ? <>✓ Your <strong>{selectedModelObj?.provider}</strong> key is set. It's used for this session only and never stored.</>
+                      : <>Provide your <strong>{selectedModelObj?.provider}</strong> API key to run Poetiq. Your key is used for this session only and never stored.</>
+                  ) : (
+                    hasApiKey
+                      ? <>✓ Your key will override the project key for <strong>{selectedModelObj?.provider}</strong>. It's used for this session only and never stored.</>
+                      : <>Optional: you can provide your own <strong>{selectedModelObj?.provider}</strong> key. If omitted, the project key will be used where configured.</>
+                  )}
               </p>
             </div>
             <input
@@ -272,9 +297,9 @@ export default function PoetiqControlPanel({
               onChange={(e) => setApiKey(e.target.value)}
               disabled={isRunning}
               placeholder={keyPlaceholder}
-              className={`input input-bordered input-sm w-full font-mono text-xs ${!hasApiKey && 'input-warning'}`}
+              className={`input input-bordered input-sm w-full font-mono text-xs ${requiresApiKey && !hasApiKey && 'input-warning'}`}
             />
-            {!hasApiKey && (
+            {requiresApiKey && !hasApiKey && (
               <p className="text-[10px] text-amber-600">
                 Get your API key from: 
                 <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener noreferrer" className="link link-primary ml-1">Google AI Studio</a> | 

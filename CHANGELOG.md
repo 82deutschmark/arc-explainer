@@ -1,6 +1,17 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top!!!
 
+### Version 5.32.3
+
+- **Poetiq Solver: BYO Key Relaxation + GPT-5.1 Codex Mini Default** (Author: Cascade using Cascade)
+  - **Change**: Adjusted Poetiq BYO key requirements so that only **Gemini** and **OpenRouter** models require a user-supplied API key. Direct OpenAI runs (including `gpt-5.1-codex-mini`) may omit `apiKey` and fall back to server `OPENAI_API_KEY` when configured.
+  - **Implementation**:
+    1. Updated `poetiqController.solve()` to require BYO keys only when the resolved provider/model is Gemini or OpenRouter; for other providers, requests without `apiKey` are accepted and rely on inherited env vars.
+    2. Updated `/api/poetiq/models` metadata so that Gemini and OpenRouter entries set `requiresBYO: true`, while `gpt-5.1-codex-mini` is marked `requiresBYO: false`.
+    3. Changed `PoetiqSolver` page defaults to use `gpt-5.1-codex-mini` as the default model and to treat the BYO key input as **optional** for direct OpenAI runs (while still required/visually enforced for Gemini/OpenRouter).
+    4. Updated `PoetiqControlPanel` and `PoetiqCommunity` UI to reflect the new rules, showing "Required" badges only for Gemini/OpenRouter configurations and keeping project-key fallback messaging for other providers.
+  - **Result**: Users can run Poetiq with GPT-5.1 Codex Mini using the server-level OpenAI key by default, while still being required to provide their own keys for higher-risk third-party providers (Gemini and OpenRouter).
+
 ### Version 5.32.2
 
 - **Poetiq Solver: Direct SDK Routing Fix + Submodule Restore** (Author: Cascade using Cascade)

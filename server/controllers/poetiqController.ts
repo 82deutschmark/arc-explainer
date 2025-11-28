@@ -137,21 +137,29 @@ export const poetiqController = {
     // Generate session ID for progress tracking
     const sessionId = randomUUID();
 
-    // Extract BYO API key (REQUIRED - no fallback to server keys)
+    // Extract BYO API key (conditionally required based on provider/model)
     const apiKey = req.body?.apiKey as string | undefined;
     const provider = req.body?.provider as 'gemini' | 'openrouter' | 'openai' | 'anthropic' | 'xai' | undefined;
+    const model = req.body?.model as string | undefined;
 
-    // Validate: Bring Your Own Key is required for Poetiq
-    if (!apiKey || apiKey.trim().length === 0) {
+    // Only require BYO key for Gemini and OpenRouter runs.
+    // Direct OpenAI / other providers may fall back to server env keys.
+    const lowerModel = (model || '').toLowerCase();
+    const requiresByo =
+      provider === 'gemini' ||
+      provider === 'openrouter' ||
+      (!provider && (lowerModel.startsWith('gemini/') || lowerModel.startsWith('openrouter/')));
+
+    if (requiresByo && (!apiKey || apiKey.trim().length === 0)) {
       return res.status(400).json(formatResponse.error(
         'api_key_required',
-        'Bring Your Own Key required: Please provide your API key for the selected provider. Your key is used for this session only and is never stored.'
+        'Bring Your Own Key required: Please provide your API key for this Gemini or OpenRouter model. Your key is used for this session only and is never stored.'
       ));
     }
 
     // Extract options from request body
     const options = {
-      model: req.body?.model as string | undefined,               // LiteLLM model ID
+      model,
       maxIterations: typeof req.body?.maxIterations === 'number' ? req.body.maxIterations : 10,
       numExperts: typeof req.body?.numExperts === 'number' ? req.body.numExperts : 1,
       temperature: typeof req.body?.temperature === 'number' ? req.body.temperature : 1.0,
@@ -295,21 +303,22 @@ export const poetiqController = {
     // All models route through OpenRouter (server key) or require BYO API key for direct access
     // Label format: "Model Name" + routing info to avoid confusion
     const models = [
-      // SOTA Models (Featured in Blog) - via OpenRouter
-      { id: 'openrouter/google/gemini-3-pro-preview', name: 'Gemini 3 Pro', provider: 'OpenRouter', recommended: true, routing: 'openrouter' },
-      { id: 'openai/gpt-5.1', name: 'GPT-5.1', provider: 'OpenRouter', recommended: true, routing: 'openrouter' },
-      { id: 'x-ai/grok-4.1-fast', name: 'Grok 4.1 Fast', provider: 'OpenRouter', recommended: true, routing: 'openrouter' },
-      { id: 'openai/gpt-oss-120b', name: 'GPT-OSS 120B', provider: 'OpenRouter', recommended: true, routing: 'openrouter' },
+      // SOTA Models (Featured in Blog) - via OpenRouter (BYO required)
+      { id: 'openrouter/google/gemini-3-pro-preview', name: 'Gemini 3 Pro', provider: 'OpenRouter', recommended: true, routing: 'openrouter', requiresBYO: true },
+      { id: 'openai/gpt-5.1', name: 'GPT-5.1', provider: 'OpenRouter', recommended: true, routing: 'openrouter', requiresBYO: true },
+      { id: 'x-ai/grok-4.1-fast', name: 'Grok 4.1 Fast', provider: 'OpenRouter', recommended: true, routing: 'openrouter', requiresBYO: true },
+      { id: 'openai/gpt-oss-120b', name: 'GPT-OSS 120B', provider: 'OpenRouter', recommended: true, routing: 'openrouter', requiresBYO: true },
 
-      // Direct API access (requires BYO API key)
+      // Direct API access
+      // Gemini direct requires BYO; OpenAI direct can fall back to server key.
       { id: 'gemini/gemini-3-pro-preview', name: 'Gemini 3 Pro', provider: 'Google', recommended: false, routing: 'direct', requiresBYO: true },
-      { id: 'gpt-5.1-codex-mini', name: 'GPT-5.1 Codex Mini', provider: 'OpenAI', recommended: false, routing: 'direct', requiresBYO: true },
-      { id: 'grok-4-fast-reasoning', name: 'Grok 4 Fast Reasoning', provider: 'xAI', recommended: false, routing: 'direct', requiresBYO: true },
-      { id: 'anthropic/claude-sonnet-4-5', name: 'Claude Sonnet 4.5', provider: 'Anthropic', recommended: false, routing: 'direct', requiresBYO: true },
+      { id: 'gpt-5.1-codex-mini', name: 'GPT-5.1 Codex Mini', provider: 'OpenAI', recommended: false, routing: 'direct', requiresBYO: false },
+      { id: 'grok-4-fast-reasoning', name: 'Grok 4 Fast Reasoning', provider: 'xAI', recommended: false, routing: 'direct', requiresBYO: false },
+      { id: 'anthropic/claude-sonnet-4-5', name: 'Claude Sonnet 4.5', provider: 'Anthropic', recommended: false, routing: 'direct', requiresBYO: false },
 
-      // Other via OpenRouter
-      { id: 'openrouter/google/gemini-2.5-flash-preview-09-2025', name: 'Gemini 2.5 Flash', provider: 'OpenRouter', recommended: false, routing: 'openrouter' },
-      { id: 'openrouter/anthropic/claude-sonnet-4', name: 'Claude Sonnet 4', provider: 'OpenRouter', recommended: false, routing: 'openrouter' },
+      // Other via OpenRouter (BYO required)
+      { id: 'openrouter/google/gemini-2.5-flash-preview-09-2025', name: 'Gemini 2.5 Flash', provider: 'OpenRouter', recommended: false, routing: 'openrouter', requiresBYO: true },
+      { id: 'openrouter/anthropic/claude-sonnet-4', name: 'Claude Sonnet 4', provider: 'OpenRouter', recommended: false, routing: 'openrouter', requiresBYO: true },
     ];
 
     return res.json(formatResponse.success({ models }));

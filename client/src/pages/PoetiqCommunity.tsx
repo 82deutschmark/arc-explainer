@@ -106,6 +106,7 @@ export default function PoetiqCommunity() {
   const nextPuzzle = progress.getNextRecommended();
   const canStart = !!nextPuzzle;
   const usingProjectKey = !apiKey.trim();
+  const requiresApiKey = selectedModel.provider === 'gemini' || selectedModel.provider === 'openrouter';
 
   const handleRunNext = () => {
     if (!nextPuzzle) return;
@@ -209,7 +210,7 @@ export default function PoetiqCommunity() {
                 </div>
 
                 <div className="space-y-1">
-                  <Label className="text-xs font-semibold text-gray-500">API Key (Optional)</Label>
+                  <Label className="text-xs font-semibold text-gray-500">API Key {requiresApiKey ? '(Required)' : '(Optional)'}</Label>
                   <Input
                     type="text"
                     placeholder={selectedModel.keyPlaceholder}
@@ -222,17 +223,25 @@ export default function PoetiqCommunity() {
 
               {/* Info */}
               <div className="text-xs text-gray-500">
-                {usingProjectKey ? (
-                  <span>Using project key (may be rate limited). <a href={selectedModel.keyUrl} target="_blank" className="text-indigo-600 underline">Get your own</a> for faster results.</span>
+                {requiresApiKey ? (
+                  usingProjectKey ? (
+                    <span>This model requires your own API key for {selectedModel.provider}. Provide a key above to run the solver.</span>
+                  ) : (
+                    <span>Using your key — passed directly to Python backend, never stored.</span>
+                  )
                 ) : (
-                  <span>Using your key — passed directly to Python backend, never stored.</span>
+                  usingProjectKey ? (
+                    <span>Using project key (may be rate limited). <a href={selectedModel.keyUrl} target="_blank" className="text-indigo-600 underline">Get your own</a> for faster results.</span>
+                  ) : (
+                    <span>Using your key — passed directly to Python backend, never stored.</span>
+                  )
                 )}
               </div>
 
               {/* Run Button */}
               <Button
                 onClick={handleRunNext}
-                disabled={!canStart}
+                disabled={!canStart || (requiresApiKey && usingProjectKey)}
                 className="w-full bg-green-600 hover:bg-green-700 h-10 text-base font-semibold"
               >
                 <Play className="h-4 w-4 mr-2" />
