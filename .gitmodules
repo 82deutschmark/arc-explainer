@@ -1,6 +1,6 @@
 [submodule "arc-agi-benchmarking"]
 	path = arc-agi-benchmarking
 	url = https://github.com/82deutschmark/arc-agi-benchmarking
-# poetiq-solver submodule REMOVED 2025-11-27
-# Poetiq is now INTERNALIZED at solver/poetiq/ for better token tracking
-# See: docs/plans/2025-11-27-poetiq-internalization-revised-plan.md
+[submodule "poetiq-solver"]
+	path = poetiq-solver
+	url = https://github.com/82deutschmark/poetiq-arc-agi-solver
