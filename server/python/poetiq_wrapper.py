@@ -2,13 +2,18 @@
 """
 Author: Cascade (Claude Sonnet 4)
 Date: 2025-11-25
-Updated: 2025-11-27 - Internalized Poetiq solver, added token/cost tracking
+Updated: 2025-11-27 - MIGRATED TO DIRECT SDK CALLS (NO LiteLLM)
+         - OpenAI: Uses Responses API (POST /v1/responses) for GPT-5.x, o3, o4 models
+         - Anthropic: Uses Messages API directly via anthropic SDK
+         - Google Gemini: Uses Generative AI SDK directly
+         - OpenRouter/xAI: Uses OpenAI SDK with custom base_url
+         
 PURPOSE: Python bridge wrapper for Poetiq ARC-AGI solver integration.
          Receives puzzle data via stdin, runs Poetiq solver, streams progress as NDJSON.
-         Now uses internalized solver from solver/poetiq/ with token/cost tracking.
+         Uses internalized solver from solver/poetiq/ with direct SDK calls for all providers.
 
 SRP and DRY check: Pass - Single responsibility is bridging Node.js to Poetiq solver.
-                   Does not duplicate Poetiq logic, only wraps and instruments it.
+                   LLM calls are delegated to solver/poetiq/llm.py which has provider-specific functions.
 
 Protocol:
   Node -> Python (stdin): { "puzzleId": str, "task": { train: [...], test: [...] }, "options": {...} }
@@ -29,8 +34,8 @@ import traceback
 from pathlib import Path
 from typing import Dict, Tuple, Optional
 
-# OpenAI SDK for direct Responses API calls
-import openai
+# Note: OpenAI, Anthropic, and Google SDKs are now called via solver/poetiq/llm.py
+# which provides direct SDK integration for all providers (NO LiteLLM)
 
 
 # ==========================================
@@ -89,7 +94,7 @@ MODEL_PRICING: Dict[str, Dict[str, float]] = {
 def normalize_model_name(model_id: str) -> str:
     """
     Normalize model ID to match our pricing lookup keys.
-    Handles litellm prefixes (openai/, gemini/, anthropic/, etc.)
+    Handles provider prefixes (openai/, gemini/, anthropic/, openrouter/, etc.)
     """
     # Remove provider prefix (openai/, gemini/, anthropic/, openrouter/, etc.)
     parts = model_id.split("/")
@@ -238,149 +243,57 @@ _token_cost_tracker = {
 }
 
 # ==========================================
-# DIRECT OPENAI RESPONSES API CALL
+# API ROUTING (uses solver/poetiq/llm.py which has direct SDK calls)
 # ==========================================
-async def llm_openai_responses(
-    model: str,
-    message: str,
-    system_prompt: str,
-    temperature: float = 1.0,
-    reasoning_effort: str = "high",
-    verbosity: str = "high",
-    reasoning_summary: str = "detailed",
-    max_output_tokens: int = 128000,
-    problem_id: Optional[str] = None,
-) -> Tuple[str, dict, str]:
-    """
-    Call OpenAI via Responses API (POST /v1/responses).
-    Uses proper reasoning parameters for GPT-5.x models.
-    
-    Returns:
-        Tuple of (response_text, token_usage_dict, reasoning_summary)
-    """
-    # Get API key from environment
-    api_key = os.environ.get("OPENAI_API_KEY")
-    if not api_key:
-        raise ValueError("OPENAI_API_KEY environment variable not set for direct OpenAI call")
-    
-    client = openai.AsyncOpenAI(api_key=api_key)
-    
-    log(f"[Responses API] Calling {model} with reasoning_effort={reasoning_effort}, verbosity={verbosity}, summary={reasoning_summary}")
-    
-    start_time = time.time()
-    
-    try:
-        # Build the Responses API request
-        # See: docs/reference/api/ResponsesAPI.md
-        response = await client.responses.create(
-            model=model,
-            input=[{"role": "user", "content": message}],
-            instructions=system_prompt,
-            reasoning={
-                "effort": reasoning_effort,
-                "summary": reasoning_summary,  # "detailed" for GPT-5.x
-            },
-            text={
-                "verbosity": verbosity,  # "high" for GPT-5.x
-            },
-            max_output_tokens=max_output_tokens,
-            store=True,
-            # Include for stateful chaining if needed
-            include=["reasoning.encrypted_content"],
-        )
-        
-        elapsed = time.time() - start_time
-        log(f"[Responses API] Response received in {elapsed:.2f}s, response_id={response.id}")
-        
-        # Extract text from response.output[]
-        output_text = ""
-        reasoning_summary_text = ""
-        
-        for item in response.output:
-            if item.type == "message":
-                for content in item.content:
-                    if hasattr(content, 'type') and content.type == "output_text":
-                        output_text += content.text
-            elif item.type == "reasoning":
-                # Capture reasoning summary if available
-                if hasattr(item, 'summary') and item.summary:
-                    reasoning_summary_text = item.summary
-        
-        # Build token usage dict matching our format
-        token_usage = {
-            "input_tokens": response.usage.input_tokens if response.usage else 0,
-            "output_tokens": response.usage.output_tokens if response.usage else 0,
-            "total_tokens": (response.usage.input_tokens + response.usage.output_tokens) if response.usage else 0,
-        }
-        
-        # Extract reasoning tokens if available
-        if response.usage and hasattr(response.usage, 'output_tokens_details'):
-            details = response.usage.output_tokens_details
-            if hasattr(details, 'reasoning_tokens'):
-                token_usage["reasoning_tokens"] = details.reasoning_tokens
-                log(f"[Responses API] Reasoning tokens: {details.reasoning_tokens}")
-        
-        log(f"[Responses API] Tokens: input={token_usage['input_tokens']}, output={token_usage['output_tokens']}")
-        
-        # Log reasoning summary if present
-        if reasoning_summary_text:
-            log(f"[Responses API] Reasoning summary available ({len(reasoning_summary_text)} chars)")
-        
-        return output_text, token_usage, reasoning_summary_text
-        
-    except openai.APIError as e:
-        log(f"[Responses API] API Error: {e}", level="error")
-        raise
-    except Exception as e:
-        log(f"[Responses API] Unexpected error: {e}", level="error")
-        raise
-
-
-# Determine API routing based on model
 def get_api_routing(model_id: str) -> dict:
     """
-    Determine which API to use for a given model.
-    Returns: {"type": "direct_openai" | "litellm", "provider": str, "apiStyle": str}
+    Determine which API style is being used for a given model.
+    All providers now use direct SDK calls (NO LiteLLM).
+    
+    Returns: {"provider": str, "apiStyle": str}
     """
     model_lower = model_id.lower()
     
-    # Direct OpenAI models (use Responses API)
-    DIRECT_OPENAI_MODELS = [
-        'gpt-5.1-codex-mini', 'gpt-5-mini', 'gpt-5-nano', 'gpt-5-',
-        'o3-mini', 'o4-mini', 'o3-2025', 'gpt-4.1'
-    ]
+    # OpenAI models (use Responses API)
+    if any(x in model_lower for x in ['gpt-5', 'o3-', 'o4-', 'gpt-4.1']):
+        if 'openrouter' not in model_lower:
+            return {
+                "provider": "OpenAI",
+                "apiStyle": "Responses API (Direct SDK)"
+            }
     
-    # Check if it's a direct OpenAI model (not via openrouter)
-    if 'openrouter' not in model_lower:
-        for direct_model in DIRECT_OPENAI_MODELS:
-            if direct_model in model_lower:
-                return {
-                    "type": "direct_openai",
-                    "provider": "OpenAI",
-                    "apiStyle": "Responses API"
-                }
-    
-    # OpenRouter routes
+    # OpenRouter models
     if 'openrouter' in model_lower:
         return {
-            "type": "litellm",
             "provider": "OpenRouter",
-            "apiStyle": "ChatCompletions API"
+            "apiStyle": "ChatCompletions API (Direct SDK)"
         }
     
-    # Default to litellm
-    provider = "Unknown"
-    if 'gemini' in model_lower:
-        provider = "Google Gemini"
-    elif 'claude' in model_lower or 'anthropic' in model_lower:
-        provider = "Anthropic"
-    elif 'grok' in model_lower:
-        provider = "xAI"
+    # Anthropic models
+    if 'claude' in model_lower or 'anthropic' in model_lower:
+        return {
+            "provider": "Anthropic",
+            "apiStyle": "Messages API (Direct SDK)"
+        }
     
+    # Google Gemini models
+    if 'gemini' in model_lower:
+        return {
+            "provider": "Google Gemini",
+            "apiStyle": "Generative AI SDK (Direct)"
+        }
+    
+    # xAI Grok models
+    if 'grok' in model_lower or 'xai' in model_lower:
+        return {
+            "provider": "xAI",
+            "apiStyle": "ChatCompletions API (Direct SDK)"
+        }
+    
+    # Unknown - will be routed through OpenRouter
     return {
-        "type": "litellm",
-        "provider": provider,
-        "apiStyle": "ChatCompletions API"
+        "provider": "OpenRouter (fallback)",
+        "apiStyle": "ChatCompletions API (Direct SDK)"
     }
 
 
@@ -492,40 +405,28 @@ async def instrumented_solve_coding(
             }
         })
 
-        # Track reasoning summary from Responses API (GPT-5.x only)
+        # Track reasoning summary (captured from Responses API for GPT-5.x, or from thinking for Claude/Gemini)
         reasoning_summary_text = ""
         
         try:
-            # Route to appropriate API based on model
-            if api_routing["type"] == "direct_openai":
-                # Use OpenAI Responses API directly for GPT-5.x, o3, o4 models
-                log(f"[Direct OpenAI] Using Responses API for {llm_model}")
-                response, token_usage, reasoning_summary_text = await llm_openai_responses(
-                    model=llm_model,
-                    message=message,
-                    system_prompt=solver_prompt,
-                    temperature=solver_temperature,
-                    reasoning_effort=llm_kwargs.get("reasoning_effort", "high"),
-                    verbosity=llm_kwargs.get("verbosity", "high"),
-                    reasoning_summary=llm_kwargs.get("reasoning_summary", "detailed"),
-                    max_output_tokens=128000,
-                    problem_id=problem_id,
-                )
-                # Responses API returns (text, usage, reasoning_summary) - no timing info
-                duration = 0  # Not tracked for Responses API
-            else:
-                # Use litellm for OpenRouter and other providers
-                response, duration, max_total_time, max_total_timeouts, token_usage = await llm(
-                    llm_model,
-                    message=message,
-                    temperature=solver_temperature,
-                    request_timeout=request_timeout,
-                    max_remaining_time=max_total_time,
-                    max_remaining_timeouts=max_total_timeouts,
-                    problem_id=problem_id,
-                    retries=per_iteration_retries,
-                    **llm_kwargs,  # Pass reasoning_effort, verbosity, reasoning_summary etc.
-                )
+            # Use unified llm() function which routes to appropriate SDK internally
+            # All providers now use direct SDK calls (NO LiteLLM)
+            log(f"[{api_routing['provider']}] Calling via {api_routing['apiStyle']}")
+            response, duration, max_total_time, max_total_timeouts, token_usage = await llm(
+                llm_model,
+                message=message,
+                temperature=solver_temperature,
+                request_timeout=request_timeout,
+                max_remaining_time=max_total_time,
+                max_remaining_timeouts=max_total_timeouts,
+                problem_id=problem_id,
+                retries=per_iteration_retries,
+                system_prompt=solver_prompt,  # Pass system prompt to the unified llm()
+                **llm_kwargs,  # Pass reasoning_effort, verbosity, reasoning_summary, thinking etc.
+            )
+            
+            # Note: reasoning_summary is not directly returned by llm() anymore
+            # It's handled internally by the provider-specific functions
 
             # Accumulate token usage for this expert
             if token_usage:

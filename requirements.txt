@@ -1,21 +1,28 @@
 # requirements.txt
-# Python dependencies needed by the Saturn Visual Solver pipeline executed via server/python/saturn_wrapper.py
-# Includes the OpenAI SDK plus imaging libs used by solver/arc_visual_solver.py and visualizers.
-# Author: Cascade (model: GPT-5 medium reasoning)
+# Python dependencies for ARC Puzzle Explainer Python components
+# Author: Cascade (Claude Sonnet 4)
+# Updated: 2025-11-27 - REMOVED LiteLLM, now uses direct SDK calls
 
-# Saturn Visual Solver dependencies
-openai>=1.0.0
+# ===========================================
+# Core Dependencies (shared across solvers)
+# ===========================================
+numpy>=1.20.0
 pillow>=9.0.0
-numpy>=1.20.0
 python-dotenv>=1.0.0
-
-# Poetiq Code-Generation Solver dependencies (internalized from poetiq-solver submodule)
-# litellm for multi-provider routing (faithful to original Poetiq)
-# SDK backends so litellm can route to each provider
-litellm>=1.50.0
-google-generativeai>=0.8.0
-openai>=1.0.0
-anthropic>=0.40.0
 asynciolimiter>=1.2.0
-numpy>=1.20.0
 scipy>=1.10.0
+
+# ===========================================
+# Direct Provider SDKs (NO LiteLLM!)
+# Each provider is called directly using their official SDK
+# ===========================================
+# OpenAI SDK - for GPT-5.x, o3, o4 models using Responses API
+openai>=1.0.0
+
+# Anthropic SDK - for Claude models using Messages API
+anthropic>=0.40.0
+
+# Google Generative AI SDK - for Gemini models
+google-generativeai>=0.8.0
+
+# Note: OpenRouter and xAI use OpenAI SDK with custom base_url
