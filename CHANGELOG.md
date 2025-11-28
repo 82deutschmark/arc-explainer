@@ -1,6 +1,21 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top!!!
 
+### Version 5.32.1
+
+- **Poetiq Community Progress: Fix Iteration Count Metrics** (Author: Cascade using Claude Sonnet 4.5)
+  - **Problem**: Iteration efficiency metrics were always showing "—" (no data) because `iteration_count` was hardcoded to `null` in the repository
+  - **Fix**: Updated `getPoetiqExplanationsForPuzzles()` to query the existing `iteration_count` column from database
+  - **Changes**:
+    1. Added `iteration_count` to SQL SELECT query in `ExplanationRepository.ts:1258`
+    2. Removed hardcoded `null` assignment, now properly maps `row.iteration_count` (line 1275)
+    3. Controller already set up to pass iteration data through (no changes needed)
+  - **Result**: "Iteration Efficiency" section on Community page now displays actual measured data:
+    - Avg Iterations (Solved): Shows average iterations to solve puzzles
+    - Avg Iterations (Failed): Shows average iterations before giving up
+  - **Files Modified**:
+    - `server/repositories/ExplanationRepository.ts:1258,1275` - Query and map `iteration_count` column
+
 ### Version 5.32.0 (BREAKING CHANGE)
 
 - **Poetiq Solver: Complete Migration from LiteLLM to Direct SDK Calls** (Author: Cascade using Claude Sonnet 4)

@@ -1255,6 +1255,7 @@ export class ExplanationRepository extends BaseRepository implements IExplanatio
           is_prediction_correct,
           multi_test_all_correct,
           api_processing_time_ms,
+          iteration_count,
           input_tokens,
           output_tokens,
           total_tokens,
@@ -1271,7 +1272,7 @@ export class ExplanationRepository extends BaseRepository implements IExplanatio
         createdAt: row.created_at,
         isPredictionCorrect: row.is_prediction_correct,
         multiTestAllCorrect: row.multi_test_all_correct,
-        iterationCount: null, // TODO: Extract from provider_raw_response if needed
+        iterationCount: row.iteration_count,
         apiProcessingTimeMs: row.api_processing_time_ms,
         inputTokens: row.input_tokens,
         outputTokens: row.output_tokens,
