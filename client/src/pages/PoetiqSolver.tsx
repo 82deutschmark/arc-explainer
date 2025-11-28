@@ -28,8 +28,8 @@ export default function PoetiqSolver() {
   
   // Configuration state - Solver page allows any provider/model
   const [apiKey, setApiKey] = useState('');
-  const [provider, setProvider] = useState<'gemini' | 'openrouter' | 'openai'>('openrouter');
-  const [model, setModel] = useState('openrouter/google/gemini-3-pro-preview');
+  const [provider, setProvider] = useState<'gemini' | 'openrouter' | 'openai'>('openai');
+  const [model, setModel] = useState('gpt-5.1-codex-mini');
   const [numExperts, setNumExperts] = useState(8);  // Default to 8 experts for best accuracy
   const [maxIterations, setMaxIterations] = useState(10);
   const [temperature, setTemperature] = useState(1.0);
@@ -103,6 +103,10 @@ export default function PoetiqSolver() {
   const isRunning = state.status === 'running';
   const isDone = state.status === 'completed';
   const hasError = state.status === 'error';
+
+  const hasApiKey = apiKey.trim().length > 0;
+  const modelLower = model.toLowerCase();
+  const requiresApiKey = modelLower.startsWith('openrouter/') || modelLower.startsWith('gemini/');
 
   // Track start time when solver begins
   useEffect(() => {
@@ -359,16 +363,16 @@ export default function PoetiqSolver() {
           ) : !isDone && (
             <button 
               onClick={handleStart} 
-              disabled={!apiKey.trim()}
+              disabled={requiresApiKey && !hasApiKey}
               className={`flex items-center gap-2 px-5 py-2.5 rounded-lg font-bold transition-colors ${
-                apiKey.trim() 
+                !requiresApiKey || hasApiKey
                   ? 'bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700' 
                   : 'bg-gray-400 cursor-not-allowed'
               }`}
-              title={!apiKey.trim() ? 'Enter your API key to start' : 'Start the Poetiq solver'}
+              title={requiresApiKey && !hasApiKey ? 'Enter your API key to start' : 'Start the Poetiq solver'}
             >
               <Rocket className="h-5 w-5" />
-              {apiKey.trim() ? 'Start' : 'Need API Key'}
+              {requiresApiKey && !hasApiKey ? 'Need API Key' : 'Start'}
             </button>
           )}
         </div>
@@ -440,18 +444,40 @@ export default function PoetiqSolver() {
               />
             </div>
 
-            {/* Bring Your Own Key - REQUIRED */}
-            <div className={`flex items-center gap-2 px-2 py-1 rounded border ${apiKey.trim() ? 'bg-green-50 border-green-300' : 'bg-amber-50 border-amber-300'}`}>
-              <Key className={`h-3.5 w-3.5 ${apiKey.trim() ? 'text-green-600' : 'text-amber-600'}`} />
-              <span className={`text-xs font-medium ${apiKey.trim() ? 'text-green-700' : 'text-amber-700'}`}>
-                {apiKey.trim() ? 'BYO Key Set' : 'BYO Key Required'}
+            {/* Bring Your Own Key - Required for Gemini/OpenRouter, optional for direct OpenAI */}
+            <div className={`flex items-center gap-2 px-2 py-1 rounded border ${
+              requiresApiKey
+                ? hasApiKey
+                  ? 'bg-green-50 border-green-300'
+                  : 'bg-amber-50 border-amber-300'
+                : hasApiKey
+                  ? 'bg-green-50 border-green-300'
+                  : 'bg-gray-50 border-gray-300'
+            }`}>
+              <Key className={`h-3.5 w-3.5 ${
+                requiresApiKey
+                  ? hasApiKey ? 'text-green-600' : 'text-amber-600'
+                  : hasApiKey ? 'text-green-600' : 'text-gray-500'
+              }`} />
+              <span className={`text-xs font-medium ${
+                requiresApiKey
+                  ? hasApiKey ? 'text-green-700' : 'text-amber-700'
+                  : hasApiKey ? 'text-green-700' : 'text-gray-700'
+              }`}>
+                {requiresApiKey
+                  ? hasApiKey
+                    ? 'BYO Key Set'
+                    : 'BYO Key Required (Gemini/OpenRouter)'
+                  : hasApiKey
+                    ? 'Optional BYO Key Set'
+                    : 'BYO Key Optional (server key used if configured)'}
               </span>
               <input
                 type="password"
                 value={apiKey}
                 onChange={(e) => setApiKey(e.target.value)}
                 placeholder="Enter your API key..."
-                className={`input input-bordered input-xs text-xs w-36 font-mono ${!apiKey.trim() && 'input-warning'}`}
+                className={`input input-bordered input-xs text-xs w-36 font-mono ${requiresApiKey && !hasApiKey && 'input-warning'}`}
               />
             </div>
 
