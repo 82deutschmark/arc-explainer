@@ -321,8 +321,8 @@ export class PoetiqService {
 
       // Handle BYO API key based on provider
       // All 5 providers are supported: openai, anthropic, gemini, openrouter, xai
+      const provider = options.provider || this.inferProviderFromModel(options.model);
       if (options.apiKey) {
-        const provider = options.provider || this.inferProviderFromModel(options.model);
         switch (provider) {
           case 'openrouter':
             childEnv.OPENROUTER_API_KEY = options.apiKey;
@@ -341,10 +341,12 @@ export class PoetiqService {
             childEnv.GEMINI_API_KEY = options.apiKey;
             break;
         }
+      } else if (provider === 'openrouter' && process.env.OPENROUTER_API_KEY) {
+        // Use server OpenRouter key for free/proxy models when BYO not supplied
+        childEnv.OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY;
       }
       
-      // For direct OpenAI models, the BYO key should already be set above
-      // No fallback to server environment - user must provide their own key
+      // For other providers, the BYO key should already be set above (still no fallback)
 
       // Debug: Log environment keys (not values) to verify they're present
       const envKeys = Object.keys(childEnv).filter(k => k.includes('API_KEY'));

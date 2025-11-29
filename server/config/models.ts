@@ -936,5 +936,21 @@ export const MODELS: ModelConfig[] = [
     releaseDate: "2025-11",
     notes: 'Cloaked model (Nov 24, 2025). Identity TBD. Add normalizer mapping when revealed.'
   },
+  {
+    key: 'kwaipilot/kat-coder-pro:free',
+    name: 'Kat Coder Pro (Free)',
+    color: 'bg-rose-500',
+    premium: false,
+    cost: { input: '$0.00', output: '$0.00' },
+    supportsTemperature: true,
+    provider: 'OpenRouter',
+    responseTime: { speed: 'moderate', estimate: '30-60 sec' },
+    isReasoning: true,
+    apiModelName: 'kwaipilot/kat-coder-pro:free',
+    modelType: 'openrouter',
+    contextWindow: 131072,
+    releaseDate: "2025-11",
+    notes: 'Free KatPilot coder-tier model on OpenRouter arena.'
+  },
 
 ];

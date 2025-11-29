@@ -71,6 +71,11 @@ const ARC2_EVAL_UNTESTED = [
   'd59b0160', 'da515329', 'e87109e9', 'f560132c',
 ];
 
+const OPENROUTER_SERVER_KEY_MODELS = new Set<string>([
+  'openrouter/bert-nebulon-alpha',
+  'openrouter/kwaipilot/kat-coder-pro:free',
+]);
+
 /**
  * Get puzzle IDs from a dataset or predefined list
  */
@@ -145,10 +150,13 @@ export const poetiqController = {
     // Only require BYO key for Gemini and OpenRouter runs.
     // Direct OpenAI / other providers may fall back to server env keys.
     const lowerModel = (model || '').toLowerCase();
+    const isOpenRouterModel =
+      provider === 'openrouter' ||
+      (!provider && lowerModel.startsWith('openrouter/'));
     const requiresByo =
       provider === 'gemini' ||
-      provider === 'openrouter' ||
-      (!provider && (lowerModel.startsWith('gemini/') || lowerModel.startsWith('openrouter/')));
+      (!provider && lowerModel.startsWith('gemini/')) ||
+      (isOpenRouterModel && !OPENROUTER_SERVER_KEY_MODELS.has(lowerModel));
 
     if (requiresByo && (!apiKey || apiKey.trim().length === 0)) {
       return res.status(400).json(formatResponse.error(
@@ -321,6 +329,7 @@ export const poetiqController = {
       { id: 'openrouter/google/gemini-2.5-flash-preview-09-2025', name: 'Gemini 2.5 Flash', provider: 'OpenRouter', recommended: false, routing: 'openrouter', requiresBYO: true },
       { id: 'openrouter/anthropic/claude-sonnet-4', name: 'Claude Sonnet 4', provider: 'OpenRouter', recommended: false, routing: 'openrouter', requiresBYO: true },
       { id: 'openrouter/bert-nebulon-alpha', name: 'Bert Nebulon Alpha (Cloaked)', provider: 'OpenRouter', recommended: false, routing: 'openrouter', requiresBYO: false },
+      { id: 'openrouter/kwaipilot/kat-coder-pro:free', name: 'Kat Coder Pro (Free)', provider: 'OpenRouter', recommended: false, routing: 'openrouter', requiresBYO: false },
     ];
 
     return res.json(formatResponse.success({ models }));
