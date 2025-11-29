@@ -102,6 +102,7 @@ export default function PoetiqCommunity() {
   const selectedModel = models.find(m => m.id === selectedModelId) ?? null;
   const providerSlug = mapProviderToSlug(selectedModel?.provider);
   const requiresByo = selectedModel?.requiresBYO ?? false;
+  const requiresApiKey = requiresByo;
   const routingLabel = getRoutingLabel(selectedModel?.routing);
   const recommendedModels = useMemo(() => models.filter(m => m.recommended), [models]);
   const keyPlaceholder = KEY_PLACEHOLDERS[providerSlug];
@@ -242,7 +243,7 @@ export default function PoetiqCommunity() {
                   <Label className="text-xs font-semibold text-gray-500">API Key {requiresApiKey ? '(Required)' : '(Optional)'}</Label>
                   <Input
                     type="text"
-                    placeholder={selectedModel.keyPlaceholder}
+                    placeholder={keyPlaceholder}
                     value={apiKey}
                     onChange={(e) => setApiKey(e.target.value)}
                     className="font-mono text-sm"
@@ -254,13 +255,19 @@ export default function PoetiqCommunity() {
               <div className="text-xs text-gray-500">
                 {requiresApiKey ? (
                   usingProjectKey ? (
-                    <span>This model requires your own API key for {selectedModel.provider}. Provide a key above to run the solver.</span>
+                    <span>
+                      This model requires your own API key{selectedModel?.provider ? ` for ${selectedModel.provider}` : ''}.
+                      {' '}Provide a key above to run the solver.
+                    </span>
                   ) : (
                     <span>Using your key — passed directly to Python backend, never stored.</span>
                   )
                 ) : (
                   usingProjectKey ? (
-                    <span>Using project key (may be rate limited). <a href={selectedModel.keyUrl} target="_blank" className="text-indigo-600 underline">Get your own</a> for faster results.</span>
+                    <span>
+                      Using project key (may be rate limited).
+                      {' '}<a href={providerKeyUrl} target="_blank" rel="noreferrer" className="text-indigo-600 underline">Get your own</a> for faster results.
+                    </span>
                   ) : (
                     <span>Using your key — passed directly to Python backend, never stored.</span>
                   )
