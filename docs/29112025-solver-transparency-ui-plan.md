@@ -416,6 +416,102 @@ broadcast('solver:update', {
 
 ---
 
+## Prompt Transparency (Poetiq Solver)
+
+> **Status:** Implemented
+
+This section captures the **actual** Poetiq prompt-transparency implementation as of 2025‑11‑29.
+
+### Data Path: From Solver to UI
+
+- **Python wrapper** (`server/python/poetiq_wrapper.py`)
+  - During every `(expert, iteration)` where `phase = "prompting"`, the wrapper now emits:
+    - `systemPrompt`: the **full** solver prompt text (no truncation).
+    - `userPrompt`: the composed message that goes to the LLM (puzzle text + optional feedback).
+    - `problemSection`: just the **puzzle + examples** text (`format_problem(...)`).
+    - `feedbackSection`: just the **previous solutions + feedback** block (or `null` when none).
+    - `stats` object with:
+      - `systemPromptChars`, `userPromptChars`, `problemChars`, `feedbackChars`.
+      - `previousSolutionCount` (how many earlier programs are being fed back in).
+    - Usual metadata: `model`, `temperature`, `provider`, `apiStyle`, `reasoningParams`.
+
+- **TypeScript bridge** (`server/services/poetiq/poetiqService.ts`)
+  - `PoetiqPromptData` mirrors the Python payload one‑to‑one.
+  - All `promptData` fields are forwarded over the Poetiq WebSocket as part of `progress` events.
+
+- **React hook** (`client/src/hooks/usePoetiqProgress.ts`)
+  - Extends `PromptData` with `problemSection`, `feedbackSection`, and `stats`.
+  - Tracks:
+    - `currentPromptData` – latest prompt for the active `(expert, iteration)`.
+    - `promptHistory` – array of all prompts this run (capped to 50 entries).
+    - `promptTimeline` – timestamped entries used for the UI timeline.
+
+### Prompt Inspector UI (PoetiqSolver page)
+
+**File:** `client/src/pages/PoetiqSolver.tsx`
+
+The Poetiq solver page now has an explicit **Prompt Inspector** surface:
+
+- **Toggle:** "Prompts" button in the top control bar.
+- **When open:**
+  - Header shows:
+    - Current **iteration** and provider badge (e.g. "🔗 Direct OpenAI" vs "OpenRouter").
+    - API style (Responses API vs ChatCompletions API).
+    - Reasoning settings badge when non‑default.
+  - Body shows, in order:
+    1. **User Prompt (sent to AI)**
+       - Full `userPrompt` with no backend or UI truncation.
+       - Scrollable but not character‑limited; users can scroll to the very bottom.
+    2. **System Prompt**
+       - Full `systemPrompt` in a collapsible `<details>` section.
+       - No 500‑character truncation – the Python wrapper now sends the complete text.
+    3. **Quick stats row** (from `promptData.stats`):
+       - System prompt length in characters.
+       - User prompt length in characters.
+       - Number of previous solutions included.
+    4. **Puzzle & examples section**
+       - Renders `problemSection` as its own block labeled:
+         - “Puzzle & examples section:”
+       - This makes it obvious which part of the prompt is just the ARC task description.
+    5. **Previous attempts & feedback section**
+       - Renders `feedbackSection` (when present) as:
+         - “Previous attempts & feedback:”
+       - Clearly separates historic Python programs + feedback from the base puzzle data.
+    6. **“What changed since last prompt?”** summary
+       - Compares `currentPromptData` to the immediately preceding entry in `promptHistory` and shows bullet points such as:
+         - Change in `previousSolutionCount`.
+         - Change in `userPromptChars` (longer/shorter and by how much).
+         - Whether feedback is now present for the first time, or has been removed.
+
+This fulfills the requirement that users can see **exactly** what was sent to the AI each time, and how it changed between iterations.
+
+### Prompt Timeline UI (PoetiqSolver page)
+
+**File:** `client/src/pages/PoetiqSolver.tsx`
+
+- **Toggle:** "Timeline" button in the top control bar.
+- **Behavior:**
+  - Uses `promptTimeline` from `usePoetiqProgress` (last ~20 entries rendered, full history kept up to 50 in state).
+  - Each row shows:
+    - Iteration number and expert id.
+    - Timestamp.
+    - Full `userPrompt` text in a scrollable region (no manual `slice(0, N)` truncation).
+  - This provides a quick way to skim earlier prompts while the **Prompt Inspector** focuses on the latest one.
+
+### Notes & Non‑Goals
+
+- **Token counts per prompt:**
+  - The global Poetiq pipeline already tracks per‑iteration and per‑expert token/cost usage.
+  - For now, the prompt inspector focuses on **character counts + previous solution count** per prompt; token counts remain a **run‑level** metric in the header and dashboard.
+  - If needed later, token usage could be joined to prompt events once we have a stable per‑call mapping.
+
+- **Historical compatibility:**
+  - All new fields (`problemSection`, `feedbackSection`, `stats`) are optional and default to `undefined`/`null`, so older runs or partial payloads remain safe.
+
+This section supersedes earlier vague language around “prompt previews” by documenting the **actual** Poetiq Prompt Inspector and Timeline surfaces that now exist in `PoetiqSolver.tsx` and are backed by the real Python `promptData` payloads.
+
+---
+
 ## Validation & Success Criteria
 
 ### UI Usability
