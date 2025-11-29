@@ -31,6 +31,12 @@ import { PuzzleGridDisplay } from '@/components/puzzle/PuzzleGridDisplay';
 import { PromptConfiguration } from '@/components/puzzle/PromptConfiguration';
 import { AdvancedControls } from '@/components/puzzle/AdvancedControls';
 
+// shadcn/ui Components
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Badge } from '@/components/ui/badge';
+import { Skeleton } from '@/components/ui/skeleton';
+
 // Types
 import type { CorrectnessFilter } from '@/hooks/useFilteredResults';
 
@@ -98,9 +104,9 @@ export default function PuzzleExaminer() {
   if (!taskId) {
     return (
       <div className="container mx-auto p-6 max-w-6xl">
-        <div role="alert" className="alert alert-error">
-          <span>Invalid puzzle ID</span>
-        </div>
+        <Alert variant="destructive">
+          <AlertDescription>Invalid puzzle ID</AlertDescription>
+        </Alert>
       </div>
     );
   }
@@ -315,9 +321,9 @@ export default function PuzzleExaminer() {
   if (taskError || (!isLoadingTask && !task)) {
     return (
       <div className="container mx-auto p-6 max-w-6xl">
-        <div role="alert" className="alert alert-error">
-          <span>Failed to load puzzle: {taskError?.message || 'Puzzle not found'}</span>
-        </div>
+        <Alert variant="destructive">
+          <AlertDescription>Failed to load puzzle: {taskError?.message || 'Puzzle not found'}</AlertDescription>
+        </Alert>
       </div>
     );
   }
@@ -355,17 +361,21 @@ export default function PuzzleExaminer() {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
-          <section className="card card-compact bg-base-100 shadow-sm border border-base-200">
-            <div className="card-body gap-3">
+          <Card>
+            <CardHeader>
               <div className="flex items-start justify-between gap-3">
-                <div>
-                  <h3 className="card-title text-sm font-semibold">Prompt Style</h3>
-                  <p className="text-xs text-base-content/70">
+                <div className="flex-1">
+                  <CardTitle className="text-sm">Prompt Style</CardTitle>
+                  <CardDescription className="text-xs mt-1">
                     Select the template, tweak emoji options, and preview the compiled instructions.
-                  </p>
+                  </CardDescription>
                 </div>
-                <span className="badge badge-outline badge-xs uppercase tracking-wide">Prompt</span>
+                <Badge variant="outline" className="text-xs uppercase tracking-wide">
+                  Prompt
+                </Badge>
               </div>
+            </CardHeader>
+            <CardContent className="gap-3 flex flex-col">
               <PromptConfiguration
                 promptId={promptId}
                 onPromptChange={setPromptId}
@@ -381,20 +391,22 @@ export default function PuzzleExaminer() {
                   setIsPromptPreviewOpen(true);
                 }}
               />
-            </div>
-          </section>
+            </CardContent>
+          </Card>
 
-          <section className="card card-compact bg-base-100 shadow-sm border border-base-200">
-            <div className="card-body gap-3">
+          <Card>
+            <CardHeader>
               <div className="flex items-start justify-between gap-3">
-                <div>
-                  <h3 className="card-title text-sm font-semibold">Advanced Controls</h3>
-                  <p className="text-xs text-base-content/70">
+                <div className="flex-1">
+                  <CardTitle className="text-sm">Advanced Controls</CardTitle>
+                  <CardDescription className="text-xs mt-1">
                     Fine-tune sampling, candidate fan-out, and reasoning depth without leaving the page.
-                  </p>
+                  </CardDescription>
                 </div>
-                <span className="text-[10px] uppercase tracking-wide text-base-content/60">GPT-5 | Gemini</span>
+                <span className="text-[10px] uppercase tracking-wide text-muted-foreground">GPT-5 | Gemini</span>
               </div>
+            </CardHeader>
+            <CardContent className="gap-3 flex flex-col">
               <AdvancedControls
                 temperature={temperature}
                 onTemperatureChange={setTemperature}
@@ -411,16 +423,16 @@ export default function PuzzleExaminer() {
                 reasoningSummaryType={reasoningSummaryType}
                 onReasoningSummaryTypeChange={setReasoningSummaryType}
               />
-            </div>
-          </section>
+            </CardContent>
+          </Card>
         </div>
 
         {/* Model Selection - Collapsible to save vertical space */}
-        <div className="bg-base-100 mb-4 rounded-lg border border-base-300">
+        <div className="bg-background mb-4 rounded-lg border border-border">
           {/* Compact Header - Always Visible */}
           <button
             onClick={() => setIsModelSelectorExpanded(!isModelSelectorExpanded)}
-            className="w-full p-3 flex items-center justify-between hover:bg-base-200 transition-colors rounded-lg"
+            className="w-full p-3 flex items-center justify-between hover:bg-muted transition-colors rounded-lg"
           >
             <h3 className="font-semibold text-base">Models</h3>
             <div className="flex items-center gap-2">
@@ -476,19 +488,19 @@ export default function PuzzleExaminer() {
 
         {/* Loading skeleton for explanations (progressive loading UX) */}
         {isLoadingSummaries && allResults.length === 0 && !isAnalyzing && (
-          <div className="card bg-base-100 shadow">
-            <div className="card-body">
+          <Card>
+            <CardContent className="pt-6">
               <div className="flex items-center gap-2 mb-4">
                 <Loader2 className="h-4 w-4 animate-spin" />
-                <span className="text-sm opacity-70">Loading previous analyses...</span>
+                <span className="text-sm text-muted-foreground">Loading previous analyses...</span>
               </div>
               <div className="space-y-3">
                 {[1, 2, 3].map((i) => (
-                  <div key={i} className="skeleton h-32 w-full"></div>
+                  <Skeleton key={i} className="h-32 w-full" />
                 ))}
               </div>
-            </div>
-          </div>
+            </CardContent>
+          </Card>
         )}
       </div>
 

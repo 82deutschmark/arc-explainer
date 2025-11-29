@@ -9,9 +9,9 @@
  * SRP/DRY check: Pass - UI orchestration, delegates to specialized components
  */
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { useParams, Link } from 'wouter';
-import { Loader2, Square, ChevronDown, ChevronUp, Activity, Timer, Layers, Copy, Check, Rocket, Key, Eye, EyeOff, Code2, Server, Brain } from 'lucide-react';
+import { Loader2, Square, ChevronDown, ChevronUp, Activity, Timer, Layers, Copy, Check, Rocket, Key, Eye, EyeOff, Code2, Server, Brain, ListTree, FileJson, ScrollText, Coins } from 'lucide-react';
 import { usePuzzle } from '@/hooks/usePuzzle';
 import { usePoetiqProgress } from '@/hooks/usePoetiqProgress';
 import { usePoetiqModels, type PoetiqModelOption } from '@/hooks/usePoetiqModels';
@@ -43,6 +43,9 @@ export default function PoetiqSolver() {
   // showApiKey state removed - BYO key input always visible since it's required
   const [showPromptInspector, setShowPromptInspector] = useState(false);  // Toggle prompt inspector visibility
   const [showReasoningTraces, setShowReasoningTraces] = useState(false);  // Toggle reasoning traces visibility
+  const [showPromptTimeline, setShowPromptTimeline] = useState(false);
+  const [showRawEvents, setShowRawEvents] = useState(false);
+  const [showReasoningStream, setShowReasoningStream] = useState(false);
   
   // Fetch available models for dropdown
   const { data: models = [], isLoading: modelsLoading } = usePoetiqModels();
@@ -118,6 +121,37 @@ export default function PoetiqSolver() {
 
   const hasApiKey = apiKey.trim().length > 0;
   const requiresApiKey = requiresByo;
+  const promptTimeline = state.promptTimeline ?? [];
+  const reasoningHistory = state.reasoningHistory ?? [];
+  const rawEvents = state.rawEvents ?? [];
+  const latestPromptTimeline = promptTimeline.slice(-20);
+  const latestReasoningHistory = reasoningHistory.slice(-20);
+  const latestRawEvents = rawEvents.slice(-20);
+  const tokenUsage = state.tokenUsage ?? state.result?.tokenUsage ?? null;
+  const costData = state.cost ?? state.result?.cost ?? null;
+  const aggregatedExpertStats = useMemo(() => {
+    const stats: Record<string, { tokens?: any; cost?: any }> = {};
+    const tokenSource = state.expertTokenUsage ?? {};
+    const costSource = state.expertCost ?? {};
+    Object.entries(tokenSource).forEach(([key, value]) => {
+      stats[key] = { ...(stats[key] ?? {}), tokens: value };
+    });
+    Object.entries(costSource).forEach(([key, value]) => {
+      stats[key] = { ...(stats[key] ?? {}), cost: value };
+    });
+    if (Object.keys(stats).length === 0 && state.result?.expertBreakdown) {
+      Object.entries(state.result.expertBreakdown).forEach(([key, value]) => {
+        stats[key] = {
+          tokens: (value as any).tokens,
+          cost: (value as any).cost,
+        };
+      });
+    }
+    return stats;
+  }, [state.expertTokenUsage, state.expertCost, state.result]);
+  const hasExpertStats = Object.keys(aggregatedExpertStats).length > 0;
+  const formatTokens = (value?: number) => (value ?? 0).toLocaleString();
+  const formatCost = (value?: number) => `$${(value ?? 0).toFixed(4)}`;
 
   // Track start time when solver begins
   useEffect(() => {
