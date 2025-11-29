@@ -7,8 +7,6 @@
  */
 
 import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { Coins } from 'lucide-react';
 import type {
   PoetiqCostBreakdown,
@@ -36,54 +34,34 @@ export function PoetiqTokenMetrics({ tokenUsage, cost, expertStates }: PoetiqTok
   const expertList = expertStates ? Object.values(expertStates).sort((a, b) => a.expertId - b.expertId) : [];
 
   return (
-    <Card className="border border-amber-200">
-      <CardHeader className="pb-3">
-        <CardTitle className="text-sm text-amber-900 flex items-center gap-2">
-          <Coins className="h-4 w-4 text-amber-600" />
-          Token & Cost Monitor
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-4 text-xs text-amber-900">
-        <div className="grid grid-cols-2 gap-3">
-          <div className="rounded border border-amber-200 bg-amber-50 p-3">
-            <p className="text-[11px] uppercase text-amber-600 font-semibold mb-1">Global Tokens</p>
-            <p>Input: {formatTokens(tokenUsage?.input_tokens)}</p>
-            <p>Output: {formatTokens(tokenUsage?.output_tokens)}</p>
-            <p>Total: {formatTokens(tokenUsage?.total_tokens)}</p>
-          </div>
-          <div className="rounded border border-amber-200 bg-amber-50 p-3">
-            <p className="text-[11px] uppercase text-amber-600 font-semibold mb-1">Cost So Far</p>
-            <p>Input: {formatCost(cost?.input)}</p>
-            <p>Output: {formatCost(cost?.output)}</p>
-            <p>Total: {formatCost(cost?.total)}</p>
-          </div>
-        </div>
-
-        {expertList.length > 0 ? (
-          <div className="space-y-2">
-            <p className="text-[11px] uppercase text-amber-600 font-semibold">Per Expert Breakdown</p>
-            <div className="grid gap-2 md:grid-cols-2">
-              {expertList.map((expert) => (
-                <div key={expert.expertId} className="rounded border border-amber-100 bg-white p-2">
-                  <div className="flex items-center justify-between">
-                    <span className="font-semibold text-amber-900">Expert {expert.expertId}</span>
-                    <Badge variant="outline" className="text-[10px]">
-                      Iter {expert.iteration ?? 0}
-                    </Badge>
-                  </div>
-                  <div className="mt-1 text-amber-800 space-y-0.5">
-                    <p>Tokens: {formatTokens(expert.tokens?.total_tokens)}</p>
-                    <p>Cost: {formatCost(expert.cost?.total)}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        ) : (
-          <p className="text-amber-700">Token data will appear once experts complete their first iteration.</p>
-        )}
-      </CardContent>
-    </Card>
+    <div className="border border-amber-200 bg-amber-50 rounded-full px-4 py-2 flex flex-wrap items-center gap-3 text-xs text-amber-900">
+      <span className="flex items-center gap-1 font-semibold text-amber-800">
+        <Coins className="h-3.5 w-3.5 text-amber-600" />
+        Token & Cost
+      </span>
+      <span>
+        Tokens in/out:{' '}
+        <strong>
+          {formatTokens(tokenUsage?.input_tokens)} / {formatTokens(tokenUsage?.output_tokens)}
+        </strong>
+      </span>
+      <span>
+        Total tokens: <strong>{formatTokens(tokenUsage?.total_tokens)}</strong>
+      </span>
+      <span>
+        Spend so far: <strong>{formatCost(cost?.total)}</strong>
+      </span>
+      {expertList.length > 0 ? (
+        <span className="text-amber-800">
+          Best expert cost:{' '}
+          <strong>
+            {expertList[0].cost?.total !== undefined ? formatCost(expertList[0].cost?.total) : '$0.0000'}
+          </strong>
+        </span>
+      ) : (
+        <span className="text-amber-700">Waiting for first sandbox run…</span>
+      )}
+    </div>
   );
 }
 
