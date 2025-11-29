@@ -1,11 +1,19 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top!!!
 
+### Version 5.32.14
+
+- **Poetiq Models: OpenRouter Free Tier Auto-Key Support** (Author: Codex / GPT-5)
+  - Added an allowlist for cloaked/free OpenRouter IDs so Poetiq skips BYO gating and automatically injects the server `OPENROUTER_API_KEY` when no user key is provided.
+  - Surfaced the new `openrouter/kwaipilot/kat-coder-pro:free` entry (non-BYO) alongside Bert Nebulon Alpha across `/api/poetiq/models` and the shared models catalog so both PoetiqSolver and Community control panels can target them without manual overrides.
+  - **Files**: `server/config/models.ts`, `server/controllers/poetiqController.ts`, `server/services/poetiq/poetiqService.ts`
+
 ### Version 5.32.13
 
-- **Poetiq Models: Add Bert Nebulon Alpha Cloaked Option** (Author: Codex / GPT-5)
-  - Added the new `openrouter/bert-nebulon-alpha` cloaked model to the `/api/poetiq/models` response (marked as BYO-not-required/free) so PoetiqSolver and Community Control Panel users can experiment with the Nebulon Alpha routing without manual overrides.
-  - **Files**: `server/controllers/poetiqController.ts`
+- **Poetiq Models: OpenRouter Free Tier Support** (Author: Codex / GPT-5)
+  - Added `openrouter/bert-nebulon-alpha` and `openrouter/kwaipilot/kat-coder-pro:free` to the shared `MODELS` catalog and the `/api/poetiq/models` response, both marked as BYO-not-required so users can route Poetiq through the cloaked/free OpenRouter arena models.
+  - Updated Poetiq's controller to skip BYO enforcement for those OpenRouter IDs and taught `poetiqService.solvePuzzle()` to fall back to the server `OPENROUTER_API_KEY` whenever a supported free-tier OpenRouter model is selected without a user key.
+  - **Files**: `server/config/models.ts`, `server/controllers/poetiqController.ts`, `server/services/poetiq/poetiqService.ts`
 
 ### Version 5.32.12
 
