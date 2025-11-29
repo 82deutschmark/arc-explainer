@@ -4,7 +4,7 @@
  * PURPOSE: Visual indicator for the Poetiq solver phases (initializing, prompting,
  *          evaluating, feedback) with live timers so humans understand what the
  *          backend is doing at any moment.
- * SRP/DRY check: Pass — dedicated to rendering the phase timeline; consumes hook data.
+ * SRP/DRY check: Pass - dedicated to rendering the phase timeline; consumes hook data.
  */
 
 import React, { useMemo } from 'react';

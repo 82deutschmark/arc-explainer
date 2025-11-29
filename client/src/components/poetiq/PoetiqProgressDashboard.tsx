@@ -3,11 +3,12 @@
  * Date: 2025-11-30
  * PURPOSE: Compose the primary Poetiq transparency UI. Presents phases, experts,
  *          and token metrics so the run feels fully narrated to the user.
- * SRP/DRY check: Pass — orchestration layer that delegates to child SRP components.
+ * SRP/DRY check: Pass - orchestration layer that delegates to child SRP components.
  */
 
 import React, { useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { AlertCircle, Download, Info } from 'lucide-react';
 import type { PoetiqProgressState, PoetiqRawEvent } from '@/hooks/usePoetiqProgress';
@@ -20,7 +21,7 @@ interface PoetiqProgressDashboardProps {
 }
 
 const formatPercent = (value?: number) => {
-  if (value === undefined || Number.isNaN(value)) return '—';
+  if (value === undefined || Number.isNaN(value)) return '-';
   return `${Math.round(value * 100)}%`;
 };
 
@@ -139,10 +140,10 @@ export function PoetiqProgressDashboard({ state, rawEvents }: PoetiqProgressDash
             We run <strong>{summary.expertsInPlay}</strong> parallel Poetiq agents. Each agent is just one AI call trying
             to write a <code>transform()</code> function that turns the input grid into the output grid.
           </p>
-          <p>
-            They are currently on <strong>iteration {state.iteration ?? 0}</strong> (out of {totalIterations}). An
-            iteration means “write code → test it on the training grids → read the feedback we gave → try again.”
-          </p>
+            <p>
+              They are currently on <strong>iteration {state.iteration ?? 0}</strong> (out of {totalIterations}). An
+              iteration means "write code {'->'} test it on the training grids {'->'} read the feedback we gave {'->'} try again."
+            </p>
           <p>
             When two or more agents reach the exact same hidden-test answer, we treat that agreement as a stronger vote of
             confidence.
@@ -172,7 +173,7 @@ export function PoetiqProgressDashboard({ state, rawEvents }: PoetiqProgressDash
             Iteration Snapshot
             {latestIteration && (
               <Badge variant="secondary" className="text-[10px]">
-                Iter {latestIteration.iteration} / Expert {latestIteration.expert ?? '—'}
+                Iter {latestIteration.iteration} / Expert {latestIteration.expert ?? '-'}
               </Badge>
             )}
           </CardTitle>
@@ -199,49 +200,46 @@ export function PoetiqProgressDashboard({ state, rawEvents }: PoetiqProgressDash
               <p className="font-semibold text-[11px] uppercase">Best progress so far</p>
               <p>
                 {formatPercent(bestIteration.accuracy)} accuracy from iteration {bestIteration.iteration}{' '}
-                (Expert {bestIteration.expert ?? '—'})
+                (Expert {bestIteration.expert ?? '-'})
               </p>
             </div>
           )}
         </CardContent>
       </Card>
 
-            <Card className="border border-slate-200">
+      <Card className="border border-slate-200">
         <CardHeader className="pb-2 flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
           <div className="flex items-center gap-2 text-base text-slate-900">
             <AlertCircle className="h-4 w-4 text-slate-600" />
             Plain-language run summary
           </div>
-          <button
+          <Button
             type="button"
+            size="sm"
             onClick={handleExport}
             disabled={!rawEvents || rawEvents.length === 0}
-            className={`flex items-center gap-1 rounded px-3 py-1 text-xs font-semibold ${
-              rawEvents && rawEvents.length
-                ? 'bg-slate-900 text-white hover:bg-slate-800'
-                : 'bg-slate-200 text-slate-500 cursor-not-allowed'
-            }`}
             title="Download every event from this run"
+            className="flex items-center gap-1"
           >
             <Download className="h-3.5 w-3.5" />
             Export run transcript
-          </button>
+          </Button>
         </CardHeader>
         <CardContent className="text-sm text-slate-800 space-y-2">
           <p>
-            ? Tried <strong>{formatCount(summary.attempts)}</strong> code ideas across{' '}
+            - Tried <strong>{formatCount(summary.attempts)}</strong> code ideas across{' '}
             <strong>{formatCount(summary.expertsInPlay)}</strong> Poetiq agents (each agent = one AI call).
           </p>
           <p>
-            ? Best idea so far came from{' '}
+            - Best idea so far came from{' '}
             <strong>
               {summary.bestExpert !== undefined ? `Agent ${summary.bestExpert}` : 'one of the agents still running'}
             </strong>{' '}
             and passes {summary.solvedExamples} training examples.
           </p>
-          <p>? Current verdict: {summary.runStatus}</p>
+          <p>- Current verdict: {summary.runStatus}</p>
           <p className="text-slate-600 italic">
-            If you see ?Waiting?? or ???, that means we don?t have that measurement yet. These numbers update live as
+            If you see "Waiting" or "...", that means we don't have that measurement yet. These numbers update live as
             soon as the agents report back.
           </p>
         </CardContent>
@@ -254,31 +252,31 @@ export function PoetiqProgressDashboard({ state, rawEvents }: PoetiqProgressDash
           </CardHeader>
           <CardContent className="text-xs text-emerald-900 space-y-1">
             <p>
-              • Tried <strong>{recap.totalAttempts}</strong> total iterations across{' '}
+              - Tried <strong>{recap.totalAttempts}</strong> total iterations across{' '}
               <strong>{summary.expertsInPlay}</strong> experts.
             </p>
             <p>
-              • Best idea came from{' '}
+              - Best idea came from{' '}
               <strong>
                 {recap.winningExpert !== null ? `Expert ${recap.winningExpert}` : 'one of the experts'}
               </strong>{' '}
               and hit <strong>{recap.bestAccuracy}</strong> accuracy on the training examples.
             </p>
             <p>
-              • {recap.consensusCount > 1
+              - {recap.consensusCount > 1
                 ? `${recap.consensusCount} experts converged on this same approach, which boosted our confidence.`
                 : 'Only one expert reached that score; future runs may try more iterations or different models.'}
             </p>
             <p>
-              • Hidden test verdict: <strong>{recap.solvedHidden ? 'Solved' : 'Not solved yet'}</strong>.
+              - Hidden test verdict: <strong>{recap.solvedHidden ? 'Solved' : 'Not solved yet'}</strong>.
             </p>
             {recap.durationMs && (
               <p>
-                • Total runtime: <strong>{Math.round(recap.durationMs / 1000)} seconds</strong>.
+                - Total runtime: <strong>{Math.round(recap.durationMs / 1000)} seconds</strong>.
               </p>
             )}
             <p className="text-emerald-800">
-              We’ve saved the winning program (and this recap) to your explanation library, so you can revisit the exact
+              We've saved the winning program (and this recap) to your explanation library, so you can revisit the exact
               code whenever you need.
             </p>
           </CardContent>

@@ -18,7 +18,7 @@ import type { PoetiqPromptData } from '@shared/types';
 export interface PoetiqOptions {
   // BYO (Bring Your Own) API key - optional, falls back to server env vars
   apiKey?: string;
-  provider?: 'gemini' | 'openrouter';
+  provider?: 'gemini' | 'openrouter' | 'openai';
   
   // Model configuration
   model?: string;

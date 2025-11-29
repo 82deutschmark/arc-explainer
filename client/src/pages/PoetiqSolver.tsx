@@ -4,23 +4,24 @@
  * Updated: 2025-11-28 - BYO Key requirement (no server fallback)
  * PURPOSE: Poetiq Iterative Code-Generation Solver page.
  *          Single horizontal control bar at top, full-width content below.
- *          Controls disappear when running to maximize output visibility.
+ *          Dedicated shadcn/ui control panel stays visible for start/cancel.
  * 
  * SRP/DRY check: Pass - UI orchestration, delegates to specialized components
  */
 
 import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { useParams, Link } from 'wouter';
-import { Loader2, Square, ChevronDown, ChevronUp, Activity, Timer, Layers, Copy, Check, Rocket, Key, Eye, EyeOff, Code2, Server, Brain, ListTree, FileJson, ScrollText, Coins, TerminalSquare, Download } from 'lucide-react';
+import { Loader2, ChevronDown, ChevronUp, Activity, Timer, Layers, Copy, Check, Eye, EyeOff, Code2, Server, Brain, ListTree, FileJson, ScrollText, Coins, TerminalSquare, Download } from 'lucide-react';
 import { usePuzzle } from '@/hooks/usePuzzle';
 import { usePoetiqProgress } from '@/hooks/usePoetiqProgress';
-import { usePoetiqModels, type PoetiqModelOption } from '@/hooks/usePoetiqModels';
 import { PuzzleGrid } from '@/components/puzzle/PuzzleGrid';
 import { DEFAULT_EMOJI_SET } from '@/lib/spaceEmojis';
 
 // Poetiq components
+import PoetiqControlPanel from '@/components/poetiq/PoetiqControlPanel';
 import PoetiqPythonTerminal from '@/components/poetiq/PoetiqPythonTerminal';
 import PoetiqProgressDashboard from '@/components/poetiq/PoetiqProgressDashboard';
+import { Button } from '@/components/ui/button';
 
 const PROMPT_ROLE_BADGES: Record<string, string> = {
   system: 'bg-gray-200 text-gray-700',
@@ -52,17 +53,11 @@ export default function PoetiqSolver() {
   const [showLogs, setShowLogs] = useState(true);  // Show event log panel
   const [copied, setCopied] = useState(false);  // For copy button feedback
   const eventLogRef = useRef<HTMLDivElement>(null);  // For auto-scroll
-  // showApiKey state removed - BYO key input always visible since it's required
   const [showPromptInspector, setShowPromptInspector] = useState(false);  // Toggle prompt inspector visibility
   const [showReasoningTraces, setShowReasoningTraces] = useState(false);  // Toggle reasoning traces visibility
   const [showPromptTimeline, setShowPromptTimeline] = useState(false);
   const [showRawEvents, setShowRawEvents] = useState(false);
   const [showReasoningStream, setShowReasoningStream] = useState(false);
-  
-  // Fetch available models for dropdown
-  const { data: models = [], isLoading: modelsLoading } = usePoetiqModels();
-  const selectedModel = models.find((m) => m.id === model) ?? null;
-  const requiresByo = selectedModel?.requiresBYO ?? false;
   
   // Timing state for visibility
   const [startTime, setStartTime] = useState<Date | null>(null);
@@ -131,8 +126,6 @@ export default function PoetiqSolver() {
   const isDone = state.status === 'completed';
   const hasError = state.status === 'error';
 
-  const hasApiKey = apiKey.trim().length > 0;
-  const requiresApiKey = requiresByo;
   const promptTimeline = state.promptTimeline ?? [];
   const promptHistory = state.promptHistory ?? [];
   const reasoningHistory = state.reasoningHistory ?? [];
@@ -212,16 +205,6 @@ export default function PoetiqSolver() {
     if (!iso) return 'N/A';
     const date = new Date(iso);
     return Number.isNaN(date.getTime()) ? 'N/A' : date.toLocaleTimeString();
-  };
-  const downloadTextFile = (filename: string, lines?: string[]) => {
-    if (!lines || lines.length === 0) return;
-    const blob = new Blob([lines.join('\n')], { type: 'text/plain' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = filename;
-    a.click();
-    URL.revokeObjectURL(url);
   };
   const headerTokenSummary = tokenUsage
     ? `${formatTokens(tokenUsage.input_tokens)} in / ${formatTokens(tokenUsage.output_tokens)} out / ${formatTokens(tokenUsage.total_tokens)} total`
@@ -323,6 +306,7 @@ export default function PoetiqSolver() {
     // Solver page allows any provider/model selection
     start({
       apiKey,
+      provider,
       model,
       numExperts,
       maxIterations,
@@ -501,222 +485,107 @@ export default function PoetiqSolver() {
             </>
           )}
           
-          {/* Start/Stop Button */}
-          {isRunning ? (
-            <button onClick={cancel} className="flex items-center gap-2 px-5 py-2.5 rounded-lg bg-red-600 hover:bg-red-700 transition-colors font-bold">
-              <Square className="h-5 w-5" />
-              Stop
-            </button>
-          ) : !isDone && (
-            <button 
-              onClick={handleStart} 
-              disabled={requiresApiKey && !hasApiKey}
-              className={`flex items-center gap-2 px-5 py-2.5 rounded-lg font-bold transition-colors ${
-                !requiresApiKey || hasApiKey
-                  ? 'bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700' 
-                  : 'bg-gray-400 cursor-not-allowed'
-              }`}
-              title={requiresApiKey && !hasApiKey ? 'Enter your API key to start' : 'Start the Poetiq solver'}
-            >
-              <Rocket className="h-5 w-5" />
-              {requiresApiKey && !hasApiKey ? 'Need API Key' : 'Start'}
-            </button>
-          )}
         </div>
       </header>
 
-      {/* Horizontal Control Bar - Only show when NOT running */}
-      {!isRunning && !isDone && (
-        <div className="bg-white border-b border-gray-300 px-4 py-3">
-          <div className="flex items-center gap-4 flex-wrap">
-            {/* Model Selector */}
-            <div className="flex items-center gap-2">
-              <label className="text-xs font-semibold text-gray-600 whitespace-nowrap">Model:</label>
-              {modelsLoading ? (
-                <div className="flex items-center gap-1 text-xs text-gray-400">
-                  <Loader2 className="h-3 w-3 animate-spin" />
-                  Loading...
-                </div>
-              ) : (
-                <select
-                  value={model}
-                  onChange={(e) => setModel(e.target.value)}
-                  className="select select-bordered select-xs text-xs min-w-[180px]"
-                >
-                  {models.map((m) => (
-                    <option key={m.id} value={m.id}>{m.name}</option>
-                  ))}
-                </select>
-              )}
-            </div>
-
-            {/* Experts */}
-            <div className="flex items-center gap-2">
-              <label className="text-xs font-semibold text-gray-600 whitespace-nowrap">Experts:</label>
-              <select
-                value={numExperts}
-                onChange={(e) => setNumExperts(parseInt(e.target.value))}
-                className="select select-bordered select-xs text-xs w-20"
+      <section className="bg-white border-b border-gray-200 px-4 py-3">
+        <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:gap-6">
+          <div className="flex items-center gap-2 text-xs text-gray-500">
+            <span>{task.train.length} train</span>
+            <span className="text-gray-300">|</span>
+            <span>{task.test.length} test</span>
+          </div>
+          <div className="flex flex-wrap items-center gap-2">
+            {(isRunning || isDone || (state.promptHistory?.length ?? 0) > 0) && (
+              <Button
+                type="button"
+                size="sm"
+                variant={showPromptInspector ? 'default' : 'outline'}
+                onClick={() => setShowPromptInspector(prev => !prev)}
+                className="flex items-center gap-1.5"
               >
-                <option value={1}>1</option>
-                <option value={2}>2</option>
-                <option value={8}>8</option>
-              </select>
-            </div>
-
-            {/* Max Iterations */}
-            <div className="flex items-center gap-2">
-              <label className="text-xs font-semibold text-gray-600 whitespace-nowrap">Max Iter:</label>
-              <input
-                type="number"
-                value={maxIterations}
-                onChange={(e) => setMaxIterations(parseInt(e.target.value) || 10)}
-                className="input input-bordered input-xs text-xs w-16 text-center"
-                min={1}
-                max={50}
-              />
-            </div>
-
-            {/* Temperature */}
-            <div className="flex items-center gap-2">
-              <label className="text-xs font-semibold text-gray-600 whitespace-nowrap">Temp:</label>
-              <input
-                type="number"
-                value={temperature}
-                onChange={(e) => setTemperature(parseFloat(e.target.value) || 1.0)}
-                className="input input-bordered input-xs text-xs w-16 text-center"
-                min={0.1}
-                max={2.0}
-                step={0.1}
-              />
-            </div>
-
-            {/* Bring Your Own Key - Required for Gemini/OpenRouter, optional for direct OpenAI */}
-            <div className={`flex items-center gap-2 px-2 py-1 rounded border ${
-              requiresApiKey
-                ? hasApiKey
-                  ? 'bg-green-50 border-green-300'
-                  : 'bg-amber-50 border-amber-300'
-                : hasApiKey
-                  ? 'bg-green-50 border-green-300'
-                  : 'bg-gray-50 border-gray-300'
-            }`}>
-              <Key className={`h-3.5 w-3.5 ${
-                requiresApiKey
-                  ? hasApiKey ? 'text-green-600' : 'text-amber-600'
-                  : hasApiKey ? 'text-green-600' : 'text-gray-500'
-              }`} />
-              <span className={`text-xs font-medium ${
-                requiresApiKey
-                  ? hasApiKey ? 'text-green-700' : 'text-amber-700'
-                  : hasApiKey ? 'text-green-700' : 'text-gray-700'
-              }`}>
-                {requiresApiKey
-                  ? hasApiKey
-                    ? 'BYO Key Set'
-                    : 'BYO Key Required (Gemini/OpenRouter)'
-                  : hasApiKey
-                    ? 'Optional BYO Key Set'
-                    : 'BYO Key Optional (server key used if configured)'}
-              </span>
-              <input
-                type="password"
-                value={apiKey}
-                onChange={(e) => setApiKey(e.target.value)}
-                placeholder="Enter your API key..."
-                className={`input input-bordered input-xs text-xs w-36 font-mono ${requiresApiKey && !hasApiKey && 'input-warning'}`}
-              />
-            </div>
-
-            {/* Prompt Inspector Toggle */}
-            {(isRunning || isDone || state.promptHistory?.length) && (
-              <button
-                onClick={() => setShowPromptInspector(!showPromptInspector)}
-                className={`flex items-center gap-1.5 text-xs px-2 py-1 rounded transition-colors ${
-                  showPromptInspector 
-                    ? 'bg-purple-100 text-purple-700' 
-                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                }`}
-              >
-                {showPromptInspector ? <EyeOff className="h-3 w-3" /> : <Eye className="h-3 w-3" />}
+                {showPromptInspector ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
                 Prompts
-              </button>
+              </Button>
             )}
-
-            {/* Reasoning Traces Toggle - Only show when we have summaries (GPT-5.x) */}
             {(state.reasoningSummaryHistory?.length ?? 0) > 0 && (
-              <button
-                onClick={() => setShowReasoningTraces(!showReasoningTraces)}
-                className={`flex items-center gap-1.5 text-xs px-2 py-1 rounded transition-colors ${
-                  showReasoningTraces 
-                    ? 'bg-amber-100 text-amber-700' 
-                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                }`}
+              <Button
+                type="button"
+                size="sm"
+                variant={showReasoningTraces ? 'default' : 'outline'}
+                onClick={() => setShowReasoningTraces(prev => !prev)}
+                className="flex items-center gap-1.5"
               >
-                <Brain className="h-3 w-3" />
+                <Brain className="h-3.5 w-3.5" />
                 Reasoning ({state.reasoningSummaryHistory?.length})
-              </button>
+              </Button>
             )}
-
             {(isRunning || isDone || promptTimeline.length > 0) && (
-              <button
-                onClick={() => setShowPromptTimeline(!showPromptTimeline)}
-                className={`flex items-center gap-1.5 text-xs px-2 py-1 rounded transition-colors ${
-                  showPromptTimeline
-                    ? 'bg-indigo-100 text-indigo-700'
-                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                }`}
+              <Button
+                type="button"
+                size="sm"
+                variant={showPromptTimeline ? 'default' : 'outline'}
+                onClick={() => setShowPromptTimeline(prev => !prev)}
+                className="flex items-center gap-1.5"
               >
-                <ListTree className="h-3 w-3" />
+                <ListTree className="h-3.5 w-3.5" />
                 Timeline ({promptTimeline.length})
-              </button>
+              </Button>
             )}
-
             {(isRunning || isDone || latestReasoningHistory.length > 0) && (
-              <button
-                onClick={() => setShowReasoningStream(!showReasoningStream)}
-                className={`flex items-center gap-1.5 text-xs px-2 py-1 rounded transition-colors ${
-                  showReasoningStream
-                    ? 'bg-blue-100 text-blue-700'
-                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                }`}
+              <Button
+                type="button"
+                size="sm"
+                variant={showReasoningStream ? 'default' : 'outline'}
+                onClick={() => setShowReasoningStream(prev => !prev)}
+                className="flex items-center gap-1.5"
               >
-                <ScrollText className="h-3 w-3" />
+                <ScrollText className="h-3.5 w-3.5" />
                 Stream ({latestReasoningHistory.length})
-              </button>
+              </Button>
             )}
-
             {(isRunning || isDone || latestRawEvents.length > 0) && (
-              <button
-                onClick={() => setShowRawEvents(!showRawEvents)}
-                className={`flex items-center gap-1.5 text-xs px-2 py-1 rounded transition-colors ${
-                  showRawEvents
-                    ? 'bg-slate-200 text-slate-800'
-                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                }`}
+              <Button
+                type="button"
+                size="sm"
+                variant={showRawEvents ? 'default' : 'outline'}
+                onClick={() => setShowRawEvents(prev => !prev)}
+                className="flex items-center gap-1.5"
               >
-                <FileJson className="h-3 w-3" />
+                <FileJson className="h-3.5 w-3.5" />
                 Events ({latestRawEvents.length})
-              </button>
+              </Button>
             )}
-
-            {/* Spacer */}
-            <div className="flex-1" />
-
-            {/* Puzzle preview thumbnails */}
-            <div className="flex items-center gap-2 text-xs text-gray-500">
-              <span>{task.train.length} train</span>
-              <span>•</span>
-              <span>{task.test.length} test</span>
-            </div>
           </div>
         </div>
-      )}
+      </section>
 
       {/* Main Content - Two-column layout, full width */}
       <main className="flex-1 overflow-y-auto p-4">
         <div className="grid grid-cols-12 gap-4">
-          <div className="col-span-12">
+          <div className="col-span-12 xl:col-span-4">
+            <PoetiqControlPanel
+              state={state}
+              isRunning={isRunning}
+              apiKey={apiKey}
+              setApiKey={setApiKey}
+              provider={provider}
+              setProvider={setProvider}
+              model={model}
+              setModel={setModel}
+              numExperts={numExperts}
+              setNumExperts={setNumExperts}
+              maxIterations={maxIterations}
+              setMaxIterations={setMaxIterations}
+              temperature={temperature}
+              setTemperature={setTemperature}
+              reasoningEffort={reasoningEffort}
+              setReasoningEffort={setReasoningEffort}
+              onStart={handleStart}
+              onCancel={cancel}
+            />
+          </div>
+          <div className="col-span-12 xl:col-span-8">
             <PoetiqProgressDashboard state={state} rawEvents={state.rawEvents} />
           </div>
 
