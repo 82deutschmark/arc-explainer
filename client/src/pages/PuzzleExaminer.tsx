@@ -416,21 +416,13 @@ export default function PuzzleExaminer() {
         </div>
 
         {/* Model Selection - Collapsible to save vertical space */}
-        <div className="bg-base-100 mb-4 rounded-lg max-w-4xl mx-auto border border-base-300">
+        <div className="bg-base-100 mb-4 rounded-lg border border-base-300">
           {/* Compact Header - Always Visible */}
           <button
             onClick={() => setIsModelSelectorExpanded(!isModelSelectorExpanded)}
             className="w-full p-3 flex items-center justify-between hover:bg-base-200 transition-colors rounded-lg"
           >
-            <div className="flex items-center gap-3">
-              <span className="text-2xl">🚀</span>
-              <div className="text-left">
-                <h3 className="font-semibold text-base">Model Selection</h3>
-                <p className="text-xs text-base-content/60">
-                  {models?.length || 0} models available • {allResults.length} analyses on this puzzle
-                </p>
-              </div>
-            </div>
+            <h3 className="font-semibold text-base">Models</h3>
             <div className="flex items-center gap-2">
               {isAnalyzing && (
                 <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded">

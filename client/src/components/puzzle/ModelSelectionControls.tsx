@@ -19,25 +19,23 @@ export function ModelSelectionControls({
   onCollapseAll
 }: ModelSelectionControlsProps) {
   return (
-    <div className="mb-4 flex justify-center">
-      <div className="flex items-center gap-2">
-        <button
-          onClick={onExpandAll}
-          className="btn btn-sm btn-outline gap-1"
-          title="Expand all provider sections"
-        >
-          <ChevronDown className="h-3 w-3" />
-          Expand All
-        </button>
-        <button
-          onClick={onCollapseAll}
-          className="btn btn-sm btn-outline gap-1"
-          title="Collapse all provider sections"
-        >
-          <ChevronUp className="h-3 w-3" />
-          Collapse All
-        </button>
-      </div>
+    <div className="mb-3 flex justify-end gap-2 px-2">
+      <button
+        onClick={onExpandAll}
+        className="btn btn-sm btn-ghost border border-base-300 hover:bg-base-200 gap-1"
+        title="Expand all provider sections"
+      >
+        <ChevronDown className="h-4 w-4" />
+        Expand All
+      </button>
+      <button
+        onClick={onCollapseAll}
+        className="btn btn-sm btn-ghost border border-base-300 hover:bg-base-200 gap-1"
+        title="Collapse all provider sections"
+      >
+        <ChevronUp className="h-4 w-4" />
+        Collapse All
+      </button>
     </div>
   );
 }
