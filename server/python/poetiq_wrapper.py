@@ -69,6 +69,8 @@ MODEL_PRICING: Dict[str, Dict[str, float]] = {
     "gpt-5-chat": {"input": 1.25, "output": 10.00},
     "gpt-5-mini": {"input": 0.25, "output": 2.00},
     "gpt-5.1": {"input": 0.35, "output": 1.40},
+    "gpt-5.1-codex": {"input": 1.25, "output": 10.00},
+    "gpt-5.1-codex-mini": {"input": 0.25, "output": 2.00},
 
     # Anthropic models
     "claude-3-5-sonnet": {"input": 3.00, "output": 15.00},
@@ -107,6 +109,10 @@ def normalize_model_name(model_id: str) -> str:
     model_lower = model_name.lower()
 
     # GPT models
+    if "gpt-5.1-codex-mini" in model_lower:
+        return "gpt-5.1-codex-mini"
+    if "gpt-5.1-codex" in model_lower:
+        return "gpt-5.1-codex"
     if "gpt-5.1" in model_lower:
         return "gpt-5.1"
     if "gpt-5-mini" in model_lower:

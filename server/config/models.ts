@@ -199,6 +199,24 @@ export const MODELS: ModelConfig[] = [
     releaseDate: "2025-11",
     notes: 'Sep 30, 2024 knowledge cutoff; reasoning token support.'
   },
+  { 
+    key: 'gpt-5.1-codex', 
+    name: 'GPT-5.1 Codex', 
+    color: 'bg-amber-600', 
+    premium: true,
+    cost: { input: '$1.25', output: '$10.00' },
+    supportsTemperature: false,
+    supportsStreaming: true,
+    provider: 'OpenAI',
+    responseTime: { speed: 'moderate', estimate: '30-60 sec' },
+    isReasoning: true,
+    apiModelName: 'gpt-5.1-codex',
+    modelType: 'gpt5',
+    contextWindow: 400000,
+    maxOutputTokens: 128000,
+    releaseDate: "2025-11",
+    notes: 'Sep 30, 2024 knowledge cutoff; reasoning token support.'
+  },
 
   // Anthropic Models
   {

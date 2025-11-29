@@ -313,6 +313,7 @@ export const poetiqController = {
       // Gemini direct requires BYO; OpenAI direct can fall back to server key.
       { id: 'gemini/gemini-3-pro-preview', name: 'Gemini 3 Pro', provider: 'Google', recommended: false, routing: 'direct', requiresBYO: true },
       { id: 'gpt-5.1-codex-mini', name: 'GPT-5.1 Codex Mini', provider: 'OpenAI', recommended: false, routing: 'direct', requiresBYO: false },
+      { id: 'gpt-5.1-codex', name: 'GPT-5.1 Codex', provider: 'OpenAI', recommended: false, routing: 'direct', requiresBYO: false },
       { id: 'grok-4-fast-reasoning', name: 'Grok 4 Fast Reasoning', provider: 'xAI', recommended: false, routing: 'direct', requiresBYO: false },
       { id: 'anthropic/claude-sonnet-4-5', name: 'Claude Sonnet 4.5', provider: 'Anthropic', recommended: false, routing: 'direct', requiresBYO: false },
 
