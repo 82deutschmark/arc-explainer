@@ -9,9 +9,9 @@
  * SRP/DRY check: Pass - UI orchestration, delegates to specialized components
  */
 
-import React, { useState, useEffect, useRef, useMemo } from 'react';
+import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { useParams, Link } from 'wouter';
-import { Loader2, Square, ChevronDown, ChevronUp, Activity, Timer, Layers, Copy, Check, Rocket, Key, Eye, EyeOff, Code2, Server, Brain, ListTree, FileJson, ScrollText, Coins, TerminalSquare } from 'lucide-react';
+import { Loader2, Square, ChevronDown, ChevronUp, Activity, Timer, Layers, Copy, Check, Rocket, Key, Eye, EyeOff, Code2, Server, Brain, ListTree, FileJson, ScrollText, Coins, TerminalSquare, Download } from 'lucide-react';
 import { usePuzzle } from '@/hooks/usePuzzle';
 import { usePoetiqProgress } from '@/hooks/usePoetiqProgress';
 import { usePoetiqModels, type PoetiqModelOption } from '@/hooks/usePoetiqModels';
@@ -248,6 +248,17 @@ export default function PoetiqSolver() {
     setStartTime(null);
     setElapsedSeconds(0);
   };
+
+  const downloadTextFile = useCallback((filename: string, lines?: string[]) => {
+    if (!lines || lines.length === 0) return;
+    const blob = new Blob([lines.join('\n')], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    a.click();
+    URL.revokeObjectURL(url);
+  }, []);
 
   // Format elapsed time as MM:SS or HH:MM:SS
   const formatElapsed = (seconds: number) => {
@@ -646,7 +657,17 @@ export default function PoetiqSolver() {
                     <TerminalSquare className="w-4 h-4 text-gray-600" />
                     Python Console
                   </div>
-                  <span className="text-xs text-gray-500">{pythonLogLines.length} lines</span>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs text-gray-500">{pythonLogLines.length} lines</span>
+                    <button
+                      onClick={() => downloadTextFile(`poetiq-python-${taskId}.txt`, pythonLogLines)}
+                      disabled={pythonLogLines.length === 0}
+                      className="flex items-center gap-1.5 px-2 py-1 rounded bg-gray-200 text-gray-700 text-xs font-medium hover:bg-gray-300 disabled:opacity-50"
+                    >
+                      <Download className="w-3.5 h-3.5" />
+                      Export
+                    </button>
+                  </div>
                 </div>
                 <div className="max-h-48 overflow-y-auto bg-gray-900 text-gray-100 text-xs font-mono px-3 py-2 space-y-1">
                   {pythonLogLines.map((line, idx) => (
@@ -900,6 +921,15 @@ export default function PoetiqSolver() {
                     )}
                   </div>
                   <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => downloadTextFile(`poetiq-events-${taskId}.txt`, state.logLines)}
+                      disabled={!state.logLines || state.logLines.length === 0}
+                      className="flex items-center gap-1.5 px-3 py-1.5 rounded bg-gray-200 hover:bg-gray-300 text-gray-700 text-sm font-medium transition-colors disabled:opacity-50"
+                      title="Download full event log"
+                    >
+                      <Download className="w-4 h-4" />
+                      Export
+                    </button>
                     {/* Copy Button */}
                     <button
                       onClick={() => {
