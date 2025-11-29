@@ -32,7 +32,7 @@ import sys
 import time
 import traceback
 from pathlib import Path
-from typing import Dict, Tuple, Optional
+from typing import Dict, Tuple, Optional, Any
 
 # Note: OpenAI, Anthropic, and Google SDKs are now called via solver/poetiq/llm.py
 # which provides direct SDK integration for all providers (NO LiteLLM)
@@ -328,6 +328,8 @@ async def instrumented_solve_coding(
     # Token/cost tracking accumulators (per expert)
     expert_tokens = {"input_tokens": 0, "output_tokens": 0, "total_tokens": 0}
     expert_cost = {"input": 0.0, "output": 0.0, "total": 0.0}
+    conversation_messages: list[dict[str, Any]] = []
+    previous_response_id: Optional[str] = None
 
     # Extract extra LLM params
     llm_kwargs = {}
@@ -390,8 +392,33 @@ async def instrumented_solve_coding(
             feedback_prompt_text = _build_prompt(feedback_prompt, feedback=examples_block)
             message += "\n\n" + feedback_prompt_text
 
-        # Emit progress with PROMPT DATA for UI visibility
-        # This is the key change - users can now see what's being sent to the AI
+        if not conversation_messages:
+            conversation_messages.append({
+                "role": "user",
+                "label": "Puzzle setup",
+                "content": message,
+                "metadata": {
+                    "iteration": 0,
+                    "expert": expert_id,
+                },
+            })
+
+        api_messages = [
+            {"role": msg["role"], "content": msg["content"]}
+            for msg in conversation_messages
+        ]
+        telemetry_messages = [
+            {
+                "role": msg["role"],
+                "content": msg["content"],
+                "label": msg.get("label"),
+                "metadata": msg.get("metadata"),
+            }
+            for msg in conversation_messages
+        ]
+        previous_attempts_count = sum(1 for msg in conversation_messages if msg.get("role") == "assistant")
+
+        # Emit progress with PROMPT DATA for UI visibility (now includes structured messages)
         emit({
             "type": "progress",
             "phase": "prompting",
@@ -412,12 +439,13 @@ async def instrumented_solve_coding(
                 } if llm_kwargs else None,
                 "problemSection": problem_str,
                 "feedbackSection": feedback_prompt_text or None,
+                "messages": telemetry_messages,
                 "stats": {
                     "systemPromptChars": len(solver_prompt),
                     "userPromptChars": len(message),
                     "problemChars": len(problem_str),
                     "feedbackChars": len(feedback_prompt_text) if feedback_prompt_text else 0,
-                    "previousSolutionCount": len(selected),
+                    "previousSolutionCount": previous_attempts_count,
                 },
             }
         })
@@ -429,7 +457,7 @@ async def instrumented_solve_coding(
             # Use unified llm() function which routes to appropriate SDK internally
             # All providers now use direct SDK calls (NO LiteLLM)
             log(f"[{api_routing['provider']}] Calling via {api_routing['apiStyle']}")
-            response, duration, max_total_time, max_total_timeouts, token_usage = await llm(
+            response, duration, max_total_time, max_total_timeouts, token_usage, provider_response_id = await llm(
                 llm_model,
                 message=message,
                 temperature=solver_temperature,
@@ -439,8 +467,13 @@ async def instrumented_solve_coding(
                 problem_id=problem_id,
                 retries=per_iteration_retries,
                 system_prompt=solver_prompt,  # Pass system prompt to the unified llm()
+                conversation_messages=api_messages,
+                previous_response_id=previous_response_id,
                 **llm_kwargs,  # Pass reasoning_effort, verbosity, reasoning_summary, thinking etc.
             )
+            
+            if provider_response_id:
+                previous_response_id = provider_response_id
             
             # Note: reasoning_summary is not directly returned by llm() anymore
             # It's handled internally by the provider-specific functions
@@ -499,6 +532,44 @@ async def instrumented_solve_coding(
         )
 
         last_train, last_test = train_res, test_res
+        train_pass_count = sum(1 for r in train_res if r.get("success"))
+        total_train_cases = len(train_res)
+        pass_rate_pct = (train_pass_count / total_train_cases * 100) if total_train_cases else 0.0
+        failure_reasons: list[str] = []
+        for idx, res in enumerate(train_res, start=1):
+            if not res.get("success"):
+                err_text = res.get("error") or "Mismatch"
+                failure_reasons.append(f"Example {idx}: {err_text[:200]}")
+
+        sandbox_summary_lines = []
+        if total_train_cases:
+            sandbox_summary_lines.append(f"Train pass rate: {train_pass_count}/{total_train_cases} ({pass_rate_pct:.1f}%)")
+        else:
+            sandbox_summary_lines.append("Train pass rate unavailable (no results).")
+        if failure_reasons:
+            sandbox_summary_lines.append("Failures:")
+            sandbox_summary_lines.extend(failure_reasons[:5])
+        base_feedback_text = "\n".join(sandbox_summary_lines)
+
+        # Append assistant turn describing the code + sandbox stats
+        conversation_messages.append({
+            "role": "assistant",
+            "label": f"Attempt {it + 1}",
+            "content": "\n".join([
+                f"Iteration {it + 1} attempt (Expert {expert_id})",
+                "```python",
+                code.strip(),
+                "```",
+                "Sandbox summary:",
+                base_feedback_text or "No sandbox results captured."
+            ]),
+            "metadata": {
+                "iteration": it + 1,
+                "expert": expert_id,
+                "trainPasses": train_pass_count,
+                "trainTotal": total_train_cases,
+            },
+        })
         
         # Calculate score for reporting
         current_score = sum(1 for r in train_res if r["success"]) / len(train_res) if train_res else 0
@@ -521,11 +592,36 @@ async def instrumented_solve_coding(
         })
 
         if all(r["success"] for r in train_res):
+            conversation_messages.append({
+                "role": "user",
+                "label": f"Sandbox feedback {it + 1}",
+                "content": base_feedback_text or "All training examples passed. Proceeding to final validation.",
+                "metadata": {
+                    "iteration": it + 1,
+                    "expert": expert_id,
+                    "trainPasses": train_pass_count,
+                    "trainTotal": total_train_cases,
+                    "solved": True,
+                },
+            })
             return ARCAGIResult(
                 train_results=train_res, results=test_res, iteration=it + 1
             )
 
         feedback, score = _build_feedback(train_res, train_in, train_out)
+        sandbox_feedback_text = f"{base_feedback_text}\n\n{feedback}".strip()
+        conversation_messages.append({
+            "role": "user",
+            "label": f"Sandbox feedback {it + 1}",
+            "content": sandbox_feedback_text,
+            "metadata": {
+                "iteration": it + 1,
+                "expert": expert_id,
+                "trainPasses": train_pass_count,
+                "trainTotal": total_train_cases,
+                "solved": False,
+            },
+        })
         solutions.append(ARCAGISolution(code=code, feedback=feedback, score=score))
 
         if score >= best_train_score:

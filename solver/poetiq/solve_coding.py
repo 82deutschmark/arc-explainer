@@ -93,7 +93,7 @@ async def solve_coding(
             message += "\n\n" + _build_prompt(feedback_prompt, feedback=examples_block)
 
         try:
-            response, duration, max_total_time, max_total_timeouts, token_usage = await llm(
+            response, duration, max_total_time, max_total_timeouts, token_usage, _ = await llm(
                 llm_model,
                 message=message,
                 temperature=solver_temperature,

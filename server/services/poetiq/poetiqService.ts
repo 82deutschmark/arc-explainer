@@ -24,7 +24,7 @@
 import { spawn, SpawnOptions } from 'child_process';
 import * as readline from 'node:readline';
 import * as path from 'path';
-import { ARCTask } from '../../../shared/types.js';
+import { ARCTask, PoetiqPromptData } from '../../../shared/types.js';
 import { broadcast } from '../wsService.js';
 import {
   validateSolverResponse,
@@ -75,31 +75,6 @@ export type PoetiqBridgeEvent =
   | { type: 'log'; level: 'info' | 'warn' | 'error'; message: string }
   | { type: 'final'; success: boolean; result: PoetiqResult }
   | { type: 'error'; message: string; traceback?: string };
-
-// Prompt data emitted by Python wrapper for UI visibility
-export interface PoetiqPromptData {
-  systemPrompt?: string;
-  userPrompt?: string;
-  model?: string;
-  temperature?: number;
-  provider?: string;        // "OpenAI", "OpenRouter", "Google Gemini", etc.
-  apiStyle?: string;        // "Responses API" or "ChatCompletions API"
-  reasoningParams?: {
-    effort?: string;
-    verbosity?: string;
-    summary?: string;
-  } | null;
-  // Additional sections to make the composed prompt transparent
-  problemSection?: string;           // Text for the puzzle examples + challenge
-  feedbackSection?: string | null;   // Text block containing previous solutions + feedback (if any)
-  stats?: {
-    systemPromptChars?: number;
-    userPromptChars?: number;
-    problemChars?: number;
-    feedbackChars?: number;
-    previousSolutionCount?: number;  // How many prior solutions fed into this prompt
-  } | null;
-}
 
 export interface PoetiqStartMetadata {
   puzzleId: string;

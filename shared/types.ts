@@ -90,6 +90,55 @@ export interface PromptTemplate {
 }
 
 /**
+ * Shared prompt telemetry payload for Poetiq solver runs.
+ * Keeps backend + frontend prompt inspectors in sync.
+ */
+export type PoetiqPromptRole = 'system' | 'user' | 'assistant' | 'developer' | 'tool';
+
+export interface PoetiqPromptMessage {
+  role: PoetiqPromptRole;
+  /**
+   * Optional friendly label (e.g., "Puzzle Setup", "Expert #1 Attempt").
+   */
+  label?: string;
+  content: string;
+  /**
+   * Optional metadata so UI can render badges (scores, pass counts, etc.).
+   */
+  metadata?: Record<string, unknown>;
+}
+
+export interface PoetiqPromptData {
+  systemPrompt?: string;
+  userPrompt?: string;
+  model?: string;
+  temperature?: number;
+  provider?: string;
+  apiStyle?: string;
+  reasoningParams?: {
+    effort?: string;
+    verbosity?: string;
+    summary?: string;
+  } | null;
+  iteration?: number;
+  expert?: number;
+  timestamp?: string;
+  problemSection?: string;
+  feedbackSection?: string | null;
+  stats?: {
+    systemPromptChars?: number;
+    userPromptChars?: number;
+    problemChars?: number;
+    feedbackChars?: number;
+    previousSolutionCount?: number;
+  } | null;
+  /**
+   * Structured conversation turns for Responses API-compatible replay.
+   */
+  messages?: PoetiqPromptMessage[];
+}
+
+/**
  * Interface for feedback data
  */
 export interface Feedback {

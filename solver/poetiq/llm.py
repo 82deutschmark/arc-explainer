@@ -126,8 +126,10 @@ async def llm_openai(
     temperature: float = 1.0,
     timeout: int = 900,
     problem_id: Optional[str] = None,
+    messages: Optional[list[dict[str, str]]] = None,
+    previous_response_id: Optional[str] = None,
     **kwargs,
-) -> Tuple[str, TokenUsage, str]:
+) -> Tuple[str, TokenUsage, str, Optional[str]]:
     """
     Call OpenAI via Responses API (POST /v1/responses).
     Uses proper reasoning parameters for GPT-5.x models.
@@ -159,7 +161,7 @@ async def llm_openai(
     try:
         response = await client.responses.create(
             model=model_name,
-            input=[{"role": "user", "content": message}],
+            input=messages if messages else [{"role": "user", "content": message}],
             instructions=system_prompt or "You are a helpful AI assistant.",
             reasoning={
                 "effort": reasoning_effort,
@@ -170,7 +172,8 @@ async def llm_openai(
             },
             max_output_tokens=128000,
             store=True,
-            include=["reasoning.encrypted_content"],
+            previous_response_id=previous_response_id,
+            include=["reasoning", "reasoning.encrypted_content"],
         )
         
         # Extract text from response.output[]
@@ -199,7 +202,7 @@ async def llm_openai(
             if hasattr(details, 'reasoning_tokens'):
                 token_usage["reasoning_tokens"] = details.reasoning_tokens
         
-        return output_text, token_usage, reasoning_summary_text
+        return output_text, token_usage, reasoning_summary_text, response.id
         
     except openai.APIError as e:
         print(f"[OpenAI Responses API] Error: {e}")
@@ -217,7 +220,7 @@ async def llm_anthropic(
     timeout: int = 900,
     problem_id: Optional[str] = None,
     **kwargs,
-) -> Tuple[str, TokenUsage, str]:
+) -> Tuple[str, TokenUsage, str, Optional[str]]:
     """
     Call Anthropic via Messages API.
     Supports extended thinking for Claude Sonnet 4.x models.
@@ -288,7 +291,7 @@ async def llm_anthropic(
             "total_tokens": (response.usage.input_tokens + response.usage.output_tokens) if response.usage else 0,
         }
         
-        return output_text, token_usage, reasoning_text
+        return output_text, token_usage, reasoning_text, None
         
     except anthropic.APIError as e:
         print(f"[Anthropic Messages API] Error: {e}")
@@ -306,7 +309,7 @@ async def llm_gemini(
     timeout: int = 900,
     problem_id: Optional[str] = None,
     **kwargs,
-) -> Tuple[str, TokenUsage, str]:
+) -> Tuple[str, TokenUsage, str, Optional[str]]:
     """
     Call Google Gemini via Generative AI SDK.
     Supports thinking for Gemini 2.5+ models.
@@ -367,7 +370,7 @@ async def llm_gemini(
                 "total_tokens": getattr(usage, 'total_token_count', 0) or 0,
             }
         
-        return output_text, token_usage, reasoning_text
+        return output_text, token_usage, reasoning_text, None
         
     except Exception as e:
         print(f"[Google Gemini API] Error: {e}")
@@ -385,7 +388,7 @@ async def llm_openrouter(
     timeout: int = 900,
     problem_id: Optional[str] = None,
     **kwargs,
-) -> Tuple[str, TokenUsage, str]:
+) -> Tuple[str, TokenUsage, str, Optional[str]]:
     """
     Call OpenRouter using OpenAI SDK with custom base URL.
     OpenRouter provides access to many models via a unified API.
@@ -431,7 +434,7 @@ async def llm_openrouter(
                 "total_tokens": response.usage.total_tokens or 0,
             }
         
-        return output_text, token_usage, ""
+        return output_text, token_usage, "", None
         
     except openai.APIError as e:
         print(f"[OpenRouter API] Error: {e}")
@@ -449,7 +452,7 @@ async def llm_xai(
     timeout: int = 900,
     problem_id: Optional[str] = None,
     **kwargs,
-) -> Tuple[str, TokenUsage, str]:
+) -> Tuple[str, TokenUsage, str, Optional[str]]:
     """
     Call xAI (Grok) using OpenAI SDK with custom base URL.
     
@@ -491,7 +494,7 @@ async def llm_xai(
                 "total_tokens": response.usage.total_tokens or 0,
             }
         
-        return output_text, token_usage, ""
+        return output_text, token_usage, "", None
         
     except openai.APIError as e:
         print(f"[xAI API] Error: {e}")
@@ -511,8 +514,10 @@ async def llm(
     problem_id: str | None = None,
     retries: int = RETRIES,
     system_prompt: str | None = None,
+    conversation_messages: list[dict[str, str]] | None = None,
+    previous_response_id: str | None = None,
     **kwargs,
-) -> tuple[str, float, float | None, int | None, TokenUsage]:
+) -> tuple[str, float, float | None, int | None, TokenUsage, Optional[str]]:
     """
     Main LLM router - dispatches to the appropriate provider SDK.
     
@@ -532,7 +537,7 @@ async def llm(
         **kwargs: Additional parameters (reasoning_effort, thinking, etc.)
     
     Returns:
-        Tuple of (response_text, duration_seconds, remaining_time, remaining_timeouts, token_usage)
+        Tuple of (response_text, duration_seconds, remaining_time, remaining_timeouts, token_usage, provider_response_id)
     """
     timeout = request_timeout or 15 * 60  # Default 15 min
     if max_remaining_time is not None:
@@ -551,23 +556,31 @@ async def llm(
             
             # Route to appropriate SDK
             if provider == 'openai':
-                response_text, token_usage, reasoning_summary = await llm_openai(
-                    model, message, system_prompt, temperature, timeout, problem_id, **kwargs
+                response_text, token_usage, reasoning_summary, provider_response_id = await llm_openai(
+                    model,
+                    message,
+                    system_prompt,
+                    temperature,
+                    timeout,
+                    problem_id,
+                    messages=conversation_messages,
+                    previous_response_id=previous_response_id,
+                    **kwargs,
                 )
             elif provider == 'anthropic':
-                response_text, token_usage, reasoning_summary = await llm_anthropic(
+                response_text, token_usage, reasoning_summary, provider_response_id = await llm_anthropic(
                     model, message, system_prompt, temperature, timeout, problem_id, **kwargs
                 )
             elif provider == 'gemini':
-                response_text, token_usage, reasoning_summary = await llm_gemini(
+                response_text, token_usage, reasoning_summary, provider_response_id = await llm_gemini(
                     model, message, system_prompt, temperature, timeout, problem_id, **kwargs
                 )
             elif provider == 'xai':
-                response_text, token_usage, reasoning_summary = await llm_xai(
+                response_text, token_usage, reasoning_summary, provider_response_id = await llm_xai(
                     model, message, system_prompt, temperature, timeout, problem_id, **kwargs
                 )
             else:  # openrouter or unknown
-                response_text, token_usage, reasoning_summary = await llm_openrouter(
+                response_text, token_usage, reasoning_summary, provider_response_id = await llm_openrouter(
                     model, message, system_prompt, temperature, timeout, problem_id, **kwargs
                 )
             
@@ -582,6 +595,7 @@ async def llm(
                 max_remaining_time,
                 max_remaining_timeouts,
                 token_usage,
+                provider_response_id,
             )
             
         except Exception as e:
@@ -602,7 +616,7 @@ async def llm(
                     raise RuntimeError("Exceeded timeouts allotted to the request")
                 
                 if attempt == retries:
-                    return ("Timeout", duration, max_remaining_time, max_remaining_timeouts, {})
+                    return ("Timeout", duration, max_remaining_time, max_remaining_timeouts, {}, None)
             
             # Check time budget
             if max_remaining_time is not None and max_remaining_time <= 0:

@@ -436,11 +436,12 @@ This section captures the **actual** Poetiq prompt-transparency implementation a
     - Usual metadata: `model`, `temperature`, `provider`, `apiStyle`, `reasoningParams`.
 
 - **TypeScript bridge** (`server/services/poetiq/poetiqService.ts`)
-  - `PoetiqPromptData` mirrors the Python payload one‑to‑one.
+  - `PoetiqPromptData` mirrors the Python payload one-to-one.
   - All `promptData` fields are forwarded over the Poetiq WebSocket as part of `progress` events.
+  - `messages[]` mirrors the Responses API `input` array (role + content) so UI surfaces can replay the full conversation.
 
 - **React hook** (`client/src/hooks/usePoetiqProgress.ts`)
-  - Extends `PromptData` with `problemSection`, `feedbackSection`, and `stats`.
+  - Extends `PromptData` with `problemSection`, `feedbackSection`, `stats`, and `messages`.
   - Tracks:
     - `currentPromptData` – latest prompt for the active `(expert, iteration)`.
     - `promptHistory` – array of all prompts this run (capped to 50 entries).
@@ -464,16 +465,19 @@ The Poetiq solver page now has an explicit **Prompt Inspector** surface:
        - Scrollable but not character‑limited; users can scroll to the very bottom.
     2. **System Prompt**
        - Full `systemPrompt` in a collapsible `<details>` section.
-       - No 500‑character truncation – the Python wrapper now sends the complete text.
-    3. **Quick stats row** (from `promptData.stats`):
+       - No 500‑character truncation — the Python wrapper now sends the complete text.
+    3. **Conversation turns (`messages[]`)**
+       - Each entry shows role badge (user, assistant, system, tool), optional label, and full `content`.
+       - Iteration/expert metadata and pass counts show up as badges so operators can see sandbox outcomes without digging through logs.
+    4. **Quick stats row** (from `promptData.stats`):
        - System prompt length in characters.
        - User prompt length in characters.
        - Number of previous solutions included.
-    4. **Puzzle & examples section**
+    5. **Puzzle & examples section**
        - Renders `problemSection` as its own block labeled:
          - “Puzzle & examples section:”
        - This makes it obvious which part of the prompt is just the ARC task description.
-    5. **Previous attempts & feedback section**
+    6. **Previous attempts & feedback section**
        - Renders `feedbackSection` (when present) as:
          - “Previous attempts & feedback:”
        - Clearly separates historic Python programs + feedback from the base puzzle data.
@@ -494,8 +498,8 @@ This fulfills the requirement that users can see **exactly** what was sent to th
   - Uses `promptTimeline` from `usePoetiqProgress` (last ~20 entries rendered, full history kept up to 50 in state).
   - Each row shows:
     - Iteration number and expert id.
-    - Timestamp.
-    - Full `userPrompt` text in a scrollable region (no manual `slice(0, N)` truncation).
+  - Timestamp.
+  - Full `userPrompt` text in a scrollable region (no manual `slice(0, N)` truncation). When `messages[]` is present, each entry is rendered with the same badges as the Prompt Inspector instead of dumping a single concatenated string.
   - This provides a quick way to skim earlier prompts while the **Prompt Inspector** focuses on the latest one.
 
 ### Notes & Non‑Goals
