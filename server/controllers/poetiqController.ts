@@ -320,6 +320,7 @@ export const poetiqController = {
       // Other via OpenRouter (BYO required)
       { id: 'openrouter/google/gemini-2.5-flash-preview-09-2025', name: 'Gemini 2.5 Flash', provider: 'OpenRouter', recommended: false, routing: 'openrouter', requiresBYO: true },
       { id: 'openrouter/anthropic/claude-sonnet-4', name: 'Claude Sonnet 4', provider: 'OpenRouter', recommended: false, routing: 'openrouter', requiresBYO: true },
+      { id: 'openrouter/bert-nebulon-alpha', name: 'Bert Nebulon Alpha (Cloaked)', provider: 'OpenRouter', recommended: false, routing: 'openrouter', requiresBYO: false },
     ];
 
     return res.json(formatResponse.success({ models }));

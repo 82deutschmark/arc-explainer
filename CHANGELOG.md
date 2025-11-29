@@ -1,6 +1,12 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top!!!
 
+### Version 5.32.13
+
+- **Poetiq Models: Add Bert Nebulon Alpha Cloaked Option** (Author: Codex / GPT-5)
+  - Added the new `openrouter/bert-nebulon-alpha` cloaked model to the `/api/poetiq/models` response (marked as BYO-not-required/free) so PoetiqSolver and Community Control Panel users can experiment with the Nebulon Alpha routing without manual overrides.
+  - **Files**: `server/controllers/poetiqController.ts`
+
 ### Version 5.32.12
 
 - **Poetiq Solver: Live Prompt/Reasoning Telemetry + Token Stats** (Author: Codex / GPT-5)
