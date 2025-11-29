@@ -1,6 +1,27 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top!!!
 
+### Version 5.32.6
+
+- **Gemini thinking_config hotfix** (Author: Codex / GPT-5)
+  - **Problem**: Direct Gemini calls (including Poetiq runs) failed with `Unknown field for GenerationConfig: thinking_config` when hitting `gemini-3-pro-preview`, causing immediate retries and no model output.
+  - **Fix**: Removed the unsupported `thinking_config` payload from the shared Gemini service generation config (`server/services/gemini.ts`) and the Poetiq solver’s Gemini client (`solver/poetiq/llm.py`), leaving only fields accepted by the current Google Generative AI SDK. Added a note to re-enable thinking controls after migrating to a SDK version that supports them.
+  - **Docs**: Captured the mitigation steps and scope in `docs/2025-11-29-gemini-thinking-config-hotfix-plan.md`.
+
+### Version 5.32.5
+
+- **Poetiq Solver: GPT-5.1 Codex Mini Verbosity Fix + BYO Routing Alignment** (Author: Cascade using Cascade)
+  - **Problem**: Direct OpenAI runs with `gpt-5.1-codex-mini` were failing with `400 invalid_request_error` because `text.verbosity: 'high'` is not supported for that model (only `'medium'` is allowed). The solver page BYO key gating also used string heuristics that could drift from backend metadata.
+  - **Fix**: Updated `solver/poetiq/llm.py` to clamp `text.verbosity` to `'medium'` specifically for `gpt-5.1-codex-mini` while keeping `'high'` as the default for other GPT-5.x/o3 models. Updated `PoetiqSolver` to consume dynamic `requiresBYO` / `routing` metadata from `/api/poetiq/models` so BYO key requirements and Community auto-start behavior stay consistent with the backend.
+  - **Result**: OpenAI Responses API calls for `gpt-5.1-codex-mini` no longer 400 on verbosity, and the solver page now matches the Community page in which models truly require BYO keys vs can safely use the server OpenAI key.
+
+### Version 5.32.4
+
+- **Poetiq Community: Dynamic Model Metadata & API Key UI Fixes** (Author: Cascade using Cascade; code authored by Codex / GPT-5)
+  - **Fix**: Community page now uses the shared `usePoetiqModels()` hook instead of a hardcoded model list, so provider, routing, and `requiresBYO` flags always stay in sync with `server/config/models.ts` and `/api/poetiq/models`.
+  - **Fix**: Resolved undefined property errors in the API key help section by switching to derived `keyPlaceholder`/`providerKeyUrl` variables, adding optional chaining for `selectedModel?.provider`, and ensuring external links include `rel="noreferrer"`.
+  - **Result**: Poetiq Community always shows accurate BYO key requirements and recommended models without runtime errors, fully aligning the page with the 5.32.3 BYO relaxation behavior.
+
 ### Version 5.32.3
 
 - **Poetiq Solver: BYO Key Relaxation + GPT-5.1 Codex Mini Default** (Author: Cascade using Cascade)

@@ -46,6 +46,8 @@ export default function PoetiqSolver() {
   
   // Fetch available models for dropdown
   const { data: models = [], isLoading: modelsLoading } = usePoetiqModels();
+  const selectedModel = models.find((m) => m.id === model) ?? null;
+  const requiresByo = selectedModel?.requiresBYO ?? false;
   
   // Timing state for visibility
   const [startTime, setStartTime] = useState<Date | null>(null);
@@ -75,18 +77,28 @@ export default function PoetiqSolver() {
         if (config.numExperts) setNumExperts(config.numExperts);
         if (config.temperature) setTemperature(config.temperature);
         
-        // Auto-start if configured AND has API key (now required)
-        if (config.autoStart && task && config.apiKey) {
+        // Determine if this configuration actually requires a BYO key
+        const lowerModel = (config.model || '').toLowerCase();
+        const requiresByoFromConfig =
+          config.routing === 'openrouter' ||
+          config.provider === 'gemini' ||
+          lowerModel.startsWith('openrouter/') ||
+          lowerModel.startsWith('gemini/');
+
+        const shouldAutoStart =
+          config.autoStart &&
+          !!task &&
+          (!requiresByoFromConfig || !!config.apiKey);
+
+        if (shouldAutoStart) {
           setAutoStartTriggered(true);
           setCameFromCommunity(true);
           // Controls are now always visible
           
           // Small delay to let state settle
           setTimeout(() => {
-            const poetiqProvider = config.provider === 'openai' ? 'openrouter' : config.provider;
             start({
               apiKey: config.apiKey || '', // Empty string uses server key
-              provider: poetiqProvider,
               model: config.model,
               numExperts: config.numExperts || 2,
               maxIterations: 10,
@@ -105,8 +117,7 @@ export default function PoetiqSolver() {
   const hasError = state.status === 'error';
 
   const hasApiKey = apiKey.trim().length > 0;
-  const modelLower = model.toLowerCase();
-  const requiresApiKey = modelLower.startsWith('openrouter/') || modelLower.startsWith('gemini/');
+  const requiresApiKey = requiresByo;
 
   // Track start time when solver begins
   useEffect(() => {
@@ -199,11 +210,8 @@ export default function PoetiqSolver() {
 
   const handleStart = () => {
     // Solver page allows any provider/model selection
-    // Cast provider for hook (which expects gemini|openrouter)
-    const poetiqProvider = provider === 'openai' ? 'openrouter' : provider;
     start({
       apiKey,
-      provider: poetiqProvider,
       model,
       numExperts,
       maxIterations,
