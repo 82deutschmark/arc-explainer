@@ -83,6 +83,9 @@ export function useAnalysisResults({
   const [streamingPhase, setStreamingPhase] = useState<string | undefined>();
   const [streamingMessage, setStreamingMessage] = useState<string | undefined>();
   const [streamingTokenUsage, setStreamingTokenUsage] = useState<{ input?: number; output?: number; reasoning?: number }>({});
+  const [streamingPhaseHistory, setStreamingPhaseHistory] = useState<
+    { phase?: string; message?: string; ts: number }[]
+  >([]);
 
   const streamSupportedModels = useMemo(() => {
     if (!models || models.length === 0) {
@@ -105,6 +108,7 @@ export function useAnalysisResults({
     setStreamingPhase(undefined);
     setStreamingMessage(undefined);
     setStreamingTokenUsage({});
+    setStreamingPhaseHistory([]);
   }, []);
 
   const canStreamModel = useCallback(
@@ -188,6 +192,7 @@ export function useAnalysisResults({
       setStreamingPhase(undefined);
       setStreamingMessage(undefined);
       setStreamingTokenUsage({});
+      setStreamingPhaseHistory([]);
       setAnalyzerErrors(prev => {
         const next = new Map(prev);
         next.delete(modelKey);
@@ -219,11 +224,26 @@ export function useAnalysisResults({
       void startStream(params, {
         onStatus: status => {
           if (status && typeof status === 'object') {
+            let phaseValue: string | undefined;
+            let messageValue: string | undefined;
             if ('phase' in status && typeof (status as any).phase === 'string') {
-              setStreamingPhase((status as any).phase);
+              phaseValue = (status as any).phase;
+              setStreamingPhase(phaseValue);
             }
             if ('message' in status && typeof (status as any).message === 'string') {
-              setStreamingMessage((status as any).message);
+              messageValue = (status as any).message;
+              setStreamingMessage(messageValue);
+            }
+            if (phaseValue || messageValue) {
+              const ts = Date.now();
+              setStreamingPhaseHistory(prev => {
+                const last = prev[prev.length - 1];
+                if (last && last.phase === phaseValue && last.message === messageValue) {
+                  return prev;
+                }
+                const next = [...prev, { phase: phaseValue ?? last?.phase, message: messageValue ?? last?.message, ts }];
+                return next.length > 50 ? next.slice(next.length - 50) : next;
+              });
             }
           }
         },
@@ -465,6 +485,7 @@ export function useAnalysisResults({
     streamingStructuredJson,
     streamingPhase,
     streamingMessage,
+    streamingPhaseHistory,
     streamingTokenUsage,
     streamingPromptPreview,
     streamError,

@@ -23,6 +23,7 @@ interface StreamingAnalysisPanelProps {
   status: 'idle' | 'starting' | 'in_progress' | 'completed' | 'failed';
   phase?: string;
   message?: string;
+  phaseHistory?: { phase?: string; message?: string; ts: number }[];
   text?: string;
   structuredJsonText?: string;
   structuredJson?: unknown;
@@ -39,6 +40,7 @@ export function StreamingAnalysisPanel({
   status,
   phase,
   message,
+  phaseHistory,
   text,
   structuredJsonText,
   structuredJson,
@@ -89,6 +91,74 @@ export function StreamingAnalysisPanel({
   }
 
   const visibleOutput = (formattedStructuredJson ?? text)?.trim();
+
+  // Derive friendly solver progress steps from phase history
+  const { steps, statusLine } = React.useMemo(() => {
+    const baseSteps: { id: 'prepare' | 'llm' | 'code' | 'test' | 'select' | 'finalize'; label: string }[] = [
+      { id: 'prepare', label: 'Preparing puzzle' },
+      { id: 'llm', label: 'Asking the AI for a strategy' },
+      { id: 'code', label: 'Generating code/solution' },
+      { id: 'test', label: 'Testing on examples' },
+      { id: 'select', label: 'Choosing the best attempt' },
+      { id: 'finalize', label: 'Preparing final answer' },
+    ];
+
+    const latest = phaseHistory && phaseHistory.length > 0 ? phaseHistory[phaseHistory.length - 1] : undefined;
+    const activePhase = (latest?.phase || phase || '').toString().toLowerCase();
+
+    const mapToBucket = (p: string): 'prepare' | 'llm' | 'code' | 'test' | 'select' | 'finalize' => {
+      const v = p.toLowerCase();
+      if (!v) {
+        return status === 'completed' || status === 'failed' ? 'finalize' : 'prepare';
+      }
+      if (v.includes('init') || v.includes('start') || v.includes('saturn_phase1')) return 'prepare';
+      if (v.includes('prompt') || v.includes('waiting') || v.includes('phase2') || v.includes('llm')) return 'llm';
+      if (v.includes('program') || v.includes('code')) return 'code';
+      if (v.includes('execution') || v.includes('train') || v.includes('test')) return 'test';
+      if (v.includes('best') || v.includes('select')) return 'select';
+      if (v.includes('final') || v.includes('complete') || v.includes('error')) return 'finalize';
+      return status === 'completed' ? 'finalize' : 'prepare';
+    };
+
+    const bucket = mapToBucket(activePhase);
+    const activeIndex = baseSteps.findIndex(step => step.id === bucket);
+
+    const derivedSteps = baseSteps.map((step, index) => {
+      let stepStatus: 'done' | 'current' | 'pending' = 'pending';
+      if (status === 'completed') {
+        stepStatus = 'done';
+      } else if (status === 'failed') {
+        stepStatus = index <= activeIndex ? 'done' : 'pending';
+      } else if (activeIndex >= 0) {
+        if (index < activeIndex) stepStatus = 'done';
+        else if (index === activeIndex) stepStatus = 'current';
+        else stepStatus = 'pending';
+      }
+      return { ...step, status: stepStatus };
+    });
+
+    let friendlyLine: string | undefined;
+    const latestMessage = latest?.message || message;
+    if (status === 'failed') {
+      friendlyLine = latestMessage || 'Streaming failed. Please try again.';
+    } else if (status === 'completed') {
+      friendlyLine = latestMessage || 'Analysis finished. Preparing final explanation.';
+    } else if (latestMessage) {
+      friendlyLine = latestMessage;
+    } else {
+      const defaultLines: Record<typeof baseSteps[number]['id'], string> = {
+        prepare: 'Preparing the puzzle and examples…',
+        llm: 'Asking the AI to analyze the pattern…',
+        code: 'Turning the pattern into code…',
+        test: 'Testing candidate answers on the examples…',
+        select: 'Comparing attempts to pick the best one…',
+        finalize: 'Wrapping up your final answer…',
+      };
+      friendlyLine = defaultLines[bucket];
+    }
+
+    return { steps: derivedSteps, statusLine: friendlyLine };
+  }, [phaseHistory, phase, message, status]);
 
   // Extract multi-test prediction grids from structuredJson
   const predictedGrids: number[][][] = React.useMemo(() => {
@@ -164,6 +234,31 @@ export function StreamingAnalysisPanel({
           )}
         </div>
         <div className="space-y-4 text-sm text-blue-900 pt-2">
+          {/* Solver Progress Overview */}
+          {steps.length > 0 && (
+            <div className="space-y-1">
+              <p className="text-[10px] font-semibold text-blue-600 uppercase tracking-wide">Solver Progress</p>
+              <div className="flex flex-wrap gap-1.5">
+                {steps.map(step => (
+                  <span
+                    key={step.id}
+                    className={`px-2 py-0.5 rounded-full text-[10px] border ${
+                      step.status === 'done'
+                        ? 'bg-green-50 border-green-300 text-green-700'
+                        : step.status === 'current'
+                          ? 'bg-blue-50 border-blue-300 text-blue-700'
+                          : 'bg-slate-50 border-slate-200 text-slate-500'
+                    }`}
+                  >
+                    {step.label}
+                  </span>
+                ))}
+              </div>
+              {statusLine && (
+                <p className="text-xs text-blue-800 mt-1">{statusLine}</p>
+              )}
+            </div>
+          )}
           {/* Test Grids Section - Compact */}
           {testExample && (
             <div className="flex flex-wrap items-start gap-4">

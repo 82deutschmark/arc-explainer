@@ -74,6 +74,7 @@ const ARC2_EVAL_UNTESTED = [
 const OPENROUTER_SERVER_KEY_MODELS = new Set<string>([
   'openrouter/bert-nebulon-alpha',
   'openrouter/kwaipilot/kat-coder-pro:free',
+  'kwaipilot/kat-coder-pro:free',
 ]);
 
 /**

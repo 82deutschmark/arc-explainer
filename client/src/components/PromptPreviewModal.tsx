@@ -77,6 +77,13 @@ export function PromptPreviewModal({
 
   // Fetch prompt preview from server when modal opens or parameters change
   useEffect(() => {
+    console.debug('[PromptPreviewModal] effect triggered', {
+      isOpen,
+      taskId,
+      promptId,
+      provider,
+    });
+
     if (!isOpen || !taskId || !promptId) return;
 
     const fetchPromptPreview = async () => {
