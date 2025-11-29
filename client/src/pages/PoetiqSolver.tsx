@@ -22,6 +22,17 @@ import { DEFAULT_EMOJI_SET } from '@/lib/spaceEmojis';
 import PoetiqPythonTerminal from '@/components/poetiq/PoetiqPythonTerminal';
 import PoetiqProgressDashboard from '@/components/poetiq/PoetiqProgressDashboard';
 
+const PROMPT_ROLE_BADGES: Record<string, string> = {
+  system: 'bg-gray-200 text-gray-700',
+  user: 'bg-blue-100 text-blue-700',
+  assistant: 'bg-green-100 text-green-700',
+  developer: 'bg-purple-100 text-purple-700',
+  tool: 'bg-amber-100 text-amber-700',
+};
+
+const getRoleBadgeClass = (role?: string) =>
+  PROMPT_ROLE_BADGES[role ?? 'user'] ?? 'bg-slate-100 text-slate-700';
+
 export default function PoetiqSolver() {
   const { taskId } = useParams<{ taskId: string }>();
   const { currentTask: task, isLoadingTask, taskError } = usePuzzle(taskId);
@@ -179,6 +190,14 @@ export default function PoetiqSolver() {
       parts.push('This is the first prompt that includes previous attempts and feedback.');
     } else if (!currHasFeedback && prevHasFeedback) {
       parts.push('This prompt no longer includes previous attempts/feedback.');
+    }
+
+    const prevMessageCount = prev.messages?.length ?? 0;
+    const currMessageCount = current.messages?.length ?? 0;
+    if (currMessageCount !== prevMessageCount) {
+      parts.push(
+        `Conversation now includes ${currMessageCount} turn(s) (was ${prevMessageCount}).`,
+      );
     }
 
     if (!parts.length) return null;
@@ -859,20 +878,6 @@ export default function PoetiqSolver() {
                   </div>
                 </div>
                 <div className="overflow-y-auto p-3 text-xs font-mono bg-gray-50 flex-1">
-                  {/* User Prompt (most important - show first) */}
-                  <div className="mb-3">
-                    <div className="text-purple-600 font-bold mb-1">User Prompt (sent to AI):</div>
-                    <pre className="bg-white border border-gray-200 rounded p-2 whitespace-pre-wrap overflow-x-auto max-h-32 overflow-y-auto text-gray-800">
-                      {state.currentPromptData.userPrompt || 'No user prompt'}
-                    </pre>
-                  </div>
-                  {/* System Prompt */}
-                  <details className="mb-2">
-                    <summary className="text-purple-600 font-bold cursor-pointer hover:text-purple-800">System Prompt (click to expand)</summary>
-                    <pre className="bg-white border border-gray-200 rounded p-2 mt-1 whitespace-pre-wrap overflow-x-auto max-h-24 overflow-y-auto text-gray-600">
-                      {state.currentPromptData.systemPrompt || 'No system prompt'}
-                    </pre>
-                  </details>
                   {/* Model & Config */}
                   <div className="text-gray-500 mt-2">
                     <span className="font-bold">Model:</span> {state.currentPromptData.model} 
@@ -884,6 +889,62 @@ export default function PoetiqSolver() {
                       <span> <span className="font-bold">Summary:</span> {state.currentPromptData.reasoningParams.summary}</span>
                     )}
                   </div>
+                  {state.currentPromptData.messages?.length ? (
+                    <div className="mt-3 space-y-2">
+                      {state.currentPromptData.messages.map((msg, idx) => {
+                        const metadata = (msg.metadata ?? {}) as Record<string, unknown>;
+                        const iterationMeta =
+                          typeof metadata.iteration === 'number' ? (metadata.iteration as number) : undefined;
+                        const expertMeta =
+                          typeof metadata.expert === 'number' ? (metadata.expert as number) : undefined;
+                        const passMeta =
+                          typeof metadata.trainPasses === 'number' ? (metadata.trainPasses as number) : undefined;
+                        const totalMeta =
+                          typeof metadata.trainTotal === 'number' ? (metadata.trainTotal as number) : undefined;
+                        return (
+                          <div key={`prompt-msg-${idx}`} className="bg-white border border-gray-200 rounded p-2">
+                            <div className="flex items-center justify-between mb-1 text-[10px] text-gray-500">
+                              <div className="flex items-center gap-2">
+                                <span
+                                  className={`px-2 py-0.5 rounded font-semibold uppercase tracking-wide ${getRoleBadgeClass(
+                                    msg.role,
+                                  )}`}
+                                >
+                                  {(msg.label || msg.role || 'message').toString()}
+                                </span>
+                                {typeof iterationMeta === 'number' && <span>Iter {iterationMeta}</span>}
+                                {typeof expertMeta === 'number' && <span>Exp {expertMeta}</span>}
+                              </div>
+                              {typeof passMeta === 'number' &&
+                                typeof totalMeta === 'number' &&
+                                totalMeta > 0 && (
+                                  <span>
+                                    {passMeta}/{totalMeta} pass
+                                  </span>
+                                )}
+                            </div>
+                            <pre className="whitespace-pre-wrap text-gray-800 max-h-32 overflow-y-auto">
+                              {msg.content || '—'}
+                            </pre>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  ) : (
+                    <div className="mb-3">
+                      <div className="text-purple-600 font-bold mb-1">User Prompt (sent to AI):</div>
+                      <pre className="bg-white border border-gray-200 rounded p-2 whitespace-pre-wrap overflow-x-auto max-h-32 overflow-y-auto text-gray-800">
+                        {state.currentPromptData.userPrompt || 'No user prompt'}
+                      </pre>
+                    </div>
+                  )}
+                  {/* System Prompt */}
+                  <details className="mb-2">
+                    <summary className="text-purple-600 font-bold cursor-pointer hover:text-purple-800">System Prompt (click to expand)</summary>
+                    <pre className="bg-white border border-gray-200 rounded p-2 mt-1 whitespace-pre-wrap overflow-x-auto max-h-24 overflow-y-auto text-gray-600">
+                      {state.currentPromptData.systemPrompt || 'No system prompt'}
+                    </pre>
+                  </details>
                   {/* Quick Prompt Stats */}
                   {state.currentPromptData.stats && (
                     <div className="mt-1 text-[11px] text-gray-500 space-x-2">
@@ -952,9 +1013,44 @@ export default function PoetiqSolver() {
                           </div>
                           <span>{formatTimestamp(entry.timestamp)}</span>
                         </div>
-                        <div className="text-gray-700 font-mono whitespace-pre-wrap max-h-16 overflow-y-auto">
-                          {entry.prompt.userPrompt || 'No prompt'}
-                        </div>
+                        {entry.prompt.messages?.length ? (
+                          <div className="space-y-1 text-gray-700 font-mono">
+                            {entry.prompt.messages.map((msg, msgIdx) => {
+                              const metadata = (msg.metadata ?? {}) as Record<string, unknown>;
+                              const passes =
+                                typeof metadata.trainPasses === 'number'
+                                  ? (metadata.trainPasses as number)
+                                  : undefined;
+                              const total =
+                                typeof metadata.trainTotal === 'number'
+                                  ? (metadata.trainTotal as number)
+                                  : undefined;
+                              return (
+                                <div key={`${entry.timestamp}-${idx}-${msgIdx}`} className="border border-indigo-100 rounded p-1">
+                                  <div className="flex items-center justify-between text-[10px] text-gray-500 mb-0.5">
+                                    <span
+                                      className={`px-1.5 py-0.5 rounded font-semibold uppercase tracking-wide ${getRoleBadgeClass(
+                                        msg.role,
+                                      )}`}
+                                    >
+                                      {(msg.label || msg.role || 'message').toString()}
+                                    </span>
+                                    {typeof passes === 'number' &&
+                                      typeof total === 'number' &&
+                                      total > 0 && <span>{passes}/{total} pass</span>}
+                                  </div>
+                                  <pre className="whitespace-pre-wrap max-h-16 overflow-y-auto text-gray-700">
+                                    {msg.content || '—'}
+                                  </pre>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        ) : (
+                          <div className="text-gray-700 font-mono whitespace-pre-wrap max-h-16 overflow-y-auto">
+                            {entry.prompt.userPrompt || 'No prompt'}
+                          </div>
+                        )}
                       </div>
                     ))
                   )}

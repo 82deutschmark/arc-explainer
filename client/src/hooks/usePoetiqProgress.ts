@@ -13,6 +13,7 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { apiRequest } from '@/lib/queryClient';
+import type { PoetiqPromptData } from '@shared/types';
 
 export interface PoetiqOptions {
   // BYO (Bring Your Own) API key - optional, falls back to server env vars
@@ -25,34 +26,6 @@ export interface PoetiqOptions {
   maxIterations?: number;   // default: 10
   temperature?: number;     // default: 1.0
   reasoningEffort?: 'low' | 'medium' | 'high'; // Optional reasoning effort
-}
-
-// Prompt data from the Python wrapper - shows what's being sent to the AI
-export interface PromptData {
-  systemPrompt?: string;
-  userPrompt?: string;
-  model?: string;
-  temperature?: number;
-  provider?: string;        // "OpenAI", "OpenRouter", "Google Gemini", etc.
-  apiStyle?: string;        // "Responses API" or "ChatCompletions API"
-  reasoningParams?: {
-    effort?: string;        // "low", "medium", "high", or "default"
-    verbosity?: string;     // "high" or "default"
-    summary?: string;       // "detailed", "auto", or "default"
-  } | null;
-  iteration?: number;
-  expert?: number;
-  timestamp?: string;
-  // Optional structured sections and quick stats for richer UI
-  problemSection?: string;
-  feedbackSection?: string | null;
-  stats?: {
-    systemPromptChars?: number;
-    userPromptChars?: number;
-    problemChars?: number;
-    feedbackChars?: number;
-    previousSolutionCount?: number;
-  } | null;
 }
 
 export interface PoetiqTokenUsage {
@@ -68,7 +41,7 @@ export interface PoetiqCostBreakdown {
 }
 
 export interface PromptTimelineEntry {
-  prompt: PromptData;
+  prompt: PoetiqPromptData;
   iteration?: number;
   expert?: number;
   timestamp: string;
@@ -171,8 +144,8 @@ export interface PoetiqProgressState {
   usingFallback?: boolean;
   
   // Prompt visibility - shows what's being sent to the AI
-  currentPromptData?: PromptData;
-  promptHistory?: PromptData[];  // All prompts sent during this run
+  currentPromptData?: PoetiqPromptData;
+  promptHistory?: PoetiqPromptData[];  // All prompts sent during this run
   promptTimeline?: PromptTimelineEntry[];
 
   // Token/cost visibility
@@ -413,8 +386,8 @@ export function usePoetiqProgress(taskId: string | undefined) {
           let nextPromptHistory = prev.promptHistory ? [...prev.promptHistory] : [];
           let nextPromptTimeline = prev.promptTimeline ? [...prev.promptTimeline] : [];
           if (data.promptData) {
-            const promptPayload: PromptData = {
-              ...(data.promptData as PromptData),
+            const promptPayload: PoetiqPromptData = {
+              ...(data.promptData as PoetiqPromptData),
               iteration: data.iteration,
               expert: data.expert,
               timestamp: isoTimestamp,

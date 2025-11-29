@@ -17,6 +17,7 @@ This version merges the best material from previous guidelines and adds **quick 
     - ResponsesAPI.md – `docs/reference/api/ResponsesAPI.md`
     - xAI-API.md – `docs/reference/api/xAI-API.md`
     - API_Conversation_Chaining.md – `docs/reference/api/API_Conversation_Chaining.md`
+    - GPT5_1_Codex_Mini_ARC_Grid_Solver.md – `docs/reference/api/GPT5_1_Codex_Mini_ARC_Grid_Solver.md` (ARC coding agent spec)
   - **Architecture** – `docs/reference/architecture/`
   - **Data** – `docs/reference/data/`
   - **Frontend** – `docs/reference/frontend/`

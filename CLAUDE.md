@@ -30,6 +30,7 @@ You are an elite software architect and senior engineer focused on:
   - `docs/reference/api/API_Conversation_Chaining.md`
   - `docs/reference/api/Responses_API_Chain_Storage_Analysis.md`
   - `docs/RESPONSES_GUIDE.md`
+  - `docs/reference/api/GPT5_1_Codex_Mini_ARC_Grid_Solver.md` (ARC grid coding agent spec for gpt-5.1-codex-mini)
 - **Use `/v1/responses`, not Chat Completions, for reasoning models.** Requests must send an `input` array of role/content items; do not send `messages` to `client.responses.create()`.
 - **Reasoning & text config:** For GPT‑5 / o‑series and similar models, prefer:
   - `reasoning.effort` ≥ `medium`,

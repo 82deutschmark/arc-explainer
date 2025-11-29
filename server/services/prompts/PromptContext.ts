@@ -46,7 +46,8 @@ export type PromptMode =
   | 'alienCommunication' 
   | 'educational'
   | 'gepa'
-  | 'custom';
+  | 'custom'
+  | 'poetiq';
 
 /**
  * Complete context for prompt generation decisions
@@ -150,6 +151,7 @@ export function supportsChaining(mode: PromptMode): boolean {
     case 'debate':
     case 'solver':
     case 'explanation':
+    case 'poetiq':
       return true;
     
     case 'alienCommunication':

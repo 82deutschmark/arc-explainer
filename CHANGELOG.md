@@ -1,6 +1,24 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top!!!
 
+### Version 5.33.7
+
+- **Poetiq Conversation-State Migration (ARC Responses spec)** (Author: Codex / GPT-5)
+  - Extended the shared prompt plumbing (`PromptContext`, `systemPrompts`, `shared/types`) with a dedicated `poetiq` mode plus structured `messages[]` payloads so Poetiq prompt events mirror the `/v1/responses` input format.
+  - Reworked the Python solver stack to keep one conversation thread per expert: `solver/poetiq/llm.py` now passes `previous_response_id` into OpenAI Responses calls (returning the fresh `provider_response_id`), `llm()` propagates the ID through all callers, and the instrumented `poetiq_wrapper` builds alternating assistant/user turns with sandbox metrics + feedback before emitting the richer `promptData`.
+  - Updated the Poetiq hook + UI to consume the new data: `usePoetiqProgress` pulls `PoetiqPromptData` straight from `shared/types`, and `PoetiqSolver` renders every conversation turn (badged by role, iteration, expert, and pass counts) inside both the Prompt Inspector and the prompt timeline, so operators can replay exactly what the Codex Mini session saw. The transparency plan doc now documents the conversation-view requirement.
+  - **Files**: `server/services/prompts/PromptContext.ts`, `server/services/prompts/systemPrompts.ts`, `shared/types.ts`, `solver/poetiq/llm.py`, `solver/poetiq/solve_coding.py`, `server/python/poetiq_wrapper.py`, `server/services/poetiq/poetiqService.ts`, `client/src/hooks/usePoetiqProgress.ts`, `client/src/pages/PoetiqSolver.tsx`, `docs/29112025-solver-transparency-ui-plan.md`
+
+### Version 5.33.6
+
+- **Docs: GPT-5.1 Codex Mini ARC Grid Solver Spec** (Author: Cascade using Cascade)
+  - Added a dedicated reference document detailing how our ARC coding agent should call OpenAI's Responses API with `gpt-5.1-codex-mini` to iteratively write and refine Python solvers for ARC grid puzzles, with full stateful retention and no ZDR constraints.
+  - Document covers: required/forbidden fields, `store: true` policy, `previous_response_id` vs `conversation`, reasoning controls, full-retention logging, and the standard four-phase ARC workflow (ingest → design/code → execute/test → refine).
+  - Wired this spec into the agent guidance docs so future assistants know where to look:
+    - Updated `AGENTS.md` API docs quick reference to include `docs/reference/api/GPT5_1_Codex_Mini_ARC_Grid_Solver.md`.
+    - Updated `CLAUDE.md` OpenAI Responses section to link to the same spec for backend/streaming changes involving Codex Mini.
+  - **Files**: `docs/reference/api/GPT5_1_Codex_Mini_ARC_Grid_Solver.md`, `AGENTS.md`, `CLAUDE.md`
+
 ### Version 5.33.5
 
 - **Poetiq Solver: Full Prompt Transparency (No Truncation)** (Author: Cascade using Cascade)
