@@ -333,3 +333,64 @@ export const RefinementThread: React.FC<RefinementThreadProps> = ({
           </div>
         </CardContent>
       </Card>
+
+      <div className="space-y-3">
+        {originalIteration && (
+          <OriginalExplanationCard
+            explanation={originalIteration.content}
+            models={models}
+            testCases={testCases}
+            timestamp={originalIteration.timestamp}
+          />
+        )}
+
+        {refinementIterations.map(iteration => {
+          const cumulativeReasoningTokens = iterations
+            .slice(0, iterations.indexOf(iteration) + 1)
+            .reduce((sum, iter) => sum + (iter.content.reasoningTokens || 0), 0);
+
+          return (
+            <IterationCard
+              key={iteration.id}
+              explanation={iteration.content}
+              models={models}
+              testCases={testCases}
+              timestamp={iteration.timestamp}
+              iterationNumber={iteration.iterationNumber}
+              cumulativeReasoningTokens={cumulativeReasoningTokens}
+            />
+          );
+        })}
+
+        <div ref={threadEndRef} />
+      </div>
+
+      <PromptPreviewModal
+        isOpen={showPromptPreview}
+        onClose={() => {
+          setShowPromptPreview(false);
+          setPreviewMode(null);
+        }}
+        task={task}
+        taskId={taskId}
+        promptId={promptId}
+        options={{
+          originalExplanation,
+          customChallenge: userGuidance,
+          previousResponseId: getLastResponseId(),
+        }}
+        confirmMode={previewMode === 'run'}
+        onConfirm={
+          previewMode === 'run'
+            ? async () => {
+                await Promise.resolve(onContinueRefinement());
+                setShowPromptPreview(false);
+                setPreviewMode(null);
+              }
+            : undefined
+        }
+        confirmButtonText="Send Refinement Request"
+      />
+    </div>
+  );
+};
