@@ -13,6 +13,8 @@ export interface PoetiqModelOption {
   name: string;
   provider: string;
   recommended: boolean;
+  routing?: string;
+  requiresBYO?: boolean;
 }
 
 async function fetchPoetiqModels(): Promise<PoetiqModelOption[]> {
