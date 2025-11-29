@@ -143,10 +143,18 @@ async def llm_openai(
     
     # Build reasoning params for GPT-5.x and o3/o4 models
     reasoning_effort = kwargs.get('reasoning_effort', 'high')
-    verbosity = kwargs.get('verbosity', 'high')
     reasoning_summary = kwargs.get('reasoning_summary', 'detailed')
+
+    # Verbosity defaults:
+    # - gpt-5.1-codex-mini only supports 'medium' for text.verbosity (API will 400 on 'high')
+    # - other GPT-5.x/o3 models retain the project-standard 'high' default
+    verbosity_override = kwargs.get('verbosity')
+    if model_name == "gpt-5.1-codex-mini":
+        verbosity = 'medium'
+    else:
+        verbosity = verbosity_override or 'high'
     
-    print(f"[OpenAI Responses API] Calling {model_name} with reasoning_effort={reasoning_effort}")
+    print(f"[OpenAI Responses API] Calling {model_name} with reasoning_effort={reasoning_effort}, verbosity={verbosity}")
     
     try:
         response = await client.responses.create(
@@ -319,19 +327,7 @@ async def llm_gemini(
         "temperature": temperature,
         "response_mime_type": "application/json",  # For structured output
     }
-    
-    # Add thinking config for Gemini 2.5+ models
-    thinking_config = kwargs.get('thinking')
-    if thinking_config and thinking_config.get("type") == "enabled":
-        budget = thinking_config.get("budget_tokens", 16000)
-        generation_config["thinking_config"] = {
-            "thinking_budget": budget
-        }
-    elif "2.5" in model_name or "3" in model_name:
-        # Default to dynamic thinking for advanced models
-        generation_config["thinking_config"] = {
-            "thinking_budget": -1
-        }
+    # Thinking config intentionally omitted — current SDK rejects `thinking_config` on Gemini 3.
     
     try:
         genai_model = genai.GenerativeModel(
