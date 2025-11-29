@@ -418,6 +418,7 @@ export function usePoetiqProgress(taskId: string | undefined) {
     // This ensures UI shows "starting" immediately before any network call
     console.log('[Poetiq] Setting initial state to running...');
     setState({
+      ...initialState,
       status: 'running',
       phase: 'initializing',
       iteration: 0,
@@ -431,11 +432,6 @@ export function usePoetiqProgress(taskId: string | undefined) {
       },
       // Initialize all buffers synchronously so UI has something to display
       logLines: [`🚀 Poetiq Meta-System Solver starting...`, `📋 Task: ${taskId}`, `🤖 Model: ${model}`, `👥 Experts: ${numExperts}`, '---'],
-      reasoningHistory: [],
-      pythonLogLines: [],
-      streamingReasoning: '',
-      streamingCode: '',
-      streamingText: '',
       usingFallback: !options.apiKey,
     });
 
@@ -489,12 +485,14 @@ export function usePoetiqProgress(taskId: string | undefined) {
         }, 5000);
       } else {
         setState({
+          ...initialState,
           status: 'error',
           message: response.message || 'Failed to start solver',
         });
       }
     } catch (err) {
       setState({
+        ...initialState,
         status: 'error',
         message: err instanceof Error ? err.message : 'Unknown error',
       });
@@ -510,6 +508,7 @@ export function usePoetiqProgress(taskId: string | undefined) {
       clearInterval(pollingRef.current);
     }
     setState({
+      ...initialState,
       status: 'idle',
       message: 'Cancelled',
     });

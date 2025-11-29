@@ -36,9 +36,27 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/com
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 
 // Types
 import type { CorrectnessFilter } from '@/hooks/useFilteredResults';
+
+const PROVIDER_PREVIEW_DEFAULT = 'openai';
+const PROVIDER_PREVIEW_MAP: Record<string, string> = {
+  OpenAI: 'openai',
+  Anthropic: 'anthropic',
+  xAI: 'grok',
+  Gemini: 'gemini',
+  DeepSeek: 'deepseek',
+  OpenRouter: 'openrouter',
+  Grover: 'openrouter',
+  Saturn: 'openai',
+};
+
+function getPreviewProvider(providerName?: string): string {
+  if (!providerName) return PROVIDER_PREVIEW_DEFAULT;
+  return PROVIDER_PREVIEW_MAP[providerName] ?? PROVIDER_PREVIEW_DEFAULT;
+}
 
 export default function PuzzleExaminer() {
   const { taskId } = useParams<{ taskId: string }>();
@@ -71,7 +89,7 @@ export default function PuzzleExaminer() {
   const [emojiSet, setEmojiSet] = useState<EmojiSet>(DEFAULT_EMOJI_SET);
   const [sendAsEmojis, setSendAsEmojis] = useState(false);
   const [isPromptPreviewOpen, setIsPromptPreviewOpen] = useState(false);
-  const [pendingAnalysis, setPendingAnalysis] = useState<{ modelKey: string; supportsTemperature: boolean } | null>(null);
+  const [pendingAnalysis, setPendingAnalysis] = useState<{ modelKey: string; supportsTemperature: boolean; provider?: string } | null>(null);
   const [omitAnswer, setOmitAnswer] = useState(true);
   const [correctnessFilter, setCorrectnessFilter] = useState<CorrectnessFilter>('all');
   const [highlightedExplanationId, setHighlightedExplanationId] = useState<number | null>(null);
@@ -284,6 +302,7 @@ export default function PuzzleExaminer() {
     setPendingAnalysis({
       modelKey,
       supportsTemperature: model?.supportsTemperature ?? true,
+      provider: getPreviewProvider(model?.provider),
     });
     setIsPromptPreviewOpen(true);
     console.log('[PuzzleExaminer] Modal should now be open');
@@ -504,12 +523,14 @@ export default function PuzzleExaminer() {
         )}
       </div>
 
-      {/* Streaming Modal Dialog (DaisyUI) */}
-      <dialog className={`modal ${isStreamingActive ? 'modal-open' : ''}`}>
-        <div className="modal-box max-w-[95vw] max-h-[90vh] overflow-y-auto">
-          <h3 className="font-bold text-lg mb-4">
-            {`Streaming ${streamingModel?.name ?? streamingModelKey ?? 'Analysis'}`}
-          </h3>
+      {/* Streaming Modal Dialog */}
+      <Dialog open={isStreamingActive} onOpenChange={closeStreamingModal}>
+        <DialogContent className="max-w-[95vw] max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>
+              {`Streaming ${streamingModel?.name ?? streamingModelKey ?? 'Analysis'}`}
+            </DialogTitle>
+          </DialogHeader>
           <StreamingAnalysisPanel
             title={`${streamingModel?.name ?? streamingModelKey ?? 'Analysis'}`}
             status={streamingPanelStatus}
@@ -529,22 +550,8 @@ export default function PuzzleExaminer() {
             task={task}
             promptPreview={streamingPromptPreview}
           />
-        </div>
-        <form method="dialog" className="modal-backdrop">
-          <button
-            onClick={() => {
-              if (streamingPanelStatus === 'in_progress') {
-                cancelStreamingAnalysis();
-              }
-              if (streamingPanelStatus !== 'completed') {
-                closeStreamingModal();
-              }
-            }}
-          >
-            close
-          </button>
-        </form>
-      </dialog>
+        </DialogContent>
+      </Dialog>
 
       {/* Prompt Preview Modal */}
       <PromptPreviewModal
@@ -559,6 +566,7 @@ export default function PuzzleExaminer() {
           omitAnswer,
           sendAsEmojis
         }}
+        provider={pendingAnalysis?.provider ?? PROVIDER_PREVIEW_DEFAULT}
         confirmMode={pendingAnalysis !== null}
         onConfirm={pendingAnalysis ? handleConfirmAnalysis : undefined}
         confirmButtonText="Confirm & Send Analysis"
