@@ -1,6 +1,13 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top!!!
 
+### Version 5.32.7
+
+- **Model Catalog: Full GPT-5.1 Codex + Poetiq Integration** (Author: Cascade using Cascade)
+  - **Change**: Added the full `GPT-5.1 Codex` reasoning model alongside `GPT-5.1 Codex Mini` in the shared `MODELS` config, with pricing set to `$1.25` input / `$10.00` output per 1M tokens and identical context/metadata to the mini variant.
+  - **Change**: Exposed `gpt-5.1-codex` as a direct OpenAI option in `/api/poetiq/models`, so Poetiq Community/Solver can select it just like Codex Mini while still treating BYO keys as optional.
+  - **Change**: Updated Poetiq cost tracking to recognize both `gpt-5.1-codex` and `gpt-5.1-codex-mini` with their correct per-token prices, and taught the Poetiq service to route BYO keys for `gpt-5.1-codex` through `OPENAI_API_KEY` (direct Responses API) instead of OpenRouter.
+
 ### Version 5.32.6
 
 - **Gemini thinking_config hotfix** (Author: Codex / GPT-5)

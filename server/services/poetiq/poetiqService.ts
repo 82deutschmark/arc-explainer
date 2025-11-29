@@ -218,7 +218,7 @@ export class PoetiqService {
     
     // Direct OpenAI models that should use Responses API
     const directModels = [
-      'gpt-5.1-codex-mini', 'gpt-5-mini', 'gpt-5-nano', 'gpt-5-',
+      'gpt-5.1-codex', 'gpt-5.1-codex-mini', 'gpt-5-mini', 'gpt-5-nano', 'gpt-5-',
       'o3-mini', 'o4-mini', 'o3-2025', 'gpt-4.1'
     ];
     
