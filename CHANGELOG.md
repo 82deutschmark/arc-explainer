@@ -1,6 +1,19 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top!!!
 
+### Version 5.33.9    4:41 pm
+
+- **UI Direction: Shadcn/ui Migration Blueprint + Analysis Result Refresh** (Author: Codex / GPT-5)
+  - Added `docs/plans/2025-12-02-shadcn-ui-replatforming-plan.md` describing the four-phase strategy (foundation, shared component families, page-level passes, DaisyUI removal) so every UI change follows the same Radix/shadcn patterns.
+  - Rebuilt the Analysis Results experience (`AnalysisResults`, `AnalysisResultCard`, `Header`, `Grid`, `Metrics`, `Content`) on top of shadcn `Card`, `Badge`, `Button`, and `Alert` primitives, removing the lingering DaisyUI `btn`/`badge` classes from that entire cluster.
+  - The refreshed list shell now uses shadcn cards for counts/filters, while grid controls and raw-record drawers reuse the same Button/Badge helpers for consistent styling and keyboard accessibility.
+  - **Files**: `docs/plans/2025-12-02-shadcn-ui-replatforming-plan.md`, `client/src/components/puzzle/AnalysisResults.tsx`, `client/src/components/puzzle/AnalysisResultCard.tsx`, `client/src/components/puzzle/AnalysisResultHeader.tsx`, `client/src/components/puzzle/AnalysisResultContent.tsx`, `client/src/components/puzzle/AnalysisResultGrid.tsx`, `client/src/components/puzzle/AnalysisResultMetrics.tsx`
+
+### Version 5.33.8
+
+- **Docs: Poetiq ARC Solver Prompt Simplification** (Author: Cascade using Cascade)
+  - Simplified the Poetiq ARC solver system prompt by removing redundant Python code examples and replacing them with a concise note that assumes standard Python and NumPy idioms, while keeping the behavioral, formatting, and iterative-refinement contract unchanged.
+
 ### Version 5.33.7
 
 - **Poetiq Conversation-State Migration (ARC Responses spec)** (Author: Codex / GPT-5)

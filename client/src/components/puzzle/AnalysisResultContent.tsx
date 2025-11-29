@@ -8,12 +8,15 @@
  * optimistic update states (analyzing, saving, error). Shows trustworthiness badge for
  * non-ELO, non-debate, non-Saturn results only (predictionAccuracyScore).
  * SRP/DRY check: Pass - Single responsibility (content display)
- * shadcn/ui: Pass - Converted to DaisyUI badge and button
+ * shadcn/ui: Pass - Uses shadcn Badge/Button components
  */
 
 import React from 'react';
 import { Brain, ChevronDown, ChevronUp, FileText, Copy, Check } from 'lucide-react';
 import { ExplanationData } from '@/types/puzzle';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 export const formatConfidence = (confidence: string | number) => {
   if (typeof confidence === 'string') {
@@ -142,27 +145,33 @@ export const AnalysisResultContent: React.FC<AnalysisResultContentProps> = ({
               {isSaturnResult ? '🪐 Saturn Visual Analysis' : isGroverResult ? '🔄 Grover Iterative Analysis' : 'Pattern Description'}
             </h5>
             {!isSaturnResult && result.confidence && (
-              <div className="badge badge-outline text-xs">
+              <Badge variant="outline" className="text-xs">
                 Confidence: {formatConfidence(result.confidence)}
-              </div>
+              </Badge>
             )}
             {!eloMode && !isSaturnResult && result.trustworthinessScore !== undefined && result.trustworthinessScore !== null && (
-              <div
-                className={`badge badge-outline text-xs ${
-                  result.trustworthinessScore >= 0.8 
-                    ? 'bg-green-50 border-green-200 text-green-700' 
+              <Badge
+                variant="outline"
+                className={`
+                  text-xs
+                  ${result.trustworthinessScore >= 0.8 
+                    ? 'bg-green-50 text-green-700 border-green-200' 
                     : result.trustworthinessScore >= 0.5 
-                      ? 'bg-yellow-50 border-yellow-200 text-yellow-700' 
-                      : 'bg-red-50 border-red-200 text-red-700'
-                }`}>
+                      ? 'bg-yellow-50 text-yellow-700 border-yellow-200' 
+                      : 'bg-red-50 text-red-700 border-red-200'}`}
+              >
                 Trustworthiness: {Math.round(result.trustworthinessScore * 100)}%
-              </div>
+              </Badge>
             )}
             {isSaturnResult && typeof result.saturnSuccess === 'boolean' && (
-              <div 
-                className={`badge badge-outline text-xs ${result.saturnSuccess ? 'bg-green-50 border-green-200 text-green-600' : 'bg-orange-50 border-orange-200 text-orange-600'}`}>
+              <Badge
+                variant="outline"
+                className={`
+                  text-xs
+                  ${result.saturnSuccess ? 'bg-green-50 text-green-600 border-green-200' : 'bg-orange-50 text-orange-600 border-orange-200'}`}
+              >
                 {result.saturnSuccess ? 'Puzzle Solved Successfully' : 'Solution Attempt Failed'}
-              </div>
+              </Badge>
             )}
           </div>
           <p className="text-gray-600">{result.patternDescription}</p>
@@ -187,23 +196,25 @@ export const AnalysisResultContent: React.FC<AnalysisResultContentProps> = ({
         </div>
       )}
       {result.alienMeaning && (
-        <div className="bg-purple-50 border border-purple-200 rounded">
-          <button
+        <div className="rounded border border-purple-200 bg-purple-50">
+          <Button
+            type="button"
+            variant="ghost"
             onClick={() => setShowAlienMeaning(!showAlienMeaning)}
-            className="w-full flex items-center justify-between p-3 text-left hover:bg-purple-100 transition-colors"
+            className="flex w-full items-center justify-between rounded-none p-3 text-left hover:bg-purple-100"
           >
             <div className="flex items-center gap-2">
               <h5 className="font-semibold text-purple-800">🛸 What might the aliens mean?</h5>
-              <div className="badge badge-outline text-xs bg-purple-50">
+              <Badge variant="outline" className="text-xs bg-purple-50 text-purple-700">
                 Confidence: {formatConfidence(result.alienMeaningConfidence || result.confidence || '85%')}
-              </div>
+              </Badge>
             </div>
             {showAlienMeaning ? (
               <ChevronUp className="h-4 w-4 text-purple-600" />
             ) : (
               <ChevronDown className="h-4 w-4 text-purple-600" />
             )}
-          </button>
+          </Button>
           {showAlienMeaning && (
             <div className="px-3 pb-3">
               <div className="bg-white p-3 rounded border border-purple-100">
@@ -224,17 +235,17 @@ export const AnalysisResultContent: React.FC<AnalysisResultContentProps> = ({
                 <>
                   <span className="text-sm">🪐</span>
                   <h5 className="font-semibold text-indigo-800">Saturn Visual Reasoning</h5>
-                  <div className="badge badge-outline text-xs bg-indigo-50 border-indigo-200">
+                  <Badge variant="outline" className="text-xs bg-indigo-50 border-indigo-200 text-indigo-700">
                     Multi-stage visual analysis
-                  </div>
+                  </Badge>
                 </>
               ) : (
                 <>
                   <Brain className="h-4 w-4 text-blue-600" />
                   <h5 className="font-semibold text-blue-800">AI Reasoning Process</h5>
-                  <div className="badge badge-outline text-xs bg-blue-50">
+                  <Badge variant="outline" className="text-xs bg-blue-50 text-blue-700">
                     Step-by-step analysis
-                  </div>
+                  </Badge>
                 </>
               )}
             </div>
@@ -342,9 +353,9 @@ export const AnalysisResultContent: React.FC<AnalysisResultContentProps> = ({
             <div className="flex items-center gap-2">
               <span className="text-sm">🔄</span>
               <h5 className="font-semibold text-green-800">Discovered Python Program</h5>
-              <div className="badge badge-outline text-xs bg-green-50 border-green-200">
+              <Badge variant="outline" className="text-xs bg-green-50 border-green-200 text-green-700">
                 Best of {result.iterationCount || '?'} iterations
-              </div>
+              </Badge>
             </div>
             {showGroverProgram ? (
               <ChevronUp className="h-4 w-4 text-green-600" />
@@ -374,9 +385,9 @@ export const AnalysisResultContent: React.FC<AnalysisResultContentProps> = ({
             <div className="flex items-center gap-2">
               <FileText className="h-4 w-4 text-gray-600" />
               <h5 className="font-semibold text-gray-800">Prompt Sent to AI</h5>
-              <div className="badge badge-outline text-xs bg-gray-50">
+              <Badge variant="outline" className="text-xs bg-gray-50 text-gray-700">
                 What was actually sent
-              </div>
+              </Badge>
             </div>
             {showPrompt ? (
               <ChevronUp className="h-4 w-4 text-gray-600" />
@@ -391,17 +402,20 @@ export const AnalysisResultContent: React.FC<AnalysisResultContentProps> = ({
                 <div>
                   <div className="flex items-center justify-between mb-2">
                     <h6 className="font-semibold text-sm text-gray-700">System Prompt:</h6>
-                    <button
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
                       onClick={() => copyToClipboard(result.systemPromptUsed!, 'system')}
-                      className="btn btn-xs btn-ghost"
                       title="Copy to clipboard"
+                      className="h-7 w-7 text-gray-600 hover:text-gray-800"
                     >
                       {copiedSection === 'system' ? (
                         <Check className="h-3 w-3 text-green-600" />
                       ) : (
                         <Copy className="h-3 w-3" />
                       )}
-                    </button>
+                    </Button>
                   </div>
                   <pre className="text-xs bg-white p-3 rounded border text-gray-700 whitespace-pre-wrap font-mono max-h-64 overflow-y-auto">
                     {result.systemPromptUsed}
@@ -417,17 +431,20 @@ export const AnalysisResultContent: React.FC<AnalysisResultContentProps> = ({
                 <div>
                   <div className="flex items-center justify-between mb-2">
                     <h6 className="font-semibold text-sm text-gray-700">User Prompt:</h6>
-                    <button
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
                       onClick={() => copyToClipboard(result.userPromptUsed!, 'user')}
-                      className="btn btn-xs btn-ghost"
                       title="Copy to clipboard"
+                      className="h-7 w-7 text-gray-600 hover:text-gray-800"
                     >
                       {copiedSection === 'user' ? (
                         <Check className="h-3 w-3 text-green-600" />
                       ) : (
                         <Copy className="h-3 w-3" />
                       )}
-                    </button>
+                    </Button>
                   </div>
                   <pre className="text-xs bg-white p-3 rounded border text-gray-700 whitespace-pre-wrap font-mono max-h-64 overflow-y-auto">
                     {result.userPromptUsed}
