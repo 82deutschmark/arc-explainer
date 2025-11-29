@@ -11,7 +11,7 @@
 
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { useParams, Link } from 'wouter';
-import { Loader2, Square, ChevronDown, ChevronUp, Activity, Timer, Layers, Copy, Check, Rocket, Key, Eye, EyeOff, Code2, Server, Brain, ListTree, FileJson, ScrollText, Coins } from 'lucide-react';
+import { Loader2, Square, ChevronDown, ChevronUp, Activity, Timer, Layers, Copy, Check, Rocket, Key, Eye, EyeOff, Code2, Server, Brain, ListTree, FileJson, ScrollText, Coins, TerminalSquare } from 'lucide-react';
 import { usePuzzle } from '@/hooks/usePuzzle';
 import { usePoetiqProgress } from '@/hooks/usePoetiqProgress';
 import { usePoetiqModels, type PoetiqModelOption } from '@/hooks/usePoetiqModels';
@@ -127,6 +127,7 @@ export default function PoetiqSolver() {
   const latestPromptTimeline = promptTimeline.slice(-20);
   const latestReasoningHistory = reasoningHistory.slice(-20);
   const latestRawEvents = rawEvents.slice(-20);
+  const pythonLogLines = state.pythonLogLines ?? [];
   const tokenUsage = state.tokenUsage ?? state.result?.tokenUsage ?? null;
   const costData = state.cost ?? state.result?.cost ?? null;
   const aggregatedExpertStats = useMemo(() => {
@@ -646,6 +647,25 @@ export default function PoetiqSolver() {
               currentCode={isRunning ? state.result?.generatedCode : undefined}
               isRunning={isRunning}
             />
+
+            {pythonLogLines.length > 0 && (
+              <div className="mt-3 bg-white border border-gray-300 rounded">
+                <div className="flex items-center justify-between px-3 py-2 bg-gray-50 border-b border-gray-200">
+                  <div className="flex items-center gap-2 text-sm font-semibold text-gray-700">
+                    <TerminalSquare className="w-4 h-4 text-gray-600" />
+                    Python Console
+                  </div>
+                  <span className="text-xs text-gray-500">{pythonLogLines.length} lines</span>
+                </div>
+                <div className="max-h-48 overflow-y-auto bg-gray-900 text-gray-100 text-xs font-mono px-3 py-2 space-y-1">
+                  {pythonLogLines.map((line, idx) => (
+                    <div key={`${line}-${idx}`} className="border-b border-gray-800/60 pb-1 last:border-b-0 last:pb-0">
+                      {line}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
 
             {/* Final Result - Show ONLY when completed */}
             {isDone && resultSummary && (

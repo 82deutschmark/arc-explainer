@@ -1,6 +1,29 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top!!!
 
+### Version 5.32.12
+
+- **Poetiq Solver: Live Prompt/Reasoning Telemetry + Token Stats** (Author: Codex / GPT-5)
+  - **client/src/hooks/usePoetiqProgress.ts**: Capture prompt timeline entries, raw WebSocket events, and expert/global token+cost aggregates while resetting state safely on each run/cancel path.
+  - **server/services/poetiq/poetiqService.ts**: Broadcast the Python wrapper's token usage, cost, and prompt payload metadata so the frontend receives everything the console prints.
+  - **client/src/pages/PoetiqSolver.tsx**: Surface the new data with timeline/stream/event toggles, live token+cost summaries, a per-expert breakdown panel, and a Python console mirror so users can see every prompt, reasoning chunk, log line, and NDJSON event without devtools.
+  - **docs/2025-11-28-poetiq-visibility-plan.md**: Logged the completion status for the visibility plan to document the new UI affordances.
+
+### Version 5.32.11
+
+- **PuzzleExaminer Prompt Preview Modal: Provider-Aware Model Card Flow** (Author: Cascade using Cascade)
+  - **Problem**: After the DaisyUI → shadcn/ui migration, clicking a model card on `PuzzleExaminer` opened the prompt preview modal but the backend preview route had no reliable indication of which provider/model family was being used. The modal also always previewed as if it were an OpenAI prompt, even for Anthropic/Gemini/xAI/DeepSeek/OpenRouter models.
+  - **Fix**:
+    1. Extended `PuzzleExaminer`'s `pendingAnalysis` state to track the selected model's provider and added a small mapping helper from shared `ModelConfig.provider` values (`OpenAI`, `Anthropic`, `Gemini`, `xAI`, `DeepSeek`, `OpenRouter`, `Grover`, `Saturn`) to the backend `provider` slugs expected by `/api/prompt-preview` (e.g. `openai`, `anthropic`, `gemini`, `grok`, `deepseek`, `openrouter`).
+    2. Updated `PromptPreviewModal` to accept an optional `provider` prop (defaulting to `'openai'`) and to send that value in the JSON body when calling `/api/prompt-preview`, satisfying the route's `provider` validation while keeping existing prompt-building behavior intact.
+    3. Wired `PuzzleExaminer` to pass the mapped provider from `pendingAnalysis` into `PromptPreviewModal` only when a model card is clicked; template-only previews (via the Prompt Style "Preview" button) continue to default to OpenAI.
+  - **Result**:
+    - Clicking any model card now opens a prompt preview that is correctly associated with that model's provider family and can be safely extended server-side to provider-specific preview logic.
+    - The confirmation button in the modal still triggers `analyzeWithModel` with the right `modelKey` and temperature support flags, preserving the existing analysis pipeline while restoring the "preview then run" flow for card-based runs.
+  - **Files Modified**:
+    - `client/src/components/PromptPreviewModal.tsx`
+    - `client/src/pages/PuzzleExaminer.tsx`
+
 ### Version 5.32.9
 
 - **UI Framework Migration: DaisyUI → shadcn/ui on PuzzleExaminer Page** (Author: Claude Code using Haiku 4.5)
@@ -32,13 +55,6 @@
     - `client/src/components/puzzle/ModelButton.tsx` (already uses shadcn/ui Button)
   - **Testing**: All functionality verified — modal opens/closes, buttons work, cards render, alerts display, skeletons load correctly.
 
-### Version 5.32.9
-
-- **Poetiq Solver: Live Prompt/Reasoning Telemetry + Token Stats** (Author: Codex / GPT-5)
-  - **client/src/hooks/usePoetiqProgress.ts**: Capture prompt timeline entries, raw WebSocket events, and expert/global token+cost aggregates while resetting state safely on each run/cancel path.
-  - **server/services/poetiq/poetiqService.ts**: Broadcast the Python wrapper's token usage, cost, and prompt payload metadata so the frontend receives everything the console prints.
-  - **client/src/pages/PoetiqSolver.tsx**: Surface the new data with timeline/stream/event toggles, live token+cost summaries, and a per-expert breakdown panel so users can see every prompt, reasoning chunk, and NDJSON event without devtools.
-  - **docs/2025-11-28-poetiq-visibility-plan.md**: Logged the completion status for the visibility plan to document the new UI affordances.
 
 ### Version 5.32.8
 
