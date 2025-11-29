@@ -1,5 +1,11 @@
 ## ARC Explainer
-- Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top!!!
+- Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top with the time and date!
+
+### Version 5.33.10  Nov 29, 2025 4:45pm 
+
+- **Docs: Poetiq ARC Prompt Conversation Behavior & Attempt Summaries** (Author: Cascade using Cascade)
+  - Updated the Poetiq ARC solver system prompt so existing partial/incorrect solutions are presented as short natural-language summaries with scores and failure reasons instead of full Python code, reducing token bloat while preserving signal about what was tried.
+  - Added concise conversation-behavior rules (at most one clarifying question, no opt-in closing questions, concise explanations of the final rule) so Poetiq runs behave more like the primary ChatGPT system prompt while staying focused on puzzle solving.
 
 ### Version 5.33.9    4:41 pm
 
