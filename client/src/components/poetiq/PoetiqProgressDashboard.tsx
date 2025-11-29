@@ -129,24 +129,23 @@ export function PoetiqProgressDashboard({ state, rawEvents }: PoetiqProgressDash
     <div className="space-y-4">
       <Card className="border border-blue-200">
         <CardHeader className="pb-2">
-          <CardTitle className="text-sm text-blue-900 flex items-center gap-2">
+          <CardTitle className="text-base text-blue-900 flex items-center gap-2">
             <Info className="h-4 w-4 text-blue-600" />
-            What the AI team is doing right now
+            What the AI agents are doing right now
           </CardTitle>
         </CardHeader>
-        <CardContent className="text-xs text-blue-900 space-y-1">
+        <CardContent className="text-sm text-blue-900 space-y-2">
           <p>
-            We’ve hired <strong>{summary.expertsInPlay}</strong> virtual coders. Each one is writing a Python rule,
-            testing it on the sample puzzles, and revising it until the outputs match.
+            We run <strong>{summary.expertsInPlay}</strong> parallel Poetiq agents. Each agent is just one AI call trying
+            to write a <code>transform()</code> function that turns the input grid into the output grid.
           </p>
           <p>
-            Right now they are working on <strong>iteration {state.iteration ?? 0}</strong> out of an allowance of{' '}
-            {totalIterations}. Whenever a coder’s program passes every sample, we stop and try their answer on the hidden
-            test grid.
+            They are currently on <strong>iteration {state.iteration ?? 0}</strong> (out of {totalIterations}). An
+            iteration means “write code → test it on the training grids → read the feedback we gave → try again.”
           </p>
           <p>
-            When multiple coders end up with the same hidden-grid answer, we treat that as a “vote” and show it as the top
-            recommendation.
+            When two or more agents reach the exact same hidden-test answer, we treat that agreement as a stronger vote of
+            confidence.
           </p>
         </CardContent>
       </Card>
@@ -207,9 +206,9 @@ export function PoetiqProgressDashboard({ state, rawEvents }: PoetiqProgressDash
         </CardContent>
       </Card>
 
-      <Card className="border border-slate-200">
+            <Card className="border border-slate-200">
         <CardHeader className="pb-2 flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
-          <div className="flex items-center gap-2 text-sm text-slate-900">
+          <div className="flex items-center gap-2 text-base text-slate-900">
             <AlertCircle className="h-4 w-4 text-slate-600" />
             Plain-language run summary
           </div>
@@ -228,20 +227,22 @@ export function PoetiqProgressDashboard({ state, rawEvents }: PoetiqProgressDash
             Export run transcript
           </button>
         </CardHeader>
-        <CardContent className="text-xs text-slate-800 space-y-1">
+        <CardContent className="text-sm text-slate-800 space-y-2">
           <p>
-            • Tried <strong>{formatCount(summary.attempts)}</strong> code ideas across{' '}
-            <strong>{formatCount(summary.expertsInPlay)}</strong> experts.
+            ? Tried <strong>{formatCount(summary.attempts)}</strong> code ideas across{' '}
+            <strong>{formatCount(summary.expertsInPlay)}</strong> Poetiq agents (each agent = one AI call).
           </p>
           <p>
-            • Best idea so far came from{' '}
-            <strong>{summary.bestExpert !== undefined ? `Expert ${summary.bestExpert}` : 'an expert still working'}</strong>{' '}
+            ? Best idea so far came from{' '}
+            <strong>
+              {summary.bestExpert !== undefined ? `Agent ${summary.bestExpert}` : 'one of the agents still running'}
+            </strong>{' '}
             and passes {summary.solvedExamples} training examples.
           </p>
-          <p>• Current verdict: {summary.runStatus}</p>
-          <p className="text-slate-600">
-            We keep the winning program (and a short history per expert) in your explanation database once the run ends,
-            so you can always revisit the exact code we trusted.
+          <p>? Current verdict: {summary.runStatus}</p>
+          <p className="text-slate-600 italic">
+            If you see ?Waiting?? or ???, that means we don?t have that measurement yet. These numbers update live as
+            soon as the agents report back.
           </p>
         </CardContent>
       </Card>

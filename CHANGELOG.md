@@ -1,6 +1,28 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top!!!
 
+### Version 5.33.5
+
+- **Poetiq Solver: Full Prompt Transparency (No Truncation)** (Author: Cascade using Cascade)
+  - **Problem**: Earlier Poetiq runs only surfaced a truncated view of the system prompt and a clipped preview of the user prompt, with no clear visual split between the puzzle description and the “previous attempts + feedback” block. Users also had no simple way to see how prompts evolved from one iteration to the next.
+  - **Changes**:
+    1. **Python wrapper prompt payload** (`server/python/poetiq_wrapper.py`):
+       - Removed the 500‑character cap on `systemPrompt` and now emit the full solver instructions for each `(expert, iteration)`.
+       - Added `problemSection` (puzzle + examples only), `feedbackSection` (previous solutions + feedback only), and a `stats` object with character counts and `previousSolutionCount` so the UI can cleanly separate and summarize each part of the composed prompt.
+    2. **TypeScript prompt types & streaming** (`server/services/poetiq/poetiqService.ts`, `client/src/hooks/usePoetiqProgress.ts`):
+       - Extended `PoetiqPromptData` / `PromptData` to carry the new `problemSection`, `feedbackSection`, and `stats` fields while keeping them optional for backward compatibility.
+       - Left the existing `currentPromptData`, `promptHistory`, and `promptTimeline` wiring intact so all prompt events still flow through the same WebSocket path.
+    3. **Prompt Inspector UI** (`client/src/pages/PoetiqSolver.tsx`):
+       - Removed UI‑level truncation of the user prompt and now show the full `userPrompt` in a scrollable block.
+       - Kept the system prompt in an expandable section but now render the complete text from Python instead of a truncated version.
+       - Added a dedicated **“Puzzle & examples section”** (from `problemSection`) and **“Previous attempts & feedback”** (from `feedbackSection`), making the two halves of the composed prompt visually distinct.
+       - Surfaced a lightweight stats row (system/user prompt lengths and previous solution count) so users can gauge prompt size and how many earlier programs are being recycled.
+       - Introduced a **“What changed since last prompt?”** summary that compares the latest prompt to the previous one and highlights changes in prompt length, feedback presence, and previous‑solution count.
+    4. **Prompt Timeline UI** (`client/src/pages/PoetiqSolver.tsx`):
+       - Updated the timeline rows to display the full `userPrompt` for each entry in a scrollable region (no manual `slice(0, N)` trimming), while still capping the number of stored entries for performance.
+  - **Result**: Poetiq users can now inspect the exact system and user prompts sent to the AI for every iteration, see clearly where the core puzzle description ends and the historical Python attempts begin, and understand at a glance how each new prompt differs from the last.
+  - **Files**: `server/python/poetiq_wrapper.py`, `server/services/poetiq/poetiqService.ts`, `client/src/hooks/usePoetiqProgress.ts`, `client/src/pages/PoetiqSolver.tsx`, `docs/29112025-solver-transparency-ui-plan.md`
+
 ### Version 5.33.2
 
 - **Poetiq UI: Slim Token & Cost Monitor** (Author: Codex / GPT-5)
@@ -13,6 +35,12 @@
   - Added a friendly post-run recap card that highlights which expert won, how many iterations ran, consensus strength, and the hidden test result so users immediately know the outcome.
   - Introduced one-click export buttons for both the live event log and the Python console output, making audits and sharing easier.
   - **Files**: `client/src/components/poetiq/PoetiqProgressDashboard.tsx`, `client/src/pages/PoetiqSolver.tsx`
+
+### Version 5.33.4
+
+- **Poetiq UI: Token Summary in Header Only** (Author: Codex / GPT-5)
+  - Removed the standalone token/cost card from the transparency dashboard so the spend summary now lives exclusively in the page header, keeping the main surface focused on meaningful updates.
+  - **Files**: `client/src/components/poetiq/PoetiqProgressDashboard.tsx`, `client/src/components/poetiq/index.ts`, `client/src/components/poetiq/PoetiqTokenMetrics.tsx` (removed)
 
 ### Version 5.33.1
 
