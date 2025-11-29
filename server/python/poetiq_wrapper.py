@@ -378,6 +378,7 @@ async def instrumented_solve_coding(
         message = _build_prompt(solver_prompt, problem=problem_str)
 
         selected = []
+        feedback_prompt_text = ""
         if solutions:
             mask = rng.uniform(size=len(solutions)) < selection_probability
             selected = [s for s, keep in zip(solutions, mask) if keep]
@@ -386,7 +387,8 @@ async def instrumented_solve_coding(
             examples_block = create_examples(
                 selected, max_examples=max_solutions, improving_order=improving_order
             )
-            message += "\n\n" + _build_prompt(feedback_prompt, feedback=examples_block)
+            feedback_prompt_text = _build_prompt(feedback_prompt, feedback=examples_block)
+            message += "\n\n" + feedback_prompt_text
 
         # Emit progress with PROMPT DATA for UI visibility
         # This is the key change - users can now see what's being sent to the AI
@@ -397,7 +399,7 @@ async def instrumented_solve_coding(
             "expert": expert_id,
             "message": f"Expert {expert_id}: Sending prompt to {llm_model}...",
             "promptData": {
-                "systemPrompt": solver_prompt[:500] + "..." if len(solver_prompt) > 500 else solver_prompt,
+                "systemPrompt": solver_prompt,
                 "userPrompt": message,
                 "model": llm_model,
                 "temperature": solver_temperature,
@@ -407,7 +409,16 @@ async def instrumented_solve_coding(
                     "effort": llm_kwargs.get("reasoning_effort", "default"),
                     "verbosity": llm_kwargs.get("verbosity", "default"),
                     "summary": llm_kwargs.get("reasoning_summary", "default"),
-                } if llm_kwargs else None
+                } if llm_kwargs else None,
+                "problemSection": problem_str,
+                "feedbackSection": feedback_prompt_text or None,
+                "stats": {
+                    "systemPromptChars": len(solver_prompt),
+                    "userPromptChars": len(message),
+                    "problemChars": len(problem_str),
+                    "feedbackChars": len(feedback_prompt_text) if feedback_prompt_text else 0,
+                    "previousSolutionCount": len(selected),
+                },
             }
         })
 

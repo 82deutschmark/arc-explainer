@@ -89,6 +89,16 @@ export interface PoetiqPromptData {
     verbosity?: string;
     summary?: string;
   } | null;
+  // Additional sections to make the composed prompt transparent
+  problemSection?: string;           // Text for the puzzle examples + challenge
+  feedbackSection?: string | null;   // Text block containing previous solutions + feedback (if any)
+  stats?: {
+    systemPromptChars?: number;
+    userPromptChars?: number;
+    problemChars?: number;
+    feedbackChars?: number;
+    previousSolutionCount?: number;  // How many prior solutions fed into this prompt
+  } | null;
 }
 
 export interface PoetiqStartMetadata {

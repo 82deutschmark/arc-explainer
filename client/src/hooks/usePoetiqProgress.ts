@@ -43,6 +43,16 @@ export interface PromptData {
   iteration?: number;
   expert?: number;
   timestamp?: string;
+  // Optional structured sections and quick stats for richer UI
+  problemSection?: string;
+  feedbackSection?: string | null;
+  stats?: {
+    systemPromptChars?: number;
+    userPromptChars?: number;
+    problemChars?: number;
+    feedbackChars?: number;
+    previousSolutionCount?: number;
+  } | null;
 }
 
 export interface PoetiqTokenUsage {

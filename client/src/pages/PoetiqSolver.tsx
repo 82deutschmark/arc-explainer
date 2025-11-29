@@ -123,11 +123,67 @@ export default function PoetiqSolver() {
   const hasApiKey = apiKey.trim().length > 0;
   const requiresApiKey = requiresByo;
   const promptTimeline = state.promptTimeline ?? [];
+  const promptHistory = state.promptHistory ?? [];
   const reasoningHistory = state.reasoningHistory ?? [];
   const rawEvents = state.rawEvents ?? [];
   const latestPromptTimeline = promptTimeline.slice(-20);
   const latestReasoningHistory = reasoningHistory.slice(-20);
   const latestRawEvents = rawEvents.slice(-20);
+  const previousPromptForDiff =
+    promptHistory.length > 1 ? promptHistory[promptHistory.length - 2] : undefined;
+
+  const promptChangeSummary = useMemo(() => {
+    const current = state.currentPromptData;
+    const prev = previousPromptForDiff;
+    if (!current || !prev) return null;
+
+    const parts: string[] = [];
+    const currentStats = current.stats || {};
+    const prevStats = prev.stats || {};
+
+    if (
+      typeof currentStats.previousSolutionCount === 'number' ||
+      typeof prevStats.previousSolutionCount === 'number'
+    ) {
+      const prevCount = prevStats.previousSolutionCount ?? 0;
+      const currCount = currentStats.previousSolutionCount ?? 0;
+      if (currCount !== prevCount) {
+        const delta = currCount - prevCount;
+        const dir = delta > 0 ? 'more' : 'fewer';
+        parts.push(
+          `Includes ${currCount} previous solution(s) (${dir} than last prompt by ${Math.abs(delta)}).`,
+        );
+      } else {
+        parts.push(`Previous solution count unchanged at ${currCount}.`);
+      }
+    }
+
+    if (
+      typeof currentStats.userPromptChars === 'number' &&
+      typeof prevStats.userPromptChars === 'number'
+    ) {
+      const deltaChars = currentStats.userPromptChars - prevStats.userPromptChars;
+      if (deltaChars !== 0) {
+        const dir = deltaChars > 0 ? 'longer' : 'shorter';
+        parts.push(
+          `User prompt is ${Math.abs(deltaChars)} characters ${dir} than last time.`,
+        );
+      }
+    }
+
+    const prevHasFeedback = !!(prev.feedbackSection && prev.feedbackSection.trim().length > 0);
+    const currHasFeedback = !!(
+      current.feedbackSection && current.feedbackSection.trim().length > 0
+    );
+    if (currHasFeedback && !prevHasFeedback) {
+      parts.push('This is the first prompt that includes previous attempts and feedback.');
+    } else if (!currHasFeedback && prevHasFeedback) {
+      parts.push('This prompt no longer includes previous attempts/feedback.');
+    }
+
+    if (!parts.length) return null;
+    return parts;
+  }, [state.currentPromptData, previousPromptForDiff]);
   const pythonLogLines = state.pythonLogLines ?? [];
   const tokenUsage = state.tokenUsage ?? state.result?.tokenUsage ?? null;
   const costData = state.cost ?? state.result?.cost ?? null;
@@ -137,6 +193,16 @@ export default function PoetiqSolver() {
     if (!iso) return 'N/A';
     const date = new Date(iso);
     return Number.isNaN(date.getTime()) ? 'N/A' : date.toLocaleTimeString();
+  };
+  const downloadTextFile = (filename: string, lines?: string[]) => {
+    if (!lines || lines.length === 0) return;
+    const blob = new Blob([lines.join('\n')], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    a.click();
+    URL.revokeObjectURL(url);
   };
   const headerTokenSummary = tokenUsage
     ? `${formatTokens(tokenUsage.input_tokens)} in / ${formatTokens(tokenUsage.output_tokens)} out / ${formatTokens(tokenUsage.total_tokens)} total`
@@ -797,8 +863,7 @@ export default function PoetiqSolver() {
                   <div className="mb-3">
                     <div className="text-purple-600 font-bold mb-1">User Prompt (sent to AI):</div>
                     <pre className="bg-white border border-gray-200 rounded p-2 whitespace-pre-wrap overflow-x-auto max-h-32 overflow-y-auto text-gray-800">
-                      {state.currentPromptData.userPrompt?.substring(0, 2000) || 'No user prompt'}
-                      {state.currentPromptData.userPrompt && state.currentPromptData.userPrompt.length > 2000 && '...'}
+                      {state.currentPromptData.userPrompt || 'No user prompt'}
                     </pre>
                   </div>
                   {/* System Prompt */}
@@ -810,15 +875,57 @@ export default function PoetiqSolver() {
                   </details>
                   {/* Model & Config */}
                   <div className="text-gray-500 mt-2">
-                    <span className="font-bold">Model:</span> {state.currentPromptData.model} • 
+                    <span className="font-bold">Model:</span> {state.currentPromptData.model} 
                     <span className="font-bold"> Temp:</span> {state.currentPromptData.temperature}
                     {state.currentPromptData.reasoningParams?.verbosity && state.currentPromptData.reasoningParams.verbosity !== 'default' && (
-                      <span> • <span className="font-bold">Verbosity:</span> {state.currentPromptData.reasoningParams.verbosity}</span>
+                      <span> <span className="font-bold">Verbosity:</span> {state.currentPromptData.reasoningParams.verbosity}</span>
                     )}
                     {state.currentPromptData.reasoningParams?.summary && state.currentPromptData.reasoningParams.summary !== 'default' && (
-                      <span> • <span className="font-bold">Summary:</span> {state.currentPromptData.reasoningParams.summary}</span>
+                      <span> <span className="font-bold">Summary:</span> {state.currentPromptData.reasoningParams.summary}</span>
                     )}
                   </div>
+                  {/* Quick Prompt Stats */}
+                  {state.currentPromptData.stats && (
+                    <div className="mt-1 text-[11px] text-gray-500 space-x-2">
+                      {typeof state.currentPromptData.stats.systemPromptChars === 'number' && (
+                        <span>System: {state.currentPromptData.stats.systemPromptChars} chars</span>
+                      )}
+                      {typeof state.currentPromptData.stats.userPromptChars === 'number' && (
+                        <span>User: {state.currentPromptData.stats.userPromptChars} chars</span>
+                      )}
+                      {typeof state.currentPromptData.stats.previousSolutionCount === 'number' && (
+                        <span>Prev solutions: {state.currentPromptData.stats.previousSolutionCount}</span>
+                      )}
+                    </div>
+                  )}
+                  {/* Problem / Feedback Sections */}
+                  {state.currentPromptData.problemSection && (
+                    <div className="mt-3">
+                      <div className="text-purple-600 font-bold mb-1">Puzzle & examples section:</div>
+                      <pre className="bg-white border border-gray-200 rounded p-2 whitespace-pre-wrap overflow-x-auto max-h-32 overflow-y-auto text-gray-800">
+                        {state.currentPromptData.problemSection}
+                      </pre>
+                    </div>
+                  )}
+                  {state.currentPromptData.feedbackSection && (
+                    <div className="mt-3">
+                      <div className="text-purple-600 font-bold mb-1">Previous attempts & feedback:</div>
+                      <pre className="bg-white border border-gray-200 rounded p-2 whitespace-pre-wrap overflow-x-auto max-h-32 overflow-y-auto text-gray-800">
+                        {state.currentPromptData.feedbackSection}
+                      </pre>
+                    </div>
+                  )}
+                  {/* Change summary vs previous prompt */}
+                  {promptChangeSummary && promptChangeSummary.length > 0 && (
+                    <div className="mt-3 text-[11px] text-purple-700">
+                      <div className="font-semibold uppercase tracking-wide mb-0.5">What changed since last prompt?</div>
+                      <ul className="list-disc pl-4 space-y-0.5">
+                        {promptChangeSummary.map((line, idx) => (
+                          <li key={idx}>{line}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
                 </div>
               </div>
             )}
@@ -846,8 +953,7 @@ export default function PoetiqSolver() {
                           <span>{formatTimestamp(entry.timestamp)}</span>
                         </div>
                         <div className="text-gray-700 font-mono whitespace-pre-wrap max-h-16 overflow-y-auto">
-                          {entry.prompt.userPrompt?.slice(0, 300) || 'No prompt'}
-                          {entry.prompt.userPrompt && entry.prompt.userPrompt.length > 300 && '...'}
+                          {entry.prompt.userPrompt || 'No prompt'}
                         </div>
                       </div>
                     ))
