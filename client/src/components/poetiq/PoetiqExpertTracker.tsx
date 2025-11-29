@@ -10,7 +10,7 @@ import React, { useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import { User, Zap } from 'lucide-react';
+import { User, Zap, BarChart, Sparkles } from 'lucide-react';
 import type { PoetiqExpertState } from '@/hooks/usePoetiqProgress';
 
 interface PoetiqExpertTrackerProps {
@@ -54,13 +54,41 @@ export function PoetiqExpertTracker({ expertStates, maxIterations, activeExpert 
     return (
       <Card className="border border-slate-200">
         <CardHeader>
-          <CardTitle className="text-sm text-slate-800 flex items-center gap-2">
-            <User className="h-4 w-4 text-slate-500" />
+          <CardTitle className="text-base text-slate-900 flex items-center gap-2">
+            <User className="h-4 w-4 text-slate-600" />
             Expert Tracker
           </CardTitle>
         </CardHeader>
-        <CardContent className="text-xs text-slate-500">
-          Waiting for experts to start their first iteration...
+        <CardContent className="space-y-3 text-sm text-slate-700">
+          <p>
+            As soon as the AI teammates start coding, each card below will light up with their current iteration, score,
+            and token spend. For now, here’s what will appear once they report back:
+          </p>
+          <div className="grid gap-3 md:grid-cols-2">
+            <div className="rounded border border-slate-200 bg-white p-3">
+              <div className="flex items-center gap-2 text-slate-900 font-semibold">
+                <Sparkles className="h-4 w-4 text-amber-500" />
+                Expert progress
+              </div>
+              <p className="text-slate-600 text-sm mt-1">
+                Shows the iteration number, whether they’re writing code or testing it, and how many samples they have
+                solved so far.
+              </p>
+            </div>
+            <div className="rounded border border-slate-200 bg-white p-3">
+              <div className="flex items-center gap-2 text-slate-900 font-semibold">
+                <BarChart className="h-4 w-4 text-indigo-500" />
+                Token & cost meter
+              </div>
+              <p className="text-slate-600 text-sm mt-1">
+                Tracks how many tokens (and dollars) this expert has spent so you can see who is burning budget vs finding
+                answers efficiently.
+              </p>
+            </div>
+          </div>
+          <p className="text-slate-600">
+            Once the first sandbox execution finishes, these cards update live every time a coder learns something new.
+          </p>
         </CardContent>
       </Card>
     );
@@ -69,7 +97,7 @@ export function PoetiqExpertTracker({ expertStates, maxIterations, activeExpert 
   return (
     <Card className="border border-slate-200">
       <CardHeader>
-        <CardTitle className="text-sm text-slate-800 flex items-center gap-2">
+        <CardTitle className="text-base text-slate-900 flex items-center gap-2">
           <User className="h-4 w-4 text-slate-600" />
           Expert Tracker
         </CardTitle>
@@ -83,7 +111,7 @@ export function PoetiqExpertTracker({ expertStates, maxIterations, activeExpert 
           return (
             <div
               key={expert.expertId}
-              className={`rounded border p-3 text-xs ${isActive ? 'border-sky-400 bg-sky-50' : 'border-slate-200 bg-white'}`}
+              className={`rounded border p-3 text-sm ${isActive ? 'border-sky-400 bg-sky-50' : 'border-slate-200 bg-white'}`}
             >
               <div className="flex items-center justify-between mb-1">
                 <div className="flex items-center gap-2 font-semibold text-slate-800">
@@ -98,7 +126,7 @@ export function PoetiqExpertTracker({ expertStates, maxIterations, activeExpert 
                   {expert.status.toUpperCase()}
                 </Badge>
               </div>
-              <div className="flex items-center justify-between text-[11px] text-slate-600 mb-1">
+              <div className="flex items-center justify-between text-xs text-slate-600 mb-2">
                 <span>Iteration {expert.iteration ?? 0} / {maxIterations}</span>
                 <span className="flex items-center gap-1 text-slate-500">
                   <Zap className="h-3.5 w-3.5" />
@@ -106,7 +134,7 @@ export function PoetiqExpertTracker({ expertStates, maxIterations, activeExpert 
                 </span>
               </div>
               <Progress value={progressValue} className="h-1.5 mb-2" />
-              <div className="grid grid-cols-2 gap-2 text-[11px] text-slate-600">
+              <div className="grid grid-cols-2 gap-2 text-xs text-slate-600">
                 <div>
                   <p className="font-semibold text-slate-700">Tokens</p>
                   <p>Input: {formatTokens(expert.tokens?.input_tokens)}</p>

@@ -1,6 +1,19 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top!!!
 
+### Version 5.33.2
+
+- **Poetiq UI: Slim Token & Cost Monitor** (Author: Codex / GPT-5)
+  - Replaced the large token/cost card with a compact one-line pill so the dashboard focuses on meaningful content while still surfacing spend at a glance.
+  - **Files**: `client/src/components/poetiq/PoetiqTokenMetrics.tsx`
+
+### Version 5.33.1
+
+- **Poetiq UI: Scroll Fixes & Friendly Expert Tracker** (Author: Codex / GPT-5)
+  - Restored vertical scrolling in PoetiqSolver so the Python terminal and event log are always reachable even when the new transparency dashboard is visible.
+  - Reimagined the Expert Tracker placeholder with plain-language copy that explains what appears once experts start coding, then enlarged the live cards for easier reading.
+  - **Files**: `client/src/pages/PoetiqSolver.tsx`, `client/src/components/poetiq/PoetiqExpertTracker.tsx`
+
 ### Version 5.33.0
 
 - **Poetiq Solver: Phase I Transparency Dashboard** (Author: Codex / GPT-5)

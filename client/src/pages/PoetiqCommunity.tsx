@@ -166,6 +166,32 @@ export default function PoetiqCommunity() {
             </div>
           </div>
         </div>
+        <Card className="bg-blue-50 border border-blue-200">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-lg flex items-center gap-2 text-blue-900">
+              <Brain className="h-5 w-5 text-blue-700" />
+              How Poetiq decides which answer to keep
+            </CardTitle>
+            <CardDescription className="text-blue-800">
+              Every run is a mini tournament of AI coders. Here’s the plain-language checklist that happens behind the scenes.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-2 text-sm text-blue-900">
+            <p>1. Several “experts” each write their own Python rule and try it on the training grids.</p>
+            <p>
+              2. We keep score: how many examples each expert passed, how many times they revised their idea, and what the
+              hidden-test answer looks like.
+            </p>
+            <p>
+              3. If multiple experts agree on the same hidden-test answer, that answer gets extra weight—it’s basically a
+              group vote.
+            </p>
+            <p>
+              4. The winning code plus a mini history for every expert is saved into the explanation database, so nothing
+              disappears after the run.
+            </p>
+          </CardContent>
+        </Card>
         <div className="bg-indigo-50 border border-indigo-200 rounded-lg p-3 text-sm text-indigo-900 flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
           <p>
             <strong>New transparency upgrade:</strong> the Poetiq Solver page now shows live phase timers, expert cards,
