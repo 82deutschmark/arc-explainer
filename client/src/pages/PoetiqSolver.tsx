@@ -20,6 +20,7 @@ import { DEFAULT_EMOJI_SET } from '@/lib/spaceEmojis';
 
 // Poetiq components
 import PoetiqPythonTerminal from '@/components/poetiq/PoetiqPythonTerminal';
+import PoetiqProgressDashboard from '@/components/poetiq/PoetiqProgressDashboard';
 
 export default function PoetiqSolver() {
   const { taskId } = useParams<{ taskId: string }>();
@@ -130,27 +131,6 @@ export default function PoetiqSolver() {
   const pythonLogLines = state.pythonLogLines ?? [];
   const tokenUsage = state.tokenUsage ?? state.result?.tokenUsage ?? null;
   const costData = state.cost ?? state.result?.cost ?? null;
-  const aggregatedExpertStats = useMemo(() => {
-    const stats: Record<string, { tokens?: any; cost?: any }> = {};
-    const tokenSource = state.expertTokenUsage ?? {};
-    const costSource = state.expertCost ?? {};
-    Object.entries(tokenSource).forEach(([key, value]) => {
-      stats[key] = { ...(stats[key] ?? {}), tokens: value };
-    });
-    Object.entries(costSource).forEach(([key, value]) => {
-      stats[key] = { ...(stats[key] ?? {}), cost: value };
-    });
-    if (Object.keys(stats).length === 0 && state.result?.expertBreakdown) {
-      Object.entries(state.result.expertBreakdown).forEach(([key, value]) => {
-        stats[key] = {
-          tokens: (value as any).tokens,
-          cost: (value as any).cost,
-        };
-      });
-    }
-    return stats;
-  }, [state.expertTokenUsage, state.expertCost, state.result]);
-  const hasExpertStats = Object.keys(aggregatedExpertStats).length > 0;
   const formatTokens = (value?: number) => (value ?? 0).toLocaleString();
   const formatCost = (value?: number) => `$${(value ?? 0).toFixed(4)}`;
   const formatTimestamp = (iso?: string) => {
@@ -633,8 +613,12 @@ export default function PoetiqSolver() {
       {/* Main Content - Two-column layout, full width */}
       <main className="flex-1 overflow-hidden p-4">
         <div className="h-full grid grid-cols-12 gap-4">
+          <div className="col-span-12">
+            <PoetiqProgressDashboard state={state} />
+          </div>
+
           {/* LEFT: Iteration Progress (5 cols normally, 4 when running) */}
-          <div className={`${isRunning || isDone ? 'col-span-4' : 'col-span-5'} overflow-y-auto`}>
+          <div className={`col-span-12 ${isRunning || isDone ? 'lg:col-span-4' : 'lg:col-span-5'} overflow-y-auto`}>
             {/* Error Display - Including API key required error */}
             {hasError && state.message && (
               <div className="bg-red-50 border border-red-300 rounded px-4 py-2 text-sm text-red-800 mb-3">
@@ -705,7 +689,7 @@ export default function PoetiqSolver() {
           </div>
 
           {/* RIGHT: Training Grids (before running) or Event Log (during/after running) */}
-          <div className={`${isRunning || isDone ? 'col-span-8' : 'col-span-7'} flex flex-col min-h-0`}>
+          <div className={`col-span-12 ${isRunning || isDone ? 'lg:col-span-8' : 'lg:col-span-7'} flex flex-col min-h-0`}>
             {/* Training Grids - Show before running */}
             {!isRunning && !isDone && task && (
               <div className="bg-white border border-gray-300 rounded flex-1 min-h-0 flex flex-col h-full overflow-y-auto">
@@ -983,50 +967,6 @@ export default function PoetiqSolver() {
               </div>
             )}
 
-            {(tokenUsage || costData || hasExpertStats) && (
-              <div className="bg-white border border-amber-300 rounded p-4 space-y-3">
-                <div className="flex items-center gap-2 text-amber-700">
-                  <Coins className="w-4 h-4" />
-                  <span className="text-sm font-bold">TOKEN & COST STATS</span>
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs font-mono text-gray-700">
-                  <div className="border border-amber-200 rounded p-2 bg-amber-50/40">
-                    <div className="text-[11px] uppercase text-amber-600">Tokens</div>
-                    <div>{tokenUsage ? `Input ${formatTokens(tokenUsage.input_tokens)}` : 'Collecting input tokens...'}</div>
-                    <div>{tokenUsage ? `Output ${formatTokens(tokenUsage.output_tokens)}` : 'Collecting output tokens...'}</div>
-                    <div>{tokenUsage ? `Total ${formatTokens(tokenUsage.total_tokens)}` : ''}</div>
-                  </div>
-                  <div className="border border-amber-200 rounded p-2 bg-amber-50/40">
-                    <div className="text-[11px] uppercase text-amber-600">Cost</div>
-                    <div>{costData ? `Input ${formatCost(costData.input)}` : 'Collecting input cost...'}</div>
-                    <div>{costData ? `Output ${formatCost(costData.output)}` : 'Collecting output cost...'}</div>
-                    <div>{costData ? `Total ${formatCost(costData.total)}` : ''}</div>
-                  </div>
-                </div>
-                {hasExpertStats && (
-                  <div>
-                    <div className="text-[11px] uppercase text-amber-600 mb-1">Per expert</div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                      {Object.entries(aggregatedExpertStats).map(([expertId, expertData]) => {
-                        const expertTokens = expertData.tokens
-                          ? `${formatTokens(expertData.tokens.input_tokens)} in / ${formatTokens(expertData.tokens.output_tokens)} out / ${formatTokens(expertData.tokens.total_tokens)} total`
-                          : 'Collecting tokens...';
-                        const expertCost = expertData.cost
-                          ? `${formatCost(expertData.cost.input)} in / ${formatCost(expertData.cost.output)} out / ${formatCost(expertData.cost.total)} total`
-                          : 'Collecting cost...';
-                        return (
-                          <div key={expertId} className="border border-amber-200 rounded p-2 bg-white text-[11px] font-mono text-gray-700">
-                            <div className="font-bold text-amber-700 mb-1">Expert {expertId}</div>
-                            <div>Tokens: {expertTokens}</div>
-                            <div>Cost: {expertCost}</div>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </div>
-                )}
-              </div>
-            )}
           </div>
         </div>
       </main>

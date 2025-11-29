@@ -112,6 +112,11 @@ export default function PoetiqCommunity() {
   const canStart = !!nextPuzzle && !!selectedModel && !modelsLoading && (!requiresByo || !!apiKey.trim());
   const usingProjectKey = !apiKey.trim();
 
+  const handleOpenTransparency = () => {
+    if (!nextPuzzle) return;
+    navigate(`/puzzle/poetiq/${nextPuzzle}`);
+  };
+
   const handleRunNext = () => {
     if (!nextPuzzle || !selectedModel) return;
 
@@ -160,6 +165,20 @@ export default function PoetiqCommunity() {
               </Button>
             </div>
           </div>
+        </div>
+        <div className="bg-indigo-50 border border-indigo-200 rounded-lg p-3 text-sm text-indigo-900 flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
+          <p>
+            <strong>New transparency upgrade:</strong> the Poetiq Solver page now shows live phase timers, expert cards,
+            and token spend as the backend runs. You can watch every prompt, iteration, and Python execution in real time.
+          </p>
+          <Button
+            variant="secondary"
+            disabled={!nextPuzzle}
+            onClick={handleOpenTransparency}
+            className="md:w-auto w-full bg-indigo-600/90 hover:bg-indigo-600 text-white"
+          >
+            View Transparency Dashboard
+          </Button>
         </div>
 
         {/* Collapsible Settings */}

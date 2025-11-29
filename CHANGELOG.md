@@ -1,6 +1,14 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top!!!
 
+### Version 5.33.0
+
+- **Poetiq Solver: Phase I Transparency Dashboard** (Author: Codex / GPT-5)
+  - Completed the Phase I transparency work by enriching `usePoetiqProgress` with phase timing, expert state tracking, and iteration history so every backend event is reflected in the UI without parsing logs.
+  - Added the new `PoetiqProgressDashboard`, `PoetiqPhaseIndicator`, `PoetiqExpertTracker`, and `PoetiqTokenMetrics` components, then integrated them into PoetiqSolver to narrate phases, expert progress, and token/cost usage live.
+  - Updated PoetiqCommunity with a transparency callout so community testers know the solver now surfaces every prompt, iteration, and cost in a human-readable dashboard.
+  - **Files**: `docs/30112025-poetiq-phase1-transparency-plan.md`, `client/src/hooks/usePoetiqProgress.ts`, `client/src/components/poetiq/PoetiqPhaseIndicator.tsx`, `client/src/components/poetiq/PoetiqExpertTracker.tsx`, `client/src/components/poetiq/PoetiqTokenMetrics.tsx`, `client/src/components/poetiq/PoetiqProgressDashboard.tsx`, `client/src/components/poetiq/index.ts`, `client/src/pages/PoetiqSolver.tsx`, `client/src/pages/PoetiqCommunity.tsx`
+
 ### Version 5.32.17
 
 - **Streaming Solver Progress: MVP Friendly Phase UI** (Author: Cascade using Cascade)

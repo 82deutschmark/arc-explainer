@@ -13,3 +13,7 @@ export { default as PoetiqStreamingModal } from './PoetiqStreamingModal';
 export { default as PoetiqLiveActivityStream, PoetiqLiveActivityStream as LiveActivityStream } from './PoetiqLiveActivityStream';
 export { default as PoetiqPythonTerminal } from './PoetiqPythonTerminal';
 export { PoetiqExplainer } from './PoetiqExplainer';
+export { default as PoetiqProgressDashboard } from './PoetiqProgressDashboard';
+export { default as PoetiqPhaseIndicator } from './PoetiqPhaseIndicator';
+export { default as PoetiqExpertTracker } from './PoetiqExpertTracker';
+export { default as PoetiqTokenMetrics } from './PoetiqTokenMetrics';
