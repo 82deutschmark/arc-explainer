@@ -3,7 +3,7 @@
  * Date: 2025-11-30
  * PURPOSE: Render per-expert progress (iteration, status, token/cost stats)
  *          so users can see how Poetiq's parallel experts are behaving.
- * SRP/DRY check: Pass — focused on expert cards, reuses shared UI primitives.
+ * SRP/DRY check: Pass - focused on expert cards, reuses shared UI primitives.
  */
 
 import React, { useMemo } from 'react';
@@ -30,7 +30,7 @@ const statusStyles: Record<PoetiqExpertState['status'], string> = {
 };
 
 const formatPercent = (value?: number) => {
-  if (value === undefined || Number.isNaN(value)) return '—';
+  if (value === undefined || Number.isNaN(value)) return '-';
   return `${Math.round(value * 100)}%`;
 };
 
@@ -62,7 +62,7 @@ export function PoetiqExpertTracker({ expertStates, maxIterations, activeExpert 
         <CardContent className="space-y-3 text-sm text-slate-700">
           <p>
             As soon as the AI teammates start coding, each card below will light up with their current iteration, score,
-            and token spend. For now, here’s what will appear once they report back:
+            and token spend. For now, here's what will appear once they report back:
           </p>
           <div className="grid gap-3 md:grid-cols-2">
             <div className="rounded border border-slate-200 bg-white p-3">
@@ -71,7 +71,7 @@ export function PoetiqExpertTracker({ expertStates, maxIterations, activeExpert 
                 Expert progress
               </div>
               <p className="text-slate-600 text-sm mt-1">
-                Shows the iteration number, whether they’re writing code or testing it, and how many samples they have
+                Shows the iteration number, whether they're writing code or testing it, and how many samples they have
                 solved so far.
               </p>
             </div>
@@ -130,7 +130,7 @@ export function PoetiqExpertTracker({ expertStates, maxIterations, activeExpert 
                 <span>Iteration {expert.iteration ?? 0} / {maxIterations}</span>
                 <span className="flex items-center gap-1 text-slate-500">
                   <Zap className="h-3.5 w-3.5" />
-                  {expert.lastUpdated ? new Date(expert.lastUpdated).toLocaleTimeString() : '—'}
+                  {expert.lastUpdated ? new Date(expert.lastUpdated).toLocaleTimeString() : '-'}
                 </span>
               </div>
               <Progress value={progressValue} className="h-1.5 mb-2" />
@@ -150,7 +150,7 @@ export function PoetiqExpertTracker({ expertStates, maxIterations, activeExpert 
               </div>
               {expert.lastMessage && (
                 <p className="mt-2 text-[11px] text-slate-500 italic">
-                  “{expert.lastMessage}”
+                  "{expert.lastMessage}"
                 </p>
               )}
             </div>

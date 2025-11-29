@@ -41,44 +41,35 @@ export function PoetiqLiveActivityStream({
   // Color coding for Poetiq-specific log patterns
   const getLogColor = (log: string) => {
     const lowerLog = log.toLowerCase();
-    
-    // Errors
-    if (lowerLog.includes('error') || lowerLog.includes('failed') || lowerLog.includes('❌')) {
+
+    if (lowerLog.includes('error') || lowerLog.includes('failed') || lowerLog.includes('exception')) {
       return 'text-red-400 font-semibold';
     }
-    // Warnings
-    if (lowerLog.includes('warning') || lowerLog.includes('⚠️')) {
+    if (lowerLog.includes('warn') || lowerLog.includes('caution')) {
       return 'text-yellow-400 font-medium';
     }
-    // Success
-    if (lowerLog.includes('success') || lowerLog.includes('correct') || lowerLog.includes('✓') || lowerLog.includes('✅')) {
+    if (lowerLog.includes('success') || lowerLog.includes('correct') || lowerLog.includes('pass')) {
       return 'text-green-400 font-medium';
     }
-    // Starting/Init
-    if (lowerLog.includes('starting') || lowerLog.includes('initializing') || lowerLog.includes('🚀')) {
+    if (lowerLog.includes('starting') || lowerLog.includes('initializing') || lowerLog.includes('boot')) {
       return 'text-cyan-400 font-bold';
     }
-    // Iteration
-    if (lowerLog.includes('iteration') || lowerLog.includes('🔁')) {
+    if (lowerLog.includes('iteration') || lowerLog.includes('loop')) {
       return 'text-blue-400 font-semibold';
     }
-    // Code generation
     if (lowerLog.includes('generating') || lowerLog.includes('code') || lowerLog.includes('transform')) {
       return 'text-purple-400 font-medium';
     }
-    // Testing/Execution
-    if (lowerLog.includes('testing') || lowerLog.includes('executing') || lowerLog.includes('running') || lowerLog.includes('🐍')) {
+    if (lowerLog.includes('testing') || lowerLog.includes('executing') || lowerLog.includes('running')) {
       return 'text-orange-400';
     }
-    // Expert/Voting
     if (lowerLog.includes('expert') || lowerLog.includes('voting')) {
       return 'text-pink-400';
     }
-    // Score
     if (lowerLog.includes('score') || lowerLog.includes('accuracy')) {
       return 'text-emerald-400';
     }
-    
+
     return 'text-gray-300';
   };
 
@@ -148,7 +139,7 @@ export function PoetiqLiveActivityStream({
           </div>
         </div>
         <div className="text-xs text-white/50 mt-1">
-          {isPaused ? '⏸ Paused' : '▶️ Live'}
+          {isPaused ? 'Paused (auto-scroll off)' : 'Live (auto-scroll on)'}
         </div>
       </CardHeader>
       <CardContent className="p-0">
@@ -161,7 +152,7 @@ export function PoetiqLiveActivityStream({
             {logs.map((log, idx) => {
               // Check for special formatting
               const isCodeBlock = log.startsWith('```') || log.startsWith('def ') || log.startsWith('    ');
-              const isSeparator = log.includes('━━━') || log.includes('---');
+              const isSeparator = /(-{3,}|=+|\*{3,})/.test(log.trim());
               
               if (isSeparator) {
                 return (

@@ -1,11 +1,8 @@
 /**
- * Author: Codex / GPT-5
- * Date: 2025-11-29
- * PURPOSE: Provide the Poetiq solver configuration surface (model picker,
- *          BYO key input, reasoning sliders) using shadcn/ui primitives so
- *          the solver matches the shared design system.
- * SRP/DRY check: Pass - Encapsulates Poetiq control state without touching
- *                the solver orchestration logic.
+ * PoetiqControlPanel.tsx
+ *
+ * Rebuilt on shadcn/ui primitives so the Poetiq solver controls match the
+ * rest of the design system (Cards, Buttons, Select, Slider, Alert).
  */
 
 import React, { useMemo, useEffect } from 'react';
@@ -124,10 +121,10 @@ export default function PoetiqControlPanel({
   }, [selectedModelObj, provider, setProvider]);
 
   const keyPlaceholder = selectedModelObj
-    ? KEY_PLACEHOLDERS[selectedModelObj.provider] || 'API key...'
-    : 'API key...';
+    ? KEY_PLACEHOLDERS[selectedModelObj.provider] || 'API Key…'
+    : 'API Key…';
   const hasApiKey = apiKey.trim().length > 0;
-  const canStart = !isRunning && !modelsLoading && (hasApiKey || !requiresApiKey);
+  const canStart = !isRunning && !modelsLoading && hasApiKey;
 
   return (
     <div className="space-y-4">
@@ -146,7 +143,7 @@ export default function PoetiqControlPanel({
             {modelsLoading ? (
               <div className="flex items-center gap-2 rounded-md border border-gray-200 bg-gray-50 px-3 py-2 text-xs text-muted-foreground">
                 <Loader2 className="h-4 w-4 animate-spin text-gray-400" />
-                Loading compatible models...
+                Loading compatible models…
               </div>
             ) : (
               <Select value={model} onValueChange={value => setModel(value)} disabled={isRunning}>
@@ -284,7 +281,7 @@ export default function PoetiqControlPanel({
             </AlertDescription>
           </Alert>
           <Input
-            type="text"
+            type="password"
             value={apiKey}
             onChange={e => setApiKey(e.target.value)}
             disabled={isRunning}
@@ -328,7 +325,7 @@ export default function PoetiqControlPanel({
               <SelectContent>
                 {EXPERT_OPTIONS.map(opt => (
                   <SelectItem key={opt.value} value={String(opt.value)}>
-                    {opt.label} - {opt.description}
+                    {opt.label} — {opt.description}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -355,7 +352,7 @@ export default function PoetiqControlPanel({
           <div className="flex items-start gap-2">
             <AlertTriangle className="h-4 w-4 text-amber-600" />
             <AlertDescription className="text-xs">
-              <strong>Config C (8 experts)</strong> issues eight concurrent API calls. Expect 25-45+ minute runtimes and higher API usage.
+              <strong>Config C (8 experts)</strong> issues eight concurrent API calls. Expect 25–45+ minute runtimes and higher API usage.
             </AlertDescription>
           </div>
         </Alert>
@@ -372,7 +369,7 @@ export default function PoetiqControlPanel({
 
       {state.status === 'running' && (
         <p className="text-center text-xs text-muted-foreground">
-          Session {state.sessionId ? `#${state.sessionId}` : ''} running... watch the progress dashboard for live events.
+          Session {state.sessionId ? `#${state.sessionId}` : ''} running… watch the progress dashboard for live events.
         </p>
       )}
     </div>

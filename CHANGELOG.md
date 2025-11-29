@@ -1,6 +1,17 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top with the time and date!
 
+### Version 5.33.11  Nov 29, 2025 5:30pm 
+
+- **Poetiq Control Panel Integration + Shadcn Toggles** (Author: Codex / GPT-5)
+  - Rebuilt `PoetiqSolver` to mount the shadcn-based `PoetiqControlPanel`, removed the DaisyUI toolbar, and moved the prompt/reasoning toggles into shadcn `Button`s so controls stay visible (with Cancel) during active runs.
+  - Cleaned `PoetiqControlPanel.tsx` (ASCII placeholders, BYO key guidance, slider/select wiring) and updated `usePoetiqProgress.ts` to accept OpenAI/Gemini/OpenRouter providers so optional runs can start without forcing a user key.
+  - **Files**: `client/src/pages/PoetiqSolver.tsx`, `client/src/components/poetiq/PoetiqControlPanel.tsx`, `client/src/hooks/usePoetiqProgress.ts`.
+- **Poetiq Dashboards/Streams on Shadcn Primitives** (Author: Codex / GPT-5)
+  - Converted the Poetiq monitoring components (`PoetiqProgressDashboard`, `PoetiqExpertTracker`, `PoetiqInfoCard`, `PoetiqLiveActivityStream`, `PoetiqPhaseIndicator`, `PoetiqPythonTerminal`, `PoetiqStreamingModal`, `PoetiqStreamingVisualizer`) to strict ASCII copy and shadcn `Card`/`Button` helpers, removing the last DaisyUI class fragments.
+  - Export buttons now reuse shadcn variants, activity-stream status text no longer carries corrupted glyphs, and status cards reuse consistent badge styling so Phase 2 of the shadcn migration is complete.
+  - **Files**: `client/src/components/poetiq/PoetiqProgressDashboard.tsx`, `client/src/components/poetiq/PoetiqExpertTracker.tsx`, `client/src/components/poetiq/PoetiqInfoCard.tsx`, `client/src/components/poetiq/PoetiqLiveActivityStream.tsx`, `client/src/components/poetiq/PoetiqPhaseIndicator.tsx`, `client/src/components/poetiq/PoetiqPythonTerminal.tsx`, `client/src/components/poetiq/PoetiqStreamingModal.tsx`, `client/src/components/poetiq/PoetiqStreamingVisualizer.tsx`.
+
 ### Version 5.33.10  Nov 29, 2025 4:45pm 
 
 - **Docs: Poetiq ARC Prompt Conversation Behavior & Attempt Summaries** (Author: Cascade using Cascade)

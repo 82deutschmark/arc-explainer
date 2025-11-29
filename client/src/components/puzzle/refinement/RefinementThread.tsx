@@ -26,7 +26,6 @@ import { PromptPreviewModal } from '@/components/PromptPreviewModal';
 
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { Textarea } from '@/components/ui/textarea';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Slider } from '@/components/ui/slider';
@@ -297,7 +296,7 @@ export const RefinementThread: React.FC<RefinementThreadProps> = ({
                   className="text-xs"
                 />
                 <p className="mt-1 text-[10px] text-muted-foreground">
-                  Example: “Focus on rotational symmetry” or “Re-check color mapping”
+                  Example: 'Focus on rotational symmetry' or 'Re-check color mapping'
                 </p>
               </div>
               <div>
@@ -394,3 +393,4 @@ export const RefinementThread: React.FC<RefinementThreadProps> = ({
     </div>
   );
 };
+
