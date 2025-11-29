@@ -4,6 +4,7 @@
 ### Version 5.33.5
 
 - **Poetiq Solver: Full Prompt Transparency (No Truncation)** (Author: Cascade using Cascade)
+  - **Status:** Implementation is currently **untested** and requires verification against live Poetiq runs.
   - **Problem**: Earlier Poetiq runs only surfaced a truncated view of the system prompt and a clipped preview of the user prompt, with no clear visual split between the puzzle description and the “previous attempts + feedback” block. Users also had no simple way to see how prompts evolved from one iteration to the next.
   - **Changes**:
     1. **Python wrapper prompt payload** (`server/python/poetiq_wrapper.py`):

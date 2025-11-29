@@ -46,6 +46,30 @@ _This directory provides a structured overview of critical docs. For deeper dive
 - Wait **5 seconds** after running terminal commands before reading output.
 - Work **slowly and methodically**—this is a large established codebase.
 
+## 🧠 OpenAI Responses API & Conversation State (CRITICAL)
+
+- **Always treat the Responses API docs as source of truth** for OpenAI/xAI calls:
+  - `docs/reference/api/ResponsesAPI.md`
+  - `docs/reference/api/OpenAI_Responses_API_Streaming_Implementation.md`
+  - `docs/reference/api/API_Conversation_Chaining.md`
+  - `docs/reference/api/Responses_API_Chain_Storage_Analysis.md`
+  - `docs/RESPONSES_GUIDE.md`
+- **Endpoint & body shape**
+  - Use `/v1/responses` (not Chat Completions) for GPT‑5 / o‑series / Grok‑4 and any direct OpenAI/xAI integration.
+  - Requests must use `input` items with `role`/`content` – never `messages` – when calling `/v1/responses`.
+- **Reasoning configuration (reasoning models)**
+  - Prefer `reasoning.effort` of at least `medium` (often `high`).
+  - Use `reasoning.summary` of `auto` or `detailed` when we expect visible reasoning.
+  - Set `text.verbosity: "high"` whenever streaming reasoning so deltas actually arrive.
+  - Use generous `max_output_tokens` so internal reasoning does not starve visible text.
+- **Conversation state & IDs**
+  - Persist `response.id` from providers as `providerResponseId` (see `Responses_API_Chain_Storage_Analysis.md`).
+  - Expose `previousResponseId` in our APIs and pass it through to provider calls as `previous_response_id`.
+  - Only chain within the **same provider**; OpenAI IDs must not be reused with xAI models (and vice‑versa).
+- **Streaming**
+  - Keep the two‑step SSE handshake (`/api/stream/analyze` POST then GET) intact; do not invent new patterns.
+  - When changing streaming code, match event handling and payload expectations from `OpenAI_Responses_API_Streaming_Implementation.md`.
+
 ## 🎯 Agent Role & User Context
 
 - Senior software engineer (20 + years). Primary values: **SRP** and **DRY**.
