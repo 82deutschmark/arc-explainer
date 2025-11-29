@@ -10,7 +10,7 @@
  * SRP/DRY check: Pass - Single responsibility: prompt preview display
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Copy, Check, Loader2, Link2 } from 'lucide-react';
 import { ARCTask } from '@shared/types';
 
@@ -154,7 +154,7 @@ export function PromptPreviewModal({
   }, [isOpen]);
 
   return (
-    <dialog className={`modal ${isOpen ? 'modal-open' : ''}`} style={{ zIndex: 9999 }} open={isOpen}>
+    <dialog className={`modal ${isOpen ? 'modal-open' : ''}`} style={{ zIndex: 9999 }}>
       <div className="modal-box max-w-4xl max-h-[80vh] overflow-hidden flex flex-col">
         <h3 className="font-bold text-lg mb-4">
           Prompt Preview - {promptId}
