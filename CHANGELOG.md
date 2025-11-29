@@ -1,6 +1,27 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top!!!
 
+### Version 5.32.17
+
+- **Streaming Solver Progress: MVP Friendly Phase UI** (Author: Cascade using Cascade)
+  - Introduced a lightweight "solver progress" experience for streaming analyses so users see a human-readable phase checklist and status sentence while the AI works instead of a bare text log.
+  - Extended the shared streaming hook to track recent `phase`/`message` updates and taught the streaming panel to render them as a simple progress line that works across Saturn, Grover, and other SSE-based flows.
+  - **Files**: `docs/2025-11-29-poetiq-solver-progress-mvp-plan.md`, `client/src/hooks/useAnalysisResults.ts`, `client/src/components/puzzle/StreamingAnalysisPanel.tsx`, `client/src/pages/PuzzleExaminer.tsx`
+
+### Version 5.32.16
+
+- **Poetiq Models: Revert Kat Coder Id & Keep Nebulon Fix** (Author: Codex / GPT-5)
+  - Restored Kat Coder Pro's shared model entry back to the original `kwaipilot/kat-coder-pro:free` identifier while retaining the OpenRouter-prefixed id in `/api/poetiq/models`, so downstream systems referencing `MODELS` stay consistent with prior behavior.
+  - Expanded the OpenRouter auto-key allowlist to handle both Kat Coder id forms, ensuring the free-tier fallback still works while BERT Nebulon Alpha continues to route through OpenRouter correctly.
+  - **Files**: `server/config/models.ts`, `server/controllers/poetiqController.ts`
+
+### Version 5.32.15
+
+- **Poetiq Models: Fix Kat Coder OpenRouter Id** (Author: Codex / GPT-5)
+  - Corrected the shared models catalog so `Kat Coder Pro (Free)` uses the `openrouter/kwaipilot/kat-coder-pro:free` identifier, keeping it aligned with `/api/poetiq/models` and the OpenRouter provider inference logic.
+  - Ensures Poetiq now actually sends the full OpenRouter-prefixed model id so the backend routes through OpenRouter just like Bert Nebulon Alpha.
+  - **Files**: `server/config/models.ts`
+
 ### Version 5.32.14
 
 - **Poetiq Models: OpenRouter Free Tier Auto-Key Support** (Author: Codex / GPT-5)

@@ -42,20 +42,9 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import type { CorrectnessFilter } from '@/hooks/useFilteredResults';
 
 const PROVIDER_PREVIEW_DEFAULT = 'openai';
-const PROVIDER_PREVIEW_MAP: Record<string, string> = {
-  OpenAI: 'openai',
-  Anthropic: 'anthropic',
-  xAI: 'grok',
-  Gemini: 'gemini',
-  DeepSeek: 'deepseek',
-  OpenRouter: 'openrouter',
-  Grover: 'openrouter',
-  Saturn: 'openai',
-};
 
 function getPreviewProvider(providerName?: string): string {
-  if (!providerName) return PROVIDER_PREVIEW_DEFAULT;
-  return PROVIDER_PREVIEW_MAP[providerName] ?? PROVIDER_PREVIEW_DEFAULT;
+  return PROVIDER_PREVIEW_DEFAULT;
 }
 
 export default function PuzzleExaminer() {
@@ -89,7 +78,7 @@ export default function PuzzleExaminer() {
   const [emojiSet, setEmojiSet] = useState<EmojiSet>(DEFAULT_EMOJI_SET);
   const [sendAsEmojis, setSendAsEmojis] = useState(false);
   const [isPromptPreviewOpen, setIsPromptPreviewOpen] = useState(false);
-  const [pendingAnalysis, setPendingAnalysis] = useState<{ modelKey: string; supportsTemperature: boolean; provider?: string } | null>(null);
+  const [pendingAnalysis, setPendingAnalysis] = useState<{ modelKey: string; supportsTemperature: boolean } | null>(null);
   const [omitAnswer, setOmitAnswer] = useState(true);
   const [correctnessFilter, setCorrectnessFilter] = useState<CorrectnessFilter>('all');
   const [highlightedExplanationId, setHighlightedExplanationId] = useState<number | null>(null);
@@ -180,6 +169,7 @@ export default function PuzzleExaminer() {
     streamingStructuredJson,
     streamingPhase,
     streamingMessage,
+    streamingPhaseHistory,
     streamingTokenUsage,
     streamingPromptPreview,
     streamError,
@@ -302,7 +292,6 @@ export default function PuzzleExaminer() {
     setPendingAnalysis({
       modelKey,
       supportsTemperature: model?.supportsTemperature ?? true,
-      provider: getPreviewProvider(model?.provider),
     });
     setIsPromptPreviewOpen(true);
     console.log('[PuzzleExaminer] Modal should now be open');
@@ -540,6 +529,7 @@ export default function PuzzleExaminer() {
                 ? streamError?.message ?? streamingMessage ?? 'Streaming failed'
                 : streamingMessage
             }
+            phaseHistory={streamingPhaseHistory}
             text={streamingText}
             structuredJsonText={streamingStructuredJsonText}
             structuredJson={streamingStructuredJson}
@@ -566,7 +556,6 @@ export default function PuzzleExaminer() {
           omitAnswer,
           sendAsEmojis
         }}
-        provider={pendingAnalysis?.provider ?? PROVIDER_PREVIEW_DEFAULT}
         confirmMode={pendingAnalysis !== null}
         onConfirm={pendingAnalysis ? handleConfirmAnalysis : undefined}
         confirmButtonText="Confirm & Send Analysis"
