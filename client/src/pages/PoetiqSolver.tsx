@@ -152,6 +152,17 @@ export default function PoetiqSolver() {
   const hasExpertStats = Object.keys(aggregatedExpertStats).length > 0;
   const formatTokens = (value?: number) => (value ?? 0).toLocaleString();
   const formatCost = (value?: number) => `$${(value ?? 0).toFixed(4)}`;
+  const formatTimestamp = (iso?: string) => {
+    if (!iso) return 'N/A';
+    const date = new Date(iso);
+    return Number.isNaN(date.getTime()) ? 'N/A' : date.toLocaleTimeString();
+  };
+  const headerTokenSummary = tokenUsage
+    ? `${formatTokens(tokenUsage.input_tokens)} in / ${formatTokens(tokenUsage.output_tokens)} out / ${formatTokens(tokenUsage.total_tokens)} total`
+    : 'Collecting tokens...';
+  const headerCostSummary = costData
+    ? `${formatCost(costData.total)} total`
+    : 'Collecting cost...';
 
   // Track start time when solver begins
   useEffect(() => {
@@ -393,6 +404,16 @@ export default function PoetiqSolver() {
                 <Timer className="h-5 w-5 text-indigo-300" />
                 <span className="font-mono">{formatElapsed(elapsedSeconds)}</span>
               </div>
+
+              {(tokenUsage || costData) && (
+                <div className="flex items-center gap-2 px-4 py-2 rounded bg-white/10" title="Live token and cost tracking">
+                  <Coins className="h-5 w-5 text-amber-200" />
+                  <div className="text-[11px] font-mono leading-tight">
+                    <div>Tokens: {headerTokenSummary}</div>
+                    <div>Cost: {headerCostSummary}</div>
+                  </div>
+                </div>
+              )}
             </>
           )}
           
@@ -550,6 +571,48 @@ export default function PoetiqSolver() {
               >
                 <Brain className="h-3 w-3" />
                 Reasoning ({state.reasoningSummaryHistory?.length})
+              </button>
+            )}
+
+            {(isRunning || isDone || promptTimeline.length > 0) && (
+              <button
+                onClick={() => setShowPromptTimeline(!showPromptTimeline)}
+                className={`flex items-center gap-1.5 text-xs px-2 py-1 rounded transition-colors ${
+                  showPromptTimeline
+                    ? 'bg-indigo-100 text-indigo-700'
+                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                }`}
+              >
+                <ListTree className="h-3 w-3" />
+                Timeline ({promptTimeline.length})
+              </button>
+            )}
+
+            {(isRunning || isDone || latestReasoningHistory.length > 0) && (
+              <button
+                onClick={() => setShowReasoningStream(!showReasoningStream)}
+                className={`flex items-center gap-1.5 text-xs px-2 py-1 rounded transition-colors ${
+                  showReasoningStream
+                    ? 'bg-blue-100 text-blue-700'
+                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                }`}
+              >
+                <ScrollText className="h-3 w-3" />
+                Stream ({latestReasoningHistory.length})
+              </button>
+            )}
+
+            {(isRunning || isDone || latestRawEvents.length > 0) && (
+              <button
+                onClick={() => setShowRawEvents(!showRawEvents)}
+                className={`flex items-center gap-1.5 text-xs px-2 py-1 rounded transition-colors ${
+                  showRawEvents
+                    ? 'bg-slate-200 text-slate-800'
+                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                }`}
+              >
+                <FileJson className="h-3 w-3" />
+                Events ({latestRawEvents.length})
               </button>
             )}
 
@@ -728,6 +791,39 @@ export default function PoetiqSolver() {
               </div>
             )}
 
+            {showPromptTimeline && (
+              <div className="bg-white border border-indigo-200 rounded mb-3 max-h-64 overflow-hidden flex flex-col">
+                <div className="flex items-center justify-between px-4 py-2 bg-indigo-50 border-b border-indigo-200 sticky top-0">
+                  <div className="flex items-center gap-2">
+                    <ListTree className="w-4 h-4 text-indigo-600" />
+                    <span className="text-sm font-bold text-indigo-700">PROMPT TIMELINE</span>
+                    <span className="text-xs text-indigo-500">({latestPromptTimeline.length} entries)</span>
+                  </div>
+                </div>
+                <div className="overflow-y-auto p-3 text-xs bg-slate-50 flex-1 space-y-2">
+                  {latestPromptTimeline.length === 0 ? (
+                    <div className="text-gray-500 text-center py-4">Waiting for prompt data...</div>
+                  ) : (
+                    latestPromptTimeline.map((entry, idx) => (
+                      <div key={`${entry.timestamp}-${idx}`} className="border border-indigo-100 rounded p-2 bg-white">
+                        <div className="flex items-center justify-between text-[11px] text-gray-500 mb-1">
+                          <div className="flex items-center gap-2">
+                            <span className="font-semibold">Iter {entry.iteration ?? 'N/A'}</span>
+                            <span>Exp {entry.expert ?? 'N/A'}</span>
+                          </div>
+                          <span>{formatTimestamp(entry.timestamp)}</span>
+                        </div>
+                        <div className="text-gray-700 font-mono whitespace-pre-wrap max-h-16 overflow-y-auto">
+                          {entry.prompt.userPrompt?.slice(0, 300) || 'No prompt'}
+                          {entry.prompt.userPrompt && entry.prompt.userPrompt.length > 300 && '...'}
+                        </div>
+                      </div>
+                    ))
+                  )}
+                </div>
+              </div>
+            )}
+
             {/* Reasoning Traces - Chain-of-thought summaries from GPT-5.x Responses API */}
             {showReasoningTraces && (state.reasoningSummaryHistory?.length ?? 0) > 0 && (
               <div className="bg-white border border-amber-300 rounded mb-3 max-h-64 overflow-hidden flex flex-col">
@@ -750,6 +846,29 @@ export default function PoetiqSolver() {
                       </pre>
                     </div>
                   ))}
+                </div>
+              </div>
+            )}
+
+            {showReasoningStream && (
+              <div className="bg-white border border-blue-300 rounded mb-3 max-h-64 overflow-hidden flex flex-col">
+                <div className="flex items-center justify-between px-4 py-2 bg-blue-50 border-b border-blue-300 sticky top-0">
+                  <div className="flex items-center gap-2">
+                    <ScrollText className="w-4 h-4 text-blue-600" />
+                    <span className="text-sm font-bold text-blue-700">LLM STREAM</span>
+                    <span className="text-xs text-blue-500">({latestReasoningHistory.length} entries)</span>
+                  </div>
+                </div>
+                <div className="overflow-y-auto p-3 text-xs font-mono bg-blue-50/40 flex-1 space-y-2">
+                  {latestReasoningHistory.length === 0 ? (
+                    <div className="text-gray-500 text-center py-4">Waiting for reasoning output...</div>
+                  ) : (
+                    latestReasoningHistory.map((block, idx) => (
+                      <pre key={`${block}-${idx}`} className="bg-white border border-blue-100 rounded p-2 whitespace-pre-wrap text-gray-700">
+                        {block}
+                      </pre>
+                    ))
+                  )}
                 </div>
               </div>
             )}
@@ -803,6 +922,87 @@ export default function PoetiqSolver() {
                         </div>
                       ))
                     )}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {showRawEvents && (
+              <div className="bg-white border border-slate-300 rounded mb-3 max-h-64 overflow-hidden flex flex-col">
+                <div className="flex items-center justify-between px-4 py-2 bg-slate-100 border-b border-slate-300 sticky top-0">
+                  <div className="flex items-center gap-2">
+                    <FileJson className="w-4 h-4 text-slate-700" />
+                    <span className="text-sm font-bold text-slate-800">RAW EVENTS</span>
+                    <span className="text-xs text-slate-500">({latestRawEvents.length} recent)</span>
+                  </div>
+                </div>
+                <div className="overflow-y-auto p-3 text-xs font-mono bg-slate-50 flex-1 space-y-2">
+                  {latestRawEvents.length === 0 ? (
+                    <div className="text-gray-500 text-center py-4">Waiting for WebSocket events...</div>
+                  ) : (
+                    latestRawEvents.map((event, idx) => {
+                      const payloadText = JSON.stringify(event.payload, null, 2);
+                      const clippedPayload = payloadText.length > 1500 ? `${payloadText.slice(0, 1500)}...` : payloadText;
+                      return (
+                        <div key={`${event.timestamp}-${idx}`} className="border border-slate-200 rounded p-2 bg-white">
+                          <div className="flex items-center justify-between text-[11px] text-gray-500 mb-1">
+                            <div className="flex items-center gap-2">
+                              <span className="font-semibold text-gray-700">{event.type}</span>
+                              {event.phase && <span className="px-1.5 py-0.5 bg-slate-200 rounded text-slate-700">{event.phase}</span>}
+                            </div>
+                            <span>{formatTimestamp(event.timestamp)}</span>
+                          </div>
+                          <pre className="bg-slate-900 text-slate-100 rounded p-2 whitespace-pre-wrap max-h-32 overflow-y-auto">
+                            {clippedPayload}
+                          </pre>
+                        </div>
+                      );
+                    })
+                  )}
+                </div>
+              </div>
+            )}
+
+            {(tokenUsage || costData || hasExpertStats) && (
+              <div className="bg-white border border-amber-300 rounded p-4 space-y-3">
+                <div className="flex items-center gap-2 text-amber-700">
+                  <Coins className="w-4 h-4" />
+                  <span className="text-sm font-bold">TOKEN & COST STATS</span>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs font-mono text-gray-700">
+                  <div className="border border-amber-200 rounded p-2 bg-amber-50/40">
+                    <div className="text-[11px] uppercase text-amber-600">Tokens</div>
+                    <div>{tokenUsage ? `Input ${formatTokens(tokenUsage.input_tokens)}` : 'Collecting input tokens...'}</div>
+                    <div>{tokenUsage ? `Output ${formatTokens(tokenUsage.output_tokens)}` : 'Collecting output tokens...'}</div>
+                    <div>{tokenUsage ? `Total ${formatTokens(tokenUsage.total_tokens)}` : ''}</div>
+                  </div>
+                  <div className="border border-amber-200 rounded p-2 bg-amber-50/40">
+                    <div className="text-[11px] uppercase text-amber-600">Cost</div>
+                    <div>{costData ? `Input ${formatCost(costData.input)}` : 'Collecting input cost...'}</div>
+                    <div>{costData ? `Output ${formatCost(costData.output)}` : 'Collecting output cost...'}</div>
+                    <div>{costData ? `Total ${formatCost(costData.total)}` : ''}</div>
+                  </div>
+                </div>
+                {hasExpertStats && (
+                  <div>
+                    <div className="text-[11px] uppercase text-amber-600 mb-1">Per expert</div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                      {Object.entries(aggregatedExpertStats).map(([expertId, expertData]) => {
+                        const expertTokens = expertData.tokens
+                          ? `${formatTokens(expertData.tokens.input_tokens)} in / ${formatTokens(expertData.tokens.output_tokens)} out / ${formatTokens(expertData.tokens.total_tokens)} total`
+                          : 'Collecting tokens...';
+                        const expertCost = expertData.cost
+                          ? `${formatCost(expertData.cost.input)} in / ${formatCost(expertData.cost.output)} out / ${formatCost(expertData.cost.total)} total`
+                          : 'Collecting cost...';
+                        return (
+                          <div key={expertId} className="border border-amber-200 rounded p-2 bg-white text-[11px] font-mono text-gray-700">
+                            <div className="font-bold text-amber-700 mb-1">Expert {expertId}</div>
+                            <div>Tokens: {expertTokens}</div>
+                            <div>Cost: {expertCost}</div>
+                          </div>
+                        );
+                      })}
+                    </div>
                   </div>
                 )}
               </div>

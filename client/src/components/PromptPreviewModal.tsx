@@ -10,7 +10,7 @@
  * SRP/DRY check: Pass - Single responsibility: prompt preview display
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Copy, Check, Loader2, Link2 } from 'lucide-react';
 import { ARCTask } from '@shared/types';
 import {
@@ -41,6 +41,7 @@ interface PromptPreviewModalProps {
   promptId: string;
   customPrompt?: string;
   options?: PromptOptions;
+  provider?: string;
   // Confirmation mode - shows "Confirm & Run" button to execute action after preview
   confirmMode?: boolean;
   onConfirm?: () => void | Promise<void>;
@@ -65,7 +66,8 @@ export function PromptPreviewModal({
   options = {},
   confirmMode = false,
   onConfirm,
-  confirmButtonText = 'Confirm & Run'
+  confirmButtonText = 'Confirm & Run',
+  provider = 'openai'
 }: PromptPreviewModalProps) {
   const [copiedSection, setCopiedSection] = useState<string | null>(null);
   const [promptPreview, setPromptPreview] = useState<PromptPreviewData | null>(null);
@@ -88,7 +90,7 @@ export function PromptPreviewModal({
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            provider: 'openai', // Default provider for preview
+            provider: provider || 'openai', // Provider for preview (defaults to OpenAI)
             taskId,
             promptId,
             customPrompt,
@@ -123,7 +125,7 @@ export function PromptPreviewModal({
     };
 
     fetchPromptPreview();
-  }, [isOpen, taskId, promptId, customPrompt, options.emojiSetKey, options.omitAnswer, options.topP, options.candidateCount, options.originalExplanation, options.customChallenge, options.previousResponseId]);
+  }, [isOpen, taskId, promptId, customPrompt, provider, options.emojiSetKey, options.omitAnswer, options.topP, options.candidateCount, options.originalExplanation, options.customChallenge, options.previousResponseId]);
 
   const copyToClipboard = async (text: string, section: string) => {
     try {

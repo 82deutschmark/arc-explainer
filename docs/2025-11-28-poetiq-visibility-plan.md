@@ -26,3 +26,10 @@
 4. **Docs & metadata**
    - Record the change in `CHANGELOG.md` with a new semantic version entry at the top (include author/model).
    - Mention touched files and new UI affordances.
+
+### Status (2025-11-29)
+
+- ✅ `server/services/poetiq/poetiqService.ts` now forwards token/cost + prompt metadata so the WS payload mirrors the Python NDJSON stream.
+- ✅ `client/src/hooks/usePoetiqProgress.ts` captures prompt timeline entries, reasoning stream text, raw events, and expert token/cost aggregates with reset-safe state handling.
+- ✅ `client/src/pages/PoetiqSolver.tsx` surfaces all of that data via new toggles (timeline, stream, raw events) plus live token/cost summary badges.
+- ✅ `CHANGELOG.md` updated with version 5.32.9 documenting every touched file for this visibility sweep.

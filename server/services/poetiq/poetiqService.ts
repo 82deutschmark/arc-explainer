@@ -49,6 +49,28 @@ export type PoetiqBridgeEvent =
       reasoningSummary?: string;  // Responses API reasoning summary (GPT-5.x)
       trainResults?: any[];
       promptData?: PoetiqPromptData;  // Added for prompt visibility
+      tokenUsage?: {
+        input_tokens?: number;
+        output_tokens?: number;
+        total_tokens?: number;
+      };
+      cost?: {
+        input?: number;
+        output?: number;
+        total?: number;
+      };
+      expertCumulativeTokens?: Record<string, any>;
+      expertCumulativeCost?: Record<string, any>;
+      globalTokens?: {
+        input_tokens?: number;
+        output_tokens?: number;
+        total_tokens?: number;
+      };
+      globalCost?: {
+        input?: number;
+        output?: number;
+        total?: number;
+      };
     }
   | { type: 'log'; level: 'info' | 'warn' | 'error'; message: string }
   | { type: 'final'; success: boolean; result: PoetiqResult }
@@ -393,6 +415,12 @@ export class PoetiqService {
                 reasoningSummary: event.reasoningSummary,  // Responses API reasoning summary
                 trainResults: event.trainResults,
                 promptData: event.promptData,  // Forward prompt data to frontend
+                tokenUsage: (event as any).tokenUsage,
+                cost: (event as any).cost,
+                expertCumulativeTokens: (event as any).expertCumulativeTokens,
+                expertCumulativeCost: (event as any).expertCumulativeCost,
+                globalTokens: (event as any).globalTokens,
+                globalCost: (event as any).globalCost,
               });
             } else if (event.type === 'log') {
               // Forward log events so UI can display them

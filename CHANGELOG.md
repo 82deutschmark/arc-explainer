@@ -1,6 +1,45 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top!!!
 
+### Version 5.32.9
+
+- **UI Framework Migration: DaisyUI → shadcn/ui on PuzzleExaminer Page** (Author: Claude Code using Haiku 4.5)
+  - **Objective**: Eliminate DaisyUI CSS overhead on the PuzzleExaminer page and align with the 30+ other files in the codebase already using shadcn/ui for consistency, maintainability, and improved accessibility.
+  - **Changes**:
+    1. **PromptPreviewModal.tsx**: Replaced native HTML `<dialog>` with shadcn/ui `<Dialog>` component, removed `.showModal()` JavaScript complexity, and migrated all DaisyUI button classes (`btn`, `btn-outline`, `btn-primary`, `btn-ghost`) to shadcn/ui `<Button>` variants.
+    2. **PuzzleExaminer.tsx**:
+       - Converted two card layouts (Prompt Style, Advanced Controls) from DaisyUI `card card-compact` to shadcn/ui `<Card>` with structured `<CardHeader>`, `<CardTitle>`, `<CardDescription>`, and `<CardContent>` components.
+       - Replaced error alerts from `alert alert-error` to shadcn/ui `<Alert variant="destructive">`.
+       - Replaced loading skeletons from DaisyUI `<div className="skeleton">` to shadcn/ui `<Skeleton />` component.
+       - Migrated streaming modal from native dialog with DaisyUI classes to shadcn/ui `<Dialog>` for consistency.
+       - Updated all DaisyUI color tokens to semantic Tailwind tokens: `bg-base-100` → `bg-background`, `bg-base-200` → `bg-muted`, `border-base-300` → `border-border`, `text-base-content/70` → `text-muted-foreground`.
+    3. **ModelSelectionControls.tsx**: Converted two expand/collapse `<button>` elements to shadcn/ui `<Button variant="outline" size="sm">`.
+    4. **ModelProviderGroup.tsx**: Updated color classes: `bg-base-200` → `bg-muted`, `hover:bg-base-300` → `hover:bg-accent`, `text-base-content/60` → `text-muted-foreground`.
+    5. **ModelSelection.tsx**: Updated empty state text color from `text-base-content/60` to `text-muted-foreground`.
+  - **Result**:
+    - Complete removal of DaisyUI classes from PuzzleExaminer page and related model selection components.
+    - All modal dialogs now use shadcn/ui Dialog component with Radix UI primitives for improved accessibility.
+    - Reduced CSS bundle size by eliminating duplicate DaisyUI utilities alongside Tailwind.
+    - 100% consistency with project's established shadcn/ui patterns (30+ existing files).
+  - **Files Modified**:
+    - `client/src/components/PromptPreviewModal.tsx`
+    - `client/src/pages/PuzzleExaminer.tsx`
+    - `client/src/components/puzzle/ModelSelectionControls.tsx`
+    - `client/src/components/puzzle/ModelProviderGroup.tsx`
+    - `client/src/components/puzzle/ModelSelection.tsx`
+  - **Files Unchanged** (already compatible):
+    - `client/src/hooks/useModelGrouping.ts` (pure state management, no UI framework deps)
+    - `client/src/components/puzzle/ModelButton.tsx` (already uses shadcn/ui Button)
+  - **Testing**: All functionality verified — modal opens/closes, buttons work, cards render, alerts display, skeletons load correctly.
+
+### Version 5.32.9
+
+- **Poetiq Solver: Live Prompt/Reasoning Telemetry + Token Stats** (Author: Codex / GPT-5)
+  - **client/src/hooks/usePoetiqProgress.ts**: Capture prompt timeline entries, raw WebSocket events, and expert/global token+cost aggregates while resetting state safely on each run/cancel path.
+  - **server/services/poetiq/poetiqService.ts**: Broadcast the Python wrapper's token usage, cost, and prompt payload metadata so the frontend receives everything the console prints.
+  - **client/src/pages/PoetiqSolver.tsx**: Surface the new data with timeline/stream/event toggles, live token+cost summaries, and a per-expert breakdown panel so users can see every prompt, reasoning chunk, and NDJSON event without devtools.
+  - **docs/2025-11-28-poetiq-visibility-plan.md**: Logged the completion status for the visibility plan to document the new UI affordances.
+
 ### Version 5.32.8
 
 - **Poetiq: GPT-5.1 Codex Verbosity Clamp** (Author: Cascade using Cascade)
