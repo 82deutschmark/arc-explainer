@@ -64,6 +64,48 @@ export interface PromptTimelineEntry {
   timestamp: string;
 }
 
+export interface PhaseHistoryEntry {
+  phase: string;
+  iteration?: number;
+  expert?: number;
+  startedAt: string;
+  endedAt?: string;
+  durationMs?: number;
+  message?: string;
+}
+
+export type PoetiqExpertStatus =
+  | 'idle'
+  | 'initializing'
+  | 'prompting'
+  | 'evaluating'
+  | 'feedback'
+  | 'completed'
+  | 'error';
+
+export interface PoetiqExpertState {
+  expertId: number;
+  iteration: number;
+  status: PoetiqExpertStatus;
+  lastUpdated: string;
+  lastMessage?: string;
+  passCount?: number;
+  failCount?: number;
+  trainAccuracy?: number;
+  tokens?: PoetiqTokenUsage | null;
+  cost?: PoetiqCostBreakdown | null;
+}
+
+export interface IterationHistoryEntry {
+  iteration: number;
+  expert?: number;
+  accuracy?: number;
+  passCount?: number;
+  failCount?: number;
+  message?: string;
+  timestamp: string;
+}
+
 export interface PoetiqRawEvent {
   type: string;
   phase?: string;
@@ -110,6 +152,10 @@ export interface PoetiqProgressState {
   reasoningHistory?: string[];  // Accumulated reasoning blocks per iteration
   reasoningSummaryHistory?: string[];  // Responses API reasoning summaries (GPT-5.x)
   pythonLogLines?: string[];    // Python execution output (sandbox/stdout/stderr)
+  phaseStartedAt?: string;
+  phaseHistory?: PhaseHistoryEntry[];
+  iterationHistory?: IterationHistoryEntry[];
+  expertStates?: Record<string, PoetiqExpertState>;
   
   // Fallback indicator
   usingFallback?: boolean;
@@ -135,6 +181,10 @@ const initialState: PoetiqProgressState = {
   reasoningHistory: [],
   reasoningSummaryHistory: [],
   pythonLogLines: [],
+  phaseStartedAt: undefined,
+  phaseHistory: [],
+  iterationHistory: [],
+  expertStates: {},
   streamingReasoning: '',
   streamingCode: '',
   streamingText: '',
@@ -211,6 +261,7 @@ export function usePoetiqProgress(taskId: string | undefined) {
           const timestamp = now.toLocaleTimeString();
           const isoTimestamp = now.toISOString();
           const eventLabel = eventType || data.type || 'unknown';
+          const trainResultsArray = Array.isArray(data.trainResults) ? data.trainResults : null;
           
           // Accumulate log lines - ALWAYS add if message exists (don't skip duplicates)
           let nextLogLines = prev.logLines ? [...prev.logLines] : [];
@@ -232,6 +283,58 @@ export function usePoetiqProgress(taskId: string | undefined) {
           // Cap log lines to prevent memory bloat (Saturn uses 500)
           if (nextLogLines.length > 500) {
             nextLogLines = nextLogLines.slice(-500);
+          }
+
+          // Phase timing + history tracking
+          const incomingPhase = typeof data.phase === 'string' ? data.phase : undefined;
+          const isPhaseEvent = incomingPhase && incomingPhase !== 'log';
+          let nextPhaseHistory = prev.phaseHistory ? [...prev.phaseHistory] : [];
+          let nextPhaseStartedAt = prev.phaseStartedAt;
+
+          if (isPhaseEvent && incomingPhase !== prev.phase) {
+            // Close previous phase entry
+            if (prev.phase && prev.phase !== 'log' && prev.phaseStartedAt && nextPhaseHistory.length > 0) {
+              const lastIdx = nextPhaseHistory.length - 1;
+              const prevStartMs = new Date(prev.phaseStartedAt).getTime();
+              nextPhaseHistory[lastIdx] = {
+                ...nextPhaseHistory[lastIdx],
+                endedAt: isoTimestamp,
+                durationMs: Math.max(0, now.getTime() - prevStartMs),
+              };
+            }
+
+            nextPhaseStartedAt = isoTimestamp;
+            nextPhaseHistory.push({
+              phase: incomingPhase,
+              iteration: data.iteration ?? prev.iteration,
+              expert: data.expert ?? prev.expert,
+              startedAt: isoTimestamp,
+              message: data.message,
+            });
+            if (nextPhaseHistory.length > 200) {
+              nextPhaseHistory = nextPhaseHistory.slice(-200);
+            }
+          } else if (!nextPhaseStartedAt && isPhaseEvent) {
+            nextPhaseStartedAt = isoTimestamp;
+            nextPhaseHistory.push({
+              phase: incomingPhase,
+              iteration: data.iteration ?? prev.iteration,
+              expert: data.expert ?? prev.expert,
+              startedAt: isoTimestamp,
+              message: data.message,
+            });
+          }
+
+          if ((data.status === 'completed' || data.status === 'error') && nextPhaseHistory.length > 0) {
+            const lastIdx = nextPhaseHistory.length - 1;
+            if (!nextPhaseHistory[lastIdx].endedAt) {
+              const currentStart = new Date(nextPhaseHistory[lastIdx].startedAt).getTime();
+              nextPhaseHistory[lastIdx] = {
+                ...nextPhaseHistory[lastIdx],
+                endedAt: isoTimestamp,
+                durationMs: Math.max(0, now.getTime() - currentStart),
+              };
+            }
           }
 
           // Raw event timeline
@@ -349,6 +452,75 @@ export function usePoetiqProgress(taskId: string | undefined) {
             currentResult.trainResults = data.trainResults;
           }
           
+          const passCount = trainResultsArray ? trainResultsArray.filter((r: any) => r.success).length : undefined;
+          const failCount = typeof passCount === 'number' && trainResultsArray ? trainResultsArray.length - passCount : undefined;
+          const trainAccuracy = typeof passCount === 'number' && trainResultsArray && trainResultsArray.length > 0
+            ? passCount / trainResultsArray.length
+            : undefined;
+
+          let nextIterationHistory = prev.iterationHistory ? [...prev.iterationHistory] : [];
+          if (trainResultsArray && typeof data.iteration === 'number') {
+            const historyEntry: IterationHistoryEntry = {
+              iteration: data.iteration,
+              expert: data.expert,
+              accuracy: trainAccuracy,
+              passCount: passCount ?? undefined,
+              failCount: failCount ?? undefined,
+              message: data.message,
+              timestamp: isoTimestamp,
+            };
+            const existingIdx = nextIterationHistory.findIndex(
+              (entry) => entry.iteration === historyEntry.iteration && entry.expert === historyEntry.expert
+            );
+            if (existingIdx >= 0) {
+              nextIterationHistory[existingIdx] = historyEntry;
+            } else {
+              nextIterationHistory.push(historyEntry);
+            }
+            if (nextIterationHistory.length > 100) {
+              nextIterationHistory = nextIterationHistory.slice(-100);
+            }
+          }
+
+          let nextExpertStates = prev.expertStates ? { ...prev.expertStates } : {};
+          if (typeof data.expert === 'number') {
+            const expertKey = String(data.expert);
+            const prevExpert = nextExpertStates[expertKey] || {
+              expertId: data.expert,
+              iteration: 0,
+              status: 'idle',
+              lastUpdated: isoTimestamp,
+            };
+            nextExpertStates[expertKey] = {
+              expertId: data.expert,
+              iteration: data.iteration ?? prevExpert.iteration,
+              status: deriveExpertStatus(incomingPhase, data.status) || prevExpert.status,
+              lastUpdated: isoTimestamp,
+              lastMessage: data.message || prevExpert.lastMessage,
+              passCount: typeof passCount === 'number' ? passCount : prevExpert.passCount,
+              failCount: typeof failCount === 'number' ? failCount : prevExpert.failCount,
+              trainAccuracy: typeof trainAccuracy === 'number' ? trainAccuracy : prevExpert.trainAccuracy,
+              tokens: nextExpertTokenUsage[expertKey] || prevExpert.tokens || null,
+              cost: nextExpertCost[expertKey] || prevExpert.cost || null,
+            };
+          } else if ((data.status === 'completed' || data.status === 'error') && Object.keys(nextExpertStates).length > 0) {
+            nextExpertStates = Object.fromEntries(
+              Object.entries(nextExpertStates).map(([key, expert]) => {
+                if (expert.status === 'prompting' || expert.status === 'evaluating' || expert.status === 'feedback') {
+                  return [
+                    key,
+                    {
+                      ...expert,
+                      status: data.status === 'error' ? 'error' : 'completed',
+                      lastUpdated: isoTimestamp,
+                    },
+                  ];
+                }
+                return [key, expert];
+              })
+            );
+          }
+          
           return {
             ...prev,
             phase: data.phase || prev.phase,
@@ -356,6 +528,10 @@ export function usePoetiqProgress(taskId: string | undefined) {
             totalIterations: data.totalIterations ?? prev.totalIterations,
             message: data.message || prev.message,
             expert: data.expert ?? prev.expert,
+            phaseStartedAt: nextPhaseStartedAt,
+            phaseHistory: nextPhaseHistory,
+            iterationHistory: nextIterationHistory,
+            expertStates: nextExpertStates,
             status: data.status === 'completed' ? 'completed' 
                   : data.status === 'error' ? 'error' 
                   : 'running',
@@ -414,6 +590,8 @@ export function usePoetiqProgress(taskId: string | undefined) {
     const maxIterations = options.maxIterations || 10;
     const temperature = options.temperature || 1.0;
 
+    const startTimestamp = new Date().toISOString();
+
     // IMMEDIATE UI FEEDBACK - Set state synchronously FIRST (Saturn pattern)
     // This ensures UI shows "starting" immediately before any network call
     console.log('[Poetiq] Setting initial state to running...');
@@ -424,6 +602,17 @@ export function usePoetiqProgress(taskId: string | undefined) {
       iteration: 0,
       totalIterations: maxIterations,
       message: `Initializing Poetiq solver with ${numExperts} expert(s)...`,
+      phaseStartedAt: startTimestamp,
+      phaseHistory: [
+        {
+          phase: 'initializing',
+          iteration: 0,
+          startedAt: startTimestamp,
+          message: `Initializing Poetiq solver with ${numExperts} expert(s)...`,
+        },
+      ],
+      iterationHistory: [],
+      expertStates: {},
       config: {
         model,
         maxIterations,
@@ -527,4 +716,35 @@ export function usePoetiqProgress(taskId: string | undefined) {
     cancel,
     reset,
   };
+}
+
+function deriveExpertStatus(phase?: string, status?: string): PoetiqExpertStatus {
+  if (status === 'error') {
+    return 'error';
+  }
+  if (status === 'completed') {
+    return 'completed';
+  }
+  if (!phase) {
+    return 'idle';
+  }
+
+  const normalized = phase.toLowerCase();
+  if (normalized.includes('init') || normalized.includes('solver_start')) {
+    return 'initializing';
+  }
+  if (normalized.includes('prompt')) {
+    return 'prompting';
+  }
+  if (normalized.includes('reason')) {
+    return 'prompting';
+  }
+  if (normalized.includes('evaluate')) {
+    return 'evaluating';
+  }
+  if (normalized.includes('feedback')) {
+    return 'feedback';
+  }
+
+  return 'idle';
 }
