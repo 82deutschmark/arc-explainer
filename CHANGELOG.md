@@ -7,6 +7,13 @@
   - Replaced the large token/cost card with a compact one-line pill so the dashboard focuses on meaningful content while still surfacing spend at a glance.
   - **Files**: `client/src/components/poetiq/PoetiqTokenMetrics.tsx`
 
+### Version 5.33.3
+
+- **Poetiq UI: Run Recap & Log Exports** (Author: Codex / GPT-5)
+  - Added a friendly post-run recap card that highlights which expert won, how many iterations ran, consensus strength, and the hidden test result so users immediately know the outcome.
+  - Introduced one-click export buttons for both the live event log and the Python console output, making audits and sharing easier.
+  - **Files**: `client/src/components/poetiq/PoetiqProgressDashboard.tsx`, `client/src/pages/PoetiqSolver.tsx`
+
 ### Version 5.33.1
 
 - **Poetiq UI: Scroll Fixes & Friendly Expert Tracker** (Author: Codex / GPT-5)

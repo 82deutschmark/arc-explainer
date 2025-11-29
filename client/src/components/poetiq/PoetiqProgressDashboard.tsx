@@ -13,7 +13,6 @@ import { AlertCircle, Download, Info } from 'lucide-react';
 import type { PoetiqProgressState, PoetiqRawEvent } from '@/hooks/usePoetiqProgress';
 import PoetiqPhaseIndicator from './PoetiqPhaseIndicator';
 import PoetiqExpertTracker from './PoetiqExpertTracker';
-import PoetiqTokenMetrics from './PoetiqTokenMetrics';
 
 interface PoetiqProgressDashboardProps {
   state: PoetiqProgressState;
@@ -68,6 +67,33 @@ export function PoetiqProgressDashboard({ state, rawEvents }: PoetiqProgressDash
       runStatus,
     };
   }, [bestIteration, iterationHistory.length, state.config?.numExperts, state.result?.isPredictionCorrect, state.status]);
+
+  const recap = useMemo(() => {
+    const finished = state.status === 'completed' || state.status === 'error';
+    if (!finished) return null;
+    const bestAccuracy = typeof bestIteration?.accuracy === 'number'
+      ? `${Math.round((bestIteration.accuracy ?? 0) * 100)}%`
+      : 'unknown';
+    const winningExpert = bestIteration?.expert ?? null;
+    const consensusExperts = new Set<number>();
+    if (typeof bestIteration?.accuracy === 'number') {
+      iterationHistory.forEach((entry) => {
+        if (entry.accuracy === bestIteration?.accuracy && typeof entry.expert === 'number') {
+          consensusExperts.add(entry.expert);
+        }
+      });
+    }
+    const consensusCount = consensusExperts.size || (winningExpert ? 1 : 0);
+    return {
+      finished,
+      winningExpert,
+      bestAccuracy,
+      consensusCount,
+      solvedHidden: state.result?.isPredictionCorrect ?? false,
+      totalAttempts: iterationHistory.length,
+      durationMs: state.result?.elapsedMs ?? null,
+    };
+  }, [bestIteration, iterationHistory, state.result?.elapsedMs, state.result?.isPredictionCorrect, state.status]);
 
   const handleExport = () => {
     if (!rawEvents || rawEvents.length === 0) return;
@@ -141,52 +167,45 @@ export function PoetiqProgressDashboard({ state, rawEvents }: PoetiqProgressDash
           activeExpert={state.expert}
         />
       </div>
-      <div className="grid gap-4 lg:grid-cols-2">
-        <PoetiqTokenMetrics
-          tokenUsage={state.tokenUsage}
-          cost={state.cost}
-          expertStates={state.expertStates}
-        />
-        <Card className="border border-emerald-200">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm text-emerald-900 flex items-center gap-2">
-              Iteration Snapshot
-              {latestIteration && (
-                <Badge variant="secondary" className="text-[10px]">
-                  Iter {latestIteration.iteration} / Expert {latestIteration.expert ?? '—'}
-                </Badge>
+      <Card className="border border-emerald-200">
+        <CardHeader className="pb-2">
+          <CardTitle className="text-sm text-emerald-900 flex items-center gap-2">
+            Iteration Snapshot
+            {latestIteration && (
+              <Badge variant="secondary" className="text-[10px]">
+                Iter {latestIteration.iteration} / Expert {latestIteration.expert ?? '—'}
+              </Badge>
+            )}
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-2 text-xs text-emerald-900">
+          {latestIteration ? (
+            <>
+              <p>
+                Current accuracy: <strong>{formatPercent(latestIteration.accuracy)}</strong>
+              </p>
+              <p>
+                Pass count: {latestIteration.passCount ?? 0} /{' '}
+                {(latestIteration.passCount ?? 0) + (latestIteration.failCount ?? 0)}
+              </p>
+              {state.message && (
+                <p className="text-emerald-800">Latest message: {state.message}</p>
               )}
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-2 text-xs text-emerald-900">
-            {latestIteration ? (
-              <>
-                <p>
-                  Current accuracy: <strong>{formatPercent(latestIteration.accuracy)}</strong>
-                </p>
-                <p>
-                  Pass count: {latestIteration.passCount ?? 0} /{' '}
-                  {(latestIteration.passCount ?? 0) + (latestIteration.failCount ?? 0)}
-                </p>
-                {state.message && (
-                  <p className="text-emerald-800">Latest message: {state.message}</p>
-                )}
-              </>
-            ) : (
-              <p>No iteration results yet. Waiting for first sandbox execution.</p>
-            )}
-            {bestIteration && (
-              <div className="rounded border border-emerald-100 bg-emerald-50 p-2 text-emerald-800">
-                <p className="font-semibold text-[11px] uppercase">Best progress so far</p>
-                <p>
-                  {formatPercent(bestIteration.accuracy)} accuracy from iteration {bestIteration.iteration}{' '}
-                  (Expert {bestIteration.expert ?? '—'})
-                </p>
-              </div>
-            )}
-          </CardContent>
-        </Card>
-      </div>
+            </>
+          ) : (
+            <p>No iteration results yet. Waiting for first sandbox execution.</p>
+          )}
+          {bestIteration && (
+            <div className="rounded border border-emerald-100 bg-emerald-50 p-2 text-emerald-800">
+              <p className="font-semibold text-[11px] uppercase">Best progress so far</p>
+              <p>
+                {formatPercent(bestIteration.accuracy)} accuracy from iteration {bestIteration.iteration}{' '}
+                (Expert {bestIteration.expert ?? '—'})
+              </p>
+            </div>
+          )}
+        </CardContent>
+      </Card>
 
       <Card className="border border-slate-200">
         <CardHeader className="pb-2 flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
@@ -226,6 +245,44 @@ export function PoetiqProgressDashboard({ state, rawEvents }: PoetiqProgressDash
           </p>
         </CardContent>
       </Card>
+
+      {recap && (
+        <Card className="border border-emerald-300">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm text-emerald-900">Run recap (after completion)</CardTitle>
+          </CardHeader>
+          <CardContent className="text-xs text-emerald-900 space-y-1">
+            <p>
+              • Tried <strong>{recap.totalAttempts}</strong> total iterations across{' '}
+              <strong>{summary.expertsInPlay}</strong> experts.
+            </p>
+            <p>
+              • Best idea came from{' '}
+              <strong>
+                {recap.winningExpert !== null ? `Expert ${recap.winningExpert}` : 'one of the experts'}
+              </strong>{' '}
+              and hit <strong>{recap.bestAccuracy}</strong> accuracy on the training examples.
+            </p>
+            <p>
+              • {recap.consensusCount > 1
+                ? `${recap.consensusCount} experts converged on this same approach, which boosted our confidence.`
+                : 'Only one expert reached that score; future runs may try more iterations or different models.'}
+            </p>
+            <p>
+              • Hidden test verdict: <strong>{recap.solvedHidden ? 'Solved' : 'Not solved yet'}</strong>.
+            </p>
+            {recap.durationMs && (
+              <p>
+                • Total runtime: <strong>{Math.round(recap.durationMs / 1000)} seconds</strong>.
+              </p>
+            )}
+            <p className="text-emerald-800">
+              We’ve saved the winning program (and this recap) to your explanation library, so you can revisit the exact
+              code whenever you need.
+            </p>
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 }
