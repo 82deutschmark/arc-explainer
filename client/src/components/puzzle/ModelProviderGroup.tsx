@@ -69,7 +69,7 @@ export function ModelProviderGroup({
       {/* Provider Header - Clickable to expand/collapse */}
       <button
         onClick={onToggle}
-        className="w-full flex items-center justify-between p-2 bg-base-200 rounded-lg hover:bg-base-300 transition-colors text-left"
+        className="w-full flex items-center justify-between p-2 bg-muted rounded-lg hover:bg-accent transition-colors text-left"
       >
         <div className="flex items-center gap-2">
           <span className="text-lg">{provider.icon}</span>
@@ -82,7 +82,7 @@ export function ModelProviderGroup({
                 </span>
               )}
             </div>
-            <p className="text-xs text-base-content/60">
+            <p className="text-xs text-muted-foreground">
               {provider.modelCount} model{provider.modelCount !== 1 ? 's' : ''}
               {analysisCount > 0 && ` • ${analysisCount} analysis${analysisCount !== 1 ? 'es' : ''}`}
             </p>

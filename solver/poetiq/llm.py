@@ -146,10 +146,10 @@ async def llm_openai(
     reasoning_summary = kwargs.get('reasoning_summary', 'detailed')
 
     # Verbosity defaults:
-    # - gpt-5.1-codex-mini only supports 'medium' for text.verbosity (API will 400 on 'high')
+    # - gpt-5.1-codex and gpt-5.1-codex-mini only support 'medium' for text.verbosity (API will 400 on 'high')
     # - other GPT-5.x/o3 models retain the project-standard 'high' default
     verbosity_override = kwargs.get('verbosity')
-    if model_name == "gpt-5.1-codex-mini":
+    if model_name in ("gpt-5.1-codex", "gpt-5.1-codex-mini"):
         verbosity = 'medium'
     else:
         verbosity = verbosity_override or 'high'

@@ -8,6 +8,7 @@
 
 import React from 'react';
 import { ChevronDown, ChevronUp } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 interface ModelSelectionControlsProps {
   onExpandAll: () => void;
@@ -20,22 +21,26 @@ export function ModelSelectionControls({
 }: ModelSelectionControlsProps) {
   return (
     <div className="mb-3 flex justify-end gap-2 px-2">
-      <button
+      <Button
+        variant="outline"
+        size="sm"
         onClick={onExpandAll}
-        className="btn btn-sm btn-ghost border border-base-300 hover:bg-base-200 gap-1"
         title="Expand all provider sections"
+        className="gap-1"
       >
         <ChevronDown className="h-4 w-4" />
         Expand All
-      </button>
-      <button
+      </Button>
+      <Button
+        variant="outline"
+        size="sm"
         onClick={onCollapseAll}
-        className="btn btn-sm btn-ghost border border-base-300 hover:bg-base-200 gap-1"
         title="Collapse all provider sections"
+        className="gap-1"
       >
         <ChevronUp className="h-4 w-4" />
         Collapse All
-      </button>
+      </Button>
     </div>
   );
 }

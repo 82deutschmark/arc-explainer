@@ -1,6 +1,12 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top!!!
 
+### Version 5.32.8
+
+- **Poetiq: GPT-5.1 Codex Verbosity Clamp** (Author: Cascade using Cascade)
+  - **Change**: Extended the OpenAI Responses API `text.verbosity` clamp so both `gpt-5.1-codex` and `gpt-5.1-codex-mini` always send `"medium"` instead of `"high"`, matching their documented maximum verbosity.
+  - **Result**: Poetiq runs that use the full GPT-5.1 Codex model no longer risk `400 invalid_request_error` responses from the Responses API due to unsupported verbosity settings.
+
 ### Version 5.32.7
 
 - **Model Catalog: Full GPT-5.1 Codex + Poetiq Integration** (Author: Cascade using Cascade)

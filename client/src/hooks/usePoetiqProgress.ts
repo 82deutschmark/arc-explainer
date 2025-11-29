@@ -40,6 +40,35 @@ export interface PromptData {
     verbosity?: string;     // "high" or "default"
     summary?: string;       // "detailed", "auto", or "default"
   } | null;
+  iteration?: number;
+  expert?: number;
+  timestamp?: string;
+}
+
+export interface PoetiqTokenUsage {
+  input_tokens: number;
+  output_tokens: number;
+  total_tokens: number;
+}
+
+export interface PoetiqCostBreakdown {
+  input: number;
+  output: number;
+  total: number;
+}
+
+export interface PromptTimelineEntry {
+  prompt: PromptData;
+  iteration?: number;
+  expert?: number;
+  timestamp: string;
+}
+
+export interface PoetiqRawEvent {
+  type: string;
+  phase?: string;
+  payload: unknown;
+  timestamp: string;
 }
 
 export interface PoetiqProgressState {
@@ -60,6 +89,9 @@ export interface PoetiqProgressState {
     generatedCode?: string;
     elapsedMs?: number;
     trainResults?: any[];
+    tokenUsage?: PoetiqTokenUsage;
+    cost?: PoetiqCostBreakdown;
+    expertBreakdown?: Record<string, { tokens: PoetiqTokenUsage; cost: PoetiqCostBreakdown }>;
   };
   
   // Config
@@ -85,6 +117,16 @@ export interface PoetiqProgressState {
   // Prompt visibility - shows what's being sent to the AI
   currentPromptData?: PromptData;
   promptHistory?: PromptData[];  // All prompts sent during this run
+  promptTimeline?: PromptTimelineEntry[];
+
+  // Token/cost visibility
+  tokenUsage?: PoetiqTokenUsage | null;
+  cost?: PoetiqCostBreakdown | null;
+  expertTokenUsage?: Record<string, PoetiqTokenUsage>;
+  expertCost?: Record<string, PoetiqCostBreakdown>;
+
+  // Raw event stream (for debugging)
+  rawEvents?: PoetiqRawEvent[];
 }
 
 const initialState: PoetiqProgressState = {
@@ -98,6 +140,12 @@ const initialState: PoetiqProgressState = {
   streamingText: '',
   currentPromptData: undefined,
   promptHistory: [],
+  promptTimeline: [],
+  tokenUsage: null,
+  cost: null,
+  expertTokenUsage: {},
+  expertCost: {},
+  rawEvents: [],
 };
 
 /**
@@ -159,7 +207,10 @@ export function usePoetiqProgress(taskId: string | undefined) {
         console.log('[Poetiq WS] Received event:', eventType, 'dataType:', data.type, 'phase:', data.phase, 'status:', data.status);
         
         setState(prev => {
-          const timestamp = new Date().toLocaleTimeString();
+          const now = new Date();
+          const timestamp = now.toLocaleTimeString();
+          const isoTimestamp = now.toISOString();
+          const eventLabel = eventType || data.type || 'unknown';
           
           // Accumulate log lines - ALWAYS add if message exists (don't skip duplicates)
           let nextLogLines = prev.logLines ? [...prev.logLines] : [];
@@ -181,6 +232,18 @@ export function usePoetiqProgress(taskId: string | undefined) {
           // Cap log lines to prevent memory bloat (Saturn uses 500)
           if (nextLogLines.length > 500) {
             nextLogLines = nextLogLines.slice(-500);
+          }
+
+          // Raw event timeline
+          let nextRawEvents = prev.rawEvents ? [...prev.rawEvents] : [];
+          nextRawEvents.push({
+            type: eventLabel,
+            phase: data.phase,
+            payload: data,
+            timestamp: isoTimestamp,
+          });
+          if (nextRawEvents.length > 200) {
+            nextRawEvents = nextRawEvents.slice(-200);
           }
           
           // Accumulate reasoning history per iteration
@@ -235,20 +298,46 @@ export function usePoetiqProgress(taskId: string | undefined) {
           // Prompt data - track current and accumulate history
           let nextCurrentPromptData = prev.currentPromptData;
           let nextPromptHistory = prev.promptHistory ? [...prev.promptHistory] : [];
+          let nextPromptTimeline = prev.promptTimeline ? [...prev.promptTimeline] : [];
           if (data.promptData) {
-            nextCurrentPromptData = data.promptData as PromptData;
-            // Add to history if it's a new prompt (different iteration or expert)
-            const isDuplicate = nextPromptHistory.some(p => 
-              p.userPrompt === data.promptData.userPrompt && 
-              p.model === data.promptData.model
-            );
-            if (!isDuplicate) {
-              nextPromptHistory.push(data.promptData as PromptData);
-            }
+            const promptPayload: PromptData = {
+              ...(data.promptData as PromptData),
+              iteration: data.iteration,
+              expert: data.expert,
+              timestamp: isoTimestamp,
+            };
+            nextCurrentPromptData = promptPayload;
+            nextPromptHistory.push(promptPayload);
             // Cap history to 50 entries
             if (nextPromptHistory.length > 50) {
               nextPromptHistory = nextPromptHistory.slice(-50);
             }
+            nextPromptTimeline.push({
+              prompt: promptPayload,
+              iteration: data.iteration,
+              expert: data.expert,
+              timestamp: isoTimestamp,
+            });
+            if (nextPromptTimeline.length > 50) {
+              nextPromptTimeline = nextPromptTimeline.slice(-50);
+            }
+          }
+
+          // Token / cost tracking
+          const nextTokenUsage =
+            data.globalTokens || data.tokenUsage || prev.tokenUsage || null;
+          const nextCost = data.globalCost || data.cost || prev.cost || null;
+          const nextExpertTokenUsage = prev.expertTokenUsage ? { ...prev.expertTokenUsage } : {};
+          const nextExpertCost = prev.expertCost ? { ...prev.expertCost } : {};
+          if (data.expertCumulativeTokens) {
+            Object.entries(data.expertCumulativeTokens).forEach(([key, value]) => {
+              nextExpertTokenUsage[key] = value as PoetiqTokenUsage;
+            });
+          }
+          if (data.expertCumulativeCost) {
+            Object.entries(data.expertCumulativeCost).forEach(([key, value]) => {
+              nextExpertCost[key] = value as PoetiqCostBreakdown;
+            });
           }
           
           // Track latest iteration result details if available
@@ -282,6 +371,12 @@ export function usePoetiqProgress(taskId: string | undefined) {
             streamingText: data.message || prev.streamingText,
             currentPromptData: nextCurrentPromptData,
             promptHistory: nextPromptHistory,
+            promptTimeline: nextPromptTimeline,
+            tokenUsage: nextTokenUsage,
+            cost: nextCost,
+            expertTokenUsage: nextExpertTokenUsage,
+            expertCost: nextExpertCost,
+            rawEvents: nextRawEvents,
           };
         });
 
