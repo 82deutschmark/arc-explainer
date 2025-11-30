@@ -147,6 +147,11 @@ export const poetiqController = {
     const apiKey = req.body?.apiKey as string | undefined;
     const provider = req.body?.provider as 'gemini' | 'openrouter' | 'openai' | 'anthropic' | 'xai' | undefined;
     const model = req.body?.model as string | undefined;
+    const promptStyleRaw = req.body?.promptStyle as string | undefined;
+    const promptStyle: 'classic' | 'arc' | undefined =
+      promptStyleRaw === 'classic' || promptStyleRaw === 'arc'
+        ? (promptStyleRaw as 'classic' | 'arc')
+        : undefined;
 
     // Only require BYO key for Gemini and OpenRouter runs.
     // Direct OpenAI / other providers may fall back to server env keys.
@@ -176,6 +181,7 @@ export const poetiqController = {
       sessionId,
       apiKey,           // BYO API key (never stored)
       provider,         // Which provider the key is for
+      promptStyle,
     };
 
     // Broadcast initial state immediately
@@ -192,6 +198,7 @@ export const poetiqController = {
         maxIterations: options.maxIterations,
         numExperts: options.numExperts,
         temperature: options.temperature,
+        promptStyle: options.promptStyle || 'classic',
       }
     });
 

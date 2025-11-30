@@ -47,6 +47,7 @@ export default function PoetiqSolver() {
   const [maxIterations, setMaxIterations] = useState(10);
   const [temperature, setTemperature] = useState(1.0);
   const [reasoningEffort, setReasoningEffort] = useState<'low' | 'medium' | 'high'>('medium');
+  const [promptStyle, setPromptStyle] = useState<'classic' | 'arc'>('classic');
   const [executions, setExecutions] = useState<any[]>([]);
   const [autoStartTriggered, setAutoStartTriggered] = useState(false);
   const [cameFromCommunity, setCameFromCommunity] = useState(false);
@@ -86,6 +87,9 @@ export default function PoetiqSolver() {
         if (config.model) setModel(config.model);
         if (config.numExperts) setNumExperts(config.numExperts);
         if (config.temperature) setTemperature(config.temperature);
+        if (config.promptStyle === 'classic' || config.promptStyle === 'arc') {
+          setPromptStyle(config.promptStyle);
+        }
         
         // Determine if this configuration actually requires a BYO key
         const lowerModel = (config.model || '').toLowerCase();
@@ -113,6 +117,10 @@ export default function PoetiqSolver() {
               numExperts: config.numExperts || 2,
               maxIterations: 10,
               temperature: config.temperature || 1.0,
+              promptStyle:
+                config.promptStyle === 'classic' || config.promptStyle === 'arc'
+                  ? config.promptStyle
+                  : 'classic',
             });
           }, 500);
         }
@@ -312,6 +320,7 @@ export default function PoetiqSolver() {
       maxIterations,
       temperature,
       reasoningEffort,
+      promptStyle,
     });
     // Reset timing on new run
     setStartTime(null);
@@ -581,6 +590,8 @@ export default function PoetiqSolver() {
               setTemperature={setTemperature}
               reasoningEffort={reasoningEffort}
               setReasoningEffort={setReasoningEffort}
+              promptStyle={promptStyle}
+              setPromptStyle={setPromptStyle}
               onStart={handleStart}
               onCancel={cancel}
             />

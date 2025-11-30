@@ -660,15 +660,24 @@ solver.poetiq.solve_parallel_coding.solve_coding = instrumented_solve_coding
 # NOTE: emit() and log() are defined at the top of the file
 
 
-def build_config_list(num_experts: int, model: str, max_iterations: int, temperature: float, reasoning_effort: str = None, verbosity: str = None, reasoning_summary: str = None):
+def build_config_list(num_experts: int, model: str, max_iterations: int, temperature: float, reasoning_effort: str = None, verbosity: str = None, reasoning_summary: str = None, prompt_style: str | None = None):
     """
     Build a dynamic CONFIG_LIST for this run based on user options.
-    This allows per-request expert count without modifying global state.
+
+    This allows per-request expert count without modifying global state and
+    lets us switch between different system prompts (classic vs ARC-optimized).
     """
-    from solver.poetiq.prompts import FEEDBACK_PROMPT, SOLVER_PROMPT_1
-    
+    from solver.poetiq.prompts import FEEDBACK_PROMPT, SOLVER_PROMPT_1, SOLVER_PROMPT_ARC
+
+    # Select solver prompt based on prompt style; default to classic to
+    # preserve historical behavior when no style is provided.
+    if prompt_style == "arc":
+        solver_prompt_value = SOLVER_PROMPT_ARC
+    else:
+        solver_prompt_value = SOLVER_PROMPT_1
+
     base_config = {
-        'solver_prompt': SOLVER_PROMPT_1,
+        'solver_prompt': solver_prompt_value,
         'feedback_prompt': FEEDBACK_PROMPT,
         'llm_id': model,
         'solver_temperature': temperature,
@@ -763,9 +772,19 @@ async def run_poetiq_solver(puzzle_id: str, task: dict, options: dict) -> dict:
     reasoning_effort = options.get("reasoningEffort")
     verbosity = options.get("verbosity")
     reasoning_summary = options.get("reasoningSummary")
+    prompt_style = options.get("promptStyle")
     
     # Build dynamic config list for this run
-    config_list = build_config_list(num_experts, model, max_iterations, temperature, reasoning_effort, verbosity, reasoning_summary)
+    config_list = build_config_list(
+        num_experts,
+        model,
+        max_iterations,
+        temperature,
+        reasoning_effort,
+        verbosity,
+        reasoning_summary,
+        prompt_style,
+    )
     
     emit({
         "type": "progress",

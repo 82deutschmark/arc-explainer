@@ -60,6 +60,8 @@ interface PoetiqControlPanelProps {
   setTemperature: (temp: number) => void;
   reasoningEffort: 'low' | 'medium' | 'high';
   setReasoningEffort: (effort: 'low' | 'medium' | 'high') => void;
+  promptStyle: 'classic' | 'arc';
+  setPromptStyle: (style: 'classic' | 'arc') => void;
   onStart: () => void;
   onCancel: () => void;
 }
@@ -81,6 +83,8 @@ export default function PoetiqControlPanel({
   setTemperature,
   reasoningEffort,
   setReasoningEffort,
+  promptStyle,
+  setPromptStyle,
   onStart,
   onCancel,
 }: PoetiqControlPanelProps) {
@@ -225,6 +229,26 @@ export default function PoetiqControlPanel({
             </Select>
             <p className="text-[10px] text-muted-foreground">
               Adjusts the thinking budget for GPT-5.1 / Grok reasoning calls.
+            </p>
+          </div>
+
+          <div className="space-y-1.5">
+            <label className="text-xs font-semibold">Prompt Template</label>
+            <Select
+              value={promptStyle}
+              onValueChange={value => setPromptStyle(value as 'classic' | 'arc')}
+              disabled={isRunning}
+            >
+              <SelectTrigger className="h-9">
+                <SelectValue placeholder="Select prompt template" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="classic">Classic Poetiq (original prompt)</SelectItem>
+                <SelectItem value="arc">ARC Explainer (cleaned ARC prompt)</SelectItem>
+              </SelectContent>
+            </Select>
+            <p className="text-[10px] text-muted-foreground">
+              Choose between the original Poetiq system prompt and the ARC-optimized variant.
             </p>
           </div>
         </CardContent>
@@ -372,7 +396,7 @@ export default function PoetiqControlPanel({
 
       {state.status === 'running' && (
         <p className="text-center text-xs text-muted-foreground">
-          Session {state.sessionId ? `#${state.sessionId}` : ''} running... watch the progress dashboard for live events.
+          Run in progress&mdash;watch the progress dashboard for live events.
         </p>
       )}
     </div>

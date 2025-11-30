@@ -1,6 +1,13 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top with the time and date!
 
+### Version 5.33.12  Nov 29, 2025 7:30pm 
+
+- **Poetiq Prompt-Style Selector (Classic vs ARC)** (Author: Cascade using Cascade)
+  - Added a prompt template selector to the Poetiq solver control panel so runs can choose between the original "classic" Poetiq system prompt and a new ARC-optimized prompt derived from `docs/ARC_Poetiq_Prompt.md`.
+  - Threaded the selected `promptStyle` (`classic` or `arc`) from the frontend hook through the Poetiq controller/service into the Python wrapper, which now builds expert configs using either `SOLVER_PROMPT_1` (classic) or the new `SOLVER_PROMPT_ARC` while preserving all existing feedback and cost/token tracking behavior.
+  - **Files**: `docs/plans/2025-11-29-poetiq-prompt-style-selector-plan.md`, `client/src/hooks/usePoetiqProgress.ts`, `client/src/pages/PoetiqSolver.tsx`, `client/src/components/poetiq/PoetiqControlPanel.tsx`, `server/controllers/poetiqController.ts`, `server/services/poetiq/poetiqService.ts`, `server/python/poetiq_wrapper.py`, `solver/poetiq/prompts.py`.
+
 ### Version 5.33.11  Nov 29, 2025 5:30pm 
 
 - **Poetiq Control Panel Integration + Shadcn Toggles** (Author: Codex / GPT-5)

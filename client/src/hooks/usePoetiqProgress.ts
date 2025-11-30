@@ -26,6 +26,7 @@ export interface PoetiqOptions {
   maxIterations?: number;   // default: 10
   temperature?: number;     // default: 1.0
   reasoningEffort?: 'low' | 'medium' | 'high'; // Optional reasoning effort
+  promptStyle?: 'classic' | 'arc'; // Optional prompt style selector
 }
 
 export interface PoetiqTokenUsage {
@@ -617,6 +618,7 @@ export function usePoetiqProgress(taskId: string | undefined) {
         maxIterations,
         temperature,
         reasoningEffort: options.reasoningEffort || 'high',  // Default to high for best results
+        promptStyle: options.promptStyle,
       };
 
       if (isOpenRouterModel) {
