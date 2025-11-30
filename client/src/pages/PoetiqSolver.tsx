@@ -47,7 +47,7 @@ export default function PoetiqSolver() {
   const [maxIterations, setMaxIterations] = useState(10);
   const [temperature, setTemperature] = useState(1.0);
   const [reasoningEffort, setReasoningEffort] = useState<'low' | 'medium' | 'high'>('medium');
-  const [promptStyle, setPromptStyle] = useState<'classic' | 'arc'>('classic');
+  const [promptStyle, setPromptStyle] = useState<'classic' | 'arc' | 'arc_de' | 'arc_ru'>('classic');
   const [executions, setExecutions] = useState<any[]>([]);
   const [autoStartTriggered, setAutoStartTriggered] = useState(false);
   const [cameFromCommunity, setCameFromCommunity] = useState(false);
@@ -87,7 +87,12 @@ export default function PoetiqSolver() {
         if (config.model) setModel(config.model);
         if (config.numExperts) setNumExperts(config.numExperts);
         if (config.temperature) setTemperature(config.temperature);
-        if (config.promptStyle === 'classic' || config.promptStyle === 'arc') {
+        if (
+          config.promptStyle === 'classic' ||
+          config.promptStyle === 'arc' ||
+          config.promptStyle === 'arc_de' ||
+          config.promptStyle === 'arc_ru'
+        ) {
           setPromptStyle(config.promptStyle);
         }
         
@@ -118,7 +123,10 @@ export default function PoetiqSolver() {
               maxIterations: 10,
               temperature: config.temperature || 1.0,
               promptStyle:
-                config.promptStyle === 'classic' || config.promptStyle === 'arc'
+                config.promptStyle === 'classic' ||
+                config.promptStyle === 'arc' ||
+                config.promptStyle === 'arc_de' ||
+                config.promptStyle === 'arc_ru'
                   ? config.promptStyle
                   : 'classic',
             });
