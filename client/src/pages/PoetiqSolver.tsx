@@ -21,6 +21,7 @@ import { DEFAULT_EMOJI_SET } from '@/lib/spaceEmojis';
 import PoetiqControlPanel from '@/components/poetiq/PoetiqControlPanel';
 import PoetiqPythonTerminal from '@/components/poetiq/PoetiqPythonTerminal';
 import PoetiqProgressDashboard from '@/components/poetiq/PoetiqProgressDashboard';
+import PoetiqAgentsPanel from '@/components/poetiq/PoetiqAgentsPanel';
 import { Button } from '@/components/ui/button';
 
 const PROMPT_ROLE_BADGES: Record<string, string> = {
@@ -48,6 +49,7 @@ export default function PoetiqSolver() {
   const [temperature, setTemperature] = useState(1.0);
   const [reasoningEffort, setReasoningEffort] = useState<'low' | 'medium' | 'high'>('medium');
   const [promptStyle, setPromptStyle] = useState<'classic' | 'arc' | 'arc_de' | 'arc_ru' | 'arc_fr' | 'arc_tr'>('classic');
+  const [useAgents, setUseAgents] = useState(false);
   const [executions, setExecutions] = useState<any[]>([]);
   const [autoStartTriggered, setAutoStartTriggered] = useState(false);
   const [cameFromCommunity, setCameFromCommunity] = useState(false);
@@ -233,6 +235,10 @@ export default function PoetiqSolver() {
     ? `${formatCost(costData.total)} total`
     : 'Collecting cost...';
 
+  const isAgentsRuntime =
+    state.currentPromptData?.apiStyle === 'openai_agents' ||
+    !!state.agentModel;
+
   // Track start time when solver begins
   useEffect(() => {
     if (isRunning && !startTime) {
@@ -333,6 +339,7 @@ export default function PoetiqSolver() {
       temperature,
       reasoningEffort,
       promptStyle,
+      useAgentsSdk: useAgents,
     });
     // Reset timing on new run
     setStartTime(null);
@@ -606,6 +613,8 @@ export default function PoetiqSolver() {
               setPromptStyle={setPromptStyle}
               onStart={handleStart}
               onCancel={cancel}
+              useAgents={useAgents}
+              setUseAgents={setUseAgents}
             />
           </div>
           <div className="col-span-12 xl:col-span-8">
@@ -695,6 +704,11 @@ export default function PoetiqSolver() {
 
           {/* RIGHT: Training Grids (before running) or Event Log (during/after running) */}
           <div className={`col-span-12 ${isRunning || isDone ? 'lg:col-span-8' : 'lg:col-span-7'} flex flex-col min-h-0`}>
+            {isAgentsRuntime && (
+              <div className="mb-3">
+                <PoetiqAgentsPanel state={state} />
+              </div>
+            )}
             {/* Training Grids - Show before running */}
             {!isRunning && !isDone && task && (
               <div className="bg-white border border-gray-300 rounded flex-1 min-h-0 flex flex-col h-full overflow-y-auto">

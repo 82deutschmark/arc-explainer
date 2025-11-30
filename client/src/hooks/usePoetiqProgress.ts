@@ -13,7 +13,11 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { apiRequest } from '@/lib/queryClient';
-import type { PoetiqPromptData } from '@shared/types';
+import type {
+  PoetiqAgentReasoningDelta,
+  PoetiqAgentTimelineItem,
+  PoetiqPromptData,
+} from '@shared/types';
 
 export interface PoetiqOptions {
   // BYO (Bring Your Own) API key - optional, falls back to server env vars
@@ -27,6 +31,8 @@ export interface PoetiqOptions {
   temperature?: number;     // default: 1.0
   reasoningEffort?: 'low' | 'medium' | 'high'; // Optional reasoning effort
   promptStyle?: 'classic' | 'arc' | 'arc_de' | 'arc_ru' | 'arc_fr' | 'arc_tr'; // Optional prompt style selector
+  // Hint to route eligible OpenAI runs through the Agents SDK runtime
+  useAgentsSdk?: boolean;
 }
 
 export interface PoetiqTokenUsage {
@@ -157,6 +163,17 @@ export interface PoetiqProgressState {
 
   // Raw event stream (for debugging)
   rawEvents?: PoetiqRawEvent[];
+
+  // OpenAI Agents SDK telemetry (Poetiq Agents runtime)
+  agentRunId?: string | null;
+  agentModel?: string | null;
+  agentTimeline?: PoetiqAgentTimelineItem[];
+  agentStreamingReasoning?: string;
+  agentUsage?: {
+    inputTokens?: number;
+    outputTokens?: number;
+    totalTokens?: number;
+  } | null;
 }
 
 const initialState: PoetiqProgressState = {
@@ -180,6 +197,11 @@ const initialState: PoetiqProgressState = {
   expertTokenUsage: {},
   expertCost: {},
   rawEvents: [],
+  agentRunId: null,
+  agentModel: null,
+  agentTimeline: [],
+  agentStreamingReasoning: '',
+  agentUsage: null,
 };
 
 /**
@@ -249,6 +271,14 @@ export function usePoetiqProgress(taskId: string | undefined) {
           
           // Accumulate log lines - ALWAYS add if message exists (don't skip duplicates)
           let nextLogLines = prev.logLines ? [...prev.logLines] : [];
+
+          // Agents runtime telemetry buffers
+          const prevAgentTimeline = prev.agentTimeline ?? [];
+          let nextAgentTimeline: PoetiqAgentTimelineItem[] = prevAgentTimeline;
+          let nextAgentRunId: string | null = prev.agentRunId ?? null;
+          let nextAgentModel: string | null = prev.agentModel ?? null;
+          let nextAgentStreamingReasoning: string = prev.agentStreamingReasoning ?? '';
+          let nextAgentUsage = prev.agentUsage ?? null;
           
           // Handle different event types
           if (eventType === 'log' || data.type === 'log') {
@@ -332,6 +362,23 @@ export function usePoetiqProgress(taskId: string | undefined) {
           if (nextRawEvents.length > 200) {
             nextRawEvents = nextRawEvents.slice(-200);
           }
+
+          // Agents SDK timeline + model metadata
+          const agentTimelineItem = (data as any).agentTimelineItem as
+            | PoetiqAgentTimelineItem
+            | undefined;
+          if (agentTimelineItem && typeof agentTimelineItem === 'object') {
+            nextAgentTimeline = [...prevAgentTimeline, agentTimelineItem];
+            if (nextAgentTimeline.length > 200) {
+              nextAgentTimeline = nextAgentTimeline.slice(-200);
+            }
+          }
+          if (data.agentRunId && typeof data.agentRunId === 'string') {
+            nextAgentRunId = data.agentRunId;
+          }
+          if (data.agentModel && typeof data.agentModel === 'string') {
+            nextAgentModel = data.agentModel;
+          }
           
           // Accumulate reasoning history per iteration
           let nextReasoningHistory = prev.reasoningHistory ? [...prev.reasoningHistory] : [];
@@ -377,6 +424,21 @@ export function usePoetiqProgress(taskId: string | undefined) {
           if (data.reasoning && data.phase === 'reasoning') {
             // Append new reasoning (may be delta or full block)
             nextStreamingReasoning = data.reasoning;
+          }
+
+          // OpenAI Agents SDK reasoning deltas (agentReasoningDelta)
+          const agentDelta = (data as any).agentReasoningDelta as
+            | PoetiqAgentReasoningDelta
+            | undefined;
+          if (agentDelta && typeof agentDelta === 'object') {
+            const cumulative = agentDelta.cumulativeText || agentDelta.delta;
+            if (typeof cumulative === 'string') {
+              nextStreamingReasoning = cumulative;
+              nextAgentStreamingReasoning = cumulative;
+            }
+            if (agentDelta.runId && typeof agentDelta.runId === 'string') {
+              nextAgentRunId = agentDelta.runId;
+            }
           }
           
           // Streaming code - replace with latest
@@ -425,6 +487,20 @@ export function usePoetiqProgress(taskId: string | undefined) {
             Object.entries(data.expertCumulativeCost).forEach(([key, value]) => {
               nextExpertCost[key] = value as PoetiqCostBreakdown;
             });
+          }
+
+          // Agents SDK usage summary
+          if (data.phase === 'agents_usage' && data.tokenUsage) {
+            const tu = data.tokenUsage as {
+              input_tokens?: number;
+              output_tokens?: number;
+              total_tokens?: number;
+            };
+            nextAgentUsage = {
+              inputTokens: tu.input_tokens ?? nextAgentUsage?.inputTokens,
+              outputTokens: tu.output_tokens ?? nextAgentUsage?.outputTokens,
+              totalTokens: tu.total_tokens ?? nextAgentUsage?.totalTokens,
+            };
           }
           
           // Track latest iteration result details if available
@@ -537,6 +613,11 @@ export function usePoetiqProgress(taskId: string | undefined) {
             expertTokenUsage: nextExpertTokenUsage,
             expertCost: nextExpertCost,
             rawEvents: nextRawEvents,
+            agentRunId: nextAgentRunId,
+            agentModel: nextAgentModel,
+            agentTimeline: nextAgentTimeline,
+            agentStreamingReasoning: nextAgentStreamingReasoning,
+            agentUsage: nextAgentUsage,
           };
         });
 
