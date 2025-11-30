@@ -673,6 +673,8 @@ def build_config_list(num_experts: int, model: str, max_iterations: int, tempera
         SOLVER_PROMPT_ARC,
         SOLVER_PROMPT_ARC_DE,
         SOLVER_PROMPT_ARC_RU,
+        SOLVER_PROMPT_ARC_FR,
+        SOLVER_PROMPT_ARC_TR,
     )
 
     # Select solver prompt based on prompt style; default to classic to
@@ -681,6 +683,10 @@ def build_config_list(num_experts: int, model: str, max_iterations: int, tempera
         solver_prompt_value = SOLVER_PROMPT_ARC
     elif prompt_style == "arc_de":
         solver_prompt_value = SOLVER_PROMPT_ARC_DE
+    elif prompt_style == "arc_fr":
+        solver_prompt_value = SOLVER_PROMPT_ARC_FR
+    elif prompt_style == "arc_tr":
+        solver_prompt_value = SOLVER_PROMPT_ARC_TR
     elif prompt_style == "arc_ru":
         solver_prompt_value = SOLVER_PROMPT_ARC_RU
     else:

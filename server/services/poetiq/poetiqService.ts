@@ -94,7 +94,7 @@ export interface PoetiqOptions {
   maxIterations?: number;   // Max iterations per expert (default: 10)
   temperature?: number;     // LLM temperature (default: 1.0)
   reasoningEffort?: 'low' | 'medium' | 'high';  // Reasoning effort for GPT-5.x models
-  promptStyle?: 'classic' | 'arc' | 'arc_de' | 'arc_ru'; // Which solver prompt template to use
+  promptStyle?: 'classic' | 'arc' | 'arc_de' | 'arc_ru' | 'arc_fr' | 'arc_tr'; // Which solver prompt template to use
   
   // Internal
   sessionId?: string;       // WebSocket session for progress updates

@@ -1,6 +1,14 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top with the time and date!
 
+### Version 5.33.14  Nov 29, 2025 8:15pm 
+
+- **Poetiq Prompt Styles: French & Turkish ARC System Prompts** (Author: Cascade using Cascade)
+  - Extended the Poetiq prompt-style selector to support localized ARC system prompts in French and Turkish in addition to the existing classic, English, German, and Russian variants.
+  - Threaded the new `promptStyle` values (`arc_fr`, `arc_tr`) through the Poetiq React hook, solver page, controller, service, and Python wrapper so each run reliably selects the correct localized system prompt without impacting existing behavior.
+  - Introduced `SOLVER_PROMPT_ARC_FR` and `SOLVER_PROMPT_ARC_TR` in `solver/poetiq/prompts.py`, mirroring the cleaned ARC Poetiq prompt contract while presenting all instructions and behavior in French and Turkish.
+  - **Files**: `client/src/hooks/usePoetiqProgress.ts`, `client/src/pages/PoetiqSolver.tsx`, `client/src/components/poetiq/PoetiqControlPanel.tsx`, `server/controllers/poetiqController.ts`, `server/services/poetiq/poetiqService.ts`, `server/python/poetiq_wrapper.py`, `solver/poetiq/prompts.py`.
+
 ### Version 5.33.13  Nov 29, 2025 8:00pm 
 
 - **Poetiq Prompt Styles: German & Russian ARC System Prompts** (Author: Cascade using Cascade)
