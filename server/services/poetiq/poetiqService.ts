@@ -24,7 +24,12 @@
 import { spawn, SpawnOptions } from 'child_process';
 import * as readline from 'node:readline';
 import * as path from 'path';
-import { ARCTask, PoetiqPromptData } from '../../../shared/types.js';
+import {
+  ARCTask,
+  PoetiqPromptData,
+  PoetiqAgentTimelineItem,
+  PoetiqAgentReasoningDelta,
+} from '../../../shared/types.js';
 import { broadcast } from '../wsService.js';
 import {
   validateSolverResponse,
@@ -49,6 +54,10 @@ export type PoetiqBridgeEvent =
       reasoningSummary?: string;  // Responses API reasoning summary (GPT-5.x)
       trainResults?: any[];
       promptData?: PoetiqPromptData;  // Added for prompt visibility
+      agentRunId?: string;            // Agents SDK run identifier
+      agentModel?: string;            // Model used by Agent runtime
+      agentTimelineItem?: PoetiqAgentTimelineItem;
+      agentReasoningDelta?: PoetiqAgentReasoningDelta;
       tokenUsage?: {
         input_tokens?: number;
         output_tokens?: number;
@@ -76,11 +85,28 @@ export type PoetiqBridgeEvent =
   | { type: 'final'; success: boolean; result: PoetiqResult }
   | { type: 'error'; message: string; traceback?: string };
 
+export type PoetiqRuntimeMode = 'python-wrapper' | 'openai-agents';
+
+export interface PoetiqAgentsRunnerInput {
+  puzzleId: string;
+  task: ARCTask;
+  options: PoetiqOptions;
+  onEvent?: (event: PoetiqBridgeEvent) => void;
+}
+
+export interface PoetiqAgentsRunner {
+  supportsModel?: (modelId?: string) => boolean;
+  run(input: PoetiqAgentsRunnerInput): Promise<PoetiqResult>;
+}
+
 export interface PoetiqStartMetadata {
   puzzleId: string;
   trainCount: number;
   testCount: number;
   options: PoetiqOptions;
+  runtimeMode?: PoetiqRuntimeMode;
+  agentRunId?: string;
+  agentModel?: string;
 }
 
 export interface PoetiqOptions {
@@ -98,6 +124,10 @@ export interface PoetiqOptions {
   
   // Internal
   sessionId?: string;       // WebSocket session for progress updates
+  useAgentsSdk?: boolean;   // Hint to route OpenAI runs through Agents SDK
+  previousResponseId?: string | null; // Continuation support
+  resolvedRuntime?: PoetiqRuntimeMode;
+  runtimeMode?: PoetiqRuntimeMode; // Back-compat alias (set by controller/service)
 }
 
 export interface PoetiqIterationData {
@@ -177,10 +207,23 @@ export interface PoetiqExplanationData {
 export class PoetiqService {
   private pythonBin: string;
   private wrapperPath: string;
+  private agentsRunner?: PoetiqAgentsRunner;
 
   constructor() {
     this.pythonBin = process.env.PYTHON_BIN || (process.platform === 'win32' ? 'python' : 'python3');
     this.wrapperPath = path.join(process.cwd(), 'server', 'python', 'poetiq_wrapper.py');
+  }
+
+  /**
+   * Allow the PoetiqAgentsRunner to be registered once it is implemented.
+   * Keeps this service decoupled from the runner implementation details.
+   */
+  registerAgentsRunner(runner: PoetiqAgentsRunner) {
+    this.agentsRunner = runner;
+  }
+
+  getRuntimeMode(options: PoetiqOptions): PoetiqRuntimeMode {
+    return this.shouldUseAgentsRoute(options) ? 'openai-agents' : 'python-wrapper';
   }
 
   private getDefaultModelForProvider(provider?: 'gemini' | 'openrouter' | 'openai'): string {
@@ -231,6 +274,25 @@ export class PoetiqService {
     ];
     
     return directModels.some(dm => modelLower.includes(dm));
+  }
+
+  private shouldUseAgentsRoute(options: PoetiqOptions): boolean {
+    if (!this.agentsRunner) return false;
+    if (options.useAgentsSdk === false) return false;
+
+    const provider = options.provider || this.inferProviderFromModel(options.model);
+    if (provider !== 'openai') return false;
+
+    const modelEligible = this.isDirectOpenAIModel(options.model);
+    if (!modelEligible) return false;
+
+    if (typeof this.agentsRunner.supportsModel === 'function' && !this.agentsRunner.supportsModel(options.model)) {
+      return false;
+    }
+
+    // Explicit opt-in takes priority, otherwise allow auto-route.
+    if (options.useAgentsSdk === true) return true;
+    return true;
   }
 
   /**
@@ -294,6 +356,52 @@ export class PoetiqService {
     puzzleId: string,
     task: ARCTask,
     options: PoetiqOptions = {},
+    onEvent?: (event: PoetiqBridgeEvent) => void
+  ): Promise<PoetiqResult> {
+    const runtimeMode = this.getRuntimeMode(options);
+    const normalizedOptions: PoetiqOptions = {
+      ...options,
+      runtimeMode,
+      resolvedRuntime: runtimeMode,
+    };
+
+    if (runtimeMode === 'openai-agents') {
+      return this.runViaAgentsRunner(puzzleId, task, normalizedOptions, onEvent);
+    }
+
+    return this.runViaPythonWrapper(puzzleId, task, normalizedOptions, onEvent);
+  }
+
+  private async runViaAgentsRunner(
+    puzzleId: string,
+    task: ARCTask,
+    options: PoetiqOptions,
+    onEvent?: (event: PoetiqBridgeEvent) => void
+  ): Promise<PoetiqResult> {
+    if (!this.agentsRunner) {
+      throw new Error('Poetiq Agents runner is not registered. Please disable useAgents or register a runner.');
+    }
+
+    let finalResult: PoetiqResult | null = null;
+    const runResult = await this.agentsRunner.run({
+      puzzleId,
+      task,
+      options,
+      onEvent: (event) => {
+        const candidate = this.handleBridgeEvent(event, puzzleId, options, onEvent);
+        if (candidate) {
+          finalResult = candidate;
+        }
+      },
+    });
+
+    return finalResult ?? this.enrichResultWithConfig(runResult, options);
+  }
+
+  private async runViaPythonWrapper(
+    puzzleId: string,
+    task: ARCTask,
+    options: PoetiqOptions,
     onEvent?: (event: PoetiqBridgeEvent) => void
   ): Promise<PoetiqResult> {
     return new Promise((resolve, reject) => {
@@ -376,72 +484,9 @@ export class PoetiqService {
         try {
           const event = JSON.parse(trimmed) as PoetiqBridgeEvent;
           pushEvent(event);
-          
-          // Forward to callback if provided
-          onEvent?.(event);
-
-          // Broadcast ALL event types to WebSocket if session provided (Saturn pattern)
-          if (options.sessionId) {
-            if (event.type === 'start') {
-              broadcast(options.sessionId, {
-                type: 'start',
-                status: 'running',
-                phase: 'starting',
-                message: `Poetiq solver starting for ${puzzleId}...`,
-                metadata: (event as any).metadata,
-              });
-            } else if (event.type === 'progress') {
-              broadcast(options.sessionId, {
-                type: 'progress',
-                status: 'running',
-                phase: event.phase,
-                iteration: event.iteration,
-                message: event.message,
-                expert: event.expert,
-                code: event.code,
-                reasoning: event.reasoning,
-                reasoningSummary: event.reasoningSummary,  // Responses API reasoning summary
-                trainResults: event.trainResults,
-                promptData: event.promptData,  // Forward prompt data to frontend
-                tokenUsage: (event as any).tokenUsage,
-                cost: (event as any).cost,
-                expertCumulativeTokens: (event as any).expertCumulativeTokens,
-                expertCumulativeCost: (event as any).expertCumulativeCost,
-                globalTokens: (event as any).globalTokens,
-                globalCost: (event as any).globalCost,
-              });
-            } else if (event.type === 'log') {
-              // Forward log events so UI can display them
-              // Include phase: 'log' so frontend state doesn't get corrupted
-              broadcast(options.sessionId, {
-                type: 'log',
-                status: 'running',
-                phase: 'log',  // Prevent undefined phase issues
-                level: event.level,
-                message: event.message,
-              });
-            } else if (event.type === 'error') {
-              broadcast(options.sessionId, {
-                type: 'error',
-                status: 'error',
-                phase: 'error',
-                message: event.message,
-                traceback: event.traceback,
-              });
-            }
-          }
-
-          // Capture final result with sanitized config metadata
-          if (event.type === 'final') {
-            finalResult = this.enrichResultWithConfig(event.result, options);
-          }
-
-          // Log errors to console
-          if (event.type === 'error') {
-            console.error(`[Poetiq] Error: ${event.message}`);
-            if (event.traceback) {
-              console.error(`[Poetiq] Traceback:\n${event.traceback}`);
-            }
+          const candidate = this.handleBridgeEvent(event, puzzleId, options, onEvent);
+          if (candidate) {
+            finalResult = candidate;
           }
 
         } catch {
@@ -505,6 +550,80 @@ export class PoetiqService {
         reject(err);
       });
     });
+  }
+
+  private handleBridgeEvent(
+    event: PoetiqBridgeEvent,
+    puzzleId: string,
+    options: PoetiqOptions,
+    onEvent?: (event: PoetiqBridgeEvent) => void
+  ): PoetiqResult | null {
+    onEvent?.(event);
+
+    if (options.sessionId) {
+      if (event.type === 'start') {
+        broadcast(options.sessionId, {
+          type: 'start',
+          status: 'running',
+          phase: 'starting',
+          message: `Poetiq solver starting for ${puzzleId}...`,
+          metadata: (event as any).metadata,
+        });
+      } else if (event.type === 'progress') {
+        broadcast(options.sessionId, {
+          type: 'progress',
+          status: 'running',
+          phase: event.phase,
+          iteration: event.iteration,
+          message: event.message,
+          expert: event.expert,
+          code: event.code,
+          reasoning: event.reasoning,
+          reasoningSummary: event.reasoningSummary,
+          trainResults: event.trainResults,
+          promptData: event.promptData,
+          agentRunId: event.agentRunId,
+          agentModel: event.agentModel,
+          agentTimelineItem: event.agentTimelineItem,
+          agentReasoningDelta: event.agentReasoningDelta,
+          tokenUsage: (event as any).tokenUsage,
+          cost: (event as any).cost,
+          expertCumulativeTokens: (event as any).expertCumulativeTokens,
+          expertCumulativeCost: (event as any).expertCumulativeCost,
+          globalTokens: (event as any).globalTokens,
+          globalCost: (event as any).globalCost,
+        });
+      } else if (event.type === 'log') {
+        broadcast(options.sessionId, {
+          type: 'log',
+          status: 'running',
+          phase: 'log',
+          level: event.level,
+          message: event.message,
+        });
+      } else if (event.type === 'error') {
+        broadcast(options.sessionId, {
+          type: 'error',
+          status: 'error',
+          phase: 'error',
+          message: event.message,
+          traceback: event.traceback,
+        });
+      }
+    }
+
+    if (event.type === 'error') {
+      console.error(`[Poetiq] Error: ${event.message}`);
+      if (event.traceback) {
+        console.error(`[Poetiq] Traceback:\n${event.traceback}`);
+      }
+    }
+
+    if (event.type === 'final') {
+      return this.enrichResultWithConfig(event.result, options);
+    }
+
+    return null;
   }
 
   private slugifyModelId(modelId?: string | null): string {
