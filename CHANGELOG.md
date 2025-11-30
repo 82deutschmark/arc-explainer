@@ -1,6 +1,14 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top with the time and date!
 
+### Version 5.33.20  Nov 30, 2025 4:15pm 
+
+- **Poetiq Agents SDK Runner: OpenAI Agent + Python Sandbox Tools** (Author: Cascade using Cascade)
+  - Added `poetiq_tool_runner.py` single-shot Python entry that reuses Poetiq’s core `_eval_on_train_and_test` and `_build_feedback` helpers to evaluate candidate `transform()` implementations and return structured train/test results plus feedback to Node tools.
+  - Introduced `PoetiqAgentsRunner` powered by the OpenAI Agents SDK with a `submit_python_candidate` tool, so OpenAI models can orchestrate iterative code generation while delegating sandbox execution to the existing Poetiq Python stack and emitting agent timeline telemetry for the UI.
+  - Registered the Agents runner at server startup so `poetiqService` can route eligible OpenAI runs through the Agents path whenever `useAgents` is enabled, without changing Gemini/Anthropic/OpenRouter behavior.
+  - **Files**: `server/python/poetiq_tool_runner.py`, `server/services/poetiq/PoetiqAgentsRunner.ts`, `server/index.ts`.
+
 ### Version 5.33.19  Nov 30, 2025 3:45pm 
 
 - **Poetiq Agents Routing: Service + Controller Hooks** (Author: Codex / GPT-5)
