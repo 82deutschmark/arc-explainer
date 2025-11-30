@@ -19,7 +19,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { CollapsibleCard } from '@/components/ui/collapsible-card';
-import { Brain, Loader2, AlertTriangle, Search, Info } from 'lucide-react';
+import { Brain, Loader2, AlertTriangle, Search, Info, Sparkles } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 // Refinement-specific components
@@ -138,7 +138,8 @@ export default function PuzzleDiscussion() {
     omitAnswer: true, // CRITICAL FIX: Must withhold test answers in solver mode to prevent data leakage
     originalExplanation: selectedExplanation,
     customChallenge: refinementState.userGuidance,
-    previousResponseId: refinementState.getLastResponseId() // Single-model chaining
+    previousResponseId: refinementState.getLastResponseId(), // Single-model chaining
+    models
   });
 
   const isStreamingActive = streamingModelKey !== null;
@@ -434,7 +435,7 @@ export default function PuzzleDiscussion() {
   // No taskId - show search and recent eligible explanations
   if (!taskId) {
     return (
-      <div className="w-full space-y-4">
+      <div className="w-full max-w-6xl mx-auto px-4 space-y-4 pb-6">
         {/* Search Card */}
         <Card>
           <CardHeader>
@@ -546,7 +547,7 @@ export default function PuzzleDiscussion() {
 
   // Main interface
   return (
-    <div className="w-full space-y-4">
+    <div className="w-full max-w-6xl mx-auto px-4 space-y-4 pb-6">
       {/* Breadcrumb Navigation */}
       <div className="text-sm breadcrumbs">
         <ul>
@@ -647,7 +648,7 @@ export default function PuzzleDiscussion() {
           }
 
           return (
-            <>
+            <div className="grid gap-4 lg:grid-cols-[minmax(0,3fr)_minmax(0,2.2fr)]">
               <ProfessionalRefinementUI
                 iterations={refinementState.iterations}
                 taskId={taskId}
@@ -682,7 +683,38 @@ export default function PuzzleDiscussion() {
                 onUserGuidanceChange={refinementState.setUserGuidance}
                 onContinueRefinement={handleGenerateRefinement}
               />
-            </>
+
+              <div className="space-y-4">
+                {isStreamingActive && (
+                  <StreamingAnalysisPanel
+                    title={`${streamingModel?.name ?? streamingModelKey ?? 'Refinement'}`}
+                    status={streamingPanelStatus}
+                    phase={typeof streamingPhase === 'string' ? streamingPhase : undefined}
+                    message={
+                      streamingPanelStatus === 'failed'
+                        ? streamError?.message ?? streamingMessage ?? 'Streaming failed'
+                        : streamingMessage
+                    }
+                    text={streamingText}
+                    structuredJsonText={streamingStructuredJsonText}
+                    structuredJson={streamingStructuredJson}
+                    reasoning={streamingReasoning}
+                    tokenUsage={streamingTokenUsage}
+                    promptPreview={streamingPromptPreview}
+                    task={task!}
+                    onCancel={
+                      streamingPanelStatus === 'in_progress'
+                        ? () => {
+                            cancelStreamingAnalysis();
+                            setPendingStream(null);
+                          }
+                        : undefined
+                    }
+                    onClose={closeStreamingModal}
+                  />
+                )}
+              </div>
+            </div>
           );
         })()
       ) : refinableExplanations.length > 0 ? (
@@ -734,56 +766,6 @@ export default function PuzzleDiscussion() {
           </CardContent>
         </Card>
       )}
-
-      {/* Streaming Modal Dialog (like PuzzleExaminer) */}
-      <dialog className={`modal ${isStreamingActive ? 'modal-open' : ''}`}>
-        <div className="modal-box max-w-[95vw] max-h-[90vh] overflow-y-auto">
-          <h3 className="font-bold text-lg mb-4">
-            {`Streaming ${streamingModel?.name ?? streamingModelKey ?? 'Refinement'}`}
-          </h3>
-          <StreamingAnalysisPanel
-            title={`${streamingModel?.name ?? streamingModelKey ?? 'Refinement'}`}
-            status={streamingPanelStatus}
-            phase={typeof streamingPhase === 'string' ? streamingPhase : undefined}
-            message={
-              streamingPanelStatus === 'failed'
-                ? streamError?.message ?? streamingMessage ?? 'Streaming failed'
-                : streamingMessage
-            }
-            text={streamingText}
-            structuredJsonText={streamingStructuredJsonText}
-            structuredJson={streamingStructuredJson}
-            reasoning={streamingReasoning}
-            tokenUsage={streamingTokenUsage}
-            promptPreview={streamingPromptPreview}
-            task={task!}
-            onCancel={
-              streamingPanelStatus === 'in_progress'
-                ? () => {
-                    cancelStreamingAnalysis();
-                    setPendingStream(null);
-                  }
-                : undefined
-            }
-            onClose={closeStreamingModal}
-          />
-        </div>
-        <form method="dialog" className="modal-backdrop">
-          <button
-            onClick={() => {
-              if (streamingPanelStatus === 'in_progress') {
-                cancelStreamingAnalysis();
-                setPendingStream(null);
-              }
-              if (streamingPanelStatus !== 'completed') {
-                closeStreamingModal();
-              }
-            }}
-          >
-            close
-          </button>
-        </form>
-      </dialog>
     </div>
   );
 }

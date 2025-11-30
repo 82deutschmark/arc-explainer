@@ -1,6 +1,28 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top with the time and date!
 
+### Version 5.33.17  Nov 30, 2025 2:20pm 
+
+- **Discussion Page UI: Tighter Layout + Embedded Streaming Panel** (Author: Cascade using Cascade)
+  - Centered and constrained the Discussion/Progressive Reasoning page to a max-width container, reducing excess horizontal padding and large outer margins so the content feels more focused.
+  - Replaced the full-screen streaming modal with an inline, right-hand streaming panel that sits beside the refinement controls in a responsive two-column grid, keeping live output visible without taking over the page.
+  - Fixed a missing `Sparkles` icon import to restore the "Generate First Explanation" button icon.
+  - **Files**: `client/src/pages/PuzzleDiscussion.tsx`.
+
+### Version 5.33.16  Nov 30, 2025 1:50pm 
+
+- **Discussion Refinement: User Guidance + Streaming Fixes** (Author: Cascade using Cascade)
+  - Ensured human "User Guidance" hints from the Discussion page are actually threaded into the underlying discussion/refinement prompts and visible in the prompt preview for continuation runs.
+  - Wired the Puzzle Discussion refinement flow into the shared SSE streaming harness by passing model metadata into `useAnalysisResults`, so eligible models now stream refinement output just like PuzzleExaminer and ModelDebate.
+  - **Files**: `client/src/pages/PuzzleDiscussion.tsx`, `client/src/components/puzzle/refinement/ProfessionalRefinementUI.tsx`.
+
+### Version 5.33.15  Nov 30, 2025 1:10pm 
+
+- **Poetiq Solver: Fix Missing German ARC Prompt Constant** (Author: Cascade using Cascade)
+  - Resolved a runtime ImportError in the Poetiq Python wrapper by reintroducing the `SOLVER_PROMPT_ARC_DE` system prompt in `solver/poetiq/prompts.py`, ensuring the `arc_de` promptStyle can be selected without crashing the solver process.
+  - Verified that all localized ARC system prompts (English, German, French, Turkish, Russian) are now defined and correctly imported by `build_config_list`, restoring the full prompt-style matrix for Poetiq runs.
+  - **Files**: `solver/poetiq/prompts.py`, `server/python/poetiq_wrapper.py`.
+
 ### Version 5.33.14  Nov 29, 2025 8:15pm 
 
 - **Poetiq Prompt Styles: French & Turkish ARC System Prompts** (Author: Cascade using Cascade)

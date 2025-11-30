@@ -122,6 +122,8 @@ export const ProfessionalRefinementUI: React.FC<ProfessionalRefinementUIProps> =
   // Calculate comprehensive metrics
   const currentIteration = iterations.length;
   const latest = iterations.length > 0 ? iterations[iterations.length - 1] : null;
+  const originalIteration = iterations.find(iter => iter.iterationNumber === 1) ?? iterations[0];
+  const originalExplanation = originalIteration?.content;
   
   const totalCost = iterations.reduce((sum, iter) => {
     const cost = Number(iter.content.estimatedCost) || 0;
@@ -325,7 +327,8 @@ export const ProfessionalRefinementUI: React.FC<ProfessionalRefinementUIProps> =
         promptId={promptId}
         options={{
           customChallenge: userGuidance,
-          previousResponseId: getLastResponseId() // ✅ CRITICAL FIX: Pass for continuation mode
+          previousResponseId: getLastResponseId(), // ✅ CRITICAL FIX: Pass for continuation mode
+          originalExplanation
         }}
         confirmMode={previewMode === 'run'}
         onConfirm={previewMode === 'run'
