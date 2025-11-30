@@ -1,6 +1,14 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top with the time and date!
 
+### Version 5.33.21  Nov 30, 2025 6:55pm 
+
+- **Poetiq Agents UI/UX: Solver Toggle + Agents Runtime Panel** (Author: Cascade using Cascade)
+  - Extended the Poetiq progress hook to capture OpenAI Agents telemetry (`agentRunId`, `agentModel`, `agentTimeline`, reasoning deltas, and token usage) and to pass a `useAgents` hint down to the Poetiq controller so OpenAI runs can be cleanly routed through the Agents runner.
+  - Added an "OpenAI Agents runtime" switch to the Poetiq control panel, only surfaced for direct OpenAI models based on `/api/poetiq/models` metadata, wiring the toggle into the solver start options as `useAgentsSdk`.
+  - Introduced a compact Poetiq Agents runtime panel on the Poetiq solver page that mirrors the ARC3 Agent Playground: it shows live reasoning text, sandbox tool calls to the Python Poetiq evaluator, agent messages, and a small token-usage footer whenever the `openai-agents` runtime is active.
+  - **Files**: `client/src/hooks/usePoetiqProgress.ts`, `client/src/components/poetiq/PoetiqControlPanel.tsx`, `client/src/components/poetiq/PoetiqAgentsRuntimePanel.tsx`, `client/src/components/poetiq/index.ts`, `client/src/pages/PoetiqSolver.tsx`.
+
 ### Version 5.33.20  Nov 30, 2025 4:15pm 
 
 - **Poetiq Agents SDK Runner: OpenAI Agent + Python Sandbox Tools** (Author: Cascade using Cascade)
