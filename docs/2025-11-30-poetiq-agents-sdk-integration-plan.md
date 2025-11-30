@@ -147,4 +147,48 @@ Purpose: Introduce the OpenAI Agents SDK into the Poetiq solver flow (OpenAI-onl
 3. Updated Poetiq service/controller/client to route OpenAI requests through Agents and surface new telemetry.  
 4. Documentation updates and a top-of-changelog entry once implemented.  
 
+---
+
+## 7. UI/UX for Poetiq Agents (implemented)
+
+### 7.1 Objectives
+
+- Mirror the successful ARC3 Agent Playground UX while staying within the existing Poetiq solver layout.
+- Keep non-Agents runs visually identical to the current Python-wrapper path.
+
+### 7.2 Hook & telemetry extensions
+
+- `client/src/hooks/usePoetiqProgress.ts` now:
+  - Adds `useAgentsSdk?: boolean` to `PoetiqOptions`, which is forwarded to the backend as `useAgents` in the `POST /api/poetiq/solve/:taskId` body.
+  - Tracks Agents-specific telemetry fields on `PoetiqProgressState`: `agentRunId`, `agentModel`, `agentTimeline`, `agentStreamingReasoning`, and `agentUsage` (token counts).
+  - Parses WebSocket payloads that include `agentTimelineItem`, `agentReasoningDelta`, `agentRunId`, `agentModel`, and the `agents_usage` token-usage summary, so the UI can render a live agent timeline without altering the legacy Poetiq event stream.
+
+### 7.3 Control surface changes
+
+- `client/src/components/poetiq/PoetiqControlPanel.tsx`:
+  - Reads model metadata from `usePoetiqModels()` and only exposes the **OpenAI Agents runtime** switch when the selected model is a direct OpenAI configuration (provider `OpenAI`, routing `direct`).
+  - Binds the switch to a local `useAgents` boolean, disabling it while a run is active.
+- `client/src/pages/PoetiqSolver.tsx`:
+  - Owns the `useAgents` state and threads it into `PoetiqControlPanel`.
+  - Passes `useAgentsSdk: useAgents` into `usePoetiqProgress.start()`, which in turn forwards the `useAgents` hint to the Poetiq controller.
+
+### 7.4 New Agents runtime panel
+
+- `client/src/components/poetiq/PoetiqAgentsRuntimePanel.tsx`:
+  - Renders only when the current Poetiq session is using the Agents runtime (detected via `currentPromptData.apiStyle === 'openai_agents'` or the presence of `agentModel`).
+  - Shows:
+    - A status card with runtime label, OpenAI model id, short run id, and Agents-specific token summary.
+    - A live reasoning card that auto-scrolls as `agentStreamingReasoning` (or the generic `streamingReasoning`) updates.
+    - A sandbox evaluations card that lists tool calls/results derived from `agentTimeline` (e.g. calls to the `submit_python_candidate` tool that delegates to the Python Poetiq evaluator).
+    - An agent messages card that surfaces assistant-facing output entries from the same timeline.
+- `client/src/components/poetiq/index.ts` exports the panel as `PoetiqAgentsPanel` so the solver page can import it alongside the existing Poetiq components.
+
+### 7.5 Layout integration & behavior
+
+- `client/src/pages/PoetiqSolver.tsx`:
+  - Mounts the Agents runtime panel at the top of the right-hand column above the existing training-grid / event-log region.
+  - Leaves all non-Agents behavior unchanged:
+    - When the runtime is the legacy Python wrapper, the panel does not render and the page looks and behaves exactly as before.
+    - When the runtime is `openai-agents`, the panel becomes a compact, ARC3-style "agent HUD" that sits alongside the pre-existing Poetiq dashboards and Python terminal.
+
 This plan keeps scope focused on OpenAI provider parity while allowing other providers to remain on the proven Python wrapper until we prove the Agents path in production.
