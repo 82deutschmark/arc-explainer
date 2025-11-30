@@ -1,6 +1,13 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top with the time and date!
 
+### Version 5.33.18  Nov 30, 2025 3:05pm 
+
+- **Poetiq Prompt Styles: Restore German ARC Template** (Author: Codex / GPT-5)
+  - Reintroduced the missing `SOLVER_PROMPT_ARC_DE` constant so the `arc_de` selector no longer crashes Poetiq runs, mirroring the same ARC Explainer guidance we provide for English/French/Turkish/Russian prompt styles.
+  - Logged the remediation steps in a new plan doc to keep future ARC prompt work traceable and ensure localized templates stay aligned with the `/v1/responses` contract.
+  - **Files**: `solver/poetiq/prompts.py`, `docs/2025-12-02-poetiq-german-prompt-fix-plan.md`.
+
 ### Version 5.33.17  Nov 30, 2025 2:20pm 
 
 - **Discussion Page UI: Tighter Layout + Embedded Streaming Panel** (Author: Cascade using Cascade)
