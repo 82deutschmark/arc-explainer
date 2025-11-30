@@ -9,7 +9,7 @@
  */
 
 import React, { useMemo, useEffect } from 'react';
-import { Key, Users, AlertTriangle, Loader2, Cpu, Cloud, Server } from 'lucide-react';
+import { Key, Users, AlertTriangle, Loader2, Cpu, Cloud, Server, Brain } from 'lucide-react';
 import type { PoetiqProgressState } from '@/hooks/usePoetiqProgress';
 import { usePoetiqModels } from '@/hooks/usePoetiqModels';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
@@ -18,6 +18,7 @@ import { Input } from '@/components/ui/input';
 import { Slider } from '@/components/ui/slider';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Switch } from '@/components/ui/switch';
 import {
   Select,
   SelectContent,
@@ -64,6 +65,8 @@ interface PoetiqControlPanelProps {
   setPromptStyle: (style: 'classic' | 'arc' | 'arc_de' | 'arc_ru' | 'arc_fr' | 'arc_tr') => void;
   onStart: () => void;
   onCancel: () => void;
+   useAgents: boolean;
+   setUseAgents: (value: boolean) => void;
 }
 
 export default function PoetiqControlPanel({
@@ -87,6 +90,8 @@ export default function PoetiqControlPanel({
   setPromptStyle,
   onStart,
   onCancel,
+  useAgents,
+  setUseAgents,
 }: PoetiqControlPanelProps) {
   const { data: poetiqModels, isLoading: modelsLoading } = usePoetiqModels();
 
@@ -117,6 +122,10 @@ export default function PoetiqControlPanel({
     [poetiqModels, model],
   );
   const requiresApiKey = !!(selectedModelObj as any)?.requiresBYO;
+  const canUseAgents =
+    !!selectedModelObj &&
+    selectedModelObj.provider === 'OpenAI' &&
+    (selectedModelObj as any)?.routing === 'direct';
 
   useEffect(() => {
     if (selectedModelObj) {
@@ -193,6 +202,24 @@ export default function PoetiqControlPanel({
                     Routed via OpenRouter
                   </>
                 )}
+              </div>
+            )}
+            {canUseAgents && (
+              <div className="mt-2 flex items-center justify-between rounded-md border border-emerald-200 bg-emerald-50 px-2 py-2">
+                <div className="space-y-0.5">
+                  <div className="flex items-center gap-1 text-xs font-semibold text-emerald-800">
+                    <Brain className="h-3.5 w-3.5" />
+                    <span>OpenAI Agents runtime</span>
+                  </div>
+                  <p className="text-[10px] text-emerald-700">
+                    Let this OpenAI model manage tools via the Agents SDK while still using the Poetiq Python sandbox.
+                  </p>
+                </div>
+                <Switch
+                  checked={useAgents}
+                  onCheckedChange={setUseAgents}
+                  disabled={isRunning}
+                />
               </div>
             )}
           </div>
