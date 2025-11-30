@@ -700,6 +700,8 @@ export function usePoetiqProgress(taskId: string | undefined) {
         temperature,
         reasoningEffort: options.reasoningEffort || 'high',  // Default to high for best results
         promptStyle: options.promptStyle,
+        // Frontend hint for Poetiq controller to route OpenAI runs via Agents SDK
+        useAgents: options.useAgentsSdk,
       };
 
       if (isOpenRouterModel) {

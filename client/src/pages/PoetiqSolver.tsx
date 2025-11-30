@@ -21,7 +21,7 @@ import { DEFAULT_EMOJI_SET } from '@/lib/spaceEmojis';
 import PoetiqControlPanel from '@/components/poetiq/PoetiqControlPanel';
 import PoetiqPythonTerminal from '@/components/poetiq/PoetiqPythonTerminal';
 import PoetiqProgressDashboard from '@/components/poetiq/PoetiqProgressDashboard';
-import PoetiqAgentsPanel from '@/components/poetiq/PoetiqAgentsPanel';
+import PoetiqAgentsPanel from '@/components/poetiq/PoetiqAgentsRuntimePanel';
 import { Button } from '@/components/ui/button';
 
 const PROMPT_ROLE_BADGES: Record<string, string> = {
