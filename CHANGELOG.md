@@ -1,6 +1,14 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top with the time and date!
 
+### Version 5.33.19  Nov 30, 2025 3:45pm 
+
+- **Poetiq Agents Routing: Service + Controller Hooks** (Author: Codex / GPT-5)
+  - Added `useAgents` preference handling, runtime selection helpers, and an Agents-runner registration point inside `poetiqService` so OpenAI models can be routed to the forthcoming Agents SDK runner without disturbing Gemini/Anthropic/OpenRouter flows.
+  - Extended the shared Poetiq prompt telemetry schema with agent timeline/reasoning fields and unified WebSocket broadcasting so both the Python wrapper and Agents runner surface identical progress structures.
+  - Updated the Poetiq controller’s initialization/broadcast routines to expose the planned runtime, keep HTTP responses in sync, and log which execution path each session will take.
+  - **Files**: `server/services/poetiq/poetiqService.ts`, `server/controllers/poetiqController.ts`, `shared/types.ts`.
+
 ### Version 5.33.18  Nov 30, 2025 3:05pm 
 
 - **Poetiq Prompt Styles: Restore German ARC Template** (Author: Codex / GPT-5)

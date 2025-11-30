@@ -176,8 +176,12 @@ export const poetiqController = {
       ));
     }
 
+    const useAgentsPreferenceRaw = req.body?.useAgents;
+    const useAgentsPreference =
+      typeof useAgentsPreferenceRaw === 'boolean' ? Boolean(useAgentsPreferenceRaw) : undefined;
+
     // Extract options from request body
-    const options = {
+    const baseOptions = {
       model,
       maxIterations: typeof req.body?.maxIterations === 'number' ? req.body.maxIterations : 10,
       numExperts: typeof req.body?.numExperts === 'number' ? req.body.numExperts : 1,
@@ -187,7 +191,11 @@ export const poetiqController = {
       apiKey,           // BYO API key (never stored)
       provider,         // Which provider the key is for
       promptStyle,
+      useAgentsSdk: useAgentsPreference,
     };
+
+    const runtimeMode = poetiqService.getRuntimeMode(baseOptions);
+    const options = { ...baseOptions, runtimeMode };
 
     // Broadcast initial state immediately
     console.log('[Poetiq] Broadcasting initial state for sessionId:', sessionId);
@@ -196,7 +204,10 @@ export const poetiqController = {
       phase: 'initializing',
       iteration: 0,
       totalIterations: options.maxIterations,
-      message: 'Starting Poetiq solver with your API key...',
+      message:
+        runtimeMode === 'openai-agents'
+          ? 'Starting Poetiq solver via OpenAI Agents SDK...'
+          : 'Starting Poetiq solver via Python wrapper...',
       taskId,
       config: {
         model: options.model || 'gemini/gemini-3-pro-preview',
@@ -204,13 +215,14 @@ export const poetiqController = {
         numExperts: options.numExperts,
         temperature: options.temperature,
         promptStyle: options.promptStyle || 'classic',
+        runtimeMode,
       }
     });
 
     // Start async solver (non-blocking)
     setImmediate(async () => {
       try {
-        console.log(`[Poetiq] Starting solver for ${taskId}`);
+        console.log(`[Poetiq] Starting solver for ${taskId} using ${runtimeMode}`);
 
         const result = await poetiqService.solvePuzzle(
           taskId,
@@ -294,6 +306,7 @@ export const poetiqController = {
         numExperts: options.numExperts,
         temperature: options.temperature,
         provider: options.provider || 'gemini',
+        runtimeMode,
       }
     }));
   },

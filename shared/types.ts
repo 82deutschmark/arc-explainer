@@ -108,6 +108,32 @@ export interface PoetiqPromptMessage {
   metadata?: Record<string, unknown>;
 }
 
+export type PoetiqAgentToolStatus = 'started' | 'completed' | 'failed';
+
+export interface PoetiqAgentTimelineItem {
+  id: string;
+  type: 'reasoning' | 'tool_call' | 'tool_result' | 'status' | 'output';
+  /**
+   * Stable identifier for the Agent run (provider response ID / run id).
+   */
+  runId?: string;
+  iteration?: number;
+  toolName?: string;
+  status?: PoetiqAgentToolStatus;
+  label?: string;
+  message?: string;
+  payload?: Record<string, unknown>;
+  timestamp?: string;
+}
+
+export interface PoetiqAgentReasoningDelta {
+  runId: string;
+  channel: 'text' | 'reasoning';
+  delta: string;
+  cumulativeText?: string;
+  timestamp?: string;
+}
+
 export interface PoetiqPromptData {
   systemPrompt?: string;
   userPrompt?: string;
@@ -136,6 +162,13 @@ export interface PoetiqPromptData {
    * Structured conversation turns for Responses API-compatible replay.
    */
   messages?: PoetiqPromptMessage[];
+  /**
+   * OpenAI Agents SDK telemetry when Poetiq runs in Agents mode.
+   */
+  agentRunId?: string;
+  agentModel?: string;
+  agentTimeline?: PoetiqAgentTimelineItem[];
+  agentReasoning?: PoetiqAgentReasoningDelta[];
 }
 
 /**
