@@ -26,7 +26,7 @@ export interface PoetiqOptions {
   maxIterations?: number;   // default: 10
   temperature?: number;     // default: 1.0
   reasoningEffort?: 'low' | 'medium' | 'high'; // Optional reasoning effort
-  promptStyle?: 'classic' | 'arc'; // Optional prompt style selector
+  promptStyle?: 'classic' | 'arc' | 'arc_de' | 'arc_ru'; // Optional prompt style selector
 }
 
 export interface PoetiqTokenUsage {

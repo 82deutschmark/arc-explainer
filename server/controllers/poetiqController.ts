@@ -148,9 +148,12 @@ export const poetiqController = {
     const provider = req.body?.provider as 'gemini' | 'openrouter' | 'openai' | 'anthropic' | 'xai' | undefined;
     const model = req.body?.model as string | undefined;
     const promptStyleRaw = req.body?.promptStyle as string | undefined;
-    const promptStyle: 'classic' | 'arc' | undefined =
-      promptStyleRaw === 'classic' || promptStyleRaw === 'arc'
-        ? (promptStyleRaw as 'classic' | 'arc')
+    const promptStyle: 'classic' | 'arc' | 'arc_de' | 'arc_ru' | undefined =
+      promptStyleRaw === 'classic' ||
+      promptStyleRaw === 'arc' ||
+      promptStyleRaw === 'arc_de' ||
+      promptStyleRaw === 'arc_ru'
+        ? (promptStyleRaw as 'classic' | 'arc' | 'arc_de' | 'arc_ru')
         : undefined;
 
     // Only require BYO key for Gemini and OpenRouter runs.

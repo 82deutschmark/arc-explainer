@@ -661,18 +661,28 @@ solver.poetiq.solve_parallel_coding.solve_coding = instrumented_solve_coding
 
 
 def build_config_list(num_experts: int, model: str, max_iterations: int, temperature: float, reasoning_effort: str = None, verbosity: str = None, reasoning_summary: str = None, prompt_style: str | None = None):
-    """
-    Build a dynamic CONFIG_LIST for this run based on user options.
+    """Build a dynamic CONFIG_LIST for this run based on user options.
 
     This allows per-request expert count without modifying global state and
-    lets us switch between different system prompts (classic vs ARC-optimized).
+    lets us switch between different system prompts (classic vs ARC-optimized
+    in English, German, or Russian).
     """
-    from solver.poetiq.prompts import FEEDBACK_PROMPT, SOLVER_PROMPT_1, SOLVER_PROMPT_ARC
+    from solver.poetiq.prompts import (
+        FEEDBACK_PROMPT,
+        SOLVER_PROMPT_1,
+        SOLVER_PROMPT_ARC,
+        SOLVER_PROMPT_ARC_DE,
+        SOLVER_PROMPT_ARC_RU,
+    )
 
     # Select solver prompt based on prompt style; default to classic to
     # preserve historical behavior when no style is provided.
     if prompt_style == "arc":
         solver_prompt_value = SOLVER_PROMPT_ARC
+    elif prompt_style == "arc_de":
+        solver_prompt_value = SOLVER_PROMPT_ARC_DE
+    elif prompt_style == "arc_ru":
+        solver_prompt_value = SOLVER_PROMPT_ARC_RU
     else:
         solver_prompt_value = SOLVER_PROMPT_1
 

@@ -60,8 +60,8 @@ interface PoetiqControlPanelProps {
   setTemperature: (temp: number) => void;
   reasoningEffort: 'low' | 'medium' | 'high';
   setReasoningEffort: (effort: 'low' | 'medium' | 'high') => void;
-  promptStyle: 'classic' | 'arc';
-  setPromptStyle: (style: 'classic' | 'arc') => void;
+  promptStyle: 'classic' | 'arc' | 'arc_de' | 'arc_ru';
+  setPromptStyle: (style: 'classic' | 'arc' | 'arc_de' | 'arc_ru') => void;
   onStart: () => void;
   onCancel: () => void;
 }
@@ -236,7 +236,9 @@ export default function PoetiqControlPanel({
             <label className="text-xs font-semibold">Prompt Template</label>
             <Select
               value={promptStyle}
-              onValueChange={value => setPromptStyle(value as 'classic' | 'arc')}
+              onValueChange={value =>
+                setPromptStyle(value as 'classic' | 'arc' | 'arc_de' | 'arc_ru')
+              }
               disabled={isRunning}
             >
               <SelectTrigger className="h-9">
@@ -244,11 +246,13 @@ export default function PoetiqControlPanel({
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="classic">Classic Poetiq (original prompt)</SelectItem>
-                <SelectItem value="arc">ARC Explainer (cleaned ARC prompt)</SelectItem>
+                <SelectItem value="arc">ARC Explainer (English)</SelectItem>
+                <SelectItem value="arc_de">ARC Explainer (Deutsch)</SelectItem>
+                <SelectItem value="arc_ru">ARC Explainer (Русский)</SelectItem>
               </SelectContent>
             </Select>
             <p className="text-[10px] text-muted-foreground">
-              Choose between the original Poetiq system prompt and the ARC-optimized variant.
+              Choose between the original Poetiq prompt and ARC-optimized prompts in English, German, or Russian.
             </p>
           </div>
         </CardContent>
