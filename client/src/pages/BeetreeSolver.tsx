@@ -11,8 +11,18 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Loader2, Play, Square, DollarSign, Clock, Users, Zap, ArrowLeft } from 'lucide-react';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
+import { Loader2, Play, Square, DollarSign, Clock, Users, Zap, ArrowLeft, AlertTriangle } from 'lucide-react';
 import { usePuzzle } from '@/hooks/usePuzzle';
 import { useBeetreeRun } from '@/hooks/useBeetreeRun';
 import { BeetreeProgressDashboard } from '@/components/beetree/BeetreeProgressDashboard';
@@ -28,6 +38,7 @@ export default function BeetreeSolver() {
   
   // Form state
   const [mode, setMode] = useState<'testing' | 'production'>('testing');
+  const [showProductionConfirm, setShowProductionConfirm] = useState(false);
   
   // Beetree run hook
   const {
@@ -47,6 +58,19 @@ export default function BeetreeSolver() {
   const handleStart = () => {
     if (!taskId) return;
     
+    // Show confirmation modal for production mode
+    if (mode === 'production') {
+      setShowProductionConfirm(true);
+      return;
+    }
+    
+    doStartAnalysis();
+  };
+
+  const doStartAnalysis = () => {
+    if (!taskId) return;
+    
+    setShowProductionConfirm(false);
     startAnalysis({
       taskId,
       testIndex: 0,
@@ -220,6 +244,41 @@ export default function BeetreeSolver() {
           </div>
         </div>
       </div>
+
+      {/* Production Mode Confirmation Modal */}
+      <AlertDialog open={showProductionConfirm} onOpenChange={setShowProductionConfirm}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center gap-2">
+              <AlertTriangle className="w-5 h-5 text-amber-500" />
+              Confirm Production Mode
+            </AlertDialogTitle>
+            <AlertDialogDescription className="space-y-3">
+              <p>
+                Production mode runs <strong>8 frontier AI models</strong> including GPT-5.1, 
+                Claude Opus, and Gemini Pro for comprehensive analysis.
+              </p>
+              <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 text-amber-800">
+                <p className="font-semibold">Estimated Cost: $15 - $50</p>
+                <p className="text-sm">Duration: 20 - 45 minutes</p>
+              </div>
+              <p className="text-sm">
+                Are you sure you want to proceed? This will incur real API charges.
+              </p>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={doStartAnalysis}
+              className="bg-amber-600 hover:bg-amber-700"
+            >
+              <DollarSign className="w-4 h-4 mr-2" />
+              Start Production Analysis
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

@@ -1,6 +1,28 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top with the time and date!
 
+### Version 5.35.1  Dec 1, 2025 5:30pm
+
+- **Beetree Ensemble Solver - Critical Bug Fixes** (Author: Cascade)
+  - **Backend Service Completion**: Added missing abstract method implementations to `BeetreeService`: `getModelInfo()`, `generatePromptPreview()`, `callProviderAPI()`, `parseProviderResponse()`, plus helper methods `extractModeFromModelKey()`, `validatePredictions()`, `gridsMatch()`, `buildAIResponse()`, `saveBeetreeResult()`, and `estimateCost()`.
+  - **Real Cost/Token Extraction**: Fixed Python wrapper to extract real token counts and costs from beetreeARC step logs instead of placeholder values. Added `estimate_model_cost()` function with model-specific pricing for GPT-5.1, Claude, Gemini, DeepSeek, and Grok models.
+  - **Consensus Data**: Python wrapper now emits `consensus_strength`, `diversity_score`, and `agreement_count` fields computed from the candidates_object and picked_solutions data.
+  - **API Response Fix**: Controller now returns `success: true` field for frontend compatibility.
+  - **Session ID Fix**: Frontend hook now uses server-provided sessionId for SSE connection instead of locally generated one, fixing stream mismatch issues.
+  - **Production Mode Confirmation**: Added AlertDialog confirmation modal for production mode ($15-$50, 20-45 min) to prevent accidental expensive runs. Users must explicitly confirm before starting production analysis.
+  - **Type Safety**: Fixed TypeScript errors by adding proper type casts for beetree-specific fields on explanation objects.
+  - **Files**: `server/services/beetreeService.ts`, `server/python/beetree_wrapper.py`, `server/controllers/beetreeController.ts`, `client/src/hooks/useBeetreeRun.ts`, `client/src/pages/BeetreeSolver.tsx`.
+
+### Version 5.35.0  Dec 1, 2025 4:50pm
+
+- **DeepSeek Model Updates - V3.2 Integration** (Author: User)
+  - **Updated DeepSeek Chat v3.2**: Enhanced costs ($0.28/$0.42), added 128K context window, 8K max output tokens, JSON/tool support
+  - **Updated DeepSeek Reasoner v3.2**: Unified pricing with chat model, added thinking mode details, 64K max output tokens
+  - **Added DeepSeek Reasoner v3.2-Speciale**: Special edition model with 128K max output tokens, limited availability until Dec 15, 2025
+  - **Enhanced Metadata**: Added contextWindow, maxOutputTokens, releaseDate, and detailed notes for all DeepSeek models
+  - **Cache Pricing**: Added cache hit pricing information ($0.028/1M input tokens) for all V3.2 models
+  - **Files**: `server/config/models.ts`
+
 ### Version 5.34.0  Dec 1, 2025 4:41pm
 
 - **🌳 Beetree Ensemble Solver - Complete Multi-Model Integration** (Author: Cascade / Claude Sonnet 4)
