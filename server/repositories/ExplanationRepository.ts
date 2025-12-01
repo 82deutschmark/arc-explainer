@@ -48,9 +48,11 @@ export class ExplanationRepository extends BaseRepository implements IExplanatio
           system_prompt_used, user_prompt_used, prompt_template_id, custom_prompt_text,
           provider_response_id, provider_raw_response, multi_test_prediction_grids,
           rebutting_explanation_id,
-          grover_iterations, grover_best_program, iteration_count
+          grover_iterations, grover_best_program, iteration_count,
+          beetree_stage, beetree_consensus_count, beetree_model_results, beetree_cost_breakdown,
+          beetree_token_usage, beetree_run_timestamp, beetree_mode, beetree_consensus_strength, beetree_diversity_score
         ) VALUES (
-          $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28, $29, $30, $31, $32, $33, $34, $35, $36, $37, $38, $39, $40, $41, $42, $43, $44
+          $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28, $29, $30, $31, $32, $33, $34, $35, $36, $37, $38, $39, $40, $41, $42, $43, $44, $45, $46, $47, $48, $49, $50, $51, $52, $53, $54, $55, $56, $57
         ) RETURNING *
       `, [
         data.puzzleId, // Simplified - consistent with ExplanationData interface
@@ -103,7 +105,17 @@ export class ExplanationRepository extends BaseRepository implements IExplanatio
         // NEW: Grover iterative solver fields
         this.safeJsonStringify(data.groverIterations),
         data.groverBestProgram ?? null,
-        data.iterationCount ?? null
+        data.iterationCount ?? null,
+        // NEW: Beetree ensemble solver fields
+        data.beetreeStage ?? null,
+        data.beetreeConsensusCount ?? null,
+        this.safeJsonStringify(data.beetreeModelResults),
+        this.safeJsonStringify(data.beetreeCostBreakdown),
+        this.safeJsonStringify(data.beetreeTokenUsage),
+        data.beetreeRunTimestamp ?? null,
+        data.beetreeMode ?? null,
+        data.beetreeConsensusStrength ?? null,
+        data.beetreeDiversityScore ?? null
       ], client);
 
       if (result.rows.length === 0) {
@@ -149,6 +161,10 @@ export class ExplanationRepository extends BaseRepository implements IExplanatio
         multi_test_all_correct AS "multiTestAllCorrect",
         multi_test_average_accuracy AS "multiTestAverageAccuracy",
         multi_test_prediction_grids AS "multiTestPredictionGrids",
+        grover_iterations AS "groverIterations", grover_best_program AS "groverBestProgram", iteration_count AS "iterationCount",
+        beetree_stage AS "beetreeStage", beetree_consensus_count AS "beetreeConsensusCount", beetree_model_results AS "beetreeModelResults",
+        beetree_cost_breakdown AS "beetreeCostBreakdown", beetree_token_usage AS "beetreeTokenUsage", beetree_run_timestamp AS "beetreeRunTimestamp",
+        beetree_mode AS "beetreeMode", beetree_consensus_strength AS "beetreeConsensusStrength", beetree_diversity_score AS "beetreeDiversityScore",
         created_at AS "createdAt",
         (SELECT COUNT(*) FROM feedback WHERE explanation_id = explanations.id AND feedback_type = 'helpful') AS "helpfulVotes",
         (SELECT COUNT(*) FROM feedback WHERE explanation_id = explanations.id AND feedback_type = 'not_helpful') AS "notHelpfulVotes"
@@ -214,6 +230,9 @@ export class ExplanationRepository extends BaseRepository implements IExplanatio
         grover_iterations AS "groverIterations",
         grover_best_program AS "groverBestProgram",
         iteration_count AS "iterationCount",
+        beetree_stage AS "beetreeStage", beetree_consensus_count AS "beetreeConsensusCount", beetree_model_results AS "beetreeModelResults",
+        beetree_cost_breakdown AS "beetreeCostBreakdown", beetree_token_usage AS "beetreeTokenUsage", beetree_run_timestamp AS "beetreeRunTimestamp",
+        beetree_mode AS "beetreeMode", beetree_consensus_strength AS "beetreeConsensusStrength", beetree_diversity_score AS "beetreeDiversityScore",
         created_at AS "createdAt",
         (SELECT COUNT(*) FROM feedback WHERE explanation_id = explanations.id AND feedback_type = 'helpful') AS "helpfulVotes",
         (SELECT COUNT(*) FROM feedback WHERE explanation_id = explanations.id AND feedback_type = 'not_helpful') AS "notHelpfulVotes"
@@ -825,6 +844,11 @@ export class ExplanationRepository extends BaseRepository implements IExplanatio
       
       // Parse Grover-specific JSONB field
       groverIterations: this.safeJsonParse(row.groverIterations, 'groverIterations', null),
+      
+      // Parse Beetree-specific JSONB fields
+      beetreeModelResults: this.safeJsonParse(row.beetreeModelResults, 'beetreeModelResults', null),
+      beetreeCostBreakdown: this.safeJsonParse(row.beetreeCostBreakdown, 'beetreeCostBreakdown', null),
+      beetreeTokenUsage: this.safeJsonParse(row.beetreeTokenUsage, 'beetreeTokenUsage', null),
       
       // Ensure boolean fields are properly typed
       hasReasoningLog: typeof row.hasReasoningLog === 'boolean' ? row.hasReasoningLog : false,

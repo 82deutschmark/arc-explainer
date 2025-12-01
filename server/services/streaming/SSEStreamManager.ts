@@ -21,6 +21,10 @@ export interface SSEStreamConnection {
 
 class SSEStreamManager {
   private connections: Map<string, SSEStreamConnection> = new Map();
+  private streams: Map<string, {
+    onConnect?: (clientId: string) => void;
+    onDisconnect?: (clientId: string) => void;
+  }> = new Map();
   private readonly heartbeatIntervalMs = 15000;
 
   register(sessionId: string, res: Response): SSEStreamConnection {
@@ -53,7 +57,25 @@ class SSEStreamManager {
     });
 
     this.connections.set(sessionId, connection);
+    
+    // Trigger stream connection callback if registered
+    const streamConfig = this.streams.get(sessionId);
+    if (streamConfig?.onConnect) {
+      streamConfig.onConnect(sessionId);
+    }
+    
     return connection;
+  }
+
+  createStream(streamKey: string, config: {
+    onConnect?: (clientId: string) => void;
+    onDisconnect?: (clientId: string) => void;
+  }): void {
+    this.streams.set(streamKey, config);
+  }
+
+  closeStream(streamKey: string): void {
+    this.streams.delete(streamKey);
   }
 
   sendEvent<T>(sessionId: string, event: string, payload: T): void {
@@ -96,6 +118,12 @@ class SSEStreamManager {
   teardown(sessionId: string, reason: string): void {
     const connection = this.connections.get(sessionId);
     if (!connection) return;
+
+    // Trigger stream disconnection callback if registered
+    const streamConfig = this.streams.get(sessionId);
+    if (streamConfig?.onDisconnect) {
+      streamConfig.onDisconnect(sessionId);
+    }
 
     if (connection.heartbeat) {
       clearInterval(connection.heartbeat);

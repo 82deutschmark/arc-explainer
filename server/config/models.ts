@@ -919,6 +919,24 @@ export const MODELS: ModelConfig[] = [
     releaseDate: "2025-11"
   },
 
+  // Beetree Ensemble Solver
+  {
+    key: 'beetree-ensemble',
+    name: 'Beetree Ensemble',
+    color: 'bg-emerald-600',
+    premium: false,
+    cost: { input: '$2.00', output: '$5.00' },
+    supportsTemperature: false,
+    provider: 'Beetree',
+    responseTime: { speed: 'slow', estimate: '3-8 min' },
+    apiModelName: 'beetree-ensemble',
+    modelType: 'beetree',
+    contextWindow: 1000000,
+    maxOutputTokens: 50000,
+    releaseDate: "2025-12",
+    notes: 'Multi-model ensemble solver with consensus analysis and cost tracking'
+  },
+
   // Cloaked Models (OpenRouter Arena - identity TBD)
   {
     key: 'openrouter/bert-nebulon-alpha',

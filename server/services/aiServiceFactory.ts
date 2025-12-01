@@ -46,6 +46,7 @@ class AIServiceFactory {
   private groverService: any;
   private saturnService: any;
   private heuristicService: any;
+  private beetreeService: any;
 
   /**
    * Initialize the factory by loading all AI services once at startup
@@ -62,6 +63,7 @@ class AIServiceFactory {
       const { groverService } = await import('./grover');
       const { saturnService } = await import('./saturnService');
       const { heuristicService } = await import('./heuristic');
+      const { beetreeService } = await import('./beetreeService');
 
       this.anthropicService = anthropicService;
       this.openaiService = openaiService;
@@ -72,6 +74,7 @@ class AIServiceFactory {
       this.groverService = groverService;
       this.saturnService = saturnService;
       this.heuristicService = heuristicService;
+      this.beetreeService = beetreeService;
     } catch (error) {
       console.error('[Factory] Error initializing services:', error);
       throw error;
@@ -113,6 +116,12 @@ class AIServiceFactory {
     if (normalized.startsWith('grover-')) {
       console.log('   -> Grover service');
       return this.groverService;
+    }
+
+    // Beetree ensemble solver (multi-model consensus)
+    if (normalized.startsWith('beetree-')) {
+      console.log('   -> Beetree service');
+      return this.beetreeService;
     }
 
     // xAI Grok models

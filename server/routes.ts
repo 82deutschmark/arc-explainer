@@ -21,6 +21,7 @@ import { promptController } from "./controllers/promptController";
 import { saturnController } from "./controllers/saturnController";
 import { groverController } from "./controllers/groverController.js";
 import { poetiqController } from "./controllers/poetiqController.js";
+import { beetreeController } from "./controllers/beetreeController.ts";
 import adminController, * as adminControllerFns from './controllers/adminController.js';
 import * as modelManagementController from './controllers/modelManagementController.js';
 import * as discussionController from './controllers/discussionController.js';
@@ -205,6 +206,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/poetiq/models", asyncHandler(poetiqController.getModels));
   // Community progress: shows ALL 120 ARC2-Eval puzzles with Poetiq-specific status
   app.get("/api/poetiq/community-progress", asyncHandler(poetiqController.getCommunityProgress));
+
+  // Beetree ensemble solver routes
+  app.post("/api/beetree/run", asyncHandler(beetreeController.runBeetreeAnalysis));
+  app.get("/api/beetree/status/:sessionId", asyncHandler(beetreeController.getBeetreeStatus));
+  app.post("/api/beetree/estimate", asyncHandler(beetreeController.estimateBeetreeCost));
+  app.get("/api/beetree/history/:taskId", asyncHandler(beetreeController.getBeetreeHistory));
+  app.get("/api/beetree/cost-breakdown/:explanationId", asyncHandler(beetreeController.getBeetreeCostBreakdown));
+  app.post("/api/beetree/cancel/:sessionId", asyncHandler(beetreeController.cancelBeetreeAnalysis));
 
   // Batch analysis routes
   app.post("/api/batch/start", asyncHandler(batchController.startBatch));
