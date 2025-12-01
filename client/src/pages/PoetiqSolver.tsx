@@ -588,185 +588,176 @@ export default function PoetiqSolver() {
         </div>
       </section>
 
-      {/* Main Content - Split layout keeps controls fixed and insights scrollable */}
-      <main className="flex-1 overflow-hidden px-4 py-6">
-        <div className="grid h-full grid-cols-12 gap-4">
-          <div className="col-span-12 xl:col-span-4 2xl:col-span-3">
-            <div className="sticky top-6 flex max-h-[calc(100vh-220px)] flex-col gap-4 overflow-y-auto rounded-2xl border border-slate-200 bg-white/95 p-4 shadow-sm">
-              <PoetiqControlPanel
-                state={state}
-                isRunning={isRunning}
-                apiKey={apiKey}
-                setApiKey={setApiKey}
-                provider={provider}
-                setProvider={setProvider}
-                model={model}
-                setModel={setModel}
-                numExperts={numExperts}
-                setNumExperts={setNumExperts}
-                maxIterations={maxIterations}
-                setMaxIterations={setMaxIterations}
-                temperature={temperature}
-                setTemperature={setTemperature}
-                reasoningEffort={reasoningEffort}
-                setReasoningEffort={setReasoningEffort}
-                promptStyle={promptStyle}
-                setPromptStyle={setPromptStyle}
-                onStart={handleStart}
-                onCancel={cancel}
-                useAgents={useAgents}
-                setUseAgents={setUseAgents}
-              />
+      {/* Main Content */}
+      <main className="flex-1 overflow-y-auto px-4 py-4">
+        <div className="mx-auto max-w-7xl space-y-4">
+          {/* Control Panel - Hidden when running */}
+          {!isRunning && !isDone && (
+            <PoetiqControlPanel
+              state={state}
+              isRunning={isRunning}
+              apiKey={apiKey}
+              setApiKey={setApiKey}
+              provider={provider}
+              setProvider={setProvider}
+              model={model}
+              setModel={setModel}
+              numExperts={numExperts}
+              setNumExperts={setNumExperts}
+              maxIterations={maxIterations}
+              setMaxIterations={setMaxIterations}
+              temperature={temperature}
+              setTemperature={setTemperature}
+              reasoningEffort={reasoningEffort}
+              setReasoningEffort={setReasoningEffort}
+              promptStyle={promptStyle}
+              setPromptStyle={setPromptStyle}
+              onStart={handleStart}
+              onCancel={cancel}
+              useAgents={useAgents}
+              setUseAgents={setUseAgents}
+            />
+          )}
+
+          {/* Cancel Button - Only when running */}
+          {isRunning && (
+            <div className="flex items-center justify-between rounded-lg border border-red-200 bg-red-50 px-3 py-2">
+              <span className="text-sm font-medium text-red-700">
+                Running with {numExperts} expert{numExperts > 1 ? 's' : ''} • {model}
+              </span>
+              <Button size="sm" variant="destructive" onClick={cancel} className="h-7">
+                Cancel Run
+              </Button>
             </div>
-          </div>
-          <div className="col-span-12 xl:col-span-8 2xl:col-span-9">
-            <div className="rounded-2xl border border-slate-200 bg-white shadow-sm">
+          )}
+
+          {/* Training Examples - Tiny grids inline, hidden when running */}
+          {!isRunning && !isDone && task && (
+            <div className="flex flex-wrap items-center gap-3 rounded-lg border border-slate-200 bg-white p-2">
+              <span className="text-xs font-semibold text-slate-500">Training:</span>
+              {task.train.map((example, idx) => (
+                <div key={idx} className="flex items-center gap-1 rounded border border-slate-100 bg-slate-50 p-1">
+                  <div className="h-10 w-10">
+                    <TinyGrid grid={example.input} />
+                  </div>
+                  <span className="text-slate-400">→</span>
+                  <div className="h-10 w-10">
+                    <TinyGrid grid={example.output} />
+                  </div>
+                </div>
+              ))}
+              <span className="text-xs font-semibold text-slate-500 ml-2">Test:</span>
+              {task.test.map((example, idx) => (
+                <div key={idx} className="flex items-center gap-1 rounded border border-amber-100 bg-amber-50 p-1">
+                  <div className="h-10 w-10">
+                    <TinyGrid grid={example.input} />
+                  </div>
+                  <span className="text-amber-400">→</span>
+                  <div className="h-10 w-10 flex items-center justify-center text-amber-400 text-xs">?</div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Error Display */}
+          {hasError && state.message && (
+            <div className="rounded-lg border border-red-300 bg-red-50 px-3 py-2 text-sm text-red-800">
+              <strong>Error:</strong> {state.message}
+            </div>
+          )}
+
+          {/* Progress Dashboard - Shows when running or completed */}
+          {(isRunning || isDone || state.status === 'error') && (
+            <div className="rounded-xl border border-slate-200 bg-white shadow-sm">
               <PoetiqProgressDashboard state={state} rawEvents={state.rawEvents} />
             </div>
-          </div>
+          )}
 
-          {/* LEFT: Iteration Progress (5 cols normally, 4 when running) */}
-          <div
-            className={`col-span-12 ${
-              isRunning || isDone ? 'lg:col-span-4' : 'lg:col-span-5'
-            } 2xl:col-span-4 flex flex-col gap-4 overflow-y-auto pr-1`}
-          >
-            {/* Error Display - Including API key required error */}
-            {hasError && state.message && (
-              <div className="rounded-xl border border-red-300 bg-red-50 px-4 py-2 text-sm text-red-800 shadow-sm">
-                <strong>Error:</strong> {state.message}
-              </div>
-            )}
-            
-            <PoetiqPythonTerminal
-              executions={executions}
-              currentCode={isRunning ? state.result?.generatedCode : undefined}
-              isRunning={isRunning}
-            />
+          {/* Agents Panel */}
+          {isAgentsRuntime && (
+            <div className="rounded-xl border border-indigo-200 bg-white p-3 shadow-sm">
+              <PoetiqAgentsPanel state={state} />
+            </div>
+          )}
 
-            {pythonLogLines.length > 0 && (
-              <div className="rounded-2xl border border-slate-200 bg-white shadow-sm">
-                <div className="flex items-center justify-between border-b border-slate-100 bg-slate-50 px-3 py-2">
-                  <div className="flex items-center gap-2 text-sm font-semibold text-slate-700">
-                    <TerminalSquare className="w-4 h-4 text-slate-600" />
-                    Python Console
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs text-slate-500">{pythonLogLines.length} lines</span>
-                    <button
-                      onClick={() => downloadTextFile(`poetiq-python-${taskId}.txt`, pythonLogLines)}
-                      disabled={pythonLogLines.length === 0}
-                      className="flex items-center gap-1.5 rounded bg-slate-200 px-2 py-1 text-xs font-medium text-slate-700 hover:bg-slate-300 disabled:opacity-50"
-                    >
-                      <Download className="w-3.5 h-3.5" />
-                      Export
-                    </button>
-                  </div>
-                </div>
-                <div className="max-h-48 space-y-1 overflow-y-auto bg-slate-950 px-3 py-2 font-mono text-xs text-slate-100">
-                  {pythonLogLines.map((line, idx) => (
-                    <div key={`${line}-${idx}`} className="border-b border-slate-800/60 pb-1 last:border-b-0 last:pb-0">
-                      {line}
+          {/* Two-column layout: Terminal + Logs */}
+          <div className="grid gap-4 lg:grid-cols-2">
+            {/* Left: Terminal + Python Console */}
+            <div className="space-y-4">
+              <PoetiqPythonTerminal
+                executions={executions}
+                currentCode={isRunning ? state.result?.generatedCode : undefined}
+                isRunning={isRunning}
+              />
+
+              {pythonLogLines.length > 0 && (
+                <div className="rounded-xl border border-slate-200 bg-white shadow-sm">
+                  <div className="flex items-center justify-between border-b border-slate-100 bg-slate-50 px-3 py-2">
+                    <div className="flex items-center gap-2 text-sm font-semibold text-slate-700">
+                      <TerminalSquare className="w-4 h-4 text-slate-600" />
+                      Python Console
                     </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Final Result - Show ONLY when completed */}
-            {isDone && resultSummary && (
-              <div
-                className={`rounded-2xl border-2 px-4 py-3 shadow-sm ${
-                  resultSummary.success ? 'border-green-500 bg-green-50' : 'border-red-500 bg-red-50'
-                }`}
-              >
-                <div className="mb-3 flex items-center gap-3">
-                  <div
-                    className={`flex h-12 w-12 items-center justify-center rounded-full ${
-                      resultSummary.success ? 'bg-white text-green-600' : 'bg-white text-red-600'
-                    }`}
-                  >
-                    <span className="text-2xl">{resultSummary.success ? '✓' : '✗'}</span>
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs text-slate-500">{pythonLogLines.length} lines</span>
+                      <button
+                        onClick={() => downloadTextFile(`poetiq-python-${taskId}.txt`, pythonLogLines)}
+                        disabled={pythonLogLines.length === 0}
+                        className="flex items-center gap-1.5 rounded bg-slate-200 px-2 py-1 text-xs font-medium text-slate-700 hover:bg-slate-300 disabled:opacity-50"
+                      >
+                        <Download className="w-3.5 h-3.5" />
+                        Export
+                      </button>
+                    </div>
                   </div>
-                  <div>
+                  <div className="max-h-48 space-y-1 overflow-y-auto bg-slate-950 px-3 py-2 font-mono text-xs text-slate-100">
+                    {pythonLogLines.map((line, idx) => (
+                      <div key={`${line}-${idx}`} className="border-b border-slate-800/60 pb-1 last:border-b-0 last:pb-0">
+                        {line}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Final Result */}
+              {isDone && resultSummary && (
+                <div
+                  className={`rounded-xl border-2 px-4 py-3 shadow-sm ${
+                    resultSummary.success ? 'border-green-500 bg-green-50' : 'border-red-500 bg-red-50'
+                  }`}
+                >
+                  <div className="mb-3 flex items-center gap-3">
                     <div
-                      className={`text-xl font-bold ${
-                        resultSummary.success ? 'text-green-800' : 'text-red-700'
+                      className={`flex h-10 w-10 items-center justify-center rounded-full ${
+                        resultSummary.success ? 'bg-white text-green-600' : 'bg-white text-red-600'
                       }`}
                     >
-                      {resultSummary.success ? 'PUZZLE SOLVED!' : 'NOT SOLVED'}
+                      <span className="text-xl">{resultSummary.success ? '✓' : '✗'}</span>
                     </div>
-                    <div className="text-sm text-slate-700">
-                      {resultSummary.iterations} iterations
-                      {resultSummary.trainScore !== undefined && ` • ${(resultSummary.trainScore * 100).toFixed(0)}% train accuracy`}
-                    </div>
-                  </div>
-                </div>
-                {resultSummary.code && (
-                  <div>
-                    <h4 className="mb-2 text-sm font-bold text-slate-700">Generated Code:</h4>
-                    <pre className="max-h-64 overflow-auto rounded bg-slate-950 p-3 font-mono text-xs text-green-400">
-                      {resultSummary.code}
-                    </pre>
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
-
-          {/* RIGHT: Training Grids (before running) or Event Log (during/after running) */}
-          <div
-            className={`col-span-12 ${
-              isRunning || isDone ? 'lg:col-span-8' : 'lg:col-span-7'
-            } 2xl:col-span-8 flex flex-col gap-4 overflow-y-auto pl-1`}
-          >
-            {isAgentsRuntime && (
-              <div className="rounded-2xl border border-indigo-200 bg-white p-3 shadow-sm">
-                <PoetiqAgentsPanel state={state} />
-              </div>
-            )}
-            {/* Training Grids - Show before running */}
-            {!isRunning && !isDone && task && (
-              <div className="flex flex-1 flex-col overflow-y-auto rounded-2xl border border-slate-200 bg-white shadow-sm">
-                <div className="sticky top-0 border-b border-slate-200 bg-slate-50 px-4 py-3">
-                  <span className="text-base font-bold text-slate-700">Training Examples</span>
-                </div>
-                <div className="max-h-[32rem] space-y-4 overflow-y-auto p-4">
-                  {task.train.map((example, idx) => (
-                    <div key={idx} className="space-y-2">
-                      <div className="text-xs font-medium text-slate-500">Example {idx + 1}</div>
-                      <div className="flex items-start gap-3">
-                        <div className="rounded border border-slate-200 bg-slate-50 p-2">
-                          <PuzzleGrid
-                            grid={example.input}
-                            title="Input"
-                            compact
-                            maxWidth={200}
-                            maxHeight={200}
-                            showEmojis={false}
-                            showColorOnly={false}
-                            emojiSet={DEFAULT_EMOJI_SET}
-                          />
-                        </div>
-                        <div className="mt-2 text-lg leading-none text-slate-400">→</div>
-                        <div className="rounded border border-slate-200 bg-slate-50 p-2">
-                          <PuzzleGrid
-                            grid={example.output}
-                            title="Output"
-                            compact
-                            maxWidth={200}
-                            maxHeight={200}
-                            showEmojis={false}
-                            showColorOnly={false}
-                            emojiSet={DEFAULT_EMOJI_SET}
-                          />
-                        </div>
+                    <div>
+                      <div
+                        className={`text-lg font-bold ${
+                          resultSummary.success ? 'text-green-800' : 'text-red-700'
+                        }`}
+                      >
+                        {resultSummary.success ? 'SOLVED' : 'NOT SOLVED'}
+                      </div>
+                      <div className="text-xs text-slate-600">
+                        {resultSummary.iterations} iter{resultSummary.trainScore !== undefined && ` • ${(resultSummary.trainScore * 100).toFixed(0)}% train`}
                       </div>
                     </div>
-                  ))}
+                  </div>
+                  {resultSummary.code && (
+                    <pre className="max-h-48 overflow-auto rounded bg-slate-950 p-2 font-mono text-xs text-green-400">
+                      {resultSummary.code}
+                    </pre>
+                  )}
                 </div>
-              </div>
-            )}
+              )}
+            </div>
+
+            {/* Right: Inspectors and Logs */}
+            <div className="space-y-4">
 
             {/* Prompt Inspector - Shows what's being sent to the AI */}
             {showPromptInspector && state.currentPromptData && (
@@ -1128,6 +1119,7 @@ export default function PoetiqSolver() {
               </div>
             )}
 
+            </div>
           </div>
         </div>
       </main>

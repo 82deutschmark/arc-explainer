@@ -1,6 +1,15 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top with the time and date!
 
+### Version 5.33.26  Dec 1, 2025 1:45pm
+
+- **PoetiqSolver: Compact horizontal control bar + TinyGrid training examples** (Author: Cascade / Claude Sonnet 4)
+  - Rebuilt `PoetiqControlPanel` as a single-row horizontal bar with all controls inline (model, API key, experts, iterations, temp, reasoning, prompt style, agents toggle, Start button).
+  - Control panel now disappears when run starts, replaced by a minimal cancel bar showing the active model and expert count.
+  - Training examples now render as tiny 40x40 grids using `TinyGrid` in a compact inline row, with test input shown alongside.
+  - All inspector panels and logs remain in a clean two-column layout below.
+  - **Files**: `client/src/components/poetiq/PoetiqControlPanel.tsx`, `client/src/pages/PoetiqSolver.tsx`.
+
 ### Version 5.33.25  Dec 1, 2025 1:30pm
 
 - **Poetiq solver layout + control rail redesign** (Author: Codex / GPT-5)
