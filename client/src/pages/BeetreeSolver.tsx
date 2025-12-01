@@ -6,31 +6,28 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, Link } from 'wouter';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Loader2, Play, Square, DollarSign, Clock, Users, Zap } from 'lucide-react';
-import { ARCTask } from '@/shared/types';
+import { Loader2, Play, Square, DollarSign, Clock, Users, Zap, ArrowLeft } from 'lucide-react';
+import { usePuzzle } from '@/hooks/usePuzzle';
 import { useBeetreeRun } from '@/hooks/useBeetreeRun';
 import { BeetreeProgressDashboard } from '@/components/beetree/BeetreeProgressDashboard';
 import { BeetreeResultsPanel } from '@/components/beetree/BeetreeResultsPanel';
 import { BeetreeCostEstimator } from '@/components/beetree/BeetreeCostEstimator';
 import { BeetreeCostDisplay } from '@/components/beetree/BeetreeCostDisplay';
 
-interface BeetreeSolverProps {
-  task?: ARCTask;
-}
-
-export const BeetreeSolver: React.FC<BeetreeSolverProps> = ({ task: propTask }) => {
-  const { taskId } = useParams<{ taskId?: string }>();
-  const navigate = useNavigate();
+export default function BeetreeSolver() {
+  const { taskId } = useParams<{ taskId: string }>();
+  
+  // Load task data
+  const { task, isLoadingTask } = usePuzzle(taskId || '');
   
   // Form state
   const [mode, setMode] = useState<'testing' | 'production'>('testing');
-  const [task, setTask] = useState<ARCTask | null>(propTask || null);
   
   // Beetree run hook
   const {
@@ -47,19 +44,11 @@ export const BeetreeSolver: React.FC<BeetreeSolverProps> = ({ task: propTask }) 
     clearResults
   } = useBeetreeRun();
 
-  // Load task if taskId provided but no task prop
-  useEffect(() => {
-    if (taskId && !propTask) {
-      // TODO: Load task from API or context
-      console.log('Loading task:', taskId);
-    }
-  }, [taskId, propTask]);
-
   const handleStart = () => {
-    if (!task) return;
+    if (!taskId) return;
     
     startAnalysis({
-      taskId: task.source || 'unknown',
+      taskId,
       testIndex: 0,
       mode,
       runTimestamp: `beetree_${Date.now()}`
@@ -77,6 +66,14 @@ export const BeetreeSolver: React.FC<BeetreeSolverProps> = ({ task: propTask }) 
   const isRunning = status === 'running';
   const hasResults = results && !error;
 
+  if (isLoadingTask) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <Loader2 className="w-8 h-8 animate-spin text-emerald-600" />
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-background p-6">
       <div className="max-w-7xl mx-auto space-y-6">
@@ -89,13 +86,17 @@ export const BeetreeSolver: React.FC<BeetreeSolverProps> = ({ task: propTask }) 
             </h1>
             <p className="text-muted-foreground mt-1">
               Multi-model consensus analysis with real-time cost tracking
+              {taskId && <span className="ml-2">• Task: {taskId}</span>}
             </p>
           </div>
           
           {taskId && (
-            <Button variant="outline" onClick={() => navigate('/puzzles')}>
-              Back to Puzzles
-            </Button>
+            <Link href={`/puzzle/${taskId}`}>
+              <Button variant="outline">
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                Back to Puzzle
+              </Button>
+            </Link>
           )}
         </div>
 
@@ -137,7 +138,7 @@ export const BeetreeSolver: React.FC<BeetreeSolverProps> = ({ task: propTask }) 
                 <div className="space-y-2">
                   <label className="text-sm font-medium">Task</label>
                   <div className="text-sm text-muted-foreground">
-                    {task.source ? `${task.source} puzzle` : 'Custom task'} • 
+                    {taskId} • 
                     {task.train?.length || 0} training examples • 
                     {task.test?.length || 0} test cases
                   </div>
@@ -154,7 +155,7 @@ export const BeetreeSolver: React.FC<BeetreeSolverProps> = ({ task: propTask }) 
             <div className="flex gap-3 mt-6">
               <Button 
                 onClick={handleStart}
-                disabled={!task || isLoading}
+                disabled={!taskId || isLoading}
                 className="bg-emerald-600 hover:bg-emerald-700"
               >
                 {isLoading ? (
@@ -197,7 +198,7 @@ export const BeetreeSolver: React.FC<BeetreeSolverProps> = ({ task: propTask }) 
         )}
 
         {/* Results Panel */}
-        {hasResults && (
+        {hasResults && cost && (
           <BeetreeResultsPanel
             results={results}
             cost={cost}
@@ -221,6 +222,4 @@ export const BeetreeSolver: React.FC<BeetreeSolverProps> = ({ task: propTask }) 
       </div>
     </div>
   );
-};
-
-export default BeetreeSolver;
+}

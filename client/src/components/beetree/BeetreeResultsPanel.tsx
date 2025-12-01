@@ -189,7 +189,7 @@ export const BeetreeResultsPanel: React.FC<BeetreeResultsPanelProps> = ({
                   </div>
 
                   <div className="flex justify-center">
-                    <TinyGrid grid={prediction} size={6} />
+                    <TinyGrid grid={prediction} className="w-24 h-24" />
                   </div>
                 </div>
               ))}

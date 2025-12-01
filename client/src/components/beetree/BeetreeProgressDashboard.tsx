@@ -198,7 +198,7 @@ export const BeetreeProgressDashboard: React.FC<BeetreeProgressDashboardProps> =
             ${cost?.total_cost?.toFixed(4) || latest?.costSoFar?.toFixed(4) || '0.0000'}
           </div>
           <div className="text-xs text-muted-foreground">
-            {cost?.total_tokens?.total || latest?.tokensUsed?.total || 0} tokens
+            {cost?.total_tokens ? (cost.total_tokens.input + cost.total_tokens.output + cost.total_tokens.reasoning) : (latest?.tokensUsed?.total || 0)} tokens
           </div>
         </Card>
 
