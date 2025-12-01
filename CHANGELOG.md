@@ -1,6 +1,40 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top with the time and date!
 
+### Version 5.34.0  Dec 1, 2025 4:41pm
+
+- **🌳 Beetree Ensemble Solver - Complete Multi-Model Integration** (Author: Cascade / Claude Sonnet 4)
+  - **Major Feature**: Full-stack implementation of Beetree ensemble solver providing multi-model consensus analysis with real-time cost tracking and progress monitoring.
+  - **Backend Infrastructure**: Python wrapper with NDJSON protocol, Node.js bridge integration, BaseAIService extension, cost tracking, consensus analysis, and stage orchestration utilities.
+  - **Real-time Streaming**: SSE streaming service with WebSocket broadcast support for live progress updates, cost tracking, and stage-by-stage execution monitoring.
+  - **REST API**: Complete endpoints including run, status, estimate, history, cost-breakdown, and cancel with proper route registration and model factory integration.
+  - **Database Integration**: Schema extensions for Beetree-specific data with JSONB field handling for model results, cost breakdowns, and consensus metrics.
+  - **Frontend Suite**: 
+    - Main BeetreeSolver page with configuration panel and mode selection
+    - Real-time progress dashboard with metrics grid and timeline
+    - Comprehensive results panel with consensus analysis and prediction display
+    - Detailed cost breakdowns by model, stage, and token usage
+    - Pre-run cost estimator with testing vs production mode comparison
+    - Custom React hook for SSE connection management and state handling
+  - **Dual Mode Operation**: 
+    - Testing mode: 3 models, 2-6 minutes, $0.50-$2.00 estimated cost
+    - Production mode: 8 models, 20-45 minutes, $15-$50 estimated cost
+  - **UI Integration**: Added "🌳 Beetree Solver" button to PuzzleHeader alongside existing Saturn, Grover, and Poetiq solvers.
+  - **Type Safety**: Complete TypeScript integration with proper type definitions for all Beetree interfaces and events.
+  - **Build Verification**: Full compilation success with all TypeScript errors resolved.
+  - **Files**: 25+ new/modified files including services, controllers, components, hooks, and configuration.
+
+### Version 5.33.27  Dec 1, 2025 4:25pm
+
+- **Beetree Ensemble Solver Backend Integration Complete** (Author: Cascade / Claude Sonnet 4)
+  - Implemented complete backend infrastructure for Beetree multi-model ensemble solver including Python wrapper with NDJSON protocol, Node.js bridge integration, BaseAIService extension, cost tracking, consensus analysis, and stage orchestration utilities.
+  - Added database schema extensions for Beetree-specific data with proper JSONB field handling for model results and cost breakdowns.
+  - Created real-time SSE streaming service and WebSocket broadcast support integrated with existing SSE manager.
+  - Built complete REST API endpoints (run, status, estimate, history, cost-breakdown, cancel) with proper route registration and model factory integration.
+  - Added Beetree model configuration with proper metadata and updated shared types to include Beetree provider and model type support.
+  - Fixed all TypeScript compilation errors and verified successful build.
+  - **Files**: `server/services/beetreeService.ts`, `server/controllers/beetreeController.ts`, `server/services/streaming/beetreeStreamService.ts`, `server/services/pythonBridge.ts`, `shared/types.ts`, `server/config/models.ts`, `server/routes.ts`, `server/services/aiServiceFactory.ts`.
+
 ### Version 5.33.26  Dec 1, 2025 1:45pm
 
 - **PoetiqSolver: Compact horizontal control bar + TinyGrid training examples** (Author: Cascade / Claude Sonnet 4)

@@ -14,6 +14,7 @@ import PuzzleDiscussion from "@/pages/PuzzleDiscussion";
 import SaturnVisualSolver from "@/pages/SaturnVisualSolver";
 import GroverSolver from "@/pages/GroverSolver";
 import PoetiqSolver from "@/pages/PoetiqSolver";
+import BeetreeSolver from "@/pages/BeetreeSolver";
 import PoetiqCommunity from "@/pages/PoetiqCommunity";
 import KaggleReadinessValidation from "@/pages/KaggleReadinessValidation";
 import PuzzleDBViewer from "@/pages/PuzzleDBViewer";
@@ -54,6 +55,7 @@ function Router() {
         <Route path="/kaggle-readiness" component={KaggleReadinessValidation} />
         <Route path="/puzzle/saturn/:taskId" component={SaturnVisualSolver} />
         <Route path="/puzzle/grover/:taskId" component={GroverSolver} />
+        <Route path="/puzzle/beetree/:taskId?" component={BeetreeSolver} />
         <Route path="/poetiq" component={PoetiqCommunity} />
         <Route path="/puzzle/poetiq/:taskId" component={PoetiqSolver} />
         <Route path="/puzzles/database" component={PuzzleDBViewer} />
