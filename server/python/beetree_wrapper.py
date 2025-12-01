@@ -270,7 +270,7 @@ def run():
                         
                         # Extract real cost/token information from step logs
                         consensus_data = {
-                            "consensus_strength": 0.0,
+                            "strength": 0.0,
                             "diversity_score": 0.0,
                             "agreement_count": 0,
                             "total_candidates": 0
@@ -294,7 +294,7 @@ def run():
                                     if picked_solutions and len(picked_solutions) > 0:
                                         top_count = picked_solutions[0].get('count', 1)
                                         consensus_data["agreement_count"] = top_count
-                                        consensus_data["consensus_strength"] = top_count / max(total_runs, 1)
+                                        consensus_data["strength"] = top_count / max(total_runs, 1)
                                     
                                     # Diversity = unique grids / total runs
                                     consensus_data["diversity_score"] = len(candidates) / max(total_runs, 1)

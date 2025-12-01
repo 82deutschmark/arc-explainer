@@ -1,6 +1,17 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top with the time and date!
 
+### Version 5.35.2  Dec 1, 2025 5:45pm
+
+- **Beetree Solver Page - Complete Rewrite** (Author: Cascade)
+  - **Matched Saturn Pattern**: Completely rewrote BeetreeSolver.tsx to follow SaturnVisualSolver.tsx patterns using DaisyUI classes, 12-col grid layout, and proper state handling.
+  - **Removed shadcn Dependency**: Replaced all shadcn components with DaisyUI equivalents (select, btn, modal, card).
+  - **3-Column Running Layout**: Left panel for status/progress/puzzle grids, center for results, right for model cost breakdown.
+  - **Simplified UI**: Clean configuration screen in idle state, monitoring layout when running/completed.
+  - **Production Confirmation Modal**: DaisyUI modal for production mode confirmation ($15-$50 warning).
+  - **Field Name Fix**: Standardized consensus field to `strength` (was `consensus_strength`) across Python wrapper and TypeScript interfaces.
+  - **Files**: `client/src/pages/BeetreeSolver.tsx`, `server/python/beetree_wrapper.py`.
+
 ### Version 5.35.1  Dec 1, 2025 5:30pm
 
 - **Beetree Ensemble Solver - Critical Bug Fixes** (Author: Cascade)
