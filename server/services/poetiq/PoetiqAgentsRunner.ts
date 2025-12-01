@@ -152,6 +152,11 @@ class PoetiqAgentsSdkRunner implements PoetiqAgentsRunner {
     let callCounter = 0;
     const toolRunnerPath = path.join(process.cwd(), 'server', 'python', 'poetiq_tool_runner.py');
 
+    // GPT-5.1 Codex variants only support text.verbosity = 'medium'
+    const lowerModelId = modelId.toLowerCase();
+    const textVerbosity: 'low' | 'medium' | 'high' =
+      lowerModelId.includes('gpt-5.1-codex') ? 'medium' : 'high';
+
     const submitPythonCandidate = tool({
       name: 'submit_python_candidate',
       description:
@@ -205,7 +210,7 @@ class PoetiqAgentsSdkRunner implements PoetiqAgentsRunner {
           effort: reasoningEffort as 'minimal' | 'low' | 'medium' | 'high',
           summary: 'detailed',
         },
-        text: { verbosity: 'high' },
+        text: { verbosity: textVerbosity },
         store: true,
       },
       tools: [submitPythonCandidate],
