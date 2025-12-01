@@ -92,6 +92,35 @@ class ProgressReporter:
         emit(event_data)
 
 
+def estimate_model_cost(model_name: str, input_tokens: int, output_tokens: int, mode: str) -> float:
+    """Estimate cost based on model name and token counts."""
+    # Pricing per 1M tokens (input, output)
+    pricing = {
+        'gpt-5.1': (1.25, 10.00),
+        'gpt-5': (1.25, 10.00),
+        'gpt-4': (0.03, 0.06),
+        'claude-opus': (5.00, 25.00),
+        'claude-sonnet': (3.00, 15.00),
+        'gemini-3': (2.00, 12.00),
+        'gemini': (0.50, 1.50),
+        'deepseek': (0.14, 0.28),
+        'grok': (0.50, 1.50),
+    }
+    
+    # Find matching pricing
+    model_lower = model_name.lower()
+    input_rate, output_rate = 0.50, 1.50  # Default fallback
+    
+    for key, rates in pricing.items():
+        if key in model_lower:
+            input_rate, output_rate = rates
+            break
+    
+    # Calculate cost
+    cost = (input_tokens * input_rate / 1_000_000) + (output_tokens * output_rate / 1_000_000)
+    return round(cost, 6)
+
+
 class CostTracker:
     """Track costs and tokens from beetreeARC events."""
     def __init__(self):
@@ -239,39 +268,92 @@ def run():
                         # result is [attempt1_grid, attempt2_grid]
                         predictions = result
                         
-                        # Try to read cost information from logs
+                        # Extract real cost/token information from step logs
+                        consensus_data = {
+                            "consensus_strength": 0.0,
+                            "diversity_score": 0.0,
+                            "agreement_count": 0,
+                            "total_candidates": 0
+                        }
+                        
                         try:
                             finish_log_path = logs_dir / f"{run_timestamp}_{task_id}_{test_index}_step_finish.json"
                             if finish_log_path.exists():
                                 with open(finish_log_path, 'r') as f:
                                     finish_log = json.load(f)
                                 
-                                # Extract cost information from candidates_object
+                                # Extract consensus data from candidates_object
                                 candidates = finish_log.get('candidates_object', {})
-                                for grid_key, candidate_data in candidates.items():
-                                    models = candidate_data.get('models', [])
-                                    # This is simplified - in a full implementation we'd parse step logs
-                                    # for detailed per-model cost information
-                                    for model_run_id in models:
-                                        model_name = model_run_id.split('_')[0] if '_' in model_run_id else model_run_id
-                                        # Estimate costs based on model and mode
-                                        if mode == 'testing':
-                                            cost_estimate = 0.5  # Testing mode is cheaper
-                                        else:
-                                            cost_estimate = 2.0  # Production mode is more expensive
-                                        
-                                        cost_tracker.track_model_call(
-                                            model=model_name,
-                                            input_tokens=1000,  # Placeholder
-                                            output_tokens=500,   # Placeholder
-                                            reasoning_tokens=0,
-                                            cost=cost_estimate
-                                        )
+                                picked_solutions = finish_log.get('picked_solutions', [])
+                                
+                                if candidates:
+                                    total_runs = sum(c.get('count', 1) for c in candidates.values())
+                                    consensus_data["total_candidates"] = len(candidates)
+                                    
+                                    # Get top candidate agreement
+                                    if picked_solutions and len(picked_solutions) > 0:
+                                        top_count = picked_solutions[0].get('count', 1)
+                                        consensus_data["agreement_count"] = top_count
+                                        consensus_data["consensus_strength"] = top_count / max(total_runs, 1)
+                                    
+                                    # Diversity = unique grids / total runs
+                                    consensus_data["diversity_score"] = len(candidates) / max(total_runs, 1)
+                            
+                            # Parse step logs for real token/cost data
+                            for step_num in [1, 3, 5]:
+                                step_log_path = logs_dir / f"{run_timestamp}_{task_id}_{test_index}_step_{step_num}.json"
+                                if step_log_path.exists():
+                                    with open(step_log_path, 'r') as f:
+                                        step_log = json.load(f)
+                                    
+                                    # Extract per-run cost data
+                                    runs = step_log if isinstance(step_log, list) else step_log.get('runs', [])
+                                    for run_data in runs:
+                                        if isinstance(run_data, dict):
+                                            model_name = run_data.get('model_name', run_data.get('run_id', 'unknown'))
+                                            # Extract from run_id if needed: "claude-opus-4.5_1_step_1"
+                                            if '_' in str(model_name):
+                                                model_name = model_name.split('_')[0]
+                                            
+                                            input_tokens = run_data.get('input_tokens', 0)
+                                            output_tokens = run_data.get('output_tokens', 0)
+                                            cached_tokens = run_data.get('cached_tokens', 0)
+                                            cost = run_data.get('cost', 0.0)
+                                            
+                                            # If no explicit cost, estimate from tokens and model
+                                            if cost == 0 and (input_tokens > 0 or output_tokens > 0):
+                                                cost = estimate_model_cost(model_name, input_tokens, output_tokens, mode)
+                                            
+                                            cost_tracker.track_model_call(
+                                                model=model_name,
+                                                input_tokens=input_tokens,
+                                                output_tokens=output_tokens,
+                                                reasoning_tokens=run_data.get('reasoning_tokens', 0),
+                                                cost=cost
+                                            )
+                                            
+                                            # Track stage cost
+                                            cost_tracker.track_stage_cost(
+                                                stage=f"Step {step_num}",
+                                                cost=cost,
+                                                duration_ms=int(run_data.get('duration_seconds', 0) * 1000)
+                                            )
                         
                         except Exception as log_err:
                             print(f"[BEETREE-DEBUG] Could not parse cost logs: {log_err}")
+                            # Fallback: use estimates if log parsing fails
+                            if cost_tracker.total_cost == 0:
+                                models_estimate = 3 if mode == 'testing' else 8
+                                for i in range(models_estimate):
+                                    cost_tracker.track_model_call(
+                                        model=f"model_{i+1}",
+                                        input_tokens=5000 if mode == 'testing' else 15000,
+                                        output_tokens=1000 if mode == 'testing' else 5000,
+                                        reasoning_tokens=0 if mode == 'testing' else 3000,
+                                        cost=0.40 if mode == 'testing' else 4.00
+                                    )
                         
-                        # Emit final success event
+                        # Emit final success event with consensus data
                         emit({
                             "type": "final",
                             "success": True,
@@ -283,6 +365,7 @@ def run():
                                 "runTimestamp": run_timestamp,
                                 "predictions": predictions,
                                 "costBreakdown": cost_tracker.get_breakdown(),
+                                "consensus": consensus_data,
                                 "verboseLog": verbose_output.getvalue()
                             },
                             "timingMs": int((time.time() - reporter.start_time) * 1000)

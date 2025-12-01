@@ -99,8 +99,9 @@ export async function runBeetreeAnalysis(req: Request, res: Response) {
       });
     });
 
-    // Send initial response
+    // Send initial response with success field for frontend compatibility
     res.status(202).json({
+      success: true,
       sessionId,
       taskId,
       testIndex,
@@ -271,19 +272,20 @@ export async function getBeetreeHistory(req: Request, res: Response) {
     const paginatedResults = beetreeExplanations
       .slice(offsetNum, offsetNum + limitNum);
 
+    // Cast to any for beetree-specific fields until types are extended
     const response = {
       taskId,
       total: beetreeExplanations.length,
       limit: limitNum,
       offset: offsetNum,
-      explanations: paginatedResults.map(exp => ({
+      explanations: paginatedResults.map((exp: any) => ({
         id: exp.id,
-        runTimestamp: exp.beetreeRunTimestamp,
-        mode: exp.beetreeMode,
-        stage: exp.beetreeStage,
-        consensusCount: exp.beetreeConsensusCount,
-        consensusStrength: exp.beetreeConsensusStrength,
-        diversityScore: exp.beetreeDiversityScore,
+        runTimestamp: exp.beetreeRunTimestamp || exp.createdAt,
+        mode: exp.beetreeMode || 'unknown',
+        stage: exp.beetreeStage || 'completed',
+        consensusCount: exp.beetreeConsensusCount || 0,
+        consensusStrength: exp.beetreeConsensusStrength || 0,
+        diversityScore: exp.beetreeDiversityScore || 0,
         totalCost: exp.estimatedCost,
         createdAt: exp.createdAt,
         isPredictionCorrect: exp.isPredictionCorrect,
@@ -330,8 +332,11 @@ export async function getBeetreeCostBreakdown(req: Request, res: Response) {
       });
     }
 
+    // Cast to any for beetree-specific fields
+    const exp = explanation as any;
+    
     // Verify it's a Beetree explanation
-    if (!explanation.modelName?.includes('beetree') || !explanation.beetreeCostBreakdown) {
+    if (!explanation.modelName?.includes('beetree') || !exp.beetreeCostBreakdown) {
       return res.status(400).json({
         error: `Explanation ${explanationId} is not a Beetree analysis`,
         timestamp: Date.now(),
@@ -341,16 +346,16 @@ export async function getBeetreeCostBreakdown(req: Request, res: Response) {
     const response = {
       explanationId: parseInt(explanationId),
       taskId: explanation.puzzleId,
-      runTimestamp: explanation.beetreeRunTimestamp,
-      mode: explanation.beetreeMode,
-      stage: explanation.beetreeStage,
+      runTimestamp: exp.beetreeRunTimestamp || explanation.createdAt,
+      mode: exp.beetreeMode || 'unknown',
+      stage: exp.beetreeStage || 'completed',
       totalCost: explanation.estimatedCost,
-      costBreakdown: explanation.beetreeCostBreakdown,
-      tokenUsage: explanation.beetreeTokenUsage,
-      consensusStrength: explanation.beetreeConsensusStrength,
-      diversityScore: explanation.beetreeDiversityScore,
-      consensusCount: explanation.beetreeConsensusCount,
-      modelResults: explanation.beetreeModelResults,
+      costBreakdown: exp.beetreeCostBreakdown,
+      tokenUsage: exp.beetreeTokenUsage || { input: 0, output: 0, reasoning: 0 },
+      consensusStrength: exp.beetreeConsensusStrength || 0,
+      diversityScore: exp.beetreeDiversityScore || 0,
+      consensusCount: exp.beetreeConsensusCount || 0,
+      modelResults: exp.beetreeModelResults || [],
       timestamp: Date.now(),
     };
 

@@ -276,8 +276,12 @@ export const useBeetreeRun = () => {
         throw new Error(result.error || 'Failed to start analysis');
       }
 
-      // Set up SSE connection
-      const eventSource = new EventSource(`/api/stream/analyze/beetree-${sessionId}`);
+      // Use server-provided sessionId for SSE connection
+      const serverSessionId = result.sessionId || sessionId;
+      sessionIdRef.current = serverSessionId;
+
+      // Set up SSE connection using the server's sessionId
+      const eventSource = new EventSource(`/api/stream/analyze/beetree-${serverSessionId}`);
       eventSourceRef.current = eventSource;
 
       eventSource.onmessage = handleSSEEvent;
@@ -300,7 +304,7 @@ export const useBeetreeRun = () => {
 
       setState(prev => ({
         ...prev,
-        run: sessionId,
+        run: serverSessionId,
         status: 'running',
         isLoading: false
       }));
