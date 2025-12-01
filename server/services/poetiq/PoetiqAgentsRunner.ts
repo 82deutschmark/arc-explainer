@@ -165,12 +165,14 @@ class PoetiqAgentsSdkRunner implements PoetiqAgentsRunner {
           .int()
           .min(1)
           .optional()
+          .nullable()
           .describe('1-based iteration counter for bookkeeping.'),
         timeout_s: z
           .number()
           .min(0.2)
           .max(10)
           .optional()
+          .nullable()
           .describe('Sandbox timeout in seconds (default ~1.5).'),
       }),
       execute: async ({ code, iteration, timeout_s }) => {
