@@ -4,3 +4,6 @@
 [submodule "poetiq-solver"]
 	path = poetiq-solver
 	url = https://github.com/82deutschmark/poetiq-arc-agi-solver
+[submodule "beetreeARC"]
+	path = beetreeARC
+	url = https://github.com/82deutschmark/beetreeARC
