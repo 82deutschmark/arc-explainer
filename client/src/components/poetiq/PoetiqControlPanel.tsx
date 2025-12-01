@@ -133,138 +133,197 @@ export default function PoetiqControlPanel({
   const canStart = !isRunning && !modelsLoading && (hasApiKey || !requiresApiKey);
 
   return (
-    <div className="flex flex-wrap items-center gap-2 rounded-lg border border-slate-200 bg-slate-50 p-2">
-      {/* Model Selector */}
-      <div className="flex items-center gap-1">
-        <span className="text-[10px] font-semibold text-slate-500">Model:</span>
-        {modelsLoading ? (
-          <Loader2 className="h-3 w-3 animate-spin text-slate-400" />
-        ) : (
-          <Select value={model} onValueChange={setModel} disabled={isRunning}>
-            <SelectTrigger className="h-7 w-44 text-xs">
-              <SelectValue placeholder="Select model" />
+    <div className="space-y-1.5 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2">
+      <div className="flex flex-wrap items-center gap-3">
+        {/* Model Selector */}
+        <div className="flex items-center gap-1.5">
+          <span className="text-[11px] font-semibold text-slate-600">Model</span>
+          {modelsLoading ? (
+            <Loader2 className="h-4 w-4 animate-spin text-slate-400" />
+          ) : (
+            <Select value={model} onValueChange={setModel} disabled={isRunning}>
+              <SelectTrigger className="h-8 w-56 text-xs">
+                <SelectValue placeholder="Select model" />
+              </SelectTrigger>
+              <SelectContent className="max-h-72">
+                {Object.entries(groupedModels).map(([group, list]) =>
+                  list.length ? (
+                    <SelectGroup key={group}>
+                      <SelectLabel className="text-[10px]">{group}</SelectLabel>
+                      {list.map(entry => (
+                        <SelectItem key={entry.id} value={entry.id} className="text-xs">
+                          {entry.name}
+                          {(entry as any)?.routing === 'direct'
+                            ? '  · direct API'
+                            : '  · via OpenRouter'}
+                        </SelectItem>
+                      ))}
+                    </SelectGroup>
+                  ) : null,
+                )}
+              </SelectContent>
+            </Select>
+          )}
+        </div>
+
+        {/* API Key */}
+        <div className="flex items-center gap-1.5">
+          <Key
+            className={cn(
+              'h-3.5 w-3.5',
+              hasApiKey ? 'text-green-600' : requiresApiKey ? 'text-amber-500' : 'text-slate-400',
+            )}
+          />
+          <Input
+            type="text"
+            value={apiKey}
+            onChange={e => setApiKey(e.target.value)}
+            disabled={isRunning}
+            placeholder={keyPlaceholder}
+            className={cn(
+              'h-8 w-40 font-mono text-[11px]',
+              requiresApiKey && !hasApiKey && 'border-amber-400',
+            )}
+          />
+        </div>
+
+        {/* Experts */}
+        <div className="flex items-center gap-1.5">
+          <span className="text-[11px] font-semibold text-slate-600">Experts</span>
+          <Select value={String(numExperts)} onValueChange={v => setNumExperts(Number(v))} disabled={isRunning}>
+            <SelectTrigger className="h-8 w-20 text-xs">
+              <SelectValue />
             </SelectTrigger>
-            <SelectContent className="max-h-72">
-              {Object.entries(groupedModels).map(([group, list]) =>
-                list.length ? (
-                  <SelectGroup key={group}>
-                    <SelectLabel className="text-[10px]">{group}</SelectLabel>
-                    {list.map(entry => (
-                      <SelectItem key={entry.id} value={entry.id} className="text-xs">
-                        {entry.name}
-                      </SelectItem>
-                    ))}
-                  </SelectGroup>
-                ) : null,
-              )}
+            <SelectContent>
+              <SelectItem value="1">1</SelectItem>
+              <SelectItem value="2">2</SelectItem>
+              <SelectItem value="8">8</SelectItem>
             </SelectContent>
           </Select>
+        </div>
+
+        {/* Iterations */}
+        <div className="flex items-center gap-1.5">
+          <span className="text-[11px] font-semibold text-slate-600">Iterations</span>
+          <Input
+            type="number"
+            min={1}
+            max={20}
+            value={maxIterations}
+            onChange={e => setMaxIterations(parseInt(e.target.value, 10) || 10)}
+            disabled={isRunning}
+            className="h-8 w-16 text-xs"
+          />
+        </div>
+
+        {/* Temperature */}
+        <div className="flex items-center gap-1.5">
+          <span className="text-[11px] font-semibold text-slate-600">Temp</span>
+          <Input
+            type="number"
+            min={0.1}
+            max={2}
+            step={0.1}
+            value={temperature}
+            onChange={e => setTemperature(parseFloat(e.target.value) || 1.0)}
+            disabled={isRunning}
+            className="h-8 w-20 text-xs"
+          />
+        </div>
+
+        {/* Reasoning Effort */}
+        <div className="flex items-center gap-1.5">
+          <span className="text-[11px] font-semibold text-slate-600">Think</span>
+          <Select value={reasoningEffort} onValueChange={v => setReasoningEffort(v as any)} disabled={isRunning}>
+            <SelectTrigger className="h-8 w-24 text-xs">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="low">Low</SelectItem>
+              <SelectItem value="medium">Med</SelectItem>
+              <SelectItem value="high">High</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
+        {/* Prompt Style */}
+        <div className="flex items-center gap-1.5">
+          <span className="text-[11px] font-semibold text-slate-600">Prompt</span>
+          <Select value={promptStyle} onValueChange={v => setPromptStyle(v as any)} disabled={isRunning}>
+            <SelectTrigger className="h-8 w-28 text-xs">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="classic">Classic</SelectItem>
+              <SelectItem value="arc">ARC EN</SelectItem>
+              <SelectItem value="arc_de">ARC DE</SelectItem>
+              <SelectItem value="arc_fr">ARC FR</SelectItem>
+              <SelectItem value="arc_tr">ARC TR</SelectItem>
+              <SelectItem value="arc_ru">ARC RU</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
+        {/* Agents Toggle */}
+        {canUseAgents && (
+          <div className="flex items-center gap-1.5 rounded bg-emerald-50 px-1.5 py-0.5">
+            <Brain className="h-3.5 w-3.5 text-emerald-600" />
+            <span className="text-[10px] font-medium text-emerald-700">Agents</span>
+            <Switch
+              checked={useAgents}
+              onCheckedChange={setUseAgents}
+              disabled={isRunning}
+              className="h-4 w-7"
+            />
+          </div>
+        )}
+
+        {/* Start Button */}
+        <Button size="sm" onClick={onStart} disabled={!canStart} className="ml-auto h-8 px-4 text-xs">
+          Start
+        </Button>
+      </div>
+
+      {/* Explanatory row */}
+      <div className="flex flex-wrap gap-x-4 gap-y-0.5 text-[11px] leading-snug text-slate-600">
+        <span>
+          <span className="font-semibold">Model</span>: which LLM writes and revises the candidate Python solver.
+        </span>
+        <span>
+          <span className="font-semibold">Key</span>: BYO provider key; never stored. Required only when the model is
+          marked BYO.
+        </span>
+        <span>
+          <span className="font-semibold">Experts</span>: number of parallel coders. 1 = fastest, 8 = most thorough.
+        </span>
+        <span>
+          <span className="font-semibold">Iterations</span>: max self-audit cycles before Poetiq stops refining.
+        </span>
+        <span>
+          <span className="font-semibold">Temp</span>: higher = more exploratory code, lower = safer/deterministic.
+        </span>
+        <span>
+          <span className="font-semibold">Think</span>: low/medium/high reasoning effort for GPT-5.1 / Grok style calls.
+        </span>
+        <span>
+          <span className="font-semibold">Prompt</span>: choose between the classic Poetiq prompt and ARC-optimized,
+          localized templates.
+        </span>
+        {selectedModelObj && (
+          <span>
+            <span className="font-semibold">Routing</span>:{' '}
+            {(selectedModelObj as any)?.routing === 'direct'
+              ? `direct API via ${selectedModelObj.provider}`
+              : 'routed via OpenRouter as a proxy layer.'}
+          </span>
+        )}
+        {canUseAgents && (
+          <span>
+            <span className="font-semibold">Agents</span>: route OpenAI calls through the Agents runtime using the
+            Poetiq Python sandbox as a tool.
+          </span>
         )}
       </div>
-
-      {/* API Key */}
-      <div className="flex items-center gap-1">
-        <Key className={cn('h-3 w-3', hasApiKey ? 'text-green-600' : requiresApiKey ? 'text-amber-500' : 'text-slate-400')} />
-        <Input
-          type="text"
-          value={apiKey}
-          onChange={e => setApiKey(e.target.value)}
-          disabled={isRunning}
-          placeholder={keyPlaceholder}
-          className={cn('h-7 w-28 font-mono text-[10px]', requiresApiKey && !hasApiKey && 'border-amber-400')}
-        />
-      </div>
-
-      {/* Experts */}
-      <div className="flex items-center gap-1">
-        <span className="text-[10px] font-semibold text-slate-500">Exp:</span>
-        <Select value={String(numExperts)} onValueChange={v => setNumExperts(Number(v))} disabled={isRunning}>
-          <SelectTrigger className="h-7 w-14 text-xs">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="1">1</SelectItem>
-            <SelectItem value="2">2</SelectItem>
-            <SelectItem value="8">8</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
-
-      {/* Iterations */}
-      <div className="flex items-center gap-1">
-        <span className="text-[10px] font-semibold text-slate-500">Iter:</span>
-        <Input
-          type="number"
-          min={1}
-          max={20}
-          value={maxIterations}
-          onChange={e => setMaxIterations(parseInt(e.target.value, 10) || 10)}
-          disabled={isRunning}
-          className="h-7 w-12 text-xs"
-        />
-      </div>
-
-      {/* Temperature */}
-      <div className="flex items-center gap-1">
-        <span className="text-[10px] font-semibold text-slate-500">Temp:</span>
-        <Input
-          type="number"
-          min={0.1}
-          max={2}
-          step={0.1}
-          value={temperature}
-          onChange={e => setTemperature(parseFloat(e.target.value) || 1.0)}
-          disabled={isRunning}
-          className="h-7 w-14 text-xs"
-        />
-      </div>
-
-      {/* Reasoning Effort */}
-      <div className="flex items-center gap-1">
-        <span className="text-[10px] font-semibold text-slate-500">Think:</span>
-        <Select value={reasoningEffort} onValueChange={v => setReasoningEffort(v as any)} disabled={isRunning}>
-          <SelectTrigger className="h-7 w-20 text-xs">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="low">Low</SelectItem>
-            <SelectItem value="medium">Med</SelectItem>
-            <SelectItem value="high">High</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
-
-      {/* Prompt Style */}
-      <div className="flex items-center gap-1">
-        <span className="text-[10px] font-semibold text-slate-500">Prompt:</span>
-        <Select value={promptStyle} onValueChange={v => setPromptStyle(v as any)} disabled={isRunning}>
-          <SelectTrigger className="h-7 w-24 text-xs">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="classic">Classic</SelectItem>
-            <SelectItem value="arc">ARC EN</SelectItem>
-            <SelectItem value="arc_de">ARC DE</SelectItem>
-            <SelectItem value="arc_fr">ARC FR</SelectItem>
-            <SelectItem value="arc_tr">ARC TR</SelectItem>
-            <SelectItem value="arc_ru">ARC RU</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
-
-      {/* Agents Toggle */}
-      {canUseAgents && (
-        <div className="flex items-center gap-1 rounded bg-emerald-50 px-1.5 py-0.5">
-          <Brain className="h-3 w-3 text-emerald-600" />
-          <span className="text-[10px] font-medium text-emerald-700">Agents</span>
-          <Switch checked={useAgents} onCheckedChange={setUseAgents} disabled={isRunning} className="h-4 w-7" />
-        </div>
-      )}
-
-      {/* Start Button */}
-      <Button size="sm" onClick={onStart} disabled={!canStart} className="ml-auto h-7 px-4 text-xs">
-        Start
-      </Button>
     </div>
   );
 }
