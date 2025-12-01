@@ -173,7 +173,7 @@ async def llm_openai(
             max_output_tokens=128000,
             store=True,
             previous_response_id=previous_response_id,
-            include=["reasoning", "reasoning.encrypted_content"],
+            include=["reasoning.encrypted_content"],
         )
         
         # Extract text from response.output[]

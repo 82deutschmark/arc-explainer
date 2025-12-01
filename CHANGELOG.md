@@ -1,6 +1,13 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top with the time and date!
 
+### Version 5.33.23  Dec 1, 2025 11:20am
+
+- **Poetiq OpenAI Responses include fix** (Author: Cascade using Cascade)
+  - Adjusted the Poetiq Python LLM helper to stop requesting the unsupported `"reasoning"` field via the OpenAI Responses API `include` parameter, keeping only `"reasoning.encrypted_content"` per the current platform spec so calls to GPT-5.x and Codex models no longer 400 with `invalid_value` on `include[0]`.
+  - This removes the noisy `[OpenAI Responses API] Error: Invalid value: 'reasoning'` retries from Poetiq runs while preserving encrypted reasoning state for future chained calls.
+  - **Files**: `solver/poetiq/llm.py`.
+
 ### Version 5.33.22  Nov 30, 2025 9:35pm 
 
 - **Poetiq Agents: GPT-5.1 Codex Verbosity Clamp (Agents SDK path)** (Author: Cascade using Cascade)
