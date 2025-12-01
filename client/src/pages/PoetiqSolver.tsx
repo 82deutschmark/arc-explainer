@@ -15,6 +15,7 @@ import { Loader2, ChevronDown, ChevronUp, Activity, Timer, Layers, Copy, Check, 
 import { usePuzzle } from '@/hooks/usePuzzle';
 import { usePoetiqProgress } from '@/hooks/usePoetiqProgress';
 import { PuzzleGrid } from '@/components/puzzle/PuzzleGrid';
+import { TinyGrid } from '@/components/puzzle/TinyGrid';
 import { DEFAULT_EMOJI_SET } from '@/lib/spaceEmojis';
 
 // Poetiq components
