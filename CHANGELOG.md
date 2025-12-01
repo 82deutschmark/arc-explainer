@@ -1,6 +1,13 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top with the time and date!
 
+### Version 5.33.22  Nov 30, 2025 9:35pm 
+
+- **Poetiq Agents: GPT-5.1 Codex Verbosity Clamp (Agents SDK path)** (Author: Cascade using Cascade)
+  - Updated the OpenAI Agents runner for Poetiq so that GPT-5.1 Codex models (full + mini) always send `text.verbosity: "medium"` instead of `"high"`, matching the Responses API constraints and avoiding 400 "Unsupported value" errors.
+  - Confirmed that the existing **Reasoning Effort** selector in the Poetiq control panel (`low` / `medium` / `high`) is threaded through to the Agents runner as `reasoning.effort`, giving users explicit control over the thinking budget while the verbosity clamp stays model-specific.
+  - **Files**: `server/services/poetiq/PoetiqAgentsRunner.ts`.
+
 ### Version 5.33.21  Nov 30, 2025 6:55pm 
 
 - **Poetiq Agents UI/UX: Solver Toggle + Agents Runtime Panel** (Author: Cascade using Cascade)
