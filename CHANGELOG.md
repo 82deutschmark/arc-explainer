@@ -1,6 +1,14 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top with the time and date!
 
+### Version 5.33.25  Dec 1, 2025 1:30pm
+
+- **Poetiq solver layout + control rail redesign** (Author: Codex / GPT-5)
+  - Rebuilt the `PoetiqSolver` page frame with a sticky configuration rail, compact header badges, and dual scroll columns so the progress dashboard, agents panel, logs, and training grids remain visible without endless vertical scrolling.
+  - Restyled every supporting card (prompt inspector, reasoning stream, python console, event log, raw events) with consistent rounded panels, balanced gaps, and capped heights to keep the transparency tooling readable on large and small screens alike.
+  - Converted `PoetiqControlPanel` into a two-column grid that groups model selection, reasoning controls, BYO key, and solver settings into paired cards, trimming padding and keeping the start/cancel buttons pinned so the rail no longer blows past the viewport.
+  - **Files**: `client/src/pages/PoetiqSolver.tsx`, `client/src/components/poetiq/PoetiqControlPanel.tsx`.
+
 ### Version 5.33.24  Dec 1, 2025 11:56am
 
 - **Repo: Added beetreeARC as tracked submodule** (Author: Codex / GPT-5)

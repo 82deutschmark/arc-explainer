@@ -1092,31 +1092,31 @@ export default function PoetiqSolver() {
             )}
 
             {showRawEvents && (
-              <div className="bg-white border border-slate-300 rounded mb-3 max-h-64 overflow-hidden flex flex-col">
-                <div className="flex items-center justify-between px-4 py-2 bg-slate-100 border-b border-slate-300 sticky top-0">
+              <div className="flex max-h-64 flex-col overflow-hidden rounded-2xl border border-slate-300 bg-white shadow-sm">
+                <div className="sticky top-0 flex items-center justify-between border-b border-slate-200 bg-slate-100 px-4 py-2">
                   <div className="flex items-center gap-2">
                     <FileJson className="w-4 h-4 text-slate-700" />
                     <span className="text-sm font-bold text-slate-800">RAW EVENTS</span>
                     <span className="text-xs text-slate-500">({latestRawEvents.length} recent)</span>
                   </div>
                 </div>
-                <div className="overflow-y-auto p-3 text-xs font-mono bg-slate-50 flex-1 space-y-2">
+                <div className="flex-1 space-y-2 overflow-y-auto bg-slate-50 p-3 text-xs font-mono">
                   {latestRawEvents.length === 0 ? (
-                    <div className="text-gray-500 text-center py-4">Waiting for WebSocket events...</div>
+                    <div className="py-4 text-center text-slate-500">Waiting for WebSocket events...</div>
                   ) : (
                     latestRawEvents.map((event, idx) => {
                       const payloadText = JSON.stringify(event.payload, null, 2);
                       const clippedPayload = payloadText.length > 1500 ? `${payloadText.slice(0, 1500)}...` : payloadText;
                       return (
-                        <div key={`${event.timestamp}-${idx}`} className="border border-slate-200 rounded p-2 bg-white">
-                          <div className="flex items-center justify-between text-[11px] text-gray-500 mb-1">
+                        <div key={`${event.timestamp}-${idx}`} className="rounded border border-slate-200 bg-white p-2">
+                          <div className="mb-1 flex items-center justify-between text-[11px] text-slate-500">
                             <div className="flex items-center gap-2">
-                              <span className="font-semibold text-gray-700">{event.type}</span>
-                              {event.phase && <span className="px-1.5 py-0.5 bg-slate-200 rounded text-slate-700">{event.phase}</span>}
+                              <span className="font-semibold text-slate-700">{event.type}</span>
+                              {event.phase && <span className="rounded bg-slate-200 px-1.5 py-0.5 text-slate-700">{event.phase}</span>}
                             </div>
                             <span>{formatTimestamp(event.timestamp)}</span>
                           </div>
-                          <pre className="bg-slate-900 text-slate-100 rounded p-2 whitespace-pre-wrap max-h-32 overflow-y-auto">
+                          <pre className="max-h-32 overflow-y-auto whitespace-pre-wrap rounded bg-slate-950 p-2 text-slate-100">
                             {clippedPayload}
                           </pre>
                         </div>
