@@ -26,6 +26,9 @@ interface BeetreeCostDisplayProps {
 }
 
 export const BeetreeCostDisplay: React.FC<BeetreeCostDisplayProps> = ({ cost, mode }) => {
+  // Compute total tokens since it's not a property
+  const totalTokens = cost.total_tokens.input + cost.total_tokens.output + cost.total_tokens.reasoning;
+
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
@@ -46,7 +49,7 @@ export const BeetreeCostDisplay: React.FC<BeetreeCostDisplayProps> = ({ cost, mo
 
   const getCostEfficiency = () => {
     // Calculate cost efficiency based on tokens vs cost
-    const tokensPerDollar = cost.total_tokens.total / cost.total_cost;
+    const tokensPerDollar = totalTokens / cost.total_cost;
     if (tokensPerDollar > 10000) return 'Excellent';
     if (tokensPerDollar > 5000) return 'Good';
     if (tokensPerDollar > 1000) return 'Fair';
@@ -92,7 +95,7 @@ export const BeetreeCostDisplay: React.FC<BeetreeCostDisplayProps> = ({ cost, mo
         <div className="text-center p-4 bg-blue-50 border border-blue-200 rounded-lg">
           <Brain className="w-6 h-6 mx-auto mb-2 text-blue-600" />
           <div className="text-3xl font-bold text-blue-600">
-            {formatTokens(cost.total_tokens.total)}
+            {formatTokens(totalTokens)}
           </div>
           <div className="text-sm text-muted-foreground">Total Tokens</div>
         </div>
@@ -119,7 +122,7 @@ export const BeetreeCostDisplay: React.FC<BeetreeCostDisplayProps> = ({ cost, mo
               <span>{formatTokens(cost.total_tokens.input)}</span>
             </div>
             <Progress 
-              value={(cost.total_tokens.input / cost.total_tokens.total) * 100} 
+              value={(cost.total_tokens.input / totalTokens) * 100} 
               className="h-2"
             />
           </div>
@@ -129,7 +132,7 @@ export const BeetreeCostDisplay: React.FC<BeetreeCostDisplayProps> = ({ cost, mo
               <span>{formatTokens(cost.total_tokens.output)}</span>
             </div>
             <Progress 
-              value={(cost.total_tokens.output / cost.total_tokens.total) * 100} 
+              value={(cost.total_tokens.output / totalTokens) * 100} 
               className="h-2"
             />
           </div>
@@ -139,7 +142,7 @@ export const BeetreeCostDisplay: React.FC<BeetreeCostDisplayProps> = ({ cost, mo
               <span>{formatTokens(cost.total_tokens.reasoning)}</span>
             </div>
             <Progress 
-              value={(cost.total_tokens.reasoning / cost.total_tokens.total) * 100} 
+              value={(cost.total_tokens.reasoning / totalTokens) * 100} 
               className="h-2"
             />
           </div>
@@ -231,7 +234,7 @@ export const BeetreeCostDisplay: React.FC<BeetreeCostDisplayProps> = ({ cost, mo
           <div className="p-3 bg-muted/50 rounded-lg">
             <div className="text-sm font-medium mb-1">Cost per 1K Tokens</div>
             <div className="text-lg font-bold">
-              {formatCurrency((cost.total_cost / cost.total_tokens.total) * 1000)}
+              {formatCurrency((cost.total_cost / totalTokens) * 1000)}
             </div>
           </div>
           <div className="p-3 bg-muted/50 rounded-lg">

@@ -6,7 +6,6 @@
  */
 
 import { useState, useCallback, useRef, useEffect } from 'react';
-import { BeetreeBridgeEvent } from '@/shared/types';
 
 export interface BeetreeRunOptions {
   taskId: string;
@@ -149,23 +148,31 @@ export const useBeetreeRun = () => {
             };
 
           case 'solver_progress':
-            return {
-              ...prev,
-              progress: [...prev.progress, {
-                stage: data.stage || 'Processing',
-                status: data.status || 'In Progress',
-                outcome: data.outcome,
-                event: data.event,
-                predictions: data.predictions,
-                costSoFar: data.costSoFar,
-                tokensUsed: data.tokensUsed,
-                timestamp: Date.now()
-              }],
-              cost: data.costSoFar ? {
+            const newProgress: BeetreeProgress = {
+              stage: data.stage || 'Processing',
+              status: data.status || 'In Progress',
+              outcome: data.outcome,
+              event: data.event,
+              predictions: data.predictions,
+              costSoFar: data.costSoFar,
+              tokensUsed: data.tokensUsed,
+              timestamp: Date.now()
+            };
+            
+            // Update cost if costSoFar is provided
+            let updatedCost = prev.cost;
+            if (data.costSoFar && prev.cost) {
+              updatedCost = {
                 ...prev.cost,
                 total_cost: data.costSoFar,
-                total_tokens: data.tokensUsed || prev.cost?.total_tokens || { input: 0, output: 0, reasoning: 0 }
-              } : prev.cost
+                total_tokens: data.tokensUsed || prev.cost.total_tokens
+              };
+            }
+            
+            return {
+              ...prev,
+              progress: [...prev.progress, newProgress],
+              cost: updatedCost
             };
 
           case 'solver_log':
