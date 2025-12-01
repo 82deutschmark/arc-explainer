@@ -110,19 +110,22 @@ export class DeepSeekService extends BaseAIService {
   getModelInfo(modelKey: string): ModelInfo {
     const modelName = getApiModelName(modelKey);
     const modelConfig = MODEL_CONFIGS.find(m => m.key === modelKey);
-    
+
     // Check if it's a reasoning model (DeepSeek Reasoner has reasoning capabilities)
-    const isReasoning = modelName.includes('reasoner');
-    
+    const isReasoning = modelName.includes('reasoner') || modelKey.includes('reasoner');
+
+    // DeepSeek-V3.2-Speciale has more restrictions than standard models
+    const isSpeciale = modelKey === 'deepseek-reasoner-speciale';
+
     return {
       name: modelName,
       isReasoning,
       supportsTemperature: modelSupportsTemperature(modelKey),
-      contextWindow: modelConfig?.contextWindow,
-      supportsFunctionCalling: true,
+      contextWindow: modelConfig?.contextWindow || 128000,
+      supportsFunctionCalling: !isSpeciale, // Speciale doesn't support tool calls
       supportsSystemPrompts: true,
-      supportsStructuredOutput: false, // DeepSeek doesn't support structured output format
-      supportsVision: false // Most DeepSeek models don't support vision currently
+      supportsStructuredOutput: !isSpeciale, // Speciale doesn't support JSON output
+      supportsVision: false // DeepSeek models don't support vision currently
     };
   }
 
@@ -207,21 +210,38 @@ export class DeepSeekService extends BaseAIService {
     const userMessage = promptPackage.userPrompt;
     const systemPromptMode = serviceOpts.systemPromptMode || 'ARC';
 
+    // Create client with appropriate base URL for this model
+    const client = createDeepSeekClient(modelKey);
+    const baseURL = getDeepSeekBaseURL(modelKey);
+
+    logger.service('DeepSeek', `Using base URL: ${baseURL}`, 'debug');
+
     // Build message array for DeepSeek API
     const messages: any[] = [];
     if (systemMessage && systemPromptMode === 'ARC') {
       messages.push({ role: "system", content: systemMessage });
     }
-    messages.push({ 
-      role: "user", 
+    messages.push({
+      role: "user",
       content: systemPromptMode === 'ARC' ? userMessage : `${systemMessage}\n\n${userMessage}`
     });
 
-    const response = await deepseek.chat.completions.create({
+    // Build request parameters
+    // Note: For reasoning models (deepseek-reasoner), temperature/top_p/penalties are
+    // accepted by the API but ignored. We still pass them for API compatibility.
+    const requestParams: any = {
       model: modelName,
       messages,
-      ...(modelSupportsTemperature(modelKey) && { temperature })
-    });
+    };
+
+    // Add temperature if model supports it (even if ignored by reasoning models)
+    if (modelSupportsTemperature(modelKey)) {
+      requestParams.temperature = temperature;
+    }
+
+    logger.service('DeepSeek', `Request params: ${JSON.stringify({ model: modelName, messageCount: messages.length, temperature: requestParams.temperature })}`, 'debug');
+
+    const response = await client.chat.completions.create(requestParams);
 
     return response;
   }
