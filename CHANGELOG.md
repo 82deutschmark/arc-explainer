@@ -1,6 +1,13 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top with the time and date!
 
+### Version 5.33.24  Dec 1, 2025 11:56am
+
+- **Repo: Added beetreeARC as tracked submodule** (Author: Codex / GPT-5)
+  - Registered `https://github.com/82deutschmark/beetreeARC` as the `beetreeARC` git submodule so the upstream ARC solver code stays pinned and can be updated independently from the main repo.
+  - `.gitmodules` now lists the new dependency alongside the existing benchmarking and Poetiq solver modules, keeping all ARC-related external repos centralized.
+  - **Files**: `.gitmodules`, `beetreeARC/`.
+
 ### Version 5.33.23  Dec 1, 2025 11:20am
 
 - **Poetiq OpenAI Responses include fix** (Author: Cascade using Cascade)
