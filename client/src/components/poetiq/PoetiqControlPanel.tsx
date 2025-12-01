@@ -285,43 +285,43 @@ export default function PoetiqControlPanel({
       </div>
 
       {/* Explanatory row */}
-      <div className="flex flex-wrap gap-x-4 gap-y-0.5 text-[11px] leading-snug text-slate-600">
-        <span>
+      <div className="grid gap-x-6 gap-y-1 text-[11px] leading-snug text-slate-600 md:grid-cols-2 xl:grid-cols-3">
+        <div>
           <span className="font-semibold">Model</span>: which LLM writes and revises the candidate Python solver.
-        </span>
-        <span>
+        </div>
+        <div>
           <span className="font-semibold">Key</span>: BYO provider key; never stored. Required only when the model is
           marked BYO.
-        </span>
-        <span>
+        </div>
+        <div>
           <span className="font-semibold">Experts</span>: number of parallel coders. 1 = fastest, 8 = most thorough.
-        </span>
-        <span>
+        </div>
+        <div>
           <span className="font-semibold">Iterations</span>: max self-audit cycles before Poetiq stops refining.
-        </span>
-        <span>
+        </div>
+        <div>
           <span className="font-semibold">Temp</span>: higher = more exploratory code, lower = safer/deterministic.
-        </span>
-        <span>
+        </div>
+        <div>
           <span className="font-semibold">Think</span>: low/medium/high reasoning effort for GPT-5.1 / Grok style calls.
-        </span>
-        <span>
+        </div>
+        <div>
           <span className="font-semibold">Prompt</span>: choose between the classic Poetiq prompt and ARC-optimized,
           localized templates.
-        </span>
+        </div>
         {selectedModelObj && (
-          <span>
+          <div>
             <span className="font-semibold">Routing</span>:{' '}
             {(selectedModelObj as any)?.routing === 'direct'
               ? `direct API via ${selectedModelObj.provider}`
               : 'routed via OpenRouter as a proxy layer.'}
-          </span>
+          </div>
         )}
         {canUseAgents && (
-          <span>
+          <div>
             <span className="font-semibold">Agents</span>: route OpenAI calls through the Agents runtime using the
             Poetiq Python sandbox as a tool.
-          </span>
+          </div>
         )}
       </div>
     </div>
