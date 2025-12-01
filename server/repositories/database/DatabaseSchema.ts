@@ -417,6 +417,26 @@ export class DatabaseSchema {
     // Migration: Add indexes for Grover queries
     await client.query(`CREATE INDEX IF NOT EXISTS idx_explanations_iteration_count ON explanations(iteration_count) WHERE iteration_count IS NOT NULL`);
     await client.query(`CREATE INDEX IF NOT EXISTS idx_explanations_grover_iterations ON explanations USING GIN(grover_iterations) WHERE grover_iterations IS NOT NULL`);
+
+    // Migration: Add Beetree ensemble solver columns
+    await client.query(`
+      ALTER TABLE explanations
+      ADD COLUMN IF NOT EXISTS beetree_stage VARCHAR(100) DEFAULT NULL,
+      ADD COLUMN IF NOT EXISTS beetree_consensus_count INTEGER DEFAULT NULL,
+      ADD COLUMN IF NOT EXISTS beetree_model_results JSONB DEFAULT NULL,
+      ADD COLUMN IF NOT EXISTS beetree_cost_breakdown JSONB DEFAULT NULL,
+      ADD COLUMN IF NOT EXISTS beetree_token_usage JSONB DEFAULT NULL,
+      ADD COLUMN IF NOT EXISTS beetree_run_timestamp VARCHAR(255) DEFAULT NULL,
+      ADD COLUMN IF NOT EXISTS beetree_mode VARCHAR(20) DEFAULT NULL CHECK (beetree_mode IN ('testing', 'production')),
+      ADD COLUMN IF NOT EXISTS beetree_consensus_strength FLOAT DEFAULT NULL CHECK (beetree_consensus_strength >= 0 AND beetree_consensus_strength <= 1),
+      ADD COLUMN IF NOT EXISTS beetree_diversity_score FLOAT DEFAULT NULL CHECK (beetree_diversity_score >= 0 AND beetree_diversity_score <= 1);
+    `);
+
+    // Migration: Add indexes for Beetree queries
+    await client.query(`CREATE INDEX IF NOT EXISTS idx_explanations_beetree_mode ON explanations(beetree_mode) WHERE beetree_mode IS NOT NULL`);
+    await client.query(`CREATE INDEX IF NOT EXISTS idx_explanations_beetree_timestamp ON explanations(beetree_run_timestamp) WHERE beetree_run_timestamp IS NOT NULL`);
+    await client.query(`CREATE INDEX IF NOT EXISTS idx_explanations_beetree_consensus ON explanations(beetree_consensus_strength DESC) WHERE beetree_consensus_strength IS NOT NULL`);
+    await client.query(`CREATE INDEX IF NOT EXISTS idx_explanations_beetree_model_results ON explanations USING GIN(beetree_model_results) WHERE beetree_model_results IS NOT NULL`);
   }
 
   /**
