@@ -1,9 +1,10 @@
 /*
  *
- * Author: Cascade using Claude Sonnet 4
- * Date: 2025-11-26
+ * Author: Cascade using Claude Sonnet 4 (original), Claude Code using Sonnet 4.5 (2025-12-01 update)
+ * Date: 2025-12-01
  * PURPOSE: Centralized AI model configuration list consumed by ModelDefinitions and provider lookup utilities.
- *          Added openrouter/bert-nebulon-alpha cloaked model (Nov 24, 2025).
+ *          Updated DeepSeek models to v3.2 with new pricing and specifications.
+ *          Added deepseek-reasoner-speciale with expiration-dated base URL.
  * SRP/DRY check: Pass - file encapsulates shared model metadata without duplication.
  * shadcn/ui: Pass - configuration only.
  */
