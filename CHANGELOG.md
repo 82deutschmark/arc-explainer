@@ -1,6 +1,13 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top with the time and date!
 
+### Version 5.35.19  Dec 3, 2025 10:15am
+
+- **Multi-test Detection: Capture predicted grids without sentinel boolean** (Author: Codex / GPT-5)
+  - Added a shared multi-prediction detection helper so both the standard and streaming validators force `validateSolverResponseMulti` whenever the puzzle has multiple tests, numbered `predictedOutputN` fields, or direct grid arrays—even if the provider forgets to set `multiplePredictedOutputs: true`.
+  - Updated `PuzzleAnalysisService` and `streamingValidator` to rely on the new helper, gracefully fallback when expected outputs are missing, and continue writing the correct multi-test fields so UI cards can show every grid that models return.
+  - **Files**: `server/services/utils/multiPredictionDetection.ts`, `server/services/puzzleAnalysisService.ts`, `server/services/streamingValidator.ts`
+
 ### Version 5.35.18  Dec 2, 2025 5:55pm
 
 - **Beetree Streaming: Fix model routing crash** (Author: Codex / GPT-5)

@@ -17,6 +17,7 @@
 import { validateSolverResponse, validateSolverResponseMulti } from './responseValidator';
 import { isSolverMode } from './prompts/systemPrompts';
 import { logger } from '../utils/logger';
+import { shouldValidateAsMultiTest } from './utils/multiPredictionDetection';
 import type { ARCTask, ARCExample } from '../../shared/types';
 
 /**
@@ -51,14 +52,14 @@ export function validateStreamingResult(
     hasReasoningLog: result.hasReasoningLog
   };
 
-  // Check if AI provided multiple predictions
-  const multiplePredictedOutputs = result.multiplePredictedOutputs || result.result?.multiplePredictedOutputs;
-  
+  const shouldRunMultiValidation = shouldValidateAsMultiTest(result, testCount);
   let validatedResult = { ...result };
 
-  if (multiplePredictedOutputs === true) {
-    // Multi-test case: AI provided multiple grids
-    const correctAnswers = testCount > 1 ? puzzle.test.map((t: ARCExample) => t.output) : [puzzle.test[0].output];
+  if (shouldRunMultiValidation) {
+    const correctAnswers = (puzzle.test || []).map((t: ARCExample) => t.output);
+    if (correctAnswers.length === 0 && puzzle.test?.[0]?.output) {
+      correctAnswers.push(puzzle.test[0].output);
+    }
     const multiValidation = validateSolverResponseMulti(result, correctAnswers, promptId, confidence);
 
     // Use database-compatible field names directly from validator
@@ -77,8 +78,13 @@ export function validateStreamingResult(
     logger.debug(`[Streaming Validator] Multi-test validation: ${multiValidation.multiTestAllCorrect ? 'ALL CORRECT' : 'SOME INCORRECT'}`, 'streaming-validator');
   } else {
     // Single-test case: AI provided one grid
-    const correctAnswer = puzzle.test[0].output;
-    const validation = validateSolverResponse(result, correctAnswer, promptId, confidence);
+    const correctAnswer = puzzle.test?.[0]?.output;
+    if (!correctAnswer) {
+      logger.warn(`Puzzle ${puzzle.id} is missing expected output data`, 'streaming-validator');
+    }
+    const validation = correctAnswer
+      ? validateSolverResponse(result, correctAnswer, promptId, confidence)
+      : { predictedGrid: null, isPredictionCorrect: false, trustworthinessScore: 0, extractionMethod: 'missing_expected_output' };
 
     // Single-test validation results
     validatedResult.predictedOutputGrid = validation.predictedGrid;
