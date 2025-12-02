@@ -1,13 +1,20 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top with the time and date!
 
-### Version 5.35.17  Dec 2, 2025 4:05pm
+### Version 5.35.18  Dec 2, 2025 5:55pm
 
-- **Dockerfile: Initialize git submodules during build** (Author: Cascade)
-  - Added git to Alpine packages and copy git metadata before initializing submodules.
-  - Dockerfile now runs `git submodule update --init --recursive --force` to ensure beetreeARC and SnakeBench are always available.
-  - Submodule dependencies are now required (not optional) since we explicitly initialize them.
-  - This fixes deployment issues on platforms like Railway that don't automatically check out submodules.
+- **Beetree Streaming: Fix model routing crash** (Author: Codex / GPT-5)
+  - Corrected the Beetree stream service to pass the puzzle, model key, and taskId to `beetreeService.analyzePuzzleWithModel` in the proper order so `modelKey.includes()` is always operating on a string. This removes the `modelKey.includes is not a function` runtime crash that stopped BeeTree runs from even starting.
+  - Cleaned up the unused BeetreeRunConfig import now that the stream service hands the correct service options directly.
+  - **Files**: `server/services/streaming/beetreeStreamService.ts`
+
+### Version 5.35.17  Dec 2, 2025 4:20pm
+
+- **Dockerfile: Ensure beetreeARC and SnakeBench without relying on .git in build context** (Author: Cascade)
+  - Added git to Alpine packages and kept the existing npm/Python build flow intact.
+  - Dockerfile now copies the repo source and, if `beetreeARC` or `external/SnakeBench` are missing, performs shallow `git clone` from their upstream GitHub URLs during the build.
+  - After ensuring the directories exist, the image verifies key files (e.g., `beetreeARC/src/solver_engine.py`, `external/SnakeBench/backend/main.py`) and installs their `requirements.txt` files.
+  - This avoids the need to have `.git` or initialized submodules in the Railway Docker build context while still guaranteeing the solvers are present in the final image.
   - **Files**: `Dockerfile`
 
 ### Version 5.35.16  Dec 2, 2025 3:15pm
