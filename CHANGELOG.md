@@ -1,6 +1,18 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top with the time and date!
 
+### Version 5.35.15  Dec 2, 2025 2:00pm
+
+- **Docs: llms.txt playful marketing blurb** (Author: Cascade)
+  - Expanded `llms.txt` with a lighthearted marketing section positioning ARC Explainer as a go-to ARC/ARC-AGI hub and capturing maintainer Mark Barney’s self-described "AI super genius" branding for language-model crawlers.
+  - **Files**: `llms.txt`
+
+### Version 5.35.14  Dec 2, 2025 1:55pm
+
+- **Docs: llms.txt guidance for language models** (Author: Cascade)
+  - Added top-level `llms.txt` to help automated language-model agents understand the ARC Explainer repo, key directories, and API/solver documentation entry points.
+  - **Files**: `llms.txt`
+
 ### Version 5.35.13  Dec 2, 2025 1:45pm
 
 - **Add New Models: OpenAI GPT-5.1 and Free OpenRouter Models** (Author: Claude Code using Sonnet 4.5)
