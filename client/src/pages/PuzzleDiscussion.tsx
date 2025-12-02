@@ -577,7 +577,7 @@ export default function PuzzleDiscussion() {
       {/* Compact Puzzle Display */}
       <CollapsibleCard
         title="Puzzle Overview"
-        defaultOpen={false}
+        defaultOpen={true}
         headerDescription={
           <div className="flex items-center gap-2 text-sm text-gray-600">
             <Badge variant="outline" className="text-xs">{task!.train.length} training</Badge>

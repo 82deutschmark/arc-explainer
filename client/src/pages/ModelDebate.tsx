@@ -17,6 +17,7 @@ import { useParams, Link } from 'wouter';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { MessageSquare, Plus, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
@@ -63,6 +64,7 @@ export default function ModelDebate() {
     promptId,
     setPromptId,
     temperature,
+    setTemperature,
     streamingEnabled,
     streamingModelKey,
     streamStatus,
@@ -79,11 +81,17 @@ export default function ModelDebate() {
     startStreamingAnalysis,
     isGPT5ReasoningModel,
     reasoningEffort,
+    setReasoningEffort,
     reasoningVerbosity,
+    setReasoningVerbosity,
     reasoningSummaryType,
+    setReasoningSummaryType,
     topP,
+    setTopP,
     candidateCount,
-    thinkingBudget
+    setCandidateCount,
+    thinkingBudget,
+    setThinkingBudget
   } = useAnalysisResults({
     taskId: taskId || '',
     refetchExplanations,
@@ -116,6 +124,13 @@ export default function ModelDebate() {
     }
   })();
   const [pendingStream, setPendingStream] = useState<{ modelKey: string; baseline: string | null } | null>(null);
+
+  // Close streaming modal handler
+  const closeStreamingModal = () => {
+    if (streamingPanelStatus !== 'in_progress') {
+      cancelStreamingAnalysis();
+    }
+  };
 
 
   // Set promptId to 'debate' when debate mode is active
@@ -305,28 +320,7 @@ export default function ModelDebate() {
             );
           }
           return (
-            <>
-              {isStreamingActive && debateState.challengerModel && (
-                <div className="mb-4">
-                  <StreamingAnalysisPanel
-                    title={`Streaming ${streamingModel?.name ?? streamingModelKey ?? 'Challenge'}`}
-                    status={streamingPanelStatus}
-                    phase={typeof streamingPhase === 'string' ? streamingPhase : undefined}
-                    message={
-                      streamingPanelStatus === 'failed'
-                        ? streamError?.message ?? streamingMessage ?? 'Streaming failed'
-                        : streamingMessage
-                    }
-                    text={streamingText}
-                    structuredJsonText={streamingStructuredJsonText}
-                    structuredJson={streamingStructuredJson}
-                    reasoning={streamingReasoning}
-                    tokenUsage={streamingTokenUsage}
-                    onCancel={streamingPanelStatus === 'in_progress' ? () => { cancelStreamingAnalysis(); setPendingStream(null); } : undefined}
-                  />
-                </div>
-              )}
-              <IndividualDebate
+            <IndividualDebate
                 originalExplanation={selectedExplanation}
                 debateMessages={debateState.debateMessages}
                 taskId={taskId}
@@ -337,13 +331,33 @@ export default function ModelDebate() {
                 customChallenge={debateState.customChallenge}
                 processingModels={processingModels}
                 analyzerErrors={analyzerErrors}
+                temperature={temperature}
+                onTemperatureChange={setTemperature}
+                topP={topP}
+                onTopPChange={setTopP}
+                candidateCount={candidateCount}
+                onCandidateCountChange={setCandidateCount}
+                thinkingBudget={thinkingBudget}
+                onThinkingBudgetChange={setThinkingBudget}
+                reasoningEffort={reasoningEffort as 'low' | 'medium' | 'high' | undefined}
+                onReasoningEffortChange={setReasoningEffort}
+                reasoningVerbosity={reasoningVerbosity as 'low' | 'medium' | 'high' | undefined}
+                onReasoningVerbosityChange={setReasoningVerbosity}
+                reasoningSummaryType={reasoningSummaryType === 'auto' ? 'detailed' : reasoningSummaryType as 'none' | 'brief' | 'detailed' | undefined}
+                onReasoningSummaryTypeChange={(value) => {
+                  // Convert component types to hook types
+                  if (value === 'none' || value === 'brief') {
+                    setReasoningSummaryType('detailed'); // Fallback to detailed for unsupported values
+                  } else {
+                    setReasoningSummaryType(value as 'auto' | 'detailed');
+                  }
+                }}
                 onBackToList={debateState.endDebate}
                 onResetDebate={debateState.resetDebate}
                 onChallengerModelChange={debateState.setChallengerModel}
                 onCustomChallengeChange={debateState.setCustomChallenge}
                 onGenerateChallenge={handleGenerateChallenge}
               />
-            </>
           );
         })()
       ) : explanations && explanations.length > 0 ? (
@@ -376,6 +390,35 @@ export default function ModelDebate() {
         </Card>
       )}
       </div>
+
+      {/* Streaming Modal Dialog - Same pattern as PuzzleExaminer */}
+      <Dialog open={isStreamingActive} onOpenChange={closeStreamingModal}>
+        <DialogContent className="max-w-[95vw] max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>
+              {`Streaming ${streamingModel?.name ?? streamingModelKey ?? 'Challenge'}`}
+            </DialogTitle>
+          </DialogHeader>
+          <StreamingAnalysisPanel
+            title={`${streamingModel?.name ?? streamingModelKey ?? 'Challenge'}`}
+            status={streamingPanelStatus}
+            phase={typeof streamingPhase === 'string' ? streamingPhase : undefined}
+            message={
+              streamingPanelStatus === 'failed'
+                ? streamError?.message ?? streamingMessage ?? 'Streaming failed'
+                : streamingMessage
+            }
+            text={streamingText}
+            structuredJsonText={streamingStructuredJsonText}
+            structuredJson={streamingStructuredJson}
+            reasoning={streamingReasoning}
+            tokenUsage={streamingTokenUsage}
+            onCancel={streamingPanelStatus === 'in_progress' ? () => { cancelStreamingAnalysis(); setPendingStream(null); } : undefined}
+            onClose={closeStreamingModal}
+            task={task}
+          />
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
