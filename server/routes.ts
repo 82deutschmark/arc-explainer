@@ -218,6 +218,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // SnakeBench LLM Snake Arena routes
   app.post("/api/snakebench/run-match", asyncHandler(snakeBenchController.runMatch));
+  app.post("/api/snakebench/run-batch", asyncHandler(snakeBenchController.runBatch));
+  app.get("/api/snakebench/games", asyncHandler(snakeBenchController.listGames));
+  app.get("/api/snakebench/games/:gameId", asyncHandler(snakeBenchController.getGame));
+  app.get("/api/snakebench/health", asyncHandler(snakeBenchController.health));
 
   // Batch analysis routes
   app.post("/api/batch/start", asyncHandler(batchController.startBatch));

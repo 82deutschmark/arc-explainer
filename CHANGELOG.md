@@ -1,6 +1,23 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top with the time and date!
 
+### Version 5.35.11  Dec 2, 2025 4:10am
+
+- **SnakeBench API: Batch, Games Index, Health + Local Docs** (Author: Cascade)
+  - Extended the SnakeBench backend integration with a small batch API, recent-games listing, single-game detail endpoint, and a dedicated health check for the Python bridge and submodule wiring.
+  - New endpoints (all public): `POST /api/snakebench/run-batch`, `GET /api/snakebench/games`, `GET /api/snakebench/games/:gameId`, and `GET /api/snakebench/health`.
+  - Added shared types for batch requests/responses, game summaries, game detail payloads, and health responses so frontend or external tools can consume these consistently.
+  - Completed Milestone 1 docs with a "Using SnakeBench Locally" quick-start section describing submodule init, venv setup, CLI usage, and how completed games relate to ARC Explainer.
+  - **Files**: `shared/types.ts`, `server/services/snakeBenchService.ts`, `server/controllers/snakeBenchController.ts`, `server/routes.ts`, `docs/plans/2025-12-02-snakebench-integration-plan.md`.
+
+### Version 5.35.10  Dec 2, 2025 2:50am
+
+- **SnakeBench UI & Infra Integration** (Author: Cascade)
+  - Added a `SnakeArena` React page that embeds the existing SnakeBench Next.js frontend via an iframe, configured through `VITE_SNAKEBENCH_URL`, plus a new `/snake-arena` route and navigation entry.
+  - Updated the Docker image to include the `external/SnakeBench/backend` submodule and install its Python dependencies so `/api/snakebench/run-match` works inside containers.
+  - Added conservative safety limits for SnakeBench single matches (board sizes, max rounds, apples) in the backend service to prevent runaway configurations.
+  - **Files**: `client/src/pages/SnakeArena.tsx`, `client/src/App.tsx`, `client/src/components/layout/AppNavigation.tsx`, `.env.example`, `server/services/snakeBenchService.ts`, `Dockerfile`.
+
 ### Version 5.35.9  Dec 2, 2025 1:40am
 
 - **SnakeBench Backend: Single-Match Run API** (Author: Cascade)

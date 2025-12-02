@@ -100,6 +100,31 @@ This plan keeps SnakeBench’s game engine and evaluation logic intact while int
   - Where game outputs live (`external/SnakeBench/backend/completed_games/`).
   - How this relates conceptually to our ARC Explainer model catalog and metrics.
 
+### 3.4. Using SnakeBench Locally (quick start)
+
+- **When to use it**
+  - You want to compare different LLM providers/models on a simple competitive game (Snake) instead of ARC puzzles.
+  - You want richer Elo-style head-to-head stats or long-running ladders beyond what ARC Explainer itself tracks.
+
+- **One-time setup**
+  1. Ensure submodules are initialized:
+     - `git submodule update --init --recursive`
+  2. Create a virtual environment for the backend:
+     - `cd external/SnakeBench/backend`
+     - `python -m venv .venv`
+     - Activate it (platform-specific) and run:
+       - `pip install -r requirements.txt`
+  3. Configure LLM keys (e.g. OpenRouter) in the SnakeBench backend `.env` or environment.
+
+- **Run a single match from CLI**
+  - From `external/SnakeBench/backend`:
+    - `python main.py --models MODEL_A MODEL_B`
+  - Completed games are written under `external/SnakeBench/backend/completed_games/` and indexed by `game_index.json`.
+
+- **Relationship to ARC Explainer**
+  - ARC Explainer can trigger individual matches via `/api/snakebench/run-match` and embeds the full SnakeBench frontend.
+  - Heavy-duty ladders, Celery workers, and database-backed leaderboards remain managed by the SnakeBench stack itself.
+
 ---
 
 ## 4. Phase B – Backend Integration (Trigger Benchmarks via API)

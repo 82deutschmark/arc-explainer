@@ -583,6 +583,62 @@ export interface SnakeBenchRunMatchResponse {
   timestamp: number;
 }
 
+export interface SnakeBenchRunBatchRequest extends SnakeBenchRunMatchRequest {
+  /** Number of matches to run sequentially (small, bounded value) */
+  count: number;
+}
+
+export interface SnakeBenchRunBatchResult {
+  results: SnakeBenchRunMatchResult[];
+  errors?: Array<{
+    index: number;
+    error: string;
+  }>;
+}
+
+export interface SnakeBenchRunBatchResponse {
+  success: boolean;
+  batch?: SnakeBenchRunBatchResult;
+  error?: string;
+  timestamp: number;
+}
+
+export interface SnakeBenchGameSummary {
+  gameId: string;
+  filename: string;
+  startedAt: string;
+  totalScore: number;
+  roundsPlayed: number;
+  /** Optional on-disk path to the completed game JSON for replay */
+  path?: string;
+}
+
+export interface SnakeBenchListGamesResponse {
+  success: boolean;
+  games: SnakeBenchGameSummary[];
+  total: number;
+  timestamp: number;
+}
+
+export interface SnakeBenchGameDetailResponse {
+  success: boolean;
+  gameId: string;
+  /** Full SnakeBench game JSON payload for replay/inspection */
+  data?: any;
+  error?: string;
+  timestamp: number;
+}
+
+export interface SnakeBenchHealthResponse {
+  success: boolean;
+  status: 'ok' | 'degraded' | 'error';
+  pythonAvailable: boolean;
+  backendDirExists: boolean;
+  runnerExists: boolean;
+  message?: string;
+  timestamp: number;
+}
+
 /**
  * Available prompt templates for puzzle analysis
  * These templates allow users to choose different prompt styles and approaches to guide AI analysis
