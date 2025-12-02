@@ -1,16 +1,25 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top with the time and date!
 
-### Version 5.35.2  Dec 1, 2025 5:45pm
+### Version 5.35.3  Dec 1, 2025 6:45pm
 
-- **Beetree Solver Page - Complete Rewrite** (Author: Cascade)
-  - **Matched Saturn Pattern**: Completely rewrote BeetreeSolver.tsx to follow SaturnVisualSolver.tsx patterns using DaisyUI classes, 12-col grid layout, and proper state handling.
-  - **Removed shadcn Dependency**: Replaced all shadcn components with DaisyUI equivalents (select, btn, modal, card).
-  - **3-Column Running Layout**: Left panel for status/progress/puzzle grids, center for results, right for model cost breakdown.
-  - **Simplified UI**: Clean configuration screen in idle state, monitoring layout when running/completed.
-  - **Production Confirmation Modal**: DaisyUI modal for production mode confirmation ($15-$50 warning).
-  - **Field Name Fix**: Standardized consensus field to `strength` (was `consensus_strength`) across Python wrapper and TypeScript interfaces.
-  - **Files**: `client/src/pages/BeetreeSolver.tsx`, `server/python/beetree_wrapper.py`.
+- **Beetree Solver - Updated Models** (Author: Cascade)
+  - **Testing Mode**: Now uses only `gpt-5.1-codex-mini` (cheap, fast) - 7 runs at $0.10-$0.50, 1-3 min
+  - **Production Mode**: Now uses only `gemini-3-high` (comprehensive) - 20 runs at $5-$20, 10-30 min
+  - **Backend Changes**: Updated `beetreeARC/src/types.py` to add GPT-5.1 Codex Mini with pricing ($0.25/$2.00 per 1M tokens)
+  - **Backend Changes**: Updated `beetreeARC/src/models.py` to parse `gpt-5.1-codex-mini` model arg
+  - **Backend Changes**: Updated `beetreeARC/src/solver_engine.py` with new model configurations
+  - **Frontend Changes**: Updated model display and cost estimates in BeetreeSolver.tsx
+  - **Files**: `beetreeARC/src/types.py`, `beetreeARC/src/models.py`, `beetreeARC/src/solver_engine.py`, `client/src/pages/BeetreeSolver.tsx`
+
+### Version 5.35.2  Dec 1, 2025 6:00pm
+
+- **Beetree Solver Page - Honest UI with Pre-configured Models Display** (Author: Cascade)
+  - **Clear Fixed Ensemble Message**: UI now explicitly tells users that Beetree is a pre-configured ensemble solver - they cannot select individual models, only choose Testing or Production mode.
+  - **Always-Visible Model List**: Shows all 5 steps with their exact pre-configured models
+  - **Alert Warning**: Prominent alert box explaining "Fixed Ensemble - These models are hard-coded in the Beetree solver"
+  - **shadcn/ui Components**: Card, Button, Badge, Alert, Select, ScrollArea, Separator, Progress, AlertDialog
+  - **Files**: `client/src/pages/BeetreeSolver.tsx`.
 
 ### Version 5.35.1  Dec 1, 2025 5:30pm
 
