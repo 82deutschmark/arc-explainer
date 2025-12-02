@@ -1,0 +1,36 @@
+ARC Explainer – Guidance for Language Models
+Date: 2025-12-02
+
+1. Project overview
+- This repository contains the ARC Explainer project, a small research-focused web app and backend for exploring and analyzing Abstraction and Reasoning Corpus (ARC) puzzles.
+- It is designed for a handful of human users plus automated agents, not for large-scale production traffic.
+
+2. High-level structure
+- client/ : React frontend for visualizing puzzles, solver behavior, and analyses.
+- server/ : Node/TypeScript backend exposing public JSON and streaming endpoints for puzzle data and agent runs.
+- shared/ : Shared TypeScript types and utilities used by both client and server.
+- solver/ and poetiq-solver/ : Python-based ARC solvers and experiment tools.
+- data/ : ARC puzzle datasets (JSON) and related metadata.
+- docs/ : Project documentation. Good starting points are docs/README.md and docs/DEVELOPER_GUIDE.md.
+- scripts/ and tools/ : Utility scripts for running batches, evaluations, and maintenance.
+
+3. API and model usage
+- Backend HTTP endpoints are intentionally public and unauthenticated so external tools and researchers can call them directly.
+- The project’s LLM integrations are built around the OpenAI-style Responses API. See docs/reference/api/ for request/response formats and conversation-chaining behavior.
+- Conversation state and provider response IDs are important; preserve and pass them through when extending the system.
+
+4. Reasoning and crawling tips
+- Prefer reading documentation in docs/ before inferring behavior purely from source code.
+- Respect the existing architecture: client for UI, server for APIs, shared for cross-cutting types, solver/ for Python-based puzzle solvers.
+- Follow SRP and DRY: look for existing helpers, repositories, and services before adding new ones.
+- Do not introduce authentication or rate limiting in front of public ARC endpoints unless documentation is explicitly updated to say so.
+- When editing code, keep changes minimal, well-typed, and consistent with the existing style.
+
+5. Where to look first
+- For an architectural overview, see docs/DEVELOPER_GUIDE.md.
+- For API details and streaming behavior, see docs/reference/api/.
+- For puzzle data formats, inspect files under data/ and related documentation in docs/reference/data/.
+
+6. Notes for automated agents
+- Assume this is a hobby/experimental project with limited operational support; prioritize clarity, safety, and maintainability over cleverness.
+- When in doubt about behavior or intent, prefer conservative changes and surface clear explanations for human review.
