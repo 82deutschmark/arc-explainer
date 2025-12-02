@@ -15,7 +15,7 @@ import { pythonBridge, BeetreeBridgeOptions, BeetreeBridgeEvent } from './python
 import { ARCTask } from '../../shared/types.js';
 import { logger } from '../utils/logger.js';
 import { ExplanationRepository } from '../repositories/ExplanationRepository.js';
-import { validateSolverResponse } from '../services/schemas/solver.js';
+import { validateSolverResponse } from './responseValidator.js';
 
 // Beetree-specific types will be added after creating shared/types.ts
 interface BeetreeRunConfig {
@@ -161,21 +161,24 @@ export class BeetreeService extends BaseAIService {
         throw new Error(`Beetree execution failed with exit code ${code}`);
       }
 
+      // TypeScript narrowing - finalResult is guaranteed non-null here
+      const beetreeResult = finalResult as BeetreeResult;
+
       // Validate predictions against task
-      const validationResult = this.validatePredictions(task, finalResult.predictions);
+      const validationResult = this.validatePredictions(task, beetreeResult.predictions);
       
       // Build AIResponse from beetree result
       const response = this.buildAIResponse(
         modelKey,
         temperature || 0.2,
-        finalResult,
+        beetreeResult,
         validationResult,
         serviceOpts
       );
 
       // Save to database if store option is enabled
       if (serviceOpts?.store !== false) {
-        await this.saveBeetreeResult(taskId, modelKey, finalResult, response);
+        await this.saveBeetreeResult(taskId, modelKey, beetreeResult, response);
       }
 
       return response;
@@ -285,12 +288,17 @@ export class BeetreeService extends BaseAIService {
     
     if (predictions.length === 1 && testOutputs.length === 1) {
       // Single test case
-      return validateSolverResponse(
+      const validationResult = validateSolverResponse(
         { predictedOutput: predictions[0] },
         testOutputs[0],
         'external-beetree',
         null
       );
+      return {
+        isValid: validationResult.isPredictionCorrect,
+        message: validationResult.isPredictionCorrect ? 'Prediction correct' : 'Prediction incorrect',
+        isPredictionCorrect: validationResult.isPredictionCorrect
+      };
     } else if (predictions.length === testOutputs.length) {
       // Multiple test cases - use single validation for each
       const results = [];
@@ -304,8 +312,8 @@ export class BeetreeService extends BaseAIService {
         results.push(result);
       }
       
-      const allCorrect = results.every(r => r.isValid);
-      const correctCount = results.filter(r => r.isValid).length;
+      const allCorrect = results.every(r => r.isPredictionCorrect);
+      const correctCount = results.filter(r => r.isPredictionCorrect).length;
       
       return {
         isValid: allCorrect,

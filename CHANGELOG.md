@@ -1,6 +1,14 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top with the time and date!
 
+### Version 5.35.24  Dec 3, 2025 6:30pm
+
+- **TypeScript Syntax Fixes** (Author: Cascade using Sonnet 4.5)
+  - **Client**: Fixed JSX parsing error in `PoetiqStreamingVisualizer.tsx` by replacing `Expand ->` with JSX-safe `Expand &gt;` to resolve TS1382
+  - **Server**: Fixed missing class closing brace in `beetreeService_fixed.ts` before the export statement to resolve TS1068
+  - **Server**: Updated `beetreeService_fixed.ts` validation logic to use correct `validateSolverResponse` signature and `ValidationResult.isPredictionCorrect` property
+  - **Verification**: Confirmed both original TypeScript errors are resolved while preserving existing streaming patterns across Saturn, Poetiq, and Beetree services
+
 ### Version 5.35.23  Dec 3, 2025 5:45pm
 
 - **ModelDebate UX Redesign: Information density improvements** (Author: Cascade using Sonnet 4.5)
