@@ -93,6 +93,7 @@ export default function PoetiqControlPanel({
       'GPT': [],
       'Grok': [],
       'Claude': [],
+      'DeepSeek': [],
       'Other': [],
     };
     poetiqModels.forEach(m => {
@@ -102,6 +103,7 @@ export default function PoetiqControlPanel({
       else if (name.includes('gpt')) groups['GPT'].push(m);
       else if (name.includes('grok')) groups['Grok'].push(m);
       else if (name.includes('claude')) groups['Claude'].push(m);
+      else if (name.includes('deepseek')) groups['DeepSeek'].push(m);
       else groups['Other'].push(m);
     });
     return groups;

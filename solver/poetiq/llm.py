@@ -56,6 +56,10 @@ limiters: dict[str, Limiter] = {
     # xAI models (OpenAI-compatible)
     "xai/grok-4-fast": Limiter(1.0),
     "xai/grok-4": Limiter(1.0),
+    # DeepSeek models (OpenAI-compatible)
+    "deepseek-chat": Limiter(1.0),
+    "deepseek-reasoner": Limiter(0.5),  # Slower rate for reasoning models
+    "deepseek-reasoner-speciale": Limiter(0.5),
     # OpenRouter models
     "openrouter/google/gemini-3-pro-preview": Limiter(2.0),
     "openrouter/google/gemini-2.5-flash-preview-09-2025": Limiter(3.0),
@@ -72,30 +76,34 @@ default_limiter = Limiter(1.0)
 def get_provider(model: str) -> str:
     """
     Determine which provider/SDK to use for a given model ID.
-    Returns: 'openai', 'anthropic', 'gemini', 'openrouter', 'xai'
+    Returns: 'openai', 'anthropic', 'gemini', 'openrouter', 'xai', 'deepseek'
     """
     model_lower = model.lower()
-    
+
     # Check for OpenRouter first (it can proxy any model)
     if 'openrouter' in model_lower:
         return 'openrouter'
-    
+
     # Direct OpenAI models (use Responses API)
     if any(x in model_lower for x in ['gpt-5', 'o3-', 'o4-', 'gpt-4.1']):
         return 'openai'
-    
+
     # Anthropic models
     if any(x in model_lower for x in ['claude', 'anthropic']):
         return 'anthropic'
-    
+
     # Google Gemini models
     if 'gemini' in model_lower:
         return 'gemini'
-    
+
     # xAI Grok models (OpenAI-compatible API)
     if any(x in model_lower for x in ['grok', 'xai']):
         return 'xai'
-    
+
+    # DeepSeek models (OpenAI-compatible API)
+    if 'deepseek' in model_lower:
+        return 'deepseek'
+
     # Default to OpenRouter for unknown models
     return 'openrouter'
 
@@ -502,6 +510,90 @@ async def llm_xai(
 
 
 # ==========================================
+# DEEPSEEK API (DeepSeek Chat, DeepSeek Reasoner)
+# ==========================================
+async def llm_deepseek(
+    model: str,
+    message: str,
+    system_prompt: Optional[str] = None,
+    temperature: float = 1.0,
+    timeout: int = 900,
+    problem_id: Optional[str] = None,
+    **kwargs,
+) -> Tuple[str, TokenUsage, str, Optional[str]]:
+    """
+    Call DeepSeek using OpenAI SDK with custom base URL.
+    Supports both deepseek-chat and deepseek-reasoner models.
+
+    Returns: (response_text, token_usage, reasoning_summary, provider_response_id)
+    """
+    api_key = os.environ.get("DEEPSEEK_API_KEY")
+    if not api_key:
+        raise ValueError("DEEPSEEK_API_KEY environment variable not set")
+
+    model_name = extract_model_name(model)
+
+    # DeepSeek v3.2-Speciale uses a special base URL with expiration
+    if 'speciale' in model_name.lower():
+        base_url = "https://api.deepseek.com/v3.2_speciale_expires_on_20251215"
+    else:
+        base_url = "https://api.deepseek.com"
+
+    client = openai.AsyncOpenAI(
+        api_key=api_key,
+        base_url=base_url,
+        timeout=timeout * 1000,  # Convert to milliseconds
+    )
+
+    print(f"[DeepSeek API] Calling {model_name} via {base_url}")
+
+    messages = []
+    if system_prompt:
+        messages.append({"role": "system", "content": system_prompt})
+    messages.append({"role": "user", "content": message})
+
+    # DeepSeek reasoner models don't support temperature (it's accepted but ignored)
+    request_params = {
+        "model": model_name,
+        "messages": messages,
+    }
+
+    # Only add temperature for non-reasoner models
+    if 'reasoner' not in model_name.lower():
+        request_params["temperature"] = temperature
+
+    try:
+        response = await client.chat.completions.create(**request_params)
+
+        output_text = response.choices[0].message.content.strip() if response.choices else ""
+
+        token_usage: TokenUsage = {}
+        if response.usage:
+            token_usage = {
+                "input_tokens": response.usage.prompt_tokens or 0,
+                "output_tokens": response.usage.completion_tokens or 0,
+                "total_tokens": response.usage.total_tokens or 0,
+            }
+            # DeepSeek reasoner models include reasoning tokens
+            if hasattr(response.usage, 'reasoning_tokens') and response.usage.reasoning_tokens:
+                token_usage["reasoning_tokens"] = response.usage.reasoning_tokens
+
+        # Extract reasoning content for deepseek-reasoner models
+        reasoning_summary = ""
+        if 'reasoner' in model_name.lower():
+            reasoning_content = getattr(response.choices[0].message, 'reasoning_content', None)
+            if reasoning_content:
+                reasoning_summary = reasoning_content
+                print(f"[DeepSeek API] Extracted reasoning: {len(reasoning_summary)} chars")
+
+        return output_text, token_usage, reasoning_summary, None
+
+    except openai.APIError as e:
+        print(f"[DeepSeek API] Error: {e}")
+        raise
+
+
+# ==========================================
 # MAIN ROUTER FUNCTION
 # ==========================================
 async def llm(
@@ -577,6 +669,10 @@ async def llm(
                 )
             elif provider == 'xai':
                 response_text, token_usage, reasoning_summary, provider_response_id = await llm_xai(
+                    model, message, system_prompt, temperature, timeout, problem_id, **kwargs
+                )
+            elif provider == 'deepseek':
+                response_text, token_usage, reasoning_summary, provider_response_id = await llm_deepseek(
                     model, message, system_prompt, temperature, timeout, problem_id, **kwargs
                 )
             else:  # openrouter or unknown
