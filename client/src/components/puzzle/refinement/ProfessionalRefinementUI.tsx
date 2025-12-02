@@ -152,7 +152,7 @@ export const ProfessionalRefinementUI: React.FC<ProfessionalRefinementUIProps> =
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-3">
       {/* Header Section */}
       <Card>
         <CardHeader className="pb-3">

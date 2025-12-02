@@ -1,6 +1,24 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top with the time and date!
 
+### Version 5.35.26  Dec 3, 2025 6:55pm
+
+- **Responses API Explanation Added to PuzzleExaminer** (Author: Cascade using Sonnet 4.5)
+  - Added informational alert about Progressive Reasoning functionality to PuzzleExaminer page
+  - **Content**: Explains how Responses API maintains stateful persistence with encrypted reasoning traces via `reasoning.encrypted_content`
+  - **Context**: Helps users understand the "Refine This Analysis" feature before navigating to discussion page
+  - **Implementation**: Added Info icon import and blue-styled alert after puzzle grid display, before controls
+  - **Files**: `client/src/pages/PuzzleExaminer.tsx` (import addition, alert component)
+
+### Version 5.35.25  Dec 3, 2025 6:45pm
+
+- **Progressive Reasoning Whitespace Fix** (Author: Cascade using Sonnet 4.5)
+  - Fixed excessive white space issue in discussion page progressive reasoning interface
+  - **AnalysisResultCard**: Reduced vertical spacing from `space-y-5 p-4 sm:p-6` to `space-y-3 p-3 sm:p-4` to minimize content gaps
+  - **IterationDataTable**: Reduced expanded row padding from `p-6` to `p-3` for more compact display
+  - **ProfessionalRefinementUI**: Reduced main container spacing from `space-y-4` to `space-y-3` for tighter layout
+  - **Impact**: Significantly reduces vertical whitespace while maintaining readability and visual hierarchy
+
 ### Version 5.35.24  Dec 3, 2025 6:30pm
 
 - **TypeScript Syntax Fixes** (Author: Cascade using Sonnet 4.5)
