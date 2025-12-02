@@ -30,6 +30,7 @@ import { streamController } from "./controllers/streamController.ts";
 
 import { eloController } from "./controllers/eloController";
 import modelDatasetController from "./controllers/modelDatasetController.ts";
+import { snakeBenchController } from "./controllers/snakeBenchController.ts";
 
 // Import route modules
 import modelsRouter from "./routes/models.js";
@@ -214,6 +215,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/beetree/history/:taskId", asyncHandler(beetreeController.getBeetreeHistory));
   app.get("/api/beetree/cost-breakdown/:explanationId", asyncHandler(beetreeController.getBeetreeCostBreakdown));
   app.post("/api/beetree/cancel/:sessionId", asyncHandler(beetreeController.cancelBeetreeAnalysis));
+
+  // SnakeBench LLM Snake Arena routes
+  app.post("/api/snakebench/run-match", asyncHandler(snakeBenchController.runMatch));
 
   // Batch analysis routes
   app.post("/api/batch/start", asyncHandler(batchController.startBatch));

@@ -549,6 +549,40 @@ export interface LeaderboardStats {
   overallTrustworthiness: number;
 }
 
+// SnakeBench integration types
+export type SnakeBenchResultLabel = 'won' | 'lost' | 'tied';
+
+export interface SnakeBenchRunMatchRequest {
+  modelA: string;
+  modelB: string;
+  width?: number;
+  height?: number;
+  maxRounds?: number;
+  numApples?: number;
+}
+
+export interface SnakeBenchRunMatchResult {
+  /** SnakeBench internal game id */
+  gameId: string;
+  /** Model name for snake slot 0 */
+  modelA: string;
+  /** Model name for snake slot 1 */
+  modelB: string;
+  /** Final scores keyed by model name */
+  scores: Record<string, number>;
+  /** Results keyed by model name (won/lost/tied) */
+  results: Record<string, SnakeBenchResultLabel>;
+  /** Optional on-disk path to the completed game JSON for replay */
+  completedGamePath?: string;
+}
+
+export interface SnakeBenchRunMatchResponse {
+  success: boolean;
+  result?: SnakeBenchRunMatchResult;
+  error?: string;
+  timestamp: number;
+}
+
 /**
  * Available prompt templates for puzzle analysis
  * These templates allow users to choose different prompt styles and approaches to guide AI analysis

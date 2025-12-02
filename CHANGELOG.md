@@ -1,6 +1,14 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top with the time and date!
 
+### Version 5.35.9  Dec 2, 2025 1:40am
+
+- **SnakeBench Backend: Single-Match Run API** (Author: Cascade)
+  - Added a Python bridge runner that calls the SnakeBench backend `run_simulation` function without requiring its own Supabase database, using minimal in-memory player configs and still writing completed game JSON files for replays.
+  - Introduced a `snakeBenchService` in Node that spawns the runner as a subprocess, validates input, parses the JSON summary, and exposes a typed `SnakeBenchRunMatchResult` shared type.
+  - Exposed a public `POST /api/snakebench/run-match` endpoint via `snakeBenchController`, returning a compact `{ success, result, error, timestamp }` payload for frontend and external callers.
+  - **Files**: `shared/types.ts`, `server/python/snakebench_runner.py`, `server/services/snakeBenchService.ts`, `server/controllers/snakeBenchController.ts`, `server/routes.ts`.
+
 ### Version 5.35.8  Dec 2, 2025 1:20am
 
 - **Docs: SnakeBench Integration Plan (A, B, C)** (Author: Cascade)
