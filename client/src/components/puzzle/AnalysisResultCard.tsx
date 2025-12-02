@@ -167,7 +167,7 @@ export const AnalysisResultCard = React.memo(function AnalysisResultCard({ model
       className="relative overflow-hidden rounded-3xl border border-amber-100/70 bg-[radial-gradient(circle_at_top,_rgba(254,243,199,0.92),_rgba(255,228,230,0.86)_45%,_rgba(219,234,254,0.82))] p-0 scroll-mt-24 shadow-[0_28px_65px_-40px_rgba(146,64,14,0.55)] transition-all hover:shadow-[0_34px_78px_-42px_rgba(30,64,175,0.55)] supports-[backdrop-filter]:bg-white/80 supports-[backdrop-filter]:backdrop-blur-md dark:border-violet-800/60 dark:bg-[radial-gradient(circle_at_top,_rgba(17,24,39,0.92),_rgba(76,29,149,0.62)_45%,_rgba(15,118,110,0.54))] dark:shadow-[0_28px_70px_-40px_rgba(12,74,110,0.65)] dark:hover:shadow-[0_34px_82px_-44px_rgba(94,234,212,0.55)]"
       data-explanation-id={result.id}
     >
-      <CardContent className="space-y-5 p-4 sm:p-6">
+      <CardContent className="space-y-3 p-3 sm:p-4">
       <AnalysisResultHeader
         result={result}
         model={model}

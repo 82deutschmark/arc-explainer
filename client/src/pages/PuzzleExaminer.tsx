@@ -475,7 +475,6 @@ export default function PuzzleExaminer() {
           <AnalysisResults
             results={allResults}
             counts={counts}
-            total={total}
             filteredTotal={filteredTotal}
             correctnessFilter={correctnessFilter}
             onFilterChange={setCorrectnessFilter}
