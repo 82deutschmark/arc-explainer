@@ -1,6 +1,14 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top with the time and date!
 
+### Version 5.35.23  Dec 3, 2025 5:45pm
+
+- **ModelDebate UX Redesign: Information density improvements** (Author: Cascade using Sonnet 4.5)
+  - Implemented comprehensive UX redesign based on user feedback to improve information density and remove redundant UI chrome
+  - **Key Changes**: Moved OriginalExplanationCard to display immediately after test cases (always expanded with forceExpanded prop), removed redundant back buttons (ELO Mode, Preview Prompt), simplified header to compact "Challenge Controls" with only Reset and Back to List buttons, reduced spacing throughout (space-y-3 → space-y-2, p-3 → p-2)
+  - **Information Flow**: Test cases → Original explanation (prominent) → Compact challenge controls → Challenge responses only
+  - **Files**: `client/src/components/puzzle/debate/IndividualDebate.tsx` (major refactor), `client/src/components/puzzle/debate/OriginalExplanationCard.tsx` (added forceExpanded prop)
+
 ### Version 5.35.22  Dec 3, 2025 5:25pm
 
 - **Model Debate: Surface original explanation in header card** (Author: Cascade using Cascade)

@@ -21,15 +21,17 @@ interface OriginalExplanationCardProps {
   models?: ModelConfig[];
   testCases: ARCExample[];
   timestamp: string;
+  forceExpanded?: boolean; // NEW: Force expanded state in debate context
 }
 
 export const OriginalExplanationCard: React.FC<OriginalExplanationCardProps> = ({
   explanation,
   models,
   testCases,
-  timestamp
+  timestamp,
+  forceExpanded
 }) => {
-  const [isOpen, setIsOpen] = useState(true); // EXPANDED by default - users need to see predictions immediately
+  const [isOpen, setIsOpen] = useState(forceExpanded ?? true); // EXPANDED by default - users need to see predictions immediately
 
   // Determine correctness status
   const hasMultiTest = explanation.hasMultiplePredictions &&
@@ -102,23 +104,25 @@ export const OriginalExplanationCard: React.FC<OriginalExplanationCardProps> = (
             </div>
           )}
 
-          {/* Toggle button */}
-          <button
-            className="btn btn-ghost btn-sm w-full mt-2 h-7 text-xs justify-center"
-            onClick={() => setIsOpen(!isOpen)}
-          >
-            {isOpen ? (
-              <>
-                <ChevronUp className="h-3 w-3 mr-1" />
-                Hide details
-              </>
-            ) : (
-              <>
-                <ChevronDown className="h-3 w-3 mr-1" />
-                Show details
-              </>
-            )}
-          </button>
+          {/* Toggle button - hide when forceExpanded */}
+          {!forceExpanded && (
+            <button
+              className="btn btn-ghost btn-sm w-full mt-2 h-7 text-xs justify-center"
+              onClick={() => setIsOpen(!isOpen)}
+            >
+              {isOpen ? (
+                <>
+                  <ChevronUp className="h-3 w-3 mr-1" />
+                  Hide details
+                </>
+              ) : (
+                <>
+                  <ChevronDown className="h-3 w-3 mr-1" />
+                  Show details
+                </>
+              )}
+            </button>
+          )}
         </div>
 
         <div className="collapse-content p-2 overflow-x-auto">
