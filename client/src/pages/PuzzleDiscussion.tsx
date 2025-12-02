@@ -362,42 +362,46 @@ export default function PuzzleDiscussion() {
   }, [explanations]);
 
   // Auto-start refinement when ?select= parameter is present
+  // FIX: Inlined startRefinement call directly instead of using handleStartRefinement to avoid
+  // closure race conditions where the function captures stale explanations data. Also removed
+  // the 100ms setTimeout which added unnecessary delay and potential for state drift.
   useEffect(() => {
     // Only attempt auto-selection when:
     // 1. We have a selectId from URL
     // 2. Explanations are loaded (not loading and exists)
     // 3. Refinement is not already active (prevent double-activation)
     // 4. Not already auto-selecting (prevent double-trigger)
-    if (selectId && explanations && explanations.length > 0 && !isLoadingExplanations && !refinementState.isRefinementActive && !isAutoSelecting) {
-      console.log(`[PuzzleDiscussion] 🔍 Auto-select initiating for ID ${selectId}...`);
-      setIsAutoSelecting(true);
-
-      const explanation = explanations.find(e => e.id === selectId);
-      if (explanation) {
-        console.log(`[PuzzleDiscussion] ✅ Found explanation #${selectId}`);
-        console.log(`[PuzzleDiscussion] Model: ${explanation.modelName}, Has Response ID: ${!!explanation.providerResponseId}`);
-
-        // Small delay to ensure state updates have propagated
-        setTimeout(() => {
-          handleStartRefinement(selectId);
-          setIsAutoSelecting(false);
-          toast({
-            title: "Refinement loaded",
-            description: `Starting refinement for explanation #${selectId}`,
-          });
-        }, 100);
-      } else {
-        console.error(`[PuzzleDiscussion] ❌ Explanation #${selectId} not found`);
-        console.error(`[PuzzleDiscussion] Available IDs: ${explanations.map(e => e.id).join(', ')}`);
-        setIsAutoSelecting(false);
-        toast({
-          title: "Explanation not found",
-          description: `Could not find explanation #${selectId}. It may have been deleted or is not eligible for refinement.`,
-          variant: "destructive"
-        });
-      }
+    if (!selectId || !explanations || explanations.length === 0 || isLoadingExplanations || refinementState.isRefinementActive || isAutoSelecting) {
+      return;
     }
-  }, [selectId, explanations, isLoadingExplanations, refinementState.isRefinementActive, isAutoSelecting, toast, handleStartRefinement]);
+
+    console.log(`[PuzzleDiscussion] 🔍 Auto-select initiating for ID ${selectId}...`);
+    setIsAutoSelecting(true);
+
+    const explanation = explanations.find(e => e.id === selectId);
+    if (explanation) {
+      console.log(`[PuzzleDiscussion] ✅ Found explanation #${selectId}`);
+      console.log(`[PuzzleDiscussion] Model: ${explanation.modelName}, Has Response ID: ${!!explanation.providerResponseId}`);
+
+      refinementState.startRefinement(explanation);
+      setIsAutoSelecting(false);
+      toast({
+        title: "Refinement loaded",
+        description: `Starting refinement for explanation #${selectId}`,
+      });
+    } else {
+      console.error(`[PuzzleDiscussion] ❌ Explanation #${selectId} not found`);
+      console.error(`[PuzzleDiscussion] Available IDs: ${explanations.map(e => e.id).join(', ')}`);
+      setIsAutoSelecting(false);
+      toast({
+        title: "Explanation not found",
+        description: `Could not find explanation #${selectId}. It may have been deleted or is not eligible for refinement.`,
+        variant: "destructive"
+      });
+    }
+  // NOTE: toast and refinementState.startRefinement intentionally omitted - they're stable references
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectId, explanations, isLoadingExplanations, refinementState.isRefinementActive, isAutoSelecting]);
 
   // Loading states
   if (isLoadingTask || isLoadingExplanations || isAutoSelecting) {

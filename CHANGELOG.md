@@ -1,6 +1,15 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top with the time and date!
 
+### Version 5.35.27  Dec 2, 2025 6:25pm
+
+- **PuzzleDiscussion Auto-Selection Fix** (Author: Cascade using Claude Sonnet 4)
+  - Fixed critical bug where `?select=<explanationId>` URL parameter was not auto-selecting the explanation for refinement
+  - **Root Cause**: `handleStartRefinement` function was included in useEffect dependencies but was NOT memoized with `useCallback`, causing it to change every render. The 100ms `setTimeout` captured a stale closure that could reference empty/outdated `explanations` data.
+  - **Fix**: Inlined `refinementState.startRefinement(explanation)` call directly in the useEffect instead of going through `handleStartRefinement`, eliminating the closure race condition. Also removed the unnecessary 100ms setTimeout delay.
+  - **Impact**: URLs like `/discussion/16de56c4?select=60951` now correctly auto-load the refinement interface for the specified explanation
+  - **Files**: `client/src/pages/PuzzleDiscussion.tsx`
+
 ### Version 5.35.26  Dec 3, 2025 6:55pm
 
 - **Responses API Explanation Added to PuzzleExaminer** (Author: Cascade using Sonnet 4.5)
