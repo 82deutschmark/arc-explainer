@@ -233,7 +233,7 @@ export default function SnakeArena() {
               Loaded from <code>completed_games/game_index.json</code> inside the SnakeBench backend.
             </p>
           </div>
-          <Button size="xs" variant="outline" onClick={() => refresh(10)} disabled={loadingGames}>
+          <Button size="sm" variant="outline" onClick={() => refresh(10)} disabled={loadingGames}>
             Refresh
           </Button>
         </div>

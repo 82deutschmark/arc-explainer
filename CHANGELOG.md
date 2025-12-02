@@ -1,6 +1,12 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top with the time and date!
 
+### Version 5.35.12  Dec 2, 2025 1:05pm
+
+- **Snake Arena: Fix Button size TypeScript error** (Author: Cascade)
+  - Switched the `Recent games` refresh control to use supported `size="sm"` on the shared shadcn `Button`, resolving a compile-time type mismatch in `SnakeArena.tsx`.
+  - **Files**: `client/src/pages/SnakeArena.tsx`
+
 ### Version 5.35.11  Dec 2, 2025 4:10am
 
 - **SnakeBench API: Batch, Games Index, Health + Local Docs** (Author: Cascade)
