@@ -37,7 +37,7 @@ export const RebuttalCard: React.FC<RebuttalCardProps> = ({
   rebuttalNumber,
   cumulativeReasoningTokens
 }) => {
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(true); // EXPANDED by default - users need to see predictions immediately
 
   // Determine correctness status
   const hasMultiTest = explanation.hasMultiplePredictions &&
