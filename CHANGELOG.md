@@ -1,6 +1,15 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top with the time and date!
 
+### Version 5.35.4  Dec 1, 2025 7:15pm
+
+- **Dockerfile - Add beetreeARC Support** (Author: Cascade)
+  - **Submodule Directory Copy**: Updated Dockerfile to copy beetreeARC/ directory directly (not cloning via git since Docker build context doesn't have .git)
+  - **Python Dependencies**: Install beetreeARC's own requirements.txt (anthropic, openai, google-genai, matplotlib, etc.)
+  - **Verification Steps**: Added checks to ensure beetreeARC/src/solver_engine.py and requirements.txt exist
+  - **Build Process**: beetreeARC is copied after npm ci but before main source code copy
+  - **Files**: `Dockerfile`
+
 ### Version 5.35.3  Dec 1, 2025 6:45pm
 
 - **Beetree Solver - Updated Models** (Author: Cascade)
