@@ -44,6 +44,16 @@ RUN echo "=== VERIFYING BEETREEARC SUBMODULE ===" && \
 RUN echo "=== INSTALLING BEETREEARC DEPENDENCIES ===" && \
     python3 -m pip install --no-cache-dir --break-system-packages -r beetreeARC/requirements.txt
 
+# Copy SnakeBench backend submodule (must be checked out in build context)
+COPY external/SnakeBench/backend/ ./external/SnakeBench/backend/
+RUN echo "=== VERIFYING SNAKEBENCH BACKEND SUBMODULE ===" && \
+    test -f external/SnakeBench/backend/main.py && echo "✓ SnakeBench backend main.py exists" || (echo "✗ SnakeBench backend main.py NOT FOUND" && exit 1) && \
+    test -f external/SnakeBench/backend/requirements.txt && echo "✓ SnakeBench backend requirements.txt exists" || (echo "✗ SnakeBench backend requirements.txt NOT FOUND" && exit 1)
+
+# Install SnakeBench backend Python dependencies (for /api/snakebench/*)
+RUN echo "=== INSTALLING SNAKEBENCH BACKEND DEPENDENCIES ===" && \
+    python3 -m pip install --no-cache-dir --break-system-packages -r external/SnakeBench/backend/requirements.txt
+
 # Copy source code and ALL config files needed for build
 COPY client/ ./client/
 COPY server/ ./server/
