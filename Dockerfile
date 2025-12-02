@@ -3,14 +3,15 @@ FROM node:20-alpine
 # Dockerfile for ARC Explainer app runtime and build
 # - Builds the client and server
 # - Adds Python 3 for Saturn Visual Solver and Poetiq Meta-System Solver
-# - Poetiq solver is now INTERNALIZED at solver/poetiq/ (no submodule needed)
-# - BeetreeARC is copied as a directory (must be checked out locally)
+# - Poetiq solver is INTERNALIZED at solver/poetiq/ (always available)
+# - BeetreeARC and SnakeBench are OPTIONAL submodules (gracefully skipped if not checked out)
 # Author: Cascade (Claude Sonnet 4)
-# Updated: 2025-12-01 - Add beetreeARC submodule support
+# Updated: 2025-12-02 - Make submodules optional for deploy platforms that don't init them
 
-# Add Python3 and canvas dependencies
+# Add Python3, git, and canvas dependencies
 RUN apk add --no-cache \
     python3 py3-pip \
+    git \
     pkgconf \
     cairo-dev \
     pango-dev \
@@ -34,39 +35,26 @@ RUN python3 -m pip install --no-cache-dir --break-system-packages -r requirement
 # Install dependencies
 RUN npm ci
 
-# Copy beetreeARC submodule (must be checked out in build context)
-COPY beetreeARC/ ./beetreeARC/
-RUN echo "=== VERIFYING BEETREEARC SUBMODULE ===" && \
-    test -f beetreeARC/src/solver_engine.py && echo "✓ beetreeARC solver_engine.py exists" || (echo "✗ beetreeARC solver_engine.py NOT FOUND" && exit 1) && \
-    test -f beetreeARC/requirements.txt && echo "✓ beetreeARC requirements.txt exists" || (echo "✗ beetreeARC requirements.txt NOT FOUND" && exit 1)
+# Copy all source code (submodules may or may not be present depending on deploy platform)
+COPY . .
 
-# Install beetreeARC Python dependencies
-RUN echo "=== INSTALLING BEETREEARC DEPENDENCIES ===" && \
-    python3 -m pip install --no-cache-dir --break-system-packages -r beetreeARC/requirements.txt
-
-# Copy SnakeBench backend submodule (must be checked out in build context)
-RUN echo "=== VERIFYING SNAKEBENCH BACKEND SUBMODULE ===" && \
-    if [ -d external/SnakeBench/backend ]; then \
-        echo "=== SNAKEBENCH BACKEND FOUND - copying and installing ===" && \
-        cp -r external/SnakeBench/backend/ ./external/SnakeBench/backend/ && \
-        test -f external/SnakeBench/backend/main.py && echo "✓ SnakeBench backend main.py exists" || (echo "✗ SnakeBench backend main.py NOT FOUND" && exit 1) && \
-        test -f external/SnakeBench/backend/requirements.txt && echo "✓ SnakeBench backend requirements.txt exists" || (echo "✗ SnakeBench backend requirements.txt NOT FOUND" && exit 1) && \
-        echo "=== INSTALLING SNAKEBENCH BACKEND DEPENDENCIES ===" && \
-        python3 -m pip install --no-cache-dir --break-system-packages -r external/SnakeBench/backend/requirements.txt; \
+# Conditionally install beetreeARC dependencies if submodule was checked out
+RUN echo "=== CHECKING BEETREEARC SUBMODULE ===" && \
+    if [ -f beetreeARC/src/solver_engine.py ]; then \
+        echo "✓ beetreeARC found - installing dependencies" && \
+        python3 -m pip install --no-cache-dir --break-system-packages -r beetreeARC/requirements.txt; \
     else \
-        echo "=== SNAKEBENCH BACKEND NOT AVAILABLE - skipping installation ==="; \
+        echo "⚠ beetreeARC not available (submodule not checked out) - skipping"; \
     fi
 
-# Copy source code and ALL config files needed for build
-COPY client/ ./client/
-COPY server/ ./server/
-COPY shared/ ./shared/
-COPY solver/ ./solver/
-COPY data/ ./data/
-COPY tsconfig.json ./
-COPY vite.config.ts ./
-COPY tailwind.config.ts ./
-COPY postcss.config.js ./
+# Conditionally install SnakeBench dependencies if submodule was checked out
+RUN echo "=== CHECKING SNAKEBENCH SUBMODULE ===" && \
+    if [ -f external/SnakeBench/backend/main.py ]; then \
+        echo "✓ SnakeBench found - installing dependencies" && \
+        python3 -m pip install --no-cache-dir --break-system-packages -r external/SnakeBench/backend/requirements.txt; \
+    else \
+        echo "⚠ SnakeBench not available (submodule not checked out) - skipping"; \
+    fi
 
 # Poetiq solver is now internalized at solver/poetiq/ (copied above)
 # Verify the internalized solver exists
