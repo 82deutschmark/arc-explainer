@@ -180,6 +180,12 @@ export const GPT5_REASONING_MODELS = new Set(
   ModelLookup.getByType('gpt5').map(m => m.key)
 );
 
+export const GPT5_CODEX_MODELS = new Set(
+  MODEL_DEFINITIONS
+    .filter(m => m.key === 'gpt-5.1-codex' || m.key === 'gpt-5.1-codex-mini')
+    .map(m => m.key)
+);
+
 export const GPT5_CHAT_MODELS = new Set(
   ModelLookup.getByType('gpt5_chat').map(m => m.key)
 );

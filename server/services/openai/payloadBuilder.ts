@@ -13,6 +13,7 @@ import {
   GPT5_REASONING_MODELS,
   MODELS_WITH_REASONING,
   O3_O4_REASONING_MODELS,
+  GPT5_CODEX_MODELS,
   getApiModelName,
   modelSupportsTemperature
 } from "../../config/models/index.js";
@@ -109,8 +110,19 @@ function buildTextConfig(
 
   let textConfig: Record<string, unknown> | undefined;
   if (isGPT5Model) {
+    const isGPT5CodexModel = GPT5_CODEX_MODELS.has(normalizedKey);
+    const requestedVerbosity = serviceOpts.reasoningVerbosity;
+    let effectiveVerbosity: "low" | "medium" | "high" | undefined;
+
+    if (isGPT5CodexModel) {
+      // GPT-5.1 Codex models only support medium verbosity; clamp all values to medium
+      effectiveVerbosity = "medium";
+    } else {
+      effectiveVerbosity = requestedVerbosity || "high";
+    }
+
     textConfig = {
-      verbosity: serviceOpts.reasoningVerbosity || "high"
+      verbosity: effectiveVerbosity
     };
   }
 

@@ -1,6 +1,12 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top with the time and date!
 
+### Version 5.35.16  Dec 2, 2025 3:15pm
+
+- **OpenAI Responses: GPT-5.1 Codex Verbosity Clamp (Responses API path)** (Author: Cascade using Cascade)
+  - Updated the OpenAI Responses payload builder and prompt preview so GPT-5.1 Codex models (`gpt-5.1-codex`, `gpt-5.1-codex-mini`) always send and display `text.verbosity: "medium"`, avoiding unsupported `"high"` values and aligning with the current Responses API contract.
+  - **Files**: `server/config/models/index.ts`, `server/services/openai/payloadBuilder.ts`, `server/services/openai.ts`
+
 ### Version 5.35.15  Dec 2, 2025 2:00pm
 
 - **Docs: llms.txt playful marketing blurb** (Author: Cascade)
