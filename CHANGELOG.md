@@ -1,6 +1,17 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top with the time and date!
 
+### Version 5.35.13  Dec 2, 2025 1:45pm
+
+- **Add New Models: OpenAI GPT-5.1 and Free OpenRouter Models** (Author: Claude Code using Sonnet 4.5)
+  - Added `gpt-5.1-2025-11-13` from OpenAI with $1.25/$10.00 per million tokens (released Nov 13, 2025)
+  - Added `arcee-ai/trinity-mini:free` with 131,072 context window (released Dec 1, 2025)
+  - Added `amazon/nova-2-lite-v1:free` with 1,000,000 context window (released Dec 2, 2025)
+  - OpenRouter models are free ($0/M input and output tokens)
+  - GPT-5.1 is a reasoning model with streaming support, 400K context window, and 128K max output tokens
+  - OpenRouter models are non-reasoning, support temperature, and have moderate to fast response times
+  - **Files**: `server/config/models.ts` (lines 3-8, 222-239, 966-996)
+
 ### Version 5.35.12  Dec 2, 2025 1:05pm
 
 - **Snake Arena: Fix Button size TypeScript error** (Author: Cascade)

@@ -1,10 +1,11 @@
 /*
  *
- * Author: Cascade using Claude Sonnet 4 (original), Claude Code using Sonnet 4.5 (2025-12-01 update)
- * Date: 2025-12-01
+ * Author: Cascade using Claude Sonnet 4 (original), Claude Code using Sonnet 4.5 (2025-12-02 update)
+ * Date: 2025-12-02
  * PURPOSE: Centralized AI model configuration list consumed by ModelDefinitions and provider lookup utilities.
  *          Updated DeepSeek models to v3.2 with new pricing and specifications.
  *          Added deepseek-reasoner-speciale with expiration-dated base URL.
+ *          Added free OpenRouter models: arcee-ai/trinity-mini:free and amazon/nova-2-lite-v1:free (Dec 2025).
  * SRP/DRY check: Pass - file encapsulates shared model metadata without duplication.
  * shadcn/ui: Pass - configuration only.
  */
@@ -200,10 +201,10 @@ export const MODELS: ModelConfig[] = [
     releaseDate: "2025-11",
     notes: 'Sep 30, 2024 knowledge cutoff; reasoning token support.'
   },
-  { 
-    key: 'gpt-5.1-codex', 
-    name: 'GPT-5.1 Codex', 
-    color: 'bg-amber-600', 
+  {
+    key: 'gpt-5.1-codex',
+    name: 'GPT-5.1 Codex',
+    color: 'bg-amber-600',
     premium: true,
     cost: { input: '$1.25', output: '$10.00' },
     supportsTemperature: false,
@@ -217,6 +218,24 @@ export const MODELS: ModelConfig[] = [
     maxOutputTokens: 128000,
     releaseDate: "2025-11",
     notes: 'Sep 30, 2024 knowledge cutoff; reasoning token support.'
+  },
+  {
+    key: 'gpt-5.1-2025-11-13',
+    name: 'GPT-5.1',
+    color: 'bg-amber-700',
+    premium: true,
+    cost: { input: '$1.25', output: '$10.00' },
+    supportsTemperature: false,
+    supportsStreaming: true,
+    provider: 'OpenAI',
+    responseTime: { speed: 'moderate', estimate: '1-2 min' },
+    isReasoning: true,
+    apiModelName: 'gpt-5.1-2025-11-13',
+    modelType: 'gpt5',
+    contextWindow: 400000,
+    maxOutputTokens: 128000,
+    releaseDate: "2025-11",
+    notes: 'GPT-5.1 base model released November 13, 2025.'
   },
 
   // Anthropic Models
@@ -961,6 +980,38 @@ export const MODELS: ModelConfig[] = [
     maxOutputTokens: 50000,
     releaseDate: "2025-12",
     notes: 'Multi-model ensemble solver with consensus analysis and cost tracking'
+  },
+
+  // Free OpenRouter Models - December 2025
+  {
+    key: 'arcee-ai/trinity-mini:free',
+    name: 'Arcee Trinity Mini (Free)',
+    color: 'bg-cyan-400',
+    premium: false,
+    cost: { input: '$0.00', output: '$0.00' },
+    supportsTemperature: true,
+    provider: 'OpenRouter',
+    responseTime: { speed: 'moderate', estimate: '30-60 sec' },
+    isReasoning: false,
+    apiModelName: 'arcee-ai/trinity-mini:free',
+    modelType: 'openrouter',
+    contextWindow: 131072,
+    releaseDate: "2025-12"
+  },
+  {
+    key: 'amazon/nova-2-lite-v1:free',
+    name: 'Amazon Nova 2 Lite (Free)',
+    color: 'bg-amber-400',
+    premium: false,
+    cost: { input: '$0.00', output: '$0.00' },
+    supportsTemperature: true,
+    provider: 'OpenRouter',
+    responseTime: { speed: 'fast', estimate: '<30 sec' },
+    isReasoning: false,
+    apiModelName: 'amazon/nova-2-lite-v1:free',
+    modelType: 'openrouter',
+    contextWindow: 1000000,
+    releaseDate: "2025-12"
   },
 
   // Cloaked Models (OpenRouter Arena - identity TBD)
