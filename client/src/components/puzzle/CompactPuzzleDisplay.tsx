@@ -1,18 +1,19 @@
 /**
  * CompactPuzzleDisplay.tsx
  *
- * Author: Cascade using Claude Sonnet 4.5
- * Date: 2025-10-12T21:55:00Z
+ * Author: Cascade using Claude Sonnet 4.5 (Updated 2025-12-02)
+ * Date: 2025-10-12 (Spacing optimized: 2025-12-02)
  * PURPOSE: Reusable component for displaying puzzle overview in compact format.
- * Orchestrates training examples, test cases, and prediction history.
+ * Orchestrates training examples, test cases, and prediction history with minimal padding
+ * to reduce vertical space usage while maintaining readability.
  * FULLY MODULARIZED: All grids now use dedicated components (Phase 3 refactor).
- * 
+ *
  * ARCHITECTURE (Oct 11, 2025):
  * - TrainingPairGallery for training examples (collapsible)
  * - TestCaseGallery for test cases (adaptive layout)
  * - PredictionCard for refinement history (horizontal scroll)
  * - All grid rendering delegated to specialized components
- * 
+ *
  * Single responsibility: Orchestration only - no direct grid rendering.
  * SRP/DRY check: Pass - Pure orchestration, delegates all rendering
  * shadcn/ui: Pass - Converted to DaisyUI card, badge, collapse
@@ -70,8 +71,8 @@ export const CompactPuzzleDisplay: React.FC<CompactPuzzleDisplayProps> = ({
           </h2>
         </div>
       )}
-      <div className="card-body p-3">
-        <div className="space-y-4">
+      <div className="card-body p-2">
+        <div className="space-y-2">
           {/* Training Examples - GALLERY LAYOUT IN COLLAPSIBLE */}
           <div className={`collapse ${isTrainingOpen ? 'collapse-open' : 'collapse-close'}`}>
             <div className="flex items-center justify-between mb-2">
