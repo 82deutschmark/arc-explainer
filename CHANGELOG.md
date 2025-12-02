@@ -1,12 +1,13 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top with the time and date!
 
-### Version 5.35.17  Dec 2, 2025 3:50pm
+### Version 5.35.17  Dec 2, 2025 3:55pm
 
-- **Dockerfile: Make SnakeBench submodule optional for builds** (Author: Cascade)
-  - Updated Dockerfile to gracefully handle missing SnakeBench submodule in remote build contexts.
-  - Added conditional checks with clear warnings so builds succeed even when deploy platforms don't check out submodules.
-  - SnakeBench endpoints will report degraded status when the backend directory isn't present.
+- **Dockerfile: Make all submodules optional for builds** (Author: Cascade)
+  - Restructured Dockerfile to use `COPY . .` instead of individual COPY commands for submodule directories.
+  - Both beetreeARC and SnakeBench submodules are now optional—builds succeed even when deploy platforms don't check out submodules.
+  - Conditional RUN steps check if submodule files exist before installing their Python dependencies.
+  - Poetiq solver remains always available (internalized in solver/poetiq/, not a submodule).
   - **Files**: `Dockerfile`
 
 ### Version 5.35.16  Dec 2, 2025 3:15pm
