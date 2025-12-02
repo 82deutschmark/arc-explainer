@@ -339,17 +339,17 @@ export default function ModelDebate() {
                 onCandidateCountChange={setCandidateCount}
                 thinkingBudget={thinkingBudget}
                 onThinkingBudgetChange={setThinkingBudget}
-                reasoningEffort={reasoningEffort as 'low' | 'medium' | 'high' | undefined}
+                reasoningEffort={(reasoningEffort || 'medium') as 'minimal' | 'low' | 'medium' | 'high'}
                 onReasoningEffortChange={setReasoningEffort}
-                reasoningVerbosity={reasoningVerbosity as 'low' | 'medium' | 'high' | undefined}
+                reasoningVerbosity={(reasoningVerbosity || 'medium') as 'low' | 'medium' | 'high'}
                 onReasoningVerbosityChange={setReasoningVerbosity}
-                reasoningSummaryType={reasoningSummaryType === 'auto' ? 'detailed' : reasoningSummaryType as 'none' | 'brief' | 'detailed' | undefined}
+                reasoningSummaryType={(reasoningSummaryType === 'auto' ? 'auto' : 'detailed') as 'auto' | 'detailed'}
                 onReasoningSummaryTypeChange={(value) => {
                   // Convert component types to hook types
-                  if (value === 'none' || value === 'brief') {
-                    setReasoningSummaryType('detailed'); // Fallback to detailed for unsupported values
-                  } else {
+                  if (value === 'detailed' || value === 'auto') {
                     setReasoningSummaryType(value as 'auto' | 'detailed');
+                  } else {
+                    setReasoningSummaryType('detailed'); // Fallback to detailed for unsupported values
                   }
                 }}
                 onBackToList={debateState.endDebate}
