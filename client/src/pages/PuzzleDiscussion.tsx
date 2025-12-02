@@ -19,6 +19,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { CollapsibleCard } from '@/components/ui/collapsible-card';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Brain, Loader2, AlertTriangle, Search, Info, Sparkles } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
@@ -647,75 +648,44 @@ export default function PuzzleDiscussion() {
             );
           }
 
-          return (
-            <div className="grid gap-4 lg:grid-cols-[minmax(0,3fr)_minmax(0,2.2fr)]">
-              <ProfessionalRefinementUI
-                iterations={refinementState.iterations}
-                taskId={taskId}
-                task={task!}
-                testCases={task!.test}
-                models={models}
-                activeModel={refinementState.activeModel}
-                userGuidance={refinementState.userGuidance}
-                isProcessing={processingModels.has(refinementState.activeModel)}
-                error={analyzerErrors.get(refinementState.activeModel) || null}
-                promptId={promptId}
-                setPromptId={setPromptId}
-                customPrompt={customPrompt}
-                setCustomPrompt={setCustomPrompt}
-                temperature={temperature}
-                setTemperature={setTemperature}
-                topP={topP}
-                setTopP={setTopP}
-                candidateCount={candidateCount}
-                setCandidateCount={setCandidateCount}
-                thinkingBudget={thinkingBudget}
-                setThinkingBudget={setThinkingBudget}
-                reasoningEffort={reasoningEffort}
-                setReasoningEffort={setReasoningEffort}
-                reasoningVerbosity={reasoningVerbosity}
-                setReasoningVerbosity={setReasoningVerbosity}
-                reasoningSummaryType={reasoningSummaryType}
-                setReasoningSummaryType={setReasoningSummaryType}
-                isGPT5ReasoningModel={isGPT5ReasoningModel}
-                onBackToList={refinementState.endRefinement}
-                onResetRefinement={refinementState.resetRefinement}
-                onUserGuidanceChange={refinementState.setUserGuidance}
-                onContinueRefinement={handleGenerateRefinement}
-              />
-
-              <div className="space-y-4">
-                {isStreamingActive && (
-                  <StreamingAnalysisPanel
-                    title={`${streamingModel?.name ?? streamingModelKey ?? 'Refinement'}`}
-                    status={streamingPanelStatus}
-                    phase={typeof streamingPhase === 'string' ? streamingPhase : undefined}
-                    message={
-                      streamingPanelStatus === 'failed'
-                        ? streamError?.message ?? streamingMessage ?? 'Streaming failed'
-                        : streamingMessage
-                    }
-                    text={streamingText}
-                    structuredJsonText={streamingStructuredJsonText}
-                    structuredJson={streamingStructuredJson}
-                    reasoning={streamingReasoning}
-                    tokenUsage={streamingTokenUsage}
-                    promptPreview={streamingPromptPreview}
-                    task={task!}
-                    onCancel={
-                      streamingPanelStatus === 'in_progress'
-                        ? () => {
-                            cancelStreamingAnalysis();
-                            setPendingStream(null);
-                          }
-                        : undefined
-                    }
-                    onClose={closeStreamingModal}
-                  />
-                )}
-              </div>
-            </div>
-          );
+        return (
+          <div className="space-y-4">
+            <ProfessionalRefinementUI
+              iterations={refinementState.iterations}
+              taskId={taskId}
+              task={task!}
+              testCases={task!.test}
+              models={models}
+              activeModel={refinementState.activeModel}
+              userGuidance={refinementState.userGuidance}
+              isProcessing={processingModels.has(refinementState.activeModel)}
+              error={analyzerErrors.get(refinementState.activeModel) || null}
+              promptId={promptId}
+              setPromptId={setPromptId}
+              customPrompt={customPrompt}
+              setCustomPrompt={setCustomPrompt}
+              temperature={temperature}
+              setTemperature={setTemperature}
+              topP={topP}
+              setTopP={setTopP}
+              candidateCount={candidateCount}
+              setCandidateCount={setCandidateCount}
+              thinkingBudget={thinkingBudget}
+              setThinkingBudget={setThinkingBudget}
+              reasoningEffort={reasoningEffort}
+              setReasoningEffort={setReasoningEffort}
+              reasoningVerbosity={reasoningVerbosity}
+              setReasoningVerbosity={setReasoningVerbosity}
+              reasoningSummaryType={reasoningSummaryType}
+              setReasoningSummaryType={setReasoningSummaryType}
+              isGPT5ReasoningModel={isGPT5ReasoningModel}
+              onBackToList={refinementState.endRefinement}
+              onResetRefinement={refinementState.resetRefinement}
+              onUserGuidanceChange={refinementState.setUserGuidance}
+              onContinueRefinement={handleGenerateRefinement}
+            />
+          </div>
+        );
         })()
       ) : refinableExplanations.length > 0 ? (
         <AnalysisSelector
@@ -766,6 +736,43 @@ export default function PuzzleDiscussion() {
           </CardContent>
         </Card>
       )}
+
+      {/* Streaming Modal Dialog - matches PuzzleExaminer experience */}
+      <Dialog open={isStreamingActive} onOpenChange={closeStreamingModal}>
+        <DialogContent className="max-w-[95vw] max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>
+              {`Streaming ${streamingModel?.name ?? streamingModelKey ?? 'Refinement'}`}
+            </DialogTitle>
+          </DialogHeader>
+          <StreamingAnalysisPanel
+            title={`${streamingModel?.name ?? streamingModelKey ?? 'Refinement'}`}
+            status={streamingPanelStatus}
+            phase={typeof streamingPhase === 'string' ? streamingPhase : undefined}
+            message={
+              streamingPanelStatus === 'failed'
+                ? streamError?.message ?? streamingMessage ?? 'Streaming failed'
+                : streamingMessage
+            }
+            text={streamingText}
+            structuredJsonText={streamingStructuredJsonText}
+            structuredJson={streamingStructuredJson}
+            reasoning={streamingReasoning}
+            tokenUsage={streamingTokenUsage}
+            promptPreview={streamingPromptPreview}
+            task={task!}
+            onCancel={
+              streamingPanelStatus === 'in_progress'
+                ? () => {
+                    cancelStreamingAnalysis();
+                    setPendingStream(null);
+                  }
+                : undefined
+            }
+            onClose={closeStreamingModal}
+          />
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
