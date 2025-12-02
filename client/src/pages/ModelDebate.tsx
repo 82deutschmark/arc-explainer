@@ -1,11 +1,12 @@
 /**
  * ModelDebate.tsx - REFACTORED
  *
- * Author: Claude Code using Sonnet 4 (Updated by Cascade using Sonnet 4 on 2025-10-04)
- * Date: 2025-09-29 (Layout update: 2025-10-04)
- * PURPOSE: Clean orchestration-only component for Model Debate page (< 100 lines).
+ * Author: Claude Code using Sonnet 4.5 (Updated 2025-12-02)
+ * Date: 2025-09-29 (Layout optimized: 2025-12-02)
+ * PURPOSE: Clean orchestration-only component for Model Debate page. Manages debate state,
+ * streaming analysis, and challenge generation. Uses container layout with proper spacing
+ * to eliminate excessive white space while maintaining readability.
  * Single responsibility: Component coordination and routing only.
- * LAYOUT: Removed container margins and max-width constraints for full-width explanation cards
  * SRP/DRY check: Pass - Pure orchestration, delegates all concerns to focused components
  * shadcn/ui: Pass - Uses shadcn/ui components throughout focused child components
  */
@@ -287,8 +288,8 @@ export default function ModelDebate() {
 
   // Main debate interface
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-gray-50 to-zinc-100">
-      <div className="px-4 py-4 space-y-4">
+    <div className="bg-gradient-to-br from-slate-50 via-gray-50 to-zinc-100 min-h-[calc(100vh-4rem)]">
+      <div className="container mx-auto px-4 py-3 space-y-3 max-w-7xl">
         <PuzzleDebateHeader taskId={taskId} />
 
         <CompactPuzzleDisplay
