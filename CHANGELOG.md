@@ -1,6 +1,13 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top with the time and date!
 
+### Version 5.35.22  Dec 3, 2025 5:25pm
+
+- **Model Debate: Surface original explanation in header card** (Author: Cascade using Cascade)
+  - Filled the large white region at the top of the debate workspace by inlining a brief summary of the original explanation (pattern description) directly inside the "AI Model Debate" header card.
+  - This makes it immediately obvious what analysis is being challenged without scrolling down into the detailed cards, bringing the layout closer to the user's desired "SHOW EXPLANATION TEXT HERE" behavior.
+  - **Files**: `client/src/components/puzzle/debate/IndividualDebate.tsx`
+
 ### Version 5.35.21  Dec 3, 2025 2:30pm
 
 - **Streaming & Discussion: Honest refinement context + panel cleanup** (Author: Cascade using Cascade)
@@ -19,6 +26,14 @@
   - Changed background gradient to match PuzzleExaminer's amber/orange/rose theme for consistency
   - Debate cards now show predictions immediately on page load, making it clear what the models predicted vs. what the correct answer was
   - **Files**: `client/src/pages/ModelDebate.tsx` (lines 14-30, 293-297), `client/src/components/puzzle/debate/OriginalExplanationCard.tsx` (line 32), `client/src/components/puzzle/debate/RebuttalCard.tsx` (line 40)
+
+### Version 5.35.20  Dec 3, 2025 11:05am
+
+- **Debate & Discussion Prompts: Explicit multi-test guidance** (Author: Codex / GPT-5)
+  - Updated the debate and discussion user prompt builders so they always announce when a puzzle contains multiple test cases, and always pluralize the previous-output sections even when legacy explanations failed to set `hasMultiplePredictions`.
+  - Discussion/debate prompts now fall back to the stored single prediction when multi-test grids are missing, giving the new challenger clear visibility into what the prior agent attempted.
+  - Continuation-mode prompt construction now passes the multi-test flag, so all refinement flows reuse the same instructions as the main solver template.
+  - **Files**: `server/services/prompts/userTemplates.ts`, `server/services/promptBuilder.ts`
 
 ### Version 5.35.19  Dec 3, 2025 10:15am
 
