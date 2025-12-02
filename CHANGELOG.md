@@ -1,6 +1,14 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top with the time and date!
 
+### Version 5.35.17  Dec 2, 2025 3:50pm
+
+- **Dockerfile: Make SnakeBench submodule optional for builds** (Author: Cascade)
+  - Updated Dockerfile to gracefully handle missing SnakeBench submodule in remote build contexts.
+  - Added conditional checks with clear warnings so builds succeed even when deploy platforms don't check out submodules.
+  - SnakeBench endpoints will report degraded status when the backend directory isn't present.
+  - **Files**: `Dockerfile`
+
 ### Version 5.35.16  Dec 2, 2025 3:15pm
 
 - **OpenAI Responses: GPT-5.1 Codex Verbosity Clamp (Responses API path)** (Author: Cascade using Cascade)
