@@ -193,6 +193,7 @@ export function buildDiscussionUserPrompt(
   taskDescription?: string
 ): string {
   let prompt = '';
+  const puzzleHasMultipleTests = options.isMultiTest ?? task.test.length > 1;
 
   // PREVIOUS ANALYSIS CONTEXT FIRST
   if (originalExplanation) {
@@ -214,13 +215,18 @@ export function buildDiscussionUserPrompt(
   // Add the puzzle data (without task description)
   prompt += buildUserPrompt(task, options);
 
+  if (puzzleHasMultipleTests) {
+    prompt += `\nIMPORTANT: This puzzle contains ${task.test.length} test cases. You must output ${task.test.length} grids (one per test case) in the same order as the inputs.\n`;
+  }
+
   // Include previous predicted output(s) after puzzle data so the model can see what it tried before
   if (originalExplanation) {
-    const hasMultiTest = originalExplanation.hasMultiplePredictions === true;
+    const hasStoredMulti = originalExplanation.hasMultiplePredictions === true;
+    const expectMultiOutputs = puzzleHasMultipleTests || hasStoredMulti;
 
-    prompt += `\n\nYOUR PREVIOUS PREDICTED OUTPUT${hasMultiTest ? 'S' : ''} (POSSIBLY INCORRECT):\n`;
+    prompt += `\n\nYOUR PREVIOUS PREDICTED OUTPUT${expectMultiOutputs ? 'S' : ''} (POSSIBLY INCORRECT):\n`;
 
-    if (hasMultiTest) {
+    if (expectMultiOutputs) {
       const predictions =
         originalExplanation.multiplePredictedOutputs || originalExplanation.multiTestPredictionGrids;
 
@@ -232,8 +238,10 @@ export function buildDiscussionUserPrompt(
             prompt += `Test ${index + 1} Predicted Output: No valid prediction\n`;
           }
         });
+      } else if (originalExplanation.predictedOutputGrid) {
+        prompt += `Test 1 Predicted Output: ${JSON.stringify(originalExplanation.predictedOutputGrid)}\n`;
       } else {
-        prompt += `No valid predictions were provided\n`;
+        prompt += `No valid multi-test predictions were provided\n`;
       }
     } else {
       const prediction = originalExplanation.predictedOutputGrid;
@@ -265,6 +273,7 @@ export function buildDebateUserPrompt(
   taskDescription?: string
 ): string {
   let prompt = '';
+  const puzzleHasMultipleTests = options.isMultiTest ?? task.test.length > 1;
 
   // DEBATE CONTEXT FIRST - AI needs to see the flawed explanation
   if (originalExplanation) {
@@ -287,14 +296,19 @@ export function buildDebateUserPrompt(
   // Add the puzzle data (training examples) - without task description
   prompt += buildSolverUserPrompt(task, options);
 
+  if (puzzleHasMultipleTests) {
+    prompt += `\nIMPORTANT: This puzzle has ${task.test.length} test cases. Produce ${task.test.length} output grids (one for each test input) in order.\n`;
+  }
+
   // PREDICTED OUTPUT COMES AFTER TRAINING EXAMPLES
   // This lets the AI see the pattern first, THEN critique the wrong prediction
   if (originalExplanation) {
-    const hasMultiTest = originalExplanation.hasMultiplePredictions === true;
+    const hasStoredMulti = originalExplanation.hasMultiplePredictions === true;
+    const expectMultiOutputs = puzzleHasMultipleTests || hasStoredMulti;
 
-    prompt += `\n\nPREVIOUS AI PREDICTED OUTPUT (INCORRECT):\n`;
+    prompt += `\n\nPREVIOUS AI PREDICTED OUTPUT${expectMultiOutputs ? 'S' : ''} (INCORRECT):\n`;
 
-    if (hasMultiTest) {
+    if (expectMultiOutputs) {
       // Multi-test puzzle - use multiple_predicted_outputs or multi_test_prediction_grids
       const predictions = originalExplanation.multiplePredictedOutputs || originalExplanation.multiTestPredictionGrids;
 
@@ -306,8 +320,10 @@ export function buildDebateUserPrompt(
             prompt += `Test ${index + 1} Predicted Output: No valid prediction\n`;
           }
         });
+      } else if (originalExplanation.predictedOutputGrid) {
+        prompt += `Test 1 Predicted Output: ${JSON.stringify(originalExplanation.predictedOutputGrid)}\n`;
       } else {
-        prompt += `No valid predictions were provided\n`;
+        prompt += `No valid multi-test predictions were provided\n`;
       }
     } else {
       // Single-test puzzle - use predicted_output_grid
