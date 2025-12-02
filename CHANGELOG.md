@@ -1,6 +1,22 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top with the time and date!
 
+### Version 5.35.29  Dec 2, 2025 6:40pm
+
+- **PuzzleDiscussion: Remove blank white box** (Author: Cascade using Claude Sonnet 4)
+  - **Removed** the entire "Puzzle Overview" CollapsibleCard section that was causing the blank white space
+  - Removed unused imports: `CollapsibleCard`, `TinyGrid`, `PuzzleGrid`
+  - Page now goes directly from header to refinement interface without empty containers
+  - **Files**: `client/src/pages/PuzzleDiscussion.tsx`
+
+### Version 5.35.28  Dec 2, 2025 6:35pm
+
+- **ModelDebate Auto-Selection Feature** (Author: Cascade using Claude Sonnet 4)
+  - Added `?select=<explanationId>` URL parameter support to ModelDebate page (was completely missing)
+  - URLs like `/debate/16de56c4?select=60951` now automatically load the debate interface for the specified explanation
+  - Uses same fix pattern as PuzzleDiscussion: inlined `debateState.startDebate()` call directly to avoid closure issues
+  - **Files**: `client/src/pages/ModelDebate.tsx`
+
 ### Version 5.35.27  Dec 2, 2025 6:25pm
 
 - **PuzzleDiscussion Auto-Selection Fix** (Author: Cascade using Claude Sonnet 4)
