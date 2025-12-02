@@ -7,3 +7,6 @@
 [submodule "beetreeARC"]
 	path = beetreeARC
 	url = https://github.com/82deutschmark/beetreeARC
+[submodule "SnakeBench"]
+	path = external/SnakeBench
+	url = https://github.com/VoynichLabs/SnakeBench
