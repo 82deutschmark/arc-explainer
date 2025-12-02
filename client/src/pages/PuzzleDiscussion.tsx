@@ -22,6 +22,9 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Brain, Loader2, AlertTriangle, Search, Info, Sparkles } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
+// Grid rendering
+import { TinyGrid } from '@/components/puzzle/TinyGrid';
+
 // Refinement-specific components
 import { ProfessionalRefinementUI } from '@/components/puzzle/refinement/ProfessionalRefinementUI';
 import { StreamingAnalysisPanel } from '@/components/puzzle/StreamingAnalysisPanel';
@@ -59,7 +62,9 @@ export default function PuzzleDiscussion() {
   }, [taskId]);
 
   // Data hooks
-  const { currentTask: task, isLoadingTask, taskError } = usePuzzle(taskId);
+  // IMPORTANT: Use `task` directly (query data) instead of `currentTask` state wrapper
+  // to avoid a race where isLoadingTask is false but currentTask is still null.
+  const { task, isLoadingTask, taskError } = usePuzzle(taskId);
   const { explanations, isLoading: isLoadingExplanations, refetchExplanations } = usePuzzleWithExplanation(taskId || '');
   const { data: models } = useModels();
 
@@ -575,6 +580,45 @@ export default function PuzzleDiscussion() {
           {taskId && <ClickablePuzzleBadge puzzleId={taskId} clickable={false} />}
         </div>
       </div>
+
+      {/* Compact Test Grid Preview - mirror ModelDebate / IndividualDebate behavior */}
+      {task && task.test && task.test.length > 0 && (
+        <Card className="border-gray-300">
+          <CardHeader className="p-2 pb-1">
+            <CardTitle className="text-sm flex items-center gap-2">
+              Test Cases
+              <Badge variant="outline" className="text-xs">
+                {task.test.length} test{task.test.length !== 1 ? 's' : ''}
+              </Badge>
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="p-2 pt-0">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+              {task.test.map((testCase, idx) => (
+                <div key={idx} className="space-y-1">
+                  <div className="text-[10px] font-medium text-gray-600">Test {idx + 1}</div>
+                  <div className="grid grid-cols-2 gap-1">
+                    <div>
+                      <div className="text-[9px] text-gray-500 mb-0.5">Input</div>
+                      <TinyGrid
+                        grid={testCase.input}
+                        className="border border-gray-300 rounded"
+                      />
+                    </div>
+                    <div>
+                      <div className="text-[9px] text-gray-500 mb-0.5">Output</div>
+                      <TinyGrid
+                        grid={testCase.output}
+                        className="border border-gray-300 rounded"
+                      />
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {refinementState.isRefinementActive && explanations ? (
         (() => {
