@@ -1,6 +1,16 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top with the time and date!
 
+### Version 5.35.20  Dec 3, 2025 11:30am
+
+- **Model Debate: Fix white space issue and improve information density** (Author: Claude Code using Sonnet 4.5)
+  - Changed OriginalExplanationCard and RebuttalCard to default to expanded state (`isOpen = true`) so users immediately see test case grids and predicted answers without needing to click to expand
+  - Removed CompactPuzzleDisplay entirely to eliminate massive white space - training examples aren't needed on debate page since predictions show test case grids
+  - Reduced container spacing from `space-y-4` to `space-y-3` for tighter layout
+  - Changed background gradient to match PuzzleExaminer's amber/orange/rose theme for consistency
+  - Debate cards now show predictions immediately on page load, making it clear what the models predicted vs. what the correct answer was
+  - **Files**: `client/src/pages/ModelDebate.tsx` (lines 14-30, 293-297), `client/src/components/puzzle/debate/OriginalExplanationCard.tsx` (line 32), `client/src/components/puzzle/debate/RebuttalCard.tsx` (line 40)
+
 ### Version 5.35.19  Dec 3, 2025 10:15am
 
 - **Multi-test Detection: Capture predicted grids without sentinel boolean** (Author: Codex / GPT-5)

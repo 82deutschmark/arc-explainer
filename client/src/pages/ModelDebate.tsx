@@ -22,7 +22,6 @@ import { useToast } from '@/hooks/use-toast';
 
 // Focused components
 import { PuzzleDebateHeader } from '@/components/puzzle/debate/PuzzleDebateHeader';
-import { CompactPuzzleDisplay } from '@/components/puzzle/CompactPuzzleDisplay';
 import { ExplanationsList } from '@/components/puzzle/debate/ExplanationsList';
 import { StreamingAnalysisPanel } from '@/components/puzzle/StreamingAnalysisPanel';
 import { IndividualDebate } from '@/components/puzzle/debate/IndividualDebate';
@@ -288,16 +287,11 @@ export default function ModelDebate() {
 
   // Main debate interface
   return (
-    <div className="bg-gradient-to-br from-slate-50 via-gray-50 to-zinc-100 min-h-[calc(100vh-4rem)]">
-      <div className="container mx-auto px-4 py-3 space-y-3 max-w-7xl">
+    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-rose-50">
+      <div className="w-full max-w-6xl mx-auto px-4 space-y-3 pb-6">
         <PuzzleDebateHeader taskId={taskId} />
 
-        <CompactPuzzleDisplay
-          trainExamples={task!.train}
-          testCases={task!.test}
-        />
-
-      {/* Individual Debate or Explanations List */}
+        {/* Individual Debate or Explanations List */}
       {debateState.isDebateActive && explanations ? (
         (() => {
           const selectedExplanation = explanations.find(e => e.id === debateState.selectedExplanationId);

@@ -29,7 +29,7 @@ export const OriginalExplanationCard: React.FC<OriginalExplanationCardProps> = (
   testCases,
   timestamp
 }) => {
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(true); // EXPANDED by default - users need to see predictions immediately
 
   // Determine correctness status
   const hasMultiTest = explanation.hasMultiplePredictions &&
