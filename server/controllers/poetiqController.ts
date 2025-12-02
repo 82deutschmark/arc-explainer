@@ -350,6 +350,9 @@ export const poetiqController = {
       { id: 'gpt-5.1-codex', name: 'GPT-5.1 Codex', provider: 'OpenAI', recommended: false, routing: 'direct', requiresBYO: false },
       { id: 'grok-4-fast-reasoning', name: 'Grok 4 Fast Reasoning', provider: 'xAI', recommended: false, routing: 'direct', requiresBYO: false },
       { id: 'anthropic/claude-sonnet-4-5', name: 'Claude Sonnet 4.5', provider: 'Anthropic', recommended: false, routing: 'direct', requiresBYO: false },
+      { id: 'deepseek-chat', name: 'DeepSeek Chat v3.2', provider: 'DeepSeek', recommended: false, routing: 'direct', requiresBYO: true },
+      { id: 'deepseek-reasoner', name: 'DeepSeek Reasoner v3.2', provider: 'DeepSeek', recommended: false, routing: 'direct', requiresBYO: true },
+      { id: 'deepseek-reasoner-speciale', name: 'DeepSeek Reasoner v3.2-Speciale', provider: 'DeepSeek', recommended: false, routing: 'direct', requiresBYO: true },
 
       // Other via OpenRouter (BYO required)
       { id: 'openrouter/google/gemini-2.5-flash-preview-09-2025', name: 'Gemini 2.5 Flash', provider: 'OpenRouter', recommended: false, routing: 'openrouter', requiresBYO: true },
