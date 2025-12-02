@@ -203,14 +203,14 @@ export const IndividualDebate: React.FC<IndividualDebateProps> = ({
         </Card>
       )}
 
-      {/* Original Explanation - MOVED UP for information density */}
-      {debateMessages.length > 0 && debateMessages[0].messageType === 'original' && (
+      {/* Original Explanation - Display directly from prop */}
+      {originalExplanation && (
         <OriginalExplanationCard
-          explanation={debateMessages[0].content}
+          explanation={originalExplanation}
           models={models}
           testCases={testCases}
-          timestamp={debateMessages[0].timestamp}
-          forceExpanded={true}  // NEW PROP
+          timestamp={originalExplanation.createdAt || new Date().toISOString()}
+          forceExpanded={true}
         />
       )}
 
