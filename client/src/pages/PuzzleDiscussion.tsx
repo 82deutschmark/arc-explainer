@@ -18,14 +18,11 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { CollapsibleCard } from '@/components/ui/collapsible-card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Brain, Loader2, AlertTriangle, Search, Info, Sparkles } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 // Refinement-specific components
-import { TinyGrid } from '@/components/puzzle/TinyGrid';
-import { PuzzleGrid } from '@/components/puzzle/PuzzleGrid';
 import { ProfessionalRefinementUI } from '@/components/puzzle/refinement/ProfessionalRefinementUI';
 import { StreamingAnalysisPanel } from '@/components/puzzle/StreamingAnalysisPanel';
 import { AnalysisSelector } from '@/components/puzzle/refinement/AnalysisSelector';
@@ -578,66 +575,6 @@ export default function PuzzleDiscussion() {
           {taskId && <ClickablePuzzleBadge puzzleId={taskId} clickable={false} />}
         </div>
       </div>
-
-      {/* Compact Puzzle Display */}
-      <CollapsibleCard
-        title="Puzzle Overview"
-        defaultOpen={true}
-        headerDescription={
-          <div className="flex items-center gap-2 text-sm text-gray-600">
-            <Badge variant="outline" className="text-xs">{task!.train.length} training</Badge>
-            <Badge variant="outline" className="text-xs">{task!.test.length} test</Badge>
-          </div>
-        }
-      >
-        <div className="space-y-3">
-          {/* Training Examples - Compact */}
-          <div>
-            <div className="text-xs font-semibold text-gray-600 mb-1">Training Examples</div>
-            <div className="flex gap-2 overflow-x-auto pb-2">
-              {task!.train.map((ex, i) => (
-                <div key={i} className="flex gap-1 flex-shrink-0">
-                  <div className="text-center">
-                    <div className="text-[10px] text-gray-500 mb-0.5">In</div>
-                    <div className="w-20 h-20 border border-gray-300 rounded">
-                      <TinyGrid grid={ex.input} />
-                    </div>
-                  </div>
-                  <div className="text-center">
-                    <div className="text-[10px] text-gray-500 mb-0.5">Out</div>
-                    <div className="w-20 h-20 border border-gray-300 rounded">
-                      <TinyGrid grid={ex.output} />
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Test Cases - Compact */}
-          <div className="border-t pt-2">
-            <div className="text-xs font-semibold text-gray-600 mb-1">Test Cases</div>
-            <div className="flex gap-2 overflow-x-auto pb-2">
-              {task!.test.map((test, i) => (
-                <div key={i} className="flex gap-1 flex-shrink-0">
-                  <div className="text-center">
-                    <div className="text-[10px] text-gray-500 mb-0.5">In</div>
-                    <div className="w-20 h-20 border border-gray-300 rounded">
-                      <TinyGrid grid={test.input} />
-                    </div>
-                  </div>
-                  <div className="text-center">
-                    <div className="text-[10px] text-green-600 mb-0.5 font-semibold">✓</div>
-                    <div className="w-20 h-20 border-2 border-green-500 rounded">
-                      <TinyGrid grid={test.output} />
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </CollapsibleCard>
 
       {refinementState.isRefinementActive && explanations ? (
         (() => {

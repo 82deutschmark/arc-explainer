@@ -11,9 +11,9 @@
  * shadcn/ui: Pass - Uses shadcn/ui components throughout focused child components
  */
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import type { AnalysisResult, ExplanationData } from '@/types/puzzle';
-import { useParams, Link } from 'wouter';
+import { useParams, Link, useLocation } from 'wouter';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -36,7 +36,16 @@ import { useDebateState } from '@/hooks/debate/useDebateState';
 export default function ModelDebate() {
   const { taskId } = useParams<{ taskId?: string }>();
   const { toast } = useToast();
+  const [location] = useLocation();
   const [showPromptPreview, setShowPromptPreview] = useState(false);
+  const [isAutoSelecting, setIsAutoSelecting] = useState(false);
+
+  // Parse ?select=123 query parameter for auto-selection
+  const selectId = useMemo(() => {
+    const params = new URLSearchParams(location.split('?')[1]);
+    const id = params.get('select');
+    return id ? parseInt(id, 10) : null;
+  }, [location]);
 
   // Page title management
   useEffect(() => {
@@ -268,14 +277,49 @@ export default function ModelDebate() {
     setPendingStream(null);
   }, [pendingStream, streamingPanelStatus, streamError, toast]);
 
+  // Auto-start debate when ?select= parameter is present
+  // FIX: Inlined startDebate call directly to avoid closure issues (same fix as PuzzleDiscussion)
+  useEffect(() => {
+    if (!selectId || !explanations || explanations.length === 0 || isLoadingExplanations || debateState.isDebateActive || isAutoSelecting) {
+      return;
+    }
+
+    console.log(`[ModelDebate] 🔍 Auto-select initiating for ID ${selectId}...`);
+    setIsAutoSelecting(true);
+
+    const explanation = explanations.find(e => e.id === selectId);
+    if (explanation) {
+      console.log(`[ModelDebate] ✅ Found explanation #${selectId}`);
+      console.log(`[ModelDebate] Model: ${explanation.modelName}`);
+
+      debateState.startDebate(explanation);
+      setIsAutoSelecting(false);
+      toast({
+        title: "Debate loaded",
+        description: `Starting debate for explanation #${selectId}`,
+      });
+    } else {
+      console.error(`[ModelDebate] ❌ Explanation #${selectId} not found`);
+      console.error(`[ModelDebate] Available IDs: ${explanations.map(e => e.id).join(', ')}`);
+      setIsAutoSelecting(false);
+      toast({
+        title: "Explanation not found",
+        description: `Could not find explanation #${selectId}. It may have been deleted.`,
+        variant: "destructive"
+      });
+    }
+  // NOTE: toast and debateState.startDebate intentionally omitted - they're stable references
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectId, explanations, isLoadingExplanations, debateState.isDebateActive, isAutoSelecting]);
+
   // Loading states
-  if (isLoadingTask || isLoadingExplanations) {
+  if (isLoadingTask || isLoadingExplanations || isAutoSelecting) {
     return (
       <div className="w-full">
         <div className="flex items-center justify-center min-h-[400px]">
           <div className="flex items-center gap-2">
             <Loader2 className="h-6 w-6 animate-spin" />
-            <span>Loading puzzle and explanations...</span>
+            <span>{isAutoSelecting ? `Loading explanation #${selectId}...` : 'Loading puzzle and explanations...'}</span>
           </div>
         </div>
       </div>
