@@ -43,7 +43,9 @@ export default function ModelDebate() {
   }, [taskId]);
 
   // Data hooks
-  const { currentTask: task, isLoadingTask, taskError } = usePuzzle(taskId);
+  // Use `task` directly (derived from query response) instead of `currentTask` (state via useEffect)
+  // to avoid race condition where isLoadingTask=false but currentTask is still null
+  const { task, isLoadingTask, taskError } = usePuzzle(taskId);
   const { explanations, isLoading: isLoadingExplanations, refetchExplanations } = usePuzzleWithExplanation(taskId || '');
   const { data: models } = useModels();
 

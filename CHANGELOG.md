@@ -1,6 +1,14 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top with the time and date!
 
+### Version 5.35.5  Dec 1, 2025 8:15pm
+
+- **Model Debate Page - Fix Blank Page Bug** (Author: Cascade)
+  - **Root Cause**: Race condition in `usePuzzle` hook usage - component used `currentTask` (state updated via useEffect) instead of `task` (immediately derived from query response)
+  - **Effect**: When query completed, `isLoadingTask` became false but `currentTask` was still null for 1 render cycle, causing the error check `(taskId && !task)` to pass incorrectly
+  - **Fix**: Changed destructuring from `{ currentTask: task }` to `{ task }` to use the immediate value
+  - **Files**: `client/src/pages/ModelDebate.tsx`
+
 ### Version 5.35.4  Dec 1, 2025 7:15pm
 
 - **Dockerfile - Add beetreeARC Support** (Author: Cascade)
