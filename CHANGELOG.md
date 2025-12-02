@@ -1,6 +1,15 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top with the time and date!
 
+### Version 5.35.21  Dec 3, 2025 2:30pm
+
+- **Streaming & Discussion: Honest refinement context + panel cleanup** (Author: Cascade using Cascade)
+  - Updated the shared StreamingAnalysisPanel to remove the pseudo "Solver Progress" step chips and friendly status line so the UI only reflects real backend telemetry (streaming phase/message, token usage, structured JSON, prompt preview) instead of guessed solver stages.
+  - Extended the discussion/self-refinement prompt builder so it now includes the model's previous predicted output grids (single- and multi-test) in the same way debate mode does, giving progressive reasoning runs the same ground truth context that rebuttals already see.
+  - Tweaked the per-puzzle Discussion page so the "Puzzle Overview" section opens by default, showing training/test grids immediately instead of a large empty white card, bringing its information density back in line with PuzzleExaminer and ModelDebate.
+  - Added a focused implementation plan under `docs/plans/2025-12-02-streaming-discussion-fixes.md` to track future alignment work across PuzzleExaminer, ModelDebate, and PuzzleDiscussion.
+  - **Files**: `client/src/components/puzzle/StreamingAnalysisPanel.tsx`, `server/services/prompts/userTemplates.ts`, `docs/plans/2025-12-02-streaming-discussion-fixes.md`
+
 ### Version 5.35.20  Dec 3, 2025 11:30am
 
 - **Model Debate: Fix white space issue and improve information density** (Author: Claude Code using Sonnet 4.5)

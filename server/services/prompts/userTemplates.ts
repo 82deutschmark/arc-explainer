@@ -214,7 +214,39 @@ export function buildDiscussionUserPrompt(
   // Add the puzzle data (without task description)
   prompt += buildUserPrompt(task, options);
 
-  // TASK DESCRIPTION AFTER PUZZLE DATA
+  // Include previous predicted output(s) after puzzle data so the model can see what it tried before
+  if (originalExplanation) {
+    const hasMultiTest = originalExplanation.hasMultiplePredictions === true;
+
+    prompt += `\n\nYOUR PREVIOUS PREDICTED OUTPUT${hasMultiTest ? 'S' : ''} (POSSIBLY INCORRECT):\n`;
+
+    if (hasMultiTest) {
+      const predictions =
+        originalExplanation.multiplePredictedOutputs || originalExplanation.multiTestPredictionGrids;
+
+      if (predictions && Array.isArray(predictions) && predictions.length > 0) {
+        predictions.forEach((grid: any, index: number) => {
+          if (grid && Array.isArray(grid) && grid.length > 0) {
+            prompt += `Test ${index + 1} Predicted Output: ${JSON.stringify(grid)}\n`;
+          } else {
+            prompt += `Test ${index + 1} Predicted Output: No valid prediction\n`;
+          }
+        });
+      } else {
+        prompt += `No valid predictions were provided\n`;
+      }
+    } else {
+      const prediction = originalExplanation.predictedOutputGrid;
+
+      if (prediction && Array.isArray(prediction) && prediction.length > 0) {
+        prompt += `${JSON.stringify(prediction)}\n`;
+      } else {
+        prompt += `No valid prediction was provided\n`;
+      }
+    }
+  }
+
+  // TASK DESCRIPTION AFTER PUZZLE DATA AND PREVIOUS PREDICTIONS
   if (taskDescription) {
     prompt += `\n\n${taskDescription}`;
   }

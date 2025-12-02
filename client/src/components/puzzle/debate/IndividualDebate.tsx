@@ -16,7 +16,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Link } from 'wouter';
 import { useQuery } from '@tanstack/react-query';
 import { apiRequest } from '@/lib/queryClient';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
@@ -40,6 +40,8 @@ import { AnalysisResultCard } from '@/components/puzzle/AnalysisResultCard';
 import { PromptPreviewModal } from '@/components/PromptPreviewModal';
 import { OriginalExplanationCard } from './OriginalExplanationCard';
 import { RebuttalCard } from './RebuttalCard';
+import { TinyGrid } from '@/components/puzzle/TinyGrid';
+import { AdvancedControls } from '@/components/puzzle/AdvancedControls';
 
 // Types
 import type { ExplanationData } from '@/types/puzzle';
@@ -68,6 +70,22 @@ interface IndividualDebateProps {
   processingModels: Set<string>;
   analyzerErrors: Map<string, Error>;
 
+  // Model configuration
+  temperature?: number;
+  onTemperatureChange?: (value: number) => void;
+  topP?: number;
+  onTopPChange?: (value: number) => void;
+  candidateCount?: number;
+  onCandidateCountChange?: (value: number) => void;
+  thinkingBudget?: number;
+  onThinkingBudgetChange?: (value: number) => void;
+  reasoningEffort?: 'low' | 'medium' | 'high';
+  onReasoningEffortChange?: (value: 'low' | 'medium' | 'high') => void;
+  reasoningVerbosity?: 'low' | 'medium' | 'high';
+  onReasoningVerbosityChange?: (value: 'low' | 'medium' | 'high') => void;
+  reasoningSummaryType?: 'none' | 'brief' | 'detailed';
+  onReasoningSummaryTypeChange?: (value: 'none' | 'brief' | 'detailed') => void;
+
   // Actions
   onBackToList: () => void;
   onResetDebate: () => void;
@@ -90,6 +108,20 @@ export const IndividualDebate: React.FC<IndividualDebateProps> = ({
   customChallenge,
   processingModels,
   analyzerErrors,
+  temperature,
+  onTemperatureChange,
+  topP,
+  onTopPChange,
+  candidateCount,
+  onCandidateCountChange,
+  thinkingBudget,
+  onThinkingBudgetChange,
+  reasoningEffort,
+  onReasoningEffortChange,
+  reasoningVerbosity,
+  onReasoningVerbosityChange,
+  reasoningSummaryType,
+  onReasoningSummaryTypeChange,
   onBackToList,
   onResetDebate,
   onChallengerModelChange,
@@ -100,10 +132,14 @@ export const IndividualDebate: React.FC<IndividualDebateProps> = ({
   const [showPromptPreview, setShowPromptPreview] = useState(false);
   const [previewMode, setPreviewMode] = useState<'view' | 'run' | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const prevMessageCountRef = useRef(debateMessages.length);
 
-  // Auto-scroll to newest message when debate updates
+  // Auto-scroll ONLY when a NEW message is added (not on initial mount)
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    if (debateMessages.length > prevMessageCountRef.current) {
+      messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    }
+    prevMessageCountRef.current = debateMessages.length;
   }, [debateMessages.length]);
 
   // Fetch rebuttal chain if this explanation is part of a chain
@@ -153,8 +189,45 @@ export const IndividualDebate: React.FC<IndividualDebateProps> = ({
 
   const wasIncorrect = !isExplicitlyCorrect;
 
+  // Smart control visibility based on selected model
+  const selectedModel = models?.find(m => m.key === challengerModel);
+  const isGPT5Model = challengerModel?.includes('gpt-5') || challengerModel?.includes('o1') || challengerModel?.includes('o3');
+  const isGeminiModel = challengerModel?.includes('gemini');
+  const showAdvancedControls = isGPT5Model || isGeminiModel;
+
   return (
     <div className="space-y-3">
+      {/* Compact Test Grid Preview */}
+      {testCases && testCases.length > 0 && (
+        <Card className="border-gray-300">
+          <CardHeader className="p-3 pb-2">
+            <CardTitle className="text-sm flex items-center gap-2">
+              Test Cases
+              <Badge variant="outline" className="text-xs">{testCases.length} test{testCases.length !== 1 ? 's' : ''}</Badge>
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="p-3 pt-0">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+              {testCases.map((testCase, idx) => (
+                <div key={idx} className="space-y-1.5">
+                  <div className="text-[10px] font-medium text-gray-600">Test {idx + 1}</div>
+                  <div className="grid grid-cols-2 gap-1.5">
+                    <div>
+                      <div className="text-[9px] text-gray-500 mb-0.5">Input</div>
+                      <TinyGrid grid={testCase.input} className="border border-gray-300 rounded" />
+                    </div>
+                    <div>
+                      <div className="text-[9px] text-gray-500 mb-0.5">Output</div>
+                      <TinyGrid grid={testCase.output} className="border border-gray-300 rounded" />
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
       {/* Compact Header with Controls */}
       <Card className={wasIncorrect ? 'border-red-200 bg-gradient-to-r from-red-50 to-orange-50' : 'border-blue-200 bg-gradient-to-r from-blue-50 to-purple-50'}>
         <CardContent className="p-3 space-y-3">
@@ -173,8 +246,8 @@ export const IndividualDebate: React.FC<IndividualDebateProps> = ({
             </div>
 
             <div className="flex items-center gap-2">
-              <Button 
-                variant="outline" 
+              <Button
+                variant="outline"
                 size="sm"
                 onClick={onResetDebate}
                 disabled={debateMessages.length <= 1}
@@ -241,7 +314,7 @@ export const IndividualDebate: React.FC<IndividualDebateProps> = ({
 
           {/* Challenge Controls Row */}
           <div className="pt-3 border-t border-gray-300">
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-3 items-end">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-3">
               {/* Challenger Model Selection - 3 cols */}
               <div className="lg:col-span-3">
                 <label className="text-xs font-medium mb-1.5 block text-gray-700">Challenger Model</label>
@@ -259,8 +332,33 @@ export const IndividualDebate: React.FC<IndividualDebateProps> = ({
                 </Select>
               </div>
 
-              {/* Custom Challenge Input - 6 cols */}
-              <div className="lg:col-span-6">
+              {/* Smart Advanced Controls - Only show for GPT-5/Gemini - 6 cols */}
+              {showAdvancedControls && challengerModel && (
+                <div className="lg:col-span-6">
+                  <label className="text-xs font-medium mb-1.5 block text-gray-700">Model Settings</label>
+                  <Card className="p-2 bg-white">
+                    <AdvancedControls
+                      temperature={temperature ?? 1.0}
+                      onTemperatureChange={onTemperatureChange ?? (() => {})}
+                      topP={topP}
+                      onTopPChange={onTopPChange}
+                      candidateCount={candidateCount}
+                      onCandidateCountChange={onCandidateCountChange}
+                      thinkingBudget={thinkingBudget}
+                      onThinkingBudgetChange={onThinkingBudgetChange}
+                      reasoningEffort={reasoningEffort}
+                      onReasoningEffortChange={onReasoningEffortChange}
+                      reasoningVerbosity={reasoningVerbosity}
+                      onReasoningVerbosityChange={onReasoningVerbosityChange}
+                      reasoningSummaryType={reasoningSummaryType}
+                      onReasoningSummaryTypeChange={onReasoningSummaryTypeChange}
+                    />
+                  </Card>
+                </div>
+              )}
+
+              {/* Custom Challenge Input - 3 cols (or 6 if no advanced controls) */}
+              <div className={showAdvancedControls && challengerModel ? "lg:col-span-3" : "lg:col-span-6"}>
                 <label className="text-xs font-medium mb-1.5 block text-gray-700">
                   Custom Challenge Focus (Optional)
                 </label>
@@ -268,41 +366,41 @@ export const IndividualDebate: React.FC<IndividualDebateProps> = ({
                   value={customChallenge}
                   onChange={(e) => onCustomChallengeChange(e.target.value)}
                   placeholder="Leave blank for general challenge"
-                  rows={2}
+                  rows={showAdvancedControls && challengerModel ? 3 : 2}
                   className="text-xs resize-none"
                 />
               </div>
+            </div>
 
-              {/* Action Buttons - 3 cols */}
-              <div className="lg:col-span-3 grid grid-cols-2 gap-2">
-                <Button
-                  variant="outline"
-                  onClick={handlePreviewPrompt}
-                  disabled={!challengerModel}
-                  className="h-[72px] text-xs"
-                  size="sm"
-                >
-                  <Eye className="h-3 w-3 mr-1" />
-                  Preview
-                </Button>
-                <Button
-                  onClick={handleGenerateChallengeClick}
-                  disabled={!challengerModel || processingModels.has(challengerModel)}
-                  className="h-[72px] text-sm bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-700 hover:to-orange-700"
-                >
-                  {processingModels.has(challengerModel) ? (
-                    <>
-                      <Loader2 className="h-4 w-4 mr-1 animate-spin" />
-                      Generating...
-                    </>
-                  ) : (
-                    <>
-                      <Send className="h-4 w-4 mr-1" />
-                      {challengeButtonText}
-                    </>
-                  )}
-                </Button>
-              </div>
+            {/* Action Buttons Row */}
+            <div className="grid grid-cols-2 gap-2 mt-3">
+              <Button
+                variant="outline"
+                onClick={handlePreviewPrompt}
+                disabled={!challengerModel}
+                className="text-xs"
+                size="sm"
+              >
+                <Eye className="h-3 w-3 mr-1" />
+                Preview Prompt
+              </Button>
+              <Button
+                onClick={handleGenerateChallengeClick}
+                disabled={!challengerModel || processingModels.has(challengerModel)}
+                className="text-sm bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-700 hover:to-orange-700"
+              >
+                {processingModels.has(challengerModel) ? (
+                  <>
+                    <Loader2 className="h-4 w-4 mr-1 animate-spin" />
+                    Generating...
+                  </>
+                ) : (
+                  <>
+                    <Send className="h-4 w-4 mr-1" />
+                    {challengeButtonText}
+                  </>
+                )}
+              </Button>
             </div>
 
             {/* Error Display */}
