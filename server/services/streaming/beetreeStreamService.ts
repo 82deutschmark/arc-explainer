@@ -17,7 +17,7 @@ import { puzzleService } from '../puzzleService';
 import { validateStreamingResult } from '../streamingValidator';
 import type { ServiceOptions } from '../base/BaseAIService';
 import type { StreamingHarness, StreamCompletion } from '../base/BaseAIService';
-import type { BeetreeRunConfig, BeetreeBridgeEvent } from '../../../shared/types';
+import type { BeetreeBridgeEvent } from '../../../shared/types';
 
 interface BeetreeStreamParams {
   sessionId: string;
@@ -125,17 +125,15 @@ class BeetreeStreamService {
       });
 
       // Configure Beetree run options
-      const beetreeConfig: BeetreeRunConfig = {
-        taskId,
-        testIndex,
-        mode,
-        runTimestamp: timestamp,
-      };
-
       // Start Beetree analysis with event handling
       await beetreeService.analyzePuzzleWithModel(
-        'beetree-ensemble', // Model key for Beetree ensemble
         puzzle,
+        'beetree-ensemble', // Model key for Beetree ensemble
+        taskId,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
         {
           testIndex,
           mode,
