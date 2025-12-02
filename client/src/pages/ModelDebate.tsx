@@ -287,13 +287,14 @@ export default function ModelDebate() {
 
   // Main debate interface
   return (
-    <div className="w-full space-y-1">
-      <PuzzleDebateHeader taskId={taskId} />
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-gray-50 to-zinc-100">
+      <div className="px-4 py-4 space-y-4">
+        <PuzzleDebateHeader taskId={taskId} />
 
-      <CompactPuzzleDisplay
-        trainExamples={task!.train}
-        testCases={task!.test}
-      />
+        <CompactPuzzleDisplay
+          trainExamples={task!.train}
+          testCases={task!.test}
+        />
 
       {/* Individual Debate or Explanations List */}
       {debateState.isDebateActive && explanations ? (
@@ -379,6 +380,7 @@ export default function ModelDebate() {
           </CardContent>
         </Card>
       )}
+      </div>
     </div>
   );
 }

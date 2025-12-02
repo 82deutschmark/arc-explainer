@@ -1,6 +1,28 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top with the time and date!
 
+### Version 5.35.8  Dec 2, 2025 1:20am
+
+- **Docs: SnakeBench Integration Plan (A, B, C)** (Author: Cascade)
+  - Added a detailed multi-phase plan for integrating the SnakeBench LLM Snake Arena into ARC Explainer across three levels: standalone dev usage (A), backend-triggered benchmarks (B), and a new "Snake Arena" frontend page (C).
+  - Plan covers Python/CLI setup, Node backend orchestration via `child_process`, public REST endpoints for running matches and listing games, shared types for summaries, and a shadcn-based UI for leaderboards and replays.
+  - **Files**: `docs/plans/2025-12-02-snakebench-integration-plan.md`.
+
+### Version 5.35.7  Dec 1, 2025 8:45pm
+
+- **Repo: Added SnakeBench as tracked submodule** (Author: Cascade)
+  - Registered `https://github.com/VoynichLabs/SnakeBench` as the `SnakeBench` git submodule under `external/SnakeBench` so the upstream benchmarking code stays pinned and can be updated independently from the main repo.
+  - `.gitmodules` now lists SnakeBench alongside the existing `arc-agi-benchmarking`, `poetiq-solver`, and `beetreeARC` modules, keeping all external ARC-related repos centralized.
+  - **Files**: `.gitmodules`, `external/SnakeBench/`.
+
+### Version 5.35.6  Dec 1, 2025 8:35pm
+
+- **Model Debate Page - Fix UI Spacing Issues** (Author: Cascade)
+  - **Root Cause**: Page layout had `space-y-1` (4px spacing) and no horizontal padding, causing cramped UI
+  - **Fix**: Added proper container with `px-4 py-4 space-y-4` for consistent padding and spacing
+  - **Added**: Subtle gradient background (`from-slate-50 via-gray-50 to-zinc-100`) matching other pages
+  - **Files**: `client/src/pages/ModelDebate.tsx`
+
 ### Version 5.35.5  Dec 1, 2025 8:15pm
 
 - **Model Debate Page - Fix Blank Page Bug** (Author: Cascade)
