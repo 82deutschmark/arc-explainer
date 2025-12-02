@@ -476,6 +476,8 @@ export class BeetreeService extends BaseAIService {
       };
     }
   }
+}
+
 const beetreeService = new BeetreeService();
 
 export { beetreeService };

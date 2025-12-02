@@ -80,7 +80,7 @@ export default function PoetiqStreamingVisualizer({
               onClick={onExpand}
               className="text-xs text-cyan-400 hover:text-cyan-300"
             >
-              Expand ->
+              Expand &gt;
             </button>
           )}
         </div>
