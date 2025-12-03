@@ -215,6 +215,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/beetree/history/:taskId", asyncHandler(beetreeController.getBeetreeHistory));
   app.get("/api/beetree/cost-breakdown/:explanationId", asyncHandler(beetreeController.getBeetreeCostBreakdown));
   app.post("/api/beetree/cancel/:sessionId", asyncHandler(beetreeController.cancelBeetreeAnalysis));
+  // Beetree streaming endpoint - client SSE connection
+  app.get("/api/stream/analyze/beetree-:sessionId", asyncHandler(beetreeController.streamBeetreeAnalysis));
 
   // SnakeBench LLM Snake Arena routes
   app.post("/api/snakebench/run-match", asyncHandler(snakeBenchController.runMatch));
