@@ -7,7 +7,7 @@
  * SRP/DRY check: Pass - focused on live metrics visualization.
  */
 
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo, useRef } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
@@ -84,6 +84,14 @@ export function PoetiqLiveDashboard({ state, rawEvents }: PoetiqLiveDashboardPro
     : state.status === 'error' 
       ? 'ERROR' 
       : 'RUNNING';
+
+  const logEndRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    if (logEndRef.current) {
+      logEndRef.current.scrollIntoView({ behavior: 'smooth', block: 'end' });
+    }
+  }, [state.logLines?.length]);
 
   if (state.status === 'idle') {
     return null; // Don't show anything when idle
@@ -267,30 +275,6 @@ export function PoetiqLiveDashboard({ state, rawEvents }: PoetiqLiveDashboardPro
           </CardContent>
         </Card>
       )}
-
-      {/* Live Log Stream */}
-      {state.logLines && state.logLines.length > 0 && (
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="flex items-center gap-2 text-sm">
-              <Activity className="h-4 w-4" />
-              Live Events ({state.logLines.length})
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <ScrollArea className="h-24">
-              <div className="space-y-0.5 text-xs font-mono">
-                {state.logLines.slice(-20).map((line, idx) => (
-                  <div key={idx} className="text-slate-600 truncate">
-                    {line}
-                  </div>
-                ))}
-              </div>
-            </ScrollArea>
-          </CardContent>
-        </Card>
-      )}
-
       {/* Iteration Progress - Compact Timeline */}
       {iterationHistory.length > 0 && (
         <Card>
@@ -325,6 +309,30 @@ export function PoetiqLiveDashboard({ state, rawEvents }: PoetiqLiveDashboardPro
                 );
               })}
             </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Live Log Stream */}
+      {state.logLines && state.logLines.length > 0 && (
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="flex items-center gap-2 text-sm">
+              <Activity className="h-4 w-4" />
+              Live Events ({state.logLines.length})
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ScrollArea className="h-24">
+              <div className="space-y-0.5 text-xs font-mono">
+                {state.logLines.slice(-20).map((line, idx) => (
+                  <div key={idx} className="text-slate-600 truncate">
+                    {line}
+                  </div>
+                ))}
+                <div ref={logEndRef} />
+              </div>
+            </ScrollArea>
           </CardContent>
         </Card>
       )}
