@@ -243,7 +243,7 @@ def run():
             return 1
         
         # Create logs directory if it doesn't exist
-        logs_dir = Path(BEETREE_DIR) / "logs"
+        logs_dir = Path(PROJECT_ROOT) / "logs"
         logs_dir.mkdir(exist_ok=True)
         
         # Override beetreeARC's ProgressReporter to capture events
