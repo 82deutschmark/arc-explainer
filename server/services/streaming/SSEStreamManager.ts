@@ -82,11 +82,13 @@ class SSEStreamManager {
     const connection = this.connections.get(sessionId);
     if (!connection || connection.closed) {
       // Silently ignore - this is normal when async operations complete after stream ends
+      logger.debug(`[SSEStreamManager] Event ${event} dropped for ${sessionId}: connection missing or closed`);
       return;
     }
 
     try {
       const serialized = JSON.stringify(payload ?? {});
+      logger.debug(`[SSEStreamManager] Sending event ${event} to ${sessionId}, ts=${(payload as any)?.timestamp}`);
       connection.response.write(`event: ${event}\n`);
       connection.response.write(`data: ${serialized}\n\n`);
     } catch (error) {

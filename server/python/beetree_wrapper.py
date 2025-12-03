@@ -261,12 +261,13 @@ def run():
         
         # Capture beetreeARC's stdout to stderr to keep NDJSON clean
         verbose_output = io.StringIO()
-        
-        print(f"[BEETREE-DEBUG] Starting run for task: {task_id}, mode: {mode}")
-        
+
+        # Emit debug log with timestamp
+        emit({"type": "log", "level": "info", "message": f"Starting run for task: {task_id}, mode: {mode}", "timestamp": 0})
+
         # Run beetreeARC with stdout redirected
         with contextlib.redirect_stdout(sys.stderr):  # Send beetree prints to stderr
-            with contextlib.redirect_stderr(StreamEmitter(verbose_output, 'info')):
+            with contextlib.redirect_stderr(StreamEmitter(verbose_output, 'info', reporter.start_time)):
                 try:
                     # Call beetreeARC's run_solver_mode
                     result = run_solver_mode(
@@ -411,30 +412,34 @@ def run():
 
 class StreamEmitter(io.TextIOBase):
     """Redirect beetreeARC prints to NDJSON log events while preserving them."""
-    def __init__(self, sink: io.StringIO, level: str = 'info') -> None:
+    def __init__(self, sink: io.StringIO, level: str = 'info', start_time: float = None) -> None:
         self._sink = sink
         self._buf = ''
         self._level = level
+        self._start_time = start_time or time.time()
 
     def write(self, s: Any) -> int:
         try:
             text = s if isinstance(s, str) else str(s)
         except Exception:
             text = str(s)
-        
+
         # Store full output for final verbose log
         self._sink.write(text)
         self._buf += text
-        
+
         # Emit each complete line as a log event
         while '\n' in self._buf:
             line, self._buf = self._buf.split('\n', 1)
             line_stripped = line.strip()
             if line_stripped:
-                emit({ 
-                    'type': 'log', 
-                    'level': ('error' if self._level == 'error' else 'info'), 
-                    'message': line_stripped 
+                # Calculate timestamp relative to run start (milliseconds)
+                timestamp_ms = int((time.time() - self._start_time) * 1000)
+                emit({
+                    'type': 'log',
+                    'level': ('error' if self._level == 'error' else 'info'),
+                    'message': line_stripped,
+                    'timestamp': timestamp_ms
                 })
         return len(text)
 
