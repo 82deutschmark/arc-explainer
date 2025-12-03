@@ -1,6 +1,14 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top with the time and date!
 
+### Version 5.35.45  Dec 3, 2025 11:35am
+
+- **Beetree Logs & UI: Use root logs directory and improve raw log display** (Author: Cascade)
+  - Pointed `server/python/beetree_wrapper.py` at the project root `logs` directory so BeeTree cost parsing matches the actual `d:\GitHub\arc-explainer\logs` files the user is inspecting, instead of `beetreeARC/logs`.
+  - Left the Beetree progress data as *raw* log events but reformatted the Progress Log card: stage events keep their existing structure, while `solver_log` lines now render in a compact monospace row with a small level badge and truncated message to make long outputs readable.
+  - Updated the Beetree Solver result card to show **ground-truth grid vs. consensus prediction side by side**, while keeping the consensus/agreements summary and run-again button.
+  - **Files**: `server/python/beetree_wrapper.py`, `client/src/pages/BeetreeSolver.tsx`
+
 ### Version 5.35.44  Dec 3, 2025 11:10am
 
 - **Beetree Cost Fix: Parse dict-keyed step logs correctly** (Author: Claude Sonnet 4)

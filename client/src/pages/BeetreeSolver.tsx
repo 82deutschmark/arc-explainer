@@ -103,6 +103,8 @@ export default function BeetreeSolver() {
     );
   }
 
+  const expectedGrid = task?.test?.[0]?.output;
+
   // Error states
   if (!taskId || taskError || !task) {
     return (
@@ -414,14 +416,43 @@ export default function BeetreeSolver() {
                       {progress.length === 0 ? (
                         <p className="text-sm text-muted-foreground">Waiting for events...</p>
                       ) : (
-                        progress.map((p, i) => (
-                          <div key={i} className="text-sm border-l-2 border-emerald-500 pl-3 py-1">
-                            <div className="font-medium">{p.stage}</div>
-                            <div className="text-muted-foreground text-xs">
-                              {p.status} {p.event && `• ${p.event}`}
+                        progress.map((p, i) => {
+                          const isLog = p.stage === 'Log';
+                          return (
+                            <div
+                              key={i}
+                              className={
+                                isLog
+                                  ? 'text-xs border-l-2 border-muted-foreground/40 pl-3 py-1 font-mono'
+                                  : 'text-sm border-l-2 border-emerald-500 pl-3 py-1'
+                              }
+                            >
+                              {isLog ? (
+                                <div className="flex items-center gap-2">
+                                  <span
+                                    className={
+                                      p.status === 'error'
+                                        ? 'px-1.5 py-0.5 rounded bg-red-100 text-red-700 text-[10px] uppercase tracking-wide'
+                                        : 'px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-700 text-[10px] uppercase tracking-wide'
+                                    }
+                                  >
+                                    {p.status || 'info'}
+                                  </span>
+                                  <span className="truncate max-w-[220px]">
+                                    {p.event}
+                                  </span>
+                                </div>
+                              ) : (
+                                <div>
+                                  <div className="font-medium">{p.stage}</div>
+                                  <div className="text-muted-foreground text-xs">
+                                    {p.status} {p.event && `• ${p.event}`}
+                                  </div>
+                                </div>
+                              )}
                             </div>
-                          </div>
-                        ))
+                          );
+                        })
                       )}
                     </div>
                   </ScrollArea>
@@ -446,21 +477,39 @@ export default function BeetreeSolver() {
                   )}
                   {isDone && results && (
                     <div className="space-y-4">
-                      <div className="text-center">
-                        <p className="text-xs font-medium text-muted-foreground mb-2">CONSENSUS PREDICTION</p>
-                        {results.predictions?.[0] && (
-                          <div className="inline-block">
-                            <PuzzleGrid
-                              grid={results.predictions[0]}
-                              title=""
-                              showEmojis={false}
-                              emojiSet={DEFAULT_EMOJI_SET}
-                              compact
-                              maxWidth={180}
-                              maxHeight={180}
-                            />
-                          </div>
-                        )}
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 items-start">
+                        <div className="text-center">
+                          <p className="text-xs font-medium text-muted-foreground mb-2">GROUND TRUTH</p>
+                          {expectedGrid && (
+                            <div className="inline-block">
+                              <PuzzleGrid
+                                grid={expectedGrid}
+                                title=""
+                                showEmojis={false}
+                                emojiSet={DEFAULT_EMOJI_SET}
+                                compact
+                                maxWidth={180}
+                                maxHeight={180}
+                              />
+                            </div>
+                          )}
+                        </div>
+                        <div className="text-center">
+                          <p className="text-xs font-medium text-muted-foreground mb-2">CONSENSUS PREDICTION</p>
+                          {results.predictions?.[0] && (
+                            <div className="inline-block">
+                              <PuzzleGrid
+                                grid={results.predictions[0]}
+                                title=""
+                                showEmojis={false}
+                                emojiSet={DEFAULT_EMOJI_SET}
+                                compact
+                                maxWidth={180}
+                                maxHeight={180}
+                              />
+                            </div>
+                          )}
+                        </div>
                       </div>
                       <div className="grid grid-cols-2 gap-2 text-sm">
                         <div className="bg-muted rounded p-2 text-center">
