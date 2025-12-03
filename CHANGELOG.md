@@ -1,6 +1,13 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top with the time and date!
 
+### Version 5.35.43  Dec 2, 2025 11:45pm
+
+- **Beetree Hook: Fix handleSSEEvent initialization error** (Author: Cascade)
+  - Restructured `useBeetreeRun` so the `handleSSEEvent` callback is defined before it is captured by the SSE listener registration function, eliminating the `Cannot access 'handleSSEEvent' before initialization` runtime crash when loading the Beetree Solver page.
+  - Kept the existing SSE wiring semantics intact while tightening hook dependency arrays to avoid unnecessary re-creations and preserving the stream event handling contract.
+  - **Files**: `client/src/hooks/useBeetreeRun.ts`
+
 ### Version 5.35.42  Dec 2, 2025 11:40pm
 
 - **Beetree Wrapper: Fix invalid-result error and normalize predictions** (Author: Cascade)
