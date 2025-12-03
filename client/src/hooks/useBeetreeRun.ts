@@ -38,6 +38,7 @@ export interface BeetreeCost {
     output_tokens: number;
     reasoning_tokens: number;
     cost: number;
+    calls?: number;
   }>;
   by_stage: Array<{
     stage: string;

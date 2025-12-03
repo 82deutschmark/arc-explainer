@@ -92,6 +92,15 @@ export default function BeetreeSolver() {
     return [...new Set(all)];
   }, [modelConfig]);
 
+  const totalRuns = useMemo(() => {
+    return modelConfig.step1.length + modelConfig.step3.length + modelConfig.step5.length;
+  }, [modelConfig]);
+
+  const totalModelCallsFromCost = useMemo(() => {
+    if (!cost) return 0;
+    return cost.by_model.reduce((sum, model) => sum + (model.calls ?? 0), 0);
+  }, [cost]);
+
   // Calculate progress percentage
   const progressPercent = useMemo(() => {
     if (!isRunning) return isDone ? 100 : 0;
@@ -245,7 +254,7 @@ export default function BeetreeSolver() {
                       </span>
                     </div>
                     <div className="flex items-center justify-between text-sm">
-                      <span className="text-muted-foreground">Total Model Runs</span>
+                      <span className="text-muted-foreground">Total Model Runs (all calls)</span>
                       <span className="font-medium">
                         {mode === 'testing' ? '7 runs (3+2+2)' : '20 runs (8+6+6)'}
                       </span>
@@ -256,7 +265,7 @@ export default function BeetreeSolver() {
                 {/* Pre-configured Models - Always Visible */}
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
-                    <h3 className="text-sm font-semibold">Pre-configured Models ({uniqueModels.length} unique)</h3>
+                    <h3 className="text-sm font-semibold">Pre-configured Models ({uniqueModels.length} unique types, {totalRuns} total runs)</h3>
                     <Badge variant={mode === 'testing' ? 'secondary' : 'default'} className={mode === 'production' ? 'bg-amber-100 text-amber-800' : ''}>
                       {mode === 'testing' ? 'Testing Mode' : 'Production Mode'}
                     </Badge>
@@ -566,10 +575,32 @@ export default function BeetreeSolver() {
                           </div>
                         </div>
                         <div className="bg-muted rounded p-3 text-center">
-                          <div className="text-xs text-muted-foreground">Models</div>
+                          <div className="text-xs text-muted-foreground">Unique Model Types</div>
                           <div className="font-bold text-xl">{cost.by_model.length}</div>
                         </div>
                       </div>
+                      <p className="text-[11px] text-muted-foreground text-center">
+                        {totalModelCallsFromCost > 0 ? (
+                          <>
+                            Total cost comes from{' '}
+                            <span className="font-semibold">{totalModelCallsFromCost} model run{totalModelCallsFromCost === 1 ? '' : 's'}</span>
+                            {cost.by_model.length === 1 && (
+                              <>
+                                {' '}of{' '}
+                                <span className="font-semibold">{cost.by_model[0].model_name}</span>
+                              </>
+                            )}
+                            . The tile above shows the number of{' '}
+                            <span className="font-semibold">distinct model types</span>, not calls.
+                          </>
+                        ) : (
+                          <>
+                            Total cost includes{' '}
+                            <span className="font-semibold">all BeeTree model runs</span> across steps 1, 3, and 5. The tile above shows the number of{' '}
+                            <span className="font-semibold">distinct model types</span>, not calls.
+                          </>
+                        )}
+                      </p>
                       
                       <Separator />
                       
@@ -596,12 +627,22 @@ export default function BeetreeSolver() {
                       <ScrollArea className="h-[200px]">
                         <div className="space-y-1">
                           <p className="text-xs font-medium text-muted-foreground mb-2">BY MODEL</p>
-                          {cost.by_model.map((m, i) => (
-                            <div key={i} className="flex justify-between text-xs py-1">
-                              <span className="truncate max-w-[140px] font-mono">{m.model_name}</span>
-                              <span className="font-medium">{formatCost(m.cost)}</span>
-                            </div>
-                          ))}
+                          {cost.by_model.map((m, i) => {
+                            const calls = m.calls ?? 0;
+                            return (
+                              <div key={i} className="flex justify-between text-xs py-1">
+                                <div className="flex flex-col">
+                                  <span className="truncate max-w-[160px] font-mono">{m.model_name}</span>
+                                  {calls > 0 && (
+                                    <span className="text-[10px] text-muted-foreground">
+                                      {calls} run{calls === 1 ? '' : 's'}
+                                    </span>
+                                  )}
+                                </div>
+                                <span className="font-medium">{formatCost(m.cost)}</span>
+                              </div>
+                            );
+                          })}
                         </div>
                       </ScrollArea>
                     </div>

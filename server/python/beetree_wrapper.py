@@ -151,13 +151,15 @@ class CostTracker:
                 "input_tokens": 0,
                 "output_tokens": 0,
                 "reasoning_tokens": 0,
-                "cost": 0.0
+                "cost": 0.0,
+                "calls": 0,
             }
         
         self.model_costs[model]["input_tokens"] += input_tokens
         self.model_costs[model]["output_tokens"] += output_tokens
         self.model_costs[model]["reasoning_tokens"] += reasoning_tokens
         self.model_costs[model]["cost"] += cost
+        self.model_costs[model]["calls"] += 1
         
         self.total_tokens["input"] += input_tokens
         self.total_tokens["output"] += output_tokens
@@ -324,58 +326,80 @@ def run():
                             # Parse step logs for real token/cost data
                             for step_num in [1, 3, 5]:
                                 step_log_path = logs_dir / f"{run_timestamp}_{task_id}_{test_index}_step_{step_num}.json"
-                                if step_log_path.exists():
-                                    with open(step_log_path, 'r') as f:
-                                        step_log = json.load(f)
-                                    
-                                    # Extract per-run cost data
-                                    # Handle different log formats:
-                                    # - List of run objects
-                                    # - Dict with 'runs' key containing a list
-                                    # - Dict keyed by run_id (actual BeeTree format)
-                                    if isinstance(step_log, list):
-                                        runs = step_log
-                                    elif 'runs' in step_log:
-                                        runs = step_log.get('runs', [])
+                                if not step_log_path.exists():
+                                    continue
+
+                                with open(step_log_path, 'r') as f:
+                                    step_log = json.load(f)
+
+                                runs = []
+
+                                # Normal formats used by steps 1/3:
+                                #  - List of run objects
+                                #  - Dict with 'runs' key containing a list
+                                #  - Dict keyed directly by run_id -> run_data
+                                if isinstance(step_log, list):
+                                    runs = step_log
+                                elif isinstance(step_log, dict) and 'runs' in step_log:
+                                    runs = step_log.get('runs', []) or []
+                                elif isinstance(step_log, dict):
+                                    # Step 5 uses a nested structure:
+                                    # {
+                                    #   "trigger-deep-thinking": { run_id -> data },
+                                    #   "image": { run_id -> data },
+                                    #   "generate-hint": { run_id -> data }
+                                    # }
+                                    sample_value = next(iter(step_log.values()), None)
+                                    if isinstance(sample_value, dict) and 'duration_seconds' not in sample_value:
+                                        # Treat values as nested maps of run_id -> run_data
+                                        for nested in step_log.values():
+                                            if isinstance(nested, dict):
+                                                for run_id, run_data in nested.items():
+                                                    if isinstance(run_data, dict):
+                                                        runs.append({**run_data, 'run_id': run_id})
                                     else:
-                                        # BeeTree step logs are dicts keyed by run_id
+                                        # Standard dict keyed by run_id
                                         runs = [
                                             {**run_data, 'run_id': run_id}
                                             for run_id, run_data in step_log.items()
                                             if isinstance(run_data, dict)
                                         ]
-                                    
-                                    for run_data in runs:
-                                        if isinstance(run_data, dict):
-                                            model_name = run_data.get('model_name', run_data.get('run_id', 'unknown'))
-                                            # Extract from run_id if needed: "gpt-5.1-codex-mini_2_step_1_..."
-                                            if '_' in str(model_name):
-                                                model_name = model_name.split('_')[0]
-                                            
-                                            input_tokens = run_data.get('input_tokens', 0)
-                                            output_tokens = run_data.get('output_tokens', 0)
-                                            cached_tokens = run_data.get('cached_tokens', 0)
-                                            # BeeTree logs use 'total_cost', fall back to 'cost'
-                                            cost = run_data.get('total_cost', run_data.get('cost', 0.0))
-                                            
-                                            # If no explicit cost, estimate from tokens and model
-                                            if cost == 0 and (input_tokens > 0 or output_tokens > 0):
-                                                cost = estimate_model_cost(model_name, input_tokens, output_tokens, mode)
-                                            
-                                            cost_tracker.track_model_call(
-                                                model=model_name,
-                                                input_tokens=input_tokens,
-                                                output_tokens=output_tokens,
-                                                reasoning_tokens=run_data.get('reasoning_tokens', 0),
-                                                cost=cost
-                                            )
-                                            
-                                            # Track stage cost
-                                            cost_tracker.track_stage_cost(
-                                                stage=f"Step {step_num}",
-                                                cost=cost,
-                                                duration_ms=int(run_data.get('duration_seconds', 0) * 1000)
-                                            )
+
+                                for run_data in runs:
+                                    if not isinstance(run_data, dict):
+                                        continue
+
+                                    model_name = run_data.get('model_name', run_data.get('run_id', 'unknown'))
+                                    # Extract underlying model from run_id if needed:
+                                    # "gpt-5.1-codex-mini_2_step_1_..." -> "gpt-5.1-codex-mini"
+                                    if '_' in str(model_name):
+                                        model_name = model_name.split('_')[0]
+
+                                    input_tokens = run_data.get('input_tokens', 0)
+                                    output_tokens = run_data.get('output_tokens', 0)
+                                    cached_tokens = run_data.get('cached_tokens', 0)
+
+                                    # BeeTree logs use 'total_cost', fall back to 'cost'
+                                    cost = run_data.get('total_cost', run_data.get('cost', 0.0))
+
+                                    # If no explicit cost, estimate from tokens and model
+                                    if cost == 0 and (input_tokens > 0 or output_tokens > 0):
+                                        cost = estimate_model_cost(model_name, input_tokens, output_tokens, mode)
+
+                                    cost_tracker.track_model_call(
+                                        model=model_name,
+                                        input_tokens=input_tokens,
+                                        output_tokens=output_tokens,
+                                        reasoning_tokens=run_data.get('reasoning_tokens', 0),
+                                        cost=cost
+                                    )
+
+                                    # Track stage cost
+                                    cost_tracker.track_stage_cost(
+                                        stage=f"Step {step_num}",
+                                        cost=cost,
+                                        duration_ms=int(run_data.get('duration_seconds', 0) * 1000)
+                                    )
                         
                         except Exception as log_err:
                             print(f"[BEETREE-DEBUG] Could not parse cost logs: {log_err}")
