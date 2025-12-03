@@ -22,6 +22,7 @@ import time
 import io
 import contextlib
 import threading
+import types
 from typing import Any, Dict, List, Optional
 from pathlib import Path
 
@@ -31,6 +32,19 @@ PROJECT_ROOT = os.path.abspath(os.path.join(SCRIPT_DIR, '..', '..'))
 BEETREE_DIR = os.path.join(PROJECT_ROOT, 'beetreeARC')
 if BEETREE_DIR not in sys.path:
     sys.path.insert(0, BEETREE_DIR)
+
+# beetreeARC uses fcntl for file locking, which is unavailable on Windows.
+# Provide a minimal shim so imports succeed and locking becomes a no-op.
+if os.name == 'nt' and 'fcntl' not in sys.modules:
+    fcntl_stub = types.ModuleType('fcntl')
+    fcntl_stub.LOCK_EX = 0
+    fcntl_stub.LOCK_UN = 0
+
+    def _noop_flock(*_args, **_kwargs):
+        return None
+
+    fcntl_stub.flock = _noop_flock  # type: ignore[attr-defined]
+    sys.modules['fcntl'] = fcntl_stub
 
 try:
     from src.solver_engine import run_solver_mode
