@@ -457,16 +457,8 @@ export const poetiqController = {
     if (!sessionId || !taskId) {
       return res.status(400).json(formatResponse.error('bad_request', 'Missing sessionId or taskId'));
     }
-
-    // Verify SSE connection exists
-    if (!poetiqStreamService.hasActiveStream(sessionId)) {
-      return res.status(400).json(formatResponse.error(
-        'no_stream',
-        'SSE connection not established. Connect to /api/poetiq/stream/:sessionId first.'
-      ));
-    }
-
-    // Start solver asynchronously
+    // Start solver asynchronously. SSE connection may still be negotiating;
+    // SSEStreamManager will safely drop events until a client is registered.
     setImmediate(async () => {
       try {
         const result = await poetiqStreamService.startStreaming({
