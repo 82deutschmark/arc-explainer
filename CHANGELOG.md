@@ -1,6 +1,14 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top with the time and date!
 
+### Version 5.36.1  Dec 3, 2025 1:35pm
+
+- **BeeTree Cost & Models UI Clarification** (Author: Cascade)
+  - Updated `server/python/beetree_wrapper.py` cost parsing so nested Step 5 logs (trigger-deep-thinking / image / generate-hint) are fully flattened and counted, ensuring `costBreakdown.total_cost` properly matches the underlying BeeTree solver summary.
+  - Clarified the Beetree solver page to distinguish **unique model types** from **total model runs**, and added helper text explaining that the Total Cost panel reflects the sum over all underlying model calls, not just the number of distinct models.
+  - The pre-configured models section now shows both the number of unique model types and the total run count (e.g., "1 unique type, 7 total runs"), which should make it clearer why consensus counts can be smaller than the overall run volume.
+  - **Files**: `server/python/beetree_wrapper.py`, `client/src/pages/BeetreeSolver.tsx`
+
 ### Version 5.36.0  Dec 3, 2025 12:45pm
 
 - **Poetiq SSE Migration: Replace WebSocket with Server-Sent Events** (Author: Cascade)
