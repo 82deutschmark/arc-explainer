@@ -195,10 +195,13 @@ class CostTracker:
 
 def run():
     try:
+        # Change to project root so relative paths work correctly
+        os.chdir(PROJECT_ROOT)
+
         # Read configuration from stdin
         payload_raw = sys.stdin.read()
         cfg = json.loads(payload_raw)
-        
+
         task_id: str = cfg.get('taskId')
         test_index: int = int(cfg.get('testIndex', 1))
         mode: str = cfg.get('mode', 'testing')  # 'testing' or 'production'
