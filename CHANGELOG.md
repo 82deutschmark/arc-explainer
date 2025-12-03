@@ -1,6 +1,14 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top with the time and date!
 
+### Version 5.36.2  Dec 3, 2025 3:45pm
+
+- **Poetiq SSE: Fix session start race and align client/server endpoints** (Author: Cascade)
+  - Updated `client/src/hooks/usePoetiqProgress.ts` to call the dedicated SSE solve endpoint `POST /api/poetiq/stream/solve/:taskId` so the `sessionId` used by the frontend always matches the SSE streaming lifecycle managed by the backend.
+  - Relaxed the brittle `hasActiveStream` check in `poetiqController.startStreamingSolver` so the solver can start even if the SSE connection is still negotiating; `SSEStreamManager` safely drops events until a client is registered, matching Saturn/Beetree semantics.
+  - This fixes cases where Poetiq appeared to “not find the session” or never delivered progress events despite a valid run starting.
+  - **Files**: `client/src/hooks/usePoetiqProgress.ts`, `server/controllers/poetiqController.ts`
+
 ### Version 5.36.1  Dec 3, 2025 1:35pm
 
 - **BeeTree Cost & Models UI Clarification** (Author: Cascade)
