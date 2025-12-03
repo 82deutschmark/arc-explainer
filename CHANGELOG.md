@@ -1,6 +1,14 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top with the time and date!
 
+### Version 5.35.33  Dec 2, 2025 9:20pm
+
+- **Gemini SDK alignment + pip conflict fix** (Author: Codex GPT-5)
+  - Swapped the legacy `google-generativeai` dependency for the modern `google-genai` client so our own Python code uses the same stack as BeetreeARC (fixes the protobuf 6.x vs <6 resolver failure during `pip install -r requirements.txt`).
+  - Updated `solver/poetiq/llm.py` to call Gemini via `google.genai.Client`, including a new config builder, `asyncio.to_thread` wrapper, and dual API key support (`GEMINI_API_KEY`/`GOOGLE_API_KEY`), plus refreshed token usage parsing.
+  - Documented the switch in `solver/poetiq/config.py` comment so future contributors know the model IDs follow google-genai naming.
+  - **Files**: `requirements.txt`, `solver/poetiq/llm.py`, `solver/poetiq/config.py`
+
 ### Version 5.35.32  Dec 2, 2025 8:45pm
 
 - **Docker build: beetree requirements placeholder** (Author: Codex GPT-5)
