@@ -372,11 +372,11 @@ export class PythonBridge {
             evt.source = 'python';
           }
 
-          console.log(`[BEETREE-DEBUG] Successfully parsed JSON event: type=${evt.type}, sessionId=${opts.sessionId}`);
+          console.log(`[BEETREE-DEBUG] Successfully parsed JSON event: type=${evt.type}`);
 
           // Debug: Log successful event parse
           if (evt.type) {
-            logger.debug(`[pythonBridge] Parsed event: type=${evt.type}, timestamp=${evt.timestamp}, sessionId=${opts.sessionId}`);
+            logger.debug(`[pythonBridge] Parsed event: type=${evt.type}, timestamp=${evt.timestamp}`);
           }
 
           // Attach verbose log on final
