@@ -175,10 +175,10 @@ class PoetiqAgentsSdkRunner implements PoetiqAgentsRunner {
         timeout_s: z
           .number()
           .min(0.2)
-          .max(10)
+          .max(60)
           .optional()
           .nullable()
-          .describe('Sandbox timeout in seconds (default ~1.5).'),
+          .describe('Sandbox timeout in seconds (default 30).'),
       }),
       execute: async ({ code, iteration, timeout_s }) => {
         callCounter += 1;
@@ -193,7 +193,7 @@ class PoetiqAgentsSdkRunner implements PoetiqAgentsRunner {
           task,
           code,
           iteration: effectiveIteration,
-          timeout_s: timeout_s ?? 1.5,
+          timeout_s: timeout_s ?? 30.0,
         };
 
         const result = await this.runPoetiqToolRunner(toolRunnerPath, payload);

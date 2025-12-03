@@ -17,13 +17,10 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Brain, ArrowLeft, Send, Loader2, RotateCcw, TrendingUp, Sparkles, Target, Settings, Eye } from 'lucide-react';
-import { CollapsibleCard } from '@/components/ui/collapsible-card';
+import { Brain, ArrowLeft, Send, Loader2, RotateCcw, TrendingUp, Sparkles, Target, Settings } from 'lucide-react';
+import { AdvancedControls } from '@/components/puzzle/AdvancedControls';
 import { IterationDataTable } from './IterationDataTable';
-import { PromptPicker } from '@/components/PromptPicker';
 import { PromptPreviewModal } from '@/components/PromptPreviewModal';
 import type { ExplanationData } from '@/types/puzzle';
 import type { ARCExample, ModelConfig, ARCTask } from '@shared/types';
@@ -153,212 +150,7 @@ export const ProfessionalRefinementUI: React.FC<ProfessionalRefinementUIProps> =
 
   return (
     <div className="space-y-3">
-      {/* Header Section */}
-      <Card>
-        <CardHeader className="pb-3">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <Brain className="h-5 w-5 text-purple-600" />
-              <div>
-                <CardTitle className="text-lg">Progressive Reasoning Analysis</CardTitle>
-                <p className="text-sm text-gray-600 mt-0.5">
-                  Tracking iterative model refinement • Model: <span className="font-mono">{modelDisplayName}</span>
-                </p>
-              </div>
-            </div>
-            <div className="flex items-center gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={onResetRefinement}
-                disabled={iterations.length <= 1 || isProcessing}
-              >
-                <RotateCcw className="h-4 w-4 mr-1" />
-                Reset
-              </Button>
-              <Button variant="outline" size="sm" onClick={onBackToList}>
-                <ArrowLeft className="h-4 w-4 mr-1" />
-                Back to List
-              </Button>
-            </div>
-          </div>
-        </CardHeader>
-        <CardContent className="pt-0">
-          {/* Compact Metrics Panel */}
-          <div className="grid grid-cols-8 gap-2 p-2 bg-gray-50 rounded border border-gray-200 text-xs">
-            <div className="text-center">
-              <div className="text-gray-500 font-medium mb-0.5">Iteration</div>
-              <div className="text-lg font-bold text-gray-900">#{currentIteration}</div>
-            </div>
-            <div className="text-center">
-              <div className="text-gray-500 font-medium mb-0.5">Status</div>
-              <div className="flex items-center justify-center">
-                {isLatestCorrect ? (
-                  <Badge className="bg-green-600 text-xs px-2 py-0.5">✓</Badge>
-                ) : (
-                  <Badge className="bg-red-600 text-xs px-2 py-0.5">✗</Badge>
-                )}
-              </div>
-            </div>
-            <div className="text-center">
-              <div className="text-gray-500 font-medium mb-0.5">Cost</div>
-              <div className="font-mono font-semibold text-blue-600">${(totalCost || 0).toFixed(4)}</div>
-            </div>
-            <div className="text-center">
-              <div className="text-gray-500 font-medium mb-0.5">Input Tok</div>
-              <div className="font-mono font-semibold text-gray-700">{totalInputTokens.toLocaleString()}</div>
-            </div>
-            <div className="text-center">
-              <div className="text-gray-500 font-medium mb-0.5">Output Tok</div>
-              <div className="font-mono font-semibold text-gray-700">{totalOutputTokens.toLocaleString()}</div>
-            </div>
-            <div className="text-center">
-              <div className="text-gray-500 font-medium mb-0.5">Reasoning</div>
-              <div className="font-mono font-semibold text-purple-600">{totalReasoningTokens.toLocaleString()}</div>
-            </div>
-            <div className="text-center">
-              <div className="text-gray-500 font-medium mb-0.5">Time (ms)</div>
-              <div className="font-mono font-semibold text-orange-600">{totalProcessingTime.toLocaleString()}</div>
-            </div>
-            <div className="text-center">
-              <div className="text-gray-500 font-medium mb-0.5">Avg Conf</div>
-              <div className="font-mono font-semibold text-green-600">{avgConfidence.toFixed(0)}%</div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Advanced Controls - Only show relevant parameters */}
-      {(showTemperature || showReasoning) && (
-        <CollapsibleCard
-          title="Advanced Model Parameters"
-          icon={Settings}
-          defaultOpen={false}
-          headerDescription={
-            <p className="text-sm text-gray-600">Fine-tune model behavior for refinement iterations</p>
-          }
-        >
-          {/* Temperature Control */}
-          {showTemperature && (
-            <div className="mb-2 p-2 bg-gray-50 border border-gray-200 rounded">
-              <div className="flex items-center gap-3">
-                <Label htmlFor="temperature" className="text-sm font-medium whitespace-nowrap">
-                  Temperature: {temperature.toFixed(2)}
-                </Label>
-                <div className="flex-1 max-w-xs">
-                  <Slider
-                    id="temperature"
-                    min={0.1}
-                    max={2.0}
-                    step={0.05}
-                    value={[temperature]}
-                    onValueChange={(val) => setTemperature(val[0])}
-                    className="w-full"
-                  />
-                </div>
-                <div className="text-xs text-gray-600 flex-shrink-0">
-                  <div>Controls creativity</div>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {showReasoning && (
-            <div className="p-2 bg-blue-50 border border-blue-200 rounded">
-              <h5 className="text-xs font-semibold text-blue-800 mb-2 flex items-center gap-2">
-                <Brain className="h-3 w-3" />
-                GPT-5 Reasoning Parameters
-              </h5>
-              <div className="grid grid-cols-3 gap-3">
-                <div>
-                  <Label className="text-sm text-blue-700">Effort Level</Label>
-                  <Select value={reasoningEffort} onValueChange={(v) => setReasoningEffort(v as any)}>
-                    <SelectTrigger className="mt-1">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="minimal">Minimal</SelectItem>
-                      <SelectItem value="low">Low</SelectItem>
-                      <SelectItem value="medium">Medium</SelectItem>
-                      <SelectItem value="high">High</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div>
-                  <Label className="text-sm text-blue-700">Verbosity</Label>
-                  <Select value={reasoningVerbosity} onValueChange={(v) => setReasoningVerbosity(v as any)}>
-                    <SelectTrigger className="mt-1">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="low">Low</SelectItem>
-                      <SelectItem value="medium">Medium</SelectItem>
-                      <SelectItem value="high">High</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div>
-                  <Label className="text-sm text-blue-700">Summary Type</Label>
-                  <Select value={reasoningSummaryType} onValueChange={(v) => setReasoningSummaryType(v as any)}>
-                    <SelectTrigger className="mt-1">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="auto">Auto</SelectItem>
-                      <SelectItem value="detailed">Detailed</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-            </div>
-          )}
-        </CollapsibleCard>
-      )}
-
-      {/* Prompt Preview Modal */}
-      <PromptPreviewModal
-        isOpen={showPromptPreview}
-        onClose={() => {
-          setShowPromptPreview(false);
-          setPreviewMode(null);
-        }}
-        task={task}
-        taskId={taskId}
-        promptId={promptId}
-        options={{
-          customChallenge: userGuidance,
-          previousResponseId: getLastResponseId(), // ✅ CRITICAL FIX: Pass for continuation mode
-          originalExplanation
-        }}
-        confirmMode={previewMode === 'run'}
-        onConfirm={previewMode === 'run'
-          ? async () => {
-              await Promise.resolve(onContinueRefinement());
-              setShowPromptPreview(false);
-              setPreviewMode(null);
-            }
-          : undefined}
-        confirmButtonText="Send Refinement Request"
-      />
-
-      {/* Iteration Data Table */}
-      <Card>
-        <CardHeader className="pb-2 pt-3">
-          <CardTitle className="flex items-center gap-2 text-sm font-semibold">
-            <TrendingUp className="h-4 w-4" />
-            Iteration History
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="pt-0 pb-2">
-          <IterationDataTable
-            iterations={iterations}
-            testCases={testCases}
-            models={models}
-          />
-        </CardContent>
-      </Card>
-
-      {/* Continue Refinement Section */}
+      {/* Continue Refinement Section - moved to top for better UX */}
       <Card>
         <CardHeader className="pb-3">
           <CardTitle className="flex items-center gap-2 text-base">
@@ -425,6 +217,162 @@ export const ProfessionalRefinementUI: React.FC<ProfessionalRefinementUIProps> =
           </div>
         </CardContent>
       </Card>
+
+      {/* Advanced Controls - Only show relevant parameters */}
+      <Card>
+        <CardHeader className="pb-2 pt-3">
+          <CardTitle className="flex items-center gap-2 text-sm font-semibold">
+            <Settings className="h-4 w-4" />
+            Advanced Controls
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="pt-0">
+          <AdvancedControls
+            temperature={temperature}
+            onTemperatureChange={setTemperature}
+            topP={topP ?? 1}
+            onTopPChange={(value) => {
+              if (setTopP) setTopP(value);
+            }}
+            candidateCount={candidateCount ?? 1}
+            onCandidateCountChange={(value) => {
+              if (setCandidateCount) setCandidateCount(value);
+            }}
+            thinkingBudget={thinkingBudget ?? -1}
+            onThinkingBudgetChange={(value) => {
+              if (setThinkingBudget) setThinkingBudget(value);
+            }}
+            reasoningEffort={reasoningEffort}
+            onReasoningEffortChange={setReasoningEffort}
+            reasoningVerbosity={reasoningVerbosity}
+            onReasoningVerbosityChange={setReasoningVerbosity}
+            reasoningSummaryType={reasoningSummaryType}
+            onReasoningSummaryTypeChange={setReasoningSummaryType}
+          />
+        </CardContent>
+      </Card>
+
+      {/* Header Section - moved below controls to reduce visual clutter */}
+      <Card>
+        <CardHeader className="pb-3">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <Brain className="h-5 w-5 text-purple-600" />
+              <div>
+                <CardTitle className="text-lg">Progressive Reasoning Analysis</CardTitle>
+                <p className="text-sm text-gray-600 mt-0.5">
+                  Tracking iterative model refinement - Model: <span className="font-mono">{modelDisplayName}</span>
+                </p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={onResetRefinement}
+                disabled={iterations.length <= 1 || isProcessing}
+              >
+                <RotateCcw className="h-4 w-4 mr-1" />
+                Reset
+              </Button>
+              <Button variant="outline" size="sm" onClick={onBackToList}>
+                <ArrowLeft className="h-4 w-4 mr-1" />
+                Back to List
+              </Button>
+            </div>
+          </div>
+        </CardHeader>
+        <CardContent className="pt-0">
+          {/* Compact Metrics Panel */}
+          <div className="grid grid-cols-8 gap-2 p-2 bg-gray-50 rounded border border-gray-200 text-xs">
+            <div className="text-center">
+              <div className="text-gray-500 font-medium mb-0.5">Iteration</div>
+              <div className="text-lg font-bold text-gray-900">#{currentIteration}</div>
+            </div>
+            <div className="text-center">
+              <div className="text-gray-500 font-medium mb-0.5">Status</div>
+              <div className="flex items-center justify-center">
+                {isLatestCorrect ? (
+                  <Badge className="bg-green-600 text-xs px-2 py-0.5">
+                    &#10003;
+                  </Badge>
+                ) : (
+                  <Badge className="bg-red-600 text-xs px-2 py-0.5">
+                    &#10007;
+                  </Badge>
+                )}
+              </div>
+            </div>
+            <div className="text-center">
+              <div className="text-gray-500 font-medium mb-0.5">Cost</div>
+              <div className="font-mono font-semibold text-blue-600">${(totalCost || 0).toFixed(4)}</div>
+            </div>
+            <div className="text-center">
+              <div className="text-gray-500 font-medium mb-0.5">Input Tok</div>
+              <div className="font-mono font-semibold text-gray-700">{totalInputTokens.toLocaleString()}</div>
+            </div>
+            <div className="text-center">
+              <div className="text-gray-500 font-medium mb-0.5">Output Tok</div>
+              <div className="font-mono font-semibold text-gray-700">{totalOutputTokens.toLocaleString()}</div>
+            </div>
+            <div className="text-center">
+              <div className="text-gray-500 font-medium mb-0.5">Reasoning</div>
+              <div className="font-mono font-semibold text-purple-600">{totalReasoningTokens.toLocaleString()}</div>
+            </div>
+            <div className="text-center">
+              <div className="text-gray-500 font-medium mb-0.5">Time (ms)</div>
+              <div className="font-mono font-semibold text-orange-600">{totalProcessingTime.toLocaleString()}</div>
+            </div>
+            <div className="text-center">
+              <div className="text-gray-500 font-medium mb-0.5">Avg Conf</div>
+              <div className="font-mono font-semibold text-green-600">{avgConfidence.toFixed(0)}%</div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Iteration Data Table */}
+      <Card>
+        <CardHeader className="pb-2 pt-3">
+          <CardTitle className="flex items-center gap-2 text-sm font-semibold">
+            <TrendingUp className="h-4 w-4" />
+            Iteration History
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="pt-0 pb-2">
+          <IterationDataTable
+            iterations={iterations}
+            testCases={testCases}
+            models={models}
+          />
+        </CardContent>
+      </Card>
+
+      {/* Prompt Preview Modal */}
+      <PromptPreviewModal
+        isOpen={showPromptPreview}
+        onClose={() => {
+          setShowPromptPreview(false);
+          setPreviewMode(null);
+        }}
+        task={task}
+        taskId={taskId}
+        promptId={promptId}
+        options={{
+          customChallenge: userGuidance,
+          previousResponseId: getLastResponseId(), // CRITICAL FIX: Pass for continuation mode
+          originalExplanation
+        }}
+        confirmMode={previewMode === 'run'}
+        onConfirm={previewMode === 'run'
+          ? async () => {
+              await Promise.resolve(onContinueRefinement());
+              setShowPromptPreview(false);
+              setPreviewMode(null);
+            }
+          : undefined}
+        confirmButtonText="Send Refinement Request"
+      />
     </div>
   );
-};
+}

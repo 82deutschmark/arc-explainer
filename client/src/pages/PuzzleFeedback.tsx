@@ -226,24 +226,51 @@ export default function PuzzleFeedback() {
     }
   }, [gridInput]);
 
-  // Check if parsed grid matches expected output dimensions and calculate correctness
-  const { dimensionsMatch, isCorrect, expectedGrid } = useMemo(() => {
+  // Check if parsed grid matches expected outputs for ALL test cases
+  const { dimensionsMatch, isCorrect, expectedGrid, matchedTestIndices } = useMemo(() => {
     if (!task || !parsedGrid || task.test.length === 0) {
-      return { dimensionsMatch: false, isCorrect: false, expectedGrid: null };
+      return { dimensionsMatch: false, isCorrect: false, expectedGrid: null, matchedTestIndices: [] };
     }
 
-    const expected = task.test[0].output; // Use first test case for now
-    const dimensionsMatch = parsedGrid.length === expected.length &&
-                          parsedGrid.every((row, i) => row.length === expected[i].length);
+    // Check against all test case outputs
+    let isCorrectForAll = true;
+    let dimensionsMismatch = false;
+    const matchedIndices: number[] = [];
 
-    let isCorrect = false;
-    if (dimensionsMatch) {
-      isCorrect = parsedGrid.every((row, i) =>
-        row.every((cell, j) => cell === expected[i][j])
+    for (let i = 0; i < task.test.length; i++) {
+      const expected = task.test[i].output;
+
+      const gridDimsMatch = parsedGrid.length === expected.length &&
+                           parsedGrid.every((row, j) => row.length === expected[j].length);
+
+      if (!gridDimsMatch) {
+        dimensionsMismatch = true;
+        isCorrectForAll = false;
+        continue;
+      }
+
+      const gridIsCorrect = parsedGrid.every((row, j) =>
+        row.every((cell, k) => cell === expected[j][k])
       );
+
+      if (gridIsCorrect) {
+        matchedIndices.push(i);
+      } else {
+        isCorrectForAll = false;
+      }
     }
 
-    return { dimensionsMatch, isCorrect, expectedGrid: expected };
+    // For dimension check, use first test case
+    const firstExpected = task.test[0].output;
+    const firstDimensionsMatch = parsedGrid.length === firstExpected.length &&
+                                parsedGrid.every((row, i) => row.length === firstExpected[i].length);
+
+    return {
+      dimensionsMatch: firstDimensionsMatch,
+      isCorrect: isCorrectForAll,
+      expectedGrid: firstExpected,
+      matchedTestIndices
+    };
   }, [task, parsedGrid]);
 
   const validationFeedback = useMemo<ValidationFeedbackState | null>(() => {
@@ -251,7 +278,7 @@ export default function PuzzleFeedback() {
       return null;
     }
 
-    if (!expectedGrid) {
+    if (!expectedGrid || !task?.test) {
       return {
         status: 'info',
         message: 'Valid grid format. Load a puzzle to verify correctness.',
@@ -271,16 +298,32 @@ export default function PuzzleFeedback() {
     }
 
     if (isCorrect) {
+      const testCount = task.test.length;
+      const successMsg = testCount === 1
+        ? `Correct solution! Matches the expected ${expectedSize} grid.`
+        : `Perfect! Your solution matches all ${testCount} test cases.`;
       return {
         status: 'success',
-        message: `Correct solution! Matches the expected ${expectedSize} grid.`,
+        message: successMsg,
         showExpected: false,
+      };
+    }
+
+    // Partial matches
+    if (matchedTestIndices.length > 0) {
+      const matchMsg = matchedTestIndices.length === 1
+        ? `Partially correct. Matches test case ${matchedTestIndices[0] + 1} of ${task.test.length}.`
+        : `Partially correct. Matches ${matchedTestIndices.length} of ${task.test.length} test cases.`;
+      return {
+        status: 'error',
+        message: matchMsg,
+        showExpected: true,
       };
     }
 
     return {
       status: 'error',
-      message: 'Incorrect solution. Compare your answer with the expected output grid below.',
+      message: `Incorrect solution. Matches 0 of ${task.test.length} test cases. Compare your answer with the expected output below.`,
       showExpected: true,
     };
   }, [
@@ -290,6 +333,8 @@ export default function PuzzleFeedback() {
     expectedGrid,
     dimensionsMatch,
     isCorrect,
+    matchedTestIndices,
+    task,
   ]);
 
   const renderValidationAlert = () => {

@@ -120,23 +120,56 @@ export function PuzzleViewer({ task, onSolutionSubmit, analysis }: PuzzleViewerP
 
       <Card>
         <CardHeader>
+          <CardTitle>Test Cases Reference</CardTitle>
+          <p className="text-sm text-gray-600">
+            Review all test cases to understand the pattern
+          </p>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            {task.test.map((testCase, index) => (
+              <div key={index} className="space-y-2">
+                <h4 className="font-medium">Test Case {index + 1}</h4>
+                <div className="flex gap-8 items-start flex-wrap">
+                  <PuzzleGrid
+                    grid={testCase.input}
+                    title="Input"
+                    className="flex-shrink-0"
+                  />
+                  <div className="flex items-center justify-center h-12">
+                    <span className="text-2xl">→</span>
+                  </div>
+                  <PuzzleGrid
+                    grid={testCase.output}
+                    title="Expected Output"
+                    className="flex-shrink-0"
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
           <CardTitle>Your Solution</CardTitle>
           <p className="text-sm text-gray-600">
-            Click on cells to change their values. Start with the test input and modify it to match the pattern.
+            Click on cells to change their values. Solve for the first test case input.
           </p>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
             <div className="flex gap-8 items-start flex-wrap">
-              <PuzzleGrid 
-                grid={task.test[0]?.input || []} 
+              <PuzzleGrid
+                grid={task.test[0]?.input || []}
                 title="Test Input"
                 className="flex-shrink-0"
               />
               <div className="flex items-center justify-center h-12">
                 <span className="text-2xl">→</span>
               </div>
-              <PuzzleGrid 
+              <PuzzleGrid
                 grid={userSolution}
                 title="Your Solution"
                 editable={true}
@@ -144,7 +177,7 @@ export function PuzzleViewer({ task, onSolutionSubmit, analysis }: PuzzleViewerP
                 className="flex-shrink-0"
               />
             </div>
-            
+
             <div className="flex gap-2">
               <Button onClick={handleSubmitSolution} className="bg-blue-600 hover:bg-blue-700">
                 Submit Solution
