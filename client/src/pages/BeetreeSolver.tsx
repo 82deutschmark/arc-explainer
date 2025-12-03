@@ -8,7 +8,7 @@
  * SRP/DRY check: Pass - Uses shadcn/ui and existing patterns
  */
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { useParams, Link } from 'wouter';
 import { ArrowLeft, Play, Square, Trees, AlertTriangle, Clock, DollarSign, Zap, Loader2 } from 'lucide-react';
 
@@ -75,6 +75,15 @@ export default function BeetreeSolver() {
   const isDone = status === 'completed';
   const hasError = status === 'error';
   const isIdle = !isRunning && !isDone && !hasError;
+
+  // Auto-scroll for progress log
+  const logEndRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    if (logEndRef.current) {
+      logEndRef.current.scrollIntoView({ behavior: 'smooth', block: 'end' });
+    }
+  }, [progress.length]);
 
   // Get models for selected mode
   const modelConfig = useMemo(() => mode === 'testing' ? TESTING_MODELS : PRODUCTION_MODELS, [mode]);
@@ -454,6 +463,7 @@ export default function BeetreeSolver() {
                           );
                         })
                       )}
+                      <div ref={logEndRef} />
                     </div>
                   </ScrollArea>
                 </CardContent>
