@@ -1,6 +1,14 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top with the time and date!
 
+### Version 5.36.5  Dec 3, 2025 5:00pm
+
+- **Poetiq UI: Remove dead iteration tile, surface raw telemetry by default** (Author: Cascade)
+  - Removed the non-functional "Iteration History" heatmap tile from the Poetiq live dashboard so the layout focuses on experts, best result, code, and live events.
+  - Updated the Poetiq solver page so the **Prompt Timeline**, **Raw Events**, and **Event Log** panels are visible by default during a run instead of being hidden behind toggle buttons.
+  - Cleaned up the Raw Events empty state message to match the new SSE-only streaming path (no WebSocket wording).
+  - **Files**: `client/src/components/poetiq/PoetiqLiveDashboard.tsx`, `client/src/pages/PoetiqSolver.tsx`
+
 ### Version 5.36.4  Dec 3, 2025 4:15pm
 
 - **Beetree Results: Improve grid spacing** (Author: Claude Code using Haiku 4.5)
