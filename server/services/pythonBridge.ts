@@ -33,6 +33,7 @@
 import { spawn, SpawnOptions } from 'child_process';
 import path from 'path';
 import * as readline from 'node:readline';
+import { logger } from '../utils/logger.js';
 
 export type SaturnBridgeOptions = {
   taskPath: string;
