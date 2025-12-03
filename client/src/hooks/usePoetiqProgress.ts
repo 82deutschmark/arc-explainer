@@ -780,7 +780,8 @@ export function usePoetiqProgress(taskId: string | undefined) {
         payload.provider = provider;
       }
 
-      const res = await apiRequest('POST', `/api/poetiq/solve/${taskId}`, payload);
+      // Use SSE-specific solve endpoint so session and stream lifecycle stay aligned
+      const res = await apiRequest('POST', `/api/poetiq/stream/solve/${taskId}`, payload);
       const response = await res.json();
 
       if (response.success && response.data?.sessionId) {
