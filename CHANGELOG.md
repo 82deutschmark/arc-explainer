@@ -1,6 +1,13 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top with the time and date!
 
+### Version 5.35.31  Dec 2, 2025 8:31pm
+
+- **Beetree requirements install + onboarding notes** (Author: Codex GPT-5)
+  - Linked `requirements.txt` to `beetreeARC/requirements.txt` so running a single `pip install -r requirements.txt` also satisfies BeetreeARC's pinned modules (fixes the "module not found" errors emitted by `beetree_wrapper.py`).
+  - Expanded `docs/reference/architecture/DEVELOPER_GUIDE.md` with a Python Solvers & Beetree checklist covering submodule init, pip install, and the key integration files (pythonBridge, wrapper, service, and client hook/page).
+  - Added `docs/2025-12-02-beetree-deps-plan.md` to capture the investigation scope, affected files, and implementation tasks for this fix.
+
 ### Version 5.35.30  Dec 2, 2025 7:00pm
 
 - **PuzzleDiscussion: Refinement UX Reordered + Reasoning Controls** (Author: Cascade using Claude Sonnet 4)
