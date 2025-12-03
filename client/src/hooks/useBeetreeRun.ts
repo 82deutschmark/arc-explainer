@@ -111,30 +111,6 @@ export const useBeetreeRun = () => {
     return `beetree_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
   }, []);
 
-  const registerSSEListeners = useCallback((eventSource: EventSource) => {
-    const beetreeEvents = [
-      'stream.init',
-      'stream_start',
-      'puzzle_validated',
-      'solver_start',
-      'solver_progress',
-      'solver_log',
-      'solver_complete',
-      'solver_error',
-      'stream_error',
-      'stream_cancelled',
-      'stream_complete',
-      'stream.end'
-    ];
-
-    beetreeEvents.forEach(eventType => {
-      eventSource.addEventListener(eventType, (event) => handleSSEEvent(event as MessageEvent, eventType));
-    });
-
-    // Fallback handler for unnamed events
-    eventSource.addEventListener('message', (event) => handleSSEEvent(event as MessageEvent));
-  }, [handleSSEEvent]);
-
   // Handle SSE events
   const handleSSEEvent = useCallback((event: MessageEvent, fallbackType?: string) => {
     try {
@@ -281,6 +257,30 @@ export const useBeetreeRun = () => {
     }
   }, []);
 
+  const registerSSEListeners = useCallback((eventSource: EventSource) => {
+    const beetreeEvents = [
+      'stream.init',
+      'stream_start',
+      'puzzle_validated',
+      'solver_start',
+      'solver_progress',
+      'solver_log',
+      'solver_complete',
+      'solver_error',
+      'stream_error',
+      'stream_cancelled',
+      'stream_complete',
+      'stream.end'
+    ];
+
+    beetreeEvents.forEach(eventType => {
+      eventSource.addEventListener(eventType, (event) => handleSSEEvent(event as MessageEvent, eventType));
+    });
+
+    // Fallback handler for unnamed events
+    eventSource.addEventListener('message', (event) => handleSSEEvent(event as MessageEvent));
+  }, [handleSSEEvent]);
+
   // Start analysis
   const startAnalysis = useCallback(async (options: BeetreeRunOptions) => {
     try {
@@ -366,7 +366,7 @@ export const useBeetreeRun = () => {
         isLoading: false
       }));
     }
-  }, [generateSessionId, handleSSEEvent, registerSSEListeners]);
+  }, [generateSessionId, registerSSEListeners]);
 
   // Cancel analysis
   const cancelAnalysis = useCallback(async () => {
