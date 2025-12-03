@@ -22,8 +22,8 @@ openai>=1.0.0
 # Anthropic SDK - for Claude models using Messages API
 anthropic>=0.40.0
 
-# Google Generative AI SDK - for Gemini models
-google-generativeai>=0.8.0
+# Google GenAI SDK (new client) - for Gemini models
+google-genai>=1.52.0
 
 # Note: OpenRouter and xAI use OpenAI SDK with custom base_url
 
