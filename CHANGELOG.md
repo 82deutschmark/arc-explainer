@@ -1,6 +1,19 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top with the time and date!
 
+### Version 5.35.35  Dec 2, 2025 9:40pm
+
+- **SnakeBench staging URL wiring** (Author: Cascade)
+  - Fixed `.env` formatting so `VITE_SNAKEBENCH_URL` is declared on its own line and actually recognized by Vite (it was previously concatenated onto `XAI_API_KEY`, so the Snake Arena page always showed "SnakeBench frontend not configured").
+  - Set the default `VITE_SNAKEBENCH_URL` in the repo to the staging SnakeBench frontend at `https://arc-explainer-staging.up.railway.app/snake-arena`, and documented this in `.env.example` for future deployments.
+  - **Files**: `.env`, `.env.example`
+
+### Version 5.35.34  Dec 2, 2025 9:30pm
+
+- **Beetree Windows shim for fcntl** (Author: Codex GPT-5)
+  - Added a lightweight no-op `fcntl` module shim in `server/python/beetree_wrapper.py` so BeetreeARC can import on Windows (the upstream logging uses Unix-only `fcntl` for file locks). This unblocks local Beetree runs on Windows without touching the submodule.
+  - **Files**: `server/python/beetree_wrapper.py`
+
 ### Version 5.35.33  Dec 2, 2025 9:20pm
 
 - **Gemini SDK alignment + pip conflict fix** (Author: Codex GPT-5)
