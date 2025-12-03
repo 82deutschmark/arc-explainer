@@ -141,7 +141,7 @@ export function StreamingAnalysisPanel({
   }, [structuredJson]);
 
   // Get test grids
-  const testExample = task?.test?.[0];
+  const testExamples = task?.test ?? [];
 
   return (
     <div className="card bg-blue-50 border border-blue-200 shadow-sm">
@@ -166,39 +166,47 @@ export function StreamingAnalysisPanel({
           )}
         </div>
         <div className="space-y-4 text-sm text-blue-900 pt-2">
-          {/* Test Grids Section - Compact */}
-          {testExample && (
-            <div className="flex flex-wrap items-start gap-4">
-              <div className="flex flex-col items-center gap-1">
-                <p className="text-[10px] text-blue-600 font-medium uppercase tracking-wide">Test Input</p>
-                <GridDisplay
-                  grid={testExample.input}
-                  label=""
-                  showDimensions={false}
-                  className="border border-blue-200 bg-white rounded-md shadow-xs"
-                  maxWidth={256}
-                  maxHeight={256}
-                />
-              </div>
-              <div className="flex flex-col items-center gap-1">
-                <p className="text-[10px] text-blue-600 font-medium uppercase tracking-wide">Test Output</p>
-                <GridDisplay
-                  grid={testExample.output}
-                  label=""
-                  showDimensions={false}
-                  className="border border-blue-200 bg-white rounded-md shadow-xs"
-                  maxWidth={256}
-                  maxHeight={256}
-                />
-              </div>
-              {promptPreview && (
-                <div className="flex-1 min-w-[200px]">
-                  <p className="text-[10px] font-semibold text-blue-600 uppercase tracking-wide mb-1">Prompt Sent</p>
-                  <pre className="whitespace-pre-wrap bg-blue-50 border border-blue-300 rounded p-3 max-h-[120px] overflow-y-auto text-[10px] text-blue-800 leading-tight">
-                    {promptPreview}
-                  </pre>
+          {/* Test Grids Section - Display all test cases */}
+          {testExamples.length > 0 && (
+            <div className="space-y-4">
+              {testExamples.map((testExample, testIndex) => (
+                <div key={testIndex} className="flex flex-wrap items-start gap-4">
+                  <div className="flex flex-col items-center gap-1">
+                    <p className="text-[10px] text-blue-600 font-medium uppercase tracking-wide">
+                      Test {testIndex + 1} Input
+                    </p>
+                    <GridDisplay
+                      grid={testExample.input}
+                      label=""
+                      showDimensions={false}
+                      className="border border-blue-200 bg-white rounded-md shadow-xs"
+                      maxWidth={256}
+                      maxHeight={256}
+                    />
+                  </div>
+                  <div className="flex flex-col items-center gap-1">
+                    <p className="text-[10px] text-blue-600 font-medium uppercase tracking-wide">
+                      Test {testIndex + 1} Output
+                    </p>
+                    <GridDisplay
+                      grid={testExample.output}
+                      label=""
+                      showDimensions={false}
+                      className="border border-blue-200 bg-white rounded-md shadow-xs"
+                      maxWidth={256}
+                      maxHeight={256}
+                    />
+                  </div>
+                  {testIndex === 0 && promptPreview && (
+                    <div className="flex-1 min-w-[200px]">
+                      <p className="text-[10px] font-semibold text-blue-600 uppercase tracking-wide mb-1">Prompt Sent</p>
+                      <pre className="whitespace-pre-wrap bg-blue-50 border border-blue-300 rounded p-3 max-h-[120px] overflow-y-auto text-[10px] text-blue-800 leading-tight">
+                        {promptPreview}
+                      </pre>
+                    </div>
+                  )}
                 </div>
-              )}
+              ))}
             </div>
           )}
 
@@ -227,7 +235,7 @@ export function StreamingAnalysisPanel({
           )}
 
           {/* Prompt only if no test grids */}
-          {!testExample && promptPreview && (
+          {testExamples.length === 0 && promptPreview && (
             <div>
               <p className="text-xs font-semibold text-blue-600 uppercase tracking-wide mb-1">Prompt Sent</p>
               <pre className="whitespace-pre-wrap bg-blue-50 border border-blue-300 rounded-md p-3 max-h-[150px] overflow-y-auto text-xs text-blue-800">

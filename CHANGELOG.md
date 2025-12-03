@@ -1,6 +1,15 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top with the time and date!
 
+### Version 5.35.30  Dec 2, 2025 7:00pm
+
+- **PuzzleDiscussion: Refinement UX Reordered + Reasoning Controls** (Author: Cascade using Claude Sonnet 4)
+  - Moved **Continue Refinement** (user guidance + send button) to the very top of the refinement UI
+  - Added a dedicated **Advanced Controls** card using the shared `AdvancedControls` component (same pattern as Examiner/Debate)
+  - Reasoning configuration (effort, verbosity, summary type, sampling, thinking budget) is now clearly accessible before any analytics tables
+  - Pushed the heavy analytics header and **Iteration History** table below the controls to reduce confusing chrome at the top of the page
+  - **Files**: `client/src/components/puzzle/refinement/ProfessionalRefinementUI.tsx`, `client/src/pages/PuzzleDiscussion.tsx`
+
 ### Version 5.35.29  Dec 2, 2025 6:40pm
 
 - **PuzzleDiscussion: Remove blank white box** (Author: Cascade using Claude Sonnet 4)
