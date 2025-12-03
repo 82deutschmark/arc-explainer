@@ -100,7 +100,8 @@ export default function ModelDebate() {
     candidateCount,
     setCandidateCount,
     thinkingBudget,
-    setThinkingBudget
+    setThinkingBudget,
+    closeStreamingModal,
   } = useAnalysisResults({
     taskId: taskId || '',
     refetchExplanations,
@@ -133,14 +134,6 @@ export default function ModelDebate() {
     }
   })();
   const [pendingStream, setPendingStream] = useState<{ modelKey: string; baseline: string | null } | null>(null);
-
-  // Close streaming modal handler
-  const closeStreamingModal = () => {
-    if (streamingPanelStatus !== 'in_progress') {
-      cancelStreamingAnalysis();
-    }
-  };
-
 
   // Set promptId to 'debate' when debate mode is active
   useEffect(() => {

@@ -64,6 +64,8 @@ class BeetreeStreamService {
     const streamKey = `beetree-${sessionId}`;
     const timestamp = runTimestamp || new Date().toISOString();
 
+    console.log(`[beetreeStreamService] startStreaming called with sessionId=${sessionId}, taskId=${taskId}, streamKey=${streamKey}`);
+
     // Initialize stream state
     const streamState: BeetreeStreamState = {
       sessionId,
@@ -124,8 +126,45 @@ class BeetreeStreamService {
         timestamp: Date.now(),
       });
 
-      // Configure Beetree run options
-      // Start Beetree analysis with event handling
+      // Create streaming harness for Beetree (like Saturn does)
+      console.log(`[beetreeStreamService] Creating streaming harness for ${streamKey}`);
+      const harness: StreamingHarness = {
+        sessionId: streamKey,
+        emit: (chunk) => {
+          console.log(`[beetreeStreamService] harness.emit called`);
+          sseStreamManager.sendEvent(streamKey, 'stream.chunk', {
+            ...(chunk ?? {}),
+            metadata: {
+              ...(chunk?.metadata ?? {}),
+              taskId,
+            },
+          });
+        },
+        emitEvent: (event, payload) => {
+          console.log(`[beetreeStreamService] harness.emitEvent called: event=${event}`);
+          logger.debug(`[beetreeStreamService] Emitting event via harness: event=${event}, ts=${payload?.timestamp}, streamKey=${streamKey}`);
+          const enrichedEvent =
+            payload && typeof payload === 'object'
+              ? { ...payload, taskId }
+              : { taskId };
+          sseStreamManager.sendEvent(streamKey, event, enrichedEvent);
+        },
+        end: async (summary) => {
+          console.log(`[beetreeStreamService] harness.end called`);
+          logger.debug(`[beetreeStreamService] Stream ending for ${streamKey}`);
+          // Stream completion handled below
+          sseStreamManager.close(streamKey, summary);
+        },
+        abortSignal,
+        metadata: {
+          taskId,
+          testIndex,
+          mode,
+        },
+      };
+
+      // Start Beetree analysis with streaming harness
+      console.log(`[beetreeStreamService] Calling beetreeService.analyzePuzzleWithModel with harness`);
       await beetreeService.analyzePuzzleWithModel(
         puzzle,
         'beetree-ensemble', // Model key for Beetree ensemble
@@ -138,9 +177,7 @@ class BeetreeStreamService {
           testIndex,
           mode,
           runTimestamp: timestamp,
-          onProgress: (event: BeetreeBridgeEvent) => {
-            this.handleBeetreeEvent(streamKey, streamState, event);
-          },
+          stream: harness,
           abortSignal,
         } as ServiceOptions
       );

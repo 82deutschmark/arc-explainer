@@ -24,7 +24,8 @@ from typing import Any, Optional, Tuple
 # Direct SDK imports - NO LiteLLM
 import openai
 import anthropic
-import google.generativeai as genai
+from google import genai
+from google.genai import types
 
 from asynciolimiter import Limiter
 from solver.poetiq.types import Models, TokenUsage
@@ -319,56 +320,57 @@ async def llm_gemini(
     **kwargs,
 ) -> Tuple[str, TokenUsage, str, Optional[str]]:
     """
-    Call Google Gemini via Generative AI SDK.
-    Supports thinking for Gemini 2.5+ models.
+    Call Google Gemini via the official google-genai SDK.
+    Supports Gemini 2.5+ models with system prompts supplied via config.
     
     Returns: (response_text, token_usage, reasoning_summary)
     """
-    api_key = os.environ.get("GEMINI_API_KEY")
+    api_key = os.environ.get("GEMINI_API_KEY") or os.environ.get("GOOGLE_API_KEY")
     if not api_key:
-        raise ValueError("GEMINI_API_KEY environment variable not set")
+        raise ValueError("GEMINI_API_KEY or GOOGLE_API_KEY environment variable not set")
     
-    genai.configure(api_key=api_key)
+    client = genai.Client(api_key=api_key)
     model_name = extract_model_name(model)
     
     print(f"[Google Gemini API] Calling {model_name}")
     
-    # Build generation config
-    generation_config = {
+    config_kwargs: dict[str, Any] = {
         "temperature": temperature,
-        "response_mime_type": "application/json",  # For structured output
+        "max_output_tokens": 65536,
+        "response_mime_type": "text/plain",
     }
-    # Thinking config intentionally omitted — current SDK rejects `thinking_config` on Gemini 3.
+    if system_prompt:
+        config_kwargs["system_instruction"] = system_prompt
+    
+    generation_config = types.GenerateContentConfig(**config_kwargs)
+    contents = [
+        types.Content(
+            role="user",
+            parts=[types.Part(text=message)]
+        )
+    ]
     
     try:
-        genai_model = genai.GenerativeModel(
-            model_name=model_name,
-            generation_config=generation_config,
-            system_instruction=system_prompt if system_prompt else None,
+        response = await asyncio.to_thread(
+            lambda: client.models.generate_content(
+                model=model_name,
+                contents=contents,
+                config=generation_config,
+            )
         )
         
-        # Use asyncio to run the sync API
-        loop = asyncio.get_event_loop()
-        response = await loop.run_in_executor(
-            None,
-            lambda: genai_model.generate_content(message)
-        )
-        
-        # Extract response text and reasoning
-        output_text = ""
+        output_text = getattr(response, 'text', '') or ''
         reasoning_text = ""
         
-        if response.candidates:
+        if getattr(response, 'candidates', None):
             candidate = response.candidates[0]
-            if candidate.content and candidate.content.parts:
+            if getattr(candidate, 'content', None) and candidate.content.parts:
                 for part in candidate.content.parts:
-                    if hasattr(part, 'thought') and part.thought:
-                        if hasattr(part, 'text'):
-                            reasoning_text += part.text
-                    elif hasattr(part, 'text'):
+                    if getattr(part, 'thought', None) and getattr(part, 'text', None):
+                        reasoning_text += part.text
+                    elif getattr(part, 'text', None) and not output_text:
                         output_text += part.text
         
-        # Build token usage
         token_usage: TokenUsage = {}
         if hasattr(response, 'usage_metadata') and response.usage_metadata:
             usage = response.usage_metadata
@@ -378,13 +380,11 @@ async def llm_gemini(
                 "total_tokens": getattr(usage, 'total_token_count', 0) or 0,
             }
         
-        return output_text, token_usage, reasoning_text, None
+        return output_text.strip(), token_usage, reasoning_text.strip(), None
         
     except Exception as e:
         print(f"[Google Gemini API] Error: {e}")
         raise
-
-
 # ==========================================
 # OPENROUTER API (OpenAI-compatible)
 # ==========================================

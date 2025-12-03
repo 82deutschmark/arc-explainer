@@ -22,6 +22,7 @@ import time
 import io
 import contextlib
 import threading
+import types
 from typing import Any, Dict, List, Optional
 from pathlib import Path
 
@@ -31,6 +32,19 @@ PROJECT_ROOT = os.path.abspath(os.path.join(SCRIPT_DIR, '..', '..'))
 BEETREE_DIR = os.path.join(PROJECT_ROOT, 'beetreeARC')
 if BEETREE_DIR not in sys.path:
     sys.path.insert(0, BEETREE_DIR)
+
+# beetreeARC uses fcntl for file locking, which is unavailable on Windows.
+# Provide a minimal shim so imports succeed and locking becomes a no-op.
+if os.name == 'nt' and 'fcntl' not in sys.modules:
+    fcntl_stub = types.ModuleType('fcntl')
+    fcntl_stub.LOCK_EX = 0
+    fcntl_stub.LOCK_UN = 0
+
+    def _noop_flock(*_args, **_kwargs):
+        return None
+
+    fcntl_stub.flock = _noop_flock  # type: ignore[attr-defined]
+    sys.modules['fcntl'] = fcntl_stub
 
 try:
     from src.solver_engine import run_solver_mode
@@ -137,13 +151,15 @@ class CostTracker:
                 "input_tokens": 0,
                 "output_tokens": 0,
                 "reasoning_tokens": 0,
-                "cost": 0.0
+                "cost": 0.0,
+                "calls": 0,
             }
         
         self.model_costs[model]["input_tokens"] += input_tokens
         self.model_costs[model]["output_tokens"] += output_tokens
         self.model_costs[model]["reasoning_tokens"] += reasoning_tokens
         self.model_costs[model]["cost"] += cost
+        self.model_costs[model]["calls"] += 1
         
         self.total_tokens["input"] += input_tokens
         self.total_tokens["output"] += output_tokens
@@ -181,10 +197,13 @@ class CostTracker:
 
 def run():
     try:
+        # Change to project root so relative paths work correctly
+        os.chdir(PROJECT_ROOT)
+
         # Read configuration from stdin
         payload_raw = sys.stdin.read()
         cfg = json.loads(payload_raw)
-        
+
         task_id: str = cfg.get('taskId')
         test_index: int = int(cfg.get('testIndex', 1))
         mode: str = cfg.get('mode', 'testing')  # 'testing' or 'production'
@@ -226,7 +245,7 @@ def run():
             return 1
         
         # Create logs directory if it doesn't exist
-        logs_dir = Path(BEETREE_DIR) / "logs"
+        logs_dir = Path(PROJECT_ROOT) / "logs"
         logs_dir.mkdir(exist_ok=True)
         
         # Override beetreeARC's ProgressReporter to capture events
@@ -244,12 +263,13 @@ def run():
         
         # Capture beetreeARC's stdout to stderr to keep NDJSON clean
         verbose_output = io.StringIO()
-        
-        print(f"[BEETREE-DEBUG] Starting run for task: {task_id}, mode: {mode}")
-        
+
+        # Emit debug log with timestamp
+        emit({"type": "log", "level": "info", "message": f"Starting run for task: {task_id}, mode: {mode}", "timestamp": 0})
+
         # Run beetreeARC with stdout redirected
         with contextlib.redirect_stdout(sys.stderr):  # Send beetree prints to stderr
-            with contextlib.redirect_stderr(StreamEmitter(verbose_output, 'info')):
+            with contextlib.redirect_stderr(StreamEmitter(verbose_output, 'info', reporter.start_time)):
                 try:
                     # Call beetreeARC's run_solver_mode
                     result = run_solver_mode(
@@ -263,10 +283,14 @@ def run():
                         answer_path=None
                     )
                     
-                    # Parse result to extract cost information
-                    if result and len(result) >= 2:
-                        # result is [attempt1_grid, attempt2_grid]
-                        predictions = result
+                    # Normalize beetreeARC picked_solutions list into pure grid predictions
+                    predictions = []
+                    if result and isinstance(result, list):
+                        for candidate in result:
+                            if isinstance(candidate, dict):
+                                grid = candidate.get('grid')
+                                if grid is not None:
+                                    predictions.append(grid)
                         
                         # Extract real cost/token information from step logs
                         consensus_data = {
@@ -302,42 +326,80 @@ def run():
                             # Parse step logs for real token/cost data
                             for step_num in [1, 3, 5]:
                                 step_log_path = logs_dir / f"{run_timestamp}_{task_id}_{test_index}_step_{step_num}.json"
-                                if step_log_path.exists():
-                                    with open(step_log_path, 'r') as f:
-                                        step_log = json.load(f)
-                                    
-                                    # Extract per-run cost data
-                                    runs = step_log if isinstance(step_log, list) else step_log.get('runs', [])
-                                    for run_data in runs:
-                                        if isinstance(run_data, dict):
-                                            model_name = run_data.get('model_name', run_data.get('run_id', 'unknown'))
-                                            # Extract from run_id if needed: "claude-opus-4.5_1_step_1"
-                                            if '_' in str(model_name):
-                                                model_name = model_name.split('_')[0]
-                                            
-                                            input_tokens = run_data.get('input_tokens', 0)
-                                            output_tokens = run_data.get('output_tokens', 0)
-                                            cached_tokens = run_data.get('cached_tokens', 0)
-                                            cost = run_data.get('cost', 0.0)
-                                            
-                                            # If no explicit cost, estimate from tokens and model
-                                            if cost == 0 and (input_tokens > 0 or output_tokens > 0):
-                                                cost = estimate_model_cost(model_name, input_tokens, output_tokens, mode)
-                                            
-                                            cost_tracker.track_model_call(
-                                                model=model_name,
-                                                input_tokens=input_tokens,
-                                                output_tokens=output_tokens,
-                                                reasoning_tokens=run_data.get('reasoning_tokens', 0),
-                                                cost=cost
-                                            )
-                                            
-                                            # Track stage cost
-                                            cost_tracker.track_stage_cost(
-                                                stage=f"Step {step_num}",
-                                                cost=cost,
-                                                duration_ms=int(run_data.get('duration_seconds', 0) * 1000)
-                                            )
+                                if not step_log_path.exists():
+                                    continue
+
+                                with open(step_log_path, 'r') as f:
+                                    step_log = json.load(f)
+
+                                runs = []
+
+                                # Normal formats used by steps 1/3:
+                                #  - List of run objects
+                                #  - Dict with 'runs' key containing a list
+                                #  - Dict keyed directly by run_id -> run_data
+                                if isinstance(step_log, list):
+                                    runs = step_log
+                                elif isinstance(step_log, dict) and 'runs' in step_log:
+                                    runs = step_log.get('runs', []) or []
+                                elif isinstance(step_log, dict):
+                                    # Step 5 uses a nested structure:
+                                    # {
+                                    #   "trigger-deep-thinking": { run_id -> data },
+                                    #   "image": { run_id -> data },
+                                    #   "generate-hint": { run_id -> data }
+                                    # }
+                                    sample_value = next(iter(step_log.values()), None)
+                                    if isinstance(sample_value, dict) and 'duration_seconds' not in sample_value:
+                                        # Treat values as nested maps of run_id -> run_data
+                                        for nested in step_log.values():
+                                            if isinstance(nested, dict):
+                                                for run_id, run_data in nested.items():
+                                                    if isinstance(run_data, dict):
+                                                        runs.append({**run_data, 'run_id': run_id})
+                                    else:
+                                        # Standard dict keyed by run_id
+                                        runs = [
+                                            {**run_data, 'run_id': run_id}
+                                            for run_id, run_data in step_log.items()
+                                            if isinstance(run_data, dict)
+                                        ]
+
+                                for run_data in runs:
+                                    if not isinstance(run_data, dict):
+                                        continue
+
+                                    model_name = run_data.get('model_name', run_data.get('run_id', 'unknown'))
+                                    # Extract underlying model from run_id if needed:
+                                    # "gpt-5.1-codex-mini_2_step_1_..." -> "gpt-5.1-codex-mini"
+                                    if '_' in str(model_name):
+                                        model_name = model_name.split('_')[0]
+
+                                    input_tokens = run_data.get('input_tokens', 0)
+                                    output_tokens = run_data.get('output_tokens', 0)
+                                    cached_tokens = run_data.get('cached_tokens', 0)
+
+                                    # BeeTree logs use 'total_cost', fall back to 'cost'
+                                    cost = run_data.get('total_cost', run_data.get('cost', 0.0))
+
+                                    # If no explicit cost, estimate from tokens and model
+                                    if cost == 0 and (input_tokens > 0 or output_tokens > 0):
+                                        cost = estimate_model_cost(model_name, input_tokens, output_tokens, mode)
+
+                                    cost_tracker.track_model_call(
+                                        model=model_name,
+                                        input_tokens=input_tokens,
+                                        output_tokens=output_tokens,
+                                        reasoning_tokens=run_data.get('reasoning_tokens', 0),
+                                        cost=cost
+                                    )
+
+                                    # Track stage cost
+                                    cost_tracker.track_stage_cost(
+                                        stage=f"Step {step_num}",
+                                        cost=cost,
+                                        duration_ms=int(run_data.get('duration_seconds', 0) * 1000)
+                                    )
                         
                         except Exception as log_err:
                             print(f"[BEETREE-DEBUG] Could not parse cost logs: {log_err}")
@@ -353,7 +415,7 @@ def run():
                                         cost=0.40 if mode == 'testing' else 4.00
                                     )
                         
-                        # Emit final success event with consensus data
+                        # Emit final event with consensus and cost data
                         emit({
                             "type": "final",
                             "success": True,
@@ -371,13 +433,6 @@ def run():
                             "timingMs": int((time.time() - reporter.start_time) * 1000)
                         })
                         
-                    else:
-                        emit({
-                            "type": "error", 
-                            "message": "beetreeARC returned invalid result"
-                        })
-                        return 1
-                        
                 except Exception as solver_err:
                     emit({
                         "type": "error",
@@ -394,30 +449,34 @@ def run():
 
 class StreamEmitter(io.TextIOBase):
     """Redirect beetreeARC prints to NDJSON log events while preserving them."""
-    def __init__(self, sink: io.StringIO, level: str = 'info') -> None:
+    def __init__(self, sink: io.StringIO, level: str = 'info', start_time: float = None) -> None:
         self._sink = sink
         self._buf = ''
         self._level = level
+        self._start_time = start_time or time.time()
 
     def write(self, s: Any) -> int:
         try:
             text = s if isinstance(s, str) else str(s)
         except Exception:
             text = str(s)
-        
+
         # Store full output for final verbose log
         self._sink.write(text)
         self._buf += text
-        
+
         # Emit each complete line as a log event
         while '\n' in self._buf:
             line, self._buf = self._buf.split('\n', 1)
             line_stripped = line.strip()
             if line_stripped:
-                emit({ 
-                    'type': 'log', 
-                    'level': ('error' if self._level == 'error' else 'info'), 
-                    'message': line_stripped 
+                # Calculate timestamp relative to run start (milliseconds)
+                timestamp_ms = int((time.time() - self._start_time) * 1000)
+                emit({
+                    'type': 'log',
+                    'level': ('error' if self._level == 'error' else 'info'),
+                    'message': line_stripped,
+                    'timestamp': timestamp_ms
                 })
         return len(text)
 

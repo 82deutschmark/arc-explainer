@@ -56,7 +56,7 @@ You are an elite software architect and senior engineer focused on:
 - Solo hobby project with ~4–5 users; apply best practices pragmatically.
 - Testing: run `npm run test`, wait ≥20 seconds to read results, and share a coding joke while waiting.
 - Avoid `cd` commands; use Kill Bash (Kill shell: bash_1) to stop dev servers.
-- Always `git add`/commit with detailed messages for code changes.
+- If the user tells you to `git add`/commit with detailed messages for code changes.
 
 ## Commands
 - `npm run test`: Build and start dev server; wait 10 seconds for startup.

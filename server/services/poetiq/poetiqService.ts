@@ -30,7 +30,6 @@ import {
   PoetiqAgentTimelineItem,
   PoetiqAgentReasoningDelta,
 } from '../../../shared/types.js';
-import { broadcast } from '../wsService.js';
 import {
   validateSolverResponse,
   validateSolverResponseMulti,
@@ -490,18 +489,8 @@ export class PoetiqService {
           }
 
         } catch {
-          // Non-JSON output - still forward as log event
+          // Non-JSON output - still log to server for debugging
           console.log(`[Poetiq] ${trimmed}`);
-          // Broadcast as log so UI can see it
-          if (options.sessionId) {
-            broadcast(options.sessionId, {
-              type: 'log',
-              status: 'running',
-              phase: 'log',  // Prevent undefined phase issues
-              level: 'info',
-              message: trimmed,
-            });
-          }
         }
       });
 
@@ -510,16 +499,6 @@ export class PoetiqService {
       rlErr.on('line', (line) => {
         logBuffer.push(`[stderr] ${line}`);
         console.error(`[Poetiq stderr] ${line}`);
-        // Also broadcast stderr to UI
-        if (options.sessionId) {
-          broadcast(options.sessionId, {
-            type: 'log',
-            status: 'running',
-            phase: 'log',  // Prevent undefined phase issues
-            level: 'error',
-            message: `[stderr] ${line}`,
-          });
-        }
       });
 
       // Send payload to Python
@@ -558,59 +537,8 @@ export class PoetiqService {
     options: PoetiqOptions,
     onEvent?: (event: PoetiqBridgeEvent) => void
   ): PoetiqResult | null {
+    console.log(`[poetiqService] Event received: type=${event.type}, timestamp=${(event as any).timestamp}`);
     onEvent?.(event);
-
-    if (options.sessionId) {
-      if (event.type === 'start') {
-        broadcast(options.sessionId, {
-          type: 'start',
-          status: 'running',
-          phase: 'starting',
-          message: `Poetiq solver starting for ${puzzleId}...`,
-          metadata: (event as any).metadata,
-        });
-      } else if (event.type === 'progress') {
-        broadcast(options.sessionId, {
-          type: 'progress',
-          status: 'running',
-          phase: event.phase,
-          iteration: event.iteration,
-          message: event.message,
-          expert: event.expert,
-          code: event.code,
-          reasoning: event.reasoning,
-          reasoningSummary: event.reasoningSummary,
-          trainResults: event.trainResults,
-          promptData: event.promptData,
-          agentRunId: event.agentRunId,
-          agentModel: event.agentModel,
-          agentTimelineItem: event.agentTimelineItem,
-          agentReasoningDelta: event.agentReasoningDelta,
-          tokenUsage: (event as any).tokenUsage,
-          cost: (event as any).cost,
-          expertCumulativeTokens: (event as any).expertCumulativeTokens,
-          expertCumulativeCost: (event as any).expertCumulativeCost,
-          globalTokens: (event as any).globalTokens,
-          globalCost: (event as any).globalCost,
-        });
-      } else if (event.type === 'log') {
-        broadcast(options.sessionId, {
-          type: 'log',
-          status: 'running',
-          phase: 'log',
-          level: event.level,
-          message: event.message,
-        });
-      } else if (event.type === 'error') {
-        broadcast(options.sessionId, {
-          type: 'error',
-          status: 'error',
-          phase: 'error',
-          message: event.message,
-          traceback: event.traceback,
-        });
-      }
-    }
 
     if (event.type === 'error') {
       console.error(`[Poetiq] Error: ${event.message}`);

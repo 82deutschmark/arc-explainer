@@ -10,6 +10,7 @@
 import { Request, Response } from 'express';
 import { beetreeService } from '../services/beetreeService';
 import { beetreeStreamService } from '../services/streaming/beetreeStreamService';
+import { sseStreamManager } from '../services/streaming/SSEStreamManager';
 import { puzzleService } from '../services/puzzleService';
 import { explanationService } from '../services/explanationService';
 import { broadcast } from '../services/wsService';
@@ -17,8 +18,9 @@ import { logger } from '../utils/logger';
 import type { BeetreeRunConfig, BeetreeBridgeEvent } from '../../shared/types';
 
 // Generate unique session IDs for Beetree runs
+// Note: Don't include 'beetree-' prefix here - beetreeStreamService will add it
 function generateSessionId(): string {
-  return `beetree-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+  return `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
 }
 
 /**
@@ -428,6 +430,51 @@ export async function cancelBeetreeAnalysis(req: Request, res: Response) {
   }
 }
 
+/**
+ * Stream Beetree analysis progress via SSE
+ * GET /api/stream/analyze/beetree-:sessionId
+ */
+export async function streamBeetreeAnalysis(req: Request, res: Response) {
+  const { sessionId } = req.params as { sessionId: string };
+
+  if (!sessionId) {
+    res.status(400).json({
+      error: 'Missing sessionId parameter',
+      timestamp: Date.now(),
+    });
+    return;
+  }
+
+  // Verify session exists
+  const streamState = beetreeStreamService.getStreamState(sessionId);
+  if (!streamState) {
+    res.status(404).json({
+      error: `Session ${sessionId} not found or expired`,
+      timestamp: Date.now(),
+    });
+    return;
+  }
+
+  // Register with SSE stream manager using the streamKey format that matches the broadcast key
+  const streamKey = `beetree-${sessionId}`;
+  sseStreamManager.register(streamKey, res);
+
+  // Send initial event
+  sseStreamManager.sendEvent(streamKey, 'stream.init', {
+    sessionId,
+    taskId: streamState.taskId,
+    testIndex: streamState.testIndex,
+    mode: streamState.mode,
+    createdAt: new Date().toISOString(),
+  });
+
+  // Set up cleanup on connection close
+  res.on('close', () => {
+    logger.info(`SSE stream closed for session ${sessionId}`, 'beetree-controller');
+  });
+
+  logger.info(`SSE stream registered for session ${sessionId}`, 'beetree-controller');
+}
 
 export const beetreeController = {
   runBeetreeAnalysis,
@@ -435,5 +482,6 @@ export const beetreeController = {
   estimateBeetreeCost,
   getBeetreeHistory,
   getBeetreeCostBreakdown,
-  cancelBeetreeAnalysis
+  cancelBeetreeAnalysis,
+  streamBeetreeAnalysis
 };

@@ -1,6 +1,191 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top with the time and date!
 
+### Version 5.36.6  Dec 3, 2025 5:15pm
+
+- **Poetiq UI: Move real telemetry above the fold** (Author: Cascade)
+  - Trimmed the Poetiq solver header to remove static explanatory paragraphs and keep only the puzzle id, run status, iterations, elapsed time, and live token/cost summary.
+  - Reordered the main two-column layout so the **Event Log** and **Raw Events** panels sit at the top of the right column, with prompt inspector/timeline/reasoning panels stacked underneath them.
+  - This ensures the first screen after starting a run shows the live stream, raw payloads, and high-level metrics without scrolling.
+  - **Files**: `client/src/pages/PoetiqSolver.tsx`
+
+### Version 5.36.5  Dec 3, 2025 5:00pm
+
+- **Poetiq UI: Remove dead iteration tile, surface raw telemetry by default** (Author: Cascade)
+  - Removed the non-functional "Iteration History" heatmap tile from the Poetiq live dashboard so the layout focuses on experts, best result, code, and live events.
+  - Updated the Poetiq solver page so the **Prompt Timeline**, **Raw Events**, and **Event Log** panels are visible by default during a run instead of being hidden behind toggle buttons.
+  - Cleaned up the Raw Events empty state message to match the new SSE-only streaming path (no WebSocket wording).
+  - **Files**: `client/src/components/poetiq/PoetiqLiveDashboard.tsx`, `client/src/pages/PoetiqSolver.tsx`
+
+### Version 5.36.4  Dec 3, 2025 4:15pm
+
+- **Beetree Results: Improve grid spacing** (Author: Claude Code using Haiku 4.5)
+  - Increased gap between ground truth and consensus prediction grids from `gap-4` (16px) to `gap-8` (32px) to prevent grids from appearing smushed together.
+  - Added `justify-center` to center the grid layout for better visual balance.
+  - **Files**: `client/src/pages/BeetreeSolver.tsx:499`
+
+### Version 5.36.3  Dec 3, 2025 4:00pm
+
+- **Poetiq Streaming: Remove all WebSocket usage (SSE-only)** (Author: Cascade)
+  - Removed all `wsService.broadcast` calls from `poetiqService.ts` so Poetiq no longer emits WebSocket progress/log events; only SSE events are produced via `poetiqStreamService`.
+  - Updated `poetiqController.ts` to stop broadcasting over WebSockets for both the legacy `/api/poetiq/solve/:taskId` endpoint and Poetiq batch runs, keeping them as console-log-only code paths while SSE is the sole streaming mechanism.
+  - Updated `wsService.ts` to stop accepting `/api/poetiq/progress` WebSocket connections; Saturn, Grover, and Beetree WebSockets remain unchanged.
+  - This ensures Poetiq cannot accidentally fall back to WebSockets and that all live solver updates come exclusively from the SSE pipeline.
+  - **Files**: `server/services/poetiq/poetiqService.ts`, `server/controllers/poetiqController.ts`, `server/services/wsService.ts`
+
+### Version 5.36.2  Dec 3, 2025 3:45pm
+
+- **Poetiq SSE: Fix session start race and align client/server endpoints** (Author: Cascade)
+  - Updated `client/src/hooks/usePoetiqProgress.ts` to call the dedicated SSE solve endpoint `POST /api/poetiq/stream/solve/:taskId` so the `sessionId` used by the frontend always matches the SSE streaming lifecycle managed by the backend.
+  - Relaxed the brittle `hasActiveStream` check in `poetiqController.startStreamingSolver` so the solver can start even if the SSE connection is still negotiating; `SSEStreamManager` safely drops events until a client is registered, matching Saturn/Beetree semantics.
+  - This fixes cases where Poetiq appeared to “not find the session” or never delivered progress events despite a valid run starting.
+  - **Files**: `client/src/hooks/usePoetiqProgress.ts`, `server/controllers/poetiqController.ts`
+
+### Version 5.36.1  Dec 3, 2025 1:35pm
+
+- **BeeTree Cost & Models UI Clarification** (Author: Cascade)
+  - Updated `server/python/beetree_wrapper.py` cost parsing so nested Step 5 logs (trigger-deep-thinking / image / generate-hint) are fully flattened and counted, ensuring `costBreakdown.total_cost` properly matches the underlying BeeTree solver summary.
+  - Clarified the Beetree solver page to distinguish **unique model types** from **total model runs**, and added helper text explaining that the Total Cost panel reflects the sum over all underlying model calls, not just the number of distinct models.
+  - The pre-configured models section now shows both the number of unique model types and the total run count (e.g., "1 unique type, 7 total runs"), which should make it clearer why consensus counts can be smaller than the overall run volume.
+  - **Files**: `server/python/beetree_wrapper.py`, `client/src/pages/BeetreeSolver.tsx`
+
+### Version 5.36.0  Dec 3, 2025 12:45pm
+
+- **Poetiq SSE Migration: Replace WebSocket with Server-Sent Events** (Author: Cascade)
+  - **Breaking Change**: Poetiq solver now uses SSE instead of WebSocket for streaming, consistent with Saturn and Beetree solvers.
+  - Created `server/services/streaming/poetiqStreamService.ts` - new SSE-based streaming service following Saturn/Beetree patterns.
+  - Added SSE endpoints to `poetiqController.ts`:
+    - `GET /api/poetiq/stream/:sessionId` - SSE connection endpoint
+    - `POST /api/poetiq/stream/solve/:taskId` - Initialize solver with SSE
+    - `POST /api/poetiq/stream/start/:sessionId` - Start solver after SSE connected
+  - Updated `client/src/hooks/usePoetiqProgress.ts` to use EventSource (SSE) instead of WebSocket.
+  - Created `client/src/components/poetiq/PoetiqLiveDashboard.tsx` - compact, data-dense live dashboard replacing verbose PoetiqProgressDashboard.
+  - Updated `client/src/pages/PoetiqSolver.tsx` to use the new compact dashboard.
+  - **Why**: WebSocket was causing events to not flow correctly to UI. SSE is simpler, auto-reconnects, and matches existing Saturn/Beetree implementation patterns.
+  - **Files**: `server/services/streaming/poetiqStreamService.ts`, `server/controllers/poetiqController.ts`, `server/routes.ts`, `client/src/hooks/usePoetiqProgress.ts`, `client/src/components/poetiq/PoetiqLiveDashboard.tsx`, `client/src/pages/PoetiqSolver.tsx`
+
+### Version 5.35.45  Dec 3, 2025 11:35am
+
+- **Beetree Logs & UI: Use root logs directory and improve raw log display** (Author: Cascade)
+  - Pointed `server/python/beetree_wrapper.py` at the project root `logs` directory so BeeTree cost parsing matches the actual `d:\GitHub\arc-explainer\logs` files the user is inspecting, instead of `beetreeARC/logs`.
+  - Left the Beetree progress data as *raw* log events but reformatted the Progress Log card: stage events keep their existing structure, while `solver_log` lines now render in a compact monospace row with a small level badge and truncated message to make long outputs readable.
+  - Updated the Beetree Solver result card to show **ground-truth grid vs. consensus prediction side by side**, while keeping the consensus/agreements summary and run-again button.
+  - **Files**: `server/python/beetree_wrapper.py`, `client/src/pages/BeetreeSolver.tsx`
+
+### Version 5.35.44  Dec 3, 2025 11:10am
+
+- **Beetree Cost Fix: Parse dict-keyed step logs correctly** (Author: Claude Sonnet 4)
+  - Fixed `server/python/beetree_wrapper.py` step log parsing which was expecting a list or dict with `runs` key, but BeeTree actually emits dicts keyed by run ID (e.g. `"gpt-5.1-codex-mini_2_step_1_...": {...}`).
+  - The loop now correctly iterates over dict values when the log is dict-keyed, extracting `input_tokens`, `output_tokens`, `total_cost`, and `duration_seconds` for each model run.
+  - Also fixed cost field name from `cost` to `total_cost` to match actual BeeTree log format.
+  - This restores token usage and cost breakdown display in the Beetree Solver UI which was previously showing zeros.
+  - **Files**: `server/python/beetree_wrapper.py`
+
+### Version 5.35.43  Dec 2, 2025 11:45pm
+
+- **Beetree Hook: Fix handleSSEEvent initialization error** (Author: Cascade)
+  - Restructured `useBeetreeRun` so the `handleSSEEvent` callback is defined before it is captured by the SSE listener registration function, eliminating the `Cannot access 'handleSSEEvent' before initialization` runtime crash when loading the Beetree Solver page.
+  - Kept the existing SSE wiring semantics intact while tightening hook dependency arrays to avoid unnecessary re-creations and preserving the stream event handling contract.
+  - **Files**: `client/src/hooks/useBeetreeRun.ts`
+
+### Version 5.35.42  Dec 2, 2025 11:40pm
+
+- **Beetree Wrapper: Fix invalid-result error and normalize predictions** (Author: Cascade)
+  - Updated `server/python/beetree_wrapper.py` to interpret BeetreeARC's `picked_solutions` structure correctly, normalize it into pure grid predictions, and always emit a `final` event for completed runs instead of raising `"beetreeARC returned invalid result"` and exiting with code 1.
+  - Successful Beetree runs (PASS/FAIL/SUBMITTED) now return exit code 0 with a structured result payload so the Node service can persist outputs and cost breakdowns without treating them as hard errors.
+- **Beetree Bridge: Preserve parsed JSON events without crashing debug logger** (Author: Cascade)
+  - Fixed the Beetree branch of `pythonBridge.runBeetreeAnalysis` to stop referencing an undefined `opts.sessionId` variable in debug logs, so successfully parsed NDJSON lines are forwarded as structured events instead of falling back to generic log messages.
+  - This ensures `start`, `progress`, `final`, and `error` events from the Beetree wrapper reach `beetreeService` and the SSE stream intact for real-time UI updates and debugging.
+
+### Version 5.35.41  Dec 2, 2025 11:25pm
+
+- **Beetree UI: Restore SSE progress events** (Author: Codex GPT-5)
+  - Normalized Beetree session IDs on the client so `/api/stream/analyze/beetree-:sessionId` never receives a double `beetree-` prefix, allowing the backend stream registry to find the right session.
+  - Rebuilt the Beetree hook’s SSE wiring to register explicit listeners for each event name (`stream_start`, `solver_progress`, etc.) and dispatch updates based on the SSE event type instead of a missing payload field.
+  - Added handling for `stream.init`, completion, and termination events so `isConnected`, `status`, and progress/cost data reflect the live stream lifecycle.
+  - **Files**: `client/src/hooks/useBeetreeRun.ts`, `docs/2025-12-02-beetree-streaming-debug-plan.md`
+
+### Version 5.35.40  Dec 2, 2025 11:05pm
+
+- **Poetiq Streaming: Add timestamp preservation and event trace collection** (Author: Cascade)
+  - Fixed Poetiq event streaming to preserve original timestamps (calculated at wrapper level) through all service layers with `timestamp: event.timestamp ?? Date.now()` pattern.
+  - Implemented event trace collection in controller callback, capping at 500 events to avoid unbounded memory growth (same pattern as Beetree).
+  - Added event trace to final WebSocket broadcast so clients receive complete event history with accurate timing for debugging and analytics.
+  - Added comprehensive debug logging across 4 layers: wrapper (Python emit), service (event handler), wsService (broadcast), and client (WS message reception).
+  - Improved event tracking with timestamps for performance analysis and timeline visualization in PuzzleExaminer and other streaming UI components.
+  - **Files**: `server/services/poetiq/poetiqService.ts`, `server/controllers/poetiqController.ts`, `server/services/wsService.ts`, `server/python/poetiq_wrapper.py`, `client/src/hooks/usePoetiqProgress.ts`
+
+### Version 5.35.39  Dec 2, 2025 10:50pm
+
+- **Beetree Streaming: Fix sessionId mismatch and event delivery** (Author: Cascade)
+  - Fixed critical sessionId mismatch in Beetree SSE streaming pipeline where `beetreeController.generateSessionId()` was adding `beetree-` prefix, then `beetreeStreamService` added another `beetree-` prefix, causing `getStreamState()` lookups to fail with "Session not found" errors.
+  - Removed `beetree-` prefix from controller's `generateSessionId()` so streamKey is consistently constructed once in `beetreeStreamService.startStreaming()` as `beetree-${sessionId}`.
+  - Added comprehensive debug logging to trace event flow through all 4 layers: pythonBridge (NDJSON parsing), beetreeService (event routing), beetreeStreamService (harness), and SSEStreamManager (client delivery).
+  - Events now properly flow from Python wrapper → Node bridge → service layer → SSE harness → client browser in real-time.
+  - **Files**: `server/controllers/beetreeController.ts`, `server/services/pythonBridge.ts`, `server/services/beetreeService.ts`, `server/services/streaming/beetreeStreamService.ts`, `server/services/streaming/SSEStreamManager.ts`, `client/src/hooks/useBeetreeRun.ts`
+
+### Version 5.35.38  Dec 2, 2025 10:40pm
+
+- **Streaming: Enable GPT-5.1 in PuzzleExaminer** (Author: Cascade)
+  - Updated the OpenAI streaming allowlist so GPT-5.1 reasoning models (`gpt-5.1-2025-11-13`, `gpt-5.1-codex`, `gpt-5.1-codex-mini`) can use the SSE analysis pipeline instead of falling back with a "Streaming is not enabled for this model" error.
+  - Impact: PuzzleExaminer and other streaming-aware flows now treat GPT-5.1 as fully stream-capable when the global streaming feature flag is on.
+  - **Files**: `server/services/openai.ts`
+
+### Version 5.35.37  Dec 2, 2025 10:07pm
+
+- **About Page: Simon spotlight + mosaic footer** (Author: Cascade)
+  - Added a dedicated Simon Strandgaard spotlight card in the About page sidebar using animated ARC puzzle GIF styling inspired by the Hall of Fame trading cards.
+  - Increased contrast and visual emphasis of the "Honest Truth" story card so the core text reads more clearly on dark backgrounds.
+  - Replaced the heart icon footer with a fully mosaic-based border and tagline that better matches the rest of the sites visual language.
+  - **Files**: `client/src/pages/About.tsx`
+
+### Version 5.35.36  Dec 2, 2025 9:50pm
+
+- **SnakeArena: link directly to SnakeBench.com** (Author: Cascade)
+  - Updated the SnakeArena React page to always embed/link `https://snakebench.com` instead of relying on `VITE_SNAKEBENCH_URL`, removing the confusing "SnakeBench frontend not configured" state.
+  - Kept a matching `VITE_SNAKEBENCH_URL` default in `.env` so local builds and Docker behaves consistently.
+  - **Files**: `client/src/pages/SnakeArena.tsx`, `.env`
+
+### Version 5.35.35  Dec 2, 2025 9:40pm
+
+- **SnakeBench staging URL wiring** (Author: Cascade)
+  - Fixed `.env` formatting so `VITE_SNAKEBENCH_URL` is declared on its own line and actually recognized by Vite (it was previously concatenated onto `XAI_API_KEY`, so the Snake Arena page always showed "SnakeBench frontend not configured").
+  - Set the default `VITE_SNAKEBENCH_URL` in the repo to the staging SnakeBench frontend at `https://arc-explainer-staging.up.railway.app/snake-arena`, and documented this in `.env.example` for future deployments.
+  - **Files**: `.env`, `.env.example`
+
+### Version 5.35.34  Dec 2, 2025 9:30pm
+
+- **Beetree Windows shim for fcntl** (Author: Codex GPT-5)
+  - Added a lightweight no-op `fcntl` module shim in `server/python/beetree_wrapper.py` so BeetreeARC can import on Windows (the upstream logging uses Unix-only `fcntl` for file locks). This unblocks local Beetree runs on Windows without touching the submodule.
+  - **Files**: `server/python/beetree_wrapper.py`
+
+### Version 5.35.33  Dec 2, 2025 9:20pm
+
+- **Gemini SDK alignment + pip conflict fix** (Author: Codex GPT-5)
+  - Swapped the legacy `google-generativeai` dependency for the modern `google-genai` client so our own Python code uses the same stack as BeetreeARC (fixes the protobuf 6.x vs <6 resolver failure during `pip install -r requirements.txt`).
+  - Updated `solver/poetiq/llm.py` to call Gemini via `google.genai.Client`, including a new config builder, `asyncio.to_thread` wrapper, and dual API key support (`GEMINI_API_KEY`/`GOOGLE_API_KEY`), plus refreshed token usage parsing.
+  - Documented the switch in `solver/poetiq/config.py` comment so future contributors know the model IDs follow google-genai naming.
+  - **Files**: `requirements.txt`, `solver/poetiq/llm.py`, `solver/poetiq/config.py`
+
+### Version 5.35.34  Dec 2, 2025 9:30pm
+
+- **Beetree Windows shim for fcntl** (Author: Codex GPT-5)
+  - Added a lightweight no-op `fcntl` module shim in `server/python/beetree_wrapper.py` so BeetreeARC can import on Windows (the upstream logging uses Unix-only `fcntl` for file locks). This unblocks local Beetree runs on Windows without touching the submodule.
+  - **Files**: `server/python/beetree_wrapper.py`
+
+### Version 5.35.32  Dec 2, 2025 8:45pm
+
+- **Docker build: beetree requirements placeholder** (Author: Codex GPT-5)
+  - Docker builds now create a temporary `beetreeARC/requirements.txt` before running `pip install -r requirements.txt`, so the new `-r beetreeARC/requirements.txt` include never fails even when the submodule is missing from the build context. After the repo is copied (or the git clone fallback runs) we still install the real Beetree dependencies exactly as before.
+  - **Files**: `Dockerfile`
+
+### Version 5.35.31  Dec 2, 2025 8:31pm
+
+- **Beetree requirements install + onboarding notes** (Author: Codex GPT-5)
+  - Linked `requirements.txt` to `beetreeARC/requirements.txt` so running a single `pip install -r requirements.txt` also satisfies BeetreeARC's pinned modules (fixes the "module not found" errors emitted by `beetree_wrapper.py`).
+  - Expanded `docs/reference/architecture/DEVELOPER_GUIDE.md` with a Python Solvers & Beetree checklist covering submodule init, pip install, and the key integration files (pythonBridge, wrapper, service, and client hook/page).
+  - Added `docs/2025-12-02-beetree-deps-plan.md` to capture the investigation scope, affected files, and implementation tasks for this fix.
+
 ### Version 5.35.30  Dec 2, 2025 7:00pm
 
 - **PuzzleDiscussion: Refinement UX Reordered + Reasoning Controls** (Author: Cascade using Claude Sonnet 4)

@@ -1,12 +1,12 @@
 /**
  * Author: Cascade (Claude Sonnet 4)
  * Date: 2025-11-25
- * Updated: 2025-11-27 - Fixed synchronous state seeding and buffer accumulation for visibility parity with Saturn
- * PURPOSE: React hook for Poetiq solver progress tracking via WebSocket.
+ * Updated: 2025-12-03 - Migrated from WebSocket to SSE for consistency with Saturn/Beetree
+ * PURPOSE: React hook for Poetiq solver progress tracking via SSE (Server-Sent Events).
  *          Manages solver state, progress updates, and result handling.
- *          Uses same WebSocket connection pattern as Saturn and Grover solvers.
+ *          Uses same SSE connection pattern as Saturn and Beetree solvers.
  *          Supports fallback to server API key when user key is missing/invalid.
- *          Now seeds UI state synchronously BEFORE network calls (Saturn pattern).
+ *          Seeds UI state synchronously BEFORE network calls (Saturn pattern).
  * 
  * SRP/DRY check: Pass - Single responsibility for Poetiq progress orchestration.
  */
@@ -210,14 +210,14 @@ const initialState: PoetiqProgressState = {
 export function usePoetiqProgress(taskId: string | undefined) {
   const [state, setState] = useState<PoetiqProgressState>(initialState);
   const [sessionId, setSessionId] = useState<string | null>(null);
-  const wsRef = useRef<WebSocket | null>(null);
+  const eventSourceRef = useRef<EventSource | null>(null);
   const pollingRef = useRef<NodeJS.Timeout | null>(null);
 
   // Cleanup on unmount
   useEffect(() => {
     return () => {
-      if (wsRef.current) {
-        wsRef.current.close();
+      if (eventSourceRef.current) {
+        eventSourceRef.current.close();
       }
       if (pollingRef.current) {
         clearInterval(pollingRef.current);
@@ -225,49 +225,40 @@ export function usePoetiqProgress(taskId: string | undefined) {
     };
   }, []);
 
-  // Connect to WebSocket for progress updates
-  // Uses same URL pattern as Saturn/Grover: /api/poetiq/progress?sessionId=...
-  const connectWebSocket = useCallback((sid: string) => {
+  // Connect to SSE for progress updates (consistent with Saturn/Beetree)
+  const connectSSE = useCallback((sid: string) => {
     // Close any existing connection first
-    if (wsRef.current) {
+    if (eventSourceRef.current) {
       try {
-        wsRef.current.close();
+        eventSourceRef.current.close();
       } catch {
         // Ignore cleanup errors
       }
-      wsRef.current = null;
+      eventSourceRef.current = null;
     }
 
-    const wsProtocol = location.protocol === 'https:' ? 'wss' : 'ws';
-    const isDev = import.meta.env.DEV;
-    const wsHost = isDev ? 'localhost:5000' : location.host;
-    const wsUrl = `${wsProtocol}://${wsHost}/api/poetiq/progress?sessionId=${encodeURIComponent(sid)}`;
+    const sseUrl = `/api/poetiq/stream/${encodeURIComponent(sid)}`;
     
-    console.log('[Poetiq WS] Connecting to:', wsUrl);
-    const ws = new WebSocket(wsUrl);
-    wsRef.current = ws;
+    console.log('[Poetiq SSE] Connecting to:', sseUrl);
+    const eventSource = new EventSource(sseUrl);
+    eventSourceRef.current = eventSource;
 
-    ws.onopen = () => {
-      console.log('[Poetiq WS] Connected successfully');
+    eventSource.onopen = () => {
+      console.log('[Poetiq SSE] Connected successfully');
     };
 
-    ws.onmessage = (event) => {
-      try {
-        const payload = JSON.parse(event.data);
-        // Server sends { type: 'progress' | 'log' | 'snapshot', data: {...} }
-        const data = payload?.data;
-        const eventType = payload?.type;  // 'progress', 'log', 'snapshot'
+    // Helper to process SSE event data
+    const processEventData = (eventType: string, data: any) => {
+      if (!data) return;
+      
+      console.log('[Poetiq SSE] Received event:', eventType, 'phase:', data.phase);
         
-        if (!data) return;
-        
-        console.log('[Poetiq WS] Received event:', eventType, 'dataType:', data.type, 'phase:', data.phase, 'status:', data.status);
-        
-        setState(prev => {
-          const now = new Date();
-          const timestamp = now.toLocaleTimeString();
-          const isoTimestamp = now.toISOString();
-          const eventLabel = eventType || data.type || 'unknown';
-          const trainResultsArray = Array.isArray(data.trainResults) ? data.trainResults : null;
+      setState(prev => {
+        const now = new Date();
+        const timestamp = now.toLocaleTimeString();
+        const isoTimestamp = now.toISOString();
+        const eventLabel = eventType || data.type || 'unknown';
+        const trainResultsArray = Array.isArray(data.trainResults) ? data.trainResults : null;
           
           // Accumulate log lines - ALWAYS add if message exists (don't skip duplicates)
           let nextLogLines = prev.logLines ? [...prev.logLines] : [];
@@ -581,64 +572,145 @@ export function usePoetiqProgress(taskId: string | undefined) {
             );
           }
           
-          return {
-            ...prev,
-            phase: data.phase || prev.phase,
-            iteration: data.iteration ?? prev.iteration,
-            totalIterations: data.totalIterations ?? prev.totalIterations,
-            message: data.message || prev.message,
-            expert: data.expert ?? prev.expert,
-            phaseStartedAt: nextPhaseStartedAt,
-            phaseHistory: nextPhaseHistory,
-            iterationHistory: nextIterationHistory,
-            expertStates: nextExpertStates,
-            status: data.status === 'completed' ? 'completed' 
-                  : data.status === 'error' ? 'error' 
-                  : 'running',
-            result: data.result || currentResult,
-            config: data.config || prev.config,
-            usingFallback: data.usingFallback ?? prev.usingFallback,
-            logLines: nextLogLines,
-            reasoningHistory: nextReasoningHistory,
-            reasoningSummaryHistory: nextReasoningSummaryHistory,
-            pythonLogLines: nextPythonLogLines,
-            streamingReasoning: nextStreamingReasoning,
-            streamingCode: nextStreamingCode,
-            streamingText: data.message || prev.streamingText,
-            currentPromptData: nextCurrentPromptData,
-            promptHistory: nextPromptHistory,
-            promptTimeline: nextPromptTimeline,
-            tokenUsage: nextTokenUsage,
-            cost: nextCost,
-            expertTokenUsage: nextExpertTokenUsage,
-            expertCost: nextExpertCost,
-            rawEvents: nextRawEvents,
-            agentRunId: nextAgentRunId,
-            agentModel: nextAgentModel,
-            agentTimeline: nextAgentTimeline,
-            agentStreamingReasoning: nextAgentStreamingReasoning,
-            agentUsage: nextAgentUsage,
-          };
-        });
+        return {
+          ...prev,
+          phase: data.phase || prev.phase,
+          iteration: data.iteration ?? prev.iteration,
+          totalIterations: data.totalIterations ?? prev.totalIterations,
+          message: data.message || prev.message,
+          expert: data.expert ?? prev.expert,
+          phaseStartedAt: nextPhaseStartedAt,
+          phaseHistory: nextPhaseHistory,
+          iterationHistory: nextIterationHistory,
+          expertStates: nextExpertStates,
+          status: data.status === 'completed' ? 'completed' 
+                : data.status === 'error' ? 'error' 
+                : 'running',
+          result: data.result || currentResult,
+          config: data.config || prev.config,
+          usingFallback: data.usingFallback ?? prev.usingFallback,
+          logLines: nextLogLines,
+          reasoningHistory: nextReasoningHistory,
+          reasoningSummaryHistory: nextReasoningSummaryHistory,
+          pythonLogLines: nextPythonLogLines,
+          streamingReasoning: nextStreamingReasoning,
+          streamingCode: nextStreamingCode,
+          streamingText: data.message || prev.streamingText,
+          currentPromptData: nextCurrentPromptData,
+          promptHistory: nextPromptHistory,
+          promptTimeline: nextPromptTimeline,
+          tokenUsage: nextTokenUsage,
+          cost: nextCost,
+          expertTokenUsage: nextExpertTokenUsage,
+          expertCost: nextExpertCost,
+          rawEvents: nextRawEvents,
+          agentRunId: nextAgentRunId,
+          agentModel: nextAgentModel,
+          agentTimeline: nextAgentTimeline,
+          agentStreamingReasoning: nextAgentStreamingReasoning,
+          agentUsage: nextAgentUsage,
+        };
+      });
+    };
 
-        if (data.status === 'completed' || data.status === 'error') {
-          if (data.status === 'error') {
-            console.error('[Poetiq WS] Error received:', data);
-          }
-          ws.close();
-        }
+    // Listen to all SSE events
+    eventSource.addEventListener('stream.status', (e) => {
+      try {
+        const data = JSON.parse((e as MessageEvent).data);
+        processEventData('stream.status', data);
       } catch (err) {
-        console.error('[Poetiq WS] Parse error:', err);
+        console.error('[Poetiq SSE] Parse error:', err);
       }
-    };
+    });
 
-    ws.onerror = (err) => {
-      console.error('[Poetiq WS] Error:', err);
-    };
+    eventSource.addEventListener('solver.start', (e) => {
+      try {
+        const data = JSON.parse((e as MessageEvent).data);
+        processEventData('solver.start', data);
+      } catch (err) {
+        console.error('[Poetiq SSE] Parse error:', err);
+      }
+    });
 
-    ws.onclose = (evt) => {
-      console.log('[Poetiq WS] Connection closed:', evt.reason || 'No reason provided', 'Code:', evt.code, 'Current state:', state.status);
-      wsRef.current = null;
+    eventSource.addEventListener('solver.progress', (e) => {
+      try {
+        const data = JSON.parse((e as MessageEvent).data);
+        processEventData('solver.progress', data);
+      } catch (err) {
+        console.error('[Poetiq SSE] Parse error:', err);
+      }
+    });
+
+    eventSource.addEventListener('solver.log', (e) => {
+      try {
+        const data = JSON.parse((e as MessageEvent).data);
+        processEventData('solver.log', { ...data, type: 'log' });
+      } catch (err) {
+        console.error('[Poetiq SSE] Parse error:', err);
+      }
+    });
+
+    eventSource.addEventListener('solver.error', (e) => {
+      try {
+        const data = JSON.parse((e as MessageEvent).data);
+        console.error('[Poetiq SSE] Error received:', data);
+        setState(prev => ({
+          ...prev,
+          status: 'error',
+          message: data.message || 'Solver error',
+        }));
+        eventSource.close();
+      } catch (err) {
+        console.error('[Poetiq SSE] Parse error:', err);
+      }
+    });
+
+    eventSource.addEventListener('stream.complete', (e) => {
+      try {
+        const data = JSON.parse((e as MessageEvent).data);
+        console.log('[Poetiq SSE] Stream complete:', data);
+        setState(prev => ({
+          ...prev,
+          status: 'completed',
+          result: {
+            success: data.success,
+            isPredictionCorrect: data.isPredictionCorrect,
+            accuracy: data.accuracy,
+            iterationCount: data.iterationCount,
+            bestTrainScore: data.bestTrainScore,
+            generatedCode: data.generatedCode,
+            elapsedMs: data.elapsedMs,
+            tokenUsage: data.tokenUsage,
+            cost: data.cost,
+            expertBreakdown: data.expertBreakdown,
+          },
+          tokenUsage: data.tokenUsage,
+          cost: data.cost,
+        }));
+        eventSource.close();
+      } catch (err) {
+        console.error('[Poetiq SSE] Parse error:', err);
+      }
+    });
+
+    eventSource.addEventListener('stream.error', (e) => {
+      try {
+        const data = JSON.parse((e as MessageEvent).data);
+        console.error('[Poetiq SSE] Stream error:', data);
+        setState(prev => ({
+          ...prev,
+          status: 'error',
+          message: data.message || 'Stream error',
+        }));
+        eventSource.close();
+      } catch (err) {
+        console.error('[Poetiq SSE] Parse error:', err);
+      }
+    });
+
+    eventSource.onerror = (err) => {
+      console.error('[Poetiq SSE] Connection error:', err);
+      // Don't close on error - SSE will auto-reconnect
     };
   }, []);
 
@@ -708,38 +780,44 @@ export function usePoetiqProgress(taskId: string | undefined) {
         payload.provider = provider;
       }
 
-      const res = await apiRequest('POST', `/api/poetiq/solve/${taskId}`, payload);
+      // Use SSE-specific solve endpoint so session and stream lifecycle stay aligned
+      const res = await apiRequest('POST', `/api/poetiq/stream/solve/${taskId}`, payload);
       const response = await res.json();
 
       if (response.success && response.data?.sessionId) {
         const sid = response.data.sessionId;
         setSessionId(sid);
-        connectWebSocket(sid);
         
-        // Also start polling as backup
-        pollingRef.current = setInterval(async () => {
+        // Connect to SSE first
+        connectSSE(sid);
+        
+        // Then start the solver via the start endpoint
+        // Small delay to ensure SSE is connected
+        setTimeout(async () => {
           try {
-            const statusRes = await apiRequest('GET', `/api/poetiq/status/${sid}`);
-            const status = await statusRes.json();
-            if (status.success && status.data?.snapshot) {
-              const snap = status.data.snapshot;
-              if (snap.status === 'completed' || snap.status === 'error') {
-                setState(prev => ({
-                  ...prev,
-                  status: snap.status,
-                  result: snap.result,
-                  message: snap.message,
-                }));
-                if (pollingRef.current) {
-                  clearInterval(pollingRef.current);
-                  pollingRef.current = null;
-                }
-              }
-            }
+            await apiRequest('POST', `/api/poetiq/stream/start/${sid}`, {
+              taskId,
+              options: {
+                apiKey: options.apiKey,
+                provider,
+                model,
+                numExperts,
+                maxIterations,
+                temperature,
+                reasoningEffort: options.reasoningEffort || 'high',
+                promptStyle: options.promptStyle,
+                useAgentsSdk: options.useAgentsSdk,
+              },
+            });
           } catch (err) {
-            console.error('[Poetiq] Polling error:', err);
+            console.error('[Poetiq] Failed to start solver:', err);
+            setState(prev => ({
+              ...prev,
+              status: 'error',
+              message: err instanceof Error ? err.message : 'Failed to start solver',
+            }));
           }
-        }, 5000);
+        }, 100);
       } else {
         setState({
           ...initialState,
@@ -754,12 +832,12 @@ export function usePoetiqProgress(taskId: string | undefined) {
         message: err instanceof Error ? err.message : 'Unknown error',
       });
     }
-  }, [taskId, connectWebSocket]);
+  }, [taskId, connectSSE]);
 
-  // Cancel the solver (not implemented yet)
+  // Cancel the solver
   const cancel = useCallback(() => {
-    if (wsRef.current) {
-      wsRef.current.close();
+    if (eventSourceRef.current) {
+      eventSourceRef.current.close();
     }
     if (pollingRef.current) {
       clearInterval(pollingRef.current);

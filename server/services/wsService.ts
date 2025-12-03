@@ -52,11 +52,10 @@ export function attach(server: Server) {
     // No path restriction - verifyClient will check the URL
     verifyClient: (info, cb) => {
       const url = info.req.url || '';
-      // Accept Saturn, Grover, Poetiq, and Beetree progress WebSocket paths
+      // Accept Saturn, Grover, and Beetree progress WebSocket paths
       if (
         url.startsWith('/api/saturn/progress') || 
         url.startsWith('/api/grover/progress') ||
-        url.startsWith('/api/poetiq/progress') ||
         url.startsWith('/api/beetree/progress')
       ) {
         cb(true);
@@ -100,10 +99,15 @@ export function attach(server: Server) {
 }
 
 export function broadcast(sessionId: string, data: any) {
+  console.log(`[wsService] Broadcasting to session ${sessionId}: status=${data?.status}, timestamp=${data?.timestamp}`);
   // Update snapshot for polling API
   sessionSnapshots.set(sessionId, data);
   const set = sessionClients.get(sessionId);
-  if (!set || set.size === 0) return;
+  if (!set || set.size === 0) {
+    console.log(`[wsService] No active clients for session ${sessionId}`);
+    return;
+  }
+  console.log(`[wsService] Sending to ${set.size} client(s) in session ${sessionId}`);
   const payload = JSON.stringify({ type: 'progress', data });
   for (const ws of set) {
     try {
