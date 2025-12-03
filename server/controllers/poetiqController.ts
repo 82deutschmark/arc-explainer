@@ -21,6 +21,8 @@ import { formatResponse } from '../utils/responseFormatter.js';
 import { poetiqService } from '../services/poetiq/poetiqService.js';
 import { puzzleLoader } from '../services/puzzleLoader.js';
 import { broadcast, getSessionSnapshot } from '../services/wsService.js';
+import { sseStreamManager } from '../services/streaming/SSEStreamManager.js';
+import { poetiqStreamService } from '../services/streaming/poetiqStreamService.js';
 import { MODELS } from '../config/models.js';
 import { randomUUID } from 'crypto';
 import fs from 'fs';
@@ -345,6 +347,164 @@ export const poetiqController = {
   },
 
   /**
+   * GET /api/poetiq/stream/:sessionId
+   * 
+   * SSE endpoint for real-time progress updates.
+   * This replaces WebSocket for Poetiq streaming (consistent with Saturn/Beetree).
+   */
+  async streamProgress(req: Request, res: Response) {
+    const { sessionId } = req.params;
+    
+    if (!sessionId) {
+      return res.status(400).json(formatResponse.error('bad_request', 'Missing sessionId'));
+    }
+
+    // Register SSE connection
+    poetiqStreamService.registerConnection(sessionId, res);
+  },
+
+  /**
+   * POST /api/poetiq/stream/solve/:taskId
+   * 
+   * Run Poetiq solver with SSE streaming (no WebSocket).
+   * Returns immediately after registering SSE, then streams events.
+   */
+  async solveWithStream(req: Request, res: Response) {
+    const { taskId } = req.params;
+
+    if (!taskId) {
+      return res.status(400).json(formatResponse.error('bad_request', 'Missing taskId'));
+    }
+
+    // Generate session ID
+    const sessionId = randomUUID();
+
+    // Extract options from request body
+    const apiKey = req.body?.apiKey as string | undefined;
+    const provider = req.body?.provider as 'gemini' | 'openrouter' | 'openai' | 'anthropic' | 'xai' | undefined;
+    const model = req.body?.model as string | undefined;
+    const promptStyleRaw = req.body?.promptStyle as string | undefined;
+    const promptStyle: 'classic' | 'arc' | 'arc_de' | 'arc_ru' | 'arc_fr' | 'arc_tr' | undefined =
+      promptStyleRaw === 'classic' ||
+      promptStyleRaw === 'arc' ||
+      promptStyleRaw === 'arc_de' ||
+      promptStyleRaw === 'arc_ru' ||
+      promptStyleRaw === 'arc_fr' ||
+      promptStyleRaw === 'arc_tr'
+        ? (promptStyleRaw as 'classic' | 'arc' | 'arc_de' | 'arc_ru' | 'arc_fr' | 'arc_tr')
+        : undefined;
+
+    // Check BYO key requirements
+    const lowerModel = (model || '').toLowerCase();
+    const isOpenRouterModel =
+      provider === 'openrouter' ||
+      (!provider && lowerModel.startsWith('openrouter/'));
+    const requiresByo =
+      provider === 'gemini' ||
+      (!provider && lowerModel.startsWith('gemini/')) ||
+      (isOpenRouterModel && !OPENROUTER_SERVER_KEY_MODELS.has(lowerModel));
+
+    if (requiresByo && (!apiKey || apiKey.trim().length === 0)) {
+      return res.status(400).json(formatResponse.error(
+        'api_key_required',
+        'Bring Your Own Key required: Please provide your API key for this model.'
+      ));
+    }
+
+    const useAgentsPreferenceRaw = req.body?.useAgents;
+    const useAgentsPreference =
+      typeof useAgentsPreferenceRaw === 'boolean' ? Boolean(useAgentsPreferenceRaw) : undefined;
+
+    const options = {
+      model,
+      maxIterations: typeof req.body?.maxIterations === 'number' ? req.body.maxIterations : 10,
+      numExperts: typeof req.body?.numExperts === 'number' ? req.body.numExperts : 1,
+      temperature: typeof req.body?.temperature === 'number' ? req.body.temperature : 1.0,
+      reasoningEffort: req.body?.reasoningEffort as 'low' | 'medium' | 'high' | undefined,
+      sessionId,
+      apiKey,
+      provider,
+      promptStyle,
+      useAgentsSdk: useAgentsPreference,
+    };
+
+    // Return session info immediately - client will connect to SSE endpoint
+    return res.json(formatResponse.success({
+      sessionId,
+      message: 'Poetiq solver starting - connect to SSE endpoint for updates',
+      taskId,
+      streamUrl: `/api/poetiq/stream/${sessionId}`,
+      config: {
+        model: options.model || 'gemini/gemini-3-pro-preview',
+        maxIterations: options.maxIterations,
+        numExperts: options.numExperts,
+        temperature: options.temperature,
+        provider: options.provider || 'gemini',
+      }
+    }));
+  },
+
+  /**
+   * POST /api/poetiq/stream/start/:sessionId
+   * 
+   * Actually start the solver after client has connected to SSE.
+   * This is called after the client establishes the SSE connection.
+   */
+  async startStreamingSolver(req: Request, res: Response) {
+    const { sessionId } = req.params;
+    const { taskId, options } = req.body;
+
+    if (!sessionId || !taskId) {
+      return res.status(400).json(formatResponse.error('bad_request', 'Missing sessionId or taskId'));
+    }
+
+    // Verify SSE connection exists
+    if (!poetiqStreamService.hasActiveStream(sessionId)) {
+      return res.status(400).json(formatResponse.error(
+        'no_stream',
+        'SSE connection not established. Connect to /api/poetiq/stream/:sessionId first.'
+      ));
+    }
+
+    // Start solver asynchronously
+    setImmediate(async () => {
+      try {
+        const result = await poetiqStreamService.startStreaming({
+          sessionId,
+          taskId,
+          options: {
+            ...options,
+            sessionId,
+          },
+        });
+
+        if (result) {
+          // Save to database
+          const task = await puzzleLoader.loadPuzzle(taskId);
+          if (task) {
+            const explanationData = poetiqService.transformToExplanationData(result, task);
+            const { explanationService } = await import('../services/explanationService.js');
+            await explanationService.saveExplanation(taskId, {
+              [explanationData.modelName]: {
+                ...explanationData,
+                result: explanationData,
+              },
+            });
+          }
+        }
+      } catch (err) {
+        console.error('[Poetiq SSE] Solver failed:', err);
+      }
+    });
+
+    return res.json(formatResponse.success({
+      sessionId,
+      message: 'Solver started',
+      taskId,
+    }));
+  },
+
+  /**
    * GET /api/poetiq/models
    * 
    * Get the list of supported Poetiq models.
@@ -428,7 +588,7 @@ export const poetiqController = {
 
     console.log(`[Poetiq Batch] Starting batch ${sessionId}: ${puzzleIds.length} puzzles from ${dataset}`);
 
-    // Broadcast initial state
+    // Broadcast initial state (WebSocket for batch, SSE for individual)
     broadcast(sessionId, {
       status: 'running',
       phase: 'batch_start',

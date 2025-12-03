@@ -207,6 +207,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/poetiq/models", asyncHandler(poetiqController.getModels));
   // Community progress: shows ALL 120 ARC2-Eval puzzles with Poetiq-specific status
   app.get("/api/poetiq/community-progress", asyncHandler(poetiqController.getCommunityProgress));
+  // SSE streaming endpoints (replacing WebSocket)
+  app.get("/api/poetiq/stream/:sessionId", asyncHandler(poetiqController.streamProgress));
+  app.post("/api/poetiq/stream/solve/:taskId", asyncHandler(poetiqController.solveWithStream));
+  app.post("/api/poetiq/stream/start/:sessionId", asyncHandler(poetiqController.startStreamingSolver));
 
   // Beetree ensemble solver routes
   app.post("/api/beetree/run", asyncHandler(beetreeController.runBeetreeAnalysis));
