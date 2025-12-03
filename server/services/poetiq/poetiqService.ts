@@ -558,6 +558,7 @@ export class PoetiqService {
     options: PoetiqOptions,
     onEvent?: (event: PoetiqBridgeEvent) => void
   ): PoetiqResult | null {
+    console.log(`[poetiqService] Event received: type=${event.type}, timestamp=${(event as any).timestamp}`);
     onEvent?.(event);
 
     if (options.sessionId) {
@@ -568,6 +569,7 @@ export class PoetiqService {
           phase: 'starting',
           message: `Poetiq solver starting for ${puzzleId}...`,
           metadata: (event as any).metadata,
+          timestamp: (event as any).timestamp ?? Date.now(),
         });
       } else if (event.type === 'progress') {
         broadcast(options.sessionId, {
@@ -592,6 +594,7 @@ export class PoetiqService {
           expertCumulativeCost: (event as any).expertCumulativeCost,
           globalTokens: (event as any).globalTokens,
           globalCost: (event as any).globalCost,
+          timestamp: (event as any).timestamp ?? Date.now(),
         });
       } else if (event.type === 'log') {
         broadcast(options.sessionId, {
@@ -600,6 +603,7 @@ export class PoetiqService {
           phase: 'log',
           level: event.level,
           message: event.message,
+          timestamp: (event as any).timestamp ?? Date.now(),
         });
       } else if (event.type === 'error') {
         broadcast(options.sessionId, {
@@ -608,6 +612,7 @@ export class PoetiqService {
           phase: 'error',
           message: event.message,
           traceback: event.traceback,
+          timestamp: (event as any).timestamp ?? Date.now(),
         });
       }
     }

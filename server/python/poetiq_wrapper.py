@@ -43,6 +43,10 @@ from typing import Dict, Tuple, Optional, Any
 # ==========================================
 def emit(event: dict):
     """Emit NDJSON event to stdout for Node.js consumption."""
+    # Debug logging to stderr so it doesn't pollute NDJSON stream
+    event_type = event.get("type", "unknown")
+    event_str = json.dumps(event, default=str)
+    print(f"[POETIQ-DEBUG] Emitting event: type={event_type}, size={len(event_str)} bytes", file=sys.stderr, flush=True)
     print(json.dumps(event, default=str), flush=True)
 
 
