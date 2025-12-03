@@ -188,3 +188,23 @@ This section provides a quick reference to the most important files in the proje
 | `contexts` | `AnalysisContext.tsx` | Provides shared state for analysis operations across different components. |
 
 By familiarizing yourself with this structure, you can quickly identify where to find existing logic and where to add new features, ensuring that we continue to build upon the solid foundation of the ARC Explainer.
+
+## Python Solvers & Beetree Integration
+
+Specialized solvers (Saturn, Beetree, Poetiq, Grover, SnakeBench) run as Python processes launched from `server/services/pythonBridge.ts`. Beetree is the heaviest of these and requires the pinned `beetreeARC/` submodule plus all of its dependencies.
+
+### Key Beetree files
+- `server/services/pythonBridge.ts` – `runBeetreeAnalysis()` streams NDJSON events from the Python wrapper into the Node service layer.
+- `server/python/beetree_wrapper.py` – bridges our NDJSON protocol to `beetreeARC/src/solver_engine.py`, captures cost logs, and enforces SRP-friendly logging.
+- `server/services/beetreeService.ts` – orchestrates a Beetree run inside the AI service factory, persists results, and surfaces metadata to the client.
+- `client/src/hooks/useBeetreeRun.ts` and `client/src/pages/BeetreeSolver.tsx` – front-end entry points that drive the Beetree workflow via `/api/beetree/*` endpoints.
+
+### Setup checklist
+1. Initialize submodules so `beetreeARC/` exists locally:
+   - `git submodule update --init --recursive`
+2. Install Python requirements (this now chains into the Beetree list automatically):
+   - `python -m pip install --upgrade pip`
+   - `python -m pip install -r requirements.txt`
+3. Provide provider API keys (`OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, `GOOGLE_AI_API_KEY`) in `.env` so Beetree has credentials for every stage.
+
+`requirements.txt` now includes `-r beetreeARC/requirements.txt`, so missing modules such as `rich`, `google-genai`, `matplotlib`, and Beetree's pinned OpenAI client are installed whenever you run the standard setup command. This mirrors the Dockerfile flow (which also installs the Beetree requirements separately) and prevents `ModuleNotFoundError` crashes inside `beetree_wrapper.py` or upstream beetreeARC imports.

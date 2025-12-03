@@ -26,3 +26,9 @@ anthropic>=0.40.0
 google-generativeai>=0.8.0
 
 # Note: OpenRouter and xAI use OpenAI SDK with custom base_url
+
+# ===========================================
+# BeetreeARC ensemble solver (python submodule)
+# Keep this include at the bottom so devs only need to run one pip install
+# ===========================================
+-r beetreeARC/requirements.txt
