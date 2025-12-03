@@ -30,7 +30,12 @@ COPY client/package*.json ./client/
 
 # Copy Python requirements for Saturn, Poetiq, and BeetreeARC and install them
 COPY requirements.txt ./
-RUN python3 -m pip install --no-cache-dir --break-system-packages -r requirements.txt
+# Ensure beetreeARC requirements placeholder exists so pip include succeeds even before submodule clone
+RUN mkdir -p beetreeARC && \
+    if [ ! -f beetreeARC/requirements.txt ]; then \
+        echo "# placeholder for beetreeARC requirements (real file copied later)" > beetreeARC/requirements.txt; \
+    fi && \
+    python3 -m pip install --no-cache-dir --break-system-packages -r requirements.txt
 
 # Install dependencies
 RUN npm ci

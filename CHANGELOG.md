@@ -1,6 +1,12 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top with the time and date!
 
+### Version 5.35.32  Dec 2, 2025 8:45pm
+
+- **Docker build: beetree requirements placeholder** (Author: Codex GPT-5)
+  - Docker builds now create a temporary `beetreeARC/requirements.txt` before running `pip install -r requirements.txt`, so the new `-r beetreeARC/requirements.txt` include never fails even when the submodule is missing from the build context. After the repo is copied (or the git clone fallback runs) we still install the real Beetree dependencies exactly as before.
+  - **Files**: `Dockerfile`
+
 ### Version 5.35.31  Dec 2, 2025 8:31pm
 
 - **Beetree requirements install + onboarding notes** (Author: Codex GPT-5)
