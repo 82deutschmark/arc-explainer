@@ -28,8 +28,10 @@ class SSEStreamManager {
   private readonly heartbeatIntervalMs = 15000;
 
   register(sessionId: string, res: Response): SSEStreamConnection {
+    console.log(`[SSEStreamManager] register called: sessionId=${sessionId}`);
     const existing = this.connections.get(sessionId);
     if (existing) {
+      console.log(`[SSEStreamManager] Existing connection found for ${sessionId}, tearing down`);
       this.teardown(sessionId, "duplicate-session");
     }
 
@@ -53,10 +55,12 @@ class SSEStreamManager {
     }, this.heartbeatIntervalMs);
 
     res.on("close", () => {
+      console.log(`[SSEStreamManager] Client closed connection for ${sessionId}`);
       this.teardown(sessionId, "client-disconnect");
     });
 
     this.connections.set(sessionId, connection);
+    console.log(`[SSEStreamManager] Registered connection for ${sessionId}. Total connections: ${this.connections.size}`);
     
     // Trigger stream connection callback if registered
     const streamConfig = this.streams.get(sessionId);
@@ -79,20 +83,27 @@ class SSEStreamManager {
   }
 
   sendEvent<T>(sessionId: string, event: string, payload: T): void {
+    console.log(`[SSEStreamManager] sendEvent called: sessionId=${sessionId}, event=${event}`);
+    console.log(`[SSEStreamManager] Active connections: ${Array.from(this.connections.keys()).join(', ')}`);
+
     const connection = this.connections.get(sessionId);
     if (!connection || connection.closed) {
       // Silently ignore - this is normal when async operations complete after stream ends
+      console.log(`[SSEStreamManager] Event ${event} dropped for ${sessionId}: connection missing or closed`);
       logger.debug(`[SSEStreamManager] Event ${event} dropped for ${sessionId}: connection missing or closed`);
       return;
     }
 
     try {
       const serialized = JSON.stringify(payload ?? {});
+      console.log(`[SSEStreamManager] Writing event ${event} to response for ${sessionId}`);
       logger.debug(`[SSEStreamManager] Sending event ${event} to ${sessionId}, ts=${(payload as any)?.timestamp}`);
       connection.response.write(`event: ${event}\n`);
       connection.response.write(`data: ${serialized}\n\n`);
+      console.log(`[SSEStreamManager] Event ${event} written successfully`);
     } catch (error) {
       // Connection may have closed between the check and write - this is fine
+      console.log(`[SSEStreamManager] Error writing event: ${error}`);
       logger.debug(`Failed to send event to ${sessionId}: ${error}`, "sse-manager");
     }
   }
