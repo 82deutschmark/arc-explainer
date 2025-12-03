@@ -1,10 +1,10 @@
 /**
  * Author: Cascade (Claude Sonnet 4)
  * Date: 2025-11-25
- * Updated: 2025-11-28 - BYO Key requirement (no server fallback)
+ * Updated: 2025-12-03 - Migrated to SSE streaming, compact dashboard layout
  * PURPOSE: Poetiq Iterative Code-Generation Solver page.
  *          Single horizontal control bar at top, full-width content below.
- *          Dedicated shadcn/ui control panel stays visible for start/cancel.
+ *          Compact data-dense layout with live SSE streaming.
  * 
  * SRP/DRY check: Pass - UI orchestration, delegates to specialized components
  */
@@ -21,9 +21,10 @@ import { DEFAULT_EMOJI_SET } from '@/lib/spaceEmojis';
 // Poetiq components
 import PoetiqControlPanel from '@/components/poetiq/PoetiqControlPanel';
 import PoetiqPythonTerminal from '@/components/poetiq/PoetiqPythonTerminal';
-import PoetiqProgressDashboard from '@/components/poetiq/PoetiqProgressDashboard';
+import PoetiqLiveDashboard from '@/components/poetiq/PoetiqLiveDashboard';
 import PoetiqAgentsPanel from '@/components/poetiq/PoetiqAgentsRuntimePanel';
 import { Button } from '@/components/ui/button';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 const PROMPT_ROLE_BADGES: Record<string, string> = {
   system: 'bg-gray-200 text-gray-700',
@@ -666,11 +667,9 @@ export default function PoetiqSolver() {
             </div>
           )}
 
-          {/* Progress Dashboard - Shows when running or completed */}
+          {/* Live Dashboard - Shows when running or completed */}
           {(isRunning || isDone || state.status === 'error') && (
-            <div className="rounded-xl border border-slate-200 bg-white shadow-sm">
-              <PoetiqProgressDashboard state={state} rawEvents={state.rawEvents} />
-            </div>
+            <PoetiqLiveDashboard state={state} rawEvents={state.rawEvents} />
           )}
 
           {/* Agents Panel */}

@@ -1,6 +1,21 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top with the time and date!
 
+### Version 5.36.0  Dec 3, 2025 12:45pm
+
+- **Poetiq SSE Migration: Replace WebSocket with Server-Sent Events** (Author: Cascade)
+  - **Breaking Change**: Poetiq solver now uses SSE instead of WebSocket for streaming, consistent with Saturn and Beetree solvers.
+  - Created `server/services/streaming/poetiqStreamService.ts` - new SSE-based streaming service following Saturn/Beetree patterns.
+  - Added SSE endpoints to `poetiqController.ts`:
+    - `GET /api/poetiq/stream/:sessionId` - SSE connection endpoint
+    - `POST /api/poetiq/stream/solve/:taskId` - Initialize solver with SSE
+    - `POST /api/poetiq/stream/start/:sessionId` - Start solver after SSE connected
+  - Updated `client/src/hooks/usePoetiqProgress.ts` to use EventSource (SSE) instead of WebSocket.
+  - Created `client/src/components/poetiq/PoetiqLiveDashboard.tsx` - compact, data-dense live dashboard replacing verbose PoetiqProgressDashboard.
+  - Updated `client/src/pages/PoetiqSolver.tsx` to use the new compact dashboard.
+  - **Why**: WebSocket was causing events to not flow correctly to UI. SSE is simpler, auto-reconnects, and matches existing Saturn/Beetree implementation patterns.
+  - **Files**: `server/services/streaming/poetiqStreamService.ts`, `server/controllers/poetiqController.ts`, `server/routes.ts`, `client/src/hooks/usePoetiqProgress.ts`, `client/src/components/poetiq/PoetiqLiveDashboard.tsx`, `client/src/pages/PoetiqSolver.tsx`
+
 ### Version 5.35.45  Dec 3, 2025 11:35am
 
 - **Beetree Logs & UI: Use root logs directory and improve raw log display** (Author: Cascade)
