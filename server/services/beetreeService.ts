@@ -123,18 +123,16 @@ export class BeetreeService extends BaseAIService {
             if (event.costSoFar !== undefined) {
               currentCost = event.costSoFar;
             }
-            
+
             // Emit progress to streaming harness if available
             if (serviceOpts?.stream) {
-              serviceOpts.stream.emit({
-                type: 'progress',
-                content: `Stage: ${event.stage}`,
-                metadata: {
-                  stage: event.stage,
-                  costSoFar: currentCost,
-                  status: event.status,
-                  outcome: event.outcome
-                }
+              serviceOpts.stream.emitEvent('stream.progress', {
+                stage: event.stage,
+                status: event.status,
+                outcome: event.outcome,
+                costSoFar: currentCost,
+                predictions: event.predictions,
+                timestamp: Date.now(),
               });
             }
             break;
