@@ -18,8 +18,9 @@ import { logger } from '../utils/logger';
 import type { BeetreeRunConfig, BeetreeBridgeEvent } from '../../shared/types';
 
 // Generate unique session IDs for Beetree runs
+// Note: Don't include 'beetree-' prefix here - beetreeStreamService will add it
 function generateSessionId(): string {
-  return `beetree-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+  return `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
 }
 
 /**
