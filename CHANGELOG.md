@@ -1,6 +1,15 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top with the time and date!
 
+### Version 5.35.42  Dec 2, 2025 11:40pm
+
+- **Beetree Wrapper: Fix invalid-result error and normalize predictions** (Author: Cascade)
+  - Updated `server/python/beetree_wrapper.py` to interpret BeetreeARC's `picked_solutions` structure correctly, normalize it into pure grid predictions, and always emit a `final` event for completed runs instead of raising `"beetreeARC returned invalid result"` and exiting with code 1.
+  - Successful Beetree runs (PASS/FAIL/SUBMITTED) now return exit code 0 with a structured result payload so the Node service can persist outputs and cost breakdowns without treating them as hard errors.
+- **Beetree Bridge: Preserve parsed JSON events without crashing debug logger** (Author: Cascade)
+  - Fixed the Beetree branch of `pythonBridge.runBeetreeAnalysis` to stop referencing an undefined `opts.sessionId` variable in debug logs, so successfully parsed NDJSON lines are forwarded as structured events instead of falling back to generic log messages.
+  - This ensures `start`, `progress`, `final`, and `error` events from the Beetree wrapper reach `beetreeService` and the SSE stream intact for real-time UI updates and debugging.
+
 ### Version 5.35.41  Dec 2, 2025 11:25pm
 
 - **Beetree UI: Restore SSE progress events** (Author: Codex GPT-5)

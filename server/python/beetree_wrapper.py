@@ -281,10 +281,14 @@ def run():
                         answer_path=None
                     )
                     
-                    # Parse result to extract cost information
-                    if result and len(result) >= 2:
-                        # result is [attempt1_grid, attempt2_grid]
-                        predictions = result
+                    # Normalize beetreeARC picked_solutions list into pure grid predictions
+                    predictions = []
+                    if result and isinstance(result, list):
+                        for candidate in result:
+                            if isinstance(candidate, dict):
+                                grid = candidate.get('grid')
+                                if grid is not None:
+                                    predictions.append(grid)
                         
                         # Extract real cost/token information from step logs
                         consensus_data = {
@@ -371,7 +375,7 @@ def run():
                                         cost=0.40 if mode == 'testing' else 4.00
                                     )
                         
-                        # Emit final success event with consensus data
+                        # Emit final event with consensus and cost data
                         emit({
                             "type": "final",
                             "success": True,
@@ -388,13 +392,6 @@ def run():
                             },
                             "timingMs": int((time.time() - reporter.start_time) * 1000)
                         })
-                        
-                    else:
-                        emit({
-                            "type": "error", 
-                            "message": "beetreeARC returned invalid result"
-                        })
-                        return 1
                         
                 except Exception as solver_err:
                     emit({
