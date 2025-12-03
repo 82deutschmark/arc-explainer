@@ -60,8 +60,8 @@ export default function PoetiqSolver() {
   const eventLogRef = useRef<HTMLDivElement>(null);  // For auto-scroll
   const [showPromptInspector, setShowPromptInspector] = useState(false);  // Toggle prompt inspector visibility
   const [showReasoningTraces, setShowReasoningTraces] = useState(false);  // Toggle reasoning traces visibility
-  const [showPromptTimeline, setShowPromptTimeline] = useState(false);
-  const [showRawEvents, setShowRawEvents] = useState(false);
+  const [showPromptTimeline, setShowPromptTimeline] = useState(true);
+  const [showRawEvents, setShowRawEvents] = useState(true);
   const [showReasoningStream, setShowReasoningStream] = useState(false);
   
   // Timing state for visibility
@@ -549,18 +549,7 @@ export default function PoetiqSolver() {
                 Reasoning ({state.reasoningSummaryHistory?.length})
               </Button>
             )}
-            {(isRunning || isDone || promptTimeline.length > 0) && (
-              <Button
-                type="button"
-                size="sm"
-                variant={showPromptTimeline ? 'default' : 'outline'}
-                onClick={() => setShowPromptTimeline(prev => !prev)}
-                className="flex items-center gap-1.5"
-              >
-                <ListTree className="h-3.5 w-3.5" />
-                Timeline ({promptTimeline.length})
-              </Button>
-            )}
+            {/* Timeline is now always visible when data exists; no toggle button */}
             {(isRunning || isDone || latestReasoningHistory.length > 0) && (
               <Button
                 type="button"
@@ -573,18 +562,7 @@ export default function PoetiqSolver() {
                 Stream ({latestReasoningHistory.length})
               </Button>
             )}
-            {(isRunning || isDone || latestRawEvents.length > 0) && (
-              <Button
-                type="button"
-                size="sm"
-                variant={showRawEvents ? 'default' : 'outline'}
-                onClick={() => setShowRawEvents(prev => !prev)}
-                className="flex items-center gap-1.5"
-              >
-                <FileJson className="h-3.5 w-3.5" />
-                Events ({latestRawEvents.length})
-              </Button>
-            )}
+            {/* Raw events are now always visible when data exists; no toggle button */}
           </div>
         </div>
       </section>
@@ -1093,7 +1071,7 @@ export default function PoetiqSolver() {
                 </div>
                 <div className="flex-1 space-y-2 overflow-y-auto bg-slate-50 p-3 text-xs font-mono">
                   {latestRawEvents.length === 0 ? (
-                    <div className="py-4 text-center text-slate-500">Waiting for WebSocket events...</div>
+                    <div className="py-4 text-center text-slate-500">Waiting for events...</div>
                   ) : (
                     latestRawEvents.map((event, idx) => {
                       const payloadText = JSON.stringify(event.payload, null, 2);

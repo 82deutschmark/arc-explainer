@@ -275,44 +275,6 @@ export function PoetiqLiveDashboard({ state, rawEvents }: PoetiqLiveDashboardPro
           </CardContent>
         </Card>
       )}
-      {/* Iteration Progress - Compact Timeline */}
-      {iterationHistory.length > 0 && (
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="flex items-center justify-between text-sm">
-              <span className="flex items-center gap-2">
-                <TrendingUp className="h-4 w-4" />
-                Iteration History
-              </span>
-              <Badge variant="outline" className="text-xs">
-                {iterationHistory.length} attempts
-              </Badge>
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex flex-wrap gap-1">
-              {iterationHistory.slice(-30).map((entry, idx) => {
-                const accuracy = entry.accuracy ?? 0;
-                const bgColor = accuracy >= 1 
-                  ? 'bg-green-500' 
-                  : accuracy >= 0.5 
-                    ? 'bg-amber-500' 
-                    : 'bg-red-500';
-                return (
-                  <div
-                    key={idx}
-                    className={`w-4 h-4 rounded text-[8px] flex items-center justify-center text-white ${bgColor}`}
-                    title={`Iter ${entry.iteration} | Expert ${entry.expert ?? '?'} | ${Math.round(accuracy * 100)}%`}
-                  >
-                    {entry.iteration}
-                  </div>
-                );
-              })}
-            </div>
-          </CardContent>
-        </Card>
-      )}
-
       {/* Live Log Stream */}
       {state.logLines && state.logLines.length > 0 && (
         <Card>
