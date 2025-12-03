@@ -1,6 +1,15 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top with the time and date!
 
+### Version 5.35.39  Dec 2, 2025 10:50pm
+
+- **Beetree Streaming: Fix sessionId mismatch and event delivery** (Author: Cascade)
+  - Fixed critical sessionId mismatch in Beetree SSE streaming pipeline where `beetreeController.generateSessionId()` was adding `beetree-` prefix, then `beetreeStreamService` added another `beetree-` prefix, causing `getStreamState()` lookups to fail with "Session not found" errors.
+  - Removed `beetree-` prefix from controller's `generateSessionId()` so streamKey is consistently constructed once in `beetreeStreamService.startStreaming()` as `beetree-${sessionId}`.
+  - Added comprehensive debug logging to trace event flow through all 4 layers: pythonBridge (NDJSON parsing), beetreeService (event routing), beetreeStreamService (harness), and SSEStreamManager (client delivery).
+  - Events now properly flow from Python wrapper → Node bridge → service layer → SSE harness → client browser in real-time.
+  - **Files**: `server/controllers/beetreeController.ts`, `server/services/pythonBridge.ts`, `server/services/beetreeService.ts`, `server/services/streaming/beetreeStreamService.ts`, `server/services/streaming/SSEStreamManager.ts`, `client/src/hooks/useBeetreeRun.ts`
+
 ### Version 5.35.38  Dec 2, 2025 10:40pm
 
 - **Streaming: Enable GPT-5.1 in PuzzleExaminer** (Author: Cascade)
