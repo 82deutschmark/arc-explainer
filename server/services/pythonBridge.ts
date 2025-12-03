@@ -33,6 +33,7 @@
 import { spawn, SpawnOptions } from 'child_process';
 import path from 'path';
 import * as readline from 'node:readline';
+import { logger } from '../utils/logger.js';
 
 export type SaturnBridgeOptions = {
   taskPath: string;
@@ -332,12 +333,16 @@ export class PythonBridge {
       };
 
       const child = spawn(pythonBin, [wrapper], spawnOpts);
+      console.log(`[BEETREE-DEBUG] Spawned Python process with PID ${child.pid}`);
 
       // Ensure stdio streams are available
       if (!child.stdout || !child.stderr || !child.stdin) {
+        console.log(`[BEETREE-DEBUG] ERROR: Python process streams not available`);
         onEvent({ type: 'error', message: 'Python process streams not available (stdout/stderr/stdin null)' });
         return resolve({ code: -1 });
       }
+
+      console.log(`[BEETREE-DEBUG] All streams available, setting UTF-8 encoding`);
 
       // Ensure Node reads UTF-8 from Python
       child.stdout.setEncoding('utf8');
@@ -345,23 +350,35 @@ export class PythonBridge {
 
       // Buffers for verbose log
       const logBuffer: string[] = [];
+      console.log(`[BEETREE-DEBUG] Initializing readline interface for stdout`);
 
       // Stream stdout as NDJSON
       const rl = readline.createInterface({ input: child.stdout });
+      console.log(`[BEETREE-DEBUG] readline interface created, registering 'line' event handler`);
+
       rl.on('line', (line) => {
         const trimmed = line.trim();
         if (!trimmed) return;
-        
+
+        console.log(`[BEETREE-DEBUG] Received line from Python: ${trimmed.substring(0, 150)}${trimmed.length > 150 ? '...' : ''}`);
+
         // Always capture ALL stdout in logBuffer first
         logBuffer.push(trimmed);
-        
+
         try {
           const evt = JSON.parse(trimmed) as any;
           // Tag source for downstream consumers
           if (evt && typeof evt === 'object' && !evt.source) {
             evt.source = 'python';
           }
-          
+
+          console.log(`[BEETREE-DEBUG] Successfully parsed JSON event: type=${evt.type}`);
+
+          // Debug: Log successful event parse
+          if (evt.type) {
+            logger.debug(`[pythonBridge] Parsed event: type=${evt.type}, timestamp=${evt.timestamp}`);
+          }
+
           // Attach verbose log on final
           if (evt.type === 'final') {
             const verboseFromPy: string | undefined = evt?.result?.verboseLog;
@@ -380,28 +397,37 @@ export class PythonBridge {
           }
         } catch (err) {
           // Non-JSON output - forward as log event
+          console.log(`[BEETREE-DEBUG] Non-JSON output (forwarding as log): ${trimmed.substring(0, 80)}...`);
+          logger.debug(`[pythonBridge] Non-JSON stdout, converting to log event: "${trimmed.substring(0, 80)}..."`);
           onEvent({ type: 'log', level: 'info', message: trimmed, source: 'python' });
         }
       });
 
       // Forward stderr as logs
+      console.log(`[BEETREE-DEBUG] Setting up stderr handler`);
       const rlErr = readline.createInterface({ input: child.stderr });
       rlErr.on('line', (line) => {
+        console.log(`[BEETREE-DEBUG] Received stderr: ${line}`);
         logBuffer.push(`[stderr] ${line}`);
         onEvent({ type: 'log', level: 'error', message: line, source: 'python' });
       });
 
       // Send payload
+      console.log(`[BEETREE-DEBUG] Sending payload to Python stdin: ${JSON.stringify(payload).substring(0, 100)}...`);
       child.stdin.setDefaultEncoding('utf8');
       child.stdin.write(JSON.stringify(payload));
       child.stdin.end();
+      console.log(`[BEETREE-DEBUG] stdin closed after payload send`);
 
       child.on('close', (code) => {
+        console.log(`[BEETREE-DEBUG] Python process closed with exit code: ${code}`);
         resolve({ code });
       });
 
       child.on('error', (err) => {
-        onEvent({ type: 'error', message: err instanceof Error ? err.message : String(err) });
+        const errMsg = err instanceof Error ? err.message : String(err);
+        console.log(`[BEETREE-DEBUG] Python process error: ${errMsg}`);
+        onEvent({ type: 'error', message: errMsg });
         resolve({ code: -1 });
       });
     });

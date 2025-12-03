@@ -22,7 +22,7 @@ import { useModels } from '@/hooks/useModels';
 import { useSnakeBenchMatch, useSnakeBenchRecentGames } from '@/hooks/useSnakeBench';
 import type { ModelConfig, SnakeBenchRunMatchRequest } from '@shared/types';
 
-const SNAKEBENCH_URL = (import.meta as any).env.VITE_SNAKEBENCH_URL as string | undefined;
+const SNAKEBENCH_URL = 'https://snakebench.com';
 
 function getSnakeEligibleModels(models: ModelConfig[]): string[] {
   return models
@@ -32,7 +32,7 @@ function getSnakeEligibleModels(models: ModelConfig[]): string[] {
 }
 
 export default function SnakeArena() {
-  const url = SNAKEBENCH_URL?.trim();
+  const url = SNAKEBENCH_URL;
   const { data: modelConfigs = [], isLoading: loadingModels, error: modelsError } = useModels();
   const snakeModels = React.useMemo(() => getSnakeEligibleModels(modelConfigs), [modelConfigs]);
 
@@ -276,21 +276,6 @@ export default function SnakeArena() {
       </div>
     );
   };
-
-  if (!url) {
-    return (
-      <div className="flex flex-col gap-4 p-4">
-        <Alert variant="destructive">
-          <AlertTitle>SnakeBench frontend not configured</AlertTitle>
-          <AlertDescription>
-            Set <code>VITE_SNAKEBENCH_URL</code> in your <code>.env</code> to the base URL of the
-            SnakeBench Next.js app (for example <code>http://localhost:3001</code> or
-            <code> https://snakebench.yourdomain.com</code>), then rebuild the client.
-          </AlertDescription>
-        </Alert>
-      </div>
-    );
-  }
 
   return (
     <div className="flex flex-col h-[calc(100vh-5rem)] gap-3 p-4">

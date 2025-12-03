@@ -38,6 +38,7 @@ export interface BeetreeCost {
     output_tokens: number;
     reasoning_tokens: number;
     cost: number;
+    calls?: number;
   }>;
   by_stage: Array<{
     stage: string;
@@ -112,12 +113,22 @@ export const useBeetreeRun = () => {
   }, []);
 
   // Handle SSE events
-  const handleSSEEvent = useCallback((event: MessageEvent) => {
+  const handleSSEEvent = useCallback((event: MessageEvent, fallbackType?: string) => {
     try {
-      const data = JSON.parse(event.data);
+      const parsed = event.data ? JSON.parse(event.data) : {};
+      const eventType = (parsed?.type as string) || fallbackType || 'message';
+      const data = { ...parsed, type: eventType };
       
       setState(prev => {
-        switch (data.type) {
+        switch (eventType) {
+          case 'stream.init':
+            return {
+              ...prev,
+              run: data.sessionId || prev.run,
+              status: prev.status === 'starting' ? 'running' : prev.status,
+              isConnected: true
+            };
+
           case 'stream_start':
             return {
               ...prev,
@@ -225,6 +236,14 @@ export const useBeetreeRun = () => {
               }]
             };
 
+          case 'stream_complete':
+          case 'stream.end':
+            return {
+              ...prev,
+              isConnected: false,
+              status: prev.status === 'error' ? prev.status : 'completed'
+            };
+
           default:
             return prev;
         }
@@ -238,6 +257,30 @@ export const useBeetreeRun = () => {
       }));
     }
   }, []);
+
+  const registerSSEListeners = useCallback((eventSource: EventSource) => {
+    const beetreeEvents = [
+      'stream.init',
+      'stream_start',
+      'puzzle_validated',
+      'solver_start',
+      'solver_progress',
+      'solver_log',
+      'solver_complete',
+      'solver_error',
+      'stream_error',
+      'stream_cancelled',
+      'stream_complete',
+      'stream.end'
+    ];
+
+    beetreeEvents.forEach(eventType => {
+      eventSource.addEventListener(eventType, (event) => handleSSEEvent(event as MessageEvent, eventType));
+    });
+
+    // Fallback handler for unnamed events
+    eventSource.addEventListener('message', (event) => handleSSEEvent(event as MessageEvent));
+  }, [handleSSEEvent]);
 
   // Start analysis
   const startAnalysis = useCallback(async (options: BeetreeRunOptions) => {
@@ -278,13 +321,20 @@ export const useBeetreeRun = () => {
 
       // Use server-provided sessionId for SSE connection
       const serverSessionId = result.sessionId || sessionId;
-      sessionIdRef.current = serverSessionId;
+      const normalizedSessionId = serverSessionId.replace(/^beetree[-_]+/i, '');
+      sessionIdRef.current = normalizedSessionId;
+      console.log(`[useBeetreeRun] Server session ID: ${serverSessionId}`);
+      if (normalizedSessionId !== serverSessionId) {
+        console.log(`[useBeetreeRun] Normalized session ID for SSE: ${normalizedSessionId}`);
+      }
 
       // Set up SSE connection using the server's sessionId
-      const eventSource = new EventSource(`/api/stream/analyze/beetree-${serverSessionId}`);
+      const sseUrl = `/api/stream/analyze/beetree-${normalizedSessionId}`;
+      console.log(`[useBeetreeRun] Connecting to SSE URL: ${sseUrl}`);
+      const eventSource = new EventSource(sseUrl);
       eventSourceRef.current = eventSource;
 
-      eventSource.onmessage = handleSSEEvent;
+      registerSSEListeners(eventSource);
       eventSource.onerror = () => {
         setState(prev => ({
           ...prev,
@@ -304,7 +354,7 @@ export const useBeetreeRun = () => {
 
       setState(prev => ({
         ...prev,
-        run: serverSessionId,
+        run: normalizedSessionId,
         status: 'running',
         isLoading: false
       }));
@@ -317,7 +367,7 @@ export const useBeetreeRun = () => {
         isLoading: false
       }));
     }
-  }, [generateSessionId, handleSSEEvent]);
+  }, [generateSessionId, registerSSEListeners]);
 
   // Cancel analysis
   const cancelAnalysis = useCallback(async () => {

@@ -20,7 +20,9 @@ import type { Request, Response } from 'express';
 import { formatResponse } from '../utils/responseFormatter.js';
 import { poetiqService } from '../services/poetiq/poetiqService.js';
 import { puzzleLoader } from '../services/puzzleLoader.js';
-import { broadcast, getSessionSnapshot } from '../services/wsService.js';
+import { getSessionSnapshot } from '../services/wsService.js';
+import { sseStreamManager } from '../services/streaming/SSEStreamManager.js';
+import { poetiqStreamService } from '../services/streaming/poetiqStreamService.js';
 import { MODELS } from '../config/models.js';
 import { randomUUID } from 'crypto';
 import fs from 'fs';
@@ -197,29 +199,17 @@ export const poetiqController = {
     const runtimeMode = poetiqService.getRuntimeMode(baseOptions);
     const options = { ...baseOptions, runtimeMode };
 
-    // Broadcast initial state immediately
-    console.log('[Poetiq] Broadcasting initial state for sessionId:', sessionId);
-    broadcast(sessionId, {
-      status: 'running',
-      phase: 'initializing',
-      iteration: 0,
-      totalIterations: options.maxIterations,
-      message:
-        runtimeMode === 'openai-agents'
-          ? 'Starting Poetiq solver via OpenAI Agents SDK...'
-          : 'Starting Poetiq solver via Python wrapper...',
+    // Legacy /solve endpoint: log initial state; streaming now uses SSE-only endpoints.
+    console.log('[Poetiq] Legacy /solve initial state for sessionId:', sessionId, {
       taskId,
-      config: {
-        model: options.model || 'gemini/gemini-3-pro-preview',
-        maxIterations: options.maxIterations,
-        numExperts: options.numExperts,
-        temperature: options.temperature,
-        promptStyle: options.promptStyle || 'classic',
-        runtimeMode,
-      }
+      runtimeMode,
+      model: options.model,
+      numExperts: options.numExperts,
+      maxIterations: options.maxIterations,
     });
 
-    // Start async solver (non-blocking)
+    // Start async solver (non-blocking) and collect event trace
+    const eventTrace: any[] = [];
     setImmediate(async () => {
       try {
         console.log(`[Poetiq] Starting solver for ${taskId} using ${runtimeMode}`);
@@ -229,6 +219,14 @@ export const poetiqController = {
           task,
           options,
           (event) => {
+            // Collect event trace (cap at 500 events to avoid unbounded memory)
+            if (eventTrace.length < 500) {
+              eventTrace.push({
+                ...event,
+                timestamp: (event as any).timestamp ?? Date.now(),
+              });
+            }
+
             // WebSocket broadcasting is now handled directly by poetiqService
             // This callback is for controller-level logging only
             if (event.type === 'progress') {
@@ -255,23 +253,7 @@ export const poetiqController = {
           },
         });
 
-        // Broadcast completion
-        broadcast(sessionId, {
-          status: 'completed',
-          phase: 'done',
-          message: `Poetiq solver complete! ${result.success ? 'Success' : 'Failed'}`,
-          result: {
-            success: result.success,
-            isPredictionCorrect: result.isPredictionCorrect,
-            accuracy: result.accuracy,
-            iterationCount: result.iterationCount,
-            bestTrainScore: result.bestTrainScore,
-            generatedCode: result.generatedCode,
-            elapsedMs: result.elapsedMs,
-          },
-        });
-
-        console.log('[Poetiq] Analysis complete and saved:', {
+        console.log('[Poetiq] Analysis complete and saved (legacy /solve):', {
           taskId,
           success: result.success,
           isPredictionCorrect: result.isPredictionCorrect,
@@ -281,14 +263,8 @@ export const poetiqController = {
 
       } catch (err) {
         const errorMessage = err instanceof Error ? err.message : String(err);
-        
-        broadcast(sessionId, {
-          status: 'error',
-          phase: 'error',
-          message: errorMessage,
-        });
 
-        console.error('[Poetiq] Solver failed:', {
+        console.error('[Poetiq] Solver failed (legacy /solve):', {
           taskId,
           error: errorMessage,
         });
@@ -325,6 +301,156 @@ export const poetiqController = {
 
     const snapshot = getSessionSnapshot(sessionId);
     return res.json(formatResponse.success({ sessionId, snapshot }));
+  },
+
+  /**
+   * GET /api/poetiq/stream/:sessionId
+   * 
+   * SSE endpoint for real-time progress updates.
+   * This replaces WebSocket for Poetiq streaming (consistent with Saturn/Beetree).
+   */
+  async streamProgress(req: Request, res: Response) {
+    const { sessionId } = req.params;
+    
+    if (!sessionId) {
+      return res.status(400).json(formatResponse.error('bad_request', 'Missing sessionId'));
+    }
+
+    // Register SSE connection
+    poetiqStreamService.registerConnection(sessionId, res);
+  },
+
+  /**
+   * POST /api/poetiq/stream/solve/:taskId
+   * 
+   * Run Poetiq solver with SSE streaming (no WebSocket).
+   * Returns immediately after registering SSE, then streams events.
+   */
+  async solveWithStream(req: Request, res: Response) {
+    const { taskId } = req.params;
+
+    if (!taskId) {
+      return res.status(400).json(formatResponse.error('bad_request', 'Missing taskId'));
+    }
+
+    // Generate session ID
+    const sessionId = randomUUID();
+
+    // Extract options from request body
+    const apiKey = req.body?.apiKey as string | undefined;
+    const provider = req.body?.provider as 'gemini' | 'openrouter' | 'openai' | 'anthropic' | 'xai' | undefined;
+    const model = req.body?.model as string | undefined;
+    const promptStyleRaw = req.body?.promptStyle as string | undefined;
+    const promptStyle: 'classic' | 'arc' | 'arc_de' | 'arc_ru' | 'arc_fr' | 'arc_tr' | undefined =
+      promptStyleRaw === 'classic' ||
+      promptStyleRaw === 'arc' ||
+      promptStyleRaw === 'arc_de' ||
+      promptStyleRaw === 'arc_ru' ||
+      promptStyleRaw === 'arc_fr' ||
+      promptStyleRaw === 'arc_tr'
+        ? (promptStyleRaw as 'classic' | 'arc' | 'arc_de' | 'arc_ru' | 'arc_fr' | 'arc_tr')
+        : undefined;
+
+    // Check BYO key requirements
+    const lowerModel = (model || '').toLowerCase();
+    const isOpenRouterModel =
+      provider === 'openrouter' ||
+      (!provider && lowerModel.startsWith('openrouter/'));
+    const requiresByo =
+      provider === 'gemini' ||
+      (!provider && lowerModel.startsWith('gemini/')) ||
+      (isOpenRouterModel && !OPENROUTER_SERVER_KEY_MODELS.has(lowerModel));
+
+    if (requiresByo && (!apiKey || apiKey.trim().length === 0)) {
+      return res.status(400).json(formatResponse.error(
+        'api_key_required',
+        'Bring Your Own Key required: Please provide your API key for this model.'
+      ));
+    }
+
+    const useAgentsPreferenceRaw = req.body?.useAgents;
+    const useAgentsPreference =
+      typeof useAgentsPreferenceRaw === 'boolean' ? Boolean(useAgentsPreferenceRaw) : undefined;
+
+    const options = {
+      model,
+      maxIterations: typeof req.body?.maxIterations === 'number' ? req.body.maxIterations : 10,
+      numExperts: typeof req.body?.numExperts === 'number' ? req.body.numExperts : 1,
+      temperature: typeof req.body?.temperature === 'number' ? req.body.temperature : 1.0,
+      reasoningEffort: req.body?.reasoningEffort as 'low' | 'medium' | 'high' | undefined,
+      sessionId,
+      apiKey,
+      provider,
+      promptStyle,
+      useAgentsSdk: useAgentsPreference,
+    };
+
+    // Return session info immediately - client will connect to SSE endpoint
+    return res.json(formatResponse.success({
+      sessionId,
+      message: 'Poetiq solver starting - connect to SSE endpoint for updates',
+      taskId,
+      streamUrl: `/api/poetiq/stream/${sessionId}`,
+      config: {
+        model: options.model || 'gemini/gemini-3-pro-preview',
+        maxIterations: options.maxIterations,
+        numExperts: options.numExperts,
+        temperature: options.temperature,
+        provider: options.provider || 'gemini',
+      }
+    }));
+  },
+
+  /**
+   * POST /api/poetiq/stream/start/:sessionId
+   * 
+   * Actually start the solver after client has connected to SSE.
+   * This is called after the client establishes the SSE connection.
+   */
+  async startStreamingSolver(req: Request, res: Response) {
+    const { sessionId } = req.params;
+    const { taskId, options } = req.body;
+
+    if (!sessionId || !taskId) {
+      return res.status(400).json(formatResponse.error('bad_request', 'Missing sessionId or taskId'));
+    }
+    // Start solver asynchronously. SSE connection may still be negotiating;
+    // SSEStreamManager will safely drop events until a client is registered.
+    setImmediate(async () => {
+      try {
+        const result = await poetiqStreamService.startStreaming({
+          sessionId,
+          taskId,
+          options: {
+            ...options,
+            sessionId,
+          },
+        });
+
+        if (result) {
+          // Save to database
+          const task = await puzzleLoader.loadPuzzle(taskId);
+          if (task) {
+            const explanationData = poetiqService.transformToExplanationData(result, task);
+            const { explanationService } = await import('../services/explanationService.js');
+            await explanationService.saveExplanation(taskId, {
+              [explanationData.modelName]: {
+                ...explanationData,
+                result: explanationData,
+              },
+            });
+          }
+        }
+      } catch (err) {
+        console.error('[Poetiq SSE] Solver failed:', err);
+      }
+    });
+
+    return res.json(formatResponse.success({
+      sessionId,
+      message: 'Solver started',
+      taskId,
+    }));
   },
 
   /**
@@ -411,16 +537,11 @@ export const poetiqController = {
 
     console.log(`[Poetiq Batch] Starting batch ${sessionId}: ${puzzleIds.length} puzzles from ${dataset}`);
 
-    // Broadcast initial state
-    broadcast(sessionId, {
-      status: 'running',
-      phase: 'batch_start',
+    // Batch runs now log to console only; WebSocket broadcasting has been removed.
+    console.log('[Poetiq Batch] Starting batch (legacy WebSocket-free):', {
+      sessionId,
       dataset,
       total: puzzleIds.length,
-      completed: 0,
-      successful: 0,
-      failed: 0,
-      message: `Starting Poetiq batch: ${puzzleIds.length} puzzles from ${dataset}`,
     });
 
     // Process puzzles sequentially (async, non-blocking)
@@ -432,16 +553,11 @@ export const poetiqController = {
         session.currentIndex = i;
         session.results[i].status = 'running';
 
-        broadcast(sessionId, {
-          status: 'running',
-          phase: 'solving',
-          currentPuzzle: puzzleId,
-          currentIndex: i,
+        console.log('[Poetiq Batch] Solving puzzle:', {
+          sessionId,
+          puzzleIndex: i,
           total: puzzleIds.length,
-          completed: i,
-          successful: session.results.filter(r => r.status === 'success' && r.correct).length,
-          failed: session.results.filter(r => r.status === 'failed').length,
-          message: `Solving puzzle ${i + 1}/${puzzleIds.length}: ${puzzleId}`,
+          puzzleId,
         });
 
         try {
@@ -495,18 +611,12 @@ export const poetiqController = {
       const failed = session.results.filter(r => r.status === 'failed').length;
       const incorrect = session.results.filter(r => r.status === 'success' && !r.correct).length;
 
-      broadcast(sessionId, {
-        status: 'completed',
-        phase: 'done',
-        total: puzzleIds.length,
+      console.log(`[Poetiq Batch] Complete (legacy WebSocket-free): ${successful}/${puzzleIds.length} correct (${(successful / puzzleIds.length * 100).toFixed(1)}%)`, {
+        sessionId,
         successful,
         incorrect,
         failed,
-        accuracy: (successful / puzzleIds.length * 100).toFixed(2),
-        message: `Batch complete: ${successful}/${puzzleIds.length} correct (${(successful / puzzleIds.length * 100).toFixed(1)}%)`,
       });
-
-      console.log(`[Poetiq Batch] Complete: ${successful}/${puzzleIds.length} correct (${(successful / puzzleIds.length * 100).toFixed(1)}%)`);
     });
 
     return res.json(formatResponse.success({

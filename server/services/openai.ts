@@ -49,6 +49,8 @@ const STREAMING_MODEL_KEYS = [
   "gpt-5-2025-08-07",
   "gpt-5-mini-2025-08-07",
   "gpt-5-nano-2025-08-07",
+  "gpt-5.1-2025-11-13",
+  "gpt-5.1-codex",
   "gpt-5.1-codex-mini",
   "gpt-5-chat-latest",
   "o3-mini-2025-01-31",

@@ -7,7 +7,7 @@
  */
 
 import React from 'react';
-import { Github, Heart, ExternalLink, Sparkles } from 'lucide-react';
+import { Github, ExternalLink, Sparkles } from 'lucide-react';
 import { EmojiMosaicAccent } from '@/components/browser/EmojiMosaicAccent';
 import { ReferenceMaterial } from '@/components/browser/ReferenceMaterial';
 import { usePageMeta } from '@/hooks/usePageMeta';
@@ -74,7 +74,7 @@ export default function About() {
           {/* Left Column - The Story */}
           <div className="lg:col-span-2 space-y-6">
             {/* What Is This */}
-            <div className="relative border border-slate-800 rounded-lg p-6 bg-slate-900/40 backdrop-blur">
+            <div className="relative border border-slate-700 rounded-lg p-6 bg-slate-900/70 backdrop-blur shadow-lg shadow-slate-900/60">
               <div className="absolute -top-3 -left-3">
                 <EmojiMosaicAccent
                   pattern="success"
@@ -88,17 +88,17 @@ export default function About() {
                 <Sparkles className="h-6 w-6 text-blue-400 flex-shrink-0 mt-1" />
                 <div>
                   <h2 className="text-2xl font-bold text-slate-100 mb-3">The Honest Truth</h2>
-                  <p className="text-slate-300 leading-relaxed mb-3">
-                    I stumbled onto ARC-AGI puzzles tagged "easy for humans" and immediately felt stupid.
-                    These weren't easy at all—they were brain-melting, frustrating, and fascinating.
+                  <p className="text-slate-200 leading-relaxed mb-3">
+                    My personal wetware operates on far less CPUs than the absolute geniuses that I've encountered in the ARC-AGI community. I stumbled onto ARC-AGI puzzles tagged "easy for humans" and immediately felt really dumb.
+                    These weren't easy at all for me... and I'm fascinated by the tools that we're using to benchmark LLMs. And so the gauntlet had been tossed and this very humble hobby project began. 
                   </p>
-                  <p className="text-slate-300 leading-relaxed">
+                  <p className="text-slate-200 leading-relaxed">
                     So I built this app to explain <em>why</em> the answers are correct. Not to solve them,
-                    but to understand them. If AI can't explain known solutions, how can it solve new problems?
+                    but to understand them. I thought, "Well, if I give it the answer, it can explain to me why the correct answer is correct, right?" Surprisingly, no. If AI can't explain known solutions, how can it solve new problems?  Luckily, nothing in the creation or maintenance of this project is a novel problem, and LLMs have been able to help me with it extensively.
                   </p>
-                  <p className="mt-3 text-slate-300 leading-relaxed">
-                    While it started as a personal tool, it has grown into a community resource shaped by
-                    fellow ARC explorers who share their insights, tools, and encouragement.
+                  <p className="mt-3 text-slate-200 leading-relaxed">
+                    While it started as a personal tool, thanks to the Discord community in particular, it has grown into a open-source resource shaped by
+                    fellow ARC explorers who share their insights, tools, and encouragement.  
                   </p>
                 </div>
               </div>
@@ -124,7 +124,7 @@ export default function About() {
                 </p>
                 <p>
                   This app replaces colors with emojis. The logic stays intact, the grids stay playful,
-                  and everyone—colorblind, math-shy, or just curious—can access these reasoning challenges.
+                  and everyone, colorblind, math-shy, or just curious, can access these reasoning challenges.
                 </p>
                 <p className="text-sm text-slate-400 italic">
                   (You can still switch back to colors and numbers if you prefer.)
@@ -204,6 +204,41 @@ export default function About() {
               </a>
             </div>
 
+            {/* Simon Spotlight */}
+            <div className="relative border border-amber-500/50 rounded-lg p-5 bg-gradient-to-br from-amber-950/80 via-slate-950 to-purple-950/80 backdrop-blur">
+              <div className="absolute -top-3 -left-3">
+                <EmojiMosaicAccent
+                  pattern="training"
+                  width={4}
+                  height={3}
+                  size="xs"
+                  framed
+                />
+              </div>
+              <h3 className="text-lg font-bold text-amber-100 mb-3">Simon Strandgaard Spotlight</h3>
+              <div className="flex items-start gap-4">
+                <div className="w-20 h-20 rounded-md overflow-hidden border border-amber-400/70 bg-black/60 flex-shrink-0">
+                  <img
+                    src="/images/decoration/arc_puzzle_1bfc4729_frame.gif"
+                    alt="Animated ARC puzzle grid decoration"
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <div className="space-y-2 text-sm">
+                  <p className="text-amber-50 font-semibold">
+                    Simon Strandgaard <span className="text-amber-200">@neoneye</span>
+                  </p>
+                  <p className="text-amber-100/90">
+                    Simon&apos;s documentation, visualization tools, and deep ARC curation have been the
+                    single biggest external influence on this project.
+                  </p>
+                  <p className="text-xs text-amber-200/80">
+                    If ARC Explainer helps you, you are standing on years of Simon&apos;s groundwork.
+                  </p>
+                </div>
+              </div>
+            </div>
+
             {/* Acknowledgments */}
             <div className="relative border border-slate-800 rounded-lg p-5 bg-slate-900/40 backdrop-blur">
               <div className="absolute -bottom-3 -left-3">
@@ -216,7 +251,7 @@ export default function About() {
                 />
               </div>
               <h3 className="text-lg font-bold text-slate-100 mb-3">Thanks To</h3>
-              <div className="space-y-2 text-sm text-slate-400">
+              <div className="space-y-2 text-sm text-slate-300">
                 <p>
                   <span className="text-slate-300 font-semibold">Simon Strandgaard (@neoneye)</span> for
                   tireless documentation, tooling, and personal encouragement.
@@ -326,9 +361,24 @@ export default function About() {
             size="sm"
             framed
           />
-          <div className="flex items-center gap-2 text-pink-400">
-            <Heart className="h-5 w-5 fill-current" />
-            <span className="text-sm">Made with curiosity</span>
+          <div className="flex items-center gap-3">
+            <EmojiMosaicAccent
+              pattern="success"
+              width={4}
+              height={2}
+              size="sm"
+              framed
+            />
+            <span className="text-sm text-slate-300">
+              Made with curiosity for humans who don&apos;t find these puzzles easy.
+            </span>
+            <EmojiMosaicAccent
+              pattern="training"
+              width={4}
+              height={2}
+              size="sm"
+              framed
+            />
           </div>
           <EmojiMosaicAccent
             pattern="hover"

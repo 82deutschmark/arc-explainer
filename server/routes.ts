@@ -207,6 +207,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/poetiq/models", asyncHandler(poetiqController.getModels));
   // Community progress: shows ALL 120 ARC2-Eval puzzles with Poetiq-specific status
   app.get("/api/poetiq/community-progress", asyncHandler(poetiqController.getCommunityProgress));
+  // SSE streaming endpoints (replacing WebSocket)
+  app.get("/api/poetiq/stream/:sessionId", asyncHandler(poetiqController.streamProgress));
+  app.post("/api/poetiq/stream/solve/:taskId", asyncHandler(poetiqController.solveWithStream));
+  app.post("/api/poetiq/stream/start/:sessionId", asyncHandler(poetiqController.startStreamingSolver));
 
   // Beetree ensemble solver routes
   app.post("/api/beetree/run", asyncHandler(beetreeController.runBeetreeAnalysis));
@@ -215,6 +219,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/beetree/history/:taskId", asyncHandler(beetreeController.getBeetreeHistory));
   app.get("/api/beetree/cost-breakdown/:explanationId", asyncHandler(beetreeController.getBeetreeCostBreakdown));
   app.post("/api/beetree/cancel/:sessionId", asyncHandler(beetreeController.cancelBeetreeAnalysis));
+  // Beetree streaming endpoint - client SSE connection
+  app.get("/api/stream/analyze/beetree-:sessionId", asyncHandler(beetreeController.streamBeetreeAnalysis));
 
   // SnakeBench LLM Snake Arena routes
   app.post("/api/snakebench/run-match", asyncHandler(snakeBenchController.runMatch));

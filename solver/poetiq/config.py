@@ -18,7 +18,7 @@ from solver.poetiq.types import ExpertConfig
 NUM_EXPERTS = 2  # Default to Gemini-3-b config
 
 # Model selection - Gemini 3 Pro Preview is the default
-# The model ID should match what google-generativeai expects
+# The model ID should match what google-genai expects
 DEFAULT_MODEL = 'gemini-3-pro-preview'
 
 CONFIG_LIST: list[ExpertConfig] = [
