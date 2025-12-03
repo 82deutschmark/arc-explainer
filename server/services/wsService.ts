@@ -52,11 +52,10 @@ export function attach(server: Server) {
     // No path restriction - verifyClient will check the URL
     verifyClient: (info, cb) => {
       const url = info.req.url || '';
-      // Accept Saturn, Grover, Poetiq, and Beetree progress WebSocket paths
+      // Accept Saturn, Grover, and Beetree progress WebSocket paths
       if (
         url.startsWith('/api/saturn/progress') || 
         url.startsWith('/api/grover/progress') ||
-        url.startsWith('/api/poetiq/progress') ||
         url.startsWith('/api/beetree/progress')
       ) {
         cb(true);
