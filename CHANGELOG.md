@@ -1,6 +1,14 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top with the time and date!
 
+### Version 5.36.6  Dec 3, 2025 5:15pm
+
+- **Poetiq UI: Move real telemetry above the fold** (Author: Cascade)
+  - Trimmed the Poetiq solver header to remove static explanatory paragraphs and keep only the puzzle id, run status, iterations, elapsed time, and live token/cost summary.
+  - Reordered the main two-column layout so the **Event Log** and **Raw Events** panels sit at the top of the right column, with prompt inspector/timeline/reasoning panels stacked underneath them.
+  - This ensures the first screen after starting a run shows the live stream, raw payloads, and high-level metrics without scrolling.
+  - **Files**: `client/src/pages/PoetiqSolver.tsx`
+
 ### Version 5.36.5  Dec 3, 2025 5:00pm
 
 - **Poetiq UI: Remove dead iteration tile, surface raw telemetry by default** (Author: Cascade)
