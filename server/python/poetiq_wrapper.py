@@ -419,6 +419,7 @@ async def instrumented_solve_coding(
         previous_attempts_count = sum(1 for msg in conversation_messages if msg.get("role") == "assistant")
 
         # Emit progress with PROMPT DATA for UI visibility (now includes structured messages)
+        timestamp_ms = int((time.time() - start_time) * 1000)
         emit({
             "type": "progress",
             "phase": "prompting",
@@ -447,7 +448,8 @@ async def instrumented_solve_coding(
                     "feedbackChars": len(feedback_prompt_text) if feedback_prompt_text else 0,
                     "previousSolutionCount": previous_attempts_count,
                 },
-            }
+            },
+            "timestamp": timestamp_ms
         })
 
         # Track reasoning summary (captured from Responses API for GPT-5.x, or from thinking for Claude/Gemini)
@@ -505,8 +507,9 @@ async def instrumented_solve_coding(
             continue
 
         code = _parse_code_from_llm(response)
-        
+
         # Emit progress with token/cost data and reasoning summary
+        timestamp_ms = int((time.time() - start_time) * 1000)
         emit({
             "type": "progress",
             "phase": "evaluating",
@@ -521,7 +524,8 @@ async def instrumented_solve_coding(
             "expertCumulativeTokens": dict(expert_tokens),
             "expertCumulativeCost": dict(expert_cost),
             "globalTokens": dict(_token_cost_tracker["total"]["tokens"]),
-            "globalCost": dict(_token_cost_tracker["total"]["cost"])
+            "globalCost": dict(_token_cost_tracker["total"]["cost"]),
+            "timestamp": timestamp_ms
         })
 
         if not code:
@@ -582,13 +586,15 @@ async def instrumented_solve_coding(
                  "error": str(r.get("error", ""))[:200] if r.get("error") else None 
              })
              
+        timestamp_ms = int((time.time() - start_time) * 1000)
         emit({
             "type": "progress",
             "phase": "feedback",
             "iteration": it + 1,
             "expert": expert_id,
             "message": f"Expert {expert_id}: Iteration {it + 1} complete (Score: {current_score:.0%})",
-            "trainResults": clean_results
+            "trainResults": clean_results,
+            "timestamp": timestamp_ms
         })
 
         if all(r["success"] for r in train_res):
@@ -740,7 +746,7 @@ def build_config_list(num_experts: int, model: str, max_iterations: int, tempera
     return configs
 
 
-async def run_poetiq_solver(puzzle_id: str, task: dict, options: dict) -> dict:
+async def run_poetiq_solver(puzzle_id: str, task: dict, options: dict, start_time: float = None) -> dict:
     """
     Run the Poetiq solver on a single puzzle with comprehensive token/cost tracking.
 
@@ -752,10 +758,14 @@ async def run_poetiq_solver(puzzle_id: str, task: dict, options: dict) -> dict:
             - numExperts: Number of parallel experts (1, 2, 4, or 8)
             - maxIterations: Max code refinement iterations per expert
             - temperature: LLM temperature
+        start_time: Time when the run started (for calculating relative timestamps)
 
     Returns:
         Result dictionary with predictions, metadata, AND token/cost data
     """
+    # Default to current time if not provided
+    if start_time is None:
+        start_time = time.time()
     # Reset global token/cost tracker for this puzzle
     global _token_cost_tracker
     _token_cost_tracker = {
@@ -946,6 +956,9 @@ async def run_poetiq_solver(puzzle_id: str, task: dict, options: dict) -> dict:
 async def main():
     """Main entry point - read from stdin, run solver, emit results."""
     try:
+        # Capture start time for relative timestamp calculation
+        start_time = time.time()
+
         # Read payload from stdin
         raw_input = sys.stdin.read()
         if not raw_input.strip():
@@ -1006,15 +1019,17 @@ async def main():
         )
         
         # Emit progress event before solver starts (for immediate UI feedback)
+        timestamp_ms = int((time.time() - start_time) * 1000)
         emit({
             "type": "progress",
             "phase": "initializing",
             "iteration": 0,
-            "message": f"Initializing Poetiq solver with {num_experts} expert(s) using {model}..."
+            "message": f"Initializing Poetiq solver with {num_experts} expert(s) using {model}...",
+            "timestamp": timestamp_ms
         })
         
-        # Run the solver
-        result = await run_poetiq_solver(puzzle_id, task, options)
+        # Run the solver with start_time for timestamp tracking
+        result = await run_poetiq_solver(puzzle_id, task, options, start_time)
         
         emit({
             "type": "final",

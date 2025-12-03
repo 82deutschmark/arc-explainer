@@ -64,6 +64,8 @@ class BeetreeStreamService {
     const streamKey = `beetree-${sessionId}`;
     const timestamp = runTimestamp || new Date().toISOString();
 
+    console.log(`[beetreeStreamService] startStreaming called with sessionId=${sessionId}, taskId=${taskId}, streamKey=${streamKey}`);
+
     // Initialize stream state
     const streamState: BeetreeStreamState = {
       sessionId,
@@ -125,9 +127,11 @@ class BeetreeStreamService {
       });
 
       // Create streaming harness for Beetree (like Saturn does)
+      console.log(`[beetreeStreamService] Creating streaming harness for ${streamKey}`);
       const harness: StreamingHarness = {
         sessionId: streamKey,
         emit: (chunk) => {
+          console.log(`[beetreeStreamService] harness.emit called`);
           sseStreamManager.sendEvent(streamKey, 'stream.chunk', {
             ...(chunk ?? {}),
             metadata: {
@@ -137,6 +141,7 @@ class BeetreeStreamService {
           });
         },
         emitEvent: (event, payload) => {
+          console.log(`[beetreeStreamService] harness.emitEvent called: event=${event}`);
           logger.debug(`[beetreeStreamService] Emitting event via harness: event=${event}, ts=${payload?.timestamp}, streamKey=${streamKey}`);
           const enrichedEvent =
             payload && typeof payload === 'object'
@@ -145,6 +150,7 @@ class BeetreeStreamService {
           sseStreamManager.sendEvent(streamKey, event, enrichedEvent);
         },
         end: async (summary) => {
+          console.log(`[beetreeStreamService] harness.end called`);
           logger.debug(`[beetreeStreamService] Stream ending for ${streamKey}`);
           // Stream completion handled below
           sseStreamManager.close(streamKey, summary);
@@ -158,6 +164,7 @@ class BeetreeStreamService {
       };
 
       // Start Beetree analysis with streaming harness
+      console.log(`[beetreeStreamService] Calling beetreeService.analyzePuzzleWithModel with harness`);
       await beetreeService.analyzePuzzleWithModel(
         puzzle,
         'beetree-ensemble', // Model key for Beetree ensemble

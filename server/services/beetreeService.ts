@@ -112,9 +112,12 @@ export class BeetreeService extends BaseAIService {
       let currentStage = 'Initializing';
 
       // Execute beetree via Python bridge
+      console.log(`[beetreeService] Calling pythonBridge.runBeetreeAnalysis with config:`, config);
       const { code } = await pythonBridge.runBeetreeAnalysis(config, (event: BeetreeBridgeEvent) => {
+        console.log(`[beetreeService] Event callback invoked: type=${event.type}, timestamp=${(event as any).timestamp}`);
         switch (event.type) {
           case 'start':
+            console.log(`[beetreeService] Processing 'start' event`);
             logger.service(this.provider, `Beetree started for ${taskId}`);
             // Forward start event to streaming harness
             if (serviceOpts?.stream) {
@@ -127,6 +130,7 @@ export class BeetreeService extends BaseAIService {
             break;
 
           case 'progress':
+            console.log(`[beetreeService] Processing 'progress' event: stage=${event.stage}`);
             currentStage = event.stage;
             if (event.costSoFar !== undefined) {
               currentCost = event.costSoFar;
@@ -134,6 +138,7 @@ export class BeetreeService extends BaseAIService {
 
             // Emit progress to streaming harness if available, preserving original timestamp
             if (serviceOpts?.stream) {
+              console.log(`[beetreeService] Has stream handler, emitting progress`);
               logger.debug(`[beetreeService] Forwarding progress event: stage=${event.stage}, ts=${event.timestamp}`);
               serviceOpts.stream.emitEvent('solver_progress', {
                 stage: event.stage,
@@ -166,6 +171,7 @@ export class BeetreeService extends BaseAIService {
             break;
 
           case 'final':
+            console.log(`[beetreeService] Processing 'final' event: success=${event.success}`);
             if (event.success && event.result) {
               finalResult = event.result;
               logger.service(this.provider, `Beetree completed for ${taskId} with cost: $${finalResult.costBreakdown.total_cost.toFixed(4)}`);
@@ -174,6 +180,7 @@ export class BeetreeService extends BaseAIService {
             }
             // Forward final event to streaming harness, preserving original timestamp
             if (serviceOpts?.stream) {
+              console.log(`[beetreeService] Has stream handler, emitting final event`);
               serviceOpts.stream.emitEvent('solver_complete', {
                 success: event.success,
                 result: event.result,
@@ -184,9 +191,11 @@ export class BeetreeService extends BaseAIService {
             break;
 
           case 'error':
+            console.log(`[beetreeService] Processing 'error' event: ${event.message}`);
             logger.service(this.provider, `Beetree error: ${event.message}`, 'error');
             // Forward error event to streaming harness, preserving original timestamp
             if (serviceOpts?.stream) {
+              console.log(`[beetreeService] Has stream handler, emitting error event`);
               serviceOpts.stream.emitEvent('solver_error', {
                 message: event.message,
                 timestamp: event.timestamp ?? Date.now(),

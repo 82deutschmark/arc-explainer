@@ -1,6 +1,13 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top with the time and date!
 
+### Version 5.35.38  Dec 2, 2025 10:40pm
+
+- **Streaming: Enable GPT-5.1 in PuzzleExaminer** (Author: Cascade)
+  - Updated the OpenAI streaming allowlist so GPT-5.1 reasoning models (`gpt-5.1-2025-11-13`, `gpt-5.1-codex`, `gpt-5.1-codex-mini`) can use the SSE analysis pipeline instead of falling back with a "Streaming is not enabled for this model" error.
+  - Impact: PuzzleExaminer and other streaming-aware flows now treat GPT-5.1 as fully stream-capable when the global streaming feature flag is on.
+  - **Files**: `server/services/openai.ts`
+
 ### Version 5.35.37  Dec 2, 2025 10:07pm
 
 - **About Page: Simon spotlight + mosaic footer** (Author: Cascade)
