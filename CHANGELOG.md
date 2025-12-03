@@ -1,6 +1,24 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top with the time and date!
 
+### Version 5.35.41  Dec 2, 2025 11:25pm
+
+- **Beetree UI: Restore SSE progress events** (Author: Codex GPT-5)
+  - Normalized Beetree session IDs on the client so `/api/stream/analyze/beetree-:sessionId` never receives a double `beetree-` prefix, allowing the backend stream registry to find the right session.
+  - Rebuilt the Beetree hook’s SSE wiring to register explicit listeners for each event name (`stream_start`, `solver_progress`, etc.) and dispatch updates based on the SSE event type instead of a missing payload field.
+  - Added handling for `stream.init`, completion, and termination events so `isConnected`, `status`, and progress/cost data reflect the live stream lifecycle.
+  - **Files**: `client/src/hooks/useBeetreeRun.ts`, `docs/2025-12-02-beetree-streaming-debug-plan.md`
+
+### Version 5.35.40  Dec 2, 2025 11:05pm
+
+- **Poetiq Streaming: Add timestamp preservation and event trace collection** (Author: Cascade)
+  - Fixed Poetiq event streaming to preserve original timestamps (calculated at wrapper level) through all service layers with `timestamp: event.timestamp ?? Date.now()` pattern.
+  - Implemented event trace collection in controller callback, capping at 500 events to avoid unbounded memory growth (same pattern as Beetree).
+  - Added event trace to final WebSocket broadcast so clients receive complete event history with accurate timing for debugging and analytics.
+  - Added comprehensive debug logging across 4 layers: wrapper (Python emit), service (event handler), wsService (broadcast), and client (WS message reception).
+  - Improved event tracking with timestamps for performance analysis and timeline visualization in PuzzleExaminer and other streaming UI components.
+  - **Files**: `server/services/poetiq/poetiqService.ts`, `server/controllers/poetiqController.ts`, `server/services/wsService.ts`, `server/python/poetiq_wrapper.py`, `client/src/hooks/usePoetiqProgress.ts`
+
 ### Version 5.35.39  Dec 2, 2025 10:50pm
 
 - **Beetree Streaming: Fix sessionId mismatch and event delivery** (Author: Cascade)

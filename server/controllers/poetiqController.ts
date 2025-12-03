@@ -219,7 +219,8 @@ export const poetiqController = {
       }
     });
 
-    // Start async solver (non-blocking)
+    // Start async solver (non-blocking) and collect event trace
+    const eventTrace: any[] = [];
     setImmediate(async () => {
       try {
         console.log(`[Poetiq] Starting solver for ${taskId} using ${runtimeMode}`);
@@ -229,6 +230,14 @@ export const poetiqController = {
           task,
           options,
           (event) => {
+            // Collect event trace (cap at 500 events to avoid unbounded memory)
+            if (eventTrace.length < 500) {
+              eventTrace.push({
+                ...event,
+                timestamp: (event as any).timestamp ?? Date.now(),
+              });
+            }
+
             // WebSocket broadcasting is now handled directly by poetiqService
             // This callback is for controller-level logging only
             if (event.type === 'progress') {
@@ -255,7 +264,7 @@ export const poetiqController = {
           },
         });
 
-        // Broadcast completion
+        // Broadcast completion with event trace
         broadcast(sessionId, {
           status: 'completed',
           phase: 'done',
@@ -269,6 +278,14 @@ export const poetiqController = {
             generatedCode: result.generatedCode,
             elapsedMs: result.elapsedMs,
           },
+          eventTrace: eventTrace.map(evt => ({
+            type: evt.type,
+            timestamp: evt.timestamp,
+            message: evt.message,
+            phase: evt.phase,
+            iteration: evt.iteration,
+            level: evt.level,
+          })),
         });
 
         console.log('[Poetiq] Analysis complete and saved:', {
