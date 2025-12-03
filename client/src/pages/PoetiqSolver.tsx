@@ -424,38 +424,12 @@ export default function PoetiqSolver() {
   return (
     <div className="min-h-screen flex flex-col bg-slate-50">
       {/* Header - Informative with clear status */}
-      <header className="flex flex-col gap-4 border-b border-indigo-900/30 bg-gradient-to-r from-indigo-900 to-purple-900 px-6 py-4 text-white shadow-lg md:flex-row md:items-center md:justify-between">
-        {/* Left: Title + Explanation */}
-        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:gap-6">
+      <header className="flex flex-col gap-3 border-b border-indigo-900/30 bg-gradient-to-r from-indigo-900 to-purple-900 px-6 py-3 text-white shadow-lg md:flex-row md:items-center md:justify-between">
+        {/* Left: Title + puzzle id */}
+        <div className="flex flex-col gap-1 lg:flex-row lg:items-baseline lg:gap-3">
           <div>
             <h1 className="text-xl font-bold">Poetiq Meta-System</h1>
             <p className="text-sm text-indigo-300 font-mono">{taskId}</p>
-          </div>
-          <div className="hidden h-10 w-px bg-indigo-600/60 lg:block" />
-          {/* Explanatory text - always visible */}
-          <div className="max-w-xl text-sm text-indigo-200 space-y-1">
-            {isRunning ? (
-              <>
-                <p>
-                  <strong className="text-white">{numExperts} AI teammates</strong> are currently writing tiny Python
-                  rules, testing them on the sample grids, and revising until the outputs match.
-                </p>
-                <p>We keep every promising idea and show you the winning code as soon as the hidden test agrees.</p>
-              </>
-            ) : isDone ? (
-              <p>
-                The run is complete, and the best rule (plus a short history of every expert) has been saved to your
-                explanation library for future reference.
-              </p>
-            ) : (
-              <>
-                <p>
-                  Click <strong className="text-white">Start</strong> to let {numExperts} AI coders compete. Each one
-                  will propose code, test it, learn from mistakes, and vote on the final answer.
-                </p>
-                <p>When several coders land on the same answer, we count that as a stronger vote of confidence.</p>
-              </>
-            )}
           </div>
         </div>
         
@@ -733,8 +707,108 @@ export default function PoetiqSolver() {
               )}
             </div>
 
-            {/* Right: Inspectors and Logs */}
+            {/* Right: Logs and Inspectors */}
             <div className="space-y-4">
+
+            {/* Event Log - primary live feed */}
+            {(isRunning || isDone || (state.logLines?.length ?? 0) > 0) && (
+              <div className="flex min-h-[320px] flex-col rounded-2xl border border-slate-200 bg-white shadow-sm">
+                <div className="flex items-center justify-between border-b border-slate-100 bg-slate-50 px-4 py-3">
+                  <div className="flex items-center gap-3">
+                    <Activity className="w-5 h-5 text-slate-600" />
+                    <span className="text-base font-bold text-slate-800">EVENT LOG</span>
+                    <span className="text-sm text-slate-500">({state.logLines?.length ?? 0} events)</span>
+                    {isRunning && (
+                      <span className="flex items-center gap-1 text-sm font-bold text-green-600">
+                        <span className="h-2 w-2 animate-pulse rounded-full bg-green-500" />
+                        LIVE
+                      </span>
+                    )}
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => downloadTextFile(`poetiq-events-${taskId}.txt`, state.logLines)}
+                      disabled={!state.logLines || state.logLines.length === 0}
+                      className="flex items-center gap-1.5 rounded bg-slate-200 px-3 py-1.5 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-300 disabled:opacity-50"
+                      title="Download full event log"
+                    >
+                      <Download className="w-4 h-4" />
+                      Export
+                    </button>
+                    {/* Copy Button */}
+                    <button
+                      onClick={() => {
+                        const text = state.logLines?.join('\n') || '';
+                        navigator.clipboard.writeText(text);
+                        setCopied(true);
+                        setTimeout(() => setCopied(false), 2000);
+                      }}
+                      className="flex items-center gap-1.5 rounded bg-slate-200 px-3 py-1.5 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-300"
+                      title="Copy all events"
+                    >
+                      {copied ? <Check className="w-4 h-4 text-green-600" /> : <Copy className="w-4 h-4" />}
+                      {copied ? 'Copied!' : 'Copy'}
+                    </button>
+                    <button onClick={() => setShowLogs(!showLogs)} className="rounded p-1.5 text-slate-600 hover:bg-slate-100">
+                      {showLogs ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
+                    </button>
+                  </div>
+                </div>
+                {showLogs && (
+                  <div 
+                    ref={eventLogRef}
+                    className="flex-1 overflow-y-auto bg-slate-950 p-3 font-mono text-sm"
+                  >
+                    {state.logLines?.length === 0 ? (
+                      <div className="py-8 text-center text-slate-500">Waiting for events...</div>
+                    ) : (
+                      state.logLines?.map((line, idx) => (
+                        <div key={idx} className="border-b border-slate-800 py-1 text-slate-200 last:border-0">
+                          {line}
+                        </div>
+                      ))
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Raw Events - structured payloads */}
+            {showRawEvents && (
+              <div className="flex max-h-64 flex-col overflow-hidden rounded-2xl border border-slate-300 bg-white shadow-sm">
+                <div className="sticky top-0 flex items-center justify-between border-b border-slate-200 bg-slate-100 px-4 py-2">
+                  <div className="flex items-center gap-2">
+                    <FileJson className="w-4 h-4 text-slate-700" />
+                    <span className="text-sm font-bold text-slate-800">RAW EVENTS</span>
+                    <span className="text-xs text-slate-500">({latestRawEvents.length} recent)</span>
+                  </div>
+                </div>
+                <div className="flex-1 space-y-2 overflow-y-auto bg-slate-50 p-3 text-xs font-mono">
+                  {latestRawEvents.length === 0 ? (
+                    <div className="py-4 text-center text-slate-500">Waiting for events...</div>
+                  ) : (
+                    latestRawEvents.map((event, idx) => {
+                      const payloadText = JSON.stringify(event.payload, null, 2);
+                      const clippedPayload = payloadText.length > 1500 ? `${payloadText.slice(0, 1500)}...` : payloadText;
+                      return (
+                        <div key={`${event.timestamp}-${idx}`} className="rounded border border-slate-200 bg-white p-2">
+                          <div className="mb-1 flex items-center justify-between text-[11px] text-slate-500">
+                            <div className="flex items-center gap-2">
+                              <span className="font-semibold text-slate-700">{event.type}</span>
+                              {event.phase && <span className="rounded bg-slate-200 px-1.5 py-0.5 text-slate-700">{event.phase}</span>}
+                            </div>
+                            <span>{formatTimestamp(event.timestamp)}</span>
+                          </div>
+                          <pre className="max-h-32 overflow-y-auto whitespace-pre-wrap rounded bg-slate-950 p-2 text-slate-100">
+                            {clippedPayload}
+                          </pre>
+                        </div>
+                      );
+                    })
+                  )}
+                </div>
+              </div>
+            )}
 
             {/* Prompt Inspector - Shows what's being sent to the AI */}
             {showPromptInspector && state.currentPromptData && (
@@ -992,105 +1066,6 @@ export default function PoetiqSolver() {
                         {block}
                       </pre>
                     ))
-                  )}
-                </div>
-              </div>
-            )}
-            
-            {/* Event Log - Show when running or after completion */}
-            {(isRunning || isDone || (state.logLines?.length ?? 0) > 0) && (
-              <div className="flex min-h-[320px] flex-col rounded-2xl border border-slate-200 bg-white shadow-sm">
-                <div className="flex items-center justify-between border-b border-slate-100 bg-slate-50 px-4 py-3">
-                  <div className="flex items-center gap-3">
-                    <Activity className="w-5 h-5 text-slate-600" />
-                    <span className="text-base font-bold text-slate-800">EVENT LOG</span>
-                    <span className="text-sm text-slate-500">({state.logLines?.length ?? 0} events)</span>
-                    {isRunning && (
-                      <span className="flex items-center gap-1 text-sm font-bold text-green-600">
-                        <span className="h-2 w-2 animate-pulse rounded-full bg-green-500" />
-                        LIVE
-                      </span>
-                    )}
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <button
-                      onClick={() => downloadTextFile(`poetiq-events-${taskId}.txt`, state.logLines)}
-                      disabled={!state.logLines || state.logLines.length === 0}
-                      className="flex items-center gap-1.5 rounded bg-slate-200 px-3 py-1.5 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-300 disabled:opacity-50"
-                      title="Download full event log"
-                    >
-                      <Download className="w-4 h-4" />
-                      Export
-                    </button>
-                    {/* Copy Button */}
-                    <button
-                      onClick={() => {
-                        const text = state.logLines?.join('\n') || '';
-                        navigator.clipboard.writeText(text);
-                        setCopied(true);
-                        setTimeout(() => setCopied(false), 2000);
-                      }}
-                      className="flex items-center gap-1.5 rounded bg-slate-200 px-3 py-1.5 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-300"
-                      title="Copy all events"
-                    >
-                      {copied ? <Check className="w-4 h-4 text-green-600" /> : <Copy className="w-4 h-4" />}
-                      {copied ? 'Copied!' : 'Copy'}
-                    </button>
-                    <button onClick={() => setShowLogs(!showLogs)} className="rounded p-1.5 text-slate-600 hover:bg-slate-100">
-                      {showLogs ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
-                    </button>
-                  </div>
-                </div>
-                {showLogs && (
-                  <div 
-                    ref={eventLogRef}
-                    className="flex-1 overflow-y-auto bg-slate-950 p-3 font-mono text-sm"
-                  >
-                    {state.logLines?.length === 0 ? (
-                      <div className="py-8 text-center text-slate-500">Waiting for events...</div>
-                    ) : (
-                      state.logLines?.map((line, idx) => (
-                        <div key={idx} className="border-b border-slate-800 py-1 text-slate-200 last:border-0">
-                          {line}
-                        </div>
-                      ))
-                    )}
-                  </div>
-                )}
-              </div>
-            )}
-
-            {showRawEvents && (
-              <div className="flex max-h-64 flex-col overflow-hidden rounded-2xl border border-slate-300 bg-white shadow-sm">
-                <div className="sticky top-0 flex items-center justify-between border-b border-slate-200 bg-slate-100 px-4 py-2">
-                  <div className="flex items-center gap-2">
-                    <FileJson className="w-4 h-4 text-slate-700" />
-                    <span className="text-sm font-bold text-slate-800">RAW EVENTS</span>
-                    <span className="text-xs text-slate-500">({latestRawEvents.length} recent)</span>
-                  </div>
-                </div>
-                <div className="flex-1 space-y-2 overflow-y-auto bg-slate-50 p-3 text-xs font-mono">
-                  {latestRawEvents.length === 0 ? (
-                    <div className="py-4 text-center text-slate-500">Waiting for events...</div>
-                  ) : (
-                    latestRawEvents.map((event, idx) => {
-                      const payloadText = JSON.stringify(event.payload, null, 2);
-                      const clippedPayload = payloadText.length > 1500 ? `${payloadText.slice(0, 1500)}...` : payloadText;
-                      return (
-                        <div key={`${event.timestamp}-${idx}`} className="rounded border border-slate-200 bg-white p-2">
-                          <div className="mb-1 flex items-center justify-between text-[11px] text-slate-500">
-                            <div className="flex items-center gap-2">
-                              <span className="font-semibold text-slate-700">{event.type}</span>
-                              {event.phase && <span className="rounded bg-slate-200 px-1.5 py-0.5 text-slate-700">{event.phase}</span>}
-                            </div>
-                            <span>{formatTimestamp(event.timestamp)}</span>
-                          </div>
-                          <pre className="max-h-32 overflow-y-auto whitespace-pre-wrap rounded bg-slate-950 p-2 text-slate-100">
-                            {clippedPayload}
-                          </pre>
-                        </div>
-                      );
-                    })
                   )}
                 </div>
               </div>
