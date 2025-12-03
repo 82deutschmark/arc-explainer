@@ -9,6 +9,12 @@
   - Documented the switch in `solver/poetiq/config.py` comment so future contributors know the model IDs follow google-genai naming.
   - **Files**: `requirements.txt`, `solver/poetiq/llm.py`, `solver/poetiq/config.py`
 
+### Version 5.35.34  Dec 2, 2025 9:30pm
+
+- **Beetree Windows shim for fcntl** (Author: Codex GPT-5)
+  - Added a lightweight no-op `fcntl` module shim in `server/python/beetree_wrapper.py` so BeetreeARC can import on Windows (the upstream logging uses Unix-only `fcntl` for file locks). This unblocks local Beetree runs on Windows without touching the submodule.
+  - **Files**: `server/python/beetree_wrapper.py`
+
 ### Version 5.35.32  Dec 2, 2025 8:45pm
 
 - **Docker build: beetree requirements placeholder** (Author: Codex GPT-5)
