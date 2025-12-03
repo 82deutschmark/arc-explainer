@@ -10,9 +10,17 @@
  * SRP/DRY check: Pass - Single responsibility: prompt preview display
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Copy, Check, Loader2, Link2 } from 'lucide-react';
 import { ARCTask } from '@shared/types';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
 
 interface PromptOptions {
   emojiSetKey?: string;
@@ -33,6 +41,7 @@ interface PromptPreviewModalProps {
   promptId: string;
   customPrompt?: string;
   options?: PromptOptions;
+  provider?: string;
   // Confirmation mode - shows "Confirm & Run" button to execute action after preview
   confirmMode?: boolean;
   onConfirm?: () => void | Promise<void>;
@@ -57,7 +66,8 @@ export function PromptPreviewModal({
   options = {},
   confirmMode = false,
   onConfirm,
-  confirmButtonText = 'Confirm & Run'
+  confirmButtonText = 'Confirm & Run',
+  provider = 'openai'
 }: PromptPreviewModalProps) {
   const [copiedSection, setCopiedSection] = useState<string | null>(null);
   const [promptPreview, setPromptPreview] = useState<PromptPreviewData | null>(null);
@@ -67,6 +77,13 @@ export function PromptPreviewModal({
 
   // Fetch prompt preview from server when modal opens or parameters change
   useEffect(() => {
+    console.debug('[PromptPreviewModal] effect triggered', {
+      isOpen,
+      taskId,
+      promptId,
+      provider,
+    });
+
     if (!isOpen || !taskId || !promptId) return;
 
     const fetchPromptPreview = async () => {
@@ -80,7 +97,7 @@ export function PromptPreviewModal({
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            provider: 'openai', // Default provider for preview
+            provider: provider || 'openai', // Provider for preview (defaults to OpenAI)
             taskId,
             promptId,
             customPrompt,
@@ -115,7 +132,7 @@ export function PromptPreviewModal({
     };
 
     fetchPromptPreview();
-  }, [isOpen, taskId, promptId, customPrompt, options.emojiSetKey, options.omitAnswer, options.topP, options.candidateCount, options.originalExplanation, options.customChallenge, options.previousResponseId]);
+  }, [isOpen, taskId, promptId, customPrompt, provider, options.emojiSetKey, options.omitAnswer, options.topP, options.candidateCount, options.originalExplanation, options.customChallenge, options.previousResponseId]);
 
   const copyToClipboard = async (text: string, section: string) => {
     try {
@@ -154,16 +171,18 @@ export function PromptPreviewModal({
   }, [isOpen]);
 
   return (
-    <dialog className={`modal ${isOpen ? 'modal-open' : ''}`} style={{ zIndex: 9999 }}>
-      <div className="modal-box max-w-4xl max-h-[80vh] overflow-hidden flex flex-col">
-        <h3 className="font-bold text-lg mb-4">
-          Prompt Preview - {promptId}
-          {promptPreview?.selectedTemplate?.emoji && (
-            <span className="ml-2">{promptPreview.selectedTemplate.emoji}</span>
-          )}
-        </h3>
-        
-        <div className="flex-1 overflow-y-auto space-y-4">
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle>
+            Prompt Preview - {promptId}
+            {promptPreview?.selectedTemplate?.emoji && (
+              <span className="ml-2">{promptPreview.selectedTemplate.emoji}</span>
+            )}
+          </DialogTitle>
+        </DialogHeader>
+
+        <div className="space-y-4">
           {isLoading && (
             <div className="flex items-center justify-center py-8">
               <Loader2 className="h-6 w-6 animate-spin mr-2" />
@@ -235,17 +254,19 @@ export function PromptPreviewModal({
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
                   <h3 className="text-sm font-semibold text-gray-700">System Prompt</h3>
-                  <button
-                    className="btn btn-outline btn-sm h-8 px-2"
+                  <Button
+                    variant="outline"
+                    size="sm"
                     onClick={() => copyToClipboard(promptPreview.systemPrompt, 'system')}
                     disabled={!promptPreview.systemPrompt}
+                    className="h-8 px-2"
                   >
                     {copiedSection === 'system' ? (
                       <Check className="h-3 w-3" />
                     ) : (
                       <Copy className="h-3 w-3" />
                     )}
-                  </button>
+                  </Button>
                 </div>
                 <pre className="text-xs bg-gray-50 p-3 rounded border overflow-x-auto whitespace-pre-wrap min-h-[100px]">
                   {promptPreview.systemPrompt || '(No system prompt)'}
@@ -259,17 +280,19 @@ export function PromptPreviewModal({
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
                   <h3 className="text-sm font-semibold text-gray-700">User Prompt</h3>
-                  <button
-                    className="btn btn-outline btn-sm h-8 px-2"
+                  <Button
+                    variant="outline"
+                    size="sm"
                     onClick={() => copyToClipboard(promptPreview.userPrompt, 'user')}
                     disabled={!promptPreview.userPrompt}
+                    className="h-8 px-2"
                   >
                     {copiedSection === 'user' ? (
                       <Check className="h-3 w-3" />
                     ) : (
                       <Copy className="h-3 w-3" />
                     )}
-                  </button>
+                  </Button>
                 </div>
                 <pre className="text-xs bg-gray-50 p-3 rounded border overflow-x-auto whitespace-pre-wrap min-h-[200px]">
                   {promptPreview.userPrompt || '(No user prompt)'}
@@ -296,18 +319,18 @@ export function PromptPreviewModal({
           )}
         </div>
 
-        <div className="modal-action">
+        <DialogFooter>
           {confirmMode ? (
             <>
-              <button
-                className="btn btn-ghost"
+              <Button
+                variant="ghost"
                 onClick={onClose}
                 disabled={isConfirming}
               >
                 Cancel
-              </button>
-              <button
-                className="btn btn-primary"
+              </Button>
+              <Button
+                variant="default"
                 onClick={handleConfirm}
                 disabled={isConfirming || !promptPreview || isLoading}
               >
@@ -319,17 +342,14 @@ export function PromptPreviewModal({
                 ) : (
                   confirmButtonText
                 )}
-              </button>
+              </Button>
             </>
           ) : (
-            <button className="btn" onClick={onClose}>Close</button>
+            <Button onClick={onClose}>Close</Button>
           )}
-        </div>
-      </div>
-      <form method="dialog" className="modal-backdrop">
-        <button onClick={onClose}>close</button>
-      </form>
-    </dialog>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }
 

@@ -1,8 +1,9 @@
 /**
  * Author: Cascade (Claude Sonnet 4)
  * Date: 2025-11-25
- * Updated: 2025-11-27 - Enhanced WebSocket broadcasting to forward ALL event types (start, progress, log, error)
- *                       Added eventTrace collection like Saturn. Broadcasts stderr as log events.
+ * Updated: 2025-11-27 - Migrated to direct SDK calls (NO LiteLLM)
+ *                       Added support for all 5 providers: OpenAI, Anthropic, Gemini, OpenRouter, xAI
+ *                       BYO API key handling now supports all providers
  * PURPOSE: TypeScript service wrapping the Poetiq ARC-AGI solver.
  *          Executes Python subprocess, captures iteration data, maps results to standard
  *          explanation format for database storage.
@@ -17,12 +18,18 @@
  * - Code is executed in sandbox to validate against training examples
  * - Multiple "experts" can run in parallel with voting
  * - Results need special handling for database storage
+ * - Python solver uses direct SDK calls for: OpenAI (Responses API), Anthropic, Gemini, OpenRouter, xAI
  */
 
 import { spawn, SpawnOptions } from 'child_process';
 import * as readline from 'node:readline';
 import * as path from 'path';
-import { ARCTask } from '../../../shared/types.js';
+import {
+  ARCTask,
+  PoetiqPromptData,
+  PoetiqAgentTimelineItem,
+  PoetiqAgentReasoningDelta,
+} from '../../../shared/types.js';
 import { broadcast } from '../wsService.js';
 import {
   validateSolverResponse,
@@ -44,32 +51,83 @@ export type PoetiqBridgeEvent =
       expert?: number;
       code?: string;
       reasoning?: string;
+      reasoningSummary?: string;  // Responses API reasoning summary (GPT-5.x)
       trainResults?: any[];
+      promptData?: PoetiqPromptData;  // Added for prompt visibility
+      agentRunId?: string;            // Agents SDK run identifier
+      agentModel?: string;            // Model used by Agent runtime
+      agentTimelineItem?: PoetiqAgentTimelineItem;
+      agentReasoningDelta?: PoetiqAgentReasoningDelta;
+      tokenUsage?: {
+        input_tokens?: number;
+        output_tokens?: number;
+        total_tokens?: number;
+      };
+      cost?: {
+        input?: number;
+        output?: number;
+        total?: number;
+      };
+      expertCumulativeTokens?: Record<string, any>;
+      expertCumulativeCost?: Record<string, any>;
+      globalTokens?: {
+        input_tokens?: number;
+        output_tokens?: number;
+        total_tokens?: number;
+      };
+      globalCost?: {
+        input?: number;
+        output?: number;
+        total?: number;
+      };
     }
   | { type: 'log'; level: 'info' | 'warn' | 'error'; message: string }
   | { type: 'final'; success: boolean; result: PoetiqResult }
   | { type: 'error'; message: string; traceback?: string };
+
+export type PoetiqRuntimeMode = 'python-wrapper' | 'openai-agents';
+
+export interface PoetiqAgentsRunnerInput {
+  puzzleId: string;
+  task: ARCTask;
+  options: PoetiqOptions;
+  onEvent?: (event: PoetiqBridgeEvent) => void;
+}
+
+export interface PoetiqAgentsRunner {
+  supportsModel?: (modelId?: string) => boolean;
+  run(input: PoetiqAgentsRunnerInput): Promise<PoetiqResult>;
+}
 
 export interface PoetiqStartMetadata {
   puzzleId: string;
   trainCount: number;
   testCount: number;
   options: PoetiqOptions;
+  runtimeMode?: PoetiqRuntimeMode;
+  agentRunId?: string;
+  agentModel?: string;
 }
 
 export interface PoetiqOptions {
   // BYO (Bring Your Own) API key - used for this run only, never stored
-  apiKey?: string;          // User's API key (Gemini or OpenRouter)
-  provider?: 'gemini' | 'openrouter';  // Which provider the key is for (default: gemini)
+  apiKey?: string;          // User's API key for the selected provider
+  provider?: 'gemini' | 'openrouter' | 'openai' | 'anthropic' | 'xai';  // All 5 supported providers
   
   // Model configuration
-  model?: string;           // LiteLLM model identifier (e.g., "gemini/gemini-3-pro-preview")
+  model?: string;           // Model identifier (e.g., "gemini-3-pro-preview", "gpt-5.1-codex-mini")
   numExperts?: number;      // Number of parallel experts: 1, 2, 4, or 8 (default: 2)
   maxIterations?: number;   // Max iterations per expert (default: 10)
   temperature?: number;     // LLM temperature (default: 1.0)
+  reasoningEffort?: 'low' | 'medium' | 'high';  // Reasoning effort for GPT-5.x models
+  promptStyle?: 'classic' | 'arc' | 'arc_de' | 'arc_ru' | 'arc_fr' | 'arc_tr'; // Which solver prompt template to use
   
   // Internal
   sessionId?: string;       // WebSocket session for progress updates
+  useAgentsSdk?: boolean;   // Hint to route OpenAI runs through Agents SDK
+  previousResponseId?: string | null; // Continuation support
+  resolvedRuntime?: PoetiqRuntimeMode;
+  runtimeMode?: PoetiqRuntimeMode; // Back-compat alias (set by controller/service)
 }
 
 export interface PoetiqIterationData {
@@ -101,7 +159,7 @@ export interface PoetiqResult {
     maxIterations?: number;
     temperature?: number;
     numExperts?: number;
-    provider?: 'gemini' | 'openrouter';
+    provider?: 'gemini' | 'openrouter' | 'openai';
   };
   error?: string;
   traceback?: string;
@@ -121,7 +179,7 @@ export interface PoetiqExplanationData {
   isPredictionCorrect: boolean;
   trustworthinessScore: number | null;  // Only set if test accuracy is known
   hasMultiplePredictions: boolean;
-  multiplePredictedOutputs: number[][][] | null;
+  multiplePredictedOutputs: (number[][] | null)[] | null;
   multiTestResults: any | null;
   multiTestAllCorrect: boolean | null;
   multiTestAverageAccuracy: number | null;
@@ -149,24 +207,40 @@ export interface PoetiqExplanationData {
 export class PoetiqService {
   private pythonBin: string;
   private wrapperPath: string;
+  private agentsRunner?: PoetiqAgentsRunner;
 
   constructor() {
     this.pythonBin = process.env.PYTHON_BIN || (process.platform === 'win32' ? 'python' : 'python3');
     this.wrapperPath = path.join(process.cwd(), 'server', 'python', 'poetiq_wrapper.py');
   }
 
-  private getDefaultModelForProvider(provider?: 'gemini' | 'openrouter'): string {
+  /**
+   * Allow the PoetiqAgentsRunner to be registered once it is implemented.
+   * Keeps this service decoupled from the runner implementation details.
+   */
+  registerAgentsRunner(runner: PoetiqAgentsRunner) {
+    this.agentsRunner = runner;
+  }
+
+  getRuntimeMode(options: PoetiqOptions): PoetiqRuntimeMode {
+    return this.shouldUseAgentsRoute(options) ? 'openai-agents' : 'python-wrapper';
+  }
+
+  private getDefaultModelForProvider(provider?: 'gemini' | 'openrouter' | 'openai'): string {
     if (provider === 'gemini') {
       return 'gemini/gemini-3-pro-preview';
+    }
+    if (provider === 'openai') {
+      return 'gpt-5.1-codex-mini';  // Default OpenAI model
     }
     return 'openrouter/google/gemini-3-pro-preview';
   }
 
-  private resolveProvider(options: PoetiqOptions, existing?: PoetiqResult['config']): 'gemini' | 'openrouter' | undefined {
-    if (existing?.provider === 'gemini' || existing?.provider === 'openrouter') {
-      return existing.provider;
+  private resolveProvider(options: PoetiqOptions, existing?: PoetiqResult['config']): 'gemini' | 'openrouter' | 'openai' | undefined {
+    if (existing?.provider === 'gemini' || existing?.provider === 'openrouter' || existing?.provider === 'openai') {
+      return existing.provider as 'gemini' | 'openrouter' | 'openai';
     }
-    if (options.provider === 'gemini' || options.provider === 'openrouter') {
+    if (options.provider === 'gemini' || options.provider === 'openrouter' || options.provider === 'openai') {
       return options.provider;
     }
     const candidate = existing?.model || options.model;
@@ -176,7 +250,76 @@ export class PoetiqService {
     if (candidate?.startsWith('openrouter/')) {
       return 'openrouter';
     }
+    // Check for direct OpenAI models
+    if (this.isDirectOpenAIModel(candidate)) {
+      return 'openai';
+    }
     return undefined;
+  }
+
+  /**
+   * Check if a model should use direct OpenAI Responses API
+   */
+  private isDirectOpenAIModel(model?: string): boolean {
+    if (!model) return false;
+    const modelLower = model.toLowerCase();
+    
+    // Don't use direct API if routed through OpenRouter
+    if (modelLower.includes('openrouter')) return false;
+    
+    // Direct OpenAI models that should use Responses API
+    const directModels = [
+      'gpt-5.1-codex', 'gpt-5.1-codex-mini', 'gpt-5-mini', 'gpt-5-nano', 'gpt-5-',
+      'o3-mini', 'o4-mini', 'o3-2025', 'gpt-4.1'
+    ];
+    
+    return directModels.some(dm => modelLower.includes(dm));
+  }
+
+  private shouldUseAgentsRoute(options: PoetiqOptions): boolean {
+    if (!this.agentsRunner) return false;
+    if (options.useAgentsSdk === false) return false;
+
+    const provider = options.provider || this.inferProviderFromModel(options.model);
+    if (provider !== 'openai') return false;
+
+    const modelEligible = this.isDirectOpenAIModel(options.model);
+    if (!modelEligible) return false;
+
+    if (typeof this.agentsRunner.supportsModel === 'function' && !this.agentsRunner.supportsModel(options.model)) {
+      return false;
+    }
+
+    // Explicit opt-in takes priority, otherwise allow auto-route.
+    if (options.useAgentsSdk === true) return true;
+    return true;
+  }
+
+  /**
+   * Infer provider from model ID
+   * Matches the provider detection in solver/poetiq/llm.py get_provider()
+   */
+  private inferProviderFromModel(model?: string): 'gemini' | 'openrouter' | 'openai' | 'anthropic' | 'xai' {
+    if (!model) return 'gemini';  // Default
+    
+    const modelLower = model.toLowerCase();
+    
+    // OpenRouter first (can proxy any model)
+    if (modelLower.includes('openrouter/') || modelLower.includes('openrouter')) return 'openrouter';
+    
+    // Direct OpenAI (GPT-5.x, o3, o4, gpt-4.1)
+    if (this.isDirectOpenAIModel(model)) return 'openai';
+    
+    // Anthropic (Claude models)
+    if (modelLower.includes('claude') || modelLower.includes('anthropic')) return 'anthropic';
+    
+    // Google Gemini
+    if (modelLower.includes('gemini')) return 'gemini';
+    
+    // xAI (Grok models)
+    if (modelLower.includes('grok') || modelLower.includes('xai')) return 'xai';
+    
+    return 'openrouter';  // Default for unknown models
   }
 
   private enrichResultWithConfig(result: PoetiqResult, options: PoetiqOptions): PoetiqResult {
@@ -215,6 +358,52 @@ export class PoetiqService {
     options: PoetiqOptions = {},
     onEvent?: (event: PoetiqBridgeEvent) => void
   ): Promise<PoetiqResult> {
+    const runtimeMode = this.getRuntimeMode(options);
+    const normalizedOptions: PoetiqOptions = {
+      ...options,
+      runtimeMode,
+      resolvedRuntime: runtimeMode,
+    };
+
+    if (runtimeMode === 'openai-agents') {
+      return this.runViaAgentsRunner(puzzleId, task, normalizedOptions, onEvent);
+    }
+
+    return this.runViaPythonWrapper(puzzleId, task, normalizedOptions, onEvent);
+  }
+
+  private async runViaAgentsRunner(
+    puzzleId: string,
+    task: ARCTask,
+    options: PoetiqOptions,
+    onEvent?: (event: PoetiqBridgeEvent) => void
+  ): Promise<PoetiqResult> {
+    if (!this.agentsRunner) {
+      throw new Error('Poetiq Agents runner is not registered. Please disable useAgents or register a runner.');
+    }
+
+    let finalResult: PoetiqResult | null = null;
+    const runResult = await this.agentsRunner.run({
+      puzzleId,
+      task,
+      options,
+      onEvent: (event) => {
+        const candidate = this.handleBridgeEvent(event, puzzleId, options, onEvent);
+        if (candidate) {
+          finalResult = candidate;
+        }
+      },
+    });
+
+    return finalResult ?? this.enrichResultWithConfig(runResult, options);
+  }
+
+  private async runViaPythonWrapper(
+    puzzleId: string,
+    task: ARCTask,
+    options: PoetiqOptions,
+    onEvent?: (event: PoetiqBridgeEvent) => void
+  ): Promise<PoetiqResult> {
     return new Promise((resolve, reject) => {
       // Build environment with optional BYO API key
       // Key is passed ONLY to this child process, never stored
@@ -225,15 +414,33 @@ export class PoetiqService {
       };
 
       // Handle BYO API key based on provider
+      // All 5 providers are supported: openai, anthropic, gemini, openrouter, xai
+      const provider = options.provider || this.inferProviderFromModel(options.model);
       if (options.apiKey) {
-        const provider = options.provider || 'gemini';
-        if (provider === 'openrouter') {
-          childEnv.OPENROUTER_API_KEY = options.apiKey;
-        } else {
-          // Default to Gemini direct
-          childEnv.GEMINI_API_KEY = options.apiKey;
+        switch (provider) {
+          case 'openrouter':
+            childEnv.OPENROUTER_API_KEY = options.apiKey;
+            break;
+          case 'openai':
+            childEnv.OPENAI_API_KEY = options.apiKey;
+            break;
+          case 'anthropic':
+            childEnv.ANTHROPIC_API_KEY = options.apiKey;
+            break;
+          case 'xai':
+            childEnv.XAI_API_KEY = options.apiKey;
+            break;
+          case 'gemini':
+          default:
+            childEnv.GEMINI_API_KEY = options.apiKey;
+            break;
         }
+      } else if (provider === 'openrouter' && process.env.OPENROUTER_API_KEY) {
+        // Use server OpenRouter key for free/proxy models when BYO not supplied
+        childEnv.OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY;
       }
+      
+      // For other providers, the BYO key should already be set above (still no fallback)
 
       // Debug: Log environment keys (not values) to verify they're present
       const envKeys = Object.keys(childEnv).filter(k => k.includes('API_KEY'));
@@ -277,64 +484,9 @@ export class PoetiqService {
         try {
           const event = JSON.parse(trimmed) as PoetiqBridgeEvent;
           pushEvent(event);
-          
-          // Forward to callback if provided
-          onEvent?.(event);
-
-          // Broadcast ALL event types to WebSocket if session provided (Saturn pattern)
-          if (options.sessionId) {
-            if (event.type === 'start') {
-              broadcast(options.sessionId, {
-                type: 'start',
-                status: 'running',
-                phase: 'starting',
-                message: `Poetiq solver starting for ${puzzleId}...`,
-                metadata: (event as any).metadata,
-              });
-            } else if (event.type === 'progress') {
-              broadcast(options.sessionId, {
-                type: 'progress',
-                status: 'running',
-                phase: event.phase,
-                iteration: event.iteration,
-                message: event.message,
-                expert: event.expert,
-                code: event.code,
-                reasoning: event.reasoning,
-                trainResults: event.trainResults,
-              });
-            } else if (event.type === 'log') {
-              // Forward log events so UI can display them
-              // Include phase: 'log' so frontend state doesn't get corrupted
-              broadcast(options.sessionId, {
-                type: 'log',
-                status: 'running',
-                phase: 'log',  // Prevent undefined phase issues
-                level: event.level,
-                message: event.message,
-              });
-            } else if (event.type === 'error') {
-              broadcast(options.sessionId, {
-                type: 'error',
-                status: 'error',
-                phase: 'error',
-                message: event.message,
-                traceback: event.traceback,
-              });
-            }
-          }
-
-          // Capture final result with sanitized config metadata
-          if (event.type === 'final') {
-            finalResult = this.enrichResultWithConfig(event.result, options);
-          }
-
-          // Log errors to console
-          if (event.type === 'error') {
-            console.error(`[Poetiq] Error: ${event.message}`);
-            if (event.traceback) {
-              console.error(`[Poetiq] Traceback:\n${event.traceback}`);
-            }
+          const candidate = this.handleBridgeEvent(event, puzzleId, options, onEvent);
+          if (candidate) {
+            finalResult = candidate;
           }
 
         } catch {
@@ -400,6 +552,80 @@ export class PoetiqService {
     });
   }
 
+  private handleBridgeEvent(
+    event: PoetiqBridgeEvent,
+    puzzleId: string,
+    options: PoetiqOptions,
+    onEvent?: (event: PoetiqBridgeEvent) => void
+  ): PoetiqResult | null {
+    onEvent?.(event);
+
+    if (options.sessionId) {
+      if (event.type === 'start') {
+        broadcast(options.sessionId, {
+          type: 'start',
+          status: 'running',
+          phase: 'starting',
+          message: `Poetiq solver starting for ${puzzleId}...`,
+          metadata: (event as any).metadata,
+        });
+      } else if (event.type === 'progress') {
+        broadcast(options.sessionId, {
+          type: 'progress',
+          status: 'running',
+          phase: event.phase,
+          iteration: event.iteration,
+          message: event.message,
+          expert: event.expert,
+          code: event.code,
+          reasoning: event.reasoning,
+          reasoningSummary: event.reasoningSummary,
+          trainResults: event.trainResults,
+          promptData: event.promptData,
+          agentRunId: event.agentRunId,
+          agentModel: event.agentModel,
+          agentTimelineItem: event.agentTimelineItem,
+          agentReasoningDelta: event.agentReasoningDelta,
+          tokenUsage: (event as any).tokenUsage,
+          cost: (event as any).cost,
+          expertCumulativeTokens: (event as any).expertCumulativeTokens,
+          expertCumulativeCost: (event as any).expertCumulativeCost,
+          globalTokens: (event as any).globalTokens,
+          globalCost: (event as any).globalCost,
+        });
+      } else if (event.type === 'log') {
+        broadcast(options.sessionId, {
+          type: 'log',
+          status: 'running',
+          phase: 'log',
+          level: event.level,
+          message: event.message,
+        });
+      } else if (event.type === 'error') {
+        broadcast(options.sessionId, {
+          type: 'error',
+          status: 'error',
+          phase: 'error',
+          message: event.message,
+          traceback: event.traceback,
+        });
+      }
+    }
+
+    if (event.type === 'error') {
+      console.error(`[Poetiq] Error: ${event.message}`);
+      if (event.traceback) {
+        console.error(`[Poetiq] Traceback:\n${event.traceback}`);
+      }
+    }
+
+    if (event.type === 'final') {
+      return this.enrichResultWithConfig(event.result, options);
+    }
+
+    return null;
+  }
+
   private slugifyModelId(modelId?: string | null): string {
     if (!modelId || typeof modelId !== 'string') {
       return 'unknown';
@@ -421,7 +647,7 @@ export class PoetiqService {
    */
   transformToExplanationData(result: PoetiqResult, task?: ARCTask): PoetiqExplanationData {
     const rawPredictions = Array.isArray(result.predictions) ? result.predictions : [];
-    const normalizedPredictions = rawPredictions.map(pred => this.normalizePredictionGrid(pred));
+    const normalizedPredictions: (number[][] | null)[] = rawPredictions.map(pred => this.normalizePredictionGrid(pred));
     const hasMultiple = normalizedPredictions.filter(Boolean).length > 1;
     
     // Build pattern description from generated code
@@ -508,8 +734,8 @@ export class PoetiqService {
     const isPredictionCorrect =
       singleValidation?.isPredictionCorrect ?? (result.isPredictionCorrect || false);
 
-    const multiplePredictedOutputs = hasValidatedMulti
-      ? multiValidation?.multiplePredictedOutputs ?? []
+    const multiplePredictedOutputs: (number[][] | null)[] | null = hasValidatedMulti
+      ? (multiValidation?.multiplePredictedOutputs ?? [])
       : hasMultiple
         ? normalizedPredictions
         : null;

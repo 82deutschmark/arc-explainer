@@ -47,6 +47,13 @@ export type SaturnBridgeOptions = {
   };
 };
 
+export type BeetreeBridgeOptions = {
+  taskId: string;
+  testIndex: number;
+  mode: 'testing' | 'production';
+  runTimestamp?: string;
+};
+
 export type SaturnBridgeEvent =
   | { type: 'start'; metadata?: any; source?: 'python' }
   | {
@@ -97,6 +104,54 @@ export type SaturnBridgeEvent =
       source?: 'python';
     };
 
+export type BeetreeBridgeEvent =
+  | { type: 'start'; metadata?: any; source?: 'python' }
+  | {
+      type: 'progress';
+      status: string;
+      stage: string;
+      outcome?: string;
+      event?: string;
+      predictions?: number[][][];
+      costSoFar?: number;
+      tokensUsed?: { input: number; output: number; reasoning: number };
+      timestamp: number;
+      source?: 'python';
+    }
+  | { type: 'log'; level: 'info' | 'warn' | 'error'; message: string; source?: 'python' }
+  | {
+      type: 'final';
+      success: boolean;
+      predictions?: number[][][];
+      result: {
+        taskId: string;
+        testIndex: number;
+        mode: string;
+        runTimestamp: string;
+        predictions: number[][][];
+        costBreakdown: {
+          total_cost: number;
+          by_model: Array<{
+            model_name: string;
+            input_tokens: number;
+            output_tokens: number;
+            reasoning_tokens: number;
+            cost: number;
+          }>;
+          by_stage: Array<{
+            stage: string;
+            cost: number;
+            duration_ms: number;
+          }>;
+          total_tokens: { input: number; output: number; reasoning: number };
+        };
+        verboseLog: string;
+      };
+      timingMs: number;
+      source?: 'python';
+    }
+  | { type: 'error'; message: string; source?: 'python' };
+
 export class PythonBridge {
   private resolvePythonBin(): string {
     // Allow override via env
@@ -110,6 +165,10 @@ export class PythonBridge {
 
   private resolveWrapperPath(): string {
     return path.join(process.cwd(), 'server', 'python', 'saturn_wrapper.py');
+  }
+
+  private resolveBeetreeWrapperPath(): string {
+    return path.join(process.cwd(), 'server', 'python', 'beetree_wrapper.py');
   }
 
   async runSaturnAnalysis(
@@ -209,6 +268,118 @@ export class PythonBridge {
         } catch (err) {
           // Non-JSON output (likely AI model responses) - forward as log event
           console.log(`[SATURN-DEBUG] Non-JSON stdout (AI response): ${trimmed.substring(0, 100)}...`);
+          onEvent({ type: 'log', level: 'info', message: trimmed, source: 'python' });
+        }
+      });
+
+      // Forward stderr as logs
+      const rlErr = readline.createInterface({ input: child.stderr });
+      rlErr.on('line', (line) => {
+        logBuffer.push(`[stderr] ${line}`);
+        onEvent({ type: 'log', level: 'error', message: line, source: 'python' });
+      });
+
+      // Send payload
+      child.stdin.setDefaultEncoding('utf8');
+      child.stdin.write(JSON.stringify(payload));
+      child.stdin.end();
+
+      child.on('close', (code) => {
+        resolve({ code });
+      });
+
+      child.on('error', (err) => {
+        onEvent({ type: 'error', message: err instanceof Error ? err.message : String(err) });
+        resolve({ code: -1 });
+      });
+    });
+  }
+
+  async runBeetreeAnalysis(
+    payload: BeetreeBridgeOptions,
+    onEvent: (evt: BeetreeBridgeEvent) => void
+  ): Promise<{ code: number | null }> {
+    return new Promise((resolve) => {
+      const pythonBin = this.resolvePythonBin();
+      const wrapper = this.resolveBeetreeWrapperPath();
+
+      // Force UTF-8 for Python stdio to prevent Windows 'charmap' codec errors
+      const envUtf8 = {
+        ...process.env,
+        PYTHONIOENCODING: 'utf-8',
+        PYTHONUTF8: '1',
+      } as NodeJS.ProcessEnv;
+
+      // Beetree requires all three provider API keys
+      const beetreeSensitiveEnv = [
+        'OPENAI_API_KEY',
+        'OPENAI_BASE_URL',
+        'OPENAI_ORG_ID',
+        'ANTHROPIC_API_KEY',
+        'GOOGLE_AI_API_KEY',
+      ] as const;
+
+      for (const key of beetreeSensitiveEnv) {
+        if (process.env[key]) {
+          envUtf8[key] = process.env[key];
+        }
+      }
+
+      const spawnOpts: SpawnOptions = {
+        cwd: path.dirname(wrapper),
+        env: envUtf8,
+        stdio: ['pipe', 'pipe', 'pipe'],
+      };
+
+      const child = spawn(pythonBin, [wrapper], spawnOpts);
+
+      // Ensure stdio streams are available
+      if (!child.stdout || !child.stderr || !child.stdin) {
+        onEvent({ type: 'error', message: 'Python process streams not available (stdout/stderr/stdin null)' });
+        return resolve({ code: -1 });
+      }
+
+      // Ensure Node reads UTF-8 from Python
+      child.stdout.setEncoding('utf8');
+      child.stderr.setEncoding('utf8');
+
+      // Buffers for verbose log
+      const logBuffer: string[] = [];
+
+      // Stream stdout as NDJSON
+      const rl = readline.createInterface({ input: child.stdout });
+      rl.on('line', (line) => {
+        const trimmed = line.trim();
+        if (!trimmed) return;
+        
+        // Always capture ALL stdout in logBuffer first
+        logBuffer.push(trimmed);
+        
+        try {
+          const evt = JSON.parse(trimmed) as any;
+          // Tag source for downstream consumers
+          if (evt && typeof evt === 'object' && !evt.source) {
+            evt.source = 'python';
+          }
+          
+          // Attach verbose log on final
+          if (evt.type === 'final') {
+            const verboseFromPy: string | undefined = evt?.result?.verboseLog;
+            const buffered = logBuffer.join('\n');
+            const beetreeLog = [verboseFromPy || '', buffered].filter(Boolean).join('\n');
+            const augmented = {
+              ...evt,
+              result: {
+                ...evt.result,
+                verboseLog: beetreeLog
+              }
+            } as any;
+            onEvent(augmented as BeetreeBridgeEvent);
+          } else {
+            onEvent(evt as BeetreeBridgeEvent);
+          }
+        } catch (err) {
+          // Non-JSON output - forward as log event
           onEvent({ type: 'log', level: 'info', message: trimmed, source: 'python' });
         }
       });

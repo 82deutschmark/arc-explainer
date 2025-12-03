@@ -1,3 +1,12 @@
+/**
+ * Author: Claude Code using Sonnet 4.5 (Updated 2025-12-02)
+ * Date: 2025-12-02
+ * PURPOSE: Vite dev server middleware setup for Express. Configures HMR WebSocket to work
+ * correctly when Vite runs in middleware mode behind Express (localhost:5000), ensuring
+ * the client connects to the correct port instead of defaulting to 5173.
+ * SRP/DRY check: Pass - Single responsibility for Vite middleware configuration
+ */
+
 import express, { type Express } from "express";
 import fs from "fs";
 import path from "path";
@@ -46,6 +55,8 @@ export async function setupVite(app: Express, server: Server) {
         server,
         protocol: 'ws',
         host: 'localhost',
+        port: 5000,  // Explicitly set HMR to use the Express server port
+        clientPort: 5000,  // Tell the client to connect to port 5000, not 5173
       },
     },
     appType: "custom",

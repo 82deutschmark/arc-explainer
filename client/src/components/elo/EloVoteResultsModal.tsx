@@ -41,9 +41,9 @@ interface EloVoteResultsModalProps {
   onContinue: () => void;
   voteResult: VoteResultData;
   outcome: 'A_WINS' | 'B_WINS' | 'BOTH_BAD';
-  correctAnswerGrid: number[][];
-  predictionA: number[][];
-  predictionB: number[][];
+  correctAnswerGrid: number[][] | number[][][];
+  predictionA: number[][] | number[][][];
+  predictionB: number[][] | number[][][];
   modelA: {
     name: string;
     accuracy?: ModelAccuracyData;
@@ -66,10 +66,29 @@ export const EloVoteResultsModal: React.FC<EloVoteResultsModalProps> = ({
   modelA,
   modelB
 }) => {
-  const isACorrect = correctAnswerGrid && predictionA &&
-    JSON.stringify(correctAnswerGrid) === JSON.stringify(predictionA);
-  const isBCorrect = correctAnswerGrid && predictionB &&
-    JSON.stringify(correctAnswerGrid) === JSON.stringify(predictionB);
+  // Handle both single grid (2D) and multiple grids (3D)
+  const correctGrids = Array.isArray(correctAnswerGrid?.[0]?.[0])
+    ? (correctAnswerGrid as number[][][])
+    : ([correctAnswerGrid] as number[][][]);
+
+  const gridsPredictionA = Array.isArray(predictionA?.[0]?.[0])
+    ? (predictionA as number[][][])
+    : ([predictionA] as number[][][]);
+
+  const gridsPredictionB = Array.isArray(predictionB?.[0]?.[0])
+    ? (predictionB as number[][][])
+    : ([predictionB] as number[][][]);
+
+  // Check if all predictions match all correct answers
+  const isACorrect = gridsPredictionA.length === correctGrids.length &&
+    gridsPredictionA.every((pred, i) =>
+      JSON.stringify(pred) === JSON.stringify(correctGrids[i])
+    );
+
+  const isBCorrect = gridsPredictionB.length === correctGrids.length &&
+    gridsPredictionB.every((pred, i) =>
+      JSON.stringify(pred) === JSON.stringify(correctGrids[i])
+    );
 
   const handleContinue = () => {
     onClose();
@@ -108,66 +127,84 @@ export const EloVoteResultsModal: React.FC<EloVoteResultsModalProps> = ({
 
           {/* Actual vs Predicted Results */}
           <div>
-            <h3 className="font-semibold mb-4">Actual vs Predicted Results</h3>
-            <div className="overflow-x-auto">
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 min-w-fit">
-              {/* Correct Answer */}
-              <div className="text-center min-w-0 flex flex-col items-center">
-                <h4 className="font-medium mb-2">Correct Answer</h4>
-                <PuzzleGrid
-                  grid={correctAnswerGrid}
-                  title="Correct Output"
-                  showEmojis={false}
-                />
-              </div>
-
-              {/* Prediction A */}
-              <div className="text-center min-w-0 flex flex-col items-center">
-                <div className="flex items-center justify-center gap-2 mb-2">
-                  <h4 className="font-medium">Model A Prediction</h4>
-                  {isACorrect ? (
-                    <CheckCircle className="h-4 w-4 text-green-600" />
-                  ) : (
-                    <XCircle className="h-4 w-4 text-red-600" />
+            <h3 className="font-semibold mb-4">
+              Actual vs Predicted Results {correctGrids.length > 1 && `(${correctGrids.length} test cases)`}
+            </h3>
+            <div className="space-y-6">
+              {correctGrids.map((correctGrid, testIndex) => (
+                <div key={testIndex} className="overflow-x-auto border-t pt-4">
+                  {correctGrids.length > 1 && (
+                    <h4 className="text-sm font-medium mb-3 text-gray-600">Test Case {testIndex + 1}</h4>
                   )}
-                </div>
-                <PuzzleGrid
-                  grid={predictionA}
-                  title="Prediction A"
-                  showEmojis={false}
-                />
-                <Badge
-                  variant="outline"
-                  className={`mt-2 ${isACorrect ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'}`}
-                >
-                  {isACorrect ? 'Correct' : 'Incorrect'}
-                </Badge>
-              </div>
+                  <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 min-w-fit">
+                    {/* Correct Answer */}
+                    <div className="text-center min-w-0 flex flex-col items-center">
+                      <h4 className="font-medium mb-2">Correct Answer</h4>
+                      <PuzzleGrid
+                        grid={correctGrid}
+                        title="Correct Output"
+                        showEmojis={false}
+                      />
+                    </div>
 
-              {/* Prediction B */}
-              <div className="text-center min-w-0 flex flex-col items-center">
-                <div className="flex items-center justify-center gap-2 mb-2">
-                  <h4 className="font-medium">Model B Prediction</h4>
-                  {isBCorrect ? (
-                    <CheckCircle className="h-4 w-4 text-green-600" />
-                  ) : (
-                    <XCircle className="h-4 w-4 text-red-600" />
-                  )}
+                    {/* Prediction A */}
+                    <div className="text-center min-w-0 flex flex-col items-center">
+                      <div className="flex items-center justify-center gap-2 mb-2">
+                        <h4 className="font-medium">Model A Prediction</h4>
+                        {gridsPredictionA[testIndex] && JSON.stringify(gridsPredictionA[testIndex]) === JSON.stringify(correctGrid) ? (
+                          <CheckCircle className="h-4 w-4 text-green-600" />
+                        ) : (
+                          <XCircle className="h-4 w-4 text-red-600" />
+                        )}
+                      </div>
+                      <PuzzleGrid
+                        grid={gridsPredictionA[testIndex] || []}
+                        title="Prediction A"
+                        showEmojis={false}
+                      />
+                    </div>
+
+                    {/* Prediction B */}
+                    <div className="text-center min-w-0 flex flex-col items-center">
+                      <div className="flex items-center justify-center gap-2 mb-2">
+                        <h4 className="font-medium">Model B Prediction</h4>
+                        {gridsPredictionB[testIndex] && JSON.stringify(gridsPredictionB[testIndex]) === JSON.stringify(correctGrid) ? (
+                          <CheckCircle className="h-4 w-4 text-green-600" />
+                        ) : (
+                          <XCircle className="h-4 w-4 text-red-600" />
+                        )}
+                      </div>
+                      <PuzzleGrid
+                        grid={gridsPredictionB[testIndex] || []}
+                        title="Prediction B"
+                        showEmojis={false}
+                      />
+                    </div>
+                  </div>
                 </div>
-                <PuzzleGrid
-                  grid={predictionB}
-                  title="Prediction B"
-                  showEmojis={false}
-                />
-                <Badge
-                  variant="outline"
-                  className={`mt-2 ${isBCorrect ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'}`}
-                >
-                  {isBCorrect ? 'Correct' : 'Incorrect'}
-                </Badge>
+              ))}
+            </div>
+
+            {/* Overall Result Summary */}
+            {correctGrids.length > 1 && (
+              <div className="mt-6 p-4 bg-gray-50 rounded-lg">
+                <h4 className="font-medium mb-2">Overall Results</h4>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <p className="text-sm text-gray-600">Model A</p>
+                    <Badge className={`mt-1 ${isACorrect ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+                      {isACorrect ? 'All Correct' : 'Some Incorrect'}
+                    </Badge>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-600">Model B</p>
+                    <Badge className={`mt-1 ${isBCorrect ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+                      {isBCorrect ? 'All Correct' : 'Some Incorrect'}
+                    </Badge>
+                  </div>
+                </div>
               </div>
-            </div>
-            </div>
+            )}
           </div>
 
           {/* Model Performance Stats */}

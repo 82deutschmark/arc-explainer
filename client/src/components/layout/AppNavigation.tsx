@@ -184,6 +184,13 @@ const navigationItems: NavItem[] = [
         href: '/poetiq',
         icon: Code,
         description: 'Help verify the Poetiq code-generation solver with your API key'
+      },
+      {
+        type: 'link',
+        title: 'Snake Arena',
+        href: '/snake-arena',
+        icon: Gamepad2,
+        description: 'Embedded SnakeBench LLM Snake Arena frontend'
       }
     ]
   },

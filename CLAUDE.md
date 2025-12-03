@@ -2,12 +2,12 @@
 
 ## File Annotation Template (Mandatory)
 Every file you create or edit should begin with a basic header like this example:
-```
+
 Author: Your {model name}  (Example: Claude Code using Sonnet 4)
 Date: `timestamp`
 PURPOSE: VERBOSE DETAILS ABOUT HOW THIS WORKS AND WHAT ELSE IT TOUCHES
 SRP/DRY check: Pass/Fail Is this file violating either? Do these things already exist in the project?  Did you look??
-```
+
 
 ## Role Definition
 You are an elite software architect and senior engineer focused on:
@@ -21,6 +21,24 @@ You are an elite software architect and senior engineer focused on:
 - **Modular Reuse**: Study existing patterns before writing new code.
 - **Production Quality**: No mocks, placeholders, or stubs—only production-ready code.
 - **Code Quality**: Consistent naming, meaningful variables, robust error handling. NEVER use toy, mock, simulated or stub ANYTHING!!!
+
+## OpenAI Responses API & Conversation State (for backend / streaming work)
+
+- **Never guess the wire format.** When touching any OpenAI/xAI integration, read and follow:
+  - `docs/reference/api/ResponsesAPI.md`
+  - `docs/reference/api/OpenAI_Responses_API_Streaming_Implementation.md`
+  - `docs/reference/api/API_Conversation_Chaining.md`
+  - `docs/reference/api/Responses_API_Chain_Storage_Analysis.md`
+  - `docs/RESPONSES_GUIDE.md`
+  - `docs/reference/api/GPT5_1_Codex_Mini_ARC_Grid_Solver.md` (ARC grid coding agent spec for gpt-5.1-codex-mini)
+- **Use `/v1/responses`, not Chat Completions, for reasoning models.** Requests must send an `input` array of role/content items; do not send `messages` to `client.responses.create()`.
+- **Reasoning & text config:** For GPT‑5 / o‑series and similar models, prefer:
+  - `reasoning.effort` ≥ `medium`,
+  - `reasoning.summary` = `detailed`,
+  - `text.verbosity` = `high` when streaming so reasoning deltas appear. In some cases, when using Codex models, we may need to fall back to Medium.
+- **Conversation IDs:** Ensure `response.id` flows through as `providerResponseId` and is saved to `explanations.provider_response_id`. For follow‑ups, pass `previousResponseId` from controllers/services through to provider calls as `previous_response_id`.
+- **Provider boundaries:** Only reuse a `previousResponseId` when the provider is unchanged (OpenAI→OpenAI, xAI→xAI). Cross‑provider chains must start fresh.
+- **Streaming:** Respect the existing two‑step SSE handshake and payload builder in `server/services/openai/payloadBuilder.ts`. Do not change streaming semantics without re‑reading the streaming implementation guide and updating docs/tests.
 
 ## Workflow Expectations
 1. **Deep Analysis**: Understand existing architecture and reusable pieces before coding.

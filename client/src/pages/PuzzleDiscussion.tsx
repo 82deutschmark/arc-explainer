@@ -18,13 +18,14 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { CollapsibleCard } from '@/components/ui/collapsible-card';
-import { Brain, Loader2, AlertTriangle, Search, Info } from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Brain, Loader2, AlertTriangle, Search, Info, Sparkles } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
-// Refinement-specific components
+// Grid rendering
 import { TinyGrid } from '@/components/puzzle/TinyGrid';
-import { PuzzleGrid } from '@/components/puzzle/PuzzleGrid';
+
+// Refinement-specific components
 import { ProfessionalRefinementUI } from '@/components/puzzle/refinement/ProfessionalRefinementUI';
 import { StreamingAnalysisPanel } from '@/components/puzzle/StreamingAnalysisPanel';
 import { AnalysisSelector } from '@/components/puzzle/refinement/AnalysisSelector';
@@ -61,7 +62,9 @@ export default function PuzzleDiscussion() {
   }, [taskId]);
 
   // Data hooks
-  const { currentTask: task, isLoadingTask, taskError } = usePuzzle(taskId);
+  // IMPORTANT: Use `task` directly (query data) instead of `currentTask` state wrapper
+  // to avoid a race where isLoadingTask is false but currentTask is still null.
+  const { task, isLoadingTask, taskError } = usePuzzle(taskId);
   const { explanations, isLoading: isLoadingExplanations, refetchExplanations } = usePuzzleWithExplanation(taskId || '');
   const { data: models } = useModels();
 
@@ -138,7 +141,8 @@ export default function PuzzleDiscussion() {
     omitAnswer: true, // CRITICAL FIX: Must withhold test answers in solver mode to prevent data leakage
     originalExplanation: selectedExplanation,
     customChallenge: refinementState.userGuidance,
-    previousResponseId: refinementState.getLastResponseId() // Single-model chaining
+    previousResponseId: refinementState.getLastResponseId(), // Single-model chaining
+    models
   });
 
   const isStreamingActive = streamingModelKey !== null;
@@ -360,42 +364,46 @@ export default function PuzzleDiscussion() {
   }, [explanations]);
 
   // Auto-start refinement when ?select= parameter is present
+  // FIX: Inlined startRefinement call directly instead of using handleStartRefinement to avoid
+  // closure race conditions where the function captures stale explanations data. Also removed
+  // the 100ms setTimeout which added unnecessary delay and potential for state drift.
   useEffect(() => {
     // Only attempt auto-selection when:
     // 1. We have a selectId from URL
     // 2. Explanations are loaded (not loading and exists)
     // 3. Refinement is not already active (prevent double-activation)
     // 4. Not already auto-selecting (prevent double-trigger)
-    if (selectId && explanations && explanations.length > 0 && !isLoadingExplanations && !refinementState.isRefinementActive && !isAutoSelecting) {
-      console.log(`[PuzzleDiscussion] 🔍 Auto-select initiating for ID ${selectId}...`);
-      setIsAutoSelecting(true);
-
-      const explanation = explanations.find(e => e.id === selectId);
-      if (explanation) {
-        console.log(`[PuzzleDiscussion] ✅ Found explanation #${selectId}`);
-        console.log(`[PuzzleDiscussion] Model: ${explanation.modelName}, Has Response ID: ${!!explanation.providerResponseId}`);
-
-        // Small delay to ensure state updates have propagated
-        setTimeout(() => {
-          handleStartRefinement(selectId);
-          setIsAutoSelecting(false);
-          toast({
-            title: "Refinement loaded",
-            description: `Starting refinement for explanation #${selectId}`,
-          });
-        }, 100);
-      } else {
-        console.error(`[PuzzleDiscussion] ❌ Explanation #${selectId} not found`);
-        console.error(`[PuzzleDiscussion] Available IDs: ${explanations.map(e => e.id).join(', ')}`);
-        setIsAutoSelecting(false);
-        toast({
-          title: "Explanation not found",
-          description: `Could not find explanation #${selectId}. It may have been deleted or is not eligible for refinement.`,
-          variant: "destructive"
-        });
-      }
+    if (!selectId || !explanations || explanations.length === 0 || isLoadingExplanations || refinementState.isRefinementActive || isAutoSelecting) {
+      return;
     }
-  }, [selectId, explanations, isLoadingExplanations, refinementState.isRefinementActive, isAutoSelecting, toast, handleStartRefinement]);
+
+    console.log(`[PuzzleDiscussion] 🔍 Auto-select initiating for ID ${selectId}...`);
+    setIsAutoSelecting(true);
+
+    const explanation = explanations.find(e => e.id === selectId);
+    if (explanation) {
+      console.log(`[PuzzleDiscussion] ✅ Found explanation #${selectId}`);
+      console.log(`[PuzzleDiscussion] Model: ${explanation.modelName}, Has Response ID: ${!!explanation.providerResponseId}`);
+
+      refinementState.startRefinement(explanation);
+      setIsAutoSelecting(false);
+      toast({
+        title: "Refinement loaded",
+        description: `Starting refinement for explanation #${selectId}`,
+      });
+    } else {
+      console.error(`[PuzzleDiscussion] ❌ Explanation #${selectId} not found`);
+      console.error(`[PuzzleDiscussion] Available IDs: ${explanations.map(e => e.id).join(', ')}`);
+      setIsAutoSelecting(false);
+      toast({
+        title: "Explanation not found",
+        description: `Could not find explanation #${selectId}. It may have been deleted or is not eligible for refinement.`,
+        variant: "destructive"
+      });
+    }
+  // NOTE: toast and refinementState.startRefinement intentionally omitted - they're stable references
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectId, explanations, isLoadingExplanations, refinementState.isRefinementActive, isAutoSelecting]);
 
   // Loading states
   if (isLoadingTask || isLoadingExplanations || isAutoSelecting) {
@@ -434,7 +442,7 @@ export default function PuzzleDiscussion() {
   // No taskId - show search and recent eligible explanations
   if (!taskId) {
     return (
-      <div className="w-full space-y-4">
+      <div className="w-full max-w-6xl mx-auto px-4 space-y-4 pb-6">
         {/* Search Card */}
         <Card>
           <CardHeader>
@@ -546,7 +554,7 @@ export default function PuzzleDiscussion() {
 
   // Main interface
   return (
-    <div className="w-full space-y-4">
+    <div className="w-full max-w-6xl mx-auto px-4 space-y-4 pb-6">
       {/* Breadcrumb Navigation */}
       <div className="text-sm breadcrumbs">
         <ul>
@@ -573,65 +581,44 @@ export default function PuzzleDiscussion() {
         </div>
       </div>
 
-      {/* Compact Puzzle Display */}
-      <CollapsibleCard
-        title="Puzzle Overview"
-        defaultOpen={false}
-        headerDescription={
-          <div className="flex items-center gap-2 text-sm text-gray-600">
-            <Badge variant="outline" className="text-xs">{task!.train.length} training</Badge>
-            <Badge variant="outline" className="text-xs">{task!.test.length} test</Badge>
-          </div>
-        }
-      >
-        <div className="space-y-3">
-          {/* Training Examples - Compact */}
-          <div>
-            <div className="text-xs font-semibold text-gray-600 mb-1">Training Examples</div>
-            <div className="flex gap-2 overflow-x-auto pb-2">
-              {task!.train.map((ex, i) => (
-                <div key={i} className="flex gap-1 flex-shrink-0">
-                  <div className="text-center">
-                    <div className="text-[10px] text-gray-500 mb-0.5">In</div>
-                    <div className="w-20 h-20 border border-gray-300 rounded">
-                      <TinyGrid grid={ex.input} />
+      {/* Compact Test Grid Preview - mirror ModelDebate / IndividualDebate behavior */}
+      {task && task.test && task.test.length > 0 && (
+        <Card className="border-gray-300">
+          <CardHeader className="p-2 pb-1">
+            <CardTitle className="text-sm flex items-center gap-2">
+              Test Cases
+              <Badge variant="outline" className="text-xs">
+                {task.test.length} test{task.test.length !== 1 ? 's' : ''}
+              </Badge>
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="p-2 pt-0">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+              {task.test.map((testCase, idx) => (
+                <div key={idx} className="space-y-1">
+                  <div className="text-[10px] font-medium text-gray-600">Test {idx + 1}</div>
+                  <div className="grid grid-cols-2 gap-1">
+                    <div>
+                      <div className="text-[9px] text-gray-500 mb-0.5">Input</div>
+                      <TinyGrid
+                        grid={testCase.input}
+                        className="border border-gray-300 rounded"
+                      />
                     </div>
-                  </div>
-                  <div className="text-center">
-                    <div className="text-[10px] text-gray-500 mb-0.5">Out</div>
-                    <div className="w-20 h-20 border border-gray-300 rounded">
-                      <TinyGrid grid={ex.output} />
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Test Cases - Compact */}
-          <div className="border-t pt-2">
-            <div className="text-xs font-semibold text-gray-600 mb-1">Test Cases</div>
-            <div className="flex gap-2 overflow-x-auto pb-2">
-              {task!.test.map((test, i) => (
-                <div key={i} className="flex gap-1 flex-shrink-0">
-                  <div className="text-center">
-                    <div className="text-[10px] text-gray-500 mb-0.5">In</div>
-                    <div className="w-20 h-20 border border-gray-300 rounded">
-                      <TinyGrid grid={test.input} />
-                    </div>
-                  </div>
-                  <div className="text-center">
-                    <div className="text-[10px] text-green-600 mb-0.5 font-semibold">✓</div>
-                    <div className="w-20 h-20 border-2 border-green-500 rounded">
-                      <TinyGrid grid={test.output} />
+                    <div>
+                      <div className="text-[9px] text-gray-500 mb-0.5">Output</div>
+                      <TinyGrid
+                        grid={testCase.output}
+                        className="border border-gray-300 rounded"
+                      />
                     </div>
                   </div>
                 </div>
               ))}
             </div>
-          </div>
-        </div>
-      </CollapsibleCard>
+          </CardContent>
+        </Card>
+      )}
 
       {refinementState.isRefinementActive && explanations ? (
         (() => {
@@ -646,44 +633,44 @@ export default function PuzzleDiscussion() {
             );
           }
 
-          return (
-            <>
-              <ProfessionalRefinementUI
-                iterations={refinementState.iterations}
-                taskId={taskId}
-                task={task!}
-                testCases={task!.test}
-                models={models}
-                activeModel={refinementState.activeModel}
-                userGuidance={refinementState.userGuidance}
-                isProcessing={processingModels.has(refinementState.activeModel)}
-                error={analyzerErrors.get(refinementState.activeModel) || null}
-                promptId={promptId}
-                setPromptId={setPromptId}
-                customPrompt={customPrompt}
-                setCustomPrompt={setCustomPrompt}
-                temperature={temperature}
-                setTemperature={setTemperature}
-                topP={topP}
-                setTopP={setTopP}
-                candidateCount={candidateCount}
-                setCandidateCount={setCandidateCount}
-                thinkingBudget={thinkingBudget}
-                setThinkingBudget={setThinkingBudget}
-                reasoningEffort={reasoningEffort}
-                setReasoningEffort={setReasoningEffort}
-                reasoningVerbosity={reasoningVerbosity}
-                setReasoningVerbosity={setReasoningVerbosity}
-                reasoningSummaryType={reasoningSummaryType}
-                setReasoningSummaryType={setReasoningSummaryType}
-                isGPT5ReasoningModel={isGPT5ReasoningModel}
-                onBackToList={refinementState.endRefinement}
-                onResetRefinement={refinementState.resetRefinement}
-                onUserGuidanceChange={refinementState.setUserGuidance}
-                onContinueRefinement={handleGenerateRefinement}
-              />
-            </>
-          );
+        return (
+          <div className="space-y-4">
+            <ProfessionalRefinementUI
+              iterations={refinementState.iterations}
+              taskId={taskId}
+              task={task!}
+              testCases={task!.test}
+              models={models}
+              activeModel={refinementState.activeModel}
+              userGuidance={refinementState.userGuidance}
+              isProcessing={processingModels.has(refinementState.activeModel)}
+              error={analyzerErrors.get(refinementState.activeModel) || null}
+              promptId={promptId}
+              setPromptId={setPromptId}
+              customPrompt={customPrompt}
+              setCustomPrompt={setCustomPrompt}
+              temperature={temperature}
+              setTemperature={setTemperature}
+              topP={topP}
+              setTopP={setTopP}
+              candidateCount={candidateCount}
+              setCandidateCount={setCandidateCount}
+              thinkingBudget={thinkingBudget}
+              setThinkingBudget={setThinkingBudget}
+              reasoningEffort={reasoningEffort}
+              setReasoningEffort={setReasoningEffort}
+              reasoningVerbosity={reasoningVerbosity}
+              setReasoningVerbosity={setReasoningVerbosity}
+              reasoningSummaryType={reasoningSummaryType}
+              setReasoningSummaryType={setReasoningSummaryType}
+              isGPT5ReasoningModel={isGPT5ReasoningModel}
+              onBackToList={refinementState.endRefinement}
+              onResetRefinement={refinementState.resetRefinement}
+              onUserGuidanceChange={refinementState.setUserGuidance}
+              onContinueRefinement={handleGenerateRefinement}
+            />
+          </div>
+        );
         })()
       ) : refinableExplanations.length > 0 ? (
         <AnalysisSelector
@@ -735,12 +722,14 @@ export default function PuzzleDiscussion() {
         </Card>
       )}
 
-      {/* Streaming Modal Dialog (like PuzzleExaminer) */}
-      <dialog className={`modal ${isStreamingActive ? 'modal-open' : ''}`}>
-        <div className="modal-box max-w-[95vw] max-h-[90vh] overflow-y-auto">
-          <h3 className="font-bold text-lg mb-4">
-            {`Streaming ${streamingModel?.name ?? streamingModelKey ?? 'Refinement'}`}
-          </h3>
+      {/* Streaming Modal Dialog - matches PuzzleExaminer experience */}
+      <Dialog open={isStreamingActive} onOpenChange={closeStreamingModal}>
+        <DialogContent className="max-w-[95vw] max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>
+              {`Streaming ${streamingModel?.name ?? streamingModelKey ?? 'Refinement'}`}
+            </DialogTitle>
+          </DialogHeader>
           <StreamingAnalysisPanel
             title={`${streamingModel?.name ?? streamingModelKey ?? 'Refinement'}`}
             status={streamingPanelStatus}
@@ -767,23 +756,8 @@ export default function PuzzleDiscussion() {
             }
             onClose={closeStreamingModal}
           />
-        </div>
-        <form method="dialog" className="modal-backdrop">
-          <button
-            onClick={() => {
-              if (streamingPanelStatus === 'in_progress') {
-                cancelStreamingAnalysis();
-                setPendingStream(null);
-              }
-              if (streamingPanelStatus !== 'completed') {
-                closeStreamingModal();
-              }
-            }}
-          >
-            close
-          </button>
-        </form>
-      </dialog>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

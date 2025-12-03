@@ -1,8 +1,8 @@
 /**
  * Author: Cascade (Claude Sonnet 4)
  * Date: 2025-11-25
- * Updated: 2025-11-27 - Removed duplicate WebSocket broadcasting (now handled by poetiqService)
- *                       Controller callback now only logs to console for all event types.
+ * Updated: 2025-11-28 - BYO Key requirement enforced (no server key fallback)
+ *                       Removed duplicate WebSocket broadcasting (now handled by poetiqService)
  * PURPOSE: Poetiq solver API controller - handles HTTP requests for running the 
  *          Poetiq ARC-AGI solver and storing results in the database.
  * 
@@ -71,6 +71,12 @@ const ARC2_EVAL_UNTESTED = [
   'd59b0160', 'da515329', 'e87109e9', 'f560132c',
 ];
 
+const OPENROUTER_SERVER_KEY_MODELS = new Set<string>([
+  'openrouter/bert-nebulon-alpha',
+  'openrouter/kwaipilot/kat-coder-pro:free',
+  'kwaipilot/kat-coder-pro:free',
+]);
+
 /**
  * Get puzzle IDs from a dataset or predefined list
  */
@@ -137,51 +143,86 @@ export const poetiqController = {
     // Generate session ID for progress tracking
     const sessionId = randomUUID();
 
-    // Extract BYO API key (optional - falls back to env vars)
+    // Extract BYO API key (conditionally required based on provider/model)
     const apiKey = req.body?.apiKey as string | undefined;
-    const provider = req.body?.provider as 'gemini' | 'openrouter' | undefined;
+    const provider = req.body?.provider as 'gemini' | 'openrouter' | 'openai' | 'anthropic' | 'xai' | undefined;
+    const model = req.body?.model as string | undefined;
+    const promptStyleRaw = req.body?.promptStyle as string | undefined;
+    const promptStyle: 'classic' | 'arc' | 'arc_de' | 'arc_ru' | 'arc_fr' | 'arc_tr' | undefined =
+      promptStyleRaw === 'classic' ||
+      promptStyleRaw === 'arc' ||
+      promptStyleRaw === 'arc_de' ||
+      promptStyleRaw === 'arc_ru' ||
+      promptStyleRaw === 'arc_fr' ||
+      promptStyleRaw === 'arc_tr'
+        ? (promptStyleRaw as 'classic' | 'arc' | 'arc_de' | 'arc_ru' | 'arc_fr' | 'arc_tr')
+        : undefined;
 
-    // Determine if using fallback (no API key provided)
-    const usingFallback = !apiKey || apiKey.trim().length === 0;
-    if (usingFallback) {
-      console.log('[Poetiq] No BYO API key provided - using server environment variables');
+    // Only require BYO key for Gemini and OpenRouter runs.
+    // Direct OpenAI / other providers may fall back to server env keys.
+    const lowerModel = (model || '').toLowerCase();
+    const isOpenRouterModel =
+      provider === 'openrouter' ||
+      (!provider && lowerModel.startsWith('openrouter/'));
+    const requiresByo =
+      provider === 'gemini' ||
+      (!provider && lowerModel.startsWith('gemini/')) ||
+      (isOpenRouterModel && !OPENROUTER_SERVER_KEY_MODELS.has(lowerModel));
+
+    if (requiresByo && (!apiKey || apiKey.trim().length === 0)) {
+      return res.status(400).json(formatResponse.error(
+        'api_key_required',
+        'Bring Your Own Key required: Please provide your API key for this Gemini or OpenRouter model. Your key is used for this session only and is never stored.'
+      ));
     }
 
+    const useAgentsPreferenceRaw = req.body?.useAgents;
+    const useAgentsPreference =
+      typeof useAgentsPreferenceRaw === 'boolean' ? Boolean(useAgentsPreferenceRaw) : undefined;
+
     // Extract options from request body
-    const options = {
-      model: req.body?.model as string | undefined,               // LiteLLM model ID
+    const baseOptions = {
+      model,
       maxIterations: typeof req.body?.maxIterations === 'number' ? req.body.maxIterations : 10,
       numExperts: typeof req.body?.numExperts === 'number' ? req.body.numExperts : 1,
       temperature: typeof req.body?.temperature === 'number' ? req.body.temperature : 1.0,
+      reasoningEffort: req.body?.reasoningEffort as 'low' | 'medium' | 'high' | undefined,  // For GPT-5.x models
       sessionId,
       apiKey,           // BYO API key (never stored)
       provider,         // Which provider the key is for
+      promptStyle,
+      useAgentsSdk: useAgentsPreference,
     };
 
+    const runtimeMode = poetiqService.getRuntimeMode(baseOptions);
+    const options = { ...baseOptions, runtimeMode };
+
     // Broadcast initial state immediately
-    console.log('[Poetiq] Broadcasting initial state for sessionId:', sessionId, usingFallback ? '(using fallback API key)' : '');
+    console.log('[Poetiq] Broadcasting initial state for sessionId:', sessionId);
     broadcast(sessionId, {
       status: 'running',
       phase: 'initializing',
       iteration: 0,
       totalIterations: options.maxIterations,
-      message: usingFallback 
-        ? 'Starting Poetiq solver (using server API key)...' 
-        : 'Starting Poetiq solver...',
+      message:
+        runtimeMode === 'openai-agents'
+          ? 'Starting Poetiq solver via OpenAI Agents SDK...'
+          : 'Starting Poetiq solver via Python wrapper...',
       taskId,
-      usingFallback,
       config: {
         model: options.model || 'gemini/gemini-3-pro-preview',
         maxIterations: options.maxIterations,
         numExperts: options.numExperts,
         temperature: options.temperature,
+        promptStyle: options.promptStyle || 'classic',
+        runtimeMode,
       }
     });
 
     // Start async solver (non-blocking)
     setImmediate(async () => {
       try {
-        console.log(`[Poetiq] Starting solver for ${taskId}`);
+        console.log(`[Poetiq] Starting solver for ${taskId} using ${runtimeMode}`);
 
         const result = await poetiqService.solvePuzzle(
           taskId,
@@ -257,17 +298,15 @@ export const poetiqController = {
     // Return session info immediately (never include API key in response)
     return res.json(formatResponse.success({
       sessionId,
-      message: usingFallback 
-        ? 'Poetiq solver started (using server API key)' 
-        : 'Poetiq solver started',
+      message: 'Poetiq solver started',
       taskId,
-      usingFallback,
       config: {
         model: options.model || 'gemini/gemini-3-pro-preview',
         maxIterations: options.maxIterations,
         numExperts: options.numExperts,
         temperature: options.temperature,
         provider: options.provider || 'gemini',
+        runtimeMode,
       }
     }));
   },
@@ -298,21 +337,28 @@ export const poetiqController = {
     // All models route through OpenRouter (server key) or require BYO API key for direct access
     // Label format: "Model Name" + routing info to avoid confusion
     const models = [
-      // SOTA Models (Featured in Blog) - via OpenRouter
-      { id: 'openrouter/google/gemini-3-pro-preview', name: 'Gemini 3 Pro', provider: 'OpenRouter', recommended: true, routing: 'openrouter' },
-      { id: 'openai/gpt-5.1', name: 'GPT-5.1', provider: 'OpenRouter', recommended: true, routing: 'openrouter' },
-      { id: 'x-ai/grok-4.1-fast', name: 'Grok 4.1 Fast', provider: 'OpenRouter', recommended: true, routing: 'openrouter' },
-      { id: 'openai/gpt-oss-120b', name: 'GPT-OSS 120B', provider: 'OpenRouter', recommended: true, routing: 'openrouter' },
+      // SOTA Models (Featured in Blog) - via OpenRouter (BYO required)
+      { id: 'openrouter/google/gemini-3-pro-preview', name: 'Gemini 3 Pro', provider: 'OpenRouter', recommended: true, routing: 'openrouter', requiresBYO: true },
+      { id: 'openai/gpt-5.1', name: 'GPT-5.1', provider: 'OpenRouter', recommended: true, routing: 'openrouter', requiresBYO: true },
+      { id: 'x-ai/grok-4.1-fast', name: 'Grok 4.1 Fast', provider: 'OpenRouter', recommended: true, routing: 'openrouter', requiresBYO: true },
+      { id: 'openai/gpt-oss-120b', name: 'GPT-OSS 120B', provider: 'OpenRouter', recommended: true, routing: 'openrouter', requiresBYO: true },
 
-      // Direct API access (requires BYO API key)
+      // Direct API access
+      // Gemini direct requires BYO; OpenAI direct can fall back to server key.
       { id: 'gemini/gemini-3-pro-preview', name: 'Gemini 3 Pro', provider: 'Google', recommended: false, routing: 'direct', requiresBYO: true },
-      { id: 'gpt-5.1-codex-mini', name: 'GPT-5.1 Codex Mini', provider: 'OpenAI', recommended: false, routing: 'direct', requiresBYO: true },
-      { id: 'grok-4-fast-reasoning', name: 'Grok 4 Fast Reasoning', provider: 'xAI', recommended: false, routing: 'direct', requiresBYO: true },
-      { id: 'anthropic/claude-sonnet-4-5', name: 'Claude Sonnet 4.5', provider: 'Anthropic', recommended: false, routing: 'direct', requiresBYO: true },
+      { id: 'gpt-5.1-codex-mini', name: 'GPT-5.1 Codex Mini', provider: 'OpenAI', recommended: false, routing: 'direct', requiresBYO: false },
+      { id: 'gpt-5.1-codex', name: 'GPT-5.1 Codex', provider: 'OpenAI', recommended: false, routing: 'direct', requiresBYO: false },
+      { id: 'grok-4-fast-reasoning', name: 'Grok 4 Fast Reasoning', provider: 'xAI', recommended: false, routing: 'direct', requiresBYO: false },
+      { id: 'anthropic/claude-sonnet-4-5', name: 'Claude Sonnet 4.5', provider: 'Anthropic', recommended: false, routing: 'direct', requiresBYO: false },
+      { id: 'deepseek-chat', name: 'DeepSeek Chat v3.2', provider: 'DeepSeek', recommended: false, routing: 'direct', requiresBYO: true },
+      { id: 'deepseek-reasoner', name: 'DeepSeek Reasoner v3.2', provider: 'DeepSeek', recommended: false, routing: 'direct', requiresBYO: true },
+      { id: 'deepseek-reasoner-speciale', name: 'DeepSeek Reasoner v3.2-Speciale', provider: 'DeepSeek', recommended: false, routing: 'direct', requiresBYO: true },
 
-      // Other via OpenRouter
-      { id: 'openrouter/google/gemini-2.5-flash-preview-09-2025', name: 'Gemini 2.5 Flash', provider: 'OpenRouter', recommended: false, routing: 'openrouter' },
-      { id: 'openrouter/anthropic/claude-sonnet-4', name: 'Claude Sonnet 4', provider: 'OpenRouter', recommended: false, routing: 'openrouter' },
+      // Other via OpenRouter (BYO required)
+      { id: 'openrouter/google/gemini-2.5-flash-preview-09-2025', name: 'Gemini 2.5 Flash', provider: 'OpenRouter', recommended: false, routing: 'openrouter', requiresBYO: true },
+      { id: 'openrouter/anthropic/claude-sonnet-4', name: 'Claude Sonnet 4', provider: 'OpenRouter', recommended: false, routing: 'openrouter', requiresBYO: true },
+      { id: 'openrouter/bert-nebulon-alpha', name: 'Bert Nebulon Alpha (Cloaked)', provider: 'OpenRouter', recommended: false, routing: 'openrouter', requiresBYO: false },
+      { id: 'openrouter/kwaipilot/kat-coder-pro:free', name: 'Kat Coder Pro (Free)', provider: 'OpenRouter', recommended: false, routing: 'openrouter', requiresBYO: false },
     ];
 
     return res.json(formatResponse.success({ models }));
@@ -561,6 +607,10 @@ export const poetiqController = {
             isPredictionCorrect: null,
             iterationCount: null,
             elapsedMs: null,
+            inputTokens: null,
+            outputTokens: null,
+            totalTokens: null,
+            estimatedCost: null,
           };
         }
 
@@ -575,6 +625,10 @@ export const poetiqController = {
           isPredictionCorrect: poetiqExp.isPredictionCorrect,
           iterationCount: poetiqExp.iterationCount || null,
           elapsedMs: poetiqExp.apiProcessingTimeMs || null,
+          inputTokens: poetiqExp.inputTokens || null,
+          outputTokens: poetiqExp.outputTokens || null,
+          totalTokens: poetiqExp.totalTokens || null,
+          estimatedCost: poetiqExp.estimatedCost || null,
         };
       });
 

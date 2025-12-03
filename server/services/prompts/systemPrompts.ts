@@ -59,6 +59,12 @@ export const SYSTEM_PROMPT_MAP = {
       testCount,
       hasStructuredOutput
     }),
+  poetiq: (testCount?: number, hasStructuredOutput?: boolean) =>
+    buildSystemPrompt({
+      additionalInstructions: ADDITIONAL_INSTRUCTIONS.solver,
+      testCount,
+      hasStructuredOutput
+    }),
   standardExplanation: (testCount?: number, hasStructuredOutput?: boolean) => 
     buildSystemPrompt({ 
       additionalInstructions: ADDITIONAL_INSTRUCTIONS.explanation,

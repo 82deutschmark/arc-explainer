@@ -13,6 +13,7 @@ import { Link } from 'wouter';
 import { Sparkles, Clock3 } from 'lucide-react';
 
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { AnalysisResultListCard } from '@/components/puzzle/AnalysisResultListCard';
 import { determineCorrectness } from '@shared/utils/correctness';
 import { useExplanationById } from '@/hooks/useExplanation';
@@ -117,14 +118,15 @@ export const EligibleAnalysisLaunchpadCard: React.FC<EligibleAnalysisLaunchpadCa
             <Clock3 className="h-4 w-4 text-indigo-200" />
             <span>{relativeUpdated}</span>
           </div>
-          <button
+          <Button
             type="button"
+            size="sm"
+            className="gap-2 bg-gradient-to-r from-indigo-500 to-purple-500 text-white hover:from-indigo-400 hover:to-purple-400"
             onClick={() => onRefine(explanation.puzzleId, explanation.id)}
-            className="btn btn-primary btn-sm gap-2 bg-gradient-to-r from-indigo-500 to-purple-500 border-0 text-white shadow-md transition hover:from-indigo-400 hover:to-purple-400"
           >
             <Sparkles className="h-4 w-4" />
             Refine
-          </button>
+          </Button>
         </div>
       </div>
 

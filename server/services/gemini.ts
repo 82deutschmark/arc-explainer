@@ -4,14 +4,18 @@
  *
  * This service integrates with the Google Generative AI SDK to analyze ARC puzzles using Gemini models.
  * It is responsible for:
- *  - Building prompts compatible with the Gemini API, including system instructions.
- *  - Handling model-specific features like the `thinking_config` for Gemini 2.5 models.
+  *  - Building prompts compatible with the Gemini API, including system instructions.
+ *  - Handling model-specific features; thinking config is currently disabled pending SDK support.
  *  - Parsing the Gemini response structure, which separates `thought` parts from the main answer.
  *  - Using the centralized `jsonParser` for robust JSON extraction from the response text.
  *  - Extending the BaseAIService for a consistent analysis workflow.
  * NEEDS UPDATING!!
  * @assessed_by Gemini 2.5 Pro
  * @assessed_on 2025-09-09
+ * Author: Codex (GPT-5)
+ * Date: 2025-11-29
+ * PURPOSE: Direct Gemini provider integration that aligns prompts, generation config, and parsing with ARC pipeline expectations. Thinking config is gated off until SDK support is confirmed to avoid request rejections.
+ * SRP/DRY check: Pass — reuses BaseAIService and shared prompt builder; no duplicate provider logic.
  */
 
 import { GoogleGenerativeAI } from "@google/generative-ai";
@@ -163,8 +167,8 @@ export class GeminiService extends BaseAIService {
         : "System Prompt Mode: {None} - All content in user message",
       "JSON extraction via regex parsing (no structured output support)",
       modelName.includes('2.5') ? "Thinking model - supports internal reasoning" : "Standard model",
-      modelName.includes('2.5') && generationConfig.thinking_config 
-        ? `Thinking Budget: ${generationConfig.thinking_config.thinking_budget === -1 ? 'Dynamic' : generationConfig.thinking_config.thinking_budget}`
+      isAdvancedGeminiModel(modelName)
+        ? "Thinking config omitted: current SDK rejects thinking_config; enable after @google/genai migration."
         : ""
     ].filter(note => note); // Remove empty strings
 
@@ -198,21 +202,13 @@ export class GeminiService extends BaseAIService {
     const generationConfig: any = {
       response_mime_type: 'application/json',
       ...(modelSupportsTemperature(modelKey) && { temperature }),
-      ...(options?.topP && { topP: options.topP }),
-      ...(options?.candidateCount && { candidateCount: options.candidateCount })
+      ...(options?.topP !== undefined && { topP: options.topP }),
+      ...(options?.candidateCount !== undefined && { candidateCount: options.candidateCount })
     };
 
-    if (isAdvancedGeminiModel(modelKey)) {
-      if ((options as any)?.thinkingBudget !== undefined) {
-        generationConfig.thinking_config = {
-          thinking_budget: (options as any).thinkingBudget
-        };
-      } else {
-        generationConfig.thinking_config = {
-          thinking_budget: -1 // Default to dynamic
-        };
-      }
-    }
+    // Thinking config is intentionally disabled because the current Google Generative AI SDK
+    // rejects `thinking_config` (e.g., gemini-3-pro-preview). Re-enable after migrating to
+    // a SDK/version that supports thinkingConfig.
     return generationConfig;
   }
 

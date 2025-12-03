@@ -80,7 +80,7 @@ export default function PoetiqStreamingVisualizer({
               onClick={onExpand}
               className="text-xs text-cyan-400 hover:text-cyan-300"
             >
-              Expand →
+              Expand &gt;
             </button>
           )}
         </div>
@@ -279,7 +279,7 @@ export default function PoetiqStreamingVisualizer({
                     {state.result.isPredictionCorrect ? 'SOLVED!' : 'UNSOLVED'}
                   </div>
                   <div className="text-white/70 text-sm">
-                    {state.result.iterationCount} iterations • {Math.round((state.result.elapsedMs || 0) / 1000)}s
+                    {state.result.iterationCount} iterations - {Math.round((state.result.elapsedMs || 0) / 1000)}s
                   </div>
                 </div>
               </div>

@@ -26,7 +26,8 @@ import {
   getModelConfig,
   modelSupportsTemperature,
   GPT5_REASONING_MODELS,
-  MODELS_WITH_REASONING
+  MODELS_WITH_REASONING,
+  GPT5_CODEX_MODELS
 } from "../config/models/index.js";
 import { openAIClient } from "./openai/client.js";
 import { buildResponsesPayload } from "./openai/payloadBuilder.js";
@@ -325,6 +326,18 @@ export class OpenAIService extends BaseAIService {
     const normalizedKey = normalizeModelKey(modelKey);
     const isReasoningModel = MODELS_WITH_REASONING.has(normalizedKey);
     const isGPT5Model = GPT5_REASONING_MODELS.has(normalizedKey);
+    const isGPT5CodexModel = GPT5_CODEX_MODELS.has(normalizedKey);
+
+    let previewVerbosity: "low" | "medium" | "high" | undefined;
+    if (isGPT5Model) {
+      const requestedVerbosity = serviceOpts.reasoningVerbosity;
+      if (isGPT5CodexModel) {
+        // GPT-5.1 Codex models only support medium verbosity; clamp all values to medium
+        previewVerbosity = "medium";
+      } else {
+        previewVerbosity = requestedVerbosity || "high";
+      }
+    }
 
     const messageFormat: any = {
       model: modelName,
@@ -337,7 +350,7 @@ export class OpenAIService extends BaseAIService {
             }
           : { summary: "detailed" },
         ...(isGPT5Model && {
-          text: { verbosity: serviceOpts.reasoningVerbosity || "high" }
+          text: { verbosity: previewVerbosity }
         })
       })
     };

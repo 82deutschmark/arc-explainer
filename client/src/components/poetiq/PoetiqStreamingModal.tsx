@@ -85,7 +85,7 @@ export default function PoetiqStreamingModal({
               <p className="text-sm text-white/70">
                 {state.phase || 'Initializing'}
                 {state.iteration !== undefined && state.totalIterations && 
-                  ` • Iteration ${state.iteration}/${state.totalIterations}`
+                  ` - Iteration ${state.iteration}/${state.totalIterations}`
                 }
               </p>
             </div>
@@ -241,7 +241,7 @@ export default function PoetiqStreamingModal({
                     // Color-code log lines
                     let color = 'text-gray-400';
                     if (log.includes('error') || log.includes('Error')) color = 'text-red-400';
-                    else if (log.includes('success') || log.includes('✓')) color = 'text-green-400';
+                    else if (log.includes('success') || log.includes('OK')) color = 'text-green-400';
                     else if (log.includes('iteration') || log.includes('Iteration')) color = 'text-blue-400';
                     else if (log.includes('generating') || log.includes('code')) color = 'text-purple-400';
                     

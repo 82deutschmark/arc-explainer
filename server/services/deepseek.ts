@@ -1,8 +1,16 @@
-/**
- * DeepSeek Service Integration for ARC-AGI Puzzle Analysis
- * Refactored to extend BaseAIService for code consolidation
- * 
- * @author Cascade / Gemini Pro 2.5 (original), Claude (refactor)
+/*
+ * Author: Claude Code using Sonnet 4.5
+ * Date: 2025-12-01
+ * PURPOSE: DeepSeek Service Integration for ARC-AGI Puzzle Analysis (v3.2 Update)
+ *          Handles deepseek-chat (non-thinking) and deepseek-reasoner (thinking mode) models.
+ *          Implements dynamic base URL routing for standard and speciale variants.
+ *          Respects DeepSeek API constraints:
+ *          - Temperature/top_p/penalties accepted but ignored for reasoning models
+ *          - reasoning_content field excluded from multi-turn conversation history
+ *          - max_tokens controls combined output (reasoning + answer)
+ *          - FIM completion not supported for reasoning models
+ * SRP/DRY check: Pass - Extends BaseAIService for shared logic. Model-specific base URL routing.
+ * Reuses: BaseAIService, promptBuilder, models config
  */
 
 import OpenAI from "openai";
@@ -19,11 +27,35 @@ function modelSupportsTemperature(modelKey: string): boolean {
   return modelConfig?.supportsTemperature ?? true; // Most DeepSeek models support temperature
 }
 
-const deepseek = new OpenAI({
-  apiKey: process.env.DEEPSEEK_API_KEY,
-  baseURL: "https://api.deepseek.com",
-  timeout: 45 * 60 * 1000, // 45 minutes timeout for very long responses
-});
+/**
+ * Get the appropriate base URL for a DeepSeek model.
+ * v3.2-Speciale uses a special base URL with expiration.
+ *
+ * @param modelKey - The model key from config
+ * @returns The base URL for the DeepSeek API
+ */
+function getDeepSeekBaseURL(modelKey: string): string {
+  if (modelKey === 'deepseek-reasoner-speciale') {
+    return "https://api.deepseek.com/v3.2_speciale_expires_on_20251215";
+  }
+  return "https://api.deepseek.com";
+}
+
+/**
+ * Create a DeepSeek API client with the appropriate base URL.
+ * Clients are created per-request to support dynamic base URL routing.
+ *
+ * @param modelKey - The model key to determine base URL
+ * @returns OpenAI-compatible client for DeepSeek API
+ */
+function createDeepSeekClient(modelKey: string): OpenAI {
+  const baseURL = getDeepSeekBaseURL(modelKey);
+  return new OpenAI({
+    apiKey: process.env.DEEPSEEK_API_KEY,
+    baseURL,
+    timeout: 45 * 60 * 1000, // 45 minutes timeout for very long responses
+  });
+}
 
 export class DeepSeekService extends BaseAIService {
   protected provider = "DeepSeek";
@@ -78,19 +110,22 @@ export class DeepSeekService extends BaseAIService {
   getModelInfo(modelKey: string): ModelInfo {
     const modelName = getApiModelName(modelKey);
     const modelConfig = MODEL_CONFIGS.find(m => m.key === modelKey);
-    
+
     // Check if it's a reasoning model (DeepSeek Reasoner has reasoning capabilities)
-    const isReasoning = modelName.includes('reasoner');
-    
+    const isReasoning = modelName.includes('reasoner') || modelKey.includes('reasoner');
+
+    // DeepSeek-V3.2-Speciale has more restrictions than standard models
+    const isSpeciale = modelKey === 'deepseek-reasoner-speciale';
+
     return {
       name: modelName,
       isReasoning,
       supportsTemperature: modelSupportsTemperature(modelKey),
-      contextWindow: modelConfig?.contextWindow,
-      supportsFunctionCalling: true,
+      contextWindow: modelConfig?.contextWindow || 128000,
+      supportsFunctionCalling: !isSpeciale, // Speciale doesn't support tool calls
       supportsSystemPrompts: true,
-      supportsStructuredOutput: false, // DeepSeek doesn't support structured output format
-      supportsVision: false // Most DeepSeek models don't support vision currently
+      supportsStructuredOutput: !isSpeciale, // Speciale doesn't support JSON output
+      supportsVision: false // DeepSeek models don't support vision currently
     };
   }
 
@@ -175,21 +210,38 @@ export class DeepSeekService extends BaseAIService {
     const userMessage = promptPackage.userPrompt;
     const systemPromptMode = serviceOpts.systemPromptMode || 'ARC';
 
+    // Create client with appropriate base URL for this model
+    const client = createDeepSeekClient(modelKey);
+    const baseURL = getDeepSeekBaseURL(modelKey);
+
+    logger.service('DeepSeek', `Using base URL: ${baseURL}`, 'debug');
+
     // Build message array for DeepSeek API
     const messages: any[] = [];
     if (systemMessage && systemPromptMode === 'ARC') {
       messages.push({ role: "system", content: systemMessage });
     }
-    messages.push({ 
-      role: "user", 
+    messages.push({
+      role: "user",
       content: systemPromptMode === 'ARC' ? userMessage : `${systemMessage}\n\n${userMessage}`
     });
 
-    const response = await deepseek.chat.completions.create({
+    // Build request parameters
+    // Note: For reasoning models (deepseek-reasoner), temperature/top_p/penalties are
+    // accepted by the API but ignored. We still pass them for API compatibility.
+    const requestParams: any = {
       model: modelName,
       messages,
-      ...(modelSupportsTemperature(modelKey) && { temperature })
-    });
+    };
+
+    // Add temperature if model supports it (even if ignored by reasoning models)
+    if (modelSupportsTemperature(modelKey)) {
+      requestParams.temperature = temperature;
+    }
+
+    logger.service('DeepSeek', `Request params: ${JSON.stringify({ model: modelName, messageCount: messages.length, temperature: requestParams.temperature })}`, 'debug');
+
+    const response = await client.chat.completions.create(requestParams);
 
     return response;
   }

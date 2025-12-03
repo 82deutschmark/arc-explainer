@@ -12,7 +12,7 @@
 
 import React from 'react';
 import { Link } from 'wouter';
-import { Hash, Eye, Rocket, RefreshCw, ExternalLink, Palette } from 'lucide-react';
+import { Hash, Eye, Rocket, RefreshCw, ExternalLink, Palette, Users } from 'lucide-react';
 import { getPuzzleName } from '@shared/utils/puzzleNames';
 import { getSynapsomorphyArcUrl } from '@shared/utils/synapsomorphy';
 import { EMOJI_SET_INFO, type EmojiSet } from '@/lib/spaceEmojis';
@@ -168,6 +168,14 @@ export function PuzzleHeader({
           <button className="btn btn-md transition-all duration-300 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 shadow-lg shadow-purple-500/25 border-2 border-purple-400/50 text-white font-semibold rounded-lg">
             <Rocket className="h-4 w-4 mr-2" />
             🧬 Poetiq Solver
+          </button>
+        </Link>
+
+        {/* Beetree Ensemble Solver Button */}
+        <Link href={`/puzzle/beetree/${taskId}`}>
+          <button className="btn btn-md transition-all duration-300 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 shadow-lg shadow-emerald-500/25 border-2 border-emerald-400/50 text-white font-semibold rounded-lg">
+            <Users className="h-4 w-4 mr-2" />
+            🌳 Beetree Solver
           </button>
         </Link>
 

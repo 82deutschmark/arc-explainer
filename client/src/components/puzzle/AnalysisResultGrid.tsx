@@ -11,13 +11,16 @@
  * UPDATED (2025-10-22T00:00:00Z) by gpt-5-codex: Restored September's warm honeyglass panels, apricot hover states,
  * and jewel-toned badges so nested grids inherit the aurora glow from AnalysisResultCard.
  * SRP/DRY check: Pass - Single responsibility (grid display), reuses PuzzleGrid component
- * shadcn/ui: Pass - Converted to DaisyUI badge and button
+ * shadcn/ui: Pass - Uses shadcn Badge/Button components
  */
 
 import React from 'react';
 import { PuzzleGrid } from '@/components/puzzle/PuzzleGrid';
 import { CheckCircle, XCircle, ChevronDown, ChevronUp } from 'lucide-react';
 import { ExplanationData } from '@/types/puzzle';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { cn } from '@/lib/utils';
 
 interface AnalysisResultGridProps {
   result: ExplanationData;
@@ -113,9 +116,15 @@ export const AnalysisResultGrid: React.FC<AnalysisResultGridProps> = ({
               )}
               {!eloMode && (
                 <div className="mt-1 md:col-span-2">
-                  <button className="btn btn-sm border-amber-300/70 bg-white/70 text-amber-800 hover:border-rose-300/70 hover:bg-rose-50/70 dark:border-violet-700/70 dark:bg-slate-900/50 dark:text-emerald-200 dark:hover:bg-violet-900/50" onClick={() => setShowDiff(!showDiff)}>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    className="border-amber-300/70 bg-white/70 text-amber-800 hover:border-rose-300/70 hover:bg-rose-50/70 dark:border-violet-700/70 dark:bg-slate-900/50 dark:text-emerald-200 dark:hover:bg-violet-900/50"
+                    onClick={() => setShowDiff(!showDiff)}
+                  >
                     {showDiff ? 'Hide' : 'Show'} Mismatches
-                  </button>
+                  </Button>
                 </div>
               )}
             </div>
@@ -133,16 +142,19 @@ export const AnalysisResultGrid: React.FC<AnalysisResultGridProps> = ({
             <div className="flex flex-wrap items-center gap-2">
               <h5 className="text-sm font-semibold text-amber-900 dark:text-emerald-200">Multi-Test Results ({predictedGrids?.length || 0} predictions, {expectedOutputGrids.length} tests{multiTestStats.totalCount > 0 ? ` • ${multiTestStats.correctCount}/${multiTestStats.totalCount} correct` : ''})</h5>
               {!eloMode && (result.multiTestAllCorrect !== undefined || result.allPredictionsCorrect !== undefined || multiTestStats.totalCount > 0) && (
-                <div
-                  className={`badge badge-outline flex items-center gap-1 text-xs ${
-                      multiTestStats.accuracyLevel === 'all_correct' || (!multiTestStats.totalCount && (result.multiTestAllCorrect ?? result.allPredictionsCorrect))
-                        ? 'bg-emerald-100/80 border-emerald-200/70 text-emerald-800'
-                        : multiTestStats.accuracyLevel === 'all_incorrect' || (!multiTestStats.totalCount && result.multiTestAverageAccuracy === 0)
-                          ? 'bg-rose-100/80 border-rose-200/70 text-rose-800'
-                          : multiTestStats.accuracyLevel === 'some_incorrect'
-                            ? 'bg-amber-100/80 border-amber-200/70 text-amber-800'
-                            : 'bg-rose-100/80 border-rose-200/70 text-rose-800'
-                  }`}>
+                <Badge
+                  variant="outline"
+                  className={cn(
+                    'flex items-center gap-1 text-xs',
+                    multiTestStats.accuracyLevel === 'all_correct' || (!multiTestStats.totalCount && (result.multiTestAllCorrect ?? result.allPredictionsCorrect))
+                      ? 'bg-emerald-100/80 border-emerald-200/70 text-emerald-800'
+                      : multiTestStats.accuracyLevel === 'all_incorrect' || (!multiTestStats.totalCount && result.multiTestAverageAccuracy === 0)
+                        ? 'bg-rose-100/80 border-rose-200/70 text-rose-800'
+                        : multiTestStats.accuracyLevel === 'some_incorrect'
+                          ? 'bg-amber-100/80 border-amber-200/70 text-amber-800'
+                          : 'bg-rose-100/80 border-rose-200/70 text-rose-800',
+                  )}
+                >
                   {(() => {
                     const isAllCorrect = multiTestStats.accuracyLevel === 'all_correct' || (!multiTestStats.totalCount && (result.multiTestAllCorrect ?? result.allPredictionsCorrect));
                     if (isAllCorrect) return <CheckCircle className="h-3 w-3" />;
@@ -164,7 +176,7 @@ export const AnalysisResultGrid: React.FC<AnalysisResultGridProps> = ({
                     // without detailed validation data, so just show "Incorrect"
                     return 'Incorrect';
                   })()}
-                </div>
+                </Badge>
               )}
             </div>
             {showMultiTest ? (
@@ -177,9 +189,15 @@ export const AnalysisResultGrid: React.FC<AnalysisResultGridProps> = ({
             <div className="space-y-2 px-4 pb-4 pt-3">
                 {!eloMode && (
                   <div className="mb-1 md:col-span-2">
-                    <button className="btn btn-sm border-amber-300/70 bg-white/70 text-amber-800 hover:border-rose-300/70 hover:bg-rose-50/70 dark:border-violet-700/70 dark:bg-slate-900/50 dark:text-emerald-200 dark:hover:bg-violet-900/50" onClick={() => setShowDiff(!showDiff)}>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      className="border-amber-300/70 bg-white/70 text-amber-800 hover:border-rose-300/70 hover:bg-rose-50/70 dark:border-violet-700/70 dark:bg-slate-900/50 dark:text-emerald-200 dark:hover:bg-violet-900/50"
+                      onClick={() => setShowDiff(!showDiff)}
+                    >
                       {showDiff ? 'Hide' : 'Show'} Mismatches
-                    </button>
+                    </Button>
                   </div>
                 )}
               {expectedOutputGrids.map((expectedGrid, index) => (

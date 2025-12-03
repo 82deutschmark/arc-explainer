@@ -18,6 +18,7 @@ import { repositoryService } from './repositories/RepositoryService.ts';
 import { logger } from './utils/logger.ts';
 import { resolveStreamingConfig } from '@shared/config/streaming';
 import { databaseMaintenance } from './maintenance/dbCleanup.js';
+import './services/poetiq/PoetiqAgentsRunner.ts';
 
 // Fix for ES modules and bundled code - get the actual current directory
 const __filename = fileURLToPath(import.meta.url);

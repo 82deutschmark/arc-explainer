@@ -90,6 +90,88 @@ export interface PromptTemplate {
 }
 
 /**
+ * Shared prompt telemetry payload for Poetiq solver runs.
+ * Keeps backend + frontend prompt inspectors in sync.
+ */
+export type PoetiqPromptRole = 'system' | 'user' | 'assistant' | 'developer' | 'tool';
+
+export interface PoetiqPromptMessage {
+  role: PoetiqPromptRole;
+  /**
+   * Optional friendly label (e.g., "Puzzle Setup", "Expert #1 Attempt").
+   */
+  label?: string;
+  content: string;
+  /**
+   * Optional metadata so UI can render badges (scores, pass counts, etc.).
+   */
+  metadata?: Record<string, unknown>;
+}
+
+export type PoetiqAgentToolStatus = 'started' | 'completed' | 'failed';
+
+export interface PoetiqAgentTimelineItem {
+  id: string;
+  type: 'reasoning' | 'tool_call' | 'tool_result' | 'status' | 'output';
+  /**
+   * Stable identifier for the Agent run (provider response ID / run id).
+   */
+  runId?: string;
+  iteration?: number;
+  toolName?: string;
+  status?: PoetiqAgentToolStatus;
+  label?: string;
+  message?: string;
+  payload?: Record<string, unknown>;
+  timestamp?: string;
+}
+
+export interface PoetiqAgentReasoningDelta {
+  runId: string;
+  channel: 'text' | 'reasoning';
+  delta: string;
+  cumulativeText?: string;
+  timestamp?: string;
+}
+
+export interface PoetiqPromptData {
+  systemPrompt?: string;
+  userPrompt?: string;
+  model?: string;
+  temperature?: number;
+  provider?: string;
+  apiStyle?: string;
+  reasoningParams?: {
+    effort?: string;
+    verbosity?: string;
+    summary?: string;
+  } | null;
+  iteration?: number;
+  expert?: number;
+  timestamp?: string;
+  problemSection?: string;
+  feedbackSection?: string | null;
+  stats?: {
+    systemPromptChars?: number;
+    userPromptChars?: number;
+    problemChars?: number;
+    feedbackChars?: number;
+    previousSolutionCount?: number;
+  } | null;
+  /**
+   * Structured conversation turns for Responses API-compatible replay.
+   */
+  messages?: PoetiqPromptMessage[];
+  /**
+   * OpenAI Agents SDK telemetry when Poetiq runs in Agents mode.
+   */
+  agentRunId?: string;
+  agentModel?: string;
+  agentTimeline?: PoetiqAgentTimelineItem[];
+  agentReasoning?: PoetiqAgentReasoningDelta[];
+}
+
+/**
  * Interface for feedback data
  */
 export interface Feedback {
@@ -467,6 +549,96 @@ export interface LeaderboardStats {
   overallTrustworthiness: number;
 }
 
+// SnakeBench integration types
+export type SnakeBenchResultLabel = 'won' | 'lost' | 'tied';
+
+export interface SnakeBenchRunMatchRequest {
+  modelA: string;
+  modelB: string;
+  width?: number;
+  height?: number;
+  maxRounds?: number;
+  numApples?: number;
+}
+
+export interface SnakeBenchRunMatchResult {
+  /** SnakeBench internal game id */
+  gameId: string;
+  /** Model name for snake slot 0 */
+  modelA: string;
+  /** Model name for snake slot 1 */
+  modelB: string;
+  /** Final scores keyed by model name */
+  scores: Record<string, number>;
+  /** Results keyed by model name (won/lost/tied) */
+  results: Record<string, SnakeBenchResultLabel>;
+  /** Optional on-disk path to the completed game JSON for replay */
+  completedGamePath?: string;
+}
+
+export interface SnakeBenchRunMatchResponse {
+  success: boolean;
+  result?: SnakeBenchRunMatchResult;
+  error?: string;
+  timestamp: number;
+}
+
+export interface SnakeBenchRunBatchRequest extends SnakeBenchRunMatchRequest {
+  /** Number of matches to run sequentially (small, bounded value) */
+  count: number;
+}
+
+export interface SnakeBenchRunBatchResult {
+  results: SnakeBenchRunMatchResult[];
+  errors?: Array<{
+    index: number;
+    error: string;
+  }>;
+}
+
+export interface SnakeBenchRunBatchResponse {
+  success: boolean;
+  batch?: SnakeBenchRunBatchResult;
+  error?: string;
+  timestamp: number;
+}
+
+export interface SnakeBenchGameSummary {
+  gameId: string;
+  filename: string;
+  startedAt: string;
+  totalScore: number;
+  roundsPlayed: number;
+  /** Optional on-disk path to the completed game JSON for replay */
+  path?: string;
+}
+
+export interface SnakeBenchListGamesResponse {
+  success: boolean;
+  games: SnakeBenchGameSummary[];
+  total: number;
+  timestamp: number;
+}
+
+export interface SnakeBenchGameDetailResponse {
+  success: boolean;
+  gameId: string;
+  /** Full SnakeBench game JSON payload for replay/inspection */
+  data?: any;
+  error?: string;
+  timestamp: number;
+}
+
+export interface SnakeBenchHealthResponse {
+  success: boolean;
+  status: 'ok' | 'degraded' | 'error';
+  pythonAvailable: boolean;
+  backendDirExists: boolean;
+  runnerExists: boolean;
+  message?: string;
+  timestamp: number;
+}
+
 /**
  * Available prompt templates for puzzle analysis
  * These templates allow users to choose different prompt styles and approaches to guide AI analysis
@@ -567,11 +739,11 @@ export interface ModelConfig {
   premium: boolean;
   cost: { input: string; output: string };
   supportsTemperature: boolean;
-  provider: 'OpenAI' | 'Anthropic' | 'xAI' | 'Gemini' | 'DeepSeek' | 'OpenRouter' | 'Grover' | 'Saturn';
+  provider: 'OpenAI' | 'Anthropic' | 'xAI' | 'Gemini' | 'DeepSeek' | 'OpenRouter' | 'Grover' | 'Saturn' | 'Beetree';
   responseTime: { speed: 'fast' | 'moderate' | 'slow'; estimate: string };
   isReasoning?: boolean;
   apiModelName: string;
-  modelType: 'gpt5_chat' | 'gpt5' | 'o3_o4' | 'claude' | 'grok' | 'gemini' | 'deepseek' | 'openrouter' | 'grover' | 'saturn';
+  modelType: 'gpt5_chat' | 'gpt5' | 'o3_o4' | 'claude' | 'grok' | 'gemini' | 'deepseek' | 'openrouter' | 'grover' | 'saturn' | 'beetree';
   contextWindow?: number;
   maxOutputTokens?: number; // Only used for some models
   releaseDate?: string; // Release date in YYYY-MM format
@@ -622,4 +794,193 @@ export interface GroverExplanationData extends ExplanationRecord {
   groverIterations?: GroverIteration[];
   groverBestProgram?: string;
   iterationCount?: number;
+}
+
+// Beetree-specific types for ensemble solver
+export interface BeetreeRunConfig {
+  taskId: string;
+  testIndex: number;
+  mode: 'testing' | 'production';
+  runTimestamp?: string;
+}
+
+export interface BeetreeModelCostInfo {
+  model_name: string;
+  input_tokens: number;
+  output_tokens: number;
+  reasoning_tokens: number;
+  cost: number;
+}
+
+export interface BeetreeStageCostInfo {
+  stage: string;
+  cost: number;
+  duration_ms: number;
+}
+
+export interface BeetreeTokenUsage {
+  input: number;
+  output: number;
+  reasoning: number;
+}
+
+export interface BeetreeCostBreakdown {
+  total_cost: number;
+  by_model: BeetreeModelCostInfo[];
+  by_stage: BeetreeStageCostInfo[];
+  total_tokens: BeetreeTokenUsage;
+  estimated_cost: number;
+  cost_variance: number;
+}
+
+export interface BeetreeModelPrediction {
+  model_name: string;
+  prediction: number[][];
+  confidence?: number;
+  reasoning?: string;
+  stage: string;
+}
+
+export interface BeetreeConsensusResult {
+  consensus_grid: number[][];
+  consensus_strength: number; // 0-1, higher = stronger consensus
+  model_agreement: number; // 0-1, percentage of models agreeing
+  top_solutions: Array<{
+    grid: number[][];
+    support_count: number;
+    supporting_models: string[];
+    confidence: number;
+  }>;
+  diversity_score: number; // 0-1, higher = more diverse solutions
+  stage_distribution: Record<string, number>; // Which stages produced which solutions
+}
+
+export interface BeetreeStageConfig {
+  name: string;
+  enabled: boolean;
+  models: string[];
+  max_tokens: number;
+  temperature: number;
+  early_termination_enabled: boolean;
+  consensus_threshold: number;
+}
+
+export interface BeetreeOrchestrationState {
+  current_stage: number;
+  total_stages: number;
+  stage_results: Array<{
+    stage_name: string;
+    predictions: BeetreeModelPrediction[];
+    consensus: BeetreeConsensusResult;
+    cost: number;
+    duration_ms: number;
+    completed_at: number;
+  }>;
+  should_terminate: boolean;
+  termination_reason?: string;
+  final_consensus?: BeetreeConsensusResult;
+}
+
+export interface BeetreeTerminationCriteria {
+  consensus_threshold: number; // Minimum consensus strength to stop
+  cost_limit: number; // Maximum cost in USD
+  time_limit: number; // Maximum time in milliseconds
+  min_solutions: number; // Minimum number of distinct solutions required
+}
+
+export interface BeetreeRunResult {
+  taskId: string;
+  testIndex: number;
+  mode: string;
+  runTimestamp: string;
+  predictions: number[][][];
+  costBreakdown: BeetreeCostBreakdown;
+  verboseLog: string;
+  consensus: BeetreeConsensusResult;
+  orchestration: BeetreeOrchestrationState;
+}
+
+// Beetree types (moved here to avoid conflicts)
+export interface BeetreeBridgeOptions {
+  taskId: string;
+  testIndex: number;
+  mode: 'testing' | 'production';
+  runTimestamp?: string;
+}
+
+export type BeetreeBridgeEvent =
+  | { type: 'start'; metadata?: any; source?: 'python' }
+  | {
+      type: 'progress';
+      status: string;
+      stage: string;
+      outcome?: string;
+      event?: string;
+      predictions?: number[][][];
+      costSoFar?: number;
+      tokensUsed?: BeetreeTokenUsage;
+      timestamp: number;
+      source?: 'python';
+    }
+  | { type: 'log'; level: 'info' | 'warn' | 'error'; message: string; source?: 'python' }
+  | {
+      type: 'final';
+      success: boolean;
+      predictions?: number[][][];
+      result: BeetreeRunResult;
+      timingMs: number;
+      source?: 'python';
+    }
+  | { type: 'error'; message: string; source?: 'python' };
+
+// Database extension for beetree-specific fields
+export interface BeetreeExplanationData extends ExplanationRecord {
+  beetreeStage?: string;
+  beetreeConsensusCount?: number;
+  beetreeModelResults?: BeetreeModelCostInfo[];
+  beetreeCostBreakdown?: BeetreeCostBreakdown;
+  beetreeTokenUsage?: BeetreeTokenUsage;
+  beetreeRunTimestamp?: string;
+  beetreeMode?: 'testing' | 'production';
+  beetreeConsensusStrength?: number;
+  beetreeDiversityScore?: number;
+}
+
+/**
+ * Legacy Leaderboard statistics interface (for backward compatibility)
+ * @deprecated Use PerformanceStats instead for accurate API response typing
+ */
+export interface LeaderboardStats {
+  trustworthinessLeaders: Array<{
+    modelName: string;
+    totalAttempts: number;
+    avgTrustworthiness: number;
+    avgConfidence: number;
+    calibrationError: number;
+    avgProcessingTime: number;
+    avgTokens: number;
+    avgCost: number;
+  }>;
+  speedLeaders: Array<{
+    modelName: string;
+    avgProcessingTime: number;
+    totalAttempts: number;
+    avgTrustworthiness: number;
+  }>;
+  calibrationLeaders: Array<{
+    modelName: string;
+    calibrationError: number;
+    totalAttempts: number;
+    avgTrustworthiness: number;
+    avgConfidence: number;
+  }>;
+  efficiencyLeaders: Array<{
+    modelName: string;
+    costEfficiency: number;
+    tokenEfficiency: number;
+    avgTrustworthiness: number;
+    totalAttempts: number;
+  }>;
+  totalTrustworthinessAttempts: number;
+  overallTrustworthiness: number;
 }
