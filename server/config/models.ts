@@ -1,9 +1,11 @@
 /*
  *
- * Author: Cascade using Claude Sonnet 4
- * Date: 2025-11-26
+ * Author: Cascade using Claude Sonnet 4 (original), Claude Code using Sonnet 4.5 (2025-12-02 update)
+ * Date: 2025-12-02
  * PURPOSE: Centralized AI model configuration list consumed by ModelDefinitions and provider lookup utilities.
- *          Added openrouter/bert-nebulon-alpha cloaked model (Nov 24, 2025).
+ *          Updated DeepSeek models to v3.2 with new pricing and specifications.
+ *          Added deepseek-reasoner-speciale with expiration-dated base URL.
+ *          Added free OpenRouter models: arcee-ai/trinity-mini:free and amazon/nova-2-lite-v1:free (Dec 2025).
  * SRP/DRY check: Pass - file encapsulates shared model metadata without duplication.
  * shadcn/ui: Pass - configuration only.
  */
@@ -198,6 +200,42 @@ export const MODELS: ModelConfig[] = [
     maxOutputTokens: 128000,
     releaseDate: "2025-11",
     notes: 'Sep 30, 2024 knowledge cutoff; reasoning token support.'
+  },
+  {
+    key: 'gpt-5.1-codex',
+    name: 'GPT-5.1 Codex',
+    color: 'bg-amber-600',
+    premium: true,
+    cost: { input: '$1.25', output: '$10.00' },
+    supportsTemperature: false,
+    supportsStreaming: true,
+    provider: 'OpenAI',
+    responseTime: { speed: 'moderate', estimate: '30-60 sec' },
+    isReasoning: true,
+    apiModelName: 'gpt-5.1-codex',
+    modelType: 'gpt5',
+    contextWindow: 400000,
+    maxOutputTokens: 128000,
+    releaseDate: "2025-11",
+    notes: 'Sep 30, 2024 knowledge cutoff; reasoning token support.'
+  },
+  {
+    key: 'gpt-5.1-2025-11-13',
+    name: 'GPT-5.1',
+    color: 'bg-amber-700',
+    premium: true,
+    cost: { input: '$1.25', output: '$10.00' },
+    supportsTemperature: false,
+    supportsStreaming: true,
+    provider: 'OpenAI',
+    responseTime: { speed: 'moderate', estimate: '1-2 min' },
+    isReasoning: true,
+    apiModelName: 'gpt-5.1-2025-11-13',
+    modelType: 'gpt5',
+    contextWindow: 400000,
+    maxOutputTokens: 128000,
+    releaseDate: "2025-11",
+    notes: 'GPT-5.1 base model released November 13, 2025.'
   },
 
   // Anthropic Models
@@ -408,29 +446,54 @@ export const MODELS: ModelConfig[] = [
   // DeepSeek Models
   {
     key: 'deepseek-chat',
-    name: 'DeepSeek Chat',
+    name: 'DeepSeek Chat v3.2',
     color: 'bg-cyan-600',
     premium: false,
-    cost: { input: '$0.14', output: '$0.28' },
+    cost: { input: '$0.28', output: '$0.42' },
     supportsTemperature: true,
     provider: 'DeepSeek',
     responseTime: { speed: 'moderate', estimate: '30-90 sec' },
     isReasoning: false,
     apiModelName: 'deepseek-chat',
     modelType: 'deepseek',
+    contextWindow: 128000,
+    maxOutputTokens: 8000,
+    releaseDate: "2025-12",
+    notes: 'DeepSeek-V3.2 non-thinking mode. Supports JSON output, tool calls, chat prefix completion, and FIM completion. Cache hit: $0.028/1M input tokens.'
   },
   {
     key: 'deepseek-reasoner',
-    name: 'DeepSeek Reasoner',
+    name: 'DeepSeek Reasoner v3.2',
     color: 'bg-cyan-800',
     premium: true,
-    cost: { input: '$0.55', output: '$2.19' },
+    cost: { input: '$0.28', output: '$0.42' },
     supportsTemperature: false,
     provider: 'DeepSeek',
     responseTime: { speed: 'slow', estimate: '5-10 min' },
     isReasoning: true,
     apiModelName: 'deepseek-reasoner',
     modelType: 'deepseek',
+    contextWindow: 128000,
+    maxOutputTokens: 64000,
+    releaseDate: "2025-12",
+    notes: 'DeepSeek-V3.2 thinking mode. Returns reasoning_content field with chain-of-thought. Temperature ignored. Cache hit: $0.028/1M input tokens.'
+  },
+  {
+    key: 'deepseek-reasoner-speciale',
+    name: 'DeepSeek Reasoner v3.2-Speciale',
+    color: 'bg-cyan-900',
+    premium: true,
+    cost: { input: '$0.28', output: '$0.42' },
+    supportsTemperature: false,
+    provider: 'DeepSeek',
+    responseTime: { speed: 'slow', estimate: '5-10 min' },
+    isReasoning: true,
+    apiModelName: 'deepseek-reasoner',
+    modelType: 'deepseek',
+    contextWindow: 128000,
+    maxOutputTokens: 128000,
+    releaseDate: "2025-12",
+    notes: 'DeepSeek-V3.2-Speciale thinking mode. Special base URL. No JSON output, no tool calls. Available until December 15, 2025, 15:59 UTC. Cache hit: $0.028/1M input tokens.'
   },
   {
     key: 'deepseek/deepseek-v3.1-terminus',
@@ -901,6 +964,56 @@ export const MODELS: ModelConfig[] = [
     releaseDate: "2025-11"
   },
 
+  // Beetree Ensemble Solver
+  {
+    key: 'beetree-ensemble',
+    name: 'Beetree Ensemble',
+    color: 'bg-emerald-600',
+    premium: false,
+    cost: { input: '$2.00', output: '$5.00' },
+    supportsTemperature: false,
+    provider: 'Beetree',
+    responseTime: { speed: 'slow', estimate: '3-8 min' },
+    apiModelName: 'beetree-ensemble',
+    modelType: 'beetree',
+    contextWindow: 1000000,
+    maxOutputTokens: 50000,
+    releaseDate: "2025-12",
+    notes: 'Multi-model ensemble solver with consensus analysis and cost tracking'
+  },
+
+  // Free OpenRouter Models - December 2025
+  {
+    key: 'arcee-ai/trinity-mini:free',
+    name: 'Arcee Trinity Mini (Free)',
+    color: 'bg-cyan-400',
+    premium: false,
+    cost: { input: '$0.00', output: '$0.00' },
+    supportsTemperature: true,
+    provider: 'OpenRouter',
+    responseTime: { speed: 'moderate', estimate: '30-60 sec' },
+    isReasoning: false,
+    apiModelName: 'arcee-ai/trinity-mini:free',
+    modelType: 'openrouter',
+    contextWindow: 131072,
+    releaseDate: "2025-12"
+  },
+  {
+    key: 'amazon/nova-2-lite-v1:free',
+    name: 'Amazon Nova 2 Lite (Free)',
+    color: 'bg-amber-400',
+    premium: false,
+    cost: { input: '$0.00', output: '$0.00' },
+    supportsTemperature: true,
+    provider: 'OpenRouter',
+    responseTime: { speed: 'fast', estimate: '<30 sec' },
+    isReasoning: false,
+    apiModelName: 'amazon/nova-2-lite-v1:free',
+    modelType: 'openrouter',
+    contextWindow: 1000000,
+    releaseDate: "2025-12"
+  },
+
   // Cloaked Models (OpenRouter Arena - identity TBD)
   {
     key: 'openrouter/bert-nebulon-alpha',
@@ -917,6 +1030,22 @@ export const MODELS: ModelConfig[] = [
     contextWindow: 256000,
     releaseDate: "2025-11",
     notes: 'Cloaked model (Nov 24, 2025). Identity TBD. Add normalizer mapping when revealed.'
+  },
+  {
+    key: 'kwaipilot/kat-coder-pro:free',
+    name: 'Kat Coder Pro (Free)',
+    color: 'bg-rose-500',
+    premium: false,
+    cost: { input: '$0.00', output: '$0.00' },
+    supportsTemperature: true,
+    provider: 'OpenRouter',
+    responseTime: { speed: 'moderate', estimate: '30-60 sec' },
+    isReasoning: true,
+    apiModelName: 'kwaipilot/kat-coder-pro:free',
+    modelType: 'openrouter',
+    contextWindow: 131072,
+    releaseDate: "2025-11",
+    notes: 'Free KatPilot coder-tier model on OpenRouter arena.'
   },
 
 ];

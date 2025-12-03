@@ -73,7 +73,9 @@ export default function PoetiqPythonTerminal({
           <div className="text-gray-500 text-center py-8">
             <Sparkles className="w-8 h-8 mx-auto mb-2 opacity-50" />
             <p>Iteration results will appear here</p>
-            <p className="text-[10px] mt-1">Each iteration: AI generates code → Tests on training → Shows pass/fail</p>
+            <p className="text-[10px] mt-1">
+              Each iteration: AI generates code {'->'} Tests on training {'->'} Shows pass/fail
+            </p>
           </div>
         )}
 

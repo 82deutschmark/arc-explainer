@@ -14,6 +14,7 @@ import PuzzleDiscussion from "@/pages/PuzzleDiscussion";
 import SaturnVisualSolver from "@/pages/SaturnVisualSolver";
 import GroverSolver from "@/pages/GroverSolver";
 import PoetiqSolver from "@/pages/PoetiqSolver";
+import BeetreeSolver from "@/pages/BeetreeSolver";
 import PoetiqCommunity from "@/pages/PoetiqCommunity";
 import KaggleReadinessValidation from "@/pages/KaggleReadinessValidation";
 import PuzzleDBViewer from "@/pages/PuzzleDBViewer";
@@ -35,6 +36,7 @@ import PuzzleTradingCards from "@/pages/PuzzleTradingCards";
 import HumanTradingCards from "@/pages/HumanTradingCards";
 import LLMReasoning from "@/pages/LLMReasoning";
 import LLMReasoningAdvanced from "@/pages/LLMReasoningAdvanced";
+import SnakeArena from "@/pages/SnakeArena";
 import Redirect from "@/components/Redirect";
 
 function Router() {
@@ -54,6 +56,7 @@ function Router() {
         <Route path="/kaggle-readiness" component={KaggleReadinessValidation} />
         <Route path="/puzzle/saturn/:taskId" component={SaturnVisualSolver} />
         <Route path="/puzzle/grover/:taskId" component={GroverSolver} />
+        <Route path="/puzzle/beetree/:taskId?" component={BeetreeSolver} />
         <Route path="/poetiq" component={PoetiqCommunity} />
         <Route path="/puzzle/poetiq/:taskId" component={PoetiqSolver} />
         <Route path="/puzzles/database" component={PuzzleDBViewer} />
@@ -82,6 +85,7 @@ function Router() {
         <Route path="/llm-reasoning/advanced" component={LLMReasoningAdvanced} />
         <Route path="/arc3" component={ARC3Browser} />
         <Route path="/arc3/playground" component={ARC3AgentPlayground} />
+        <Route path="/snake-arena" component={SnakeArena} />
         <Route path="/puzzle/:taskId" component={PuzzleExaminer} />
         <Route path="/examine/:taskId" component={PuzzleExaminer} />
         <Route component={NotFound} />

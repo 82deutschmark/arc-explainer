@@ -18,7 +18,7 @@ import OpenAI from "openai";
 const openai = new OpenAI();
 
 const response = await openai.responses.create({
-    model: "gpt-4o-mini",
+    model: "gpt-5-mini",
     input: [
         { role: "user", content: "knock knock." },
         { role: "assistant", content: "Who's there?" },
@@ -35,7 +35,7 @@ from openai import OpenAI
 client = OpenAI()
 
 response = client.responses.create(
-    model="gpt-4o-mini",
+    model="gpt-5-mini",
     input=[
         {"role": "user", "content": "knock knock."},
         {"role": "assistant", "content": "Who's there?"},
@@ -62,12 +62,12 @@ const openai = new OpenAI();
 let history = [
     {
         role: "user",
-        content: "tell me a joke",
+        content: "Generate Python code to solve this.",
     },
 ];
 
 const response = await openai.responses.create({
-    model: "gpt-4o-mini",
+    model: "gpt-5-mini",
     input: history,
     store: true,
 });
@@ -90,7 +90,7 @@ history.push({
 });
 
 const secondResponse = await openai.responses.create({
-    model: "gpt-4o-mini",
+    model: "gpt-5-mini",
     input: history,
     store: true,
 });
@@ -106,12 +106,12 @@ client = OpenAI()
 history = [
     {
         "role": "user",
-        "content": "tell me a joke"
+        "content": "Generate Python code to solve this."
     }
 ]
 
 response = client.responses.create(
-    model="gpt-4o-mini",
+    model="gpt-5-mini",
     input=history,
     store=False
 )
@@ -124,7 +124,7 @@ history += [{"role": el.role, "content": el.content} for el in response.output]
 history.append({ "role": "user", "content": "tell me another" })
 
 second_response = client.responses.create(
-    model="gpt-4o-mini",
+    model="gpt-5-mini",
     input=history,
     store=False
 )
@@ -155,8 +155,8 @@ Manage conversation state with Conversations and Responses APIs
 
 ```python
 response = openai.responses.create(
-  model="gpt-4.1",
-  input=[{"role": "user", "content": "What are the 5 Ds of dodgeball?"}],
+  model="gpt-5.1-codex-mini",
+  input=[{"role": "user", "content": "What are the Best Python programs you generated."}],
   conversation="conv_689667905b048191b4740501625afd940c7533ace33a2dab"
 )
 ```
@@ -173,17 +173,17 @@ import OpenAI from "openai";
 const openai = new OpenAI();
 
 const response = await openai.responses.create({
-    model: "gpt-4o-mini",
-    input: "tell me a joke",
+    model: "gpt-5-mini",
+    input: "tell me The best Python program that solves it.",
     store: true,
 });
 
 console.log(response.output_text);
 
 const secondResponse = await openai.responses.create({
-    model: "gpt-4o-mini",
+    model: "gpt-5-mini",
     previous_response_id: response.id,
-    input: [{"role": "user", "content": "explain why this is funny."}],
+    input: [{"role": "user", "content": "explain why this is correct in simple language."}],
     store: true,
 });
 
@@ -195,13 +195,13 @@ from openai import OpenAI
 client = OpenAI()
 
 response = client.responses.create(
-    model="gpt-4o-mini",
+    model="gpt-5-mini",
     input="tell me a joke",
 )
 print(response.output_text)
 
 second_response = client.responses.create(
-    model="gpt-4o-mini",
+    model="gpt-5-mini",
     previous_response_id=response.id,
     input=[{"role": "user", "content": "explain why this is funny."}],
 )

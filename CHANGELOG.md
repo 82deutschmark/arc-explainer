@@ -1,5 +1,916 @@
 ## ARC Explainer
-- Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top!!!
+- Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top with the time and date!
+
+### Version 5.35.30  Dec 2, 2025 7:00pm
+
+- **PuzzleDiscussion: Refinement UX Reordered + Reasoning Controls** (Author: Cascade using Claude Sonnet 4)
+  - Moved **Continue Refinement** (user guidance + send button) to the very top of the refinement UI
+  - Added a dedicated **Advanced Controls** card using the shared `AdvancedControls` component (same pattern as Examiner/Debate)
+  - Reasoning configuration (effort, verbosity, summary type, sampling, thinking budget) is now clearly accessible before any analytics tables
+  - Pushed the heavy analytics header and **Iteration History** table below the controls to reduce confusing chrome at the top of the page
+  - **Files**: `client/src/components/puzzle/refinement/ProfessionalRefinementUI.tsx`, `client/src/pages/PuzzleDiscussion.tsx`
+
+### Version 5.35.29  Dec 2, 2025 6:40pm
+
+- **PuzzleDiscussion: Remove blank white box** (Author: Cascade using Claude Sonnet 4)
+  - **Removed** the entire "Puzzle Overview" CollapsibleCard section that was causing the blank white space
+  - Removed unused imports: `CollapsibleCard`, `TinyGrid`, `PuzzleGrid`
+  - Page now goes directly from header to refinement interface without empty containers
+  - **Files**: `client/src/pages/PuzzleDiscussion.tsx`
+
+### Version 5.35.28  Dec 2, 2025 6:35pm
+
+- **ModelDebate Auto-Selection Feature** (Author: Cascade using Claude Sonnet 4)
+  - Added `?select=<explanationId>` URL parameter support to ModelDebate page (was completely missing)
+  - URLs like `/debate/16de56c4?select=60951` now automatically load the debate interface for the specified explanation
+  - Uses same fix pattern as PuzzleDiscussion: inlined `debateState.startDebate()` call directly to avoid closure issues
+  - **Files**: `client/src/pages/ModelDebate.tsx`
+
+### Version 5.35.27  Dec 2, 2025 6:25pm
+
+- **PuzzleDiscussion Auto-Selection Fix** (Author: Cascade using Claude Sonnet 4)
+  - Fixed critical bug where `?select=<explanationId>` URL parameter was not auto-selecting the explanation for refinement
+  - **Root Cause**: `handleStartRefinement` function was included in useEffect dependencies but was NOT memoized with `useCallback`, causing it to change every render. The 100ms `setTimeout` captured a stale closure that could reference empty/outdated `explanations` data.
+  - **Fix**: Inlined `refinementState.startRefinement(explanation)` call directly in the useEffect instead of going through `handleStartRefinement`, eliminating the closure race condition. Also removed the unnecessary 100ms setTimeout delay.
+  - **Impact**: URLs like `/discussion/16de56c4?select=60951` now correctly auto-load the refinement interface for the specified explanation
+  - **Files**: `client/src/pages/PuzzleDiscussion.tsx`
+
+### Version 5.35.26  Dec 3, 2025 6:55pm
+
+- **Responses API Explanation Added to PuzzleExaminer** (Author: Cascade using Sonnet 4.5)
+  - Added informational alert about Progressive Reasoning functionality to PuzzleExaminer page
+  - **Content**: Explains how Responses API maintains stateful persistence with encrypted reasoning traces via `reasoning.encrypted_content`
+  - **Context**: Helps users understand the "Refine This Analysis" feature before navigating to discussion page
+  - **Implementation**: Added Info icon import and blue-styled alert after puzzle grid display, before controls
+  - **Files**: `client/src/pages/PuzzleExaminer.tsx` (import addition, alert component)
+
+### Version 5.35.25  Dec 3, 2025 6:45pm
+
+- **Progressive Reasoning Whitespace Fix** (Author: Cascade using Sonnet 4.5)
+  - Fixed excessive white space issue in discussion page progressive reasoning interface
+  - **AnalysisResultCard**: Reduced vertical spacing from `space-y-5 p-4 sm:p-6` to `space-y-3 p-3 sm:p-4` to minimize content gaps
+  - **IterationDataTable**: Reduced expanded row padding from `p-6` to `p-3` for more compact display
+  - **ProfessionalRefinementUI**: Reduced main container spacing from `space-y-4` to `space-y-3` for tighter layout
+  - **Impact**: Significantly reduces vertical whitespace while maintaining readability and visual hierarchy
+
+### Version 5.35.24  Dec 3, 2025 6:30pm
+
+- **TypeScript Syntax Fixes** (Author: Cascade using Sonnet 4.5)
+  - **Client**: Fixed JSX parsing error in `PoetiqStreamingVisualizer.tsx` by replacing `Expand ->` with JSX-safe `Expand &gt;` to resolve TS1382
+  - **Server**: Fixed missing class closing brace in `beetreeService_fixed.ts` before the export statement to resolve TS1068
+  - **Server**: Updated `beetreeService_fixed.ts` validation logic to use correct `validateSolverResponse` signature and `ValidationResult.isPredictionCorrect` property
+  - **Verification**: Confirmed both original TypeScript errors are resolved while preserving existing streaming patterns across Saturn, Poetiq, and Beetree services
+
+### Version 5.35.23  Dec 3, 2025 5:45pm
+
+- **ModelDebate UX Redesign: Information density improvements** (Author: Cascade using Sonnet 4.5)
+  - Implemented comprehensive UX redesign based on user feedback to improve information density and remove redundant UI chrome
+  - **Key Changes**: Moved OriginalExplanationCard to display immediately after test cases (always expanded with forceExpanded prop), removed redundant back buttons (ELO Mode, Preview Prompt), simplified header to compact "Challenge Controls" with only Reset and Back to List buttons, reduced spacing throughout (space-y-3 → space-y-2, p-3 → p-2)
+  - **Information Flow**: Test cases → Original explanation (prominent) → Compact challenge controls → Challenge responses only
+  - **Files**: `client/src/components/puzzle/debate/IndividualDebate.tsx` (major refactor), `client/src/components/puzzle/debate/OriginalExplanationCard.tsx` (added forceExpanded prop)
+
+### Version 5.35.22  Dec 3, 2025 5:25pm
+
+- **Model Debate: Surface original explanation in header card** (Author: Cascade using Cascade)
+  - Filled the large white region at the top of the debate workspace by inlining a brief summary of the original explanation (pattern description) directly inside the "AI Model Debate" header card.
+  - This makes it immediately obvious what analysis is being challenged without scrolling down into the detailed cards, bringing the layout closer to the user's desired "SHOW EXPLANATION TEXT HERE" behavior.
+  - **Files**: `client/src/components/puzzle/debate/IndividualDebate.tsx`
+
+### Version 5.35.21  Dec 3, 2025 2:30pm
+
+- **Streaming & Discussion: Honest refinement context + panel cleanup** (Author: Cascade using Cascade)
+  - Updated the shared StreamingAnalysisPanel to remove the pseudo "Solver Progress" step chips and friendly status line so the UI only reflects real backend telemetry (streaming phase/message, token usage, structured JSON, prompt preview) instead of guessed solver stages.
+  - Extended the discussion/self-refinement prompt builder so it now includes the model's previous predicted output grids (single- and multi-test) in the same way debate mode does, giving progressive reasoning runs the same ground truth context that rebuttals already see.
+  - Tweaked the per-puzzle Discussion page so the "Puzzle Overview" section opens by default, showing training/test grids immediately instead of a large empty white card, bringing its information density back in line with PuzzleExaminer and ModelDebate.
+  - Added a focused implementation plan under `docs/plans/2025-12-02-streaming-discussion-fixes.md` to track future alignment work across PuzzleExaminer, ModelDebate, and PuzzleDiscussion.
+  - **Files**: `client/src/components/puzzle/StreamingAnalysisPanel.tsx`, `server/services/prompts/userTemplates.ts`, `docs/plans/2025-12-02-streaming-discussion-fixes.md`
+
+### Version 5.35.20  Dec 3, 2025 11:30am
+
+- **Model Debate: Fix white space issue and improve information density** (Author: Claude Code using Sonnet 4.5)
+  - Changed OriginalExplanationCard and RebuttalCard to default to expanded state (`isOpen = true`) so users immediately see test case grids and predicted answers without needing to click to expand
+  - Removed CompactPuzzleDisplay entirely to eliminate massive white space - training examples aren't needed on debate page since predictions show test case grids
+  - Reduced container spacing from `space-y-4` to `space-y-3` for tighter layout
+  - Changed background gradient to match PuzzleExaminer's amber/orange/rose theme for consistency
+  - Debate cards now show predictions immediately on page load, making it clear what the models predicted vs. what the correct answer was
+  - **Files**: `client/src/pages/ModelDebate.tsx` (lines 14-30, 293-297), `client/src/components/puzzle/debate/OriginalExplanationCard.tsx` (line 32), `client/src/components/puzzle/debate/RebuttalCard.tsx` (line 40)
+
+### Version 5.35.20  Dec 3, 2025 11:05am
+
+- **Debate & Discussion Prompts: Explicit multi-test guidance** (Author: Codex / GPT-5)
+  - Updated the debate and discussion user prompt builders so they always announce when a puzzle contains multiple test cases, and always pluralize the previous-output sections even when legacy explanations failed to set `hasMultiplePredictions`.
+  - Discussion/debate prompts now fall back to the stored single prediction when multi-test grids are missing, giving the new challenger clear visibility into what the prior agent attempted.
+  - Continuation-mode prompt construction now passes the multi-test flag, so all refinement flows reuse the same instructions as the main solver template.
+  - **Files**: `server/services/prompts/userTemplates.ts`, `server/services/promptBuilder.ts`
+
+### Version 5.35.19  Dec 3, 2025 10:15am
+
+- **Multi-test Detection: Capture predicted grids without sentinel boolean** (Author: Codex / GPT-5)
+  - Added a shared multi-prediction detection helper so both the standard and streaming validators force `validateSolverResponseMulti` whenever the puzzle has multiple tests, numbered `predictedOutputN` fields, or direct grid arrays—even if the provider forgets to set `multiplePredictedOutputs: true`.
+  - Updated `PuzzleAnalysisService` and `streamingValidator` to rely on the new helper, gracefully fallback when expected outputs are missing, and continue writing the correct multi-test fields so UI cards can show every grid that models return.
+  - **Files**: `server/services/utils/multiPredictionDetection.ts`, `server/services/puzzleAnalysisService.ts`, `server/services/streamingValidator.ts`
+
+### Version 5.35.18  Dec 2, 2025 5:55pm
+
+- **Beetree Streaming: Fix model routing crash** (Author: Codex / GPT-5)
+  - Corrected the Beetree stream service to pass the puzzle, model key, and taskId to `beetreeService.analyzePuzzleWithModel` in the proper order so `modelKey.includes()` is always operating on a string. This removes the `modelKey.includes is not a function` runtime crash that stopped BeeTree runs from even starting.
+  - Cleaned up the unused BeetreeRunConfig import now that the stream service hands the correct service options directly.
+  - **Files**: `server/services/streaming/beetreeStreamService.ts`
+
+### Version 5.35.17  Dec 2, 2025 4:20pm
+
+- **Dockerfile: Ensure beetreeARC and SnakeBench without relying on .git in build context** (Author: Cascade)
+  - Added git to Alpine packages and kept the existing npm/Python build flow intact.
+  - Dockerfile now copies the repo source and, if `beetreeARC` or `external/SnakeBench` are missing, performs shallow `git clone` from their upstream GitHub URLs during the build.
+  - After ensuring the directories exist, the image verifies key files (e.g., `beetreeARC/src/solver_engine.py`, `external/SnakeBench/backend/main.py`) and installs their `requirements.txt` files.
+  - This avoids the need to have `.git` or initialized submodules in the Railway Docker build context while still guaranteeing the solvers are present in the final image.
+  - **Files**: `Dockerfile`
+
+### Version 5.35.16  Dec 2, 2025 3:15pm
+
+- **OpenAI Responses: GPT-5.1 Codex Verbosity Clamp (Responses API path)** (Author: Cascade using Cascade)
+  - Updated the OpenAI Responses payload builder and prompt preview so GPT-5.1 Codex models (`gpt-5.1-codex`, `gpt-5.1-codex-mini`) always send and display `text.verbosity: "medium"`, avoiding unsupported `"high"` values and aligning with the current Responses API contract.
+  - **Files**: `server/config/models/index.ts`, `server/services/openai/payloadBuilder.ts`, `server/services/openai.ts`
+
+### Version 5.35.15  Dec 2, 2025 2:00pm
+
+- **Docs: llms.txt playful marketing blurb** (Author: Cascade)
+  - Expanded `llms.txt` with a lighthearted marketing section positioning ARC Explainer as a go-to ARC/ARC-AGI hub and capturing maintainer Mark Barney’s self-described "AI super genius" branding for language-model crawlers.
+  - **Files**: `llms.txt`
+
+### Version 5.35.14  Dec 2, 2025 1:55pm
+
+- **Docs: llms.txt guidance for language models** (Author: Cascade)
+  - Added top-level `llms.txt` to help automated language-model agents understand the ARC Explainer repo, key directories, and API/solver documentation entry points.
+  - **Files**: `llms.txt`
+
+### Version 5.35.13  Dec 2, 2025 1:45pm
+
+- **Add New Models: OpenAI GPT-5.1 and Free OpenRouter Models** (Author: Claude Code using Sonnet 4.5)
+  - Added `gpt-5.1-2025-11-13` from OpenAI with $1.25/$10.00 per million tokens (released Nov 13, 2025)
+  - Added `arcee-ai/trinity-mini:free` with 131,072 context window (released Dec 1, 2025)
+  - Added `amazon/nova-2-lite-v1:free` with 1,000,000 context window (released Dec 2, 2025)
+  - OpenRouter models are free ($0/M input and output tokens)
+  - GPT-5.1 is a reasoning model with streaming support, 400K context window, and 128K max output tokens
+  - OpenRouter models are non-reasoning, support temperature, and have moderate to fast response times
+  - **Files**: `server/config/models.ts` (lines 3-8, 222-239, 966-996)
+
+### Version 5.35.12  Dec 2, 2025 1:05pm
+
+- **Snake Arena: Fix Button size TypeScript error** (Author: Cascade)
+  - Switched the `Recent games` refresh control to use supported `size="sm"` on the shared shadcn `Button`, resolving a compile-time type mismatch in `SnakeArena.tsx`.
+  - **Files**: `client/src/pages/SnakeArena.tsx`
+
+### Version 5.35.11  Dec 2, 2025 4:10am
+
+- **SnakeBench API: Batch, Games Index, Health + Local Docs** (Author: Cascade)
+  - Extended the SnakeBench backend integration with a small batch API, recent-games listing, single-game detail endpoint, and a dedicated health check for the Python bridge and submodule wiring.
+  - New endpoints (all public): `POST /api/snakebench/run-batch`, `GET /api/snakebench/games`, `GET /api/snakebench/games/:gameId`, and `GET /api/snakebench/health`.
+  - Added shared types for batch requests/responses, game summaries, game detail payloads, and health responses so frontend or external tools can consume these consistently.
+  - Completed Milestone 1 docs with a "Using SnakeBench Locally" quick-start section describing submodule init, venv setup, CLI usage, and how completed games relate to ARC Explainer.
+  - **Files**: `shared/types.ts`, `server/services/snakeBenchService.ts`, `server/controllers/snakeBenchController.ts`, `server/routes.ts`, `docs/plans/2025-12-02-snakebench-integration-plan.md`.
+
+### Version 5.35.10  Dec 2, 2025 2:50am
+
+- **SnakeBench UI & Infra Integration** (Author: Cascade)
+  - Added a `SnakeArena` React page that embeds the existing SnakeBench Next.js frontend via an iframe, configured through `VITE_SNAKEBENCH_URL`, plus a new `/snake-arena` route and navigation entry.
+  - Updated the Docker image to include the `external/SnakeBench/backend` submodule and install its Python dependencies so `/api/snakebench/run-match` works inside containers.
+  - Added conservative safety limits for SnakeBench single matches (board sizes, max rounds, apples) in the backend service to prevent runaway configurations.
+  - **Files**: `client/src/pages/SnakeArena.tsx`, `client/src/App.tsx`, `client/src/components/layout/AppNavigation.tsx`, `.env.example`, `server/services/snakeBenchService.ts`, `Dockerfile`.
+
+### Version 5.35.9  Dec 2, 2025 1:40am
+
+- **SnakeBench Backend: Single-Match Run API** (Author: Cascade)
+  - Added a Python bridge runner that calls the SnakeBench backend `run_simulation` function without requiring its own Supabase database, using minimal in-memory player configs and still writing completed game JSON files for replays.
+  - Introduced a `snakeBenchService` in Node that spawns the runner as a subprocess, validates input, parses the JSON summary, and exposes a typed `SnakeBenchRunMatchResult` shared type.
+  - Exposed a public `POST /api/snakebench/run-match` endpoint via `snakeBenchController`, returning a compact `{ success, result, error, timestamp }` payload for frontend and external callers.
+  - **Files**: `shared/types.ts`, `server/python/snakebench_runner.py`, `server/services/snakeBenchService.ts`, `server/controllers/snakeBenchController.ts`, `server/routes.ts`.
+
+### Version 5.35.8  Dec 2, 2025 1:20am
+
+- **Docs: SnakeBench Integration Plan (A, B, C)** (Author: Cascade)
+  - Added a detailed multi-phase plan for integrating the SnakeBench LLM Snake Arena into ARC Explainer across three levels: standalone dev usage (A), backend-triggered benchmarks (B), and a new "Snake Arena" frontend page (C).
+  - Plan covers Python/CLI setup, Node backend orchestration via `child_process`, public REST endpoints for running matches and listing games, shared types for summaries, and a shadcn-based UI for leaderboards and replays.
+  - **Files**: `docs/plans/2025-12-02-snakebench-integration-plan.md`.
+
+### Version 5.35.7  Dec 1, 2025 8:45pm
+
+- **Repo: Added SnakeBench as tracked submodule** (Author: Cascade)
+  - Registered `https://github.com/VoynichLabs/SnakeBench` as the `SnakeBench` git submodule under `external/SnakeBench` so the upstream benchmarking code stays pinned and can be updated independently from the main repo.
+  - `.gitmodules` now lists SnakeBench alongside the existing `arc-agi-benchmarking`, `poetiq-solver`, and `beetreeARC` modules, keeping all external ARC-related repos centralized.
+  - **Files**: `.gitmodules`, `external/SnakeBench/`.
+
+### Version 5.35.6  Dec 1, 2025 8:35pm
+
+- **Model Debate Page - Fix UI Spacing Issues** (Author: Cascade)
+  - **Root Cause**: Page layout had `space-y-1` (4px spacing) and no horizontal padding, causing cramped UI
+  - **Fix**: Added proper container with `px-4 py-4 space-y-4` for consistent padding and spacing
+  - **Added**: Subtle gradient background (`from-slate-50 via-gray-50 to-zinc-100`) matching other pages
+  - **Files**: `client/src/pages/ModelDebate.tsx`
+
+### Version 5.35.5  Dec 1, 2025 8:15pm
+
+- **Model Debate Page - Fix Blank Page Bug** (Author: Cascade)
+  - **Root Cause**: Race condition in `usePuzzle` hook usage - component used `currentTask` (state updated via useEffect) instead of `task` (immediately derived from query response)
+  - **Effect**: When query completed, `isLoadingTask` became false but `currentTask` was still null for 1 render cycle, causing the error check `(taskId && !task)` to pass incorrectly
+  - **Fix**: Changed destructuring from `{ currentTask: task }` to `{ task }` to use the immediate value
+  - **Files**: `client/src/pages/ModelDebate.tsx`
+
+### Version 5.35.4  Dec 1, 2025 7:15pm
+
+- **Dockerfile - Add beetreeARC Support** (Author: Cascade)
+  - **Submodule Directory Copy**: Updated Dockerfile to copy beetreeARC/ directory directly (not cloning via git since Docker build context doesn't have .git)
+  - **Python Dependencies**: Install beetreeARC's own requirements.txt (anthropic, openai, google-genai, matplotlib, etc.)
+  - **Verification Steps**: Added checks to ensure beetreeARC/src/solver_engine.py and requirements.txt exist
+  - **Build Process**: beetreeARC is copied after npm ci but before main source code copy
+  - **Files**: `Dockerfile`
+
+### Version 5.35.3  Dec 1, 2025 6:45pm
+
+- **Beetree Solver - Updated Models** (Author: Cascade)
+  - **Testing Mode**: Now uses only `gpt-5.1-codex-mini` (cheap, fast) - 7 runs at $0.10-$0.50, 1-3 min
+  - **Production Mode**: Now uses only `gemini-3-high` (comprehensive) - 20 runs at $5-$20, 10-30 min
+  - **Backend Changes**: Updated `beetreeARC/src/types.py` to add GPT-5.1 Codex Mini with pricing ($0.25/$2.00 per 1M tokens)
+  - **Backend Changes**: Updated `beetreeARC/src/models.py` to parse `gpt-5.1-codex-mini` model arg
+  - **Backend Changes**: Updated `beetreeARC/src/solver_engine.py` with new model configurations
+  - **Frontend Changes**: Updated model display and cost estimates in BeetreeSolver.tsx
+  - **Files**: `beetreeARC/src/types.py`, `beetreeARC/src/models.py`, `beetreeARC/src/solver_engine.py`, `client/src/pages/BeetreeSolver.tsx`
+
+### Version 5.35.2  Dec 1, 2025 6:00pm
+
+- **Beetree Solver Page - Honest UI with Pre-configured Models Display** (Author: Cascade)
+  - **Clear Fixed Ensemble Message**: UI now explicitly tells users that Beetree is a pre-configured ensemble solver - they cannot select individual models, only choose Testing or Production mode.
+  - **Always-Visible Model List**: Shows all 5 steps with their exact pre-configured models
+  - **Alert Warning**: Prominent alert box explaining "Fixed Ensemble - These models are hard-coded in the Beetree solver"
+  - **shadcn/ui Components**: Card, Button, Badge, Alert, Select, ScrollArea, Separator, Progress, AlertDialog
+  - **Files**: `client/src/pages/BeetreeSolver.tsx`.
+
+### Version 5.35.1  Dec 1, 2025 5:30pm
+
+- **Beetree Ensemble Solver - Critical Bug Fixes** (Author: Cascade)
+  - **Backend Service Completion**: Added missing abstract method implementations to `BeetreeService`: `getModelInfo()`, `generatePromptPreview()`, `callProviderAPI()`, `parseProviderResponse()`, plus helper methods `extractModeFromModelKey()`, `validatePredictions()`, `gridsMatch()`, `buildAIResponse()`, `saveBeetreeResult()`, and `estimateCost()`.
+  - **Real Cost/Token Extraction**: Fixed Python wrapper to extract real token counts and costs from beetreeARC step logs instead of placeholder values. Added `estimate_model_cost()` function with model-specific pricing for GPT-5.1, Claude, Gemini, DeepSeek, and Grok models.
+  - **Consensus Data**: Python wrapper now emits `consensus_strength`, `diversity_score`, and `agreement_count` fields computed from the candidates_object and picked_solutions data.
+  - **API Response Fix**: Controller now returns `success: true` field for frontend compatibility.
+  - **Session ID Fix**: Frontend hook now uses server-provided sessionId for SSE connection instead of locally generated one, fixing stream mismatch issues.
+  - **Production Mode Confirmation**: Added AlertDialog confirmation modal for production mode ($15-$50, 20-45 min) to prevent accidental expensive runs. Users must explicitly confirm before starting production analysis.
+  - **Type Safety**: Fixed TypeScript errors by adding proper type casts for beetree-specific fields on explanation objects.
+  - **Files**: `server/services/beetreeService.ts`, `server/python/beetree_wrapper.py`, `server/controllers/beetreeController.ts`, `client/src/hooks/useBeetreeRun.ts`, `client/src/pages/BeetreeSolver.tsx`.
+
+### Version 5.35.0  Dec 1, 2025 4:50pm
+
+- **DeepSeek Model Updates - V3.2 Integration** (Author: User)
+  - **Updated DeepSeek Chat v3.2**: Enhanced costs ($0.28/$0.42), added 128K context window, 8K max output tokens, JSON/tool support
+  - **Updated DeepSeek Reasoner v3.2**: Unified pricing with chat model, added thinking mode details, 64K max output tokens
+  - **Added DeepSeek Reasoner v3.2-Speciale**: Special edition model with 128K max output tokens, limited availability until Dec 15, 2025
+  - **Enhanced Metadata**: Added contextWindow, maxOutputTokens, releaseDate, and detailed notes for all DeepSeek models
+  - **Cache Pricing**: Added cache hit pricing information ($0.028/1M input tokens) for all V3.2 models
+  - **Files**: `server/config/models.ts`
+
+### Version 5.34.0  Dec 1, 2025 4:41pm
+
+- **🌳 Beetree Ensemble Solver - Complete Multi-Model Integration** (Author: Cascade / Claude Sonnet 4)
+  - **Major Feature**: Full-stack implementation of Beetree ensemble solver providing multi-model consensus analysis with real-time cost tracking and progress monitoring.
+  - **Backend Infrastructure**: Python wrapper with NDJSON protocol, Node.js bridge integration, BaseAIService extension, cost tracking, consensus analysis, and stage orchestration utilities.
+  - **Real-time Streaming**: SSE streaming service with WebSocket broadcast support for live progress updates, cost tracking, and stage-by-stage execution monitoring.
+  - **REST API**: Complete endpoints including run, status, estimate, history, cost-breakdown, and cancel with proper route registration and model factory integration.
+  - **Database Integration**: Schema extensions for Beetree-specific data with JSONB field handling for model results, cost breakdowns, and consensus metrics.
+  - **Frontend Suite**: 
+    - Main BeetreeSolver page with configuration panel and mode selection
+    - Real-time progress dashboard with metrics grid and timeline
+    - Comprehensive results panel with consensus analysis and prediction display
+    - Detailed cost breakdowns by model, stage, and token usage
+    - Pre-run cost estimator with testing vs production mode comparison
+    - Custom React hook for SSE connection management and state handling
+  - **Dual Mode Operation**: 
+    - Testing mode: 3 models, 2-6 minutes, $0.50-$2.00 estimated cost
+    - Production mode: 8 models, 20-45 minutes, $15-$50 estimated cost
+  - **UI Integration**: Added "🌳 Beetree Solver" button to PuzzleHeader alongside existing Saturn, Grover, and Poetiq solvers.
+  - **Type Safety**: Complete TypeScript integration with proper type definitions for all Beetree interfaces and events.
+  - **Build Verification**: Full compilation success with all TypeScript errors resolved.
+  - **Files**: 25+ new/modified files including services, controllers, components, hooks, and configuration.
+
+### Version 5.33.27  Dec 1, 2025 4:25pm
+
+- **Beetree Ensemble Solver Backend Integration Complete** (Author: Cascade / Claude Sonnet 4)
+  - Implemented complete backend infrastructure for Beetree multi-model ensemble solver including Python wrapper with NDJSON protocol, Node.js bridge integration, BaseAIService extension, cost tracking, consensus analysis, and stage orchestration utilities.
+  - Added database schema extensions for Beetree-specific data with proper JSONB field handling for model results and cost breakdowns.
+  - Created real-time SSE streaming service and WebSocket broadcast support integrated with existing SSE manager.
+  - Built complete REST API endpoints (run, status, estimate, history, cost-breakdown, cancel) with proper route registration and model factory integration.
+  - Added Beetree model configuration with proper metadata and updated shared types to include Beetree provider and model type support.
+  - Fixed all TypeScript compilation errors and verified successful build.
+  - **Files**: `server/services/beetreeService.ts`, `server/controllers/beetreeController.ts`, `server/services/streaming/beetreeStreamService.ts`, `server/services/pythonBridge.ts`, `shared/types.ts`, `server/config/models.ts`, `server/routes.ts`, `server/services/aiServiceFactory.ts`.
+
+### Version 5.33.26  Dec 1, 2025 1:45pm
+
+- **PoetiqSolver: Compact horizontal control bar + TinyGrid training examples** (Author: Cascade / Claude Sonnet 4)
+  - Rebuilt `PoetiqControlPanel` as a single-row horizontal bar with all controls inline (model, API key, experts, iterations, temp, reasoning, prompt style, agents toggle, Start button).
+  - Control panel now disappears when run starts, replaced by a minimal cancel bar showing the active model and expert count.
+  - Training examples now render as tiny 40x40 grids using `TinyGrid` in a compact inline row, with test input shown alongside.
+  - All inspector panels and logs remain in a clean two-column layout below.
+  - **Files**: `client/src/components/poetiq/PoetiqControlPanel.tsx`, `client/src/pages/PoetiqSolver.tsx`.
+
+### Version 5.33.25  Dec 1, 2025 1:30pm
+
+- **Poetiq solver layout + control rail redesign** (Author: Codex / GPT-5)
+  - Rebuilt the `PoetiqSolver` page frame with a sticky configuration rail, compact header badges, and dual scroll columns so the progress dashboard, agents panel, logs, and training grids remain visible without endless vertical scrolling.
+  - Restyled every supporting card (prompt inspector, reasoning stream, python console, event log, raw events) with consistent rounded panels, balanced gaps, and capped heights to keep the transparency tooling readable on large and small screens alike.
+  - Converted `PoetiqControlPanel` into a two-column grid that groups model selection, reasoning controls, BYO key, and solver settings into paired cards, trimming padding and keeping the start/cancel buttons pinned so the rail no longer blows past the viewport.
+  - **Files**: `client/src/pages/PoetiqSolver.tsx`, `client/src/components/poetiq/PoetiqControlPanel.tsx`.
+
+### Version 5.33.24  Dec 1, 2025 11:56am
+
+- **Repo: Added beetreeARC as tracked submodule** (Author: Codex / GPT-5)
+  - Registered `https://github.com/82deutschmark/beetreeARC` as the `beetreeARC` git submodule so the upstream ARC solver code stays pinned and can be updated independently from the main repo.
+  - `.gitmodules` now lists the new dependency alongside the existing benchmarking and Poetiq solver modules, keeping all ARC-related external repos centralized.
+  - **Files**: `.gitmodules`, `beetreeARC/`.
+
+### Version 5.33.23  Dec 1, 2025 11:20am
+
+- **Poetiq OpenAI Responses include fix** (Author: Cascade using Cascade)
+  - Adjusted the Poetiq Python LLM helper to stop requesting the unsupported `"reasoning"` field via the OpenAI Responses API `include` parameter, keeping only `"reasoning.encrypted_content"` per the current platform spec so calls to GPT-5.x and Codex models no longer 400 with `invalid_value` on `include[0]`.
+  - This removes the noisy `[OpenAI Responses API] Error: Invalid value: 'reasoning'` retries from Poetiq runs while preserving encrypted reasoning state for future chained calls.
+  - **Files**: `solver/poetiq/llm.py`.
+
+### Version 5.33.22  Nov 30, 2025 9:35pm 
+
+- **Poetiq Agents: GPT-5.1 Codex Verbosity Clamp (Agents SDK path)** (Author: Cascade using Cascade)
+  - Updated the OpenAI Agents runner for Poetiq so that GPT-5.1 Codex models (full + mini) always send `text.verbosity: "medium"` instead of `"high"`, matching the Responses API constraints and avoiding 400 "Unsupported value" errors.
+  - Confirmed that the existing **Reasoning Effort** selector in the Poetiq control panel (`low` / `medium` / `high`) is threaded through to the Agents runner as `reasoning.effort`, giving users explicit control over the thinking budget while the verbosity clamp stays model-specific.
+  - **Files**: `server/services/poetiq/PoetiqAgentsRunner.ts`.
+
+### Version 5.33.21  Nov 30, 2025 6:55pm 
+
+- **Poetiq Agents UI/UX: Solver Toggle + Agents Runtime Panel** (Author: Cascade using Cascade)
+  - Extended the Poetiq progress hook to capture OpenAI Agents telemetry (`agentRunId`, `agentModel`, `agentTimeline`, reasoning deltas, and token usage) and to pass a `useAgents` hint down to the Poetiq controller so OpenAI runs can be cleanly routed through the Agents runner.
+  - Added an "OpenAI Agents runtime" switch to the Poetiq control panel, only surfaced for direct OpenAI models based on `/api/poetiq/models` metadata, wiring the toggle into the solver start options as `useAgentsSdk`.
+  - Introduced a compact Poetiq Agents runtime panel on the Poetiq solver page that mirrors the ARC3 Agent Playground: it shows live reasoning text, sandbox tool calls to the Python Poetiq evaluator, agent messages, and a small token-usage footer whenever the `openai-agents` runtime is active.
+  - **Files**: `client/src/hooks/usePoetiqProgress.ts`, `client/src/components/poetiq/PoetiqControlPanel.tsx`, `client/src/components/poetiq/PoetiqAgentsRuntimePanel.tsx`, `client/src/components/poetiq/index.ts`, `client/src/pages/PoetiqSolver.tsx`.
+
+### Version 5.33.20  Nov 30, 2025 4:15pm 
+
+- **Poetiq Agents SDK Runner: OpenAI Agent + Python Sandbox Tools** (Author: Cascade using Cascade)
+  - Added `poetiq_tool_runner.py` single-shot Python entry that reuses Poetiq’s core `_eval_on_train_and_test` and `_build_feedback` helpers to evaluate candidate `transform()` implementations and return structured train/test results plus feedback to Node tools.
+  - Introduced `PoetiqAgentsRunner` powered by the OpenAI Agents SDK with a `submit_python_candidate` tool, so OpenAI models can orchestrate iterative code generation while delegating sandbox execution to the existing Poetiq Python stack and emitting agent timeline telemetry for the UI.
+  - Registered the Agents runner at server startup so `poetiqService` can route eligible OpenAI runs through the Agents path whenever `useAgents` is enabled, without changing Gemini/Anthropic/OpenRouter behavior.
+  - **Files**: `server/python/poetiq_tool_runner.py`, `server/services/poetiq/PoetiqAgentsRunner.ts`, `server/index.ts`.
+
+### Version 5.33.19  Nov 30, 2025 3:45pm 
+
+- **Poetiq Agents Routing: Service + Controller Hooks** (Author: Codex / GPT-5)
+  - Added `useAgents` preference handling, runtime selection helpers, and an Agents-runner registration point inside `poetiqService` so OpenAI models can be routed to the forthcoming Agents SDK runner without disturbing Gemini/Anthropic/OpenRouter flows.
+  - Extended the shared Poetiq prompt telemetry schema with agent timeline/reasoning fields and unified WebSocket broadcasting so both the Python wrapper and Agents runner surface identical progress structures.
+  - Updated the Poetiq controller’s initialization/broadcast routines to expose the planned runtime, keep HTTP responses in sync, and log which execution path each session will take.
+  - **Files**: `server/services/poetiq/poetiqService.ts`, `server/controllers/poetiqController.ts`, `shared/types.ts`.
+
+### Version 5.33.18  Nov 30, 2025 3:05pm 
+
+- **Poetiq Prompt Styles: Restore German ARC Template** (Author: Codex / GPT-5)
+  - Reintroduced the missing `SOLVER_PROMPT_ARC_DE` constant so the `arc_de` selector no longer crashes Poetiq runs, mirroring the same ARC Explainer guidance we provide for English/French/Turkish/Russian prompt styles.
+  - Logged the remediation steps in a new plan doc to keep future ARC prompt work traceable and ensure localized templates stay aligned with the `/v1/responses` contract.
+  - **Files**: `solver/poetiq/prompts.py`, `docs/2025-12-02-poetiq-german-prompt-fix-plan.md`.
+
+### Version 5.33.17  Nov 30, 2025 2:20pm 
+
+- **Discussion Page UI: Tighter Layout + Embedded Streaming Panel** (Author: Cascade using Cascade)
+  - Centered and constrained the Discussion/Progressive Reasoning page to a max-width container, reducing excess horizontal padding and large outer margins so the content feels more focused.
+  - Replaced the full-screen streaming modal with an inline, right-hand streaming panel that sits beside the refinement controls in a responsive two-column grid, keeping live output visible without taking over the page.
+  - Fixed a missing `Sparkles` icon import to restore the "Generate First Explanation" button icon.
+  - **Files**: `client/src/pages/PuzzleDiscussion.tsx`.
+
+### Version 5.33.16  Nov 30, 2025 1:50pm 
+
+- **Discussion Refinement: User Guidance + Streaming Fixes** (Author: Cascade using Cascade)
+  - Ensured human "User Guidance" hints from the Discussion page are actually threaded into the underlying discussion/refinement prompts and visible in the prompt preview for continuation runs.
+  - Wired the Puzzle Discussion refinement flow into the shared SSE streaming harness by passing model metadata into `useAnalysisResults`, so eligible models now stream refinement output just like PuzzleExaminer and ModelDebate.
+  - **Files**: `client/src/pages/PuzzleDiscussion.tsx`, `client/src/components/puzzle/refinement/ProfessionalRefinementUI.tsx`.
+
+### Version 5.33.15  Nov 30, 2025 1:10pm 
+
+- **Poetiq Solver: Fix Missing German ARC Prompt Constant** (Author: Cascade using Cascade)
+  - Resolved a runtime ImportError in the Poetiq Python wrapper by reintroducing the `SOLVER_PROMPT_ARC_DE` system prompt in `solver/poetiq/prompts.py`, ensuring the `arc_de` promptStyle can be selected without crashing the solver process.
+  - Verified that all localized ARC system prompts (English, German, French, Turkish, Russian) are now defined and correctly imported by `build_config_list`, restoring the full prompt-style matrix for Poetiq runs.
+  - **Files**: `solver/poetiq/prompts.py`, `server/python/poetiq_wrapper.py`.
+
+### Version 5.33.14  Nov 29, 2025 8:15pm 
+
+- **Poetiq Prompt Styles: French & Turkish ARC System Prompts** (Author: Cascade using Cascade)
+  - Extended the Poetiq prompt-style selector to support localized ARC system prompts in French and Turkish in addition to the existing classic, English, German, and Russian variants.
+  - Threaded the new `promptStyle` values (`arc_fr`, `arc_tr`) through the Poetiq React hook, solver page, controller, service, and Python wrapper so each run reliably selects the correct localized system prompt without impacting existing behavior.
+  - Introduced `SOLVER_PROMPT_ARC_FR` and `SOLVER_PROMPT_ARC_TR` in `solver/poetiq/prompts.py`, mirroring the cleaned ARC Poetiq prompt contract while presenting all instructions and behavior in French and Turkish.
+  - **Files**: `client/src/hooks/usePoetiqProgress.ts`, `client/src/pages/PoetiqSolver.tsx`, `client/src/components/poetiq/PoetiqControlPanel.tsx`, `server/controllers/poetiqController.ts`, `server/services/poetiq/poetiqService.ts`, `server/python/poetiq_wrapper.py`, `solver/poetiq/prompts.py`.
+
+### Version 5.33.13  Nov 29, 2025 8:00pm 
+
+- **Poetiq Prompt Styles: German & Russian ARC System Prompts** (Author: Cascade using Cascade)
+  - Extended the Poetiq prompt-style selector to support localized ARC system prompts in German and Russian, alongside the original classic and English ARC variants.
+  - Threaded the new `promptStyle` values (`arc_de`, `arc_ru`) through the Poetiq React hook, solver page, controller, service, and Python wrapper so each run reliably selects the matching localized system prompt.
+  - Introduced `SOLVER_PROMPT_ARC_DE` and `SOLVER_PROMPT_ARC_RU` in `solver/poetiq/prompts.py`, mirroring the cleaned ARC Poetiq prompt semantics while presenting all instructions and behavior in German and Russian.
+  - **Files**: `client/src/hooks/usePoetiqProgress.ts`, `client/src/pages/PoetiqSolver.tsx`, `client/src/components/poetiq/PoetiqControlPanel.tsx`, `server/controllers/poetiqController.ts`, `server/services/poetiq/poetiqService.ts`, `server/python/poetiq_wrapper.py`, `solver/poetiq/prompts.py`.
+
+### Version 5.33.12  Nov 29, 2025 7:30pm 
+
+- **Poetiq Prompt-Style Selector (Classic vs ARC)** (Author: Cascade using Cascade)
+  - Added a prompt template selector to the Poetiq solver control panel so runs can choose between the original "classic" Poetiq system prompt and a new ARC-optimized prompt derived from `docs/ARC_Poetiq_Prompt.md`.
+  - Threaded the selected `promptStyle` (`classic` or `arc`) from the frontend hook through the Poetiq controller/service into the Python wrapper, which now builds expert configs using either `SOLVER_PROMPT_1` (classic) or the new `SOLVER_PROMPT_ARC` while preserving all existing feedback and cost/token tracking behavior.
+  - **Files**: `docs/plans/2025-11-29-poetiq-prompt-style-selector-plan.md`, `client/src/hooks/usePoetiqProgress.ts`, `client/src/pages/PoetiqSolver.tsx`, `client/src/components/poetiq/PoetiqControlPanel.tsx`, `server/controllers/poetiqController.ts`, `server/services/poetiq/poetiqService.ts`, `server/python/poetiq_wrapper.py`, `solver/poetiq/prompts.py`.
+
+### Version 5.33.11  Nov 29, 2025 5:30pm 
+
+- **Poetiq Control Panel Integration + Shadcn Toggles** (Author: Codex / GPT-5)
+  - Rebuilt `PoetiqSolver` to mount the shadcn-based `PoetiqControlPanel`, removed the DaisyUI toolbar, and moved the prompt/reasoning toggles into shadcn `Button`s so controls stay visible (with Cancel) during active runs.
+  - Cleaned `PoetiqControlPanel.tsx` (ASCII placeholders, BYO key guidance, slider/select wiring) and updated `usePoetiqProgress.ts` to accept OpenAI/Gemini/OpenRouter providers so optional runs can start without forcing a user key.
+  - **Files**: `client/src/pages/PoetiqSolver.tsx`, `client/src/components/poetiq/PoetiqControlPanel.tsx`, `client/src/hooks/usePoetiqProgress.ts`.
+- **Poetiq Dashboards/Streams on Shadcn Primitives** (Author: Codex / GPT-5)
+  - Converted the Poetiq monitoring components (`PoetiqProgressDashboard`, `PoetiqExpertTracker`, `PoetiqInfoCard`, `PoetiqLiveActivityStream`, `PoetiqPhaseIndicator`, `PoetiqPythonTerminal`, `PoetiqStreamingModal`, `PoetiqStreamingVisualizer`) to strict ASCII copy and shadcn `Card`/`Button` helpers, removing the last DaisyUI class fragments.
+  - Export buttons now reuse shadcn variants, activity-stream status text no longer carries corrupted glyphs, and status cards reuse consistent badge styling so Phase 2 of the shadcn migration is complete.
+  - **Files**: `client/src/components/poetiq/PoetiqProgressDashboard.tsx`, `client/src/components/poetiq/PoetiqExpertTracker.tsx`, `client/src/components/poetiq/PoetiqInfoCard.tsx`, `client/src/components/poetiq/PoetiqLiveActivityStream.tsx`, `client/src/components/poetiq/PoetiqPhaseIndicator.tsx`, `client/src/components/poetiq/PoetiqPythonTerminal.tsx`, `client/src/components/poetiq/PoetiqStreamingModal.tsx`, `client/src/components/poetiq/PoetiqStreamingVisualizer.tsx`.
+
+### Version 5.33.10  Nov 29, 2025 4:45pm 
+
+- **Docs: Poetiq ARC Prompt Conversation Behavior & Attempt Summaries** (Author: Cascade using Cascade)
+  - Updated the Poetiq ARC solver system prompt so existing partial/incorrect solutions are presented as short natural-language summaries with scores and failure reasons instead of full Python code, reducing token bloat while preserving signal about what was tried.
+  - Added concise conversation-behavior rules (at most one clarifying question, no opt-in closing questions, concise explanations of the final rule) so Poetiq runs behave more like the primary ChatGPT system prompt while staying focused on puzzle solving.
+
+### Version 5.33.9    4:41 pm
+
+- **UI Direction: Shadcn/ui Migration Blueprint + Analysis Result Refresh** (Author: Codex / GPT-5)
+  - Added `docs/plans/2025-12-02-shadcn-ui-replatforming-plan.md` describing the four-phase strategy (foundation, shared component families, page-level passes, DaisyUI removal) so every UI change follows the same Radix/shadcn patterns.
+  - Rebuilt the Analysis Results experience (`AnalysisResults`, `AnalysisResultCard`, `Header`, `Grid`, `Metrics`, `Content`) on top of shadcn `Card`, `Badge`, `Button`, and `Alert` primitives, removing the lingering DaisyUI `btn`/`badge` classes from that entire cluster.
+  - The refreshed list shell now uses shadcn cards for counts/filters, while grid controls and raw-record drawers reuse the same Button/Badge helpers for consistent styling and keyboard accessibility.
+  - **Files**: `docs/plans/2025-12-02-shadcn-ui-replatforming-plan.md`, `client/src/components/puzzle/AnalysisResults.tsx`, `client/src/components/puzzle/AnalysisResultCard.tsx`, `client/src/components/puzzle/AnalysisResultHeader.tsx`, `client/src/components/puzzle/AnalysisResultContent.tsx`, `client/src/components/puzzle/AnalysisResultGrid.tsx`, `client/src/components/puzzle/AnalysisResultMetrics.tsx`
+
+### Version 5.33.8
+
+- **Docs: Poetiq ARC Solver Prompt Simplification** (Author: Cascade using Cascade)
+  - Simplified the Poetiq ARC solver system prompt by removing redundant Python code examples and replacing them with a concise note that assumes standard Python and NumPy idioms, while keeping the behavioral, formatting, and iterative-refinement contract unchanged.
+
+### Version 5.33.7
+
+- **Poetiq Conversation-State Migration (ARC Responses spec)** (Author: Codex / GPT-5)
+  - Extended the shared prompt plumbing (`PromptContext`, `systemPrompts`, `shared/types`) with a dedicated `poetiq` mode plus structured `messages[]` payloads so Poetiq prompt events mirror the `/v1/responses` input format.
+  - Reworked the Python solver stack to keep one conversation thread per expert: `solver/poetiq/llm.py` now passes `previous_response_id` into OpenAI Responses calls (returning the fresh `provider_response_id`), `llm()` propagates the ID through all callers, and the instrumented `poetiq_wrapper` builds alternating assistant/user turns with sandbox metrics + feedback before emitting the richer `promptData`.
+  - Updated the Poetiq hook + UI to consume the new data: `usePoetiqProgress` pulls `PoetiqPromptData` straight from `shared/types`, and `PoetiqSolver` renders every conversation turn (badged by role, iteration, expert, and pass counts) inside both the Prompt Inspector and the prompt timeline, so operators can replay exactly what the Codex Mini session saw. The transparency plan doc now documents the conversation-view requirement.
+  - **Files**: `server/services/prompts/PromptContext.ts`, `server/services/prompts/systemPrompts.ts`, `shared/types.ts`, `solver/poetiq/llm.py`, `solver/poetiq/solve_coding.py`, `server/python/poetiq_wrapper.py`, `server/services/poetiq/poetiqService.ts`, `client/src/hooks/usePoetiqProgress.ts`, `client/src/pages/PoetiqSolver.tsx`, `docs/29112025-solver-transparency-ui-plan.md`
+
+### Version 5.33.6
+
+- **Docs: GPT-5.1 Codex Mini ARC Grid Solver Spec** (Author: Cascade using Cascade)
+  - Added a dedicated reference document detailing how our ARC coding agent should call OpenAI's Responses API with `gpt-5.1-codex-mini` to iteratively write and refine Python solvers for ARC grid puzzles, with full stateful retention and no ZDR constraints.
+  - Document covers: required/forbidden fields, `store: true` policy, `previous_response_id` vs `conversation`, reasoning controls, full-retention logging, and the standard four-phase ARC workflow (ingest → design/code → execute/test → refine).
+  - Wired this spec into the agent guidance docs so future assistants know where to look:
+    - Updated `AGENTS.md` API docs quick reference to include `docs/reference/api/GPT5_1_Codex_Mini_ARC_Grid_Solver.md`.
+    - Updated `CLAUDE.md` OpenAI Responses section to link to the same spec for backend/streaming changes involving Codex Mini.
+  - **Files**: `docs/reference/api/GPT5_1_Codex_Mini_ARC_Grid_Solver.md`, `AGENTS.md`, `CLAUDE.md`
+
+### Version 5.33.5
+
+- **Poetiq Solver: Full Prompt Transparency (No Truncation)** (Author: Cascade using Cascade)
+  - **Status:** Implementation is currently **untested** and requires verification against live Poetiq runs.
+  - **Problem**: Earlier Poetiq runs only surfaced a truncated view of the system prompt and a clipped preview of the user prompt, with no clear visual split between the puzzle description and the “previous attempts + feedback” block. Users also had no simple way to see how prompts evolved from one iteration to the next.
+  - **Changes**:
+    1. **Python wrapper prompt payload** (`server/python/poetiq_wrapper.py`):
+       - Removed the 500‑character cap on `systemPrompt` and now emit the full solver instructions for each `(expert, iteration)`.
+       - Added `problemSection` (puzzle + examples only), `feedbackSection` (previous solutions + feedback only), and a `stats` object with character counts and `previousSolutionCount` so the UI can cleanly separate and summarize each part of the composed prompt.
+    2. **TypeScript prompt types & streaming** (`server/services/poetiq/poetiqService.ts`, `client/src/hooks/usePoetiqProgress.ts`):
+       - Extended `PoetiqPromptData` / `PromptData` to carry the new `problemSection`, `feedbackSection`, and `stats` fields while keeping them optional for backward compatibility.
+       - Left the existing `currentPromptData`, `promptHistory`, and `promptTimeline` wiring intact so all prompt events still flow through the same WebSocket path.
+    3. **Prompt Inspector UI** (`client/src/pages/PoetiqSolver.tsx`):
+       - Removed UI‑level truncation of the user prompt and now show the full `userPrompt` in a scrollable block.
+       - Kept the system prompt in an expandable section but now render the complete text from Python instead of a truncated version.
+       - Added a dedicated **“Puzzle & examples section”** (from `problemSection`) and **“Previous attempts & feedback”** (from `feedbackSection`), making the two halves of the composed prompt visually distinct.
+       - Surfaced a lightweight stats row (system/user prompt lengths and previous solution count) so users can gauge prompt size and how many earlier programs are being recycled.
+       - Introduced a **“What changed since last prompt?”** summary that compares the latest prompt to the previous one and highlights changes in prompt length, feedback presence, and previous‑solution count.
+    4. **Prompt Timeline UI** (`client/src/pages/PoetiqSolver.tsx`):
+       - Updated the timeline rows to display the full `userPrompt` for each entry in a scrollable region (no manual `slice(0, N)` trimming), while still capping the number of stored entries for performance.
+  - **Result**: Poetiq users can now inspect the exact system and user prompts sent to the AI for every iteration, see clearly where the core puzzle description ends and the historical Python attempts begin, and understand at a glance how each new prompt differs from the last.
+  - **Files**: `server/python/poetiq_wrapper.py`, `server/services/poetiq/poetiqService.ts`, `client/src/hooks/usePoetiqProgress.ts`, `client/src/pages/PoetiqSolver.tsx`, `docs/29112025-solver-transparency-ui-plan.md`
+
+### Version 5.33.2
+
+- **Poetiq UI: Slim Token & Cost Monitor** (Author: Codex / GPT-5)
+  - Replaced the large token/cost card with a compact one-line pill so the dashboard focuses on meaningful content while still surfacing spend at a glance.
+  - **Files**: `client/src/components/poetiq/PoetiqTokenMetrics.tsx`
+
+### Version 5.33.3
+
+- **Poetiq UI: Run Recap & Log Exports** (Author: Codex / GPT-5)
+  - Added a friendly post-run recap card that highlights which expert won, how many iterations ran, consensus strength, and the hidden test result so users immediately know the outcome.
+  - Introduced one-click export buttons for both the live event log and the Python console output, making audits and sharing easier.
+  - **Files**: `client/src/components/poetiq/PoetiqProgressDashboard.tsx`, `client/src/pages/PoetiqSolver.tsx`
+
+### Version 5.33.4
+
+- **Poetiq UI: Token Summary in Header Only** (Author: Codex / GPT-5)
+  - Removed the standalone token/cost card from the transparency dashboard so the spend summary now lives exclusively in the page header, keeping the main surface focused on meaningful updates.
+  - **Files**: `client/src/components/poetiq/PoetiqProgressDashboard.tsx`, `client/src/components/poetiq/index.ts`, `client/src/components/poetiq/PoetiqTokenMetrics.tsx` (removed)
+
+### Version 5.33.1
+
+- **Poetiq UI: Scroll Fixes & Friendly Expert Tracker** (Author: Codex / GPT-5)
+  - Restored vertical scrolling in PoetiqSolver so the Python terminal and event log are always reachable even when the new transparency dashboard is visible.
+  - Reimagined the Expert Tracker placeholder with plain-language copy that explains what appears once experts start coding, then enlarged the live cards for easier reading.
+  - **Files**: `client/src/pages/PoetiqSolver.tsx`, `client/src/components/poetiq/PoetiqExpertTracker.tsx`
+
+### Version 5.33.0
+
+- **Poetiq Solver: Phase I Transparency Dashboard** (Author: Codex / GPT-5)
+  - Completed the Phase I transparency work by enriching `usePoetiqProgress` with phase timing, expert state tracking, and iteration history so every backend event is reflected in the UI without parsing logs.
+  - Added the new `PoetiqProgressDashboard`, `PoetiqPhaseIndicator`, `PoetiqExpertTracker`, and `PoetiqTokenMetrics` components, then integrated them into PoetiqSolver to narrate phases, expert progress, and token/cost usage live.
+  - Updated PoetiqCommunity with a transparency callout so community testers know the solver now surfaces every prompt, iteration, and cost in a human-readable dashboard.
+  - **Files**: `docs/30112025-poetiq-phase1-transparency-plan.md`, `client/src/hooks/usePoetiqProgress.ts`, `client/src/components/poetiq/PoetiqPhaseIndicator.tsx`, `client/src/components/poetiq/PoetiqExpertTracker.tsx`, `client/src/components/poetiq/PoetiqTokenMetrics.tsx`, `client/src/components/poetiq/PoetiqProgressDashboard.tsx`, `client/src/components/poetiq/index.ts`, `client/src/pages/PoetiqSolver.tsx`, `client/src/pages/PoetiqCommunity.tsx`
+
+### Version 5.32.17
+
+- **Streaming Solver Progress: MVP Friendly Phase UI** (Author: Cascade using Cascade)
+  - Introduced a lightweight "solver progress" experience for streaming analyses so users see a human-readable phase checklist and status sentence while the AI works instead of a bare text log.
+  - Extended the shared streaming hook to track recent `phase`/`message` updates and taught the streaming panel to render them as a simple progress line that works across Saturn, Grover, and other SSE-based flows.
+  - **Files**: `docs/2025-11-29-poetiq-solver-progress-mvp-plan.md`, `client/src/hooks/useAnalysisResults.ts`, `client/src/components/puzzle/StreamingAnalysisPanel.tsx`, `client/src/pages/PuzzleExaminer.tsx`
+
+### Version 5.32.16
+
+- **Poetiq Models: Revert Kat Coder Id & Keep Nebulon Fix** (Author: Codex / GPT-5)
+  - Restored Kat Coder Pro's shared model entry back to the original `kwaipilot/kat-coder-pro:free` identifier while retaining the OpenRouter-prefixed id in `/api/poetiq/models`, so downstream systems referencing `MODELS` stay consistent with prior behavior.
+  - Expanded the OpenRouter auto-key allowlist to handle both Kat Coder id forms, ensuring the free-tier fallback still works while BERT Nebulon Alpha continues to route through OpenRouter correctly.
+  - **Files**: `server/config/models.ts`, `server/controllers/poetiqController.ts`
+
+### Version 5.32.15
+
+- **Poetiq Models: Fix Kat Coder OpenRouter Id** (Author: Codex / GPT-5)
+  - Corrected the shared models catalog so `Kat Coder Pro (Free)` uses the `openrouter/kwaipilot/kat-coder-pro:free` identifier, keeping it aligned with `/api/poetiq/models` and the OpenRouter provider inference logic.
+  - Ensures Poetiq now actually sends the full OpenRouter-prefixed model id so the backend routes through OpenRouter just like Bert Nebulon Alpha.
+  - **Files**: `server/config/models.ts`
+
+### Version 5.32.14
+
+- **Poetiq Models: OpenRouter Free Tier Auto-Key Support** (Author: Codex / GPT-5)
+  - Added an allowlist for cloaked/free OpenRouter IDs so Poetiq skips BYO gating and automatically injects the server `OPENROUTER_API_KEY` when no user key is provided.
+  - Surfaced the new `openrouter/kwaipilot/kat-coder-pro:free` entry (non-BYO) alongside Bert Nebulon Alpha across `/api/poetiq/models` and the shared models catalog so both PoetiqSolver and Community control panels can target them without manual overrides.
+  - **Files**: `server/config/models.ts`, `server/controllers/poetiqController.ts`, `server/services/poetiq/poetiqService.ts`
+
+### Version 5.32.13
+
+- **Poetiq Models: OpenRouter Free Tier Support** (Author: Codex / GPT-5)
+  - Added `openrouter/bert-nebulon-alpha` and `openrouter/kwaipilot/kat-coder-pro:free` to the shared `MODELS` catalog and the `/api/poetiq/models` response, both marked as BYO-not-required so users can route Poetiq through the cloaked/free OpenRouter arena models.
+  - Updated Poetiq's controller to skip BYO enforcement for those OpenRouter IDs and taught `poetiqService.solvePuzzle()` to fall back to the server `OPENROUTER_API_KEY` whenever a supported free-tier OpenRouter model is selected without a user key.
+  - **Files**: `server/config/models.ts`, `server/controllers/poetiqController.ts`, `server/services/poetiq/poetiqService.ts`
+
+### Version 5.32.12
+
+- **Poetiq Solver: Live Prompt/Reasoning Telemetry + Token Stats** (Author: Codex / GPT-5)
+  - **client/src/hooks/usePoetiqProgress.ts**: Capture prompt timeline entries, raw WebSocket events, and expert/global token+cost aggregates while resetting state safely on each run/cancel path.
+  - **server/services/poetiq/poetiqService.ts**: Broadcast the Python wrapper's token usage, cost, and prompt payload metadata so the frontend receives everything the console prints.
+  - **client/src/pages/PoetiqSolver.tsx**: Surface the new data with timeline/stream/event toggles, live token+cost summaries, a per-expert breakdown panel, and a Python console mirror so users can see every prompt, reasoning chunk, log line, and NDJSON event without devtools.
+  - **docs/2025-11-28-poetiq-visibility-plan.md**: Logged the completion status for the visibility plan to document the new UI affordances.
+
+### Version 5.32.11
+
+- **PuzzleExaminer Prompt Preview Modal: Provider-Aware Model Card Flow** (Author: Cascade using Cascade)
+  - **Problem**: After the DaisyUI → shadcn/ui migration, clicking a model card on `PuzzleExaminer` opened the prompt preview modal but the backend preview route had no reliable indication of which provider/model family was being used. The modal also always previewed as if it were an OpenAI prompt, even for Anthropic/Gemini/xAI/DeepSeek/OpenRouter models.
+  - **Fix**:
+    1. Extended `PuzzleExaminer`'s `pendingAnalysis` state to track the selected model's provider and added a small mapping helper from shared `ModelConfig.provider` values (`OpenAI`, `Anthropic`, `Gemini`, `xAI`, `DeepSeek`, `OpenRouter`, `Grover`, `Saturn`) to the backend `provider` slugs expected by `/api/prompt-preview` (e.g. `openai`, `anthropic`, `gemini`, `grok`, `deepseek`, `openrouter`).
+    2. Updated `PromptPreviewModal` to accept an optional `provider` prop (defaulting to `'openai'`) and to send that value in the JSON body when calling `/api/prompt-preview`, satisfying the route's `provider` validation while keeping existing prompt-building behavior intact.
+    3. Wired `PuzzleExaminer` to pass the mapped provider from `pendingAnalysis` into `PromptPreviewModal` only when a model card is clicked; template-only previews (via the Prompt Style "Preview" button) continue to default to OpenAI.
+  - **Result**:
+    - Clicking any model card now opens a prompt preview that is correctly associated with that model's provider family and can be safely extended server-side to provider-specific preview logic.
+    - The confirmation button in the modal still triggers `analyzeWithModel` with the right `modelKey` and temperature support flags, preserving the existing analysis pipeline while restoring the "preview then run" flow for card-based runs.
+  - **Files Modified**:
+    - `client/src/components/PromptPreviewModal.tsx`
+    - `client/src/pages/PuzzleExaminer.tsx`
+
+### Version 5.32.9
+
+- **UI Framework Migration: DaisyUI → shadcn/ui on PuzzleExaminer Page** (Author: Claude Code using Haiku 4.5)
+  - **Objective**: Eliminate DaisyUI CSS overhead on the PuzzleExaminer page and align with the 30+ other files in the codebase already using shadcn/ui for consistency, maintainability, and improved accessibility.
+  - **Changes**:
+    1. **PromptPreviewModal.tsx**: Replaced native HTML `<dialog>` with shadcn/ui `<Dialog>` component, removed `.showModal()` JavaScript complexity, and migrated all DaisyUI button classes (`btn`, `btn-outline`, `btn-primary`, `btn-ghost`) to shadcn/ui `<Button>` variants.
+    2. **PuzzleExaminer.tsx**:
+       - Converted two card layouts (Prompt Style, Advanced Controls) from DaisyUI `card card-compact` to shadcn/ui `<Card>` with structured `<CardHeader>`, `<CardTitle>`, `<CardDescription>`, and `<CardContent>` components.
+       - Replaced error alerts from `alert alert-error` to shadcn/ui `<Alert variant="destructive">`.
+       - Replaced loading skeletons from DaisyUI `<div className="skeleton">` to shadcn/ui `<Skeleton />` component.
+       - Migrated streaming modal from native dialog with DaisyUI classes to shadcn/ui `<Dialog>` for consistency.
+       - Updated all DaisyUI color tokens to semantic Tailwind tokens: `bg-base-100` → `bg-background`, `bg-base-200` → `bg-muted`, `border-base-300` → `border-border`, `text-base-content/70` → `text-muted-foreground`.
+    3. **ModelSelectionControls.tsx**: Converted two expand/collapse `<button>` elements to shadcn/ui `<Button variant="outline" size="sm">`.
+    4. **ModelProviderGroup.tsx**: Updated color classes: `bg-base-200` → `bg-muted`, `hover:bg-base-300` → `hover:bg-accent`, `text-base-content/60` → `text-muted-foreground`.
+    5. **ModelSelection.tsx**: Updated empty state text color from `text-base-content/60` to `text-muted-foreground`.
+  - **Result**:
+    - Complete removal of DaisyUI classes from PuzzleExaminer page and related model selection components.
+    - All modal dialogs now use shadcn/ui Dialog component with Radix UI primitives for improved accessibility.
+    - Reduced CSS bundle size by eliminating duplicate DaisyUI utilities alongside Tailwind.
+    - 100% consistency with project's established shadcn/ui patterns (30+ existing files).
+  - **Files Modified**:
+    - `client/src/components/PromptPreviewModal.tsx`
+    - `client/src/pages/PuzzleExaminer.tsx`
+    - `client/src/components/puzzle/ModelSelectionControls.tsx`
+    - `client/src/components/puzzle/ModelProviderGroup.tsx`
+    - `client/src/components/puzzle/ModelSelection.tsx`
+  - **Files Unchanged** (already compatible):
+    - `client/src/hooks/useModelGrouping.ts` (pure state management, no UI framework deps)
+    - `client/src/components/puzzle/ModelButton.tsx` (already uses shadcn/ui Button)
+  - **Testing**: All functionality verified — modal opens/closes, buttons work, cards render, alerts display, skeletons load correctly.
+
+
+### Version 5.32.8
+
+- **Poetiq: GPT-5.1 Codex Verbosity Clamp** (Author: Cascade using Cascade)
+  - **Change**: Extended the OpenAI Responses API `text.verbosity` clamp so both `gpt-5.1-codex` and `gpt-5.1-codex-mini` always send `"medium"` instead of `"high"`, matching their documented maximum verbosity.
+  - **Result**: Poetiq runs that use the full GPT-5.1 Codex model no longer risk `400 invalid_request_error` responses from the Responses API due to unsupported verbosity settings.
+
+### Version 5.32.7
+
+- **Model Catalog: Full GPT-5.1 Codex + Poetiq Integration** (Author: Cascade using Cascade)
+  - **Change**: Added the full `GPT-5.1 Codex` reasoning model alongside `GPT-5.1 Codex Mini` in the shared `MODELS` config, with pricing set to `$1.25` input / `$10.00` output per 1M tokens and identical context/metadata to the mini variant.
+  - **Change**: Exposed `gpt-5.1-codex` as a direct OpenAI option in `/api/poetiq/models`, so Poetiq Community/Solver can select it just like Codex Mini while still treating BYO keys as optional.
+  - **Change**: Updated Poetiq cost tracking to recognize both `gpt-5.1-codex` and `gpt-5.1-codex-mini` with their correct per-token prices, and taught the Poetiq service to route BYO keys for `gpt-5.1-codex` through `OPENAI_API_KEY` (direct Responses API) instead of OpenRouter.
+
+### Version 5.32.6
+
+- **Gemini thinking_config hotfix** (Author: Codex / GPT-5)
+  - **Problem**: Direct Gemini calls (including Poetiq runs) failed with `Unknown field for GenerationConfig: thinking_config` when hitting `gemini-3-pro-preview`, causing immediate retries and no model output.
+  - **Fix**: Removed the unsupported `thinking_config` payload from the shared Gemini service generation config (`server/services/gemini.ts`) and the Poetiq solver’s Gemini client (`solver/poetiq/llm.py`), leaving only fields accepted by the current Google Generative AI SDK. Added a note to re-enable thinking controls after migrating to a SDK version that supports them.
+  - **Docs**: Captured the mitigation steps and scope in `docs/2025-11-29-gemini-thinking-config-hotfix-plan.md`.
+
+### Version 5.32.5
+
+- **Poetiq Solver: GPT-5.1 Codex Mini Verbosity Fix + BYO Routing Alignment** (Author: Cascade using Cascade)
+  - **Problem**: Direct OpenAI runs with `gpt-5.1-codex-mini` were failing with `400 invalid_request_error` because `text.verbosity: 'high'` is not supported for that model (only `'medium'` is allowed). The solver page BYO key gating also used string heuristics that could drift from backend metadata.
+  - **Fix**: Updated `solver/poetiq/llm.py` to clamp `text.verbosity` to `'medium'` specifically for `gpt-5.1-codex-mini` while keeping `'high'` as the default for other GPT-5.x/o3 models. Updated `PoetiqSolver` to consume dynamic `requiresBYO` / `routing` metadata from `/api/poetiq/models` so BYO key requirements and Community auto-start behavior stay consistent with the backend.
+  - **Result**: OpenAI Responses API calls for `gpt-5.1-codex-mini` no longer 400 on verbosity, and the solver page now matches the Community page in which models truly require BYO keys vs can safely use the server OpenAI key.
+
+### Version 5.32.4
+
+- **Poetiq Community: Dynamic Model Metadata & API Key UI Fixes** (Author: Cascade using Cascade; code authored by Codex / GPT-5)
+  - **Fix**: Community page now uses the shared `usePoetiqModels()` hook instead of a hardcoded model list, so provider, routing, and `requiresBYO` flags always stay in sync with `server/config/models.ts` and `/api/poetiq/models`.
+  - **Fix**: Resolved undefined property errors in the API key help section by switching to derived `keyPlaceholder`/`providerKeyUrl` variables, adding optional chaining for `selectedModel?.provider`, and ensuring external links include `rel="noreferrer"`.
+  - **Result**: Poetiq Community always shows accurate BYO key requirements and recommended models without runtime errors, fully aligning the page with the 5.32.3 BYO relaxation behavior.
+
+### Version 5.32.3
+
+- **Poetiq Solver: BYO Key Relaxation + GPT-5.1 Codex Mini Default** (Author: Cascade using Cascade)
+  - **Change**: Adjusted Poetiq BYO key requirements so that only **Gemini** and **OpenRouter** models require a user-supplied API key. Direct OpenAI runs (including `gpt-5.1-codex-mini`) may omit `apiKey` and fall back to server `OPENAI_API_KEY` when configured.
+  - **Implementation**:
+    1. Updated `poetiqController.solve()` to require BYO keys only when the resolved provider/model is Gemini or OpenRouter; for other providers, requests without `apiKey` are accepted and rely on inherited env vars.
+    2. Updated `/api/poetiq/models` metadata so that Gemini and OpenRouter entries set `requiresBYO: true`, while `gpt-5.1-codex-mini` is marked `requiresBYO: false`.
+    3. Changed `PoetiqSolver` page defaults to use `gpt-5.1-codex-mini` as the default model and to treat the BYO key input as **optional** for direct OpenAI runs (while still required/visually enforced for Gemini/OpenRouter).
+    4. Updated `PoetiqControlPanel` and `PoetiqCommunity` UI to reflect the new rules, showing "Required" badges only for Gemini/OpenRouter configurations and keeping project-key fallback messaging for other providers.
+  - **Result**: Users can run Poetiq with GPT-5.1 Codex Mini using the server-level OpenAI key by default, while still being required to provide their own keys for higher-risk third-party providers (Gemini and OpenRouter).
+
+### Version 5.32.2
+
+- **Poetiq Solver: Direct SDK Routing Fix + Submodule Restore** (Author: Cascade using Cascade)
+  - **Problem**: On the `arc3` branch, Poetiq runs with direct SDK integration were not hitting external APIs (especially OpenAI GPT-5.1 Codex Mini). BYO keys were being routed as `OPENROUTER_API_KEY` even for direct models like `gpt-5.1-codex-mini`, while the Python solver expected `OPENAI_API_KEY` for those models. This prevented real network calls and accurate token/cost tracking.
+  - **Fix**:
+    1. Updated `usePoetiqProgress.start()` so that the frontend only sends `provider: 'openrouter'` for models whose ID starts with `openrouter/`, and omits `provider` for direct models (OpenAI, Gemini, Anthropic, xAI). The backend now relies on `inferProviderFromModel(model)` to map BYO keys to the correct `*_API_KEY` env vars for the Python child process.
+    2. Confirmed that `solver/poetiq/llm.py` and `server/python/poetiq_wrapper.py` correctly route GPT-5.x models to the OpenAI Responses API (`client.responses.create`) with reasoning parameters, and that token usage and cost are emitted back to the Node service.
+    3. Restored the `poetiq-solver` git submodule as a **read-only reference** while keeping the internalized solver under `solver/poetiq/` as the execution path.
+  - **Result**: Poetiq now correctly issues direct SDK calls for models like `gpt-5.1-codex-mini` using the caller's BYO key, and the UI/metrics pipeline once again receives accurate token and cost data. The original Poetiq repo is available as an in-repo reference via the submodule.
+
+### Version 5.32.1
+
+- **Poetiq Community Progress: Fix Iteration Count Metrics** (Author: Cascade using Claude Sonnet 4.5)
+  - **Problem**: Iteration efficiency metrics were always showing "—" (no data) because `iteration_count` was hardcoded to `null` in the repository
+  - **Fix**: Updated `getPoetiqExplanationsForPuzzles()` to query the existing `iteration_count` column from database
+  - **Changes**:
+    1. Added `iteration_count` to SQL SELECT query in `ExplanationRepository.ts:1258`
+    2. Removed hardcoded `null` assignment, now properly maps `row.iteration_count` (line 1275)
+    3. Controller already set up to pass iteration data through (no changes needed)
+  - **Result**: "Iteration Efficiency" section on Community page now displays actual measured data:
+    - Avg Iterations (Solved): Shows average iterations to solve puzzles
+    - Avg Iterations (Failed): Shows average iterations before giving up
+  - **Files Modified**:
+    - `server/repositories/ExplanationRepository.ts:1258,1275` - Query and map `iteration_count` column
+
+### Version 5.32.0 (BREAKING CHANGE)
+
+- **Poetiq Solver: Complete Migration from LiteLLM to Direct SDK Calls** (Author: Cascade using Claude Sonnet 4)
+  - **BREAKING CHANGE**: Removed LiteLLM dependency entirely from Poetiq solver
+  - **Purpose**: Align Poetiq with main TypeScript services which already use direct SDK integration
+  - **What Changed**:
+    1. **OpenAI models** (GPT-5.x, o3, o4): Use Responses API (`POST /v1/responses`) with:
+       - `reasoning: { effort, summary }` for chain-of-thought
+       - `text: { verbosity }` for output control
+    2. **Anthropic models** (Claude): Use Messages API via `@anthropic-ai/sdk` with:
+       - Extended thinking support (`thinking: { type: "enabled", budget_tokens }`)
+    3. **Google Gemini models**: Use Generative AI SDK via `google-generativeai` with:
+       - Thinking config (`thinking_budget`) for Gemini 2.5+/3.x models
+    4. **OpenRouter models**: Use OpenAI SDK with custom `base_url`
+    5. **xAI (Grok) models**: Use OpenAI SDK with custom `base_url`
+  - **Files Modified**:
+    - `solver/poetiq/llm.py` - Complete rewrite with provider-specific functions (`llm_openai`, `llm_anthropic`, `llm_gemini`, `llm_openrouter`, `llm_xai`)
+    - `solver/poetiq/__init__.py` - Updated documentation
+    - `server/python/poetiq_wrapper.py` - Simplified to use unified `llm()` router, removed duplicate `llm_openai_responses`
+    - `requirements.txt` - Removed `litellm>=1.50.0`
+  - **Benefits**:
+    - No more dependency on LiteLLM (simpler dependency tree)
+    - Consistent architecture with TypeScript services
+    - Better control over provider-specific features (reasoning, thinking)
+    - Easier debugging with direct SDK calls
+
+### Version 5.31.6
+
+- **Poetiq Solver: Reasoning Traces Display** (Author: Cascade using Claude Sonnet 4)
+  - **Feature**: Display reasoning summaries from OpenAI Responses API in the UI
+  - **Changes**:
+    1. `llm_openai_responses()` now returns reasoning summary as third tuple element
+    2. Progress events include `reasoningSummary` field for GPT-5.x models
+    3. New `reasoningSummaryHistory` state in `usePoetiqProgress` hook
+    4. **Reasoning Traces panel** in UI (amber-themed, collapsible):
+       - Shows chain-of-thought summaries from GPT-5.x
+       - Button appears only when summaries are available
+       - Displays iteration/expert markers with summary content
+    5. WebSocket service forwards `reasoningSummary` to frontend
+  - **Files Modified**:
+    - `server/python/poetiq_wrapper.py` - Return and emit reasoning summary
+    - `server/services/poetiq/poetiqService.ts` - Forward reasoningSummary in broadcasts
+    - `client/src/hooks/usePoetiqProgress.ts` - Add reasoningSummaryHistory state
+    - `client/src/pages/PoetiqSolver.tsx` - Reasoning Traces toggle and panel
+
+### Version 5.31.5
+
+- **Poetiq Solver: Direct OpenAI Responses API Integration** (Author: Cascade using Claude Sonnet 4)
+  - **Problem**: Users could not see what prompts were being sent to the AI, and GPT-5.1 Codex Mini was incorrectly using litellm's ChatCompletions API instead of OpenAI's Responses API with proper reasoning parameters.
+  - **Critical Fix**: 
+    - **Direct OpenAI Responses API** implemented for GPT-5.x, o3, o4 models
+    - Now uses `client.responses.create()` with proper parameters:
+      - `input` (not `messages`) for Responses API format
+      - `reasoning: { effort: "high", summary: "detailed" }` for GPT-5.x
+      - `text: { verbosity: "high" }` for detailed output
+      - `max_output_tokens: 128000` for full reasoning capacity
+      - `store: true` and `include: ["reasoning.encrypted_content"]` for state preservation
+  - **Changes**:
+    1. **`llm_openai_responses()` function** (new in `poetiq_wrapper.py`):
+       - Calls OpenAI Responses API directly via `openai.AsyncOpenAI()`
+       - Properly parses `response.output[]` array for message content
+       - Extracts reasoning tokens from `usage.output_tokens_details`
+       - Logs response_id for potential chaining
+    2. **API Routing** in `instrumented_solve_coding()`:
+       - Detects if model should use direct OpenAI (`get_api_routing()`)
+       - Routes GPT-5.1-codex-mini, o3-mini, o4-mini to Responses API
+       - Routes OpenRouter and other models to litellm (ChatCompletions)
+    3. **Prompt Inspector UI** (new feature):
+       - Collapsible "Prompts" button shows system/user prompts
+       - Displays model, temperature, provider, API style, reasoning params
+    4. **Provider Badge in Header**:
+       - Shows "🔗 Direct OpenAI" (green) or "🔀 OpenRouter" (amber)
+       - Displays API style ("Responses API" vs "ChatCompletions API")
+    5. **Service Updates** (`poetiqService.ts`):
+       - Added `'openai'` as valid provider type
+       - Added `isDirectOpenAIModel()` and `inferProviderFromModel()` methods
+       - Ensures `OPENAI_API_KEY` is passed to Python subprocess
+  - **Files Modified**:
+    - `server/python/poetiq_wrapper.py` - `llm_openai_responses()`, API routing
+    - `server/services/poetiq/poetiqService.ts` - OpenAI provider support
+    - `server/controllers/poetiqController.ts` - reasoningEffort extraction
+    - `client/src/hooks/usePoetiqProgress.ts` - PromptData interface
+    - `client/src/pages/PoetiqSolver.tsx` - Prompt Inspector, Provider Badge
+  - **Plan Document**: `docs/plans/2025-11-27-poetiq-api-improvements-plan.md`
+
+### Version 5.31.4
+
+- **Plan: Enforce User-Provided API Keys for Third-Party Providers** (Author: GPT-5.1 via Codex)
+  - **Purpose**: Define a safe path to require users to enter their own API keys (e.g., Gemini, OpenRouter) instead of silently falling back to project-level keys, while preserving all existing secure behavior and flows that already work.
+  - **Scope**:
+    - Backend: Remove silent project-key fallback for user-facing requests, introduce explicit "API key required" errors, and keep project keys only for system-level tasks.
+    - Frontend: Show clear prompts when a user key is missing and guide users to the existing API key/settings screen to add or update their keys.
+    - Testing & Docs: Add coverage and documentation updates so the new requirement is clearly specified and verifiable.
+  - **Plan Doc**: See `docs/2025-11-28-require-user-api-key-plan.md` for detailed steps, assumptions, and test strategy.
+
+### Version 5.31.3
+
+- **Poetiq Solver Training Examples Display Fix** (Author: Cascade using Claude Sonnet 4)
+  - **Problem**: Training examples section in PoetiqSolver showed empty space instead of actual grid content
+  - **Root Cause**: PoetiqSolver was using `TinyGrid` component instead of the project's standard `PuzzleGrid` component
+  - **Fix**: 
+    - Replaced `TinyGrid` with `PuzzleGrid` component to match rest of project
+    - Added required props: `title`, `compact`, `maxWidth`, `maxHeight`, `showEmojis`, `showColorOnly`, `emojiSet`
+    - Fixed TypeScript errors by adding missing `title` prop to both input and output grids
+  - **Files Modified**: `client/src/pages/PoetiqSolver.tsx`
+  - **Impact**: Training examples now properly display input→output grid pairs in the right-side panel before solver starts
+
+### Version 5.31.2
+
+- **Poetiq Deployment Fix - Remove Submodule Cloning** (Author: Cascade using Claude Sonnet 4)
+  - **CRITICAL BUG**: Dockerfile was still cloning the old `poetiq-solver` submodule, but `poetiq_wrapper.py` now expects `solver/poetiq/`. This would cause deployment failures.
+  - **Fixes**:
+    - `Dockerfile` - Removed `git clone` of old submodule, added verification of internalized solver at `solver/poetiq/`
+    - `.gitmodules` - Removed poetiq-solver submodule entry (with historical note)
+    - `setup-poetiq.sh` - Updated to check for `solver/poetiq/` instead of old `poetiq-solver/arc_agi/`
+    - `solver/poetiq/__init__.py` - Fixed docstring to correctly describe litellm usage
+  - **Note**: The old `poetiq-solver/` directory may still exist locally. It can be safely deleted with `git rm -r poetiq-solver` and `rm -rf poetiq-solver`.
+
+### Version 5.31.1
+
+- **Poetiq Community Page: Cost Efficiency Metrics & Layout Redesign** (Author: Claude Code using Haiku 4.5)
+  - **Purpose**: Add cost tracking to validate Poetiq's Pareto Frontier claims about accuracy-to-cost ratios
+  - **Changes**:
+    1. **Cost Efficiency Metrics** (validates Pareto claims):
+       - **Coverage**: `attempted / total` showing % of dataset tested
+       - **Success Rate**: `solved / attempted` showing effectiveness on tested puzzles
+       - **Total Cost**: Cumulative cost across all attempts
+       - **Cost per Solve**: Average cost for successful solves (accuracy-to-cost ratio)
+       - **Cost per Attempt**: Average cost including failures
+    2. **Backend Enhancement**:
+       - Updated `ExplanationRepository.getPoetiqExplanationsForPuzzles()` to return cost data
+       - Added `inputTokens`, `outputTokens`, `totalTokens`, `estimatedCost` to query results
+       - Modified `poetiqController.getCommunityProgress()` to pass cost data to frontend
+    3. **Hook Enhancements** (`usePoetiqCommunityProgress.ts`):
+       - Added cost fields to `PoetiqPuzzleStatus` interface
+       - Calculate `totalCost`, `avgCostPerSolve`, `avgCostPerAttempt` from puzzle data
+       - Removed useless `modelStats` breakdown (no expert count metadata available)
+    4. **PoetiqCommunity.tsx Redesign**:
+       - Moved explanations (Technical Definitions + Deep Dive sections) to top
+       - Replaced simple counter with 5-card metrics panel showing cost efficiency
+       - Removed per-model stats table (replaced with cost metrics)
+       - Moved puzzle grid to bottom as "Puzzle Status"
+    5. **PuzzleProgressGrid.tsx Navigation Fix**:
+       - Changed puzzle badge destination from `/puzzle/poetiq/{puzzleId}` to `/puzzle/{puzzleId}`
+       - Users navigate to Puzzle Explainer instead of Poetiq solver
+    6. **PoetiqSolver.tsx Training Grid Display**:
+       - Added training examples to right-side panel
+       - Shows input→output pairs before running, replaced by event log when solver starts
+  - **Files Changed**:
+    - `server/repositories/ExplanationRepository.ts` (cost data query)
+    - `server/controllers/poetiqController.ts` (cost data passthrough)
+    - `client/src/hooks/usePoetiqCommunityProgress.ts` (cost calculations)
+    - `client/src/pages/PoetiqCommunity.tsx` (cost metrics display)
+    - `client/src/components/poetiq/PuzzleProgressGrid.tsx` (navigation fix)
+    - `client/src/pages/PoetiqSolver.tsx` (training grid display)
+
+### Version 5.31.0
+
+- **Poetiq Solver - Comprehensive Token & Cost Tracking** (Author: Cascade using Claude Sonnet 4)
+  - **Purpose**: Independent audit capability for Poetiq's Pareto Frontier cost claims
+  - **Implementation**: Enhanced `server/python/poetiq_wrapper.py` with full token/cost tracking
+    - **Cost Calculator**: Added MODEL_PRICING table mirroring `server/config/models.ts` (per-1M-token pricing)
+    - **Model Normalizer**: Handles litellm provider prefixes (openai/, gemini/, anthropic/, openrouter/)
+    - **Per-Iteration Tracking**: Captures token usage from every LLM API call via `llm()` function
+    - **Per-Expert Aggregation**: Each expert's total tokens/cost tracked separately
+    - **Global Aggregation**: Sum across all experts for puzzle-level totals
+  - **Enhanced llm.py**: Modified `solver/poetiq/llm.py` to return token_usage as 5th tuple element
+    - Original Poetiq discarded `resp.usage` - we now capture: `input_tokens`, `output_tokens`, `total_tokens`
+    - Backward-compatible wrapper (`llm_compat`) for code expecting old 4-element return
+  - **Progress Events**: Real-time token/cost streaming to frontend
+    - `tokenUsage`: Per-iteration token counts
+    - `cost`: Per-iteration cost breakdown (input/output/total)
+    - `expertCumulativeTokens`/`expertCumulativeCost`: Running totals for this expert
+    - `globalTokens`/`globalCost`: Running totals across all experts
+  - **Final Result Schema**: Added to `run_poetiq_solver()` return value:
+    - `tokenUsage`: {input_tokens, output_tokens, total_tokens}
+    - `cost`: {input, output, total} in USD
+    - `expertBreakdown`: Per-expert token/cost data for multi-expert runs
+  - **Audit Documentation**: Created `docs/2025-11-27-arc-agi-token-cost-tracking-analysis.md`
+    - Compares ARC-AGI benchmarking framework's token tracking (gold standard)
+    - Documents Poetiq's dashboard-only approach (no programmatic tracking)
+    - Identifies verification gaps in Poetiq's Pareto Frontier claims
+    - Proposes audit methodology using our instrumented wrapper
+  - **Benefits**:
+    - ✅ Verifiable per-puzzle cost attribution (unlike Poetiq's dashboard approach)
+    - ✅ Per-expert cost breakdowns (critical for multi-expert configs)
+    - ✅ Real-time cost visibility during execution
+    - ✅ Programmatic validation of cost claims
+    - ✅ Independent audit trail for research/publication
+
+### Version 5.30.0
+
+- **Poetiq Solver Internalization - Enhanced Token Tracking** (Author: Cascade using Claude Sonnet 4)
+  - **Architecture**: Moved Poetiq solver from git submodule (`poetiq-solver/`) into `solver/poetiq/`, keeping litellm for multi-provider routing (faithful to original Poetiq).
+  - **KEY FIX**: Original Poetiq discarded `resp.usage` token data - we now capture and return it! This enables cost tracking without changing the underlying architecture.
+  - **SDK Backends Installed**: Added all SDK backends that litellm needs:
+    - `litellm>=1.50.0` - Multi-provider router (kept from original)
+    - `google-generativeai>=0.8.0` - Gemini backend
+    - `openai>=1.0.0` - OpenAI/GPT backend  
+    - `anthropic>=0.40.0` - Claude backend
+  - **Files Created in `solver/poetiq/`**:
+    - `__init__.py` - Package exports
+    - `types.py` - TypedDict definitions (ExpertConfig, ARCAGIResult, TokenUsage)
+    - `utils.py` - Utility functions
+    - `sandbox.py` - Sandboxed code execution
+    - `scoring.py` - Kaggle-format scoring
+    - `io.py` - I/O utilities
+    - `prompts.py` - Solver prompt templates
+    - `config.py` - Default configuration
+    - `llm.py` - **Enhanced** litellm-based implementation with token usage capture
+    - `solve_coding.py` - Iterative code generation loop (accumulates token usage)
+    - `solve_parallel_coding.py` - Parallel expert orchestration and voting
+    - `solve.py` - Main entry point
+  - **Updated Files**:
+    - `server/python/poetiq_wrapper.py` - Now imports from `solver.poetiq` instead of submodule
+    - `requirements.txt` - Added all SDK backends
+  - **Benefits**:
+    - **Faithful replication** of original Poetiq behavior via litellm
+    - **Token usage tracking** for cost analysis (previously discarded!)
+    - **Multi-provider support** - works with Gemini, OpenAI, Anthropic, xAI, OpenRouter
+    - No external submodule dependency
+  - **Plan Documents**: 
+    - `docs/plans/2025-11-27-poetiq-internalization-plan.md`
+    - `docs/plans/2025-11-27-poetiq-internalization-revised-plan.md`
+
+### Version 5.29.15
+
+- **Poetiq LLM Temperature Guidance** (Author: Codex (GPT-5))
+  - Added a lightweight plan plus a full write-up explaining how the Poetiq integration keeps LiteLLM-based requests provider-agnostic, why the solver defaults to `temperature = 1.0`, and how each vendor clamps randomness (Gemini, GPT-5, Grok, Anthropic, OpenRouter mirrors).
+  - Document answers the “isn’t that high?” question from the Poetiq audit notes and calls out the relevant code paths (`PoetiqSolver.tsx`, `poetiqController.ts`, `poetiq_wrapper.py`, `arc_agi/llm.py`, `openai/payloadBuilder.ts`, and `server/config/models.ts`).
+  - **Files**: `docs/2025-11-27-llm-temperature-doc-plan.md`, `docs/poetiq-llm-agnostic-temperature-guide.md`
 
 ### Version 5.29.14
 

@@ -44,10 +44,10 @@ export function usePuzzle(taskId?: string) {
 
   // Submit user solution for validation
   const solutionMutation = useMutation({
-    mutationFn: async (solution: { 
-      input: number[][], 
-      userOutput: number[][], 
-      correctOutput: number[][] 
+    mutationFn: async (solution: {
+      inputs: number[][][],
+      userOutput: number[][],
+      correctOutputs: number[][][]
     }) => {
       const response = await apiRequest('POST', '/api/puzzle/validate', solution);
       return response.json();
@@ -59,10 +59,11 @@ export function usePuzzle(taskId?: string) {
       throw new Error('No current task or test data available');
     }
 
+    // Validate against all test cases
     solutionMutation.mutate({
-      input: currentTask.test[0].input,
+      inputs: currentTask.test.map(t => t.input),
       userOutput: solution,
-      correctOutput: currentTask.test[0].output,
+      correctOutputs: currentTask.test.map(t => t.output),
     });
   };
 

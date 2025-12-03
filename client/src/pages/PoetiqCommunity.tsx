@@ -7,22 +7,16 @@
  * SRP/DRY check: Pass - Single page for community progress and methodology explanation
  */
 
-import React, { useEffect, useState } from 'react';
-import { Link, useLocation } from 'wouter';
+import React, { useEffect, useMemo, useState } from 'react';
+import { useLocation } from 'wouter';
 import {
-  Users,
-  Zap,
-  ArrowRight,
   ExternalLink,
   RefreshCw,
   Play,
-  Key,
   CheckCircle,
   Target,
   Code,
   AlertCircle,
-  ChevronDown,
-  ChevronUp,
   Brain,
   TestTube,
   TrendingUp,
@@ -33,61 +27,12 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { Progress } from '@/components/ui/progress';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { PuzzleProgressGrid } from '@/components/poetiq/PuzzleProgressGrid';
 import { usePoetiqCommunityProgress } from '@/hooks/usePoetiqCommunityProgress';
-
-// Verified models from server/config/models.ts
-const POETIQ_MODELS = [
-  {
-    id: 'gemini-3-pro',
-    name: 'Gemini 3 Pro Preview',
-    provider: 'openrouter',
-    modelId: 'openrouter/google/gemini-3-pro-preview',
-    keyPlaceholder: 'sk-or-...',
-    keyUrl: 'https://openrouter.ai/keys',
-    description: 'Primary reasoning engine (SOTA)'
-  },
-  {
-    id: 'gemini-3-pro-direct',
-    name: 'Gemini 3 Pro Preview (Direct)',
-    provider: 'gemini',
-    modelId: 'gemini/gemini-3-pro-preview',
-    keyPlaceholder: 'AIza...',
-    keyUrl: 'https://aistudio.google.com/app/apikey',
-    description: 'Direct Google API'
-  },
-  {
-    id: 'gpt-5.1',
-    name: 'GPT-5.1',
-    provider: 'openrouter',
-    modelId: 'openai/gpt-5.1',
-    keyPlaceholder: 'sk-or-...',
-    keyUrl: 'https://openrouter.ai/keys',
-    description: 'High-performance alternative'
-  },
-  {
-    id: 'grok-4-fast',
-    name: 'Grok 4 Fast (via Grok 4.1)',
-    provider: 'openrouter',
-    modelId: 'x-ai/grok-4.1-fast', // Closest match in OpenRouter for Grok 4 Fast
-    keyPlaceholder: 'sk-or-...',
-    keyUrl: 'https://openrouter.ai/keys',
-    description: 'Cost-optimized reasoning'
-  },
-  {
-    id: 'gpt-oss-120b',
-    name: 'GPT-OSS 120B',
-    provider: 'openrouter',
-    modelId: 'openai/gpt-oss-120b',
-    keyPlaceholder: 'sk-or-...',
-    keyUrl: 'https://openrouter.ai/keys',
-    description: 'Extreme cost efficiency (<1¢)'
-  }
-] as const;
+import { usePoetiqModels } from '@/hooks/usePoetiqModels';
 
 const EXPERT_OPTIONS = [
   { value: '1', label: '1 Expert (Poetiq-a)' },
@@ -95,36 +40,94 @@ const EXPERT_OPTIONS = [
   { value: '8', label: '8 Experts (Poetiq-c)' },
 ];
 
+const MODEL_CARD_COLORS = [
+  'bg-blue-50 border-blue-200 text-blue-800',
+  'bg-gray-100 border-gray-200 text-gray-800',
+  'bg-amber-50 border-amber-200 text-amber-800',
+];
+
+const ROUTING_LABELS: Record<string, string> = {
+  direct: 'Direct API',
+  openrouter: 'OpenRouter Relay',
+};
+
+const mapProviderToSlug = (provider?: string): 'openrouter' | 'gemini' | 'openai' => {
+  if (!provider) return 'openrouter';
+  const normalized = provider.toLowerCase();
+  if (normalized.includes('google')) return 'gemini';
+  if (normalized.includes('openai')) return 'openai';
+  if (normalized.includes('openrouter')) return 'openrouter';
+  return 'openrouter';
+};
+
+const getRoutingLabel = (routing?: string) => {
+  if (!routing) return ROUTING_LABELS.openrouter;
+  return ROUTING_LABELS[routing] ?? ROUTING_LABELS.openrouter;
+};
+
+const KEY_PLACEHOLDERS: Record<'openrouter' | 'gemini' | 'openai', string> = {
+  openrouter: 'sk-or-...',
+  gemini: 'AIza...',
+  openai: 'sk-...',
+};
+
+const PROVIDER_KEY_URLS: Record<'openrouter' | 'gemini' | 'openai', string> = {
+  openrouter: 'https://openrouter.ai/keys',
+  gemini: 'https://aistudio.google.com/app/apikey',
+  openai: 'https://platform.openai.com/account/api-keys',
+};
+
 export default function PoetiqCommunity() {
   const [, navigate] = useLocation();
   const progress = usePoetiqCommunityProgress();
+  const { data: models = [], isLoading: modelsLoading } = usePoetiqModels();
   const [showSettings, setShowSettings] = useState(false);
 
   // Configuration state
-  const [selectedModelId, setSelectedModelId] = useState<string>('gemini-3-pro');
+  const [selectedModelId, setSelectedModelId] = useState('');
   const [apiKey, setApiKey] = useState('');
   const [numExperts, setNumExperts] = useState('2');
-
-  const selectedModel = POETIQ_MODELS.find(m => m.id === selectedModelId)!;
 
   useEffect(() => {
     document.title = 'Poetiq Integration Audit';
   }, []);
 
+  useEffect(() => {
+    if (!selectedModelId && models.length > 0) {
+      const defaultModel = models.find(m => m.recommended) ?? models[0];
+      setSelectedModelId(defaultModel.id);
+    }
+  }, [models, selectedModelId]);
+
+  const selectedModel = models.find(m => m.id === selectedModelId) ?? null;
+  const providerSlug = mapProviderToSlug(selectedModel?.provider);
+  const requiresByo = selectedModel?.requiresBYO ?? false;
+  const requiresApiKey = requiresByo;
+  const routingLabel = getRoutingLabel(selectedModel?.routing);
+  const recommendedModels = useMemo(() => models.filter(m => m.recommended), [models]);
+  const keyPlaceholder = KEY_PLACEHOLDERS[providerSlug];
+  const providerKeyUrl = PROVIDER_KEY_URLS[providerSlug];
+
   const nextPuzzle = progress.getNextRecommended();
-  const canStart = !!nextPuzzle;
+  const canStart = !!nextPuzzle && !!selectedModel && !modelsLoading && (!requiresByo || !!apiKey.trim());
   const usingProjectKey = !apiKey.trim();
 
-  const handleRunNext = () => {
+  const handleOpenTransparency = () => {
     if (!nextPuzzle) return;
+    navigate(`/puzzle/poetiq/${nextPuzzle}`);
+  };
+
+  const handleRunNext = () => {
+    if (!nextPuzzle || !selectedModel) return;
 
     sessionStorage.setItem('poetiq_config', JSON.stringify({
       apiKey,
-      provider: selectedModel.provider,
-      model: selectedModel.modelId,
+      provider: providerSlug,
+      model: selectedModel.id,
       numExperts: parseInt(numExperts, 10),
       temperature: 1.0,
       autoStart: true,
+      routing: selectedModel.routing,
     }));
 
     navigate(`/puzzle/poetiq/${nextPuzzle}`);
@@ -163,6 +166,46 @@ export default function PoetiqCommunity() {
             </div>
           </div>
         </div>
+        <Card className="bg-blue-50 border border-blue-200">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-lg flex items-center gap-2 text-blue-900">
+              <Brain className="h-5 w-5 text-blue-700" />
+              How Poetiq decides which answer to keep
+            </CardTitle>
+            <CardDescription className="text-blue-800">
+              Every run is a mini tournament of AI coders. Here’s the plain-language checklist that happens behind the scenes.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-2 text-sm text-blue-900">
+            <p>1. Several “experts” each write their own Python rule and try it on the training grids.</p>
+            <p>
+              2. We keep score: how many examples each expert passed, how many times they revised their idea, and what the
+              hidden-test answer looks like.
+            </p>
+            <p>
+              3. If multiple experts agree on the same hidden-test answer, that answer gets extra weight—it’s basically a
+              group vote.
+            </p>
+            <p>
+              4. The winning code plus a mini history for every expert is saved into the explanation database, so nothing
+              disappears after the run.
+            </p>
+          </CardContent>
+        </Card>
+        <div className="bg-indigo-50 border border-indigo-200 rounded-lg p-3 text-sm text-indigo-900 flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
+          <p>
+            <strong>New transparency upgrade:</strong> the Poetiq Solver page now shows live phase timers, expert cards,
+            and token spend as the backend runs. You can watch every prompt, iteration, and Python execution in real time.
+          </p>
+          <Button
+            variant="secondary"
+            disabled={!nextPuzzle}
+            onClick={handleOpenTransparency}
+            className="md:w-auto w-full bg-indigo-600/90 hover:bg-indigo-600 text-white"
+          >
+            View Transparency Dashboard
+          </Button>
+        </div>
 
         {/* Collapsible Settings */}
         {showSettings && (
@@ -187,19 +230,44 @@ export default function PoetiqCommunity() {
               <div className="grid md:grid-cols-3 gap-4">
                 <div className="space-y-1">
                   <Label className="text-xs font-semibold text-gray-500">Model Configuration</Label>
-                  <Select value={selectedModelId} onValueChange={setSelectedModelId}>
+                  <Select
+                    value={selectedModelId}
+                    onValueChange={setSelectedModelId}
+                    disabled={modelsLoading || !selectedModel}
+                  >
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      {POETIQ_MODELS.map(m => (
-                        <SelectItem key={m.id} value={m.id}>
-                          {m.name}
+                      {models.length === 0 ? (
+                        <SelectItem value="loading" disabled>
+                          Loading models...
                         </SelectItem>
-                      ))}
+                      ) : (
+                        models.map(m => (
+                          <SelectItem key={m.id} value={m.id}>
+                            {`${m.name} · ${m.provider} · ${getRoutingLabel(m.routing)}`}
+                          </SelectItem>
+                        ))
+                      )}
                     </SelectContent>
                   </Select>
-                  <p className="text-[10px] text-gray-500">{selectedModel.description}</p>
+                  <p className="text-[10px] text-gray-500 font-mono">
+                    {selectedModel ? selectedModel.id : 'Model metadata will appear once loaded.'}
+                  </p>
+                  <div className="flex flex-wrap gap-2">
+                    {selectedModel ? (
+                      <>
+                        <Badge variant="outline">{selectedModel.provider}</Badge>
+                        <Badge variant="secondary">{routingLabel}</Badge>
+                        {selectedModel.requiresBYO && (
+                          <Badge variant="destructive">BYO Key Required</Badge>
+                        )}
+                      </>
+                    ) : (
+                      <Badge variant="outline">Loading model info…</Badge>
+                    )}
+                  </div>
                 </div>
 
                 <div className="space-y-1">
@@ -217,10 +285,10 @@ export default function PoetiqCommunity() {
                 </div>
 
                 <div className="space-y-1">
-                  <Label className="text-xs font-semibold text-gray-500">API Key (Optional)</Label>
+                  <Label className="text-xs font-semibold text-gray-500">API Key {requiresApiKey ? '(Required)' : '(Optional)'}</Label>
                   <Input
                     type="text"
-                    placeholder={selectedModel.keyPlaceholder}
+                    placeholder={keyPlaceholder}
                     value={apiKey}
                     onChange={(e) => setApiKey(e.target.value)}
                     className="font-mono text-sm"
@@ -230,17 +298,31 @@ export default function PoetiqCommunity() {
 
               {/* Info */}
               <div className="text-xs text-gray-500">
-                {usingProjectKey ? (
-                  <span>Using project key (may be rate limited). <a href={selectedModel.keyUrl} target="_blank" className="text-indigo-600 underline">Get your own</a> for faster results.</span>
+                {requiresApiKey ? (
+                  usingProjectKey ? (
+                    <span>
+                      This model requires your own API key{selectedModel?.provider ? ` for ${selectedModel.provider}` : ''}.
+                      {' '}Provide a key above to run the solver.
+                    </span>
+                  ) : (
+                    <span>Using your key — passed directly to Python backend, never stored.</span>
+                  )
                 ) : (
-                  <span>Using your key — passed directly to Python backend, never stored.</span>
+                  usingProjectKey ? (
+                    <span>
+                      Using project key (may be rate limited).
+                      {' '}<a href={providerKeyUrl} target="_blank" rel="noreferrer" className="text-indigo-600 underline">Get your own</a> for faster results.
+                    </span>
+                  ) : (
+                    <span>Using your key — passed directly to Python backend, never stored.</span>
+                  )
                 )}
               </div>
 
               {/* Run Button */}
               <Button
                 onClick={handleRunNext}
-                disabled={!canStart}
+                disabled={!canStart || (requiresApiKey && usingProjectKey)}
                 className="w-full bg-green-600 hover:bg-green-700 h-10 text-base font-semibold"
               >
                 <Play className="h-4 w-4 mr-2" />
@@ -249,22 +331,6 @@ export default function PoetiqCommunity() {
             </CardContent>
           </Card>
         )}
-
-        {/* Main Content: Puzzle Grid */}
-        <div className="space-y-2">
-           <div className="flex items-center justify-between">
-              <h2 className="text-lg font-semibold text-gray-800">Community Progress</h2>
-              <div className="text-sm text-gray-600">
-                 {progress.solved}/{progress.total} solved ({progress.completionPercentage}%)
-              </div>
-           </div>
-           <PuzzleProgressGrid
-             puzzles={progress.puzzles}
-             isLoading={progress.isLoading}
-           />
-        </div>
-
-        <Separator className="my-8" />
 
         {/* Definitions Section */}
         <Card className="bg-amber-50 border-amber-200">
@@ -342,27 +408,31 @@ export default function PoetiqCommunity() {
           {/* Right Col: Pareto & Models */}
           <div className="space-y-6">
             
-            {/* Pareto Frontier */}
+            {/* Measured Results */}
             <div className="space-y-2">
                <h2 className="text-xl font-bold flex items-center gap-2 text-green-800 mb-2">
                   <TrendingUp className="h-6 w-6" />
-                  Pareto Optimal Reasoning
+                  Measured Results
                </h2>
                <div className="bg-green-50 border border-green-200 rounded-lg p-4">
                   <p className="text-sm text-green-900 mb-3">
-                     Poetiq claims their system establishes a new Pareto frontier, achieving better accuracy-to-cost ratios
-                     than prior reported results across multiple operating points.
+                     Community audit results from independent testing. Poetiq claims their system establishes a Pareto frontier
+                     with better accuracy-to-cost ratios than prior systems.
                   </p>
                   <div className="grid grid-cols-2 gap-3">
                      <div className="bg-white p-3 rounded border border-green-100">
-                        <div className="text-xs text-gray-500 uppercase font-bold">Cost Efficiency</div>
-                        <div className="text-lg font-bold text-green-700">&lt; $0.01</div>
-                        <div className="text-xs text-gray-600">per problem (GPT-OSS-b)</div>
+                        <div className="text-xs text-gray-500 uppercase font-bold">Cost / Solve</div>
+                        <div className="text-lg font-bold text-green-700">
+                          {progress.avgCostPerSolve ? `$${progress.avgCostPerSolve.toFixed(3)}` : 'No data'}
+                        </div>
+                        <div className="text-xs text-gray-600">measured average</div>
                      </div>
                      <div className="bg-white p-3 rounded border border-green-100">
-                        <div className="text-xs text-gray-500 uppercase font-bold">SOTA Accuracy</div>
-                        <div className="text-lg font-bold text-green-700">&gt; 60%</div>
-                        <div className="text-xs text-gray-600">on ARC-AGI-2 (Human Level)</div>
+                        <div className="text-xs text-gray-500 uppercase font-bold">Success Rate</div>
+                        <div className="text-lg font-bold text-green-700">
+                          {progress.attempted > 0 ? `${progress.successRateOnAttempted}%` : 'No data'}
+                        </div>
+                        <div className="text-xs text-gray-600">on attempted ({progress.attempted} tests)</div>
                      </div>
                   </div>
                </div>
@@ -392,22 +462,119 @@ export default function PoetiqCommunity() {
                      role="OpenAI model used in mixed-model configurations."
                      color="bg-gray-100 border-gray-200 text-gray-800"
                   />
-                  <ModelCard
-                     name="Grok 4"
-                     variant="Fast"
-                     role="xAI's fast reasoning model for cost-optimized configs."
-                     color="bg-slate-100 border-slate-200 text-slate-800"
-                  />
-                  <ModelCard
-                     name="GPT-OSS"
-                     variant="120B"
-                     role="Open-weights model used for low-cost benchmarking."
-                     color="bg-orange-50 border-orange-200 text-orange-800"
-                  />
                </div>
             </div>
           </div>
 
+        </div>
+
+        <Separator className="my-8" />
+
+        {/* Main Content: Progress Metrics */}
+        <div className="space-y-4">
+           <div>
+              <h2 className="text-lg font-semibold text-gray-800 mb-3">Test Coverage & Performance</h2>
+              <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+                {/* Attempted Coverage */}
+                <Card>
+                  <CardContent className="pt-6">
+                    <div className="text-xs text-gray-500 font-semibold uppercase mb-1">Coverage</div>
+                    <div className="text-2xl font-bold text-blue-600">{progress.attemptedPercentage}%</div>
+                    <div className="text-xs text-gray-600">{progress.attempted}/{progress.total} tested</div>
+                  </CardContent>
+                </Card>
+
+                {/* Success Rate on Attempted */}
+                <Card>
+                  <CardContent className="pt-6">
+                    <div className="text-xs text-gray-500 font-semibold uppercase mb-1">Success Rate</div>
+                    <div className="text-2xl font-bold text-green-600">{progress.successRateOnAttempted}%</div>
+                    <div className="text-xs text-gray-600">{progress.solved}/{progress.attempted} solved</div>
+                  </CardContent>
+                </Card>
+
+                {/* Total Cost */}
+                <Card>
+                  <CardContent className="pt-6">
+                    <div className="text-xs text-gray-500 font-semibold uppercase mb-1">Total Cost</div>
+                    <div className="text-2xl font-bold text-purple-600">${progress.totalCost.toFixed(2)}</div>
+                    <div className="text-xs text-gray-600">{progress.attempted} attempts</div>
+                  </CardContent>
+                </Card>
+
+                {/* Avg Cost per Solve */}
+                <Card>
+                  <CardContent className="pt-6">
+                    <div className="text-xs text-gray-500 font-semibold uppercase mb-1">Cost / Solve</div>
+                    <div className="text-2xl font-bold text-emerald-600">{progress.avgCostPerSolve ? `$${progress.avgCostPerSolve.toFixed(3)}` : '—'}</div>
+                    <div className="text-xs text-gray-600">per success</div>
+                  </CardContent>
+                </Card>
+
+                {/* Avg Cost per Attempt */}
+                <Card>
+                  <CardContent className="pt-6">
+                    <div className="text-xs text-gray-500 font-semibold uppercase mb-1">Cost / Attempt</div>
+                    <div className="text-2xl font-bold text-orange-600">{progress.avgCostPerAttempt ? `$${progress.avgCostPerAttempt.toFixed(3)}` : '—'}</div>
+                    <div className="text-xs text-gray-600">all attempts</div>
+                  </CardContent>
+                </Card>
+              </div>
+           </div>
+
+           {/* Iteration Efficiency */}
+           {(progress.avgIterationsSolved !== null || progress.avgIterationsFailed !== null) && (
+             <div>
+               <h3 className="text-base font-semibold text-gray-800 mb-2">Iteration Efficiency</h3>
+               <div className="grid grid-cols-2 gap-3">
+                 <Card>
+                   <CardContent className="pt-6">
+                     <div className="text-xs text-gray-500 font-semibold uppercase mb-1">Avg Iterations (Solved)</div>
+                     <div className="text-2xl font-bold text-emerald-600">{progress.avgIterationsSolved ?? '—'}</div>
+                     <div className="text-xs text-gray-600">iterations to solve</div>
+                   </CardContent>
+                 </Card>
+                 <Card>
+                   <CardContent className="pt-6">
+                     <div className="text-xs text-gray-500 font-semibold uppercase mb-1">Avg Iterations (Failed)</div>
+                     <div className="text-2xl font-bold text-orange-600">{progress.avgIterationsFailed ?? '—'}</div>
+                     <div className="text-xs text-gray-600">iterations before giving up</div>
+                   </CardContent>
+                 </Card>
+               </div>
+             </div>
+           )}
+
+           {/* Per-Model Breakdown */}
+           {progress.modelStats.length > 0 && (
+             <div>
+               <h3 className="text-base font-semibold text-gray-800 mb-2">Model Performance</h3>
+               <Card>
+                 <CardContent className="pt-4">
+                   <div className="space-y-2">
+                     {progress.modelStats.map((stat) => (
+                       <div key={stat.modelName} className="flex items-center justify-between py-2 px-3 bg-gray-50 rounded text-sm">
+                         <div className="font-mono text-gray-700 flex-1">{stat.modelName}</div>
+                         <div className="flex items-center gap-4">
+                           <div className="text-gray-600">{stat.solved}/{stat.attempts} solved</div>
+                           <div className="font-bold text-gray-800 min-w-12 text-right">{stat.successRate}%</div>
+                         </div>
+                       </div>
+                     ))}
+                   </div>
+                 </CardContent>
+               </Card>
+             </div>
+           )}
+
+           {/* Puzzle Grid */}
+           <div>
+              <h3 className="text-base font-semibold text-gray-800 mb-2">Puzzle Status</h3>
+              <PuzzleProgressGrid
+                puzzles={progress.puzzles}
+                isLoading={progress.isLoading}
+              />
+           </div>
         </div>
 
         {/* Footer Links */}

@@ -149,7 +149,7 @@ function PuzzleBadgeCell({
 
   const handleClick = () => {
     onClick?.();
-    window.open(`/puzzle/poetiq/${puzzle.puzzleId}`, '_blank');
+    window.open(`/puzzle/${puzzle.puzzleId}`, '_blank');
   };
 
   return (

@@ -10,6 +10,7 @@
  * - /api/saturn/progress?sessionId=... (Saturn Visual Solver)
  * - /api/grover/progress?sessionId=... (Grover Iterative Solver)
  * - /api/poetiq/progress?sessionId=... (Poetiq Code-Generation Solver)
+ * - /api/beetree/progress?sessionId=... (Beetree Ensemble Solver)
  *
  * Exposes:
  * - attach(server): initialize ws server and URL routing
@@ -33,7 +34,7 @@ let wss: WebSocketServer | null = null;
 function parseSessionId(url?: string | null): string | null {
   if (!url) return null;
   try {
-    // Expect URL like /api/saturn/progress?sessionId=..., /api/grover/progress?sessionId=..., or /api/poetiq/progress?sessionId=...
+    // Expect URL like /api/saturn/progress?sessionId=..., /api/grover/progress?sessionId=..., /api/poetiq/progress?sessionId=..., or /api/beetree/progress?sessionId=...
     const qs = url.split('?')[1] || '';
     const params = new URLSearchParams(qs);
     const sid = params.get('sessionId');
@@ -44,18 +45,19 @@ function parseSessionId(url?: string | null): string | null {
 
 export function attach(server: Server) {
   if (wss) return wss;
-  // Attach without path restriction - handles Saturn, Grover, and Poetiq solver progress endpoints
+  // Attach without path restriction - handles Saturn, Grover, Poetiq, and Beetree solver progress endpoints
   // Clients connect to ws(s)://host/api/{solver}/progress?sessionId=...
   wss = new WebSocketServer({ 
     server,
     // No path restriction - verifyClient will check the URL
     verifyClient: (info, cb) => {
       const url = info.req.url || '';
-      // Accept Saturn, Grover, and Poetiq progress WebSocket paths
+      // Accept Saturn, Grover, Poetiq, and Beetree progress WebSocket paths
       if (
         url.startsWith('/api/saturn/progress') || 
         url.startsWith('/api/grover/progress') ||
-        url.startsWith('/api/poetiq/progress')
+        url.startsWith('/api/poetiq/progress') ||
+        url.startsWith('/api/beetree/progress')
       ) {
         cb(true);
       } else {

@@ -6,11 +6,12 @@
  * PURPOSE: Displays Saturn Visual Solver-specific metrics including generated images,
  * execution logs, and event traces. Conditionally rendered only for Saturn results.
  * SRP/DRY check: Pass - Single responsibility (Saturn metrics display)
- * shadcn/ui: Pass - Converted to DaisyUI badge
+ * shadcn/ui: Pass - Uses shadcn Badge component
  */
 
 import React from 'react';
 import { ExplanationData } from '@/types/puzzle';
+import { Badge } from '@/components/ui/badge';
 
 interface AnalysisResultMetricsProps {
   result: ExplanationData;
@@ -29,9 +30,9 @@ export const AnalysisResultMetrics: React.FC<AnalysisResultMetricsProps> = ({ re
         <div className="bg-purple-50 border border-purple-200 rounded p-3">
           <h5 className="font-semibold text-purple-800 mb-2 flex items-center gap-2">
             🖼️ Generated Images 
-            <div className="badge badge-outline text-xs bg-purple-50">
+            <Badge variant="outline" className="text-xs bg-purple-50 text-purple-700">
               {result.saturnImages.length} image{result.saturnImages.length !== 1 ? 's' : ''}
-            </div>
+            </Badge>
           </h5>
           <div className="text-xs text-purple-600 space-y-1">
             {result.saturnImages.slice(0, 3).map((imagePath, i) => (
@@ -54,9 +55,9 @@ export const AnalysisResultMetrics: React.FC<AnalysisResultMetricsProps> = ({ re
           <div className="p-3 border-b border-gray-200">
             <h5 className="font-semibold text-gray-800 flex items-center gap-2">
               📋 Saturn Execution Log
-              <div className="badge badge-outline text-xs bg-gray-50">
+              <Badge variant="outline" className="text-xs bg-gray-50 text-gray-700">
                 {(result.saturnLog.length / 1024).toFixed(1)}KB
-              </div>
+              </Badge>
             </h5>
           </div>
           <div className="p-3 max-h-48 overflow-y-auto">
@@ -72,9 +73,9 @@ export const AnalysisResultMetrics: React.FC<AnalysisResultMetricsProps> = ({ re
         <div className="bg-blue-50 border border-blue-200 rounded p-3">
           <h5 className="font-semibold text-blue-800 mb-2 flex items-center gap-2">
             ⚡ Event Trace
-            <div className="badge badge-outline text-xs bg-blue-50">
+            <Badge variant="outline" className="text-xs bg-blue-50 text-blue-700">
               NDJSON
-            </div>
+            </Badge>
           </h5>
           <div className="text-xs text-blue-600">
             <div className="bg-white p-2 rounded border font-mono max-h-32 overflow-y-auto">

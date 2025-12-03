@@ -1,13 +1,7 @@
 /**
  * IterationCard.tsx
  *
- * Author: Cascade using Claude Sonnet 4.5
- * Date: 2025-10-12T21:42:00Z
- * PURPOSE: Display component for single refinement iteration in progressive reasoning.
- * Shows one iteration of model's self-refinement with positive/progressive styling.
- * Wraps AnalysisResultCard which handles all grid scaling naturally via PuzzleGrid component.
- * SRP/DRY check: Pass - Single responsibility (iteration display), reuses AnalysisResultCard
- * shadcn/ui: Pass - Converted to DaisyUI card and badge
+ * Displays a single refinement iteration using shadcn/ui components.
  */
 
 import React, { useState } from 'react';
@@ -15,14 +9,17 @@ import { Brain, ChevronDown, ChevronUp, Sparkles } from 'lucide-react';
 import { AnalysisResultCard } from '@/components/puzzle/AnalysisResultCard';
 import type { ExplanationData } from '@/types/puzzle';
 import type { ARCExample, ModelConfig } from '@shared/types';
+import { Card, CardContent } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 
 interface IterationCardProps {
   explanation: ExplanationData;
   models?: ModelConfig[];
   testCases: ARCExample[];
   timestamp: string;
-  iterationNumber: number; // Which iteration this is (1, 2, 3...)
-  cumulativeReasoningTokens?: number; // Cumulative reasoning tokens from all iterations
+  iterationNumber: number;
+  cumulativeReasoningTokens?: number;
 }
 
 export const IterationCard: React.FC<IterationCardProps> = ({
@@ -31,59 +28,52 @@ export const IterationCard: React.FC<IterationCardProps> = ({
   testCases,
   timestamp,
   iterationNumber,
-  cumulativeReasoningTokens
+  cumulativeReasoningTokens,
 }) => {
-  const [isOpen, setIsOpen] = useState(true); // Open by default for latest iteration
+  const [isOpen, setIsOpen] = useState(true);
 
-  // Determine correctness status
-  const hasMultiTest = explanation.hasMultiplePredictions &&
+  const hasMultiTest =
+    explanation.hasMultiplePredictions &&
     (explanation.multiTestAllCorrect !== undefined || explanation.multiTestAverageAccuracy !== undefined);
 
   const isExplicitlyCorrect = hasMultiTest
     ? explanation.multiTestAllCorrect === true
     : explanation.isPredictionCorrect === true;
 
-  // Create brief summary from pattern description (first 100 chars)
+  const needsRefinement =
+    (hasMultiTest ? explanation.multiTestAllCorrect : explanation.isPredictionCorrect) === false;
+
   const briefSummary = explanation.patternDescription
-    ? (explanation.patternDescription.length > 100
-      ? explanation.patternDescription.substring(0, 100) + '...'
-      : explanation.patternDescription)
+    ? explanation.patternDescription.length > 100
+      ? `${explanation.patternDescription.substring(0, 100)}...`
+      : explanation.patternDescription
     : 'No pattern description available';
 
   return (
-    <div className="card border-2 border-purple-200 bg-purple-50/30 overflow-visible">
-      <div className={`collapse ${isOpen ? 'collapse-open' : 'collapse-close'}`}>
-        <div className="collapse-title p-3 bg-gradient-to-r from-purple-100/50 to-blue-100/50 min-h-0">
-          <div className="flex items-center gap-2 text-sm flex-wrap font-bold">
-            <Brain className="h-5 w-5 text-purple-600" />
-            <span className="text-purple-900 font-semibold">Iteration #{iterationNumber}</span>
-            <div className="badge badge-outline text-xs bg-purple-100 text-purple-800 border-purple-300">
+    <Card className="border-2 border-purple-200 bg-purple-50/30">
+      <CardContent className="space-y-3 p-3">
+        <div className="space-y-2 rounded-2xl bg-gradient-to-r from-purple-100/60 to-blue-100/60 p-3">
+          <div className="flex flex-wrap items-center gap-2 text-sm font-semibold">
+            <Brain className="h-4 w-4 text-purple-600" />
+            <span className="text-purple-900">Iteration #{iterationNumber}</span>
+            <Badge variant="outline" className="bg-purple-100 text-purple-800 border-purple-300 text-xs">
               {explanation.modelName}
-            </div>
+            </Badge>
             {isExplicitlyCorrect && (
-              <div className="badge text-xs bg-green-600 text-white">
-                ✓ Correct
-              </div>
+              <Badge className="bg-green-600 text-xs text-white hover:bg-green-600">Correct</Badge>
             )}
-            {(hasMultiTest ? explanation.multiTestAllCorrect : explanation.isPredictionCorrect) === false && (
-              <div className="badge badge-secondary text-xs bg-amber-100 text-amber-800">
+            {needsRefinement && (
+              <Badge variant="secondary" className="text-xs text-amber-800">
                 Needs Refinement
-              </div>
+              </Badge>
             )}
-            <span className="ml-auto text-[10px] text-gray-500 font-normal">
-              {new Date(timestamp).toLocaleTimeString()}
-            </span>
+            <span className="ml-auto text-[10px] text-gray-500">{new Date(timestamp).toLocaleTimeString()}</span>
           </div>
+          <p className="text-sm italic text-gray-700">{briefSummary}</p>
 
-          {/* Brief summary - always visible */}
-          <p className="text-sm text-gray-700 mt-2 line-clamp-2 italic">
-            {briefSummary}
-          </p>
-
-          {/* Reasoning Token Display */}
           {explanation.reasoningTokens && explanation.reasoningTokens > 0 && (
-            <div className="bg-purple-50 border border-purple-300 rounded-lg p-3 mt-3">
-              <div className="flex items-center justify-between">
+            <div className="rounded-lg border border-purple-300 bg-purple-50 p-3">
+              <div className="flex flex-wrap items-center justify-between gap-2">
                 <div className="flex items-center gap-2">
                   <Sparkles className="h-4 w-4 text-purple-600" />
                   <span className="text-sm font-semibold text-purple-900">
@@ -91,54 +81,58 @@ export const IterationCard: React.FC<IterationCardProps> = ({
                   </span>
                 </div>
                 {cumulativeReasoningTokens !== undefined && (
-                  <span className="text-xs text-purple-700 font-medium">
+                  <span className="text-xs font-medium text-purple-700">
                     Chain Total: {cumulativeReasoningTokens.toLocaleString()}
                   </span>
                 )}
               </div>
               <div className="mt-2">
-                <div className="w-full bg-purple-200 rounded-full h-2.5">
+                <div className="h-2.5 w-full rounded-full bg-purple-200">
                   <div
-                    className="bg-gradient-to-r from-purple-600 to-blue-600 h-2.5 rounded-full transition-all"
+                    className="h-2.5 rounded-full bg-gradient-to-r from-purple-600 to-blue-600"
                     style={{ width: `${Math.min((explanation.reasoningTokens / 100000) * 100, 100)}%` }}
                   />
                 </div>
-                <p className="text-xs text-purple-600 mt-1.5">
-                  Reasoning depth: {Math.round((explanation.reasoningTokens / 1000))}k tokens preserved on server
+                <p className="mt-1.5 text-xs text-purple-600">
+                  Reasoning depth: {Math.round(explanation.reasoningTokens / 1000)}k tokens preserved
                 </p>
               </div>
             </div>
           )}
 
-          {/* Toggle button */}
-          <button
-            className="btn btn-ghost btn-sm w-full mt-2 h-8 text-xs justify-center hover:bg-purple-100"
-            onClick={() => setIsOpen(!isOpen)}
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            className="w-full justify-center text-xs"
+            onClick={() => setIsOpen(open => !open)}
           >
             {isOpen ? (
               <>
-                <ChevronUp className="h-3 w-3 mr-1" />
+                <ChevronUp className="mr-1 h-3 w-3" />
                 Hide details
               </>
             ) : (
               <>
-                <ChevronDown className="h-3 w-3 mr-1" />
+                <ChevronDown className="mr-1 h-3 w-3" />
                 Show details
               </>
             )}
-          </button>
+          </Button>
         </div>
 
-        <div className="collapse-content p-3 overflow-x-auto">
-          <AnalysisResultCard
-            result={explanation}
-            modelKey={explanation.modelName}
-            model={models?.find(m => m.key === explanation.modelName)}
-            testCases={testCases}
-            eloMode={false}
-          />
-        </div>
-      </div>
-    </div>
+        {isOpen && (
+          <div className="rounded-2xl border border-purple-100 bg-white p-3">
+            <AnalysisResultCard
+              result={explanation}
+              modelKey={explanation.modelName}
+              model={models?.find(m => m.key === explanation.modelName)}
+              testCases={testCases}
+              eloMode={false}
+            />
+          </div>
+        )}
+      </CardContent>
+    </Card>
   );
 };

@@ -3,9 +3,10 @@ FROM node:20-alpine
 # Dockerfile for ARC Explainer app runtime and build
 # - Builds the client and server
 # - Adds Python 3 for Saturn Visual Solver and Poetiq Meta-System Solver
-# - Clones poetiq-solver submodule directly (submodules don't copy in Docker context)
+# - Poetiq solver is INTERNALIZED at solver/poetiq/ (always available)
+# - BeetreeARC and SnakeBench code are ensured via submodules when present, or shallow git clones during build
 # Author: Cascade (Claude Sonnet 4)
-# Updated: 2025-11-27 - Added git for submodule cloning
+# Updated: 2025-12-02 - Ensure beetreeARC and SnakeBench are available even when submodules are not pre-initialized
 
 # Add Python3, git, and canvas dependencies
 RUN apk add --no-cache \
@@ -27,32 +28,51 @@ WORKDIR /app
 COPY package*.json ./
 COPY client/package*.json ./client/
 
-# Copy Python requirements for Saturn and Poetiq and install them
+# Copy Python requirements for Saturn, Poetiq, and BeetreeARC and install them
 COPY requirements.txt ./
 RUN python3 -m pip install --no-cache-dir --break-system-packages -r requirements.txt
 
 # Install dependencies
 RUN npm ci
 
-# Copy source code and ALL config files needed for build
-COPY client/ ./client/
-COPY server/ ./server/
-COPY shared/ ./shared/
-COPY solver/ ./solver/
-COPY data/ ./data/
-COPY tsconfig.json ./
-COPY vite.config.ts ./
-COPY tailwind.config.ts ./
-COPY postcss.config.js ./
+# Copy all source code (submodules may or may not be present in build context)
+COPY . .
 
-# Clone poetiq-solver submodule directly (submodules don't work with COPY)
-# This is a public repo so no auth needed
-RUN echo "=== CLONING POETIQ-SOLVER SUBMODULE ===" && \
-    git clone --depth 1 https://github.com/82deutschmark/poetiq-arc-agi-solver.git poetiq-solver && \
-    echo "=== VERIFYING POETIQ-SOLVER ===" && \
-    ls -la poetiq-solver/ && \
-    ls -la poetiq-solver/arc_agi/ && \
-    test -f poetiq-solver/arc_agi/solve.py && echo "✓ solve.py exists" || (echo "✗ solve.py NOT FOUND" && exit 1)
+# Prepare beetreeARC: use existing checkout if present, otherwise clone from GitHub
+RUN echo "=== PREPARING BEETREEARC SUBMODULE ===" && \
+    if [ ! -f beetreeARC/src/solver_engine.py ]; then \
+        echo "\u2717 beetreeARC not present in build context; cloning from GitHub" && \
+        rm -rf beetreeARC && \
+        git clone --depth 1 https://github.com/82deutschmark/beetreeARC beetreeARC; \
+    else \
+        echo "\u2713 beetreeARC present in build context; using existing checkout"; \
+    fi && \
+    test -f beetreeARC/src/solver_engine.py && echo "\u2713 beetreeARC solver_engine.py exists" || (echo "\u2717 beetreeARC solver_engine.py NOT FOUND after clone" && exit 1) && \
+    test -f beetreeARC/requirements.txt && echo "\u2713 beetreeARC requirements.txt exists" || (echo "\u2717 beetreeARC requirements.txt NOT FOUND after clone" && exit 1) && \
+    echo "=== INSTALLING BEETREEARC DEPENDENCIES ===" && \
+    python3 -m pip install --no-cache-dir --break-system-packages -r beetreeARC/requirements.txt
+
+# Prepare SnakeBench backend: use existing checkout if present, otherwise clone from GitHub
+RUN echo "=== PREPARING SNAKEBENCH BACKEND ===" && \
+    if [ ! -f external/SnakeBench/backend/main.py ]; then \
+        echo "\u2717 SnakeBench backend not present in build context; cloning from GitHub" && \
+        rm -rf external/SnakeBench && \
+        mkdir -p external && \
+        git clone --depth 1 https://github.com/VoynichLabs/SnakeBench external/SnakeBench; \
+    else \
+        echo "\u2713 SnakeBench backend present in build context; using existing checkout"; \
+    fi && \
+    test -f external/SnakeBench/backend/main.py && echo "\u2713 SnakeBench backend main.py exists" || (echo "\u2717 SnakeBench backend main.py NOT FOUND after clone" && exit 1) && \
+    test -f external/SnakeBench/backend/requirements.txt && echo "\u2713 SnakeBench backend requirements.txt exists" || (echo "\u2717 SnakeBench backend requirements.txt NOT FOUND after clone" && exit 1) && \
+    echo "=== INSTALLING SNAKEBENCH BACKEND DEPENDENCIES ===" && \
+    python3 -m pip install --no-cache-dir --break-system-packages -r external/SnakeBench/backend/requirements.txt
+
+# Poetiq solver is now internalized at solver/poetiq/ (copied above)
+# Verify the internalized solver exists
+RUN echo "=== VERIFYING INTERNALIZED POETIQ SOLVER ===" && \
+    ls -la solver/poetiq/ && \
+    test -f solver/poetiq/solve.py && echo "✓ solver/poetiq/solve.py exists" || (echo "✗ solver/poetiq/solve.py NOT FOUND" && exit 1) && \
+    test -f solver/poetiq/llm.py && echo "✓ solver/poetiq/llm.py exists" || (echo "✗ solver/poetiq/llm.py NOT FOUND" && exit 1)
 
 # Debug what files exist
 RUN ls -la

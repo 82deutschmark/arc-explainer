@@ -151,7 +151,7 @@ export const IterationDataTable: React.FC<IterationDataTableProps> = ({
                 {/* Expanded Details Row */}
                 {isExpanded && (
                   <TableRow className="border-b border-gray-200">
-                    <TableCell colSpan={8} className="bg-gray-50 p-6">
+                    <TableCell colSpan={8} className="bg-gray-50 p-3">
                       <AnalysisResultCard
                         result={iteration.content}
                         modelKey={iteration.content.modelName}

@@ -82,7 +82,7 @@ export function ModelSelection({
 
       {/* Empty State */}
       {groupedModels.length === 0 && (
-        <div className="text-center py-8 text-base-content/60">
+        <div className="text-center py-8 text-muted-foreground">
           <p className="text-sm">No models available.</p>
         </div>
       )}

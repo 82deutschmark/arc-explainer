@@ -1,27 +1,28 @@
 /**
  * ModelDebate.tsx - REFACTORED
  *
- * Author: Claude Code using Sonnet 4 (Updated by Cascade using Sonnet 4 on 2025-10-04)
- * Date: 2025-09-29 (Layout update: 2025-10-04)
- * PURPOSE: Clean orchestration-only component for Model Debate page (< 100 lines).
+ * Author: Claude Code using Sonnet 4.5 (Updated 2025-12-02)
+ * Date: 2025-09-29 (Layout optimized: 2025-12-02)
+ * PURPOSE: Clean orchestration-only component for Model Debate page. Manages debate state,
+ * streaming analysis, and challenge generation. Uses container layout with proper spacing
+ * to eliminate excessive white space while maintaining readability.
  * Single responsibility: Component coordination and routing only.
- * LAYOUT: Removed container margins and max-width constraints for full-width explanation cards
  * SRP/DRY check: Pass - Pure orchestration, delegates all concerns to focused components
  * shadcn/ui: Pass - Uses shadcn/ui components throughout focused child components
  */
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import type { AnalysisResult, ExplanationData } from '@/types/puzzle';
-import { useParams, Link } from 'wouter';
+import { useParams, Link, useLocation } from 'wouter';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { MessageSquare, Plus, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 // Focused components
 import { PuzzleDebateHeader } from '@/components/puzzle/debate/PuzzleDebateHeader';
-import { CompactPuzzleDisplay } from '@/components/puzzle/CompactPuzzleDisplay';
 import { ExplanationsList } from '@/components/puzzle/debate/ExplanationsList';
 import { StreamingAnalysisPanel } from '@/components/puzzle/StreamingAnalysisPanel';
 import { IndividualDebate } from '@/components/puzzle/debate/IndividualDebate';
@@ -35,7 +36,16 @@ import { useDebateState } from '@/hooks/debate/useDebateState';
 export default function ModelDebate() {
   const { taskId } = useParams<{ taskId?: string }>();
   const { toast } = useToast();
+  const [location] = useLocation();
   const [showPromptPreview, setShowPromptPreview] = useState(false);
+  const [isAutoSelecting, setIsAutoSelecting] = useState(false);
+
+  // Parse ?select=123 query parameter for auto-selection
+  const selectId = useMemo(() => {
+    const params = new URLSearchParams(location.split('?')[1]);
+    const id = params.get('select');
+    return id ? parseInt(id, 10) : null;
+  }, [location]);
 
   // Page title management
   useEffect(() => {
@@ -43,7 +53,9 @@ export default function ModelDebate() {
   }, [taskId]);
 
   // Data hooks
-  const { currentTask: task, isLoadingTask, taskError } = usePuzzle(taskId);
+  // Use `task` directly (derived from query response) instead of `currentTask` (state via useEffect)
+  // to avoid race condition where isLoadingTask=false but currentTask is still null
+  const { task, isLoadingTask, taskError } = usePuzzle(taskId);
   const { explanations, isLoading: isLoadingExplanations, refetchExplanations } = usePuzzleWithExplanation(taskId || '');
   const { data: models } = useModels();
 
@@ -61,6 +73,7 @@ export default function ModelDebate() {
     promptId,
     setPromptId,
     temperature,
+    setTemperature,
     streamingEnabled,
     streamingModelKey,
     streamStatus,
@@ -77,11 +90,17 @@ export default function ModelDebate() {
     startStreamingAnalysis,
     isGPT5ReasoningModel,
     reasoningEffort,
+    setReasoningEffort,
     reasoningVerbosity,
+    setReasoningVerbosity,
     reasoningSummaryType,
+    setReasoningSummaryType,
     topP,
+    setTopP,
     candidateCount,
-    thinkingBudget
+    setCandidateCount,
+    thinkingBudget,
+    setThinkingBudget
   } = useAnalysisResults({
     taskId: taskId || '',
     refetchExplanations,
@@ -114,6 +133,13 @@ export default function ModelDebate() {
     }
   })();
   const [pendingStream, setPendingStream] = useState<{ modelKey: string; baseline: string | null } | null>(null);
+
+  // Close streaming modal handler
+  const closeStreamingModal = () => {
+    if (streamingPanelStatus !== 'in_progress') {
+      cancelStreamingAnalysis();
+    }
+  };
 
 
   // Set promptId to 'debate' when debate mode is active
@@ -251,14 +277,49 @@ export default function ModelDebate() {
     setPendingStream(null);
   }, [pendingStream, streamingPanelStatus, streamError, toast]);
 
+  // Auto-start debate when ?select= parameter is present
+  // FIX: Inlined startDebate call directly to avoid closure issues (same fix as PuzzleDiscussion)
+  useEffect(() => {
+    if (!selectId || !explanations || explanations.length === 0 || isLoadingExplanations || debateState.isDebateActive || isAutoSelecting) {
+      return;
+    }
+
+    console.log(`[ModelDebate] 🔍 Auto-select initiating for ID ${selectId}...`);
+    setIsAutoSelecting(true);
+
+    const explanation = explanations.find(e => e.id === selectId);
+    if (explanation) {
+      console.log(`[ModelDebate] ✅ Found explanation #${selectId}`);
+      console.log(`[ModelDebate] Model: ${explanation.modelName}`);
+
+      debateState.startDebate(explanation);
+      setIsAutoSelecting(false);
+      toast({
+        title: "Debate loaded",
+        description: `Starting debate for explanation #${selectId}`,
+      });
+    } else {
+      console.error(`[ModelDebate] ❌ Explanation #${selectId} not found`);
+      console.error(`[ModelDebate] Available IDs: ${explanations.map(e => e.id).join(', ')}`);
+      setIsAutoSelecting(false);
+      toast({
+        title: "Explanation not found",
+        description: `Could not find explanation #${selectId}. It may have been deleted.`,
+        variant: "destructive"
+      });
+    }
+  // NOTE: toast and debateState.startDebate intentionally omitted - they're stable references
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectId, explanations, isLoadingExplanations, debateState.isDebateActive, isAutoSelecting]);
+
   // Loading states
-  if (isLoadingTask || isLoadingExplanations) {
+  if (isLoadingTask || isLoadingExplanations || isAutoSelecting) {
     return (
       <div className="w-full">
         <div className="flex items-center justify-center min-h-[400px]">
           <div className="flex items-center gap-2">
             <Loader2 className="h-6 w-6 animate-spin" />
-            <span>Loading puzzle and explanations...</span>
+            <span>{isAutoSelecting ? `Loading explanation #${selectId}...` : 'Loading puzzle and explanations...'}</span>
           </div>
         </div>
       </div>
@@ -285,15 +346,11 @@ export default function ModelDebate() {
 
   // Main debate interface
   return (
-    <div className="w-full space-y-1">
-      <PuzzleDebateHeader taskId={taskId} />
+    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-rose-50">
+      <div className="w-full max-w-6xl mx-auto px-4 space-y-3 pb-6">
+        <PuzzleDebateHeader taskId={taskId} />
 
-      <CompactPuzzleDisplay
-        trainExamples={task!.train}
-        testCases={task!.test}
-      />
-
-      {/* Individual Debate or Explanations List */}
+        {/* Individual Debate or Explanations List */}
       {debateState.isDebateActive && explanations ? (
         (() => {
           const selectedExplanation = explanations.find(e => e.id === debateState.selectedExplanationId);
@@ -307,28 +364,7 @@ export default function ModelDebate() {
             );
           }
           return (
-            <>
-              {isStreamingActive && debateState.challengerModel && (
-                <div className="mb-4">
-                  <StreamingAnalysisPanel
-                    title={`Streaming ${streamingModel?.name ?? streamingModelKey ?? 'Challenge'}`}
-                    status={streamingPanelStatus}
-                    phase={typeof streamingPhase === 'string' ? streamingPhase : undefined}
-                    message={
-                      streamingPanelStatus === 'failed'
-                        ? streamError?.message ?? streamingMessage ?? 'Streaming failed'
-                        : streamingMessage
-                    }
-                    text={streamingText}
-                    structuredJsonText={streamingStructuredJsonText}
-                    structuredJson={streamingStructuredJson}
-                    reasoning={streamingReasoning}
-                    tokenUsage={streamingTokenUsage}
-                    onCancel={streamingPanelStatus === 'in_progress' ? () => { cancelStreamingAnalysis(); setPendingStream(null); } : undefined}
-                  />
-                </div>
-              )}
-              <IndividualDebate
+            <IndividualDebate
                 originalExplanation={selectedExplanation}
                 debateMessages={debateState.debateMessages}
                 taskId={taskId}
@@ -339,13 +375,33 @@ export default function ModelDebate() {
                 customChallenge={debateState.customChallenge}
                 processingModels={processingModels}
                 analyzerErrors={analyzerErrors}
+                temperature={temperature}
+                onTemperatureChange={setTemperature}
+                topP={topP}
+                onTopPChange={setTopP}
+                candidateCount={candidateCount}
+                onCandidateCountChange={setCandidateCount}
+                thinkingBudget={thinkingBudget}
+                onThinkingBudgetChange={setThinkingBudget}
+                reasoningEffort={(reasoningEffort || 'medium') as 'minimal' | 'low' | 'medium' | 'high'}
+                onReasoningEffortChange={setReasoningEffort}
+                reasoningVerbosity={(reasoningVerbosity || 'medium') as 'low' | 'medium' | 'high'}
+                onReasoningVerbosityChange={setReasoningVerbosity}
+                reasoningSummaryType={(reasoningSummaryType === 'auto' ? 'auto' : 'detailed') as 'auto' | 'detailed'}
+                onReasoningSummaryTypeChange={(value) => {
+                  // Convert component types to hook types
+                  if (value === 'detailed' || value === 'auto') {
+                    setReasoningSummaryType(value as 'auto' | 'detailed');
+                  } else {
+                    setReasoningSummaryType('detailed'); // Fallback to detailed for unsupported values
+                  }
+                }}
                 onBackToList={debateState.endDebate}
                 onResetDebate={debateState.resetDebate}
                 onChallengerModelChange={debateState.setChallengerModel}
                 onCustomChallengeChange={debateState.setCustomChallenge}
                 onGenerateChallenge={handleGenerateChallenge}
               />
-            </>
           );
         })()
       ) : explanations && explanations.length > 0 ? (
@@ -377,6 +433,36 @@ export default function ModelDebate() {
           </CardContent>
         </Card>
       )}
+      </div>
+
+      {/* Streaming Modal Dialog - Same pattern as PuzzleExaminer */}
+      <Dialog open={isStreamingActive} onOpenChange={closeStreamingModal}>
+        <DialogContent className="max-w-[95vw] max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>
+              {`Streaming ${streamingModel?.name ?? streamingModelKey ?? 'Challenge'}`}
+            </DialogTitle>
+          </DialogHeader>
+          <StreamingAnalysisPanel
+            title={`${streamingModel?.name ?? streamingModelKey ?? 'Challenge'}`}
+            status={streamingPanelStatus}
+            phase={typeof streamingPhase === 'string' ? streamingPhase : undefined}
+            message={
+              streamingPanelStatus === 'failed'
+                ? streamError?.message ?? streamingMessage ?? 'Streaming failed'
+                : streamingMessage
+            }
+            text={streamingText}
+            structuredJsonText={streamingStructuredJsonText}
+            structuredJson={streamingStructuredJson}
+            reasoning={streamingReasoning}
+            tokenUsage={streamingTokenUsage}
+            onCancel={streamingPanelStatus === 'in_progress' ? () => { cancelStreamingAnalysis(); setPendingStream(null); } : undefined}
+            onClose={closeStreamingModal}
+            task={task}
+          />
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

@@ -1,0 +1,193 @@
+/**
+ * server/services/beetreeService.ts
+ * 
+ * Service layer for beetreeARC multi-model ensemble solver
+ * Extends BaseAIService but uses Python bridge for actual execution
+ * 
+ * Author: Cascade (model: Cascade GPT-5 medium reasoning)
+ * Date: 2025-12-01
+ * PURPOSE: Orchestrate beetreeARC single-puzzle execution with cost tracking and result persistence
+ * SRP/DRY check: Pass - Reuses pythonBridge, costTracker, and database patterns
+ */
+
+import { BaseAIService, ServiceOptions, AIResponse, TokenUsage } from './base/BaseAIService.js';
+import { pythonBridge, BeetreeBridgeOptions, BeetreeBridgeEvent } from './pythonBridge.js';
+import { ARCTask } from '../../shared/types.js';
+import { logger } from '../utils/logger.js';
+import { ExplanationRepository } from '../repositories/ExplanationRepository.js';
+import { validateSolverResponse } from '../services/schemas/solver.js';
+
+// Beetree-specific types will be added after creating shared/types.ts
+interface BeetreeRunConfig {
+  taskId: string;
+  testIndex: number;
+  mode: 'testing' | 'production';
+  runTimestamp?: string;
+}
+
+interface BeetreeCostBreakdown {
+  total_cost: number;
+  by_model: Array<{
+    model_name: string;
+    input_tokens: number;
+    output_tokens: number;
+    reasoning_tokens: number;
+    cost: number;
+  }>;
+  by_stage: Array<{
+    stage: string;
+    cost: number;
+    duration_ms: number;
+  }>;
+  total_tokens: {
+    input: number;
+    output: number;
+    reasoning: number;
+  };
+}
+
+interface BeetreeResult {
+  taskId: string;
+  testIndex: number;
+  mode: string;
+  runTimestamp: string;
+  predictions: number[][][];
+  costBreakdown: BeetreeCostBreakdown;
+  verboseLog: string;
+}
+
+export class BeetreeService extends BaseAIService {
+  protected provider = 'beetree';
+  protected models = {
+    'beetree-testing': 'beetree-testing',
+    'beetree-production': 'beetree-production',
+    'beetree-ensemble-gpt5': 'beetree-ensemble-gpt5',
+    'beetree-ensemble-claude': 'beetree-ensemble-claude',
+    'beetree-ensemble-gemini': 'beetree-ensemble-gemini',
+    'beetree-full': 'beetree-full'
+  };
+
+  private explanationRepository: ExplanationRepository;
+
+  constructor() {
+    super();
+    this.explanationRepository = new ExplanationRepository();
+  }
+
+  /**
+   * Main analysis method - orchestrates beetreeARC execution
+   */
+  async analyzePuzzleWithModel(
+    task: ARCTask,
+    modelKey: string,
+    taskId: string,
+    temperature?: number,
+    promptId?: string,
+    customPrompt?: string,
+    options?: any,
+    serviceOpts?: ServiceOptions
+  ): Promise<AIResponse> {
+    try {
+      // Extract mode from model key
+      const mode = this.extractModeFromModelKey(modelKey);
+      const testIndex = 1; // Default to first test case
+      
+      // Generate run timestamp
+      const runTimestamp = `beetree_${Date.now()}`;
+      
+      // Build configuration for Python bridge
+      const config: BeetreeBridgeOptions = {
+        taskId,
+        testIndex,
+        mode,
+        runTimestamp
+      };
+
+      logger.service(this.provider, `Starting beetree analysis for ${taskId} in ${mode} mode`);
+
+      // Track cost and progress
+      let finalResult: BeetreeResult | null = null;
+      let currentCost = 0.0;
+      let currentStage = 'Initializing';
+
+      // Execute beetree via Python bridge
+      const { code } = await pythonBridge.runBeetreeAnalysis(config, (event: BeetreeBridgeEvent) => {
+        switch (event.type) {
+          case 'start':
+            logger.service(this.provider, `Beetree started for ${taskId}`);
+            break;
+            
+          case 'progress':
+            currentStage = event.stage;
+            if (event.costSoFar !== undefined) {
+              currentCost = event.costSoFar;
+            }
+            
+            // Emit progress to streaming harness if available
+            if (serviceOpts?.stream) {
+              serviceOpts.stream.emit({
+                type: 'progress',
+                content: `Stage: ${event.stage}`,
+                metadata: {
+                  stage: event.stage,
+                  costSoFar: currentCost,
+                  status: event.status,
+                  outcome: event.outcome
+                }
+              });
+            }
+            break;
+            
+          case 'log':
+            logger.service(this.provider, `[${event.level.toUpperCase()}] ${event.message}`);
+            break;
+            
+          case 'final':
+            if (event.success && event.result) {
+              finalResult = event.result;
+              logger.service(this.provider, `Beetree completed for ${taskId} with cost: $${finalResult.costBreakdown.total_cost.toFixed(4)}`);
+            } else {
+              logger.service(this.provider, `Beetree failed for ${taskId}`, 'error');
+            }
+            break;
+            
+          case 'error':
+            logger.service(this.provider, `Beetree error: ${event.message}`, 'error');
+            break;
+        }
+      });
+
+      if (code !== 0 || !finalResult) {
+        throw new Error(`Beetree execution failed with exit code ${code}`);
+      }
+
+      // Validate predictions against task
+      const validationResult = this.validatePredictions(task, finalResult!.predictions);
+      
+      // Build AIResponse from beetree result
+      const response = this.buildAIResponse(
+        modelKey,
+        temperature || 0.2,
+        finalResult,
+        validationResult,
+        serviceOpts
+      );
+
+      // Save to database if store option is enabled
+      if (serviceOpts?.store !== false) {
+        await this.saveBeetreeResult(taskId, modelKey, finalResult, response);
+      }
+
+      return response;
+
+    } catch (error) {
+      logger.logError('Beetree analysis failed', { error, context: this.provider });
+      throw error;
+    }
+  }
+
+const beetreeService = new BeetreeService();
+
+export { beetreeService };
+
+export { beetreeService };
