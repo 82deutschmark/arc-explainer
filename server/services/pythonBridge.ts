@@ -351,17 +351,22 @@ export class PythonBridge {
       rl.on('line', (line) => {
         const trimmed = line.trim();
         if (!trimmed) return;
-        
+
         // Always capture ALL stdout in logBuffer first
         logBuffer.push(trimmed);
-        
+
         try {
           const evt = JSON.parse(trimmed) as any;
           // Tag source for downstream consumers
           if (evt && typeof evt === 'object' && !evt.source) {
             evt.source = 'python';
           }
-          
+
+          // Debug: Log successful event parse
+          if (evt.type) {
+            logger.debug(`[pythonBridge] Parsed event: type=${evt.type}, timestamp=${evt.timestamp}, sessionId=${opts.sessionId}`);
+          }
+
           // Attach verbose log on final
           if (evt.type === 'final') {
             const verboseFromPy: string | undefined = evt?.result?.verboseLog;
@@ -380,6 +385,7 @@ export class PythonBridge {
           }
         } catch (err) {
           // Non-JSON output - forward as log event
+          logger.debug(`[pythonBridge] Non-JSON stdout, converting to log event: "${trimmed.substring(0, 80)}..."`);
           onEvent({ type: 'log', level: 'info', message: trimmed, source: 'python' });
         }
       });

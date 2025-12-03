@@ -137,6 +137,7 @@ class BeetreeStreamService {
           });
         },
         emitEvent: (event, payload) => {
+          logger.debug(`[beetreeStreamService] Emitting event via harness: event=${event}, ts=${payload?.timestamp}, streamKey=${streamKey}`);
           const enrichedEvent =
             payload && typeof payload === 'object'
               ? { ...payload, taskId }
@@ -144,6 +145,7 @@ class BeetreeStreamService {
           sseStreamManager.sendEvent(streamKey, event, enrichedEvent);
         },
         end: async (summary) => {
+          logger.debug(`[beetreeStreamService] Stream ending for ${streamKey}`);
           // Stream completion handled below
           sseStreamManager.close(streamKey, summary);
         },
