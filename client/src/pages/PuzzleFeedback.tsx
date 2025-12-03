@@ -54,6 +54,13 @@ type ValidationFeedbackState = {
   showExpected: boolean;
 };
 
+type GridComparisonResult = {
+  dimensionsMatch: boolean;
+  isCorrect: boolean;
+  expectedGrid: number[][] | null;
+  matchedTestIndices: number[];
+};
+
 const FEEDBACK_STYLES: Record<ValidationStatus, {
   container: string;
   icon: typeof CheckCircle;
@@ -227,7 +234,7 @@ export default function PuzzleFeedback() {
   }, [gridInput]);
 
   // Check if parsed grid matches expected outputs for ALL test cases
-  const { dimensionsMatch, isCorrect, expectedGrid, matchedTestIndices } = useMemo(() => {
+  const gridComparison = useMemo<GridComparisonResult>(() => {
     if (!task || !parsedGrid || task.test.length === 0) {
       return { dimensionsMatch: false, isCorrect: false, expectedGrid: null, matchedTestIndices: [] };
     }
@@ -269,9 +276,11 @@ export default function PuzzleFeedback() {
       dimensionsMatch: firstDimensionsMatch,
       isCorrect: isCorrectForAll,
       expectedGrid: firstExpected,
-      matchedTestIndices
+      matchedTestIndices: matchedIndices
     };
   }, [task, parsedGrid]);
+
+  const { dimensionsMatch, isCorrect, expectedGrid, matchedTestIndices } = gridComparison;
 
   const validationFeedback = useMemo<ValidationFeedbackState | null>(() => {
     if (!gridInput.trim() || !isValidFormat || !parsedGrid) {
