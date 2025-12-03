@@ -1,6 +1,15 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top with the time and date!
 
+### Version 5.35.44  Dec 3, 2025 11:10am
+
+- **Beetree Cost Fix: Parse dict-keyed step logs correctly** (Author: Claude Sonnet 4)
+  - Fixed `server/python/beetree_wrapper.py` step log parsing which was expecting a list or dict with `runs` key, but BeeTree actually emits dicts keyed by run ID (e.g. `"gpt-5.1-codex-mini_2_step_1_...": {...}`).
+  - The loop now correctly iterates over dict values when the log is dict-keyed, extracting `input_tokens`, `output_tokens`, `total_cost`, and `duration_seconds` for each model run.
+  - Also fixed cost field name from `cost` to `total_cost` to match actual BeeTree log format.
+  - This restores token usage and cost breakdown display in the Beetree Solver UI which was previously showing zeros.
+  - **Files**: `server/python/beetree_wrapper.py`
+
 ### Version 5.35.43  Dec 2, 2025 11:45pm
 
 - **Beetree Hook: Fix handleSSEEvent initialization error** (Author: Cascade)

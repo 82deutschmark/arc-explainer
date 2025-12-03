@@ -329,18 +329,34 @@ def run():
                                         step_log = json.load(f)
                                     
                                     # Extract per-run cost data
-                                    runs = step_log if isinstance(step_log, list) else step_log.get('runs', [])
+                                    # Handle different log formats:
+                                    # - List of run objects
+                                    # - Dict with 'runs' key containing a list
+                                    # - Dict keyed by run_id (actual BeeTree format)
+                                    if isinstance(step_log, list):
+                                        runs = step_log
+                                    elif 'runs' in step_log:
+                                        runs = step_log.get('runs', [])
+                                    else:
+                                        # BeeTree step logs are dicts keyed by run_id
+                                        runs = [
+                                            {**run_data, 'run_id': run_id}
+                                            for run_id, run_data in step_log.items()
+                                            if isinstance(run_data, dict)
+                                        ]
+                                    
                                     for run_data in runs:
                                         if isinstance(run_data, dict):
                                             model_name = run_data.get('model_name', run_data.get('run_id', 'unknown'))
-                                            # Extract from run_id if needed: "claude-opus-4.5_1_step_1"
+                                            # Extract from run_id if needed: "gpt-5.1-codex-mini_2_step_1_..."
                                             if '_' in str(model_name):
                                                 model_name = model_name.split('_')[0]
                                             
                                             input_tokens = run_data.get('input_tokens', 0)
                                             output_tokens = run_data.get('output_tokens', 0)
                                             cached_tokens = run_data.get('cached_tokens', 0)
-                                            cost = run_data.get('cost', 0.0)
+                                            # BeeTree logs use 'total_cost', fall back to 'cost'
+                                            cost = run_data.get('total_cost', run_data.get('cost', 0.0))
                                             
                                             # If no explicit cost, estimate from tokens and model
                                             if cost == 0 and (input_tokens > 0 or output_tokens > 0):
