@@ -1,6 +1,21 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top with the time and date!
 
+### Version 5.35.37  Dec 2, 2025 10:07pm
+
+- **About Page: Simon spotlight + mosaic footer** (Author: Cascade)
+  - Added a dedicated Simon Strandgaard spotlight card in the About page sidebar using animated ARC puzzle GIF styling inspired by the Hall of Fame trading cards.
+  - Increased contrast and visual emphasis of the "Honest Truth" story card so the core text reads more clearly on dark backgrounds.
+  - Replaced the heart icon footer with a fully mosaic-based border and tagline that better matches the rest of the sites visual language.
+  - **Files**: `client/src/pages/About.tsx`
+
+### Version 5.35.36  Dec 2, 2025 9:50pm
+
+- **SnakeArena: link directly to SnakeBench.com** (Author: Cascade)
+  - Updated the SnakeArena React page to always embed/link `https://snakebench.com` instead of relying on `VITE_SNAKEBENCH_URL`, removing the confusing "SnakeBench frontend not configured" state.
+  - Kept a matching `VITE_SNAKEBENCH_URL` default in `.env` so local builds and Docker behaves consistently.
+  - **Files**: `client/src/pages/SnakeArena.tsx`, `.env`
+
 ### Version 5.35.35  Dec 2, 2025 9:40pm
 
 - **SnakeBench staging URL wiring** (Author: Cascade)
