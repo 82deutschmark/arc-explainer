@@ -279,9 +279,12 @@ export const useBeetreeRun = () => {
       // Use server-provided sessionId for SSE connection
       const serverSessionId = result.sessionId || sessionId;
       sessionIdRef.current = serverSessionId;
+      console.log(`[useBeetreeRun] Server session ID: ${serverSessionId}`);
 
       // Set up SSE connection using the server's sessionId
-      const eventSource = new EventSource(`/api/stream/analyze/beetree-${serverSessionId}`);
+      const sseUrl = `/api/stream/analyze/beetree-${serverSessionId}`;
+      console.log(`[useBeetreeRun] Connecting to SSE URL: ${sseUrl}`);
+      const eventSource = new EventSource(sseUrl);
       eventSourceRef.current = eventSource;
 
       eventSource.onmessage = handleSSEEvent;
