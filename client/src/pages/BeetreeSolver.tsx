@@ -496,7 +496,7 @@ export default function BeetreeSolver() {
                   )}
                   {isDone && results && (
                     <div className="space-y-4">
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 items-start">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 items-start justify-center">
                         <div className="text-center">
                           <p className="text-xs font-medium text-muted-foreground mb-2">GROUND TRUTH</p>
                           {expectedGrid && (

@@ -1,6 +1,22 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top with the time and date!
 
+### Version 5.36.4  Dec 3, 2025 4:15pm
+
+- **Beetree Results: Improve grid spacing** (Author: Claude Code using Haiku 4.5)
+  - Increased gap between ground truth and consensus prediction grids from `gap-4` (16px) to `gap-8` (32px) to prevent grids from appearing smushed together.
+  - Added `justify-center` to center the grid layout for better visual balance.
+  - **Files**: `client/src/pages/BeetreeSolver.tsx:499`
+
+### Version 5.36.3  Dec 3, 2025 4:00pm
+
+- **Poetiq Streaming: Remove all WebSocket usage (SSE-only)** (Author: Cascade)
+  - Removed all `wsService.broadcast` calls from `poetiqService.ts` so Poetiq no longer emits WebSocket progress/log events; only SSE events are produced via `poetiqStreamService`.
+  - Updated `poetiqController.ts` to stop broadcasting over WebSockets for both the legacy `/api/poetiq/solve/:taskId` endpoint and Poetiq batch runs, keeping them as console-log-only code paths while SSE is the sole streaming mechanism.
+  - Updated `wsService.ts` to stop accepting `/api/poetiq/progress` WebSocket connections; Saturn, Grover, and Beetree WebSockets remain unchanged.
+  - This ensures Poetiq cannot accidentally fall back to WebSockets and that all live solver updates come exclusively from the SSE pipeline.
+  - **Files**: `server/services/poetiq/poetiqService.ts`, `server/controllers/poetiqController.ts`, `server/services/wsService.ts`
+
 ### Version 5.36.2  Dec 3, 2025 3:45pm
 
 - **Poetiq SSE: Fix session start race and align client/server endpoints** (Author: Cascade)
