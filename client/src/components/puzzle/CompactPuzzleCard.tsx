@@ -11,6 +11,7 @@ import { Link } from 'wouter';
 import type { ARCTask } from '@shared/types';
 import type { PuzzleDBStats } from '@/hooks/usePuzzleDBStats';
 import { TinyGrid } from '@/components/puzzle/TinyGrid';
+import { getPuzzleGif } from '@/utils/puzzleGifMap';
 
 interface CompactPuzzleCardProps {
   puzzle: PuzzleDBStats;
@@ -53,6 +54,7 @@ export const CompactPuzzleCard: React.FC<CompactPuzzleCardProps> = ({
   const [isVisible, setIsVisible] = useState(!lazyLoadGrid);
   const [hasRequestedTask, setHasRequestedTask] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
+  const puzzleGifSrc = getPuzzleGif(puzzle.id);
 
   useEffect(() => {
     setTaskData(prefetchedTask ?? null);
@@ -77,7 +79,8 @@ export const CompactPuzzleCard: React.FC<CompactPuzzleCardProps> = ({
   }, [lazyLoadGrid]);
 
   useEffect(() => {
-    if (!isVisible || taskData || hasRequestedTask) return;
+    // Skip fetching grid data when an animated GIF is available.
+    if (!isVisible || taskData || hasRequestedTask || puzzleGifSrc) return;
 
     let isCancelled = false;
     setHasRequestedTask(true);
@@ -143,11 +146,24 @@ export const CompactPuzzleCard: React.FC<CompactPuzzleCardProps> = ({
         </div>
 
         <div className="flex gap-2">
-          {firstPuzzleGrid && (
-            <div className="shrink-0" style={{ width: '64px', height: '64px' }}>
-              <TinyGrid grid={firstPuzzleGrid} style={{ width: '64px', height: '64px' }} />
-            </div>
-          )}
+          <div className="shrink-0" style={{ width: '64px', height: '64px' }}>
+            {puzzleGifSrc ? (
+              isVisible ? (
+                <img
+                  src={puzzleGifSrc}
+                  alt={`Animated ARC preview for puzzle ${puzzle.id}`}
+                  className="w-full h-full rounded-sm border border-base-200 object-contain bg-base-200"
+                  loading="lazy"
+                />
+              ) : (
+                <div className="w-full h-full rounded-sm bg-base-200 animate-pulse" />
+              )
+            ) : (
+              firstPuzzleGrid && (
+                <TinyGrid grid={firstPuzzleGrid} style={{ width: '64px', height: '64px' }} />
+              )
+            )}
+          </div>
 
           {showMetrics && (
             <div className="flex-1 min-w-0">

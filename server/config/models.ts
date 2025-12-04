@@ -227,6 +227,7 @@ export const MODELS: ModelConfig[] = [
     cost: { input: '$1.25', output: '$10.00' },
     supportsTemperature: false,
     supportsStreaming: true,
+    supportsVision: true,
     provider: 'OpenAI',
     responseTime: { speed: 'moderate', estimate: '1-2 min' },
     isReasoning: true,
