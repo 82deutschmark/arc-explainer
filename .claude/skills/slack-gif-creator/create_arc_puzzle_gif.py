@@ -122,22 +122,24 @@ def create_frame_with_grid(grid, label, puzzle_id, width=None, height=None):
     return frame
 
 def find_puzzle_file(puzzle_id: str) -> Path:
-    """Find the puzzle JSON file in training or evaluation directories"""
+    """Find the puzzle JSON file in training or evaluation directories (ARC 1 or ARC 2)"""
     base_path = Path(r'D:\GitHub\arc-explainer\data')
 
-    # Check training directory first
-    training_path = base_path / 'training' / f'{puzzle_id}.json'
-    if training_path.exists():
-        return training_path
+    # Check all possible locations in order
+    search_paths = [
+        base_path / 'training' / f'{puzzle_id}.json',
+        base_path / 'evaluation' / f'{puzzle_id}.json',
+        base_path / 'training2' / f'{puzzle_id}.json',
+        base_path / 'evaluation2' / f'{puzzle_id}.json',
+    ]
 
-    # Check evaluation directory
-    eval_path = base_path / 'evaluation' / f'{puzzle_id}.json'
-    if eval_path.exists():
-        return eval_path
+    for path in search_paths:
+        if path.exists():
+            return path
 
     raise FileNotFoundError(
-        f"Puzzle {puzzle_id} not found in training or evaluation directories.\n"
-        f"Searched:\n  - {training_path}\n  - {eval_path}"
+        f"Puzzle {puzzle_id} not found in any data directories.\n"
+        f"Searched:\n" + "\n".join(f"  - {p}" for p in search_paths)
     )
 
 # Get puzzle ID from command line

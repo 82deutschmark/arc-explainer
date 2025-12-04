@@ -1,6 +1,14 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top with the time and date!
 
+### Version 5.36.17  Dec 4, 2025 6:00pm
+
+- **Slack GIF Creator: Add ARC2 puzzle support and generate evaluation datasets** (Author: Claude Code using Haiku 4.5)
+  - Extended puzzle discovery to support ARC 2 evaluation puzzles (evaluation2 and training2 directories)
+  - Generated ARC2_EVAL dataset: 44 animated GIFs for ARC 2 unsolved evaluation puzzles (~15 MB total)
+  - Each GIF shows all training examples and test cases with proper label annotations
+  - **Files**: `.claude/skills/slack-gif-creator/create_arc_puzzle_gif.py` (updated find_puzzle_file), `.claude/skills/slack-gif-creator/ARC2_EVAL/` (new folder with 44 GIF files)
+
 ### Version 5.36.16  Dec 4, 2025 5:30pm
 
 - **Slack GIF Creator: Optimize animation speed and dynamic grid scaling** (Author: Claude Code using Haiku 4.5)
@@ -33,6 +41,14 @@
 - **PuzzleBrowser: Add button to view unsolved ARC1/ARC2 puzzles** (Author: Claude Code using Haiku 4.5)
   - Added simple button after featured gallery linking to `/puzzle-db-viewer` for browsing all unsolved ARC1 and ARC2 evaluation puzzles.
   - **Files**: `client/src/pages/PuzzleBrowser.tsx`
+
+### Version 5.36.14  Dec 4, 2025 6:05pm
+
+- **Compact puzzle cards: ARC1-Eval GIF previews** (Author: Codex)
+  - Copied the newly generated ARC1-Eval GIFs into the public decoration assets and added a centralized `PUZZLE_GIF_MAP` so puzzle IDs immediately map to their animated previews.
+  - Updated `CompactPuzzleCard` to prefer those GIFs (lazy-loaded via the existing observer) while keeping the TinyGrid fallback for all other puzzles, giving the `/puzzles/database` cards an eye-catching animation whenever we have curated media.
+  - Documented the approach in `docs/2025-12-04-compact-card-gif-integration-plan.md` for future expansions.
+  - **Files**: `client/public/images/decoration/arc_puzzle_7d419a02.gif`, `client/public/images/decoration/arc_puzzle_50f325b5.gif`, `client/public/images/decoration/arc_puzzle_b9630600.gif`, `client/public/images/decoration/arc_puzzle_4ff4c9da.gif`, `client/public/images/decoration/arc_puzzle_14754a24.gif`, `client/public/images/decoration/arc_puzzle_8b28cd80.gif`, `client/public/images/decoration/arc_puzzle_c6e1b8da.gif`, `client/public/images/decoration/arc_puzzle_f3b10344.gif`, `client/public/images/decoration/arc_puzzle_212895b5.gif`, `client/public/images/decoration/arc_puzzle_16b78196.gif`, `client/public/images/decoration/arc_puzzle_0934a4d8.gif`, `client/src/utils/puzzleGifMap.ts`, `client/src/components/puzzle/CompactPuzzleCard.tsx`, `docs/2025-12-04-compact-card-gif-integration-plan.md`
 
 ### Version 5.36.13  Dec 3, 2025 11:20pm
 
