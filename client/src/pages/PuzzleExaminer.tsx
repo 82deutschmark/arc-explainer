@@ -37,6 +37,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Switch } from '@/components/ui/switch';
 
 // Types
 import type { CorrectnessFilter } from '@/hooks/useFilteredResults';
@@ -188,6 +189,8 @@ export default function PuzzleExaminer() {
     setCandidateCount,
     thinkingBudget,
     setThinkingBudget,
+    includeGridImages,
+    setIncludeGridImages,
   } = useAnalysisResults({
     taskId,
     refetchExplanations: refetchSummaries,
@@ -282,6 +285,10 @@ export default function PuzzleExaminer() {
   })();
 
   const currentModel = currentModelKey ? models?.find(model => model.key === currentModelKey) ?? null : null;
+  const anyVisionModels = useMemo(
+    () => (models ?? []).some(model => model.supportsVision),
+    [models]
+  );
 
   // Handle model selection
   const handleAnalyzeWithModel = (modelKey: string) => {
@@ -431,6 +438,19 @@ export default function PuzzleExaminer() {
                 reasoningSummaryType={reasoningSummaryType}
                 onReasoningSummaryTypeChange={setReasoningSummaryType}
               />
+              {anyVisionModels && (
+                <div className="pt-1 flex items-center gap-2">
+                  <Switch
+                    id="include-grid-images"
+                    checked={includeGridImages}
+                    onCheckedChange={(value) => setIncludeGridImages(Boolean(value))}
+                    disabled={isAnalyzing}
+                  />
+                  <label htmlFor="include-grid-images" className="text-xs text-muted-foreground">
+                    Include puzzle screenshots (vision models only)
+                  </label>
+                </div>
+              )}
             </CardContent>
           </Card>
         </div>

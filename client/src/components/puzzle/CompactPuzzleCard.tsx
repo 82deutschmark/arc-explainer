@@ -7,7 +7,6 @@
  */
 
 import React, { useEffect, useRef, useState } from 'react';
-import { Link } from 'wouter';
 import type { ARCTask } from '@shared/types';
 import type { PuzzleDBStats } from '@/hooks/usePuzzleDBStats';
 import { TinyGrid } from '@/components/puzzle/TinyGrid';
@@ -123,7 +122,7 @@ export const CompactPuzzleCard: React.FC<CompactPuzzleCardProps> = ({
     <button
       className="btn btn-outline btn-xs w-full mt-2"
       onClick={onOpenDetails}
-      type={onOpenDetails ? 'button' : 'button'}
+      type="button"
     >
       {actionLabel}
     </button>
@@ -147,21 +146,17 @@ export const CompactPuzzleCard: React.FC<CompactPuzzleCardProps> = ({
 
         <div className="flex gap-2">
           <div className="shrink-0" style={{ width: '64px', height: '64px' }}>
-            {puzzleGifSrc ? (
-              isVisible ? (
-                <img
-                  src={puzzleGifSrc}
-                  alt={`Animated ARC preview for puzzle ${puzzle.id}`}
-                  className="w-full h-full rounded-sm border border-base-200 object-contain bg-base-200"
-                  loading="lazy"
-                />
-              ) : (
-                <div className="w-full h-full rounded-sm bg-base-200 animate-pulse" />
-              )
+            {puzzleGifSrc && isVisible ? (
+              <img
+                src={puzzleGifSrc}
+                alt={`Animated ARC preview for puzzle ${puzzle.id}`}
+                className="w-full h-full rounded-sm border border-base-200 object-contain bg-base-200"
+                loading="lazy"
+              />
+            ) : firstPuzzleGrid ? (
+              <TinyGrid grid={firstPuzzleGrid} style={{ width: '64px', height: '64px' }} />
             ) : (
-              firstPuzzleGrid && (
-                <TinyGrid grid={firstPuzzleGrid} style={{ width: '64px', height: '64px' }} />
-              )
+              <div className="w-full h-full rounded-sm bg-base-200 animate-pulse" />
             )}
           </div>
 
@@ -230,7 +225,14 @@ export const CompactPuzzleCard: React.FC<CompactPuzzleCardProps> = ({
         {onOpenDetails ? (
           actionButton
         ) : (
-          <Link href={`/puzzle/${puzzle.id}`}>{actionButton}</Link>
+          <a
+            href={`/puzzle/${puzzle.id}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="block"
+          >
+            {actionButton}
+          </a>
         )}
       </div>
     </div>

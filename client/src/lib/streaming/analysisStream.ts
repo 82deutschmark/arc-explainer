@@ -49,6 +49,7 @@ export interface AnalysisStreamParams {
   originalExplanationId?: number;
   originalExplanation?: Record<string, unknown>;
   customChallenge?: string;
+  includeGridImages?: boolean;
 }
 
 export interface AnalysisStreamHandlers {
