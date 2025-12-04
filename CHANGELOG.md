@@ -42,7 +42,7 @@
   - Added simple button after featured gallery linking to `/puzzle-db-viewer` for browsing all unsolved ARC1 and ARC2 evaluation puzzles.
   - **Files**: `client/src/pages/PuzzleBrowser.tsx`
 
-### Version 5.36.15  Dec 4, 2025 6:25pm
+### Version 5.37.0  Dec 4, 2025 6:25pm
 
 - **ARC2 GIF previews for CompactPuzzleCard** (Author: Codex)
   - Copied the ARC2-Eval GIF batch into the public decoration assets, documented the rollout, and expanded `PUZZLE_GIF_MAP` so every unsolved ARC2 puzzle now auto-renders its curated animation on the `/puzzles/database` cards.
