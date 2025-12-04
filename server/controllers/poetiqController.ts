@@ -77,6 +77,10 @@ const OPENROUTER_SERVER_KEY_MODELS = new Set<string>([
   'openrouter/bert-nebulon-alpha',
   'openrouter/kwaipilot/kat-coder-pro:free',
   'kwaipilot/kat-coder-pro:free',
+  'openrouter/arcee-ai/trinity-mini:free',
+  'arcee-ai/trinity-mini:free',
+  'openrouter/amazon/nova-2-lite-v1:free',
+  'amazon/nova-2-lite-v1:free',
 ]);
 
 /**
@@ -485,6 +489,9 @@ export const poetiqController = {
       { id: 'openrouter/anthropic/claude-sonnet-4', name: 'Claude Sonnet 4', provider: 'OpenRouter', recommended: false, routing: 'openrouter', requiresBYO: true },
       { id: 'openrouter/bert-nebulon-alpha', name: 'Bert Nebulon Alpha (Cloaked)', provider: 'OpenRouter', recommended: false, routing: 'openrouter', requiresBYO: false },
       { id: 'openrouter/kwaipilot/kat-coder-pro:free', name: 'Kat Coder Pro (Free)', provider: 'OpenRouter', recommended: false, routing: 'openrouter', requiresBYO: false },
+      // Free OpenRouter arena models (December 2025 drop)
+      { id: 'openrouter/arcee-ai/trinity-mini:free', name: 'Arcee Trinity Mini (Free)', provider: 'OpenRouter', recommended: false, routing: 'openrouter', requiresBYO: false },
+      { id: 'openrouter/amazon/nova-2-lite-v1:free', name: 'Amazon Nova 2 Lite (Free)', provider: 'OpenRouter', recommended: false, routing: 'openrouter', requiresBYO: false },
     ];
 
     return res.json(formatResponse.success({ models }));
