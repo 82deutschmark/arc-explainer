@@ -1,6 +1,19 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top with the time and date!
 
+### Version 5.36.13  Dec 3, 2025 11:20pm
+
+- **Reusable CompactPuzzleCard component** (Author: Codex)
+  - Extracted the inline PuzzleDBViewer card into `client/src/components/puzzle/CompactPuzzleCard.tsx` with optional lazy loading, prefetched task support, and customizable actions so other pages can reuse the TinyGrid preview + metrics layout without duplicating logic.
+  - Updated PuzzleDBViewer to consume the shared component and removed the redundant helper code from the page file.
+  - **Files**: `client/src/components/puzzle/CompactPuzzleCard.tsx`, `client/src/pages/PuzzleDBViewer.tsx`
+
+### Version 5.36.12  Dec 3, 2025 10:55pm
+
+- **Docs: Compact puzzle card extraction plan** (Author: Codex)
+  - Captured a detailed plan to promote the inline `CompactPuzzleCard` in PuzzleDBViewer into a reusable component under `client/src/components/puzzle/`, covering prop design, extraction steps, and verification.
+  - **Files**: `docs/2025-12-03-compact-puzzle-card-plan.md`
+
 ### Version 5.36.11  Dec 3, 2025 10:40pm
 
 - **PuzzleDBViewer: Show test outputs in TinyGrid previews** (Author: Codex)

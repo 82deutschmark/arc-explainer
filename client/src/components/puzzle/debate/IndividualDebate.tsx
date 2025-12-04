@@ -30,7 +30,6 @@ import { Textarea } from '@/components/ui/textarea';
 // Reuse existing components
 import { AnalysisResultCard } from '@/components/puzzle/AnalysisResultCard';
 import { PromptPreviewModal } from '@/components/PromptPreviewModal';
-import { OriginalExplanationCard } from './OriginalExplanationCard';
 import { RebuttalCard } from './RebuttalCard';
 import { TinyGrid } from '@/components/puzzle/TinyGrid';
 import { AdvancedControls } from '@/components/puzzle/AdvancedControls';
@@ -203,16 +202,6 @@ export const IndividualDebate: React.FC<IndividualDebateProps> = ({
         </Card>
       )}
 
-      {/* Original Explanation - Display directly from prop */}
-      {originalExplanation && (
-        <OriginalExplanationCard
-          explanation={originalExplanation}
-          models={models}
-          testCases={testCases}
-          timestamp={originalExplanation.createdAt || new Date().toISOString()}
-          forceExpanded={true}
-        />
-      )}
 
       {/* Compact Challenge Controls Card */}
       <Card className="border-gray-200 bg-white">
