@@ -1,6 +1,14 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top with the time and date!
 
+### Version 5.36.9  Dec 3, 2025 10:15pm
+
+- **Poetiq Solver: Add Free OpenRouter Arena Models** (Author: Codex)
+  - Surfaced Amazon Nova 2 Lite (Free) and Arcee Trinity Mini (Free) inside the `/api/poetiq/models` response so the Poetiq control panel exposes both new options.
+  - Flagged the new ids inside `OPENROUTER_SERVER_KEY_MODELS`, which keeps BYO keys optional for these free-tier runs while preserving the BYO requirement for other OpenRouter models.
+  - Captured a short implementation plan at `docs/2025-12-03-poetiq-free-models-plan.md` for traceability.
+  - **Files**: `server/controllers/poetiqController.ts`, `docs/2025-12-03-poetiq-free-models-plan.md`
+
 ### Version 5.36.8  Dec 3, 2025 9:55pm
 
 - **DeepSeek: Enhanced provider error logging** (Author: Cascade)
