@@ -22,6 +22,9 @@
   - Rebuilt `PoetiqLiveDashboard` so it now focuses solely on the active model/provider, tokens in/out/total, total cost, iteration progress, and the latest solver message.
   - Removed the Poetiq Agents Runtime panel entirely and re-ordered the solver layout so the Event Log, Raw Events panel, and final result card render directly under the header, while the Python terminal only appears once it has data (no more empty black box).
   - **Files**: `client/src/components/poetiq/PoetiqLiveDashboard.tsx`, `client/src/pages/PoetiqSolver.tsx`, `client/src/components/poetiq/PoetiqAgentsRuntimePanel.tsx`
+- **Poetiq Result Card: Restore code preview** (Author: Codex)
+  - The SOLVED / NOT SOLVED card again embeds the final `transform()` code (with streaming fallback) so users can copy the winning Python without opening other panels, while the raw-events column stays unchanged.
+  - **Files**: `client/src/pages/PoetiqSolver.tsx`
 - **Docs: Capture Poetiq solver UI plan** (Author: Codex)
   - Added a quick planning note describing the telemetry-first redesign.
   - **Files**: `docs/2025-12-03-poetiq-solver-ui-plan.md`
