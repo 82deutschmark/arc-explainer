@@ -300,7 +300,7 @@ export class OpenAIService extends BaseAIService {
       supportsFunctionCalling: true,
       supportsSystemPrompts: true,
       supportsStructuredOutput: !modelName.includes("gpt-5-chat-latest"),
-      supportsVision: false
+      supportsVision: Boolean(modelConfig?.supportsVision)
     };
   }
 

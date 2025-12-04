@@ -95,7 +95,7 @@ export class PuzzleAnalysisService {
     const aiService = aiServiceFactory.getService(model);
     const modelConfig = getModelConfig(model);
     const supportsVision = Boolean(modelConfig?.supportsVision);
-    
+
     let resolvedOriginalExplanation = originalExplanation;
     if (!resolvedOriginalExplanation && typeof originalExplanationId === 'number') {
       resolvedOriginalExplanation = await repositoryService.explanations.getExplanationById(originalExplanationId) || undefined;
@@ -119,7 +119,7 @@ export class PuzzleAnalysisService {
     // Add debate mode context
     if (resolvedOriginalExplanation) promptOptions.originalExplanation = resolvedOriginalExplanation;
     if (customChallenge) promptOptions.customChallenge = customChallenge;
-    
+
     // Build service options
     const serviceOpts: any = {};
     if (reasoningEffort) serviceOpts.reasoningEffort = reasoningEffort;
@@ -129,6 +129,7 @@ export class PuzzleAnalysisService {
     // Conversation chaining support - pass through response ID for multi-turn analysis
     if (previousResponseId) serviceOpts.previousResponseId = previousResponseId;
 
+    // Optionally attach grid images for vision-capable models (non-streaming)
     const effectiveIncludeGridImages = !!includeGridImages && supportsVision;
     if (effectiveIncludeGridImages) {
       try {
@@ -213,10 +214,13 @@ export class PuzzleAnalysisService {
       originalExplanationId,
       customChallenge,
       previousResponseId,
+      includeGridImages = false,
     } = options;
 
     const puzzle = await puzzleService.getPuzzleById(taskId);
     const aiService = aiServiceFactory.getService(model);
+    const modelConfig = getModelConfig(model);
+    const supportsVision = Boolean(modelConfig?.supportsVision);
 
     let resolvedOriginalExplanation = originalExplanation;
     if (!resolvedOriginalExplanation && typeof originalExplanationId === 'number') {
@@ -240,6 +244,19 @@ export class PuzzleAnalysisService {
     }
     if (resolvedOriginalExplanation) promptOptions.originalExplanation = resolvedOriginalExplanation;
     if (customChallenge) promptOptions.customChallenge = customChallenge;
+
+    const effectiveIncludeGridImagesStreaming = !!includeGridImages && supportsVision;
+    let streamingGridImages: Awaited<ReturnType<typeof buildTaskGridImages>> | undefined;
+    if (effectiveIncludeGridImagesStreaming) {
+      try {
+        streamingGridImages = await buildTaskGridImages(puzzle);
+      } catch (error) {
+        logger.logError('[Streaming Analysis] Failed to build grid images; falling back to text-only streaming', {
+          error,
+          context: 'puzzle-analysis-service',
+        });
+      }
+    }
 
     if (stream?.emitEvent) {
       stream.emitEvent('stream.status', {
@@ -375,6 +392,12 @@ export class PuzzleAnalysisService {
     if (reasoningSummaryType) serviceOpts.reasoningSummaryType = reasoningSummaryType;
     if (systemPromptMode) serviceOpts.systemPromptMode = systemPromptMode;
     if (previousResponseId) serviceOpts.previousResponseId = previousResponseId;
+
+    // Optionally attach grid images for vision-capable models (streaming)
+    if (effectiveIncludeGridImagesStreaming && streamingGridImages && streamingGridImages.length > 0) {
+      serviceOpts.includeGridImages = true;
+      serviceOpts.gridImages = streamingGridImages;
+    }
 
     await aiService.analyzePuzzleWithStreaming(
       puzzle,

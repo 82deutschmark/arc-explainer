@@ -1,6 +1,18 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top with the time and date!
 
+### Version 5.38.0  Dec 4, 2025 7:15pm
+
+- **Puzzle Analysis: Add vision model support with grid image inclusion** (Author: Claude Code using Haiku 4.5)
+  - Extended `/api/analyze` and streaming analysis endpoints to optionally include puzzle grid images for vision-capable models, enabling visual context in model reasoning
+  - Added `supportsVision` flag to model configuration and exposed it across `/api/models`, `/api/models/:modelKey`, and `/api/models/provider/:provider` endpoints
+  - Implemented grid image capture system that converts puzzle grids to canvas-based PNG dataURLs with configurable descriptions for inclusion in OpenAI Responses API payloads
+  - Extended `buildResponsesPayload()` to support mixed text/image content in user messages by adding `input_image` type to ResponseContent union
+  - Integrated grid image generation into both streaming (`analyzePuzzleWithStreaming`) and non-streaming (`analyzePuzzle`) code paths with graceful fallback to text-only on failure
+  - Added user-facing UI toggle in PuzzleExaminer to enable/disable grid image inclusion, visible only when vision models are available
+  - Simplified CompactPuzzleCard navigation: replaced wouter Link with standard anchor tags (opens puzzle in new tab) for improved interoperability
+  - **Files**: `client/src/pages/PuzzleExaminer.tsx` (added Switch toggle for grid images), `client/src/hooks/useAnalysisResults.ts` (added state), `client/src/lib/streaming/analysisStream.ts`, `server/services/openai/payloadBuilder.ts` (image content support), `server/services/puzzleAnalysisService.ts` (grid capture + streaming integration), `server/controllers/streamController.ts`, `server/routes/models.ts`, `server/services/openai.ts`, `client/src/components/puzzle/CompactPuzzleCard.tsx`, `server/services/streaming/analysisStreamService.ts`
+
 ### Version 5.36.17  Dec 4, 2025 6:00pm
 
 - **Slack GIF Creator: Add ARC2 puzzle support and generate evaluation datasets** (Author: Claude Code using Haiku 4.5)

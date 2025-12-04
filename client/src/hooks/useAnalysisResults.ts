@@ -56,6 +56,7 @@ export function useAnalysisResults({
   const [reasoningEffort, setReasoningEffort] = useState<'minimal' | 'low' | 'medium' | 'high'>('high');
   const [reasoningVerbosity, setReasoningVerbosity] = useState<'low' | 'medium' | 'high'>('high');
   const [reasoningSummaryType, setReasoningSummaryType] = useState<'auto' | 'detailed'>('detailed');
+  const [includeGridImages, setIncludeGridImages] = useState(false);
 
   // Streaming integration
   const streamingEnabled = useMemo(() => {
@@ -219,6 +220,7 @@ export function useAnalysisResults({
         retryMode,
         customChallenge,
         originalExplanationId: originalExplanation?.id,
+        ...(includeGridImages ? { includeGridImages: true } : {}),
       };
 
       void startStream(params, {
@@ -334,6 +336,7 @@ export function useAnalysisResults({
           ...(effort ? { reasoningEffort: effort } : {}),
           ...(verbosity ? { reasoningVerbosity: verbosity } : {}),
           ...(summaryType ? { reasoningSummaryType: summaryType } : {}),
+          ...(includeGridImages ? { includeGridImages: true } : {}),
         };
 
         if (promptId === 'custom' && customPrompt.trim()) {
@@ -499,6 +502,8 @@ export function useAnalysisResults({
     reasoningSummaryType,
     setReasoningSummaryType,
     isGPT5ReasoningModel,
+    includeGridImages,
+    setIncludeGridImages,
   };
 }
 

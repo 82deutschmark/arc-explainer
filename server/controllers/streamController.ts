@@ -88,6 +88,7 @@ function buildPayloadFromBody(body: any): { payload?: StreamAnalysisPayload; err
   const retryMode = parseBoolean(body?.retryMode);
   const originalExplanationId = parseNumber(body?.originalExplanationId);
   const customChallenge = ensureString(body?.customChallenge);
+  const includeGridImages = parseBoolean(body?.includeGridImages);
 
   const rawPromptOptions = isPlainObject(body?.options) ? (body.options as Record<string, unknown>) : undefined;
   const promptOptions: PromptOptions = {};
@@ -268,6 +269,7 @@ function buildPayloadFromBody(body: any): { payload?: StreamAnalysisPayload; err
     originalExplanationId,
     originalExplanation,
     customChallenge,
+    includeGridImages: includeGridImages === true,
   };
 
   return { payload, errors };

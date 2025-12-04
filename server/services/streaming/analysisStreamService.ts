@@ -40,6 +40,7 @@ export interface StreamAnalysisPayload {
   customChallenge?: string;
   createdAt?: number;
   expiresAt?: number;
+  includeGridImages?: boolean;
 }
 
 export const PENDING_SESSION_TTL_SECONDS = 60;
@@ -239,6 +240,7 @@ export class AnalysisStreamService {
           originalExplanationId: payload.originalExplanationId,
           customChallenge: payload.customChallenge,
           previousResponseId: baseServiceOpts.previousResponseId,
+          includeGridImages: payload.includeGridImages,
         },
         streamHarness,
         baseServiceOpts
