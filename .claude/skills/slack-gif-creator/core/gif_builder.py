@@ -223,7 +223,7 @@ class GIFBuilder:
         }
 
         # Print info
-        print(f"\n✓ GIF created successfully!")
+        print(f"\n[OK] GIF created successfully!")
         print(f"  Path: {output_path}")
         print(f"  Size: {file_size_kb:.1f} KB ({file_size_mb:.2f} MB)")
         print(f"  Dimensions: {self.width}x{self.height}")
@@ -233,10 +233,10 @@ class GIFBuilder:
 
         # Warnings
         if optimize_for_emoji and file_size_kb > 64:
-            print(f"\n⚠️  WARNING: Emoji file size ({file_size_kb:.1f} KB) exceeds 64 KB limit")
+            print(f"\n[WARN] Emoji file size ({file_size_kb:.1f} KB) exceeds 64 KB limit")
             print("   Try: fewer frames, fewer colors, or simpler design")
         elif not optimize_for_emoji and file_size_kb > 2048:
-            print(f"\n⚠️  WARNING: File size ({file_size_kb:.1f} KB) is large for Slack")
+            print(f"\n[WARN] File size ({file_size_kb:.1f} KB) is large for Slack")
             print("   Try: fewer frames, smaller dimensions, or fewer colors")
 
         return info
