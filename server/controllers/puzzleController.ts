@@ -92,7 +92,8 @@ export const puzzleController = {
       retryMode: req.body.retryMode || false,
       originalExplanation: req.body.originalExplanation, // For debate mode
       customChallenge: req.body.customChallenge, // For debate mode
-      previousResponseId: req.body.previousResponseId // For conversation chaining
+      previousResponseId: req.body.previousResponseId, // For conversation chaining
+      includeGridImages: req.body.includeGridImages === true
     };
     
     const result = await puzzleAnalysisService.analyzePuzzle(taskId, model, options);
