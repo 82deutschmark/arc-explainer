@@ -625,7 +625,7 @@ export default function PoetiqSolver() {
             <section className="grid gap-4 lg:grid-cols-3">
               <div
                 className={`space-y-4 ${
-                  showRawEvents || (isDone && resultSummary) ? 'lg:col-span-2' : 'lg:col-span-3'
+                  showRawEvents ? 'lg:col-span-2' : 'lg:col-span-3'
                 }`}
               >
                 {hasEventLog && (
@@ -681,85 +681,46 @@ export default function PoetiqSolver() {
                 )}
               </div>
 
-              {(showRawEvents || (isDone && resultSummary)) && (
+              {showRawEvents && (
                 <div className="space-y-4">
-                  {showRawEvents && (
-                    <div className="flex max-h-64 flex-col overflow-hidden rounded-2xl border border-slate-300 bg-white shadow-sm">
-                      <div className="sticky top-0 flex items-center justify-between border-b border-slate-200 bg-slate-100 px-4 py-2">
-                        <div className="flex items-center gap-2">
-                          <FileJson className="w-4 h-4 text-slate-700" />
-                          <span className="text-sm font-bold text-slate-800">RAW EVENTS</span>
-                          <span className="text-xs text-slate-500">({latestRawEvents.length} recent)</span>
-                        </div>
-                      </div>
-                      <div className="flex-1 space-y-2 overflow-y-auto bg-slate-50 p-3 text-xs font-mono">
-                        {latestRawEvents.length === 0 ? (
-                          <div className="py-4 text-center text-slate-500">Waiting for events...</div>
-                        ) : (
-                          latestRawEvents.map((event, idx) => {
-                            const payloadText = JSON.stringify(event.payload, null, 2);
-                            const clippedPayload =
-                              payloadText.length > 1500 ? `${payloadText.slice(0, 1500)}...` : payloadText;
-                            return (
-                              <div key={`${event.timestamp}-${idx}`} className="rounded border border-slate-200 bg-white p-2">
-                                <div className="mb-1 flex items-center justify-between text-[11px] text-slate-500">
-                                  <div className="flex items-center gap-2">
-                                    <span className="font-semibold text-slate-700">{event.type}</span>
-                                    {event.phase && (
-                                      <span className="rounded bg-slate-200 px-1.5 py-0.5 text-slate-700">
-                                        {event.phase}
-                                      </span>
-                                    )}
-                                  </div>
-                                  <span>{formatTimestamp(event.timestamp)}</span>
-                                </div>
-                                <pre className="max-h-32 overflow-y-auto whitespace-pre-wrap rounded bg-slate-950 p-2 text-slate-100">
-                                  {clippedPayload}
-                                </pre>
-                              </div>
-                            );
-                          })
-                        )}
+                  <div className="flex max-h-64 flex-col overflow-hidden rounded-2xl border border-slate-300 bg-white shadow-sm">
+                    <div className="sticky top-0 flex items-center justify-between border-b border-slate-200 bg-slate-100 px-4 py-2">
+                      <div className="flex items-center gap-2">
+                        <FileJson className="w-4 h-4 text-slate-700" />
+                        <span className="text-sm font-bold text-slate-800">RAW EVENTS</span>
+                        <span className="text-xs text-slate-500">({latestRawEvents.length} recent)</span>
                       </div>
                     </div>
-                  )}
-
-                  {isDone && resultSummary && (
-                    <div
-                      className={`rounded-xl border-2 px-4 py-3 shadow-sm ${
-                        resultSummary.success ? 'border-green-500 bg-green-50' : 'border-red-500 bg-red-50'
-                      }`}
-                    >
-                      <div className="mb-3 flex items-center gap-3">
-                        <div
-                          className={`flex h-10 w-10 items-center justify-center rounded-full ${
-                            resultSummary.success ? 'bg-white text-green-600' : 'bg-white text-red-600'
-                          }`}
-                        >
-                          <span className="text-xl">{resultSummary.success ? '✓' : '✗'}</span>
-                        </div>
-                        <div>
-                          <div
-                            className={`text-lg font-bold ${
-                              resultSummary.success ? 'text-green-800' : 'text-red-700'
-                            }`}
-                          >
-                            {resultSummary.success ? 'SOLVED' : 'NOT SOLVED'}
-                          </div>
-                          <div className="text-xs text-slate-600">
-                            {resultSummary.iterations} iter
-                            {resultSummary.trainScore !== undefined &&
-                              ` • ${(resultSummary.trainScore * 100).toFixed(0)}% train`}
-                          </div>
-                        </div>
-                      </div>
-                      {resultSummary.code && (
-                        <pre className="max-h-48 overflow-auto rounded bg-slate-950 p-2 font-mono text-xs text-green-400">
-                          {resultSummary.code}
-                        </pre>
+                    <div className="flex-1 space-y-2 overflow-y-auto bg-slate-50 p-3 text-xs font-mono">
+                      {latestRawEvents.length === 0 ? (
+                        <div className="py-4 text-center text-slate-500">Waiting for events...</div>
+                      ) : (
+                        latestRawEvents.map((event, idx) => {
+                          const payloadText = JSON.stringify(event.payload, null, 2);
+                          const clippedPayload =
+                            payloadText.length > 1500 ? `${payloadText.slice(0, 1500)}...` : payloadText;
+                          return (
+                            <div key={`${event.timestamp}-${idx}`} className="rounded border border-slate-200 bg-white p-2">
+                              <div className="mb-1 flex items-center justify-between text-[11px] text-slate-500">
+                                <div className="flex items-center gap-2">
+                                  <span className="font-semibold text-slate-700">{event.type}</span>
+                                  {event.phase && (
+                                    <span className="rounded bg-slate-200 px-1.5 py-0.5 text-slate-700">
+                                      {event.phase}
+                                    </span>
+                                  )}
+                                </div>
+                                <span>{formatTimestamp(event.timestamp)}</span>
+                              </div>
+                              <pre className="max-h-32 overflow-y-auto whitespace-pre-wrap rounded bg-slate-950 p-2 text-slate-100">
+                                {clippedPayload}
+                              </pre>
+                            </div>
+                          );
+                        })
                       )}
                     </div>
-                  )}
+                  </div>
                 </div>
               )}
             </section>
@@ -803,6 +764,43 @@ export default function PoetiqSolver() {
                       </div>
                     ))}
                   </div>
+                </div>
+              )}
+
+              {isDone && resultSummary && (
+                <div
+                  className={`rounded-xl border-2 px-4 py-3 shadow-sm ${
+                    resultSummary.success ? 'border-green-500 bg-green-50' : 'border-red-500 bg-red-50'
+                  }`}
+                >
+                  <div className="mb-3 flex items-center gap-3">
+                    <div
+                      className={`flex h-10 w-10 items-center justify-center rounded-full ${
+                        resultSummary.success ? 'bg-white text-green-600' : 'bg-white text-red-600'
+                      }`}
+                    >
+                      <span className="text-xl">{resultSummary.success ? '✓' : '✗'}</span>
+                    </div>
+                    <div>
+                      <div
+                        className={`text-lg font-bold ${
+                          resultSummary.success ? 'text-green-800' : 'text-red-700'
+                        }`}
+                      >
+                        {resultSummary.success ? 'SOLVED' : 'NOT SOLVED'}
+                      </div>
+                      <div className="text-xs text-slate-600">
+                        {resultSummary.iterations} iter
+                        {typeof resultSummary.trainScore === 'number' &&
+                          ` • ${(resultSummary.trainScore * 100).toFixed(0)}% train`}
+                      </div>
+                    </div>
+                  </div>
+                  {(resultSummary.code || streamingCode) && (
+                    <pre className="max-h-48 overflow-auto rounded bg-slate-950 p-2 font-mono text-xs text-green-400">
+                      {resultSummary.code || streamingCode}
+                    </pre>
+                  )}
                 </div>
               )}
 
