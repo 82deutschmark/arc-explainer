@@ -1,6 +1,13 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top with the time and date!
 
+### Version 5.36.8  Dec 3, 2025 9:55pm
+
+- **DeepSeek: Enhanced provider error logging** (Author: Cascade)
+  - Added DeepSeek-specific error handling that records HTTP status, provider error code, error type, and a truncated copy of the provider response body when DeepSeek API calls fail.
+  - Delegates back to the shared BaseAIService error handler so existing error propagation and Express middleware behavior remain unchanged while logs now surface the root cause behind generic "terminated" errors.
+  - **Files**: `server/services/deepseek.ts`
+
 ### Version 5.36.7  Dec 3, 2025 5:45pm
 
 - **Poetiq UI: Telemetry-first cleanup** (Author: Codex)
