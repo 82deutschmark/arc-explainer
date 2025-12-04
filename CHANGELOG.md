@@ -3,9 +3,8 @@
 
 ### Version 5.36.14  Dec 4, 2025 12:00am
 
-- **PuzzleBrowser: Add CTA button to view all unsolved puzzles** (Author: Claude Code using Haiku 4.5)
-  - Added a prominent "View All Unsolved Puzzles" call-to-action section after the featured gallery on the main PuzzleBrowser page that links to `/puzzle-db-viewer`.
-  - This provides users with an easy navigation path from the featured puzzles to the comprehensive database of all unsolved ARC1 and ARC2 evaluation puzzles.
+- **PuzzleBrowser: Add button to view unsolved ARC1/ARC2 puzzles** (Author: Claude Code using Haiku 4.5)
+  - Added simple button after featured gallery linking to `/puzzle-db-viewer` for browsing all unsolved ARC1 and ARC2 evaluation puzzles.
   - **Files**: `client/src/pages/PuzzleBrowser.tsx`
 
 ### Version 5.36.13  Dec 3, 2025 11:20pm
