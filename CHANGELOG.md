@@ -1,6 +1,14 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top with the time and date!
 
+### Version 5.38.1  Dec 4, 2025 7:25pm
+
+- **PuzzleCard: Fix test count display to show actual test cases instead of prediction count** (Author: Claude Code using Haiku 4.5)
+  - Fixed bug where puzzle cards always showed "Tests Single" regardless of actual test case count
+  - Changed test display logic from checking `puzzle.hasMultiplePredictions` (which tracks AI predictions) to checking actual `taskData.test.length` from loaded puzzle data
+  - Now correctly displays "Single" for puzzles with 1 test case, or the actual count (e.g., "2", "3") for puzzles with multiple test cases
+  - **Files**: `client/src/components/puzzle/PuzzleCard.tsx:224`
+
 ### Version 5.38.0  Dec 4, 2025 7:15pm
 
 - **Puzzle Analysis: Add vision model support with grid image inclusion** (Author: Claude Code using Haiku 4.5)
