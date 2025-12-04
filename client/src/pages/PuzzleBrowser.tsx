@@ -349,17 +349,13 @@ export default function PuzzleBrowser() {
           )}
         </section>
 
-        {/* View All Unsolved Puzzles CTA */}
-        <section className="w-full rounded-lg border border-purple-800 bg-purple-900/20 p-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <div className="text-xs text-slate-200">
-            <p className="font-semibold text-purple-300">Ready to tackle the unsolved puzzles?</p>
-            <p className="text-slate-400 mt-1">View all unsolved ARC1 and ARC2 evaluation puzzles with detailed performance metrics and research insights.</p>
-          </div>
+        {/* View All Unsolved Puzzles */}
+        <section className="w-full rounded-lg border border-slate-700 bg-slate-900/40 p-2 flex items-center justify-between">
           <Link
             href="/puzzle-db-viewer"
-            className="btn btn-sm border border-purple-500 bg-purple-900/40 text-purple-200 hover:border-purple-400 hover:bg-purple-900/60 hover:text-purple-100 whitespace-nowrap"
+            className="btn btn-sm border border-slate-600 bg-slate-800 text-slate-100 hover:border-slate-500 hover:bg-slate-700"
           >
-            View All Unsolved Puzzles →
+            See puzzles from ARC 1 and 2, which have not been solved yet
           </Link>
         </section>
 
