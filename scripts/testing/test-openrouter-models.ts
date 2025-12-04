@@ -41,7 +41,7 @@ const OPENROUTER_MODELS_TO_TEST = [
   'cohere/command-r-plus',
   'baidu/ernie-4.5-vl-28b-a3b',
   'nousresearch/hermes-4-70b',
-  'mistralai/mistral-large',
+  'mistralai/mistral-large-2512',
   'deepseek/deepseek-chat-v3.1',
   'openai/gpt-oss-120b',
   'mistralai/codestral-2508',

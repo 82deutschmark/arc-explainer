@@ -157,7 +157,7 @@ function displayResults(puzzleResults: PuzzleResult[], puzzleStatus: PuzzleStatu
   console.log(`✅ SOLVED (${puzzleStatus.solved.length} puzzles):`);
   puzzleStatus.solved.forEach(puzzle => console.log(`   • ${puzzle}`));
 
-  console.log(`\n🔄 TESTED BUT NOT SOLVED (${puzzleStatus.tested_but_not_solved.length} puzzles):`);
+  console.log(`\n🔄 TESTED BUT INCORRECT (${puzzleStatus.tested_but_not_solved.length} puzzles):`);
   puzzleStatus.tested_but_not_solved.forEach(puzzle => console.log(`   • ${puzzle}`));
 
   console.log(`\n❓ NOT TESTED (${puzzleStatus.not_tested.length} puzzles):`);

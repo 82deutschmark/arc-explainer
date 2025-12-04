@@ -74,7 +74,8 @@ const ARC2_EVAL_UNTESTED = [
 ];
 
 const OPENROUTER_SERVER_KEY_MODELS = new Set<string>([
-  'openrouter/bert-nebulon-alpha',
+  'openrouter/mistralai/mistral-large-2512',
+  'mistralai/mistral-large-2512',
   'openrouter/kwaipilot/kat-coder-pro:free',
   'kwaipilot/kat-coder-pro:free',
   'openrouter/arcee-ai/trinity-mini:free',
@@ -487,7 +488,7 @@ export const poetiqController = {
       // Other via OpenRouter (BYO required)
       { id: 'openrouter/google/gemini-2.5-flash-preview-09-2025', name: 'Gemini 2.5 Flash', provider: 'OpenRouter', recommended: false, routing: 'openrouter', requiresBYO: true },
       { id: 'openrouter/anthropic/claude-sonnet-4', name: 'Claude Sonnet 4', provider: 'OpenRouter', recommended: false, routing: 'openrouter', requiresBYO: true },
-      { id: 'openrouter/bert-nebulon-alpha', name: 'Bert Nebulon Alpha (Cloaked)', provider: 'OpenRouter', recommended: false, routing: 'openrouter', requiresBYO: false },
+      { id: 'openrouter/mistralai/mistral-large-2512', name: 'Mistral Large 2512', provider: 'OpenRouter', recommended: false, routing: 'openrouter', requiresBYO: false },
       { id: 'openrouter/kwaipilot/kat-coder-pro:free', name: 'Kat Coder Pro (Free)', provider: 'OpenRouter', recommended: false, routing: 'openrouter', requiresBYO: false },
       // Free OpenRouter arena models (December 2025 drop)
       { id: 'openrouter/arcee-ai/trinity-mini:free', name: 'Arcee Trinity Mini (Free)', provider: 'OpenRouter', recommended: false, routing: 'openrouter', requiresBYO: false },

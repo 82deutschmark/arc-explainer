@@ -199,7 +199,7 @@ export const PROVIDER_GROUPS: ProviderGroup[] = [
         name: 'Mistral',
         description: 'Mistral AI models',
         modelKeys: [
-          'mistralai/mistral-large',
+          'mistralai/mistral-large-2512',
           'mistralai/codestral-2508'
         ]
       },

@@ -787,7 +787,7 @@ export default function PoetiqSolver() {
                           resultSummary.success ? 'text-green-800' : 'text-red-700'
                         }`}
                       >
-                        {resultSummary.success ? 'SOLVED' : 'NOT SOLVED'}
+                        {resultSummary.success ? 'CORRECT' : 'INCORRECT'}
                       </div>
                       <div className="text-xs text-slate-600">
                         {resultSummary.iterations} iter
