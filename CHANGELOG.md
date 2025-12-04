@@ -1,6 +1,16 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top with the time and date!
 
+### Version 5.36.7  Dec 3, 2025 5:45pm
+
+- **Poetiq UI: Telemetry-first cleanup** (Author: Codex)
+  - Rebuilt `PoetiqLiveDashboard` so it now focuses solely on the active model/provider, tokens in/out/total, total cost, iteration progress, and the latest solver message.
+  - Removed the Poetiq Agents Runtime panel entirely and re-ordered the solver layout so the Event Log, Raw Events panel, and final result card render directly under the header, while the Python terminal only appears once it has data (no more empty black box).
+  - **Files**: `client/src/components/poetiq/PoetiqLiveDashboard.tsx`, `client/src/pages/PoetiqSolver.tsx`, `client/src/components/poetiq/PoetiqAgentsRuntimePanel.tsx`
+- **Docs: Capture Poetiq solver UI plan** (Author: Codex)
+  - Added a quick planning note describing the telemetry-first redesign.
+  - **Files**: `docs/2025-12-03-poetiq-solver-ui-plan.md`
+
 ### Version 5.36.6  Dec 3, 2025 5:15pm
 
 - **Poetiq UI: Move real telemetry above the fold** (Author: Cascade)
