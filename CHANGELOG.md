@@ -1,10 +1,20 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top with the time and date!
 
-### Version 5.36.15  Dec 4, 2025 4:30pm
+### Version 5.36.15  Dec 4, 2025 5:00pm
+
+- **PuzzleBrowser: Redesign layout, improve typography, and fix UX issues** (Author: Claude Code using Haiku 4.5)
+  - Moved "Open Research Browser" button to header next to "Featured ARC puzzles" heading with shadcn/ui Button component for better visibility
+  - Moved "See puzzles from ARC 1 and 2..." button to the bottom of featured section inside the card with separator
+  - Increased font sizes throughout page: all labels from text-xs to text-sm, working notes from text-xs to text-sm, status badges from text-xs to text-sm
+  - Replaced generic btn styling with shadcn/ui Button component for consistency
+  - Fixed broken external link in working notes section
+  - **Files**: `client/src/pages/PuzzleBrowser.tsx`
+
+### Version 5.36.14  Dec 4, 2025 4:30pm
 
 - **Docs: Refresh README with recent streaming, solver, and puzzle browser updates** (Author: Cascade)
-  - Updated the top-level README version and "What’s New" section to summarize recent Poetiq/BeeTree streaming improvements, puzzle database browsing tools, and debate/discussion UX tweaks in plain language for new visitors.
+  - Updated the top-level README version and "What's New" section to summarize recent Poetiq/BeeTree streaming improvements, puzzle database browsing tools, and debate/discussion UX tweaks in plain language for new visitors.
   - Added short notes about SnakeArena/SnakeBench integration, unsolved puzzle database view, and multi-provider streaming so the front page reflects current capabilities instead of older v5.1.0 highlights.
   - **Files**: `README.md`, `CHANGELOG.md`
 
