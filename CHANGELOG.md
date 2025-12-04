@@ -1,6 +1,13 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top with the time and date!
 
+### Version 5.36.15  Dec 4, 2025 4:30pm
+
+- **Docs: Refresh README with recent streaming, solver, and puzzle browser updates** (Author: Cascade)
+  - Updated the top-level README version and "What’s New" section to summarize recent Poetiq/BeeTree streaming improvements, puzzle database browsing tools, and debate/discussion UX tweaks in plain language for new visitors.
+  - Added short notes about SnakeArena/SnakeBench integration, unsolved puzzle database view, and multi-provider streaming so the front page reflects current capabilities instead of older v5.1.0 highlights.
+  - **Files**: `README.md`, `CHANGELOG.md`
+
 ### Version 5.36.14  Dec 4, 2025 12:00am
 
 - **PuzzleBrowser: Add button to view unsolved ARC1/ARC2 puzzles** (Author: Claude Code using Haiku 4.5)

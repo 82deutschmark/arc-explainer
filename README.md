@@ -2,7 +2,7 @@
  
 ![ARC Puzzle 08573cc6](.claude/skills/slack-gif-creator/arc_puzzle_08573cc6.gif)
 
-**Version 5.1.0** — November 6, 2025
+**Version 5.36.15** — December 4, 2025
 
 
 A hobby platform for analyzing Abstract Reasoning Corpus (ARC-AGI) puzzles using state-of-the-art LLMs with reasoning capture, conversation chaining, and comprehensive performance analytics.
