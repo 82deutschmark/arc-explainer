@@ -276,7 +276,7 @@ export default function PoetiqStreamingVisualizer({
                   <div className={`text-xl font-bold ${
                     state.result.isPredictionCorrect ? 'text-green-300' : 'text-red-300'
                   }`}>
-                    {state.result.isPredictionCorrect ? 'SOLVED!' : 'UNSOLVED'}
+                    {state.result.isPredictionCorrect ? 'CORRECT!' : 'INCORRECT'}
                   </div>
                   <div className="text-white/70 text-sm">
                     {state.result.iterationCount} iterations - {Math.round((state.result.elapsedMs || 0) / 1000)}s

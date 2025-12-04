@@ -1,6 +1,14 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top with the time and date!
 
+### Version 5.36.10  Dec 3, 2025 10:23pm
+
+- **Model Config: Mistral Large 2512** (Author: Cascade)
+  - Updated the shared models catalog and Poetiq model list to use the official `mistralai/mistral-large-2512` identifier with a 262,144 token context window and $0.50 / $1.50 pricing.
+  - Replaced the previous cloaked OpenRouter arena id in all active configs so analytics, Poetiq runs, and UI model groups now present only the official model name going forward.
+  - Removed the now-unused name-normalization rule for the old cloaked id, since we no longer treat it as a separate model in code.
+  - **Files**: `server/config/models.ts`, `server/controllers/poetiqController.ts`, `shared/modelGroups.ts`, `scripts/testing/test-openrouter-models.ts`, `server/utils/modelNormalizer.ts`, `CHANGELOG.md`
+
 ### Version 5.36.9  Dec 3, 2025 10:15pm
 
 - **Poetiq Solver: Add Free OpenRouter Arena Models** (Author: Codex)
@@ -22,9 +30,9 @@
   - Rebuilt `PoetiqLiveDashboard` so it now focuses solely on the active model/provider, tokens in/out/total, total cost, iteration progress, and the latest solver message.
   - Removed the Poetiq Agents Runtime panel entirely and re-ordered the solver layout so the Event Log, Raw Events panel, and final result card render directly under the header, while the Python terminal only appears once it has data (no more empty black box).
   - **Files**: `client/src/components/poetiq/PoetiqLiveDashboard.tsx`, `client/src/pages/PoetiqSolver.tsx`, `client/src/components/poetiq/PoetiqAgentsRuntimePanel.tsx`
-- **Poetiq Result Card: Restore code preview** (Author: Codex)
-  - The SOLVED / NOT SOLVED card again embeds the final `transform()` code (with streaming fallback) so users can copy the winning Python without opening other panels, while the raw-events column stays unchanged.
-  - **Files**: `client/src/pages/PoetiqSolver.tsx`
+- **Poetiq Result Card: Restore code preview + standard wording** (Author: Codex)
+  - The CORRECT / INCORRECT card again embeds the final `transform()` code (with streaming fallback) so users can copy the winning Python without opening other panels, while the raw-events column stays unchanged.
+  - **Files**: `client/src/pages/PoetiqSolver.tsx`, `client/src/components/poetiq/PoetiqStreamingVisualizer.tsx`, `client/src/components/poetiq/PoetiqStreamingModal.tsx`, `puzzle-analysis.ts`
 - **Docs: Capture Poetiq solver UI plan** (Author: Codex)
   - Added a quick planning note describing the telemetry-first redesign.
   - **Files**: `docs/2025-12-03-poetiq-solver-ui-plan.md`

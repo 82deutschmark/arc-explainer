@@ -567,18 +567,19 @@ export const MODELS: ModelConfig[] = [
   },
   
   {
-    key: 'mistralai/mistral-large',
-    name: 'Mistral Large',
+    key: 'mistralai/mistral-large-2512',
+    name: 'Mistral Large 2512',
     color: 'bg-purple-600',
     premium: true,
-    cost: { input: '$2.00', output: '$6.00' },
+    cost: { input: '$0.50', output: '$1.50' },
     supportsTemperature: true,
     provider: 'OpenRouter',
     responseTime: { speed: 'moderate', estimate: '1-2 min' },
     isReasoning: true,
-    apiModelName: 'mistralai/mistral-large',
+    apiModelName: 'mistralai/mistral-large-2512',
     modelType: 'openrouter',
-    contextWindow: 128000
+    contextWindow: 262144,
+    releaseDate: "2025-12"
   },
   {
     key: 'deepseek/deepseek-chat-v3.1',
@@ -1015,22 +1016,6 @@ export const MODELS: ModelConfig[] = [
   },
 
   // Cloaked Models (OpenRouter Arena - identity TBD)
-  {
-    key: 'openrouter/bert-nebulon-alpha',
-    name: 'Bert Nebulon Alpha',
-    color: 'bg-slate-500',
-    premium: false,
-    cost: { input: '$0.00', output: '$0.00' },
-    supportsTemperature: true,
-    provider: 'OpenRouter',
-    responseTime: { speed: 'moderate', estimate: '1-2 min' },
-    isReasoning: false,
-    apiModelName: 'openrouter/bert-nebulon-alpha',
-    modelType: 'openrouter',
-    contextWindow: 256000,
-    releaseDate: "2025-11",
-    notes: 'Cloaked model (Nov 24, 2025). Identity TBD. Add normalizer mapping when revealed.'
-  },
   {
     key: 'kwaipilot/kat-coder-pro:free',
     name: 'Kat Coder Pro (Free)',
