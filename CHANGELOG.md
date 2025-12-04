@@ -1,6 +1,12 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top with the time and date!
 
+### Version 5.36.11  Dec 3, 2025 10:40pm
+
+- **PuzzleDBViewer: Show test outputs in TinyGrid previews** (Author: Codex)
+  - Updated the compact puzzle cards on `/puzzles/database` to render the first test output (with sensible fallbacks) instead of the first training input so researchers see the actual evaluation targets.
+  - **Files**: `client/src/pages/PuzzleDBViewer.tsx`
+
 ### Version 5.36.10  Dec 3, 2025 10:23pm
 
 - **Model Config: Mistral Large 2512** (Author: Cascade)

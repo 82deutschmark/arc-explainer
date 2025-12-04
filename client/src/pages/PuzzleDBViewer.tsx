@@ -178,7 +178,12 @@ function CompactPuzzleCard({ puzzle }: CompactPuzzleCardProps) {
       });
   }, [isVisible, puzzle.id, taskData]);
 
-  const firstTrainingExample = taskData?.train?.[0]?.input;
+  // Prefer the first TEST output grid so researchers see actual evaluation targets.
+  const firstPuzzleGrid =
+    taskData?.test?.[0]?.output ??
+    taskData?.test?.[0]?.input ??
+    taskData?.train?.[0]?.output ??
+    taskData?.train?.[0]?.input;
 
   return (
     <div
@@ -199,10 +204,10 @@ function CompactPuzzleCard({ puzzle }: CompactPuzzleCardProps) {
 
         <div className="flex gap-2">
           {/* TinyGrid Preview */}
-          {firstTrainingExample && (
+          {firstPuzzleGrid && (
             <div className="shrink-0" style={{ width: '64px', height: '64px' }}>
               <TinyGrid
-                grid={firstTrainingExample}
+                grid={firstPuzzleGrid}
                 style={{ width: '64px', height: '64px' }}
               />
             </div>
