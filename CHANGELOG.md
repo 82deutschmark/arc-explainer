@@ -1,6 +1,16 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top with the time and date!
 
+### Version 5.36.16  Dec 4, 2025 5:30pm
+
+- **Slack GIF Creator: Optimize animation speed and dynamic grid scaling** (Author: Claude Code using Haiku 4.5)
+  - Reduced default FPS from 15 to 8 for slower, more deliberate animation in ARC puzzle GIFs
+  - Implemented dynamic grid cell sizing based on puzzle dimensions: 3×3 grids get ~24px cells, 30×30 grids get ~6px cells for consistent readability
+  - Auto-calculated frame sizes to properly fit grids of any size without clipping or excess white space
+  - Fixed Unicode encoding issues on Windows console (replaced emoji characters with ASCII equivalents in print statements)
+  - Generated ARC1_EVAL dataset: 11 animated GIFs (7d419a02, 50f325b5, b9630600, 4ff4c9da, 14754a24, 8b28cd80, c6e1b8da, f3b10344, 212895b5, 16b78196, 0934a4d8)
+  - **Files**: `.claude/skills/slack-gif-creator/core/gif_builder.py`, `.claude/skills/slack-gif-creator/core/validators.py`, `.claude/skills/slack-gif-creator/create_arc_puzzle_gif.py`, `.claude/skills/slack-gif-creator/ARC1_EVAL/` (new folder with 11 GIF files)
+
 ### Version 5.36.15  Dec 4, 2025 5:00pm
 
 - **PuzzleBrowser: Redesign layout, improve typography, and fix UX issues** (Author: Claude Code using Haiku 4.5)
