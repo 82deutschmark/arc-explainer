@@ -268,6 +268,46 @@ export class ContributorRepository extends BaseRepository {
   }
 
   /**
+   * Upsert a contributor by fullName - insert if not exists, update if exists.
+   * Safe for auto-sync on server startup.
+   */
+  async upsertContributor(data: CreateContributorRequest): Promise<ArcContributor> {
+    try {
+      // Try to find existing contributor by full name
+      const existing = await this.query(
+        `SELECT id FROM arc_contributors WHERE full_name = $1`,
+        [data.fullName]
+      );
+
+      if (existing.rows.length > 0) {
+        // Update existing contributor
+        const updated = await this.updateContributor(existing.rows[0].id, data);
+        if (updated) return updated;
+        throw new Error('Update failed unexpectedly');
+      } else {
+        // Insert new contributor
+        return await this.createContributor(data);
+      }
+    } catch (error) {
+      logger.error(`Failed to upsert contributor ${data.fullName}: ${error instanceof Error ? error.message : String(error)}`, 'contributor-repository');
+      throw error;
+    }
+  }
+
+  /**
+   * Get the count of contributors in the table
+   */
+  async getContributorCount(): Promise<number> {
+    try {
+      const result = await this.query(`SELECT COUNT(*) as count FROM arc_contributors`);
+      return parseInt(result.rows[0].count, 10);
+    } catch (error) {
+      logger.error(`Failed to get contributor count: ${error instanceof Error ? error.message : String(error)}`, 'contributor-repository');
+      return 0;
+    }
+  }
+
+  /**
    * Get count of contributors by category
    */
   async getCountsByCategory(): Promise<Record<string, number>> {
