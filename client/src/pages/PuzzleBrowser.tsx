@@ -19,6 +19,7 @@ import { ReferenceMaterial } from '@/components/browser/ReferenceMaterial';
 import type { PuzzleMetadata } from '@shared/types';
 import type { PuzzleDBStats, PuzzlePerformanceData } from '@/hooks/usePuzzleDBStats';
 import { CompactPuzzleCard } from '@/components/puzzle/CompactPuzzleCard';
+import { usePuzzleDBStats } from '@/hooks/usePuzzleDBStats';
 import { usePageMeta } from '@/hooks/usePageMeta';
 
 const HERO_STREAMER_PATTERN = [
@@ -149,6 +150,16 @@ export default function PuzzleBrowser() {
   }, [maxGridSize, gridSizeConsistent, arcVersion, multiTestFilter]);
 
   const { puzzles, isLoading, error } = usePuzzleList(filters);
+  const { data: puzzleStats = [] } = usePuzzleDBStats();
+  const puzzleStatsMap = React.useMemo(
+    () => new Map(puzzleStats.map((stat: PuzzleDBStats) => [stat.id, stat])),
+    [puzzleStats]
+  );
+
+  const getStatsForPuzzle = React.useCallback(
+    (puzzle: EnhancedPuzzleMetadata) => puzzleStatsMap.get(puzzle.id) ?? toCompactStats(puzzle),
+    [puzzleStatsMap]
+  );
 
   // Fetch ALL puzzles with NO filters for featured section
   const { puzzles: allPuzzles, isLoading: allPuzzlesLoading } = usePuzzleList({});
