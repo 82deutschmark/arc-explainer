@@ -136,6 +136,7 @@ const contributors: CreateContributorRequest[] = [
     affiliation: 'Independent Researcher',
     achievement: '2nd Place ARC Prize 2024 - 40% accuracy',
     description: 'Achieved second place in ARC Prize 2024 with Omni-ARC approach combining multiple solving techniques.',
+    imageUrl: '/guillermo.png',
     yearStart: 2024,
     yearEnd: 2024,
     score: '40% (2nd Place)',
@@ -407,6 +408,50 @@ const contributors: CreateContributorRequest[] = [
   }
 ];
 
+/**
+ * Sync contributors using upsert - safe to run on every server startup.
+ * Inserts new contributors and updates existing ones by fullName.
+ * Never deletes data - only adds or updates.
+ */
+export async function syncContributors(): Promise<void> {
+  const repo = new ContributorRepository();
+
+  try {
+    const existingCount = await repo.getContributorCount();
+    logger.info(`Syncing contributors (${existingCount} existing, ${contributors.length} in source)...`, 'contributor-sync');
+
+    let inserted = 0;
+    let updated = 0;
+
+    for (const contributor of contributors) {
+      try {
+        const existing = await repo.getAllContributors();
+        const wasExisting = existing.some(c => c.fullName === contributor.fullName);
+        
+        await repo.upsertContributor(contributor);
+        
+        if (wasExisting) {
+          updated++;
+        } else {
+          inserted++;
+        }
+      } catch (error) {
+        logger.error(`✗ Failed to sync ${contributor.fullName}: ${error}`, 'contributor-sync');
+      }
+    }
+
+    logger.info(`Contributor sync complete: ${inserted} inserted, ${updated} updated`, 'contributor-sync');
+
+  } catch (error) {
+    logger.error(`Contributor sync failed: ${error}`, 'contributor-sync');
+    // Don't throw - sync failure shouldn't crash the server
+  }
+}
+
+/**
+ * Full database seed (destructive) - clears table and reinserts all.
+ * Use this for manual resets only.
+ */
 async function seedDatabase() {
   // Initialize the database connection
   const initialized = await initializeDatabase();
@@ -419,7 +464,7 @@ async function seedDatabase() {
   const repo = new ContributorRepository();
 
   try {
-    logger.info('Starting contributor database seeding...', 'seed');
+    logger.info('Starting contributor database seeding (destructive)...', 'seed');
 
     // Clear existing data first to ensure updates are applied
     await repo.deleteAllContributors();
@@ -454,12 +499,17 @@ async function seedDatabase() {
   }
 }
 
-// Run the seed function
-seedDatabase()
-  .then(() => {
-    process.exit(0);
-  })
-  .catch((error) => {
-    console.error('Seeding error:', error);
-    process.exit(1);
-  });
+// Only run seedDatabase() when this script is executed directly (not imported)
+// Check if this module is the main entry point
+const isMainModule = import.meta.url === `file:///${process.argv[1].replace(/\\/g, '/')}`;
+
+if (isMainModule) {
+  seedDatabase()
+    .then(() => {
+      process.exit(0);
+    })
+    .catch((error) => {
+      console.error('Seeding error:', error);
+      process.exit(1);
+    });
+}

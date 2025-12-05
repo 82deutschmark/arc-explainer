@@ -18,6 +18,7 @@ import { repositoryService } from './repositories/RepositoryService.ts';
 import { logger } from './utils/logger.ts';
 import { resolveStreamingConfig } from '@shared/config/streaming';
 import { databaseMaintenance } from './maintenance/dbCleanup.js';
+import { syncContributors } from './scripts/seedContributors.ts';
 import './services/poetiq/PoetiqAgentsRunner.ts';
 
 // Fix for ES modules and bundled code - get the actual current directory
@@ -152,6 +153,13 @@ const initServer = async () => {
       logger.info(`Scheduled database maintenance to run every 6 hours`, 'startup');
     } catch (error) {
       logger.warn(`Initial database maintenance failed (non-fatal): ${error instanceof Error ? error.message : String(error)}`, 'startup');
+    }
+
+    // Sync contributors on startup (upsert-based, safe to run every time)
+    try {
+      await syncContributors();
+    } catch (error) {
+      logger.warn(`Contributor sync failed (non-fatal): ${error instanceof Error ? error.message : String(error)}`, 'startup');
     }
   }
   // Register API routes FIRST

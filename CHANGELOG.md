@@ -13,6 +13,13 @@
   - Updated helper functions with new category colors, icons, and display names.
   - **Files**: `client/src/pages/HumanTradingCards.tsx`, `client/src/utils/humanCardHelpers.ts`, `shared/types/contributor.ts`, `server/scripts/seedContributors.ts`
 
+- **Auto-sync contributors on server startup** (Author: Cascade using Claude 3.5 Sonnet)
+  - Added `upsertContributor` method to ContributorRepository for safe insert-or-update by fullName.
+  - Added `syncContributors()` function that upserts all contributors from seed data without truncating.
+  - Server now automatically syncs contributors on startup (non-destructive, safe for production).
+  - Manual destructive seed (`npx tsx server/scripts/seedContributors.ts`) still available for full resets.
+  - **Files**: `server/repositories/ContributorRepository.ts`, `server/scripts/seedContributors.ts`, `server/index.ts`
+
 ### Version 5.39.1  Dec 5, 2025 2:45pm
 
 - **CompactPuzzleCard refactored to follow PuzzleCard patterns** (Author: Claude Sonnet 4)
