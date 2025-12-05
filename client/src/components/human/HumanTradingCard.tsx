@@ -108,107 +108,65 @@ export const HumanTradingCard: React.FC<HumanTradingCardProps> = ({ contributor 
     <>
       <Dialog>
         <div className="w-full h-full flex flex-col">
-          <div className={`relative rounded-xl border bg-gradient-to-b from-zinc-900 to-zinc-950 ${cardData.colors.borderGradient} flex flex-col overflow-hidden hover:border-zinc-500 transition-all duration-300 shadow-xl hover:shadow-2xl h-full`}>
+          {/* IMAGE-FIRST CARD: Large artwork is the primary focus */}
+          <div className={`relative rounded-xl border ${cardData.colors.borderGradient} overflow-hidden hover:border-zinc-400 transition-all duration-300 shadow-xl hover:shadow-2xl h-full group`}>
             
-            {/* Card Header */}
-            <div className="p-5 flex gap-4 items-start border-b border-zinc-800/50 bg-zinc-900/60 backdrop-blur-sm">
-              {/* Avatar / GIF - Click to view full size */}
-              <Dialog>
-                <DialogTrigger asChild>
-                  <div
-                    className="flex-shrink-0 cursor-pointer hover:opacity-90 hover:scale-[1.03] transition"
-                    aria-label={`Open large portrait of ${contributor.fullName}`}
-                    title="Click portrait to zoom"
-                  >
-                    <ProfileImage className="w-24 h-24" showFeatured={true} />
-                  </div>
-                </DialogTrigger>
-                <DialogContent className="bg-transparent border-none shadow-none p-0 flex items-center justify-center max-w-[90vw] max-h-[90vh]">
-                  <div className="relative">
-                    {selectedImageUrl ? (
-                       <img
-                         src={selectedImageUrl}
-                         alt={contributor.fullName}
-                         className="max-w-[85vw] max-h-[85vh] object-contain rounded-lg shadow-2xl border-2 border-slate-700 bg-black"
-                       />
-                    ) : (
-                       <img
-                         src={gifUrl}
-                         alt="Profile"
-                         className="max-w-[85vw] max-h-[85vh] object-contain image-pixelated rounded-lg shadow-2xl border-2 border-slate-700 bg-black"
-                       />
-                    )}
-                  </div>
-                </DialogContent>
-              </Dialog>
-
-              {/* Name & Title */}
-              <div className="flex-1 min-w-0 pt-1">
-                <h3 className="text-xl font-bold text-zinc-50 truncate leading-tight tracking-tight">
+            {/* LARGE IMAGE - Primary Focus */}
+            <div className="relative aspect-[3/4] w-full bg-black">
+              {selectedImageUrl ? (
+                <img
+                  src={selectedImageUrl}
+                  alt={contributor.fullName}
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <img
+                  src={gifUrl}
+                  alt="Profile"
+                  className="w-full h-full object-cover image-pixelated"
+                />
+              )}
+              
+              {/* Gradient overlay at bottom for text legibility */}
+              <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/90 via-black/50 to-transparent" />
+              
+              {/* Featured badge */}
+              {cardData.featured && (
+                <div className="absolute top-3 right-3 bg-gradient-to-br from-amber-400 to-amber-600 text-zinc-900 rounded-full p-2 shadow-lg shadow-amber-500/30 animate-pulse">
+                  <Sparkles className="w-4 h-4" />
+                </div>
+              )}
+              
+              {/* Category badge */}
+              <div className="absolute top-3 left-3">
+                <Badge variant="outline" className={`${cardData.colors.accentColor} border-opacity-70 uppercase text-[10px] tracking-wider backdrop-blur-sm bg-black/50`}>
+                  {cardData.icon} {cardData.categoryName}
+                </Badge>
+              </div>
+              
+              {/* Name overlay at bottom of image */}
+              <div className="absolute inset-x-0 bottom-0 p-4">
+                <h3 className="text-xl font-bold text-white drop-shadow-lg leading-tight">
                   {contributor.fullName}
                 </h3>
                 {contributor.handle && (
-                  <p className={`text-xs font-mono mb-2 ${cardData.colors.textColor}`}>@{contributor.handle}</p>
+                  <p className={`text-sm font-mono mt-1 ${cardData.colors.textColor}`}>@{contributor.handle}</p>
                 )}
-                
-                <div className="flex items-center gap-2 flex-wrap">
-                  <Badge variant="outline" className={`${cardData.colors.accentColor} border-opacity-50 uppercase text-[10px] tracking-wider`}>
-                    {cardData.icon} {cardData.categoryName}
-                  </Badge>
-                  
-                  {contributor.rank && contributor.rank <= 3 && (
-                    <Badge variant="outline" className="bg-amber-500/10 text-amber-500 border-amber-500/20 uppercase text-[10px] tracking-wider">
-                      Rank #{contributor.rank}
-                    </Badge>
-                  )}
-                </div>
+                {contributor.score && (
+                  <p className={`text-sm font-mono font-bold mt-1 ${cardData.colors.textColor}`}>{contributor.score}</p>
+                )}
               </div>
             </div>
 
-            {/* Content Body */}
-            <div className="p-5 flex-1 flex flex-col gap-5">
-              
-              {/* Key Achievement */}
-              <div className="bg-zinc-800/40 rounded-lg p-4 border border-zinc-700/40">
-                <div className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-2 flex items-center gap-1.5">
-                  <Zap className="w-3 h-3 text-amber-500" /> Achievement
-                </div>
-                <p className="text-sm font-medium text-zinc-200 leading-relaxed">
-                  {contributor.achievement}
-                </p>
-              </div>
-
-              {/* Description Preview */}
-              <div className="flex-1">
-                <div className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-2">Contribution</div>
-                <p className="text-sm text-zinc-400 leading-relaxed line-clamp-3">
-                  {contributor.description}
-                </p>
-              </div>
-
-              {/* Stats Row */}
-              <div className="flex items-center justify-between pt-3 mt-auto border-t border-zinc-800/50">
-                <div className="text-xs">
-                  <span className="text-zinc-500 mr-2">Active:</span>
-                  <span className="text-zinc-300 font-mono">{cardData.yearRange}</span>
-                </div>
-                {contributor.score && (
-                  <div className="text-xs text-right">
-                    <span className="text-zinc-500 mr-2">Score:</span>
-                    <span className={`font-mono font-bold ${cardData.colors.textColor}`}>{contributor.score}</span>
-                  </div>
-                )}
-              </div>
-
-              {/* View Full Profile Button (Modal Trigger) */}
+            {/* Minimal footer with View Profile button */}
+            <div className="p-3 bg-zinc-900/95">
               <DialogTrigger asChild>
                 <button 
-                  className="w-full mt-3 py-2.5 flex items-center justify-center gap-2 text-xs font-semibold uppercase tracking-wider rounded-lg transition-all bg-zinc-800/60 text-zinc-400 hover:bg-zinc-700 hover:text-zinc-200 border border-zinc-700/50 hover:border-zinc-600"
+                  className="w-full py-2 flex items-center justify-center gap-2 text-xs font-semibold uppercase tracking-wider rounded-lg transition-all bg-zinc-800 text-zinc-300 hover:bg-zinc-700 hover:text-white border border-zinc-700/50"
                 >
                   View Full Profile <ExternalLink className="w-3.5 h-3.5" />
                 </button>
               </DialogTrigger>
-
             </div>
           </div>
         </div>

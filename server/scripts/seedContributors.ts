@@ -23,7 +23,7 @@ const contributors: CreateContributorRequest[] = [
     affiliation: 'Samsung SAIT Montréal, Senior AI Researcher',
     achievement: '2025 Top Paper Award: "Less is More: Recursive Reasoning with Tiny Networks" (TRM)',
     description: 'Lead author of the Tiny Recursive Model (TRM) work on ARC-AGI—a groundbreaking ~7M-parameter, 2-layer recursive network that repeatedly refines an internal reasoning state and answer instead of relying on huge LLMs. TRM became the leading open-source approach on ARC-AGI shortly before the 2025 ARC Prize deadline, though its compute budget exceeded competition constraints.',
-    imageUrl: '/alexiaJM3.png',
+    imageUrl: '/alexiaJM4.png',
     yearStart: 2025,
     yearEnd: 2025,
     score: '~45% ARC-AGI-1, ~8% ARC-AGI-2',
