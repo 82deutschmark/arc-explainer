@@ -1,6 +1,14 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top with the time and date!
 
+### Version 5.38.5  Dec 4, 2025 10:35pm
+
+- **Fix PuzzleBrowser button: correct link and improve visibility** (Author: Claude Code using Haiku 4.5)
+  - Fixed broken button link from `/puzzle-db-viewer` to correct route `/puzzles/database`
+  - Increased button prominence with red styling (`bg-red-600 hover:bg-red-700`), larger padding (`px-8 py-4`), and bold text (`text-lg font-bold`)
+  - Added shadow effect and improved spacing for better visual hierarchy
+  - **Files**: `client/src/pages/PuzzleBrowser.tsx:360-368`
+
 ### Version 5.38.4  Dec 4, 2025 8:20pm
 
 - **Grid image toggle inside Advanced Controls** (Author: Cascade using Haiku 4.5)
