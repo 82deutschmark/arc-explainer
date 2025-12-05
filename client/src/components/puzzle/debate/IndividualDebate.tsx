@@ -17,6 +17,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+
 import {
   MessageSquare,
   ArrowLeft,
@@ -30,7 +31,6 @@ import { Textarea } from '@/components/ui/textarea';
 // Reuse existing components
 import { AnalysisResultCard } from '@/components/puzzle/AnalysisResultCard';
 import { PromptPreviewModal } from '@/components/PromptPreviewModal';
-import { OriginalExplanationCard } from './OriginalExplanationCard';
 import { RebuttalCard } from './RebuttalCard';
 import { TinyGrid } from '@/components/puzzle/TinyGrid';
 import { AdvancedControls } from '@/components/puzzle/AdvancedControls';
@@ -78,6 +78,9 @@ interface IndividualDebateProps {
   reasoningSummaryType: 'auto' | 'detailed';
   onReasoningSummaryTypeChange: (value: 'auto' | 'detailed') => void;
 
+  includeGridImages: boolean;
+  onIncludeGridImagesChange: (value: boolean) => void;
+
   // Actions
   onBackToList: () => void;
   onResetDebate: () => void;
@@ -114,6 +117,8 @@ export const IndividualDebate: React.FC<IndividualDebateProps> = ({
   onReasoningVerbosityChange,
   reasoningSummaryType,
   onReasoningSummaryTypeChange,
+  includeGridImages,
+  onIncludeGridImagesChange,
   onBackToList,
   onResetDebate,
   onChallengerModelChange,
@@ -203,16 +208,6 @@ export const IndividualDebate: React.FC<IndividualDebateProps> = ({
         </Card>
       )}
 
-      {/* Original Explanation - Display directly from prop */}
-      {originalExplanation && (
-        <OriginalExplanationCard
-          explanation={originalExplanation}
-          models={models}
-          testCases={testCases}
-          timestamp={originalExplanation.createdAt || new Date().toISOString()}
-          forceExpanded={true}
-        />
-      )}
 
       {/* Compact Challenge Controls Card */}
       <Card className="border-gray-200 bg-white">
@@ -284,6 +279,8 @@ export const IndividualDebate: React.FC<IndividualDebateProps> = ({
                       onReasoningVerbosityChange={onReasoningVerbosityChange}
                       reasoningSummaryType={reasoningSummaryType}
                       onReasoningSummaryTypeChange={onReasoningSummaryTypeChange}
+                      includeGridImages={includeGridImages}
+                      onIncludeGridImagesChange={onIncludeGridImagesChange}
                     />
                   </Card>
                 </div>

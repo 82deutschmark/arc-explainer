@@ -14,6 +14,7 @@ import { buildAnalysisPrompt, getDefaultPromptId, PromptOptions, PromptPackage }
 import { calculateCost } from "../../utils/costCalculator.js";
 import { getModelConfig } from "../../config/models/index.js";
 import { logger } from '../../utils/logger.js';
+import type { GridImagePayload } from '../gridImageService.js';
 
 export interface StreamChunk {
   type: string;
@@ -60,6 +61,8 @@ export interface ServiceOptions {
   customUserPrompt?: string; // Override user prompt generation for specialized flows
   suppressInstructionsOnContinuation?: boolean; // Skip instructions when chaining previous responses
   structuredOutputDisabled?: boolean; // Allow callers to suppress schema enforcement
+  includeGridImages?: boolean; // Opt-in flag to attach grid images for vision-capable models
+  gridImages?: GridImagePayload[]; // Pre-rendered grid images to include in provider payloads
 }
 
 export interface TokenUsage {

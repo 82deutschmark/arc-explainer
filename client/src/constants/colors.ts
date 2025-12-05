@@ -10,19 +10,10 @@
  * Author: Cascade (model: Cascade)
  */
 
+import { ARC_COLORS_TUPLES as SHARED_ARC_COLORS_TUPLES } from '@shared/config/colors';
+
 /** Numeric tuples [r,g,b] matching docs in client/src/constants/colors.md */
-export const ARC_COLORS_TUPLES: ReadonlyArray<readonly [number, number, number]> = [
-  [0, 0, 0],        // 0 Black
-  [0, 116, 217],    // 1 Blue
-  [255, 65, 54],    // 2 Red
-  [46, 204, 64],    // 3 Green
-  [255, 220, 0],    // 4 Yellow
-  [128, 128, 128],  // 5 Grey
-  [240, 18, 190],   // 6 Magenta/Pink
-  [255, 133, 27],   // 7 Orange
-  [127, 219, 255],  // 8 Light Blue/Cyan
-  [128, 0, 0],      // 9 Maroon
-] as const;
+export const ARC_COLORS_TUPLES: ReadonlyArray<readonly [number, number, number]> = SHARED_ARC_COLORS_TUPLES;
 
 /** Primary CSS-friendly rgb() strings */
 export const ARC_COLORS: string[] = ARC_COLORS_TUPLES.map(

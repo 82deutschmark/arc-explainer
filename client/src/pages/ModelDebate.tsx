@@ -102,6 +102,8 @@ export default function ModelDebate() {
     thinkingBudget,
     setThinkingBudget,
     closeStreamingModal,
+    includeGridImages,
+    setIncludeGridImages,
   } = useAnalysisResults({
     taskId: taskId || '',
     refetchExplanations,
@@ -389,6 +391,8 @@ export default function ModelDebate() {
                     setReasoningSummaryType('detailed'); // Fallback to detailed for unsupported values
                   }
                 }}
+                includeGridImages={includeGridImages}
+                onIncludeGridImagesChange={(value: boolean) => setIncludeGridImages(value)}
                 onBackToList={debateState.endDebate}
                 onResetDebate={debateState.resetDebate}
                 onChallengerModelChange={debateState.setChallengerModel}

@@ -1,6 +1,167 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top with the time and date!
 
+### Version 5.38.5  Dec 4, 2025 10:35pm
+
+- **Fix PuzzleBrowser button: correct link and make prominent full-width call-to-action** (Author: Claude Code using Haiku 4.5)
+  - Fixed broken button link from `/puzzle-db-viewer` to correct route `/puzzles/database`
+  - Repositioned button to top of featured section header and made it full-width, centered, and highly prominent
+  - Full button text restored: "See puzzles from ARC 1 and 2, which have not been solved yet"
+  - Enhanced styling: red background (`bg-red-600 hover:bg-red-700`), full-width layout (`w-full`), centered text (`text-center`), large padding (`px-8 py-4`), bold large text (`text-lg font-bold`), shadow effect
+  - **Files**: `client/src/pages/PuzzleBrowser.tsx:314-334`
+
+### Version 5.38.4  Dec 4, 2025 8:20pm
+
+- **Grid image toggle inside Advanced Controls** (Author: Cascade using Haiku 4.5)
+  - Moved the "include puzzle screenshots" switch into the shared `AdvancedControls` component so PuzzleExaminer, PuzzleDiscussion, and ModelDebate share a single unified control.
+  - The toggle is now always visible; backend capability checks still determine whether ARC grid PNGs are actually attached, so non-vision models remain text-only.
+  - **Files**: `client/src/components/puzzle/AdvancedControls.tsx`, `client/src/pages/PuzzleExaminer.tsx`, `client/src/components/puzzle/refinement/ProfessionalRefinementUI.tsx`, `client/src/components/puzzle/debate/IndividualDebate.tsx`
+
+### Version 5.38.3  Dec 4, 2025 7:45pm
+
+- **Model catalog: mark GPT-5 family as vision-capable** (Author: Cascade using Haiku 4.5)
+  - Updated all GPT-5 / GPT-5.1 entries (including the OpenRouter mirror) in the central model config to set `supportsVision: true`, matching provider capabilities.
+  - Ensures the new grid image toggles in PuzzleExaminer, PuzzleDiscussion, and ModelDebate correctly recognize GPT-5 variants as eligible for ARC grid screenshots.
+  - **Files**: `server/config/models.ts`
+
+### Version 5.38.2  Dec 4, 2025 7:40pm
+
+- **Vision toggles for refinement and debate UIs** (Author: Cascade using Haiku 4.5)
+  - Surfaced the existing `includeGridImages` option in the PuzzleDiscussion progressive reasoning interface and the ModelDebate challenge interface, reusing the grid image support added in 5.38.0.
+  - Added compact shadcn `Switch` controls in ProfessionalRefinementUI and IndividualDebate, visible only when the currently selected model has `supportsVision = true`.
+  - Wired these toggles through `useAnalysisResults` so both streaming and non-streaming refinement/debate runs can include ARC grid PNGs for vision-capable models while preserving text-only behavior for all other models.
+  - **Files**: `client/src/pages/PuzzleDiscussion.tsx`, `client/src/components/puzzle/refinement/ProfessionalRefinementUI.tsx`, `client/src/pages/ModelDebate.tsx`, `client/src/components/puzzle/debate/IndividualDebate.tsx`
+
+### Version 5.38.1  Dec 4, 2025 7:25pm
+
+- **PuzzleCard: Fix test count display to show actual test cases instead of prediction count** (Author: Claude Code using Haiku 4.5)
+  - Fixed bug where puzzle cards always showed "Tests Single" regardless of actual test case count
+  - Changed test display logic from checking `puzzle.hasMultiplePredictions` (which tracks AI predictions) to checking actual `taskData.test.length` from loaded puzzle data
+  - Now correctly displays "Single" for puzzles with 1 test case, or the actual count (e.g., "2", "3") for puzzles with multiple test cases
+  - **Files**: `client/src/components/puzzle/PuzzleCard.tsx:224`
+
+### Version 5.38.0  Dec 4, 2025 7:15pm
+
+- **Puzzle Analysis: Add vision model support with grid image inclusion** (Author: Claude Code using Haiku 4.5)
+  - Extended `/api/analyze` and streaming analysis endpoints to optionally include puzzle grid images for vision-capable models, enabling visual context in model reasoning
+  - Added `supportsVision` flag to model configuration and exposed it across `/api/models`, `/api/models/:modelKey`, and `/api/models/provider/:provider` endpoints
+  - Implemented grid image capture system that converts puzzle grids to canvas-based PNG dataURLs with configurable descriptions for inclusion in OpenAI Responses API payloads
+  - Extended `buildResponsesPayload()` to support mixed text/image content in user messages by adding `input_image` type to ResponseContent union
+  - Integrated grid image generation into both streaming (`analyzePuzzleWithStreaming`) and non-streaming (`analyzePuzzle`) code paths with graceful fallback to text-only on failure
+  - Added user-facing UI toggle in PuzzleExaminer to enable/disable grid image inclusion, visible only when vision models are available
+  - Simplified CompactPuzzleCard navigation: replaced wouter Link with standard anchor tags (opens puzzle in new tab) for improved interoperability
+  - **Files**: `client/src/pages/PuzzleExaminer.tsx` (added Switch toggle for grid images), `client/src/hooks/useAnalysisResults.ts` (added state), `client/src/lib/streaming/analysisStream.ts`, `server/services/openai/payloadBuilder.ts` (image content support), `server/services/puzzleAnalysisService.ts` (grid capture + streaming integration), `server/controllers/streamController.ts`, `server/routes/models.ts`, `server/services/openai.ts`, `client/src/components/puzzle/CompactPuzzleCard.tsx`, `server/services/streaming/analysisStreamService.ts`
+
+### Version 5.36.17  Dec 4, 2025 6:00pm
+
+- **Slack GIF Creator: Add ARC2 puzzle support and generate evaluation datasets** (Author: Claude Code using Haiku 4.5)
+  - Extended puzzle discovery to support ARC 2 evaluation puzzles (evaluation2 and training2 directories)
+  - Generated ARC2_EVAL dataset: 44 animated GIFs for ARC 2 unsolved evaluation puzzles (~15 MB total)
+  - Each GIF shows all training examples and test cases with proper label annotations
+  - **Files**: `.claude/skills/slack-gif-creator/create_arc_puzzle_gif.py` (updated find_puzzle_file), `.claude/skills/slack-gif-creator/ARC2_EVAL/` (new folder with 44 GIF files)
+
+### Version 5.36.16  Dec 4, 2025 5:30pm
+
+- **Slack GIF Creator: Optimize animation speed and dynamic grid scaling** (Author: Claude Code using Haiku 4.5)
+  - Reduced default FPS from 15 to 8 for slower, more deliberate animation in ARC puzzle GIFs
+  - Implemented dynamic grid cell sizing based on puzzle dimensions: 3×3 grids get ~24px cells, 30×30 grids get ~6px cells for consistent readability
+  - Auto-calculated frame sizes to properly fit grids of any size without clipping or excess white space
+  - Fixed Unicode encoding issues on Windows console (replaced emoji characters with ASCII equivalents in print statements)
+  - Generated ARC1_EVAL dataset: 11 animated GIFs (7d419a02, 50f325b5, b9630600, 4ff4c9da, 14754a24, 8b28cd80, c6e1b8da, f3b10344, 212895b5, 16b78196, 0934a4d8)
+  - **Files**: `.claude/skills/slack-gif-creator/core/gif_builder.py`, `.claude/skills/slack-gif-creator/core/validators.py`, `.claude/skills/slack-gif-creator/create_arc_puzzle_gif.py`, `.claude/skills/slack-gif-creator/ARC1_EVAL/` (new folder with 11 GIF files)
+
+### Version 5.36.15  Dec 4, 2025 5:00pm
+
+- **PuzzleBrowser: Redesign layout, improve typography, and fix UX issues** (Author: Claude Code using Haiku 4.5)
+  - Moved "Open Research Browser" button to header next to "Featured ARC puzzles" heading with shadcn/ui Button component for better visibility
+  - Moved "See puzzles from ARC 1 and 2..." button to the bottom of featured section inside the card with separator
+  - Increased font sizes throughout page: all labels from text-xs to text-sm, working notes from text-xs to text-sm, status badges from text-xs to text-sm
+  - Replaced generic btn styling with shadcn/ui Button component for consistency
+  - Fixed broken external link in working notes section
+  - **Files**: `client/src/pages/PuzzleBrowser.tsx`
+
+### Version 5.36.14  Dec 4, 2025 4:30pm
+
+- **Docs: Refresh README with recent streaming, solver, and puzzle browser updates** (Author: Cascade)
+  - Updated the top-level README version and "What's New" section to summarize recent Poetiq/BeeTree streaming improvements, puzzle database browsing tools, and debate/discussion UX tweaks in plain language for new visitors.
+  - Added short notes about SnakeArena/SnakeBench integration, unsolved puzzle database view, and multi-provider streaming so the front page reflects current capabilities instead of older v5.1.0 highlights.
+  - **Files**: `README.md`, `CHANGELOG.md`
+
+### Version 5.36.14  Dec 4, 2025 12:00am
+
+- **PuzzleBrowser: Add button to view unsolved ARC1/ARC2 puzzles** (Author: Claude Code using Haiku 4.5)
+  - Added simple button after featured gallery linking to `/puzzle-db-viewer` for browsing all unsolved ARC1 and ARC2 evaluation puzzles.
+  - **Files**: `client/src/pages/PuzzleBrowser.tsx`
+
+### Version 5.37.0  Dec 4, 2025 6:25pm
+
+- **ARC2 GIF previews for CompactPuzzleCard** (Author: Codex)
+  - Copied the ARC2-Eval GIF batch into the public decoration assets, documented the rollout, and expanded `PUZZLE_GIF_MAP` so every unsolved ARC2 puzzle now auto-renders its curated animation on the `/puzzles/database` cards.
+  - **Files**: `client/public/images/decoration/arc_puzzle_13e47133.gif`, `client/public/images/decoration/arc_puzzle_142ca369.gif`, `client/public/images/decoration/arc_puzzle_195c6913.gif`, `client/public/images/decoration/arc_puzzle_20270e3b.gif`, `client/public/images/decoration/arc_puzzle_21897d95.gif`, `client/public/images/decoration/arc_puzzle_221dfab4.gif`, `client/public/images/decoration/arc_puzzle_269e22fb.gif`, `client/public/images/decoration/arc_puzzle_271d71e2.gif`, `client/public/images/decoration/arc_puzzle_28a6681f.gif`, `client/public/images/decoration/arc_puzzle_2b83f449.gif`, `client/public/images/decoration/arc_puzzle_2d0172a1.gif`, `client/public/images/decoration/arc_puzzle_35ab12c3.gif`, `client/public/images/decoration/arc_puzzle_3a25b0d8.gif`, `client/public/images/decoration/arc_puzzle_446ef5d2.gif`, `client/public/images/decoration/arc_puzzle_4c416de3.gif`, `client/public/images/decoration/arc_puzzle_4c7dc4dd.gif`, `client/public/images/decoration/arc_puzzle_4e34c42c.gif`, `client/public/images/decoration/arc_puzzle_5545f144.gif`, `client/public/images/decoration/arc_puzzle_5dbc8537.gif`, `client/public/images/decoration/arc_puzzle_62593bfd.gif`, `client/public/images/decoration/arc_puzzle_6e4f6532.gif`, `client/public/images/decoration/arc_puzzle_6ffbe589.gif`, `client/public/images/decoration/arc_puzzle_7491f3cf.gif`, `client/public/images/decoration/arc_puzzle_78332cb0.gif`, `client/public/images/decoration/arc_puzzle_7b0280bc.gif`, `client/public/images/decoration/arc_puzzle_7b80bb43.gif`, `client/public/images/decoration/arc_puzzle_800d221b.gif`, `client/public/images/decoration/arc_puzzle_88bcf3b4.gif`, `client/public/images/decoration/arc_puzzle_88e364bc.gif`, `client/public/images/decoration/arc_puzzle_8b7bacbf.gif`, `client/public/images/decoration/arc_puzzle_9385bd28.gif`, `client/public/images/decoration/arc_puzzle_97d7923e.gif`, `client/public/images/decoration/arc_puzzle_9bbf930d.gif`, `client/public/images/decoration/arc_puzzle_a32d8b75.gif`, `client/public/images/decoration/arc_puzzle_b6f77b65.gif`, `client/public/images/decoration/arc_puzzle_b9e38dc0.gif`, `client/public/images/decoration/arc_puzzle_cbebaa4b.gif`, `client/public/images/decoration/arc_puzzle_d35bdbdc.gif`, `client/public/images/decoration/arc_puzzle_de809cff.gif`, `client/public/images/decoration/arc_puzzle_e12f9a14.gif`, `client/public/images/decoration/arc_puzzle_e87109e9.gif`, `client/public/images/decoration/arc_puzzle_eee78d87.gif`, `client/public/images/decoration/arc_puzzle_f560132c.gif`, `client/public/images/decoration/arc_puzzle_faa9f03d.gif`, `client/src/utils/puzzleGifMap.ts`, `docs/2025-12-04-arc2-gif-card-plan.md`
+
+### Version 5.36.14  Dec 4, 2025 6:05pm
+
+- **Compact puzzle cards: ARC1-Eval GIF previews** (Author: Codex)
+  - Copied the newly generated ARC1-Eval GIFs into the public decoration assets and added a centralized `PUZZLE_GIF_MAP` so puzzle IDs immediately map to their animated previews.
+  - Updated `CompactPuzzleCard` to prefer those GIFs (lazy-loaded via the existing observer) while keeping the TinyGrid fallback for all other puzzles, giving the `/puzzles/database` cards an eye-catching animation whenever we have curated media.
+  - Documented the approach in `docs/2025-12-04-compact-card-gif-integration-plan.md` for future expansions.
+  - **Files**: `client/public/images/decoration/arc_puzzle_7d419a02.gif`, `client/public/images/decoration/arc_puzzle_50f325b5.gif`, `client/public/images/decoration/arc_puzzle_b9630600.gif`, `client/public/images/decoration/arc_puzzle_4ff4c9da.gif`, `client/public/images/decoration/arc_puzzle_14754a24.gif`, `client/public/images/decoration/arc_puzzle_8b28cd80.gif`, `client/public/images/decoration/arc_puzzle_c6e1b8da.gif`, `client/public/images/decoration/arc_puzzle_f3b10344.gif`, `client/public/images/decoration/arc_puzzle_212895b5.gif`, `client/public/images/decoration/arc_puzzle_16b78196.gif`, `client/public/images/decoration/arc_puzzle_0934a4d8.gif`, `client/src/utils/puzzleGifMap.ts`, `client/src/components/puzzle/CompactPuzzleCard.tsx`, `docs/2025-12-04-compact-card-gif-integration-plan.md`
+
+### Version 5.36.13  Dec 3, 2025 11:20pm
+
+- **Reusable CompactPuzzleCard component** (Author: Codex)
+  - Extracted the inline PuzzleDBViewer card into `client/src/components/puzzle/CompactPuzzleCard.tsx` with optional lazy loading, prefetched task support, and customizable actions so other pages can reuse the TinyGrid preview + metrics layout without duplicating logic.
+  - Updated PuzzleDBViewer to consume the shared component and removed the redundant helper code from the page file.
+  - **Files**: `client/src/components/puzzle/CompactPuzzleCard.tsx`, `client/src/pages/PuzzleDBViewer.tsx`
+
+### Version 5.36.12  Dec 3, 2025 10:55pm
+
+- **Docs: Compact puzzle card extraction plan** (Author: Codex)
+  - Captured a detailed plan to promote the inline `CompactPuzzleCard` in PuzzleDBViewer into a reusable component under `client/src/components/puzzle/`, covering prop design, extraction steps, and verification.
+  - **Files**: `docs/2025-12-03-compact-puzzle-card-plan.md`
+
+### Version 5.36.11  Dec 3, 2025 10:40pm
+
+- **PuzzleDBViewer: Show test outputs in TinyGrid previews** (Author: Codex)
+  - Updated the compact puzzle cards on `/puzzles/database` to render the first test output (with sensible fallbacks) instead of the first training input so researchers see the actual evaluation targets.
+  - **Files**: `client/src/pages/PuzzleDBViewer.tsx`
+
+### Version 5.36.10  Dec 3, 2025 10:23pm
+
+- **Model Config: Mistral Large 2512** (Author: Cascade)
+  - Updated the shared models catalog and Poetiq model list to use the official `mistralai/mistral-large-2512` identifier with a 262,144 token context window and $0.50 / $1.50 pricing.
+  - Replaced the previous cloaked OpenRouter arena id in all active configs so analytics, Poetiq runs, and UI model groups now present only the official model name going forward.
+  - Removed the now-unused name-normalization rule for the old cloaked id, since we no longer treat it as a separate model in code.
+  - **Files**: `server/config/models.ts`, `server/controllers/poetiqController.ts`, `shared/modelGroups.ts`, `scripts/testing/test-openrouter-models.ts`, `server/utils/modelNormalizer.ts`, `CHANGELOG.md`
+
+### Version 5.36.9  Dec 3, 2025 10:15pm
+
+- **Poetiq Solver: Add Free OpenRouter Arena Models** (Author: Codex)
+  - Surfaced Amazon Nova 2 Lite (Free) and Arcee Trinity Mini (Free) inside the `/api/poetiq/models` response so the Poetiq control panel exposes both new options.
+  - Flagged the new ids inside `OPENROUTER_SERVER_KEY_MODELS`, which keeps BYO keys optional for these free-tier runs while preserving the BYO requirement for other OpenRouter models.
+  - Captured a short implementation plan at `docs/2025-12-03-poetiq-free-models-plan.md` for traceability.
+  - **Files**: `server/controllers/poetiqController.ts`, `docs/2025-12-03-poetiq-free-models-plan.md`
+
+### Version 5.36.8  Dec 3, 2025 9:55pm
+
+- **DeepSeek: Enhanced provider error logging** (Author: Cascade)
+  - Added DeepSeek-specific error handling that records HTTP status, provider error code, error type, and a truncated copy of the provider response body when DeepSeek API calls fail.
+  - Delegates back to the shared BaseAIService error handler so existing error propagation and Express middleware behavior remain unchanged while logs now surface the root cause behind generic "terminated" errors.
+  - **Files**: `server/services/deepseek.ts`
+
+### Version 5.36.7  Dec 3, 2025 5:45pm
+
+- **Poetiq UI: Telemetry-first cleanup** (Author: Codex)
+  - Rebuilt `PoetiqLiveDashboard` so it now focuses solely on the active model/provider, tokens in/out/total, total cost, iteration progress, and the latest solver message.
+  - Removed the Poetiq Agents Runtime panel entirely and re-ordered the solver layout so the Event Log, Raw Events panel, and final result card render directly under the header, while the Python terminal only appears once it has data (no more empty black box).
+  - **Files**: `client/src/components/poetiq/PoetiqLiveDashboard.tsx`, `client/src/pages/PoetiqSolver.tsx`, `client/src/components/poetiq/PoetiqAgentsRuntimePanel.tsx`
+- **Poetiq Result Card: Restore code preview + standard wording** (Author: Codex)
+  - The CORRECT / INCORRECT card again embeds the final `transform()` code (with streaming fallback) so users can copy the winning Python without opening other panels, while the raw-events column stays unchanged.
+  - **Files**: `client/src/pages/PoetiqSolver.tsx`, `client/src/components/poetiq/PoetiqStreamingVisualizer.tsx`, `client/src/components/poetiq/PoetiqStreamingModal.tsx`, `puzzle-analysis.ts`
+- **Docs: Capture Poetiq solver UI plan** (Author: Codex)
+  - Added a quick planning note describing the telemetry-first redesign.
+  - **Files**: `docs/2025-12-03-poetiq-solver-ui-plan.md`
+
 ### Version 5.36.6  Dec 3, 2025 5:15pm
 
 - **Poetiq UI: Move real telemetry above the fold** (Author: Cascade)

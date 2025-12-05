@@ -24,12 +24,11 @@
  * shadcn/ui: Pass - Uses shadcn/ui components with compact styling
  */
 
-import React, { useState, useEffect, useRef, useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Link } from 'wouter';
 import { Database, Grid, AlertTriangle, XCircle, Loader2, Search, AlertCircle } from 'lucide-react';
 import type { PuzzleDBStats, PuzzlePerformanceData } from '@/hooks/usePuzzleDBStats';
 import { useWorstPerformingPuzzles } from '@/hooks/usePuzzle';
-import { TinyGrid } from '@/components/puzzle/TinyGrid';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
@@ -37,12 +36,7 @@ import { Input } from '@/components/ui/input';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { ClickablePuzzleBadge } from '@/components/ui/ClickablePuzzleBadge';
 import { PuzzleCard } from '@/components/puzzle/PuzzleCard';
-
-// ARCTask type for puzzle data
-interface ARCTask {
-  train: Array<{ input: number[][], output: number[][] }>;
-  test: Array<{ input: number[][], output?: number[][] }>;
-}
+import { CompactPuzzleCard } from '@/components/puzzle/CompactPuzzleCard';
 
 
 // Helper functions for puzzle categorization based on AI confidence patterns
@@ -96,184 +90,6 @@ function getCorrectAttempts(totalExplanations: number, avgAccuracy: number) {
   return Math.round(totalExplanations * avgAccuracy);
 }
 
-function formatCurrency(amount: number) {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 3
-  }).format(amount);
-}
-
-function formatDuration(milliseconds: number) {
-  const seconds = Math.round(milliseconds / 1000);
-  if (seconds < 60) return `${seconds}s`;
-  const minutes = Math.floor(seconds / 60);
-  const remainingSeconds = seconds % 60;
-  return `${minutes}m ${remainingSeconds}s`;
-}
-
-function formatNumber(num: number): string {
-  return new Intl.NumberFormat('en-US').format(num);
-}
-
-function formatTime(seconds: number): string {
-  if (seconds < 60) return `${seconds}s`;
-  const minutes = Math.floor(seconds / 60);
-  const remainingSeconds = seconds % 60;
-  return remainingSeconds > 0 ? `${minutes}m ${remainingSeconds}s` : `${minutes}m`;
-}
-
-// Compact puzzle card component with lazy-loaded TinyGrid preview
-interface CompactPuzzleCardProps {
-  puzzle: PuzzleDBStats;
-}
-
-function CompactPuzzleCard({ puzzle }: CompactPuzzleCardProps) {
-  const [taskData, setTaskData] = useState<ARCTask | null>(null);
-  const [isVisible, setIsVisible] = useState(false);
-  const cardRef = useRef<HTMLDivElement>(null);
-
-  // Cost and resource metrics
-  const totalSpend = puzzle.performanceData.avgCost && puzzle.performanceData.totalExplanations
-    ? puzzle.performanceData.avgCost * puzzle.performanceData.totalExplanations
-    : 0;
-  const totalTokens = puzzle.performanceData.avgTotalTokens && puzzle.performanceData.totalExplanations
-    ? puzzle.performanceData.avgTotalTokens * puzzle.performanceData.totalExplanations
-    : 0;
-
-  // Lazy loading with IntersectionObserver
-  useEffect(() => {
-    if (!cardRef.current) return;
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            setIsVisible(true);
-            observer.disconnect();
-          }
-        });
-      },
-      { rootMargin: '100px' }
-    );
-
-    observer.observe(cardRef.current);
-    return () => observer.disconnect();
-  }, []);
-
-  // Load puzzle data when visible
-  useEffect(() => {
-    if (!isVisible || taskData) return;
-
-    fetch(`/api/puzzle/task/${puzzle.id}`)
-      .then(res => res.json())
-      .then(data => {
-        if (data.success) {
-          setTaskData(data.data);
-        }
-      })
-      .catch(() => {
-        // Silently fail - preview just won't show
-      });
-  }, [isVisible, puzzle.id, taskData]);
-
-  const firstTrainingExample = taskData?.train?.[0]?.input;
-
-  return (
-    <div
-      ref={cardRef}
-      className="card shadow-lg hover:shadow-xl transition-shadow bg-base-100"
-    >
-      <div className="card-body p-2">
-        <div className="flex items-start justify-between mb-1 gap-2">
-          <div className="flex-1 min-w-0">
-            <h3 className="text-xs font-mono flex items-center gap-1 flex-wrap">
-              <span className="truncate">{puzzle.id}</span>
-              <div className="badge badge-outline badge-xs">
-                {puzzle.source}
-              </div>
-            </h3>
-          </div>
-        </div>
-
-        <div className="flex gap-2">
-          {/* TinyGrid Preview */}
-          {firstTrainingExample && (
-            <div className="shrink-0" style={{ width: '64px', height: '64px' }}>
-              <TinyGrid
-                grid={firstTrainingExample}
-                style={{ width: '64px', height: '64px' }}
-              />
-            </div>
-          )}
-
-          {/* Cost & Resource Metrics */}
-          <div className="flex-1 min-w-0">
-            {puzzle.performanceData.totalExplanations > 0 ? (
-              <div className="grid grid-cols-2 gap-1 text-xs">
-                {/* Total Spend */}
-                {totalSpend > 0 && (
-                  <div>
-                    <div className="font-bold">{formatCurrency(totalSpend)}</div>
-                    <div className="text-base-content/60">Total $</div>
-                  </div>
-                )}
-                {/* Avg Cost per Attempt */}
-                {puzzle.performanceData.avgCost && puzzle.performanceData.avgCost > 0 && (
-                  <div>
-                    <div className="font-semibold">{formatCurrency(puzzle.performanceData.avgCost)}</div>
-                    <div className="text-base-content/60">$/Attempt</div>
-                  </div>
-                )}
-                {/* Avg Tokens per Attempt */}
-                {puzzle.performanceData.avgTotalTokens && puzzle.performanceData.avgTotalTokens > 0 && (
-                  <div>
-                    <div className="font-semibold">{formatNumber(Math.round(puzzle.performanceData.avgTotalTokens))}</div>
-                    <div className="text-base-content/60">Tok/Attempt</div>
-                  </div>
-                )}
-                {/* Total Tokens */}
-                {totalTokens > 0 && (
-                  <div>
-                    <div className="font-semibold">{formatNumber(Math.round(totalTokens))}</div>
-                    <div className="text-base-content/60">Total Tok</div>
-                  </div>
-                )}
-                {/* Models Tested */}
-                {puzzle.performanceData.modelsAttemptedCount && puzzle.performanceData.modelsAttemptedCount > 0 && (
-                  <div>
-                    <div className="font-semibold">{puzzle.performanceData.modelsAttemptedCount}</div>
-                    <div className="text-base-content/60">Models</div>
-                  </div>
-                )}
-                {/* Avg Latency */}
-                {puzzle.performanceData.avgProcessingTime && puzzle.performanceData.avgProcessingTime > 0 && (
-                  <div>
-                    <div className="font-semibold">{formatTime(Math.round(puzzle.performanceData.avgProcessingTime / 1000))}</div>
-                    <div className="text-base-content/60">Avg Time</div>
-                  </div>
-                )}
-              </div>
-            ) : (
-              <div className="text-center py-2">
-                <div className="text-sm font-bold text-base-content/50">No Attempts</div>
-                <div className="text-xs text-base-content/60">Untested puzzle</div>
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* Action Button */}
-        <Link href={`/puzzle/${puzzle.id}`}>
-          <button className="btn btn-outline btn-xs w-full mt-2">
-            {puzzle.performanceData.totalExplanations === 0 ? 'Analyze First' : 'View Analysis'}
-          </button>
-        </Link>
-      </div>
-    </div>
-  );
-}
 
 export default function PuzzleDBViewer() {
   // Set page title

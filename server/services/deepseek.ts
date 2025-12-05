@@ -107,6 +107,36 @@ export class DeepSeekService extends BaseAIService {
     }
   }
 
+  protected handleAnalysisError(error: any, modelKey: string, task: ARCTask): never {
+    const anyError = error as any;
+    const status = anyError.status ?? anyError.statusCode ?? anyError.response?.status;
+    const code = anyError.code ?? anyError.error?.code;
+    const errorType = anyError.type ?? anyError.name;
+
+    let providerBody: string | undefined;
+    try {
+      const rawBody = anyError.response_body ?? anyError.error ?? anyError.response?.data;
+      if (rawBody) {
+        providerBody = typeof rawBody === "string" ? rawBody : JSON.stringify(rawBody);
+      }
+    } catch {
+      providerBody = undefined;
+    }
+
+    logger.logError(`DeepSeek API error for model ${modelKey}`, {
+      error,
+      context: "DeepSeekService",
+      metadata: {
+        status,
+        code,
+        errorType,
+        providerBody: providerBody && providerBody.substring(0, 2000),
+      },
+    });
+
+    return super.handleAnalysisError(error, modelKey, task);
+  }
+
   getModelInfo(modelKey: string): ModelInfo {
     const modelName = getApiModelName(modelKey);
     const modelConfig = MODEL_CONFIGS.find(m => m.key === modelKey);

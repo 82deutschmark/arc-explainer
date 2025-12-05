@@ -68,6 +68,9 @@ interface ProfessionalRefinementUIProps {
   setReasoningSummaryType: (value: 'auto' | 'detailed') => void;
   isGPT5ReasoningModel: (modelKey: string) => boolean;
   
+  includeGridImages: boolean;
+  setIncludeGridImages: (value: boolean) => void;
+  
   // Actions
   onBackToList: () => void;
   onResetRefinement: () => void;
@@ -104,6 +107,8 @@ export const ProfessionalRefinementUI: React.FC<ProfessionalRefinementUIProps> =
   reasoningSummaryType,
   setReasoningSummaryType,
   isGPT5ReasoningModel,
+  includeGridImages,
+  setIncludeGridImages,
   onBackToList,
   onResetRefinement,
   onUserGuidanceChange,
@@ -248,6 +253,8 @@ export const ProfessionalRefinementUI: React.FC<ProfessionalRefinementUIProps> =
             onReasoningVerbosityChange={setReasoningVerbosity}
             reasoningSummaryType={reasoningSummaryType}
             onReasoningSummaryTypeChange={setReasoningSummaryType}
+            includeGridImages={includeGridImages}
+            onIncludeGridImagesChange={setIncludeGridImages}
           />
         </CardContent>
       </Card>
