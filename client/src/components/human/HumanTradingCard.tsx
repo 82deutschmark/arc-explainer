@@ -107,68 +107,66 @@ export const HumanTradingCard: React.FC<HumanTradingCardProps> = ({ contributor 
   return (
     <>
       <Dialog>
-        <div className="w-full h-full flex flex-col">
-          {/* IMAGE-FIRST CARD: Large artwork is the primary focus */}
-          <div className={`relative rounded-xl border ${cardData.colors.borderGradient} overflow-hidden hover:border-zinc-400 transition-all duration-300 shadow-xl hover:shadow-2xl h-full group`}>
-            
-            {/* LARGE IMAGE - Primary Focus */}
-            <div className="relative aspect-[3/4] w-full bg-black">
-              {selectedImageUrl ? (
-                <img
-                  src={selectedImageUrl}
-                  alt={contributor.fullName}
-                  className="w-full h-full object-cover"
-                />
-              ) : (
-                <img
-                  src={gifUrl}
-                  alt="Profile"
-                  className="w-full h-full object-cover image-pixelated"
-                />
-              )}
+        <div className="w-full h-full flex flex-col max-w-[280px] mx-auto">
+          {/* IMAGE-FIRST CARD: Entire card is clickable */}
+          <DialogTrigger asChild>
+            <div className={`relative rounded-xl border ${cardData.colors.borderGradient} overflow-hidden hover:border-zinc-400 transition-all duration-300 shadow-xl hover:shadow-2xl h-full cursor-pointer group`}>
               
-              {/* Gradient overlay at bottom for text legibility */}
-              <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/90 via-black/50 to-transparent" />
-              
-              {/* Featured badge */}
-              {cardData.featured && (
-                <div className="absolute top-3 right-3 bg-gradient-to-br from-amber-400 to-amber-600 text-zinc-900 rounded-full p-2 shadow-lg shadow-amber-500/30 animate-pulse">
-                  <Sparkles className="w-4 h-4" />
+              {/* LARGE IMAGE - Primary Focus */}
+              <div className="relative aspect-[3/4] w-full bg-black">
+                {selectedImageUrl ? (
+                  <img
+                    src={selectedImageUrl}
+                    alt={contributor.fullName}
+                    className="w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-300"
+                  />
+                ) : (
+                  <img
+                    src={gifUrl}
+                    alt="Profile"
+                    className="w-full h-full object-cover image-pixelated group-hover:scale-[1.02] transition-transform duration-300"
+                  />
+                )}
+                
+                {/* Gradient overlay at bottom for text legibility */}
+                <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/90 via-black/50 to-transparent" />
+                
+                {/* Featured badge */}
+                {cardData.featured && (
+                  <div className="absolute top-2 right-2 bg-gradient-to-br from-amber-400 to-amber-600 text-zinc-900 rounded-full p-1.5 shadow-lg shadow-amber-500/30 animate-pulse">
+                    <Sparkles className="w-3.5 h-3.5" />
+                  </div>
+                )}
+                
+                {/* Category badge */}
+                <div className="absolute top-2 left-2">
+                  <Badge variant="outline" className={`${cardData.colors.accentColor} border-opacity-70 uppercase text-[9px] tracking-wider backdrop-blur-sm bg-black/50`}>
+                    {cardData.icon} {cardData.categoryName}
+                  </Badge>
                 </div>
-              )}
-              
-              {/* Category badge */}
-              <div className="absolute top-3 left-3">
-                <Badge variant="outline" className={`${cardData.colors.accentColor} border-opacity-70 uppercase text-[10px] tracking-wider backdrop-blur-sm bg-black/50`}>
-                  {cardData.icon} {cardData.categoryName}
-                </Badge>
-              </div>
-              
-              {/* Name overlay at bottom of image */}
-              <div className="absolute inset-x-0 bottom-0 p-4">
-                <h3 className="text-xl font-bold text-white drop-shadow-lg leading-tight">
-                  {contributor.fullName}
-                </h3>
-                {contributor.handle && (
-                  <p className={`text-sm font-mono mt-1 ${cardData.colors.textColor}`}>@{contributor.handle}</p>
-                )}
-                {contributor.score && (
-                  <p className={`text-sm font-mono font-bold mt-1 ${cardData.colors.textColor}`}>{contributor.score}</p>
-                )}
+                
+                {/* Name overlay at bottom of image */}
+                <div className="absolute inset-x-0 bottom-0 p-3">
+                  <h3 className="text-lg font-bold text-white drop-shadow-lg leading-tight">
+                    {contributor.fullName}
+                  </h3>
+                  {contributor.handle && (
+                    <p className={`text-xs font-mono mt-0.5 ${cardData.colors.textColor}`}>@{contributor.handle}</p>
+                  )}
+                  {contributor.score && (
+                    <p className={`text-xs font-mono font-bold mt-0.5 ${cardData.colors.textColor}`}>{contributor.score}</p>
+                  )}
+                </div>
+                
+                {/* Hover overlay hint */}
+                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors flex items-center justify-center">
+                  <span className="opacity-0 group-hover:opacity-100 transition-opacity text-white text-xs font-semibold bg-black/60 px-3 py-1.5 rounded-full backdrop-blur-sm">
+                    View Profile
+                  </span>
+                </div>
               </div>
             </div>
-
-            {/* Minimal footer with View Profile button */}
-            <div className="p-3 bg-zinc-900/95">
-              <DialogTrigger asChild>
-                <button 
-                  className="w-full py-2 flex items-center justify-center gap-2 text-xs font-semibold uppercase tracking-wider rounded-lg transition-all bg-zinc-800 text-zinc-300 hover:bg-zinc-700 hover:text-white border border-zinc-700/50"
-                >
-                  View Full Profile <ExternalLink className="w-3.5 h-3.5" />
-                </button>
-              </DialogTrigger>
-            </div>
-          </div>
+          </DialogTrigger>
         </div>
 
         {/* Modal Content - Side-by-side layout with prominent image */}
