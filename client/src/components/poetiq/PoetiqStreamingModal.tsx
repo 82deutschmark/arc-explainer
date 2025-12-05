@@ -195,7 +195,7 @@ export default function PoetiqStreamingModal({
                       <div className={`text-xl font-bold ${
                         state.result.isPredictionCorrect ? 'text-green-300' : 'text-orange-300'
                       }`}>
-                        {state.result.isPredictionCorrect ? 'PUZZLE SOLVED!' : 'NOT SOLVED'}
+                        {state.result.isPredictionCorrect ? 'CORRECT' : 'INCORRECT'}
                       </div>
                       <div className="text-white/70 text-sm grid grid-cols-2 gap-x-4 mt-1">
                         <span>Iterations: {state.result.iterationCount}</span>

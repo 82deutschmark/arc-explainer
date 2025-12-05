@@ -28,10 +28,22 @@ ARC_COLORS = {
     9: (135, 12, 37),       # Maroon
 }
 
-def draw_arc_grid(grid, cell_size=24):
-    """Draw an ARC grid with the proper color palette"""
+def draw_arc_grid(grid, cell_size=None):
+    """Draw an ARC grid with the proper color palette.
+
+    Args:
+        grid: The grid data to draw
+        cell_size: Size of each cell in pixels. If None, auto-calculate for readability.
+    """
     height = len(grid)
     width = len(grid[0]) if grid else 0
+
+    # Auto-calculate cell size if not provided
+    if cell_size is None:
+        # Ensure grids are readable: aim for ~16-24 pixels per cell
+        # Smaller grids get bigger cells, larger grids get smaller cells
+        target_cell_size = 384 // max(width, height)  # Use 384 as target for ~400px grid
+        cell_size = max(6, min(target_cell_size, 24))  # Between 6 and 24 pixels
 
     img_width = width * cell_size
     img_height = height * cell_size
@@ -56,36 +68,51 @@ def draw_arc_grid(grid, cell_size=24):
 
     return img
 
-def create_frame_with_grid(grid, label, puzzle_id, width=480, height=480):
-    """Create a frame with a grid and label centered"""
-    # Create background
-    frame = Image.new('RGB', (width, height), (240, 248, 255))
+def create_frame_with_grid(grid, label, puzzle_id, width=None, height=None):
+    """Create a frame with a grid and label centered.
 
-    # Draw the grid
-    grid_img = draw_arc_grid(grid, cell_size=24)
+    Args:
+        grid: The grid to draw
+        label: Label text to display
+        puzzle_id: Puzzle ID for bottom text
+        width: Frame width. If None, auto-size to fit grid.
+        height: Frame height. If None, auto-size to fit grid.
+    """
+    # Draw the grid (with auto-calculated cell size)
+    grid_img = draw_arc_grid(grid)
+
+    # Auto-calculate frame size if not provided
+    padding = 80  # Space for labels and padding
+    if width is None:
+        width = grid_img.width + padding
+    if height is None:
+        height = grid_img.height + padding
+
+    # Create background frame
+    frame = Image.new('RGB', (width, height), (240, 248, 255))
 
     # Center the grid
     grid_x = (width - grid_img.width) // 2
-    grid_y = (height - grid_img.height) // 2 + 20  # Offset down a bit for label
+    grid_y = (height - grid_img.height) // 2
 
     frame.paste(grid_img, (grid_x, grid_y))
 
-    # Add label at top
+    # Add label at top (with padding)
     draw_text_with_outline(
         frame, label,
-        position=(width // 2, 30),
-        font_size=32,
+        position=(width // 2, 25),
+        font_size=28,
         text_color=(50, 50, 50),
         outline_color=(255, 255, 255),
         outline_width=2,
         centered=True
     )
 
-    # Add puzzle ID at bottom
+    # Add puzzle ID at bottom (with padding)
     draw_text_with_outline(
         frame, f"Puzzle ID: {puzzle_id}",
-        position=(width // 2, height - 30),
-        font_size=24,
+        position=(width // 2, height - 25),
+        font_size=20,
         text_color=(100, 100, 100),
         outline_color=(255, 255, 255),
         outline_width=2,
@@ -95,22 +122,24 @@ def create_frame_with_grid(grid, label, puzzle_id, width=480, height=480):
     return frame
 
 def find_puzzle_file(puzzle_id: str) -> Path:
-    """Find the puzzle JSON file in training or evaluation directories"""
+    """Find the puzzle JSON file in training or evaluation directories (ARC 1 or ARC 2)"""
     base_path = Path(r'D:\GitHub\arc-explainer\data')
 
-    # Check training directory first
-    training_path = base_path / 'training' / f'{puzzle_id}.json'
-    if training_path.exists():
-        return training_path
+    # Check all possible locations in order
+    search_paths = [
+        base_path / 'training' / f'{puzzle_id}.json',
+        base_path / 'evaluation' / f'{puzzle_id}.json',
+        base_path / 'training2' / f'{puzzle_id}.json',
+        base_path / 'evaluation2' / f'{puzzle_id}.json',
+    ]
 
-    # Check evaluation directory
-    eval_path = base_path / 'evaluation' / f'{puzzle_id}.json'
-    if eval_path.exists():
-        return eval_path
+    for path in search_paths:
+        if path.exists():
+            return path
 
     raise FileNotFoundError(
-        f"Puzzle {puzzle_id} not found in training or evaluation directories.\n"
-        f"Searched:\n  - {training_path}\n  - {eval_path}"
+        f"Puzzle {puzzle_id} not found in any data directories.\n"
+        f"Searched:\n" + "\n".join(f"  - {p}" for p in search_paths)
     )
 
 # Get puzzle ID from command line
@@ -130,10 +159,10 @@ with open(puzzle_path, 'r') as f:
     puzzle = json.load(f)
 
 # Create GIF builder
-builder = GIFBuilder(width=480, height=480, fps=15)
+builder = GIFBuilder(width=480, height=480, fps=8)
 
 # Parameters
-frames_per_grid = 37  # ~2.5 seconds per grid at 15fps (slower pace)
+frames_per_grid = 37  # ~4.6 seconds per grid at 8fps
 
 # Create frames for each grid
 grids_to_show = []
@@ -167,7 +196,7 @@ info = builder.save(
     optimize_for_emoji=False
 )
 
-print(f"\n✅ GIF created successfully!")
+print(f"\n[DONE] GIF created successfully!")
 print(f"  File: {output_filename}")
 print(f"  Frames: {info['frame_count']}")
 print(f"  Duration: {info['duration_seconds']:.1f}s")
@@ -176,7 +205,7 @@ print(f"  Size: {info['size_mb']:.2f}MB ({info['size_kb']:.1f}KB)")
 # Validate for Slack
 passes, validation_info = check_slack_size(output_filename, is_emoji=False)
 if passes:
-    print(f"\n✅ GIF is ready for Slack!")
+    print(f"\n[OK] GIF is ready for Slack!")
 else:
-    print(f"\n⚠️  GIF may be too large for Slack")
+    print(f"\n[WARN] GIF may be too large for Slack")
     print(f"   Size: {validation_info['size_kb']:.1f}KB (limit: {validation_info['limit_kb']:.0f}KB)")

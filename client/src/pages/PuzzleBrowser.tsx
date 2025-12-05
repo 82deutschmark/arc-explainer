@@ -13,6 +13,7 @@ import { Link, useLocation } from 'wouter';
 import { usePuzzleList } from '@/hooks/usePuzzle';
 import { useQuery } from '@tanstack/react-query';
 import { Loader2, Grid3X3, MessageSquare, Youtube, ExternalLink, ListVideo } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import { EmojiMosaicAccent } from '@/components/browser/EmojiMosaicAccent';
 import { ReferenceMaterial } from '@/components/browser/ReferenceMaterial';
 import type { PuzzleMetadata } from '@shared/types';
@@ -302,19 +303,33 @@ export default function PuzzleBrowser() {
         <ReferenceMaterial />
 
         {/* Featured Gallery - Lightweight default view */}
-        <section className="w-full rounded-lg border border-slate-800 bg-slate-900/60 p-2">
-          <div className="mb-2 flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
+        <section className="w-full rounded-lg border border-slate-800 bg-slate-900/60 p-3">
+          <div className="mb-3 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <h2 className="text-base font-semibold uppercase tracking-wide text-slate-300">Featured ARC puzzles</h2>
-              <p className="text-xs text-slate-500">
-                A small curated set of visually interesting puzzles for quick browsing. Use the full research browser for heavy filtering.
+              <h2 className="text-lg font-semibold uppercase tracking-wide text-slate-200">Featured ARC puzzles</h2>
+              <p className="text-sm text-slate-400">
+                A small curated set of visually interesting puzzles for quick browsing.
               </p>
             </div>
-            {!isFeaturedLoading && (
-              <span className="rounded-full border border-slate-700 px-3 py-1 text-xs text-slate-400">
-                {featuredPuzzles.length} featured
-              </span>
-            )}
+            <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-end sm:gap-3">
+              {!isFeaturedLoading && (
+                <span className="rounded-full border border-slate-700 px-3 py-1 text-sm text-slate-400">
+                  {featuredPuzzles.length} featured
+                </span>
+              )}
+              <Link
+                href="/puzzles/database"
+                className="px-4 py-2 rounded-lg bg-red-600 hover:bg-red-700 text-white font-bold transition-colors shadow-lg"
+              >
+                See unsolved puzzles from ARC1 and ARC2 evaluation sets
+              </Link>
+              <Button
+                onClick={() => setShowAdvancedBrowser(prev => !prev)}
+                className="bg-sky-600 hover:bg-sky-700 text-white"
+              >
+                {showAdvancedBrowser ? 'Hide Research Browser' : 'Open Research Browser'}
+              </Button>
+            </div>
           </div>
 
           {isFeaturedLoading ? (
@@ -328,40 +343,27 @@ export default function PuzzleBrowser() {
               <p className="text-sm text-slate-300">Featured puzzles are temporarily unavailable.</p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4">
-              {featuredPuzzles.map((puzzle: EnhancedPuzzleMetadata) => (
-                <div key={puzzle.id} className="flex flex-col gap-2">
-                  <PuzzleCard
-                    puzzle={puzzle}
-                    showGridPreview={true}
-                  />
-                  {TEAM_NOTES[puzzle.id] && (
-                    <div className="rounded-md border border-slate-800 bg-slate-950/80 px-3 py-2 text-xs sm:text-sm leading-relaxed text-slate-200">
-                      <div className="text-[11px] font-semibold uppercase tracking-wide text-sky-300 mb-0.5">
-                        Team Notes
+            <>
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4">
+                {featuredPuzzles.map((puzzle: EnhancedPuzzleMetadata) => (
+                  <div key={puzzle.id} className="flex flex-col gap-2">
+                    <PuzzleCard
+                      puzzle={puzzle}
+                      showGridPreview={true}
+                    />
+                    {TEAM_NOTES[puzzle.id] && (
+                      <div className="rounded-md border border-slate-800 bg-slate-950/80 px-3 py-2 text-sm leading-relaxed text-slate-200">
+                        <div className="text-xs font-semibold uppercase tracking-wide text-sky-300 mb-0.5">
+                          Team Notes
+                        </div>
+                        <p>{TEAM_NOTES[puzzle.id]}</p>
                       </div>
-                      <p>{TEAM_NOTES[puzzle.id]}</p>
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </>
           )}
-        </section>
-
-        {/* Advanced Browser Toggle */}
-        <section className="w-full rounded-lg border border-slate-800 bg-slate-900/60 p-2 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-          <div className="text-xs text-slate-400">
-            <p className="font-semibold text-slate-200">Need the full research browser?</p>
-            <p>Open the advanced view to run heavy filters and scan the entire ARC dataset with rich metrics.</p>
-          </div>
-          <button
-            type="button"
-            onClick={() => setShowAdvancedBrowser(prev => !prev)}
-            className="btn btn-sm border border-slate-600 bg-slate-900 text-slate-200 hover:border-sky-500 hover:text-sky-300"
-          >
-            {showAdvancedBrowser ? 'Hide full research browser' : 'Open full research browser'}
-          </button>
         </section>
 
         {/* Advanced Filters + Results */}
@@ -370,7 +372,7 @@ export default function PuzzleBrowser() {
             <section className="w-full rounded-lg border border-slate-800 bg-slate-900/60 p-2">
               <div className="grid grid-cols-1 gap-1.5 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                 <div className="flex flex-col gap-1">
-                  <label htmlFor="maxGridSize" className="text-xs font-semibold uppercase tracking-wide text-slate-400">Max Grid Size</label>
+                  <label htmlFor="maxGridSize" className="text-sm font-semibold uppercase tracking-wide text-slate-400">Max Grid Size</label>
                   <select
                     className="select select-sm select-bordered w-full border border-slate-700 bg-slate-950 text-slate-100 focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500"
                     value={maxGridSize}
@@ -386,7 +388,7 @@ export default function PuzzleBrowser() {
                 </div>
 
                 <div className="flex flex-col gap-1">
-                  <label htmlFor="explanationFilter" className="text-xs font-semibold uppercase tracking-wide text-slate-400">Explanation Status</label>
+                  <label htmlFor="explanationFilter" className="text-sm font-semibold uppercase tracking-wide text-slate-400">Explanation Status</label>
                   <select
                     className="select select-sm select-bordered w-full border border-slate-700 bg-slate-950 text-slate-100 focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500"
                     value={explanationFilter}
@@ -399,7 +401,7 @@ export default function PuzzleBrowser() {
                 </div>
 
                 <div className="flex flex-col gap-1">
-                  <label htmlFor="gridConsistent" className="text-xs font-semibold uppercase tracking-wide text-slate-400">Grid Consistency</label>
+                  <label htmlFor="gridConsistent" className="text-sm font-semibold uppercase tracking-wide text-slate-400">Grid Consistency</label>
                   <select
                     className="select select-sm select-bordered w-full border border-slate-700 bg-slate-950 text-slate-100 focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500"
                     value={gridSizeConsistent}
@@ -412,7 +414,7 @@ export default function PuzzleBrowser() {
                 </div>
 
                 <div className="flex flex-col gap-1">
-                  <label htmlFor="arcVersion" className="text-xs font-semibold uppercase tracking-wide text-slate-400">ARC Version</label>
+                  <label htmlFor="arcVersion" className="text-sm font-semibold uppercase tracking-wide text-slate-400">ARC Version</label>
                   <select
                     className="select select-sm select-bordered w-full border border-slate-700 bg-slate-950 text-slate-100 focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500"
                     value={arcVersion}
@@ -429,7 +431,7 @@ export default function PuzzleBrowser() {
                 </div>
 
                 <div className="flex flex-col gap-1">
-                  <label htmlFor="multiTestFilter" className="text-xs font-semibold uppercase tracking-wide text-slate-400">Test Cases</label>
+                  <label htmlFor="multiTestFilter" className="text-sm font-semibold uppercase tracking-wide text-slate-400">Test Cases</label>
                   <select
                     className="select select-sm select-bordered w-full border border-slate-700 bg-slate-950 text-slate-100 focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500"
                     value={multiTestFilter}
@@ -442,7 +444,7 @@ export default function PuzzleBrowser() {
                 </div>
 
                 <div className="flex flex-col gap-1">
-                  <label htmlFor="sortBy" className="text-xs font-semibold uppercase tracking-wide text-slate-400">Sort By</label>
+                  <label htmlFor="sortBy" className="text-sm font-semibold uppercase tracking-wide text-slate-400">Sort By</label>
                   <select
                     className="select select-sm select-bordered w-full border border-slate-700 bg-slate-950 text-slate-100 focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500"
                     value={sortBy}
@@ -457,7 +459,7 @@ export default function PuzzleBrowser() {
                 </div>
               </div>
 
-              <div className="mt-1.5 flex flex-col gap-1.5 border-t border-slate-800 pt-1.5 text-xs text-slate-400 md:flex-row md:items-center md:justify-between">
+              <div className="mt-1.5 flex flex-col gap-1.5 border-t border-slate-800 pt-1.5 text-sm text-slate-400 md:flex-row md:items-center md:justify-between">
                 <div className="flex flex-wrap items-center gap-2">
                   <span className="text-sm font-semibold text-slate-200">Active filters</span>
                   {[
@@ -478,10 +480,10 @@ export default function PuzzleBrowser() {
                   ))}
                 </div>
 
-                <div className="flex flex-wrap items-center gap-2 text-[11px] text-slate-500">
+                <div className="flex flex-wrap items-center gap-2 text-sm text-slate-500">
                   <label htmlFor="puzzleSearch" className="font-semibold uppercase tracking-wide">Direct ID lookup</label>
                   <input
-                    className="input input-xs input-bordered w-48 border border-slate-700 bg-slate-950 text-slate-100 placeholder:text-slate-500 focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500"
+                    className="input input-sm input-bordered w-48 border border-slate-700 bg-slate-950 text-slate-100 placeholder:text-slate-500 focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500"
                     id="puzzleSearch"
                     placeholder="e.g. 1ae2feb7"
                     value={searchQuery}
@@ -497,13 +499,13 @@ export default function PuzzleBrowser() {
                   />
                   <button
                     type="button"
-                    className="btn btn-xs border border-slate-600 bg-slate-900 text-slate-200 hover:border-sky-500 hover:text-sky-300"
+                    className="btn btn-sm border border-slate-600 bg-slate-900 text-slate-200 hover:border-sky-500 hover:text-sky-300"
                     onClick={handleSearch}
                   >
                     Go
                   </button>
                   {searchError && (
-                    <span className="text-[10px] font-semibold text-rose-400">{searchError}</span>
+                    <span className="text-xs font-semibold text-rose-400">{searchError}</span>
                   )}
                 </div>
               </div>
@@ -514,7 +516,7 @@ export default function PuzzleBrowser() {
               <div className="mb-1.5 flex flex-wrap items-center justify-between gap-1.5 text-slate-200">
                 <h2 className="text-base font-semibold uppercase tracking-wide text-slate-300">Puzzle results</h2>
                 {!isLoading && (
-                  <span className="rounded-full border border-slate-700 px-3 py-1 text-xs text-slate-400">
+                  <span className="rounded-full border border-slate-700 px-3 py-1 text-sm text-slate-400">
                     {filteredPuzzles.length} found
                   </span>
                 )}
@@ -522,13 +524,13 @@ export default function PuzzleBrowser() {
               {isLoading ? (
                 <div className="py-6 text-center text-slate-400">
                   <Loader2 className="mx-auto mb-2 h-5 w-5 animate-spin" />
-                  <p className="text-xs">Loading puzzles…</p>
+                  <p className="text-sm">Loading puzzles…</p>
                 </div>
               ) : filteredPuzzles.length === 0 ? (
                 <div className="py-6 text-center text-slate-400">
                   <Grid3X3 className="mx-auto mb-3 h-10 w-10 text-slate-600" />
-                  <p className="text-sm text-slate-300">No puzzles match the current filters.</p>
-                  <p className="mt-1 text-xs text-slate-500">Adjust the criteria to broaden the search.</p>
+                  <p className="text-base text-slate-300">No puzzles match the current filters.</p>
+                  <p className="mt-1 text-sm text-slate-500">Adjust the criteria to broaden the search.</p>
                 </div>
               ) : (
                 <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
@@ -545,11 +547,10 @@ export default function PuzzleBrowser() {
 
             {/* Instructions */}
             <section className="w-full rounded-lg border border-slate-800 bg-slate-900/60 p-2">
-              <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-300">Working notes</h2>
-              <div className="mt-2 space-y-2 text-xs leading-relaxed text-slate-400">
+              <h2 className="text-base font-semibold uppercase tracking-wide text-slate-300">Working notes</h2>
+              <div className="mt-2 space-y-2 text-sm leading-relaxed text-slate-400">
                 <p>
-                  <strong className="text-slate-200">Goal:</strong> Use the browser to study puzzle structure, metadata, and historical attempts. For hands-on solving, pivot to the dedicated human challenge interface at{' '}
-                  <Link href="https://human-arc.gptpluspro.com/assessment" className="text-sky-300 hover:text-sky-200">Puzzle Browser</Link>.
+                  <strong className="text-slate-200">Goal:</strong> Use the browser to study puzzle structure, metadata, and historical attempts. Examine puzzle logic, model explanations, and performance data.
                 </p>
 
                 <p>

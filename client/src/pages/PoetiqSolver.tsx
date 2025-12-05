@@ -11,7 +11,7 @@
 
 import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { useParams, Link } from 'wouter';
-import { Loader2, ChevronDown, ChevronUp, Activity, Timer, Layers, Copy, Check, Eye, EyeOff, Code2, Server, Brain, ListTree, FileJson, ScrollText, Coins, TerminalSquare, Download } from 'lucide-react';
+import { Loader2, Activity, Timer, Layers, Copy, Check, Eye, EyeOff, Code2, Server, Brain, ListTree, FileJson, ScrollText, Coins, TerminalSquare, Download } from 'lucide-react';
 import { usePuzzle } from '@/hooks/usePuzzle';
 import { usePoetiqProgress } from '@/hooks/usePoetiqProgress';
 import { PuzzleGrid } from '@/components/puzzle/PuzzleGrid';
@@ -22,7 +22,6 @@ import { DEFAULT_EMOJI_SET } from '@/lib/spaceEmojis';
 import PoetiqControlPanel from '@/components/poetiq/PoetiqControlPanel';
 import PoetiqPythonTerminal from '@/components/poetiq/PoetiqPythonTerminal';
 import PoetiqLiveDashboard from '@/components/poetiq/PoetiqLiveDashboard';
-import PoetiqAgentsPanel from '@/components/poetiq/PoetiqAgentsRuntimePanel';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 
@@ -55,7 +54,6 @@ export default function PoetiqSolver() {
   const [executions, setExecutions] = useState<any[]>([]);
   const [autoStartTriggered, setAutoStartTriggered] = useState(false);
   const [cameFromCommunity, setCameFromCommunity] = useState(false);
-  const [showLogs, setShowLogs] = useState(true);  // Show event log panel
   const [copied, setCopied] = useState(false);  // For copy button feedback
   const eventLogRef = useRef<HTMLDivElement>(null);  // For auto-scroll
   const [showPromptInspector, setShowPromptInspector] = useState(false);  // Toggle prompt inspector visibility
@@ -157,6 +155,8 @@ export default function PoetiqSolver() {
   const latestPromptTimeline = promptTimeline.slice(-20);
   const latestReasoningHistory = reasoningHistory.slice(-20);
   const latestRawEvents = rawEvents.slice(-20);
+  const streamingCode = state.streamingCode || state.result?.generatedCode || '';
+  const hasTerminalData = executions.length > 0 || (isRunning && !!streamingCode);
   const previousPromptForDiff =
     promptHistory.length > 1 ? promptHistory[promptHistory.length - 2] : undefined;
 
@@ -236,10 +236,7 @@ export default function PoetiqSolver() {
   const headerCostSummary = costData
     ? `${formatCost(costData.total)} total`
     : 'Collecting cost...';
-
-  const isAgentsRuntime =
-    state.currentPromptData?.apiStyle === 'openai_agents' ||
-    !!state.agentModel;
+  const hasEventLog = isRunning || isDone || (state.logLines?.length ?? 0) > 0;
 
   // Track start time when solver begins
   useEffect(() => {
@@ -621,25 +618,125 @@ export default function PoetiqSolver() {
 
           {/* Live Dashboard - Shows when running or completed */}
           {(isRunning || isDone || state.status === 'error') && (
-            <PoetiqLiveDashboard state={state} rawEvents={state.rawEvents} />
+            <PoetiqLiveDashboard state={state} />
           )}
 
-          {/* Agents Panel */}
-          {isAgentsRuntime && (
-            <div className="rounded-xl border border-indigo-200 bg-white p-3 shadow-sm">
-              <PoetiqAgentsPanel state={state} />
-            </div>
+          {(hasEventLog || showRawEvents || (isDone && resultSummary)) && (
+            <section className="grid gap-4 lg:grid-cols-3">
+              <div
+                className={`space-y-4 ${
+                  showRawEvents ? 'lg:col-span-2' : 'lg:col-span-3'
+                }`}
+              >
+                {hasEventLog && (
+                  <div className="flex min-h-[320px] flex-col rounded-2xl border border-slate-200 bg-white shadow-sm">
+                    <div className="flex items-center justify-between border-b border-slate-100 bg-slate-50 px-4 py-3">
+                      <div className="flex items-center gap-3">
+                        <Activity className="w-5 h-5 text-slate-600" />
+                        <span className="text-base font-bold text-slate-800">EVENT LOG</span>
+                        <span className="text-sm text-slate-500">({state.logLines?.length ?? 0} events)</span>
+                        {isRunning && (
+                          <span className="flex items-center gap-1 text-sm font-bold text-green-600">
+                            <span className="h-2 w-2 animate-pulse rounded-full bg-green-500" />
+                            LIVE
+                          </span>
+                        )}
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={() => downloadTextFile(`poetiq-events-${taskId}.txt`, state.logLines)}
+                          disabled={!state.logLines || state.logLines.length === 0}
+                          className="flex items-center gap-1.5 rounded bg-slate-200 px-3 py-1.5 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-300 disabled:opacity-50"
+                          title="Download full event log"
+                        >
+                          <Download className="w-4 h-4" />
+                          Export
+                        </button>
+                        <button
+                          onClick={() => {
+                            const text = state.logLines?.join('\n') || '';
+                            navigator.clipboard.writeText(text);
+                            setCopied(true);
+                            setTimeout(() => setCopied(false), 2000);
+                          }}
+                          className="flex items-center gap-1.5 rounded bg-slate-200 px-3 py-1.5 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-300"
+                          title="Copy all events"
+                        >
+                          {copied ? <Check className="w-4 h-4 text-green-600" /> : <Copy className="w-4 h-4" />}
+                          {copied ? 'Copied!' : 'Copy'}
+                        </button>
+                      </div>
+                    </div>
+                    <div ref={eventLogRef} className="flex-1 space-y-1 overflow-y-auto bg-slate-950 px-4 py-3 font-mono text-xs text-slate-100">
+                      {(state.logLines || []).map((line, idx) => (
+                        <div
+                          key={`${line}-${idx}`}
+                          className="border-b border-slate-800/60 pb-1 last:border-b-0 last:pb-0"
+                        >
+                          {line}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {showRawEvents && (
+                <div className="space-y-4">
+                  <div className="flex max-h-64 flex-col overflow-hidden rounded-2xl border border-slate-300 bg-white shadow-sm">
+                    <div className="sticky top-0 flex items-center justify-between border-b border-slate-200 bg-slate-100 px-4 py-2">
+                      <div className="flex items-center gap-2">
+                        <FileJson className="w-4 h-4 text-slate-700" />
+                        <span className="text-sm font-bold text-slate-800">RAW EVENTS</span>
+                        <span className="text-xs text-slate-500">({latestRawEvents.length} recent)</span>
+                      </div>
+                    </div>
+                    <div className="flex-1 space-y-2 overflow-y-auto bg-slate-50 p-3 text-xs font-mono">
+                      {latestRawEvents.length === 0 ? (
+                        <div className="py-4 text-center text-slate-500">Waiting for events...</div>
+                      ) : (
+                        latestRawEvents.map((event, idx) => {
+                          const payloadText = JSON.stringify(event.payload, null, 2);
+                          const clippedPayload =
+                            payloadText.length > 1500 ? `${payloadText.slice(0, 1500)}...` : payloadText;
+                          return (
+                            <div key={`${event.timestamp}-${idx}`} className="rounded border border-slate-200 bg-white p-2">
+                              <div className="mb-1 flex items-center justify-between text-[11px] text-slate-500">
+                                <div className="flex items-center gap-2">
+                                  <span className="font-semibold text-slate-700">{event.type}</span>
+                                  {event.phase && (
+                                    <span className="rounded bg-slate-200 px-1.5 py-0.5 text-slate-700">
+                                      {event.phase}
+                                    </span>
+                                  )}
+                                </div>
+                                <span>{formatTimestamp(event.timestamp)}</span>
+                              </div>
+                              <pre className="max-h-32 overflow-y-auto whitespace-pre-wrap rounded bg-slate-950 p-2 text-slate-100">
+                                {clippedPayload}
+                              </pre>
+                            </div>
+                          );
+                        })
+                      )}
+                    </div>
+                  </div>
+                </div>
+              )}
+            </section>
           )}
 
           {/* Two-column layout: Terminal + Logs */}
           <div className="grid gap-4 lg:grid-cols-2">
             {/* Left: Terminal + Python Console */}
             <div className="space-y-4">
-              <PoetiqPythonTerminal
-                executions={executions}
-                currentCode={isRunning ? state.result?.generatedCode : undefined}
-                isRunning={isRunning}
-              />
+              {hasTerminalData && (
+                <PoetiqPythonTerminal
+                  executions={executions}
+                  currentCode={isRunning ? streamingCode : undefined}
+                  isRunning={isRunning}
+                />
+              )}
 
               {pythonLogLines.length > 0 && (
                 <div className="rounded-xl border border-slate-200 bg-white shadow-sm">
@@ -670,7 +767,6 @@ export default function PoetiqSolver() {
                 </div>
               )}
 
-              {/* Final Result */}
               {isDone && resultSummary && (
                 <div
                   className={`rounded-xl border-2 px-4 py-3 shadow-sm ${
@@ -691,124 +787,27 @@ export default function PoetiqSolver() {
                           resultSummary.success ? 'text-green-800' : 'text-red-700'
                         }`}
                       >
-                        {resultSummary.success ? 'SOLVED' : 'NOT SOLVED'}
+                        {resultSummary.success ? 'CORRECT' : 'INCORRECT'}
                       </div>
                       <div className="text-xs text-slate-600">
-                        {resultSummary.iterations} iter{resultSummary.trainScore !== undefined && ` • ${(resultSummary.trainScore * 100).toFixed(0)}% train`}
+                        {resultSummary.iterations} iter
+                        {typeof resultSummary.trainScore === 'number' &&
+                          ` • ${(resultSummary.trainScore * 100).toFixed(0)}% train`}
                       </div>
                     </div>
                   </div>
-                  {resultSummary.code && (
+                  {(resultSummary.code || streamingCode) && (
                     <pre className="max-h-48 overflow-auto rounded bg-slate-950 p-2 font-mono text-xs text-green-400">
-                      {resultSummary.code}
+                      {resultSummary.code || streamingCode}
                     </pre>
                   )}
                 </div>
               )}
+
             </div>
 
             {/* Right: Logs and Inspectors */}
             <div className="space-y-4">
-
-            {/* Event Log - primary live feed */}
-            {(isRunning || isDone || (state.logLines?.length ?? 0) > 0) && (
-              <div className="flex min-h-[320px] flex-col rounded-2xl border border-slate-200 bg-white shadow-sm">
-                <div className="flex items-center justify-between border-b border-slate-100 bg-slate-50 px-4 py-3">
-                  <div className="flex items-center gap-3">
-                    <Activity className="w-5 h-5 text-slate-600" />
-                    <span className="text-base font-bold text-slate-800">EVENT LOG</span>
-                    <span className="text-sm text-slate-500">({state.logLines?.length ?? 0} events)</span>
-                    {isRunning && (
-                      <span className="flex items-center gap-1 text-sm font-bold text-green-600">
-                        <span className="h-2 w-2 animate-pulse rounded-full bg-green-500" />
-                        LIVE
-                      </span>
-                    )}
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <button
-                      onClick={() => downloadTextFile(`poetiq-events-${taskId}.txt`, state.logLines)}
-                      disabled={!state.logLines || state.logLines.length === 0}
-                      className="flex items-center gap-1.5 rounded bg-slate-200 px-3 py-1.5 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-300 disabled:opacity-50"
-                      title="Download full event log"
-                    >
-                      <Download className="w-4 h-4" />
-                      Export
-                    </button>
-                    {/* Copy Button */}
-                    <button
-                      onClick={() => {
-                        const text = state.logLines?.join('\n') || '';
-                        navigator.clipboard.writeText(text);
-                        setCopied(true);
-                        setTimeout(() => setCopied(false), 2000);
-                      }}
-                      className="flex items-center gap-1.5 rounded bg-slate-200 px-3 py-1.5 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-300"
-                      title="Copy all events"
-                    >
-                      {copied ? <Check className="w-4 h-4 text-green-600" /> : <Copy className="w-4 h-4" />}
-                      {copied ? 'Copied!' : 'Copy'}
-                    </button>
-                    <button onClick={() => setShowLogs(!showLogs)} className="rounded p-1.5 text-slate-600 hover:bg-slate-100">
-                      {showLogs ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
-                    </button>
-                  </div>
-                </div>
-                {showLogs && (
-                  <div 
-                    ref={eventLogRef}
-                    className="flex-1 overflow-y-auto bg-slate-950 p-3 font-mono text-sm"
-                  >
-                    {state.logLines?.length === 0 ? (
-                      <div className="py-8 text-center text-slate-500">Waiting for events...</div>
-                    ) : (
-                      state.logLines?.map((line, idx) => (
-                        <div key={idx} className="border-b border-slate-800 py-1 text-slate-200 last:border-0">
-                          {line}
-                        </div>
-                      ))
-                    )}
-                  </div>
-                )}
-              </div>
-            )}
-
-            {/* Raw Events - structured payloads */}
-            {showRawEvents && (
-              <div className="flex max-h-64 flex-col overflow-hidden rounded-2xl border border-slate-300 bg-white shadow-sm">
-                <div className="sticky top-0 flex items-center justify-between border-b border-slate-200 bg-slate-100 px-4 py-2">
-                  <div className="flex items-center gap-2">
-                    <FileJson className="w-4 h-4 text-slate-700" />
-                    <span className="text-sm font-bold text-slate-800">RAW EVENTS</span>
-                    <span className="text-xs text-slate-500">({latestRawEvents.length} recent)</span>
-                  </div>
-                </div>
-                <div className="flex-1 space-y-2 overflow-y-auto bg-slate-50 p-3 text-xs font-mono">
-                  {latestRawEvents.length === 0 ? (
-                    <div className="py-4 text-center text-slate-500">Waiting for events...</div>
-                  ) : (
-                    latestRawEvents.map((event, idx) => {
-                      const payloadText = JSON.stringify(event.payload, null, 2);
-                      const clippedPayload = payloadText.length > 1500 ? `${payloadText.slice(0, 1500)}...` : payloadText;
-                      return (
-                        <div key={`${event.timestamp}-${idx}`} className="rounded border border-slate-200 bg-white p-2">
-                          <div className="mb-1 flex items-center justify-between text-[11px] text-slate-500">
-                            <div className="flex items-center gap-2">
-                              <span className="font-semibold text-slate-700">{event.type}</span>
-                              {event.phase && <span className="rounded bg-slate-200 px-1.5 py-0.5 text-slate-700">{event.phase}</span>}
-                            </div>
-                            <span>{formatTimestamp(event.timestamp)}</span>
-                          </div>
-                          <pre className="max-h-32 overflow-y-auto whitespace-pre-wrap rounded bg-slate-950 p-2 text-slate-100">
-                            {clippedPayload}
-                          </pre>
-                        </div>
-                      );
-                    })
-                  )}
-                </div>
-              </div>
-            )}
 
             {/* Prompt Inspector - Shows what's being sent to the AI */}
             {showPromptInspector && state.currentPromptData && (

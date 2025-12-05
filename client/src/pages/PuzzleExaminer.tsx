@@ -188,6 +188,8 @@ export default function PuzzleExaminer() {
     setCandidateCount,
     thinkingBudget,
     setThinkingBudget,
+    includeGridImages,
+    setIncludeGridImages,
   } = useAnalysisResults({
     taskId,
     refetchExplanations: refetchSummaries,
@@ -430,6 +432,8 @@ export default function PuzzleExaminer() {
                 onReasoningVerbosityChange={setReasoningVerbosity}
                 reasoningSummaryType={reasoningSummaryType}
                 onReasoningSummaryTypeChange={setReasoningSummaryType}
+                includeGridImages={includeGridImages}
+                onIncludeGridImagesChange={(value: boolean) => setIncludeGridImages(value)}
               />
             </CardContent>
           </Card>

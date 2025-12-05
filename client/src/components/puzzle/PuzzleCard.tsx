@@ -221,7 +221,7 @@ export const PuzzleCard: React.FC<PuzzleCardProps> = ({
               <div>
                 <div className="text-[11px] font-medium text-muted-foreground uppercase tracking-wide">Tests</div>
                 <div className="text-sm font-semibold text-card-foreground">
-                  {puzzle.hasMultiplePredictions ? 'Multi' : 'Single'}
+                  {taskData?.test && taskData.test.length > 1 ? `${taskData.test.length}` : 'Single'}
                 </div>
               </div>
             </div>

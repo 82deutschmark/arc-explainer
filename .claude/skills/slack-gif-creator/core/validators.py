@@ -45,9 +45,9 @@ def check_slack_size(gif_path: str | Path, is_emoji: bool = True) -> tuple[bool,
 
     # Print feedback
     if passes:
-        print(f"✓ {size_kb:.1f} KB - within {limit_kb} KB limit")
+        print(f"[OK] {size_kb:.1f} KB - within {limit_kb} KB limit")
     else:
-        print(f"✗ {size_kb:.1f} KB - exceeds {limit_kb} KB limit")
+        print(f"[FAIL] {size_kb:.1f} KB - exceeds {limit_kb} KB limit")
         overage_kb = size_kb - limit_kb
         overage_percent = (overage_kb / limit_kb) * 100
         print(f"  Over by: {overage_kb:.1f} KB ({overage_percent:.1f}%)")
@@ -84,13 +84,13 @@ def validate_dimensions(width: int, height: int, is_emoji: bool = True) -> tuple
         info['acceptable'] = acceptable
 
         if optimal:
-            print(f"✓ {width}x{height} - optimal for emoji")
+            print(f"[OK] {width}x{height} - optimal for emoji")
             passes = True
         elif acceptable:
-            print(f"⚠ {width}x{height} - acceptable but 128x128 is optimal")
+            print(f"[WARN] {width}x{height} - acceptable but 128x128 is optimal")
             passes = True
         else:
-            print(f"✗ {width}x{height} - emoji should be square, 128x128 recommended")
+            print(f"[FAIL] {width}x{height} - emoji should be square, 128x128 recommended")
             passes = False
     else:
         # Message GIFs should be square-ish and reasonable size
@@ -104,16 +104,16 @@ def validate_dimensions(width: int, height: int, is_emoji: bool = True) -> tuple
         is_square_ish = aspect_ratio <= 2.0
 
         if is_square_ish and reasonable_size:
-            print(f"✓ {width}x{height} - good for message GIF")
+            print(f"[OK] {width}x{height} - good for message GIF")
             passes = True
         elif is_square_ish:
-            print(f"⚠ {width}x{height} - square-ish but unusual size")
+            print(f"[WARN] {width}x{height} - square-ish but unusual size")
             passes = True
         elif reasonable_size:
-            print(f"⚠ {width}x{height} - good size but not square-ish")
+            print(f"[WARN] {width}x{height} - good size but not square-ish")
             passes = True
         else:
-            print(f"✗ {width}x{height} - unusual dimensions for Slack")
+            print(f"[FAIL] {width}x{height} - unusual dimensions for Slack")
             passes = False
 
     return passes, info
@@ -189,9 +189,9 @@ def validate_gif(gif_path: str | Path, is_emoji: bool = True) -> tuple[bool, dic
 
     print("=" * 60)
     if all_pass:
-        print("✓ All validations passed!")
+        print("[OK] All validations passed!")
     else:
-        print("✗ Some validations failed")
+        print("[FAIL] Some validations failed")
     print()
 
     return all_pass, results

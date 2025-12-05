@@ -35,11 +35,15 @@ export interface ResponsesPayloadResult {
   expectingJsonSchema: boolean;
 }
 
+type ResponseContent =
+  | { type: "input_text"; text: string }
+  | { type: "input_image"; image_url: string; detail?: "low" | "high" };
+
 type ResponseMessage = {
   id: string;
   role: "user" | "system" | "developer" | "assistant";
   type: "message";
-  content: Array<{ type: "input_text"; text: string }>;
+  content: ResponseContent[];
 };
 
 let messageCounter = 0;
@@ -177,6 +181,26 @@ export function buildResponsesPayload({
 
   const includeInstructions = !(isContinuation && serviceOpts.suppressInstructionsOnContinuation);
   const instructions = includeInstructions ? promptPackage.systemPrompt || undefined : undefined;
+
+  const userMessage = messages.find(m => m.role === "user");
+  if (
+    userMessage &&
+    serviceOpts.includeGridImages &&
+    Array.isArray(serviceOpts.gridImages) &&
+    serviceOpts.gridImages.length > 0
+  ) {
+    for (const img of serviceOpts.gridImages) {
+      if (!img || typeof img.dataUrl !== "string" || !img.dataUrl) continue;
+      if (typeof img.description === "string" && img.description.trim().length > 0) {
+        userMessage.content.push({ type: "input_text", text: img.description });
+      }
+      userMessage.content.push({
+        type: "input_image",
+        image_url: img.dataUrl,
+        detail: "low",
+      });
+    }
+  }
 
   const payload = removeUndefined({
     model: modelName,
