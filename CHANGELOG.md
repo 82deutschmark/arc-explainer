@@ -1,6 +1,15 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top with the time and date!
 
+### Version 5.40.2  Dec 5, 2025 3:58pm
+
+- **Clickable cards + confirmed 1st place scores** (Author: Cascade)
+  - Updated JF Puget & Ivan Sorokin with confirmed 1st place and 24.03% score.
+  - Entire card image now clickable (opens profile modal).
+  - Cards smaller (max-width 280px) with hover zoom effect and "View Profile" overlay.
+  - Dialog X close button now visible with dark background.
+  - **Files**: `server/scripts/seedContributors.ts`, `client/src/components/human/HumanTradingCard.tsx`, `client/src/components/ui/dialog.tsx`
+
 ### Version 5.40.1  Dec 5, 2025 3:50pm
 
 - **Hall of Fame design overhaul** (Author: Cascade using Claude 3.5 Sonnet)
