@@ -1,6 +1,13 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top with the time and date!
 
+### Version 5.38.4  Dec 4, 2025 8:20pm
+
+- **Grid image toggle inside Advanced Controls** (Author: Cascade using Haiku 4.5)
+  - Moved the "include puzzle screenshots" switch into the shared `AdvancedControls` component so PuzzleExaminer, PuzzleDiscussion, and ModelDebate share a single unified control.
+  - The toggle is now always visible; backend capability checks still determine whether ARC grid PNGs are actually attached, so non-vision models remain text-only.
+  - **Files**: `client/src/components/puzzle/AdvancedControls.tsx`, `client/src/pages/PuzzleExaminer.tsx`, `client/src/components/puzzle/refinement/ProfessionalRefinementUI.tsx`, `client/src/components/puzzle/debate/IndividualDebate.tsx`
+
 ### Version 5.38.3  Dec 4, 2025 7:45pm
 
 - **Model catalog: mark GPT-5 family as vision-capable** (Author: Cascade using Haiku 4.5)
