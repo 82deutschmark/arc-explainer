@@ -1,6 +1,14 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top with the time and date!
 
+### Version 5.38.2  Dec 4, 2025 7:40pm
+
+- **Vision toggles for refinement and debate UIs** (Author: Cascade using Haiku 4.5)
+  - Surfaced the existing `includeGridImages` option in the PuzzleDiscussion progressive reasoning interface and the ModelDebate challenge interface, reusing the grid image support added in 5.38.0.
+  - Added compact shadcn `Switch` controls in ProfessionalRefinementUI and IndividualDebate, visible only when the currently selected model has `supportsVision = true`.
+  - Wired these toggles through `useAnalysisResults` so both streaming and non-streaming refinement/debate runs can include ARC grid PNGs for vision-capable models while preserving text-only behavior for all other models.
+  - **Files**: `client/src/pages/PuzzleDiscussion.tsx`, `client/src/components/puzzle/refinement/ProfessionalRefinementUI.tsx`, `client/src/pages/ModelDebate.tsx`, `client/src/components/puzzle/debate/IndividualDebate.tsx`
+
 ### Version 5.38.1  Dec 4, 2025 7:25pm
 
 - **PuzzleCard: Fix test count display to show actual test cases instead of prediction count** (Author: Claude Code using Haiku 4.5)

@@ -134,7 +134,9 @@ export default function PuzzleDiscussion() {
     streamingPromptPreview,
     streamError,
     cancelStreamingAnalysis,
-    closeStreamingModal // ✅ ADD: For proper modal management
+    closeStreamingModal, // ✅ ADD: For proper modal management
+    includeGridImages,
+    setIncludeGridImages,
   } = useAnalysisResults({
     taskId: taskId || '',
     refetchExplanations,
@@ -664,6 +666,8 @@ export default function PuzzleDiscussion() {
               reasoningSummaryType={reasoningSummaryType}
               setReasoningSummaryType={setReasoningSummaryType}
               isGPT5ReasoningModel={isGPT5ReasoningModel}
+              includeGridImages={includeGridImages}
+              setIncludeGridImages={setIncludeGridImages}
               onBackToList={refinementState.endRefinement}
               onResetRefinement={refinementState.resetRefinement}
               onUserGuidanceChange={refinementState.setUserGuidance}
