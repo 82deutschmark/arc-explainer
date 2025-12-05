@@ -3,11 +3,12 @@
 
 ### Version 5.38.5  Dec 4, 2025 10:35pm
 
-- **Fix PuzzleBrowser button: correct link and improve visibility** (Author: Claude Code using Haiku 4.5)
+- **Fix PuzzleBrowser button: correct link, improve visibility, and reposition to header** (Author: Claude Code using Haiku 4.5)
   - Fixed broken button link from `/puzzle-db-viewer` to correct route `/puzzles/database`
-  - Increased button prominence with red styling (`bg-red-600 hover:bg-red-700`), larger padding (`px-8 py-4`), and bold text (`text-lg font-bold`)
-  - Added shadow effect and improved spacing for better visual hierarchy
-  - **Files**: `client/src/pages/PuzzleBrowser.tsx:360-368`
+  - Moved button from bottom of featured puzzles section to header level, placing it alongside "Open Research Browser" button for better visibility and layout consistency
+  - Adjusted button styling for header context: red styling (`bg-red-600 hover:bg-red-700`), adjusted padding (`px-6 py-2`), with bold text and shadow
+  - Button now displays as "View All Unsolved" (shortened for header context) instead of the longer descriptive text
+  - **Files**: `client/src/pages/PuzzleBrowser.tsx:314-332, 360-366`
 
 ### Version 5.38.4  Dec 4, 2025 8:20pm
 
