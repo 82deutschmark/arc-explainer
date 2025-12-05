@@ -132,23 +132,23 @@ const contributors: CreateContributorRequest[] = [
 
   {
     fullName: 'Guillermo Barbadillo',
-    handle: 'guille_bar',
-    affiliation: 'Independent Researcher',
-    achievement: '2nd Place ARC Prize 2024 - 40% accuracy',
-    description: 'Achieved second place in ARC Prize 2024 with Omni-ARC approach combining multiple solving techniques.',
+    handle: 'ironbar',
+    affiliation: 'Veridas AI',
+    achievement: '5th Place ARC Prize 2025 - 6.53% accuracy (semi-private eval)',
+    description: 'Continued development of multi-technique approach, achieving 5th place in ARC Prize 2025 with strong public Kaggle leaderboard performance.',
     imageUrl: '/guillermo.png',
     yearStart: 2024,
-    yearEnd: 2024,
-    score: '40% (2nd Place)',
+    yearEnd: 2025,
+    score: '6.53% (5th Place) / 11.94% (Public Kaggle)',
     approach: 'Omni-ARC approach combining multiple techniques for comprehensive puzzle solving',
     uniqueTechnique: 'Multi-method ensemble combining neural and symbolic approaches',
     links: {
       twitter: 'https://x.com/guille_bar',
       kaggle: 'https://www.kaggle.com/guillermobarba'
     },
-    teamName: 'Omni-ARC',
+    teamName: 'Veridas',
     category: 'competition_winner',
-    rank: undefined
+    rank: 5
   },
 
   {
