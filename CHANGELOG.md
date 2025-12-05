@@ -1,6 +1,18 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top with the time and date!
 
+### Version 5.40.1  Dec 5, 2025 3:50pm
+
+- **Hall of Fame design overhaul** (Author: Cascade using Claude 3.5 Sonnet)
+  - Warmer color palette: Replaced cold slate-950 with warm zinc gradient background.
+  - Full profile modal redesign: Side-by-side layout with large image (45%) alongside content (55%).
+  - Image now displays full-size with equal visual priority as text - no extra click required.
+  - Added subtle radial gradient texture overlay for depth.
+  - Section headers now have icon badges with colored backgrounds.
+  - Cards have refined shadows, hover effects, and smoother transitions.
+  - Gradient text on main title for visual polish.
+  - **Files**: `client/src/pages/HumanTradingCards.tsx`, `client/src/components/human/HumanTradingCard.tsx`
+
 ### Version 5.40.0  Dec 5, 2025 3:45pm
 
 - **ARC Prize 2025 Winners Page Refresh** (Author: Cascade using Claude 3.5 Sonnet)
