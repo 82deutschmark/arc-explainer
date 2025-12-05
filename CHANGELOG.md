@@ -1,6 +1,16 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top with the time and date!
 
+### Version 5.39.1  Dec 5, 2025 2:45pm
+
+- **CompactPuzzleCard refactored to follow PuzzleCard patterns** (Author: Claude Sonnet 4)
+  - Fixed theme mismatch: replaced DaisyUI `bg-base-100` (white) with shadcn/ui Card using CSS variables (`bg-card`, `text-card-foreground`) for proper dark theme support on PuzzleBrowser's `bg-slate-950` background.
+  - Increased grid preview from 64px to 80px to match PuzzleCard and improve visibility.
+  - Replaced `<a target="_blank">` with wouter `Link` for proper SPA navigation instead of opening new tabs.
+  - Removed excessive whitespace: consolidated metrics into clean 2-column grid layout with conditional rendering.
+  - Added proper hover states and "View Analysis →" footer that matches PuzzleCard UX.
+  - **Files**: `client/src/components/puzzle/CompactPuzzleCard.tsx`
+
 ### Version 5.39.0  Dec 6, 2025 11:55pm
 
 - **Compact Puzzle cards stay informative** (Author: Codex)
