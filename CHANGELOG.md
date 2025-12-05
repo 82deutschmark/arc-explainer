@@ -99,6 +99,12 @@
   - Added simple button after featured gallery linking to `/puzzle-db-viewer` for browsing all unsolved ARC1 and ARC2 evaluation puzzles.
   - **Files**: `client/src/pages/PuzzleBrowser.tsx`
 
+### Version 5.37.1  Dec 4, 2025 6:50pm
+
+- **Puzzle Browser: reuse CompactPuzzleCard** (Author: Codex)
+  - Swapped every Puzzle Browser puzzle card (featured gallery + advanced results) to the shared `CompactPuzzleCard`, including helper projection logic so `EnhancedPuzzleMetadata` satisfies the required `PuzzleDBStats` shape and keeps the GIF/TinyGrid preview behavior consistent with `/puzzles/database`.
+  - **Files**: `client/src/pages/PuzzleBrowser.tsx`, `client/src/components/puzzle/CompactPuzzleCard.tsx`
+
 ### Version 5.37.0  Dec 4, 2025 6:25pm
 
 - **ARC2 GIF previews for CompactPuzzleCard** (Author: Codex)
