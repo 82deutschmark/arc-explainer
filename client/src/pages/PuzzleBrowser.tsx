@@ -316,7 +316,7 @@ export default function PuzzleBrowser() {
                 href="/puzzles/database"
                 className="w-full px-8 py-4 rounded-lg bg-red-600 hover:bg-red-700 text-white font-bold text-lg transition-colors shadow-lg text-center"
               >
-                See puzzles from ARC 1 and 2, which have not been solved yet
+                See unsolved puzzles from ARC 1 and 2 Evaluation
               </Link>
               <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-end sm:gap-3">
                 {!isFeaturedLoading && (
