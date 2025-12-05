@@ -11,7 +11,7 @@ import React, { useEffect, useMemo } from 'react';
 import { useArcContributors } from '@/hooks/useArcContributors';
 import { HumanTradingCard } from '@/components/human/HumanTradingCard';
 import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
-import { Loader2, Users, Trophy, ScrollText, History, Star, ExternalLink, Award, Sparkles, Calendar } from 'lucide-react';
+import { Loader2, Users, Trophy, ScrollText, History, Star, ExternalLink, Award, Sparkles, Calendar, Rocket } from 'lucide-react';
 
 export default function HumanTradingCards() {
   const { data, isLoading, error } = useArcContributors();
@@ -22,8 +22,8 @@ export default function HumanTradingCards() {
   }, []);
 
   // Categorize contributors for 2025 results
-  const { founders, topPaperAward2025, winners2025, winners2024, researchers, pioneers } = useMemo(() => {
-    if (!data?.contributors) return { founders: [], topPaperAward2025: [], winners2025: [], winners2024: [], researchers: [], pioneers: [] };
+  const { founders, topPaperAward2025, winners2025, winners2024, researchers, pioneers, arc3Preview } = useMemo(() => {
+    if (!data?.contributors) return { founders: [], topPaperAward2025: [], winners2025: [], winners2024: [], researchers: [], pioneers: [], arc3Preview: [] };
     
     const contributors = [...data.contributors];
     
@@ -59,7 +59,12 @@ export default function HumanTradingCards() {
       .filter(c => c.category === 'pioneer' || (c.yearStart && c.yearStart < 2024 && c.rank !== 0 && c.category !== 'founder'))
       .sort((a, b) => b.yearStart! - a.yearStart!);
 
-    return { founders, topPaperAward2025, winners2025, winners2024, researchers, pioneers };
+    // ARC3 2026 Preview - Rising Stars
+    const arc3Preview = contributors
+      .filter(c => c.category === 'arc3_preview')
+      .sort((a, b) => (a.rank || 999) - (b.rank || 999));
+
+    return { founders, topPaperAward2025, winners2025, winners2024, researchers, pioneers, arc3Preview };
   }, [data?.contributors]);
 
   if (error) {
@@ -274,6 +279,28 @@ export default function HumanTradingCards() {
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                   {pioneers.map(contributor => (
+                    <div key={contributor.id} className="h-full">
+                      <HumanTradingCard contributor={contributor} />
+                    </div>
+                  ))}
+                </div>
+              </section>
+            )}
+
+            {/* ARC3 2026 Preview - Rising Stars */}
+            {arc3Preview.length > 0 && (
+              <section className="space-y-8">
+                <div className="flex items-center gap-4 border-b border-cyan-500/30 pb-5">
+                  <div className="p-2 rounded-xl bg-cyan-500/20 border border-cyan-500/30">
+                    <Rocket className="h-6 w-6 text-cyan-400" />
+                  </div>
+                  <div>
+                    <h2 className="text-2xl font-bold text-zinc-100">ARC3 2026</h2>
+                    <p className="text-sm text-cyan-400">Rising Stars & Agent Preview Winners</p>
+                  </div>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                  {arc3Preview.map(contributor => (
                     <div key={contributor.id} className="h-full">
                       <HumanTradingCard contributor={contributor} />
                     </div>

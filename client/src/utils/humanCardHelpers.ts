@@ -59,6 +59,12 @@ export function getCategoryGradient(category: ContributorCategory): {
       backgroundGradient: 'bg-slate-900',
       accentColor: 'bg-slate-500/10 text-slate-400 border-slate-500/20',
       textColor: 'text-slate-400'
+    },
+    'arc3_preview': {
+      borderGradient: 'border-cyan-500/60',
+      backgroundGradient: 'bg-gradient-to-br from-slate-900 via-cyan-950/20 to-slate-900',
+      accentColor: 'bg-cyan-500/15 text-cyan-400 border-cyan-500/30',
+      textColor: 'text-cyan-400'
     }
   };
 
@@ -75,7 +81,8 @@ export function getCategoryDisplayName(category: ContributorCategory): string {
     'top_paper_award': 'Top Paper Award',
     'researcher': 'Researcher',
     'founder': 'Founder & Organizer',
-    'pioneer': 'Pioneer'
+    'pioneer': 'Pioneer',
+    'arc3_preview': 'ARC3 Preview'
   };
 
   return names[category];
@@ -101,7 +108,8 @@ export function getCategoryIcon(category: ContributorCategory): string {
     'top_paper_award': '🏅',
     'researcher': '🔬',
     'founder': '🚀',
-    'pioneer': '⭐'
+    'pioneer': '⭐',
+    'arc3_preview': '🚀'
   };
 
   return icons[category];

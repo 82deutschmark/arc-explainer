@@ -40,7 +40,8 @@ export type ContributorCategory =
   | 'top_paper_award'
   | 'researcher'
   | 'founder'
-  | 'pioneer';
+  | 'pioneer'
+  | 'arc3_preview';
 
 export interface ArcContributorsResponse {
   contributors: ArcContributor[];
