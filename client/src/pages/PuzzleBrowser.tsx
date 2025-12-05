@@ -11,7 +11,7 @@
 import React, { useState, useCallback } from 'react';
 import { Link, useLocation } from 'wouter';
 import { usePuzzleList } from '@/hooks/usePuzzle';
-import { useQuery } from '@tanstack/react-query';
+import { useQueries } from '@tanstack/react-query';
 import { Loader2, Grid3X3, MessageSquare, Youtube, ExternalLink, ListVideo } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { EmojiMosaicAccent } from '@/components/browser/EmojiMosaicAccent';
@@ -21,6 +21,8 @@ import type { PuzzleDBStats, PuzzlePerformanceData } from '@/hooks/usePuzzleDBSt
 import { CompactPuzzleCard } from '@/components/puzzle/CompactPuzzleCard';
 import { usePuzzleDBStats } from '@/hooks/usePuzzleDBStats';
 import { usePageMeta } from '@/hooks/usePageMeta';
+import type { ARCTask } from '@shared/types';
+import { apiRequest } from '@/lib/queryClient';
 
 const HERO_STREAMER_PATTERN = [
   '🟥', '🟧', '🟨', '🟩', '🟦', '🟪', '⬛', '🟥', '🟧', '🟨',
@@ -150,7 +152,7 @@ export default function PuzzleBrowser() {
   }, [maxGridSize, gridSizeConsistent, arcVersion, multiTestFilter]);
 
   const { puzzles, isLoading, error } = usePuzzleList(filters);
-  const { data: puzzleStats = [] } = usePuzzleDBStats();
+  const { data: puzzleStats = [] } = usePuzzleDBStats({ includeRichMetrics: true });
   const puzzleStatsMap = React.useMemo(
     () => new Map(puzzleStats.map((stat: PuzzleDBStats) => [stat.id, stat])),
     [puzzleStats]
@@ -173,6 +175,35 @@ export default function PuzzleBrowser() {
   }, [allPuzzles]);
 
   const isFeaturedLoading = allPuzzlesLoading;
+
+  const featuredTaskQueries = useQueries({
+    queries: featuredPuzzles.map((puzzle) => ({
+      queryKey: ['puzzle-task', puzzle.id],
+      queryFn: async (): Promise<ARCTask> => {
+        const response = await apiRequest('GET', `/api/puzzle/task/${puzzle.id}`);
+        const json = await response.json();
+        if (!json.success) {
+          throw new Error(`Failed to load puzzle ${puzzle.id}`);
+        }
+        return json.data as ARCTask;
+      },
+      staleTime: 1000 * 60 * 15,
+      refetchOnWindowFocus: false,
+    })),
+  });
+
+  const featuredTaskMap = React.useMemo(() => {
+    const map = new Map<string, ARCTask>();
+    featuredTaskQueries.forEach((query, index) => {
+      if (query.data) {
+        const puzzleId = featuredPuzzles[index]?.id;
+        if (puzzleId) {
+          map.set(puzzleId, query.data);
+        }
+      }
+    });
+    return map;
+  }, [featuredTaskQueries, featuredPuzzles]);
 
   // Apply explanation filtering and sorting after getting puzzles from the hook (advanced browser only)
   const filteredPuzzles = React.useMemo(() => {
@@ -388,7 +419,11 @@ export default function PuzzleBrowser() {
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4">
                 {featuredPuzzles.map((puzzle: EnhancedPuzzleMetadata) => (
                   <div key={puzzle.id} className="flex flex-col gap-2">
-                    <CompactPuzzleCard puzzle={getStatsForPuzzle(puzzle)} lazyLoadGrid={false} />
+                    <CompactPuzzleCard
+                      puzzle={getStatsForPuzzle(puzzle)}
+                      lazyLoadGrid={false}
+                      prefetchedTask={featuredTaskMap.get(puzzle.id) ?? null}
+                    />
                     {TEAM_NOTES[puzzle.id] && (
                       <div className="rounded-md border border-slate-800 bg-slate-950/80 px-3 py-2 text-sm leading-relaxed text-slate-200">
                         <div className="text-xs font-semibold uppercase tracking-wide text-sky-300 mb-0.5">

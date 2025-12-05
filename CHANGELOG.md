@@ -1,6 +1,14 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top with the time and date!
 
+### Version 5.39.0  Dec 6, 2025 11:55pm
+
+- **Compact Puzzle cards stay informative** (Author: Codex)
+  - Prefetch the featured PuzzleBrowser tasks, feed them into the reusable `CompactPuzzleCard`, and keep the GIF/TinyGrid preview pipeline intact so featured cards no longer render blank white placeholders.
+  - Call `usePuzzleDBStats` with `includeRichMetrics: true` and keep the shared card layout showing attempts, wrong counts, grid dimensions, and test counts alongside cost/token math so the browser mirrors the stats the database already knows.
+  - Document the work plan and keep the shared card kit in sync with PuzzleDBViewer, preventing duplicated logic while still honoring the requested preview behavior.
+  - **Files**: `docs/plans/2025-12-06-puzzle-browser-compact-card-plan.md`, `client/src/components/puzzle/CompactPuzzleCard.tsx`, `client/src/pages/PuzzleBrowser.tsx`
+
 ### Version 5.38.8  Dec 4, 2025 10:34pm
 
 - **GPT-5.1 Codex limits removed** (Author: Codex)

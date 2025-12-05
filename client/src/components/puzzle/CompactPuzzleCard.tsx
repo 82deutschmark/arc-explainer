@@ -105,6 +105,24 @@ export const CompactPuzzleCard: React.FC<CompactPuzzleCardProps> = ({
     taskData?.test?.[0]?.input ??
     taskData?.train?.[0]?.output ??
     taskData?.train?.[0]?.input;
+  const attemptCount = puzzle.performanceData.totalExplanations;
+  const wrongCount = puzzle.performanceData.wrongCount ?? 0;
+  const testCount = taskData?.test?.length ?? taskData?.train?.length ?? 0;
+  const gridHeight = firstPuzzleGrid?.length ?? taskData?.train?.[0]?.input?.length ?? 0;
+  const gridWidth =
+    firstPuzzleGrid?.[0]?.length ??
+    taskData?.train?.[0]?.input?.[0]?.length ??
+    0;
+  const gridSizeLabel =
+    gridWidth > 0 && gridHeight > 0 ? `${gridWidth}×${gridHeight}` : '—';
+  const testsLabel =
+    testCount > 1 ? `${testCount}` : testCount === 1 ? 'Single' : '—';
+  const generalStats = [
+    { label: 'Attempts', value: attemptCount },
+    { label: 'Wrong', value: wrongCount },
+    { label: 'Tests', value: testsLabel },
+    { label: 'Grid', value: gridSizeLabel },
+  ];
 
   const totalSpend =
     puzzle.performanceData.avgCost && puzzle.performanceData.totalExplanations
@@ -162,60 +180,72 @@ export const CompactPuzzleCard: React.FC<CompactPuzzleCardProps> = ({
 
           {showMetrics && (
             <div className="flex-1 min-w-0">
-              {puzzle.performanceData.totalExplanations > 0 ? (
-                <div className="grid grid-cols-2 gap-1 text-xs">
+              <div className="grid grid-cols-2 gap-2 text-[10px] uppercase tracking-widest text-slate-500">
+                {generalStats.map((stat) => (
+                  <div key={stat.label} className="space-y-1">
+                    <div className="text-[9px] font-semibold text-slate-500">{stat.label}</div>
+                    <div className="text-sm font-bold text-slate-900">
+                      {typeof stat.value === 'number' ? formatNumber(stat.value) : stat.value}
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {attemptCount > 0 ? (
+                <div className="mt-2 grid grid-cols-2 gap-2 text-xs text-slate-600">
                   {totalSpend > 0 && (
                     <div>
-                      <div className="font-bold">{formatCurrency(totalSpend)}</div>
-                      <div className="text-base-content/60">Total $</div>
+                      <div className="font-bold text-slate-900">{formatCurrency(totalSpend)}</div>
+                      <div className="text-[9px] text-slate-500">Total $</div>
                     </div>
                   )}
                   {puzzle.performanceData.avgCost && puzzle.performanceData.avgCost > 0 && (
                     <div>
-                      <div className="font-semibold">
+                      <div className="font-semibold text-slate-900">
                         {formatCurrency(puzzle.performanceData.avgCost)}
                       </div>
-                      <div className="text-base-content/60">$/Attempt</div>
+                      <div className="text-[9px] text-slate-500">$/Attempt</div>
                     </div>
                   )}
                   {puzzle.performanceData.avgTotalTokens &&
                     puzzle.performanceData.avgTotalTokens > 0 && (
                       <div>
-                        <div className="font-semibold">
+                        <div className="font-semibold text-slate-900">
                           {formatNumber(Math.round(puzzle.performanceData.avgTotalTokens))}
                         </div>
-                        <div className="text-base-content/60">Tok/Attempt</div>
+                        <div className="text-[9px] text-slate-500">Tok/Attempt</div>
                       </div>
                     )}
                   {totalTokens > 0 && (
                     <div>
-                      <div className="font-semibold">{formatNumber(Math.round(totalTokens))}</div>
-                      <div className="text-base-content/60">Total Tok</div>
+                      <div className="font-semibold text-slate-900">
+                        {formatNumber(Math.round(totalTokens))}
+                      </div>
+                      <div className="text-[9px] text-slate-500">Total Tok</div>
                     </div>
                   )}
                   {puzzle.performanceData.modelsAttemptedCount &&
                     puzzle.performanceData.modelsAttemptedCount > 0 && (
                       <div>
-                        <div className="font-semibold">
+                        <div className="font-semibold text-slate-900">
                           {puzzle.performanceData.modelsAttemptedCount}
                         </div>
-                        <div className="text-base-content/60">Models</div>
+                        <div className="text-[9px] text-slate-500">Models</div>
                       </div>
                     )}
                   {puzzle.performanceData.avgProcessingTime &&
                     puzzle.performanceData.avgProcessingTime > 0 && (
                       <div>
-                        <div className="font-semibold">
+                        <div className="font-semibold text-slate-900">
                           {formatTime(Math.round(puzzle.performanceData.avgProcessingTime / 1000))}
                         </div>
-                        <div className="text-base-content/60">Avg Time</div>
+                        <div className="text-[9px] text-slate-500">Avg Time</div>
                       </div>
                     )}
                 </div>
               ) : (
-                <div className="text-center py-2">
-                  <div className="text-sm font-bold text-base-content/50">No Attempts</div>
-                  <div className="text-xs text-base-content/60">Untested puzzle</div>
+                <div className="mt-2 text-center text-xs font-semibold text-slate-500">
+                  No Attempts · Untested puzzle
                 </div>
               )}
             </div>
