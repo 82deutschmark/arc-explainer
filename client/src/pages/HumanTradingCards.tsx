@@ -75,33 +75,35 @@ export default function HumanTradingCards() {
   }
 
   return (
-    <div className="min-h-screen w-full bg-slate-950 text-slate-200">
-      <div className="container mx-auto px-6 py-10 space-y-10">
+    <div className="min-h-screen w-full bg-gradient-to-b from-zinc-950 via-zinc-900 to-zinc-950 text-zinc-200">
+      {/* Subtle background texture */}
+      <div className="fixed inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-zinc-800/20 via-transparent to-transparent pointer-events-none" />
+      
+      <div className="relative container mx-auto px-6 py-10 space-y-12">
 
         {/* 2025 Announcement Hero */}
-        <header className="text-center max-w-5xl mx-auto space-y-6 relative">
+        <header className="text-center max-w-5xl mx-auto space-y-6 relative py-8">
           {/* Decorative glow */}
-          <div className="absolute -inset-10 bg-gradient-to-r from-fuchsia-600/20 via-amber-500/20 to-blue-600/20 blur-3xl -z-10 rounded-full opacity-60" />
+          <div className="absolute -inset-20 bg-gradient-to-r from-amber-500/10 via-fuchsia-500/15 to-violet-500/10 blur-3xl -z-10 rounded-full" />
           
           {/* Date badge */}
-          <div className="inline-flex items-center gap-2 bg-slate-800/80 border border-slate-700 rounded-full px-4 py-1.5 text-sm text-slate-300">
+          <div className="inline-flex items-center gap-2 bg-zinc-800/60 backdrop-blur-sm border border-zinc-700/50 rounded-full px-5 py-2 text-sm text-zinc-300 shadow-lg">
             <Calendar className="w-4 h-4 text-amber-400" />
-            <span>December 5, 2025</span>
-            <span className="text-slate-500">•</span>
+            <span className="font-medium">December 5, 2025</span>
+            <span className="text-zinc-600">•</span>
             <span className="text-amber-400 font-semibold">Official Results</span>
           </div>
 
-          <div className="flex items-center justify-center gap-3">
-            <Trophy className="h-10 w-10 text-amber-500 animate-pulse" />
-            <h1 className="text-4xl md:text-5xl font-bold text-slate-100 tracking-tight">
-              ARC Prize 2025 Winners
+          <div className="flex items-center justify-center gap-4">
+            <Trophy className="h-12 w-12 text-amber-400 drop-shadow-lg" />
+            <h1 className="text-4xl md:text-6xl font-bold bg-gradient-to-r from-zinc-100 via-zinc-200 to-zinc-300 bg-clip-text text-transparent tracking-tight">
+              ARC Prize 2025
             </h1>
-            <Sparkles className="h-8 w-8 text-fuchsia-400" />
+            <Sparkles className="h-10 w-10 text-fuchsia-400 drop-shadow-lg" />
           </div>
           
-          <p className="text-xl text-slate-400 max-w-3xl mx-auto">
-            Celebrating the brilliant minds who pushed the boundaries of artificial general intelligence.
-            The 2025 ARC Prize results are in!
+          <p className="text-xl text-zinc-400 max-w-2xl mx-auto leading-relaxed">
+            Celebrating the brilliant minds pushing the boundaries of artificial general intelligence.
           </p>
         </header>
 
@@ -114,15 +116,15 @@ export default function HumanTradingCards() {
           <>
             {/* Founders Hero Section */}
             {founders.length > 0 && (
-              <section className="max-w-6xl mx-auto relative">
-                <div className="absolute -inset-4 bg-gradient-to-r from-amber-500/20 to-purple-600/20 blur-3xl -z-10 rounded-full opacity-50" />
+              <section className="max-w-5xl mx-auto relative">
+                <div className="absolute -inset-4 bg-gradient-to-r from-amber-500/15 to-violet-500/15 blur-3xl -z-10 rounded-full" />
                 {founders.map(founder => (
                   <Dialog key={founder.id}>
-                    <div className="border border-slate-800 bg-slate-900/80 backdrop-blur-md rounded-xl px-5 py-3 shadow-2xl flex flex-col md:flex-row md:items-center gap-4 md:h-[10vh] overflow-hidden">
+                    <div className="border border-zinc-700/50 bg-zinc-900/80 backdrop-blur-md rounded-2xl px-6 py-4 shadow-2xl flex flex-col md:flex-row md:items-center gap-5 overflow-hidden">
                       <DialogTrigger asChild>
                         <button
                           type="button"
-                          className="flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden border border-slate-700 bg-black hover:border-amber-400/60 transition-colors"
+                          className="flex-shrink-0 w-20 h-20 rounded-xl overflow-hidden border-2 border-zinc-600/50 bg-black hover:border-amber-400/60 transition-all hover:scale-105 shadow-lg"
                         >
                           {founder.imageUrl && (
                             <img
@@ -134,25 +136,25 @@ export default function HumanTradingCards() {
                         </button>
                       </DialogTrigger>
 
-                      <div className="flex-1 min-w-0 space-y-1">
-                        <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-amber-400 flex items-center gap-2">
+                      <div className="flex-1 min-w-0 space-y-2">
+                        <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-amber-400 flex items-center gap-2">
                           <Users className="w-4 h-4" />
-                          Founders & organizers
+                          Founders & Organizers
                         </p>
-                        <h2 className="text-xl md:text-2xl font-bold text-slate-100 truncate">
+                        <h2 className="text-2xl md:text-3xl font-bold text-zinc-100 truncate">
                           {founder.fullName}
                         </h2>
                         {founder.achievement && (
-                          <p className="text-sm text-slate-400 line-clamp-1">
+                          <p className="text-sm text-zinc-400 line-clamp-1">
                             {founder.achievement}
                           </p>
                         )}
                       </div>
 
-                      <div className="flex flex-col items-start md:items-end gap-2">
-                        <div className="text-xs text-slate-400">
-                          <span className="mr-1 text-slate-500">Active:</span>
-                          <span className="font-mono text-slate-200">
+                      <div className="flex flex-col items-start md:items-end gap-3">
+                        <div className="text-sm text-zinc-400">
+                          <span className="mr-1 text-zinc-500">Active:</span>
+                          <span className="font-mono text-zinc-200">
                             {founder.yearStart}
                             {founder.yearEnd ? `–${founder.yearEnd}` : '–Present'}
                           </span>
@@ -160,16 +162,16 @@ export default function HumanTradingCards() {
                         <DialogTrigger asChild>
                           <button
                             type="button"
-                            className="inline-flex items-center gap-1.5 rounded-md border border-amber-500/40 bg-amber-500/10 px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.16em] text-amber-300 hover:bg-amber-500/20 hover:text-amber-100 transition-colors"
+                            className="inline-flex items-center gap-2 rounded-lg border border-amber-500/40 bg-amber-500/15 px-4 py-2 text-sm font-semibold text-amber-300 hover:bg-amber-500/25 hover:text-amber-100 transition-all shadow-lg"
                           >
-                            View full profile
-                            <ExternalLink className="w-3 h-3" />
+                            View Profile
+                            <ExternalLink className="w-4 h-4" />
                           </button>
                         </DialogTrigger>
                       </div>
                     </div>
 
-                    <DialogContent className="bg-slate-950 border-slate-800 text-slate-200 max-w-3xl max-h-[90vh] overflow-y-auto">
+                    <DialogContent className="bg-gradient-to-br from-zinc-900 to-zinc-950 border-zinc-700/50 text-zinc-200 max-w-5xl max-h-[90vh] overflow-y-auto p-0">
                       <HumanTradingCard contributor={founder} />
                     </DialogContent>
                   </Dialog>
@@ -179,14 +181,16 @@ export default function HumanTradingCards() {
 
             {/* 2025 Top Paper Award - Featured Section */}
             {topPaperAward2025.length > 0 && (
-              <section className="space-y-6 relative">
+              <section className="space-y-8 relative">
                 {/* Special glow for this section */}
-                <div className="absolute -inset-6 bg-gradient-to-r from-fuchsia-600/10 to-purple-600/10 blur-2xl -z-10 rounded-3xl" />
+                <div className="absolute -inset-10 bg-gradient-to-r from-fuchsia-600/10 via-violet-600/10 to-purple-600/10 blur-3xl -z-10 rounded-3xl" />
                 
-                <div className="flex items-center gap-3 border-b border-fuchsia-500/30 pb-4">
-                  <Award className="h-7 w-7 text-fuchsia-400" />
-                  <h2 className="text-2xl font-bold text-slate-100">2025 Top Paper Award</h2>
-                  <span className="ml-2 text-xs bg-fuchsia-500/20 text-fuchsia-300 px-2 py-1 rounded-full border border-fuchsia-500/30 uppercase tracking-wider font-semibold">
+                <div className="flex items-center gap-4 border-b border-fuchsia-500/30 pb-5">
+                  <div className="p-2 rounded-xl bg-fuchsia-500/20 border border-fuchsia-500/30">
+                    <Award className="h-7 w-7 text-fuchsia-400" />
+                  </div>
+                  <h2 className="text-3xl font-bold text-zinc-100">2025 Top Paper Award</h2>
+                  <span className="ml-auto text-xs bg-fuchsia-500/20 text-fuchsia-300 px-3 py-1.5 rounded-full border border-fuchsia-500/30 uppercase tracking-wider font-bold shadow-lg">
                     Featured
                   </span>
                 </div>
@@ -204,10 +208,12 @@ export default function HumanTradingCards() {
 
             {/* 2025 Competition Winners */}
             {winners2025.length > 0 && (
-              <section className="space-y-6">
-                <div className="flex items-center gap-3 border-b border-amber-500/30 pb-4">
-                  <Trophy className="h-6 w-6 text-amber-400" />
-                  <h2 className="text-2xl font-bold text-slate-100">2025 Competition Winners</h2>
+              <section className="space-y-8">
+                <div className="flex items-center gap-4 border-b border-amber-500/30 pb-5">
+                  <div className="p-2 rounded-xl bg-amber-500/20 border border-amber-500/30">
+                    <Trophy className="h-6 w-6 text-amber-400" />
+                  </div>
+                  <h2 className="text-2xl font-bold text-zinc-100">2025 Competition Winners</h2>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                   {winners2025.map(contributor => (
@@ -221,10 +227,12 @@ export default function HumanTradingCards() {
 
             {/* 2024 Winners */}
             {winners2024.length > 0 && (
-              <section className="space-y-6">
-                 <div className="flex items-center gap-3 border-b border-slate-800 pb-4">
-                  <Star className="h-6 w-6 text-blue-400" />
-                  <h2 className="text-2xl font-bold text-slate-100">2024 ARC Prize Winners</h2>
+              <section className="space-y-8">
+                <div className="flex items-center gap-4 border-b border-zinc-700/50 pb-5">
+                  <div className="p-2 rounded-xl bg-blue-500/20 border border-blue-500/30">
+                    <Star className="h-6 w-6 text-blue-400" />
+                  </div>
+                  <h2 className="text-2xl font-bold text-zinc-100">2024 ARC Prize Winners</h2>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                   {winners2024.map(contributor => (
@@ -238,10 +246,12 @@ export default function HumanTradingCards() {
 
             {/* Research & Papers */}
             {researchers.length > 0 && (
-              <section className="space-y-6">
-                 <div className="flex items-center gap-3 border-b border-slate-800 pb-4">
-                  <ScrollText className="h-6 w-6 text-emerald-400" />
-                  <h2 className="text-2xl font-bold text-slate-100">Research & Awards</h2>
+              <section className="space-y-8">
+                <div className="flex items-center gap-4 border-b border-zinc-700/50 pb-5">
+                  <div className="p-2 rounded-xl bg-emerald-500/20 border border-emerald-500/30">
+                    <ScrollText className="h-6 w-6 text-emerald-400" />
+                  </div>
+                  <h2 className="text-2xl font-bold text-zinc-100">Research & Awards</h2>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                   {researchers.map(contributor => (
@@ -255,10 +265,12 @@ export default function HumanTradingCards() {
 
             {/* Pioneers */}
             {pioneers.length > 0 && (
-              <section className="space-y-6">
-                 <div className="flex items-center gap-3 border-b border-slate-800 pb-4">
-                  <History className="h-6 w-6 text-purple-400" />
-                  <h2 className="text-2xl font-bold text-slate-100">Pioneers</h2>
+              <section className="space-y-8">
+                <div className="flex items-center gap-4 border-b border-zinc-700/50 pb-5">
+                  <div className="p-2 rounded-xl bg-violet-500/20 border border-violet-500/30">
+                    <History className="h-6 w-6 text-violet-400" />
+                  </div>
+                  <h2 className="text-2xl font-bold text-zinc-100">Pioneers</h2>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                   {pioneers.map(contributor => (

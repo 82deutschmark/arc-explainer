@@ -34,7 +34,7 @@ export const HumanTradingCard: React.FC<HumanTradingCardProps> = ({ contributor 
 
   const ProfileImage = ({ className, showFeatured = false }: { className?: string, showFeatured?: boolean }) => (
     <div className={`relative group ${className}`}>
-      <div className={`w-full h-full overflow-hidden rounded-lg border-2 ${cardData.colors.borderGradient} bg-slate-950 shadow-inner`}>
+      <div className={`w-full h-full overflow-hidden rounded-xl border-2 ${cardData.colors.borderGradient} bg-zinc-950 shadow-inner`}>
         {selectedImageUrl ? (
           <img
             src={selectedImageUrl}
@@ -51,12 +51,12 @@ export const HumanTradingCard: React.FC<HumanTradingCardProps> = ({ contributor 
       </div>
       {/* Hover hint so it’s obvious the portrait is interactive */}
       <div className="pointer-events-none absolute inset-0 flex items-end justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-        <div className="mb-1 rounded-full bg-black/75 px-2 py-0.5 text-[10px] font-semibold tracking-wide text-amber-200 border border-amber-400/70 shadow-md">
-          Click portrait to zoom
+        <div className="mb-2 rounded-full bg-zinc-800/80 backdrop-blur-sm px-3 py-1 text-[10px] font-semibold tracking-wide text-zinc-400 border border-zinc-700/50 shadow-lg">
+          Click to zoom
         </div>
       </div>
       {showFeatured && cardData.featured && (
-        <div className="absolute -top-2 -right-2 bg-amber-500 text-slate-900 rounded-full p-1 shadow-lg animate-pulse z-10">
+        <div className="absolute -top-2 -right-2 bg-gradient-to-br from-zinc-400 to-zinc-600 text-zinc-900 rounded-full p-1.5 shadow-lg shadow-zinc-500/30 animate-pulse z-10">
           <Sparkles className="w-3 h-3" />
         </div>
       )}
@@ -67,38 +67,38 @@ export const HumanTradingCard: React.FC<HumanTradingCardProps> = ({ contributor 
     <div className="flex flex-wrap gap-2">
       {contributor.links?.twitter && (
         <a href={contributor.links.twitter} target="_blank" rel="noreferrer" 
-            className="flex items-center gap-1.5 text-xs bg-slate-800 hover:bg-blue-900/30 text-slate-300 hover:text-blue-400 px-2.5 py-1.5 rounded border border-slate-700 hover:border-blue-500/30 transition-all">
-          <Twitter className="w-3 h-3" /> Twitter
+            className="flex items-center gap-1.5 text-xs bg-zinc-800/80 hover:bg-blue-900/40 text-zinc-300 hover:text-blue-400 px-3 py-2 rounded-lg border border-zinc-700/50 hover:border-blue-500/40 transition-all shadow-sm">
+          <Twitter className="w-3.5 h-3.5" /> Twitter
         </a>
       )}
       {contributor.links?.github && (
         <a href={contributor.links.github} target="_blank" rel="noreferrer" 
-            className="flex items-center gap-1.5 text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white px-2.5 py-1.5 rounded border border-slate-700 hover:border-slate-500 transition-all">
-          <Github className="w-3 h-3" /> GitHub
+            className="flex items-center gap-1.5 text-xs bg-zinc-800/80 hover:bg-zinc-700 text-zinc-300 hover:text-white px-3 py-2 rounded-lg border border-zinc-700/50 hover:border-zinc-500 transition-all shadow-sm">
+          <Github className="w-3.5 h-3.5" /> GitHub
         </a>
       )}
       {contributor.links?.website && (
         <a href={contributor.links.website} target="_blank" rel="noreferrer" 
-            className="flex items-center gap-1.5 text-xs bg-slate-800 hover:bg-emerald-900/30 text-slate-300 hover:text-emerald-400 px-2.5 py-1.5 rounded border border-slate-700 hover:border-emerald-500/30 transition-all">
-          <Globe className="w-3 h-3" /> Website
+            className="flex items-center gap-1.5 text-xs bg-zinc-800/80 hover:bg-emerald-900/40 text-zinc-300 hover:text-emerald-400 px-3 py-2 rounded-lg border border-zinc-700/50 hover:border-emerald-500/40 transition-all shadow-sm">
+          <Globe className="w-3.5 h-3.5" /> Website
         </a>
       )}
       {contributor.links?.papers && contributor.links.papers.length > 0 && (
         <a href={contributor.links.papers[0]} target="_blank" rel="noreferrer" 
-            className="flex items-center gap-1.5 text-xs bg-slate-800 hover:bg-indigo-900/30 text-slate-300 hover:text-indigo-400 px-2.5 py-1.5 rounded border border-slate-700 hover:border-indigo-500/30 transition-all">
-          <BookOpen className="w-3 h-3" /> Paper
+            className="flex items-center gap-1.5 text-xs bg-zinc-800/80 hover:bg-indigo-900/40 text-zinc-300 hover:text-indigo-400 px-3 py-2 rounded-lg border border-zinc-700/50 hover:border-indigo-500/40 transition-all shadow-sm">
+          <BookOpen className="w-3.5 h-3.5" /> Paper
         </a>
       )}
       {contributor.links?.linkedin && (
         <a href={contributor.links.linkedin} target="_blank" rel="noreferrer" 
-            className="flex items-center gap-1.5 text-xs bg-slate-800 hover:bg-blue-900/30 text-slate-300 hover:text-blue-500 px-2.5 py-1.5 rounded border border-slate-700 hover:border-blue-500/30 transition-all">
-          <Linkedin className="w-3 h-3" /> LinkedIn
+            className="flex items-center gap-1.5 text-xs bg-zinc-800/80 hover:bg-blue-900/40 text-zinc-300 hover:text-blue-500 px-3 py-2 rounded-lg border border-zinc-700/50 hover:border-blue-500/40 transition-all shadow-sm">
+          <Linkedin className="w-3.5 h-3.5" /> LinkedIn
         </a>
       )}
       {contributor.links?.kaggle && (
         <a href={contributor.links.kaggle} target="_blank" rel="noreferrer" 
-            className="flex items-center gap-1.5 text-xs bg-slate-800 hover:bg-sky-900/30 text-slate-300 hover:text-sky-400 px-2.5 py-1.5 rounded border border-slate-700 hover:border-sky-500/30 transition-all">
-          <ExternalLink className="w-3 h-3" /> Kaggle
+            className="flex items-center gap-1.5 text-xs bg-zinc-800/80 hover:bg-sky-900/40 text-zinc-300 hover:text-sky-400 px-3 py-2 rounded-lg border border-zinc-700/50 hover:border-sky-500/40 transition-all shadow-sm">
+          <ExternalLink className="w-3.5 h-3.5" /> Kaggle
         </a>
       )}
     </div>
@@ -108,10 +108,10 @@ export const HumanTradingCard: React.FC<HumanTradingCardProps> = ({ contributor 
     <>
       <Dialog>
         <div className="w-full h-full flex flex-col">
-          <div className={`relative rounded-lg border bg-slate-900 ${cardData.colors.borderGradient} flex flex-col overflow-hidden hover:border-slate-400 transition-all duration-200 shadow-lg h-full`}>
+          <div className={`relative rounded-xl border bg-gradient-to-b from-zinc-900 to-zinc-950 ${cardData.colors.borderGradient} flex flex-col overflow-hidden hover:border-zinc-500 transition-all duration-300 shadow-xl hover:shadow-2xl h-full`}>
             
             {/* Card Header */}
-            <div className="p-5 flex gap-4 items-start border-b border-slate-800/50 bg-slate-900/50 backdrop-blur-sm">
+            <div className="p-5 flex gap-4 items-start border-b border-zinc-800/50 bg-zinc-900/60 backdrop-blur-sm">
               {/* Avatar / GIF - Click to view full size */}
               <Dialog>
                 <DialogTrigger asChild>
@@ -144,7 +144,7 @@ export const HumanTradingCard: React.FC<HumanTradingCardProps> = ({ contributor 
 
               {/* Name & Title */}
               <div className="flex-1 min-w-0 pt-1">
-                <h3 className="text-xl font-bold text-slate-100 truncate leading-tight tracking-tight">
+                <h3 className="text-xl font-bold text-zinc-50 truncate leading-tight tracking-tight">
                   {contributor.fullName}
                 </h3>
                 {contributor.handle && (
@@ -166,35 +166,35 @@ export const HumanTradingCard: React.FC<HumanTradingCardProps> = ({ contributor 
             </div>
 
             {/* Content Body */}
-            <div className="p-5 flex-1 flex flex-col gap-5 bg-gradient-to-b from-slate-900 to-slate-950">
+            <div className="p-5 flex-1 flex flex-col gap-5">
               
               {/* Key Achievement */}
-              <div className="bg-slate-800/30 rounded-md p-3 border border-slate-800/50">
-                <div className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1.5 flex items-center gap-1.5">
-                  <Zap className="w-3 h-3" /> Achievement
+              <div className="bg-zinc-800/40 rounded-lg p-4 border border-zinc-700/40">
+                <div className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-2 flex items-center gap-1.5">
+                  <Zap className="w-3 h-3 text-amber-500" /> Achievement
                 </div>
-                <p className="text-sm font-medium text-slate-200 leading-relaxed">
+                <p className="text-sm font-medium text-zinc-200 leading-relaxed">
                   {contributor.achievement}
                 </p>
               </div>
 
               {/* Description Preview */}
               <div className="flex-1">
-                <div className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1.5">Contribution</div>
-                <p className="text-sm text-slate-400 leading-relaxed line-clamp-3">
+                <div className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-2">Contribution</div>
+                <p className="text-sm text-zinc-400 leading-relaxed line-clamp-3">
                   {contributor.description}
                 </p>
               </div>
 
               {/* Stats Row */}
-              <div className="flex items-center justify-between pt-2 mt-auto border-t border-slate-800/50">
+              <div className="flex items-center justify-between pt-3 mt-auto border-t border-zinc-800/50">
                 <div className="text-xs">
-                  <span className="text-slate-500 mr-2">Active:</span>
-                  <span className="text-slate-300 font-mono">{cardData.yearRange}</span>
+                  <span className="text-zinc-500 mr-2">Active:</span>
+                  <span className="text-zinc-300 font-mono">{cardData.yearRange}</span>
                 </div>
                 {contributor.score && (
                   <div className="text-xs text-right">
-                    <span className="text-slate-500 mr-2">Score:</span>
+                    <span className="text-zinc-500 mr-2">Score:</span>
                     <span className={`font-mono font-bold ${cardData.colors.textColor}`}>{contributor.score}</span>
                   </div>
                 )}
@@ -203,9 +203,9 @@ export const HumanTradingCard: React.FC<HumanTradingCardProps> = ({ contributor 
               {/* View Full Profile Button (Modal Trigger) */}
               <DialogTrigger asChild>
                 <button 
-                  className="w-full mt-2 py-2 flex items-center justify-center gap-2 text-xs font-semibold uppercase tracking-wider rounded transition-colors bg-slate-800/50 text-slate-500 hover:bg-slate-800 hover:text-slate-300"
+                  className="w-full mt-3 py-2.5 flex items-center justify-center gap-2 text-xs font-semibold uppercase tracking-wider rounded-lg transition-all bg-zinc-800/60 text-zinc-400 hover:bg-zinc-700 hover:text-zinc-200 border border-zinc-700/50 hover:border-zinc-600"
                 >
-                  View Full Profile <ExternalLink className="w-3 h-3" />
+                  View Full Profile <ExternalLink className="w-3.5 h-3.5" />
                 </button>
               </DialogTrigger>
 
@@ -213,87 +213,104 @@ export const HumanTradingCard: React.FC<HumanTradingCardProps> = ({ contributor 
           </div>
         </div>
 
-        {/* Modal Content */}
-        <DialogContent className="bg-slate-950 border-slate-800 text-slate-200 max-w-2xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
-            <div className="flex items-start gap-6 pb-4 border-b border-slate-800">
-              <div className="flex-shrink-0 mt-1">
-                <ProfileImage className="w-24 h-24" />
-              </div>
-              <div className="flex-1">
-                <DialogTitle className="text-2xl font-bold text-slate-100 mb-2">
-                  {contributor.fullName}
-                </DialogTitle>
-                
-                <div className="flex flex-wrap gap-2 mb-3">
-                   <Badge variant="outline" className={`${cardData.colors.accentColor} border-opacity-50 uppercase text-[10px] tracking-wider`}>
+        {/* Modal Content - Side-by-side layout with prominent image */}
+        <DialogContent className="bg-gradient-to-br from-zinc-900 via-zinc-900 to-zinc-950 border-zinc-700/50 text-zinc-100 max-w-5xl max-h-[90vh] overflow-y-auto p-0">
+          <div className="flex flex-col lg:flex-row">
+            {/* Left: Large Image Panel */}
+            <div className="lg:w-[45%] flex-shrink-0 bg-black/40 p-6 flex items-center justify-center">
+              <div className="relative w-full max-w-md">
+                {selectedImageUrl ? (
+                  <img
+                    src={selectedImageUrl}
+                    alt={contributor.fullName}
+                    className="w-full h-auto rounded-xl shadow-2xl border border-zinc-700/50"
+                  />
+                ) : (
+                  <img
+                    src={gifUrl}
+                    alt="Profile"
+                    className="w-full h-auto rounded-xl shadow-2xl border border-zinc-700/50 image-pixelated"
+                  />
+                )}
+                {/* Floating category badge on image */}
+                <div className="absolute bottom-4 left-4 right-4">
+                  <Badge variant="outline" className={`${cardData.colors.accentColor} border-opacity-70 uppercase text-xs tracking-wider backdrop-blur-sm bg-black/60 px-3 py-1.5`}>
                     {cardData.icon} {cardData.categoryName}
                   </Badge>
-                  {contributor.handle && (
-                    <span className="text-sm font-mono text-slate-400">@{contributor.handle}</span>
-                  )}
                 </div>
+              </div>
+            </div>
 
-                <DialogDescription className="text-slate-400">
+            {/* Right: Content Panel */}
+            <div className="lg:w-[55%] p-6 lg:p-8 space-y-6 overflow-y-auto">
+              {/* Header */}
+              <DialogHeader className="space-y-3">
+                <DialogTitle className="text-3xl font-bold text-zinc-50 tracking-tight">
+                  {contributor.fullName}
+                </DialogTitle>
+                {contributor.handle && (
+                  <p className={`text-sm font-mono ${cardData.colors.textColor}`}>@{contributor.handle}</p>
+                )}
+                <DialogDescription className="text-zinc-400 text-base">
                   {contributor.affiliation}
                 </DialogDescription>
-              </div>
-            </div>
-          </DialogHeader>
+              </DialogHeader>
 
-          <div className="space-y-6 py-4">
-            {/* Key Stats Grid */}
-            <div className="grid grid-cols-2 gap-4">
-              <div className="bg-slate-900/50 p-4 rounded-lg border border-slate-800">
-                <div className="text-xs font-bold text-slate-500 uppercase mb-1">Achievement</div>
-                <div className="text-sm font-medium text-slate-200">{contributor.achievement}</div>
+              {/* Key Stats */}
+              <div className="grid grid-cols-2 gap-3">
+                <div className="bg-zinc-800/50 p-4 rounded-lg border border-zinc-700/50">
+                  <div className="text-xs font-semibold text-zinc-500 uppercase tracking-wide mb-1">Achievement</div>
+                  <div className="text-sm font-medium text-zinc-200">{contributor.achievement}</div>
+                </div>
+                <div className="bg-zinc-800/50 p-4 rounded-lg border border-zinc-700/50">
+                  <div className="text-xs font-semibold text-zinc-500 uppercase tracking-wide mb-1">Best Score</div>
+                  <div className={`text-lg font-bold ${cardData.colors.textColor}`}>{contributor.score || 'N/A'}</div>
+                </div>
               </div>
-              <div className="bg-slate-900/50 p-4 rounded-lg border border-slate-800">
-                 <div className="text-xs font-bold text-slate-500 uppercase mb-1">Best Score</div>
-                 <div className={`text-sm font-bold ${cardData.colors.textColor}`}>{contributor.score || 'N/A'}</div>
+
+              {/* About */}
+              <div>
+                <h4 className="text-sm font-semibold text-zinc-300 uppercase tracking-wide mb-2">About</h4>
+                <p className="text-zinc-400 leading-relaxed text-sm">
+                  {contributor.description}
+                </p>
               </div>
-            </div>
 
-            {/* Full Description */}
-            <div>
-              <h4 className="text-sm font-bold text-slate-300 uppercase tracking-wider mb-2">About</h4>
-              <p className="text-slate-400 leading-relaxed">
-                {contributor.description}
-              </p>
-            </div>
+              {/* Technical Details */}
+              {(contributor.approach || contributor.uniqueTechnique) && (
+                <div className="space-y-4">
+                  {contributor.approach && (
+                    <div>
+                      <h4 className="text-sm font-semibold text-zinc-300 uppercase tracking-wide mb-2 flex items-center gap-2">
+                        <Zap className="w-4 h-4 text-amber-400" /> Methodology
+                      </h4>
+                      <div className="bg-zinc-800/30 p-4 rounded-lg border border-zinc-700/30 text-sm text-zinc-400 leading-relaxed">
+                        {contributor.approach}
+                      </div>
+                    </div>
+                  )}
 
-            {/* Technical Details */}
-            <div className="grid md:grid-cols-2 gap-6">
-              {contributor.approach && (
-                <div className="space-y-2">
-                  <h4 className="text-sm font-bold text-slate-300 uppercase tracking-wider flex items-center gap-2">
-                    <Zap className="w-4 h-4 text-amber-500" /> Methodology
-                  </h4>
-                  <div className="bg-slate-900/30 p-4 rounded-lg border border-slate-800/50 text-sm text-slate-400 leading-relaxed">
-                    {contributor.approach}
-                  </div>
+                  {contributor.uniqueTechnique && (
+                    <div>
+                      <h4 className="text-sm font-semibold text-zinc-300 uppercase tracking-wide mb-2 flex items-center gap-2">
+                        <Sparkles className="w-4 h-4 text-fuchsia-400" /> Innovation
+                      </h4>
+                      <div className="bg-zinc-800/30 p-4 rounded-lg border border-zinc-700/30 text-sm text-zinc-400 leading-relaxed">
+                        {contributor.uniqueTechnique}
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
 
-              {contributor.uniqueTechnique && (
-                <div className="space-y-2">
-                  <h4 className="text-sm font-bold text-slate-300 uppercase tracking-wider flex items-center gap-2">
-                    <Sparkles className="w-4 h-4 text-purple-500" /> Innovation
-                  </h4>
-                  <div className="bg-slate-900/30 p-4 rounded-lg border border-slate-800/50 text-sm text-slate-400 leading-relaxed">
-                    {contributor.uniqueTechnique}
-                  </div>
-                </div>
-              )}
-            </div>
-
-            {/* Resources */}
-            {contributor.links && Object.keys(contributor.links).length > 0 && (
-               <div>
-                  <h4 className="text-sm font-bold text-slate-300 uppercase tracking-wider mb-3">Resources & Links</h4>
+              {/* Resources */}
+              {contributor.links && Object.keys(contributor.links).length > 0 && (
+                <div>
+                  <h4 className="text-sm font-semibold text-zinc-300 uppercase tracking-wide mb-3">Resources & Links</h4>
                   <SocialLinks />
-               </div>
-            )}
+                </div>
+              )}
+            </div>
           </div>
         </DialogContent>
       </Dialog>
