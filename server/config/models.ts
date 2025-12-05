@@ -202,7 +202,6 @@ export const MODELS: ModelConfig[] = [
     apiModelName: 'gpt-5.1-codex-mini',
     modelType: 'gpt5',
     contextWindow: 400000,
-    maxOutputTokens: 128000,
     releaseDate: "2025-11",
     notes: 'Sep 30, 2024 knowledge cutoff; reasoning token support.'
   },
@@ -221,7 +220,6 @@ export const MODELS: ModelConfig[] = [
     apiModelName: 'gpt-5.1-codex',
     modelType: 'gpt5',
     contextWindow: 400000,
-    maxOutputTokens: 128000,
     releaseDate: "2025-11",
     notes: 'Sep 30, 2024 knowledge cutoff; reasoning token support.'
   },
