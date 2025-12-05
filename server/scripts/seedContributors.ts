@@ -130,23 +130,23 @@ const contributors: CreateContributorRequest[] = [
     rank: 5
   },
 
-  // Jack Cole - 2025 entry
+  // Team MindsAI - 2025 entry (Jack Cole & Dries Smit)
   {
-    fullName: 'Jack Cole',
+    fullName: 'Team MindsAI (Jack Cole & Dries Smit)',
     handle: undefined,
-    affiliation: 'MindsAI Team',
-    imageUrl: '/jackCole2.png',
-    achievement: '2nd Place ARC Prize 2025',
-    description: 'Core researcher on Team MindsAI, continuing to push boundaries on ARC-AGI with test-time training approaches.',
+    affiliation: 'MindsAI & Tufa Labs',
+    imageUrl: '/jackCole2.png,/dries.png',
+    achievement: '3rd Place ARC Prize 2025 (15.42% on public ARC-AGI-2)',
+    description: 'Jack Cole (test-time training pioneer) and Dries Smit (RL agent specialist) teamed up for ARC Prize 2025, reaching 3rd place on the public ARC-AGI-2 leaderboard with 15.42%.',
     yearStart: 2025,
     yearEnd: 2025,
-    score: '2nd Place',
-    approach: 'Test-time training (TTT) and ARC-specific domain knowledge.',
-    uniqueTechnique: 'Pioneered test-time training for ARC-AGI, now refined for 2025 competition.',
+    score: '15.42% (3rd Place)',
+    approach: 'Test-time training (TTT) combined with RL-based adaptation.',
+    uniqueTechnique: 'Combined TTT expertise with efficient RL agent approaches.',
     links: {},
     teamName: 'MindsAI',
     category: 'competition_winner',
-    rank: 2
+    rank: 3
   },
 
   // Jack Cole - 2024 entry (separate card)
@@ -389,6 +389,25 @@ const contributors: CreateContributorRequest[] = [
     teamName: undefined,
     category: 'paper_award',
     rank: undefined
+  },
+
+  // ARC3 2026 Preview - Rising Stars
+  {
+    fullName: 'Dries Smit',
+    handle: 'DriesSmit',
+    affiliation: 'Independent Researcher / MindsAI & Tufa Labs',
+    imageUrl: '/dries.png',
+    achievement: '1st Place ARC-AGI-3 Agent Preview 2025 (12.58%)',
+    description: 'Rising ARC-AGI researcher who won 1st place in the ARC-AGI-3 Agent Preview 2025 with his RL-based "StochasticGoose" agent, scoring 12.58% and leading all teams in efficiency. Also contributed to the MindsAI & Tufa Labs team in ARC Prize 2025, reaching 3rd place on the public ARC-AGI-2 leaderboard with 15.42%. His work focuses on efficient RL agents and test-time adaptation methods for ARC tasks.',
+    yearStart: 2025,
+    yearEnd: 2026,
+    score: '12.58% (1st Place)',
+    approach: 'RL-based agent with test-time adaptation, focusing on efficiency.',
+    uniqueTechnique: 'StochasticGoose - an efficient RL agent that led all teams in computational efficiency while achieving top accuracy.',
+    links: {},
+    teamName: 'StochasticGoose',
+    category: 'arc3_preview',
+    rank: 1
   }
 ];
 
