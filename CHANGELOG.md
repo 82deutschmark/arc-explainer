@@ -99,6 +99,12 @@
   - Added simple button after featured gallery linking to `/puzzle-db-viewer` for browsing all unsolved ARC1 and ARC2 evaluation puzzles.
   - **Files**: `client/src/pages/PuzzleBrowser.tsx`
 
+### Version 5.37.2  Dec 4, 2025 7:05pm
+
+- **Puzzle Browser metrics: real attempt counts** (Author: Codex)
+  - Hooked the Puzzle Browser into `usePuzzleDBStats`, mapping each entry to `CompactPuzzleCard` so the featured gallery and research results display actual `attempts`/`wrong` metrics instead of hard-coded zeros while still reusing the GIF-capable card layout.
+  - **Files**: `client/src/pages/PuzzleBrowser.tsx`
+
 ### Version 5.37.1  Dec 4, 2025 6:50pm
 
 - **Puzzle Browser: reuse CompactPuzzleCard** (Author: Codex)
