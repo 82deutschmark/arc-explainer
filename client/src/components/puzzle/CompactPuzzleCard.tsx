@@ -128,7 +128,7 @@ export const CompactPuzzleCard: React.FC<CompactPuzzleCardProps> = ({
     </button>
   );
 
-  const cardClasses = ['card shadow-lg hover:shadow-xl transition-shadow bg-base-100', className]
+  const cardClasses = ['card shadow-lg hover:shadow-xl transition-shadow bg-base-100 text-slate-900', className]
     .filter(Boolean)
     .join(' ');
 
