@@ -1,6 +1,13 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top with the time and date!
 
+### Version 5.38.3  Dec 4, 2025 7:45pm
+
+- **Model catalog: mark GPT-5 family as vision-capable** (Author: Cascade using Haiku 4.5)
+  - Updated all GPT-5 / GPT-5.1 entries (including the OpenRouter mirror) in the central model config to set `supportsVision: true`, matching provider capabilities.
+  - Ensures the new grid image toggles in PuzzleExaminer, PuzzleDiscussion, and ModelDebate correctly recognize GPT-5 variants as eligible for ARC grid screenshots.
+  - **Files**: `server/config/models.ts`
+
 ### Version 5.38.2  Dec 4, 2025 7:40pm
 
 - **Vision toggles for refinement and debate UIs** (Author: Cascade using Haiku 4.5)
