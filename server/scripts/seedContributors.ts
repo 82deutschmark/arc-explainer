@@ -82,16 +82,17 @@ const contributors: CreateContributorRequest[] = [
     },
     teamName: 'ARChitects',
     category: 'competition_winner',
-    rank: undefined
+    rank: 1
   },
 
+  // 2025 Competition Winners - Combined team card for 1st place
   {
-    fullName: 'Jean-François Puget',
-    handle: 'JFPuget',
-    affiliation: 'Machine Learning at NVIDIA, 6x Kaggle Grandmaster',
-    achievement: '1st Place ARC Prize 2025 (24.03%); Runner-Up ARC Prize 2024 Paper Award',
-    description: 'Machine Learning at NVIDIA, 6x Kaggle Grandmaster (CPMP). ENS Ulm alumni, ML PhD. Formerly at ILOG CPLEX and IBM. Won 1st place in ARC Prize 2025 with 24.03% accuracy alongside teammate Ivan Sorokin. Earlier authored the 2024 ARC Prize paper "A 2D nGPT Model For ARC Prize" which received a runner-up paper award.',
-    imageUrl: '/jfPuget.png,/jfPuget2.png',
+    fullName: 'Team NVARC (JF Puget & Ivan Sorokin)',
+    handle: 'JFPuget & lytic',
+    affiliation: 'NVIDIA - Machine Learning & Kaggle Grandmasters',
+    achievement: '1st Place ARC Prize 2025 (24.03%)',
+    description: 'Jean-François Puget (6x Kaggle Grandmaster, ENS Ulm alumni, ML PhD) and Ivan Sorokin (ML Researcher, Kaggle Grandmaster, Math Olympiad 2025 winner) won 1st place in ARC Prize 2025 with 24.03% accuracy as Team NVARC.',
+    imageUrl: '/jfPuget.png,/ivanARC2.png',
     yearStart: 2025,
     yearEnd: 2025,
     score: '24.03% (1st Place)',
@@ -101,28 +102,6 @@ const contributors: CreateContributorRequest[] = [
       github: 'https://github.com/jfpuget',
       twitter: 'https://x.com/JFPuget',
       kaggle: 'https://www.kaggle.com/cpmpml',
-      website: 'https://www.kaggle.com/competitions/arc-prize-2024/discussion/545844',
-      papers: ['https://github.com/jfpuget/ARC-AGI-Challenge-2024/blob/main/arc.pdf']
-    },
-    teamName: 'NVARC',
-    category: 'competition_winner',
-    rank: 1
-  },
-
-  {
-    fullName: 'Ivan Sorokin',
-    handle: 'lytic',
-    affiliation: 'Machine Learning Researcher at NVIDIA, Kaggle Grandmaster',
-    achievement: '1st Place ARC Prize 2025 (24.03%)',
-    description: 'Machine Learning Researcher at NVIDIA based in Finland. Kaggle Grandmaster, one of only ~350 worldwide. Member of NVIDIA\'s KGMON team (Kaggle Grandmasters of NVIDIA). Won Math Olympiad Competition 2025 with team NemoSkills ($262,144 prize). Won 1st place in ARC Prize 2025 with 24.03% accuracy alongside teammate JF Puget.',
-    imageUrl: '/ivanARC2.png,/ivanARC21.png',
-    yearStart: 2025,
-    yearEnd: 2025,
-    score: '24.03% (1st Place)',
-    approach: 'TBA',
-    uniqueTechnique: 'TBA',
-    links: {
-      github: 'https://github.com/1ytic',
       linkedin: 'https://www.linkedin.com/in/lytic/'
     },
     teamName: 'NVARC',
@@ -151,22 +130,42 @@ const contributors: CreateContributorRequest[] = [
     rank: 5
   },
 
+  // Jack Cole - 2025 entry
   {
     fullName: 'Jack Cole',
     handle: undefined,
     affiliation: 'MindsAI Team',
-    imageUrl: '/jackcole.jpeg,/jackCole2.png',
-    achievement: 'MindsAI: Highest score 55.5% on ARC Prize 2024 private eval set (ineligible for official prize)',
-    description: 'Core researcher on Team MindsAI, which achieved the top 55.5% score on the ARC Prize 2024 private evaluation set using heavy test-time training, while remaining ineligible for official prizes because the solution was not open sourced.',
-    yearStart: 2024,
-    yearEnd: 2024,
-    score: '55.5% (Highest score, ineligible for prize)',
-    approach: 'Test-time training (TTT) and ARC-specific domain knowledge as part of MindsAI\'s proprietary system, extending earlier 2023 work on neurally guided program search.',
-    uniqueTechnique: 'Helped pioneer the use of test-time training for ARC-AGI and scale it into a closed-source system that set the 55.5% high score on the 2024 private evaluation set.',
+    imageUrl: '/jackCole2.png',
+    achievement: '2nd Place ARC Prize 2025',
+    description: 'Core researcher on Team MindsAI, continuing to push boundaries on ARC-AGI with test-time training approaches.',
+    yearStart: 2025,
+    yearEnd: 2025,
+    score: '2nd Place',
+    approach: 'Test-time training (TTT) and ARC-specific domain knowledge.',
+    uniqueTechnique: 'Pioneered test-time training for ARC-AGI, now refined for 2025 competition.',
     links: {},
     teamName: 'MindsAI',
     category: 'competition_winner',
-    rank: undefined
+    rank: 2
+  },
+
+  // Jack Cole - 2024 entry (separate card)
+  {
+    fullName: 'Jack Cole (2024)',
+    handle: undefined,
+    affiliation: 'MindsAI Team',
+    imageUrl: '/jackcole.jpeg',
+    achievement: 'MindsAI: Highest score 55.5% on ARC Prize 2024 (ineligible)',
+    description: 'Core researcher on Team MindsAI, which achieved the top 55.5% score on the ARC Prize 2024 private evaluation set using heavy test-time training, while remaining ineligible for official prizes because the solution was not open sourced.',
+    yearStart: 2024,
+    yearEnd: 2024,
+    score: '55.5% (Highest, ineligible)',
+    approach: 'Test-time training (TTT) and ARC-specific domain knowledge as part of MindsAI\'s proprietary system.',
+    uniqueTechnique: 'Helped pioneer test-time training for ARC-AGI, setting the 55.5% high score on 2024 private eval.',
+    links: {},
+    teamName: 'MindsAI',
+    category: 'competition_winner',
+    rank: 2
   },
 
   // 2024 Paper Award Winners
@@ -253,16 +252,17 @@ const contributors: CreateContributorRequest[] = [
   },
 
   {
-    fullName: 'Jean-François Puget',
+    fullName: 'Jean-François Puget (2024 Paper)',
     handle: 'JFPuget',
     affiliation: 'Machine Learning at NVIDIA, 6x Kaggle Grandmaster',
+    imageUrl: '/jfPuget2.png',
     achievement: 'Runner-Up ARC Prize 2024 Paper Award - A 2D nGPT Model For ARC Prize',
     description: 'Authored A 2D nGPT Model For ARC Prize, a 2D-aware nGPT-style model tailored to ARC-AGI grids that was recognized as a runner-up paper in the ARC Prize 2024 paper awards.',
     yearStart: 2024,
     yearEnd: 2024,
-    score: 'Runner-Up (Paper Award, $2.5k)',
+    score: 'Runner-Up (Paper Award)',
     approach: '2D-aware nGPT-style model that tokenizes ARC grids as 2D structures and uses an autoregressive transformer to predict output grids.',
-    uniqueTechnique: 'Emphasizes explicit 2D spatial structure in tokenization and attention so the model can reason over local and global patterns on ARC grids more naturally than 1D sequence models.',
+    uniqueTechnique: 'Emphasizes explicit 2D spatial structure in tokenization and attention so the model can reason over local and global patterns on ARC grids.',
     links: {
       kaggle: 'https://www.kaggle.com/competitions/arc-prize-2024/discussion/545844',
       papers: ['https://github.com/jfpuget/ARC-AGI-Challenge-2024/blob/main/arc.pdf']
@@ -290,23 +290,7 @@ const contributors: CreateContributorRequest[] = [
     rank: undefined
   },
 
-  {
-    fullName: 'Jack Cole',
-    handle: undefined,
-    affiliation: 'MindsAI Team',
-    imageUrl: '/jackcole.jpeg,/jackCole2.png',
-    achievement: '1st Place ARCathon 2023 (tied), Early 2024 world record of 39%',
-    description: 'Pioneered test-time training for ARC-AGI in 2023, first to successfully apply TTT to ARC-AGI, inspiring the dominant approach in 2024 competition.',
-    yearStart: 2023,
-    yearEnd: 2024,
-    score: '39% (Record 2024)',
-    approach: 'Fine-tuning models on synthetic and augmented data with test-time fine-tuning',
-    uniqueTechnique: 'First successful test-time training application to ARC-AGI',
-    links: {},
-    teamName: 'MindsAI',
-    category: 'pioneer',
-    rank: undefined
-  },
+  // Jack Cole pioneer entry removed - covered by his 2024 and 2025 competition winner entries
 
   // 2020 Kaggle Winners
   {
