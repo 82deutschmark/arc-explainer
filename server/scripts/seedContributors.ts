@@ -64,18 +64,39 @@ const contributors: CreateContributorRequest[] = [
     rank: undefined
   },
 
-  // 2024 ARC Prize Winners
+  // ARChitects - 2025 (2nd Place)
   {
-    fullName: 'Daniel Franzen',
+    fullName: 'ARChitects (Franzen, Disselhoff, Hartmann)',
     handle: undefined,
-    affiliation: 'Johannes Gutenberg University Mainz (JGU Mainz), Germany',
-    achievement: '1st Place ARC Prize 2024 - 53.5% accuracy',
-    description: 'Led ARChitects team to victory using innovative LLM-based approach with Mistral-Nemo-Minitron-8B model, depth-first search for token selection, and test-time training.',
+    affiliation: 'Johannes Gutenberg University Mainz, Germany',
+    achievement: '2nd Place ARC Prize 2025 (16.53%)',
+    description: 'Three-person team (Daniel Franzen, Jan Disselhoff, David Hartmann) that dominates the ARC-AGI scene. Took 2nd place in ARC Prize 2025 with 16.53% on ARC-AGI-2, using a 2D-aware masked-diffusion LLM with recursive self-refinement.',
+    yearStart: 2025,
+    yearEnd: 2025,
+    score: '16.53% (2nd Place)',
+    approach: '2D-aware masked-diffusion LLM with recursive self-refinement',
+    uniqueTechnique: 'Masked diffusion approach applied to 2D grid reasoning with iterative refinement',
+    links: {
+      github: 'https://github.com/da-fr/arc-prize-2024',
+      papers: ['https://arxiv.org/abs/arc-prize-2024']
+    },
+    teamName: 'ARChitects',
+    category: 'competition_winner',
+    rank: 2
+  },
+
+  // ARChitects - 2024 (1st Place)
+  {
+    fullName: 'ARChitects 2024 (Franzen, Disselhoff, Hartmann)',
+    handle: undefined,
+    affiliation: 'Johannes Gutenberg University Mainz, Germany',
+    achievement: '1st Place ARC Prize 2024 (53.5%)',
+    description: 'Three-person team (Daniel Franzen, Jan Disselhoff, David Hartmann) won ARC Prize 2024, scoring 53.5% on ARC-AGI-1 private eval with "The LLM ARChitect," using test-time training plus a product-of-experts ensemble over different perspectives of each grid.',
     yearStart: 2024,
     yearEnd: 2024,
     score: '53.5% (1st Place)',
-    approach: 'Product of Experts approach using multiple perspectives to improve solution selection, combining LLM fine-tuning with symbolic reasoning',
-    uniqueTechnique: 'Test-time training with augmentation-based validation system using depth-first search for token selection',
+    approach: 'Product of Experts ensemble using multiple perspectives to improve solution selection, combining LLM fine-tuning with test-time training',
+    uniqueTechnique: 'Test-time training with augmentation-based validation using depth-first search for token selection',
     links: {
       github: 'https://github.com/da-fr/arc-prize-2024',
       papers: ['https://arxiv.org/abs/arc-prize-2024']
