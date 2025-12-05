@@ -100,22 +100,22 @@ const DEFAULT_PERFORMANCE_DATA: PuzzlePerformanceData = {
   compositeScore: 0,
 };
 
-const toCompactStats = (puzzle: EnhancedPuzzleMetadata): PuzzleDBStats => ({
-  id: puzzle.id,
-  source: puzzle.source || 'Unknown',
-  performanceData: {
-    ...DEFAULT_PERFORMANCE_DATA,
-    avgAccuracy: puzzle.isSolved ? 1 : 0,
-    avgConfidence: puzzle.confidence ?? 0,
-    totalExplanations: puzzle.hasExplanation ? 1 : 0,
-    totalFeedback: puzzle.feedbackCount ?? 0,
-    latestAnalysis: puzzle.createdAt ?? '',
-    worstExplanationId: puzzle.explanationId ?? 0,
-    compositeScore: puzzle.estimatedCost ?? 0,
-    avgCost: typeof puzzle.estimatedCost === 'number' ? puzzle.estimatedCost : undefined,
-    avgProcessingTime: puzzle.apiProcessingTimeMs,
-  },
-});
+  const toCompactStats = (puzzle: EnhancedPuzzleMetadata): PuzzleDBStats => ({
+    id: puzzle.id,
+    source: puzzle.source || 'Unknown',
+    performanceData: {
+      ...DEFAULT_PERFORMANCE_DATA,
+      avgAccuracy: puzzle.isSolved ? 1 : 0,
+      avgConfidence: puzzle.confidence ?? 0,
+      totalExplanations: puzzle.hasExplanation ? 1 : 0,
+      totalFeedback: puzzle.feedbackCount ?? 0,
+      latestAnalysis: puzzle.createdAt ?? '',
+      worstExplanationId: puzzle.explanationId ?? 0,
+      compositeScore: puzzle.estimatedCost ?? 0,
+      avgCost: typeof puzzle.estimatedCost === 'number' ? puzzle.estimatedCost : undefined,
+      avgProcessingTime: puzzle.apiProcessingTimeMs,
+    },
+  });
 
 export default function PuzzleBrowser() {
   const [maxGridSize, setMaxGridSize] = useState<string>('any');
@@ -388,7 +388,7 @@ export default function PuzzleBrowser() {
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4">
                 {featuredPuzzles.map((puzzle: EnhancedPuzzleMetadata) => (
                   <div key={puzzle.id} className="flex flex-col gap-2">
-                    <CompactPuzzleCard puzzle={toCompactStats(puzzle)} />
+                    <CompactPuzzleCard puzzle={getStatsForPuzzle(puzzle)} lazyLoadGrid={false} />
                     {TEAM_NOTES[puzzle.id] && (
                       <div className="rounded-md border border-slate-800 bg-slate-950/80 px-3 py-2 text-sm leading-relaxed text-slate-200">
                         <div className="text-xs font-semibold uppercase tracking-wide text-sky-300 mb-0.5">
@@ -575,7 +575,7 @@ export default function PuzzleBrowser() {
                   {filteredPuzzles.map((puzzle: EnhancedPuzzleMetadata) => (
                     <CompactPuzzleCard
                       key={puzzle.id}
-                      puzzle={toCompactStats(puzzle)}
+                      puzzle={getStatsForPuzzle(puzzle)}
                     />
                   ))}
                 </div>
