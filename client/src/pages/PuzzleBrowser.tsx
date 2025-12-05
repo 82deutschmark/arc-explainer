@@ -388,7 +388,7 @@ export default function PuzzleBrowser() {
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4">
                 {featuredPuzzles.map((puzzle: EnhancedPuzzleMetadata) => (
                   <div key={puzzle.id} className="flex flex-col gap-2">
-                    <CompactPuzzleCard puzzle={toCompactStats(puzzle)} lazyLoadGrid={false} />
+                    <CompactPuzzleCard puzzle={toCompactStats(puzzle)} />
                     {TEAM_NOTES[puzzle.id] && (
                       <div className="rounded-md border border-slate-800 bg-slate-950/80 px-3 py-2 text-sm leading-relaxed text-slate-200">
                         <div className="text-xs font-semibold uppercase tracking-wide text-sky-300 mb-0.5">
