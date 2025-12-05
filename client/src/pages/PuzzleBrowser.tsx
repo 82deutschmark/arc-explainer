@@ -311,24 +311,26 @@ export default function PuzzleBrowser() {
                 A small curated set of visually interesting puzzles for quick browsing.
               </p>
             </div>
-            <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3">
-              {!isFeaturedLoading && (
-                <span className="rounded-full border border-slate-700 px-3 py-1 text-sm text-slate-400">
-                  {featuredPuzzles.length} featured
-                </span>
-              )}
+            <div className="flex flex-col gap-3 w-full">
               <Link
                 href="/puzzles/database"
-                className="px-6 py-2 rounded-lg bg-red-600 hover:bg-red-700 text-white font-bold text-sm transition-colors shadow-lg"
+                className="w-full px-8 py-4 rounded-lg bg-red-600 hover:bg-red-700 text-white font-bold text-lg transition-colors shadow-lg text-center"
               >
-                View All Unsolved
+                See puzzles from ARC 1 and 2, which have not been solved yet
               </Link>
-              <Button
-                onClick={() => setShowAdvancedBrowser(prev => !prev)}
-                className="bg-sky-600 hover:bg-sky-700 text-white"
-              >
-                {showAdvancedBrowser ? 'Hide Research Browser' : 'Open Research Browser'}
-              </Button>
+              <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-end sm:gap-3">
+                {!isFeaturedLoading && (
+                  <span className="rounded-full border border-slate-700 px-3 py-1 text-sm text-slate-400">
+                    {featuredPuzzles.length} featured
+                  </span>
+                )}
+                <Button
+                  onClick={() => setShowAdvancedBrowser(prev => !prev)}
+                  className="bg-sky-600 hover:bg-sky-700 text-white"
+                >
+                  {showAdvancedBrowser ? 'Hide Research Browser' : 'Open Research Browser'}
+                </Button>
+              </div>
             </div>
           </div>
 
