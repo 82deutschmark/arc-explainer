@@ -1,6 +1,12 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top with the time and date!
 
+### Version 5.38.8  Dec 4, 2025 10:34pm
+
+- **GPT-5.1 Codex limits removed** (Author: Codex)
+  - Dropped the explicit `maxOutputTokens` caps from `gpt-5.1-codex-mini` and `gpt-5.1-codex` so they inherit the provider defaults and can stream long-form reasoning without artificial truncation.
+  - **Files**: `server/config/models.ts:190-220`
+
 ### Version 5.38.5  Dec 4, 2025 10:35pm
 
 - **Fix PuzzleBrowser button: correct link and make prominent full-width call-to-action** (Author: Claude Code using Haiku 4.5)
