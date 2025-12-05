@@ -311,26 +311,24 @@ export default function PuzzleBrowser() {
                 A small curated set of visually interesting puzzles for quick browsing.
               </p>
             </div>
-            <div className="flex flex-col gap-3 w-full">
+            <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-end sm:gap-3">
+              {!isFeaturedLoading && (
+                <span className="rounded-full border border-slate-700 px-3 py-1 text-sm text-slate-400">
+                  {featuredPuzzles.length} featured
+                </span>
+              )}
               <Link
                 href="/puzzles/database"
-                className="w-full px-8 py-4 rounded-lg bg-red-600 hover:bg-red-700 text-white font-bold text-lg transition-colors shadow-lg text-center"
+                className="px-4 py-2 rounded-lg bg-red-600 hover:bg-red-700 text-white font-bold transition-colors shadow-lg"
               >
-                See unsolved puzzles from ARC 1 and 2 Evaluation
+                See unsolved puzzles from ARC1 and ARC2 evaluation sets
               </Link>
-              <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-end sm:gap-3">
-                {!isFeaturedLoading && (
-                  <span className="rounded-full border border-slate-700 px-3 py-1 text-sm text-slate-400">
-                    {featuredPuzzles.length} featured
-                  </span>
-                )}
-                <Button
-                  onClick={() => setShowAdvancedBrowser(prev => !prev)}
-                  className="bg-sky-600 hover:bg-sky-700 text-white"
-                >
-                  {showAdvancedBrowser ? 'Hide Research Browser' : 'Open Research Browser'}
-                </Button>
-              </div>
+              <Button
+                onClick={() => setShowAdvancedBrowser(prev => !prev)}
+                className="bg-sky-600 hover:bg-sky-700 text-white"
+              >
+                {showAdvancedBrowser ? 'Hide Research Browser' : 'Open Research Browser'}
+              </Button>
             </div>
           </div>
 
