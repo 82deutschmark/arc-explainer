@@ -7,6 +7,7 @@
 
 import React from 'react';
 import { Brain, Info } from 'lucide-react';
+import { Switch } from '@/components/ui/switch';
 
 interface AdvancedControlsProps {
   temperature: number;
@@ -23,6 +24,8 @@ interface AdvancedControlsProps {
   onReasoningVerbosityChange: (value: 'low' | 'medium' | 'high') => void;
   reasoningSummaryType: 'auto' | 'detailed';
   onReasoningSummaryTypeChange: (value: 'auto' | 'detailed') => void;
+  includeGridImages: boolean;
+  onIncludeGridImagesChange: (value: boolean) => void;
 }
 
 type NumberCommitHandler = (
@@ -102,7 +105,9 @@ export function AdvancedControls({
   reasoningVerbosity,
   onReasoningVerbosityChange,
   reasoningSummaryType,
-  onReasoningSummaryTypeChange
+  onReasoningSummaryTypeChange,
+  includeGridImages,
+  onIncludeGridImagesChange
 }: AdvancedControlsProps) {
   const sliderControls = [
     {
@@ -323,6 +328,18 @@ export function AdvancedControls({
           <p className="text-[11px] text-base-content/60">
             GPT-5 is NOT compatible with temperature settings. These controls are ignored.
           </p>
+          <div className="flex items-center justify-between pt-1">
+            <div className="flex items-center gap-2">
+              <Switch
+                id="include-grid-images-advanced"
+                checked={includeGridImages}
+                onCheckedChange={(checked) => onIncludeGridImagesChange(Boolean(checked))}
+              />
+              <span className="text-[11px] text-base-content/80">
+                Include puzzle screenshots in request
+              </span>
+            </div>
+          </div>
         </div>
       </div>
     </div>

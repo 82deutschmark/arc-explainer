@@ -18,7 +18,6 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Label } from '@/components/ui/label';
-import { Switch } from '@/components/ui/switch';
 import { Brain, ArrowLeft, Send, Loader2, RotateCcw, TrendingUp, Sparkles, Target, Settings } from 'lucide-react';
 import { AdvancedControls } from '@/components/puzzle/AdvancedControls';
 import { IterationDataTable } from './IterationDataTable';
@@ -121,7 +120,6 @@ export const ProfessionalRefinementUI: React.FC<ProfessionalRefinementUIProps> =
   const modelDisplayName = currentModel?.name || activeModel;
   const showTemperature = currentModel?.supportsTemperature && !isGPT5ReasoningModel(activeModel);
   const showReasoning = isGPT5ReasoningModel(activeModel);
-  const supportsVision = currentModel?.supportsVision === true;
 
   // Calculate comprehensive metrics
   const currentIteration = iterations.length;
@@ -183,21 +181,6 @@ export const ProfessionalRefinementUI: React.FC<ProfessionalRefinementUIProps> =
                 Leave blank for model to self-refine based on previous iteration
               </p>
             </div>
-
-            {supportsVision && (
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <Switch
-                    id="include-grid-images-refinement"
-                    checked={includeGridImages}
-                    onCheckedChange={checked => setIncludeGridImages(Boolean(checked))}
-                  />
-                  <Label htmlFor="include-grid-images-refinement" className="text-xs text-gray-700">
-                    Include puzzle screenshots (vision models only)
-                  </Label>
-                </div>
-              </div>
-            )}
 
             <Button
               onClick={() => {
@@ -270,6 +253,8 @@ export const ProfessionalRefinementUI: React.FC<ProfessionalRefinementUIProps> =
             onReasoningVerbosityChange={setReasoningVerbosity}
             reasoningSummaryType={reasoningSummaryType}
             onReasoningSummaryTypeChange={setReasoningSummaryType}
+            includeGridImages={includeGridImages}
+            onIncludeGridImagesChange={setIncludeGridImages}
           />
         </CardContent>
       </Card>

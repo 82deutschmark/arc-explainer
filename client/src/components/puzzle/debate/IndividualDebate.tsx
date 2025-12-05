@@ -17,7 +17,6 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Label } from '@/components/ui/label';
 
 import {
   MessageSquare,
@@ -28,7 +27,6 @@ import {
 } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
-import { Switch } from '@/components/ui/switch';
 
 // Reuse existing components
 import { AnalysisResultCard } from '@/components/puzzle/AnalysisResultCard';
@@ -176,7 +174,6 @@ export const IndividualDebate: React.FC<IndividualDebateProps> = ({
   const isGPT5Model = challengerModel?.includes('gpt-5') || challengerModel?.includes('o1') || challengerModel?.includes('o3');
   const isGeminiModel = challengerModel?.includes('gemini');
   const showAdvancedControls = isGPT5Model || isGeminiModel;
-  const supportsVision = selectedModel?.supportsVision === true;
 
   return (
     <div className="space-y-2">
@@ -282,6 +279,8 @@ export const IndividualDebate: React.FC<IndividualDebateProps> = ({
                       onReasoningVerbosityChange={onReasoningVerbosityChange}
                       reasoningSummaryType={reasoningSummaryType}
                       onReasoningSummaryTypeChange={onReasoningSummaryTypeChange}
+                      includeGridImages={includeGridImages}
+                      onIncludeGridImagesChange={onIncludeGridImagesChange}
                     />
                   </Card>
                 </div>
@@ -301,21 +300,6 @@ export const IndividualDebate: React.FC<IndividualDebateProps> = ({
                 />
               </div>
             </div>
-
-            {supportsVision && (
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <Switch
-                    id="include-grid-images-debate"
-                    checked={includeGridImages}
-                    onCheckedChange={checked => onIncludeGridImagesChange(Boolean(checked))}
-                  />
-                  <Label htmlFor="include-grid-images-debate" className="text-xs text-gray-700">
-                    Include puzzle screenshots (vision models only)
-                  </Label>
-                </div>
-              </div>
-            )}
 
             {/* Generate Challenge Button - Full width */}
             <Button
