@@ -358,10 +358,10 @@ export default function PuzzleBrowser() {
               </div>
 
               {/* View All Unsolved Puzzles */}
-              <div className="mt-4 pt-4 border-t border-slate-700 flex justify-center">
+              <div className="mt-6 pt-6 border-t border-slate-700 flex justify-center">
                 <Link
-                  href="/puzzle-db-viewer"
-                  className="btn border border-slate-600 bg-slate-800 text-slate-100 hover:border-slate-500 hover:bg-slate-700 text-sm"
+                  href="/puzzles/database"
+                  className="px-8 py-4 rounded-lg bg-red-600 hover:bg-red-700 text-white font-bold text-lg transition-colors shadow-lg"
                 >
                   See puzzles from ARC 1 and 2, which have not been solved yet
                 </Link>
