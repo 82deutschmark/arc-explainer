@@ -1,6 +1,18 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top with the time and date!
 
+### Version 5.40.0  Dec 5, 2025 3:45pm
+
+- **ARC Prize 2025 Winners Page Refresh** (Author: Cascade using Claude 3.5 Sonnet)
+  - Restructured Human Trading Cards page for the December 5, 2025 competition results announcement.
+  - Added new hero section with celebratory styling, date badge, and 2025 results announcement.
+  - Added `top_paper_award` contributor category with distinctive fuchsia/magenta styling for special recognition.
+  - Created featured "2025 Top Paper Award" section with prominent display layout.
+  - Added Alexia Jolicoeur-Martineau as 2025 Top Paper Award winner for "Less is More: Recursive Reasoning with Tiny Networks" (TRM).
+  - Renamed "2025 Leaderboard" to "2025 Competition Winners" for clarity.
+  - Updated helper functions with new category colors, icons, and display names.
+  - **Files**: `client/src/pages/HumanTradingCards.tsx`, `client/src/utils/humanCardHelpers.ts`, `shared/types/contributor.ts`, `server/scripts/seedContributors.ts`
+
 ### Version 5.39.1  Dec 5, 2025 2:45pm
 
 - **CompactPuzzleCard refactored to follow PuzzleCard patterns** (Author: Claude Sonnet 4)

@@ -16,6 +16,31 @@ import { config } from 'dotenv';
 config();
 
 const contributors: CreateContributorRequest[] = [
+  // 2025 Top Paper Award Winner
+  {
+    fullName: 'Alexia Jolicoeur-Martineau',
+    handle: 'jm_alexia',
+    affiliation: 'Samsung SAIT Montréal, Senior AI Researcher',
+    achievement: '2025 Top Paper Award: "Less is More: Recursive Reasoning with Tiny Networks" (TRM)',
+    description: 'Lead author of the Tiny Recursive Model (TRM) work on ARC-AGI—a groundbreaking ~7M-parameter, 2-layer recursive network that repeatedly refines an internal reasoning state and answer instead of relying on huge LLMs. TRM became the leading open-source approach on ARC-AGI shortly before the 2025 ARC Prize deadline, though its compute budget exceeded competition constraints.',
+    imageUrl: '/alexiaJM3.png',
+    yearStart: 2025,
+    yearEnd: 2025,
+    score: '~45% ARC-AGI-1, ~8% ARC-AGI-2',
+    approach: 'Tiny Recursive Model (TRM)—a compact 2-layer network with recursive refinement that iteratively improves its reasoning state and answer prediction. Trained from scratch without LLM pretraining.',
+    uniqueTechnique: 'Demonstrated that ~7M parameters can match or beat models 10,000× larger (DeepSeek R1, o3-mini, Gemini 2.5 Pro) on ARC-AGI-2, proving "less is more" for abstract reasoning.',
+    links: {
+      twitter: 'https://x.com/jm_alexia',
+      github: 'https://github.com/SamsungSAILMontreal/TinyRecursiveModels',
+      kaggle: 'https://www.kaggle.com/code/alexiajm/arc-agi-without-pretraining',
+      papers: ['https://arxiv.org/abs/2510.04871'],
+      website: 'https://alexiajm.github.io/2025/09/29/tiny_recursive_models.html'
+    },
+    teamName: 'Samsung SAIL Montréal',
+    category: 'top_paper_award',
+    rank: 1
+  },
+
   // 2024-2025 Top Achievers
   {
     fullName: 'Jeremy Berman',

@@ -1,9 +1,9 @@
 /**
- * Author: Claude Code using Sonnet 4.5
- * Date: 2025-11-16
+ * Author: Claude 3.5 Sonnet / Cascade
+ * Date: 2025-12-05
  * PURPOSE: Human Trading Cards page - displays ARC contributors as 1980s-style trading cards.
- * Shows notable human contributors to the ARC-AGI challenge with their achievements, approaches, and contributions.
- * Based on PuzzleTradingCards page structure but focused on human contributors.
+ * Updated for ARC Prize 2025 results announcement (December 5, 2025).
+ * Shows official 2025 winners, Top Paper Award, and notable contributors.
  * SRP/DRY check: Pass - Reuses useArcContributors hook, HumanTradingCard component, and existing UI patterns
  */
 
@@ -11,7 +11,7 @@ import React, { useEffect, useMemo } from 'react';
 import { useArcContributors } from '@/hooks/useArcContributors';
 import { HumanTradingCard } from '@/components/human/HumanTradingCard';
 import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
-import { Loader2, Users, Trophy, ScrollText, History, Star, ExternalLink } from 'lucide-react';
+import { Loader2, Users, Trophy, ScrollText, History, Star, ExternalLink, Award, Sparkles, Calendar } from 'lucide-react';
 
 export default function HumanTradingCards() {
   const { data, isLoading, error } = useArcContributors();
@@ -21,21 +21,26 @@ export default function HumanTradingCards() {
     document.title = 'ARC Hall of Fame';
   }, []);
 
-  // Categorize contributors
-  const { founders, leaderboard2025, winners2024, researchers, pioneers } = useMemo(() => {
-    if (!data?.contributors) return { founders: [], leaderboard2025: [], winners2024: [], researchers: [], pioneers: [] };
+  // Categorize contributors for 2025 results
+  const { founders, topPaperAward2025, winners2025, winners2024, researchers, pioneers } = useMemo(() => {
+    if (!data?.contributors) return { founders: [], topPaperAward2025: [], winners2025: [], winners2024: [], researchers: [], pioneers: [] };
     
     const contributors = [...data.contributors];
     
     // Founders hero card (category 'founder')
     const founders = contributors.filter(c => c.category === 'founder');
     
-    // 2025 Leaderboard (contributors active in 2025 based on year range)
-    const leaderboard2025 = contributors
+    // 2025 Top Paper Award (special category)
+    const topPaperAward2025 = contributors
+      .filter(c => c.category === 'top_paper_award' && c.yearStart === 2025)
+      .sort((a, b) => (a.rank || 999) - (b.rank || 999));
+
+    // 2025 Competition Winners
+    const winners2025 = contributors
       .filter(c => {
         if (!c.yearStart) return false;
-        const endYear = c.yearEnd ?? 9999; // treat null/undefined as ongoing
-        return c.yearStart <= 2025 && endYear >= 2025 && c.rank !== 0;
+        const endYear = c.yearEnd ?? 9999;
+        return c.yearStart <= 2025 && endYear >= 2025 && c.category === 'competition_winner' && c.rank !== 0;
       })
       .sort((a, b) => (a.rank || 999) - (b.rank || 999));
 
@@ -44,17 +49,17 @@ export default function HumanTradingCards() {
       .filter(c => c.yearStart === 2024 && c.category === 'competition_winner' && c.rank !== 0)
       .sort((a, b) => (a.rank || 999) - (b.rank || 999));
 
-    // Researchers & Paper Awards
+    // Researchers & Paper Awards (excluding top_paper_award which has its own section)
     const researchers = contributors
       .filter(c => ['paper_award', 'researcher'].includes(c.category) && c.rank !== 0)
-      .sort((a, b) => b.yearStart! - a.yearStart!); // Newest first
+      .sort((a, b) => b.yearStart! - a.yearStart!);
 
     // Pioneers (Old categories or explicit pioneers)
     const pioneers = contributors
       .filter(c => c.category === 'pioneer' || (c.yearStart && c.yearStart < 2024 && c.rank !== 0 && c.category !== 'founder'))
       .sort((a, b) => b.yearStart! - a.yearStart!);
 
-    return { founders, leaderboard2025, winners2024, researchers, pioneers };
+    return { founders, topPaperAward2025, winners2025, winners2024, researchers, pioneers };
   }, [data?.contributors]);
 
   if (error) {
@@ -73,16 +78,30 @@ export default function HumanTradingCards() {
     <div className="min-h-screen w-full bg-slate-950 text-slate-200">
       <div className="container mx-auto px-6 py-10 space-y-10">
 
-        {/* Header */}
-        <header className="text-center max-w-4xl mx-auto space-y-4">
-          <div className="flex items-center justify-center gap-3">
-            <Users className="h-10 w-10 text-amber-500" />
-            <h1 className="text-4xl md:text-5xl font-bold text-slate-100 tracking-tight">
-              ARC Hall of Fame
-            </h1>
+        {/* 2025 Announcement Hero */}
+        <header className="text-center max-w-5xl mx-auto space-y-6 relative">
+          {/* Decorative glow */}
+          <div className="absolute -inset-10 bg-gradient-to-r from-fuchsia-600/20 via-amber-500/20 to-blue-600/20 blur-3xl -z-10 rounded-full opacity-60" />
+          
+          {/* Date badge */}
+          <div className="inline-flex items-center gap-2 bg-slate-800/80 border border-slate-700 rounded-full px-4 py-1.5 text-sm text-slate-300">
+            <Calendar className="w-4 h-4 text-amber-400" />
+            <span>December 5, 2025</span>
+            <span className="text-slate-500">•</span>
+            <span className="text-amber-400 font-semibold">Official Results</span>
           </div>
-          <p className="text-xl text-slate-400">
-            Honoring the researchers, engineers, and pioneers pushing the boundaries of AGI.
+
+          <div className="flex items-center justify-center gap-3">
+            <Trophy className="h-10 w-10 text-amber-500 animate-pulse" />
+            <h1 className="text-4xl md:text-5xl font-bold text-slate-100 tracking-tight">
+              ARC Prize 2025 Winners
+            </h1>
+            <Sparkles className="h-8 w-8 text-fuchsia-400" />
+          </div>
+          
+          <p className="text-xl text-slate-400 max-w-3xl mx-auto">
+            Celebrating the brilliant minds who pushed the boundaries of artificial general intelligence.
+            The 2025 ARC Prize results are in!
           </p>
         </header>
 
@@ -158,15 +177,40 @@ export default function HumanTradingCards() {
               </section>
             )}
 
-            {/* 2025 Leaderboard */}
-            {leaderboard2025.length > 0 && (
+            {/* 2025 Top Paper Award - Featured Section */}
+            {topPaperAward2025.length > 0 && (
+              <section className="space-y-6 relative">
+                {/* Special glow for this section */}
+                <div className="absolute -inset-6 bg-gradient-to-r from-fuchsia-600/10 to-purple-600/10 blur-2xl -z-10 rounded-3xl" />
+                
+                <div className="flex items-center gap-3 border-b border-fuchsia-500/30 pb-4">
+                  <Award className="h-7 w-7 text-fuchsia-400" />
+                  <h2 className="text-2xl font-bold text-slate-100">2025 Top Paper Award</h2>
+                  <span className="ml-2 text-xs bg-fuchsia-500/20 text-fuchsia-300 px-2 py-1 rounded-full border border-fuchsia-500/30 uppercase tracking-wider font-semibold">
+                    Featured
+                  </span>
+                </div>
+                
+                {/* Featured large card layout for top paper award winner */}
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                  {topPaperAward2025.map(contributor => (
+                    <div key={contributor.id} className="lg:col-span-2 max-w-3xl mx-auto w-full">
+                      <HumanTradingCard contributor={contributor} />
+                    </div>
+                  ))}
+                </div>
+              </section>
+            )}
+
+            {/* 2025 Competition Winners */}
+            {winners2025.length > 0 && (
               <section className="space-y-6">
-                <div className="flex items-center gap-3 border-b border-slate-800 pb-4">
+                <div className="flex items-center gap-3 border-b border-amber-500/30 pb-4">
                   <Trophy className="h-6 w-6 text-amber-400" />
-                  <h2 className="text-2xl font-bold text-slate-100">2025 Leaderboard</h2>
+                  <h2 className="text-2xl font-bold text-slate-100">2025 Competition Winners</h2>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                  {leaderboard2025.map(contributor => (
+                  {winners2025.map(contributor => (
                     <div key={contributor.id} className="h-full">
                       <HumanTradingCard contributor={contributor} />
                     </div>

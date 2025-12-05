@@ -37,6 +37,7 @@ export interface ArcContributor {
 export type ContributorCategory =
   | 'competition_winner'
   | 'paper_award'
+  | 'top_paper_award'
   | 'researcher'
   | 'founder'
   | 'pioneer';
