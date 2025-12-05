@@ -1,6 +1,15 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top with the time and date!
 
+### Version 5.41.0  Dec 5, 2025 6:35pm
+
+- **ARC3 Preview + complete 2025 leaderboard data** (Author: Cascade)
+  - Added ARChitects team entries for 2024 (1st place, 53.5%) and 2025 (2nd place, 16.53%) with the official `/ARChitechts.png` team image.
+  - Completed 2025 competition winners data: Team NVARC (Puget & Sorokin, 24.03%), ARChitects (16.53%), Team MindsAI (Jack Cole & Dries Smit, 15.42%), and Guillermo Barbadillo (6.53%).
+  - Added Dries Smit as ARC-AGI-3 Agent Preview 2025 winner ("StochasticGoose", 12.58%) plus new `arc3_preview` category and "ARC3 2026" rising-stars section.
+  - Updated Hall of Fame layout and seed data so team cards and new categories use the correct images and styling.
+  - **Files**: `server/scripts/seedContributors.ts`, `shared/types/contributor.ts`, `client/src/utils/humanCardHelpers.ts`, `client/src/pages/HumanTradingCards.tsx`, `client/public/ARChitechts.png`, `client/public/dries.png`
+
 ### Version 5.40.2  Dec 5, 2025 3:58pm
 
 - **Clickable cards + confirmed 1st place scores** (Author: Cascade)
