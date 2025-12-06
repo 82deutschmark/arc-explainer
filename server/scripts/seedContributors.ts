@@ -423,6 +423,26 @@ const contributors: CreateContributorRequest[] = [
 
   // Additional Notable Contributors
   {
+    fullName: 'Simon Strandgaard (neoneye)',
+    handle: 'neoneye',
+    affiliation: 'Independent developer & ARC community contributor',
+    achievement: 'ARC community datasets and tools curator; long-time maintainer of ARC-related GitHub resources',
+    description: 'Independent developer who has collected, curated, and published many ARC-related datasets and tools on GitHub, making it dramatically easier for researchers and hobbyists to explore ARC puzzles, human interaction traces, and alternative task formats. His work has been a major inspiration and reference point for the ARC Explainer project and the broader community.',
+    imageUrl: '/simonS.png,/simonS1.png',
+    score: 'Community datasets & visual tooling widely used across ARC-AGI research',
+    approach: 'Open-source curation and tooling for ARC: maintains multiple repositories that package ARC variants, derived datasets, and interactive history logs in researcher-friendly formats, along with viewers and utilities for inspecting tasks and human behavior.',
+    uniqueTechnique: 'Treats ARC as a community dataset and tooling problem as much as a benchmark: systematically archives human interaction histories, alternative encodings, and visualization tools so others can build on shared resources instead of re-implementing infrastructure.',
+    links: {
+      github: 'https://github.com/neoneye',
+      website: 'https://neoneye.github.io',
+      papers: ['https://github.com/neoneye/ARC-Interactive-History-Dataset']
+    },
+    teamName: undefined,
+    category: 'researcher',
+    rank: undefined
+  },
+
+  {
     fullName: 'Ryan Greenblatt',
     handle: undefined,
     affiliation: 'Redwood Research',
