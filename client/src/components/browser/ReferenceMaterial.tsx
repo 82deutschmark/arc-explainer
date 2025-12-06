@@ -100,7 +100,7 @@ const REFERENCE_SECTIONS: ReferenceSectionProps[] = [
         href: 'https://github.com/fchollet/ARC-AGI',
       },
       {
-        label: 'Human ARC dataset',
+        label: 'Human Insights & Explanations',
         href: 'https://arc-visualizations.github.io/',
       },
     ],

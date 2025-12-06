@@ -1,8 +1,8 @@
 # ARC-AGI Explainer Platform - A Fan Site for ARC-AGI-3
- 
+
 ![ARC Puzzle 08573cc6](.claude/skills/slack-gif-creator/arc_puzzle_08573cc6.gif)
 
-**Version 5.36.15** — December 4, 2025
+**Version 5.44.0** — December 6, 2025
 
 
 A hobby platform for analyzing Abstract Reasoning Corpus (ARC-AGI) puzzles using state-of-the-art LLMs with reasoning capture, conversation chaining, and comprehensive performance analytics.
@@ -11,7 +11,17 @@ A hobby platform for analyzing Abstract Reasoning Corpus (ARC-AGI) puzzles using
 
 ---
 
-## What's New in v5.1.0
+## What's New in v5.44.0
+
+### 💡 Human Insights Resource Integration
+- **Direct Integration**: Added "Human Insights" button to the Puzzle Examiner header, and a prominent banner above analysis results
+- **Human Explanations**: Links directly to human test participant explanations and error examples for each puzzle at `https://arc-visualizations.github.io/{taskId}.html`
+- **Community Value**: This resource was instrumental for synthetic data creation and represents a major community contribution to understanding puzzle-solving patterns
+- **Dual Access Points**: Available both in the header (alongside solver buttons) and prominently above analysis results for maximum discoverability
+
+## Previous Highlights
+
+### v5.1.0 - ARC3 Agent Playground & Backend Agent Runner
 
 ### 🎮 ARC3 Agent Playground (In Development)
 - `/arc3/playground` introduces an interactive lab powered by the OpenAI Agents SDK where users can watch agents attempt to solve real ARC-AGI-3 competition games (like ls20 "LockSmith").
@@ -30,8 +40,7 @@ A hobby platform for analyzing Abstract Reasoning Corpus (ARC-AGI) puzzles using
 
 For additional release notes, see [Changelog](./CHANGELOG.md).
 
-## Previous Highlights
-
+### Earlier Releases
 - **v4.8.3**: Restored OpenAI service compilation, enhanced streaming event handling, and delivered the heuristic Python ARC solver with sub-second performance.
 - **v4.8.2**: Introduced conversation chaining with 30-day reasoning persistence, batch analysis controls, and richer correctness filtering across the UI.
 
