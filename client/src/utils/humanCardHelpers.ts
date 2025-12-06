@@ -36,6 +36,12 @@ export function getCategoryGradient(category: ContributorCategory): {
       accentColor: 'bg-blue-500/10 text-blue-500 border-blue-500/20',
       textColor: 'text-blue-500'
     },
+    'top_paper_award': {
+      borderGradient: 'border-fuchsia-500/60',
+      backgroundGradient: 'bg-gradient-to-br from-slate-900 via-fuchsia-950/20 to-slate-900',
+      accentColor: 'bg-fuchsia-500/15 text-fuchsia-400 border-fuchsia-500/30',
+      textColor: 'text-fuchsia-400'
+    },
     'researcher': {
       borderGradient: 'border-emerald-500/50',
       backgroundGradient: 'bg-slate-900',
@@ -53,6 +59,12 @@ export function getCategoryGradient(category: ContributorCategory): {
       backgroundGradient: 'bg-slate-900',
       accentColor: 'bg-slate-500/10 text-slate-400 border-slate-500/20',
       textColor: 'text-slate-400'
+    },
+    'arc3_preview': {
+      borderGradient: 'border-cyan-500/60',
+      backgroundGradient: 'bg-gradient-to-br from-slate-900 via-cyan-950/20 to-slate-900',
+      accentColor: 'bg-cyan-500/15 text-cyan-400 border-cyan-500/30',
+      textColor: 'text-cyan-400'
     }
   };
 
@@ -66,9 +78,11 @@ export function getCategoryDisplayName(category: ContributorCategory): string {
   const names: Record<ContributorCategory, string> = {
     'competition_winner': 'Competition Winner',
     'paper_award': 'Paper Award',
+    'top_paper_award': 'Top Paper Award',
     'researcher': 'Researcher',
     'founder': 'Founder & Organizer',
-    'pioneer': 'Pioneer'
+    'pioneer': 'Pioneer',
+    'arc3_preview': 'ARC3 Preview'
   };
 
   return names[category];
@@ -91,9 +105,11 @@ export function getCategoryIcon(category: ContributorCategory): string {
   const icons: Record<ContributorCategory, string> = {
     'competition_winner': '🏆',
     'paper_award': '📄',
+    'top_paper_award': '🏅',
     'researcher': '🔬',
     'founder': '🚀',
-    'pioneer': '⭐'
+    'pioneer': '⭐',
+    'arc3_preview': '🚀'
   };
 
   return icons[category];
@@ -151,10 +167,11 @@ export function getRankBadge(rank: number | null): string | null {
  * Determine if contributor should have a "featured" badge
  */
 export function isFeatured(contributor: ArcContributor): boolean {
-  // Feature top 3 ranks, current record holders, or founders
+  // Feature top 3 ranks, current record holders, founders, or top paper award winners
   return (
     (contributor.rank !== null && contributor.rank <= 3) ||
     contributor.category === 'founder' ||
+    contributor.category === 'top_paper_award' ||
     (contributor.score?.includes('SOTA') ?? false) ||
     (contributor.score?.includes('Record') ?? false)
   );

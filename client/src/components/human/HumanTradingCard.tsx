@@ -11,7 +11,7 @@ import React, { useMemo, useState } from 'react';
 import { formatContributorCard } from '@/utils/humanCardHelpers';
 import { getRandomGif } from '@/utils/arcGifs';
 import type { ArcContributor } from '@shared/types/contributor';
-import { ExternalLink, Github, Twitter, Globe, BookOpen, Linkedin, Sparkles, Zap } from 'lucide-react';
+import { ExternalLink, Github, Twitter, Globe, BookOpen, Linkedin, Sparkles, Zap, Youtube } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from '@/components/ui/dialog';
 
@@ -34,7 +34,7 @@ export const HumanTradingCard: React.FC<HumanTradingCardProps> = ({ contributor 
 
   const ProfileImage = ({ className, showFeatured = false }: { className?: string, showFeatured?: boolean }) => (
     <div className={`relative group ${className}`}>
-      <div className={`w-full h-full overflow-hidden rounded-lg border-2 ${cardData.colors.borderGradient} bg-slate-950 shadow-inner`}>
+      <div className={`w-full h-full overflow-hidden rounded-xl border-2 ${cardData.colors.borderGradient} bg-zinc-950 shadow-inner`}>
         {selectedImageUrl ? (
           <img
             src={selectedImageUrl}
@@ -51,12 +51,12 @@ export const HumanTradingCard: React.FC<HumanTradingCardProps> = ({ contributor 
       </div>
       {/* Hover hint so it’s obvious the portrait is interactive */}
       <div className="pointer-events-none absolute inset-0 flex items-end justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-        <div className="mb-1 rounded-full bg-black/75 px-2 py-0.5 text-[10px] font-semibold tracking-wide text-amber-200 border border-amber-400/70 shadow-md">
-          Click portrait to zoom
+        <div className="mb-2 rounded-full bg-zinc-800/80 backdrop-blur-sm px-3 py-1 text-[10px] font-semibold tracking-wide text-zinc-400 border border-zinc-700/50 shadow-lg">
+          Click to zoom
         </div>
       </div>
       {showFeatured && cardData.featured && (
-        <div className="absolute -top-2 -right-2 bg-amber-500 text-slate-900 rounded-full p-1 shadow-lg animate-pulse z-10">
+        <div className="absolute -top-2 -right-2 bg-gradient-to-br from-zinc-400 to-zinc-600 text-zinc-900 rounded-full p-1.5 shadow-lg shadow-zinc-500/30 animate-pulse z-10">
           <Sparkles className="w-3 h-3" />
         </div>
       )}
@@ -67,38 +67,44 @@ export const HumanTradingCard: React.FC<HumanTradingCardProps> = ({ contributor 
     <div className="flex flex-wrap gap-2">
       {contributor.links?.twitter && (
         <a href={contributor.links.twitter} target="_blank" rel="noreferrer" 
-            className="flex items-center gap-1.5 text-xs bg-slate-800 hover:bg-blue-900/30 text-slate-300 hover:text-blue-400 px-2.5 py-1.5 rounded border border-slate-700 hover:border-blue-500/30 transition-all">
-          <Twitter className="w-3 h-3" /> Twitter
+            className="flex items-center gap-1.5 text-xs bg-zinc-800/80 hover:bg-blue-900/40 text-zinc-300 hover:text-blue-400 px-3 py-2 rounded-lg border border-zinc-700/50 hover:border-blue-500/40 transition-all shadow-sm">
+          <Twitter className="w-3.5 h-3.5" /> Twitter
         </a>
       )}
       {contributor.links?.github && (
         <a href={contributor.links.github} target="_blank" rel="noreferrer" 
-            className="flex items-center gap-1.5 text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white px-2.5 py-1.5 rounded border border-slate-700 hover:border-slate-500 transition-all">
-          <Github className="w-3 h-3" /> GitHub
+            className="flex items-center gap-1.5 text-xs bg-zinc-800/80 hover:bg-zinc-700 text-zinc-300 hover:text-white px-3 py-2 rounded-lg border border-zinc-700/50 hover:border-zinc-500 transition-all shadow-sm">
+          <Github className="w-3.5 h-3.5" /> GitHub
         </a>
       )}
       {contributor.links?.website && (
         <a href={contributor.links.website} target="_blank" rel="noreferrer" 
-            className="flex items-center gap-1.5 text-xs bg-slate-800 hover:bg-emerald-900/30 text-slate-300 hover:text-emerald-400 px-2.5 py-1.5 rounded border border-slate-700 hover:border-emerald-500/30 transition-all">
-          <Globe className="w-3 h-3" /> Website
+            className="flex items-center gap-1.5 text-xs bg-zinc-800/80 hover:bg-emerald-900/40 text-zinc-300 hover:text-emerald-400 px-3 py-2 rounded-lg border border-zinc-700/50 hover:border-emerald-500/40 transition-all shadow-sm">
+          <Globe className="w-3.5 h-3.5" /> Website
         </a>
       )}
       {contributor.links?.papers && contributor.links.papers.length > 0 && (
         <a href={contributor.links.papers[0]} target="_blank" rel="noreferrer" 
-            className="flex items-center gap-1.5 text-xs bg-slate-800 hover:bg-indigo-900/30 text-slate-300 hover:text-indigo-400 px-2.5 py-1.5 rounded border border-slate-700 hover:border-indigo-500/30 transition-all">
-          <BookOpen className="w-3 h-3" /> Paper
+            className="flex items-center gap-1.5 text-xs bg-zinc-800/80 hover:bg-indigo-900/40 text-zinc-300 hover:text-indigo-400 px-3 py-2 rounded-lg border border-zinc-700/50 hover:border-indigo-500/40 transition-all shadow-sm">
+          <BookOpen className="w-3.5 h-3.5" /> Paper
         </a>
       )}
       {contributor.links?.linkedin && (
         <a href={contributor.links.linkedin} target="_blank" rel="noreferrer" 
-            className="flex items-center gap-1.5 text-xs bg-slate-800 hover:bg-blue-900/30 text-slate-300 hover:text-blue-500 px-2.5 py-1.5 rounded border border-slate-700 hover:border-blue-500/30 transition-all">
-          <Linkedin className="w-3 h-3" /> LinkedIn
+            className="flex items-center gap-1.5 text-xs bg-zinc-800/80 hover:bg-blue-900/40 text-zinc-300 hover:text-blue-500 px-3 py-2 rounded-lg border border-zinc-700/50 hover:border-blue-500/40 transition-all shadow-sm">
+          <Linkedin className="w-3.5 h-3.5" /> LinkedIn
         </a>
       )}
       {contributor.links?.kaggle && (
-        <a href={contributor.links.kaggle} target="_blank" rel="noreferrer" 
-            className="flex items-center gap-1.5 text-xs bg-slate-800 hover:bg-sky-900/30 text-slate-300 hover:text-sky-400 px-2.5 py-1.5 rounded border border-slate-700 hover:border-sky-500/30 transition-all">
-          <ExternalLink className="w-3 h-3" /> Kaggle
+        <a href={contributor.links.kaggle} target="_blank" rel="noreferrer"
+            className="flex items-center gap-1.5 text-xs bg-zinc-800/80 hover:bg-sky-900/40 text-zinc-300 hover:text-sky-400 px-3 py-2 rounded-lg border border-zinc-700/50 hover:border-sky-500/40 transition-all shadow-sm">
+          <ExternalLink className="w-3.5 h-3.5" /> Kaggle
+        </a>
+      )}
+      {contributor.links?.youtube && (
+        <a href={contributor.links.youtube} target="_blank" rel="noreferrer"
+            className="flex items-center gap-1.5 text-xs bg-zinc-800/80 hover:bg-red-900/40 text-zinc-300 hover:text-red-400 px-3 py-2 rounded-lg border border-zinc-700/50 hover:border-red-500/40 transition-all shadow-sm">
+          <Youtube className="w-3.5 h-3.5" /> Talk
         </a>
       )}
     </div>
@@ -107,193 +113,166 @@ export const HumanTradingCard: React.FC<HumanTradingCardProps> = ({ contributor 
   return (
     <>
       <Dialog>
-        <div className="w-full h-full flex flex-col">
-          <div className={`relative rounded-lg border bg-slate-900 ${cardData.colors.borderGradient} flex flex-col overflow-hidden hover:border-slate-400 transition-all duration-200 shadow-lg h-full`}>
-            
-            {/* Card Header */}
-            <div className="p-5 flex gap-4 items-start border-b border-slate-800/50 bg-slate-900/50 backdrop-blur-sm">
-              {/* Avatar / GIF - Click to view full size */}
-              <Dialog>
-                <DialogTrigger asChild>
-                  <div
-                    className="flex-shrink-0 cursor-pointer hover:opacity-90 hover:scale-[1.03] transition"
-                    aria-label={`Open large portrait of ${contributor.fullName}`}
-                    title="Click portrait to zoom"
-                  >
-                    <ProfileImage className="w-24 h-24" showFeatured={true} />
-                  </div>
-                </DialogTrigger>
-                <DialogContent className="bg-transparent border-none shadow-none p-0 flex items-center justify-center max-w-[90vw] max-h-[90vh]">
-                  <div className="relative">
-                    {selectedImageUrl ? (
-                       <img
-                         src={selectedImageUrl}
-                         alt={contributor.fullName}
-                         className="max-w-[85vw] max-h-[85vh] object-contain rounded-lg shadow-2xl border-2 border-slate-700 bg-black"
-                       />
-                    ) : (
-                       <img
-                         src={gifUrl}
-                         alt="Profile"
-                         className="max-w-[85vw] max-h-[85vh] object-contain image-pixelated rounded-lg shadow-2xl border-2 border-slate-700 bg-black"
-                       />
-                    )}
-                  </div>
-                </DialogContent>
-              </Dialog>
-
-              {/* Name & Title */}
-              <div className="flex-1 min-w-0 pt-1">
-                <h3 className="text-xl font-bold text-slate-100 truncate leading-tight tracking-tight">
-                  {contributor.fullName}
-                </h3>
-                {contributor.handle && (
-                  <p className={`text-xs font-mono mb-2 ${cardData.colors.textColor}`}>@{contributor.handle}</p>
+        <div className="w-full h-full flex flex-col max-w-[280px] mx-auto">
+          {/* IMAGE-FIRST CARD: Entire card is clickable */}
+          <DialogTrigger asChild>
+            <div className={`relative rounded-xl border ${cardData.colors.borderGradient} overflow-hidden hover:border-zinc-400 transition-all duration-300 shadow-xl hover:shadow-2xl h-full cursor-pointer group`}>
+              
+              {/* LARGE IMAGE - Primary Focus */}
+              <div className="relative aspect-[3/4] w-full bg-black">
+                {selectedImageUrl ? (
+                  <img
+                    src={selectedImageUrl}
+                    alt={contributor.fullName}
+                    className="w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-300"
+                  />
+                ) : (
+                  <img
+                    src={gifUrl}
+                    alt="Profile"
+                    className="w-full h-full object-cover image-pixelated group-hover:scale-[1.02] transition-transform duration-300"
+                  />
                 )}
                 
-                <div className="flex items-center gap-2 flex-wrap">
-                  <Badge variant="outline" className={`${cardData.colors.accentColor} border-opacity-50 uppercase text-[10px] tracking-wider`}>
+                {/* Gradient overlay at bottom for text legibility */}
+                <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/90 via-black/50 to-transparent" />
+                
+                {/* Featured badge */}
+                {cardData.featured && (
+                  <div className="absolute top-2 right-2 bg-gradient-to-br from-amber-400 to-amber-600 text-zinc-900 rounded-full p-1.5 shadow-lg shadow-amber-500/30 animate-pulse">
+                    <Sparkles className="w-3.5 h-3.5" />
+                  </div>
+                )}
+                
+                {/* Category badge */}
+                <div className="absolute top-2 left-2">
+                  <Badge variant="outline" className={`${cardData.colors.accentColor} border-opacity-70 uppercase text-[9px] tracking-wider backdrop-blur-sm bg-black/50`}>
                     {cardData.icon} {cardData.categoryName}
                   </Badge>
-                  
-                  {contributor.rank && contributor.rank <= 3 && (
-                    <Badge variant="outline" className="bg-amber-500/10 text-amber-500 border-amber-500/20 uppercase text-[10px] tracking-wider">
-                      Rank #{contributor.rank}
-                    </Badge>
+                </div>
+                
+                {/* Name overlay at bottom of image */}
+                <div className="absolute inset-x-0 bottom-0 p-3">
+                  <h3 className="text-lg font-bold text-white drop-shadow-lg leading-tight">
+                    {contributor.fullName}
+                  </h3>
+                  {contributor.handle && (
+                    <p className={`text-xs font-mono mt-0.5 ${cardData.colors.textColor}`}>@{contributor.handle}</p>
                   )}
+                  {contributor.score && (
+                    <p className={`text-xs font-mono font-bold mt-0.5 ${cardData.colors.textColor}`}>{contributor.score}</p>
+                  )}
+                </div>
+                
+                {/* Hover overlay hint */}
+                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors flex items-center justify-center">
+                  <span className="opacity-0 group-hover:opacity-100 transition-opacity text-white text-xs font-semibold bg-black/60 px-3 py-1.5 rounded-full backdrop-blur-sm">
+                    View Profile
+                  </span>
+                </div>
+              </div>
+            </div>
+          </DialogTrigger>
+        </div>
+
+        {/* Modal Content - Side-by-side layout with prominent image */}
+        <DialogContent className="bg-gradient-to-br from-zinc-900 via-zinc-900 to-zinc-950 border-zinc-700/50 text-zinc-100 max-w-5xl max-h-[90vh] overflow-y-auto p-0">
+          <div className="flex flex-col lg:flex-row">
+            {/* Left: Large Image Panel */}
+            <div className="lg:w-[45%] flex-shrink-0 bg-black/40 p-6 flex items-center justify-center">
+              <div className="relative w-full max-w-md">
+                {selectedImageUrl ? (
+                  <img
+                    src={selectedImageUrl}
+                    alt={contributor.fullName}
+                    className="w-full h-auto rounded-xl shadow-2xl border border-zinc-700/50"
+                  />
+                ) : (
+                  <img
+                    src={gifUrl}
+                    alt="Profile"
+                    className="w-full h-auto rounded-xl shadow-2xl border border-zinc-700/50 image-pixelated"
+                  />
+                )}
+                {/* Floating category badge on image */}
+                <div className="absolute bottom-4 left-4 right-4">
+                  <Badge variant="outline" className={`${cardData.colors.accentColor} border-opacity-70 uppercase text-xs tracking-wider backdrop-blur-sm bg-black/60 px-3 py-1.5`}>
+                    {cardData.icon} {cardData.categoryName}
+                  </Badge>
                 </div>
               </div>
             </div>
 
-            {/* Content Body */}
-            <div className="p-5 flex-1 flex flex-col gap-5 bg-gradient-to-b from-slate-900 to-slate-950">
-              
-              {/* Key Achievement */}
-              <div className="bg-slate-800/30 rounded-md p-3 border border-slate-800/50">
-                <div className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1.5 flex items-center gap-1.5">
-                  <Zap className="w-3 h-3" /> Achievement
+            {/* Right: Content Panel */}
+            <div className="lg:w-[55%] p-6 lg:p-8 space-y-6 overflow-y-auto">
+              {/* Header */}
+              <DialogHeader className="space-y-3">
+                <DialogTitle className="text-3xl font-bold text-zinc-50 tracking-tight">
+                  {contributor.fullName}
+                </DialogTitle>
+                {contributor.handle && (
+                  <p className={`text-sm font-mono ${cardData.colors.textColor}`}>@{contributor.handle}</p>
+                )}
+                <DialogDescription className="text-zinc-400 text-base">
+                  {contributor.affiliation}
+                </DialogDescription>
+              </DialogHeader>
+
+              {/* Key Stats */}
+              <div className="grid grid-cols-2 gap-3">
+                <div className="bg-zinc-800/50 p-4 rounded-lg border border-zinc-700/50">
+                  <div className="text-xs font-semibold text-zinc-500 uppercase tracking-wide mb-1">Achievement</div>
+                  <div className="text-sm font-medium text-zinc-200">{contributor.achievement}</div>
                 </div>
-                <p className="text-sm font-medium text-slate-200 leading-relaxed">
-                  {contributor.achievement}
-                </p>
+                <div className="bg-zinc-800/50 p-4 rounded-lg border border-zinc-700/50">
+                  <div className="text-xs font-semibold text-zinc-500 uppercase tracking-wide mb-1">Best Score</div>
+                  <div className={`text-lg font-bold ${cardData.colors.textColor}`}>{contributor.score || 'N/A'}</div>
+                </div>
               </div>
 
-              {/* Description Preview */}
-              <div className="flex-1">
-                <div className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1.5">Contribution</div>
-                <p className="text-sm text-slate-400 leading-relaxed line-clamp-3">
+              {/* About */}
+              <div>
+                <h4 className="text-sm font-semibold text-zinc-300 uppercase tracking-wide mb-2">About</h4>
+                <p className="text-zinc-400 leading-relaxed text-sm">
                   {contributor.description}
                 </p>
               </div>
 
-              {/* Stats Row */}
-              <div className="flex items-center justify-between pt-2 mt-auto border-t border-slate-800/50">
-                <div className="text-xs">
-                  <span className="text-slate-500 mr-2">Active:</span>
-                  <span className="text-slate-300 font-mono">{cardData.yearRange}</span>
-                </div>
-                {contributor.score && (
-                  <div className="text-xs text-right">
-                    <span className="text-slate-500 mr-2">Score:</span>
-                    <span className={`font-mono font-bold ${cardData.colors.textColor}`}>{contributor.score}</span>
-                  </div>
-                )}
-              </div>
+              {/* Technical Details */}
+              {(contributor.approach || contributor.uniqueTechnique) && (
+                <div className="space-y-4">
+                  {contributor.approach && (
+                    <div>
+                      <h4 className="text-sm font-semibold text-zinc-300 uppercase tracking-wide mb-2 flex items-center gap-2">
+                        <Zap className="w-4 h-4 text-amber-400" /> Methodology
+                      </h4>
+                      <div className="bg-zinc-800/30 p-4 rounded-lg border border-zinc-700/30 text-sm text-zinc-400 leading-relaxed">
+                        {contributor.approach}
+                      </div>
+                    </div>
+                  )}
 
-              {/* View Full Profile Button (Modal Trigger) */}
-              <DialogTrigger asChild>
-                <button 
-                  className="w-full mt-2 py-2 flex items-center justify-center gap-2 text-xs font-semibold uppercase tracking-wider rounded transition-colors bg-slate-800/50 text-slate-500 hover:bg-slate-800 hover:text-slate-300"
-                >
-                  View Full Profile <ExternalLink className="w-3 h-3" />
-                </button>
-              </DialogTrigger>
-
-            </div>
-          </div>
-        </div>
-
-        {/* Modal Content */}
-        <DialogContent className="bg-slate-950 border-slate-800 text-slate-200 max-w-2xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
-            <div className="flex items-start gap-6 pb-4 border-b border-slate-800">
-              <div className="flex-shrink-0 mt-1">
-                <ProfileImage className="w-24 h-24" />
-              </div>
-              <div className="flex-1">
-                <DialogTitle className="text-2xl font-bold text-slate-100 mb-2">
-                  {contributor.fullName}
-                </DialogTitle>
-                
-                <div className="flex flex-wrap gap-2 mb-3">
-                   <Badge variant="outline" className={`${cardData.colors.accentColor} border-opacity-50 uppercase text-[10px] tracking-wider`}>
-                    {cardData.icon} {cardData.categoryName}
-                  </Badge>
-                  {contributor.handle && (
-                    <span className="text-sm font-mono text-slate-400">@{contributor.handle}</span>
+                  {contributor.uniqueTechnique && (
+                    <div>
+                      <h4 className="text-sm font-semibold text-zinc-300 uppercase tracking-wide mb-2 flex items-center gap-2">
+                        <Sparkles className="w-4 h-4 text-fuchsia-400" /> Innovation
+                      </h4>
+                      <div className="bg-zinc-800/30 p-4 rounded-lg border border-zinc-700/30 text-sm text-zinc-400 leading-relaxed">
+                        {contributor.uniqueTechnique}
+                      </div>
+                    </div>
                   )}
                 </div>
-
-                <DialogDescription className="text-slate-400">
-                  {contributor.affiliation}
-                </DialogDescription>
-              </div>
-            </div>
-          </DialogHeader>
-
-          <div className="space-y-6 py-4">
-            {/* Key Stats Grid */}
-            <div className="grid grid-cols-2 gap-4">
-              <div className="bg-slate-900/50 p-4 rounded-lg border border-slate-800">
-                <div className="text-xs font-bold text-slate-500 uppercase mb-1">Achievement</div>
-                <div className="text-sm font-medium text-slate-200">{contributor.achievement}</div>
-              </div>
-              <div className="bg-slate-900/50 p-4 rounded-lg border border-slate-800">
-                 <div className="text-xs font-bold text-slate-500 uppercase mb-1">Best Score</div>
-                 <div className={`text-sm font-bold ${cardData.colors.textColor}`}>{contributor.score || 'N/A'}</div>
-              </div>
-            </div>
-
-            {/* Full Description */}
-            <div>
-              <h4 className="text-sm font-bold text-slate-300 uppercase tracking-wider mb-2">About</h4>
-              <p className="text-slate-400 leading-relaxed">
-                {contributor.description}
-              </p>
-            </div>
-
-            {/* Technical Details */}
-            <div className="grid md:grid-cols-2 gap-6">
-              {contributor.approach && (
-                <div className="space-y-2">
-                  <h4 className="text-sm font-bold text-slate-300 uppercase tracking-wider flex items-center gap-2">
-                    <Zap className="w-4 h-4 text-amber-500" /> Methodology
-                  </h4>
-                  <div className="bg-slate-900/30 p-4 rounded-lg border border-slate-800/50 text-sm text-slate-400 leading-relaxed">
-                    {contributor.approach}
-                  </div>
-                </div>
               )}
 
-              {contributor.uniqueTechnique && (
-                <div className="space-y-2">
-                  <h4 className="text-sm font-bold text-slate-300 uppercase tracking-wider flex items-center gap-2">
-                    <Sparkles className="w-4 h-4 text-purple-500" /> Innovation
-                  </h4>
-                  <div className="bg-slate-900/30 p-4 rounded-lg border border-slate-800/50 text-sm text-slate-400 leading-relaxed">
-                    {contributor.uniqueTechnique}
-                  </div>
-                </div>
-              )}
-            </div>
-
-            {/* Resources */}
-            {contributor.links && Object.keys(contributor.links).length > 0 && (
-               <div>
-                  <h4 className="text-sm font-bold text-slate-300 uppercase tracking-wider mb-3">Resources & Links</h4>
+              {/* Resources */}
+              {contributor.links && Object.keys(contributor.links).length > 0 && (
+                <div>
+                  <h4 className="text-sm font-semibold text-zinc-300 uppercase tracking-wide mb-3">Resources & Links</h4>
                   <SocialLinks />
-               </div>
-            )}
+                </div>
+              )}
+            </div>
           </div>
         </DialogContent>
       </Dialog>

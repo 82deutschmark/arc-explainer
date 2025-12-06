@@ -1,9 +1,10 @@
 # AGENTS.md
 
-**Author:** The User  
+**Author:** The User  (aka YOUR BOSS!!)
 **Date:** 2025-10-15  
-**Purpose:** Consolidated guidance for AI agents working with the ARC Explainer repository.  
-This version merges the best material from previous guidelines and adds **quick pointers** to locate critical information fast.
+**Purpose:** Guidance for AI agents working with the ARC Explainer repository. 
+
+Do not be afraid to ask the user questions about the outcomes that they are expecting and be honest about your abilities. If a web search would be useful or updated information, mention that.  The user does not care about the speed at which you execute your tasks. Take your time and ultrathink about a comprehensive plan before you do things. It's generally always a good idea to have your plan approved by the user before you start changing files.
 
 ## 📚 Quick Reference – Where to Find Things
 - **Core Documentation**
@@ -325,3 +326,10 @@ The initial { stream: true } option only applies to the call where it is provide
 If your application only cares about the textual result prefer toTextStream() to avoid dealing with individual event objects.
 With streaming and the event system you can integrate an agent into a chat interface, terminal application or any place where users benefit from incremental updates.
 
+
+
+Think and breathe Python and TypeScript. You are a Python and TypeScript engineer proficient in building complex, agentic systems or multi-step, stateful execution frameworks.
+Work autonomously to develop both clearly defined and ambiguous ideas, including your own, into reality.
+Excel at designing and building reliable, high-performance infrastructure that interacts heavily with external, third-party LLMs – some experimental, some large-scale and publicly deployed.
+Can architect clean abstractions for complex workflows, specifically synthesizing fragmented information gathered over thousands of parallel, asynchronous queries.
+Care deeply about code quality, performance profiling, and building the stable, scalable platform that allows research to run autonomously.

@@ -16,6 +16,76 @@ import { config } from 'dotenv';
 config();
 
 const contributors: CreateContributorRequest[] = [
+  // 2025 Top Paper Award Winner
+  {
+    fullName: 'Alexia Jolicoeur-Martineau',
+    handle: 'jm_alexia',
+    affiliation: 'Samsung SAIT Montréal, Senior AI Researcher',
+    achievement: '2025 Top Paper Award: "Less is More: Recursive Reasoning with Tiny Networks" (TRM)',
+    description: 'Lead author of the Tiny Recursive Model (TRM) work on ARC-AGI—a groundbreaking ~7M-parameter, 2-layer recursive network that repeatedly refines an internal reasoning state and answer instead of relying on huge LLMs. TRM became the leading open-source approach on ARC-AGI shortly before the 2025 ARC Prize deadline, though its compute budget exceeded competition constraints.',
+    imageUrl: '/alexiaJM4.png',
+    yearStart: 2025,
+    yearEnd: 2025,
+    score: '~45% ARC-AGI-1, ~8% ARC-AGI-2',
+    approach: 'Tiny Recursive Model (TRM)—a compact 2-layer network with recursive refinement that iteratively improves its reasoning state and answer prediction. Trained from scratch without LLM pretraining.',
+    uniqueTechnique: 'Demonstrated that ~7M parameters can match or beat models 10,000× larger (DeepSeek R1, o3-mini, Gemini 2.5 Pro) on ARC-AGI-2, proving "less is more" for abstract reasoning.',
+    links: {
+      twitter: 'https://x.com/jm_alexia',
+      github: 'https://github.com/SamsungSAILMontreal/TinyRecursiveModels',
+      kaggle: 'https://www.kaggle.com/code/alexiajm/arc-agi-without-pretraining',
+      papers: ['https://arxiv.org/abs/2510.04871'],
+      website: 'https://alexiajm.github.io/2025/09/29/tiny_recursive_models.html'
+    },
+    teamName: 'Samsung SAIL Montréal',
+    category: 'top_paper_award',
+    rank: 1
+  },
+
+  {
+    fullName: 'SOAR Team (Pourcel, Colas, Oudeyer)',
+    handle: undefined,
+    affiliation: 'LLM4Code / Inria & Sorbonne University',
+    imageUrl: '/julienPourcel.png',
+    achievement: '2nd Place 2025 Paper Award: "Self-Improving Language Models for Evolutionary Program Synthesis" (SOAR)',
+    description: 'Authors of SOAR, a self-improving evolutionary program synthesis framework that alternates between LLM-driven evolutionary search for ARC-AGI programs and hindsight fine-tuning on its own search traces, steadily improving the model as a search operator without human-engineered DSLs or curated solution datasets.',
+    yearStart: 2025,
+    yearEnd: 2025,
+    score: 'Up to 52% solved on the ARC-AGI public test set via self-improving evolutionary program synthesis.',
+    approach: 'Self-improving evolutionary program synthesis: use an LLM to sample and refine candidate programs, then convert successful and near-miss search attempts into training data for a hindsight fine-tuning phase that improves the LLM search operator over iterations.',
+    uniqueTechnique: 'Shows how to close the loop between evolutionary search and LLM training: SOAR turns search traces into supervised data, leveraging positive transfer across tasks to significantly boost ARC-AGI performance without hand-designed DSLs or solution datasets.',
+    links: {
+      papers: ['https://arxiv.org/abs/2507.14172'],
+      github: 'https://github.com/flowersteam/SOAR',
+      youtube: 'https://www.youtube.com/watch?v=9lIuoslCHWI'
+    },
+    teamName: 'SOAR',
+    category: 'paper_award',
+    rank: 2
+  },
+
+  {
+    fullName: 'Isaac Liao',
+    handle: undefined,
+    affiliation: 'Carnegie Mellon University, Graduate Researcher',
+    imageUrl: '/isaacliao.png',
+    achievement: '3rd Place 2025 Paper Award: "ARC-AGI Without Pretraining" (CompressARC)',
+    description: 'Creator of CompressARC, an MDL-based neural "code golf" system that trains a single small network per puzzle from scratch and selects the model that minimizes description length, solving ARC-AGI puzzles using only the target puzzle data with no pretraining or external datasets.',
+    yearStart: 2025,
+    yearEnd: 2025,
+    score: 'ARC-AGI-1: 34.75% (training), 20% (evaluation); ARC-AGI-2: ~4% (no pretraining, no external data)',
+    approach: 'Minimum Description Length (MDL) compression-driven solver that treats ARC-AGI as a lossless compression problem, performing single-puzzle training of a compact neural network and choosing architectures/hyperparameters that yield the shortest overall description of inputs and outputs.',
+    uniqueTechnique: 'Shows that pure compression at inference time can yield intelligent behavior: a single-puzzle-trained neural network that optimizes description length instead of accuracy, achieving non-trivial ARC-AGI-1/2 performance without any pretraining or synthetic data.',
+    links: {
+      website: 'https://iliao2345.github.io/blog_posts/arc_agi_without_pretraining/arc_agi_without_pretraining.html',
+      github: 'https://github.com/iliao2345/CompressARC',
+      papers: ['https://iliao2345.github.io/blog_posts/arc_agi_without_pretraining/ARC_AGI_Without_Pretraining.pdf'],
+      youtube: 'https://www.youtube.com/watch?v=N9GvFj0cE9s'
+    },
+    teamName: undefined,
+    category: 'paper_award',
+    rank: 3
+  },
+
   // 2024-2025 Top Achievers
   {
     fullName: 'Jeremy Berman',
@@ -39,65 +109,67 @@ const contributors: CreateContributorRequest[] = [
     rank: undefined
   },
 
-  // 2024 ARC Prize Winners
+  // ARChitects - 2025 (2nd Place)
   {
-    fullName: 'Daniel Franzen',
+    fullName: 'ARChitects (Franzen, Disselhoff, Hartmann)',
     handle: undefined,
-    affiliation: 'Johannes Gutenberg University Mainz (JGU Mainz), Germany',
-    achievement: '1st Place ARC Prize 2024 - 53.5% accuracy',
-    description: 'Led ARChitects team to victory using innovative LLM-based approach with Mistral-Nemo-Minitron-8B model, depth-first search for token selection, and test-time training.',
-    yearStart: 2024,
-    yearEnd: 2024,
-    score: '53.5% (1st Place)',
-    approach: 'Product of Experts approach using multiple perspectives to improve solution selection, combining LLM fine-tuning with symbolic reasoning',
-    uniqueTechnique: 'Test-time training with augmentation-based validation system using depth-first search for token selection',
+    affiliation: 'Johannes Gutenberg University Mainz, Germany',
+    achievement: '2nd Place ARC Prize 2025 (16.53%)',
+    description: 'Three-person team (Daniel Franzen, Jan Disselhoff, David Hartmann) that dominates the ARC-AGI scene. Took 2nd place in ARC Prize 2025 with 16.53% on ARC-AGI-2, using a 2D-aware masked-diffusion LLM with recursive self-refinement.',
+    imageUrl: '/ARChitechts.png',
+    yearStart: 2025,
+    yearEnd: 2025,
+    score: '16.53% (2nd Place)',
+    approach: '2D-aware masked-diffusion LLM with recursive self-refinement',
+    uniqueTechnique: 'Masked diffusion approach applied to 2D grid reasoning with iterative refinement',
     links: {
       github: 'https://github.com/da-fr/arc-prize-2024',
       papers: ['https://arxiv.org/abs/arc-prize-2024']
     },
     teamName: 'ARChitects',
     category: 'competition_winner',
-    rank: undefined
+    rank: 2
   },
 
+  // ARChitects - 2024 (1st Place)
   {
-    fullName: 'Jean-François Puget',
-    handle: 'JFPuget',
-    affiliation: 'Machine Learning at NVIDIA, 6x Kaggle Grandmaster',
-    achievement: 'Preliminary 1st Place on ARC Prize 2025 Kaggle leaderboard; Runner-Up ARC Prize 2024 Paper Award for "A 2D nGPT Model For ARC Prize"',
-    description: 'Machine Learning at NVIDIA, 6x Kaggle Grandmaster (CPMP). ENS Ulm alumni, ML PhD. Formerly at ILOG CPLEX and IBM. Achieved preliminary first place on Kaggle 2025 ARC Prize, and earlier authored the 2024 ARC Prize paper "A 2D nGPT Model For ARC Prize" which received a runner-up paper award.',
-    imageUrl: '/jfPuget.png,/jfPuget2.png',
+    fullName: 'ARChitects 2024 (Franzen, Disselhoff, Hartmann)',
+    handle: undefined,
+    affiliation: 'Johannes Gutenberg University Mainz, Germany',
+    achievement: '1st Place ARC Prize 2024 (53.5%)',
+    description: 'Three-person team (Daniel Franzen, Jan Disselhoff, David Hartmann) won ARC Prize 2024, scoring 53.5% on ARC-AGI-1 private eval with "The LLM ARChitect," using test-time training plus a product-of-experts ensemble over different perspectives of each grid.',
+    imageUrl: '/ARChitechts.png',
+    yearStart: 2024,
+    yearEnd: 2024,
+    score: '53.5% (1st Place)',
+    approach: 'Product of Experts ensemble using multiple perspectives to improve solution selection, combining LLM fine-tuning with test-time training',
+    uniqueTechnique: 'Test-time training with augmentation-based validation using depth-first search for token selection',
+    links: {
+      github: 'https://github.com/da-fr/arc-prize-2024',
+      papers: ['https://arxiv.org/abs/arc-prize-2024']
+    },
+    teamName: 'ARChitects',
+    category: 'competition_winner',
+    rank: 1
+  },
+
+  // 2025 Competition Winners - Combined team card for 1st place
+  {
+    fullName: 'Team NVARC (Jean-François Puget & Ivan Sorokin)',
+    handle: 'JFPuget & lytic',
+    affiliation: 'NVIDIA - Machine Learning & Kaggle Grandmasters',
+    achievement: '1st Place ARC Prize 2025 (24.03%)',
+    description: 'Jean-François Puget (6x Kaggle Grandmaster, ENS Ulm alumni, ML PhD) and Ivan Sorokin (ML Researcher, Kaggle Grandmaster, Math Olympiad 2025 winner) won 1st place in ARC Prize 2025 with 24.03% accuracy as Team NVARC.',
+    imageUrl: '/jfPuget3.png,/ivanARC2.png',
     yearStart: 2025,
     yearEnd: 2025,
-    score: '1st Place (Preliminary)',
-    approach: 'TBA',
+    score: '24.03% (1st Place)',
+    approach: 'Synthetic-data-driven ensemble of an improved ARChitects-style, test-time-trained model and TRM-based components that reaches ~24% on ARC-AGI-2 under Kaggle contest constraints.',
     uniqueTechnique: 'TBA',
     links: {
       github: 'https://github.com/jfpuget',
       twitter: 'https://x.com/JFPuget',
       kaggle: 'https://www.kaggle.com/cpmpml',
-      website: 'https://www.kaggle.com/competitions/arc-prize-2024/discussion/545844',
-      papers: ['https://github.com/jfpuget/ARC-AGI-Challenge-2024/blob/main/arc.pdf']
-    },
-    teamName: 'NVARC',
-    category: 'competition_winner',
-    rank: 1
-  },
-
-  {
-    fullName: 'Ivan Sorokin',
-    handle: 'lytic',
-    affiliation: 'Machine Learning Researcher at NVIDIA, Kaggle Grandmaster',
-    achievement: 'Preliminary 1st Place on ARC Prize 2025 Kaggle leaderboard',
-    description: 'Machine Learning Researcher at NVIDIA based in Finland. Kaggle Grandmaster, one of only ~350 worldwide. Member of NVIDIA\'s KGMON team (Kaggle Grandmasters of NVIDIA). Won Math Olympiad Competition 2025 with team NemoSkills ($262,144 prize). Achieved preliminary first place on Kaggle 2025 ARC Prize alongside teammate JF Puget.',
-    imageUrl: '/ivanARC2.png,/ivanARC21.png',
-    yearStart: 2025,
-    yearEnd: 2025,
-    score: '1st Place (Preliminary)',
-    approach: 'TBA',
-    uniqueTechnique: 'TBA',
-    links: {
-      github: 'https://github.com/1ytic',
       linkedin: 'https://www.linkedin.com/in/lytic/'
     },
     teamName: 'NVARC',
@@ -107,40 +179,61 @@ const contributors: CreateContributorRequest[] = [
 
   {
     fullName: 'Guillermo Barbadillo',
-    handle: 'guille_bar',
-    affiliation: 'Independent Researcher',
-    achievement: '2nd Place ARC Prize 2024 - 40% accuracy',
-    description: 'Achieved second place in ARC Prize 2024 with Omni-ARC approach combining multiple solving techniques.',
+    handle: 'ironbar',
+    affiliation: 'Veridas AI',
+    achievement: '5th Place ARC Prize 2025 - 6.53% accuracy (semi-private eval)',
+    description: 'Continued development of multi-technique approach, achieving 5th place in ARC Prize 2025 with strong public Kaggle leaderboard performance.',
+    imageUrl: '/guillermo.png',
     yearStart: 2024,
-    yearEnd: 2024,
-    score: '40% (2nd Place)',
+    yearEnd: 2025,
+    score: '6.53% (5th Place) / 11.94% (Public Kaggle)',
     approach: 'Omni-ARC approach combining multiple techniques for comprehensive puzzle solving',
     uniqueTechnique: 'Multi-method ensemble combining neural and symbolic approaches',
     links: {
       twitter: 'https://x.com/guille_bar',
       kaggle: 'https://www.kaggle.com/guillermobarba'
     },
-    teamName: 'Omni-ARC',
+    teamName: 'Veridas',
     category: 'competition_winner',
-    rank: undefined
+    rank: 5
   },
 
+  // Team MindsAI - 2025 entry (Jack Cole & Dries Smit)
   {
-    fullName: 'Jack Cole',
+    fullName: 'Team MindsAI (Jack Cole & Dries Smit)',
     handle: undefined,
-    affiliation: 'MindsAI Team',
-    imageUrl: '/jackcole.jpeg,/jackCole2.png',
-    achievement: 'MindsAI: Highest score 55.5% on ARC Prize 2024 private eval set (ineligible for official prize)',
-    description: 'Core researcher on Team MindsAI, which achieved the top 55.5% score on the ARC Prize 2024 private evaluation set using heavy test-time training, while remaining ineligible for official prizes because the solution was not open sourced.',
-    yearStart: 2024,
-    yearEnd: 2024,
-    score: '55.5% (Highest score, ineligible for prize)',
-    approach: 'Test-time training (TTT) and ARC-specific domain knowledge as part of MindsAI\'s proprietary system, extending earlier 2023 work on neurally guided program search.',
-    uniqueTechnique: 'Helped pioneer the use of test-time training for ARC-AGI and scale it into a closed-source system that set the 55.5% high score on the 2024 private evaluation set.',
+    affiliation: 'MindsAI & Tufa Labs',
+    imageUrl: '/jackCole2.png,/dries.png',
+    achievement: '3rd Place ARC Prize 2025 (15.42% on public ARC-AGI-2)',
+    description: 'Jack Cole (test-time training pioneer) and Dries Smit (RL agent specialist) teamed up for ARC Prize 2025, reaching 3rd place on the public ARC-AGI-2 leaderboard with 15.42%.',
+    yearStart: 2025,
+    yearEnd: 2025,
+    score: '15.42% (3rd Place)',
+    approach: 'Test-time training (TTT) combined with RL-based adaptation.',
+    uniqueTechnique: 'Combined TTT expertise with efficient RL agent approaches.',
     links: {},
     teamName: 'MindsAI',
     category: 'competition_winner',
-    rank: undefined
+    rank: 3
+  },
+
+  // Jack Cole - 2024 entry (separate card)
+  {
+    fullName: 'Jack Cole (2024)',
+    handle: undefined,
+    affiliation: 'MindsAI Team',
+    imageUrl: '/jackcole.jpeg',
+    achievement: 'MindsAI: Highest score 55.5% on ARC Prize 2024 (ineligible)',
+    description: 'Core researcher on Team MindsAI, which achieved the top 55.5% score on the ARC Prize 2024 private evaluation set using heavy test-time training, while remaining ineligible for official prizes because the solution was not open sourced.',
+    yearStart: 2024,
+    yearEnd: 2024,
+    score: '55.5% (Highest, ineligible)',
+    approach: 'Test-time training (TTT) and ARC-specific domain knowledge as part of MindsAI\'s proprietary system.',
+    uniqueTechnique: 'Helped pioneer test-time training for ARC-AGI, setting the 55.5% high score on 2024 private eval.',
+    links: {},
+    teamName: 'MindsAI',
+    category: 'competition_winner',
+    rank: 2
   },
 
   // 2024 Paper Award Winners
@@ -227,16 +320,17 @@ const contributors: CreateContributorRequest[] = [
   },
 
   {
-    fullName: 'Jean-François Puget',
+    fullName: 'Jean-François Puget (2024 Paper)',
     handle: 'JFPuget',
     affiliation: 'Machine Learning at NVIDIA, 6x Kaggle Grandmaster',
+    imageUrl: '/jfPuget2.png',
     achievement: 'Runner-Up ARC Prize 2024 Paper Award - A 2D nGPT Model For ARC Prize',
     description: 'Authored A 2D nGPT Model For ARC Prize, a 2D-aware nGPT-style model tailored to ARC-AGI grids that was recognized as a runner-up paper in the ARC Prize 2024 paper awards.',
     yearStart: 2024,
     yearEnd: 2024,
-    score: 'Runner-Up (Paper Award, $2.5k)',
+    score: 'Runner-Up (Paper Award)',
     approach: '2D-aware nGPT-style model that tokenizes ARC grids as 2D structures and uses an autoregressive transformer to predict output grids.',
-    uniqueTechnique: 'Emphasizes explicit 2D spatial structure in tokenization and attention so the model can reason over local and global patterns on ARC grids more naturally than 1D sequence models.',
+    uniqueTechnique: 'Emphasizes explicit 2D spatial structure in tokenization and attention so the model can reason over local and global patterns on ARC grids.',
     links: {
       kaggle: 'https://www.kaggle.com/competitions/arc-prize-2024/discussion/545844',
       papers: ['https://github.com/jfpuget/ARC-AGI-Challenge-2024/blob/main/arc.pdf']
@@ -264,23 +358,7 @@ const contributors: CreateContributorRequest[] = [
     rank: undefined
   },
 
-  {
-    fullName: 'Jack Cole',
-    handle: undefined,
-    affiliation: 'MindsAI Team',
-    imageUrl: '/jackcole.jpeg,/jackCole2.png',
-    achievement: '1st Place ARCathon 2023 (tied), Early 2024 world record of 39%',
-    description: 'Pioneered test-time training for ARC-AGI in 2023, first to successfully apply TTT to ARC-AGI, inspiring the dominant approach in 2024 competition.',
-    yearStart: 2023,
-    yearEnd: 2024,
-    score: '39% (Record 2024)',
-    approach: 'Fine-tuning models on synthetic and augmented data with test-time fine-tuning',
-    uniqueTechnique: 'First successful test-time training application to ARC-AGI',
-    links: {},
-    teamName: 'MindsAI',
-    category: 'pioneer',
-    rank: undefined
-  },
+  // Jack Cole pioneer entry removed - covered by his 2024 and 2025 competition winner entries
 
   // 2020 Kaggle Winners
   {
@@ -345,6 +423,26 @@ const contributors: CreateContributorRequest[] = [
 
   // Additional Notable Contributors
   {
+    fullName: 'Simon Strandgaard (neoneye)',
+    handle: 'neoneye',
+    affiliation: 'Independent developer & ARC community contributor',
+    achievement: 'ARC community datasets and tools curator; long-time maintainer of ARC-related GitHub resources',
+    description: 'Independent developer who has collected, curated, and published many ARC-related datasets and tools on GitHub, making it dramatically easier for researchers and hobbyists to explore ARC puzzles, human interaction traces, and alternative task formats. His work has been a major inspiration and reference point for the ARC Explainer project and the broader community.',
+    imageUrl: '/simonS.png,/simonS1.png',
+    score: 'Community datasets & visual tooling widely used across ARC-AGI research',
+    approach: 'Open-source curation and tooling for ARC: maintains multiple repositories that package ARC variants, derived datasets, and interactive history logs in researcher-friendly formats, along with viewers and utilities for inspecting tasks and human behavior.',
+    uniqueTechnique: 'Treats ARC as a community dataset and tooling problem as much as a benchmark: systematically archives human interaction histories, alternative encodings, and visualization tools so others can build on shared resources instead of re-implementing infrastructure.',
+    links: {
+      github: 'https://github.com/neoneye',
+      website: 'https://neoneye.github.io',
+      papers: ['https://github.com/neoneye/ARC-Interactive-History-Dataset']
+    },
+    teamName: undefined,
+    category: 'researcher',
+    rank: undefined
+  },
+
+  {
     fullName: 'Ryan Greenblatt',
     handle: undefined,
     affiliation: 'Redwood Research',
@@ -357,6 +455,26 @@ const contributors: CreateContributorRequest[] = [
     uniqueTechnique: 'LLM-based error identification and rectification; ARC Prize estimates 85% achievable with ~100M programs per task',
     links: {},
     teamName: 'Redwood Research',
+    category: 'researcher',
+    rank: undefined
+  },
+
+  {
+    fullName: 'Eric Pang',
+    handle: undefined,
+    affiliation: 'Amazon (Machine Learning Engineer; previously Quora), University of Waterloo Math/CS',
+    achievement: 'ARC-AGI-2 SoTA: Efficient Evolutionary Program Synthesis with Grok-4 and DreamCoder-inspired library learning',
+    description: 'Developed an open-source, DreamCoder-inspired evolutionary program synthesis system that builds a reusable library of Python programs across ARC-AGI tasks, reusing concepts via accuracy-based heuristics and LLM-guided search to break the performance–cost frontier versus frontier models.',
+    imageUrl: '/ericpang.jpeg',
+    yearStart: 2025,
+    yearEnd: 2025,
+    score: 'Outperforms frontier models on ARC-AGI-1 & ARC-AGI-2 with ~10 Grok-4 calls per task and ~$2.56 cost per ARC-AGI-1 task',
+    approach: 'Efficient evolutionary program synthesis with Grok-4 that iteratively expands a shared program library, selects high-scoring programs using accuracy heuristics and score-weighted sampling, and conditions new generations on the best existing programs.',
+    uniqueTechnique: 'DreamCoder-inspired DREAM library learning across tasks, using a single evolving program library and low test-time compute (10 LLM calls per task) to outperform frontier models on ARC-AGI-1/2 while breaking the performance–cost Pareto frontier.',
+    links: {
+      website: 'https://gist.github.com/inspiredlabs/a3fc232eba4b9754ad4a8234b85b8d34'
+    },
+    teamName: undefined,
     category: 'researcher',
     rank: undefined
   },
@@ -379,9 +497,72 @@ const contributors: CreateContributorRequest[] = [
     teamName: undefined,
     category: 'paper_award',
     rank: undefined
+  },
+
+  // ARC3 2026 Preview - Rising Stars
+  {
+    fullName: 'Dries Smit',
+    handle: 'DriesSmit',
+    affiliation: 'Independent Researcher / MindsAI & Tufa Labs',
+    imageUrl: '/dries.png',
+    achievement: '1st Place ARC-AGI-3 Agent Preview 2025 (12.58%)',
+    description: 'Rising ARC-AGI researcher who won 1st place in the ARC-AGI-3 Agent Preview 2025 with his RL-based "StochasticGoose" agent, scoring 12.58% and leading all teams in efficiency. Also contributed to the MindsAI & Tufa Labs team in ARC Prize 2025, reaching 3rd place on the public ARC-AGI-2 leaderboard with 15.42%. His work focuses on efficient RL agents and test-time adaptation methods for ARC tasks.',
+    yearStart: 2025,
+    yearEnd: 2026,
+    score: '12.58% (1st Place)',
+    approach: 'RL-based agent with test-time adaptation, focusing on efficiency.',
+    uniqueTechnique: 'StochasticGoose - an efficient RL agent that led all teams in computational efficiency while achieving top accuracy.',
+    links: {},
+    teamName: 'Tufa AI',
+    category: 'arc3_preview',
+    rank: 1
   }
 ];
 
+/**
+ * Sync contributors using upsert - safe to run on every server startup.
+ * Inserts new contributors and updates existing ones by fullName.
+ * Never deletes data - only adds or updates.
+ */
+export async function syncContributors(): Promise<void> {
+  const repo = new ContributorRepository();
+
+  try {
+    const existingCount = await repo.getContributorCount();
+    logger.info(`Syncing contributors (${existingCount} existing, ${contributors.length} in source)...`, 'contributor-sync');
+
+    let inserted = 0;
+    let updated = 0;
+
+    for (const contributor of contributors) {
+      try {
+        const existing = await repo.getAllContributors();
+        const wasExisting = existing.some(c => c.fullName === contributor.fullName);
+        
+        await repo.upsertContributor(contributor);
+        
+        if (wasExisting) {
+          updated++;
+        } else {
+          inserted++;
+        }
+      } catch (error) {
+        logger.error(`✗ Failed to sync ${contributor.fullName}: ${error}`, 'contributor-sync');
+      }
+    }
+
+    logger.info(`Contributor sync complete: ${inserted} inserted, ${updated} updated`, 'contributor-sync');
+
+  } catch (error) {
+    logger.error(`Contributor sync failed: ${error}`, 'contributor-sync');
+    // Don't throw - sync failure shouldn't crash the server
+  }
+}
+
+/**
+ * Full database seed (destructive) - clears table and reinserts all.
+ * Use this for manual resets only.
+ */
 async function seedDatabase() {
   // Initialize the database connection
   const initialized = await initializeDatabase();
@@ -394,7 +575,7 @@ async function seedDatabase() {
   const repo = new ContributorRepository();
 
   try {
-    logger.info('Starting contributor database seeding...', 'seed');
+    logger.info('Starting contributor database seeding (destructive)...', 'seed');
 
     // Clear existing data first to ensure updates are applied
     await repo.deleteAllContributors();
@@ -429,12 +610,17 @@ async function seedDatabase() {
   }
 }
 
-// Run the seed function
-seedDatabase()
-  .then(() => {
-    process.exit(0);
-  })
-  .catch((error) => {
-    console.error('Seeding error:', error);
-    process.exit(1);
-  });
+// Only run seedDatabase() when this script is executed directly (not imported)
+// Check if this module is the main entry point
+const isMainModule = import.meta.url === `file:///${process.argv[1].replace(/\\/g, '/')}`;
+
+if (isMainModule) {
+  seedDatabase()
+    .then(() => {
+      process.exit(0);
+    })
+    .catch((error) => {
+      console.error('Seeding error:', error);
+      process.exit(1);
+    });
+}

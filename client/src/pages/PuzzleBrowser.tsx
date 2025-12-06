@@ -11,14 +11,18 @@
 import React, { useState, useCallback } from 'react';
 import { Link, useLocation } from 'wouter';
 import { usePuzzleList } from '@/hooks/usePuzzle';
-import { useQuery } from '@tanstack/react-query';
+import { useQueries } from '@tanstack/react-query';
 import { Loader2, Grid3X3, MessageSquare, Youtube, ExternalLink, ListVideo } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { EmojiMosaicAccent } from '@/components/browser/EmojiMosaicAccent';
 import { ReferenceMaterial } from '@/components/browser/ReferenceMaterial';
 import type { PuzzleMetadata } from '@shared/types';
-import { PuzzleCard } from '@/components/puzzle/PuzzleCard';
+import type { PuzzleDBStats, PuzzlePerformanceData } from '@/hooks/usePuzzleDBStats';
+import { CompactPuzzleCard } from '@/components/puzzle/CompactPuzzleCard';
+import { usePuzzleDBStats } from '@/hooks/usePuzzleDBStats';
 import { usePageMeta } from '@/hooks/usePageMeta';
+import type { ARCTask } from '@shared/types';
+import { apiRequest } from '@/lib/queryClient';
 
 const HERO_STREAMER_PATTERN = [
   '🟥', '🟧', '🟨', '🟩', '🟦', '🟪', '⬛', '🟥', '🟧', '🟨',
@@ -86,6 +90,35 @@ const TEAM_NOTES: Record<string, string> = {
     'Additional curated ARC puzzle chosen as a visually interesting featured sample for this gallery.',
 };
 
+const DEFAULT_PERFORMANCE_DATA: PuzzlePerformanceData = {
+  wrongCount: 0,
+  avgAccuracy: 0,
+  avgConfidence: 0,
+  totalExplanations: 0,
+  negativeFeedback: 0,
+  totalFeedback: 0,
+  latestAnalysis: '',
+  worstExplanationId: 0,
+  compositeScore: 0,
+};
+
+  const toCompactStats = (puzzle: EnhancedPuzzleMetadata): PuzzleDBStats => ({
+    id: puzzle.id,
+    source: puzzle.source || 'Unknown',
+    performanceData: {
+      ...DEFAULT_PERFORMANCE_DATA,
+      avgAccuracy: puzzle.isSolved ? 1 : 0,
+      avgConfidence: puzzle.confidence ?? 0,
+      totalExplanations: puzzle.hasExplanation ? 1 : 0,
+      totalFeedback: puzzle.feedbackCount ?? 0,
+      latestAnalysis: puzzle.createdAt ?? '',
+      worstExplanationId: puzzle.explanationId ?? 0,
+      compositeScore: puzzle.estimatedCost ?? 0,
+      avgCost: typeof puzzle.estimatedCost === 'number' ? puzzle.estimatedCost : undefined,
+      avgProcessingTime: puzzle.apiProcessingTimeMs,
+    },
+  });
+
 export default function PuzzleBrowser() {
   const [maxGridSize, setMaxGridSize] = useState<string>('any');
   const [gridSizeConsistent, setGridSizeConsistent] = useState<string>('any');
@@ -119,6 +152,16 @@ export default function PuzzleBrowser() {
   }, [maxGridSize, gridSizeConsistent, arcVersion, multiTestFilter]);
 
   const { puzzles, isLoading, error } = usePuzzleList(filters);
+  const { data: puzzleStats = [] } = usePuzzleDBStats({ includeRichMetrics: true });
+  const puzzleStatsMap = React.useMemo(
+    () => new Map(puzzleStats.map((stat: PuzzleDBStats) => [stat.id, stat])),
+    [puzzleStats]
+  );
+
+  const getStatsForPuzzle = React.useCallback(
+    (puzzle: EnhancedPuzzleMetadata) => puzzleStatsMap.get(puzzle.id) ?? toCompactStats(puzzle),
+    [puzzleStatsMap]
+  );
 
   // Fetch ALL puzzles with NO filters for featured section
   const { puzzles: allPuzzles, isLoading: allPuzzlesLoading } = usePuzzleList({});
@@ -132,6 +175,35 @@ export default function PuzzleBrowser() {
   }, [allPuzzles]);
 
   const isFeaturedLoading = allPuzzlesLoading;
+
+  const featuredTaskQueries = useQueries({
+    queries: featuredPuzzles.map((puzzle) => ({
+      queryKey: ['puzzle-task', puzzle.id],
+      queryFn: async (): Promise<ARCTask> => {
+        const response = await apiRequest('GET', `/api/puzzle/task/${puzzle.id}`);
+        const json = await response.json();
+        if (!json.success) {
+          throw new Error(`Failed to load puzzle ${puzzle.id}`);
+        }
+        return json.data as ARCTask;
+      },
+      staleTime: 1000 * 60 * 15,
+      refetchOnWindowFocus: false,
+    })),
+  });
+
+  const featuredTaskMap = React.useMemo(() => {
+    const map = new Map<string, ARCTask>();
+    featuredTaskQueries.forEach((query, index) => {
+      if (query.data) {
+        const puzzleId = featuredPuzzles[index]?.id;
+        if (puzzleId) {
+          map.set(puzzleId, query.data);
+        }
+      }
+    });
+    return map;
+  }, [featuredTaskQueries, featuredPuzzles]);
 
   // Apply explanation filtering and sorting after getting puzzles from the hook (advanced browser only)
   const filteredPuzzles = React.useMemo(() => {
@@ -279,7 +351,7 @@ export default function PuzzleBrowser() {
             </a>
 
             <a
-              href="https://www.twitch.tv/professormaxhammer"
+              href="https://discord.com/invite/9b77dPAmcA"
               target="_blank"
               rel="noopener noreferrer"
               className="group flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-900/60 border border-slate-700 text-xs font-medium text-slate-300 hover:bg-purple-500/20 hover:border-purple-400 hover:text-purple-200 transition-all"
@@ -347,9 +419,10 @@ export default function PuzzleBrowser() {
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4">
                 {featuredPuzzles.map((puzzle: EnhancedPuzzleMetadata) => (
                   <div key={puzzle.id} className="flex flex-col gap-2">
-                    <PuzzleCard
-                      puzzle={puzzle}
-                      showGridPreview={true}
+                    <CompactPuzzleCard
+                      puzzle={getStatsForPuzzle(puzzle)}
+                      lazyLoadGrid={false}
+                      prefetchedTask={featuredTaskMap.get(puzzle.id) ?? null}
                     />
                     {TEAM_NOTES[puzzle.id] && (
                       <div className="rounded-md border border-slate-800 bg-slate-950/80 px-3 py-2 text-sm leading-relaxed text-slate-200">
@@ -535,10 +608,9 @@ export default function PuzzleBrowser() {
               ) : (
                 <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
                   {filteredPuzzles.map((puzzle: EnhancedPuzzleMetadata) => (
-                    <PuzzleCard
+                    <CompactPuzzleCard
                       key={puzzle.id}
-                      puzzle={puzzle}
-                      showGridPreview={true}
+                      puzzle={getStatsForPuzzle(puzzle)}
                     />
                   ))}
                 </div>
