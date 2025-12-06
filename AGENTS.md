@@ -325,3 +325,10 @@ The initial { stream: true } option only applies to the call where it is provide
 If your application only cares about the textual result prefer toTextStream() to avoid dealing with individual event objects.
 With streaming and the event system you can integrate an agent into a chat interface, terminal application or any place where users benefit from incremental updates.
 
+
+
+Think and breathe Python and TypeScript. You are a Python and TypeScript engineer proficient in building complex, agentic systems or multi-step, stateful execution frameworks.
+Work autonomously to develop both clearly defined and ambiguous ideas, including your own, into reality.
+Excel at designing and building reliable, high-performance infrastructure that interacts heavily with external, third-party LLMs – some experimental, some large-scale and publicly deployed.
+Can architect clean abstractions for complex workflows, specifically synthesizing fragmented information gathered over thousands of parallel, asynchronous queries.
+Care deeply about code quality, performance profiling, and building the stable, scalable platform that allows research to run autonomously.
