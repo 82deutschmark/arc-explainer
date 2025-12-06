@@ -262,7 +262,7 @@ export default function HumanTradingCards() {
 
             {/* 2025 Top Paper Award */}
             {topPaperAward2025.length > 0 && (
-              <section className="space-y-3">
+              <section id="2025-top-paper-award" className="space-y-3 scroll-mt-20">
                 <div className="flex items-center gap-2 border-b border-fuchsia-500/20 pb-2">
                   <Award className="h-4 w-4 text-fuchsia-400" />
                   <h2 className="text-lg font-bold text-zinc-100">2025 Top Paper Award</h2>
@@ -280,7 +280,7 @@ export default function HumanTradingCards() {
 
             {/* 2025 Competition Winners */}
             {(teamWinnerGroups.length > 0 || soloWinners2025.length > 0) && (
-              <section className="space-y-3">
+              <section id="2025-competition-winners" className="space-y-3 scroll-mt-20">
                 <div className="flex items-center gap-2 border-b border-amber-500/20 pb-2">
                   <Trophy className="h-4 w-4 text-amber-400" />
                   <h2 className="text-lg font-bold text-zinc-100">2025 Competition Winners</h2>
@@ -289,22 +289,42 @@ export default function HumanTradingCards() {
                 {/* Team winner groups (full width) */}
                 {teamWinnerGroups.length > 0 && (
                   <div className="space-y-4">
-                    {teamWinnerGroups.map((group, idx) => (
-                      <TeamWinnerGroup
-                        key={`team-${idx}`}
-                        teamContributor={enrichContributor(group.teamContributor)}
-                        members={group.members.map(enrichContributor)}
-                      />
-                    ))}
+                    {teamWinnerGroups.map((group, idx) => {
+                      const rankLabel = group.teamContributor.rank === 1 ? '🥇 1st Place' : group.teamContributor.rank === 2 ? '🥈 2nd Place' : group.teamContributor.rank === 3 ? '🥉 3rd Place' : `#${group.teamContributor.rank}`;
+                      const anchorId = `contributor-${group.teamContributor.id}`;
+                      return (
+                        <div key={`team-${idx}`} id={anchorId} className="scroll-mt-20">
+                          <div className="mb-2 flex items-center gap-2">
+                            <span className="text-sm font-bold text-amber-400">{rankLabel}</span>
+                          </div>
+                          <TeamWinnerGroup
+                            teamContributor={enrichContributor(group.teamContributor)}
+                            members={group.members.map(enrichContributor)}
+                          />
+                        </div>
+                      );
+                    })}
                   </div>
                 )}
 
                 {/* Solo winners (grid) */}
                 {soloWinners2025.length > 0 && (
-                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3">
-                    {soloWinners2025.map(contributor => (
-                      <HumanTradingCard key={contributor.id} contributor={enrichContributor(contributor)} />
-                    ))}
+                  <div className="space-y-3">
+                    {soloWinners2025.length > 0 && (
+                      <div className="text-sm text-zinc-500 font-semibold uppercase tracking-wider">
+                        Other Winners
+                      </div>
+                    )}
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3">
+                      {soloWinners2025.map(contributor => {
+                        const anchorId = `contributor-${contributor.id}`;
+                        return (
+                          <div key={contributor.id} id={anchorId} className="scroll-mt-20">
+                            <HumanTradingCard contributor={enrichContributor(contributor)} />
+                          </div>
+                        );
+                      })}
+                    </div>
                   </div>
                 )}
               </section>
@@ -312,7 +332,7 @@ export default function HumanTradingCards() {
 
             {/* 2024 Winners */}
             {winners2024.length > 0 && (
-              <section className="space-y-3">
+              <section id="2024-winners" className="space-y-3 scroll-mt-20">
                 <div className="flex items-center gap-2 border-b border-blue-500/20 pb-2">
                   <Star className="h-4 w-4 text-blue-400" />
                   <h2 className="text-lg font-bold text-zinc-100">2024 ARC Prize Winners</h2>
@@ -327,7 +347,7 @@ export default function HumanTradingCards() {
 
             {/* Research & Awards */}
             {researchers.length > 0 && (
-              <section className="space-y-3">
+              <section id="research-awards" className="space-y-3 scroll-mt-20">
                 <div className="flex items-center gap-2 border-b border-emerald-500/20 pb-2">
                   <ScrollText className="h-4 w-4 text-emerald-400" />
                   <h2 className="text-lg font-bold text-zinc-100">Research & Awards</h2>
@@ -342,7 +362,7 @@ export default function HumanTradingCards() {
 
             {/* Pioneers */}
             {pioneers.length > 0 && (
-              <section className="space-y-3">
+              <section id="pioneers" className="space-y-3 scroll-mt-20">
                 <div className="flex items-center gap-2 border-b border-violet-500/20 pb-2">
                   <History className="h-4 w-4 text-violet-400" />
                   <h2 className="text-lg font-bold text-zinc-100">Pioneers</h2>
@@ -357,7 +377,7 @@ export default function HumanTradingCards() {
 
             {/* ARC3 2026 Preview */}
             {arc3Preview.length > 0 && (
-              <section className="space-y-3">
+              <section id="arc3-preview" className="space-y-3 scroll-mt-20">
                 <div className="flex items-center gap-2 border-b border-cyan-500/20 pb-2">
                   <Rocket className="h-4 w-4 text-cyan-400" />
                   <div className="flex items-center gap-2">
