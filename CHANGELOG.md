@@ -1,6 +1,13 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top with the time and date!
 
+### Version 5.45.6  Dec 6, 2025 (PENDING TESTING)
+
+- **Hall of Fame: Surface all 2025 paper awards together at the top** (Author: Cascade)
+  - Updated the Hall of Fame layout so the dedicated 2025 paper awards strip now shows Alexia Jolicoeur-Martineau (Top Paper Award) together with the SOAR team and Isaac Liao, instead of scattering SOAR and Isaac into the generic Research & Awards section.
+  - Adjusted contributor categorization so 2025 paper award winners are excluded from the Research & Awards grid, while keeping 2024 paper awards and all `researcher` entries unchanged.
+  - **Files**: `client/src/pages/HumanTradingCards.tsx`, `CHANGELOG.md`
+
 ### Version 5.45.5  Dec 6, 2025 (PENDING TESTING)
 
 - **Fix contributor sync: respect database varchar(50) score limit** (Author: Cascade)

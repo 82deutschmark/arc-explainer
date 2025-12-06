@@ -53,8 +53,13 @@ export default function HumanTradingCards() {
 
     const founders = contributors.filter(c => c.category === 'founder');
 
-    const topPaperAward2025 = contributors
-      .filter(c => c.category === 'top_paper_award' && c.yearStart === 2025)
+    const topPaper2025Winners = contributors
+      .filter(c => c.category === 'top_paper_award' && c.yearStart === 2025);
+
+    const paperAwards2025 = contributors
+      .filter(c => c.category === 'paper_award' && c.yearStart === 2025 && c.rank !== 0);
+
+    const topPaperAward2025 = [...topPaper2025Winners, ...paperAwards2025]
       .sort((a, b) => (a.rank || 999) - (b.rank || 999));
 
     // All 2025 competition winners (before grouping)
@@ -104,7 +109,11 @@ export default function HumanTradingCards() {
       .sort((a, b) => (a.rank || 999) - (b.rank || 999));
 
     const researchers = contributors
-      .filter(c => ['paper_award', 'researcher'].includes(c.category) && c.rank !== 0)
+      .filter(c =>
+        ['paper_award', 'researcher'].includes(c.category) &&
+        c.rank !== 0 &&
+        !(c.category === 'paper_award' && c.yearStart === 2025)
+      )
       .sort((a, b) => b.yearStart! - a.yearStart!);
 
     const pioneers = contributors
@@ -260,12 +269,12 @@ export default function HumanTradingCards() {
               </section>
             )}
 
-            {/* 2025 Top Paper Award */}
+            {/* 2025 Paper Awards */}
             {topPaperAward2025.length > 0 && (
               <section id="2025-top-paper-award" className="space-y-3 scroll-mt-20">
                 <div className="flex items-center gap-2 border-b border-fuchsia-500/20 pb-2">
                   <Award className="h-4 w-4 text-fuchsia-400" />
-                  <h2 className="text-lg font-bold text-zinc-100">2025 Top Paper Award</h2>
+                  <h2 className="text-lg font-bold text-zinc-100">2025 Paper Awards</h2>
                   <span className="ml-auto text-[10px] bg-fuchsia-500/20 text-fuchsia-300 px-2 py-0.5 rounded-full border border-fuchsia-500/30 uppercase tracking-wider font-bold">
                     Featured
                   </span>
