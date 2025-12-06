@@ -15,7 +15,7 @@ import { Gamepad2, AlertCircle, RefreshCw, ExternalLink } from 'lucide-react';
 import { apiRequest } from '@/lib/queryClient';
 
 interface GameInfo {
-  game_id: string;  // ARC3 API uses game_id (e.g., "ls20", "zz34")
+  game_id: string;  // ARC3 API uses game_id (e.g., "ls20", "as66", "ft09", "lp85", "sp80", "vc33")
   title: string;     // ARC3 API uses title for display name
 }
 
