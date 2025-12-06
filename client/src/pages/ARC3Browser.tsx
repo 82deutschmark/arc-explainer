@@ -88,9 +88,10 @@ export default function ARC3Browser() {
               </div>
               <div className="mt-4 grid grid-cols-3 gap-3">
                 {arc3GameThumbs.map(game => (
-                  <div
+                  <Link
                     key={game.gameId}
-                    className="aspect-square rounded-md overflow-hidden border border-border/40 bg-muted flex items-center justify-center"
+                    href={`/arc3/games/${game.gameId}`}
+                    className="aspect-square rounded-md overflow-hidden border border-border/40 bg-muted flex items-center justify-center hover:border-primary/40 hover:shadow-md transition-all cursor-pointer"
                   >
                     {game.thumbnailUrl ? (
                       <img
@@ -104,7 +105,7 @@ export default function ARC3Browser() {
                         {game.gameId}
                       </span>
                     )}
-                  </div>
+                  </Link>
                 ))}
               </div>
               <Button asChild className="mt-4 w-full">

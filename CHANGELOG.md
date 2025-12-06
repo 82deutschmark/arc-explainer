@@ -1,6 +1,14 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top with the time and date!
 
+### Version 5.45.16  Dec 6, 2025 (PENDING TESTING)
+
+- **ARC-AGI-3 landing: Fix game thumbnails to be actually clickable** (Author: Claude Code using Sonnet 4.5)
+  - Fixed the game thumbnail grid in the Games Browser card on `/arc3` so each PNG is now wrapped in a clickable Link component that navigates to `/arc3/games/:gameId`.
+  - Added hover effects (border highlight, shadow, cursor pointer) to indicate interactivity.
+  - Previous implementation (v5.45.12) claimed to make thumbnails clickable but only rendered static div/img elements without any Link wrapper.
+  - **Files Modified**: `client/src/pages/ARC3Browser.tsx:91-108`, `CHANGELOG.md`
+
 ### Version 5.45.15  Dec 6, 2025 (PENDING TESTING)
 
 - **ARC-AGI-3 Games Browser: remove speculative metrics and fix thumbnails** (Author: Cascade)
