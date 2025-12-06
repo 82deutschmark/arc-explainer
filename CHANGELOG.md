@@ -3,13 +3,20 @@
 
 ### Version 5.44.0  Dec 6, 2025 (PENDING TESTING)
 
-- **Human Insights Resource Integration** (Author: Claude Code using Haiku 4.5)
+- **Human Insights Resource Integration & Research Terminal Expansion** (Author: Claude Code using Haiku 4.5)
   - Integrated human test participant explanations and error examples directly into the Puzzle Examiner.
   - Added "Human Insights" button to PuzzleHeader alongside solver buttons, linking to `https://arc-visualizations.github.io/{taskId}.html`.
   - Added prominent full-width "Human Insights" banner immediately above Analysis Results section for maximum visibility and discoverability.
-  - Updated ReferenceMaterial component to clearly label this resource as "Human Insights & Explanations" in the Data Sources section.
   - This resource was instrumental for synthetic data creation and represents a major community contribution to understanding puzzle-solving patterns.
-  - **Files Modified**: `client/src/components/puzzle/PuzzleHeader.tsx`, `client/src/pages/PuzzleExaminer.tsx`, `client/src/components/browser/ReferenceMaterial.tsx`
+  - **Research Terminal Enhancements** (ReferenceMaterial):
+    - Added NVIDIA Kaggle Grandmasters - AGI Competition paper (community winner recognition)
+    - Added "Less is More - Tiny Recursive Models" research paper
+    - Added NVARC synthetic data generation tool to Tools & Solvers section
+    - Updated "Human ARC dataset" label to "Human Insights & Explanations" for clarity
+    - Linked Simon Strandgaard's (@neoneye) name to his GitHub profile in footer
+  - **Community Link Fix**:
+    - Fixed "ARC Discord Weekly Meeting" link in PuzzleBrowser from incorrect Twitch URL to correct Discord invite: `https://discord.com/invite/9b77dPAmcA`
+  - **Files Modified**: `client/src/components/puzzle/PuzzleHeader.tsx`, `client/src/pages/PuzzleExaminer.tsx`, `client/src/components/browser/ReferenceMaterial.tsx`, `client/src/pages/PuzzleBrowser.tsx`
 
 ### Version 5.43.0  Dec 6, 2025 12:40pm (PENDING TESTING)
 
