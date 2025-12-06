@@ -1,9 +1,10 @@
 # AGENTS.md
 
-**Author:** The User  
+**Author:** The User  (aka YOUR BOSS!!)
 **Date:** 2025-10-15  
-**Purpose:** Consolidated guidance for AI agents working with the ARC Explainer repository.  
-This version merges the best material from previous guidelines and adds **quick pointers** to locate critical information fast.
+**Purpose:** Guidance for AI agents working with the ARC Explainer repository. 
+
+Do not be afraid to ask the user questions about the outcomes that they are expecting and be honest about your abilities. If a web search would be useful or updated information, mention that.  The user does not care about the speed at which you execute your tasks. Take your time and ultrathink about a comprehensive plan before you do things. It's generally always a good idea to have your plan approved by the user before you start changing files.
 
 ## 📚 Quick Reference – Where to Find Things
 - **Core Documentation**
