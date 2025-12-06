@@ -1,6 +1,25 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top with the time and date!
 
+### Version 5.45.9  Dec 6, 2025 (PENDING TESTING)
+
+- **ARC-AGI-3 Games: Add informal names, descriptions, and thumbnails for 5 games** (Author: Claude Code using Sonnet 4.5)
+  - Added informal community names and descriptive text for all remaining ARC-AGI-3 games in the games browser.
+  - Preview games: **as66** → "Always Sliding" (dynamic puzzle with continuously moving elements), **ft09** → "Functional Tiles" (tiles with specific functions and behaviors).
+  - Evaluation games: **lp85** → "Loop & Pull" (looping patterns and pulling mechanics), **sp80** → "Streaming Purple" (flowing purple elements and streaming patterns), **vc33** → "Volume Control" (adjusting volumes, sizes, or quantities).
+  - Added thumbnail URLs for all 5 games pointing to images in `/client/public/` (as66.png, ft09.png, lp85.png, sp80.png, vc33.png).
+  - Added descriptive tags for each game to aid categorization and searchability (e.g., "sliding", "motion", "dynamic" for Always Sliding; "loops", "mechanics", "patterns" for Loop & Pull).
+  - Games Browser now displays rich preview cards with game images, informal names, and thematic descriptions for all revealed ARC-AGI-3 games.
+  - **Files Modified**: `shared/arc3Games.ts:211-289`, `CHANGELOG.md`
+
+### Version 5.45.8  Dec 6, 2025 (PENDING TESTING)
+
+- **ARC-AGI-3 layout refresh: make the Games Browser the star** (Author: Cascade)
+  - Recentered the ARC-AGI-3 landing page so the Games Browser is now the primary call-to-action, with a prominent "Browse ARC-AGI-3 Games" hero button and a top "Explore ARC-AGI-3" section featuring Games Browser + 2026 roadmap cards using shadcn/ui.
+  - Tightened vertical spacing and removed the old bottom "Future Features" block to reduce noise while keeping all real links and factual ARC-AGI-3 context intact.
+  - Enhanced the ARC-AGI-3 Games Browser itself with per-game thumbnail support (via existing `thumbnailUrl` metadata), richer quick stats (including resource counts), surfaced game notes/documentation status, and a small coverage summary showing total games, fully documented games, and total hints captured—without introducing any mock data.
+  - **Files**: `client/src/pages/ARC3Browser.tsx`, `client/src/pages/Arc3GamesBrowser.tsx`, `CHANGELOG.md`
+
 ### Version 5.45.7  Dec 6, 2025 (PENDING TESTING)
 
 - **ARC-AGI-3 Browser: Replace speculative feature placeholders with 2026 roadmap facts** (Author: Cascade)
