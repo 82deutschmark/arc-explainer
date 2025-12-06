@@ -1,6 +1,15 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top with the time and date!
 
+### Version 5.45.4  Dec 6, 2025 (PENDING TESTING)
+
+- **Hall of Fame: Add Simon Strandgaard (neoneye) as ARC datasets & tools curator** (Author: Cascade)
+  - Added a new contributor trading card entry for Simon Strandgaard (aka `@neoneye`), recognizing his long-standing role as an independent ARC community contributor and dataset/tool curator.
+  - Highlighted his many ARC-related GitHub repositories (including the ARC-Interactive-History-Dataset) that package human interaction traces, derived task collections, and utilities that the wider community—this project included—relies on for exploration and analysis.
+  - Framed his contribution as infrastructure: organizing and sharing high-quality ARC datasets, visualizations, and tools so researchers and hobbyists can build on shared resources instead of re-implementing basic plumbing.
+  - Tied this card to the existing Research Terminal footer link that credits Simon and points to his GitHub profile, and wired his Hall of Fame card to the `/simonS.png,/simonS1.png` portrait variants.
+  - **Files**: `server/scripts/seedContributors.ts`, `client/public/simonS.png`, `client/public/simonS1.png`, `CHANGELOG.md`
+
 ### Version 5.45.3  Dec 6, 2025 (PENDING TESTING)
 
 - **Hall of Fame: Add SOAR 2nd Place 2025 Paper Award Team (Self-Improving Program Synthesis)** (Author: Cascade)
