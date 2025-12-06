@@ -26,11 +26,11 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { usePageMeta } from '@/hooks/usePageMeta';
-import { 
-  getAllGames, 
-  getGamesByCategory, 
+import {
+  getAllGames,
+  getGamesByCategory,
   type Arc3GameMetadata,
-  type DifficultyRating 
+  type DifficultyRating,
 } from '../../../shared/arc3Games';
 
 /**
@@ -56,7 +56,17 @@ function getDifficultyBadge(difficulty: DifficultyRating) {
  */
 function GameCard({ game }: { game: Arc3GameMetadata }) {
   return (
-    <Card className="h-full hover:shadow-lg transition-shadow">
+    <Card className="h-full hover:shadow-lg transition-shadow overflow-hidden">
+      {game.thumbnailUrl && (
+        <div className="relative aspect-[4/3] w-full bg-muted border-b border-border/40">
+          <img
+            src={game.thumbnailUrl}
+            alt={game.informalName ? `${game.informalName} (${game.gameId})` : game.gameId}
+            className="h-full w-full object-cover"
+            loading="lazy"
+          />
+        </div>
+      )}
       <CardHeader className="pb-3">
         <div className="flex items-start justify-between gap-2">
           <div className="flex-1">
@@ -97,9 +107,9 @@ function GameCard({ game }: { game: Arc3GameMetadata }) {
         <p className="text-sm text-muted-foreground line-clamp-3">
           {game.description}
         </p>
-        
+
         {/* Quick stats */}
-        <div className="grid grid-cols-3 gap-2 text-xs">
+        <div className="grid grid-cols-3 md:grid-cols-4 gap-2 text-xs">
           {game.winScore !== undefined && (
             <div className="text-center p-2 bg-muted rounded">
               <div className="font-semibold text-primary">{game.winScore}</div>
@@ -118,7 +128,20 @@ function GameCard({ game }: { game: Arc3GameMetadata }) {
               <div className="text-muted-foreground">Hints</div>
             </div>
           )}
+          {game.resources.length > 0 && (
+            <div className="text-center p-2 bg-muted rounded">
+              <div className="font-semibold text-primary">{game.resources.length}</div>
+              <div className="text-muted-foreground">Resources</div>
+            </div>
+          )}
         </div>
+
+        {/* Notes / documentation status */}
+        {game.notes && (
+          <p className="text-xs text-muted-foreground">
+            {game.notes}
+          </p>
+        )}
 
         {/* Tags */}
         {game.tags.length > 0 && (
@@ -167,11 +190,15 @@ export default function Arc3GamesBrowser() {
     canonicalPath: '/arc3/games',
   });
 
+  const allGames = getAllGames();
   const previewGames = getGamesByCategory('preview');
   const evaluationGames = getGamesByCategory('evaluation');
 
+  const totalHints = allGames.reduce((sum, game) => sum + game.hints.length, 0);
+  const fullyDocumentedCount = allGames.filter(game => game.isFullyDocumented).length;
+
   return (
-    <div className="container mx-auto px-4 py-8 max-w-6xl">
+    <div className="container mx-auto px-4 py-6 max-w-6xl">
       {/* Header */}
       <div className="flex items-center gap-3 mb-6">
         <Button variant="ghost" size="sm" asChild>
@@ -182,7 +209,25 @@ export default function Arc3GamesBrowser() {
         </Button>
       </div>
 
-      <div className="text-center mb-8">
+      {/* Coverage Summary */}
+      <Card className="mb-8">
+        <CardContent className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm">
+          <div>
+            <p className="font-semibold text-foreground">Games covered</p>
+            <p className="text-muted-foreground">{allGames.length} revealed ARC-AGI-3 games (preview + evaluation)</p>
+          </div>
+          <div>
+            <p className="font-semibold text-foreground">Fully documented</p>
+            <p className="text-muted-foreground">{fullyDocumentedCount} game(s) with complete mechanics and notes</p>
+          </div>
+          <div>
+            <p className="font-semibold text-foreground">Hints captured</p>
+            <p className="text-muted-foreground">{totalHints} hint(s) and strategy notes in this browser</p>
+          </div>
+        </CardContent>
+      </Card>
+
+      <div className="text-center mb-6">
         <div className="flex items-center justify-center gap-3 mb-4">
           <Gamepad2 className="h-10 w-10 text-primary" />
           <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
@@ -196,7 +241,7 @@ export default function Arc3GamesBrowser() {
       </div>
 
       {/* Spoiler Warning */}
-      <Alert className="mb-8 border-amber-500 bg-amber-50 dark:bg-amber-950">
+      <Alert className="mb-6 border-amber-500 bg-amber-50 dark:bg-amber-950">
         <AlertTriangle className="h-4 w-4 text-amber-600 dark:text-amber-400" />
         <AlertTitle className="text-amber-900 dark:text-amber-100">
           Spoiler Warning
@@ -217,7 +262,7 @@ export default function Arc3GamesBrowser() {
       </Alert>
 
       {/* Quick Actions */}
-      <div className="flex flex-wrap gap-3 justify-center mb-8">
+      <div className="flex flex-wrap gap-3 justify-center mb-6">
         <Button asChild variant="outline">
           <Link href="/arc3/playground">
             <Gamepad2 className="h-4 w-4 mr-2" />
@@ -237,7 +282,7 @@ export default function Arc3GamesBrowser() {
       </div>
 
       {/* Preview Games Section */}
-      <section className="mb-12">
+      <section className="mb-10">
         <div className="flex items-center gap-2 mb-4">
           <Eye className="h-5 w-5 text-blue-500" />
           <h2 className="text-2xl font-bold">Preview Games</h2>
@@ -255,7 +300,7 @@ export default function Arc3GamesBrowser() {
       </section>
 
       {/* Evaluation Games Section */}
-      <section className="mb-12">
+      <section className="mb-10">
         <div className="flex items-center gap-2 mb-4">
           <EyeOff className="h-5 w-5 text-purple-500" />
           <h2 className="text-2xl font-bold">Evaluation Games</h2>
