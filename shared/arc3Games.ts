@@ -8,7 +8,7 @@
  */
 
 /**
- * Difficulty ratings based on community experience
+ * Difficulty ratings based on community experience I don't think this will mean anything as highly subjective. It would probably be more useful to have something like what type of game it is.
  */
 export type DifficultyRating = 'easy' | 'medium' | 'hard' | 'very-hard' | 'unknown';
 
