@@ -1,6 +1,13 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top with the time and date!
 
+### Version 5.45.10  Dec 6, 2025 (PENDING TESTING)
+
+- **ARC-AGI-3 landing: show game thumbnails in Games Browser card** (Author: Cascade)
+  - Added a compact grid of ARC-AGI-3 game PNG thumbnails under the Games Browser summary on the `/arc3` landing page, using shared `getAllGames()` + `thumbnailUrl` metadata so the highlight card no longer shows empty white space.
+  - The grid automatically reflects all revealed games with thumbnails (currently ls20, as66, ft09, lp85, sp80, vc33) and keeps the existing "Browse Games" call-to-action intact, making the Games Browser visually feel like the entry point into the benchmark.
+  - **Files**: `client/src/pages/ARC3Browser.tsx`, `CHANGELOG.md`
+
 ### Version 5.45.9  Dec 6, 2025 (PENDING TESTING)
 
 - **ARC-AGI-3 Games: Add informal names, descriptions, and thumbnails for 5 games** (Author: Claude Code using Sonnet 4.5)
