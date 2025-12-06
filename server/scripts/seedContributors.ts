@@ -42,6 +42,28 @@ const contributors: CreateContributorRequest[] = [
   },
 
   {
+    fullName: 'SOAR Team (Pourcel, Colas, Oudeyer)',
+    handle: undefined,
+    affiliation: 'LLM4Code / Inria & Sorbonne University',
+    imageUrl: '/julienPourcel.png',
+    achievement: '2nd Place 2025 Paper Award: "Self-Improving Language Models for Evolutionary Program Synthesis" (SOAR)',
+    description: 'Authors of SOAR, a self-improving evolutionary program synthesis framework that alternates between LLM-driven evolutionary search for ARC-AGI programs and hindsight fine-tuning on its own search traces, steadily improving the model as a search operator without human-engineered DSLs or curated solution datasets.',
+    yearStart: 2025,
+    yearEnd: 2025,
+    score: 'Up to 52% solved on the ARC-AGI public test set via self-improving evolutionary program synthesis.',
+    approach: 'Self-improving evolutionary program synthesis: use an LLM to sample and refine candidate programs, then convert successful and near-miss search attempts into training data for a hindsight fine-tuning phase that improves the LLM search operator over iterations.',
+    uniqueTechnique: 'Shows how to close the loop between evolutionary search and LLM training: SOAR turns search traces into supervised data, leveraging positive transfer across tasks to significantly boost ARC-AGI performance without hand-designed DSLs or solution datasets.',
+    links: {
+      papers: ['https://arxiv.org/abs/2507.14172'],
+      github: 'https://github.com/flowersteam/SOAR',
+      youtube: 'https://www.youtube.com/watch?v=9lIuoslCHWI'
+    },
+    teamName: 'SOAR',
+    category: 'paper_award',
+    rank: 2
+  },
+
+  {
     fullName: 'Isaac Liao',
     handle: undefined,
     affiliation: 'Carnegie Mellon University, Graduate Researcher',
