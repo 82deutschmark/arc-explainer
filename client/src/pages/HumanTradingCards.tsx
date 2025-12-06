@@ -7,9 +7,11 @@
  * SRP/DRY check: Pass - Reuses useArcContributors hook, HumanTradingCard component, and existing UI patterns
  */
 
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useArcContributors } from '@/hooks/useArcContributors';
+import { useFirstVisit } from '@/hooks/useFirstVisit';
 import { HumanTradingCard } from '@/components/human/HumanTradingCard';
+import { CardPackOpening } from '@/components/human/CardPackOpening';
 import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
 import {
   Loader2, Users, Trophy, ScrollText, History, Star, ExternalLink,
@@ -25,10 +27,20 @@ const CONTRIBUTOR_VIDEOS: Record<string, string> = {
 
 export default function HumanTradingCards() {
   const { data, isLoading, error } = useArcContributors();
+  const { isFirstVisit, markVisited } = useFirstVisit();
+  const [animationComplete, setAnimationComplete] = useState(false);
 
   useEffect(() => {
     document.title = 'ARC Hall of Fame';
   }, []);
+
+  const handleAnimationComplete = () => {
+    setAnimationComplete(true);
+    markVisited();
+  };
+
+  // Show animation on first visit (if not already complete)
+  const shouldShowAnimation = isFirstVisit === true && !animationComplete;
 
   // Categorize contributors for 2025 results
   const { founders, topPaperAward2025, winners2025, winners2024, researchers, pioneers, arc3Preview } = useMemo(() => {
@@ -89,6 +101,15 @@ export default function HumanTradingCards() {
             <span className="text-red-200">Failed to load data. Please try again later.</span>
           </div>
         </div>
+      </div>
+    );
+  }
+
+  // Show animation overlay on first visit
+  if (shouldShowAnimation) {
+    return (
+      <div className="min-h-screen w-full bg-zinc-950">
+        <CardPackOpening onComplete={handleAnimationComplete} />
       </div>
     );
   }

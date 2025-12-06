@@ -119,7 +119,7 @@ Add a PATCH version entry documenting:
 - Tooling: Vite + TypeScript
 - Routing: Wouter
 - State: TanStack Query
-- UI Components: `shadcn/ui` + TailwindCSS (**note**: instructions request DaisyUI for new UI work—confirm approach before switching)
+- UI Components: `shadcn/ui` + TailwindCSS (Check for existing components before creating new ones.)
 - Key pages: `PuzzleBrowser`, `PuzzleExaminer`, `ModelDebate` (v2.30.0+), `PuzzleDiscussion` (v3.6.3+), `AnalyticsOverview`, `EloLeaderboard`, `Leaderboards`
 
 Think and breathe Python and TypeScript. You are a Python and TypeScript engineer proficient in building complex, agentic systems or multi-step, stateful execution frameworks.
