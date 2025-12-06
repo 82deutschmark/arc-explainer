@@ -1,9 +1,9 @@
 /**
- * Author: Claude 3.5 Sonnet / Cascade
- * Date: 2025-12-05
- * PURPOSE: Human Trading Cards page - displays ARC contributors as 1980s-style trading cards.
+ * Author: Claude Code using Opus 4.5
+ * Date: 2025-12-06
+ * PURPOSE: ARC Hall of Fame page - information-dense display of ARC contributors as trading cards.
  * Updated for ARC Prize 2025 results announcement (December 5, 2025).
- * Shows official 2025 winners, Top Paper Award, and notable contributors.
+ * Features compact card grid layout, Hall of Fame header, and external resource links.
  * SRP/DRY check: Pass - Reuses useArcContributors hook, HumanTradingCard component, and existing UI patterns
  */
 
@@ -11,12 +11,21 @@ import React, { useEffect, useMemo } from 'react';
 import { useArcContributors } from '@/hooks/useArcContributors';
 import { HumanTradingCard } from '@/components/human/HumanTradingCard';
 import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
-import { Loader2, Users, Trophy, ScrollText, History, Star, ExternalLink, Award, Sparkles, Calendar, Rocket } from 'lucide-react';
+import {
+  Loader2, Users, Trophy, ScrollText, History, Star, ExternalLink,
+  Award, Sparkles, Rocket, Youtube, Medal, Crown
+} from 'lucide-react';
+
+// Video links for specific contributors (until added to database)
+const CONTRIBUTOR_VIDEOS: Record<string, string> = {
+  'Alexia Jolicoeur-Martineau': 'https://www.youtube.com/watch?v=P9zzUM0PrBM',
+  'Team NVARC (JF Puget & Ivan Sorokin)': 'https://www.youtube.com/watch?v=t-mIRJJCbKg',
+  'Jean-François Puget (2024 Paper)': 'https://www.youtube.com/watch?v=t-mIRJJCbKg',
+};
 
 export default function HumanTradingCards() {
   const { data, isLoading, error } = useArcContributors();
 
-  // Set page title
   useEffect(() => {
     document.title = 'ARC Hall of Fame';
   }, []);
@@ -24,18 +33,15 @@ export default function HumanTradingCards() {
   // Categorize contributors for 2025 results
   const { founders, topPaperAward2025, winners2025, winners2024, researchers, pioneers, arc3Preview } = useMemo(() => {
     if (!data?.contributors) return { founders: [], topPaperAward2025: [], winners2025: [], winners2024: [], researchers: [], pioneers: [], arc3Preview: [] };
-    
+
     const contributors = [...data.contributors];
-    
-    // Founders hero card (category 'founder')
+
     const founders = contributors.filter(c => c.category === 'founder');
-    
-    // 2025 Top Paper Award (special category)
+
     const topPaperAward2025 = contributors
       .filter(c => c.category === 'top_paper_award' && c.yearStart === 2025)
       .sort((a, b) => (a.rank || 999) - (b.rank || 999));
 
-    // 2025 Competition Winners
     const winners2025 = contributors
       .filter(c => {
         if (!c.yearStart) return false;
@@ -44,22 +50,18 @@ export default function HumanTradingCards() {
       })
       .sort((a, b) => (a.rank || 999) - (b.rank || 999));
 
-    // 2024 Winners (Year 2024, Competition Winner category)
     const winners2024 = contributors
       .filter(c => c.yearStart === 2024 && c.category === 'competition_winner' && c.rank !== 0)
       .sort((a, b) => (a.rank || 999) - (b.rank || 999));
 
-    // Researchers & Paper Awards (excluding top_paper_award which has its own section)
     const researchers = contributors
       .filter(c => ['paper_award', 'researcher'].includes(c.category) && c.rank !== 0)
       .sort((a, b) => b.yearStart! - a.yearStart!);
 
-    // Pioneers (Old categories or explicit pioneers)
     const pioneers = contributors
       .filter(c => c.category === 'pioneer' || (c.yearStart && c.yearStart < 2024 && c.rank !== 0 && c.category !== 'founder'))
       .sort((a, b) => b.yearStart! - a.yearStart!);
 
-    // ARC3 2026 Preview - Rising Stars
     const arc3Preview = contributors
       .filter(c => c.category === 'arc3_preview')
       .sort((a, b) => (a.rank || 999) - (b.rank || 999));
@@ -67,11 +69,23 @@ export default function HumanTradingCards() {
     return { founders, topPaperAward2025, winners2025, winners2024, researchers, pioneers, arc3Preview };
   }, [data?.contributors]);
 
+  // Inject YouTube video links into contributors (until stored in DB)
+  const enrichContributor = (contributor: typeof winners2025[0]) => {
+    const videoUrl = CONTRIBUTOR_VIDEOS[contributor.fullName];
+    if (videoUrl && !contributor.links?.youtube) {
+      return {
+        ...contributor,
+        links: { ...contributor.links, youtube: videoUrl }
+      };
+    }
+    return contributor;
+  };
+
   if (error) {
     return (
-      <div className="min-h-screen w-full bg-slate-950 text-slate-100">
-        <div className="container mx-auto px-4 py-10">
-          <div className="rounded-md border border-red-900 bg-red-950/30 p-6">
+      <div className="min-h-screen w-full bg-zinc-950 text-zinc-100">
+        <div className="container mx-auto px-4 py-6">
+          <div className="rounded-md border border-red-900 bg-red-950/30 p-4">
             <span className="text-red-200">Failed to load data. Please try again later.</span>
           </div>
         </div>
@@ -80,97 +94,101 @@ export default function HumanTradingCards() {
   }
 
   return (
-    <div className="min-h-screen w-full bg-gradient-to-b from-zinc-950 via-zinc-900 to-zinc-950 text-zinc-200">
-      {/* Subtle background texture */}
-      <div className="fixed inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-zinc-800/20 via-transparent to-transparent pointer-events-none" />
-      
-      <div className="relative container mx-auto px-6 py-10 space-y-12">
+    <div className="min-h-screen w-full bg-zinc-950 text-zinc-200">
+      {/* Subtle top gradient accent */}
+      <div className="fixed top-0 inset-x-0 h-48 bg-gradient-to-b from-amber-900/10 via-zinc-950/50 to-transparent pointer-events-none" />
 
-        {/* 2025 Announcement Hero */}
-        <header className="text-center max-w-5xl mx-auto space-y-6 relative py-8">
-          {/* Decorative glow */}
-          <div className="absolute -inset-20 bg-gradient-to-r from-amber-500/10 via-fuchsia-500/15 to-violet-500/10 blur-3xl -z-10 rounded-full" />
-          
-          {/* Date badge */}
-          <div className="inline-flex items-center gap-2 bg-zinc-800/60 backdrop-blur-sm border border-zinc-700/50 rounded-full px-5 py-2 text-sm text-zinc-300 shadow-lg">
-            <Calendar className="w-4 h-4 text-amber-400" />
-            <span className="font-medium">December 5, 2025</span>
-            <span className="text-zinc-600">•</span>
-            <span className="text-amber-400 font-semibold">Official Results</span>
-          </div>
+      <div className="relative container mx-auto px-4 py-4 space-y-5">
 
-          <div className="flex items-center justify-center gap-4">
-            <Trophy className="h-12 w-12 text-amber-400 drop-shadow-lg" />
-            <h1 className="text-4xl md:text-6xl font-bold bg-gradient-to-r from-zinc-100 via-zinc-200 to-zinc-300 bg-clip-text text-transparent tracking-tight">
-              ARC Prize 2025
-            </h1>
-            <Sparkles className="h-10 w-10 text-fuchsia-400 drop-shadow-lg" />
+        {/* Compact Hall of Fame Header */}
+        <header className="border-b border-zinc-800 pb-4">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+            {/* Title Section */}
+            <div className="flex items-center gap-3">
+              <div className="p-2 rounded-lg bg-gradient-to-br from-amber-500/20 to-amber-600/10 border border-amber-500/30">
+                <Crown className="h-6 w-6 text-amber-400" />
+              </div>
+              <div>
+                <h1 className="text-2xl md:text-3xl font-bold text-zinc-100 tracking-tight flex items-center gap-2">
+                  ARC Hall of Fame
+                  <span className="text-xs font-normal bg-amber-500/20 text-amber-300 px-2 py-0.5 rounded-full border border-amber-500/30">
+                    2025
+                  </span>
+                </h1>
+                <p className="text-sm text-zinc-500">Celebrating brilliant minds pushing AGI boundaries</p>
+              </div>
+            </div>
+
+            {/* Quick Links */}
+            <div className="flex flex-wrap items-center gap-2">
+              <a
+                href="https://www.kaggle.com/competitions/arc-prize-2025/leaderboard"
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center gap-1.5 text-xs bg-zinc-800/80 hover:bg-sky-900/50 text-zinc-300 hover:text-sky-300 px-3 py-1.5 rounded-md border border-zinc-700/50 hover:border-sky-500/50 transition-all"
+              >
+                <Medal className="w-3.5 h-3.5" />
+                Kaggle Leaderboard
+                <ExternalLink className="w-3 h-3 opacity-60" />
+              </a>
+              <a
+                href="https://www.youtube.com/@ARCprize"
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center gap-1.5 text-xs bg-zinc-800/80 hover:bg-red-900/50 text-zinc-300 hover:text-red-300 px-3 py-1.5 rounded-md border border-zinc-700/50 hover:border-red-500/50 transition-all"
+              >
+                <Youtube className="w-3.5 h-3.5" />
+                Winner Talks
+                <ExternalLink className="w-3 h-3 opacity-60" />
+              </a>
+            </div>
           </div>
-          
-          <p className="text-xl text-zinc-400 max-w-2xl mx-auto leading-relaxed">
-            Celebrating the brilliant minds pushing the boundaries of artificial general intelligence.
-          </p>
         </header>
 
         {isLoading ? (
-          <div className="py-32 text-center">
-            <Loader2 className="mx-auto mb-4 h-10 w-10 animate-spin text-amber-500" />
-            <p className="text-lg text-slate-500">Loading profiles...</p>
+          <div className="py-20 text-center">
+            <Loader2 className="mx-auto mb-3 h-8 w-8 animate-spin text-amber-500" />
+            <p className="text-sm text-zinc-500">Loading profiles...</p>
           </div>
         ) : (
           <>
-            {/* Founders Hero Section */}
+            {/* Founders - Compact Banner */}
             {founders.length > 0 && (
-              <section className="max-w-5xl mx-auto relative">
-                <div className="absolute -inset-4 bg-gradient-to-r from-amber-500/15 to-violet-500/15 blur-3xl -z-10 rounded-full" />
+              <section>
                 {founders.map(founder => (
                   <Dialog key={founder.id}>
-                    <div className="border border-zinc-700/50 bg-zinc-900/80 backdrop-blur-md rounded-2xl px-6 py-4 shadow-2xl flex flex-col md:flex-row md:items-center gap-5 overflow-hidden">
+                    <div className="border border-zinc-800 bg-zinc-900/60 rounded-lg px-4 py-3 flex flex-col sm:flex-row sm:items-center gap-3">
                       <DialogTrigger asChild>
                         <button
                           type="button"
-                          className="flex-shrink-0 w-20 h-20 rounded-xl overflow-hidden border-2 border-zinc-600/50 bg-black hover:border-amber-400/60 transition-all hover:scale-105 shadow-lg"
+                          className="flex-shrink-0 w-14 h-14 rounded-lg overflow-hidden border border-zinc-700 bg-black hover:border-amber-500/60 transition-all hover:scale-105"
                         >
                           {founder.imageUrl && (
-                            <img
-                              src={founder.imageUrl}
-                              alt={founder.fullName}
-                              className="w-full h-full object-cover"
-                            />
+                            <img src={founder.imageUrl} alt={founder.fullName} className="w-full h-full object-cover" />
                           )}
                         </button>
                       </DialogTrigger>
 
-                      <div className="flex-1 min-w-0 space-y-2">
-                        <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-amber-400 flex items-center gap-2">
-                          <Users className="w-4 h-4" />
-                          Founders & Organizers
+                      <div className="flex-1 min-w-0">
+                        <p className="text-[10px] font-semibold uppercase tracking-widest text-amber-400/80 flex items-center gap-1.5 mb-0.5">
+                          <Users className="w-3 h-3" /> Founders & Organizers
                         </p>
-                        <h2 className="text-2xl md:text-3xl font-bold text-zinc-100 truncate">
-                          {founder.fullName}
-                        </h2>
+                        <h2 className="text-lg font-bold text-zinc-100 truncate">{founder.fullName}</h2>
                         {founder.achievement && (
-                          <p className="text-sm text-zinc-400 line-clamp-1">
-                            {founder.achievement}
-                          </p>
+                          <p className="text-xs text-zinc-500 truncate">{founder.achievement}</p>
                         )}
                       </div>
 
-                      <div className="flex flex-col items-start md:items-end gap-3">
-                        <div className="text-sm text-zinc-400">
-                          <span className="mr-1 text-zinc-500">Active:</span>
-                          <span className="font-mono text-zinc-200">
-                            {founder.yearStart}
-                            {founder.yearEnd ? `–${founder.yearEnd}` : '–Present'}
-                          </span>
-                        </div>
+                      <div className="flex items-center gap-3 text-xs">
+                        <span className="text-zinc-500">
+                          {founder.yearStart}{founder.yearEnd ? `–${founder.yearEnd}` : '–Present'}
+                        </span>
                         <DialogTrigger asChild>
                           <button
                             type="button"
-                            className="inline-flex items-center gap-2 rounded-lg border border-amber-500/40 bg-amber-500/15 px-4 py-2 text-sm font-semibold text-amber-300 hover:bg-amber-500/25 hover:text-amber-100 transition-all shadow-lg"
+                            className="inline-flex items-center gap-1.5 rounded-md border border-amber-500/40 bg-amber-500/10 px-3 py-1.5 text-xs font-medium text-amber-300 hover:bg-amber-500/20 transition-all"
                           >
-                            View Profile
-                            <ExternalLink className="w-4 h-4" />
+                            View <ExternalLink className="w-3 h-3" />
                           </button>
                         </DialogTrigger>
                       </div>
@@ -184,28 +202,19 @@ export default function HumanTradingCards() {
               </section>
             )}
 
-            {/* 2025 Top Paper Award - Featured Section */}
+            {/* 2025 Top Paper Award */}
             {topPaperAward2025.length > 0 && (
-              <section className="space-y-8 relative">
-                {/* Special glow for this section */}
-                <div className="absolute -inset-10 bg-gradient-to-r from-fuchsia-600/10 via-violet-600/10 to-purple-600/10 blur-3xl -z-10 rounded-3xl" />
-                
-                <div className="flex items-center gap-4 border-b border-fuchsia-500/30 pb-5">
-                  <div className="p-2 rounded-xl bg-fuchsia-500/20 border border-fuchsia-500/30">
-                    <Award className="h-7 w-7 text-fuchsia-400" />
-                  </div>
-                  <h2 className="text-3xl font-bold text-zinc-100">2025 Top Paper Award</h2>
-                  <span className="ml-auto text-xs bg-fuchsia-500/20 text-fuchsia-300 px-3 py-1.5 rounded-full border border-fuchsia-500/30 uppercase tracking-wider font-bold shadow-lg">
+              <section className="space-y-3">
+                <div className="flex items-center gap-2 border-b border-fuchsia-500/20 pb-2">
+                  <Award className="h-4 w-4 text-fuchsia-400" />
+                  <h2 className="text-lg font-bold text-zinc-100">2025 Top Paper Award</h2>
+                  <span className="ml-auto text-[10px] bg-fuchsia-500/20 text-fuchsia-300 px-2 py-0.5 rounded-full border border-fuchsia-500/30 uppercase tracking-wider font-bold">
                     Featured
                   </span>
                 </div>
-                
-                {/* Featured large card layout for top paper award winner */}
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3">
                   {topPaperAward2025.map(contributor => (
-                    <div key={contributor.id} className="lg:col-span-2 max-w-3xl mx-auto w-full">
-                      <HumanTradingCard contributor={contributor} />
-                    </div>
+                    <HumanTradingCard key={contributor.id} contributor={enrichContributor(contributor)} />
                   ))}
                 </div>
               </section>
@@ -213,18 +222,14 @@ export default function HumanTradingCards() {
 
             {/* 2025 Competition Winners */}
             {winners2025.length > 0 && (
-              <section className="space-y-8">
-                <div className="flex items-center gap-4 border-b border-amber-500/30 pb-5">
-                  <div className="p-2 rounded-xl bg-amber-500/20 border border-amber-500/30">
-                    <Trophy className="h-6 w-6 text-amber-400" />
-                  </div>
-                  <h2 className="text-2xl font-bold text-zinc-100">2025 Competition Winners</h2>
+              <section className="space-y-3">
+                <div className="flex items-center gap-2 border-b border-amber-500/20 pb-2">
+                  <Trophy className="h-4 w-4 text-amber-400" />
+                  <h2 className="text-lg font-bold text-zinc-100">2025 Competition Winners</h2>
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3">
                   {winners2025.map(contributor => (
-                    <div key={contributor.id} className="h-full">
-                      <HumanTradingCard contributor={contributor} />
-                    </div>
+                    <HumanTradingCard key={contributor.id} contributor={enrichContributor(contributor)} />
                   ))}
                 </div>
               </section>
@@ -232,37 +237,29 @@ export default function HumanTradingCards() {
 
             {/* 2024 Winners */}
             {winners2024.length > 0 && (
-              <section className="space-y-8">
-                <div className="flex items-center gap-4 border-b border-zinc-700/50 pb-5">
-                  <div className="p-2 rounded-xl bg-blue-500/20 border border-blue-500/30">
-                    <Star className="h-6 w-6 text-blue-400" />
-                  </div>
-                  <h2 className="text-2xl font-bold text-zinc-100">2024 ARC Prize Winners</h2>
+              <section className="space-y-3">
+                <div className="flex items-center gap-2 border-b border-blue-500/20 pb-2">
+                  <Star className="h-4 w-4 text-blue-400" />
+                  <h2 className="text-lg font-bold text-zinc-100">2024 ARC Prize Winners</h2>
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3">
                   {winners2024.map(contributor => (
-                    <div key={contributor.id} className="h-full">
-                      <HumanTradingCard contributor={contributor} />
-                    </div>
+                    <HumanTradingCard key={contributor.id} contributor={enrichContributor(contributor)} />
                   ))}
                 </div>
               </section>
             )}
 
-            {/* Research & Papers */}
+            {/* Research & Awards */}
             {researchers.length > 0 && (
-              <section className="space-y-8">
-                <div className="flex items-center gap-4 border-b border-zinc-700/50 pb-5">
-                  <div className="p-2 rounded-xl bg-emerald-500/20 border border-emerald-500/30">
-                    <ScrollText className="h-6 w-6 text-emerald-400" />
-                  </div>
-                  <h2 className="text-2xl font-bold text-zinc-100">Research & Awards</h2>
+              <section className="space-y-3">
+                <div className="flex items-center gap-2 border-b border-emerald-500/20 pb-2">
+                  <ScrollText className="h-4 w-4 text-emerald-400" />
+                  <h2 className="text-lg font-bold text-zinc-100">Research & Awards</h2>
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3">
                   {researchers.map(contributor => (
-                    <div key={contributor.id} className="h-full">
-                      <HumanTradingCard contributor={contributor} />
-                    </div>
+                    <HumanTradingCard key={contributor.id} contributor={enrichContributor(contributor)} />
                   ))}
                 </div>
               </section>
@@ -270,47 +267,71 @@ export default function HumanTradingCards() {
 
             {/* Pioneers */}
             {pioneers.length > 0 && (
-              <section className="space-y-8">
-                <div className="flex items-center gap-4 border-b border-zinc-700/50 pb-5">
-                  <div className="p-2 rounded-xl bg-violet-500/20 border border-violet-500/30">
-                    <History className="h-6 w-6 text-violet-400" />
-                  </div>
-                  <h2 className="text-2xl font-bold text-zinc-100">Pioneers</h2>
+              <section className="space-y-3">
+                <div className="flex items-center gap-2 border-b border-violet-500/20 pb-2">
+                  <History className="h-4 w-4 text-violet-400" />
+                  <h2 className="text-lg font-bold text-zinc-100">Pioneers</h2>
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3">
                   {pioneers.map(contributor => (
-                    <div key={contributor.id} className="h-full">
-                      <HumanTradingCard contributor={contributor} />
-                    </div>
+                    <HumanTradingCard key={contributor.id} contributor={enrichContributor(contributor)} />
                   ))}
                 </div>
               </section>
             )}
 
-            {/* ARC3 2026 Preview - Rising Stars */}
+            {/* ARC3 2026 Preview */}
             {arc3Preview.length > 0 && (
-              <section className="space-y-8">
-                <div className="flex items-center gap-4 border-b border-cyan-500/30 pb-5">
-                  <div className="p-2 rounded-xl bg-cyan-500/20 border border-cyan-500/30">
-                    <Rocket className="h-6 w-6 text-cyan-400" />
-                  </div>
-                  <div>
-                    <h2 className="text-2xl font-bold text-zinc-100">ARC3 2026</h2>
-                    <p className="text-sm text-cyan-400">Rising Stars & Agent Preview Winners</p>
+              <section className="space-y-3">
+                <div className="flex items-center gap-2 border-b border-cyan-500/20 pb-2">
+                  <Rocket className="h-4 w-4 text-cyan-400" />
+                  <div className="flex items-center gap-2">
+                    <h2 className="text-lg font-bold text-zinc-100">ARC3 2026</h2>
+                    <span className="text-[10px] text-cyan-400 bg-cyan-500/10 px-2 py-0.5 rounded-full border border-cyan-500/30">
+                      Rising Stars
+                    </span>
                   </div>
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3">
                   {arc3Preview.map(contributor => (
-                    <div key={contributor.id} className="h-full">
-                      <HumanTradingCard contributor={contributor} />
-                    </div>
+                    <HumanTradingCard key={contributor.id} contributor={enrichContributor(contributor)} />
                   ))}
                 </div>
               </section>
             )}
+
+            {/* Footer with additional resources */}
+            <footer className="border-t border-zinc-800 pt-4 mt-6">
+              <div className="flex flex-wrap items-center justify-center gap-4 text-xs text-zinc-500">
+                <span>Learn more about ARC-AGI:</span>
+                <a
+                  href="https://www.kaggle.com/competitions/arc-prize-2025/leaderboard"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="hover:text-zinc-300 transition-colors flex items-center gap-1"
+                >
+                  <Medal className="w-3 h-3" /> Official Leaderboard
+                </a>
+                <a
+                  href="https://www.youtube.com/@ARCprize"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="hover:text-zinc-300 transition-colors flex items-center gap-1"
+                >
+                  <Youtube className="w-3 h-3" /> ARC Prize YouTube
+                </a>
+                <a
+                  href="https://arcprize.org"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="hover:text-zinc-300 transition-colors flex items-center gap-1"
+                >
+                  <ExternalLink className="w-3 h-3" /> arcprize.org
+                </a>
+              </div>
+            </footer>
           </>
         )}
-
       </div>
     </div>
   );

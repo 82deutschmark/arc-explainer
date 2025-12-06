@@ -115,11 +115,11 @@ const contributors: CreateContributorRequest[] = [
     affiliation: 'NVIDIA - Machine Learning & Kaggle Grandmasters',
     achievement: '1st Place ARC Prize 2025 (24.03%)',
     description: 'Jean-François Puget (6x Kaggle Grandmaster, ENS Ulm alumni, ML PhD) and Ivan Sorokin (ML Researcher, Kaggle Grandmaster, Math Olympiad 2025 winner) won 1st place in ARC Prize 2025 with 24.03% accuracy as Team NVARC.',
-    imageUrl: '/jfPuget.png,/ivanARC2.png',
+    imageUrl: '/jfPuget3.png,/ivanARC2.png',
     yearStart: 2025,
     yearEnd: 2025,
     score: '24.03% (1st Place)',
-    approach: 'TBA',
+    approach: 'Synthetic-data-driven ensemble of an improved ARChitects-style, test-time-trained model and TRM-based components that reaches ~24% on ARC-AGI-2 under Kaggle contest constraints.',
     uniqueTechnique: 'TBA',
     links: {
       github: 'https://github.com/jfpuget',
