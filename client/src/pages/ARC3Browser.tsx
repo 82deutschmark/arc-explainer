@@ -240,26 +240,28 @@ export default function ARC3Browser() {
         </h2>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {/* Games List */}
-          <Card className="opacity-60">
+          {/* Games List - Now Active! */}
+          <Card className="hover:shadow-lg transition-shadow border-primary/20">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <Gamepad2 className="h-5 w-5" />
+                <Gamepad2 className="h-5 w-5 text-primary" />
                 Games Browser
               </CardTitle>
               <CardDescription>
-                Browse available ARC-AGI-3 games with descriptions and difficulty ratings
+                Browse all ARC-AGI-3 games with spoilers, hints, and strategies
               </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="text-sm text-muted-foreground space-y-2">
-                <p>• Game descriptions and objectives</p>
-                <p>• Available actions and controls</p>
-                <p>• Current game status</p>
+                <p>• 6 revealed games (3 preview + 3 evaluation)</p>
+                <p>• Mechanics documentation and action mappings</p>
+                <p>• Community hints and strategies</p>
               </div>
-              <div className="mt-4 text-xs text-muted-foreground italic">
-                Feature in development
-              </div>
+              <Button asChild className="mt-4 w-full">
+                <Link href="/arc3/games">
+                  Browse Games
+                </Link>
+              </Button>
             </CardContent>
           </Card>
 

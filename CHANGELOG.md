@@ -1,6 +1,22 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top with the time and date!
 
+### Version 5.42.0  Dec 5, 2025 9:55pm
+
+- **ARC-AGI-3 Games Browser & Spoiler Pages** (Author: Claude Windsurf Cascade)
+  - Created comprehensive game metadata system (`shared/arc3Games.ts`) with support for 6 revealed games (3 preview + 3 evaluation).
+  - Added `Arc3GamesBrowser` page at `/arc3/games` - the ultimate spoilers index with game cards, difficulty ratings, and documentation status.
+  - Added `Arc3GameSpoiler` page at `/arc3/games/:gameId` - individual game deep-dive pages with:
+    - Embedded playable game via iframe from three.arcprize.org
+    - Mechanics documentation with action mappings
+    - Spoiler-protected hints system (3 levels: mild hints, moderate spoilers, full solutions)
+    - External resources section
+    - Quick links to playground for agent testing
+  - Populated ls20 ("Locksmith") with full documentation: mechanics explanation, action mappings, 4 community hints, and 2 external resources.
+  - Updated ARC3Browser landing page to link to the new Games Browser (replaced "Feature in development" placeholder).
+  - Game categories: preview (ls20, as66, ft09) and evaluation (lp85, sp80, vc33).
+  - **Files**: `shared/arc3Games.ts`, `client/src/pages/Arc3GamesBrowser.tsx`, `client/src/pages/Arc3GameSpoiler.tsx`, `client/src/pages/ARC3Browser.tsx`, `client/src/App.tsx`
+
 ### Version 5.41.0  Dec 5, 2025 6:35pm
 
 - **ARC3 Preview + complete 2025 leaderboard data** (Author: Cascade)
