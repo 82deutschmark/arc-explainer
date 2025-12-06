@@ -1,6 +1,204 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top with the time and date!
 
+### Version 5.45.4  Dec 6, 2025 (PENDING TESTING)
+
+- **Hall of Fame: Add Simon Strandgaard (neoneye) as ARC datasets & tools curator** (Author: Cascade)
+  - Added a new contributor trading card entry for Simon Strandgaard (aka `@neoneye`), recognizing his long-standing role as an independent ARC community contributor and dataset/tool curator.
+  - Highlighted his many ARC-related GitHub repositories (including the ARC-Interactive-History-Dataset) that package human interaction traces, derived task collections, and utilities that the wider community—this project included—relies on for exploration and analysis.
+  - Framed his contribution as infrastructure: organizing and sharing high-quality ARC datasets, visualizations, and tools so researchers and hobbyists can build on shared resources instead of re-implementing basic plumbing.
+  - Tied this card to the existing Research Terminal footer link that credits Simon and points to his GitHub profile, and wired his Hall of Fame card to the `/simonS.png,/simonS1.png` portrait variants.
+  - **Files**: `server/scripts/seedContributors.ts`, `client/public/simonS.png`, `client/public/simonS1.png`, `CHANGELOG.md`
+
+### Version 5.45.3  Dec 6, 2025 (PENDING TESTING)
+
+- **Hall of Fame: Add SOAR 2nd Place 2025 Paper Award Team (Self-Improving Program Synthesis)** (Author: Cascade)
+  - Added a new contributor trading card for the SOAR team (Julien Pourcel, Cédric Colas, Pierre-Yves Oudeyer), recognizing their 2nd place 2025 paper award "Self-Improving Language Models for Evolutionary Program Synthesis: A Case Study on ARC-AGI".
+  - Captured SOAR as a self-improving evolutionary program synthesis framework that alternates between LLM-driven evolutionary search for ARC-AGI programs and a hindsight learning phase that fine-tunes the LLM on its own search traces.
+  - Highlighted that SOAR achieves up to **52% of the ARC-AGI public test set** without relying on human-engineered DSLs or curated solution datasets, instead using search traces as training data.
+  - Linked to the official paper, GitHub repository, and ARC Prize interview video: `https://www.youtube.com/watch?v=9lIuoslCHWI`.
+  - Wired the team card to the existing `/julienPourcel.png` portrait asset and categorized them under 2025 paper award winners alongside Alexia and Isaac.
+  - **Files**: `server/scripts/seedContributors.ts`, `client/public/julienPourcel.png`, `CHANGELOG.md`
+
+### Version 5.45.2  Dec 6, 2025 (TESTING)
+
+- **2025 ARC Prize Team Winners: Tufa AI & MindsAI Normalization** (Author: Claude Code using Haiku 4.5)
+  - Refined team winners implementation to properly handle team name variations and affiliations.
+  - Created team name normalization utility (`client/src/utils/teamNameNormalizer.ts`) mapping team aliases to canonical forms.
+  - Updated Dries Smit's arc3_preview entry: `teamName: "StochasticGoose"` → `"Tufa AI"` (reflects his individual work with Tufa Labs).
+  - Team name normalization: `"Tufa AI"`, `"Tufa Labs"` → `"MindsAI"` (canonical) for unified grouping.
+  - Updated team contributor matching in `HumanTradingCards.tsx` to use normalized team names.
+  - Dries Smit now maintains dual affiliations:
+    - Arc3 Preview: `teamName: "Tufa AI"` (individual/agent work)
+    - 2025 Competition: Member of MindsAI team group (via normalized lookup)
+  - **Files Created**: `client/src/utils/teamNameNormalizer.ts`
+  - **Files Modified**: `client/src/pages/HumanTradingCards.tsx`, `server/scripts/seedContributors.ts`, `CHANGELOG.md`
+
+### Version 5.45.1  Dec 6, 2025 (PENDING TESTING)
+
+- **Hall of Fame: Add Isaac Liao (ARC-AGI Without Pretraining / CompressARC)** (Author: Cascade)
+  - Added a new contributor trading card entry for Isaac Liao, a graduate researcher at Carnegie Mellon University and creator of CompressARC.
+  - Captured his MDL-based, single-puzzle-trained neural "code golf" system that treats ARC-AGI as a compression problem, training a compact network per task from scratch and selecting the model that minimizes description length.
+  - Documented his reported performance: ~34.75% on ARC-AGI-1 training, ~20% on ARC-AGI-1 evaluation, and ~4% on ARC-AGI-2, all achieved **without any pretraining or external data**.
+  - Linked to his official 2025 ARC Prize paper/interview bundle, including the YouTube interview: `https://www.youtube.com/watch?v=N9GvFj0cE9s`.
+  - Wired his Hall of Fame card to the existing `/isaacliao.png` portrait asset and categorized him under the 2025 paper award winners alongside Alexia.
+  - **Files**: `server/scripts/seedContributors.ts`, `client/public/isaacliao.png`, `CHANGELOG.md`
+
+### Version 5.45.0  Dec 6, 2025 (TESTING)
+
+- **2025 ARC Prize Team Winners Grouping** (Author: Claude Code using Haiku 4.5)
+  - Introduced special team winner grouping in Hall of Fame "2025 Competition Winners" section.
+  - Teams now display as unified groups with team-level card + member cards in single layout.
+  - Team card displays both member images side-by-side from comma-separated imageUrl field.
+  - Created `TeamWinnerGroup` component (`client/src/components/human/TeamWinnerGroup.tsx`) for team + member rendering.
+  - Created team winners configuration (`client/src/constants/teamWinners.ts`) mapping teamName to member fullNames.
+  - Created team name normalization utility (`client/src/utils/teamNameNormalizer.ts`) to handle team name aliases/variations.
+  - Updated `HumanTradingCards.tsx` to compute team groups separately from solo winners grid with normalized team name matching.
+  - Responsive design: Desktop (side-by-side team card + 2-column member grid), Mobile (stacked layout).
+  - Affected teams:
+    - Team NVARC (1st Place, 24.03%) with member Jean-François Puget.
+    - Team MindsAI (3rd Place, 15.42%) with members Jack Cole & Dries Smit.
+  - Seed data updates:
+    - Normalized "JF Puget" → "Jean-François Puget" in Team NVARC fullName.
+    - Changed Dries Smit's arc3_preview teamName from "StochasticGoose" to "Tufa AI" (part of MindsAI ecosystem).
+    - Team name normalization: "Tufa AI" and "Tufa Labs" → "MindsAI" canonical form for unified grouping.
+  - **Files Created**: `client/src/components/human/TeamWinnerGroup.tsx`, `client/src/constants/teamWinners.ts`, `client/src/utils/teamNameNormalizer.ts`
+  - **Files Modified**: `client/src/pages/HumanTradingCards.tsx`, `server/scripts/seedContributors.ts`
+
+### Version 5.44.1  Dec 6, 2025 (PENDING TESTING)
+
+- **Hall of Fame: Add Eric Pang (Efficient Evolutionary Program Synthesis)** (Author: Cascade)
+  - Added a new contributor trading card entry for Eric Pang, a machine learning engineer at Amazon (formerly Quora) and University of Waterloo Math/CS graduate.
+  - Captured his DreamCoder-inspired "DREAM" evolutionary program synthesis system that builds a reusable Python program library across ARC-AGI tasks using Grok-4, score-weighted program selection, and low test-time compute (~10 LLM calls per task).
+  - Documented that his approach breaks the performance–cost Pareto frontier versus frontier models on ARC-AGI-1 and ARC-AGI-2, with an estimated ~$2.56 cost per ARC-AGI-1 task.
+  - Wired his Hall of Fame card to the new `/ericpang.jpeg` portrait asset and categorized him as a `researcher` in the contributors seed data.
+  - **Files**: `server/scripts/seedContributors.ts`, `client/public/ericpang.jpeg`, `CHANGELOG.md`
+
+### Version 5.44.0  Dec 6, 2025 (PENDING TESTING)
+
+- **Human Insights Resource Integration & Research Terminal Expansion** (Author: Claude Code using Haiku 4.5)
+  - Integrated human test participant explanations and error examples directly into the Puzzle Examiner.
+  - Added "Human Insights" button to PuzzleHeader alongside solver buttons, linking to `https://arc-visualizations.github.io/{taskId}.html`.
+  - Added prominent full-width "Human Insights" banner immediately above Analysis Results section for maximum visibility and discoverability.
+  - This resource was instrumental for synthetic data creation and represents a major community contribution to understanding puzzle-solving patterns.
+  - **Research Terminal Enhancements** (ReferenceMaterial):
+    - Added NVIDIA Kaggle Grandmasters - AGI Competition paper (community winner recognition)
+    - Added "Less is More - Tiny Recursive Models" research paper
+    - Added NVARC synthetic data generation tool to Tools & Solvers section
+    - Updated "Human ARC dataset" label to "Human Insights & Explanations" for clarity
+    - Linked Simon Strandgaard's (@neoneye) name to his GitHub profile in footer
+  - **Community Link Fix**:
+    - Fixed "ARC Discord Weekly Meeting" link in PuzzleBrowser from incorrect Twitch URL to correct Discord invite: `https://discord.com/invite/9b77dPAmcA`
+  - **Files Modified**: `client/src/components/puzzle/PuzzleHeader.tsx`, `client/src/pages/PuzzleExaminer.tsx`, `client/src/components/browser/ReferenceMaterial.tsx`, `client/src/pages/PuzzleBrowser.tsx`
+
+### Version 5.43.0  Dec 6, 2025 12:40pm (PENDING TESTING)
+
+- **Hall of Fame Card Pack Opening Animation** (Author: Claude Code using Haiku 4.5)
+  - Implemented immersive first-visitor experience with holographic card pack opening sequence.
+  - Features three new hooks:
+    - `useFirstVisit()` - localStorage-based tracking of first-time visitors with dev reset capability via `window.__resetHallOfFameVisit()`.
+    - `usePackAnimation()` - state machine managing animation phases (idle → pack → opening → scattering → settling → complete) with automatic timing transitions.
+  - Created four new components:
+    - `CardPack.tsx` - Holographic pack visual with shimmer animation, click/keyboard interaction (Enter/Space), and focus-visible ring for accessibility.
+    - `ScatteredCard.tsx` - Individual card animations with staggered transitions between scatter and settle positions using framer-motion.
+    - `CardPackOpening.tsx` - Orchestrator component coordinating animation flow, position calculations (starburst scatter + centered grid settle), and responsive dimension scaling.
+  - Animation Timing: Pack phase 2s (auto-open) → Opening 300ms → Scattering 500ms (staggered) → Settling 800ms (staggered) → Complete.
+  - Responsive behavior: Mobile (2 columns, smaller pack), Tablet (3 columns), Desktop (4 columns).
+  - Accessibility: Full `prefers-reduced-motion` support (skips animation entirely), ARIA labels, keyboard navigation, focus management.
+  - Added `.pack-shimmer` CSS animation for holographic effect on pack background.
+  - Integrated into `HumanTradingCards.tsx` with conditional rendering: first visitors see animation overlay, returning visitors skip to normal page.
+  - **Files Created**: `client/src/hooks/useFirstVisit.ts`, `client/src/hooks/usePackAnimation.ts`, `client/src/components/human/CardPack.tsx`, `client/src/components/human/ScatteredCard.tsx`, `client/src/components/human/CardPackOpening.tsx`
+  - **Files Modified**: `client/src/pages/HumanTradingCards.tsx`, `client/src/index.css`
+
+### Version 5.42.0  Dec 5, 2025 9:55pm
+
+- **ARC-AGI-3 Games Browser & Spoiler Pages** (Author: Claude Windsurf Cascade)
+  - Created comprehensive game metadata system (`shared/arc3Games.ts`) with support for 6 revealed games (3 preview + 3 evaluation).
+  - Added `Arc3GamesBrowser` page at `/arc3/games` - the ultimate spoilers index with game cards, difficulty ratings, and documentation status.
+  - Added `Arc3GameSpoiler` page at `/arc3/games/:gameId` - individual game deep-dive pages with:
+    - Embedded playable game via iframe from three.arcprize.org
+    - Mechanics documentation with action mappings
+    - Spoiler-protected hints system (3 levels: mild hints, moderate spoilers, full solutions)
+    - External resources section
+    - Quick links to playground for agent testing
+  - Populated ls20 ("Locksmith") with full documentation: mechanics explanation, action mappings, 4 community hints, and 2 external resources.
+  - Updated ARC3Browser landing page to link to the new Games Browser (replaced "Feature in development" placeholder).
+  - Game categories: preview (ls20, as66, ft09) and evaluation (lp85, sp80, vc33).
+  - **Files**: `shared/arc3Games.ts`, `client/src/pages/Arc3GamesBrowser.tsx`, `client/src/pages/Arc3GameSpoiler.tsx`, `client/src/pages/ARC3Browser.tsx`, `client/src/App.tsx`
+
+### Version 5.41.0  Dec 5, 2025 6:35pm
+
+- **ARC3 Preview + complete 2025 leaderboard data** (Author: Cascade)
+  - Added ARChitects team entries for 2024 (1st place, 53.5%) and 2025 (2nd place, 16.53%) with the official `/ARChitechts.png` team image.
+  - Completed 2025 competition winners data: Team NVARC (Puget & Sorokin, 24.03%), ARChitects (16.53%), Team MindsAI (Jack Cole & Dries Smit, 15.42%), and Guillermo Barbadillo (6.53%).
+  - Added Dries Smit as ARC-AGI-3 Agent Preview 2025 winner ("StochasticGoose", 12.58%) plus new `arc3_preview` category and "ARC3 2026" rising-stars section.
+  - Updated Hall of Fame layout and seed data so team cards and new categories use the correct images and styling.
+  - **Files**: `server/scripts/seedContributors.ts`, `shared/types/contributor.ts`, `client/src/utils/humanCardHelpers.ts`, `client/src/pages/HumanTradingCards.tsx`, `client/public/ARChitechts.png`, `client/public/dries.png`
+
+### Version 5.40.2  Dec 5, 2025 3:58pm
+
+- **Clickable cards + confirmed 1st place scores** (Author: Cascade)
+  - Updated JF Puget & Ivan Sorokin with confirmed 1st place and 24.03% score.
+  - Entire card image now clickable (opens profile modal).
+  - Cards smaller (max-width 280px) with hover zoom effect and "View Profile" overlay.
+  - Dialog X close button now visible with dark background.
+  - **Files**: `server/scripts/seedContributors.ts`, `client/src/components/human/HumanTradingCard.tsx`, `client/src/components/ui/dialog.tsx`
+
+### Version 5.40.1  Dec 5, 2025 3:50pm
+
+- **Hall of Fame design overhaul** (Author: Cascade using Claude 3.5 Sonnet)
+  - Warmer color palette: Replaced cold slate-950 with warm zinc gradient background.
+  - Full profile modal redesign: Side-by-side layout with large image (45%) alongside content (55%).
+  - Image now displays full-size with equal visual priority as text - no extra click required.
+  - Added subtle radial gradient texture overlay for depth.
+  - Section headers now have icon badges with colored backgrounds.
+  - Cards have refined shadows, hover effects, and smoother transitions.
+  - Gradient text on main title for visual polish.
+  - **Files**: `client/src/pages/HumanTradingCards.tsx`, `client/src/components/human/HumanTradingCard.tsx`
+
+### Version 5.40.0  Dec 5, 2025 3:45pm
+
+- **ARC Prize 2025 Winners Page Refresh** (Author: Cascade using Claude 3.5 Sonnet)
+  - Restructured Human Trading Cards page for the December 5, 2025 competition results announcement.
+  - Added new hero section with celebratory styling, date badge, and 2025 results announcement.
+  - Added `top_paper_award` contributor category with distinctive fuchsia/magenta styling for special recognition.
+  - Created featured "2025 Top Paper Award" section with prominent display layout.
+  - Added Alexia Jolicoeur-Martineau as 2025 Top Paper Award winner for "Less is More: Recursive Reasoning with Tiny Networks" (TRM).
+  - Renamed "2025 Leaderboard" to "2025 Competition Winners" for clarity.
+  - Updated helper functions with new category colors, icons, and display names.
+  - **Files**: `client/src/pages/HumanTradingCards.tsx`, `client/src/utils/humanCardHelpers.ts`, `shared/types/contributor.ts`, `server/scripts/seedContributors.ts`
+
+- **Auto-sync contributors on server startup** (Author: Cascade using Claude 3.5 Sonnet)
+  - Added `upsertContributor` method to ContributorRepository for safe insert-or-update by fullName.
+  - Added `syncContributors()` function that upserts all contributors from seed data without truncating.
+  - Server now automatically syncs contributors on startup (non-destructive, safe for production).
+  - Manual destructive seed (`npx tsx server/scripts/seedContributors.ts`) still available for full resets.
+  - **Files**: `server/repositories/ContributorRepository.ts`, `server/scripts/seedContributors.ts`, `server/index.ts`
+
+### Version 5.39.1  Dec 5, 2025 2:45pm
+
+- **CompactPuzzleCard refactored to follow PuzzleCard patterns** (Author: Claude Sonnet 4)
+  - Fixed theme mismatch: replaced DaisyUI `bg-base-100` (white) with shadcn/ui Card using CSS variables (`bg-card`, `text-card-foreground`) for proper dark theme support on PuzzleBrowser's `bg-slate-950` background.
+  - Increased grid preview from 64px to 80px to match PuzzleCard and improve visibility.
+  - Replaced `<a target="_blank">` with wouter `Link` for proper SPA navigation instead of opening new tabs.
+  - Removed excessive whitespace: consolidated metrics into clean 2-column grid layout with conditional rendering.
+  - Added proper hover states and "View Analysis →" footer that matches PuzzleCard UX.
+  - **Files**: `client/src/components/puzzle/CompactPuzzleCard.tsx`
+
+### Version 5.39.0  Dec 6, 2025 11:55pm
+
+- **Compact Puzzle cards stay informative** (Author: Codex)
+  - Prefetch the featured PuzzleBrowser tasks, feed them into the reusable `CompactPuzzleCard`, and keep the GIF/TinyGrid preview pipeline intact so featured cards no longer render blank white placeholders.
+  - Call `usePuzzleDBStats` with `includeRichMetrics: true` and keep the shared card layout showing attempts, wrong counts, grid dimensions, and test counts alongside cost/token math so the browser mirrors the stats the database already knows.
+  - Document the work plan and keep the shared card kit in sync with PuzzleDBViewer, preventing duplicated logic while still honoring the requested preview behavior.
+  - **Files**: `docs/plans/2025-12-06-puzzle-browser-compact-card-plan.md`, `client/src/components/puzzle/CompactPuzzleCard.tsx`, `client/src/pages/PuzzleBrowser.tsx`
+
+### Version 5.38.8  Dec 4, 2025 10:34pm
+
+- **GPT-5.1 Codex limits removed** (Author: Codex)
+  - Dropped the explicit `maxOutputTokens` caps from `gpt-5.1-codex-mini` and `gpt-5.1-codex` so they inherit the provider defaults and can stream long-form reasoning without artificial truncation.
+  - **Files**: `server/config/models.ts:190-220`
+
 ### Version 5.38.5  Dec 4, 2025 10:35pm
 
 - **Fix PuzzleBrowser button: correct link and make prominent full-width call-to-action** (Author: Claude Code using Haiku 4.5)
@@ -92,6 +290,18 @@
 - **PuzzleBrowser: Add button to view unsolved ARC1/ARC2 puzzles** (Author: Claude Code using Haiku 4.5)
   - Added simple button after featured gallery linking to `/puzzle-db-viewer` for browsing all unsolved ARC1 and ARC2 evaluation puzzles.
   - **Files**: `client/src/pages/PuzzleBrowser.tsx`
+
+### Version 5.37.2  Dec 4, 2025 7:05pm
+
+- **Puzzle Browser metrics: real attempt counts** (Author: Codex)
+  - Hooked the Puzzle Browser into `usePuzzleDBStats`, mapping each entry to `CompactPuzzleCard` so the featured gallery and research results display actual `attempts`/`wrong` metrics instead of hard-coded zeros while still reusing the GIF-capable card layout.
+  - **Files**: `client/src/pages/PuzzleBrowser.tsx`
+
+### Version 5.37.1  Dec 4, 2025 6:50pm
+
+- **Puzzle Browser: reuse CompactPuzzleCard** (Author: Codex)
+  - Swapped every Puzzle Browser puzzle card (featured gallery + advanced results) to the shared `CompactPuzzleCard`, including helper projection logic so `EnhancedPuzzleMetadata` satisfies the required `PuzzleDBStats` shape and keeps the GIF/TinyGrid preview behavior consistent with `/puzzles/database`.
+  - **Files**: `client/src/pages/PuzzleBrowser.tsx`, `client/src/components/puzzle/CompactPuzzleCard.tsx`
 
 ### Version 5.37.0  Dec 4, 2025 6:25pm
 

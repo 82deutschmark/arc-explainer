@@ -26,6 +26,7 @@ export interface ArcContributor {
     papers?: string[];
     linkedin?: string;
     substack?: string;
+    youtube?: string;
   };
   teamName: string | null;
   category: ContributorCategory;
@@ -37,9 +38,11 @@ export interface ArcContributor {
 export type ContributorCategory =
   | 'competition_winner'
   | 'paper_award'
+  | 'top_paper_award'
   | 'researcher'
   | 'founder'
-  | 'pioneer';
+  | 'pioneer'
+  | 'arc3_preview';
 
 export interface ArcContributorsResponse {
   contributors: ArcContributor[];

@@ -1,15 +1,14 @@
 /**
- * Author: Claude Code using Sonnet 4.5
- * Date: 2025-11-22
- * PURPOSE: Renders Reference Material section with dark theme matching the app's overall design.
- *          Features colorful section headers (amber, emerald, cyan, violet, rose) with micro-containers,
- *          pill hover effects on links, and structured visual hierarchy. Provides reusable
- *          ReferenceLink and ReferenceSection components to avoid duplication.
- * SRP/DRY check: Pass - Extracted link rendering and section layout into reusable components.
- *                      Centralized styling with color mapping for visual consistency.
+ * Author: Claude Code using Haiku 4.5
+ * Date: 2025-12-05
+ * PURPOSE: Research terminal-style Reference Material section with Bloomberg-terminal aesthetic.
+ *          Monospace fonts, amber/gold accents, minimal padding, organized as data panels.
+ *          Terminal-like presentation for professional research platform feel.
+ * SRP/DRY check: Pass - Single responsibility for reference display; reusable components
+ *                      for links and sections; centralized data and styling.
  */
 import React from 'react';
-import { ExternalLink, Sparkles } from 'lucide-react';
+import { ExternalLink, Server } from 'lucide-react';
 
 // ============================================================================
 // TYPE DEFINITIONS
@@ -23,84 +22,50 @@ interface ReferenceLink {
 interface ReferenceSectionProps {
   title: string;
   links: ReferenceLink[];
+  icon: string;
 }
-
-// ============================================================================
-// COLOR THEME CONFIGURATION
-// ============================================================================
-
-/**
- * Color mapping for section headers
- * Each section has unique colorful accents to create visual hierarchy
- */
-const SECTION_COLORS = {
-  'Research Papers': {
-    text: 'text-amber-400',
-    icon: 'bg-amber-500',
-    border: 'border-amber-500/30',
-  },
-  'Data Sources': {
-    text: 'text-emerald-400',
-    icon: 'bg-emerald-500',
-    border: 'border-emerald-500/30',
-  },
-  'Tools': {
-    text: 'text-cyan-400',
-    icon: 'bg-cyan-500',
-    border: 'border-cyan-500/30',
-  },
-  'Solution References': {
-    text: 'text-violet-400',
-    icon: 'bg-violet-500',
-    border: 'border-violet-500/30',
-  },
-  'Community Notes': {
-    text: 'text-rose-400',
-    icon: 'bg-rose-500',
-    border: 'border-rose-500/30',
-  },
-} as const;
 
 // ============================================================================
 // REUSABLE COMPONENTS
 // ============================================================================
 
 /**
- * ReferenceLink - Individual link with external link icon and pill hover effect
- * Provides consistent dark theme styling for all reference links
+ * TerminalLink - Individual link styled like a terminal output
+ * Monospace font, amber hover state, minimal padding
  */
-const ReferenceLink: React.FC<{ link: ReferenceLink }> = ({ link }) => (
+const TerminalLink: React.FC<{ link: ReferenceLink }> = ({ link }) => (
   <li>
     <a
       href={link.href}
       target="_blank"
       rel="noopener noreferrer"
-      className="group inline-flex items-center gap-1.5 px-2 py-1 -mx-2 rounded-md text-slate-300 hover:text-sky-200 hover:bg-sky-500/10 transition-all"
+      className="group font-mono text-xs inline-flex items-center gap-1 px-1 py-0.5 text-amber-300/80 hover:text-amber-200 hover:bg-amber-500/5 transition-all"
     >
-      <span className="text-xs">{link.label}</span>
-      <ExternalLink className="h-3 w-3 text-slate-500 group-hover:text-sky-400 transition-colors" />
+      <span>→</span>
+      <span>{link.label}</span>
+      <ExternalLink className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity" />
     </a>
   </li>
 );
 
 /**
- * ReferenceSection - Category of reference links with colorful header
- * Each section is contained in a micro-container with color-coded border
+ * DataPanel - Terminal-style panel for a category of links
+ * Mimics financial terminal instrument panels with minimal padding
  */
-const ReferenceSection: React.FC<ReferenceSectionProps> = ({ title, links }) => {
-  const colors = SECTION_COLORS[title as keyof typeof SECTION_COLORS] || SECTION_COLORS['Research Papers'];
-
+const DataPanel: React.FC<ReferenceSectionProps> = ({ title, links, icon }) => {
   return (
-    <div className={`space-y-2 p-2.5 rounded-lg border ${colors.border} bg-slate-800/30`}>
-      <div className="flex items-center gap-1.5">
-        <div className={`h-1 w-1 rounded-full ${colors.icon}`}></div>
-        <p className={`text-xs font-bold uppercase tracking-wider ${colors.text}`}>
-          {title}
-        </p>
+    <div className="border border-amber-500/20 bg-slate-950/40 backdrop-blur-sm">
+      {/* Panel header - terminal style */}
+      <div className="border-b border-amber-500/10 px-1.5 py-0.5 flex items-center gap-1">
+        <span className="text-amber-400 font-mono text-xs font-bold">{icon}</span>
+        <span className="font-mono text-amber-400/90 text-xs uppercase tracking-tight">{title}</span>
+        <div className="ml-auto text-amber-500/40 font-mono text-xs">[{links.length}]</div>
       </div>
-      <ul className="space-y-1">
+
+      {/* Panel content */}
+      <ul className="space-y-0.5 px-1.5 py-1">
         {links.map((link) => (
-          <ReferenceLink key={link.href} link={link} />
+          <TerminalLink key={link.href} link={link} />
         ))}
       </ul>
     </div>
@@ -113,16 +78,26 @@ const ReferenceSection: React.FC<ReferenceSectionProps> = ({ title, links }) => 
 
 const REFERENCE_SECTIONS: ReferenceSectionProps[] = [
   {
-    title: 'Research Papers',
+    title: 'Papers',
+    icon: '📄',
     links: [
       {
         label: 'ARC-AGI-2 Technical Report',
         href: 'https://www.arxiv.org/pdf/2505.11831',
       },
+      {
+        label: 'NVIDIA Kaggle Grandmasters - AGI Competition',
+        href: 'https://developer.nvidia.com/blog/nvidia-kaggle-grandmasters-win-artificial-general-intelligence-competition/?nvid=nv-int-tblg-454784',
+      },
+      {
+        label: 'Less is More - Tiny Recursive Models',
+        href: 'https://alexiajm.github.io/2025/09/29/tiny_recursive_models.html',
+      },
     ],
   },
   {
     title: 'Data Sources',
+    icon: '🗂️',
     links: [
       {
         label: 'HuggingFace datasets',
@@ -132,13 +107,18 @@ const REFERENCE_SECTIONS: ReferenceSectionProps[] = [
         label: 'Official repository',
         href: 'https://github.com/fchollet/ARC-AGI',
       },
+      {
+        label: 'Human Insights & Explanations',
+        href: 'https://arc-visualizations.github.io/',
+      },
     ],
   },
   {
-    title: 'Tools',
+    title: 'Tools & Solvers',
+    icon: '⚙️',
     links: [
       {
-        label: 'Useful tool kit for ARC',
+        label: 'arckit toolkit',
         href: 'https://github.com/mxbi/arckit',
       },
       {
@@ -146,17 +126,22 @@ const REFERENCE_SECTIONS: ReferenceSectionProps[] = [
         href: 'https://github.com/pwspen/objarc',
       },
       {
-        label: 'Synapsomorphy ARC (Patrick Spencer)',
+        label: 'Synapsomorphy ARC',
         href: 'https://synapsomorphy.com/arc/',
       },
       {
-        label: 'CAPEd - Game/Tool (Viktor Ferenczi)',
+        label: 'CAPEd - Game/Tool',
         href: 'https://caped.ferenczi.eu/',
+      },
+      {
+        label: 'NVARC - Synthetic Data Generation',
+        href: 'https://github.com/1ytic/NVARC',
       },
     ],
   },
   {
-    title: 'Solution References',
+    title: 'Solutions',
+    icon: '✓',
     links: [
       {
         label: 'zoecarver\'s approach',
@@ -167,13 +152,14 @@ const REFERENCE_SECTIONS: ReferenceSectionProps[] = [
         href: 'https://github.com/jerber',
       },
       {
-        label: 'Eric Pang\'s SOTA solution',
+        label: 'Eric Pang SOTA',
         href: 'https://github.com/epang080516/arc_agi',
       },
     ],
   },
   {
-    title: 'Community Notes',
+    title: 'Community',
+    icon: '👥',
     links: [
       {
         label: 'Puzzle nomenclature',
@@ -200,34 +186,45 @@ const REFERENCE_SECTIONS: ReferenceSectionProps[] = [
 // ============================================================================
 
 /**
- * ReferenceMaterial - Main section component with dark theme
- * Displays all reference materials organized by category with colorful headers
+ * ReferenceMaterial - Terminal-style reference section
+ * Bloomberg terminal aesthetic with amber accents, minimal padding, monospace fonts
  */
 export const ReferenceMaterial: React.FC = () => {
   return (
-    <section className="rounded-lg border border-slate-700 bg-slate-900/60 p-3">
-      {/* Header */}
-      <div className="flex items-center gap-2 pb-2 border-b border-slate-700/50">
-        <Sparkles className="h-4 w-4 text-sky-400" />
-        <span className="text-sm font-semibold uppercase tracking-wide text-slate-300">Reference Material</span>
+    <section className="border border-amber-500/20 bg-slate-950/50 backdrop-blur-sm">
+      {/* Terminal header */}
+      <div className="border-b border-amber-500/20 px-1.5 py-1 flex items-center gap-1.5 bg-amber-500/5">
+        <Server className="h-3.5 w-3.5 text-amber-400" />
+        <span className="font-mono text-amber-400 text-xs font-bold uppercase tracking-tight">
+          Research Terminal
+        </span>
+        <span className="ml-auto font-mono text-amber-500/40 text-xs">v1.0</span>
       </div>
 
-      {/* Grid of reference sections */}
-      <div className="mt-3 grid gap-2 text-xs sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+      {/* Data panels grid - minimal spacing */}
+      <div className="p-1 grid gap-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
         {REFERENCE_SECTIONS.map((section) => (
-          <ReferenceSection
+          <DataPanel
             key={section.title}
             title={section.title}
             links={section.links}
+            icon={section.icon}
           />
         ))}
       </div>
 
-      {/* Footer acknowledgement */}
-      <p className="mt-3 pt-2 border-t border-slate-700/50 text-xs text-slate-400 italic">
-        Special Acknowledgement: Simon Strandgaard (@neoneye) for his invaluable
-        support, feedback, and collection of resources.
-      </p>
+      {/* Terminal footer */}
+      <div className="border-t border-amber-500/10 px-1.5 py-0.5 text-xs font-mono text-amber-500/50">
+        Special thanks:{' '}
+        <a
+          href="https://github.com/neoneye"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-amber-400/80 hover:text-amber-300 hover:underline transition-colors"
+        >
+          Simon Strandgaard (@neoneye)
+        </a>
+      </div>
     </section>
   );
 };

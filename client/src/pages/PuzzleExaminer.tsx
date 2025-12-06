@@ -7,7 +7,7 @@
 
 import React, { useState, useMemo, useCallback } from 'react';
 import { useParams } from 'wouter';
-import { Loader2, ChevronDown } from 'lucide-react';
+import { Loader2, ChevronDown, Brain } from 'lucide-react';
 import { getPuzzleName } from '@shared/utils/puzzleNames';
 import { DEFAULT_EMOJI_SET } from '@/lib/spaceEmojis';
 import type { EmojiSet } from '@/lib/spaceEmojis';
@@ -473,6 +473,25 @@ export default function PuzzleExaminer() {
             </div>
           )}
         </div>
+
+        {/* Human Insights Banner - Above Analysis Results */}
+        <a
+          href={`https://arc-visualizations.github.io/${taskId}.html`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="block mb-4 p-3 bg-gradient-to-r from-amber-50 to-orange-50 border-2 border-amber-300/60 hover:border-amber-400 hover:bg-gradient-to-r hover:from-amber-100 hover:to-orange-100 rounded-lg transition-all duration-300 group"
+          title="View human test participant explanations and error examples for this puzzle"
+        >
+          <div className="flex items-center justify-between gap-3">
+            <div className="flex items-center gap-2">
+              <Brain className="h-5 w-5 text-amber-700 group-hover:scale-110 transition-transform" />
+              <span className="font-semibold text-amber-900">💡 Human Insights</span>
+            </div>
+            <span className="text-sm text-amber-700 group-hover:text-amber-900 font-medium">
+              See how humans solved this puzzle →
+            </span>
+          </div>
+        </a>
 
         {/* Analysis Results (PERFORMANCE-OPTIMIZED with progressive loading) */}
         {(allResults.length > 0 || isAnalyzing || isLoadingSummaries || highlightedExplanationData) && (

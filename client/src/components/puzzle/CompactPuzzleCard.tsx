@@ -1,16 +1,19 @@
 /**
- * Author: Codex (GPT-5)
- * Date: 2025-12-03
- * PURPOSE: Reusable compact ARC puzzle card with lazy TinyGrid preview and cost/token metrics.
- *          Mirrors the PuzzleDBViewer inline card so multiple pages can surface identical previews.
- * SRP/DRY check: Pass — isolated presentational component, reuses shared types/utilities.
+ * Author: Codex (GPT-5) / Refactored by Claude Sonnet 4
+ * Date: 2025-12-03 / Refactored 2025-12-05
+ * PURPOSE: Compact ARC puzzle card following PuzzleCard patterns with shadcn/ui.
+ *          Fixed: theme mismatch, tiny grids, poor navigation, excessive whitespace.
+ * SRP/DRY check: Pass — uses shadcn/ui Card, CSS variables for theming, wouter Link.
  */
 
 import React, { useEffect, useRef, useState } from 'react';
+import { Link } from 'wouter';
 import type { ARCTask } from '@shared/types';
 import type { PuzzleDBStats } from '@/hooks/usePuzzleDBStats';
 import { TinyGrid } from '@/components/puzzle/TinyGrid';
 import { getPuzzleGif } from '@/utils/puzzleGifMap';
+import { Card, CardContent } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 
 interface CompactPuzzleCardProps {
   puzzle: PuzzleDBStats;
@@ -22,23 +25,21 @@ interface CompactPuzzleCardProps {
 }
 
 function formatCurrency(amount: number) {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 3,
-  }).format(amount);
+  if (amount < 0.01) return `$${amount.toFixed(4)}`;
+  return `$${amount.toFixed(2)}`;
 }
 
 function formatNumber(num: number): string {
-  return new Intl.NumberFormat('en-US').format(num);
+  if (num >= 1_000_000) return `${(num / 1_000_000).toFixed(1)}M`;
+  if (num >= 1_000) return `${(num / 1_000).toFixed(1)}k`;
+  return num.toLocaleString();
 }
 
-function formatTime(seconds: number): string {
+function formatTime(ms: number): string {
+  const seconds = Math.round(ms / 1000);
   if (seconds < 60) return `${seconds}s`;
   const minutes = Math.floor(seconds / 60);
-  const remainingSeconds = seconds % 60;
-  return remainingSeconds > 0 ? `${minutes}m ${remainingSeconds}s` : `${minutes}m`;
+  return `${minutes}m`;
 }
 
 export const CompactPuzzleCard: React.FC<CompactPuzzleCardProps> = ({
@@ -105,136 +106,139 @@ export const CompactPuzzleCard: React.FC<CompactPuzzleCardProps> = ({
     taskData?.test?.[0]?.input ??
     taskData?.train?.[0]?.output ??
     taskData?.train?.[0]?.input;
+  const attemptCount = puzzle.performanceData.totalExplanations;
+  const wrongCount = puzzle.performanceData.wrongCount ?? 0;
+  const testCount = taskData?.test?.length ?? taskData?.train?.length ?? 0;
+  const gridHeight = firstPuzzleGrid?.length ?? taskData?.train?.[0]?.input?.length ?? 0;
+  const gridWidth =
+    firstPuzzleGrid?.[0]?.length ??
+    taskData?.train?.[0]?.input?.[0]?.length ??
+    0;
+  const gridSizeLabel =
+    gridWidth > 0 && gridHeight > 0 ? `${gridWidth}×${gridHeight}` : '—';
+  const testsLabel =
+    testCount > 1 ? `${testCount}` : testCount === 1 ? 'Single' : '—';
+  const generalStats = [
+    { label: 'Attempts', value: attemptCount },
+    { label: 'Wrong', value: wrongCount },
+    { label: 'Tests', value: testsLabel },
+    { label: 'Grid', value: gridSizeLabel },
+  ];
 
   const totalSpend =
     puzzle.performanceData.avgCost && puzzle.performanceData.totalExplanations
       ? puzzle.performanceData.avgCost * puzzle.performanceData.totalExplanations
       : 0;
-  const totalTokens =
-    puzzle.performanceData.avgTotalTokens && puzzle.performanceData.totalExplanations
-      ? puzzle.performanceData.avgTotalTokens * puzzle.performanceData.totalExplanations
-      : 0;
 
-  const actionLabel =
-    puzzle.performanceData.totalExplanations === 0 ? 'Analyze First' : 'View Analysis';
-
-  const actionButton = (
-    <button
-      className="btn btn-outline btn-xs w-full mt-2"
-      onClick={onOpenDetails}
-      type="button"
+  // Card content - wrapped in Link for navigation
+  const cardContent = (
+    <Card
+      ref={cardRef}
+      className={`group h-full transition-shadow hover:shadow-md cursor-pointer ${className}`}
     >
-      {actionLabel}
-    </button>
-  );
-
-  const cardClasses = ['card shadow-lg hover:shadow-xl transition-shadow bg-base-100', className]
-    .filter(Boolean)
-    .join(' ');
-
-  return (
-    <div ref={cardRef} className={cardClasses}>
-      <div className="card-body p-2">
-        <div className="flex items-start justify-between mb-1 gap-2">
-          <div className="flex-1 min-w-0">
-            <h3 className="text-xs font-mono flex items-center gap-1 flex-wrap">
-              <span className="truncate">{puzzle.id}</span>
-              <div className="badge badge-outline badge-xs">{puzzle.source}</div>
-            </h3>
-          </div>
+      <CardContent className="p-3 h-full flex flex-col gap-2">
+        {/* Header: ID + Source Badge */}
+        <div className="flex items-start justify-between gap-2">
+          <code className="text-sm font-mono font-semibold text-card-foreground truncate flex-1">
+            {puzzle.id}
+          </code>
+          <Badge variant="outline" className="text-[9px] shrink-0">
+            {puzzle.source}
+          </Badge>
         </div>
 
-        <div className="flex gap-2">
-          <div className="shrink-0" style={{ width: '64px', height: '64px' }}>
+        {/* Main Content: Grid + Metrics Side-by-Side */}
+        <div className="grid grid-cols-[80px_1fr] gap-3 flex-1">
+          {/* Grid Preview - Left Side (80px like PuzzleCard) */}
+          <div className="w-20 h-20 flex items-center justify-center bg-gray-900 rounded border overflow-hidden">
             {puzzleGifSrc && isVisible ? (
               <img
                 src={puzzleGifSrc}
                 alt={`Animated ARC preview for puzzle ${puzzle.id}`}
-                className="w-full h-full rounded-sm border border-base-200 object-contain bg-base-200"
+                className="w-full h-full object-contain"
                 loading="lazy"
               />
             ) : firstPuzzleGrid ? (
-              <TinyGrid grid={firstPuzzleGrid} style={{ width: '64px', height: '64px' }} />
+              <TinyGrid
+                grid={firstPuzzleGrid}
+                style={{ maxWidth: '80px', maxHeight: '80px' }}
+              />
             ) : (
-              <div className="w-full h-full rounded-sm bg-base-200 animate-pulse" />
+              <div className="w-full h-full bg-muted animate-pulse" />
             )}
           </div>
 
+          {/* Metrics Table - Right Side */}
           {showMetrics && (
-            <div className="flex-1 min-w-0">
-              {puzzle.performanceData.totalExplanations > 0 ? (
-                <div className="grid grid-cols-2 gap-1 text-xs">
-                  {totalSpend > 0 && (
-                    <div>
-                      <div className="font-bold">{formatCurrency(totalSpend)}</div>
-                      <div className="text-base-content/60">Total $</div>
-                    </div>
-                  )}
-                  {puzzle.performanceData.avgCost && puzzle.performanceData.avgCost > 0 && (
-                    <div>
-                      <div className="font-semibold">
-                        {formatCurrency(puzzle.performanceData.avgCost)}
-                      </div>
-                      <div className="text-base-content/60">$/Attempt</div>
-                    </div>
-                  )}
-                  {puzzle.performanceData.avgTotalTokens &&
-                    puzzle.performanceData.avgTotalTokens > 0 && (
-                      <div>
-                        <div className="font-semibold">
-                          {formatNumber(Math.round(puzzle.performanceData.avgTotalTokens))}
-                        </div>
-                        <div className="text-base-content/60">Tok/Attempt</div>
-                      </div>
-                    )}
-                  {totalTokens > 0 && (
-                    <div>
-                      <div className="font-semibold">{formatNumber(Math.round(totalTokens))}</div>
-                      <div className="text-base-content/60">Total Tok</div>
-                    </div>
-                  )}
-                  {puzzle.performanceData.modelsAttemptedCount &&
-                    puzzle.performanceData.modelsAttemptedCount > 0 && (
-                      <div>
-                        <div className="font-semibold">
-                          {puzzle.performanceData.modelsAttemptedCount}
-                        </div>
-                        <div className="text-base-content/60">Models</div>
-                      </div>
-                    )}
-                  {puzzle.performanceData.avgProcessingTime &&
-                    puzzle.performanceData.avgProcessingTime > 0 && (
-                      <div>
-                        <div className="font-semibold">
-                          {formatTime(Math.round(puzzle.performanceData.avgProcessingTime / 1000))}
-                        </div>
-                        <div className="text-base-content/60">Avg Time</div>
-                      </div>
-                    )}
+            <div className="flex-1 min-w-0 grid grid-cols-2 gap-x-2 gap-y-1 text-xs">
+              {generalStats.map((stat) => (
+                <div key={stat.label}>
+                  <div className="text-[10px] font-medium text-muted-foreground uppercase tracking-wide">
+                    {stat.label}
+                  </div>
+                  <div className="text-sm font-semibold text-card-foreground">
+                    {typeof stat.value === 'number' ? formatNumber(stat.value) : stat.value}
+                  </div>
                 </div>
-              ) : (
-                <div className="text-center py-2">
-                  <div className="text-sm font-bold text-base-content/50">No Attempts</div>
-                  <div className="text-xs text-base-content/60">Untested puzzle</div>
+              ))}
+
+              {/* Cost metrics - only if attempts > 0 */}
+              {attemptCount > 0 && totalSpend > 0 && (
+                <div>
+                  <div className="text-[10px] font-medium text-muted-foreground uppercase tracking-wide">
+                    Total $
+                  </div>
+                  <div className="text-sm font-semibold text-card-foreground">
+                    {formatCurrency(totalSpend)}
+                  </div>
+                </div>
+              )}
+              {attemptCount > 0 && puzzle.performanceData.avgProcessingTime && puzzle.performanceData.avgProcessingTime > 0 && (
+                <div>
+                  <div className="text-[10px] font-medium text-muted-foreground uppercase tracking-wide">
+                    Avg Time
+                  </div>
+                  <div className="text-sm font-semibold text-card-foreground">
+                    {formatTime(puzzle.performanceData.avgProcessingTime)}
+                  </div>
+                </div>
+              )}
+              {attemptCount > 0 && puzzle.performanceData.modelsAttemptedCount && puzzle.performanceData.modelsAttemptedCount > 0 && (
+                <div>
+                  <div className="text-[10px] font-medium text-muted-foreground uppercase tracking-wide">
+                    Models
+                  </div>
+                  <div className="text-sm font-semibold text-card-foreground">
+                    {puzzle.performanceData.modelsAttemptedCount}
+                  </div>
                 </div>
               )}
             </div>
           )}
         </div>
 
-        {onOpenDetails ? (
-          actionButton
-        ) : (
-          <a
-            href={`/puzzle/${puzzle.id}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="block"
-          >
-            {actionButton}
-          </a>
-        )}
+        {/* Footer: View Analysis link */}
+        <div className="pt-1 mt-auto border-t border-border">
+          <div className="text-xs text-muted-foreground group-hover:text-primary transition-colors font-medium">
+            {attemptCount === 0 ? 'Analyze Puzzle →' : 'View Analysis →'}
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+
+  // If onOpenDetails provided, use that; otherwise wrap in Link
+  if (onOpenDetails) {
+    return (
+      <div onClick={onOpenDetails} className="cursor-pointer">
+        {cardContent}
       </div>
-    </div>
+    );
+  }
+
+  return (
+    <Link href={`/puzzle/${puzzle.id}`}>
+      {cardContent}
+    </Link>
   );
 };
