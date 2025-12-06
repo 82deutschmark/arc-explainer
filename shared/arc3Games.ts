@@ -203,7 +203,7 @@ The "Locksmith" game is a puzzle-exploration game where you control a white char
       },
     ],
     tags: ['puzzle', 'navigation', 'keys-and-doors', 'exploration', 'multi-level'],
-    thumbnailUrl: '/images/arc3/ls20-thumbnail.png',
+    thumbnailUrl: '/ls20.png',
     isFullyDocumented: true,
     notes: 'This was one of the most studied games during the preview period.',
   },
