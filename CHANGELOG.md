@@ -1,6 +1,42 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top with the time and date!
 
+### Version 5.45.15  Dec 6, 2025 (PENDING TESTING)
+
+- **ARC-AGI-3 Games Browser: remove speculative metrics and fix thumbnails** (Author: Cascade)
+  - Simplified the `/arc3/games` header by removing the redundant "Back to ARC-AGI-3" button and the speculative coverage summary card (`Games covered`, `Fully documented`, `Hints captured`).
+  - Removed difficulty badges, hint counts, "fully documented" icons/legend entries, and "community favorite" labels from ARC-3 game cards and the legend so the UI no longer surfaces fields that are not grounded in real, curated data.
+  - Updated the game thumbnail rendering to use `object-contain` inside a square container so each ARC-AGI-3 PNG is shown in full (no cropping) while keeping a clean grid layout.
+  - Softened page copy to avoid promising hints where they do not yet exist (removed "hints" from descriptions and CTA text).
+  - **Files**: `client/src/pages/Arc3GamesBrowser.tsx`, `CHANGELOG.md`
+
+### Version 5.45.14  Dec 6, 2025 (PENDING TESTING)
+
+- **Human Trading Cards: Fix duplicate Team NVARC entries and improve layout** (Author: Claude Code using Sonnet 4.5)
+  - Added deduplication logic to prevent duplicate competition winner entries caused by stale database records (database had 25 entries vs 24 in seed file).
+  - Deduplicates by `rank + teamName` to ensure only one entry per team appears, fixing the double "1st Place (NVARC)" issue.
+  - Removed TeamWinnerGroup component usage in favor of displaying individual member cards directly for teams with dual images (NVARC, MindsAI).
+  - Created `splitTeamIntoMembers()` helper function to generate virtual contributor cards from team entries with comma-separated images.
+  - Redesigned Paper Awards 2025 section: larger cards (w-64), horizontal layout, clear 🥇🥈🥉 placement indicators on one line.
+  - Fixed ARChitects 2nd place not displaying by removing member requirement check in competition winners logic.
+  - Reduced padding throughout page: py-4→py-3, space-y-5→space-y-4, gap-3→gap-2.5 to minimize wasted space.
+  - Added hover scale effects and visual indicators for clickable cards.
+  - **Files Modified**: `client/src/pages/HumanTradingCards.tsx:65-80,82-110,273-351`, `client/src/utils/humanCardHelpers.ts:203-233`, `client/src/components/human/TeamWinnerGroup.tsx:100-139`, `CHANGELOG.md`
+
+### Version 5.45.13  Dec 6, 2025 (PENDING TESTING)
+
+- **ARC-AGI-3 roadmap: soften Python library wording** (Author: Cascade)
+  - Updated the "Python library" section of the ARC-AGI-3 2026 roadmap card on `/arc3` to state only that there has been public mention of a possible Python library, and that concrete details (timing, interface, workflows) have not been formally announced yet.
+  - Removed stronger language that could be read as a firm commitment or specification, keeping the page aligned with known public information.
+  - **Files**: `client/src/pages/ARC3Browser.tsx`, `CHANGELOG.md`
+
+### Version 5.45.12  Dec 6, 2025 (PENDING TESTING)
+
+- **ARC-AGI-3 landing: clickable thumbnails + larger Games Browser text** (Author: Cascade)
+  - Made the ARC-AGI-3 game PNG thumbnails in the Games Browser highlight card on `/arc3` clickable links to their corresponding spoiler pages at `/arc3/games/:gameId`, so the visual gallery is now a direct entry point into each game.
+  - Increased the font size and weight of the Games Browser bullet text to `text-base` and `font-semibold` for better readability while preserving the existing layout and shadcn/ui structure.
+  - **Files**: `client/src/pages/ARC3Browser.tsx`, `CHANGELOG.md`
+
 ### Version 5.45.11  Dec 6, 2025 (PENDING TESTING)
 
 - **ARC-AGI-3 ls20 thumbnail path fix** (Author: Cascade)
