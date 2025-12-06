@@ -27,6 +27,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { usePageMeta } from '@/hooks/usePageMeta';
+import { getAllGames } from '../../../shared/arc3Games';
 
 export default function ARC3Browser() {
   usePageMeta({
@@ -35,6 +36,9 @@ export default function ARC3Browser() {
       'Learn how ARC-AGI-3 interactive reasoning benchmarks differ from ARC 1 & 2 and explore agents, games, and resources.',
     canonicalPath: '/arc3',
   });
+  const arc3GameThumbs = getAllGames()
+    .filter(game => game.thumbnailUrl)
+    .slice(0, 6);
   return (
     <div className="container mx-auto px-4 py-6 max-w-6xl">
       {/* Hero Section */}
@@ -81,6 +85,27 @@ export default function ARC3Browser() {
                 <p>• 6 revealed games (3 preview + 3 evaluation)</p>
                 <p>• Mechanics documentation and action mappings where available</p>
                 <p>• Community hints and strategy notes</p>
+              </div>
+              <div className="mt-4 grid grid-cols-3 gap-3">
+                {arc3GameThumbs.map(game => (
+                  <div
+                    key={game.gameId}
+                    className="aspect-square rounded-md overflow-hidden border border-border/40 bg-muted flex items-center justify-center"
+                  >
+                    {game.thumbnailUrl ? (
+                      <img
+                        src={game.thumbnailUrl}
+                        alt={game.informalName ? `${game.informalName} (${game.gameId})` : game.gameId}
+                        className="h-full w-full object-cover"
+                        loading="lazy"
+                      />
+                    ) : (
+                      <span className="text-[10px] text-muted-foreground px-1 text-center">
+                        {game.gameId}
+                      </span>
+                    )}
+                  </div>
+                ))}
               </div>
               <Button asChild className="mt-4 w-full">
                 <Link href="/arc3/games">
