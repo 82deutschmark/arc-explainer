@@ -1,6 +1,16 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top with the time and date!
 
+### Version 5.45.3  Dec 6, 2025 (PENDING TESTING)
+
+- **Hall of Fame: Add SOAR 2nd Place 2025 Paper Award Team (Self-Improving Program Synthesis)** (Author: Cascade)
+  - Added a new contributor trading card for the SOAR team (Julien Pourcel, Cédric Colas, Pierre-Yves Oudeyer), recognizing their 2nd place 2025 paper award "Self-Improving Language Models for Evolutionary Program Synthesis: A Case Study on ARC-AGI".
+  - Captured SOAR as a self-improving evolutionary program synthesis framework that alternates between LLM-driven evolutionary search for ARC-AGI programs and a hindsight learning phase that fine-tunes the LLM on its own search traces.
+  - Highlighted that SOAR achieves up to **52% of the ARC-AGI public test set** without relying on human-engineered DSLs or curated solution datasets, instead using search traces as training data.
+  - Linked to the official paper, GitHub repository, and ARC Prize interview video: `https://www.youtube.com/watch?v=9lIuoslCHWI`.
+  - Wired the team card to the existing `/julienPourcel.png` portrait asset and categorized them under 2025 paper award winners alongside Alexia and Isaac.
+  - **Files**: `server/scripts/seedContributors.ts`, `client/public/julienPourcel.png`, `CHANGELOG.md`
+
 ### Version 5.45.2  Dec 6, 2025 (TESTING)
 
 - **2025 ARC Prize Team Winners: Tufa AI & MindsAI Normalization** (Author: Claude Code using Haiku 4.5)
