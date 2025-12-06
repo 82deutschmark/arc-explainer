@@ -351,7 +351,7 @@ export default function PuzzleBrowser() {
             </a>
 
             <a
-              href="https://www.twitch.tv/professormaxhammer"
+              href="https://discord.com/invite/9b77dPAmcA"
               target="_blank"
               rel="noopener noreferrer"
               className="group flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-900/60 border border-slate-700 text-xs font-medium text-slate-300 hover:bg-purple-500/20 hover:border-purple-400 hover:text-purple-200 transition-all"

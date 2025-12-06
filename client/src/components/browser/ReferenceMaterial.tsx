@@ -85,6 +85,14 @@ const REFERENCE_SECTIONS: ReferenceSectionProps[] = [
         label: 'ARC-AGI-2 Technical Report',
         href: 'https://www.arxiv.org/pdf/2505.11831',
       },
+      {
+        label: 'NVIDIA Kaggle Grandmasters - AGI Competition',
+        href: 'https://developer.nvidia.com/blog/nvidia-kaggle-grandmasters-win-artificial-general-intelligence-competition/?nvid=nv-int-tblg-454784',
+      },
+      {
+        label: 'Less is More - Tiny Recursive Models',
+        href: 'https://alexiajm.github.io/2025/09/29/tiny_recursive_models.html',
+      },
     ],
   },
   {
@@ -124,6 +132,10 @@ const REFERENCE_SECTIONS: ReferenceSectionProps[] = [
       {
         label: 'CAPEd - Game/Tool',
         href: 'https://caped.ferenczi.eu/',
+      },
+      {
+        label: 'NVARC - Synthetic Data Generation',
+        href: 'https://github.com/1ytic/NVARC',
       },
     ],
   },
@@ -203,7 +215,15 @@ export const ReferenceMaterial: React.FC = () => {
 
       {/* Terminal footer */}
       <div className="border-t border-amber-500/10 px-1.5 py-0.5 text-xs font-mono text-amber-500/50">
-        Special thanks: Simon Strandgaard (@neoneye)
+        Special thanks:{' '}
+        <a
+          href="https://github.com/neoneye"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-amber-400/80 hover:text-amber-300 hover:underline transition-colors"
+        >
+          Simon Strandgaard (@neoneye)
+        </a>
       </div>
     </section>
   );
