@@ -15,6 +15,7 @@ import { CardPackOpening } from '@/components/human/CardPackOpening';
 import { TeamWinnerGroup } from '@/components/human/TeamWinnerGroup';
 import { teamWinnersConfig } from '@/constants/teamWinners';
 import { normalizeTeamName } from '@/utils/teamNameNormalizer';
+import { splitTeamIntoMembers } from '@/utils/humanCardHelpers';
 import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
 import {
   Loader2, Users, Trophy, ScrollText, History, Star, ExternalLink,
@@ -46,8 +47,8 @@ export default function HumanTradingCards() {
   const shouldShowAnimation = isFirstVisit === true && !animationComplete;
 
   // Categorize contributors for 2025 results
-  const { founders, topPaperAward2025, teamWinnerGroups, soloWinners2025, winners2024, researchers, pioneers, arc3Preview } = useMemo(() => {
-    if (!data?.contributors) return { founders: [], topPaperAward2025: [], teamWinnerGroups: [], soloWinners2025: [], winners2024: [], researchers: [], pioneers: [], arc3Preview: [] };
+  const { founders, topPaperAward2025, competitionWinners2025, winners2024, researchers, pioneers, arc3Preview } = useMemo(() => {
+    if (!data?.contributors) return { founders: [], topPaperAward2025: [], competitionWinners2025: [], winners2024: [], researchers: [], pioneers: [], arc3Preview: [] };
 
     const contributors = [...data.contributors];
 
@@ -62,7 +63,7 @@ export default function HumanTradingCards() {
     const topPaperAward2025 = [...topPaper2025Winners, ...paperAwards2025]
       .sort((a, b) => (a.rank || 999) - (b.rank || 999));
 
-    // All 2025 competition winners (before grouping)
+    // All 2025 competition winners
     const allWinners2025 = contributors
       .filter(c => {
         if (!c.yearStart) return false;
@@ -71,38 +72,36 @@ export default function HumanTradingCards() {
       })
       .sort((a, b) => (a.rank || 999) - (b.rank || 999));
 
-    // Build team winner groups from config
-    const teamWinnerGroups: Array<{ teamContributor: typeof allWinners2025[0], members: typeof allWinners2025 }> = [];
-    const usedContributorIds = new Set<number>();
+    // Process each 2025 competition winner
+    const competitionWinners2025 = allWinners2025.map(winner => {
+      // Check if this is a team with dual images that should be split into individual cards
+      const hasMultipleImages = winner.imageUrl?.includes(',');
 
-    // For each configured team, find the team entry and its members
-    for (const teamName of Object.keys(teamWinnersConfig) as Array<keyof typeof teamWinnersConfig>) {
-      // Find the team contributor by teamName (with normalization for team name aliases)
-      const normalizedTeamName = normalizeTeamName(teamName);
-      const teamContributor = allWinners2025.find(c => normalizeTeamName(c.teamName) === normalizedTeamName);
-      if (!teamContributor) {
-        console.warn(`Team ${teamName} configured but not found in 2025 winners`);
-        continue;
+      if (hasMultipleImages) {
+        // Teams like NVARC and MindsAI with dual images
+        // Extract member names from fullName (e.g., "Team NVARC (Jean-François Puget & Ivan Sorokin)")
+        const memberNamesMatch = winner.fullName.match(/\((.*?)\)/);
+        if (memberNamesMatch) {
+          const memberNamesPart = memberNamesMatch[1];
+          const memberNames = memberNamesPart.split('&').map(name => name.trim());
+          const memberCards = splitTeamIntoMembers(winner, memberNames);
+
+          return {
+            type: 'team_with_members' as const,
+            teamContributor: winner,
+            members: memberCards,
+            rank: winner.rank || 999
+          };
+        }
       }
 
-      // Find member contributors by fullName from config
-      const memberNames = teamWinnersConfig[teamName];
-      const members = memberNames
-        .map(fullName => contributors.find(c => c.fullName === fullName))
-        .filter((m): m is typeof contributors[0] => m !== undefined);
-
-      if (members.length === 0) {
-        console.warn(`Team ${teamName} has no valid members`);
-        continue;
-      }
-
-      teamWinnerGroups.push({ teamContributor, members });
-      usedContributorIds.add(teamContributor.id);
-      members.forEach(m => usedContributorIds.add(m.id));
-    }
-
-    // Solo winners: exclude team entries and their members
-    const soloWinners2025 = allWinners2025.filter(c => !usedContributorIds.has(c.id));
+      // Single person or team without individual member cards (like ARChitects)
+      return {
+        type: 'solo' as const,
+        contributor: winner,
+        rank: winner.rank || 999
+      };
+    });
 
     const winners2024 = contributors
       .filter(c => c.yearStart === 2024 && c.category === 'competition_winner' && c.rank !== 0)
@@ -124,11 +123,11 @@ export default function HumanTradingCards() {
       .filter(c => c.category === 'arc3_preview')
       .sort((a, b) => (a.rank || 999) - (b.rank || 999));
 
-    return { founders, topPaperAward2025, teamWinnerGroups, soloWinners2025, winners2024, researchers, pioneers, arc3Preview };
+    return { founders, topPaperAward2025, competitionWinners2025, winners2024, researchers, pioneers, arc3Preview };
   }, [data?.contributors]);
 
   // Inject YouTube video links into contributors (until stored in DB)
-  const enrichContributor = (contributor: typeof soloWinners2025[0]) => {
+  const enrichContributor = (contributor: any) => {
     const videoUrl = CONTRIBUTOR_VIDEOS[contributor.fullName];
     if (videoUrl && !contributor.links?.youtube) {
       return {
@@ -165,11 +164,11 @@ export default function HumanTradingCards() {
       {/* Subtle top gradient accent */}
       <div className="fixed top-0 inset-x-0 h-48 bg-gradient-to-b from-amber-900/10 via-zinc-950/50 to-transparent pointer-events-none" />
 
-      <div className="relative container mx-auto px-4 py-4 space-y-5">
+      <div className="relative container mx-auto px-4 py-3 space-y-4">
 
         {/* Compact Hall of Fame Header */}
-        <header className="border-b border-zinc-800 pb-4">
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+        <header className="border-b border-zinc-800 pb-3">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
             {/* Title Section */}
             <div className="flex items-center gap-3">
               <div className="p-2 rounded-lg bg-gradient-to-br from-amber-500/20 to-amber-600/10 border border-amber-500/30">
@@ -271,7 +270,7 @@ export default function HumanTradingCards() {
 
             {/* 2025 Paper Awards */}
             {topPaperAward2025.length > 0 && (
-              <section id="2025-top-paper-award" className="space-y-3 scroll-mt-20">
+              <section id="2025-top-paper-award" className="space-y-2 scroll-mt-20">
                 <div className="flex items-center gap-2 border-b border-fuchsia-500/20 pb-2">
                   <Award className="h-4 w-4 text-fuchsia-400" />
                   <h2 className="text-lg font-bold text-zinc-100">2025 Paper Awards</h2>
@@ -279,74 +278,82 @@ export default function HumanTradingCards() {
                     Featured
                   </span>
                 </div>
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3">
-                  {topPaperAward2025.map(contributor => (
-                    <HumanTradingCard key={contributor.id} contributor={enrichContributor(contributor)} />
-                  ))}
+                {/* Horizontal layout with larger cards and placement indicators */}
+                <div className="flex flex-wrap justify-center gap-6 py-2">
+                  {topPaperAward2025.map((contributor, index) => {
+                    const placementLabels = ['🥇 1st Place', '🥈 2nd Place', '🥉 3rd Place'];
+                    const placementColors = ['text-amber-400', 'text-slate-400', 'text-orange-600'];
+                    const placementLabel = placementLabels[index] || `#${index + 1}`;
+                    const placementColor = placementColors[index] || 'text-zinc-400';
+
+                    return (
+                      <div key={contributor.id} className="flex flex-col items-center gap-2">
+                        <span className={`text-sm font-bold ${placementColor} uppercase tracking-wide`}>
+                          {placementLabel}
+                        </span>
+                        <div className="w-64 hover:scale-105 transition-transform duration-200">
+                          <HumanTradingCard contributor={enrichContributor(contributor)} />
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
               </section>
             )}
 
             {/* 2025 Competition Winners */}
-            {(teamWinnerGroups.length > 0 || soloWinners2025.length > 0) && (
-              <section id="2025-competition-winners" className="space-y-3 scroll-mt-20">
+            {competitionWinners2025.length > 0 && (
+              <section id="2025-competition-winners" className="space-y-2 scroll-mt-20">
                 <div className="flex items-center gap-2 border-b border-amber-500/20 pb-2">
                   <Trophy className="h-4 w-4 text-amber-400" />
                   <h2 className="text-lg font-bold text-zinc-100">2025 Competition Winners</h2>
                 </div>
 
-                {/* Team winner groups (full width) */}
-                {teamWinnerGroups.length > 0 && (
-                  <div className="space-y-4">
-                    {teamWinnerGroups.map((group, idx) => {
-                      const rankLabel = group.teamContributor.rank === 1 ? '🥇 1st Place' : group.teamContributor.rank === 2 ? '🥈 2nd Place' : group.teamContributor.rank === 3 ? '🥉 3rd Place' : `#${group.teamContributor.rank}`;
-                      const anchorId = `contributor-${group.teamContributor.id}`;
+                <div className="space-y-3">
+                  {competitionWinners2025.map((winner, idx) => {
+                    const rankLabel = winner.rank === 1 ? '🥇 1st Place' : winner.rank === 2 ? '🥈 2nd Place' : winner.rank === 3 ? '🥉 3rd Place' : `#${winner.rank}`;
+
+                    if (winner.type === 'team_with_members') {
+                      // Teams with individual member cards (NVARC, MindsAI)
+                      const anchorId = `contributor-${winner.teamContributor.id}`;
                       return (
                         <div key={`team-${idx}`} id={anchorId} className="scroll-mt-20">
                           <div className="mb-2 flex items-center gap-2">
                             <span className="text-sm font-bold text-amber-400">{rankLabel}</span>
                           </div>
                           <TeamWinnerGroup
-                            teamContributor={enrichContributor(group.teamContributor)}
-                            members={group.members.map(enrichContributor)}
+                            teamContributor={enrichContributor(winner.teamContributor)}
+                            members={winner.members.map(enrichContributor)}
                           />
                         </div>
                       );
-                    })}
-                  </div>
-                )}
-
-                {/* Solo winners (grid) */}
-                {soloWinners2025.length > 0 && (
-                  <div className="space-y-3">
-                    {soloWinners2025.length > 0 && (
-                      <div className="text-sm text-zinc-500 font-semibold uppercase tracking-wider">
-                        Other Winners
-                      </div>
-                    )}
-                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3">
-                      {soloWinners2025.map(contributor => {
-                        const anchorId = `contributor-${contributor.id}`;
-                        return (
-                          <div key={contributor.id} id={anchorId} className="scroll-mt-20">
-                            <HumanTradingCard contributor={enrichContributor(contributor)} />
+                    } else {
+                      // Solo winners or teams without individual cards (ARChitects)
+                      const anchorId = `contributor-${winner.contributor.id}`;
+                      return (
+                        <div key={`solo-${idx}`} id={anchorId} className="scroll-mt-20">
+                          <div className="mb-2 flex items-center gap-2">
+                            <span className="text-sm font-bold text-amber-400">{rankLabel}</span>
                           </div>
-                        );
-                      })}
-                    </div>
-                  </div>
-                )}
+                          <div className="max-w-xs hover:scale-105 transition-transform duration-200">
+                            <HumanTradingCard contributor={enrichContributor(winner.contributor)} />
+                          </div>
+                        </div>
+                      );
+                    }
+                  })}
+                </div>
               </section>
             )}
 
             {/* 2024 Winners */}
             {winners2024.length > 0 && (
-              <section id="2024-winners" className="space-y-3 scroll-mt-20">
+              <section id="2024-winners" className="space-y-2 scroll-mt-20">
                 <div className="flex items-center gap-2 border-b border-blue-500/20 pb-2">
                   <Star className="h-4 w-4 text-blue-400" />
                   <h2 className="text-lg font-bold text-zinc-100">2024 ARC Prize Winners</h2>
                 </div>
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3">
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2.5">
                   {winners2024.map(contributor => (
                     <HumanTradingCard key={contributor.id} contributor={enrichContributor(contributor)} />
                   ))}
@@ -356,12 +363,12 @@ export default function HumanTradingCards() {
 
             {/* Research & Awards */}
             {researchers.length > 0 && (
-              <section id="research-awards" className="space-y-3 scroll-mt-20">
+              <section id="research-awards" className="space-y-2 scroll-mt-20">
                 <div className="flex items-center gap-2 border-b border-emerald-500/20 pb-2">
                   <ScrollText className="h-4 w-4 text-emerald-400" />
                   <h2 className="text-lg font-bold text-zinc-100">Research & Awards</h2>
                 </div>
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3">
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2.5">
                   {researchers.map(contributor => (
                     <HumanTradingCard key={contributor.id} contributor={enrichContributor(contributor)} />
                   ))}
@@ -371,12 +378,12 @@ export default function HumanTradingCards() {
 
             {/* Pioneers */}
             {pioneers.length > 0 && (
-              <section id="pioneers" className="space-y-3 scroll-mt-20">
+              <section id="pioneers" className="space-y-2 scroll-mt-20">
                 <div className="flex items-center gap-2 border-b border-violet-500/20 pb-2">
                   <History className="h-4 w-4 text-violet-400" />
                   <h2 className="text-lg font-bold text-zinc-100">Pioneers</h2>
                 </div>
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3">
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2.5">
                   {pioneers.map(contributor => (
                     <HumanTradingCard key={contributor.id} contributor={enrichContributor(contributor)} />
                   ))}
@@ -386,7 +393,7 @@ export default function HumanTradingCards() {
 
             {/* ARC3 2026 Preview */}
             {arc3Preview.length > 0 && (
-              <section id="arc3-preview" className="space-y-3 scroll-mt-20">
+              <section id="arc3-preview" className="space-y-2 scroll-mt-20">
                 <div className="flex items-center gap-2 border-b border-cyan-500/20 pb-2">
                   <Rocket className="h-4 w-4 text-cyan-400" />
                   <div className="flex items-center gap-2">
@@ -396,7 +403,7 @@ export default function HumanTradingCards() {
                     </span>
                   </div>
                 </div>
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3">
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2.5">
                   {arc3Preview.map(contributor => (
                     <HumanTradingCard key={contributor.id} contributor={enrichContributor(contributor)} />
                   ))}
