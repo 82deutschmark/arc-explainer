@@ -314,17 +314,21 @@ export default function HumanTradingCards() {
                     const rankLabel = winner.rank === 1 ? '🥇 1st Place' : winner.rank === 2 ? '🥈 2nd Place' : winner.rank === 3 ? '🥉 3rd Place' : `#${winner.rank}`;
 
                     if (winner.type === 'team_with_members') {
-                      // Teams with individual member cards (NVARC, MindsAI)
+                      // Teams with individual member cards (NVARC, MindsAI) - show just the individual cards
                       const anchorId = `contributor-${winner.teamContributor.id}`;
                       return (
                         <div key={`team-${idx}`} id={anchorId} className="scroll-mt-20">
                           <div className="mb-2 flex items-center gap-2">
                             <span className="text-sm font-bold text-amber-400">{rankLabel}</span>
+                            <span className="text-xs text-zinc-500">({winner.teamContributor.teamName})</span>
                           </div>
-                          <TeamWinnerGroup
-                            teamContributor={enrichContributor(winner.teamContributor)}
-                            members={winner.members.map(enrichContributor)}
-                          />
+                          <div className="flex flex-wrap gap-3">
+                            {winner.members.map(enrichContributor).map(member => (
+                              <div key={member.id} className="w-64 hover:scale-105 transition-transform duration-200">
+                                <HumanTradingCard contributor={member} />
+                              </div>
+                            ))}
+                          </div>
                         </div>
                       );
                     } else {
@@ -335,7 +339,7 @@ export default function HumanTradingCards() {
                           <div className="mb-2 flex items-center gap-2">
                             <span className="text-sm font-bold text-amber-400">{rankLabel}</span>
                           </div>
-                          <div className="max-w-xs hover:scale-105 transition-transform duration-200">
+                          <div className="w-64 hover:scale-105 transition-transform duration-200">
                             <HumanTradingCard contributor={enrichContributor(winner.contributor)} />
                           </div>
                         </div>
