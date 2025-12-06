@@ -26,6 +26,7 @@ export interface ArcContributor {
     papers?: string[];
     linkedin?: string;
     substack?: string;
+    youtube?: string;
   };
   teamName: string | null;
   category: ContributorCategory;

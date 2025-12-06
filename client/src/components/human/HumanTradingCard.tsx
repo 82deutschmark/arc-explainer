@@ -11,7 +11,7 @@ import React, { useMemo, useState } from 'react';
 import { formatContributorCard } from '@/utils/humanCardHelpers';
 import { getRandomGif } from '@/utils/arcGifs';
 import type { ArcContributor } from '@shared/types/contributor';
-import { ExternalLink, Github, Twitter, Globe, BookOpen, Linkedin, Sparkles, Zap } from 'lucide-react';
+import { ExternalLink, Github, Twitter, Globe, BookOpen, Linkedin, Sparkles, Zap, Youtube } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from '@/components/ui/dialog';
 
@@ -96,9 +96,15 @@ export const HumanTradingCard: React.FC<HumanTradingCardProps> = ({ contributor 
         </a>
       )}
       {contributor.links?.kaggle && (
-        <a href={contributor.links.kaggle} target="_blank" rel="noreferrer" 
+        <a href={contributor.links.kaggle} target="_blank" rel="noreferrer"
             className="flex items-center gap-1.5 text-xs bg-zinc-800/80 hover:bg-sky-900/40 text-zinc-300 hover:text-sky-400 px-3 py-2 rounded-lg border border-zinc-700/50 hover:border-sky-500/40 transition-all shadow-sm">
           <ExternalLink className="w-3.5 h-3.5" /> Kaggle
+        </a>
+      )}
+      {contributor.links?.youtube && (
+        <a href={contributor.links.youtube} target="_blank" rel="noreferrer"
+            className="flex items-center gap-1.5 text-xs bg-zinc-800/80 hover:bg-red-900/40 text-zinc-300 hover:text-red-400 px-3 py-2 rounded-lg border border-zinc-700/50 hover:border-red-500/40 transition-all shadow-sm">
+          <Youtube className="w-3.5 h-3.5" /> Talk
         </a>
       )}
     </div>
