@@ -18,6 +18,10 @@ export const teamWinnersConfig = {
     'Jean-François Puget (2024 Paper)'
     // Ivan Sorokin missing as individual entry - would be added here
   ],
+  ARChitects: [
+    // Individual entries not available in seed data yet
+    // Daniel Franzen, Jan Disselhoff, David Hartmann members would go here
+  ],
   MindsAI: [
     'Jack Cole (2024)',
     'Dries Smit'
