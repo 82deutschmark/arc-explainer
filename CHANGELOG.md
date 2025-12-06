@@ -1,6 +1,12 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top with the time and date!
 
+### Version 5.45.11  Dec 6, 2025 (PENDING TESTING)
+
+- **ARC-AGI-3 ls20 thumbnail path fix** (Author: Cascade)
+  - Updated the `ls20` game metadata to use the existing `/ls20.png` asset in `client/public` instead of the non-existent `/images/arc3/ls20-thumbnail.png` path so the Locksmith thumbnail renders correctly on both the Games Browser and ARC-3 landing page.
+  - **Files**: `shared/arc3Games.ts`, `CHANGELOG.md`
+
 ### Version 5.45.10  Dec 6, 2025 (PENDING TESTING)
 
 - **ARC-AGI-3 landing: show game thumbnails in Games Browser card** (Author: Cascade)
