@@ -11,6 +11,15 @@ import { BaseRepository } from './base/BaseRepository.ts';
 import type { ArcContributor, CreateContributorRequest } from '@shared/types/contributor.ts';
 import { logger } from '../utils/logger.ts';
 
+const SCORE_MAX_LENGTH = 50;
+
+const truncateScore = (value?: string): string | null => {
+  if (!value) {
+    return null;
+  }
+  return value.length > SCORE_MAX_LENGTH ? value.slice(0, SCORE_MAX_LENGTH) : value;
+};
+
 export class ContributorRepository extends BaseRepository {
 
   /**
@@ -128,7 +137,7 @@ export class ContributorRepository extends BaseRepository {
           data.description,
           data.yearStart || null,
           data.yearEnd || null,
-          data.score || null,
+          truncateScore(data.score),
           data.approach || null,
           data.uniqueTechnique || null,
           JSON.stringify(data.links || {}),
@@ -185,7 +194,7 @@ export class ContributorRepository extends BaseRepository {
       }
       if (data.score !== undefined) {
         updates.push(`score = $${paramCount++}`);
-        values.push(data.score);
+        values.push(truncateScore(data.score));
       }
       if (data.approach !== undefined) {
         updates.push(`approach = $${paramCount++}`);

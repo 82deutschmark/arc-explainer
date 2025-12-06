@@ -1,6 +1,13 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top with the time and date!
 
+### Version 5.45.5  Dec 6, 2025 (PENDING TESTING)
+
+- **Fix contributor sync: respect database varchar(50) score limit** (Author: Cascade)
+  - Updated `ContributorRepository` to centrally truncate `score` fields to the database’s `varchar(50)` limit on insert and update so the auto-sync on server startup no longer fails with `value too long for type character varying(50)` when new Hall of Fame entries include long score strings.
+  - Kept the database-first architecture intact by adapting application writes to the existing schema instead of changing the live table definition; all other contributor fields and behaviors remain unchanged.
+  - **Files**: `server/repositories/ContributorRepository.ts`, `CHANGELOG.md`
+
 ### Version 5.45.4  Dec 6, 2025 (PENDING TESTING)
 
 - **Hall of Fame: Add Simon Strandgaard (neoneye) as ARC datasets & tools curator** (Author: Cascade)
