@@ -12,6 +12,9 @@ import { useArcContributors } from '@/hooks/useArcContributors';
 import { useFirstVisit } from '@/hooks/useFirstVisit';
 import { HumanTradingCard } from '@/components/human/HumanTradingCard';
 import { CardPackOpening } from '@/components/human/CardPackOpening';
+import { TeamWinnerGroup } from '@/components/human/TeamWinnerGroup';
+import { teamWinnersConfig } from '@/constants/teamWinners';
+import { normalizeTeamName } from '@/utils/teamNameNormalizer';
 import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
 import {
   Loader2, Users, Trophy, ScrollText, History, Star, ExternalLink,
@@ -21,7 +24,7 @@ import {
 // Video links for specific contributors (until added to database)
 const CONTRIBUTOR_VIDEOS: Record<string, string> = {
   'Alexia Jolicoeur-Martineau': 'https://www.youtube.com/watch?v=P9zzUM0PrBM',
-  'Team NVARC (JF Puget & Ivan Sorokin)': 'https://www.youtube.com/watch?v=t-mIRJJCbKg',
+  'Team NVARC (Jean-François Puget & Ivan Sorokin)': 'https://www.youtube.com/watch?v=t-mIRJJCbKg',
   'Jean-François Puget (2024 Paper)': 'https://www.youtube.com/watch?v=t-mIRJJCbKg',
 };
 
@@ -43,8 +46,8 @@ export default function HumanTradingCards() {
   const shouldShowAnimation = isFirstVisit === true && !animationComplete;
 
   // Categorize contributors for 2025 results
-  const { founders, topPaperAward2025, winners2025, winners2024, researchers, pioneers, arc3Preview } = useMemo(() => {
-    if (!data?.contributors) return { founders: [], topPaperAward2025: [], winners2025: [], winners2024: [], researchers: [], pioneers: [], arc3Preview: [] };
+  const { founders, topPaperAward2025, teamWinnerGroups, soloWinners2025, winners2024, researchers, pioneers, arc3Preview } = useMemo(() => {
+    if (!data?.contributors) return { founders: [], topPaperAward2025: [], teamWinnerGroups: [], soloWinners2025: [], winners2024: [], researchers: [], pioneers: [], arc3Preview: [] };
 
     const contributors = [...data.contributors];
 
@@ -54,13 +57,47 @@ export default function HumanTradingCards() {
       .filter(c => c.category === 'top_paper_award' && c.yearStart === 2025)
       .sort((a, b) => (a.rank || 999) - (b.rank || 999));
 
-    const winners2025 = contributors
+    // All 2025 competition winners (before grouping)
+    const allWinners2025 = contributors
       .filter(c => {
         if (!c.yearStart) return false;
         const endYear = c.yearEnd ?? 9999;
         return c.yearStart <= 2025 && endYear >= 2025 && c.category === 'competition_winner' && c.rank !== 0;
       })
       .sort((a, b) => (a.rank || 999) - (b.rank || 999));
+
+    // Build team winner groups from config
+    const teamWinnerGroups: Array<{ teamContributor: typeof allWinners2025[0], members: typeof allWinners2025 }> = [];
+    const usedContributorIds = new Set<number>();
+
+    // For each configured team, find the team entry and its members
+    for (const teamName of Object.keys(teamWinnersConfig) as Array<keyof typeof teamWinnersConfig>) {
+      // Find the team contributor by teamName (with normalization for team name aliases)
+      const normalizedTeamName = normalizeTeamName(teamName);
+      const teamContributor = allWinners2025.find(c => normalizeTeamName(c.teamName) === normalizedTeamName);
+      if (!teamContributor) {
+        console.warn(`Team ${teamName} configured but not found in 2025 winners`);
+        continue;
+      }
+
+      // Find member contributors by fullName from config
+      const memberNames = teamWinnersConfig[teamName];
+      const members = memberNames
+        .map(fullName => contributors.find(c => c.fullName === fullName))
+        .filter((m): m is typeof contributors[0] => m !== undefined);
+
+      if (members.length === 0) {
+        console.warn(`Team ${teamName} has no valid members`);
+        continue;
+      }
+
+      teamWinnerGroups.push({ teamContributor, members });
+      usedContributorIds.add(teamContributor.id);
+      members.forEach(m => usedContributorIds.add(m.id));
+    }
+
+    // Solo winners: exclude team entries and their members
+    const soloWinners2025 = allWinners2025.filter(c => !usedContributorIds.has(c.id));
 
     const winners2024 = contributors
       .filter(c => c.yearStart === 2024 && c.category === 'competition_winner' && c.rank !== 0)
@@ -78,11 +115,11 @@ export default function HumanTradingCards() {
       .filter(c => c.category === 'arc3_preview')
       .sort((a, b) => (a.rank || 999) - (b.rank || 999));
 
-    return { founders, topPaperAward2025, winners2025, winners2024, researchers, pioneers, arc3Preview };
+    return { founders, topPaperAward2025, teamWinnerGroups, soloWinners2025, winners2024, researchers, pioneers, arc3Preview };
   }, [data?.contributors]);
 
   // Inject YouTube video links into contributors (until stored in DB)
-  const enrichContributor = (contributor: typeof winners2025[0]) => {
+  const enrichContributor = (contributor: typeof soloWinners2025[0]) => {
     const videoUrl = CONTRIBUTOR_VIDEOS[contributor.fullName];
     if (videoUrl && !contributor.links?.youtube) {
       return {
@@ -242,17 +279,34 @@ export default function HumanTradingCards() {
             )}
 
             {/* 2025 Competition Winners */}
-            {winners2025.length > 0 && (
+            {(teamWinnerGroups.length > 0 || soloWinners2025.length > 0) && (
               <section className="space-y-3">
                 <div className="flex items-center gap-2 border-b border-amber-500/20 pb-2">
                   <Trophy className="h-4 w-4 text-amber-400" />
                   <h2 className="text-lg font-bold text-zinc-100">2025 Competition Winners</h2>
                 </div>
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3">
-                  {winners2025.map(contributor => (
-                    <HumanTradingCard key={contributor.id} contributor={enrichContributor(contributor)} />
-                  ))}
-                </div>
+
+                {/* Team winner groups (full width) */}
+                {teamWinnerGroups.length > 0 && (
+                  <div className="space-y-4">
+                    {teamWinnerGroups.map((group, idx) => (
+                      <TeamWinnerGroup
+                        key={`team-${idx}`}
+                        teamContributor={enrichContributor(group.teamContributor)}
+                        members={group.members.map(enrichContributor)}
+                      />
+                    ))}
+                  </div>
+                )}
+
+                {/* Solo winners (grid) */}
+                {soloWinners2025.length > 0 && (
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3">
+                    {soloWinners2025.map(contributor => (
+                      <HumanTradingCard key={contributor.id} contributor={enrichContributor(contributor)} />
+                    ))}
+                  </div>
+                )}
               </section>
             )}
 
