@@ -1,6 +1,14 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top with the time and date!
 
+### Version 5.45.7  Dec 6, 2025 (PENDING TESTING)
+
+- **ARC-AGI-3 Browser: Replace speculative feature placeholders with 2026 roadmap facts** (Author: Cascade)
+  - Removed the non-committal Leaderboard, Scorecard Viewer, and Replay Viewer cards from the ARC-AGI-3 landing page so the UI no longer advertises features that are not actually planned on this platform.
+  - Added an info-dense "ARC-AGI-3 2026 roadmap & known facts" card summarizing what is publicly known today: ARC-AGI-2 and ARC-AGI-3 both running in 2026, interactive 64×64 grid game format, the team’s hints about a future Python library, and the current uncertainty around exact prize amounts and final game lists.
+  - Kept all existing real navigation intact (including the ARC-AGI-3 Games Browser and official external links) while making the page more readable, searchable, and accurate for humans and large language models looking for up-to-date ARC3 context.
+  - **Files**: `client/src/pages/ARC3Browser.tsx`, `CHANGELOG.md`
+
 ### Version 5.45.6  Dec 6, 2025 (PENDING TESTING)
 
 - **Hall of Fame: Surface all 2025 paper awards together at the top** (Author: Cascade)

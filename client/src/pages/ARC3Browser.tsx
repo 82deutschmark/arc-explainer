@@ -264,72 +264,80 @@ export default function ARC3Browser() {
               </Button>
             </CardContent>
           </Card>
-
-          {/* Leaderboard */}
-          <Card className="opacity-60">
+          {/* ARC-AGI-3 2026 roadmap & known facts */}
+          <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <Trophy className="h-5 w-5" />
-                Leaderboard
+                <Info className="h-5 w-5 text-primary" />
+                ARC-AGI-3 2026 roadmap & known facts
               </CardTitle>
               <CardDescription>
-                View top-performing agents and their scores across all games
+                High-signal summary of what is publicly known about ARC-AGI-3 ("ARC3") and the 2026 ARC-AGI-2/3 competitions.
               </CardDescription>
             </CardHeader>
-            <CardContent>
-              <div className="text-sm text-muted-foreground space-y-2">
-                <p>• Agent rankings by total score</p>
-                <p>• Win rates per game</p>
-                <p>• Action efficiency metrics</p>
-              </div>
-              <div className="mt-4 text-xs text-muted-foreground italic">
-                Feature in development
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Scorecard Viewer */}
-          <Card className="opacity-60">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <BarChart3 className="h-5 w-5" />
-                Scorecard Viewer
-              </CardTitle>
-              <CardDescription>
-                Analyze detailed performance metrics for individual agent runs
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="text-sm text-muted-foreground space-y-2">
-                <p>• Detailed score breakdowns</p>
-                <p>• Action counts and patterns</p>
-                <p>• Game state progression</p>
-              </div>
-              <div className="mt-4 text-xs text-muted-foreground italic">
-                Feature in development
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Replay Viewer */}
-          <Card className="opacity-60">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Play className="h-5 w-5" />
-                Replay Viewer
-              </CardTitle>
-              <CardDescription>
-                Watch step-by-step replays of agent gameplay sessions
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="text-sm text-muted-foreground space-y-2">
-                <p>• Frame-by-frame playback</p>
-                <p>• Action visualization</p>
-                <p>• Performance annotations</p>
-              </div>
-              <div className="mt-4 text-xs text-muted-foreground italic">
-                Feature in development
+            <CardContent className="space-y-3 text-sm text-muted-foreground">
+              <p>
+                ARC-AGI-3 is still evolving. The points below reflect the most accurate public information we have as of late 2025.
+                Details may change over time—always cross-check against the official ARC Prize announcements and documentation.
+              </p>
+              <div className="space-y-3">
+                <div>
+                  <p className="font-semibold text-foreground">Timeline &amp; competitions</p>
+                  <ul className="list-disc list-inside ml-4 space-y-1">
+                    <li>ARC-AGI-2 and ARC-AGI-3 will both run as official ARC Prize competitions in 2026.</li>
+                    <li>Exact dates, phases, and prize structure have not been finalized or publicly announced yet.</li>
+                  </ul>
+                </div>
+                <div>
+                  <p className="font-semibold text-foreground">Game format</p>
+                  <ul className="list-disc list-inside ml-4 space-y-1">
+                    <li>
+                      ARC-AGI-3 games are interactive 64×64 grid environments where agents act through an API over thousands of
+                      steps.
+                    </li>
+                    <li>
+                      The benchmark measures exploration, memory, goal acquisition, and long-horizon planning rather than
+                      single-shot pattern matching.
+                    </li>
+                  </ul>
+                </div>
+                <div>
+                  <p className="font-semibold text-foreground">Python library plans</p>
+                  <ul className="list-disc list-inside ml-4 space-y-1">
+                    <li>
+                      The ARC Prize team has indicated that ARC-AGI-3 games are expected to be released as a Python library so
+                      agents can be run locally.
+                    </li>
+                    <li>
+                      Until that library ships, the canonical interface is the hosted platform at three.arcprize.org together
+                      with the official ARC-AGI-3 agent SDKs.
+                    </li>
+                  </ul>
+                </div>
+                <div>
+                  <p className="font-semibold text-foreground">What is still unknown</p>
+                  <ul className="list-disc list-inside ml-4 space-y-1">
+                    <li>Exact prize amounts and detailed reward breakdowns for the 2026 competitions.</li>
+                    <li>The full list of public, preview, and hidden games that will appear in the final evaluation sets.</li>
+                    <li>Any additional benchmark variants beyond the currently previewed interactive reasoning games.</li>
+                  </ul>
+                </div>
+                <div>
+                  <p className="font-semibold text-foreground">How to use this page</p>
+                  <ul className="list-disc list-inside ml-4 space-y-1">
+                    <li>
+                      Use the ARC-AGI-3 Games Browser on this site to study individual games with spoilers, mechanics, and
+                      strategies once you are comfortable with seeing spoilers.
+                    </li>
+                    <li>
+                      Follow the official links above for platform access, documentation, and competition announcements.
+                    </li>
+                    <li>
+                      Treat this page as a concise, searchable reference for humans and language models that need accurate
+                      high-level context about ARC-AGI-3.
+                    </li>
+                  </ul>
+                </div>
               </div>
             </CardContent>
           </Card>
