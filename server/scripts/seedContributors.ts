@@ -41,6 +41,29 @@ const contributors: CreateContributorRequest[] = [
     rank: 1
   },
 
+  {
+    fullName: 'Isaac Liao',
+    handle: undefined,
+    affiliation: 'Carnegie Mellon University, Graduate Researcher',
+    imageUrl: '/isaacliao.png',
+    achievement: '3rd Place 2025 Paper Award: "ARC-AGI Without Pretraining" (CompressARC)',
+    description: 'Creator of CompressARC, an MDL-based neural "code golf" system that trains a single small network per puzzle from scratch and selects the model that minimizes description length, solving ARC-AGI puzzles using only the target puzzle data with no pretraining or external datasets.',
+    yearStart: 2025,
+    yearEnd: 2025,
+    score: 'ARC-AGI-1: 34.75% (training), 20% (evaluation); ARC-AGI-2: ~4% (no pretraining, no external data)',
+    approach: 'Minimum Description Length (MDL) compression-driven solver that treats ARC-AGI as a lossless compression problem, performing single-puzzle training of a compact neural network and choosing architectures/hyperparameters that yield the shortest overall description of inputs and outputs.',
+    uniqueTechnique: 'Shows that pure compression at inference time can yield intelligent behavior: a single-puzzle-trained neural network that optimizes description length instead of accuracy, achieving non-trivial ARC-AGI-1/2 performance without any pretraining or synthetic data.',
+    links: {
+      website: 'https://iliao2345.github.io/blog_posts/arc_agi_without_pretraining/arc_agi_without_pretraining.html',
+      github: 'https://github.com/iliao2345/CompressARC',
+      papers: ['https://iliao2345.github.io/blog_posts/arc_agi_without_pretraining/ARC_AGI_Without_Pretraining.pdf'],
+      youtube: 'https://www.youtube.com/watch?v=N9GvFj0cE9s'
+    },
+    teamName: undefined,
+    category: 'paper_award',
+    rank: 3
+  },
+
   // 2024-2025 Top Achievers
   {
     fullName: 'Jeremy Berman',
@@ -110,7 +133,7 @@ const contributors: CreateContributorRequest[] = [
 
   // 2025 Competition Winners - Combined team card for 1st place
   {
-    fullName: 'Team NVARC (JF Puget & Ivan Sorokin)',
+    fullName: 'Team NVARC (Jean-François Puget & Ivan Sorokin)',
     handle: 'JFPuget & lytic',
     affiliation: 'NVIDIA - Machine Learning & Kaggle Grandmasters',
     achievement: '1st Place ARC Prize 2025 (24.03%)',
@@ -395,6 +418,26 @@ const contributors: CreateContributorRequest[] = [
   },
 
   {
+    fullName: 'Eric Pang',
+    handle: undefined,
+    affiliation: 'Amazon (Machine Learning Engineer; previously Quora), University of Waterloo Math/CS',
+    achievement: 'ARC-AGI-2 SoTA: Efficient Evolutionary Program Synthesis with Grok-4 and DreamCoder-inspired library learning',
+    description: 'Developed an open-source, DreamCoder-inspired evolutionary program synthesis system that builds a reusable library of Python programs across ARC-AGI tasks, reusing concepts via accuracy-based heuristics and LLM-guided search to break the performance–cost frontier versus frontier models.',
+    imageUrl: '/ericpang.jpeg',
+    yearStart: 2025,
+    yearEnd: 2025,
+    score: 'Outperforms frontier models on ARC-AGI-1 & ARC-AGI-2 with ~10 Grok-4 calls per task and ~$2.56 cost per ARC-AGI-1 task',
+    approach: 'Efficient evolutionary program synthesis with Grok-4 that iteratively expands a shared program library, selects high-scoring programs using accuracy heuristics and score-weighted sampling, and conditions new generations on the best existing programs.',
+    uniqueTechnique: 'DreamCoder-inspired DREAM library learning across tasks, using a single evolving program library and low test-time compute (10 LLM calls per task) to outperform frontier models on ARC-AGI-1/2 while breaking the performance–cost Pareto frontier.',
+    links: {
+      website: 'https://gist.github.com/inspiredlabs/a3fc232eba4b9754ad4a8234b85b8d34'
+    },
+    teamName: undefined,
+    category: 'researcher',
+    rank: undefined
+  },
+
+  {
     fullName: 'Paul Fletcher-Hill',
     handle: undefined,
     affiliation: 'Independent Researcher',
@@ -428,7 +471,7 @@ const contributors: CreateContributorRequest[] = [
     approach: 'RL-based agent with test-time adaptation, focusing on efficiency.',
     uniqueTechnique: 'StochasticGoose - an efficient RL agent that led all teams in computational efficiency while achieving top accuracy.',
     links: {},
-    teamName: 'StochasticGoose',
+    teamName: 'Tufa AI',
     category: 'arc3_preview',
     rank: 1
   }

@@ -1,6 +1,60 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top with the time and date!
 
+### Version 5.45.2  Dec 6, 2025 (TESTING)
+
+- **2025 ARC Prize Team Winners: Tufa AI & MindsAI Normalization** (Author: Claude Code using Haiku 4.5)
+  - Refined team winners implementation to properly handle team name variations and affiliations.
+  - Created team name normalization utility (`client/src/utils/teamNameNormalizer.ts`) mapping team aliases to canonical forms.
+  - Updated Dries Smit's arc3_preview entry: `teamName: "StochasticGoose"` → `"Tufa AI"` (reflects his individual work with Tufa Labs).
+  - Team name normalization: `"Tufa AI"`, `"Tufa Labs"` → `"MindsAI"` (canonical) for unified grouping.
+  - Updated team contributor matching in `HumanTradingCards.tsx` to use normalized team names.
+  - Dries Smit now maintains dual affiliations:
+    - Arc3 Preview: `teamName: "Tufa AI"` (individual/agent work)
+    - 2025 Competition: Member of MindsAI team group (via normalized lookup)
+  - **Files Created**: `client/src/utils/teamNameNormalizer.ts`
+  - **Files Modified**: `client/src/pages/HumanTradingCards.tsx`, `server/scripts/seedContributors.ts`, `CHANGELOG.md`
+
+### Version 5.45.1  Dec 6, 2025 (PENDING TESTING)
+
+- **Hall of Fame: Add Isaac Liao (ARC-AGI Without Pretraining / CompressARC)** (Author: Cascade)
+  - Added a new contributor trading card entry for Isaac Liao, a graduate researcher at Carnegie Mellon University and creator of CompressARC.
+  - Captured his MDL-based, single-puzzle-trained neural "code golf" system that treats ARC-AGI as a compression problem, training a compact network per task from scratch and selecting the model that minimizes description length.
+  - Documented his reported performance: ~34.75% on ARC-AGI-1 training, ~20% on ARC-AGI-1 evaluation, and ~4% on ARC-AGI-2, all achieved **without any pretraining or external data**.
+  - Linked to his official 2025 ARC Prize paper/interview bundle, including the YouTube interview: `https://www.youtube.com/watch?v=N9GvFj0cE9s`.
+  - Wired his Hall of Fame card to the existing `/isaacliao.png` portrait asset and categorized him under the 2025 paper award winners alongside Alexia.
+  - **Files**: `server/scripts/seedContributors.ts`, `client/public/isaacliao.png`, `CHANGELOG.md`
+
+### Version 5.45.0  Dec 6, 2025 (TESTING)
+
+- **2025 ARC Prize Team Winners Grouping** (Author: Claude Code using Haiku 4.5)
+  - Introduced special team winner grouping in Hall of Fame "2025 Competition Winners" section.
+  - Teams now display as unified groups with team-level card + member cards in single layout.
+  - Team card displays both member images side-by-side from comma-separated imageUrl field.
+  - Created `TeamWinnerGroup` component (`client/src/components/human/TeamWinnerGroup.tsx`) for team + member rendering.
+  - Created team winners configuration (`client/src/constants/teamWinners.ts`) mapping teamName to member fullNames.
+  - Created team name normalization utility (`client/src/utils/teamNameNormalizer.ts`) to handle team name aliases/variations.
+  - Updated `HumanTradingCards.tsx` to compute team groups separately from solo winners grid with normalized team name matching.
+  - Responsive design: Desktop (side-by-side team card + 2-column member grid), Mobile (stacked layout).
+  - Affected teams:
+    - Team NVARC (1st Place, 24.03%) with member Jean-François Puget.
+    - Team MindsAI (3rd Place, 15.42%) with members Jack Cole & Dries Smit.
+  - Seed data updates:
+    - Normalized "JF Puget" → "Jean-François Puget" in Team NVARC fullName.
+    - Changed Dries Smit's arc3_preview teamName from "StochasticGoose" to "Tufa AI" (part of MindsAI ecosystem).
+    - Team name normalization: "Tufa AI" and "Tufa Labs" → "MindsAI" canonical form for unified grouping.
+  - **Files Created**: `client/src/components/human/TeamWinnerGroup.tsx`, `client/src/constants/teamWinners.ts`, `client/src/utils/teamNameNormalizer.ts`
+  - **Files Modified**: `client/src/pages/HumanTradingCards.tsx`, `server/scripts/seedContributors.ts`
+
+### Version 5.44.1  Dec 6, 2025 (PENDING TESTING)
+
+- **Hall of Fame: Add Eric Pang (Efficient Evolutionary Program Synthesis)** (Author: Cascade)
+  - Added a new contributor trading card entry for Eric Pang, a machine learning engineer at Amazon (formerly Quora) and University of Waterloo Math/CS graduate.
+  - Captured his DreamCoder-inspired "DREAM" evolutionary program synthesis system that builds a reusable Python program library across ARC-AGI tasks using Grok-4, score-weighted program selection, and low test-time compute (~10 LLM calls per task).
+  - Documented that his approach breaks the performance–cost Pareto frontier versus frontier models on ARC-AGI-1 and ARC-AGI-2, with an estimated ~$2.56 cost per ARC-AGI-1 task.
+  - Wired his Hall of Fame card to the new `/ericpang.jpeg` portrait asset and categorized him as a `researcher` in the contributors seed data.
+  - **Files**: `server/scripts/seedContributors.ts`, `client/public/ericpang.jpeg`, `CHANGELOG.md`
+
 ### Version 5.44.0  Dec 6, 2025 (PENDING TESTING)
 
 - **Human Insights Resource Integration & Research Terminal Expansion** (Author: Claude Code using Haiku 4.5)
