@@ -63,14 +63,21 @@ export default function HumanTradingCards() {
     const topPaperAward2025 = [...topPaper2025Winners, ...paperAwards2025]
       .sort((a, b) => (a.rank || 999) - (b.rank || 999));
 
-    // All 2025 competition winners
+    // All 2025 competition winners (deduplicate by rank and teamName to avoid database duplicates)
     const allWinners2025 = contributors
       .filter(c => {
         if (!c.yearStart) return false;
         const endYear = c.yearEnd ?? 9999;
         return c.yearStart <= 2025 && endYear >= 2025 && c.category === 'competition_winner' && c.rank !== 0;
       })
-      .sort((a, b) => (a.rank || 999) - (b.rank || 999));
+      .sort((a, b) => (a.rank || 999) - (b.rank || 999))
+      .filter((contributor, index, array) => {
+        // Deduplicate: keep only first occurrence of each rank+teamName combination
+        return index === array.findIndex(c =>
+          c.rank === contributor.rank &&
+          c.teamName === contributor.teamName
+        );
+      });
 
     // Process each 2025 competition winner
     const competitionWinners2025 = allWinners2025.map(winner => {
