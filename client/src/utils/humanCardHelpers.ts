@@ -199,3 +199,35 @@ export function formatContributorCard(contributor: ArcContributor) {
     featured
   };
 }
+
+/**
+ * Split a team contributor with dual images into individual member contributors.
+ * Used for teams like NVARC and MindsAI where we want to show individual cards
+ * alongside the team card, but don't have separate database entries.
+ *
+ * @param teamContributor - Team contributor with comma-separated imageUrl
+ * @param memberNames - Array of member names (e.g., ['Jean-François Puget', 'Ivan Sorokin'])
+ * @returns Array of virtual contributor objects, one per member
+ */
+export function splitTeamIntoMembers(
+  teamContributor: ArcContributor,
+  memberNames: string[]
+): ArcContributor[] {
+  // Parse dual images from imageUrl
+  const imageUrls = teamContributor.imageUrl
+    ? teamContributor.imageUrl.split(',').map(url => url.trim()).filter(Boolean)
+    : [];
+
+  if (imageUrls.length === 0 || memberNames.length === 0) {
+    return [];
+  }
+
+  // Create virtual contributor for each member
+  return memberNames.map((name, index) => ({
+    ...teamContributor,
+    id: teamContributor.id * 1000 + index + 1, // Generate unique virtual ID
+    fullName: name,
+    imageUrl: imageUrls[index] || imageUrls[0], // Use corresponding image, or fallback to first
+    // Keep same achievement, score, rank, etc. from team
+  }));
+}
