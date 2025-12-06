@@ -12,7 +12,7 @@
 
 import React from 'react';
 import { Link } from 'wouter';
-import { Hash, Eye, Rocket, RefreshCw, ExternalLink, Palette, Users } from 'lucide-react';
+import { Hash, Eye, Rocket, RefreshCw, ExternalLink, Palette, Users, Brain } from 'lucide-react';
 import { getPuzzleName } from '@shared/utils/puzzleNames';
 import { getSynapsomorphyArcUrl } from '@shared/utils/synapsomorphy';
 import { EMOJI_SET_INFO, type EmojiSet } from '@/lib/spaceEmojis';
@@ -178,6 +178,18 @@ export function PuzzleHeader({
             🌳 Beetree Solver
           </button>
         </Link>
+
+        {/* Human Insights Button */}
+        <a
+          href={`https://arc-visualizations.github.io/${taskId}.html`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="btn btn-md btn-outline border-2 border-amber-400/60 hover:border-amber-500 hover:bg-amber-50 text-amber-700 font-semibold rounded-lg flex items-center"
+          title="View human test participant explanations and error examples for this puzzle"
+        >
+          <Brain className="h-4 w-4 mr-2" />
+          💡 Human Insights
+        </a>
 
         {synapsomorphyUrl && (
           <a
