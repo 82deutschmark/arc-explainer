@@ -84,7 +84,8 @@ export function useArc3AgentStream() {
   });
   const sseRef = useRef<EventSource | null>(null);
   const latestGuidRef = useRef<string | null>(null);  // Track latest guid synchronously to prevent race conditions
-  const [isPendingManualAction, setIsPendingManualAction] = useState(false);  // Lock concurrent manual actions
+  const isPendingActionRef = useRef(false);  // CRITICAL: Ref-based lock for synchronous check (state has stale closure issue)
+  const [isPendingManualAction, setIsPendingManualAction] = useState(false);  // State for UI updates (disable buttons)
   const streamingEnabled = isStreamingEnabled();
 
   const closeEventSource = useCallback(() => {
@@ -602,21 +603,27 @@ export function useArc3AgentStream() {
 
   const executeManualAction = useCallback(
     async (action: string, coordinates?: [number, number]) => {
+      // CRITICAL: Check ref FIRST for synchronous lock (state check has stale closure issue)
+      // If user clicks rapidly, the state-based check might not have updated yet
+      if (isPendingActionRef.current) {
+        console.warn('[ARC3 Manual Action] Blocked by ref lock - action already in progress');
+        throw new Error('Another action is in progress. Please wait.');
+      }
+
+      // CRITICAL: Set ref lock IMMEDIATELY before any async work
+      isPendingActionRef.current = true;
+
       // Use latest guid from ref (not state) to avoid race conditions
       const currentGuid = latestGuidRef.current || state.gameGuid;
       const currentGameId = state.gameId;
 
       if (!currentGuid || !currentGameId) {
+        isPendingActionRef.current = false;  // Release lock on early exit
         throw new Error('No active game session. Start a game first.');
       }
 
-      // Prevent concurrent manual actions to avoid guid race conditions
-      if (isPendingManualAction) {
-        throw new Error('Another action is in progress. Please wait.');
-      }
-
       try {
-        setIsPendingManualAction(true);  // Lock concurrent actions
+        setIsPendingManualAction(true);  // Also set state for UI updates (disable buttons after re-render)
 
         console.log('[ARC3 Manual Action] Executing:', {
           action,
@@ -703,10 +710,12 @@ export function useArc3AgentStream() {
         }));
         throw error;
       } finally {
-        setIsPendingManualAction(false);  // Unlock after completion or error
+        // CRITICAL: Release BOTH locks - ref first (synchronous), then state (async UI update)
+        isPendingActionRef.current = false;
+        setIsPendingManualAction(false);
       }
     },
-    [state.gameGuid, state.gameId, isPendingManualAction]
+    [state.gameGuid, state.gameId]  // Removed isPendingManualAction - now using ref for lock check
   );
 
   const initializeGameSession = useCallback((frameData: any) => {
