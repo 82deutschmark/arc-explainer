@@ -1,6 +1,12 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top with the time and date!
 
+### Version 5.46.4  Dec 6, 2025 (PENDING TESTING)
+
+- **ARC-AGI-3 ls20: add level 4 screenshot metadata** (Author: Cascade)
+  - Wired the Locksmith (ls20) game metadata to use the new `/ls20-lvl4.png` asset as a level screenshot via the shared `levelScreenshots` structure, mirroring the existing FT-09 screenshot configuration so it appears in the Screenshots tab on the game spoiler page.
+  - **Files**: `shared/arc3Games.ts`, `CHANGELOG.md`
+
 ### Version 5.46.3  Dec 6, 2025 (PENDING TESTING)
 
 - **ARC-AGI-3 prompt: add official ACTION6 guidance** (Author: GPT-5 (Codex))

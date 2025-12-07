@@ -186,6 +186,12 @@ The "Locksmith" game is a puzzle-exploration game where you control a white char
         description: 'Dries Smit\'s writeup on winning the preview competition',
       },
     ],
+    levelScreenshots: [
+      {
+        level: 4,
+        imageUrl: '/ls20-lvl4.png',
+      },
+    ],
     tags: ['puzzle', 'navigation', 'keys-and-doors', 'exploration', 'multi-level'],
     thumbnailUrl: '/ls20.png',
     isFullyDocumented: true,
