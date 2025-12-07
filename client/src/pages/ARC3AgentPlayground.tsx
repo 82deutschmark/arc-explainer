@@ -220,7 +220,7 @@ export default function ARC3AgentPlayground() {
   const [showUserInput, setShowUserInput] = useState(false);
 
   // Streaming
-  const { state, start, cancel, continueWithMessage, executeManualAction, initializeGameSession, setCurrentFrame, isPlaying } = useArc3AgentStream();
+  const { state, start, cancel, continueWithMessage, executeManualAction, initializeGameSession, setCurrentFrame, isPlaying, isPendingManualAction } = useArc3AgentStream();
 
   // Manual action state
   const [showCoordinatePicker, setShowCoordinatePicker] = useState(false);
@@ -651,14 +651,20 @@ export default function ARC3AgentPlayground() {
                     }
                   };
 
-                  const isDisabled = !state.gameGuid || !state.gameId || !isAvailable;
+                  const isDisabled = !state.gameGuid || !state.gameId || !isAvailable || isPendingManualAction;
 
                   return (
                     <button
                       key={actionName}
                       onClick={handleActionClick}
                       disabled={isDisabled}
-                      title={!isAvailable ? `${actionName} is not available in this game state` : `Execute ${actionName}`}
+                      title={
+                        isPendingManualAction
+                          ? 'Another action is in progress. Please wait...'
+                          : !isAvailable
+                          ? `${actionName} is not available in this game state`
+                          : `Execute ${actionName}`
+                      }
                       className={`px-3 py-1 rounded-full text-[11px] sm:text-xs font-semibold transition-all shadow-sm ${
                         isActive
                           ? 'bg-green-500 text-white animate-pulse shadow-lg'

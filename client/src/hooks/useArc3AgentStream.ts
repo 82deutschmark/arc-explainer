@@ -83,6 +83,8 @@ export function useArc3AgentStream() {
     streamingStatus: 'idle',
   });
   const sseRef = useRef<EventSource | null>(null);
+  const latestGuidRef = useRef<string | null>(null);  // Track latest guid synchronously to prevent race conditions
+  const [isPendingManualAction, setIsPendingManualAction] = useState(false);  // Lock concurrent manual actions
   const streamingEnabled = isStreamingEnabled();
 
   const closeEventSource = useCallback(() => {
@@ -428,6 +430,11 @@ export function useArc3AgentStream() {
           action: data.action // Add action metadata from event
         };
 
+        // Update ref with latest guid from streaming frames
+        if (frameWithAction.guid) {
+          latestGuidRef.current = frameWithAction.guid;
+        }
+
         setState((prev) => ({
           ...prev,
           frames: data.frameIndex === prev.frames.length
@@ -446,6 +453,11 @@ export function useArc3AgentStream() {
       try {
         const data = JSON.parse((evt as MessageEvent<string>).data);
         console.log('[ARC3 Stream] Agent completed:', data);
+
+        // Update ref with final guid for potential manual actions after agent completes
+        if (data.gameGuid) {
+          latestGuidRef.current = data.gameGuid;
+        }
 
         setState((prev) => ({
           ...prev,
@@ -590,12 +602,29 @@ export function useArc3AgentStream() {
 
   const executeManualAction = useCallback(
     async (action: string, coordinates?: [number, number]) => {
-      if (!state.gameGuid || !state.gameId) {
+      // Use latest guid from ref (not state) to avoid race conditions
+      const currentGuid = latestGuidRef.current || state.gameGuid;
+      const currentGameId = state.gameId;
+
+      if (!currentGuid || !currentGameId) {
         throw new Error('No active game session. Start a game first.');
       }
 
+      // Prevent concurrent manual actions to avoid guid race conditions
+      if (isPendingManualAction) {
+        throw new Error('Another action is in progress. Please wait.');
+      }
+
       try {
-        console.log('[ARC3 Manual Action] Executing:', { action, coordinates, currentGuid: state.gameGuid, gameId: state.gameId });
+        setIsPendingManualAction(true);  // Lock concurrent actions
+
+        console.log('[ARC3 Manual Action] Executing:', {
+          action,
+          coordinates,
+          currentGuid,
+          gameId: currentGameId,
+          usingRefGuid: latestGuidRef.current !== null,
+        });
 
         setState(prev => ({
           ...prev,
@@ -603,8 +632,8 @@ export function useArc3AgentStream() {
         }));
 
         const response = await apiRequest('POST', '/api/arc3/manual-action', {
-          game_id: state.gameId,
-          guid: state.gameGuid,
+          game_id: currentGameId,
+          guid: currentGuid,  // Use latest guid from ref
           action,
           coordinates,
         });
@@ -625,19 +654,8 @@ export function useArc3AgentStream() {
           available_actions: frameData.available_actions,
         });
 
-        // CRITICAL DEBUG: Log the actual frame structure
-        console.log('[ARC3 Manual Action] RAW frameData object:', frameData);
-        console.log('[ARC3 Manual Action] frameData.frame type:', typeof frameData.frame);
-        console.log('[ARC3 Manual Action] frameData.frame is Array?', Array.isArray(frameData.frame));
-        if (frameData.frame && Array.isArray(frameData.frame)) {
-          console.log('[ARC3 Manual Action] frameData.frame[0] type:', typeof frameData.frame[0]);
-          console.log('[ARC3 Manual Action] frameData.frame[0] is Array?', Array.isArray(frameData.frame[0]));
-          if (frameData.frame[0] && Array.isArray(frameData.frame[0])) {
-            console.log('[ARC3 Manual Action] frameData.frame[0][0] type:', typeof frameData.frame[0][0]);
-            console.log('[ARC3 Manual Action] frameData.frame[0][0] is Array?', Array.isArray(frameData.frame[0][0]));
-            console.log('[ARC3 Manual Action] frameData.frame[0][0] sample:', frameData.frame[0][0]?.slice(0, 5));
-          }
-        }
+        // CRITICAL: Update ref IMMEDIATELY (before setState) so next action gets fresh guid
+        latestGuidRef.current = frameData.guid;
 
         // Add action metadata to frame
         const frameWithAction = {
@@ -648,7 +666,7 @@ export function useArc3AgentStream() {
           },
         };
 
-        // Update state with new frame AND update gameGuid if it changed
+        // Update state with new frame AND update gameGuid
         setState(prev => {
           const newFrameIndex = prev.frames.length;
           console.log('[ARC3 Manual Action] Updating state:', {
@@ -660,7 +678,7 @@ export function useArc3AgentStream() {
 
           return {
             ...prev,
-            gameGuid: frameData.guid,  // CRITICAL: Update the guid for next action
+            gameGuid: frameData.guid,  // Update state guid
             frames: [...prev.frames, frameWithAction],
             currentFrameIndex: newFrameIndex,
             streamingMessage: `${action} completed`,
@@ -684,9 +702,11 @@ export function useArc3AgentStream() {
           error: errorMessage,
         }));
         throw error;
+      } finally {
+        setIsPendingManualAction(false);  // Unlock after completion or error
       }
     },
-    [state.gameGuid, state.gameId]
+    [state.gameGuid, state.gameId, isPendingManualAction]
   );
 
   const initializeGameSession = useCallback((frameData: any) => {
@@ -701,6 +721,9 @@ export function useArc3AgentStream() {
         length: frameData.frame[0]?.length,
       } : null,
     });
+
+    // CRITICAL: Set ref immediately so manual actions work right away
+    latestGuidRef.current = frameData.guid;
 
     setState(prev => ({
       ...prev,
@@ -739,5 +762,6 @@ export function useArc3AgentStream() {
     setCurrentFrame,
     currentFrame: state.frames[state.currentFrameIndex] || null,
     isPlaying: state.status === 'running' && state.streamingStatus === 'in_progress',
+    isPendingManualAction,  // Lock state for disabling action buttons during execution
   };
 }
