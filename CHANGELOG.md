@@ -1,6 +1,18 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top with the time and date!
 
+### Version 5.47.0  Dec 7, 2025 (PENDING TESTING)
+
+- **ARC-AGI-3 Playground: Add vision support with base64 grid images** (Author: Claude Code using Opus 4.5)
+  - Added server-side grid-to-PNG rendering for Arc3 games using the correct 16-color Arc3 palette (0-15).
+  - The `inspect_game_state` tool now returns a `frameImage` field containing a base64 PNG data URL alongside the numeric grid data.
+  - Vision-capable models (GPT-4o, Claude 3, Grok-2-Vision) can now "see" the grid instead of parsing numeric arrays.
+  - Optimized for 64×64 grids: 8px cell size produces 512×512px images.
+  - Created shared Arc3 color palette (`shared/config/arc3Colors.ts`) with RGB tuples, hex values, and human-readable names.
+  - **Why**: Research shows "GPT-4's reliance on textual encodings impedes effective problem solving" on ARC tasks. Visual input enables spatial reasoning.
+  - **Files Created**: `shared/config/arc3Colors.ts`, `server/services/arc3/arc3GridImageService.ts`
+  - **Files Modified**: `server/services/arc3/Arc3RealGameRunner.ts:22,126-132,403-409,139-140,416-417`, `CHANGELOG.md`
+
 ### Version 5.46.9  Dec 7, 2025 (PENDING TESTING)
 
 - **ARC-AGI-3 as66: add level 8 screenshot metadata** (Author: Cascade)
