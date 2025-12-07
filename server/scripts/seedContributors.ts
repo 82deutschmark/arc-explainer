@@ -54,7 +54,7 @@ const contributors: CreateContributorRequest[] = [
     approach: 'Self-improving evolutionary program synthesis: use an LLM to sample and refine candidate programs, then convert successful and near-miss search attempts into training data for a hindsight fine-tuning phase that improves the LLM search operator over iterations.',
     uniqueTechnique: 'Shows how to close the loop between evolutionary search and LLM training: SOAR turns search traces into supervised data, leveraging positive transfer across tasks to significantly boost ARC-AGI performance without hand-designed DSLs or solution datasets.',
     links: {
-      papers: ['https://arxiv.org/abs/2507.14172'],
+      papers: [''],
       github: '',
       youtube: 'https://www.youtube.com/watch?v=9lIuoslCHWI'
     },
