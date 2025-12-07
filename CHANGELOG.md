@@ -1,6 +1,24 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top with the time and date!
 
+### Version 5.46.6  Dec 6, 2025 (PENDING TESTING)
+
+- **ARC-AGI-3 ls20: add level 5 screenshot metadata** (Author: Cascade)
+  - Added a second level screenshot entry for Locksmith (ls20) pointing to `/ls20-lvl5.png` via the shared `levelScreenshots` structure so both levels 4 and 5 appear in the Screenshots tab on the game spoiler page.
+  - **Files**: `shared/arc3Games.ts`, `CHANGELOG.md`
+
+### Version 5.46.5  Dec 6, 2025 (PENDING TESTING)
+
+- **ARC-AGI-3 Playground: Sync game selection with URL parameters** (Author: Claude Code using Sonnet 4.5)
+  - Fixed game selector not updating URL when switching games - URL now updates to `?game=<gameId>` when selecting different games.
+  - Added `useLocation` and `useSearch` from wouter to read and update URL query parameters.
+  - Initial game now loads from URL param (`?game=ft09`) instead of hardcoded default, enabling direct links to specific games.
+  - Page refresh now preserves selected game state via URL params.
+  - Browser back/forward buttons now work for game navigation.
+  - **Issue**: Selecting different game only updated UI, URL stayed unchanged (e.g., stuck on `?game=ft09`), breaking refresh, sharing, and browser history.
+  - **Root Cause**: Game selector only called `setGameId()` and `fetchGameGrid()`, never updated URL state.
+  - **Files Modified**: `client/src/pages/ARC3AgentPlayground.tsx:18,119-125,148,218,448-453`, `CHANGELOG.md`
+
 ### Version 5.46.4  Dec 6, 2025 (PENDING TESTING)
 
 - **ARC-AGI-3 ls20: add level 4 screenshot metadata** (Author: Cascade)
