@@ -84,6 +84,7 @@ export function useArc3AgentStream() {
   });
   const sseRef = useRef<EventSource | null>(null);
   const latestGuidRef = useRef<string | null>(null);  // Track latest guid synchronously to prevent race conditions
+  const latestGameIdRef = useRef<string | null>(null);  // CRITICAL: Track gameId in sync with guid to prevent mismatch
   const isPendingActionRef = useRef(false);  // CRITICAL: Ref-based lock for synchronous check (state has stale closure issue)
   const [isPendingManualAction, setIsPendingManualAction] = useState(false);  // State for UI updates (disable buttons)
   const streamingEnabled = isStreamingEnabled();
@@ -431,9 +432,12 @@ export function useArc3AgentStream() {
           action: data.action // Add action metadata from event
         };
 
-        // Update ref with latest guid from streaming frames
+        // Update refs with latest guid AND gameId from streaming frames (keep them in sync!)
         if (frameWithAction.guid) {
           latestGuidRef.current = frameWithAction.guid;
+        }
+        if (frameWithAction.game_id) {
+          latestGameIdRef.current = frameWithAction.game_id;
         }
 
         setState((prev) => ({
@@ -455,9 +459,12 @@ export function useArc3AgentStream() {
         const data = JSON.parse((evt as MessageEvent<string>).data);
         console.log('[ARC3 Stream] Agent completed:', data);
 
-        // Update ref with final guid for potential manual actions after agent completes
+        // Update refs with final guid AND gameId for potential manual actions after agent completes
         if (data.gameGuid) {
           latestGuidRef.current = data.gameGuid;
+        }
+        if (data.gameId) {
+          latestGameIdRef.current = data.gameId;
         }
 
         setState((prev) => ({
@@ -613,9 +620,10 @@ export function useArc3AgentStream() {
       // CRITICAL: Set ref lock IMMEDIATELY before any async work
       isPendingActionRef.current = true;
 
-      // Use latest guid from ref (not state) to avoid race conditions
+      // CRITICAL: Use BOTH refs (not state) to avoid guid/gameId mismatch when user rapidly switches games
+      // The refs are updated synchronously in initializeGameSession, while state updates are async
       const currentGuid = latestGuidRef.current || state.gameGuid;
-      const currentGameId = state.gameId;
+      const currentGameId = latestGameIdRef.current || state.gameId;
 
       if (!currentGuid || !currentGameId) {
         isPendingActionRef.current = false;  // Release lock on early exit
@@ -631,6 +639,9 @@ export function useArc3AgentStream() {
           currentGuid,
           gameId: currentGameId,
           usingRefGuid: latestGuidRef.current !== null,
+          usingRefGameId: latestGameIdRef.current !== null,
+          stateGuid: state.gameGuid,
+          stateGameId: state.gameId,
         });
 
         setState(prev => ({
@@ -661,8 +672,9 @@ export function useArc3AgentStream() {
           available_actions: frameData.available_actions,
         });
 
-        // CRITICAL: Update ref IMMEDIATELY (before setState) so next action gets fresh guid
+        // CRITICAL: Update BOTH refs IMMEDIATELY (before setState) so next action gets fresh values
         latestGuidRef.current = frameData.guid;
+        latestGameIdRef.current = frameData.game_id;
 
         // Add action metadata to frame
         const frameWithAction = {
@@ -731,8 +743,10 @@ export function useArc3AgentStream() {
       } : null,
     });
 
-    // CRITICAL: Set ref immediately so manual actions work right away
+    // CRITICAL: Set BOTH refs immediately so manual actions work right away
+    // State updates are async, but refs are synchronous - prevents guid/gameId mismatch
     latestGuidRef.current = frameData.guid;
+    latestGameIdRef.current = frameData.game_id;
 
     setState(prev => ({
       ...prev,
