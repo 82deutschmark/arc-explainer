@@ -54,3 +54,28 @@ Only the **first 16** emojis from that sequence are used here.
 - **Teaching / explanation tools** – use the randomness to emphasise that colour *indices* are abstract labels, not inherently tied to any real-world meaning.
 
 If you later want a code-ready mapping (e.g. `ARC3_EMOJI_PALETTE[0] === '🧇'`), you can mirror this table in TypeScript, or feed these directly into `EmojiMosaicAccent` via `customCells`.
+
+---
+
+## Random Example ARC3 Palettes (from `emojis.md`)
+
+Below are additional 16-emoji palettes for ARC3.  
+Each line is a **length-16 sequence** intended to be read as:
+
+> colour index 0 → first emoji, 1 → second emoji, …, 15 → sixteenth emoji
+
+The emojis were chosen by sampling one glyph from different arrays in `client/src/lib/emojis.md` (`SPACE_EMOJIS`).  
+The set names are ignored at usage time – these are just strange symbols in an ARC3 alphabet.
+
+### Palette A
+
+`🌟 ⚡ 🔥 🌪 🤪 🤖 💠 👽 🦄 🐍 🍍 🍪 🍄 🧪 𓂀 ♊`
+
+### Palette B
+
+`🌕 📡 🍔 🎲 ㊗️ 🚪 🐙 🐤 🏰 🦋 🔨 🎸 🥕 ☕ ⚽ 🚗`
+
+### Palette C
+
+`🌞 😎 💡 🆎 🐯 🐢 🥭 🧁 🌴 🔬 𓃒 ♌ 🧢 🏠 🟡 🍷`
+

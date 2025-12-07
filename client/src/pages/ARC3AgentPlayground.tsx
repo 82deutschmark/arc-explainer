@@ -815,7 +815,7 @@ export default function ARC3AgentPlayground() {
                     </div>
                   )}
 
-                  {/* Color Legend */}
+                  {/* Color Legend INCORRECT!!!!!  NEED TO READ FROM A CENTRAL SOT!!!*/}
                   <div className="grid grid-cols-5 gap-1 text-[9px]">
                     {[
                       { color: '#000000', name: '0' },
