@@ -97,9 +97,9 @@ export const TeamWinnerGroup: React.FC<TeamWinnerGroupProps> = ({ teamContributo
   );
 
   return (
-    <div className="w-full border border-zinc-700/50 rounded-xl bg-gradient-to-br from-zinc-900/50 to-black/50 p-6 shadow-lg">
+    <div className="w-full border border-zinc-700/50 rounded-xl bg-gradient-to-br from-zinc-900/50 to-black/50 p-4 shadow-lg">
       {/* Desktop: side-by-side layout */}
-      <div className="hidden md:flex gap-6">
+      <div className="hidden md:flex gap-4">
         {/* Left: Team card */}
         <div className="flex-shrink-0 w-full max-w-xs">
           <TeamCardWithDualImages />
@@ -118,14 +118,14 @@ export const TeamWinnerGroup: React.FC<TeamWinnerGroupProps> = ({ teamContributo
       </div>
 
       {/* Mobile: Stacked vertical layout */}
-      <div className="flex md:hidden flex-col gap-6">
+      <div className="flex md:hidden flex-col gap-4">
         {/* Team card */}
         <div className="w-full max-w-sm mx-auto">
           <TeamCardWithDualImages />
         </div>
 
         {/* Member cards stacked */}
-        <div className="space-y-4">
+        <div className="space-y-3">
           {members.map(member => (
             <div key={member.id} className="flex justify-center">
               <div className="w-full max-w-[280px]">

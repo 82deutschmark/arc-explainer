@@ -55,6 +55,20 @@ export interface GameResource {
 }
 
 /**
+ * Screenshot of a specific game level
+ */
+export interface LevelScreenshot {
+  /** Level number (1-based) */
+  level: number;
+  /** Image URL relative to public folder (e.g., '/ft09-lvl8.png') */
+  imageUrl: string;
+  /** Optional caption or description */
+  caption?: string;
+  /** Optional notes about this specific level */
+  notes?: string;
+}
+
+/**
  * Complete metadata for an ARC-AGI-3 game
  */
 export interface Arc3GameMetadata {
@@ -96,7 +110,10 @@ export interface Arc3GameMetadata {
   
   /** External resources (articles, videos, etc.) */
   resources: GameResource[];
-  
+
+  /** Level screenshots organized by level number */
+  levelScreenshots?: LevelScreenshot[];
+
   /** Tags for categorization */
   tags: string[];
   
@@ -154,40 +171,7 @@ The "Locksmith" game is a puzzle-exploration game where you control a white char
       { action: 'ACTION5', commonName: 'Space/Action', description: 'Interact with environment (pick up key, unlock door)' },
       { action: 'ACTION6', commonName: 'Click', description: 'Click at specific coordinates (x, y)', notes: 'Requires coordinate parameters' },
     ],
-    hints: [
-      {
-        id: 'ls20-hint-1',
-        title: 'The Name Gives It Away',
-        content: 'The informal name "Locksmith" hints at the core mechanic - you need to find and use keys to unlock doors.',
-        spoilerLevel: 1,
-        contributor: 'Community',
-        dateAdded: '2025-11-01',
-      },
-      {
-        id: 'ls20-hint-2',
-        title: 'Color Matching',
-        content: 'Keys and doors are color-coded. You need the blue key for blue doors, orange key for orange doors, etc.',
-        spoilerLevel: 2,
-        contributor: 'Community',
-        dateAdded: '2025-11-01',
-      },
-      {
-        id: 'ls20-hint-3',
-        title: 'Exploration Strategy',
-        content: 'Start by exploring the entire visible area before committing to a path. Keys may be hidden in corners or behind obstacles you need to navigate around.',
-        spoilerLevel: 2,
-        contributor: 'StochasticGoose',
-        dateAdded: '2025-11-15',
-      },
-      {
-        id: 'ls20-hint-4',
-        title: 'Level Progression',
-        content: 'The game has 8 levels. Each level is more complex than the last. Win score of 8 means you need to complete all 8 levels.',
-        spoilerLevel: 3,
-        contributor: 'Community',
-        dateAdded: '2025-11-20',
-      },
-    ],
+    hints: [],
     resources: [
       {
         title: 'ARC-AGI-3 Preview: 30-Day Learnings',
@@ -203,7 +187,7 @@ The "Locksmith" game is a puzzle-exploration game where you control a white char
       },
     ],
     tags: ['puzzle', 'navigation', 'keys-and-doors', 'exploration', 'multi-level'],
-    thumbnailUrl: '/images/arc3/ls20-thumbnail.png',
+    thumbnailUrl: '/ls20.png',
     isFullyDocumented: true,
     notes: 'This was one of the most studied games during the preview period.',
   },
@@ -211,14 +195,15 @@ The "Locksmith" game is a puzzle-exploration game where you control a white char
   as66: {
     gameId: 'as66',
     officialTitle: 'as66',
-    informalName: undefined, // Community hasn't named this one yet
-    description: 'An ARC-AGI-3 preview game. Mechanics and objective to be documented.',
+    informalName: 'Always Sliding',
+    description: 'A dynamic puzzle game featuring continuously moving elements. Navigate and solve challenges in an environment where objects are always in motion.',
     category: 'preview',
     difficulty: 'unknown',
     actionMappings: [],
     hints: [],
     resources: [],
-    tags: [],
+    tags: ['sliding', 'motion', 'dynamic'],
+    thumbnailUrl: '/as66.png',
     isFullyDocumented: false,
     notes: 'Part of the original preview set. Documentation in progress.',
   },
@@ -226,29 +211,74 @@ The "Locksmith" game is a puzzle-exploration game where you control a white char
   ft09: {
     gameId: 'ft09',
     officialTitle: 'ft09',
-    informalName: undefined,
-    description: 'An ARC-AGI-3 preview game. Mechanics and objective to be documented.',
+    informalName: 'Functional Tiles',
+    description: 'A puzzle game featuring tiles with specific functions and behaviors. Interact with different tile types to solve spatial challenges and manage colored resources.',
+    mechanicsExplanation: `
+The "Functional Tiles" game is a spatial puzzle where you interact with different tile types to achieve level objectives.
+
+**Objective:** Navigate and manipulate various functional tiles to complete increasingly complex puzzles across multiple levels.
+
+**Key Mechanics:**
+- Multiple tile types with distinct visual patterns and behaviors
+- Resource management indicated by colored bars (yellow, green, light blue)
+- Gray "container" tiles with colored elements (yellow/white, green/white patterns)
+- Yellow solid tiles (possibly moveable or interactive elements)
+- Pink/magenta tiles with yellow cross/checkered patterns (special function tiles)
+- Vertical progress/inventory indicator on the right side showing collected or available resources
+
+**Visual Elements:**
+- Dark gray/black: Background grid
+- Gray tiles with patterns: Interactive containers or puzzle elements
+- Yellow tiles: Primary interactive elements
+- Pink/magenta checkered tiles: Special function tiles
+- Light blue tiles: Secondary resource or goal elements
+- Right-side colored bar: Resource inventory or progress tracker (yellow, green, blue sections)
+
+**Level Progression:**
+- At least 9 levels confirmed (screenshots available for levels 8 and 9)
+- Complexity increases with more tile types and spatial arrangements
+- Later levels (8, 9) show intricate tile placement patterns requiring strategic interaction
+    `,
     category: 'preview',
-    difficulty: 'unknown',
-    actionMappings: [],
+    difficulty: 'medium',
+    levelCount: 9,
+    actionMappings: [
+      { action: 'ACTION1', commonName: 'Up', description: 'Move or interact upward' },
+      { action: 'ACTION2', commonName: 'Down', description: 'Move or interact downward' },
+      { action: 'ACTION3', commonName: 'Left', description: 'Move or interact left' },
+      { action: 'ACTION4', commonName: 'Right', description: 'Move or interact right' },
+      { action: 'ACTION5', commonName: 'Action/Interact', description: 'Activate tile function or interact with element' },
+    ],
     hints: [],
     resources: [],
-    tags: [],
+    levelScreenshots: [
+      {
+        level: 8,
+        imageUrl: '/ft09-lvl8.png',
+      },
+      {
+        level: 9,
+        imageUrl: '/ft09-lvl9.png',
+      },
+    ],
+    tags: ['tiles', 'functions', 'spatial', 'resource-management', 'multi-level'],
+    thumbnailUrl: '/ft09.png',
     isFullyDocumented: false,
-    notes: 'Part of the original preview set. Documentation in progress.',
+    notes: 'Part of the original preview set. Level 8 and 9 screenshots reveal complex tile-based puzzle mechanics with resource management elements.',
   },
 
   lp85: {
     gameId: 'lp85',
     officialTitle: 'lp85',
-    informalName: undefined,
-    description: 'An ARC-AGI-3 evaluation game. This was held back during the preview for evaluation purposes.',
+    informalName: 'Loop & Pull',
+    description: 'A puzzle game involving looping patterns and pulling mechanics. Master the interplay between circular movements and directional forces.',
     category: 'evaluation',
     difficulty: 'unknown',
     actionMappings: [],
     hints: [],
     resources: [],
-    tags: ['evaluation-set'],
+    tags: ['evaluation-set', 'loops', 'mechanics', 'patterns'],
+    thumbnailUrl: '/lp85.png',
     isFullyDocumented: false,
     notes: 'Part of the evaluation set - held back from public preview.',
   },
@@ -256,14 +286,15 @@ The "Locksmith" game is a puzzle-exploration game where you control a white char
   sp80: {
     gameId: 'sp80',
     officialTitle: 'sp80',
-    informalName: undefined,
-    description: 'An ARC-AGI-3 evaluation game. This was held back during the preview for evaluation purposes.',
+    informalName: 'Streaming Purple',
+    description: 'A visually distinctive game featuring flowing purple elements. Navigate or manipulate streaming patterns to achieve objectives.',
     category: 'evaluation',
     difficulty: 'unknown',
     actionMappings: [],
     hints: [],
     resources: [],
-    tags: ['evaluation-set'],
+    tags: ['evaluation-set', 'streaming', 'visual', 'flow'],
+    thumbnailUrl: '/sp80.png',
     isFullyDocumented: false,
     notes: 'Part of the evaluation set - held back from public preview.',
   },
@@ -271,14 +302,15 @@ The "Locksmith" game is a puzzle-exploration game where you control a white char
   vc33: {
     gameId: 'vc33',
     officialTitle: 'vc33',
-    informalName: undefined,
-    description: 'An ARC-AGI-3 evaluation game. This was held back during the preview for evaluation purposes.',
+    informalName: 'Volume Control',
+    description: 'A puzzle game centered on adjusting volumes, sizes, or quantities. Manipulate spatial or numerical properties to solve challenges.',
     category: 'evaluation',
     difficulty: 'unknown',
     actionMappings: [],
     hints: [],
     resources: [],
-    tags: ['evaluation-set'],
+    tags: ['evaluation-set', 'volume', 'adjustment', 'spatial'],
+    thumbnailUrl: '/vc33.png',
     isFullyDocumented: false,
     notes: 'Part of the evaluation set - held back from public preview.',
   },

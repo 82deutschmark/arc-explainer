@@ -27,6 +27,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { usePageMeta } from '@/hooks/usePageMeta';
+import { getAllGames } from '../../../shared/arc3Games';
 
 export default function ARC3Browser() {
   usePageMeta({
@@ -35,10 +36,13 @@ export default function ARC3Browser() {
       'Learn how ARC-AGI-3 interactive reasoning benchmarks differ from ARC 1 & 2 and explore agents, games, and resources.',
     canonicalPath: '/arc3',
   });
+  const arc3GameThumbs = getAllGames()
+    .filter(game => game.thumbnailUrl)
+    .slice(0, 6);
   return (
-    <div className="container mx-auto px-4 py-8 max-w-6xl">
+    <div className="container mx-auto px-4 py-6 max-w-6xl">
       {/* Hero Section */}
-      <div className="text-center mb-12">
+      <div className="text-center mb-8">
         <div className="flex items-center justify-center gap-3 mb-4">
           <Gamepad2 className="h-12 w-12 text-primary" />
           <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
@@ -52,15 +56,148 @@ export default function ARC3Browser() {
           A groundbreaking benchmark that tests AI systems through game-based environments,
           evaluating exploration, memory, planning, and goal acquisition—not static puzzle solving.
         </p>
-        <div className="mt-6 flex justify-center">
+        <div className="mt-6 flex flex-wrap justify-center gap-3">
           <Button asChild>
+            <Link href="/arc3/games">Browse ARC-AGI-3 Games</Link>
+          </Button>
+          <Button asChild variant="outline">
             <Link href="/arc3/playground">Launch ARC3 Playground</Link>
           </Button>
         </div>
       </div>
 
+      {/* Explore ARC-AGI-3 on this site */}
+      <section className="mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {/* Games Browser highlight */}
+          <Card className="hover:shadow-lg transition-shadow border-primary/20 bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-950 dark:to-purple-950">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Gamepad2 className="h-5 w-5 text-primary" />
+                ARC-AGI-3 Games Browser
+              </CardTitle>
+              <CardDescription>
+                Spoiler-friendly index of all revealed ARC-AGI-3 games with mechanics, hints, and strategies.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="text-sm text-muted-foreground space-y-2">
+                <p>• 6 revealed games (3 preview + 3 evaluation)</p>
+                <p>• Mechanics documentation and action mappings where available</p>
+                <p>• Community hints and strategy notes</p>
+              </div>
+              <div className="mt-4 grid grid-cols-3 gap-3">
+                {arc3GameThumbs.map(game => (
+                  <Link
+                    key={game.gameId}
+                    href={`/arc3/games/${game.gameId}`}
+                    className="aspect-square rounded-md overflow-hidden border border-border/40 bg-muted flex items-center justify-center hover:border-primary/40 hover:shadow-md transition-all cursor-pointer"
+                  >
+                    {game.thumbnailUrl ? (
+                      <img
+                        src={game.thumbnailUrl}
+                        alt={game.informalName ? `${game.informalName} (${game.gameId})` : game.gameId}
+                        className="h-full w-full object-cover"
+                        loading="lazy"
+                      />
+                    ) : (
+                      <span className="text-[10px] text-muted-foreground px-1 text-center">
+                        {game.gameId}
+                      </span>
+                    )}
+                  </Link>
+                ))}
+              </div>
+              <Button asChild className="mt-4 w-full">
+                <Link href="/arc3/games">
+                  Browse Games
+                </Link>
+              </Button>
+            </CardContent>
+          </Card>
+
+          {/* ARC-AGI-3 2026 roadmap & known facts */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Info className="h-5 w-5 text-primary" />
+                ARC-AGI-3 2026 roadmap & known facts
+              </CardTitle>
+              <CardDescription>
+                High-signal summary of what is publicly known about ARC-AGI-3 ("ARC3") and the 2026 ARC-AGI-2/3 competitions.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-3 text-sm text-muted-foreground">
+              <p>
+                ARC-AGI-3 is still evolving. The points below reflect the most accurate public information we have as of late 2025.
+                Details may change over time—always cross-check against the official ARC Prize announcements and documentation.
+              </p>
+              <div className="space-y-3">
+                <div>
+                  <p className="font-semibold text-foreground">Timeline &amp; competitions</p>
+                  <ul className="list-disc list-inside ml-4 space-y-1">
+                    <li>ARC-AGI-2 and ARC-AGI-3 will both run as official ARC Prize competitions in 2026.</li>
+                    <li>Exact dates, phases, and prize structure have not been finalized or publicly announced yet.</li>
+                  </ul>
+                </div>
+                <div>
+                  <p className="font-semibold text-foreground">Game format</p>
+                  <ul className="list-disc list-inside ml-4 space-y-1">
+                    <li>
+                      ARC-AGI-3 games are interactive 64×64 grid environments where agents act through an API over thousands of
+                      steps.
+                    </li>
+                    <li>
+                      The benchmark measures exploration, memory, goal acquisition, and long-horizon planning rather than
+                      single-shot pattern matching.
+                    </li>
+                  </ul>
+                </div>
+                <div>
+                  <p className="font-semibold text-foreground">Python library plans</p>
+                  <ul className="list-disc list-inside ml-4 space-y-1">
+                    <li>
+                      The ARC Prize team has indicated that ARC-AGI-3 games are expected to be released as a Python library so
+                      agents can be run locally.
+                    </li>
+                    <li>
+                      Until that library ships, the canonical interface is the hosted platform at three.arcprize.org together
+                      with the official ARC-AGI-3 agent SDKs.
+                    </li>
+                  </ul>
+                </div>
+                <div>
+                  <p className="font-semibold text-foreground">What is still unknown</p>
+                  <ul className="list-disc list-inside ml-4 space-y-1">
+                    <li>Exact prize amounts and detailed reward breakdowns for the 2026 competitions.</li>
+                    <li>The full list of public, preview, and hidden games that will appear in the final evaluation sets.</li>
+                    <li>Any additional benchmark variants beyond the currently previewed interactive reasoning games.</li>
+                  </ul>
+                </div>
+                <div>
+                  <p className="font-semibold text-foreground">How to use this page</p>
+                  <ul className="list-disc list-inside ml-4 space-y-1">
+                    <li>
+                      Use the ARC-AGI-3 Games Browser on this site to study individual games with spoilers, mechanics, and
+                      strategies once you are comfortable with seeing spoilers.
+                    </li>
+                    <li>
+                      Follow the official links above for platform access, documentation, and competition announcements.
+                    </li>
+                    <li>
+                      Treat this page as a concise, searchable reference for humans and language models that need accurate
+                      high-level context about ARC-AGI-3.
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </section>
+
       {/* Key Difference Alert */}
-      <Alert className="mb-8 border-blue-500 bg-blue-50 dark:bg-blue-950">
+      <Alert className="mb-6 border-blue-500 bg-blue-50 dark:bg-blue-950">
         <Info className="h-4 w-4 text-blue-600 dark:text-blue-400" />
         <AlertTitle className="text-blue-900 dark:text-blue-100">
           ARC-AGI-3 is fundamentally different from ARC 1 & 2
@@ -156,7 +293,7 @@ export default function ARC3Browser() {
       </Card>
 
       {/* External Resources */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-12">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-10">
         <Card>
           <CardHeader>
             <CardTitle className="text-base flex items-center gap-2">
@@ -232,110 +369,6 @@ export default function ARC3Browser() {
           </CardContent>
         </Card>
       </div>
-
-      {/* Future Features - Coming Soon */}
-      <div className="space-y-6">
-        <h2 className="text-2xl font-bold text-center mb-6">
-          Coming Soon to This Platform
-        </h2>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {/* Games List - Now Active! */}
-          <Card className="hover:shadow-lg transition-shadow border-primary/20">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Gamepad2 className="h-5 w-5 text-primary" />
-                Games Browser
-              </CardTitle>
-              <CardDescription>
-                Browse all ARC-AGI-3 games with spoilers, hints, and strategies
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="text-sm text-muted-foreground space-y-2">
-                <p>• 6 revealed games (3 preview + 3 evaluation)</p>
-                <p>• Mechanics documentation and action mappings</p>
-                <p>• Community hints and strategies</p>
-              </div>
-              <Button asChild className="mt-4 w-full">
-                <Link href="/arc3/games">
-                  Browse Games
-                </Link>
-              </Button>
-            </CardContent>
-          </Card>
-
-          {/* Leaderboard */}
-          <Card className="opacity-60">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Trophy className="h-5 w-5" />
-                Leaderboard
-              </CardTitle>
-              <CardDescription>
-                View top-performing agents and their scores across all games
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="text-sm text-muted-foreground space-y-2">
-                <p>• Agent rankings by total score</p>
-                <p>• Win rates per game</p>
-                <p>• Action efficiency metrics</p>
-              </div>
-              <div className="mt-4 text-xs text-muted-foreground italic">
-                Feature in development
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Scorecard Viewer */}
-          <Card className="opacity-60">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <BarChart3 className="h-5 w-5" />
-                Scorecard Viewer
-              </CardTitle>
-              <CardDescription>
-                Analyze detailed performance metrics for individual agent runs
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="text-sm text-muted-foreground space-y-2">
-                <p>• Detailed score breakdowns</p>
-                <p>• Action counts and patterns</p>
-                <p>• Game state progression</p>
-              </div>
-              <div className="mt-4 text-xs text-muted-foreground italic">
-                Feature in development
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Replay Viewer */}
-          <Card className="opacity-60">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Play className="h-5 w-5" />
-                Replay Viewer
-              </CardTitle>
-              <CardDescription>
-                Watch step-by-step replays of agent gameplay sessions
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="text-sm text-muted-foreground space-y-2">
-                <p>• Frame-by-frame playback</p>
-                <p>• Action visualization</p>
-                <p>• Performance annotations</p>
-              </div>
-              <div className="mt-4 text-xs text-muted-foreground italic">
-                Feature in development
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      </div>
-
       {/* Reference Materials */}
       <Card className="mt-12">
         <CardHeader>

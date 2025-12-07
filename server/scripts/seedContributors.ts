@@ -50,12 +50,12 @@ const contributors: CreateContributorRequest[] = [
     description: 'Authors of SOAR, a self-improving evolutionary program synthesis framework that alternates between LLM-driven evolutionary search for ARC-AGI programs and hindsight fine-tuning on its own search traces, steadily improving the model as a search operator without human-engineered DSLs or curated solution datasets.',
     yearStart: 2025,
     yearEnd: 2025,
-    score: 'Up to 52% solved on the ARC-AGI public test set via self-improving evolutionary program synthesis.',
+    score: '2nd Place 2025 Paper Award',
     approach: 'Self-improving evolutionary program synthesis: use an LLM to sample and refine candidate programs, then convert successful and near-miss search attempts into training data for a hindsight fine-tuning phase that improves the LLM search operator over iterations.',
     uniqueTechnique: 'Shows how to close the loop between evolutionary search and LLM training: SOAR turns search traces into supervised data, leveraging positive transfer across tasks to significantly boost ARC-AGI performance without hand-designed DSLs or solution datasets.',
     links: {
-      papers: ['https://arxiv.org/abs/2507.14172'],
-      github: 'https://github.com/flowersteam/SOAR',
+      papers: [''],
+      github: '',
       youtube: 'https://www.youtube.com/watch?v=9lIuoslCHWI'
     },
     teamName: 'SOAR',
