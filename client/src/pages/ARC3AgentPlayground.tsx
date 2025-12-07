@@ -14,10 +14,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
-import { Gamepad2, Play, Square, Brain, Wrench, ArrowLeft, RefreshCw, Eye, EyeOff } from 'lucide-react';
+import { Gamepad2, Play, Square, ArrowLeft, RefreshCw, Eye, EyeOff } from 'lucide-react';
 import { Link, useLocation, useSearch } from 'wouter';
 import { useArc3AgentStream } from '@/hooks/useArc3AgentStream';
 import { Arc3GridVisualization } from '@/components/arc3/Arc3GridVisualization';
+import { Arc3ReasoningViewer } from '@/components/arc3/Arc3ReasoningViewer';
+import { Arc3ToolTimeline } from '@/components/arc3/Arc3ToolTimeline';
 import { apiRequest } from '@/lib/queryClient';
 import { usePageMeta } from '@/hooks/usePageMeta';
 
@@ -123,9 +125,6 @@ export default function ARC3AgentPlayground() {
     const params = new URLSearchParams(searchParams);
     return params.get('game') || 'ls20';  // Default to ls20 if no game param
   }, [searchParams]);
-
-  // Auto-scroll ref for streaming panel
-  const reasoningContainerRef = React.useRef<HTMLDivElement>(null);
 
   // Fetch games
   const [games, setGames] = useState<GameInfo[]>([]);
@@ -266,20 +265,7 @@ export default function ARC3AgentPlayground() {
     }
   };
 
-  // Auto-scroll streaming panel to bottom when new content arrives
-  React.useEffect(() => {
-    if (reasoningContainerRef.current) {
-      setTimeout(() => {
-        if (reasoningContainerRef.current) {
-          reasoningContainerRef.current.scrollTop = reasoningContainerRef.current.scrollHeight;
-        }
-      }, 0);
-    }
-  }, [state.timeline, state.streamingReasoning]);
-
   // Filter timeline entries by type
-  const reasoningEntries = state.timeline.filter(entry => entry.type === 'reasoning');
-  const assistantMessages = state.timeline.filter(entry => entry.type === 'assistant_message');
   const toolEntries = state.timeline.filter(entry => entry.type === 'tool_call' || entry.type === 'tool_result');
 
   // Get available models (OpenAI only for ARC3 Agents SDK)
@@ -636,40 +622,11 @@ export default function ARC3AgentPlayground() {
           )}
 
           {/* Actions */}
-          <Card className="text-xs">
-            <CardHeader className="pb-2 pt-3 px-3">
-              <CardTitle className="text-sm flex items-center gap-1.5">
-                <Wrench className="h-3.5 w-3.5" />
-                Actions
-                {isPlaying && state.streamingMessage?.includes('called') && (
-                  <div className="flex items-center gap-1">
-                    <RefreshCw className="h-3 w-3 animate-spin text-blue-500" />
-                    <span className="text-[9px] text-blue-600">Calling ARC3 API...</span>
-                  </div>
-                )}
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="px-3 pb-3">
-              <div className="space-y-1.5 max-h-48 overflow-y-auto text-[10px]">
-                {toolEntries.length === 0 ? (
-                  <p className="text-muted-foreground text-center py-3">No actions yet</p>
-                ) : (
-                  toolEntries.map((entry, idx) => (
-                    <div key={idx} className={`p-1.5 rounded border ${
-                      idx === toolEntries.length - 1 && isPlaying && state.streamingMessage?.includes('called')
-                        ? 'bg-blue-50 border-blue-300 animate-pulse'
-                        : 'bg-muted/30'
-                    }`}>
-                      <p className="font-medium text-[10px]">{entry.label}</p>
-                      <pre className="text-[9px] text-muted-foreground mt-0.5 overflow-x-auto">
-                        {entry.content.substring(0, 80)}...
-                      </pre>
-                    </div>
-                  ))
-                )}
-              </div>
-            </CardContent>
-          </Card>
+          <Arc3ToolTimeline
+            entries={toolEntries}
+            isPlaying={isPlaying}
+            streamingMessage={state.streamingMessage}
+          />
         </div>
 
         {/* CENTER: Action pills now occupy former game selector spot */}
@@ -826,65 +783,12 @@ export default function ARC3AgentPlayground() {
 
         {/* RIGHT: Streaming Reasoning - Auto-advance, larger text */}
         <div className="lg:col-span-4">
-          <Card className="h-full">
-            <CardHeader className="pb-2 pt-3 px-3">
-              <CardTitle className="text-base font-bold flex items-center gap-1.5">
-                <Brain className="h-4 w-4" />
-                Agent Reasoning
-                {isPlaying && <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse" />}
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="px-3 pb-3">
-              <div ref={reasoningContainerRef} className="space-y-2 max-h-[calc(100vh-10rem)] overflow-y-auto text-sm">
-                {reasoningEntries.length === 0 && assistantMessages.length === 0 && !isPlaying ? (
-                  <div className="text-center text-muted-foreground py-10">
-                    <Brain className="h-8 w-8 mx-auto mb-2 opacity-50" />
-                    <p className="text-xs">No reasoning yet</p>
-                    <p className="text-[10px]">Start agent to see reasoning</p>
-                  </div>
-                ) : (
-                  <>
-                    {/* Display all entries in chronological order */}
-                    {state.timeline
-                      .filter(entry => entry.type === 'reasoning' || entry.type === 'assistant_message')
-                      .map((entry, idx) => (
-                        <div
-                          key={idx}
-                          className={`p-3 rounded-lg border-l-4 ${
-                            entry.type === 'reasoning'
-                              ? 'bg-blue-50 dark:bg-blue-950 border-l-blue-500 border-r border-t border-b border-blue-200'
-                              : 'bg-green-50 dark:bg-green-950 border-l-green-500 border-r border-t border-b border-green-200'
-                          }`}
-                        >
-                          <p className={`font-bold text-sm mb-1 ${
-                            entry.type === 'reasoning' ? 'text-blue-700' : 'text-green-700'
-                          }`}>
-                            {entry.label}
-                          </p>
-                          <pre className="text-sm text-foreground whitespace-pre-wrap font-mono leading-relaxed">
-                            {entry.content}
-                          </pre>
-                        </div>
-                      ))}
-
-                    {isPlaying && (
-                      <div className="p-3 rounded-lg border-l-4 border-l-blue-500 bg-blue-50 dark:bg-blue-950 border-r border-t border-b border-blue-200 animate-pulse">
-                        <div className="flex items-center gap-2 text-blue-700 mb-2 font-bold text-sm">
-                          <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse" />
-                          <span>{state.streamingMessage || 'Agent thinking...'}</span>
-                        </div>
-                        {state.streamingReasoning && (
-                          <pre className="text-sm text-foreground whitespace-pre-wrap font-mono mt-2 leading-relaxed">
-                            {state.streamingReasoning}
-                          </pre>
-                        )}
-                      </div>
-                    )}
-                  </>
-                )}
-              </div>
-            </CardContent>
-          </Card>
+          <Arc3ReasoningViewer
+            timeline={state.timeline}
+            isPlaying={isPlaying}
+            streamingMessage={state.streamingMessage}
+            streamingReasoning={state.streamingReasoning}
+          />
         </div>
       </div>
 

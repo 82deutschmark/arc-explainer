@@ -48,6 +48,8 @@
 
 ### 🔲 Phase 1: Fix Action Button Double-Click Issue (PENDING)
 
+> **Reviewer note (Cascade, secondary developer):** Before making structural changes, we should re-confirm the current behavior of the double-click bug using the latest `useArc3AgentStream` implementation, since that hook already includes a manual-action lock. See Step 1.0 below.
+
 ### 🔲 Phase 3: Decompose ARC3AgentPlayground Page (PENDING)
 
 ---
@@ -61,7 +63,7 @@
 - Dynamic `key` prop on grid forces remount at wrong times
 
 ### Solution
-Create `Arc3GamePanel.tsx` that tightly couples grid + action buttons in single render cycle.
+Create `Arc3GamePanel.tsx` that tightly couples grid + action buttons in single render cycle, while leveraging the existing manual-action lock in `useArc3AgentStream`.
 
 ### Files to Create
 - `client/src/components/arc3/Arc3GamePanel.tsx` - New wrapper component
@@ -71,6 +73,11 @@ Create `Arc3GamePanel.tsx` that tightly couples grid + action buttons in single 
 - `client/src/components/arc3/Arc3GridVisualization.tsx` - Remove unused props if needed
 
 ### Implementation Steps
+
+#### Step 1.0: Confirm Current Behavior
+- Reproduce the double-click issue on the current `ARC3AgentPlayground.tsx`.
+- Verify whether the behavior still occurs with the ref-based lock in `useArc3AgentStream`.
+- Capture console logs around `executeManualAction` and SSE `game.frame_update` events to ensure the bug is not caused by API latency or manual locking logic.
 
 #### Step 1.1: Create Arc3GamePanel Component
 ```typescript
@@ -201,15 +208,15 @@ Update `description` to tell agent about new fields:
 Break into focused components following SRP.
 
 ### Files to Create
-- `client/src/components/arc3/Arc3ConfigurationPanel.tsx` - Model/game selection, config options
-- `client/src/components/arc3/Arc3AgentControls.tsx` - Start/stop/continue buttons
-- `client/src/components/arc3/Arc3ReasoningViewer.tsx` - Reasoning stream display
-- `client/src/components/arc3/Arc3ToolTimeline.tsx` - Tool call history
-- `client/src/components/arc3/Arc3AgentVisionPreview.tsx` - Mini base64 image preview
+- `client/src/components/arc3/Arc3ConfigurationPanel.tsx` - Layout wrapper for config section, **reusing** existing `Arc3AgentConfigPanel` for model/prompt/reasoning controls (do not duplicate that logic).
+- `client/src/components/arc3/Arc3AgentControls.tsx` - Start/stop/continue buttons and message injection UI, using callbacks provided by the page.
+- `client/src/components/arc3/Arc3ReasoningViewer.tsx` - Reasoning stream display with preserved auto-scroll behavior.
+- `client/src/components/arc3/Arc3ToolTimeline.tsx` - Tool call history.
+- `client/src/components/arc3/Arc3AgentVisionPreview.tsx` - Mini base64 image preview.
 
 ### Files to Modify
-- `client/src/pages/ARC3AgentPlayground.tsx` - Slim down to composition layer
-- `client/src/utils/arc3Colors.ts` - Verify 16-color support (already correct)
+- `client/src/pages/ARC3AgentPlayground.tsx` - Slim down to composition layer and own coordination logic (URL state, hook wiring, and extracting structured data like `frameImage` from tool results).
+- `client/src/utils/arc3Colors.ts` - Verify 16-color support (already correct) and ensure it uses the shared palette from `shared/config/arc3Colors.ts` as the single source of truth.
 
 ### Implementation Steps
 
@@ -239,7 +246,7 @@ interface Arc3AgentControlsProps {
 ```
 
 #### Step 3.3: Create Arc3ReasoningViewer
-Extract reasoning stream display (lines 501-638):
+Extract reasoning stream display (lines 501-638) and preserve existing auto-scroll behavior:
 ```typescript
 interface Arc3ReasoningViewerProps {
   reasoning: string;
@@ -247,6 +254,8 @@ interface Arc3ReasoningViewerProps {
   streamingMessage: string | null;
 }
 ```
+
+> **Progress note (Cascade, 2025-12-07):** `Arc3ReasoningViewer` now exists at `client/src/components/arc3/Arc3ReasoningViewer.tsx`, extracted from the right-hand "Agent Reasoning" card in `ARC3AgentPlayground.tsx`. It renders both reasoning and assistant messages plus the streaming reasoning block, and preserves the original auto-scroll-to-bottom behavior.
 
 #### Step 3.4: Create Arc3ToolTimeline
 Extract tool call history (lines 472-500):
@@ -256,6 +265,8 @@ interface Arc3ToolTimelineProps {
   onClearHistory: () => void;
 }
 ```
+
+> **Progress note (Cascade, 2025-12-07):** The initial `Arc3ToolTimeline` implementation now exists at `client/src/components/arc3/Arc3ToolTimeline.tsx`, extracted faithfully from the inline "Actions" card in `ARC3AgentPlayground.tsx`. It renders the existing `toolEntries` list and streaming "Calling ARC3 API..." indicator without changing behavior. Future iterations can extend its API (e.g., clear history) as needed.
 
 #### Step 3.5: Create Arc3AgentVisionPreview
 NEW component showing base64 image agent sees:
@@ -273,12 +284,14 @@ interface Arc3AgentVisionPreviewProps {
 ```
 
 Extract from SSE stream events → grab `frameImage` from `agent.tool_result` events.
+    - **Option A (preferred for minimal API surface change):** In `ARC3AgentPlayground.tsx`, detect `tool_result` entries for `inspect_game_state` in `state.timeline`, parse their JSON payloads, and pass the latest `frameImage` down to `Arc3AgentVisionPreview` as a prop.
+    - **Option B (if we decide to extend the hook explicitly):** Add a `lastInspectSnapshot` field to `useArc3AgentStream` state and note this as a documented, backwards-compatible extension of the hook API. This should be reflected in both the hook docstring and this plan if we choose it.
 
 #### Step 3.6: Fix Color Mapping Issues
 Audit `ARC3AgentPlayground.tsx` for any hardcoded color references:
-- Ensure all use `ARC3_COLORS` (16 colors, 0-15)
+- Ensure all use the shared Arc3 color configuration from `shared/config/arc3Colors.ts` (16 colors, 0-15)
 - Remove any references to classic ARC colors (10 colors, 0-9)
-- Check prompt templates, tooltips, help text
+- Use shared arc3Colors SOT.
 
 #### Step 3.7: Compose New Page Structure
 ```tsx
@@ -365,7 +378,9 @@ export function ARC3AgentPlayground() {
 8. `docs/plans/2025-12-07-arc3-playground-improvements-plan.md` (this file)
 
 ### Modified (4 files)
-1. `client/src/pages/ARC3AgentPlayground.tsx` - Decompose into components
-2. `server/services/arc3/Arc3RealGameRunner.ts` - Add colorDistribution + changes
-3. `server/services/arc3/helpers/frameAnalysis.ts` - Export change helpers
-4. `CHANGELOG.md` - Document changes
+1. `client/src/pages/ARC3AgentPlayground.tsx` - Decompose into components and wire up new panels.
+2. `server/services/arc3/Arc3RealGameRunner.ts` - Add colorDistribution + changes (Phase 2 complete).
+3. `server/services/arc3/helpers/frameAnalysis.ts` - Export change helpers (Phase 2 complete).
+4. `CHANGELOG.md` - Document changes once phases are implemented.
+
+> **Reviewer note (Cascade):** This section describes the intended file changes for the full implementation of this plan. It is aspirational until the corresponding phases/PRs are merged.

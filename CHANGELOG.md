@@ -1,6 +1,15 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top with the time and date!
 
+### Version 5.47.1  Dec 7, 2025 (PENDING TESTING)
+
+- **ARC-AGI-3 Playground: Extract Arc3ToolTimeline & Arc3ReasoningViewer components** (Author: Cascade)
+  - Extracted the inline "Actions" card from `ARC3AgentPlayground.tsx` into a reusable `Arc3ToolTimeline` component under `client/src/components/arc3/Arc3ToolTimeline.tsx`, keeping rendering and behavior identical.
+  - Extracted the right-hand "Agent Reasoning" card (including reasoning + assistant messages and streaming reasoning block) into `Arc3ReasoningViewer` at `client/src/components/arc3/Arc3ReasoningViewer.tsx`, preserving the existing auto-scroll behavior.
+  - The playground page now imports both components and passes the existing `toolEntries` and `state.timeline`/streaming fields, preparing the layout for further decomposition without changing UX.
+  - **Files Created**: `client/src/components/arc3/Arc3ToolTimeline.tsx`, `client/src/components/arc3/Arc3ReasoningViewer.tsx`
+  - **Files Modified**: `client/src/pages/ARC3AgentPlayground.tsx`, `CHANGELOG.md`, `docs/plans/2025-12-07-arc3-playground-improvements-plan.md`
+
 ### Version 5.47.0  Dec 7, 2025 (PENDING TESTING)
 
 - **ARC-AGI-3 Playground: Add vision support with base64 grid images** (Author: Claude Code using Opus 4.5)
