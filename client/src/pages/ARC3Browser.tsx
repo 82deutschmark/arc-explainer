@@ -160,10 +160,6 @@ export default function ARC3Browser() {
                       The ARC Prize team has indicated that ARC-AGI-3 games are expected to be released as a Python library so
                       agents can be run locally.
                     </li>
-                    <li>
-                      Until that library ships, the canonical interface is the hosted platform at three.arcprize.org together
-                      with the official ARC-AGI-3 agent SDKs.
-                    </li>
                   </ul>
                 </div>
                 <div>
@@ -222,8 +218,7 @@ export default function ARC3Browser() {
         </CardHeader>
         <CardContent className="space-y-4">
           <p className="text-muted-foreground">
-            Dries Smit&apos;s <strong>StochasticGoose</strong> agent led the preview leaderboard through
-            disciplined exploration, curriculum-driven practice runs, and clever memory tooling.
+            Dries Smit&apos;s <strong>StochasticGoose</strong> agent won the preview competition.
             Dive into the full breakdown, implementation, and supporting resources below.
           </p>
           <div className="flex flex-col sm:flex-row gap-2">

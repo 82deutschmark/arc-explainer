@@ -186,7 +186,7 @@ export default function Arc3GamesBrowser() {
   usePageMeta({
     title: 'ARC Explainer – ARC-AGI-3 Games Browser',
     description:
-      'Browse all ARC-AGI-3 games with spoilers, hints, strategies, and detailed mechanics documentation. The ultimate community resource.',
+      'Browse all ARC-AGI-3 games documentation. The ultimate community resource.',
     canonicalPath: '/arc3/games',
   });
 
