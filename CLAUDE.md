@@ -36,7 +36,7 @@ You are an elite software architect and senior engineer focused on:
 - **Reasoning & text config:** For GPT‑5 / o‑series and similar models, prefer:
   - `reasoning.effort` ≥ `medium`,
   - `reasoning.summary` = `detailed`,
-  - `text.verbosity` = `high` when streaming so reasoning deltas appear. In some cases, when using Codex models, we may need to fall back to Medium.
+  - `text.verbosity` = `high` when streaming so reasoning deltas appear. In some cases, when using Codex models, we may need to fall back to `medium`.
 - **Conversation IDs:** Ensure `response.id` flows through as `providerResponseId` and is saved to `explanations.provider_response_id`. For follow‑ups, pass `previousResponseId` from controllers/services through to provider calls as `previous_response_id`.
 - **Provider boundaries:** Only reuse a `previousResponseId` when the provider is unchanged (OpenAI→OpenAI, xAI→xAI). Cross‑provider chains must start fresh.
 - **Streaming:** Respect the existing two‑step SSE handshake and payload builder in `server/services/openai/payloadBuilder.ts`. Do not change streaming semantics without re‑reading the streaming implementation guide and updating docs/tests.

@@ -1,6 +1,12 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top with the time and date!
 
+### Version 5.46.9  Dec 7, 2025 (PENDING TESTING)
+
+- **ARC-AGI-3 as66: add level 8 screenshot metadata** (Author: Cascade)
+  - Extended Always Sliding (as66) level screenshots to include `/as66-lvl8.png` as level 8 via the shared `levelScreenshots` structure so the Level 8 card appears in the Screenshots tab alongside levels 3 and 4.
+  - **Files**: `shared/arc3Games.ts`, `CHANGELOG.md`
+
 ### Version 5.46.8  Dec 6, 2025 (PENDING TESTING)
 
 - **ARC-AGI-3 as66: add level 4 screenshot metadata** (Author: Cascade)

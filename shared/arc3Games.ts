@@ -221,6 +221,10 @@ The "Locksmith" game is a puzzle-exploration game where you control a white char
         level: 4,
         imageUrl: '/as66-lvl4.png',
       },
+      {
+        level: 8,
+        imageUrl: '/as66-lvl8.png',
+      },
     ],
     tags: ['sliding', 'motion', 'dynamic'],
     thumbnailUrl: '/as66.png',
