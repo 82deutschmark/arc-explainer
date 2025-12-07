@@ -15,7 +15,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Gamepad2, Play, Square, Brain, Wrench, ArrowLeft, RefreshCw, Eye, EyeOff } from 'lucide-react';
-import { Link } from 'wouter';
+import { Link, useLocation, useSearch } from 'wouter';
 import { useArc3AgentStream } from '@/hooks/useArc3AgentStream';
 import { Arc3GridVisualization } from '@/components/arc3/Arc3GridVisualization';
 import { apiRequest } from '@/lib/queryClient';
@@ -115,6 +115,15 @@ export default function ARC3AgentPlayground() {
       'Watch real ARC-AGI-3 agents explore interactive games, stream reasoning traces, and inspect grid state transitions.',
     canonicalPath: '/arc3/playground',
   });
+
+  // URL state management for game selection
+  const [location, setLocation] = useLocation();
+  const searchParams = useSearch();
+  const urlGameId = React.useMemo(() => {
+    const params = new URLSearchParams(searchParams);
+    return params.get('game') || 'ls20';  // Default to ls20 if no game param
+  }, [searchParams]);
+
   // Auto-scroll ref for streaming panel
   const reasoningContainerRef = React.useRef<HTMLDivElement>(null);
 
@@ -134,11 +143,11 @@ export default function ARC3AgentPlayground() {
       const data = await response.json();
       if (data.success && Array.isArray(data.data)) {
         setGames(data.data);
-        // Auto-load first game's grid
+        // Auto-load game from URL or default to ls20
         if (data.data.length > 0) {
-          const firstGame = data.data.find((g: GameInfo) => g.game_id === 'ls20') || data.data[0];
-          setGameId(firstGame.game_id);
-          await fetchGameGrid(firstGame.game_id);
+          const targetGame = data.data.find((g: GameInfo) => g.game_id === urlGameId) || data.data[0];
+          setGameId(targetGame.game_id);
+          await fetchGameGrid(targetGame.game_id);
         }
       }
     } catch (error) {
@@ -206,7 +215,7 @@ export default function ARC3AgentPlayground() {
   }, []);
 
   // Agent config
-  const [gameId, setGameId] = useState('ls20');
+  const [gameId, setGameId] = useState(urlGameId);  // Initialize from URL param
   const [agentName, setAgentName] = useState('ARC3 Explorer');
   const [model, setModel] = useState<string>('');
   const [maxTurns, setMaxTurns] = useState(100);
@@ -439,6 +448,8 @@ export default function ARC3AgentPlayground() {
                 onValueChange={(newGameId) => {
                   setGameId(newGameId);
                   fetchGameGrid(newGameId);
+                  // Update URL to reflect game selection
+                  setLocation(`/arc3/playground?game=${newGameId}`);
                 }}
                 disabled={isPlaying}
               >
