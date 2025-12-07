@@ -818,38 +818,8 @@ export default function ARC3AgentPlayground() {
                   {/* Color Legend INCORRECT!!!!!  NEED TO READ FROM A CENTRAL SOT!!!*/}
                   <div className="grid grid-cols-5 gap-1 text-[9px]">
                     
-                    ].map((item) => (
-                      <div key={item.name} className="flex items-center gap-0.5">
-                        <div 
-                          className="w-2.5 h-2.5 border border-gray-300 rounded"
-                          style={{ backgroundColor: item.color }}
-                        />
-                        <span className="text-muted-foreground">{item.name}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              ) : initialGrid ? (
-                <div className="space-y-2">
-                  <div className="flex justify-center">
-                    <Arc3GridVisualization
-                      key={`initial-grid-${gameId}`}
-                      grid={initialGrid as number[][][]}
-                      frameIndex={Math.max(0, (initialGrid as number[][][]).length - 1)}
-                      cellSize={20}
-                      showGrid={true}
-                    />
-                  </div>
-                  <p className="text-center text-[10px] text-muted-foreground">Initial state - press Start to begin</p>
-                </div>
-              ) : (
-                <div className="flex flex-col items-center justify-center py-12 text-center">
-                  <Gamepad2 className="h-10 w-10 text-muted-foreground opacity-50 mb-2" />
-                  <p className="text-xs text-muted-foreground">
-                    {state.status === 'running' ? 'Waiting for game...' : gamesLoading ? 'Loading games...' : 'Select a game to see grid'}
-                  </p>
-                </div>
-              )}
+
+              ) }
             </CardContent>
           </Card>
         </div>
