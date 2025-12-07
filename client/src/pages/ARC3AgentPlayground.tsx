@@ -303,34 +303,80 @@ export default function ARC3AgentPlayground() {
   });
 
   // State for managing which layer/timestep to display within the current frame
-  // Start with null to indicate "not manually set by user"
   const [manualLayerIndex, setManualLayerIndex] = useState<number | null>(null);
+  const [animatingLayerIndex, setAnimatingLayerIndex] = useState<number | null>(null);
+  const animationTimerRef = React.useRef<NodeJS.Timeout | null>(null);
 
-  // CRITICAL FIX: Compute currentLayerIndex directly, don't use useEffect
-  // This ensures we ALWAYS show the correct layer immediately, no flash of wrong layer
+  // CRITICAL: Auto-animate through layers when new frame arrives (like official ARC Prize site)
+  React.useEffect(() => {
+    console.log('[ARC3 Playground] Frame changed, starting layer animation:', {
+      currentFrameIndex: state.currentFrameIndex,
+      hasFrame: !!currentFrame,
+      resolvedFrameLayers: resolvedCurrentFrame?.length || 0,
+    });
+
+    // Clear any existing animation
+    if (animationTimerRef.current) {
+      clearInterval(animationTimerRef.current);
+      animationTimerRef.current = null;
+    }
+
+    // Reset manual selection
+    setManualLayerIndex(null);
+
+    // Start animation if frame has multiple layers
+    if (resolvedCurrentFrame && resolvedCurrentFrame.length > 1) {
+      let currentLayer = 0;
+      setAnimatingLayerIndex(0);
+
+      // Animate through layers at ~120ms per layer (matches official site feel)
+      animationTimerRef.current = setInterval(() => {
+        currentLayer += 1;
+        if (currentLayer >= resolvedCurrentFrame.length) {
+          // Animation complete - stop at final layer
+          if (animationTimerRef.current) {
+            clearInterval(animationTimerRef.current);
+            animationTimerRef.current = null;
+          }
+          setAnimatingLayerIndex(null);
+        } else {
+          setAnimatingLayerIndex(currentLayer);
+        }
+      }, 120); // 120ms per frame for smooth animation
+    } else {
+      setAnimatingLayerIndex(null);
+    }
+
+    // Cleanup on unmount or frame change
+    return () => {
+      if (animationTimerRef.current) {
+        clearInterval(animationTimerRef.current);
+        animationTimerRef.current = null;
+      }
+    };
+  }, [state.currentFrameIndex, resolvedCurrentFrame?.length]);
+
+  // Compute currentLayerIndex: manual > animating > final layer
   const currentLayerIndex = React.useMemo(() => {
-    // If user manually selected a layer via the slider, use that
+    // If user manually selected a layer via the slider, use that (stops animation)
     if (manualLayerIndex !== null && resolvedCurrentFrame && manualLayerIndex < resolvedCurrentFrame.length) {
+      // Stop animation when user manually selects
+      if (animationTimerRef.current) {
+        clearInterval(animationTimerRef.current);
+        animationTimerRef.current = null;
+      }
       return manualLayerIndex;
+    }
+    // If animating, show the current animation layer
+    if (animatingLayerIndex !== null && resolvedCurrentFrame && animatingLayerIndex < resolvedCurrentFrame.length) {
+      return animatingLayerIndex;
     }
     // Otherwise, default to the LAST layer (final state after action)
     if (resolvedCurrentFrame && resolvedCurrentFrame.length > 0) {
       return resolvedCurrentFrame.length - 1;
     }
     return 0;
-  }, [manualLayerIndex, resolvedCurrentFrame, resolvedCurrentFrame?.length]);
-
-  // Reset manual layer selection when frame changes
-  React.useEffect(() => {
-    console.log('[ARC3 Playground] Frame changed, resetting manual layer selection:', {
-      currentFrameIndex: state.currentFrameIndex,
-      hasFrame: !!currentFrame,
-      resolvedFrameLayers: resolvedCurrentFrame?.length || 0,
-      computedLayerIndex: currentLayerIndex,
-    });
-    // Reset to auto (null) so we default to last layer of new frame
-    setManualLayerIndex(null);
-  }, [state.currentFrameIndex]); // ONLY depend on frame index, not derived objects
+  }, [manualLayerIndex, animatingLayerIndex, resolvedCurrentFrame, resolvedCurrentFrame?.length]);
   // Normalize available_actions from the API
   // API returns integers [1, 2, 3, 4, 5, 6] but we use strings like 'ACTION1', 'ACTION2'
   const normalizedAvailableActions = React.useMemo(() => {
