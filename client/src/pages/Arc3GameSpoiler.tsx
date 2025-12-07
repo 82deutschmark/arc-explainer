@@ -203,23 +203,8 @@ export default function Arc3GameSpoiler() {
     return <GameNotFound gameId={gameId} />;
   }
 
-  // Group hints by spoiler level
-  const mildHints = game.hints.filter(h => h.spoilerLevel === 1);
-  const moderateHints = game.hints.filter(h => h.spoilerLevel === 2);
-  const fullSolutions = game.hints.filter(h => h.spoilerLevel === 3);
-
   return (
     <div className="container mx-auto px-4 py-8 max-w-5xl">
-      {/* Header Navigation */}
-      <div className="flex items-center gap-3 mb-6">
-        <Button variant="ghost" size="sm" asChild>
-          <Link href="/arc3/games">
-            <ArrowLeft className="h-4 w-4 mr-1" />
-            Back to Games
-          </Link>
-        </Button>
-      </div>
-
       {/* Hero Section */}
       <div className="mb-8">
         <div className="flex items-start justify-between gap-4 flex-wrap">
@@ -274,26 +259,6 @@ export default function Arc3GameSpoiler() {
         </p>
       </div>
 
-      {/* Spoiler Warning */}
-      <Alert className="mb-8 border-amber-500 bg-amber-50 dark:bg-amber-950">
-        <AlertTriangle className="h-4 w-4 text-amber-600 dark:text-amber-400" />
-        <AlertTitle className="text-amber-900 dark:text-amber-100">
-          Spoiler Warning
-        </AlertTitle>
-        <AlertDescription className="text-amber-800 dark:text-amber-200">
-          This page contains detailed spoilers about {game.informalName || game.gameId}. 
-          If you want to solve it yourself first, visit the{' '}
-          <a 
-            href={`https://three.arcprize.org/games/${game.gameId}`}
-            target="_blank" 
-            rel="noopener noreferrer"
-            className="underline font-medium"
-          >
-            official ARC-AGI-3 site
-          </a>.
-        </AlertDescription>
-      </Alert>
-
       {/* Main Content Tabs */}
       <Tabs defaultValue="play" className="mb-8">
         <TabsList className="grid w-full grid-cols-4">
@@ -305,9 +270,9 @@ export default function Arc3GameSpoiler() {
             <Info className="h-4 w-4 mr-2" />
             Mechanics
           </TabsTrigger>
-          <TabsTrigger value="hints">
-            <Lightbulb className="h-4 w-4 mr-2" />
-            Hints ({game.hints.length})
+          <TabsTrigger value="screenshots">
+            <Eye className="h-4 w-4 mr-2" />
+            Screenshots ({game.levelScreenshots?.length || 0})
           </TabsTrigger>
           <TabsTrigger value="resources">
             <Link2 className="h-4 w-4 mr-2" />
@@ -328,11 +293,10 @@ export default function Arc3GameSpoiler() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="rounded-lg overflow-hidden border bg-black">
+              <div className="aspect-square w-full max-w-3xl mx-auto rounded-lg overflow-hidden border bg-black">
                 <iframe
                   src={`https://three.arcprize.org/games/${game.gameId}`}
-                  className="w-full"
-                  style={{ height: '600px', minHeight: '500px' }}
+                  className="w-full h-full"
                   title={`Play ${game.informalName || game.gameId}`}
                   allow="fullscreen"
                 />
@@ -480,82 +444,56 @@ export default function Arc3GameSpoiler() {
           )}
         </TabsContent>
 
-        {/* Hints Tab */}
-        <TabsContent value="hints" className="mt-6 space-y-6">
-          {game.hints.length === 0 ? (
+        {/* Screenshots Tab */}
+        <TabsContent value="screenshots" className="mt-6">
+          {!game.levelScreenshots || game.levelScreenshots.length === 0 ? (
             <Card className="text-center py-12">
               <CardContent>
-                <Lightbulb className="h-12 w-12 text-yellow-400 mx-auto mb-4" />
-                <h3 className="text-lg font-semibold mb-2">No Hints Yet</h3>
+                <Eye className="h-12 w-12 text-muted-foreground mx-auto mb-4 opacity-30" />
+                <h3 className="text-lg font-semibold mb-2">No Screenshots Yet</h3>
                 <p className="text-muted-foreground mb-4">
-                  We don't have any documented hints for this game yet.
+                  No level screenshots have been documented for this game yet.
                 </p>
-                <Button asChild variant="outline">
-                  <a
-                    href="https://github.com/82deutschmark/arc-explainer/issues"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <ExternalLink className="h-4 w-4 mr-2" />
-                    Contribute a Hint
-                  </a>
-                </Button>
               </CardContent>
             </Card>
           ) : (
-            <>
-              {/* Mild Hints */}
-              {mildHints.length > 0 && (
-                <div>
-                  <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
-                    <Eye className="h-5 w-5 text-green-500" />
-                    Mild Hints ({mildHints.length})
-                  </h3>
-                  <div className="grid gap-4">
-                    {mildHints.map(hint => (
-                      <HintCard key={hint.id} hint={hint} initiallyHidden={false} />
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Moderate Spoilers */}
-              {moderateHints.length > 0 && (
-                <div>
-                  <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
-                    <AlertTriangle className="h-5 w-5 text-yellow-500" />
-                    Moderate Spoilers ({moderateHints.length})
-                  </h3>
-                  <div className="grid gap-4">
-                    {moderateHints.map(hint => (
-                      <HintCard key={hint.id} hint={hint} initiallyHidden={true} />
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Full Solutions */}
-              {fullSolutions.length > 0 && (
-                <div>
-                  <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
-                    <AlertTriangle className="h-5 w-5 text-red-500" />
-                    Full Solutions ({fullSolutions.length})
-                  </h3>
-                  <Alert className="mb-4 border-red-500 bg-red-50 dark:bg-red-950">
-                    <AlertTriangle className="h-4 w-4 text-red-600" />
-                    <AlertTitle>Warning</AlertTitle>
-                    <AlertDescription>
-                      These hints reveal the complete solution. Only reveal if you're truly stuck or want to verify your approach.
-                    </AlertDescription>
-                  </Alert>
-                  <div className="grid gap-4">
-                    {fullSolutions.map(hint => (
-                      <HintCard key={hint.id} hint={hint} initiallyHidden={true} />
-                    ))}
-                  </div>
-                </div>
-              )}
-            </>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {game.levelScreenshots
+                .sort((a, b) => a.level - b.level)
+                .map(screenshot => (
+                  <Card key={screenshot.level} className="overflow-hidden">
+                    <CardHeader className="pb-3">
+                      <CardTitle className="text-base flex items-center gap-2">
+                        <Badge variant="outline" className="font-mono">
+                          Level {screenshot.level}
+                        </Badge>
+                        {screenshot.caption && (
+                          <span className="text-sm font-normal text-muted-foreground">
+                            {screenshot.caption}
+                          </span>
+                        )}
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="p-0">
+                      <div className="relative aspect-square bg-muted">
+                        <img
+                          src={screenshot.imageUrl}
+                          alt={`Level ${screenshot.level}${screenshot.caption ? ` - ${screenshot.caption}` : ''}`}
+                          className="w-full h-full object-contain"
+                          loading="lazy"
+                        />
+                      </div>
+                      {screenshot.notes && (
+                        <div className="p-4 pt-3">
+                          <p className="text-xs text-muted-foreground italic">
+                            {screenshot.notes}
+                          </p>
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
+                ))}
+            </div>
           )}
         </TabsContent>
 

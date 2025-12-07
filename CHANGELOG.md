@@ -1,6 +1,28 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top with the time and date!
 
+### Version 5.46.0  Dec 6, 2025 (PENDING TESTING)
+
+- **ARC-AGI-3 Level Screenshots System** (Author: Claude Code using Sonnet 4.5)
+  - Implemented scalable level screenshots system for all six ARC-AGI-3 games (ls20, as66, ft09, lp85, sp80, vc33).
+  - Added `LevelScreenshot` interface with `level`, `imageUrl`, `caption`, and `notes` fields for structured screenshot metadata.
+  - Updated `Arc3GameMetadata` interface with optional `levelScreenshots` array field.
+  - Migrated ft09 game to new structure with level 8 and 9 screenshots (`/ft09-lvl8.png`, `/ft09-lvl9.png`).
+  - Replaced "Hints" tab with "Screenshots" tab in game detail pages - removed all hallucinated hint content from UI and data.
+  - Removed fake hints from ls20 and ft09 game entries - set all games to `hints: []`.
+  - Screenshots display in responsive grid (1 col mobile, 2 cols tablet, 3 cols desktop) with level badges and square aspect ratio containers.
+  - Empty state shown for games without screenshots yet ("No Screenshots Yet" message).
+  - Created comprehensive implementation plan document at `docs/plans/2025-12-06-arc3-level-screenshots-system.md`.
+  - **Files Modified**: `shared/arc3Games.ts:57-69,115,174,285-296`, `client/src/pages/Arc3GameSpoiler.tsx:204-206,278-281,452-503`, `CHANGELOG.md`
+
+### Version 5.45.17  Dec 6, 2025 (PENDING TESTING)
+
+- **ARC-AGI-3 game page improvements** (Author: Claude Code using Sonnet 4.5)
+  - Fixed embedded game iframe to use square (1:1) aspect ratio instead of rectangular fixed height, matching the 64×64 grid game format.
+  - Changed iframe container from `style={{ height: '600px' }}` to `aspect-square` with centered `max-w-3xl` wrapper.
+  - Removed "Back to Games" navigation button and spoiler warning alert from game detail pages for cleaner layout.
+  - **Files Modified**: `client/src/pages/Arc3GameSpoiler.tsx:206-265,301-308`, `CHANGELOG.md`
+
 ### Version 5.45.16  Dec 6, 2025 (PENDING TESTING)
 
 - **ARC-AGI-3 landing: Fix game thumbnails to be actually clickable** (Author: Claude Code using Sonnet 4.5)
