@@ -817,17 +817,7 @@ export default function ARC3AgentPlayground() {
 
                   {/* Color Legend INCORRECT!!!!!  NEED TO READ FROM A CENTRAL SOT!!!*/}
                   <div className="grid grid-cols-5 gap-1 text-[9px]">
-                    {[
-                      { color: '#000000', name: '0' },
-                      { color: '#0074D9', name: '1' },
-                      { color: '#FF4136', name: '2' },
-                      { color: '#2ECC40', name: '3' },
-                      { color: '#FFDC00', name: '4' },
-                      { color: '#AAAAAA', name: '5' },
-                      { color: '#F012BE', name: '6' },
-                      { color: '#FF851B', name: '7' },
-                      { color: '#7FDBFF', name: '8' },
-                      { color: '#870C25', name: '9' },
+                    
                     ].map((item) => (
                       <div key={item.name} className="flex items-center gap-0.5">
                         <div 
