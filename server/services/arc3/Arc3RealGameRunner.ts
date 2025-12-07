@@ -19,6 +19,7 @@ import { generateActionCaption, generateInspectCaption } from './helpers/caption
 import { countChangedPixels } from './helpers/frameAnalysis.ts';
 import { createSession } from './persistence/sessionManager.ts';
 import { saveFrame } from './persistence/framePersistence.ts';
+import { renderArc3FrameToPng } from './arc3GridImageService.ts';
 import { logger } from '../../utils/logger.ts';
 
 export interface Arc3StreamHarness {
@@ -106,7 +107,7 @@ export class Arc3RealGameRunner {
 
     const inspectTool = tool({
       name: 'inspect_game_state',
-      description: 'Inspect the current game state including frame data, score, remaining actions, and game status. Always call before making decisions.',
+      description: 'Inspect the current game state including frame data, visual image, score, remaining actions, and game status. Always call before making decisions. The frameImage is a base64 PNG showing exactly what the player sees.',
       parameters: z.object({
         note: z
           .string()
@@ -122,11 +123,21 @@ export class Arc3RealGameRunner {
           throw new Error('Game session not initialized yet.');
         }
 
-        // Return cached frame state (ARC3 API doesn't have separate status/frame endpoints)
+        // Generate base64 PNG image of the current frame
+        const imageResult = await renderArc3FrameToPng(currentFrame.frame);
+        const frameImage = imageResult?.dataUrl ?? null;
+        if (frameImage) {
+          logger.info(`[ARC3 TOOL] Generated frame image: ${imageResult!.width}x${imageResult!.height}px`, 'arc3');
+        } else {
+          logger.warn('[ARC3 TOOL] Failed to generate frame image, returning numeric data only', 'arc3');
+        }
+
+        // Return cached frame state with visual representation
         const result = {
           gameGuid: currentFrame.guid,
           gameId: currentFrame.game_id,
           frame: currentFrame.frame,
+          frameImage,  // Base64 PNG data URL for vision models
           score: currentFrame.score,
           state: currentFrame.state,
           action_counter: currentFrame.action_counter,
@@ -376,7 +387,7 @@ export class Arc3RealGameRunner {
 
     const inspectTool = tool({
       name: 'inspect_game_state',
-      description: 'Inspect the current game state including frame data, score, remaining actions, and game status. Always call before making decisions.',
+      description: 'Inspect the current game state including frame data, visual image, score, remaining actions, and game status. Always call before making decisions. The frameImage is a base64 PNG showing exactly what the player sees.',
       parameters: z.object({
         note: z
           .string()
@@ -399,11 +410,21 @@ export class Arc3RealGameRunner {
           timestamp: Date.now(),
         });
 
-        // Return cached frame state (ARC3 API doesn't have separate status/frame endpoints)
+        // Generate base64 PNG image of the current frame
+        const imageResult = await renderArc3FrameToPng(currentFrame.frame);
+        const frameImage = imageResult?.dataUrl ?? null;
+        if (frameImage) {
+          logger.info(`[ARC3 TOOL STREAM] Generated frame image: ${imageResult!.width}x${imageResult!.height}px`, 'arc3');
+        } else {
+          logger.warn('[ARC3 TOOL STREAM] Failed to generate frame image, returning numeric data only', 'arc3');
+        }
+
+        // Return cached frame state with visual representation
         const result = {
           gameGuid: currentFrame.guid,
           gameId: currentFrame.game_id,
           frame: currentFrame.frame,
+          frameImage,  // Base64 PNG data URL for vision models
           score: currentFrame.score,
           state: currentFrame.state,
           action_counter: currentFrame.action_counter,
