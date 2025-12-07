@@ -166,8 +166,8 @@ export default function ARC3Browser() {
                   <p className="font-semibold text-foreground">What is still unknown</p>
                   <ul className="list-disc list-inside ml-4 space-y-1">
                     <li>Exact prize amounts and detailed reward breakdowns for the 2026 competitions.</li>
-                    <li>The full list of public, preview, and hidden games that will appear in the final evaluation sets.</li>
-                    <li>Any additional benchmark variants beyond the currently previewed interactive reasoning games.</li>
+                    <li>The exact nature of "training" and "evaluation" games that will appear in the final evaluation sets.</li>
+                    <li>Any additional variants beyond those currently previewed.</li>
                   </ul>
                 </div>
                 <div>
