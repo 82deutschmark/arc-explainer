@@ -1,6 +1,12 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top with the time and date!
 
+### Version 5.46.7  Dec 6, 2025 (PENDING TESTING)
+
+- **ARC-AGI-3 as66: add level 3 screenshot metadata** (Author: Cascade)
+  - Added an initial level screenshot entry for Always Sliding (as66) pointing to `/as66-lvl3.png` via the shared `levelScreenshots` structure so level 3 appears in the Screenshots tab on the game spoiler page.
+  - **Files**: `shared/arc3Games.ts`, `CHANGELOG.md`
+
 ### Version 5.46.6  Dec 6, 2025 (PENDING TESTING)
 
 - **ARC-AGI-3 ls20: add level 5 screenshot metadata** (Author: Cascade)

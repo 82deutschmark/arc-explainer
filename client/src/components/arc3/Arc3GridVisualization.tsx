@@ -51,10 +51,24 @@ export const Arc3GridVisualization: React.FC<Arc3GridVisualizationProps> = ({
   const height = currentFrame.length;
   const width = height > 0 ? currentFrame[0].length : 0;
 
-  // Create a stable signature for the grid data to track changes
+  // Create a comprehensive signature for the grid data to track changes
+  // CRITICAL: Include samples from multiple positions to detect any grid change
   const gridSignature = React.useMemo(() => {
-    return `${grid?.length || 0}-${frameIndex}-${height}-${width}-${currentFrame?.[0]?.[0] || 0}`;
-  }, [grid?.length, frameIndex, height, width, currentFrame]);
+    if (!currentFrame || currentFrame.length === 0) {
+      return `empty-${frameIndex}`;
+    }
+    // Sample corners and center to detect any change in the grid
+    const h = currentFrame.length;
+    const w = currentFrame[0]?.length || 0;
+    const corners = [
+      currentFrame[0]?.[0],                           // top-left
+      currentFrame[0]?.[w - 1],                       // top-right
+      currentFrame[h - 1]?.[0],                       // bottom-left
+      currentFrame[h - 1]?.[w - 1],                   // bottom-right
+      currentFrame[Math.floor(h / 2)]?.[Math.floor(w / 2)],  // center
+    ].join(',');
+    return `${grid?.length || 0}-${frameIndex}-${h}-${w}-[${corners}]-${Date.now()}`;
+  }, [grid?.length, frameIndex, currentFrame]);
 
   // Debug logging for grid updates
   console.log('[Arc3GridVisualization] Render:', {
