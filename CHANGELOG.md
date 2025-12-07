@@ -1,6 +1,25 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top with the time and date!
 
+### Version 5.46.3  Dec 6, 2025 (PENDING TESTING)
+
+- **ARC-AGI-3 prompt: add official ACTION6 guidance** (Author: GPT-5 (Codex))
+  - Updated the ARC3 default prompt to embed official docs details for ACTION6 coordinates (required x,y 0-63), simple action expectations, and optional reasoning blob guidance, while keeping the Twitch-streamer tone and action narration requirements.
+  - Cleaned prompt logging instructions and refreshed header metadata to reflect current ownership/date.
+  - Added a planning note documenting the prompt-doc alignment steps.
+  - **Files Modified**: `server/services/arc3/prompts.ts`, `docs/2025-12-06-arc3-prompt-docs-plan.md`
+
+### Version 5.46.2  Dec 6, 2025 (PENDING TESTING)
+
+- **ARC-AGI-3 Playground: Add automatic layer animation for multi-layer frames** (Author: Claude Code using Sonnet 4.5)
+  - Fixed grid not animating after actions - now automatically animates through frame layers 0 → 1 → 2 → ... → N showing objects falling/moving in real-time (matches official ARC Prize site behavior).
+  - Added `animatingLayerIndex` state and `animationTimerRef` to track and control automatic layer progression.
+  - Animation plays at 120ms per layer for smooth visual feedback showing intermediate game states.
+  - Animation automatically stops when reaching final layer or when user manually selects a layer via slider.
+  - **Issue**: Grid only updated once per action, not showing intermediate states (falling objects, motion, etc.).
+  - **Root Cause**: Code was defaulting to show last layer immediately (`resolvedCurrentFrame.length - 1`) instead of animating through layers sequentially.
+  - **Files Modified**: `client/src/pages/ARC3AgentPlayground.tsx:305-379`, `CHANGELOG.md`
+
 ### Version 5.46.1  Dec 6, 2025 (PENDING TESTING)
 
 - **ARC-AGI-3 Playground: Fix manual action guid race condition** (Author: Claude Code using Sonnet 4.5)
