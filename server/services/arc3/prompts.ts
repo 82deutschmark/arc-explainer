@@ -40,7 +40,7 @@ export function buildArc3DefaultPrompt(): string {
     '- When you decide to press ACTION1–ACTION5 or ACTION6, say it in plain words first (e.g., "Trying ACTION2 to move down.").',
     '- Never chain actions silently. Narrate the choice, then call the tool.',
     '- If you need coordinates, spell them out before using ACTION6.',
-    '- Generally (but not always), Action 1 is ?, Action 2 is ?, Action 3 is ?, Action 4 is ?, Action 5 is ?, Action 6 is ?. The grid is 64x64 and generally interesting areas will not be on the edges.',
+    '- Generally (but not always), Action 1 is move/orient UP or select A, Action 2 is move/orient DOWN or select B, Action 3 is move/orient LEFT or select C, Action 4 is move/orient RIGHT or select D, Action 5 is wild it could be jump or rotate or fire or select option E, Action 6 is clicking on a specific X,Y coordinate. The grid is 64x64 and generally interesting areas will not be on the edges.',
     '',
     'Tone and style:',
     '- Talk like a Gen-Z Twitch streamer hyping up your viewers: heavy gamer slang and Gen-Z slang, playful energy, zero complex math.',
