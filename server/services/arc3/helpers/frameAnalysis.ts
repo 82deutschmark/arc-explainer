@@ -146,3 +146,67 @@ export function printDifferenceSummary(differences: PixelDiff[], actionName: str
     }
   }
 }
+
+/**
+ * Structured frame change analysis for agent context.
+ * Includes pixel counts, sample changes, and human-readable summary.
+ */
+export interface FrameChanges {
+  pixelsChanged: number;
+  changedCells: Array<{ x: number; y: number; from: number; to: number }>;
+  regions: Region[];
+  summary: string;
+}
+
+/**
+ * Analyze changes between two frames for agent context enrichment.
+ * Returns null if prevFrame is null (first frame, nothing to compare).
+ *
+ * @param prevFrame - Previous frame (or null)
+ * @param currentFrame - Current frame
+ * @param maxCellSamples - Max number of changed cells to include (default: 10)
+ * @returns Frame change analysis or null
+ */
+export function analyzeFrameChanges(
+  prevFrame: FrameData | null,
+  currentFrame: FrameData,
+  maxCellSamples: number = 10
+): FrameChanges | null {
+  if (!prevFrame) {
+    return null; // First frame, nothing to compare
+  }
+
+  const differences = compareFrames(prevFrame, currentFrame);
+  const regions = findChangedRegions(prevFrame, currentFrame);
+
+  // Sample up to maxCellSamples changed cells
+  const changedCells = differences.slice(0, maxCellSamples).map(diff => ({
+    x: diff.col,
+    y: diff.row,
+    from: diff.oldVal,
+    to: diff.newVal,
+  }));
+
+  // Generate human-readable summary
+  let summary: string;
+  if (differences.length === 0) {
+    summary = 'No changes detected';
+  } else if (differences.length === 1) {
+    const { col, row, oldVal, newVal } = differences[0];
+    summary = `1 cell changed at (${col},${row}): ${oldVal} → ${newVal}`;
+  } else if (regions.length === 1) {
+    const region = regions[0];
+    const area = region.width * region.height;
+    const changePercentage = Math.round((differences.length / area) * 100);
+    summary = `${differences.length} cells changed in ${region.width}×${region.height} region at (${region.left},${region.top}), ${changePercentage}% of region`;
+  } else {
+    summary = `${differences.length} cells changed across ${regions.length} regions`;
+  }
+
+  return {
+    pixelsChanged: differences.length,
+    changedCells,
+    regions,
+    summary,
+  };
+}

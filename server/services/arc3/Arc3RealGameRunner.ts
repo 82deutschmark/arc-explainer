@@ -16,7 +16,8 @@ import { buildArc3DefaultPrompt } from './prompts.ts';
 import { DEFAULT_MODEL, DEFAULT_MAX_TURNS, DEFAULT_GAME_ID } from './utils/constants.ts';
 import { processRunItems, processRunItemsWithReasoning } from './utils/timelineProcessor.ts';
 import { generateActionCaption, generateInspectCaption } from './helpers/captionGenerator.ts';
-import { countChangedPixels } from './helpers/frameAnalysis.ts';
+import { countChangedPixels, analyzeFrameChanges } from './helpers/frameAnalysis.ts';
+import { calculateColorDistribution } from './helpers/colorAnalysis.ts';
 import { createSession } from './persistence/sessionManager.ts';
 import { saveFrame } from './persistence/framePersistence.ts';
 import { renderArc3FrameToPng } from './arc3GridImageService.ts';
@@ -107,7 +108,7 @@ export class Arc3RealGameRunner {
 
     const inspectTool = tool({
       name: 'inspect_game_state',
-      description: 'Inspect the current game state including frame data, visual image, score, remaining actions, and game status. Always call before making decisions. The frameImage is a base64 PNG showing exactly what the player sees.',
+      description: 'Inspect the current game state including frame data, visual image, color distribution, change analysis, score, and game status. Always call before making decisions. The frameImage is a base64 PNG showing exactly what the player sees. The colorDistribution shows which colors exist and their counts. The changes object shows what pixels changed since the last action.',
       parameters: z.object({
         note: z
           .string()
@@ -132,12 +133,21 @@ export class Arc3RealGameRunner {
           logger.warn('[ARC3 TOOL] Failed to generate frame image, returning numeric data only', 'arc3');
         }
 
-        // Return cached frame state with visual representation
+        // Calculate color distribution from the latest 2D layer
+        const grid2D = currentFrame.frame[currentFrame.frame.length - 1];
+        const colorDistribution = calculateColorDistribution(grid2D);
+
+        // Analyze changes since previous frame
+        const changes = analyzeFrameChanges(prevFrame, currentFrame);
+
+        // Return cached frame state with visual representation and analysis
         const result = {
           gameGuid: currentFrame.guid,
           gameId: currentFrame.game_id,
           frame: currentFrame.frame,
           frameImage,  // Base64 PNG data URL for vision models
+          colorDistribution,  // Which colors exist and their counts
+          changes,  // What changed since last action (null if first frame)
           score: currentFrame.score,
           state: currentFrame.state,
           action_counter: currentFrame.action_counter,
@@ -146,7 +156,12 @@ export class Arc3RealGameRunner {
           note: input.note ?? null,
         };
 
-        logger.info(`[ARC3 TOOL] inspect_game_state returning: state=${result.state}, score=${result.score}, actions=${result.action_counter}/${result.max_actions}`, 'arc3');
+        logger.info(
+          `[ARC3 TOOL] inspect_game_state returning: state=${result.state}, score=${result.score}, ` +
+          `actions=${result.action_counter}/${result.max_actions}, colors=${colorDistribution.length}, ` +
+          `changes=${changes?.pixelsChanged ?? 'N/A'}`,
+          'arc3'
+        );
         return result;
       },
     });
@@ -387,7 +402,7 @@ export class Arc3RealGameRunner {
 
     const inspectTool = tool({
       name: 'inspect_game_state',
-      description: 'Inspect the current game state including frame data, visual image, score, remaining actions, and game status. Always call before making decisions. The frameImage is a base64 PNG showing exactly what the player sees.',
+      description: 'Inspect the current game state including frame data, visual image, color distribution, change analysis, score, and game status. Always call before making decisions. The frameImage is a base64 PNG showing exactly what the player sees. The colorDistribution shows which colors exist and their counts. The changes object shows what pixels changed since the last action.',
       parameters: z.object({
         note: z
           .string()
@@ -419,12 +434,21 @@ export class Arc3RealGameRunner {
           logger.warn('[ARC3 TOOL STREAM] Failed to generate frame image, returning numeric data only', 'arc3');
         }
 
-        // Return cached frame state with visual representation
+        // Calculate color distribution from the latest 2D layer
+        const grid2D = currentFrame.frame[currentFrame.frame.length - 1];
+        const colorDistribution = calculateColorDistribution(grid2D);
+
+        // Analyze changes since previous frame
+        const changes = analyzeFrameChanges(prevFrame, currentFrame);
+
+        // Return cached frame state with visual representation and analysis
         const result = {
           gameGuid: currentFrame.guid,
           gameId: currentFrame.game_id,
           frame: currentFrame.frame,
           frameImage,  // Base64 PNG data URL for vision models
+          colorDistribution,  // Which colors exist and their counts
+          changes,  // What changed since last action (null if first frame)
           score: currentFrame.score,
           state: currentFrame.state,
           action_counter: currentFrame.action_counter,
@@ -433,7 +457,12 @@ export class Arc3RealGameRunner {
           note: input.note ?? null,
         };
 
-        logger.info(`[ARC3 TOOL STREAM] inspect_game_state returning: state=${result.state}, score=${result.score}, actions=${result.action_counter}/${result.max_actions}`, 'arc3');
+        logger.info(
+          `[ARC3 TOOL STREAM] inspect_game_state returning: state=${result.state}, score=${result.score}, ` +
+          `actions=${result.action_counter}/${result.max_actions}, colors=${colorDistribution.length}, ` +
+          `changes=${changes?.pixelsChanged ?? 'N/A'}`,
+          'arc3'
+        );
 
         // Emit tool result event
         streamHarness.emitEvent("agent.tool_result", {
