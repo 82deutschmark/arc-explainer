@@ -1,6 +1,19 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top with the time and date!
 
+### Version 5.46.1  Dec 6, 2025 (PENDING TESTING)
+
+- **ARC-AGI-3 Playground: Fix manual action guid race condition** (Author: Claude Code using Sonnet 4.5)
+  - Fixed critical race condition where rapid manual action clicks caused actions to execute on stale game state (wrong guid).
+  - Added `latestGuidRef` useRef to track current guid synchronously, preventing React state lag during rapid clicks.
+  - Added `isPendingManualAction` lock to prevent concurrent manual actions - buttons now disable while action is executing.
+  - Updated `executeManualAction` to use ref guid instead of state guid, and update ref immediately before setState.
+  - Updated `initializeGameSession` and SSE event listeners (`game.frame_update`, `agent.completed`) to sync latestGuidRef.
+  - Action buttons now show "Another action is in progress. Please wait..." tooltip when disabled due to pending action.
+  - **Issue**: Actions appeared delayed or wrong (e.g., clicking Action 4 → sees right movement, clicking Action 1 → sees diagonal movement).
+  - **Root Cause**: Second click used guid from before first action completed, causing ARC3 API to apply action to outdated game state.
+  - **Files Modified**: `client/src/hooks/useArc3AgentStream.ts:86-87,596-699,715-716,433-436,457-460,755`, `client/src/pages/ARC3AgentPlayground.tsx:223,654,661-667`, `CHANGELOG.md`
+
 ### Version 5.46.0  Dec 6, 2025 (PENDING TESTING)
 
 - **ARC-AGI-3 Level Screenshots System** (Author: Claude Code using Sonnet 4.5)
