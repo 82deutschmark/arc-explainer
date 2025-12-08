@@ -21,6 +21,7 @@ import { calculateColorDistribution } from './helpers/colorAnalysis.ts';
 import { createSession } from './persistence/sessionManager.ts';
 import { saveFrame } from './persistence/framePersistence.ts';
 import { renderArc3FrameToPng } from './arc3GridImageService.ts';
+import { executeGridAnalysis } from './helpers/gridAnalyzer.ts';
 import { logger } from '../../utils/logger.ts';
 
 export interface Arc3StreamHarness {
@@ -108,7 +109,7 @@ export class Arc3RealGameRunner {
 
     const inspectTool = tool({
       name: 'inspect_game_state',
-      description: 'Inspect the current game state including frame data, visual image, color distribution, change analysis, score, and game status. Always call before making decisions. The frameImage is a base64 PNG showing exactly what the player sees. The colorDistribution shows which colors exist and their counts. The changes object shows what pixels changed since the last action.',
+      description: 'Inspect the current game state visually. Returns a PNG image (frameImage) showing exactly what you see, plus structured analysis. The changes object shows what pixels changed since your last action - use this to understand action effects. Always call this before making decisions. For programmatic grid analysis, use the analyze_grid tool instead.',
       parameters: z.object({
         note: z
           .string()
@@ -140,14 +141,13 @@ export class Arc3RealGameRunner {
         // Analyze changes since previous frame
         const changes = analyzeFrameChanges(prevFrame, currentFrame);
 
-        // Return cached frame state with visual representation and analysis
+        // Return visual representation and analysis (no raw grid - use analyze_grid for that)
         const result = {
           gameGuid: currentFrame.guid,
           gameId: currentFrame.game_id,
-          frame: currentFrame.frame,
-          frameImage,  // Base64 PNG data URL for vision models
-          colorDistribution,  // Which colors exist and their counts
-          changes,  // What changed since last action (null if first frame)
+          frameImage,  // Base64 PNG data URL - THIS is what you should look at
+          colorDistribution,  // Quick summary of which colors exist
+          changes,  // What changed since last action - critical for understanding effects
           score: currentFrame.score,
           state: currentFrame.state,
           action_counter: currentFrame.action_counter,
@@ -163,6 +163,46 @@ export class Arc3RealGameRunner {
           'arc3'
         );
         return result;
+      },
+    });
+
+    const analyzeGridTool = tool({
+      name: 'analyze_grid',
+      description: 'Execute Python code to analyze the current game grid programmatically. The code runs in a sandboxed environment with numpy, scipy.ndimage available. You have access to: `grid` (3D numpy array of all layers), `current_layer` (2D array of latest layer), and helper functions: find_connected_components(layer, color=None), detect_symmetry(layer), get_bounding_box(layer, exclude_color=0), color_counts(layer). Use print() to output results - stdout is captured and returned. 10 second timeout.',
+      parameters: z.object({
+        code: z
+          .string()
+          .min(5)
+          .max(4000)
+          .describe('Python code to execute. Must use print() to output results.'),
+        note: z
+          .string()
+          .max(120)
+          .nullable()
+          .describe('Optional note explaining the purpose of this analysis.'),
+      }),
+      execute: async ({ code, note }) => {
+        logger.info(`[ARC3 TOOL] analyze_grid called with note: "${note}"`, 'arc3');
+
+        if (!currentFrame) {
+          throw new Error('Game session not initialized yet.');
+        }
+
+        const result = await executeGridAnalysis(currentFrame.frame, code);
+
+        logger.info(
+          `[ARC3 TOOL] analyze_grid completed: success=${result.success}, ` +
+          `time=${result.executionTimeMs}ms`,
+          'arc3'
+        );
+
+        return {
+          success: result.success,
+          output: result.output,
+          error: result.error,
+          executionTimeMs: result.executionTimeMs,
+          note: note ?? null,
+        };
       },
     });
 
@@ -271,7 +311,7 @@ export class Arc3RealGameRunner {
         text: { verbosity: 'high' },
         store: storeResponse,
       },
-      tools: [inspectTool, resetGameTool, simpleAction('ACTION1'), simpleAction('ACTION2'), simpleAction('ACTION3'), simpleAction('ACTION4'), simpleAction('ACTION5'), action6Tool],
+      tools: [inspectTool, analyzeGridTool, resetGameTool, simpleAction('ACTION1'), simpleAction('ACTION2'), simpleAction('ACTION3'), simpleAction('ACTION4'), simpleAction('ACTION5'), action6Tool],
     });
 
     const result = await run(
@@ -402,7 +442,7 @@ export class Arc3RealGameRunner {
 
     const inspectTool = tool({
       name: 'inspect_game_state',
-      description: 'Inspect the current game state including frame data, visual image, color distribution, change analysis, score, and game status. Always call before making decisions. The frameImage is a base64 PNG showing exactly what the player sees. The colorDistribution shows which colors exist and their counts. The changes object shows what pixels changed since the last action.',
+      description: 'Inspect the current game state visually. Returns a PNG image (frameImage) showing exactly what you see, plus structured analysis. The changes object shows what pixels changed since your last action - use this to understand action effects. Always call this before making decisions. For programmatic grid analysis, use the analyze_grid tool instead.',
       parameters: z.object({
         note: z
           .string()
@@ -441,14 +481,13 @@ export class Arc3RealGameRunner {
         // Analyze changes since previous frame
         const changes = analyzeFrameChanges(prevFrame, currentFrame);
 
-        // Return cached frame state with visual representation and analysis
+        // Return visual representation and analysis (no raw grid - use analyze_grid for that)
         const result = {
           gameGuid: currentFrame.guid,
           gameId: currentFrame.game_id,
-          frame: currentFrame.frame,
-          frameImage,  // Base64 PNG data URL for vision models
-          colorDistribution,  // Which colors exist and their counts
-          changes,  // What changed since last action (null if first frame)
+          frameImage,  // Base64 PNG data URL - THIS is what you should look at
+          colorDistribution,  // Quick summary of which colors exist
+          changes,  // What changed since last action - critical for understanding effects
           score: currentFrame.score,
           state: currentFrame.state,
           action_counter: currentFrame.action_counter,
@@ -472,6 +511,60 @@ export class Arc3RealGameRunner {
         });
 
         return result;
+      },
+    });
+
+    const analyzeGridTool = tool({
+      name: 'analyze_grid',
+      description: 'Execute Python code to analyze the current game grid programmatically. The code runs in a sandboxed environment with numpy, scipy.ndimage available. You have access to: `grid` (3D numpy array of all layers), `current_layer` (2D array of latest layer), and helper functions: find_connected_components(layer, color=None), detect_symmetry(layer), get_bounding_box(layer, exclude_color=0), color_counts(layer). Use print() to output results - stdout is captured and returned. 10 second timeout.',
+      parameters: z.object({
+        code: z
+          .string()
+          .min(5)
+          .max(4000)
+          .describe('Python code to execute. Must use print() to output results. Has access to grid, current_layer, numpy (as np), and scipy.ndimage.'),
+        note: z
+          .string()
+          .max(120)
+          .nullable()
+          .describe('Optional note explaining the purpose of this analysis.'),
+      }),
+      execute: async ({ code, note }) => {
+        logger.info(`[ARC3 TOOL STREAM] analyze_grid called with note: "${note}"`, 'arc3');
+
+        if (!currentFrame) {
+          throw new Error('Game session not initialized yet.');
+        }
+
+        streamHarness.emitEvent("agent.tool_call", {
+          tool: 'analyze_grid',
+          arguments: { code: code.slice(0, 200) + '...', note },
+          timestamp: Date.now(),
+        });
+
+        const result = await executeGridAnalysis(currentFrame.frame, code);
+
+        const toolResult = {
+          success: result.success,
+          output: result.output,
+          error: result.error,
+          executionTimeMs: result.executionTimeMs,
+          note: note ?? null,
+        };
+
+        logger.info(
+          `[ARC3 TOOL STREAM] analyze_grid completed: success=${result.success}, ` +
+          `time=${result.executionTimeMs}ms, output_length=${result.output.length}`,
+          'arc3'
+        );
+
+        streamHarness.emitEvent("agent.tool_result", {
+          tool: 'analyze_grid',
+          result: toolResult,
+          timestamp: Date.now(),
+        });
+
+        return toolResult;
       },
     });
 
@@ -592,7 +685,7 @@ export class Arc3RealGameRunner {
         text: { verbosity: 'high' },
         store: storeResponse,
       },
-      tools: [inspectTool, simpleAction('ACTION1'), simpleAction('ACTION2'), simpleAction('ACTION3'), simpleAction('ACTION4'), simpleAction('ACTION5'), action6Tool],
+      tools: [inspectTool, analyzeGridTool, simpleAction('ACTION1'), simpleAction('ACTION2'), simpleAction('ACTION3'), simpleAction('ACTION4'), simpleAction('ACTION5'), action6Tool],
     });
 
     // Emit agent ready event

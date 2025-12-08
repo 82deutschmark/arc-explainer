@@ -6,7 +6,7 @@ SRP/DRY check: Pass — encapsulates grid rendering logic separate from game sta
 */
 
 import React, { useEffect, useRef, useState } from 'react';
-import { getArc3Color, getContrastColor, getColorDistribution, type Arc3ColorEntry } from '../../utils/arc3Colors';
+import { getArc3Color, getContrastColor } from '../../utils/arc3Colors';
 
 interface Arc3GridVisualizationProps {
   grid: number[][][]; // 3D array: [time][height][width]
@@ -43,7 +43,6 @@ export const Arc3GridVisualization: React.FC<Arc3GridVisualizationProps> = ({
 }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [hoveredCell, setHoveredCell] = useState<{ x: number; y: number; value: number } | null>(null);
-  const [colorDistribution, setColorDistribution] = useState<Arc3ColorEntry[]>([]);
   const [canvasScale, setCanvasScale] = useState({ x: 1, y: 1 });
 
   // Get the current frame to display
@@ -85,13 +84,6 @@ export const Arc3GridVisualization: React.FC<Arc3GridVisualizationProps> = ({
 
   const scaledCellWidth = cellSize * canvasScale.x;
   const scaledCellHeight = cellSize * canvasScale.y;
-
-  // Update color distribution when grid changes
-  useEffect(() => {
-    if (currentFrame.length > 0) {
-      setColorDistribution(getColorDistribution(currentFrame));
-    }
-  }, [currentFrame]);
 
   useEffect(() => {
     const computeScale = () => {
@@ -272,27 +264,6 @@ export const Arc3GridVisualization: React.FC<Arc3GridVisualizationProps> = ({
           </div>
         )}
       </div>
-      
-      {/* Color distribution legend */}
-      {colorDistribution.length > 0 && (
-        <div className="mt-4 p-3 bg-gray-50 rounded border">
-          <h4 className="text-sm font-semibold mb-2">Color Distribution</h4>
-          <div className="flex flex-wrap gap-2">
-            {colorDistribution.map(({ value, color, name, count }) => (
-              <div key={value} className="flex items-center gap-1 text-xs">
-                <div
-                  className="w-4 h-4 border border-gray-300 rounded"
-                  style={{ backgroundColor: color }}
-                />
-                <span>{value} ({name})</span>
-                {count !== undefined && (
-                  <span className="text-gray-500">({count})</span>
-                )}
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
     </div>
   );
 };

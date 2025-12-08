@@ -1,6 +1,14 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top with the time and date!
 
+### Version 5.47.10  Dec 8, 2025 (PENDING TESTING)
+
+- **ARC3 continuation: guard chaining inputs** (Author: Codex)
+  - Hardened `/api/arc3/stream/:sessionId/continue` to fall back to the stored `providerResponseId` when the client lacks a `previousResponseId`, and return clear 400 errors instead of generic 500s when chaining data is missing.
+  - Added defensive validation that refuses ARC3 continuations without a seed frame when reusing an existing game guid, preventing silent state corruption.
+  - Documented the remediation steps in a dedicated plan for tracking and validation.
+  - **Files Modified**: `server/routes/arc3.ts`, `docs/plans/2025-12-08-arc3-streaming-continuation-fix-plan.md`, `CHANGELOG.md`
+
 ### Version 5.47.9  Dec 7, 2025 (PENDING TESTING)
 
 - **ARC-AGI-3: Attach agent reasoning to ARC3 scorecards (streaming path)** (Author: Cascade)
