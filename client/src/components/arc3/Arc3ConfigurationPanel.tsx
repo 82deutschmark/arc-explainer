@@ -155,7 +155,7 @@ export const Arc3ConfigurationPanel: React.FC<Arc3ConfigurationPanelProps> = ({
           </div>
         </div>
 
-        {/* Max Turns - Unlimited */}
+        {/* Max Turns - High default (effectively unlimited) */}
         <div className="space-y-0.5">
           <label className="font-medium text-[10px]">Max Turns</label>
           <Input
@@ -165,9 +165,9 @@ export const Arc3ConfigurationPanel: React.FC<Arc3ConfigurationPanelProps> = ({
             onChange={(e) => setMaxTurns(Number(e.target.value))}
             disabled={isPlaying}
             className="h-7 text-[11px]"
-            placeholder="100 (default)"
+            placeholder="100000 (default)"
           />
-          <p className="text-[9px] text-muted-foreground">Agent loop iterations (not tool calls)</p>
+          <p className="text-[9px] text-muted-foreground">Set high to avoid auto-pauses; agent stops only on user cancel or game end.</p>
         </div>
 
         {/* Start/Stop */}

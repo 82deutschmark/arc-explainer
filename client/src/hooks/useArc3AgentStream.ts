@@ -327,6 +327,26 @@ export function useArc3AgentStream() {
       }
     });
 
+    eventSource.addEventListener('agent.loop_hint', (evt) => {
+      try {
+        const data = JSON.parse((evt as MessageEvent<string>).data);
+        console.log('[ARC3 Stream] Loop hint:', data);
+
+        setState((prev) => ({
+          ...prev,
+          streamingMessage: data.message || 'Agent is rethinking strategy...',
+          timeline: [...prev.timeline, {
+            index: prev.timeline.length,
+            type: 'assistant_message' as const,
+            label: 'Loop hint',
+            content: data.message || 'No score change detected; trying alternate strategy.',
+          }],
+        }));
+      } catch (error) {
+        console.error('[ARC3 Stream] Failed to parse agent.loop_hint payload:', error);
+      }
+    });
+
     eventSource.addEventListener('agent.reasoning', (evt) => {
       try {
         const data = JSON.parse((evt as MessageEvent<string>).data);
