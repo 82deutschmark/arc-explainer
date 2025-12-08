@@ -1,6 +1,14 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top with the time and date!
 
+### Version 5.47.14  Dec 8, 2025 (PENDING TESTING)
+
+- **ARC3 Agent Playground: enlarge Actions stream UI & JSON viewer** (Author: Cascade)
+  - Increased font sizes and vertical spacing for the left-hand Actions timeline so tool calls like ACTION1–ACTION7 stay legible during long runs.
+  - Extended the Actions panel scroll box to use more of the viewport height on large screens and added auto-scroll to keep the latest entry in view while the agent is streaming.
+  - Switched the tool call / result body to a full pretty-printed JSON block in a highlighted code-style container instead of a tiny truncated snippet.
+  - **Files Modified**: `client/src/components/arc3/Arc3ToolTimeline.tsx`, `client/src/pages/ARC3AgentPlayground.tsx`, `CHANGELOG.md`
+
 ### Version 5.47.11  Dec 8, 2025 (PENDING TESTING)
 
 - **ARC-AGI-3 Playground: add analyze_grid Python tool for grid analysis** (Author: Cascade)
@@ -24,6 +32,13 @@
   - Added a simple loop detector that emits non-blocking hints when score hasn’t changed after multiple actions (no forced pause).
   - Wired loop hints into the frontend timeline and messaging, and kept user-message flow intact while runs stay active.
   - **Files Modified**: `server/services/arc3/utils/constants.ts`, `server/services/arc3/Arc3RealGameRunner.ts`, `client/src/pages/ARC3AgentPlayground.tsx`, `client/src/components/arc3/Arc3ConfigurationPanel.tsx`, `client/src/components/arc3/Arc3AgentConfigPanel.tsx`, `client/src/hooks/useArc3AgentStream.ts`, `CHANGELOG.md`
+
+### Version 5.47.13  Dec 8, 2025 (PENDING TESTING)
+
+- **ARC3 continuation: tolerate partial frames** (Author: Codex)
+  - Relaxed continuation frame parsing to merge client-provided frames with cached server frames, preventing Zod errors when `action_counter`/`max_actions` are absent from the request.
+  - Kept validation to require a usable frame when continuing an existing game, but now fall back to cached data before returning errors.
+  - **Files Modified**: `server/routes/arc3.ts`, `CHANGELOG.md`
 
 ### Version 5.47.10  Dec 8, 2025 (PENDING TESTING)
 

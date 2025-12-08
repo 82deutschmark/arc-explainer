@@ -264,9 +264,9 @@ const frameSeedSchema = z.object({
   frame: z.array(z.array(z.array(z.number().int()))),
   score: z.number().int(),
   state: z.string().trim(),
-  action_counter: z.number().int(),
-  max_actions: z.number().int(),
-  win_score: z.number().int(),
+  action_counter: z.number().int().optional(),
+  max_actions: z.number().int().optional(),
+  win_score: z.number().int().optional(),
   full_reset: z.boolean().optional(),
   available_actions: z.array(z.union([z.string(), z.number()])).optional(),
 });
@@ -302,7 +302,8 @@ router.post(
     }
 
     // Update the payload with continuation data
-    const normalizedLastFrame: FrameData | undefined = lastFrame
+    const cachedFrame = payload.lastFrame;
+    const clientFrame = lastFrame
       ? {
           guid: lastFrame.guid,
           game_id: lastFrame.game_id,
@@ -315,9 +316,26 @@ router.post(
           full_reset: lastFrame.full_reset,
           available_actions: normalizeAvailableActions(lastFrame.available_actions),
         }
-      : payload.lastFrame;
+      : undefined;
 
-    if (existingGameGuid && !normalizedLastFrame) {
+    const clientComplete = Boolean(
+      clientFrame &&
+      clientFrame.action_counter !== undefined &&
+      clientFrame.max_actions !== undefined &&
+      clientFrame.win_score !== undefined
+    );
+
+    if (clientFrame && !clientComplete && cachedFrame) {
+      logger.warn(`[ARC3 Continue] Ignoring incomplete client frame, using cached frame. Missing counters in client frame for session ${sessionId}`, 'arc3');
+    }
+
+    const normalizedLastFrame: FrameData | undefined = clientComplete
+      ? clientFrame
+      : cachedFrame;
+
+    logger.info(`[ARC3 Continue] Frame source for session ${sessionId}: ${clientComplete ? 'client' : cachedFrame ? 'cached' : 'none'}`, 'arc3');
+
+    if (existingGameGuid && (!normalizedLastFrame || normalizedLastFrame.action_counter === undefined || normalizedLastFrame.max_actions === undefined)) {
       return res
         .status(400)
         .json(formatResponse.error('MISSING_SEED_FRAME', 'Cannot continue an existing ARC3 game without the last known frame. Please retry after loading the current frame state.'));

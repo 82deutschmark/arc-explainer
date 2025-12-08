@@ -310,6 +310,8 @@ export class Arc3StreamService {
         ? (runResult.frames[runResult.frames.length - 1] as FrameData)
         : payload.lastFrame;
 
+      logger.info(`[ARC3 Streaming] Caching final frame for session ${sessionId}; frame index=${runResult.frames?.length ?? 0}`, 'arc3-stream-service');
+
       // Persist response metadata for future continuations
       this.updatePendingPayload(sessionId, {
         existingGameGuid: runResult.gameGuid,
@@ -439,6 +441,8 @@ export class Arc3StreamService {
       const finalFrame = Array.isArray(runResult.frames) && runResult.frames.length > 0
         ? (runResult.frames[runResult.frames.length - 1] as FrameData)
         : payload.lastFrame;
+
+      logger.info(`[ARC3 Streaming] Caching continuation frame for session ${sessionId}; frame index=${runResult.frames?.length ?? 0}`, 'arc3-stream-service');
 
       this.updatePendingPayload(sessionId, {
         existingGameGuid: runResult.gameGuid,

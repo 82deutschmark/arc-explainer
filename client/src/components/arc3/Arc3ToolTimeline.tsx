@@ -9,7 +9,7 @@
  *                  streaming hook orchestration.
  */
 
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { RefreshCw, Wrench } from 'lucide-react';
 
@@ -34,10 +34,26 @@ export const Arc3ToolTimeline: React.FC<Arc3ToolTimelineProps> = ({
   const hasActiveToolCall =
     isPlaying && (streamingMessage?.includes('called') ?? false);
 
+  const containerRef = useRef<HTMLDivElement | null>(null);
+
+  // Auto-scroll to the bottom whenever new tool entries arrive so the latest
+  // ACTION / RESET calls and results stay visible during streaming.
+  useEffect(() => {
+    if (!containerRef.current) return;
+    const container = containerRef.current;
+
+    // Defer to the next paint so layout has settled before scrolling.
+    setTimeout(() => {
+      if (container) {
+        container.scrollTop = container.scrollHeight;
+      }
+    }, 0);
+  }, [entries]);
+
   return (
-    <Card className={`text-xs ${className}`}>
+    <Card className={`text-sm h-full ${className}`}>
       <CardHeader className="pb-2 pt-3 px-3">
-        <CardTitle className="text-sm flex items-center gap-1.5">
+        <CardTitle className="text-base flex items-center gap-1.5">
           <Wrench className="h-3.5 w-3.5" />
           Actions
           {hasActiveToolCall && (
@@ -49,22 +65,27 @@ export const Arc3ToolTimeline: React.FC<Arc3ToolTimelineProps> = ({
         </CardTitle>
       </CardHeader>
       <CardContent className="px-3 pb-3">
-        <div className="space-y-1.5 max-h-48 overflow-y-auto text-[10px]">
+        <div
+          ref={containerRef}
+          className="space-y-2 max-h-[calc(100vh-18rem)] overflow-y-auto text-sm"
+        >
           {entries.length === 0 ? (
             <p className="text-muted-foreground text-center py-3">No actions yet</p>
           ) : (
             entries.map((entry, idx) => (
               <div
                 key={idx}
-                className={`p-1.5 rounded border ${
+                className={`p-2 rounded border ${
                   idx === entries.length - 1 && hasActiveToolCall
                     ? 'bg-blue-50 border-blue-300 animate-pulse'
-                    : 'bg-muted/30'
+                    : 'bg-muted/40'
                 }`}
               >
-                <p className="font-medium text-[10px]">{entry.label}</p>
-                <pre className="text-[9px] text-muted-foreground mt-0.5 overflow-x-auto">
-                  {entry.content.substring(0, 80)}...
+                <p className="font-semibold text-xs text-foreground mb-1">
+                  {entry.label}
+                </p>
+                <pre className="text-xs text-muted-foreground overflow-x-auto whitespace-pre-wrap font-mono leading-relaxed bg-background/60 border border-border rounded px-2 py-1">
+                  {entry.content}
                 </pre>
               </div>
             ))
