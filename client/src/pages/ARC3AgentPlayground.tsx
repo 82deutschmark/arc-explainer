@@ -7,11 +7,9 @@ SRP/DRY check: Pass
 */
 
 import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Textarea } from '@/components/ui/textarea';
 import { Gamepad2, ArrowLeft, RefreshCw } from 'lucide-react';
 import { Link, useLocation, useSearch } from 'wouter';
 import { useArc3AgentStream } from '@/hooks/useArc3AgentStream';
@@ -19,6 +17,8 @@ import { Arc3ReasoningViewer } from '@/components/arc3/Arc3ReasoningViewer';
 import { Arc3ToolTimeline } from '@/components/arc3/Arc3ToolTimeline';
 import { Arc3GamePanel } from '@/components/arc3/Arc3GamePanel';
 import { Arc3ConfigurationPanel } from '@/components/arc3/Arc3ConfigurationPanel';
+import { Arc3AgentControls } from '@/components/arc3/Arc3AgentControls';
+import { Arc3AgentVisionPreview } from '@/components/arc3/Arc3AgentVisionPreview';
 import { apiRequest } from '@/lib/queryClient';
 import { usePageMeta } from '@/hooks/usePageMeta';
 
@@ -219,7 +219,6 @@ export default function ARC3AgentPlayground() {
   const [maxTurns, setMaxTurns] = useState(100);
   const [reasoningEffort, setReasoningEffort] = useState<'minimal' | 'low' | 'medium' | 'high'>('low');
   const [systemPrompt, setSystemPrompt] = useState('Loading default prompt...');
-  const [showSystemPrompt, setShowSystemPrompt] = useState(true);
   const [instructions, setInstructions] = useState(
     'Explore the game systematically. Inspect the game state and try different actions to learn the rules.'
   );
@@ -262,6 +261,25 @@ export default function ARC3AgentPlayground() {
 
   // Filter timeline entries by type
   const toolEntries = state.timeline.filter(entry => entry.type === 'tool_call' || entry.type === 'tool_result');
+
+  // Extract latest frameImage from inspect_game_state tool results
+  const latestFrameImage = React.useMemo(() => {
+    const inspectResults = state.timeline
+      .filter(entry => entry.type === 'tool_result' && entry.label.includes('inspect_game_state'))
+      .reverse(); // Get most recent first
+
+    for (const result of inspectResults) {
+      try {
+        const parsed = JSON.parse(result.content);
+        if (parsed.frameImage && typeof parsed.frameImage === 'string') {
+          return parsed.frameImage;
+        }
+      } catch {
+        // Ignore parsing errors
+      }
+    }
+    return null;
+  }, [state.timeline]);
 
   // Get available models (OpenAI only for ARC3 Agents SDK)
   const availableModels = models.filter((m: ModelInfo) => 
@@ -399,25 +417,11 @@ export default function ARC3AgentPlayground() {
 
           {/* User Message Injection - shown when agent completes */}
           {showUserInput && (
-            <Card className="border-orange-500">
-              <CardHeader className="pb-2 pt-3 px-3">
-                <CardTitle className="text-sm text-orange-600">Send Message</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-2 px-3 pb-3">
-                <p className="text-[10px] text-muted-foreground">
-                  Chain your message to the agent for continued exploration:
-                </p>
-                <Textarea
-                  value={userMessage}
-                  onChange={(e) => setUserMessage(e.target.value)}
-                  className="text-[11px] h-20 resize-none"
-                  placeholder="Send new guidance or observation..."
-                />
-                <Button onClick={handleUserMessageSubmit} size="sm" className="w-full h-7 text-[10px]">
-                  Send
-                </Button>
-              </CardContent>
-            </Card>
+            <Arc3AgentControls
+              userMessage={userMessage}
+              setUserMessage={setUserMessage}
+              onSubmit={handleUserMessageSubmit}
+            />
           )}
 
           {/* Actions */}
@@ -429,7 +433,7 @@ export default function ARC3AgentPlayground() {
         </div>
 
         {/* CENTER: Game Panel (grid + actions + navigation) */}
-        <div className="lg:col-span-5">
+        <div className="lg:col-span-5 space-y-3">
           <Arc3GamePanel
             currentFrame={currentFrame}
             frames={state.frames}
@@ -445,6 +449,9 @@ export default function ARC3AgentPlayground() {
             setCurrentFrame={setCurrentFrame}
             normalizedAvailableActions={normalizedAvailableActions}
           />
+
+          {/* Agent Vision Preview - shows base64 image the agent sees */}
+          <Arc3AgentVisionPreview frameImage={latestFrameImage} />
         </div>
 
         {/* RIGHT: Streaming Reasoning - Auto-advance, larger text */}

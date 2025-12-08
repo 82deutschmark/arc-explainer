@@ -194,7 +194,7 @@ export default function Arc3GameSpoiler() {
       ? `ARC Explainer – ${game.informalName || game.gameId} (ARC-AGI-3 Game)`
       : `ARC Explainer – Game Not Found`,
     description: game
-      ? `Complete spoilers, hints, and strategies for ARC-AGI-3 game ${game.gameId}${game.informalName ? ` (${game.informalName})` : ''}. ${game.description}`
+      ? `Spoilers, mechanics, and any hints or resources we've documented so far for ARC-AGI-3 game ${game.gameId}${game.informalName ? ` (${game.informalName})` : ''}. ${game.description}`
       : `Game not found in the ARC-AGI-3 database.`,
     canonicalPath: `/arc3/games/${gameId}`,
   });

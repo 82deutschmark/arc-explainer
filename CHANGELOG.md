@@ -1,6 +1,21 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top with the time and date!
 
+### Version 5.47.5  Dec 7, 2025 (PENDING TESTING)
+
+- **ARC-AGI-3 Playground: Complete component decomposition (Phase 1 & Phase 3)** (Author: Claude Code using Sonnet 4.5)
+  - Extracted monolithic 839-line playground into focused, reusable components following SRP.
+  - **Phase 1**: Created `Arc3GamePanel` consolidating grid visualization, action buttons, layer/timestep navigation, and frame navigation in single render cycle to fix double-click issues caused by parent-child state update lag.
+  - **Phase 3 Decomposition**:
+    - Created `Arc3ConfigurationPanel` - Ultra-compact config UI with system prompt (collapsible), user prompt, model selection (OpenAI only), reasoning effort, max turns, and start/stop controls.
+    - Created `Arc3AgentControls` - User message injection card for continuing agent exploration after pause/completion.
+    - Created `Arc3AgentVisionPreview` - Displays base64 PNG image showing what vision-enabled agent sees when inspecting game state (extracted from `inspect_game_state` tool results).
+  - Slimmed `ARC3AgentPlayground.tsx` to composition layer handling URL state, hook wiring, and structured data extraction.
+  - Fixed color legend to use shared Arc3 16-color palette from `shared/config/arc3Colors.ts` as single source of truth.
+  - **Why**: Massive SRP violation (964 lines, multiple responsibilities). Now follows established pattern of focused components with clear boundaries.
+  - **Files Created**: `client/src/components/arc3/Arc3GamePanel.tsx`, `client/src/components/arc3/Arc3ConfigurationPanel.tsx`, `client/src/components/arc3/Arc3AgentControls.tsx`, `client/src/components/arc3/Arc3AgentVisionPreview.tsx`
+  - **Files Modified**: `client/src/pages/ARC3AgentPlayground.tsx:9-25,217-282,376-407,435-455`, `docs/plans/2025-12-07-arc3-playground-improvements-plan.md:6,10-55`, `CHANGELOG.md`
+
 ### Version 5.47.4  Dec 7, 2025 (PENDING TESTING)
 
 - **ARC-AGI-3 browser: modular reference panel** (Author: Codex)

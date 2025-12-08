@@ -139,30 +139,22 @@ export const ARC3_GAMES: Record<string, Arc3GameMetadata> = {
     gameId: 'ls20',
     officialTitle: 'ls20',
     informalName: 'Locksmith',
-    description: 'Navigate a character through a puzzle environment, collecting keys to unlock doors and reach the goal.',
+    description: 'Agentic navigation game where you carry a key-like symbol through a map, use rotators to change its shape, and reach a matching door before running out of health.',
     mechanicsExplanation: `
-The "Locksmith" game is a puzzle-exploration game where you control a white character on a 64x64 grid.
+Locksmith (ls20) is an agentic, map-based game played on a 2D grid.
 
-**Objective:** Collect keys of matching colors to unlock corresponding doors, navigating through the environment to reach the goal and maximize your score.
+**Objective:** Carry a key-shaped symbol through the map so that, by the time you reach the door, the key's shape matches the door's shape while using as few actions as possible.
 
-**Key Mechanics:**
-- The white character is controlled using directional actions
-- Colored keys (blue, orange, etc.) must be collected to unlock matching colored doors
-- Score increases as you progress through levels
-- Multiple levels exist, each more complex than the last
+**Core mechanics (from public ARC-AGI-3 preview docs):**
+- You move a token around the grid using simple directional actions.
+- Certain tiles act as "rotators" that cycle the key through different shapes.
+- A door opens only if you arrive with a key shape that matches the door shape.
+- Every movement costs health; running out of health ends the level.
 
-**Visual Elements:**
-- Dark gray: Walls/obstacles
-- White squares: Your character
-- Colored rectangles: Keys and doors
-- Pink/magenta bar at top: Progress indicator
-- Red indicators: Goal markers or win conditions
+The implicit goal is to discover a route and sequence of transformations that both opens the door and preserves as much health as possible (high action efficiency).
     `,
     category: 'preview',
     difficulty: 'medium',
-    winScore: 8,
-    maxActions: 2000,
-    levelCount: 8,
     actionMappings: [
       { action: 'ACTION1', commonName: 'Up', description: 'Move character up one cell' },
       { action: 'ACTION2', commonName: 'Down', description: 'Move character down one cell' },
@@ -206,7 +198,7 @@ The "Locksmith" game is a puzzle-exploration game where you control a white char
     gameId: 'as66',
     officialTitle: 'as66',
     informalName: 'Always Sliding',
-    description: 'A dynamic puzzle game featuring continuously moving elements. Navigate and solve challenges in an environment where objects are always in motion.',
+    description: 'Preview game from ARC-AGI-3; this site currently tracks only basic metadata and screenshots while mechanics are still being worked out from public materials.',
     category: 'preview',
     difficulty: 'unknown',
     actionMappings: [],
@@ -226,46 +218,31 @@ The "Locksmith" game is a puzzle-exploration game where you control a white char
         imageUrl: '/as66-lvl8.png',
       },
     ],
-    tags: ['sliding', 'motion', 'dynamic'],
+    tags: ['preview-set'],
     thumbnailUrl: '/as66.png',
     isFullyDocumented: false,
-    notes: 'Part of the original preview set. Documentation in progress.',
+    notes: 'Part of the original preview set. Mechanics here are intentionally high-level until more official detail is available.',
   },
 
   ft09: {
     gameId: 'ft09',
     officialTitle: 'ft09',
     informalName: 'Functional Tiles',
-    description: 'A puzzle game featuring tiles with specific functions and behaviors. Interact with different tile types to solve spatial challenges and manage colored resources.',
+    description: 'Non-agentic logic game where you match a target pattern shown on screen; later levels use overlapping patterns that increase difficulty.',
     mechanicsExplanation: `
-The "Functional Tiles" game is a spatial puzzle where you interact with different tile types to achieve level objectives.
+Functional Tiles (ft09) is described in the ARC-AGI-3 preview as a non-agentic logic game.
 
-**Objective:** Navigate and manipulate various functional tiles to complete increasingly complex puzzles across multiple levels.
+**Objective:** Match a target pattern shown on the screen.
 
-**Key Mechanics:**
-- Multiple tile types with distinct visual patterns and behaviors
-- Resource management indicated by colored bars (yellow, green, light blue)
-- Gray "container" tiles with colored elements (yellow/white, green/white patterns)
-- Yellow solid tiles (possibly moveable or interactive elements)
-- Pink/magenta tiles with yellow cross/checkered patterns (special function tiles)
-- Vertical progress/inventory indicator on the right side showing collected or available resources
+**Core mechanics (from public ARC-AGI-3 materials):**
+- Each level presents a target configuration the player must recreate.
+- Patterns can overlap, so the order and combination of operations matters.
+- Difficulty increases across levels as patterns become more complex and interactions between them grow.
 
-**Visual Elements:**
-- Dark gray/black: Background grid
-- Gray tiles with patterns: Interactive containers or puzzle elements
-- Yellow tiles: Primary interactive elements
-- Pink/magenta checkered tiles: Special function tiles
-- Light blue tiles: Secondary resource or goal elements
-- Right-side colored bar: Resource inventory or progress tracker (yellow, green, blue sections)
-
-**Level Progression:**
-- At least 9 levels confirmed (screenshots available for levels 8 and 9)
-- Complexity increases with more tile types and spatial arrangements
-- Later levels (8, 9) show intricate tile placement patterns requiring strategic interaction
+Beyond this high-level description, detailed tile semantics are not yet fully documented here; refer to official ARC Prize materials for the most precise behavior.
     `,
     category: 'preview',
     difficulty: 'medium',
-    levelCount: 9,
     actionMappings: [
       { action: 'ACTION1', commonName: 'Up', description: 'Move or interact upward' },
       { action: 'ACTION2', commonName: 'Down', description: 'Move or interact downward' },
@@ -295,29 +272,29 @@ The "Functional Tiles" game is a spatial puzzle where you interact with differen
     gameId: 'lp85',
     officialTitle: 'lp85',
     informalName: 'Loop & Pull',
-    description: 'A puzzle game involving looping patterns and pulling mechanics. Master the interplay between circular movements and directional forces.',
+    description: 'Evaluation game from the ARC-AGI-3 preview. Detailed mechanics are not yet publicly documented; this entry currently exposes only high-level metadata and assets.',
     category: 'evaluation',
     difficulty: 'unknown',
     actionMappings: [],
     hints: [],
     resources: [],
-    tags: ['evaluation-set', 'loops', 'mechanics', 'patterns'],
+    tags: ['evaluation-set'],
     thumbnailUrl: '/lp85.png',
     isFullyDocumented: false,
-    notes: 'Part of the evaluation set - held back from public preview.',
+    notes: 'Part of the evaluation set used as a private holdout during the preview; documentation here is intentionally minimal until more official detail is available.',
   },
 
   sp80: {
     gameId: 'sp80',
     officialTitle: 'sp80',
     informalName: 'Streaming Purple',
-    description: 'A visually distinctive game featuring flowing purple elements. Navigate or manipulate streaming patterns to achieve objectives.',
+    description: 'Evaluation game informally known as "Streaming Purple". Public materials highlight distinctive purple visuals, but detailed mechanics have not been documented here yet.',
     category: 'evaluation',
     difficulty: 'unknown',
     actionMappings: [],
     hints: [],
     resources: [],
-    tags: ['evaluation-set', 'streaming', 'visual', 'flow'],
+    tags: ['evaluation-set'],
     thumbnailUrl: '/sp80.png',
     isFullyDocumented: false,
     notes: 'Part of the evaluation set - held back from public preview.',
@@ -327,13 +304,13 @@ The "Functional Tiles" game is a spatial puzzle where you interact with differen
     gameId: 'vc33',
     officialTitle: 'vc33',
     informalName: 'Volume Control',
-    description: 'A puzzle game centered on adjusting volumes, sizes, or quantities. Manipulate spatial or numerical properties to solve challenges.',
+    description: 'Orchestration-style game where you adjust the height or "volume" of multiple objects to match target states; the evaluation version here mirrors the public preview archetype.',
     category: 'evaluation',
     difficulty: 'unknown',
     actionMappings: [],
     hints: [],
     resources: [],
-    tags: ['evaluation-set', 'volume', 'adjustment', 'spatial'],
+    tags: ['evaluation-set', 'orchestration', 'volume'],
     thumbnailUrl: '/vc33.png',
     isFullyDocumented: false,
     notes: 'Part of the evaluation set - held back from public preview.',
