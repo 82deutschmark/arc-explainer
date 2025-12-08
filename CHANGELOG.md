@@ -1,6 +1,14 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top with the time and date!
 
+### Version 5.47.6  Dec 7, 2025 (PENDING TESTING)
+
+- **ARC-AGI-3: front-facing copy and metadata audit** (Author: Cascade)
+  - Audited `/arc3` landing copy and ARC-AGI-3 games index text against the updated ARC3 spec and public preview docs, softening speculative language about timelines, offline engines, Python libraries, and step counts.
+  - Updated ARC-AGI-3 game spoiler pages so descriptions and spoiler warnings more accurately reflect what is actually documented today (rather than promising complete hints/strategies).
+  - Tightened shared `ARC3_GAMES` metadata: aligned ls20/ft09 summaries with official descriptions, and made lp85/sp80/vc33 clearly marked as evaluation holdouts with intentionally minimal mechanics detail.
+  - **Files Modified**: `client/src/pages/ARC3Browser.tsx`, `client/src/pages/Arc3GamesBrowser.tsx`, `client/src/pages/Arc3GameSpoiler.tsx`, `shared/arc3Games.ts`
+
 ### Version 5.47.5  Dec 7, 2025 (PENDING TESTING)
 
 - **ARC-AGI-3 Playground: Complete component decomposition (Phase 1 & Phase 3)** (Author: Claude Code using Sonnet 4.5)
