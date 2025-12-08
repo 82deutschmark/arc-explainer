@@ -26,6 +26,7 @@ import {
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import Arc3References from '@/components/arc3/Arc3References';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import { getAllGames } from '../../../shared/arc3Games';
 
@@ -363,63 +364,33 @@ export default function ARC3Browser() {
             </Button>
           </CardContent>
         </Card>
-      </div>
-      {/* Reference Materials */}
-      <Card className="mt-12">
-        <CardHeader>
-          <CardTitle>Reference Materials</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-2">
-          <div className="flex items-start gap-2">
-            <ExternalLink className="h-4 w-4 mt-1 flex-shrink-0 text-muted-foreground" />
-            <div>
+
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base flex items-center gap-2">
+              <BookOpen className="h-4 w-4" />
+              Preview Learnings
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-sm text-muted-foreground mb-4">
+              Key takeaways from the first 30 days of the ARC-AGI-3 preview agent competition.
+            </p>
+            <Button asChild variant="outline" size="sm" className="w-full">
               <a
                 href="https://arcprize.org/blog/arc-agi-3-preview-30-day-learnings"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-blue-600 hover:underline font-medium"
+                className="flex items-center gap-2"
               >
-                ARC-AGI-3 Preview: 30-Day Learnings
+                Read the preview blog
+                <ExternalLink className="h-3 w-3" />
               </a>
-              <p className="text-sm text-muted-foreground">
-                Insights from the first 30 days of the preview competition
-              </p>
-            </div>
-          </div>
-          <div className="flex items-start gap-2">
-            <ExternalLink className="h-4 w-4 mt-1 flex-shrink-0 text-muted-foreground" />
-            <div>
-              <a
-                href="https://github.com/arcprize/ARC-AGI-3-Agents"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-blue-600 hover:underline font-medium"
-              >
-                ARC-AGI-3-Agents GitHub Repository
-              </a>
-              <p className="text-sm text-muted-foreground">
-                Official agent framework and examples for building ARC-AGI-3 agents
-              </p>
-            </div>
-          </div>
-          <div className="flex items-start gap-2">
-            <ExternalLink className="h-4 w-4 mt-1 flex-shrink-0 text-muted-foreground" />
-            <div>
-              <a
-                href="https://arcprize.org/arc-agi/3/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-blue-600 hover:underline font-medium"
-              >
-                ARC-AGI-3 Official Announcement
-              </a>
-              <p className="text-sm text-muted-foreground">
-                Introduction to Interactive Reasoning Benchmarks
-              </p>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+      <Arc3References />
     </div>
   );
 }

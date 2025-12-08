@@ -12,14 +12,13 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
-import { Input } from '@/components/ui/input';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
-import { Gamepad2, Play, Square, ArrowLeft, RefreshCw, Eye, EyeOff } from 'lucide-react';
+import { Gamepad2, ArrowLeft, RefreshCw } from 'lucide-react';
 import { Link, useLocation, useSearch } from 'wouter';
 import { useArc3AgentStream } from '@/hooks/useArc3AgentStream';
-import { Arc3GridVisualization } from '@/components/arc3/Arc3GridVisualization';
 import { Arc3ReasoningViewer } from '@/components/arc3/Arc3ReasoningViewer';
 import { Arc3ToolTimeline } from '@/components/arc3/Arc3ToolTimeline';
+import { Arc3GamePanel } from '@/components/arc3/Arc3GamePanel';
+import { Arc3ConfigurationPanel } from '@/components/arc3/Arc3ConfigurationPanel';
 import { apiRequest } from '@/lib/queryClient';
 import { usePageMeta } from '@/hooks/usePageMeta';
 
@@ -230,10 +229,6 @@ export default function ARC3AgentPlayground() {
   // Streaming
   const { state, start, cancel, continueWithMessage, executeManualAction, initializeGameSession, setCurrentFrame, isPlaying, isPendingManualAction } = useArc3AgentStream();
 
-  // Manual action state
-  const [showCoordinatePicker, setShowCoordinatePicker] = useState(false);
-  const [actionError, setActionError] = useState<string | null>(null);
-
   const handleStart = () => {
     start({
       game_id: gameId,
@@ -275,103 +270,9 @@ export default function ARC3AgentPlayground() {
     !m.color.includes('slate')
   );
 
-  const resolveFrameLayers = (frameData: { frame: number[][][] } | null) => {
-    if (!frameData) return null;
-    return frameData.frame as number[][][];
-  };
-
   // Compute currentFrame directly from state to ensure re-renders trigger updates
   const currentFrame = state.frames[state.currentFrameIndex] || null;
-  const resolvedCurrentFrame = resolveFrameLayers(currentFrame);
 
-  // CRITICAL DEBUG: Log what we're about to render
-  console.log('[ARC3 Playground] Current render state:', {
-    totalFrames: state.frames.length,
-    currentFrameIndex: state.currentFrameIndex,
-    hasCurrentFrame: !!currentFrame,
-    currentFrameKeys: currentFrame ? Object.keys(currentFrame) : null,
-    resolvedCurrentFrame: resolvedCurrentFrame ? `Array[${resolvedCurrentFrame.length}]` : null,
-    resolvedSample: resolvedCurrentFrame ? {
-      layerCount: resolvedCurrentFrame.length,
-      firstLayerSize: resolvedCurrentFrame[0] ? `${resolvedCurrentFrame[0].length}x${resolvedCurrentFrame[0][0]?.length}` : 'null',
-    } : null,
-  });
-
-  // State for managing which layer/timestep to display within the current frame
-  const [manualLayerIndex, setManualLayerIndex] = useState<number | null>(null);
-  const [animatingLayerIndex, setAnimatingLayerIndex] = useState<number | null>(null);
-  const animationTimerRef = React.useRef<NodeJS.Timeout | null>(null);
-
-  // CRITICAL: Auto-animate through layers when new frame arrives (like official ARC Prize site)
-  React.useEffect(() => {
-    console.log('[ARC3 Playground] Frame changed, starting layer animation:', {
-      currentFrameIndex: state.currentFrameIndex,
-      hasFrame: !!currentFrame,
-      resolvedFrameLayers: resolvedCurrentFrame?.length || 0,
-    });
-
-    // Clear any existing animation
-    if (animationTimerRef.current) {
-      clearInterval(animationTimerRef.current);
-      animationTimerRef.current = null;
-    }
-
-    // Reset manual selection
-    setManualLayerIndex(null);
-
-    // Start animation if frame has multiple layers
-    if (resolvedCurrentFrame && resolvedCurrentFrame.length > 1) {
-      let currentLayer = 0;
-      setAnimatingLayerIndex(0);
-
-      // Animate through layers at ~120ms per layer (matches official site feel)
-      animationTimerRef.current = setInterval(() => {
-        currentLayer += 1;
-        if (currentLayer >= resolvedCurrentFrame.length) {
-          // Animation complete - stop at final layer
-          if (animationTimerRef.current) {
-            clearInterval(animationTimerRef.current);
-            animationTimerRef.current = null;
-          }
-          setAnimatingLayerIndex(null);
-        } else {
-          setAnimatingLayerIndex(currentLayer);
-        }
-      }, 120); // 120ms per frame for smooth animation
-    } else {
-      setAnimatingLayerIndex(null);
-    }
-
-    // Cleanup on unmount or frame change
-    return () => {
-      if (animationTimerRef.current) {
-        clearInterval(animationTimerRef.current);
-        animationTimerRef.current = null;
-      }
-    };
-  }, [state.currentFrameIndex, resolvedCurrentFrame?.length]);
-
-  // Compute currentLayerIndex: manual > animating > final layer
-  const currentLayerIndex = React.useMemo(() => {
-    // If user manually selected a layer via the slider, use that (stops animation)
-    if (manualLayerIndex !== null && resolvedCurrentFrame && manualLayerIndex < resolvedCurrentFrame.length) {
-      // Stop animation when user manually selects
-      if (animationTimerRef.current) {
-        clearInterval(animationTimerRef.current);
-        animationTimerRef.current = null;
-      }
-      return manualLayerIndex;
-    }
-    // If animating, show the current animation layer
-    if (animatingLayerIndex !== null && resolvedCurrentFrame && animatingLayerIndex < resolvedCurrentFrame.length) {
-      return animatingLayerIndex;
-    }
-    // Otherwise, default to the LAST layer (final state after action)
-    if (resolvedCurrentFrame && resolvedCurrentFrame.length > 0) {
-      return resolvedCurrentFrame.length - 1;
-    }
-    return 0;
-  }, [manualLayerIndex, animatingLayerIndex, resolvedCurrentFrame, resolvedCurrentFrame?.length]);
   // Normalize available_actions from the API
   // API returns integers [1, 2, 3, 4, 5, 6] but we use strings like 'ACTION1', 'ACTION2'
   const normalizedAvailableActions = React.useMemo(() => {
@@ -477,125 +378,23 @@ export default function ARC3AgentPlayground() {
 
           {/* Config - Hidden when playing */}
           {!isPlaying && (
-          <Card className="text-xs">
-            <CardHeader className="pb-2 pt-3 px-3">
-              <div className="flex items-center justify-between">
-                <CardTitle className="text-sm">Configuration</CardTitle>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setShowSystemPrompt(!showSystemPrompt)}
-                  className="h-6 px-2 text-[10px]"
-                >
-                  {showSystemPrompt ? <EyeOff className="h-3 w-3 mr-1" /> : <Eye className="h-3 w-3 mr-1" />}
-                  {showSystemPrompt ? 'Hide' : 'Show'} System
-                </Button>
-              </div>
-            </CardHeader>
-            <CardContent className="space-y-2 text-[11px] px-3 pb-3">
-
-              {/* System Prompt - EDITABLE, at top */}
-              {showSystemPrompt && (
-                <div className="space-y-0.5">
-                  <label className="font-medium text-[10px]">System Prompt</label>
-                  <Textarea
-                    value={systemPrompt}
-                    onChange={(e) => setSystemPrompt(e.target.value)}
-                    disabled={isPlaying}
-                    className="text-[10px] min-h-[8rem] max-h-[60vh] resize-y font-mono"
-                    placeholder="Base system instructions..."
-                  />
-                </div>
-              )}
-
-              {/* User Prompt (formerly "Instructions") */}
-              <div className="space-y-0.5">
-                <label className="font-medium text-[10px]">User Prompt</label>
-                <Textarea
-                  value={instructions}
-                  onChange={(e) => setInstructions(e.target.value)}
-                  disabled={isPlaying}
-                  className="text-[11px] min-h-[6rem] max-h-[50vh] resize-y"
-                  placeholder="Additional operator guidance..."
-                />
-              </div>
-
-              {/* Model & Reasoning - Compact horizontal layout */}
-              <div className="grid grid-cols-2 gap-1.5">
-                <div className="space-y-0.5">
-                  <label className="font-medium text-[10px]">Model</label>
-                  {modelsLoading ? (
-                    <div className="flex items-center gap-1 h-7 px-2 text-[10px] text-muted-foreground">
-                      <RefreshCw className="h-3 w-3 animate-spin" />
-                      Loading...
-                    </div>
-                  ) : (
-                    <Select value={model} onValueChange={setModel} disabled={isPlaying}>
-                      <SelectTrigger className="h-7 text-[10px] px-2">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {availableModels.map((m: ModelInfo) => (
-                          <SelectItem key={m.key} value={m.key} className="text-[10px]">
-                            {m.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  )}
-                </div>
-
-                <div className="space-y-0.5">
-                  <label className="font-medium text-[10px]">Reasoning</label>
-                  <Select
-                    value={reasoningEffort}
-                    onValueChange={(v) => setReasoningEffort(v as any)}
-                    disabled={isPlaying}
-                  >
-                    <SelectTrigger className="h-7 text-[10px] px-2">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="minimal" className="text-[10px]">Minimal</SelectItem>
-                      <SelectItem value="low" className="text-[10px]">Low</SelectItem>
-                      <SelectItem value="medium" className="text-[10px]">Medium</SelectItem>
-                      <SelectItem value="high" className="text-[10px]">High</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-
-              {/* Max Turns - Unlimited */}
-              <div className="space-y-0.5">
-                <label className="font-medium text-[10px]">Max Turns</label>
-                <Input
-                  type="number"
-                  min="1"
-                  value={maxTurns}
-                  onChange={(e) => setMaxTurns(Number(e.target.value))}
-                  disabled={isPlaying}
-                  className="h-7 text-[11px]"
-                  placeholder="100 (default)"
-                />
-                <p className="text-[9px] text-muted-foreground">Agent loop iterations (not tool calls)</p>
-              </div>
-
-              {/* Start/Stop */}
-              <div className="flex gap-1.5 pt-1">
-                {!isPlaying ? (
-                  <Button onClick={handleStart} size="sm" className="flex-1 h-7 text-[11px]">
-                    <Play className="h-3 w-3 mr-1" />
-                    Start
-                  </Button>
-                ) : (
-                  <Button onClick={cancel} size="sm" variant="destructive" className="flex-1 h-7 text-[11px]">
-                    <Square className="h-3 w-3 mr-1" />
-                    Stop
-                  </Button>
-                )}
-              </div>
-            </CardContent>
-          </Card>
+            <Arc3ConfigurationPanel
+              systemPrompt={systemPrompt}
+              setSystemPrompt={setSystemPrompt}
+              instructions={instructions}
+              setInstructions={setInstructions}
+              model={model}
+              setModel={setModel}
+              reasoningEffort={reasoningEffort}
+              setReasoningEffort={setReasoningEffort}
+              maxTurns={maxTurns}
+              setMaxTurns={setMaxTurns}
+              availableModels={availableModels}
+              modelsLoading={modelsLoading}
+              isPlaying={isPlaying}
+              onStart={handleStart}
+              onCancel={cancel}
+            />
           )}
 
           {/* User Message Injection - shown when agent completes */}
@@ -629,156 +428,23 @@ export default function ARC3AgentPlayground() {
           />
         </div>
 
-        {/* CENTER: Action pills now occupy former game selector spot */}
-        <div className="lg:col-span-5 space-y-3">
-          {/* Action Error Display */}
-          {actionError && (
-            <div className="p-2 bg-red-50 border border-red-200 rounded text-xs text-red-700">
-              <p className="font-semibold">Action Error:</p>
-              <p className="text-[10px] mt-1">{actionError}</p>
-            </div>
-          )}
-
-          <Card>
-            <CardContent className="p-3">
-              <div className="flex flex-wrap items-center justify-center gap-1.5">
-                {['RESET', 'ACTION1', 'ACTION2', 'ACTION3', 'ACTION4', 'ACTION5', 'ACTION6', 'ACTION7'].map((actionName) => {
-                  const usedCount = toolEntries.filter(e => e.label.includes(actionName)).length;
-                  const isActive = isPlaying && state.streamingMessage?.includes(actionName);
-                  const displayName = actionName === 'RESET' ? 'Reset' : actionName.replace('ACTION', 'Action ');
-
-                  // Check if action is available according to the API
-                  const isAvailable = !normalizedAvailableActions || normalizedAvailableActions.has(actionName);
-
-                  const handleActionClick = async () => {
-                    if (actionName === 'ACTION6') {
-                      setShowCoordinatePicker(true);
-                    } else {
-                      try {
-                        setActionError(null);
-                        await executeManualAction(actionName);
-                      } catch (error) {
-                        const msg = error instanceof Error ? error.message : 'Failed to execute action';
-                        setActionError(msg);
-                        console.error(`Failed to execute ${actionName}:`, error);
-                      }
-                    }
-                  };
-
-                  const isDisabled = !state.gameGuid || !state.gameId || !isAvailable || isPendingManualAction;
-
-                  return (
-                    <button
-                      key={actionName}
-                      onClick={handleActionClick}
-                      disabled={isDisabled}
-                      title={
-                        isPendingManualAction
-                          ? 'Another action is in progress. Please wait...'
-                          : !isAvailable
-                          ? `${actionName} is not available in this game state`
-                          : `Execute ${actionName}`
-                      }
-                      className={`px-3 py-1 rounded-full text-[11px] sm:text-xs font-semibold transition-all shadow-sm ${
-                        isActive
-                          ? 'bg-green-500 text-white animate-pulse shadow-lg'
-                          : !isAvailable
-                          ? 'bg-red-50 text-red-400 border border-red-200 opacity-60 cursor-not-allowed'
-                          : usedCount > 0
-                          ? 'bg-blue-100 text-blue-700 border border-blue-300 hover:bg-blue-200 cursor-pointer'
-                          : 'bg-gray-100 text-gray-500 border border-gray-200 hover:bg-gray-200 cursor-pointer'
-                      } ${isDisabled && isAvailable ? 'opacity-50 cursor-not-allowed' : ''}`}
-                    >
-                      {displayName}
-                      {usedCount > 0 && <span className="ml-1 text-[10px] sm:text-[11px]">×{usedCount}</span>}
-                    </button>
-                  );
-                })}
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Grid */}
-          <Card>
-            <CardHeader className="pb-2 pt-3 px-3">
-              <div className="flex items-center justify-between">
-                <CardTitle className="text-sm flex items-center gap-1.5">
-                  <Gamepad2 className="h-3.5 w-3.5" />
-                  Game Grid
-                </CardTitle>
-                {currentFrame && (
-                  <Badge variant={currentFrame.state === 'WIN' ? 'default' : 'outline'} className="text-[10px]">
-                    {currentFrame.state}
-                  </Badge>
-                )}
-              </div>
-            </CardHeader>
-            <CardContent className="px-3 pb-3">
-              {/* Show error if present */}
-              {state.error && (
-                <div className="mb-3 p-2 bg-red-50 border border-red-200 rounded text-xs text-red-700">
-                  <p className="font-semibold">Error:</p>
-                  <pre className="text-[10px] whitespace-pre-wrap mt-1">{state.error}</pre>
-                </div>
-              )}
-              
-              {resolvedCurrentFrame ? (
-                <div className="space-y-2">
-                  <div className="flex justify-center">
-                    <Arc3GridVisualization
-                      key={`frame-${state.currentFrameIndex}-${currentLayerIndex}-${currentFrame?.score}`}
-                      grid={resolvedCurrentFrame}
-                      frameIndex={currentLayerIndex}
-                      cellSize={20}
-                      showGrid={true}
-                      lastAction={currentFrame?.action}
-                    />
-                  </div>
-
-                  {/* Layer/Timestep Navigation - shown when current frame has multiple layers */}
-                  {resolvedCurrentFrame.length > 1 && (
-                    <div className="space-y-0.5 p-2 bg-amber-50 border border-amber-200 rounded">
-                      <label className="text-[10px] font-medium text-amber-800">
-                        Timestep: {currentLayerIndex + 1} / {resolvedCurrentFrame.length}
-                        <span className="ml-2 text-[9px] font-normal text-amber-600">
-                          (Action created {resolvedCurrentFrame.length} intermediate states)
-                        </span>
-                      </label>
-                      <input
-                        type="range"
-                        min="0"
-                        max={resolvedCurrentFrame.length - 1}
-                        value={currentLayerIndex}
-                        onChange={(e) => setManualLayerIndex(Number(e.target.value))}
-                        className="w-full h-1 bg-amber-300 rounded-lg appearance-none cursor-pointer"
-                      />
-                    </div>
-                  )}
-
-                  {/* Frame Navigation */}
-                  {state.frames.length > 1 && (
-                    <div className="space-y-0.5">
-                      <label className="text-[10px] font-medium">
-                        Frame: {state.currentFrameIndex + 1} / {state.frames.length}
-                      </label>
-                      <input
-                        type="range"
-                        min="0"
-                        max={state.frames.length - 1}
-                        value={state.currentFrameIndex}
-                        onChange={(e) => setCurrentFrame(Number(e.target.value))}
-                        className="w-full h-1 bg-gray-200 rounded-lg appearance-none cursor-pointer"
-                      />
-                    </div>
-                  )}
-
-                  {/* Color Legend INCORRECT!!!!!  NEED TO READ FROM A CENTRAL SOT!!!*/}
-                  <div className="grid grid-cols-5 gap-1 text-[9px]">
-                    
-
-              ) }
-            </CardContent>
-          </Card>
+        {/* CENTER: Game Panel (grid + actions + navigation) */}
+        <div className="lg:col-span-5">
+          <Arc3GamePanel
+            currentFrame={currentFrame}
+            frames={state.frames}
+            currentFrameIndex={state.currentFrameIndex}
+            executeManualAction={executeManualAction}
+            isPendingManualAction={isPendingManualAction}
+            isPlaying={isPlaying}
+            streamingMessage={state.streamingMessage}
+            toolEntries={toolEntries}
+            gameGuid={state.gameGuid}
+            gameId={state.gameId}
+            error={state.error}
+            setCurrentFrame={setCurrentFrame}
+            normalizedAvailableActions={normalizedAvailableActions}
+          />
         </div>
 
         {/* RIGHT: Streaming Reasoning - Auto-advance, larger text */}
@@ -791,48 +457,6 @@ export default function ARC3AgentPlayground() {
           />
         </div>
       </div>
-
-      {/* ACTION6 Coordinate Picker Dialog - SIMPLIFIED: uses built-in onCellClick */}
-      <Dialog open={showCoordinatePicker} onOpenChange={setShowCoordinatePicker}>
-        <DialogContent className="max-w-3xl">
-          <DialogHeader>
-            <DialogTitle>Action 6: Select Coordinates</DialogTitle>
-            <DialogDescription>
-              Click on any cell in the grid to execute ACTION6 at that position
-            </DialogDescription>
-          </DialogHeader>
-
-          <div className="flex justify-center py-4">
-            {resolvedCurrentFrame && (
-              <Arc3GridVisualization
-                key={`picker-frame-${state.currentFrameIndex}`}
-                grid={resolvedCurrentFrame}
-                frameIndex={Math.max(0, resolvedCurrentFrame.length - 1)}
-                cellSize={20}
-                showGrid={true}
-                lastAction={currentFrame?.action}
-                onCellClick={async (x, y) => {
-                  try {
-                    setActionError(null);
-                    await executeManualAction('ACTION6', [x, y]);
-                    setShowCoordinatePicker(false);
-                  } catch (error) {
-                    const msg = error instanceof Error ? error.message : 'Failed to execute ACTION6';
-                    setActionError(msg);
-                    console.error('Failed to execute ACTION6:', error);
-                  }
-                }}
-              />
-            )}
-          </div>
-
-          <div className="flex justify-end gap-2">
-            <Button variant="outline" onClick={() => setShowCoordinatePicker(false)}>
-              Cancel
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 }

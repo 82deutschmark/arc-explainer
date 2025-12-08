@@ -1,6 +1,26 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top with the time and date!
 
+### Version 5.47.4  Dec 7, 2025 (PENDING TESTING)
+
+- **ARC-AGI-3 browser: modular reference panel** (Author: Codex)
+  - Extracted the reference materials segment into `client/src/components/arc3/Arc3References.tsx` so the layout and metadata stay consistent whenever ARC-AGI-3 resources are reused.
+  - Updated `ARC3Browser` to render the new component instead of inline markup, reducing duplication and making the layout easier to evolve in the future.
+  - **Files Modified**: `client/src/pages/ARC3Browser.tsx`, `client/src/components/arc3/Arc3References.tsx`, `CHANGELOG.md`
+
+### Version 5.47.3  Dec 7, 2025 (PENDING TESTING)
+
+- **ARC-AGI-3 browser: highlight preview learnings blog** (Author: Codex)
+  - Added a dedicated Preview Learnings resource card to the `/arc3` landing grid so the ARC-AGI-3 preview 30-day learnings blog sits alongside the platform, docs, and competition links.
+  - Removed the former duplicate entry from the Reference Materials list to keep the blog reference focused in the new card.
+  - **Files Modified**: `client/src/pages/ARC3Browser.tsx`, `CHANGELOG.md`
+
+### Version 5.47.2  Dec 7, 2025 (PENDING TESTING)
+
+- **Docs: Clean up ARC-AGI-3 spec Markdown formatting** (Author: Cascade)
+  - Removed the outer code block wrapper from `docs/reference/arc3/ARC3.md` so the ARC-AGI-3 spec renders as standard Markdown instead of a fenced text blob.
+  - Simplified the checklist Actions line by dropping the redundant inline `RESET`/`ACTION1`–`ACTION7` enumeration, keeping the rest of the environment checklist intact.
+
 ### Version 5.47.1  Dec 7, 2025 (PENDING TESTING)
 
 - **ARC-AGI-3 Playground: Extract Arc3ToolTimeline & Arc3ReasoningViewer components** (Author: Cascade)
