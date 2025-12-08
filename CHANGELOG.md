@@ -1,6 +1,13 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top with the time and date!
 
+### Version 5.47.15  Dec 8, 2025
+
+- **Add GLM 4.6V (Vision) model via OpenRouter** (Author: Claude Code using Opus 4.5)
+  - Added `z-ai/glm-4.6v` multimodal model configuration: 131K context, 24K max output, $0.30/$0.90 pricing.
+  - Supports vision, native multimodal function calling, interleaved image-text generation, and UI reconstruction workflows.
+  - **Files Modified**: `server/config/models.ts:1041-1058`, `CHANGELOG.md`
+
 ### Version 5.47.14  Dec 8, 2025 (PENDING TESTING)
 
 - **ARC3 Agent Playground: enlarge Actions stream UI & JSON viewer** (Author: Cascade)
@@ -39,6 +46,13 @@
   - Relaxed continuation frame parsing to merge client-provided frames with cached server frames, preventing Zod errors when `action_counter`/`max_actions` are absent from the request.
   - Kept validation to require a usable frame when continuing an existing game, but now fall back to cached data before returning errors.
   - **Files Modified**: `server/routes/arc3.ts`, `CHANGELOG.md`
+
+### Version 5.47.14  Dec 8, 2025 (PENDING TESTING)
+
+- **ARC3 continuation: cache-first frame selection + verbose logs** (Author: Codex)
+  - Prefer the cached server frame for continuation; only use a client frame if it is fully populated, and log the chosen source.
+  - Added explicit logging when caching frames after streaming/continuation runs.
+  - **Files Modified**: `server/routes/arc3.ts`, `server/services/arc3/Arc3StreamService.ts`, `CHANGELOG.md`
 
 ### Version 5.47.10  Dec 8, 2025 (PENDING TESTING)
 
