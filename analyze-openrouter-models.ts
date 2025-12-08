@@ -18,11 +18,24 @@ dotenv.config();
 type SourceKey = 'ARC1-Eval' | 'ARC2-Eval';
 
 type ModelKey =
-  | 'moonshotai/kimi-k2-thinking';
+  | 'moonshotai/kimi-k2-thinking'
+  | 'z-ai/glm-4.6v';
 
 const API_BASE_URL = process.env.API_BASE_URL || 'http://localhost:5000';
 const SOURCES: SourceKey[] = ['ARC1-Eval', 'ARC2-Eval'];
-const MODEL_KEY: ModelKey = 'moonshotai/kimi-k2-thinking';
+const MODEL_KEY: ModelKey = 'z-ai/glm-4.6v';
+
+// Hardcoded puzzle IDs for targeted runs (overrides source fetch when non-empty)
+const HARDCODED_PUZZLE_IDS: string[] = [
+  '135a2760', '1818057f', '20a9e565', '291dc1e1', '2ba387bc',
+  '31f7f899', '38007db0', '3e6067c3', '45a5af55', '4a21e3da',
+  '4c3d4a41', '53fb4810', '581f7754', '58490d8a', '58f5dbd5',
+  '5961cc34', '64efde09', '65b59efc', '6e453dd6', '7b5033c1',
+  '7ed72f31', '80a900e0', '8b9c3697', '8f215267', '9aaea919',
+  'a251c730', 'a395ee82', 'b10624e5', 'b5ca7ac4', 'bf45cf4b',
+  'c4d067a0', 'c7f57c3e', 'cb2d8a2c', 'd59b0160', 'd8e07eb2',
+  'db0c5428', 'db695cfb', 'edb79dae', 'f931b4a8', 'fc7cae8d'
+];
 
 const RATE_LIMIT_DELAY_MS = Number(process.env.OPENROUTER_RATE_LIMIT_MS) || 1000;
 // Not used now, but retained for clarity if future models are added.
@@ -185,13 +198,20 @@ async function main(): Promise<void> {
 
     const allResults: AnalysisResult[] = [];
 
-    for (const source of SOURCES) {
-      console.log(`\nLoading puzzles for ${source}`);
-      const puzzleIds = await fetchPuzzleIds(source);
-      console.log(`Loaded ${puzzleIds.length} puzzles (${source})`);
-
-      const modelResults = await fireKimiWithSpacing(source, puzzleIds);
+    // Use hardcoded puzzle IDs if provided, otherwise fetch from sources
+    if (HARDCODED_PUZZLE_IDS.length > 0) {
+      console.log(`\nUsing ${HARDCODED_PUZZLE_IDS.length} hardcoded puzzle IDs`);
+      const modelResults = await fireKimiWithSpacing('ARC1-Eval', HARDCODED_PUZZLE_IDS);
       allResults.push(...modelResults);
+    } else {
+      for (const source of SOURCES) {
+        console.log(`\nLoading puzzles for ${source}`);
+        const puzzleIds = await fetchPuzzleIds(source);
+        console.log(`Loaded ${puzzleIds.length} puzzles (${source})`);
+
+        const modelResults = await fireKimiWithSpacing(source, puzzleIds);
+        allResults.push(...modelResults);
+      }
     }
 
     const total = allResults.length;
