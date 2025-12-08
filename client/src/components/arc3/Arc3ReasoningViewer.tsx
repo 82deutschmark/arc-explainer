@@ -89,13 +89,13 @@ export const Arc3ReasoningViewer: React.FC<Arc3ReasoningViewerProps> = ({
                   }`}
                 >
                   <p
-                    className={`font-bold text-sm mb-1 ${
+                    className={`font-bold text-base mb-1 ${
                       entry.type === 'reasoning' ? 'text-blue-700' : 'text-green-700'
                     }`}
                   >
                     {entry.label}
                   </p>
-                  <pre className="text-sm text-foreground whitespace-pre-wrap font-mono leading-relaxed">
+                  <pre className="text-base text-foreground whitespace-pre-wrap font-mono leading-relaxed">
                     {entry.content}
                   </pre>
                 </div>
@@ -108,7 +108,7 @@ export const Arc3ReasoningViewer: React.FC<Arc3ReasoningViewerProps> = ({
                     <span>{streamingMessage || 'Agent thinking...'}</span>
                   </div>
                   {streamingReasoning && (
-                    <pre className="text-sm text-foreground whitespace-pre-wrap font-mono mt-2 leading-relaxed">
+                    <pre className="text-base text-foreground whitespace-pre-wrap font-mono mt-2 leading-relaxed">
                       {streamingReasoning}
                     </pre>
                   )}
