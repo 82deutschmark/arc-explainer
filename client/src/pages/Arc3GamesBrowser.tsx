@@ -186,7 +186,7 @@ export default function Arc3GamesBrowser() {
   usePageMeta({
     title: 'ARC Explainer – ARC-AGI-3 Games Browser',
     description:
-      'Browse all ARC-AGI-3 games documentation. The ultimate community resource.',
+      'Browse the six revealed ARC-AGI-3 games and the documentation this site has collected so far.',
     canonicalPath: '/arc3/games',
   });
 
@@ -218,7 +218,7 @@ export default function Arc3GamesBrowser() {
           </div>
           <div>
             <p className="font-semibold text-foreground">Fully documented</p>
-            <p className="text-muted-foreground">{fullyDocumentedCount} game(s) with complete mechanics and notes</p>
+            <p className="text-muted-foreground">{fullyDocumentedCount} game(s) with the most complete mechanics and notes documented here</p>
           </div>
           <div>
             <p className="font-semibold text-foreground">Hints captured</p>
@@ -235,8 +235,7 @@ export default function Arc3GamesBrowser() {
           </h1>
         </div>
         <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-          The ultimate spoilers resource. Everything we've learned about each game: 
-          mechanics, hints, strategies, and community knowledge.
+          Spoilers index for the six revealed ARC-AGI-3 games. Where available, we surface mechanics, screenshots, and external resources collected so far.
         </p>
       </div>
 
@@ -349,13 +348,13 @@ export default function Arc3GamesBrowser() {
         <CardHeader>
           <CardTitle>Help Document These Games</CardTitle>
           <CardDescription>
-            Know something about an ARC-AGI-3 game that isn't documented here?
+            Know something about an ARC-AGI-3 game that isn't documented here yet?
           </CardDescription>
         </CardHeader>
         <CardContent>
           <p className="text-sm text-muted-foreground mb-4">
-            We're building the ultimate community resource for ARC-AGI-3. If you've discovered 
-            mechanics, hints, or strategies for any game, we'd love to include your knowledge!
+            We're building a community resource for ARC-AGI-3. If you've discovered 
+            mechanics, hints, or strategies for any game, we'd love to include your knowledge.
           </p>
           <Button asChild variant="outline">
             <a

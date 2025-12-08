@@ -54,7 +54,7 @@ export default function ARC3Browser() {
           Interactive Reasoning Benchmark for AI Agents
         </p>
         <p className="text-sm text-muted-foreground max-w-2xl mx-auto">
-          A groundbreaking benchmark that tests AI systems through game-based environments,
+          A new unique benchmark that tests AI systems through game-based environments,
           evaluating exploration, memory, planning, and goal acquisition—not static puzzle solving.
         </p>
         <div className="mt-6 flex flex-wrap justify-center gap-3">
@@ -78,14 +78,14 @@ export default function ARC3Browser() {
                 ARC-AGI-3 Games Browser
               </CardTitle>
               <CardDescription>
-                Spoiler-friendly index of all revealed ARC-AGI-3 games with mechanics, hints, and strategies.
+                Spoiler-friendly index of the six revealed ARC-AGI-3 games with whatever mechanics, screenshots, and resources we’ve documented so far.
               </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="text-sm text-muted-foreground space-y-2">
                 <p>• 6 revealed games (3 preview + 3 evaluation)</p>
                 <p>• Mechanics documentation and action mappings where available</p>
-                <p>• Community hints and strategy notes</p>
+                <p>• Screenshots and external resources for selected games</p>
               </div>
               <div className="mt-4 grid grid-cols-3 gap-3">
                 {arc3GameThumbs.map(game => (
@@ -137,29 +137,26 @@ export default function ARC3Browser() {
                 <div>
                   <p className="font-semibold text-foreground">Timeline &amp; competitions</p>
                   <ul className="list-disc list-inside ml-4 space-y-1">
-                    <li>ARC-AGI-2 and ARC-AGI-3 will both run as official ARC Prize competitions in 2026.</li>
-                    <li>Exact dates, phases, and prize structure have not been finalized or publicly announced yet.</li>
+                    <li>ARC-AGI-3 is planned to launch as a full benchmark in early 2026 alongside ARC Prize 2026 (per the official results blog).</li>
+                    <li>Exact competition dates, phases, and prize structure may evolve—always confirm against the latest ARC Prize announcements.</li>
                   </ul>
                 </div>
                 <div>
                   <p className="font-semibold text-foreground">Game format</p>
                   <ul className="list-disc list-inside ml-4 space-y-1">
                     <li>
-                      ARC-AGI-3 games are interactive 64×64 grid environments where agents act through an API over thousands of
-                      steps.
+                      ARC-AGI-3 games are interactive grid environments (up to 64×64 cells) where agents act through an API over multiple steps.
                     </li>
                     <li>
-                      The benchmark measures exploration, memory, goal acquisition, and long-horizon planning rather than
-                      single-shot pattern matching.
+                      The benchmark emphasizes exploration, closed-loop perception–planning–control, memory, and goal acquisition rather than single-shot pattern matching.
                     </li>
                   </ul>
                 </div>
                 <div>
-                  <p className="font-semibold text-foreground">Python library plans</p>
+                  <p className="font-semibold text-foreground">Offline engine / Python library</p>
                   <ul className="list-disc list-inside ml-4 space-y-1">
                     <li>
-                      The ARC Prize team has indicated that ARC-AGI-3 games are expected to be released as a Python library so
-                      agents can be run locally.
+                      Official ARC-AGI-3 materials mention that a local/offline engine is being explored, but there is no public offline simulator or finalized Python library yet.
                     </li>
                   </ul>
                 </div>

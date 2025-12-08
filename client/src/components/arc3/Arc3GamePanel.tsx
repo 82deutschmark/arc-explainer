@@ -17,11 +17,20 @@ import { Arc3GridVisualization } from './Arc3GridVisualization';
 import { ARC3_COLORS_HEX, ARC3_COLOR_NAMES } from '@shared/config/arc3Colors';
 
 interface FrameData {
+  guid?: string;
+  game_id?: string;
   frame: number[][][];
-  action?: string;
-  state?: string;
-  score?: number;
+  score: number;
+  state: string;
+  action_counter: number;
+  max_actions: number;
+  full_reset: boolean;
+  win_score?: number;
   available_actions?: (string | number)[];
+  action?: {
+    type: string;
+    coordinates?: [number, number];
+  };
 }
 
 interface ToolEntry {
@@ -36,11 +45,11 @@ interface Arc3GamePanelProps {
   executeManualAction: (action: string, coords?: [number, number]) => Promise<void>;
   isPendingManualAction: boolean;
   isPlaying: boolean;
-  streamingMessage: string | null;
+  streamingMessage: string | undefined;
   toolEntries: ToolEntry[];
-  gameGuid: string | null;
-  gameId: string | null;
-  error: string | null;
+  gameGuid: string | undefined;
+  gameId: string | undefined;
+  error: string | undefined;
   setCurrentFrame: (index: number) => void;
   normalizedAvailableActions: Set<string> | null;
 }

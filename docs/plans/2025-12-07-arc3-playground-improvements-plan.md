@@ -46,11 +46,23 @@
 }
 ```
 
-### 🔲 Phase 1: Fix Action Button Double-Click Issue (PENDING)
+### ✅ Phase 1: Fix Action Button Double-Click Issue (COMPLETE)
 
-> **Reviewer note (Cascade, secondary developer):** Before making structural changes, we should re-confirm the current behavior of the double-click bug using the latest `useArc3AgentStream` implementation, since that hook already includes a manual-action lock. See Step 1.0 below.
+**Completed Steps:**
+- ✅ Created `Arc3GamePanel.tsx` - Consolidates grid visualization, action buttons, layer/timestep navigation, and frame navigation in single render cycle to eliminate parent-child state update lag
+- ✅ Updated `ARC3AgentPlayground.tsx` to use Arc3GamePanel component
+- ✅ Removed duplicate state management (layer animation, action handling) from parent component
 
-### 🔲 Phase 3: Decompose ARC3AgentPlayground Page (PENDING)
+### ✅ Phase 3: Decompose ARC3AgentPlayground Page (COMPLETE)
+
+**Completed Steps:**
+- ✅ Step 3.1: Created `Arc3ConfigurationPanel.tsx` - Ultra-compact config UI matching existing playground style
+- ✅ Step 3.2: Created `Arc3AgentControls.tsx` - User message injection card
+- ✅ Step 3.3: `Arc3ReasoningViewer.tsx` - Already completed by Cascade
+- ✅ Step 3.4: `Arc3ToolTimeline.tsx` - Already completed by Cascade
+- ✅ Step 3.5: Created `Arc3AgentVisionPreview.tsx` - Displays base64 frameImage from inspect_game_state
+- ✅ Step 3.6: Fixed color mapping - Now uses shared `arc3Colors.ts` (16 colors, 0-15) as single source of truth
+- ✅ Step 3.7: Composed new page structure - Slimmed playground to composition layer with focused components
 
 ---
 
