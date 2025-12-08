@@ -14,7 +14,7 @@ export const DEFAULT_MODEL = 'gpt-5-nano';
 /**
  * Default maximum turns for agent execution
  */
-export const DEFAULT_MAX_TURNS = 100;
+export const DEFAULT_MAX_TURNS = 1000; // effectively unlimited for long runs
 
 /**
  * Default game ID if not specified

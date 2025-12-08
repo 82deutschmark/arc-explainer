@@ -216,7 +216,7 @@ export default function ARC3AgentPlayground() {
   const [gameId, setGameId] = useState(urlGameId);  // Initialize from URL param
   const [agentName, setAgentName] = useState('ARC3 Explorer');
   const [model, setModel] = useState<string>('');
-  const [maxTurns, setMaxTurns] = useState(100);
+  const [maxTurns, setMaxTurns] = useState(100000);
   const [reasoningEffort, setReasoningEffort] = useState<'minimal' | 'low' | 'medium' | 'high'>('low');
   const [systemPrompt, setSystemPrompt] = useState('Loading default prompt...');
   const [instructions, setInstructions] = useState(

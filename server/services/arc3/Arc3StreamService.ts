@@ -29,6 +29,7 @@ export interface StreamArc3Payload {
   expiresAt?: number;
   existingGameGuid?: string;
   providerResponseId?: string | null;
+  lastFrame?: FrameData; // Cached last known frame for safe continuation
 }
 
 export interface ContinueStreamArc3Payload extends StreamArc3Payload {
@@ -150,7 +151,7 @@ export class Arc3StreamService {
       userMessage: continuationData.userMessage,
       previousResponseId: continuationData.previousResponseId,
       existingGameGuid: continuationData.existingGameGuid,
-      lastFrame: continuationData.lastFrame,
+      lastFrame: continuationData.lastFrame ?? basePayload.lastFrame,
       createdAt: now,
       expiresAt: expirationTimestamp,
     };
@@ -305,10 +306,15 @@ export class Arc3StreamService {
       // Override the game runner to emit streaming events
       const runResult = await this.gameRunner.runWithStreaming(runConfig, streamHarness);
 
+      const finalFrame = Array.isArray(runResult.frames) && runResult.frames.length > 0
+        ? (runResult.frames[runResult.frames.length - 1] as FrameData)
+        : payload.lastFrame;
+
       // Persist response metadata for future continuations
       this.updatePendingPayload(sessionId, {
         existingGameGuid: runResult.gameGuid,
         providerResponseId: runResult.providerResponseId ?? null,
+        lastFrame: finalFrame,
       });
 
       // After successful streaming, extend the session TTL to allow continuation
@@ -430,9 +436,14 @@ export class Arc3StreamService {
       // The previous_response_id will be passed to the Responses API to chain conversations
       const runResult = await this.gameRunner.runWithStreaming(runConfig, streamHarness);
 
+      const finalFrame = Array.isArray(runResult.frames) && runResult.frames.length > 0
+        ? (runResult.frames[runResult.frames.length - 1] as FrameData)
+        : payload.lastFrame;
+
       this.updatePendingPayload(sessionId, {
         existingGameGuid: runResult.gameGuid,
         providerResponseId: runResult.providerResponseId ?? null,
+        lastFrame: finalFrame,
       });
 
       // After successful continuation, extend the base session TTL again for potential further continuation

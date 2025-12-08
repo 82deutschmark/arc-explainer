@@ -211,23 +211,21 @@ export const Arc3AgentConfigPanel: React.FC<Arc3AgentConfigPanelProps> = ({
           )}
         </div>
 
-        {/* Max Turns */}
+        {/* Max Turns (set high to avoid auto-stop) */}
         <div className="space-y-2">
-          <Label htmlFor="max-turns">Max Turns: {maxTurns}</Label>
-          <input
+          <Label htmlFor="max-turns">Max Turns</Label>
+          <Input
             id="max-turns"
-            type="range"
-            min="10"
-            max="100"
-            step="5"
+            type="number"
+            min={1}
             value={maxTurns}
             onChange={(e) => setMaxTurns(Number(e.target.value))}
             disabled={isRunning}
-            className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700"
+            placeholder="100000"
           />
           <div className="flex justify-between text-xs text-muted-foreground">
-            <span>10 (quick exploration)</span>
-            <span>100 (thorough gameplay)</span>
+            <span>Set high for continuous play</span>
+            <span>Agent stops only on cancel/game end</span>
           </div>
         </div>
 

@@ -107,6 +107,17 @@ export class Arc3RealGameRunner {
       logger.warn(`Failed to create database session: ${error instanceof Error ? error.message : String(error)}`, 'arc3');
     }
 
+    // Track score progress to detect if agent is stuck
+    let noScoreProgressStreak = 0;
+    const updateNoScoreProgress = (prev: FrameData | null, curr: FrameData | null) => {
+      if (!prev || !curr) return;
+      if (curr.score === prev.score) {
+        noScoreProgressStreak += 1;
+      } else {
+        noScoreProgressStreak = 0;
+      }
+    };
+
     const inspectTool = tool({
       name: 'inspect_game_state',
       description: 'Inspect the current game state visually. Returns a PNG image (frameImage) showing exactly what you see, plus structured analysis. The changes object shows what pixels changed since your last action - use this to understand action effects. Always call this before making decisions. For programmatic grid analysis, use the analyze_grid tool instead.',
@@ -219,6 +230,7 @@ export class Arc3RealGameRunner {
         currentFrame = resetFrame;
         gameGuid = resetFrame.guid;
         frames.push(resetFrame);
+        updateNoScoreProgress(prevFrame, currentFrame);
         logger.info(`[ARC3 TOOL] reset_game executed: state=${resetFrame.state}, score=${resetFrame.score}`, 'arc3');
 
         if (dbSessionId) {
@@ -246,6 +258,7 @@ export class Arc3RealGameRunner {
         prevFrame = currentFrame;
         currentFrame = await this.apiClient.executeAction(gameId, gameGuid, { action: name });
         frames.push(currentFrame);
+        updateNoScoreProgress(prevFrame, currentFrame);
         logger.info(`[ARC3 TOOL] ${name} executed: state=${currentFrame.state}, score=${currentFrame.score}`, 'arc3');
 
         // Save frame with auto-generated caption
@@ -273,6 +286,7 @@ export class Arc3RealGameRunner {
         prevFrame = currentFrame;
         currentFrame = await this.apiClient.executeAction(gameId, gameGuid, { action: 'ACTION6', coordinates: [x, y] });
         frames.push(currentFrame);
+        updateNoScoreProgress(prevFrame, currentFrame);
         logger.info(`[ARC3 TOOL] ACTION6 executed: state=${currentFrame.state}, score=${currentFrame.score}`, 'arc3');
 
         // Save frame with auto-generated caption
@@ -430,6 +444,24 @@ export class Arc3RealGameRunner {
     const streamState = {
       accumulatedReasoning: "",
       reasoningSequence: 0,
+    };
+    let noScoreProgressStreak = 0;
+    const updateNoScoreProgress = (prev: FrameData | null, curr: FrameData | null) => {
+      if (!prev || !curr) return;
+      if (curr.score === prev.score) {
+        noScoreProgressStreak += 1;
+        if (noScoreProgressStreak === 5) {
+          streamHarness.emitEvent("agent.loop_hint", {
+            message: "Score has not changed across 5 actions. Try an alternate strategy.",
+            score: curr.score,
+            action_counter: curr.action_counter,
+            state: curr.state,
+            timestamp: Date.now(),
+          });
+        }
+      } else {
+        noScoreProgressStreak = 0;
+      }
     };
 
     // Emit agent starting event

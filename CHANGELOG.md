@@ -9,6 +9,22 @@
   - Extended the ARC3 Agent Playbook with guidance on when and how to use `analyze_grid` during per-game setup and exploration, plus a dedicated reference section describing the available helpers and typical use cases.
   - **Files Modified**: `server/services/arc3/Arc3RealGameRunner.ts`, `docs/reference/arc3/ARC3_Agent_Playbook.md`, `CHANGELOG.md`
 
+### Version 5.47.11  Dec 8, 2025 (PENDING TESTING)
+
+- **ARC3 continuation: server-cached frames + safer chaining** (Author: Codex)
+  - Cache the last ARC3 frame server-side after streaming runs and reuse it during continuation so clients aren’t forced to resend frames; only 400 when no cached frame exists and none is provided.
+  - Continue to default `previousResponseId` from stored `providerResponseId` and deliver clear 400s instead of 500s when chaining data is missing.
+  - Updated continuation plan to reflect the cache-first flow for ARC3 continuations.
+  - **Files Modified**: `server/routes/arc3.ts`, `server/services/arc3/Arc3StreamService.ts`, `docs/plans/2025-12-08-arc3-streaming-continuation-fix-plan.md`, `CHANGELOG.md`
+
+### Version 5.47.12  Dec 8, 2025 (PENDING TESTING)
+
+- **ARC3 agent: keep running + loop hints** (Author: Codex)
+  - Raised default max turns to an effectively unlimited value and updated UI controls to avoid auto-pausing; the agent now stops only on cancel or game end.
+  - Added a simple loop detector that emits non-blocking hints when score hasn’t changed after multiple actions (no forced pause).
+  - Wired loop hints into the frontend timeline and messaging, and kept user-message flow intact while runs stay active.
+  - **Files Modified**: `server/services/arc3/utils/constants.ts`, `server/services/arc3/Arc3RealGameRunner.ts`, `client/src/pages/ARC3AgentPlayground.tsx`, `client/src/components/arc3/Arc3ConfigurationPanel.tsx`, `client/src/components/arc3/Arc3AgentConfigPanel.tsx`, `client/src/hooks/useArc3AgentStream.ts`, `CHANGELOG.md`
+
 ### Version 5.47.10  Dec 8, 2025 (PENDING TESTING)
 
 - **ARC3 continuation: guard chaining inputs** (Author: Codex)

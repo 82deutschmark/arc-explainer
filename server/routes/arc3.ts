@@ -301,12 +301,6 @@ router.post(
         .json(formatResponse.error('MISSING_PREVIOUS_RESPONSE_ID', 'previousResponseId is required to chain Responses API runs. Restart the ARC3 agent to create a new chain.'));
     }
 
-    if (existingGameGuid && !lastFrame) {
-      return res
-        .status(400)
-        .json(formatResponse.error('MISSING_SEED_FRAME', 'Cannot continue an existing ARC3 game without the last known frame. Please retry after loading the current frame state.'));
-    }
-
     // Update the payload with continuation data
     const normalizedLastFrame: FrameData | undefined = lastFrame
       ? {
@@ -321,7 +315,13 @@ router.post(
           full_reset: lastFrame.full_reset,
           available_actions: normalizeAvailableActions(lastFrame.available_actions),
         }
-      : undefined;
+      : payload.lastFrame;
+
+    if (existingGameGuid && !normalizedLastFrame) {
+      return res
+        .status(400)
+        .json(formatResponse.error('MISSING_SEED_FRAME', 'Cannot continue an existing ARC3 game without the last known frame. Please retry after loading the current frame state.'));
+    }
 
     arc3StreamService.saveContinuationPayload(sessionId, payload, {
       userMessage,
