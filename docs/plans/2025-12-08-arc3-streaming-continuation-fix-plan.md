@@ -10,10 +10,11 @@
 
 ## Plan / TODOs
 1) Harden continuation contract in backend:
-   - Allow `previousResponseId` to default from stored `providerResponseId`.
-   - Validate presence of a seed frame when continuing an existing game; return clear 400s instead of throwing.
+   - Default `previousResponseId` from stored `providerResponseId`.
+   - Cache the last frame server-side after each streaming run and reuse it on continuation; only 400 when no cached frame and none provided.
+   - Keep `existingGameGuid` guard to avoid accidental resets.
 2) Frontend review:
-   - Ensure continue payload always includes last known frame and sends `previousResponseId` when available.
+   - Ensure continue payload still passes `previousResponseId` when available; sending a frame is optional when server cache is present.
    - Surface user-friendly errors if continuation cannot proceed.
 3) Verification:
    - Exercise continuation flow locally (happy path + missing `previousResponseId` case) and confirm JSON responses are non-500 with helpful messages.
