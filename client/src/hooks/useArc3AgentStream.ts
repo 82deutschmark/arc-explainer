@@ -432,10 +432,9 @@ export function useArc3AgentStream() {
           action: data.action // Add action metadata from event
         };
 
-        // Update refs with latest guid AND gameId from streaming frames (keep them in sync!)
-        if (frameWithAction.guid) {
-          latestGuidRef.current = frameWithAction.guid;
-        }
+        // NOTE: Do NOT update latestGuidRef here - guid is set ONCE during initializeGameSession
+        // and must remain constant throughout the session (per ARC3 API spec)
+        // Only update gameId ref for tracking purposes
         if (frameWithAction.game_id) {
           latestGameIdRef.current = frameWithAction.game_id;
         }
@@ -672,8 +671,9 @@ export function useArc3AgentStream() {
           available_actions: frameData.available_actions,
         });
 
-        // CRITICAL: Update BOTH refs IMMEDIATELY (before setState) so next action gets fresh values
-        latestGuidRef.current = frameData.guid;
+        // NOTE: Do NOT update latestGuidRef here - guid is set ONCE during initializeGameSession
+        // and must remain constant throughout the session (per ARC3 API spec)
+        // Only update gameId ref for tracking purposes
         latestGameIdRef.current = frameData.game_id;
 
         // Add action metadata to frame
@@ -685,19 +685,19 @@ export function useArc3AgentStream() {
           },
         };
 
-        // Update state with new frame AND update gameGuid
+        // Update state with new frame (guid stays constant per ARC3 API spec)
         setState(prev => {
           const newFrameIndex = prev.frames.length;
           console.log('[ARC3 Manual Action] Updating state:', {
             newFrameIndex,
-            newGuid: frameData.guid,
-            previousGuid: prev.gameGuid,
-            guidChanged: frameData.guid !== prev.gameGuid,
+            sessionGuid: prev.gameGuid,
+            responseGuid: frameData.guid,
+            guidsMatch: frameData.guid === prev.gameGuid,
           });
 
           return {
             ...prev,
-            gameGuid: frameData.guid,  // Update state guid
+            // NOTE: Do NOT update gameGuid here - it's set once during initializeGameSession
             frames: [...prev.frames, frameWithAction],
             currentFrameIndex: newFrameIndex,
             streamingMessage: `${action} completed`,

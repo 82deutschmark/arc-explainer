@@ -150,7 +150,7 @@ export class Arc3ApiClient {
    * Execute an action in a game session
    * Reference: ARC-AGI-3-ClaudeCode-SDK/actions/action.js lines 92-95
    */
-  async executeAction(gameId: string, guid: string, action: GameAction): Promise<FrameData> {
+  async executeAction(gameId: string, guid: string, action: GameAction, reasoning?: any): Promise<FrameData> {
     const body: any = {
       game_id: gameId,  // Required by ARC3 API
       guid,
@@ -169,6 +169,10 @@ export class Arc3ApiClient {
         throw new Error('Must open scorecard before resetting game. Call openScorecard() first.');
       }
       body.card_id = this.cardId;
+    }
+
+    if (reasoning && action.action !== 'RESET') {
+      body.reasoning = reasoning;
     }
 
     return this.makeRequest<FrameData>(`/api/cmd/${action.action}`, {
