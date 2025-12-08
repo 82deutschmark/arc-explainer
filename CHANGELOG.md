@@ -1,6 +1,28 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top with the time and date!
 
+### Version 5.47.9  Dec 7, 2025 (PENDING TESTING)
+
+- **ARC-AGI-3: Attach agent reasoning to ARC3 scorecards (streaming path)** (Author: Cascade)
+  - Extended `Arc3ApiClient.executeAction` to accept an optional `reasoning` payload and forward it to the ARC3 `/api/cmd/ACTION*` endpoints so scorecards can store per-action reasoning blobs.
+  - Updated the streaming `Arc3RealGameRunner` tools for `ACTION1`–`ACTION5` and `ACTION6` to pass a compact JSON reasoning object built from the accumulated streaming reasoning text (truncated well under the 16 KB ARC3 limit) on every ARC3 action call.
+  - Added `opaque` metadata when opening ARC3 scorecards for both the web UI router and the streaming service so ARC-side scorecards clearly record that runs originate from the arc-explainer playground.
+  - **Files Modified**: `server/services/arc3/Arc3ApiClient.ts`, `server/services/arc3/Arc3RealGameRunner.ts`, `server/routes/arc3.ts`, `server/services/arc3/Arc3StreamService.ts`, `CHANGELOG.md`
+
+### Version 5.47.8  Dec 7, 2025 (PENDING TESTING)
+
+- **Docs: ARC-AGI-3 prompt alignment plan** (Author: Cascade)
+  - Captured a concrete plan for aligning the ARC-AGI-3 agent system prompt with the new `ARC3_Agent_Playbook` while preserving the Twitch/Gen-Z streamer UX and simple, non-jargony tone.
+  - Described proposed prompt structure (role, "brain habits", tool-call commentary rules, narration template, and final report guidance) plus phased implementation and validation steps.
+  - **Files Created**: `docs/plans/prompts/2025-12-07-arc3-prompt-alignment-plan.md`
+
+### Version 5.47.7  Dec 7, 2025 (PENDING TESTING)
+
+- **Docs: ARC-AGI-3 Agent Playbook for future agents** (Author: Cascade)
+  - Captured a structured "mental playbook" for ARC-AGI-3 agents, describing how to think in novel games, run targeted experiments, build compact world models, and plan efficient action sequences.
+  - Added harness and tooling recommendations (state diffs, memory, schemas, planning helpers) so future agents can better close the gap with humans on interactive reasoning tasks.
+  - **Files Created**: `docs/reference/arc3/ARC3_Agent_Playbook.md`
+
 ### Version 5.47.6  Dec 7, 2025 (PENDING TESTING)
 
 - **ARC-AGI-3: front-facing copy and metadata audit** (Author: Cascade)

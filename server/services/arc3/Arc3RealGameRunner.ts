@@ -484,8 +484,19 @@ export class Arc3RealGameRunner {
         if (!gameGuid) throw new Error('Game session not initialized yet.');
         streamHarness.emitEvent("agent.tool_call", { tool: name, arguments: {}, timestamp: Date.now() });
 
+        const reasoningPayload = streamState.accumulatedReasoning
+          ? {
+              type: 'agent_reasoning',
+              agentName,
+              game_id: gameId,
+              gameGuid,
+              step: frames.length,
+              text: streamState.accumulatedReasoning.slice(0, 8000),
+            }
+          : undefined;
+
         prevFrame = currentFrame;
-        currentFrame = await this.apiClient.executeAction(gameId, gameGuid, { action: name });
+        currentFrame = await this.apiClient.executeAction(gameId, gameGuid, { action: name }, reasoningPayload);
         frames.push(currentFrame);
         logger.info(`[ARC3 TOOL STREAM] ${name} executed: state=${currentFrame.state}, score=${currentFrame.score}`, 'arc3');
 
@@ -521,8 +532,19 @@ export class Arc3RealGameRunner {
         if (!gameGuid) throw new Error('Game session not initialized yet.');
         streamHarness.emitEvent("agent.tool_call", { tool: 'ACTION6', arguments: { x, y }, timestamp: Date.now() });
 
+        const reasoningPayload = streamState.accumulatedReasoning
+          ? {
+              type: 'agent_reasoning',
+              agentName,
+              game_id: gameId,
+              gameGuid,
+              step: frames.length,
+              text: streamState.accumulatedReasoning.slice(0, 8000),
+            }
+          : undefined;
+
         prevFrame = currentFrame;
-        currentFrame = await this.apiClient.executeAction(gameId, gameGuid, { action: 'ACTION6', coordinates: [x, y] });
+        currentFrame = await this.apiClient.executeAction(gameId, gameGuid, { action: 'ACTION6', coordinates: [x, y] }, reasoningPayload);
         frames.push(currentFrame);
         logger.info(`[ARC3 TOOL STREAM] ACTION6 executed: state=${currentFrame.state}, score=${currentFrame.score}`, 'arc3');
 

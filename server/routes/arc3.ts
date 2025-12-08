@@ -29,7 +29,11 @@ let scorecardInitialized = false;
 async function ensureScorecard() {
   if (!scorecardInitialized) {
     try {
-      await arc3ApiClient.openScorecard(['arc-explainer', 'web-ui'], 'https://github.com/yourusername/arc-explainer');
+      await arc3ApiClient.openScorecard(
+        ['arc-explainer', 'web-ui'],
+        'https://github.com/yourusername/arc-explainer',
+        { source: 'arc-explainer', mode: 'web-ui' },
+      );
       scorecardInitialized = true;
       console.log('✅ ARC3 scorecard opened:', arc3ApiClient.getCardId());
     } catch (error) {

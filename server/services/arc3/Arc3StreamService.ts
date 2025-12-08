@@ -62,6 +62,7 @@ export class Arc3StreamService {
       await this.apiClient.openScorecard(
         ['arc-explainer', 'streaming'],
         'https://github.com/arc-explainer/arc-explainer',
+        { source: 'arc-explainer', mode: 'streaming' },
       );
       this.scorecardInitialized = true;
       logger.info(
