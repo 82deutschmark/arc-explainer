@@ -273,7 +273,7 @@ const frameSeedSchema = z.object({
 
 const continueSessionSchema = z.object({
   userMessage: z.string().trim().min(1, 'userMessage must not be empty'),
-  previousResponseId: z.string().trim().min(1, 'previousResponseId is required for chained runs'),
+  previousResponseId: z.string().trim().min(1).optional(),
   existingGameGuid: z.string().optional(), // Game session guid to continue (from previous run)
   lastFrame: frameSeedSchema.optional(),
 });
@@ -294,6 +294,19 @@ router.post(
         .json(formatResponse.error('SESSION_NOT_FOUND', 'Session not found or expired'));
     }
 
+    const effectivePreviousResponseId = previousResponseId || payload.providerResponseId;
+    if (!effectivePreviousResponseId) {
+      return res
+        .status(400)
+        .json(formatResponse.error('MISSING_PREVIOUS_RESPONSE_ID', 'previousResponseId is required to chain Responses API runs. Restart the ARC3 agent to create a new chain.'));
+    }
+
+    if (existingGameGuid && !lastFrame) {
+      return res
+        .status(400)
+        .json(formatResponse.error('MISSING_SEED_FRAME', 'Cannot continue an existing ARC3 game without the last known frame. Please retry after loading the current frame state.'));
+    }
+
     // Update the payload with continuation data
     const normalizedLastFrame: FrameData | undefined = lastFrame
       ? {
@@ -312,7 +325,7 @@ router.post(
 
     arc3StreamService.saveContinuationPayload(sessionId, payload, {
       userMessage,
-      previousResponseId,
+      previousResponseId: effectivePreviousResponseId,
       existingGameGuid,
       lastFrame: normalizedLastFrame,
     });
