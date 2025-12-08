@@ -52,6 +52,8 @@ On first contact with a game:
 
      - `symbol → appearances (coords, context, moments when it changes)`
 
+   - Use `analyze_grid` tool for programmatic pattern detection when visual inspection is insufficient.
+
 2. **Identify visible interfaces.**
    - Available actions (`RESET`, `ACTION1`–`ACTION6/7`).
    - UI elements such as health bars, score, timers, level index, inventory bars.
@@ -82,6 +84,12 @@ Before trying to "win", run a short, deliberate experiment campaign.
   - Verify its actual effect:
     - Does `ACTION1` mean "up"? Does it sometimes do nothing?
     - Is `RESET` free or costly?
+
+- Use `analyze_grid` for structured experiments:
+  - Count objects before and after actions.
+  - Measure distances between key elements.
+  - Check symmetry changes.
+  - Track which connected components move or change.
 
 - **Principle:**
   - Sacrifice a small number of early steps to massively improve model quality for later levels.
@@ -239,6 +247,58 @@ This is where the harness can meaningfully help. It should push you toward the d
     - Still have unexplained tile types ("winning path may be blocked by unknown behavior").
 
 These are not cheats; they replicate the structure and externalization humans naturally use (paper notes, sketches, explicit planning).
+
+### 3.6 Grid Analysis Tool (`analyze_grid`)
+
+The `analyze_grid` tool lets you execute Python code to perform programmatic analysis on the current game grid. This is useful when you need precise, quantitative facts that are difficult to get from visual inspection alone.
+
+**Available in your code environment:**
+- `grid`: numpy array of shape `(layers, height, width)`, values 0–15.
+- `current_layer`: the most recent 2D layer (what you see in the main grid view).
+- `np` (numpy): for array operations.
+- `scipy.ndimage`: for connected components, labeling, and basic morphology (when available in the environment).
+
+**Built-in helper functions:**
+- `find_connected_components(layer, color=None)` – Returns a list of `(color, size, bounding_box)` tuples.
+- `detect_symmetry(layer)` – Returns a dict with `horizontal`, `vertical`, `rotation_90`, `rotation_180` booleans.
+- `get_bounding_box(layer, exclude_color=0)` – Returns `(min_row, min_col, max_row, max_col)` or `None` if the layer is empty (after excluding background).
+- `color_counts(layer)` – Returns a dict mapping color value to pixel count.
+
+**Example usage:**
+```python
+# Find all connected components
+components = find_connected_components(current_layer)
+print(f"Found {len(components)} objects")
+for color, size, bbox in components:
+    print(f"  Color {color}: {size} pixels at {bbox}")
+
+# Check for symmetry
+sym = detect_symmetry(current_layer)
+print(f"Horizontal symmetry: {sym['horizontal']}")
+print(f"Vertical symmetry: {sym['vertical']}")
+
+# Custom analysis – find distance between two colors
+color_3_coords = np.argwhere(current_layer == 3)
+color_7_coords = np.argwhere(current_layer == 7)
+if len(color_3_coords) > 0 and len(color_7_coords) > 0:
+    center_3 = color_3_coords.mean(axis=0)
+    center_7 = color_7_coords.mean(axis=0)
+    distance = np.linalg.norm(center_3 - center_7)
+    print(f"Distance between color 3 and 7 centers: {distance:.2f}")
+```
+
+**When to use:**
+- Detecting object counts and positions.
+- Checking symmetry properties.
+- Calculating distances between objects.
+- Finding patterns that span the grid.
+- Validating hypotheses about game rules.
+
+**Constraints:**
+- 10 second execution timeout.
+- No file I/O, network, or external packages.
+- Output limited to ~8000 characters.
+- Use `print()` to return results.
 
 ---
 

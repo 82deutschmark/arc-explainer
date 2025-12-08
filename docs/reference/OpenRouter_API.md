@@ -1,22 +1,14 @@
----
-title: API Reference
-subtitle: An overview of OpenRouter's API
-headline: OpenRouter API Reference | Complete API Documentation
-canonical-url: 'https://openrouter.ai/docs/api/reference/overview'
-'og:site_name': OpenRouter Documentation
-'og:title': OpenRouter API Reference - Complete Documentation
-'og:description': >-
-  Comprehensive guide to OpenRouter's API. Learn about request/response schemas,
-  authentication, parameters, and integration with multiple AI model providers.
-'og:image':
-  type: url
-  value: >-
+
+
+Comprehensive guide to OpenRouter's API. Learn about request/response schemas,
+authentication, parameters, and integration with multiple AI model providers.
+
     https://openrouter.ai/dynamic-og?title=OpenRouter%20API%20Reference&description=Comprehensive%20guide%20to%20OpenRouter's%20API.
 
 
 OpenRouter's request and response schemas are very similar to the OpenAI Chat API, with a few small differences. At a high level, **OpenRouter normalizes the schema across models and providers** so you only need to learn one.
 
-## Requests
+## Requests use RESPONSES API!
 
 ### Completions Request Format THIS IS THE OLD FORMAT!!!  WE PREFER RESPONSES API!!!
 

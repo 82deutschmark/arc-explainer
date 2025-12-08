@@ -1,6 +1,14 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top with the time and date!
 
+### Version 5.47.11  Dec 8, 2025 (PENDING TESTING)
+
+- **ARC-AGI-3 Playground: add analyze_grid Python tool for grid analysis** (Author: Cascade)
+  - Added an `analyze_grid` tool to the ARC3 real-game Agent runner so agents can execute sandboxed Python code for programmatic grid analysis (connected components, symmetry, bounding boxes, color counts) without flooding context with raw numeric frames.
+  - Wired the tool into both non-streaming and streaming `Arc3RealGameRunner` paths, including structured `agent.tool_call` / `agent.tool_result` events in the streaming timeline and reuse of the existing `executeGridAnalysis` helper for Python execution, timeouts, and output limits.
+  - Extended the ARC3 Agent Playbook with guidance on when and how to use `analyze_grid` during per-game setup and exploration, plus a dedicated reference section describing the available helpers and typical use cases.
+  - **Files Modified**: `server/services/arc3/Arc3RealGameRunner.ts`, `docs/reference/arc3/ARC3_Agent_Playbook.md`, `CHANGELOG.md`
+
 ### Version 5.47.10  Dec 8, 2025 (PENDING TESTING)
 
 - **ARC3 continuation: guard chaining inputs** (Author: Codex)
