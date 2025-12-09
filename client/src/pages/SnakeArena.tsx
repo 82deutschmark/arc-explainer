@@ -4,7 +4,7 @@
  * PURPOSE: Embed the external SnakeBench LLM Snake Arena frontend inside ARC Explainer.
  *          Uses VITE_SNAKEBENCH_URL to locate the Next.js app and renders it in an iframe,
  *          with a small wrapper header and helpful messaging when misconfigured.
- * SRP/DRY check: Pass  dedicated to embedding a single external app; reuses global layout & nav.
+ * SRP/DRY check:  to embedding a single external app; reuses global layout & nav.
  */
 
 import React from 'react';
@@ -425,18 +425,11 @@ export default function SnakeArena() {
 
   return (
     <div className="flex flex-col h-[calc(100vh-5rem)] gap-3 p-4">
-      <div className="flex items-center justify-between gap-4 flex-wrap">
-        <div>
-          <h1 className="text-xl font-semibold">Snake Arena</h1>
-          <p className="text-sm text-muted-foreground">
-            Embedded SnakeBench LLM Snake Arena UI from <span className="font-mono">{url}</span>.
-          </p>
-        </div>
-        <Button asChild variant="outline" size="sm">
-          <a href={url} target="_blank" rel="noreferrer">
-            Open in new tab
-          </a>
-        </Button>
+      <div className="text-sm text-muted-foreground">
+        To run your own games with your own API key, visit{' '}
+        <a href="https://wormarena.com" target="_blank" rel="noreferrer" className="font-semibold underline hover:text-foreground">
+          Worm Arena
+        </a>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 min-h-[180px]">
