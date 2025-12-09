@@ -28,15 +28,22 @@ const url = import.meta.env.VITE_SNAKEBENCH_URL ?? SNAKEBENCH_URL_DEFAULT;
 function getSnakeEligibleModels(models: ModelConfig[]): string[] {
   const eligible = models
     .filter((m) => m.provider === 'OpenRouter')
-    .map((m) => m.apiModelName || m.key)
-    .filter(Boolean) as string[];
-  // Ensure no empty strings slip through
-  return eligible.filter((m) => m && m.trim().length > 0);
+    .map((m) => {
+      const name = m.apiModelName || m.key;
+      // Validate: must exist and have non-whitespace content
+      return (name && typeof name === 'string' && name.trim().length > 0) ? name.trim() : null;
+    })
+    .filter((m): m is string => m !== null);
+  return eligible;
 }
 
 export default function SnakeArena() {
   const { data: modelConfigs = [], isLoading: loadingModels, error: modelsError } = useModels();
   const snakeModels = React.useMemo(() => getSnakeEligibleModels(modelConfigs), [modelConfigs]);
+  const selectableModels = React.useMemo(
+    () => snakeModels.filter((m) => typeof m === 'string' && m.trim().length > 0),
+    [snakeModels],
+  );
 
   const [modelA, setModelA] = React.useState<string>('');
   const [modelB, setModelB] = React.useState<string>('');
@@ -53,11 +60,11 @@ export default function SnakeArena() {
   const { games, total, isLoading: loadingGames, error: gamesError, refresh } = useSnakeBenchRecentGames();
 
   React.useEffect(() => {
-    if (snakeModels.length >= 2 && !modelA && !modelB) {
-      setModelA(snakeModels[0]);
-      setModelB(snakeModels[1]);
+    if (selectableModels.length >= 2 && !modelA && !modelB) {
+      setModelA(selectableModels[0]);
+      setModelB(selectableModels[1]);
     }
-  }, [snakeModels, modelA, modelB]);
+  }, [selectableModels, modelA, modelB]);
 
   React.useEffect(() => {
     void refresh(10);
@@ -97,8 +104,8 @@ export default function SnakeArena() {
   };
 
   const renderConfigPanel = () => {
-    const disabled = loadingModels || snakeModels.length < 2 || isRunning;
-    const hasValidModels = snakeModels.length >= 2 && snakeModels.every((m) => m && m.trim());
+    const disabled = loadingModels || selectableModels.length < 2 || isRunning;
+    const hasValidModels = selectableModels.length >= 2;
 
     return (
       <div className="border rounded-md p-4 bg-white/70 space-y-3">
@@ -140,45 +147,46 @@ export default function SnakeArena() {
         )}
 
         {hasValidModels && (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-          <div className="space-y-1.5">
-            <label className="text-xs font-medium text-gray-700">Model A</label>
-            <Select value={modelA || ''} onValueChange={setModelA} disabled={disabled}>
-              <SelectTrigger className="h-8 text-xs">
-                <SelectValue placeholder={loadingModels ? 'Loading models…' : 'Select Model A'} />
-              </SelectTrigger>
-              {snakeModels.length > 0 && (
-                <SelectContent className="max-h-64 text-xs">
-                  {snakeModels.map((m) => (
-                    <SelectItem key={m} value={m}>
-                      {m}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              )}
-            </Select>
-          </div>
+          <>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <div className="space-y-1.5">
+                <label className="text-xs font-medium text-gray-700">Model A</label>
+                <Select value={modelA || ''} onValueChange={setModelA} disabled={disabled}>
+                  <SelectTrigger className="h-8 text-xs">
+                    <SelectValue placeholder={loadingModels ? 'Loading models…' : 'Select Model A'} />
+                  </SelectTrigger>
+                  {selectableModels.length > 0 && (
+                    <SelectContent className="max-h-64 text-xs">
+                      {selectableModels.map((m) => (
+                        <SelectItem key={m} value={m}>
+                          {m}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  )}
+                </Select>
+              </div>
 
-          <div className="space-y-1.5">
-            <label className="text-xs font-medium text-gray-700">Model B</label>
-            <Select value={modelB || ''} onValueChange={setModelB} disabled={disabled}>
-              <SelectTrigger className="h-8 text-xs">
-                <SelectValue placeholder={loadingModels ? 'Loading models…' : 'Select Model B'} />
-              </SelectTrigger>
-              {snakeModels.length > 0 && (
-                <SelectContent className="max-h-64 text-xs">
-                  {snakeModels.map((m) => (
-                    <SelectItem key={m} value={m}>
-                      {m}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              )}
-            </Select>
-          </div>
-        </div>
+              <div className="space-y-1.5">
+                <label className="text-xs font-medium text-gray-700">Model B</label>
+                <Select value={modelB || ''} onValueChange={setModelB} disabled={disabled}>
+                  <SelectTrigger className="h-8 text-xs">
+                    <SelectValue placeholder={loadingModels ? 'Loading models…' : 'Select Model B'} />
+                  </SelectTrigger>
+                  {selectableModels.length > 0 && (
+                    <SelectContent className="max-h-64 text-xs">
+                      {selectableModels.map((m) => (
+                        <SelectItem key={m} value={m}>
+                          {m}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  )}
+                </Select>
+              </div>
+            </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs">
           <div className="space-y-1.5">
             <label className="font-medium text-gray-700">Width</label>
             <Input
@@ -228,12 +236,12 @@ export default function SnakeArena() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
           <div className="space-y-1.5">
             <label className="font-medium text-gray-700">Provider (BYO key)</label>
-            <Select value={byoProvider} onValueChange={(v: any) => setByoProvider(v)} disabled={disabled}>
+            <Select value={byoProvider || 'none'} onValueChange={(v) => setByoProvider(v === 'none' ? '' : (v as any))} disabled={disabled}>
               <SelectTrigger className="h-8 text-xs">
                 <SelectValue placeholder="Use server keys" />
               </SelectTrigger>
               <SelectContent className="text-xs">
-                <SelectItem value="">Use server keys</SelectItem>
+                <SelectItem value="none">Use server keys</SelectItem>
                 <SelectItem value="openrouter">OpenRouter</SelectItem>
                 <SelectItem value="openai">OpenAI</SelectItem>
                 <SelectItem value="anthropic">Anthropic</SelectItem>
@@ -262,40 +270,41 @@ export default function SnakeArena() {
           </Alert>
         )}
 
-        {lastResponse?.success && lastResponse.result && (
-          <div className="border-t pt-3 mt-2 text-xs">
-            <div className="flex flex-wrap items-center justify-between gap-2">
-              <div>
-                <div className="font-semibold text-gray-800">Last match</div>
-                <div className="text-gray-600">
-                  {lastResponse.result.modelA} vs {lastResponse.result.modelB} — game {lastResponse.result.gameId}
-                </div>
-              </div>
-              <div className="flex gap-4 text-gray-800">
-                <div>
-                  <div className="font-semibold">Scores</div>
-                  <div className="text-gray-700">
-                    {Object.entries(lastResponse.result.scores).map(([m, s]) => (
-                      <span key={m} className="mr-3">
-                        <span className="font-mono">{m}</span>: {s}
-                      </span>
-                    ))}
+            {lastResponse?.success && lastResponse.result && (
+              <div className="border-t pt-3 mt-2 text-xs">
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <div>
+                    <div className="font-semibold text-gray-800">Last match</div>
+                    <div className="text-gray-600">
+                      {lastResponse.result.modelA} vs {lastResponse.result.modelB} — game {lastResponse.result.gameId}
+                    </div>
+                  </div>
+                  <div className="flex gap-4 text-gray-800">
+                    <div>
+                      <div className="font-semibold">Scores</div>
+                      <div className="text-gray-700">
+                        {Object.entries(lastResponse.result.scores).map(([m, s]) => (
+                          <span key={m} className="mr-3">
+                            <span className="font-mono">{m}</span>: {s}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                    <div>
+                      <div className="font-semibold">Result</div>
+                      <div className="text-gray-700">
+                        {Object.entries(lastResponse.result.results).map(([m, r]) => (
+                          <span key={m} className="mr-3">
+                            <span className="font-mono">{m}</span>: {r}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
                   </div>
                 </div>
-                <div>
-                  <div className="font-semibold">Result</div>
-                  <div className="text-gray-700">
-                    {Object.entries(lastResponse.result.results).map(([m, r]) => (
-                      <span key={m} className="mr-3">
-                        <span className="font-mono">{m}</span>: {r}
-                      </span>
-                    ))}
-                  </div>
-                </div>
               </div>
-            </div>
-          </div>
-        )}
+            )}
+          </>
         )}
       </div>
     );
