@@ -148,9 +148,10 @@ export default function SnakeArena() {
       numApples,
       ...(byoApiKey && byoProvider ? { apiKey: byoApiKey, provider: byoProvider } : {}),
     };
-    const result = await runMatch(payload);
-    if (result?.gameId) {
-      setSelectedGameId(result.gameId);
+    const response = await runMatch(payload);
+    const gameId = response?.result?.gameId;
+    if (gameId) {
+      setSelectedGameId(gameId);
     }
     void refresh(10);
   };
