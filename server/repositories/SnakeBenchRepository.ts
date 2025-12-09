@@ -260,6 +260,7 @@ export class SnakeBenchRepository extends BaseRepository {
     }
 
     try {
+      const safeDays = Math.max(1, Math.min(90, days)); // Clamp to 1-90
       const sql = `
         SELECT
           COUNT(DISTINCT g.id) AS games_played,
@@ -268,10 +269,10 @@ export class SnakeBenchRepository extends BaseRepository {
         LEFT JOIN public.game_participants gp ON g.id = gp.game_id
         LEFT JOIN public.models m ON gp.model_id = m.id
         WHERE g.game_type = 'arc-explainer'
-          AND g.created_at >= NOW() - INTERVAL '${Math.max(1, days)} days';
+          AND g.created_at >= NOW() - (INTERVAL '1 day' * $1);
       `;
 
-      const result = await this.query(sql);
+      const result = await this.query(sql, [safeDays]);
       const row = result.rows[0];
 
       return {
