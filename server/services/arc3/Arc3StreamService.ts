@@ -49,37 +49,10 @@ export class Arc3StreamService {
   private readonly continuationSessionTimers: Map<string, ReturnType<typeof setTimeout>> = new Map();
   private readonly apiClient: Arc3ApiClient;
   private readonly gameRunner: Arc3RealGameRunner;
-  private scorecardInitialized = false;
 
   constructor() {
     this.apiClient = new Arc3ApiClient(process.env.ARC3_API_KEY || '');
     this.gameRunner = new Arc3RealGameRunner(this.apiClient);
-  }
-
-  private async ensureScorecard(): Promise<void> {
-    if (this.scorecardInitialized) {
-      return;
-    }
-
-    try {
-      await this.apiClient.openScorecard(
-        ['arc-explainer', 'streaming'],
-        'https://github.com/arc-explainer/arc-explainer',
-        { source: 'arc-explainer', mode: 'streaming' },
-      );
-      this.scorecardInitialized = true;
-      logger.info(
-        '[ARC3 Streaming] Scorecard opened for streaming runner',
-        'arc3-stream-service',
-      );
-    } catch (error) {
-      this.scorecardInitialized = false;
-      logger.error(
-        `Failed to open ARC3 scorecard for streaming: ${error instanceof Error ? error.message : String(error)}`,
-        'arc3-stream-service',
-      );
-      throw error;
-    }
   }
 
   savePendingPayload(payload: StreamArc3Payload, ttlMs: number = PENDING_ARC3_SESSION_TTL_SECONDS * 1000): string {
@@ -233,8 +206,6 @@ export class Arc3StreamService {
     const sessionId = payload.sessionId ?? nanoid();
 
     try {
-      await this.ensureScorecard();
-
       if (!sseStreamManager.has(sessionId)) {
         throw new Error("SSE session must be registered before starting ARC3 streaming.");
       }
@@ -348,8 +319,6 @@ export class Arc3StreamService {
     const sessionId = payload.sessionId ?? nanoid();
 
     try {
-      await this.ensureScorecard();
-
       if (!sseStreamManager.has(sessionId)) {
         throw new Error("SSE session must be registered before continuing ARC3 streaming.");
       }

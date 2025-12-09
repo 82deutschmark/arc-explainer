@@ -81,6 +81,11 @@ export class Arc3RealGameRunner {
     const agentName = config.agentName?.trim() || 'ARC3 Real Game Operator';
     const maxTurns = config.maxTurns ?? DEFAULT_MAX_TURNS;
     const gameId = config.game_id ?? DEFAULT_GAME_ID;
+    const scorecardId = await this.apiClient.openScorecard(
+      ['arc-explainer', 'agent-run'],
+      'https://github.com/arc-explainer/arc-explainer',
+      { source: 'arc-explainer', mode: 'agent-run', game_id: gameId, agentName }
+    );
 
     let gameGuid: string | null = null;
     let currentFrame: FrameData | null = null;
@@ -94,7 +99,7 @@ export class Arc3RealGameRunner {
       ? this.validateContinuationFrame(config.seedFrame, gameId, config.existingGameGuid)
       : config.seedFrame
         ? config.seedFrame
-        : await this.apiClient.startGame(gameId);
+        : await this.apiClient.startGame(gameId, undefined, scorecardId);
 
     gameGuid = initialFrame.guid;
     currentFrame = initialFrame;
@@ -235,7 +240,7 @@ export class Arc3RealGameRunner {
         if (!gameGuid) throw new Error('Game session not initialized yet.');
 
         prevFrame = currentFrame;
-        const resetFrame = await this.apiClient.executeAction(gameId, gameGuid, { action: 'RESET' });
+        const resetFrame = await this.apiClient.executeAction(gameId, gameGuid, { action: 'RESET' }, undefined, scorecardId);
         currentFrame = resetFrame;
         gameGuid = resetFrame.guid;
         frames.push(resetFrame);
@@ -409,7 +414,7 @@ export class Arc3RealGameRunner {
     const summary: Arc3RunSummary = {
       state: mapState(cf.state),
       score: cf.score,
-      stepsTaken: cf.action_counter,
+      stepsTaken: cf.action_counter ?? Math.max(0, frames.length - 1),
       simpleActionsUsed: [],  // ARC3 doesn't track this the same way
       coordinateGuesses: 0,  // ARC3 doesn't track this separately
       scenarioId: gameId,
@@ -437,6 +442,11 @@ export class Arc3RealGameRunner {
     const agentName = config.agentName?.trim() || 'ARC3 Real Game Operator';
     const maxTurns = config.maxTurns ?? DEFAULT_MAX_TURNS;
     const gameId = config.game_id ?? DEFAULT_GAME_ID;
+    const scorecardId = await this.apiClient.openScorecard(
+      ['arc-explainer', 'agent-run', 'streaming'],
+      'https://github.com/arc-explainer/arc-explainer',
+      { source: 'arc-explainer', mode: 'agent-run-stream', game_id: gameId, agentName }
+    );
 
     let gameGuid: string | null = null;
     let currentFrame: FrameData | null = null;
@@ -449,7 +459,7 @@ export class Arc3RealGameRunner {
     // CRITICAL: When continuing, we MUST have a seed frame - we can't execute actions to "fetch" state
     const initialFrame = config.existingGameGuid
       ? this.validateContinuationFrame(config.seedFrame, gameId, config.existingGameGuid)
-      : await this.apiClient.startGame(gameId);
+      : await this.apiClient.startGame(gameId, undefined, scorecardId);
 
     gameGuid = initialFrame.guid;
     currentFrame = initialFrame;
@@ -660,7 +670,7 @@ export class Arc3RealGameRunner {
           : undefined;
 
         prevFrame = currentFrame;
-        currentFrame = await this.apiClient.executeAction(gameId, gameGuid, { action: name }, reasoningPayload);
+        currentFrame = await this.apiClient.executeAction(gameId, gameGuid, { action: name }, reasoningPayload, scorecardId);
         frames.push(currentFrame);
         logger.info(`[ARC3 TOOL STREAM] ${name} executed: state=${currentFrame.state}, score=${currentFrame.score}`, 'arc3');
 
@@ -708,7 +718,7 @@ export class Arc3RealGameRunner {
           : undefined;
 
         prevFrame = currentFrame;
-        currentFrame = await this.apiClient.executeAction(gameId, gameGuid, { action: 'ACTION6', coordinates: [x, y] }, reasoningPayload);
+        currentFrame = await this.apiClient.executeAction(gameId, gameGuid, { action: 'ACTION6', coordinates: [x, y] }, reasoningPayload, scorecardId);
         frames.push(currentFrame);
         logger.info(`[ARC3 TOOL STREAM] ACTION6 executed: state=${currentFrame.state}, score=${currentFrame.score}`, 'arc3');
 
@@ -941,7 +951,7 @@ export class Arc3RealGameRunner {
     const summary: Arc3RunSummary = {
       state: mapState(cf.state),
       score: cf.score,
-      stepsTaken: cf.action_counter,
+      stepsTaken: cf.action_counter ?? Math.max(0, frames.length - 1),
       simpleActionsUsed: [],  // ARC3 doesn't track this the same way
       coordinateGuesses: 0,  // ARC3 doesn't track this separately
       scenarioId: gameId,
