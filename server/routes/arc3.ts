@@ -335,16 +335,16 @@ router.post(
 
     logger.info(`[ARC3 Continue] Frame source for session ${sessionId}: ${clientComplete ? 'client' : cachedFrame ? 'cached' : 'none'}`, 'arc3');
 
+    let continuationGameGuid = existingGameGuid;
     if (existingGameGuid && (!normalizedLastFrame || normalizedLastFrame.action_counter === undefined || normalizedLastFrame.max_actions === undefined)) {
-      return res
-        .status(400)
-        .json(formatResponse.error('MISSING_SEED_FRAME', 'Cannot continue an existing ARC3 game without the last known frame. Please retry after loading the current frame state.'));
+      logger.warn(`[ARC3 Continue] Missing usable seed frame; falling back to fresh session (existingGameGuid cleared) for session ${sessionId}`, 'arc3');
+      continuationGameGuid = undefined;
     }
 
     arc3StreamService.saveContinuationPayload(sessionId, payload, {
       userMessage,
       previousResponseId: effectivePreviousResponseId,
-      existingGameGuid,
+      existingGameGuid: continuationGameGuid,
       lastFrame: normalizedLastFrame,
     });
 

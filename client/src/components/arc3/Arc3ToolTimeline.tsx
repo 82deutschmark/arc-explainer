@@ -75,16 +75,16 @@ export const Arc3ToolTimeline: React.FC<Arc3ToolTimelineProps> = ({
             entries.map((entry, idx) => (
               <div
                 key={idx}
-                className={`p-2 rounded border ${
-                  idx === entries.length - 1 && hasActiveToolCall
-                    ? 'bg-blue-50 border-blue-300 animate-pulse'
-                    : 'bg-muted/40'
-                }`}
+                className={`p-2.5 rounded-md border shadow-sm ${
+                  entry.label.toLowerCase().startsWith('result from')
+                    ? 'bg-emerald-50 dark:bg-emerald-950/40 border-emerald-300 dark:border-emerald-500/60'
+                    : 'bg-indigo-50 dark:bg-indigo-950/40 border-indigo-300 dark:border-indigo-500/60'
+                } ${idx === entries.length - 1 && hasActiveToolCall ? 'ring-2 ring-blue-400 ring-offset-1' : ''}`}
               >
-                <p className="font-semibold text-xs text-foreground mb-1">
+                <p className="font-semibold text-xs text-slate-900 dark:text-slate-50 tracking-tight mb-1">
                   {entry.label}
                 </p>
-                <pre className="text-xs text-muted-foreground overflow-x-auto whitespace-pre-wrap font-mono leading-relaxed bg-background/60 border border-border rounded px-2 py-1">
+                <pre className="text-[13px] leading-relaxed text-slate-900 dark:text-slate-50 overflow-x-auto whitespace-pre-wrap font-mono bg-white/90 dark:bg-slate-900/70 border border-slate-300 dark:border-slate-600 rounded-md px-3 py-2 shadow-inner">
                   {entry.content}
                 </pre>
               </div>

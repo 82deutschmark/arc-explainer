@@ -1,6 +1,14 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top with the time and date!
 
+### Version 5.47.16  Dec 8, 2025 (PENDING TESTING)
+
+- **ARC3 Agent Playground: high-contrast Actions JSON stream** (Author: Cascade)
+  - Darkened the JSON text color and boosted the background/border contrast in the left-hand Actions panel so tool call results are readable even on bright displays.
+  - Color-coded tool call vs tool result entries with stronger indigo/emerald tints and a subtle ring highlight on the most recent active action.
+  - Kept the taller scroll area and auto-scroll behavior so the latest ACTION1–ACTION7 events remain visible while streaming.
+  - **Files Modified**: `client/src/components/arc3/Arc3ToolTimeline.tsx`, `CHANGELOG.md`
+
 ### Version 5.47.15  Dec 8, 2025
 
 - **Add GLM 4.6V (Vision) model via OpenRouter** (Author: Claude Code using Opus 4.5)
@@ -53,6 +61,20 @@
   - Prefer the cached server frame for continuation; only use a client frame if it is fully populated, and log the chosen source.
   - Added explicit logging when caching frames after streaming/continuation runs.
   - **Files Modified**: `server/routes/arc3.ts`, `server/services/arc3/Arc3StreamService.ts`, `CHANGELOG.md`
+
+### Version 5.47.15  Dec 8, 2025 (PENDING TESTING)
+
+- **ARC3 Responses API calls include tracing metadata** (Author: Codex)
+  - Added provider `metadata` to Responses API calls (via Agents SDK providerData) carrying sessionId, gameGuid, frameHash, frameIndex, and previousResponseId for traceability.
+  - Passed sessionId through streaming run configs so metadata is populated; frame hash is computed server-side.
+  - **Files Modified**: `server/services/arc3/Arc3RealGameRunner.ts`, `server/services/arc3/Arc3StreamService.ts`, `server/services/arc3/types.ts`, `CHANGELOG.md`
+
+### Version 5.47.16  Dec 8, 2025 (PENDING TESTING)
+
+- **ARC3 continuation: no hard stop when seed frame is missing** (Author: Codex)
+  - If no usable seed frame is available for an existing game guid, the continue endpoint now falls back to starting a fresh session instead of 400-ing, with a warning log.
+  - Keeps cache-first frame selection and logs the chosen source.
+  - **Files Modified**: `server/routes/arc3.ts`, `CHANGELOG.md`
 
 ### Version 5.47.10  Dec 8, 2025 (PENDING TESTING)
 

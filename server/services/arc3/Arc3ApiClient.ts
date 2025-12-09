@@ -11,7 +11,7 @@ SRP/DRY check: Pass — encapsulates all ARC3 API communication separate from ga
  * Game info structure returned by /api/games endpoint
  */
 export interface GameInfo {
-  game_id: string;  // e.g., "ls20", "zz34"
+  game_id: string;  // e.g., "ls20", "as66"
   title: string;    // Human-readable title
 }
 

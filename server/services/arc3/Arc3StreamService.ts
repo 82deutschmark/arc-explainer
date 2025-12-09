@@ -38,7 +38,7 @@ export interface ContinueStreamArc3Payload extends StreamArc3Payload {
   lastFrame?: FrameData; // Cached frame from client to seed continuation state
 }
 
-export const PENDING_ARC3_SESSION_TTL_SECONDS = 60;
+export const PENDING_ARC3_SESSION_TTL_SECONDS = 900; // 15 minutes to allow user follow-ups
 
 export class Arc3StreamService {
   private readonly pendingSessions: Map<string, StreamArc3Payload> = new Map();
@@ -293,6 +293,7 @@ export class Arc3StreamService {
         maxTurns,
         reasoningEffort,
         storeResponse: true,
+        sessionId,
       };
 
       // Send status update
@@ -432,6 +433,7 @@ export class Arc3StreamService {
         previousResponseId,
         seedFrame: payload.lastFrame,  // CRITICAL FIX: Pass cached frame to avoid executing actions
         storeResponse: true,
+        sessionId,
       };
 
       // Override the game runner to emit streaming events
