@@ -46,6 +46,7 @@ import { CostRepository } from './CostRepository.ts';
 import { EloRepository } from './EloRepository.ts';
 import { ModelDatasetRepository } from './ModelDatasetRepository.ts';
 import { ContributorRepository } from './ContributorRepository.ts';
+import { SnakeBenchRepository } from './SnakeBenchRepository.ts';
 import { DatabaseSchema } from './database/DatabaseSchema.ts';
 import { logger } from '../utils/logger.ts';
 
@@ -60,6 +61,7 @@ export class RepositoryService {
   private costRepository: CostRepository;
   private eloRepository: EloRepository;
   private contributorRepository: ContributorRepository;
+  private snakeBenchRepository: SnakeBenchRepository;
   private initialized = false;
 
   constructor() {
@@ -73,6 +75,7 @@ export class RepositoryService {
     this.costRepository = new CostRepository();
     this.eloRepository = new EloRepository();
     this.contributorRepository = new ContributorRepository();
+    this.snakeBenchRepository = new SnakeBenchRepository();
   }
 
   /**
@@ -181,6 +184,13 @@ export class RepositoryService {
    */
   get contributors(): ContributorRepository {
     return this.contributorRepository;
+  }
+
+  /**
+   * Get SnakeBench repository (compatibility-first SnakeBench DB access)
+   */
+  get snakeBench(): SnakeBenchRepository {
+    return this.snakeBenchRepository;
   }
 
   /**
