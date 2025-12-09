@@ -56,6 +56,91 @@ export class SnakeBenchService {
     return path.join(process.cwd(), 'external', 'SnakeBench', 'backend');
   }
 
+  private resolveCompletedDir(): string {
+    return path.join(this.resolveBackendDir(), 'completed_games');
+  }
+
+  private async upsertGameIndex(completedGamePath: string | undefined, fallbackGameId: string, models: { modelA: string; modelB: string }): Promise<void> {
+    if (!completedGamePath) return;
+
+    const completedDir = this.resolveCompletedDir();
+    const indexPath = path.join(completedDir, 'game_index.json');
+
+    try {
+      await fs.promises.mkdir(completedDir, { recursive: true });
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      logger.warn(`SnakeBenchService.upsertGameIndex: failed to ensure completed_games directory: ${msg}`, 'snakebench-service');
+      return;
+    }
+
+    let payload: any = null;
+    try {
+      const raw = await fs.promises.readFile(completedGamePath, 'utf8');
+      payload = JSON.parse(raw);
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      logger.warn(`SnakeBenchService.upsertGameIndex: failed to read ${completedGamePath}: ${msg}`, 'snakebench-service');
+      return;
+    }
+
+    const gameBlock = payload?.game ?? payload?.metadata ?? {};
+    const metadata = payload?.metadata ?? {};
+    const totals = payload?.totals ?? {};
+
+    const gameId: string = gameBlock.id ?? metadata.game_id ?? fallbackGameId ?? '';
+    if (!gameId) return;
+
+    const filename = path.basename(completedGamePath);
+    const startedAt = metadata.start_time ?? gameBlock.started_at ?? '';
+    const endTime = metadata.end_time ?? gameBlock.ended_at ?? '';
+    const actualRounds = Number(metadata.actual_rounds ?? gameBlock.rounds_played ?? 0) || 0;
+
+    const scoreSource = metadata.final_scores ?? totals.scores ?? {};
+    const totalScore = Object.values(scoreSource).reduce<number>((acc, val) => {
+      const num = typeof val === 'number' ? val : Number(val);
+      return acc + (Number.isFinite(num) ? num : 0);
+    }, 0);
+
+    const entry = {
+      game_id: gameId,
+      filename,
+      start_time: startedAt,
+      end_time: endTime,
+      total_score: totalScore,
+      actual_rounds: actualRounds,
+      model_a: models.modelA,
+      model_b: models.modelB,
+    };
+
+    let existing: any[] = [];
+    try {
+      if (fs.existsSync(indexPath)) {
+        const rawIndex = await fs.promises.readFile(indexPath, 'utf8');
+        const parsed = JSON.parse(rawIndex);
+        if (Array.isArray(parsed)) existing = parsed;
+      }
+    } catch {
+      existing = [];
+    }
+
+    const filtered = existing.filter((e) => (e.game_id ?? e.gameId) !== gameId);
+    filtered.push(entry);
+
+    filtered.sort((a, b) => {
+      const at = new Date(a.start_time ?? a.startTime ?? 0).getTime();
+      const bt = new Date(b.start_time ?? b.startTime ?? 0).getTime();
+      return bt - at;
+    });
+
+    try {
+      await fs.promises.writeFile(indexPath, JSON.stringify(filtered, null, 2), 'utf8');
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      logger.warn(`SnakeBenchService.upsertGameIndex: failed to write index: ${msg}`, 'snakebench-service');
+    }
+  }
+
   async runMatch(request: SnakeBenchRunMatchRequest): Promise<SnakeBenchRunMatchResult> {
     const { modelA, modelB } = request;
 
@@ -102,6 +187,7 @@ export class SnakeBenchService {
 
     const pythonBin = this.resolvePythonBin();
     const runnerPath = this.resolveRunnerPath();
+    const backendDir = this.resolveBackendDir();
 
     const env: NodeJS.ProcessEnv = {
       ...process.env,
@@ -141,7 +227,7 @@ export class SnakeBenchService {
     }
 
     const spawnOpts: SpawnOptions = {
-      cwd: path.dirname(runnerPath),
+      cwd: backendDir,
       env,
       stdio: ['pipe', 'pipe', 'pipe'],
     };
@@ -244,6 +330,9 @@ export class SnakeBenchService {
           const msg = persistErr instanceof Error ? persistErr.message : String(persistErr);
           logger.warn(`SnakeBenchService.runMatch: failed to enqueue DB persistence: ${msg}`, 'snakebench-service');
         }
+
+        // Fire-and-forget filesystem index update to mirror upstream game_index.json expectations.
+        void this.upsertGameIndex(result.completedGamePath, result.gameId, { modelA, modelB });
 
         resolve(result);
       });
