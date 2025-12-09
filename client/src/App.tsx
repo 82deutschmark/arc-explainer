@@ -39,7 +39,7 @@ import HumanTradingCards from "@/pages/HumanTradingCards";
 import LLMReasoning from "@/pages/LLMReasoning";
 import LLMReasoningAdvanced from "@/pages/LLMReasoningAdvanced";
 import SnakeBenchEmbed from "@/pages/SnakeBenchEmbed";
-import WormArena from "@/pages/SnakeArena";
+import WormArena from "@/pages/WormArena";
 import Redirect from "@/components/Redirect";
 
 function Router() {
