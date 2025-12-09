@@ -1,6 +1,14 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top with the time and date!
 
+### Version 5.47.25  Dec 9, 2025 (PENDING TESTING)
+
+- **Worm Arena replay controls component** (Author: Cascade)
+  - Captured a focused plan for text-first Worm Arena replay controls in `docs/plans/2025-12-09-worm-arena-controls-plan.md`, clarifying responsibilities, props, and wording.
+  - Implemented `WormArenacontrol.tsx` as a self-contained replay controls component, wiring it into `SnakeArena.tsx` so transport controls (first/prev/play/pause/next/last) and replay error/loading text live in a dedicated component instead of the page.
+  - **Files Created**: `docs/plans/2025-12-09-worm-arena-controls-plan.md`, `client/src/components/WormArenacontrol.tsx`
+  - **Files Modified**: `client/src/pages/SnakeArena.tsx`, `CHANGELOG.md`
+
 ### Version 5.47.24  Dec 9, 2025 (PENDING TESTING)
 
 - **Worm Arena replays + SnakeBench file parity** (Author: Codex)

@@ -95,7 +95,7 @@ export function useSnakeBenchRecentGames() {
       const res = await apiRequest('GET', url);
       const json = (await res.json()) as SnakeBenchListGamesResponse;
       if (!json.success) {
-        setError('Failed to load SnakeBench games');
+        setError('Failed to load Worm Arena games');
         setGames([]);
         setTotal(0);
         return;
@@ -103,7 +103,7 @@ export function useSnakeBenchRecentGames() {
       setGames(json.games || []);
       setTotal(json.total || 0);
     } catch (e: any) {
-      setError(e?.message || 'Failed to load SnakeBench games');
+      setError(e?.message || 'Failed to load Worm Arena games');
       setGames([]);
       setTotal(0);
     } finally {
