@@ -51,6 +51,8 @@ export async function runMatch(req: Request, res: Response) {
       height,
       maxRounds,
       numApples,
+      apiKey: body.apiKey,
+      provider: body.provider,
     };
 
     const result = await snakeBenchService.runMatch(request);
@@ -108,6 +110,8 @@ export async function runBatch(req: Request, res: Response) {
       maxRounds: body.maxRounds != null ? Number(body.maxRounds) : undefined,
       numApples: body.numApples != null ? Number(body.numApples) : undefined,
       count: parsedCount,
+      apiKey: body.apiKey,
+      provider: body.provider,
     };
 
     const batch = await snakeBenchService.runBatch(request);

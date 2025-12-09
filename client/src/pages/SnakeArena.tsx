@@ -22,7 +22,8 @@ import { useModels } from '@/hooks/useModels';
 import { useSnakeBenchMatch, useSnakeBenchRecentGames } from '@/hooks/useSnakeBench';
 import type { ModelConfig, SnakeBenchRunMatchRequest } from '@shared/types';
 
-const SNAKEBENCH_URL = 'https://snakebench.com';
+const SNAKEBENCH_URL_DEFAULT = 'https://snakebench.com';
+const url = import.meta.env.VITE_SNAKEBENCH_URL ?? SNAKEBENCH_URL_DEFAULT;
 
 function getSnakeEligibleModels(models: ModelConfig[]): string[] {
   return models
@@ -32,7 +33,6 @@ function getSnakeEligibleModels(models: ModelConfig[]): string[] {
 }
 
 export default function SnakeArena() {
-  const url = SNAKEBENCH_URL;
   const { data: modelConfigs = [], isLoading: loadingModels, error: modelsError } = useModels();
   const snakeModels = React.useMemo(() => getSnakeEligibleModels(modelConfigs), [modelConfigs]);
 
@@ -297,6 +297,15 @@ export default function SnakeArena() {
         <div className="lg:col-span-2 space-y-3">{renderConfigPanel()}</div>
         <div>{renderRecentGames()}</div>
       </div>
+
+      {!import.meta.env.VITE_SNAKEBENCH_URL && (
+        <Alert variant="default" className="border-yellow-300 bg-yellow-50">
+          <AlertTitle className="text-xs">Using default SnakeBench URL</AlertTitle>
+          <AlertDescription className="text-xs">
+            Set <code>VITE_SNAKEBENCH_URL</code> in your environment to customize the embedded SnakeBench UI (e.g., for staging/local).
+          </AlertDescription>
+        </Alert>
+      )}
 
       <div className="flex-1 border rounded-md overflow-hidden bg-black/5">
         <iframe

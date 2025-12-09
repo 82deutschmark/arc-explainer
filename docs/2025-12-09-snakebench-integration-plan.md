@@ -348,7 +348,7 @@ SnakeBench dataset, while avoiding a parallel analytics implementation.
 - [ ] Railway: confirm Docker-based deployment and verify SnakeBench preparation logs during build.
 - [ ] Railway: set `VITE_SNAKEBENCH_URL` per environment and rebuild the client.
 - [ ] Optional: add a small Railway health probe that surfaces `/api/snakebench/health` state.
-- [ ] Future: implement Drizzle mappings for `models`, `games`, and `game_participants` exactly as defined in `docs/SNAKE_BENCH_DB.md` and add a small `SnakeBenchRepository` for minimal match logging.
+- [x] Future: implement PostgreSQL tables for `models`, `games`, and `game_participants` exactly as defined in `docs/SNAKE_BENCH_DB.md` and add a small `SnakeBenchRepository` for minimal match logging. (COMPLETED: tables created in DatabaseSchema.initialize(); repository wired; matches log to DB; /api/snakebench/games prefers DB summaries with filesystem fallback.)
 - [ ] Future: add only lightweight local summary endpoints/UI; rely on Greg's SnakeBench deployment for canonical analytics and advanced leaderboards.
 
 This plan keeps the core feature small but robust: Python and SnakeBench are always available where Saturn/Poetiq already work, configuration is explicit, and deeper analytics can be layered on later without disrupting existing domains.

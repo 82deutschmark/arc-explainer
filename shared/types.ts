@@ -559,6 +559,10 @@ export interface SnakeBenchRunMatchRequest {
   height?: number;
   maxRounds?: number;
   numApples?: number;
+  /** Optional per-request BYO API key (never stored/logged) */
+  apiKey?: string;
+  /** Optional provider for BYO key; if omitted, defaults to OpenRouter */
+  provider?: 'openrouter' | 'openai' | 'anthropic' | 'xai' | 'gemini';
 }
 
 export interface SnakeBenchRunMatchResult {
