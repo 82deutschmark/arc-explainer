@@ -16,11 +16,13 @@ export default function SnakeBenchEmbed() {
   return (
     <div className="w-screen h-screen flex flex-col gap-6 p-8 -m-6">
       <Alert className="border-blue-200 bg-blue-50 shadow-lg">
-        <AlertCircle className="h-12 w-12 text-blue-600" />
-        <AlertTitle className="text-blue-900 text-4xl font-bold">🐍 Official SnakeBench</AlertTitle>
-        <AlertDescription className="text-blue-800 text-2xl mt-2">
+        <AlertCircle className="h-24 w-24 text-blue-600" />
+        <AlertTitle className="text-blue-900 text-5xl font-bold mt-2">
+          <span className="text-9xl">🐍</span> Official SnakeBench
+        </AlertTitle>
+        <AlertDescription className="text-blue-800 text-2xl mt-4">
           Canonical leaderboards, Elo ratings, and analytics for LLM head-to-head snake games.
-          To run games with your own API key, visit <strong>🐛 Worm Arena</strong> instead.
+          To run games with your own API key, visit <strong><span className="text-8xl">🐛</span> Worm Arena</strong> instead.
         </AlertDescription>
       </Alert>
 
