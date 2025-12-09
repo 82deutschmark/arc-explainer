@@ -26,11 +26,9 @@ const SOURCES: SourceKey[] = ['ARC1-Eval', 'ARC2-Eval'];
 const MODEL_KEY: ModelKey = 'z-ai/glm-4.6v';
 
 // Hardcoded puzzle IDs for targeted runs (overrides source fetch when non-empty)
-// Retry batch: 13 failed from run 2 (rate limits + server unavailable)
+// Retry batch: 5 failed from run 3 (server unavailable + 400 error)
 const HARDCODED_PUZZLE_IDS: string[] = [
-  '58f5dbd5', '4c3d4a41', '64efde09', '45a5af55', 'bf45cf4b',
-  '65b59efc', '80a900e0', 'db695cfb', 'b5ca7ac4', 'cb2d8a2c',
-  'a251c730', 'edb79dae', 'fc7cae8d'
+  'bf45cf4b', '65b59efc', 'a251c730', 'edb79dae', 'fc7cae8d'
 ];
 
 const RATE_LIMIT_DELAY_MS = Number(process.env.OPENROUTER_RATE_LIMIT_MS) || 30000;
