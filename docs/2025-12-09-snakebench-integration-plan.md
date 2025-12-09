@@ -340,15 +340,15 @@ SnakeBench dataset, while avoiding a parallel analytics implementation.
 
 ## Checklist
 
-- [ ] Local: document Python requirements and submodule setup for SnakeBench.
-- [ ] Local: recommend `pip install -r external/SnakeBench/backend/requirements.txt` and add an optional helper script.
-- [ ] Frontend: introduce `VITE_SNAKEBENCH_URL` usage in `SnakeArena.tsx` with a reasonable default.
-- [ ] Backend: extend SnakeBench shared types, controller, and service to support BYO API keys (Poetiq-style).
-- [ ] Frontend: add BYO key + provider inputs to `SnakeArena` and wire them into SnakeBench requests.
-- [ ] Railway: confirm Docker-based deployment and verify SnakeBench preparation logs during build.
-- [ ] Railway: set `VITE_SNAKEBENCH_URL` per environment and rebuild the client.
-- [ ] Optional: add a small Railway health probe that surfaces `/api/snakebench/health` state.
+- [x] Local: document Python requirements and submodule setup for SnakeBench.
+- [x] Local: recommend `pip install -r external/SnakeBench/backend/requirements.txt` and add an optional helper script.
+- [x] Frontend: introduce `VITE_SNAKEBENCH_URL` usage in `SnakeArena.tsx` with a reasonable default.
+- [x] Backend: extend SnakeBench shared types, controller, and service to support BYO API keys (Poetiq-style).
+- [x] Frontend: add BYO key + provider inputs to `SnakeArena` and wire them into SnakeBench requests.
+- [x] Railway: confirm Docker-based deployment and verify SnakeBench preparation logs during build.
+- [x] Railway: set `VITE_SNAKEBENCH_URL` per environment and rebuild the client.
+- [x] Optional: add a small Railway health probe that surfaces `/api/snakebench/health` state.
 - [x] Future: implement PostgreSQL tables for `models`, `games`, and `game_participants` exactly as defined in `docs/SNAKE_BENCH_DB.md` and add a small `SnakeBenchRepository` for minimal match logging. (COMPLETED: tables created in DatabaseSchema.initialize(); repository wired; matches log to DB; /api/snakebench/games prefers DB summaries with filesystem fallback.)
-- [ ] Future: add only lightweight local summary endpoints/UI; rely on Greg's SnakeBench deployment for canonical analytics and advanced leaderboards.
+- [x] Future: add only lightweight local summary endpoints/UI; rely on Greg's SnakeBench deployment for canonical analytics and advanced leaderboards. (COMPLETED: added /api/snakebench/recent-activity and /api/snakebench/leaderboard endpoints; local summaries panel in SnakeArena showing activity and top models.)
 
 This plan keeps the core feature small but robust: Python and SnakeBench are always available where Saturn/Poetiq already work, configuration is explicit, and deeper analytics can be layered on later without disrupting existing domains.
