@@ -407,7 +407,10 @@ export default function SnakeArena() {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 min-h-[180px]">
         <div className="lg:col-span-2 space-y-3">{renderConfigPanel()}</div>
-        <div>{renderRecentGames()}</div>
+        <div className="space-y-3">
+          {renderRecentGames()}
+          {renderSummaries()}
+        </div>
       </div>
 
       {!import.meta.env.VITE_SNAKEBENCH_URL && (
