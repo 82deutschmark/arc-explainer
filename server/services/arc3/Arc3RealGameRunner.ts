@@ -350,7 +350,7 @@ export class Arc3RealGameRunner {
       frameIndex: String(frames.length - 1),
       previousResponseId: config.previousResponseId ?? null,
       systemPromptPresetId: config.systemPromptPresetId ?? null,
-      skipDefaultSystemPrompt: config.skipDefaultSystemPrompt ?? false,
+      skipDefaultSystemPrompt: String(config.skipDefaultSystemPrompt ?? false),
     };
 
     const agent = new Agent({
@@ -777,7 +777,7 @@ export class Arc3RealGameRunner {
       frameIndex: String(frames.length - 1),
       previousResponseId: config.previousResponseId ?? null,
       systemPromptPresetId: config.systemPromptPresetId ?? null,
-      skipDefaultSystemPrompt: config.skipDefaultSystemPrompt ?? false,
+      skipDefaultSystemPrompt: String(config.skipDefaultSystemPrompt ?? false),
     };
 
     const agent = new Agent({
