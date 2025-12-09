@@ -24,6 +24,7 @@ import type {
 } from '../../shared/types.js';
 import { logger } from '../utils/logger.ts';
 import { repositoryService } from '../repositories/RepositoryService.ts';
+import { MODELS } from '../config/models.ts';
 
 const MIN_BOARD_SIZE = 4;
 const MAX_BOARD_SIZE = 50;
@@ -32,6 +33,7 @@ const MAX_MAX_ROUNDS = 500;
 const MIN_NUM_APPLES = 1;
 const MAX_NUM_APPLES = 20;
 const MAX_BATCH_COUNT = 10;
+const DEFAULT_SNAKEBENCH_TIMEOUT_MS = 4 * 60 * 60 * 1000; // 4 hours (safe for 2+ hour matches)
 
 function clamp(value: number, min: number, max: number): number {
   if (!Number.isFinite(value)) return min;
@@ -59,6 +61,24 @@ export class SnakeBenchService {
 
     if (!modelA || !modelB) {
       throw new Error('modelA and modelB are required');
+    }
+
+    // NEW: Validate models against project's canonical MODELS list (source of truth)
+    const snakeBenchModels = MODELS
+      .filter((m) => m.provider === 'OpenRouter')
+      .map((m) => m.apiModelName || m.key);
+
+    if (!snakeBenchModels.includes(modelA)) {
+      throw new Error(
+        `Model '${modelA}' not available for SnakeBench. ` +
+        `Available models: ${snakeBenchModels.join(', ')}`
+      );
+    }
+    if (!snakeBenchModels.includes(modelB)) {
+      throw new Error(
+        `Model '${modelB}' not available for SnakeBench. ` +
+        `Available models: ${snakeBenchModels.join(', ')}`
+      );
     }
 
     const widthRaw = request.width ?? 10;
@@ -133,6 +153,25 @@ export class SnakeBenchService {
         return reject(new Error('Python process streams not available for SnakeBench runner'));
       }
 
+      // NEW: Add configurable timeout to prevent hung processes (default 4 hours, safe for 2+ hour matches)
+      const timeoutMs = process.env.SNAKEBENCH_TIMEOUT_MS
+        ? parseInt(process.env.SNAKEBENCH_TIMEOUT_MS, 10)
+        : DEFAULT_SNAKEBENCH_TIMEOUT_MS;
+
+      const timeoutHandle = setTimeout(() => {
+        child.kill('SIGTERM');
+        const mins = Math.round(timeoutMs / (60 * 1000));
+        logger.error(
+          `SnakeBench runner timeout (${mins} minutes exceeded). Process killed. ` +
+          `Configure via SNAKEBENCH_TIMEOUT_MS env var if longer matches are needed.`,
+          'snakebench-service',
+        );
+        reject(new Error(
+          `SnakeBench runner timeout (${mins} minutes exceeded). ` +
+          `For longer matches, set SNAKEBENCH_TIMEOUT_MS environment variable.`
+        ));
+      }, timeoutMs);
+
       child.stdout.setEncoding('utf8');
       child.stderr.setEncoding('utf8');
 
@@ -148,6 +187,7 @@ export class SnakeBenchService {
       });
 
       child.on('close', (code: number | null) => {
+        clearTimeout(timeoutHandle);
         if (code !== 0) {
           const errSnippet = (stderrBuf || stdoutBuf).trim().slice(0, 500);
           logger.error(
@@ -209,6 +249,7 @@ export class SnakeBenchService {
       });
 
       child.on('error', (err) => {
+        clearTimeout(timeoutHandle);
         logger.error(
           `Failed to spawn SnakeBench runner: ${err instanceof Error ? err.message : String(err)}`,
           'snakebench-service',
@@ -221,6 +262,7 @@ export class SnakeBenchService {
         child.stdin.write(JSON.stringify(payload));
         child.stdin.end();
       } catch (err) {
+        clearTimeout(timeoutHandle);
         logger.error(
           `Failed to send payload to SnakeBench runner: ${err instanceof Error ? err.message : String(err)}`,
           'snakebench-service',
