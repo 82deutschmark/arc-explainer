@@ -26,10 +26,12 @@ const SNAKEBENCH_URL_DEFAULT = 'https://snakebench.com';
 const url = import.meta.env.VITE_SNAKEBENCH_URL ?? SNAKEBENCH_URL_DEFAULT;
 
 function getSnakeEligibleModels(models: ModelConfig[]): string[] {
-  return models
+  const eligible = models
     .filter((m) => m.provider === 'OpenRouter')
     .map((m) => m.apiModelName || m.key)
-    .filter(Boolean);
+    .filter(Boolean) as string[];
+  // Ensure no empty strings slip through
+  return eligible.filter((m) => m && m.trim().length > 0);
 }
 
 export default function SnakeArena() {
@@ -123,17 +125,19 @@ export default function SnakeArena() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           <div className="space-y-1.5">
             <label className="text-xs font-medium text-gray-700">Model A</label>
-            <Select value={modelA} onValueChange={setModelA} disabled={disabled}>
+            <Select value={modelA || ''} onValueChange={setModelA} disabled={disabled}>
               <SelectTrigger className="h-8 text-xs">
                 <SelectValue placeholder={loadingModels ? 'Loading models…' : 'Select Model A'} />
               </SelectTrigger>
-              <SelectContent className="max-h-64 text-xs">
-                {snakeModels.map((m) => (
-                  <SelectItem key={m} value={m}>
-                    {m}
-                  </SelectItem>
-                ))}
-              </SelectContent>
+              {snakeModels.length > 0 && (
+                <SelectContent className="max-h-64 text-xs">
+                  {snakeModels.map((m) => (
+                    <SelectItem key={m} value={m}>
+                      {m}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              )}
             </Select>
           </div>
 
