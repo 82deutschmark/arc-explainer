@@ -143,17 +143,19 @@ export default function SnakeArena() {
 
           <div className="space-y-1.5">
             <label className="text-xs font-medium text-gray-700">Model B</label>
-            <Select value={modelB} onValueChange={setModelB} disabled={disabled}>
+            <Select value={modelB || ''} onValueChange={setModelB} disabled={disabled}>
               <SelectTrigger className="h-8 text-xs">
                 <SelectValue placeholder={loadingModels ? 'Loading models…' : 'Select Model B'} />
               </SelectTrigger>
-              <SelectContent className="max-h-64 text-xs">
-                {snakeModels.map((m) => (
-                  <SelectItem key={m} value={m}>
-                    {m}
-                  </SelectItem>
-                ))}
-              </SelectContent>
+              {snakeModels.length > 0 && (
+                <SelectContent className="max-h-64 text-xs">
+                  {snakeModels.map((m) => (
+                    <SelectItem key={m} value={m}>
+                      {m}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              )}
             </Select>
           </div>
         </div>
