@@ -30,6 +30,8 @@ export interface StreamArc3Payload {
   existingGameGuid?: string;
   providerResponseId?: string | null;
   lastFrame?: FrameData; // Cached last known frame for safe continuation
+  systemPromptPresetId?: 'twitch' | 'playbook' | 'none';
+  skipDefaultSystemPrompt?: boolean;
 }
 
 export interface ContinueStreamArc3Payload extends StreamArc3Payload {
@@ -243,7 +245,7 @@ export class Arc3StreamService {
         return sessionId;
       }
 
-      const { game_id, agentName, systemPrompt, instructions, model, maxTurns, reasoningEffort } = payload;
+      const { game_id, agentName, systemPrompt, instructions, model, maxTurns, reasoningEffort, systemPromptPresetId, skipDefaultSystemPrompt } = payload;
 
       // Send initial status
       sseStreamManager.sendEvent(sessionId, "stream.init", {
@@ -294,6 +296,8 @@ export class Arc3StreamService {
         reasoningEffort,
         storeResponse: true,
         sessionId,
+        systemPromptPresetId,
+        skipDefaultSystemPrompt,
       };
 
       // Send status update
@@ -356,7 +360,7 @@ export class Arc3StreamService {
         return sessionId;
       }
 
-      const { game_id, agentName, systemPrompt, instructions, model, maxTurns, reasoningEffort, userMessage, previousResponseId, existingGameGuid } = payload;
+      const { game_id, agentName, systemPrompt, instructions, model, maxTurns, reasoningEffort, userMessage, previousResponseId, existingGameGuid, systemPromptPresetId, skipDefaultSystemPrompt } = payload;
 
       if (!previousResponseId) {
         throw new Error('ARC3 continuation requires a previousResponseId to maintain conversation state.');
@@ -434,6 +438,8 @@ export class Arc3StreamService {
         seedFrame: payload.lastFrame,  // CRITICAL FIX: Pass cached frame to avoid executing actions
         storeResponse: true,
         sessionId,
+        systemPromptPresetId,
+        skipDefaultSystemPrompt,
       };
 
       // Override the game runner to emit streaming events

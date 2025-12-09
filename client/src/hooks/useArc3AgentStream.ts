@@ -18,6 +18,8 @@ export interface Arc3AgentOptions {
   model?: string;
   maxTurns?: number;
   reasoningEffort?: 'minimal' | 'low' | 'medium' | 'high';
+  systemPromptPresetId?: 'twitch' | 'playbook' | 'none';
+  skipDefaultSystemPrompt?: boolean;
 }
 
 export interface Arc3AgentStreamState {
@@ -130,6 +132,8 @@ export function useArc3AgentStream() {
             model: options.model,
             maxTurns: options.maxTurns,
             reasoningEffort: options.reasoningEffort || 'low',
+            systemPromptPresetId: options.systemPromptPresetId,
+            skipDefaultSystemPrompt: options.skipDefaultSystemPrompt,
           });
 
           const prepareData = await prepareResponse.json();
@@ -156,10 +160,13 @@ export function useArc3AgentStream() {
           const response = await apiRequest('POST', '/api/arc3/real-game/run', {
             game_id: options.game_id || 'ls20',  // Match API property name
             agentName: options.agentName,
+            systemPrompt: options.systemPrompt,
             instructions: options.instructions,
             model: options.model,
             maxTurns: options.maxTurns,
             reasoningEffort: options.reasoningEffort || 'low',
+            systemPromptPresetId: options.systemPromptPresetId,
+            skipDefaultSystemPrompt: options.skipDefaultSystemPrompt,
           });
 
           const result = await response.json();

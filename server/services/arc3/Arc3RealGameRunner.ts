@@ -313,11 +313,28 @@ export class Arc3RealGameRunner {
       }
     });
 
-    const systemPrompt = config.systemPrompt?.trim() || buildArc3DefaultPrompt();
+    const selectSystemPrompt = (): string => {
+      const explicit = config.systemPrompt?.trim() || '';
+      const skipDefault = config.skipDefaultSystemPrompt === true;
+
+      if (skipDefault) {
+        return explicit;
+      }
+
+      if (explicit) {
+        return explicit;
+      }
+
+      return buildArc3DefaultPrompt();
+    };
+
+    const baseSystemPrompt = selectSystemPrompt();
     const operatorGuidance = config.instructions?.trim();
     const combinedInstructions = operatorGuidance
-      ? `${systemPrompt}\n\nOperator guidance: ${operatorGuidance}`
-      : systemPrompt;
+      ? (baseSystemPrompt
+          ? `${baseSystemPrompt}\n\nOperator guidance: ${operatorGuidance}`
+          : operatorGuidance)
+      : baseSystemPrompt || '';
 
     const storeResponse = config.storeResponse ?? true;
     const frameHash = this.computeFrameHash(currentFrame?.frame);
@@ -327,6 +344,8 @@ export class Arc3RealGameRunner {
       frameHash,
       frameIndex: String(frames.length - 1),
       previousResponseId: config.previousResponseId ?? null,
+      systemPromptPresetId: config.systemPromptPresetId ?? null,
+      skipDefaultSystemPrompt: config.skipDefaultSystemPrompt ?? false,
     };
 
     const agent = new Agent({
@@ -716,11 +735,28 @@ export class Arc3RealGameRunner {
       }
     });
 
-    const systemPrompt = config.systemPrompt?.trim() || buildArc3DefaultPrompt();
+    const selectSystemPrompt = (): string => {
+      const explicit = config.systemPrompt?.trim() || '';
+      const skipDefault = config.skipDefaultSystemPrompt === true;
+
+      if (skipDefault) {
+        return explicit;
+      }
+
+      if (explicit) {
+        return explicit;
+      }
+
+      return buildArc3DefaultPrompt();
+    };
+
+    const baseSystemPrompt = selectSystemPrompt();
     const operatorGuidance = config.instructions?.trim();
     const combinedInstructions = operatorGuidance
-      ? `${systemPrompt}\n\nOperator guidance: ${operatorGuidance}`
-      : systemPrompt;
+      ? (baseSystemPrompt
+          ? `${baseSystemPrompt}\n\nOperator guidance: ${operatorGuidance}`
+          : operatorGuidance)
+      : baseSystemPrompt || '';
 
     const storeResponse = config.storeResponse ?? true;
     const frameHash = this.computeFrameHash(currentFrame?.frame);
@@ -730,6 +766,8 @@ export class Arc3RealGameRunner {
       frameHash,
       frameIndex: String(frames.length - 1),
       previousResponseId: config.previousResponseId ?? null,
+      systemPromptPresetId: config.systemPromptPresetId ?? null,
+      skipDefaultSystemPrompt: config.skipDefaultSystemPrompt ?? false,
     };
 
     const agent = new Agent({
