@@ -43,7 +43,8 @@ import {
   MoreHorizontal,
   FileCheck,
   Zap,
-  Code
+  Code,
+  Worm
 } from 'lucide-react';
 
 // Type definitions for discriminated union
@@ -184,15 +185,15 @@ const navigationItems: NavItem[] = [
         href: '/poetiq',
         icon: Code,
         description: 'Help verify the Poetiq code-generation solver with your API key'
-      },
-      {
-        type: 'link',
-        title: 'Snake Arena',
-        href: '/snake-arena',
-        icon: Gamepad2,
-        description: 'Run LLM head-to-head snake games'
       }
     ]
+  },
+  {
+    type: 'link',
+    title: 'Snake Arena',
+    href: '/snake-arena',
+    icon: Worm,
+    description: 'Run LLM head-to-head snake games'
   },
   {
     type: 'link',
