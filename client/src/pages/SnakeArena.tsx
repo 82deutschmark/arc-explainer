@@ -44,6 +44,8 @@ export default function SnakeArena() {
   const [numApples, setNumApples] = React.useState<number>(5);
   const [byoApiKey, setByoApiKey] = React.useState<string>('');
   const [byoProvider, setByoProvider] = React.useState<'openrouter' | 'openai' | 'anthropic' | 'xai' | 'gemini' | ''>('');
+  const [recentActivity, setRecentActivity] = React.useState<{ days: number; gamesPlayed: number; uniqueModels: number } | null>(null);
+  const [leaderboard, setLeaderboard] = React.useState<Array<{ modelSlug: string; gamesPlayed: number; wins: number; losses: number; ties: number; winRate?: number }>>([]);
 
   const { runMatch, lastResponse, isRunning, error: matchError } = useSnakeBenchMatch();
   const { games, total, isLoading: loadingGames, error: gamesError, refresh } = useSnakeBenchRecentGames();
@@ -58,6 +60,24 @@ export default function SnakeArena() {
   React.useEffect(() => {
     void refresh(10);
   }, [refresh]);
+
+  React.useEffect(() => {
+    const fetchSummaries = async () => {
+      try {
+        const [activityRes, leaderboardRes] = await Promise.all([
+          fetch('/api/snakebench/recent-activity?days=7'),
+          fetch('/api/snakebench/leaderboard?limit=5&sortBy=gamesPlayed'),
+        ]);
+        const activityData = await activityRes.json();
+        const leaderboardData = await leaderboardRes.json();
+        if (activityData.success) setRecentActivity(activityData.result);
+        if (leaderboard mimData.success) setLeaderboard(leaderboardData.result);
+      } catch {
+        // Silently ignore if endpoints fail
+      }
+    };
+    void fetchSummaries();
+  }, [lastResponse]);
 
   const handleRunMatch = async () => {
     if (!modelA || !modelB) return;
