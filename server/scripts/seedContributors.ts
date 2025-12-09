@@ -113,9 +113,9 @@ const contributors: CreateContributorRequest[] = [
   {
     fullName: 'ARChitects (Franzen, Disselhoff, Hartmann)',
     handle: undefined,
-    affiliation: 'Johannes Gutenberg University Mainz, Germany',
+    affiliation: 'JGU Mainz / Lambda, Inc.',
     achievement: '2nd Place ARC Prize 2025 (16.53%)',
-    description: 'Three-person team (Daniel Franzen, Jan Disselhoff, David Hartmann) that dominates the ARC-AGI scene. Took 2nd place in ARC Prize 2025 with 16.53% on ARC-AGI-2, using a 2D-aware masked-diffusion LLM with recursive self-refinement.',
+    description: 'The ARChitects Kaggle team (Daniel Franzen 1*, Jan Disselhoff 1*, David Hartmann 2*) dominated ARC-AGI research with their ARC Prize 2025 Solution Summary, combining a 2D-aware masked-diffusion LLM with recursive self-refinement and LambdaLabs compute support.',
     imageUrl: '/ARChitechts.png',
     yearStart: 2025,
     yearEnd: 2025,
@@ -124,7 +124,8 @@ const contributors: CreateContributorRequest[] = [
     uniqueTechnique: 'Masked diffusion approach applied to 2D grid reasoning with iterative refinement',
     links: {
       github: 'https://github.com/da-fr/arc-prize-2024',
-      papers: ['https://arxiv.org/abs/arc-prize-2024']
+      papers: ['https://arxiv.org/abs/arc-prize-2024'],
+      website: 'https://lambdalabsml.github.io/ARC2025_Solution_by_the_ARChitects/'
     },
     teamName: 'ARChitects',
     category: 'competition_winner',
