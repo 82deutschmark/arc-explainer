@@ -1,6 +1,13 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top with the time and date!
 
+### Version 5.47.21  Dec 8, 2025 (PENDING TESTING)
+
+- **ARC3 frames: handle multi-frame payloads** (Author: Codex)
+  - Updated ARC3 frame typing and extraction to support collections of frames (4D arrays) by always selecting the latest frame/layer when comparing grids.
+  - Prevents downstream tools (diff/analysis) from assuming a single-frame 3D array and missing changes.
+  - **Files Modified**: `server/services/arc3/Arc3ApiClient.ts`, `server/services/arc3/helpers/frameAnalysis.ts`, `CHANGELOG.md`
+
 ### Version 5.47.20  Dec 8, 2025 (PENDING TESTING)
 
 - **ARC3 scorecards: open per run + normalize actions** (Author: Codex)

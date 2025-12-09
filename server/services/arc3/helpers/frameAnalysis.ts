@@ -32,12 +32,38 @@ export interface Region {
 }
 
 /**
- * Extract the 2D grid from a frame (first layer of the 3D array)
- * @param frame - Frame object with 3D grid data
+ * Extract the latest 2D grid from a frame.
+ * Supports both 3D ([layer][h][w]) and 4D ([frameIdx][layer][h][w]) shapes.
+ * @param frame - Frame object with nested grid data
  * @returns 2D grid array [height][width] with values 0-15
  */
 export function extractGrid(frame: FrameData): number[][] {
-  return frame.frame[0];
+  const raw = frame.frame as any;
+  if (!Array.isArray(raw) || raw.length === 0) {
+    return [];
+  }
+
+  const maybeFrame = raw[raw.length - 1];
+  const layers = Array.isArray(maybeFrame?.[0]?.[0])
+    ? maybeFrame
+    : raw;
+
+  const grid2d = Array.isArray(layers) && layers.length > 0 ? layers[layers.length - 1] : [];
+  return Array.isArray(grid2d) ? grid2d : [];
+}
+
+export function extractLayerStack(frame: FrameData): number[][][] {
+  const raw = frame.frame as any;
+  if (!Array.isArray(raw) || raw.length === 0) {
+    return [];
+  }
+
+  const maybeFrame = raw[raw.length - 1];
+  const layers = Array.isArray(maybeFrame?.[0]?.[0])
+    ? maybeFrame
+    : raw;
+
+  return Array.isArray(layers) ? (layers as number[][][]) : [];
 }
 
 /**
