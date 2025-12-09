@@ -479,30 +479,24 @@ export default function SnakeArena() {
                 </Button>
               </div>
             </div>
-
-            {replayError && <p className="text-[11px] text-red-600">Replay load error: {replayError}</p>}
+            {replayError && <p className="text-[11px] text-red-600">Replay load error: {String(replayError)}</p>}
             {loadingReplay && <p className="text-[11px] text-gray-500">Loading replay...</p>}
 
             <div className="grid md:grid-cols-3 gap-3 text-[11px]">
               <div className="space-y-1">
                 <div className="font-semibold text-gray-700">Summary</div>
                 <div className="text-gray-600">Rounds: {roundsPlayed}</div>
-                <div className="text-gray-600">Started: {startedAt ? new Date(startedAt).toLocaleString() : '—'}</div>
-                <div className="text-gray-600">Board: {boardWidth} × {boardHeight}</div>
+                <div className="text-gray-600">Started: {startedAt ? new Date(startedAt).toLocaleString() : "-"}</div>
+                <div className="text-gray-600">Board: {boardWidth} x {boardHeight}</div>
               </div>
               <div className="space-y-1">
                 <div className="font-semibold text-gray-700">Scores</div>
                 {Object.keys(finalScores).length === 0 && <div className="text-gray-500">No scores yet.</div>}
                 {Object.entries(finalScores).map(([k, v]) => (
                   <div key={k} className="text-gray-700">
-                    <span className="font-mono mr-1">{k}</span> {v}
+                    <span className="font-mono mr-1">{k}</span> {String(v)}
                   </div>
                 ))}
-              </div>
-              <div className="space-y-1">
-                <div className="font-semibold text-gray-700">Controls</div>
-                <div className="text-gray-600">Click rows to load replay JSON.</div>
-                <div className="text-gray-600">Use Prev/Next or Play for timeline.</div>
               </div>
             </div>
 
