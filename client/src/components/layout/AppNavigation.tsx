@@ -188,9 +188,9 @@ const navigationItems: NavItem[] = [
       {
         type: 'link',
         title: 'Snake Arena',
-        href: 'https://snakebench.com',
+        href: '/snake-arena',
         icon: Gamepad2,
-        description: 'Visit SnakeBench LLM Snake Arena'
+        description: 'Run LLM head-to-head snake games'
       }
     ]
   },
