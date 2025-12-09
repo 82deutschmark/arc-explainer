@@ -98,6 +98,7 @@ export default function SnakeArena() {
 
   const renderConfigPanel = () => {
     const disabled = loadingModels || snakeModels.length < 2 || isRunning;
+    const hasValidModels = snakeModels.length >= 2 && snakeModels.every((m) => m && m.trim());
 
     return (
       <div className="border rounded-md p-4 bg-white/70 space-y-3">
@@ -122,6 +123,23 @@ export default function SnakeArena() {
           </Alert>
         )}
 
+        {loadingModels && (
+          <Alert className="border-blue-200 bg-blue-50">
+            <AlertTitle>Loading models…</AlertTitle>
+            <AlertDescription className="text-xs">Fetching available OpenRouter models.</AlertDescription>
+          </Alert>
+        )}
+
+        {!loadingModels && !hasValidModels && !modelsError && (
+          <Alert variant="destructive">
+            <AlertTitle>No models available</AlertTitle>
+            <AlertDescription className="text-xs">
+              Could not load OpenRouter models. Please refresh and try again.
+            </AlertDescription>
+          </Alert>
+        )}
+
+        {hasValidModels && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           <div className="space-y-1.5">
             <label className="text-xs font-medium text-gray-700">Model A</label>
@@ -277,6 +295,7 @@ export default function SnakeArena() {
               </div>
             </div>
           </div>
+        )}
         )}
       </div>
     );
