@@ -71,7 +71,7 @@ export default function SnakeArena() {
         const activityData = await activityRes.json();
         const leaderboardData = await leaderboardRes.json();
         if (activityData.success) setRecentActivity(activityData.result);
-        if (leaderboard mimData.success) setLeaderboard(leaderboardData.result);
+        if (leaderboardData.success) setLeaderboard(leaderboardData.result);
       } catch {
         // Silently ignore if endpoints fail
       }
@@ -326,6 +326,65 @@ export default function SnakeArena() {
             <p className="mt-1 text-[10px] text-gray-500">Showing {games.length} of {total} games.</p>
           )}
         </div>
+      </div>
+    );
+  };
+
+  const renderSummaries = () => {
+    return (
+      <div className="border rounded-md p-4 bg-white/60 space-y-3">
+        <div>
+          <h2 className="text-xs font-semibold tracking-wide uppercase text-gray-700">Local summaries</h2>
+          <p className="text-[11px] text-muted-foreground">
+            Lightweight activity and leaderboard from local DB (when available).
+          </p>
+        </div>
+
+        {recentActivity && (
+          <div className="text-[11px]">
+            <div className="font-medium text-gray-700 mb-1">Recent activity (last {recentActivity.days} days)</div>
+            <div className="flex gap-4 text-gray-600">
+              <span>Games: <strong>{recentActivity.gamesPlayed}</strong></span>
+              <span>Models: <strong>{recentActivity.uniqueModels}</strong></span>
+            </div>
+          </div>
+        )}
+
+        {leaderboard.length > 0 && (
+          <div className="text-[11px]">
+            <div className="font-medium text-gray-700 mb-1">Top models by games played</div>
+            <table className="w-full text-left border-collapse">
+              <thead>
+                <tr className="border-b">
+                  <th className="py-1 pr-2">Model</th>
+                  <th className="py-1 pr-2">Games</th>
+                  <th className="py-1 pr-2">W-L-T</th>
+                  <th className="py-1">Win%</th>
+                </tr>
+              </thead>
+              <tbody>
+                {leaderboard.map((m) => (
+                  <tr key={m.modelSlug} className="border-b last:border-0">
+                    <td className="py-1 pr-2 font-mono text-[10px] truncate max-w-[120px]" title={m.modelSlug}>
+                      {m.modelSlug}
+                    </td>
+                    <td className="py-1 pr-2">{m.gamesPlayed}</td>
+                    <td className="py-1 pr-2 text-gray-600">
+                      {m.wins}-{m.losses}-{m.ties}
+                    </td>
+                    <td className="py-1 text-gray-600">
+                      {m.winRate !== undefined ? `${(m.winRate * 100).toFixed(1)}%` : '-'}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+
+        {!recentActivity && leaderboard.length === 0 && (
+          <p className="text-[11px] text-gray-500">No local summary data available yet.</p>
+        )}
       </div>
     );
   };
