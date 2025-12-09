@@ -684,6 +684,24 @@ export const MODELS: ModelConfig[] = [
 
   },
   {
+    key: 'openrouter/gpt-5.1-codex-mini',
+    name: 'GPT-5.1 Codex Mini (OpenRouter)',
+    color: 'bg-amber-600',
+    premium: true,
+    cost: { input: '$0.25', output: '$2.00' },
+    supportsTemperature: false,
+    supportsVision: true,
+    provider: 'OpenRouter',
+    responseTime: { speed: 'moderate', estimate: '30-60 sec' },
+    isReasoning: true,
+    apiModelName: 'openai/gpt-5.1-codex-mini',
+    modelType: 'openrouter',
+    contextWindow: 400000,
+    supportsStreaming: true,
+    releaseDate: "2025-11",
+    notes: 'Sep 30, 2024 knowledge cutoff; reasoning token support.'
+  },
+  {
     key: 'openai/gpt-5.1',
     name: 'OpenAI: GPT-5.1',
     color: 'bg-sky-700',

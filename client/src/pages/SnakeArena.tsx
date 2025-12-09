@@ -19,11 +19,8 @@ import {
   SelectItem,
 } from '@/components/ui/select';
 import { useModels } from '@/hooks/useModels';
-import { useSnakeBenchMatch, useSnakeBenchRecentGames } from '@/hooks/useSnakeBench';
+import { useSnakeBenchMatch, useSnakeBenchRecentGames, useSnakeBenchGame } from '@/hooks/useSnakeBench';
 import type { ModelConfig, SnakeBenchRunMatchRequest } from '@shared/types';
-
-const SNAKEBENCH_URL_DEFAULT = 'https://snakebench.com';
-const url = import.meta.env.VITE_SNAKEBENCH_URL ?? SNAKEBENCH_URL_DEFAULT;
 
 function getSnakeEligibleModels(models: ModelConfig[]): string[] {
   const eligible = models
@@ -35,6 +32,35 @@ function getSnakeEligibleModels(models: ModelConfig[]): string[] {
     })
     .filter((m): m is string => m !== null);
   return eligible;
+}
+
+function renderAsciiFrame(frame: any, width: number, height: number, labels: Record<string, string>): string {
+  if (!frame) return '';
+  const w = Number.isFinite(width) ? Math.max(1, width) : 10;
+  const h = Number.isFinite(height) ? Math.max(1, height) : 10;
+
+  const grid: string[][] = Array.from({ length: h }, () => Array.from({ length: w }, () => '.'));
+
+  const apples: Array<[number, number]> = frame?.state?.apples ?? [];
+  apples.forEach(([x, y]) => {
+    if (Number.isFinite(x) && Number.isFinite(y) && y >= 0 && y < h && x >= 0 && x < w) {
+      grid[y][x] = '@';
+    }
+  });
+
+  const snakes: Record<string, Array<[number, number]>> = frame?.state?.snakes ?? {};
+  Object.entries(snakes).forEach(([sid, positions], idx) => {
+    const display = (labels[sid]?.[0] ?? sid ?? String(idx)).toString();
+    positions.forEach((pos, posIdx) => {
+      const [x, y] = pos as [number, number];
+      if (Number.isFinite(x) && Number.isFinite(y) && y >= 0 && y < h && x >= 0 && x < w) {
+        const char = posIdx === 0 ? display.toUpperCase() : display.toLowerCase();
+        grid[y][x] = char;
+      }
+    });
+  });
+
+  return grid.map((row) => row.join(' ')).join('\n');
 }
 
 export default function SnakeArena() {
@@ -55,9 +81,13 @@ export default function SnakeArena() {
   const [byoProvider, setByoProvider] = React.useState<'openrouter' | 'openai' | 'anthropic' | 'xai' | 'gemini' | ''>('');
   const [recentActivity, setRecentActivity] = React.useState<{ days: number; gamesPlayed: number; uniqueModels: number } | null>(null);
   const [leaderboard, setLeaderboard] = React.useState<Array<{ modelSlug: string; gamesPlayed: number; wins: number; losses: number; ties: number; winRate?: number }>>([]);
+  const [selectedGameId, setSelectedGameId] = React.useState<string>('');
+  const [frameIndex, setFrameIndex] = React.useState<number>(0);
+  const [isPlaying, setIsPlaying] = React.useState<boolean>(false);
 
   const { runMatch, lastResponse, isRunning, error: matchError } = useSnakeBenchMatch();
   const { games, total, isLoading: loadingGames, error: gamesError, refresh } = useSnakeBenchRecentGames();
+  const { data: replayData, isLoading: loadingReplay, error: replayError, fetchGame } = useSnakeBenchGame(selectedGameId);
 
   React.useEffect(() => {
     if (selectableModels.length >= 2 && !modelA && !modelB) {
@@ -88,6 +118,25 @@ export default function SnakeArena() {
     void fetchSummaries();
   }, [lastResponse]);
 
+  React.useEffect(() => {
+    if (games.length === 0) return;
+    if (!selectedGameId) {
+      setSelectedGameId(games[0].gameId);
+      return;
+    }
+    const stillExists = games.some((g) => g.gameId === selectedGameId);
+    if (!stillExists) {
+      setSelectedGameId(games[0].gameId);
+    }
+  }, [games, selectedGameId]);
+
+  React.useEffect(() => {
+    if (!selectedGameId) return;
+    setFrameIndex(0);
+    setIsPlaying(false);
+    void fetchGame(selectedGameId);
+  }, [selectedGameId, fetchGame]);
+
   const handleRunMatch = async () => {
     if (!modelA || !modelB) return;
     const payload: SnakeBenchRunMatchRequest = {
@@ -99,9 +148,48 @@ export default function SnakeArena() {
       numApples,
       ...(byoApiKey && byoProvider ? { apiKey: byoApiKey, provider: byoProvider } : {}),
     };
-    await runMatch(payload);
+    const result = await runMatch(payload);
+    if (result?.gameId) {
+      setSelectedGameId(result.gameId);
+    }
     void refresh(10);
   };
+
+  const frames: any[] = React.useMemo(() => {
+    if (replayData && Array.isArray(replayData.frames)) return replayData.frames;
+    return [];
+  }, [replayData]);
+
+  const boardWidth = replayData?.game?.board?.width ?? 10;
+  const boardHeight = replayData?.game?.board?.height ?? 10;
+
+  const playerLabels = React.useMemo(() => {
+    const labels: Record<string, string> = {};
+    const players = replayData?.players ?? {};
+    Object.entries(players).forEach(([sid, player], idx) => {
+      const name = (player as any)?.name ?? (player as any)?.model_name ?? (player as any)?.modelName ?? `Snake ${idx + 1}`;
+      labels[sid] = String(name);
+    });
+    return labels;
+  }, [replayData]);
+
+  React.useEffect(() => {
+    setFrameIndex(0);
+  }, [frames.length]);
+
+  React.useEffect(() => {
+    if (!isPlaying || frames.length === 0) return;
+    const handle = setInterval(() => {
+      setFrameIndex((idx) => (idx + 1) % frames.length);
+    }, 800);
+    return () => clearInterval(handle);
+  }, [isPlaying, frames.length]);
+
+  const currentFrame = frames.length > 0 ? frames[Math.min(frameIndex, frames.length - 1)] : null;
+  const asciiFrame = React.useMemo(
+    () => (currentFrame ? renderAsciiFrame(currentFrame, boardWidth, boardHeight, playerLabels) : ''),
+    [currentFrame, boardWidth, boardHeight, playerLabels],
+  );
 
   const renderConfigPanel = () => {
     const disabled = loadingModels || selectableModels.length < 2 || isRunning;
@@ -117,7 +205,7 @@ export default function SnakeArena() {
             </p>
           </div>
           <Button size="sm" onClick={handleRunMatch} disabled={disabled || !modelA || !modelB}>
-            {isRunning ? 'Running match…' : 'Run match'}
+            {isRunning ? 'Running match...' : 'Run match'}
           </Button>
         </div>
 
@@ -132,7 +220,7 @@ export default function SnakeArena() {
 
         {loadingModels && (
           <Alert className="border-blue-200 bg-blue-50">
-            <AlertTitle>Loading models…</AlertTitle>
+            <AlertTitle>Loading models...</AlertTitle>
             <AlertDescription className="text-xs">Fetching available OpenRouter models.</AlertDescription>
           </Alert>
         )}
@@ -153,7 +241,7 @@ export default function SnakeArena() {
                 <label className="text-xs font-medium text-gray-700">Model A</label>
                 <Select value={modelA || ''} onValueChange={setModelA} disabled={disabled}>
                   <SelectTrigger className="h-8 text-xs">
-                    <SelectValue placeholder={loadingModels ? 'Loading models…' : 'Select Model A'} />
+                    <SelectValue placeholder={loadingModels ? 'Loading models...' : 'Select Model A'} />
                   </SelectTrigger>
                   {selectableModels.length > 0 && (
                     <SelectContent className="max-h-64 text-xs">
@@ -171,7 +259,7 @@ export default function SnakeArena() {
                 <label className="text-xs font-medium text-gray-700">Model B</label>
                 <Select value={modelB || ''} onValueChange={setModelB} disabled={disabled}>
                   <SelectTrigger className="h-8 text-xs">
-                    <SelectValue placeholder={loadingModels ? 'Loading models…' : 'Select Model B'} />
+                    <SelectValue placeholder={loadingModels ? 'Loading models...' : 'Select Model B'} />
                   </SelectTrigger>
                   {selectableModels.length > 0 && (
                     <SelectContent className="max-h-64 text-xs">
@@ -310,6 +398,122 @@ export default function SnakeArena() {
     );
   };
 
+  const renderReplayPanel = () => {
+    const selectedMeta = games.find((g) => g.gameId === selectedGameId);
+    const models = (replayData?.metadata?.models as string[] | undefined) ?? [];
+    const finalScores = replayData?.metadata?.final_scores ?? replayData?.totals?.scores ?? {};
+    const roundsPlayed = selectedMeta?.roundsPlayed ?? replayData?.metadata?.actual_rounds ?? replayData?.game?.rounds_played ?? frames.length ?? 0;
+    const startedAt = selectedMeta?.startedAt ?? replayData?.metadata?.start_time ?? replayData?.game?.started_at ?? '';
+
+    return (
+      <div className="border rounded-md p-4 bg-white/70 space-y-3">
+        <div className="flex items-center justify-between gap-2 flex-wrap">
+          <div>
+            <h2 className="text-sm font-semibold tracking-wide uppercase text-gray-700">Worm Arena Replays</h2>
+            <p className="text-xs text-muted-foreground">Local replay viewer (JSON-compatible with upstream SnakeBench).</p>
+          </div>
+          <div className="flex items-center gap-2">
+            <Button size="sm" variant="outline" onClick={() => refresh(15)} disabled={loadingGames}>
+              Refresh list
+            </Button>
+            <Button size="sm" variant={isPlaying ? 'destructive' : 'default'} onClick={() => setIsPlaying((v) => !v)} disabled={frames.length === 0}>
+              {isPlaying ? 'Pause' : 'Play'}
+            </Button>
+          </div>
+        </div>
+
+        <div className="grid md:grid-cols-3 gap-3">
+          <div className="md:col-span-1 space-y-2">
+            <div className="flex items-center justify-between text-xs">
+              <span className="font-semibold text-gray-700">Games</span>
+              {gamesError && <span className="text-red-600">{gamesError}</span>}
+            </div>
+            <div className="border rounded bg-white/80 max-h-64 overflow-y-auto text-[11px]">
+              {loadingGames && <div className="p-2 text-gray-500">Loading games...</div>}
+              {!loadingGames && games.length === 0 && <div className="p-2 text-gray-500">No games yet.</div>}
+              {!loadingGames && games.length > 0 && (
+                <table className="w-full text-left">
+                  <tbody>
+                    {games.map((g) => (
+                      <tr
+                        key={g.gameId}
+                        className={`border-b last:border-0 cursor-pointer ${selectedGameId === g.gameId ? 'bg-blue-50' : 'hover:bg-gray-50'}`}
+                        onClick={() => setSelectedGameId(g.gameId)}
+                      >
+                        <td className="py-2 px-2">
+                          <div className="font-mono text-[10px] truncate" title={g.gameId}>{g.gameId}</div>
+                          <div className="text-gray-600">{g.totalScore} pts · {g.roundsPlayed} rds</div>
+                          <div className="text-gray-500">{g.startedAt ? new Date(g.startedAt).toLocaleString() : ''}</div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              )}
+            </div>
+            {!loadingGames && total > games.length && (
+              <div className="text-[10px] text-gray-500">Showing {games.length} of {total}.</div>
+            )}
+          </div>
+
+          <div className="md:col-span-2 space-y-2">
+            <div className="flex items-center justify-between text-xs">
+              <div>
+                <div className="font-semibold text-gray-700">
+                  {selectedGameId ? `Game ${selectedGameId}` : 'Select a game'}
+                </div>
+                <div className="text-gray-600">
+                  {models.length > 0 ? models.join(' vs ') : `${modelA || 'Model A'} vs ${modelB || 'Model B'}`}
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                <Button size="sm" variant="outline" onClick={() => setFrameIndex((idx) => Math.max(0, idx - 1))} disabled={frames.length === 0}>
+                  Prev
+                </Button>
+                <div className="text-[11px] text-gray-700">
+                  Frame {frames.length === 0 ? 0 : frameIndex + 1} / {frames.length || 0}
+                </div>
+                <Button size="sm" variant="outline" onClick={() => setFrameIndex((idx) => Math.min(frames.length - 1, idx + 1))} disabled={frames.length === 0}>
+                  Next
+                </Button>
+              </div>
+            </div>
+
+            {replayError && <p className="text-[11px] text-red-600">Replay load error: {replayError}</p>}
+            {loadingReplay && <p className="text-[11px] text-gray-500">Loading replay...</p>}
+
+            <div className="grid md:grid-cols-3 gap-3 text-[11px]">
+              <div className="space-y-1">
+                <div className="font-semibold text-gray-700">Summary</div>
+                <div className="text-gray-600">Rounds: {roundsPlayed}</div>
+                <div className="text-gray-600">Started: {startedAt ? new Date(startedAt).toLocaleString() : '—'}</div>
+                <div className="text-gray-600">Board: {boardWidth} × {boardHeight}</div>
+              </div>
+              <div className="space-y-1">
+                <div className="font-semibold text-gray-700">Scores</div>
+                {Object.keys(finalScores).length === 0 && <div className="text-gray-500">No scores yet.</div>}
+                {Object.entries(finalScores).map(([k, v]) => (
+                  <div key={k} className="text-gray-700">
+                    <span className="font-mono mr-1">{k}</span> {v}
+                  </div>
+                ))}
+              </div>
+              <div className="space-y-1">
+                <div className="font-semibold text-gray-700">Controls</div>
+                <div className="text-gray-600">Click rows to load replay JSON.</div>
+                <div className="text-gray-600">Use Prev/Next or Play for timeline.</div>
+              </div>
+            </div>
+
+            <div className="border rounded bg-black text-green-200 font-mono text-[11px] leading-tight p-3 min-h-[260px] overflow-auto">
+              {asciiFrame ? asciiFrame : 'No frames available for this game yet.'}
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   const renderRecentGames = () => {
     return (
       <div className="border rounded-md p-4 bg-white/60">
@@ -328,7 +532,7 @@ export default function SnakeArena() {
           <p className="text-[11px] text-red-600 mb-1">{gamesError}</p>
         )}
         <div className="text-[11px] text-gray-800 max-h-40 overflow-y-auto">
-          {loadingGames && <p className="text-gray-500">Loading games…</p>}
+          {loadingGames && <p className="text-gray-500">Loading games...</p>}
           {!loadingGames && games.length === 0 && <p className="text-gray-500">No games found yet.</p>}
           {!loadingGames && games.length > 0 && (
             <table className="w-full text-left border-collapse">
@@ -342,7 +546,11 @@ export default function SnakeArena() {
               </thead>
               <tbody>
                 {games.map((g) => (
-                  <tr key={g.gameId} className="border-b last:border-0">
+                  <tr
+                    key={g.gameId}
+                    className={`border-b last:border-0 cursor-pointer ${selectedGameId === g.gameId ? 'bg-blue-50' : 'hover:bg-gray-50'}`}
+                    onClick={() => setSelectedGameId(g.gameId)}
+                  >
                     <td className="py-1 pr-2 font-mono text-[10px] truncate max-w-[120px]" title={g.gameId}>
                       {g.gameId}
                     </td>
@@ -424,37 +632,19 @@ export default function SnakeArena() {
   };
 
   return (
-    <div className="flex flex-col h-[calc(100vh-5rem)] gap-3 p-4">
+    <div className="flex flex-col gap-3 p-4">
       <div className="text-sm text-muted-foreground">
-        To run your own games with your own API key, visit{' '}
-        <a href="https://wormarena.com" target="_blank" rel="noreferrer" className="font-semibold underline hover:text-foreground">
-          Worm Arena
-        </a>
+        Worm Arena runs locally with your own API keys and stores replays in SnakeBench format. The official SnakeBench embed lives on its own page for global leaderboards.
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 min-h-[180px]">
-        <div className="lg:col-span-2 space-y-3">{renderConfigPanel()}</div>
-        <div className="space-y-3">
-          {renderRecentGames()}
-          {renderSummaries()}
-        </div>
+        <div className="space-y-3">{renderConfigPanel()}</div>
+        <div className="lg:col-span-2 space-y-3">{renderReplayPanel()}</div>
       </div>
 
-      {!import.meta.env.VITE_SNAKEBENCH_URL && (
-        <Alert variant="default" className="border-yellow-300 bg-yellow-50">
-          <AlertTitle className="text-xs">Using default SnakeBench URL</AlertTitle>
-          <AlertDescription className="text-xs">
-            Set <code>VITE_SNAKEBENCH_URL</code> in your environment to customize the embedded SnakeBench UI (e.g., for staging/local).
-          </AlertDescription>
-        </Alert>
-      )}
-
-      <div className="flex-1 border rounded-md overflow-hidden bg-black/5">
-        <iframe
-          src={url}
-          title="SnakeBench Snake Arena"
-          className="w-full h-full border-0"
-        />
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+        {renderRecentGames()}
+        {renderSummaries()}
       </div>
     </div>
   );

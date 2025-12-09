@@ -15,6 +15,7 @@ import type {
   SnakeBenchRunBatchResponse,
   SnakeBenchListGamesResponse,
   SnakeBenchGameSummary,
+  SnakeBenchGameDetailResponse,
 } from '@shared/types';
 import { apiRequest } from '@/lib/queryClient';
 
@@ -111,4 +112,33 @@ export function useSnakeBenchRecentGames() {
   }, []);
 
   return { games, total, isLoading, error, refresh };
+}
+
+export function useSnakeBenchGame(gameId?: string) {
+  const [data, setData] = useState<any | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchGame = useCallback(async (id: string) => {
+    if (!id) return;
+    setIsLoading(true);
+    setError(null);
+    try {
+      const res = await apiRequest('GET', `/api/snakebench/games/${encodeURIComponent(id)}`);
+      const json = (await res.json()) as SnakeBenchGameDetailResponse;
+      if (!json.success) {
+        setError(json.error || 'Failed to load game replay');
+        setData(null);
+        return;
+      }
+      setData(json.data ?? null);
+    } catch (e: any) {
+      setError(e?.message || 'Failed to load game replay');
+      setData(null);
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
+  return { data, isLoading, error, fetchGame };
 }

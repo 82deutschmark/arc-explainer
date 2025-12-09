@@ -1,6 +1,13 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top with the time and date!
 
+### Version 5.47.24  Dec 9, 2025 (PENDING TESTING)
+
+- **Worm Arena replays + SnakeBench file parity** (Author: Codex)
+  - Point SnakeBench runner working dir at the upstream backend so completed game JSON files land in `external/SnakeBench/backend/completed_games` exactly like upstream, and mirror `game_index.json` entries after every run for compatibility.
+  - Added replay fetch hook and Worm Arena UI that lists local games, loads full replay JSON, and renders ASCII timelines with playback controls instead of embedding the official SnakeBench iframe.
+  - **Files Modified**: `server/services/snakeBenchService.ts`, `client/src/hooks/useSnakeBench.ts`, `client/src/pages/SnakeArena.tsx`, `CHANGELOG.md`
+
 ### Version 5.47.23  Dec 9, 2025 (PENDING TESTING)
 
 - **SnakeBench DB compatibility and minimal summaries** (Author: Cascade)
