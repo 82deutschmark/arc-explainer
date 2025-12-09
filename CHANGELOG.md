@@ -1,6 +1,15 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top with the time and date!
 
+### Version 5.47.23  Dec 9, 2025 (PENDING TESTING)
+
+- **SnakeBench DB compatibility and minimal summaries** (Author: Cascade)
+  - Added SnakeBench-compatible tables (`public.models`, `public.games`, `public.game_participants`) in `DatabaseSchema.initialize()` aligned to `docs/SNAKE_BENCH_DB.md` for future dataset merging.
+  - Implemented `SnakeBenchRepository` with `recordMatchFromResult` for minimal match logging (upserts models, inserts game, inserts two participants) and `getRecentGames` for lightweight summaries.
+  - Integrated repository into `SnakeBenchService`: matches now log to Postgres when available; `/api/snakebench/games` prefers DB-backed summaries with filesystem fallback.
+  - Wired repository via `RepositoryService.snakeBench`; existing UI recent-games panel automatically benefits without API changes.
+  - **Files Modified**: `server/repositories/database/DatabaseSchema.ts`, `server/repositories/SnakeBenchRepository.ts`, `server/repositories/RepositoryService.ts`, `server/services/snakeBenchService.ts`, `CHANGELOG.md`
+
 ### Version 5.47.22  Dec 9, 2025 (PENDING TESTING)
 
 - **SnakeBench gap report** (Author: Codex)
