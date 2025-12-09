@@ -1,6 +1,22 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top with the time and date!
 
+### Version 5.47.18  Dec 8, 2025 (PENDING TESTING)
+
+- **Hall of Fame: spotlight The ARChitects 2025 Solution Summary** (Author: Codex)
+  - Added a banner just below the ARC Hall of Fame header so Daniel Franzen 1*, Jan Disselhoff 1*, and David Hartmann 2* are introduced alongside the ARC Prize 2025 Solution Summary link (`https://lambdalabsml.github.io/ARC2025_Solution_by_the_ARChitects/`) and their JGU Mainz / Lambda, Inc. affiliations before visitors reach the cards.
+  - Updated the ARChitects 2025 seed entry to call out The ARChitects Kaggle team, include the LambdaLabs solution summary link, and reinforce the required keywords so the people cards honor the paper.
+  - Captured the intent in `docs/2025-12-08-architects-hall-of-fame-plan.md` before making the UI/data edits.
+  - **Files Modified**: `client/src/pages/HumanTradingCards.tsx`, `server/scripts/seedContributors.ts`, `docs/2025-12-08-architects-hall-of-fame-plan.md`, `CHANGELOG.md`
+
+### Version 5.47.17  Dec 8, 2025 (PENDING TESTING)
+
+- **Research terminal: highlight The ARChitects ARC Prize 2025 solution** (Author: Codex)
+  - Inserted the LambdaLabs-hosted ARC Prize 2025 Solution Summary link for The ARChitects Kaggle team into the Papers panel so the keywords ARC Prize 2025 Solution Summary, Daniel Franzen 1*, Jan Disselhoff 1*, David Hartmann 2*, and The ARChitects appear front and center.
+  - Added a dedicated research banner under the panels listing 1 JGU Mainz, 2 Lambda, Inc., and noting * “The ARChitects” Kaggle team members while pointing again to https://lambdalabsml.github.io/ARC2025_Solution_by_the_ARChitects/.
+  - Logged the intent via docs/2025-12-08-reference-material-plan.md before coding and recorded the component/changelog updates here.
+  - **Files Modified**: `client/src/components/browser/ReferenceMaterial.tsx`, `docs/2025-12-08-reference-material-plan.md`, `CHANGELOG.md`
+
 ### Version 5.47.16  Dec 8, 2025 (PENDING TESTING)
 
 - **ARC3 Agent Playground: high-contrast Actions JSON stream** (Author: Cascade)

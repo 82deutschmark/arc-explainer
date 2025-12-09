@@ -82,6 +82,10 @@ const REFERENCE_SECTIONS: ReferenceSectionProps[] = [
     icon: '📄',
     links: [
       {
+        label: 'ARC Prize 2025 Solution Summary – The ARChitects Kaggle team',
+        href: 'https://lambdalabsml.github.io/ARC2025_Solution_by_the_ARChitects/',
+      },
+      {
         label: 'ARC-AGI-2 Technical Report',
         href: 'https://www.arxiv.org/pdf/2505.11831',
       },
@@ -211,6 +215,25 @@ export const ReferenceMaterial: React.FC = () => {
             icon={section.icon}
           />
         ))}
+      </div>
+
+      {/* Featured homage to the LambdaLabs-hosted ARC Prize 2025 Solution */}
+      <div className="border border-amber-500/20 bg-slate-950/60 px-1.5 py-2 space-y-0.5 text-[0.7rem] font-mono tracking-tight text-amber-200">
+        <p className="text-amber-200/90 font-semibold">
+          ARC Prize 2025 Solution Summary – Daniel Franzen 1*, Jan Disselhoff 1*, David Hartmann 2*.
+        </p>
+        <p className="text-amber-400/80 text-[0.65rem]">
+          1 JGU Mainz · 2 Lambda, Inc. · * “The ARChitects” Kaggle team members.
+        </p>
+        <a
+          href="https://lambdalabsml.github.io/ARC2025_Solution_by_the_ARChitects/"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-2 text-amber-300 hover:text-amber-100 underline decoration-amber-500/70 underline-offset-2"
+        >
+          Read the LambdaLabs write-up from The ARChitects
+          <ExternalLink className="h-3 w-3" />
+        </a>
       </div>
 
       {/* Terminal footer */}

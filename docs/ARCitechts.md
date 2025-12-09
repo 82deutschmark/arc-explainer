@@ -8,7 +8,7 @@ David Hartmann 2*
 1 JGU Mainz
 2 Lambda, Inc.
 * “The ARChitects” Kaggle team members
-Podcast
+
 ARC Kaggle Competition 2025
 Code (GitHub)
 Jump to: TL;DR, Our Initial Strategy: Autoregressive Model Improvements, Our Final Submission: Recursive Masked Diffusion Model, Things That Didn’t Work, Compute Budget, Final Submission Results, Things to Improve, See Y’All Soon!
