@@ -15,7 +15,7 @@ import type { FrameData } from '../services/arc3/Arc3ApiClient';
 import { arc3StreamService, type StreamArc3Payload } from '../services/arc3/Arc3StreamService';
 import { sseStreamManager } from '../services/streaming/SSEStreamManager';
 import { formatResponse } from '../utils/responseFormatter';
-import { buildArc3DefaultPrompt } from '../services/arc3/prompts';
+import { buildArc3DefaultPrompt, listArc3PromptPresets, getArc3PromptBody } from '../services/arc3/prompts';
 import { logger } from '../utils/logger';
 
 const router = Router();
@@ -45,6 +45,7 @@ async function ensureScorecard() {
 
 const runSchema = z.object({
   agentName: z.string().trim().max(60).optional(),
+  systemPrompt: z.string().trim().optional(),
   instructions: z
     .string({ required_error: 'instructions is required' })
     .trim()
@@ -57,6 +58,8 @@ const runSchema = z.object({
     .optional(),
   game_id: z.string().trim().max(120).optional(),
   reasoningEffort: z.enum(['minimal', 'low', 'medium', 'high']).optional(),
+  systemPromptPresetId: z.enum(['twitch', 'playbook', 'none']).optional(),
+  skipDefaultSystemPrompt: z.boolean().optional(),
 });
 
 // NEW: Real ARC3 API endpoints
@@ -70,6 +73,54 @@ router.get(
   asyncHandler(async (req: Request, res: Response) => {
     const prompt = buildArc3DefaultPrompt();
     res.json(formatResponse.success({ prompt }));
+  }),
+);
+
+/**
+ * GET /api/arc3/system-prompts
+ * Return metadata for available ARC3 system prompt presets (no bodies).
+ */
+router.get(
+  '/system-prompts',
+  asyncHandler(async (req: Request, res: Response) => {
+    const presets = listArc3PromptPresets();
+    res.json(formatResponse.success(presets));
+  }),
+);
+
+/**
+ * GET /api/arc3/system-prompts/:id
+ * Return full prompt body and metadata for a specific preset.
+ */
+router.get(
+  '/system-prompts/:id',
+  asyncHandler(async (req: Request, res: Response) => {
+    const { id } = req.params;
+
+    if (id !== 'twitch' && id !== 'playbook' && id !== 'none') {
+      return res
+        .status(404)
+        .json(formatResponse.error('PRESET_NOT_FOUND', 'Unknown ARC3 system prompt preset id.'));
+    }
+
+    const presets = listArc3PromptPresets();
+    const meta = presets.find((p) => p.id === id);
+    if (!meta) {
+      return res
+        .status(404)
+        .json(formatResponse.error('PRESET_NOT_FOUND', 'Unknown ARC3 system prompt preset id.'));
+    }
+
+    const body = getArc3PromptBody(id as any);
+    res.json(
+      formatResponse.success({
+        id: meta.id,
+        label: meta.label,
+        description: meta.description,
+        isDefault: meta.isDefault,
+        body,
+      }),
+    );
   }),
 );
 
@@ -154,6 +205,7 @@ router.post(
 const streamRunSchema = z.object({
   game_id: z.string().trim().max(120).default('ls20'),  // Match API property name
   agentName: z.string().trim().max(60).optional(),
+  systemPrompt: z.string().trim().optional(),
   instructions: z
     .string({ required_error: 'instructions is required' })
     .trim()
@@ -165,6 +217,8 @@ const streamRunSchema = z.object({
     .min(2)
     .optional(),
   reasoningEffort: z.enum(['minimal', 'low', 'medium', 'high']).optional(),
+  systemPromptPresetId: z.enum(['twitch', 'playbook', 'none']).optional(),
+  skipDefaultSystemPrompt: z.boolean().optional(),
 });
 
 /**
@@ -330,7 +384,7 @@ router.post(
     }
 
     const normalizedLastFrame: FrameData | undefined = clientComplete
-      ? clientFrame
+      ? (clientFrame as FrameData)
       : cachedFrame;
 
     logger.info(`[ARC3 Continue] Frame source for session ${sessionId}: ${clientComplete ? 'client' : cachedFrame ? 'cached' : 'none'}`, 'arc3');

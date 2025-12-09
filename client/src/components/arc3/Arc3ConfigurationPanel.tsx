@@ -30,6 +30,13 @@ interface ModelInfo {
   releaseDate?: string;
 }
 
+interface Arc3SystemPromptPresetMeta {
+  id: 'twitch' | 'playbook' | 'none';
+  label: string;
+  description: string;
+  isDefault: boolean;
+}
+
 interface Arc3ConfigurationPanelProps {
   systemPrompt: string;
   setSystemPrompt: (value: string) => void;
@@ -44,6 +51,9 @@ interface Arc3ConfigurationPanelProps {
   availableModels: ModelInfo[];
   modelsLoading: boolean;
   isPlaying: boolean;
+  systemPromptPresetId: 'twitch' | 'playbook' | 'none';
+  setSystemPromptPresetId: (value: 'twitch' | 'playbook' | 'none') => void;
+  systemPromptPresets: Arc3SystemPromptPresetMeta[];
   onStart: () => void;
   onCancel: () => void;
 }
@@ -62,6 +72,9 @@ export const Arc3ConfigurationPanel: React.FC<Arc3ConfigurationPanelProps> = ({
   availableModels,
   modelsLoading,
   isPlaying,
+  systemPromptPresetId,
+  setSystemPromptPresetId,
+  systemPromptPresets,
   onStart,
   onCancel,
 }) => {
@@ -84,6 +97,29 @@ export const Arc3ConfigurationPanel: React.FC<Arc3ConfigurationPanelProps> = ({
         </div>
       </CardHeader>
       <CardContent className="space-y-2 text-[11px] px-3 pb-3">
+        {/* System Prompt Preset selector */}
+        {systemPromptPresets.length > 0 && (
+          <div className="space-y-0.5">
+            <label className="font-medium text-[10px]">System Prompt Preset</label>
+            <Select
+              value={systemPromptPresetId}
+              onValueChange={(value) => setSystemPromptPresetId(value as 'twitch' | 'playbook' | 'none')}
+              disabled={isPlaying}
+            >
+              <SelectTrigger className="h-7 text-[10px] px-2">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {systemPromptPresets.map((preset) => (
+                  <SelectItem key={preset.id} value={preset.id} className="text-[10px]">
+                    {preset.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        )}
+
         {/* System Prompt - EDITABLE, at top */}
         {showSystemPrompt && (
           <div className="space-y-0.5">

@@ -6,6 +6,7 @@ SRP/DRY check: Pass — centralizes enums and interfaces used by the new ARC3 ba
 */
 
 import type { FrameData } from './Arc3ApiClient.ts';
+import type { Arc3PromptPresetId } from './prompts.ts';
 
 export type Arc3GameState = 'NOT_PLAYED' | 'IN_PROGRESS' | 'WIN' | 'GAME_OVER' | 'NOT_FINISHED';
 
@@ -55,4 +56,6 @@ export interface Arc3AgentRunConfig {
   storeResponse?: boolean; // Whether to persist the response server-side (mandatory for GPT-5)
   seedFrame?: FrameData; // Optional cached frame to seed continuations without extra API calls
   sessionId?: string; // For tracing/metadata on provider calls
+  systemPromptPresetId?: Arc3PromptPresetId; // One-word preset id: 'twitch' | 'playbook' | 'none'
+  skipDefaultSystemPrompt?: boolean; // When true, never fall back to any default system prompt
 }

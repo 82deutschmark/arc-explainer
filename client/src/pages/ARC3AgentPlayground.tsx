@@ -41,6 +41,13 @@ interface ModelInfo {
   releaseDate?: string;
 }
 
+interface Arc3SystemPromptPresetMeta {
+  id: 'twitch' | 'playbook' | 'none';
+  label: string;
+  description: string;
+  isDefault: boolean;
+}
+
 // Normalize available_actions tokens from the API
 // API can send: integers (0=RESET, 1-7=ACTION1-7) or strings ('RESET', 'ACTION1', etc)
 const normalizeAvailableActionName = (token: string | number | null | undefined): string | null => {
@@ -155,6 +162,27 @@ export default function ARC3AgentPlayground() {
     }
   };
 
+  const [systemPromptPresets, setSystemPromptPresets] = useState<Arc3SystemPromptPresetMeta[]>([]);
+  const [systemPromptPresetId, setSystemPromptPresetId] = useState<'twitch' | 'playbook' | 'none'>('playbook');
+
+  const fetchSystemPromptPresets = async () => {
+    try {
+      const response = await apiRequest('GET', '/api/arc3/system-prompts');
+      const result = await response.json();
+      if (result.success && Array.isArray(result.data)) {
+        const presets = result.data as Arc3SystemPromptPresetMeta[];
+        setSystemPromptPresets(presets);
+
+        const defaultPreset = presets.find((p) => p.isDefault) || presets.find((p) => p.id === 'playbook');
+        if (defaultPreset) {
+          setSystemPromptPresetId(defaultPreset.id);
+        }
+      }
+    } catch (error) {
+      console.error('[ARC3] Failed to fetch system prompt presets:', error);
+    }
+  };
+
   const fetchModels = async () => {
     setModelsLoading(true);
     try {
@@ -210,7 +238,30 @@ export default function ARC3AgentPlayground() {
     fetchGames();
     fetchModels();
     fetchDefaultPrompt();
+    fetchSystemPromptPresets();
   }, []);
+
+  // When the preset changes, update the System Prompt textarea from backend templates.
+  useEffect(() => {
+    if (systemPromptPresetId === 'none') {
+      setSystemPrompt('');
+      return;
+    }
+
+    const loadPresetBody = async () => {
+      try {
+        const response = await apiRequest('GET', `/api/arc3/system-prompts/${systemPromptPresetId}`);
+        const result = await response.json();
+        if (result.success && result.data?.body && typeof result.data.body === 'string') {
+          setSystemPrompt(result.data.body);
+        }
+      } catch (error) {
+        console.error('[ARC3] Failed to load system prompt preset body:', error);
+      }
+    };
+
+    loadPresetBody();
+  }, [systemPromptPresetId]);
 
   // Agent config
   const [gameId, setGameId] = useState(urlGameId);  // Initialize from URL param
@@ -229,6 +280,8 @@ export default function ARC3AgentPlayground() {
   const { state, start, cancel, continueWithMessage, executeManualAction, initializeGameSession, setCurrentFrame, isPlaying, isPendingManualAction } = useArc3AgentStream();
 
   const handleStart = () => {
+    const skipDefaultSystemPrompt = systemPromptPresetId === 'none';
+
     start({
       game_id: gameId,
       agentName,
@@ -237,6 +290,8 @@ export default function ARC3AgentPlayground() {
       model,
       maxTurns,
       reasoningEffort,
+      systemPromptPresetId,
+      skipDefaultSystemPrompt,
     });
   };
 
@@ -410,6 +465,9 @@ export default function ARC3AgentPlayground() {
               availableModels={availableModels}
               modelsLoading={modelsLoading}
               isPlaying={isPlaying}
+              systemPromptPresetId={systemPromptPresetId}
+              setSystemPromptPresetId={setSystemPromptPresetId}
+              systemPromptPresets={systemPromptPresets}
               onStart={handleStart}
               onCancel={cancel}
             />

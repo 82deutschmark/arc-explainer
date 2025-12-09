@@ -117,14 +117,14 @@ In `ARC3AgentPlayground.tsx`:
 
 - New local state:
   - `systemPromptPresets` – list returned from `/api/arc3/system-prompts`.
-  - `systemPromptPresetId` – current selection (`'playbook_meta_policy'` by default).
+  - `systemPromptPresetId` – current selection (`'playbook'` by default).
 
 - On mount:
   - Fetch presets and set `systemPromptPresetId` to the one marked `isDefault` (Playbook).
   - Fetch the default prompt (Playbook) via `/api/arc3/default-prompt` to seed the System Prompt textarea.
 
 - On preset change:
-  - For `twitch_streamer` or `playbook_meta_policy`, replace the System Prompt textarea with the corresponding template text.
+  - For `twitch` or `playbook`, replace the System Prompt textarea with the corresponding template text.
   - For `none`, either:
     - Clear the System Prompt textarea, or
     - Leave it as-is but set `skipDefaultSystemPrompt = true`.

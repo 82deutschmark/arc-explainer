@@ -1,6 +1,15 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top with the time and date!
 
+### Version 5.47.19  Dec 8, 2025 (PENDING TESTING)
+
+- **ARC3 Agent Playground: system prompt presets + Playbook default** (Author: Cascade)
+  - Switched the ARC3 real-game runner to use the Playbook-style meta-policy prompt as the default system prompt whenever no explicit system prompt is provided.
+  - Added a small preset registry for one-word ARC3 system prompt modes (`twitch`, `playbook`, `none`) with a new `/api/arc3/system-prompts` metadata endpoint and `/api/arc3/system-prompts/:id` for fetching full prompt bodies.
+  - Extended ARC3 run config and streaming payloads with `systemPromptPresetId` and `skipDefaultSystemPrompt` so both streaming and non-streaming runs can trace which preset was used and cleanly disable all defaults when requested.
+  - Updated the ARC3 Agent Playground configuration panel to include a simple System Prompt Preset dropdown above the System Prompt textarea, wiring selections through to the backend and allowing a strict "no base system prompt" mode.
+  - **Files Modified**: `server/services/arc3/prompts.ts`, `server/services/arc3/types.ts`, `server/services/arc3/Arc3RealGameRunner.ts`, `server/services/arc3/Arc3StreamService.ts`, `server/routes/arc3.ts`, `client/src/hooks/useArc3AgentStream.ts`, `client/src/pages/ARC3AgentPlayground.tsx`, `client/src/components/arc3/Arc3ConfigurationPanel.tsx`, `CHANGELOG.md`
+
 ### Version 5.47.18  Dec 8, 2025 (PENDING TESTING)
 
 - **Hall of Fame: spotlight The ARChitects 2025 Solution Summary** (Author: Codex)
