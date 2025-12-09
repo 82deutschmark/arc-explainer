@@ -348,26 +348,37 @@ export class SnakeBenchService {
         try {
           const raw = await fs.promises.readFile(indexPath, 'utf8');
           const entries: any[] = JSON.parse(raw);
-          const match = Array.isArray(entries)
-            ? entries.find((e) => String(e.game_id ?? e.gameId) === gameId)
-            : undefined;
-          if (match && match.filename) {
-            filename = String(match.filename);
+          const entry = entries.find((e) => (e.game_id ?? e.gameId) === gameId);
+          if (entry?.filename) {
+            filename = String(entry.filename);
             candidate = path.join(completedDir, filename);
           }
-        } catch (err) {
-          const message = err instanceof Error ? err.message : String(err);
-          logger.error(`Failed to read SnakeBench game_index.json: ${message}`, 'snakebench-service');
+        } catch {
+          // continue to error below
         }
       }
     }
 
     if (!fs.existsSync(candidate)) {
-      throw new Error(`SnakeBench game not found for id ${gameId}`);
+      throw new Error(`Game not found: ${gameId}`);
     }
 
-    const raw = await fs.promises.readFile(candidate, 'utf8');
-    return JSON.parse(raw);
+    try {
+      const raw = await fs.promises.readFile(candidate, 'utf8');
+      return JSON.parse(raw);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
+      logger.error(`Failed to read SnakeBench game ${gameId}: ${message}`, 'snakebench-service');
+      throw new Error(`Failed to read game ${gameId}`);
+    }
+  }
+
+  async getRecentActivity(days: number = 7): Promise<{ days: number; gamesPlayed: number; uniqueModels: number }> {
+    return await repositoryService.snakeBench.getRecentActivity(days);
+  }
+
+  async getBasicLeaderboard(limit: number = 10, sortBy: 'gamesPlayed' | 'winRate' = 'gamesPlayed'): Promise<Array<{ modelSlug: string; gamesPlayed: number; wins: number; losses: number; ties: number; winRate?: number }>> {
+    return await repositoryService.snakeBench.getBasicLeaderboard(limit, sortBy);
   }
 
   async healthCheck(): Promise<SnakeBenchHealthResponse> {

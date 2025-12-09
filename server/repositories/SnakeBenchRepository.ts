@@ -250,4 +250,118 @@ export class SnakeBenchRepository extends BaseRepository {
       return { games: [], total: 0 };
     }
   }
+
+  /**
+   * Recent activity snapshot: games played in the last N days.
+   */
+  async getRecentActivity(days: number = 7): Promise<{ days: number; gamesPlayed: number; uniqueModels: number }> {
+    if (!this.isConnected()) {
+      return { days, gamesPlayed: 0, uniqueModels: 0 };
+    }
+
+    try {
+      const sql = `
+        SELECT
+          COUNT(DISTINCT g.id) AS games_played,
+          COUNT(DISTINCT m.model_slug) AS unique_models
+        FROM public.games g
+        LEFT JOIN public.game_participants gp ON g.id = gp.game_id
+        LEFT JOIN public.models m ON gp.model_id = m.id
+        WHERE g.game_type = 'arc-explainer'
+          AND g.created_at >= NOW() - INTERVAL '${Math.max(1, days)} days';
+      `;
+
+      const result = await this.query(sql);
+      const row = result.rows[0];
+
+      return {
+        days,
+        gamesPlayed: parseInt((row?.games_played as string) ?? '0', 10) || 0,
+        uniqueModels: parseInt((row?.unique_models as string) ?? '0', 10) || 0,
+      };
+    } catch (error) {
+      logger.warn(
+        `SnakeBenchRepository.getRecentActivity: query failed: ${error instanceof Error ? error.message : String(error)}`,
+        'snakebench-db',
+      );
+      return { days, gamesPlayed: 0, uniqueModels: 0 };
+    }
+  }
+
+  /**
+   * Basic local leaderboard: top N models by games played or local win rate.
+   */
+  async getBasicLeaderboard(limit: number = 10, sortBy: 'gamesPlayed' | 'winRate' = 'gamesPlayed'): Promise<Array<{ modelSlug: string; gamesPlayed: number; wins: number; losses: number; ties: number; winRate?: number }>> {
+    if (!this.isConnected()) {
+      return [];
+    }
+
+    const safeLimit = Number.isFinite(limit) ? Math.max(1, Math.min(limit, 100)) : 10;
+
+    try {
+      let sql = '';
+      let orderBy = '';
+
+      if (sortBy === 'winRate') {
+        sql = `
+          SELECT
+            m.model_slug,
+            COUNT(gp.game_id) AS games_played,
+            COUNT(CASE WHEN gp.result = 'won' THEN 1 END) AS wins,
+            COUNT(CASE WHEN gp.result = 'lost' THEN 1 END) AS losses,
+            COUNT(CASE WHEN gp.result = 'tied' THEN 1 END) AS ties
+          FROM public.models m
+          JOIN public.game_participants gp ON m.id = gp.model_id
+          JOIN public.games g ON gp.game_id = g.id
+          WHERE g.game_type = 'arc-explainer'
+          GROUP BY m.model_slug
+          HAVING COUNT(gp.game_id) > 0
+          ORDER BY (COUNT(CASE WHEN gp.result = 'won' THEN 1 END)::float / NULLIF(COUNT(gp.game_id), 0)) DESC NULLS LAST
+          LIMIT $1;
+        `;
+      } else {
+        sql = `
+          SELECT
+            m.model_slug,
+            COUNT(gp.game_id) AS games_played,
+            COUNT(CASE WHEN gp.result = 'won' THEN 1 END) AS wins,
+            COUNT(CASE WHEN gp.result = 'lost' THEN 1 END) AS losses,
+            COUNT(CASE WHEN gp.result = 'tied' THEN 1 END) AS ties
+          FROM public.models m
+          JOIN public.game_participants gp ON m.id = gp.model_id
+          JOIN public.games g ON gp.game_id = g.id
+          WHERE g.game_type = 'arc-explainer'
+          GROUP BY m.model_slug
+          HAVING COUNT(gp.game_id) > 0
+          ORDER BY games_played DESC
+          LIMIT $1;
+        `;
+      }
+
+      const result = await this.query(sql, [safeLimit]);
+
+      return result.rows.map((row: any) => {
+        const gamesPlayed = parseInt((row?.games_played as string) ?? '0', 10) || 0;
+        const wins = parseInt((row?.wins as string) ?? '0', 10) || 0;
+        const losses = parseInt((row?.losses as string) ?? '0', 10) || 0;
+        const ties = parseInt((row?.ties as string) ?? '0', 10) || 0;
+        const winRate = gamesPlayed > 0 ? wins / gamesPlayed : undefined;
+
+        return {
+          modelSlug: String(row?.model_slug ?? ''),
+          gamesPlayed,
+          wins,
+          losses,
+          ties,
+          ...(sortBy === 'winRate' ? { winRate } : {}),
+        };
+      });
+    } catch (error) {
+      logger.warn(
+        `SnakeBenchRepository.getBasicLeaderboard: query failed: ${error instanceof Error ? error.message : String(error)}`,
+        'snakebench-db',
+      );
+      return [];
+    }
+  }
 }
