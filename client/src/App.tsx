@@ -38,7 +38,8 @@ import PuzzleTradingCards from "@/pages/PuzzleTradingCards";
 import HumanTradingCards from "@/pages/HumanTradingCards";
 import LLMReasoning from "@/pages/LLMReasoning";
 import LLMReasoningAdvanced from "@/pages/LLMReasoningAdvanced";
-import SnakeArena from "@/pages/SnakeArena";
+import SnakeBenchEmbed from "@/pages/SnakeBenchEmbed";
+import WormArena from "@/pages/SnakeArena";
 import Redirect from "@/components/Redirect";
 
 function Router() {
@@ -89,7 +90,12 @@ function Router() {
         <Route path="/arc3/playground" component={ARC3AgentPlayground} />
         <Route path="/arc3/games" component={Arc3GamesBrowser} />
         <Route path="/arc3/games/:gameId" component={Arc3GameSpoiler} />
-        <Route path="/snake-arena" component={SnakeArena} />
+        {/* SnakeBench = official upstream project at snakebench.com */}
+        <Route path="/snakebench" component={SnakeBenchEmbed} />
+        {/* Backwards compatibility redirect */}
+        <Route path="/snake-arena" component={() => <Redirect to="/worm-arena" />} />
+        {/* Worm Arena = our local junior version with bring-your-own-key functionality */}
+        <Route path="/worm-arena" component={WormArena} />
         <Route path="/puzzle/:taskId" component={PuzzleExaminer} />
         <Route path="/examine/:taskId" component={PuzzleExaminer} />
         <Route component={NotFound} />

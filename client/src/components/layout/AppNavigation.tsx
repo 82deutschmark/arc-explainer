@@ -190,10 +190,17 @@ const navigationItems: NavItem[] = [
   },
   {
     type: 'link',
-    title: 'Snake Arena',
-    href: '/snake-arena',
+    title: 'SnakeBench',
+    href: '/snakebench',
+    icon: Gamepad2,
+    description: 'Official SnakeBench project (upstream)'
+  },
+  {
+    type: 'link',
+    title: 'Worm Arena',
+    href: '/worm-arena',
     icon: Worm,
-    description: 'Run LLM head-to-head snake games'
+    description: 'Our local SnakeBench with bring-your-own-key'
   },
   {
     type: 'link',
