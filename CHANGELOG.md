@@ -1,6 +1,13 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top with the time and date!
 
+### Version 5.47.22  Dec 9, 2025 (PENDING TESTING)
+
+- **SnakeBench gap report** (Author: Codex)
+  - Cataloged prior SnakeBench integration attempts (submodule, runner/service/routes, and env-based embed wiring) and noted the broken VITE_SNAKEBENCH_URL configuration that forced us to hard-code the iframe URL.
+  - Documented the current blockers: missing replay indexing (`game_index.json` never produced), absent dependency/env guidance, no model mapping/validation, lack of pythonBridge-style timeouts/observability, sequential batch runs with no persistence/leaderboards, and hard-coded frontend targets with no staging/local override.
+  - **Files Modified**: `docs/2025-12-09-snakebench-gap-assessment.md`, `CHANGELOG.md`
+
 ### Version 5.47.21  Dec 8, 2025 (PENDING TESTING)
 
 - **ARC3 frames: handle multi-frame payloads** (Author: Codex)

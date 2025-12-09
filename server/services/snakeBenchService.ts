@@ -23,6 +23,7 @@ import type {
   SnakeBenchHealthResponse,
 } from '../../shared/types.js';
 import { logger } from '../utils/logger.ts';
+import { repositoryService } from '../repositories/RepositoryService.ts';
 
 const MIN_BOARD_SIZE = 4;
 const MAX_BOARD_SIZE = 50;
@@ -159,6 +160,20 @@ export class SnakeBenchService {
           completedGamePath: parsed.completed_game_path ?? parsed.completedGamePath,
         };
 
+        // Fire-and-forget persistence into SnakeBench-compatible tables.
+        try {
+          void repositoryService.snakeBench.recordMatchFromResult({
+            result,
+            width,
+            height,
+            numApples,
+            gameType: 'arc-explainer',
+          });
+        } catch (persistErr) {
+          const msg = persistErr instanceof Error ? persistErr.message : String(persistErr);
+          logger.warn(`SnakeBenchService.runMatch: failed to enqueue DB persistence: ${msg}`, 'snakebench-service');
+        }
+
         resolve(result);
       });
 
@@ -216,6 +231,24 @@ export class SnakeBenchService {
   }
 
   async listGames(limit: number = 20): Promise<{ games: SnakeBenchGameSummary[]; total: number }> {
+    const safeLimit = Math.max(1, Math.min(limit ?? 20, 100));
+
+    // Prefer database-backed summaries when available (Phase II/III),
+    // but gracefully fall back to filesystem index if DB is unavailable
+    // or has no SnakeBench rows yet.
+    try {
+      const { games, total } = await repositoryService.snakeBench.getRecentGames(safeLimit);
+      if (total > 0 && games.length > 0) {
+        return { games, total };
+      }
+    } catch (dbErr) {
+      const msg = dbErr instanceof Error ? dbErr.message : String(dbErr);
+      logger.warn(
+        `SnakeBenchService.listGames: DB-backed recent games failed, falling back to filesystem: ${msg}`,
+        'snakebench-service',
+      );
+    }
+
     const backendDir = this.resolveBackendDir();
     const completedDir = path.join(backendDir, 'completed_games');
     const indexPath = path.join(completedDir, 'game_index.json');
@@ -239,7 +272,7 @@ export class SnakeBenchService {
         return bt - at;
       });
 
-      const slice = entries.slice(0, Math.max(1, Math.min(limit, 100)));
+      const slice = entries.slice(0, safeLimit);
 
       const games: SnakeBenchGameSummary[] = slice.map((entry) => {
         const gameId = String(entry.game_id ?? entry.gameId ?? '');
