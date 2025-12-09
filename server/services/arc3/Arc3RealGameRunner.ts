@@ -325,7 +325,7 @@ export class Arc3RealGameRunner {
       sessionId: config.sessionId,
       gameGuid: gameGuid || undefined,
       frameHash,
-      frameIndex: frames.length - 1,
+      frameIndex: String(frames.length - 1),
       previousResponseId: config.previousResponseId ?? null,
     };
 
@@ -454,7 +454,7 @@ export class Arc3RealGameRunner {
     // Emit initial frame to streaming clients
     streamHarness.emitEvent("game.started", {
       initialFrame,
-      frameIndex: 0,
+      frameIndex: String(0),
       caption: isContinuation ? `Continuing game session ${gameGuid}` : generateActionCaption({ action: 'RESET' }, null, initialFrame),
       isContingation: isContinuation,
       timestamp: Date.now(),
@@ -658,7 +658,7 @@ export class Arc3RealGameRunner {
         }
 
         streamHarness.emitEvent("game.frame_update", {
-          frameIndex: frames.length - 1,
+          frameIndex: String(frames.length - 1),
           frameData: currentFrame,
           caption,
           action: { type: name },
@@ -706,7 +706,7 @@ export class Arc3RealGameRunner {
         }
 
         streamHarness.emitEvent("game.frame_update", {
-          frameIndex: frames.length - 1,
+          frameIndex: String(frames.length - 1),
           frameData: currentFrame,
           caption,
           action: { type: 'ACTION6', coordinates: [x, y] },
@@ -728,7 +728,7 @@ export class Arc3RealGameRunner {
       sessionId: config.sessionId,
       gameGuid: gameGuid || undefined,
       frameHash,
-      frameIndex: frames.length - 1,
+      frameIndex: String(frames.length - 1),
       previousResponseId: config.previousResponseId ?? null,
     };
 
