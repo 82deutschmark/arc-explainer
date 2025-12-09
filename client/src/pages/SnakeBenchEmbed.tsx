@@ -14,20 +14,20 @@ const SNAKEBENCH_OFFICIAL_URL = 'https://snakebench.com';
 
 export default function SnakeBenchEmbed() {
   return (
-    <div className="w-full h-full flex flex-col gap-4 p-6">
-      <Alert className="border-blue-200 bg-blue-50">
-        <AlertCircle className="h-4 w-4 text-blue-600" />
-        <AlertTitle className="text-blue-900">Official SnakeBench</AlertTitle>
-        <AlertDescription className="text-blue-800">
-          This is the official SnakeBench deployment with canonical leaderboards, Elo ratings, and analytics.
-          To run games with your own API key, visit <strong>Worm Arena</strong> instead.
+    <div className="w-screen h-screen flex flex-col gap-6 p-8 -m-6">
+      <Alert className="border-blue-200 bg-blue-50 shadow-lg">
+        <AlertCircle className="h-12 w-12 text-blue-600" />
+        <AlertTitle className="text-blue-900 text-4xl font-bold">🐍 Official SnakeBench</AlertTitle>
+        <AlertDescription className="text-blue-800 text-2xl mt-2">
+          Canonical leaderboards, Elo ratings, and analytics for LLM head-to-head snake games.
+          To run games with your own API key, visit <strong>🐛 Worm Arena</strong> instead.
         </AlertDescription>
       </Alert>
 
-      <div className="flex-1 border rounded-lg overflow-hidden bg-white">
+      <div className="flex-1 overflow-hidden bg-white rounded-lg shadow-xl">
         <iframe
           src={SNAKEBENCH_OFFICIAL_URL}
-          title="Official SnakeBench Arena"
+          title="Official SnakeBench"
           className="w-full h-full border-none"
           allowFullScreen
           sandbox="allow-same-origin allow-scripts allow-forms allow-popups allow-popups-to-escape-sandbox"
