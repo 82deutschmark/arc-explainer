@@ -1,6 +1,15 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top with the time and date!
 
+### Version 5.47.26  Dec 9, 2025 (PENDING TESTING)
+
+- **Worm Arena page: three-column farm layout + modular controls** (Author: Cascade)
+  - Implemented a new `WormArena` page with a three-column layout (reasoning left/right, ASCII board center) using the earthy farm palette and larger monospace reasoning text from the redesign plan.
+  - Refactored the local Worm Arena experience to keep page code lean by delegating playback UI to `WormArenaControls` and match configuration to `WormArenaSetup`, while WormArena.tsx focuses on layout and state wiring.
+  - Reused existing SnakeBench hooks for match execution and replay (`useSnakeBenchMatch`, `useSnakeBenchRecentGames`, `useSnakeBenchGame`) so no new backend routes were required.
+  - **Files Created**: `client/src/pages/WormArena.tsx`
+  - **Files Modified**: `client/src/pages/WormArena.tsx`, `CHANGELOG.md`
+
 ### Version 5.47.25  Dec 9, 2025 (PENDING TESTING)
 
 - **Worm Arena replay controls component** (Author: Cascade)
