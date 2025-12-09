@@ -85,10 +85,10 @@ const WormArenaGameBoard: React.FC<WormArenaGameBoardProps> = ({
       }
     });
 
-    // Draw snakes (🐛 for heads, 🟩/🟧 for bodies)
+    // Draw snakes (🐛 for heads, ⏹🔳🔲/🟧 for bodies)
     const snakeEmojis: Record<string, { head: string; body: string }> = {
-      '0': { head: '🐛', body: '🟨' }, // Worm A - yellow
-      '1': { head: '🪱', body: '🟧' }, // Worm B - orange
+      '0': { head: '🐛', body: '🟨' }, // Worm A - yellow body
+      '1': { head: '🐛', body: '🟧' }, // Worm B - orange body
     };
 
     Object.entries(snakes).forEach(([sid, positions]) => {

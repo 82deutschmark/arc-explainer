@@ -37,6 +37,13 @@ function getSnakeEligibleModels(models: ModelConfig[]): string[] {
   return eligible;
 }
 
+function mapToSnakeBenchModelId(modelId: string): string {
+  if (modelId === 'openrouter/gpt-5.1-codex-mini') {
+    return 'openai/gpt-5.1-codex-mini';
+  }
+  return modelId;
+}
+
 function renderAsciiFrame(frame: any, width: number, height: number, labels: Record<string, string>): string {
   if (!frame) return '';
   const w = Number.isFinite(width) ? Math.max(1, width) : 10;
@@ -156,8 +163,8 @@ export default function SnakeArena() {
   const handleRunMatch = async () => {
     if (!modelA || !modelB) return;
     const payload: SnakeBenchRunMatchRequest = {
-      modelA,
-      modelB,
+      modelA: mapToSnakeBenchModelId(modelA),
+      modelB: mapToSnakeBenchModelId(modelB),
       width,
       height,
       maxRounds,
