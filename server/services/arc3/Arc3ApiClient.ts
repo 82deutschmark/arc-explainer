@@ -17,12 +17,13 @@ export interface GameInfo {
 
 /**
  * Frame data structure returned by game actions
- * Frame is a 3D array: [depth/layer][height][width] with values 0-15 (color indices)
+ * Frame can be a 3D array: [layer][height][width] with values 0-15 (color indices)
+ * OR a collection of frames (4D): [frameIndex][layer][height][width]
  */
 export interface FrameData {
   guid: string;
   game_id: string;
-  frame: number[][][];  // 3D array: [layer][height][width] with values 0-15
+  frame: number[][][] | number[][][][];
   score: number;
   state: string;  // 'NOT_PLAYED' | 'IN_PROGRESS' | 'WIN' | 'GAME_OVER'
   action_counter: number | null;

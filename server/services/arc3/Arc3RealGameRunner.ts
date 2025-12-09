@@ -16,7 +16,7 @@ import { buildArc3DefaultPrompt } from './prompts.ts';
 import { DEFAULT_MODEL, DEFAULT_MAX_TURNS, DEFAULT_GAME_ID } from './utils/constants.ts';
 import { processRunItems, processRunItemsWithReasoning } from './utils/timelineProcessor.ts';
 import { generateActionCaption, generateInspectCaption } from './helpers/captionGenerator.ts';
-import { countChangedPixels, analyzeFrameChanges } from './helpers/frameAnalysis.ts';
+import { countChangedPixels, analyzeFrameChanges, extractGrid, extractLayerStack } from './helpers/frameAnalysis.ts';
 import { calculateColorDistribution } from './helpers/colorAnalysis.ts';
 import { createSession } from './persistence/sessionManager.ts';
 import { saveFrame } from './persistence/framePersistence.ts';
@@ -39,7 +39,7 @@ export class Arc3RealGameRunner {
   constructor(private readonly apiClient: Arc3ApiClient) {}
 
   private computeFrameHash(frame: number[][][] | undefined): string | undefined {
-    if (!frame) return undefined;
+    if (!frame || frame.length === 0) return undefined;
     try {
       return createHash('sha256').update(JSON.stringify(frame)).digest('hex').slice(0, 16);
     } catch {
@@ -150,8 +150,11 @@ export class Arc3RealGameRunner {
           throw new Error('Game session not initialized yet.');
         }
 
+        // Normalize frame data to a 3D layer stack for rendering
+        const layerStack = extractLayerStack(currentFrame);
+
         // Generate base64 PNG image of the current frame
-        const imageResult = await renderArc3FrameToPng(currentFrame.frame);
+        const imageResult = await renderArc3FrameToPng(layerStack);
         const frameImage = imageResult?.dataUrl ?? null;
         if (frameImage) {
           logger.info(`[ARC3 TOOL] Generated frame image: ${imageResult!.width}x${imageResult!.height}px`, 'arc3');
@@ -160,7 +163,7 @@ export class Arc3RealGameRunner {
         }
 
         // Calculate color distribution from the latest 2D layer
-        const grid2D = currentFrame.frame[currentFrame.frame.length - 1];
+        const grid2D = extractGrid(currentFrame);
         const colorDistribution = calculateColorDistribution(grid2D);
 
         // Analyze changes since previous frame
@@ -213,7 +216,8 @@ export class Arc3RealGameRunner {
           throw new Error('Game session not initialized yet.');
         }
 
-        const result = await executeGridAnalysis(currentFrame.frame, code);
+        const gridStack = extractLayerStack(currentFrame);
+        const result = await executeGridAnalysis(gridStack, code);
 
         logger.info(
           `[ARC3 TOOL] analyze_grid completed: success=${result.success}, ` +
@@ -342,7 +346,7 @@ export class Arc3RealGameRunner {
       : baseSystemPrompt || '';
 
     const storeResponse = config.storeResponse ?? true;
-    const frameHash = this.computeFrameHash(currentFrame?.frame);
+    const frameHash = currentFrame ? this.computeFrameHash(extractLayerStack(currentFrame)) : undefined;
     const metadata = {
       sessionId: config.sessionId,
       gameGuid: gameGuid || undefined,
@@ -546,8 +550,11 @@ export class Arc3RealGameRunner {
           timestamp: Date.now(),
         });
 
+        // Normalize frame data to a 3D layer stack for rendering
+        const layerStack = extractLayerStack(currentFrame);
+
         // Generate base64 PNG image of the current frame
-        const imageResult = await renderArc3FrameToPng(currentFrame.frame);
+        const imageResult = await renderArc3FrameToPng(layerStack);
         const frameImage = imageResult?.dataUrl ?? null;
         if (frameImage) {
           logger.info(`[ARC3 TOOL STREAM] Generated frame image: ${imageResult!.width}x${imageResult!.height}px`, 'arc3');
@@ -556,7 +563,7 @@ export class Arc3RealGameRunner {
         }
 
         // Calculate color distribution from the latest 2D layer
-        const grid2D = currentFrame.frame[currentFrame.frame.length - 1];
+        const grid2D = extractGrid(currentFrame);
         const colorDistribution = calculateColorDistribution(grid2D);
 
         // Analyze changes since previous frame
@@ -623,7 +630,8 @@ export class Arc3RealGameRunner {
           timestamp: Date.now(),
         });
 
-        const result = await executeGridAnalysis(currentFrame.frame, code);
+        const gridStack = extractLayerStack(currentFrame);
+        const result = await executeGridAnalysis(gridStack, code);
 
         const toolResult = {
           success: result.success,
@@ -769,7 +777,7 @@ export class Arc3RealGameRunner {
       : baseSystemPrompt || '';
 
     const storeResponse = config.storeResponse ?? true;
-    const frameHash = this.computeFrameHash(currentFrame?.frame);
+    const frameHash = currentFrame ? this.computeFrameHash(extractLayerStack(currentFrame)) : undefined;
     const metadata = {
       sessionId: config.sessionId,
       gameGuid: gameGuid || undefined,
