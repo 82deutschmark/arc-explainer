@@ -24,25 +24,6 @@ const router = Router();
 const arc3ApiClient = new Arc3ApiClient(process.env.ARC3_API_KEY || '');
 const realGameRunner = new Arc3RealGameRunner(arc3ApiClient);
 
-// Initialize scorecard on server startup (required before any game operations)
-let scorecardInitialized = false;
-async function ensureScorecard() {
-  if (!scorecardInitialized) {
-    try {
-      await arc3ApiClient.openScorecard(
-        ['arc-explainer', 'web-ui'],
-        'https://github.com/yourusername/arc-explainer',
-        { source: 'arc-explainer', mode: 'web-ui' },
-      );
-      scorecardInitialized = true;
-      console.log('✅ ARC3 scorecard opened:', arc3ApiClient.getCardId());
-    } catch (error) {
-      console.error('❌ Failed to open ARC3 scorecard:', error);
-      throw error;
-    }
-  }
-}
-
 const runSchema = z.object({
   agentName: z.string().trim().max(60).optional(),
   systemPrompt: z.string().trim().optional(),
@@ -131,7 +112,6 @@ router.get(
 router.get(
   '/games',
   asyncHandler(async (req: Request, res: Response) => {
-    await ensureScorecard();  // Ensure scorecard is open before any operations
     const games = await arc3ApiClient.listGames();
     res.json(formatResponse.success(games));
   }),
@@ -144,13 +124,18 @@ router.get(
 router.post(
   '/start-game',
   asyncHandler(async (req: Request, res: Response) => {
-    await ensureScorecard();  // Ensure scorecard is open before any operations
     const { game_id } = req.body;
     if (!game_id) {
       return res.status(400).json(formatResponse.error('MISSING_GAME_ID', 'game_id is required'));
     }
-    const frameData = await arc3ApiClient.startGame(game_id);
-    res.json(formatResponse.success(frameData));
+
+    const scorecardId = await arc3ApiClient.openScorecard(
+      ['arc-explainer', 'web-ui'],
+      'https://github.com/yourusername/arc-explainer',
+      { source: 'arc-explainer', mode: 'web-ui', game_id }
+    );
+    const frameData = await arc3ApiClient.startGame(game_id, undefined, scorecardId);
+    res.json(formatResponse.success({ ...frameData, card_id: scorecardId }));
   }),
 );
 
@@ -159,6 +144,7 @@ const manualActionSchema = z.object({
   guid: z.string().trim(),
   action: z.enum(['RESET', 'ACTION1', 'ACTION2', 'ACTION3', 'ACTION4', 'ACTION5', 'ACTION6', 'ACTION7']),
   coordinates: z.tuple([z.number().int().min(0).max(63), z.number().int().min(0).max(63)]).optional(),
+  card_id: z.string().trim().optional(),
 });
 
 /**
@@ -168,9 +154,7 @@ const manualActionSchema = z.object({
 router.post(
   '/manual-action',
   asyncHandler(async (req: Request, res: Response) => {
-    await ensureScorecard();  // Ensure scorecard is open before any operations
-
-    const { game_id, guid, action, coordinates } = manualActionSchema.parse(req.body);
+    const { game_id, guid, action, coordinates, card_id } = manualActionSchema.parse(req.body);
 
     // Validate ACTION6 requires coordinates
     if (action === 'ACTION6' && !coordinates) {
@@ -179,8 +163,20 @@ router.post(
       );
     }
 
+    if (action === 'RESET' && !card_id) {
+      return res.status(400).json(
+        formatResponse.error('MISSING_CARD_ID', 'RESET requires card_id from the start-game response')
+      );
+    }
+
     // Execute action via API client
-    const frameData = await arc3ApiClient.executeAction(game_id, guid, { action, coordinates });
+    const frameData = await arc3ApiClient.executeAction(
+      game_id,
+      guid,
+      { action, coordinates },
+      undefined,
+      card_id ?? undefined,
+    );
 
     res.json(formatResponse.success(frameData));
   }),
@@ -193,7 +189,6 @@ router.post(
 router.post(
   '/real-game/run',
   asyncHandler(async (req: Request, res: Response) => {
-    await ensureScorecard();  // Ensure scorecard is open before starting game
     const payload = runSchema.parse(req.body);
     const result = await realGameRunner.run(payload);
     res.json(formatResponse.success(result));
@@ -241,7 +236,6 @@ router.post(
 router.get(
   '/stream/:sessionId',
   asyncHandler(async (req: Request, res: Response) => {
-    await ensureScorecard();  // Ensure scorecard is open before starting stream
     const { sessionId } = req.params;
     const payload = arc3StreamService.getPendingPayload(sessionId);
 

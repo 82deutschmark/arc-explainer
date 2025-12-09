@@ -1,6 +1,14 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top with the time and date!
 
+### Version 5.47.20  Dec 8, 2025 (PENDING TESTING)
+
+- **ARC3 scorecards: open per run + normalize actions** (Author: Codex)
+  - Open a brand-new ARC3 scorecard for every start/run (web UI, streaming, and backend runner) instead of reusing a bootstrap card; propagate the card_id into RESET calls so each session is properly tracked.
+  - Normalize available_actions to strings and default action_counter to 0 from the API responses to prevent “no-op” UI states when the service returns numeric tokens or null counters.
+  - Require card_id on manual RESET calls and expose card_id from `/api/arc3/start-game` so hybrid/manual flows stay aligned with per-run scorecards.
+  - **Files Modified**: `server/services/arc3/Arc3ApiClient.ts`, `server/services/arc3/Arc3RealGameRunner.ts`, `server/services/arc3/Arc3StreamService.ts`, `server/routes/arc3.ts`, `docs/plans/2025-12-08-arc3-scorecard-per-run-plan.md`, `CHANGELOG.md`
+
 ### Version 5.47.19  Dec 8, 2025 (PENDING TESTING)
 
 - **ARC3 Agent Playground: system prompt presets + Playbook default** (Author: Cascade)

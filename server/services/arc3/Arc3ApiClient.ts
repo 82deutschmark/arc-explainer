@@ -25,11 +25,11 @@ export interface FrameData {
   frame: number[][][];  // 3D array: [layer][height][width] with values 0-15
   score: number;
   state: string;  // 'NOT_PLAYED' | 'IN_PROGRESS' | 'WIN' | 'GAME_OVER'
-  action_counter: number;
+  action_counter: number | null;
   max_actions: number;
   win_score: number;
   full_reset?: boolean;
-  available_actions?: string[];  // List of available action names (e.g., ['RESET', 'ACTION1', 'ACTION2'])
+  available_actions?: Array<string | number>;  // API may return numeric or string action identifiers
 }
 
 /**
@@ -49,6 +49,33 @@ export class Arc3ApiClient {
   constructor(apiKey: string) {
     this.baseUrl = 'https://three.arcprize.org';
     this.apiKey = apiKey;
+  }
+
+  private normalizeFrame(frame: FrameData): FrameData {
+    const normalizeAvailableActions = (tokens?: Array<string | number>): string[] | undefined => {
+      if (!tokens || tokens.length === 0) return undefined;
+      const normalized = tokens
+        .map((token) => {
+          if (typeof token === 'number') {
+            return token === 0 ? 'RESET' : `ACTION${token}`;
+          }
+          const trimmed = token.trim();
+          if (!trimmed) return null;
+          const upper = trimmed.toUpperCase();
+          if (upper === 'RESET') return 'RESET';
+          if (/^ACTION\d+$/.test(upper)) return upper;
+          if (/^\d+$/.test(upper)) return upper === '0' ? 'RESET' : `ACTION${upper}`;
+          return upper;
+        })
+        .filter((value): value is string => value !== null);
+      return normalized.length > 0 ? normalized : undefined;
+    };
+
+    return {
+      ...frame,
+      available_actions: normalizeAvailableActions(frame.available_actions),
+      action_counter: frame.action_counter ?? 0,
+    };
   }
 
   private async makeRequest<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
@@ -126,31 +153,40 @@ export class Arc3ApiClient {
    * Start a new game session using RESET command
    * Reference: ARC-AGI-3-ClaudeCode-SDK/actions/start-game.js lines 40-48
    */
-  async startGame(gameId: string, seedFrame?: FrameData): Promise<FrameData> {
+  async startGame(gameId: string, seedFrame?: FrameData, cardIdOverride?: string): Promise<FrameData> {
     if (seedFrame && seedFrame.game_id === gameId) {
-      return seedFrame;
+      return this.normalizeFrame(seedFrame);
     }
 
-    if (!this.cardId) {
+    const cardId = cardIdOverride ?? this.cardId;
+    if (!cardId) {
       throw new Error('Must open scorecard before starting game. Call openScorecard() first.');
     }
 
     const requestBody = {
       game_id: gameId,
-      card_id: this.cardId,
+      card_id: cardId,
     };
 
-    return this.makeRequest<FrameData>('/api/cmd/RESET', {
+    const frame = await this.makeRequest<FrameData>('/api/cmd/RESET', {
       method: 'POST',
       body: JSON.stringify(requestBody),
     });
+
+    return this.normalizeFrame(frame);
   }
 
   /**
    * Execute an action in a game session
    * Reference: ARC-AGI-3-ClaudeCode-SDK/actions/action.js lines 92-95
    */
-  async executeAction(gameId: string, guid: string, action: GameAction, reasoning?: any): Promise<FrameData> {
+  async executeAction(
+    gameId: string,
+    guid: string,
+    action: GameAction,
+    reasoning?: any,
+    cardIdOverride?: string,
+  ): Promise<FrameData> {
     const body: any = {
       game_id: gameId,  // Required by ARC3 API
       guid,
@@ -165,19 +201,22 @@ export class Arc3ApiClient {
     // RESET requires the active scorecard id
     // Reference: ARC-AGI-3-ClaudeCode-SDK/actions/reset-game.js
     if (action.action === 'RESET') {
-      if (!this.cardId) {
+      const cardId = cardIdOverride ?? this.cardId;
+      if (!cardId) {
         throw new Error('Must open scorecard before resetting game. Call openScorecard() first.');
       }
-      body.card_id = this.cardId;
+      body.card_id = cardId;
     }
 
     if (reasoning && action.action !== 'RESET') {
       body.reasoning = reasoning;
     }
 
-    return this.makeRequest<FrameData>(`/api/cmd/${action.action}`, {
+    const frame = await this.makeRequest<FrameData>(`/api/cmd/${action.action}`, {
       method: 'POST',
       body: JSON.stringify(body),
     });
+
+    return this.normalizeFrame(frame);
   }
 }
