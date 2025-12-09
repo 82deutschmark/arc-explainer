@@ -90,13 +90,6 @@ export default defineConfig(async ({ mode }): Promise<import('vite').UserConfig>
         strict: true,
         deny: ["**/.*"],
       },
-      proxy: {
-        '/api': {
-          target: 'http://localhost:5000',
-          changeOrigin: true,
-          secure: false
-        }
-      }
     },
   };
 });
