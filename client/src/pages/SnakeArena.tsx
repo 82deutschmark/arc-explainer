@@ -42,6 +42,8 @@ export default function SnakeArena() {
   const [height, setHeight] = React.useState<number>(10);
   const [maxRounds, setMaxRounds] = React.useState<number>(150);
   const [numApples, setNumApples] = React.useState<number>(5);
+  const [byoApiKey, setByoApiKey] = React.useState<string>('');
+  const [byoProvider, setByoProvider] = React.useState<'openrouter' | 'openai' | 'anthropic' | 'xai' | 'gemini' | ''>('');
 
   const { runMatch, lastResponse, isRunning, error: matchError } = useSnakeBenchMatch();
   const { games, total, isLoading: loadingGames, error: gamesError, refresh } = useSnakeBenchRecentGames();
@@ -66,6 +68,7 @@ export default function SnakeArena() {
       height,
       maxRounds,
       numApples,
+      ...(byoApiKey && byoProvider ? { apiKey: byoApiKey, provider: byoProvider } : {}),
     };
     await runMatch(payload);
     void refresh(10);
@@ -174,6 +177,36 @@ export default function SnakeArena() {
               max={20}
               value={numApples}
               onChange={(e) => setNumApples(Number(e.target.value) || 5)}
+            />
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+          <div className="space-y-1.5">
+            <label className="font-medium text-gray-700">Provider (BYO key)</label>
+            <Select value={byoProvider} onValueChange={(v: any) => setByoProvider(v)} disabled={disabled}>
+              <SelectTrigger className="h-8 text-xs">
+                <SelectValue placeholder="Use server keys" />
+              </SelectTrigger>
+              <SelectContent className="text-xs">
+                <SelectItem value="">Use server keys</SelectItem>
+                <SelectItem value="openrouter">OpenRouter</SelectItem>
+                <SelectItem value="openai">OpenAI</SelectItem>
+                <SelectItem value="anthropic">Anthropic</SelectItem>
+                <SelectItem value="xai">xAI</SelectItem>
+                <SelectItem value="gemini">Gemini</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="space-y-1.5">
+            <label className="font-medium text-gray-700">API Key (BYO)</label>
+            <Input
+              type="password"
+              className="h-8 text-xs"
+              placeholder="Optional per-request key"
+              value={byoApiKey}
+              onChange={(e) => setByoApiKey(e.target.value)}
+              disabled={disabled}
             />
           </div>
         </div>
