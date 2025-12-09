@@ -89,6 +89,37 @@ export class SnakeBenchService {
       PYTHONUTF8: '1',
     };
 
+    // BYO API key handling (Poetiq-style)
+    if (request.apiKey && request.provider) {
+      switch (request.provider) {
+        case 'openrouter':
+          env.OPENROUTER_API_KEY = request.apiKey;
+          break;
+        case 'openai':
+          env.OPENAI_API_KEY = request.apiKey;
+          break;
+        case 'anthropic':
+          env.ANTHROPIC_API_KEY = request.apiKey;
+          break;
+        case 'xai':
+          env.XAI_API_KEY = request.apiKey;
+          break;
+        case 'gemini':
+          env.GEMINI_API_KEY = request.apiKey;
+          break;
+        default:
+          logger.warn(
+            `SnakeBench runMatch: unsupported provider "${request.provider}" for BYO key; falling back to server keys`,
+            'snakebench-service',
+          );
+      }
+    } else if (request.apiKey || request.provider) {
+      logger.warn(
+        `SnakeBench runMatch: both apiKey and provider must be provided together; using server keys`,
+        'snakebench-service',
+      );
+    }
+
     const spawnOpts: SpawnOptions = {
       cwd: path.dirname(runnerPath),
       env,
