@@ -7,7 +7,7 @@ Eliminates duplication via timelineProcessor utility. Tracks sessions and genera
 SRP/DRY check: Pass — agent orchestration only, delegates persistence/analysis to specialized modules (350 lines, down from 621).
 */
 
-import { randomUUID } from 'node:crypto';
+import { randomUUID, createHash } from 'node:crypto';
 import { Agent, run, tool, extractAllTextOutput } from '@openai/agents';
 import { z } from 'zod';
 import { Arc3ApiClient, type FrameData, type GameAction } from './Arc3ApiClient.ts';
@@ -37,6 +37,15 @@ export interface Arc3StreamHarness {
 
 export class Arc3RealGameRunner {
   constructor(private readonly apiClient: Arc3ApiClient) {}
+
+  private computeFrameHash(frame: number[][][] | undefined): string | undefined {
+    if (!frame) return undefined;
+    try {
+      return createHash('sha256').update(JSON.stringify(frame)).digest('hex').slice(0, 16);
+    } catch {
+      return undefined;
+    }
+  }
 
   /**
    * Continue an existing game session WITHOUT executing any actions.
@@ -311,6 +320,14 @@ export class Arc3RealGameRunner {
       : systemPrompt;
 
     const storeResponse = config.storeResponse ?? true;
+    const frameHash = this.computeFrameHash(currentFrame?.frame);
+    const metadata = {
+      sessionId: config.sessionId,
+      gameGuid: gameGuid || undefined,
+      frameHash,
+      frameIndex: frames.length - 1,
+      previousResponseId: config.previousResponseId ?? null,
+    };
 
     const agent = new Agent({
       name: agentName,
@@ -324,6 +341,9 @@ export class Arc3RealGameRunner {
         },
         text: { verbosity: 'high' },
         store: storeResponse,
+        providerData: {
+          metadata,
+        },
       },
       tools: [inspectTool, analyzeGridTool, resetGameTool, simpleAction('ACTION1'), simpleAction('ACTION2'), simpleAction('ACTION3'), simpleAction('ACTION4'), simpleAction('ACTION5'), action6Tool],
     });
@@ -703,6 +723,14 @@ export class Arc3RealGameRunner {
       : systemPrompt;
 
     const storeResponse = config.storeResponse ?? true;
+    const frameHash = this.computeFrameHash(currentFrame?.frame);
+    const metadata = {
+      sessionId: config.sessionId,
+      gameGuid: gameGuid || undefined,
+      frameHash,
+      frameIndex: frames.length - 1,
+      previousResponseId: config.previousResponseId ?? null,
+    };
 
     const agent = new Agent({
       name: agentName,
@@ -716,6 +744,9 @@ export class Arc3RealGameRunner {
         },
         text: { verbosity: 'high' },
         store: storeResponse,
+        providerData: {
+          metadata,
+        },
       },
       tools: [inspectTool, analyzeGridTool, simpleAction('ACTION1'), simpleAction('ACTION2'), simpleAction('ACTION3'), simpleAction('ACTION4'), simpleAction('ACTION5'), action6Tool],
     });

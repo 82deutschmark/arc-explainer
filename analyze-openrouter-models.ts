@@ -26,18 +26,14 @@ const SOURCES: SourceKey[] = ['ARC1-Eval', 'ARC2-Eval'];
 const MODEL_KEY: ModelKey = 'z-ai/glm-4.6v';
 
 // Hardcoded puzzle IDs for targeted runs (overrides source fetch when non-empty)
+// Retry batch: 13 failed from run 2 (rate limits + server unavailable)
 const HARDCODED_PUZZLE_IDS: string[] = [
-  '135a2760', '1818057f', '20a9e565', '291dc1e1', '2ba387bc',
-  '31f7f899', '38007db0', '3e6067c3', '45a5af55', '4a21e3da',
-  '4c3d4a41', '53fb4810', '581f7754', '58490d8a', '58f5dbd5',
-  '5961cc34', '64efde09', '65b59efc', '6e453dd6', '7b5033c1',
-  '7ed72f31', '80a900e0', '8b9c3697', '8f215267', '9aaea919',
-  'a251c730', 'a395ee82', 'b10624e5', 'b5ca7ac4', 'bf45cf4b',
-  'c4d067a0', 'c7f57c3e', 'cb2d8a2c', 'd59b0160', 'd8e07eb2',
-  'db0c5428', 'db695cfb', 'edb79dae', 'f931b4a8', 'fc7cae8d'
+  '58f5dbd5', '4c3d4a41', '64efde09', '45a5af55', 'bf45cf4b',
+  '65b59efc', '80a900e0', 'db695cfb', 'b5ca7ac4', 'cb2d8a2c',
+  'a251c730', 'edb79dae', 'fc7cae8d'
 ];
 
-const RATE_LIMIT_DELAY_MS = Number(process.env.OPENROUTER_RATE_LIMIT_MS) || 1000;
+const RATE_LIMIT_DELAY_MS = Number(process.env.OPENROUTER_RATE_LIMIT_MS) || 30000;
 // Not used now, but retained for clarity if future models are added.
 const MODEL_SWITCH_DELAY_MS = Number(process.env.OPENROUTER_MODEL_SWITCH_DELAY_MS) || 3000;
 const PUZZLE_TIMEOUT_MS = 10 * 60 * 1000; // 10 minutes

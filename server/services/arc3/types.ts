@@ -54,4 +54,5 @@ export interface Arc3AgentRunConfig {
   previousResponseId?: string; // Responses API chaining support (must be provided by GPT-5 class callers)
   storeResponse?: boolean; // Whether to persist the response server-side (mandatory for GPT-5)
   seedFrame?: FrameData; // Optional cached frame to seed continuations without extra API calls
+  sessionId?: string; // For tracing/metadata on provider calls
 }
