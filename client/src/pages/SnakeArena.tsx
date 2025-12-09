@@ -8,6 +8,7 @@
  */
 
 import React from 'react';
+
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -20,6 +21,8 @@ import {
 } from '@/components/ui/select';
 import { useModels } from '@/hooks/useModels';
 import { useSnakeBenchMatch, useSnakeBenchRecentGames, useSnakeBenchGame } from '@/hooks/useSnakeBench';
+import WormArenaControls from '@/components/WormArenaControls';
+
 import type { ModelConfig, SnakeBenchRunMatchRequest } from '@shared/types';
 
 function getSnakeEligibleModels(models: ModelConfig[]): string[] {
@@ -90,9 +93,22 @@ export default function SnakeArena() {
   const { data: replayData, isLoading: loadingReplay, error: replayError, fetchGame } = useSnakeBenchGame(selectedGameId);
 
   React.useEffect(() => {
-    if (selectableModels.length >= 2 && !modelA && !modelB) {
-      setModelA(selectableModels[0]);
-      setModelB(selectableModels[1]);
+    if (selectableModels.length === 0) return;
+
+    if (!modelA && !modelB) {
+      const preferredA = 'x-ai/grok-4.1-fast';
+      const preferredB = 'openai/gpt-5.1-codex-mini';
+
+      const hasPreferredA = selectableModels.includes(preferredA);
+      const hasPreferredB = selectableModels.includes(preferredB);
+
+      if (hasPreferredA && hasPreferredB) {
+        setModelA(preferredA);
+        setModelB(preferredB);
+      } else if (selectableModels.length >= 2) {
+        setModelA(selectableModels[0]);
+        setModelB(selectableModels[1]);
+      }
     }
   }, [selectableModels, modelA, modelB]);
 
@@ -276,88 +292,88 @@ export default function SnakeArena() {
             </div>
 
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs">
-          <div className="space-y-1.5">
-            <label className="font-medium text-gray-700">Width</label>
-            <Input
-              type="number"
-              className="h-8 text-xs"
-              min={4}
-              max={50}
-              value={width}
-              onChange={(e) => setWidth(Number(e.target.value) || 10)}
-            />
-          </div>
-          <div className="space-y-1.5">
-            <label className="font-medium text-gray-700">Height</label>
-            <Input
-              type="number"
-              className="h-8 text-xs"
-              min={4}
-              max={50}
-              value={height}
-              onChange={(e) => setHeight(Number(e.target.value) || 10)}
-            />
-          </div>
-          <div className="space-y-1.5">
-            <label className="font-medium text-gray-700">Max rounds</label>
-            <Input
-              type="number"
-              className="h-8 text-xs"
-              min={10}
-              max={500}
-              value={maxRounds}
-              onChange={(e) => setMaxRounds(Number(e.target.value) || 150)}
-            />
-          </div>
-          <div className="space-y-1.5">
-            <label className="font-medium text-gray-700">Apples</label>
-            <Input
-              type="number"
-              className="h-8 text-xs"
-              min={1}
-              max={20}
-              value={numApples}
-              onChange={(e) => setNumApples(Number(e.target.value) || 5)}
-            />
-          </div>
-        </div>
+              <div className="space-y-1.5">
+                <label className="font-medium text-gray-700">Width</label>
+                <Input
+                  type="number"
+                  className="h-8 text-xs"
+                  min={4}
+                  max={50}
+                  value={width}
+                  onChange={(e) => setWidth(Number(e.target.value) || 10)}
+                />
+              </div>
+              <div className="space-y-1.5">
+                <label className="font-medium text-gray-700">Height</label>
+                <Input
+                  type="number"
+                  className="h-8 text-xs"
+                  min={4}
+                  max={50}
+                  value={height}
+                  onChange={(e) => setHeight(Number(e.target.value) || 10)}
+                />
+              </div>
+              <div className="space-y-1.5">
+                <label className="font-medium text-gray-700">Max rounds</label>
+                <Input
+                  type="number"
+                  className="h-8 text-xs"
+                  min={10}
+                  max={500}
+                  value={maxRounds}
+                  onChange={(e) => setMaxRounds(Number(e.target.value) || 150)}
+                />
+              </div>
+              <div className="space-y-1.5">
+                <label className="font-medium text-gray-700">Apples</label>
+                <Input
+                  type="number"
+                  className="h-8 text-xs"
+                  min={1}
+                  max={20}
+                  value={numApples}
+                  onChange={(e) => setNumApples(Number(e.target.value) || 5)}
+                />
+              </div>
+            </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
-          <div className="space-y-1.5">
-            <label className="font-medium text-gray-700">Provider (BYO key)</label>
-            <Select value={byoProvider || 'none'} onValueChange={(v) => setByoProvider(v === 'none' ? '' : (v as any))} disabled={disabled}>
-              <SelectTrigger className="h-8 text-xs">
-                <SelectValue placeholder="Use server keys" />
-              </SelectTrigger>
-              <SelectContent className="text-xs">
-                <SelectItem value="none">Use server keys</SelectItem>
-                <SelectItem value="openrouter">OpenRouter</SelectItem>
-                <SelectItem value="openai">OpenAI</SelectItem>
-                <SelectItem value="anthropic">Anthropic</SelectItem>
-                <SelectItem value="xai">xAI</SelectItem>
-                <SelectItem value="gemini">Gemini</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="space-y-1.5">
-            <label className="font-medium text-gray-700">API Key (BYO)</label>
-            <Input
-              type="password"
-              className="h-8 text-xs"
-              placeholder="Optional per-request key"
-              value={byoApiKey}
-              onChange={(e) => setByoApiKey(e.target.value)}
-              disabled={disabled}
-            />
-          </div>
-        </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+              <div className="space-y-1.5">
+                <label className="font-medium text-gray-700">Provider (BYO key)</label>
+                <Select value={byoProvider || 'none'} onValueChange={(v) => setByoProvider(v === 'none' ? '' : (v as any))} disabled={disabled}>
+                  <SelectTrigger className="h-8 text-xs">
+                    <SelectValue placeholder="Use server keys" />
+                  </SelectTrigger>
+                  <SelectContent className="text-xs">
+                    <SelectItem value="none">Use server keys</SelectItem>
+                    <SelectItem value="openrouter">OpenRouter</SelectItem>
+                    <SelectItem value="openai">OpenAI</SelectItem>
+                    <SelectItem value="anthropic">Anthropic</SelectItem>
+                    <SelectItem value="xai">xAI</SelectItem>
+                    <SelectItem value="gemini">Gemini</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-1.5">
+                <label className="font-medium text-gray-700">API Key (BYO)</label>
+                <Input
+                  type="password"
+                  className="h-8 text-xs"
+                  placeholder="Optional per-request key"
+                  value={byoApiKey}
+                  onChange={(e) => setByoApiKey(e.target.value)}
+                  disabled={disabled}
+                />
+              </div>
+            </div>
 
-        {matchError && (
-          <Alert variant="destructive">
-            <AlertTitle>Latest match error</AlertTitle>
-            <AlertDescription className="text-xs">{matchError}</AlertDescription>
-          </Alert>
-        )}
+            {matchError && (
+              <Alert variant="destructive">
+                <AlertTitle>Latest match error</AlertTitle>
+                <AlertDescription className="text-xs">{matchError}</AlertDescription>
+              </Alert>
+            )}
 
             {lastResponse?.success && lastResponse.result && (
               <div className="border-t pt-3 mt-2 text-xs">
@@ -402,6 +418,7 @@ export default function SnakeArena() {
   const renderReplayPanel = () => {
     const selectedMeta = games.find((g) => g.gameId === selectedGameId);
     const models = (replayData?.metadata?.models as string[] | undefined) ?? [];
+
     const finalScores = replayData?.metadata?.final_scores ?? replayData?.totals?.scores ?? {};
     const roundsPlayed = selectedMeta?.roundsPlayed ?? replayData?.metadata?.actual_rounds ?? replayData?.game?.rounds_played ?? frames.length ?? 0;
     const startedAt = selectedMeta?.startedAt ?? replayData?.metadata?.start_time ?? replayData?.game?.started_at ?? '';
@@ -416,9 +433,6 @@ export default function SnakeArena() {
           <div className="flex items-center gap-2">
             <Button size="sm" variant="outline" onClick={() => refresh(15)} disabled={loadingGames}>
               Refresh list
-            </Button>
-            <Button size="sm" variant={isPlaying ? 'destructive' : 'default'} onClick={() => setIsPlaying((v) => !v)} disabled={frames.length === 0}>
-              {isPlaying ? 'Pause' : 'Play'}
             </Button>
           </div>
         </div>
@@ -467,20 +481,25 @@ export default function SnakeArena() {
                   {models.length > 0 ? models.join(' vs ') : `${modelA || 'Model A'} vs ${modelB || 'Model B'}`}
                 </div>
               </div>
-              <div className="flex items-center gap-2">
-                <Button size="sm" variant="outline" onClick={() => setFrameIndex((idx) => Math.max(0, idx - 1))} disabled={frames.length === 0}>
-                  Prev
-                </Button>
-                <div className="text-[11px] text-gray-700">
-                  Frame {frames.length === 0 ? 0 : frameIndex + 1} / {frames.length || 0}
-                </div>
-                <Button size="sm" variant="outline" onClick={() => setFrameIndex((idx) => Math.min(frames.length - 1, idx + 1))} disabled={frames.length === 0}>
-                  Next
-                </Button>
-              </div>
             </div>
-            {replayError && <p className="text-[11px] text-red-600">Replay load error: {String(replayError)}</p>}
-            {loadingReplay && <p className="text-[11px] text-gray-500">Loading replay...</p>}
+
+            <WormArenaControls
+              modelsLabel={models.length > 0 ? models.join(' vs ') : `${modelA || 'Model A'} vs ${modelB || 'Model B'}`}
+              currentRound={frames.length === 0 ? 0 : frameIndex + 1}
+              totalRounds={frames.length}
+              currentThought={undefined}
+              upcomingThought={undefined}
+              isPlaying={isPlaying}
+              isLoading={loadingReplay}
+              errorMessage={replayError ? String(replayError) : null}
+              canStepBackward={frameIndex > 0}
+              canStepForward={frames.length > 0 && frameIndex < frames.length - 1}
+              onPlayToggle={() => setIsPlaying((v) => !v)}
+              onStepPrevious={() => setFrameIndex((idx) => Math.max(0, idx - 1))}
+              onStepNext={() => setFrameIndex((idx) => Math.min(frames.length - 1, idx + 1))}
+              onJumpToStart={() => setFrameIndex(0)}
+              onJumpToEnd={() => setFrameIndex(Math.max(0, frames.length - 1))}
+            />
 
             <div className="grid md:grid-cols-3 gap-3 text-[11px]">
               <div className="space-y-1">
@@ -489,12 +508,13 @@ export default function SnakeArena() {
                 <div className="text-gray-600">Started: {startedAt ? new Date(startedAt).toLocaleString() : "-"}</div>
                 <div className="text-gray-600">Board: {boardWidth} x {boardHeight}</div>
               </div>
+
               <div className="space-y-1">
                 <div className="font-semibold text-gray-700">Scores</div>
                 {Object.keys(finalScores).length === 0 && <div className="text-gray-500">No scores yet.</div>}
                 {Object.entries(finalScores).map(([k, v]) => (
                   <div key={k} className="text-gray-700">
-                    <span className="font-mono mr-1">{k}</span> {String(v)}
+                    <span className="font-mono">{k}</span> {String(v)}
                   </div>
                 ))}
               </div>
@@ -514,9 +534,9 @@ export default function SnakeArena() {
       <div className="border rounded-md p-4 bg-white/60">
         <div className="flex items-center justify-between gap-2 mb-2">
           <div>
-            <h2 className="text-xs font-semibold tracking-wide uppercase text-gray-700">Recent games (SnakeBench)</h2>
+            <h2 className="text-xs font-semibold tracking-wide uppercase text-gray-700">Recent Worm Arena games</h2>
             <p className="text-[11px] text-muted-foreground">
-              Loaded from <code>completed_games/game_index.json</code> inside the SnakeBench backend.
+              Loaded from local Worm Arena replays written by the SnakeBench engine.
             </p>
           </div>
           <Button size="sm" variant="outline" onClick={() => refresh(10)} disabled={loadingGames}>
