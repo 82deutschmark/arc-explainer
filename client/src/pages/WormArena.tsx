@@ -12,6 +12,7 @@ import { useModels } from '@/hooks/useModels';
 import { useSnakeBenchMatch, useSnakeBenchRecentGames, useSnakeBenchGame } from '@/hooks/useSnakeBench';
 import WormArenaSetup from '@/components/WormArenaSetup';
 import WormArenaControls from '@/components/WormArenaControls';
+import WormArenaGameBoard from '@/components/WormArenaGameBoard';
 
 import type { ModelConfig, SnakeBenchRunMatchRequest } from '@shared/types';
 
@@ -24,6 +25,13 @@ function getSnakeEligibleModels(models: ModelConfig[]): string[] {
     })
     .filter((m): m is string => m !== null);
   return eligible;
+}
+
+function mapToSnakeBenchModelId(modelId: string): string {
+  if (modelId === 'openrouter/gpt-5.1-codex-mini') {
+    return 'openai/gpt-5.1-codex-mini';
+  }
+  return modelId;
 }
 
 function renderAsciiFrame(frame: any, width: number, height: number, labels: Record<string, string>): string {
@@ -126,8 +134,8 @@ export default function WormArena() {
   const handleRunMatch = async () => {
     if (!modelA || !modelB) return;
     const payload: SnakeBenchRunMatchRequest = {
-      modelA,
-      modelB,
+      modelA: mapToSnakeBenchModelId(modelA),
+      modelB: mapToSnakeBenchModelId(modelB),
       width,
       height,
       maxRounds,
@@ -196,6 +204,25 @@ export default function WormArena() {
   const playerAName = playerIds.length > 0 ? playerLabels[playerIds[0]] : 'Player A';
   const playerBName = playerIds.length > 1 ? playerLabels[playerIds[1]] : 'Player B';
 
+  const matchupLabel = React.useMemo(() => {
+    // Prefer explicit player names from replay data
+    if (playerIds.length >= 2) {
+      return `${playerAName} vs ${playerBName}`;
+    }
+
+    // Fallback to metadata models if they look like a pair
+    if (Array.isArray(models) && models.length === 2) {
+      return `${models[0]} vs ${models[1]}`;
+    }
+
+    // Fallback to currently selected models from setup
+    if (modelA || modelB) {
+      return `${modelA || 'Model A'} vs ${modelB || 'Model B'}`;
+    }
+
+    return 'Worm Arena Match';
+  }, [playerIds.length, playerAName, playerBName, models, modelA, modelB]);
+
   return (
     <div className="min-h-screen" style={{ backgroundColor: '#f5f1e8', fontFamily: 'Fredoka, Nunito, sans-serif' }}>
       {/* Google Fonts for Fredoka */}
@@ -218,7 +245,7 @@ export default function WormArena() {
         {/* Matchup Title */}
         <div className="text-center mb-6">
           <h2 className="text-xl font-medium mb-2" style={{ color: '#3d2817' }}>
-            {models.length > 0 ? models.join(' vs ') : `${modelA || 'Model A'} vs ${modelB || 'Model B'}`}
+            {matchupLabel}
           </h2>
           <p className="text-sm" style={{ color: '#7a6b5f' }}>
             {startedAt ? `Match run on ${new Date(startedAt).toLocaleString()}` : 'Select a game to view details'}
@@ -246,22 +273,13 @@ export default function WormArena() {
             </div>
           </div>
 
-          {/* Center Column: Game Board */}
-          <div className="rounded-lg border-8 flex items-center justify-center p-6" style={{ 
-            backgroundColor: '#6b5344', 
-            borderColor: '#8b6f47',
-            minHeight: '500px'
-          }}>
-            <div className="font-mono text-center" style={{ 
-              fontSize: '16px', 
-              color: '#d4a574',
-              lineHeight: '1.4',
-              whiteSpace: 'pre',
-              fontFamily: 'Monaco, Menlo, monospace'
-            }}>
-              {asciiFrame || 'No game data available'}
-            </div>
-          </div>
+          {/* Center Column: Game Board (emoji canvas) */}
+          <WormArenaGameBoard
+            frame={currentFrame}
+            boardWidth={boardWidth}
+            boardHeight={boardHeight}
+            playerLabels={playerLabels}
+          />
 
           {/* Right Column: Player B Reasoning */}
           <div className="rounded-lg border p-4 overflow-auto" style={{ 
@@ -296,7 +314,7 @@ export default function WormArena() {
 
         {/* Playback Controls */}
         <WormArenaControls
-          modelsLabel={models.length > 0 ? models.join(' vs ') : `${modelA || 'Model A'} vs ${modelB || 'Model B'}`}
+          modelsLabel={matchupLabel}
           currentRound={frames.length === 0 ? 0 : frameIndex + 1}
           totalRounds={frames.length}
           currentThought={playerAReasoning}
