@@ -40,6 +40,7 @@ import LLMReasoning from "@/pages/LLMReasoning";
 import LLMReasoningAdvanced from "@/pages/LLMReasoningAdvanced";
 import SnakeBenchEmbed from "@/pages/SnakeBenchEmbed";
 import WormArena from "@/pages/WormArena";
+import WormArenaLive from "@/pages/WormArenaLive";
 import Redirect from "@/components/Redirect";
 
 function Router() {
@@ -96,6 +97,7 @@ function Router() {
         <Route path="/snake-arena" component={() => <Redirect to="/worm-arena" />} />
         {/* Worm Arena = our local junior version with bring-your-own-key functionality */}
         <Route path="/worm-arena" component={WormArena} />
+        <Route path="/worm-arena/live/:sessionId" component={WormArenaLive} />
         <Route path="/puzzle/:taskId" component={PuzzleExaminer} />
         <Route path="/examine/:taskId" component={PuzzleExaminer} />
         <Route component={NotFound} />

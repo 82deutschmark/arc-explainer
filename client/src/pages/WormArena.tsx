@@ -10,6 +10,7 @@
 import React from 'react';
 import { useModels } from '@/hooks/useModels';
 import { useSnakeBenchMatch, useSnakeBenchRecentGames, useSnakeBenchGame } from '@/hooks/useSnakeBench';
+import useWormArenaStreaming from '@/hooks/useWormArenaStreaming';
 import WormArenaSetup from '@/components/WormArenaSetup';
 import WormArenaControls from '@/components/WormArenaControls';
 import WormArenaGameBoard from '@/components/WormArenaGameBoard';
@@ -83,6 +84,8 @@ export default function WormArena() {
   const [frameIndex, setFrameIndex] = React.useState<number>(0);
   const [isPlaying, setIsPlaying] = React.useState<boolean>(false);
   const [isConfigExpanded, setIsConfigExpanded] = React.useState<boolean>(false);
+  const { startMatch: startLiveMatch, isStarting } = useWormArenaStreaming();
+  const [launchNotice, setLaunchNotice] = React.useState<string | null>(null);
 
   const { runMatch, lastResponse, isRunning, error: matchError } = useSnakeBenchMatch();
   const { games, total, isLoading: loadingGames, error: gamesError, refresh } = useSnakeBenchRecentGames();
@@ -142,12 +145,19 @@ export default function WormArena() {
       numApples,
       ...(byoApiKey && byoProvider ? { apiKey: byoApiKey, provider: byoProvider } : {}),
     };
-    const response = await runMatch(payload);
-    const gameId = response?.result?.gameId;
-    if (gameId) {
-      setSelectedGameId(gameId);
+    setLaunchNotice(null);
+    try {
+      const prep = await startLiveMatch(payload);
+      if (prep?.liveUrl) {
+        window.open(prep.liveUrl, '_blank', 'noopener,noreferrer');
+        setLaunchNotice('We’re starting your match in a new tab. It may take a little while.');
+      }
+    } catch (err: any) {
+      console.error('[WormArena] Failed to start live match', err);
+      setLaunchNotice(err?.message || 'Failed to start match');
+    } finally {
+      void refresh(10);
     }
-    void refresh(10);
   };
 
   const frames: any[] = React.useMemo(() => {
@@ -375,13 +385,22 @@ export default function WormArena() {
                   modelA={modelA}
                   modelB={modelB}
                   selectableModels={selectableModels}
-                  isRunning={isRunning}
+                  isRunning={isRunning || isStarting}
                   loadingModels={loadingModels}
                   modelsError={modelsError?.message}
                   onModelAChange={setModelA}
                   onModelBChange={setModelB}
+                  byoApiKey={byoApiKey}
+                  byoProvider={byoProvider}
+                  onApiKeyChange={setByoApiKey}
+                  onProviderChange={setByoProvider}
                   onRunMatch={handleRunMatch}
                 />
+                {launchNotice && (
+                  <div className="text-sm text-[#7a6b5f]" role="status">
+                    {launchNotice}
+                  </div>
+                )}
               </div>
             </div>
           )}
