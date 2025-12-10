@@ -172,6 +172,11 @@ export default function WormArenaLive() {
       <WormArenaHeader
         matchupLabel={finalSummary ? `${finalSummary.modelA} vs ${finalSummary.modelB}` : undefined}
         totalGames={0}
+        links={[
+          { label: 'Replay', href: '/worm-arena' },
+          { label: 'Live', href: '/worm-arena/live', active: true },
+          { label: 'Stats & Placement', href: '/worm-arena/stats' },
+        ]}
         actionSlot={
           <WormArenaHeaderStartAction
             isRunning={status === 'in_progress' || isStarting}
@@ -241,6 +246,22 @@ export default function WormArenaLive() {
                 >
                   View Replay
                 </a>
+                <div className="text-xs mt-2" style={{ color: '#7a6b5f' }}>
+                  View stats:
+                  {['modelA', 'modelB'].map((key) => {
+                    const slug = (finalSummary as any)[key] as string | undefined;
+                    if (!slug) return null;
+                    return (
+                      <a
+                        key={key}
+                        href={`/worm-arena/stats?model=${encodeURIComponent(slug)}`}
+                        className="ml-2 underline font-mono"
+                      >
+                        {slug}
+                      </a>
+                    );
+                  })}
+                </div>
               </div>
             )}
 

@@ -179,7 +179,7 @@ Top-to-bottom structure (desktop):
 
 ### 3.3 Copy / terminology guidelines
 
-- Avoid raw math terms in UI labels:
+- DUAL purpose!  Both simple text AND raw math terms in UI labels:
   - `mu` → “Skill estimate”.
   - `sigma` → “Uncertainty (how sure we are)”.
   - `exposed` → “Pessimistic rating (we assume you’re this good or better)”.

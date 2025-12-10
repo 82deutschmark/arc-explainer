@@ -1,3 +1,12 @@
+### Version 6.1.1  Dec 10, 2025 (PENDING TESTING)
+
+- **Worm Arena Stats & Placement page (Railway-ready)** (Author: Cascade)
+  - Implemented the `/worm-arena/stats` page showing Worm Arena global aggregates, per-model TrueSkill snapshots (skill estimate, uncertainty, pessimistic rating, leaderboard score), placement progress, and recent match history, all wired to existing SnakeBench DB-backed APIs.
+  - Added shared placement helper `summarizeWormArenaPlacement` plus Node tests to classify models into "not started", "in progress", "effectively complete", and "complete" based on games played and sigma, with a 0–1 progress fraction suitable for 9-game placement UX.
+  - Extended SnakeBench frontend hooks with `useSnakeBenchStats`, `useModelRating`, and `useModelHistory` so React pages can consume `/api/snakebench/stats`, `/api/snakebench/model-rating`, and `/api/snakebench/model-history` without duplicating HTTP wiring.
+  - Updated Worm Arena replay and live pages to share a three-tab header (`Replay`, `Live`, `Stats & Placement`) and added deep links from match summaries into the stats page with modelSlug query params for quick placement inspection.
+  - **Files Modified/Created**: `shared/utils/wormArenaPlacement.ts`, `tests/wormArenaPlacement.test.ts`, `client/src/hooks/useSnakeBench.ts`, `client/src/pages/WormArenaStats.tsx`, `client/src/pages/WormArena.tsx`, `client/src/pages/WormArenaLive.tsx`, `client/src/App.tsx`, `CHANGELOG.md`
+
 ### Version 6.1.0  Dec 10, 2025 (PENDING TESTING)
 
 - **Worm Arena stats backend: SnakeBench TrueSkill + history APIs** (Author: Cascade)

@@ -165,8 +165,8 @@ export default function WormArena() {
         totalGames={total}
         links={[
           { label: 'Replay', href: '/worm-arena', active: true },
-          { label: 'Live Games', href: '/worm-arena/live' },
-          { label: 'Leaderboards', href: '/leaderboards' },
+          { label: 'Live', href: '/worm-arena/live' },
+          { label: 'Stats & Placement', href: '/worm-arena/stats' },
         ]}
         showMatchupLabel={false}
       />
@@ -227,6 +227,20 @@ export default function WormArena() {
             <span><strong>Round:</strong> {frameIndex + 1} / {frames.length}</span>
             <span><strong>Board:</strong> {boardWidth}x{boardHeight}</span>
           </div>
+          {Array.isArray(models) && models.length > 0 && (
+            <div className="mt-3 text-xs flex justify-center gap-3 flex-wrap">
+              <span>View stats:</span>
+              {models.slice(0, 2).map((slug) => (
+                <a
+                  key={slug}
+                  href={`/worm-arena/stats?model=${encodeURIComponent(slug)}`}
+                  className="underline font-mono"
+                >
+                  {slug}
+                </a>
+              ))}
+            </div>
+          )}
           {selectedGameId && (
             <div className="mt-2 flex items-center justify-center gap-2 text-sm">
               <span>
