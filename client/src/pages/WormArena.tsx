@@ -254,6 +254,34 @@ export default function WormArena() {
         totalGames={total}
       />
 
+      {/* Elevated playback controls bar */}
+      <div className="px-8 pt-4">
+        <div className="rounded-lg border bg-white/90 shadow-sm px-4 py-3 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3" style={{ borderColor: '#d4b5a0' }}>
+          <div className="text-base font-semibold" style={{ color: '#3d2817' }}>
+            Replay Controls · {matchupLabel}
+          </div>
+          <div className="flex-1">
+            <WormArenaControls
+              modelsLabel={matchupLabel}
+              currentRound={frames.length === 0 ? 0 : frameIndex + 1}
+              totalRounds={frames.length}
+              currentThought={playerAReasoning}
+              upcomingThought={playerBReasoning}
+              isPlaying={isPlaying}
+              isLoading={loadingReplay}
+              errorMessage={replayError ? String(replayError) : null}
+              canStepBackward={frameIndex > 0}
+              canStepForward={frames.length > 0 && frameIndex < frames.length - 1}
+              onPlayToggle={() => setIsPlaying((v) => !v)}
+              onStepPrevious={() => setFrameIndex((idx) => Math.max(0, idx - 1))}
+              onStepNext={() => setFrameIndex((idx) => Math.min(frames.length - 1, idx + 1))}
+              onJumpToStart={() => setFrameIndex(0)}
+              onJumpToEnd={() => setFrameIndex(Math.max(0, frames.length - 1))}
+            />
+          </div>
+        </div>
+      </div>
+
       <main className="p-8">
         {/* Match Metadata */}
         {startedAt && (
@@ -329,25 +357,6 @@ export default function WormArena() {
             <span><strong>Board:</strong> {boardWidth}x{boardHeight}</span>
           </div>
         </div>
-
-        {/* Playback Controls */}
-        <WormArenaControls
-          modelsLabel={matchupLabel}
-          currentRound={frames.length === 0 ? 0 : frameIndex + 1}
-          totalRounds={frames.length}
-          currentThought={playerAReasoning}
-          upcomingThought={playerBReasoning}
-          isPlaying={isPlaying}
-          isLoading={loadingReplay}
-          errorMessage={replayError ? String(replayError) : null}
-          canStepBackward={frameIndex > 0}
-          canStepForward={frames.length > 0 && frameIndex < frames.length - 1}
-          onPlayToggle={() => setIsPlaying((v) => !v)}
-          onStepPrevious={() => setFrameIndex((idx) => Math.max(0, idx - 1))}
-          onStepNext={() => setFrameIndex((idx) => Math.min(frames.length - 1, idx + 1))}
-          onJumpToStart={() => setFrameIndex(0)}
-          onJumpToEnd={() => setFrameIndex(Math.max(0, frames.length - 1))}
-        />
 
         {/* Collapsible Game Selection & Setup */}
         <div className="rounded-lg border" style={{ backgroundColor: '#faf5f0', borderColor: '#d4b5a0' }}>
