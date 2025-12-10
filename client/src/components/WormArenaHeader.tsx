@@ -1,31 +1,25 @@
 /**
  * Author: Claude Code using Haiku 4.5
  * Date: 2025-12-09
- * PURPOSE: Distinctive WormArena header with integrated play button,
- *          creative worm emoji arrangements, and organic farm aesthetic.
- *          Replaces generic header with memorable visual identity.
- * SRP/DRY check: Pass — single responsibility for header presentation.
+ * PURPOSE: Generic WormArena header with creative worm emoji arrangements and farm aesthetic.
+ *          Displays title, game stats, and optional action slot (for Start Match or other actions).
+ *          Reusable across both replay and live pages.
+ * SRP/DRY check: Pass — single responsibility for header presentation only.
  */
 
 import React from 'react';
 
 interface WormArenaHeaderProps {
-  isRunning?: boolean;
-  isStarting?: boolean;
-  onPlayClick?: () => void;
   matchupLabel?: string;
   totalGames?: number;
+  actionSlot?: React.ReactNode;
 }
 
 export default function WormArenaHeader({
-  isRunning = false,
-  isStarting = false,
-  onPlayClick,
   matchupLabel,
   totalGames = 0,
+  actionSlot,
 }: WormArenaHeaderProps) {
-  const isLoading = isRunning || isStarting;
-
   return (
     <header className="relative overflow-hidden" style={{ backgroundColor: '#2d1f0f', borderBottom: '3px solid #d4a574' }}>
       {/* Animated background pattern */}
@@ -65,47 +59,8 @@ export default function WormArenaHeader({
             </div>
           </div>
 
-          {/* Right: Action Area with Play Button */}
-          <div className="flex items-center gap-4">
-            {/* Status Indicator */}
-            {isLoading && (
-              <div className="flex items-center gap-2" style={{ color: '#f5a623' }}>
-                <div
-                  className="w-2 h-2 rounded-full"
-                  style={{
-                    backgroundColor: '#f5a623',
-                    animation: 'pulse 1.5s ease-in-out infinite',
-                  }}
-                />
-                <span className="text-xs font-medium">Match running</span>
-              </div>
-            )}
-
-            {/* Primary Play Button */}
-            <button
-              onClick={onPlayClick}
-              disabled={isLoading}
-              className="group relative px-8 py-4 rounded-full font-bold text-lg transition-all duration-300 transform hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 flex items-center gap-3 shadow-lg"
-              style={{
-                backgroundColor: isLoading ? '#d4a574' : '#f5a623',
-                color: '#2d1f0f',
-                boxShadow: isLoading ? 'none' : '0 12px 24px rgba(245, 166, 35, 0.3)',
-              }}
-            >
-              <span style={{ fontSize: '20px' }}>▶</span>
-              <span>{isLoading ? 'Starting...' : 'Start Match'}</span>
-
-              {/* Decorative worm on button hover */}
-              {!isLoading && (
-                <span
-                  className="absolute -right-8 top-1/2 transform -translate-y-1/2 opacity-0 group-hover:opacity-100 group-hover:right-[-20px] transition-all duration-300"
-                  style={{ fontSize: '24px' }}
-                >
-                  🐛
-                </span>
-              )}
-            </button>
-          </div>
+          {/* Right: Action Area (optional slot) */}
+          {actionSlot && <div className="flex items-center gap-4">{actionSlot}</div>}
         </div>
 
         {/* Bottom decorative worm crawl */}
