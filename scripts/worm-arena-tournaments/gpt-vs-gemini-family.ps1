@@ -13,7 +13,7 @@ $geminiModels = @(
 )
 
 $matchesPerPair = 3
-$delaySeconds = 0.5
+$delaySeconds = 1.5
 
 Write-Host "GPT vs Gemini Family Championship"
 Write-Host "GPT Models: $($gptModels.Count)"
