@@ -7,17 +7,18 @@ SRP/DRY check: Pass
 */
 
 import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Textarea } from '@/components/ui/textarea';
-import { Input } from '@/components/ui/input';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
-import { Gamepad2, Play, Square, Brain, Wrench, ArrowLeft, RefreshCw, Eye, EyeOff } from 'lucide-react';
-import { Link } from 'wouter';
+import { Gamepad2, ArrowLeft, RefreshCw } from 'lucide-react';
+import { Link, useLocation, useSearch } from 'wouter';
 import { useArc3AgentStream } from '@/hooks/useArc3AgentStream';
-import { Arc3GridVisualization } from '@/components/arc3/Arc3GridVisualization';
+import { Arc3ReasoningViewer } from '@/components/arc3/Arc3ReasoningViewer';
+import { Arc3ToolTimeline } from '@/components/arc3/Arc3ToolTimeline';
+import { Arc3GamePanel } from '@/components/arc3/Arc3GamePanel';
+import { Arc3ConfigurationPanel } from '@/components/arc3/Arc3ConfigurationPanel';
+import { Arc3AgentControls } from '@/components/arc3/Arc3AgentControls';
+import { Arc3AgentVisionPreview } from '@/components/arc3/Arc3AgentVisionPreview';
 import { apiRequest } from '@/lib/queryClient';
 import { usePageMeta } from '@/hooks/usePageMeta';
 
@@ -38,6 +39,13 @@ interface ModelInfo {
   responseTime: { speed: string; estimate: string };
   isReasoning?: boolean;
   releaseDate?: string;
+}
+
+interface Arc3SystemPromptPresetMeta {
+  id: 'twitch' | 'playbook' | 'none';
+  label: string;
+  description: string;
+  isDefault: boolean;
 }
 
 // Normalize available_actions tokens from the API
@@ -115,8 +123,14 @@ export default function ARC3AgentPlayground() {
       'Watch real ARC-AGI-3 agents explore interactive games, stream reasoning traces, and inspect grid state transitions.',
     canonicalPath: '/arc3/playground',
   });
-  // Auto-scroll ref for streaming panel
-  const reasoningContainerRef = React.useRef<HTMLDivElement>(null);
+
+  // URL state management for game selection
+  const [location, setLocation] = useLocation();
+  const searchParams = useSearch();
+  const urlGameId = React.useMemo(() => {
+    const params = new URLSearchParams(searchParams);
+    return params.get('game') || 'ls20';  // Default to ls20 if no game param
+  }, [searchParams]);
 
   // Fetch games
   const [games, setGames] = useState<GameInfo[]>([]);
@@ -134,17 +148,38 @@ export default function ARC3AgentPlayground() {
       const data = await response.json();
       if (data.success && Array.isArray(data.data)) {
         setGames(data.data);
-        // Auto-load first game's grid
+        // Auto-load game from URL or default to ls20
         if (data.data.length > 0) {
-          const firstGame = data.data.find((g: GameInfo) => g.game_id === 'ls20') || data.data[0];
-          setGameId(firstGame.game_id);
-          await fetchGameGrid(firstGame.game_id);
+          const targetGame = data.data.find((g: GameInfo) => g.game_id === urlGameId) || data.data[0];
+          setGameId(targetGame.game_id);
+          await fetchGameGrid(targetGame.game_id);
         }
       }
     } catch (error) {
       console.error('[ARC3] Failed to fetch games:', error);
     } finally {
       setGamesLoading(false);
+    }
+  };
+
+  const [systemPromptPresets, setSystemPromptPresets] = useState<Arc3SystemPromptPresetMeta[]>([]);
+  const [systemPromptPresetId, setSystemPromptPresetId] = useState<'twitch' | 'playbook' | 'none'>('playbook');
+
+  const fetchSystemPromptPresets = async () => {
+    try {
+      const response = await apiRequest('GET', '/api/arc3/system-prompts');
+      const result = await response.json();
+      if (result.success && Array.isArray(result.data)) {
+        const presets = result.data as Arc3SystemPromptPresetMeta[];
+        setSystemPromptPresets(presets);
+
+        const defaultPreset = presets.find((p) => p.isDefault) || presets.find((p) => p.id === 'playbook');
+        if (defaultPreset) {
+          setSystemPromptPresetId(defaultPreset.id);
+        }
+      }
+    } catch (error) {
+      console.error('[ARC3] Failed to fetch system prompt presets:', error);
     }
   };
 
@@ -203,16 +238,38 @@ export default function ARC3AgentPlayground() {
     fetchGames();
     fetchModels();
     fetchDefaultPrompt();
+    fetchSystemPromptPresets();
   }, []);
 
+  // When the preset changes, update the System Prompt textarea from backend templates.
+  useEffect(() => {
+    if (systemPromptPresetId === 'none') {
+      setSystemPrompt('');
+      return;
+    }
+
+    const loadPresetBody = async () => {
+      try {
+        const response = await apiRequest('GET', `/api/arc3/system-prompts/${systemPromptPresetId}`);
+        const result = await response.json();
+        if (result.success && result.data?.body && typeof result.data.body === 'string') {
+          setSystemPrompt(result.data.body);
+        }
+      } catch (error) {
+        console.error('[ARC3] Failed to load system prompt preset body:', error);
+      }
+    };
+
+    loadPresetBody();
+  }, [systemPromptPresetId]);
+
   // Agent config
-  const [gameId, setGameId] = useState('ls20');
+  const [gameId, setGameId] = useState(urlGameId);  // Initialize from URL param
   const [agentName, setAgentName] = useState('ARC3 Explorer');
   const [model, setModel] = useState<string>('');
-  const [maxTurns, setMaxTurns] = useState(100);
+  const [maxTurns, setMaxTurns] = useState(100000);
   const [reasoningEffort, setReasoningEffort] = useState<'minimal' | 'low' | 'medium' | 'high'>('low');
   const [systemPrompt, setSystemPrompt] = useState('Loading default prompt...');
-  const [showSystemPrompt, setShowSystemPrompt] = useState(true);
   const [instructions, setInstructions] = useState(
     'Explore the game systematically. Inspect the game state and try different actions to learn the rules.'
   );
@@ -220,13 +277,11 @@ export default function ARC3AgentPlayground() {
   const [showUserInput, setShowUserInput] = useState(false);
 
   // Streaming
-  const { state, start, cancel, continueWithMessage, executeManualAction, initializeGameSession, setCurrentFrame, isPlaying } = useArc3AgentStream();
-
-  // Manual action state
-  const [showCoordinatePicker, setShowCoordinatePicker] = useState(false);
-  const [actionError, setActionError] = useState<string | null>(null);
+  const { state, start, cancel, continueWithMessage, executeManualAction, initializeGameSession, setCurrentFrame, isPlaying, isPendingManualAction } = useArc3AgentStream();
 
   const handleStart = () => {
+    const skipDefaultSystemPrompt = systemPromptPresetId === 'none';
+
     start({
       game_id: gameId,
       agentName,
@@ -235,6 +290,8 @@ export default function ARC3AgentPlayground() {
       model,
       maxTurns,
       reasoningEffort,
+      systemPromptPresetId,
+      skipDefaultSystemPrompt,
     });
   };
 
@@ -257,21 +314,27 @@ export default function ARC3AgentPlayground() {
     }
   };
 
-  // Auto-scroll streaming panel to bottom when new content arrives
-  React.useEffect(() => {
-    if (reasoningContainerRef.current) {
-      setTimeout(() => {
-        if (reasoningContainerRef.current) {
-          reasoningContainerRef.current.scrollTop = reasoningContainerRef.current.scrollHeight;
-        }
-      }, 0);
-    }
-  }, [state.timeline, state.streamingReasoning]);
-
   // Filter timeline entries by type
-  const reasoningEntries = state.timeline.filter(entry => entry.type === 'reasoning');
-  const assistantMessages = state.timeline.filter(entry => entry.type === 'assistant_message');
   const toolEntries = state.timeline.filter(entry => entry.type === 'tool_call' || entry.type === 'tool_result');
+
+  // Extract latest frameImage from inspect_game_state tool results
+  const latestFrameImage = React.useMemo(() => {
+    const inspectResults = state.timeline
+      .filter(entry => entry.type === 'tool_result' && entry.label.includes('inspect_game_state'))
+      .reverse(); // Get most recent first
+
+    for (const result of inspectResults) {
+      try {
+        const parsed = JSON.parse(result.content);
+        if (parsed.frameImage && typeof parsed.frameImage === 'string') {
+          return parsed.frameImage;
+        }
+      } catch {
+        // Ignore parsing errors
+      }
+    }
+    return null;
+  }, [state.timeline]);
 
   // Get available models (OpenAI only for ARC3 Agents SDK)
   const availableModels = models.filter((m: ModelInfo) => 
@@ -280,57 +343,9 @@ export default function ARC3AgentPlayground() {
     !m.color.includes('slate')
   );
 
-  const resolveFrameLayers = (frameData: { frame: number[][][] } | null) => {
-    if (!frameData) return null;
-    return frameData.frame as number[][][];
-  };
-
   // Compute currentFrame directly from state to ensure re-renders trigger updates
   const currentFrame = state.frames[state.currentFrameIndex] || null;
-  const resolvedCurrentFrame = resolveFrameLayers(currentFrame);
 
-  // CRITICAL DEBUG: Log what we're about to render
-  console.log('[ARC3 Playground] Current render state:', {
-    totalFrames: state.frames.length,
-    currentFrameIndex: state.currentFrameIndex,
-    hasCurrentFrame: !!currentFrame,
-    currentFrameKeys: currentFrame ? Object.keys(currentFrame) : null,
-    resolvedCurrentFrame: resolvedCurrentFrame ? `Array[${resolvedCurrentFrame.length}]` : null,
-    resolvedSample: resolvedCurrentFrame ? {
-      layerCount: resolvedCurrentFrame.length,
-      firstLayerSize: resolvedCurrentFrame[0] ? `${resolvedCurrentFrame[0].length}x${resolvedCurrentFrame[0][0]?.length}` : 'null',
-    } : null,
-  });
-
-  // State for managing which layer/timestep to display within the current frame
-  // Start with null to indicate "not manually set by user"
-  const [manualLayerIndex, setManualLayerIndex] = useState<number | null>(null);
-
-  // CRITICAL FIX: Compute currentLayerIndex directly, don't use useEffect
-  // This ensures we ALWAYS show the correct layer immediately, no flash of wrong layer
-  const currentLayerIndex = React.useMemo(() => {
-    // If user manually selected a layer via the slider, use that
-    if (manualLayerIndex !== null && resolvedCurrentFrame && manualLayerIndex < resolvedCurrentFrame.length) {
-      return manualLayerIndex;
-    }
-    // Otherwise, default to the LAST layer (final state after action)
-    if (resolvedCurrentFrame && resolvedCurrentFrame.length > 0) {
-      return resolvedCurrentFrame.length - 1;
-    }
-    return 0;
-  }, [manualLayerIndex, resolvedCurrentFrame, resolvedCurrentFrame?.length]);
-
-  // Reset manual layer selection when frame changes
-  React.useEffect(() => {
-    console.log('[ARC3 Playground] Frame changed, resetting manual layer selection:', {
-      currentFrameIndex: state.currentFrameIndex,
-      hasFrame: !!currentFrame,
-      resolvedFrameLayers: resolvedCurrentFrame?.length || 0,
-      computedLayerIndex: currentLayerIndex,
-    });
-    // Reset to auto (null) so we default to last layer of new frame
-    setManualLayerIndex(null);
-  }, [state.currentFrameIndex]); // ONLY depend on frame index, not derived objects
   // Normalize available_actions from the API
   // API returns integers [1, 2, 3, 4, 5, 6] but we use strings like 'ACTION1', 'ACTION2'
   const normalizedAvailableActions = React.useMemo(() => {
@@ -393,6 +408,8 @@ export default function ARC3AgentPlayground() {
                 onValueChange={(newGameId) => {
                   setGameId(newGameId);
                   fetchGameGrid(newGameId);
+                  // Update URL to reflect game selection
+                  setLocation(`/arc3/playground?game=${newGameId}`);
                 }}
                 disabled={isPlaying}
               >
@@ -434,478 +451,77 @@ export default function ARC3AgentPlayground() {
 
           {/* Config - Hidden when playing */}
           {!isPlaying && (
-          <Card className="text-xs">
-            <CardHeader className="pb-2 pt-3 px-3">
-              <div className="flex items-center justify-between">
-                <CardTitle className="text-sm">Configuration</CardTitle>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setShowSystemPrompt(!showSystemPrompt)}
-                  className="h-6 px-2 text-[10px]"
-                >
-                  {showSystemPrompt ? <EyeOff className="h-3 w-3 mr-1" /> : <Eye className="h-3 w-3 mr-1" />}
-                  {showSystemPrompt ? 'Hide' : 'Show'} System
-                </Button>
-              </div>
-            </CardHeader>
-            <CardContent className="space-y-2 text-[11px] px-3 pb-3">
-
-              {/* System Prompt - EDITABLE, at top */}
-              {showSystemPrompt && (
-                <div className="space-y-0.5">
-                  <label className="font-medium text-[10px]">System Prompt</label>
-                  <Textarea
-                    value={systemPrompt}
-                    onChange={(e) => setSystemPrompt(e.target.value)}
-                    disabled={isPlaying}
-                    className="text-[10px] min-h-[8rem] max-h-[60vh] resize-y font-mono"
-                    placeholder="Base system instructions..."
-                  />
-                </div>
-              )}
-
-              {/* User Prompt (formerly "Instructions") */}
-              <div className="space-y-0.5">
-                <label className="font-medium text-[10px]">User Prompt</label>
-                <Textarea
-                  value={instructions}
-                  onChange={(e) => setInstructions(e.target.value)}
-                  disabled={isPlaying}
-                  className="text-[11px] min-h-[6rem] max-h-[50vh] resize-y"
-                  placeholder="Additional operator guidance..."
-                />
-              </div>
-
-              {/* Model & Reasoning - Compact horizontal layout */}
-              <div className="grid grid-cols-2 gap-1.5">
-                <div className="space-y-0.5">
-                  <label className="font-medium text-[10px]">Model</label>
-                  {modelsLoading ? (
-                    <div className="flex items-center gap-1 h-7 px-2 text-[10px] text-muted-foreground">
-                      <RefreshCw className="h-3 w-3 animate-spin" />
-                      Loading...
-                    </div>
-                  ) : (
-                    <Select value={model} onValueChange={setModel} disabled={isPlaying}>
-                      <SelectTrigger className="h-7 text-[10px] px-2">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {availableModels.map((m: ModelInfo) => (
-                          <SelectItem key={m.key} value={m.key} className="text-[10px]">
-                            {m.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  )}
-                </div>
-
-                <div className="space-y-0.5">
-                  <label className="font-medium text-[10px]">Reasoning</label>
-                  <Select
-                    value={reasoningEffort}
-                    onValueChange={(v) => setReasoningEffort(v as any)}
-                    disabled={isPlaying}
-                  >
-                    <SelectTrigger className="h-7 text-[10px] px-2">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="minimal" className="text-[10px]">Minimal</SelectItem>
-                      <SelectItem value="low" className="text-[10px]">Low</SelectItem>
-                      <SelectItem value="medium" className="text-[10px]">Medium</SelectItem>
-                      <SelectItem value="high" className="text-[10px]">High</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-
-              {/* Max Turns - Unlimited */}
-              <div className="space-y-0.5">
-                <label className="font-medium text-[10px]">Max Turns</label>
-                <Input
-                  type="number"
-                  min="1"
-                  value={maxTurns}
-                  onChange={(e) => setMaxTurns(Number(e.target.value))}
-                  disabled={isPlaying}
-                  className="h-7 text-[11px]"
-                  placeholder="100 (default)"
-                />
-                <p className="text-[9px] text-muted-foreground">Agent loop iterations (not tool calls)</p>
-              </div>
-
-              {/* Start/Stop */}
-              <div className="flex gap-1.5 pt-1">
-                {!isPlaying ? (
-                  <Button onClick={handleStart} size="sm" className="flex-1 h-7 text-[11px]">
-                    <Play className="h-3 w-3 mr-1" />
-                    Start
-                  </Button>
-                ) : (
-                  <Button onClick={cancel} size="sm" variant="destructive" className="flex-1 h-7 text-[11px]">
-                    <Square className="h-3 w-3 mr-1" />
-                    Stop
-                  </Button>
-                )}
-              </div>
-            </CardContent>
-          </Card>
+            <Arc3ConfigurationPanel
+              systemPrompt={systemPrompt}
+              setSystemPrompt={setSystemPrompt}
+              instructions={instructions}
+              setInstructions={setInstructions}
+              model={model}
+              setModel={setModel}
+              reasoningEffort={reasoningEffort}
+              setReasoningEffort={setReasoningEffort}
+              maxTurns={maxTurns}
+              setMaxTurns={setMaxTurns}
+              availableModels={availableModels}
+              modelsLoading={modelsLoading}
+              isPlaying={isPlaying}
+              systemPromptPresetId={systemPromptPresetId}
+              setSystemPromptPresetId={setSystemPromptPresetId}
+              systemPromptPresets={systemPromptPresets}
+              onStart={handleStart}
+              onCancel={cancel}
+            />
           )}
 
           {/* User Message Injection - shown when agent completes */}
           {showUserInput && (
-            <Card className="border-orange-500">
-              <CardHeader className="pb-2 pt-3 px-3">
-                <CardTitle className="text-sm text-orange-600">Send Message</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-2 px-3 pb-3">
-                <p className="text-[10px] text-muted-foreground">
-                  Chain your message to the agent for continued exploration:
-                </p>
-                <Textarea
-                  value={userMessage}
-                  onChange={(e) => setUserMessage(e.target.value)}
-                  className="text-[11px] h-20 resize-none"
-                  placeholder="Send new guidance or observation..."
-                />
-                <Button onClick={handleUserMessageSubmit} size="sm" className="w-full h-7 text-[10px]">
-                  Send
-                </Button>
-              </CardContent>
-            </Card>
+            <Arc3AgentControls
+              userMessage={userMessage}
+              setUserMessage={setUserMessage}
+              onSubmit={handleUserMessageSubmit}
+            />
           )}
 
           {/* Actions */}
-          <Card className="text-xs">
-            <CardHeader className="pb-2 pt-3 px-3">
-              <CardTitle className="text-sm flex items-center gap-1.5">
-                <Wrench className="h-3.5 w-3.5" />
-                Actions
-                {isPlaying && state.streamingMessage?.includes('called') && (
-                  <div className="flex items-center gap-1">
-                    <RefreshCw className="h-3 w-3 animate-spin text-blue-500" />
-                    <span className="text-[9px] text-blue-600">Calling ARC3 API...</span>
-                  </div>
-                )}
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="px-3 pb-3">
-              <div className="space-y-1.5 max-h-48 overflow-y-auto text-[10px]">
-                {toolEntries.length === 0 ? (
-                  <p className="text-muted-foreground text-center py-3">No actions yet</p>
-                ) : (
-                  toolEntries.map((entry, idx) => (
-                    <div key={idx} className={`p-1.5 rounded border ${
-                      idx === toolEntries.length - 1 && isPlaying && state.streamingMessage?.includes('called')
-                        ? 'bg-blue-50 border-blue-300 animate-pulse'
-                        : 'bg-muted/30'
-                    }`}>
-                      <p className="font-medium text-[10px]">{entry.label}</p>
-                      <pre className="text-[9px] text-muted-foreground mt-0.5 overflow-x-auto">
-                        {entry.content.substring(0, 80)}...
-                      </pre>
-                    </div>
-                  ))
-                )}
-              </div>
-            </CardContent>
-          </Card>
+          <Arc3ToolTimeline
+            entries={toolEntries}
+            isPlaying={isPlaying}
+            streamingMessage={state.streamingMessage}
+          />
         </div>
 
-        {/* CENTER: Action pills now occupy former game selector spot */}
+        {/* CENTER: Game Panel (grid + actions + navigation) */}
         <div className="lg:col-span-5 space-y-3">
-          {/* Action Error Display */}
-          {actionError && (
-            <div className="p-2 bg-red-50 border border-red-200 rounded text-xs text-red-700">
-              <p className="font-semibold">Action Error:</p>
-              <p className="text-[10px] mt-1">{actionError}</p>
-            </div>
-          )}
+          <Arc3GamePanel
+            currentFrame={currentFrame}
+            frames={state.frames}
+            currentFrameIndex={state.currentFrameIndex}
+            executeManualAction={executeManualAction}
+            isPendingManualAction={isPendingManualAction}
+            isPlaying={isPlaying}
+            streamingMessage={state.streamingMessage}
+            toolEntries={toolEntries}
+            gameGuid={state.gameGuid}
+            gameId={state.gameId}
+            error={state.error}
+            setCurrentFrame={setCurrentFrame}
+            normalizedAvailableActions={normalizedAvailableActions}
+          />
 
-          <Card>
-            <CardContent className="p-3">
-              <div className="flex flex-wrap items-center justify-center gap-1.5">
-                {['RESET', 'ACTION1', 'ACTION2', 'ACTION3', 'ACTION4', 'ACTION5', 'ACTION6', 'ACTION7'].map((actionName) => {
-                  const usedCount = toolEntries.filter(e => e.label.includes(actionName)).length;
-                  const isActive = isPlaying && state.streamingMessage?.includes(actionName);
-                  const displayName = actionName === 'RESET' ? 'Reset' : actionName.replace('ACTION', 'Action ');
-
-                  // Check if action is available according to the API
-                  const isAvailable = !normalizedAvailableActions || normalizedAvailableActions.has(actionName);
-
-                  const handleActionClick = async () => {
-                    if (actionName === 'ACTION6') {
-                      setShowCoordinatePicker(true);
-                    } else {
-                      try {
-                        setActionError(null);
-                        await executeManualAction(actionName);
-                      } catch (error) {
-                        const msg = error instanceof Error ? error.message : 'Failed to execute action';
-                        setActionError(msg);
-                        console.error(`Failed to execute ${actionName}:`, error);
-                      }
-                    }
-                  };
-
-                  const isDisabled = !state.gameGuid || !state.gameId || !isAvailable;
-
-                  return (
-                    <button
-                      key={actionName}
-                      onClick={handleActionClick}
-                      disabled={isDisabled}
-                      title={!isAvailable ? `${actionName} is not available in this game state` : `Execute ${actionName}`}
-                      className={`px-3 py-1 rounded-full text-[11px] sm:text-xs font-semibold transition-all shadow-sm ${
-                        isActive
-                          ? 'bg-green-500 text-white animate-pulse shadow-lg'
-                          : !isAvailable
-                          ? 'bg-red-50 text-red-400 border border-red-200 opacity-60 cursor-not-allowed'
-                          : usedCount > 0
-                          ? 'bg-blue-100 text-blue-700 border border-blue-300 hover:bg-blue-200 cursor-pointer'
-                          : 'bg-gray-100 text-gray-500 border border-gray-200 hover:bg-gray-200 cursor-pointer'
-                      } ${isDisabled && isAvailable ? 'opacity-50 cursor-not-allowed' : ''}`}
-                    >
-                      {displayName}
-                      {usedCount > 0 && <span className="ml-1 text-[10px] sm:text-[11px]">×{usedCount}</span>}
-                    </button>
-                  );
-                })}
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Grid */}
-          <Card>
-            <CardHeader className="pb-2 pt-3 px-3">
-              <div className="flex items-center justify-between">
-                <CardTitle className="text-sm flex items-center gap-1.5">
-                  <Gamepad2 className="h-3.5 w-3.5" />
-                  Game Grid
-                </CardTitle>
-                {currentFrame && (
-                  <Badge variant={currentFrame.state === 'WIN' ? 'default' : 'outline'} className="text-[10px]">
-                    {currentFrame.state}
-                  </Badge>
-                )}
-              </div>
-            </CardHeader>
-            <CardContent className="px-3 pb-3">
-              {/* Show error if present */}
-              {state.error && (
-                <div className="mb-3 p-2 bg-red-50 border border-red-200 rounded text-xs text-red-700">
-                  <p className="font-semibold">Error:</p>
-                  <pre className="text-[10px] whitespace-pre-wrap mt-1">{state.error}</pre>
-                </div>
-              )}
-              
-              {resolvedCurrentFrame ? (
-                <div className="space-y-2">
-                  <div className="flex justify-center">
-                    <Arc3GridVisualization
-                      key={`frame-${state.currentFrameIndex}-${currentLayerIndex}-${currentFrame?.score}`}
-                      grid={resolvedCurrentFrame}
-                      frameIndex={currentLayerIndex}
-                      cellSize={20}
-                      showGrid={true}
-                      lastAction={currentFrame?.action}
-                    />
-                  </div>
-
-                  {/* Layer/Timestep Navigation - shown when current frame has multiple layers */}
-                  {resolvedCurrentFrame.length > 1 && (
-                    <div className="space-y-0.5 p-2 bg-amber-50 border border-amber-200 rounded">
-                      <label className="text-[10px] font-medium text-amber-800">
-                        Timestep: {currentLayerIndex + 1} / {resolvedCurrentFrame.length}
-                        <span className="ml-2 text-[9px] font-normal text-amber-600">
-                          (Action created {resolvedCurrentFrame.length} intermediate states)
-                        </span>
-                      </label>
-                      <input
-                        type="range"
-                        min="0"
-                        max={resolvedCurrentFrame.length - 1}
-                        value={currentLayerIndex}
-                        onChange={(e) => setManualLayerIndex(Number(e.target.value))}
-                        className="w-full h-1 bg-amber-300 rounded-lg appearance-none cursor-pointer"
-                      />
-                    </div>
-                  )}
-
-                  {/* Frame Navigation */}
-                  {state.frames.length > 1 && (
-                    <div className="space-y-0.5">
-                      <label className="text-[10px] font-medium">
-                        Frame: {state.currentFrameIndex + 1} / {state.frames.length}
-                      </label>
-                      <input
-                        type="range"
-                        min="0"
-                        max={state.frames.length - 1}
-                        value={state.currentFrameIndex}
-                        onChange={(e) => setCurrentFrame(Number(e.target.value))}
-                        className="w-full h-1 bg-gray-200 rounded-lg appearance-none cursor-pointer"
-                      />
-                    </div>
-                  )}
-
-                  {/* Color Legend */}
-                  <div className="grid grid-cols-5 gap-1 text-[9px]">
-                    {[
-                      { color: '#000000', name: '0' },
-                      { color: '#0074D9', name: '1' },
-                      { color: '#FF4136', name: '2' },
-                      { color: '#2ECC40', name: '3' },
-                      { color: '#FFDC00', name: '4' },
-                      { color: '#AAAAAA', name: '5' },
-                      { color: '#F012BE', name: '6' },
-                      { color: '#FF851B', name: '7' },
-                      { color: '#7FDBFF', name: '8' },
-                      { color: '#870C25', name: '9' },
-                    ].map((item) => (
-                      <div key={item.name} className="flex items-center gap-0.5">
-                        <div 
-                          className="w-2.5 h-2.5 border border-gray-300 rounded"
-                          style={{ backgroundColor: item.color }}
-                        />
-                        <span className="text-muted-foreground">{item.name}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              ) : initialGrid ? (
-                <div className="space-y-2">
-                  <div className="flex justify-center">
-                    <Arc3GridVisualization
-                      key={`initial-grid-${gameId}`}
-                      grid={initialGrid as number[][][]}
-                      frameIndex={Math.max(0, (initialGrid as number[][][]).length - 1)}
-                      cellSize={20}
-                      showGrid={true}
-                    />
-                  </div>
-                  <p className="text-center text-[10px] text-muted-foreground">Initial state - press Start to begin</p>
-                </div>
-              ) : (
-                <div className="flex flex-col items-center justify-center py-12 text-center">
-                  <Gamepad2 className="h-10 w-10 text-muted-foreground opacity-50 mb-2" />
-                  <p className="text-xs text-muted-foreground">
-                    {state.status === 'running' ? 'Waiting for game...' : gamesLoading ? 'Loading games...' : 'Select a game to see grid'}
-                  </p>
-                </div>
-              )}
-            </CardContent>
-          </Card>
+          {/* Agent Vision Preview - shows base64 image the agent sees */}
+          <Arc3AgentVisionPreview frameImage={latestFrameImage} />
         </div>
 
         {/* RIGHT: Streaming Reasoning - Auto-advance, larger text */}
         <div className="lg:col-span-4">
-          <Card className="h-full">
-            <CardHeader className="pb-2 pt-3 px-3">
-              <CardTitle className="text-base font-bold flex items-center gap-1.5">
-                <Brain className="h-4 w-4" />
-                Agent Reasoning
-                {isPlaying && <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse" />}
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="px-3 pb-3">
-              <div ref={reasoningContainerRef} className="space-y-2 max-h-[calc(100vh-10rem)] overflow-y-auto text-sm">
-                {reasoningEntries.length === 0 && assistantMessages.length === 0 && !isPlaying ? (
-                  <div className="text-center text-muted-foreground py-10">
-                    <Brain className="h-8 w-8 mx-auto mb-2 opacity-50" />
-                    <p className="text-xs">No reasoning yet</p>
-                    <p className="text-[10px]">Start agent to see reasoning</p>
-                  </div>
-                ) : (
-                  <>
-                    {/* Display all entries in chronological order */}
-                    {state.timeline
-                      .filter(entry => entry.type === 'reasoning' || entry.type === 'assistant_message')
-                      .map((entry, idx) => (
-                        <div
-                          key={idx}
-                          className={`p-3 rounded-lg border-l-4 ${
-                            entry.type === 'reasoning'
-                              ? 'bg-blue-50 dark:bg-blue-950 border-l-blue-500 border-r border-t border-b border-blue-200'
-                              : 'bg-green-50 dark:bg-green-950 border-l-green-500 border-r border-t border-b border-green-200'
-                          }`}
-                        >
-                          <p className={`font-bold text-sm mb-1 ${
-                            entry.type === 'reasoning' ? 'text-blue-700' : 'text-green-700'
-                          }`}>
-                            {entry.label}
-                          </p>
-                          <pre className="text-sm text-foreground whitespace-pre-wrap font-mono leading-relaxed">
-                            {entry.content}
-                          </pre>
-                        </div>
-                      ))}
-
-                    {isPlaying && (
-                      <div className="p-3 rounded-lg border-l-4 border-l-blue-500 bg-blue-50 dark:bg-blue-950 border-r border-t border-b border-blue-200 animate-pulse">
-                        <div className="flex items-center gap-2 text-blue-700 mb-2 font-bold text-sm">
-                          <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse" />
-                          <span>{state.streamingMessage || 'Agent thinking...'}</span>
-                        </div>
-                        {state.streamingReasoning && (
-                          <pre className="text-sm text-foreground whitespace-pre-wrap font-mono mt-2 leading-relaxed">
-                            {state.streamingReasoning}
-                          </pre>
-                        )}
-                      </div>
-                    )}
-                  </>
-                )}
-              </div>
-            </CardContent>
-          </Card>
+          <Arc3ReasoningViewer
+            timeline={state.timeline}
+            isPlaying={isPlaying}
+            streamingMessage={state.streamingMessage}
+            streamingReasoning={state.streamingReasoning}
+          />
         </div>
       </div>
-
-      {/* ACTION6 Coordinate Picker Dialog - SIMPLIFIED: uses built-in onCellClick */}
-      <Dialog open={showCoordinatePicker} onOpenChange={setShowCoordinatePicker}>
-        <DialogContent className="max-w-3xl">
-          <DialogHeader>
-            <DialogTitle>Action 6: Select Coordinates</DialogTitle>
-            <DialogDescription>
-              Click on any cell in the grid to execute ACTION6 at that position
-            </DialogDescription>
-          </DialogHeader>
-
-          <div className="flex justify-center py-4">
-            {resolvedCurrentFrame && (
-              <Arc3GridVisualization
-                key={`picker-frame-${state.currentFrameIndex}`}
-                grid={resolvedCurrentFrame}
-                frameIndex={Math.max(0, resolvedCurrentFrame.length - 1)}
-                cellSize={20}
-                showGrid={true}
-                lastAction={currentFrame?.action}
-                onCellClick={async (x, y) => {
-                  try {
-                    setActionError(null);
-                    await executeManualAction('ACTION6', [x, y]);
-                    setShowCoordinatePicker(false);
-                  } catch (error) {
-                    const msg = error instanceof Error ? error.message : 'Failed to execute ACTION6';
-                    setActionError(msg);
-                    console.error('Failed to execute ACTION6:', error);
-                  }
-                }}
-              />
-            )}
-          </div>
-
-          <div className="flex justify-end gap-2">
-            <Button variant="outline" onClick={() => setShowCoordinatePicker(false)}>
-              Cancel
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 }

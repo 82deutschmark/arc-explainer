@@ -168,10 +168,10 @@ export default function HumanTradingCards() {
 
   return (
     <div className="min-h-screen w-full bg-zinc-950 text-zinc-200">
-      {/* Subtle top gradient accent */}
-      <div className="fixed top-0 inset-x-0 h-48 bg-gradient-to-b from-amber-900/10 via-zinc-950/50 to-transparent pointer-events-none" />
+        {/* Subtle top gradient accent */}
+        <div className="fixed top-0 inset-x-0 h-48 bg-gradient-to-b from-amber-900/10 via-zinc-950/50 to-transparent pointer-events-none" />
 
-      <div className="relative container mx-auto px-4 py-3 space-y-4">
+        <div className="relative container mx-auto px-4 py-3 space-y-4">
 
         {/* Compact Hall of Fame Header */}
         <header className="border-b border-zinc-800 pb-3">
@@ -217,6 +217,29 @@ export default function HumanTradingCards() {
             </div>
           </div>
         </header>
+
+        {/* The ARChitects spotlight banner */}
+        <div className="rounded-2xl border border-amber-500/30 bg-gradient-to-br from-amber-500/10 via-amber-400/10 to-zinc-900/60 px-4 py-3 text-amber-100 space-y-1 shadow-lg shadow-amber-900/50">
+          <div className="flex flex-wrap items-center gap-2">
+            <Trophy className="h-4 w-4 text-amber-400" />
+            <span className="text-xs uppercase tracking-widest text-amber-300">ARC Prize 2025 Solution Summary</span>
+          </div>
+          <p className="text-base font-semibold text-amber-50">
+            The ARChitects Kaggle team (Daniel Franzen 1*, Jan Disselhoff 1*, David Hartmann 2*)
+          </p>
+          <p className="text-[13px] text-amber-200">
+            1 JGU Mainz · 2 Lambda, Inc. · * “The ARChitects” Kaggle team members.
+          </p>
+          <a
+            href="https://lambdalabsml.github.io/ARC2025_Solution_by_the_ARChitects/"
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-amber-100 hover:text-amber-50"
+          >
+            Read the LambdaLabs write-up
+            <ExternalLink className="h-3 w-3" />
+          </a>
+        </div>
 
         {isLoading ? (
           <div className="py-20 text-center">

@@ -1,0 +1,137 @@
+﻿/**
+ * Author: Cascade
+ * Date: 2025-12-09
+ * PURPOSE: WormArenaControls
+ *          Self-contained replay controls for Worm Arena replays.
+ *          Handles text/wording and basic navigation callbacks only.
+ * SRP/DRY check: Pass — no JSON parsing or layout orchestration.
+ */
+
+import React from 'react';
+import { Button } from '@/components/ui/button';
+
+export interface WormArenaControlsProps {
+  modelsLabel: string;
+  currentRound: number;
+  totalRounds: number;
+  currentThought?: string | null;
+  upcomingThought?: string | null;
+  isPlaying: boolean;
+  isLoading?: boolean;
+  errorMessage?: string | null;
+  canStepBackward: boolean;
+  canStepForward: boolean;
+  onPlayToggle: () => void;
+  onStepPrevious: () => void;
+  onStepNext: () => void;
+  onJumpToStart?: () => void;
+  onJumpToEnd?: () => void;
+}
+
+const WormArenaControls: React.FC<WormArenaControlsProps> = ({
+  modelsLabel,
+  currentRound,
+  totalRounds,
+  currentThought,
+  upcomingThought,
+  isPlaying,
+  isLoading = false,
+  errorMessage,
+  canStepBackward,
+  canStepForward,
+  onPlayToggle,
+  onStepPrevious,
+  onStepNext,
+  onJumpToStart,
+  onJumpToEnd,
+}) => {
+  const disabledAll = isLoading || totalRounds === 0;
+
+  const safeCurrentRound = totalRounds === 0 ? 0 : Math.max(1, Math.min(currentRound, totalRounds));
+
+  return (
+    <div className="space-y-2 text-[11px]">
+      <div className="flex flex-col gap-1">
+        <div className="font-semibold text-gray-700">Replay controls</div>
+        <div className="text-gray-600">
+          {totalRounds > 0
+            ? `Round ${safeCurrentRound} of ${totalRounds} · ${modelsLabel}`
+            : `No rounds available yet.`}
+        </div>
+        {isLoading && <div className="text-gray-500">Loading Replay</div>}
+        {errorMessage && (
+          <div className="text-red-600">Replay error: {errorMessage}</div>
+        )}
+      </div>
+
+      <div className="grid md:grid-cols-2 gap-2">
+        <div className="border rounded bg-white/80 p-2 space-y-1">
+          <div className="font-semibold text-gray-700">Current move</div>
+          <div className="text-gray-700 whitespace-pre-wrap max-h-40 overflow-auto">
+            {currentThought && currentThought.trim().length > 0
+              ? currentThought
+              : 'No thoughts recorded for this round.'}
+          </div>
+        </div>
+        <div className="border rounded bg-white/80 p-2 space-y-1">
+          <div className="font-semibold text-gray-700">Upcoming move</div>
+          <div className="text-gray-700 whitespace-pre-wrap max-h-40 overflow-auto">
+            {upcomingThought && upcomingThought.trim().length > 0
+              ? upcomingThought
+              : 'No upcoming move recorded yet.'}
+          </div>
+        </div>
+      </div>
+
+      <div className="flex items-center justify-between gap-2">
+        <div className="flex items-center gap-1">
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={onJumpToStart}
+            disabled={disabledAll || !onJumpToStart || !canStepBackward}
+          >
+          First
+          </Button>
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={onStepPrevious}
+            disabled={disabledAll || !canStepBackward}
+          >
+      Prev
+          </Button>
+          <Button
+            size="sm"
+            variant={isPlaying ? 'destructive' : 'default'}
+            onClick={onPlayToggle}
+            disabled={disabledAll}
+          >
+            {isPlaying ? 'Pause' : 'Play'}
+          </Button>
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={onStepNext}
+            disabled={disabledAll || !canStepForward}
+          >
+            Next 
+          </Button>
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={onJumpToEnd}
+            disabled={disabledAll || !onJumpToEnd || !canStepForward}
+          >
+            Last 
+          </Button>
+        </div>
+        <div className="text-[11px] text-gray-700">
+          {totalRounds > 0 ? `Round ${safeCurrentRound} of ${totalRounds}` : ''}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default WormArenaControls;

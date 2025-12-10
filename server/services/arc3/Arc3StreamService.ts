@@ -29,6 +29,9 @@ export interface StreamArc3Payload {
   expiresAt?: number;
   existingGameGuid?: string;
   providerResponseId?: string | null;
+  lastFrame?: FrameData; // Cached last known frame for safe continuation
+  systemPromptPresetId?: 'twitch' | 'playbook' | 'none';
+  skipDefaultSystemPrompt?: boolean;
 }
 
 export interface ContinueStreamArc3Payload extends StreamArc3Payload {
@@ -37,7 +40,7 @@ export interface ContinueStreamArc3Payload extends StreamArc3Payload {
   lastFrame?: FrameData; // Cached frame from client to seed continuation state
 }
 
-export const PENDING_ARC3_SESSION_TTL_SECONDS = 60;
+export const PENDING_ARC3_SESSION_TTL_SECONDS = 900; // 15 minutes to allow user follow-ups
 
 export class Arc3StreamService {
   private readonly pendingSessions: Map<string, StreamArc3Payload> = new Map();
@@ -46,36 +49,10 @@ export class Arc3StreamService {
   private readonly continuationSessionTimers: Map<string, ReturnType<typeof setTimeout>> = new Map();
   private readonly apiClient: Arc3ApiClient;
   private readonly gameRunner: Arc3RealGameRunner;
-  private scorecardInitialized = false;
 
   constructor() {
     this.apiClient = new Arc3ApiClient(process.env.ARC3_API_KEY || '');
     this.gameRunner = new Arc3RealGameRunner(this.apiClient);
-  }
-
-  private async ensureScorecard(): Promise<void> {
-    if (this.scorecardInitialized) {
-      return;
-    }
-
-    try {
-      await this.apiClient.openScorecard(
-        ['arc-explainer', 'streaming'],
-        'https://github.com/arc-explainer/arc-explainer',
-      );
-      this.scorecardInitialized = true;
-      logger.info(
-        '[ARC3 Streaming] Scorecard opened for streaming runner',
-        'arc3-stream-service',
-      );
-    } catch (error) {
-      this.scorecardInitialized = false;
-      logger.error(
-        `Failed to open ARC3 scorecard for streaming: ${error instanceof Error ? error.message : String(error)}`,
-        'arc3-stream-service',
-      );
-      throw error;
-    }
   }
 
   savePendingPayload(payload: StreamArc3Payload, ttlMs: number = PENDING_ARC3_SESSION_TTL_SECONDS * 1000): string {
@@ -149,7 +126,7 @@ export class Arc3StreamService {
       userMessage: continuationData.userMessage,
       previousResponseId: continuationData.previousResponseId,
       existingGameGuid: continuationData.existingGameGuid,
-      lastFrame: continuationData.lastFrame,
+      lastFrame: continuationData.lastFrame ?? basePayload.lastFrame,
       createdAt: now,
       expiresAt: expirationTimestamp,
     };
@@ -229,8 +206,6 @@ export class Arc3StreamService {
     const sessionId = payload.sessionId ?? nanoid();
 
     try {
-      await this.ensureScorecard();
-
       if (!sseStreamManager.has(sessionId)) {
         throw new Error("SSE session must be registered before starting ARC3 streaming.");
       }
@@ -241,7 +216,7 @@ export class Arc3StreamService {
         return sessionId;
       }
 
-      const { game_id, agentName, systemPrompt, instructions, model, maxTurns, reasoningEffort } = payload;
+      const { game_id, agentName, systemPrompt, instructions, model, maxTurns, reasoningEffort, systemPromptPresetId, skipDefaultSystemPrompt } = payload;
 
       // Send initial status
       sseStreamManager.sendEvent(sessionId, "stream.init", {
@@ -291,6 +266,9 @@ export class Arc3StreamService {
         maxTurns,
         reasoningEffort,
         storeResponse: true,
+        sessionId,
+        systemPromptPresetId,
+        skipDefaultSystemPrompt,
       };
 
       // Send status update
@@ -304,10 +282,17 @@ export class Arc3StreamService {
       // Override the game runner to emit streaming events
       const runResult = await this.gameRunner.runWithStreaming(runConfig, streamHarness);
 
+      const finalFrame = Array.isArray(runResult.frames) && runResult.frames.length > 0
+        ? (runResult.frames[runResult.frames.length - 1] as FrameData)
+        : payload.lastFrame;
+
+      logger.info(`[ARC3 Streaming] Caching final frame for session ${sessionId}; frame index=${runResult.frames?.length ?? 0}`, 'arc3-stream-service');
+
       // Persist response metadata for future continuations
       this.updatePendingPayload(sessionId, {
         existingGameGuid: runResult.gameGuid,
         providerResponseId: runResult.providerResponseId ?? null,
+        lastFrame: finalFrame,
       });
 
       // After successful streaming, extend the session TTL to allow continuation
@@ -334,8 +319,6 @@ export class Arc3StreamService {
     const sessionId = payload.sessionId ?? nanoid();
 
     try {
-      await this.ensureScorecard();
-
       if (!sseStreamManager.has(sessionId)) {
         throw new Error("SSE session must be registered before continuing ARC3 streaming.");
       }
@@ -346,7 +329,7 @@ export class Arc3StreamService {
         return sessionId;
       }
 
-      const { game_id, agentName, systemPrompt, instructions, model, maxTurns, reasoningEffort, userMessage, previousResponseId, existingGameGuid } = payload;
+      const { game_id, agentName, systemPrompt, instructions, model, maxTurns, reasoningEffort, userMessage, previousResponseId, existingGameGuid, systemPromptPresetId, skipDefaultSystemPrompt } = payload;
 
       if (!previousResponseId) {
         throw new Error('ARC3 continuation requires a previousResponseId to maintain conversation state.');
@@ -423,15 +406,25 @@ export class Arc3StreamService {
         previousResponseId,
         seedFrame: payload.lastFrame,  // CRITICAL FIX: Pass cached frame to avoid executing actions
         storeResponse: true,
+        sessionId,
+        systemPromptPresetId,
+        skipDefaultSystemPrompt,
       };
 
       // Override the game runner to emit streaming events
       // The previous_response_id will be passed to the Responses API to chain conversations
       const runResult = await this.gameRunner.runWithStreaming(runConfig, streamHarness);
 
+      const finalFrame = Array.isArray(runResult.frames) && runResult.frames.length > 0
+        ? (runResult.frames[runResult.frames.length - 1] as FrameData)
+        : payload.lastFrame;
+
+      logger.info(`[ARC3 Streaming] Caching continuation frame for session ${sessionId}; frame index=${runResult.frames?.length ?? 0}`, 'arc3-stream-service');
+
       this.updatePendingPayload(sessionId, {
         existingGameGuid: runResult.gameGuid,
         providerResponseId: runResult.providerResponseId ?? null,
+        lastFrame: finalFrame,
       });
 
       // After successful continuation, extend the base session TTL again for potential further continuation

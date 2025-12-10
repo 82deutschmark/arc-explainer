@@ -51,6 +51,8 @@ export async function runMatch(req: Request, res: Response) {
       height,
       maxRounds,
       numApples,
+      apiKey: body.apiKey,
+      provider: body.provider,
     };
 
     const result = await snakeBenchService.runMatch(request);
@@ -108,6 +110,8 @@ export async function runBatch(req: Request, res: Response) {
       maxRounds: body.maxRounds != null ? Number(body.maxRounds) : undefined,
       numApples: body.numApples != null ? Number(body.numApples) : undefined,
       count: parsedCount,
+      apiKey: body.apiKey,
+      provider: body.provider,
     };
 
     const batch = await snakeBenchService.runBatch(request);
@@ -227,10 +231,62 @@ export async function health(req: Request, res: Response) {
   }
 }
 
+export async function recentActivity(req: Request, res: Response) {
+  try {
+    const daysQuery = req.query.days;
+    const days = Number.isFinite(Number(daysQuery)) ? Math.max(1, Math.min(Number(daysQuery), 90)) : 7;
+
+    const result = await snakeBenchService.getRecentActivity(days);
+
+    return res.json({
+      success: true,
+      result,
+      timestamp: Date.now(),
+    });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    logger.error(`SnakeBench recentActivity failed: ${message}`, 'snakebench-controller');
+
+    return res.status(500).json({
+      success: false,
+      error: message,
+      timestamp: Date.now(),
+    });
+  }
+}
+
+export async function basicLeaderboard(req: Request, res: Response) {
+  try {
+    const limitQuery = req.query.limit;
+    const sortByQuery = req.query.sortBy;
+    const limit = Number.isFinite(Number(limitQuery)) ? Math.max(1, Math.min(Number(limitQuery), 100)) : 10;
+    const sortBy = sortByQuery === 'winRate' ? 'winRate' : 'gamesPlayed';
+
+    const result = await snakeBenchService.getBasicLeaderboard(limit, sortBy);
+
+    return res.json({
+      success: true,
+      result,
+      timestamp: Date.now(),
+    });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    logger.error(`SnakeBench basicLeaderboard failed: ${message}`, 'snakebench-controller');
+
+    return res.status(500).json({
+      success: false,
+      error: message,
+      timestamp: Date.now(),
+    });
+  }
+}
+
 export const snakeBenchController = {
   runMatch,
   runBatch,
   listGames,
   getGame,
   health,
+  recentActivity,
+  basicLeaderboard,
 };

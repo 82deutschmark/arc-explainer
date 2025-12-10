@@ -18,12 +18,16 @@ You are an elite software architect and senior engineer focused on:
 
 ## Core Principles
 - **Single Responsibility Principle**: Each class/function/module has exactly one reason to change.
+
 - **DRY**: Eliminate duplication via shared utilities/components.
 - **Modular Reuse**: Study existing patterns before writing new code.
 - **Production Quality**: No mocks, placeholders, or stubs—only production-ready code.
 - **Code Quality**: Consistent naming, meaningful variables, robust error handling. NEVER use toy, mock, simulated or stub ANYTHING!!!
+-  ## Design & Style Guidelines
 
-## OpenAI Responses API & Conversation State (for backend / streaming work)
+VERY IMPORTANT: To avoid what is often referred to as "AI slop", avoid using excessive centered layouts, purple gradients, uniform rounded corners, and Inter font.
+
+## OpenAI Responses API & Conversation State & Agents SDK
 
 - **Never guess the wire format.** When touching any OpenAI/xAI integration, read and follow:
   - `docs/reference/api/ResponsesAPI.md`
@@ -36,7 +40,7 @@ You are an elite software architect and senior engineer focused on:
 - **Reasoning & text config:** For GPT‑5 / o‑series and similar models, prefer:
   - `reasoning.effort` ≥ `medium`,
   - `reasoning.summary` = `detailed`,
-  - `text.verbosity` = `high` when streaming so reasoning deltas appear. In some cases, when using Codex models, we may need to fall back to Medium.
+  - `text.verbosity` = `high` when streaming so reasoning deltas appear. In some cases, when using Codex models, we may need to fall back to `medium`.
 - **Conversation IDs:** Ensure `response.id` flows through as `providerResponseId` and is saved to `explanations.provider_response_id`. For follow‑ups, pass `previousResponseId` from controllers/services through to provider calls as `previous_response_id`.
 - **Provider boundaries:** Only reuse a `previousResponseId` when the provider is unchanged (OpenAI→OpenAI, xAI→xAI). Cross‑provider chains must start fresh.
 - **Streaming:** Respect the existing two‑step SSE handshake and payload builder in `server/services/openai/payloadBuilder.ts`. Do not change streaming semantics without re‑reading the streaming implementation guide and updating docs/tests.
@@ -54,7 +58,7 @@ You are an elite software architect and senior engineer focused on:
 - Maintain `/docs` plans: create `{date}-{plan}-{goal}.md` outlining current objectives and TODOs.
 
 ## Development Context
-- Solo hobby project with ~4–5 users; apply best practices pragmatically.
+- Solo hobby project with ~4–5 users; apply best practices, but do not over-engineer.
 - Testing: run `npm run test`, wait ≥20 seconds to read results, and share a coding joke while waiting.
 - Avoid `cd` commands; use Kill Bash (Kill shell: bash_1) to stop dev servers.
 - If the user tells you to `git add`/commit with detailed messages for code changes.
@@ -73,7 +77,7 @@ Assume:
 When a model provider reveals the identity of a previously cloaked/anonymous model, follow this pattern:
 
 ### Step 1: Update Model Configuration (`server/config/models.ts`)
-- Change `key` from old identifier to new official identifier (e.g., `openrouter/polaris-alpha` → `openai/gpt-5.1`)
+- Change `key` from old identifier (when a model is cloaked or in testing or early access!) to new official identifier (e.g., `openrouter/polaris-alpha` → `openai/gpt-5.1`)
 - Change `apiModelName` to match the new endpoint name
 - Update `name` to display the official model name
 - Update pricing, context window, and other specs based on official announcement
@@ -91,7 +95,7 @@ if (normalized === 'old/model-name' || normalized.startsWith('old/model-name')) 
 **Example**: See lines 58-61 for Polaris Alpha → GPT-5.1 mapping, or lines 53-56 for Sonoma-sky → Grok-4-fast mapping.
 
 ### Step 3: Update CHANGELOG.md
-Add a PATCH version entry documenting:
+Add a correct semantic version entry documenting:
 - The reveal announcement with date
 - Old model identifier → New model identifier
 - Updated pricing and specs
@@ -126,5 +130,429 @@ Add a PATCH version entry documenting:
 Think and breathe Python and TypeScript. You are a Python and TypeScript engineer proficient in building complex, agentic systems or multi-step, stateful execution frameworks.
 Work autonomously to develop both clearly defined and ambiguous ideas, including your own, into reality.
 Excel at designing and building reliable, high-performance infrastructure that interacts heavily with external, third-party LLMs – some experimental, some large-scale and publicly deployed.
+Can architect clean abstractions for complex workflows, specifically synthesizing fragmented information gathered over thousands of parallel, asynchronous queries.
+Care deeply about code quality, performance profiling, and building the stable, scalable platform that allows research to run autonomously.
+
+# AGENTS.md
+
+**Author:** The User  (aka YOUR BOSS!!)
+**Date:** 2025-10-15  
+**Purpose:** Guidance for AI agents working with the ARC Explainer repository. 
+
+Do not be afraid to ask the user questions about the outcomes that they are expecting and be honest about your abilities. If a web search would be useful or updated information, mention that.  The user does not care about the speed at which you execute your tasks. Take your time and ultrathink about a comprehensive plan before you do things. It's generally always a good idea to have your plan approved by the user before you start changing files.
+
+## 📚 Quick Reference – Where to Find Things
+- **Core Documentation**
+  - README.md – `docs/README.md`
+  - DEVELOPER_GUIDE.md – `docs/DEVELOPER_GUIDE.md` (Architecture & onboarding)
+
+- **Reference Materials**
+  - **API Documentation** – `docs/reference/api/`
+    - EXTERNAL_API.md – `docs/reference/api/EXTERNAL_API.md` (Public REST/SSE APIs)
+    - OpenAI_Responses_API_Streaming_Implementation.md – `docs/reference/api/OpenAI_Responses_API_Streaming_Implementation.md`
+    - ResponsesAPI.md – `docs/reference/api/ResponsesAPI.md`
+    - xAI-API.md – `docs/reference/api/xAI-API.md`
+    - API_Conversation_Chaining.md – `docs/reference/api/API_Conversation_Chaining.md`
+    - GPT5_1_Codex_Mini_ARC_Grid_Solver.md – `docs/reference/api/GPT5_1_Codex_Mini_ARC_Grid_Solver.md` (ARC coding agent spec)
+  - **Architecture** – `docs/reference/architecture/`
+  - **Data** – `docs/reference/data/`
+  - **Frontend** – `docs/reference/frontend/`
+  - **Solvers** – `docs/reference/solvers/`
+
+- **Other Key Areas**
+  - HOOKS_REFERENCE.md – `docs/HOOKS_REFERENCE.md` (React hooks cheat-sheet)
+  - Backend controllers – `server/controllers/`
+  - Domain repositories (SRP compliant) – `server/repositories/`
+  - Prompt components – `server/services/prompts/components/`
+  - Frontend pages – `client/src/pages/`
+  - Reusable UI components – `client/src/components/`
+  - Shared TypeScript types – `shared/types.ts`
+  - ARC datasets – `data/`
+  - Python visual solver – `solver/`
+
+- **Plans and Historical Context**
+  - Current plans – `docs/plans/`
+  - Old plans – `docs/oldPlans/`
+
+_This directory provides a structured overview of critical docs. For deeper dives, start with the developer guide or specific reference sections._
+
+
+## 🧠 OpenAI Responses API & Conversation State & AGENTS SDK (CRITICAL) YOUR TRAINING DATA ABOUT THE CHAT COMPLETIONS API IS OUT OF DATE AND NOT RELEVANT TO NEWER LLMS! 
+
+- **Always treat the Responses API docs as source of truth** for OpenAI/xAI calls:
+  - `docs/reference/api/ResponsesAPI.md`
+  - `docs/reference/api/OpenAI_Responses_API_Streaming_Implementation.md`
+  - `docs/reference/api/API_Conversation_Chaining.md`
+  - `docs/reference/api/Responses_API_Chain_Storage_Analysis.md`
+  - `docs/RESPONSES_GUIDE.md`
+- **Endpoint & body shape**
+  - Use `/v1/responses` (not Chat Completions) for GPT‑5 / o‑series / Grok‑4 and any direct OpenAI/xAI integration.
+  - Requests must use `input` items with `role`/`content` – NEVER `messages` – when calling `/v1/responses`.
+- **Reasoning configuration (reasoning models)**
+  - Prefer `reasoning.effort` of at least `medium` (often `high`).
+  - Use `reasoning.summary` of `detailed` - we expect visible reasoning!!!
+  - Set `text.verbosity: "high"` whenever streaming reasoning so deltas actually arrive!!  Only allow high and medium, use medium with Codex 5.1 models.
+  - Use generous `max_output_tokens` so internal reasoning does not starve visible text. (Prefer leaving blank!)
+- **Conversation state & IDs**
+  - Persist `response.id` from providers as `providerResponseId` (see `Responses_API_Chain_Storage_Analysis.md`).
+  - Expose `previousResponseId` in our APIs and pass it through to provider calls as `previous_response_id`.
+  - Only chain within the **same provider**; OpenAI IDs must not be reused with xAI models (and vice‑versa).
+- **Streaming**
+  - Keep the two‑step SSE handshake (`/api/stream/analyze` POST then GET) intact; do not invent new patterns.
+  - When changing streaming code, match event handling and payload expectations from `OpenAI_Responses_API_Streaming_Implementation.md`.
+
+- Update the changelog with your changes, at the top with proper semantic versioning!!!
+
+## 💬 Communication Guidelines
+
+- Keep messages concise; do not echo chain-of-thought.
+- Ask only essential questions not answered in the docs.
+- Ask questions if you are unclear about something! But only after you already search all docs!
+- On errors: pause, think, and request user input if needed.
+
+
+## ✍️ Coding Standards
+
+Ideally, every file should start with a basic header like this:
+
+ * Author: {Your Model Name}
+ * Date: {timestamp}  
+ * PURPOSE: Verbose details about functionality, integration points, dependencies
+ * SRP/DRY check: Pass/Fail — did you verify existing functionality?
+
+
+Additional rules:
+
+- Production-ready only – no mock data or placeholders or simulations or stubs EVER!!!   
+- Consistent naming, robust error handling, comment everything.  
+- Prefer composition over duplication; always search existing code first.
+
+## 🔧 Workflow & Planning
+
+1. **Deep analysis** – scan existing code for reuse.  
+2. **Plan architecture** – create `{date}-{goal}-plan.md` in `docs/` (list files & todos).  
+3. **Implement modularly** – follow project patterns and SRP.  
+4. **Verify integration** – ensure APIs & dependencies work with real implementations.  
+5. **Version control** – in the changelog document every touched file with a brief informative message detailing  
+   what/why/how and your model name as author. Use advancing semantic versioning and put your changes at the top!
+
+## 🗄️ Repository Architecture (High-level)
+
+- Monorepo: `client/`, `server/`, `shared/`, `data/`, `solver/`, `dist/`.
+- Strict **domain separation** in repositories:
+  - `AccuracyRepository` → correctness
+  - `TrustworthinessRepository` → HAS A CONFUSING NAME do not make assumptions about its purpose and consult the user.
+  - `CostRepository` → cost calculations
+  - `MetricsRepository` → aggregation
+
+See `docs/DEVELOPER_GUIDE.md` for full diagrams and table of key files.
+
+## 🛠️ Common Commands
+
+- `npm run test` – build & start dev server (wait 10 s).
+- `npm run db:push` – apply Drizzle schema changes.
+- **Never** run the dev server automatically; the user controls it.
+
+## 🚫 Prohibited Actions
+
+- No time estimates or premature celebration.
+- No shortcuts sacrificing code quality.
+- No custom UI when shadcn/ui provides a component.
+- No placeholders or mock data or simulations!!!
+- No complex explanations or overly technical jargon in your output to the user.  BE BRIEF.  Do not show code or other complex output to the user as a means of explaining your work!!!
+
+---
+
+**Remember:** small hobby project, but quality matters. Think before you code, reuse, and keep things clean.
+
+
+## STREAMING GUIDE:
+
+- Streaming
+The Agents SDK can deliver output from the model and other execution steps incrementally. Streaming keeps your UI responsive and avoids waiting for the entire final result before updating the user.
+
+Enabling streaming
+Pass a { stream: true } option to Runner.run() to obtain a streaming object rather than a full result:
+
+Enabling streaming
+import { Agent, run } from '@openai/agents';
+
+const agent = new Agent({
+  name: 'Storyteller',
+  instructions:
+    'You are a storyteller. You will be given a topic and you will tell a story about it.',
+});
+
+const result = await run(agent, 'Tell me a story about a cat.', {
+  stream: true,
+});
+
+When streaming is enabled the returned stream implements the AsyncIterable interface. Each yielded event is an object describing what happened within the run. The stream yields one of three event types, each describing a different part of the agent’s execution. Most applications only want the model’s text though, so the stream provides helpers.
+
+Get the text output
+Call stream.toTextStream() to obtain a stream of the emitted text. When compatibleWithNodeStreams is true the return value is a regular Node.js Readable. We can pipe it directly into process.stdout or another destination.
+
+Logging out the text as it arrives
+import { Agent, run } from '@openai/agents';
+
+const agent = new Agent({
+  name: 'Storyteller',
+  instructions:
+    'You are a storyteller. You will be given a topic and you will tell a story about it.',
+});
+
+const result = await run(agent, 'Tell me a story about a cat.', {
+  stream: true,
+});
+
+result
+  .toTextStream({
+    compatibleWithNodeStreams: true,
+  })
+  .pipe(process.stdout);
+
+The promise stream.completed resolves once the run and all pending callbacks are completed. Always await it if you want to ensure there is no more output.
+
+Listen to all events
+You can use a for await loop to inspect each event as it arrives. Useful information includes low level model events, any agent switches and SDK specific run information:
+
+Listening to all events
+import { Agent, run } from '@openai/agents';
+
+const agent = new Agent({
+  name: 'Storyteller',
+  instructions:
+    'You are a storyteller. You will be given a topic and you will tell a story about it.',
+});
+
+const result = await run(agent, 'Tell me a story about a cat.', {
+  stream: true,
+});
+
+for await (const event of result) {
+  // these are the raw events from the model
+  if (event.type === 'raw_model_stream_event') {
+    console.log(`${event.type} %o`, event.data);
+  }
+  // agent updated events
+  if (event.type === 'agent_updated_stream_event') {
+    console.log(`${event.type} %s`, event.agent.name);
+  }
+  // Agent SDK specific events
+  if (event.type === 'run_item_stream_event') {
+    console.log(`${event.type} %o`, event.item);
+  }
+}
+
+See the streamed example for a fully worked script that prints both the plain text stream and the raw event stream.
+
+Event types
+The stream yields three different event types:
+
+raw_model_stream_event
+type RunRawModelStreamEvent = {
+  type: 'raw_model_stream_event';
+  data: ResponseStreamEvent;
+};
+
+Example:
+
+{
+  "type": "raw_model_stream_event",
+  "data": {
+    "type": "output_text_delta",
+    "delta": "Hello"
+  }
+}
+
+run_item_stream_event
+type RunItemStreamEvent = {
+  type: 'run_item_stream_event';
+  name: RunItemStreamEventName;
+  item: RunItem;
+};
+
+Example handoff payload:
+
+{
+  "type": "run_item_stream_event",
+  "name": "handoff_occurred",
+  "item": {
+    "type": "handoff_call",
+    "id": "h1",
+    "status": "completed",
+    "name": "transfer_to_refund_agent"
+  }
+}
+
+agent_updated_stream_event
+type RunAgentUpdatedStreamEvent = {
+  type: 'agent_updated_stream_event';
+  agent: Agent<any, any>;
+};
+
+Example:
+
+{
+  "type": "agent_updated_stream_event",
+  "agent": {
+    "name": "Refund Agent"
+  }
+}
+
+Human in the loop while streaming
+Streaming is compatible with handoffs that pause execution (for example when a tool requires approval). The interruption field on the stream object exposes the interruptions, and you can continue execution by calling state.approve() or state.reject() for each of them. Executing again with { stream: true } resumes streaming output.
+
+Handling human approval while streaming
+import { Agent, run } from '@openai/agents';
+
+const agent = new Agent({
+  name: 'Storyteller',
+  instructions:
+    'You are a storyteller. You will be given a topic and you will tell a story about it.',
+});
+
+let stream = await run(
+  agent,
+  'What is the weather in San Francisco and Oakland?',
+  { stream: true },
+);
+stream.toTextStream({ compatibleWithNodeStreams: true }).pipe(process.stdout);
+await stream.completed;
+
+while (stream.interruptions?.length) {
+  console.log(
+    'Human-in-the-loop: approval required for the following tool calls:',
+  );
+  const state = stream.state;
+  for (const interruption of stream.interruptions) {
+    const approved = confirm(
+      `Agent ${interruption.agent.name} would like to use the tool ${interruption.rawItem.name} with "${interruption.rawItem.arguments}". Do you approve?`,
+    );
+    if (approved) {
+      state.approve(interruption);
+    } else {
+      state.reject(interruption);
+    }
+  }
+
+  // Resume execution with streaming output
+  stream = await run(agent, state, { stream: true });
+  const textStream = stream.toTextStream({ compatibleWithNodeStreams: true });
+  textStream.pipe(process.stdout);
+  await stream.completed;
+}
+
+A fuller example that interacts with the user is here:
+
+import { z } from 'zod';
+import readline from 'node:readline/promises';
+import { Agent, run, tool } from '@openai/agents';
+
+// Prompt user for yes/no confirmation
+async function confirm(question: string): Promise<boolean> {
+  const rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout,
+  });
+  const answer = await rl.question(`${question} (y/n): `);
+  rl.close();
+  return ['y', 'yes'].includes(answer.trim().toLowerCase());
+}
+
+async function main() {
+  // Define a tool that requires approval for certain inputs
+  const getWeatherTool = tool({
+    name: 'get_weather',
+    description: 'Get the weather for a given city',
+    parameters: z.object({ city: z.string() }),
+    async execute({ city }) {
+      return `The weather in ${city} is sunny.`;
+    },
+  });
+
+  const weatherAgent = new Agent({
+    name: 'Weather agent',
+    instructions: 'You provide weather information.',
+    handoffDescription: 'Handles weather-related queries',
+    tools: [getWeatherTool],
+  });
+
+  const getTemperatureTool = tool({
+    name: 'get_temperature',
+    description: 'Get the temperature for a given city',
+    parameters: z.object({
+      city: z.string(),
+    }),
+    needsApproval: async (_ctx, { city }) => city.includes('Oakland'),
+    execute: async ({ city }) => {
+      return `The temperature in ${city} is 20° Celsius`;
+    },
+  });
+
+  const mainAgent = new Agent({
+    name: 'Main agent',
+    instructions:
+      'You are a general assistant. For weather questions, call the weather agent tool with a short input string and then answer.',
+    tools: [
+      getTemperatureTool,
+      weatherAgent.asTool({
+        toolName: 'ask_weather_agent',
+        toolDescription:
+          'Ask the weather agent about locations by passing a short input.',
+        // Require approval when the generated input mentions San Francisco.
+        needsApproval: async (_ctx, { input }) =>
+          input.includes('San Francisco'),
+      }),
+    ],
+  });
+
+  let stream = await run(
+    mainAgent,
+    'What is the weather and temperature in San Francisco and Oakland? Use available tools as needed.',
+    { stream: true },
+  );
+  stream.toTextStream({ compatibleWithNodeStreams: true }).pipe(process.stdout);
+  await stream.completed;
+
+  while (stream.interruptions?.length) {
+    console.log(
+      'Human-in-the-loop: approval required for the following tool calls:',
+    );
+    const state = stream.state;
+    for (const interruption of stream.interruptions) {
+      const ok = await confirm(
+        `Agent ${interruption.agent.name} would like to use the tool ${interruption.rawItem.name} with "${interruption.rawItem.arguments}". Do you approve?`,
+      );
+      if (ok) {
+        state.approve(interruption);
+      } else {
+        state.reject(interruption);
+      }
+    }
+
+    // Resume execution with streaming output
+    stream = await run(mainAgent, state, { stream: true });
+    const textStream = stream.toTextStream({ compatibleWithNodeStreams: true });
+    textStream.pipe(process.stdout);
+    await stream.completed;
+  }
+
+  console.log('\n\nDone');
+}
+
+main().catch((error) => {
+  console.error(error);
+  process.exit(1);
+});
+
+
+Tips
+Remember to wait for stream.completed before exiting to ensure all output has been flushed. Keep the stream visible until the user confirms they have read it!
+The initial { stream: true } option only applies to the call where it is provided. If you re-run with a RunState you must specify the option again.
+If your application only cares about the textual result prefer toTextStream() to avoid dealing with individual event objects.
+With streaming and the event system you can integrate an agent into a chat interface, terminal application or any place where users benefit from incremental updates.
+
+
 Can architect clean abstractions for complex workflows, specifically synthesizing fragmented information gathered over thousands of parallel, asynchronous queries.
 Care deeply about code quality, performance profiling, and building the stable, scalable platform that allows research to run autonomously.

@@ -18,6 +18,8 @@ export interface Arc3AgentOptions {
   model?: string;
   maxTurns?: number;
   reasoningEffort?: 'minimal' | 'low' | 'medium' | 'high';
+  systemPromptPresetId?: 'twitch' | 'playbook' | 'none';
+  skipDefaultSystemPrompt?: boolean;
 }
 
 export interface Arc3AgentStreamState {
@@ -83,6 +85,10 @@ export function useArc3AgentStream() {
     streamingStatus: 'idle',
   });
   const sseRef = useRef<EventSource | null>(null);
+  const latestGuidRef = useRef<string | null>(null);  // Track latest guid synchronously to prevent race conditions
+  const latestGameIdRef = useRef<string | null>(null);  // CRITICAL: Track gameId in sync with guid to prevent mismatch
+  const isPendingActionRef = useRef(false);  // CRITICAL: Ref-based lock for synchronous check (state has stale closure issue)
+  const [isPendingManualAction, setIsPendingManualAction] = useState(false);  // State for UI updates (disable buttons)
   const streamingEnabled = isStreamingEnabled();
 
   const closeEventSource = useCallback(() => {
@@ -126,6 +132,8 @@ export function useArc3AgentStream() {
             model: options.model,
             maxTurns: options.maxTurns,
             reasoningEffort: options.reasoningEffort || 'low',
+            systemPromptPresetId: options.systemPromptPresetId,
+            skipDefaultSystemPrompt: options.skipDefaultSystemPrompt,
           });
 
           const prepareData = await prepareResponse.json();
@@ -152,10 +160,13 @@ export function useArc3AgentStream() {
           const response = await apiRequest('POST', '/api/arc3/real-game/run', {
             game_id: options.game_id || 'ls20',  // Match API property name
             agentName: options.agentName,
+            systemPrompt: options.systemPrompt,
             instructions: options.instructions,
             model: options.model,
             maxTurns: options.maxTurns,
             reasoningEffort: options.reasoningEffort || 'low',
+            systemPromptPresetId: options.systemPromptPresetId,
+            skipDefaultSystemPrompt: options.skipDefaultSystemPrompt,
           });
 
           const result = await response.json();
@@ -323,6 +334,26 @@ export function useArc3AgentStream() {
       }
     });
 
+    eventSource.addEventListener('agent.loop_hint', (evt) => {
+      try {
+        const data = JSON.parse((evt as MessageEvent<string>).data);
+        console.log('[ARC3 Stream] Loop hint:', data);
+
+        setState((prev) => ({
+          ...prev,
+          streamingMessage: data.message || 'Agent is rethinking strategy...',
+          timeline: [...prev.timeline, {
+            index: prev.timeline.length,
+            type: 'assistant_message' as const,
+            label: 'Loop hint',
+            content: data.message || 'No score change detected; trying alternate strategy.',
+          }],
+        }));
+      } catch (error) {
+        console.error('[ARC3 Stream] Failed to parse agent.loop_hint payload:', error);
+      }
+    });
+
     eventSource.addEventListener('agent.reasoning', (evt) => {
       try {
         const data = JSON.parse((evt as MessageEvent<string>).data);
@@ -428,6 +459,13 @@ export function useArc3AgentStream() {
           action: data.action // Add action metadata from event
         };
 
+        // NOTE: Do NOT update latestGuidRef here - guid is set ONCE during initializeGameSession
+        // and must remain constant throughout the session (per ARC3 API spec)
+        // Only update gameId ref for tracking purposes
+        if (frameWithAction.game_id) {
+          latestGameIdRef.current = frameWithAction.game_id;
+        }
+
         setState((prev) => ({
           ...prev,
           frames: data.frameIndex === prev.frames.length
@@ -446,6 +484,14 @@ export function useArc3AgentStream() {
       try {
         const data = JSON.parse((evt as MessageEvent<string>).data);
         console.log('[ARC3 Stream] Agent completed:', data);
+
+        // Update refs with final guid AND gameId for potential manual actions after agent completes
+        if (data.gameGuid) {
+          latestGuidRef.current = data.gameGuid;
+        }
+        if (data.gameId) {
+          latestGameIdRef.current = data.gameId;
+        }
 
         setState((prev) => ({
           ...prev,
@@ -590,12 +636,39 @@ export function useArc3AgentStream() {
 
   const executeManualAction = useCallback(
     async (action: string, coordinates?: [number, number]) => {
-      if (!state.gameGuid || !state.gameId) {
+      // CRITICAL: Check ref FIRST for synchronous lock (state check has stale closure issue)
+      // If user clicks rapidly, the state-based check might not have updated yet
+      if (isPendingActionRef.current) {
+        console.warn('[ARC3 Manual Action] Blocked by ref lock - action already in progress');
+        throw new Error('Another action is in progress. Please wait.');
+      }
+
+      // CRITICAL: Set ref lock IMMEDIATELY before any async work
+      isPendingActionRef.current = true;
+
+      // CRITICAL: Use BOTH refs (not state) to avoid guid/gameId mismatch when user rapidly switches games
+      // The refs are updated synchronously in initializeGameSession, while state updates are async
+      const currentGuid = latestGuidRef.current || state.gameGuid;
+      const currentGameId = latestGameIdRef.current || state.gameId;
+
+      if (!currentGuid || !currentGameId) {
+        isPendingActionRef.current = false;  // Release lock on early exit
         throw new Error('No active game session. Start a game first.');
       }
 
       try {
-        console.log('[ARC3 Manual Action] Executing:', { action, coordinates, currentGuid: state.gameGuid, gameId: state.gameId });
+        setIsPendingManualAction(true);  // Also set state for UI updates (disable buttons after re-render)
+
+        console.log('[ARC3 Manual Action] Executing:', {
+          action,
+          coordinates,
+          currentGuid,
+          gameId: currentGameId,
+          usingRefGuid: latestGuidRef.current !== null,
+          usingRefGameId: latestGameIdRef.current !== null,
+          stateGuid: state.gameGuid,
+          stateGameId: state.gameId,
+        });
 
         setState(prev => ({
           ...prev,
@@ -603,8 +676,8 @@ export function useArc3AgentStream() {
         }));
 
         const response = await apiRequest('POST', '/api/arc3/manual-action', {
-          game_id: state.gameId,
-          guid: state.gameGuid,
+          game_id: currentGameId,
+          guid: currentGuid,  // Use latest guid from ref
           action,
           coordinates,
         });
@@ -625,19 +698,10 @@ export function useArc3AgentStream() {
           available_actions: frameData.available_actions,
         });
 
-        // CRITICAL DEBUG: Log the actual frame structure
-        console.log('[ARC3 Manual Action] RAW frameData object:', frameData);
-        console.log('[ARC3 Manual Action] frameData.frame type:', typeof frameData.frame);
-        console.log('[ARC3 Manual Action] frameData.frame is Array?', Array.isArray(frameData.frame));
-        if (frameData.frame && Array.isArray(frameData.frame)) {
-          console.log('[ARC3 Manual Action] frameData.frame[0] type:', typeof frameData.frame[0]);
-          console.log('[ARC3 Manual Action] frameData.frame[0] is Array?', Array.isArray(frameData.frame[0]));
-          if (frameData.frame[0] && Array.isArray(frameData.frame[0])) {
-            console.log('[ARC3 Manual Action] frameData.frame[0][0] type:', typeof frameData.frame[0][0]);
-            console.log('[ARC3 Manual Action] frameData.frame[0][0] is Array?', Array.isArray(frameData.frame[0][0]));
-            console.log('[ARC3 Manual Action] frameData.frame[0][0] sample:', frameData.frame[0][0]?.slice(0, 5));
-          }
-        }
+        // NOTE: Do NOT update latestGuidRef here - guid is set ONCE during initializeGameSession
+        // and must remain constant throughout the session (per ARC3 API spec)
+        // Only update gameId ref for tracking purposes
+        latestGameIdRef.current = frameData.game_id;
 
         // Add action metadata to frame
         const frameWithAction = {
@@ -648,19 +712,19 @@ export function useArc3AgentStream() {
           },
         };
 
-        // Update state with new frame AND update gameGuid if it changed
+        // Update state with new frame (guid stays constant per ARC3 API spec)
         setState(prev => {
           const newFrameIndex = prev.frames.length;
           console.log('[ARC3 Manual Action] Updating state:', {
             newFrameIndex,
-            newGuid: frameData.guid,
-            previousGuid: prev.gameGuid,
-            guidChanged: frameData.guid !== prev.gameGuid,
+            sessionGuid: prev.gameGuid,
+            responseGuid: frameData.guid,
+            guidsMatch: frameData.guid === prev.gameGuid,
           });
 
           return {
             ...prev,
-            gameGuid: frameData.guid,  // CRITICAL: Update the guid for next action
+            // NOTE: Do NOT update gameGuid here - it's set once during initializeGameSession
             frames: [...prev.frames, frameWithAction],
             currentFrameIndex: newFrameIndex,
             streamingMessage: `${action} completed`,
@@ -684,9 +748,13 @@ export function useArc3AgentStream() {
           error: errorMessage,
         }));
         throw error;
+      } finally {
+        // CRITICAL: Release BOTH locks - ref first (synchronous), then state (async UI update)
+        isPendingActionRef.current = false;
+        setIsPendingManualAction(false);
       }
     },
-    [state.gameGuid, state.gameId]
+    [state.gameGuid, state.gameId]  // Removed isPendingManualAction - now using ref for lock check
   );
 
   const initializeGameSession = useCallback((frameData: any) => {
@@ -701,6 +769,11 @@ export function useArc3AgentStream() {
         length: frameData.frame[0]?.length,
       } : null,
     });
+
+    // CRITICAL: Set BOTH refs immediately so manual actions work right away
+    // State updates are async, but refs are synchronous - prevents guid/gameId mismatch
+    latestGuidRef.current = frameData.guid;
+    latestGameIdRef.current = frameData.game_id;
 
     setState(prev => ({
       ...prev,
@@ -739,5 +812,6 @@ export function useArc3AgentStream() {
     setCurrentFrame,
     currentFrame: state.frames[state.currentFrameIndex] || null,
     isPlaying: state.status === 'running' && state.streamingStatus === 'in_progress',
+    isPendingManualAction,  // Lock state for disabling action buttons during execution
   };
 }

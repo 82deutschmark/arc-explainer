@@ -559,6 +559,10 @@ export interface SnakeBenchRunMatchRequest {
   height?: number;
   maxRounds?: number;
   numApples?: number;
+  /** Optional per-request BYO API key (never stored/logged) */
+  apiKey?: string;
+  /** Optional provider for BYO key; if omitted, defaults to OpenRouter */
+  provider?: 'openrouter' | 'openai' | 'anthropic' | 'xai' | 'gemini';
 }
 
 export interface SnakeBenchRunMatchResult {
@@ -637,6 +641,44 @@ export interface SnakeBenchHealthResponse {
   runnerExists: boolean;
   message?: string;
   timestamp: number;
+}
+
+/**
+ * Worm Arena streaming status (lightweight, matches other streaming flows).
+ */
+export interface WormArenaStreamStatus {
+  state: 'idle' | 'starting' | 'in_progress' | 'completed' | 'failed';
+  phase?: string;
+  message?: string;
+  round?: number;
+  tokenUsage?: {
+    input?: number;
+    output?: number;
+    reasoning?: number;
+  };
+}
+
+/**
+ * Single frame event for live Worm Arena streaming.
+ */
+export interface WormArenaFrameEvent {
+  round: number;
+  frame: any;
+  timestamp: number;
+}
+
+/**
+ * Final summary for a live Worm Arena match.
+ */
+export interface WormArenaFinalSummary {
+  gameId: string;
+  modelA: string;
+  modelB: string;
+  scores: Record<string, number>;
+  results: Record<string, SnakeBenchResultLabel>;
+  roundsPlayed?: number;
+  startedAt?: string;
+  completedAt?: string;
 }
 
 /**

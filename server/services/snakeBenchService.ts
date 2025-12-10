@@ -23,6 +23,8 @@ import type {
   SnakeBenchHealthResponse,
 } from '../../shared/types.js';
 import { logger } from '../utils/logger.ts';
+import { repositoryService } from '../repositories/RepositoryService.ts';
+import { MODELS } from '../config/models.ts';
 
 const MIN_BOARD_SIZE = 4;
 const MAX_BOARD_SIZE = 50;
@@ -31,6 +33,7 @@ const MAX_MAX_ROUNDS = 500;
 const MIN_NUM_APPLES = 1;
 const MAX_NUM_APPLES = 20;
 const MAX_BATCH_COUNT = 10;
+const DEFAULT_SNAKEBENCH_TIMEOUT_MS = 4 * 60 * 60 * 1000; // 4 hours (safe for 2+ hour matches)
 
 function clamp(value: number, min: number, max: number): number {
   if (!Number.isFinite(value)) return min;
@@ -53,11 +56,114 @@ export class SnakeBenchService {
     return path.join(process.cwd(), 'external', 'SnakeBench', 'backend');
   }
 
+  private resolveCompletedDir(): string {
+    return path.join(this.resolveBackendDir(), 'completed_games');
+  }
+
+  private async upsertGameIndex(completedGamePath: string | undefined, fallbackGameId: string, models: { modelA: string; modelB: string }): Promise<void> {
+    if (!completedGamePath) return;
+
+    const completedDir = this.resolveCompletedDir();
+    const indexPath = path.join(completedDir, 'game_index.json');
+
+    try {
+      await fs.promises.mkdir(completedDir, { recursive: true });
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      logger.warn(`SnakeBenchService.upsertGameIndex: failed to ensure completed_games directory: ${msg}`, 'snakebench-service');
+      return;
+    }
+
+    let payload: any = null;
+    try {
+      const raw = await fs.promises.readFile(completedGamePath, 'utf8');
+      payload = JSON.parse(raw);
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      logger.warn(`SnakeBenchService.upsertGameIndex: failed to read ${completedGamePath}: ${msg}`, 'snakebench-service');
+      return;
+    }
+
+    const gameBlock = payload?.game ?? payload?.metadata ?? {};
+    const metadata = payload?.metadata ?? {};
+    const totals = payload?.totals ?? {};
+
+    const gameId: string = gameBlock.id ?? metadata.game_id ?? fallbackGameId ?? '';
+    if (!gameId) return;
+
+    const filename = path.basename(completedGamePath);
+    const startedAt = metadata.start_time ?? gameBlock.started_at ?? '';
+    const endTime = metadata.end_time ?? gameBlock.ended_at ?? '';
+    const actualRounds = Number(metadata.actual_rounds ?? gameBlock.rounds_played ?? 0) || 0;
+
+    const scoreSource = metadata.final_scores ?? totals.scores ?? {};
+    const totalScore = Object.values(scoreSource).reduce<number>((acc, val) => {
+      const num = typeof val === 'number' ? val : Number(val);
+      return acc + (Number.isFinite(num) ? num : 0);
+    }, 0);
+
+    const entry = {
+      game_id: gameId,
+      filename,
+      start_time: startedAt,
+      end_time: endTime,
+      total_score: totalScore,
+      actual_rounds: actualRounds,
+      model_a: models.modelA,
+      model_b: models.modelB,
+    };
+
+    let existing: any[] = [];
+    try {
+      if (fs.existsSync(indexPath)) {
+        const rawIndex = await fs.promises.readFile(indexPath, 'utf8');
+        const parsed = JSON.parse(rawIndex);
+        if (Array.isArray(parsed)) existing = parsed;
+      }
+    } catch {
+      existing = [];
+    }
+
+    const filtered = existing.filter((e) => (e.game_id ?? e.gameId) !== gameId);
+    filtered.push(entry);
+
+    filtered.sort((a, b) => {
+      const at = new Date(a.start_time ?? a.startTime ?? 0).getTime();
+      const bt = new Date(b.start_time ?? b.startTime ?? 0).getTime();
+      return bt - at;
+    });
+
+    try {
+      await fs.promises.writeFile(indexPath, JSON.stringify(filtered, null, 2), 'utf8');
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      logger.warn(`SnakeBenchService.upsertGameIndex: failed to write index: ${msg}`, 'snakebench-service');
+    }
+  }
+
   async runMatch(request: SnakeBenchRunMatchRequest): Promise<SnakeBenchRunMatchResult> {
     const { modelA, modelB } = request;
 
     if (!modelA || !modelB) {
       throw new Error('modelA and modelB are required');
+    }
+
+    // NEW: Validate models against project's canonical MODELS list (source of truth)
+    const snakeBenchModels = MODELS
+      .filter((m) => m.provider === 'OpenRouter')
+      .map((m) => m.apiModelName || m.key);
+
+    if (!snakeBenchModels.includes(modelA)) {
+      throw new Error(
+        `Model '${modelA}' not available for SnakeBench. ` +
+        `Available models: ${snakeBenchModels.join(', ')}`
+      );
+    }
+    if (!snakeBenchModels.includes(modelB)) {
+      throw new Error(
+        `Model '${modelB}' not available for SnakeBench. ` +
+        `Available models: ${snakeBenchModels.join(', ')}`
+      );
     }
 
     const widthRaw = request.width ?? 10;
@@ -81,6 +187,7 @@ export class SnakeBenchService {
 
     const pythonBin = this.resolvePythonBin();
     const runnerPath = this.resolveRunnerPath();
+    const backendDir = this.resolveBackendDir();
 
     const env: NodeJS.ProcessEnv = {
       ...process.env,
@@ -88,8 +195,39 @@ export class SnakeBenchService {
       PYTHONUTF8: '1',
     };
 
+    // BYO API key handling (Poetiq-style)
+    if (request.apiKey && request.provider) {
+      switch (request.provider) {
+        case 'openrouter':
+          env.OPENROUTER_API_KEY = request.apiKey;
+          break;
+        case 'openai':
+          env.OPENAI_API_KEY = request.apiKey;
+          break;
+        case 'anthropic':
+          env.ANTHROPIC_API_KEY = request.apiKey;
+          break;
+        case 'xai':
+          env.XAI_API_KEY = request.apiKey;
+          break;
+        case 'gemini':
+          env.GEMINI_API_KEY = request.apiKey;
+          break;
+        default:
+          logger.warn(
+            `SnakeBench runMatch: unsupported provider "${request.provider}" for BYO key; falling back to server keys`,
+            'snakebench-service',
+          );
+      }
+    } else if (request.apiKey || request.provider) {
+      logger.warn(
+        `SnakeBench runMatch: both apiKey and provider must be provided together; using server keys`,
+        'snakebench-service',
+      );
+    }
+
     const spawnOpts: SpawnOptions = {
-      cwd: path.dirname(runnerPath),
+      cwd: backendDir,
       env,
       stdio: ['pipe', 'pipe', 'pipe'],
     };
@@ -100,6 +238,25 @@ export class SnakeBenchService {
       if (!child.stdout || !child.stderr || !child.stdin) {
         return reject(new Error('Python process streams not available for SnakeBench runner'));
       }
+
+      // NEW: Add configurable timeout to prevent hung processes (default 4 hours, safe for 2+ hour matches)
+      const timeoutMs = process.env.SNAKEBENCH_TIMEOUT_MS
+        ? parseInt(process.env.SNAKEBENCH_TIMEOUT_MS, 10)
+        : DEFAULT_SNAKEBENCH_TIMEOUT_MS;
+
+      const timeoutHandle = setTimeout(() => {
+        child.kill('SIGTERM');
+        const mins = Math.round(timeoutMs / (60 * 1000));
+        logger.error(
+          `SnakeBench runner timeout (${mins} minutes exceeded). Process killed. ` +
+          `Configure via SNAKEBENCH_TIMEOUT_MS env var if longer matches are needed.`,
+          'snakebench-service',
+        );
+        reject(new Error(
+          `SnakeBench runner timeout (${mins} minutes exceeded). ` +
+          `For longer matches, set SNAKEBENCH_TIMEOUT_MS environment variable.`
+        ));
+      }, timeoutMs);
 
       child.stdout.setEncoding('utf8');
       child.stderr.setEncoding('utf8');
@@ -116,6 +273,7 @@ export class SnakeBenchService {
       });
 
       child.on('close', (code: number | null) => {
+        clearTimeout(timeoutHandle);
         if (code !== 0) {
           const errSnippet = (stderrBuf || stdoutBuf).trim().slice(0, 500);
           logger.error(
@@ -159,10 +317,28 @@ export class SnakeBenchService {
           completedGamePath: parsed.completed_game_path ?? parsed.completedGamePath,
         };
 
+        // Fire-and-forget persistence into SnakeBench-compatible tables.
+        try {
+          void repositoryService.snakeBench.recordMatchFromResult({
+            result,
+            width,
+            height,
+            numApples,
+            gameType: 'arc-explainer',
+          });
+        } catch (persistErr) {
+          const msg = persistErr instanceof Error ? persistErr.message : String(persistErr);
+          logger.warn(`SnakeBenchService.runMatch: failed to enqueue DB persistence: ${msg}`, 'snakebench-service');
+        }
+
+        // Fire-and-forget filesystem index update to mirror upstream game_index.json expectations.
+        void this.upsertGameIndex(result.completedGamePath, result.gameId, { modelA, modelB });
+
         resolve(result);
       });
 
       child.on('error', (err) => {
+        clearTimeout(timeoutHandle);
         logger.error(
           `Failed to spawn SnakeBench runner: ${err instanceof Error ? err.message : String(err)}`,
           'snakebench-service',
@@ -175,6 +351,7 @@ export class SnakeBenchService {
         child.stdin.write(JSON.stringify(payload));
         child.stdin.end();
       } catch (err) {
+        clearTimeout(timeoutHandle);
         logger.error(
           `Failed to send payload to SnakeBench runner: ${err instanceof Error ? err.message : String(err)}`,
           'snakebench-service',
@@ -216,6 +393,24 @@ export class SnakeBenchService {
   }
 
   async listGames(limit: number = 20): Promise<{ games: SnakeBenchGameSummary[]; total: number }> {
+    const safeLimit = Math.max(1, Math.min(limit ?? 20, 100));
+
+    // Prefer database-backed summaries when available (Phase II/III),
+    // but gracefully fall back to filesystem index if DB is unavailable
+    // or has no SnakeBench rows yet.
+    try {
+      const { games, total } = await repositoryService.snakeBench.getRecentGames(safeLimit);
+      if (total > 0 && games.length > 0) {
+        return { games, total };
+      }
+    } catch (dbErr) {
+      const msg = dbErr instanceof Error ? dbErr.message : String(dbErr);
+      logger.warn(
+        `SnakeBenchService.listGames: DB-backed recent games failed, falling back to filesystem: ${msg}`,
+        'snakebench-service',
+      );
+    }
+
     const backendDir = this.resolveBackendDir();
     const completedDir = path.join(backendDir, 'completed_games');
     const indexPath = path.join(completedDir, 'game_index.json');
@@ -239,7 +434,7 @@ export class SnakeBenchService {
         return bt - at;
       });
 
-      const slice = entries.slice(0, Math.max(1, Math.min(limit, 100)));
+      const slice = entries.slice(0, safeLimit);
 
       const games: SnakeBenchGameSummary[] = slice.map((entry) => {
         const gameId = String(entry.game_id ?? entry.gameId ?? '');
@@ -284,26 +479,37 @@ export class SnakeBenchService {
         try {
           const raw = await fs.promises.readFile(indexPath, 'utf8');
           const entries: any[] = JSON.parse(raw);
-          const match = Array.isArray(entries)
-            ? entries.find((e) => String(e.game_id ?? e.gameId) === gameId)
-            : undefined;
-          if (match && match.filename) {
-            filename = String(match.filename);
+          const entry = entries.find((e) => (e.game_id ?? e.gameId) === gameId);
+          if (entry?.filename) {
+            filename = String(entry.filename);
             candidate = path.join(completedDir, filename);
           }
-        } catch (err) {
-          const message = err instanceof Error ? err.message : String(err);
-          logger.error(`Failed to read SnakeBench game_index.json: ${message}`, 'snakebench-service');
+        } catch {
+          // continue to error below
         }
       }
     }
 
     if (!fs.existsSync(candidate)) {
-      throw new Error(`SnakeBench game not found for id ${gameId}`);
+      throw new Error(`Game not found: ${gameId}`);
     }
 
-    const raw = await fs.promises.readFile(candidate, 'utf8');
-    return JSON.parse(raw);
+    try {
+      const raw = await fs.promises.readFile(candidate, 'utf8');
+      return JSON.parse(raw);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
+      logger.error(`Failed to read SnakeBench game ${gameId}: ${message}`, 'snakebench-service');
+      throw new Error(`Failed to read game ${gameId}`);
+    }
+  }
+
+  async getRecentActivity(days: number = 7): Promise<{ days: number; gamesPlayed: number; uniqueModels: number }> {
+    return await repositoryService.snakeBench.getRecentActivity(days);
+  }
+
+  async getBasicLeaderboard(limit: number = 10, sortBy: 'gamesPlayed' | 'winRate' = 'gamesPlayed'): Promise<Array<{ modelSlug: string; gamesPlayed: number; wins: number; losses: number; ties: number; winRate?: number }>> {
+    return await repositoryService.snakeBench.getBasicLeaderboard(limit, sortBy);
   }
 
   async healthCheck(): Promise<SnakeBenchHealthResponse> {

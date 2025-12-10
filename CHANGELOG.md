@@ -1,6 +1,329 @@
 ## ARC Explainer
 - Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top with the time and date!
 
+### Version 5.47.26  Dec 9, 2025 (PENDING TESTING)
+
+- **Worm Arena page: three-column farm layout + modular controls** (Author: Cascade)
+  - Implemented a new `WormArena` page with a three-column layout (reasoning left/right, ASCII board center) using the earthy farm palette and larger monospace reasoning text from the redesign plan.
+  - Refactored the local Worm Arena experience to keep page code lean by delegating playback UI to `WormArenaControls` and match configuration to `WormArenaSetup`, while WormArena.tsx focuses on layout and state wiring.
+  - Reused existing SnakeBench hooks for match execution and replay (`useSnakeBenchMatch`, `useSnakeBenchRecentGames`, `useSnakeBenchGame`) so no new backend routes were required.
+  - **Files Created**: `client/src/pages/WormArena.tsx`
+  - **Files Modified**: `client/src/pages/WormArena.tsx`, `CHANGELOG.md`
+
+### Version 5.47.25  Dec 9, 2025 (PENDING TESTING)
+
+- **Worm Arena replay controls component** (Author: Cascade)
+  - Captured a focused plan for text-first Worm Arena replay controls in `docs/plans/2025-12-09-worm-arena-controls-plan.md`, clarifying responsibilities, props, and wording.
+  - Implemented `WormArenacontrol.tsx` as a self-contained replay controls component, wiring it into `SnakeArena.tsx` so transport controls (first/prev/play/pause/next/last) and replay error/loading text live in a dedicated component instead of the page.
+  - **Files Created**: `docs/plans/2025-12-09-worm-arena-controls-plan.md`, `client/src/components/WormArenacontrol.tsx`
+  - **Files Modified**: `client/src/pages/SnakeArena.tsx`, `CHANGELOG.md`
+
+### Version 5.47.24  Dec 9, 2025 (PENDING TESTING)
+
+- **Worm Arena replays + SnakeBench file parity** (Author: Codex)
+  - Point SnakeBench runner working dir at the upstream backend so completed game JSON files land in `external/SnakeBench/backend/completed_games` exactly like upstream, and mirror `game_index.json` entries after every run for compatibility.
+  - Added replay fetch hook and Worm Arena UI that lists local games, loads full replay JSON, and renders ASCII timelines with playback controls instead of embedding the official SnakeBench iframe.
+  - **Files Modified**: `server/services/snakeBenchService.ts`, `client/src/hooks/useSnakeBench.ts`, `client/src/pages/SnakeArena.tsx`, `CHANGELOG.md`
+
+### Version 5.47.23  Dec 9, 2025 (PENDING TESTING)
+
+- **SnakeBench DB compatibility and minimal summaries** (Author: Cascade)
+  - Added SnakeBench-compatible tables (`public.models`, `public.games`, `public.game_participants`) in `DatabaseSchema.initialize()` aligned to `docs/SNAKE_BENCH_DB.md` for future dataset merging.
+  - Implemented `SnakeBenchRepository` with `recordMatchFromResult` for minimal match logging (upserts models, inserts game, inserts two participants) and `getRecentGames` for lightweight summaries.
+  - Integrated repository into `SnakeBenchService`: matches now log to Postgres when available; `/api/snakebench/games` prefers DB-backed summaries with filesystem fallback.
+  - Wired repository via `RepositoryService.snakeBench`; existing UI recent-games panel automatically benefits without API changes.
+  - **Files Modified**: `server/repositories/database/DatabaseSchema.ts`, `server/repositories/SnakeBenchRepository.ts`, `server/repositories/RepositoryService.ts`, `server/services/snakeBenchService.ts`, `CHANGELOG.md`
+
+### Version 5.47.22  Dec 9, 2025 (PENDING TESTING)
+
+- **SnakeBench gap report** (Author: Codex)
+  - Cataloged prior SnakeBench integration attempts (submodule, runner/service/routes, and env-based embed wiring) and noted the broken VITE_SNAKEBENCH_URL configuration that forced us to hard-code the iframe URL.
+  - Documented the current blockers: missing replay indexing (`game_index.json` never produced), absent dependency/env guidance, no model mapping/validation, lack of pythonBridge-style timeouts/observability, sequential batch runs with no persistence/leaderboards, and hard-coded frontend targets with no staging/local override.
+  - **Files Modified**: `docs/2025-12-09-snakebench-gap-assessment.md`, `CHANGELOG.md`
+
+### Version 5.47.21  Dec 8, 2025 (PENDING TESTING)
+
+- **ARC3 frames: handle multi-frame payloads** (Author: Codex)
+  - Updated ARC3 frame typing and extraction to support collections of frames (4D arrays) by always selecting the latest frame/layer when comparing grids.
+  - Prevents downstream tools (diff/analysis) from assuming a single-frame 3D array and missing changes.
+  - **Files Modified**: `server/services/arc3/Arc3ApiClient.ts`, `server/services/arc3/helpers/frameAnalysis.ts`, `CHANGELOG.md`
+
+### Version 5.47.20  Dec 8, 2025 (PENDING TESTING)
+
+- **ARC3 scorecards: open per run + normalize actions** (Author: Codex)
+  - Open a brand-new ARC3 scorecard for every start/run (web UI, streaming, and backend runner) instead of reusing a bootstrap card; propagate the card_id into RESET calls so each session is properly tracked.
+  - Normalize available_actions to strings and default action_counter to 0 from the API responses to prevent “no-op” UI states when the service returns numeric tokens or null counters.
+  - Require card_id on manual RESET calls and expose card_id from `/api/arc3/start-game` so hybrid/manual flows stay aligned with per-run scorecards.
+  - **Files Modified**: `server/services/arc3/Arc3ApiClient.ts`, `server/services/arc3/Arc3RealGameRunner.ts`, `server/services/arc3/Arc3StreamService.ts`, `server/routes/arc3.ts`, `docs/plans/2025-12-08-arc3-scorecard-per-run-plan.md`, `CHANGELOG.md`
+
+### Version 5.47.19  Dec 8, 2025 (PENDING TESTING)
+
+- **ARC3 Agent Playground: system prompt presets + Playbook default** (Author: Cascade)
+  - Switched the ARC3 real-game runner to use the Playbook-style meta-policy prompt as the default system prompt whenever no explicit system prompt is provided.
+  - Added a small preset registry for one-word ARC3 system prompt modes (`twitch`, `playbook`, `none`) with a new `/api/arc3/system-prompts` metadata endpoint and `/api/arc3/system-prompts/:id` for fetching full prompt bodies.
+  - Extended ARC3 run config and streaming payloads with `systemPromptPresetId` and `skipDefaultSystemPrompt` so both streaming and non-streaming runs can trace which preset was used and cleanly disable all defaults when requested.
+  - Updated the ARC3 Agent Playground configuration panel to include a simple System Prompt Preset dropdown above the System Prompt textarea, wiring selections through to the backend and allowing a strict "no base system prompt" mode.
+  - **Files Modified**: `server/services/arc3/prompts.ts`, `server/services/arc3/types.ts`, `server/services/arc3/Arc3RealGameRunner.ts`, `server/services/arc3/Arc3StreamService.ts`, `server/routes/arc3.ts`, `client/src/hooks/useArc3AgentStream.ts`, `client/src/pages/ARC3AgentPlayground.tsx`, `client/src/components/arc3/Arc3ConfigurationPanel.tsx`, `CHANGELOG.md`
+
+### Version 5.47.18  Dec 8, 2025 (PENDING TESTING)
+
+- **Hall of Fame: spotlight The ARChitects 2025 Solution Summary** (Author: Codex)
+  - Added a banner just below the ARC Hall of Fame header so Daniel Franzen 1*, Jan Disselhoff 1*, and David Hartmann 2* are introduced alongside the ARC Prize 2025 Solution Summary link (`https://lambdalabsml.github.io/ARC2025_Solution_by_the_ARChitects/`) and their JGU Mainz / Lambda, Inc. affiliations before visitors reach the cards.
+  - Updated the ARChitects 2025 seed entry to call out The ARChitects Kaggle team, include the LambdaLabs solution summary link, and reinforce the required keywords so the people cards honor the paper.
+  - Captured the intent in `docs/2025-12-08-architects-hall-of-fame-plan.md` before making the UI/data edits.
+  - **Files Modified**: `client/src/pages/HumanTradingCards.tsx`, `server/scripts/seedContributors.ts`, `docs/2025-12-08-architects-hall-of-fame-plan.md`, `CHANGELOG.md`
+
+### Version 5.47.17  Dec 8, 2025 (PENDING TESTING)
+
+- **Research terminal: highlight The ARChitects ARC Prize 2025 solution** (Author: Codex)
+  - Inserted the LambdaLabs-hosted ARC Prize 2025 Solution Summary link for The ARChitects Kaggle team into the Papers panel so the keywords ARC Prize 2025 Solution Summary, Daniel Franzen 1*, Jan Disselhoff 1*, David Hartmann 2*, and The ARChitects appear front and center.
+  - Added a dedicated research banner under the panels listing 1 JGU Mainz, 2 Lambda, Inc., and noting * “The ARChitects” Kaggle team members while pointing again to https://lambdalabsml.github.io/ARC2025_Solution_by_the_ARChitects/.
+  - Logged the intent via docs/2025-12-08-reference-material-plan.md before coding and recorded the component/changelog updates here.
+  - **Files Modified**: `client/src/components/browser/ReferenceMaterial.tsx`, `docs/2025-12-08-reference-material-plan.md`, `CHANGELOG.md`
+
+### Version 5.47.16  Dec 8, 2025 (PENDING TESTING)
+
+- **ARC3 Agent Playground: high-contrast Actions JSON stream** (Author: Cascade)
+  - Darkened the JSON text color and boosted the background/border contrast in the left-hand Actions panel so tool call results are readable even on bright displays.
+  - Color-coded tool call vs tool result entries with stronger indigo/emerald tints and a subtle ring highlight on the most recent active action.
+  - Kept the taller scroll area and auto-scroll behavior so the latest ACTION1–ACTION7 events remain visible while streaming.
+  - **Files Modified**: `client/src/components/arc3/Arc3ToolTimeline.tsx`, `CHANGELOG.md`
+
+### Version 5.47.15  Dec 8, 2025
+
+- **Add GLM 4.6V (Vision) model via OpenRouter** (Author: Claude Code using Opus 4.5)
+  - Added `z-ai/glm-4.6v` multimodal model configuration: 131K context, 24K max output, $0.30/$0.90 pricing.
+  - Supports vision, native multimodal function calling, interleaved image-text generation, and UI reconstruction workflows.
+  - **Files Modified**: `server/config/models.ts:1041-1058`, `CHANGELOG.md`
+
+### Version 5.47.14  Dec 8, 2025 (PENDING TESTING)
+
+- **ARC3 Agent Playground: enlarge Actions stream UI & JSON viewer** (Author: Cascade)
+  - Increased font sizes and vertical spacing for the left-hand Actions timeline so tool calls like ACTION1–ACTION7 stay legible during long runs.
+  - Extended the Actions panel scroll box to use more of the viewport height on large screens and added auto-scroll to keep the latest entry in view while the agent is streaming.
+  - Switched the tool call / result body to a full pretty-printed JSON block in a highlighted code-style container instead of a tiny truncated snippet.
+  - **Files Modified**: `client/src/components/arc3/Arc3ToolTimeline.tsx`, `client/src/pages/ARC3AgentPlayground.tsx`, `CHANGELOG.md`
+
+### Version 5.47.11  Dec 8, 2025 (PENDING TESTING)
+
+- **ARC-AGI-3 Playground: add analyze_grid Python tool for grid analysis** (Author: Cascade)
+  - Added an `analyze_grid` tool to the ARC3 real-game Agent runner so agents can execute sandboxed Python code for programmatic grid analysis (connected components, symmetry, bounding boxes, color counts) without flooding context with raw numeric frames.
+  - Wired the tool into both non-streaming and streaming `Arc3RealGameRunner` paths, including structured `agent.tool_call` / `agent.tool_result` events in the streaming timeline and reuse of the existing `executeGridAnalysis` helper for Python execution, timeouts, and output limits.
+  - Extended the ARC3 Agent Playbook with guidance on when and how to use `analyze_grid` during per-game setup and exploration, plus a dedicated reference section describing the available helpers and typical use cases.
+  - **Files Modified**: `server/services/arc3/Arc3RealGameRunner.ts`, `docs/reference/arc3/ARC3_Agent_Playbook.md`, `CHANGELOG.md`
+
+### Version 5.47.11  Dec 8, 2025 (PENDING TESTING)
+
+- **ARC3 continuation: server-cached frames + safer chaining** (Author: Codex)
+  - Cache the last ARC3 frame server-side after streaming runs and reuse it during continuation so clients aren’t forced to resend frames; only 400 when no cached frame exists and none is provided.
+  - Continue to default `previousResponseId` from stored `providerResponseId` and deliver clear 400s instead of 500s when chaining data is missing.
+  - Updated continuation plan to reflect the cache-first flow for ARC3 continuations.
+  - **Files Modified**: `server/routes/arc3.ts`, `server/services/arc3/Arc3StreamService.ts`, `docs/plans/2025-12-08-arc3-streaming-continuation-fix-plan.md`, `CHANGELOG.md`
+
+### Version 5.47.12  Dec 8, 2025 (PENDING TESTING)
+
+- **ARC3 agent: keep running + loop hints** (Author: Codex)
+  - Raised default max turns to an effectively unlimited value and updated UI controls to avoid auto-pausing; the agent now stops only on cancel or game end.
+  - Added a simple loop detector that emits non-blocking hints when score hasn’t changed after multiple actions (no forced pause).
+  - Wired loop hints into the frontend timeline and messaging, and kept user-message flow intact while runs stay active.
+  - **Files Modified**: `server/services/arc3/utils/constants.ts`, `server/services/arc3/Arc3RealGameRunner.ts`, `client/src/pages/ARC3AgentPlayground.tsx`, `client/src/components/arc3/Arc3ConfigurationPanel.tsx`, `client/src/components/arc3/Arc3AgentConfigPanel.tsx`, `client/src/hooks/useArc3AgentStream.ts`, `CHANGELOG.md`
+
+### Version 5.47.13  Dec 8, 2025 (PENDING TESTING)
+
+- **ARC3 continuation: tolerate partial frames** (Author: Codex)
+  - Relaxed continuation frame parsing to merge client-provided frames with cached server frames, preventing Zod errors when `action_counter`/`max_actions` are absent from the request.
+  - Kept validation to require a usable frame when continuing an existing game, but now fall back to cached data before returning errors.
+  - **Files Modified**: `server/routes/arc3.ts`, `CHANGELOG.md`
+
+### Version 5.47.14  Dec 8, 2025 (PENDING TESTING)
+
+- **ARC3 continuation: cache-first frame selection + verbose logs** (Author: Codex)
+  - Prefer the cached server frame for continuation; only use a client frame if it is fully populated, and log the chosen source.
+  - Added explicit logging when caching frames after streaming/continuation runs.
+  - **Files Modified**: `server/routes/arc3.ts`, `server/services/arc3/Arc3StreamService.ts`, `CHANGELOG.md`
+
+### Version 5.47.15  Dec 8, 2025 (PENDING TESTING)
+
+- **ARC3 Responses API calls include tracing metadata** (Author: Codex)
+  - Added provider `metadata` to Responses API calls (via Agents SDK providerData) carrying sessionId, gameGuid, frameHash, frameIndex, and previousResponseId for traceability.
+  - Passed sessionId through streaming run configs so metadata is populated; frame hash is computed server-side.
+  - **Files Modified**: `server/services/arc3/Arc3RealGameRunner.ts`, `server/services/arc3/Arc3StreamService.ts`, `server/services/arc3/types.ts`, `CHANGELOG.md`
+
+### Version 5.47.16  Dec 8, 2025 (PENDING TESTING)
+
+- **ARC3 continuation: no hard stop when seed frame is missing** (Author: Codex)
+  - If no usable seed frame is available for an existing game guid, the continue endpoint now falls back to starting a fresh session instead of 400-ing, with a warning log.
+  - Keeps cache-first frame selection and logs the chosen source.
+  - **Files Modified**: `server/routes/arc3.ts`, `CHANGELOG.md`
+
+### Version 5.47.10  Dec 8, 2025 (PENDING TESTING)
+
+- **ARC3 continuation: guard chaining inputs** (Author: Codex)
+  - Hardened `/api/arc3/stream/:sessionId/continue` to fall back to the stored `providerResponseId` when the client lacks a `previousResponseId`, and return clear 400 errors instead of generic 500s when chaining data is missing.
+  - Added defensive validation that refuses ARC3 continuations without a seed frame when reusing an existing game guid, preventing silent state corruption.
+  - Documented the remediation steps in a dedicated plan for tracking and validation.
+  - **Files Modified**: `server/routes/arc3.ts`, `docs/plans/2025-12-08-arc3-streaming-continuation-fix-plan.md`, `CHANGELOG.md`
+
+### Version 5.47.9  Dec 7, 2025 (PENDING TESTING)
+
+- **ARC-AGI-3: Attach agent reasoning to ARC3 scorecards (streaming path)** (Author: Cascade)
+  - Extended `Arc3ApiClient.executeAction` to accept an optional `reasoning` payload and forward it to the ARC3 `/api/cmd/ACTION*` endpoints so scorecards can store per-action reasoning blobs.
+  - Updated the streaming `Arc3RealGameRunner` tools for `ACTION1`–`ACTION5` and `ACTION6` to pass a compact JSON reasoning object built from the accumulated streaming reasoning text (truncated well under the 16 KB ARC3 limit) on every ARC3 action call.
+  - Added `opaque` metadata when opening ARC3 scorecards for both the web UI router and the streaming service so ARC-side scorecards clearly record that runs originate from the arc-explainer playground.
+  - **Files Modified**: `server/services/arc3/Arc3ApiClient.ts`, `server/services/arc3/Arc3RealGameRunner.ts`, `server/routes/arc3.ts`, `server/services/arc3/Arc3StreamService.ts`, `CHANGELOG.md`
+
+### Version 5.47.8  Dec 7, 2025 (PENDING TESTING)
+
+- **Docs: ARC-AGI-3 prompt alignment plan** (Author: Cascade)
+  - Captured a concrete plan for aligning the ARC-AGI-3 agent system prompt with the new `ARC3_Agent_Playbook` while preserving the Twitch/Gen-Z streamer UX and simple, non-jargony tone.
+  - Described proposed prompt structure (role, "brain habits", tool-call commentary rules, narration template, and final report guidance) plus phased implementation and validation steps.
+  - **Files Created**: `docs/plans/prompts/2025-12-07-arc3-prompt-alignment-plan.md`
+
+### Version 5.47.7  Dec 7, 2025 (PENDING TESTING)
+
+- **Docs: ARC-AGI-3 Agent Playbook for future agents** (Author: Cascade)
+  - Captured a structured "mental playbook" for ARC-AGI-3 agents, describing how to think in novel games, run targeted experiments, build compact world models, and plan efficient action sequences.
+  - Added harness and tooling recommendations (state diffs, memory, schemas, planning helpers) so future agents can better close the gap with humans on interactive reasoning tasks.
+  - **Files Created**: `docs/reference/arc3/ARC3_Agent_Playbook.md`
+
+### Version 5.47.6  Dec 7, 2025 (PENDING TESTING)
+
+- **ARC-AGI-3: front-facing copy and metadata audit** (Author: Cascade)
+  - Audited `/arc3` landing copy and ARC-AGI-3 games index text against the updated ARC3 spec and public preview docs, softening speculative language about timelines, offline engines, Python libraries, and step counts.
+  - Updated ARC-AGI-3 game spoiler pages so descriptions and spoiler warnings more accurately reflect what is actually documented today (rather than promising complete hints/strategies).
+  - Tightened shared `ARC3_GAMES` metadata: aligned ls20/ft09 summaries with official descriptions, and made lp85/sp80/vc33 clearly marked as evaluation holdouts with intentionally minimal mechanics detail.
+  - **Files Modified**: `client/src/pages/ARC3Browser.tsx`, `client/src/pages/Arc3GamesBrowser.tsx`, `client/src/pages/Arc3GameSpoiler.tsx`, `shared/arc3Games.ts`
+
+### Version 5.47.5  Dec 7, 2025 (PENDING TESTING)
+
+- **ARC-AGI-3 Playground: Complete component decomposition (Phase 1 & Phase 3)** (Author: Claude Code using Sonnet 4.5)
+  - Extracted monolithic 839-line playground into focused, reusable components following SRP.
+  - **Phase 1**: Created `Arc3GamePanel` consolidating grid visualization, action buttons, layer/timestep navigation, and frame navigation in single render cycle to fix double-click issues caused by parent-child state update lag.
+  - **Phase 3 Decomposition**:
+    - Created `Arc3ConfigurationPanel` - Ultra-compact config UI with system prompt (collapsible), user prompt, model selection (OpenAI only), reasoning effort, max turns, and start/stop controls.
+    - Created `Arc3AgentControls` - User message injection card for continuing agent exploration after pause/completion.
+    - Created `Arc3AgentVisionPreview` - Displays base64 PNG image showing what vision-enabled agent sees when inspecting game state (extracted from `inspect_game_state` tool results).
+  - Slimmed `ARC3AgentPlayground.tsx` to composition layer handling URL state, hook wiring, and structured data extraction.
+  - Fixed color legend to use shared Arc3 16-color palette from `shared/config/arc3Colors.ts` as single source of truth.
+  - **Why**: Massive SRP violation (964 lines, multiple responsibilities). Now follows established pattern of focused components with clear boundaries.
+  - **Files Created**: `client/src/components/arc3/Arc3GamePanel.tsx`, `client/src/components/arc3/Arc3ConfigurationPanel.tsx`, `client/src/components/arc3/Arc3AgentControls.tsx`, `client/src/components/arc3/Arc3AgentVisionPreview.tsx`
+  - **Files Modified**: `client/src/pages/ARC3AgentPlayground.tsx:9-25,217-282,376-407,435-455`, `docs/plans/2025-12-07-arc3-playground-improvements-plan.md:6,10-55`, `CHANGELOG.md`
+
+### Version 5.47.4  Dec 7, 2025 (PENDING TESTING)
+
+- **ARC-AGI-3 browser: modular reference panel** (Author: Codex)
+  - Extracted the reference materials segment into `client/src/components/arc3/Arc3References.tsx` so the layout and metadata stay consistent whenever ARC-AGI-3 resources are reused.
+  - Updated `ARC3Browser` to render the new component instead of inline markup, reducing duplication and making the layout easier to evolve in the future.
+  - **Files Modified**: `client/src/pages/ARC3Browser.tsx`, `client/src/components/arc3/Arc3References.tsx`, `CHANGELOG.md`
+
+### Version 5.47.3  Dec 7, 2025 (PENDING TESTING)
+
+- **ARC-AGI-3 browser: highlight preview learnings blog** (Author: Codex)
+  - Added a dedicated Preview Learnings resource card to the `/arc3` landing grid so the ARC-AGI-3 preview 30-day learnings blog sits alongside the platform, docs, and competition links.
+  - Removed the former duplicate entry from the Reference Materials list to keep the blog reference focused in the new card.
+  - **Files Modified**: `client/src/pages/ARC3Browser.tsx`, `CHANGELOG.md`
+
+### Version 5.47.2  Dec 7, 2025 (PENDING TESTING)
+
+- **Docs: Clean up ARC-AGI-3 spec Markdown formatting** (Author: Cascade)
+  - Removed the outer code block wrapper from `docs/reference/arc3/ARC3.md` so the ARC-AGI-3 spec renders as standard Markdown instead of a fenced text blob.
+  - Simplified the checklist Actions line by dropping the redundant inline `RESET`/`ACTION1`–`ACTION7` enumeration, keeping the rest of the environment checklist intact.
+
+### Version 5.47.1  Dec 7, 2025 (PENDING TESTING)
+
+- **ARC-AGI-3 Playground: Extract Arc3ToolTimeline & Arc3ReasoningViewer components** (Author: Cascade)
+  - Extracted the inline "Actions" card from `ARC3AgentPlayground.tsx` into a reusable `Arc3ToolTimeline` component under `client/src/components/arc3/Arc3ToolTimeline.tsx`, keeping rendering and behavior identical.
+  - Extracted the right-hand "Agent Reasoning" card (including reasoning + assistant messages and streaming reasoning block) into `Arc3ReasoningViewer` at `client/src/components/arc3/Arc3ReasoningViewer.tsx`, preserving the existing auto-scroll behavior.
+  - The playground page now imports both components and passes the existing `toolEntries` and `state.timeline`/streaming fields, preparing the layout for further decomposition without changing UX.
+  - **Files Created**: `client/src/components/arc3/Arc3ToolTimeline.tsx`, `client/src/components/arc3/Arc3ReasoningViewer.tsx`
+  - **Files Modified**: `client/src/pages/ARC3AgentPlayground.tsx`, `CHANGELOG.md`, `docs/plans/2025-12-07-arc3-playground-improvements-plan.md`
+
+### Version 5.47.0  Dec 7, 2025 (PENDING TESTING)
+
+- **ARC-AGI-3 Playground: Add vision support with base64 grid images** (Author: Claude Code using Opus 4.5)
+  - Added server-side grid-to-PNG rendering for Arc3 games using the correct 16-color Arc3 palette (0-15).
+  - The `inspect_game_state` tool now returns a `frameImage` field containing a base64 PNG data URL alongside the numeric grid data.
+  - Vision-capable models (GPT-4o, Claude 3, Grok-2-Vision) can now "see" the grid instead of parsing numeric arrays.
+  - Optimized for 64×64 grids: 8px cell size produces 512×512px images.
+  - Created shared Arc3 color palette (`shared/config/arc3Colors.ts`) with RGB tuples, hex values, and human-readable names.
+  - **Why**: Research shows "GPT-4's reliance on textual encodings impedes effective problem solving" on ARC tasks. Visual input enables spatial reasoning.
+  - **Files Created**: `shared/config/arc3Colors.ts`, `server/services/arc3/arc3GridImageService.ts`
+  - **Files Modified**: `server/services/arc3/Arc3RealGameRunner.ts:22,126-132,403-409,139-140,416-417`, `CHANGELOG.md`
+
+### Version 5.46.9  Dec 7, 2025 (PENDING TESTING)
+
+- **ARC-AGI-3 as66: add level 8 screenshot metadata** (Author: Cascade)
+  - Extended Always Sliding (as66) level screenshots to include `/as66-lvl8.png` as level 8 via the shared `levelScreenshots` structure so the Level 8 card appears in the Screenshots tab alongside levels 3 and 4.
+  - **Files**: `shared/arc3Games.ts`, `CHANGELOG.md`
+
+### Version 5.46.8  Dec 6, 2025 (PENDING TESTING)
+
+- **ARC-AGI-3 as66: add level 4 screenshot metadata** (Author: Cascade)
+  - Extended Always Sliding (as66) level screenshots to include `/as66-lvl4.png` so both levels 3 and 4 appear in the Screenshots tab via the shared `levelScreenshots` structure.
+  - **Files**: `shared/arc3Games.ts`, `CHANGELOG.md`
+
+### Version 5.46.7  Dec 6, 2025 (PENDING TESTING)
+
+- **ARC-AGI-3 as66: add level 3 screenshot metadata** (Author: Cascade)
+  - Added an initial level screenshot entry for Always Sliding (as66) pointing to `/as66-lvl3.png` via the shared `levelScreenshots` structure so level 3 appears in the Screenshots tab on the game spoiler page.
+  - **Files**: `shared/arc3Games.ts`, `CHANGELOG.md`
+
+### Version 5.46.6  Dec 6, 2025 (PENDING TESTING)
+
+- **ARC-AGI-3 ls20: add level 5 screenshot metadata** (Author: Cascade)
+  - Added a second level screenshot entry for Locksmith (ls20) pointing to `/ls20-lvl5.png` via the shared `levelScreenshots` structure so both levels 4 and 5 appear in the Screenshots tab on the game spoiler page.
+  - **Files**: `shared/arc3Games.ts`, `CHANGELOG.md`
+
+### Version 5.46.5  Dec 6, 2025 (PENDING TESTING)
+
+- **ARC-AGI-3 Playground: Sync game selection with URL parameters** (Author: Claude Code using Sonnet 4.5)
+  - Fixed game selector not updating URL when switching games - URL now updates to `?game=<gameId>` when selecting different games.
+  - Added `useLocation` and `useSearch` from wouter to read and update URL query parameters.
+  - Initial game now loads from URL param (`?game=ft09`) instead of hardcoded default, enabling direct links to specific games.
+  - Page refresh now preserves selected game state via URL params.
+  - Browser back/forward buttons now work for game navigation.
+  - **Issue**: Selecting different game only updated UI, URL stayed unchanged (e.g., stuck on `?game=ft09`), breaking refresh, sharing, and browser history.
+  - **Root Cause**: Game selector only called `setGameId()` and `fetchGameGrid()`, never updated URL state.
+  - **Files Modified**: `client/src/pages/ARC3AgentPlayground.tsx:18,119-125,148,218,448-453`, `CHANGELOG.md`
+
+### Version 5.46.4  Dec 6, 2025 (PENDING TESTING)
+
+- **ARC-AGI-3 ls20: add level 4 screenshot metadata** (Author: Cascade)
+  - Wired the Locksmith (ls20) game metadata to use the new `/ls20-lvl4.png` asset as a level screenshot via the shared `levelScreenshots` structure, mirroring the existing FT-09 screenshot configuration so it appears in the Screenshots tab on the game spoiler page.
+  - **Files**: `shared/arc3Games.ts`, `CHANGELOG.md`
+
+### Version 5.46.3  Dec 6, 2025 (PENDING TESTING)
+
+- **ARC-AGI-3 prompt: add official ACTION6 guidance** (Author: GPT-5 (Codex))
+  - Updated the ARC3 default prompt to embed official docs details for ACTION6 coordinates (required x,y 0-63), simple action expectations, and optional reasoning blob guidance, while keeping the Twitch-streamer tone and action narration requirements.
+  - Cleaned prompt logging instructions and refreshed header metadata to reflect current ownership/date.
+  - Added a planning note documenting the prompt-doc alignment steps.
+  - **Files Modified**: `server/services/arc3/prompts.ts`, `docs/2025-12-06-arc3-prompt-docs-plan.md`
+
+### Version 5.46.2  Dec 6, 2025 (PENDING TESTING)
+
+- **ARC-AGI-3 Playground: Add automatic layer animation for multi-layer frames** (Author: Claude Code using Sonnet 4.5)
+  - Fixed grid not animating after actions - now automatically animates through frame layers 0 → 1 → 2 → ... → N showing objects falling/moving in real-time (matches official ARC Prize site behavior).
+  - Added `animatingLayerIndex` state and `animationTimerRef` to track and control automatic layer progression.
+  - Animation plays at 120ms per layer for smooth visual feedback showing intermediate game states.
+  - Animation automatically stops when reaching final layer or when user manually selects a layer via slider.
+  - **Issue**: Grid only updated once per action, not showing intermediate states (falling objects, motion, etc.).
+  - **Root Cause**: Code was defaulting to show last layer immediately (`resolvedCurrentFrame.length - 1`) instead of animating through layers sequentially.
+  - **Files Modified**: `client/src/pages/ARC3AgentPlayground.tsx:305-379`, `CHANGELOG.md`
+
+### Version 5.46.1  Dec 6, 2025 (PENDING TESTING)
+
+- **ARC-AGI-3 Playground: Fix manual action guid race condition** (Author: Claude Code using Sonnet 4.5)
+  - Fixed critical race condition where rapid manual action clicks caused actions to execute on stale game state (wrong guid).
+  - Added `latestGuidRef` useRef to track current guid synchronously, preventing React state lag during rapid clicks.
+  - Added `isPendingManualAction` lock to prevent concurrent manual actions - buttons now disable while action is executing.
+  - Updated `executeManualAction` to use ref guid instead of state guid, and update ref immediately before setState.
+  - Updated `initializeGameSession` and SSE event listeners (`game.frame_update`, `agent.completed`) to sync latestGuidRef.
+  - Action buttons now show "Another action is in progress. Please wait..." tooltip when disabled due to pending action.
+  - **Issue**: Actions appeared delayed or wrong (e.g., clicking Action 4 → sees right movement, clicking Action 1 → sees diagonal movement).
+  - **Root Cause**: Second click used guid from before first action completed, causing ARC3 API to apply action to outdated game state.
+  - **Files Modified**: `client/src/hooks/useArc3AgentStream.ts:86-87,596-699,715-716,433-436,457-460,755`, `client/src/pages/ARC3AgentPlayground.tsx:223,654,661-667`, `CHANGELOG.md`
+
 ### Version 5.46.0  Dec 6, 2025 (PENDING TESTING)
 
 - **ARC-AGI-3 Level Screenshots System** (Author: Claude Code using Sonnet 4.5)
