@@ -24,6 +24,7 @@ import type {
 } from '../../shared/types.js';
 import { logger } from '../utils/logger.ts';
 import { repositoryService } from '../repositories/RepositoryService.ts';
+import { snakeBenchIngestQueue } from './snakeBenchIngestQueue.ts';
 import { MODELS } from '../config/models.ts';
 
 const MIN_BOARD_SIZE = 4;
@@ -346,9 +347,9 @@ export class SnakeBenchService {
           completedGamePath: parsed.completed_game_path ?? parsed.completedGamePath,
         };
 
-        // Fire-and-forget persistence into SnakeBench-compatible tables.
+        // Fire-and-forget persistence via the ingest queue (no lossy fallbacks).
         try {
-          void repositoryService.snakeBench.recordMatchFromResult({
+          snakeBenchIngestQueue.enqueue({
             result,
             width,
             height,
