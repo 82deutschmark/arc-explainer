@@ -72,7 +72,7 @@ const WormArenaGameBoard: React.FC<WormArenaGameBoardProps> = ({
     const apples: Array<[number, number]> = frame?.state?.apples ?? [];
     const snakes: Record<string, Array<[number, number]>> = frame?.state?.snakes ?? {};
 
-    // Draw apples first (🍎 or 🟩)
+    // Draw apples first (🍎)
     ctx.font = `${Math.floor(cellSize * 0.8)}px "Segoe UI Emoji", "Apple Color Emoji", sans-serif`;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';

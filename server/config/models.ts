@@ -609,7 +609,7 @@ export const MODELS: ModelConfig[] = [
     name: 'OpenAI GPT-OSS 120B',
     color: 'bg-blue-400',
     premium: false,
-    cost: { input: '$0.072', output: '$0.28' },
+    cost: { input: '$0.05', output: '$0.45' },
     supportsTemperature: false,
     provider: 'OpenRouter',
     responseTime: { speed: 'moderate', estimate: '30-60 sec' },
