@@ -22,6 +22,7 @@ interface WormArenaHeaderProps {
   totalGames?: number;
   actionSlot?: React.ReactNode;
   links?: WormArenaHeaderLink[];
+  showMatchupLabel?: boolean;
 }
 
 export default function WormArenaHeader({
@@ -29,24 +30,28 @@ export default function WormArenaHeader({
   totalGames = 0,
   actionSlot,
   links = [],
+  showMatchupLabel = true,
 }: WormArenaHeaderProps) {
   return (
-    <header className="relative overflow-hidden" style={{ backgroundColor: '#2d1f0f', borderBottom: '3px solid #d4a574' }}>
+    <header
+      className="relative overflow-hidden"
+      style={{ backgroundColor: '#2d1f0f', borderBottom: '3px solid #d4a574', minHeight: '64px' }}
+    >
       {/* Animated background pattern */}
       <div className="absolute inset-0 opacity-10 pointer-events-none" style={{
         backgroundImage: `radial-gradient(circle at 20% 50%, rgba(212, 165, 116, 0.1) 0%, transparent 50%),
                           radial-gradient(circle at 80% 80%, rgba(139, 90, 43, 0.1) 0%, transparent 50%)`,
       }} />
 
-      <div className="relative px-8 py-8 max-w-7xl mx-auto">
-        <div className="flex items-center justify-between gap-6">
+      <div className="relative px-6 py-2 max-w-7xl mx-auto">
+        <div className="flex items-center justify-between gap-4">
           {/* Left: Creative Worm Title */}
-          <div className="flex-1 flex flex-col gap-2">
+          <div className="flex-1 flex flex-col gap-1.5">
             {/* Main Title with Worm Emojis */}
-            <div className="flex items-center gap-3 flex-wrap">
-              <span style={{ fontSize: '28px' }}>🐛</span>
+            <div className="flex items-center gap-2 flex-wrap">
+              <span style={{ fontSize: '18px' }}>🐛</span>
               <h1
-                className="text-5xl font-bold tracking-tight"
+                className="text-2xl font-bold tracking-tight leading-tight"
                 style={{
                   color: '#f5e6d3',
                   fontFamily: '"Fredoka Expanded", "Fredoka", sans-serif',
@@ -56,11 +61,11 @@ export default function WormArenaHeader({
               >
                 Worm Arena
               </h1>
-              <span style={{ fontSize: '28px', animation: 'float 3s ease-in-out infinite' }}>🐛</span>
+              <span style={{ fontSize: '18px', animation: 'float 3s ease-in-out infinite' }}>🐛</span>
             </div>
 
             {links.length > 0 && (
-              <nav className="flex items-center gap-4 flex-wrap text-base font-semibold">
+              <nav className="flex items-center gap-3 flex-wrap text-sm font-semibold">
                 {links.map((link) => (
                   <Link
                     key={link.href}
@@ -79,7 +84,7 @@ export default function WormArenaHeader({
             )}
 
             {/* Subtitle with stats and decorative worms */}
-            <div className="flex items-center gap-3 text-sm" style={{ color: '#d4a574' }}>
+            <div className="flex items-center gap-2 text-xs" style={{ color: '#d4a574' }}>
               <span>🌱</span>
               <span style={{ fontFamily: '"Fredoka", sans-serif', fontWeight: 500 }}>
                 {totalGames > 0 ? `${totalGames} matches played` : 'Launch your first battle'}
@@ -92,19 +97,10 @@ export default function WormArenaHeader({
           {actionSlot && <div className="flex items-center gap-4">{actionSlot}</div>}
         </div>
 
-        {/* Bottom decorative worm crawl */}
-        {!matchupLabel && (
-          <div className="mt-6 flex gap-2 text-xl opacity-60 animate-pulse" style={{ color: '#d4a574' }}>
-            <span>🐛</span>
-            <span style={{ opacity: 0.4 }}>🐛</span>
-            <span style={{ opacity: 0.2 }}>🐛</span>
-          </div>
-        )}
-
-        {/* Matchup Label if present */}
-        {matchupLabel && (
-          <div className="mt-4 text-center text-sm font-medium" style={{ color: '#d4a574' }}>
-            Next: <span style={{ color: '#f5e6d3' }}>{matchupLabel}</span>
+        {/* Matchup Label intentionally hidden unless explicitly requested */}
+        {matchupLabel && showMatchupLabel && (
+          <div className="mt-1 text-center text-xs font-medium" style={{ color: '#d4a574' }}>
+            <span style={{ color: '#f5e6d3' }}>{matchupLabel}</span>
           </div>
         )}
       </div>

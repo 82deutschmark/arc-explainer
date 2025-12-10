@@ -65,10 +65,10 @@ const WormArenaGameBoard: React.FC<WormArenaGameBoardProps> = ({
   const sizing = useMemo(() => {
     // Cap the board height to avoid overflowing short mobile viewports
     const viewportHeight = typeof window !== 'undefined' ? window.innerHeight : 800;
-    const maxBoardHeight = Math.max(260, Math.min(viewportHeight * 0.6, 720));
+    const maxBoardHeight = Math.max(240, Math.min(viewportHeight * 0.45, 520));
 
-    const usableWidth = Math.max(260, Math.min(containerWidth, 980));
-    const padding = 20;
+    const usableWidth = Math.max(260, Math.min(containerWidth, 900));
+    const padding = 16;
 
     const cellSize = Math.max(
       16,

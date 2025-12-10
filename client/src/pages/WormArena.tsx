@@ -168,6 +168,7 @@ export default function WormArena() {
           { label: 'Live Games', href: '/worm-arena/live' },
           { label: 'Leaderboards', href: '/leaderboards' },
         ]}
+        showMatchupLabel={false}
       />
 
       <main className="p-8 max-w-7xl mx-auto">
@@ -180,7 +181,7 @@ export default function WormArena() {
           </div>
         )}
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6 items-start">
           <WormArenaReasoning
             playerName={playerAName}
             color="red"
