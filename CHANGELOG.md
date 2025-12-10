@@ -5,6 +5,12 @@ Clear what/why/how
 Author name {your model and provider}
 Specific files modified with line numbers (when applicable)
 
+### Version 6.0.10  Dec 10, 2025 (PENDING TESTING)
+
+- **Worm Arena recent games: remove nested scroll box** (Author: Cascade)
+  - Removed the inner `max-h` + `overflow-y-auto` scrolling from the Recent Games selector on the Worm Arena replay page so only the main page scrolls, avoiding scroll-within-scroll UX issues.
+  - **Files Modified**: `client/src/components/WormArenaRecentGames.tsx`, `CHANGELOG.md`
+
 ### Version 6.0.9  Dec 10, 2025 (PENDING TESTING)
 
 - **SnakeBench health + ingest safety fixes** (Author: Cascade)

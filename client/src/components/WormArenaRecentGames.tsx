@@ -33,7 +33,7 @@ export default function WormArenaRecentGames({
       <h4 className="font-medium mb-2 text-sm" style={{ color: '#3d2817' }}>
         Recent Games
       </h4>
-      <div className="border rounded bg-white/80 max-h-32 overflow-y-auto text-xs">
+      <div className="border rounded bg-white/80 text-xs">
         {isLoading && (
           <div className="p-2" style={{ color: '#7a6b5f' }}>
             Loading games...
