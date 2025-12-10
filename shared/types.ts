@@ -643,6 +643,62 @@ export interface SnakeBenchHealthResponse {
   timestamp: number;
 }
 
+export interface SnakeBenchArcExplainerStats {
+  totalGames: number;
+  activeModels: number;
+  topApples: number;
+  totalCost: number;
+}
+
+export interface SnakeBenchModelRating {
+  modelSlug: string;
+  mu: number;
+  sigma: number;
+  exposed: number;
+  displayScore: number;
+  wins: number;
+  losses: number;
+  ties: number;
+  applesEaten: number;
+  gamesPlayed: number;
+  isActive?: boolean;
+}
+
+export interface SnakeBenchModelMatchHistoryEntry {
+  gameId: string;
+  startedAt: string;
+  opponentSlug: string;
+  result: SnakeBenchResultLabel;
+  myScore: number;
+  opponentScore: number;
+  rounds: number;
+  deathReason: string | null;
+  boardWidth: number;
+  boardHeight: number;
+}
+
+export interface SnakeBenchStatsResponse {
+  success: boolean;
+  stats: SnakeBenchArcExplainerStats;
+  error?: string;
+  timestamp: number;
+}
+
+export interface SnakeBenchModelRatingResponse {
+  success: boolean;
+  rating?: SnakeBenchModelRating | null;
+  error?: string;
+  timestamp: number;
+}
+
+export interface SnakeBenchModelHistoryResponse {
+  success: boolean;
+  modelSlug: string;
+  history: SnakeBenchModelMatchHistoryEntry[];
+  error?: string;
+  timestamp: number;
+}
+
 /**
  * Worm Arena streaming status (lightweight, matches other streaming flows).
  */

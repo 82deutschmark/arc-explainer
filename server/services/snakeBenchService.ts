@@ -22,6 +22,9 @@ import type {
   SnakeBenchRunBatchResult,
   SnakeBenchGameSummary,
   SnakeBenchHealthResponse,
+  SnakeBenchArcExplainerStats,
+  SnakeBenchModelRating,
+  SnakeBenchModelMatchHistoryEntry,
 } from '../../shared/types.js';
 import { logger } from '../utils/logger.ts';
 import { repositoryService } from '../repositories/RepositoryService.ts';
@@ -520,9 +523,9 @@ export class SnakeBenchService {
         }
       }
     } catch (err) {
-      const message = err instanceof Error ? err.message : String(err);
+      const msg = err instanceof Error ? err.message : String(err);
       logger.warn(
-        `SnakeBenchService.getGame: failed to fetch replay_path from DB for ${gameId}: ${message}`,
+        `SnakeBenchService.getGame: failed to fetch replay_path from DB for ${gameId}: ${msg}`,
         'snakebench-service',
       );
     }
@@ -629,6 +632,19 @@ export class SnakeBenchService {
 
   async getBasicLeaderboard(limit: number = 10, sortBy: 'gamesPlayed' | 'winRate' = 'gamesPlayed'): Promise<Array<{ modelSlug: string; gamesPlayed: number; wins: number; losses: number; ties: number; winRate?: number }>> {
     return await repositoryService.snakeBench.getBasicLeaderboard(limit, sortBy);
+  }
+
+  async getArcExplainerStats(): Promise<SnakeBenchArcExplainerStats> {
+    return await repositoryService.snakeBench.getArcExplainerStats();
+  }
+
+  async getModelRating(modelSlug: string): Promise<SnakeBenchModelRating | null> {
+    return await repositoryService.snakeBench.getModelRating(modelSlug);
+  }
+
+  async getModelMatchHistory(modelSlug: string, limit?: number): Promise<SnakeBenchModelMatchHistoryEntry[]> {
+    const safeLimit = limit != null && Number.isFinite(limit) ? Number(limit) : 50;
+    return await repositoryService.snakeBench.getModelMatchHistory(modelSlug, safeLimit);
   }
 
   async healthCheck(): Promise<SnakeBenchHealthResponse> {

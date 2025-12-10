@@ -186,6 +186,49 @@ Top-to-bottom structure (desktop):
 - Explicitly note:
   - “9 games is a rule of thumb: we can stop earlier if sigma is already low, or continue playing for more precision.”
 
+### 3.4 Visual design direction ("competitive research terminal")
+
+- **Overall vibe**
+  - Blend a **retro-futuristic research terminal** look with the existing **Worm Arena farm** aesthetic.
+  - Info-dense but readable; feels like a placement “lab” for models rather than a toy game.
+
+- **Palette (adapted)**
+  - Deep background: **forest green** `#1a2f23` (used in panels/accents, not full-page override of current farm background).
+  - Light surfaces: **cream** `#faf6f1` for cards and stats strip backgrounds.
+  - Accent: **terracotta rust** `#c85a3a` for key highlights (badges, loss/negative deltas, section headers).
+  - Positive accent: **lime green** `#9ece6a` for wins, upward trends, “placement complete” states.
+  - Implement as CSS variables / Tailwind theme extensions so we stay consistent with the existing design system.
+
+- **Typography**
+  - Keep global app fonts, but **nod to designer intent**:
+    - Headings: slightly more playful weight/roundness (Fredoka-like) via Tailwind classes on titles.
+    - Data: monospaced or “code-like” font (Fira-Code-like) for rating numbers and table cells (reuse any existing mono font token if configured).
+
+- **Layout**
+  - Desktop: **two-pane layout**
+    - Left: **Model selector sidebar** (search + list of models) with a subtle vertical divider.
+    - Right: **Main dashboard** stacking:
+      1. Model summary header.
+      2. Four TrueSkill metric cards (µ, σ, pessimistic rating, display score).
+      3. 9-game placement progress bar with small worm/apple icons.
+      4. Aggregate stats (wins/losses/ties/apples).
+      5. Dense match history table.
+      6. Info callout explaining TrueSkill.
+  - Mobile: sidebar collapses into a **top model selector** above the main content; sections stack vertically.
+
+- **Styling details**
+  - Use existing **shadcn/ui** components (Card, Input, Table, Badge) — no custom component library.
+  - **Glow / emphasis** only on a few key metrics (e.g., display score card, current placement status), using soft box-shadows or subtle border glows in the accent colors.
+  - Optional **grid/terminal overlay** on the main background (very low-contrast lines) to hint at a “research terminal” without hurting readability.
+  - Respect existing Worm Arena backgrounds (e.g., farm soil color); stats page can blend soil background + green/cream cards.
+
+- **Data, not mockups**
+  - Unlike the designer’s original note, we will **not use mock data**.
+  - All cards, charts, and tables must be wired to the real Phase I backend endpoints:
+    - `/api/snakebench/stats`
+    - `/api/snakebench/model-rating`
+    - `/api/snakebench/model-history`
+
 ---
 
 ## 4. Data Model & Backend APIs
