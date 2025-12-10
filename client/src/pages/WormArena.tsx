@@ -14,6 +14,8 @@ import useWormArenaStreaming from '@/hooks/useWormArenaStreaming';
 import WormArenaSetup from '@/components/WormArenaSetup';
 import WormArenaControls from '@/components/WormArenaControls';
 import WormArenaGameBoard from '@/components/WormArenaGameBoard';
+import WormArenaHeader from '@/components/WormArenaHeader';
+import WormArenaReasoning from '@/components/WormArenaReasoning';
 
 import type { ModelConfig, SnakeBenchRunMatchRequest } from '@shared/types';
 
@@ -84,6 +86,7 @@ export default function WormArena() {
   const [frameIndex, setFrameIndex] = React.useState<number>(0);
   const [isPlaying, setIsPlaying] = React.useState<boolean>(false);
   const [isConfigExpanded, setIsConfigExpanded] = React.useState<boolean>(false);
+  const [showNextMove, setShowNextMove] = React.useState<boolean>(true);
   const { startMatch: startLiveMatch, isStarting } = useWormArenaStreaming();
   const [launchNotice, setLaunchNotice] = React.useState<string | null>(null);
 
@@ -240,48 +243,60 @@ export default function WormArena() {
       <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
       <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
 
-      {/* Header */}
-      <header className="px-8 py-6 border-b" style={{ borderColor: '#d4b5a0' }}>
-        <div className="flex items-center justify-between">
-          <h1 className="text-3xl font-bold" style={{ color: '#3d2817' }}>🌱 Worm Arena</h1>
-          <nav className="flex gap-4">
-            <button className="text-sm hover:underline" style={{ color: '#7a6b5f' }}>Live Games</button>
-            <button className="text-sm hover:underline" style={{ color: '#7a6b5f' }}>Leaderboards</button>
-          </nav>
-        </div>
-      </header>
+      {/* New Worm Arena Header with integrated play button */}
+      <WormArenaHeader
+        isRunning={isRunning || isStarting}
+        isStarting={isStarting}
+        onPlayClick={handleRunMatch}
+        matchupLabel={matchupLabel}
+        totalGames={total}
+      />
 
       <main className="p-8">
-        {/* Matchup Title */}
-        <div className="text-center mb-6">
-          <h2 className="text-xl font-medium mb-2" style={{ color: '#3d2817' }}>
-            {matchupLabel}
-          </h2>
-          <p className="text-sm" style={{ color: '#7a6b5f' }}>
-            {startedAt ? `Match run on ${new Date(startedAt).toLocaleString()}` : 'Select a game to view details'}
-          </p>
+        {/* Match Metadata */}
+        {startedAt && (
+          <div className="text-center mb-6">
+            <p className="text-sm" style={{ color: '#7a6b5f' }}>
+              Match run on {new Date(startedAt).toLocaleString()}
+            </p>
+          </div>
+        )}
+
+        {/* Move Reasoning Toggle */}
+        <div className="mb-6 flex justify-center gap-4">
+          <button
+            onClick={() => setShowNextMove(false)}
+            className={`px-6 py-2 rounded-full font-semibold transition-all ${
+              !showNextMove
+                ? 'bg-[#3d2817] text-white'
+                : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+            }`}
+          >
+            Current Move
+          </button>
+          <button
+            onClick={() => setShowNextMove(true)}
+            className={`px-6 py-2 rounded-full font-semibold transition-all ${
+              showNextMove
+                ? 'bg-[#3d2817] text-white'
+                : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+            }`}
+          >
+            Next Move
+          </button>
         </div>
 
         {/* Three-Column Hero Layout */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
           {/* Left Column: Player A Reasoning */}
-          <div className="rounded-lg border p-4 overflow-auto" style={{ 
-            backgroundColor: '#faf5f0', 
-            borderColor: '#d4b5a0',
-            minHeight: '600px',
-            maxHeight: '600px'
-          }}>
-            <h3 className="text-base font-semibold mb-3 flex items-center gap-2" style={{ color: '#d84949' }}>
-              🐛 {playerAName}
-            </h3>
-            <div className="font-mono font-bold leading-relaxed whitespace-pre-wrap" style={{ 
-              fontSize: '18px', 
-              color: '#2d2416',
-              lineHeight: '1.6'
-            }}>
-              {playerAReasoning || 'No reasoning available for this round.'}
-            </div>
-          </div>
+          <WormArenaReasoning
+            playerName={playerAName}
+            color="red"
+            reasoning={showNextMove && playerIds.length > 0 ? (frames[frameIndex + 1]?.moves?.[playerIds[0]]?.rationale || '') : playerAReasoning}
+            currentRound={frames.length === 0 ? 0 : frameIndex + 1}
+            totalRounds={frames.length}
+            showNextMove={showNextMove}
+          />
 
           {/* Center Column: Game Board (emoji canvas) */}
           <WormArenaGameBoard
@@ -292,28 +307,19 @@ export default function WormArena() {
           />
 
           {/* Right Column: Player B Reasoning */}
-          <div className="rounded-lg border p-4 overflow-auto" style={{ 
-            backgroundColor: '#faf5f0', 
-            borderColor: '#d4b5a0',
-            minHeight: '600px',
-            maxHeight: '600px'
-          }}>
-            <h3 className="text-base font-semibold mb-3 flex items-center gap-2" style={{ color: '#e8a11a' }}>
-              🐛 {playerBName}
-            </h3>
-            <div className="font-mono font-bold leading-relaxed whitespace-pre-wrap" style={{ 
-              fontSize: '18px', 
-              color: '#2d2416',
-              lineHeight: '1.6'
-            }}>
-              {playerBReasoning || 'No reasoning available for this round.'}
-            </div>
-          </div>
+          <WormArenaReasoning
+            playerName={playerBName}
+            color="gold"
+            reasoning={showNextMove && playerIds.length > 1 ? (frames[frameIndex + 1]?.moves?.[playerIds[1]]?.rationale || '') : playerBReasoning}
+            currentRound={frames.length === 0 ? 0 : frameIndex + 1}
+            totalRounds={frames.length}
+            showNextMove={showNextMove}
+          />
         </div>
 
         {/* Metadata Row */}
-        <div className="text-center mb-4 text-sm" style={{ color: '#7a6b5f' }}>
-          <div className="flex justify-center gap-6">
+        <div className="text-center mb-4" style={{ color: '#7a6b5f', fontSize: '16px' }}>
+          <div className="flex justify-center gap-6 flex-wrap">
             <span><strong>Scores:</strong> {Object.entries(finalScores).map(([k, v]) => (
               <span key={k} className="ml-2"><span className="font-mono">{k}</span>: {String(v)}</span>
             ))}</span>
