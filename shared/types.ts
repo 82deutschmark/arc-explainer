@@ -644,6 +644,44 @@ export interface SnakeBenchHealthResponse {
 }
 
 /**
+ * Worm Arena streaming status (lightweight, matches other streaming flows).
+ */
+export interface WormArenaStreamStatus {
+  state: 'idle' | 'starting' | 'in_progress' | 'completed' | 'failed';
+  phase?: string;
+  message?: string;
+  round?: number;
+  tokenUsage?: {
+    input?: number;
+    output?: number;
+    reasoning?: number;
+  };
+}
+
+/**
+ * Single frame event for live Worm Arena streaming.
+ */
+export interface WormArenaFrameEvent {
+  round: number;
+  frame: any;
+  timestamp: number;
+}
+
+/**
+ * Final summary for a live Worm Arena match.
+ */
+export interface WormArenaFinalSummary {
+  gameId: string;
+  modelA: string;
+  modelB: string;
+  scores: Record<string, number>;
+  results: Record<string, SnakeBenchResultLabel>;
+  roundsPlayed?: number;
+  startedAt?: string;
+  completedAt?: string;
+}
+
+/**
  * Available prompt templates for puzzle analysis
  * These templates allow users to choose different prompt styles and approaches to guide AI analysis
  */
