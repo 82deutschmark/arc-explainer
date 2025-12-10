@@ -276,6 +276,23 @@ export const MODELS: ModelConfig[] = [
     maxOutputTokens: 64000,
     releaseDate: "2025-09"
   },
+  {
+    key: 'anthropic/claude-opus-4.5',
+    name: 'Claude Opus 4.5',
+    color: 'bg-indigo-900',
+    premium: true,
+    cost: { input: '$5.00', output: '$25.00' },
+    supportsTemperature: true,
+    provider: 'Anthropic',
+    responseTime: { speed: 'slow', estimate: '2-5 min' },
+    isReasoning: true,
+    apiModelName: 'claude-opus-4.5-20251124',
+    modelType: 'claude',
+    contextWindow: 200000,
+    maxOutputTokens: 16000,
+    releaseDate: "2025-11",
+    notes: 'EXTREMELY EXPENSIVE: $5/M input, $25/M output. Use sparingly for benchmarking only. High reasoning capability but significant cost implications. Each game match can cost $0.50-$5.00+ depending on token usage.'
+  },
   { 
     key: 'claude-3-7-sonnet-20250219', 
     name: 'Claude 3.7 Sonnet', 
@@ -449,7 +466,37 @@ export const MODELS: ModelConfig[] = [
     contextWindow: 1000000,
     releaseDate: "2025-08"
   },
-  
+  {
+    key: 'google/gemini-2.5-flash-lite-preview-09-2025',
+    name: 'Gemini 2.5 Flash-Lite Preview (Sep 2025)',
+    color: 'bg-teal-300',
+    premium: false,
+    cost: { input: '$0.10', output: '$0.40' },
+    supportsTemperature: true,
+    provider: 'OpenRouter',
+    responseTime: { speed: 'fast', estimate: '<30 sec' },
+    isReasoning: true,
+    apiModelName: 'google/gemini-2.5-flash-lite-preview-09-2025',
+    modelType: 'openrouter',
+    contextWindow: 1050000,
+    releaseDate: "2025-09"
+  },
+  {
+    key: 'google/gemma-3n-e2b-it:free',
+    name: 'Gemma 3N E2B (Free)',
+    color: 'bg-teal-100',
+    premium: false,
+    cost: { input: '$0.00', output: '$0.00' },
+    supportsTemperature: true,
+    provider: 'OpenRouter',
+    responseTime: { speed: 'moderate', estimate: '30-60 sec' },
+    isReasoning: false,
+    apiModelName: 'google/gemma-3n-e2b-it:free',
+    modelType: 'openrouter',
+    contextWindow: 4000,
+    releaseDate: "2025-12"
+  },
+
   // DeepSeek Models
   {
     key: 'deepseek-chat',
@@ -915,6 +962,39 @@ export const MODELS: ModelConfig[] = [
   },
 
   // Anthropic Models (via OpenRouter)
+  {
+    key: 'anthropic/claude-opus-4.5',
+    name: 'Claude Opus 4.5 (OpenRouter)',
+    color: 'bg-indigo-900',
+    premium: true,
+    cost: { input: '$5.00', output: '$25.00' },
+    supportsTemperature: true,
+    provider: 'OpenRouter',
+    responseTime: { speed: 'slow', estimate: '2-5 min' },
+    isReasoning: true,
+    apiModelName: 'anthropic/claude-opus-4.5',
+    modelType: 'openrouter',
+    contextWindow: 200000,
+    maxOutputTokens: 16000,
+    releaseDate: "2025-11",
+    notes: 'EXTREMELY EXPENSIVE: $5/M input, $25/M output. Use sparingly for benchmarking only.'
+  },
+  {
+    key: 'anthropic/claude-sonnet-4-5',
+    name: 'Claude Sonnet 4.5 (OpenRouter)',
+    color: 'bg-indigo-600',
+    premium: true,
+    cost: { input: '$3.00', output: '$15.00' },
+    supportsTemperature: true,
+    provider: 'OpenRouter',
+    responseTime: { speed: 'moderate', estimate: '1-3 min' },
+    isReasoning: true,
+    apiModelName: 'anthropic/claude-sonnet-4-5',
+    modelType: 'openrouter',
+    contextWindow: 200000,
+    maxOutputTokens: 64000,
+    releaseDate: "2025-09"
+  },
   {
     key: 'anthropic/claude-haiku-4.5',
     name: 'Claude Haiku 4.5 (OpenRouter)',
