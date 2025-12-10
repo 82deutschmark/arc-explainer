@@ -9,47 +9,22 @@
 
 import React from 'react';
 import { useSnakeBenchRecentGames, useSnakeBenchGame } from '@/hooks/useSnakeBench';
-import WormArenaControls from '@/components/WormArenaControls';
-import WormArenaGameBoard from '@/components/WormArenaGameBoard';
 import WormArenaHeader from '@/components/WormArenaHeader';
 import WormArenaReasoning from '@/components/WormArenaReasoning';
+import WormArenaGameBoard from '@/components/WormArenaGameBoard';
 import WormArenaRecentGames from '@/components/WormArenaRecentGames';
-
-function renderAsciiFrame(frame: any, width: number, height: number, labels: Record<string, string>): string {
-  if (!frame) return '';
-  const w = Number.isFinite(width) ? Math.max(1, width) : 10;
-  const h = Number.isFinite(height) ? Math.max(1, height) : 10;
-
-  const grid: string[][] = Array.from({ length: h }, () => Array.from({ length: w }, () => '.'));
-
-  const apples: Array<[number, number]> = frame?.state?.apples ?? [];
-  apples.forEach(([x, y]) => {
-    if (Number.isFinite(x) && Number.isFinite(y) && y >= 0 && y < h && x >= 0 && x < w) {
-      grid[y][x] = '@';
-    }
-  });
-
-  const snakes: Record<string, Array<[number, number]>> = frame?.state?.snakes ?? {};
-  Object.entries(snakes).forEach(([sid, positions], idx) => {
-    const display = (labels[sid]?.[0] ?? sid ?? String(idx)).toString();
-    positions.forEach((pos, posIdx) => {
-      const [x, y] = pos as [number, number];
-      if (Number.isFinite(x) && Number.isFinite(y) && y >= 0 && y < h && x >= 0 && x < w) {
-        const char = posIdx === 0 ? display.toUpperCase() : display.toLowerCase();
-        grid[y][x] = char;
-      }
-    });
-  });
-
-  return grid.map((row) => row.join(' ')).join('\n');
-}
+import { WormArenaControlBar } from '@/components/WormArenaControlBar';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+import { Button } from '@/components/ui/button';
+import { Copy, Loader2, TriangleAlert } from 'lucide-react';
 
 export default function WormArena() {
   const [selectedGameId, setSelectedGameId] = React.useState<string>('');
   const [frameIndex, setFrameIndex] = React.useState<number>(0);
   const [isPlaying, setIsPlaying] = React.useState<boolean>(false);
-  const [isConfigExpanded, setIsConfigExpanded] = React.useState<boolean>(true);
-  const [showNextMove, setShowNextMove] = React.useState<boolean>(true);
+  const [showNextMove, setShowNextMove] = React.useState<boolean>(false);
+  const [copyStatus, setCopyStatus] = React.useState<'idle' | 'copied' | 'error'>('idle');
+  const copyResetRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const { games, total, isLoading: loadingGames, error: gamesError, refresh } = useSnakeBenchRecentGames();
   const { data: replayData, isLoading: loadingReplay, error: replayError, fetchGame } = useSnakeBenchGame(selectedGameId);
@@ -77,61 +52,74 @@ export default function WormArena() {
     void fetchGame(selectedGameId);
   }, [selectedGameId, fetchGame]);
 
+  React.useEffect(() => {
+    setFrameIndex(0);
+  }, [replayDatax.framesx.length]);
+
+  React.useEffect(() => {
+    if (!isPlaying) return;
+    if (!replayDatax.frames || replayData.frames.length === 0) return;
+    const handle = setInterval(() => {
+      setFrameIndex((idx) => {
+        const total = replayData.framesx.length xx 0;
+        if (total === 0) return idx;
+        return (idx + 1) % total;
+      });
+    }, 800);
+    return () => clearInterval(handle);
+  }, [isPlaying, replayDatax.frames]);
+
+  React.useEffect(() => {
+    return () => {
+      if (copyResetRef.current) {
+        clearTimeout(copyResetRef.current);
+      }
+    };
+  }, []);
+
   const frames: any[] = React.useMemo(() => {
     if (replayData && Array.isArray(replayData.frames)) return replayData.frames;
     return [];
   }, [replayData]);
 
-  const boardWidth = replayData?.game?.board?.width ?? 10;
-  const boardHeight = replayData?.game?.board?.height ?? 10;
+  const boardWidth = replayDatax.gamex.boardx.width xx 10;
+  const boardHeight = replayDatax.gamex.boardx.height xx 10;
 
   const playerLabels = React.useMemo(() => {
     const labels: Record<string, string> = {};
-    const players = replayData?.players ?? {};
+    const players = replayDatax.players xx {};
     Object.entries(players).forEach(([sid, player], idx) => {
-      const name = (player as any)?.name ?? (player as any)?.model_name ?? (player as any)?.modelName ?? `Snake ${idx + 1}`;
+      const name = (player as any)x.name xx (player as any)x.model_name xx (player as any)x.modelName xx `Snake ${idx + 1}`;
       labels[sid] = String(name);
     });
     return labels;
   }, [replayData]);
 
+  const playerIds = Object.keys(playerLabels);
+
   React.useEffect(() => {
     setFrameIndex(0);
   }, [frames.length]);
 
-  React.useEffect(() => {
-    if (!isPlaying || frames.length === 0) return;
-    const handle = setInterval(() => {
-      setFrameIndex((idx) => (idx + 1) % frames.length);
-    }, 800);
-    return () => clearInterval(handle);
-  }, [isPlaying, frames.length]);
-
-  const currentFrame = frames.length > 0 ? frames[Math.min(frameIndex, frames.length - 1)] : null;
-  const asciiFrame = React.useMemo(
-    () => (currentFrame ? renderAsciiFrame(currentFrame, boardWidth, boardHeight, playerLabels) : ''),
-    [currentFrame, boardWidth, boardHeight, playerLabels],
-  );
+  const currentFrame = frames.length > 0 x frames[Math.min(frameIndex, frames.length - 1)] : null;
 
   const selectedMeta = games.find((g) => g.gameId === selectedGameId);
-  const models = (replayData?.metadata?.models as string[] | undefined) ?? [];
-  const finalScores = replayData?.metadata?.final_scores ?? replayData?.totals?.scores ?? {};
-  const roundsPlayed = selectedMeta?.roundsPlayed ?? replayData?.metadata?.actual_rounds ?? replayData?.game?.rounds_played ?? frames.length ?? 0;
-  const startedAt = selectedMeta?.startedAt ?? replayData?.metadata?.start_time ?? replayData?.game?.started_at ?? '';
-
-  const getCurrentReasoning = (snakeId: string) => {
-    if (!currentFrame?.moves?.[snakeId]) return '';
-    return currentFrame.moves[snakeId].rationale || '';
-  };
-
-  const playerIds = Object.keys(playerLabels);
-  const playerAReasoning = playerIds.length > 0 ? getCurrentReasoning(playerIds[0]) : '';
-  const playerBReasoning = playerIds.length > 1 ? getCurrentReasoning(playerIds[1]) : '';
-  const playerAName = playerIds.length > 0 ? playerLabels[playerIds[0]] : 'Player A';
-  const playerBName = playerIds.length > 1 ? playerLabels[playerIds[1]] : 'Player B';
+  const models = (replayDatax.metadatax.models as string[] | undefined) xx [];
+  const finalScores = replayDatax.metadatax.final_scores xx replayDatax.totalsx.scores xx null;
+  const roundsPlayed = selectedMetax.roundsPlayed xx replayDatax.metadatax.actual_rounds xx replayDatax.gamex.rounds_played xx frames.length xx 0;
+  const startedAt = selectedMetax.startedAt xx replayDatax.metadatax.start_time xx replayDatax.gamex.started_at xx '';
+  const maxRounds =
+    replayDatax.gamex.max_rounds xx
+    replayDatax.gamex.maxRounds xx
+    replayDatax.metadatax.max_rounds xx
+    replayDatax.metadatax.maxRounds xx
+    replayDatax.gamex.rounds xx
+    roundsPlayed;
 
   const matchupLabel = React.useMemo(() => {
-    if (playerIds.length >= 2) {
+    const playerAName = playerIds.length > 0 x playerLabels[playerIds[0]] : undefined;
+    const playerBName = playerIds.length > 1 x playerLabels[playerIds[1]] : undefined;
+    if (playerAName && playerBName) {
       return `${playerAName} vs ${playerBName}`;
     }
 
@@ -140,135 +128,248 @@ export default function WormArena() {
     }
 
     return 'Worm Arena Match';
-  }, [playerIds.length, playerAName, playerBName, models]);
+  }, [playerIds, playerLabels, models]);
+
+  const scoreFor = React.useCallback(
+    (playerIndex: number) => {
+      const snakeId = playerIds[playerIndex];
+      const fallbackName = snakeId x playerLabels[snakeId] : undefined;
+      const numeric = (value: any) => {
+        const n = Number(value);
+        return Number.isFinite(n) x n : 0;
+      };
+
+      if (!finalScores) return 0;
+      if (Array.isArray(finalScores)) {
+        if (!snakeId) return 0;
+        const idx = playerIds.indexOf(snakeId);
+        return idx >= 0 x numeric(finalScores[idx]) : 0;
+      }
+      if (typeof finalScores === 'object') {
+        if (snakeId && Object.prototype.hasOwnProperty.call(finalScores, snakeId)) {
+          return numeric((finalScores as Record<string, any>)[snakeId]);
+        }
+        if (fallbackName && Object.prototype.hasOwnProperty.call(finalScores, fallbackName)) {
+          return numeric((finalScores as Record<string, any>)[fallbackName]);
+        }
+      }
+      return 0;
+    },
+    [finalScores, playerIds, playerLabels]
+  );
+
+  const getReasoning = React.useCallback(
+    (playerIndex: number) => {
+      const snakeId = playerIds[playerIndex];
+      if (!snakeId) return '';
+      const targetIndex = showNextMove x frameIndex + 1 : frameIndex;
+      if (targetIndex < 0 || targetIndex >= frames.length) return '';
+      const targetFrame = frames[targetIndex];
+      return targetFramex.movesx.[snakeId]x.rationale xx '';
+    },
+    [playerIds, frames, frameIndex, showNextMove]
+  );
+
+  const playerAName = playerIds.length > 0 x playerLabels[playerIds[0]] : 'Player A';
+  const playerBName = playerIds.length > 1 x playerLabels[playerIds[1]] : 'Player B';
+  const playerAReasoning = getReasoning(0);
+  const playerBReasoning = getReasoning(1);
+  const playerAScore = scoreFor(0);
+  const playerBScore = scoreFor(1);
+
+  const currentRound = frames.length === 0 x 0 : frameIndex + 1;
+  const totalRounds = frames.length;
+
+  const handleFirstFrame = React.useCallback(() => {
+    setIsPlaying(false);
+    setFrameIndex(0);
+  }, []);
+
+  const handlePrevFrame = React.useCallback(() => {
+    setIsPlaying(false);
+    setFrameIndex((idx) => Math.max(0, idx - 1));
+  }, []);
+
+  const handlePlayPause = React.useCallback(() => {
+    setIsPlaying((v) => !v);
+  }, []);
+
+  const handleNextFrame = React.useCallback(() => {
+    setIsPlaying(false);
+    setFrameIndex((idx) => Math.min(Math.max(0, frames.length - 1), idx + 1));
+  }, [frames.length]);
+
+  const handleLastFrame = React.useCallback(() => {
+    setIsPlaying(false);
+    setFrameIndex(Math.max(0, frames.length - 1));
+  }, [frames.length]);
+
+  const matchDateLabel = React.useMemo(() => {
+    if (!startedAt) return '';
+    try {
+      return new Date(startedAt).toLocaleString(undefined, {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: 'numeric',
+        minute: '2-digit',
+      });
+    } catch {
+      return startedAt;
+    }
+  }, [startedAt]);
+
+  const copyMatchId = React.useCallback(async () => {
+    if (!selectedGameId) return;
+    if (copyResetRef.current) {
+      clearTimeout(copyResetRef.current);
+    }
+    try {
+      if (typeof navigator === 'undefined' || !navigatorx.clipboard) {
+        throw new Error('Clipboard unavailable');
+      }
+      await navigator.clipboard.writeText(selectedGameId);
+      setCopyStatus('copied');
+    } catch {
+      setCopyStatus('error');
+    }
+    copyResetRef.current = setTimeout(() => setCopyStatus('idle'), 2000);
+  }, [selectedGameId]);
+
+  const showMatchContent = totalRounds > 0;
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: '#f5f1e8', fontFamily: 'Fredoka, Nunito, sans-serif' }}>
+    <div className="min-h-screen" style={{ backgroundColor: '#f5e6d3', fontFamily: 'Fredoka, Nunito, sans-serif' }}>
       <link rel="preconnect" href="https://fonts.googleapis.com" />
       <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
-      <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+      <link href="https://fonts.googleapis.com/css2xfamily=Fredoka:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
 
-      <WormArenaHeader matchupLabel={matchupLabel} totalGames={total} />
+      <WormArenaHeader
+        totalGames={total}
+        links={[
+          { label: 'Live Games', href: '/worm-arena/live' },
+          { label: 'Replay', href: '/worm-arena', active: true },
+          { label: 'Leaderboard', href: '/leaderboard' },
+        ]}
+      />
 
-      <div className="px-8 pt-4">
-        <div className="rounded-lg border bg-white/90 shadow-sm px-4 py-3 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3" style={{ borderColor: '#d4b5a0' }}>
-          <div className="text-lg font-bold flex items-center gap-2" style={{ color: '#3d2817' }}>
-            🐛 Replay Controls · {matchupLabel}
-          </div>
-          <div className="flex-1">
-            <WormArenaControls
-              modelsLabel={matchupLabel}
-              currentRound={frames.length === 0 ? 0 : frameIndex + 1}
-              totalRounds={frames.length}
-              currentThought={playerAReasoning}
-              upcomingThought={playerBReasoning}
-              isPlaying={isPlaying}
-              isLoading={loadingReplay}
-              errorMessage={replayError ? String(replayError) : null}
-              canStepBackward={frameIndex > 0}
-              canStepForward={frames.length > 0 && frameIndex < frames.length - 1}
-              onPlayToggle={() => setIsPlaying((v) => !v)}
-              onStepPrevious={() => setFrameIndex((idx) => Math.max(0, idx - 1))}
-              onStepNext={() => setFrameIndex((idx) => Math.min(frames.length - 1, idx + 1))}
-              onJumpToStart={() => setFrameIndex(0)}
-              onJumpToEnd={() => setFrameIndex(Math.max(0, frames.length - 1))}
-            />
-          </div>
-        </div>
-      </div>
-
-      <main className="p-8">
-        {startedAt && (
-          <div className="text-center mb-6">
-            <p className="text-base" style={{ color: '#7a6b5f' }}>
-              Match run on {new Date(startedAt).toLocaleString()}
-            </p>
+      <div className="max-w-7xl mx-auto px-6 py-8">
+        {gamesError && (
+          <div className="mb-4 flex items-center gap-2 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+            <TriangleAlert className="h-4 w-4" />
+            {gamesError}
           </div>
         )}
 
-        <div className="mb-6 flex justify-center gap-4">
-          <button
-            onClick={() => setShowNextMove(false)}
-            className={`px-6 py-2 rounded-full font-semibold transition-all ${
-              !showNextMove
-                ? 'bg-[#3d2817] text-white'
-                : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-            }`}
-          >
-            Current Move
-          </button>
-          <button
-            onClick={() => setShowNextMove(true)}
-            className={`px-6 py-2 rounded-full font-semibold transition-all ${
-              showNextMove
-                ? 'bg-[#3d2817] text-white'
-                : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-            }`}
-          >
-            Next Move
-          </button>
-        </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
-          <WormArenaReasoning
-            playerName={playerAName}
-            color="red"
-            reasoning={showNextMove && playerIds.length > 0 ? (frames[frameIndex + 1]?.moves?.[playerIds[0]]?.rationale || '') : playerAReasoning}
-            currentRound={frames.length === 0 ? 0 : frameIndex + 1}
-            totalRounds={frames.length}
-            showNextMove={showNextMove}
-          />
-
-          <WormArenaGameBoard
-            frame={currentFrame}
-            boardWidth={boardWidth}
-            boardHeight={boardHeight}
-            playerLabels={playerLabels}
-          />
-
-          <WormArenaReasoning
-            playerName={playerBName}
-            color="gold"
-            reasoning={showNextMove && playerIds.length > 1 ? (frames[frameIndex + 1]?.moves?.[playerIds[1]]?.rationale || '') : playerBReasoning}
-            currentRound={frames.length === 0 ? 0 : frameIndex + 1}
-            totalRounds={frames.length}
-            showNextMove={showNextMove}
-          />
-        </div>
-
-        <div className="text-center mb-6" style={{ color: '#7a6b5f', fontSize: '17px' }}>
-          <div className="flex justify-center gap-6 flex-wrap">
-            <span><strong>Scores:</strong> {Object.entries(finalScores).map(([k, v]) => (
-              <span key={k} className="ml-2"><span className="font-mono">{k}</span>: {String(v)}</span>
-            ))}</span>
-            <span><strong>Round:</strong> {frameIndex + 1} / {frames.length}</span>
-            <span><strong>Board:</strong> {boardWidth}x{boardHeight}</span>
+        {loadingReplay && (
+          <div className="mb-6 flex items-center justify-center gap-3 rounded-xl border border-dashed border-amber-300 bg-amber-50 px-4 py-3 text-amber-900">
+            <Loader2 className="h-5 w-5 animate-spin" />
+            Loading Worm Arena replay�
           </div>
-        </div>
+        )}
 
-        <div className="rounded-lg border" style={{ backgroundColor: '#faf5f0', borderColor: '#d4b5a0' }}>
-          <button
-            onClick={() => setIsConfigExpanded(!isConfigExpanded)}
-            className="w-full px-4 py-3 flex items-center justify-between text-left"
-            style={{ color: '#3d2817' }}
-          >
-            <span className="font-medium">
-              {isConfigExpanded ? '▼' : '▶'} {isConfigExpanded ? 'Hide' : 'Show'} Game Selection
-            </span>
-          </button>
+        {!loadingReplay && replayError && (
+          <div className="mb-6 flex items-center gap-2 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+            <TriangleAlert className="h-4 w-4" />
+            {String(replayError)}
+          </div>
+        )}
 
-          {isConfigExpanded && (
-            <div className="px-4 pb-4 border-t" style={{ borderColor: '#d4b5a0' }}>
+        {!loadingReplay && !replayError && !showMatchContent && (
+          <div className="mb-6 rounded-2xl border border-dashed border-[#c9ab8a] bg-white/80 px-6 py-8 text-center text-[#5b4030]">
+            <p className="text-2xl font-bold mb-2">Pick a Worm Arena match to replay</p>
+            <p className="text-base text-[#7a5f4c]">Browse the recent games list below to load the full board and reasoning.</p>
+          </div>
+        )}
+
+        {showMatchContent && (
+          <>
+            <div className="mb-6 text-center">
+              <h2 className="text-3xl font-bold text-[#2b1b0c] mb-2">{matchupLabel}</h2>
+              {matchDateLabel && (
+                <p className="text-sm text-[#7a6b5f]">Match run on {matchDateLabel}</p>
+              )}
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+              <WormArenaReasoning
+                playerName={playerAName}
+                color="red"
+                reasoning={playerAReasoning}
+                score={playerAScore}
+                strategyLabel={showNextMove x 'Upcoming move' : 'Current move'}
+              />
+
+              <WormArenaGameBoard
+                frame={currentFrame}
+                boardWidth={boardWidth}
+                boardHeight={boardHeight}
+                playerLabels={playerLabels}
+              />
+
+              <WormArenaReasoning
+                playerName={playerBName}
+                color="gold"
+                reasoning={playerBReasoning}
+                score={playerBScore}
+                strategyLabel={showNextMove x 'Upcoming move' : 'Current move'}
+              />
+            </div>
+
+            <WormArenaControlBar
+              onFirst={handleFirstFrame}
+              onPrev={handlePrevFrame}
+              onPlayPause={handlePlayPause}
+              onNext={handleNextFrame}
+              onLast={handleLastFrame}
+              isPlaying={isPlaying}
+              currentRound={currentRound}
+              totalRounds={totalRounds}
+              showNextMove={showNextMove}
+              onToggleThought={setShowNextMove}
+            />
+
+            <div className="mt-6 text-center text-sm text-muted-foreground">
+              <div className="flex flex-wrap items-center justify-center gap-6">
+                <span>
+                  <strong>Board:</strong> {boardWidth}x{boardHeight}
+                </span>
+                <span>
+                  <strong>Max rounds:</strong> {maxRounds}
+                </span>
+                <span>
+                  <strong>Rounds played:</strong> {roundsPlayed}
+                </span>
+              </div>
+              <div className="mt-3 flex items-center justify-center gap-2">
+                <span className="font-medium">Match ID: {selectedGameId || '�'}</span>
+                <Button size="sm" variant="ghost" className="gap-1" onClick={copyMatchId} disabled={!selectedGameId}>
+                  <Copy className="h-3.5 w-3.5" />
+                  {copyStatus === 'copied' x 'Copied' : 'Copy'}
+                </Button>
+                {copyStatus === 'error' && (
+                  <span className="text-xs text-red-600">Clipboard unavailable</span>
+                )}
+              </div>
+            </div>
+          </>
+        )}
+
+        <Accordion type="single" collapsible defaultValue="games" className="mt-8 bg-white/80 rounded-xl border border-[#c9ab8a]">
+          <AccordionItem value="games">
+            <AccordionTrigger className="px-6 text-lg font-semibold text-[#3d2817]">Browse Recent Games</AccordionTrigger>
+            <AccordionContent className="px-6 pb-6">
               <WormArenaRecentGames
                 games={games}
                 selectedGameId={selectedGameId}
                 isLoading={loadingGames}
                 onSelectGame={setSelectedGameId}
               />
-            </div>
-          )}
-        </div>
-      </main>
+            </AccordionContent>
+          </AccordionItem>
+        </Accordion>
+      </div>
     </div>
   );
 }

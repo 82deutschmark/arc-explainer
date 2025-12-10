@@ -8,17 +8,27 @@
  */
 
 import React from 'react';
+import { Link } from 'wouter';
+import { cn } from '@/lib/utils';
+
+interface WormArenaHeaderLink {
+  label: string;
+  href: string;
+  active?: boolean;
+}
 
 interface WormArenaHeaderProps {
   matchupLabel?: string;
   totalGames?: number;
   actionSlot?: React.ReactNode;
+  links?: WormArenaHeaderLink[];
 }
 
 export default function WormArenaHeader({
   matchupLabel,
   totalGames = 0,
   actionSlot,
+  links = [],
 }: WormArenaHeaderProps) {
   return (
     <header className="relative overflow-hidden" style={{ backgroundColor: '#2d1f0f', borderBottom: '3px solid #d4a574' }}>
@@ -48,6 +58,25 @@ export default function WormArenaHeader({
               </h1>
               <span style={{ fontSize: '28px', animation: 'float 3s ease-in-out infinite' }}>🐛</span>
             </div>
+
+            {links.length > 0 && (
+              <nav className="flex items-center gap-4 flex-wrap text-base font-semibold">
+                {links.map((link) => (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    className={cn(
+                      'transition-colors px-1 pb-1 border-b-2 border-transparent',
+                      link.active
+                        ? 'text-[#f5e6d3] border-[#f5e6d3]'
+                        : 'text-[#c79b6d] hover:text-[#f5e6d3]'
+                    )}
+                  >
+                    {link.label}
+                  </Link>
+                ))}
+              </nav>
+            )}
 
             {/* Subtitle with stats and decorative worms */}
             <div className="flex items-center gap-3 text-sm" style={{ color: '#d4a574' }}>
