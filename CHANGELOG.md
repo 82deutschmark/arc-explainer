@@ -1,3 +1,10 @@
+### Version 6.0.12  Dec 10, 2025 (COMPLETED)
+
+- **Worm Arena stats page plan** (Author: Codex / GPT-5)
+  - Documented a dedicated `/worm-arena/stats` page scope with KPIs, leaderboard, trends, and head-to-head spotlight plus proposed backend endpoints/hooks.
+  - Listed the exact backend/frontend files for the data scientist to review first (repository/service/controller, shared DTOs, stats hook/panel, and SnakeBench references).
+  - **Files Modified**: `docs/plans/2025-12-10-worm-arena-stats-page-plan.md`, `CHANGELOG.md`
+
 ### Version 6.0.11  Dec 10, 2025 (COMPLETED)
 
 - **Worm Arena UI: Complete SnakeBench layout parity** (Author: Cascade)
