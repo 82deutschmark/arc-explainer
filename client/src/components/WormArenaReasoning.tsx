@@ -1,94 +1,75 @@
 /**
- * Author: Claude Code using Haiku 4.5
- * Date: 2025-12-09
- * PURPOSE: Display worm reasoning/thoughts in a readable format inspired by Greg's approach.
- *          Shows thoughts as structured lines rather than one big block.
- *          Supports toggling between current and next move reasoning.
- * SRP/DRY check: Pass — single responsibility for reasoning display.
+ * Author: Codex (GPT-5)
+ * Date: 2025-12-10
+ * PURPOSE: Present Worm Arena reasoning panels with bold typography, color-coded headers,
+ *          and emoji score indicators to mirror SnakeBench's three-column layout.
+ * SRP/DRY check: Pass - focused solely on rendering a single player's reasoning panel.
  */
 
 import React from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { cn } from '@/lib/utils';
+
+const WORM_ICON = String.fromCodePoint(0x1FAB1);
+const APPLE_ICON = String.fromCodePoint(0x1F34E);
 
 interface WormArenaReasoningProps {
   playerName: string;
   color: 'red' | 'gold';
   reasoning: string;
-  currentRound: number;
-  totalRounds: number;
-  showNextMove?: boolean;
+  score?: number;
+  strategyLabel?: string;
 }
 
 export default function WormArenaReasoning({
   playerName,
   color,
   reasoning,
-  currentRound,
-  totalRounds,
-  showNextMove = false,
+  score = 0,
+  strategyLabel = 'Strategy',
 }: WormArenaReasoningProps) {
-  // Parse reasoning into lines
-  const reasoningLines = React.useMemo(() => {
-    if (!reasoning) return [];
-    return reasoning
-      .split('\n')
-      .map((line) => line.trim())
-      .filter((line) => line.length > 0);
-  }, [reasoning]);
-
   const accentColor = color === 'red' ? '#d84949' : '#e8a11a';
-  const backgroundColor = color === 'red' ? '#fde7e7' : '#fef3e5';
+  const safeScore = Number.isFinite(score) ? Math.max(0, Math.floor(score)) : 0;
+  const appleIcons = React.useMemo(() => {
+    const visible = Math.min(6, safeScore);
+    return Array.from({ length: visible }, (_, idx) => idx);
+  }, [safeScore]);
+  const remainingScore = safeScore - appleIcons.length;
 
   return (
-    <div
-      className="rounded-lg border p-6 overflow-auto flex flex-col"
-      style={{
-        backgroundColor,
-        borderColor: accentColor,
-        minHeight: '520px',
-        maxHeight: '520px',
-      }}
-    >
-      {/* Header with player name and move label */}
-      <div className="mb-4 pb-4 border-b" style={{ borderColor: accentColor }}>
-        <h3 className="text-lg font-bold flex items-center gap-2 mb-2" style={{ color: accentColor }}>
-          🐛 {playerName}
-        </h3>
-        <div className="text-xs font-medium" style={{ color: accentColor, opacity: 0.8 }}>
-          {showNextMove ? 'Next Move Strategy' : 'Current Move'}
+    <Card className="h-full flex flex-col border-2" style={{ borderColor: accentColor }}>
+      <CardHeader className="text-center pb-4">
+        <CardTitle
+          className={cn(
+            'text-lg font-bold flex items-center justify-center gap-2',
+            color === 'red' ? 'text-red-600' : 'text-yellow-600'
+          )}
+        >
+          <span role="img" aria-hidden="true">
+            {WORM_ICON}
+          </span>
+          {playerName}
+        </CardTitle>
+        <div className="text-xs uppercase tracking-wide text-muted-foreground">{strategyLabel}</div>
+      </CardHeader>
+      <CardContent className="flex-1 flex flex-col">
+        <div className="text-base font-medium leading-relaxed whitespace-pre-wrap text-[#2d2416]">
+          {reasoning?.trim()?.length ? reasoning : 'No reasoning captured for this moment.'}
         </div>
-      </div>
-
-      {/* Reasoning Content */}
-      <div className="flex-1 overflow-auto">
-        {reasoningLines.length === 0 ? (
-          <div className="text-sm italic" style={{ color: accentColor, opacity: 0.6 }}>
-            No reasoning available for this round.
-          </div>
-        ) : (
-          <div className="space-y-3">
-            {reasoningLines.map((line, idx) => (
-              <div
-                key={idx}
-                className="text-sm leading-relaxed"
-                style={{
-                  color: '#2d2416',
-                  fontSize: '15px',
-                  lineHeight: '1.7',
-                }}
-              >
-                {/* Add bullet point for visual separation */}
-                <span style={{ color: accentColor, fontWeight: 'bold', marginRight: '8px' }}>•</span>
-                {line}
-              </div>
+        <div className="mt-6 pt-4 border-t border-dashed flex flex-col items-center gap-2">
+          <div className="flex items-center gap-1 text-xl" aria-label={`Score ${safeScore}`}>
+            {appleIcons.map((idx) => (
+              <span key={idx} role="img" aria-hidden="true">
+                {APPLE_ICON}
+              </span>
             ))}
+            {remainingScore > 0 && (
+              <span className="text-base font-semibold text-muted-foreground">+{remainingScore}</span>
+            )}
           </div>
-        )}
-      </div>
-
-      {/* Footer with round info */}
-      <div className="mt-4 pt-4 border-t text-xs text-right" style={{ borderColor: accentColor, color: accentColor }}>
-        Round {currentRound} / {totalRounds}
-      </div>
-    </div>
+          <div className="text-sm text-muted-foreground font-semibold">Score: {safeScore}</div>
+        </div>
+      </CardContent>
+    </Card>
   );
 }

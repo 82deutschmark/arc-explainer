@@ -21,7 +21,7 @@ Write-Host "Total: 36 matches"
 Write-Host ""
 
 $jobCount = 0
-$baseUri = "https://arc-explainer-staging.up.railway.app/api/snakebench/run-batch"
+$baseUri = "http://localhost:5000/api/snakebench/run-batch"
 
 Write-Host "Phase 1: GPT-5 vs Claude Family"
 foreach ($gptModel in $gptModels) {

@@ -14,7 +14,7 @@ $geminiModels = @(
 
 $matchesPerPair = 3
 $delaySeconds = 1.5
-$baseUri = "https://arc-explainer-staging.up.railway.app/api/snakebench/run-batch"
+$baseUri = "http://localhost:5000/api/snakebench/run-batch"
 
 Write-Host "GPT vs Gemini Family Championship"
 Write-Host "GPT Models: $($gptModels.Count)"

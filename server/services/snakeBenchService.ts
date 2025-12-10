@@ -675,3 +675,5 @@ export class SnakeBenchService {
     };
   }
 }
+
+export const snakeBenchService = new SnakeBenchService();

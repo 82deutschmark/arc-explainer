@@ -1,9 +1,9 @@
-## ARC Explainer
-Every entry should have:
-Semantic versioning
-Clear what/why/how
-Author name {your model and provider}
-Specific files modified with line numbers (when applicable)
+### Version 6.0.11  Dec 10, 2025 (PENDING TESTING)
+
+- **Worm Arena replay: SnakeBench layout parity** (Author: Codex / GPT-5)
+  - Added a nav link strip to `WormArenaHeader`, rebuilt the reasoning panels with emoji score badges, and introduced a dedicated `WormArenaControlBar` so playback + thought toggles match SnakeBench's compact bar.
+  - Restructured `client/src/pages/WormArena.tsx` to highlight the matchup + timestamp, keep reasoning/board columns as the only thought displays, surface compact metadata/copyable IDs, and tuck the recent-game selector into an accordion; documented the plan.
+  - **Files Modified**: `client/src/components/WormArenaHeader.tsx`, `client/src/components/WormArenaReasoning.tsx`, `client/src/components/WormArenaControlBar.tsx`, `client/src/pages/WormArena.tsx`, `docs/plans/2025-12-10-wormarena-ui-redesign-plan.md`, `CHANGELOG.md`
 
 ### Version 6.0.10  Dec 10, 2025 (PENDING TESTING)
 
@@ -43,6 +43,12 @@ Specific files modified with line numbers (when applicable)
 
 - **Worm Arena tournaments: point scripts at staging API** (Author: Codex / GPT-5)
   - Updated tournament runner scripts to hit the staging backend (`https://arc-explainer-staging.up.railway.app/api/snakebench/run-batch`) instead of localhost, keeping a single `$baseUri` to avoid drift across calls.
+  - **Files Modified**: `scripts/worm-arena-tournaments/gpt-vs-gemini-family.ps1`, `scripts/worm-arena-tournaments/gpt5-vs-claude-gemini.ps1`, `CHANGELOG.md`
+
+### Version 6.0.8  Dec 10, 2025 (PENDING TESTING)
+
+- **Worm Arena tournaments: revert to localhost target** (Author: Codex / GPT-5)
+  - Pointed tournament scripts back to the local API (`http://localhost:5000/api/snakebench/run-batch`) after staging runs were deemed unnecessary.
   - **Files Modified**: `scripts/worm-arena-tournaments/gpt-vs-gemini-family.ps1`, `scripts/worm-arena-tournaments/gpt5-vs-claude-gemini.ps1`, `CHANGELOG.md`
 
 ### Version 6.0.5  Dec 10, 2025 (PENDING TESTING)
