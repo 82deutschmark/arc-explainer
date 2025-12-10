@@ -503,6 +503,31 @@ export class SnakeBenchService {
     let filename = `snake_game_${gameId}.json`;
     let candidate = path.join(completedDir, filename);
 
+    // Prefer a replay_path from the database (covers freshly completed games
+    // after a restart where the index/filename lookup may not be populated).
+    const candidatePaths: string[] = [];
+    try {
+      const dbReplay = await repositoryService.snakeBench.getReplayPath(gameId);
+      const replayPath = dbReplay?.replayPath;
+      if (replayPath) {
+        if (/^https?:\/\//i.test(replayPath)) {
+          logger.warn(
+            `SnakeBenchService.getGame: replay_path for ${gameId} is a URL; remote fetch not supported (${replayPath})`,
+            'snakebench-service',
+          );
+        } else {
+          const resolved = path.isAbsolute(replayPath) ? replayPath : path.join(backendDir, replayPath);
+          candidatePaths.push(resolved);
+        }
+      }
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
+      logger.warn(
+        `SnakeBenchService.getGame: failed to fetch replay_path from DB for ${gameId}: ${message}`,
+        'snakebench-service',
+      );
+    }
+
     if (!fs.existsSync(candidate)) {
       const indexPath = path.join(completedDir, 'game_index.json');
       if (fs.existsSync(indexPath)) {
@@ -520,12 +545,17 @@ export class SnakeBenchService {
       }
     }
 
-    if (!fs.existsSync(candidate)) {
+    candidatePaths.push(candidate);
+
+    const uniquePaths = Array.from(new Set(candidatePaths));
+    const existingPath = uniquePaths.find((p) => fs.existsSync(p));
+
+    if (!existingPath) {
       throw new Error(`Game not found: ${gameId}`);
     }
 
     try {
-      const raw = await fs.promises.readFile(candidate, 'utf8');
+      const raw = await fs.promises.readFile(existingPath, 'utf8');
       return JSON.parse(raw);
     } catch (err) {
       const message = err instanceof Error ? err.message : String(err);

@@ -5,6 +5,22 @@ Clear what/why/how
 Author name {your model and provider}
 Specific files modified with line numbers (when applicable)
 
+### Version 6.0.6  Dec 10, 2025 (PENDING TESTING)
+
+- **SnakeBench replays: DB-aware fallback for Railway** (Author: Codex / GPT-5)
+  - `getGame` now consults the database `replay_path` before filesystem guesses so replay fetches work on fresh Railway deploys where the local index or default filename lookup fails.
+  - Added a lightweight `SnakeBenchRepository.getReplayPath` helper to retrieve the stored replay path and resolve it relative to the embedded SnakeBench backend.
+  - **Files Modified**: `server/services/snakeBenchService.ts`, `server/repositories/SnakeBenchRepository.ts`, `CHANGELOG.md`
+
+### Version 6.0.5  Dec 10, 2025 (PENDING TESTING)
+
+- **SnakeBench ingest queue + safer tournaments** (Author: Cascade)
+  - Routed SnakeBench DB persistence through a single-process ingest queue (`snakeBenchIngestQueue`) instead of running full transactions directly in the HTTP handler, eliminating lossy minimal inserts and greatly reducing Postgres deadlocks during `/api/snakebench/run-batch`.
+  - Updated `SnakeBenchService.runMatch` to enqueue `recordMatchFromResult` jobs via the ingest queue so HTTP responses are no longer blocked by replay ingest or rating updates.
+  - Increased the delay in `scripts/worm-arena-tournaments/gpt-vs-gemini-family.ps1` between queued matches to ease OpenRouter 402/"Insufficient credits" errors when firing large GPT vs Gemini tournaments.
+  - Captured the replay remediation approach in `docs/plans/2025-12-10-snakebench-replay-remediation-plan.md` and synchronized the embedded `external/SnakeBench` submodule to a newer upstream revision for replay parity.
+  - **Files Modified/Created**: `.claude/settings.local.json`, `docs/plans/2025-12-10-snakebench-replay-remediation-plan.md`, `external/SnakeBench`, `scripts/worm-arena-tournaments/gpt-vs-gemini-family.ps1`, `server/services/snakeBenchIngestQueue.ts`, `server/services/snakeBenchService.ts`, `CHANGELOG.md`
+
 ### Version 6.0.4  Dec 10, 2025 (PENDING TESTING)
 
 - **Worm Arena: real SnakeBench cost from MODELS pricing** (Author: Cascade)
