@@ -11,17 +11,25 @@ $freeModels = @(
     "mistralai/ministral-3b-2512"
 )
 
+$jobCount = 0
+
 foreach ($modelB in $freeModels) {
-    Write-Host "Starting match: $modelA vs $modelB"
+    Write-Host "Queuing match: $modelA vs $modelB" -ForegroundColor Cyan
     $body = @{
         modelA = $modelA
         modelB = $modelB
         count = 5
     } | ConvertTo-Json
 
-    $response = Invoke-WebRequest -Uri "https://arc-explainer-staging.up.railway.app/api/snakebench/run-batch" -Method Post -Headers @{"Content-Type"="application/json"} -Body $body
-    Write-Host "Response: $($response.StatusCode)" -ForegroundColor Green
-    Start-Sleep -Seconds 2
+    Start-Job -ScriptBlock {
+        param($uri, $body)
+        Invoke-WebRequest -Uri $uri -Method Post -Headers @{"Content-Type"="application/json"} -Body $body | Out-Null
+    } -ArgumentList "https://arc-explainer-staging.up.railway.app/api/snakebench/run-batch", $body | Out-Null
+
+    $jobCount++
+    Start-Sleep -Milliseconds 500
 }
 
-Write-Host "All batches submitted!" -ForegroundColor Green
+Write-Host ""
+Write-Host "All $jobCount batches submitted asynchronously!" -ForegroundColor Green
+Write-Host "Games running in parallel on backend"
