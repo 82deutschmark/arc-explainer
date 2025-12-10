@@ -1,12 +1,13 @@
 /*
  *
- * Author: Cascade using Claude Sonnet 4 (original), Claude Code using Opus 4.5 (2025-12-08 update)
- * Date: 2025-12-08
+ * Author: Cascade using Claude Sonnet 4 (original), Claude Code using Opus 4.5 (2025-12-08 update), Claude Code using Haiku 4.5 (2025-12-09 update)
+ * Date: 2025-12-09
  * PURPOSE: Centralized AI model configuration list consumed by ModelDefinitions and provider lookup utilities.
  *          Updated DeepSeek models to v3.2 with new pricing and specifications.
  *          Added deepseek-reasoner-speciale with expiration-dated base URL.
  *          Added free OpenRouter models: arcee-ai/trinity-mini:free and amazon/nova-2-lite-v1:free (Dec 2025).
  *          Added z-ai/glm-4.6v (Vision) via OpenRouter - multimodal model with 131K context (Dec 2025).
+ *          Added openai/gpt-5-nano and openai/gpt-5-mini via OpenRouter (Dec 2025).
  * SRP/DRY check: Pass - file encapsulates shared model metadata without duplication.
  * shadcn/ui: Pass - configuration only.
  */
@@ -717,6 +718,40 @@ export const MODELS: ModelConfig[] = [
     contextWindow: 400000,
     maxOutputTokens: 60000,
     releaseDate: "2025-11"
+  },
+  {
+    key: 'openai/gpt-5-nano',
+    name: 'OpenAI: GPT-5 Nano',
+    color: 'bg-sky-400',
+    premium: false,
+    cost: { input: '$0.05', output: '$0.40' },
+    supportsTemperature: true,
+    supportsVision: true,
+    provider: 'OpenRouter',
+    responseTime: { speed: 'fast', estimate: '<30 sec' },
+    isReasoning: true,
+    apiModelName: 'openai/gpt-5-nano',
+    modelType: 'openrouter',
+    contextWindow: 400000,
+    maxOutputTokens: 50000,
+    releaseDate: "2025-12"
+  },
+  {
+    key: 'openai/gpt-5-mini',
+    name: 'OpenAI: GPT-5 Mini',
+    color: 'bg-sky-500',
+    premium: false,
+    cost: { input: '$0.25', output: '$2.00' },
+    supportsTemperature: true,
+    supportsVision: true,
+    provider: 'OpenRouter',
+    responseTime: { speed: 'moderate', estimate: '30-60 sec' },
+    isReasoning: true,
+    apiModelName: 'openai/gpt-5-mini',
+    modelType: 'openrouter',
+    contextWindow: 400000,
+    maxOutputTokens: 60000,
+    releaseDate: "2025-12"
   },
   // xAI Grok Models (Direct API via Responses API)
   {

@@ -55,15 +55,16 @@ const WormArenaSetup: React.FC<WormArenaSetupProps> = ({
   return (
     <div className="border rounded-lg p-6 bg-[#faf5f0] border-[#d4b5a0] space-y-4" style={{ fontFamily: 'Fredoka, sans-serif' }}>
       <div>
-        <h2 className="text-lg font-bold text-[#3d2817]">🌱 Start a Match</h2>
-        <p className="text-sm text-[#7a6b5f]">Select two models and run a Worm Arena battle.</p>
+        <h2 className="text-xl font-bold text-[#3d2817]">🌱🐛 Start a Match</h2>
+        <p className="text-sm text-[#7a6b5f]">Pick models and kick off a Worm Arena battle.</p>
       </div>
 
-      {modelsError && (
-        <Alert variant="destructive">
-          <AlertTitle>Model catalog error</AlertTitle>
-          <AlertDescription className="text-sm">{modelsError}</AlertDescription>
-        </Alert>
+      {modelsError ? (
+        <div className="text-sm text-red-700 bg-red-50 border border-red-200 rounded p-3">
+          <strong>Error:</strong> {modelsError}
+        </div>
+      ) : (
+        <></>
       )}
 
       {loadingModels && (
@@ -86,12 +87,12 @@ const WormArenaSetup: React.FC<WormArenaSetupProps> = ({
         <>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <label className="text-sm font-semibold text-[#3d2817]">Model A</label>
+              <label className="text-base font-semibold text-[#3d2817]">Model A 🐛</label>
               <Select value={modelA || ''} onValueChange={onModelAChange} disabled={disabled}>
                 <SelectTrigger className="h-10 text-sm">
-                  <SelectValue placeholder="Select Model A" />
+                  <SelectValue placeholder={hasValidModels ? 'Choose model A' : 'Loading models...'} />
                 </SelectTrigger>
-                {selectableModels.length > 0 && (
+                {hasValidModels && (
                   <SelectContent className="text-sm">
                     {selectableModels.map((m) => (
                       <SelectItem key={m} value={m}>
@@ -104,12 +105,12 @@ const WormArenaSetup: React.FC<WormArenaSetupProps> = ({
             </div>
 
             <div className="space-y-2">
-              <label className="text-sm font-semibold text-[#3d2817]">Model B</label>
+              <label className="text-base font-semibold text-[#3d2817]">Model B 🐛</label>
               <Select value={modelB || ''} onValueChange={onModelBChange} disabled={disabled}>
                 <SelectTrigger className="h-10 text-sm">
-                  <SelectValue placeholder="Select Model B" />
+                  <SelectValue placeholder={hasValidModels ? 'Choose model B' : 'Loading models...'} />
                 </SelectTrigger>
-                {selectableModels.length > 0 && (
+                {hasValidModels && (
                   <SelectContent className="text-sm">
                     {selectableModels.map((m) => (
                       <SelectItem key={m} value={m}>
@@ -124,12 +125,12 @@ const WormArenaSetup: React.FC<WormArenaSetupProps> = ({
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <label className="text-sm font-semibold text-[#3d2817]">BYO API Key (optional)</label>
+              <label className="text-base font-semibold text-[#3d2817]">BYO API Key (optional) 🐛</label>
               <input
                 type="password"
                 value={byoApiKey}
                 onChange={(e) => onApiKeyChange(e.target.value)}
-                className="w-full h-10 rounded border px-3 text-sm"
+                className="w-full h-11 rounded border px-3 text-base"
                 placeholder="Paste your API key"
                 disabled={isRunning}
               />
@@ -138,7 +139,7 @@ const WormArenaSetup: React.FC<WormArenaSetupProps> = ({
               </p>
             </div>
             <div className="space-y-2">
-              <label className="text-sm font-semibold text-[#3d2817]">Provider</label>
+              <label className="text-base font-semibold text-[#3d2817]">Provider 🐛</label>
               <Select value={byoProvider} onValueChange={(v) => onProviderChange(v as WormArenaSetupProps['byoProvider'])} disabled={isRunning}>
                 <SelectTrigger className="h-10 text-sm">
                   <SelectValue placeholder="Select provider (optional)" />
