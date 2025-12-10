@@ -28,7 +28,7 @@ export interface WormArenaSetupProps {
   onModelAChange: (model: string) => void;
   onModelBChange: (model: string) => void;
   byoApiKey: string;
-  byoProvider: 'openrouter' | 'openai' | 'anthropic' | 'xai' | 'gemini' | '';
+  byoProvider: 'openrouter' | 'openai' | 'anthropic' | 'xai' | 'gemini' | 'server-default';
   onApiKeyChange: (key: string) => void;
   onProviderChange: (provider: WormArenaSetupProps['byoProvider']) => void;
   onRunMatch: () => void;
@@ -149,7 +149,7 @@ const WormArenaSetup: React.FC<WormArenaSetupProps> = ({
                   <SelectItem value="anthropic">Anthropic</SelectItem>
                   <SelectItem value="xai">xAI</SelectItem>
                   <SelectItem value="gemini">Gemini</SelectItem>
-                  <SelectItem value="">Use server default</SelectItem>
+                  <SelectItem value="server-default">Use server default</SelectItem>
                 </SelectContent>
               </Select>
             </div>

@@ -40,7 +40,7 @@ export default function WormArenaHeader({
           <div className="flex-1 flex flex-col gap-2">
             {/* Main Title with Worm Emojis */}
             <div className="flex items-center gap-3 flex-wrap">
-              <span style={{ fontSize: '28px' }}>🪱</span>
+              <span style={{ fontSize: '28px' }}>🐛</span>
               <h1
                 className="text-5xl font-bold tracking-tight"
                 style={{
@@ -52,7 +52,7 @@ export default function WormArenaHeader({
               >
                 Worm Arena
               </h1>
-              <span style={{ fontSize: '28px', animation: 'float 3s ease-in-out infinite' }}>🪱</span>
+              <span style={{ fontSize: '28px', animation: 'float 3s ease-in-out infinite' }}>🐛</span>
             </div>
 
             {/* Subtitle with stats and decorative worms */}
@@ -101,7 +101,7 @@ export default function WormArenaHeader({
                   className="absolute -right-8 top-1/2 transform -translate-y-1/2 opacity-0 group-hover:opacity-100 group-hover:right-[-20px] transition-all duration-300"
                   style={{ fontSize: '24px' }}
                 >
-                  🪱
+                  🐛
                 </span>
               )}
             </button>
@@ -111,9 +111,9 @@ export default function WormArenaHeader({
         {/* Bottom decorative worm crawl */}
         {!matchupLabel && (
           <div className="mt-6 flex gap-2 text-xl opacity-60 animate-pulse" style={{ color: '#d4a574' }}>
-            <span>🪱</span>
-            <span style={{ opacity: 0.4 }}>🪱</span>
-            <span style={{ opacity: 0.2 }}>🪱</span>
+            <span>🐛</span>
+            <span style={{ opacity: 0.4 }}>🐛</span>
+            <span style={{ opacity: 0.2 }}>🐛</span>
           </div>
         )}
 

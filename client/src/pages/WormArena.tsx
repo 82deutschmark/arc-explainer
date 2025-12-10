@@ -81,7 +81,7 @@ export default function WormArena() {
   const [maxRounds, setMaxRounds] = React.useState<number>(150);
   const [numApples, setNumApples] = React.useState<number>(5);
   const [byoApiKey, setByoApiKey] = React.useState<string>('');
-  const [byoProvider, setByoProvider] = React.useState<'openrouter' | 'openai' | 'anthropic' | 'xai' | 'gemini' | ''>('');
+  const [byoProvider, setByoProvider] = React.useState<'openrouter' | 'openai' | 'anthropic' | 'xai' | 'gemini' | 'server-default'>('server-default');
   const [selectedGameId, setSelectedGameId] = React.useState<string>('');
   const [frameIndex, setFrameIndex] = React.useState<number>(0);
   const [isPlaying, setIsPlaying] = React.useState<boolean>(false);
@@ -146,7 +146,9 @@ export default function WormArena() {
       height,
       maxRounds,
       numApples,
-      ...(byoApiKey && byoProvider ? { apiKey: byoApiKey, provider: byoProvider } : {}),
+      ...(byoApiKey && byoProvider && byoProvider !== 'server-default'
+        ? { apiKey: byoApiKey, provider: byoProvider }
+        : {}),
     };
     setLaunchNotice(null);
     try {

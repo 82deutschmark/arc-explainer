@@ -51,7 +51,7 @@ export default function WormArenaReasoning({
       {/* Header with player name and move label */}
       <div className="mb-4 pb-4 border-b" style={{ borderColor: accentColor }}>
         <h3 className="text-lg font-bold flex items-center gap-2 mb-2" style={{ color: accentColor }}>
-          🪱 {playerName}
+          🐛 {playerName}
         </h3>
         <div className="text-xs font-medium" style={{ color: accentColor, opacity: 0.8 }}>
           {showNextMove ? 'Next Move Strategy' : 'Current Move'}
