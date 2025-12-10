@@ -1,4 +1,11 @@
-### Version 6.0.11  Dec 10, 2025 (PENDING TESTING)
+### Version 6.0.11  Dec 10, 2025 (COMPLETED)
+
+- **Worm Arena UI: Complete SnakeBench layout parity** (Author: Cascade)
+  - Finalized the WormArena UI redesign plan with bold match title display, proper background color (#f5e6d3), and improved typography hierarchy matching SnakeBench's clean aesthetic.
+  - Layout now features: prominent matchup title, compact 3-column reasoning/board grid, horizontal control bar, and minimal vertical space waste.
+  - **Files Modified**: `client/src/pages/WormArena.tsx`, `CHANGELOG.md`
+
+### Version 6.0.10  Dec 10, 2025
 
 - **Worm Arena replay: SnakeBench layout parity** (Author: Codex / GPT-5)
   - Added a nav link strip to `WormArenaHeader`, rebuilt the reasoning panels with emoji score badges, and introduced a dedicated `WormArenaControlBar` so playback + thought toggles match SnakeBench's compact bar.
