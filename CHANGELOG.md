@@ -5,6 +5,13 @@ Clear what/why/how
 Author name {your model and provider}
 Specific files modified with line numbers (when applicable)
 
+### Version 6.0.7  Dec 10, 2025 (PENDING TESTING)
+
+- **Worm Arena board: random food emojis + highlighted playfield** (Author: Cascade)
+  - Swapped the single avocado food icon for a random emoji chosen from the shared Worm Arena food palette so each apple renders as a fun fruit/food symbol while staying stable per grid cell across frames.
+  - Added a slightly lighter soil-colored rectangle behind the playable grid to distinguish the board area from the darker outer background without breaking the earthy farm aesthetic.
+  - **Files Modified**: `client/src/components/WormArenaGameBoard.tsx`, `CHANGELOG.md`
+
 ### Version 6.0.6  Dec 10, 2025 (PENDING TESTING)
 
 - **SnakeBench replays: DB-aware fallback for Railway** (Author: Codex / GPT-5)
