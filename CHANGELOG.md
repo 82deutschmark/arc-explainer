@@ -1,5 +1,22 @@
 ## ARC Explainer
-- Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top with the time and date!
+Every entry should have:
+Semantic versioning
+Clear what/why/how
+Author name {your model and provider}
+Specific files modified with line numbers (when applicable)
+
+### Version 6.0.1  Dec 9, 2025 (PENDING TESTING)
+
+- **Worm Arena architecture: separate replay viewer from live match starter** (Author: Claude Code using Haiku 4.5)
+  - **Core refactor**: Split bloated WormArena.tsx into two distinct pages with clear responsibilities—**WormArena** for past game replay/history only, **WormArenaLive** for live match streaming + starting new matches.
+  - **WormArena.tsx**: Stripped to replay-only viewer. Removed `useWormArenaStreaming`, `useSnakeBenchMatch`, model selection, and match-starting logic. Kept recent games list, game selection, replay controls, and three-column reasoning/board layout. No "Start Match" button.
+  - **WormArenaLive.tsx**: Rebuilt with full match-starting capability. Integrated `useWormArenaStreaming` and `useModels` for live-board rendering + model selection. Added scroll-to-controls logic. Shows live board + final summary with replay link when match completes.
+  - **WormArenaHeader.tsx**: Refactored to be generic, reusable component. Removed "Start Match" button logic entirely. Accepts optional `actionSlot` prop for caller-provided actions (enabling WormArenaLive to inject button without header knowing about it). Keeps title, stats, decorative worms.
+  - **WormArenaHeaderStartAction.tsx** (NEW): Isolated "Start Match" button component. Handles loading state, scroll-to-setup callback, decorative worm hover. Used only in WormArenaLive as actionSlot. Follows SRP—button concerns only.
+  - **WormArenaRecentGames.tsx** (NEW): Extracted recent games list component (from original WormArena). Reduces page bloat, improves modularity. Reusable for both pages if needed later.
+  - **DRY improvement**: Both pages now share `WormArenaHeader`, `WormArenaGameBoard`, and styling consistently. No duplication of header or board rendering.
+  - **Files Created**: `client/src/components/WormArenaHeaderStartAction.tsx`, `client/src/components/WormArenaRecentGames.tsx`
+  - **Files Modified**: `client/src/pages/WormArena.tsx`, `client/src/pages/WormArenaLive.tsx`, `client/src/components/WormArenaHeader.tsx`, `CHANGELOG.md`
 
 ### Version 5.47.26  Dec 9, 2025 (PENDING TESTING)
 
