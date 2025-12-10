@@ -231,6 +231,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/snakebench/health", asyncHandler(snakeBenchController.health));
   app.get("/api/snakebench/recent-activity", asyncHandler(snakeBenchController.recentActivity));
   app.get("/api/snakebench/leaderboard", asyncHandler(snakeBenchController.basicLeaderboard));
+  app.get("/api/snakebench/stats", asyncHandler(snakeBenchController.stats));
+  app.get("/api/snakebench/model-rating", asyncHandler(snakeBenchController.modelRating));
+  app.get("/api/snakebench/model-history", asyncHandler(snakeBenchController.modelHistory));
 
   // Worm Arena live streaming (SSE wrapper around SnakeBench matches)
   app.post("/api/wormarena/prepare", asyncHandler(wormArenaStreamController.prepare));

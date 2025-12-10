@@ -1,3 +1,11 @@
+### Version 6.1.0  Dec 10, 2025 (PENDING TESTING)
+
+- **Worm Arena stats backend: SnakeBench TrueSkill + history APIs** (Author: Cascade)
+  - Added DB-backed SnakeBench stats for ARC Explainer games (`getArcExplainerStats`) exposing total matches, active models, top apples, and total testing cost for Worm Arena dashboards.
+  - Implemented per-model TrueSkill snapshot + match history accessors (`getModelRating`, `getModelMatchHistory`) so the future `/worm-arena/stats` page can show skill estimates, uncertainty, conservative ratings, and recent head-to-head results.
+  - Exposed new public HTTP endpoints: `/api/snakebench/stats`, `/api/snakebench/model-rating`, and `/api/snakebench/model-history`, wired through `snakeBenchService` and typed via shared SnakeBench stats DTOs.
+  - **Files Modified**: `shared/types.ts`, `server/repositories/SnakeBenchRepository.ts`, `server/services/snakeBenchService.ts`, `server/controllers/snakeBenchController.ts`, `server/routes.ts`, `CHANGELOG.md`
+
 ### Version 6.0.12  Dec 10, 2025 (COMPLETED)
 
 - **Worm Arena stats page plan** (Author: Codex / GPT-5)

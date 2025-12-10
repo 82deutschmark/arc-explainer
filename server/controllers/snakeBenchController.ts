@@ -23,6 +23,9 @@ import type {
   SnakeBenchListGamesResponse,
   SnakeBenchGameDetailResponse,
   SnakeBenchHealthResponse,
+  SnakeBenchStatsResponse,
+  SnakeBenchModelRatingResponse,
+  SnakeBenchModelHistoryResponse,
 } from '../../shared/types.js';
 
 export async function runMatch(req: Request, res: Response) {
@@ -281,6 +284,101 @@ export async function basicLeaderboard(req: Request, res: Response) {
   }
 }
 
+export async function stats(req: Request, res: Response) {
+  try {
+    const stats = await snakeBenchService.getArcExplainerStats();
+    const response: SnakeBenchStatsResponse = {
+      success: true,
+      stats,
+      timestamp: Date.now(),
+    };
+    return res.json(response);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    logger.error(`SnakeBench stats failed: ${message}`, 'snakebench-controller');
+    const response: SnakeBenchStatsResponse = {
+      success: false,
+      stats: { totalGames: 0, activeModels: 0, topApples: 0, totalCost: 0 },
+      error: message as any,
+      timestamp: Date.now(),
+    };
+    return res.status(500).json(response);
+  }
+}
+
+export async function modelRating(req: Request, res: Response) {
+  try {
+    const modelSlugRaw = (req.query.modelSlug as string | undefined) ?? '';
+    const modelSlug = modelSlugRaw.trim();
+
+    if (!modelSlug) {
+      const response: SnakeBenchModelRatingResponse = {
+        success: false,
+        error: 'modelSlug query parameter is required',
+        timestamp: Date.now(),
+      };
+      return res.status(400).json(response);
+    }
+
+    const rating = await snakeBenchService.getModelRating(modelSlug);
+    const response: SnakeBenchModelRatingResponse = {
+      success: true,
+      rating,
+      timestamp: Date.now(),
+    };
+    return res.json(response);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    logger.error(`SnakeBench modelRating failed: ${message}`, 'snakebench-controller');
+    const response: SnakeBenchModelRatingResponse = {
+      success: false,
+      error: message,
+      timestamp: Date.now(),
+    };
+    return res.status(500).json(response);
+  }
+}
+
+export async function modelHistory(req: Request, res: Response) {
+  try {
+    const modelSlugRaw = (req.query.modelSlug as string | undefined) ?? '';
+    const modelSlug = modelSlugRaw.trim();
+    const limitQuery = req.query.limit as string | undefined;
+    const limit = limitQuery != null && Number.isFinite(Number(limitQuery)) ? Number(limitQuery) : undefined;
+
+    if (!modelSlug) {
+      const response: SnakeBenchModelHistoryResponse = {
+        success: false,
+        modelSlug: '',
+        history: [],
+        timestamp: Date.now(),
+        error: 'modelSlug query parameter is required' as any,
+      };
+      return res.status(400).json(response);
+    }
+
+    const history = await snakeBenchService.getModelMatchHistory(modelSlug, limit);
+    const response: SnakeBenchModelHistoryResponse = {
+      success: true,
+      modelSlug,
+      history,
+      timestamp: Date.now(),
+    };
+    return res.json(response);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    logger.error(`SnakeBench modelHistory failed: ${message}`, 'snakebench-controller');
+    const response: SnakeBenchModelHistoryResponse = {
+      success: false,
+      modelSlug: '',
+      history: [],
+      timestamp: Date.now(),
+      error: message as any,
+    };
+    return res.status(500).json(response);
+  }
+}
+
 export const snakeBenchController = {
   runMatch,
   runBatch,
@@ -289,4 +387,7 @@ export const snakeBenchController = {
   health,
   recentActivity,
   basicLeaderboard,
+  stats,
+  modelRating,
+  modelHistory,
 };

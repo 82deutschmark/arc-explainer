@@ -17,6 +17,10 @@ import { logger } from '../utils/logger.ts';
 import type {
   SnakeBenchRunMatchResult,
   SnakeBenchGameSummary,
+  SnakeBenchArcExplainerStats,
+  SnakeBenchModelRating,
+  SnakeBenchModelMatchHistoryEntry,
+  SnakeBenchResultLabel,
 } from '../../shared/types.js';
 
 export interface SnakeBenchRecordMatchParams {
@@ -316,6 +320,207 @@ export class SnakeBenchRepository extends BaseRepository {
         'snakebench-db',
       );
       return { days, gamesPlayed: 0, uniqueModels: 0 };
+    }
+  }
+
+  async getArcExplainerStats(): Promise<SnakeBenchArcExplainerStats> {
+    if (!this.isConnected()) {
+      return { totalGames: 0, activeModels: 0, topApples: 0, totalCost: 0 };
+    }
+
+    try {
+      const sql = `
+        SELECT
+          (SELECT COUNT(*) FROM public.games g WHERE g.game_type = 'arc-explainer') AS total_games,
+          (
+            SELECT COUNT(DISTINCT m.model_slug)
+            FROM public.models m
+            JOIN public.game_participants gp ON m.id = gp.model_id
+            JOIN public.games g2 ON gp.game_id = g2.id
+            WHERE g2.game_type = 'arc-explainer'
+          ) AS active_models,
+          (
+            SELECT COALESCE(MAX(gp2.score), 0)
+            FROM public.game_participants gp2
+            JOIN public.games g3 ON gp2.game_id = g3.id
+            WHERE g3.game_type = 'arc-explainer'
+          ) AS top_apples,
+          (
+            SELECT COALESCE(SUM(gp3.cost), 0)
+            FROM public.game_participants gp3
+            JOIN public.games g4 ON gp3.game_id = g4.id
+            WHERE g4.game_type = 'arc-explainer'
+          ) AS total_cost;
+      `;
+
+      const result = await this.query(sql);
+      const row = result.rows[0] ?? {};
+
+      const totalGames = parseInt(String(row.total_games ?? '0'), 10) || 0;
+      const activeModels = parseInt(String(row.active_models ?? '0'), 10) || 0;
+      const topApples = Number(row.top_apples ?? 0) || 0;
+      const totalCost = Number(row.total_cost ?? 0) || 0;
+
+      return { totalGames, activeModels, topApples, totalCost };
+    } catch (error) {
+      logger.warn(
+        `SnakeBenchRepository.getArcExplainerStats: query failed: ${error instanceof Error ? error.message : String(error)}`,
+        'snakebench-db',
+      );
+      return { totalGames: 0, activeModels: 0, topApples: 0, totalCost: 0 };
+    }
+  }
+
+  async getModelRating(modelSlug: string): Promise<SnakeBenchModelRating | null> {
+    if (!this.isConnected()) {
+      return null;
+    }
+
+    if (!modelSlug) {
+      return null;
+    }
+
+    try {
+      const sql = `
+        SELECT
+          model_slug,
+          trueskill_mu,
+          trueskill_sigma,
+          trueskill_exposed,
+          wins,
+          losses,
+          ties,
+          apples_eaten,
+          games_played,
+          is_active
+        FROM public.models
+        WHERE model_slug = $1
+        LIMIT 1;
+      `;
+
+      const result = await this.query(sql, [modelSlug]);
+      if (!result.rows.length) {
+        return null;
+      }
+
+      const row: any = result.rows[0];
+
+      const mu = typeof row.trueskill_mu === 'number' ? row.trueskill_mu : DEFAULT_TRUESKILL_MU;
+      const sigma = typeof row.trueskill_sigma === 'number' ? row.trueskill_sigma : DEFAULT_TRUESKILL_SIGMA;
+      const exposedRaw = typeof row.trueskill_exposed === 'number' ? row.trueskill_exposed : undefined;
+      const exposed = typeof exposedRaw === 'number' ? exposedRaw : mu - 3 * sigma;
+      const displayScore = exposed * TRUESKILL_DISPLAY_MULTIPLIER;
+
+      const wins = parseInt(String(row.wins ?? '0'), 10) || 0;
+      const losses = parseInt(String(row.losses ?? '0'), 10) || 0;
+      const ties = parseInt(String(row.ties ?? '0'), 10) || 0;
+      const applesEaten = parseInt(String(row.apples_eaten ?? '0'), 10) || 0;
+      const gamesPlayed = parseInt(String(row.games_played ?? '0'), 10) || 0;
+      const isActive = typeof row.is_active === 'boolean' ? row.is_active : undefined;
+
+      const rating: SnakeBenchModelRating = {
+        modelSlug: String(row.model_slug ?? modelSlug),
+        mu,
+        sigma,
+        exposed,
+        displayScore,
+        wins,
+        losses,
+        ties,
+        applesEaten,
+        gamesPlayed,
+        ...(isActive !== undefined ? { isActive } : {}),
+      };
+
+      return rating;
+    } catch (error) {
+      logger.warn(
+        `SnakeBenchRepository.getModelRating: query failed for ${modelSlug}: ${error instanceof Error ? error.message : String(error)}`,
+        'snakebench-db',
+      );
+      return null;
+    }
+  }
+
+  async getModelMatchHistory(modelSlug: string, limit: number = 50): Promise<SnakeBenchModelMatchHistoryEntry[]> {
+    if (!this.isConnected()) {
+      return [];
+    }
+
+    if (!modelSlug) {
+      return [];
+    }
+
+    const safeLimit = Number.isFinite(limit) ? Math.max(1, Math.min(limit, 200)) : 50;
+
+    try {
+      const sql = `
+        SELECT
+          g.id AS game_id,
+          g.start_time,
+          g.created_at,
+          g.rounds,
+          g.board_width,
+          g.board_height,
+          gp.score AS my_score,
+          gp.result AS my_result,
+          gp.death_reason,
+          opp.model_slug AS opponent_slug,
+          opp_gp.score AS opponent_score
+        FROM public.game_participants gp
+        JOIN public.models m ON gp.model_id = m.id
+        JOIN public.games g ON gp.game_id = g.id
+        LEFT JOIN public.game_participants opp_gp
+          ON opp_gp.game_id = gp.game_id AND opp_gp.player_slot <> gp.player_slot
+        LEFT JOIN public.models opp ON opp_gp.model_id = opp.id
+        WHERE m.model_slug = $1
+          AND g.game_type = 'arc-explainer'
+        ORDER BY COALESCE(g.start_time, g.created_at, NOW()) DESC
+        LIMIT $2;
+      `;
+
+      const result = await this.query(sql, [modelSlug, safeLimit]);
+
+      const history: SnakeBenchModelMatchHistoryEntry[] = result.rows.map((row: any) => {
+        const startedTs = row.start_time ?? row.created_at ?? null;
+        const startedAt = startedTs ? new Date(startedTs).toISOString() : '';
+
+        const myScore = Number(row.my_score ?? 0) || 0;
+        const opponentScore = Number(row.opponent_score ?? 0) || 0;
+        const rounds = Number(row.rounds ?? 0) || 0;
+        const boardWidth = Number(row.board_width ?? 0) || 0;
+        const boardHeight = Number(row.board_height ?? 0) || 0;
+
+        const resultLabelRaw = String(row.my_result ?? 'tied') as SnakeBenchResultLabel;
+        const resultLabel: SnakeBenchResultLabel =
+          resultLabelRaw === 'won' || resultLabelRaw === 'lost' || resultLabelRaw === 'tied'
+            ? resultLabelRaw
+            : 'tied';
+
+        const deathReason = row.death_reason != null ? String(row.death_reason) : null;
+        const opponentSlug = row.opponent_slug ? String(row.opponent_slug) : '';
+
+        return {
+          gameId: String(row.game_id),
+          startedAt,
+          opponentSlug,
+          result: resultLabel,
+          myScore,
+          opponentScore,
+          rounds,
+          deathReason,
+          boardWidth,
+          boardHeight,
+        };
+      });
+
+      return history;
+    } catch (error) {
+      logger.warn(
+        `SnakeBenchRepository.getModelMatchHistory: query failed for ${modelSlug}: ${error instanceof Error ? error.message : String(error)}`,
+        'snakebench-db',
+      );
+      return [];
     }
   }
 
