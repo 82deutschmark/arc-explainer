@@ -75,6 +75,18 @@ const WormArenaGameBoard: React.FC<WormArenaGameBoardProps> = ({
     ctx.fillStyle = gradient;
     ctx.fillRect(0, 0, width, height);
 
+    // Slightly lighter soil color for the playable board area
+    const boardRectX = padding;
+    const boardRectY = padding;
+    const boardRectWidth = boardWidth * cellSize;
+    const boardRectHeight = boardHeight * cellSize;
+
+    ctx.save();
+    ctx.globalAlpha = 0.7;
+    ctx.fillStyle = '#7b5b46';
+    ctx.fillRect(boardRectX, boardRectY, boardRectWidth, boardRectHeight);
+    ctx.restore();
+
     // Draw grid with light tan lines
     ctx.strokeStyle = '#8b7355';
     ctx.lineWidth = 1;
