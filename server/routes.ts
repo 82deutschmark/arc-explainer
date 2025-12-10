@@ -27,6 +27,7 @@ import * as modelManagementController from './controllers/modelManagementControl
 import * as discussionController from './controllers/discussionController.js';
 import { batchController } from './controllers/batchController.ts';
 import { streamController } from "./controllers/streamController.ts";
+import { wormArenaStreamController } from "./controllers/wormArenaStreamController.ts";
 
 import { eloController } from "./controllers/eloController";
 import modelDatasetController from "./controllers/modelDatasetController.ts";
@@ -230,6 +231,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/snakebench/health", asyncHandler(snakeBenchController.health));
   app.get("/api/snakebench/recent-activity", asyncHandler(snakeBenchController.recentActivity));
   app.get("/api/snakebench/leaderboard", asyncHandler(snakeBenchController.basicLeaderboard));
+
+  // Worm Arena live streaming (SSE wrapper around SnakeBench matches)
+  app.post("/api/wormarena/prepare", asyncHandler(wormArenaStreamController.prepare));
+  app.get("/api/wormarena/stream/:sessionId", asyncHandler(wormArenaStreamController.stream));
 
   // Batch analysis routes
   app.post("/api/batch/start", asyncHandler(batchController.startBatch));

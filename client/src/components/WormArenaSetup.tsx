@@ -27,6 +27,10 @@ export interface WormArenaSetupProps {
   modelsError?: string | null;
   onModelAChange: (model: string) => void;
   onModelBChange: (model: string) => void;
+  byoApiKey: string;
+  byoProvider: 'openrouter' | 'openai' | 'anthropic' | 'xai' | 'gemini' | '';
+  onApiKeyChange: (key: string) => void;
+  onProviderChange: (provider: WormArenaSetupProps['byoProvider']) => void;
   onRunMatch: () => void;
 }
 
@@ -39,6 +43,10 @@ const WormArenaSetup: React.FC<WormArenaSetupProps> = ({
   modelsError,
   onModelAChange,
   onModelBChange,
+  byoApiKey,
+  byoProvider,
+  onApiKeyChange,
+  onProviderChange,
   onRunMatch,
 }) => {
   const disabled = loadingModels || selectableModels.length < 2 || isRunning;
@@ -110,6 +118,39 @@ const WormArenaSetup: React.FC<WormArenaSetupProps> = ({
                     ))}
                   </SelectContent>
                 )}
+              </Select>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <label className="text-sm font-semibold text-[#3d2817]">BYO API Key (optional)</label>
+              <input
+                type="password"
+                value={byoApiKey}
+                onChange={(e) => onApiKeyChange(e.target.value)}
+                className="w-full h-10 rounded border px-3 text-sm"
+                placeholder="Paste your API key"
+                disabled={isRunning}
+              />
+              <p className="text-xs text-[#7a6b5f]">
+                Key is sent only for this match; leave blank to use server keys.
+              </p>
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm font-semibold text-[#3d2817]">Provider</label>
+              <Select value={byoProvider} onValueChange={(v) => onProviderChange(v as WormArenaSetupProps['byoProvider'])} disabled={isRunning}>
+                <SelectTrigger className="h-10 text-sm">
+                  <SelectValue placeholder="Select provider (optional)" />
+                </SelectTrigger>
+                <SelectContent className="text-sm">
+                  <SelectItem value="openrouter">OpenRouter</SelectItem>
+                  <SelectItem value="openai">OpenAI</SelectItem>
+                  <SelectItem value="anthropic">Anthropic</SelectItem>
+                  <SelectItem value="xai">xAI</SelectItem>
+                  <SelectItem value="gemini">Gemini</SelectItem>
+                  <SelectItem value="">Use server default</SelectItem>
+                </SelectContent>
               </Select>
             </div>
           </div>
