@@ -558,7 +558,7 @@ Can architect clean abstractions for complex workflows, specifically synthesizin
 Care deeply about code quality, performance profiling, and building the stable, scalable platform that allows research to run autonomously.
 
 ## SnakeBench (Greg's external project!)
-# Worm Arena (Our clone of SnakeBench)
+# Worm 🐛 Arena (Our clone of SnakeBench) Worm 🐛
 Greg’s SnakeBench backend (external/SnakeBench/backend). There is already “live” plumbing in Python:
 
 Routes in external/SnakeBench/backend/app.py: /api/games/live and /api/games/<game_id>/live expose in-progress state (pulled from data_access/live_game.py).

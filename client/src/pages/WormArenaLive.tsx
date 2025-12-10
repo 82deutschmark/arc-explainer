@@ -6,7 +6,7 @@ import useWormArenaStreaming from '@/hooks/useWormArenaStreaming';
 /**
  * Author: Cascade
  * Date: 2025-12-09
- * PURPOSE: Live Worm Arena match view opened in a new tab.
+ * PURPOSE: Live Worm 🐛 Arena match view opened in a new tab.
  *          Shows status + board (when frames are streamed) or a waiting state.
  * SRP/DRY check: Pass — consumes the streaming hook, no replay logic here.
  */
