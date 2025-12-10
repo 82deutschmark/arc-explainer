@@ -25,6 +25,13 @@
   - Updated all Worm Arena tournament PowerShell scripts to POST SnakeBench batches to the staging backend (`https://arc-explainer-staging.up.railway.app/api/snakebench/run-batch`) instead of localhost so tournaments exercise the deployed Railway environment.
   - **Files Modified**: `scripts/worm-arena-tournaments/run-matches.ps1`, `scripts/worm-arena-tournaments/gpt-openai-feud.ps1`, `scripts/worm-arena-tournaments/gpt-vs-claude-family.ps1`, `scripts/worm-arena-tournaments/gpt-vs-gemini-family.ps1`, `scripts/worm-arena-tournaments/gpt5-vs-claude-gemini.ps1`, `scripts/worm-arena-tournaments/ministral-feud.ps1`, `scripts/worm-arena-tournaments/opus-vs-all.ps1`, `scripts/worm-arena-tournaments/opus-vs-sonnet.ps1`, `CHANGELOG.md`
 
+### Version 6.0.8  Dec 10, 2025 (PENDING TESTING)
+
+- **Worm Arena mobile board: responsive + crisp emoji scaling** (Author: GPT-5.1-Codex-Max)
+  - Added a ResizeObserver-driven layout pass that sizes the canvas from its container and viewport height, clamping cell sizes for readability on phones while preventing overflow.
+  - Scaled the canvas with devicePixelRatio and fluid width styles so the emoji grid stays sharp and fills the available space on mobile without distortion.
+  - **Files Modified**: `client/src/components/WormArenaGameBoard.tsx`, `docs/2025-05-07-worm-arena-mobile-plan.md`, `CHANGELOG.md`
+
 ### Version 6.0.7  Dec 10, 2025 (PENDING TESTING)
 
 - **Worm Arena board: random food emojis + highlighted playfield** (Author: Cascade)
