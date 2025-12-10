@@ -32,12 +32,38 @@ export interface Region {
 }
 
 /**
- * Extract the 2D grid from a frame (first layer of the 3D array)
- * @param frame - Frame object with 3D grid data
+ * Extract the latest 2D grid from a frame.
+ * Supports both 3D ([layer][h][w]) and 4D ([frameIdx][layer][h][w]) shapes.
+ * @param frame - Frame object with nested grid data
  * @returns 2D grid array [height][width] with values 0-15
  */
 export function extractGrid(frame: FrameData): number[][] {
-  return frame.frame[0];
+  const raw = frame.frame as any;
+  if (!Array.isArray(raw) || raw.length === 0) {
+    return [];
+  }
+
+  const maybeFrame = raw[raw.length - 1];
+  const layers = Array.isArray(maybeFrame?.[0]?.[0])
+    ? maybeFrame
+    : raw;
+
+  const grid2d = Array.isArray(layers) && layers.length > 0 ? layers[layers.length - 1] : [];
+  return Array.isArray(grid2d) ? grid2d : [];
+}
+
+export function extractLayerStack(frame: FrameData): number[][][] {
+  const raw = frame.frame as any;
+  if (!Array.isArray(raw) || raw.length === 0) {
+    return [];
+  }
+
+  const maybeFrame = raw[raw.length - 1];
+  const layers = Array.isArray(maybeFrame?.[0]?.[0])
+    ? maybeFrame
+    : raw;
+
+  return Array.isArray(layers) ? (layers as number[][][]) : [];
 }
 
 /**
@@ -145,4 +171,68 @@ export function printDifferenceSummary(differences: PixelDiff[], actionName: str
       console.log(`    ... and ${differences.length - 5} more`);
     }
   }
+}
+
+/**
+ * Structured frame change analysis for agent context.
+ * Includes pixel counts, sample changes, and human-readable summary.
+ */
+export interface FrameChanges {
+  pixelsChanged: number;
+  changedCells: Array<{ x: number; y: number; from: number; to: number }>;
+  regions: Region[];
+  summary: string;
+}
+
+/**
+ * Analyze changes between two frames for agent context enrichment.
+ * Returns null if prevFrame is null (first frame, nothing to compare).
+ *
+ * @param prevFrame - Previous frame (or null)
+ * @param currentFrame - Current frame
+ * @param maxCellSamples - Max number of changed cells to include (default: 10)
+ * @returns Frame change analysis or null
+ */
+export function analyzeFrameChanges(
+  prevFrame: FrameData | null,
+  currentFrame: FrameData,
+  maxCellSamples: number = 10
+): FrameChanges | null {
+  if (!prevFrame) {
+    return null; // First frame, nothing to compare
+  }
+
+  const differences = compareFrames(prevFrame, currentFrame);
+  const regions = findChangedRegions(prevFrame, currentFrame);
+
+  // Sample up to maxCellSamples changed cells
+  const changedCells = differences.slice(0, maxCellSamples).map(diff => ({
+    x: diff.col,
+    y: diff.row,
+    from: diff.oldVal,
+    to: diff.newVal,
+  }));
+
+  // Generate human-readable summary
+  let summary: string;
+  if (differences.length === 0) {
+    summary = 'No changes detected';
+  } else if (differences.length === 1) {
+    const { col, row, oldVal, newVal } = differences[0];
+    summary = `1 cell changed at (${col},${row}): ${oldVal} → ${newVal}`;
+  } else if (regions.length === 1) {
+    const region = regions[0];
+    const area = region.width * region.height;
+    const changePercentage = Math.round((differences.length / area) * 100);
+    summary = `${differences.length} cells changed in ${region.width}×${region.height} region at (${region.left},${region.top}), ${changePercentage}% of region`;
+  } else {
+    summary = `${differences.length} cells changed across ${regions.length} regions`;
+  }
+
+  return {
+    pixelsChanged: differences.length,
+    changedCells,
+    regions,
+    summary,
+  };
 }

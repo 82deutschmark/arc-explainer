@@ -18,13 +18,20 @@ dotenv.config();
 type SourceKey = 'ARC1-Eval' | 'ARC2-Eval';
 
 type ModelKey =
-  | 'moonshotai/kimi-k2-thinking';
+  | 'moonshotai/kimi-k2-thinking'
+  | 'z-ai/glm-4.6v';
 
 const API_BASE_URL = process.env.API_BASE_URL || 'http://localhost:5000';
 const SOURCES: SourceKey[] = ['ARC1-Eval', 'ARC2-Eval'];
-const MODEL_KEY: ModelKey = 'moonshotai/kimi-k2-thinking';
+const MODEL_KEY: ModelKey = 'z-ai/glm-4.6v';
 
-const RATE_LIMIT_DELAY_MS = Number(process.env.OPENROUTER_RATE_LIMIT_MS) || 1000;
+// Hardcoded puzzle IDs for targeted runs (overrides source fetch when non-empty)
+// Retry batch: 5 failed from run 3 (server unavailable + 400 error)
+const HARDCODED_PUZZLE_IDS: string[] = [
+  'bf45cf4b', '65b59efc', 'a251c730', 'edb79dae', 'fc7cae8d'
+];
+
+const RATE_LIMIT_DELAY_MS = Number(process.env.OPENROUTER_RATE_LIMIT_MS) || 30000;
 // Not used now, but retained for clarity if future models are added.
 const MODEL_SWITCH_DELAY_MS = Number(process.env.OPENROUTER_MODEL_SWITCH_DELAY_MS) || 3000;
 const PUZZLE_TIMEOUT_MS = 10 * 60 * 1000; // 10 minutes
@@ -185,13 +192,20 @@ async function main(): Promise<void> {
 
     const allResults: AnalysisResult[] = [];
 
-    for (const source of SOURCES) {
-      console.log(`\nLoading puzzles for ${source}`);
-      const puzzleIds = await fetchPuzzleIds(source);
-      console.log(`Loaded ${puzzleIds.length} puzzles (${source})`);
-
-      const modelResults = await fireKimiWithSpacing(source, puzzleIds);
+    // Use hardcoded puzzle IDs if provided, otherwise fetch from sources
+    if (HARDCODED_PUZZLE_IDS.length > 0) {
+      console.log(`\nUsing ${HARDCODED_PUZZLE_IDS.length} hardcoded puzzle IDs`);
+      const modelResults = await fireKimiWithSpacing('ARC1-Eval', HARDCODED_PUZZLE_IDS);
       allResults.push(...modelResults);
+    } else {
+      for (const source of SOURCES) {
+        console.log(`\nLoading puzzles for ${source}`);
+        const puzzleIds = await fetchPuzzleIds(source);
+        console.log(`Loaded ${puzzleIds.length} puzzles (${source})`);
+
+        const modelResults = await fireKimiWithSpacing(source, puzzleIds);
+        allResults.push(...modelResults);
+      }
     }
 
     const total = allResults.length;

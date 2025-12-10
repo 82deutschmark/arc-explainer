@@ -228,6 +228,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/snakebench/games", asyncHandler(snakeBenchController.listGames));
   app.get("/api/snakebench/games/:gameId", asyncHandler(snakeBenchController.getGame));
   app.get("/api/snakebench/health", asyncHandler(snakeBenchController.health));
+  app.get("/api/snakebench/recent-activity", asyncHandler(snakeBenchController.recentActivity));
+  app.get("/api/snakebench/leaderboard", asyncHandler(snakeBenchController.basicLeaderboard));
 
   // Batch analysis routes
   app.post("/api/batch/start", asyncHandler(batchController.startBatch));
