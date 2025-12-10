@@ -8,6 +8,10 @@
  * SRP/DRY check: Pass — focused exclusively on SnakeBench DB reads/writes.
  */
 
+import fs from 'fs';
+import path from 'path';
+import { Rating, TrueSkill } from 'ts-trueskill';
+
 import { BaseRepository } from './base/BaseRepository.ts';
 import { logger } from '../utils/logger.ts';
 import type {
@@ -27,6 +31,21 @@ export interface SnakeBenchRecentGamesResult {
   games: SnakeBenchGameSummary[];
   total: number;
 }
+
+const DEFAULT_TRUESKILL_MU = 25.0;
+const DEFAULT_TRUESKILL_SIGMA = DEFAULT_TRUESKILL_MU / 3.0;
+const DEFAULT_TRUESKILL_BETA = DEFAULT_TRUESKILL_MU / 6.0;
+const DEFAULT_TRUESKILL_TAU = 0.5;
+const DEFAULT_TRUESKILL_DRAW_PROBABILITY = 0.1;
+const TRUESKILL_DISPLAY_MULTIPLIER = 50.0;
+
+const ELO_K = 32;
+const RESULT_RANK: Record<string, number> = { won: 0, tied: 1, lost: 2 };
+const RESULT_SCORE: Record<string, [number, number]> = {
+  won: [1, 0],
+  lost: [0, 1],
+  tied: [0.5, 0.5],
+};
 
 export class SnakeBenchRepository extends BaseRepository {
   /**
@@ -51,6 +70,17 @@ export class SnakeBenchRepository extends BaseRepository {
     if (!gameId || !result.modelA || !result.modelB) {
       logger.warn('SnakeBenchRepository.recordMatchFromResult: missing gameId/model names, skipping DB write', 'snakebench-db');
       return;
+    }
+
+    // If we have a completed replay file, ingest the full parity data path instead of the minimal summary.
+    if (result.completedGamePath) {
+      try {
+        await this.ingestReplayFromFile(result.completedGamePath);
+        return;
+      } catch (err) {
+        const msg = err instanceof Error ? err.message : String(err);
+        logger.warn(`SnakeBenchRepository.recordMatchFromResult: full replay ingest failed, falling back to minimal insert: ${msg}`, 'snakebench-db');
+      }
     }
 
     const gameType = params.gameType ?? 'arc-explainer';
@@ -363,6 +393,456 @@ export class SnakeBenchRepository extends BaseRepository {
         'snakebench-db',
       );
       return [];
+    }
+  }
+
+  /**
+   * Full-fidelity ingest of a completed SnakeBench replay JSON, matching Greg's DB writes:
+   * - Upsert models
+   * - Upsert game with completed status, scores, costs, board params
+   * - Upsert participants with score/result/death/cost
+   * - Update aggregates and TrueSkill (Elo fallback) for this game
+   *
+   * @param filePath Absolute or relative path to snake_game_<id>.json
+   * @param opts.forceRecompute When true, run aggregates/ratings even if the game already exists (for backfill)
+   */
+  async ingestReplayFromFile(filePath: string, opts: { forceRecompute?: boolean } = {}): Promise<void> {
+    if (!this.isConnected()) return;
+
+    const absolutePath = path.isAbsolute(filePath) ? filePath : path.join(process.cwd(), filePath);
+    const raw = await fs.promises.readFile(absolutePath, 'utf8');
+    const parsed = JSON.parse(raw);
+
+    const normalized = this.parseReplayJson(parsed, absolutePath);
+    if (!normalized.gameId) {
+      throw new Error(`Replay missing game id: ${absolutePath}`);
+    }
+
+    const forceRecompute = opts.forceRecompute === true;
+
+    await this.transaction(async (client) => {
+      const existed = (await client.query('SELECT 1 FROM public.games WHERE id = $1', [normalized.gameId])).rowCount > 0;
+
+      // Upsert models and collect ids by player_slot
+      const modelIds: Record<number, number | null> = {};
+      for (const p of normalized.participants) {
+        modelIds[p.playerSlot] = await this.getOrCreateModelId(client, p.modelName);
+      }
+
+      // Upsert game row
+      await client.query(
+        `
+        INSERT INTO public.games (
+          id, status, start_time, end_time, rounds, replay_path,
+          board_width, board_height, num_apples, total_score, total_cost, game_type, current_state
+        ) VALUES (
+          $1, 'completed', $2, $3, $4, $5,
+          $6, $7, $8, $9, $10, $11, NULL
+        )
+        ON CONFLICT (id) DO UPDATE SET
+          status = EXCLUDED.status,
+          start_time = COALESCE(EXCLUDED.start_time, public.games.start_time),
+          end_time = COALESCE(EXCLUDED.end_time, public.games.end_time),
+          rounds = COALESCE(EXCLUDED.rounds, public.games.rounds),
+          replay_path = EXCLUDED.replay_path,
+          board_width = EXCLUDED.board_width,
+          board_height = EXCLUDED.board_height,
+          num_apples = EXCLUDED.num_apples,
+          total_score = EXCLUDED.total_score,
+          total_cost = EXCLUDED.total_cost,
+          game_type = EXCLUDED.game_type,
+          current_state = NULL,
+          updated_at = NOW();
+        `,
+        [
+          normalized.gameId,
+          normalized.startTime ?? null,
+          normalized.endTime ?? null,
+          normalized.rounds ?? null,
+          normalized.replayPath,
+          normalized.boardWidth,
+          normalized.boardHeight,
+          normalized.numApples,
+          normalized.totalScore,
+          normalized.totalCost,
+          normalized.gameType,
+        ],
+      );
+
+      // Upsert participants
+      for (const p of normalized.participants) {
+        const modelId = modelIds[p.playerSlot];
+        if (modelId == null) continue;
+
+        await client.query(
+          `
+          INSERT INTO public.game_participants (
+            game_id, model_id, player_slot, score, result, death_round, death_reason, cost, opponent_rank_at_match
+          ) VALUES (
+            $1, $2, $3, $4, $5, $6, $7, $8, NULL
+          )
+          ON CONFLICT (game_id, player_slot) DO UPDATE SET
+            score = EXCLUDED.score,
+            result = EXCLUDED.result,
+            death_round = EXCLUDED.death_round,
+            death_reason = EXCLUDED.death_reason,
+            cost = EXCLUDED.cost;
+          `,
+          [
+            normalized.gameId,
+            modelId,
+            p.playerSlot,
+            p.score,
+            p.result,
+            p.deathRound,
+            p.deathReason,
+            p.cost,
+          ],
+        );
+      }
+
+      const shouldRecompute = forceRecompute || !existed;
+      if (shouldRecompute) {
+        await this.updateAggregatesForGame(normalized.gameId, client);
+        try {
+          await this.updateTrueSkillForGame(normalized.gameId, client);
+        } catch (tsErr) {
+          const msg = tsErr instanceof Error ? tsErr.message : String(tsErr);
+          logger.warn(`SnakeBenchRepository: TrueSkill update failed for ${normalized.gameId}, falling back to Elo: ${msg}`, 'snakebench-db');
+          await this.updateEloForGame(normalized.gameId, client);
+        }
+      }
+    });
+  }
+
+  /**
+   * Parse replay JSON into normalized structures for DB writes.
+   */
+  private parseReplayJson(raw: any, absolutePath: string): {
+    gameId: string;
+    startTime: Date | null;
+    endTime: Date | null;
+    rounds: number | null;
+    boardWidth: number;
+    boardHeight: number;
+    numApples: number;
+    totalScore: number;
+    totalCost: number;
+    gameType: string;
+    replayPath: string;
+    participants: Array<{
+      playerSlot: number;
+      modelName: string;
+      result: string;
+      score: number;
+      deathRound: number | null;
+      deathReason: string | null;
+      cost: number;
+    }>;
+  } {
+    const gameBlock = raw?.game ?? {};
+    const metadata = raw?.metadata ?? {};
+    const players = raw?.players ?? {};
+    const totals = raw?.totals ?? {};
+
+    const gameId: string =
+      gameBlock.id ??
+      metadata.game_id ??
+      path.basename(absolutePath).replace(/^snake_game_/, '').replace(/\.json$/i, '');
+
+    const startTimeStr: string | undefined = gameBlock.started_at ?? metadata.start_time;
+    const endTimeStr: string | undefined = gameBlock.ended_at ?? metadata.end_time;
+    const startTime = startTimeStr ? new Date(startTimeStr) : null;
+    const endTime = endTimeStr ? new Date(endTimeStr) : null;
+
+    const rounds =
+      (typeof gameBlock.rounds_played === 'number' ? gameBlock.rounds_played : null) ??
+      (typeof metadata.actual_rounds === 'number' ? metadata.actual_rounds : null) ??
+      null;
+
+    const board = gameBlock.board ?? {};
+    const boardWidth = Number(board.width ?? 0) || 0;
+    const boardHeight = Number(board.height ?? 0) || 0;
+    const numApples = Number(board.num_apples ?? 0) || 0;
+
+    const totalCost = Number(totals.cost ?? 0) || 0;
+
+    const participants: Array<{
+      playerSlot: number;
+      modelName: string;
+      result: string;
+      score: number;
+      deathRound: number | null;
+      deathReason: string | null;
+      cost: number;
+    }> = [];
+
+    let totalScore = 0;
+
+    for (const [slotKey, player] of Object.entries<any>(players)) {
+      const playerSlot = Number(slotKey);
+      const modelName = String(player?.name ?? player?.model_id ?? '').trim();
+      const score = Number(player?.final_score ?? 0) || 0;
+      totalScore += score;
+      const result = String(player?.result ?? 'tied');
+      const deathRound = player?.death?.round ?? null;
+      const deathReason = player?.death?.reason ?? null;
+      const cost = Number(player?.totals?.cost ?? 0) || 0;
+
+      participants.push({
+        playerSlot,
+        modelName,
+        result,
+        score,
+        deathRound: deathRound != null ? Number(deathRound) : null,
+        deathReason: deathReason ? String(deathReason) : null,
+        cost,
+      });
+    }
+
+    const filename = path.basename(absolutePath);
+    const replayPath = path.join('completed_games', filename);
+    const gameType = String(gameBlock.game_type ?? metadata.game_type ?? 'ladder');
+
+    return {
+      gameId,
+      startTime,
+      endTime,
+      rounds,
+      boardWidth,
+      boardHeight,
+      numApples,
+      totalScore,
+      totalCost,
+      gameType,
+      replayPath,
+      participants,
+    };
+  }
+
+  private async getOrCreateModelId(client: any, modelSlug: string): Promise<number | null> {
+    if (!modelSlug) return null;
+    const provider = 'OpenRouter';
+    const name = modelSlug;
+
+    const insertSql = `
+      INSERT INTO public.models (name, provider, model_slug, is_active, test_status, trueskill_mu, trueskill_sigma, trueskill_exposed, trueskill_updated_at)
+      VALUES ($1, $2, $3, TRUE, 'ranked', $4, $5, $6, NOW())
+      ON CONFLICT (model_slug) DO UPDATE
+        SET name = EXCLUDED.name
+      RETURNING id;
+    `;
+
+    const exposed = DEFAULT_TRUESKILL_MU - 3 * DEFAULT_TRUESKILL_SIGMA;
+    const { rows } = await client.query(insertSql, [
+      name,
+      provider,
+      modelSlug,
+      DEFAULT_TRUESKILL_MU,
+      DEFAULT_TRUESKILL_SIGMA,
+      exposed,
+    ]);
+    if (!rows.length) return null;
+    return rows[0].id as number;
+  }
+
+  private async updateAggregatesForGame(gameId: string, client: any): Promise<void> {
+    // Increment aggregates per participant, idempotent only if called once per game after a reset.
+    await client.query(
+      `
+      UPDATE public.models m
+      SET
+        wins = wins + CASE WHEN gp.result = 'won' THEN 1 ELSE 0 END,
+        losses = losses + CASE WHEN gp.result = 'lost' THEN 1 ELSE 0 END,
+        ties = ties + CASE WHEN gp.result = 'tied' THEN 1 ELSE 0 END,
+        apples_eaten = apples_eaten + COALESCE(gp.score, 0),
+        games_played = games_played + 1,
+        last_played_at = NOW(),
+        updated_at = NOW()
+      FROM public.game_participants gp
+      WHERE gp.model_id = m.id
+        AND gp.game_id = $1;
+      `,
+      [gameId],
+    );
+  }
+
+  private async updateTrueSkillForGame(gameId: string, client: any): Promise<void> {
+    const res = await client.query(
+      `
+      SELECT gp.model_id, gp.player_slot, gp.score, gp.result,
+             m.trueskill_mu, m.trueskill_sigma, m.name
+      FROM public.game_participants gp
+      JOIN public.models m ON gp.model_id = m.id
+      WHERE gp.game_id = $1
+      ORDER BY gp.player_slot ASC;
+      `,
+      [gameId],
+    );
+
+    if (!res.rows.length) return;
+
+    const env = new TrueSkill(
+      DEFAULT_TRUESKILL_MU,
+      DEFAULT_TRUESKILL_SIGMA,
+      DEFAULT_TRUESKILL_BETA,
+      DEFAULT_TRUESKILL_TAU,
+      DEFAULT_TRUESKILL_DRAW_PROBABILITY,
+    );
+
+    const ratingGroups: Rating[][] = [];
+    const ranks: number[] = [];
+    const participants: Array<{ modelId: number; slot: number; pre: Rating; result: string }> = [];
+
+    for (const row of res.rows) {
+      const mu = typeof row.trueskill_mu === 'number' ? row.trueskill_mu : DEFAULT_TRUESKILL_MU;
+      const sigma = typeof row.trueskill_sigma === 'number' ? row.trueskill_sigma : DEFAULT_TRUESKILL_SIGMA;
+      const rating = new Rating(mu, sigma);
+      ratingGroups.push([rating]);
+      const result = String(row.result ?? 'tied');
+      ranks.push(RESULT_RANK[result] ?? RESULT_RANK.tied);
+      participants.push({ modelId: row.model_id, slot: row.player_slot, pre: rating, result });
+    }
+
+    const rated = env.rate(ratingGroups, ranks);
+
+    for (let i = 0; i < participants.length; i += 1) {
+      const participant = participants[i];
+      const newRating = rated[i][0] as Rating;
+      const exposed = newRating.mu - 3 * newRating.sigma;
+      const display = exposed * TRUESKILL_DISPLAY_MULTIPLIER;
+
+      await client.query(
+        `
+        UPDATE public.models
+        SET
+          trueskill_mu = $1,
+          trueskill_sigma = $2,
+          trueskill_exposed = $3,
+          trueskill_updated_at = NOW(),
+          elo_rating = $4,
+          updated_at = NOW()
+        WHERE id = $5;
+        `,
+        [newRating.mu, newRating.sigma, exposed, display, participant.modelId],
+      );
+    }
+  }
+
+  private async updateEloForGame(gameId: string, client: any): Promise<void> {
+    const res = await client.query(
+      `
+      SELECT gp.model_id, gp.result, m.elo_rating
+      FROM public.game_participants gp
+      JOIN public.models m ON gp.model_id = m.id
+      WHERE gp.game_id = $1
+      ORDER BY gp.player_slot ASC;
+      `,
+      [gameId],
+    );
+    const rows = res.rows;
+    const n = rows.length;
+    if (n < 2) return;
+
+    const ratings: Record<number, number> = {};
+    rows.forEach((r: any) => {
+      ratings[r.model_id] = typeof r.elo_rating === 'number' ? r.elo_rating : 1500;
+    });
+
+    const scoreSum: Record<number, number> = {};
+    const expectedSum: Record<number, number> = {};
+    rows.forEach((r: any) => {
+      scoreSum[r.model_id] = 0;
+      expectedSum[r.model_id] = 0;
+    });
+
+    for (let i = 0; i < n; i += 1) {
+      for (let j = i + 1; j < n; j += 1) {
+        const rowI = rows[i];
+        const rowJ = rows[j];
+        const [sI, sJ] = RESULT_SCORE[rowI.result] ?? [0.5, 0.5];
+        const expectedI = this.expectedScore(ratings[rowI.model_id], ratings[rowJ.model_id]);
+        const expectedJ = this.expectedScore(ratings[rowJ.model_id], ratings[rowI.model_id]);
+
+        scoreSum[rowI.model_id] += sI;
+        scoreSum[rowJ.model_id] += sJ;
+        expectedSum[rowI.model_id] += expectedI;
+        expectedSum[rowJ.model_id] += expectedJ;
+      }
+    }
+
+    for (const row of rows) {
+      const mid = row.model_id;
+      const delta = (ELO_K / (n - 1)) * (scoreSum[mid] - expectedSum[mid]);
+      const newRating = ratings[mid] + delta;
+      await client.query(
+        `UPDATE public.models SET elo_rating = $1, updated_at = NOW() WHERE id = $2;`,
+        [newRating, mid],
+      );
+    }
+  }
+
+  private expectedScore(ratingA: number, ratingB: number): number {
+    return 1 / (1 + 10 ** ((ratingB - ratingA) / 400));
+  }
+
+  /**
+   * Reset model aggregates and TrueSkill/Elo to baseline (used before backfill).
+   */
+  async resetModelRatings(): Promise<void> {
+    if (!this.isConnected()) return;
+    const exposed = DEFAULT_TRUESKILL_MU - 3 * DEFAULT_TRUESKILL_SIGMA;
+    const display = exposed * TRUESKILL_DISPLAY_MULTIPLIER;
+    await this.query(
+      `
+      UPDATE public.models
+      SET
+        wins = 0,
+        losses = 0,
+        ties = 0,
+        apples_eaten = 0,
+        games_played = 0,
+        last_played_at = NULL,
+        trueskill_mu = $1,
+        trueskill_sigma = $2,
+        trueskill_exposed = $3,
+        trueskill_updated_at = NOW(),
+        elo_rating = $4,
+        updated_at = NOW();
+      `,
+      [DEFAULT_TRUESKILL_MU, DEFAULT_TRUESKILL_SIGMA, exposed, display],
+    );
+  }
+
+  /**
+   * Backfill all completed replay files in a directory (chronological order).
+   */
+  async backfillFromDirectory(completedDir: string): Promise<void> {
+    if (!this.isConnected()) return;
+
+    const dirPath = path.isAbsolute(completedDir) ? completedDir : path.join(process.cwd(), completedDir);
+    const entries = await fs.promises.readdir(dirPath);
+    const files = entries.filter((f) => /^snake_game_.*\.json$/i.test(f));
+
+    // Sort by start_time inside the file if available; fallback to filename
+    const withTimes: Array<{ file: string; time: number }> = [];
+    for (const file of files) {
+      const full = path.join(dirPath, file);
+      try {
+        const raw = await fs.promises.readFile(full, 'utf8');
+        const parsed = JSON.parse(raw);
+        const t = parsed?.game?.started_at ?? parsed?.metadata?.start_time;
+        const timeVal = t ? new Date(t).getTime() : fs.statSync(full).mtimeMs;
+        withTimes.push({ file: full, time: timeVal });
+      } catch {
+        withTimes.push({ file: full, time: fs.statSync(full).mtimeMs });
+      }
+    }
+
+    withTimes.sort((a, b) => a.time - b.time);
+
+    for (const entry of withTimes) {
+      await this.ingestReplayFromFile(entry.file, { forceRecompute: true });
     }
   }
 }

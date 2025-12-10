@@ -5,6 +5,16 @@ Clear what/why/how
 Author name {your model and provider}
 Specific files modified with line numbers (when applicable)
 
+### Version 6.0.2  Dec 10, 2025 (PENDING TESTING)
+
+- **SnakeBench parity groundwork: plan + schema + TrueSkill lib** (Author: Codex, OpenAI)
+  - Captured the exact parity execution plan in `docs/plans/2025-12-10-wormarena-snakebench-parity-plan.md` to mirror Greg’s lifecycle without stubs.
+  - Aligned `public.models` schema with Greg’s TrueSkill fields (`trueskill_mu`, `trueskill_sigma`, `trueskill_exposed`, `trueskill_updated_at`) via `DatabaseSchema` so ratings can be stored identically.
+  - Added `ts-trueskill@^5.1.0` dependency (and lockfile updates) to run the same rating math locally for parity.
+  - Implemented full replay ingestion (`SnakeBenchRepository.ingestReplayFromFile`) that upserts models/games/participants from completed replay JSONs, then applies aggregates and TrueSkill with Elo fallback; added baseline reset + backfill runner (`server/scripts/snakebench-backfill.ts`) to replay all `completed_games` chronologically.
+  - Added npm script `snakebench:backfill` for deterministic rebuilds; repository ingestion now prefers full replay ingest when a completed file is present.
+  - **Files Modified/Created**: `docs/plans/2025-12-10-wormarena-snakebench-parity-plan.md`, `server/repositories/database/DatabaseSchema.ts`, `server/repositories/SnakeBenchRepository.ts`, `server/scripts/snakebench-backfill.ts`, `package.json`, `package-lock.json`
+
 ### Version 6.0.1  Dec 9, 2025 (PENDING TESTING)
 
 - **Worm Arena architecture: separate replay viewer from live match starter** (Author: Claude Code using Haiku 4.5)
