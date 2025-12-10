@@ -14,8 +14,8 @@ Specific files modified with line numbers (when applicable)
 
 ### Version 6.0.6  Dec 10, 2025 (PENDING TESTING)
 
-- **SnakeBench replays: DB-aware fallback for Railway** (Author: Codex / GPT-5)
-  - `getGame` now consults the database `replay_path` before filesystem guesses so replay fetches work on fresh Railway deploys where the local index or default filename lookup fails.
+- **SnakeBench replays: DB-aware + remote fetch fallback for Railway** (Author: Codex / GPT-5)
+  - `getGame` now consults the database `replay_path` before filesystem guesses and, when the path is an HTTP URL (e.g., Supabase), fetches the JSON remotely so Railway serves replays even when the local file is absent; if still missing, it falls back to the committed GitHub raw replay (`SNAKEBENCH_REPLAY_RAW_BASE` overrideable).
   - Added a lightweight `SnakeBenchRepository.getReplayPath` helper to retrieve the stored replay path and resolve it relative to the embedded SnakeBench backend.
   - **Files Modified**: `server/services/snakeBenchService.ts`, `server/repositories/SnakeBenchRepository.ts`, `CHANGELOG.md`
 

@@ -13,6 +13,7 @@
 import { spawn, spawnSync, type SpawnOptions } from 'child_process';
 import fs from 'fs';
 import path from 'path';
+import https from 'https';
 
 import type {
   SnakeBenchRunMatchRequest,
@@ -506,15 +507,13 @@ export class SnakeBenchService {
     // Prefer a replay_path from the database (covers freshly completed games
     // after a restart where the index/filename lookup may not be populated).
     const candidatePaths: string[] = [];
+    let remoteReplayUrl: string | null = null;
     try {
       const dbReplay = await repositoryService.snakeBench.getReplayPath(gameId);
       const replayPath = dbReplay?.replayPath;
       if (replayPath) {
         if (/^https?:\/\//i.test(replayPath)) {
-          logger.warn(
-            `SnakeBenchService.getGame: replay_path for ${gameId} is a URL; remote fetch not supported (${replayPath})`,
-            'snakebench-service',
-          );
+          remoteReplayUrl = replayPath;
         } else {
           const resolved = path.isAbsolute(replayPath) ? replayPath : path.join(backendDir, replayPath);
           candidatePaths.push(resolved);
@@ -550,18 +549,78 @@ export class SnakeBenchService {
     const uniquePaths = Array.from(new Set(candidatePaths));
     const existingPath = uniquePaths.find((p) => fs.existsSync(p));
 
-    if (!existingPath) {
-      throw new Error(`Game not found: ${gameId}`);
+    if (existingPath) {
+      try {
+        const raw = await fs.promises.readFile(existingPath, 'utf8');
+        return JSON.parse(raw);
+      } catch (err) {
+        const message = err instanceof Error ? err.message : String(err);
+        logger.error(`Failed to read SnakeBench game ${gameId}: ${message}`, 'snakebench-service');
+        throw new Error(`Failed to read game ${gameId}`);
+      }
     }
 
+    // Remote fetch fallback (e.g., Supabase public URL stored in replay_path)
+    if (remoteReplayUrl) {
+      try {
+        const payload = await this.fetchJsonFromUrl(remoteReplayUrl);
+        return payload;
+      } catch (err) {
+        const message = err instanceof Error ? err.message : String(err);
+        logger.error(
+          `Failed to fetch remote replay for SnakeBench game ${gameId} from ${remoteReplayUrl}: ${message}`,
+          'snakebench-service',
+        );
+      }
+    }
+
+    // GitHub raw fallback for committed replay assets (matches submodule repo structure)
+    const rawBase =
+      process.env.SNAKEBENCH_REPLAY_RAW_BASE ||
+      'https://raw.githubusercontent.com/VoynichLabs/SnakeBench/main/backend/completed_games';
+    const rawUrl = `${rawBase}/snake_game_${gameId}.json`;
     try {
-      const raw = await fs.promises.readFile(existingPath, 'utf8');
-      return JSON.parse(raw);
+      const payload = await this.fetchJsonFromUrl(rawUrl);
+      return payload;
     } catch (err) {
       const message = err instanceof Error ? err.message : String(err);
-      logger.error(`Failed to read SnakeBench game ${gameId}: ${message}`, 'snakebench-service');
-      throw new Error(`Failed to read game ${gameId}`);
+      logger.error(
+        `Failed to fetch GitHub raw replay for SnakeBench game ${gameId} from ${rawUrl}: ${message}`,
+        'snakebench-service',
+      );
     }
+
+    throw new Error(`Game not found: ${gameId}`);
+  }
+
+  /**
+   * Lightweight HTTPS JSON fetcher to retrieve remote replay assets (e.g., Supabase public URLs).
+   */
+  private async fetchJsonFromUrl(url: string): Promise<any> {
+    return await new Promise((resolve, reject) => {
+      const req = https.get(url, (res) => {
+        if (res.statusCode && res.statusCode >= 400) {
+          reject(new Error(`HTTP ${res.statusCode}`));
+          return;
+        }
+        const chunks: Buffer[] = [];
+        res.on('data', (chunk) => chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk)));
+        res.on('end', () => {
+          try {
+            const raw = Buffer.concat(chunks).toString('utf8');
+            const parsed = JSON.parse(raw);
+            resolve(parsed);
+          } catch (err) {
+            reject(err);
+          }
+        });
+      });
+
+      req.on('error', (err) => reject(err));
+      req.setTimeout(15_000, () => {
+        req.destroy(new Error('timeout'));
+      });
+    });
   }
 
   async getRecentActivity(days: number = 7): Promise<{ days: number; gamesPlayed: number; uniqueModels: number }> {
