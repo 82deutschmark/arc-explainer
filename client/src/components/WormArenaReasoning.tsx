@@ -44,8 +44,8 @@ export default function WormArenaReasoning({
       style={{
         backgroundColor,
         borderColor: accentColor,
-        minHeight: '500px',
-        maxHeight: '500px',
+        minHeight: '520px',
+        maxHeight: '520px',
       }}
     >
       {/* Header with player name and move label */}

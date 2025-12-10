@@ -85,7 +85,7 @@ export default function WormArena() {
   const [selectedGameId, setSelectedGameId] = React.useState<string>('');
   const [frameIndex, setFrameIndex] = React.useState<number>(0);
   const [isPlaying, setIsPlaying] = React.useState<boolean>(false);
-  const [isConfigExpanded, setIsConfigExpanded] = React.useState<boolean>(false);
+  const [isConfigExpanded, setIsConfigExpanded] = React.useState<boolean>(true);
   const [showNextMove, setShowNextMove] = React.useState<boolean>(true);
   const { startMatch: startLiveMatch, isStarting } = useWormArenaStreaming();
   const [launchNotice, setLaunchNotice] = React.useState<string | null>(null);
@@ -257,8 +257,8 @@ export default function WormArena() {
       {/* Elevated playback controls bar */}
       <div className="px-8 pt-4">
         <div className="rounded-lg border bg-white/90 shadow-sm px-4 py-3 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3" style={{ borderColor: '#d4b5a0' }}>
-          <div className="text-base font-semibold" style={{ color: '#3d2817' }}>
-            Replay Controls · {matchupLabel}
+          <div className="text-lg font-bold flex items-center gap-2" style={{ color: '#3d2817' }}>
+            🐛 Replay Controls · {matchupLabel}
           </div>
           <div className="flex-1">
             <WormArenaControls
@@ -286,7 +286,7 @@ export default function WormArena() {
         {/* Match Metadata */}
         {startedAt && (
           <div className="text-center mb-6">
-            <p className="text-sm" style={{ color: '#7a6b5f' }}>
+            <p className="text-base" style={{ color: '#7a6b5f' }}>
               Match run on {new Date(startedAt).toLocaleString()}
             </p>
           </div>
@@ -348,7 +348,7 @@ export default function WormArena() {
         </div>
 
         {/* Metadata Row */}
-        <div className="text-center mb-4" style={{ color: '#7a6b5f', fontSize: '16px' }}>
+        <div className="text-center mb-6" style={{ color: '#7a6b5f', fontSize: '17px' }}>
           <div className="flex justify-center gap-6 flex-wrap">
             <span><strong>Scores:</strong> {Object.entries(finalScores).map(([k, v]) => (
               <span key={k} className="ml-2"><span className="font-mono">{k}</span>: {String(v)}</span>
