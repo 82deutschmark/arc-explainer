@@ -155,7 +155,7 @@ export default function WormArena() {
   }, [selectedGameId]);
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: '#f5f1e8', fontFamily: 'Fredoka, Nunito, sans-serif' }}>
+    <div className="min-h-screen" style={{ backgroundColor: '#f5e6d3', fontFamily: 'Fredoka, Nunito, sans-serif' }}>
       <link rel="preconnect" href="https://fonts.googleapis.com" />
       <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
       <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
@@ -173,7 +173,8 @@ export default function WormArena() {
       <main className="p-8 max-w-7xl mx-auto">
         {startedAt && (
           <div className="text-center mb-6">
-            <p className="text-base" style={{ color: '#7a6b5f' }}>
+            <h2 className="text-3xl font-bold mb-2">{matchupLabel}</h2>
+            <p className="text-base text-muted-foreground">
               Match run on {new Date(startedAt).toLocaleString()}
             </p>
           </div>
