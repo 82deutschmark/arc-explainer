@@ -14,6 +14,7 @@ $geminiModels = @(
 
 $matchesPerPair = 3
 $delaySeconds = 1.5
+$baseUri = "https://arc-explainer-staging.up.railway.app/api/snakebench/run-batch"
 
 Write-Host "GPT vs Gemini Family Championship"
 Write-Host "GPT Models: $($gptModels.Count)"
@@ -40,7 +41,7 @@ foreach ($gptModel in $gptModels) {
             Start-Job -ScriptBlock {
                 param($uri, $body)
                 Invoke-WebRequest -Uri $uri -Method Post -Headers @{"Content-Type"="application/json"} -Body $body | Out-Null
-            } -ArgumentList "http://localhost:5000/api/snakebench/run-batch", $body1 | Out-Null
+            } -ArgumentList $baseUri, $body1 | Out-Null
 
             # Gemini vs GPT (reverse)
             $body2 = @{
@@ -52,7 +53,7 @@ foreach ($gptModel in $gptModels) {
             Start-Job -ScriptBlock {
                 param($uri, $body)
                 Invoke-WebRequest -Uri $uri -Method Post -Headers @{"Content-Type"="application/json"} -Body $body | Out-Null
-            } -ArgumentList "http://localhost:5000/api/snakebench/run-batch", $body2 | Out-Null
+            } -ArgumentList $baseUri, $body2 | Out-Null
 
             $jobCount += 2
             Start-Sleep -Milliseconds ($delaySeconds * 1000)

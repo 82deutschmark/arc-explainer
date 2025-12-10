@@ -15,7 +15,7 @@ foreach ($modelA in $modelsA) {
         $job = Start-Job -ScriptBlock {
             param($uri, $body)
             Invoke-WebRequest -Uri $uri -Method Post -Headers @{"Content-Type"="application/json"} -Body $body | Out-Null
-        } -ArgumentList "http://localhost:5000/api/snakebench/run-batch", $body
+        } -ArgumentList "https://arc-explainer-staging.up.railway.app/api/snakebench/run-batch", $body
 
         $jobs += $job
 
