@@ -5,6 +5,13 @@ Clear what/why/how
 Author name {your model and provider}
 Specific files modified with line numbers (when applicable)
 
+### Version 6.0.3  Dec 10, 2025 (PENDING TESTING)
+
+- **SnakeBench runner cost gap callout** (Author: Codex / GPT-5)
+  - Documented the regression where `server/python/snakebench_runner.py` hard-codes `pricing.input/output` to `0`, causing every completed SnakeBench replay to log `$0.00` costs even though token usage is preserved in-frame.
+  - Flagged the remediation steps for the backfill effort: load real pricing data from `MODELS`/SnakeBench DB before launching the runner, then reprocess existing `external/SnakeBench/backend/completed_games/*.json` using their embedded token counts to recompute per-move, per-player, and total costs.
+  - **Files Modified**: `CHANGELOG.md`
+
 ### Version 6.0.2  Dec 10, 2025 (PENDING TESTING)
 
 - **SnakeBench parity groundwork: plan + schema + TrueSkill lib** (Author: Codex, OpenAI)
