@@ -5,6 +5,13 @@ Clear what/why/how
 Author name {your model and provider}
 Specific files modified with line numbers (when applicable)
 
+### Version 6.0.4  Dec 10, 2025 (PENDING TESTING)
+
+- **Worm Arena: real SnakeBench cost from MODELS pricing** (Author: Cascade)
+  - Passed per-million pricing for both players from the central `MODELS` config into the SnakeBench runner payload so LLMPlayer.cost is computed with non-zero rates instead of hard-coded zeros.
+  - Updated the Python bridge to inject those prices into `pricing.input` / `pricing.output` for each player config, making `external/SnakeBench/backend/completed_games/*.json` reflect realistic simulated dollar costs based on token counts.
+  - **Files Modified**: `server/services/snakeBenchService.ts`, `server/python/snakebench_runner.py`, `CHANGELOG.md`
+
 ### Version 6.0.3  Dec 10, 2025 (PENDING TESTING)
 
 - **SnakeBench runner cost gap callout** (Author: Codex / GPT-5)

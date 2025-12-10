@@ -40,6 +40,16 @@ function clamp(value: number, min: number, max: number): number {
   return Math.min(max, Math.max(min, value));
 }
 
+function parseCostStringToNumber(cost: string | undefined | null): number {
+  if (!cost) return 0;
+  const cleaned = cost.replace(/\$/g, "").trim();
+  const firstPart = cleaned.split(/-|–|—/)[0]?.trim() ?? "";
+  const match = firstPart.match(/[0-9]*\.?[0-9]+/);
+  if (!match) return 0;
+  const value = parseFloat(match[0]);
+  return Number.isFinite(value) ? value : 0;
+}
+
 export class SnakeBenchService {
   private resolvePythonBin(): string {
     if (process.env.PYTHON_BIN) {
@@ -176,6 +186,21 @@ export class SnakeBenchService {
     const maxRounds = clamp(maxRoundsRaw, MIN_MAX_ROUNDS, MAX_MAX_ROUNDS);
     const numApples = clamp(numApplesRaw, MIN_NUM_APPLES, MAX_NUM_APPLES);
 
+    const findModelConfig = (slug: string) =>
+      MODELS.find(
+        (m) =>
+          m.provider === 'OpenRouter' &&
+          ((m.apiModelName && m.apiModelName === slug) || m.key === slug),
+      );
+
+    const configA = findModelConfig(modelA);
+    const configB = findModelConfig(modelB);
+
+    const pricingInputA = configA ? parseCostStringToNumber(configA.cost.input) : 0;
+    const pricingOutputA = configA ? parseCostStringToNumber(configA.cost.output) : 0;
+    const pricingInputB = configB ? parseCostStringToNumber(configB.cost.input) : 0;
+    const pricingOutputB = configB ? parseCostStringToNumber(configB.cost.output) : 0;
+
     const payload = {
       modelA: String(modelA),
       modelB: String(modelB),
@@ -183,6 +208,10 @@ export class SnakeBenchService {
       height,
       maxRounds,
       numApples,
+      pricingInputA,
+      pricingOutputA,
+      pricingInputB,
+      pricingOutputB,
     };
 
     const pythonBin = this.resolvePythonBin();
