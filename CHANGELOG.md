@@ -5,6 +5,20 @@ Clear what/why/how
 Author name {your model and provider}
 Specific files modified with line numbers (when applicable)
 
+### Version 6.0.9  Dec 10, 2025 (PENDING TESTING)
+
+- **SnakeBench health + ingest safety fixes** (Author: Cascade)
+  - Completed the `SnakeBenchService.healthCheck` implementation so it returns the full `SnakeBenchHealthResponse` shape (python/backend/runner flags plus timestamp) and compiles cleanly.
+  - Hardened `SnakeBenchRepository.ingestReplayFromFile` against null `rowCount` results when checking for existing games before recomputing aggregates.
+  - Removed an unused `totalCost` variable from the `opus-vs-all.ps1` Worm Arena tournament script to satisfy PowerShell analysis while preserving behavior.
+  - **Files Modified**: `server/services/snakeBenchService.ts`, `server/repositories/SnakeBenchRepository.ts`, `scripts/worm-arena-tournaments/opus-vs-all.ps1`, `CHANGELOG.md`
+
+### Version 6.0.8  Dec 10, 2025 (PENDING TESTING)
+
+- **Worm Arena tournaments: run against staging API** (Author: Cascade)
+  - Updated all Worm Arena tournament PowerShell scripts to POST SnakeBench batches to the staging backend (`https://arc-explainer-staging.up.railway.app/api/snakebench/run-batch`) instead of localhost so tournaments exercise the deployed Railway environment.
+  - **Files Modified**: `scripts/worm-arena-tournaments/run-matches.ps1`, `scripts/worm-arena-tournaments/gpt-openai-feud.ps1`, `scripts/worm-arena-tournaments/gpt-vs-claude-family.ps1`, `scripts/worm-arena-tournaments/gpt-vs-gemini-family.ps1`, `scripts/worm-arena-tournaments/gpt5-vs-claude-gemini.ps1`, `scripts/worm-arena-tournaments/ministral-feud.ps1`, `scripts/worm-arena-tournaments/opus-vs-all.ps1`, `scripts/worm-arena-tournaments/opus-vs-sonnet.ps1`, `CHANGELOG.md`
+
 ### Version 6.0.7  Dec 10, 2025 (PENDING TESTING)
 
 - **Worm Arena board: random food emojis + highlighted playfield** (Author: Cascade)
@@ -18,6 +32,12 @@ Specific files modified with line numbers (when applicable)
   - `getGame` now consults the database `replay_path` before filesystem guesses and, when the path is an HTTP URL (e.g., Supabase), fetches the JSON remotely so Railway serves replays even when the local file is absent; if still missing, it falls back to the committed GitHub raw replay (`SNAKEBENCH_REPLAY_RAW_BASE` overrideable).
   - Added a lightweight `SnakeBenchRepository.getReplayPath` helper to retrieve the stored replay path and resolve it relative to the embedded SnakeBench backend.
   - **Files Modified**: `server/services/snakeBenchService.ts`, `server/repositories/SnakeBenchRepository.ts`, `CHANGELOG.md`
+
+### Version 6.0.7  Dec 10, 2025 (PENDING TESTING)
+
+- **Worm Arena tournaments: point scripts at staging API** (Author: Codex / GPT-5)
+  - Updated tournament runner scripts to hit the staging backend (`https://arc-explainer-staging.up.railway.app/api/snakebench/run-batch`) instead of localhost, keeping a single `$baseUri` to avoid drift across calls.
+  - **Files Modified**: `scripts/worm-arena-tournaments/gpt-vs-gemini-family.ps1`, `scripts/worm-arena-tournaments/gpt5-vs-claude-gemini.ps1`, `CHANGELOG.md`
 
 ### Version 6.0.5  Dec 10, 2025 (PENDING TESTING)
 

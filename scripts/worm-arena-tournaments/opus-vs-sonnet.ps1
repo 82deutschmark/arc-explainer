@@ -13,7 +13,7 @@ for ($i = 0; $i -lt 3; $i++) {
     Start-Job -ScriptBlock {
         param($uri, $body)
         Invoke-WebRequest -Uri $uri -Method Post -Headers @{"Content-Type"="application/json"} -Body $body | Out-Null
-    } -ArgumentList "http://localhost:5000/api/snakebench/run-batch", $body | Out-Null
+    } -ArgumentList "https://arc-explainer-staging.up.railway.app/api/snakebench/run-batch", $body | Out-Null
 
     Start-Sleep -Milliseconds 500
 }

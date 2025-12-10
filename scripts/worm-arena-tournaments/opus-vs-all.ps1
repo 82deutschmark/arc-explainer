@@ -16,7 +16,6 @@ Write-Host "Cost per match: $0.50 - $5.00+"
 Write-Host ""
 
 $jobCount = 0
-$totalCost = 0
 
 Write-Host "Phase 1: Opus vs Haiku (3 matches)"
 for ($i = 0; $i -lt 3; $i++) {
@@ -29,7 +28,7 @@ for ($i = 0; $i -lt 3; $i++) {
     Start-Job -ScriptBlock {
         param($uri, $body)
         Invoke-WebRequest -Uri $uri -Method Post -Headers @{"Content-Type"="application/json"} -Body $body | Out-Null
-    } -ArgumentList "http://localhost:5000/api/snakebench/run-batch", $body | Out-Null
+    } -ArgumentList "https://arc-explainer-staging.up.railway.app/api/snakebench/run-batch", $body | Out-Null
 
     $jobCount++
     Start-Sleep -Milliseconds 500
@@ -49,7 +48,7 @@ foreach ($gptModel in $gptModels) {
         Start-Job -ScriptBlock {
             param($uri, $body)
             Invoke-WebRequest -Uri $uri -Method Post -Headers @{"Content-Type"="application/json"} -Body $body | Out-Null
-        } -ArgumentList "http://localhost:5000/api/snakebench/run-batch", $body | Out-Null
+        } -ArgumentList "https://arc-explainer-staging.up.railway.app/api/snakebench/run-batch", $body | Out-Null
 
         $jobCount++
         Start-Sleep -Milliseconds 500

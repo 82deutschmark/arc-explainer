@@ -19,7 +19,7 @@ foreach ($modelB in $freeModels) {
         count = 5
     } | ConvertTo-Json
 
-    $response = Invoke-WebRequest -Uri "http://localhost:5000/api/snakebench/run-batch" -Method Post -Headers @{"Content-Type"="application/json"} -Body $body
+    $response = Invoke-WebRequest -Uri "https://arc-explainer-staging.up.railway.app/api/snakebench/run-batch" -Method Post -Headers @{"Content-Type"="application/json"} -Body $body
     Write-Host "Response: $($response.StatusCode)" -ForegroundColor Green
     Start-Sleep -Seconds 2
 }

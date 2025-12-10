@@ -443,7 +443,8 @@ export class SnakeBenchRepository extends BaseRepository {
     const forceRecompute = opts.forceRecompute === true;
 
     await this.transaction(async (client) => {
-      const existed = (await client.query('SELECT 1 FROM public.games WHERE id = $1', [normalized.gameId])).rowCount > 0;
+      const existedResult = await client.query('SELECT 1 FROM public.games WHERE id = $1', [normalized.gameId]);
+      const existed = (existedResult?.rowCount ?? 0) > 0;
 
       // Upsert models and collect ids by player_slot
       const modelIds: Record<number, number | null> = {};

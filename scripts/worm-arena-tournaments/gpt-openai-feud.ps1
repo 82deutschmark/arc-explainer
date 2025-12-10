@@ -34,7 +34,7 @@ for ($i = 0; $i -lt $modelsA.Count; $i++) {
             Start-Job -ScriptBlock {
                 param($uri, $body)
                 Invoke-WebRequest -Uri $uri -Method Post -Headers @{"Content-Type"="application/json"} -Body $body | Out-Null
-            } -ArgumentList "http://localhost:5000/api/snakebench/run-batch", $body1 | Out-Null
+            } -ArgumentList "https://arc-explainer-staging.up.railway.app/api/snakebench/run-batch", $body1 | Out-Null
 
             $body2 = @{
                 modelA = $modelB
@@ -45,7 +45,7 @@ for ($i = 0; $i -lt $modelsA.Count; $i++) {
             Start-Job -ScriptBlock {
                 param($uri, $body)
                 Invoke-WebRequest -Uri $uri -Method Post -Headers @{"Content-Type"="application/json"} -Body $body | Out-Null
-            } -ArgumentList "http://localhost:5000/api/snakebench/run-batch", $body2 | Out-Null
+            } -ArgumentList "https://arc-explainer-staging.up.railway.app/api/snakebench/run-batch", $body2 | Out-Null
 
             $jobCount += 2
             Start-Sleep -Milliseconds ($delaySeconds * 1000)
