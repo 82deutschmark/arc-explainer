@@ -16,6 +16,28 @@ export interface WormArenaGameBoardProps {
   playerLabels?: Record<string, string>;
 }
 
+const FOOD_EMOJIS: string[] = [
+  '🥑',
+  '🍊',
+  '🍋',
+  '🍐',
+  '🍍',
+  '🥭',
+  '🥝',
+  '🥥',
+  '🍑',
+  '🍈',
+  '🍔',
+  '🍟',
+  '🌭',
+  '🍗',
+  '🍖',
+  '🥓',
+  '🍝',
+  '🍛',
+  '🍲',
+];
+
 const WormArenaGameBoard: React.FC<WormArenaGameBoardProps> = ({
   frame,
   boardWidth,
@@ -23,6 +45,7 @@ const WormArenaGameBoard: React.FC<WormArenaGameBoardProps> = ({
   playerLabels = {},
 }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const appleEmojiMapRef = useRef<Map<string, string>>(new Map());
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -72,7 +95,7 @@ const WormArenaGameBoard: React.FC<WormArenaGameBoardProps> = ({
     const apples: Array<[number, number]> = frame?.state?.apples ?? [];
     const snakes: Record<string, Array<[number, number]>> = frame?.state?.snakes ?? {};
 
-    // Draw apples first (🍎)
+    // Draw apples first (🍎 variants from FOOD_EMOJIS)
     ctx.font = `${Math.floor(cellSize * 0.8)}px "Segoe UI Emoji", "Apple Color Emoji", sans-serif`;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
@@ -81,7 +104,16 @@ const WormArenaGameBoard: React.FC<WormArenaGameBoardProps> = ({
       if (x >= 0 && x < boardWidth && y >= 0 && y < boardHeight) {
         const cx = padding + (x + 0.5) * cellSize;
         const cy = padding + (y + 0.5) * cellSize;
-        ctx.fillText('🍎', cx, cy);
+
+        const key = `${x},${y}`;
+        let emoji = appleEmojiMapRef.current.get(key);
+        if (!emoji) {
+          const idx = Math.floor(Math.random() * FOOD_EMOJIS.length);
+          emoji = FOOD_EMOJIS[idx];
+          appleEmojiMapRef.current.set(key, emoji);
+        }
+
+        ctx.fillText(emoji, cx, cy);
       }
     });
 

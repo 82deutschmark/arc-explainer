@@ -397,6 +397,28 @@ export class SnakeBenchRepository extends BaseRepository {
   }
 
   /**
+   * Fetch the replay path for a single game (if present). This is a light
+   * helper so API callers can resolve the on-disk JSON even when the server
+   * restarted and lost the in-memory index.
+   */
+  async getReplayPath(gameId: string): Promise<{ replayPath: string | null } | null> {
+    if (!this.isConnected()) return null;
+
+    try {
+      const sql = `SELECT replay_path FROM public.games WHERE id = $1 LIMIT 1;`;
+      const { rows } = await this.query(sql, [gameId]);
+      if (!rows.length) return null;
+      return { replayPath: rows[0]?.replay_path ?? null };
+    } catch (error) {
+      logger.warn(
+        `SnakeBenchRepository.getReplayPath: query failed for game ${gameId}: ${error instanceof Error ? error.message : String(error)}`,
+        'snakebench-db',
+      );
+      return null;
+    }
+  }
+
+  /**
    * Full-fidelity ingest of a completed SnakeBench replay JSON, matching Greg's DB writes:
    * - Upsert models
    * - Upsert game with completed status, scores, costs, board params
