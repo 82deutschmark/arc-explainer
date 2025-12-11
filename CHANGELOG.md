@@ -1,3 +1,9 @@
+### Version 6.1.15  Dec 11, 2025 (PENDING TESTING)
+
+- **Worm Arena Devstral vs OpenAI GPT-5 tournament script** (Author: GPT-5.1 Codex CLI)
+  - Added a dedicated PowerShell helper script to queue Worm Arena batches where Mistral Devstral 2 2512 plays nine games each against GPT-5.1 Codex-Mini, GPT-5 Mini, and GPT-5 Nano using the standard `/api/snakebench/run-batch` endpoint.
+  - **Files Created**: `scripts/worm-arena-tournaments/devstral-vs-openai-gpt5.ps1`, `CHANGELOG.md`
+
 ### Version 6.1.14  Dec 11, 2025 (PENDING TESTING)
 
 - **Worm Arena TrueSkill leaderboard (SnakeBench parity)** (Author: Cascade)
