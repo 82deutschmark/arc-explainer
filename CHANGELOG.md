@@ -1,3 +1,11 @@
+### Version 6.1.23  Dec 11, 2025 (PENDING TESTING)
+
+- **Worm Arena greatest-hits: focus on expensive / high-scoring games** (Author: Cascade)
+  - Updated the Worm Arena greatest-hits selector to drop the "longest games" leaderboard entirely so matches are only surfaced when they are either costly or high-scoring, instead of just long slogs.
+  - Greatest-hits entries now come from two dimensions: most expensive by `total_cost` (with a small cost floor and rounds >= 5) and highest-scoring by max per-player apples (also rounds >= 5), then merged/deduped.
+  - This makes the list more stable and quality-focused; long, low-cost, low-score games are no longer eligible unless they also meet the cost or scoring thresholds.
+  - **Files Modified**: `server/repositories/SnakeBenchRepository.ts`, `CHANGELOG.md`
+
 ### Version 6.1.22  Dec 11, 2025 (PENDING TESTING)
 
 - **Worm Arena TrueSkill leaderboard scrolling fix** (Author: GPT-5.1 Codex CLI)
