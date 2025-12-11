@@ -70,6 +70,24 @@ type CatalogResponse = {
   models: CatalogModel[];
 };
 
+type SyncConfigResponse = {
+  success: boolean;
+  totalRemote: number;
+  totalInConfig: number;
+  filteredOut: number;
+  newModels: Array<{
+    id: string;
+    name?: string;
+    contextLength?: number;
+    pricing?: {
+      input?: string;
+      completion?: string;
+    };
+  }>;
+  snippet: string;
+  message: string;
+};
+
 export default function AdminOpenRouter() {
   const { toast } = useToast();
   const [discoverResult, setDiscoverResult] = React.useState<DiscoverResponse | null>(null);
@@ -79,6 +97,10 @@ export default function AdminOpenRouter() {
   const [catalog, setCatalog] = React.useState<CatalogResponse | null>(null);
   const [catalogLoading, setCatalogLoading] = React.useState(false);
   const [catalogSearch, setCatalogSearch] = React.useState('');
+  const [syncResult, setSyncResult] = React.useState<SyncConfigResponse | null>(null);
+  const [syncLoading, setSyncLoading] = React.useState(false);
+  const [maxInputCost, setMaxInputCost] = React.useState('');
+  const [maxOutputCost, setMaxOutputCost] = React.useState('5.0');
 
   const formatUsdPerM = (value?: number | null): string | null => {
     if (value == null) return null;
@@ -231,6 +253,36 @@ export default function AdminOpenRouter() {
       setCatalogLoading(false);
     }
   }, [toast]);
+
+  const syncConfig = React.useCallback(async () => {
+    setSyncLoading(true);
+    try {
+      const params = new URLSearchParams();
+      if (maxInputCost) params.append('maxInputCost', maxInputCost);
+      if (maxOutputCost) params.append('maxOutputCost', maxOutputCost);
+
+      const url = `/api/admin/openrouter/sync-config${params.toString() ? '?' + params.toString() : ''}`;
+      const res = await fetch(url);
+      if (!res.ok) {
+        const text = await res.text().catch(() => '');
+        throw new Error(text || 'Sync failed');
+      }
+      const data = (await res.json()) as SyncConfigResponse;
+      setSyncResult(data);
+      toast({
+        title: 'Config sync complete',
+        description: data.message,
+      });
+    } catch (err) {
+      toast({
+        title: 'Config sync failed',
+        description: err instanceof Error ? err.message : 'Unknown error',
+        variant: 'destructive',
+      });
+    } finally {
+      setSyncLoading(false);
+    }
+  }, [toast, maxInputCost, maxOutputCost]);
 
   const handleDownloadCatalog = () => {
     if (!catalog) return;
@@ -446,6 +498,88 @@ export default function AdminOpenRouter() {
           ) : (
             <div className="text-sm text-muted-foreground">
               Load the catalog to see the full list of OpenRouter models, pricing, and capabilities.
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
+          <div>
+            <CardTitle>Sync Models to Config</CardTitle>
+            <CardDescription>Generate TypeScript snippets to add new OpenRouter models to models.ts</CardDescription>
+          </div>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="bg-blue-50 border border-blue-200 p-3 rounded-md text-sm text-blue-800">
+            <p className="font-semibold mb-2">Cost Filters (Optional)</p>
+            <p className="text-xs mb-3">Exclude expensive models by setting maximum costs per million tokens:</p>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-xs font-semibold mb-1">Max Input Cost ($/M)</label>
+                <Input
+                  type="number"
+                  step="0.1"
+                  placeholder="e.g., 2.0"
+                  value={maxInputCost}
+                  onChange={(e) => setMaxInputCost(e.target.value)}
+                  className="text-sm"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-semibold mb-1">Max Output Cost ($/M)</label>
+                <Input
+                  type="number"
+                  step="0.1"
+                  placeholder="e.g., 5.0"
+                  value={maxOutputCost}
+                  onChange={(e) => setMaxOutputCost(e.target.value)}
+                  className="text-sm"
+                />
+              </div>
+            </div>
+          </div>
+          <Button onClick={syncConfig} disabled={syncLoading} className="w-full">
+            {syncLoading ? 'Syncing...' : 'Generate Snippets'}
+          </Button>
+
+          {syncResult && (
+            <>
+              <Separator className="my-4" />
+              <div className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
+                <Badge variant="secondary">Remote: {syncResult.totalRemote}</Badge>
+                <Badge variant="secondary">In config: {syncResult.totalInConfig}</Badge>
+                {syncResult.filteredOut > 0 && <Badge variant="destructive">Filtered: {syncResult.filteredOut}</Badge>}
+                <Badge>{syncResult.newModels.length} new</Badge>
+              </div>
+              {syncResult.newModels.length === 0 ? (
+                <div className="text-sm text-muted-foreground">{syncResult.message}</div>
+              ) : (
+                <>
+                  <div className="text-sm text-muted-foreground mb-4">{syncResult.message}</div>
+                  <div className="bg-slate-900 text-slate-100 p-4 rounded-md font-mono text-xs overflow-auto max-h-96 border">
+                    <pre>{syncResult.snippet}</pre>
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-3">
+                    ✏️ Copy the snippet above and paste it into <code>server/config/models.ts</code> in the appropriate section.
+                  </p>
+                  <Button
+                    variant="secondary"
+                    onClick={() => {
+                      navigator.clipboard.writeText(syncResult.snippet);
+                      toast({ title: 'Copied!', description: 'Snippet copied to clipboard' });
+                    }}
+                  >
+                    Copy to Clipboard
+                  </Button>
+                </>
+              )}
+            </>
+          )}
+
+          {!syncResult && (
+            <div className="text-sm text-muted-foreground">
+              Click "Generate Snippets" to discover new OpenRouter models and generate TypeScript configuration for them.
             </div>
           )}
         </CardContent>
