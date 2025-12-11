@@ -53,12 +53,11 @@ export default function WormArenaLive() {
   );
 
   const [modelA, setModelA] = React.useState<string>('');
-  const [modelB, setModelB] = React.useState<string>('');
+  const [selectedOpponents, setSelectedOpponents] = React.useState<string[]>([]);
   const [width, setWidth] = React.useState<number>(10);
   const [height, setHeight] = React.useState<number>(10);
   const [maxRounds, setMaxRounds] = React.useState<number>(150);
   const [numApples, setNumApples] = React.useState<number>(5);
-  const [matchCount, setMatchCount] = React.useState<number>(9);
   const [byoApiKey, setByoApiKey] = React.useState<string>('');
   const [byoProvider, setByoProvider] = React.useState<'openrouter' | 'openai' | 'anthropic' | 'xai' | 'gemini' | 'server-default'>('server-default');
   const [launchNotice, setLaunchNotice] = React.useState<string | null>(null);
@@ -67,22 +66,27 @@ export default function WormArenaLive() {
   React.useEffect(() => {
     if (selectableModels.length === 0) return;
 
-    if (!modelA && !modelB) {
+    if (!modelA) {
       const preferredA = 'x-ai/grok-4.1-fast';
-      const preferredB = 'openai/gpt-5.1-codex-mini';
-
       const hasPreferredA = selectableModels.includes(preferredA);
-      const hasPreferredB = selectableModels.includes(preferredB);
 
-      if (hasPreferredA && hasPreferredB) {
+      if (hasPreferredA) {
         setModelA(preferredA);
-        setModelB(preferredB);
-      } else if (selectableModels.length >= 2) {
+      } else if (selectableModels.length >= 1) {
         setModelA(selectableModels[0]);
-        setModelB(selectableModels[1]);
       }
     }
-  }, [selectableModels, modelA, modelB]);
+  }, [selectableModels, modelA]);
+
+  // Auto-populate opponents with top 9 models (excluding modelA)
+  React.useEffect(() => {
+    if (modelA && selectableModels.length > 0 && selectedOpponents.length === 0) {
+      const topOpponents = selectableModels
+        .filter(m => m !== modelA)
+        .slice(0, 9);
+      setSelectedOpponents(topOpponents);
+    }
+  }, [modelA, selectableModels, selectedOpponents.length]);
 
   // Live streaming
   const {
@@ -111,10 +115,13 @@ export default function WormArenaLive() {
 
   // Handle starting a new match or batch
   const handleRunMatch = async () => {
-    if (!modelA || !modelB) return;
+    if (!modelA || selectedOpponents.length === 0) return;
+
+    const mappedOpponents = selectedOpponents.map(op => mapToSnakeBenchModelId(op));
+
     const payload: SnakeBenchRunMatchRequest = {
       modelA: mapToSnakeBenchModelId(modelA),
-      modelB: mapToSnakeBenchModelId(modelB),
+      modelB: '', // Will be set per opponent in backend
       width,
       height,
       maxRounds,
@@ -125,7 +132,7 @@ export default function WormArenaLive() {
     };
     setLaunchNotice(null);
     try {
-      const prep = await startLiveMatch(payload, matchCount);
+      const prep = await startLiveMatch(payload, mappedOpponents);
       if (prep?.liveUrl) {
         window.location.href = prep.liveUrl;
       }
@@ -342,15 +349,13 @@ export default function WormArenaLive() {
           <div className="px-4 py-4 space-y-3">
             <WormArenaSetup
               modelA={modelA}
-              modelB={modelB}
               selectableModels={selectableModels}
+              selectedOpponents={selectedOpponents}
               isRunning={status === 'in_progress' || isStarting}
               loadingModels={loadingModels}
               modelsError={modelsError?.message}
-              matchCount={matchCount}
               onModelAChange={setModelA}
-              onModelBChange={setModelB}
-              onMatchCountChange={setMatchCount}
+              onOpponentsChange={setSelectedOpponents}
               byoApiKey={byoApiKey}
               byoProvider={byoProvider}
               onApiKeyChange={setByoApiKey}
