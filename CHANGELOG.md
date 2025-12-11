@@ -1,3 +1,10 @@
+### Version 6.1.8  Dec 11, 2025 (PENDING TESTING)
+
+- **OpenRouter reasoning models: DeepSeek v3.2 + OLMo-3 Think** (Author: GPT-5.1 Codex CLI)
+  - Added OpenRouter configuration entries for `deepseek/deepseek-v3.2` (reasoning mode aligned with direct DeepSeek Reasoner specs), `allenai/olmo-3-7b-think`, and `allenai/olmo-3-32b-think:free`, including context windows, pricing, and reasoning flags so they show up correctly in UI selectors and backend lookups.
+  - Extended the Worm Arena Nova/Kat coverage tournament script to include the three new reasoning models in the opponent pool, enabling coverage matches across premium DeepSeek v3.2 and both OLMo-3 thinking variants.
+  - **Files Modified**: `server/config/models.ts`, `scripts/worm-arena-tournaments/run-nova-kat-coverage.ps1`, `CHANGELOG.md`
+
 ### Version 6.1.7  Dec 10, 2025 (PENDING TESTING)
 
 - **Worm Arena tournaments: Devstral vs free baselines + Nova/Kat coverage** (Author: Cascade)

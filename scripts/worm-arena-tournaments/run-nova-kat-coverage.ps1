@@ -5,7 +5,7 @@
 #          against diverse opponent models for comprehensive TrueSkill ranking data.
 #          Uses new multi-opponent batch API with sequential execution.
 
-$apiEndpoint = "http://localhost:5000/api/wormarena/prepare"
+$apiEndpoint = "http://localhost:5000/api/snakebench/run-batch"
 
 $coverageModels = @(
     "amazon/nova-2-lite-v1:free",
@@ -13,18 +13,22 @@ $coverageModels = @(
 )
 
 $opponentModels = @(
-    "x-ai/grok-4.1-fast",
     "openai/gpt-5.1-codex-mini",
     "openai/gpt-5-nano",
-    "anthropic/claude-3.5-sonnet",
-    "google/gemini-2.0-flash-exp",
-    "openrouter/meta-llama/llama-3.3-70b-instruct",
-    "openrouter/deepseek/deepseek-chat",
-    "openrouter/mistral/mistral-large-2",
-    "openrouter/qwen/qwen-max"
+    "mistralai/devstral-2512",
+    "mistralai/ministral-8b-2512",
+    "arcee-ai/trinity-mini:free",
+    "amazon/nova-2-lite-v1:free",
+    "deepseek/deepseek-chat-v3.1",
+    "deepseek/deepseek-v3.2",
+    "allenai/olmo-3-7b-think",
+    "allenai/olmo-3-32b-think:free"
 )
 
-Write-Host "Starting multi-opponent batch runs..." -ForegroundColor Green
+$gamesPerPairing = 1
+$headToHeadGames = 9
+
+Write-Host "Starting Nova/Kat coverage batch runs (non-streaming)..." -ForegroundColor Green
 Write-Host "Coverage Models: $($coverageModels -join ', ')" -ForegroundColor Cyan
 Write-Host "Opponent Pool: $($opponentModels.Count) models" -ForegroundColor Cyan
 Write-Host ""
@@ -32,73 +36,56 @@ Write-Host ""
 $jobCount = 0
 
 foreach ($modelA in $coverageModels) {
-    Write-Host "Queuing batch for: $modelA vs 9 opponents" -ForegroundColor Yellow
+    foreach ($opponent in $opponentModels) {
+        Write-Host "Queuing batch: $modelA vs $opponent (x$gamesPerPairing)" -ForegroundColor Yellow
 
-    $body = @{
-        modelA = $modelA
-        opponents = $opponentModels
-        width = 10
-        height = 10
-        maxRounds = 150
-        numApples = 5
-    } | ConvertTo-Json
+        $body = @{
+            modelA    = $modelA
+            modelB    = $opponent
+            count     = $gamesPerPairing
+            width     = 10
+            height    = 10
+            maxRounds = 150
+            numApples = 5
+        } | ConvertTo-Json
 
-    try {
-        $response = Invoke-WebRequest -Uri $apiEndpoint -Method Post -Headers @{"Content-Type"="application/json"} -Body $body -ErrorAction Stop
-        $result = $response.Content | ConvertFrom-Json
+        Start-Job -ScriptBlock {
+            param($uri, $payload)
+            Invoke-WebRequest -Uri $uri -Method Post -Headers @{"Content-Type"="application/json"} -Body $payload | Out-Null
+        } -ArgumentList $apiEndpoint, $body | Out-Null
 
-        if ($result.success) {
-            $sessionId = $result.sessionId
-            $liveUrl = "http://localhost:5000/worm-arena/live/$sessionId"
-            Write-Host "✓ Batch queued! Session: $sessionId" -ForegroundColor Green
-            Write-Host "  Live view: $liveUrl" -ForegroundColor Cyan
-        } else {
-            Write-Host "✗ Error: $($result.error)" -ForegroundColor Red
-        }
-    } catch {
-        Write-Host "✗ Request failed: $_" -ForegroundColor Red
+        $jobCount++
+        Start-Sleep -Milliseconds 500
     }
-
-    $jobCount++
-    Start-Sleep -Milliseconds 500
 }
 
 Write-Host ""
 
-# Nova vs Kat head-to-head (9 matches)
-Write-Host "Queuing head-to-head: amazon/nova-2-lite-v1:free vs kwaipilot/kat-coder-pro:free (9 matches)" -ForegroundColor Yellow
+# Nova vs Kat head-to-head
+Write-Host "Queuing head-to-head: amazon/nova-2-lite-v1:free vs kwaipilot/kat-coder-pro:free (x$headToHeadGames)" -ForegroundColor Yellow
 
 $headToHeadBody = @{
-    modelA = "amazon/nova-2-lite-v1:free"
-    opponents = @("kwaipilot/kat-coder-pro:free") * 9
-    width = 10
-    height = 10
+    modelA    = "amazon/nova-2-lite-v1:free"
+    modelB    = "kwaipilot/kat-coder-pro:free"
+    count     = $headToHeadGames
+    width     = 10
+    height    = 10
     maxRounds = 150
     numApples = 5
 } | ConvertTo-Json
 
-try {
-    $response = Invoke-WebRequest -Uri $apiEndpoint -Method Post -Headers @{"Content-Type"="application/json"} -Body $headToHeadBody -ErrorAction Stop
-    $result = $response.Content | ConvertFrom-Json
-
-    if ($result.success) {
-        $sessionId = $result.sessionId
-        $liveUrl = "http://localhost:5000/worm-arena/live/$sessionId"
-        Write-Host "✓ Head-to-head queued! Session: $sessionId" -ForegroundColor Green
-        Write-Host "  Live view: $liveUrl" -ForegroundColor Cyan
-    } else {
-        Write-Host "✗ Error: $($result.error)" -ForegroundColor Red
-    }
-} catch {
-    Write-Host "✗ Request failed: $_" -ForegroundColor Red
-}
+Start-Job -ScriptBlock {
+    param($uri, $payload)
+    Invoke-WebRequest -Uri $uri -Method Post -Headers @{"Content-Type"="application/json"} -Body $payload | Out-Null
+} -ArgumentList $apiEndpoint, $headToHeadBody | Out-Null
 
 $jobCount++
 
 Write-Host ""
-Write-Host "All $($jobCount) batches submitted!" -ForegroundColor Green
+Write-Host "All $jobCount batches submitted asynchronously!" -ForegroundColor Green
 Write-Host "Breakdown:" -ForegroundColor Cyan
-Write-Host "  - Nova vs 9 diverse opponents" -ForegroundColor Cyan
-Write-Host "  - Kat vs 9 diverse opponents" -ForegroundColor Cyan
-Write-Host "  - Nova vs Kat (9 head-to-head matches)" -ForegroundColor Cyan
-Write-Host "Total: $(($coverageModels.Count * $opponentModels.Count) + 9) matches queued" -ForegroundColor Cyan
+Write-Host "  - Nova vs $($opponentModels.Count) diverse opponents (x$gamesPerPairing each)" -ForegroundColor Cyan
+Write-Host "  - Kat vs $($opponentModels.Count) diverse opponents (x$gamesPerPairing each)" -ForegroundColor Cyan
+Write-Host "  - Nova vs Kat head-to-head (x$headToHeadGames)" -ForegroundColor Cyan
+Write-Host ("Total: {0} matches queued" -f (($coverageModels.Count * $opponentModels.Count * $gamesPerPairing) + $headToHeadGames)) -ForegroundColor Cyan
+Write-Host "JSONs will be written to: external/SnakeBench/backend/completed_games/" -ForegroundColor Cyan
