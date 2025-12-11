@@ -1,3 +1,9 @@
+### Version 6.1.2  Dec 10, 2025 (PENDING TESTING)
+
+- **Worm Arena tournament: GPT-5.1 Codex Mini vs verified OpenRouter roster** (Author: Codex / GPT-5)
+  - Updated the `run-matches.ps1` batch runner to pit GPT-5.1 Codex Mini against only OpenRouter models that exist in `server/config/models.ts`, avoiding invalid model slugs and keeping the staging endpoint configurable via a single variable.
+  - **Files Modified**: `scripts/worm-arena-tournaments/run-matches.ps1`, `CHANGELOG.md`
+
 ### Version 6.1.1  Dec 10, 2025 (PENDING TESTING)
 
 - **Worm Arena Stats & Placement page (Railway-ready)** (Author: Cascade)
