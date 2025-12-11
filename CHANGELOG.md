@@ -1,8 +1,9 @@
 ### Version 6.1.9  Dec 11, 2025 (PENDING TESTING)
 
-- **Worm Arena TrueSkill coverage script async launch** (Author: GPT-5.1 Codex)
-  - Updated `trueskill-coverage-nova-kat.ps1` to submit all Nova/Kat TrueSkill coverage matches asynchronously using `Start-Job`, ensuring every batch is queued within roughly 30 seconds while keeping the script focused solely on batch submissions.
-  - **Files Modified**: `scripts/worm-arena-tournaments/trueskill-coverage-nova-kat.ps1`, `CHANGELOG.md`
+- **Worm Arena TrueSkill coverage + deeper leaderboard** (Author: GPT-5.1 Codex)
+  - Updated `trueskill-coverage-nova-kat.ps1` to submit all Nova/Kat TrueSkill coverage matches asynchronously using `Start-Job`, and refreshed the opponent pool to use current OpenRouter slugs (Devstral, Ministral family, Trinity Mini, DeepSeek v3.2, Olmo-3 Think, Kimi K2, Nemotron, Gemma 3n, GLM 4.6v).
+  - Increased the Worm Arena basic leaderboard cap from 20/100 up to 150 entries end-to-end (repository, controller, and `useWormArenaStats` hook) so the stats page can surface a much larger pool of active models.
+  - **Files Modified**: `scripts/worm-arena-tournaments/trueskill-coverage-nova-kat.ps1`, `server/repositories/SnakeBenchRepository.ts`, `server/controllers/snakeBenchController.ts`, `client/src/hooks/useWormArenaStats.ts`, `CHANGELOG.md`
 
 ### Version 6.1.8  Dec 11, 2025 (PENDING TESTING)
 

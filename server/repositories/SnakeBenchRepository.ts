@@ -601,7 +601,7 @@ export class SnakeBenchRepository extends BaseRepository {
       return [];
     }
 
-    const safeLimit = Number.isFinite(limit) ? Math.max(1, Math.min(limit, 100)) : 10;
+    const safeLimit = Number.isFinite(limit) ? Math.max(1, Math.min(limit, 150)) : 10;
 
     try {
       let sql = '';
