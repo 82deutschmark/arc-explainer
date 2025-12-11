@@ -89,7 +89,7 @@ export default function WormArenaGreatestHits() {
                       </span>
                     )}
                     <a
-                      href={`/worm-arena?gameId=${encodeURIComponent(game.gameId)}`}
+                      href={`/worm-arena?matchId=${encodeURIComponent(game.gameId)}`}
                       className="underline font-semibold text-xs"
                       style={{ color: '#3d2817' }}
                     >

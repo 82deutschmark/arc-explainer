@@ -4,7 +4,7 @@
 # PURPOSE: Run parallel Worm Arena matches between GPT-5.1 Codex Mini and verified OpenRouter models listed in server/config/models.ts.
   $apiEndpoint = "https://localhost:5000/api/snakebench/run-batch"
 # $apiEndpoint = "https://arc-explainer-staging.up.railway.app/api/snakebench/run-batch"
-$modelA = "openai/gpt-5.1-codex-mini"
+$modelA = "nex-agi/deepseek-v3.1-nex-n1:free"
 
 # Only models whose apiModelName exists in server/config/models.ts (provider: OpenRouter)
 $openRouterModels = @(
@@ -27,16 +27,14 @@ $openRouterModels = @(
     "google/gemini-3-pro-preview",
 
     "x-ai/grok-4.1-fast",
-   
-    "anthropic/claude-sonnet-4-5",
     "anthropic/claude-haiku-4.5",
     "arcee-ai/trinity-mini:free",
     "amazon/nova-2-lite-v1:free",
     "amazon/nova-premier-v1",
     
-    "nvidia/nemotron-nano-12b-v2-vl:free",
+    "nvidia/nemotron-nano-12b-v2-vl:free"
     
-    "z-ai/glm-4.6v"
+    
 )
 
 $jobCount = 0

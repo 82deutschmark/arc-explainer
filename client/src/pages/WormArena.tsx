@@ -13,27 +13,44 @@ import { useSnakeBenchRecentGames, useSnakeBenchGame, useModelRating } from '@/h
 import WormArenaGameBoard from '@/components/WormArenaGameBoard';
 import WormArenaHeader from '@/components/WormArenaHeader';
 import WormArenaReasoning from '@/components/WormArenaReasoning';
-import WormArenaRecentGames from '@/components/WormArenaRecentGames';
 import WormArenaStatsPanel from '@/components/WormArenaStatsPanel';
 import WormArenaGreatestHits from '@/components/WormArenaGreatestHits';
 import { WormArenaControlBar } from '@/components/WormArenaControlBar';
-import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from '@/components/ui/accordion';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { summarizeWormArenaPlacement } from '@shared/utils/wormArenaPlacement.ts';
 
-function useQueryParamGameId(): string | null {
-  const [location] = useLocation();
+function useQueryParamMatchId(): { matchId: string | null; setMatchIdInUrl: (id: string) => void } {
+  const [location, setLocation] = useLocation();
 
-  try {
-    const query = location.split('?')[1] ?? '';
-    if (!query) return null;
-    const params = new URLSearchParams(query);
-    const gameId = params.get('gameId');
-    return gameId && gameId.trim().length > 0 ? gameId.trim() : null;
-  } catch {
-    return null;
-  }
+  const matchId = React.useMemo(() => {
+    try {
+      const query = location.split('?')[1] ?? '';
+      if (!query) return null;
+      const params = new URLSearchParams(query);
+      const raw = params.get('matchId') ?? params.get('gameId');
+      const trimmed = raw?.trim();
+      return trimmed && trimmed.length > 0 ? trimmed : null;
+    } catch {
+      return null;
+    }
+  }, [location]);
+
+  const setMatchIdInUrl = React.useCallback(
+    (id: string) => {
+      const trimmed = id.trim();
+      if (!trimmed) {
+        setLocation('/worm-arena');
+        return;
+      }
+
+      const encoded = encodeURIComponent(trimmed);
+      setLocation(`/worm-arena?matchId=${encoded}`);
+    },
+    [setLocation],
+  );
+
+  return { matchId, setMatchIdInUrl };
 }
 
 function renderAsciiFrame(frame: any, width: number, height: number, labels: Record<string, string>): string {
@@ -65,15 +82,24 @@ function renderAsciiFrame(frame: any, width: number, height: number, labels: Rec
   return grid.map((row) => row.join(' ')).join('\n');
 }
 export default function WormArena() {
-  const queryGameId = useQueryParamGameId();
+  const { matchId: initialMatchId, setMatchIdInUrl } = useQueryParamMatchId();
 
-  const [selectedGameId, setSelectedGameId] = React.useState<string>(queryGameId ?? '');
+  const [selectedMatchId, setSelectedMatchId] = React.useState<string>(initialMatchId ?? '');
   const [frameIndex, setFrameIndex] = React.useState<number>(0);
   const [isPlaying, setIsPlaying] = React.useState<boolean>(false);
   const [showNextMove, setShowNextMove] = React.useState<boolean>(true);
 
-  const { games, total, isLoading: loadingGames, error: gamesError, refresh } = useSnakeBenchRecentGames();
-  const { data: replayData, isLoading: loadingReplay, error: replayError, fetchGame } = useSnakeBenchGame(selectedGameId);
+  const { games, total, refresh } = useSnakeBenchRecentGames();
+  const { data: replayData, isLoading: loadingReplay, error: replayError, fetchGame } = useSnakeBenchGame(selectedMatchId);
+
+  const initialMatchIdRef = React.useRef<string | null>(initialMatchId ?? null);
+
+  React.useEffect(() => {
+    if (initialMatchId && initialMatchId !== selectedMatchId) {
+      setSelectedMatchId(initialMatchId);
+      initialMatchIdRef.current = initialMatchId;
+    }
+  }, [initialMatchId, selectedMatchId]);
 
   React.useEffect(() => {
     void refresh(10);
@@ -81,22 +107,30 @@ export default function WormArena() {
 
   React.useEffect(() => {
     if (games.length === 0) return;
-    if (!selectedGameId) {
-      setSelectedGameId(games[0].gameId);
+    if (!selectedMatchId) {
+      const fallbackId = games[0].gameId;
+      setSelectedMatchId(fallbackId);
+      setMatchIdInUrl(fallbackId);
       return;
     }
-    const stillExists = games.some((g) => g.gameId === selectedGameId);
+    const stillExists = games.some((g) => g.gameId === selectedMatchId);
     if (!stillExists) {
-      setSelectedGameId(games[0].gameId);
+      if (initialMatchIdRef.current && initialMatchIdRef.current === selectedMatchId) {
+        return;
+      }
+
+      const fallbackId = games[0].gameId;
+      setSelectedMatchId(fallbackId);
+      setMatchIdInUrl(fallbackId);
     }
-  }, [games, selectedGameId]);
+  }, [games, selectedMatchId, setMatchIdInUrl]);
 
   React.useEffect(() => {
-    if (!selectedGameId) return;
+    if (!selectedMatchId) return;
     setFrameIndex(0);
     setIsPlaying(false);
-    void fetchGame(selectedGameId);
-  }, [selectedGameId, fetchGame]);
+    void fetchGame(selectedMatchId);
+  }, [selectedMatchId, fetchGame]);
 
   const frames: any[] = React.useMemo(() => {
     if (replayData && Array.isArray(replayData.frames)) return replayData.frames;
@@ -149,7 +183,7 @@ export default function WormArena() {
     [currentFrame, boardWidth, boardHeight, playerLabels],
   );
 
-  const selectedMeta = games.find((g) => g.gameId === selectedGameId);
+  const selectedMeta = games.find((g) => g.gameId === selectedMatchId);
   const models = (replayData?.metadata?.models as string[] | undefined) ?? [];
   const modelA = Array.isArray(models) && models.length > 0 ? models[0] : null;
   const modelB = Array.isArray(models) && models.length > 1 ? models[1] : null;
@@ -195,13 +229,24 @@ export default function WormArena() {
   }, [playerIds.length, playerAName, playerBName, models]);
 
   const handleCopyMatchId = React.useCallback(() => {
-    if (!selectedGameId) return;
+    if (!selectedMatchId) return;
     if (typeof navigator !== 'undefined' && navigator.clipboard?.writeText) {
-      navigator.clipboard.writeText(selectedGameId).catch(() => {
+      navigator.clipboard.writeText(selectedMatchId).catch(() => {
         // Best-effort copy; ignore errors
       });
     }
-  }, [selectedGameId]);
+  }, [selectedMatchId]);
+
+  const handleSelectMatch = React.useCallback(
+    (id: string) => {
+      const trimmed = id.trim();
+      if (!trimmed) return;
+      setSelectedMatchId(trimmed);
+      setMatchIdInUrl(trimmed);
+      initialMatchIdRef.current = null;
+    },
+    [setMatchIdInUrl],
+  );
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: '#f5e6d3', fontFamily: 'Fredoka, Nunito, sans-serif' }}>
@@ -358,11 +403,11 @@ export default function WormArena() {
               ))}
             </div>
           )}
-          {selectedGameId && (
+          {selectedMatchId && (
             <div className="mt-2 flex items-center justify-center gap-2 text-sm">
               <span>
                 <strong>Match ID:</strong>{' '}
-                <span className="font-mono text-xs">{selectedGameId}</span>
+                <span className="font-mono text-xs">{selectedMatchId}</span>
               </span>
               <button
                 type="button"
@@ -380,25 +425,6 @@ export default function WormArena() {
           <WormArenaGreatestHits />
         </div>
 
-        <Accordion type="single" collapsible defaultValue="games" className="mb-4">
-          <AccordionItem value="games">
-            <AccordionTrigger className="px-4 text-sm font-medium" style={{ color: '#3d2817' }}>
-              Browse Recent Games
-            </AccordionTrigger>
-            <AccordionContent>
-              <div className="rounded-lg border" style={{ backgroundColor: '#faf5f0', borderColor: '#d4b5a0' }}>
-                <div className="px-4 pb-4 border-t" style={{ borderColor: '#d4b5a0' }}>
-                  <WormArenaRecentGames
-                    games={games}
-                    selectedGameId={selectedGameId}
-                    isLoading={loadingGames}
-                    onSelectGame={setSelectedGameId}
-                  />
-                </div>
-              </div>
-            </AccordionContent>
-          </AccordionItem>
-        </Accordion>
       </main>
     </div>
   );

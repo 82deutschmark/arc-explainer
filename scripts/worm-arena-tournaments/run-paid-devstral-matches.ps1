@@ -4,13 +4,13 @@
 # PURPOSE: Run parallel Worm Arena matches between Devstral 2512 Paid and all free models listed in server/config/models.ts.
  $apiEndpoint = "https://localhost:5000/api/snakebench/run-batch"
 # $apiEndpoint = "https://arc-explainer-staging.up.railway.app/api/snakebench/run-batch"
-$modelA = "mistralai/devstral-2512"
+$modelA = "nex-agi/deepseek-v3.1-nex-n1:free"
 
 # Only free models whose apiModelName exists in server/config/models.ts (provider: OpenRouter)
 $freeModels = @(
     "openai/gpt-5-nano",
     "moonshotai/kimi-dev-72b:free",
-    "google/gemma-3n-e2b-it:free",
+    "nex-agi/deepseek-v3.1-nex-n1:free",
     "arcee-ai/trinity-mini:free",
     "amazon/nova-2-lite-v1:free",
     "nvidia/nemotron-nano-12b-v2-vl:free"

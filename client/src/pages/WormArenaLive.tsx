@@ -243,7 +243,7 @@ export default function WormArenaLive() {
             {finalSummary && (
               <div className="space-y-2 border-t pt-3" style={{ borderColor: '#d4b5a0' }}>
                 <div className="text-sm font-semibold" style={{ color: '#3d2817' }}>✅ Final</div>
-                <div className="text-xs" style={{ color: '#7a6b5f' }}>ID: {finalSummary.gameId.slice(0, 12)}</div>
+                <div className="text-xs" style={{ color: '#7a6b5f' }}>Match ID: {finalSummary.gameId.slice(0, 12)}</div>
                 <div className="text-xs" style={{ color: '#7a6b5f' }}>
                   {finalSummary.modelA} vs {finalSummary.modelB}
                 </div>
@@ -253,7 +253,7 @@ export default function WormArenaLive() {
                   ))}
                 </div>
                 <a
-                  href={`/worm-arena?gameId=${encodeURIComponent(finalSummary.gameId)}`}
+                  href={`/worm-arena?matchId=${encodeURIComponent(finalSummary.gameId)}`}
                   className="inline-block mt-2 px-4 py-2 rounded text-xs font-semibold text-white transition-all"
                   style={{ backgroundColor: '#3d2817' }}
                 >
@@ -318,7 +318,7 @@ export default function WormArenaLive() {
                         <TableCell style={{ color: resultColor }} className="font-semibold">{resultLabel}</TableCell>
                         <TableCell>
                           <a
-                            href={`/worm-arena?gameId=${encodeURIComponent(result.gameId)}`}
+                            href={`/worm-arena?matchId=${encodeURIComponent(result.gameId)}`}
                             className="underline text-sm font-semibold"
                           >
                             View
