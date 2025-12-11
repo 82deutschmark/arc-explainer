@@ -53,6 +53,12 @@ SnakeBench DB and API already expose:
 
 We will treat the **DB-backed game summaries** as the primary source and only fall back to reading JSON files if necessary for additional metrics that aren’t in the DB yet.
 
+Important:
+
+- The `public.games` table can contain completed Worm Arena games that **do not** have a corresponding local replay JSON under `external/SnakeBench/backend/completed_games/`.
+- For any **local-only** workflows (offline replay/MP4 generation, local analysis), always filter to game IDs that appear in `completed_games/` and `completed_games/game_index.json`.
+- See `docs/reference/data/WormArena_GreatestHits_Local_Analysis.md` for details on DB vs local replays and the `analyze_local_games.py` helper.
+
 ---
 
 ## 3. Greatest-Hits Metrics and Ranking
