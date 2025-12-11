@@ -28,6 +28,16 @@ type OpenRouterModel = {
   name?: string;
   description?: string;
   context_length?: number;
+  pricing?: {
+    prompt?: string;
+    completion?: string;
+    request?: string;
+    image?: string;
+    web_search?: string;
+    internal_reasoning?: string;
+    input_cache_read?: string;
+    input_cache_write?: string;
+  };
 };
 
 // ============================================================================
@@ -514,6 +524,15 @@ function flagPreview(slug: string): boolean {
   );
 }
 
+function computePricePerMillion(perTokenString?: string): number | null {
+  if (!perTokenString) return null;
+  const value = Number(perTokenString);
+  if (!Number.isFinite(value) || value < 0) return null;
+  const perMillion = value * 1_000_000;
+  const rounded = Math.round(perMillion * 100) / 100;
+  return rounded;
+}
+
 /**
  * @route   GET /api/admin/openrouter/discover
  * @desc    Fetch OpenRouter catalog and list slugs not present in DB/config
@@ -539,6 +558,8 @@ export async function discoverOpenRouter(req: Request, res: Response) {
         name: m.name ?? m.id,
         contextLength: m.context_length ?? null,
         isPreview: flagPreview(m.id),
+        inputCostPerM: computePricePerMillion(m.pricing?.prompt),
+        outputCostPerM: computePricePerMillion(m.pricing?.completion),
       }));
 
     res.json({

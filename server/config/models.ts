@@ -1,7 +1,7 @@
 /*
  *
- * Author: Cascade using Claude Sonnet 4 (original), Claude Code using Opus 4.5 (2025-12-08 update), Claude Code using Haiku 4.5 (2025-12-09 update)
- * Date: 2025-12-10
+ * Author: Cascade using Claude Sonnet 4 (original), Claude Code using Opus 4.5 (2025-12-08 update), Claude Code using Haiku 4.5 (2025-12-09 update), GPT-5.1 Codex CLI (2025-12-11 update)
+ * Date: 2025-12-11
  * PURPOSE: Centralized AI model configuration list consumed by ModelDefinitions and provider lookup utilities.
  *          Updated DeepSeek models to v3.2 with new pricing and specifications.
  *          Added deepseek-reasoner-speciale with expiration-dated base URL.
@@ -9,6 +9,7 @@
  *          Added z-ai/glm-4.6v (Vision) via OpenRouter - multimodal model with 131K context (Dec 2025).
  *          Added openai/gpt-5-nano and openai/gpt-5-mini via OpenRouter (Dec 2025).
  *          Added mistralai/devstral-2512 and mistralai/devstral-2512:free via OpenRouter (Dec 2025).
+ *          Added DeepSeek v3.2 Reasoner and OLMo-3 thinking models via OpenRouter (Dec 2025).
  * SRP/DRY check: Pass - file encapsulates shared model metadata without duplication.
  * shadcn/ui: Pass - configuration only.
  */
@@ -727,6 +728,55 @@ export const MODELS: ModelConfig[] = [
     apiModelName: 'deepseek/deepseek-chat-v3.1',
     modelType: 'openrouter',
     contextWindow: 256000
+  },
+  {
+    key: 'deepseek/deepseek-v3.2',
+    name: 'DeepSeek v3.2 Reasoner',
+    color: 'bg-cyan-900',
+    premium: true,
+    cost: { input: '$0.28', output: '$0.42' },
+    supportsTemperature: false,
+    provider: 'OpenRouter',
+    responseTime: { speed: 'slow', estimate: '5-10 min' },
+    isReasoning: true,
+    apiModelName: 'deepseek/deepseek-v3.2',
+    modelType: 'openrouter',
+    contextWindow: 128000,
+    maxOutputTokens: 64000,
+    releaseDate: "2025-12",
+    notes: 'DeepSeek-V3.2 thinking mode via OpenRouter. Returns reasoning_content field with chain-of-thought.'
+  },
+  {
+    key: 'allenai/olmo-3-7b-think',
+    name: 'OLMo-3 7B Think',
+    color: 'bg-blue-500',
+    premium: false,
+    cost: { input: '$0.12', output: '$0.20' },
+    supportsTemperature: true,
+    provider: 'OpenRouter',
+    responseTime: { speed: 'moderate', estimate: '30-60 sec' },
+    isReasoning: true,
+    apiModelName: 'allenai/olmo-3-7b-think',
+    modelType: 'openrouter',
+    contextWindow: 66000,
+    releaseDate: "2025-12",
+    notes: 'OLMo-3 7B thinking model from AllenAI via OpenRouter.'
+  },
+  {
+    key: 'allenai/olmo-3-32b-think:free',
+    name: 'OLMo-3 32B Think (Free)',
+    color: 'bg-blue-400',
+    premium: false,
+    cost: { input: '$0.00', output: '$0.00' },
+    supportsTemperature: true,
+    provider: 'OpenRouter',
+    responseTime: { speed: 'moderate', estimate: '1-2 min' },
+    isReasoning: true,
+    apiModelName: 'allenai/olmo-3-32b-think:free',
+    modelType: 'openrouter',
+    contextWindow: 66000,
+    releaseDate: "2025-12",
+    notes: 'Free OLMo-3 32B thinking model from AllenAI via OpenRouter.'
   },
 
   // New OpenRouter Models - August 2025

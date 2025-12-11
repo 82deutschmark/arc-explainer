@@ -20,7 +20,14 @@ type DiscoverResponse = {
   totalRemote: number;
   totalLocalConfig: number;
   totalLocalDb: number;
-  newModels: Array<{ id: string; name: string; contextLength: number | null; isPreview: boolean }>;
+  newModels: Array<{
+    id: string;
+    name: string;
+    contextLength: number | null;
+    isPreview: boolean;
+    inputCostPerM?: number | null;
+    outputCostPerM?: number | null;
+  }>;
 };
 
 export default function AdminOpenRouter() {
@@ -29,6 +36,28 @@ export default function AdminOpenRouter() {
   const [selected, setSelected] = React.useState<Record<string, boolean>>({});
   const [nameEdits, setNameEdits] = React.useState<Record<string, string>>({});
   const [loading, setLoading] = React.useState(false);
+
+  const formatUsdPerM = (value?: number | null): string | null => {
+    if (value == null) return null;
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }).format(value);
+  };
+
+  const renderPricing = (model: DiscoverResponse['newModels'][number]) => {
+    const input = formatUsdPerM(model.inputCostPerM);
+    const output = formatUsdPerM(model.outputCostPerM);
+    if (!input && !output) return '';
+    return (
+      <div className="flex flex-col text-xs text-muted-foreground">
+        {input && <span>In: {input}/M</span>}
+        {output && <span>Out: {output}/M</span>}
+      </div>
+    );
+  };
 
   const discover = React.useCallback(async () => {
     setLoading(true);
@@ -161,6 +190,7 @@ export default function AdminOpenRouter() {
                           <TableHead className="w-12 text-center">Select</TableHead>
                           <TableHead>Slug</TableHead>
                           <TableHead>Name</TableHead>
+                          <TableHead className="w-40">Pricing</TableHead>
                           <TableHead className="w-32">Context</TableHead>
                           <TableHead className="w-32">Tags</TableHead>
                         </TableRow>
@@ -185,8 +215,9 @@ export default function AdminOpenRouter() {
                                 }
                               />
                             </TableCell>
+                            <TableCell>{renderPricing(m)}</TableCell>
                             <TableCell className="text-sm text-muted-foreground">
-                              {m.contextLength ? `${m.contextLength.toLocaleString()} tokens` : '—'}
+                              {m.contextLength ? `${m.contextLength.toLocaleString()} tokens` : ''}
                             </TableCell>
                             <TableCell className="text-sm text-muted-foreground">
                               {m.isPreview && <Badge variant="outline">preview</Badge>}
