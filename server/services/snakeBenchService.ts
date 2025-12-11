@@ -599,6 +599,65 @@ export class SnakeBenchService {
   }
 
   /**
+   * Check whether a replay asset exists locally or remotely for a given game.
+   * Used to keep greatest-hits entries playable.
+   */
+  private async replayExists(gameId: string): Promise<boolean> {
+    const backendDir = this.resolveBackendDir();
+    const completedDir = path.join(backendDir, 'completed_games');
+
+    const candidatePaths: string[] = [];
+    let remoteReplayUrl: string | null = null;
+
+    try {
+      const dbReplay = await repositoryService.snakeBench.getReplayPath(gameId);
+      const replayPath = dbReplay?.replayPath;
+      if (replayPath) {
+        if (/^https?:\/\//i.test(replayPath)) {
+          remoteReplayUrl = replayPath;
+        } else {
+          const resolved = path.isAbsolute(replayPath) ? replayPath : path.join(backendDir, replayPath);
+          candidatePaths.push(resolved);
+        }
+      }
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      logger.warn(
+        `SnakeBenchService.replayExists: failed to fetch replay_path from DB for ${gameId}: ${msg}`,
+        'snakebench-service',
+      );
+    }
+
+    candidatePaths.push(path.join(completedDir, `snake_game_${gameId}.json`));
+
+    const uniquePaths = Array.from(new Set(candidatePaths));
+    const existingPath = uniquePaths.find((p) => fs.existsSync(p));
+    if (existingPath) return true;
+
+    if (remoteReplayUrl) {
+      try {
+        await this.fetchJsonFromUrl(remoteReplayUrl);
+        return true;
+      } catch {
+        // continue to raw fallback
+      }
+    }
+
+    const rawBase =
+      process.env.SNAKEBENCH_REPLAY_RAW_BASE ||
+      'https://raw.githubusercontent.com/VoynichLabs/SnakeBench/main/backend/completed_games';
+    const rawUrl = `${rawBase}/snake_game_${gameId}.json`;
+    try {
+      await this.fetchJsonFromUrl(rawUrl);
+      return true;
+    } catch {
+      // Not available
+    }
+
+    return false;
+  }
+
+  /**
    * Lightweight HTTPS JSON fetcher to retrieve remote replay assets (e.g., Supabase public URLs).
    */
   private async fetchJsonFromUrl(url: string): Promise<any> {
@@ -661,7 +720,22 @@ export class SnakeBenchService {
   async getWormArenaGreatestHits(limitPerDimension: number = 5): Promise<WormArenaGreatestHitGame[]> {
     const raw = Number(limitPerDimension);
     const safeLimit = Number.isFinite(raw) ? Math.max(1, Math.min(raw, 10)) : 5;
-    return await repositoryService.snakeBench.getWormArenaGreatestHits(safeLimit);
+    const candidates = await repositoryService.snakeBench.getWormArenaGreatestHits(safeLimit);
+    const playable: WormArenaGreatestHitGame[] = [];
+
+    for (const game of candidates) {
+      const available = await this.replayExists(game.gameId);
+      if (available) {
+        playable.push(game);
+      } else {
+        logger.warn(
+          `SnakeBenchService.getWormArenaGreatestHits: skipping ${game.gameId} because replay asset is missing`,
+          'snakebench-service',
+        );
+      }
+    }
+
+    return playable;
   }
 
   async healthCheck(): Promise<SnakeBenchHealthResponse> {

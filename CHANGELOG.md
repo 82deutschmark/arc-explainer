@@ -1,3 +1,9 @@
+### Version 6.1.17  Dec 11, 2025 (PENDING TESTING)
+
+- **Worm Arena greatest-hits now only shows playable replays** (Author: GPT-5.1 Codex CLI)
+  - Filtered the greatest-hits service to verify each candidate game’s replay asset exists (local path, DB replay_path, or remote fallback) and skip any missing entries, preventing broken playback when the list includes stale DB rows.
+  - **Files Modified**: `server/services/snakeBenchService.ts`, `CHANGELOG.md`
+
 ### Version 6.1.16  Dec 11, 2025 (PENDING TESTING)
 
 - **Worm Arena per-model testing cost on stats page** (Author: GPT-5.1 Codex CLI)

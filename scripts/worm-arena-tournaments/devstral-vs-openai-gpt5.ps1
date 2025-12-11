@@ -9,11 +9,11 @@
 
 $apiEndpoint = "http://localhost:5000/api/snakebench/run-batch"
 
-$devstralModel = "mistralai/devstral-2512:free"
+$devstralModel = "moonshotai/kimi-k2-thinking"
 
 $openaiOpponents = @(
     "openrouter/gpt-5.1-codex-mini",
-    "openai/gpt-5-mini",
+    "moonshotai/kimi-k2-thinking",
     "openai/gpt-5-nano"
 )
 
