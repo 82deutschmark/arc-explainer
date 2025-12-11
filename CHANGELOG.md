@@ -1,3 +1,9 @@
+### Version 6.1.9  Dec 11, 2025 (PENDING TESTING)
+
+- **Worm Arena TrueSkill coverage script async launch** (Author: GPT-5.1 Codex)
+  - Updated `trueskill-coverage-nova-kat.ps1` to submit all Nova/Kat TrueSkill coverage matches asynchronously using `Start-Job`, ensuring every batch is queued within roughly 30 seconds while keeping the script focused solely on batch submissions.
+  - **Files Modified**: `scripts/worm-arena-tournaments/trueskill-coverage-nova-kat.ps1`, `CHANGELOG.md`
+
 ### Version 6.1.8  Dec 11, 2025 (PENDING TESTING)
 
 - **OpenRouter reasoning models: DeepSeek v3.2 + OLMo-3 Think** (Author: GPT-5.1 Codex CLI)
