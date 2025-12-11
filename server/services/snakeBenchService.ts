@@ -25,6 +25,7 @@ import type {
   SnakeBenchArcExplainerStats,
   SnakeBenchModelRating,
   SnakeBenchModelMatchHistoryEntry,
+  SnakeBenchTrueSkillLeaderboardEntry,
 } from '../../shared/types.js';
 import { logger } from '../utils/logger.ts';
 import { repositoryService } from '../repositories/RepositoryService.ts';
@@ -645,6 +646,15 @@ export class SnakeBenchService {
   async getModelMatchHistory(modelSlug: string, limit?: number): Promise<SnakeBenchModelMatchHistoryEntry[]> {
     const safeLimit = limit != null && Number.isFinite(limit) ? Number(limit) : 50;
     return await repositoryService.snakeBench.getModelMatchHistory(modelSlug, safeLimit);
+  }
+
+  async getTrueSkillLeaderboard(
+    limit: number = 150,
+    minGames: number = 3,
+  ): Promise<SnakeBenchTrueSkillLeaderboardEntry[]> {
+    const safeLimit = Number.isFinite(limit) ? Math.max(1, Math.min(limit, 150)) : 150;
+    const safeMinGames = Number.isFinite(minGames) ? Math.max(1, minGames) : 3;
+    return await repositoryService.snakeBench.getTrueSkillLeaderboard(safeLimit, safeMinGames);
   }
 
   async healthCheck(): Promise<SnakeBenchHealthResponse> {

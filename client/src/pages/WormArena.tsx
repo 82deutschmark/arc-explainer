@@ -8,7 +8,8 @@
  */
 
 import React from 'react';
-import { useSnakeBenchRecentGames, useSnakeBenchGame } from '@/hooks/useSnakeBench';
+import { useLocation } from 'wouter';
+import { useSnakeBenchRecentGames, useSnakeBenchGame, useModelRating } from '@/hooks/useSnakeBench';
 import WormArenaGameBoard from '@/components/WormArenaGameBoard';
 import WormArenaHeader from '@/components/WormArenaHeader';
 import WormArenaReasoning from '@/components/WormArenaReasoning';
@@ -16,6 +17,23 @@ import WormArenaRecentGames from '@/components/WormArenaRecentGames';
 import WormArenaStatsPanel from '@/components/WormArenaStatsPanel';
 import { WormArenaControlBar } from '@/components/WormArenaControlBar';
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from '@/components/ui/accordion';
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { summarizeWormArenaPlacement } from '@shared/utils/wormArenaPlacement.ts';
+
+function useQueryParamGameId(): string | null {
+  const [location] = useLocation();
+
+  try {
+    const query = location.split('?')[1] ?? '';
+    if (!query) return null;
+    const params = new URLSearchParams(query);
+    const gameId = params.get('gameId');
+    return gameId && gameId.trim().length > 0 ? gameId.trim() : null;
+  } catch {
+    return null;
+  }
+}
 
 function renderAsciiFrame(frame: any, width: number, height: number, labels: Record<string, string>): string {
   if (!frame) return '';
@@ -45,9 +63,10 @@ function renderAsciiFrame(frame: any, width: number, height: number, labels: Rec
 
   return grid.map((row) => row.join(' ')).join('\n');
 }
-
 export default function WormArena() {
-  const [selectedGameId, setSelectedGameId] = React.useState<string>('');
+  const queryGameId = useQueryParamGameId();
+
+  const [selectedGameId, setSelectedGameId] = React.useState<string>(queryGameId ?? '');
   const [frameIndex, setFrameIndex] = React.useState<number>(0);
   const [isPlaying, setIsPlaying] = React.useState<boolean>(false);
   const [showNextMove, setShowNextMove] = React.useState<boolean>(true);
@@ -102,11 +121,26 @@ export default function WormArena() {
 
   React.useEffect(() => {
     if (!isPlaying || frames.length === 0) return;
+
     const handle = setInterval(() => {
-      setFrameIndex((idx) => (idx + 1) % frames.length);
+      setFrameIndex((idx) => {
+        if (idx >= frames.length - 1) {
+          // Stop autoplay on the final frame instead of looping
+          setIsPlaying(false);
+          return idx;
+        }
+        return idx + 1;
+      });
     }, 800);
+
     return () => clearInterval(handle);
   }, [isPlaying, frames.length]);
+
+  React.useEffect(() => {
+    if (frames.length > 0) {
+      setIsPlaying(true);
+    }
+  }, [frames.length]);
 
   const currentFrame = frames.length > 0 ? frames[Math.min(frameIndex, frames.length - 1)] : null;
   const asciiFrame = React.useMemo(
@@ -116,6 +150,20 @@ export default function WormArena() {
 
   const selectedMeta = games.find((g) => g.gameId === selectedGameId);
   const models = (replayData?.metadata?.models as string[] | undefined) ?? [];
+  const modelA = Array.isArray(models) && models.length > 0 ? models[0] : null;
+  const modelB = Array.isArray(models) && models.length > 1 ? models[1] : null;
+
+  const { rating: ratingA } = useModelRating(modelA ?? undefined);
+  const { rating: ratingB } = useModelRating(modelB ?? undefined);
+
+  const placementA = React.useMemo(
+    () => summarizeWormArenaPlacement(ratingA ?? undefined),
+    [ratingA],
+  );
+  const placementB = React.useMemo(
+    () => summarizeWormArenaPlacement(ratingB ?? undefined),
+    [ratingB],
+  );
   const finalScores = replayData?.metadata?.final_scores ?? replayData?.totals?.scores ?? {};
   const roundsPlayed = selectedMeta?.roundsPlayed ?? replayData?.metadata?.actual_rounds ?? replayData?.game?.rounds_played ?? frames.length ?? 0;
   const startedAt = selectedMeta?.startedAt ?? replayData?.metadata?.start_time ?? replayData?.game?.started_at ?? '';
@@ -181,6 +229,74 @@ export default function WormArena() {
           </div>
         )}
 
+        {(modelA || modelB) && (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+            {modelA && ratingA && (
+              <Card className="bg-[#faf6f1] border-[#d4b5a0]">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-lg font-bold" style={{ color: '#3d2817' }}>
+                    {modelA}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-2 text-sm" style={{ color: '#3d2817' }}>
+                  <div className="flex items-center justify-between">
+                    <span className="font-semibold">Pessimistic rating</span>
+                    <span className="inline-flex items-baseline px-2 py-0.5 rounded-md bg-[#e4f2e9] border border-[#9ece6a] font-extrabold text-base" style={{ color: '#064e3b' }}>
+                      {ratingA.exposed.toFixed(1)}
+                    </span>
+                  </div>
+                  <div className="flex flex-wrap gap-3 text-xs">
+                    <span>Games: {ratingA.gamesPlayed}</span>
+                    <span>W {ratingA.wins}</span>
+                    <span>L {ratingA.losses}</span>
+                    <span>T {ratingA.ties}</span>
+                  </div>
+                  {placementA && (
+                    <div className="flex items-center justify-between text-xs">
+                      <span>{placementA.label}</span>
+                      <Badge variant="outline" className="text-[11px] font-semibold">
+                        {placementA.gamesPlayed}/{placementA.maxGames} games
+                      </Badge>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            )}
+
+            {modelB && ratingB && (
+              <Card className="bg-[#faf6f1] border-[#d4b5a0]">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-lg font-bold" style={{ color: '#3d2817' }}>
+                    {modelB}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-2 text-sm" style={{ color: '#3d2817' }}>
+                  <div className="flex items-center justify-between">
+                    <span className="font-semibold">Pessimistic rating</span>
+                    <span className="inline-flex items-baseline px-2 py-0.5 rounded-md bg-[#e4f2e9] border border-[#9ece6a] font-extrabold text-base" style={{ color: '#064e3b' }}>
+                      {ratingB.exposed.toFixed(1)}
+                    </span>
+                  </div>
+                  <div className="flex flex-wrap gap-3 text-xs">
+                    <span>Games: {ratingB.gamesPlayed}</span>
+                    <span>W {ratingB.wins}</span>
+                    <span>L {ratingB.losses}</span>
+                    <span>T {ratingB.ties}</span>
+                  </div>
+                  {placementB && (
+                    <div className="flex items-center justify-between text-xs">
+                      <span>{placementB.label}</span>
+                      <Badge variant="outline" className="text-[11px] font-semibold">
+                        {placementB.gamesPlayed}/{placementB.maxGames} games
+                      </Badge>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            )}
+          </div>
+        )}
+
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6 items-start">
           <WormArenaReasoning
             playerName={playerAName}
@@ -189,33 +305,33 @@ export default function WormArena() {
             score={playerAScore}
           />
 
-          <WormArenaGameBoard
-            frame={currentFrame}
-            boardWidth={boardWidth}
-            boardHeight={boardHeight}
-            playerLabels={playerLabels}
-          />
+          <div className="flex flex-col gap-4">
+            <WormArenaGameBoard
+              frame={currentFrame}
+              boardWidth={boardWidth}
+              boardHeight={boardHeight}
+              playerLabels={playerLabels}
+            />
+
+            <WormArenaControlBar
+              onFirst={() => setFrameIndex(0)}
+              onPrev={() => setFrameIndex((idx) => Math.max(0, idx - 1))}
+              onPlayPause={() => setIsPlaying((v) => !v)}
+              onNext={() => setFrameIndex((idx) => Math.min(frames.length - 1, idx + 1))}
+              onLast={() => setFrameIndex(Math.max(0, frames.length - 1))}
+              isPlaying={isPlaying}
+              currentRound={frames.length === 0 ? 0 : frameIndex + 1}
+              totalRounds={frames.length}
+              showNextMove={showNextMove}
+              onToggleThought={setShowNextMove}
+            />
+          </div>
 
           <WormArenaReasoning
             playerName={playerBName}
             color="gold"
             reasoning={showNextMove && playerIds.length > 1 ? (frames[frameIndex + 1]?.moves?.[playerIds[1]]?.rationale || '') : playerBReasoning}
             score={playerBScore}
-          />
-        </div>
-
-        <div className="mb-6">
-          <WormArenaControlBar
-            onFirst={() => setFrameIndex(0)}
-            onPrev={() => setFrameIndex((idx) => Math.max(0, idx - 1))}
-            onPlayPause={() => setIsPlaying((v) => !v)}
-            onNext={() => setFrameIndex((idx) => Math.min(frames.length - 1, idx + 1))}
-            onLast={() => setFrameIndex(Math.max(0, frames.length - 1))}
-            isPlaying={isPlaying}
-            currentRound={frames.length === 0 ? 0 : frameIndex + 1}
-            totalRounds={frames.length}
-            showNextMove={showNextMove}
-            onToggleThought={setShowNextMove}
           />
         </div>
 

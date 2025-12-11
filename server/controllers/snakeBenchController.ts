@@ -26,6 +26,7 @@ import type {
   SnakeBenchStatsResponse,
   SnakeBenchModelRatingResponse,
   SnakeBenchModelHistoryResponse,
+  SnakeBenchTrueSkillLeaderboardResponse,
 } from '../../shared/types.js';
 
 export async function runMatch(req: Request, res: Response) {
@@ -77,6 +78,37 @@ export async function runMatch(req: Request, res: Response) {
       timestamp: Date.now(),
     };
 
+    return res.status(500).json(response);
+  }
+}
+
+export async function trueSkillLeaderboard(req: Request, res: Response) {
+  try {
+    const limitQuery = req.query.limit as string | undefined;
+    const minGamesQuery = req.query.minGames as string | undefined;
+
+    const parsedLimit = limitQuery != null && Number.isFinite(Number(limitQuery)) ? Number(limitQuery) : undefined;
+    const parsedMinGames =
+      minGamesQuery != null && Number.isFinite(Number(minGamesQuery)) ? Number(minGamesQuery) : undefined;
+
+    const entries = await snakeBenchService.getTrueSkillLeaderboard(parsedLimit ?? 150, parsedMinGames ?? 3);
+
+    const response: SnakeBenchTrueSkillLeaderboardResponse = {
+      success: true,
+      entries,
+      timestamp: Date.now(),
+    };
+
+    return res.json(response);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    logger.error(`SnakeBench trueSkillLeaderboard failed: ${message}`, 'snakebench-controller');
+    const response: SnakeBenchTrueSkillLeaderboardResponse = {
+      success: false,
+      entries: [],
+      error: message,
+      timestamp: Date.now(),
+    };
     return res.status(500).json(response);
   }
 }
@@ -404,4 +436,5 @@ export const snakeBenchController = {
   stats,
   modelRating,
   modelHistory,
+  trueSkillLeaderboard,
 };

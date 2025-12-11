@@ -699,6 +699,29 @@ export interface SnakeBenchModelHistoryResponse {
   timestamp: number;
 }
 
+export interface SnakeBenchTrueSkillLeaderboardEntry {
+  modelSlug: string;
+  mu: number;
+  sigma: number;
+  exposed: number;
+  displayScore: number;
+  gamesPlayed: number;
+  wins: number;
+  losses: number;
+  ties: number;
+  applesEaten: number;
+  topScore: number;
+  winRate?: number;
+  totalCost: number;
+}
+
+export interface SnakeBenchTrueSkillLeaderboardResponse {
+  success: boolean;
+  entries: SnakeBenchTrueSkillLeaderboardEntry[];
+  error?: string;
+  timestamp: number;
+}
+
 /**
  * Worm Arena streaming status (lightweight, matches other streaming flows).
  */

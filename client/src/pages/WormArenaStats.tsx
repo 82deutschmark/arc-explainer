@@ -22,6 +22,8 @@ import {
   useModelRating,
   useModelHistory,
 } from "@/hooks/useSnakeBench";
+import useWormArenaTrueSkillLeaderboard from "@/hooks/useWormArenaTrueSkillLeaderboard";
+import WormArenaTrueSkillLeaderboard from "@/components/WormArenaTrueSkillLeaderboard";
 import { summarizeWormArenaPlacement } from "@shared/utils/wormArenaPlacement.ts";
 
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
@@ -36,6 +38,13 @@ import {
   TableCell,
   TableBody,
 } from "@/components/ui/table";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { HelpCircle } from "lucide-react";
 
 function DataNumber({
   children,
@@ -73,6 +82,11 @@ export default function WormArenaStats() {
 
   const { leaderboard, recentActivity } = useWormArenaStats();
   const { stats: globalStats } = useSnakeBenchStats();
+  const {
+    entries: trueSkillEntries,
+    isLoading: loadingTrueSkill,
+    error: trueSkillError,
+  } = useWormArenaTrueSkillLeaderboard(150, 3);
 
   const [selectedModel, setSelectedModel] = React.useState<string | null>(queryModel);
   const [filter, setFilter] = React.useState("");
@@ -139,18 +153,19 @@ export default function WormArenaStats() {
   }, [placement]);
 
   return (
-    <div
-      className="min-h-screen"
-      style={{ backgroundColor: "#f5e6d3", fontFamily: "Fredoka, Nunito, sans-serif" }}
-    >
-      <link rel="preconnect" href="https://fonts.googleapis.com" />
-      <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
-      <link
-        href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300;400;500;600;700&display=swap"
-        rel="stylesheet"
-      />
+    <TooltipProvider>
+      <div
+        className="min-h-screen"
+        style={{ backgroundColor: "#f5e6d3", fontFamily: "Fredoka, Nunito, sans-serif" }}
+      >
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300;400;500;600;700&display=swap"
+          rel="stylesheet"
+        />
 
-      <WormArenaHeader
+        <WormArenaHeader
         totalGames={globalStats?.totalGames ?? 0}
         links={[
           { label: "Replay", href: "/worm-arena" },
@@ -223,6 +238,13 @@ export default function WormArenaStats() {
             </CardContent>
           </Card>
         </div>
+
+        {/* TrueSkill leaderboard (global Worm Arena rankings) */}
+        <WormArenaTrueSkillLeaderboard
+          entries={trueSkillEntries}
+          isLoading={loadingTrueSkill}
+          error={trueSkillError}
+        />
 
         {/* Models + snapshot/placement row */}
         <div className="grid grid-cols-1 xl:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)] gap-6 items-start">
@@ -358,11 +380,19 @@ export default function WormArenaStats() {
                     <div className="grid grid-cols-2 gap-4">
                       <div>
                         <div
-                          className="text-sm font-bold flex items-center gap-1"
+                          className="text-sm font-bold flex items-center gap-2"
                           style={{ color: "#3d2817" }}
                         >
                           <span>Skill estimate</span>
                           <InlineMath math={"\\mu"} />
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <HelpCircle className="w-4 h-4 cursor-help" style={{ color: "#7a6b5f" }} />
+                            </TooltipTrigger>
+                            <TooltipContent side="top" className="max-w-xs text-xs">
+                              Higher is better. This is the center of the model's estimated skill distribution.
+                            </TooltipContent>
+                          </Tooltip>
                         </div>
                         <DataNumber>{rating.mu.toFixed(2)}</DataNumber>
                         <div
@@ -376,11 +406,19 @@ export default function WormArenaStats() {
 
                       <div>
                         <div
-                          className="text-sm font-bold flex items-center gap-1"
+                          className="text-sm font-bold flex items-center gap-2"
                           style={{ color: "#3d2817" }}
                         >
                           <span>Uncertainty</span>
                           <InlineMath math={"\\sigma"} />
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <HelpCircle className="w-4 h-4 cursor-help" style={{ color: "#7a6b5f" }} />
+                            </TooltipTrigger>
+                            <TooltipContent side="top" className="max-w-xs text-xs">
+                              Bigger σ = less certain about skill. Smaller is better (more confidence in the rating).
+                            </TooltipContent>
+                          </Tooltip>
                         </div>
                         <DataNumber>{rating.sigma.toFixed(2)}</DataNumber>
                         <div
@@ -395,11 +433,19 @@ export default function WormArenaStats() {
 
                       <div>
                         <div
-                          className="text-sm font-bold flex items-center gap-1"
+                          className="text-sm font-bold flex items-center gap-2"
                           style={{ color: "#3d2817" }}
                         >
                           <span>Pessimistic rating</span>
                           <InlineMath math={"\\mu - 3\\sigma"} />
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <HelpCircle className="w-4 h-4 cursor-help" style={{ color: "#7a6b5f" }} />
+                            </TooltipTrigger>
+                            <TooltipContent side="top" className="max-w-xs text-xs">
+                              Conservative lower bound: the skill rating we'd guarantee with 99.7% confidence.
+                            </TooltipContent>
+                          </Tooltip>
                         </div>
                         <DataNumber>{rating.exposed.toFixed(2)}</DataNumber>
                         {pessimisticEquation && (
@@ -414,10 +460,18 @@ export default function WormArenaStats() {
 
                       <div>
                         <div
-                          className="text-sm font-bold"
+                          className="text-sm font-bold flex items-center gap-2"
                           style={{ color: "#3d2817" }}
                         >
-                          Leaderboard score
+                          <span>Leaderboard score</span>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <HelpCircle className="w-4 h-4 cursor-help" style={{ color: "#7a6b5f" }} />
+                            </TooltipTrigger>
+                            <TooltipContent side="top" className="max-w-xs text-xs">
+                              Display ranking (scaled from μ ≈ 0–50). Higher scores rank higher on the leaderboard.
+                            </TooltipContent>
+                          </Tooltip>
                         </div>
                         <DataNumber>{rating.displayScore.toFixed(0)}</DataNumber>
                         <div
@@ -429,7 +483,7 @@ export default function WormArenaStats() {
                       </div>
                     </div>
 
-                    <div className="grid grid-cols-4 gap-4 text-sm mt-2">
+                    <div className="grid grid-cols-5 gap-3 text-sm mt-2">
                       <div>
                         <div
                           className="font-bold"
@@ -465,6 +519,28 @@ export default function WormArenaStats() {
                           Ties
                         </div>
                         <DataNumber size="lg">{rating.ties}</DataNumber>
+                      </div>
+                      <div>
+                        <div
+                          className="font-bold flex items-center gap-1"
+                          style={{ color: "#3d2817" }}
+                        >
+                          <span>Testing cost</span>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <HelpCircle className="w-4 h-4 cursor-help" style={{ color: "#7a6b5f" }} />
+                            </TooltipTrigger>
+                            <TooltipContent side="top" className="max-w-xs text-xs">
+                              Total USD spent testing this model via LLM API calls.
+                            </TooltipContent>
+                          </Tooltip>
+                        </div>
+                        <div
+                          className="inline-flex items-baseline px-2.5 py-0.5 rounded-md bg-[#f0e5d8] border border-[#d4b5a0] font-bold text-sm"
+                          style={{ color: "#3d2817" }}
+                        >
+                          TBD
+                        </div>
                       </div>
                     </div>
 
@@ -691,6 +767,7 @@ export default function WormArenaStats() {
           </CardContent>
         </Card>
       </main>
-    </div>
+      </div>
+    </TooltipProvider>
   );
 }

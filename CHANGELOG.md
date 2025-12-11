@@ -1,3 +1,35 @@
+### Version 6.1.14  Dec 11, 2025 (PENDING TESTING)
+
+- **Worm Arena TrueSkill leaderboard (SnakeBench parity)** (Author: Cascade)
+  - Added a DB-backed TrueSkill leaderboard endpoint for Worm Arena games, exposing top models ranked by conservative TrueSkill rating (\mu - 3\sigma) with minimum 3 games and support for up to 150 rows.
+  - Introduced shared DTOs for TrueSkill leaderboard entries/responses and a new repository/service method pair (`getTrueSkillLeaderboard`) that aggregates games, wins/losses/ties, apples eaten, top score, win rate, and total cost from `public.game_participants` filtered to `game_type = 'arc-explainer'`.
+  - Wired a new public API route `/api/snakebench/trueskill-leaderboard` into `server/routes.ts` with no authentication required, consistent with ARC Explainer’s open research posture.
+  - Implemented `useWormArenaTrueSkillLeaderboard` hook and `WormArenaTrueSkillLeaderboard` component on the client so `/worm-arena/stats` now shows a wide, 150-row TrueSkill leaderboard table with SnakeBench-parity columns (Rank, Model, TS Rating, TS Uncertainty, Games, Wins, Losses, Ties, Apples Eaten, Top Score, Win Rate, Total Cost).
+  - Captured the design in `docs/plans/2025-12-10-wormarena-trueskill-leaderboard-plan.md` alongside the existing stats and SnakeBench parity plans.
+  - **Files Modified/Created**: `shared/types.ts`, `server/repositories/SnakeBenchRepository.ts`, `server/services/snakeBenchService.ts`, `server/controllers/snakeBenchController.ts`, `server/routes.ts`, `client/src/hooks/useWormArenaTrueSkillLeaderboard.ts`, `client/src/components/WormArenaTrueSkillLeaderboard.tsx`, `client/src/pages/WormArenaStats.tsx`, `docs/plans/2025-12-10-wormarena-trueskill-leaderboard-plan.md`, `CHANGELOG.md`
+
+### Version 6.1.13  Dec 11, 2025 (PENDING TESTING)
+
+- **Worm Arena replay page model stats strip** (Author: GPT-5.1 Codex CLI)
+  - Added per-model TrueSkill summaries to the Worm Arena replay page so each side of a match shows its pessimistic rating, win/loss/tie record, and placement status, using the same Worm Arena stats and placement helpers as the dedicated stats page.
+  - Reused `useModelRating` and `summarizeWormArenaPlacement` to keep replay-side stats fully wired to live SnakeBench tables instead of hard-coded placeholders, keeping the UI consistent with `WormArenaStats` while staying compact above the board.
+  - **Files Modified**: `client/src/pages/WormArena.tsx`, `CHANGELOG.md`
+
+### Version 6.1.12  Dec 11, 2025 (PENDING TESTING)
+
+- **Worm Arena replay autoplay stop + thought toggle layout** (Author: GPT-5.1 Codex CLI)
+  - Updated the Worm Arena replay autoplay logic so matches begin playing automatically when frames load but stop cleanly on the final round instead of looping back to the start.
+  - Reworked the Worm Arena control bar layout so the "Thoughts show" toggle now appears directly under the playback/round controls, making it more visible and reducing visual flicker during replays.
+  - **Files Modified**: `client/src/pages/WormArena.tsx`, `client/src/components/WormArenaControlBar.tsx`, `CHANGELOG.md`
+
+### Version 6.1.11  Dec 11, 2025 (PENDING TESTING)
+
+- **Worm Arena deep link autoplay + inline controls** (Author: Cascade)
+  - Wired the Worm Arena replay page to respect `gameId` query parameters so `/worm-arena?gameId=...` loads and focuses the specified match instead of always defaulting to the latest game.
+  - Enabled automatic replay playback as soon as frames load for any selected match (including deep-linked replays) so users no longer need to press Play to start watching.
+  - Moved the Worm Arena control bar directly under the emoji game board in the center column to keep controls visually tied to the board and closer to SnakeBench's layout.
+  - **Files Modified**: `client/src/pages/WormArena.tsx`, `CHANGELOG.md`
+
 ### Version 6.1.10  Dec 11, 2025 (PENDING TESTING)
 
 - **Admin OpenRouter full catalog viewer + pricing** (Author: Cascade)
@@ -11,8 +43,9 @@
 - **Worm Arena TrueSkill coverage + underrepresented tail models** (Author: GPT-5.1 Codex)
   - Updated `trueskill-coverage-nova-kat.ps1` to submit all Nova/Kat TrueSkill coverage matches asynchronously using `Start-Job`, and refreshed the opponent pool to use current OpenRouter slugs (Devstral, Ministral family, Trinity Mini, DeepSeek v3.2, Olmo-3 Think, Kimi K2, Nemotron, Gemma 3n, GLM 4.6v).
   - Added `gpt5-nano-vs-underrepresented.ps1` to run focused coverage tournaments where `openai/gpt-5-nano` plays 9 games against each tail model (`arcee-ai/trinity-mini:free`, `mistralai/ministral-3b-2512`, `nvidia/nemotron-nano-9b-v2`, `google/gemma-3n-e2b-it:free`, `nvidia/nemotron-nano-12b-v2-vl:free`, `z-ai/glm-4.6v`) to strengthen TrueSkill estimates for low-sample models.
+  - Added `devstral-free-vs-underrepresented.ps1` to mirror that coverage with `mistralai/devstral-2512:free` as the focus model against GPT-5 Nano and the same underrepresented pool, improving its convergence and direct comparability.
   - Increased the Worm Arena basic leaderboard cap from 20/100 up to 150 entries end-to-end (repository, controller, and `useWormArenaStats` hook) so the stats page can surface a much larger pool of active models.
-  - **Files Modified/Created**: `scripts/worm-arena-tournaments/trueskill-coverage-nova-kat.ps1`, `scripts/worm-arena-tournaments/gpt5-nano-vs-underrepresented.ps1`, `server/repositories/SnakeBenchRepository.ts`, `server/controllers/snakeBenchController.ts`, `client/src/hooks/useWormArenaStats.ts`, `CHANGELOG.md`
+  - **Files Modified/Created**: `scripts/worm-arena-tournaments/trueskill-coverage-nova-kat.ps1`, `scripts/worm-arena-tournaments/gpt5-nano-vs-underrepresented.ps1`, `scripts/worm-arena-tournaments/devstral-free-vs-underrepresented.ps1`, `server/repositories/SnakeBenchRepository.ts`, `server/controllers/snakeBenchController.ts`, `client/src/hooks/useWormArenaStats.ts`, `CHANGELOG.md`
 - **OpenRouter reasoning models: DeepSeek v3.2 + OLMo-3 Think** (Author: GPT-5.1 Codex CLI)
   - Added OpenRouter configuration entries for `deepseek/deepseek-v3.2` (reasoning mode aligned with direct DeepSeek Reasoner specs), `allenai/olmo-3-7b-think`, and `allenai/olmo-3-32b-think:free`, including context windows, pricing, and reasoning flags so they show up correctly in UI selectors and backend lookups.
   - Extended the Worm Arena Nova/Kat coverage tournament script to include the three new reasoning models in the opponent pool, enabling coverage matches across premium DeepSeek v3.2 and both OLMo-3 thinking variants.
