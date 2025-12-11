@@ -1,3 +1,11 @@
+### Version 6.1.25  Dec 11, 2025 (PENDING TESTING)
+
+- **Worm Arena replay UX: skip short games, fix headers, clarify thoughts toggle** (Author: GPT-5.1 Codex Mini)
+  - Updated the SnakeBench game listing service to down-rank very short matches by default, only surfacing replays with at least 20 rounds when possible and otherwise preferring the longest available game so the Worm Arena viewer no longer opens on a 6-round diagnostic match.
+  - Adjusted the Worm Arena replay page to pick a default match that respects this minimum-rounds rule and to default the reasoning display to the **current move**, with a clearer "Show thoughts for: Current move / Upcoming move" toggle and stronger visual highlighting for the selected option.
+  - Replaced the fragile worm header glyph in the reasoning side panels with a broadly supported emoji so player headers no longer show a broken icon on some platforms.
+  - **Files Modified**: `server/services/snakeBenchService.ts`, `client/src/pages/WormArena.tsx`, `client/src/components/WormArenaReasoning.tsx`, `client/src/components/WormArenaControlBar.tsx`, `docs/2025-12-11-worm-arena-gameboard-fixes-plan.md`, `CHANGELOG.md`
+
 ### Version 6.1.24  Dec 11, 2025 (PENDING TESTING)
 
 - **Worm Arena Hall of Fame: curated top 10 replays** (Author: GPT-5.1 High Reasoning)

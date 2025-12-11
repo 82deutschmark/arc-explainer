@@ -10,7 +10,8 @@ import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 
-const WORM_ICON = String.fromCodePoint(0x1FAB1);
+// Use broadly supported emoji to avoid missing glyphs on older platforms.
+const WORM_ICON = '🐍';
 const APPLE_ICON = String.fromCodePoint(0x1F34E);
 
 interface WormArenaReasoningProps {

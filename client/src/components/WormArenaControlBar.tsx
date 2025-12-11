@@ -65,12 +65,12 @@ export function WormArenaControlBar({
       </div>
 
       <div className="flex items-center justify-center gap-3">
-        <span className="text-sm text-muted-foreground">Thoughts show:</span>
-        <div className="flex rounded-md border bg-background">
+        <span className="text-sm text-muted-foreground">Show thoughts for:</span>
+        <div className="flex rounded-md border bg-background overflow-hidden">
           <Button
             size="sm"
             variant={showNextMove ? 'ghost' : 'default'}
-            className="rounded-none first:rounded-l-md"
+            className={`rounded-none first:rounded-l-md ${!showNextMove ? 'bg-[#2563eb] text-white hover:bg-[#1d4ed8]' : ''}`}
             onClick={handleCurrentClick}
           >
             Current move
@@ -78,7 +78,7 @@ export function WormArenaControlBar({
           <Button
             size="sm"
             variant={showNextMove ? 'default' : 'ghost'}
-            className="rounded-none last:rounded-r-md"
+            className={`rounded-none last:rounded-r-md ${showNextMove ? 'bg-[#2563eb] text-white hover:bg-[#1d4ed8]' : ''}`}
             onClick={handleNextClick}
           >
             Upcoming move

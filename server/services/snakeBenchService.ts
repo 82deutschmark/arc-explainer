@@ -584,7 +584,7 @@ export class SnakeBenchService {
     try {
       const { games, total } = await repositoryService.snakeBench.getRecentGames(safeLimit);
       if (total > 0 && games.length > 0) {
-        return { games, total };
+        return { games: this.filterReplayableGames(games), total };
       }
     } catch (dbErr) {
       const msg = dbErr instanceof Error ? dbErr.message : String(dbErr);
@@ -637,7 +637,7 @@ export class SnakeBenchService {
         };
       });
 
-      return { games, total };
+      return { games: this.filterReplayableGames(games), total };
     } catch (err) {
       const message = err instanceof Error ? err.message : String(err);
       logger.error(`Failed to list SnakeBench games: ${message}`, 'snakebench-service');
@@ -884,6 +884,29 @@ export class SnakeBenchService {
     }
 
     return playable;
+  }
+
+  /**
+   * Apply a conservative minimum-rounds filter for Worm Arena replays.
+   * Very short diagnostic matches (< 20 rounds) are still stored, but
+   * we avoid surfacing them as default replays in the UI.
+   */
+  private filterReplayableGames(games: SnakeBenchGameSummary[]): SnakeBenchGameSummary[] {
+    if (!Array.isArray(games) || games.length === 0) return [];
+
+    const MIN_ROUNDS = 20;
+    const filtered = games.filter((g) => {
+      const rounds = Number.isFinite(g.roundsPlayed) ? Number(g.roundsPlayed) : 0;
+      return rounds >= MIN_ROUNDS;
+    });
+
+    if (filtered.length > 0) {
+      return filtered;
+    }
+
+    // Fallback: no games meet the threshold; return original list so the
+    // UI can still show "something", but prefer longer matches first.
+    return [...games].sort((a, b) => (b.roundsPlayed ?? 0) - (a.roundsPlayed ?? 0));
   }
 
   async healthCheck(): Promise<SnakeBenchHealthResponse> {
