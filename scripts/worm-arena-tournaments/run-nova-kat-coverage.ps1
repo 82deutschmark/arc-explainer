@@ -64,6 +64,41 @@ foreach ($modelA in $coverageModels) {
 }
 
 Write-Host ""
-Write-Host "All $jobCount batches submitted!" -ForegroundColor Green
-Write-Host "Each batch runs 9 sequential matches (rate-limit safe)" -ForegroundColor Cyan
-Write-Host "Total: $($jobCount * $opponentModels.Count) matches queued" -ForegroundColor Cyan
+
+# Nova vs Kat head-to-head (9 matches)
+Write-Host "Queuing head-to-head: amazon/nova-2-lite-v1:free vs kwaipilot/kat-coder-pro:free (9 matches)" -ForegroundColor Yellow
+
+$headToHeadBody = @{
+    modelA = "amazon/nova-2-lite-v1:free"
+    opponents = @("kwaipilot/kat-coder-pro:free") * 9
+    width = 10
+    height = 10
+    maxRounds = 150
+    numApples = 5
+} | ConvertTo-Json
+
+try {
+    $response = Invoke-WebRequest -Uri $apiEndpoint -Method Post -Headers @{"Content-Type"="application/json"} -Body $headToHeadBody -ErrorAction Stop
+    $result = $response.Content | ConvertFrom-Json
+
+    if ($result.success) {
+        $sessionId = $result.sessionId
+        $liveUrl = "http://localhost:5000/worm-arena/live/$sessionId"
+        Write-Host "✓ Head-to-head queued! Session: $sessionId" -ForegroundColor Green
+        Write-Host "  Live view: $liveUrl" -ForegroundColor Cyan
+    } else {
+        Write-Host "✗ Error: $($result.error)" -ForegroundColor Red
+    }
+} catch {
+    Write-Host "✗ Request failed: $_" -ForegroundColor Red
+}
+
+$jobCount++
+
+Write-Host ""
+Write-Host "All $($jobCount) batches submitted!" -ForegroundColor Green
+Write-Host "Breakdown:" -ForegroundColor Cyan
+Write-Host "  - Nova vs 9 diverse opponents" -ForegroundColor Cyan
+Write-Host "  - Kat vs 9 diverse opponents" -ForegroundColor Cyan
+Write-Host "  - Nova vs Kat (9 head-to-head matches)" -ForegroundColor Cyan
+Write-Host "Total: $(($coverageModels.Count * $opponentModels.Count) + 9) matches queued" -ForegroundColor Cyan
