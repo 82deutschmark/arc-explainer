@@ -236,10 +236,24 @@ export async function health(req: Request, res: Response) {
 
 export async function recentActivity(req: Request, res: Response) {
   try {
-    const daysQuery = req.query.days;
-    const days = Number.isFinite(Number(daysQuery)) ? Math.max(1, Math.min(Number(daysQuery), 90)) : 7;
+    const daysRaw = req.query.days as string | undefined;
+    let days: number | undefined;
 
-    const result = await snakeBenchService.getRecentActivity(days);
+    if (typeof daysRaw === 'string') {
+      const trimmed = daysRaw.trim().toLowerCase();
+      if (trimmed === 'all') {
+        days = 0;
+      } else if (trimmed.length > 0) {
+        const parsed = Number(trimmed);
+        if (Number.isFinite(parsed)) {
+          days = parsed;
+        }
+      }
+    }
+
+    const effectiveDays = days === undefined ? 7 : days;
+
+    const result = await snakeBenchService.getRecentActivity(effectiveDays);
 
     return res.json({
       success: true,

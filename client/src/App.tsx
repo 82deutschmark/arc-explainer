@@ -22,6 +22,7 @@ import ModelBrowser from "@/pages/ModelBrowser";
 import ModelManagement from "@/pages/ModelManagement";
 import AdminHub from "@/pages/AdminHub";
 import HuggingFaceIngestion from "@/pages/HuggingFaceIngestion";
+import AdminOpenRouter from "@/pages/AdminOpenRouter";
 import EloComparison from "@/pages/EloComparison";
 import EloLeaderboard from "@/pages/EloLeaderboard";
 import PuzzleFeedback from "@/pages/PuzzleFeedback";
@@ -72,6 +73,7 @@ function Router() {
         <Route path="/admin" component={AdminHub} />
         <Route path="/admin/models" component={ModelManagement} />
         <Route path="/admin/ingest-hf" component={HuggingFaceIngestion} />
+        <Route path="/admin/openrouter" component={AdminOpenRouter} />
 
         <Route path="/elo" component={EloComparison} />
         <Route path="/elo/leaderboard" component={EloLeaderboard} />

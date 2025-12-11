@@ -21,6 +21,14 @@ import { MODELS } from '../config/models.js';
 
 const router = Router();
 const puzzleLoader = new PuzzleLoader();
+const OPENROUTER_ENDPOINT = 'https://openrouter.ai/api/v1/models';
+
+type OpenRouterModel = {
+  id: string;
+  name?: string;
+  description?: string;
+  context_length?: number;
+};
 
 // ============================================================================
 // DATA RECOVERY ENDPOINT (Existing)
@@ -472,6 +480,120 @@ export async function listHFFolders(req: Request, res: Response) {
     res.json({ folders: results });
   } catch (error) {
     res.status(500).json({ error: 'Failed to list HF folders', message: error instanceof Error ? error.message : String(error) });
+  }
+}
+
+// ============================================================================
+// OPENROUTER DISCOVERY / IMPORT ENDPOINTS (New)
+// ============================================================================
+
+async function fetchOpenRouterCatalog(): Promise<OpenRouterModel[]> {
+  const headers: Record<string, string> = { Accept: 'application/json' };
+  if (process.env.OPENROUTER_API_KEY) {
+    headers.Authorization = `Bearer ${process.env.OPENROUTER_API_KEY}`;
+  }
+
+  const resp = await fetch(OPENROUTER_ENDPOINT, { headers });
+  if (!resp.ok) {
+    const info = await resp.text().catch(() => resp.statusText);
+    throw new Error(`OpenRouter API error: ${resp.status} ${info}`);
+  }
+  const payload = (await resp.json()) as { data?: OpenRouterModel[] };
+  return payload.data ?? [];
+}
+
+function flagPreview(slug: string): boolean {
+  const lower = slug.toLowerCase();
+  return (
+    lower.includes('preview') ||
+    lower.includes('beta') ||
+    lower.includes(':free') ||
+    lower.includes(':exacto') ||
+    lower.includes('sandbox') ||
+    lower.includes('dev')
+  );
+}
+
+/**
+ * @route   GET /api/admin/openrouter/discover
+ * @desc    Fetch OpenRouter catalog and list slugs not present in DB/config
+ * @access  Private
+ */
+export async function discoverOpenRouter(req: Request, res: Response) {
+  try {
+    const remote = await fetchOpenRouterCatalog();
+
+    const configSlugs = new Set(
+      MODELS.filter((m) => m.modelType === 'openrouter')
+        .map((m) => m.apiModelName || m.key)
+        .filter(Boolean) as string[]
+    );
+
+    const dbModels = repositoryService.isInitialized() ? await repositoryService.snakeBench.listModels() : [];
+    const dbSlugs = new Set(dbModels.map((m) => m.model_slug));
+
+    const newModels = remote
+      .filter((m) => m.id && !configSlugs.has(m.id) && !dbSlugs.has(m.id))
+      .map((m) => ({
+        id: m.id,
+        name: m.name ?? m.id,
+        contextLength: m.context_length ?? null,
+        isPreview: flagPreview(m.id),
+      }));
+
+    res.json({
+      totalRemote: remote.length,
+      totalLocalConfig: configSlugs.size,
+      totalLocalDb: dbSlugs.size,
+      newModels,
+    });
+  } catch (error) {
+    console.error('[Admin] OpenRouter discovery failed:', error);
+    res.status(500).json({
+      error: 'Failed to fetch OpenRouter catalog',
+      message: error instanceof Error ? error.message : 'Unknown error',
+    });
+  }
+}
+
+/**
+ * @route   POST /api/admin/openrouter/import
+ * @desc    Import selected OpenRouter slugs into DB (models table)
+ * @body    { slugs: string[], nameOverrides?: Record<string,string> }
+ * @access  Private
+ */
+export async function importOpenRouter(req: Request, res: Response) {
+  try {
+    const { slugs, nameOverrides } = req.body as { slugs?: string[]; nameOverrides?: Record<string, string> };
+    if (!Array.isArray(slugs) || slugs.length === 0) {
+      return res.status(400).json({ error: 'No slugs provided' });
+    }
+
+    if (!repositoryService.isInitialized()) {
+      return res.status(500).json({ error: 'Database not available for import' });
+    }
+
+    const models = slugs.map((slug) => ({
+      modelSlug: slug,
+      name: nameOverrides?.[slug] || slug,
+      provider: 'OpenRouter',
+      isActive: true,
+      testStatus: 'untested',
+    }));
+
+    const result = await repositoryService.snakeBench.upsertModels(models);
+
+    res.json({
+      inserted: result.inserted,
+      updated: result.updated,
+      totalRequested: slugs.length,
+    });
+  } catch (error) {
+    console.error('[Admin] OpenRouter import failed:', error);
+    res.status(500).json({
+      error: 'Failed to import models',
+      message: error instanceof Error ? error.message : 'Unknown error',
+    });
   }
 }
 

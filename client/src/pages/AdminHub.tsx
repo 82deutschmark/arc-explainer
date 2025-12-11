@@ -16,6 +16,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Globe } from 'lucide-react';
 
 interface QuickStats {
   totalModels: number;
@@ -219,6 +220,27 @@ export default function AdminHub() {
             <CardContent>
               <Button variant="outline" className="w-full">
                 Open HuggingFace Ingestion
+              </Button>
+            </CardContent>
+          </Link>
+        </Card>
+
+        <Card className="hover:shadow-lg transition-shadow cursor-pointer">
+          <Link href="/admin/openrouter">
+            <CardHeader>
+              <div className="flex items-center gap-3">
+                <Globe className="h-8 w-8 text-primary" />
+                <div>
+                  <CardTitle>OpenRouter Models</CardTitle>
+                  <CardDescription>
+                    Discover and import new OpenRouter slugs
+                  </CardDescription>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <Button variant="outline" className="w-full">
+                Open OpenRouter Manager
               </Button>
             </CardContent>
           </Link>
