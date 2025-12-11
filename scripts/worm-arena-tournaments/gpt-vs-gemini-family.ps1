@@ -3,7 +3,8 @@ $gptModels = @(
     "openrouter/gpt-5.1-codex-mini",
     
     "openai/gpt-5-nano",
-    "openai/gpt-5-mini"
+    "openai/gpt-5-mini",
+    "openai/gpt-5.2"
 )
 
 $geminiModels = @(
@@ -12,7 +13,7 @@ $geminiModels = @(
     "google/gemini-3-pro-preview"
 )
 
-$matchesPerPair = 3
+$matchesPerPair = 2
 $delaySeconds = 1.5
 $baseUri = "http://localhost:5000/api/snakebench/run-batch"
 

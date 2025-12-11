@@ -1,15 +1,16 @@
 # Worm Arena Tournament Script - Devstral 2512 Paid vs All Free Models
-# Author: Cascade
+# Author: Cascade GPT 5.1 high reasoning
 # Date: 2025-12-10
 # PURPOSE: Run parallel Worm Arena matches between Devstral 2512 Paid and all free models listed in server/config/models.ts.
  $apiEndpoint = "https://localhost:5000/api/snakebench/run-batch"
 # $apiEndpoint = "https://arc-explainer-staging.up.railway.app/api/snakebench/run-batch"
-$modelA = "nex-agi/deepseek-v3.1-nex-n1:free"
+$modelA = "openai/gpt-5.2"
 
 # Only free models whose apiModelName exists in server/config/models.ts (provider: OpenRouter)
 $freeModels = @(
     "openai/gpt-5-nano",
-    "openai/gpt-5-mini"
+    "openai/gpt-5.1",
+    "openai/gpt-5-mini",
     "moonshotai/kimi-dev-72b:free",
     "nex-agi/deepseek-v3.1-nex-n1:free",
     "arcee-ai/trinity-mini:free",

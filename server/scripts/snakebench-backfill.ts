@@ -1,6 +1,6 @@
 /**
  * SnakeBench backfill script
- *
+ *THIS SCRIPT NEEDS DOCUMENTATION!
  * Resets model aggregates/ratings to baseline and re-ingests all
  * completed SnakeBench replay JSONs in chronological order, matching
  * Greg's pipeline (aggregates + TrueSkill/Elo).

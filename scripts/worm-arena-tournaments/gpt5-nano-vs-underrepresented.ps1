@@ -11,12 +11,14 @@ $apiEndpoint = "http://localhost:5000/api/snakebench/run-batch"
 $focusModel = "openai/gpt-5-nano"
 
 $underrepresentedModels = @(
-    "arcee-ai/trinity-mini:free",
-    "mistralai/ministral-3b-2512",
-    "nvidia/nemotron-nano-9b-v2",
-    "google/gemma-3n-e2b-it:free",
-    "nvidia/nemotron-nano-12b-v2-vl:free",
-    "z-ai/glm-4.6v"
+    "mistralai/devstral-2512",
+    "kwaipilot/kat-coder-pro:free",
+    "x-ai/grok-4.1-fast",
+    "moonshotai/kimi-k2-thinking",
+    "nvidia/nemotron-nano-12b-v2-vl",
+    "allenai/olmo-3-32b-think:free",
+    "allenai/olmo-3-7b-instruct",
+    "deepseek/deepseek-v3.2"
 )
 
 $gamesPerPairing = 9

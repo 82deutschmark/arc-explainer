@@ -1,5 +1,7 @@
 $gptModels = @(
     "openai/gpt-5-nano",
+    "openai/gpt-5.2",
+    "deepseek/deepseek-v3.2",
     "openai/gpt-5-mini",
     "openrouter/gpt-5.1-codex-mini"
 )
@@ -10,14 +12,12 @@ $claudeModels = @(
     "anthropic/claude-haiku-4.5"
 )
 
-$geminiModel = "google/gemini-3-pro-preview"
+$geminiModel = "google/gemini-3-pro-preview",
+"google/gemini-2.5-flash-preview-09-2025",
+"google/gemini-2.5-flash-lite-preview-09-2025"
 
 Write-Host "GPT-5 Family vs Claude Family vs Gemini 3 Tournament"
-Write-Host "GPT-5 Models: 3"
-Write-Host "Claude Models (OpenRouter): 3"
-Write-Host "Gemini 3: 1"
-Write-Host "Matches per pairing: 3"
-Write-Host "Total: 36 matches"
+
 Write-Host ""
 
 $jobCount = 0
