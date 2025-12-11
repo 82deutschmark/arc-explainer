@@ -1,3 +1,17 @@
+### Version 6.1.22  Dec 11, 2025 (PENDING TESTING)
+
+- **Worm Arena TrueSkill leaderboard scrolling fix** (Author: GPT-5.1 Codex CLI)
+  - Fixed the TrueSkill leaderboard viewport to a fixed 420px height so the 150-row table scrolls instead of overflowing and getting cut off on `/worm-arena/stats`.
+  - **Files Modified**: `client/src/components/WormArenaTrueSkillLeaderboard.tsx`, `CHANGELOG.md`
+
+### Version 6.1.21  Dec 11, 2025 (PENDING TESTING)
+
+- **Worm Arena replay matchId canonicalization + remove Recent Games firehose** (Author: Cascade)
+  - Updated the Worm Arena replay page to treat the URL query parameter as a canonical **matchId**, with backward-compatible support for legacy `gameId` links, so the address bar and on-page "Match ID" label always refer to the same underlying SnakeBench game.
+  - Removed the uncurated "Recent Games" list from the replay page UI to avoid exposing users to a raw firehose of matches; curated entry points now come from Greatest Hits, live tournament completion links, or direct matchId deep links only.
+  - Standardized all Worm Arena replay links (Greatest Hits card, live session summary, batch results table) to use `matchId` in the query string while still loading existing `gameId` URLs for backwards compatibility.
+  - **Files Modified**: `client/src/pages/WormArena.tsx`, `client/src/components/WormArenaGreatestHits.tsx`, `client/src/pages/WormArenaLive.tsx`, `CHANGELOG.md`
+
 ### Version 6.1.20  Dec 11, 2025 (PENDING TESTING)
 
 - **OpenRouter model sync utility + GPT-5.2 + Nex AGI DeepSeek** (Author: Claude Code using Haiku 4.5)

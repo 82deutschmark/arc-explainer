@@ -106,7 +106,7 @@ export function WormArenaTrueSkillLeaderboard({
           )}
 
           {hasRows && !error && (
-            <ScrollArea className="max-h-[380px] border rounded-md bg-white/90">
+            <ScrollArea className="h-[420px] max-h-[420px] border rounded-md bg-white/90">
               <Table className="text-sm min-w-[900px]">
                 <TableHeader>
                   <TableRow>
