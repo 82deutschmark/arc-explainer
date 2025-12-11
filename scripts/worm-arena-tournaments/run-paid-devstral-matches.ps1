@@ -9,11 +9,12 @@ $modelA = "nex-agi/deepseek-v3.1-nex-n1:free"
 # Only free models whose apiModelName exists in server/config/models.ts (provider: OpenRouter)
 $freeModels = @(
     "openai/gpt-5-nano",
+    "openai/gpt-5-mini"
     "moonshotai/kimi-dev-72b:free",
     "nex-agi/deepseek-v3.1-nex-n1:free",
     "arcee-ai/trinity-mini:free",
     "amazon/nova-2-lite-v1:free",
-    "nvidia/nemotron-nano-12b-v2-vl:free"
+    "nvidia/nemotron-nano-12b-v2-vl"
 )
 
 $jobCount = 0
