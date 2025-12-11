@@ -15,6 +15,8 @@ import WormArenaGameBoard from '@/components/WormArenaGameBoard';
 import WormArenaHeader from '@/components/WormArenaHeader';
 import WormArenaHeaderStartAction from '@/components/WormArenaHeaderStartAction';
 import WormArenaSetup from '@/components/WormArenaSetup';
+import { Table, TableHead, TableHeader, TableRow, TableCell, TableBody } from '@/components/ui/table';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 import type { ModelConfig, SnakeBenchRunMatchRequest } from '@shared/types';
 
@@ -56,6 +58,7 @@ export default function WormArenaLive() {
   const [height, setHeight] = React.useState<number>(10);
   const [maxRounds, setMaxRounds] = React.useState<number>(150);
   const [numApples, setNumApples] = React.useState<number>(5);
+  const [matchCount, setMatchCount] = React.useState<number>(9);
   const [byoApiKey, setByoApiKey] = React.useState<string>('');
   const [byoProvider, setByoProvider] = React.useState<'openrouter' | 'openai' | 'anthropic' | 'xai' | 'gemini' | 'server-default'>('server-default');
   const [launchNotice, setLaunchNotice] = React.useState<string | null>(null);
@@ -92,6 +95,9 @@ export default function WormArenaLive() {
     disconnect,
     startMatch: startLiveMatch,
     isStarting,
+    batchResults,
+    currentMatchIndex,
+    totalMatches,
   } = useWormArenaStreaming();
 
   // Connect to stream if sessionId exists
@@ -103,7 +109,7 @@ export default function WormArenaLive() {
     };
   }, [sessionId, connect, disconnect]);
 
-  // Handle starting a new match
+  // Handle starting a new match or batch
   const handleRunMatch = async () => {
     if (!modelA || !modelB) return;
     const payload: SnakeBenchRunMatchRequest = {
@@ -119,7 +125,7 @@ export default function WormArenaLive() {
     };
     setLaunchNotice(null);
     try {
-      const prep = await startLiveMatch(payload);
+      const prep = await startLiveMatch(payload, matchCount);
       if (prep?.liveUrl) {
         window.location.href = prep.liveUrl;
       }
@@ -275,6 +281,56 @@ export default function WormArenaLive() {
           </div>
         </div>
 
+        {/* Batch Results Table - show when batch is running or completed */}
+        {totalMatches && totalMatches > 1 && batchResults.length > 0 && (
+          <div className="rounded-lg border bg-white/90 shadow-sm px-4 py-4" style={{ borderColor: '#d4b5a0' }}>
+            <h2 className="text-sm font-semibold mb-3" style={{ color: '#3d2817' }}>✅ Completed Matches</h2>
+            <ScrollArea className="max-h-[40vh] border rounded-md bg-white/90">
+              <Table className="text-sm">
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="whitespace-nowrap font-bold" style={{ color: '#3d2817' }}>Match #</TableHead>
+                    <TableHead className="font-bold" style={{ color: '#3d2817' }}>Models</TableHead>
+                    <TableHead className="font-bold" style={{ color: '#3d2817' }}>Score</TableHead>
+                    <TableHead className="font-bold" style={{ color: '#3d2817' }}>Result</TableHead>
+                    <TableHead className="font-bold" style={{ color: '#3d2817' }}>Replay</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {batchResults.map((result) => {
+                    const modelAScore = result.scores?.[result.modelA] ?? 0;
+                    const modelBScore = result.scores?.[result.modelB] ?? 0;
+                    const resultLabel = modelAScore > modelBScore ? 'Win' : modelAScore < modelBScore ? 'Loss' : 'Tie';
+                    const resultColor = resultLabel === 'Win' ? '#6b9e3f' : resultLabel === 'Loss' ? '#c85a3a' : '#3d2817';
+
+                    return (
+                      <TableRow key={result.gameId}>
+                        <TableCell className="whitespace-nowrap">{result.index}/{result.total}</TableCell>
+                        <TableCell className="text-xs font-mono">{result.modelA} vs {result.modelB}</TableCell>
+                        <TableCell>{modelAScore}-{modelBScore}</TableCell>
+                        <TableCell style={{ color: resultColor }} className="font-semibold">{resultLabel}</TableCell>
+                        <TableCell>
+                          <a
+                            href={`/worm-arena?gameId=${encodeURIComponent(result.gameId)}`}
+                            className="underline text-sm font-semibold"
+                          >
+                            View
+                          </a>
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
+                </TableBody>
+              </Table>
+            </ScrollArea>
+            {totalMatches && batchResults.length < totalMatches && (
+              <div className="text-xs mt-3" style={{ color: '#7a6b5f' }}>
+                {batchResults.length}/{totalMatches} matches complete
+              </div>
+            )}
+          </div>
+        )}
+
         {/* Match Setup Controls */}
         <div ref={setupRef} className="rounded-lg border" style={{ backgroundColor: '#faf5f0', borderColor: '#d4b5a0' }}>
           <div className="px-4 py-3 border-b" style={{ borderColor: '#d4b5a0' }}>
@@ -291,8 +347,10 @@ export default function WormArenaLive() {
               isRunning={status === 'in_progress' || isStarting}
               loadingModels={loadingModels}
               modelsError={modelsError?.message}
+              matchCount={matchCount}
               onModelAChange={setModelA}
               onModelBChange={setModelB}
+              onMatchCountChange={setMatchCount}
               byoApiKey={byoApiKey}
               byoProvider={byoProvider}
               onApiKeyChange={setByoApiKey}

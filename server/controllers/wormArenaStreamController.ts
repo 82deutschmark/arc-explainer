@@ -107,31 +107,105 @@ export const wormArenaStreamController = {
     }
 
     const connection = sseStreamManager.register(sessionId, res);
-    sseStreamManager.sendEvent(sessionId, 'stream.init', {
-      sessionId,
-      createdAt: new Date(connection.createdAt).toISOString(),
-      payload: { modelA: pending.payload.modelA, modelB: pending.payload.modelB },
-    });
+    const isBatch = pending.count > 1;
+
+    if (isBatch) {
+      // Batch initialization
+      sseStreamManager.sendEvent(sessionId, 'batch.init', {
+        totalMatches: pending.count,
+        modelA: pending.payload.modelA,
+        modelB: pending.payload.modelB,
+      });
+    } else {
+      // Single match initialization (for backward compatibility)
+      sseStreamManager.sendEvent(sessionId, 'stream.init', {
+        sessionId,
+        createdAt: new Date(connection.createdAt).toISOString(),
+        payload: { modelA: pending.payload.modelA, modelB: pending.payload.modelB },
+      });
+    }
 
     const sendStatus = (status: WormArenaStreamStatus) => {
       sseStreamManager.sendEvent(sessionId, 'stream.status', status);
     };
 
-    sendStatus({ state: 'starting', message: 'Launching match...' });
-
     try {
-      const result = await snakeBenchService.runMatch(pending.payload);
-      const summary: WormArenaFinalSummary = {
-        gameId: result.gameId,
-        modelA: result.modelA,
-        modelB: result.modelB,
-        scores: result.scores ?? {},
-        results: result.results ?? {},
-      };
-      sendStatus({ state: 'completed', message: 'Match finished.' });
-      sseStreamManager.sendEvent(sessionId, 'stream.complete', summary);
-      // Close with summary as generic record to satisfy typing
-      sseStreamManager.close(sessionId, summary as unknown as Record<string, unknown>);
+      if (isBatch) {
+        // Execute batch of matches
+        const results: WormArenaBatchMatchComplete[] = [];
+        let failedCount = 0;
+
+        for (let i = 0; i < pending.count; i += 1) {
+          const matchNum = i + 1; // 1-based for user display
+
+          // Emit match start
+          const matchStartEvent: WormArenaBatchMatchStart = {
+            index: matchNum,
+            total: pending.count,
+            modelA: pending.payload.modelA,
+            modelB: pending.payload.modelB,
+          };
+          sseStreamManager.sendEvent(sessionId, 'batch.match.start', matchStartEvent);
+          sendStatus({
+            state: 'in_progress',
+            message: `Running match ${matchNum} of ${pending.count}...`,
+          });
+
+          try {
+            // Run the match
+            const result = await snakeBenchService.runMatch(pending.payload);
+
+            // Emit match complete
+            const matchCompleteEvent: WormArenaBatchMatchComplete = {
+              index: matchNum,
+              total: pending.count,
+              gameId: result.gameId,
+              modelA: result.modelA,
+              modelB: result.modelB,
+              scores: result.scores ?? {},
+              results: result.results ?? {},
+            };
+            sseStreamManager.sendEvent(sessionId, 'batch.match.complete', matchCompleteEvent);
+            results.push(matchCompleteEvent);
+          } catch (err: any) {
+            failedCount += 1;
+            const message = err?.message || `Match ${matchNum} failed`;
+            logger.error(`[WormArenaStream] Batch match ${matchNum} failed: ${message}`, 'worm-arena-stream');
+            sseStreamManager.sendEvent(sessionId, 'batch.error', {
+              index: matchNum,
+              total: pending.count,
+              error: message,
+            });
+          }
+        }
+
+        // Emit batch complete
+        const batchCompleteEvent: WormArenaBatchComplete = {
+          totalMatches: pending.count,
+          completedMatches: results.length,
+          failedMatches: failedCount,
+        };
+        sendStatus({
+          state: 'completed',
+          message: `Batch complete: ${results.length}/${pending.count} matches finished`,
+        });
+        sseStreamManager.sendEvent(sessionId, 'batch.complete', batchCompleteEvent);
+        sseStreamManager.close(sessionId, batchCompleteEvent as unknown as Record<string, unknown>);
+      } else {
+        // Single match (legacy flow)
+        sendStatus({ state: 'starting', message: 'Launching match...' });
+        const result = await snakeBenchService.runMatch(pending.payload);
+        const summary: WormArenaFinalSummary = {
+          gameId: result.gameId,
+          modelA: result.modelA,
+          modelB: result.modelB,
+          scores: result.scores ?? {},
+          results: result.results ?? {},
+        };
+        sendStatus({ state: 'completed', message: 'Match finished.' });
+        sseStreamManager.sendEvent(sessionId, 'stream.complete', summary);
+        sseStreamManager.close(sessionId, summary as unknown as Record<string, unknown>);
+      }
     } catch (err: any) {
       const message = err?.message || 'Match failed';
       logger.error(`[WormArenaStream] Run failed: ${message}`, 'worm-arena-stream');

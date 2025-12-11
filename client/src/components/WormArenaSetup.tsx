@@ -25,8 +25,10 @@ export interface WormArenaSetupProps {
   isRunning: boolean;
   loadingModels: boolean;
   modelsError?: string | null;
+  matchCount: number;
   onModelAChange: (model: string) => void;
   onModelBChange: (model: string) => void;
+  onMatchCountChange: (count: number) => void;
   byoApiKey: string;
   byoProvider: 'openrouter' | 'openai' | 'anthropic' | 'xai' | 'gemini' | 'server-default';
   onApiKeyChange: (key: string) => void;
@@ -41,8 +43,10 @@ const WormArenaSetup: React.FC<WormArenaSetupProps> = ({
   isRunning,
   loadingModels,
   modelsError,
+  matchCount,
   onModelAChange,
   onModelBChange,
+  onMatchCountChange,
   byoApiKey,
   byoProvider,
   onApiKeyChange,
@@ -123,7 +127,22 @@ const WormArenaSetup: React.FC<WormArenaSetupProps> = ({
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="space-y-2">
+              <label className="text-base font-semibold text-[#3d2817]">Number of matches</label>
+              <input
+                type="number"
+                min="1"
+                max="10"
+                value={matchCount}
+                onChange={(e) => onMatchCountChange(Math.max(1, Math.min(10, parseInt(e.target.value) || 1)))}
+                className="w-full h-11 rounded border px-3 text-base"
+                disabled={isRunning}
+              />
+              <p className="text-xs text-[#7a6b5f]">
+                9 recommended for placement ranking
+              </p>
+            </div>
             <div className="space-y-2">
               <label className="text-base font-semibold text-[#3d2817]">BYO API Key (optional) 🐛</label>
               <input
@@ -162,7 +181,7 @@ const WormArenaSetup: React.FC<WormArenaSetupProps> = ({
             className="w-full h-12 text-base font-bold bg-[#6b9e3f] hover:bg-[#5a8836]"
             style={{ fontFamily: 'Fredoka, sans-serif' }}
           >
-            {isRunning ? 'Running match...' : '▶ Run Match'}
+            {isRunning ? `Running ${matchCount} match${matchCount !== 1 ? 'es' : ''}...` : `▶ Run ${matchCount} Match${matchCount !== 1 ? 'es' : ''}`}
           </Button>
         </>
       )}
