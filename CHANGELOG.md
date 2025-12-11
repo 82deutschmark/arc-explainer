@@ -1,3 +1,11 @@
+### Version 6.1.24  Dec 11, 2025 (PENDING TESTING)
+
+- **Worm Arena Hall of Fame: curated top 10 replays** (Author: GPT-5.1 High Reasoning)
+  - Replaced the dynamic DB-driven greatest-hits selector with a hand-curated Hall of Fame of 10 locally verified replays sourced from `external/SnakeBench/backend/completed_games/snake_game_*.json`.
+  - For each curated game we now surface the exact model IDs for both snakes, total rounds played (all > 20), max apples for a single player, and the true end-to-end test cost taken directly from `totals.cost` in the replay JSON.
+  - `/api/snakebench/greatest-hits` now returns only these curated entries (subject to replay existence checks), so the UI always shows a stable, explainable set of Worm Arena showcase matches instead of an opaque, ever-shifting DB heuristic.
+  - **Files Modified**: `server/services/snakeBenchService.ts`, `CHANGELOG.md`
+
 ### Version 6.1.23  Dec 11, 2025 (PENDING TESTING)
 
 - **Worm Arena greatest-hits: focus on expensive / high-scoring games** (Author: Cascade)
