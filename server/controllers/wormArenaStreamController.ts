@@ -163,34 +163,42 @@ export const wormArenaStreamController = {
 
     try {
       if (isBatch) {
-        // Execute batch of matches
+        // Execute batch of matches with different opponents
+        const opponents = pending.opponents!;
         const results: WormArenaBatchMatchComplete[] = [];
         let failedCount = 0;
 
-        for (let i = 0; i < pending.count; i += 1) {
+        for (let i = 0; i < opponents.length; i += 1) {
           const matchNum = i + 1; // 1-based for user display
+          const currentOpponent = opponents[i];
 
-          // Emit match start
+          // Create match payload with current opponent
+          const matchPayload: SnakeBenchRunMatchRequest = {
+            ...pending.payload,
+            modelB: currentOpponent,
+          };
+
+          // Emit match start with specific opponent
           const matchStartEvent: WormArenaBatchMatchStart = {
             index: matchNum,
-            total: pending.count,
+            total: opponents.length,
             modelA: pending.payload.modelA,
-            modelB: pending.payload.modelB,
+            modelB: currentOpponent,
           };
           sseStreamManager.sendEvent(sessionId, 'batch.match.start', matchStartEvent);
           sendStatus({
             state: 'in_progress',
-            message: `Running match ${matchNum} of ${pending.count}...`,
+            message: `Running match ${matchNum} of ${opponents.length}: ${pending.payload.modelA} vs ${currentOpponent}...`,
           });
 
           try {
-            // Run the match
-            const result = await snakeBenchService.runMatch(pending.payload);
+            // Run the match with current opponent
+            const result = await snakeBenchService.runMatch(matchPayload);
 
             // Emit match complete
             const matchCompleteEvent: WormArenaBatchMatchComplete = {
               index: matchNum,
-              total: pending.count,
+              total: opponents.length,
               gameId: result.gameId,
               modelA: result.modelA,
               modelB: result.modelB,
@@ -202,24 +210,25 @@ export const wormArenaStreamController = {
           } catch (err: any) {
             failedCount += 1;
             const message = err?.message || `Match ${matchNum} failed`;
-            logger.error(`[WormArenaStream] Batch match ${matchNum} failed: ${message}`, 'worm-arena-stream');
+            logger.error(`[WormArenaStream] Multi-opponent match ${matchNum} (${currentOpponent}) failed: ${message}`, 'worm-arena-stream');
             sseStreamManager.sendEvent(sessionId, 'batch.error', {
               index: matchNum,
-              total: pending.count,
+              total: opponents.length,
               error: message,
             });
+            // Continue with next opponent despite error
           }
         }
 
         // Emit batch complete
         const batchCompleteEvent: WormArenaBatchComplete = {
-          totalMatches: pending.count,
+          totalMatches: opponents.length,
           completedMatches: results.length,
           failedMatches: failedCount,
         };
         sendStatus({
           state: 'completed',
-          message: `Batch complete: ${results.length}/${pending.count} matches finished`,
+          message: `Batch complete: ${results.length}/${opponents.length} matches finished`,
         });
         sseStreamManager.sendEvent(sessionId, 'batch.complete', batchCompleteEvent);
         sseStreamManager.close(sessionId, batchCompleteEvent as unknown as Record<string, unknown>);
