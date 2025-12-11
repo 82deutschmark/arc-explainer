@@ -212,3 +212,7 @@ If you’d like, I can:
 
 - Export this local ranking into a small CSV or JSON file so you can browse it, and/or  
 - Update the Worm Arena Greatest Hits plan to explicitly distinguish “DB greatest hits” from “locally available greatest hits,” so the UI can prefer games that we know have a replay JSON (and soon, an MP4).
+
+For a maintained, non-conversational reference on this behavior and the local analysis script, see:
+
+- `docs/reference/data/WormArena_GreatestHits_Local_Analysis.md` (DB vs local replays, analysis metrics, and practical guidance).

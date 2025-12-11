@@ -1,3 +1,11 @@
+### Version 6.1.18  Dec 11, 2025 (PENDING TESTING)
+
+- **Worm Arena greatest-hits docs + local analysis tooling** (Author: Cascade)
+  - Documented how DB-backed Worm Arena greatest-hits selections in `public.games` can diverge from locally available replay JSONs, and how to interpret that when building UI or running offline MP4 backfills.
+  - Added a reference doc describing the relationship between `public.games`, `completed_games/`, `game_index.json`, and the new local analysis script, including examples and practical guidance for filtering to playable games.
+  - Captured this behavior and the local analysis script in `AGENTS.md` and `CLAUDE.md` so both local and cloud agents respect DB-vs-local differences when working on Worm Arena features.
+  - **Files Created/Modified**: `docs/reference/data/WormArena_GreatestHits_Local_Analysis.md`, `external/SnakeBench/backend/cli/analyze_local_games.py`, `AGENTS.md`, `CLAUDE.md`, `README.md`, `CHANGELOG.md`
+
 ### Version 6.1.17  Dec 11, 2025 (PENDING TESTING)
 
 - **Worm Arena greatest-hits now only shows playable replays** (Author: GPT-5.1 Codex CLI)

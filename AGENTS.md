@@ -347,3 +347,10 @@ Implications for us:
 Python already emits round-by-round info (stdout prints + DB live_game rows). We can stream by tailing stdout in snakeBenchService.runMatchStreaming and/or polling the Python live endpoints during a match.
 No SSE is provided by Python; we’ll need to wrap it on our side (Express) using stdout lines or those live endpoints.
 There is live UI in Greg’s frontend (external/SnakeBench/frontend), so the data path is real.
+
+### Worm Arena greatest hits vs local replays
+
+- **DB source of truth for rankings:** Greatest-hits queries operate on the `public.games` table (Railway Postgres) and may return game IDs that **do not** have a local replay JSON under `external/SnakeBench/backend/completed_games`.
+- **Local source of truth for assets:** For offline replay/MP4 work, always treat `completed_games/` + `game_index.json` as the real set of local games. A "greatest hit" without a local JSON (or valid `replay_path`) is not playable on this machine.
+- **Local analysis helper:** Use `external/SnakeBench/backend/cli/analyze_local_games.py` to compute per-game metrics (cost, rounds, max apples, duration) for all **local** replays. See `docs/reference/data/WormArena_GreatestHits_Local_Analysis.md` for details and example outputs.
+- **When building UI or tools:** Prefer DB greatest hits for *which* games are interesting, but **filter to games with existing assets** (local JSON, DB `replay_path`, or known remote storage) before presenting them as playable or queuing video generation.
