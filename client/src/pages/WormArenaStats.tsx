@@ -16,6 +16,7 @@ import { InlineMath } from "react-katex";
 import "katex/dist/katex.min.css";
 
 import WormArenaHeader from "@/components/WormArenaHeader";
+import WormArenaGreatestHits from "@/components/WormArenaGreatestHits";
 import useWormArenaStats from "@/hooks/useWormArenaStats";
 import {
   useSnakeBenchStats,
@@ -652,120 +653,10 @@ export default function WormArenaStats() {
           </div>
         </div>
 
-        {/* History table */}
-        <Card className="bg-[#faf6f1] border-[#d4b5a0]">
-          <CardHeader className="pb-2">
-            <CardTitle
-              className="text-lg font-bold"
-              style={{ color: "#3d2817" }}
-            >
-              Recent matches
-            </CardTitle>
-          </CardHeader>
-          <CardContent
-            className="space-y-3 text-sm"
-            style={{ color: "#3d2817" }}
-          >
-            {loadingHistory && (
-              <div
-                className="text-sm font-semibold"
-                style={{ color: "#7a6b5f" }}
-              >
-                Loading history...
-              </div>
-            )}
-            {historyError && (
-              <div className="text-sm font-semibold text-red-700">{historyError}</div>
-            )}
-
-            {historyForTable.length === 0 && !loadingHistory && !historyError && (
-              <div
-                className="text-sm font-semibold"
-                style={{ color: "#7a6b5f" }}
-              >
-                No games yet for this model.
-              </div>
-            )}
-
-            {historyForTable.length > 0 && (
-              <ScrollArea className="max-h-[60vh] border rounded-md bg-white/90">
-                <Table className="text-sm">
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead
-                        className="whitespace-nowrap font-bold"
-                        style={{ color: "#3d2817" }}
-                      >
-                        When
-                      </TableHead>
-                      <TableHead
-                        className="font-bold"
-                        style={{ color: "#3d2817" }}
-                      >
-                        Opponent
-                      </TableHead>
-                      <TableHead
-                        className="font-bold"
-                        style={{ color: "#3d2817" }}
-                      >
-                        Result
-                      </TableHead>
-                      <TableHead
-                        className="font-bold"
-                        style={{ color: "#3d2817" }}
-                      >
-                        Score
-                      </TableHead>
-                      <TableHead
-                        className="font-bold"
-                        style={{ color: "#3d2817" }}
-                      >
-                        Rounds
-                      </TableHead>
-                      <TableHead
-                        className="font-bold"
-                        style={{ color: "#3d2817" }}
-                      >
-                        Death reason
-                      </TableHead>
-                      <TableHead
-                        className="font-bold"
-                        style={{ color: "#3d2817" }}
-                      >
-                        Replay
-                      </TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {historyForTable.map((row) => {
-                      const dt = row.startedAt ? new Date(row.startedAt) : null;
-                      const when = dt ? dt.toLocaleString() : "";
-                      const score = `${row.myScore}-${row.opponentScore}`;
-                      return (
-                        <TableRow key={row.gameId}>
-                          <TableCell className="whitespace-nowrap">{when}</TableCell>
-                          <TableCell>{row.opponentSlug || "Unknown"}</TableCell>
-                          <TableCell className="capitalize">{row.result}</TableCell>
-                          <TableCell>{score}</TableCell>
-                          <TableCell>{row.rounds}</TableCell>
-                          <TableCell>{row.deathReason ?? ""}</TableCell>
-                          <TableCell>
-                            <a
-                              href={`/worm-arena?gameId=${encodeURIComponent(row.gameId)}`}
-                              className="underline text-sm font-semibold"
-                            >
-                              View replay
-                            </a>
-                          </TableCell>
-                        </TableRow>
-                      );
-                    })}
-                  </TableBody>
-                </Table>
-              </ScrollArea>
-            )}
-          </CardContent>
-        </Card>
+        {/* Global greatest hits (replay-friendly matches) */}
+        <div className="mt-6">
+          <WormArenaGreatestHits />
+        </div>
       </main>
       </div>
     </TooltipProvider>
