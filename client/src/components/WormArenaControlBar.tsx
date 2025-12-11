@@ -39,30 +39,32 @@ export function WormArenaControlBar({
   const handleNextClick = React.useCallback(() => onToggleThought(true), [onToggleThought]);
 
   return (
-    <div className="flex flex-col gap-4 rounded-xl border bg-card/80 p-4 shadow-sm lg:flex-row lg:items-center lg:justify-between">
-      <div className="flex items-center gap-2">
-        <Button size="sm" variant="outline" onClick={onFirst} aria-label="Jump to first round">
-          <ChevronsLeft className="h-4 w-4" />
-        </Button>
-        <Button size="sm" variant="outline" onClick={onPrev} aria-label="Previous round">
-          <ChevronLeft className="h-4 w-4" />
-        </Button>
-        <Button size="sm" onClick={onPlayPause} aria-label={isPlaying ? 'Pause replay' : 'Play replay'}>
-          {isPlaying ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
-        </Button>
-        <Button size="sm" variant="outline" onClick={onNext} aria-label="Next round">
-          <ChevronRight className="h-4 w-4" />
-        </Button>
-        <Button size="sm" variant="outline" onClick={onLast} aria-label="Jump to last round">
-          <ChevronsRight className="h-4 w-4" />
-        </Button>
+    <div className="flex flex-col gap-3 rounded-xl border bg-card/80 p-4 shadow-sm">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex items-center gap-2">
+          <Button size="sm" variant="outline" onClick={onFirst} aria-label="Jump to first round">
+            <ChevronsLeft className="h-4 w-4" />
+          </Button>
+          <Button size="sm" variant="outline" onClick={onPrev} aria-label="Previous round">
+            <ChevronLeft className="h-4 w-4" />
+          </Button>
+          <Button size="sm" onClick={onPlayPause} aria-label={isPlaying ? 'Pause replay' : 'Play replay'}>
+            {isPlaying ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
+          </Button>
+          <Button size="sm" variant="outline" onClick={onNext} aria-label="Next round">
+            <ChevronRight className="h-4 w-4" />
+          </Button>
+          <Button size="sm" variant="outline" onClick={onLast} aria-label="Jump to last round">
+            <ChevronsRight className="h-4 w-4" />
+          </Button>
+        </div>
+
+        <div className="text-base font-semibold text-[#3d2817]">
+          Round {Math.max(0, currentRound)} / {Math.max(0, totalRounds)}
+        </div>
       </div>
 
-      <div className="text-base font-semibold text-[#3d2817]">
-        Round {Math.max(0, currentRound)} / {Math.max(0, totalRounds)}
-      </div>
-
-      <div className="flex items-center gap-3">
+      <div className="flex items-center justify-center gap-3">
         <span className="text-sm text-muted-foreground">Thoughts show:</span>
         <div className="flex rounded-md border bg-background">
           <Button

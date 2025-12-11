@@ -38,6 +38,8 @@ const FOOD_EMOJIS: string[] = [
   '🍲',
 ];
 
+const USE_VARIANT_FOOD_EMOJIS = false;
+
 const WormArenaGameBoard: React.FC<WormArenaGameBoardProps> = ({
   frame,
   boardWidth,
@@ -151,13 +153,20 @@ const WormArenaGameBoard: React.FC<WormArenaGameBoardProps> = ({
       if (x >= 0 && x < boardWidth && y >= 0 && y < boardHeight) {
         const cx = padding + (x + 0.5) * cellSize;
         const cy = padding + (y + 0.5) * cellSize;
+        let emoji: string;
 
-        const key = `${x},${y}`;
-        let emoji = appleEmojiMapRef.current.get(key);
-        if (!emoji) {
-          const idx = Math.floor(Math.random() * FOOD_EMOJIS.length);
-          emoji = FOOD_EMOJIS[idx];
-          appleEmojiMapRef.current.set(key, emoji);
+        if (USE_VARIANT_FOOD_EMOJIS) {
+          const key = `${x},${y}`;
+          const existing = appleEmojiMapRef.current.get(key);
+          if (existing) {
+            emoji = existing;
+          } else {
+            const idx = Math.floor(Math.random() * FOOD_EMOJIS.length);
+            emoji = FOOD_EMOJIS[idx];
+            appleEmojiMapRef.current.set(key, emoji);
+          }
+        } else {
+          emoji = '🍎';
         }
 
         ctx.fillText(emoji, cx, cy);
@@ -187,7 +196,7 @@ const WormArenaGameBoard: React.FC<WormArenaGameBoardProps> = ({
   return (
     <div
       ref={containerRef}
-      className="flex flex-col items-center justify-center bg-[#6b5344] rounded-xl border-8 border-[#4a3728] p-4"
+      className="flex flex-col items-center justify-center bg-[#6b5344] rounded-xl border-8 border-[#2e7d32] p-4"
     >
       <canvas
         ref={canvasRef}

@@ -21,6 +21,7 @@ import type {
   SnakeBenchModelRating,
   SnakeBenchModelMatchHistoryEntry,
   SnakeBenchResultLabel,
+  SnakeBenchTrueSkillLeaderboardEntry,
 } from '../../shared/types.js';
 
 export interface SnakeBenchRecordMatchParams {
@@ -587,6 +588,89 @@ export class SnakeBenchRepository extends BaseRepository {
     } catch (error) {
       logger.warn(
         `SnakeBenchRepository.getModelMatchHistory: query failed for ${modelSlug}: ${error instanceof Error ? error.message : String(error)}`,
+        'snakebench-db',
+      );
+      return [];
+    }
+  }
+
+  async getTrueSkillLeaderboard(
+    limit: number = 150,
+    minGames: number = 3,
+  ): Promise<SnakeBenchTrueSkillLeaderboardEntry[]> {
+    if (!this.isConnected()) {
+      return [];
+    }
+
+    const safeLimit = Number.isFinite(limit) ? Math.max(1, Math.min(limit, 150)) : 150;
+    const safeMinGames = Number.isFinite(minGames) ? Math.max(1, minGames) : 3;
+
+    try {
+      const sql = `
+        SELECT
+          m.model_slug,
+          m.trueskill_mu,
+          m.trueskill_sigma,
+          m.trueskill_exposed,
+          COUNT(gp.game_id) AS games_played,
+          COUNT(CASE WHEN gp.result = 'won' THEN 1 END) AS wins,
+          COUNT(CASE WHEN gp.result = 'lost' THEN 1 END) AS losses,
+          COUNT(CASE WHEN gp.result = 'tied' THEN 1 END) AS ties,
+          COALESCE(SUM(gp.score), 0) AS apples_eaten,
+          COALESCE(MAX(gp.score), 0) AS top_score,
+          COALESCE(SUM(gp.cost), 0) AS total_cost
+        FROM public.models m
+        JOIN public.game_participants gp ON m.id = gp.model_id
+        JOIN public.games g ON gp.game_id = g.id
+        WHERE g.game_type = 'arc-explainer'
+        GROUP BY m.model_slug, m.trueskill_mu, m.trueskill_sigma, m.trueskill_exposed
+        HAVING COUNT(gp.game_id) >= $2
+        ORDER BY COALESCE(m.trueskill_exposed, m.trueskill_mu - 3 * m.trueskill_sigma) DESC
+        LIMIT $1;
+      `;
+
+      const result = await this.query(sql, [safeLimit, safeMinGames]);
+
+      return result.rows.map((row: any) => {
+        const mu = typeof row.trueskill_mu === 'number' ? row.trueskill_mu : DEFAULT_TRUESKILL_MU;
+        const sigma = typeof row.trueskill_sigma === 'number' ? row.trueskill_sigma : DEFAULT_TRUESKILL_SIGMA;
+        const exposedRaw = typeof row.trueskill_exposed === 'number' ? row.trueskill_exposed : undefined;
+        const exposed = typeof exposedRaw === 'number' ? exposedRaw : mu - 3 * sigma;
+        const displayScore = exposed * TRUESKILL_DISPLAY_MULTIPLIER;
+
+        const gamesPlayed = parseInt(String(row.games_played ?? '0'), 10) || 0;
+        const wins = parseInt(String(row.wins ?? '0'), 10) || 0;
+        const losses = parseInt(String(row.losses ?? '0'), 10) || 0;
+        const ties = parseInt(String(row.ties ?? '0'), 10) || 0;
+        const applesEaten = parseInt(String(row.apples_eaten ?? '0'), 10) || 0;
+        const topScore = Number(row.top_score ?? 0) || 0;
+        const totalCost = Number(row.total_cost ?? 0) || 0;
+
+        const winRate = gamesPlayed > 0 ? wins / gamesPlayed : undefined;
+
+        const entry: SnakeBenchTrueSkillLeaderboardEntry = {
+          modelSlug: String(row.model_slug ?? ''),
+          mu,
+          sigma,
+          exposed,
+          displayScore,
+          gamesPlayed,
+          wins,
+          losses,
+          ties,
+          applesEaten,
+          topScore,
+          totalCost,
+          ...(winRate !== undefined ? { winRate } : {}),
+        };
+
+        return entry;
+      });
+    } catch (error) {
+      logger.warn(
+        `SnakeBenchRepository.getTrueSkillLeaderboard: query failed: ${
+          error instanceof Error ? error.message : String(error)
+        }`,
         'snakebench-db',
       );
       return [];
