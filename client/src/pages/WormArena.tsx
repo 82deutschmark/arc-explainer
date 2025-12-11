@@ -92,12 +92,10 @@ export default function WormArena() {
   const { games, total, refresh } = useSnakeBenchRecentGames();
   const { data: replayData, isLoading: loadingReplay, error: replayError, fetchGame } = useSnakeBenchGame(selectedMatchId);
 
-  const initialMatchIdRef = React.useRef<string | null>(initialMatchId ?? null);
-
+  // Sync URL parameter changes to selectedMatchId
   React.useEffect(() => {
     if (initialMatchId && initialMatchId !== selectedMatchId) {
       setSelectedMatchId(initialMatchId);
-      initialMatchIdRef.current = initialMatchId;
     }
   }, [initialMatchId, selectedMatchId]);
 
@@ -105,30 +103,23 @@ export default function WormArena() {
     void refresh(10);
   }, [refresh]);
 
+  // Effect: Pick a default game only if none is selected (no URL param, no state set)
+  // If a matchId is in the URL or state, trust it and let the API fetch handle validation
   React.useEffect(() => {
     if (games.length === 0) return;
-    const fallbackId = (() => {
-      const longGames = games.filter((g) => (g.roundsPlayed ?? 0) >= 20);
-      const target = longGames[0];
-      return target?.gameId ?? '';
-    })();
 
+    // Only pick fallback if no game is currently selected
     if (!selectedMatchId) {
-      if (!fallbackId) return;
-      setSelectedMatchId(fallbackId);
-      setMatchIdInUrl(fallbackId);
-      return;
-    }
+      const longGames = games.filter((g) => (g.roundsPlayed ?? 0) >= 20);
+      const fallbackId = longGames[0]?.gameId ?? games[0]?.gameId ?? '';
 
-    const stillExists = games.some((g) => g.gameId === selectedMatchId);
-    if (!stillExists) {
-      if (initialMatchIdRef.current && initialMatchIdRef.current === selectedMatchId) {
-        return;
+      if (fallbackId) {
+        setSelectedMatchId(fallbackId);
+        setMatchIdInUrl(fallbackId);
       }
-      if (!fallbackId) return;
-      setSelectedMatchId(fallbackId);
-      setMatchIdInUrl(fallbackId);
     }
+    // For URL-provided matchIds: trust them completely. The API fetch will handle
+    // invalid/missing games gracefully with errors shown to the user.
   }, [games, selectedMatchId, setMatchIdInUrl]);
 
   React.useEffect(() => {
@@ -249,7 +240,6 @@ export default function WormArena() {
       if (!trimmed) return;
       setSelectedMatchId(trimmed);
       setMatchIdInUrl(trimmed);
-      initialMatchIdRef.current = null;
     },
     [setMatchIdInUrl],
   );
