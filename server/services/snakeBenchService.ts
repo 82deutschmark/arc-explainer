@@ -26,6 +26,7 @@ import type {
   SnakeBenchModelRating,
   SnakeBenchModelMatchHistoryEntry,
   SnakeBenchTrueSkillLeaderboardEntry,
+  WormArenaGreatestHitGame,
 } from '../../shared/types.js';
 import { logger } from '../utils/logger.ts';
 import { repositoryService } from '../repositories/RepositoryService.ts';
@@ -655,6 +656,12 @@ export class SnakeBenchService {
     const safeLimit = Number.isFinite(limit) ? Math.max(1, Math.min(limit, 150)) : 150;
     const safeMinGames = Number.isFinite(minGames) ? Math.max(1, minGames) : 3;
     return await repositoryService.snakeBench.getTrueSkillLeaderboard(safeLimit, safeMinGames);
+  }
+
+  async getWormArenaGreatestHits(limitPerDimension: number = 5): Promise<WormArenaGreatestHitGame[]> {
+    const raw = Number(limitPerDimension);
+    const safeLimit = Number.isFinite(raw) ? Math.max(1, Math.min(raw, 10)) : 5;
+    return await repositoryService.snakeBench.getWormArenaGreatestHits(safeLimit);
   }
 
   async healthCheck(): Promise<SnakeBenchHealthResponse> {

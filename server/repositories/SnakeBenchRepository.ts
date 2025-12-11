@@ -22,6 +22,7 @@ import type {
   SnakeBenchModelMatchHistoryEntry,
   SnakeBenchResultLabel,
   SnakeBenchTrueSkillLeaderboardEntry,
+  WormArenaGreatestHitGame,
 } from '../../shared/types.js';
 
 export interface SnakeBenchRecordMatchParams {
@@ -438,6 +439,230 @@ export class SnakeBenchRepository extends BaseRepository {
         'snakebench-db',
       );
       return { totalGames: 0, activeModels: 0, topApples: 0, totalCost: 0 };
+    }
+  }
+
+  /**
+   * Greatest-hits selector for Worm Arena.
+   *
+   * Uses three simple leaderboards over completed arc-explainer games:
+   * - Longest by rounds played (rounds >= 20)
+   * - Most expensive by total_cost (cost > $0.01, rounds >= 5)
+   * - Highest scoring by max per-player score (rounds >= 5)
+   *
+   * Then merges/deduplicates the results into a compact list of
+   * WormArenaGreatestHitGame entries with human-readable highlight reasons.
+   */
+  async getWormArenaGreatestHits(limitPerDimension: number = 5): Promise<WormArenaGreatestHitGame[]> {
+    if (!this.isConnected()) {
+      logger.warn(
+        'SnakeBenchRepository.getWormArenaGreatestHits: database not connected, returning empty list',
+        'snakebench-db',
+      );
+      return [];
+    }
+
+    const rawLimit = Number(limitPerDimension);
+    const safeLimit = Number.isFinite(rawLimit) ? Math.max(1, Math.min(rawLimit, 10)) : 5;
+    const MAX_TOTAL = 20;
+
+    try {
+      const roundsSql = `
+        SELECT
+          g.id AS game_id,
+          g.start_time,
+          g.rounds AS rounds_played,
+          g.board_width,
+          g.board_height,
+          g.total_cost,
+          MAX(gp.score) AS max_final_score,
+          ABS(
+            COALESCE(MAX(CASE WHEN gp.player_slot = 0 THEN gp.score END), 0) -
+            COALESCE(MAX(CASE WHEN gp.player_slot = 1 THEN gp.score END), 0)
+          ) AS score_delta,
+          MAX(CASE WHEN gp.player_slot = 0 THEN m.model_slug END) AS model_a,
+          MAX(CASE WHEN gp.player_slot = 1 THEN m.model_slug END) AS model_b
+        FROM public.games g
+        JOIN public.game_participants gp ON gp.game_id = g.id
+        JOIN public.models m ON gp.model_id = m.id
+        WHERE g.game_type = 'arc-explainer'
+          AND g.status = 'completed'
+          AND COALESCE(g.rounds, 0) >= 20
+        GROUP BY g.id, g.start_time, g.rounds, g.board_width, g.board_height, g.total_cost
+        HAVING MAX(gp.score) > 0 OR g.total_cost > 0
+        ORDER BY COALESCE(g.rounds, 0) DESC, COALESCE(g.start_time, NOW()) DESC
+        LIMIT $1;
+      `;
+
+      const costSql = `
+        SELECT
+          g.id AS game_id,
+          g.start_time,
+          g.rounds AS rounds_played,
+          g.board_width,
+          g.board_height,
+          g.total_cost,
+          MAX(gp.score) AS max_final_score,
+          ABS(
+            COALESCE(MAX(CASE WHEN gp.player_slot = 0 THEN gp.score END), 0) -
+            COALESCE(MAX(CASE WHEN gp.player_slot = 1 THEN gp.score END), 0)
+          ) AS score_delta,
+          MAX(CASE WHEN gp.player_slot = 0 THEN m.model_slug END) AS model_a,
+          MAX(CASE WHEN gp.player_slot = 1 THEN m.model_slug END) AS model_b
+        FROM public.games g
+        JOIN public.game_participants gp ON gp.game_id = g.id
+        JOIN public.models m ON gp.model_id = m.id
+        WHERE g.game_type = 'arc-explainer'
+          AND g.status = 'completed'
+          AND COALESCE(g.rounds, 0) >= 5
+          AND g.total_cost >= 0.010
+        GROUP BY g.id, g.start_time, g.rounds, g.board_width, g.board_height, g.total_cost
+        HAVING MAX(gp.score) > 0 OR g.total_cost > 0
+        ORDER BY g.total_cost DESC, COALESCE(g.start_time, NOW()) DESC
+        LIMIT $1;
+      `;
+
+      const scoreSql = `
+        SELECT
+          g.id AS game_id,
+          g.start_time,
+          g.rounds AS rounds_played,
+          g.board_width,
+          g.board_height,
+          g.total_cost,
+          MAX(gp.score) AS max_final_score,
+          ABS(
+            COALESCE(MAX(CASE WHEN gp.player_slot = 0 THEN gp.score END), 0) -
+            COALESCE(MAX(CASE WHEN gp.player_slot = 1 THEN gp.score END), 0)
+          ) AS score_delta,
+          MAX(CASE WHEN gp.player_slot = 0 THEN m.model_slug END) AS model_a,
+          MAX(CASE WHEN gp.player_slot = 1 THEN m.model_slug END) AS model_b
+        FROM public.games g
+        JOIN public.game_participants gp ON gp.game_id = g.id
+        JOIN public.models m ON gp.model_id = m.id
+        WHERE g.game_type = 'arc-explainer'
+          AND g.status = 'completed'
+          AND COALESCE(g.rounds, 0) >= 5
+        GROUP BY g.id, g.start_time, g.rounds, g.board_width, g.board_height, g.total_cost
+        HAVING MAX(gp.score) > 0 OR g.total_cost > 0
+        ORDER BY MAX(gp.score) DESC, COALESCE(g.rounds, 0) DESC, COALESCE(g.start_time, NOW()) DESC
+        LIMIT $1;
+      `;
+
+      const [roundsResult, costResult, scoreResult] = await Promise.all([
+        this.query(roundsSql, [safeLimit]),
+        this.query(costSql, [safeLimit]),
+        this.query(scoreSql, [safeLimit]),
+      ]);
+
+      const seen = new Map<string, WormArenaGreatestHitGame>();
+      const ordered: WormArenaGreatestHitGame[] = [];
+
+      const addGameFromRow = (
+        row: any,
+        dimension: 'rounds' | 'cost' | 'score',
+      ) => {
+        const gameId = String(row.game_id ?? row.id ?? '').trim();
+        if (!gameId || seen.has(gameId)) return;
+
+        const roundsPlayed = Number(row.rounds_played ?? row.rounds ?? 0) || 0;
+        const totalCost = Number(row.total_cost ?? 0) || 0;
+        const maxFinalScore = Number(row.max_final_score ?? 0) || 0;
+        const scoreDelta = Number(row.score_delta ?? 0) || 0;
+        const boardWidth = Number(row.board_width ?? 0) || 0;
+        const boardHeight = Number(row.board_height ?? 0) || 0;
+
+        const startTs = row.start_time ?? null;
+        const startedAt = startTs ? new Date(startTs).toISOString() : '';
+
+        const modelA = String(row.model_a ?? '').trim();
+        const modelB = String(row.model_b ?? '').trim();
+
+        // Guardrails: skip trivial or malformed games
+        if (!modelA || !modelB) return;
+        if (roundsPlayed <= 0) return;
+        if (maxFinalScore <= 0 && totalCost <= 0) return;
+
+        // We currently don't persist max_rounds in the DB, so we approximate
+        // using the actual rounds played. This still makes the UI readable
+        // (e.g., "42 / 42 rounds").
+        const maxRounds = roundsPlayed;
+
+        let highlightReason: string;
+        if (dimension === 'rounds') {
+          if (roundsPlayed >= 50) {
+            highlightReason = 'Epic long game (50+ rounds)';
+          } else if (roundsPlayed >= 40) {
+            highlightReason = 'Very long game (40+ rounds)';
+          } else {
+            highlightReason = 'Long game (20+ rounds)';
+          }
+        } else if (dimension === 'cost') {
+          if (totalCost >= 1) {
+            highlightReason = 'Extremely expensive match (>$1)';
+          } else if (totalCost >= 0.25) {
+            highlightReason = 'High-cost match (>$0.25)';
+          } else {
+            highlightReason = 'Expensive match (>$0.01)';
+          }
+        } else {
+          if (maxFinalScore >= 15) {
+            highlightReason = 'Highest-scoring match (15+ apples)';
+          } else if (maxFinalScore >= 10) {
+            highlightReason = 'Big scoring match (10+ apples)';
+          } else {
+            highlightReason = 'Notable scoring match';
+          }
+        }
+
+        const game: WormArenaGreatestHitGame = {
+          gameId,
+          startedAt,
+          modelA,
+          modelB,
+          roundsPlayed,
+          maxRounds,
+          totalCost,
+          maxFinalScore,
+          scoreDelta,
+          boardWidth,
+          boardHeight,
+          highlightReason,
+        };
+
+        seen.set(gameId, game);
+        ordered.push(game);
+      };
+
+      // Priority: long games first, then expensive, then scoring
+      for (const row of roundsResult.rows ?? []) {
+        addGameFromRow(row, 'rounds');
+        if (ordered.length >= MAX_TOTAL) break;
+      }
+
+      if (ordered.length < MAX_TOTAL) {
+        for (const row of costResult.rows ?? []) {
+          addGameFromRow(row, 'cost');
+          if (ordered.length >= MAX_TOTAL) break;
+        }
+      }
+
+      if (ordered.length < MAX_TOTAL) {
+        for (const row of scoreResult.rows ?? []) {
+          addGameFromRow(row, 'score');
+          if (ordered.length >= MAX_TOTAL) break;
+        }
+      }
+
+      return ordered.slice(0, MAX_TOTAL);
+    } catch (error) {
+      logger.warn(
+        `SnakeBenchRepository.getWormArenaGreatestHits: query failed: ${
+          error instanceof Error ? error.message : String(error)
+        }`,
+        'snakebench-db',
+      );
+      return [];
     }
   }
 
