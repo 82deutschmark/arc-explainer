@@ -1,3 +1,16 @@
+### Version 6.1.6  Dec 10, 2025 (PENDING TESTING)
+
+- **Worm Arena multi-opponent batch runs** (Author: Claude Code using Haiku 4.5)
+  - Refactored batch match architecture from repeated same-opponent (A vs B × N) to sequential multi-opponent (A vs [B1, B2, ..., B9]) for better ranking data quality and TrueSkill convergence.
+  - Updated `wormArenaStreamController.ts` to accept `opponents: string[]` instead of `count: number`; validates opponent list, stores in session, and loops through different opponents while keeping modelA constant.
+  - Updated `useWormArenaStreaming.ts` hook: `startMatch()` now accepts opponents array; passes to `/api/wormarena/prepare` endpoint; SSE event listeners remain unchanged (work for both scenarios).
+  - Replaced `matchCount` number input with opponent multi-select UI in `WormArenaSetup.tsx`: checkbox list shows available models (excluding modelA), "Reset to Top 9" button for convenience, max 10 opponents enforced.
+  - Added auto-population logic in `WormArenaLive.tsx`: selects top 9 models (excluding selected modelA) on page load, respects user customization, disabled during execution.
+  - Backend batch loop now emits opponent-specific status messages (e.g., "Running match 3 of 9: nova-2-lite vs gpt-5.1-codex-mini...") for transparency.
+  - Sequential execution guarantees respect for API rate limits (models run one-at-a-time, not parallel).
+  - Backward compatible: legacy `count` parameter still supported; converts to repeated opponents array if provided.
+  - **Files Modified**: `server/controllers/wormArenaStreamController.ts` (batch loop refactor), `client/src/hooks/useWormArenaStreaming.ts` (opponents param), `client/src/pages/WormArenaLive.tsx` (state + auto-populate), `client/src/components/WormArenaSetup.tsx` (opponent selector UI), `CHANGELOG.md`
+
 ### Version 6.1.5  Dec 10, 2025 (PENDING TESTING)
 
 - **Admin OpenRouter discovery/import UI** (Author: Codex / GPT-5)
