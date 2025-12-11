@@ -1,3 +1,11 @@
+### Version 6.1.5  Dec 10, 2025 (PENDING TESTING)
+
+- **Admin OpenRouter discovery/import UI** (Author: Codex / GPT-5)
+  - Added backend admin endpoints to discover OpenRouter catalog vs DB/config and import selected slugs into `public.models` without WormArena side effects.
+  - Added Admin UI page `/admin/openrouter` to list new slugs, edit names, and import selected; linked from Admin Hub.
+  - Shared OpenRouter model helpers in `SnakeBenchRepository` for listing/upserting DB models.
+  - **Files Modified/Created**: `server/controllers/adminController.ts`, `server/routes.ts`, `server/repositories/SnakeBenchRepository.ts`, `client/src/pages/AdminOpenRouter.tsx`, `client/src/pages/AdminHub.tsx`, `client/src/App.tsx`, `CHANGELOG.md`
+
 ### Version 6.1.4  Dec 10, 2025 (PENDING TESTING)
 
 - **OpenRouter discovery + enqueue split** (Author: Codex / GPT-5)

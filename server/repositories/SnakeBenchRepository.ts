@@ -52,6 +52,52 @@ const RESULT_SCORE: Record<string, [number, number]> = {
 };
 
 export class SnakeBenchRepository extends BaseRepository {
+  async listModels(): Promise<Array<{ id: number; model_slug: string; name: string; provider: string; is_active: boolean; test_status: string }>> {
+    if (!this.isConnected()) return [];
+    const sql = `
+      SELECT id, model_slug, name, provider, is_active, test_status
+      FROM public.models
+      ORDER BY name ASC
+    `;
+    const { rows } = await this.query(sql);
+    return rows as any[];
+  }
+
+  async upsertModels(
+    models: Array<{ modelSlug: string; name?: string; provider?: string; isActive?: boolean; testStatus?: string }>
+  ): Promise<{ inserted: number; updated: number }> {
+    if (!this.isConnected() || models.length === 0) {
+      return { inserted: 0, updated: 0 };
+    }
+
+    let inserted = 0;
+    let updated = 0;
+
+    await this.transaction(async (client) => {
+      for (const m of models) {
+        const name = m.name ?? m.modelSlug;
+        const provider = m.provider ?? 'OpenRouter';
+        const isActive = m.isActive ?? true;
+        const testStatus = m.testStatus ?? 'untested';
+        const sql = `
+          INSERT INTO public.models (name, provider, model_slug, is_active, test_status)
+          VALUES ($1, $2, $3, $4, $5)
+          ON CONFLICT (model_slug) DO UPDATE
+            SET name = EXCLUDED.name,
+                provider = EXCLUDED.provider,
+                is_active = EXCLUDED.is_active
+          RETURNING xmax = 0 AS inserted_flag;
+        `;
+        const { rows } = await client.query(sql, [name, provider, m.modelSlug, isActive, testStatus]);
+        const wasInserted = rows?.[0]?.inserted_flag === true;
+        if (wasInserted) inserted += 1;
+        else updated += 1;
+      }
+    });
+
+    return { inserted, updated };
+  }
+
   /**
    * Record a single SnakeBench match in the compatibility-first schema.
    *
@@ -287,6 +333,7 @@ export class SnakeBenchRepository extends BaseRepository {
 
   /**
    * Recent activity snapshot: games played in the last N days.
+   * When days <= 0, returns all-time activity.
    */
   async getRecentActivity(days: number = 7): Promise<{ days: number; gamesPlayed: number; uniqueModels: number }> {
     if (!this.isConnected()) {
@@ -294,6 +341,28 @@ export class SnakeBenchRepository extends BaseRepository {
     }
 
     try {
+      // All-history mode: no date filter
+      if (!Number.isFinite(days) || days <= 0) {
+        const sqlAll = `
+          SELECT
+            COUNT(DISTINCT g.id) AS games_played,
+            COUNT(DISTINCT m.model_slug) AS unique_models
+          FROM public.games g
+          LEFT JOIN public.game_participants gp ON g.id = gp.game_id
+          LEFT JOIN public.models m ON gp.model_id = m.id
+          WHERE g.game_type = 'arc-explainer';
+        `;
+
+        const result = await this.query(sqlAll);
+        const row = result.rows[0];
+
+        return {
+          days: 0,
+          gamesPlayed: parseInt((row?.games_played as string) ?? '0', 10) || 0,
+          uniqueModels: parseInt((row?.unique_models as string) ?? '0', 10) || 0,
+        };
+      }
+
       const safeDays = Math.max(1, Math.min(90, days)); // Clamp to 1-90
       const sql = `
         SELECT
@@ -310,7 +379,7 @@ export class SnakeBenchRepository extends BaseRepository {
       const row = result.rows[0];
 
       return {
-        days,
+        days: safeDays,
         gamesPlayed: parseInt((row?.games_played as string) ?? '0', 10) || 0,
         uniqueModels: parseInt((row?.unique_models as string) ?? '0', 10) || 0,
       };

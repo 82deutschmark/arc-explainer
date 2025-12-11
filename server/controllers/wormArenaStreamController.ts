@@ -24,7 +24,7 @@ import { logger } from '../utils/logger';
 
 type PendingSession = {
   payload: SnakeBenchRunMatchRequest;
-  count: number; // 1 for single match, > 1 for batch
+  opponents?: string[]; // Array of opponent model IDs for multi-opponent batch; undefined for single match
   createdAt: number;
   expiresAt: number;
 };
@@ -37,21 +37,53 @@ function generateSessionId(): string {
   return crypto.randomUUID();
 }
 
-function validatePayload(body: any): { payload?: SnakeBenchRunMatchRequest; count?: number; error?: string } {
-  const { modelA, modelB, count: countRaw } = body || {};
-  if (!modelA || !modelB || typeof modelA !== 'string' || typeof modelB !== 'string') {
-    return { error: 'modelA and modelB are required strings.' };
+function validatePayload(body: any): { payload?: SnakeBenchRunMatchRequest; opponents?: string[]; error?: string } {
+  const { modelA, opponents: opponentsRaw, count: countRaw } = body || {};
+  if (!modelA || typeof modelA !== 'string') {
+    return { error: 'modelA is required string.' };
   }
 
-  // Parse and validate count (default 1 for single match)
-  const count = countRaw !== undefined ? Math.floor(Number(countRaw)) : 1;
-  if (!Number.isFinite(count) || count < 1 || count > MAX_BATCH_COUNT) {
-    return { error: `count must be between 1 and ${MAX_BATCH_COUNT}` };
+  // Determine opponents: either from explicit array or legacy count parameter
+  let opponents: string[] | undefined;
+
+  if (opponentsRaw && Array.isArray(opponentsRaw)) {
+    // New format: explicit opponent list
+    opponents = opponentsRaw
+      .filter((op) => typeof op === 'string' && op.trim().length > 0)
+      .map((op) => op.trim());
+
+    if (opponents.length === 0) {
+      return { error: 'opponents array must contain at least one model' };
+    }
+    if (opponents.length > MAX_BATCH_COUNT) {
+      return { error: `opponents array cannot exceed ${MAX_BATCH_COUNT} models` };
+    }
+  } else if (countRaw !== undefined) {
+    // Legacy format: count parameter (for backward compatibility)
+    // In legacy mode with count, modelB is required
+    const { modelB } = body || {};
+    if (!modelB || typeof modelB !== 'string') {
+      return { error: 'Legacy count mode requires modelB' };
+    }
+
+    const count = Math.floor(Number(countRaw));
+    if (!Number.isFinite(count) || count < 1 || count > MAX_BATCH_COUNT) {
+      return { error: `count must be between 1 and ${MAX_BATCH_COUNT}` };
+    }
+
+    // Convert legacy count to repeated opponents array
+    if (count > 1) {
+      opponents = Array(count).fill(modelB);
+    }
+    // If count === 1, leave opponents undefined for single match
+  } else {
+    return { error: 'Either "opponents" array or "count" number must be provided' };
   }
 
   const req: SnakeBenchRunMatchRequest = {
     modelA: String(modelA),
-    modelB: String(modelB),
+    // Note: modelB will be set per-opponent in stream() method, not here
+    modelB: '', // Placeholder; will be overridden for batch mode
   };
   if (body.width !== undefined) req.width = Number(body.width);
   if (body.height !== undefined) req.height = Number(body.height);
@@ -61,12 +93,12 @@ function validatePayload(body: any): { payload?: SnakeBenchRunMatchRequest; coun
   if (body.provider && typeof body.provider === 'string') {
     req.provider = body.provider as SnakeBenchRunMatchRequest['provider'];
   }
-  return { payload: req, count };
+  return { payload: req, opponents };
 }
 
 export const wormArenaStreamController = {
   async prepare(req: Request, res: Response) {
-    const { payload, count, error } = validatePayload(req.body);
+    const { payload, opponents, error } = validatePayload(req.body);
     if (error || !payload) {
       res.status(422).json({ success: false, error: error ?? 'Invalid payload' });
       return;
@@ -76,7 +108,7 @@ export const wormArenaStreamController = {
     const now = Date.now();
     pendingSessions.set(sessionId, {
       payload,
-      count: count ?? 1,
+      opponents,
       createdAt: now,
       expiresAt: now + PENDING_TTL_MS,
     });
@@ -107,14 +139,14 @@ export const wormArenaStreamController = {
     }
 
     const connection = sseStreamManager.register(sessionId, res);
-    const isBatch = pending.count > 1;
+    const isBatch = pending.opponents && pending.opponents.length > 0;
 
     if (isBatch) {
-      // Batch initialization
+      // Batch initialization with opponent list
       sseStreamManager.sendEvent(sessionId, 'batch.init', {
-        totalMatches: pending.count,
+        totalMatches: pending.opponents!.length,
         modelA: pending.payload.modelA,
-        modelB: pending.payload.modelB,
+        opponents: pending.opponents,
       });
     } else {
       // Single match initialization (for backward compatibility)
