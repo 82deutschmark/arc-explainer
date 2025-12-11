@@ -28,14 +28,17 @@ export function useWormArenaStreaming() {
 
   const eventSourceRef = useRef<EventSource | null>(null);
 
-  const startMatch = useCallback(async (payload: SnakeBenchRunMatchRequest, count: number = 1) => {
+  const startMatch = useCallback(async (payload: SnakeBenchRunMatchRequest, opponents: string[] = []) => {
     setIsStarting(true);
     setError(null);
     try {
       const res = await fetch('/api/wormarena/prepare', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...payload, count }),
+        body: JSON.stringify({
+          ...payload,
+          opponents: opponents.length > 0 ? opponents : undefined,
+        }),
       });
       const json = await res.json();
       if (!res.ok || !json?.success) {
