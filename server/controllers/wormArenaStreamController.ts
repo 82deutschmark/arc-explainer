@@ -1,36 +1,54 @@
 /**
- * Author: Cascade
- * Date: 2025-12-09
- * PURPOSE: Lightweight SSE controller for Worm Arena matches.
- *          Prepares a session, then streams status + final summary.
- * SRP/DRY check: Pass — self-contained pending store + SSE wiring.
+ * Author: Claude Code using Haiku 4.5
+ * Date: 2025-12-10
+ * PURPOSE: SSE controller for Worm Arena matches (single and batch).
+ *          Prepares a session, then streams status + results for each match.
+ *          Supports batch runs with sequential match execution.
+ * SRP/DRY check: Pass — orchestrates batch logic via runMatch loop,
+ *                delegates match execution to service layer.
  */
 
 import type { Request, Response } from 'express';
 import crypto from 'crypto';
 import { sseStreamManager } from '../services/streaming/SSEStreamManager';
 import { snakeBenchService } from '../services/snakeBenchService';
-import type { SnakeBenchRunMatchRequest, WormArenaFinalSummary, WormArenaStreamStatus } from '../../shared/types';
+import type {
+  SnakeBenchRunMatchRequest,
+  WormArenaFinalSummary,
+  WormArenaStreamStatus,
+  WormArenaBatchMatchStart,
+  WormArenaBatchMatchComplete,
+  WormArenaBatchComplete,
+} from '../../shared/types';
 import { logger } from '../utils/logger';
 
 type PendingSession = {
   payload: SnakeBenchRunMatchRequest;
+  count: number; // 1 for single match, > 1 for batch
   createdAt: number;
   expiresAt: number;
 };
 
 const PENDING_TTL_MS = 5 * 60 * 1000; // 5 minutes
+const MAX_BATCH_COUNT = 10; // Safety limit for batch runs
 const pendingSessions: Map<string, PendingSession> = new Map();
 
 function generateSessionId(): string {
   return crypto.randomUUID();
 }
 
-function validatePayload(body: any): { payload?: SnakeBenchRunMatchRequest; error?: string } {
-  const { modelA, modelB } = body || {};
+function validatePayload(body: any): { payload?: SnakeBenchRunMatchRequest; count?: number; error?: string } {
+  const { modelA, modelB, count: countRaw } = body || {};
   if (!modelA || !modelB || typeof modelA !== 'string' || typeof modelB !== 'string') {
     return { error: 'modelA and modelB are required strings.' };
   }
+
+  // Parse and validate count (default 1 for single match)
+  const count = countRaw !== undefined ? Math.floor(Number(countRaw)) : 1;
+  if (!Number.isFinite(count) || count < 1 || count > MAX_BATCH_COUNT) {
+    return { error: `count must be between 1 and ${MAX_BATCH_COUNT}` };
+  }
+
   const req: SnakeBenchRunMatchRequest = {
     modelA: String(modelA),
     modelB: String(modelB),
@@ -43,12 +61,12 @@ function validatePayload(body: any): { payload?: SnakeBenchRunMatchRequest; erro
   if (body.provider && typeof body.provider === 'string') {
     req.provider = body.provider as SnakeBenchRunMatchRequest['provider'];
   }
-  return { payload: req };
+  return { payload: req, count };
 }
 
 export const wormArenaStreamController = {
   async prepare(req: Request, res: Response) {
-    const { payload, error } = validatePayload(req.body);
+    const { payload, count, error } = validatePayload(req.body);
     if (error || !payload) {
       res.status(422).json({ success: false, error: error ?? 'Invalid payload' });
       return;
@@ -58,6 +76,7 @@ export const wormArenaStreamController = {
     const now = Date.now();
     pendingSessions.set(sessionId, {
       payload,
+      count: count ?? 1,
       createdAt: now,
       expiresAt: now + PENDING_TTL_MS,
     });

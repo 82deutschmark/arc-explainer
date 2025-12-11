@@ -1,40 +1,50 @@
-/**
+﻿/**
  * Author: Cascade
  * Date: 2025-12-10
  * PURPOSE: Worm Arena Stats & Placement page. Shows global Worm Arena
  *          aggregates, model-centric TrueSkill snapshots, placement
  *          progress, and recent match history. Backed entirely by
  *          SnakeBench DB tables via public ARC Explainer APIs.
- * SRP/DRY check: Pass — page-level composition only, delegates data
+ * SRP/DRY check: Pass  page-level composition only, delegates data
  *                fetching to dedicated hooks and shared helpers.
  */
 
-import React from 'react';
-import { useLocation } from 'wouter';
+import React from "react";
+import { useLocation } from "wouter";
 
-import WormArenaHeader from '@/components/WormArenaHeader';
-import useWormArenaStats from '@/hooks/useWormArenaStats';
+import { InlineMath } from "react-katex";
+import "katex/dist/katex.min.css";
+
+import WormArenaHeader from "@/components/WormArenaHeader";
+import useWormArenaStats from "@/hooks/useWormArenaStats";
 import {
   useSnakeBenchStats,
   useModelRating,
   useModelHistory,
-} from '@/hooks/useSnakeBench';
-import { summarizeWormArenaPlacement } from '@shared/utils/wormArenaPlacement.ts';
+} from "@/hooks/useSnakeBench";
+import { summarizeWormArenaPlacement } from "@shared/utils/wormArenaPlacement.ts";
 
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { Table, TableHead, TableHeader, TableRow, TableCell, TableBody } from '@/components/ui/table';
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import {
+  Table,
+  TableHead,
+  TableHeader,
+  TableRow,
+  TableCell,
+  TableBody,
+} from "@/components/ui/table";
 
 function useQueryParamModel(): string | null {
   const [location] = useLocation();
 
   try {
-    const query = location.split('?')[1] ?? '';
+    const query = location.split("?")[1] ?? "";
     if (!query) return null;
     const params = new URLSearchParams(query);
-    const model = params.get('model');
+    const model = params.get("model");
     return model && model.trim().length > 0 ? model.trim() : null;
   } catch {
     return null;
@@ -48,9 +58,15 @@ export default function WormArenaStats() {
   const { stats: globalStats } = useSnakeBenchStats();
 
   const [selectedModel, setSelectedModel] = React.useState<string | null>(queryModel);
-  const [filter, setFilter] = React.useState('');
+  const [filter, setFilter] = React.useState("");
 
-  const { rating, isLoading: loadingRating, error: ratingError, refresh: refreshRating } = useModelRating(selectedModel ?? undefined);
+  const {
+    rating,
+    isLoading: loadingRating,
+    error: ratingError,
+    refresh: refreshRating,
+  } = useModelRating(selectedModel ?? undefined);
+
   const {
     historyForTable,
     isLoading: loadingHistory,
@@ -71,20 +87,45 @@ export default function WormArenaStats() {
     }
   }, [leaderboard, selectedModel]);
 
-  const placement = React.useMemo(() => summarizeWormArenaPlacement(rating ?? undefined), [rating]);
+  const placement = React.useMemo(
+    () => summarizeWormArenaPlacement(rating ?? undefined),
+    [rating],
+  );
 
   const filteredLeaderboard = React.useMemo(() => {
     const term = filter.trim().toLowerCase();
-    if (!term) return leaderboard;
-    return leaderboard.filter((entry) => entry.modelSlug.toLowerCase().includes(term));
+    const sorted = [...leaderboard].sort(
+      (a, b) => (b.gamesPlayed ?? 0) - (a.gamesPlayed ?? 0),
+    );
+    if (!term) return sorted;
+    return sorted.filter((entry) =>
+      entry.modelSlug.toLowerCase().includes(term),
+    );
   }, [leaderboard, filter]);
 
   const handleSelectModel = (slug: string) => {
     setSelectedModel(slug);
   };
 
+  const pessimisticEquation = React.useMemo(() => {
+    if (!rating) return null;
+    const mu = rating.mu.toFixed(2);
+    const sigma = rating.sigma.toFixed(2);
+    const exposed = rating.exposed.toFixed(2);
+    return `\\mu - 3\\sigma = ${mu} - 3 \\times ${sigma} \\approx ${exposed}`;
+  }, [rating]);
+
+  const placementEquation = React.useMemo(() => {
+    if (!placement) return null;
+    const progressPercent = Math.round(placement.progress * 100);
+    return `\\text{progress} = \\frac{${placement.gamesPlayed}}{${placement.maxGames}} \\approx ${progressPercent}\\%`;
+  }, [placement]);
+
   return (
-    <div className="min-h-screen" style={{ backgroundColor: '#f5e6d3', fontFamily: 'Fredoka, Nunito, sans-serif' }}>
+    <div
+      className="min-h-screen"
+      style={{ backgroundColor: "#f5e6d3", fontFamily: "Fredoka, Nunito, sans-serif" }}
+    >
       <link rel="preconnect" href="https://fonts.googleapis.com" />
       <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
       <link
@@ -95,51 +136,175 @@ export default function WormArenaStats() {
       <WormArenaHeader
         totalGames={globalStats?.totalGames ?? 0}
         links={[
-          { label: 'Replay', href: '/worm-arena' },
-          { label: 'Live', href: '/worm-arena/live' },
-          { label: 'Stats & Placement', href: '/worm-arena/stats', active: true },
+          { label: "Replay", href: "/worm-arena" },
+          { label: "Live", href: "/worm-arena/live" },
+          { label: "Stats & Placement", href: "/worm-arena/stats", active: true },
         ]}
         showMatchupLabel={false}
       />
 
-      <main className="p-8 max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-[280px_minmax(0,1fr)] gap-6">
-        {/* Sidebar: Model selector */}
-        <aside className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-sm">Models</CardTitle>
+      <main className="p-8 max-w-7xl mx-auto space-y-6">
+        {/* Global strip */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <Card className="bg-[#faf6f1] border-[#d4b5a0]">
+            <CardHeader className="py-3">
+              <CardTitle
+                className="text-base font-bold"
+                style={{ color: "#3d2817" }}
+              >
+                Total matches
+              </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-3">
+            <CardContent className="pb-3">
+              <div
+                className="text-3xl font-extrabold"
+                style={{ color: "#1f130a" }}
+              >
+                {globalStats?.totalGames ?? 0}
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-[#faf6f1] border-[#d4b5a0]">
+            <CardHeader className="py-3">
+              <CardTitle
+                className="text-base font-bold"
+                style={{ color: "#3d2817" }}
+              >
+                Models competing
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="pb-3">
+              <div
+                className="text-3xl font-extrabold"
+                style={{ color: "#1f130a" }}
+              >
+                {globalStats?.activeModels ?? 0}
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-[#faf6f1] border-[#d4b5a0]">
+            <CardHeader className="py-3">
+              <CardTitle
+                className="text-base font-bold"
+                style={{ color: "#3d2817" }}
+              >
+                Top apples (single game)
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="pb-3">
+              <div
+                className="text-3xl font-extrabold"
+                style={{ color: "#1f130a" }}
+              >
+                {globalStats?.topApples ?? 0}
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-[#faf6f1] border-[#d4b5a0]">
+            <CardHeader className="py-3">
+              <CardTitle
+                className="text-base font-bold"
+                style={{ color: "#3d2817" }}
+              >
+                Total testing cost
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="pb-3">
+              <div
+                className="text-3xl font-extrabold"
+                style={{ color: "#1f130a" }}
+              >
+                ${globalStats?.totalCost?.toFixed
+                  ? globalStats.totalCost.toFixed(2)
+                  : globalStats?.totalCost ?? 0}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Models + snapshot/placement row */}
+        <div className="grid grid-cols-1 xl:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)] gap-6 items-start">
+          {/* Models list (large) */}
+          <Card className="bg-[#faf6f1] border-[#d4b5a0]">
+            <CardHeader className="pb-3 flex flex-row items-baseline justify-between">
+              <div>
+                <CardTitle
+                  className="text-lg font-bold"
+                  style={{ color: "#3d2817" }}
+                >
+                  Models
+                </CardTitle>
+                <div
+                  className="text-sm font-semibold"
+                  style={{ color: "#7a6b5f" }}
+                >
+                  Sorted by games played (most to least)
+                </div>
+              </div>
+              {recentActivity && (
+                <div
+                  className="text-sm font-semibold text-right"
+                  style={{ color: "#3d2817" }}
+                >
+                  <div>
+                    Last {recentActivity.days} days: {recentActivity.gamesPlayed} games
+                  </div>
+                  <div>Active models: {recentActivity.uniqueModels}</div>
+                </div>
+              )}
+            </CardHeader>
+            <CardContent className="space-y-4">
               <Input
                 placeholder="Search model (e.g. openai/gpt-5.1)"
                 value={filter}
                 onChange={(e) => setFilter(e.target.value)}
-                className="text-sm"
+                className="text-base font-semibold"
+                style={{ color: "#3d2817" }}
               />
-              <ScrollArea className="h-80 border rounded-md bg-white/70">
-                <div className="p-2 space-y-1">
-                  {filteredLeaderboard.map((entry) => {
+              <ScrollArea className="h-[60vh] border rounded-md bg-white/90">
+                <div className="p-3 space-y-2">
+                  {filteredLeaderboard.map((entry, index) => {
                     const active = entry.modelSlug === selectedModel;
                     return (
                       <button
                         key={entry.modelSlug}
                         type="button"
                         onClick={() => handleSelectModel(entry.modelSlug)}
-                        className={`w-full flex items-center justify-between px-2 py-1.5 text-xs rounded border transition-colors ${
+                        className={`w-full flex items-center justify-between px-3 py-2 text-sm font-semibold rounded border transition-colors ${
                           active
-                            ? 'bg-[#1a2f23] text-[#faf6f1] border-[#1a2f23]'
-                            : 'bg-white/80 text-[#3d2817] border-[#d4b5a0] hover:bg-[#faf6f1]'
+                            ? "bg-[#1a2f23] text-[#faf6f1] border-[#1a2f23]"
+                            : "bg-white text-[#1f130a] border-[#d4b5a0] hover:bg-[#faf6f1]"
                         }`}
                       >
-                        <span className="truncate mr-2">{entry.modelSlug}</span>
-                        <span className="font-mono text-[10px] text-[#7a6b5f]">
-                          {entry.gamesPlayed}g · {entry.wins}W/{entry.losses}L
-                        </span>
+                        <div className="flex items-center gap-3 min-w-0">
+                          <span
+                            className="text-xs font-bold"
+                            style={{ color: active ? "#f5e6d3" : "#7a6b5f" }}
+                          >
+                            #{index + 1}
+                          </span>
+                          <span className="truncate font-mono">{entry.modelSlug}</span>
+                        </div>
+                        <div className="text-xs sm:text-sm font-semibold text-right">
+                          <div>{entry.gamesPlayed} games</div>
+                          <div
+                            className="text-[11px]"
+                            style={{ color: active ? "#f5e6d3" : "#7a6b5f" }}
+                          >
+                            {entry.wins}W / {entry.losses}L / {entry.ties}T
+                          </div>
+                        </div>
                       </button>
                     );
                   })}
                   {filteredLeaderboard.length === 0 && (
-                    <div className="text-xs text-center text-muted-foreground py-4">
+                    <div
+                      className="text-sm text-center font-semibold py-6"
+                      style={{ color: "#7a6b5f" }}
+                    >
                       No models yet. Run a few matches to populate stats.
                     </div>
                   )}
@@ -148,128 +313,215 @@ export default function WormArenaStats() {
             </CardContent>
           </Card>
 
-          {recentActivity && (
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-sm">Recent activity</CardTitle>
-              </CardHeader>
-              <CardContent className="text-xs space-y-1 text-[#3d2817]">
-                <div>
-                  Last {recentActivity.days} days: <strong>{recentActivity.gamesPlayed}</strong> games
-                </div>
-                <div>
-                  Active models: <strong>{recentActivity.uniqueModels}</strong>
-                </div>
-              </CardContent>
-            </Card>
-          )}
-        </aside>
-
-        {/* Main content: Stats & placement */}
-        <section className="space-y-6">
-          {/* Global strip */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
-            <Card className="bg-[#faf6f1] border-[#d4b5a0]">
-              <CardHeader className="py-3">
-                <CardTitle className="text-xs text-[#7a6b5f]">Total matches</CardTitle>
-              </CardHeader>
-              <CardContent className="pb-3">
-                <div className="text-2xl font-bold" style={{ color: '#3d2817' }}>
-                  {globalStats?.totalGames ?? 0}
-                </div>
-              </CardContent>
-            </Card>
-            <Card className="bg-[#faf6f1] border-[#d4b5a0]">
-              <CardHeader className="py-3">
-                <CardTitle className="text-xs text-[#7a6b5f]">Models competing</CardTitle>
-              </CardHeader>
-              <CardContent className="pb-3">
-                <div className="text-2xl font-bold" style={{ color: '#3d2817' }}>
-                  {globalStats?.activeModels ?? 0}
-                </div>
-              </CardContent>
-            </Card>
-            <Card className="bg-[#faf6f1] border-[#d4b5a0]">
-              <CardHeader className="py-3">
-                <CardTitle className="text-xs text-[#7a6b5f]">Top apples (single game)</CardTitle>
-              </CardHeader>
-              <CardContent className="pb-3">
-                <div className="text-2xl font-bold" style={{ color: '#3d2817' }}>
-                  {globalStats?.topApples ?? 0}
-                </div>
-              </CardContent>
-            </Card>
-            <Card className="bg-[#faf6f1] border-[#d4b5a0]">
-              <CardHeader className="py-3">
-                <CardTitle className="text-xs text-[#7a6b5f]">Total testing cost</CardTitle>
-              </CardHeader>
-              <CardContent className="pb-3">
-                <div className="text-2xl font-bold" style={{ color: '#3d2817' }}>
-                  ${globalStats?.totalCost?.toFixed ? globalStats.totalCost.toFixed(2) : (globalStats?.totalCost ?? 0)}
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Model summary & placement */}
-          <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 items-start">
+          {/* Snapshot + placement */}
+          <div className="space-y-4">
             <Card className="bg-[#faf6f1] border-[#d4b5a0]">
               <CardHeader className="pb-2">
-                <CardTitle className="text-sm flex items-center justify-between">
+                <CardTitle
+                  className="text-lg font-bold flex items-center justify-between"
+                  style={{ color: "#3d2817" }}
+                >
                   <span>Model snapshot</span>
-                  {rating?.modelSlug && <Badge variant="outline">{rating.modelSlug}</Badge>}
+                  {rating?.modelSlug && (
+                    <Badge variant="outline" className="text-xs font-mono">
+                      {rating.modelSlug}
+                    </Badge>
+                  )}
                 </CardTitle>
               </CardHeader>
-              <CardContent className="space-y-3 text-sm" style={{ color: '#3d2817' }}>
-                {loadingRating && <div className="text-xs text-muted-foreground">Loading rating…</div>}
-                {ratingError && <div className="text-xs text-red-600">{ratingError}</div>}
+              <CardContent
+                className="space-y-4 text-sm"
+                style={{ color: "#3d2817" }}
+              >
+                {loadingRating && (
+                  <div className="text-sm font-semibold">Loading rating...</div>
+                )}
+                {ratingError && (
+                  <div className="text-sm font-semibold text-red-700">{ratingError}</div>
+                )}
                 {!loadingRating && !rating && !ratingError && (
-                  <div className="text-xs text-muted-foreground">Select a model on the left to see stats.</div>
+                  <div
+                    className="text-sm font-semibold"
+                    style={{ color: "#7a6b5f" }}
+                  >
+                    Select a model in the list to see its rating details.
+                  </div>
                 )}
 
                 {rating && (
                   <>
-                    <div className="grid grid-cols-2 gap-3">
+                    <div className="grid grid-cols-2 gap-4">
                       <div>
-                        <div className="text-[11px] text-[#7a6b5f]">Skill estimate</div>
-                        <div className="text-xl font-semibold">{rating.mu.toFixed(2)}</div>
+                        <div
+                          className="text-sm font-bold flex items-center gap-1"
+                          style={{ color: "#3d2817" }}
+                        >
+                          <span>Skill estimate</span>
+                          <InlineMath math={"\\mu"} />
+                        </div>
+                        <div
+                          className="text-3xl font-extrabold"
+                          style={{ color: "#1f130a" }}
+                        >
+                          {rating.mu.toFixed(2)}
+                        </div>
+                        <div
+                          className="text-xs font-mono mt-1"
+                          style={{ color: "#3d2817" }}
+                        >
+                          <InlineMath math={"\\mu"} /> is the centre of the model skill
+                          distribution.
+                        </div>
                       </div>
+
                       <div>
-                        <div className="text-[11px] text-[#7a6b5f]">Uncertainty</div>
-                        <div className="text-xl font-semibold">{rating.sigma.toFixed(2)}</div>
+                        <div
+                          className="text-sm font-bold flex items-center gap-1"
+                          style={{ color: "#3d2817" }}
+                        >
+                          <span>Uncertainty</span>
+                          <InlineMath math={"\\sigma"} />
+                        </div>
+                        <div
+                          className="text-3xl font-extrabold"
+                          style={{ color: "#1f130a" }}
+                        >
+                          {rating.sigma.toFixed(2)}
+                        </div>
+                        <div
+                          className="text-xs font-mono mt-1"
+                          style={{ color: "#3d2817" }}
+                        >
+                          Most skill lies in
+                          {" "}
+                          <InlineMath math={"\\mu \\pm 3\\sigma"} />.
+                        </div>
                       </div>
+
                       <div>
-                        <div className="text-[11px] text-[#7a6b5f]">Pessimistic rating</div>
-                        <div className="text-xl font-semibold">{rating.exposed.toFixed(2)}</div>
+                        <div
+                          className="text-sm font-bold flex items-center gap-1"
+                          style={{ color: "#3d2817" }}
+                        >
+                          <span>Pessimistic rating</span>
+                          <InlineMath math={"\\mu - 3\\sigma"} />
+                        </div>
+                        <div
+                          className="text-3xl font-extrabold"
+                          style={{ color: "#1f130a" }}
+                        >
+                          {rating.exposed.toFixed(2)}
+                        </div>
+                        {pessimisticEquation && (
+                          <div
+                            className="text-xs font-mono mt-1"
+                            style={{ color: "#3d2817" }}
+                          >
+                            <InlineMath math={pessimisticEquation} />
+                          </div>
+                        )}
                       </div>
+
                       <div>
-                        <div className="text-[11px] text-[#7a6b5f]">Leaderboard score</div>
-                        <div className="text-xl font-semibold">{rating.displayScore.toFixed(0)}</div>
+                        <div
+                          className="text-sm font-bold"
+                          style={{ color: "#3d2817" }}
+                        >
+                          Leaderboard score
+                        </div>
+                        <div
+                          className="text-3xl font-extrabold"
+                          style={{ color: "#1f130a" }}
+                        >
+                          {rating.displayScore.toFixed(0)}
+                        </div>
+                        <div
+                          className="text-xs font-mono mt-1"
+                          style={{ color: "#3d2817" }}
+                        >
+                          Scaled from TrueSkill rating for display.
+                        </div>
                       </div>
                     </div>
 
-                    <div className="grid grid-cols-4 gap-3 text-xs mt-2">
+                    <div className="grid grid-cols-4 gap-4 text-sm mt-2">
                       <div>
-                        <div className="text-[11px] text-[#7a6b5f]">Games</div>
-                        <div className="font-semibold">{rating.gamesPlayed}</div>
+                        <div
+                          className="font-bold"
+                          style={{ color: "#3d2817" }}
+                        >
+                          Games
+                        </div>
+                        <div
+                          className="text-xl font-extrabold"
+                          style={{ color: "#1f130a" }}
+                        >
+                          {rating.gamesPlayed}
+                        </div>
                       </div>
                       <div>
-                        <div className="text-[11px] text-[#7a6b5f]">Wins</div>
-                        <div className="font-semibold">{rating.wins}</div>
+                        <div
+                          className="font-bold"
+                          style={{ color: "#3d2817" }}
+                        >
+                          Wins
+                        </div>
+                        <div
+                          className="text-xl font-extrabold"
+                          style={{ color: "#1f130a" }}
+                        >
+                          {rating.wins}
+                        </div>
                       </div>
                       <div>
-                        <div className="text-[11px] text-[#7a6b5f]">Losses</div>
-                        <div className="font-semibold">{rating.losses}</div>
+                        <div
+                          className="font-bold"
+                          style={{ color: "#3d2817" }}
+                        >
+                          Losses
+                        </div>
+                        <div
+                          className="text-xl font-extrabold"
+                          style={{ color: "#1f130a" }}
+                        >
+                          {rating.losses}
+                        </div>
                       </div>
                       <div>
-                        <div className="text-[11px] text-[#7a6b5f]">Ties</div>
-                        <div className="font-semibold">{rating.ties}</div>
+                        <div
+                          className="font-bold"
+                          style={{ color: "#3d2817" }}
+                        >
+                          Ties
+                        </div>
+                        <div
+                          className="text-xl font-extrabold"
+                          style={{ color: "#1f130a" }}
+                        >
+                          {rating.ties}
+                        </div>
                       </div>
                     </div>
 
-                    <div className="text-xs mt-3 text-[#7a6b5f]">
-                      We start uncertain about each model. After around nine high-signal games with the right opponents,
-                      this pessimistic rating stabilises.
+                    {/* Math legend */}
+                    <div
+                      className="mt-4 p-3 rounded-md border bg-white/80 text-xs"
+                      style={{ borderColor: "#d4b5a0", color: "#3d2817" }}
+                    >
+                      <div className="font-semibold mb-1">TrueSkill legend</div>
+                      <div className="space-y-1">
+                        <div>
+                          <InlineMath math={"\\mu"} /> : skill estimate.
+                        </div>
+                        <div>
+                          <InlineMath math={"\\sigma"} /> : uncertainty (spread of the
+                          estimate).
+                        </div>
+                        <div>
+                          <InlineMath math={"\\mu - 3\\sigma"} /> : conservative lower
+                          bound we use as the pessimistic rating.
+                        </div>
+                      </div>
                     </div>
                   </>
                 )}
@@ -278,106 +530,197 @@ export default function WormArenaStats() {
 
             <Card className="bg-[#faf6f1] border-[#d4b5a0]">
               <CardHeader className="pb-2">
-                <CardTitle className="text-sm">Placement status</CardTitle>
+                <CardTitle
+                  className="text-lg font-bold"
+                  style={{ color: "#3d2817" }}
+                >
+                  Placement status
+                </CardTitle>
               </CardHeader>
-              <CardContent className="space-y-3 text-sm" style={{ color: '#3d2817' }}>
+              <CardContent
+                className="space-y-3 text-sm"
+                style={{ color: "#3d2817" }}
+              >
                 {placement ? (
                   <>
-                    <div className="flex items-center justify-between text-xs">
+                    <div className="flex items-center justify-between text-sm font-bold">
                       <span>{placement.label}</span>
-                      <Badge variant="outline">
+                      <Badge variant="outline" className="text-xs font-bold">
                         {placement.gamesPlayed}/{placement.maxGames} games
                       </Badge>
                     </div>
-                    <div className="w-full h-2 rounded-full bg-[#e5d5c5] overflow-hidden">
+                    <div className="w-full h-3 rounded-full bg-[#e5d5c5] overflow-hidden">
                       <div
                         className="h-full rounded-full"
                         style={{
                           width: `${Math.round(placement.progress * 100)}%`,
                           background:
-                            placement.phase === 'complete' || placement.phase === 'effectively_complete'
-                              ? '#9ece6a'
-                              : '#c85a3a',
+                            placement.phase === "complete" ||
+                            placement.phase === "effectively_complete"
+                              ? "#9ece6a"
+                              : "#c85a3a",
                         }}
                       />
                     </div>
-                    <div className="text-xs text-[#7a6b5f]">{placement.description}</div>
-                    <div className="text-[11px] text-[#7a6b5f]">
-                      9 games is a rule of thumb: we can stop earlier if uncertainty is already low, or continue playing
-                      for more precision.
+                    <div
+                      className="text-sm font-semibold"
+                      style={{ color: "#7a6b5f" }}
+                    >
+                      {placement.description}
+                    </div>
+                    {placementEquation && (
+                      <div
+                        className="text-xs font-mono"
+                        style={{ color: "#3d2817" }}
+                      >
+                        <InlineMath math={placementEquation} />
+                      </div>
+                    )}
+                    <div
+                      className="text-xs font-semibold"
+                      style={{ color: "#7a6b5f" }}
+                    >
+                      We aim for roughly nine good games per model; we can stop
+                      earlier if sigma is already low, or keep playing for more
+                      precision.
                     </div>
                   </>
                 ) : (
-                  <div className="text-xs text-muted-foreground">Select a model to see placement progress.</div>
+                  <div
+                    className="text-sm font-semibold"
+                    style={{ color: "#7a6b5f" }}
+                  >
+                    Select a model to see placement progress.
+                  </div>
                 )}
 
                 {rating && rating.isActive === false && (
-                  <div className="text-[11px] text-[#7a6b5f] border-t pt-2 mt-2">
+                  <div
+                    className="text-xs font-semibold border-t pt-2 mt-2"
+                    style={{ color: "#7a6b5f" }}
+                  >
                     This model is currently inactive, but its stats are preserved.
                   </div>
                 )}
               </CardContent>
             </Card>
           </div>
+        </div>
 
-          {/* History table */}
-          <Card className="bg-[#faf6f1] border-[#d4b5a0]">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm">Recent matches</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-2 text-sm" style={{ color: '#3d2817' }}>
-              {loadingHistory && <div className="text-xs text-muted-foreground">Loading history…</div>}
-              {historyError && <div className="text-xs text-red-600">{historyError}</div>}
+        {/* History table */}
+        <Card className="bg-[#faf6f1] border-[#d4b5a0]">
+          <CardHeader className="pb-2">
+            <CardTitle
+              className="text-lg font-bold"
+              style={{ color: "#3d2817" }}
+            >
+              Recent matches
+            </CardTitle>
+          </CardHeader>
+          <CardContent
+            className="space-y-3 text-sm"
+            style={{ color: "#3d2817" }}
+          >
+            {loadingHistory && (
+              <div
+                className="text-sm font-semibold"
+                style={{ color: "#7a6b5f" }}
+              >
+                Loading history...
+              </div>
+            )}
+            {historyError && (
+              <div className="text-sm font-semibold text-red-700">{historyError}</div>
+            )}
 
-              {historyForTable.length === 0 && !loadingHistory && !historyError && (
-                <div className="text-xs text-muted-foreground">No games yet for this model.</div>
-              )}
+            {historyForTable.length === 0 && !loadingHistory && !historyError && (
+              <div
+                className="text-sm font-semibold"
+                style={{ color: "#7a6b5f" }}
+              >
+                No games yet for this model.
+              </div>
+            )}
 
-              {historyForTable.length > 0 && (
-                <ScrollArea className="max-h-96 border rounded-md bg-white/80">
-                  <Table className="text-xs">
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead className="whitespace-nowrap">When</TableHead>
-                        <TableHead>Opponent</TableHead>
-                        <TableHead>Result</TableHead>
-                        <TableHead>Score</TableHead>
-                        <TableHead>Rounds</TableHead>
-                        <TableHead>Death reason</TableHead>
-                        <TableHead>Replay</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {historyForTable.map((row) => {
-                        const dt = row.startedAt ? new Date(row.startedAt) : null;
-                        const when = dt ? dt.toLocaleString() : '';
-                        const score = `${row.myScore}-${row.opponentScore}`;
-                        return (
-                          <TableRow key={row.gameId}>
-                            <TableCell className="whitespace-nowrap">{when}</TableCell>
-                            <TableCell>{row.opponentSlug || 'Unknown'}</TableCell>
-                            <TableCell className="capitalize">{row.result}</TableCell>
-                            <TableCell>{score}</TableCell>
-                            <TableCell>{row.rounds}</TableCell>
-                            <TableCell>{row.deathReason ?? '—'}</TableCell>
-                            <TableCell>
-                              <a
-                                href={`/worm-arena?gameId=${encodeURIComponent(row.gameId)}`}
-                                className="underline text-xs"
-                              >
-                                View replay
-                              </a>
-                            </TableCell>
-                          </TableRow>
-                        );
-                      })}
-                    </TableBody>
-                  </Table>
-                </ScrollArea>
-              )}
-            </CardContent>
-          </Card>
-        </section>
+            {historyForTable.length > 0 && (
+              <ScrollArea className="max-h-[60vh] border rounded-md bg-white/90">
+                <Table className="text-sm">
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead
+                        className="whitespace-nowrap font-bold"
+                        style={{ color: "#3d2817" }}
+                      >
+                        When
+                      </TableHead>
+                      <TableHead
+                        className="font-bold"
+                        style={{ color: "#3d2817" }}
+                      >
+                        Opponent
+                      </TableHead>
+                      <TableHead
+                        className="font-bold"
+                        style={{ color: "#3d2817" }}
+                      >
+                        Result
+                      </TableHead>
+                      <TableHead
+                        className="font-bold"
+                        style={{ color: "#3d2817" }}
+                      >
+                        Score
+                      </TableHead>
+                      <TableHead
+                        className="font-bold"
+                        style={{ color: "#3d2817" }}
+                      >
+                        Rounds
+                      </TableHead>
+                      <TableHead
+                        className="font-bold"
+                        style={{ color: "#3d2817" }}
+                      >
+                        Death reason
+                      </TableHead>
+                      <TableHead
+                        className="font-bold"
+                        style={{ color: "#3d2817" }}
+                      >
+                        Replay
+                      </TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {historyForTable.map((row) => {
+                      const dt = row.startedAt ? new Date(row.startedAt) : null;
+                      const when = dt ? dt.toLocaleString() : "";
+                      const score = `${row.myScore}-${row.opponentScore}`;
+                      return (
+                        <TableRow key={row.gameId}>
+                          <TableCell className="whitespace-nowrap">{when}</TableCell>
+                          <TableCell>{row.opponentSlug || "Unknown"}</TableCell>
+                          <TableCell className="capitalize">{row.result}</TableCell>
+                          <TableCell>{score}</TableCell>
+                          <TableCell>{row.rounds}</TableCell>
+                          <TableCell>{row.deathReason ?? ""}</TableCell>
+                          <TableCell>
+                            <a
+                              href={`/worm-arena?gameId=${encodeURIComponent(row.gameId)}`}
+                              className="underline text-sm font-semibold"
+                            >
+                              View replay
+                            </a>
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })}
+                  </TableBody>
+                </Table>
+              </ScrollArea>
+            )}
+          </CardContent>
+        </Card>
       </main>
     </div>
   );
