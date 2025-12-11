@@ -50,7 +50,7 @@ export default function AdminOpenRouter() {
   const renderPricing = (model: DiscoverResponse['newModels'][number]) => {
     const input = formatUsdPerM(model.inputCostPerM);
     const output = formatUsdPerM(model.outputCostPerM);
-    if (!input && !output) return '';
+    if (!input && !output) return '—';
     return (
       <div className="flex flex-col text-xs text-muted-foreground">
         {input && <span>In: {input}/M</span>}
@@ -217,7 +217,7 @@ export default function AdminOpenRouter() {
                             </TableCell>
                             <TableCell>{renderPricing(m)}</TableCell>
                             <TableCell className="text-sm text-muted-foreground">
-                              {m.contextLength ? `${m.contextLength.toLocaleString()} tokens` : ''}
+                              {m.contextLength ? `${m.contextLength.toLocaleString()} tokens` : '—'}
                             </TableCell>
                             <TableCell className="text-sm text-muted-foreground">
                               {m.isPreview && <Badge variant="outline">preview</Badge>}
