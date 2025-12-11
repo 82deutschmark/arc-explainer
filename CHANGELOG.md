@@ -1,3 +1,15 @@
+### Version 6.1.7  Dec 10, 2025 (PENDING TESTING)
+
+- **Worm Arena tournaments: Devstral vs free baselines + Nova/Kat coverage** (Author: Cascade)
+  - Added `run-paid-devstral-matches.ps1` to run the paid `mistralai/devstral-2512` model against a curated set of free OpenRouter baselines (`openai/gpt-5-nano`, `moonshotai/kimi-dev-72b:free`, `google/gemma-3n-e2b-it:free`, `arcee-ai/trinity-mini:free`, `amazon/nova-2-lite-v1:free`, `nvidia/nemotron-nano-12b-v2-vl:free`) with 9 games per pairing for Worm Arena TrueSkill placement.
+  - Added `run-nova-kat-coverage.ps1` to pit `amazon/nova-2-lite-v1:free` and `kwaipilot/kat-coder-pro:free` against cost-controlled GPT-5 baselines (`openai/gpt-5.1-codex-mini`, `openai/gpt-5-nano`) to increase coverage without ever queueing full `openai/gpt-5.1`.
+  - Tweaked `run-nova-kat-coverage.ps1` mid-run to remove the plain GPT-5.1 baseline after the initial batch, keeping future tournaments within a safe cost envelope while preserving existing results.
+  - **Files Modified/Created**: `scripts/worm-arena-tournaments/run-paid-devstral-matches.ps1`, `scripts/worm-arena-tournaments/run-nova-kat-coverage.ps1`, `CHANGELOG.md`
+
+- **Admin OpenRouter toast import fix** (Author: Cascade)
+  - Corrected the `useToast` import in `AdminOpenRouter.tsx` to point at the shared hook module (`@/hooks/use-toast`) instead of a non-existent `@/components/ui/use-toast`, restoring type-checking and toast notifications for discovery/import operations.
+  - **Files Modified**: `client/src/pages/AdminOpenRouter.tsx`, `CHANGELOG.md`
+
 ### Version 6.1.6  Dec 10, 2025 (PENDING TESTING)
 
 - **Worm Arena multi-opponent batch runs** (Author: Claude Code using Haiku 4.5)
