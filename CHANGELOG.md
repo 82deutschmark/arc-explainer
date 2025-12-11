@@ -1,3 +1,12 @@
+### Version 6.1.26  Dec 11, 2025 (PENDING TESTING)
+
+- **Worm Arena Greatest Hits link navigation: fix fallback game resetting** (Author: Claude Code using Haiku 4.5)
+  - Fixed a critical bug where clicking Greatest Hits replay links always loaded the same fallback game instead of the selected game, caused by overly strict validation that treated any game not in the recent 10-game list as invalid.
+  - Simplified the game selection logic to trust URL-provided matchIds completely: the effect now only picks a default game when no game is currently selected (empty state), and otherwise trusts the URL parameter and lets the API handle validation/errors gracefully.
+  - Removed the fragile ref-based protection logic that attempted to distinguish URL-provided vs. manually-selected games, which was prone to race conditions and incomplete coverage.
+  - **Impact**: Users can now reliably navigate directly to any game via URL or Greatest Hits links without being redirected to a default fallback, fixing playback of historical, curated, and deep-linked matches.
+  - **Files Modified**: `client/src/pages/WormArena.tsx`, `CHANGELOG.md`
+
 ### Version 6.1.25  Dec 11, 2025 (PENDING TESTING)
 
 - **Worm Arena replay UX: skip short games, fix headers, clarify thoughts toggle** (Author: GPT-5.1 Codex Mini)
