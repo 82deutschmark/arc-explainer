@@ -21,7 +21,6 @@ import useWormArenaStats from "@/hooks/useWormArenaStats";
 import {
   useSnakeBenchStats,
   useModelRating,
-  useModelHistory,
 } from "@/hooks/useSnakeBench";
 import useWormArenaTrueSkillLeaderboard from "@/hooks/useWormArenaTrueSkillLeaderboard";
 import WormArenaTrueSkillLeaderboard from "@/components/WormArenaTrueSkillLeaderboard";
@@ -99,19 +98,11 @@ export default function WormArenaStats() {
     refresh: refreshRating,
   } = useModelRating(selectedModel ?? undefined);
 
-  const {
-    historyForTable,
-    isLoading: loadingHistory,
-    error: historyError,
-    refresh: refreshHistory,
-  } = useModelHistory(selectedModel ?? undefined, 1000);
-
   React.useEffect(() => {
     if (selectedModel) {
       void refreshRating(selectedModel);
-      void refreshHistory(selectedModel);
     }
-  }, [selectedModel, refreshRating, refreshHistory]);
+  }, [selectedModel, refreshRating]);
 
   React.useEffect(() => {
     if (!selectedModel && leaderboard.length > 0) {
@@ -654,9 +645,19 @@ export default function WormArenaStats() {
         </div>
 
         {/* Global greatest hits (replay-friendly matches) */}
-        <div className="mt-6">
-          <WormArenaGreatestHits />
-        </div>
+        <Card className="bg-[#faf6f1] border-[#d4b5a0] mt-6">
+          <CardHeader className="pb-2">
+            <CardTitle
+              className="text-lg font-bold"
+              style={{ color: "#3d2817" }}
+            >
+              Greatest Hits
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <WormArenaGreatestHits />
+          </CardContent>
+        </Card>
       </main>
       </div>
     </TooltipProvider>

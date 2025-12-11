@@ -265,6 +265,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/admin/openrouter/catalog", asyncHandler(adminControllerFns.getOpenRouterCatalog));
   app.get("/api/admin/openrouter/discover", asyncHandler(adminControllerFns.discoverOpenRouter));
   app.post("/api/admin/openrouter/import", asyncHandler(adminControllerFns.importOpenRouter));
+  app.get("/api/admin/openrouter/sync-config", asyncHandler(adminControllerFns.syncOpenRouterConfig));
 
   // Recovery routes for multiple predictions data
   app.get("/api/admin/recovery-stats", asyncHandler(async (req: any, res: any) => {

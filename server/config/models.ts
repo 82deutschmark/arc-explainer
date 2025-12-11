@@ -929,6 +929,24 @@ export const MODELS: ModelConfig[] = [
     maxOutputTokens: 60000,
     releaseDate: "2025-12"
   },
+  {
+    key: 'openai/gpt-5.2',
+    name: 'OpenAI: GPT-5.2',
+    color: 'bg-sky-600',
+    premium: true,
+    cost: { input: '$1.75', output: '$14.00' },
+    supportsTemperature: true,
+    supportsVision: true,
+    provider: 'OpenRouter',
+    responseTime: { speed: 'moderate', estimate: '30-90 sec' },
+    isReasoning: true,
+    apiModelName: 'openai/gpt-5.2',
+    modelType: 'openrouter',
+    contextWindow: 400000,
+    maxOutputTokens: 60000,
+    releaseDate: "2025-12",
+    notes: 'Latest GPT-5 variant with enhanced reasoning. Available via OpenRouter only.'
+  },
   // xAI Grok Models (Direct API via Responses API)
   {
     key: 'grok-4',

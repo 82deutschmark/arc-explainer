@@ -1,3 +1,21 @@
+### Version 6.1.20  Dec 11, 2025 (PENDING TESTING)
+
+- **OpenRouter model sync utility + GPT-5.2 model** (Author: Claude Code using Haiku 4.5)
+  - Added new `openai/gpt-5.2` model to config with $1.75/M input, $14.00/M output pricing via OpenRouter.
+  - Created `openRouterModelSync.ts` utility to discover new OpenRouter models not yet in `server/config/models.ts` and generate TypeScript configuration snippets with intelligent color/speed/cost detection.
+  - Added `/api/admin/openrouter/sync-config` endpoint supporting optional cost filters (`?maxInputCost=X&maxOutputCost=Y`) to exclude expensive models (e.g., filter out models with output cost > $5/M).
+  - Enhanced Admin OpenRouter panel with new "Sync Models to Config" card: cost filter inputs, discover/generate flow, and one-click copy-to-clipboard for generated snippets.
+  - **Key workflow**: Admin sets max output cost (e.g., $5/M), clicks "Generate Snippets", reviews TypeScript config, and manually adds passing models to `server/config/models.ts`.
+  - **Files Created/Modified**: `server/utils/openRouterModelSync.ts` (new), `server/config/models.ts` (add GPT-5.2), `server/controllers/adminController.ts` (add sync endpoint), `client/src/pages/AdminOpenRouter.tsx` (add sync UI), `server/routes.ts` (register sync route), `CHANGELOG.md`
+
+### Version 6.1.19  Dec 11, 2025 (PENDING TESTING)
+
+- **SnakeBench & Worm Arena API reference docs** (Author: Cascade)
+  - Added a dedicated API reference document for `/api/snakebench/*` and `/api/wormarena/*` covering match/batch execution, game listing, stats/leaderboards, greatest-hits summaries, and SSE-based live tournament streaming.
+  - Updated the main external API reference to surface Worm Arena/SnakeBench endpoints at a glance and point external integrators to the detailed SnakeBench/Worm Arena API doc.
+  - Confirmed all SnakeBench/Worm Arena endpoints remain fully public with no authentication, consistent with the platform’s open research posture.
+  - **Files Created/Modified**: `docs/reference/api/SnakeBench_WormArena_API.md`, `docs/reference/api/EXTERNAL_API.md`, `CHANGELOG.md`
+
 ### Version 6.1.18  Dec 11, 2025 (PENDING TESTING)
 
 - **Worm Arena greatest-hits docs + local analysis tooling** (Author: Cascade)
@@ -5,6 +23,12 @@
   - Added a reference doc describing the relationship between `public.games`, `completed_games/`, `game_index.json`, and the new local analysis script, including examples and practical guidance for filtering to playable games.
   - Captured this behavior and the local analysis script in `AGENTS.md` and `CLAUDE.md` so both local and cloud agents respect DB-vs-local differences when working on Worm Arena features.
   - **Files Created/Modified**: `docs/reference/data/WormArena_GreatestHits_Local_Analysis.md`, `external/SnakeBench/backend/cli/analyze_local_games.py`, `AGENTS.md`, `CLAUDE.md`, `README.md`, `CHANGELOG.md`
+
+### Version 6.1.18  Dec 11, 2025 (PENDING TESTING)
+
+- **Worm Arena stats: replace recent matches card with Greatest Hits** (Author: GPT-5.1 Codex CLI)
+  - Cleaned the stats page to drop the stale recent-matches hook and wrapped the new Greatest Hits component in a dedicated card so the bottom section now shows the curated replay list instead of DB-recent games.
+  - **Files Modified**: `client/src/pages/WormArenaStats.tsx`, `CHANGELOG.md`
 
 ### Version 6.1.17  Dec 11, 2025 (PENDING TESTING)
 

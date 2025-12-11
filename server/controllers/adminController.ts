@@ -679,5 +679,71 @@ export async function importOpenRouter(req: Request, res: Response) {
   }
 }
 
+/**
+ * @route   GET /api/admin/openrouter/sync-config
+ * @desc    Generate TypeScript config snippets for new OpenRouter models to add to models.ts
+ * @query   maxInputCost: number (max input cost per M tokens, e.g., 2.0 for $2/M)
+ * @query   maxOutputCost: number (max output cost per M tokens, e.g., 10.0 for $10/M)
+ * @access  Private
+ */
+export async function syncOpenRouterConfig(req: Request, res: Response) {
+  try {
+    const { generateConfigSnippet, discoverNewModels } = await import(
+      '../utils/openRouterModelSync.js'
+    );
+
+    const maxInputCost = req.query.maxInputCost ? Number(req.query.maxInputCost) : undefined;
+    const maxOutputCost = req.query.maxOutputCost ? Number(req.query.maxOutputCost) : undefined;
+
+    const { totalRemote, totalInConfig, newModels, filteredOut } = await discoverNewModels(
+      maxInputCost,
+      maxOutputCost
+    );
+
+    if (newModels.length === 0) {
+      const msg =
+        filteredOut > 0
+          ? `No models match your cost filters (filtered out ${filteredOut}). Your config is up to date.`
+          : 'No new models found. Your config is up to date!';
+
+      return res.json({
+        success: true,
+        totalRemote,
+        totalInConfig,
+        filteredOut,
+        newModels: [],
+        snippet: '',
+        message: msg,
+      });
+    }
+
+    const snippet = generateConfigSnippet(newModels);
+
+    res.json({
+      success: true,
+      totalRemote,
+      totalInConfig,
+      filteredOut,
+      newModels: newModels.map((m) => ({
+        id: m.id,
+        name: m.name,
+        contextLength: m.context_length,
+        pricing: {
+          input: m.pricing?.prompt,
+          completion: m.pricing?.completion,
+        },
+      })),
+      snippet,
+      message: `Found ${newModels.length} new OpenRouter model(s) matching your filters. Copy the snippet to add them to models.ts.`,
+    });
+  } catch (error) {
+    console.error('[Admin] OpenRouter config sync failed:', error);
+    res.status(500).json({
+      error: 'Failed to sync config',
+      message: error instanceof Error ? error.message : 'Unknown error',
+    });
+  }
+}
+
 // Export router as default
 export default router;
