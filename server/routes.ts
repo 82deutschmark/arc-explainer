@@ -27,6 +27,7 @@ import * as modelManagementController from './controllers/modelManagementControl
 import * as discussionController from './controllers/discussionController.js';
 import { batchController } from './controllers/batchController.ts';
 import { streamController } from "./controllers/streamController.ts";
+import { wormArenaStreamController } from "./controllers/wormArenaStreamController.ts";
 
 import { eloController } from "./controllers/eloController";
 import modelDatasetController from "./controllers/modelDatasetController.ts";
@@ -230,6 +231,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/snakebench/health", asyncHandler(snakeBenchController.health));
   app.get("/api/snakebench/recent-activity", asyncHandler(snakeBenchController.recentActivity));
   app.get("/api/snakebench/leaderboard", asyncHandler(snakeBenchController.basicLeaderboard));
+  app.get("/api/snakebench/stats", asyncHandler(snakeBenchController.stats));
+  app.get("/api/snakebench/model-rating", asyncHandler(snakeBenchController.modelRating));
+  app.get("/api/snakebench/model-history", asyncHandler(snakeBenchController.modelHistory));
+  app.get("/api/snakebench/greatest-hits", asyncHandler(snakeBenchController.getWormArenaGreatestHits));
+  app.get(
+    "/api/snakebench/trueskill-leaderboard",
+    asyncHandler(snakeBenchController.trueSkillLeaderboard),
+  );
+
+  // Worm Arena live streaming (SSE wrapper around SnakeBench matches)
+  app.post("/api/wormarena/prepare", asyncHandler(wormArenaStreamController.prepare));
+  app.get("/api/wormarena/stream/:sessionId", asyncHandler(wormArenaStreamController.stream));
 
   // Batch analysis routes
   app.post("/api/batch/start", asyncHandler(batchController.startBatch));
@@ -249,6 +262,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/admin/start-ingestion", asyncHandler(adminControllerFns.startIngestion));
   app.get("/api/admin/ingestion-history", asyncHandler(adminControllerFns.getIngestionHistory));
   app.get("/api/admin/hf-folders", asyncHandler(adminControllerFns.listHFFolders));
+  app.get("/api/admin/openrouter/catalog", asyncHandler(adminControllerFns.getOpenRouterCatalog));
+  app.get("/api/admin/openrouter/discover", asyncHandler(adminControllerFns.discoverOpenRouter));
+  app.post("/api/admin/openrouter/import", asyncHandler(adminControllerFns.importOpenRouter));
+  app.get("/api/admin/openrouter/sync-config", asyncHandler(adminControllerFns.syncOpenRouterConfig));
 
   // Recovery routes for multiple predictions data
   app.get("/api/admin/recovery-stats", asyncHandler(async (req: any, res: any) => {

@@ -1,5 +1,327 @@
-## ARC Explainer
-- Use proper semantic versioning (MAJOR.MINOR.PATCH) for all changes!! Add new changes at the top with the time and date!
+### Version 6.1.24  Dec 11, 2025 (PENDING TESTING)
+
+- **Worm Arena Hall of Fame: curated top 10 replays** (Author: GPT-5.1 High Reasoning)
+  - Replaced the dynamic DB-driven greatest-hits selector with a hand-curated Hall of Fame of 10 locally verified replays sourced from `external/SnakeBench/backend/completed_games/snake_game_*.json`.
+  - For each curated game we now surface the exact model IDs for both snakes, total rounds played (all > 20), max apples for a single player, and the true end-to-end test cost taken directly from `totals.cost` in the replay JSON.
+  - `/api/snakebench/greatest-hits` now returns only these curated entries (subject to replay existence checks), so the UI always shows a stable, explainable set of Worm Arena showcase matches instead of an opaque, ever-shifting DB heuristic.
+  - **Files Modified**: `server/services/snakeBenchService.ts`, `CHANGELOG.md`
+
+### Version 6.1.23  Dec 11, 2025 (PENDING TESTING)
+
+- **Worm Arena greatest-hits: focus on expensive / high-scoring games** (Author: Cascade)
+  - Updated the Worm Arena greatest-hits selector to drop the "longest games" leaderboard entirely so matches are only surfaced when they are either costly or high-scoring, instead of just long slogs.
+  - Greatest-hits entries now come from two dimensions: most expensive by `total_cost` (with a small cost floor and rounds >= 5) and highest-scoring by max per-player apples (also rounds >= 5), then merged/deduped.
+  - This makes the list more stable and quality-focused; long, low-cost, low-score games are no longer eligible unless they also meet the cost or scoring thresholds.
+  - **Files Modified**: `server/repositories/SnakeBenchRepository.ts`, `CHANGELOG.md`
+
+### Version 6.1.22  Dec 11, 2025 (PENDING TESTING)
+
+- **Worm Arena TrueSkill leaderboard scrolling fix** (Author: GPT-5.1 Codex CLI)
+  - Fixed the TrueSkill leaderboard viewport to a fixed 420px height so the 150-row table scrolls instead of overflowing and getting cut off on `/worm-arena/stats`.
+  - **Files Modified**: `client/src/components/WormArenaTrueSkillLeaderboard.tsx`, `CHANGELOG.md`
+
+### Version 6.1.21  Dec 11, 2025 (PENDING TESTING)
+
+- **Worm Arena replay matchId canonicalization + remove Recent Games firehose** (Author: Cascade)
+  - Updated the Worm Arena replay page to treat the URL query parameter as a canonical **matchId**, with backward-compatible support for legacy `gameId` links, so the address bar and on-page "Match ID" label always refer to the same underlying SnakeBench game.
+  - Removed the uncurated "Recent Games" list from the replay page UI to avoid exposing users to a raw firehose of matches; curated entry points now come from Greatest Hits, live tournament completion links, or direct matchId deep links only.
+  - Standardized all Worm Arena replay links (Greatest Hits card, live session summary, batch results table) to use `matchId` in the query string while still loading existing `gameId` URLs for backwards compatibility.
+  - **Files Modified**: `client/src/pages/WormArena.tsx`, `client/src/components/WormArenaGreatestHits.tsx`, `client/src/pages/WormArenaLive.tsx`, `CHANGELOG.md`
+
+### Version 6.1.20  Dec 11, 2025 (PENDING TESTING)
+
+- **OpenRouter model sync utility + GPT-5.2 + Nex AGI DeepSeek** (Author: Claude Code using Haiku 4.5)
+  - Added new `openai/gpt-5.2` model to config with $1.75/M input, $14.00/M output pricing via OpenRouter.
+  - Added `nex-agi/deepseek-v3.1-nex-n1:free` free model via OpenRouter (131K context window, free tier).
+  - Created `openRouterModelSync.ts` utility to discover new OpenRouter models not yet in `server/config/models.ts` and generate TypeScript configuration snippets with intelligent color/speed/cost detection.
+  - Added `/api/admin/openrouter/sync-config` endpoint supporting optional cost filters (`?maxInputCost=X&maxOutputCost=Y`) to exclude expensive models (e.g., filter out models with output cost > $5/M).
+  - Enhanced Admin OpenRouter panel with new "Sync Models to Config" card: cost filter inputs, discover/generate flow, and one-click copy-to-clipboard for generated snippets.
+  - **Key workflow**: Admin sets max output cost (e.g., $5/M), clicks "Generate Snippets", reviews TypeScript config, and manually adds passing models to `server/config/models.ts`.
+  - **Files Created/Modified**: `server/utils/openRouterModelSync.ts` (new), `server/config/models.ts` (add GPT-5.2, Nex AGI), `server/controllers/adminController.ts` (add sync endpoint), `client/src/pages/AdminOpenRouter.tsx` (add sync UI), `server/routes.ts` (register sync route), `CHANGELOG.md`
+
+### Version 6.1.19  Dec 11, 2025 (PENDING TESTING)
+
+- **SnakeBench & Worm Arena API reference docs** (Author: Cascade)
+  - Added a dedicated API reference document for `/api/snakebench/*` and `/api/wormarena/*` covering match/batch execution, game listing, stats/leaderboards, greatest-hits summaries, and SSE-based live tournament streaming.
+  - Updated the main external API reference to surface Worm Arena/SnakeBench endpoints at a glance and point external integrators to the detailed SnakeBench/Worm Arena API doc.
+  - Confirmed all SnakeBench/Worm Arena endpoints remain fully public with no authentication, consistent with the platform’s open research posture.
+  - **Files Created/Modified**: `docs/reference/api/SnakeBench_WormArena_API.md`, `docs/reference/api/EXTERNAL_API.md`, `CHANGELOG.md`
+
+### Version 6.1.18  Dec 11, 2025 (PENDING TESTING)
+
+- **Worm Arena greatest-hits docs + local analysis tooling** (Author: Cascade)
+  - Documented how DB-backed Worm Arena greatest-hits selections in `public.games` can diverge from locally available replay JSONs, and how to interpret that when building UI or running offline MP4 backfills.
+  - Added a reference doc describing the relationship between `public.games`, `completed_games/`, `game_index.json`, and the new local analysis script, including examples and practical guidance for filtering to playable games.
+  - Captured this behavior and the local analysis script in `AGENTS.md` and `CLAUDE.md` so both local and cloud agents respect DB-vs-local differences when working on Worm Arena features.
+  - **Files Created/Modified**: `docs/reference/data/WormArena_GreatestHits_Local_Analysis.md`, `external/SnakeBench/backend/cli/analyze_local_games.py`, `AGENTS.md`, `CLAUDE.md`, `README.md`, `CHANGELOG.md`
+
+### Version 6.1.18  Dec 11, 2025 (PENDING TESTING)
+
+- **Worm Arena stats: replace recent matches card with Greatest Hits** (Author: GPT-5.1 Codex CLI)
+  - Cleaned the stats page to drop the stale recent-matches hook and wrapped the new Greatest Hits component in a dedicated card so the bottom section now shows the curated replay list instead of DB-recent games.
+  - **Files Modified**: `client/src/pages/WormArenaStats.tsx`, `CHANGELOG.md`
+
+### Version 6.1.17  Dec 11, 2025 (PENDING TESTING)
+
+- **Worm Arena greatest-hits now only shows playable replays** (Author: GPT-5.1 Codex CLI)
+  - Filtered the greatest-hits service to verify each candidate game’s replay asset exists (local path, DB replay_path, or remote fallback) and skip any missing entries, preventing broken playback when the list includes stale DB rows.
+  - **Files Modified**: `server/services/snakeBenchService.ts`, `CHANGELOG.md`
+
+### Version 6.1.16  Dec 11, 2025 (PENDING TESTING)
+
+- **Worm Arena per-model testing cost on stats page** (Author: GPT-5.1 Codex CLI)
+  - Extended the SnakeBench model rating query to join `game_participants` and `games` for `game_type = 'arc-explainer'` and aggregate total USD cost per model using `SUM(gp.cost)` in line with the TrueSkill leaderboard.
+  - Added a `totalCost` field to the shared `SnakeBenchModelRating` type and surfaced it on the Worm Arena stats model snapshot grid so the "Testing cost" badge now shows the real per-model testing spend instead of a TBD placeholder.
+  - **Files Modified**: `shared/types.ts`, `server/repositories/SnakeBenchRepository.ts`, `client/src/pages/WormArenaStats.tsx`, `CHANGELOG.md`
+
+### Version 6.1.16  Dec 11, 2025 (PENDING TESTING)
+
+- **Worm Arena TrueSkill leaderboard visual polish** (Author: Cascade)
+  - Constrained the Worm Arena TrueSkill leaderboard table to a fixed-height, scrollable viewport so up to 150 rows no longer dominate the stats page layout.
+  - Refined TrueSkill labeling to use clear μ and σ glyphs for exposed rating and uncertainty and applied a color-coded palette so each numeric column has a distinct, readable color while preserving the Worm Arena earth-tone aesthetic.
+  - **Files Modified**: `client/src/components/WormArenaTrueSkillLeaderboard.tsx`, `CHANGELOG.md`
+
+### Version 6.1.15  Dec 11, 2025 (PENDING TESTING)
+
+- **Worm Arena Devstral vs OpenAI GPT-5 tournament script** (Author: GPT-5.1 Codex CLI)
+  - Added a dedicated PowerShell helper script to queue Worm Arena batches where Mistral Devstral 2 2512 plays nine games each against GPT-5.1 Codex-Mini, GPT-5 Mini, and GPT-5 Nano using the standard `/api/snakebench/run-batch` endpoint.
+  - **Files Created**: `scripts/worm-arena-tournaments/devstral-vs-openai-gpt5.ps1`, `CHANGELOG.md`
+
+### Version 6.1.14  Dec 11, 2025 (PENDING TESTING)
+
+- **Worm Arena TrueSkill leaderboard (SnakeBench parity)** (Author: Cascade)
+  - Added a DB-backed TrueSkill leaderboard endpoint for Worm Arena games, exposing top models ranked by conservative TrueSkill rating (\mu - 3\sigma) with minimum 3 games and support for up to 150 rows.
+  - Introduced shared DTOs for TrueSkill leaderboard entries/responses and a new repository/service method pair (`getTrueSkillLeaderboard`) that aggregates games, wins/losses/ties, apples eaten, top score, win rate, and total cost from `public.game_participants` filtered to `game_type = 'arc-explainer'`.
+  - Wired a new public API route `/api/snakebench/trueskill-leaderboard` into `server/routes.ts` with no authentication required, consistent with ARC Explainer’s open research posture.
+  - Implemented `useWormArenaTrueSkillLeaderboard` hook and `WormArenaTrueSkillLeaderboard` component on the client so `/worm-arena/stats` now shows a wide, 150-row TrueSkill leaderboard table with SnakeBench-parity columns (Rank, Model, TS Rating, TS Uncertainty, Games, Wins, Losses, Ties, Apples Eaten, Top Score, Win Rate, Total Cost).
+  - Captured the design in `docs/plans/2025-12-10-wormarena-trueskill-leaderboard-plan.md` alongside the existing stats and SnakeBench parity plans.
+  - **Files Modified/Created**: `shared/types.ts`, `server/repositories/SnakeBenchRepository.ts`, `server/services/snakeBenchService.ts`, `server/controllers/snakeBenchController.ts`, `server/routes.ts`, `client/src/hooks/useWormArenaTrueSkillLeaderboard.ts`, `client/src/components/WormArenaTrueSkillLeaderboard.tsx`, `client/src/pages/WormArenaStats.tsx`, `docs/plans/2025-12-10-wormarena-trueskill-leaderboard-plan.md`, `CHANGELOG.md`
+
+### Version 6.1.13  Dec 11, 2025 (PENDING TESTING)
+
+- **Worm Arena replay page model stats strip** (Author: GPT-5.1 Codex CLI)
+  - Added per-model TrueSkill summaries to the Worm Arena replay page so each side of a match shows its pessimistic rating, win/loss/tie record, and placement status, using the same Worm Arena stats and placement helpers as the dedicated stats page.
+  - Reused `useModelRating` and `summarizeWormArenaPlacement` to keep replay-side stats fully wired to live SnakeBench tables instead of hard-coded placeholders, keeping the UI consistent with `WormArenaStats` while staying compact above the board.
+  - **Files Modified**: `client/src/pages/WormArena.tsx`, `CHANGELOG.md`
+
+### Version 6.1.12  Dec 11, 2025 (PENDING TESTING)
+
+- **Worm Arena replay autoplay stop + thought toggle layout** (Author: GPT-5.1 Codex CLI)
+  - Updated the Worm Arena replay autoplay logic so matches begin playing automatically when frames load but stop cleanly on the final round instead of looping back to the start.
+  - Reworked the Worm Arena control bar layout so the "Thoughts show" toggle now appears directly under the playback/round controls, making it more visible and reducing visual flicker during replays.
+  - **Files Modified**: `client/src/pages/WormArena.tsx`, `client/src/components/WormArenaControlBar.tsx`, `CHANGELOG.md`
+
+### Version 6.1.11  Dec 11, 2025 (PENDING TESTING)
+
+- **Worm Arena deep link autoplay + inline controls** (Author: Cascade)
+  - Wired the Worm Arena replay page to respect `gameId` query parameters so `/worm-arena?gameId=...` loads and focuses the specified match instead of always defaulting to the latest game.
+  - Enabled automatic replay playback as soon as frames load for any selected match (including deep-linked replays) so users no longer need to press Play to start watching.
+  - Moved the Worm Arena control bar directly under the emoji game board in the center column to keep controls visually tied to the board and closer to SnakeBench's layout.
+  - **Files Modified**: `client/src/pages/WormArena.tsx`, `CHANGELOG.md`
+
+### Version 6.1.10  Dec 11, 2025 (PENDING TESTING)
+
+- **Admin OpenRouter full catalog viewer + pricing** (Author: Cascade)
+  - Added a dedicated `/api/admin/openrouter/catalog` endpoint that proxies the full OpenRouter `/api/v1/models` catalog, including architecture, supported parameters, and raw pricing fields, and derives per-million input/output token costs plus a preview flag for each model.
+  - Extended the `/admin/openrouter` page with a "Full OpenRouter Catalog" card that loads the full catalog on demand, supports text filtering by slug or name, shows per-model pricing in the standard "In: $X.XX/M, Out: $Y.YY/M" format, and surfaces key capabilities via badges (preview, reasoning, vision, moderated).
+  - Added a one-click "Download JSON" action on the admin catalog card to export the current OpenRouter catalog snapshot for offline analysis, and updated all placeholders and loading labels on this page to use Windows-safe ASCII text (for example "N/A" and "Loading catalog...").
+  - **Files Modified**: `server/controllers/adminController.ts`, `server/routes.ts`, `client/src/pages/AdminOpenRouter.tsx`, `CHANGELOG.md`
+
+### Version 6.1.9  Dec 11, 2025 (PENDING TESTING)
+
+- **Worm Arena TrueSkill coverage + underrepresented tail models** (Author: GPT-5.1 Codex)
+  - Updated `trueskill-coverage-nova-kat.ps1` to submit all Nova/Kat TrueSkill coverage matches asynchronously using `Start-Job`, and refreshed the opponent pool to use current OpenRouter slugs (Devstral, Ministral family, Trinity Mini, DeepSeek v3.2, Olmo-3 Think, Kimi K2, Nemotron, Gemma 3n, GLM 4.6v).
+  - Added `gpt5-nano-vs-underrepresented.ps1` to run focused coverage tournaments where `openai/gpt-5-nano` plays 9 games against each tail model (`arcee-ai/trinity-mini:free`, `mistralai/ministral-3b-2512`, `nvidia/nemotron-nano-9b-v2`, `google/gemma-3n-e2b-it:free`, `nvidia/nemotron-nano-12b-v2-vl:free`, `z-ai/glm-4.6v`) to strengthen TrueSkill estimates for low-sample models.
+  - Added `devstral-free-vs-underrepresented.ps1` to mirror that coverage with `mistralai/devstral-2512:free` as the focus model against GPT-5 Nano and the same underrepresented pool, improving its convergence and direct comparability.
+  - Increased the Worm Arena basic leaderboard cap from 20/100 up to 150 entries end-to-end (repository, controller, and `useWormArenaStats` hook) so the stats page can surface a much larger pool of active models.
+  - **Files Modified/Created**: `scripts/worm-arena-tournaments/trueskill-coverage-nova-kat.ps1`, `scripts/worm-arena-tournaments/gpt5-nano-vs-underrepresented.ps1`, `scripts/worm-arena-tournaments/devstral-free-vs-underrepresented.ps1`, `server/repositories/SnakeBenchRepository.ts`, `server/controllers/snakeBenchController.ts`, `client/src/hooks/useWormArenaStats.ts`, `CHANGELOG.md`
+- **OpenRouter reasoning models: DeepSeek v3.2 + OLMo-3 Think** (Author: GPT-5.1 Codex CLI)
+  - Added OpenRouter configuration entries for `deepseek/deepseek-v3.2` (reasoning mode aligned with direct DeepSeek Reasoner specs), `allenai/olmo-3-7b-think`, and `allenai/olmo-3-32b-think:free`, including context windows, pricing, and reasoning flags so they show up correctly in UI selectors and backend lookups.
+  - Extended the Worm Arena Nova/Kat coverage tournament script to include the three new reasoning models in the opponent pool, enabling coverage matches across premium DeepSeek v3.2 and both OLMo-3 thinking variants.
+  - **Files Modified**: `server/config/models.ts`, `scripts/worm-arena-tournaments/run-nova-kat-coverage.ps1`, `CHANGELOG.md`
+
+### Version 6.1.7  Dec 10, 2025 (PENDING TESTING)
+
+- **Worm Arena tournaments: Devstral vs free baselines + Nova/Kat coverage** (Author: Cascade)
+  - Added `run-paid-devstral-matches.ps1` to run the paid `mistralai/devstral-2512` model against a curated set of free OpenRouter baselines (`openai/gpt-5-nano`, `moonshotai/kimi-dev-72b:free`, `google/gemma-3n-e2b-it:free`, `arcee-ai/trinity-mini:free`, `amazon/nova-2-lite-v1:free`, `nvidia/nemotron-nano-12b-v2-vl:free`) with 9 games per pairing for Worm Arena TrueSkill placement.
+  - Added `run-nova-kat-coverage.ps1` to pit `amazon/nova-2-lite-v1:free` and `kwaipilot/kat-coder-pro:free` against cost-controlled GPT-5 baselines (`openai/gpt-5.1-codex-mini`, `openai/gpt-5-nano`) to increase coverage without ever queueing full `openai/gpt-5.1`.
+  - Tweaked `run-nova-kat-coverage.ps1` mid-run to remove the plain GPT-5.1 baseline after the initial batch, keeping future tournaments within a safe cost envelope while preserving existing results.
+  - **Files Modified/Created**: `scripts/worm-arena-tournaments/run-paid-devstral-matches.ps1`, `scripts/worm-arena-tournaments/run-nova-kat-coverage.ps1`, `CHANGELOG.md`
+
+- **Admin OpenRouter toast import fix** (Author: Cascade)
+  - Corrected the `useToast` import in `AdminOpenRouter.tsx` to point at the shared hook module (`@/hooks/use-toast`) instead of a non-existent `@/components/ui/use-toast`, restoring type-checking and toast notifications for discovery/import operations.
+  - **Files Modified**: `client/src/pages/AdminOpenRouter.tsx`, `CHANGELOG.md`
+
+### Version 6.1.6  Dec 10, 2025 (PENDING TESTING)
+
+- **Worm Arena multi-opponent batch runs** (Author: Claude Code using Haiku 4.5)
+  - Refactored batch match architecture from repeated same-opponent (A vs B × N) to sequential multi-opponent (A vs [B1, B2, ..., B9]) for better ranking data quality and TrueSkill convergence.
+  - Updated `wormArenaStreamController.ts` to accept `opponents: string[]` instead of `count: number`; validates opponent list, stores in session, and loops through different opponents while keeping modelA constant.
+  - Updated `useWormArenaStreaming.ts` hook: `startMatch()` now accepts opponents array; passes to `/api/wormarena/prepare` endpoint; SSE event listeners remain unchanged (work for both scenarios).
+  - Replaced `matchCount` number input with opponent multi-select UI in `WormArenaSetup.tsx`: checkbox list shows available models (excluding modelA), "Reset to Top 9" button for convenience, max 10 opponents enforced.
+  - Added auto-population logic in `WormArenaLive.tsx`: selects top 9 models (excluding selected modelA) on page load, respects user customization, disabled during execution.
+  - Backend batch loop now emits opponent-specific status messages (e.g., "Running match 3 of 9: nova-2-lite vs gpt-5.1-codex-mini...") for transparency.
+  - Sequential execution guarantees respect for API rate limits (models run one-at-a-time, not parallel).
+  - Backward compatible: legacy `count` parameter still supported; converts to repeated opponents array if provided.
+  - **Files Modified**: `server/controllers/wormArenaStreamController.ts` (batch loop refactor), `client/src/hooks/useWormArenaStreaming.ts` (opponents param), `client/src/pages/WormArenaLive.tsx` (state + auto-populate), `client/src/components/WormArenaSetup.tsx` (opponent selector UI), `CHANGELOG.md`
+
+### Version 6.1.5  Dec 10, 2025 (PENDING TESTING)
+
+- **Admin OpenRouter discovery/import UI** (Author: Codex / GPT-5)
+  - Added backend admin endpoints to discover OpenRouter catalog vs DB/config and import selected slugs into `public.models` without WormArena side effects.
+  - Added Admin UI page `/admin/openrouter` to list new slugs, edit names, and import selected; linked from Admin Hub.
+  - Shared OpenRouter model helpers in `SnakeBenchRepository` for listing/upserting DB models.
+  - **Files Modified/Created**: `server/controllers/adminController.ts`, `server/routes.ts`, `server/repositories/SnakeBenchRepository.ts`, `client/src/pages/AdminOpenRouter.tsx`, `client/src/pages/AdminHub.tsx`, `client/src/App.tsx`, `CHANGELOG.md`
+
+### Version 6.1.4  Dec 10, 2025 (PENDING TESTING)
+
+- **OpenRouter discovery + enqueue split** (Author: Codex / GPT-5)
+  - Split discovery (no side effects) from gauntlet enqueue into separate TS scripts: `discover-openrouter-models.ts` reports new slugs vs `server/config/models.ts`; `enqueue-openrouter-new-models.ts` posts WormArena batches for newly discovered slugs with env overrides for modelA/count/endpoint.
+  - Added npm scripts `wormarena:discover-openrouter` and `wormarena:enqueue-openrouter-new`.
+  - **Files Modified/Created**: `scripts/openrouter/openrouter-utils.ts`, `scripts/openrouter/discover-openrouter-models.ts`, `scripts/openrouter/enqueue-openrouter-new-models.ts`, `package.json`, `CHANGELOG.md`
+
+### Version 6.1.2  Dec 10, 2025 (PENDING TESTING)
+
+- **Worm Arena tournament: GPT-5.1 Codex Mini vs verified OpenRouter roster** (Author: Codex / GPT-5)
+  - Updated the `run-matches.ps1` batch runner to pit GPT-5.1 Codex Mini against only OpenRouter models that exist in `server/config/models.ts`, avoiding invalid model slugs and keeping the staging endpoint configurable via a single variable.
+  - **Files Modified**: `scripts/worm-arena-tournaments/run-matches.ps1`, `CHANGELOG.md`
+
+### Version 6.1.1  Dec 10, 2025 (PENDING TESTING)
+
+- **Worm Arena Stats & Placement page (Railway-ready)** (Author: Cascade)
+  - Implemented the `/worm-arena/stats` page showing Worm Arena global aggregates, per-model TrueSkill snapshots (skill estimate, uncertainty, pessimistic rating, leaderboard score), placement progress, and recent match history, all wired to existing SnakeBench DB-backed APIs.
+  - Added shared placement helper `summarizeWormArenaPlacement` plus Node tests to classify models into "not started", "in progress", "effectively complete", and "complete" based on games played and sigma, with a 0–1 progress fraction suitable for 9-game placement UX.
+  - Extended SnakeBench frontend hooks with `useSnakeBenchStats`, `useModelRating`, and `useModelHistory` so React pages can consume `/api/snakebench/stats`, `/api/snakebench/model-rating`, and `/api/snakebench/model-history` without duplicating HTTP wiring.
+  - Updated Worm Arena replay and live pages to share a three-tab header (`Replay`, `Live`, `Stats & Placement`) and added deep links from match summaries into the stats page with modelSlug query params for quick placement inspection.
+  - **Files Modified/Created**: `shared/utils/wormArenaPlacement.ts`, `tests/wormArenaPlacement.test.ts`, `client/src/hooks/useSnakeBench.ts`, `client/src/pages/WormArenaStats.tsx`, `client/src/pages/WormArena.tsx`, `client/src/pages/WormArenaLive.tsx`, `client/src/App.tsx`, `CHANGELOG.md`
+
+### Version 6.1.0  Dec 10, 2025 (PENDING TESTING)
+
+- **Worm Arena stats backend: SnakeBench TrueSkill + history APIs** (Author: Cascade)
+  - Added DB-backed SnakeBench stats for ARC Explainer games (`getArcExplainerStats`) exposing total matches, active models, top apples, and total testing cost for Worm Arena dashboards.
+  - Implemented per-model TrueSkill snapshot + match history accessors (`getModelRating`, `getModelMatchHistory`) so the future `/worm-arena/stats` page can show skill estimates, uncertainty, conservative ratings, and recent head-to-head results.
+  - Exposed new public HTTP endpoints: `/api/snakebench/stats`, `/api/snakebench/model-rating`, and `/api/snakebench/model-history`, wired through `snakeBenchService` and typed via shared SnakeBench stats DTOs.
+  - **Files Modified**: `shared/types.ts`, `server/repositories/SnakeBenchRepository.ts`, `server/services/snakeBenchService.ts`, `server/controllers/snakeBenchController.ts`, `server/routes.ts`, `CHANGELOG.md`
+
+### Version 6.0.12  Dec 10, 2025 (COMPLETED)
+
+- **Worm Arena stats page plan** (Author: Codex / GPT-5)
+  - Documented a dedicated `/worm-arena/stats` page scope with KPIs, leaderboard, trends, and head-to-head spotlight plus proposed backend endpoints/hooks.
+  - Listed the exact backend/frontend files for the data scientist to review first (repository/service/controller, shared DTOs, stats hook/panel, and SnakeBench references).
+  - **Files Modified**: `docs/plans/2025-12-10-worm-arena-stats-page-plan.md`, `CHANGELOG.md`
+
+### Version 6.0.11  Dec 10, 2025 (COMPLETED)
+
+- **Worm Arena UI: Complete SnakeBench layout parity** (Author: Cascade)
+  - Finalized the WormArena UI redesign plan with bold match title display, proper background color (#f5e6d3), and improved typography hierarchy matching SnakeBench's clean aesthetic.
+  - Layout now features: prominent matchup title, compact 3-column reasoning/board grid, horizontal control bar, and minimal vertical space waste.
+  - **Files Modified**: `client/src/pages/WormArena.tsx`, `CHANGELOG.md`
+
+### Version 6.0.10  Dec 10, 2025
+
+- **Worm Arena replay: SnakeBench layout parity** (Author: Codex / GPT-5)
+  - Added a nav link strip to `WormArenaHeader`, rebuilt the reasoning panels with emoji score badges, and introduced a dedicated `WormArenaControlBar` so playback + thought toggles match SnakeBench's compact bar.
+  - Restructured `client/src/pages/WormArena.tsx` to highlight the matchup + timestamp, keep reasoning/board columns as the only thought displays, surface compact metadata/copyable IDs, and tuck the recent-game selector into an accordion; documented the plan.
+  - **Files Modified**: `client/src/components/WormArenaHeader.tsx`, `client/src/components/WormArenaReasoning.tsx`, `client/src/components/WormArenaControlBar.tsx`, `client/src/pages/WormArena.tsx`, `docs/plans/2025-12-10-wormarena-ui-redesign-plan.md`, `CHANGELOG.md`
+
+### Version 6.0.10  Dec 10, 2025 (PENDING TESTING)
+
+- **Worm Arena recent games: remove nested scroll box** (Author: Cascade)
+  - Removed the inner `max-h` + `overflow-y-auto` scrolling from the Recent Games selector on the Worm Arena replay page so only the main page scrolls, avoiding scroll-within-scroll UX issues.
+  - **Files Modified**: `client/src/components/WormArenaRecentGames.tsx`, `CHANGELOG.md`
+
+### Version 6.0.9  Dec 10, 2025 (PENDING TESTING)
+
+- **SnakeBench health + ingest safety fixes** (Author: Cascade)
+  - Completed the `SnakeBenchService.healthCheck` implementation so it returns the full `SnakeBenchHealthResponse` shape (python/backend/runner flags plus timestamp) and compiles cleanly.
+  - Hardened `SnakeBenchRepository.ingestReplayFromFile` against null `rowCount` results when checking for existing games before recomputing aggregates.
+  - Removed an unused `totalCost` variable from the `opus-vs-all.ps1` Worm Arena tournament script to satisfy PowerShell analysis while preserving behavior.
+  - **Files Modified**: `server/services/snakeBenchService.ts`, `server/repositories/SnakeBenchRepository.ts`, `scripts/worm-arena-tournaments/opus-vs-all.ps1`, `CHANGELOG.md`
+
+### Version 6.0.8  Dec 10, 2025 (PENDING TESTING)
+
+- **Worm Arena tournaments: run against staging API** (Author: Cascade)
+  - Updated all Worm Arena tournament PowerShell scripts to POST SnakeBench batches to the staging backend (`https://arc-explainer-staging.up.railway.app/api/snakebench/run-batch`) instead of localhost so tournaments exercise the deployed Railway environment.
+  - **Files Modified**: `scripts/worm-arena-tournaments/run-matches.ps1`, `scripts/worm-arena-tournaments/gpt-openai-feud.ps1`, `scripts/worm-arena-tournaments/gpt-vs-claude-family.ps1`, `scripts/worm-arena-tournaments/gpt-vs-gemini-family.ps1`, `scripts/worm-arena-tournaments/gpt5-vs-claude-gemini.ps1`, `scripts/worm-arena-tournaments/ministral-feud.ps1`, `scripts/worm-arena-tournaments/opus-vs-all.ps1`, `scripts/worm-arena-tournaments/opus-vs-sonnet.ps1`, `CHANGELOG.md`
+
+### Version 6.0.8  Dec 10, 2025 (PENDING TESTING)
+
+- **Worm Arena mobile board: responsive + crisp emoji scaling** (Author: GPT-5.1-Codex-Max)
+  - Added a ResizeObserver-driven layout pass that sizes the canvas from its container and viewport height, clamping cell sizes for readability on phones while preventing overflow.
+  - Scaled the canvas with devicePixelRatio and fluid width styles so the emoji grid stays sharp and fills the available space on mobile without distortion.
+  - **Files Modified**: `client/src/components/WormArenaGameBoard.tsx`, `docs/2025-05-07-worm-arena-mobile-plan.md`, `CHANGELOG.md`
+
+### Version 6.0.7  Dec 10, 2025 (PENDING TESTING)
+
+- **Worm Arena board: random food emojis + highlighted playfield** (Author: Cascade)
+  - Swapped the single avocado food icon for a random emoji chosen from the shared Worm Arena food palette so each apple renders as a fun fruit/food symbol while staying stable per grid cell across frames.
+  - Added a slightly lighter soil-colored rectangle behind the playable grid to distinguish the board area from the darker outer background without breaking the earthy farm aesthetic.
+  - **Files Modified**: `client/src/components/WormArenaGameBoard.tsx`, `CHANGELOG.md`
+
+### Version 6.0.6  Dec 10, 2025 (PENDING TESTING)
+
+- **SnakeBench replays: DB-aware + remote fetch fallback for Railway** (Author: Codex / GPT-5)
+  - `getGame` now consults the database `replay_path` before filesystem guesses and, when the path is an HTTP URL (e.g., Supabase), fetches the JSON remotely so Railway serves replays even when the local file is absent; if still missing, it falls back to the committed GitHub raw replay (`SNAKEBENCH_REPLAY_RAW_BASE` overrideable).
+  - Added a lightweight `SnakeBenchRepository.getReplayPath` helper to retrieve the stored replay path and resolve it relative to the embedded SnakeBench backend.
+  - **Files Modified**: `server/services/snakeBenchService.ts`, `server/repositories/SnakeBenchRepository.ts`, `CHANGELOG.md`
+
+### Version 6.0.7  Dec 10, 2025 (PENDING TESTING)
+
+- **Worm Arena tournaments: point scripts at staging API** (Author: Codex / GPT-5)
+  - Updated tournament runner scripts to hit the staging backend (`https://arc-explainer-staging.up.railway.app/api/snakebench/run-batch`) instead of localhost, keeping a single `$baseUri` to avoid drift across calls.
+  - **Files Modified**: `scripts/worm-arena-tournaments/gpt-vs-gemini-family.ps1`, `scripts/worm-arena-tournaments/gpt5-vs-claude-gemini.ps1`, `CHANGELOG.md`
+
+### Version 6.0.8  Dec 10, 2025 (PENDING TESTING)
+
+- **Worm Arena tournaments: revert to localhost target** (Author: Codex / GPT-5)
+  - Pointed tournament scripts back to the local API (`http://localhost:5000/api/snakebench/run-batch`) after staging runs were deemed unnecessary.
+  - **Files Modified**: `scripts/worm-arena-tournaments/gpt-vs-gemini-family.ps1`, `scripts/worm-arena-tournaments/gpt5-vs-claude-gemini.ps1`, `CHANGELOG.md`
+
+### Version 6.0.5  Dec 10, 2025 (PENDING TESTING)
+
+- **SnakeBench ingest queue + safer tournaments** (Author: Cascade)
+  - Routed SnakeBench DB persistence through a single-process ingest queue (`snakeBenchIngestQueue`) instead of running full transactions directly in the HTTP handler, eliminating lossy minimal inserts and greatly reducing Postgres deadlocks during `/api/snakebench/run-batch`.
+  - Updated `SnakeBenchService.runMatch` to enqueue `recordMatchFromResult` jobs via the ingest queue so HTTP responses are no longer blocked by replay ingest or rating updates.
+  - Increased the delay in `scripts/worm-arena-tournaments/gpt-vs-gemini-family.ps1` between queued matches to ease OpenRouter 402/"Insufficient credits" errors when firing large GPT vs Gemini tournaments.
+  - Captured the replay remediation approach in `docs/plans/2025-12-10-snakebench-replay-remediation-plan.md` and synchronized the embedded `external/SnakeBench` submodule to a newer upstream revision for replay parity.
+  - **Files Modified/Created**: `.claude/settings.local.json`, `docs/plans/2025-12-10-snakebench-replay-remediation-plan.md`, `external/SnakeBench`, `scripts/worm-arena-tournaments/gpt-vs-gemini-family.ps1`, `server/services/snakeBenchIngestQueue.ts`, `server/services/snakeBenchService.ts`, `CHANGELOG.md`
+
+### Version 6.0.4  Dec 10, 2025 (PENDING TESTING)
+
+- **Worm Arena: real SnakeBench cost from MODELS pricing** (Author: Cascade)
+  - Passed per-million pricing for both players from the central `MODELS` config into the SnakeBench runner payload so LLMPlayer.cost is computed with non-zero rates instead of hard-coded zeros.
+  - Updated the Python bridge to inject those prices into `pricing.input` / `pricing.output` for each player config, making `external/SnakeBench/backend/completed_games/*.json` reflect realistic simulated dollar costs based on token counts.
+  - **Files Modified**: `server/services/snakeBenchService.ts`, `server/python/snakebench_runner.py`, `CHANGELOG.md`
+
+### Version 6.0.3  Dec 10, 2025 (PENDING TESTING)
+
+- **SnakeBench runner cost gap callout** (Author: Codex / GPT-5)
+  - Documented the regression where `server/python/snakebench_runner.py` hard-codes `pricing.input/output` to `0`, causing every completed SnakeBench replay to log `$0.00` costs even though token usage is preserved in-frame.
+  - Flagged the remediation steps for the backfill effort: load real pricing data from `MODELS`/SnakeBench DB before launching the runner, then reprocess existing `external/SnakeBench/backend/completed_games/*.json` using their embedded token counts to recompute per-move, per-player, and total costs.
+  - **Files Modified**: `CHANGELOG.md`
+
+### Version 6.0.2  Dec 10, 2025 (PENDING TESTING)
+
+- **SnakeBench parity groundwork: plan + schema + TrueSkill lib** (Author: Codex, OpenAI)
+  - Captured the exact parity execution plan in `docs/plans/2025-12-10-wormarena-snakebench-parity-plan.md` to mirror Greg’s lifecycle without stubs.
+  - Aligned `public.models` schema with Greg’s TrueSkill fields (`trueskill_mu`, `trueskill_sigma`, `trueskill_exposed`, `trueskill_updated_at`) via `DatabaseSchema` so ratings can be stored identically.
+  - Added `ts-trueskill@^5.1.0` dependency (and lockfile updates) to run the same rating math locally for parity.
+  - Implemented full replay ingestion (`SnakeBenchRepository.ingestReplayFromFile`) that upserts models/games/participants from completed replay JSONs, then applies aggregates and TrueSkill with Elo fallback; added baseline reset + backfill runner (`server/scripts/snakebench-backfill.ts`) to replay all `completed_games` chronologically.
+  - Added npm script `snakebench:backfill` for deterministic rebuilds; repository ingestion now prefers full replay ingest when a completed file is present.
+  - **Files Modified/Created**: `docs/plans/2025-12-10-wormarena-snakebench-parity-plan.md`, `server/repositories/database/DatabaseSchema.ts`, `server/repositories/SnakeBenchRepository.ts`, `server/scripts/snakebench-backfill.ts`, `package.json`, `package-lock.json`
+
+### Version 6.0.1  Dec 9, 2025 (PENDING TESTING)
+
+- **Worm Arena architecture: separate replay viewer from live match starter** (Author: Claude Code using Haiku 4.5)
+  - **Core refactor**: Split bloated WormArena.tsx into two distinct pages with clear responsibilities—**WormArena** for past game replay/history only, **WormArenaLive** for live match streaming + starting new matches.
+  - **WormArena.tsx**: Stripped to replay-only viewer. Removed `useWormArenaStreaming`, `useSnakeBenchMatch`, model selection, and match-starting logic. Kept recent games list, game selection, replay controls, and three-column reasoning/board layout. No "Start Match" button.
+  - **WormArenaLive.tsx**: Rebuilt with full match-starting capability. Integrated `useWormArenaStreaming` and `useModels` for live-board rendering + model selection. Added scroll-to-controls logic. Shows live board + final summary with replay link when match completes.
+  - **WormArenaHeader.tsx**: Refactored to be generic, reusable component. Removed "Start Match" button logic entirely. Accepts optional `actionSlot` prop for caller-provided actions (enabling WormArenaLive to inject button without header knowing about it). Keeps title, stats, decorative worms.
+  - **WormArenaHeaderStartAction.tsx** (NEW): Isolated "Start Match" button component. Handles loading state, scroll-to-setup callback, decorative worm hover. Used only in WormArenaLive as actionSlot. Follows SRP—button concerns only.
+  - **WormArenaRecentGames.tsx** (NEW): Extracted recent games list component (from original WormArena). Reduces page bloat, improves modularity. Reusable for both pages if needed later.
+  - **DRY improvement**: Both pages now share `WormArenaHeader`, `WormArenaGameBoard`, and styling consistently. No duplication of header or board rendering.
+  - **Files Created**: `client/src/components/WormArenaHeaderStartAction.tsx`, `client/src/components/WormArenaRecentGames.tsx`
+  - **Files Modified**: `client/src/pages/WormArena.tsx`, `client/src/pages/WormArenaLive.tsx`, `client/src/components/WormArenaHeader.tsx`, `CHANGELOG.md`
 
 ### Version 5.47.26  Dec 9, 2025 (PENDING TESTING)
 

@@ -24,6 +24,7 @@ Do not be afraid to ask the user questions about the outcomes that they are expe
   - **Frontend** – `docs/reference/frontend/`
   - **Solvers** – `docs/reference/solvers/`
 
+
 - **Other Key Areas**
   - HOOKS_REFERENCE.md – `docs/HOOKS_REFERENCE.md` (React hooks cheat-sheet)
   - Backend controllers – `server/controllers/`
@@ -333,3 +334,23 @@ Work autonomously to develop both clearly defined and ambiguous ideas, including
 Excel at designing and building reliable, high-performance infrastructure that interacts heavily with external, third-party LLMs – some experimental, some large-scale and publicly deployed.
 Can architect clean abstractions for complex workflows, specifically synthesizing fragmented information gathered over thousands of parallel, asynchronous queries.
 Care deeply about code quality, performance profiling, and building the stable, scalable platform that allows research to run autonomously.
+
+## SnakeBench (Greg's external project!) 
+# Worm Arena (Our clone of SnakeBench) Worm 🐛 Arena
+Greg’s SnakeBench backend (external/SnakeBench/backend). There is already “live” plumbing in Python:
+
+Routes in external/SnakeBench/backend/app.py: /api/games/live and /api/games/<game_id>/live expose in-progress state (pulled from data_access/live_game.py).
+The game loop in external/SnakeBench/backend/main.py updates live state every round: after each round it calls data_access.live_game.update_game_state(...) and eventually complete_game(...). It also prints Finished round ... to stdout per round.
+Live state is written to the database (see data_access/live_game.py), not streamed over SSE. So a caller can poll these endpoints or DB to watch progress; stdout has per-round prints you could tap if you stream process output.
+Implications for us:
+
+Python already emits round-by-round info (stdout prints + DB live_game rows). We can stream by tailing stdout in snakeBenchService.runMatchStreaming and/or polling the Python live endpoints during a match.
+No SSE is provided by Python; we’ll need to wrap it on our side (Express) using stdout lines or those live endpoints.
+There is live UI in Greg’s frontend (external/SnakeBench/frontend), so the data path is real.
+
+### Worm Arena greatest hits vs local replays
+
+- **DB source of truth for rankings:** Greatest-hits queries operate on the `public.games` table (Railway Postgres) and may return game IDs that **do not** have a local replay JSON under `external/SnakeBench/backend/completed_games`.
+- **Local source of truth for assets:** For offline replay/MP4 work, always treat `completed_games/` + `game_index.json` as the real set of local games. A "greatest hit" without a local JSON (or valid `replay_path`) is not playable on this machine.
+- **Local analysis helper:** Use `external/SnakeBench/backend/cli/analyze_local_games.py` to compute per-game metrics (cost, rounds, max apples, duration) for all **local** replays. See `docs/reference/data/WormArena_GreatestHits_Local_Analysis.md` for details and example outputs.
+- **When building UI or tools:** Prefer DB greatest hits for *which* games are interesting, but **filter to games with existing assets** (local JSON, DB `replay_path`, or known remote storage) before presenting them as playable or queuing video generation.

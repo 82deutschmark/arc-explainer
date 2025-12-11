@@ -205,13 +205,14 @@ export default function AnalyticsOverview() {
     }
   }, [datasetOptions, selectedDataset]);
 
-  // Auto-select gpt-5-1-2025-11-13-thinking-high-attempt2 as the model if available, fallback to first model
+  // Auto-select gpt-5-2-pro-2025-12-11-high-attempt1 as the model if available, fallback through preferred models
   React.useEffect(() => {
     if (availableModels.length > 0 && !selectedModelForDataset) {
+      const gpt52 = availableModels.find(m => m === 'gpt-5-2-pro-2025-12-11-high-attempt1');
       const geminiPro = availableModels.find(m => m === 'gemini-3-pro-preview-attempt1');
       const geminiDeepThink = availableModels.find(m => m === 'gemini-3-deep-think-preview-attempt1');
       const gpt5 = availableModels.find(m => m === 'gpt-5-1-2025-11-13-thinking-high-attempt2');
-      setSelectedModelForDataset(geminiPro || geminiDeepThink || gpt5 || availableModels[0]);
+      setSelectedModelForDataset(gpt52 || geminiPro || geminiDeepThink || gpt5 || availableModels[0]);
     }
   }, [availableModels, selectedModelForDataset]);
 

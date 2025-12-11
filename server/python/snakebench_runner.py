@@ -49,6 +49,17 @@ def main() -> int:
         max_rounds = int(payload.get("maxRounds") or 150)
         num_apples = int(payload.get("numApples") or 5)
 
+        def _safe_float(value: Any) -> float:
+            try:
+                return float(value)
+            except (TypeError, ValueError):  # noqa: PERF203
+                return 0.0
+
+        pricing_input_a = _safe_float(payload.get("pricingInputA"))
+        pricing_output_a = _safe_float(payload.get("pricingOutputA"))
+        pricing_input_b = _safe_float(payload.get("pricingInputB"))
+        pricing_output_b = _safe_float(payload.get("pricingOutputB"))
+
         # Resolve SnakeBench backend path relative to this repo
         script_dir = Path(__file__).resolve().parent
         project_root = script_dir.parent.parent
@@ -68,7 +79,7 @@ def main() -> int:
             emit_error(f"Failed to import SnakeBench main module: {e}")
             return 1
 
-        def build_player_config(name: str) -> Dict[str, Any]:
+        def build_player_config(name: str, input_price: float, output_price: float) -> Dict[str, Any]:
             """Build a minimal player_config for LLMPlayer without DB lookups.
 
             Fields match what llm_providers.OpenRouterProvider and LLMPlayer expect:
@@ -81,16 +92,16 @@ def main() -> int:
                 "name": name,
                 "model_name": name,
                 "pricing": {
-                    "input": 0.0,
-                    "output": 0.0,
+                    "input": float(input_price) if input_price is not None else 0.0,
+                    "output": float(output_price) if output_price is not None else 0.0,
                 },
                 "provider": "OpenRouter",
                 "is_active": True,
                 "test_status": "arc-explainer",
             }
 
-        model_config_1 = build_player_config(str(model_a))
-        model_config_2 = build_player_config(str(model_b))
+        model_config_1 = build_player_config(str(model_a), pricing_input_a, pricing_output_a)
+        model_config_2 = build_player_config(str(model_b), pricing_input_b, pricing_output_b)
 
         # Build an argparse-like namespace expected by run_simulation
         game_params = SimpleNamespace(

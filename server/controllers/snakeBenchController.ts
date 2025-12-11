@@ -23,6 +23,11 @@ import type {
   SnakeBenchListGamesResponse,
   SnakeBenchGameDetailResponse,
   SnakeBenchHealthResponse,
+  SnakeBenchStatsResponse,
+  SnakeBenchModelRatingResponse,
+  SnakeBenchModelHistoryResponse,
+  SnakeBenchTrueSkillLeaderboardResponse,
+  WormArenaGreatestHitsResponse,
 } from '../../shared/types.js';
 
 export async function runMatch(req: Request, res: Response) {
@@ -74,6 +79,73 @@ export async function runMatch(req: Request, res: Response) {
       timestamp: Date.now(),
     };
 
+    return res.status(500).json(response);
+  }
+}
+
+export async function getWormArenaGreatestHits(req: Request, res: Response) {
+  try {
+    const rawLimit = req.query.limitPerDimension as string | undefined;
+    let limit: number | undefined;
+
+    if (typeof rawLimit === 'string' && rawLimit.trim().length > 0) {
+      const parsed = Number(rawLimit.trim());
+      if (Number.isFinite(parsed)) {
+        limit = parsed;
+      }
+    }
+
+    const games = await snakeBenchService.getWormArenaGreatestHits(limit ?? 5);
+
+    const response: WormArenaGreatestHitsResponse = {
+      success: true,
+      games,
+      timestamp: Date.now(),
+    };
+
+    return res.json(response);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    logger.error(`SnakeBench getWormArenaGreatestHits failed: ${message}`, 'snakebench-controller');
+
+    const response: WormArenaGreatestHitsResponse = {
+      success: false,
+      games: [],
+      error: message,
+      timestamp: Date.now(),
+    };
+
+    return res.status(500).json(response);
+  }
+}
+
+export async function trueSkillLeaderboard(req: Request, res: Response) {
+  try {
+    const limitQuery = req.query.limit as string | undefined;
+    const minGamesQuery = req.query.minGames as string | undefined;
+
+    const parsedLimit = limitQuery != null && Number.isFinite(Number(limitQuery)) ? Number(limitQuery) : undefined;
+    const parsedMinGames =
+      minGamesQuery != null && Number.isFinite(Number(minGamesQuery)) ? Number(minGamesQuery) : undefined;
+
+    const entries = await snakeBenchService.getTrueSkillLeaderboard(parsedLimit ?? 150, parsedMinGames ?? 3);
+
+    const response: SnakeBenchTrueSkillLeaderboardResponse = {
+      success: true,
+      entries,
+      timestamp: Date.now(),
+    };
+
+    return res.json(response);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    logger.error(`SnakeBench trueSkillLeaderboard failed: ${message}`, 'snakebench-controller');
+    const response: SnakeBenchTrueSkillLeaderboardResponse = {
+      success: false,
+      entries: [],
+      error: message,
+      timestamp: Date.now(),
+    };
     return res.status(500).json(response);
   }
 }
@@ -233,10 +305,24 @@ export async function health(req: Request, res: Response) {
 
 export async function recentActivity(req: Request, res: Response) {
   try {
-    const daysQuery = req.query.days;
-    const days = Number.isFinite(Number(daysQuery)) ? Math.max(1, Math.min(Number(daysQuery), 90)) : 7;
+    const daysRaw = req.query.days as string | undefined;
+    let days: number | undefined;
 
-    const result = await snakeBenchService.getRecentActivity(days);
+    if (typeof daysRaw === 'string') {
+      const trimmed = daysRaw.trim().toLowerCase();
+      if (trimmed === 'all') {
+        days = 0;
+      } else if (trimmed.length > 0) {
+        const parsed = Number(trimmed);
+        if (Number.isFinite(parsed)) {
+          days = parsed;
+        }
+      }
+    }
+
+    const effectiveDays = days === undefined ? 7 : days;
+
+    const result = await snakeBenchService.getRecentActivity(effectiveDays);
 
     return res.json({
       success: true,
@@ -259,7 +345,7 @@ export async function basicLeaderboard(req: Request, res: Response) {
   try {
     const limitQuery = req.query.limit;
     const sortByQuery = req.query.sortBy;
-    const limit = Number.isFinite(Number(limitQuery)) ? Math.max(1, Math.min(Number(limitQuery), 100)) : 10;
+    const limit = Number.isFinite(Number(limitQuery)) ? Math.max(1, Math.min(Number(limitQuery), 150)) : 10;
     const sortBy = sortByQuery === 'winRate' ? 'winRate' : 'gamesPlayed';
 
     const result = await snakeBenchService.getBasicLeaderboard(limit, sortBy);
@@ -281,6 +367,101 @@ export async function basicLeaderboard(req: Request, res: Response) {
   }
 }
 
+export async function stats(req: Request, res: Response) {
+  try {
+    const stats = await snakeBenchService.getArcExplainerStats();
+    const response: SnakeBenchStatsResponse = {
+      success: true,
+      stats,
+      timestamp: Date.now(),
+    };
+    return res.json(response);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    logger.error(`SnakeBench stats failed: ${message}`, 'snakebench-controller');
+    const response: SnakeBenchStatsResponse = {
+      success: false,
+      stats: { totalGames: 0, activeModels: 0, topApples: 0, totalCost: 0 },
+      error: message as any,
+      timestamp: Date.now(),
+    };
+    return res.status(500).json(response);
+  }
+}
+
+export async function modelRating(req: Request, res: Response) {
+  try {
+    const modelSlugRaw = (req.query.modelSlug as string | undefined) ?? '';
+    const modelSlug = modelSlugRaw.trim();
+
+    if (!modelSlug) {
+      const response: SnakeBenchModelRatingResponse = {
+        success: false,
+        error: 'modelSlug query parameter is required',
+        timestamp: Date.now(),
+      };
+      return res.status(400).json(response);
+    }
+
+    const rating = await snakeBenchService.getModelRating(modelSlug);
+    const response: SnakeBenchModelRatingResponse = {
+      success: true,
+      rating,
+      timestamp: Date.now(),
+    };
+    return res.json(response);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    logger.error(`SnakeBench modelRating failed: ${message}`, 'snakebench-controller');
+    const response: SnakeBenchModelRatingResponse = {
+      success: false,
+      error: message,
+      timestamp: Date.now(),
+    };
+    return res.status(500).json(response);
+  }
+}
+
+export async function modelHistory(req: Request, res: Response) {
+  try {
+    const modelSlugRaw = (req.query.modelSlug as string | undefined) ?? '';
+    const modelSlug = modelSlugRaw.trim();
+    const limitQuery = req.query.limit as string | undefined;
+    const limit = limitQuery != null && Number.isFinite(Number(limitQuery)) ? Number(limitQuery) : undefined;
+
+    if (!modelSlug) {
+      const response: SnakeBenchModelHistoryResponse = {
+        success: false,
+        modelSlug: '',
+        history: [],
+        timestamp: Date.now(),
+        error: 'modelSlug query parameter is required' as any,
+      };
+      return res.status(400).json(response);
+    }
+
+    const history = await snakeBenchService.getModelMatchHistory(modelSlug, limit);
+    const response: SnakeBenchModelHistoryResponse = {
+      success: true,
+      modelSlug,
+      history,
+      timestamp: Date.now(),
+    };
+    return res.json(response);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    logger.error(`SnakeBench modelHistory failed: ${message}`, 'snakebench-controller');
+    const response: SnakeBenchModelHistoryResponse = {
+      success: false,
+      modelSlug: '',
+      history: [],
+      timestamp: Date.now(),
+      error: message as any,
+    };
+    return res.status(500).json(response);
+  }
+}
+
 export const snakeBenchController = {
   runMatch,
   runBatch,
@@ -289,4 +470,9 @@ export const snakeBenchController = {
   health,
   recentActivity,
   basicLeaderboard,
+  stats,
+  modelRating,
+  modelHistory,
+  trueSkillLeaderboard,
+  getWormArenaGreatestHits,
 };

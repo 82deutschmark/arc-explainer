@@ -21,6 +21,56 @@ import { MODELS } from '../config/models.js';
 
 const router = Router();
 const puzzleLoader = new PuzzleLoader();
+const OPENROUTER_ENDPOINT = 'https://openrouter.ai/api/v1/models';
+
+type OpenRouterArchitecture = {
+  modality?: string;
+  input_modalities?: string[];
+  output_modalities?: string[];
+  tokenizer?: string;
+  instruct_type?: string | null;
+};
+
+type OpenRouterTopProvider = {
+  context_length?: number;
+  max_completion_tokens?: number | null;
+  is_moderated?: boolean;
+};
+
+type OpenRouterModel = {
+  id: string;
+  name?: string;
+  description?: string;
+  created?: number;
+  context_length?: number;
+  architecture?: OpenRouterArchitecture;
+  pricing?: {
+    prompt?: string;
+    completion?: string;
+    request?: string;
+    image?: string;
+    web_search?: string;
+    internal_reasoning?: string;
+    input_cache_read?: string;
+    input_cache_write?: string;
+  };
+  top_provider?: OpenRouterTopProvider;
+  supported_parameters?: string[];
+  default_parameters?: Record<string, unknown>;
+  catalog_metadata?: {
+    preview?: boolean;
+    derived_pricing?: {
+      prompt?: string;
+      completion?: string;
+      request?: string;
+      image?: string;
+      web_search?: string;
+      internal_reasoning?: string;
+      input_cache_read?: string;
+      input_cache_write?: string;
+    };
+  };
+};
 
 // ============================================================================
 // DATA RECOVERY ENDPOINT (Existing)
@@ -472,6 +522,226 @@ export async function listHFFolders(req: Request, res: Response) {
     res.json({ folders: results });
   } catch (error) {
     res.status(500).json({ error: 'Failed to list HF folders', message: error instanceof Error ? error.message : String(error) });
+  }
+}
+
+// ============================================================================
+// OPENROUTER DISCOVERY / IMPORT ENDPOINTS (New)
+// ============================================================================
+
+async function fetchOpenRouterCatalog(): Promise<OpenRouterModel[]> {
+  const headers: Record<string, string> = { Accept: 'application/json' };
+  if (process.env.OPENROUTER_API_KEY) {
+    headers.Authorization = `Bearer ${process.env.OPENROUTER_API_KEY}`;
+  }
+
+  const resp = await fetch(OPENROUTER_ENDPOINT, { headers });
+  if (!resp.ok) {
+    const info = await resp.text().catch(() => resp.statusText);
+    throw new Error(`OpenRouter API error: ${resp.status} ${info}`);
+  }
+  const payload = (await resp.json()) as { data?: OpenRouterModel[] };
+  return payload.data ?? [];
+}
+
+function flagPreview(slug: string): boolean {
+  const lower = slug.toLowerCase();
+  return (
+    lower.includes('preview') ||
+    lower.includes('beta') ||
+    lower.includes(':free') ||
+    lower.includes(':exacto') ||
+    lower.includes('sandbox') ||
+    lower.includes('dev')
+  );
+}
+
+function computePricePerMillion(perTokenString?: string): number | null {
+  if (!perTokenString) return null;
+  const value = Number(perTokenString);
+  if (!Number.isFinite(value) || value < 0) return null;
+  const perMillion = value * 1_000_000;
+  const rounded = Math.round(perMillion * 100) / 100;
+  return rounded;
+}
+
+/**
+ * @route   GET /api/admin/openrouter/catalog
+ * @desc    Return full OpenRouter catalog with derived pricing for admin UI
+ * @access  Private
+ */
+export async function getOpenRouterCatalog(req: Request, res: Response) {
+  try {
+    const remote = await fetchOpenRouterCatalog();
+
+    const models = remote.map((m) => ({
+      ...m,
+      inputCostPerM: computePricePerMillion(m.pricing?.prompt),
+      outputCostPerM: computePricePerMillion(m.pricing?.completion),
+      isPreview: flagPreview(m.id),
+    }));
+
+    res.json({
+      total: models.length,
+      models,
+    });
+  } catch (error) {
+    console.error('[Admin] OpenRouter catalog fetch failed:', error);
+    res.status(500).json({
+      error: 'Failed to fetch OpenRouter catalog',
+      message: error instanceof Error ? error.message : 'Unknown error',
+    });
+  }
+}
+
+/**
+ * @route   GET /api/admin/openrouter/discover
+ * @desc    Fetch OpenRouter catalog and list slugs not present in DB/config
+ * @access  Private
+ */
+export async function discoverOpenRouter(req: Request, res: Response) {
+  try {
+    const remote = await fetchOpenRouterCatalog();
+
+    const configSlugs = new Set(
+      MODELS.filter((m) => m.modelType === 'openrouter')
+        .map((m) => m.apiModelName || m.key)
+        .filter(Boolean) as string[]
+    );
+
+    const dbModels = repositoryService.isInitialized() ? await repositoryService.snakeBench.listModels() : [];
+    const dbSlugs = new Set(dbModels.map((m) => m.model_slug));
+
+    const newModels = remote
+      .filter((m) => m.id && !configSlugs.has(m.id) && !dbSlugs.has(m.id))
+      .map((m) => ({
+        id: m.id,
+        name: m.name ?? m.id,
+        contextLength: m.context_length ?? null,
+        isPreview: flagPreview(m.id),
+        inputCostPerM: computePricePerMillion(m.pricing?.prompt),
+        outputCostPerM: computePricePerMillion(m.pricing?.completion),
+      }));
+
+    res.json({
+      totalRemote: remote.length,
+      totalLocalConfig: configSlugs.size,
+      totalLocalDb: dbSlugs.size,
+      newModels,
+    });
+  } catch (error) {
+    console.error('[Admin] OpenRouter discovery failed:', error);
+    res.status(500).json({
+      error: 'Failed to fetch OpenRouter catalog',
+      message: error instanceof Error ? error.message : 'Unknown error',
+    });
+  }
+}
+
+/**
+ * @route   POST /api/admin/openrouter/import
+ * @desc    Import selected OpenRouter slugs into DB (models table)
+ * @body    { slugs: string[], nameOverrides?: Record<string,string> }
+ * @access  Private
+ */
+export async function importOpenRouter(req: Request, res: Response) {
+  try {
+    const { slugs, nameOverrides } = req.body as { slugs?: string[]; nameOverrides?: Record<string, string> };
+    if (!Array.isArray(slugs) || slugs.length === 0) {
+      return res.status(400).json({ error: 'No slugs provided' });
+    }
+
+    if (!repositoryService.isInitialized()) {
+      return res.status(500).json({ error: 'Database not available for import' });
+    }
+
+    const models = slugs.map((slug) => ({
+      modelSlug: slug,
+      name: nameOverrides?.[slug] || slug,
+      provider: 'OpenRouter',
+      isActive: true,
+      testStatus: 'untested',
+    }));
+
+    const result = await repositoryService.snakeBench.upsertModels(models);
+
+    res.json({
+      inserted: result.inserted,
+      updated: result.updated,
+      totalRequested: slugs.length,
+    });
+  } catch (error) {
+    console.error('[Admin] OpenRouter import failed:', error);
+    res.status(500).json({
+      error: 'Failed to import models',
+      message: error instanceof Error ? error.message : 'Unknown error',
+    });
+  }
+}
+
+/**
+ * @route   GET /api/admin/openrouter/sync-config
+ * @desc    Generate TypeScript config snippets for new OpenRouter models to add to models.ts
+ * @query   maxInputCost: number (max input cost per M tokens, e.g., 2.0 for $2/M)
+ * @query   maxOutputCost: number (max output cost per M tokens, e.g., 10.0 for $10/M)
+ * @access  Private
+ */
+export async function syncOpenRouterConfig(req: Request, res: Response) {
+  try {
+    const { generateConfigSnippet, discoverNewModels } = await import(
+      '../utils/openRouterModelSync.js'
+    );
+
+    const maxInputCost = req.query.maxInputCost ? Number(req.query.maxInputCost) : undefined;
+    const maxOutputCost = req.query.maxOutputCost ? Number(req.query.maxOutputCost) : undefined;
+
+    const { totalRemote, totalInConfig, newModels, filteredOut } = await discoverNewModels(
+      maxInputCost,
+      maxOutputCost
+    );
+
+    if (newModels.length === 0) {
+      const msg =
+        filteredOut > 0
+          ? `No models match your cost filters (filtered out ${filteredOut}). Your config is up to date.`
+          : 'No new models found. Your config is up to date!';
+
+      return res.json({
+        success: true,
+        totalRemote,
+        totalInConfig,
+        filteredOut,
+        newModels: [],
+        snippet: '',
+        message: msg,
+      });
+    }
+
+    const snippet = generateConfigSnippet(newModels);
+
+    res.json({
+      success: true,
+      totalRemote,
+      totalInConfig,
+      filteredOut,
+      newModels: newModels.map((m) => ({
+        id: m.id,
+        name: m.name,
+        contextLength: m.context_length,
+        pricing: {
+          input: m.pricing?.prompt,
+          completion: m.pricing?.completion,
+        },
+      })),
+      snippet,
+      message: `Found ${newModels.length} new OpenRouter model(s) matching your filters. Copy the snippet to add them to models.ts.`,
+    });
+  } catch (error) {
+    console.error('[Admin] OpenRouter config sync failed:', error);
+    res.status(500).json({
+      error: 'Failed to sync config',
+      message: error instanceof Error ? error.message : 'Unknown error',
+    });
   }
 }
 

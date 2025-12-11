@@ -13,6 +13,7 @@
 import { spawn, spawnSync, type SpawnOptions } from 'child_process';
 import fs from 'fs';
 import path from 'path';
+import https from 'https';
 
 import type {
   SnakeBenchRunMatchRequest,
@@ -21,9 +22,15 @@ import type {
   SnakeBenchRunBatchResult,
   SnakeBenchGameSummary,
   SnakeBenchHealthResponse,
+  SnakeBenchArcExplainerStats,
+  SnakeBenchModelRating,
+  SnakeBenchModelMatchHistoryEntry,
+  SnakeBenchTrueSkillLeaderboardEntry,
+  WormArenaGreatestHitGame,
 } from '../../shared/types.js';
 import { logger } from '../utils/logger.ts';
 import { repositoryService } from '../repositories/RepositoryService.ts';
+import { snakeBenchIngestQueue } from './snakeBenchIngestQueue.ts';
 import { MODELS } from '../config/models.ts';
 
 const MIN_BOARD_SIZE = 4;
@@ -39,6 +46,163 @@ function clamp(value: number, min: number, max: number): number {
   if (!Number.isFinite(value)) return min;
   return Math.min(max, Math.max(min, value));
 }
+
+function parseCostStringToNumber(cost: string | undefined | null): number {
+  if (!cost) return 0;
+  const cleaned = cost.replace(/\$/g, "").trim();
+  const firstPart = cleaned.split(/-|–|—/)[0]?.trim() ?? "";
+  const match = firstPart.match(/[0-9]*\.?[0-9]+/);
+  if (!match) return 0;
+  const value = parseFloat(match[0]);
+  return Number.isFinite(value) ? value : 0;
+}
+
+// Curated Worm Arena Hall of Fame (local replay JSONs)
+// Metrics (rounds, scores, cost) were computed from
+// external/SnakeBench/backend/completed_games/snake_game_*.json
+// via analyze_local_games.py and manual inspection.
+const CURATED_WORM_ARENA_HALL_OF_FAME: WormArenaGreatestHitGame[] = [
+  {
+    gameId: '295efa56-170b-44b7-99ef-f11c2111058e',
+    startedAt: '2025-06-11T07:01:49.612695',
+    modelA: 'o3-2025-04-16-low',
+    modelB: 'o3-mini-2025-01-31-high',
+    roundsPlayed: 97,
+    maxRounds: 100,
+    totalCost: 0.0,
+    maxFinalScore: 29,
+    scoreDelta: 5,
+    boardWidth: 10,
+    boardHeight: 10,
+    highlightReason: 'Legendary high-scoring marathon (29 apples over 97/100 rounds)',
+  },
+  {
+    gameId: '82bca6d4-5bc7-4273-84b5-ad272fbe3bc9',
+    startedAt: '2025-06-11T06:57:27.291026',
+    modelA: 'o3-2025-04-16-low',
+    modelB: 'o3-mini-2025-01-31-high',
+    roundsPlayed: 97,
+    maxRounds: 100,
+    totalCost: 0.0,
+    maxFinalScore: 29,
+    scoreDelta: 9,
+    boardWidth: 10,
+    boardHeight: 10,
+    highlightReason: 'Epic mirror match marathon (97/100 rounds, 29-20 apples)',
+  },
+  {
+    gameId: '1b0cadf1-be63-4347-9479-b53453900888',
+    startedAt: '2025-06-11T07:42:01.757390',
+    modelA: 'o3-2025-04-16-low',
+    modelB: 'o4-mini-2025-04-16-medium',
+    roundsPlayed: 90,
+    maxRounds: 100,
+    totalCost: 0.0,
+    maxFinalScore: 26,
+    scoreDelta: 9,
+    boardWidth: 10,
+    boardHeight: 10,
+    highlightReason: 'Close high-apple duel (26-17 apples over 90/100 rounds)',
+  },
+  {
+    gameId: '562c44b7-57bd-4efb-b754-2c29914de2f5',
+    startedAt: '2025-06-11T08:09:57.815378',
+    modelA: 'o3-2025-04-16-low',
+    modelB: 'o4-mini-2025-04-16-high',
+    roundsPlayed: 96,
+    maxRounds: 100,
+    totalCost: 0.0,
+    maxFinalScore: 25,
+    scoreDelta: 10,
+    boardWidth: 10,
+    boardHeight: 10,
+    highlightReason: 'High-scoring upset (25-15 apples, nearly full 96/100 rounds)',
+  },
+  {
+    gameId: '659ec86c-87b3-4152-a6a5-8e4ea13dfca8',
+    startedAt: '2025-06-12T08:44:40.494441',
+    modelA: 'claude-sonnet-4-20250514',
+    modelB: 'o4-mini-2025-04-16-high',
+    roundsPlayed: 80,
+    maxRounds: 100,
+    totalCost: 0.0,
+    maxFinalScore: 25,
+    scoreDelta: 6,
+    boardWidth: 10,
+    boardHeight: 10,
+    highlightReason: 'Sonnet vs o4-mini shootout (25-19 apples over 80 rounds)',
+  },
+  {
+    gameId: 'e2e36302-c742-4613-9cb6-6e4cb617d5e3',
+    startedAt: '2025-12-09T23:12:40.258782',
+    modelA: 'x-ai/grok-4.1-fast',
+    modelB: 'openai/gpt-5.1-codex-mini',
+    roundsPlayed: 91,
+    maxRounds: 150,
+    totalCost: 0.5321893,
+    maxFinalScore: 26,
+    scoreDelta: 7,
+    boardWidth: 10,
+    boardHeight: 10,
+    highlightReason: 'Grok vs GPT-5.1 Codex slugfest (26-19 apples, ~$0.53 test)',
+  },
+  {
+    gameId: 'c6c26143-451f-4524-bb72-f4cd2e8242c4',
+    startedAt: '2025-11-29T22:16:36.672170',
+    modelA: 'Anthropic: Claude Opus 4.5',
+    modelB: 'Google: Gemini 3 Pro Preview',
+    roundsPlayed: 45,
+    maxRounds: 150,
+    totalCost: 4.833026999999999,
+    maxFinalScore: 16,
+    scoreDelta: 4,
+    boardWidth: 10,
+    boardHeight: 10,
+    highlightReason: 'Most expensive duel (Opus vs Gemini 3 Pro, ~$4.83)',
+  },
+  {
+    gameId: '01ba2c15-ab41-4049-9d61-ff3f49050b7e',
+    startedAt: '2025-11-18T11:57:01.263267',
+    modelA: 'Google: Gemini 3 Pro Preview',
+    modelB: 'Google: Gemini 2.5 Flash Lite',
+    roundsPlayed: 58,
+    maxRounds: 100,
+    totalCost: 3.463459899999999,
+    maxFinalScore: 14,
+    scoreDelta: 2,
+    boardWidth: 10,
+    boardHeight: 10,
+    highlightReason: 'Gemini mirror match, pricey but close (14-12 apples, ~$3.46)',
+  },
+  {
+    gameId: '8a2b969e-1390-42ff-a3ec-a9c49db64dc3',
+    startedAt: '2025-12-10T19:54:05.683069',
+    modelA: 'openai/gpt-5-nano',
+    modelB: 'anthropic/claude-opus-4.5',
+    roundsPlayed: 37,
+    maxRounds: 150,
+    totalCost: 2.7476616999999997,
+    maxFinalScore: 10,
+    scoreDelta: 10,
+    boardWidth: 10,
+    boardHeight: 10,
+    highlightReason: 'GPT-5 Nano vs Claude Opus showdown (~$2.75, 10-0 apples blowout)',
+  },
+  {
+    gameId: 'cd8f383c-24ab-4622-a7bd-5a55853709e6',
+    startedAt: '2025-11-18T12:49:54.860429',
+    modelA: 'Google: Gemini 3 Pro Preview',
+    modelB: 'Qwen: Qwen-Plus',
+    roundsPlayed: 45,
+    maxRounds: 100,
+    totalCost: 2.1374307999999997,
+    maxFinalScore: 11,
+    scoreDelta: 2,
+    boardWidth: 10,
+    boardHeight: 10,
+    highlightReason: 'Gemini 3 Pro vs Qwen-Plus nail-biter (11-9 apples, ~$2.14)',
+  },
+];
 
 export class SnakeBenchService {
   private resolvePythonBin(): string {
@@ -176,6 +340,21 @@ export class SnakeBenchService {
     const maxRounds = clamp(maxRoundsRaw, MIN_MAX_ROUNDS, MAX_MAX_ROUNDS);
     const numApples = clamp(numApplesRaw, MIN_NUM_APPLES, MAX_NUM_APPLES);
 
+    const findModelConfig = (slug: string) =>
+      MODELS.find(
+        (m) =>
+          m.provider === 'OpenRouter' &&
+          ((m.apiModelName && m.apiModelName === slug) || m.key === slug),
+      );
+
+    const configA = findModelConfig(modelA);
+    const configB = findModelConfig(modelB);
+
+    const pricingInputA = configA ? parseCostStringToNumber(configA.cost.input) : 0;
+    const pricingOutputA = configA ? parseCostStringToNumber(configA.cost.output) : 0;
+    const pricingInputB = configB ? parseCostStringToNumber(configB.cost.input) : 0;
+    const pricingOutputB = configB ? parseCostStringToNumber(configB.cost.output) : 0;
+
     const payload = {
       modelA: String(modelA),
       modelB: String(modelB),
@@ -183,6 +362,10 @@ export class SnakeBenchService {
       height,
       maxRounds,
       numApples,
+      pricingInputA,
+      pricingOutputA,
+      pricingInputB,
+      pricingOutputB,
     };
 
     const pythonBin = this.resolvePythonBin();
@@ -317,9 +500,9 @@ export class SnakeBenchService {
           completedGamePath: parsed.completed_game_path ?? parsed.completedGamePath,
         };
 
-        // Fire-and-forget persistence into SnakeBench-compatible tables.
+        // Fire-and-forget persistence via the ingest queue (no lossy fallbacks).
         try {
-          void repositoryService.snakeBench.recordMatchFromResult({
+          snakeBenchIngestQueue.enqueue({
             result,
             width,
             height,
@@ -473,6 +656,29 @@ export class SnakeBenchService {
     let filename = `snake_game_${gameId}.json`;
     let candidate = path.join(completedDir, filename);
 
+    // Prefer a replay_path from the database (covers freshly completed games
+    // after a restart where the index/filename lookup may not be populated).
+    const candidatePaths: string[] = [];
+    let remoteReplayUrl: string | null = null;
+    try {
+      const dbReplay = await repositoryService.snakeBench.getReplayPath(gameId);
+      const replayPath = dbReplay?.replayPath;
+      if (replayPath) {
+        if (/^https?:\/\//i.test(replayPath)) {
+          remoteReplayUrl = replayPath;
+        } else {
+          const resolved = path.isAbsolute(replayPath) ? replayPath : path.join(backendDir, replayPath);
+          candidatePaths.push(resolved);
+        }
+      }
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      logger.warn(
+        `SnakeBenchService.getGame: failed to fetch replay_path from DB for ${gameId}: ${msg}`,
+        'snakebench-service',
+      );
+    }
+
     if (!fs.existsSync(candidate)) {
       const indexPath = path.join(completedDir, 'game_index.json');
       if (fs.existsSync(indexPath)) {
@@ -490,18 +696,142 @@ export class SnakeBenchService {
       }
     }
 
-    if (!fs.existsSync(candidate)) {
-      throw new Error(`Game not found: ${gameId}`);
+    candidatePaths.push(candidate);
+
+    const uniquePaths = Array.from(new Set(candidatePaths));
+    const existingPath = uniquePaths.find((p) => fs.existsSync(p));
+
+    if (existingPath) {
+      try {
+        const raw = await fs.promises.readFile(existingPath, 'utf8');
+        return JSON.parse(raw);
+      } catch (err) {
+        const message = err instanceof Error ? err.message : String(err);
+        logger.error(`Failed to read SnakeBench game ${gameId}: ${message}`, 'snakebench-service');
+        throw new Error(`Failed to read game ${gameId}`);
+      }
     }
 
+    // Remote fetch fallback (e.g., Supabase public URL stored in replay_path)
+    if (remoteReplayUrl) {
+      try {
+        const payload = await this.fetchJsonFromUrl(remoteReplayUrl);
+        return payload;
+      } catch (err) {
+        const message = err instanceof Error ? err.message : String(err);
+        logger.error(
+          `Failed to fetch remote replay for SnakeBench game ${gameId} from ${remoteReplayUrl}: ${message}`,
+          'snakebench-service',
+        );
+      }
+    }
+
+    // GitHub raw fallback for committed replay assets (matches submodule repo structure)
+    const rawBase =
+      process.env.SNAKEBENCH_REPLAY_RAW_BASE ||
+      'https://raw.githubusercontent.com/VoynichLabs/SnakeBench/main/backend/completed_games';
+    const rawUrl = `${rawBase}/snake_game_${gameId}.json`;
     try {
-      const raw = await fs.promises.readFile(candidate, 'utf8');
-      return JSON.parse(raw);
+      const payload = await this.fetchJsonFromUrl(rawUrl);
+      return payload;
     } catch (err) {
       const message = err instanceof Error ? err.message : String(err);
-      logger.error(`Failed to read SnakeBench game ${gameId}: ${message}`, 'snakebench-service');
-      throw new Error(`Failed to read game ${gameId}`);
+      logger.error(
+        `Failed to fetch GitHub raw replay for SnakeBench game ${gameId} from ${rawUrl}: ${message}`,
+        'snakebench-service',
+      );
     }
+
+    throw new Error(`Game not found: ${gameId}`);
+  }
+
+  /**
+   * Check whether a replay asset exists locally or remotely for a given game.
+   * Used to keep greatest-hits entries playable.
+   */
+  private async replayExists(gameId: string): Promise<boolean> {
+    const backendDir = this.resolveBackendDir();
+    const completedDir = path.join(backendDir, 'completed_games');
+
+    const candidatePaths: string[] = [];
+    let remoteReplayUrl: string | null = null;
+
+    try {
+      const dbReplay = await repositoryService.snakeBench.getReplayPath(gameId);
+      const replayPath = dbReplay?.replayPath;
+      if (replayPath) {
+        if (/^https?:\/\//i.test(replayPath)) {
+          remoteReplayUrl = replayPath;
+        } else {
+          const resolved = path.isAbsolute(replayPath) ? replayPath : path.join(backendDir, replayPath);
+          candidatePaths.push(resolved);
+        }
+      }
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      logger.warn(
+        `SnakeBenchService.replayExists: failed to fetch replay_path from DB for ${gameId}: ${msg}`,
+        'snakebench-service',
+      );
+    }
+
+    candidatePaths.push(path.join(completedDir, `snake_game_${gameId}.json`));
+
+    const uniquePaths = Array.from(new Set(candidatePaths));
+    const existingPath = uniquePaths.find((p) => fs.existsSync(p));
+    if (existingPath) return true;
+
+    if (remoteReplayUrl) {
+      try {
+        await this.fetchJsonFromUrl(remoteReplayUrl);
+        return true;
+      } catch {
+        // continue to raw fallback
+      }
+    }
+
+    const rawBase =
+      process.env.SNAKEBENCH_REPLAY_RAW_BASE ||
+      'https://raw.githubusercontent.com/VoynichLabs/SnakeBench/main/backend/completed_games';
+    const rawUrl = `${rawBase}/snake_game_${gameId}.json`;
+    try {
+      await this.fetchJsonFromUrl(rawUrl);
+      return true;
+    } catch {
+      // Not available
+    }
+
+    return false;
+  }
+
+  /**
+   * Lightweight HTTPS JSON fetcher to retrieve remote replay assets (e.g., Supabase public URLs).
+   */
+  private async fetchJsonFromUrl(url: string): Promise<any> {
+    return await new Promise((resolve, reject) => {
+      const req = https.get(url, (res) => {
+        if (res.statusCode && res.statusCode >= 400) {
+          reject(new Error(`HTTP ${res.statusCode}`));
+          return;
+        }
+        const chunks: Buffer[] = [];
+        res.on('data', (chunk) => chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk)));
+        res.on('end', () => {
+          try {
+            const raw = Buffer.concat(chunks).toString('utf8');
+            const parsed = JSON.parse(raw);
+            resolve(parsed);
+          } catch (err) {
+            reject(err);
+          }
+        });
+      });
+
+      req.on('error', (err) => reject(err));
+      req.setTimeout(15_000, () => {
+        req.destroy(new Error('timeout'));
+      });
+    });
   }
 
   async getRecentActivity(days: number = 7): Promise<{ days: number; gamesPlayed: number; uniqueModels: number }> {
@@ -510,6 +840,50 @@ export class SnakeBenchService {
 
   async getBasicLeaderboard(limit: number = 10, sortBy: 'gamesPlayed' | 'winRate' = 'gamesPlayed'): Promise<Array<{ modelSlug: string; gamesPlayed: number; wins: number; losses: number; ties: number; winRate?: number }>> {
     return await repositoryService.snakeBench.getBasicLeaderboard(limit, sortBy);
+  }
+
+  async getArcExplainerStats(): Promise<SnakeBenchArcExplainerStats> {
+    return await repositoryService.snakeBench.getArcExplainerStats();
+  }
+
+  async getModelRating(modelSlug: string): Promise<SnakeBenchModelRating | null> {
+    return await repositoryService.snakeBench.getModelRating(modelSlug);
+  }
+
+  async getModelMatchHistory(modelSlug: string, limit?: number): Promise<SnakeBenchModelMatchHistoryEntry[]> {
+    const safeLimit = limit != null && Number.isFinite(limit) ? Number(limit) : 50;
+    return await repositoryService.snakeBench.getModelMatchHistory(modelSlug, safeLimit);
+  }
+
+  async getTrueSkillLeaderboard(
+    limit: number = 150,
+    minGames: number = 3,
+  ): Promise<SnakeBenchTrueSkillLeaderboardEntry[]> {
+    const safeLimit = Number.isFinite(limit) ? Math.max(1, Math.min(limit, 150)) : 150;
+    const safeMinGames = Number.isFinite(minGames) ? Math.max(1, minGames) : 3;
+    return await repositoryService.snakeBench.getTrueSkillLeaderboard(safeLimit, safeMinGames);
+  }
+
+  async getWormArenaGreatestHits(limitPerDimension: number = 5): Promise<WormArenaGreatestHitGame[]> {
+    const raw = Number(limitPerDimension);
+    const safeLimit = Number.isFinite(raw) ? Math.max(1, Math.min(raw, CURATED_WORM_ARENA_HALL_OF_FAME.length)) : 5;
+    const target = CURATED_WORM_ARENA_HALL_OF_FAME.slice(0, safeLimit);
+
+    const playable: WormArenaGreatestHitGame[] = [];
+
+    for (const game of target) {
+      const available = await this.replayExists(game.gameId);
+      if (available) {
+        playable.push(game);
+      } else {
+        logger.warn(
+          `SnakeBenchService.getWormArenaGreatestHits: curated game ${game.gameId} has no available replay asset`,
+          'snakebench-service',
+        );
+      }
+    }
+
+    return playable;
   }
 
   async healthCheck(): Promise<SnakeBenchHealthResponse> {

@@ -1,37 +1,56 @@
 /**
- * Author: Cascade
+ * Author: Claude Code using Haiku 4.5
  * Date: 2025-12-09
- * PURPOSE: Worm Arena - Redesigned layout with minimalist + farm aesthetic.
- *          Three-column layout: reasoning logs (left/right), game board (center).
- *          Earthy color palette, large monospace reasoning text, minimal controls.
- * SRP/DRY check: Pass - Single page component with clear layout responsibility.
+ * PURPOSE: Worm Arena - Replay viewer for past/completed games. Shows game history,
+ *          recent games list, and replay controls. Three-column layout: reasoning logs
+ *          (left/right), game board (center). Earthy color palette, monospace reasoning.
+ * SRP/DRY check: Pass - Replay viewer only, no match-starting logic.
  */
 
 import React from 'react';
-import { useModels } from '@/hooks/useModels';
-import { useSnakeBenchMatch, useSnakeBenchRecentGames, useSnakeBenchGame } from '@/hooks/useSnakeBench';
-import WormArenaSetup from '@/components/WormArenaSetup';
-import WormArenaControls from '@/components/WormArenaControls';
+import { useLocation } from 'wouter';
+import { useSnakeBenchRecentGames, useSnakeBenchGame, useModelRating } from '@/hooks/useSnakeBench';
 import WormArenaGameBoard from '@/components/WormArenaGameBoard';
+import WormArenaHeader from '@/components/WormArenaHeader';
+import WormArenaReasoning from '@/components/WormArenaReasoning';
+import WormArenaStatsPanel from '@/components/WormArenaStatsPanel';
+import WormArenaGreatestHits from '@/components/WormArenaGreatestHits';
+import { WormArenaControlBar } from '@/components/WormArenaControlBar';
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { summarizeWormArenaPlacement } from '@shared/utils/wormArenaPlacement.ts';
 
-import type { ModelConfig, SnakeBenchRunMatchRequest } from '@shared/types';
+function useQueryParamMatchId(): { matchId: string | null; setMatchIdInUrl: (id: string) => void } {
+  const [location, setLocation] = useLocation();
 
-function getSnakeEligibleModels(models: ModelConfig[]): string[] {
-  const eligible = models
-    .filter((m) => m.provider === 'OpenRouter')
-    .map((m) => {
-      const name = m.apiModelName || m.key;
-      return (name && typeof name === 'string' && name.trim().length > 0) ? name.trim() : null;
-    })
-    .filter((m): m is string => m !== null);
-  return eligible;
-}
+  const matchId = React.useMemo(() => {
+    try {
+      const query = location.split('?')[1] ?? '';
+      if (!query) return null;
+      const params = new URLSearchParams(query);
+      const raw = params.get('matchId') ?? params.get('gameId');
+      const trimmed = raw?.trim();
+      return trimmed && trimmed.length > 0 ? trimmed : null;
+    } catch {
+      return null;
+    }
+  }, [location]);
 
-function mapToSnakeBenchModelId(modelId: string): string {
-  if (modelId === 'openrouter/gpt-5.1-codex-mini') {
-    return 'openai/gpt-5.1-codex-mini';
-  }
-  return modelId;
+  const setMatchIdInUrl = React.useCallback(
+    (id: string) => {
+      const trimmed = id.trim();
+      if (!trimmed) {
+        setLocation('/worm-arena');
+        return;
+      }
+
+      const encoded = encodeURIComponent(trimmed);
+      setLocation(`/worm-arena?matchId=${encoded}`);
+    },
+    [setLocation],
+  );
+
+  return { matchId, setMatchIdInUrl };
 }
 
 function renderAsciiFrame(frame: any, width: number, height: number, labels: Record<string, string>): string {
@@ -62,51 +81,25 @@ function renderAsciiFrame(frame: any, width: number, height: number, labels: Rec
 
   return grid.map((row) => row.join(' ')).join('\n');
 }
-
 export default function WormArena() {
-  const { data: modelConfigs = [], isLoading: loadingModels, error: modelsError } = useModels();
-  const snakeModels = React.useMemo(() => getSnakeEligibleModels(modelConfigs), [modelConfigs]);
-  const selectableModels = React.useMemo(
-    () => snakeModels.filter((m) => typeof m === 'string' && m.trim().length > 0),
-    [snakeModels],
-  );
+  const { matchId: initialMatchId, setMatchIdInUrl } = useQueryParamMatchId();
 
-  const [modelA, setModelA] = React.useState<string>('');
-  const [modelB, setModelB] = React.useState<string>('');
-  const [width, setWidth] = React.useState<number>(10);
-  const [height, setHeight] = React.useState<number>(10);
-  const [maxRounds, setMaxRounds] = React.useState<number>(150);
-  const [numApples, setNumApples] = React.useState<number>(5);
-  const [byoApiKey, setByoApiKey] = React.useState<string>('');
-  const [byoProvider, setByoProvider] = React.useState<'openrouter' | 'openai' | 'anthropic' | 'xai' | 'gemini' | ''>('');
-  const [selectedGameId, setSelectedGameId] = React.useState<string>('');
+  const [selectedMatchId, setSelectedMatchId] = React.useState<string>(initialMatchId ?? '');
   const [frameIndex, setFrameIndex] = React.useState<number>(0);
   const [isPlaying, setIsPlaying] = React.useState<boolean>(false);
-  const [isConfigExpanded, setIsConfigExpanded] = React.useState<boolean>(false);
+  const [showNextMove, setShowNextMove] = React.useState<boolean>(true);
 
-  const { runMatch, lastResponse, isRunning, error: matchError } = useSnakeBenchMatch();
-  const { games, total, isLoading: loadingGames, error: gamesError, refresh } = useSnakeBenchRecentGames();
-  const { data: replayData, isLoading: loadingReplay, error: replayError, fetchGame } = useSnakeBenchGame(selectedGameId);
+  const { games, total, refresh } = useSnakeBenchRecentGames();
+  const { data: replayData, isLoading: loadingReplay, error: replayError, fetchGame } = useSnakeBenchGame(selectedMatchId);
+
+  const initialMatchIdRef = React.useRef<string | null>(initialMatchId ?? null);
 
   React.useEffect(() => {
-    if (selectableModels.length === 0) return;
-
-    if (!modelA && !modelB) {
-      const preferredA = 'x-ai/grok-4.1-fast';
-      const preferredB = 'openai/gpt-5.1-codex-mini';
-
-      const hasPreferredA = selectableModels.includes(preferredA);
-      const hasPreferredB = selectableModels.includes(preferredB);
-
-      if (hasPreferredA && hasPreferredB) {
-        setModelA(preferredA);
-        setModelB(preferredB);
-      } else if (selectableModels.length >= 2) {
-        setModelA(selectableModels[0]);
-        setModelB(selectableModels[1]);
-      }
+    if (initialMatchId && initialMatchId !== selectedMatchId) {
+      setSelectedMatchId(initialMatchId);
+      initialMatchIdRef.current = initialMatchId;
     }
-  }, [selectableModels, modelA, modelB]);
+  }, [initialMatchId, selectedMatchId]);
 
   React.useEffect(() => {
     void refresh(10);
@@ -114,41 +107,30 @@ export default function WormArena() {
 
   React.useEffect(() => {
     if (games.length === 0) return;
-    if (!selectedGameId) {
-      setSelectedGameId(games[0].gameId);
+    if (!selectedMatchId) {
+      const fallbackId = games[0].gameId;
+      setSelectedMatchId(fallbackId);
+      setMatchIdInUrl(fallbackId);
       return;
     }
-    const stillExists = games.some((g) => g.gameId === selectedGameId);
+    const stillExists = games.some((g) => g.gameId === selectedMatchId);
     if (!stillExists) {
-      setSelectedGameId(games[0].gameId);
+      if (initialMatchIdRef.current && initialMatchIdRef.current === selectedMatchId) {
+        return;
+      }
+
+      const fallbackId = games[0].gameId;
+      setSelectedMatchId(fallbackId);
+      setMatchIdInUrl(fallbackId);
     }
-  }, [games, selectedGameId]);
+  }, [games, selectedMatchId, setMatchIdInUrl]);
 
   React.useEffect(() => {
-    if (!selectedGameId) return;
+    if (!selectedMatchId) return;
     setFrameIndex(0);
     setIsPlaying(false);
-    void fetchGame(selectedGameId);
-  }, [selectedGameId, fetchGame]);
-
-  const handleRunMatch = async () => {
-    if (!modelA || !modelB) return;
-    const payload: SnakeBenchRunMatchRequest = {
-      modelA: mapToSnakeBenchModelId(modelA),
-      modelB: mapToSnakeBenchModelId(modelB),
-      width,
-      height,
-      maxRounds,
-      numApples,
-      ...(byoApiKey && byoProvider ? { apiKey: byoApiKey, provider: byoProvider } : {}),
-    };
-    const response = await runMatch(payload);
-    const gameId = response?.result?.gameId;
-    if (gameId) {
-      setSelectedGameId(gameId);
-    }
-    void refresh(10);
-  };
+    void fetchGame(selectedMatchId);
+  }, [selectedMatchId, fetchGame]);
 
   const frames: any[] = React.useMemo(() => {
     if (replayData && Array.isArray(replayData.frames)) return replayData.frames;
@@ -174,11 +156,26 @@ export default function WormArena() {
 
   React.useEffect(() => {
     if (!isPlaying || frames.length === 0) return;
+
     const handle = setInterval(() => {
-      setFrameIndex((idx) => (idx + 1) % frames.length);
+      setFrameIndex((idx) => {
+        if (idx >= frames.length - 1) {
+          // Stop autoplay on the final frame instead of looping
+          setIsPlaying(false);
+          return idx;
+        }
+        return idx + 1;
+      });
     }, 800);
+
     return () => clearInterval(handle);
   }, [isPlaying, frames.length]);
+
+  React.useEffect(() => {
+    if (frames.length > 0) {
+      setIsPlaying(true);
+    }
+  }, [frames.length]);
 
   const currentFrame = frames.length > 0 ? frames[Math.min(frameIndex, frames.length - 1)] : null;
   const asciiFrame = React.useMemo(
@@ -186,13 +183,26 @@ export default function WormArena() {
     [currentFrame, boardWidth, boardHeight, playerLabels],
   );
 
-  const selectedMeta = games.find((g) => g.gameId === selectedGameId);
+  const selectedMeta = games.find((g) => g.gameId === selectedMatchId);
   const models = (replayData?.metadata?.models as string[] | undefined) ?? [];
+  const modelA = Array.isArray(models) && models.length > 0 ? models[0] : null;
+  const modelB = Array.isArray(models) && models.length > 1 ? models[1] : null;
+
+  const { rating: ratingA } = useModelRating(modelA ?? undefined);
+  const { rating: ratingB } = useModelRating(modelB ?? undefined);
+
+  const placementA = React.useMemo(
+    () => summarizeWormArenaPlacement(ratingA ?? undefined),
+    [ratingA],
+  );
+  const placementB = React.useMemo(
+    () => summarizeWormArenaPlacement(ratingB ?? undefined),
+    [ratingB],
+  );
   const finalScores = replayData?.metadata?.final_scores ?? replayData?.totals?.scores ?? {};
   const roundsPlayed = selectedMeta?.roundsPlayed ?? replayData?.metadata?.actual_rounds ?? replayData?.game?.rounds_played ?? frames.length ?? 0;
   const startedAt = selectedMeta?.startedAt ?? replayData?.metadata?.start_time ?? replayData?.game?.started_at ?? '';
 
-  // Get reasoning for current frame
   const getCurrentReasoning = (snakeId: string) => {
     if (!currentFrame?.moves?.[snakeId]) return '';
     return currentFrame.moves[snakeId].rationale || '';
@@ -203,189 +213,218 @@ export default function WormArena() {
   const playerBReasoning = playerIds.length > 1 ? getCurrentReasoning(playerIds[1]) : '';
   const playerAName = playerIds.length > 0 ? playerLabels[playerIds[0]] : 'Player A';
   const playerBName = playerIds.length > 1 ? playerLabels[playerIds[1]] : 'Player B';
+  const playerAScore = playerIds.length > 0 ? Number((finalScores as any)[playerIds[0]] ?? 0) : 0;
+  const playerBScore = playerIds.length > 1 ? Number((finalScores as any)[playerIds[1]] ?? 0) : 0;
 
   const matchupLabel = React.useMemo(() => {
-    // Prefer explicit player names from replay data
     if (playerIds.length >= 2) {
       return `${playerAName} vs ${playerBName}`;
     }
 
-    // Fallback to metadata models if they look like a pair
     if (Array.isArray(models) && models.length === 2) {
       return `${models[0]} vs ${models[1]}`;
     }
 
-    // Fallback to currently selected models from setup
-    if (modelA || modelB) {
-      return `${modelA || 'Model A'} vs ${modelB || 'Model B'}`;
-    }
-
     return 'Worm Arena Match';
-  }, [playerIds.length, playerAName, playerBName, models, modelA, modelB]);
+  }, [playerIds.length, playerAName, playerBName, models]);
+
+  const handleCopyMatchId = React.useCallback(() => {
+    if (!selectedMatchId) return;
+    if (typeof navigator !== 'undefined' && navigator.clipboard?.writeText) {
+      navigator.clipboard.writeText(selectedMatchId).catch(() => {
+        // Best-effort copy; ignore errors
+      });
+    }
+  }, [selectedMatchId]);
+
+  const handleSelectMatch = React.useCallback(
+    (id: string) => {
+      const trimmed = id.trim();
+      if (!trimmed) return;
+      setSelectedMatchId(trimmed);
+      setMatchIdInUrl(trimmed);
+      initialMatchIdRef.current = null;
+    },
+    [setMatchIdInUrl],
+  );
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: '#f5f1e8', fontFamily: 'Fredoka, Nunito, sans-serif' }}>
-      {/* Google Fonts for Fredoka */}
+    <div className="min-h-screen" style={{ backgroundColor: '#f5e6d3', fontFamily: 'Fredoka, Nunito, sans-serif' }}>
       <link rel="preconnect" href="https://fonts.googleapis.com" />
       <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
       <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
 
-      {/* Header */}
-      <header className="px-8 py-6 border-b" style={{ borderColor: '#d4b5a0' }}>
-        <div className="flex items-center justify-between">
-          <h1 className="text-3xl font-bold" style={{ color: '#3d2817' }}>🌱 Worm Arena</h1>
-          <nav className="flex gap-4">
-            <button className="text-sm hover:underline" style={{ color: '#7a6b5f' }}>Live Games</button>
-            <button className="text-sm hover:underline" style={{ color: '#7a6b5f' }}>Leaderboards</button>
-          </nav>
-        </div>
-      </header>
+      <WormArenaHeader
+        matchupLabel={matchupLabel}
+        totalGames={total}
+        links={[
+          { label: 'Replay', href: '/worm-arena', active: true },
+          { label: 'Live', href: '/worm-arena/live' },
+          { label: 'Stats & Placement', href: '/worm-arena/stats' },
+        ]}
+        showMatchupLabel={false}
+      />
 
-      <main className="p-8">
-        {/* Matchup Title */}
-        <div className="text-center mb-6">
-          <h2 className="text-xl font-medium mb-2" style={{ color: '#3d2817' }}>
-            {matchupLabel}
-          </h2>
-          <p className="text-sm" style={{ color: '#7a6b5f' }}>
-            {startedAt ? `Match run on ${new Date(startedAt).toLocaleString()}` : 'Select a game to view details'}
-          </p>
-        </div>
-
-        {/* Three-Column Hero Layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
-          {/* Left Column: Player A Reasoning */}
-          <div className="rounded-lg border p-4 overflow-auto" style={{ 
-            backgroundColor: '#faf5f0', 
-            borderColor: '#d4b5a0',
-            minHeight: '600px',
-            maxHeight: '600px'
-          }}>
-            <h3 className="text-base font-semibold mb-3 flex items-center gap-2" style={{ color: '#d84949' }}>
-              🐛 {playerAName}
-            </h3>
-            <div className="font-mono font-bold leading-relaxed whitespace-pre-wrap" style={{ 
-              fontSize: '18px', 
-              color: '#2d2416',
-              lineHeight: '1.6'
-            }}>
-              {playerAReasoning || 'No reasoning available for this round.'}
-            </div>
+      <main className="p-8 max-w-7xl mx-auto">
+        {startedAt && (
+          <div className="text-center mb-6">
+            <h2 className="text-3xl font-bold mb-2">{matchupLabel}</h2>
+            <p className="text-base text-muted-foreground">
+              Match run on {new Date(startedAt).toLocaleString()}
+            </p>
           </div>
+        )}
 
-          {/* Center Column: Game Board (emoji canvas) */}
-          <WormArenaGameBoard
-            frame={currentFrame}
-            boardWidth={boardWidth}
-            boardHeight={boardHeight}
-            playerLabels={playerLabels}
+        {(modelA || modelB) && (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+            {modelA && ratingA && (
+              <Card className="bg-[#faf6f1] border-[#d4b5a0]">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-lg font-bold" style={{ color: '#3d2817' }}>
+                    {modelA}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-2 text-sm" style={{ color: '#3d2817' }}>
+                  <div className="flex items-center justify-between">
+                    <span className="font-semibold">Pessimistic rating</span>
+                    <span className="inline-flex items-baseline px-2 py-0.5 rounded-md bg-[#e4f2e9] border border-[#9ece6a] font-extrabold text-base" style={{ color: '#064e3b' }}>
+                      {ratingA.exposed.toFixed(1)}
+                    </span>
+                  </div>
+                  <div className="flex flex-wrap gap-3 text-xs">
+                    <span>Games: {ratingA.gamesPlayed}</span>
+                    <span>W {ratingA.wins}</span>
+                    <span>L {ratingA.losses}</span>
+                    <span>T {ratingA.ties}</span>
+                  </div>
+                  {placementA && (
+                    <div className="flex items-center justify-between text-xs">
+                      <span>{placementA.label}</span>
+                      <Badge variant="outline" className="text-[11px] font-semibold">
+                        {placementA.gamesPlayed}/{placementA.maxGames} games
+                      </Badge>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            )}
+
+            {modelB && ratingB && (
+              <Card className="bg-[#faf6f1] border-[#d4b5a0]">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-lg font-bold" style={{ color: '#3d2817' }}>
+                    {modelB}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-2 text-sm" style={{ color: '#3d2817' }}>
+                  <div className="flex items-center justify-between">
+                    <span className="font-semibold">Pessimistic rating</span>
+                    <span className="inline-flex items-baseline px-2 py-0.5 rounded-md bg-[#e4f2e9] border border-[#9ece6a] font-extrabold text-base" style={{ color: '#064e3b' }}>
+                      {ratingB.exposed.toFixed(1)}
+                    </span>
+                  </div>
+                  <div className="flex flex-wrap gap-3 text-xs">
+                    <span>Games: {ratingB.gamesPlayed}</span>
+                    <span>W {ratingB.wins}</span>
+                    <span>L {ratingB.losses}</span>
+                    <span>T {ratingB.ties}</span>
+                  </div>
+                  {placementB && (
+                    <div className="flex items-center justify-between text-xs">
+                      <span>{placementB.label}</span>
+                      <Badge variant="outline" className="text-[11px] font-semibold">
+                        {placementB.gamesPlayed}/{placementB.maxGames} games
+                      </Badge>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            )}
+          </div>
+        )}
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6 items-start">
+          <WormArenaReasoning
+            playerName={playerAName}
+            color="red"
+            reasoning={showNextMove && playerIds.length > 0 ? (frames[frameIndex + 1]?.moves?.[playerIds[0]]?.rationale || '') : playerAReasoning}
+            score={playerAScore}
           />
 
-          {/* Right Column: Player B Reasoning */}
-          <div className="rounded-lg border p-4 overflow-auto" style={{ 
-            backgroundColor: '#faf5f0', 
-            borderColor: '#d4b5a0',
-            minHeight: '600px',
-            maxHeight: '600px'
-          }}>
-            <h3 className="text-base font-semibold mb-3 flex items-center gap-2" style={{ color: '#e8a11a' }}>
-              🐛 {playerBName}
-            </h3>
-            <div className="font-mono font-bold leading-relaxed whitespace-pre-wrap" style={{ 
-              fontSize: '18px', 
-              color: '#2d2416',
-              lineHeight: '1.6'
-            }}>
-              {playerBReasoning || 'No reasoning available for this round.'}
-            </div>
+          <div className="flex flex-col gap-4">
+            <WormArenaGameBoard
+              frame={currentFrame}
+              boardWidth={boardWidth}
+              boardHeight={boardHeight}
+              playerLabels={playerLabels}
+            />
+
+            <WormArenaControlBar
+              onFirst={() => setFrameIndex(0)}
+              onPrev={() => setFrameIndex((idx) => Math.max(0, idx - 1))}
+              onPlayPause={() => setIsPlaying((v) => !v)}
+              onNext={() => setFrameIndex((idx) => Math.min(frames.length - 1, idx + 1))}
+              onLast={() => setFrameIndex(Math.max(0, frames.length - 1))}
+              isPlaying={isPlaying}
+              currentRound={frames.length === 0 ? 0 : frameIndex + 1}
+              totalRounds={frames.length}
+              showNextMove={showNextMove}
+              onToggleThought={setShowNextMove}
+            />
           </div>
+
+          <WormArenaReasoning
+            playerName={playerBName}
+            color="gold"
+            reasoning={showNextMove && playerIds.length > 1 ? (frames[frameIndex + 1]?.moves?.[playerIds[1]]?.rationale || '') : playerBReasoning}
+            score={playerBScore}
+          />
         </div>
 
-        {/* Metadata Row */}
-        <div className="text-center mb-4 text-sm" style={{ color: '#7a6b5f' }}>
-          <div className="flex justify-center gap-6">
+        <div className="text-center mb-6" style={{ color: '#7a6b5f', fontSize: '17px' }}>
+          <div className="flex justify-center gap-6 flex-wrap">
             <span><strong>Scores:</strong> {Object.entries(finalScores).map(([k, v]) => (
               <span key={k} className="ml-2"><span className="font-mono">{k}</span>: {String(v)}</span>
             ))}</span>
             <span><strong>Round:</strong> {frameIndex + 1} / {frames.length}</span>
             <span><strong>Board:</strong> {boardWidth}x{boardHeight}</span>
           </div>
-        </div>
-
-        {/* Playback Controls */}
-        <WormArenaControls
-          modelsLabel={matchupLabel}
-          currentRound={frames.length === 0 ? 0 : frameIndex + 1}
-          totalRounds={frames.length}
-          currentThought={playerAReasoning}
-          upcomingThought={playerBReasoning}
-          isPlaying={isPlaying}
-          isLoading={loadingReplay}
-          errorMessage={replayError ? String(replayError) : null}
-          canStepBackward={frameIndex > 0}
-          canStepForward={frames.length > 0 && frameIndex < frames.length - 1}
-          onPlayToggle={() => setIsPlaying((v) => !v)}
-          onStepPrevious={() => setFrameIndex((idx) => Math.max(0, idx - 1))}
-          onStepNext={() => setFrameIndex((idx) => Math.min(frames.length - 1, idx + 1))}
-          onJumpToStart={() => setFrameIndex(0)}
-          onJumpToEnd={() => setFrameIndex(Math.max(0, frames.length - 1))}
-        />
-
-        {/* Collapsible Game Selection & Setup */}
-        <div className="rounded-lg border" style={{ backgroundColor: '#faf5f0', borderColor: '#d4b5a0' }}>
-          <button
-            onClick={() => setIsConfigExpanded(!isConfigExpanded)}
-            className="w-full px-4 py-3 flex items-center justify-between text-left"
-            style={{ color: '#3d2817' }}
-          >
-            <span className="font-medium">
-              {isConfigExpanded ? '▼' : '▶'} {isConfigExpanded ? 'Hide' : 'Show'} Match Setup
-            </span>
-          </button>
-          
-          {isConfigExpanded && (
-            <div className="px-4 pb-4 border-t" style={{ borderColor: '#d4b5a0' }}>
-              {/* Game Selection */}
-              <div className="mb-4">
-                <h4 className="font-medium mb-2 text-sm" style={{ color: '#3d2817' }}>Recent Games</h4>
-                <div className="border rounded bg-white/80 max-h-32 overflow-y-auto text-xs">
-                  {loadingGames && <div className="p-2" style={{ color: '#7a6b5f' }}>Loading games...</div>}
-                  {!loadingGames && games.length === 0 && <div className="p-2" style={{ color: '#7a6b5f' }}>No games yet.</div>}
-                  {!loadingGames && games.length > 0 && (
-                    <div className="divide-y" style={{ borderColor: '#d4b5a0' }}>
-                      {games.map((g) => (
-                        <button
-                          key={g.gameId}
-                          onClick={() => setSelectedGameId(g.gameId)}
-                          className={`w-full text-left p-2 hover:bg-gray-50 ${selectedGameId === g.gameId ? 'bg-blue-50' : ''}`}
-                          style={{ fontSize: '11px' }}
-                        >
-                          <div className="font-mono truncate" title={g.gameId}>{g.gameId}</div>
-                          <div style={{ color: '#7a6b5f' }}>{g.totalScore} pts · {g.roundsPlayed} rds</div>
-                        </button>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              {/* New Match Setup */}
-              <div className="space-y-3">
-                <WormArenaSetup
-                  modelA={modelA}
-                  modelB={modelB}
-                  selectableModels={selectableModels}
-                  isRunning={isRunning}
-                  loadingModels={loadingModels}
-                  modelsError={modelsError?.message}
-                  onModelAChange={setModelA}
-                  onModelBChange={setModelB}
-                  onRunMatch={handleRunMatch}
-                />
-              </div>
+          {Array.isArray(models) && models.length > 0 && (
+            <div className="mt-3 text-xs flex justify-center gap-3 flex-wrap">
+              <span>View stats:</span>
+              {models.slice(0, 2).map((slug) => (
+                <a
+                  key={slug}
+                  href={`/worm-arena/stats?model=${encodeURIComponent(slug)}`}
+                  className="underline font-mono"
+                >
+                  {slug}
+                </a>
+              ))}
+            </div>
+          )}
+          {selectedMatchId && (
+            <div className="mt-2 flex items-center justify-center gap-2 text-sm">
+              <span>
+                <strong>Match ID:</strong>{' '}
+                <span className="font-mono text-xs">{selectedMatchId}</span>
+              </span>
+              <button
+                type="button"
+                onClick={handleCopyMatchId}
+                className="text-xs px-2 py-1 rounded border border-[#d4b5a0] bg-white hover:bg-gray-50"
+              >
+                Copy
+              </button>
             </div>
           )}
         </div>
+
+        <div className="mb-8 grid grid-cols-1 lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)] gap-4 items-start">
+          <WormArenaStatsPanel />
+          <WormArenaGreatestHits />
+        </div>
+
       </main>
     </div>
   );
