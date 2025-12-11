@@ -71,7 +71,7 @@ export function WormArenaTrueSkillLeaderboard({
                 </TooltipTrigger>
                 <TooltipContent side="top" className="max-w-xs text-xs">
                   Global Worm Arena rankings by conservative TrueSkill rating
-                  (\u03bc - 3\u03c3), filtered to models with at least 3 games.
+                  (μ - 3σ), filtered to models with at least 3 games.
                 </TooltipContent>
               </Tooltip>
             </CardTitle>
@@ -79,7 +79,7 @@ export function WormArenaTrueSkillLeaderboard({
               className="text-xs font-semibold mt-1"
               style={{ color: '#7a6b5f' }}
             >
-              Top models by TrueSkill exposed rating (\u03bc - 3\u03c3), up to 150 rows.
+              Top models by TrueSkill exposed rating (μ - 3σ), up to 150 rows.
             </div>
           </div>
         </CardHeader>
