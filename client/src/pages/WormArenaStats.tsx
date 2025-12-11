@@ -89,7 +89,7 @@ export default function WormArenaStats() {
     isLoading: loadingHistory,
     error: historyError,
     refresh: refreshHistory,
-  } = useModelHistory(selectedModel ?? undefined, 50);
+  } = useModelHistory(selectedModel ?? undefined, 1000);
 
   React.useEffect(() => {
     if (selectedModel) {
@@ -249,9 +249,15 @@ export default function WormArenaStats() {
                   style={{ color: "#3d2817" }}
                 >
                   <div>
-                    Last {recentActivity.days} days: {recentActivity.gamesPlayed} games
+                    {recentActivity.days && recentActivity.days > 0 ? (
+                      <>
+                        Last {recentActivity.days} days: {recentActivity.gamesPlayed} games
+                      </>
+                    ) : (
+                      <>All history: {recentActivity.gamesPlayed} games</>
+                    )}
                   </div>
-                  <div>Active models: {recentActivity.uniqueModels}</div>
+                  <div>Models with games: {recentActivity.uniqueModels}</div>
                 </div>
               )}
             </CardHeader>
