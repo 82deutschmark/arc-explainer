@@ -1,3 +1,17 @@
+### Version 6.1.16  Dec 11, 2025 (PENDING TESTING)
+
+- **Worm Arena per-model testing cost on stats page** (Author: GPT-5.1 Codex CLI)
+  - Extended the SnakeBench model rating query to join `game_participants` and `games` for `game_type = 'arc-explainer'` and aggregate total USD cost per model using `SUM(gp.cost)` in line with the TrueSkill leaderboard.
+  - Added a `totalCost` field to the shared `SnakeBenchModelRating` type and surfaced it on the Worm Arena stats model snapshot grid so the "Testing cost" badge now shows the real per-model testing spend instead of a TBD placeholder.
+  - **Files Modified**: `shared/types.ts`, `server/repositories/SnakeBenchRepository.ts`, `client/src/pages/WormArenaStats.tsx`, `CHANGELOG.md`
+
+### Version 6.1.16  Dec 11, 2025 (PENDING TESTING)
+
+- **Worm Arena TrueSkill leaderboard visual polish** (Author: Cascade)
+  - Constrained the Worm Arena TrueSkill leaderboard table to a fixed-height, scrollable viewport so up to 150 rows no longer dominate the stats page layout.
+  - Refined TrueSkill labeling to use clear μ and σ glyphs for exposed rating and uncertainty and applied a color-coded palette so each numeric column has a distinct, readable color while preserving the Worm Arena earth-tone aesthetic.
+  - **Files Modified**: `client/src/components/WormArenaTrueSkillLeaderboard.tsx`, `CHANGELOG.md`
+
 ### Version 6.1.15  Dec 11, 2025 (PENDING TESTING)
 
 - **Worm Arena Devstral vs OpenAI GPT-5 tournament script** (Author: GPT-5.1 Codex CLI)

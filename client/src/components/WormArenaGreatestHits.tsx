@@ -5,7 +5,7 @@
  *          Shows a short list of especially interesting matches
  *          (longest, most expensive, highest-scoring) with one-click
  *          replay links into the main Worm Arena viewer.
- * SRP/DRY check: Pass  purely presentational; data comes from hook.
+ * SRP/DRY check: Pass purely presentational; data comes from hook.
  */
 
 import React from 'react';
@@ -29,7 +29,7 @@ export default function WormArenaGreatestHits() {
       <CardContent className="pt-0 text-sm" style={{ color: '#3d2817' }}>
         {isLoading && (
           <div className="py-2 text-sm font-semibold" style={{ color: '#7a6b5f' }}>
-            Loading greatest hits0
+            Loading greatest hits
           </div>
         )}
         {error && !isLoading && (
@@ -37,7 +37,7 @@ export default function WormArenaGreatestHits() {
         )}
         {!isLoading && !error && games.length === 0 && (
           <div className="py-2 text-sm font-semibold" style={{ color: '#7a6b5f' }}>
-            No greatest hits yet  run a few matches to discover epic games.
+            No greatest hits yet run a few matches to discover epic games.
           </div>
         )}
 
