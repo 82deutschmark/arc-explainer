@@ -678,18 +678,33 @@ export class SnakeBenchRepository extends BaseRepository {
     try {
       const sql = `
         SELECT
-          model_slug,
-          trueskill_mu,
-          trueskill_sigma,
-          trueskill_exposed,
-          wins,
-          losses,
-          ties,
-          apples_eaten,
-          games_played,
-          is_active
-        FROM public.models
-        WHERE model_slug = $1
+          m.model_slug,
+          m.trueskill_mu,
+          m.trueskill_sigma,
+          m.trueskill_exposed,
+          m.wins,
+          m.losses,
+          m.ties,
+          m.apples_eaten,
+          m.games_played,
+          m.is_active,
+          COALESCE(SUM(gp.cost), 0) AS total_cost
+        FROM public.models m
+        JOIN public.game_participants gp ON m.id = gp.model_id
+        JOIN public.games g ON gp.game_id = g.id
+        WHERE m.model_slug = $1
+          AND g.game_type = 'arc-explainer'
+        GROUP BY
+          m.model_slug,
+          m.trueskill_mu,
+          m.trueskill_sigma,
+          m.trueskill_exposed,
+          m.wins,
+          m.losses,
+          m.ties,
+          m.apples_eaten,
+          m.games_played,
+          m.is_active
         LIMIT 1;
       `;
 
@@ -711,6 +726,7 @@ export class SnakeBenchRepository extends BaseRepository {
       const ties = parseInt(String(row.ties ?? '0'), 10) || 0;
       const applesEaten = parseInt(String(row.apples_eaten ?? '0'), 10) || 0;
       const gamesPlayed = parseInt(String(row.games_played ?? '0'), 10) || 0;
+      const totalCost = Number(row.total_cost ?? 0) || 0;
       const isActive = typeof row.is_active === 'boolean' ? row.is_active : undefined;
 
       const rating: SnakeBenchModelRating = {
@@ -724,6 +740,7 @@ export class SnakeBenchRepository extends BaseRepository {
         ties,
         applesEaten,
         gamesPlayed,
+        totalCost,
         ...(isActive !== undefined ? { isActive } : {}),
       };
 

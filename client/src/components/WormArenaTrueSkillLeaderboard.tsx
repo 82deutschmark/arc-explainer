@@ -42,6 +42,19 @@ export function WormArenaTrueSkillLeaderboard({
 }: WormArenaTrueSkillLeaderboardProps) {
   const hasRows = entries.length > 0;
 
+  const palette = {
+    rating: '#1f4f7a',
+    sigma: '#7b3fe4',
+    games: '#5c3b1d',
+    wins: '#1f7a3a',
+    losses: '#b3261e',
+    ties: '#c85a11',
+    apples: '#5b6f1f',
+    topScore: '#1f4f7a',
+    winRate: '#a0266a',
+    cost: '#8b5a00',
+  } as const;
+
   return (
     <TooltipProvider>
       <Card className="bg-[#faf6f1] border-[#d4b5a0]">
@@ -93,7 +106,7 @@ export function WormArenaTrueSkillLeaderboard({
           )}
 
           {hasRows && !error && (
-            <ScrollArea className="max-h-[60vh] border rounded-md bg-white/90">
+            <ScrollArea className="max-h-[380px] border rounded-md bg-white/90">
               <Table className="text-sm min-w-[900px]">
                 <TableHeader>
                   <TableRow>
@@ -114,7 +127,7 @@ export function WormArenaTrueSkillLeaderboard({
                       style={{ color: '#3d2817' }}
                     >
                       <span className="inline-flex items-center gap-1">
-                        <span>TS rating</span>
+                        <span>TS rating (μ - 3σ)</span>
                       </span>
                     </TableHead>
                     <TableHead
@@ -122,7 +135,7 @@ export function WormArenaTrueSkillLeaderboard({
                       style={{ color: '#3d2817' }}
                     >
                       <span className="inline-flex items-center gap-1">
-                        <span>TS uncertainty</span>
+                        <span>σ (uncertainty)</span>
                       </span>
                     </TableHead>
                     <TableHead
@@ -188,34 +201,64 @@ export function WormArenaTrueSkillLeaderboard({
                         <TableCell className="whitespace-nowrap font-mono max-w-[260px] truncate">
                           {entry.modelSlug}
                         </TableCell>
-                        <TableCell className="whitespace-nowrap font-mono">
+                        <TableCell
+                          className="whitespace-nowrap font-mono"
+                          style={{ color: palette.rating }}
+                        >
                           {entry.exposed.toFixed(2)}
                         </TableCell>
-                        <TableCell className="whitespace-nowrap font-mono">
-                          \u03c3 {entry.sigma.toFixed(2)}
+                        <TableCell
+                          className="whitespace-nowrap font-mono"
+                          style={{ color: palette.sigma }}
+                        >
+                          σ = {entry.sigma.toFixed(2)}
                         </TableCell>
-                        <TableCell className="whitespace-nowrap font-mono">
+                        <TableCell
+                          className="whitespace-nowrap font-mono"
+                          style={{ color: palette.games }}
+                        >
                           {entry.gamesPlayed}
                         </TableCell>
-                        <TableCell className="whitespace-nowrap font-mono">
+                        <TableCell
+                          className="whitespace-nowrap font-mono"
+                          style={{ color: palette.wins }}
+                        >
                           {entry.wins}
                         </TableCell>
-                        <TableCell className="whitespace-nowrap font-mono">
+                        <TableCell
+                          className="whitespace-nowrap font-mono"
+                          style={{ color: palette.losses }}
+                        >
                           {entry.losses}
                         </TableCell>
-                        <TableCell className="whitespace-nowrap font-mono">
+                        <TableCell
+                          className="whitespace-nowrap font-mono"
+                          style={{ color: palette.ties }}
+                        >
                           {entry.ties}
                         </TableCell>
-                        <TableCell className="whitespace-nowrap font-mono">
+                        <TableCell
+                          className="whitespace-nowrap font-mono"
+                          style={{ color: palette.apples }}
+                        >
                           {entry.applesEaten}
                         </TableCell>
-                        <TableCell className="whitespace-nowrap font-mono">
+                        <TableCell
+                          className="whitespace-nowrap font-mono"
+                          style={{ color: palette.topScore }}
+                        >
                           {entry.topScore}
                         </TableCell>
-                        <TableCell className="whitespace-nowrap font-mono">
+                        <TableCell
+                          className="whitespace-nowrap font-mono"
+                          style={{ color: palette.winRate }}
+                        >
                           {winRatePercent != null ? `${winRatePercent}%` : '—'}
                         </TableCell>
-                        <TableCell className="whitespace-nowrap font-mono">
+                        <TableCell
+                          className="whitespace-nowrap font-mono"
+                          style={{ color: palette.cost }}
+                        >
                           ${entry.totalCost.toFixed(4)}
                         </TableCell>
                       </TableRow>

@@ -539,7 +539,7 @@ export default function WormArenaStats() {
                           className="inline-flex items-baseline px-2.5 py-0.5 rounded-md bg-[#f0e5d8] border border-[#d4b5a0] font-bold text-sm"
                           style={{ color: "#3d2817" }}
                         >
-                          TBD
+                          ${rating.totalCost.toFixed(4)}
                         </div>
                       </div>
                     </div>
