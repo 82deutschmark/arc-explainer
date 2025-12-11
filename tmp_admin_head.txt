@@ -1,0 +1,120 @@
+/**
+ * Author: Claude Code using Sonnet 4.5
+ * Date: 2025-10-01
+ * PURPOSE: Admin controller for administrative operations including data recovery
+ *          and HuggingFace dataset ingestion management. Provides endpoints for:
+ *          - Manual data recovery
+ *          - Ingestion validation and execution
+ *          - Admin dashboard statistics
+ *          - Ingestion history tracking
+ * SRP/DRY check: Pass - Single responsibility (admin operations), reuses existing services
+ * shadcn/ui: N/A - Backend controller
+ */
+
+import { Router, Request, Response } from 'express';
+import { recoveryService } from '../services/recoveryService.js';
+import { asyncHandler } from '../middleware/asyncHandler.js';
+import { repositoryService } from '../repositories/RepositoryService.js';
+import { PuzzleLoader } from '../services/puzzleLoader.js';
+import { validateSolverResponse, validateSolverResponseMulti } from '../services/responseValidator.js';
+import { MODELS } from '../config/models.js';
+
+const router = Router();
+const puzzleLoader = new PuzzleLoader();
+
+// ============================================================================
+// DATA RECOVERY ENDPOINT (Existing)
+// ============================================================================
+
+/**
+ * @route   POST /api/admin/start-recovery
+ * @desc    Manually starts the data recovery process.
+ * @access  Private (to be implemented)
+ */
+router.post('/start-recovery', asyncHandler(async (req: Request, res: Response) => {
+  console.log('[API] Manual data recovery process initiated.');
+
+  // Start the recovery process but do not wait for it to complete.
+  // This allows the API to respond immediately.
+  recoveryService.processRecovery(true); // Always run in non-interactive mode.
+
+  res.status(202).json({
+    success: true,
+    message: 'Data recovery process has been initiated. Check server logs for progress.'
+  });
+}));
+
+// ============================================================================
+// ADMIN DASHBOARD ENDPOINTS (New)
+// ============================================================================
+
+/**
+ * @route   GET /api/admin/quick-stats
+ * @desc    Get dashboard statistics for admin hub
+ * @access  Private
+ */
+export async function getQuickStats(req: Request, res: Response) {
+  try {
+    const dbConnected = repositoryService.isInitialized();
+
+    // Get total models
+    const totalModels = MODELS.length;
+
+    // Get total explanations and last ingestion
+    let totalExplanations = 0;
+    let lastIngestion = null;
+
+    if (dbConnected) {
+      // Count all explanations using repository method
+      totalExplanations = await repositoryService.explanations.countExplanations();
+
+      // Get last ingestion run from ingestion_runs table
+      try {
+        const historyResult = await repositoryService.db?.query(
+          `SELECT started_at FROM ingestion_runs ORDER BY started_at DESC LIMIT 1`
+        );
+
+        if (historyResult && historyResult.rows.length > 0) {
+          lastIngestion = historyResult.rows[0].started_at;
+        }
+      } catch (error) {
+        // Table might not exist yet, ignore
+        console.log('[Admin] ingestion_runs table not found (migration not run yet)');
+      }
+    }
+
+    res.json({
+      totalModels,
+      totalExplanations,
+      databaseConnected: dbConnected,
+      lastIngestion,
+      timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    console.error('[Admin] Error getting quick stats:', error);
+    res.status(500).json({
+      error: 'Failed to get quick stats',
+      message: error instanceof Error ? error.message : 'Unknown error'
+    });
+  }
+}
+
+/**
+ * @route   GET /api/admin/recent-activity
+ * @desc    Get recent administrative activity (last 10 ingestion runs)
+ * @access  Private
+ */
+export async function getRecentActivity(req: Request, res: Response) {
+  try {
+    if (!repositoryService.isInitialized()) {
+      return res.json({ runs: [] });
+    }
+
+    try {
+      const result = await repositoryService.db?.query(`
+        SELECT
+          id,
+          dataset_name,
+          source,
+          total_puzzles,
+          successful,
