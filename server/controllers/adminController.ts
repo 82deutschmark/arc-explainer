@@ -23,11 +23,27 @@ const router = Router();
 const puzzleLoader = new PuzzleLoader();
 const OPENROUTER_ENDPOINT = 'https://openrouter.ai/api/v1/models';
 
+type OpenRouterArchitecture = {
+  modality?: string;
+  input_modalities?: string[];
+  output_modalities?: string[];
+  tokenizer?: string;
+  instruct_type?: string | null;
+};
+
+type OpenRouterTopProvider = {
+  context_length?: number;
+  max_completion_tokens?: number | null;
+  is_moderated?: boolean;
+};
+
 type OpenRouterModel = {
   id: string;
   name?: string;
   description?: string;
+  created?: number;
   context_length?: number;
+  architecture?: OpenRouterArchitecture;
   pricing?: {
     prompt?: string;
     completion?: string;
@@ -37,6 +53,22 @@ type OpenRouterModel = {
     internal_reasoning?: string;
     input_cache_read?: string;
     input_cache_write?: string;
+  };
+  top_provider?: OpenRouterTopProvider;
+  supported_parameters?: string[];
+  default_parameters?: Record<string, unknown>;
+  catalog_metadata?: {
+    preview?: boolean;
+    derived_pricing?: {
+      prompt?: string;
+      completion?: string;
+      request?: string;
+      image?: string;
+      web_search?: string;
+      internal_reasoning?: string;
+      input_cache_read?: string;
+      input_cache_write?: string;
+    };
   };
 };
 
@@ -531,6 +563,64 @@ function computePricePerMillion(perTokenString?: string): number | null {
   const perMillion = value * 1_000_000;
   const rounded = Math.round(perMillion * 100) / 100;
   return rounded;
+}
+
+/**
+ * @route   GET /api/admin/openrouter/catalog
+ * @desc    Return full OpenRouter catalog with derived pricing for admin UI
+ * @access  Private
+ */
+export async function getOpenRouterCatalog(req: Request, res: Response) {
+  try {
+    const remote = await fetchOpenRouterCatalog();
+
+    const models = remote.map((m) => ({
+      ...m,
+      inputCostPerM: computePricePerMillion(m.pricing?.prompt),
+      outputCostPerM: computePricePerMillion(m.pricing?.completion),
+      isPreview: flagPreview(m.id),
+    }));
+
+    res.json({
+      total: models.length,
+      models,
+    });
+  } catch (error) {
+    console.error('[Admin] OpenRouter catalog fetch failed:', error);
+    res.status(500).json({
+      error: 'Failed to fetch OpenRouter catalog',
+      message: error instanceof Error ? error.message : 'Unknown error',
+    });
+  }
+}
+
+/**
+ * @route   GET /api/admin/openrouter/catalog
+ * @desc    Return raw OpenRouter catalog with derived pricing fields for admin UI
+ * @access  Private
+ */
+export async function getOpenRouterCatalog(req: Request, res: Response) {
+	try {
+		const remote = await fetchOpenRouterCatalog();
+
+		const models = remote.map((m) => ({
+			...m,
+			inputCostPerM: computePricePerMillion(m.pricing?.prompt),
+			outputCostPerM: computePricePerMillion(m.pricing?.completion),
+			isPreview: flagPreview(m.id),
+		}));
+
+		res.json({
+			total: models.length,
+			models,
+		});
+	} catch (error) {
+		console.error('[Admin] OpenRouter catalog fetch failed:', error);
+		res.status(500).json({
+			error: 'Failed to fetch OpenRouter catalog',
+			message: error instanceof Error ? error.message : 'Unknown error',
+		});
+	}
 }
 
 /**

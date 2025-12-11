@@ -276,7 +276,7 @@ export async function basicLeaderboard(req: Request, res: Response) {
   try {
     const limitQuery = req.query.limit;
     const sortByQuery = req.query.sortBy;
-    const limit = Number.isFinite(Number(limitQuery)) ? Math.max(1, Math.min(Number(limitQuery), 100)) : 10;
+    const limit = Number.isFinite(Number(limitQuery)) ? Math.max(1, Math.min(Number(limitQuery), 150)) : 10;
     const sortBy = sortByQuery === 'winRate' ? 'winRate' : 'gamesPlayed';
 
     const result = await snakeBenchService.getBasicLeaderboard(limit, sortBy);

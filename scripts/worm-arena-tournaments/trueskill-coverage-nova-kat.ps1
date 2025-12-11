@@ -13,15 +13,17 @@ $coverageModels = @(
 )
 
 $diverseOpponents = @(
-    "x-ai/grok-4.1-fast",
-    "openai/gpt-5.1-codex-mini",
-    "openai/gpt-5-nano",
-    "anthropic/claude-3.5-sonnet",
-    "google/gemini-2.0-flash-exp",
-    "openrouter/meta-llama/llama-3.3-70b-instruct",
-    "openrouter/deepseek/deepseek-chat",
-    "openrouter/mistral/mistral-large-2",
-    "openrouter/qwen/qwen-max"
+    "mistralai/devstral-2512:free",
+    "mistralai/ministral-8b-2512",
+    "mistralai/ministral-3b-2512",
+    "arcee-ai/trinity-mini:free",
+    "deepseek/deepseek-v3.2",
+    "allenai/olmo-3-32b-think:free",
+    "moonshotai/kimi-k2-thinking",
+    "nvidia/nemotron-nano-9b-v2",
+    "google/gemma-3n-e2b-it:free",
+    "nvidia/nemotron-nano-12b-v2-vl:free",
+    "z-ai/glm-4.6v"
 )
 
 Write-Host "TrueSkill Coverage Tournament" -ForegroundColor Green

@@ -47,7 +47,7 @@ export function useWormArenaStats() {
     setError(null);
     try {
       const [lbRes, activityRes] = await Promise.all([
-        apiRequest('GET', '/api/snakebench/leaderboard?limit=100&sortBy=gamesPlayed'),
+        apiRequest('GET', '/api/snakebench/leaderboard?limit=150&sortBy=gamesPlayed'),
         apiRequest('GET', '/api/snakebench/recent-activity?days=0'),
       ]);
 
