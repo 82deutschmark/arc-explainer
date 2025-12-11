@@ -7,7 +7,7 @@
  * SRP/DRY check: Pass — focused on HTTP wiring for SnakeBench endpoints.
  */
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import type {
   SnakeBenchRunMatchRequest,
   SnakeBenchRunMatchResponse,
@@ -16,6 +16,9 @@ import type {
   SnakeBenchListGamesResponse,
   SnakeBenchGameSummary,
   SnakeBenchGameDetailResponse,
+  SnakeBenchStatsResponse,
+  SnakeBenchModelRatingResponse,
+  SnakeBenchModelHistoryResponse,
 } from '@shared/types';
 import { apiRequest } from '@/lib/queryClient';
 
@@ -141,4 +144,117 @@ export function useSnakeBenchGame(gameId?: string) {
   }, []);
 
   return { data, isLoading, error, fetchGame };
+}
+
+export function useSnakeBenchStats() {
+  const [stats, setStats] = useState<SnakeBenchStatsResponse['stats'] | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const refresh = useCallback(async () => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const res = await apiRequest('GET', '/api/snakebench/stats');
+      const json = (await res.json()) as SnakeBenchStatsResponse;
+      if (!json.success) {
+        throw new Error(json.error || 'Failed to load Worm Arena stats');
+      }
+      setStats(json.stats ?? null);
+    } catch (e: any) {
+      setError(e?.message || 'Failed to load Worm Arena stats');
+      setStats(null);
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    void refresh();
+  }, [refresh]);
+
+  return { stats, isLoading, error, refresh };
+}
+
+export function useModelRating(modelSlug?: string) {
+  const [rating, setRating] = useState<SnakeBenchModelRatingResponse['rating'] | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const refresh = useCallback(
+    async (slug?: string) => {
+      const target = (slug ?? modelSlug ?? '').trim();
+      if (!target) {
+        setRating(null);
+        setError(null);
+        return;
+      }
+
+      setIsLoading(true);
+      setError(null);
+      try {
+        const url = `/api/snakebench/model-rating?modelSlug=${encodeURIComponent(target)}`;
+        const res = await apiRequest('GET', url);
+        const json = (await res.json()) as SnakeBenchModelRatingResponse;
+        if (!json.success) {
+          throw new Error(json.error || 'Failed to load model rating');
+        }
+        setRating(json.rating ?? null);
+      } catch (e: any) {
+        setError(e?.message || 'Failed to load model rating');
+        setRating(null);
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [modelSlug],
+  );
+
+  return { rating, isLoading, error, refresh };
+}
+
+export function useModelHistory(modelSlug?: string, limit: number = 50) {
+  const [history, setHistory] = useState<SnakeBenchModelHistoryResponse['history']>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const refresh = useCallback(
+    async (slug?: string) => {
+      const target = (slug ?? modelSlug ?? '').trim();
+      if (!target) {
+        setHistory([]);
+        setError(null);
+        return;
+      }
+
+      setIsLoading(true);
+      setError(null);
+      try {
+        const url = `/api/snakebench/model-history?modelSlug=${encodeURIComponent(
+          target,
+        )}&limit=${encodeURIComponent(String(limit))}`;
+        const res = await apiRequest('GET', url);
+        const json = (await res.json()) as SnakeBenchModelHistoryResponse;
+        if (!json.success) {
+          throw new Error(json.error || 'Failed to load model history');
+        }
+        setHistory(json.history ?? []);
+      } catch (e: any) {
+        setError(e?.message || 'Failed to load model history');
+        setHistory([]);
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [modelSlug, limit],
+  );
+
+  const historyForTable = history;
+  const historyForChart = [...history].sort((a, b) => {
+    const at = a.startedAt ? Date.parse(a.startedAt) : 0;
+    const bt = b.startedAt ? Date.parse(b.startedAt) : 0;
+    return at - bt;
+  });
+
+  return { historyForTable, historyForChart, isLoading, error, refresh };
 }

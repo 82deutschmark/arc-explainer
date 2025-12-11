@@ -24,7 +24,8 @@
       "Bash(git restore:*)",
       "Bash(python3 -c:*)",
       "Bash(/tmp/huggingface_file.tsx)",
-      "Bash(/tmp/current_file.tsx)"
+      "Bash(/tmp/current_file.tsx)",
+      "Bash(powershell -File:*)"
     ],
     "defaultMode": "bypassPermissions"
   },

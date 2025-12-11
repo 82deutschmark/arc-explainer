@@ -556,3 +556,24 @@ With streaming and the event system you can integrate an agent into a chat inter
 
 Can architect clean abstractions for complex workflows, specifically synthesizing fragmented information gathered over thousands of parallel, asynchronous queries.
 Care deeply about code quality, performance profiling, and building the stable, scalable platform that allows research to run autonomously.
+
+## SnakeBench (Greg's external project!)
+# Worm 🐛 Arena (Our clone of SnakeBench) Worm 🐛
+Greg’s SnakeBench backend (external/SnakeBench/backend). There is already “live” plumbing in Python:
+
+Routes in external/SnakeBench/backend/app.py: /api/games/live and /api/games/<game_id>/live expose in-progress state (pulled from data_access/live_game.py).
+The game loop in external/SnakeBench/backend/main.py updates live state every round: after each round it calls data_access.live_game.update_game_state(...) and eventually complete_game(...). It also prints Finished round ... to stdout per round.
+Live state is written to the database (see data_access/live_game.py), not streamed over SSE. So a caller can poll these endpoints or DB to watch progress; stdout has per-round prints you could tap if you stream process output.
+Implications for us:
+
+Python already emits round-by-round info (stdout prints + DB live_game rows). We can stream by tailing stdout in snakeBenchService.runMatchStreaming and/or polling the Python live endpoints during a match.
+No SSE is provided by Python; we’ll need to wrap it on our side (Express) using stdout lines or those live endpoints.
+There is live UI in Greg’s frontend (external/SnakeBench/frontend), so the data path is real.
+
+### Worm Arena greatest hits vs local replays (cloud agent notes)
+
+- **DB vs local assets:** Greatest-hits rankings come from the `public.games` table (Railway Postgres). A game can be a "greatest hit" in the DB while **missing** its `snake_game_<id>.json` under `external/SnakeBench/backend/completed_games`.
+- **Local-only work:** When you are reasoning about offline replay/MP4 backfill or local analysis, treat `completed_games/` + `completed_games/game_index.json` as the authoritative set of games that actually exist on disk.
+- **Analysis helper:** Prefer the Python helper `external/SnakeBench/backend/cli/analyze_local_games.py` when you need to rank local games by cost, rounds, apples (max final score), or duration. It only inspects local JSON files.
+- **Docs as source of truth:** For any Worm Arena / SnakeBench reconciliation work, consult `docs/SNAKE_BENCH_DB.md` for schema details and `docs/reference/data/WormArena_GreatestHits_Local_Analysis.md` for the DB vs local replay relationship and example findings.
+- **UI & API design:** When exposing "greatest hits" in new endpoints or UI, **separate** the concern of "interesting according to DB" from "playable on this environment". Always filter to games with a known replay asset (local JSON or valid `replay_path`) before promising playback or video generation.

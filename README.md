@@ -2,7 +2,7 @@
 
 ![ARC Puzzle 08573cc6](.claude/skills/slack-gif-creator/arc_puzzle_08573cc6.gif)
 
-**Version 5.44.0** — December 6, 2025
+**Version 6.0.12** — December 10, 2025
 
 
 A hobby platform for analyzing Abstract Reasoning Corpus (ARC-AGI) puzzles using state-of-the-art LLMs with reasoning capture, conversation chaining, and comprehensive performance analytics.
@@ -11,18 +11,19 @@ A hobby platform for analyzing Abstract Reasoning Corpus (ARC-AGI) puzzles using
 
 ---
 
-## What's New in v5.44.0
+## What's New in v6.0
 
-### 💡 Human Insights Resource Integration
-- **Direct Integration**: Added "Human Insights" button to the Puzzle Examiner header, and a prominent banner above analysis results
-- **Human Explanations**: Links directly to human test participant explanations and error examples for each puzzle at `https://arc-visualizations.github.io/{taskId}.html`
-- **Community Value**: This resource was instrumental for synthetic data creation and represents a major community contribution to understanding puzzle-solving patterns
-- **Dual Access Points**: Available both in the header (alongside solver buttons) and prominently above analysis results for maximum discoverability
+### Worm Arena 6.0 — SnakeBench-powered tournaments & stats
+- **Real SnakeBench integration**: Worm Arena now logs matches to SnakeBench-compatible tables (`public.models`, `public.games`, `public.game_participants`) and uses real token-based pricing so costs and TrueSkill ratings are grounded in the same schema as Greg's project.
+- **Replay viewer & live matches**: Dedicated Worm Arena pages let you browse recent games, deep-link into specific replays, and watch matches play out with reasoning panels and improved board layout—no more relying on the embedded upstream UI.
+- **Stats & placement dashboards**: A new `/worm-arena/stats` page surfaces global Worm Arena KPIs, a large TrueSkill leaderboard, per-model placement progress, and recent match history so you can see how models are converging.
+- **Tournament scripts & backfill tooling**: PowerShell helpers and a Python ingest/backfill path make it easy to run reproducible tournaments (e.g., Devstral vs GPT-5) and rebuild SnakeBench stats from local `completed_games` replays.
 
 ## Previous Highlights
 
 ### v5.1.0 - ARC3 Agent Playground & Backend Agent Runner
 
+### ARC3 Agent Playground (In Development)
 ### 🎮 ARC3 Agent Playground (In Development)
 - `/arc3/playground` introduces an interactive lab powered by the OpenAI Agents SDK where users can watch agents attempt to solve real ARC-AGI-3 competition games (like ls20 "LockSmith").
 - Features real-time streaming, grid visualization, customizable agent instructions, and performance metrics.

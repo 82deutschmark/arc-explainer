@@ -414,6 +414,25 @@ Response: { "providerResponseId": "resp_def456", ... }
   - **Query params**: `limit` (max 500, increased from 50), `sortBy`, accuracy filters
   - **🔄 CHANGED**: Maximum limit increased from 50 to 500 results
 
+### Worm Arena & SnakeBench API (Worm 🐛 Arena)
+
+Worm Arena (LLM Snake) and the embedded SnakeBench backend expose a small, public API surface for running matches, listing replays, querying stats, and streaming tournaments:
+
+- `POST /api/snakebench/run-match` – Run a single Worm Arena match between two models
+- `POST /api/snakebench/run-batch` – Run a bounded batch of matches (small `count`)
+- `GET /api/snakebench/games` / `/api/snakebench/games/:gameId` – List games and fetch full replay JSON
+- `GET /api/snakebench/health` – Embedded SnakeBench health check (Python/backend/runner)
+- `GET /api/snakebench/stats` – Global Worm Arena stats (total games, active models, apples, total cost)
+- `GET /api/snakebench/model-rating` / `/api/snakebench/model-history` – Per-model TrueSkill snapshot + match history
+- `GET /api/snakebench/leaderboard` / `/api/snakebench/trueskill-leaderboard` – Leaderboards for Worm Arena models
+- `GET /api/snakebench/greatest-hits` – Curated list of “greatest hits” games (longest, most expensive, highest-scoring)
+- `POST /api/wormarena/prepare` – Prepare live Worm Arena batch session (multi-opponent or legacy count-based)
+- `GET /api/wormarena/stream/:sessionId` – SSE stream for live Worm Arena batches and single matches
+
+All of these endpoints are **public with no authentication**, consistent with the rest of ARC Explainer. For detailed request/response schemas and SSE event types, see:
+
+- `docs/reference/api/SnakeBench_WormArena_API.md`
+
 ### Solution Submission (Community Features)
 - `GET /api/puzzles/:puzzleId/solutions` - Get community solutions for puzzle
 - `POST /api/puzzles/:puzzleId/solutions` - Submit community solution

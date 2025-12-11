@@ -22,6 +22,7 @@ import ModelBrowser from "@/pages/ModelBrowser";
 import ModelManagement from "@/pages/ModelManagement";
 import AdminHub from "@/pages/AdminHub";
 import HuggingFaceIngestion from "@/pages/HuggingFaceIngestion";
+import AdminOpenRouter from "@/pages/AdminOpenRouter";
 import EloComparison from "@/pages/EloComparison";
 import EloLeaderboard from "@/pages/EloLeaderboard";
 import PuzzleFeedback from "@/pages/PuzzleFeedback";
@@ -40,6 +41,8 @@ import LLMReasoning from "@/pages/LLMReasoning";
 import LLMReasoningAdvanced from "@/pages/LLMReasoningAdvanced";
 import SnakeBenchEmbed from "@/pages/SnakeBenchEmbed";
 import WormArena from "@/pages/WormArena";
+import WormArenaLive from "@/pages/WormArenaLive";
+import WormArenaStats from "@/pages/WormArenaStats";
 import Redirect from "@/components/Redirect";
 
 function Router() {
@@ -70,6 +73,7 @@ function Router() {
         <Route path="/admin" component={AdminHub} />
         <Route path="/admin/models" component={ModelManagement} />
         <Route path="/admin/ingest-hf" component={HuggingFaceIngestion} />
+        <Route path="/admin/openrouter" component={AdminOpenRouter} />
 
         <Route path="/elo" component={EloComparison} />
         <Route path="/elo/leaderboard" component={EloLeaderboard} />
@@ -96,6 +100,9 @@ function Router() {
         <Route path="/snake-arena" component={() => <Redirect to="/worm-arena" />} />
         {/* Worm Arena = our local junior version with bring-your-own-key functionality */}
         <Route path="/worm-arena" component={WormArena} />
+        <Route path="/worm-arena/live" component={WormArenaLive} />
+        <Route path="/worm-arena/live/:sessionId" component={WormArenaLive} />
+        <Route path="/worm-arena/stats" component={WormArenaStats} />
         <Route path="/puzzle/:taskId" component={PuzzleExaminer} />
         <Route path="/examine/:taskId" component={PuzzleExaminer} />
         <Route component={NotFound} />

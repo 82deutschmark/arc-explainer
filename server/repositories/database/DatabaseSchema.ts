@@ -326,6 +326,10 @@ export class DatabaseSchema {
         test_status         text        NOT NULL DEFAULT 'untested',
 
         elo_rating          double precision NOT NULL DEFAULT 1500.0,
+        trueskill_mu        double precision NOT NULL DEFAULT 25.0,
+        trueskill_sigma     double precision NOT NULL DEFAULT 8.333333333333334,
+        trueskill_exposed   double precision,
+        trueskill_updated_at timestamptz,
         wins                integer     NOT NULL DEFAULT 0,
         losses              integer     NOT NULL DEFAULT 0,
         ties                integer     NOT NULL DEFAULT 0,
@@ -544,6 +548,15 @@ export class DatabaseSchema {
     await client.query(`CREATE INDEX IF NOT EXISTS idx_explanations_beetree_timestamp ON explanations(beetree_run_timestamp) WHERE beetree_run_timestamp IS NOT NULL`);
     await client.query(`CREATE INDEX IF NOT EXISTS idx_explanations_beetree_consensus ON explanations(beetree_consensus_strength DESC) WHERE beetree_consensus_strength IS NOT NULL`);
     await client.query(`CREATE INDEX IF NOT EXISTS idx_explanations_beetree_model_results ON explanations USING GIN(beetree_model_results) WHERE beetree_model_results IS NOT NULL`);
+
+    // Migration: Align SnakeBench models table with Greg's TrueSkill fields
+    await client.query(`
+      ALTER TABLE public.models
+      ADD COLUMN IF NOT EXISTS trueskill_mu double precision DEFAULT 25.0,
+      ADD COLUMN IF NOT EXISTS trueskill_sigma double precision DEFAULT 8.333333333333334,
+      ADD COLUMN IF NOT EXISTS trueskill_exposed double precision,
+      ADD COLUMN IF NOT EXISTS trueskill_updated_at timestamptz;
+    `);
   }
 
   /**

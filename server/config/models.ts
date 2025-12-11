@@ -1,12 +1,15 @@
 /*
  *
- * Author: Cascade using Claude Sonnet 4 (original), Claude Code using Opus 4.5 (2025-12-08 update)
- * Date: 2025-12-08
+ * Author: Cascade using Claude Sonnet 4 (original), Claude Code using Opus 4.5 (2025-12-08 update), Claude Code using Haiku 4.5 (2025-12-09 update), GPT-5.1 Codex CLI (2025-12-11 update)
+ * Date: 2025-12-11
  * PURPOSE: Centralized AI model configuration list consumed by ModelDefinitions and provider lookup utilities.
  *          Updated DeepSeek models to v3.2 with new pricing and specifications.
  *          Added deepseek-reasoner-speciale with expiration-dated base URL.
  *          Added free OpenRouter models: arcee-ai/trinity-mini:free and amazon/nova-2-lite-v1:free (Dec 2025).
  *          Added z-ai/glm-4.6v (Vision) via OpenRouter - multimodal model with 131K context (Dec 2025).
+ *          Added openai/gpt-5-nano and openai/gpt-5-mini via OpenRouter (Dec 2025).
+ *          Added mistralai/devstral-2512 and mistralai/devstral-2512:free via OpenRouter (Dec 2025).
+ *          Added DeepSeek v3.2 Reasoner and OLMo-3 thinking models via OpenRouter (Dec 2025).
  * SRP/DRY check: Pass - file encapsulates shared model metadata without duplication.
  * shadcn/ui: Pass - configuration only.
  */
@@ -275,6 +278,23 @@ export const MODELS: ModelConfig[] = [
     maxOutputTokens: 64000,
     releaseDate: "2025-09"
   },
+  {
+    key: 'anthropic/claude-opus-4.5',
+    name: 'Claude Opus 4.5',
+    color: 'bg-indigo-900',
+    premium: true,
+    cost: { input: '$5.00', output: '$25.00' },
+    supportsTemperature: true,
+    provider: 'Anthropic',
+    responseTime: { speed: 'slow', estimate: '2-5 min' },
+    isReasoning: true,
+    apiModelName: 'claude-opus-4.5-20251124',
+    modelType: 'claude',
+    contextWindow: 200000,
+    maxOutputTokens: 16000,
+    releaseDate: "2025-11",
+    notes: 'EXTREMELY EXPENSIVE: $5/M input, $25/M output. Use sparingly for benchmarking only. High reasoning capability but significant cost implications. Each game match can cost $0.50-$5.00+ depending on token usage.'
+  },
   { 
     key: 'claude-3-7-sonnet-20250219', 
     name: 'Claude 3.7 Sonnet', 
@@ -448,7 +468,37 @@ export const MODELS: ModelConfig[] = [
     contextWindow: 1000000,
     releaseDate: "2025-08"
   },
-  
+  {
+    key: 'google/gemini-2.5-flash-lite-preview-09-2025',
+    name: 'Gemini 2.5 Flash-Lite Preview (Sep 2025)',
+    color: 'bg-teal-300',
+    premium: false,
+    cost: { input: '$0.10', output: '$0.40' },
+    supportsTemperature: true,
+    provider: 'OpenRouter',
+    responseTime: { speed: 'fast', estimate: '<30 sec' },
+    isReasoning: true,
+    apiModelName: 'google/gemini-2.5-flash-lite-preview-09-2025',
+    modelType: 'openrouter',
+    contextWindow: 1050000,
+    releaseDate: "2025-09"
+  },
+  {
+    key: 'google/gemma-3n-e2b-it:free',
+    name: 'Gemma 3N E2B (Free)',
+    color: 'bg-teal-100',
+    premium: false,
+    cost: { input: '$0.00', output: '$0.00' },
+    supportsTemperature: true,
+    provider: 'OpenRouter',
+    responseTime: { speed: 'moderate', estimate: '30-60 sec' },
+    isReasoning: false,
+    apiModelName: 'google/gemma-3n-e2b-it:free',
+    modelType: 'openrouter',
+    contextWindow: 4000,
+    releaseDate: "2025-12"
+  },
+
   // DeepSeek Models
   {
     key: 'deepseek-chat',
@@ -588,6 +638,84 @@ export const MODELS: ModelConfig[] = [
     releaseDate: "2025-12"
   },
   {
+    key: 'mistralai/ministral-14b-2512',
+    name: 'Ministral 14B 2512',
+    color: 'bg-purple-500',
+    premium: false,
+    cost: { input: '$0.20', output: '$0.20' },
+    supportsTemperature: true,
+    provider: 'OpenRouter',
+    responseTime: { speed: 'moderate', estimate: '30-60 sec' },
+    isReasoning: false,
+    apiModelName: 'mistralai/ministral-14b-2512',
+    modelType: 'openrouter',
+    contextWindow: 262144,
+    releaseDate: "2025-12"
+  },
+  {
+    key: 'mistralai/ministral-8b-2512',
+    name: 'Ministral 8B 2512',
+    color: 'bg-purple-400',
+    premium: false,
+    cost: { input: '$0.15', output: '$0.15' },
+    supportsTemperature: true,
+    provider: 'OpenRouter',
+    responseTime: { speed: 'fast', estimate: '<30 sec' },
+    isReasoning: false,
+    apiModelName: 'mistralai/ministral-8b-2512',
+    modelType: 'openrouter',
+    contextWindow: 262144,
+    releaseDate: "2025-12"
+  },
+  {
+    key: 'mistralai/ministral-3b-2512',
+    name: 'Ministral 3B 2512',
+    color: 'bg-purple-300',
+    premium: false,
+    cost: { input: '$0.10', output: '$0.10' },
+    supportsTemperature: true,
+    provider: 'OpenRouter',
+    responseTime: { speed: 'fast', estimate: '<30 sec' },
+    isReasoning: false,
+    apiModelName: 'mistralai/ministral-3b-2512',
+    modelType: 'openrouter',
+    contextWindow: 262144,
+    releaseDate: "2025-12"
+  },
+  {
+    key: 'mistralai/devstral-2512',
+    name: 'Devstral 2512',
+    color: 'bg-purple-700',
+    premium: false,
+    cost: { input: '$0.15', output: '$0.60' },
+    supportsTemperature: true,
+    provider: 'OpenRouter',
+    responseTime: { speed: 'moderate', estimate: '30-60 sec' },
+    isReasoning: false,
+    apiModelName: 'mistralai/devstral-2512',
+    modelType: 'openrouter',
+    contextWindow: 262144,
+    maxOutputTokens: 32000,
+    releaseDate: "2025-12-09"
+  },
+  {
+    key: 'mistralai/devstral-2512:free',
+    name: 'Devstral 2512 (Free)',
+    color: 'bg-purple-200',
+    premium: false,
+    cost: { input: '$0.00', output: '$0.00' },
+    supportsTemperature: true,
+    provider: 'OpenRouter',
+    responseTime: { speed: 'moderate', estimate: '30-60 sec' },
+    isReasoning: false,
+    apiModelName: 'mistralai/devstral-2512:free',
+    modelType: 'openrouter',
+    contextWindow: 262144,
+    maxOutputTokens: 32000,
+    releaseDate: "2025-12-09",
+    notes: 'Free version of Devstral 2512 via OpenRouter'
+  },
+  {
     key: 'deepseek/deepseek-chat-v3.1',
     name: 'DeepSeek Chat v3.1',
     color: 'bg-cyan-700',
@@ -601,6 +729,55 @@ export const MODELS: ModelConfig[] = [
     modelType: 'openrouter',
     contextWindow: 256000
   },
+  {
+    key: 'deepseek/deepseek-v3.2',
+    name: 'DeepSeek v3.2 Reasoner',
+    color: 'bg-cyan-900',
+    premium: true,
+    cost: { input: '$0.28', output: '$0.42' },
+    supportsTemperature: false,
+    provider: 'OpenRouter',
+    responseTime: { speed: 'slow', estimate: '5-10 min' },
+    isReasoning: true,
+    apiModelName: 'deepseek/deepseek-v3.2',
+    modelType: 'openrouter',
+    contextWindow: 128000,
+    maxOutputTokens: 64000,
+    releaseDate: "2025-12",
+    notes: 'DeepSeek-V3.2 thinking mode via OpenRouter. Returns reasoning_content field with chain-of-thought.'
+  },
+  {
+    key: 'allenai/olmo-3-7b-think',
+    name: 'OLMo-3 7B Think',
+    color: 'bg-blue-500',
+    premium: false,
+    cost: { input: '$0.12', output: '$0.20' },
+    supportsTemperature: true,
+    provider: 'OpenRouter',
+    responseTime: { speed: 'moderate', estimate: '30-60 sec' },
+    isReasoning: true,
+    apiModelName: 'allenai/olmo-3-7b-think',
+    modelType: 'openrouter',
+    contextWindow: 66000,
+    releaseDate: "2025-12",
+    notes: 'OLMo-3 7B thinking model from AllenAI via OpenRouter.'
+  },
+  {
+    key: 'allenai/olmo-3-32b-think:free',
+    name: 'OLMo-3 32B Think (Free)',
+    color: 'bg-blue-400',
+    premium: false,
+    cost: { input: '$0.00', output: '$0.00' },
+    supportsTemperature: true,
+    provider: 'OpenRouter',
+    responseTime: { speed: 'moderate', estimate: '1-2 min' },
+    isReasoning: true,
+    apiModelName: 'allenai/olmo-3-32b-think:free',
+    modelType: 'openrouter',
+    contextWindow: 66000,
+    releaseDate: "2025-12",
+    notes: 'Free OLMo-3 32B thinking model from AllenAI via OpenRouter.'
+  },
 
   // New OpenRouter Models - August 2025
   {
@@ -608,7 +785,7 @@ export const MODELS: ModelConfig[] = [
     name: 'OpenAI GPT-OSS 120B',
     color: 'bg-blue-400',
     premium: false,
-    cost: { input: '$0.072', output: '$0.28' },
+    cost: { input: '$0.05', output: '$0.45' },
     supportsTemperature: false,
     provider: 'OpenRouter',
     responseTime: { speed: 'moderate', estimate: '30-60 sec' },
@@ -717,6 +894,58 @@ export const MODELS: ModelConfig[] = [
     contextWindow: 400000,
     maxOutputTokens: 60000,
     releaseDate: "2025-11"
+  },
+  {
+    key: 'openai/gpt-5-nano',
+    name: 'OpenAI: GPT-5 Nano',
+    color: 'bg-sky-400',
+    premium: false,
+    cost: { input: '$0.05', output: '$0.40' },
+    supportsTemperature: true,
+    supportsVision: true,
+    provider: 'OpenRouter',
+    responseTime: { speed: 'fast', estimate: '<30 sec' },
+    isReasoning: true,
+    apiModelName: 'openai/gpt-5-nano',
+    modelType: 'openrouter',
+    contextWindow: 400000,
+    maxOutputTokens: 50000,
+    releaseDate: "2025-12"
+  },
+  {
+    key: 'openai/gpt-5-mini',
+    name: 'OpenAI: GPT-5 Mini',
+    color: 'bg-sky-500',
+    premium: false,
+    cost: { input: '$0.25', output: '$2.00' },
+    supportsTemperature: true,
+    supportsVision: true,
+    provider: 'OpenRouter',
+    responseTime: { speed: 'moderate', estimate: '30-60 sec' },
+    isReasoning: true,
+    apiModelName: 'openai/gpt-5-mini',
+    modelType: 'openrouter',
+    contextWindow: 400000,
+    maxOutputTokens: 60000,
+    releaseDate: "2025-12"
+  },
+  {
+    key: 'openai/gpt-5.2',
+    name: 'OpenAI: GPT-5.2',
+    color: 'bg-sky-600',
+    premium: true,
+    cost: { input: '$1.75', output: '$14.00' },
+    supportsTemperature: true,
+    supportsVision: true,
+    provider: 'OpenRouter',
+    responseTime: { speed: 'moderate', estimate: '30-90 sec' },
+    isReasoning: true,
+    apiModelName: 'openai/gpt-5.2',
+    modelType: 'openrouter',
+    contextWindow: 400000,
+    maxOutputTokens: 60000,
+    releaseDate: "2025-12",
+    notes: 'Latest GPT-5 variant with enhanced reasoning. Available via OpenRouter only.'
   },
   // xAI Grok Models (Direct API via Responses API)
   {
@@ -835,6 +1064,39 @@ export const MODELS: ModelConfig[] = [
   },
 
   // Anthropic Models (via OpenRouter)
+  {
+    key: 'anthropic/claude-opus-4.5',
+    name: 'Claude Opus 4.5 (OpenRouter)',
+    color: 'bg-indigo-900',
+    premium: true,
+    cost: { input: '$5.00', output: '$25.00' },
+    supportsTemperature: true,
+    provider: 'OpenRouter',
+    responseTime: { speed: 'slow', estimate: '2-5 min' },
+    isReasoning: true,
+    apiModelName: 'anthropic/claude-opus-4.5',
+    modelType: 'openrouter',
+    contextWindow: 200000,
+    maxOutputTokens: 16000,
+    releaseDate: "2025-11",
+    notes: 'EXTREMELY EXPENSIVE: $5/M input, $25/M output. Use sparingly for benchmarking only.'
+  },
+  {
+    key: 'anthropic/claude-sonnet-4-5',
+    name: 'Claude Sonnet 4.5 (OpenRouter)',
+    color: 'bg-indigo-600',
+    premium: true,
+    cost: { input: '$3.00', output: '$15.00' },
+    supportsTemperature: true,
+    provider: 'OpenRouter',
+    responseTime: { speed: 'moderate', estimate: '1-3 min' },
+    isReasoning: true,
+    apiModelName: 'anthropic/claude-sonnet-4-5',
+    modelType: 'openrouter',
+    contextWindow: 200000,
+    maxOutputTokens: 64000,
+    releaseDate: "2025-09"
+  },
   {
     key: 'anthropic/claude-haiku-4.5',
     name: 'Claude Haiku 4.5 (OpenRouter)',
@@ -1074,6 +1336,23 @@ export const MODELS: ModelConfig[] = [
     maxOutputTokens: 24000,
     releaseDate: "2025-12",
     notes: 'Multimodal model for visual understanding and long-context reasoning. Supports native multimodal function calling, interleaved image-text generation, and UI reconstruction workflows including screenshot-to-HTML synthesis.'
+  },
+
+  {
+    key: 'nex-agi/deepseek-v3.1-nex-n1:free',
+    name: 'Nex AGI: DeepSeek V3.1 Nex N1 (Free)',
+    color: 'bg-cyan-600',
+    premium: false,
+    cost: { input: '$0.00', output: '$0.00' },
+    supportsTemperature: true,
+    provider: 'OpenRouter',
+    responseTime: { speed: 'moderate', estimate: '30-60 sec' },
+    isReasoning: false,
+    apiModelName: 'nex-agi/deepseek-v3.1-nex-n1:free',
+    modelType: 'openrouter',
+    contextWindow: 131072,
+    releaseDate: "2025-12",
+    notes: 'Free DeepSeek V3.1 variant via OpenRouter'
   },
 
 ];
