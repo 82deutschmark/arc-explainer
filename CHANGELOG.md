@@ -1,12 +1,18 @@
+### Version 6.1.10  Dec 11, 2025 (PENDING TESTING)
+
+- **Admin OpenRouter full catalog viewer + pricing** (Author: Cascade)
+  - Added a dedicated `/api/admin/openrouter/catalog` endpoint that proxies the full OpenRouter `/api/v1/models` catalog, including architecture, supported parameters, and raw pricing fields, and derives per-million input/output token costs plus a preview flag for each model.
+  - Extended the `/admin/openrouter` page with a "Full OpenRouter Catalog" card that loads the full catalog on demand, supports text filtering by slug or name, shows per-model pricing in the standard "In: $X.XX/M, Out: $Y.YY/M" format, and surfaces key capabilities via badges (preview, reasoning, vision, moderated).
+  - Added a one-click "Download JSON" action on the admin catalog card to export the current OpenRouter catalog snapshot for offline analysis, and updated all placeholders and loading labels on this page to use Windows-safe ASCII text (for example "N/A" and "Loading catalog...").
+  - **Files Modified**: `server/controllers/adminController.ts`, `server/routes.ts`, `client/src/pages/AdminOpenRouter.tsx`, `CHANGELOG.md`
+
 ### Version 6.1.9  Dec 11, 2025 (PENDING TESTING)
 
-- **Worm Arena TrueSkill coverage + deeper leaderboard** (Author: GPT-5.1 Codex)
+- **Worm Arena TrueSkill coverage + underrepresented tail models** (Author: GPT-5.1 Codex)
   - Updated `trueskill-coverage-nova-kat.ps1` to submit all Nova/Kat TrueSkill coverage matches asynchronously using `Start-Job`, and refreshed the opponent pool to use current OpenRouter slugs (Devstral, Ministral family, Trinity Mini, DeepSeek v3.2, Olmo-3 Think, Kimi K2, Nemotron, Gemma 3n, GLM 4.6v).
+  - Added `gpt5-nano-vs-underrepresented.ps1` to run focused coverage tournaments where `openai/gpt-5-nano` plays 9 games against each tail model (`arcee-ai/trinity-mini:free`, `mistralai/ministral-3b-2512`, `nvidia/nemotron-nano-9b-v2`, `google/gemma-3n-e2b-it:free`, `nvidia/nemotron-nano-12b-v2-vl:free`, `z-ai/glm-4.6v`) to strengthen TrueSkill estimates for low-sample models.
   - Increased the Worm Arena basic leaderboard cap from 20/100 up to 150 entries end-to-end (repository, controller, and `useWormArenaStats` hook) so the stats page can surface a much larger pool of active models.
-  - **Files Modified**: `scripts/worm-arena-tournaments/trueskill-coverage-nova-kat.ps1`, `server/repositories/SnakeBenchRepository.ts`, `server/controllers/snakeBenchController.ts`, `client/src/hooks/useWormArenaStats.ts`, `CHANGELOG.md`
-
-### Version 6.1.8  Dec 11, 2025 (PENDING TESTING)
-
+  - **Files Modified/Created**: `scripts/worm-arena-tournaments/trueskill-coverage-nova-kat.ps1`, `scripts/worm-arena-tournaments/gpt5-nano-vs-underrepresented.ps1`, `server/repositories/SnakeBenchRepository.ts`, `server/controllers/snakeBenchController.ts`, `client/src/hooks/useWormArenaStats.ts`, `CHANGELOG.md`
 - **OpenRouter reasoning models: DeepSeek v3.2 + OLMo-3 Think** (Author: GPT-5.1 Codex CLI)
   - Added OpenRouter configuration entries for `deepseek/deepseek-v3.2` (reasoning mode aligned with direct DeepSeek Reasoner specs), `allenai/olmo-3-7b-think`, and `allenai/olmo-3-32b-think:free`, including context windows, pricing, and reasoning flags so they show up correctly in UI selectors and backend lookups.
   - Extended the Worm Arena Nova/Kat coverage tournament script to include the three new reasoning models in the opponent pool, enabling coverage matches across premium DeepSeek v3.2 and both OLMo-3 thinking variants.
