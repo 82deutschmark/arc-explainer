@@ -4,7 +4,7 @@
 # PURPOSE: Run parallel Worm Arena matches between Devstral 2512 Free and all other free models listed in server/config/models.ts.
   $apiEndpoint = "https://localhost:5000/api/snakebench/run-batch"
 # $apiEndpoint = "https://arc-explainer-staging.up.railway.app/api/snakebench/run-batch"
-$modelA = "mistralai/devstral-2512:free"
+$modelA = "nvidia/nemotron-nano-12b-v2-v1"
 
 # Only free models whose apiModelName exists in server/config/models.ts (provider: OpenRouter)
 $freeModels = @(
