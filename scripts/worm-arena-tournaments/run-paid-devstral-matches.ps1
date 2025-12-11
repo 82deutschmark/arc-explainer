@@ -1,41 +1,24 @@
-# Worm Arena Tournament Script - Devstral 2512 Paid vs All Paid Models
+# Worm Arena Tournament Script - Devstral 2512 Paid vs All Free Models
 # Author: Cascade
 # Date: 2025-12-10
-# PURPOSE: Run parallel Worm Arena matches between Devstral 2512 Paid and all other paid models listed in server/config/models.ts.
+# PURPOSE: Run parallel Worm Arena matches between Devstral 2512 Paid and all free models listed in server/config/models.ts.
  $apiEndpoint = "https://localhost:5000/api/snakebench/run-batch"
 # $apiEndpoint = "https://arc-explainer-staging.up.railway.app/api/snakebench/run-batch"
 $modelA = "mistralai/devstral-2512"
 
-# Only paid models whose apiModelName exists in server/config/models.ts (excluding the free version of Devstral)
-$paidModels = @(
-    "o3-mini-2025-01-31",
-    "o4-mini-2025-04-16",
-    "o3-2025-04-16",
-    "gpt-4.1-2025-04-14",
-    "gpt-5-2025-08-07",
-    "gpt-5-mini-2025-08-07",
-    "gpt-5.1-codex-mini",
-    "gpt-5.1-codex",
-    "gpt-5.1-2025-11-13",
-    "claude-sonnet-4-20250514",
-    "claude-sonnet-4-5-20250929",
-    "anthropic/claude-opus-4.5",
-    "gemini-3-pro-preview",
-    "gemini-2.5-pro",
-    "deepseek-reasoner",
-    "deepseek-reasoner-speciale",
-    "qwen/qwen-plus-2025-07-28:thinking",
-    "mistralai/mistral-large-2512",
-    "moonshotai/kimi-k2-thinking",
-    "openrouter/gpt-5.1-codex-mini",
-    "openai/gpt-5.1",
-    "grok-4",
-    "x-ai/grok-3"
+# Only free models whose apiModelName exists in server/config/models.ts (provider: OpenRouter)
+$freeModels = @(
+    "openai/gpt-5-nano",
+    "moonshotai/kimi-dev-72b:free",
+    "google/gemma-3n-e2b-it:free",
+    "arcee-ai/trinity-mini:free",
+    "amazon/nova-2-lite-v1:free",
+    "nvidia/nemotron-nano-12b-v2-vl:free"
 )
 
 $jobCount = 0
 
-foreach ($modelB in $paidModels) {
+foreach ($modelB in $freeModels) {
     Write-Host "Queuing match: $modelA vs $modelB" -ForegroundColor Cyan
     $body = @{
         modelA = $modelA

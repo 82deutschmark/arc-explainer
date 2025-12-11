@@ -21,6 +21,8 @@
     "retry": "node --import tsx retry-failed-puzzles.ts",
     "process": "node --import tsx flexible-puzzle-processor.ts",
     "snakebench:backfill": "node --import tsx server/scripts/snakebench-backfill.ts",
+    "wormarena:discover-openrouter": "node --import tsx scripts/openrouter/discover-openrouter-models.ts",
+    "wormarena:enqueue-openrouter-new": "node --import tsx scripts/openrouter/enqueue-openrouter-new-models.ts",
     "openrouter": "node --import tsx scripts/testing/test-openrouter-models.ts",
     "openrouter-multi": "node --import tsx scripts/testing/test-openrouter-multi-output.ts",
     "models": "node --import tsx scripts/manage-models.ts",

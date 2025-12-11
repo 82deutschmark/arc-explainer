@@ -1,3 +1,10 @@
+### Version 6.1.4  Dec 10, 2025 (PENDING TESTING)
+
+- **OpenRouter discovery + enqueue split** (Author: Codex / GPT-5)
+  - Split discovery (no side effects) from gauntlet enqueue into separate TS scripts: `discover-openrouter-models.ts` reports new slugs vs `server/config/models.ts`; `enqueue-openrouter-new-models.ts` posts WormArena batches for newly discovered slugs with env overrides for modelA/count/endpoint.
+  - Added npm scripts `wormarena:discover-openrouter` and `wormarena:enqueue-openrouter-new`.
+  - **Files Modified/Created**: `scripts/openrouter/openrouter-utils.ts`, `scripts/openrouter/discover-openrouter-models.ts`, `scripts/openrouter/enqueue-openrouter-new-models.ts`, `package.json`, `CHANGELOG.md`
+
 ### Version 6.1.2  Dec 10, 2025 (PENDING TESTING)
 
 - **Worm Arena tournament: GPT-5.1 Codex Mini vs verified OpenRouter roster** (Author: Codex / GPT-5)
