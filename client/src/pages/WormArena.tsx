@@ -107,19 +107,25 @@ export default function WormArena() {
 
   React.useEffect(() => {
     if (games.length === 0) return;
+    const fallbackId = (() => {
+      const longGames = games.filter((g) => (g.roundsPlayed ?? 0) >= 20);
+      const target = longGames[0];
+      return target?.gameId ?? '';
+    })();
+
     if (!selectedMatchId) {
-      const fallbackId = games[0].gameId;
+      if (!fallbackId) return;
       setSelectedMatchId(fallbackId);
       setMatchIdInUrl(fallbackId);
       return;
     }
+
     const stillExists = games.some((g) => g.gameId === selectedMatchId);
     if (!stillExists) {
       if (initialMatchIdRef.current && initialMatchIdRef.current === selectedMatchId) {
         return;
       }
-
-      const fallbackId = games[0].gameId;
+      if (!fallbackId) return;
       setSelectedMatchId(fallbackId);
       setMatchIdInUrl(fallbackId);
     }
