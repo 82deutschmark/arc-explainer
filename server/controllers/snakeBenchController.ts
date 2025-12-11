@@ -27,6 +27,7 @@ import type {
   SnakeBenchModelRatingResponse,
   SnakeBenchModelHistoryResponse,
   SnakeBenchTrueSkillLeaderboardResponse,
+  WormArenaGreatestHitsResponse,
 } from '../../shared/types.js';
 
 export async function runMatch(req: Request, res: Response) {
@@ -74,6 +75,42 @@ export async function runMatch(req: Request, res: Response) {
 
     const response: SnakeBenchRunMatchResponse = {
       success: false,
+      error: message,
+      timestamp: Date.now(),
+    };
+
+    return res.status(500).json(response);
+  }
+}
+
+export async function getWormArenaGreatestHits(req: Request, res: Response) {
+  try {
+    const rawLimit = req.query.limitPerDimension as string | undefined;
+    let limit: number | undefined;
+
+    if (typeof rawLimit === 'string' && rawLimit.trim().length > 0) {
+      const parsed = Number(rawLimit.trim());
+      if (Number.isFinite(parsed)) {
+        limit = parsed;
+      }
+    }
+
+    const games = await snakeBenchService.getWormArenaGreatestHits(limit ?? 5);
+
+    const response: WormArenaGreatestHitsResponse = {
+      success: true,
+      games,
+      timestamp: Date.now(),
+    };
+
+    return res.json(response);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    logger.error(`SnakeBench getWormArenaGreatestHits failed: ${message}`, 'snakebench-controller');
+
+    const response: WormArenaGreatestHitsResponse = {
+      success: false,
+      games: [],
       error: message,
       timestamp: Date.now(),
     };
@@ -437,4 +474,5 @@ export const snakeBenchController = {
   modelRating,
   modelHistory,
   trueSkillLeaderboard,
+  getWormArenaGreatestHits,
 };

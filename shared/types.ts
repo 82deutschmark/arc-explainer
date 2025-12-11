@@ -723,6 +723,32 @@ export interface SnakeBenchTrueSkillLeaderboardResponse {
 }
 
 /**
+ * Worm Arena "Greatest Hits" summary types
+ * Compact per-game view used by the replay UI to surface memorable matches.
+ */
+export interface WormArenaGreatestHitGame {
+  gameId: string;
+  startedAt: string;
+  modelA: string;
+  modelB: string;
+  roundsPlayed: number;
+  maxRounds: number;
+  totalCost: number;
+  maxFinalScore: number;
+  scoreDelta: number;
+  boardWidth: number;
+  boardHeight: number;
+  highlightReason: string;
+}
+
+export interface WormArenaGreatestHitsResponse {
+  success: boolean;
+  games: WormArenaGreatestHitGame[];
+  error?: string;
+  timestamp: number;
+}
+
+/**
  * Worm Arena streaming status (lightweight, matches other streaming flows).
  */
 export interface WormArenaStreamStatus {

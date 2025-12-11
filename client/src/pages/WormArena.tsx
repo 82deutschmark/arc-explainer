@@ -15,6 +15,7 @@ import WormArenaHeader from '@/components/WormArenaHeader';
 import WormArenaReasoning from '@/components/WormArenaReasoning';
 import WormArenaRecentGames from '@/components/WormArenaRecentGames';
 import WormArenaStatsPanel from '@/components/WormArenaStatsPanel';
+import WormArenaGreatestHits from '@/components/WormArenaGreatestHits';
 import { WormArenaControlBar } from '@/components/WormArenaControlBar';
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from '@/components/ui/accordion';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
@@ -374,8 +375,9 @@ export default function WormArena() {
           )}
         </div>
 
-        <div className="mb-8">
+        <div className="mb-8 grid grid-cols-1 lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)] gap-4 items-start">
           <WormArenaStatsPanel />
+          <WormArenaGreatestHits />
         </div>
 
         <Accordion type="single" collapsible defaultValue="games" className="mb-4">

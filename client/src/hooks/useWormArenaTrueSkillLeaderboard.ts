@@ -29,6 +29,15 @@ export function useWormArenaTrueSkillLeaderboard(limit: number = 150, minGames: 
     try {
       const url = `/api/snakebench/trueskill-leaderboard?limit=${encodeURIComponent(String(limit))}&minGames=${encodeURIComponent(String(minGames))}`;
       const res = await apiRequest('GET', url);
+      const contentType = res.headers.get('content-type') || '';
+      if (!contentType.toLowerCase().includes('application/json')) {
+        const raw = await res.text();
+        const snippet = raw.slice(0, 200) || '<empty response>';
+        throw new Error(
+          `Leaderboard API returned non-JSON response (content-type: ${contentType || 'unknown'}). Snippet: ${snippet}`,
+        );
+      }
+
       const json = (await res.json()) as SnakeBenchTrueSkillLeaderboardResponse;
       if (!json.success) {
         throw new Error(json.error || 'Failed to load Worm Arena TrueSkill leaderboard');
