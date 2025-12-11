@@ -4,6 +4,10 @@ import type {
   WormArenaFrameEvent,
   WormArenaFinalSummary,
   WormArenaStreamStatus,
+  WormArenaBatchMatchStart,
+  WormArenaBatchMatchComplete,
+  WormArenaBatchComplete,
+  WormArenaBatchError,
 } from '@shared/types';
 
 type StreamState = 'idle' | 'connecting' | 'starting' | 'in_progress' | 'completed' | 'failed';
@@ -16,16 +20,22 @@ export function useWormArenaStreaming() {
   const [finalSummary, setFinalSummary] = useState<WormArenaFinalSummary | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isStarting, setIsStarting] = useState(false);
+
+  // Batch state
+  const [batchResults, setBatchResults] = useState<WormArenaBatchMatchComplete[]>([]);
+  const [currentMatchIndex, setCurrentMatchIndex] = useState<number | null>(null);
+  const [totalMatches, setTotalMatches] = useState<number | null>(null);
+
   const eventSourceRef = useRef<EventSource | null>(null);
 
-  const startMatch = useCallback(async (payload: SnakeBenchRunMatchRequest) => {
+  const startMatch = useCallback(async (payload: SnakeBenchRunMatchRequest, count: number = 1) => {
     setIsStarting(true);
     setError(null);
     try {
       const res = await fetch('/api/wormarena/prepare', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
+        body: JSON.stringify({ ...payload, count }),
       });
       const json = await res.json();
       if (!res.ok || !json?.success) {
@@ -108,6 +118,64 @@ export function useWormArenaStreaming() {
       }
     });
 
+    // Batch events
+    es.addEventListener('batch.init', (event) => {
+      try {
+        const data = JSON.parse((event as MessageEvent).data) as { totalMatches: number; modelA: string; modelB: string };
+        setStatus('starting');
+        setTotalMatches(data.totalMatches);
+        setBatchResults([]);
+        setCurrentMatchIndex(null);
+        setMessage(`Preparing batch of ${data.totalMatches} matches...`);
+      } catch (err: any) {
+        setError(err?.message || 'Failed to parse batch init event');
+      }
+    });
+
+    es.addEventListener('batch.match.start', (event) => {
+      try {
+        const data = JSON.parse((event as MessageEvent).data) as WormArenaBatchMatchStart;
+        setCurrentMatchIndex(data.index);
+        setStatus('in_progress');
+        setMessage(`Running match ${data.index} of ${data.total}...`);
+      } catch (err: any) {
+        setError(err?.message || 'Failed to parse match start event');
+      }
+    });
+
+    es.addEventListener('batch.match.complete', (event) => {
+      try {
+        const data = JSON.parse((event as MessageEvent).data) as WormArenaBatchMatchComplete;
+        setBatchResults((prev) => [...prev, data]);
+      } catch (err: any) {
+        setError(err?.message || 'Failed to parse match complete event');
+      }
+    });
+
+    es.addEventListener('batch.error', (event) => {
+      try {
+        const data = JSON.parse((event as MessageEvent).data) as WormArenaBatchError;
+        setError(`Match ${data.index} failed: ${data.error}`);
+        // Continue running batch despite error
+      } catch (err: any) {
+        setError(err?.message || 'Match error');
+      }
+    });
+
+    es.addEventListener('batch.complete', (event) => {
+      try {
+        const data = JSON.parse((event as MessageEvent).data) as WormArenaBatchComplete;
+        setStatus('completed');
+        setMessage(`Batch complete: ${data.completedMatches}/${data.totalMatches} matches finished`);
+        if (data.failedMatches > 0) {
+          setError(`${data.failedMatches} matches failed`);
+        }
+      } catch (err: any) {
+        setError(err?.message || 'Failed to parse batch complete event');
+        setStatus('failed');
+      }
+    });
+
     es.addEventListener('stream.error', (event) => {
       try {
         const data = JSON.parse((event as MessageEvent).data) as { message?: string };
@@ -142,6 +210,9 @@ export function useWormArenaStreaming() {
     finalSummary,
     error,
     isStarting,
+    batchResults,
+    currentMatchIndex,
+    totalMatches,
     startMatch,
     connect,
     disconnect,

@@ -738,6 +738,38 @@ export interface WormArenaFinalSummary {
 }
 
 /**
+ * Batch run event types for Worm Arena streaming
+ */
+export interface WormArenaBatchMatchStart {
+  index: number;
+  total: number;
+  modelA: string;
+  modelB: string;
+}
+
+export interface WormArenaBatchMatchComplete {
+  index: number;
+  total: number;
+  gameId: string;
+  modelA: string;
+  modelB: string;
+  scores: Record<string, number>;
+  results: Record<string, SnakeBenchResultLabel>;
+}
+
+export interface WormArenaBatchComplete {
+  totalMatches: number;
+  completedMatches: number;
+  failedMatches: number;
+}
+
+export interface WormArenaBatchError {
+  index: number;
+  total: number;
+  error: string;
+}
+
+/**
  * Available prompt templates for puzzle analysis
  * These templates allow users to choose different prompt styles and approaches to guide AI analysis
  */

@@ -1,13 +1,14 @@
 /*
  *
  * Author: Cascade using Claude Sonnet 4 (original), Claude Code using Opus 4.5 (2025-12-08 update), Claude Code using Haiku 4.5 (2025-12-09 update)
- * Date: 2025-12-09
+ * Date: 2025-12-10
  * PURPOSE: Centralized AI model configuration list consumed by ModelDefinitions and provider lookup utilities.
  *          Updated DeepSeek models to v3.2 with new pricing and specifications.
  *          Added deepseek-reasoner-speciale with expiration-dated base URL.
  *          Added free OpenRouter models: arcee-ai/trinity-mini:free and amazon/nova-2-lite-v1:free (Dec 2025).
  *          Added z-ai/glm-4.6v (Vision) via OpenRouter - multimodal model with 131K context (Dec 2025).
  *          Added openai/gpt-5-nano and openai/gpt-5-mini via OpenRouter (Dec 2025).
+ *          Added mistralai/devstral-2512 and mistralai/devstral-2512:free via OpenRouter (Dec 2025).
  * SRP/DRY check: Pass - file encapsulates shared model metadata without duplication.
  * shadcn/ui: Pass - configuration only.
  */
@@ -679,6 +680,39 @@ export const MODELS: ModelConfig[] = [
     modelType: 'openrouter',
     contextWindow: 262144,
     releaseDate: "2025-12"
+  },
+  {
+    key: 'mistralai/devstral-2512',
+    name: 'Devstral 2512',
+    color: 'bg-purple-700',
+    premium: false,
+    cost: { input: '$0.15', output: '$0.60' },
+    supportsTemperature: true,
+    provider: 'OpenRouter',
+    responseTime: { speed: 'moderate', estimate: '30-60 sec' },
+    isReasoning: false,
+    apiModelName: 'mistralai/devstral-2512',
+    modelType: 'openrouter',
+    contextWindow: 262144,
+    maxOutputTokens: 32000,
+    releaseDate: "2025-12-09"
+  },
+  {
+    key: 'mistralai/devstral-2512:free',
+    name: 'Devstral 2512 (Free)',
+    color: 'bg-purple-200',
+    premium: false,
+    cost: { input: '$0.00', output: '$0.00' },
+    supportsTemperature: true,
+    provider: 'OpenRouter',
+    responseTime: { speed: 'moderate', estimate: '30-60 sec' },
+    isReasoning: false,
+    apiModelName: 'mistralai/devstral-2512:free',
+    modelType: 'openrouter',
+    contextWindow: 262144,
+    maxOutputTokens: 32000,
+    releaseDate: "2025-12-09",
+    notes: 'Free version of Devstral 2512 via OpenRouter'
   },
   {
     key: 'deepseek/deepseek-chat-v3.1',

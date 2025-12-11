@@ -5,7 +5,7 @@
  *          aggregates, model-centric TrueSkill snapshots, placement
  *          progress, and recent match history. Backed entirely by
  *          SnakeBench DB tables via public ARC Explainer APIs.
- * SRP/DRY check: Pass  page-level composition only, delegates data
+ * SRP/DRY check: Pass page-level composition only, delegates data
  *                fetching to dedicated hooks and shared helpers.
  */
 
@@ -36,6 +36,23 @@ import {
   TableCell,
   TableBody,
 } from "@/components/ui/table";
+
+function DataNumber({
+  children,
+  size = "xl",
+}: {
+  children: React.ReactNode;
+  size?: "lg" | "xl";
+}) {
+  const baseClasses =
+    "inline-flex items-baseline px-2.5 py-0.5 rounded-md bg-[#e4f2e9] border border-[#9ece6a] font-extrabold leading-tight";
+  const sizeClass = size === "xl" ? " text-3xl" : " text-xl";
+  return (
+    <span className={baseClasses + sizeClass} style={{ color: "#064e3b" }}>
+      {children}
+    </span>
+  );
+}
 
 function useQueryParamModel(): string | null {
   const [location] = useLocation();
@@ -156,12 +173,7 @@ export default function WormArenaStats() {
               </CardTitle>
             </CardHeader>
             <CardContent className="pb-3">
-              <div
-                className="text-3xl font-extrabold"
-                style={{ color: "#1f130a" }}
-              >
-                {globalStats?.totalGames ?? 0}
-              </div>
+              <DataNumber>{globalStats?.totalGames ?? 0}</DataNumber>
             </CardContent>
           </Card>
 
@@ -175,12 +187,7 @@ export default function WormArenaStats() {
               </CardTitle>
             </CardHeader>
             <CardContent className="pb-3">
-              <div
-                className="text-3xl font-extrabold"
-                style={{ color: "#1f130a" }}
-              >
-                {globalStats?.activeModels ?? 0}
-              </div>
+              <DataNumber>{globalStats?.activeModels ?? 0}</DataNumber>
             </CardContent>
           </Card>
 
@@ -194,12 +201,7 @@ export default function WormArenaStats() {
               </CardTitle>
             </CardHeader>
             <CardContent className="pb-3">
-              <div
-                className="text-3xl font-extrabold"
-                style={{ color: "#1f130a" }}
-              >
-                {globalStats?.topApples ?? 0}
-              </div>
+              <DataNumber>{globalStats?.topApples ?? 0}</DataNumber>
             </CardContent>
           </Card>
 
@@ -213,14 +215,11 @@ export default function WormArenaStats() {
               </CardTitle>
             </CardHeader>
             <CardContent className="pb-3">
-              <div
-                className="text-3xl font-extrabold"
-                style={{ color: "#1f130a" }}
-              >
+              <DataNumber>
                 ${globalStats?.totalCost?.toFixed
                   ? globalStats.totalCost.toFixed(2)
                   : globalStats?.totalCost ?? 0}
-              </div>
+              </DataNumber>
             </CardContent>
           </Card>
         </div>
@@ -359,12 +358,7 @@ export default function WormArenaStats() {
                           <span>Skill estimate</span>
                           <InlineMath math={"\\mu"} />
                         </div>
-                        <div
-                          className="text-3xl font-extrabold"
-                          style={{ color: "#1f130a" }}
-                        >
-                          {rating.mu.toFixed(2)}
-                        </div>
+                        <DataNumber>{rating.mu.toFixed(2)}</DataNumber>
                         <div
                           className="text-xs font-mono mt-1"
                           style={{ color: "#3d2817" }}
@@ -382,12 +376,7 @@ export default function WormArenaStats() {
                           <span>Uncertainty</span>
                           <InlineMath math={"\\sigma"} />
                         </div>
-                        <div
-                          className="text-3xl font-extrabold"
-                          style={{ color: "#1f130a" }}
-                        >
-                          {rating.sigma.toFixed(2)}
-                        </div>
+                        <DataNumber>{rating.sigma.toFixed(2)}</DataNumber>
                         <div
                           className="text-xs font-mono mt-1"
                           style={{ color: "#3d2817" }}
@@ -406,12 +395,7 @@ export default function WormArenaStats() {
                           <span>Pessimistic rating</span>
                           <InlineMath math={"\\mu - 3\\sigma"} />
                         </div>
-                        <div
-                          className="text-3xl font-extrabold"
-                          style={{ color: "#1f130a" }}
-                        >
-                          {rating.exposed.toFixed(2)}
-                        </div>
+                        <DataNumber>{rating.exposed.toFixed(2)}</DataNumber>
                         {pessimisticEquation && (
                           <div
                             className="text-xs font-mono mt-1"
@@ -429,12 +413,7 @@ export default function WormArenaStats() {
                         >
                           Leaderboard score
                         </div>
-                        <div
-                          className="text-3xl font-extrabold"
-                          style={{ color: "#1f130a" }}
-                        >
-                          {rating.displayScore.toFixed(0)}
-                        </div>
+                        <DataNumber>{rating.displayScore.toFixed(0)}</DataNumber>
                         <div
                           className="text-xs font-mono mt-1"
                           style={{ color: "#3d2817" }}
@@ -452,12 +431,7 @@ export default function WormArenaStats() {
                         >
                           Games
                         </div>
-                        <div
-                          className="text-xl font-extrabold"
-                          style={{ color: "#1f130a" }}
-                        >
-                          {rating.gamesPlayed}
-                        </div>
+                        <DataNumber size="lg">{rating.gamesPlayed}</DataNumber>
                       </div>
                       <div>
                         <div
@@ -466,12 +440,7 @@ export default function WormArenaStats() {
                         >
                           Wins
                         </div>
-                        <div
-                          className="text-xl font-extrabold"
-                          style={{ color: "#1f130a" }}
-                        >
-                          {rating.wins}
-                        </div>
+                        <DataNumber size="lg">{rating.wins}</DataNumber>
                       </div>
                       <div>
                         <div
@@ -480,12 +449,7 @@ export default function WormArenaStats() {
                         >
                           Losses
                         </div>
-                        <div
-                          className="text-xl font-extrabold"
-                          style={{ color: "#1f130a" }}
-                        >
-                          {rating.losses}
-                        </div>
+                        <DataNumber size="lg">{rating.losses}</DataNumber>
                       </div>
                       <div>
                         <div
@@ -494,12 +458,7 @@ export default function WormArenaStats() {
                         >
                           Ties
                         </div>
-                        <div
-                          className="text-xl font-extrabold"
-                          style={{ color: "#1f130a" }}
-                        >
-                          {rating.ties}
-                        </div>
+                        <DataNumber size="lg">{rating.ties}</DataNumber>
                       </div>
                     </div>
 
@@ -520,6 +479,10 @@ export default function WormArenaStats() {
                         <div>
                           <InlineMath math={"\\mu - 3\\sigma"} /> : conservative lower
                           bound we use as the pessimistic rating.
+                        </div>
+                        <div>
+                          Numbers shown with the green pill highlight are live metrics
+                          pulled directly from Worm Arena games.
                         </div>
                       </div>
                     </div>
