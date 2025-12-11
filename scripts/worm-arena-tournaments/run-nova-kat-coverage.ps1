@@ -2,7 +2,7 @@
 # Author: Cascade
 # Date: 2025-12-10
 # PURPOSE: Run Worm Arena matches for amazon/nova-2-lite-v1:free and kwaipilot/kat-coder-pro:free
-#          against key GPT-5 baseline models (GPT-5.1, GPT-5.1 Codex Mini, GPT-5 Nano) for coverage.
+#          against cost-controlled GPT-5 baseline models (GPT-5.1 Codex Mini, GPT-5 Nano) for coverage.
 
 $apiEndpoint = "https://localhost:5000/api/snakebench/run-batch"
 # $apiEndpoint = "https://arc-explainer-staging.up.railway.app/api/snakebench/run-batch"
@@ -13,7 +13,6 @@ $coverageModels = @(
 )
 
 $baselineModels = @(
-    "openai/gpt-5.1",
     "openai/gpt-5.1-codex-mini",
     "openai/gpt-5-nano"
 )
