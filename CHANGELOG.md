@@ -1,12 +1,13 @@
 ### Version 6.1.20  Dec 11, 2025 (PENDING TESTING)
 
-- **OpenRouter model sync utility + GPT-5.2 model** (Author: Claude Code using Haiku 4.5)
+- **OpenRouter model sync utility + GPT-5.2 + Nex AGI DeepSeek** (Author: Claude Code using Haiku 4.5)
   - Added new `openai/gpt-5.2` model to config with $1.75/M input, $14.00/M output pricing via OpenRouter.
+  - Added `nex-agi/deepseek-v3.1-nex-n1:free` free model via OpenRouter (131K context window, free tier).
   - Created `openRouterModelSync.ts` utility to discover new OpenRouter models not yet in `server/config/models.ts` and generate TypeScript configuration snippets with intelligent color/speed/cost detection.
   - Added `/api/admin/openrouter/sync-config` endpoint supporting optional cost filters (`?maxInputCost=X&maxOutputCost=Y`) to exclude expensive models (e.g., filter out models with output cost > $5/M).
   - Enhanced Admin OpenRouter panel with new "Sync Models to Config" card: cost filter inputs, discover/generate flow, and one-click copy-to-clipboard for generated snippets.
   - **Key workflow**: Admin sets max output cost (e.g., $5/M), clicks "Generate Snippets", reviews TypeScript config, and manually adds passing models to `server/config/models.ts`.
-  - **Files Created/Modified**: `server/utils/openRouterModelSync.ts` (new), `server/config/models.ts` (add GPT-5.2), `server/controllers/adminController.ts` (add sync endpoint), `client/src/pages/AdminOpenRouter.tsx` (add sync UI), `server/routes.ts` (register sync route), `CHANGELOG.md`
+  - **Files Created/Modified**: `server/utils/openRouterModelSync.ts` (new), `server/config/models.ts` (add GPT-5.2, Nex AGI), `server/controllers/adminController.ts` (add sync endpoint), `client/src/pages/AdminOpenRouter.tsx` (add sync UI), `server/routes.ts` (register sync route), `CHANGELOG.md`
 
 ### Version 6.1.19  Dec 11, 2025 (PENDING TESTING)
 
