@@ -1338,4 +1338,21 @@ export const MODELS: ModelConfig[] = [
     notes: 'Multimodal model for visual understanding and long-context reasoning. Supports native multimodal function calling, interleaved image-text generation, and UI reconstruction workflows including screenshot-to-HTML synthesis.'
   },
 
+  {
+    key: 'nex-agi/deepseek-v3.1-nex-n1:free',
+    name: 'Nex AGI: DeepSeek V3.1 Nex N1 (Free)',
+    color: 'bg-cyan-600',
+    premium: false,
+    cost: { input: '$0.00', output: '$0.00' },
+    supportsTemperature: true,
+    provider: 'OpenRouter',
+    responseTime: { speed: 'moderate', estimate: '30-60 sec' },
+    isReasoning: false,
+    apiModelName: 'nex-agi/deepseek-v3.1-nex-n1:free',
+    modelType: 'openrouter',
+    contextWindow: 131072,
+    releaseDate: "2025-12",
+    notes: 'Free DeepSeek V3.1 variant via OpenRouter'
+  },
+
 ];
