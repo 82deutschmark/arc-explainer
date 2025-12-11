@@ -595,35 +595,6 @@ export async function getOpenRouterCatalog(req: Request, res: Response) {
 }
 
 /**
- * @route   GET /api/admin/openrouter/catalog
- * @desc    Return raw OpenRouter catalog with derived pricing fields for admin UI
- * @access  Private
- */
-export async function getOpenRouterCatalog(req: Request, res: Response) {
-	try {
-		const remote = await fetchOpenRouterCatalog();
-
-		const models = remote.map((m) => ({
-			...m,
-			inputCostPerM: computePricePerMillion(m.pricing?.prompt),
-			outputCostPerM: computePricePerMillion(m.pricing?.completion),
-			isPreview: flagPreview(m.id),
-		}));
-
-		res.json({
-			total: models.length,
-			models,
-		});
-	} catch (error) {
-		console.error('[Admin] OpenRouter catalog fetch failed:', error);
-		res.status(500).json({
-			error: 'Failed to fetch OpenRouter catalog',
-			message: error instanceof Error ? error.message : 'Unknown error',
-		});
-	}
-}
-
-/**
  * @route   GET /api/admin/openrouter/discover
  * @desc    Fetch OpenRouter catalog and list slugs not present in DB/config
  * @access  Private

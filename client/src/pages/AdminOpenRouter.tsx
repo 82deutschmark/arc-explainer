@@ -30,12 +30,55 @@ type DiscoverResponse = {
   }>;
 };
 
+type CatalogModel = {
+  id: string;
+  name?: string;
+  description?: string;
+  created?: number;
+  context_length?: number | null;
+  architecture?: {
+    modality?: string;
+    input_modalities?: string[];
+    output_modalities?: string[];
+    tokenizer?: string;
+    instruct_type?: string | null;
+  } | null;
+  pricing?: {
+    prompt?: string;
+    completion?: string;
+    request?: string;
+    image?: string;
+    web_search?: string;
+    internal_reasoning?: string;
+    input_cache_read?: string;
+    input_cache_write?: string;
+  } | null;
+  top_provider?: {
+    context_length?: number | null;
+    max_completion_tokens?: number | null;
+    is_moderated?: boolean;
+  } | null;
+  supported_parameters?: string[] | null;
+  default_parameters?: Record<string, unknown> | null;
+  inputCostPerM?: number | null;
+  outputCostPerM?: number | null;
+  isPreview?: boolean;
+};
+
+type CatalogResponse = {
+  total: number;
+  models: CatalogModel[];
+};
+
 export default function AdminOpenRouter() {
   const { toast } = useToast();
   const [discoverResult, setDiscoverResult] = React.useState<DiscoverResponse | null>(null);
   const [selected, setSelected] = React.useState<Record<string, boolean>>({});
   const [nameEdits, setNameEdits] = React.useState<Record<string, string>>({});
   const [loading, setLoading] = React.useState(false);
+  const [catalog, setCatalog] = React.useState<CatalogResponse | null>(null);
+  const [catalogLoading, setCatalogLoading] = React.useState(false);
+  const [catalogSearch, setCatalogSearch] = React.useState('');
 
   const formatUsdPerM = (value?: number | null): string | null => {
     if (value == null) return null;
@@ -50,13 +93,39 @@ export default function AdminOpenRouter() {
   const renderPricing = (model: DiscoverResponse['newModels'][number]) => {
     const input = formatUsdPerM(model.inputCostPerM);
     const output = formatUsdPerM(model.outputCostPerM);
-    if (!input && !output) return '—';
+    if (!input && !output) return 'N/A';
     return (
       <div className="flex flex-col text-xs text-muted-foreground">
         {input && <span>In: {input}/M</span>}
         {output && <span>Out: {output}/M</span>}
       </div>
     );
+  };
+
+  const renderCatalogPricing = (model: CatalogModel) => {
+    const input = formatUsdPerM(model.inputCostPerM ?? null);
+    const output = formatUsdPerM(model.outputCostPerM ?? null);
+    if (!input && !output) return 'N/A';
+    return (
+      <div className="flex flex-col text-xs text-muted-foreground">
+        {input && <span>In: {input}/M</span>}
+        {output && <span>Out: {output}/M</span>}
+      </div>
+    );
+  };
+
+  const renderCatalogModality = (model: CatalogModel) => {
+    const arch = model.architecture;
+    if (!arch) return 'N/A';
+    const parts: string[] = [];
+    if (arch.modality) parts.push(arch.modality);
+    if (arch.input_modalities && arch.input_modalities.length > 0) {
+      parts.push('In: ' + arch.input_modalities.join(','));
+    }
+    if (arch.output_modalities && arch.output_modalities.length > 0) {
+      parts.push('Out: ' + arch.output_modalities.join(','));
+    }
+    return parts.length > 0 ? parts.join(' | ') : 'N/A';
   };
 
   const discover = React.useCallback(async () => {
@@ -142,6 +211,59 @@ export default function AdminOpenRouter() {
     setSelected(updated);
   };
 
+  const loadCatalog = React.useCallback(async () => {
+    setCatalogLoading(true);
+    try {
+      const res = await fetch('/api/admin/openrouter/catalog');
+      if (!res.ok) {
+        const text = await res.text().catch(() => '');
+        throw new Error(text || 'Catalog fetch failed');
+      }
+      const data = (await res.json()) as CatalogResponse;
+      setCatalog(data);
+    } catch (err) {
+      toast({
+        title: 'Catalog fetch failed',
+        description: err instanceof Error ? err.message : 'Unknown error',
+        variant: 'destructive',
+      });
+    } finally {
+      setCatalogLoading(false);
+    }
+  }, [toast]);
+
+  const handleDownloadCatalog = () => {
+    if (!catalog) return;
+    try {
+      const blob = new Blob([JSON.stringify(catalog, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = 'openrouter-catalog.json';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      toast({
+        title: 'Download failed',
+        description: err instanceof Error ? err.message : 'Unknown error',
+        variant: 'destructive',
+      });
+    }
+  };
+
+  const catalogModels: CatalogModel[] = React.useMemo(() => {
+    if (!catalog) return [];
+    const query = catalogSearch.trim().toLowerCase();
+    if (!query) return catalog.models;
+    return catalog.models.filter((m) => {
+      const slug = m.id.toLowerCase();
+      const name = (m.name || '').toLowerCase();
+      return slug.includes(query) || name.includes(query);
+    });
+  }, [catalog, catalogSearch]);
+
   return (
     <div className="container mx-auto p-6 space-y-6">
       <div>
@@ -159,7 +281,7 @@ export default function AdminOpenRouter() {
           </div>
           <div className="flex items-center gap-3">
             <Button onClick={discover} disabled={loading}>
-              {loading ? 'Discovering…' : 'Discover OpenRouter'}
+              {loading ? 'Discovering...' : 'Discover OpenRouter'}
             </Button>
             <Button variant="secondary" onClick={() => toggleAll(true)} disabled={!discoverResult}>
               Select all
@@ -217,7 +339,7 @@ export default function AdminOpenRouter() {
                             </TableCell>
                             <TableCell>{renderPricing(m)}</TableCell>
                             <TableCell className="text-sm text-muted-foreground">
-                              {m.contextLength ? `${m.contextLength.toLocaleString()} tokens` : '—'}
+                              {m.contextLength ? `${m.contextLength.toLocaleString()} tokens` : 'N/A'}
                             </TableCell>
                             <TableCell className="text-sm text-muted-foreground">
                               {m.isPreview && <Badge variant="outline">preview</Badge>}
@@ -229,7 +351,7 @@ export default function AdminOpenRouter() {
                   </div>
                   <div className="flex justify-end">
                     <Button onClick={handleImport} disabled={importMutation.isPending}>
-                      {importMutation.isPending ? 'Importing…' : 'Import selected'}
+                      {importMutation.isPending ? 'Importing...' : 'Import selected'}
                     </Button>
                   </div>
                 </>
@@ -237,6 +359,94 @@ export default function AdminOpenRouter() {
             </>
           ) : (
             <div className="text-sm text-muted-foreground">Run discovery to see new models.</div>
+          )}
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
+          <div>
+            <CardTitle>Full OpenRouter Catalog</CardTitle>
+            <CardDescription>Browse all OpenRouter models, pricing, and capabilities.</CardDescription>
+          </div>
+          <div className="flex flex-wrap items-center gap-3">
+            <Input
+              placeholder="Filter by slug or name"
+              value={catalogSearch}
+              onChange={(e) => setCatalogSearch(e.target.value)}
+              className="w-56"
+            />
+            <Button onClick={loadCatalog} disabled={catalogLoading}>
+              {catalogLoading ? 'Loading catalog...' : 'Load catalog'}
+            </Button>
+            <Button variant="secondary" onClick={handleDownloadCatalog} disabled={!catalog}>
+              Download JSON
+            </Button>
+          </div>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {catalog ? (
+            <>
+              <div className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
+                <Badge variant="secondary">Total models: {catalog.total}</Badge>
+                <Badge variant="secondary">Visible: {catalogModels.length}</Badge>
+              </div>
+              <Separator />
+              {catalogModels.length === 0 ? (
+                <div className="text-sm text-muted-foreground">No models match the current filter.</div>
+              ) : (
+                <div className="overflow-auto border rounded-md">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Slug</TableHead>
+                        <TableHead>Name</TableHead>
+                        <TableHead className="w-40">Pricing</TableHead>
+                        <TableHead className="w-32">Context</TableHead>
+                        <TableHead className="w-48">Modality</TableHead>
+                        <TableHead className="w-40">Tags</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {catalogModels.map((m) => {
+                        const hasReasoning = (m.supported_parameters || []).some((p) =>
+                          p === 'reasoning' || p === 'include_reasoning'
+                        );
+                        const inputs = (m.architecture?.input_modalities || []).map((v) => v.toLowerCase());
+                        const hasVision = inputs.includes('image') || inputs.includes('video');
+                        return (
+                          <TableRow key={m.id}>
+                            <TableCell className="font-mono text-xs">{m.id}</TableCell>
+                            <TableCell className="text-sm">{m.name || m.id}</TableCell>
+                            <TableCell>{renderCatalogPricing(m)}</TableCell>
+                            <TableCell className="text-sm text-muted-foreground">
+                              {m.context_length != null
+                                ? m.context_length.toLocaleString() + ' tokens'
+                                : 'N/A'}
+                            </TableCell>
+                            <TableCell className="text-xs text-muted-foreground">
+                              {renderCatalogModality(m)}
+                            </TableCell>
+                            <TableCell className="text-xs text-muted-foreground space-x-2">
+                              {m.isPreview && <Badge variant="outline">preview</Badge>}
+                              {hasReasoning && <Badge variant="outline">reasoning</Badge>}
+                              {hasVision && <Badge variant="outline">vision</Badge>}
+                              {m.top_provider?.is_moderated && (
+                                <Badge variant="outline">moderated</Badge>
+                              )}
+                            </TableCell>
+                          </TableRow>
+                        );
+                      })}
+                    </TableBody>
+                  </Table>
+                </div>
+              )}
+            </>
+          ) : (
+            <div className="text-sm text-muted-foreground">
+              Load the catalog to see the full list of OpenRouter models, pricing, and capabilities.
+            </div>
           )}
         </CardContent>
       </Card>
