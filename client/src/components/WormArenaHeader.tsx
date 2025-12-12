@@ -23,6 +23,7 @@ interface WormArenaHeaderProps {
   actionSlot?: React.ReactNode;
   links?: WormArenaHeaderLink[];
   showMatchupLabel?: boolean;
+  subtitle?: string;
 }
 
 export default function WormArenaHeader({
@@ -31,6 +32,7 @@ export default function WormArenaHeader({
   actionSlot,
   links = [],
   showMatchupLabel = true,
+  subtitle,
 }: WormArenaHeaderProps) {
   return (
     <header className="worm-header">
@@ -73,7 +75,7 @@ export default function WormArenaHeader({
             <div className="flex items-center gap-2 text-xs worm-header-subtitle">
               <span>🌱</span>
               <span className="font-medium font-worm">
-                {totalGames > 0 ? `${totalGames} matches played` : 'Launch your first battle'}
+                {subtitle ?? (totalGames > 0 ? `${totalGames} matches played` : 'Launch your first battle')}
               </span>
               <span>🍎</span>
             </div>
