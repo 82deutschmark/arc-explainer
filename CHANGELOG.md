@@ -1,3 +1,13 @@
+### Version 6.1.32  Dec 12, 2025 (PENDING TESTING)
+
+- **Worm Arena Stats: fix win rate bug and unreadable font sizes** (Author: Cascade)
+  - **Bug fix**: `SnakeBenchRepository.getBasicLeaderboard` now always returns `winRate` regardless of `sortBy` parameter. Previously win rate was only included when sorting by win rate, causing the UI to show "—" for all entries.
+  - **Font sizes**: Bumped `WormArenaStatsPanel` from `text-xs` (12px) to `text-base` (16px) for table content, `text-sm` (14px) for model names. Increased cell padding for better readability.
+  - **Font sizes**: Bumped `WormArenaGreatestHits` from `text-[11px]` to `text-sm`/`text-base` throughout. Title now `text-xl`.
+  - **Cost display**: Greatest Hits now hides the cost badge when `totalCost === 0` instead of showing "$0.0000".
+  - **Hall of Fame**: Reordered curated games to show matches with actual cost data first; legacy o3/o4 matches without cost tracking moved to end.
+  - **Files Modified**: `server/repositories/SnakeBenchRepository.ts`, `client/src/components/WormArenaStatsPanel.tsx`, `client/src/components/WormArenaGreatestHits.tsx`, `server/services/snakeBenchHallOfFame.ts`, `CHANGELOG.md`
+
 ### Version 6.1.30  Dec 12, 2025 (PENDING TESTING)
 
 - **Worm Arena Live: curated 1v1 matchup selector (no batching)** (Author: GPT-5.2 Codex CLI)

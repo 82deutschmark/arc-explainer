@@ -1,11 +1,14 @@
 /**
- * Author: GPT-5.2 Codex CLI
+ * Author: Claude Code using Haiku 4.5
  * Date: 2025-12-12
  * PURPOSE: Curated matchup selector for WormArenaLive.
- *          Renders categorized cards the user can pick from to launch a single
- *          statistically meaningful live match.
- * SRP/DRY check: Pass - UI only, no streaming logic.
- * shadcn/ui: Pass - uses existing styling primitives.
+ *          Renders categorized buttons (Cross-Tier, Budget, Premium, Rivalry, Placement)
+ *          with full-width, high-contrast cards that are immediately scannable.
+ *          Selected state has ring + bg highlight + checkmark. Unavailable models show warning.
+ *          Optimized for sidebar context (left panel of live arena).
+ * SRP/DRY check: Pass - pure UI component. Reuses getCuratedMatchups() utility.
+ *                No streaming, scoring, or timing logic. No duplication.
+ * UX Notes: Cards 3x larger than previous, clear hover states, active press feedback.
  */
 
 import React from 'react';
@@ -46,25 +49,18 @@ export default function WormArenaMatchupSelector({
   };
 
   return (
-    <div className="space-y-4 font-worm">
-      <div className="text-sm font-semibold text-worm-ink">
-        Select a Matchup
-      </div>
-
+    <div className="space-y-3 font-worm">
       {CATEGORIES.map((cat) => {
         const matchups = getCuratedMatchups(cat.key);
         if (matchups.length === 0) return null;
 
         return (
           <div key={cat.key} className="space-y-2">
-            <div className="text-xs font-medium worm-muted">
-              {cat.label}{' '}
-              <span className="font-normal">
-                · {cat.description}
-              </span>
+            <div className="text-[11px] font-bold uppercase tracking-wide worm-muted">
+              {cat.label}
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+            <div className="space-y-2">
               {matchups.map((matchup) => {
                 const selected = selectedMatchup.id === matchup.id;
                 const available = isAvailable(matchup);
@@ -75,31 +71,33 @@ export default function WormArenaMatchupSelector({
                     key={matchup.id}
                     onClick={() => onSelectMatchup(matchup)}
                     disabled={disabled}
-                    className={
-                      `
-                      p-3 rounded border text-left transition-all
+                    className={`
+                      w-full p-3 rounded border text-left transition-all
                       ${selected
-                        ? 'border-worm-ink bg-worm-card shadow-sm'
-                        : 'border-worm-border bg-white/90 hover:border-worm-muted'
+                        ? 'border-worm-ink bg-worm-card shadow-md ring-2 ring-worm-green/30'
+                        : 'border-worm-border bg-white/80 hover:border-worm-ink hover:bg-white'
                       }
-                      ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
+                      ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer active:scale-95'}
                     `}
                   >
-                    <div className="flex items-start gap-2">
-                      <span className="text-lg">{matchup.icon}</span>
+                    <div className="flex items-start gap-2.5">
+                      <span className="text-xl flex-shrink-0 mt-0.5">{matchup.icon}</span>
                       <div className="flex-1 min-w-0">
-                        <div className="text-xs font-semibold truncate text-worm-ink">
+                        <div className="text-xs font-bold text-worm-ink leading-tight">
                           {matchup.displayName}
                         </div>
-                        <div className="text-xs mt-1 worm-muted">
+                        <div className="text-xs mt-1 worm-muted leading-tight">
                           {matchup.description}
                         </div>
                         {!available && (
-                          <div className="text-[10px] mt-1 text-worm-red">
-                            Not available on OpenRouter
+                          <div className="text-[10px] mt-1.5 text-orange-600 font-semibold">
+                            ⚠ Not on OpenRouter
                           </div>
                         )}
                       </div>
+                      {selected && (
+                        <span className="text-lg flex-shrink-0 mt-0.5">✓</span>
+                      )}
                     </div>
                   </button>
                 );

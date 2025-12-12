@@ -18,35 +18,36 @@ export default function WormArenaGreatestHits() {
 
   return (
     <Card className="worm-card">
-      <CardHeader className="pb-2">
-        <CardTitle className="text-lg font-bold text-worm-ink">
+      <CardHeader className="pb-3">
+        <CardTitle className="text-xl font-bold text-worm-ink">
           Greatest Hits Matches
         </CardTitle>
-        <p className="text-xs font-semibold mt-1 worm-muted">
+        <p className="text-sm mt-1 worm-muted">
           Curated Worm Arena games with long runs, high costs, or big scores.
         </p>
       </CardHeader>
-      <CardContent className="pt-0 text-sm text-worm-ink">
+      <CardContent className="pt-0 text-base text-worm-ink">
         {isLoading && (
-          <div className="py-2 text-sm font-semibold worm-muted">
-            Loading greatest hits
+          <div className="py-3 text-base worm-muted">
+            Loading greatest hits…
           </div>
         )}
         {error && !isLoading && (
-          <div className="py-2 text-sm font-semibold text-red-700">{error}</div>
+          <div className="py-3 text-base text-red-700">{error}</div>
         )}
         {!isLoading && !error && games.length === 0 && (
-          <div className="py-2 text-sm font-semibold worm-muted">
-            No greatest hits yet run a few matches to discover epic games.
+          <div className="py-3 text-base worm-muted">
+            No greatest hits yet — run a few matches to discover epic games.
           </div>
         )}
 
         {!isLoading && !error && games.length > 0 && (
-          <div className="space-y-2">
+          <div className="space-y-3">
             {games.map((game) => {
               const matchup = `${game.modelA} vs ${game.modelB}`;
               const roundsLabel = `${game.roundsPlayed} / ${game.maxRounds || game.roundsPlayed} rounds`;
-              const costLabel = `$${game.totalCost.toFixed(4)}`;
+              const hasCost = game.totalCost > 0;
+              const costLabel = hasCost ? `$${game.totalCost.toFixed(2)}` : null;
               const scoreLabel =
                 game.scoreDelta > 0
                   ? `Score delta: ${game.scoreDelta}`
@@ -55,40 +56,42 @@ export default function WormArenaGreatestHits() {
               return (
                 <div
                   key={game.gameId}
-                  className="flex flex-col md:flex-row md:items-center md:justify-between gap-2 rounded-md border px-3 py-2 bg-white/80 worm-border"
+                  className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 rounded-md border px-4 py-3 bg-white/80 worm-border"
                 >
-                  <div className="space-y-1 min-w-0">
-                    <div className="font-mono text-xs truncate" title={matchup}>
+                  <div className="space-y-2 min-w-0">
+                    <div className="font-mono text-sm truncate" title={matchup}>
                       {matchup}
                     </div>
-                    <div className="flex flex-wrap gap-2 text-[11px]">
-                      <Badge variant="outline" className="font-semibold">
+                    <div className="flex flex-wrap gap-2 text-sm">
+                      <Badge variant="outline" className="font-semibold text-sm px-2 py-1">
                         {roundsLabel}
                       </Badge>
-                      <Badge
-                        variant="outline"
-                        className="font-semibold worm-border"
-                      >
-                        Cost: {costLabel}
-                      </Badge>
-                      <Badge variant="outline" className="font-semibold">
+                      {costLabel && (
+                        <Badge
+                          variant="outline"
+                          className="font-semibold text-sm px-2 py-1 worm-border"
+                        >
+                          Cost: {costLabel}
+                        </Badge>
+                      )}
+                      <Badge variant="outline" className="font-semibold text-sm px-2 py-1">
                         {scoreLabel}
                       </Badge>
                     </div>
-                    <div className="text-[11px] font-semibold worm-muted">
+                    <div className="text-sm worm-muted">
                       {game.highlightReason}
                     </div>
                   </div>
 
-                  <div className="flex items-center justify-end gap-3 text-xs">
+                  <div className="flex items-center justify-end gap-4">
                     {game.startedAt && (
-                      <span className="text-[11px] worm-muted">
-                        {new Date(game.startedAt).toLocaleString()}
+                      <span className="text-sm worm-muted">
+                        {new Date(game.startedAt).toLocaleDateString()}
                       </span>
                     )}
                     <a
                       href={`/worm-arena?matchId=${encodeURIComponent(game.gameId)}`}
-                      className="underline font-semibold text-xs text-worm-ink"
+                      className="underline font-semibold text-base text-worm-ink hover:text-worm-green"
                     >
                       View replay
                     </a>
