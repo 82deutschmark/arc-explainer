@@ -4,6 +4,11 @@
   - Reordered the `/scoring` model dropdown so `gpt-5-2-2025-12-11-thinking-high` appears first and is auto-selected by default.
   - **Files Modified**: `client/src/pages/HuggingFaceUnionAccuracy.tsx`, `CHANGELOG.md`
 
+- **Worm Arena: fix Responses output parsing and quoted OpenRouter keys** (Author: GPT-5.2 Codex CLI)
+  - Hardened SnakeBench's OpenRouter provider to strip accidental surrounding quotes from `OPENROUTER_API_KEY` / `OPENROUTER_BASE_URL`, eliminating cookie-auth 401s even when env vars are exported with quotes.
+  - Updated Responses-mode text extraction to skip reasoning items and reliably read the actual output text, so GPT‑5 / x‑ai models stop falling back to random moves and token/cost totals populate correctly.
+  - **Files Modified**: `external/SnakeBench/backend/llm_providers.py`, `CHANGELOG.md`
+
 - **Worm Arena: fix OpenRouter cookie-auth 401 causing random-move fallbacks** (Author: Cascade)
   - Ensured the SnakeBench subprocess always uses the official OpenRouter API base URL (`https://openrouter.ai/api/v1`) to prevent accidental routing to cookie-auth protected endpoints (which surfaced as `401: No cookie auth credentials found`).
   - SnakeBench submodule now honors `SNAKEBENCH_DISABLE_INTERNAL_DB` / `SNAKEBENCH_DISABLE_SUPABASE` so ARC Explainer runs never attempt Supabase DB writes or Supabase Storage uploads (local replay JSON + ARC Explainer Postgres ingest remain).
