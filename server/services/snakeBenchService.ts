@@ -246,6 +246,22 @@ export class SnakeBenchService {
       PYTHONUTF8: '1',
     };
 
+    const expectedOpenRouterBaseUrl = 'https://openrouter.ai/api/v1';
+    const configuredOpenRouterBaseUrl = (env.OPENROUTER_BASE_URL || '').trim();
+    if (
+      !configuredOpenRouterBaseUrl ||
+      configuredOpenRouterBaseUrl === expectedOpenRouterBaseUrl ||
+      configuredOpenRouterBaseUrl === `${expectedOpenRouterBaseUrl}/`
+    ) {
+      env.OPENROUTER_BASE_URL = expectedOpenRouterBaseUrl;
+    } else {
+      logger.warn(
+        `SnakeBench runMatch: overriding OPENROUTER_BASE_URL (${configuredOpenRouterBaseUrl}) with ${expectedOpenRouterBaseUrl} to avoid cookie-auth 401s`,
+        'snakebench-service',
+      );
+      env.OPENROUTER_BASE_URL = expectedOpenRouterBaseUrl;
+    }
+
     if (request.apiKey && request.provider) {
       switch (request.provider) {
         case 'openrouter':
