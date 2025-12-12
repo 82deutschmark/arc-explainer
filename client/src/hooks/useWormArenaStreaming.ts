@@ -60,21 +60,27 @@ export function useWormArenaStreaming() {
     }
   }, []);
 
-  const disconnect = useCallback(() => {
+  const disconnect = useCallback((opts?: { preserveState?: boolean }) => {
     if (eventSourceRef.current) {
       eventSourceRef.current.close();
       eventSourceRef.current = null;
     }
-    setStatus('idle');
-    setMessage(undefined);
-    setPhase(undefined);
-    setFrames([]);
-    setFinalSummary(null);
-    setError(null);
-  }, []);
+    const preserve = opts?.preserveState === true;
+    if (!preserve) {
+      setStatus('idle');
+      setMessage(undefined);
+      setPhase(undefined);
+      setFrames([]);
+      setFinalSummary(null);
+      setError(null);
+      setBatchResults([]);
+      setCurrentMatchIndex(null);
+      setTotalMatches(null);
+    }
+  }, [setBatchResults, setCurrentMatchIndex, setError, setFinalSummary, setFrames, setMessage, setPhase, setStatus, setTotalMatches]);
 
   const connect = useCallback((sessionId: string) => {
-    disconnect();
+    disconnect({ preserveState: false });
     setStatus('connecting');
     const es = new EventSource(`/api/wormarena/stream/${encodeURIComponent(sessionId)}`);
     eventSourceRef.current = es;

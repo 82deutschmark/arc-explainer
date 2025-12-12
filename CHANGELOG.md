@@ -1,3 +1,20 @@
+### Version 6.1.36  Dec 12, 2025 (PENDING TESTING)
+
+- **Worm Arena Live: UX refactor (setup/live/completed modes) + component decomposition** (Author: Cascade)
+  - Implemented explicit view modes for Worm Arena Live so the UI always matches session state:
+    - Setup: compact match setup only (no empty board)
+    - Live: board-first with a slim status strip and collapsible controls
+    - Completed: results-first with final board (and no “run another match” on completed session URLs)
+  - Moved BYO key inputs into a collapsed “Advanced: use your own API key” section to reduce accidental exposure.
+  - Decomposed `WormArenaLive.tsx` into small focused components for maintainability.
+  - **Files Modified/Created**: `client/src/pages/WormArenaLive.tsx`, `client/src/hooks/useWormArenaStreaming.ts`, `client/src/components/WormArenaHeader.tsx`, `client/src/components/WormArenaLiveStatusStrip.tsx`, `client/src/components/WormArenaLiveBoardPanel.tsx`, `client/src/components/WormArenaLiveResultsPanel.tsx`, `client/src/components/WormArenaRunControls.tsx`, `CHANGELOG.md`
+
+### Version 6.1.35  Dec 12, 2025 (PENDING TESTING)
+
+- **Worm Arena: snakebench_runner disables Supabase by default** (Author: GPT-5.2 Codex CLI)
+  - Running `server/python/snakebench_runner.py` directly now sets `SNAKEBENCH_DISABLE_INTERNAL_DB=1` and `SNAKEBENCH_DISABLE_SUPABASE=1` automatically, so SnakeBench never attempts Supabase connections during local matches.
+  - **Files Modified**: `server/python/snakebench_runner.py`, `CHANGELOG.md`
+
 ### Version 6.1.34  Dec 12, 2025 (PENDING TESTING)
 
 - **Worm Arena: prefer direct OpenAI for OpenAI models** (Author: GPT-5.2 Codex CLI)
