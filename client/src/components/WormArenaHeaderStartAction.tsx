@@ -58,7 +58,6 @@ export default function WormArenaHeaderStartAction({
         {/* Decorative worm on button hover */}
         {!isLoading && (
           <span
-            className="absolute -right-8 top-1/2 transform -translate-y-1/2 opacity-0 group-hover:opacity-100 group-hover:right-[-20px] transition-all duration-300"
             className="absolute -right-8 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 group-hover:right-[-20px] transition-all duration-300 text-[24px]"
           >
             🐛
