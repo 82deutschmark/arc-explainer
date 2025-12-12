@@ -1,5 +1,9 @@
 ### Version 6.1.32  Dec 12, 2025 (PENDING TESTING)
 
+- **Scoring: default model now GPT-5.2 High** (Author: Cascade)
+  - Reordered the `/scoring` model dropdown so `gpt-5-2-2025-12-11-thinking-high` appears first and is auto-selected by default.
+  - **Files Modified**: `client/src/pages/HuggingFaceUnionAccuracy.tsx`, `CHANGELOG.md`
+
 - **Worm Arena Stats: fix win rate bug and unreadable font sizes** (Author: Cascade)
   - **Bug fix**: `SnakeBenchRepository.getBasicLeaderboard` now always returns `winRate` regardless of `sortBy` parameter. Previously win rate was only included when sorting by win rate, causing the UI to show "—" for all entries.
   - **Font sizes**: Bumped `WormArenaStatsPanel` from `text-xs` (12px) to `text-base` (16px) for table content, `text-sm` (14px) for model names. Increased cell padding for better readability.
