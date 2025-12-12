@@ -7,7 +7,7 @@
   - Updated `wormArenaStreamController.prepare` to accept single‑match requests with `modelB` and no `opponents`/`count`, enabling the new flow.
   - **Files Modified/Created**: `shared/utils/curatedMatchups.ts`, `client/src/components/WormArenaMatchupSelector.tsx`, `client/src/pages/WormArenaLive.tsx`, `server/controllers/wormArenaStreamController.ts`, `CHANGELOG.md`
 
-### Version 6.1.30  Dec 11, 2025 (PENDING TESTING)
+### Version 6.1.31  Dec 11, 2025 (PENDING TESTING)
 
 - **Worm Arena canonical theme + stats page refactor** (Author: Cascade)
   - Added a single canonical Worm Arena theme powered by CSS variables + Tailwind `worm.*` tokens; removed repeated earthy-palette literals and arbitrary hex Tailwind classes.
