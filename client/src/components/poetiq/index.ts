@@ -16,4 +16,4 @@ export { PoetiqInfoCard as PoetiqExplainer } from './PoetiqInfoCard';
 export { default as PoetiqProgressDashboard } from './PoetiqProgressDashboard';
 export { default as PoetiqPhaseIndicator } from './PoetiqPhaseIndicator';
 export { default as PoetiqExpertTracker } from './PoetiqExpertTracker';
-export { default as PoetiqAgentsPanel } from './PoetiqAgentsRuntimePanel';
+export { default as PoetiqAgentsPanel } from './PoetiqAgentsPanel';

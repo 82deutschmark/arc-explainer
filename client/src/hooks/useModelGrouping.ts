@@ -128,7 +128,8 @@ export function useModelGrouping(models: ModelConfig[] | undefined) {
       DeepSeek: 'deepseek',
       OpenRouter: 'openrouter',
       Grover: 'grover',
-      Saturn: 'saturn'
+      Saturn: 'saturn',
+      Beetree: 'beetree'
     };
 
     const assignedKeys = new Set<string>();
