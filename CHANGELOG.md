@@ -1,3 +1,11 @@
+### Version 6.1.38  Dec 12, 2025 (PENDING TESTING)
+
+- **Worm Arena Live: readable text + proper state transitions** (Author: GPT-5.2 Codex CLI)
+  - Fixed low-contrast/garbled text and removed fragile decorative glyphs that rendered incorrectly on Windows.
+  - Live mode now auto-hides setup controls; a single `Controls` button opens a right-side sheet when needed (board-first during streaming).
+  - Completed sessions stay view-only on `/worm-arena/live/:sessionId` (no "run another match" UI on that URL).
+  - **Files Modified/Created**: `client/src/pages/WormArenaLive.tsx`, `client/src/components/WormArenaRunControls.tsx`, `client/src/components/WormArenaHeader.tsx`, `client/src/components/WormArenaMatchupSelector.tsx`, `CHANGELOG.md`
+
 ### Version 6.1.37  Dec 12, 2025 (PENDING TESTING)
 
 - **TypeScript: fix build-breaking type and import issues** (Author: GPT-5.2 Codex CLI)
@@ -14,8 +22,8 @@
   - Implemented explicit view modes for Worm Arena Live so the UI always matches session state:
     - Setup: compact match setup only (no empty board)
     - Live: board-first with a slim status strip and collapsible controls
-    - Completed: results-first with final board (and no “run another match” on completed session URLs)
-  - Moved BYO key inputs into a collapsed “Advanced: use your own API key” section to reduce accidental exposure.
+    - Completed: results-first with final board (and no "run another match" on completed session URLs)
+  - Moved BYO key inputs into a collapsed "Advanced: use your own API key" section to reduce accidental exposure.
   - Decomposed `WormArenaLive.tsx` into small focused components for maintainability.
   - **Files Modified/Created**: `client/src/pages/WormArenaLive.tsx`, `client/src/hooks/useWormArenaStreaming.ts`, `client/src/components/WormArenaHeader.tsx`, `client/src/components/WormArenaLiveStatusStrip.tsx`, `client/src/components/WormArenaLiveBoardPanel.tsx`, `client/src/components/WormArenaLiveResultsPanel.tsx`, `client/src/components/WormArenaRunControls.tsx`, `CHANGELOG.md`
 
@@ -47,17 +55,17 @@
 
 - **Worm Arena: fix Responses output parsing and quoted OpenRouter keys** (Author: GPT-5.2 Codex CLI)
   - Hardened SnakeBench's OpenRouter provider to strip accidental surrounding quotes from `OPENROUTER_API_KEY` / `OPENROUTER_BASE_URL`, eliminating cookie-auth 401s even when env vars are exported with quotes.
-  - Updated Responses-mode text extraction to skip reasoning items and reliably read the actual output text, so GPT‑5 / x‑ai models stop falling back to random moves and token/cost totals populate correctly.
+  - Updated Responses-mode text extraction to skip reasoning items and reliably read the actual output text, so GPTâ€‘5 / xâ€‘ai models stop falling back to random moves and token/cost totals populate correctly.
   - **Files Modified**: `external/SnakeBench/backend/llm_providers.py`, `CHANGELOG.md`
 
 - **Worm Arena: fix OpenRouter cookie-auth 401 causing random-move fallbacks** (Author: Cascade)
   - Ensured the SnakeBench subprocess always uses the official OpenRouter API base URL (`https://openrouter.ai/api/v1`) to prevent accidental routing to cookie-auth protected endpoints (which surfaced as `401: No cookie auth credentials found`).
   - SnakeBench submodule now honors `SNAKEBENCH_DISABLE_INTERNAL_DB` / `SNAKEBENCH_DISABLE_SUPABASE` so ARC Explainer runs never attempt Supabase DB writes or Supabase Storage uploads (local replay JSON + ARC Explainer Postgres ingest remain).
-  - This prevents provider failures from triggering SnakeBench's emergency “random move” fallback during games.
+  - This prevents provider failures from triggering SnakeBench's emergency "random move" fallback during games.
   - **Files Modified**: `server/services/snakeBenchService.ts`, `external/SnakeBench/backend/main.py`, `CHANGELOG.md`
 
 - **Worm Arena Stats: fix win rate bug and unreadable font sizes** (Author: Cascade)
-  - **Bug fix**: `SnakeBenchRepository.getBasicLeaderboard` now always returns `winRate` regardless of `sortBy` parameter. Previously win rate was only included when sorting by win rate, causing the UI to show "—" for all entries.
+  - **Bug fix**: `SnakeBenchRepository.getBasicLeaderboard` now always returns `winRate` regardless of `sortBy` parameter. Previously win rate was only included when sorting by win rate, causing the UI to show "â€”" for all entries.
   - **Font sizes**: Bumped `WormArenaStatsPanel` from `text-xs` (12px) to `text-base` (16px) for table content, `text-sm` (14px) for model names. Increased cell padding for better readability.
   - **Font sizes**: Bumped `WormArenaGreatestHits` from `text-[11px]` to `text-sm`/`text-base` throughout. Title now `text-xl`.
   - **Cost display**: Greatest Hits now hides the cost badge when `totalCost === 0` instead of showing "$0.0000".
@@ -67,10 +75,10 @@
 ### Version 6.1.30  Dec 12, 2025 (PENDING TESTING)
 
 - **Worm Arena Live: curated 1v1 matchup selector (no batching)** (Author: GPT-5.2 Codex CLI)
-  - Added a shared curated matchup gallery with categorized, statistically useful pairings and a default **GPT‑5.2 vs GPT‑5 Nano** matchup.
-  - Rebuilt `WormArenaLive` to remove multi‑opponent/batch UI and launch a single selected curated match with live streaming, keeping the live board and status panels intact.
-  - Added a new `WormArenaMatchupSelector` card grid and moved board/BYO settings into a collapsible “Advanced Settings” section.
-  - Updated `wormArenaStreamController.prepare` to accept single‑match requests with `modelB` and no `opponents`/`count`, enabling the new flow.
+  - Added a shared curated matchup gallery with categorized, statistically useful pairings and a default **GPTâ€‘5.2 vs GPTâ€‘5 Nano** matchup.
+  - Rebuilt `WormArenaLive` to remove multiâ€‘opponent/batch UI and launch a single selected curated match with live streaming, keeping the live board and status panels intact.
+  - Added a new `WormArenaMatchupSelector` card grid and moved board/BYO settings into a collapsible "Advanced Settings" section.
+  - Updated `wormArenaStreamController.prepare` to accept singleâ€‘match requests with `modelB` and no `opponents`/`count`, enabling the new flow.
   - **Files Modified/Created**: `shared/utils/curatedMatchups.ts`, `client/src/components/WormArenaMatchupSelector.tsx`, `client/src/pages/WormArenaLive.tsx`, `server/controllers/wormArenaStreamController.ts`, `CHANGELOG.md`
 
 ### Version 6.1.31  Dec 11, 2025 (PENDING TESTING)
@@ -176,7 +184,7 @@
 - **SnakeBench & Worm Arena API reference docs** (Author: Cascade)
   - Added a dedicated API reference document for `/api/snakebench/*` and `/api/wormarena/*` covering match/batch execution, game listing, stats/leaderboards, greatest-hits summaries, and SSE-based live tournament streaming.
   - Updated the main external API reference to surface Worm Arena/SnakeBench endpoints at a glance and point external integrators to the detailed SnakeBench/Worm Arena API doc.
-  - Confirmed all SnakeBench/Worm Arena endpoints remain fully public with no authentication, consistent with the platform’s open research posture.
+  - Confirmed all SnakeBench/Worm Arena endpoints remain fully public with no authentication, consistent with the platformâ€™s open research posture.
   - **Files Created/Modified**: `docs/reference/api/SnakeBench_WormArena_API.md`, `docs/reference/api/EXTERNAL_API.md`, `CHANGELOG.md`
 
 ### Version 6.1.18  Dec 11, 2025 (PENDING TESTING)
@@ -196,7 +204,7 @@
 ### Version 6.1.17  Dec 11, 2025 (PENDING TESTING)
 
 - **Worm Arena greatest-hits now only shows playable replays** (Author: GPT-5.1 Codex CLI)
-  - Filtered the greatest-hits service to verify each candidate game’s replay asset exists (local path, DB replay_path, or remote fallback) and skip any missing entries, preventing broken playback when the list includes stale DB rows.
+  - Filtered the greatest-hits service to verify each candidate gameâ€™s replay asset exists (local path, DB replay_path, or remote fallback) and skip any missing entries, preventing broken playback when the list includes stale DB rows.
   - **Files Modified**: `server/services/snakeBenchService.ts`, `CHANGELOG.md`
 
 ### Version 6.1.16  Dec 11, 2025 (PENDING TESTING)
@@ -210,7 +218,7 @@
 
 - **Worm Arena TrueSkill leaderboard visual polish** (Author: Cascade)
   - Constrained the Worm Arena TrueSkill leaderboard table to a fixed-height, scrollable viewport so up to 150 rows no longer dominate the stats page layout.
-  - Refined TrueSkill labeling to use clear μ and σ glyphs for exposed rating and uncertainty and applied a color-coded palette so each numeric column has a distinct, readable color while preserving the Worm Arena earth-tone aesthetic.
+  - Refined TrueSkill labeling to use clear Î¼ and Ïƒ glyphs for exposed rating and uncertainty and applied a color-coded palette so each numeric column has a distinct, readable color while preserving the Worm Arena earth-tone aesthetic.
   - **Files Modified**: `client/src/components/WormArenaTrueSkillLeaderboard.tsx`, `CHANGELOG.md`
 
 ### Version 6.1.15  Dec 11, 2025 (PENDING TESTING)
@@ -224,7 +232,7 @@
 - **Worm Arena TrueSkill leaderboard (SnakeBench parity)** (Author: Cascade)
   - Added a DB-backed TrueSkill leaderboard endpoint for Worm Arena games, exposing top models ranked by conservative TrueSkill rating (\mu - 3\sigma) with minimum 3 games and support for up to 150 rows.
   - Introduced shared DTOs for TrueSkill leaderboard entries/responses and a new repository/service method pair (`getTrueSkillLeaderboard`) that aggregates games, wins/losses/ties, apples eaten, top score, win rate, and total cost from `public.game_participants` filtered to `game_type = 'arc-explainer'`.
-  - Wired a new public API route `/api/snakebench/trueskill-leaderboard` into `server/routes.ts` with no authentication required, consistent with ARC Explainer’s open research posture.
+  - Wired a new public API route `/api/snakebench/trueskill-leaderboard` into `server/routes.ts` with no authentication required, consistent with ARC Explainerâ€™s open research posture.
   - Implemented `useWormArenaTrueSkillLeaderboard` hook and `WormArenaTrueSkillLeaderboard` component on the client so `/worm-arena/stats` now shows a wide, 150-row TrueSkill leaderboard table with SnakeBench-parity columns (Rank, Model, TS Rating, TS Uncertainty, Games, Wins, Losses, Ties, Apples Eaten, Top Score, Win Rate, Total Cost).
   - Captured the design in `docs/plans/2025-12-10-wormarena-trueskill-leaderboard-plan.md` alongside the existing stats and SnakeBench parity plans.
   - **Files Modified/Created**: `shared/types.ts`, `server/repositories/SnakeBenchRepository.ts`, `server/services/snakeBenchService.ts`, `server/controllers/snakeBenchController.ts`, `server/routes.ts`, `client/src/hooks/useWormArenaTrueSkillLeaderboard.ts`, `client/src/components/WormArenaTrueSkillLeaderboard.tsx`, `client/src/pages/WormArenaStats.tsx`, `docs/plans/2025-12-10-wormarena-trueskill-leaderboard-plan.md`, `CHANGELOG.md`
@@ -287,7 +295,7 @@
 ### Version 6.1.6  Dec 10, 2025 (PENDING TESTING)
 
 - **Worm Arena multi-opponent batch runs** (Author: Claude Code using Haiku 4.5)
-  - Refactored batch match architecture from repeated same-opponent (A vs B × N) to sequential multi-opponent (A vs [B1, B2, ..., B9]) for better ranking data quality and TrueSkill convergence.
+  - Refactored batch match architecture from repeated same-opponent (A vs B Ã— N) to sequential multi-opponent (A vs [B1, B2, ..., B9]) for better ranking data quality and TrueSkill convergence.
   - Updated `wormArenaStreamController.ts` to accept `opponents: string[]` instead of `count: number`; validates opponent list, stores in session, and loops through different opponents while keeping modelA constant.
   - Updated `useWormArenaStreaming.ts` hook: `startMatch()` now accepts opponents array; passes to `/api/wormarena/prepare` endpoint; SSE event listeners remain unchanged (work for both scenarios).
   - Replaced `matchCount` number input with opponent multi-select UI in `WormArenaSetup.tsx`: checkbox list shows available models (excluding modelA), "Reset to Top 9" button for convenience, max 10 opponents enforced.
@@ -322,7 +330,7 @@
 
 - **Worm Arena Stats & Placement page (Railway-ready)** (Author: Cascade)
   - Implemented the `/worm-arena/stats` page showing Worm Arena global aggregates, per-model TrueSkill snapshots (skill estimate, uncertainty, pessimistic rating, leaderboard score), placement progress, and recent match history, all wired to existing SnakeBench DB-backed APIs.
-  - Added shared placement helper `summarizeWormArenaPlacement` plus Node tests to classify models into "not started", "in progress", "effectively complete", and "complete" based on games played and sigma, with a 0–1 progress fraction suitable for 9-game placement UX.
+  - Added shared placement helper `summarizeWormArenaPlacement` plus Node tests to classify models into "not started", "in progress", "effectively complete", and "complete" based on games played and sigma, with a 0â€“1 progress fraction suitable for 9-game placement UX.
   - Extended SnakeBench frontend hooks with `useSnakeBenchStats`, `useModelRating`, and `useModelHistory` so React pages can consume `/api/snakebench/stats`, `/api/snakebench/model-rating`, and `/api/snakebench/model-history` without duplicating HTTP wiring.
   - Updated Worm Arena replay and live pages to share a three-tab header (`Replay`, `Live`, `Stats & Placement`) and added deep links from match summaries into the stats page with modelSlug query params for quick placement inspection.
   - **Files Modified/Created**: `shared/utils/wormArenaPlacement.ts`, `tests/wormArenaPlacement.test.ts`, `client/src/hooks/useSnakeBench.ts`, `client/src/pages/WormArenaStats.tsx`, `client/src/pages/WormArena.tsx`, `client/src/pages/WormArenaLive.tsx`, `client/src/App.tsx`, `CHANGELOG.md`
@@ -435,8 +443,8 @@
 ### Version 6.0.2  Dec 10, 2025 (PENDING TESTING)
 
 - **SnakeBench parity groundwork: plan + schema + TrueSkill lib** (Author: Codex, OpenAI)
-  - Captured the exact parity execution plan in `docs/plans/2025-12-10-wormarena-snakebench-parity-plan.md` to mirror Greg’s lifecycle without stubs.
-  - Aligned `public.models` schema with Greg’s TrueSkill fields (`trueskill_mu`, `trueskill_sigma`, `trueskill_exposed`, `trueskill_updated_at`) via `DatabaseSchema` so ratings can be stored identically.
+  - Captured the exact parity execution plan in `docs/plans/2025-12-10-wormarena-snakebench-parity-plan.md` to mirror Gregâ€™s lifecycle without stubs.
+  - Aligned `public.models` schema with Gregâ€™s TrueSkill fields (`trueskill_mu`, `trueskill_sigma`, `trueskill_exposed`, `trueskill_updated_at`) via `DatabaseSchema` so ratings can be stored identically.
   - Added `ts-trueskill@^5.1.0` dependency (and lockfile updates) to run the same rating math locally for parity.
   - Implemented full replay ingestion (`SnakeBenchRepository.ingestReplayFromFile`) that upserts models/games/participants from completed replay JSONs, then applies aggregates and TrueSkill with Elo fallback; added baseline reset + backfill runner (`server/scripts/snakebench-backfill.ts`) to replay all `completed_games` chronologically.
   - Added npm script `snakebench:backfill` for deterministic rebuilds; repository ingestion now prefers full replay ingest when a completed file is present.
@@ -445,11 +453,11 @@
 ### Version 6.0.1  Dec 9, 2025 (PENDING TESTING)
 
 - **Worm Arena architecture: separate replay viewer from live match starter** (Author: Claude Code using Haiku 4.5)
-  - **Core refactor**: Split bloated WormArena.tsx into two distinct pages with clear responsibilities—**WormArena** for past game replay/history only, **WormArenaLive** for live match streaming + starting new matches.
+  - **Core refactor**: Split bloated WormArena.tsx into two distinct pages with clear responsibilitiesâ€”**WormArena** for past game replay/history only, **WormArenaLive** for live match streaming + starting new matches.
   - **WormArena.tsx**: Stripped to replay-only viewer. Removed `useWormArenaStreaming`, `useSnakeBenchMatch`, model selection, and match-starting logic. Kept recent games list, game selection, replay controls, and three-column reasoning/board layout. No "Start Match" button.
   - **WormArenaLive.tsx**: Rebuilt with full match-starting capability. Integrated `useWormArenaStreaming` and `useModels` for live-board rendering + model selection. Added scroll-to-controls logic. Shows live board + final summary with replay link when match completes.
   - **WormArenaHeader.tsx**: Refactored to be generic, reusable component. Removed "Start Match" button logic entirely. Accepts optional `actionSlot` prop for caller-provided actions (enabling WormArenaLive to inject button without header knowing about it). Keeps title, stats, decorative worms.
-  - **WormArenaHeaderStartAction.tsx** (NEW): Isolated "Start Match" button component. Handles loading state, scroll-to-setup callback, decorative worm hover. Used only in WormArenaLive as actionSlot. Follows SRP—button concerns only.
+  - **WormArenaHeaderStartAction.tsx** (NEW): Isolated "Start Match" button component. Handles loading state, scroll-to-setup callback, decorative worm hover. Used only in WormArenaLive as actionSlot. Follows SRPâ€”button concerns only.
   - **WormArenaRecentGames.tsx** (NEW): Extracted recent games list component (from original WormArena). Reduces page bloat, improves modularity. Reusable for both pages if needed later.
   - **DRY improvement**: Both pages now share `WormArenaHeader`, `WormArenaGameBoard`, and styling consistently. No duplication of header or board rendering.
   - **Files Created**: `client/src/components/WormArenaHeaderStartAction.tsx`, `client/src/components/WormArenaRecentGames.tsx`
@@ -506,7 +514,7 @@
 
 - **ARC3 scorecards: open per run + normalize actions** (Author: Codex)
   - Open a brand-new ARC3 scorecard for every start/run (web UI, streaming, and backend runner) instead of reusing a bootstrap card; propagate the card_id into RESET calls so each session is properly tracked.
-  - Normalize available_actions to strings and default action_counter to 0 from the API responses to prevent “no-op” UI states when the service returns numeric tokens or null counters.
+  - Normalize available_actions to strings and default action_counter to 0 from the API responses to prevent "no-op" UI states when the service returns numeric tokens or null counters.
   - Require card_id on manual RESET calls and expose card_id from `/api/arc3/start-game` so hybrid/manual flows stay aligned with per-run scorecards.
   - **Files Modified**: `server/services/arc3/Arc3ApiClient.ts`, `server/services/arc3/Arc3RealGameRunner.ts`, `server/services/arc3/Arc3StreamService.ts`, `server/routes/arc3.ts`, `docs/plans/2025-12-08-arc3-scorecard-per-run-plan.md`, `CHANGELOG.md`
 
@@ -531,7 +539,7 @@
 
 - **Research terminal: highlight The ARChitects ARC Prize 2025 solution** (Author: Codex)
   - Inserted the LambdaLabs-hosted ARC Prize 2025 Solution Summary link for The ARChitects Kaggle team into the Papers panel so the keywords ARC Prize 2025 Solution Summary, Daniel Franzen 1*, Jan Disselhoff 1*, David Hartmann 2*, and The ARChitects appear front and center.
-  - Added a dedicated research banner under the panels listing 1 JGU Mainz, 2 Lambda, Inc., and noting * “The ARChitects” Kaggle team members while pointing again to https://lambdalabsml.github.io/ARC2025_Solution_by_the_ARChitects/.
+  - Added a dedicated research banner under the panels listing 1 JGU Mainz, 2 Lambda, Inc., and noting * "The ARChitects" Kaggle team members while pointing again to https://lambdalabsml.github.io/ARC2025_Solution_by_the_ARChitects/.
   - Logged the intent via docs/2025-12-08-reference-material-plan.md before coding and recorded the component/changelog updates here.
   - **Files Modified**: `client/src/components/browser/ReferenceMaterial.tsx`, `docs/2025-12-08-reference-material-plan.md`, `CHANGELOG.md`
 
@@ -540,7 +548,7 @@
 - **ARC3 Agent Playground: high-contrast Actions JSON stream** (Author: Cascade)
   - Darkened the JSON text color and boosted the background/border contrast in the left-hand Actions panel so tool call results are readable even on bright displays.
   - Color-coded tool call vs tool result entries with stronger indigo/emerald tints and a subtle ring highlight on the most recent active action.
-  - Kept the taller scroll area and auto-scroll behavior so the latest ACTION1–ACTION7 events remain visible while streaming.
+  - Kept the taller scroll area and auto-scroll behavior so the latest ACTION1â€“ACTION7 events remain visible while streaming.
   - **Files Modified**: `client/src/components/arc3/Arc3ToolTimeline.tsx`, `CHANGELOG.md`
 
 ### Version 5.47.15  Dec 8, 2025
@@ -553,7 +561,7 @@
 ### Version 5.47.14  Dec 8, 2025 (PENDING TESTING)
 
 - **ARC3 Agent Playground: enlarge Actions stream UI & JSON viewer** (Author: Cascade)
-  - Increased font sizes and vertical spacing for the left-hand Actions timeline so tool calls like ACTION1–ACTION7 stay legible during long runs.
+  - Increased font sizes and vertical spacing for the left-hand Actions timeline so tool calls like ACTION1â€“ACTION7 stay legible during long runs.
   - Extended the Actions panel scroll box to use more of the viewport height on large screens and added auto-scroll to keep the latest entry in view while the agent is streaming.
   - Switched the tool call / result body to a full pretty-printed JSON block in a highlighted code-style container instead of a tiny truncated snippet.
   - **Files Modified**: `client/src/components/arc3/Arc3ToolTimeline.tsx`, `client/src/pages/ARC3AgentPlayground.tsx`, `CHANGELOG.md`
@@ -569,7 +577,7 @@
 ### Version 5.47.11  Dec 8, 2025 (PENDING TESTING)
 
 - **ARC3 continuation: server-cached frames + safer chaining** (Author: Codex)
-  - Cache the last ARC3 frame server-side after streaming runs and reuse it during continuation so clients aren’t forced to resend frames; only 400 when no cached frame exists and none is provided.
+  - Cache the last ARC3 frame server-side after streaming runs and reuse it during continuation so clients arenâ€™t forced to resend frames; only 400 when no cached frame exists and none is provided.
   - Continue to default `previousResponseId` from stored `providerResponseId` and deliver clear 400s instead of 500s when chaining data is missing.
   - Updated continuation plan to reflect the cache-first flow for ARC3 continuations.
   - **Files Modified**: `server/routes/arc3.ts`, `server/services/arc3/Arc3StreamService.ts`, `docs/plans/2025-12-08-arc3-streaming-continuation-fix-plan.md`, `CHANGELOG.md`
@@ -578,7 +586,7 @@
 
 - **ARC3 agent: keep running + loop hints** (Author: Codex)
   - Raised default max turns to an effectively unlimited value and updated UI controls to avoid auto-pausing; the agent now stops only on cancel or game end.
-  - Added a simple loop detector that emits non-blocking hints when score hasn’t changed after multiple actions (no forced pause).
+  - Added a simple loop detector that emits non-blocking hints when score hasnâ€™t changed after multiple actions (no forced pause).
   - Wired loop hints into the frontend timeline and messaging, and kept user-message flow intact while runs stay active.
   - **Files Modified**: `server/services/arc3/utils/constants.ts`, `server/services/arc3/Arc3RealGameRunner.ts`, `client/src/pages/ARC3AgentPlayground.tsx`, `client/src/components/arc3/Arc3ConfigurationPanel.tsx`, `client/src/components/arc3/Arc3AgentConfigPanel.tsx`, `client/src/hooks/useArc3AgentStream.ts`, `CHANGELOG.md`
 
@@ -622,7 +630,7 @@
 
 - **ARC-AGI-3: Attach agent reasoning to ARC3 scorecards (streaming path)** (Author: Cascade)
   - Extended `Arc3ApiClient.executeAction` to accept an optional `reasoning` payload and forward it to the ARC3 `/api/cmd/ACTION*` endpoints so scorecards can store per-action reasoning blobs.
-  - Updated the streaming `Arc3RealGameRunner` tools for `ACTION1`–`ACTION5` and `ACTION6` to pass a compact JSON reasoning object built from the accumulated streaming reasoning text (truncated well under the 16 KB ARC3 limit) on every ARC3 action call.
+  - Updated the streaming `Arc3RealGameRunner` tools for `ACTION1`â€“`ACTION5` and `ACTION6` to pass a compact JSON reasoning object built from the accumulated streaming reasoning text (truncated well under the 16 KB ARC3 limit) on every ARC3 action call.
   - Added `opaque` metadata when opening ARC3 scorecards for both the web UI router and the streaming service so ARC-side scorecards clearly record that runs originate from the arc-explainer playground.
   - **Files Modified**: `server/services/arc3/Arc3ApiClient.ts`, `server/services/arc3/Arc3RealGameRunner.ts`, `server/routes/arc3.ts`, `server/services/arc3/Arc3StreamService.ts`, `CHANGELOG.md`
 
@@ -681,7 +689,7 @@
 
 - **Docs: Clean up ARC-AGI-3 spec Markdown formatting** (Author: Cascade)
   - Removed the outer code block wrapper from `docs/reference/arc3/ARC3.md` so the ARC-AGI-3 spec renders as standard Markdown instead of a fenced text blob.
-  - Simplified the checklist Actions line by dropping the redundant inline `RESET`/`ACTION1`–`ACTION7` enumeration, keeping the rest of the environment checklist intact.
+  - Simplified the checklist Actions line by dropping the redundant inline `RESET`/`ACTION1`â€“`ACTION7` enumeration, keeping the rest of the environment checklist intact.
 
 ### Version 5.47.1  Dec 7, 2025 (PENDING TESTING)
 
@@ -698,7 +706,7 @@
   - Added server-side grid-to-PNG rendering for Arc3 games using the correct 16-color Arc3 palette (0-15).
   - The `inspect_game_state` tool now returns a `frameImage` field containing a base64 PNG data URL alongside the numeric grid data.
   - Vision-capable models (GPT-4o, Claude 3, Grok-2-Vision) can now "see" the grid instead of parsing numeric arrays.
-  - Optimized for 64×64 grids: 8px cell size produces 512×512px images.
+  - Optimized for 64Ã—64 grids: 8px cell size produces 512Ã—512px images.
   - Created shared Arc3 color palette (`shared/config/arc3Colors.ts`) with RGB tuples, hex values, and human-readable names.
   - **Why**: Research shows "GPT-4's reliance on textual encodings impedes effective problem solving" on ARC tasks. Visual input enables spatial reasoning.
   - **Files Created**: `shared/config/arc3Colors.ts`, `server/services/arc3/arc3GridImageService.ts`
@@ -757,7 +765,7 @@
 ### Version 5.46.2  Dec 6, 2025 (PENDING TESTING)
 
 - **ARC-AGI-3 Playground: Add automatic layer animation for multi-layer frames** (Author: Claude Code using Sonnet 4.5)
-  - Fixed grid not animating after actions - now automatically animates through frame layers 0 → 1 → 2 → ... → N showing objects falling/moving in real-time (matches official ARC Prize site behavior).
+  - Fixed grid not animating after actions - now automatically animates through frame layers 0 â†’ 1 â†’ 2 â†’ ... â†’ N showing objects falling/moving in real-time (matches official ARC Prize site behavior).
   - Added `animatingLayerIndex` state and `animationTimerRef` to track and control automatic layer progression.
   - Animation plays at 120ms per layer for smooth visual feedback showing intermediate game states.
   - Animation automatically stops when reaching final layer or when user manually selects a layer via slider.
@@ -774,7 +782,7 @@
   - Updated `executeManualAction` to use ref guid instead of state guid, and update ref immediately before setState.
   - Updated `initializeGameSession` and SSE event listeners (`game.frame_update`, `agent.completed`) to sync latestGuidRef.
   - Action buttons now show "Another action is in progress. Please wait..." tooltip when disabled due to pending action.
-  - **Issue**: Actions appeared delayed or wrong (e.g., clicking Action 4 → sees right movement, clicking Action 1 → sees diagonal movement).
+  - **Issue**: Actions appeared delayed or wrong (e.g., clicking Action 4 â†’ sees right movement, clicking Action 1 â†’ sees diagonal movement).
   - **Root Cause**: Second click used guid from before first action completed, causing ARC3 API to apply action to outdated game state.
   - **Files Modified**: `client/src/hooks/useArc3AgentStream.ts:86-87,596-699,715-716,433-436,457-460,755`, `client/src/pages/ARC3AgentPlayground.tsx:223,654,661-667`, `CHANGELOG.md`
 
@@ -795,7 +803,7 @@
 ### Version 5.45.17  Dec 6, 2025 (PENDING TESTING)
 
 - **ARC-AGI-3 game page improvements** (Author: Claude Code using Sonnet 4.5)
-  - Fixed embedded game iframe to use square (1:1) aspect ratio instead of rectangular fixed height, matching the 64×64 grid game format.
+  - Fixed embedded game iframe to use square (1:1) aspect ratio instead of rectangular fixed height, matching the 64Ã—64 grid game format.
   - Changed iframe container from `style={{ height: '600px' }}` to `aspect-square` with centered `max-w-3xl` wrapper.
   - Removed "Back to Games" navigation button and spoiler warning alert from game detail pages for cleaner layout.
   - **Files Modified**: `client/src/pages/Arc3GameSpoiler.tsx:206-265,301-308`, `CHANGELOG.md`
@@ -824,9 +832,9 @@
   - Deduplicates by `rank + teamName` to ensure only one entry per team appears, fixing the double "1st Place (NVARC)" issue.
   - Removed TeamWinnerGroup component usage in favor of displaying individual member cards directly for teams with dual images (NVARC, MindsAI).
   - Created `splitTeamIntoMembers()` helper function to generate virtual contributor cards from team entries with comma-separated images.
-  - Redesigned Paper Awards 2025 section: larger cards (w-64), horizontal layout, clear 🥇🥈🥉 placement indicators on one line.
+  - Redesigned Paper Awards 2025 section: larger cards (w-64), horizontal layout, clear ðŸ¥‡ðŸ¥ˆðŸ¥‰ placement indicators on one line.
   - Fixed ARChitects 2nd place not displaying by removing member requirement check in competition winners logic.
-  - Reduced padding throughout page: py-4→py-3, space-y-5→space-y-4, gap-3→gap-2.5 to minimize wasted space.
+  - Reduced padding throughout page: py-4â†’py-3, space-y-5â†’space-y-4, gap-3â†’gap-2.5 to minimize wasted space.
   - Added hover scale effects and visual indicators for clickable cards.
   - **Files Modified**: `client/src/pages/HumanTradingCards.tsx:65-80,82-110,273-351`, `client/src/utils/humanCardHelpers.ts:203-233`, `client/src/components/human/TeamWinnerGroup.tsx:100-139`, `CHANGELOG.md`
 
@@ -861,8 +869,8 @@
 
 - **ARC-AGI-3 Games: Add informal names, descriptions, and thumbnails for 5 games** (Author: Claude Code using Sonnet 4.5)
   - Added informal community names and descriptive text for all remaining ARC-AGI-3 games in the games browser.
-  - Preview games: **as66** → "Always Sliding" (dynamic puzzle with continuously moving elements), **ft09** → "Functional Tiles" (tiles with specific functions and behaviors).
-  - Evaluation games: **lp85** → "Loop & Pull" (looping patterns and pulling mechanics), **sp80** → "Streaming Purple" (flowing purple elements and streaming patterns), **vc33** → "Volume Control" (adjusting volumes, sizes, or quantities).
+  - Preview games: **as66** â†’ "Always Sliding" (dynamic puzzle with continuously moving elements), **ft09** â†’ "Functional Tiles" (tiles with specific functions and behaviors).
+  - Evaluation games: **lp85** â†’ "Loop & Pull" (looping patterns and pulling mechanics), **sp80** â†’ "Streaming Purple" (flowing purple elements and streaming patterns), **vc33** â†’ "Volume Control" (adjusting volumes, sizes, or quantities).
   - Added thumbnail URLs for all 5 games pointing to images in `/client/public/` (as66.png, ft09.png, lp85.png, sp80.png, vc33.png).
   - Added descriptive tags for each game to aid categorization and searchability (e.g., "sliding", "motion", "dynamic" for Always Sliding; "loops", "mechanics", "patterns" for Loop & Pull).
   - Games Browser now displays rich preview cards with game images, informal names, and thematic descriptions for all revealed ARC-AGI-3 games.
@@ -873,14 +881,14 @@
 - **ARC-AGI-3 layout refresh: make the Games Browser the star** (Author: Cascade)
   - Recentered the ARC-AGI-3 landing page so the Games Browser is now the primary call-to-action, with a prominent "Browse ARC-AGI-3 Games" hero button and a top "Explore ARC-AGI-3" section featuring Games Browser + 2026 roadmap cards using shadcn/ui.
   - Tightened vertical spacing and removed the old bottom "Future Features" block to reduce noise while keeping all real links and factual ARC-AGI-3 context intact.
-  - Enhanced the ARC-AGI-3 Games Browser itself with per-game thumbnail support (via existing `thumbnailUrl` metadata), richer quick stats (including resource counts), surfaced game notes/documentation status, and a small coverage summary showing total games, fully documented games, and total hints captured—without introducing any mock data.
+  - Enhanced the ARC-AGI-3 Games Browser itself with per-game thumbnail support (via existing `thumbnailUrl` metadata), richer quick stats (including resource counts), surfaced game notes/documentation status, and a small coverage summary showing total games, fully documented games, and total hints capturedâ€”without introducing any mock data.
   - **Files**: `client/src/pages/ARC3Browser.tsx`, `client/src/pages/Arc3GamesBrowser.tsx`, `CHANGELOG.md`
 
 ### Version 5.45.7  Dec 6, 2025 (PENDING TESTING)
 
 - **ARC-AGI-3 Browser: Replace speculative feature placeholders with 2026 roadmap facts** (Author: Cascade)
   - Removed the non-committal Leaderboard, Scorecard Viewer, and Replay Viewer cards from the ARC-AGI-3 landing page so the UI no longer advertises features that are not actually planned on this platform.
-  - Added an info-dense "ARC-AGI-3 2026 roadmap & known facts" card summarizing what is publicly known today: ARC-AGI-2 and ARC-AGI-3 both running in 2026, interactive 64×64 grid game format, the team’s hints about a future Python library, and the current uncertainty around exact prize amounts and final game lists.
+  - Added an info-dense "ARC-AGI-3 2026 roadmap & known facts" card summarizing what is publicly known today: ARC-AGI-2 and ARC-AGI-3 both running in 2026, interactive 64Ã—64 grid game format, the teamâ€™s hints about a future Python library, and the current uncertainty around exact prize amounts and final game lists.
   - Kept all existing real navigation intact (including the ARC-AGI-3 Games Browser and official external links) while making the page more readable, searchable, and accurate for humans and large language models looking for up-to-date ARC3 context.
   - **Files**: `client/src/pages/ARC3Browser.tsx`, `CHANGELOG.md`
 
@@ -894,7 +902,7 @@
 ### Version 5.45.5  Dec 6, 2025 (PENDING TESTING)
 
 - **Fix contributor sync: respect database varchar(50) score limit** (Author: Cascade)
-  - Updated `ContributorRepository` to centrally truncate `score` fields to the database’s `varchar(50)` limit on insert and update so the auto-sync on server startup no longer fails with `value too long for type character varying(50)` when new Hall of Fame entries include long score strings.
+  - Updated `ContributorRepository` to centrally truncate `score` fields to the databaseâ€™s `varchar(50)` limit on insert and update so the auto-sync on server startup no longer fails with `value too long for type character varying(50)` when new Hall of Fame entries include long score strings.
   - Kept the database-first architecture intact by adapting application writes to the existing schema instead of changing the live table definition; all other contributor fields and behaviors remain unchanged.
   - **Files**: `server/repositories/ContributorRepository.ts`, `CHANGELOG.md`
 
@@ -902,7 +910,7 @@
 
 - **Hall of Fame: Add Simon Strandgaard (neoneye) as ARC datasets & tools curator** (Author: Cascade)
   - Added a new contributor trading card entry for Simon Strandgaard (aka `@neoneye`), recognizing his long-standing role as an independent ARC community contributor and dataset/tool curator.
-  - Highlighted his many ARC-related GitHub repositories (including the ARC-Interactive-History-Dataset) that package human interaction traces, derived task collections, and utilities that the wider community—this project included—relies on for exploration and analysis.
+  - Highlighted his many ARC-related GitHub repositories (including the ARC-Interactive-History-Dataset) that package human interaction traces, derived task collections, and utilities that the wider communityâ€”this project includedâ€”relies on for exploration and analysis.
   - Framed his contribution as infrastructure: organizing and sharing high-quality ARC datasets, visualizations, and tools so researchers and hobbyists can build on shared resources instead of re-implementing basic plumbing.
   - Tied this card to the existing Research Terminal footer link that credits Simon and points to his GitHub profile, and wired his Hall of Fame card to the `/simonS.png,/simonS1.png` portrait variants.
   - **Files**: `server/scripts/seedContributors.ts`, `client/public/simonS.png`, `client/public/simonS1.png`, `CHANGELOG.md`
@@ -910,7 +918,7 @@
 ### Version 5.45.3  Dec 6, 2025 (PENDING TESTING)
 
 - **Hall of Fame: Add SOAR 2nd Place 2025 Paper Award Team (Self-Improving Program Synthesis)** (Author: Cascade)
-  - Added a new contributor trading card for the SOAR team (Julien Pourcel, Cédric Colas, Pierre-Yves Oudeyer), recognizing their 2nd place 2025 paper award "Self-Improving Language Models for Evolutionary Program Synthesis: A Case Study on ARC-AGI".
+  - Added a new contributor trading card for the SOAR team (Julien Pourcel, CÃ©dric Colas, Pierre-Yves Oudeyer), recognizing their 2nd place 2025 paper award "Self-Improving Language Models for Evolutionary Program Synthesis: A Case Study on ARC-AGI".
   - Captured SOAR as a self-improving evolutionary program synthesis framework that alternates between LLM-driven evolutionary search for ARC-AGI programs and a hindsight learning phase that fine-tunes the LLM on its own search traces.
   - Highlighted that SOAR achieves up to **52% of the ARC-AGI public test set** without relying on human-engineered DSLs or curated solution datasets, instead using search traces as training data.
   - Linked to the official paper, GitHub repository, and ARC Prize interview video: `https://www.youtube.com/watch?v=9lIuoslCHWI`.
@@ -922,8 +930,8 @@
 - **2025 ARC Prize Team Winners: Tufa AI & MindsAI Normalization** (Author: Claude Code using Haiku 4.5)
   - Refined team winners implementation to properly handle team name variations and affiliations.
   - Created team name normalization utility (`client/src/utils/teamNameNormalizer.ts`) mapping team aliases to canonical forms.
-  - Updated Dries Smit's arc3_preview entry: `teamName: "StochasticGoose"` → `"Tufa AI"` (reflects his individual work with Tufa Labs).
-  - Team name normalization: `"Tufa AI"`, `"Tufa Labs"` → `"MindsAI"` (canonical) for unified grouping.
+  - Updated Dries Smit's arc3_preview entry: `teamName: "StochasticGoose"` â†’ `"Tufa AI"` (reflects his individual work with Tufa Labs).
+  - Team name normalization: `"Tufa AI"`, `"Tufa Labs"` â†’ `"MindsAI"` (canonical) for unified grouping.
   - Updated team contributor matching in `HumanTradingCards.tsx` to use normalized team names.
   - Dries Smit now maintains dual affiliations:
     - Arc3 Preview: `teamName: "Tufa AI"` (individual/agent work)
@@ -953,12 +961,12 @@
   - Updated `HumanTradingCards.tsx` to compute team groups separately from solo winners grid with normalized team name matching.
   - Responsive design: Desktop (side-by-side team card + 2-column member grid), Mobile (stacked layout).
   - Affected teams:
-    - Team NVARC (1st Place, 24.03%) with member Jean-François Puget.
+    - Team NVARC (1st Place, 24.03%) with member Jean-FranÃ§ois Puget.
     - Team MindsAI (3rd Place, 15.42%) with members Jack Cole & Dries Smit.
   - Seed data updates:
-    - Normalized "JF Puget" → "Jean-François Puget" in Team NVARC fullName.
+    - Normalized "JF Puget" â†’ "Jean-FranÃ§ois Puget" in Team NVARC fullName.
     - Changed Dries Smit's arc3_preview teamName from "StochasticGoose" to "Tufa AI" (part of MindsAI ecosystem).
-    - Team name normalization: "Tufa AI" and "Tufa Labs" → "MindsAI" canonical form for unified grouping.
+    - Team name normalization: "Tufa AI" and "Tufa Labs" â†’ "MindsAI" canonical form for unified grouping.
   - **Files Created**: `client/src/components/human/TeamWinnerGroup.tsx`, `client/src/constants/teamWinners.ts`, `client/src/utils/teamNameNormalizer.ts`
   - **Files Modified**: `client/src/pages/HumanTradingCards.tsx`, `server/scripts/seedContributors.ts`
 
@@ -967,7 +975,7 @@
 - **Hall of Fame: Add Eric Pang (Efficient Evolutionary Program Synthesis)** (Author: Cascade)
   - Added a new contributor trading card entry for Eric Pang, a machine learning engineer at Amazon (formerly Quora) and University of Waterloo Math/CS graduate.
   - Captured his DreamCoder-inspired "DREAM" evolutionary program synthesis system that builds a reusable Python program library across ARC-AGI tasks using Grok-4, score-weighted program selection, and low test-time compute (~10 LLM calls per task).
-  - Documented that his approach breaks the performance–cost Pareto frontier versus frontier models on ARC-AGI-1 and ARC-AGI-2, with an estimated ~$2.56 cost per ARC-AGI-1 task.
+  - Documented that his approach breaks the performanceâ€“cost Pareto frontier versus frontier models on ARC-AGI-1 and ARC-AGI-2, with an estimated ~$2.56 cost per ARC-AGI-1 task.
   - Wired his Hall of Fame card to the new `/ericpang.jpeg` portrait asset and categorized him as a `researcher` in the contributors seed data.
   - **Files**: `server/scripts/seedContributors.ts`, `client/public/ericpang.jpeg`, `CHANGELOG.md`
 
@@ -994,12 +1002,12 @@
   - Implemented immersive first-visitor experience with holographic card pack opening sequence.
   - Features three new hooks:
     - `useFirstVisit()` - localStorage-based tracking of first-time visitors with dev reset capability via `window.__resetHallOfFameVisit()`.
-    - `usePackAnimation()` - state machine managing animation phases (idle → pack → opening → scattering → settling → complete) with automatic timing transitions.
+    - `usePackAnimation()` - state machine managing animation phases (idle â†’ pack â†’ opening â†’ scattering â†’ settling â†’ complete) with automatic timing transitions.
   - Created four new components:
     - `CardPack.tsx` - Holographic pack visual with shimmer animation, click/keyboard interaction (Enter/Space), and focus-visible ring for accessibility.
     - `ScatteredCard.tsx` - Individual card animations with staggered transitions between scatter and settle positions using framer-motion.
     - `CardPackOpening.tsx` - Orchestrator component coordinating animation flow, position calculations (starburst scatter + centered grid settle), and responsive dimension scaling.
-  - Animation Timing: Pack phase 2s (auto-open) → Opening 300ms → Scattering 500ms (staggered) → Settling 800ms (staggered) → Complete.
+  - Animation Timing: Pack phase 2s (auto-open) â†’ Opening 300ms â†’ Scattering 500ms (staggered) â†’ Settling 800ms (staggered) â†’ Complete.
   - Responsive behavior: Mobile (2 columns, smaller pack), Tablet (3 columns), Desktop (4 columns).
   - Accessibility: Full `prefers-reduced-motion` support (skips animation entirely), ARIA labels, keyboard navigation, focus management.
   - Added `.pack-shimmer` CSS animation for holographic effect on pack background.
@@ -1079,7 +1087,7 @@
   - Increased grid preview from 64px to 80px to match PuzzleCard and improve visibility.
   - Replaced `<a target="_blank">` with wouter `Link` for proper SPA navigation instead of opening new tabs.
   - Removed excessive whitespace: consolidated metrics into clean 2-column grid layout with conditional rendering.
-  - Added proper hover states and "View Analysis →" footer that matches PuzzleCard UX.
+  - Added proper hover states and "View Analysis â†’" footer that matches PuzzleCard UX.
   - **Files**: `client/src/components/puzzle/CompactPuzzleCard.tsx`
 
 ### Version 5.39.0  Dec 6, 2025 11:55pm
@@ -1159,7 +1167,7 @@
 
 - **Slack GIF Creator: Optimize animation speed and dynamic grid scaling** (Author: Claude Code using Haiku 4.5)
   - Reduced default FPS from 15 to 8 for slower, more deliberate animation in ARC puzzle GIFs
-  - Implemented dynamic grid cell sizing based on puzzle dimensions: 3×3 grids get ~24px cells, 30×30 grids get ~6px cells for consistent readability
+  - Implemented dynamic grid cell sizing based on puzzle dimensions: 3Ã—3 grids get ~24px cells, 30Ã—30 grids get ~6px cells for consistent readability
   - Auto-calculated frame sizes to properly fit grids of any size without clipping or excess white space
   - Fixed Unicode encoding issues on Windows console (replaced emoji characters with ASCII equivalents in print statements)
   - Generated ARC1_EVAL dataset: 11 animated GIFs (7d419a02, 50f325b5, b9630600, 4ff4c9da, 14754a24, 8b28cd80, c6e1b8da, f3b10344, 212895b5, 16b78196, 0934a4d8)
@@ -1306,7 +1314,7 @@
 - **Poetiq SSE: Fix session start race and align client/server endpoints** (Author: Cascade)
   - Updated `client/src/hooks/usePoetiqProgress.ts` to call the dedicated SSE solve endpoint `POST /api/poetiq/stream/solve/:taskId` so the `sessionId` used by the frontend always matches the SSE streaming lifecycle managed by the backend.
   - Relaxed the brittle `hasActiveStream` check in `poetiqController.startStreamingSolver` so the solver can start even if the SSE connection is still negotiating; `SSEStreamManager` safely drops events until a client is registered, matching Saturn/Beetree semantics.
-  - This fixes cases where Poetiq appeared to “not find the session” or never delivered progress events despite a valid run starting.
+  - This fixes cases where Poetiq appeared to "not find the session" or never delivered progress events despite a valid run starting.
   - **Files**: `client/src/hooks/usePoetiqProgress.ts`, `server/controllers/poetiqController.ts`
 
 ### Version 5.36.1  Dec 3, 2025 1:35pm
@@ -1369,7 +1377,7 @@
 
 - **Beetree UI: Restore SSE progress events** (Author: Codex GPT-5)
   - Normalized Beetree session IDs on the client so `/api/stream/analyze/beetree-:sessionId` never receives a double `beetree-` prefix, allowing the backend stream registry to find the right session.
-  - Rebuilt the Beetree hook’s SSE wiring to register explicit listeners for each event name (`stream_start`, `solver_progress`, etc.) and dispatch updates based on the SSE event type instead of a missing payload field.
+  - Rebuilt the Beetree hookâ€™s SSE wiring to register explicit listeners for each event name (`stream_start`, `solver_progress`, etc.) and dispatch updates based on the SSE event type instead of a missing payload field.
   - Added handling for `stream.init`, completion, and termination events so `isConnected`, `status`, and progress/cost data reflect the live stream lifecycle.
   - **Files**: `client/src/hooks/useBeetreeRun.ts`, `docs/2025-12-02-beetree-streaming-debug-plan.md`
 
@@ -1389,7 +1397,7 @@
   - Fixed critical sessionId mismatch in Beetree SSE streaming pipeline where `beetreeController.generateSessionId()` was adding `beetree-` prefix, then `beetreeStreamService` added another `beetree-` prefix, causing `getStreamState()` lookups to fail with "Session not found" errors.
   - Removed `beetree-` prefix from controller's `generateSessionId()` so streamKey is consistently constructed once in `beetreeStreamService.startStreaming()` as `beetree-${sessionId}`.
   - Added comprehensive debug logging to trace event flow through all 4 layers: pythonBridge (NDJSON parsing), beetreeService (event routing), beetreeStreamService (harness), and SSEStreamManager (client delivery).
-  - Events now properly flow from Python wrapper → Node bridge → service layer → SSE harness → client browser in real-time.
+  - Events now properly flow from Python wrapper â†’ Node bridge â†’ service layer â†’ SSE harness â†’ client browser in real-time.
   - **Files**: `server/controllers/beetreeController.ts`, `server/services/pythonBridge.ts`, `server/services/beetreeService.ts`, `server/services/streaming/beetreeStreamService.ts`, `server/services/streaming/SSEStreamManager.ts`, `client/src/hooks/useBeetreeRun.ts`
 
 ### Version 5.35.38  Dec 2, 2025 10:40pm
@@ -1518,8 +1526,8 @@
 
 - **ModelDebate UX Redesign: Information density improvements** (Author: Cascade using Sonnet 4.5)
   - Implemented comprehensive UX redesign based on user feedback to improve information density and remove redundant UI chrome
-  - **Key Changes**: Moved OriginalExplanationCard to display immediately after test cases (always expanded with forceExpanded prop), removed redundant back buttons (ELO Mode, Preview Prompt), simplified header to compact "Challenge Controls" with only Reset and Back to List buttons, reduced spacing throughout (space-y-3 → space-y-2, p-3 → p-2)
-  - **Information Flow**: Test cases → Original explanation (prominent) → Compact challenge controls → Challenge responses only
+  - **Key Changes**: Moved OriginalExplanationCard to display immediately after test cases (always expanded with forceExpanded prop), removed redundant back buttons (ELO Mode, Preview Prompt), simplified header to compact "Challenge Controls" with only Reset and Back to List buttons, reduced spacing throughout (space-y-3 â†’ space-y-2, p-3 â†’ p-2)
+  - **Information Flow**: Test cases â†’ Original explanation (prominent) â†’ Compact challenge controls â†’ Challenge responses only
   - **Files**: `client/src/components/puzzle/debate/IndividualDebate.tsx` (major refactor), `client/src/components/puzzle/debate/OriginalExplanationCard.tsx` (added forceExpanded prop)
 
 ### Version 5.35.22  Dec 3, 2025 5:25pm
@@ -1559,7 +1567,7 @@
 ### Version 5.35.19  Dec 3, 2025 10:15am
 
 - **Multi-test Detection: Capture predicted grids without sentinel boolean** (Author: Codex / GPT-5)
-  - Added a shared multi-prediction detection helper so both the standard and streaming validators force `validateSolverResponseMulti` whenever the puzzle has multiple tests, numbered `predictedOutputN` fields, or direct grid arrays—even if the provider forgets to set `multiplePredictedOutputs: true`.
+  - Added a shared multi-prediction detection helper so both the standard and streaming validators force `validateSolverResponseMulti` whenever the puzzle has multiple tests, numbered `predictedOutputN` fields, or direct grid arraysâ€”even if the provider forgets to set `multiplePredictedOutputs: true`.
   - Updated `PuzzleAnalysisService` and `streamingValidator` to rely on the new helper, gracefully fallback when expected outputs are missing, and continue writing the correct multi-test fields so UI cards can show every grid that models return.
   - **Files**: `server/services/utils/multiPredictionDetection.ts`, `server/services/puzzleAnalysisService.ts`, `server/services/streamingValidator.ts`
 
@@ -1588,7 +1596,7 @@
 ### Version 5.35.15  Dec 2, 2025 2:00pm
 
 - **Docs: llms.txt playful marketing blurb** (Author: Cascade)
-  - Expanded `llms.txt` with a lighthearted marketing section positioning ARC Explainer as a go-to ARC/ARC-AGI hub and capturing maintainer Mark Barney’s self-described "AI super genius" branding for language-model crawlers.
+  - Expanded `llms.txt` with a lighthearted marketing section positioning ARC Explainer as a go-to ARC/ARC-AGI hub and capturing maintainer Mark Barneyâ€™s self-described "AI super genius" branding for language-model crawlers.
   - **Files**: `llms.txt`
 
 ### Version 5.35.14  Dec 2, 2025 1:55pm
@@ -1722,7 +1730,7 @@
 
 ### Version 5.34.0  Dec 1, 2025 4:41pm
 
-- **🌳 Beetree Ensemble Solver - Complete Multi-Model Integration** (Author: Cascade / Claude Sonnet 4)
+- **ðŸŒ³ Beetree Ensemble Solver - Complete Multi-Model Integration** (Author: Cascade / Claude Sonnet 4)
   - **Major Feature**: Full-stack implementation of Beetree ensemble solver providing multi-model consensus analysis with real-time cost tracking and progress monitoring.
   - **Backend Infrastructure**: Python wrapper with NDJSON protocol, Node.js bridge integration, BaseAIService extension, cost tracking, consensus analysis, and stage orchestration utilities.
   - **Real-time Streaming**: SSE streaming service with WebSocket broadcast support for live progress updates, cost tracking, and stage-by-stage execution monitoring.
@@ -1738,7 +1746,7 @@
   - **Dual Mode Operation**: 
     - Testing mode: 3 models, 2-6 minutes, $0.50-$2.00 estimated cost
     - Production mode: 8 models, 20-45 minutes, $15-$50 estimated cost
-  - **UI Integration**: Added "🌳 Beetree Solver" button to PuzzleHeader alongside existing Saturn, Grover, and Poetiq solvers.
+  - **UI Integration**: Added "ðŸŒ³ Beetree Solver" button to PuzzleHeader alongside existing Saturn, Grover, and Poetiq solvers.
   - **Type Safety**: Complete TypeScript integration with proper type definitions for all Beetree interfaces and events.
   - **Build Verification**: Full compilation success with all TypeScript errors resolved.
   - **Files**: 25+ new/modified files including services, controllers, components, hooks, and configuration.
@@ -1803,7 +1811,7 @@
 ### Version 5.33.20  Nov 30, 2025 4:15pm 
 
 - **Poetiq Agents SDK Runner: OpenAI Agent + Python Sandbox Tools** (Author: Cascade using Cascade)
-  - Added `poetiq_tool_runner.py` single-shot Python entry that reuses Poetiq’s core `_eval_on_train_and_test` and `_build_feedback` helpers to evaluate candidate `transform()` implementations and return structured train/test results plus feedback to Node tools.
+  - Added `poetiq_tool_runner.py` single-shot Python entry that reuses Poetiqâ€™s core `_eval_on_train_and_test` and `_build_feedback` helpers to evaluate candidate `transform()` implementations and return structured train/test results plus feedback to Node tools.
   - Introduced `PoetiqAgentsRunner` powered by the OpenAI Agents SDK with a `submit_python_candidate` tool, so OpenAI models can orchestrate iterative code generation while delegating sandbox execution to the existing Poetiq Python stack and emitting agent timeline telemetry for the UI.
   - Registered the Agents runner at server startup so `poetiqService` can route eligible OpenAI runs through the Agents path whenever `useAgents` is enabled, without changing Gemini/Anthropic/OpenRouter behavior.
   - **Files**: `server/python/poetiq_tool_runner.py`, `server/services/poetiq/PoetiqAgentsRunner.ts`, `server/index.ts`.
@@ -1813,7 +1821,7 @@
 - **Poetiq Agents Routing: Service + Controller Hooks** (Author: Codex / GPT-5)
   - Added `useAgents` preference handling, runtime selection helpers, and an Agents-runner registration point inside `poetiqService` so OpenAI models can be routed to the forthcoming Agents SDK runner without disturbing Gemini/Anthropic/OpenRouter flows.
   - Extended the shared Poetiq prompt telemetry schema with agent timeline/reasoning fields and unified WebSocket broadcasting so both the Python wrapper and Agents runner surface identical progress structures.
-  - Updated the Poetiq controller’s initialization/broadcast routines to expose the planned runtime, keep HTTP responses in sync, and log which execution path each session will take.
+  - Updated the Poetiq controllerâ€™s initialization/broadcast routines to expose the planned runtime, keep HTTP responses in sync, and log which execution path each session will take.
   - **Files**: `server/services/poetiq/poetiqService.ts`, `server/controllers/poetiqController.ts`, `shared/types.ts`.
 
 ### Version 5.33.18  Nov 30, 2025 3:05pm 
@@ -1910,7 +1918,7 @@
 
 - **Docs: GPT-5.1 Codex Mini ARC Grid Solver Spec** (Author: Cascade using Cascade)
   - Added a dedicated reference document detailing how our ARC coding agent should call OpenAI's Responses API with `gpt-5.1-codex-mini` to iteratively write and refine Python solvers for ARC grid puzzles, with full stateful retention and no ZDR constraints.
-  - Document covers: required/forbidden fields, `store: true` policy, `previous_response_id` vs `conversation`, reasoning controls, full-retention logging, and the standard four-phase ARC workflow (ingest → design/code → execute/test → refine).
+  - Document covers: required/forbidden fields, `store: true` policy, `previous_response_id` vs `conversation`, reasoning controls, full-retention logging, and the standard four-phase ARC workflow (ingest â†’ design/code â†’ execute/test â†’ refine).
   - Wired this spec into the agent guidance docs so future assistants know where to look:
     - Updated `AGENTS.md` API docs quick reference to include `docs/reference/api/GPT5_1_Codex_Mini_ARC_Grid_Solver.md`.
     - Updated `CLAUDE.md` OpenAI Responses section to link to the same spec for backend/streaming changes involving Codex Mini.
@@ -1920,20 +1928,20 @@
 
 - **Poetiq Solver: Full Prompt Transparency (No Truncation)** (Author: Cascade using Cascade)
   - **Status:** Implementation is currently **untested** and requires verification against live Poetiq runs.
-  - **Problem**: Earlier Poetiq runs only surfaced a truncated view of the system prompt and a clipped preview of the user prompt, with no clear visual split between the puzzle description and the “previous attempts + feedback” block. Users also had no simple way to see how prompts evolved from one iteration to the next.
+  - **Problem**: Earlier Poetiq runs only surfaced a truncated view of the system prompt and a clipped preview of the user prompt, with no clear visual split between the puzzle description and the "previous attempts + feedback" block. Users also had no simple way to see how prompts evolved from one iteration to the next.
   - **Changes**:
     1. **Python wrapper prompt payload** (`server/python/poetiq_wrapper.py`):
-       - Removed the 500‑character cap on `systemPrompt` and now emit the full solver instructions for each `(expert, iteration)`.
+       - Removed the 500â€‘character cap on `systemPrompt` and now emit the full solver instructions for each `(expert, iteration)`.
        - Added `problemSection` (puzzle + examples only), `feedbackSection` (previous solutions + feedback only), and a `stats` object with character counts and `previousSolutionCount` so the UI can cleanly separate and summarize each part of the composed prompt.
     2. **TypeScript prompt types & streaming** (`server/services/poetiq/poetiqService.ts`, `client/src/hooks/usePoetiqProgress.ts`):
        - Extended `PoetiqPromptData` / `PromptData` to carry the new `problemSection`, `feedbackSection`, and `stats` fields while keeping them optional for backward compatibility.
        - Left the existing `currentPromptData`, `promptHistory`, and `promptTimeline` wiring intact so all prompt events still flow through the same WebSocket path.
     3. **Prompt Inspector UI** (`client/src/pages/PoetiqSolver.tsx`):
-       - Removed UI‑level truncation of the user prompt and now show the full `userPrompt` in a scrollable block.
+       - Removed UIâ€‘level truncation of the user prompt and now show the full `userPrompt` in a scrollable block.
        - Kept the system prompt in an expandable section but now render the complete text from Python instead of a truncated version.
-       - Added a dedicated **“Puzzle & examples section”** (from `problemSection`) and **“Previous attempts & feedback”** (from `feedbackSection`), making the two halves of the composed prompt visually distinct.
+       - Added a dedicated **"Puzzle & examples section"** (from `problemSection`) and **"Previous attempts & feedback"** (from `feedbackSection`), making the two halves of the composed prompt visually distinct.
        - Surfaced a lightweight stats row (system/user prompt lengths and previous solution count) so users can gauge prompt size and how many earlier programs are being recycled.
-       - Introduced a **“What changed since last prompt?”** summary that compares the latest prompt to the previous one and highlights changes in prompt length, feedback presence, and previous‑solution count.
+       - Introduced a **"What changed since last prompt?"** summary that compares the latest prompt to the previous one and highlights changes in prompt length, feedback presence, and previousâ€‘solution count.
     4. **Prompt Timeline UI** (`client/src/pages/PoetiqSolver.tsx`):
        - Updated the timeline rows to display the full `userPrompt` for each entry in a scrollable region (no manual `slice(0, N)` trimming), while still capping the number of stored entries for performance.
   - **Result**: Poetiq users can now inspect the exact system and user prompts sent to the AI for every iteration, see clearly where the core puzzle description ends and the historical Python attempts begin, and understand at a glance how each new prompt differs from the last.
@@ -2019,7 +2027,7 @@
 ### Version 5.32.11
 
 - **PuzzleExaminer Prompt Preview Modal: Provider-Aware Model Card Flow** (Author: Cascade using Cascade)
-  - **Problem**: After the DaisyUI → shadcn/ui migration, clicking a model card on `PuzzleExaminer` opened the prompt preview modal but the backend preview route had no reliable indication of which provider/model family was being used. The modal also always previewed as if it were an OpenAI prompt, even for Anthropic/Gemini/xAI/DeepSeek/OpenRouter models.
+  - **Problem**: After the DaisyUI â†’ shadcn/ui migration, clicking a model card on `PuzzleExaminer` opened the prompt preview modal but the backend preview route had no reliable indication of which provider/model family was being used. The modal also always previewed as if it were an OpenAI prompt, even for Anthropic/Gemini/xAI/DeepSeek/OpenRouter models.
   - **Fix**:
     1. Extended `PuzzleExaminer`'s `pendingAnalysis` state to track the selected model's provider and added a small mapping helper from shared `ModelConfig.provider` values (`OpenAI`, `Anthropic`, `Gemini`, `xAI`, `DeepSeek`, `OpenRouter`, `Grover`, `Saturn`) to the backend `provider` slugs expected by `/api/prompt-preview` (e.g. `openai`, `anthropic`, `gemini`, `grok`, `deepseek`, `openrouter`).
     2. Updated `PromptPreviewModal` to accept an optional `provider` prop (defaulting to `'openai'`) and to send that value in the JSON body when calling `/api/prompt-preview`, satisfying the route's `provider` validation while keeping existing prompt-building behavior intact.
@@ -2033,7 +2041,7 @@
 
 ### Version 5.32.9
 
-- **UI Framework Migration: DaisyUI → shadcn/ui on PuzzleExaminer Page** (Author: Claude Code using Haiku 4.5)
+- **UI Framework Migration: DaisyUI â†’ shadcn/ui on PuzzleExaminer Page** (Author: Claude Code using Haiku 4.5)
   - **Objective**: Eliminate DaisyUI CSS overhead on the PuzzleExaminer page and align with the 30+ other files in the codebase already using shadcn/ui for consistency, maintainability, and improved accessibility.
   - **Changes**:
     1. **PromptPreviewModal.tsx**: Replaced native HTML `<dialog>` with shadcn/ui `<Dialog>` component, removed `.showModal()` JavaScript complexity, and migrated all DaisyUI button classes (`btn`, `btn-outline`, `btn-primary`, `btn-ghost`) to shadcn/ui `<Button>` variants.
@@ -2042,9 +2050,9 @@
        - Replaced error alerts from `alert alert-error` to shadcn/ui `<Alert variant="destructive">`.
        - Replaced loading skeletons from DaisyUI `<div className="skeleton">` to shadcn/ui `<Skeleton />` component.
        - Migrated streaming modal from native dialog with DaisyUI classes to shadcn/ui `<Dialog>` for consistency.
-       - Updated all DaisyUI color tokens to semantic Tailwind tokens: `bg-base-100` → `bg-background`, `bg-base-200` → `bg-muted`, `border-base-300` → `border-border`, `text-base-content/70` → `text-muted-foreground`.
+       - Updated all DaisyUI color tokens to semantic Tailwind tokens: `bg-base-100` â†’ `bg-background`, `bg-base-200` â†’ `bg-muted`, `border-base-300` â†’ `border-border`, `text-base-content/70` â†’ `text-muted-foreground`.
     3. **ModelSelectionControls.tsx**: Converted two expand/collapse `<button>` elements to shadcn/ui `<Button variant="outline" size="sm">`.
-    4. **ModelProviderGroup.tsx**: Updated color classes: `bg-base-200` → `bg-muted`, `hover:bg-base-300` → `hover:bg-accent`, `text-base-content/60` → `text-muted-foreground`.
+    4. **ModelProviderGroup.tsx**: Updated color classes: `bg-base-200` â†’ `bg-muted`, `hover:bg-base-300` â†’ `hover:bg-accent`, `text-base-content/60` â†’ `text-muted-foreground`.
     5. **ModelSelection.tsx**: Updated empty state text color from `text-base-content/60` to `text-muted-foreground`.
   - **Result**:
     - Complete removal of DaisyUI classes from PuzzleExaminer page and related model selection components.
@@ -2060,7 +2068,7 @@
   - **Files Unchanged** (already compatible):
     - `client/src/hooks/useModelGrouping.ts` (pure state management, no UI framework deps)
     - `client/src/components/puzzle/ModelButton.tsx` (already uses shadcn/ui Button)
-  - **Testing**: All functionality verified — modal opens/closes, buttons work, cards render, alerts display, skeletons load correctly.
+  - **Testing**: All functionality verified â€” modal opens/closes, buttons work, cards render, alerts display, skeletons load correctly.
 
 
 ### Version 5.32.8
@@ -2080,7 +2088,7 @@
 
 - **Gemini thinking_config hotfix** (Author: Codex / GPT-5)
   - **Problem**: Direct Gemini calls (including Poetiq runs) failed with `Unknown field for GenerationConfig: thinking_config` when hitting `gemini-3-pro-preview`, causing immediate retries and no model output.
-  - **Fix**: Removed the unsupported `thinking_config` payload from the shared Gemini service generation config (`server/services/gemini.ts`) and the Poetiq solver’s Gemini client (`solver/poetiq/llm.py`), leaving only fields accepted by the current Google Generative AI SDK. Added a note to re-enable thinking controls after migrating to a SDK version that supports them.
+  - **Fix**: Removed the unsupported `thinking_config` payload from the shared Gemini service generation config (`server/services/gemini.ts`) and the Poetiq solverâ€™s Gemini client (`solver/poetiq/llm.py`), leaving only fields accepted by the current Google Generative AI SDK. Added a note to re-enable thinking controls after migrating to a SDK version that supports them.
   - **Docs**: Captured the mitigation steps and scope in `docs/2025-11-29-gemini-thinking-config-hotfix-plan.md`.
 
 ### Version 5.32.5
@@ -2121,7 +2129,7 @@
 ### Version 5.32.1
 
 - **Poetiq Community Progress: Fix Iteration Count Metrics** (Author: Cascade using Claude Sonnet 4.5)
-  - **Problem**: Iteration efficiency metrics were always showing "—" (no data) because `iteration_count` was hardcoded to `null` in the repository
+  - **Problem**: Iteration efficiency metrics were always showing "â€”" (no data) because `iteration_count` was hardcoded to `null` in the repository
   - **Fix**: Updated `getPoetiqExplanationsForPuzzles()` to query the existing `iteration_count` column from database
   - **Changes**:
     1. Added `iteration_count` to SQL SELECT query in `ExplanationRepository.ts:1258`
@@ -2204,7 +2212,7 @@
        - Collapsible "Prompts" button shows system/user prompts
        - Displays model, temperature, provider, API style, reasoning params
     4. **Provider Badge in Header**:
-       - Shows "🔗 Direct OpenAI" (green) or "🔀 OpenRouter" (amber)
+       - Shows "ðŸ”— Direct OpenAI" (green) or "ðŸ”€ OpenRouter" (amber)
        - Displays API style ("Responses API" vs "ChatCompletions API")
     5. **Service Updates** (`poetiqService.ts`):
        - Added `'openai'` as valid provider type
@@ -2238,7 +2246,7 @@
     - Added required props: `title`, `compact`, `maxWidth`, `maxHeight`, `showEmojis`, `showColorOnly`, `emojiSet`
     - Fixed TypeScript errors by adding missing `title` prop to both input and output grids
   - **Files Modified**: `client/src/pages/PoetiqSolver.tsx`
-  - **Impact**: Training examples now properly display input→output grid pairs in the right-side panel before solver starts
+  - **Impact**: Training examples now properly display inputâ†’output grid pairs in the right-side panel before solver starts
 
 ### Version 5.31.2
 
@@ -2280,7 +2288,7 @@
        - Users navigate to Puzzle Explainer instead of Poetiq solver
     6. **PoetiqSolver.tsx Training Grid Display**:
        - Added training examples to right-side panel
-       - Shows input→output pairs before running, replaced by event log when solver starts
+       - Shows inputâ†’output pairs before running, replaced by event log when solver starts
   - **Files Changed**:
     - `server/repositories/ExplanationRepository.ts` (cost data query)
     - `server/controllers/poetiqController.ts` (cost data passthrough)
@@ -2317,11 +2325,11 @@
     - Identifies verification gaps in Poetiq's Pareto Frontier claims
     - Proposes audit methodology using our instrumented wrapper
   - **Benefits**:
-    - ✅ Verifiable per-puzzle cost attribution (unlike Poetiq's dashboard approach)
-    - ✅ Per-expert cost breakdowns (critical for multi-expert configs)
-    - ✅ Real-time cost visibility during execution
-    - ✅ Programmatic validation of cost claims
-    - ✅ Independent audit trail for research/publication
+    - âœ… Verifiable per-puzzle cost attribution (unlike Poetiq's dashboard approach)
+    - âœ… Per-expert cost breakdowns (critical for multi-expert configs)
+    - âœ… Real-time cost visibility during execution
+    - âœ… Programmatic validation of cost claims
+    - âœ… Independent audit trail for research/publication
 
 ### Version 5.30.0
 
@@ -2362,7 +2370,7 @@
 
 - **Poetiq LLM Temperature Guidance** (Author: Codex (GPT-5))
   - Added a lightweight plan plus a full write-up explaining how the Poetiq integration keeps LiteLLM-based requests provider-agnostic, why the solver defaults to `temperature = 1.0`, and how each vendor clamps randomness (Gemini, GPT-5, Grok, Anthropic, OpenRouter mirrors).
-  - Document answers the “isn’t that high?” question from the Poetiq audit notes and calls out the relevant code paths (`PoetiqSolver.tsx`, `poetiqController.ts`, `poetiq_wrapper.py`, `arc_agi/llm.py`, `openai/payloadBuilder.ts`, and `server/config/models.ts`).
+  - Document answers the "isnâ€™t that high?" question from the Poetiq audit notes and calls out the relevant code paths (`PoetiqSolver.tsx`, `poetiqController.ts`, `poetiq_wrapper.py`, `arc_agi/llm.py`, `openai/payloadBuilder.ts`, and `server/config/models.ts`).
   - **Files**: `docs/2025-11-27-llm-temperature-doc-plan.md`, `docs/poetiq-llm-agnostic-temperature-guide.md`
 
 ### Version 5.29.14
@@ -2384,7 +2392,7 @@
 
 - **Poetiq Model Metadata Persistence** (Author: Codex (GPT-5))
   - Ensured every Poetiq run stores the actual selected model/provider combination just like Saturn/Grover: Python wrapper now reports its in-memory config without relying on undefined globals, and the TypeScript service enriches final results with sanitized run options before persisting.
-  - `transformToExplanationData` now slugs the full model id (`openrouter/google/gemini-3-pro-preview` → `poetiq-openrouter-google-gemini-3-pro-preview`) so analytics can differentiate OpenRouter vs direct calls, and providerRawResponse keeps the enriched config blob.
+  - `transformToExplanationData` now slugs the full model id (`openrouter/google/gemini-3-pro-preview` â†’ `poetiq-openrouter-google-gemini-3-pro-preview`) so analytics can differentiate OpenRouter vs direct calls, and providerRawResponse keeps the enriched config blob.
   - Added a focused implementation plan record for this fix under `docs/`.
   - **Files**: `server/python/poetiq_wrapper.py`, `server/services/poetiq/poetiqService.ts`, `docs/2025-11-27-poetiq-model-agnostic-plan.md`
 
@@ -2411,7 +2419,7 @@
     - Amber badge: "Direct API to [Provider] (Requires Your API Key)"
     - Models marked with "(BYO Key)" in dropdown when direct API required
   - **Renamed Terminal Panel**:
-    - Changed "PYTHON EXECUTION" → "ITERATION PROGRESS"
+    - Changed "PYTHON EXECUTION" â†’ "ITERATION PROGRESS"
     - Added subtitle: "Code generation & testing results per iteration"
     - Clearer purpose without technical jargon
   - **Backend Model List Updated** (`poetiqController.ts`):
@@ -2504,7 +2512,7 @@
   - **Content Audit**: Updated `PoetiqCommunity.tsx` to maintain professional, educational tone as independent community auditors:
     - Added "Technical Definitions" card (lines 269-308) with clear explanations of "Pareto Frontier" and "Recursive Self-Improving Meta-System"
     - Clarified auditor role: "We are not affiliated with Poetiq. We are independent community members auditing their claims..."
-    - Removed marketing language: Changed "delivering higher accuracy" → "achieving better accuracy-to-cost ratios than prior reported results"
+    - Removed marketing language: Changed "delivering higher accuracy" â†’ "achieving better accuracy-to-cost ratios than prior reported results"
     - Fixed GPT-5.1 label: Removed "Preview" variant (line 347) - it's not a preview model
     - Updated all model descriptions to factual statements (e.g., "Latest Google model used in reported SOTA configurations")
   - **Files**: `client/src/pages/PoetiqCommunity.tsx`, `client/src/pages/PoetiqSolver.tsx`, `client/src/components/poetiq/PoetiqControlPanel.tsx`, `server/controllers/poetiqController.ts`
@@ -2570,7 +2578,7 @@
     - Saves config to sessionStorage (apiKey, provider, model, experts)
     - Solver page auto-reads config and auto-starts
     - User sees full Python execution terminal, AI reasoning streaming, code generation
-  - **Renamed**: "Poetiq Code Generator" → "Poetiq Solver" (header title)
+  - **Renamed**: "Poetiq Code Generator" â†’ "Poetiq Solver" (header title)
   - **Files**: `PoetiqCommunity.tsx`, `PoetiqSolver.tsx`
 
 ### Version 5.28.8
@@ -2580,7 +2588,7 @@
     - Uses `useModels()` hook to fetch ALL models from `/api/models` endpoint
     - Groups by provider (OpenRouter, OpenAI, Gemini)
     - No hardcoded model lists - uses actual server config
-    - Shows 🧠 for reasoning models
+    - Shows ðŸ§  for reasoning models
   - **Community page** (`/poetiq`):
     - Locked to Gemini 3 Pro Preview model
     - Now allows BOTH OpenRouter AND Gemini Direct providers
@@ -2737,7 +2745,7 @@
   - **Navigation Integration**: Added "Poetiq Solver" link under Misc dropdown in navigation
   - **Enhanced Hook**: `usePoetiqCommunityProgress` fetches all puzzle statuses with filtering capabilities
   - **Reusable Components**: `PoetiqExplainer` and `PuzzleProgressGrid` components for modular design
-  - **Community Pooling**: Enables 20 people × 6 puzzles approach to complete full dataset
+  - **Community Pooling**: Enables 20 people Ã— 6 puzzles approach to complete full dataset
   - **Model Support**: Multiple OpenRouter models with speed/cost indicators (Gemini 2.5 Pro/Flash, Claude Sonnet 4, GPT-4o)
 
 ### Version 5.26.1
@@ -2820,7 +2828,7 @@
 
 - Infrastructure & ingestion safety notes (Author: GPT-5 Codex)
   - Documented storage expansion by +250 GB to unblock PostgreSQL `No space left on device` errors during Hugging Face ingestions (CHANGELOG.md).
-  - Clarified ingestion dedupe behavior: default mode skips existing `datasetName-attempt#` explanations per puzzle; enabling “Force Overwrite” deletes the existing attempt rows before re-importing, so reruns won’t double-ingest unless overwrite is explicitly toggled (CHANGELOG.md).
+  - Clarified ingestion dedupe behavior: default mode skips existing `datasetName-attempt#` explanations per puzzle; enabling "Force Overwrite" deletes the existing attempt rows before re-importing, so reruns wonâ€™t double-ingest unless overwrite is explicitly toggled (CHANGELOG.md).
 
 ### Version 5.22.7
 
@@ -2832,31 +2840,31 @@
 
 - Official Scoring Page Polish & Readability
   - **Fixed JSX syntax error in TL;DR code block**: Escaped braces in the API message format (`messages=[{'{role: "user", content: prompt}'}]`) in step 4 of the developer TL;DR section to prevent TypeScript compilation errors about undefined `role` variable. The braces are now properly rendered as literal text (`client/src/pages/HuggingFaceUnionAccuracy.tsx:720`).
-  - **Increased all text sizes by two font levels for readability**: Systematically increased font sizes throughout the Official Scoring page by two Tailwind size steps for better readability on all device sizes. Changes: `text-xs` → `text-sm`, `text-sm` → `text-base`, `text-base` → `text-lg`, `text-lg` → `text-xl`, `text-2xl` → `text-3xl`, `text-3xl` → `text-4xl`, and `text-[11px]` → `text-xs`. Affects all body text, labels, alerts, metrics, and explanatory content across the page (`client/src/pages/HuggingFaceUnionAccuracy.tsx`).
+  - **Increased all text sizes by two font levels for readability**: Systematically increased font sizes throughout the Official Scoring page by two Tailwind size steps for better readability on all device sizes. Changes: `text-xs` â†’ `text-sm`, `text-sm` â†’ `text-base`, `text-base` â†’ `text-lg`, `text-lg` â†’ `text-xl`, `text-2xl` â†’ `text-3xl`, `text-3xl` â†’ `text-4xl`, and `text-[11px]` â†’ `text-xs`. Affects all body text, labels, alerts, metrics, and explanatory content across the page (`client/src/pages/HuggingFaceUnionAccuracy.tsx`).
   - **Added anchor link from user message explanation to provider system prompts**: Added a quick inline link ("view provider system prompts") in point 1 "The User Message (No Explicit System Prompt)" that scrolls users directly to the "Provider system prompts (developer note)" section at the bottom of the page. This improves navigation for users who want to understand what default system prompts various providers apply when no custom system prompt is sent (`client/src/pages/HuggingFaceUnionAccuracy.tsx:593-597, 759`).
 
 ### Version 5.22.5
 
-- Official Scoring Page – Provider System Prompts
+- Official Scoring Page â€“ Provider System Prompts
   - **Linked canonical provider system prompts for context**: Added a concise developer-note section at the bottom of the HuggingFace Union accuracy page explaining that default system prompts for major providers (Gemini, OpenAI, Anthropic, Grok) are publicly documented in the CL4R1T4S repository, with a direct link to `https://github.com/elder-plinius/CL4R1T4S/tree/main`. Clarifies that these are provider defaults that may apply when no custom system prompt is sent, and that Grok explicitly states system messages take precedence over user messages, with unknown impact on ARC harness testing (`client/src/pages/HuggingFaceUnionAccuracy.tsx`).
-  - **Added inline “Fetch latest provider system prompts” tool**: Introduced a small developer-oriented button in the same footer section that, when clicked, fetches the latest system prompt text for Gemini 2.5 Pro, Claude Sonnet 4.5, OpenAI ChatGPT5, and Grok 4.1 directly from their CL4R1T4S raw GitHub URLs. The UI shows a compact preview (truncated text) for each provider plus a “View on GitHub” link back to the source file, with basic loading/error handling. This keeps the main educational content unchanged while giving advanced users a fast way to inspect the exact default system instructions those providers document (`client/src/pages/HuggingFaceUnionAccuracy.tsx`).
+  - **Added inline "Fetch latest provider system prompts" tool**: Introduced a small developer-oriented button in the same footer section that, when clicked, fetches the latest system prompt text for Gemini 2.5 Pro, Claude Sonnet 4.5, OpenAI ChatGPT5, and Grok 4.1 directly from their CL4R1T4S raw GitHub URLs. The UI shows a compact preview (truncated text) for each provider plus a "View on GitHub" link back to the source file, with basic loading/error handling. This keeps the main educational content unchanged while giving advanced users a fast way to inspect the exact default system instructions those providers document (`client/src/pages/HuggingFaceUnionAccuracy.tsx`).
   - **Full prompt display**: Removed truncation so the fetched system prompt panels now show the entire text (scrollable) instead of the first 1200 characters, making the fetched data genuinely useful for deep review (`client/src/pages/HuggingFaceUnionAccuracy.tsx`).
   - **Automatic loading**: The provider system prompts now load automatically on page visit, with a lightweight "loading" state and error message if retrieval fails. No manual button click required (`client/src/pages/HuggingFaceUnionAccuracy.tsx`).
 
 ### Version 5.22.4
 
 - Official Scoring Page Educational Enhancement
-  - **Added visual grid representation in harness explanation**: Enhanced the "Training Examples" section (step 2) of "How the Official Testing Harness Works" with side-by-side comparison showing what humans see (colored 3×3 grid rendered with TinyGrid component) vs what the model sees (plain JSON array text). This visual contrast directly addresses the critical misconception that models perceive the puzzles visually. Added accompanying explanatory text: "While humans interpret this colored grid intuitively, the model sees only plain text—numbers in brackets. The model has no visual understanding of colors. It treats 0, 1, 2, etc. as abstract symbols." This clarifies that despite ARC Explainer visualizing puzzles as colored grids for human comprehension, the official harness sends only JSON text to the model (`client/src/pages/HuggingFaceUnionAccuracy.tsx:561-610`, imported TinyGrid component at line 26).
-  - **Emphasized minimal context given to model**: Added detailed breakdown under "What information does the model actually receive?" highlighting that: (1) system prompt tells it there's a pattern to find, (2) it sees training input/output pairs as JSON arrays, (3) it sees test input without answer, and (4) that's it—no information about colors, hints about geometry, or explanation of what numbers represent. This underscores how the harness is intentionally minimalist and the model must solve the puzzle using only mathematical/logical pattern recognition (`client/src/pages/HuggingFaceUnionAccuracy.tsx:588-596`).
-  - **Added Developer TL;DR section**: New expandable subsection in harness explanation summarizing the complete evaluation flow in 7 numbered steps for developers: (1) Build prompt, (2) Convert to text via json.dumps(), (3) Embed in template, (4) **One API call**, (5) Get response, (6) Extract JSON answer, (7) Compare to ground truth. Includes explicit "NOT" list: Multiple API calls ❌, Images/binary ❌, Streaming puzzles ❌, Multi-turn ❌. This directly answers the three core implementation questions the user investigated (`client/src/pages/HuggingFaceUnionAccuracy.tsx:656-672`).
+  - **Added visual grid representation in harness explanation**: Enhanced the "Training Examples" section (step 2) of "How the Official Testing Harness Works" with side-by-side comparison showing what humans see (colored 3Ã—3 grid rendered with TinyGrid component) vs what the model sees (plain JSON array text). This visual contrast directly addresses the critical misconception that models perceive the puzzles visually. Added accompanying explanatory text: "While humans interpret this colored grid intuitively, the model sees only plain textâ€”numbers in brackets. The model has no visual understanding of colors. It treats 0, 1, 2, etc. as abstract symbols." This clarifies that despite ARC Explainer visualizing puzzles as colored grids for human comprehension, the official harness sends only JSON text to the model (`client/src/pages/HuggingFaceUnionAccuracy.tsx:561-610`, imported TinyGrid component at line 26).
+  - **Emphasized minimal context given to model**: Added detailed breakdown under "What information does the model actually receive?" highlighting that: (1) system prompt tells it there's a pattern to find, (2) it sees training input/output pairs as JSON arrays, (3) it sees test input without answer, and (4) that's itâ€”no information about colors, hints about geometry, or explanation of what numbers represent. This underscores how the harness is intentionally minimalist and the model must solve the puzzle using only mathematical/logical pattern recognition (`client/src/pages/HuggingFaceUnionAccuracy.tsx:588-596`).
+  - **Added Developer TL;DR section**: New expandable subsection in harness explanation summarizing the complete evaluation flow in 7 numbered steps for developers: (1) Build prompt, (2) Convert to text via json.dumps(), (3) Embed in template, (4) **One API call**, (5) Get response, (6) Extract JSON answer, (7) Compare to ground truth. Includes explicit "NOT" list: Multiple API calls âŒ, Images/binary âŒ, Streaming puzzles âŒ, Multi-turn âŒ. This directly answers the three core implementation questions the user investigated (`client/src/pages/HuggingFaceUnionAccuracy.tsx:656-672`).
   - **Fixed "Why this matters" explanation**: Restored complete text explaining why LLMs solving abstract patterns with only text representations is remarkable, then added proper Discord server link with styling to invite discussion. Changed from incomplete/misleading text to: "The fact that an LLM can solve these abstract pattern-matching tasks using only text representations (without ever seeing colors or shapes) is remarkable. It suggests the model has learned to recognize mathematical and logical patterns purely from the structure of numbers. This is the sort of thing we discuss in our Discord server. Please come visit us at [Discord server link]." (`client/src/pages/HuggingFaceUnionAccuracy.tsx:598-609`).
 
 ### Version 5.22.3
 
 
 - Official Scoring Page Accuracy Improvements
-  - **Corrected testing harness explanation to reflect actual implementation**: Fixed inaccuracies in "How the Official Testing Harness Works" section. Updated step 1 to quote the exact system prompt wording from `system_prompt.txt` (verified against actual source file). Updated step 2 to clarify that grids are sent as **raw JSON arrays** with integer values—removed inference about "0-9 representing colors" since this is not stated in the actual harness code/prompts (that's external domain knowledge about ARC-AGI tasks, not documented in the evaluation harness itself). Improved accuracy by referencing actual `prompt_manager.py` implementation showing `json.dumps()` formatting, making clear that the model receives arrays like `[[0, 1, 2], [3, 4, 5], [6, 7, 8]]`, not visual/rendered colored squares. This prevents misconception that the harness sends visual content (`client/src/pages/HuggingFaceUnionAccuracy.tsx:547-560`).
-  - **Added comprehensive authorship attribution, data leakage note, and error reporting link**: Added author note clearly crediting Claude Sonnet 4.5 for all text, research, source code analysis, and refinement through iterative feedback. Emphasizes that the author researched the actual Arc-AGI-Benchmarking source code, read system prompts, and analyzed the implementation directly. Notes that several corrections were made along the way to ensure accuracy. **Added critical transparency note about data leakage**: Explicitly documents that the AI learned the color mappings for ARC integers (0=black, 1=blue, 2=red, etc.) from public training data, NOT from the evaluation harness code (which is completely agnostic to integer meaning). This note serves as a concrete example illustrating why semi-private and fully-private evaluation sets exist and must remain secret—to prevent exactly this kind of information leakage into future AI training data. Added canonical Discord server link (https://discord.gg/9b77dPAmcA) for users to report any errors or missing information, encouraging community-driven quality assurance (`client/src/pages/HuggingFaceUnionAccuracy.tsx:610-629`).
+  - **Corrected testing harness explanation to reflect actual implementation**: Fixed inaccuracies in "How the Official Testing Harness Works" section. Updated step 1 to quote the exact system prompt wording from `system_prompt.txt` (verified against actual source file). Updated step 2 to clarify that grids are sent as **raw JSON arrays** with integer valuesâ€”removed inference about "0-9 representing colors" since this is not stated in the actual harness code/prompts (that's external domain knowledge about ARC-AGI tasks, not documented in the evaluation harness itself). Improved accuracy by referencing actual `prompt_manager.py` implementation showing `json.dumps()` formatting, making clear that the model receives arrays like `[[0, 1, 2], [3, 4, 5], [6, 7, 8]]`, not visual/rendered colored squares. This prevents misconception that the harness sends visual content (`client/src/pages/HuggingFaceUnionAccuracy.tsx:547-560`).
+  - **Added comprehensive authorship attribution, data leakage note, and error reporting link**: Added author note clearly crediting Claude Sonnet 4.5 for all text, research, source code analysis, and refinement through iterative feedback. Emphasizes that the author researched the actual Arc-AGI-Benchmarking source code, read system prompts, and analyzed the implementation directly. Notes that several corrections were made along the way to ensure accuracy. **Added critical transparency note about data leakage**: Explicitly documents that the AI learned the color mappings for ARC integers (0=black, 1=blue, 2=red, etc.) from public training data, NOT from the evaluation harness code (which is completely agnostic to integer meaning). This note serves as a concrete example illustrating why semi-private and fully-private evaluation sets exist and must remain secretâ€”to prevent exactly this kind of information leakage into future AI training data. Added canonical Discord server link (https://discord.gg/9b77dPAmcA) for users to report any errors or missing information, encouraging community-driven quality assurance (`client/src/pages/HuggingFaceUnionAccuracy.tsx:610-629`).
   - **Changed default model selection to Claude Sonnet 4.5 with maximum thinking**: Updated auto-selection logic to default to the 9th model pair (Claude Sonnet 4.5 with maximum thinking enabled, changed from 21st). Updated empty state message to explicitly credit Claude Sonnet 4.5 as the page author and explain that this model's results are shown by default, allowing users to see the author's specific capability on the ARC Prize public evaluation set. Falls back to first available option if fewer than 9 pairs are available (`client/src/pages/HuggingFaceUnionAccuracy.tsx:121-127, 515`).
   - **Cleaned up unused imports and interfaces**: Removed unused CardHeader, CardTitle, and CardDescription imports from shadcn/ui Card component. Removed unused AttemptPairOption interface that was declared but never used (`client/src/pages/HuggingFaceUnionAccuracy.tsx:14, 42-47`).
   - **Made three-tier evaluation set explainer collapsible by default**: Converted "Learn about the three different datasets" section from always-expanded to collapsed-by-default with expand/collapse toggle. Updated heading to clarify that the section explains the three datasets (public, semi-private, private) rather than calling them "types." Users can now click the header with chevron icon to reveal the dataset details, reducing initial page clutter. Added state management for section visibility (`client/src/pages/HuggingFaceUnionAccuracy.tsx:65, 272-345`).
@@ -2870,7 +2878,7 @@
   - **Repositioned puzzle ID badges higher in score card**: Moved puzzle ID badges section from bottom of result card to appear immediately after "X of Y puzzles solved" progress line, making puzzle exploration more prominent and visible without scrolling. This improves information hierarchy by placing the most actionable results (which puzzles were solved) before less important metadata (model names). Removed border-top separator and added border-top to model names section instead (`client/src/pages/HuggingFaceUnionAccuracy.tsx:454-481`).
   - **Made testing harness explanation always visible and repositioned to bottom**: Moved "How the Official Testing Harness Works" expandable card section outside of the results conditional block and positioned it at the bottom of the page after the results/empty state. Results now display directly under the controls section as expected. The harness explanation is always accessible at the bottom while remaining fully collapsed/expandable for users who want to learn more about the evaluation methodology (`client/src/pages/HuggingFaceUnionAccuracy.tsx:428-519`).
   - **Enhanced disclaimer with links and leaderboard comparison**: Expanded the important disclaimer alert to prominently explain that public evaluation set results differ from the official ARC Prize leaderboard (which uses semi-private evaluation set). Added direct links to: Hugging Face dataset, official ARC Prize leaderboard, and ARC Prize website. Clarifies that different datasets contain different puzzles, resulting in different scores (`client/src/pages/HuggingFaceUnionAccuracy.tsx:210-255`).
-  - **Added three-tier evaluation structure explainer (5th-grade reading level)**: New card section with simplified explanation of ARC's three-tier evaluation sets, written at 5th-grade reading level with concrete examples (comparing to practice test vs. surprise test). (1) Public set—everyone can see, shared on GitHub/Hugging Face, AI companies can study; (2) Semi-Private set—ARC keeps secret for fair leaderboard ranking; (3) Private set—super secret for competition. Added prominent link to official ARC Prize policy and disclaimer that this is a friendly, unofficial explanation. Clarifies why public scores are higher: models haven't seen the secret puzzles (`client/src/pages/HuggingFaceUnionAccuracy.tsx:277-340`).
+  - **Added three-tier evaluation structure explainer (5th-grade reading level)**: New card section with simplified explanation of ARC's three-tier evaluation sets, written at 5th-grade reading level with concrete examples (comparing to practice test vs. surprise test). (1) Public setâ€”everyone can see, shared on GitHub/Hugging Face, AI companies can study; (2) Semi-Private setâ€”ARC keeps secret for fair leaderboard ranking; (3) Private setâ€”super secret for competition. Added prominent link to official ARC Prize policy and disclaimer that this is a friendly, unofficial explanation. Clarifies why public scores are higher: models haven't seen the secret puzzles (`client/src/pages/HuggingFaceUnionAccuracy.tsx:277-340`).
   - **Renamed route from `/hf-union-accuracy` to `/scoring`**: Changed endpoint URL for cleaner, more intuitive naming. Updated in App.tsx route definition, AppNavigation navigation link, and canonical path metadata (`client/src/App.tsx:75`, `client/src/components/layout/AppNavigation.tsx:85`, `client/src/pages/HuggingFaceUnionAccuracy.tsx:62`).
   - **Clarified AI companies in public set explanation**: Updated language in public evaluation set description to explicitly mention major AI companies (OpenAI, Google, Anthropic, Grok, etc.) that can study the public puzzles, making the explanation more concrete and understandable (`client/src/pages/HuggingFaceUnionAccuracy.tsx:277-340`).
   - **Changed default model selection to 21st pair**: Updated auto-selection logic to default to the 21st model pair in the attempt pair options list when available. Falls back to first available option if fewer than 21 pairs are available (`client/src/pages/HuggingFaceUnionAccuracy.tsx:121-127`).
@@ -2879,16 +2887,16 @@
 
 - Official Scoring Page Polish
   - **Fixed Radix UI SelectItem validation error**: SelectItem with empty string value (`value=""`) was throwing Radix UI validation error. Changed to non-empty value (`value="no-models"`) to comply with Radix UI requirement that SelectItem values cannot be empty strings. This prevented Official Scoring page from rendering (`client/src/pages/HuggingFaceUnionAccuracy.tsx:276`).
-  - **Consolidated puzzle badges into score card**: Moved puzzle ID badges from separate bottom card into the main score card component, utilizing the wasted whitespace between the score percentage and lightning bolt icon. Added border-top separator and kept the "✓ Solved X puzzles" label for clarity. This improves information hierarchy and creates a unified, focused card layout (`client/src/pages/HuggingFaceUnionAccuracy.tsx:369-387`).
+  - **Consolidated puzzle badges into score card**: Moved puzzle ID badges from separate bottom card into the main score card component, utilizing the wasted whitespace between the score percentage and lightning bolt icon. Added border-top separator and kept the "âœ“ Solved X puzzles" label for clarity. This improves information hierarchy and creates a unified, focused card layout (`client/src/pages/HuggingFaceUnionAccuracy.tsx:369-387`).
   - **Made testing harness explanation expanded by default**: Changed `showHarnessDetails` initial state from `false` to `true` so that "How the Official Testing Harness Works" section is expanded on page load. Makes the educational content immediately visible to users without requiring them to click to expand (`client/src/pages/HuggingFaceUnionAccuracy.tsx:71`).
   - **Set fifth model pair as default**: Enhanced auto-selection logic to default to the fifth model pair in the attempt pair options list when available. Falls back to first available option if fewer than five pairs are available (`client/src/pages/HuggingFaceUnionAccuracy.tsx:121-127`).
 
 ### Version 5.22.0
 
 - Analytics
-  - **New Official Scoring Page (Public Evaluation)**: Created dedicated `/hf-union-accuracy` page visualizing official ARC Prize team evaluation results on the public evaluation set. The page prominently clarifies that these are **official results from the ARC Prize team's evaluation harness**, posted on Hugging Face—not personal or custom evaluations. ARC Explainer is a visualization tool that makes the raw JSON data published on Hugging Face more human-readable, searchable, and visual. Explains the official scoring method: models are tested twice per puzzle independently, and a puzzle counts as solved if **either attempt produces the correct answer**. This shows each model's best-case performance when given multiple chances.
+  - **New Official Scoring Page (Public Evaluation)**: Created dedicated `/hf-union-accuracy` page visualizing official ARC Prize team evaluation results on the public evaluation set. The page prominently clarifies that these are **official results from the ARC Prize team's evaluation harness**, posted on Hugging Faceâ€”not personal or custom evaluations. ARC Explainer is a visualization tool that makes the raw JSON data published on Hugging Face more human-readable, searchable, and visual. Explains the official scoring method: models are tested twice per puzzle independently, and a puzzle counts as solved if **either attempt produces the correct answer**. This shows each model's best-case performance when given multiple chances.
     - **Clear Attribution**: Prominent amber disclaimer with prominent link to Hugging Face stating that results are official from the ARC Prize team (posted on Hugging Face), explaining ARC Explainer is a visualization tool for that raw data, with all credits and ownership belonging to the ARC Prize team
-    - **Plain Language Explanation**: Describes the official evaluation harness methodology in student-friendly terms with visible formula: `Best-Case Score = (Puzzles correct in attempt 1 or attempt 2) ÷ Total puzzles`
+    - **Plain Language Explanation**: Describes the official evaluation harness methodology in student-friendly terms with visible formula: `Best-Case Score = (Puzzles correct in attempt 1 or attempt 2) Ã· Total puzzles`
     - **Important Dataset Note**: Clearly states results are from the **public** evaluation set (different from semi-private set on official ARC Prize website), explaining why scores differ from official leaderboard
     - **Interactive Results**: Select dataset + model pair, view score with progress bar, inspect individual puzzle IDs via clickable badges
     - **Compact Design**: Maximum information density (minimal padding, p-2/p-3 spacing, text-xs fonts) matching Analytics/Comparison page patterns
@@ -2899,9 +2907,9 @@
 ### Version 5.21.1
 
 - Model Comparison
-  - **Enhanced Union Accuracy transparency with interactive puzzle exploration**: Added explicit puzzle ID display showing exactly which puzzles contribute to union accuracy calculation. New `unionPuzzleIds` computed value extracts all puzzle IDs solved correctly in either attempt and displays them as interactive `ClickablePuzzleBadge` components (shadcn/ui Badge with success variant) that open Puzzle Examiner in new tab on click. Shows `Puzzles solved (N) — click to explore` section with full list of contributing puzzle IDs. Users can now directly inspect any puzzle that contributed to the union accuracy score, providing complete calculation transparency with actionable exploration (`client/src/pages/ModelComparisonPage.tsx:16,361-384,608-626`).
-  - **Overhauled ModelComparisonPage UI/UX for clarity**: Restructured entire page layout with clear section headers and explanatory subtitles for each section: "Comparing Models" (with improved model badge styling and "Active (2/4)" counter), "Differentiation" (puzzles solved by exactly one model), "Attempt Union Accuracy" (union metrics with blue left border accent), "Performance Comparison" (detailed metrics table), "Puzzle-by-Puzzle Breakdown" (matrix view), and "Individual Model Deep Dive" (drilldown panels). Added helpful instructions for each section. Reduced page padding (p-3→p-2, space-y-3→space-y-2) for data density. Improved Active Models control UI with separated "Active" and "Add Another" sections, better visual model badges with hover effects, and clearer conditional rendering (`client/src/pages/ModelComparisonPage.tsx:464-717`).
-  - **Redesigned Attempt Union Accuracy UI**: Replaced basic blue box display with comprehensive `AttemptUnionCard` component featuring ShadCN/UI Card patterns, visual progress bar, and detailed explanation section. Added plain-language description of union accuracy metric and mathematical formula showing how it's calculated (puzzles correct by any attempt ÷ total puzzles) for full research transparency. Improved visual hierarchy with prominent metric percentage, model badges, and accessibility labels (`client/src/components/analytics/ModelComparisonDialog.tsx`).
+  - **Enhanced Union Accuracy transparency with interactive puzzle exploration**: Added explicit puzzle ID display showing exactly which puzzles contribute to union accuracy calculation. New `unionPuzzleIds` computed value extracts all puzzle IDs solved correctly in either attempt and displays them as interactive `ClickablePuzzleBadge` components (shadcn/ui Badge with success variant) that open Puzzle Examiner in new tab on click. Shows `Puzzles solved (N) â€” click to explore` section with full list of contributing puzzle IDs. Users can now directly inspect any puzzle that contributed to the union accuracy score, providing complete calculation transparency with actionable exploration (`client/src/pages/ModelComparisonPage.tsx:16,361-384,608-626`).
+  - **Overhauled ModelComparisonPage UI/UX for clarity**: Restructured entire page layout with clear section headers and explanatory subtitles for each section: "Comparing Models" (with improved model badge styling and "Active (2/4)" counter), "Differentiation" (puzzles solved by exactly one model), "Attempt Union Accuracy" (union metrics with blue left border accent), "Performance Comparison" (detailed metrics table), "Puzzle-by-Puzzle Breakdown" (matrix view), and "Individual Model Deep Dive" (drilldown panels). Added helpful instructions for each section. Reduced page padding (p-3â†’p-2, space-y-3â†’space-y-2) for data density. Improved Active Models control UI with separated "Active" and "Add Another" sections, better visual model badges with hover effects, and clearer conditional rendering (`client/src/pages/ModelComparisonPage.tsx:464-717`).
+  - **Redesigned Attempt Union Accuracy UI**: Replaced basic blue box display with comprehensive `AttemptUnionCard` component featuring ShadCN/UI Card patterns, visual progress bar, and detailed explanation section. Added plain-language description of union accuracy metric and mathematical formula showing how it's calculated (puzzles correct by any attempt Ã· total puzzles) for full research transparency. Improved visual hierarchy with prominent metric percentage, model badges, and accessibility labels (`client/src/components/analytics/ModelComparisonDialog.tsx`).
 
 
 - Model Comparison
@@ -2936,7 +2944,7 @@
 ### Version 5.19.0
 
 - Database Performance & Architecture
-  - **PHASE 1: Lightweight bulk explanation status query**: Created `getBulkExplanationStatusLight()` that returns only 8 fields actually used by puzzle list UI instead of 37 heavy fields. This reduces data transfer by 99% (1.2GB → 15KB for 1600+ puzzles) and eliminates PostgreSQL temp file bloat on Railway's limited disk space. Updated `puzzleService.ts` and `puzzleOverviewService.ts` to use the lightweight method. Fixes "No space left on device" errors (`server/repositories/ExplanationRepository.ts:576-671`, `server/repositories/interfaces/IExplanationRepository.ts:173-184`, `server/services/puzzleService.ts:84`, `server/services/puzzleOverviewService.ts:190,309`).
+  - **PHASE 1: Lightweight bulk explanation status query**: Created `getBulkExplanationStatusLight()` that returns only 8 fields actually used by puzzle list UI instead of 37 heavy fields. This reduces data transfer by 99% (1.2GB â†’ 15KB for 1600+ puzzles) and eliminates PostgreSQL temp file bloat on Railway's limited disk space. Updated `puzzleService.ts` and `puzzleOverviewService.ts` to use the lightweight method. Fixes "No space left on device" errors (`server/repositories/ExplanationRepository.ts:576-671`, `server/repositories/interfaces/IExplanationRepository.ts:173-184`, `server/services/puzzleService.ts:84`, `server/services/puzzleOverviewService.ts:190,309`).
   - **PHASE 2: Move analytics out of ExplanationRepository**: Moved `getWorstPerformingPuzzles()` from ExplanationRepository to MetricsRepository (SRP fix). This method does cross-table analytics (explanations + feedback) and computes composite scores, which is analytics work that belongs in MetricsRepository, not a CRUD repository. Updated all callers in `puzzleOverviewService.ts` to use `repositoryService.metrics.getWorstPerformingPuzzles()` (`server/repositories/MetricsRepository.ts:1252-1451`, `server/services/puzzleOverviewService.ts:190,309`).
   - **Aggressive database cleanup on startup**: Modified database maintenance to terminate ALL active/idle queries on startup (not just long-running idle transactions) to force cleanup of orphaned PostgreSQL temp files. Runs automatically every 6 hours to prevent temp file accumulation on Railway (`server/maintenance/dbCleanup.ts:81-110`).
 
@@ -2974,12 +2982,12 @@
 ### Version 5.18.1
 
 - Puzzle Examiner
-  - **Multi-test mismatch overlay now only marks model outputs**: Updated the multi-test grid rendering in `AnalysisResultGrid` so the "Show Mismatches" toggle applies the high-contrast diff mask only to the model’s predicted grids, never to the expected answer grids. This brings multi-test behavior in line with the single-test card, where the bullseye markers appear exclusively on the AI output for easier visual debugging (`client/src/components/puzzle/AnalysisResultGrid.tsx`).
+  - **Multi-test mismatch overlay now only marks model outputs**: Updated the multi-test grid rendering in `AnalysisResultGrid` so the "Show Mismatches" toggle applies the high-contrast diff mask only to the modelâ€™s predicted grids, never to the expected answer grids. This brings multi-test behavior in line with the single-test card, where the bullseye markers appear exclusively on the AI output for easier visual debugging (`client/src/components/puzzle/AnalysisResultGrid.tsx`).
 
 ### Version 5.18.0
 
 - Hall of Fame / Human Trading Cards
-  - **More prominent, clearly clickable portraits**: Enlarged contributor portraits on `HumanTradingCard` and added a subtle hover hint plus stronger cursor/hover styling so it’s visually obvious that the images can be clicked to open a zoomed-in view, without changing the existing dialog/profile routing (`client/src/components/human/HumanTradingCard.tsx`).
+  - **More prominent, clearly clickable portraits**: Enlarged contributor portraits on `HumanTradingCard` and added a subtle hover hint plus stronger cursor/hover styling so itâ€™s visually obvious that the images can be clicked to open a zoomed-in view, without changing the existing dialog/profile routing (`client/src/components/human/HumanTradingCard.tsx`).
 
 ### Version 5.17.9
 
@@ -2999,12 +3007,12 @@
 ### Version 5.17.6
 
 - Data
-  - **Separated JF Puget 2024 vs 2025 achievements in Hall of Fame seed data**: Cleaned up the Jean-François Puget `competition_winner` entry so it is a 2025-only card for the preliminary ARC Prize 2025 Kaggle leaderboard, leaving the 2024 runner-up paper recognized solely by his dedicated `paper_award` card. This avoids mixing paper-award and competition contexts in a single entry (`server/scripts/seedContributors.ts`).
+  - **Separated JF Puget 2024 vs 2025 achievements in Hall of Fame seed data**: Cleaned up the Jean-FranÃ§ois Puget `competition_winner` entry so it is a 2025-only card for the preliminary ARC Prize 2025 Kaggle leaderboard, leaving the 2024 runner-up paper recognized solely by his dedicated `paper_award` card. This avoids mixing paper-award and competition contexts in a single entry (`server/scripts/seedContributors.ts`).
 
 ### Version 5.17.5
 
 - Hall of Fame
-  - **2025 Leaderboard now respects year ranges**: Updated `HumanTradingCards` leaderboard logic so contributors whose active range spans 2025 (e.g., yearStart 2024, yearEnd 2025) are included in the "2025 Leaderboard" section instead of being omitted. This ensures Jean-François Puget appears in the 2025 row alongside other preliminary ARC Prize 2025 leaders while still retaining his 2024 entries (`client/src/pages/HumanTradingCards.tsx`).
+  - **2025 Leaderboard now respects year ranges**: Updated `HumanTradingCards` leaderboard logic so contributors whose active range spans 2025 (e.g., yearStart 2024, yearEnd 2025) are included in the "2025 Leaderboard" section instead of being omitted. This ensures Jean-FranÃ§ois Puget appears in the 2025 row alongside other preliminary ARC Prize 2025 leaders while still retaining his 2024 entries (`client/src/pages/HumanTradingCards.tsx`).
 
 ### Version 5.17.4
 
@@ -3015,12 +3023,12 @@
   - **Gemini 3 Pro Preview streaming disabled for reasoning safety**: Changed `supportsStreaming` from `true` to `false` for `google/gemini-3-pro-preview` so the app no longer attempts streaming calls that can truncate reasoning tokens in multi-turn tool-calling scenarios, keeping behavior consistent with the existing `supportsStructuredOutput: false` safeguard (`server/config/models.ts`).
 
 - Data
-  - **Jean-François Puget Hall of Fame imagery update**: Updated contributor seed data to support a second profile image for JF Puget so Human Trading Cards can rotate between multiple assets without manual database edits (`server/scripts/seedContributors.ts`).
+  - **Jean-FranÃ§ois Puget Hall of Fame imagery update**: Updated contributor seed data to support a second profile image for JF Puget so Human Trading Cards can rotate between multiple assets without manual database edits (`server/scripts/seedContributors.ts`).
 
 ### Version 5.17.3
 
 - Unsolved Puzzle Viewer
-  - **Always load ALL unsolved evaluation puzzles**: Increased the `GET /api/puzzle/worst-performing` limit cap from 50 to 500 so `PuzzleDBViewer` can request the full ARC2-Eval (≈120) and ARC1-Eval (≈400) zero-accuracy sets in one shot (`server/controllers/puzzleController.ts:getWorstPerformingPuzzles`).
+  - **Always load ALL unsolved evaluation puzzles**: Increased the `GET /api/puzzle/worst-performing` limit cap from 50 to 500 so `PuzzleDBViewer` can request the full ARC2-Eval (â‰ˆ120) and ARC1-Eval (â‰ˆ400) zero-accuracy sets in one shot (`server/controllers/puzzleController.ts:getWorstPerformingPuzzles`).
   - **Removed infinite cache on worst-performing hook**: Dropped `staleTime: Infinity` from `useWorstPerformingPuzzles` so each visit to the Unsolved ARC Evaluation Puzzles page triggers a fresh worst-performing calculation while still disabling noisy refetch-on-focus/interval (`client/src/hooks/usePuzzle.ts`).
 
 ### Version 5.17.2
@@ -3030,12 +3038,12 @@
   - **Removed filter UI completely**: Eliminated Premium, Fast, and Reasoning filter toggles per user feedback - this is a research platform, not an e-commerce site (`client/src/components/puzzle/ModelSelectionControls.tsx`, `client/src/components/puzzle/ModelSelection.tsx`).
   - **Professional research platform density**: Systematically tightened spacing throughout the model selection hierarchy:
     - Reduced provider header padding from `p-4` to `p-3`, icon size from `text-2xl` to `text-xl`, title from `text-lg` to `text-base`
-    - Reduced vertical spacing: `space-y-3` → `space-y-2`, `space-y-6` → `space-y-3`, `mt-3` → `mt-2`
+    - Reduced vertical spacing: `space-y-3` â†’ `space-y-2`, `space-y-6` â†’ `space-y-3`, `mt-3` â†’ `mt-2`
     - Tightened model grid gaps from `gap-2` to `gap-1.5` and family dividers from `gap-3` to `gap-2`
     - All changes focused on eliminating the "empty ribbon" effect and improving information density
 
 - Models
-  - **Added Google Gemini 3 Pro Preview via OpenRouter**: Integrated the newest Gemini model (released Nov 18, 2025) with 1,048,576 token context window and tiered pricing structure ($2-$4/M input tokens, $12-$18/M output tokens based on context length ≤200K vs >200K).
+  - **Added Google Gemini 3 Pro Preview via OpenRouter**: Integrated the newest Gemini model (released Nov 18, 2025) with 1,048,576 token context window and tiered pricing structure ($2-$4/M input tokens, $12-$18/M output tokens based on context length â‰¤200K vs >200K).
     - **Model Configuration** (`server/config/models.ts:812-830`)
       - Key: `google/gemini-3-pro-preview`, premium tier, reasoning-capable
       - **Critical fields**: `supportsStructuredOutput: false` (prevents JSON mode conflicts with reasoning), `supportsStreaming: true`
@@ -3054,7 +3062,7 @@
     - Preserves reasoning continuity across tool use and conversation turns (per OpenRouter documentation requirement)
     - Enables proper context maintenance for Gemini 3 Pro and other reasoning models
   - **OpenRouter Service: Token Usage Pipeline** (`server/services/openrouter.ts:75-80, 348-354, 540-561`)
-    - Added `usage` parameter throughout API call → parser → response pipeline
+    - Added `usage` parameter throughout API call â†’ parser â†’ response pipeline
     - Returns actual API usage data (input/output/reasoning tokens) instead of estimates
     - Fixes token tracking accuracy for all OpenRouter models
 
@@ -3064,14 +3072,14 @@
 ### Version 5.17.1
 
 - Data
-  - Extended Jean-François Puget Hall of Fame contributor entry to mention his ARC Prize 2024 runner-up paper award for "A 2D nGPT Model For ARC Prize" and added Kaggle discussion + PDF links in the contributors seed script (`server/scripts/seedContributors.ts`).
-  - Added a separate 2024 paper-award contributor card for Jean-François Puget so his 2D nGPT ARC Prize paper appears in the Research & Awards section.
+  - Extended Jean-FranÃ§ois Puget Hall of Fame contributor entry to mention his ARC Prize 2024 runner-up paper award for "A 2D nGPT Model For ARC Prize" and added Kaggle discussion + PDF links in the contributors seed script (`server/scripts/seedContributors.ts`).
+  - Added a separate 2024 paper-award contributor card for Jean-FranÃ§ois Puget so his 2D nGPT ARC Prize paper appears in the Research & Awards section.
 
 ### Version 5.17.0
 
 - UI/UX Major Redesign - Professional Research Platform Transformation
   - **PuzzleCard complete redesign**: Transformed from "purple cartoon nightmare" to professional, information-dense scientific research platform (`client/src/components/puzzle/PuzzleCard.tsx`)
-    - **Removed**: 5 rainbow gradients, 4 emojis (❌🔥✅💰), 36px border radius, heavy animations, 28px padding
+    - **Removed**: 5 rainbow gradients, 4 emojis (âŒðŸ”¥âœ…ðŸ’°), 36px border radius, heavy animations, 28px padding
     - **Added**: shadcn/ui Card + Badge components, automatic dark/light theme support via CSS variables
     - **Layout**: Compact side-by-side grid+metrics (~200-250px tall, down from ~500px = 2.5x information density)
     - **Metrics**: 6-point tabular display (Correctness, Attempts, Models, Grid, Tests) with `text-[10px]` labels
@@ -3108,8 +3116,8 @@
 ### Version 5.16.6
 
 - UI/UX & Metrics
-  - **PuzzleDBViewer white theme**: Replaced the dark slate layout with a clean white page, light borders, and compact spacing so unsolved ARC evaluation puzzles are easier to scan at a glance (PuzzleDBViewer.tsx). Header, filters, and ARC2/ARC1 sections now match the rest of the app’s light styling while keeping ARC2-Eval as the clearly marked primary focus.
-  - **Puzzle preview stats cleanup**: Simplified PuzzleCard metrics to only show grounded, research-relevant stats: solve rate (clamped 0–100%), total attempts, unique models tested, test-case mode (single vs multi), grid size, dataset, and optional cost badge (PuzzleCard.tsx). Removed confidence/trustworthiness badges and any paths that could surface >100% style percentages.
+  - **PuzzleDBViewer white theme**: Replaced the dark slate layout with a clean white page, light borders, and compact spacing so unsolved ARC evaluation puzzles are easier to scan at a glance (PuzzleDBViewer.tsx). Header, filters, and ARC2/ARC1 sections now match the rest of the appâ€™s light styling while keeping ARC2-Eval as the clearly marked primary focus.
+  - **Puzzle preview stats cleanup**: Simplified PuzzleCard metrics to only show grounded, research-relevant stats: solve rate (clamped 0â€“100%), total attempts, unique models tested, test-case mode (single vs multi), grid size, dataset, and optional cost badge (PuzzleCard.tsx). Removed confidence/trustworthiness badges and any paths that could surface >100% style percentages.
   - **Backend accuracy clamp**: Normalized aggregated `avgAccuracy` in the worst-performing puzzles query to always live in [0,1] before sending to the UI, so no combination of database state can produce impossible solve rates (ExplanationRepository.getWorstPerformingPuzzles).
 
 ### Version 5.16.6
@@ -3120,7 +3128,7 @@
 ### Version 5.16.5
 
 - Features
-  - **Puzzle Examiner color-only grids**: Added a dedicated “Show Colors Only” toggle beside the emoji button so users can hide numeric labels and focus on raw palette comparisons (PuzzleExaminer.tsx, PuzzleHeader.tsx). The button automatically disables while in emoji mode, and the new state propagates through PuzzleGridDisplay → PuzzleGrid → GridCell so every training/test grid now supports color-only rendering plus accessible screen reader labels. Updated PuzzleGrid props/types to keep Saturn Visual Solver and other consumers compiling cleanly.
+  - **Puzzle Examiner color-only grids**: Added a dedicated "Show Colors Only" toggle beside the emoji button so users can hide numeric labels and focus on raw palette comparisons (PuzzleExaminer.tsx, PuzzleHeader.tsx). The button automatically disables while in emoji mode, and the new state propagates through PuzzleGridDisplay â†’ PuzzleGrid â†’ GridCell so every training/test grid now supports color-only rendering plus accessible screen reader labels. Updated PuzzleGrid props/types to keep Saturn Visual Solver and other consumers compiling cleanly.
 
 ### Version 5.16.4
 
@@ -3278,17 +3286,21 @@
 
 - Top navigation refactor (ARC-3 & Misc)
   - Replaced hover-based `NavigationMenu` dropdowns with click-to-open `DropdownMenu` components.
-  - Fixed dropdown alignment and viewport so ARC‑3 / Misc menus open directly under their tabs and are no longer clipped by header overflow.
-  - Reorganized navigation into grouped menus for ARC‑3 experiences and Misc tools with clearer active‑route highlighting.
+  - Fixed dropdown alignment and viewport so ARCâ€‘3 / Misc menus open directly under their tabs and are no longer clipped by header overflow.
+  - Reorganized navigation into grouped menus for ARCâ€‘3 experiences and Misc tools with clearer activeâ€‘route highlighting.
 
 - Analytics, SEO & AEO
-  - Added sitemap, robots, and `llms.txt` plus canonical metadata and JSON‑LD to improve web and LLM discoverability.
+  - Added sitemap, robots, and `llms.txt` plus canonical metadata and JSONâ€‘LD to improve web and LLM discoverability.
   - Introduced model origin badges and labels in Analytics to distinguish official ARC Prize leaderboard runs from community runs.
-  - Clarified evaluation harness copy and how analytics are generated from the shared ARC‑AGI benchmarking harness.
+  - Clarified evaluation harness copy and how analytics are generated from the shared ARCâ€‘AGI benchmarking harness.
 
 - Correctness & metrics fixes
-  - Overhauled correctness logic across Accuracy, Trustworthiness, ModelDataset, and Metrics query helpers to correctly handle single vs multi‑prediction runs, NULLs, and JOIN duplication.
-  - Updated trading card win‑rate and difficulty display to use consistent correctness semantics and percentage formatting.
+  - Overhauled correctness logic across Accuracy, Trustworthiness, ModelDataset, and Metrics query helpers to correctly handle single vs multiâ€‘prediction runs, NULLs, and JOIN duplication.
+  - Updated trading card winâ€‘rate and difficulty display to use consistent correctness semantics and percentage formatting.
 
 - Contributors backend
   - Refactored `ContributorRepository` to extend `BaseRepository` and integrated it via `RepositoryService` and a new `contributorController`, fixing crashes on `/api/contributors` endpoints and aligning with the standard repository/controller pattern.
+
+
+
+

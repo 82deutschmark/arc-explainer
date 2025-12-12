@@ -15,7 +15,7 @@ function StatusBadge({ status }: { status: StreamState }) {
   switch (status) {
     case 'connecting':
     case 'starting':
-      return <span className="badge badge-outline">Starting…</span>;
+      return <span className="badge badge-outline">Starting...</span>;
     case 'in_progress':
       return <span className="badge badge-primary">Streaming</span>;
     case 'completed':
@@ -38,7 +38,7 @@ export default function WormArenaLiveStatusStrip({
   const batchText =
     currentMatchIndex && totalMatches ? `Match ${currentMatchIndex} / ${totalMatches}` : undefined;
 
-  const sessionText = sessionId ? `${sessionId.slice(0, 12)}…` : undefined;
+  const sessionText = sessionId ? `${sessionId.slice(0, 12)}...` : undefined;
 
   return (
     <div className="rounded-lg border bg-white/90 shadow-sm px-4 py-2 worm-border">
@@ -46,7 +46,7 @@ export default function WormArenaLiveStatusStrip({
         <div className="flex items-center gap-2 min-w-0">
           <StatusBadge status={status} />
           <div className="text-xs text-worm-ink truncate">
-            {error ? error : message || (status === 'in_progress' ? 'Streaming…' : 'Preparing…')}
+            {error ? error : message || (status === 'in_progress' ? 'Streaming...' : 'Preparing...')}
           </div>
         </div>
 
@@ -58,3 +58,4 @@ export default function WormArenaLiveStatusStrip({
     </div>
   );
 }
+

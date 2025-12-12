@@ -1,22 +1,14 @@
 /**
- * Author: Claude Code using Haiku 4.5
+ * Author: GPT-5.2
  * Date: 2025-12-12
  * PURPOSE: Curated matchup selector for WormArenaLive.
- *          Renders categorized buttons (Cross-Tier, Budget, Premium, Rivalry, Placement)
- *          with full-width, high-contrast cards that are immediately scannable.
- *          Selected state has ring + bg highlight + checkmark. Unavailable models show warning.
- *          Optimized for sidebar context (left panel of live arena).
- * SRP/DRY check: Pass - pure UI component. Reuses getCuratedMatchups() utility.
- *                No streaming, scoring, or timing logic. No duplication.
- * UX Notes: Cards 3x larger than previous, clear hover states, active press feedback.
+ *          Renders categorized, high-contrast matchup cards and clearly indicates
+ *          selection/availability without relying on fragile decorative glyphs.
+ * SRP/DRY check: Pass — pure UI component.
  */
 
 import React from 'react';
-import {
-  getCuratedMatchups,
-  type CuratedMatchup,
-  type CuratedMatchupCategory,
-} from '@shared/utils/curatedMatchups';
+import { getCuratedMatchups, type CuratedMatchup, type CuratedMatchupCategory } from '@shared/utils/curatedMatchups';
 
 interface WormArenaMatchupSelectorProps {
   selectedMatchup: CuratedMatchup;
@@ -30,11 +22,11 @@ const CATEGORIES: Array<{
   label: string;
   description: string;
 }> = [
-  { key: 'cross-tier', label: '⚡ Cross-Tier', description: 'Premium vs budget comparisons' },
-  { key: 'budget', label: '💰 Budget Tier', description: 'Ultra-cheap showdowns' },
-  { key: 'premium', label: '👑 Premium Tier', description: 'Top-tier reasoning battles' },
-  { key: 'rivalry', label: '🔥 Rivalries', description: 'Late-2025 head-to-heads' },
-  { key: 'placement', label: '🆕 Placement', description: 'New or less-scored models' },
+  { key: 'cross-tier', label: 'Cross-tier', description: 'Premium vs budget comparisons' },
+  { key: 'budget', label: 'Budget', description: 'Ultra-cheap showdowns' },
+  { key: 'premium', label: 'Premium', description: 'Top-tier reasoning battles' },
+  { key: 'rivalry', label: 'Rivalries', description: 'Head-to-head matchups' },
+  { key: 'placement', label: 'Placement', description: 'New or under-scored models' },
 ];
 
 export default function WormArenaMatchupSelector({
@@ -50,14 +42,15 @@ export default function WormArenaMatchupSelector({
 
   return (
     <div className="space-y-3 font-worm">
-      {CATEGORIES.map((cat) => {
-        const matchups = getCuratedMatchups(cat.key);
+      {CATEGORIES.map((category) => {
+        const matchups = getCuratedMatchups(category.key);
         if (matchups.length === 0) return null;
 
         return (
-          <div key={cat.key} className="space-y-2">
-            <div className="text-[11px] font-bold uppercase tracking-wide worm-muted">
-              {cat.label}
+          <div key={category.key} className="space-y-2">
+            <div className="flex items-baseline justify-between gap-3">
+              <div className="text-[11px] font-bold uppercase tracking-wide text-worm-ink">{category.label}</div>
+              <div className="text-[11px] text-worm-ink/80">{category.description}</div>
             </div>
 
             <div className="space-y-2">
@@ -71,32 +64,21 @@ export default function WormArenaMatchupSelector({
                     key={matchup.id}
                     onClick={() => onSelectMatchup(matchup)}
                     disabled={disabled}
-                    className={`
-                      w-full p-3 rounded border text-left transition-all
-                      ${selected
-                        ? 'border-worm-ink bg-worm-card shadow-md ring-2 ring-worm-green/30'
-                        : 'border-worm-border bg-white/80 hover:border-worm-ink hover:bg-white'
-                      }
-                      ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer active:scale-95'}
-                    `}
+                    className={cnMatchupCard(selected, disabled)}
                   >
                     <div className="flex items-start gap-2.5">
                       <span className="text-xl flex-shrink-0 mt-0.5">{matchup.icon}</span>
                       <div className="flex-1 min-w-0">
-                        <div className="text-xs font-bold text-worm-ink leading-tight">
-                          {matchup.displayName}
-                        </div>
-                        <div className="text-xs mt-1 worm-muted leading-tight">
-                          {matchup.description}
-                        </div>
+                        <div className="text-xs font-bold text-worm-ink leading-tight">{matchup.displayName}</div>
+                        <div className="text-xs mt-1 text-worm-ink/80 leading-tight">{matchup.description}</div>
                         {!available && (
-                          <div className="text-[10px] mt-1.5 text-orange-600 font-semibold">
-                            ⚠ Not on OpenRouter
-                          </div>
+                          <div className="text-[10px] mt-1.5 text-orange-700 font-semibold">Not on OpenRouter</div>
                         )}
                       </div>
                       {selected && (
-                        <span className="text-lg flex-shrink-0 mt-0.5">✓</span>
+                        <span className="text-[10px] flex-shrink-0 mt-1 px-2 py-0.5 rounded border worm-border bg-white/70 text-worm-ink font-semibold">
+                          Selected
+                        </span>
                       )}
                     </div>
                   </button>
@@ -108,5 +90,13 @@ export default function WormArenaMatchupSelector({
       })}
     </div>
   );
+}
+
+function cnMatchupCard(selected: boolean, disabled: boolean) {
+  const base =
+    'w-full p-3 rounded border text-left transition-all bg-white/90 border-worm-border hover:border-worm-ink hover:bg-white';
+  const selectedClass = selected ? 'ring-2 ring-worm-green/30 border-worm-ink bg-worm-card shadow-md' : '';
+  const disabledClass = disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer active:scale-[0.99]';
+  return [base, selectedClass, disabledClass].filter(Boolean).join(' ');
 }
 

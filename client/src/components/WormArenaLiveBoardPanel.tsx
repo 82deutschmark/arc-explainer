@@ -49,7 +49,7 @@ export default function WormArenaLiveBoardPanel({
             </>
           ) : (
             <div className="text-sm font-medium text-worm-ink">
-              {status === 'failed' ? 'Match failed.' : 'Waiting for first frame…'}
+              {status === 'failed' ? 'Match failed.' : 'Waiting for first frame...'}
             </div>
           )}
         </div>
@@ -57,3 +57,4 @@ export default function WormArenaLiveBoardPanel({
     </div>
   );
 }
+
