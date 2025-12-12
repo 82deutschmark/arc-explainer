@@ -1,3 +1,17 @@
+### Version 6.1.34  Dec 12, 2025 (PENDING TESTING)
+
+- **Worm Arena: prefer direct OpenAI for OpenAI models** (Author: GPT-5.2 Codex CLI)
+  - SnakeBench now prefers calling OpenAI directly (Responses API) for `openai/...` models whenever `OPENAI_API_KEY` is present, instead of routing those requests through OpenRouter by default.
+  - ARC Explainer SnakeBench runner no longer hardcodes `provider: OpenRouter` for OpenAI models when an OpenAI key is available.
+  - **Files Modified**: `external/SnakeBench/backend/llm_providers.py`, `server/python/snakebench_runner.py`, `external/SnakeBench/backend/tests/test_llm_providers.py`, `CHANGELOG.md`
+
+### Version 6.1.33  Dec 12, 2025 (PENDING TESTING)
+
+- **Worm Arena: SnakeBench direct OpenAI Responses provider** (Author: GPT-5.2 Codex CLI)
+  - Added a direct-OpenAI provider to SnakeBench so the harness can call OpenAI with `OPENAI_API_KEY` (Responses API, `input` role/content items) instead of routing everything through OpenRouter.
+  - Provider selection is now driven by `player_config.provider` (`openai` vs default `openrouter`), and OpenAI configs accept `model_name` values like `openai/gpt-5.1-codex-mini` (prefix is stripped when calling OpenAI).
+  - **Files Modified**: `external/SnakeBench/backend/llm_providers.py`, `external/SnakeBench/backend/tests/test_llm_providers.py`, `CHANGELOG.md`
+
 ### Version 6.1.32  Dec 12, 2025 (PENDING TESTING)
 
 - **Scoring: default model now GPT-5.2 High** (Author: Cascade)
