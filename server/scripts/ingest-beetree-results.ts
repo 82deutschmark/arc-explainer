@@ -261,7 +261,7 @@ function buildModelName(config: BeeTreeIngestionConfig, attemptNumber: number): 
 async function checkDuplicate(puzzleId: string, modelName: string): Promise<boolean> {
   try {
     const existing = await repositoryService.explanations.getExplanationsForPuzzle(puzzleId);
-    return existing.some(exp => exp.model_name === modelName);
+    return existing.some(exp => exp.modelName === modelName);
   } catch (error) {
     console.warn(`Warning: Could not check for duplicates: ${error instanceof Error ? error.message : String(error)}`);
     return false;
@@ -274,7 +274,7 @@ async function checkDuplicate(puzzleId: string, modelName: string): Promise<bool
 async function deleteDuplicate(puzzleId: string, modelName: string): Promise<void> {
   try {
     const existing = await repositoryService.explanations.getExplanationsForPuzzle(puzzleId);
-    const duplicate = existing.find(exp => exp.model_name === modelName);
+    const duplicate = existing.find(exp => exp.modelName === modelName);
     if (duplicate?.id) {
       await repositoryService.explanations.deleteExplanation(duplicate.id);
     }
@@ -397,7 +397,7 @@ async function processPuzzle(
   // Load puzzle data
   let puzzleData;
   try {
-    puzzleData = await puzzleLoader.loadPuzzle(puzzleId, config.source);
+    puzzleData = await puzzleLoader.loadPuzzle(puzzleId);
   } catch (error) {
     progress.notFoundErrors++;
     console.error(`   ❌ Puzzle not found in local dataset`);
@@ -572,14 +572,20 @@ async function processPuzzle(
       enrichedData.hasMultiplePredictions = true;
       enrichedData.multiplePredictedOutputs = grids;
       enrichedData.multiTestPredictionGrids = grids;
-      enrichedData.multiTestResults = validationResult.multiTestResults;
-      enrichedData.multiTestAllCorrect = validationResult.multiTestAllCorrect;
-      enrichedData.multiTestAverageAccuracy = validationResult.multiTestAverageAccuracy;
+      if ('multiTestResults' in validationResult) {
+        enrichedData.multiTestResults = validationResult.multiTestResults;
+        enrichedData.multiTestAllCorrect = validationResult.multiTestAllCorrect;
+        enrichedData.multiTestAverageAccuracy = validationResult.multiTestAverageAccuracy;
+      }
       enrichedData.predictedOutputGrid = grids[0]; // First test for convenience
-      enrichedData.isPredictionCorrect = validationResult.multiTestResults[0].isPredictionCorrect;
+      if ('multiTestResults' in validationResult) {
+        enrichedData.isPredictionCorrect = validationResult.multiTestResults[0]?.isPredictionCorrect ?? false;
+      }
     } else {
       enrichedData.predictedOutputGrid = grids[0];
-      enrichedData.isPredictionCorrect = validationResult.isPredictionCorrect;
+      if ('isPredictionCorrect' in validationResult) {
+        enrichedData.isPredictionCorrect = validationResult.isPredictionCorrect;
+      }
       enrichedData.hasMultiplePredictions = false;
     }
 
@@ -599,7 +605,7 @@ async function processPuzzle(
 
       if (config.verbose) {
         const statusIcon = correctnessStatus.isCorrect ? '✅' : '❌';
-        console.log(`   ${statusIcon} Attempt ${attemptNumber} - Saved (${correctnessStatus.displayText})`);
+        console.log(`   ${statusIcon} Attempt ${attemptNumber} - Saved (${correctnessStatus.label})`);
       }
     } else {
       progress.failed++;
@@ -643,7 +649,7 @@ async function main() {
 
   // Initialize puzzle loader
   console.log('Initializing puzzle loader...');
-  await puzzleLoader.initialize(config.source);
+  await puzzleLoader.initialize();
   console.log(`✓ Puzzle loader initialized (source: ${config.source || 'all'})\n`);
 
   // Load submission file

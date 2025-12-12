@@ -46,6 +46,16 @@ export interface ExplanationData {
   multiTestAverageAccuracy?: number | null;
   hasMultiplePredictions?: boolean | null;
   multiTestPredictionGrids?: any | null;
+  // BeeTree ensemble metadata fields (optional)
+  beetreeStage?: string | null;
+  beetreeConsensusCount?: number | null;
+  beetreeModelResults?: any | null;
+  beetreeCostBreakdown?: any | null;
+  beetreeTokenUsage?: any | null;
+  beetreeRunTimestamp?: string | null;
+  beetreeMode?: string | null;
+  beetreeConsensusStrength?: number | null;
+  beetreeDiversityScore?: number | null;
   // NEW: Prompt tracking fields for full traceability
   systemPromptUsed?: string | null;
   userPromptUsed?: string | null;

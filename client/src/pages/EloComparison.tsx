@@ -103,16 +103,25 @@ export default function EloComparison() {
 
       // Enhance vote result with additional data for modal
       // Pass all test case outputs and predictions (or single if only one test case)
-      const allTestOutputs = comparisonData.puzzle.test.map(t => t.output);
-      const predictionsA = comparisonData.explanationA.predictedOutputs ||
-                          (comparisonData.explanationA.predictedOutputGrid ? [comparisonData.explanationA.predictedOutputGrid] : []);
-      const predictionsB = comparisonData.explanationB.predictedOutputs ||
-                          (comparisonData.explanationB.predictedOutputGrid ? [comparisonData.explanationB.predictedOutputGrid] : []);
+      const firstTestOutput = comparisonData.puzzle.test[0]?.output ?? [];
+      const predictionsA = (comparisonData.explanationA.predictedOutputGrids || []).filter(
+        (grid): grid is number[][] => Array.isArray(grid)
+      );
+      if (predictionsA.length === 0 && comparisonData.explanationA.predictedOutputGrid) {
+        predictionsA.push(comparisonData.explanationA.predictedOutputGrid);
+      }
+
+      const predictionsB = (comparisonData.explanationB.predictedOutputGrids || []).filter(
+        (grid): grid is number[][] => Array.isArray(grid)
+      );
+      if (predictionsB.length === 0 && comparisonData.explanationB.predictedOutputGrid) {
+        predictionsB.push(comparisonData.explanationB.predictedOutputGrid);
+      }
 
       enhanceVoteResult(basicResult, {
-        correctAnswerGrid: allTestOutputs.length > 1 ? allTestOutputs : allTestOutputs[0] || [],
-        predictionA: predictionsA.length > 1 ? predictionsA : predictionsA[0] || [],
-        predictionB: predictionsB.length > 1 ? predictionsB : predictionsB[0] || [],
+        correctAnswerGrid: firstTestOutput,
+        predictionA: predictionsA[0] || [],
+        predictionB: predictionsB[0] || [],
         modelA: {
           name: comparisonData.explanationA.modelName,
           accuracy: getModelAccuracy(comparisonData.explanationA.modelName)

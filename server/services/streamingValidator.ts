@@ -80,7 +80,8 @@ export function validateStreamingResult(
     // Single-test case: AI provided one grid
     const correctAnswer = puzzle.test?.[0]?.output;
     if (!correctAnswer) {
-      logger.warn(`Puzzle ${puzzle.id} is missing expected output data`, 'streaming-validator');
+      const puzzleIdForLog = result?.puzzleId ?? 'unknown';
+      logger.warn(`Puzzle ${puzzleIdForLog} is missing expected output data`, 'streaming-validator');
     }
     const validation = correctAnswer
       ? validateSolverResponse(result, correctAnswer, promptId, confidence)

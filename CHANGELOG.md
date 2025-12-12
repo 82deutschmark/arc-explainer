@@ -1,3 +1,13 @@
+### Version 6.1.37  Dec 12, 2025 (PENDING TESTING)
+
+- **TypeScript: fix build-breaking type and import issues** (Author: GPT-5.2 Codex CLI)
+  - Fixed Poetiq barrel export to point at the correct agents panel component.
+  - Hardened Puzzle Trading Cards resource metrics rendering against `null` performance fields.
+  - Added missing `Beetree` provider mapping for model grouping UI.
+  - Fixed Elo comparison modal data shaping to use schema-aligned multi-test fields.
+  - Aligned BeeTree bridge event types and ingestion script typings; added missing `PuzzleLoader.initialize()` helper.
+  - **Files Modified**: `client/src/components/poetiq/index.ts`, `client/src/components/puzzle/PuzzleTradingCard.tsx`, `client/src/hooks/useModelGrouping.ts`, `client/src/pages/EloComparison.tsx`, `client/src/pages/PuzzleTradingCards.tsx`, `server/repositories/interfaces/IExplanationRepository.ts`, `server/scripts/ingest-beetree-results.ts`, `server/services/beetree/consensusAnalyzer.ts`, `server/services/beetreeService.ts`, `server/services/pythonBridge.ts`, `server/services/puzzleLoader.ts`, `server/services/streamingValidator.ts`, `shared/types.ts`, `CHANGELOG.md`
+
 ### Version 6.1.36  Dec 12, 2025 (PENDING TESTING)
 
 - **Worm Arena Live: UX refactor (setup/live/completed modes) + component decomposition** (Author: Cascade)
