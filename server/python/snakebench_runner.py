@@ -12,6 +12,7 @@ SRP/DRY check: Pass — single responsibility is running one match and
 """
 
 import json
+import os
 import sys
 from pathlib import Path
 from types import SimpleNamespace
@@ -104,6 +105,11 @@ def main() -> int:
                 config["api_type"] = "responses"
                 config["reasoning"] = {"effort": "medium", "summary": "detailed"}
                 config["text"] = {"verbosity": "medium"}
+
+                # Prefer direct OpenAI for OpenAI models when a key is present.
+                # (SnakeBench backend still supports OpenRouter if you explicitly set provider="openrouter".)
+                if name.startswith("openai/") and (os.getenv("OPENAI_API_KEY") or "").strip():
+                    config["provider"] = "openai"
 
             return config
 
