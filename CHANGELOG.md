@@ -1,6 +1,6 @@
-### Version 6.1.29  Dec 12, 2025 (PENDING TESTING)
+### Version 6.1.29  Dec 11, 2025 (PENDING TESTING)
 
-- **Worm Arena Live streaming: per-round SSE + live board frames** (Author: GPT-5.1 Codex CLI)
+- **Worm Arena Live streaming: per-round SSE + live board frames** (Author: GPT-5.2 Extra High)
   - Added `SnakeBenchService.runMatchStreaming` to emit per-round status over SSE and (when DB live state is available) poll `public.games.current_state` for live frames so the Worm Arena Live board updates during play, while preserving the existing final replay/DB persistence flow.
   - Updated `wormArenaStreamController` to run both single and batch sessions through the streaming runner, forward `stream.frame` events, restore legacy single-match `modelB` handling, and avoid duplicate `stream.complete` events from the SSE manager.
   - Hardened `useWormArenaStreaming` to handle `stream.end` without spurious failures, close EventSource cleanly on completion, and reset frames between batch matches so the live board always reflects the active matchup.
