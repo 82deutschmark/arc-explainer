@@ -20,6 +20,8 @@ import WormArenaLiveStatusStrip from '@/components/WormArenaLiveStatusStrip';
 import WormArenaLiveBoardPanel from '@/components/WormArenaLiveBoardPanel';
 import WormArenaLiveResultsPanel from '@/components/WormArenaLiveResultsPanel';
 import WormArenaRunControls from '@/components/WormArenaRunControls';
+import { Button } from '@/components/ui/button';
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 
 import type { ModelConfig, SnakeBenchRunMatchRequest } from '@shared/types';
 import { getDefaultMatchup, type CuratedMatchup } from '@shared/utils/curatedMatchups';
@@ -127,7 +129,7 @@ export default function WormArenaLive() {
       : 'setup';
 
   const headerSubtitle =
-    viewMode === 'setup' ? 'Start a live match' : viewMode === 'live' ? 'Streaming…' : 'Match complete';
+    viewMode === 'setup' ? 'Start a live match' : viewMode === 'live' ? 'Streaming...' : 'Match complete';
 
   return (
     <div className="worm-page">
@@ -143,32 +145,6 @@ export default function WormArenaLive() {
       />
 
       <main className="p-4 max-w-7xl mx-auto space-y-4">
-        {viewMode === 'live' && (
-          <WormArenaLiveStatusStrip
-            status={status}
-            message={message}
-            error={error}
-            sessionId={sessionId}
-            currentMatchIndex={currentMatchIndex}
-            totalMatches={totalMatches}
-          />
-        )}
-
-        {viewMode === 'completed' && finalSummary && (
-          <WormArenaLiveResultsPanel finalSummary={finalSummary} />
-        )}
-
-        {(viewMode === 'live' || viewMode === 'completed') && (
-          <WormArenaLiveBoardPanel
-            viewMode={viewMode}
-            status={status}
-            latestFrame={latestFrame}
-            boardWidth={boardWidth}
-            boardHeight={boardHeight}
-            finalSummary={finalSummary}
-          />
-        )}
-
         {viewMode === 'setup' && (
           <WormArenaRunControls
             viewMode="setup"
@@ -197,29 +173,70 @@ export default function WormArenaLive() {
         )}
 
         {viewMode === 'live' && (
-          <WormArenaRunControls
-            viewMode="live"
+          <div className="flex items-start justify-between gap-3 flex-wrap">
+            <div className="flex-1 min-w-[280px]">
+              <WormArenaLiveStatusStrip
+                status={status}
+                message={message}
+                error={error}
+                sessionId={sessionId}
+                currentMatchIndex={currentMatchIndex}
+                totalMatches={totalMatches}
+              />
+            </div>
+
+            <Sheet>
+              <SheetTrigger asChild>
+                <Button variant="secondary" size="sm" className="shrink-0">
+                  Controls
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="right" className="w-[420px] max-w-[90vw] overflow-auto">
+                <SheetHeader>
+                  <SheetTitle>Controls</SheetTitle>
+                </SheetHeader>
+                <div className="mt-4">
+                  <WormArenaRunControls
+                    viewMode="live"
+                    renderMode="inline"
+                    status={status}
+                    isStarting={isStarting}
+                    loadingModels={loadingModels}
+                    matchupAvailable={matchupAvailable}
+                    availableModels={availableModelSet}
+                    selectedMatchup={selectedMatchup}
+                    onSelectMatchup={setSelectedMatchup}
+                    width={width}
+                    height={height}
+                    maxRounds={maxRounds}
+                    numApples={numApples}
+                    onWidthChange={setWidth}
+                    onHeightChange={setHeight}
+                    onMaxRoundsChange={setMaxRounds}
+                    onNumApplesChange={setNumApples}
+                    byoApiKey={byoApiKey}
+                    byoProvider={byoProvider}
+                    onByoApiKeyChange={setByoApiKey}
+                    onByoProviderChange={setByoProvider}
+                    onStart={handleRunMatch}
+                    launchNotice={launchNotice}
+                  />
+                </div>
+              </SheetContent>
+            </Sheet>
+          </div>
+        )}
+
+        {viewMode === 'completed' && finalSummary && <WormArenaLiveResultsPanel finalSummary={finalSummary} />}
+
+        {(viewMode === 'live' || viewMode === 'completed') && (
+          <WormArenaLiveBoardPanel
+            viewMode={viewMode}
             status={status}
-            isStarting={isStarting}
-            loadingModels={loadingModels}
-            matchupAvailable={matchupAvailable}
-            availableModels={availableModelSet}
-            selectedMatchup={selectedMatchup}
-            onSelectMatchup={setSelectedMatchup}
-            width={width}
-            height={height}
-            maxRounds={maxRounds}
-            numApples={numApples}
-            onWidthChange={setWidth}
-            onHeightChange={setHeight}
-            onMaxRoundsChange={setMaxRounds}
-            onNumApplesChange={setNumApples}
-            byoApiKey={byoApiKey}
-            byoProvider={byoProvider}
-            onByoApiKeyChange={setByoApiKey}
-            onByoProviderChange={setByoProvider}
-            onStart={handleRunMatch}
-            launchNotice={launchNotice}
+            latestFrame={latestFrame}
+            boardWidth={boardWidth}
+            boardHeight={boardHeight}
+            finalSummary={finalSummary}
           />
         )}
 

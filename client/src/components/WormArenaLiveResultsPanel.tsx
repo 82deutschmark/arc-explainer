@@ -10,7 +10,7 @@ export default function WormArenaLiveResultsPanel({ finalSummary }: WormArenaLiv
     <div className="rounded-lg border bg-white/90 shadow-sm px-4 py-4 worm-border space-y-4">
       <div className="flex items-center justify-between gap-3 flex-wrap">
         <div className="text-xs font-bold uppercase tracking-wide text-worm-ink">Match complete</div>
-        <div className="text-[11px] worm-muted font-mono">{finalSummary.gameId.slice(0, 12)}…</div>
+        <div className="text-[11px] worm-muted font-mono">{finalSummary.gameId.slice(0, 12)}...</div>
       </div>
 
       <div>
@@ -56,3 +56,4 @@ export default function WormArenaLiveResultsPanel({ finalSummary }: WormArenaLiv
     </div>
   );
 }
+
