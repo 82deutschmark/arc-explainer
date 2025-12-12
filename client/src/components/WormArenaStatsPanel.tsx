@@ -37,42 +37,42 @@ const WormArenaStatsPanel: React.FC = () => {
           {activityLabel && <span className="text-xs font-normal worm-muted">{activityLabel}</span>}
         </CardTitle>
       </CardHeader>
-      <CardContent className="pt-0 text-sm">
-        {isLoading && <div className="worm-muted">Loading Worm Arena stats…</div>}
+      <CardContent className="pt-0">
+        {isLoading && <div className="text-base worm-muted">Loading Worm Arena stats…</div>}
         {!isLoading && error && (
-          <div className="text-red-700">Failed to load stats: {error}</div>
+          <div className="text-base text-red-700">Failed to load stats: {error}</div>
         )}
         {!isLoading && !error && leaderboard.length === 0 && (
-          <div className="worm-muted">No Worm Arena matches recorded yet.</div>
+          <div className="text-base worm-muted">No Worm Arena matches recorded yet.</div>
         )}
         {!isLoading && !error && leaderboard.length > 0 && (
           <div className="overflow-x-auto">
-            <table className="min-w-full text-xs">
+            <table className="min-w-full text-base">
               <thead>
                 <tr className="worm-table-head">
-                  <th className="py-1 px-2 text-left font-semibold">Model</th>
-                  <th className="py-1 px-2 text-right font-semibold">Games</th>
-                  <th className="py-1 px-2 text-right font-semibold">Wins</th>
-                  <th className="py-1 px-2 text-right font-semibold">Losses</th>
-                  <th className="py-1 px-2 text-right font-semibold">Ties</th>
-                  <th className="py-1 px-2 text-right font-semibold">Win rate</th>
+                  <th className="py-2 px-3 text-left font-semibold">Model</th>
+                  <th className="py-2 px-3 text-right font-semibold">Games</th>
+                  <th className="py-2 px-3 text-right font-semibold">Wins</th>
+                  <th className="py-2 px-3 text-right font-semibold">Losses</th>
+                  <th className="py-2 px-3 text-right font-semibold">Ties</th>
+                  <th className="py-2 px-3 text-right font-semibold">Win Rate</th>
                 </tr>
               </thead>
               <tbody>
                 {rows.map((row) => (
                   <tr key={row.modelSlug} className="worm-table-row">
-                    <td className="py-1 px-2 font-mono text-[11px] truncate max-w-[240px]" title={row.modelSlug}>
+                    <td className="py-2 px-3 font-mono text-sm truncate max-w-[280px]" title={row.modelSlug}>
                       {row.modelSlug}
                     </td>
-                    <td className="py-1 px-2 text-right">{row.gamesPlayed}</td>
-                    <td className="py-1 px-2 text-right font-semibold worm-metric-wins">
+                    <td className="py-2 px-3 text-right">{row.gamesPlayed}</td>
+                    <td className="py-2 px-3 text-right font-semibold worm-metric-wins">
                       {row.wins}
                     </td>
-                    <td className="py-1 px-2 text-right font-semibold worm-metric-losses">
+                    <td className="py-2 px-3 text-right font-semibold worm-metric-losses">
                       {row.losses}
                     </td>
-                    <td className="py-1 px-2 text-right">{row.ties}</td>
-                    <td className="py-1 px-2 text-right">
+                    <td className="py-2 px-3 text-right">{row.ties}</td>
+                    <td className="py-2 px-3 text-right font-semibold">
                       {typeof row.winRate === 'number' ? `${(row.winRate * 100).toFixed(1)}%` : '—'}
                     </td>
                   </tr>
@@ -81,7 +81,7 @@ const WormArenaStatsPanel: React.FC = () => {
             </table>
 
             {leaderboard.length > rows.length && (
-              <div className="mt-2 text-[11px] worm-muted">
+              <div className="mt-3 text-sm worm-muted">
                 Showing top {rows.length} by games played.
               </div>
             )}
