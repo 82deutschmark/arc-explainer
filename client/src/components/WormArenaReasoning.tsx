@@ -29,7 +29,6 @@ export default function WormArenaReasoning({
   score = 0,
   strategyLabel = 'Strategy',
 }: WormArenaReasoningProps) {
-  const accentColor = color === 'red' ? '#d84949' : '#e8a11a';
   const safeScore = Number.isFinite(score) ? Math.max(0, Math.floor(score)) : 0;
   const appleIcons = React.useMemo(() => {
     const visible = Math.min(6, safeScore);
@@ -38,7 +37,10 @@ export default function WormArenaReasoning({
   const remainingScore = safeScore - appleIcons.length;
 
   return (
-    <Card className="h-full flex flex-col border-2" style={{ borderColor: accentColor }}>
+    <Card className={cn(
+      'h-full flex flex-col border-2',
+      color === 'red' ? 'border-worm-red' : 'border-worm-orange',
+    )}>
       <CardHeader className="text-center pb-4">
         <CardTitle
           className={cn(
@@ -54,7 +56,7 @@ export default function WormArenaReasoning({
         <div className="text-xs uppercase tracking-wide text-muted-foreground">{strategyLabel}</div>
       </CardHeader>
       <CardContent className="flex-1 flex flex-col">
-        <div className="text-base font-medium leading-relaxed whitespace-pre-wrap text-[#2d2416]">
+        <div className="text-base font-medium leading-relaxed whitespace-pre-wrap text-worm-ink">
           {reasoning?.trim()?.length ? reasoning : 'No reasoning captured for this moment.'}
         </div>
         <div className="mt-6 pt-4 border-t border-dashed flex flex-col items-center gap-2">

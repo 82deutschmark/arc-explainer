@@ -30,22 +30,22 @@ export default function WormArenaRecentGames({
 }: WormArenaRecentGamesProps) {
   return (
     <div className="mb-4">
-      <h4 className="font-medium mb-2 text-sm" style={{ color: '#3d2817' }}>
+      <h4 className="font-medium mb-2 text-sm text-worm-ink">
         Recent Games
       </h4>
-      <div className="border rounded bg-white/80 text-xs">
+      <div className="border rounded bg-white/80 text-xs worm-border">
         {isLoading && (
-          <div className="p-2" style={{ color: '#7a6b5f' }}>
+          <div className="p-2 worm-muted">
             Loading games...
           </div>
         )}
         {!isLoading && games.length === 0 && (
-          <div className="p-2" style={{ color: '#7a6b5f' }}>
+          <div className="p-2 worm-muted">
             No games yet.
           </div>
         )}
         {!isLoading && games.length > 0 && (
-          <div className="divide-y" style={{ borderColor: '#d4b5a0' }}>
+          <div className="divide-y worm-border">
             {games.map((g) => (
               <button
                 key={g.gameId}
@@ -58,7 +58,7 @@ export default function WormArenaRecentGames({
                 <div className="font-mono truncate" title={g.gameId}>
                   {g.gameId}
                 </div>
-                <div style={{ color: '#7a6b5f' }}>
+                <div className="worm-muted">
                   {g.totalScore} pts · {g.roundsPlayed} rds
                 </div>
               </button>

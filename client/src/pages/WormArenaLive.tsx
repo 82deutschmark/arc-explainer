@@ -1,10 +1,10 @@
 /**
- * Author: Claude Code using Haiku 4.5
- * Date: 2025-12-09
- * PURPOSE: Worm Arena Live - Live match viewer and start interface. Shows active gameplay
- *          as it streams, with controls to start new matches. Matches WormArena layout
- *          for consistency but focuses on live data and match creation.
- * SRP/DRY check: Pass — live streaming viewer + match start interface, separated concerns.
+ * Author: GPT-5.2 Codex CLI
+ * Date: 2025-12-12
+ * PURPOSE: Worm Arena Live - Live match viewer and curated single-match launcher.
+ *          Shows active gameplay as it streams and provides a curated matchup gallery
+ *          for statistically useful 1v1 comparisons (no batching on this page).
+ * SRP/DRY check: Pass - live streaming viewer + curated launcher only.
  */
 
 import React, { useEffect, useMemo } from 'react';
@@ -14,18 +14,18 @@ import useWormArenaStreaming from '@/hooks/useWormArenaStreaming';
 import WormArenaGameBoard from '@/components/WormArenaGameBoard';
 import WormArenaHeader from '@/components/WormArenaHeader';
 import WormArenaHeaderStartAction from '@/components/WormArenaHeaderStartAction';
-import WormArenaSetup from '@/components/WormArenaSetup';
-import { Table, TableHead, TableHeader, TableRow, TableCell, TableBody } from '@/components/ui/table';
-import { ScrollArea } from '@/components/ui/scroll-area';
+import WormArenaMatchupSelector from '@/components/WormArenaMatchupSelector';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 
 import type { ModelConfig, SnakeBenchRunMatchRequest } from '@shared/types';
+import { getDefaultMatchup, type CuratedMatchup } from '@shared/utils/curatedMatchups';
 
 function getSnakeEligibleModels(models: ModelConfig[]): string[] {
   const eligible = models
     .filter((m) => m.provider === 'OpenRouter')
     .map((m) => {
       const name = m.apiModelName || m.key;
-      return (name && typeof name === 'string' && name.trim().length > 0) ? name.trim() : null;
+      return name && typeof name === 'string' && name.trim().length > 0 ? name.trim() : null;
     })
     .filter((m): m is string => m !== null);
   return eligible;
@@ -39,12 +39,11 @@ function mapToSnakeBenchModelId(modelId: string): string {
 }
 
 export default function WormArenaLive() {
-  const [match, params] = useRoute('/worm-arena/live/:sessionId');
+  const [, params] = useRoute('/worm-arena/live/:sessionId');
   const sessionId = params?.sessionId ?? '';
 
   const setupRef = React.useRef<HTMLDivElement>(null);
 
-  // Model selection for starting new matches
   const { data: modelConfigs = [], isLoading: loadingModels, error: modelsError } = useModels();
   const snakeModels = React.useMemo(() => getSnakeEligibleModels(modelConfigs), [modelConfigs]);
   const selectableModels = React.useMemo(
@@ -52,50 +51,22 @@ export default function WormArenaLive() {
     [snakeModels],
   );
 
-  const [modelA, setModelA] = React.useState<string>('');
-  const [selectedOpponents, setSelectedOpponents] = React.useState<string[]>([]);
+  const [selectedMatchup, setSelectedMatchup] = React.useState<CuratedMatchup>(getDefaultMatchup());
   const [width, setWidth] = React.useState<number>(10);
   const [height, setHeight] = React.useState<number>(10);
   const [maxRounds, setMaxRounds] = React.useState<number>(150);
   const [numApples, setNumApples] = React.useState<number>(5);
   const [byoApiKey, setByoApiKey] = React.useState<string>('');
-  const [byoProvider, setByoProvider] = React.useState<'openrouter' | 'openai' | 'anthropic' | 'xai' | 'gemini' | 'server-default'>('server-default');
+  const [byoProvider, setByoProvider] = React.useState<
+    'openrouter' | 'openai' | 'anthropic' | 'xai' | 'gemini' | 'server-default'
+  >('server-default');
   const [launchNotice, setLaunchNotice] = React.useState<string | null>(null);
+  const [advancedOpen, setAdvancedOpen] = React.useState<boolean>(false);
 
-  // Set preferred models on load
-  React.useEffect(() => {
-    if (selectableModels.length === 0) return;
+  const availableModelSet = React.useMemo(() => new Set(selectableModels), [selectableModels]);
+  const matchupAvailable =
+    availableModelSet.has(selectedMatchup.modelA) && availableModelSet.has(selectedMatchup.modelB);
 
-    if (!modelA) {
-      const preferredOrder = [
-        'openai/gpt-5.2',
-        'openai/gpt-5.1',
-        'openai/gpt-5.1-codex-mini',
-        'openai/gpt-5-mini',
-        'openai/gpt-5-nano',
-      ];
-
-      const preferred = preferredOrder.find((m) => selectableModels.includes(m));
-
-      if (preferred) {
-        setModelA(preferred);
-      } else if (selectableModels.length >= 1) {
-        setModelA(selectableModels[0]);
-      }
-    }
-  }, [selectableModels, modelA]);
-
-  // Auto-populate opponents with top 9 models (excluding modelA)
-  React.useEffect(() => {
-    if (modelA && selectableModels.length > 0 && selectedOpponents.length === 0) {
-      const topOpponents = selectableModels
-        .filter(m => m !== modelA)
-        .slice(0, 9);
-      setSelectedOpponents(topOpponents);
-    }
-  }, [modelA, selectableModels, selectedOpponents.length]);
-
-  // Live streaming
   const {
     status,
     message,
@@ -106,43 +77,36 @@ export default function WormArenaLive() {
     disconnect,
     startMatch: startLiveMatch,
     isStarting,
-    batchResults,
-    currentMatchIndex,
-    totalMatches,
   } = useWormArenaStreaming();
 
-  // Connect to stream if sessionId exists
   useEffect(() => {
     if (!sessionId) return;
     connect(sessionId);
-    return () => {
-      disconnect();
-    };
+    return () => disconnect();
   }, [sessionId, connect, disconnect]);
 
-  // Handle starting a new match or batch
   const handleRunMatch = async () => {
-    if (!modelA || selectedOpponents.length === 0) return;
-
-    const mappedOpponents = selectedOpponents.map(op => mapToSnakeBenchModelId(op));
+    if (!matchupAvailable) {
+      setLaunchNotice('Selected matchup is not available on OpenRouter.');
+      return;
+    }
 
     const payload: SnakeBenchRunMatchRequest = {
-      modelA: mapToSnakeBenchModelId(modelA),
-      modelB: '', // Will be set per opponent in backend
+      modelA: mapToSnakeBenchModelId(selectedMatchup.modelA),
+      modelB: mapToSnakeBenchModelId(selectedMatchup.modelB),
       width,
       height,
       maxRounds,
       numApples,
-      ...(byoApiKey && byoProvider && byoProvider !== 'server-default'
+      ...(byoApiKey && byoProvider !== 'server-default'
         ? { apiKey: byoApiKey, provider: byoProvider }
         : {}),
     };
+
     setLaunchNotice(null);
     try {
-      const prep = await startLiveMatch(payload, mappedOpponents);
-      if (prep?.liveUrl) {
-        window.location.href = prep.liveUrl;
-      }
+      const prep = await startLiveMatch(payload, []);
+      if (prep?.liveUrl) window.location.href = prep.liveUrl;
     } catch (err: any) {
       console.error('[WormArenaLive] Failed to start match', err);
       setLaunchNotice(err?.message || 'Failed to start match');
@@ -150,16 +114,10 @@ export default function WormArenaLive() {
   };
 
   const handleScrollToSetup = () => {
-    setTimeout(() => {
-      setupRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }, 0);
+    setTimeout(() => setupRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 0);
   };
 
-  const latestFrame = useMemo(() => {
-    if (frames.length === 0) return null;
-    return frames[frames.length - 1];
-  }, [frames]);
-
+  const latestFrame = useMemo(() => (frames.length ? frames[frames.length - 1] : null), [frames]);
   const boardWidth = (latestFrame as any)?.frame?.state?.width ?? 10;
   const boardHeight = (latestFrame as any)?.frame?.state?.height ?? 10;
 
@@ -184,11 +142,7 @@ export default function WormArenaLive() {
     : message || (status === 'in_progress' ? 'Running your match…' : 'Preparing your match…');
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: '#f5f1e8', fontFamily: 'Fredoka, Nunito, sans-serif' }}>
-      <link rel="preconnect" href="https://fonts.googleapis.com" />
-      <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
-      <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
-
+    <div className="worm-page">
       <WormArenaHeader
         matchupLabel={finalSummary ? `${finalSummary.modelA} vs ${finalSummary.modelB}` : undefined}
         totalGames={0}
@@ -208,30 +162,40 @@ export default function WormArenaLive() {
       />
 
       <main className="p-8 space-y-6">
-        {/* Session Info */}
-        <div className="rounded-lg border bg-white/90 shadow-sm px-4 py-3" style={{ borderColor: '#d4b5a0' }}>
+        <div
+          className="rounded-lg border bg-white/90 shadow-sm px-4 py-3 worm-border"
+        >
           <div className="flex items-center justify-between gap-3 flex-wrap">
             <div>
-              <div className="text-sm font-semibold" style={{ color: '#3d2817' }}>Session</div>
-              <div className="text-xs" style={{ color: '#7a6b5f' }} title={sessionId}>
+              <div className="text-sm font-semibold text-worm-ink">
+                Session
+              </div>
+              <div className="text-xs worm-muted" title={sessionId}>
                 {sessionId ? sessionId.slice(0, 16) + '…' : 'No active session'}
               </div>
             </div>
             <div className="flex items-center gap-2">
-              <div className="text-sm" style={{ color: '#7a6b5f' }}>{infoText}</div>
+              <div className="text-sm worm-muted">
+                {infoText}
+              </div>
               {statusBadge}
             </div>
           </div>
         </div>
 
-        {/* Live Board & Status */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-2 rounded-lg border bg-white/90 shadow-sm px-4 py-4" style={{ borderColor: '#d4b5a0' }}>
-            <h2 className="text-sm font-semibold mb-3" style={{ color: '#3d2817' }}>🐛 Live Board</h2>
+          <div
+            className="lg:col-span-2 rounded-lg border bg-white/90 shadow-sm px-4 py-4 worm-border"
+          >
+            <h2 className="text-sm font-semibold mb-3 text-worm-ink">Live Board</h2>
             {latestFrame ? (
-              <WormArenaGameBoard frame={latestFrame.frame} boardWidth={boardWidth} boardHeight={boardHeight} />
+              <WormArenaGameBoard
+                frame={latestFrame.frame}
+                boardWidth={boardWidth}
+                boardHeight={boardHeight}
+              />
             ) : (
-              <div className="flex flex-col items-center justify-center h-64" style={{ color: '#7a6b5f' }}>
+              <div className="flex flex-col items-center justify-center h-64 worm-muted">
                 <div className="text-sm">
                   {status === 'failed'
                     ? 'Match failed.'
@@ -243,30 +207,38 @@ export default function WormArenaLive() {
             )}
           </div>
 
-          <div className="rounded-lg border bg-white/90 shadow-sm px-4 py-4 space-y-3" style={{ borderColor: '#d4b5a0' }}>
-            <h2 className="text-sm font-semibold" style={{ color: '#3d2817' }}>📊 Status</h2>
-            <div className="text-sm" style={{ color: '#7a6b5f', minHeight: '2rem' }}>{infoText}</div>
+          <div
+            className="rounded-lg border bg-white/90 shadow-sm px-4 py-4 space-y-3 worm-border"
+          >
+            <h2 className="text-sm font-semibold text-worm-ink">Status</h2>
+            <div className="text-sm worm-muted min-h-8">
+              {infoText}
+            </div>
 
             {finalSummary && (
-              <div className="space-y-2 border-t pt-3" style={{ borderColor: '#d4b5a0' }}>
-                <div className="text-sm font-semibold" style={{ color: '#3d2817' }}>✅ Final</div>
-                <div className="text-xs" style={{ color: '#7a6b5f' }}>Match ID: {finalSummary.gameId.slice(0, 12)}</div>
-                <div className="text-xs" style={{ color: '#7a6b5f' }}>
+              <div className="space-y-2 border-t pt-3 worm-border">
+                <div className="text-sm font-semibold text-worm-ink">Final</div>
+                <div className="text-xs worm-muted">
+                  Match ID: {finalSummary.gameId.slice(0, 12)}
+                </div>
+                <div className="text-xs worm-muted">
                   {finalSummary.modelA} vs {finalSummary.modelB}
                 </div>
-                <div className="text-xs" style={{ color: '#7a6b5f' }}>
-                  Scores: {Object.entries(finalSummary.scores || {}).map(([k, v]) => (
-                    <span key={k} className="mr-3">{k}:{v}</span>
+                <div className="text-xs worm-muted">
+                  Scores:{' '}
+                  {Object.entries(finalSummary.scores || {}).map(([k, v]) => (
+                    <span key={k} className="mr-3">
+                      {k}:{v}
+                    </span>
                   ))}
                 </div>
                 <a
                   href={`/worm-arena?matchId=${encodeURIComponent(finalSummary.gameId)}`}
-                  className="inline-block mt-2 px-4 py-2 rounded text-xs font-semibold text-white transition-all"
-                  style={{ backgroundColor: '#3d2817' }}
+                  className="inline-block mt-2 px-4 py-2 rounded text-xs font-semibold text-white transition-all bg-worm-ink"
                 >
                   View Replay
                 </a>
-                <div className="text-xs mt-2" style={{ color: '#7a6b5f' }}>
+                <div className="text-xs mt-2 worm-muted">
                   View stats:
                   {['modelA', 'modelB'].map((key) => {
                     const slug = (finalSummary as any)[key] as string | undefined;
@@ -286,7 +258,7 @@ export default function WormArenaLive() {
             )}
 
             {!finalSummary && status !== 'failed' && (
-              <div className="text-xs" style={{ color: '#7a6b5f' }}>
+              <div className="text-xs worm-muted">
                 Final scores & replay link appear here once complete.
               </div>
             )}
@@ -295,88 +267,150 @@ export default function WormArenaLive() {
           </div>
         </div>
 
-        {/* Batch Results Table - show when batch is running or completed */}
-        {totalMatches && totalMatches > 1 && batchResults.length > 0 && (
-          <div className="rounded-lg border bg-white/90 shadow-sm px-4 py-4" style={{ borderColor: '#d4b5a0' }}>
-            <h2 className="text-sm font-semibold mb-3" style={{ color: '#3d2817' }}>✅ Completed Matches</h2>
-            <ScrollArea className="max-h-[40vh] border rounded-md bg-white/90">
-              <Table className="text-sm">
-                <TableHeader>
-                  <TableRow>
-                    <TableHead className="whitespace-nowrap font-bold" style={{ color: '#3d2817' }}>Match #</TableHead>
-                    <TableHead className="font-bold" style={{ color: '#3d2817' }}>Models</TableHead>
-                    <TableHead className="font-bold" style={{ color: '#3d2817' }}>Score</TableHead>
-                    <TableHead className="font-bold" style={{ color: '#3d2817' }}>Result</TableHead>
-                    <TableHead className="font-bold" style={{ color: '#3d2817' }}>Replay</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {batchResults.map((result) => {
-                    const modelAScore = result.scores?.[result.modelA] ?? 0;
-                    const modelBScore = result.scores?.[result.modelB] ?? 0;
-                    const resultLabel = modelAScore > modelBScore ? 'Win' : modelAScore < modelBScore ? 'Loss' : 'Tie';
-                    const resultColor = resultLabel === 'Win' ? '#6b9e3f' : resultLabel === 'Loss' ? '#c85a3a' : '#3d2817';
+        <div
+          ref={setupRef}
+          className="rounded-lg border px-4 py-4 space-y-4 worm-border bg-worm-card"
+        >
+          {modelsError && (
+            <div className="text-sm text-red-700 bg-red-50 border border-red-200 rounded p-3">
+              <strong>Error:</strong> {modelsError.message}
+            </div>
+          )}
 
-                    return (
-                      <TableRow key={result.gameId}>
-                        <TableCell className="whitespace-nowrap">{result.index}/{result.total}</TableCell>
-                        <TableCell className="text-xs font-mono">{result.modelA} vs {result.modelB}</TableCell>
-                        <TableCell>{modelAScore}-{modelBScore}</TableCell>
-                        <TableCell style={{ color: resultColor }} className="font-semibold">{resultLabel}</TableCell>
-                        <TableCell>
-                          <a
-                            href={`/worm-arena?matchId=${encodeURIComponent(result.gameId)}`}
-                            className="underline text-sm font-semibold"
-                          >
-                            View
-                          </a>
-                        </TableCell>
-                      </TableRow>
-                    );
-                  })}
-                </TableBody>
-              </Table>
-            </ScrollArea>
-            {totalMatches && batchResults.length < totalMatches && (
-              <div className="text-xs mt-3" style={{ color: '#7a6b5f' }}>
-                {batchResults.length}/{totalMatches} matches complete
+          {loadingModels && (
+            <div className="text-xs worm-muted">
+              Loading available OpenRouter models…
+            </div>
+          )}
+
+          <WormArenaMatchupSelector
+            selectedMatchup={selectedMatchup}
+            onSelectMatchup={setSelectedMatchup}
+            isRunning={status === 'in_progress' || isStarting}
+            availableModels={availableModelSet}
+          />
+
+          <Collapsible open={advancedOpen} onOpenChange={setAdvancedOpen}>
+            <CollapsibleTrigger asChild>
+              <button
+                type="button"
+                disabled={status === 'in_progress' || isStarting}
+                className="w-full flex items-center justify-between px-3 py-2 rounded border bg-white/80 text-xs font-semibold worm-border text-worm-ink"
+              >
+                <span>Advanced Settings</span>
+                <span>{advancedOpen ? '▾' : '▸'}</span>
+              </button>
+            </CollapsibleTrigger>
+            <CollapsibleContent className="pt-3 space-y-3">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                <label className="text-xs font-semibold text-worm-ink">
+                  Width
+                  <input
+                    type="number"
+                    min={5}
+                    max={30}
+                    value={width}
+                    onChange={(e) => setWidth(Number(e.target.value))}
+                    className="mt-1 w-full h-9 rounded border px-2 text-xs bg-white"
+                    disabled={status === 'in_progress' || isStarting}
+                  />
+                </label>
+                <label className="text-xs font-semibold text-worm-ink">
+                  Height
+                  <input
+                    type="number"
+                    min={5}
+                    max={30}
+                    value={height}
+                    onChange={(e) => setHeight(Number(e.target.value))}
+                    className="mt-1 w-full h-9 rounded border px-2 text-xs bg-white"
+                    disabled={status === 'in_progress' || isStarting}
+                  />
+                </label>
+                <label className="text-xs font-semibold text-worm-ink">
+                  Max Rounds
+                  <input
+                    type="number"
+                    min={10}
+                    max={500}
+                    value={maxRounds}
+                    onChange={(e) => setMaxRounds(Number(e.target.value))}
+                    className="mt-1 w-full h-9 rounded border px-2 text-xs bg-white"
+                    disabled={status === 'in_progress' || isStarting}
+                  />
+                </label>
+                <label className="text-xs font-semibold text-worm-ink">
+                  Apples
+                  <input
+                    type="number"
+                    min={1}
+                    max={15}
+                    value={numApples}
+                    onChange={(e) => setNumApples(Number(e.target.value))}
+                    className="mt-1 w-full h-9 rounded border px-2 text-xs bg-white"
+                    disabled={status === 'in_progress' || isStarting}
+                  />
+                </label>
               </div>
-            )}
-          </div>
-        )}
 
-        {/* Match Setup Controls */}
-        <div ref={setupRef} className="rounded-lg border" style={{ backgroundColor: '#faf5f0', borderColor: '#d4b5a0' }}>
-          <div className="px-4 py-3 border-b" style={{ borderColor: '#d4b5a0' }}>
-            <span className="font-medium text-sm" style={{ color: '#3d2817' }}>
-              🎮 Start New Match
-            </span>
-          </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <label className="text-xs font-semibold text-worm-ink">
+                  BYO API Key (optional)
+                  <input
+                    type="password"
+                    value={byoApiKey}
+                    onChange={(e) => setByoApiKey(e.target.value)}
+                    className="mt-1 w-full h-9 rounded border px-2 text-xs bg-white"
+                    placeholder="Paste your API key"
+                    disabled={status === 'in_progress' || isStarting}
+                  />
+                  <div className="text-[10px] mt-1 worm-muted">
+                    Leave blank to use server keys.
+                  </div>
+                </label>
 
-          <div className="px-4 py-4 space-y-3">
-            <WormArenaSetup
-              modelA={modelA}
-              selectableModels={selectableModels}
-              selectedOpponents={selectedOpponents}
-              isRunning={status === 'in_progress' || isStarting}
-              loadingModels={loadingModels}
-              modelsError={modelsError?.message}
-              onModelAChange={setModelA}
-              onOpponentsChange={setSelectedOpponents}
-              byoApiKey={byoApiKey}
-              byoProvider={byoProvider}
-              onApiKeyChange={setByoApiKey}
-              onProviderChange={setByoProvider}
-              onRunMatch={handleRunMatch}
-            />
-            {launchNotice && (
-              <div className="text-sm" style={{ color: '#7a6b5f' }} role="status">
-                {launchNotice}
+                <label className="text-xs font-semibold text-worm-ink">
+                  Provider
+                  <select
+                    value={byoProvider}
+                    onChange={(e) => setByoProvider(e.target.value as any)}
+                    className="mt-1 w-full h-9 rounded border px-2 text-xs bg-white"
+                    disabled={status === 'in_progress' || isStarting}
+                  >
+                    <option value="server-default">Use server default</option>
+                    <option value="openrouter">OpenRouter</option>
+                    <option value="openai">OpenAI</option>
+                    <option value="anthropic">Anthropic</option>
+                    <option value="xai">xAI</option>
+                    <option value="gemini">Gemini</option>
+                  </select>
+                </label>
               </div>
-            )}
+            </CollapsibleContent>
+          </Collapsible>
+
+          <div className="flex items-center justify-between gap-3 flex-wrap">
+            <div className="text-xs worm-muted">
+              Selected: <span className="font-mono">{selectedMatchup.modelA}</span> vs{' '}
+              <span className="font-mono">{selectedMatchup.modelB}</span>
+            </div>
+            <button
+              onClick={handleRunMatch}
+              disabled={status === 'in_progress' || isStarting || loadingModels || !matchupAvailable}
+              className="px-5 py-2 rounded text-xs font-bold text-white transition-all disabled:opacity-50 disabled:cursor-not-allowed bg-worm-green hover:bg-worm-green-hover"
+            >
+              {status === 'in_progress' || isStarting ? 'Running…' : 'Run Match'}
+            </button>
           </div>
+
+          {launchNotice && (
+            <div className="text-xs worm-muted" role="status">
+              {launchNotice}
+            </div>
+          )}
         </div>
       </main>
     </div>
   );
 }
+

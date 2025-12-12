@@ -1,3 +1,21 @@
+### Version 6.1.30  Dec 12, 2025 (PENDING TESTING)
+
+- **Worm Arena Live: curated 1v1 matchup selector (no batching)** (Author: GPT-5.2 Codex CLI)
+  - Added a shared curated matchup gallery with categorized, statistically useful pairings and a default **GPT‑5.2 vs GPT‑5 Nano** matchup.
+  - Rebuilt `WormArenaLive` to remove multi‑opponent/batch UI and launch a single selected curated match with live streaming, keeping the live board and status panels intact.
+  - Added a new `WormArenaMatchupSelector` card grid and moved board/BYO settings into a collapsible “Advanced Settings” section.
+  - Updated `wormArenaStreamController.prepare` to accept single‑match requests with `modelB` and no `opponents`/`count`, enabling the new flow.
+  - **Files Modified/Created**: `shared/utils/curatedMatchups.ts`, `client/src/components/WormArenaMatchupSelector.tsx`, `client/src/pages/WormArenaLive.tsx`, `server/controllers/wormArenaStreamController.ts`, `CHANGELOG.md`
+
+### Version 6.1.30  Dec 11, 2025 (PENDING TESTING)
+
+- **Worm Arena canonical theme + stats page refactor** (Author: Cascade)
+  - Added a single canonical Worm Arena theme powered by CSS variables + Tailwind `worm.*` tokens; removed repeated earthy-palette literals and arbitrary hex Tailwind classes.
+  - Centralized Fredoka font loading in `client/index.html` and removed per-page font `<link>` tags.
+  - Refactored Worm Arena shared components and pages to use theme utilities only (no inline hex styling), including fixing a broken `FIX THIS TODO` rendering bug.
+  - Split `/worm-arena/stats` into small reusable subcomponents and moved `DataNumber` into `client/src/components/wormArena/DataNumber.tsx`.
+  - **Files Modified/Created**: `client/src/index.css`, `tailwind.config.ts`, `client/index.html`, `client/src/components/WormArenaStatsPanel.tsx`, `client/src/components/WormArenaHeader.tsx`, `client/src/components/WormArenaControlBar.tsx`, `client/src/components/WormArenaTrueSkillLeaderboard.tsx`, `client/src/components/WormArenaGreatestHits.tsx`, `client/src/components/WormArenaMatchupSelector.tsx`, `client/src/components/WormArenaHeaderStartAction.tsx`, `client/src/components/WormArenaRecentGames.tsx`, `client/src/components/WormArenaGameBoard.tsx`, `client/src/components/WormArenaReasoning.tsx`, `client/src/components/WormArenaSetup.tsx`, `client/src/pages/WormArenaStats.tsx`, `client/src/pages/WormArenaLive.tsx`, `client/src/pages/WormArena.tsx`, `client/src/components/wormArena/DataNumber.tsx`, `client/src/components/wormArena/stats/WormArenaGlobalStatsStrip.tsx`, `client/src/components/wormArena/stats/WormArenaModelListCard.tsx`, `client/src/components/wormArena/stats/WormArenaModelSnapshotCard.tsx`, `client/src/components/wormArena/stats/WormArenaPlacementCard.tsx`, `CHANGELOG.md`
+
 ### Version 6.1.29  Dec 11, 2025 (PENDING TESTING)
 
 - **Worm Arena Live streaming: per-round SSE + live board frames** (Author: GPT-5.2 Extra High)
