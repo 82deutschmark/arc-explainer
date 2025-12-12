@@ -4,6 +4,11 @@
   - Reordered the `/scoring` model dropdown so `gpt-5-2-2025-12-11-thinking-high` appears first and is auto-selected by default.
   - **Files Modified**: `client/src/pages/HuggingFaceUnionAccuracy.tsx`, `CHANGELOG.md`
 
+- **Worm Arena: fix OpenRouter cookie-auth 401 causing random-move fallbacks** (Author: Cascade)
+  - Ensured the SnakeBench subprocess always uses the official OpenRouter API base URL (`https://openrouter.ai/api/v1`) to prevent accidental routing to cookie-auth protected endpoints (which surfaced as `401: No cookie auth credentials found`).
+  - This prevents provider failures from triggering SnakeBench's emergency “random move” fallback during games.
+  - **Files Modified**: `server/services/snakeBenchService.ts`, `CHANGELOG.md`
+
 - **Worm Arena Stats: fix win rate bug and unreadable font sizes** (Author: Cascade)
   - **Bug fix**: `SnakeBenchRepository.getBasicLeaderboard` now always returns `winRate` regardless of `sortBy` parameter. Previously win rate was only included when sorting by win rate, causing the UI to show "—" for all entries.
   - **Font sizes**: Bumped `WormArenaStatsPanel` from `text-xs` (12px) to `text-base` (16px) for table content, `text-sm` (14px) for model names. Increased cell padding for better readability.
