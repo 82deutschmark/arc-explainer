@@ -76,8 +76,11 @@ function validatePayload(body: any): { payload?: SnakeBenchRunMatchRequest; oppo
       opponents = Array(count).fill(modelB);
     }
     // If count === 1, leave opponents undefined for single match
+  } else if (modelB && typeof modelB === 'string' && modelB.trim().length > 0) {
+    // Curated/single-match format: modelB provided, no opponents/count.
+    opponents = undefined;
   } else {
-    return { error: 'Either "opponents" array or "count" number must be provided' };
+    return { error: 'Must provide modelB for single match or an "opponents" array / "count" for batch.' };
   }
 
   const req: SnakeBenchRunMatchRequest = {
@@ -98,8 +101,10 @@ function validatePayload(body: any): { payload?: SnakeBenchRunMatchRequest; oppo
 
 export const wormArenaStreamController = {
   async prepare(req: Request, res: Response) {
+    logger.info(`[WormArenaStream] PREPARE called with body: ${JSON.stringify(req.body)}`, 'worm-arena-stream');
     const { payload, opponents, error } = validatePayload(req.body);
     if (error || !payload) {
+      logger.warn(`[WormArenaStream] Validation error: ${error}`, 'worm-arena-stream');
       res.status(422).json({ success: false, error: error ?? 'Invalid payload' });
       return;
     }
@@ -112,6 +117,8 @@ export const wormArenaStreamController = {
       createdAt: now,
       expiresAt: now + PENDING_TTL_MS,
     });
+
+    logger.info(`[WormArenaStream] Session created: ${sessionId} for ${payload.modelA} vs ${payload.modelB || opponents?.join(',')}`, 'worm-arena-stream');
 
     res.json({
       success: true,

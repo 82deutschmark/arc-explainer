@@ -245,10 +245,7 @@ export default function WormArena() {
   );
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: '#f5e6d3', fontFamily: 'Fredoka, Nunito, sans-serif' }}>
-      <link rel="preconnect" href="https://fonts.googleapis.com" />
-      <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
-      <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    <div className="worm-page">
 
       <WormArenaHeader
         matchupLabel={matchupLabel}
@@ -274,16 +271,16 @@ export default function WormArena() {
         {(modelA || modelB) && (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
             {modelA && ratingA && (
-              <Card className="bg-[#faf6f1] border-[#d4b5a0]">
+              <Card className="worm-card">
                 <CardHeader className="pb-2">
-                  <CardTitle className="text-lg font-bold" style={{ color: '#3d2817' }}>
+                  <CardTitle className="text-lg font-bold text-worm-ink">
                     {modelA}
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-2 text-sm" style={{ color: '#3d2817' }}>
+                <CardContent className="space-y-2 text-sm text-worm-ink">
                   <div className="flex items-center justify-between">
                     <span className="font-semibold">Pessimistic rating</span>
-                    <span className="inline-flex items-baseline px-2 py-0.5 rounded-md bg-[#e4f2e9] border border-[#9ece6a] font-extrabold text-base" style={{ color: '#064e3b' }}>
+                    <span className="worm-pill-green px-2 py-0.5 text-base">
                       {ratingA.exposed.toFixed(1)}
                     </span>
                   </div>
@@ -306,16 +303,16 @@ export default function WormArena() {
             )}
 
             {modelB && ratingB && (
-              <Card className="bg-[#faf6f1] border-[#d4b5a0]">
+              <Card className="worm-card">
                 <CardHeader className="pb-2">
-                  <CardTitle className="text-lg font-bold" style={{ color: '#3d2817' }}>
+                  <CardTitle className="text-lg font-bold text-worm-ink">
                     {modelB}
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-2 text-sm" style={{ color: '#3d2817' }}>
+                <CardContent className="space-y-2 text-sm text-worm-ink">
                   <div className="flex items-center justify-between">
                     <span className="font-semibold">Pessimistic rating</span>
-                    <span className="inline-flex items-baseline px-2 py-0.5 rounded-md bg-[#e4f2e9] border border-[#9ece6a] font-extrabold text-base" style={{ color: '#064e3b' }}>
+                    <span className="worm-pill-green px-2 py-0.5 text-base">
                       {ratingB.exposed.toFixed(1)}
                     </span>
                   </div>
@@ -377,7 +374,7 @@ export default function WormArena() {
           />
         </div>
 
-        <div className="text-center mb-6" style={{ color: '#7a6b5f', fontSize: '17px' }}>
+        <div className="text-center mb-6 worm-muted text-[17px]">
           <div className="flex justify-center gap-6 flex-wrap">
             <span><strong>Scores:</strong> {Object.entries(finalScores).map(([k, v]) => (
               <span key={k} className="ml-2"><span className="font-mono">{k}</span>: {String(v)}</span>
@@ -408,7 +405,7 @@ export default function WormArena() {
               <button
                 type="button"
                 onClick={handleCopyMatchId}
-                className="text-xs px-2 py-1 rounded border border-[#d4b5a0] bg-white hover:bg-gray-50"
+                className="text-xs px-2 py-1 rounded border bg-white hover:bg-gray-50 worm-border text-worm-ink"
               >
                 Copy
               </button>

@@ -54,10 +54,10 @@ const WormArenaSetup: React.FC<WormArenaSetupProps> = ({
   const availableOpponents = selectableModels.filter(m => m !== modelA);
 
   return (
-    <div className="border rounded-lg p-6 bg-[#faf5f0] border-[#d4b5a0] space-y-4" style={{ fontFamily: 'Fredoka, sans-serif' }}>
+    <div className="border rounded-lg p-6 space-y-4 worm-border font-worm bg-worm-card">
       <div>
-        <h2 className="text-xl font-bold text-[#3d2817]">🌱🐛 Start a Match</h2>
-        <p className="text-sm text-[#7a6b5f]">Pick models and kick off a Worm Arena battle.</p>
+        <h2 className="text-xl font-bold text-worm-ink">🐛 Start a Match 🍎</h2>
+        <p className="text-sm worm-muted">Pick models and kick off a Worm Arena battle.</p>
       </div>
 
       {modelsError ? (
@@ -87,7 +87,7 @@ const WormArenaSetup: React.FC<WormArenaSetupProps> = ({
       {hasValidModels && (
         <>
           <div className="space-y-2">
-            <label className="text-base font-semibold text-[#3d2817]">Model A 🐛</label>
+            <label className="text-base font-semibold text-worm-ink">Model A 🐛</label>
             <Select value={modelA || ''} onValueChange={onModelAChange} disabled={disabled}>
               <SelectTrigger className="h-10 text-sm">
                 <SelectValue placeholder={hasValidModels ? 'Choose model A' : 'Loading models...'} />
@@ -107,7 +107,7 @@ const WormArenaSetup: React.FC<WormArenaSetupProps> = ({
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
               <div className="flex justify-between items-center">
-                <label className="text-base font-semibold text-[#3d2817]">
+                <label className="text-base font-semibold text-worm-ink">
                   Opponents 🐛 ({selectedOpponents.length})
                 </label>
                 <button
@@ -119,9 +119,9 @@ const WormArenaSetup: React.FC<WormArenaSetupProps> = ({
                 </button>
               </div>
 
-              <div className="border rounded p-3 max-h-48 overflow-y-auto bg-white/50 border-[#d4b5a0]">
+              <div className="border rounded p-3 max-h-48 overflow-y-auto bg-white/50 worm-border">
                 {availableOpponents.length === 0 ? (
-                  <div className="text-xs text-[#7a6b5f]">
+                  <div className="text-xs worm-muted">
                     {modelA ? 'No other models available' : 'Select Model A first'}
                   </div>
                 ) : (
@@ -145,18 +145,18 @@ const WormArenaSetup: React.FC<WormArenaSetupProps> = ({
                         disabled={isRunning || (!selectedOpponents.includes(model) && selectedOpponents.length >= 10)}
                         className="w-4 h-4"
                       />
-                      <span className="text-sm font-mono text-[#3d2817]">{model}</span>
+                      <span className="text-sm font-mono text-worm-ink">{model}</span>
                     </label>
                   ))
                 )}
               </div>
 
-              <p className="text-xs text-[#7a6b5f]">
+              <p className="text-xs worm-muted">
                 Select up to 10 opponents. 9 recommended for TrueSkill placement. Sequential execution respects rate limits.
               </p>
             </div>
             <div className="space-y-2">
-              <label className="text-base font-semibold text-[#3d2817]">BYO API Key (optional) 🐛</label>
+              <label className="text-base font-semibold text-worm-ink">BYO API Key (optional) 🐛</label>
               <input
                 type="password"
                 value={byoApiKey}
@@ -165,12 +165,12 @@ const WormArenaSetup: React.FC<WormArenaSetupProps> = ({
                 placeholder="Paste your API key"
                 disabled={isRunning}
               />
-              <p className="text-xs text-[#7a6b5f]">
+              <p className="text-xs worm-muted">
                 Key is sent only for this match; leave blank to use server keys.
               </p>
             </div>
             <div className="space-y-2">
-              <label className="text-base font-semibold text-[#3d2817]">Provider 🐛</label>
+              <label className="text-base font-semibold text-worm-ink">Provider 🐛</label>
               <Select value={byoProvider} onValueChange={(v) => onProviderChange(v as WormArenaSetupProps['byoProvider'])} disabled={isRunning}>
                 <SelectTrigger className="h-10 text-sm">
                   <SelectValue placeholder="Select provider (optional)" />
@@ -190,8 +190,7 @@ const WormArenaSetup: React.FC<WormArenaSetupProps> = ({
           <Button
             onClick={onRunMatch}
             disabled={disabled || !modelA || selectedOpponents.length === 0}
-            className="w-full h-12 text-base font-bold bg-[#6b9e3f] hover:bg-[#5a8836] disabled:opacity-50 disabled:cursor-not-allowed"
-            style={{ fontFamily: 'Fredoka, sans-serif' }}
+            className="w-full h-12 text-base font-bold bg-worm-green hover:bg-worm-green-hover disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isRunning ? `Running ${selectedOpponents.length} match${selectedOpponents.length !== 1 ? 'es' : ''}...` : `▶ Run ${selectedOpponents.length} Match${selectedOpponents.length !== 1 ? 'es' : ''}`}
           </Button>

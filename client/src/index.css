@@ -42,6 +42,10 @@
   --worm-green-ink: #064e3b;
   --worm-blue: #2563eb;
   --worm-blue-hover: #1d4ed8;
+  --worm-orange: #f5a623;
+  --worm-orange-hover: #e2961f;
+  --worm-board-bg: #6b5344;
+  --worm-board-frame: #2e7d32;
 
   --worm-header-bg: #2d1f0f;
   --worm-header-accent: #d4a574;
@@ -95,6 +99,10 @@
   --worm-green-ink: #064e3b;
   --worm-blue: #2563eb;
   --worm-blue-hover: #1d4ed8;
+  --worm-orange: #f5a623;
+  --worm-orange-hover: #e2961f;
+  --worm-board-bg: #6b5344;
+  --worm-board-frame: #2e7d32;
 
   --worm-header-bg: #2d1f0f;
   --worm-header-accent: #d4a574;
@@ -259,6 +267,15 @@
 
 .worm-float {
   animation: worm-float 3s ease-in-out infinite;
+}
+
+@keyframes worm-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+.worm-pulse {
+  animation: worm-pulse 1.5s ease-in-out infinite;
 }
 
 /* Card Pack Opening Animation Styles */

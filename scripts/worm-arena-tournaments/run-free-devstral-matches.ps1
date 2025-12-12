@@ -14,7 +14,7 @@ $allModels = @(
     "openai/gpt-5-mini",
     "openai/gpt-5.1-codex-mini",
     "arcee-ai/trinity-mini:free",
-    "anthropic/",
+    "anthropic/claude-haiku-4.5",
     "nvidia/nemotron-nano-12b-v2-vl:free"
 )
 
@@ -43,7 +43,7 @@ foreach ($matchup in $matchups) {
     $body = @{
         modelA = $matchup.modelA
         modelB = $matchup.modelB
-        count = 9
+        count = 1
     } | ConvertTo-Json
 
     Start-Job -ScriptBlock {

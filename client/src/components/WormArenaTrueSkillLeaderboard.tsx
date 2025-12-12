@@ -42,32 +42,18 @@ export function WormArenaTrueSkillLeaderboard({
 }: WormArenaTrueSkillLeaderboardProps) {
   const hasRows = entries.length > 0;
 
-  const palette = {
-    rating: '#1f4f7a',
-    sigma: '#7b3fe4',
-    games: '#5c3b1d',
-    wins: '#1f7a3a',
-    losses: '#b3261e',
-    ties: '#c85a11',
-    apples: '#5b6f1f',
-    topScore: '#1f4f7a',
-    winRate: '#a0266a',
-    cost: '#8b5a00',
-  } as const;
-
   return (
     <TooltipProvider>
-      <Card className="bg-[#faf6f1] border-[#d4b5a0]">
+      <Card className="worm-card">
         <CardHeader className="pb-2 flex flex-row items-center justify-between">
           <div>
             <CardTitle
               className="text-lg font-bold flex items-center gap-2"
-              style={{ color: '#3d2817' }}
             >
               <span>TrueSkill leaderboard</span>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <HelpCircle className="w-4 h-4 cursor-help" style={{ color: '#7a6b5f' }} />
+                  <HelpCircle className="w-4 h-4 cursor-help worm-muted" />
                 </TooltipTrigger>
                 <TooltipContent side="top" className="max-w-xs text-xs">
                   Global Worm Arena rankings by conservative TrueSkill rating
@@ -75,20 +61,14 @@ export function WormArenaTrueSkillLeaderboard({
                 </TooltipContent>
               </Tooltip>
             </CardTitle>
-            <div
-              className="text-xs font-semibold mt-1"
-              style={{ color: '#7a6b5f' }}
-            >
+            <div className="text-xs font-semibold mt-1 worm-muted">
               Top models by TrueSkill exposed rating (μ - 3σ), up to 150 rows.
             </div>
           </div>
         </CardHeader>
         <CardContent className="pt-0">
           {isLoading && (
-            <div
-              className="text-sm font-semibold py-3"
-              style={{ color: '#7a6b5f' }}
-            >
+            <div className="text-sm font-semibold py-3 worm-muted">
               Loading TrueSkill leaderboard...
             </div>
           )}
@@ -96,94 +76,55 @@ export function WormArenaTrueSkillLeaderboard({
             <div className="text-sm font-semibold text-red-700 py-3">{error}</div>
           )}
           {!isLoading && !error && !hasRows && (
-            <div
-              className="text-sm font-semibold py-3"
-              style={{ color: '#7a6b5f' }}
-            >
+            <div className="text-sm font-semibold py-3 worm-muted">
               No models meet the minimum games requirement yet. Run a few matches to
               populate the TrueSkill leaderboard.
             </div>
           )}
 
           {hasRows && !error && (
-            <ScrollArea className="h-[420px] max-h-[420px] border rounded-md bg-white/90">
+            <ScrollArea className="h-[420px] max-h-[420px] border rounded-md bg-white/90 worm-border">
               <Table className="text-sm min-w-[900px]">
                 <TableHeader>
                   <TableRow>
-                    <TableHead
-                      className="whitespace-nowrap font-bold"
-                      style={{ color: '#3d2817' }}
-                    >
+                    <TableHead className="whitespace-nowrap font-bold text-worm-ink">
                       Rank
                     </TableHead>
-                    <TableHead
-                      className="whitespace-nowrap font-bold"
-                      style={{ color: '#3d2817' }}
-                    >
+                    <TableHead className="whitespace-nowrap font-bold text-worm-ink">
                       Model
                     </TableHead>
-                    <TableHead
-                      className="whitespace-nowrap font-bold"
-                      style={{ color: '#3d2817' }}
-                    >
+                    <TableHead className="whitespace-nowrap font-bold text-worm-ink">
                       <span className="inline-flex items-center gap-1">
                         <span>TS rating (μ - 3σ)</span>
                       </span>
                     </TableHead>
-                    <TableHead
-                      className="whitespace-nowrap font-bold"
-                      style={{ color: '#3d2817' }}
-                    >
+                    <TableHead className="whitespace-nowrap font-bold text-worm-ink">
                       <span className="inline-flex items-center gap-1">
                         <span>σ (uncertainty)</span>
                       </span>
                     </TableHead>
-                    <TableHead
-                      className="whitespace-nowrap font-bold"
-                      style={{ color: '#3d2817' }}
-                    >
+                    <TableHead className="whitespace-nowrap font-bold text-worm-ink">
                       Games
                     </TableHead>
-                    <TableHead
-                      className="whitespace-nowrap font-bold"
-                      style={{ color: '#3d2817' }}
-                    >
+                    <TableHead className="whitespace-nowrap font-bold text-worm-ink">
                       Wins
                     </TableHead>
-                    <TableHead
-                      className="whitespace-nowrap font-bold"
-                      style={{ color: '#3d2817' }}
-                    >
+                    <TableHead className="whitespace-nowrap font-bold text-worm-ink">
                       Losses
                     </TableHead>
-                    <TableHead
-                      className="whitespace-nowrap font-bold"
-                      style={{ color: '#3d2817' }}
-                    >
+                    <TableHead className="whitespace-nowrap font-bold text-worm-ink">
                       Ties
                     </TableHead>
-                    <TableHead
-                      className="whitespace-nowrap font-bold"
-                      style={{ color: '#3d2817' }}
-                    >
+                    <TableHead className="whitespace-nowrap font-bold text-worm-ink">
                       Apples eaten
                     </TableHead>
-                    <TableHead
-                      className="whitespace-nowrap font-bold"
-                      style={{ color: '#3d2817' }}
-                    >
+                    <TableHead className="whitespace-nowrap font-bold text-worm-ink">
                       Top score
                     </TableHead>
-                    <TableHead
-                      className="whitespace-nowrap font-bold"
-                      style={{ color: '#3d2817' }}
-                    >
+                    <TableHead className="whitespace-nowrap font-bold text-worm-ink">
                       Win rate
                     </TableHead>
-                    <TableHead
-                      className="whitespace-nowrap font-bold"
-                      style={{ color: '#3d2817' }}
-                    >
+                    <TableHead className="whitespace-nowrap font-bold text-worm-ink">
                       Total cost
                     </TableHead>
                   </TableRow>
@@ -201,64 +142,34 @@ export function WormArenaTrueSkillLeaderboard({
                         <TableCell className="whitespace-nowrap font-mono max-w-[260px] truncate">
                           {entry.modelSlug}
                         </TableCell>
-                        <TableCell
-                          className="whitespace-nowrap font-mono"
-                          style={{ color: palette.rating }}
-                        >
+                        <TableCell className="whitespace-nowrap font-mono worm-metric-rating">
                           {entry.exposed.toFixed(2)}
                         </TableCell>
-                        <TableCell
-                          className="whitespace-nowrap font-mono"
-                          style={{ color: palette.sigma }}
-                        >
+                        <TableCell className="whitespace-nowrap font-mono worm-metric-sigma">
                           σ = {entry.sigma.toFixed(2)}
                         </TableCell>
-                        <TableCell
-                          className="whitespace-nowrap font-mono"
-                          style={{ color: palette.games }}
-                        >
+                        <TableCell className="whitespace-nowrap font-mono worm-metric-games">
                           {entry.gamesPlayed}
                         </TableCell>
-                        <TableCell
-                          className="whitespace-nowrap font-mono"
-                          style={{ color: palette.wins }}
-                        >
+                        <TableCell className="whitespace-nowrap font-mono worm-metric-wins">
                           {entry.wins}
                         </TableCell>
-                        <TableCell
-                          className="whitespace-nowrap font-mono"
-                          style={{ color: palette.losses }}
-                        >
+                        <TableCell className="whitespace-nowrap font-mono worm-metric-losses">
                           {entry.losses}
                         </TableCell>
-                        <TableCell
-                          className="whitespace-nowrap font-mono"
-                          style={{ color: palette.ties }}
-                        >
+                        <TableCell className="whitespace-nowrap font-mono worm-metric-ties">
                           {entry.ties}
                         </TableCell>
-                        <TableCell
-                          className="whitespace-nowrap font-mono"
-                          style={{ color: palette.apples }}
-                        >
+                        <TableCell className="whitespace-nowrap font-mono worm-metric-apples">
                           {entry.applesEaten}
                         </TableCell>
-                        <TableCell
-                          className="whitespace-nowrap font-mono"
-                          style={{ color: palette.topScore }}
-                        >
+                        <TableCell className="whitespace-nowrap font-mono worm-metric-rating">
                           {entry.topScore}
                         </TableCell>
-                        <TableCell
-                          className="whitespace-nowrap font-mono"
-                          style={{ color: palette.winRate }}
-                        >
+                        <TableCell className="whitespace-nowrap font-mono worm-metric-winrate">
                           {winRatePercent != null ? `${winRatePercent}%` : '—'}
                         </TableCell>
-                        <TableCell
-                          className="whitespace-nowrap font-mono"
-                          style={{ color: palette.cost }}
-                        >
+                        <TableCell className="whitespace-nowrap font-mono worm-metric-cost">
                           ${entry.totalCost.toFixed(4)}
                         </TableCell>
                       </TableRow>

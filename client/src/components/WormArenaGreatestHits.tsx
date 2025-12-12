@@ -17,18 +17,18 @@ export default function WormArenaGreatestHits() {
   const { games, isLoading, error } = useWormArenaGreatestHits(5);
 
   return (
-    <Card className="bg-[#faf6f1] border-[#d4b5a0]">
+    <Card className="worm-card">
       <CardHeader className="pb-2">
-        <CardTitle className="text-lg font-bold" style={{ color: '#3d2817' }}>
+        <CardTitle className="text-lg font-bold text-worm-ink">
           Greatest Hits Matches
         </CardTitle>
-        <p className="text-xs font-semibold mt-1" style={{ color: '#7a6b5f' }}>
+        <p className="text-xs font-semibold mt-1 worm-muted">
           Curated Worm Arena games with long runs, high costs, or big scores.
         </p>
       </CardHeader>
-      <CardContent className="pt-0 text-sm" style={{ color: '#3d2817' }}>
+      <CardContent className="pt-0 text-sm text-worm-ink">
         {isLoading && (
-          <div className="py-2 text-sm font-semibold" style={{ color: '#7a6b5f' }}>
+          <div className="py-2 text-sm font-semibold worm-muted">
             Loading greatest hits
           </div>
         )}
@@ -36,7 +36,7 @@ export default function WormArenaGreatestHits() {
           <div className="py-2 text-sm font-semibold text-red-700">{error}</div>
         )}
         {!isLoading && !error && games.length === 0 && (
-          <div className="py-2 text-sm font-semibold" style={{ color: '#7a6b5f' }}>
+          <div className="py-2 text-sm font-semibold worm-muted">
             No greatest hits yet run a few matches to discover epic games.
           </div>
         )}
@@ -55,8 +55,7 @@ export default function WormArenaGreatestHits() {
               return (
                 <div
                   key={game.gameId}
-                  className="flex flex-col md:flex-row md:items-center md:justify-between gap-2 rounded-md border px-3 py-2 bg-white/80"
-                  style={{ borderColor: '#d4b5a0' }}
+                  className="flex flex-col md:flex-row md:items-center md:justify-between gap-2 rounded-md border px-3 py-2 bg-white/80 worm-border"
                 >
                   <div className="space-y-1 min-w-0">
                     <div className="font-mono text-xs truncate" title={matchup}>
@@ -68,8 +67,7 @@ export default function WormArenaGreatestHits() {
                       </Badge>
                       <Badge
                         variant="outline"
-                        className="font-semibold"
-                        style={{ borderColor: '#d4b5a0' }}
+                        className="font-semibold worm-border"
                       >
                         Cost: {costLabel}
                       </Badge>
@@ -77,21 +75,20 @@ export default function WormArenaGreatestHits() {
                         {scoreLabel}
                       </Badge>
                     </div>
-                    <div className="text-[11px] font-semibold" style={{ color: '#7a6b5f' }}>
+                    <div className="text-[11px] font-semibold worm-muted">
                       {game.highlightReason}
                     </div>
                   </div>
 
                   <div className="flex items-center justify-end gap-3 text-xs">
                     {game.startedAt && (
-                      <span className="text-[11px]" style={{ color: '#7a6b5f' }}>
+                      <span className="text-[11px] worm-muted">
                         {new Date(game.startedAt).toLocaleString()}
                       </span>
                     )}
                     <a
                       href={`/worm-arena?matchId=${encodeURIComponent(game.gameId)}`}
-                      className="underline font-semibold text-xs"
-                      style={{ color: '#3d2817' }}
+                      className="underline font-semibold text-xs text-worm-ink"
                     >
                       View replay
                     </a>

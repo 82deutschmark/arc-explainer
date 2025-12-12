@@ -196,7 +196,7 @@ const WormArenaGameBoard: React.FC<WormArenaGameBoardProps> = ({
   return (
     <div
       ref={containerRef}
-      className="flex flex-col items-center justify-center bg-[#6b5344] rounded-xl border-8 border-[#2e7d32] p-4"
+      className="flex flex-col items-center justify-center rounded-xl border-8 p-4 bg-worm-board-bg border-worm-board-frame"
     >
       <canvas
         ref={canvasRef}

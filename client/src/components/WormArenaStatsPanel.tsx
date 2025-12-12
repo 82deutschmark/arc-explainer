@@ -65,10 +65,10 @@ const WormArenaStatsPanel: React.FC = () => {
                       {row.modelSlug}
                     </td>
                     <td className="py-1 px-2 text-right">{row.gamesPlayed}</td>
-                    <td className="py-1 px-2 text-right font-semibold" style={{ color: 'var(--worm-metric-wins)' }}>
+                    <td className="py-1 px-2 text-right font-semibold worm-metric-wins">
                       {row.wins}
                     </td>
-                    <td className="py-1 px-2 text-right font-semibold" style={{ color: 'var(--worm-metric-losses)' }}>
+                    <td className="py-1 px-2 text-right font-semibold worm-metric-losses">
                       {row.losses}
                     </td>
                     <td className="py-1 px-2 text-right">{row.ties}</td>
