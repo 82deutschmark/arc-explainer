@@ -984,7 +984,7 @@ export class SnakeBenchRepository extends BaseRepository {
           wins,
           losses,
           ties,
-          ...(sortBy === 'winRate' ? { winRate } : {}),
+          winRate,
         };
       });
     } catch (error) {

@@ -27,11 +27,14 @@ import type {
   SnakeBenchModelMatchHistoryEntry,
   SnakeBenchTrueSkillLeaderboardEntry,
   WormArenaGreatestHitGame,
+  WormArenaStreamStatus,
+  WormArenaFrameEvent,
 } from '../../shared/types.js';
 import { logger } from '../utils/logger.ts';
 import { repositoryService } from '../repositories/RepositoryService.ts';
 import { snakeBenchIngestQueue } from './snakeBenchIngestQueue.ts';
 import { MODELS } from '../config/models.ts';
+import { CURATED_WORM_ARENA_HALL_OF_FAME } from './snakeBenchHallOfFame.ts';
 
 const MIN_BOARD_SIZE = 4;
 const MAX_BOARD_SIZE = 50;
@@ -56,153 +59,6 @@ function parseCostStringToNumber(cost: string | undefined | null): number {
   const value = parseFloat(match[0]);
   return Number.isFinite(value) ? value : 0;
 }
-
-// Curated Worm Arena Hall of Fame (local replay JSONs)
-// Metrics (rounds, scores, cost) were computed from
-// external/SnakeBench/backend/completed_games/snake_game_*.json
-// via analyze_local_games.py and manual inspection.
-const CURATED_WORM_ARENA_HALL_OF_FAME: WormArenaGreatestHitGame[] = [
-  {
-    gameId: '295efa56-170b-44b7-99ef-f11c2111058e',
-    startedAt: '2025-06-11T07:01:49.612695',
-    modelA: 'o3-2025-04-16-low',
-    modelB: 'o3-mini-2025-01-31-high',
-    roundsPlayed: 97,
-    maxRounds: 100,
-    totalCost: 0.0,
-    maxFinalScore: 29,
-    scoreDelta: 5,
-    boardWidth: 10,
-    boardHeight: 10,
-    highlightReason: 'Legendary high-scoring marathon (29 apples over 97/100 rounds)',
-  },
-  {
-    gameId: '82bca6d4-5bc7-4273-84b5-ad272fbe3bc9',
-    startedAt: '2025-06-11T06:57:27.291026',
-    modelA: 'o3-2025-04-16-low',
-    modelB: 'o3-mini-2025-01-31-high',
-    roundsPlayed: 97,
-    maxRounds: 100,
-    totalCost: 0.0,
-    maxFinalScore: 29,
-    scoreDelta: 9,
-    boardWidth: 10,
-    boardHeight: 10,
-    highlightReason: 'Epic mirror match marathon (97/100 rounds, 29-20 apples)',
-  },
-  {
-    gameId: '1b0cadf1-be63-4347-9479-b53453900888',
-    startedAt: '2025-06-11T07:42:01.757390',
-    modelA: 'o3-2025-04-16-low',
-    modelB: 'o4-mini-2025-04-16-medium',
-    roundsPlayed: 90,
-    maxRounds: 100,
-    totalCost: 0.0,
-    maxFinalScore: 26,
-    scoreDelta: 9,
-    boardWidth: 10,
-    boardHeight: 10,
-    highlightReason: 'Close high-apple duel (26-17 apples over 90/100 rounds)',
-  },
-  {
-    gameId: '562c44b7-57bd-4efb-b754-2c29914de2f5',
-    startedAt: '2025-06-11T08:09:57.815378',
-    modelA: 'o3-2025-04-16-low',
-    modelB: 'o4-mini-2025-04-16-high',
-    roundsPlayed: 96,
-    maxRounds: 100,
-    totalCost: 0.0,
-    maxFinalScore: 25,
-    scoreDelta: 10,
-    boardWidth: 10,
-    boardHeight: 10,
-    highlightReason: 'High-scoring upset (25-15 apples, nearly full 96/100 rounds)',
-  },
-  {
-    gameId: '659ec86c-87b3-4152-a6a5-8e4ea13dfca8',
-    startedAt: '2025-06-12T08:44:40.494441',
-    modelA: 'claude-sonnet-4-20250514',
-    modelB: 'o4-mini-2025-04-16-high',
-    roundsPlayed: 80,
-    maxRounds: 100,
-    totalCost: 0.0,
-    maxFinalScore: 25,
-    scoreDelta: 6,
-    boardWidth: 10,
-    boardHeight: 10,
-    highlightReason: 'Sonnet vs o4-mini shootout (25-19 apples over 80 rounds)',
-  },
-  {
-    gameId: 'e2e36302-c742-4613-9cb6-6e4cb617d5e3',
-    startedAt: '2025-12-09T23:12:40.258782',
-    modelA: 'x-ai/grok-4.1-fast',
-    modelB: 'openai/gpt-5.1-codex-mini',
-    roundsPlayed: 91,
-    maxRounds: 150,
-    totalCost: 0.5321893,
-    maxFinalScore: 26,
-    scoreDelta: 7,
-    boardWidth: 10,
-    boardHeight: 10,
-    highlightReason: 'Grok vs GPT-5.1 Codex slugfest (26-19 apples, ~$0.53 test)',
-  },
-  {
-    gameId: 'c6c26143-451f-4524-bb72-f4cd2e8242c4',
-    startedAt: '2025-11-29T22:16:36.672170',
-    modelA: 'Anthropic: Claude Opus 4.5',
-    modelB: 'Google: Gemini 3 Pro Preview',
-    roundsPlayed: 45,
-    maxRounds: 150,
-    totalCost: 4.833026999999999,
-    maxFinalScore: 16,
-    scoreDelta: 4,
-    boardWidth: 10,
-    boardHeight: 10,
-    highlightReason: 'Most expensive duel (Opus vs Gemini 3 Pro, ~$4.83)',
-  },
-  {
-    gameId: '01ba2c15-ab41-4049-9d61-ff3f49050b7e',
-    startedAt: '2025-11-18T11:57:01.263267',
-    modelA: 'Google: Gemini 3 Pro Preview',
-    modelB: 'Google: Gemini 2.5 Flash Lite',
-    roundsPlayed: 58,
-    maxRounds: 100,
-    totalCost: 3.463459899999999,
-    maxFinalScore: 14,
-    scoreDelta: 2,
-    boardWidth: 10,
-    boardHeight: 10,
-    highlightReason: 'Gemini mirror match, pricey but close (14-12 apples, ~$3.46)',
-  },
-  {
-    gameId: '8a2b969e-1390-42ff-a3ec-a9c49db64dc3',
-    startedAt: '2025-12-10T19:54:05.683069',
-    modelA: 'openai/gpt-5-nano',
-    modelB: 'anthropic/claude-opus-4.5',
-    roundsPlayed: 37,
-    maxRounds: 150,
-    totalCost: 2.7476616999999997,
-    maxFinalScore: 10,
-    scoreDelta: 10,
-    boardWidth: 10,
-    boardHeight: 10,
-    highlightReason: 'GPT-5 Nano vs Claude Opus showdown (~$2.75, 10-0 apples blowout)',
-  },
-  {
-    gameId: 'cd8f383c-24ab-4622-a7bd-5a55853709e6',
-    startedAt: '2025-11-18T12:49:54.860429',
-    modelA: 'Google: Gemini 3 Pro Preview',
-    modelB: 'Qwen: Qwen-Plus',
-    roundsPlayed: 45,
-    maxRounds: 100,
-    totalCost: 2.1374307999999997,
-    maxFinalScore: 11,
-    scoreDelta: 2,
-    boardWidth: 10,
-    boardHeight: 10,
-    highlightReason: 'Gemini 3 Pro vs Qwen-Plus nail-biter (11-9 apples, ~$2.14)',
-  },
-];
 
 export class SnakeBenchService {
   private resolvePythonBin(): string {
@@ -305,14 +161,26 @@ export class SnakeBenchService {
     }
   }
 
-  async runMatch(request: SnakeBenchRunMatchRequest): Promise<SnakeBenchRunMatchResult> {
+  private prepareRunMatch(request: SnakeBenchRunMatchRequest): {
+    modelA: string;
+    modelB: string;
+    width: number;
+    height: number;
+    maxRounds: number;
+    numApples: number;
+    payload: Record<string, unknown>;
+    pythonBin: string;
+    runnerPath: string;
+    backendDir: string;
+    spawnOpts: SpawnOptions;
+    timeoutMs: number;
+  } {
     const { modelA, modelB } = request;
 
     if (!modelA || !modelB) {
       throw new Error('modelA and modelB are required');
     }
 
-    // NEW: Validate models against project's canonical MODELS list (source of truth)
     const snakeBenchModels = MODELS
       .filter((m) => m.provider === 'OpenRouter')
       .map((m) => m.apiModelName || m.key);
@@ -320,13 +188,13 @@ export class SnakeBenchService {
     if (!snakeBenchModels.includes(modelA)) {
       throw new Error(
         `Model '${modelA}' not available for SnakeBench. ` +
-        `Available models: ${snakeBenchModels.join(', ')}`
+        `Available models: ${snakeBenchModels.join(', ')}`,
       );
     }
     if (!snakeBenchModels.includes(modelB)) {
       throw new Error(
         `Model '${modelB}' not available for SnakeBench. ` +
-        `Available models: ${snakeBenchModels.join(', ')}`
+        `Available models: ${snakeBenchModels.join(', ')}`,
       );
     }
 
@@ -355,7 +223,7 @@ export class SnakeBenchService {
     const pricingInputB = configB ? parseCostStringToNumber(configB.cost.input) : 0;
     const pricingOutputB = configB ? parseCostStringToNumber(configB.cost.output) : 0;
 
-    const payload = {
+    const payload: Record<string, unknown> = {
       modelA: String(modelA),
       modelB: String(modelB),
       width,
@@ -378,7 +246,27 @@ export class SnakeBenchService {
       PYTHONUTF8: '1',
     };
 
-    // BYO API key handling (Poetiq-style)
+    // ARC Explainer runs do not use SnakeBench's Supabase DB or Supabase Storage.
+    // We persist via our own Postgres + local replay JSON under external/SnakeBench/backend/completed_games.
+    env.SNAKEBENCH_DISABLE_INTERNAL_DB = '1';
+    env.SNAKEBENCH_DISABLE_SUPABASE = '1';
+
+    const expectedOpenRouterBaseUrl = 'https://openrouter.ai/api/v1';
+    const configuredOpenRouterBaseUrl = (env.OPENROUTER_BASE_URL || '').trim();
+    if (
+      !configuredOpenRouterBaseUrl ||
+      configuredOpenRouterBaseUrl === expectedOpenRouterBaseUrl ||
+      configuredOpenRouterBaseUrl === `${expectedOpenRouterBaseUrl}/`
+    ) {
+      env.OPENROUTER_BASE_URL = expectedOpenRouterBaseUrl;
+    } else {
+      logger.warn(
+        `SnakeBench runMatch: overriding OPENROUTER_BASE_URL (${configuredOpenRouterBaseUrl}) with ${expectedOpenRouterBaseUrl} to avoid cookie-auth 401s`,
+        'snakebench-service',
+      );
+      env.OPENROUTER_BASE_URL = expectedOpenRouterBaseUrl;
+    }
+
     if (request.apiKey && request.provider) {
       switch (request.provider) {
         case 'openrouter':
@@ -415,17 +303,359 @@ export class SnakeBenchService {
       stdio: ['pipe', 'pipe', 'pipe'],
     };
 
+    const timeoutMs = process.env.SNAKEBENCH_TIMEOUT_MS
+      ? parseInt(process.env.SNAKEBENCH_TIMEOUT_MS, 10)
+      : DEFAULT_SNAKEBENCH_TIMEOUT_MS;
+
+    return {
+      modelA,
+      modelB,
+      width,
+      height,
+      maxRounds,
+      numApples,
+      payload,
+      pythonBin,
+      runnerPath,
+      backendDir,
+      spawnOpts,
+      timeoutMs,
+    };
+  }
+
+  /**
+   * Streaming variant of runMatch.
+   * Emits per-round status logs from stdout and, when available, live frames
+   * by polling `public.games.current_state` written by the SnakeBench engine.
+   *
+   * This is used by Worm Arena Live SSE; it does not change match semantics
+   * or persistence.
+   */
+  async runMatchStreaming(
+    request: SnakeBenchRunMatchRequest,
+    handlers: {
+      onStatus?: (status: WormArenaStreamStatus) => void;
+      onFrame?: (frame: WormArenaFrameEvent) => void;
+      onComplete?: (result: SnakeBenchRunMatchResult) => void;
+      onError?: (err: Error) => void;
+    } = {},
+  ): Promise<SnakeBenchRunMatchResult> {
+    const {
+      modelA,
+      modelB,
+      width,
+      height,
+      numApples,
+      payload,
+      pythonBin,
+      runnerPath,
+      backendDir,
+      spawnOpts,
+      timeoutMs,
+    } = this.prepareRunMatch(request);
+
+    return await new Promise<SnakeBenchRunMatchResult>((resolve, reject) => {
+      const child = spawn(pythonBin, [runnerPath], spawnOpts);
+
+      if (!child.stdout || !child.stderr || !child.stdin) {
+        const err = new Error('Python process streams not available for SnakeBench runner');
+        handlers.onError?.(err);
+        return reject(err);
+      }
+
+      const timeoutHandle = setTimeout(() => {
+        child.kill('SIGTERM');
+        const mins = Math.round(timeoutMs / (60 * 1000));
+        const err = new Error(
+          `SnakeBench runner timeout (${mins} minutes exceeded). ` +
+          `For longer matches, set SNAKEBENCH_TIMEOUT_MS environment variable.`,
+        );
+        logger.error(
+          `SnakeBench runner timeout (${mins} minutes exceeded). Process killed.`,
+          'snakebench-service',
+        );
+        handlers.onError?.(err);
+        reject(err);
+      }, timeoutMs);
+
+      child.stdout.setEncoding('utf8');
+      child.stderr.setEncoding('utf8');
+
+      let stdoutBuf = '';
+      let stderrBuf = '';
+      let lineBuf = '';
+
+      let discoveredGameId: string | null = null;
+      let livePollHandle: NodeJS.Timeout | null = null;
+      let pollInFlight = false;
+      let lastRoundSent = 0;
+
+      const stopLivePolling = () => {
+        if (livePollHandle) {
+          clearInterval(livePollHandle);
+          livePollHandle = null;
+        }
+      };
+
+      const startLivePolling = (gameId: string) => {
+        if (!handlers.onFrame || livePollHandle) return;
+        if (!repositoryService.isConnected() || !repositoryService.db) return;
+
+        livePollHandle = setInterval(async () => {
+          if (pollInFlight) return;
+          pollInFlight = true;
+          try {
+            const pool = repositoryService.db;
+            if (!pool) return;
+            const { rows } = await pool.query(
+              'SELECT current_state, rounds FROM public.games WHERE id = $1',
+              [gameId],
+            );
+            const row = rows?.[0];
+            if (!row || !row.current_state) return;
+
+            const stateRaw = row.current_state;
+            const state =
+              typeof stateRaw === 'string' ? JSON.parse(stateRaw) : stateRaw;
+            const roundNumber = Number(
+              state?.round_number ?? row.rounds ?? 0,
+            );
+            if (!Number.isFinite(roundNumber) || roundNumber <= lastRoundSent) {
+              return;
+            }
+
+            lastRoundSent = roundNumber;
+            const snakes =
+              state?.snake_positions ?? state?.snakes ?? {};
+            const apples = state?.apples ?? [];
+
+            handlers.onFrame?.({
+              round: roundNumber,
+              frame: {
+                state: {
+                  width,
+                  height,
+                  apples,
+                  snakes,
+                  maxRounds: request.maxRounds ?? 150,
+                },
+              },
+              timestamp: Date.now(),
+            });
+          } catch (err) {
+            // Ignore polling errors; stdout streaming still works.
+          } finally {
+            pollInFlight = false;
+          }
+        }, 700);
+      };
+
+      handlers.onStatus?.({ state: 'starting', message: 'Launching match...' });
+
+      logger.info(
+        `SnakeBench runMatchStreaming: OPENROUTER_BASE_URL=${spawnOpts.env?.OPENROUTER_BASE_URL ?? '(unset)'}`,
+        'snakebench-service',
+      );
+
+      child.stdout.on('data', (chunk: Buffer | string) => {
+        const text = chunk.toString();
+        stdoutBuf += text;
+        lineBuf += text;
+
+        const lines = lineBuf.split(/\r?\n/);
+        lineBuf = lines.pop() ?? '';
+
+        for (const rawLine of lines) {
+          const line = rawLine.trim();
+          if (!line) continue;
+
+          if (
+            line.includes('Provider error') ||
+            line.includes('No cookie auth credentials found') ||
+            line.includes('cookie auth')
+          ) {
+            logger.warn(`SnakeBench engine: ${line}`, 'snakebench-service');
+          }
+
+          if (!discoveredGameId) {
+            const inserted = line.match(/Inserted initial game record\s+([0-9a-fA-F-]+)/);
+            if (inserted?.[1]) {
+              discoveredGameId = inserted[1];
+              startLivePolling(discoveredGameId);
+            }
+          }
+
+          const finishedRound = line.match(/Finished round\s+(\d+)/i);
+          if (finishedRound?.[1]) {
+            const round = Number(finishedRound[1]);
+            if (Number.isFinite(round)) {
+              handlers.onStatus?.({
+                state: 'in_progress',
+                message: line,
+                round,
+              });
+              continue;
+            }
+          }
+
+          if (line.startsWith('{') && line.endsWith('}')) {
+            try {
+              const evt = JSON.parse(line);
+              if (evt?.type === 'frame' && handlers.onFrame) {
+                handlers.onFrame({
+                  round: Number(evt.round ?? 0),
+                  frame: evt.frame ?? evt,
+                  timestamp: Date.now(),
+                });
+                continue;
+              }
+              if (evt?.type === 'status') {
+                handlers.onStatus?.({
+                  state: 'in_progress',
+                  message: evt.message ?? line,
+                  round: evt.round,
+                });
+                continue;
+              }
+            } catch {
+              // Fall through to generic log handling.
+            }
+          }
+
+          handlers.onStatus?.({ state: 'in_progress', message: line });
+        }
+      });
+
+      child.stderr.on('data', (chunk: Buffer | string) => {
+        stderrBuf += chunk.toString();
+      });
+
+      child.on('close', (code: number | null) => {
+        clearTimeout(timeoutHandle);
+        stopLivePolling();
+
+        if (code !== 0) {
+          const errSnippet = (stderrBuf || stdoutBuf).trim().slice(0, 500);
+          logger.error(
+            `SnakeBench runner failed (exit code ${code ?? 'null'}): ${errSnippet}`,
+            'snakebench-service',
+          );
+          const err = new Error(`SnakeBench runner failed (exit code ${code ?? 'null'})`);
+          handlers.onError?.(err);
+          return reject(err);
+        }
+
+        const lines = stdoutBuf
+          .split(/\r?\n/)
+          .map((l) => l.trim())
+          .filter((l) => l.length > 0);
+
+        if (lines.length === 0) {
+          const err = new Error('SnakeBench runner produced no output');
+          handlers.onError?.(err);
+          return reject(err);
+        }
+
+        const lastLine = lines[lines.length - 1];
+        let parsed: any;
+        try {
+          parsed = JSON.parse(lastLine);
+        } catch (err) {
+          logger.error(
+            `SnakeBench runner output was not valid JSON: ${lastLine.slice(0, 200)}`,
+            'snakebench-service',
+          );
+          const parseErr = new Error('Failed to parse SnakeBench runner output');
+          handlers.onError?.(parseErr);
+          return reject(parseErr);
+        }
+
+        if (parsed && typeof parsed === 'object' && parsed.error) {
+          const err = new Error(String(parsed.error));
+          handlers.onError?.(err);
+          return reject(err);
+        }
+
+        const result: SnakeBenchRunMatchResult = {
+          gameId: parsed.game_id ?? parsed.gameId ?? '',
+          modelA: parsed.modelA,
+          modelB: parsed.modelB,
+          scores: parsed.scores ?? {},
+          results: parsed.results ?? {},
+          completedGamePath: parsed.completed_game_path ?? parsed.completedGamePath,
+        };
+
+        try {
+          snakeBenchIngestQueue.enqueue({
+            result,
+            width,
+            height,
+            numApples,
+            gameType: 'arc-explainer',
+          });
+        } catch (persistErr) {
+          const msg = persistErr instanceof Error ? persistErr.message : String(persistErr);
+          logger.warn(`SnakeBenchService.runMatchStreaming: failed to enqueue DB persistence: ${msg}`, 'snakebench-service');
+        }
+
+        void this.upsertGameIndex(result.completedGamePath, result.gameId, { modelA, modelB });
+
+        handlers.onComplete?.(result);
+        resolve(result);
+      });
+
+      child.on('error', (err) => {
+        clearTimeout(timeoutHandle);
+        stopLivePolling();
+        logger.error(
+          `Failed to spawn SnakeBench runner: ${err instanceof Error ? err.message : String(err)}`,
+          'snakebench-service',
+        );
+        const spawnErr = err instanceof Error ? err : new Error(String(err));
+        handlers.onError?.(spawnErr);
+        reject(spawnErr);
+      });
+
+      try {
+        child.stdin.setDefaultEncoding('utf8');
+        child.stdin.write(JSON.stringify(payload));
+        child.stdin.end();
+      } catch (err) {
+        clearTimeout(timeoutHandle);
+        stopLivePolling();
+        logger.error(
+          `Failed to send payload to SnakeBench runner: ${err instanceof Error ? err.message : String(err)}`,
+          'snakebench-service',
+        );
+        child.kill();
+        const sendErr = err instanceof Error ? err : new Error(String(err));
+        handlers.onError?.(sendErr);
+        reject(sendErr);
+      }
+    });
+  }
+
+  async runMatch(request: SnakeBenchRunMatchRequest): Promise<SnakeBenchRunMatchResult> {
+    const {
+      modelA,
+      modelB,
+      width,
+      height,
+      numApples,
+      payload,
+      pythonBin,
+      runnerPath,
+      backendDir,
+      spawnOpts,
+      timeoutMs,
+    } = this.prepareRunMatch(request);
+
     return new Promise<SnakeBenchRunMatchResult>((resolve, reject) => {
       const child = spawn(pythonBin, [runnerPath], spawnOpts);
 
       if (!child.stdout || !child.stderr || !child.stdin) {
         return reject(new Error('Python process streams not available for SnakeBench runner'));
       }
-
-      // NEW: Add configurable timeout to prevent hung processes (default 4 hours, safe for 2+ hour matches)
-      const timeoutMs = process.env.SNAKEBENCH_TIMEOUT_MS
-        ? parseInt(process.env.SNAKEBENCH_TIMEOUT_MS, 10)
-        : DEFAULT_SNAKEBENCH_TIMEOUT_MS;
 
       const timeoutHandle = setTimeout(() => {
         child.kill('SIGTERM');
@@ -447,8 +677,25 @@ export class SnakeBenchService {
       let stdoutBuf = '';
       let stderrBuf = '';
 
+      logger.info(
+        `SnakeBench runMatch: OPENROUTER_BASE_URL=${spawnOpts.env?.OPENROUTER_BASE_URL ?? '(unset)'}`,
+        'snakebench-service',
+      );
+
       child.stdout.on('data', (chunk: Buffer | string) => {
-        stdoutBuf += chunk.toString();
+        const text = chunk.toString();
+        stdoutBuf += text;
+
+        // Surface provider failures emitted by the SnakeBench engine so we can debug
+        // auth issues without forcing users to inspect Python output.
+        if (
+          text.includes('Provider error') ||
+          text.includes('No cookie auth credentials found') ||
+          text.includes('cookie auth')
+        ) {
+          const preview = text.trim().split(/\r?\n/).filter(Boolean).slice(-3).join(' | ');
+          logger.warn(`SnakeBench engine stdout (provider issue): ${preview}`, 'snakebench-service');
+        }
       });
 
       child.stderr.on('data', (chunk: Buffer | string) => {
@@ -584,7 +831,7 @@ export class SnakeBenchService {
     try {
       const { games, total } = await repositoryService.snakeBench.getRecentGames(safeLimit);
       if (total > 0 && games.length > 0) {
-        return { games, total };
+        return { games: this.filterReplayableGames(games), total };
       }
     } catch (dbErr) {
       const msg = dbErr instanceof Error ? dbErr.message : String(dbErr);
@@ -637,7 +884,7 @@ export class SnakeBenchService {
         };
       });
 
-      return { games, total };
+      return { games: this.filterReplayableGames(games), total };
     } catch (err) {
       const message = err instanceof Error ? err.message : String(err);
       logger.error(`Failed to list SnakeBench games: ${message}`, 'snakebench-service');
@@ -884,6 +1131,29 @@ export class SnakeBenchService {
     }
 
     return playable;
+  }
+
+  /**
+   * Apply a conservative minimum-rounds filter for Worm Arena replays.
+   * Very short diagnostic matches (< 20 rounds) are still stored, but
+   * we avoid surfacing them as default replays in the UI.
+   */
+  private filterReplayableGames(games: SnakeBenchGameSummary[]): SnakeBenchGameSummary[] {
+    if (!Array.isArray(games) || games.length === 0) return [];
+
+    const MIN_ROUNDS = 20;
+    const filtered = games.filter((g) => {
+      const rounds = Number.isFinite(g.roundsPlayed) ? Number(g.roundsPlayed) : 0;
+      return rounds >= MIN_ROUNDS;
+    });
+
+    if (filtered.length > 0) {
+      return filtered;
+    }
+
+    // Fallback: no games meet the threshold; return original list so the
+    // UI can still show "something", but prefer longer matches first.
+    return [...games].sort((a, b) => (b.roundsPlayed ?? 0) - (a.roundsPlayed ?? 0));
   }
 
   async healthCheck(): Promise<SnakeBenchHealthResponse> {

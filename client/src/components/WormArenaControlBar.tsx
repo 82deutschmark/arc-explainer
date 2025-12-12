@@ -59,18 +59,18 @@ export function WormArenaControlBar({
           </Button>
         </div>
 
-        <div className="text-base font-semibold text-[#3d2817]">
+        <div className="text-base font-semibold text-worm-ink">
           Round {Math.max(0, currentRound)} / {Math.max(0, totalRounds)}
         </div>
       </div>
 
       <div className="flex items-center justify-center gap-3">
-        <span className="text-sm text-muted-foreground">Thoughts show:</span>
-        <div className="flex rounded-md border bg-background">
+        <span className="text-sm text-muted-foreground">Show thoughts for:</span>
+        <div className="flex rounded-md border bg-background overflow-hidden">
           <Button
             size="sm"
             variant={showNextMove ? 'ghost' : 'default'}
-            className="rounded-none first:rounded-l-md"
+            className={`rounded-none first:rounded-l-md ${!showNextMove ? 'bg-worm-blue text-white hover:bg-worm-blue-hover' : ''}`}
             onClick={handleCurrentClick}
           >
             Current move
@@ -78,7 +78,7 @@ export function WormArenaControlBar({
           <Button
             size="sm"
             variant={showNextMove ? 'default' : 'ghost'}
-            className="rounded-none last:rounded-r-md"
+            className={`rounded-none last:rounded-r-md ${showNextMove ? 'bg-worm-blue text-white hover:bg-worm-blue-hover' : ''}`}
             onClick={handleNextClick}
           >
             Upcoming move

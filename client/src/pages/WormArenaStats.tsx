@@ -11,8 +11,6 @@
 
 import React from "react";
 import { useLocation } from "wouter";
-
-import { InlineMath } from "react-katex";
 import "katex/dist/katex.min.css";
 
 import WormArenaHeader from "@/components/WormArenaHeader";
@@ -26,42 +24,13 @@ import useWormArenaTrueSkillLeaderboard from "@/hooks/useWormArenaTrueSkillLeade
 import WormArenaTrueSkillLeaderboard from "@/components/WormArenaTrueSkillLeaderboard";
 import { summarizeWormArenaPlacement } from "@shared/utils/wormArenaPlacement.ts";
 
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import {
-  Table,
-  TableHead,
-  TableHeader,
-  TableRow,
-  TableCell,
-  TableBody,
-} from "@/components/ui/table";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
-import { HelpCircle } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { TooltipProvider } from "@/components/ui/tooltip";
 
-function DataNumber({
-  children,
-  size = "xl",
-}: {
-  children: React.ReactNode;
-  size?: "lg" | "xl";
-}) {
-  const baseClasses =
-    "inline-flex items-baseline px-2.5 py-0.5 rounded-md bg-[#e4f2e9] border border-[#9ece6a] font-extrabold leading-tight";
-  const sizeClass = size === "xl" ? " text-3xl" : " text-xl";
-  return (
-    <span className={baseClasses + sizeClass} style={{ color: "#064e3b" }}>
-      {children}
-    </span>
-  );
-}
+import WormArenaGlobalStatsStrip from "@/components/wormArena/stats/WormArenaGlobalStatsStrip";
+import WormArenaModelListCard from "@/components/wormArena/stats/WormArenaModelListCard";
+import WormArenaModelSnapshotCard from "@/components/wormArena/stats/WormArenaModelSnapshotCard";
+import WormArenaPlacementCard from "@/components/wormArena/stats/WormArenaPlacementCard";
 
 function useQueryParamModel(): string | null {
   const [location] = useLocation();
@@ -115,48 +84,21 @@ export default function WormArenaStats() {
     [rating],
   );
 
-  const filteredLeaderboard = React.useMemo(() => {
-    const term = filter.trim().toLowerCase();
-    const sorted = [...leaderboard].sort(
-      (a, b) => (b.gamesPlayed ?? 0) - (a.gamesPlayed ?? 0),
-    );
-    if (!term) return sorted;
-    return sorted.filter((entry) =>
-      entry.modelSlug.toLowerCase().includes(term),
-    );
-  }, [leaderboard, filter]);
-
   const handleSelectModel = (slug: string) => {
     setSelectedModel(slug);
   };
 
-  const pessimisticEquation = React.useMemo(() => {
-    if (!rating) return null;
-    const mu = rating.mu.toFixed(2);
-    const sigma = rating.sigma.toFixed(2);
-    const exposed = rating.exposed.toFixed(2);
-    return `\\mu - 3\\sigma = ${mu} - 3 \\times ${sigma} \\approx ${exposed}`;
-  }, [rating]);
-
-  const placementEquation = React.useMemo(() => {
-    if (!placement) return null;
-    const progressPercent = Math.round(placement.progress * 100);
-    return `\\text{progress} = \\frac{${placement.gamesPlayed}}{${placement.maxGames}} \\approx ${progressPercent}\\%`;
-  }, [placement]);
+  const recentActivityLabel = React.useMemo(() => {
+    if (!recentActivity) return null;
+    if (recentActivity.days && recentActivity.days > 0) {
+      return `Last ${recentActivity.days} days: ${recentActivity.gamesPlayed} games\nModels with games: ${recentActivity.uniqueModels}`;
+    }
+    return `All history: ${recentActivity.gamesPlayed} games\nModels with games: ${recentActivity.uniqueModels}`;
+  }, [recentActivity]);
 
   return (
     <TooltipProvider>
-      <div
-        className="min-h-screen"
-        style={{ backgroundColor: "#f5e6d3", fontFamily: "Fredoka, Nunito, sans-serif" }}
-      >
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300;400;500;600;700&display=swap"
-          rel="stylesheet"
-        />
-
+      <div className="worm-page">
         <WormArenaHeader
         totalGames={globalStats?.totalGames ?? 0}
         links={[
@@ -168,68 +110,7 @@ export default function WormArenaStats() {
       />
 
       <main className="p-8 max-w-7xl mx-auto space-y-6">
-        {/* Global strip */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <Card className="bg-[#faf6f1] border-[#d4b5a0]">
-            <CardHeader className="py-3">
-              <CardTitle
-                className="text-base font-bold"
-                style={{ color: "#3d2817" }}
-              >
-                Total matches
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="pb-3">
-              <DataNumber>{globalStats?.totalGames ?? 0}</DataNumber>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-[#faf6f1] border-[#d4b5a0]">
-            <CardHeader className="py-3">
-              <CardTitle
-                className="text-base font-bold"
-                style={{ color: "#3d2817" }}
-              >
-                Models competing
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="pb-3">
-              <DataNumber>{globalStats?.activeModels ?? 0}</DataNumber>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-[#faf6f1] border-[#d4b5a0]">
-            <CardHeader className="py-3">
-              <CardTitle
-                className="text-base font-bold"
-                style={{ color: "#3d2817" }}
-              >
-                Top apples (single game)
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="pb-3">
-              <DataNumber>{globalStats?.topApples ?? 0}</DataNumber>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-[#faf6f1] border-[#d4b5a0]">
-            <CardHeader className="py-3">
-              <CardTitle
-                className="text-base font-bold"
-                style={{ color: "#3d2817" }}
-              >
-                Total testing cost
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="pb-3">
-              <DataNumber>
-                ${globalStats?.totalCost?.toFixed
-                  ? globalStats.totalCost.toFixed(2)
-                  : globalStats?.totalCost ?? 0}
-              </DataNumber>
-            </CardContent>
-          </Card>
-        </div>
+        <WormArenaGlobalStatsStrip stats={globalStats ?? null} />
 
         {/* TrueSkill leaderboard (global Worm Arena rankings) */}
         <WormArenaTrueSkillLeaderboard
@@ -238,421 +119,39 @@ export default function WormArenaStats() {
           error={trueSkillError}
         />
 
-        {/* Models + snapshot/placement row */}
         <div className="grid grid-cols-1 xl:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)] gap-6 items-start">
-          {/* Models list (large) */}
-          <Card className="bg-[#faf6f1] border-[#d4b5a0]">
-            <CardHeader className="pb-3 flex flex-row items-baseline justify-between">
-              <div>
-                <CardTitle
-                  className="text-lg font-bold"
-                  style={{ color: "#3d2817" }}
-                >
-                  Models
-                </CardTitle>
-                <div
-                  className="text-sm font-semibold"
-                  style={{ color: "#7a6b5f" }}
-                >
-                  Sorted by games played (most to least)
-                </div>
-              </div>
-              {recentActivity && (
-                <div
-                  className="text-sm font-semibold text-right"
-                  style={{ color: "#3d2817" }}
-                >
-                  <div>
-                    {recentActivity.days && recentActivity.days > 0 ? (
-                      <>
-                        Last {recentActivity.days} days: {recentActivity.gamesPlayed} games
-                      </>
-                    ) : (
-                      <>All history: {recentActivity.gamesPlayed} games</>
-                    )}
-                  </div>
-                  <div>Models with games: {recentActivity.uniqueModels}</div>
-                </div>
-              )}
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <Input
-                placeholder="Search model (e.g. openai/gpt-5.1)"
-                value={filter}
-                onChange={(e) => setFilter(e.target.value)}
-                className="text-base font-semibold"
-                style={{ color: "#3d2817" }}
-              />
-              <ScrollArea className="h-[60vh] border rounded-md bg-white/90">
-                <div className="p-3 space-y-2">
-                  {filteredLeaderboard.map((entry, index) => {
-                    const active = entry.modelSlug === selectedModel;
-                    return (
-                      <button
-                        key={entry.modelSlug}
-                        type="button"
-                        onClick={() => handleSelectModel(entry.modelSlug)}
-                        className={`w-full flex items-center justify-between px-3 py-2 text-sm font-semibold rounded border transition-colors ${
-                          active
-                            ? "bg-[#1a2f23] text-[#faf6f1] border-[#1a2f23]"
-                            : "bg-white text-[#1f130a] border-[#d4b5a0] hover:bg-[#faf6f1]"
-                        }`}
-                      >
-                        <div className="flex items-center gap-3 min-w-0">
-                          <span
-                            className="text-xs font-bold"
-                            style={{ color: active ? "#f5e6d3" : "#7a6b5f" }}
-                          >
-                            #{index + 1}
-                          </span>
-                          <span className="truncate font-mono">{entry.modelSlug}</span>
-                        </div>
-                        <div className="text-xs sm:text-sm font-semibold text-right">
-                          <div>{entry.gamesPlayed} games</div>
-                          <div
-                            className="text-[11px]"
-                            style={{ color: active ? "#f5e6d3" : "#7a6b5f" }}
-                          >
-                            {entry.wins}W / {entry.losses}L / {entry.ties}T
-                          </div>
-                        </div>
-                      </button>
-                    );
-                  })}
-                  {filteredLeaderboard.length === 0 && (
-                    <div
-                      className="text-sm text-center font-semibold py-6"
-                      style={{ color: "#7a6b5f" }}
-                    >
-                      No models yet. Run a few matches to populate stats.
-                    </div>
-                  )}
-                </div>
-              </ScrollArea>
-            </CardContent>
-          </Card>
+          <WormArenaModelListCard
+            leaderboard={leaderboard}
+            recentActivityLabel={recentActivityLabel}
+            selectedModel={selectedModel}
+            filter={filter}
+            onFilterChange={setFilter}
+            onSelectModel={handleSelectModel}
+          />
 
-          {/* Snapshot + placement */}
           <div className="space-y-4">
-            <Card className="bg-[#faf6f1] border-[#d4b5a0]">
-              <CardHeader className="pb-2">
-                <CardTitle
-                  className="text-lg font-bold flex items-center justify-between"
-                  style={{ color: "#3d2817" }}
-                >
-                  <span>Model snapshot</span>
-                  {rating?.modelSlug && (
-                    <Badge variant="outline" className="text-xs font-mono">
-                      {rating.modelSlug}
-                    </Badge>
-                  )}
-                </CardTitle>
-              </CardHeader>
-              <CardContent
-                className="space-y-4 text-sm"
-                style={{ color: "#3d2817" }}
-              >
-                {loadingRating && (
-                  <div className="text-sm font-semibold">Loading rating...</div>
-                )}
-                {ratingError && (
-                  <div className="text-sm font-semibold text-red-700">{ratingError}</div>
-                )}
-                {!loadingRating && !rating && !ratingError && (
-                  <div
-                    className="text-sm font-semibold"
-                    style={{ color: "#7a6b5f" }}
-                  >
-                    Select a model in the list to see its rating details.
-                  </div>
-                )}
+            <WormArenaModelSnapshotCard
+              rating={rating ?? null}
+              isLoading={loadingRating}
+              error={ratingError}
+            />
 
-                {rating && (
-                  <>
-                    <div className="grid grid-cols-2 gap-4">
-                      <div>
-                        <div
-                          className="text-sm font-bold flex items-center gap-2"
-                          style={{ color: "#3d2817" }}
-                        >
-                          <span>Skill estimate</span>
-                          <InlineMath math={"\\mu"} />
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <HelpCircle className="w-4 h-4 cursor-help" style={{ color: "#7a6b5f" }} />
-                            </TooltipTrigger>
-                            <TooltipContent side="top" className="max-w-xs text-xs">
-                              Higher is better. This is the center of the model's estimated skill distribution.
-                            </TooltipContent>
-                          </Tooltip>
-                        </div>
-                        <DataNumber>{rating.mu.toFixed(2)}</DataNumber>
-                        <div
-                          className="text-xs font-mono mt-1"
-                          style={{ color: "#3d2817" }}
-                        >
-                          <InlineMath math={"\\mu"} /> is the centre of the model skill
-                          distribution.
-                        </div>
-                      </div>
+            <WormArenaPlacementCard placement={placement} />
 
-                      <div>
-                        <div
-                          className="text-sm font-bold flex items-center gap-2"
-                          style={{ color: "#3d2817" }}
-                        >
-                          <span>Uncertainty</span>
-                          <InlineMath math={"\\sigma"} />
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <HelpCircle className="w-4 h-4 cursor-help" style={{ color: "#7a6b5f" }} />
-                            </TooltipTrigger>
-                            <TooltipContent side="top" className="max-w-xs text-xs">
-                              Bigger σ = less certain about skill. Smaller is better (more confidence in the rating).
-                            </TooltipContent>
-                          </Tooltip>
-                        </div>
-                        <DataNumber>{rating.sigma.toFixed(2)}</DataNumber>
-                        <div
-                          className="text-xs font-mono mt-1"
-                          style={{ color: "#3d2817" }}
-                        >
-                          Most skill lies in
-                          {" "}
-                          <InlineMath math={"\\mu \\pm 3\\sigma"} />.
-                        </div>
-                      </div>
-
-                      <div>
-                        <div
-                          className="text-sm font-bold flex items-center gap-2"
-                          style={{ color: "#3d2817" }}
-                        >
-                          <span>Pessimistic rating</span>
-                          <InlineMath math={"\\mu - 3\\sigma"} />
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <HelpCircle className="w-4 h-4 cursor-help" style={{ color: "#7a6b5f" }} />
-                            </TooltipTrigger>
-                            <TooltipContent side="top" className="max-w-xs text-xs">
-                              Conservative lower bound: the skill rating we'd guarantee with 99.7% confidence.
-                            </TooltipContent>
-                          </Tooltip>
-                        </div>
-                        <DataNumber>{rating.exposed.toFixed(2)}</DataNumber>
-                        {pessimisticEquation && (
-                          <div
-                            className="text-xs font-mono mt-1"
-                            style={{ color: "#3d2817" }}
-                          >
-                            <InlineMath math={pessimisticEquation} />
-                          </div>
-                        )}
-                      </div>
-
-                      <div>
-                        <div
-                          className="text-sm font-bold flex items-center gap-2"
-                          style={{ color: "#3d2817" }}
-                        >
-                          <span>Leaderboard score</span>
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <HelpCircle className="w-4 h-4 cursor-help" style={{ color: "#7a6b5f" }} />
-                            </TooltipTrigger>
-                            <TooltipContent side="top" className="max-w-xs text-xs">
-                              Display ranking (scaled from μ ≈ 0–50). Higher scores rank higher on the leaderboard.
-                            </TooltipContent>
-                          </Tooltip>
-                        </div>
-                        <DataNumber>{rating.displayScore.toFixed(0)}</DataNumber>
-                        <div
-                          className="text-xs font-mono mt-1"
-                          style={{ color: "#3d2817" }}
-                        >
-                          Scaled from TrueSkill rating for display.
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-5 gap-3 text-sm mt-2">
-                      <div>
-                        <div
-                          className="font-bold"
-                          style={{ color: "#3d2817" }}
-                        >
-                          Games
-                        </div>
-                        <DataNumber size="lg">{rating.gamesPlayed}</DataNumber>
-                      </div>
-                      <div>
-                        <div
-                          className="font-bold"
-                          style={{ color: "#3d2817" }}
-                        >
-                          Wins
-                        </div>
-                        <DataNumber size="lg">{rating.wins}</DataNumber>
-                      </div>
-                      <div>
-                        <div
-                          className="font-bold"
-                          style={{ color: "#3d2817" }}
-                        >
-                          Losses
-                        </div>
-                        <DataNumber size="lg">{rating.losses}</DataNumber>
-                      </div>
-                      <div>
-                        <div
-                          className="font-bold"
-                          style={{ color: "#3d2817" }}
-                        >
-                          Ties
-                        </div>
-                        <DataNumber size="lg">{rating.ties}</DataNumber>
-                      </div>
-                      <div>
-                        <div
-                          className="font-bold flex items-center gap-1"
-                          style={{ color: "#3d2817" }}
-                        >
-                          <span>Testing cost</span>
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <HelpCircle className="w-4 h-4 cursor-help" style={{ color: "#7a6b5f" }} />
-                            </TooltipTrigger>
-                            <TooltipContent side="top" className="max-w-xs text-xs">
-                              Total USD spent testing this model via LLM API calls.
-                            </TooltipContent>
-                          </Tooltip>
-                        </div>
-                        <div
-                          className="inline-flex items-baseline px-2.5 py-0.5 rounded-md bg-[#f0e5d8] border border-[#d4b5a0] font-bold text-sm"
-                          style={{ color: "#3d2817" }}
-                        >
-                          ${rating.totalCost.toFixed(4)}
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Math legend */}
-                    <div
-                      className="mt-4 p-3 rounded-md border bg-white/80 text-xs"
-                      style={{ borderColor: "#d4b5a0", color: "#3d2817" }}
-                    >
-                      <div className="font-semibold mb-1">TrueSkill legend</div>
-                      <div className="space-y-1">
-                        <div>
-                          <InlineMath math={"\\mu"} /> : skill estimate.
-                        </div>
-                        <div>
-                          <InlineMath math={"\\sigma"} /> : uncertainty (spread of the
-                          estimate).
-                        </div>
-                        <div>
-                          <InlineMath math={"\\mu - 3\\sigma"} /> : conservative lower
-                          bound we use as the pessimistic rating.
-                        </div>
-                        <div>
-                          Numbers shown with the green pill highlight are live metrics
-                          pulled directly from Worm Arena games.
-                        </div>
-                      </div>
-                    </div>
-                  </>
-                )}
-              </CardContent>
-            </Card>
-
-            <Card className="bg-[#faf6f1] border-[#d4b5a0]">
-              <CardHeader className="pb-2">
-                <CardTitle
-                  className="text-lg font-bold"
-                  style={{ color: "#3d2817" }}
-                >
-                  Placement status
-                </CardTitle>
-              </CardHeader>
-              <CardContent
-                className="space-y-3 text-sm"
-                style={{ color: "#3d2817" }}
-              >
-                {placement ? (
-                  <>
-                    <div className="flex items-center justify-between text-sm font-bold">
-                      <span>{placement.label}</span>
-                      <Badge variant="outline" className="text-xs font-bold">
-                        {placement.gamesPlayed}/{placement.maxGames} games
-                      </Badge>
-                    </div>
-                    <div className="w-full h-3 rounded-full bg-[#e5d5c5] overflow-hidden">
-                      <div
-                        className="h-full rounded-full"
-                        style={{
-                          width: `${Math.round(placement.progress * 100)}%`,
-                          background:
-                            placement.phase === "complete" ||
-                            placement.phase === "effectively_complete"
-                              ? "#9ece6a"
-                              : "#c85a3a",
-                        }}
-                      />
-                    </div>
-                    <div
-                      className="text-sm font-semibold"
-                      style={{ color: "#7a6b5f" }}
-                    >
-                      {placement.description}
-                    </div>
-                    {placementEquation && (
-                      <div
-                        className="text-xs font-mono"
-                        style={{ color: "#3d2817" }}
-                      >
-                        <InlineMath math={placementEquation} />
-                      </div>
-                    )}
-                    <div
-                      className="text-xs font-semibold"
-                      style={{ color: "#7a6b5f" }}
-                    >
-                      We aim for roughly nine good games per model; we can stop
-                      earlier if sigma is already low, or keep playing for more
-                      precision.
-                    </div>
-                  </>
-                ) : (
-                  <div
-                    className="text-sm font-semibold"
-                    style={{ color: "#7a6b5f" }}
-                  >
-                    Select a model to see placement progress.
-                  </div>
-                )}
-
-                {rating && rating.isActive === false && (
-                  <div
-                    className="text-xs font-semibold border-t pt-2 mt-2"
-                    style={{ color: "#7a6b5f" }}
-                  >
-                    This model is currently inactive, but its stats are preserved.
-                  </div>
-                )}
-              </CardContent>
-            </Card>
+            {rating && rating.isActive === false && (
+              <Card className="worm-card">
+                <CardContent className="text-xs font-semibold pt-4 worm-muted">
+                  This model is currently inactive, but its stats are preserved.
+                </CardContent>
+              </Card>
+            )}
           </div>
         </div>
 
         {/* Global greatest hits (replay-friendly matches) */}
-        <Card className="bg-[#faf6f1] border-[#d4b5a0] mt-6">
+        <Card className="worm-card mt-6">
           <CardHeader className="pb-2">
-            <CardTitle
-              className="text-lg font-bold"
-              style={{ color: "#3d2817" }}
-            >
-              Greatest Hits
-            </CardTitle>
+            <CardTitle className="text-lg worm-card-title">Greatest Hits</CardTitle>
           </CardHeader>
           <CardContent>
             <WormArenaGreatestHits />

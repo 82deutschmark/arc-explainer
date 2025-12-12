@@ -126,7 +126,11 @@ export default function HuggingFaceUnionAccuracy() {
 
   // Create attempt pair options (only groups with 2+ attempts)
   const attemptPairOptions = useMemo(() => {
-    return attemptGroups
+    const preferredDefaultBaseModels = [
+      'gpt-5-2-2025-12-11-thinking-high',
+    ];
+
+    const options = attemptGroups
       .filter((group) => group.attempts.length >= 2)
       .map((group) => {
         const sorted = [...group.attempts].sort((a, b) => a.attemptNumber - b.attemptNumber);
@@ -138,13 +142,25 @@ export default function HuggingFaceUnionAccuracy() {
           modelNames,
         };
       });
+
+    options.sort((a, b) => {
+      const prefA = preferredDefaultBaseModels.indexOf(a.baseModelName);
+      const prefB = preferredDefaultBaseModels.indexOf(b.baseModelName);
+
+      const rankA = prefA === -1 ? Number.POSITIVE_INFINITY : prefA;
+      const rankB = prefB === -1 ? Number.POSITIVE_INFINITY : prefB;
+
+      if (rankA !== rankB) return rankA - rankB;
+      return a.baseModelName.localeCompare(b.baseModelName);
+    });
+
+    return options;
   }, [attemptGroups]);
 
-  // Auto-select 9th pair if available, otherwise first pair
+  // Auto-select first pair (which is ordered to prefer GPT-5.2 High)
   useEffect(() => {
     if (!selectedAttemptPair && attemptPairOptions.length > 0) {
-      const ninthPair = attemptPairOptions.length >= 9 ? attemptPairOptions[8] : attemptPairOptions[0];
-      setSelectedAttemptPair(ninthPair.value);
+      setSelectedAttemptPair(attemptPairOptions[0].value);
     }
   }, [attemptPairOptions, selectedAttemptPair]);
 

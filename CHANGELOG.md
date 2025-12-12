@@ -1,3 +1,89 @@
+### Version 6.1.32  Dec 12, 2025 (PENDING TESTING)
+
+- **Scoring: default model now GPT-5.2 High** (Author: Cascade)
+  - Reordered the `/scoring` model dropdown so `gpt-5-2-2025-12-11-thinking-high` appears first and is auto-selected by default.
+  - **Files Modified**: `client/src/pages/HuggingFaceUnionAccuracy.tsx`, `CHANGELOG.md`
+
+- **Worm Arena: fix OpenRouter cookie-auth 401 causing random-move fallbacks** (Author: Cascade)
+  - Ensured the SnakeBench subprocess always uses the official OpenRouter API base URL (`https://openrouter.ai/api/v1`) to prevent accidental routing to cookie-auth protected endpoints (which surfaced as `401: No cookie auth credentials found`).
+  - SnakeBench submodule now honors `SNAKEBENCH_DISABLE_INTERNAL_DB` / `SNAKEBENCH_DISABLE_SUPABASE` so ARC Explainer runs never attempt Supabase DB writes or Supabase Storage uploads (local replay JSON + ARC Explainer Postgres ingest remain).
+  - This prevents provider failures from triggering SnakeBench's emergency “random move” fallback during games.
+  - **Files Modified**: `server/services/snakeBenchService.ts`, `external/SnakeBench/backend/main.py`, `CHANGELOG.md`
+
+- **Worm Arena Stats: fix win rate bug and unreadable font sizes** (Author: Cascade)
+  - **Bug fix**: `SnakeBenchRepository.getBasicLeaderboard` now always returns `winRate` regardless of `sortBy` parameter. Previously win rate was only included when sorting by win rate, causing the UI to show "—" for all entries.
+  - **Font sizes**: Bumped `WormArenaStatsPanel` from `text-xs` (12px) to `text-base` (16px) for table content, `text-sm` (14px) for model names. Increased cell padding for better readability.
+  - **Font sizes**: Bumped `WormArenaGreatestHits` from `text-[11px]` to `text-sm`/`text-base` throughout. Title now `text-xl`.
+  - **Cost display**: Greatest Hits now hides the cost badge when `totalCost === 0` instead of showing "$0.0000".
+  - **Hall of Fame**: Reordered curated games to show matches with actual cost data first; legacy o3/o4 matches without cost tracking moved to end.
+  - **Files Modified**: `server/repositories/SnakeBenchRepository.ts`, `client/src/components/WormArenaStatsPanel.tsx`, `client/src/components/WormArenaGreatestHits.tsx`, `server/services/snakeBenchHallOfFame.ts`, `CHANGELOG.md`
+
+### Version 6.1.30  Dec 12, 2025 (PENDING TESTING)
+
+- **Worm Arena Live: curated 1v1 matchup selector (no batching)** (Author: GPT-5.2 Codex CLI)
+  - Added a shared curated matchup gallery with categorized, statistically useful pairings and a default **GPT‑5.2 vs GPT‑5 Nano** matchup.
+  - Rebuilt `WormArenaLive` to remove multi‑opponent/batch UI and launch a single selected curated match with live streaming, keeping the live board and status panels intact.
+  - Added a new `WormArenaMatchupSelector` card grid and moved board/BYO settings into a collapsible “Advanced Settings” section.
+  - Updated `wormArenaStreamController.prepare` to accept single‑match requests with `modelB` and no `opponents`/`count`, enabling the new flow.
+  - **Files Modified/Created**: `shared/utils/curatedMatchups.ts`, `client/src/components/WormArenaMatchupSelector.tsx`, `client/src/pages/WormArenaLive.tsx`, `server/controllers/wormArenaStreamController.ts`, `CHANGELOG.md`
+
+### Version 6.1.31  Dec 11, 2025 (PENDING TESTING)
+
+- **Worm Arena canonical theme + stats page refactor** (Author: Cascade)
+  - Added a single canonical Worm Arena theme powered by CSS variables + Tailwind `worm.*` tokens; removed repeated earthy-palette literals and arbitrary hex Tailwind classes.
+  - Centralized Fredoka font loading in `client/index.html` and removed per-page font `<link>` tags.
+  - Refactored Worm Arena shared components and pages to use theme utilities only (no inline hex styling), including fixing a broken `FIX THIS TODO` rendering bug.
+  - Split `/worm-arena/stats` into small reusable subcomponents and moved `DataNumber` into `client/src/components/wormArena/DataNumber.tsx`.
+  - **Files Modified/Created**: `client/src/index.css`, `tailwind.config.ts`, `client/index.html`, `client/src/components/WormArenaStatsPanel.tsx`, `client/src/components/WormArenaHeader.tsx`, `client/src/components/WormArenaControlBar.tsx`, `client/src/components/WormArenaTrueSkillLeaderboard.tsx`, `client/src/components/WormArenaGreatestHits.tsx`, `client/src/components/WormArenaMatchupSelector.tsx`, `client/src/components/WormArenaHeaderStartAction.tsx`, `client/src/components/WormArenaRecentGames.tsx`, `client/src/components/WormArenaGameBoard.tsx`, `client/src/components/WormArenaReasoning.tsx`, `client/src/components/WormArenaSetup.tsx`, `client/src/pages/WormArenaStats.tsx`, `client/src/pages/WormArenaLive.tsx`, `client/src/pages/WormArena.tsx`, `client/src/components/wormArena/DataNumber.tsx`, `client/src/components/wormArena/stats/WormArenaGlobalStatsStrip.tsx`, `client/src/components/wormArena/stats/WormArenaModelListCard.tsx`, `client/src/components/wormArena/stats/WormArenaModelSnapshotCard.tsx`, `client/src/components/wormArena/stats/WormArenaPlacementCard.tsx`, `CHANGELOG.md`
+
+### Version 6.1.29  Dec 11, 2025 (PENDING TESTING)
+
+- **Worm Arena Live streaming: per-round SSE + live board frames** (Author: GPT-5.2 Extra High)
+  - Added `SnakeBenchService.runMatchStreaming` to emit per-round status over SSE and (when DB live state is available) poll `public.games.current_state` for live frames so the Worm Arena Live board updates during play, while preserving the existing final replay/DB persistence flow.
+  - Updated `wormArenaStreamController` to run both single and batch sessions through the streaming runner, forward `stream.frame` events, restore legacy single-match `modelB` handling, and avoid duplicate `stream.complete` events from the SSE manager.
+  - Hardened `useWormArenaStreaming` to handle `stream.end` without spurious failures, close EventSource cleanly on completion, and reset frames between batch matches so the live board always reflects the active matchup.
+  - **Files Modified**: `server/services/snakeBenchService.ts`, `server/controllers/wormArenaStreamController.ts`, `client/src/hooks/useWormArenaStreaming.ts`, `CHANGELOG.md`
+
+### Version 6.1.28  Dec 11, 2025 (PENDING TESTING)
+
+- **SnakeBench Responses defaults: capture reasoning properly for OpenAI/xAI models** (Author: Cascade)
+  - Ensured Worm Arena / SnakeBench games that use OpenRouter models under the `openai/*` or `x-ai/*` namespaces always call the Responses API with our standard reasoning-friendly defaults: `reasoning.summary: "detailed"`, `text.verbosity: "medium"`, `store: true`, and `include: ["reasoning.encrypted_content"]`.
+  - This prevents the common failure mode where runs incur large `reasoning_tokens` but return `null` reasoning summaries because the request omitted `reasoning.summary` / `include` / `store`.
+  - **Files Modified**: `server/python/snakebench_runner.py`, `external/SnakeBench/backend/llm_providers.py`, `CHANGELOG.md`
+
+- **Worm Arena Live GPT-5 tournament & smart matchmaking plan** (Author: Cascade)
+  - Added a detailed plan focusing on GPT-5-first defaults for Worm Arena Live, a smart opponent recommendation API that prioritizes underplayed models and never-before-seen matchups, and UX flows for running GPT-5-centric multi-opponent tournaments from the live page.
+  - Clarified how this plan fits alongside existing Worm Arena streaming and UI plans, keeping all endpoints public and reusing the current SnakeBench repository and SSE infrastructure.
+  - **Files Created**: `docs/plans/2025-12-11-worm-arena-live-gpt5-tournament-plan.md`, `CHANGELOG.md`
+
+- **Worm Arena Live default model: GPT-5.2** (Author: Cascade)
+  - Updated Worm Arena Live to prefer `openai/gpt-5.2` as the default Model A (with a safe fallback order to other GPT-5 family models if GPT-5.2 is unavailable).
+  - **Files Modified**: `client/src/pages/WormArenaLive.tsx`, `CHANGELOG.md`
+
+### Version 6.1.27  Dec 11, 2025 (PENDING TESTING)
+
+- **Worm Arena live streaming and GPT-5 tournament defaults plan** (Author: GPT-5.1 Codex CLI)
+  - Added a comprehensive plan covering live SSE hardening, GPT-5-first default model presets, and smart tournament scheduling that prioritizes low-play models and unseen opponent pairs for fair rating coverage.
+  - Outlined backend and UI steps to bridge Python live data (stdout + `/api/games/live`) into the existing Worm Arena SSE flow while keeping replay/DB persistence intact, plus a tournament tab design with rationale tags and batch progress.
+  - **Files Created/Modified**: `docs/2025-12-11-worm-arena-live-streaming-tournament-plan.md`, `CHANGELOG.md`
+
+### Version 6.1.26  Dec 11, 2025 (PENDING TESTING)
+
+- **Worm Arena Greatest Hits link navigation: fix fallback game resetting** (Author: Claude Code using Haiku 4.5)
+  - Fixed a critical bug where clicking Greatest Hits replay links always loaded the same fallback game instead of the selected game, caused by overly strict validation that treated any game not in the recent 10-game list as invalid.
+  - Simplified the game selection logic to trust URL-provided matchIds completely: the effect now only picks a default game when no game is currently selected (empty state), and otherwise trusts the URL parameter and lets the API handle validation/errors gracefully.
+  - Removed the fragile ref-based protection logic that attempted to distinguish URL-provided vs. manually-selected games, which was prone to race conditions and incomplete coverage.
+  - **Impact**: Users can now reliably navigate directly to any game via URL or Greatest Hits links without being redirected to a default fallback, fixing playback of historical, curated, and deep-linked matches.
+  - **Files Modified**: `client/src/pages/WormArena.tsx`, `CHANGELOG.md`
+
+### Version 6.1.25  Dec 11, 2025 (PENDING TESTING)
+
+- **Worm Arena replay UX: skip short games, fix headers, clarify thoughts toggle** (Author: GPT-5.1 Codex Mini)
+  - Updated the SnakeBench game listing service to down-rank very short matches by default, only surfacing replays with at least 20 rounds when possible and otherwise preferring the longest available game so the Worm Arena viewer no longer opens on a 6-round diagnostic match.
+  - Adjusted the Worm Arena replay page to pick a default match that respects this minimum-rounds rule and to default the reasoning display to the **current move**, with a clearer "Show thoughts for: Current move / Upcoming move" toggle and stronger visual highlighting for the selected option.
+  - Replaced the fragile worm header glyph in the reasoning side panels with a broadly supported emoji so player headers no longer show a broken icon on some platforms.
+  - **Files Modified**: `server/services/snakeBenchService.ts`, `client/src/pages/WormArena.tsx`, `client/src/components/WormArenaReasoning.tsx`, `client/src/components/WormArenaControlBar.tsx`, `docs/2025-12-11-worm-arena-gameboard-fixes-plan.md`, `CHANGELOG.md`
+
 ### Version 6.1.24  Dec 11, 2025 (PENDING TESTING)
 
 - **Worm Arena Hall of Fame: curated top 10 replays** (Author: GPT-5.1 High Reasoning)

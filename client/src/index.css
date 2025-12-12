@@ -27,6 +27,40 @@
   --destructive-foreground: hsl(60, 9.1%, 97.8%);
   --ring: hsl(20, 14.3%, 4.1%);
   --radius: 0.5rem;
+
+  --worm-bg: #f5e6d3;
+  --worm-card: #faf6f1;
+  --worm-border: #d4b5a0;
+  --worm-ink: #3d2817;
+  --worm-muted: #7a6b5f;
+  --worm-ink-strong: #1a2f23;
+  --worm-track: #e5d5c5;
+  --worm-highlight-bg: #e4f2e9;
+  --worm-green: #9ece6a;
+  --worm-green-hover: #5a8836;
+  --worm-red: #c85a3a;
+  --worm-green-ink: #064e3b;
+  --worm-blue: #2563eb;
+  --worm-blue-hover: #1d4ed8;
+  --worm-orange: #f5a623;
+  --worm-orange-hover: #e2961f;
+  --worm-board-bg: #6b5344;
+  --worm-board-frame: #2e7d32;
+
+  --worm-header-bg: #2d1f0f;
+  --worm-header-accent: #d4a574;
+  --worm-header-link: #c79b6d;
+  --worm-header-ink: #f5e6d3;
+
+  --worm-metric-rating: #1f4f7a;
+  --worm-metric-sigma: #7b3fe4;
+  --worm-metric-games: #5c3b1d;
+  --worm-metric-wins: #1f7a3a;
+  --worm-metric-losses: #b3261e;
+  --worm-metric-ties: #c85a11;
+  --worm-metric-apples: #5b6f1f;
+  --worm-metric-winrate: #a0266a;
+  --worm-metric-cost: #8b5a00;
 }
 
 .dark {
@@ -50,6 +84,40 @@
   --destructive-foreground: hsl(0, 0%, 98%);
   --ring: hsl(240, 4.9%, 83.9%);
   --radius: 0.5rem;
+
+  --worm-bg: #f5e6d3;
+  --worm-card: #faf6f1;
+  --worm-border: #d4b5a0;
+  --worm-ink: #3d2817;
+  --worm-muted: #7a6b5f;
+  --worm-ink-strong: #1a2f23;
+  --worm-track: #e5d5c5;
+  --worm-highlight-bg: #e4f2e9;
+  --worm-green: #9ece6a;
+  --worm-green-hover: #5a8836;
+  --worm-red: #c85a3a;
+  --worm-green-ink: #064e3b;
+  --worm-blue: #2563eb;
+  --worm-blue-hover: #1d4ed8;
+  --worm-orange: #f5a623;
+  --worm-orange-hover: #e2961f;
+  --worm-board-bg: #6b5344;
+  --worm-board-frame: #2e7d32;
+
+  --worm-header-bg: #2d1f0f;
+  --worm-header-accent: #d4a574;
+  --worm-header-link: #c79b6d;
+  --worm-header-ink: #f5e6d3;
+
+  --worm-metric-rating: #1f4f7a;
+  --worm-metric-sigma: #7b3fe4;
+  --worm-metric-games: #5c3b1d;
+  --worm-metric-wins: #1f7a3a;
+  --worm-metric-losses: #b3261e;
+  --worm-metric-ties: #c85a11;
+  --worm-metric-apples: #5b6f1f;
+  --worm-metric-winrate: #a0266a;
+  --worm-metric-cost: #8b5a00;
 }
 
 @layer base {
@@ -60,6 +128,107 @@
   body {
     @apply font-sans antialiased bg-background text-foreground;
   }
+}
+
+@layer components {
+  .worm-page {
+    @apply min-h-screen font-worm;
+    background: var(--worm-bg);
+    color: var(--worm-ink);
+  }
+
+  .worm-card {
+    @apply border rounded-lg;
+    background: var(--worm-card);
+    border-color: var(--worm-border);
+    color: var(--worm-ink);
+  }
+
+  .worm-card-soft {
+    @apply border rounded-lg;
+    background: rgba(255, 255, 255, 0.9);
+    border-color: var(--worm-border);
+    color: var(--worm-ink);
+  }
+
+  .worm-card-title {
+    @apply font-bold;
+    color: var(--worm-ink);
+  }
+
+  .worm-muted {
+    color: var(--worm-muted);
+  }
+
+  .worm-border {
+    border-color: var(--worm-border);
+  }
+
+  .worm-pill-green {
+    @apply inline-flex items-baseline rounded-md border font-extrabold leading-tight;
+    background: var(--worm-highlight-bg);
+    border-color: var(--worm-green);
+    color: var(--worm-green-ink);
+  }
+
+  .worm-pill-neutral {
+    @apply inline-flex items-baseline rounded-md border font-bold;
+    background: rgba(255, 255, 255, 0.8);
+    border-color: var(--worm-border);
+    color: var(--worm-ink);
+  }
+
+  .worm-table-head {
+    @apply border-b;
+    border-color: rgba(212, 181, 160, 0.55);
+    background: rgba(250, 246, 241, 0.9);
+    color: var(--worm-ink);
+  }
+
+  .worm-table-row {
+    @apply border-b last:border-0;
+    border-color: rgba(212, 181, 160, 0.35);
+  }
+
+  .worm-header {
+    @apply relative overflow-hidden;
+    background: var(--worm-header-bg);
+    border-bottom: 3px solid var(--worm-header-accent);
+    min-height: 64px;
+  }
+
+  .worm-header-pattern {
+    background-image: radial-gradient(circle at 20% 50%, rgba(212, 165, 116, 0.1) 0%, transparent 50%),
+      radial-gradient(circle at 80% 80%, rgba(139, 90, 43, 0.1) 0%, transparent 50%);
+  }
+
+  .worm-header-subtitle {
+    color: var(--worm-header-accent);
+  }
+
+  .worm-header-title {
+    @apply text-2xl font-bold tracking-tight leading-tight font-worm;
+    color: var(--worm-header-ink);
+  }
+
+  .worm-header-link {
+    color: var(--worm-header-link);
+  }
+
+  .worm-header-link-active {
+    color: var(--worm-header-ink);
+    border-color: var(--worm-header-ink);
+  }
+
+  .worm-metric-rating { color: var(--worm-metric-rating); }
+  .worm-metric-sigma { color: var(--worm-metric-sigma); }
+  .worm-metric-games { color: var(--worm-metric-games); }
+  .worm-metric-wins { color: var(--worm-metric-wins); }
+  .worm-metric-losses { color: var(--worm-metric-losses); }
+  .worm-metric-ties { color: var(--worm-metric-ties); }
+  .worm-metric-apples { color: var(--worm-metric-apples); }
+  .worm-metric-winrate { color: var(--worm-metric-winrate); }
+  .worm-metric-cost { color: var(--worm-metric-cost); }
 }
 
 /* Custom slow animations for toggle button - requested to be 5% of original speed */
@@ -89,6 +258,24 @@
 
 .animate-slow-bounce {
   animation: slow-bounce 2s infinite;
+}
+
+@keyframes worm-float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-4px); }
+}
+
+.worm-float {
+  animation: worm-float 3s ease-in-out infinite;
+}
+
+@keyframes worm-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+.worm-pulse {
+  animation: worm-pulse 1.5s ease-in-out infinite;
 }
 
 /* Card Pack Opening Animation Styles */

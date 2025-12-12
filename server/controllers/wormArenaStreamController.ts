@@ -38,7 +38,7 @@ function generateSessionId(): string {
 }
 
 function validatePayload(body: any): { payload?: SnakeBenchRunMatchRequest; opponents?: string[]; error?: string } {
-  const { modelA, opponents: opponentsRaw, count: countRaw } = body || {};
+  const { modelA, modelB, opponents: opponentsRaw, count: countRaw } = body || {};
   if (!modelA || typeof modelA !== 'string') {
     return { error: 'modelA is required string.' };
   }
@@ -76,14 +76,17 @@ function validatePayload(body: any): { payload?: SnakeBenchRunMatchRequest; oppo
       opponents = Array(count).fill(modelB);
     }
     // If count === 1, leave opponents undefined for single match
+  } else if (modelB && typeof modelB === 'string' && modelB.trim().length > 0) {
+    // Curated/single-match format: modelB provided, no opponents/count.
+    opponents = undefined;
   } else {
-    return { error: 'Either "opponents" array or "count" number must be provided' };
+    return { error: 'Must provide modelB for single match or an "opponents" array / "count" for batch.' };
   }
 
   const req: SnakeBenchRunMatchRequest = {
     modelA: String(modelA),
-    // Note: modelB will be set per-opponent in stream() method, not here
-    modelB: '', // Placeholder; will be overridden for batch mode
+    // For batch mode, modelB will be overridden per opponent; for single match keep legacy modelB.
+    modelB: opponents ? '' : String(modelB ?? ''),
   };
   if (body.width !== undefined) req.width = Number(body.width);
   if (body.height !== undefined) req.height = Number(body.height);
@@ -98,8 +101,10 @@ function validatePayload(body: any): { payload?: SnakeBenchRunMatchRequest; oppo
 
 export const wormArenaStreamController = {
   async prepare(req: Request, res: Response) {
+    logger.info(`[WormArenaStream] PREPARE called with body: ${JSON.stringify(req.body)}`, 'worm-arena-stream');
     const { payload, opponents, error } = validatePayload(req.body);
     if (error || !payload) {
+      logger.warn(`[WormArenaStream] Validation error: ${error}`, 'worm-arena-stream');
       res.status(422).json({ success: false, error: error ?? 'Invalid payload' });
       return;
     }
@@ -112,6 +117,8 @@ export const wormArenaStreamController = {
       createdAt: now,
       expiresAt: now + PENDING_TTL_MS,
     });
+
+    logger.info(`[WormArenaStream] Session created: ${sessionId} for ${payload.modelA} vs ${payload.modelB || opponents?.join(',')}`, 'worm-arena-stream');
 
     res.json({
       success: true,
@@ -192,8 +199,13 @@ export const wormArenaStreamController = {
           });
 
           try {
-            // Run the match with current opponent
-            const result = await snakeBenchService.runMatch(matchPayload);
+            // Run the match with current opponent, streaming stdout/live frames to SSE
+            const result = await snakeBenchService.runMatchStreaming(matchPayload, {
+              onStatus: sendStatus,
+              onFrame: (frame) => {
+                sseStreamManager.sendEvent(sessionId, 'stream.frame', frame);
+              },
+            });
 
             // Emit match complete
             const matchCompleteEvent: WormArenaBatchMatchComplete = {
@@ -231,11 +243,15 @@ export const wormArenaStreamController = {
           message: `Batch complete: ${results.length}/${opponents.length} matches finished`,
         });
         sseStreamManager.sendEvent(sessionId, 'batch.complete', batchCompleteEvent);
-        sseStreamManager.close(sessionId, batchCompleteEvent as unknown as Record<string, unknown>);
+        sseStreamManager.close(sessionId);
       } else {
         // Single match (legacy flow)
-        sendStatus({ state: 'starting', message: 'Launching match...' });
-        const result = await snakeBenchService.runMatch(pending.payload);
+        const result = await snakeBenchService.runMatchStreaming(pending.payload, {
+          onStatus: sendStatus,
+          onFrame: (frame) => {
+            sseStreamManager.sendEvent(sessionId, 'stream.frame', frame);
+          },
+        });
         const summary: WormArenaFinalSummary = {
           gameId: result.gameId,
           modelA: result.modelA,
@@ -245,7 +261,7 @@ export const wormArenaStreamController = {
         };
         sendStatus({ state: 'completed', message: 'Match finished.' });
         sseStreamManager.sendEvent(sessionId, 'stream.complete', summary);
-        sseStreamManager.close(sessionId, summary as unknown as Record<string, unknown>);
+        sseStreamManager.close(sessionId);
       }
     } catch (err: any) {
       const message = err?.message || 'Match failed';
