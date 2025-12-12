@@ -67,11 +67,18 @@ export default function WormArenaLive() {
     if (selectableModels.length === 0) return;
 
     if (!modelA) {
-      const preferredA = 'x-ai/grok-4.1-fast';
-      const hasPreferredA = selectableModels.includes(preferredA);
+      const preferredOrder = [
+        'openai/gpt-5.2',
+        'openai/gpt-5.1',
+        'openai/gpt-5.1-codex-mini',
+        'openai/gpt-5-mini',
+        'openai/gpt-5-nano',
+      ];
 
-      if (hasPreferredA) {
-        setModelA(preferredA);
+      const preferred = preferredOrder.find((m) => selectableModels.includes(m));
+
+      if (preferred) {
+        setModelA(preferred);
       } else if (selectableModels.length >= 1) {
         setModelA(selectableModels[0]);
       }

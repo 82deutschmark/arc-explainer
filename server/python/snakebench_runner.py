@@ -88,7 +88,7 @@ def main() -> int:
             - pricing: simple $/1M token rates (0 by default; ARC Explainer can
               handle cost tracking separately if desired).
             """
-            return {
+            config: Dict[str, Any] = {
                 "name": name,
                 "model_name": name,
                 "pricing": {
@@ -99,6 +99,15 @@ def main() -> int:
                 "is_active": True,
                 "test_status": "arc-explainer",
             }
+
+            if name.startswith("openai/") or name.startswith("x-ai/"):
+                config["api_type"] = "responses"
+                config["reasoning"] = {"summary": "detailed"}
+                config["text"] = {"verbosity": "medium"}
+                config["store"] = True
+                config["include"] = ["reasoning.encrypted_content"]
+
+            return config
 
         model_config_1 = build_player_config(str(model_a), pricing_input_a, pricing_output_a)
         model_config_2 = build_player_config(str(model_b), pricing_input_b, pricing_output_b)
