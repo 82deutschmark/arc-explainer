@@ -102,7 +102,7 @@ def main() -> int:
 
             if name.startswith("openai/") or name.startswith("x-ai/"):
                 config["api_type"] = "responses"
-                config["reasoning"] = {"summary": "detailed"}
+                config["reasoning"] = {"effort": "medium", "summary": "detailed"}
                 config["text"] = {"verbosity": "medium"}
 
             return config
