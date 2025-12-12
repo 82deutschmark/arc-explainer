@@ -27,6 +27,8 @@ import type {
   SnakeBenchModelMatchHistoryEntry,
   SnakeBenchTrueSkillLeaderboardEntry,
   WormArenaGreatestHitGame,
+  WormArenaStreamStatus,
+  WormArenaFrameEvent,
 } from '../../shared/types.js';
 import { logger } from '../utils/logger.ts';
 import { repositoryService } from '../repositories/RepositoryService.ts';
@@ -305,14 +307,26 @@ export class SnakeBenchService {
     }
   }
 
-  async runMatch(request: SnakeBenchRunMatchRequest): Promise<SnakeBenchRunMatchResult> {
+  private prepareRunMatch(request: SnakeBenchRunMatchRequest): {
+    modelA: string;
+    modelB: string;
+    width: number;
+    height: number;
+    maxRounds: number;
+    numApples: number;
+    payload: Record<string, unknown>;
+    pythonBin: string;
+    runnerPath: string;
+    backendDir: string;
+    spawnOpts: SpawnOptions;
+    timeoutMs: number;
+  } {
     const { modelA, modelB } = request;
 
     if (!modelA || !modelB) {
       throw new Error('modelA and modelB are required');
     }
 
-    // NEW: Validate models against project's canonical MODELS list (source of truth)
     const snakeBenchModels = MODELS
       .filter((m) => m.provider === 'OpenRouter')
       .map((m) => m.apiModelName || m.key);
@@ -320,13 +334,13 @@ export class SnakeBenchService {
     if (!snakeBenchModels.includes(modelA)) {
       throw new Error(
         `Model '${modelA}' not available for SnakeBench. ` +
-        `Available models: ${snakeBenchModels.join(', ')}`
+        `Available models: ${snakeBenchModels.join(', ')}`,
       );
     }
     if (!snakeBenchModels.includes(modelB)) {
       throw new Error(
         `Model '${modelB}' not available for SnakeBench. ` +
-        `Available models: ${snakeBenchModels.join(', ')}`
+        `Available models: ${snakeBenchModels.join(', ')}`,
       );
     }
 
@@ -355,7 +369,7 @@ export class SnakeBenchService {
     const pricingInputB = configB ? parseCostStringToNumber(configB.cost.input) : 0;
     const pricingOutputB = configB ? parseCostStringToNumber(configB.cost.output) : 0;
 
-    const payload = {
+    const payload: Record<string, unknown> = {
       modelA: String(modelA),
       modelB: String(modelB),
       width,
@@ -378,7 +392,6 @@ export class SnakeBenchService {
       PYTHONUTF8: '1',
     };
 
-    // BYO API key handling (Poetiq-style)
     if (request.apiKey && request.provider) {
       switch (request.provider) {
         case 'openrouter':
@@ -415,17 +428,346 @@ export class SnakeBenchService {
       stdio: ['pipe', 'pipe', 'pipe'],
     };
 
+    const timeoutMs = process.env.SNAKEBENCH_TIMEOUT_MS
+      ? parseInt(process.env.SNAKEBENCH_TIMEOUT_MS, 10)
+      : DEFAULT_SNAKEBENCH_TIMEOUT_MS;
+
+    return {
+      modelA,
+      modelB,
+      width,
+      height,
+      maxRounds,
+      numApples,
+      payload,
+      pythonBin,
+      runnerPath,
+      backendDir,
+      spawnOpts,
+      timeoutMs,
+    };
+  }
+
+  /**
+   * Streaming variant of runMatch.
+   * Emits per-round status logs from stdout and, when available, live frames
+   * by polling `public.games.current_state` written by the SnakeBench engine.
+   *
+   * This is used by Worm Arena Live SSE; it does not change match semantics
+   * or persistence.
+   */
+  async runMatchStreaming(
+    request: SnakeBenchRunMatchRequest,
+    handlers: {
+      onStatus?: (status: WormArenaStreamStatus) => void;
+      onFrame?: (frame: WormArenaFrameEvent) => void;
+      onComplete?: (result: SnakeBenchRunMatchResult) => void;
+      onError?: (err: Error) => void;
+    } = {},
+  ): Promise<SnakeBenchRunMatchResult> {
+    const {
+      modelA,
+      modelB,
+      width,
+      height,
+      numApples,
+      payload,
+      pythonBin,
+      runnerPath,
+      backendDir,
+      spawnOpts,
+      timeoutMs,
+    } = this.prepareRunMatch(request);
+
+    return await new Promise<SnakeBenchRunMatchResult>((resolve, reject) => {
+      const child = spawn(pythonBin, [runnerPath], spawnOpts);
+
+      if (!child.stdout || !child.stderr || !child.stdin) {
+        const err = new Error('Python process streams not available for SnakeBench runner');
+        handlers.onError?.(err);
+        return reject(err);
+      }
+
+      const timeoutHandle = setTimeout(() => {
+        child.kill('SIGTERM');
+        const mins = Math.round(timeoutMs / (60 * 1000));
+        const err = new Error(
+          `SnakeBench runner timeout (${mins} minutes exceeded). ` +
+          `For longer matches, set SNAKEBENCH_TIMEOUT_MS environment variable.`,
+        );
+        logger.error(
+          `SnakeBench runner timeout (${mins} minutes exceeded). Process killed.`,
+          'snakebench-service',
+        );
+        handlers.onError?.(err);
+        reject(err);
+      }, timeoutMs);
+
+      child.stdout.setEncoding('utf8');
+      child.stderr.setEncoding('utf8');
+
+      let stdoutBuf = '';
+      let stderrBuf = '';
+      let lineBuf = '';
+
+      let discoveredGameId: string | null = null;
+      let livePollHandle: NodeJS.Timeout | null = null;
+      let pollInFlight = false;
+      let lastRoundSent = 0;
+
+      const stopLivePolling = () => {
+        if (livePollHandle) {
+          clearInterval(livePollHandle);
+          livePollHandle = null;
+        }
+      };
+
+      const startLivePolling = (gameId: string) => {
+        if (!handlers.onFrame || livePollHandle) return;
+        if (!repositoryService.isConnected() || !repositoryService.db) return;
+
+        livePollHandle = setInterval(async () => {
+          if (pollInFlight) return;
+          pollInFlight = true;
+          try {
+            const pool = repositoryService.db;
+            if (!pool) return;
+            const { rows } = await pool.query(
+              'SELECT current_state, rounds FROM public.games WHERE id = $1',
+              [gameId],
+            );
+            const row = rows?.[0];
+            if (!row || !row.current_state) return;
+
+            const stateRaw = row.current_state;
+            const state =
+              typeof stateRaw === 'string' ? JSON.parse(stateRaw) : stateRaw;
+            const roundNumber = Number(
+              state?.round_number ?? row.rounds ?? 0,
+            );
+            if (!Number.isFinite(roundNumber) || roundNumber <= lastRoundSent) {
+              return;
+            }
+
+            lastRoundSent = roundNumber;
+            const snakes =
+              state?.snake_positions ?? state?.snakes ?? {};
+            const apples = state?.apples ?? [];
+
+            handlers.onFrame?.({
+              round: roundNumber,
+              frame: {
+                state: {
+                  width,
+                  height,
+                  apples,
+                  snakes,
+                  maxRounds: request.maxRounds ?? 150,
+                },
+              },
+              timestamp: Date.now(),
+            });
+          } catch (err) {
+            // Ignore polling errors; stdout streaming still works.
+          } finally {
+            pollInFlight = false;
+          }
+        }, 700);
+      };
+
+      handlers.onStatus?.({ state: 'starting', message: 'Launching match...' });
+
+      child.stdout.on('data', (chunk: Buffer | string) => {
+        const text = chunk.toString();
+        stdoutBuf += text;
+        lineBuf += text;
+
+        const lines = lineBuf.split(/\r?\n/);
+        lineBuf = lines.pop() ?? '';
+
+        for (const rawLine of lines) {
+          const line = rawLine.trim();
+          if (!line) continue;
+
+          if (!discoveredGameId) {
+            const inserted = line.match(/Inserted initial game record\s+([0-9a-fA-F-]+)/);
+            if (inserted?.[1]) {
+              discoveredGameId = inserted[1];
+              startLivePolling(discoveredGameId);
+            }
+          }
+
+          const finishedRound = line.match(/Finished round\s+(\d+)/i);
+          if (finishedRound?.[1]) {
+            const round = Number(finishedRound[1]);
+            if (Number.isFinite(round)) {
+              handlers.onStatus?.({
+                state: 'in_progress',
+                message: line,
+                round,
+              });
+              continue;
+            }
+          }
+
+          if (line.startsWith('{') && line.endsWith('}')) {
+            try {
+              const evt = JSON.parse(line);
+              if (evt?.type === 'frame' && handlers.onFrame) {
+                handlers.onFrame({
+                  round: Number(evt.round ?? 0),
+                  frame: evt.frame ?? evt,
+                  timestamp: Date.now(),
+                });
+                continue;
+              }
+              if (evt?.type === 'status') {
+                handlers.onStatus?.({
+                  state: 'in_progress',
+                  message: evt.message ?? line,
+                  round: evt.round,
+                });
+                continue;
+              }
+            } catch {
+              // Fall through to generic log handling.
+            }
+          }
+
+          handlers.onStatus?.({ state: 'in_progress', message: line });
+        }
+      });
+
+      child.stderr.on('data', (chunk: Buffer | string) => {
+        stderrBuf += chunk.toString();
+      });
+
+      child.on('close', (code: number | null) => {
+        clearTimeout(timeoutHandle);
+        stopLivePolling();
+
+        if (code !== 0) {
+          const errSnippet = (stderrBuf || stdoutBuf).trim().slice(0, 500);
+          logger.error(
+            `SnakeBench runner failed (exit code ${code ?? 'null'}): ${errSnippet}`,
+            'snakebench-service',
+          );
+          const err = new Error(`SnakeBench runner failed (exit code ${code ?? 'null'})`);
+          handlers.onError?.(err);
+          return reject(err);
+        }
+
+        const lines = stdoutBuf
+          .split(/\r?\n/)
+          .map((l) => l.trim())
+          .filter((l) => l.length > 0);
+
+        if (lines.length === 0) {
+          const err = new Error('SnakeBench runner produced no output');
+          handlers.onError?.(err);
+          return reject(err);
+        }
+
+        const lastLine = lines[lines.length - 1];
+        let parsed: any;
+        try {
+          parsed = JSON.parse(lastLine);
+        } catch (err) {
+          logger.error(
+            `SnakeBench runner output was not valid JSON: ${lastLine.slice(0, 200)}`,
+            'snakebench-service',
+          );
+          const parseErr = new Error('Failed to parse SnakeBench runner output');
+          handlers.onError?.(parseErr);
+          return reject(parseErr);
+        }
+
+        if (parsed && typeof parsed === 'object' && parsed.error) {
+          const err = new Error(String(parsed.error));
+          handlers.onError?.(err);
+          return reject(err);
+        }
+
+        const result: SnakeBenchRunMatchResult = {
+          gameId: parsed.game_id ?? parsed.gameId ?? '',
+          modelA: parsed.modelA,
+          modelB: parsed.modelB,
+          scores: parsed.scores ?? {},
+          results: parsed.results ?? {},
+          completedGamePath: parsed.completed_game_path ?? parsed.completedGamePath,
+        };
+
+        try {
+          snakeBenchIngestQueue.enqueue({
+            result,
+            width,
+            height,
+            numApples,
+            gameType: 'arc-explainer',
+          });
+        } catch (persistErr) {
+          const msg = persistErr instanceof Error ? persistErr.message : String(persistErr);
+          logger.warn(`SnakeBenchService.runMatchStreaming: failed to enqueue DB persistence: ${msg}`, 'snakebench-service');
+        }
+
+        void this.upsertGameIndex(result.completedGamePath, result.gameId, { modelA, modelB });
+
+        handlers.onComplete?.(result);
+        resolve(result);
+      });
+
+      child.on('error', (err) => {
+        clearTimeout(timeoutHandle);
+        stopLivePolling();
+        logger.error(
+          `Failed to spawn SnakeBench runner: ${err instanceof Error ? err.message : String(err)}`,
+          'snakebench-service',
+        );
+        const spawnErr = err instanceof Error ? err : new Error(String(err));
+        handlers.onError?.(spawnErr);
+        reject(spawnErr);
+      });
+
+      try {
+        child.stdin.setDefaultEncoding('utf8');
+        child.stdin.write(JSON.stringify(payload));
+        child.stdin.end();
+      } catch (err) {
+        clearTimeout(timeoutHandle);
+        stopLivePolling();
+        logger.error(
+          `Failed to send payload to SnakeBench runner: ${err instanceof Error ? err.message : String(err)}`,
+          'snakebench-service',
+        );
+        child.kill();
+        const sendErr = err instanceof Error ? err : new Error(String(err));
+        handlers.onError?.(sendErr);
+        reject(sendErr);
+      }
+    });
+  }
+
+  async runMatch(request: SnakeBenchRunMatchRequest): Promise<SnakeBenchRunMatchResult> {
+    const {
+      modelA,
+      modelB,
+      width,
+      height,
+      numApples,
+      payload,
+      pythonBin,
+      runnerPath,
+      backendDir,
+      spawnOpts,
+      timeoutMs,
+    } = this.prepareRunMatch(request);
+
     return new Promise<SnakeBenchRunMatchResult>((resolve, reject) => {
       const child = spawn(pythonBin, [runnerPath], spawnOpts);
 
       if (!child.stdout || !child.stderr || !child.stdin) {
         return reject(new Error('Python process streams not available for SnakeBench runner'));
       }
-
-      // NEW: Add configurable timeout to prevent hung processes (default 4 hours, safe for 2+ hour matches)
-      const timeoutMs = process.env.SNAKEBENCH_TIMEOUT_MS
-        ? parseInt(process.env.SNAKEBENCH_TIMEOUT_MS, 10)
-        : DEFAULT_SNAKEBENCH_TIMEOUT_MS;
 
       const timeoutHandle = setTimeout(() => {
         child.kill('SIGTERM');

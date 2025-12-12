@@ -1,9 +1,26 @@
+### Version 6.1.29  Dec 12, 2025 (PENDING TESTING)
+
+- **Worm Arena Live streaming: per-round SSE + live board frames** (Author: GPT-5.1 Codex CLI)
+  - Added `SnakeBenchService.runMatchStreaming` to emit per-round status over SSE and (when DB live state is available) poll `public.games.current_state` for live frames so the Worm Arena Live board updates during play, while preserving the existing final replay/DB persistence flow.
+  - Updated `wormArenaStreamController` to run both single and batch sessions through the streaming runner, forward `stream.frame` events, restore legacy single-match `modelB` handling, and avoid duplicate `stream.complete` events from the SSE manager.
+  - Hardened `useWormArenaStreaming` to handle `stream.end` without spurious failures, close EventSource cleanly on completion, and reset frames between batch matches so the live board always reflects the active matchup.
+  - **Files Modified**: `server/services/snakeBenchService.ts`, `server/controllers/wormArenaStreamController.ts`, `client/src/hooks/useWormArenaStreaming.ts`, `CHANGELOG.md`
+
 ### Version 6.1.28  Dec 11, 2025 (PENDING TESTING)
+
+- **SnakeBench Responses defaults: capture reasoning properly for OpenAI/xAI models** (Author: Cascade)
+  - Ensured Worm Arena / SnakeBench games that use OpenRouter models under the `openai/*` or `x-ai/*` namespaces always call the Responses API with our standard reasoning-friendly defaults: `reasoning.summary: "detailed"`, `text.verbosity: "medium"`, `store: true`, and `include: ["reasoning.encrypted_content"]`.
+  - This prevents the common failure mode where runs incur large `reasoning_tokens` but return `null` reasoning summaries because the request omitted `reasoning.summary` / `include` / `store`.
+  - **Files Modified**: `server/python/snakebench_runner.py`, `external/SnakeBench/backend/llm_providers.py`, `CHANGELOG.md`
 
 - **Worm Arena Live GPT-5 tournament & smart matchmaking plan** (Author: Cascade)
   - Added a detailed plan focusing on GPT-5-first defaults for Worm Arena Live, a smart opponent recommendation API that prioritizes underplayed models and never-before-seen matchups, and UX flows for running GPT-5-centric multi-opponent tournaments from the live page.
   - Clarified how this plan fits alongside existing Worm Arena streaming and UI plans, keeping all endpoints public and reusing the current SnakeBench repository and SSE infrastructure.
   - **Files Created**: `docs/plans/2025-12-11-worm-arena-live-gpt5-tournament-plan.md`, `CHANGELOG.md`
+
+- **Worm Arena Live default model: GPT-5.2** (Author: Cascade)
+  - Updated Worm Arena Live to prefer `openai/gpt-5.2` as the default Model A (with a safe fallback order to other GPT-5 family models if GPT-5.2 is unavailable).
+  - **Files Modified**: `client/src/pages/WormArenaLive.tsx`, `CHANGELOG.md`
 
 ### Version 6.1.27  Dec 11, 2025 (PENDING TESTING)
 
