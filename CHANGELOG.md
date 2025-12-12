@@ -1,3 +1,17 @@
+### Version 6.1.28  Dec 11, 2025 (PENDING TESTING)
+
+- **Worm Arena Live GPT-5 tournament & smart matchmaking plan** (Author: Cascade)
+  - Added a detailed plan focusing on GPT-5-first defaults for Worm Arena Live, a smart opponent recommendation API that prioritizes underplayed models and never-before-seen matchups, and UX flows for running GPT-5-centric multi-opponent tournaments from the live page.
+  - Clarified how this plan fits alongside existing Worm Arena streaming and UI plans, keeping all endpoints public and reusing the current SnakeBench repository and SSE infrastructure.
+  - **Files Created**: `docs/plans/2025-12-11-worm-arena-live-gpt5-tournament-plan.md`, `CHANGELOG.md`
+
+### Version 6.1.27  Dec 11, 2025 (PENDING TESTING)
+
+- **Worm Arena live streaming and GPT-5 tournament defaults plan** (Author: GPT-5.1 Codex CLI)
+  - Added a comprehensive plan covering live SSE hardening, GPT-5-first default model presets, and smart tournament scheduling that prioritizes low-play models and unseen opponent pairs for fair rating coverage.
+  - Outlined backend and UI steps to bridge Python live data (stdout + `/api/games/live`) into the existing Worm Arena SSE flow while keeping replay/DB persistence intact, plus a tournament tab design with rationale tags and batch progress.
+  - **Files Created/Modified**: `docs/2025-12-11-worm-arena-live-streaming-tournament-plan.md`, `CHANGELOG.md`
+
 ### Version 6.1.26  Dec 11, 2025 (PENDING TESTING)
 
 - **Worm Arena Greatest Hits link navigation: fix fallback game resetting** (Author: Claude Code using Haiku 4.5)
