@@ -6,8 +6,9 @@
 
 - **Worm Arena: fix OpenRouter cookie-auth 401 causing random-move fallbacks** (Author: Cascade)
   - Ensured the SnakeBench subprocess always uses the official OpenRouter API base URL (`https://openrouter.ai/api/v1`) to prevent accidental routing to cookie-auth protected endpoints (which surfaced as `401: No cookie auth credentials found`).
+  - SnakeBench submodule now honors `SNAKEBENCH_DISABLE_INTERNAL_DB` / `SNAKEBENCH_DISABLE_SUPABASE` so ARC Explainer runs never attempt Supabase DB writes or Supabase Storage uploads (local replay JSON + ARC Explainer Postgres ingest remain).
   - This prevents provider failures from triggering SnakeBench's emergency “random move” fallback during games.
-  - **Files Modified**: `server/services/snakeBenchService.ts`, `CHANGELOG.md`
+  - **Files Modified**: `server/services/snakeBenchService.ts`, `external/SnakeBench/backend/main.py`, `CHANGELOG.md`
 
 - **Worm Arena Stats: fix win rate bug and unreadable font sizes** (Author: Cascade)
   - **Bug fix**: `SnakeBenchRepository.getBasicLeaderboard` now always returns `winRate` regardless of `sortBy` parameter. Previously win rate was only included when sorting by win rate, causing the UI to show "—" for all entries.
