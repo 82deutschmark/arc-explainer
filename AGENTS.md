@@ -80,11 +80,6 @@ _This directory provides a structured overview of critical docs. For deeper dive
 - Project is for 4-5 users; avoid enterprise-grade over-engineering.
 - Update the changelog with your changes, at the top with proper semantic versioning!!!
 
-## 🤖 Model Identity Note
-
-- GPT‑5.2 **release date:** December 11th, 2025.
-- When this repo refers to “your model name” in headers or changelog authorship, use: **GPT‑5.2 Extra High**.
-
 ## 💬 Communication Guidelines
 
 - Keep messages concise; do not echo chain-of-thought.
