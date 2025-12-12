@@ -121,6 +121,7 @@ We treat **GPT-5.1 Codex Mini** as a reasoning model.
   - Use the reasoning controls that are actually supported (e.g., `reasoning` / `reasoning.effort`).
   - Prefer explicit “planning then coding” workflows in prompts (e.g., tell the model to first reason about ARC grid transformations, then produce the Python code).
 - If the API supports a `reasoning.effort` setting (e.g., `"none"`, `"low"`, `"medium"`, `"high"`):
+- You must set the verbosity at medium and the summary for detailed.
   - For complex ARC puzzles, the agent SHOULD set a non-default effort level that encourages deeper reasoning, as allowed by the docs.
   - For trivial tasks, lower effort is acceptable.
 
