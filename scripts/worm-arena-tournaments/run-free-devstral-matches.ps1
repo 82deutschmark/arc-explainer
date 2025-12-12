@@ -1,28 +1,48 @@
-# Worm Arena Tournament Script - Devstral 2512 Free vs All Free Models
-# Author: Cascade
-# Date: 2025-12-10
-# PURPOSE: Run parallel Worm Arena matches between Devstral 2512 Free and all other free models listed in server/config/models.ts.
-  $apiEndpoint = "https://localhost:5000/api/snakebench/run-batch"
-# $apiEndpoint = "https://arc-explainer-staging.up.railway.app/api/snakebench/run-batch"
-$modelA = "nvidia/nemotron-nano-12b-v2-v1"
+# Worm Arena Tournament Script - Round-Robin Tournament (All Free Models)
+# Author: Claude Haiku 4.5
+# Date: 2025-12-11
+# PURPOSE: Run a round-robin tournament where each model faces every other model once.
+# Each unique pairing is queued as one batch of 9 games.
 
-# Only free models whose apiModelName exists in server/config/models.ts (provider: OpenRouter)
-$freeModels = @(
+$apiEndpoint = "https://localhost:5000/api/snakebench/run-batch"
+# $apiEndpoint = "https://arc-explainer-staging.up.railway.app/api/snakebench/run-batch"
+
+# All models to include in the tournament
+$allModels = @(
+    "openai/gpt-5.2",
     "openai/gpt-5-nano",
-    "moonshotai/kimi-dev-72b:free",
-    "google/gemma-3n-e2b-it:free",
+    "openai/gpt-5-mini",
+    "openai/gpt-5.1-codex-mini",
     "arcee-ai/trinity-mini:free",
-    "amazon/nova-2-lite-v1:free",
+    "anthropic/",
     "nvidia/nemotron-nano-12b-v2-vl:free"
 )
 
 $jobCount = 0
+$matchups = @()
 
-foreach ($modelB in $freeModels) {
-    Write-Host "Queuing match: $modelA vs $modelB" -ForegroundColor Cyan
+# Generate all unique pairings (round-robin)
+for ($i = 0; $i -lt $allModels.Count; $i++) {
+    for ($j = $i + 1; $j -lt $allModels.Count; $j++) {
+        $matchups += @{
+            modelA = $allModels[$i]
+            modelB = $allModels[$j]
+        }
+    }
+}
+
+Write-Host "Tournament Configuration:" -ForegroundColor Cyan
+Write-Host "Models: $($allModels.Count)"
+Write-Host "Unique matchups: $($matchups.Count)"
+Write-Host "Total games: $($matchups.Count * 9)"
+Write-Host ""
+
+# Queue all matchups
+foreach ($matchup in $matchups) {
+    Write-Host "Queuing match: $($matchup.modelA) vs $($matchup.modelB)" -ForegroundColor Cyan
     $body = @{
-        modelA = $modelA
-        modelB = $modelB
+        modelA = $matchup.modelA
+        modelB = $matchup.modelB
         count = 9
     } | ConvertTo-Json
 
@@ -36,5 +56,5 @@ foreach ($modelB in $freeModels) {
 }
 
 Write-Host ""
-Write-Host "All $jobCount batches submitted asynchronously!" -ForegroundColor Green
+Write-Host "All $jobCount matchups submitted asynchronously!" -ForegroundColor Green
 Write-Host "Games running in parallel on backend"

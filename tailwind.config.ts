@@ -10,6 +10,9 @@ export default {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        worm: ["Fredoka", "Nunito", "ui-sans-serif", "system-ui", "sans-serif"],
+      },
       borderRadius: {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
@@ -65,6 +68,37 @@ export default {
           "accent-foreground": "var(--sidebar-accent-foreground)",
           border: "var(--sidebar-border)",
           ring: "var(--sidebar-ring)",
+        },
+
+        worm: {
+          bg: "var(--worm-bg)",
+          card: "var(--worm-card)",
+          border: "var(--worm-border)",
+          ink: "var(--worm-ink)",
+          muted: "var(--worm-muted)",
+          "ink-strong": "var(--worm-ink-strong)",
+          track: "var(--worm-track)",
+          highlight: "var(--worm-highlight-bg)",
+          green: "var(--worm-green)",
+          red: "var(--worm-red)",
+          "green-ink": "var(--worm-green-ink)",
+          blue: "var(--worm-blue)",
+          "blue-hover": "var(--worm-blue-hover)",
+
+          "header-bg": "var(--worm-header-bg)",
+          "header-accent": "var(--worm-header-accent)",
+          "header-link": "var(--worm-header-link)",
+          "header-ink": "var(--worm-header-ink)",
+
+          "metric-rating": "var(--worm-metric-rating)",
+          "metric-sigma": "var(--worm-metric-sigma)",
+          "metric-games": "var(--worm-metric-games)",
+          "metric-wins": "var(--worm-metric-wins)",
+          "metric-losses": "var(--worm-metric-losses)",
+          "metric-ties": "var(--worm-metric-ties)",
+          "metric-apples": "var(--worm-metric-apples)",
+          "metric-winrate": "var(--worm-metric-winrate)",
+          "metric-cost": "var(--worm-metric-cost)",
         },
       },
       keyframes: {
