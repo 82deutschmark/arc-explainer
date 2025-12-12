@@ -246,6 +246,11 @@ export class SnakeBenchService {
       PYTHONUTF8: '1',
     };
 
+    // ARC Explainer runs do not use SnakeBench's Supabase DB or Supabase Storage.
+    // We persist via our own Postgres + local replay JSON under external/SnakeBench/backend/completed_games.
+    env.SNAKEBENCH_DISABLE_INTERNAL_DB = '1';
+    env.SNAKEBENCH_DISABLE_SUPABASE = '1';
+
     const expectedOpenRouterBaseUrl = 'https://openrouter.ai/api/v1';
     const configuredOpenRouterBaseUrl = (env.OPENROUTER_BASE_URL || '').trim();
     if (
@@ -447,6 +452,11 @@ export class SnakeBenchService {
 
       handlers.onStatus?.({ state: 'starting', message: 'Launching match...' });
 
+      logger.info(
+        `SnakeBench runMatchStreaming: OPENROUTER_BASE_URL=${spawnOpts.env?.OPENROUTER_BASE_URL ?? '(unset)'}`,
+        'snakebench-service',
+      );
+
       child.stdout.on('data', (chunk: Buffer | string) => {
         const text = chunk.toString();
         stdoutBuf += text;
@@ -458,6 +468,14 @@ export class SnakeBenchService {
         for (const rawLine of lines) {
           const line = rawLine.trim();
           if (!line) continue;
+
+          if (
+            line.includes('Provider error') ||
+            line.includes('No cookie auth credentials found') ||
+            line.includes('cookie auth')
+          ) {
+            logger.warn(`SnakeBench engine: ${line}`, 'snakebench-service');
+          }
 
           if (!discoveredGameId) {
             const inserted = line.match(/Inserted initial game record\s+([0-9a-fA-F-]+)/);
@@ -659,8 +677,25 @@ export class SnakeBenchService {
       let stdoutBuf = '';
       let stderrBuf = '';
 
+      logger.info(
+        `SnakeBench runMatch: OPENROUTER_BASE_URL=${spawnOpts.env?.OPENROUTER_BASE_URL ?? '(unset)'}`,
+        'snakebench-service',
+      );
+
       child.stdout.on('data', (chunk: Buffer | string) => {
-        stdoutBuf += chunk.toString();
+        const text = chunk.toString();
+        stdoutBuf += text;
+
+        // Surface provider failures emitted by the SnakeBench engine so we can debug
+        // auth issues without forcing users to inspect Python output.
+        if (
+          text.includes('Provider error') ||
+          text.includes('No cookie auth credentials found') ||
+          text.includes('cookie auth')
+        ) {
+          const preview = text.trim().split(/\r?\n/).filter(Boolean).slice(-3).join(' | ');
+          logger.warn(`SnakeBench engine stdout (provider issue): ${preview}`, 'snakebench-service');
+        }
       });
 
       child.stderr.on('data', (chunk: Buffer | string) => {
