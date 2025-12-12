@@ -20,6 +20,7 @@ export function useWormArenaStreaming() {
   const [finalSummary, setFinalSummary] = useState<WormArenaFinalSummary | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isStarting, setIsStarting] = useState(false);
+  const statusRef = useRef<StreamState>('idle');
 
   // Batch state
   const [batchResults, setBatchResults] = useState<WormArenaBatchMatchComplete[]>([]);
@@ -27,6 +28,10 @@ export function useWormArenaStreaming() {
   const [totalMatches, setTotalMatches] = useState<number | null>(null);
 
   const eventSourceRef = useRef<EventSource | null>(null);
+
+  useEffect(() => {
+    statusRef.current = status;
+  }, [status]);
 
   const startMatch = useCallback(async (payload: SnakeBenchRunMatchRequest, opponents: string[] = []) => {
     setIsStarting(true);
@@ -115,10 +120,18 @@ export function useWormArenaStreaming() {
         setFinalSummary(data);
         setStatus('completed');
         setMessage('Match finished');
+        es.close();
+        eventSourceRef.current = null;
       } catch (err: any) {
         setError(err?.message || 'Failed to parse completion event');
         setStatus('failed');
       }
+    });
+
+    es.addEventListener('stream.end', () => {
+      setStatus((prev) => (prev === 'failed' ? prev : 'completed'));
+      es.close();
+      eventSourceRef.current = null;
     });
 
     // Batch events
@@ -129,6 +142,8 @@ export function useWormArenaStreaming() {
         setTotalMatches(data.totalMatches);
         setBatchResults([]);
         setCurrentMatchIndex(null);
+        setFrames([]);
+        setFinalSummary(null);
         setMessage(`Preparing batch of ${data.totalMatches} matches...`);
       } catch (err: any) {
         setError(err?.message || 'Failed to parse batch init event');
@@ -140,6 +155,7 @@ export function useWormArenaStreaming() {
         const data = JSON.parse((event as MessageEvent).data) as WormArenaBatchMatchStart;
         setCurrentMatchIndex(data.index);
         setStatus('in_progress');
+        setFrames([]);
         setMessage(`Running match ${data.index} of ${data.total}...`);
       } catch (err: any) {
         setError(err?.message || 'Failed to parse match start event');
@@ -173,6 +189,8 @@ export function useWormArenaStreaming() {
         if (data.failedMatches > 0) {
           setError(`${data.failedMatches} matches failed`);
         }
+        es.close();
+        eventSourceRef.current = null;
       } catch (err: any) {
         setError(err?.message || 'Failed to parse batch complete event');
         setStatus('failed');
@@ -191,9 +209,16 @@ export function useWormArenaStreaming() {
     });
 
     es.onerror = () => {
+      const current = statusRef.current;
+      if (current === 'completed' || current === 'failed') {
+        es.close();
+        eventSourceRef.current = null;
+        return;
+      }
       setError('Connection lost');
       setStatus('failed');
       es.close();
+      eventSourceRef.current = null;
     };
   }, [disconnect]);
 

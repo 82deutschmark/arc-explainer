@@ -28,13 +28,10 @@ export default function WormArenaHeaderStartAction({
     <div className="flex items-center gap-4">
       {/* Status Indicator */}
       {isLoading && (
-        <div className="flex items-center gap-2" style={{ color: '#f5a623' }}>
+        <div className="flex items-center gap-2 text-worm-orange">
           <div
-            className="w-2 h-2 rounded-full"
-            style={{
-              backgroundColor: '#f5a623',
-              animation: 'pulse 1.5s ease-in-out infinite',
-            }}
+            className="w-2 h-2 rounded-full worm-pulse"
+            style={{ backgroundColor: 'currentColor' }}
           />
           <span className="text-xs font-medium">Match running</span>
         </div>
@@ -47,33 +44,26 @@ export default function WormArenaHeaderStartAction({
           onScrollToControls?.();
         }}
         disabled={isLoading}
-        className="group relative px-8 py-4 rounded-full font-bold text-lg transition-all duration-300 transform hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 flex items-center gap-3 shadow-lg"
-        style={{
-          backgroundColor: isLoading ? '#d4a574' : '#f5a623',
-          color: '#2d1f0f',
-          boxShadow: isLoading ? 'none' : '0 12px 24px rgba(245, 166, 35, 0.3)',
-        }}
+        className={
+          `group relative px-8 py-4 rounded-full font-bold text-lg transition-all duration-300 transform hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 flex items-center gap-3 shadow-lg ` +
+          (isLoading
+            ? 'bg-worm-header-accent text-worm-header-bg'
+            : 'bg-worm-orange text-worm-header-bg hover:bg-worm-orange-hover')
+        }
+        style={{ boxShadow: isLoading ? 'none' : '0 12px 24px rgba(245, 166, 35, 0.3)' }}
       >
-        <span style={{ fontSize: '20px' }}>▶</span>
+        <span className="text-[20px]">▶</span>
         <span>{isLoading ? 'Starting...' : 'Start Match'}</span>
 
         {/* Decorative worm on button hover */}
         {!isLoading && (
           <span
-            className="absolute -right-8 top-1/2 transform -translate-y-1/2 opacity-0 group-hover:opacity-100 group-hover:right-[-20px] transition-all duration-300"
-            style={{ fontSize: '24px' }}
+            className="absolute -right-8 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 group-hover:right-[-20px] transition-all duration-300 text-[24px]"
           >
             🐛
           </span>
         )}
       </button>
-
-      <style>{`
-        @keyframes pulse {
-          0%, 100% { opacity: 1; }
-          50% { opacity: 0.4; }
-        }
-      `}</style>
     </div>
   );
 }

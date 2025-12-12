@@ -28,7 +28,8 @@
     "models": "node --import tsx scripts/manage-models.ts",
     "ingest-hf": "node --import tsx server/scripts/ingest-huggingface-dataset.ts",
     "cleanup-hf": "node --import tsx server/scripts/cleanup-huggingface-imports.ts",
-    "del": "node --import tsx server/scripts/delete-hf-now.ts"
+    "del": "node --import tsx server/scripts/delete-hf-now.ts",
+    "worm:cheap-matchups": "node --import tsx server/scripts/generate-cheap-matchups.ts"
   },
   "dependencies": {
     "@ai-sdk/xai": "^2.0.23",
