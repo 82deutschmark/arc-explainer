@@ -2,7 +2,7 @@
  * Author: Claude Code using Haiku
  * Date: 2025-12-09
  * PURPOSE: Emoji-based Canvas renderer for Worm Arena game board.
- *          Uses emoji grid (🟨 soil, 🐛 worms, 🍎 apples) instead of ASCII.
+ *          Uses emoji grid (🟫 soil, 🐛 worms, 🍎 apples) instead of ASCII.
  *          Pure HTML5 Canvas 2D, responsive, fun farm aesthetic.
  * SRP/DRY check: Pass — focused solely on game board rendering.
  */
@@ -173,14 +173,14 @@ const WormArenaGameBoard: React.FC<WormArenaGameBoardProps> = ({
       }
     });
 
-    // Draw snakes (🐛 for heads, ⏹🔳🔲/🟧 for bodies)
+    // Draw snakes (🐛 for heads, 🟡🔴⏹🔳🔲/🟧 for bodies)
     const snakeEmojis: Record<string, { head: string; body: string }> = {
-      '0': { head: '🐛', body: '🟨' }, // Worm A - yellow body
-      '1': { head: '🐛', body: '🟧' }, // Worm B - orange body
+      '0': { head: '🐛', body: '🟡' }, // Worm A - yellow body
+      '1': { head: '🐛', body: '🔴' }, // Worm B - RED body
     };
 
     Object.entries(snakes).forEach(([sid, positions]) => {
-      const emojis = snakeEmojis[sid] || { head: '🐛', body: '🟨' };
+      const emojis = snakeEmojis[sid] || { head: '🐛', body: '0️⃣' };
       positions.forEach((pos, idx) => {
         const [x, y] = pos as [number, number];
         if (x >= 0 && x < boardWidth && y >= 0 && y < boardHeight) {
