@@ -89,10 +89,11 @@ const WormArenaGameBoard: React.FC<WormArenaGameBoardProps> = ({
       ),
     );
 
-    const width = boardWidth * cellSize + padding * 2;
-    const height = boardHeight * cellSize + padding * 2;
+    const labelMargin = Math.max(16, Math.round(cellSize * 0.6));
+    const width = boardWidth * cellSize + padding * 2 + labelMargin * 2;
+    const height = boardHeight * cellSize + padding * 2 + labelMargin * 2;
 
-    return { cellSize, padding, width, height };
+    return { cellSize, padding, width, height, labelMargin };
   }, [boardHeight, boardWidth, containerWidth]);
 
   useEffect(() => {
@@ -100,7 +101,7 @@ const WormArenaGameBoard: React.FC<WormArenaGameBoardProps> = ({
     if (!canvas || !frame) return;
 
     // Responsive sizing tuned for mobile
-    const { cellSize, padding, width, height } = sizing;
+    const { cellSize, padding, width, height, labelMargin } = sizing;
 
     // Account for device pixel ratio to keep emoji crisp
     const dpr = typeof window !== 'undefined' ? window.devicePixelRatio || 1 : 1;
@@ -121,10 +122,10 @@ const WormArenaGameBoard: React.FC<WormArenaGameBoardProps> = ({
     ctx.fillRect(0, 0, width, height);
 
     // Slightly lighter soil color for the playable board area
-    const boardRectX = padding;
-    const boardRectY = padding;
     const boardRectWidth = boardWidth * cellSize;
     const boardRectHeight = boardHeight * cellSize;
+    const boardRectX = padding + labelMargin;
+    const boardRectY = padding + labelMargin;
 
     ctx.save();
     ctx.globalAlpha = 0.7;
@@ -137,15 +138,64 @@ const WormArenaGameBoard: React.FC<WormArenaGameBoardProps> = ({
     ctx.lineWidth = 1;
     for (let i = 0; i <= boardWidth; i++) {
       ctx.beginPath();
-      ctx.moveTo(padding + i * cellSize, padding);
-      ctx.lineTo(padding + i * cellSize, padding + boardHeight * cellSize);
+      ctx.moveTo(boardRectX + i * cellSize, boardRectY);
+      ctx.lineTo(boardRectX + i * cellSize, boardRectY + boardRectHeight);
       ctx.stroke();
     }
     for (let i = 0; i <= boardHeight; i++) {
       ctx.beginPath();
-      ctx.moveTo(padding, padding + i * cellSize);
-      ctx.lineTo(padding + boardWidth * cellSize, padding + i * cellSize);
+      ctx.moveTo(boardRectX, boardRectY + i * cellSize);
+      ctx.lineTo(boardRectX + boardRectWidth, boardRectY + i * cellSize);
       ctx.stroke();
+    }
+
+    // Coordinate labels outside the grid (blue padding bands)
+    const axisFontSize = Math.max(Math.round(cellSize * 0.45), 14);
+    const labelBandColor = '#d7eaff';
+    ctx.fillStyle = labelBandColor;
+    ctx.fillRect(boardRectX, padding, boardRectWidth, labelMargin);
+    ctx.fillRect(boardRectX, boardRectY + boardRectHeight, boardRectWidth, labelMargin);
+    ctx.fillRect(padding, boardRectY, labelMargin, boardRectHeight);
+    ctx.fillRect(boardRectX + boardRectWidth, boardRectY, labelMargin, boardRectHeight);
+    ctx.fillStyle = '#000';
+    ctx.font = `bold ${axisFontSize}px monospace`;
+    ctx.fillStyle = '#000';
+    ctx.textBaseline = 'middle';
+
+    const topLabelY = padding + labelMargin / 2;
+    const bottomLabelY = boardRectY + boardRectHeight + labelMargin / 2;
+    ctx.textAlign = 'center';
+    for (let x = 0; x < boardWidth; x++) {
+      const labelX = boardRectX + (x + 0.5) * cellSize;
+      ctx.fillText(x.toString(), labelX, topLabelY);
+      ctx.fillText(x.toString(), labelX, bottomLabelY);
+    }
+
+    const rowOffsetX = padding + labelMargin / 2;
+    ctx.textAlign = 'right';
+    for (let y = 0; y < boardHeight; y++) {
+      const labelY = boardRectY + (y + 0.5) * cellSize;
+      ctx.fillText(y.toString(), rowOffsetX, labelY);
+    }
+
+    const rightLabelX = boardRectX + boardRectWidth + labelMargin / 2;
+    ctx.textAlign = 'left';
+    for (let y = 0; y < boardHeight; y++) {
+      const labelY = boardRectY + (y + 0.5) * cellSize;
+      ctx.fillText(y.toString(), rightLabelX, labelY);
+    }
+
+    // Cell coordinates inside the board
+    const cellCoordFontSize = Math.max(Math.round(cellSize * 0.25), 10);
+    ctx.font = `${cellCoordFontSize}px monospace`;
+    ctx.fillStyle = '#CFCFCF';
+    ctx.textAlign = 'center';
+    for (let x = 0; x < boardWidth; x++) {
+      for (let y = 0; y < boardHeight; y++) {
+        const cx = boardRectX + (x + 0.5) * cellSize;
+        const cy = boardRectY + (y + 0.5) * cellSize;
+        ctx.fillText(`${x},${y}`, cx, cy);
+      }
     }
 
     // Extract game state
@@ -156,6 +206,7 @@ const WormArenaGameBoard: React.FC<WormArenaGameBoardProps> = ({
     ctx.font = `${Math.floor(cellSize * 0.8)}px "Segoe UI Emoji", "Apple Color Emoji", sans-serif`;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
+    ctx.fillStyle = '#000';
 
     apples.forEach(([x, y]) => {
       if (x >= 0 && x < boardWidth && y >= 0 && y < boardHeight) {
