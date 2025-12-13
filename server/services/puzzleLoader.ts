@@ -88,6 +88,10 @@ export class PuzzleLoader {
     this.initializeData();
   }
 
+  public async initialize(): Promise<void> {
+    await this.initializeData();
+  }
+
   // Force reinitialization - useful for development and testing
   public forceReinitialize() {
     this.initialized = false;

@@ -29,7 +29,8 @@ export default function WormArenaGreatestHits() {
       <CardContent className="pt-0 text-base text-worm-ink">
         {isLoading && (
           <div className="py-3 text-base worm-muted">
-            Loading greatest hits…
+            Loading greatest hits
+            …
           </div>
         )}
         {error && !isLoading && (

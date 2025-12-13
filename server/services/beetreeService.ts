@@ -120,13 +120,11 @@ export class BeetreeService extends BaseAIService {
             console.log(`[beetreeService] Processing 'start' event`);
             logger.service(this.provider, `Beetree started for ${taskId}`);
             // Forward start event to streaming harness
-            if (serviceOpts?.stream) {
-              serviceOpts.stream.emitEvent('solver_start', {
-                message: event.message,
-                metadata: event.metadata,
-                timestamp: event.timestamp || Date.now(),
-              });
-            }
+            serviceOpts?.stream?.emitEvent?.('solver_start', {
+              message: event.message ?? 'Beetree started',
+              metadata: event.metadata,
+              timestamp: event.timestamp ?? Date.now(),
+            });
             break;
 
           case 'progress':
@@ -137,7 +135,7 @@ export class BeetreeService extends BaseAIService {
             }
 
             // Emit progress to streaming harness if available, preserving original timestamp
-            if (serviceOpts?.stream) {
+            if (serviceOpts?.stream?.emitEvent) {
               console.log(`[beetreeService] Has stream handler, emitting progress`);
               logger.debug(`[beetreeService] Forwarding progress event: stage=${event.stage}, ts=${event.timestamp}`);
               serviceOpts.stream.emitEvent('solver_progress', {
@@ -158,7 +156,7 @@ export class BeetreeService extends BaseAIService {
           case 'log':
             logger.service(this.provider, `[${event.level.toUpperCase()}] ${event.message}`);
             // Forward log event to streaming harness, preserving original timestamp
-            if (serviceOpts?.stream) {
+            if (serviceOpts?.stream?.emitEvent) {
               logger.debug(`[beetreeService] Forwarding log event: level=${event.level}, ts=${event.timestamp}`);
               serviceOpts.stream.emitEvent('solver_log', {
                 level: event.level,
@@ -179,7 +177,7 @@ export class BeetreeService extends BaseAIService {
               logger.service(this.provider, `Beetree failed for ${taskId}`, 'error');
             }
             // Forward final event to streaming harness, preserving original timestamp
-            if (serviceOpts?.stream) {
+            if (serviceOpts?.stream?.emitEvent) {
               console.log(`[beetreeService] Has stream handler, emitting final event`);
               serviceOpts.stream.emitEvent('solver_complete', {
                 success: event.success,
@@ -194,7 +192,7 @@ export class BeetreeService extends BaseAIService {
             console.log(`[beetreeService] Processing 'error' event: ${event.message}`);
             logger.service(this.provider, `Beetree error: ${event.message}`, 'error');
             // Forward error event to streaming harness, preserving original timestamp
-            if (serviceOpts?.stream) {
+            if (serviceOpts?.stream?.emitEvent) {
               console.log(`[beetreeService] Has stream handler, emitting error event`);
               serviceOpts.stream.emitEvent('solver_error', {
                 message: event.message,

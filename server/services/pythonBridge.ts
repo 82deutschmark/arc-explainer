@@ -106,7 +106,7 @@ export type SaturnBridgeEvent =
     };
 
 export type BeetreeBridgeEvent =
-  | { type: 'start'; metadata?: any; source?: 'python' }
+  | { type: 'start'; message?: string; metadata?: any; timestamp?: number; source?: 'python' }
   | {
       type: 'progress';
       status: string;
@@ -116,10 +116,10 @@ export type BeetreeBridgeEvent =
       predictions?: number[][][];
       costSoFar?: number;
       tokensUsed?: { input: number; output: number; reasoning: number };
-      timestamp: number;
+      timestamp?: number;
       source?: 'python';
     }
-  | { type: 'log'; level: 'info' | 'warn' | 'error'; message: string; source?: 'python' }
+  | { type: 'log'; level: 'info' | 'warn' | 'error'; message: string; timestamp?: number; source?: 'python' }
   | {
       type: 'final';
       success: boolean;
@@ -149,9 +149,10 @@ export type BeetreeBridgeEvent =
         verboseLog: string;
       };
       timingMs: number;
+      timestamp?: number;
       source?: 'python';
     }
-  | { type: 'error'; message: string; source?: 'python' };
+  | { type: 'error'; message: string; timestamp?: number; source?: 'python' };
 
 export class PythonBridge {
   private resolvePythonBin(): string {
