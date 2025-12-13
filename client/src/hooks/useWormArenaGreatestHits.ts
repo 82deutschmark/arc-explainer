@@ -5,7 +5,7 @@
  *          Fetches a small curated list of standout Worm Arena games
  *          (longest, most expensive, highest-scoring) from the backend
  *          and exposes a simple loading/error API for the replay UI.
- * SRP/DRY check: Pass  focused on HTTP wiring only.
+ * SRP/DRY check: Pass focused on HTTP wiring only.
  */
 
 import { useCallback, useEffect, useState } from 'react';
