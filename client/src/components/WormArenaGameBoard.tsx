@@ -48,8 +48,16 @@ const WormArenaGameBoard: React.FC<WormArenaGameBoardProps> = ({
 }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const appleEmojiMapRef = useRef<Map<string, string>>(new Map());
+  const prevSnakeHeadsRef = useRef<Map<string, [number, number]>>(new Map());
   const containerRef = useRef<HTMLDivElement>(null);
   const [containerWidth, setContainerWidth] = useState<number>(480);
+
+  const getHeadEmoji = (dx: number, dy: number) => {
+    if (dy < 0) return '⬆️';
+    if (dy > 0) return '⬇️';
+    if (dx < 0) return '⬅️';
+    return '➡️';
+  };
 
   // Observe parent width so we can render responsively on mobile
   useEffect(() => {
@@ -173,20 +181,52 @@ const WormArenaGameBoard: React.FC<WormArenaGameBoardProps> = ({
       }
     });
 
-    // Draw snakes (🐛 for heads, 🟡🔴⏹🔳🔲/🟧 for bodies)
-    const snakeEmojis: Record<string, { head: string; body: string }> = {
-      '0': { head: '🐛', body: '🟡' }, // Worm A - yellow body
-      '1': { head: '🐛', body: '🔴' }, // Worm B - RED body
+    // Draw snakes (directional heads, 🟡🔴⏹🔳🔲/🟧 for bodies)
+    const snakeEmojis: Record<string, { body: string }> = {
+      '0': { body: '🟡' }, // Worm A - yellow body
+      '1': { body: '🔴' }, // Worm B - RED body
     };
 
     Object.entries(snakes).forEach(([sid, positions]) => {
-      const emojis = snakeEmojis[sid] || { head: '🐛', body: '0️⃣' };
+      const emojis = snakeEmojis[sid] || { body: '0️⃣' };
+
+      const head = positions?.[0] as [number, number] | undefined;
+      if (head) {
+        const prevHead = prevSnakeHeadsRef.current.get(sid);
+
+        let dx = 0;
+        let dy = 0;
+        if (prevHead) {
+          dx = head[0] - prevHead[0];
+          dy = head[1] - prevHead[1];
+        } else if (positions.length > 1) {
+          const neck = positions[1] as [number, number];
+          dx = head[0] - neck[0];
+          dy = head[1] - neck[1];
+        }
+
+        prevSnakeHeadsRef.current.set(sid, head);
+
+        const headEmoji = getHeadEmoji(dx, dy);
+        positions.forEach((pos, idx) => {
+          const [x, y] = pos as [number, number];
+          if (x >= 0 && x < boardWidth && y >= 0 && y < boardHeight) {
+            const cx = padding + (x + 0.5) * cellSize;
+            const cy = padding + (y + 0.5) * cellSize;
+            const emoji = idx === 0 ? headEmoji : emojis.body;
+            ctx.fillText(emoji, cx, cy);
+          }
+        });
+
+        return;
+      }
+
       positions.forEach((pos, idx) => {
         const [x, y] = pos as [number, number];
         if (x >= 0 && x < boardWidth && y >= 0 && y < boardHeight) {
           const cx = padding + (x + 0.5) * cellSize;
           const cy = padding + (y + 0.5) * cellSize;
-          const emoji = idx === 0 ? emojis.head : emojis.body;
+          const emoji = idx === 0 ? '➡️' : emojis.body;
           ctx.fillText(emoji, cx, cy);
         }
       });

@@ -1,3 +1,17 @@
+### Version 6.1.44  Dec 15, 2025 (PENDING TESTING)
+
+- **Worm Arena mobile board: SVG + Twemoji sprites** (Author: Codex)
+  - Added `WormArenaGameBoardSVG`, which draws the grid in SVG and layers Twemoji-rendered apples plus a bug head sprite for the lead worm so the mobile view stays crisp without canvas throttling.
+  - The replay page now swaps in the SVG renderer when `useIsMobile` reports a phone viewport, keeping the original emoji canvas for desktop while delivering a lighter, vector-based experience on small screens.
+  - Twemoji 14.0.2 became a direct dependency so the SVG renderer can reference the canonical Twitter assets without bundling full emoji fonts.
+  - **Files Modified**: `client/src/components/WormArenaGameBoardSVG.tsx`, `client/src/pages/WormArena.tsx`, `package.json`, `package-lock.json`, `CHANGELOG.md`
+
+### Version 6.1.43  Dec 13, 2025 (PENDING TESTING)
+
+- **Worm Arena board: directional snake heads** (Author: Cascade)
+  - Snake head rendering now reflects movement direction (computed from consecutive frames, with a safe head/neck fallback on the first frame).
+  - **Files Modified**: `client/src/components/WormArenaGameBoard.tsx`, `CHANGELOG.md`
+
 ### Version 6.1.42  Dec 12, 2025 (PENDING TESTING)
 
 - **Worm Arena replay UX: stable reasoning panels + clearer controls** (Author: Cascade)
@@ -3333,6 +3347,5 @@
 
 - Contributors backend
   - Refactored `ContributorRepository` to extend `BaseRepository` and integrated it via `RepositoryService` and a new `contributorController`, fixing crashes on `/api/contributors` endpoints and aligning with the standard repository/controller pattern.
-
 
 
