@@ -29,6 +29,8 @@ import type {
   WormArenaGreatestHitGame,
   WormArenaStreamStatus,
   WormArenaFrameEvent,
+  SnakeBenchMatchSearchQuery,
+  SnakeBenchMatchSearchRow,
 } from '../../shared/types.js';
 import { logger } from '../utils/logger.ts';
 import { repositoryService } from '../repositories/RepositoryService.ts';
@@ -890,6 +892,12 @@ export class SnakeBenchService {
       logger.error(`Failed to list SnakeBench games: ${message}`, 'snakebench-service');
       throw new Error('Failed to list SnakeBench games');
     }
+  }
+
+  async searchMatches(
+    query: SnakeBenchMatchSearchQuery,
+  ): Promise<{ rows: SnakeBenchMatchSearchRow[]; total: number }> {
+    return await repositoryService.snakeBench.searchMatches(query);
   }
 
   async getGame(gameId: string): Promise<any> {
