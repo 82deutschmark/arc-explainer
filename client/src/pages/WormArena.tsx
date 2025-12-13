@@ -12,6 +12,7 @@ import { useLocation } from 'wouter';
 import { useSnakeBenchRecentGames, useSnakeBenchGame, useModelRating } from '@/hooks/useSnakeBench';
 import WormArenaGameBoard from '@/components/WormArenaGameBoard';
 import WormArenaHeader from '@/components/WormArenaHeader';
+import WormArenaGameBoardSVG from '@/components/WormArenaGameBoardSVG';
 import WormArenaReasoning from '@/components/WormArenaReasoning';
 import WormArenaStatsPanel from '@/components/WormArenaStatsPanel';
 import WormArenaGreatestHits from '@/components/WormArenaGreatestHits';
@@ -19,6 +20,7 @@ import { WormArenaControlBar } from '@/components/WormArenaControlBar';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { summarizeWormArenaPlacement } from '@shared/utils/wormArenaPlacement.ts';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 function useQueryParamMatchId(): { matchId: string | null; setMatchIdInUrl: (id: string) => void } {
   const [location, setLocation] = useLocation();
@@ -91,6 +93,7 @@ function renderAsciiFrame(frame: any, width: number, height: number, labels: Rec
 }
 export default function WormArena() {
   const { matchId: initialMatchId, setMatchIdInUrl } = useQueryParamMatchId();
+  const isMobile = useIsMobile();
 
   const [selectedMatchId, setSelectedMatchId] = React.useState<string>(initialMatchId ?? '');
   const [frameIndex, setFrameIndex] = React.useState<number>(0);
@@ -358,12 +361,20 @@ export default function WormArena() {
           />
 
           <div className="flex flex-col gap-4">
-            <WormArenaGameBoard
-              frame={currentFrame}
-              boardWidth={boardWidth}
-              boardHeight={boardHeight}
-              playerLabels={playerLabels}
-            />
+            {isMobile ? (
+              <WormArenaGameBoardSVG
+                frame={currentFrame}
+                boardWidth={boardWidth}
+                boardHeight={boardHeight}
+              />
+            ) : (
+              <WormArenaGameBoard
+                frame={currentFrame}
+                boardWidth={boardWidth}
+                boardHeight={boardHeight}
+                playerLabels={playerLabels}
+              />
+            )}
 
             <WormArenaControlBar
               onFirst={() => setFrameIndex(0)}
