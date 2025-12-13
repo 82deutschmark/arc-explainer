@@ -25,7 +25,15 @@ function useQueryParamMatchId(): { matchId: string | null; setMatchIdInUrl: (id:
 
   const matchId = React.useMemo(() => {
     try {
-      const query = location.split('?')[1] ?? '';
+      const query = (() => {
+        if (typeof window !== 'undefined' && typeof window.location?.search === 'string') {
+          const raw = window.location.search;
+          return raw.startsWith('?') ? raw.slice(1) : raw;
+        }
+
+        const idx = location.indexOf('?');
+        return idx >= 0 ? location.slice(idx + 1) : '';
+      })();
       if (!query) return null;
       const params = new URLSearchParams(query);
       const raw = params.get('matchId') ?? params.get('gameId');
