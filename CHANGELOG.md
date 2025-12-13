@@ -1,5 +1,11 @@
 ### Version 6.1.46  Dec 17, 2025 (PENDING TESTING)
 
+- **Worm Arena Match Browser: DB-backed matches page + query endpoint** (Author: Cascade)
+  - Added `GET /api/snakebench/matches` (requires `model`) with filtering, sorting, and pagination to browse stored games without hand-curated lists.
+  - Added `/worm-arena/matches` page to search by opponent/result/rounds/date and jump directly to replay.
+  - Wired the new "Matches" tab into Worm Arena navigation.
+  - **Files Modified**: `shared/types.ts`, `server/repositories/SnakeBenchRepository.ts`, `server/services/snakeBenchService.ts`, `server/controllers/snakeBenchController.ts`, `server/routes.ts`, `client/src/pages/WormArenaMatches.tsx`, `client/src/App.tsx`, `client/src/pages/WormArena.tsx`, `client/src/pages/WormArenaLive.tsx`, `client/src/pages/WormArenaStats.tsx`, `CHANGELOG.md`
+
 - **Worm Arena board: coordinate-guided overlays** (Author: Codex)
   - Added pale-blue bands around the grid and inscribed bold black axis labels that now sit well within the new margin so nothing is clipped.
   - Kept the light-gray `x,y` labels inside each cell while shifting the emoji, grid, and apple/snake rendering to the inset board area created by the label margins.

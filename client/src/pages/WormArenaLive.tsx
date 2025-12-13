@@ -153,6 +153,7 @@ export default function WormArenaLive() {
         links={[
           { label: 'Replay', href: '/worm-arena' },
           { label: 'Live', href: '/worm-arena/live', active: true },
+          { label: 'Matches', href: '/worm-arena/matches' },
           { label: 'Stats & Placement', href: '/worm-arena/stats' },
         ]}
       />

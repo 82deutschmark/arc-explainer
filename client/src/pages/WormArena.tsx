@@ -269,6 +269,7 @@ export default function WormArena() {
         links={[
           { label: 'Replay', href: '/worm-arena', active: true },
           { label: 'Live', href: '/worm-arena/live' },
+          { label: 'Matches', href: '/worm-arena/matches' },
           { label: 'Stats & Placement', href: '/worm-arena/stats' },
         ]}
         showMatchupLabel={false}
