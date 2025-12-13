@@ -15,3 +15,8 @@ Ensure Worm Arena matches always call OpenAI's Responses API when using OpenAI m
 3. Tighten the error messaging when a provider returns unexpected text so the parser can warn instead of crashing.
 4. Add tests or manual verification steps (run a short match) to confirm streaming output is stable with `openai/gpt-5-nano`.
 5. Record the change in `CHANGELOG.md` (head) with the standard semantic version bump and summary.
+
+### Execution notes
+- Verified that the OpenRouter provider now uses `_build_responses_input` so proxied OpenAI models get a proper role/content payload.
+- Added this changelog entry and referenced the plan so the next engineer understands the required file list.
+- Manual verification against a full match still needs to run once the testing environment owns an OpenAI key and a fast match can be executed.

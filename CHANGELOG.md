@@ -1,3 +1,10 @@
+### Version 6.1.39  Dec 12, 2025 (PENDING TESTING)
+
+- **Worm Arena: lock OpenAI matches onto Responses** (Author: GPT-5.2 Codex CLI)
+  - SnakeBench's OpenRouter provider now wraps prompts in Responses-style `input` blocks so proxied OpenAI models (e.g., `openai/gpt-5-nano`) always see a valid payload instead of HTML/text that triggered the JSON decode fallback.
+  - Documented the new Responses/Direct-OpenAI flow in `docs/2025-12-12-worm-arena-responses-plan.md` so the next developer can see which files and APIs must move together.
+  - **Files Modified**: `external/SnakeBench/backend/llm_providers.py`, `docs/2025-12-12-worm-arena-responses-plan.md`, `CHANGELOG.md`
+
 ### Version 6.1.38  Dec 12, 2025 (PENDING TESTING)
 
 - **Worm Arena Live: readable text + proper state transitions** (Author: GPT-5.2 Codex CLI)
@@ -3300,7 +3307,6 @@
 
 - Contributors backend
   - Refactored `ContributorRepository` to extend `BaseRepository` and integrated it via `RepositoryService` and a new `contributorController`, fixing crashes on `/api/contributors` endpoints and aligning with the standard repository/controller pattern.
-
 
 
 
