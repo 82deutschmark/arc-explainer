@@ -23,6 +23,8 @@ import type {
   SnakeBenchResultLabel,
   SnakeBenchTrueSkillLeaderboardEntry,
   WormArenaGreatestHitGame,
+  SnakeBenchMatchSearchQuery,
+  SnakeBenchMatchSearchRow,
 } from '../../shared/types.js';
 
 export interface SnakeBenchRecordMatchParams {
@@ -35,6 +37,11 @@ export interface SnakeBenchRecordMatchParams {
 
 export interface SnakeBenchRecentGamesResult {
   games: SnakeBenchGameSummary[];
+  total: number;
+}
+
+export interface SnakeBenchMatchSearchResult {
+  rows: SnakeBenchMatchSearchRow[];
   total: number;
 }
 
@@ -330,6 +337,177 @@ export class SnakeBenchRepository extends BaseRepository {
         'snakebench-db',
       );
       return { games: [], total: 0 };
+    }
+  }
+
+  async searchMatches(query: SnakeBenchMatchSearchQuery): Promise<SnakeBenchMatchSearchResult> {
+    if (!this.isConnected()) {
+      return { rows: [], total: 0 };
+    }
+
+    const model = String(query.model ?? '').trim();
+    if (!model) {
+      return { rows: [], total: 0 };
+    }
+
+    const opponent = query.opponent != null ? String(query.opponent).trim() : '';
+    const result = query.result;
+
+    const minRoundsRaw = query.minRounds != null ? Number(query.minRounds) : undefined;
+    const minRounds = Number.isFinite(minRoundsRaw as number) ? Math.max(0, Math.floor(minRoundsRaw as number)) : undefined;
+
+    const limitRaw = query.limit != null ? Number(query.limit) : 50;
+    const limit = Number.isFinite(limitRaw) ? Math.max(1, Math.min(Math.floor(limitRaw), 200)) : 50;
+
+    const offsetRaw = query.offset != null ? Number(query.offset) : 0;
+    const offset = Number.isFinite(offsetRaw) ? Math.max(0, Math.floor(offsetRaw)) : 0;
+
+    const sortBy = query.sortBy ?? 'startedAt';
+    const sortDir = (query.sortDir ?? 'desc') === 'asc' ? 'asc' : 'desc';
+
+    const where: string[] = [];
+    const params: any[] = [];
+
+    params.push(model);
+    where.push(`m.model_slug = $${params.length}`);
+    where.push(`g.game_type = 'arc-explainer'`);
+    where.push(`g.status = 'completed'`);
+
+    if (opponent) {
+      params.push(`%${opponent}%`);
+      where.push(`opp.model_slug ILIKE $${params.length}`);
+    }
+
+    if (result === 'won' || result === 'lost' || result === 'tied') {
+      params.push(result);
+      where.push(`gp.result = $${params.length}`);
+    }
+
+    if (minRounds != null) {
+      params.push(minRounds);
+      where.push(`COALESCE(g.rounds, 0) >= $${params.length}`);
+    }
+
+    const parseDate = (value: string | undefined): Date | null => {
+      if (!value) return null;
+      const trimmed = value.trim();
+      if (!trimmed) return null;
+      const asNumber = Number(trimmed);
+      if (Number.isFinite(asNumber) && asNumber > 0) {
+        const d = new Date(asNumber);
+        return Number.isFinite(d.getTime()) ? d : null;
+      }
+      const d = new Date(trimmed);
+      return Number.isFinite(d.getTime()) ? d : null;
+    };
+
+    const fromDate = parseDate(query.from);
+    if (fromDate) {
+      params.push(fromDate);
+      where.push(`COALESCE(g.start_time, g.created_at) >= $${params.length}`);
+    }
+
+    const toDate = parseDate(query.to);
+    if (toDate) {
+      params.push(toDate);
+      where.push(`COALESCE(g.start_time, g.created_at) <= $${params.length}`);
+    }
+
+    const whereSql = where.length ? `WHERE ${where.join(' AND ')}` : '';
+
+    const sortColumn = (() => {
+      switch (sortBy) {
+        case 'rounds':
+          return `COALESCE(g.rounds, 0)`;
+        case 'totalCost':
+          return `COALESCE(g.total_cost, 0)`;
+        case 'maxFinalScore':
+          return `GREATEST(COALESCE(gp.score, 0), COALESCE(opp_gp.score, 0))`;
+        case 'scoreDelta':
+          return `ABS(COALESCE(gp.score, 0) - COALESCE(opp_gp.score, 0))`;
+        case 'startedAt':
+        default:
+          return `COALESCE(g.start_time, g.created_at, NOW())`;
+      }
+    })();
+
+    try {
+      const listSql = `
+        SELECT
+          g.id AS game_id,
+          COALESCE(g.start_time, g.created_at) AS started_at,
+          COALESCE(g.rounds, 0) AS rounds_played,
+          COALESCE(g.board_width, 0) AS board_width,
+          COALESCE(g.board_height, 0) AS board_height,
+          COALESCE(g.total_cost, 0) AS total_cost,
+          COALESCE(gp.score, 0) AS my_score,
+          COALESCE(opp_gp.score, 0) AS opponent_score,
+          COALESCE(gp.result, 'tied') AS my_result,
+          COALESCE(opp.model_slug, '') AS opponent_slug
+        FROM public.game_participants gp
+        JOIN public.models m ON gp.model_id = m.id
+        JOIN public.games g ON gp.game_id = g.id
+        LEFT JOIN public.game_participants opp_gp
+          ON opp_gp.game_id = gp.game_id AND opp_gp.player_slot <> gp.player_slot
+        LEFT JOIN public.models opp ON opp_gp.model_id = opp.id
+        ${whereSql}
+        ORDER BY ${sortColumn} ${sortDir}, g.id DESC
+        LIMIT ${limit} OFFSET ${offset};
+      `;
+
+      const countSql = `
+        SELECT COUNT(*) AS total
+        FROM public.game_participants gp
+        JOIN public.models m ON gp.model_id = m.id
+        JOIN public.games g ON gp.game_id = g.id
+        LEFT JOIN public.game_participants opp_gp
+          ON opp_gp.game_id = gp.game_id AND opp_gp.player_slot <> gp.player_slot
+        LEFT JOIN public.models opp ON opp_gp.model_id = opp.id
+        ${whereSql};
+      `;
+
+      const [listResult, countResult] = await Promise.all([
+        this.query(listSql, params),
+        this.query(countSql, params),
+      ]);
+
+      const total = parseInt((countResult.rows[0]?.total as string) ?? '0', 10) || 0;
+
+      const rows: SnakeBenchMatchSearchRow[] = (listResult.rows ?? []).map((row: any) => {
+        const myScore = Number(row.my_score ?? 0) || 0;
+        const opponentScore = Number(row.opponent_score ?? 0) || 0;
+        const maxFinalScore = Math.max(myScore, opponentScore);
+        const scoreDelta = Math.abs(myScore - opponentScore);
+
+        const startedAt = row.started_at ? new Date(row.started_at).toISOString() : '';
+        const resultLabelRaw = String(row.my_result ?? 'tied') as SnakeBenchResultLabel;
+        const resultLabel: SnakeBenchResultLabel =
+          resultLabelRaw === 'won' || resultLabelRaw === 'lost' || resultLabelRaw === 'tied' ? resultLabelRaw : 'tied';
+
+        return {
+          gameId: String(row.game_id ?? ''),
+          startedAt,
+          model,
+          opponent: String(row.opponent_slug ?? ''),
+          result: resultLabel,
+          myScore,
+          opponentScore,
+          roundsPlayed: Number(row.rounds_played ?? 0) || 0,
+          totalCost: Number(row.total_cost ?? 0) || 0,
+          maxFinalScore,
+          scoreDelta,
+          boardWidth: Number(row.board_width ?? 0) || 0,
+          boardHeight: Number(row.board_height ?? 0) || 0,
+        };
+      });
+
+      return { rows, total };
+    } catch (error) {
+      logger.warn(
+        `SnakeBenchRepository.searchMatches: query failed for ${model}: ${error instanceof Error ? error.message : String(error)}`,
+        'snakebench-db',
+      );
+      return { rows: [], total: 0 };
     }
   }
 

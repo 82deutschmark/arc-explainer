@@ -624,6 +624,55 @@ export interface SnakeBenchListGamesResponse {
   timestamp: number;
 }
 
+export type SnakeBenchMatchSearchResultLabel = SnakeBenchResultLabel;
+
+export type SnakeBenchMatchSearchSortBy =
+  | 'startedAt'
+  | 'rounds'
+  | 'totalCost'
+  | 'maxFinalScore'
+  | 'scoreDelta';
+
+export type SnakeBenchMatchSearchSortDir = 'asc' | 'desc';
+
+export interface SnakeBenchMatchSearchQuery {
+  model: string;
+  opponent?: string;
+  result?: SnakeBenchMatchSearchResultLabel;
+  minRounds?: number;
+  from?: string;
+  to?: string;
+  sortBy?: SnakeBenchMatchSearchSortBy;
+  sortDir?: SnakeBenchMatchSearchSortDir;
+  limit?: number;
+  offset?: number;
+}
+
+export interface SnakeBenchMatchSearchRow {
+  gameId: string;
+  startedAt: string;
+  model: string;
+  opponent: string;
+  result: SnakeBenchMatchSearchResultLabel;
+  myScore: number;
+  opponentScore: number;
+  roundsPlayed: number;
+  totalCost: number;
+  maxFinalScore: number;
+  scoreDelta: number;
+  boardWidth: number;
+  boardHeight: number;
+}
+
+export interface SnakeBenchMatchSearchResponse {
+  success: boolean;
+  model: string;
+  rows: SnakeBenchMatchSearchRow[];
+  total: number;
+  error?: string;
+  timestamp: number;
+}
+
 export interface SnakeBenchGameDetailResponse {
   success: boolean;
   gameId: string;
