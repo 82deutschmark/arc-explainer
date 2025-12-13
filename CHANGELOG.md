@@ -1,3 +1,11 @@
+### Version 6.1.40  Dec 12, 2025 (PENDING TESTING)
+
+- **Worm Arena replay links: load the selected match reliably** (Author: Cascade)
+  - Fixed a bug where clicking different replay links could still show the same replay because the page parsed `matchId` from `wouter`'s `location` (often pathname-only) instead of the real browser query string.
+  - `matchId` is now read from `window.location.search` (with a safe fallback), so query-only navigation updates the selected match correctly.
+  - Minor UI tweak: Greatest Hits loading text now renders cleanly without a single ellipsis glyph.
+  - **Files Modified**: `client/src/pages/WormArena.tsx`, `client/src/components/WormArenaGreatestHits.tsx`, `CHANGELOG.md`
+
 ### Version 6.1.39  Dec 12, 2025 (PENDING TESTING)
 
 - **Worm Arena: lock OpenAI matches onto Responses** (Author: GPT-5.2 Codex CLI)
