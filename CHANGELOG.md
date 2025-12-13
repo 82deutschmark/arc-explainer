@@ -1,3 +1,10 @@
+### Version 6.1.45  Dec 15, 2025 (PENDING TESTING)
+
+- **Worm Arena tournaments: GPT-5.2 vs OpenAI + hybrid challengers** (Author: Codex)
+  - Added a parameterized PowerShell runner that queues `/api/snakebench/run-batch` POSTs where `openai/gpt-5.2` plays OpenAI challengers plus DeepSeek, Gemini, and Haiku opponents in both directions with a configurable `count` and pacing delay.
+  - The script captures submission success/failure per batch so operators can launch these cross-family matchups without scattering credentials or multiple tools.
+  - **Files Modified**: `scripts/worm-arena-tournaments/gpt52-vs-openai-gpt5-family.ps1`, `CHANGELOG.md`
+
 ### Version 6.1.44  Dec 15, 2025 (PENDING TESTING)
 
 - **Worm Arena mobile board: SVG + Twemoji sprites** (Author: Codex)
@@ -3347,5 +3354,4 @@
 
 - Contributors backend
   - Refactored `ContributorRepository` to extend `BaseRepository` and integrated it via `RepositoryService` and a new `contributorController`, fixing crashes on `/api/contributors` endpoints and aligning with the standard repository/controller pattern.
-
 
