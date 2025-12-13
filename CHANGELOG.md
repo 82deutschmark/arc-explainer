@@ -1,3 +1,10 @@
+### Version 6.1.46  Dec 17, 2025 (PENDING TESTING)
+
+- **Worm Arena board: coordinate-guided overlays** (Author: Codex)
+  - Added pale-blue bands around the grid and inscribed bold black axis labels that now sit well within the new margin so nothing is clipped.
+  - Kept the light-gray `x,y` labels inside each cell while shifting the emoji, grid, and apple/snake rendering to the inset board area created by the label margins.
+  - **Files Modified**: `client/src/components/WormArenaGameBoard.tsx`, `CHANGELOG.md`
+
 ### Version 6.1.45  Dec 15, 2025 (PENDING TESTING)
 
 - **Worm Arena tournaments: GPT-5.2 vs OpenAI + hybrid challengers** (Author: Codex)
@@ -3354,4 +3361,3 @@
 
 - Contributors backend
   - Refactored `ContributorRepository` to extend `BaseRepository` and integrated it via `RepositoryService` and a new `contributorController`, fixing crashes on `/api/contributors` endpoints and aligning with the standard repository/controller pattern.
-
