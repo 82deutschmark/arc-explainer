@@ -205,6 +205,7 @@ export default function WormArena() {
     [ratingB],
   );
   const finalScores = replayData?.metadata?.final_scores ?? replayData?.totals?.scores ?? {};
+  const currentScores = currentFrame?.state?.scores ?? replayData?.initial_state?.scores ?? {};
   const roundsPlayed = selectedMeta?.roundsPlayed ?? replayData?.metadata?.actual_rounds ?? replayData?.game?.rounds_played ?? frames.length ?? 0;
   const startedAt = selectedMeta?.startedAt ?? replayData?.metadata?.start_time ?? replayData?.game?.started_at ?? '';
 
@@ -218,8 +219,12 @@ export default function WormArena() {
   const playerBReasoning = playerIds.length > 1 ? getCurrentReasoning(playerIds[1]) : '';
   const playerAName = playerIds.length > 0 ? playerLabels[playerIds[0]] : 'Player A';
   const playerBName = playerIds.length > 1 ? playerLabels[playerIds[1]] : 'Player B';
-  const playerAScore = playerIds.length > 0 ? Number((finalScores as any)[playerIds[0]] ?? 0) : 0;
-  const playerBScore = playerIds.length > 1 ? Number((finalScores as any)[playerIds[1]] ?? 0) : 0;
+  const playerAScore = playerIds.length > 0
+    ? Number((currentScores as any)[playerIds[0]] ?? (finalScores as any)[playerIds[0]] ?? 0)
+    : 0;
+  const playerBScore = playerIds.length > 1
+    ? Number((currentScores as any)[playerIds[1]] ?? (finalScores as any)[playerIds[1]] ?? 0)
+    : 0;
 
   const matchupLabel = React.useMemo(() => {
     if (playerIds.length >= 2) {
@@ -344,7 +349,7 @@ export default function WormArena() {
           </div>
         )}
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6 items-stretch">
           <WormArenaReasoning
             playerName={playerAName}
             color="yellow"
@@ -371,6 +376,13 @@ export default function WormArena() {
               totalRounds={frames.length}
               showNextMove={showNextMove}
               onToggleThought={setShowNextMove}
+              playerALabel={playerAName}
+              playerBLabel={playerBName}
+              playerAScore={playerAScore}
+              playerBScore={playerBScore}
+              matchId={selectedMatchId}
+              onCopyMatchId={handleCopyMatchId}
+              statsModels={Array.isArray(models) ? models.slice(0, 2) : []}
             />
           </div>
 
@@ -380,45 +392,6 @@ export default function WormArena() {
             reasoning={showNextMove && playerIds.length > 1 ? (frames[frameIndex + 1]?.moves?.[playerIds[1]]?.rationale || '') : playerBReasoning}
             score={playerBScore}
           />
-        </div>
-
-        <div className="text-center mb-6 worm-muted text-[17px]">
-          <div className="flex justify-center gap-6 flex-wrap">
-            <span><strong>Scores:</strong> {Object.entries(finalScores).map(([k, v]) => (
-              <span key={k} className="ml-2"><span className="font-mono">{k}</span>: {String(v)}</span>
-            ))}</span>
-            <span><strong>Round:</strong> {frameIndex + 1} / {frames.length}</span>
-            <span><strong>Board:</strong> {boardWidth}x{boardHeight}</span>
-          </div>
-          {Array.isArray(models) && models.length > 0 && (
-            <div className="mt-3 text-xs flex justify-center gap-3 flex-wrap">
-              <span>View stats:</span>
-              {models.slice(0, 2).map((slug) => (
-                <a
-                  key={slug}
-                  href={`/worm-arena/stats?model=${encodeURIComponent(slug)}`}
-                  className="underline font-mono"
-                >
-                  {slug}
-                </a>
-              ))}
-            </div>
-          )}
-          {selectedMatchId && (
-            <div className="mt-2 flex items-center justify-center gap-2 text-sm">
-              <span>
-                <strong>Match ID:</strong>{' '}
-                <span className="font-mono text-xs">{selectedMatchId}</span>
-              </span>
-              <button
-                type="button"
-                onClick={handleCopyMatchId}
-                className="text-xs px-2 py-1 rounded border bg-white hover:bg-gray-50 worm-border text-worm-ink"
-              >
-                Copy
-              </button>
-            </div>
-          )}
         </div>
 
         <div className="mb-8 grid grid-cols-1 lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)] gap-4 items-start">

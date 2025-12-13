@@ -1,3 +1,14 @@
+### Version 6.1.42  Dec 12, 2025 (PENDING TESTING)
+
+- **Worm Arena replay UX: stable reasoning panels + clearer controls** (Author: Cascade)
+  - Prevented replay-time layout shifts by making the reasoning panels scroll internally instead of resizing as the reasoning text changes.
+  - Removed the redundant bottom-of-page Scores/Round/Board strip; scores + match ID now live inside the center replay control card.
+  - Renamed and clarified the reasoning toggle (“This move” vs “Next move”) with unambiguous selected styling and a short helper line.
+  - Fixed replay score display so it updates per-round during playback (instead of always showing final score).
+  - Worm Arena Live: added a GPT-5 Nano vs GPT-5 Nano preset and made it the default for quick testing.
+  - Worm Arena Live: improved sessionId detection so the SSE connection reliably attaches to the correct live session.
+  - **Files Modified**: `client/src/pages/WormArena.tsx`, `client/src/pages/WormArenaLive.tsx`, `client/src/components/WormArenaReasoning.tsx`, `client/src/components/WormArenaControlBar.tsx`, `shared/utils/curatedMatchups.ts`, `CHANGELOG.md`
+
 ### Version 6.1.41  Dec 12, 2025 (PENDING TESTING)
 
 - **Worm Arena replay UI: clarify player colors (left yellow, right red)** (Author: Cascade)
