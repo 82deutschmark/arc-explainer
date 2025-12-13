@@ -248,8 +248,8 @@ export class SnakeBenchService {
 
     // ARC Explainer runs do not use SnakeBench's Supabase DB or Supabase Storage.
     // We persist via our own Postgres + local replay JSON under external/SnakeBench/backend/completed_games.
+    // ARC Explainer handles DB persistence via its ingest queue, so disable SnakeBench's internal DB writes.
     env.SNAKEBENCH_DISABLE_INTERNAL_DB = '1';
-    env.SNAKEBENCH_DISABLE_SUPABASE = '1';
 
     const expectedOpenRouterBaseUrl = 'https://openrouter.ai/api/v1';
     const configuredOpenRouterBaseUrl = (env.OPENROUTER_BASE_URL || '').trim();

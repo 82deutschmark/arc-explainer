@@ -1,10 +1,10 @@
 /**
- * Author: Claude Code using Haiku 4.5
- * Date: 2025-12-09
- * PURPOSE: Generic WormArena header with creative worm emoji arrangements and farm aesthetic.
- *          Displays title, game stats, and optional action slot (for Start Match or other actions).
- *          Reusable across both replay and live pages.
- * SRP/DRY check: Pass — single responsibility for header presentation only.
+ * Author: GPT-5.2
+ * Date: 2025-12-12
+ * PURPOSE: Worm Arena header shared by replay/live pages. Renders title, nav links,
+ *          optional subtitle text, optional matchup label, and an optional action slot.
+ *          Intentionally avoids decorative glyphs that can render poorly on Windows.
+ * SRP/DRY check: Pass — presentation only.
  */
 
 import React from 'react';
@@ -23,6 +23,7 @@ interface WormArenaHeaderProps {
   actionSlot?: React.ReactNode;
   links?: WormArenaHeaderLink[];
   showMatchupLabel?: boolean;
+  subtitle?: string;
 }
 
 export default function WormArenaHeader({
@@ -31,23 +32,19 @@ export default function WormArenaHeader({
   actionSlot,
   links = [],
   showMatchupLabel = true,
+  subtitle,
 }: WormArenaHeaderProps) {
+  const resolvedSubtitle = subtitle ?? (totalGames > 0 ? `${totalGames} matches played` : 'Start a match');
+
   return (
     <header className="worm-header">
-      {/* Animated background pattern */}
       <div className="absolute inset-0 opacity-10 pointer-events-none worm-header-pattern" />
 
       <div className="relative px-6 py-2 max-w-7xl mx-auto">
         <div className="flex items-center justify-between gap-4">
-          {/* Left: Creative Worm Title */}
           <div className="flex-1 flex flex-col gap-1.5">
-            {/* Main Title with Worm Emojis */}
             <div className="flex items-center gap-2 flex-wrap">
-              <span className="text-[18px]">🐛</span>
-              <h1 className="worm-header-title">
-                Worm Arena
-              </h1>
-              <span className="text-[18px] worm-float">🐛</span>
+              <h1 className="worm-header-title">Worm Arena</h1>
             </div>
 
             {links.length > 0 && (
@@ -58,9 +55,7 @@ export default function WormArenaHeader({
                     href={link.href}
                     className={cn(
                       'transition-colors px-1 pb-1 border-b-2 border-transparent',
-                      link.active
-                        ? 'worm-header-link-active'
-                        : 'worm-header-link hover:text-worm-header-ink'
+                      link.active ? 'worm-header-link-active' : 'worm-header-link hover:text-worm-header-ink',
                     )}
                   >
                     {link.label}
@@ -69,21 +64,14 @@ export default function WormArenaHeader({
               </nav>
             )}
 
-            {/* Subtitle with stats and decorative worms */}
             <div className="flex items-center gap-2 text-xs worm-header-subtitle">
-              <span>🌱</span>
-              <span className="font-medium font-worm">
-                {totalGames > 0 ? `${totalGames} matches played` : 'Launch your first battle'}
-              </span>
-              <span>🍎</span>
+              <span className="font-medium font-worm">{resolvedSubtitle}</span>
             </div>
           </div>
 
-          {/* Right: Action Area (optional slot) */}
           {actionSlot && <div className="flex items-center gap-4">{actionSlot}</div>}
         </div>
 
-        {/* Matchup Label intentionally hidden unless explicitly requested */}
         {matchupLabel && showMatchupLabel && (
           <div className="mt-1 text-center text-xs font-medium worm-header-subtitle">
             <span className="text-worm-header-ink">{matchupLabel}</span>
@@ -93,3 +81,4 @@ export default function WormArenaHeader({
     </header>
   );
 }
+

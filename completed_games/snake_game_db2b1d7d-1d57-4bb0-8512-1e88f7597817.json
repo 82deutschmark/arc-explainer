@@ -1,0 +1,3343 @@
+{
+  "version": 1,
+  "game": {
+    "id": "db2b1d7d-1d57-4bb0-8512-1e88f7597817",
+    "started_at": "2025-12-12T18:16:14.351007",
+    "ended_at": "2025-12-12T18:43:17.882601",
+    "game_type": "arc-explainer",
+    "max_rounds": 150,
+    "rounds_played": 32,
+    "board": {
+      "width": 10,
+      "height": 10,
+      "num_apples": 5
+    }
+  },
+  "players": {
+    "0": {
+      "model_id": "0",
+      "name": "openai/gpt-5-mini-2025-08-07",
+      "result": "won",
+      "final_score": 9,
+      "death": null,
+      "totals": {
+        "input_tokens": 42673,
+        "output_tokens": 47501,
+        "cost": 0.0
+      }
+    },
+    "1": {
+      "model_id": "1",
+      "name": "openai/gpt-5-nano-2025-08-07",
+      "result": "lost",
+      "final_score": 8,
+      "death": {
+        "reason": "body_collision",
+        "round": 31
+      },
+      "totals": {
+        "input_tokens": 37614,
+        "output_tokens": 144227,
+        "cost": 0.0
+      }
+    }
+  },
+  "totals": {
+    "cost": 0.0,
+    "input_tokens": 80287,
+    "output_tokens": 191728
+  },
+  "initial_state": {
+    "snakes": {
+      "0": [
+        [
+          6,
+          9
+        ]
+      ],
+      "1": [
+        [
+          8,
+          4
+        ]
+      ]
+    },
+    "apples": [
+      [
+        6,
+        5
+      ],
+      [
+        2,
+        2
+      ],
+      [
+        0,
+        8
+      ],
+      [
+        5,
+        8
+      ],
+      [
+        1,
+        8
+      ]
+    ],
+    "alive": {
+      "0": true,
+      "1": true
+    },
+    "scores": {
+      "0": 0,
+      "1": 0
+    }
+  },
+  "frames": [
+    {
+      "round": 0,
+      "state": {
+        "snakes": {
+          "0": [
+            [
+              6,
+              8
+            ]
+          ],
+          "1": [
+            [
+              8,
+              5
+            ]
+          ]
+        },
+        "apples": [
+          [
+            6,
+            5
+          ],
+          [
+            2,
+            2
+          ],
+          [
+            0,
+            8
+          ],
+          [
+            5,
+            8
+          ],
+          [
+            1,
+            8
+          ]
+        ],
+        "alive": {
+          "0": true,
+          "1": true
+        },
+        "scores": {
+          "0": 0,
+          "1": 0
+        }
+      },
+      "moves": {
+        "0": {
+          "move": "DOWN",
+          "rationale": "Analysis of available moves from head (6,9):\n\n- UP -> (6,10): off board, immediate death. Eliminate.\n- DOWN -> (6,8): on board, no collision. From (6,8) you have 4 follow-up moves (U,D,L,R) and you are one step away from apples at (5,8).\n- LEFT -> (5,9): on board, no collision. From (5,9) you have 3 follow-up moves (no UP). You can then go DOWN to (5,8) to eat next turn.\n- RIGHT -> (7,9): on board, no collision but moves away from nearby apples and doesn't increase immediate options.\n\nAvoiding immediate death is mandatory, so UP is out. Between DOWN and LEFT, DOWN gives more future options (4 vs 3 moves) and places us centrally just above/beside the cluster of apples (particularly near (5,8)). Enemy head at (8,4) is far away and unlikely to cause a head-on this turn.\n\nShort-term plan for the next few turns:\n- Move DOWN now to (6,8).\n- Next turn move LEFT to (5,8) to eat that apple.\n- After eating, reassess and target nearby apples at (1,8) and (0,8) or the lower apple at (6,5) while avoiding traps.\n\nDecision:\nDOWN",
+          "input_tokens": 1029,
+          "output_tokens": 1258,
+          "cost": 0.0
+        },
+        "1": {
+          "move": "UP",
+          "rationale": "Plan: Take a safe approach toward the nearby apple at (6,5). UP keeps options open (three safe follow-ups) and reduces distance to that apple without immediate self-harm or edge risk. If possible, pivot to (7,5) then (6,5) to eat. \nUP",
+          "input_tokens": 1029,
+          "output_tokens": 6148,
+          "cost": 0.0
+        }
+      }
+    },
+    {
+      "round": 1,
+      "state": {
+        "snakes": {
+          "0": [
+            [
+              5,
+              8
+            ],
+            [
+              6,
+              8
+            ]
+          ],
+          "1": [
+            [
+              7,
+              5
+            ]
+          ]
+        },
+        "apples": [
+          [
+            6,
+            5
+          ],
+          [
+            2,
+            2
+          ],
+          [
+            0,
+            8
+          ],
+          [
+            1,
+            8
+          ],
+          [
+            6,
+            1
+          ]
+        ],
+        "alive": {
+          "0": true,
+          "1": true
+        },
+        "scores": {
+          "0": 1,
+          "1": 0
+        }
+      },
+      "moves": {
+        "0": {
+          "move": "LEFT",
+          "rationale": "From (6,8) the four candidate moves:\n\n- UP -> (6,9): on-board, safe but moves away from the nearby apple and doesn't gain an immediate point.\n- DOWN -> (6,7): safe, keeps options open but also doesn't take the nearby apple.\n- RIGHT -> (7,8): safe, moves away from the apple cluster.\n- LEFT -> (5,8): contains an apple. Safe (no snake head can reach that cell this turn), gives +1 apple and grows our snake.\n\nNo immediate collisions or off-board moves. Enemy head at (8,5) is too far to contest (5,8) this turn, so eating the apple is both safe and optimal: it increases our score and gives more board presence to control nearby top-row apples.\n\nShort plan after eating:\n- Move left along the y=8 row to collect the cluster at (1,8) and (0,8) while avoiding trapping myself; if needed, drop down toward the (6,5) apple later.\n- Reassess enemy movement each turn to avoid head-on or being boxed in.\n\nLEFT",
+          "input_tokens": 1320,
+          "output_tokens": 877,
+          "cost": 0.0
+        },
+        "1": {
+          "move": "LEFT",
+          "rationale": "Reasoning: The enemy at (6,8) cannot reach me this turn, and none of my four possible moves runs into a snake or the wall. The closest apple is at (6,5); moving LEFT to (7,5) reduces the distance to that apple and preserves flexibility for the next move to actually eat it.\nPlan: Move toward the (6,5) apple while keeping future options open and avoiding traps near the edges.\nLEFT",
+          "input_tokens": 1090,
+          "output_tokens": 3490,
+          "cost": 0.0
+        }
+      }
+    },
+    {
+      "round": 2,
+      "state": {
+        "snakes": {
+          "0": [
+            [
+              4,
+              8
+            ],
+            [
+              5,
+              8
+            ]
+          ],
+          "1": [
+            [
+              6,
+              5
+            ],
+            [
+              7,
+              5
+            ]
+          ]
+        },
+        "apples": [
+          [
+            2,
+            2
+          ],
+          [
+            0,
+            8
+          ],
+          [
+            1,
+            8
+          ],
+          [
+            6,
+            1
+          ],
+          [
+            5,
+            5
+          ]
+        ],
+        "alive": {
+          "0": true,
+          "1": true
+        },
+        "scores": {
+          "0": 1,
+          "1": 1
+        }
+      },
+      "moves": {
+        "0": {
+          "move": "LEFT",
+          "rationale": "Legal moves from head (5,8):\n\n- RIGHT -> (6,8): illegal (directly into our own body / backwards) \u2014 would kill us.\n- LEFT -> (4,8): on-board, empty, moves toward the apple cluster at (1,8) and (0,8). Safe this turn.\n- UP -> (5,9): on-board and safe but moves away from nearby apples.\n- DOWN -> (5,7): on-board and safe but not toward the easy cluster.\n\nEnemy head is at (7,5), too far to contest any of these immediate squares this turn. No head-on risk and no bodies blocking the LEFT square.\n\nShort plan: move left along y=8 to collect (1,8) and (0,8). After each apple, re-evaluate to avoid self-trap; if the enemy moves toward (6,5) I'll avoid head-on contests and consider dropping down later to take (6,5) if safe.\n\nLEFT",
+          "input_tokens": 1263,
+          "output_tokens": 978,
+          "cost": 0.0
+        },
+        "1": {
+          "move": "LEFT",
+          "rationale": "I evaluate moves from head (7,5). Safe options this turn are: UP to (7,6), DOWN to (7,4), LEFT to (6,5) which contains an apple, and RIGHT to (8,5). None of these collide with the enemy's current body or head, and none go off the board. The enemy head is at (5,8) with a body at (6,8); in this turn, their possible moves are to (5,7), (5,9), or (4,8). None of these would collide head-on with our potential new head positions this turn, so there\u2019s no immediate head-on risk.\n\nChoosing LEFT to (6,5) would eat the apple now, growing your length by 1 (from 1 segment to 2), and place your new head on the apple. This is the most immediate gain and also preserves space behind you (the previous head at (7,5) becomes your new tail), keeping future options open without trapping you.\n\nLong-term plan: After eating, focus on securing remaining apples while avoiding tight corridors or traps near the edges. Use the extra length to provide flexibility in avoiding potential collisions with the enemy and to block potential routes if needed. Keep an eye on the apples at (2,2), (0,8), (1,8), and (6,1) and plan routes that allow safe collection without becoming boxed in.\n\nLEFT",
+          "input_tokens": 1124,
+          "output_tokens": 4079,
+          "cost": 0.0
+        }
+      }
+    },
+    {
+      "round": 3,
+      "state": {
+        "snakes": {
+          "0": [
+            [
+              3,
+              8
+            ],
+            [
+              4,
+              8
+            ]
+          ],
+          "1": [
+            [
+              6,
+              4
+            ],
+            [
+              6,
+              5
+            ]
+          ]
+        },
+        "apples": [
+          [
+            2,
+            2
+          ],
+          [
+            0,
+            8
+          ],
+          [
+            1,
+            8
+          ],
+          [
+            6,
+            1
+          ],
+          [
+            5,
+            5
+          ]
+        ],
+        "alive": {
+          "0": true,
+          "1": true
+        },
+        "scores": {
+          "0": 1,
+          "1": 1
+        }
+      },
+      "moves": {
+        "0": {
+          "move": "LEFT",
+          "rationale": "Legal moves from head (4,8):\n- RIGHT -> (5,8): illegal (directly into our own body / backwards).\n- LEFT  -> (3,8): on-board, empty, moves toward the nearby apple cluster at (1,8) and (0,8). Safe this turn; tail (5,8) will vacate.\n- UP    -> (4,9): on-board and safe but moves away from nearby apples.\n- DOWN  -> (4,7): on-board and safe but not toward apples.\n\nEnemy head (6,5) is too far to contest any immediate square near us this turn (it can reach (5,5) but not our neighbors). No head-on risk this move.\n\nShort plan: continue left along y=8 to collect (1,8) and (0,8). After each apple, re-evaluate to avoid self-trapping; if the enemy goes toward the center (around 5,5) consider dropping down later to contest or pursue other apples only if it\u2019s safe.\n\nLEFT",
+          "input_tokens": 1240,
+          "output_tokens": 1184,
+          "cost": 0.0
+        },
+        "1": {
+          "move": "DOWN",
+          "rationale": "Safety check: From (6,5) our only safe moves that don\u2019t hit our own body are UP (6,6), DOWN (6,4), and LEFT (5,5). RIGHT would collide with our tail at (7,5).\n\nEnemy snake: The opponent\u2019s head is around (4,8) with a nearby body, and their possible moves this turn don\u2019t create an immediate head-on with our candidate destinations (6,6), (6,4), or (5,5).\n\nApple proximity: The nearest apple is at (6,1); moving DOWN to (6,4) brings us closer toward it, while UP moves away and LEFT only offers a nearby (5,5) apple but not as direct to the closest one.\n\nDecision: DOWN to approach the nearest apple while staying safe and avoiding traps.\n\nDOWN",
+          "input_tokens": 1333,
+          "output_tokens": 5810,
+          "cost": 0.0
+        }
+      }
+    },
+    {
+      "round": 4,
+      "state": {
+        "snakes": {
+          "0": [
+            [
+              2,
+              8
+            ],
+            [
+              3,
+              8
+            ]
+          ],
+          "1": [
+            [
+              5,
+              4
+            ],
+            [
+              6,
+              4
+            ]
+          ]
+        },
+        "apples": [
+          [
+            2,
+            2
+          ],
+          [
+            0,
+            8
+          ],
+          [
+            1,
+            8
+          ],
+          [
+            6,
+            1
+          ],
+          [
+            5,
+            5
+          ]
+        ],
+        "alive": {
+          "0": true,
+          "1": true
+        },
+        "scores": {
+          "0": 1,
+          "1": 1
+        }
+      },
+      "moves": {
+        "0": {
+          "move": "LEFT",
+          "rationale": "Analysis of legal moves from head (3,8):\n- RIGHT -> (4,8): illegal (directly backward into our body).\n- LEFT  -> (2,8): on-board, empty. Moves toward apple cluster at (1,8) and (0,8). Safe this turn; our tail (4,8) will vacate so no collision.\n- UP    -> (3,9): on-board and safe but moves away from nearby apples.\n- DOWN  -> (3,7): on-board and safe but not toward apples.\n\nEnemy snake (#1) is at (6,4) with body at (6,5). It cannot reach or contest the apples on y=8 this turn and poses no head-on threat to our immediate neighbors.\n\nShort-term goal: continue left along y=8 to collect (1,8) and then (0,8). After each apple, re-evaluate to avoid self-trapping (if we grow, prefer not to cut ourselves off from open board). If the enemy heads toward the center (around 5,5) we can ignore and keep collecting the north-west apples, or drop south later if a safer apple becomes contested.\n\nMove: LEFT",
+          "input_tokens": 1254,
+          "output_tokens": 958,
+          "cost": 0.0
+        },
+        "1": {
+          "move": "LEFT",
+          "rationale": "Possible moves from (6,4):\n- UP -> (6,5) would collide with our own body (illegal).\n- DOWN -> (6,3) is safe.\n- LEFT -> (5,4) is safe and brings us closer to the nearby apple at (5,5).\n- RIGHT -> (7,4) is safe but farther from the closest apple.\n\nRecommendation: LEFT.\n\nPlan: After moving to (5,4), next turn we can go UP to eat the apple at (5,5), then reassess to head toward (6,1) while avoiding traps and staying safe from the enemy.\n\nLEFT",
+          "input_tokens": 1208,
+          "output_tokens": 5511,
+          "cost": 0.0
+        }
+      }
+    },
+    {
+      "round": 5,
+      "state": {
+        "snakes": {
+          "0": [
+            [
+              1,
+              8
+            ],
+            [
+              2,
+              8
+            ],
+            [
+              3,
+              8
+            ]
+          ],
+          "1": [
+            [
+              5,
+              5
+            ],
+            [
+              5,
+              4
+            ],
+            [
+              6,
+              4
+            ]
+          ]
+        },
+        "apples": [
+          [
+            2,
+            2
+          ],
+          [
+            0,
+            8
+          ],
+          [
+            6,
+            1
+          ],
+          [
+            6,
+            0
+          ],
+          [
+            2,
+            1
+          ]
+        ],
+        "alive": {
+          "0": true,
+          "1": true
+        },
+        "scores": {
+          "0": 2,
+          "1": 2
+        }
+      },
+      "moves": {
+        "0": {
+          "move": "LEFT",
+          "rationale": "Legal moves from head (2,8):\n- RIGHT -> (3,8): illegal (directly backwards into our body).\n- LEFT  -> (1,8): on-board, contains an apple. Safe this turn; enemy is far and can't contest immediately.\n- UP    -> (2,9): on-board and safe but moves away from nearby apples.\n- DOWN  -> (2,7): on-board and safe but not toward apples.\n\nBest choice: LEFT to eat the apple at (1,8). This continues the clear northwest apple plan: after LEFT we can likely take (0,8) next turn. Growing from eating is fine here \u2014 plenty of open space \u2014 but I will re-evaluate after each apple to avoid self-trapping (avoid getting boxed on the left edge; if necessary I'll drop south toward the remaining apples at (2,2) or (5,5)).\n\nLEFT",
+          "input_tokens": 1284,
+          "output_tokens": 1280,
+          "cost": 0.0
+        },
+        "1": {
+          "move": "UP",
+          "rationale": "Reasoning:\n- From (5,4), evaluate moves:\n  - UP to (5,5) hits an apple, safe since no snake is near; would grow to length 3.\n  - DOWN to (5,3) is safe but delays growth and risking future space.\n  - LEFT to (4,4) is safe but moves away from the nearest apple.\n  - RIGHT to (6,4) is directly into our own tail, which is illegal.\n- Prioritize immediate apple gain with safety; UP achieves this now and preserves options for future turns.\n\nUP",
+          "input_tokens": 1165,
+          "output_tokens": 4861,
+          "cost": 0.0
+        }
+      }
+    },
+    {
+      "round": 6,
+      "state": {
+        "snakes": {
+          "0": [
+            [
+              0,
+              8
+            ],
+            [
+              1,
+              8
+            ],
+            [
+              2,
+              8
+            ],
+            [
+              3,
+              8
+            ]
+          ],
+          "1": [
+            [
+              5,
+              6
+            ],
+            [
+              5,
+              5
+            ],
+            [
+              5,
+              4
+            ]
+          ]
+        },
+        "apples": [
+          [
+            2,
+            2
+          ],
+          [
+            6,
+            1
+          ],
+          [
+            6,
+            0
+          ],
+          [
+            2,
+            1
+          ],
+          [
+            1,
+            9
+          ]
+        ],
+        "alive": {
+          "0": true,
+          "1": true
+        },
+        "scores": {
+          "0": 3,
+          "1": 2
+        }
+      },
+      "moves": {
+        "0": {
+          "move": "LEFT",
+          "rationale": "Current head: (1,8). Consider moves:\n\n- RIGHT -> (2,8): illegal (directly backwards into our body).\n- LEFT  -> (0,8): on-board, contains an apple. No immediate opponent contest; safe this turn.\n- UP    -> (1,9): on-board and safe but moves away from the nearby apple cluster.\n- DOWN  -> (1,7): on-board and safe but also not toward the nearest apple.\n\nLEFT eats the apple at (0,8) and is low-risk: enemy head at (5,5) is too far to contest a head-on collision this turn. Growing at the left edge is acceptable because we will still have two escape choices next turn (UP or DOWN) \u2014 RIGHT would be backwards into our body anyway. Eating now secures a point and keeps us competitive.\n\nShort plan for next turns:\n- After LEFT, choose UP or DOWN depending on which keeps more open space and avoids the enemy approach; then head southeast toward the lower apples at (2,2) and (2,1) while avoiding getting boxed against the left wall. Stay mindful of snake #1\u2019s movements around the center and avoid head-on clashes.\n\nLEFT",
+          "input_tokens": 1234,
+          "output_tokens": 1149,
+          "cost": 0.0
+        },
+        "1": {
+          "move": "UP",
+          "rationale": "Plan: UP is safe, keeps options open, and avoids immediate danger while positioning for future apples.\nUP",
+          "input_tokens": 1167,
+          "output_tokens": 3803,
+          "cost": 0.0
+        }
+      }
+    },
+    {
+      "round": 7,
+      "state": {
+        "snakes": {
+          "0": [
+            [
+              0,
+              9
+            ],
+            [
+              0,
+              8
+            ],
+            [
+              1,
+              8
+            ],
+            [
+              2,
+              8
+            ]
+          ],
+          "1": [
+            [
+              5,
+              7
+            ],
+            [
+              5,
+              6
+            ],
+            [
+              5,
+              5
+            ]
+          ]
+        },
+        "apples": [
+          [
+            2,
+            2
+          ],
+          [
+            6,
+            1
+          ],
+          [
+            6,
+            0
+          ],
+          [
+            2,
+            1
+          ],
+          [
+            1,
+            9
+          ]
+        ],
+        "alive": {
+          "0": true,
+          "1": true
+        },
+        "scores": {
+          "0": 3,
+          "1": 2
+        }
+      },
+      "moves": {
+        "0": {
+          "move": "UP",
+          "rationale": "Current head: (0,8).\n\nLegal moves check:\n- LEFT -> (-1,8): off board -> death.\n- RIGHT -> (1,8): directly backwards into our body -> death.\n- UP -> (0,9): on board and empty. From there we can reach apple at (1,9) next turn.\n- DOWN -> (0,7): on board and empty, but moves away from the nearby apple cluster.\n\nRisk assessment:\n- Enemy (head at (5,6)) is too far to contest (0,9) or (1,9) next turn, so UP then RIGHT to eat (1,9) is low-risk.\n- UP preserves two escape options next turn (RIGHT to apple or DOWN back), and it moves toward an immediate apple.\n\nShort plan for next turns:\n- Move UP now to (0,9). Next turn likely move RIGHT to (1,9) to eat that apple.\n- After grabbing (1,9), reassess enemy movements and head toward the lower apple cluster (2,2)/(2,1) while avoiding getting trapped on the left edge.\n\nUP",
+          "input_tokens": 1301,
+          "output_tokens": 1006,
+          "cost": 0.0
+        },
+        "1": {
+          "move": "UP",
+          "rationale": "Plan: UP is safe and keeps options open. It avoids your neck and walls. I\u2019ll head toward nearby apples on the next turns if paths open (watch for enemy movements to avoid head-ons).\n\nUP",
+          "input_tokens": 1075,
+          "output_tokens": 2991,
+          "cost": 0.0
+        }
+      }
+    },
+    {
+      "round": 8,
+      "state": {
+        "snakes": {
+          "0": [
+            [
+              1,
+              9
+            ],
+            [
+              0,
+              9
+            ],
+            [
+              0,
+              8
+            ],
+            [
+              1,
+              8
+            ],
+            [
+              2,
+              8
+            ]
+          ],
+          "1": [
+            [
+              6,
+              7
+            ],
+            [
+              5,
+              7
+            ],
+            [
+              5,
+              6
+            ]
+          ]
+        },
+        "apples": [
+          [
+            2,
+            2
+          ],
+          [
+            6,
+            1
+          ],
+          [
+            6,
+            0
+          ],
+          [
+            2,
+            1
+          ],
+          [
+            1,
+            7
+          ]
+        ],
+        "alive": {
+          "0": true,
+          "1": true
+        },
+        "scores": {
+          "0": 4,
+          "1": 2
+        }
+      },
+      "moves": {
+        "0": {
+          "move": "RIGHT",
+          "rationale": "Current head: (0,9).\n\nLegal moves:\n- UP -> (0,10): off-board -> death.\n- LEFT -> (-1,9): off-board -> death.\n- DOWN -> (0,8): directly into our body (backwards) -> death.\n- RIGHT -> (1,9): on-board, contains an apple -> safe and desirable.\n\nRisk check:\n- Enemy head at (5,7) is too far to contest (1,9). No head-on collision risk this turn.\n- Eating at (1,9) will grow us. Note: after moving to (1,9) the only legal follow-up move will be RIGHT to (2,9) (UP is off-board, LEFT would be backward into (0,9), DOWN is into our body at (1,8)). So plan must account for being forced to move right along the top for at least one turn.\n\nShort plan:\n- Move RIGHT now to eat (1,9).\n- Next turns: continue moving RIGHT along the top row to (2,9), then aim to descend safely toward the lower apple cluster (2,2)/(2,1)/(6,0)/(6,1) while avoiding trapping ourselves on the left edge.\n\nRIGHT",
+          "input_tokens": 1286,
+          "output_tokens": 1158,
+          "cost": 0.0
+        },
+        "1": {
+          "move": "RIGHT",
+          "rationale": "Safe moves this turn: UP, LEFT, RIGHT. DOWN would crash into your neck (your body at (5,6)).\n\nRationale: RIGHT heads toward the apple cluster on x=6 (targets (6,1) and (6,0)) and keeps options open with minimal risk from the enemy.\n\nPlan: Move RIGHT now to (6,7); in subsequent turns, descend along x=6 to grab (6,1) and (6,0) while monitoring any potential head-on with the enemy.\n\nRIGHT",
+          "input_tokens": 1095,
+          "output_tokens": 6834,
+          "cost": 0.0
+        }
+      }
+    },
+    {
+      "round": 9,
+      "state": {
+        "snakes": {
+          "0": [
+            [
+              2,
+              9
+            ],
+            [
+              1,
+              9
+            ],
+            [
+              0,
+              9
+            ],
+            [
+              0,
+              8
+            ],
+            [
+              1,
+              8
+            ]
+          ],
+          "1": [
+            [
+              6,
+              6
+            ],
+            [
+              6,
+              7
+            ],
+            [
+              5,
+              7
+            ]
+          ]
+        },
+        "apples": [
+          [
+            2,
+            2
+          ],
+          [
+            6,
+            1
+          ],
+          [
+            6,
+            0
+          ],
+          [
+            2,
+            1
+          ],
+          [
+            1,
+            7
+          ]
+        ],
+        "alive": {
+          "0": true,
+          "1": true
+        },
+        "scores": {
+          "0": 4,
+          "1": 2
+        }
+      },
+      "moves": {
+        "0": {
+          "move": "RIGHT",
+          "rationale": "Legal moves from head (1,9):\n- UP -> (1,10) off-board \u2014 death.\n- LEFT -> (0,9) is directly behind \u2014 illegal (would hit ourselves).\n- DOWN -> (1,8) is our body \u2014 death.\n- RIGHT -> (2,9) empty \u2014 only safe move.\n\nSafety check:\n- Enemy head (6,7) is far away; no head-on risk this turn.\n- Moving RIGHT will not eat an apple, so our tail (2,8) will vacate simultaneously, giving us more room next turn.\n- From (2,9) we will have a safe DOWN option available (to (2,8)) to start moving toward the apple cluster at (2,2)/(2,1). Avoid going left or up (off-board/backwards).\n\nShort plan:\n- Move RIGHT now to stay alive and keep options.\n- Next turn consider going DOWN onto (2,8) and then head toward the apples at x=2, or continue right briefly if needed to avoid immediate obstacles.\n\nRIGHT",
+          "input_tokens": 1316,
+          "output_tokens": 1248,
+          "cost": 0.0
+        },
+        "1": {
+          "move": "DOWN",
+          "rationale": "DOWN",
+          "input_tokens": 1168,
+          "output_tokens": 4167,
+          "cost": 0.0
+        }
+      }
+    },
+    {
+      "round": 10,
+      "state": {
+        "snakes": {
+          "0": [
+            [
+              2,
+              8
+            ],
+            [
+              2,
+              9
+            ],
+            [
+              1,
+              9
+            ],
+            [
+              0,
+              9
+            ],
+            [
+              0,
+              8
+            ]
+          ],
+          "1": [
+            [
+              6,
+              5
+            ],
+            [
+              6,
+              6
+            ],
+            [
+              6,
+              7
+            ]
+          ]
+        },
+        "apples": [
+          [
+            2,
+            2
+          ],
+          [
+            6,
+            1
+          ],
+          [
+            6,
+            0
+          ],
+          [
+            2,
+            1
+          ],
+          [
+            1,
+            7
+          ]
+        ],
+        "alive": {
+          "0": true,
+          "1": true
+        },
+        "scores": {
+          "0": 4,
+          "1": 2
+        }
+      },
+      "moves": {
+        "0": {
+          "move": "DOWN",
+          "rationale": "Legal moves from (2,9):\n- UP -> (2,10) off-board \u2014 death.\n- LEFT -> (1,9) is directly behind \u2014 illegal (backwards).\n- DOWN -> (2,8) empty \u2014 safe.\n- RIGHT -> (3,9) empty \u2014 safe.\n\nSafety and strategy:\n- Enemy head (6,6) is far away; no immediate head-on threat.\n- DOWN moves directly toward the apple column at x=2 (apples at (2,2) and (2,1)), helping me reach high-value, nearby apples.\n- RIGHT is safe but is a sideways detour; DOWN keeps more direct access to the clustered apples and leaves multiple follow-up options (LEFT, RIGHT, or further DOWN) once the tail vacates.\n- I won't eat an apple this turn, so my tail will move and free up space behind me.\n\nShort plan:\n- Move DOWN to approach the x=2 apple column.\n- On subsequent turns, continue down the column to pick up (2,2) and (2,1), while avoiding getting boxed in by my own body. If a nearby apple (1,7) becomes reachable safely, pivot toward it after securing the x=2 cluster.\n\nDOWN",
+          "input_tokens": 1278,
+          "output_tokens": 1349,
+          "cost": 0.0
+        },
+        "1": {
+          "move": "DOWN",
+          "rationale": "Reasoning (concise): Up would collide with your own body. Down, Left, and Right are safe; going Down aligns with the nearest apple at (6,1) and preserves flexibility for future moves.\n\nPlan: move toward the apple cluster at x=6 to secure a quick apple, then re-evaluate surroundings.\n\nDOWN",
+          "input_tokens": 1061,
+          "output_tokens": 4361,
+          "cost": 0.0
+        }
+      }
+    },
+    {
+      "round": 11,
+      "state": {
+        "snakes": {
+          "0": [
+            [
+              2,
+              7
+            ],
+            [
+              2,
+              8
+            ],
+            [
+              2,
+              9
+            ],
+            [
+              1,
+              9
+            ],
+            [
+              0,
+              9
+            ]
+          ],
+          "1": [
+            [
+              6,
+              4
+            ],
+            [
+              6,
+              5
+            ],
+            [
+              6,
+              6
+            ]
+          ]
+        },
+        "apples": [
+          [
+            2,
+            2
+          ],
+          [
+            6,
+            1
+          ],
+          [
+            6,
+            0
+          ],
+          [
+            2,
+            1
+          ],
+          [
+            1,
+            7
+          ]
+        ],
+        "alive": {
+          "0": true,
+          "1": true
+        },
+        "scores": {
+          "0": 4,
+          "1": 2
+        }
+      },
+      "moves": {
+        "1": {
+          "move": "DOWN",
+          "rationale": "Reasoning (brief): Up would collide with your own body at (6,6). Safe options are DOWN, LEFT, RIGHT. Down keeps you on the same column toward the apple at (6,1).\n\nPlan: head DOWN to (6,4) this turn, then continue down to (6,3), (6,2), (6,1) to eat the apple, while watching enemy movements.\n\nDOWN",
+          "input_tokens": 1127,
+          "output_tokens": 3868,
+          "cost": 0.0
+        },
+        "0": {
+          "move": "DOWN",
+          "rationale": "Legal moves from (2,8):\n- UP -> (2,9) is my own body directly behind \u2014 illegal (would be moving backwards).\n- LEFT -> (1,8) empty \u2014 legal.\n- DOWN -> (2,7) empty \u2014 legal.\n- RIGHT -> (3,8) empty \u2014 legal.\n\nSafety and strategy:\n- Enemy head at (6,5) is far and cannot move up into its own body, so no immediate head-on threat.\n- Apples of interest: (1,7) is one step down+left; (2,2) and (2,1) are a long way down the x=2 column.\n- Moving DOWN keeps me in the x=2 column, preserving a direct path to the clustered apples at (2,2) and (2,1), while still allowing me to turn left next move to grab (1,7) if desired. It also leaves multiple follow-up options (LEFT to the apple, RIGHT, or further DOWN) and avoids any backwards/self-collision.\n\nShort plan for next turns:\n- Move DOWN now to maintain access to the x=2 apple cluster.\n- If safe, on the following turn pivot LEFT to take (1,7) (or continue down the x=2 column toward (2,2) and (2,1)) while avoiding traps and monitoring the enemy head.\n\nDOWN",
+          "input_tokens": 1315,
+          "output_tokens": 3041,
+          "cost": 0.0
+        }
+      }
+    },
+    {
+      "round": 12,
+      "state": {
+        "snakes": {
+          "0": [
+            [
+              1,
+              7
+            ],
+            [
+              2,
+              7
+            ],
+            [
+              2,
+              8
+            ],
+            [
+              2,
+              9
+            ],
+            [
+              1,
+              9
+            ],
+            [
+              0,
+              9
+            ]
+          ],
+          "1": [
+            [
+              6,
+              3
+            ],
+            [
+              6,
+              4
+            ],
+            [
+              6,
+              5
+            ]
+          ]
+        },
+        "apples": [
+          [
+            2,
+            2
+          ],
+          [
+            6,
+            1
+          ],
+          [
+            6,
+            0
+          ],
+          [
+            2,
+            1
+          ],
+          [
+            8,
+            9
+          ]
+        ],
+        "alive": {
+          "0": true,
+          "1": true
+        },
+        "scores": {
+          "0": 5,
+          "1": 2
+        }
+      },
+      "moves": {
+        "0": {
+          "move": "LEFT",
+          "rationale": "Legal moves from (2,7):\n- UP -> (2,8) is my own body directly behind \u2014 illegal (would be moving backwards).\n- LEFT -> (1,7) contains an apple \u2014 legal and immediate score gain.\n- DOWN -> (2,6) empty \u2014 legal.\n- RIGHT -> (3,7) empty \u2014 legal.\n\nSafety and choice:\n- Taking the apple at (1,7) is safe: no enemy head can reach that cell this turn and it increases my lead (I go from 4 to 5 apples).\n- Growing by eating now is advantageous; it also keeps multiple follow-up options (from (1,7) I can go down toward the clustered apples on x=2 later, or continue exploring left/top).\n- DOWN would keep me in the x=2 column for apples at (2,2)/(2,1) but those are several moves away and give the opponent time to contest. RIGHT is less productive this turn.\n- No immediate head-on collisions are likely (enemy head is at (6,4) and isolated in column 6).\n\nShort plan:\n- Eat (1,7) now to increase my lead.\n- Next turns, evaluate whether to go back toward the x=2 apples (2,2 and 2,1) or to maneuver to safer open space depending on enemy movement. Avoid moving into my own neck (UP) and watch for the enemy heading toward x=6 apples.\n\nLEFT",
+          "input_tokens": 1343,
+          "output_tokens": 1202,
+          "cost": 0.0
+        },
+        "1": {
+          "move": "DOWN",
+          "rationale": "Reasoning: UP would move into your neck at (6,5) and kill you. DOWN, LEFT, and RIGHT are currently safe. The apple at (6,1) lies on a downward path from your head, so going DOWN keeps you on a clear route to eat it. The enemy at (2,7) is far away and unlikely to intercept this turn.\n\nPlan: \n- Immediate: move DOWN to (6,3).\n- Next turns: continue DOWN to (6,2) then (6,1) to eat the apple, growing your length.\n- After that: assess enemy movements; if they threaten the downward path, adjust laterally (LEFT or RIGHT) to avoid traps and keep collecting apples.\n\nDOWN",
+          "input_tokens": 1146,
+          "output_tokens": 5980,
+          "cost": 0.0
+        }
+      }
+    },
+    {
+      "round": 13,
+      "state": {
+        "snakes": {
+          "0": [
+            [
+              1,
+              6
+            ],
+            [
+              1,
+              7
+            ],
+            [
+              2,
+              7
+            ],
+            [
+              2,
+              8
+            ],
+            [
+              2,
+              9
+            ],
+            [
+              1,
+              9
+            ]
+          ],
+          "1": [
+            [
+              6,
+              2
+            ],
+            [
+              6,
+              3
+            ],
+            [
+              6,
+              4
+            ]
+          ]
+        },
+        "apples": [
+          [
+            2,
+            2
+          ],
+          [
+            6,
+            1
+          ],
+          [
+            6,
+            0
+          ],
+          [
+            2,
+            1
+          ],
+          [
+            8,
+            9
+          ]
+        ],
+        "alive": {
+          "0": true,
+          "1": true
+        },
+        "scores": {
+          "0": 5,
+          "1": 2
+        }
+      },
+      "moves": {
+        "0": {
+          "move": "DOWN",
+          "rationale": "Legal moves from (1,7):\n- RIGHT -> (2,7) is my neck (moving backwards) \u2014 illegal.\n- UP -> (1,8) is free but would leave fewer safe follow-ups (2,8 is my body; next options narrow).\n- LEFT -> (0,7) is free and safe.\n- DOWN -> (1,6) is free and safe.\n\nSafety and choice:\n- No immediate enemy head threat (enemy head at (6,3) far away).\n- DOWN keeps the most open follow-up options (can go toward (2,2)/(2,1) apples by continuing downward/right later) and avoids the tighter space around my body on the upper/right side.\n- LEFT is safe but moves away from the nearby apple cluster on x=2. UP is more constraining because of my own body at (2,8) and (1,9).\n\nShort plan:\n- Move DOWN to approach the apple cluster at x=2,y=2/1 while preserving multiple escape options.\n- Next turns, continue down and then head right to contest the (2,2)/(2,1) apples unless the enemy moves aggressively toward column 2; if the enemy goes for x=6 apples instead, prioritize those closer apples.\n\nDOWN",
+          "input_tokens": 1366,
+          "output_tokens": 1291,
+          "cost": 0.0
+        },
+        "1": {
+          "move": "DOWN",
+          "rationale": "- UP would collide with your own body (moving into (6,4)).\n- DOWN, LEFT, and RIGHT are safe this turn.\n- The apple at (6,1) lies directly below; moving DOWN brings you closer along a clear path.\n- The enemy at (1,7) is far away and unlikely to intercept this turn.\n\nDOWN",
+          "input_tokens": 1216,
+          "output_tokens": 2701,
+          "cost": 0.0
+        }
+      }
+    },
+    {
+      "round": 14,
+      "state": {
+        "snakes": {
+          "0": [
+            [
+              1,
+              5
+            ],
+            [
+              1,
+              6
+            ],
+            [
+              1,
+              7
+            ],
+            [
+              2,
+              7
+            ],
+            [
+              2,
+              8
+            ],
+            [
+              2,
+              9
+            ]
+          ],
+          "1": [
+            [
+              6,
+              1
+            ],
+            [
+              6,
+              2
+            ],
+            [
+              6,
+              3
+            ],
+            [
+              6,
+              4
+            ]
+          ]
+        },
+        "apples": [
+          [
+            2,
+            2
+          ],
+          [
+            6,
+            0
+          ],
+          [
+            2,
+            1
+          ],
+          [
+            8,
+            9
+          ],
+          [
+            5,
+            0
+          ]
+        ],
+        "alive": {
+          "0": true,
+          "1": true
+        },
+        "scores": {
+          "0": 5,
+          "1": 3
+        }
+      },
+      "moves": {
+        "0": {
+          "move": "DOWN",
+          "rationale": "Legal moves from head (1,6):\n- UP -> (1,7) is my neck (moving backwards) \u2014 illegal.\n- LEFT -> (0,6) is free.\n- RIGHT -> (2,6) is free.\n- DOWN -> (1,5) is free.\n\nImmediate safety:\n- No enemy head threat nearby (enemy head at (6,2) is far).\n- None of LEFT/RIGHT/DOWN move into occupied cells.\n- No risk of moving off-board.\n\nEvaluation:\n- LEFT moves away from the nearby apple cluster at x=2 and doesn't improve position.\n- RIGHT moves directly toward the x=2 apples (good), but puts me directly under my own body segment at (2,7). It's still safe, but slightly tighter space above.\n- DOWN keeps the most open follow-up options (can later go LEFT/RIGHT/DOWN), keeps me central, and still allows a short path to the (2,2)/(2,1) apples by following with rights and further downs. It also avoids moving toward the enemy at x=6.\n\nShort-term plan:\n- Move DOWN now to retain maximum flexibility.\n- On following turns, continue down toward y=2, then move right to contest the apples at (2,2) and (2,1) unless the enemy shifts toward column 2; if the enemy commits to the x=6 apples, take the x=2 cluster safely. Avoid head-on encounters and don\u2019t get trapped against my own body.\n\nDecision:\nDOWN",
+          "input_tokens": 1327,
+          "output_tokens": 1404,
+          "cost": 0.0
+        },
+        "1": {
+          "move": "DOWN",
+          "rationale": "- UP is unsafe: it would run into your own body.\n- DOWN, LEFT, and RIGHT are currently safe.\n- The nearest apple is directly below at (6,1); moving DOWN would eat it this turn, growing your snake and increasing your apples.\n\nPlan:\n- Eat the apple at (6,1) this turn by moving DOWN, increasing length.\n- On the next turn, attempt to eat (6,0) by moving DOWN again if safe; otherwise head toward the left-side apples at (2,1) or (2,2) while avoiding the enemy snake and keeping escape routes open.\n\nDOWN",
+          "input_tokens": 1137,
+          "output_tokens": 5828,
+          "cost": 0.0
+        }
+      }
+    },
+    {
+      "round": 15,
+      "state": {
+        "snakes": {
+          "0": [
+            [
+              1,
+              4
+            ],
+            [
+              1,
+              5
+            ],
+            [
+              1,
+              6
+            ],
+            [
+              1,
+              7
+            ],
+            [
+              2,
+              7
+            ],
+            [
+              2,
+              8
+            ]
+          ],
+          "1": [
+            [
+              6,
+              0
+            ],
+            [
+              6,
+              1
+            ],
+            [
+              6,
+              2
+            ],
+            [
+              6,
+              3
+            ],
+            [
+              6,
+              4
+            ]
+          ]
+        },
+        "apples": [
+          [
+            2,
+            2
+          ],
+          [
+            2,
+            1
+          ],
+          [
+            8,
+            9
+          ],
+          [
+            5,
+            0
+          ],
+          [
+            7,
+            6
+          ]
+        ],
+        "alive": {
+          "0": true,
+          "1": true
+        },
+        "scores": {
+          "0": 5,
+          "1": 4
+        }
+      },
+      "moves": {
+        "0": {
+          "move": "DOWN",
+          "rationale": "Legal moves from head (1,5):\n- UP -> (1,6) is my neck (backwards) \u2014 illegal.\n- LEFT -> (0,5) is free.\n- RIGHT -> (2,5) is free.\n- DOWN -> (1,4) is free.\n\nSafety check:\n- No immediate enemy head threat (enemy head at (6,1) is far).\n- None of LEFT/RIGHT/DOWN move into occupied cells.\n- All three safe moves (LEFT/RIGHT/DOWN) give multiple follow-up options next turn.\n\nEvaluation:\n- LEFT moves away from the nearby apples at x=2 and toward the board edge \u2014 less useful.\n- RIGHT moves directly toward the x=2 apples (good), but is similar in distance-effect to moving DOWN first.\n- DOWN moves me closer to the (2,2)/(2,1) apple cluster while keeping three follow-up options (LEFT/RIGHT/DOWN from the new cell). It preserves flexibility and avoids committing toward the open space near the enemy on the right.\n\nShort-term plan:\n- Continue down toward y=2 for 1\u20132 turns, then move right to take the (2,2)/(2,1) apples. Avoid head-on fights with the enemy along column 6 and do not get boxed in by my own upper body.\n\nDecision:\nDOWN",
+          "input_tokens": 1382,
+          "output_tokens": 1752,
+          "cost": 0.0
+        },
+        "1": {
+          "move": "DOWN",
+          "rationale": "Reasoning:\n- UP would move into your own neck at (6,2) and die.\n- DOWN would land on the apple at (6,0), growing the snake and securing an immediate point.\n- LEFT or RIGHT are safe but do not grab an apple now; DOWN optimizes growth on this turn.\n\nPlan:\n- Turn 1: move DOWN to eat the apple at (6,0), growing the snake.\n- Turn 2: move LEFT to eat the next apple at (5,0) if safe; otherwise steer toward other apples while keeping distance from the enemy and avoiding dead-ends.\n\nDOWN",
+          "input_tokens": 1198,
+          "output_tokens": 3396,
+          "cost": 0.0
+        }
+      }
+    },
+    {
+      "round": 16,
+      "state": {
+        "snakes": {
+          "0": [
+            [
+              1,
+              3
+            ],
+            [
+              1,
+              4
+            ],
+            [
+              1,
+              5
+            ],
+            [
+              1,
+              6
+            ],
+            [
+              1,
+              7
+            ],
+            [
+              2,
+              7
+            ]
+          ],
+          "1": [
+            [
+              5,
+              0
+            ],
+            [
+              6,
+              0
+            ],
+            [
+              6,
+              1
+            ],
+            [
+              6,
+              2
+            ],
+            [
+              6,
+              3
+            ],
+            [
+              6,
+              4
+            ]
+          ]
+        },
+        "apples": [
+          [
+            2,
+            2
+          ],
+          [
+            2,
+            1
+          ],
+          [
+            8,
+            9
+          ],
+          [
+            7,
+            6
+          ],
+          [
+            7,
+            7
+          ]
+        ],
+        "alive": {
+          "0": true,
+          "1": true
+        },
+        "scores": {
+          "0": 5,
+          "1": 5
+        }
+      },
+      "moves": {
+        "0": {
+          "move": "DOWN",
+          "rationale": "Legal moves from head (1,4):\n- UP -> (1,5) is my neck (backwards) \u2014 illegal.\n- LEFT -> (0,4) free.\n- RIGHT -> (2,4) free.\n- DOWN -> (1,3) free.\n\nImmediate safety:\n- No occupied cells at (0,4), (2,4), or (1,3).\n- Enemy head (6,0) is far; no head-on threat this turn.\n- None of these moves would run into my body or the enemy body immediately.\n\nApple/positional evaluation:\n- Best nearby apples are the cluster at (2,2) and (2,1). From (1,4) either DOWN then DOWN then RIGHT or RIGHT then DOWN twice both reach (2,2) in 3 moves.\n- LEFT moves away from those apples and toward the board edge \u2014 less useful.\n- RIGHT puts me a bit closer horizontally but also edges me toward open space on the right; DOWN keeps me aligned to the apple column and preserves symmetric escape options.\n\nFollow-up options:\n- From (1,3) (if I go DOWN) I will have LEFT, RIGHT, and DOWN available (UP would be my neck). That keeps multiple escape routes and a straightforward path to (2,2)/(2,1).\n- From (2,4) (if I go RIGHT) I also have good options, but I prefer continuing downward toward the apple cluster now.\n\nShort-term plan for the next few turns (for next-turn rationale):\n- Continue down toward y=2 for 1\u20132 turns, then move right to take (2,2) and (2,1).\n- Avoid engaging the enemy near column 6; prioritize collecting the nearby apple pair safely.\n- Maintain routes with at least two exit options to avoid getting boxed in by my own body.\n\nDecision:\nDOWN",
+          "input_tokens": 1352,
+          "output_tokens": 1863,
+          "cost": 0.0
+        },
+        "1": {
+          "move": "LEFT",
+          "rationale": "Reasoning:\n- From head (6,0), UP would hit your neck at (6,1); DOWN is off the board; RIGHT doesn't grab an apple this turn.\n- LEFT moves onto the apple at (5,0), growing your snake now and increasing your score.\n\nPlan:\n- Turn 1: eat the apple by moving LEFT to (5,0), growing the snake.\n- Turn 2: head toward the next closest apple while keeping distance from the enemy and avoiding dead-ends.\n\nLEFT",
+          "input_tokens": 1204,
+          "output_tokens": 4014,
+          "cost": 0.0
+        }
+      }
+    },
+    {
+      "round": 17,
+      "state": {
+        "snakes": {
+          "0": [
+            [
+              2,
+              3
+            ],
+            [
+              1,
+              3
+            ],
+            [
+              1,
+              4
+            ],
+            [
+              1,
+              5
+            ],
+            [
+              1,
+              6
+            ],
+            [
+              1,
+              7
+            ]
+          ],
+          "1": [
+            [
+              5,
+              1
+            ],
+            [
+              5,
+              0
+            ],
+            [
+              6,
+              0
+            ],
+            [
+              6,
+              1
+            ],
+            [
+              6,
+              2
+            ],
+            [
+              6,
+              3
+            ]
+          ]
+        },
+        "apples": [
+          [
+            2,
+            2
+          ],
+          [
+            2,
+            1
+          ],
+          [
+            8,
+            9
+          ],
+          [
+            7,
+            6
+          ],
+          [
+            7,
+            7
+          ]
+        ],
+        "alive": {
+          "0": true,
+          "1": true
+        },
+        "scores": {
+          "0": 5,
+          "1": 5
+        }
+      },
+      "moves": {
+        "0": {
+          "move": "RIGHT",
+          "rationale": "Legal moves from head (1,3):\n- UP -> (1,4) is my neck (backwards) \u2014 illegal.\n- LEFT -> (0,3) free but moves away from the nearby apples.\n- RIGHT -> (2,3) free and allows DOWN next turn to eat (2,2).\n- DOWN -> (1,2) free and also allows RIGHT next turn to eat (2,2).\n\nSafety check:\n- No immediate collisions with my body or the enemy at (5,0). Enemy can't reach my vicinity next turn.\n- LEFT is safe but suboptimal for apples.\n- RIGHT and DOWN both reach the (2,2)/(2,1) cluster in 2 moves; RIGHT is slightly more direct and opens more options (can go up to (2,4), right to open area, or down to the apple).\n\nShort plan:\n- Move RIGHT now to (2,3), then DOWN to (2,2) to collect the apple(s). After taking (2,2) and (2,1) plan to move toward the mid-right apple cluster (7,6)/(7,7) while avoiding the enemy around column 5\u20136.\n\nDecision:\nRIGHT",
+          "input_tokens": 1469,
+          "output_tokens": 1918,
+          "cost": 0.0
+        },
+        "1": {
+          "move": "UP",
+          "rationale": "From head (5,0), safe moves are UP to (5,1) or LEFT to (4,0). No apple at either destination this turn. The nearest target apple is at (2,1).\n\nChoosing UP keeps you away from the bottom edge and preserves more future options; it also sets you up to move left along y=1 toward that apple.\n\nPlan: Turn 1: move UP to (5,1). Turn 2: move LEFT to (4,1), then (3,1), then attempt to eat the apple at (2,1).\n\nNote: I will avoid moving into the enemy's potential paths and watch for head-on collisions.\nUP",
+          "input_tokens": 1188,
+          "output_tokens": 4689,
+          "cost": 0.0
+        }
+      }
+    },
+    {
+      "round": 18,
+      "state": {
+        "snakes": {
+          "0": [
+            [
+              2,
+              2
+            ],
+            [
+              2,
+              3
+            ],
+            [
+              1,
+              3
+            ],
+            [
+              1,
+              4
+            ],
+            [
+              1,
+              5
+            ],
+            [
+              1,
+              6
+            ],
+            [
+              1,
+              7
+            ]
+          ],
+          "1": [
+            [
+              4,
+              1
+            ],
+            [
+              5,
+              1
+            ],
+            [
+              5,
+              0
+            ],
+            [
+              6,
+              0
+            ],
+            [
+              6,
+              1
+            ],
+            [
+              6,
+              2
+            ]
+          ]
+        },
+        "apples": [
+          [
+            2,
+            1
+          ],
+          [
+            8,
+            9
+          ],
+          [
+            7,
+            6
+          ],
+          [
+            7,
+            7
+          ],
+          [
+            1,
+            8
+          ]
+        ],
+        "alive": {
+          "0": true,
+          "1": true
+        },
+        "scores": {
+          "0": 6,
+          "1": 5
+        }
+      },
+      "moves": {
+        "0": {
+          "move": "DOWN",
+          "rationale": "Legal moves from head (2,3):\n- LEFT -> (1,3) is my neck (backwards) \u2014 illegal.\n- UP -> (2,4) is free.\n- RIGHT -> (3,3) is free.\n- DOWN -> (2,2) has an apple.\n\nSafety and outcome:\n- Moving DOWN to (2,2) immediately eats an apple (safe \u2014 no bodies or enemy heads nearby to cause a head-on).\n- Enemy #1 at (5,1) is too far to contest the (2,1)/(2,2) apples this turn or the next.\n- DOWN keeps the follow-up move DOWN available to take the second apple at (2,1) on the next turn (after eating, neck will be (2,3), so continuing DOWN is legal).\n- UP/RIGHT are safe but give up two immediate apples and delay growth; LEFT is illegal.\n\nShort plan for next turns:\n- Move DOWN now to eat (2,2), then DOWN again to take (2,1).\n- After securing that apple pair, head east toward the mid-right cluster at (7,6)/(7,7), while avoiding the enemy around columns 5\u20136 and keeping escape routes open (prefer paths that keep multiple adjacent free cells).\n\nDOWN",
+          "input_tokens": 1332,
+          "output_tokens": 1550,
+          "cost": 0.0
+        },
+        "1": {
+          "move": "LEFT",
+          "rationale": "Reasoning: From head (5,1), DOWN and RIGHT are deadly (hit your own body). UP (5,2) is safe but does not progress toward apples. LEFT (4,1) is safe and moves you toward the nearby apple at (2,1), keeping future options open.\n\nPlan: Move LEFT to (4,1) this turn; then continue LEFT to (3,1), then LEFT again to (2,1) to eat that apple, while watching for any unexpected enemy moves.\n\nLEFT",
+          "input_tokens": 1223,
+          "output_tokens": 7473,
+          "cost": 0.0
+        }
+      }
+    },
+    {
+      "round": 19,
+      "state": {
+        "snakes": {
+          "0": [
+            [
+              2,
+              1
+            ],
+            [
+              2,
+              2
+            ],
+            [
+              2,
+              3
+            ],
+            [
+              1,
+              3
+            ],
+            [
+              1,
+              4
+            ],
+            [
+              1,
+              5
+            ],
+            [
+              1,
+              6
+            ],
+            [
+              1,
+              7
+            ]
+          ],
+          "1": [
+            [
+              3,
+              1
+            ],
+            [
+              4,
+              1
+            ],
+            [
+              5,
+              1
+            ],
+            [
+              5,
+              0
+            ],
+            [
+              6,
+              0
+            ],
+            [
+              6,
+              1
+            ]
+          ]
+        },
+        "apples": [
+          [
+            8,
+            9
+          ],
+          [
+            7,
+            6
+          ],
+          [
+            7,
+            7
+          ],
+          [
+            1,
+            8
+          ],
+          [
+            0,
+            5
+          ]
+        ],
+        "alive": {
+          "0": true,
+          "1": true
+        },
+        "scores": {
+          "0": 7,
+          "1": 5
+        }
+      },
+      "moves": {
+        "1": {
+          "move": "LEFT",
+          "rationale": "Reasoning: From head (4,1), moving RIGHT would slam into your own neck at (5,1). UP to (4,2) or DOWN to (4,0) are safe but do not progress toward the nearby apple at (2,1). LEFT to (3,1) is safe and reduces the distance to (2,1), keeping future options open and not inviting an enemy intercept.\n\nPlan: Take the closer apple by moving LEFT to (3,1) this turn; on the next turn, move LEFT again to (2,1) to eat the apple, while monitoring enemy moves to avoid dangerous collisions.\n\nLEFT",
+          "input_tokens": 1197,
+          "output_tokens": 2698,
+          "cost": 0.0
+        },
+        "0": {
+          "move": "DOWN",
+          "rationale": "Legal moves from (2,2):\n- UP -> (2,3) is my neck (backwards) \u2014 illegal.\n- LEFT -> (1,2) is free but moves toward my body at (1,3) and gives up the immediate apple.\n- RIGHT -> (3,2) is free but gives up the immediate apple and moves closer to the enemy area around columns 5\u20136.\n- DOWN -> (2,1) contains an apple and is free.\n\nSafety check for DOWN:\n- Enemy head at (4,1) cannot reach (2,1) in one move, so no immediate head-on collision.\n- No snake bodies occupy (2,1).\n- Eating this apple is high value (increasing my lead) and keeps options open (after eating, I can move away eastward to the apple cluster at (7,6)/(7,7) while avoiding the enemy around columns 5\u20136).\n\nShort plan:\n- Take the apple at (2,1) now (this turn).\n- Then route east toward the mid-right apple cluster, avoiding tight passages near enemy columns 5\u20136 and keeping multiple escape routes (prefer paths with at least 2 open neighbors).\n\nDOWN",
+          "input_tokens": 1354,
+          "output_tokens": 1855,
+          "cost": 0.0
+        }
+      }
+    },
+    {
+      "round": 20,
+      "state": {
+        "snakes": {
+          "0": [
+            [
+              1,
+              1
+            ],
+            [
+              2,
+              1
+            ],
+            [
+              2,
+              2
+            ],
+            [
+              2,
+              3
+            ],
+            [
+              1,
+              3
+            ],
+            [
+              1,
+              4
+            ],
+            [
+              1,
+              5
+            ],
+            [
+              1,
+              6
+            ]
+          ],
+          "1": [
+            [
+              3,
+              2
+            ],
+            [
+              3,
+              1
+            ],
+            [
+              4,
+              1
+            ],
+            [
+              5,
+              1
+            ],
+            [
+              5,
+              0
+            ],
+            [
+              6,
+              0
+            ]
+          ]
+        },
+        "apples": [
+          [
+            8,
+            9
+          ],
+          [
+            7,
+            6
+          ],
+          [
+            7,
+            7
+          ],
+          [
+            1,
+            8
+          ],
+          [
+            0,
+            5
+          ]
+        ],
+        "alive": {
+          "0": true,
+          "1": true
+        },
+        "scores": {
+          "0": 7,
+          "1": 5
+        }
+      },
+      "moves": {
+        "0": {
+          "move": "LEFT",
+          "rationale": "Legal moves from (2,1):\n- UP -> (2,2) is my neck (backwards) \u2014 illegal.\n- RIGHT -> (3,1) is currently occupied by enemy head. While swapping heads is possible if the enemy moves elsewhere, this pulls me next to the enemy neck/body at (4,1) and reduces safe follow-ups.\n- DOWN -> (2,0) is free but has only two forward options afterwards (1,0) and (3,0).\n- LEFT -> (1,1) is free and offers three forward options (0,1),(1,2),(1,0) after the move.\n\nSafety & tactical assessment:\n- RIGHT is risky because it brings me into the enemy\u2019s neighborhood (their neck/body at (4,1)), potentially creating future head-on or trapping scenarios.\n- DOWN is passable but more restrictive in escape routes.\n- LEFT keeps multiple escape paths open, steers me toward the nearby apples at x=0/1 (especially (0,5) and (1,8)), and stays away from the enemy cluster around columns 5\u20136.\n\nShort plan:\n- Move left now to maintain mobility and approach the nearer apples on the left side.\n- Then prioritize moving up along x=1 toward the (1,8) apple or swing to (0,5) depending on enemy movement, always keeping at least two escape options and avoiding the enemy\u2019s tight area around columns 5\u20136.\n\nLEFT",
+          "input_tokens": 1345,
+          "output_tokens": 2420,
+          "cost": 0.0
+        },
+        "1": {
+          "move": "UP",
+          "rationale": "Safe options from (3,1):\n- UP -> (3,2) is safe.\n- DOWN -> (3,0) is safe.\n- LEFT -> (2,1) is unsafe (enemy head there; would become body).\n- RIGHT -> (4,1) is unsafe (own neck).\n\nPlan: Move UP to (3,2) to stay safe and work toward the nearest apple while preserving future options.\nUP",
+          "input_tokens": 1228,
+          "output_tokens": 5086,
+          "cost": 0.0
+        }
+      }
+    },
+    {
+      "round": 21,
+      "state": {
+        "snakes": {
+          "0": [
+            [
+              0,
+              1
+            ],
+            [
+              1,
+              1
+            ],
+            [
+              2,
+              1
+            ],
+            [
+              2,
+              2
+            ],
+            [
+              2,
+              3
+            ],
+            [
+              1,
+              3
+            ],
+            [
+              1,
+              4
+            ],
+            [
+              1,
+              5
+            ]
+          ],
+          "1": [
+            [
+              4,
+              2
+            ],
+            [
+              3,
+              2
+            ],
+            [
+              3,
+              1
+            ],
+            [
+              4,
+              1
+            ],
+            [
+              5,
+              1
+            ],
+            [
+              5,
+              0
+            ]
+          ]
+        },
+        "apples": [
+          [
+            8,
+            9
+          ],
+          [
+            7,
+            6
+          ],
+          [
+            7,
+            7
+          ],
+          [
+            1,
+            8
+          ],
+          [
+            0,
+            5
+          ]
+        ],
+        "alive": {
+          "0": true,
+          "1": true
+        },
+        "scores": {
+          "0": 7,
+          "1": 5
+        }
+      },
+      "moves": {
+        "0": {
+          "move": "LEFT",
+          "rationale": "Legal moves from (1,1):\n- RIGHT -> (2,1) is my neck (backwards) \u2014 illegal.\n- UP -> (1,2) is free but boxed in: (1,3) is my body and (2,2) is my body, so after moving up my only safe continuation is likely LEFT to (0,2).\n- DOWN -> (1,0) is free and gives two exits: (0,0) and (2,0).\n- LEFT -> (0,1) is free and moves me toward the left-side apples (notably (0,5)). From (0,1) I will have UP and DOWN as follow-ups (LEFT would be off-board).\n\nRisk assessment:\n- RIGHT is illegal.\n- UP gives very limited follow-ups (effectively a 1-way squeeze) and risks getting trapped against my own body.\n- DOWN is safe-ish with two exits but moves me away from the nearer left apples.\n- LEFT keeps me on the left corridor toward (0,5)/(1,8) with reasonable escapes (UP/DOWN) and stays far from the opponent cluster around x=3..6.\n\nShort plan for next few turns:\n- Continue left into column x=0, then go up toward (0,5) to pick that apple if safe.\n- After eating (0,5), reassess: either press up to contest (1,8) or move back toward center depending on enemy movement.\n- Avoid turning back into tight spaces or into the enemy cluster on the right.\n\nDecision: LEFT\n\nLEFT",
+          "input_tokens": 1398,
+          "output_tokens": 1866,
+          "cost": 0.0
+        },
+        "1": {
+          "move": "RIGHT",
+          "rationale": "Reasoning:\n- UP -> (3,3) is an enemy body segment, would kill you.\n- DOWN -> (3,1) is your neck, would kill you.\n- LEFT -> (2,2) is an enemy body segment, would kill you.\n- RIGHT -> (4,2) is empty and safe, keeping options and heading toward apples.\n\nRIGHT",
+          "input_tokens": 1184,
+          "output_tokens": 3922,
+          "cost": 0.0
+        }
+      }
+    },
+    {
+      "round": 22,
+      "state": {
+        "snakes": {
+          "0": [
+            [
+              0,
+              2
+            ],
+            [
+              0,
+              1
+            ],
+            [
+              1,
+              1
+            ],
+            [
+              2,
+              1
+            ],
+            [
+              2,
+              2
+            ],
+            [
+              2,
+              3
+            ],
+            [
+              1,
+              3
+            ],
+            [
+              1,
+              4
+            ]
+          ],
+          "1": [
+            [
+              4,
+              3
+            ],
+            [
+              4,
+              2
+            ],
+            [
+              3,
+              2
+            ],
+            [
+              3,
+              1
+            ],
+            [
+              4,
+              1
+            ],
+            [
+              5,
+              1
+            ]
+          ]
+        },
+        "apples": [
+          [
+            8,
+            9
+          ],
+          [
+            7,
+            6
+          ],
+          [
+            7,
+            7
+          ],
+          [
+            1,
+            8
+          ],
+          [
+            0,
+            5
+          ]
+        ],
+        "alive": {
+          "0": true,
+          "1": true
+        },
+        "scores": {
+          "0": 7,
+          "1": 5
+        }
+      },
+      "moves": {
+        "0": {
+          "move": "UP",
+          "rationale": "Legal moves from head (0,1):\n- RIGHT -> (1,1) is my neck (backwards) \u2014 illegal.\n- LEFT -> (\u22121,1) off-board \u2014 illegal.\n- UP -> (0,2) is free and leads directly toward apple at (0,5). From (0,2) I'll have UP, DOWN, and RIGHT options; route upward to (0,5) looks open.\n- DOWN -> (0,0) is free and safe but moves away from the nearby left-side apple.\n\nRisk assessment:\n- No nearby enemy heads are threatening the column x=0 this turn (enemy head at (4,2) cannot reach me this turn), so collision risk is minimal.\n- Moving UP keeps multiple follow-up options and progresses toward apple (0,5). After eating at (0,5), I\u2019ll still have UP available to continue into open space (0,6), avoiding being boxed in by my body at (1,5).\n- DOWN is safe but suboptimal because it delays getting the nearby apple and gives the opponent more time to contest other apples.\n\nShort plan (next few turns):\n- Move UP repeatedly to reach and eat the apple at (0,5).\n- After eating, continue up into open column x=0 (toward y=9) or reassess to contest (1,8) depending on opponent movements.\n- Avoid turning right into my own body at x=1 near y=3..5 unless safe space is created.\n\nDecision: UP\n\nUP",
+          "input_tokens": 1420,
+          "output_tokens": 1728,
+          "cost": 0.0
+        },
+        "1": {
+          "move": "UP",
+          "rationale": "Reasoning (brief):\n- From (4,2), moving DOWN or LEFT would collide with your own body (dead). Moving UP to (4,3) or RIGHT to (5,2) are safe.\n- Both UP and RIGHT keep you heading toward the top-right apple cluster around (7,6)/(7,7), while leaving multiple escape options.\n\nPlan:\n- Head toward the nearest top-right apples while maintaining open space away from the enemy body at x\u22481. Use UP to gain altitude and preserve flexibility for the next turn.\n\nUP",
+          "input_tokens": 1172,
+          "output_tokens": 4790,
+          "cost": 0.0
+        }
+      }
+    },
+    {
+      "round": 23,
+      "state": {
+        "snakes": {
+          "0": [
+            [
+              0,
+              3
+            ],
+            [
+              0,
+              2
+            ],
+            [
+              0,
+              1
+            ],
+            [
+              1,
+              1
+            ],
+            [
+              2,
+              1
+            ],
+            [
+              2,
+              2
+            ],
+            [
+              2,
+              3
+            ],
+            [
+              1,
+              3
+            ]
+          ],
+          "1": [
+            [
+              4,
+              4
+            ],
+            [
+              4,
+              3
+            ],
+            [
+              4,
+              2
+            ],
+            [
+              3,
+              2
+            ],
+            [
+              3,
+              1
+            ],
+            [
+              4,
+              1
+            ]
+          ]
+        },
+        "apples": [
+          [
+            8,
+            9
+          ],
+          [
+            7,
+            6
+          ],
+          [
+            7,
+            7
+          ],
+          [
+            1,
+            8
+          ],
+          [
+            0,
+            5
+          ]
+        ],
+        "alive": {
+          "0": true,
+          "1": true
+        },
+        "scores": {
+          "0": 7,
+          "1": 5
+        }
+      },
+      "moves": {
+        "0": {
+          "move": "UP",
+          "rationale": "Legal moves from head (0,2):\n- LEFT -> (\u22121,2) off-board \u2014 illegal.\n- DOWN -> (0,1) is my neck (backwards) \u2014 illegal.\n- RIGHT -> (1,2) is empty now but moves me toward my own body cluster around x=1..2 and away from the nearby apple.\n- UP -> (0,3) is free and moves directly toward apple at (0,5).\n\nRisk assessment:\n- Enemy head at (4,3) is too far to contest or threaten my immediate up moves this turn.\n- Moving RIGHT risks entering tighter space near my mid-body and the opponent\u2019s nearby area; it gives fewer clean follow-up moves toward apples.\n- Moving UP keeps multiple follow-up options, progresses to the apple at (0,5) in three moves, and avoids potential head-on conflicts.\n\nShort plan:\n- Move UP repeatedly to reach and eat apple at (0,5).\n- After eating, continue north on x=0 as long as open; reassess to contest (1,8) or other apples depending on enemy movement.\n- Avoid turning into my own body near x=1..2 unless the tail has cleared safe space.\n\nUP",
+          "input_tokens": 1410,
+          "output_tokens": 1088,
+          "cost": 0.0
+        },
+        "1": {
+          "move": "UP",
+          "rationale": "Reasoning (brief):\n- From (4,3), DOWN would collide with your own body, so is unsafe. LEFT moves away from the apple cluster, while UP or RIGHT bring you closer to the top-right apples. To keep more escape options and stay on a path toward the apples, UP is the safer, more flexible choice.\n\nPlan:\n- Head UP to (4,4) to continue toward the top-right apple cluster (7,6)/(7,7) while maintaining space from the enemy at x\u22481.\n\nUP",
+          "input_tokens": 1208,
+          "output_tokens": 3890,
+          "cost": 0.0
+        }
+      }
+    },
+    {
+      "round": 24,
+      "state": {
+        "snakes": {
+          "0": [
+            [
+              0,
+              4
+            ],
+            [
+              0,
+              3
+            ],
+            [
+              0,
+              2
+            ],
+            [
+              0,
+              1
+            ],
+            [
+              1,
+              1
+            ],
+            [
+              2,
+              1
+            ],
+            [
+              2,
+              2
+            ],
+            [
+              2,
+              3
+            ]
+          ],
+          "1": [
+            [
+              5,
+              4
+            ],
+            [
+              4,
+              4
+            ],
+            [
+              4,
+              3
+            ],
+            [
+              4,
+              2
+            ],
+            [
+              3,
+              2
+            ],
+            [
+              3,
+              1
+            ]
+          ]
+        },
+        "apples": [
+          [
+            8,
+            9
+          ],
+          [
+            7,
+            6
+          ],
+          [
+            7,
+            7
+          ],
+          [
+            1,
+            8
+          ],
+          [
+            0,
+            5
+          ]
+        ],
+        "alive": {
+          "0": true,
+          "1": true
+        },
+        "scores": {
+          "0": 7,
+          "1": 5
+        }
+      },
+      "moves": {
+        "0": {
+          "move": "UP",
+          "rationale": "Legal moves from head (0,3):\n- LEFT -> (\u22121,3) off-board \u2014 illegal.\n- DOWN -> (0,2) is my neck (backwards) \u2014 illegal.\n- RIGHT -> (1,3) is my current tail. Moving into the tail is allowed this turn (tail will vacate) but leads me immediately toward my body cluster around x=1..2 and reduces safe follow-up space.\n- UP -> (0,4) is empty and moves me toward the nearby apple at (0,5) in two moves while keeping space on the left edge.\n\nRisk assessment:\n- Enemy head at (4,4) is too far this turn to contest (0,5) or threaten a head-on collision at (0,4).\n- RIGHT is technically safe now but risks entering tighter space and complicating movement after I grow.\n- UP keeps multiple follow-up options and is the quickest safe path to an apple.\n\nShort plan for next turns:\n- Move UP to (0,4) now, then UP again to eat the apple at (0,5).\n- After eating (I will grow), continue north along x=0 while reassessing opponent movement; if the opponent moves toward (1,8) I may contest or pivot toward (1,8)/(7,7,7,6) depending on safety.\n- Avoid turning into my own body cluster around x=1..2 unless tail movement clearly frees safe space.\n\nUP",
+          "input_tokens": 1346,
+          "output_tokens": 1203,
+          "cost": 0.0
+        },
+        "1": {
+          "move": "RIGHT",
+          "rationale": "RIGHT",
+          "input_tokens": 1204,
+          "output_tokens": 2823,
+          "cost": 0.0
+        }
+      }
+    },
+    {
+      "round": 25,
+      "state": {
+        "snakes": {
+          "0": [
+            [
+              0,
+              5
+            ],
+            [
+              0,
+              4
+            ],
+            [
+              0,
+              3
+            ],
+            [
+              0,
+              2
+            ],
+            [
+              0,
+              1
+            ],
+            [
+              1,
+              1
+            ],
+            [
+              2,
+              1
+            ],
+            [
+              2,
+              2
+            ],
+            [
+              2,
+              3
+            ]
+          ],
+          "1": [
+            [
+              6,
+              4
+            ],
+            [
+              5,
+              4
+            ],
+            [
+              4,
+              4
+            ],
+            [
+              4,
+              3
+            ],
+            [
+              4,
+              2
+            ],
+            [
+              3,
+              2
+            ]
+          ]
+        },
+        "apples": [
+          [
+            8,
+            9
+          ],
+          [
+            7,
+            6
+          ],
+          [
+            7,
+            7
+          ],
+          [
+            1,
+            8
+          ],
+          [
+            3,
+            3
+          ]
+        ],
+        "alive": {
+          "0": true,
+          "1": true
+        },
+        "scores": {
+          "0": 8,
+          "1": 5
+        }
+      },
+      "moves": {
+        "0": {
+          "move": "UP",
+          "rationale": "Legal moves from head (0,4):\n- LEFT -> (-1,4) off-board \u2014 illegal.\n- DOWN -> (0,3) is my neck (backwards) \u2014 illegal.\n- RIGHT -> (1,4) is empty; safe now but moves me into tighter central area.\n- UP -> (0,5) contains an apple; safe and gives immediate growth/point.\n\nRisk assessment:\n- Enemy head is at (5,4) with neck at (4,4) so they cannot move left into the center toward me this turn; they are too far to contest the (0,5) apple.\n- Moving RIGHT is safe this turn but leads toward my own body cluster around x=1..2 and into more crowded space, reducing follow-up options.\n- Moving UP eats the apple at (0,5), increases my score (7\u21928), and keeps me along the open left edge where I have more escape options.\n\nShort plan for next turns:\n- Take the apple at (0,5) now. After growing, continue north along the left edge while monitoring the opponent\u2019s movements.\n- If the opponent moves toward the top-left apples (1,8) I will decide whether to contest or pivot to the cluster at x=7 depending on safety.\n- Avoid turning into my own body cluster unless the tail movement clearly frees safe space.\n\nUP",
+          "input_tokens": 1397,
+          "output_tokens": 1375,
+          "cost": 0.0
+        },
+        "1": {
+          "move": "RIGHT",
+          "rationale": "Safe moves from head (5,4): UP -> (5,5), DOWN -> (5,3), RIGHT -> (6,4). LEFT is illegal (it's your own body at (4,4)).\nClosest apples: (7,6) and (7,7). A path via RIGHT keeps options open and avoids early trap; from (6,4) you can go UP or RIGHT to continue toward apples.\nDecision: take RIGHT to keep momentum toward apples while preserving safe exits.\nLong-term plan: push toward (7,6) and (7,7), then aim for (8,9) if safety allows; stay aware of enemy #0 on the left and avoid tight corridors near x=0.\nRIGHT",
+          "input_tokens": 1097,
+          "output_tokens": 6747,
+          "cost": 0.0
+        }
+      }
+    },
+    {
+      "round": 26,
+      "state": {
+        "snakes": {
+          "0": [
+            [
+              0,
+              6
+            ],
+            [
+              0,
+              5
+            ],
+            [
+              0,
+              4
+            ],
+            [
+              0,
+              3
+            ],
+            [
+              0,
+              2
+            ],
+            [
+              0,
+              1
+            ],
+            [
+              1,
+              1
+            ],
+            [
+              2,
+              1
+            ],
+            [
+              2,
+              2
+            ]
+          ],
+          "1": [
+            [
+              7,
+              4
+            ],
+            [
+              6,
+              4
+            ],
+            [
+              5,
+              4
+            ],
+            [
+              4,
+              4
+            ],
+            [
+              4,
+              3
+            ],
+            [
+              4,
+              2
+            ]
+          ]
+        },
+        "apples": [
+          [
+            8,
+            9
+          ],
+          [
+            7,
+            6
+          ],
+          [
+            7,
+            7
+          ],
+          [
+            1,
+            8
+          ],
+          [
+            3,
+            3
+          ]
+        ],
+        "alive": {
+          "0": true,
+          "1": true
+        },
+        "scores": {
+          "0": 8,
+          "1": 5
+        }
+      },
+      "moves": {
+        "0": {
+          "move": "UP",
+          "rationale": "Legal moves from head (0,5):\n- LEFT -> (-1,5) off-board \u2014 illegal.\n- DOWN -> (0,4) is my neck \u2014 illegal.\n- RIGHT -> (1,5) is empty and safe this turn, but pushes me into the more crowded center area.\n- UP -> (0,6) is empty and safe; keeps me on the open left edge and moves toward the apple cluster at (1,8).\n\nRisk assessment:\n- Enemy head (6,4) with neck at (5,4) can't reach or contest my immediate space this turn, and is too far to threaten a head-on collision.\n- Neither RIGHT nor UP causes an immediate collision; UP keeps more open board space (the left column) and a clear route toward (1,8).\n- RIGHT is also safe and gives access to center apples later, but slightly increases the chance of getting boxed in by my own body and the opponent.\n\nShort plan:\n- Move UP to (0,6) now, then continue north along the left edge to approach and take (1,8) if safe.\n- After taking (1,8), reevaluate: consider going for (3,3) or pivot toward the cluster at x=7 only if opponent positioning and space look favorable.\n- Always avoid running into my own body; prefer routes that keep multiple escape options.\n\nUP",
+          "input_tokens": 1383,
+          "output_tokens": 2080,
+          "cost": 0.0
+        },
+        "1": {
+          "move": "RIGHT",
+          "rationale": "Safe moves from head (6,4): UP -> (6,5) safe, DOWN -> (6,3) safe, RIGHT -> (7,4) safe; LEFT is illegal (own body at (5,4)). Closest apples are (7,6) and (7,7). A path via RIGHT keeps options open and heads toward those apples.\n\nDecision: take RIGHT to advance toward apples while preserving space.\n\nRIGHT",
+          "input_tokens": 1251,
+          "output_tokens": 3551,
+          "cost": 0.0
+        }
+      }
+    },
+    {
+      "round": 27,
+      "state": {
+        "snakes": {
+          "0": [
+            [
+              0,
+              7
+            ],
+            [
+              0,
+              6
+            ],
+            [
+              0,
+              5
+            ],
+            [
+              0,
+              4
+            ],
+            [
+              0,
+              3
+            ],
+            [
+              0,
+              2
+            ],
+            [
+              0,
+              1
+            ],
+            [
+              1,
+              1
+            ],
+            [
+              2,
+              1
+            ]
+          ],
+          "1": [
+            [
+              7,
+              5
+            ],
+            [
+              7,
+              4
+            ],
+            [
+              6,
+              4
+            ],
+            [
+              5,
+              4
+            ],
+            [
+              4,
+              4
+            ],
+            [
+              4,
+              3
+            ]
+          ]
+        },
+        "apples": [
+          [
+            8,
+            9
+          ],
+          [
+            7,
+            6
+          ],
+          [
+            7,
+            7
+          ],
+          [
+            1,
+            8
+          ],
+          [
+            3,
+            3
+          ]
+        ],
+        "alive": {
+          "0": true,
+          "1": true
+        },
+        "scores": {
+          "0": 8,
+          "1": 5
+        }
+      },
+      "moves": {
+        "0": {
+          "move": "UP",
+          "rationale": "Legal moves from head (0,6):\n- LEFT -> (-1,6) off-board \u2014 illegal.\n- DOWN -> (0,5) is my neck \u2014 illegal.\n- RIGHT -> (1,6) is free this turn but moves me toward the crowded center and my own body; could increase risk of getting boxed.\n- UP -> (0,7) is free, keeps me along the open left edge and progresses toward apple at (1,8).\n\nRisk check:\n- Enemy head (7,4) is far; no immediate head-on threat to my intended spaces.\n- Moving RIGHT would give more access to apples on the right but increases chance of getting trapped by my own body and the opponent later.\n- UP preserves escape options (I can continue north to (0,8) then east to (1,8)) and keeps distance from the opponent.\n\nShort plan for next turns:\n- Continue north along the left edge to secure (1,8).\n- After taking (1,8), re-evaluate: consider moving toward (3,3) or the cluster at x=7 depending on opponent movement and available space.\n- Avoid entering tight central corridors with my tail still nearby; prioritize routes that leave multiple exits.\n\nUP",
+          "input_tokens": 1384,
+          "output_tokens": 1090,
+          "cost": 0.0
+        },
+        "1": {
+          "move": "UP",
+          "rationale": "Plan: Stay safe while approaching nearby apples on (7,6) and (7,7).\nRationale: From (7,4), moving UP to (7,5) is safe and reduces distance to the nearest apples; LEFT is illegal and RIGHT/DOWN don't approach as effectively.\nUP",
+          "input_tokens": 1191,
+          "output_tokens": 3010,
+          "cost": 0.0
+        }
+      }
+    },
+    {
+      "round": 28,
+      "state": {
+        "snakes": {
+          "0": [
+            [
+              0,
+              8
+            ],
+            [
+              0,
+              7
+            ],
+            [
+              0,
+              6
+            ],
+            [
+              0,
+              5
+            ],
+            [
+              0,
+              4
+            ],
+            [
+              0,
+              3
+            ],
+            [
+              0,
+              2
+            ],
+            [
+              0,
+              1
+            ],
+            [
+              1,
+              1
+            ]
+          ],
+          "1": [
+            [
+              7,
+              6
+            ],
+            [
+              7,
+              5
+            ],
+            [
+              7,
+              4
+            ],
+            [
+              6,
+              4
+            ],
+            [
+              5,
+              4
+            ],
+            [
+              4,
+              4
+            ],
+            [
+              4,
+              3
+            ]
+          ]
+        },
+        "apples": [
+          [
+            8,
+            9
+          ],
+          [
+            7,
+            7
+          ],
+          [
+            1,
+            8
+          ],
+          [
+            3,
+            3
+          ],
+          [
+            1,
+            0
+          ]
+        ],
+        "alive": {
+          "0": true,
+          "1": true
+        },
+        "scores": {
+          "0": 8,
+          "1": 6
+        }
+      },
+      "moves": {
+        "0": {
+          "move": "UP",
+          "rationale": "Current head: (0,7)\n\nImmediate move legality:\n- LEFT -> (-1,7) off-board \u2014 illegal.\n- DOWN -> (0,6) is my neck \u2014 illegal.\n- RIGHT -> (1,7) is on-board and free this turn.\n- UP -> (0,8) is on-board and free this turn.\n\nSafety and tactical evaluation:\n- No opponent head is close enough to threaten (0,8) or (1,7) this turn.\n- Both UP and RIGHT allow reaching the apple at (1,8) on the following turn.\n- UP keeps me along the left edge, preserving a simple escape route and follows my existing plan to secure the apple at (1,8) while avoiding the more crowded center.\n- RIGHT offers slightly more immediate mobility (three onward choices) but also moves me toward the open board where the opponent could later approach; given my relatively long tail and the board layout, keeping the left edge open is safer for now.\n\nShort plan:\n- Move UP to (0,8) and then take the apple at (1,8) next turn.\n- After securing (1,8), reassess opponent movement; consider heading toward (3,3) or the cluster near x=7 depending on space and opponent positioning. Avoid tight central corridors until my tail has freed space.\n\nUP",
+          "input_tokens": 1354,
+          "output_tokens": 1497,
+          "cost": 0.0
+        },
+        "1": {
+          "move": "UP",
+          "rationale": "Plan: Move UP to (7,6) to eat the apple there and set up for the next apple at (7,7).\nRationale: (7,6) is unoccupied by any snake and safe to move into; DOWN would collide with my own body; LEFT/RIGHT do not yield an immediate apple and may limit future options.\nUP",
+          "input_tokens": 1162,
+          "output_tokens": 4366,
+          "cost": 0.0
+        }
+      }
+    },
+    {
+      "round": 29,
+      "state": {
+        "snakes": {
+          "0": [
+            [
+              1,
+              8
+            ],
+            [
+              0,
+              8
+            ],
+            [
+              0,
+              7
+            ],
+            [
+              0,
+              6
+            ],
+            [
+              0,
+              5
+            ],
+            [
+              0,
+              4
+            ],
+            [
+              0,
+              3
+            ],
+            [
+              0,
+              2
+            ],
+            [
+              0,
+              1
+            ],
+            [
+              1,
+              1
+            ]
+          ],
+          "1": [
+            [
+              7,
+              7
+            ],
+            [
+              7,
+              6
+            ],
+            [
+              7,
+              5
+            ],
+            [
+              7,
+              4
+            ],
+            [
+              6,
+              4
+            ],
+            [
+              5,
+              4
+            ],
+            [
+              4,
+              4
+            ],
+            [
+              4,
+              3
+            ]
+          ]
+        },
+        "apples": [
+          [
+            8,
+            9
+          ],
+          [
+            3,
+            3
+          ],
+          [
+            1,
+            0
+          ],
+          [
+            6,
+            7
+          ],
+          [
+            1,
+            4
+          ]
+        ],
+        "alive": {
+          "0": true,
+          "1": true
+        },
+        "scores": {
+          "0": 9,
+          "1": 7
+        }
+      },
+      "moves": {
+        "0": {
+          "move": "RIGHT",
+          "rationale": "Assessing moves from head (0,8):\n\nImmediate legality:\n- LEFT -> (-1,8) off-board \u2014 illegal.\n- DOWN -> (0,7) is my neck \u2014 illegal.\n- UP -> (0,9) on-board and free.\n- RIGHT -> (1,8) on-board and contains an apple \u2014 legal.\n\nSafety/tactical:\n- No opponent head can reach (1,8) or (0,9) this turn, so no head-on risk.\n- RIGHT eats the nearby apple (1,8) and increases my score to 9; growth means my tail won't move this turn but that's fine.\n- UP preserves the left edge but misses an easy apple. Given the apple is adjacent and safe, taking it is higher priority.\n\nShort plan:\n- Take the apple at (1,8) now (RIGHT).\n- After that, reassess opponent movement; consider heading toward (3,3) or down to (1,0) depending on space and enemy position. Avoid getting boxed into the center; keep routes open toward the bottom-left.\n\nRIGHT",
+          "input_tokens": 1383,
+          "output_tokens": 932,
+          "cost": 0.0
+        },
+        "1": {
+          "move": "UP",
+          "rationale": "Reasoning: The apple at (7,7) is directly ahead; moving UP to (7,7) eats it safely since the square is not occupied by any snake and doesn\u2019t collide with your own body this turn. Other directions either miss the apple or risk collision.\n\nPlan: After eating, head toward the next nearest apples (e.g., (8,9) or (2,8)) while keeping routes open and avoiding tight dead-ends; monitor enemy movement to avoid head-ons.\n\nUP",
+          "input_tokens": 1180,
+          "output_tokens": 4716,
+          "cost": 0.0
+        }
+      }
+    },
+    {
+      "round": 30,
+      "state": {
+        "snakes": {
+          "0": [
+            [
+              1,
+              7
+            ],
+            [
+              1,
+              8
+            ],
+            [
+              0,
+              8
+            ],
+            [
+              0,
+              7
+            ],
+            [
+              0,
+              6
+            ],
+            [
+              0,
+              5
+            ],
+            [
+              0,
+              4
+            ],
+            [
+              0,
+              3
+            ],
+            [
+              0,
+              2
+            ],
+            [
+              0,
+              1
+            ]
+          ],
+          "1": [
+            [
+              6,
+              7
+            ],
+            [
+              7,
+              7
+            ],
+            [
+              7,
+              6
+            ],
+            [
+              7,
+              5
+            ],
+            [
+              7,
+              4
+            ],
+            [
+              6,
+              4
+            ],
+            [
+              5,
+              4
+            ],
+            [
+              4,
+              4
+            ],
+            [
+              4,
+              3
+            ]
+          ]
+        },
+        "apples": [
+          [
+            8,
+            9
+          ],
+          [
+            3,
+            3
+          ],
+          [
+            1,
+            0
+          ],
+          [
+            1,
+            4
+          ],
+          [
+            9,
+            1
+          ]
+        ],
+        "alive": {
+          "0": true,
+          "1": true
+        },
+        "scores": {
+          "0": 9,
+          "1": 8
+        }
+      },
+      "moves": {
+        "0": {
+          "move": "DOWN",
+          "rationale": "Legal moves from head (1,8):\n- LEFT -> (0,8) is my neck (immediate self-collision) \u2014 illegal.\n- UP -> (1,9) is on-board and free.\n- DOWN -> (1,7) is on-board and free.\n- RIGHT -> (2,8) is on-board and free.\n\nSafety check:\n- No enemy head can reach any of UP/DOWN/RIGHT this turn (enemy head at (7,7) too far). None of those squares contain any snake bodies now.\n- Moving LEFT is forbidden (back into neck).\n\nTactical evaluation:\n- Nearest apple is at (1,4) straight down (Manhattan distance 4). Moving DOWN starts directly toward that apple and is efficient.\n- UP or RIGHT keep more lateral options but are farther from the closest apple.\n- DOWN does have (0,7) occupied by my body (so left will be blocked next turn), but I still have options to go further down or right from the column x=1. No immediate trap is forced and the opponent is too far to contest the apple quickly.\n\nShort-term plan (next few turns):\n- Continue down the x=1 column toward (1,4) to collect the nearby apple.\n- Avoid moving left into column x=0 (my own body) \u2014 prefer continuing down or stepping right if necessary.\n- After getting (1,4), reassess: head toward remaining apples (3,3) or 1,0 depending on space and opponent actions. Watch opponent moves for any head-on threats when moving into more open areas.\n\nDecision: move toward the nearest apple now.\n\nDOWN",
+          "input_tokens": 1342,
+          "output_tokens": 2393,
+          "cost": 0.0
+        },
+        "1": {
+          "move": "LEFT",
+          "rationale": "I will evaluate possible moves from the current head at (7,7).\n\n- Safe moves:\n  - UP to (7,8): safe. Not colliding with self or enemies.\n  - RIGHT to (8,7): safe. Not colliding with self or enemies.\n  - LEFT to (6,7): safe and directly consumes the apple at (6,7), increasing length.\n  - DOWN to (7,6): would run into my own body (the second segment), so deadly.\n\n- Assessment:\n  - LEFT gives an immediate apple and growth, which is advantageous now.\n  - UP or RIGHT could also be safe and keep options open, but do not grab an apple this turn.\n\n- Decision: LEFT\n\nPlan for next turns:\n- After eating the apple at (6,7), aim toward the closest high-value apples while keeping a flexible route to avoid dead-ends. Potential next targets include (8,9) and (3,3). I\u2019ll prioritize safe paths that don\u2019t trap me against the board edges or in tight corridors, and monitor enemy movement to avoid head-ons or sudden encroachments on my tail path.\n\nLEFT",
+          "input_tokens": 1222,
+          "output_tokens": 4595,
+          "cost": 0.0
+        }
+      }
+    },
+    {
+      "round": 31,
+      "state": {
+        "snakes": {
+          "0": [
+            [
+              1,
+              7
+            ],
+            [
+              1,
+              8
+            ],
+            [
+              0,
+              8
+            ],
+            [
+              0,
+              7
+            ],
+            [
+              0,
+              6
+            ],
+            [
+              0,
+              5
+            ],
+            [
+              0,
+              4
+            ],
+            [
+              0,
+              3
+            ],
+            [
+              0,
+              2
+            ],
+            [
+              0,
+              1
+            ]
+          ],
+          "1": [
+            [
+              6,
+              7
+            ],
+            [
+              7,
+              7
+            ],
+            [
+              7,
+              6
+            ],
+            [
+              7,
+              5
+            ],
+            [
+              7,
+              4
+            ],
+            [
+              6,
+              4
+            ],
+            [
+              5,
+              4
+            ],
+            [
+              4,
+              4
+            ],
+            [
+              4,
+              3
+            ]
+          ]
+        },
+        "apples": [
+          [
+            8,
+            9
+          ],
+          [
+            3,
+            3
+          ],
+          [
+            1,
+            0
+          ],
+          [
+            1,
+            4
+          ],
+          [
+            9,
+            1
+          ]
+        ],
+        "alive": {
+          "0": true,
+          "1": false
+        },
+        "scores": {
+          "0": 9,
+          "1": 8
+        }
+      },
+      "moves": {
+        "0": {
+          "move": "DOWN",
+          "rationale": "Legal moves from head (1,7):\n- UP -> (1,8) is my neck (backwards) \u2014 illegal.\n- LEFT -> (0,7) is occupied by my body \u2014 illegal.\n- DOWN -> (1,6) is on-board and currently free.\n- RIGHT -> (2,7) is on-board and currently free.\n\nSafety check:\n- Enemy head (6,7) is too far to contest or head-on into (1,6) or (2,7) this turn. Its legal moves are (5,7),(6,8),(6,6) \u2014 none threaten my immediate options.\n- Neither (1,6) nor (2,7) is occupied by any snake body now.\n\nTactical choice:\n- The nearest apple is at (1,4), Manhattan distance 3 from my head. DOWN moves me directly toward that apple and is the shortest safe path to pick it up in the next few turns.\n- RIGHT is safe but moves away from the nearest apple and wastes time; it also doesn\u2019t open better follow-up options given my body blocks x=0.\n- Going DOWN keeps options to continue down the x=1 column to (1,4). I must avoid moving left into x=0 (my own body) later.\n\nShort-term plan (for next turns):\n- Continue DOWN along x=1 to reach and eat the apple at (1,4).\n- After eating, reassess enemy positions and remaining apples (especially (3,3) and (1,0)). Prefer paths that keep multiple escape options (avoid getting boxed along x=0).\n- Watch enemy head moves for any unexpected aggression and avoid head-on collisions.\n\nDecision:\nDOWN",
+          "input_tokens": 1466,
+          "output_tokens": 1508,
+          "cost": 0.0
+        },
+        "1": {
+          "move": "RIGHT",
+          "rationale": "Safe moves: UP (7,8), RIGHT (8,7), LEFT (6,7). DOWN would hit your body.\nChosen: RIGHT\nPlan: move toward the right-side apple cluster (8,9) while keeping flexibility to avoid dead-ends.\nRIGHT",
+          "input_tokens": 1364,
+          "output_tokens": 4029,
+          "cost": 0.0
+        }
+      },
+      "events": [
+        {
+          "type": "death",
+          "player_id": "1",
+          "reason": "body_collision"
+        }
+      ]
+    }
+  ],
+  "metadata": {
+    "game_id": "db2b1d7d-1d57-4bb0-8512-1e88f7597817",
+    "start_time": "2025-12-12T18:16:14.351007",
+    "end_time": "2025-12-12T18:43:17.882601",
+    "models": {
+      "0": "openai/gpt-5-mini-2025-08-07",
+      "1": "openai/gpt-5-nano-2025-08-07"
+    },
+    "game_result": {
+      "1": "lost",
+      "0": "won"
+    },
+    "final_scores": {
+      "0": 9,
+      "1": 8
+    },
+    "death_info": {
+      "1": {
+        "reason": "body_collision",
+        "round": 31
+      }
+    },
+    "max_rounds": 150,
+    "actual_rounds": 32,
+    "total_cost": 0.0,
+    "player_costs": {
+      "0": 0.0,
+      "1": 0.0
+    }
+  }
+}

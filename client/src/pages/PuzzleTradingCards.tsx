@@ -137,8 +137,9 @@ export default function PuzzleTradingCards() {
   // Get unique datasets for filter with priority ordering
   const availableDatasets = useMemo(() => {
     if (!data?.puzzles) return [];
-    const datasets = new Set(data.puzzles.map(p => p.source).filter(Boolean));
-    const datasetArray = Array.from(datasets);
+    const isDatasetSource = (value: unknown): value is string => typeof value === 'string' && value.length > 0;
+    const datasets = new Set(data.puzzles.map(p => p.source).filter(isDatasetSource));
+    const datasetArray: string[] = Array.from(datasets);
 
     // Define priority order - Evaluation datasets first!
     const priorityOrder = ['ARC2-Eval', 'ARC1-Eval', 'ARC2', 'ARC1', 'ARC-Heavy', 'ConceptARC'];

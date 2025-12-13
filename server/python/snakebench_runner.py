@@ -12,6 +12,7 @@ SRP/DRY check: Pass — single responsibility is running one match and
 """
 
 import json
+import os
 import sys
 from pathlib import Path
 from types import SimpleNamespace
@@ -26,6 +27,11 @@ def emit_error(message: str) -> None:
 
 def main() -> int:
     try:
+        # ARC Explainer runs do not use SnakeBench's Supabase DB or Supabase Storage.
+        # Ensure direct CLI runs of this runner never attempt Supabase connections.
+        os.environ.setdefault("SNAKEBENCH_DISABLE_INTERNAL_DB", "1")
+        os.environ.setdefault("SNAKEBENCH_DISABLE_SUPABASE", "1")
+
         raw = sys.stdin.read()
         if not raw.strip():
             emit_error("Empty SnakeBench payload")
@@ -104,6 +110,11 @@ def main() -> int:
                 config["api_type"] = "responses"
                 config["reasoning"] = {"effort": "medium", "summary": "detailed"}
                 config["text"] = {"verbosity": "medium"}
+
+                # Prefer direct OpenAI for OpenAI models when a key is present.
+                # (SnakeBench backend still supports OpenRouter if you explicitly set provider="openrouter".)
+                if name.startswith("openai/") and (os.getenv("OPENAI_API_KEY") or "").strip():
+                    config["provider"] = "openai"
 
             return config
 

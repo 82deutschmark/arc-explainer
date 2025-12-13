@@ -266,7 +266,7 @@ export class ConsensusAnalyzer {
   /**
    * Find the most similar grid to a target from a list
    */
-  findMostSimilar(targetGrid: number[][], candidateGrids: number[][]): {
+  findMostSimilar(targetGrid: number[][], candidateGrids: number[][][]): {
     grid: number[][];
     similarity: number;
   } {
