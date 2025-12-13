@@ -356,7 +356,7 @@ export default function WormArena() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6 items-stretch">
           <WormArenaReasoning
             playerName={playerAName}
-            color="yellow"
+            color="green"
             reasoning={showNextMove && playerIds.length > 0 ? (frames[frameIndex + 1]?.moves?.[playerIds[0]]?.rationale || '') : playerAReasoning}
             score={playerAScore}
           />
@@ -400,7 +400,7 @@ export default function WormArena() {
 
           <WormArenaReasoning
             playerName={playerBName}
-            color="red"
+            color="blue"
             reasoning={showNextMove && playerIds.length > 1 ? (frames[frameIndex + 1]?.moves?.[playerIds[1]]?.rationale || '') : playerBReasoning}
             score={playerBScore}
           />

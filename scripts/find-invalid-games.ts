@@ -43,33 +43,62 @@ async function findInvalidGames() {
       return;
     }
 
+    type InvalidGameRow = {
+      game_id: string;
+      status: string;
+      created_at: string;
+      total_cost: number;
+      model_id: number;
+      model_name: string;
+      participant_cost: number;
+      score: number;
+      death_round: number | null;
+      death_reason: string | null;
+    };
+
+    type InvalidParticipant = {
+      model_name: string;
+      cost: number;
+      score: number;
+      death_round: number | null;
+      death_reason: string | null;
+    };
+
+    type InvalidGameGroup = {
+      game_id: string;
+      status: string;
+      created_at: string;
+      total_cost: number;
+      participants: InvalidParticipant[];
+    };
+
     // Group by game_id for display
-    const gameMap = new Map();
-    result.rows.forEach(row => {
+    const gameMap = new Map<string, InvalidGameGroup>();
+    (result.rows as InvalidGameRow[]).forEach((row: InvalidGameRow) => {
       if (!gameMap.has(row.game_id)) {
         gameMap.set(row.game_id, {
           game_id: row.game_id,
           status: row.status,
           created_at: row.created_at,
           total_cost: row.total_cost,
-          participants: []
+          participants: [],
         });
       }
-      gameMap.get(row.game_id).participants.push({
+      gameMap.get(row.game_id)?.participants.push({
         model_name: row.model_name,
         cost: row.participant_cost,
         score: row.score,
         death_round: row.death_round,
-        death_reason: row.death_reason
+        death_reason: row.death_reason,
       });
     });
 
     // Display results
     let gameNum = 1;
-    gameMap.forEach((game, gameId) => {
+    gameMap.forEach((game: InvalidGameGroup, gameId: string) => {
       console.log(`${gameNum}. Game: ${gameId}`);
       console.log(`   Status: ${game.status} | Total Cost: $${game.total_cost} | Created: ${game.created_at}`);
-      game.participants.forEach((p, idx) => {
+      game.participants.forEach((p: InvalidParticipant, idx: number) => {
         console.log(`   Player ${idx + 1}: ${p.model_name}`);
         console.log(`     Cost: $${p.cost} | Score: ${p.score} | Death: Round ${p.death_round} (${p.death_reason})`);
       });
