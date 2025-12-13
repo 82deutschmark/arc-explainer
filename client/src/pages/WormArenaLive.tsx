@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Author: Claude Code using Haiku 4.5
  * Date: 2025-12-12
  * PURPOSE: Worm Arena Live - Redesigned layout with clear information hierarchy.
@@ -48,7 +48,22 @@ function mapToSnakeBenchModelId(modelId: string): string {
 
 export default function WormArenaLive() {
   const [, params] = useRoute('/worm-arena/live/:sessionId');
-  const sessionId = params?.sessionId ?? '';
+  const sessionId = React.useMemo(() => {
+    try {
+      if (typeof window !== 'undefined' && typeof window.location?.pathname === 'string') {
+        const parts = window.location.pathname.split('/').filter(Boolean);
+        const liveIdx = parts.lastIndexOf('live');
+        const candidate = liveIdx >= 0 ? parts[liveIdx + 1] : undefined;
+        const trimmed = candidate?.trim();
+        if (trimmed && trimmed.length > 0) return trimmed;
+      }
+    } catch {
+      // ignore
+    }
+
+    const fallback = params?.sessionId?.trim();
+    return fallback && fallback.length > 0 ? fallback : '';
+  }, [params?.sessionId]);
 
   const { data: modelConfigs = [], isLoading: loadingModels, error: modelsError } = useModels();
   const snakeModels = React.useMemo(() => getSnakeEligibleModels(modelConfigs), [modelConfigs]);

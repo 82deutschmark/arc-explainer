@@ -28,6 +28,16 @@ export interface CuratedMatchup {
 
 export const CURATED_MATCHUPS: CuratedMatchup[] = [
   {
+    id: 'gpt5-nano-vs-nano',
+    category: 'budget',
+    modelA: 'openai/gpt-5-nano',
+    modelB: 'openai/gpt-5-nano',
+    displayName: 'GPT-5 Nano vs GPT-5 Nano',
+    description: 'Fastest, cheapest mirror match for quick live testing',
+    icon: '🧪',
+    isDefault: true,
+  },
+  {
     id: 'gpt52-vs-nano',
     category: 'cross-tier',
     modelA: 'openai/gpt-5.2',
@@ -35,7 +45,6 @@ export const CURATED_MATCHUPS: CuratedMatchup[] = [
     displayName: 'GPT-5.2 vs GPT-5 Nano',
     description: 'Latest GPT flagship vs budget ($14 vs $0.40 output)',
     icon: '⚡',
-    isDefault: true,
   },
   {
     id: 'deepseek-v32-vs-ministral3b',
