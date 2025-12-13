@@ -1,3 +1,10 @@
+### Version 6.1.41  Dec 12, 2025 (PENDING TESTING)
+
+- **Worm Arena replay UI: clarify player colors (left yellow, right red)** (Author: Cascade)
+  - Fixed the replay viewer reasoning panel color mapping so the left player consistently renders as yellow and the right player as red.
+  - Updated `WormArenaReasoning` to use an explicit `yellow` variant (replacing the ambiguous `gold` variant) and removed the orange-border styling from the “non-red” path.
+  - **Files Modified**: `client/src/pages/WormArena.tsx`, `client/src/components/WormArenaReasoning.tsx`, `CHANGELOG.md`
+
 ### Version 6.1.40  Dec 12, 2025 (PENDING TESTING)
 
 - **Worm Arena replay links: load the selected match reliably** (Author: Cascade)
