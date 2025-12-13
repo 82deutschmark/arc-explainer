@@ -1,22 +1,14 @@
-$champion = "nex-agi/deepseek-v3.1-nex-n1:free"
+$champion = "deepseek/deepseek-v3.2"
 $challengers = @(
-    "deepseek-chat",
-    "deepseek-reasoner",
-    "deepseek-reasoner-speciale",
     "deepseek/deepseek-v3.1-terminus",
-    "deepseek/deepseek-chat-v3.1",
-    "deepseek/deepseek-v3.2",
-    "openai/gpt-5-mini",
-    "openai/gpt-5.1-codex-mini",
-    "allenai/olmo-3-32b-think:free",
-    "essentialai/rnj-1-instruct"
+    "deepseek/deepseek-chat-v3.1"
 )
 
 $matchesPerDirection = 5
 $delayMilliseconds = 500
 $baseUrl = "http://localhost:5000/api/snakebench/run-batch"
 
-Write-Host "GPT-5.2 Championship: Champion vs GPT-5 Family"
+Write-Host "DeepSeek OpenRouter Championship"
 Write-Host "Champion: $champion"
 Write-Host "Challengers: $($challengers.Count)"
 Write-Host "Matches per direction: $matchesPerDirection"
