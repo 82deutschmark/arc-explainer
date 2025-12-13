@@ -16,7 +16,7 @@ const APPLE_ICON = String.fromCodePoint(0x1F34E);
 
 interface WormArenaReasoningProps {
   playerName: string;
-  color: 'red' | 'gold';
+  color: 'red' | 'yellow';
   reasoning: string;
   score?: number;
   strategyLabel?: string;
@@ -39,13 +39,13 @@ export default function WormArenaReasoning({
   return (
     <Card className={cn(
       'h-full flex flex-col border-2',
-      color === 'red' ? 'border-worm-red' : 'border-worm-orange',
+      color === 'red' ? 'border-worm-red' : 'border-yellow-500',
     )}>
       <CardHeader className="text-center pb-4">
         <CardTitle
           className={cn(
             'text-lg font-bold flex items-center justify-center gap-2',
-            color === 'red' ? 'text-red-600' : 'text-yellow-600'
+            color === 'red' ? 'text-red-600' : 'text-yellow-700'
           )}
         >
           <span role="img" aria-hidden="true">
