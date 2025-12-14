@@ -29,7 +29,6 @@ def main() -> int:
     try:
         # ARC Explainer runs do not use SnakeBench's Supabase DB or Supabase Storage.
         # Ensure direct CLI runs of this runner never attempt Supabase connections.
-        os.environ.setdefault("SNAKEBENCH_DISABLE_INTERNAL_DB", "1")
         os.environ.setdefault("SNAKEBENCH_DISABLE_SUPABASE", "1")
 
         raw = sys.stdin.read()

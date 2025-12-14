@@ -163,7 +163,10 @@ export class SnakeBenchService {
     }
   }
 
-  private prepareRunMatch(request: SnakeBenchRunMatchRequest): {
+  private prepareRunMatch(
+    request: SnakeBenchRunMatchRequest,
+    opts: { enableLiveDb?: boolean } = {},
+  ): {
     modelA: string;
     modelB: string;
     width: number;
@@ -251,7 +254,9 @@ export class SnakeBenchService {
     // ARC Explainer runs do not use SnakeBench's Supabase DB or Supabase Storage.
     // We persist via our own Postgres + local replay JSON under external/SnakeBench/backend/completed_games.
     // ARC Explainer handles DB persistence via its ingest queue, so disable SnakeBench's internal DB writes.
-    env.SNAKEBENCH_DISABLE_INTERNAL_DB = '1';
+    if (!opts.enableLiveDb) {
+      env.SNAKEBENCH_DISABLE_INTERNAL_DB = '1';
+    }
 
     const expectedOpenRouterBaseUrl = 'https://openrouter.ai/api/v1';
     const configuredOpenRouterBaseUrl = (env.OPENROUTER_BASE_URL || '').trim();
@@ -354,7 +359,7 @@ export class SnakeBenchService {
       backendDir,
       spawnOpts,
       timeoutMs,
-    } = this.prepareRunMatch(request);
+    } = this.prepareRunMatch(request, { enableLiveDb: true });
 
     return await new Promise<SnakeBenchRunMatchResult>((resolve, reject) => {
       const child = spawn(pythonBin, [runnerPath], spawnOpts);
@@ -481,8 +486,10 @@ export class SnakeBenchService {
 
           if (!discoveredGameId) {
             const inserted = line.match(/Inserted initial game record\s+([0-9a-fA-F-]+)/);
-            if (inserted?.[1]) {
-              discoveredGameId = inserted[1];
+            const gameIdLine = line.match(/^Game ID:\s*([0-9a-fA-F-]+)\s*$/);
+            const discovered = inserted?.[1] ?? gameIdLine?.[1];
+            if (discovered) {
+              discoveredGameId = discovered;
               startLivePolling(discoveredGameId);
             }
           }

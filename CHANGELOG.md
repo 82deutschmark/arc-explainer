@@ -1,3 +1,15 @@
+### Version 6.1.47  Dec 17, 2025 (PENDING TESTING)
+
+- **Admin OpenRouter sync-config: correct costs + release dates** (Author: Cascade)
+  - Fixed OpenRouter model sync snippet generation so token costs are recorded as USD per 1M tokens (matching our `MODELS` config conventions).
+  - Release dates are now derived from OpenRouter-provided created/released timestamps when present, with a slug-based fallback (e.g. `-2512` -> `2025-12`).
+  - **Files Modified**: `server/utils/openRouterModelSync.ts`, `CHANGELOG.md`
+
+- **Worm Arena Live: emit frames for single matches (DB live state + game id discovery)** (Author: Cascade)
+  - Re-enabled SnakeBench internal DB persistence for ARC Explainer runs so live `current_state` updates are written to Postgres (required for frame polling).
+  - Updated game id discovery in `runMatchStreaming()` to recognize SnakeBench's `Game ID: ...` stdout line so live polling starts reliably.
+  - **Files Modified**: `server/python/snakebench_runner.py`, `server/services/snakeBenchService.ts`, `CHANGELOG.md`
+
 ### Version 6.1.46  Dec 17, 2025 (PENDING TESTING)
 
 - **Worm Arena Match Browser: DB-backed matches page + query endpoint** (Author: Cascade)
