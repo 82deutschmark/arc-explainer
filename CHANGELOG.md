@@ -1,3 +1,10 @@
+### Version 6.1.50  Dec 17, 2025 (PENDING TESTING)
+
+- **Worm Arena Live: better curated matchup presets (new default + GPT-5.2 opponents)** (Author: Cascade)
+  - Default curated matchup is now `openai/gpt-5-mini` vs `x-ai/grok-4.1-fast`.
+  - Added multiple curated presets for `openai/gpt-5.2` vs strong opponents (Grok 4.1 Fast, Claude Sonnet 4.5, DeepSeek v3.2, Mistral Large).
+  - **Files Modified**: `shared/utils/curatedMatchups.ts`, `CHANGELOG.md`
+
 ### Version 6.1.49  Dec 17, 2025 (PENDING TESTING)
 
 - **Worm Arena Live: source-of-truth streaming (frames + live model output) + matchId clarity** (Author: Cascade)
