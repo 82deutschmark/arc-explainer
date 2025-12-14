@@ -396,6 +396,9 @@ export class SnakeBenchService {
       let livePollHandle: NodeJS.Timeout | null = null;
       let pollInFlight = false;
       let lastRoundSent = 0;
+      let pollErrorReported = false;
+      let pollMissingReported = false;
+      let pollNoStateReported = false;
 
       const stopLivePolling = () => {
         if (livePollHandle) {
@@ -419,7 +422,25 @@ export class SnakeBenchService {
               [gameId],
             );
             const row = rows?.[0];
-            if (!row || !row.current_state) return;
+            if (!row) {
+              if (!pollMissingReported) {
+                pollMissingReported = true;
+                const msg = `Live frame polling: no row found in public.games for gameId=${gameId}`;
+                logger.warn(msg, 'snakebench-service');
+                handlers.onStatus?.({ state: 'in_progress', message: msg });
+              }
+              return;
+            }
+
+            if (!row.current_state) {
+              if (!pollNoStateReported) {
+                pollNoStateReported = true;
+                const msg = `Live frame polling: public.games.current_state is empty for gameId=${gameId}`;
+                logger.warn(msg, 'snakebench-service');
+                handlers.onStatus?.({ state: 'in_progress', message: msg });
+              }
+              return;
+            }
 
             const stateRaw = row.current_state;
             const state =
@@ -450,7 +471,18 @@ export class SnakeBenchService {
               timestamp: Date.now(),
             });
           } catch (err) {
-            // Ignore polling errors; stdout streaming still works.
+            if (!pollErrorReported) {
+              pollErrorReported = true;
+              const msg = err instanceof Error ? err.message : String(err);
+              logger.warn(
+                `Live frame polling error for gameId=${gameId}: ${msg}`,
+                'snakebench-service',
+              );
+              handlers.onStatus?.({
+                state: 'in_progress',
+                message: `Live frame polling error: ${msg}`,
+              });
+            }
           } finally {
             pollInFlight = false;
           }
