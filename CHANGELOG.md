@@ -1,3 +1,20 @@
+### Version 6.1.49  Dec 17, 2025 (PENDING TESTING)
+
+- **Worm Arena Live: source-of-truth streaming (frames + live model output) + matchId clarity** (Author: Cascade)
+  - SnakeBench engine now emits ARC Explainer NDJSON events when `ARC_EXPLAINER_STDOUT_EVENTS=1`:
+    - `type: "frame"` for initial + per-round board state (fixes "waiting for first frame" by removing DB polling dependency).
+    - `type: "chunk"` for per-move model output so the UI can display live reasoning/output alongside the board.
+  - Worm Arena SSE now forwards `stream.chunk` events and adds `matchId` (session id) to streaming payloads to distinguish from `gameId`.
+  - Live UI now renders the streamed model output in the existing two-column reasoning panel layout.
+  - **Files Modified**: `external/SnakeBench/backend/main.py`, `server/services/snakeBenchService.ts`, `server/controllers/wormArenaStreamController.ts`, `shared/types.ts`, `client/src/hooks/useWormArenaStreaming.ts`, `client/src/pages/WormArenaLive.tsx`, `CHANGELOG.md`
+
+### Version 6.1.48  Dec 17, 2025 (PENDING TESTING)
+
+- Catalog-driven OpenRouter models via openrouter-catalog.json (Author: Codex)
+  - Added an OpenRouter catalog mapper so model metadata (cost, context, vision flags, streaming/structured-output overrides) is built directly from the shipped catalog file and merged with the static model list.
+  - Dropped catalog-missing OpenRouter entries (anthropic/claude-sonnet-4-5, moonshotai/kimi-dev-72b:free, x-ai/grok-3-mini-fast) and aliased openrouter/gpt-5.1-codex-mini to the catalog id openai/gpt-5.1-codex-mini to keep existing callers working.
+  - Files Modified: `server/config/openrouterModels.ts`, `server/config/models.ts`, `CHANGELOG.md`
+
 ### Version 6.1.47  Dec 17, 2025 (PENDING TESTING)
 
 - **Admin OpenRouter sync-config: correct costs + release dates** (Author: Cascade)

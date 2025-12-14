@@ -4,6 +4,7 @@ import type {
   WormArenaFrameEvent,
   WormArenaFinalSummary,
   WormArenaStreamStatus,
+  WormArenaStreamChunk,
   WormArenaBatchMatchStart,
   WormArenaBatchMatchComplete,
   WormArenaBatchComplete,
@@ -17,6 +18,9 @@ export function useWormArenaStreaming() {
   const [message, setMessage] = useState<string | undefined>();
   const [phase, setPhase] = useState<string | undefined>();
   const [frames, setFrames] = useState<WormArenaFrameEvent[]>([]);
+  const [chunks, setChunks] = useState<WormArenaStreamChunk[]>([]);
+  const [reasoningBySnakeId, setReasoningBySnakeId] = useState<Record<string, string>>({});
+  const [playerNameBySnakeId, setPlayerNameBySnakeId] = useState<Record<string, string>>({});
   const [finalSummary, setFinalSummary] = useState<WormArenaFinalSummary | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isStarting, setIsStarting] = useState(false);
@@ -71,6 +75,9 @@ export function useWormArenaStreaming() {
       setMessage(undefined);
       setPhase(undefined);
       setFrames([]);
+      setChunks([]);
+      setReasoningBySnakeId({});
+      setPlayerNameBySnakeId({});
       setFinalSummary(null);
       setError(null);
       setBatchResults([]);
@@ -120,6 +127,36 @@ export function useWormArenaStreaming() {
       }
     });
 
+    es.addEventListener('stream.chunk', (event) => {
+      try {
+        const data = JSON.parse((event as MessageEvent).data) as WormArenaStreamChunk;
+
+        setChunks((prev) => {
+          const next = [...prev, data];
+          if (next.length > 500) {
+            return next.slice(next.length - 500);
+          }
+          return next;
+        });
+
+        const meta = (data as any)?.metadata as Record<string, unknown> | undefined;
+        const snakeId = typeof meta?.snakeId === 'string' ? meta.snakeId : undefined;
+        const playerName = typeof meta?.playerName === 'string' ? meta.playerName : undefined;
+        const text = typeof data.content === 'string' ? data.content : typeof data.delta === 'string' ? data.delta : '';
+
+        if (snakeId) {
+          if (playerName) {
+            setPlayerNameBySnakeId((prev) => ({ ...prev, [snakeId]: playerName }));
+          }
+          if (text) {
+            setReasoningBySnakeId((prev) => ({ ...prev, [snakeId]: text }));
+          }
+        }
+      } catch (err: any) {
+        setError(err?.message || 'Failed to parse chunk event');
+      }
+    });
+
     es.addEventListener('stream.complete', (event) => {
       try {
         const data = JSON.parse((event as MessageEvent).data) as WormArenaFinalSummary;
@@ -162,6 +199,9 @@ export function useWormArenaStreaming() {
         setCurrentMatchIndex(data.index);
         setStatus('in_progress');
         setFrames([]);
+        setChunks([]);
+        setReasoningBySnakeId({});
+        setPlayerNameBySnakeId({});
         setMessage(`Running match ${data.index} of ${data.total}...`);
       } catch (err: any) {
         setError(err?.message || 'Failed to parse match start event');
@@ -241,6 +281,9 @@ export function useWormArenaStreaming() {
     message,
     phase,
     frames,
+    chunks,
+    reasoningBySnakeId,
+    playerNameBySnakeId,
     finalSummary,
     error,
     isStarting,

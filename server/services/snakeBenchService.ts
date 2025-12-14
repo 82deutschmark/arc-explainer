@@ -165,7 +165,7 @@ export class SnakeBenchService {
 
   private prepareRunMatch(
     request: SnakeBenchRunMatchRequest,
-    opts: { enableLiveDb?: boolean } = {},
+    opts: { enableLiveDb?: boolean; enableStdoutEvents?: boolean } = {},
   ): {
     modelA: string;
     modelB: string;
@@ -249,6 +249,7 @@ export class SnakeBenchService {
       ...process.env,
       PYTHONIOENCODING: 'utf-8',
       PYTHONUTF8: '1',
+      PYTHONUNBUFFERED: '1',
     };
 
     // ARC Explainer runs do not use SnakeBench's Supabase DB or Supabase Storage.
@@ -256,6 +257,10 @@ export class SnakeBenchService {
     // ARC Explainer handles DB persistence via its ingest queue, so disable SnakeBench's internal DB writes.
     if (!opts.enableLiveDb) {
       env.SNAKEBENCH_DISABLE_INTERNAL_DB = '1';
+    }
+
+    if (opts.enableStdoutEvents) {
+      env.ARC_EXPLAINER_STDOUT_EVENTS = '1';
     }
 
     const expectedOpenRouterBaseUrl = 'https://openrouter.ai/api/v1';
@@ -343,6 +348,7 @@ export class SnakeBenchService {
     handlers: {
       onStatus?: (status: WormArenaStreamStatus) => void;
       onFrame?: (frame: WormArenaFrameEvent) => void;
+      onChunk?: (chunk: any) => void;
       onComplete?: (result: SnakeBenchRunMatchResult) => void;
       onError?: (err: Error) => void;
     } = {},
@@ -359,7 +365,7 @@ export class SnakeBenchService {
       backendDir,
       spawnOpts,
       timeoutMs,
-    } = this.prepareRunMatch(request, { enableLiveDb: true });
+    } = this.prepareRunMatch(request, { enableLiveDb: true, enableStdoutEvents: true });
 
     return await new Promise<SnakeBenchRunMatchResult>((resolve, reject) => {
       const child = spawn(pythonBin, [runnerPath], spawnOpts);
@@ -400,6 +406,9 @@ export class SnakeBenchService {
       let pollMissingReported = false;
       let pollNoStateReported = false;
 
+      const stdoutEventsEnabled =
+        String(spawnOpts.env?.ARC_EXPLAINER_STDOUT_EVENTS ?? '').trim() === '1';
+
       const stopLivePolling = () => {
         if (livePollHandle) {
           clearInterval(livePollHandle);
@@ -409,6 +418,7 @@ export class SnakeBenchService {
 
       const startLivePolling = (gameId: string) => {
         if (!handlers.onFrame || livePollHandle) return;
+        if (stdoutEventsEnabled) return;
         if (!repositoryService.isConnected() || !repositoryService.db) return;
 
         livePollHandle = setInterval(async () => {
@@ -548,6 +558,18 @@ export class SnakeBenchService {
                   frame: evt.frame ?? evt,
                   timestamp: Date.now(),
                 });
+                continue;
+              }
+              if (evt?.type === 'chunk' && handlers.onChunk) {
+                handlers.onChunk(evt.chunk ?? evt);
+                continue;
+              }
+              if (evt?.type === 'game.init') {
+                if (!discoveredGameId && typeof evt.gameId === 'string' && evt.gameId.trim().length > 0) {
+                  const gameId = evt.gameId.trim();
+                  discoveredGameId = gameId;
+                  startLivePolling(gameId);
+                }
                 continue;
               }
               if (evt?.type === 'status') {
