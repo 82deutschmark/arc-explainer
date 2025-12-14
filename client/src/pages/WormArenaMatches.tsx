@@ -85,62 +85,56 @@ export default function WormArenaMatches() {
     }
   }, [availableModels, model]);
 
-  const fetchMatches = React.useCallback(async () => {
-    const trimmedModel = model.trim();
-    if (!trimmedModel) return;
+  const fetchMatches = React.useCallback(
+    async (currentOffset: number = 0) => {
+      const trimmedModel = model.trim();
+      if (!trimmedModel) return;
 
-    const params = new URLSearchParams();
-    params.set('model', trimmedModel);
-    if (opponent.trim()) params.set('opponent', opponent.trim());
-    if (result !== 'any') params.set('result', result);
+      const params = new URLSearchParams();
+      params.set('model', trimmedModel);
+      if (opponent.trim()) params.set('opponent', opponent.trim());
+      if (result !== 'any') params.set('result', result);
 
-    const minRoundsNum = Number(minRounds);
-    if (minRounds.trim().length > 0 && Number.isFinite(minRoundsNum)) {
-      params.set('minRounds', String(Math.max(0, Math.floor(minRoundsNum))));
-    }
-
-    if (from.trim()) params.set('from', from.trim());
-    if (to.trim()) params.set('to', to.trim());
-
-    params.set('sortBy', sortBy);
-    params.set('sortDir', sortDir);
-    params.set('limit', String(limit));
-    params.set('offset', String(offset));
-
-    setIsLoading(true);
-    setError(null);
-
-    try {
-      const res = await apiRequest('GET', `/api/snakebench/matches?${params.toString()}`);
-      const json = (await res.json()) as SnakeBenchMatchSearchResponse;
-      if (!json.success) {
-        throw new Error(json.error || 'Failed to load matches');
+      const minRoundsNum = Number(minRounds);
+      if (minRounds.trim().length > 0 && Number.isFinite(minRoundsNum)) {
+        params.set('minRounds', String(Math.max(0, Math.floor(minRoundsNum))));
       }
-      setRows(json.rows ?? []);
-      setTotal(json.total ?? 0);
-    } catch (e: any) {
-      setError(e?.message || 'Failed to load matches');
-      setRows([]);
-      setTotal(0);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [
-    from,
-    limit,
-    minRounds,
-    model,
-    offset,
-    opponent,
-    result,
-    sortBy,
-    sortDir,
-    to,
-  ]);
+
+      if (from.trim()) params.set('from', from.trim());
+      if (to.trim()) params.set('to', to.trim());
+
+      params.set('sortBy', sortBy);
+      params.set('sortDir', sortDir);
+      params.set('limit', String(limit));
+      params.set('offset', String(currentOffset));
+
+      setIsLoading(true);
+      setError(null);
+
+      try {
+        const res = await apiRequest('GET', `/api/snakebench/matches?${params.toString()}`);
+        const json = (await res.json()) as SnakeBenchMatchSearchResponse;
+        if (!json.success) {
+          throw new Error(json.error || 'Failed to load matches');
+        }
+        setRows(json.rows ?? []);
+        setTotal(json.total ?? 0);
+      } catch (e: any) {
+        setError(e?.message || 'Failed to load matches');
+        setRows([]);
+        setTotal(0);
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [from, limit, minRounds, model, opponent, result, sortBy, sortDir, to],
+  );
 
   React.useEffect(() => {
-    void fetchMatches();
-  }, [fetchMatches]);
+    if (model) {
+      void fetchMatches(offset);
+    }
+  }, [offset, fetchMatches, model]);
 
   const canPrev = offset > 0;
   const canNext = offset + limit < total;
@@ -155,7 +149,7 @@ export default function WormArenaMatches() {
 
   const handleApply = () => {
     setOffset(0);
-    void fetchMatches();
+    void fetchMatches(0);
   };
 
   const rangeLabel = React.useMemo(() => {

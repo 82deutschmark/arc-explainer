@@ -8,7 +8,6 @@
  */
 
 import fs from 'fs';
-import { fileURLToPath } from 'url';
 import path from 'path';
 import type { ModelConfig } from '@shared/types.js';
 
@@ -93,7 +92,7 @@ const STRUCTURED_OUTPUT_FALSE = new Set<string>([
 
 const STREAMING_FALSE = new Set<string>(['google/gemini-3-pro-preview']);
 
-const catalogFilePath = fileURLToPath(new URL('./openrouter-catalog.json', import.meta.url));
+const catalogFilePath = path.resolve(process.cwd(), 'server', 'config', 'openrouter-catalog.json');
 
 function loadCatalog(): OpenRouterCatalogModel[] {
   const raw = fs.readFileSync(path.resolve(catalogFilePath), 'utf-8');
