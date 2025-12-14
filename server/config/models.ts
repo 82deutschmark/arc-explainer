@@ -10,14 +10,16 @@
  *          Added openai/gpt-5-nano and openai/gpt-5-mini via OpenRouter (Dec 2025).
  *          Added mistralai/devstral-2512 and mistralai/devstral-2512:free via OpenRouter (Dec 2025).
  *          Added DeepSeek v3.2 Reasoner and OLMo-3 thinking models via OpenRouter (Dec 2025).
+ *          OpenRouter entries now source all metadata directly from openrouter-catalog.json (SoT).
  * SRP/DRY check: Pass - file encapsulates shared model metadata without duplication.
  * shadcn/ui: Pass - configuration only.
  */
 
 import type { ModelConfig } from '@shared/types';
+import { buildOpenRouterModels } from './openrouterModels.js';
 
 
-export const MODELS: ModelConfig[] = [
+const STATIC_MODELS: ModelConfig[] = [
   // OpenAI Models
   { 
     key: 'gpt-4.1-nano-2025-04-14', 
@@ -1355,4 +1357,12 @@ export const MODELS: ModelConfig[] = [
     notes: 'Free DeepSeek V3.1 variant via OpenRouter'
   },
 
+];
+
+const OPENROUTER_MODELS = buildOpenRouterModels();
+
+// Final export merges static entries with catalog-driven OpenRouter models (catalog is SoT).
+export const MODELS: ModelConfig[] = [
+  ...STATIC_MODELS.filter(model => model.provider !== 'OpenRouter'),
+  ...OPENROUTER_MODELS
 ];

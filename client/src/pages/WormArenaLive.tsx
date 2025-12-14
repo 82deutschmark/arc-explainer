@@ -20,6 +20,7 @@ import WormArenaLiveStatusStrip from '@/components/WormArenaLiveStatusStrip';
 import WormArenaLiveBoardPanel from '@/components/WormArenaLiveBoardPanel';
 import WormArenaLiveResultsPanel from '@/components/WormArenaLiveResultsPanel';
 import WormArenaRunControls from '@/components/WormArenaRunControls';
+import WormArenaReasoning from '@/components/WormArenaReasoning';
 
 import type { ModelConfig, SnakeBenchRunMatchRequest } from '@shared/types';
 import { getDefaultMatchup, type CuratedMatchup } from '@shared/utils/curatedMatchups';
@@ -89,6 +90,8 @@ export default function WormArenaLive() {
     status,
     message,
     frames,
+    reasoningBySnakeId,
+    playerNameBySnakeId,
     finalSummary,
     error,
     connect,
@@ -134,6 +137,24 @@ export default function WormArenaLive() {
   const latestFrame = useMemo(() => (frames.length ? frames[frames.length - 1] : null), [frames]);
   const boardWidth = (latestFrame as any)?.frame?.state?.width ?? 10;
   const boardHeight = (latestFrame as any)?.frame?.state?.height ?? 10;
+
+  const snakeIds = useMemo(() => {
+    const ids = new Set<string>();
+    Object.keys(playerNameBySnakeId || {}).forEach((k) => ids.add(k));
+    Object.keys(reasoningBySnakeId || {}).forEach((k) => ids.add(k));
+    const fromFrame = (latestFrame as any)?.frame?.state?.snakes;
+    if (fromFrame && typeof fromFrame === 'object') {
+      Object.keys(fromFrame).forEach((k) => ids.add(k));
+    }
+    return Array.from(ids).sort();
+  }, [latestFrame, playerNameBySnakeId, reasoningBySnakeId]);
+
+  const leftSnakeId = snakeIds[0];
+  const rightSnakeId = snakeIds[1];
+  const leftName = (leftSnakeId && playerNameBySnakeId[leftSnakeId]) || (leftSnakeId ? `Snake ${leftSnakeId}` : 'Player A');
+  const rightName = (rightSnakeId && playerNameBySnakeId[rightSnakeId]) || (rightSnakeId ? `Snake ${rightSnakeId}` : 'Player B');
+  const leftReasoning = (leftSnakeId && reasoningBySnakeId[leftSnakeId]) || '';
+  const rightReasoning = (rightSnakeId && reasoningBySnakeId[rightSnakeId]) || '';
 
   const viewMode: ViewMode = finalSummary
     ? 'completed'
@@ -195,6 +216,26 @@ export default function WormArenaLive() {
             currentMatchIndex={currentMatchIndex}
             totalMatches={totalMatches}
           />
+        )}
+
+        {viewMode === 'live' && (
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            <WormArenaReasoning
+              playerName={leftName}
+              color="green"
+              reasoning={leftReasoning}
+              score={Number((latestFrame as any)?.frame?.state?.scores?.[leftSnakeId] ?? 0)}
+              strategyLabel="Live output"
+            />
+
+            <WormArenaReasoning
+              playerName={rightName}
+              color="blue"
+              reasoning={rightReasoning}
+              score={Number((latestFrame as any)?.frame?.state?.scores?.[rightSnakeId] ?? 0)}
+              strategyLabel="Live output"
+            />
+          </div>
         )}
 
         {viewMode === 'completed' && finalSummary && <WormArenaLiveResultsPanel finalSummary={finalSummary} />}
