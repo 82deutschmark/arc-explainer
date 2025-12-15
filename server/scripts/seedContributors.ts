@@ -500,6 +500,27 @@ const contributors: CreateContributorRequest[] = [
     rank: undefined
   },
 
+  // Friends of the ARC Community & Researchers
+  {
+    fullName: 'Dr. Jeremy Budd',
+    handle: 'jez2718',
+    affiliation: 'University of Birmingham, Assistant Professor',
+    achievement: 'ARC Research Presenter - Inverse Problem Formulation',
+    description: 'Assistant Professor at the University of Birmingham conducting research on ARC-AGI from the perspective of inverse problems. Dr. Budd earned his PhD from Delft University of Technology in January 2022 (cum laude) and holds degrees from Cambridge University. His research blends applied analysis and data science, focusing on graph-based machine learning for image processing, segmentation, and reconstruction methods. He presented his ARC work to the ARC Discord community, contributing fresh theoretical perspectives to the field.',
+    imageUrl: '/jbudd.png',
+    yearStart: 2025,
+    yearEnd: undefined,
+    score: 'Theoretical Research Contribution',
+    approach: 'Inverse problem formulation combined with graph-based machine learning for ARC-AGI reasoning',
+    uniqueTechnique: 'Applied analysis and data science perspective on ARC as an inverse problem',
+    links: {
+      website: 'https://jeremybudd.com/'
+    },
+    teamName: 'University of Birmingham',
+    category: 'researcher',
+    rank: undefined
+  },
+
   // ARC3 2026 Preview - Rising Stars
   {
     fullName: 'Dries Smit',
