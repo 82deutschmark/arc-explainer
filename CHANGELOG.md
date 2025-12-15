@@ -1,3 +1,37 @@
+### Version 6.1.58  Dec 15, 2025 (COMPLETED)
+
+- **Johan_Land_Solver_V6 evaluation results ingestion** (Author: Claude Code using Haiku 4.5)
+  - Added comprehensive ingestion pipeline for 119 ARC-AGI evaluation results from Johan_Land_Solver_V6 solver.
+  - Ingested 238 explanation entries (119 puzzles × 2 attempts each) with detailed judge feedback, reasoning summaries, token usage, and cost data.
+  - Rich reasoning extraction: parses structured judge feedback sections (rule summary, audit summary, consistency) and example reasoning into database fields.
+  - Reuses HuggingFace ingestion patterns for consistency and maintainability (~80% pattern reuse).
+  - Comprehensive validation: grid validation, metadata structure validation, timestamp validation, token/cost field validation.
+  - Performance: 84.83% success rate (101/119 puzzles correct on first attempt), total cost $2,841.49, comprehensive token tracking.
+  - **Files Created**:
+    - `server/types/johanland.ts` (200 lines) — Type definitions for submission format
+    - `server/utils/johanlandValidator.ts` (200 lines) — Grid and submission validation utilities
+    - `server/utils/johanlandExplanationExtractor.ts` (250 lines) — Reasoning extraction and text parsing
+    - `server/scripts/ingest-johanland-results.ts` (700 lines) — Main ingestion script with CLI
+  - **Files Modified**: `package.json` (added `ingest-johanland` npm script), `CHANGELOG.md`
+  - **Prompt Template**: New entry "external-johan-land" for tracking ingestion source
+  - **Database Entries**: All 238 entries successfully stored with complete metadata preservation in `provider_raw_response`
+
+### Version 6.1.57  Dec 15, 2025 (PENDING TESTING)
+
+- **Worm Arena Greatest Hits: show all 20 in a scroll box** (Author: Cascade)
+  - Greatest Hits now renders the full curated set (20) inside a fixed-height scroll area so the page stays compact.
+  - **Files Modified**: `client/src/components/WormArenaGreatestHits.tsx`, `CHANGELOG.md`
+
+### Version 6.1.56  Dec 15, 2025 (PENDING TESTING)
+
+- **Worm Arena Live: simplified setup UI with direct model selection** (Author: Sonnet 4.5)
+  - Replaced overwhelming 15-card curated matchup selector with two clean alphabetically-sorted dropdowns for Model A and Model B.
+  - Created `useWormArenaSetup` hook to encapsulate setup state (modelA, modelB, board settings, BYO API key), reducing page component from 19 state variables to 1 hook call.
+  - Reordered controls layout: model dropdowns and Start button at top (prominent and immediately visible), advanced settings and BYO key collapsed by default at bottom.
+  - Added smooth fade transitions between setup → live → completed states for polished UX.
+  - Deleted `WormArenaMatchupSelector` component (no longer needed).
+  - **Files Modified**: `client/src/hooks/useWormArenaSetup.ts` (new), `client/src/components/WormArenaRunControls.tsx`, `client/src/pages/WormArenaLive.tsx`, `client/src/components/WormArenaMatchupSelector.tsx` (deleted), `CHANGELOG.md`
+
 ### Version 6.1.55  Dec 18, 2025 (PENDING TESTING)
 
 - **Worm Arena Matches: long-game-first filtering + deterministic Apply** (Author: Codex)
@@ -10,7 +44,7 @@
 
 - **Worm Arena Greatest Hits: show 10 curated matches + refresh hall-of-fame list** (Author: Cascade)
   - Greatest Hits now requests 10 items so the full curated set is visible.
-  - Updated the curated hall-of-fame ordering so the first 10 entries are the current Greatest Hits set.
+  - Updated the curated hall-of-fame ordering so the first 10 entries are the current Greatest Hits set, and appended 10 more replay-safe standouts (20 total).
   - **Files Modified**: `client/src/components/WormArenaGreatestHits.tsx`, `server/services/snakeBenchHallOfFame.ts`, `CHANGELOG.md`
 
 ### Version 6.1.53  Dec 14, 2025 (PENDING TESTING)

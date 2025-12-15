@@ -1,20 +1,19 @@
 ﻿/**
- * Author: Claude Code using Haiku 4.5
- * Date: 2025-12-12
- * PURPOSE: Worm Arena Live - Redesigned layout with clear information hierarchy.
- *          Left sidebar (control center): API key, matchup selection, main CTA button.
- *          Right content: Live game board prominently displayed, results panel below.
- *          Responsive: stacks vertically on mobile (lg breakpoint for side-by-side).
- *          Integrates with useWormArenaStreaming for real-time frame updates.
- * SRP/DRY check: Pass - orchestrates child components (Header, GameBoard, MatchupSelector).
- *                No duplicated logic; uses existing hooks and utilities.
- *                Improves UX from previous cramped layout by 4-5x readability.
+ * Author: Claude Code using Sonnet 4.5
+ * Date: 2025-12-15
+ * PURPOSE: Worm Arena Live - Simplified setup with two model dropdowns and clean transitions.
+ *          Removed curated matchup selector for faster, cleaner UX.
+ *          Uses useWormArenaSetup hook to manage setup state.
+ *          Smooth fade transitions between setup → live → completed states.
+ * SRP/DRY check: Pass - orchestrates child components with minimal state management.
+ *                State extracted to useWormArenaSetup hook for better maintainability.
  */
 
 import React, { useEffect, useMemo } from 'react';
 import { useRoute } from 'wouter';
 import { useModels } from '@/hooks/useModels';
 import useWormArenaStreaming from '@/hooks/useWormArenaStreaming';
+import { useWormArenaSetup } from '@/hooks/useWormArenaSetup';
 import WormArenaHeader from '@/components/WormArenaHeader';
 import WormArenaLiveStatusStrip from '@/components/WormArenaLiveStatusStrip';
 import WormArenaLiveBoardPanel from '@/components/WormArenaLiveBoardPanel';
@@ -23,7 +22,6 @@ import WormArenaRunControls from '@/components/WormArenaRunControls';
 import WormArenaReasoning from '@/components/WormArenaReasoning';
 
 import type { ModelConfig, SnakeBenchRunMatchRequest } from '@shared/types';
-import { getDefaultMatchup, type CuratedMatchup } from '@shared/utils/curatedMatchups';
 
 type ViewMode = 'setup' | 'live' | 'completed';
 
@@ -71,20 +69,31 @@ export default function WormArenaLive() {
     [snakeModels],
   );
 
-  const [selectedMatchup, setSelectedMatchup] = React.useState<CuratedMatchup>(getDefaultMatchup());
-  const [width, setWidth] = React.useState<number>(10);
-  const [height, setHeight] = React.useState<number>(10);
-  const [maxRounds, setMaxRounds] = React.useState<number>(150);
-  const [numApples, setNumApples] = React.useState<number>(5);
-  const [byoApiKey, setByoApiKey] = React.useState<string>('');
-  const [byoProvider, setByoProvider] = React.useState<
-    'openrouter' | 'openai' | 'anthropic' | 'xai' | 'gemini'
-  >('openrouter');
+  // Setup state hook
+  const {
+    modelA,
+    modelB,
+    width,
+    height,
+    maxRounds,
+    numApples,
+    byoApiKey,
+    byoProvider,
+    setModelA,
+    setModelB,
+    setWidth,
+    setHeight,
+    setMaxRounds,
+    setNumApples,
+    setByoApiKey,
+    setByoProvider,
+    isValid,
+  } = useWormArenaSetup();
+
   const [launchNotice, setLaunchNotice] = React.useState<string | null>(null);
 
   const availableModelSet = React.useMemo(() => new Set(selectableModels), [selectableModels]);
-  const matchupAvailable =
-    availableModelSet.has(selectedMatchup.modelA) && availableModelSet.has(selectedMatchup.modelB);
+  const matchupAvailable = isValid(availableModelSet);
 
   const {
     status,
@@ -110,13 +119,13 @@ export default function WormArenaLive() {
 
   const handleRunMatch = async () => {
     if (!matchupAvailable) {
-      setLaunchNotice('Selected matchup is not available on OpenRouter.');
+      setLaunchNotice('Selected models are not available on OpenRouter.');
       return;
     }
 
     const payload: SnakeBenchRunMatchRequest = {
-      modelA: mapToSnakeBenchModelId(selectedMatchup.modelA),
-      modelB: mapToSnakeBenchModelId(selectedMatchup.modelB),
+      modelA: mapToSnakeBenchModelId(modelA),
+      modelB: mapToSnakeBenchModelId(modelB),
       width,
       height,
       maxRounds,
@@ -181,45 +190,51 @@ export default function WormArenaLive() {
 
       <main className="p-4 max-w-7xl mx-auto space-y-4">
         {viewMode === 'setup' && (
-          <WormArenaRunControls
-            viewMode="setup"
-            status={status}
-            isStarting={isStarting}
-            loadingModels={loadingModels}
-            matchupAvailable={matchupAvailable}
-            availableModels={availableModelSet}
-            selectedMatchup={selectedMatchup}
-            onSelectMatchup={setSelectedMatchup}
-            width={width}
-            height={height}
-            maxRounds={maxRounds}
-            numApples={numApples}
-            onWidthChange={setWidth}
-            onHeightChange={setHeight}
-            onMaxRoundsChange={setMaxRounds}
-            onNumApplesChange={setNumApples}
-            byoApiKey={byoApiKey}
-            byoProvider={byoProvider}
-            onByoApiKeyChange={setByoApiKey}
-            onByoProviderChange={setByoProvider}
-            onStart={handleRunMatch}
-            launchNotice={launchNotice}
-          />
+          <div className="transition-opacity duration-300 ease-in-out">
+            <WormArenaRunControls
+              viewMode="setup"
+              status={status}
+              isStarting={isStarting}
+              loadingModels={loadingModels}
+              matchupAvailable={matchupAvailable}
+              availableModels={availableModelSet}
+              modelA={modelA}
+              modelB={modelB}
+              onModelAChange={setModelA}
+              onModelBChange={setModelB}
+              width={width}
+              height={height}
+              maxRounds={maxRounds}
+              numApples={numApples}
+              onWidthChange={setWidth}
+              onHeightChange={setHeight}
+              onMaxRoundsChange={setMaxRounds}
+              onNumApplesChange={setNumApples}
+              byoApiKey={byoApiKey}
+              byoProvider={byoProvider}
+              onByoApiKeyChange={setByoApiKey}
+              onByoProviderChange={setByoProvider}
+              onStart={handleRunMatch}
+              launchNotice={launchNotice}
+            />
+          </div>
         )}
 
         {viewMode === 'live' && (
-          <WormArenaLiveStatusStrip
-            status={status}
-            message={message}
-            error={error}
-            sessionId={sessionId}
-            currentMatchIndex={currentMatchIndex}
-            totalMatches={totalMatches}
-          />
+          <div className="transition-opacity duration-300 ease-in-out animate-in fade-in">
+            <WormArenaLiveStatusStrip
+              status={status}
+              message={message}
+              error={error}
+              sessionId={sessionId}
+              currentMatchIndex={currentMatchIndex}
+              totalMatches={totalMatches}
+            />
+          </div>
         )}
 
         {viewMode === 'live' && (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 transition-opacity duration-300 ease-in-out animate-in fade-in">
             <WormArenaReasoning
               playerName={leftName}
               color="green"
@@ -238,7 +253,11 @@ export default function WormArenaLive() {
           </div>
         )}
 
-        {viewMode === 'completed' && finalSummary && <WormArenaLiveResultsPanel finalSummary={finalSummary} />}
+        {viewMode === 'completed' && finalSummary && (
+          <div className="transition-opacity duration-300 ease-in-out animate-in fade-in">
+            <WormArenaLiveResultsPanel finalSummary={finalSummary} />
+          </div>
+        )}
 
         {(viewMode === 'live' || viewMode === 'completed') && (
           <WormArenaLiveBoardPanel
