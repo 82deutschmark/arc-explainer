@@ -117,25 +117,28 @@ export default function WormArenaMatches() {
   }, [appliedFilters, from, limit, minRounds, model, opponent, result, sortBy, sortDir, to]);
 
   React.useEffect(() => {
-    const trimmedModel = appliedFilters?.model.trim();
+    const filters = appliedFilters;
+    if (!filters) return;
+
+    const trimmedModel = filters.model.trim();
     if (!trimmedModel) return;
 
     const params = new URLSearchParams();
     params.set('model', trimmedModel);
-    if (appliedFilters.opponent.trim()) params.set('opponent', appliedFilters.opponent.trim());
-    if (appliedFilters.result !== 'any') params.set('result', appliedFilters.result);
+    if (filters.opponent.trim()) params.set('opponent', filters.opponent.trim());
+    if (filters.result !== 'any') params.set('result', filters.result);
 
-    const minRoundsNum = Number(appliedFilters.minRounds);
-    if (appliedFilters.minRounds.trim().length > 0 && Number.isFinite(minRoundsNum)) {
+    const minRoundsNum = Number(filters.minRounds);
+    if (filters.minRounds.trim().length > 0 && Number.isFinite(minRoundsNum)) {
       params.set('minRounds', String(Math.max(0, Math.floor(minRoundsNum))));
     }
 
-    if (appliedFilters.from.trim()) params.set('from', appliedFilters.from.trim());
-    if (appliedFilters.to.trim()) params.set('to', appliedFilters.to.trim());
+    if (filters.from.trim()) params.set('from', filters.from.trim());
+    if (filters.to.trim()) params.set('to', filters.to.trim());
 
-    params.set('sortBy', appliedFilters.sortBy);
-    params.set('sortDir', appliedFilters.sortDir);
-    params.set('limit', String(appliedFilters.limit));
+    params.set('sortBy', filters.sortBy);
+    params.set('sortDir', filters.sortDir);
+    params.set('limit', String(filters.limit));
     params.set('offset', String(offset));
 
     const requestId = latestRequestId.current + 1;
