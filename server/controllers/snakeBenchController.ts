@@ -22,6 +22,8 @@ import type {
   SnakeBenchRunBatchResponse,
   SnakeBenchListGamesResponse,
   SnakeBenchGameDetailResponse,
+  SnakeBenchMatchSearchQuery,
+  SnakeBenchMatchSearchResponse,
   SnakeBenchHealthResponse,
   SnakeBenchStatsResponse,
   SnakeBenchModelRatingResponse,
@@ -75,6 +77,65 @@ export async function runMatch(req: Request, res: Response) {
 
     const response: SnakeBenchRunMatchResponse = {
       success: false,
+      error: message,
+      timestamp: Date.now(),
+    };
+
+    return res.status(500).json(response);
+  }
+}
+
+export async function searchMatches(req: Request, res: Response) {
+  try {
+    const modelRaw = (req.query.model as string | undefined) ?? '';
+    const model = modelRaw.trim();
+
+    if (!model) {
+      const response: SnakeBenchMatchSearchResponse = {
+        success: false,
+        model: '',
+        rows: [],
+        total: 0,
+        error: 'model query parameter is required',
+        timestamp: Date.now(),
+      };
+      return res.status(400).json(response);
+    }
+
+    const query: SnakeBenchMatchSearchQuery = {
+      model,
+      opponent: typeof req.query.opponent === 'string' ? req.query.opponent : undefined,
+      result: typeof req.query.result === 'string' ? (req.query.result as any) : undefined,
+      minRounds: typeof req.query.minRounds === 'string' ? Number(req.query.minRounds) : undefined,
+      from: typeof req.query.from === 'string' ? req.query.from : undefined,
+      to: typeof req.query.to === 'string' ? req.query.to : undefined,
+      sortBy: typeof req.query.sortBy === 'string' ? (req.query.sortBy as any) : undefined,
+      sortDir: typeof req.query.sortDir === 'string' ? (req.query.sortDir as any) : undefined,
+      limit: typeof req.query.limit === 'string' ? Number(req.query.limit) : undefined,
+      offset: typeof req.query.offset === 'string' ? Number(req.query.offset) : undefined,
+    };
+
+    const { rows, total } = await snakeBenchService.searchMatches(query);
+
+    const response: SnakeBenchMatchSearchResponse = {
+      success: true,
+      model,
+      rows,
+      total,
+      timestamp: Date.now(),
+    };
+
+    return res.json(response);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    logger.error(`SnakeBench searchMatches failed: ${message}`, 'snakebench-controller');
+
+    const modelRaw = (req.query.model as string | undefined) ?? '';
+    const response: SnakeBenchMatchSearchResponse = {
+      success: false,
+      model: modelRaw.trim(),
+      rows: [],
+      total: 0,
       error: message,
       timestamp: Date.now(),
     };
@@ -467,6 +528,7 @@ export const snakeBenchController = {
   runBatch,
   listGames,
   getGame,
+  searchMatches,
   health,
   recentActivity,
   basicLeaderboard,

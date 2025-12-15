@@ -624,6 +624,55 @@ export interface SnakeBenchListGamesResponse {
   timestamp: number;
 }
 
+export type SnakeBenchMatchSearchResultLabel = SnakeBenchResultLabel;
+
+export type SnakeBenchMatchSearchSortBy =
+  | 'startedAt'
+  | 'rounds'
+  | 'totalCost'
+  | 'maxFinalScore'
+  | 'scoreDelta';
+
+export type SnakeBenchMatchSearchSortDir = 'asc' | 'desc';
+
+export interface SnakeBenchMatchSearchQuery {
+  model: string;
+  opponent?: string;
+  result?: SnakeBenchMatchSearchResultLabel;
+  minRounds?: number;
+  from?: string;
+  to?: string;
+  sortBy?: SnakeBenchMatchSearchSortBy;
+  sortDir?: SnakeBenchMatchSearchSortDir;
+  limit?: number;
+  offset?: number;
+}
+
+export interface SnakeBenchMatchSearchRow {
+  gameId: string;
+  startedAt: string;
+  model: string;
+  opponent: string;
+  result: SnakeBenchMatchSearchResultLabel;
+  myScore: number;
+  opponentScore: number;
+  roundsPlayed: number;
+  totalCost: number;
+  maxFinalScore: number;
+  scoreDelta: number;
+  boardWidth: number;
+  boardHeight: number;
+}
+
+export interface SnakeBenchMatchSearchResponse {
+  success: boolean;
+  model: string;
+  rows: SnakeBenchMatchSearchRow[];
+  total: number;
+  error?: string;
+  timestamp: number;
+}
+
 export interface SnakeBenchGameDetailResponse {
   success: boolean;
   gameId: string;
@@ -763,6 +812,14 @@ export interface WormArenaStreamStatus {
     reasoning?: number;
   };
 }
+export interface WormArenaStreamChunk {
+  type: string;
+  delta?: string;
+  content?: string;
+  metadata?: Record<string, unknown>;
+  timestamp?: number;
+  raw?: unknown;
+}
 
 /**
  * Single frame event for live Worm Arena streaming.
@@ -777,6 +834,7 @@ export interface WormArenaFrameEvent {
  * Final summary for a live Worm Arena match.
  */
 export interface WormArenaFinalSummary {
+  matchId?: string;
   gameId: string;
   modelA: string;
   modelB: string;
@@ -791,6 +849,7 @@ export interface WormArenaFinalSummary {
  * Batch run event types for Worm Arena streaming
  */
 export interface WormArenaBatchMatchStart {
+  matchId?: string;
   index: number;
   total: number;
   modelA: string;
@@ -798,6 +857,7 @@ export interface WormArenaBatchMatchStart {
 }
 
 export interface WormArenaBatchMatchComplete {
+  matchId?: string;
   index: number;
   total: number;
   gameId: string;
@@ -808,12 +868,14 @@ export interface WormArenaBatchMatchComplete {
 }
 
 export interface WormArenaBatchComplete {
+  matchId?: string;
   totalMatches: number;
   completedMatches: number;
   failedMatches: number;
 }
 
 export interface WormArenaBatchError {
+  matchId?: string;
   index: number;
   total: number;
   error: string;

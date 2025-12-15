@@ -104,6 +104,7 @@ export default function WormArenaStats() {
         links={[
           { label: "Replay", href: "/worm-arena" },
           { label: "Live", href: "/worm-arena/live" },
+          { label: "Matches", href: "/worm-arena/matches" },
           { label: "Stats & Placement", href: "/worm-arena/stats", active: true },
         ]}
         showMatchupLabel={false}

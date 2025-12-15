@@ -1,3 +1,84 @@
+### Version 6.1.50  Dec 17, 2025 (PENDING TESTING)
+
+- **Worm Arena Live: better curated matchup presets (new default + GPT-5.2 opponents)** (Author: Cascade)
+  - Default curated matchup is now `openai/gpt-5-mini` vs `x-ai/grok-4.1-fast`.
+  - Added multiple curated presets for `openai/gpt-5.2` vs strong opponents (Grok 4.1 Fast, Claude Sonnet 4.5, DeepSeek v3.2, Mistral Large).
+  - **Files Modified**: `shared/utils/curatedMatchups.ts`, `CHANGELOG.md`
+
+### Version 6.1.49  Dec 17, 2025 (PENDING TESTING)
+
+- **Worm Arena Live: source-of-truth streaming (frames + live model output) + matchId clarity** (Author: Cascade)
+  - SnakeBench engine now emits ARC Explainer NDJSON events when `ARC_EXPLAINER_STDOUT_EVENTS=1`:
+    - `type: "frame"` for initial + per-round board state (fixes "waiting for first frame" by removing DB polling dependency).
+    - `type: "chunk"` for per-move model output so the UI can display live reasoning/output alongside the board.
+  - Worm Arena SSE now forwards `stream.chunk` events and adds `matchId` (session id) to streaming payloads to distinguish from `gameId`.
+  - Live UI now renders the streamed model output in the existing two-column reasoning panel layout.
+  - **Files Modified**: `external/SnakeBench/backend/main.py`, `server/services/snakeBenchService.ts`, `server/controllers/wormArenaStreamController.ts`, `shared/types.ts`, `client/src/hooks/useWormArenaStreaming.ts`, `client/src/pages/WormArenaLive.tsx`, `CHANGELOG.md`
+
+### Version 6.1.48  Dec 17, 2025 (PENDING TESTING)
+
+- Catalog-driven OpenRouter models via openrouter-catalog.json (Author: Codex)
+  - Added an OpenRouter catalog mapper so model metadata (cost, context, vision flags, streaming/structured-output overrides) is built directly from the shipped catalog file and merged with the static model list.
+  - Dropped catalog-missing OpenRouter entries (anthropic/claude-sonnet-4-5, moonshotai/kimi-dev-72b:free, x-ai/grok-3-mini-fast) and aliased openrouter/gpt-5.1-codex-mini to the catalog id openai/gpt-5.1-codex-mini to keep existing callers working.
+  - Files Modified: `server/config/openrouterModels.ts`, `server/config/models.ts`, `CHANGELOG.md`
+
+### Version 6.1.47  Dec 17, 2025 (PENDING TESTING)
+
+- **Admin OpenRouter sync-config: correct costs + release dates** (Author: Cascade)
+  - Fixed OpenRouter model sync snippet generation so token costs are recorded as USD per 1M tokens (matching our `MODELS` config conventions).
+  - Release dates are now derived from OpenRouter-provided created/released timestamps when present, with a slug-based fallback (e.g. `-2512` -> `2025-12`).
+  - **Files Modified**: `server/utils/openRouterModelSync.ts`, `CHANGELOG.md`
+
+- **Worm Arena Live: emit frames for single matches (DB live state + game id discovery)** (Author: Cascade)
+  - Re-enabled SnakeBench internal DB persistence for ARC Explainer runs so live `current_state` updates are written to Postgres (required for frame polling).
+  - Updated game id discovery in `runMatchStreaming()` to recognize SnakeBench's `Game ID: ...` stdout line so live polling starts reliably.
+  - **Files Modified**: `server/python/snakebench_runner.py`, `server/services/snakeBenchService.ts`, `CHANGELOG.md`
+
+### Version 6.1.46  Dec 17, 2025 (PENDING TESTING)
+
+- **Worm Arena Match Browser: DB-backed matches page + query endpoint** (Author: Cascade)
+  - Added `GET /api/snakebench/matches` (requires `model`) with filtering, sorting, and pagination to browse stored games without hand-curated lists.
+  - Added `/worm-arena/matches` page to search by opponent/result/rounds/date and jump directly to replay.
+  - Wired the new "Matches" tab into Worm Arena navigation.
+  - **Files Modified**: `shared/types.ts`, `server/repositories/SnakeBenchRepository.ts`, `server/services/snakeBenchService.ts`, `server/controllers/snakeBenchController.ts`, `server/routes.ts`, `client/src/pages/WormArenaMatches.tsx`, `client/src/App.tsx`, `client/src/pages/WormArena.tsx`, `client/src/pages/WormArenaLive.tsx`, `client/src/pages/WormArenaStats.tsx`, `CHANGELOG.md`
+
+- **Worm Arena board: coordinate-guided overlays** (Author: Codex)
+  - Added pale-blue bands around the grid and inscribed bold black axis labels that now sit well within the new margin so nothing is clipped.
+  - Kept the light-gray `x,y` labels inside each cell while shifting the emoji, grid, and apple/snake rendering to the inset board area created by the label margins.
+  - **Files Modified**: `client/src/components/WormArenaGameBoard.tsx`, `CHANGELOG.md`
+
+### Version 6.1.45  Dec 15, 2025 (PENDING TESTING)
+
+- **Worm Arena tournaments: GPT-5.2 vs OpenAI + hybrid challengers** (Author: Codex)
+  - Added a parameterized PowerShell runner that queues `/api/snakebench/run-batch` POSTs where `openai/gpt-5.2` plays OpenAI challengers plus DeepSeek, Gemini, and Haiku opponents in both directions with a configurable `count` and pacing delay.
+  - The script captures submission success/failure per batch so operators can launch these cross-family matchups without scattering credentials or multiple tools.
+  - **Files Modified**: `scripts/worm-arena-tournaments/gpt52-vs-openai-gpt5-family.ps1`, `CHANGELOG.md`
+
+### Version 6.1.44  Dec 15, 2025 (PENDING TESTING)
+
+- **Worm Arena mobile board: SVG + Twemoji sprites** (Author: Codex)
+  - Added `WormArenaGameBoardSVG`, which draws the grid in SVG and layers Twemoji-rendered apples plus a bug head sprite for the lead worm so the mobile view stays crisp without canvas throttling.
+  - The replay page now swaps in the SVG renderer when `useIsMobile` reports a phone viewport, keeping the original emoji canvas for desktop while delivering a lighter, vector-based experience on small screens.
+  - Twemoji 14.0.2 became a direct dependency so the SVG renderer can reference the canonical Twitter assets without bundling full emoji fonts.
+  - **Files Modified**: `client/src/components/WormArenaGameBoardSVG.tsx`, `client/src/pages/WormArena.tsx`, `package.json`, `package-lock.json`, `CHANGELOG.md`
+
+### Version 6.1.43  Dec 13, 2025 (PENDING TESTING)
+
+- **Worm Arena board: directional snake heads** (Author: Cascade)
+  - Snake head rendering now reflects movement direction (computed from consecutive frames, with a safe head/neck fallback on the first frame).
+  - **Files Modified**: `client/src/components/WormArenaGameBoard.tsx`, `CHANGELOG.md`
+
+### Version 6.1.42  Dec 12, 2025 (PENDING TESTING)
+
+- **Worm Arena replay UX: stable reasoning panels + clearer controls** (Author: Cascade)
+  - Prevented replay-time layout shifts by making the reasoning panels scroll internally instead of resizing as the reasoning text changes.
+  - Removed the redundant bottom-of-page Scores/Round/Board strip; scores + match ID now live inside the center replay control card.
+  - Renamed and clarified the reasoning toggle (“This move” vs “Next move”) with unambiguous selected styling and a short helper line.
+  - Fixed replay score display so it updates per-round during playback (instead of always showing final score).
+  - Worm Arena Live: added a GPT-5 Nano vs GPT-5 Nano preset and made it the default for quick testing.
+  - Worm Arena Live: improved sessionId detection so the SSE connection reliably attaches to the correct live session.
+  - **Files Modified**: `client/src/pages/WormArena.tsx`, `client/src/pages/WormArenaLive.tsx`, `client/src/components/WormArenaReasoning.tsx`, `client/src/components/WormArenaControlBar.tsx`, `shared/utils/curatedMatchups.ts`, `CHANGELOG.md`
+
 ### Version 6.1.41  Dec 12, 2025 (PENDING TESTING)
 
 - **Worm Arena replay UI: clarify player colors (left yellow, right red)** (Author: Cascade)
@@ -3322,6 +3403,3 @@
 
 - Contributors backend
   - Refactored `ContributorRepository` to extend `BaseRepository` and integrated it via `RepositoryService` and a new `contributorController`, fixing crashes on `/api/contributors` endpoints and aligning with the standard repository/controller pattern.
-
-
-

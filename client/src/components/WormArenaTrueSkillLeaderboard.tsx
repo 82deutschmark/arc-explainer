@@ -5,10 +5,11 @@
  *          Renders a SnakeBench-parity leaderboard table with Rank,
  *          model slug, TrueSkill rating/uncertainty, games, outcomes,
  *          apples, top score, win rate, and total cost.
- * SRP/DRY check: Pass — presentational table only, no data fetching.
+ *          Features sticky sorted header with red border and full sortability.
+ * SRP/DRY check: Pass — presentational table with client-side sorting only.
  */
 
-import React from 'react';
+import React, { useState, useMemo } from 'react';
 import type { SnakeBenchTrueSkillLeaderboardEntry } from '@shared/types';
 
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
@@ -27,7 +28,10 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
-import { HelpCircle } from 'lucide-react';
+import { HelpCircle, ArrowUp, ArrowDown } from 'lucide-react';
+
+type SortColumn = 'exposed' | 'sigma' | 'gamesPlayed' | 'wins' | 'losses' | 'ties' | 'applesEaten' | 'topScore' | 'winRate' | 'totalCost';
+type SortDirection = 'asc' | 'desc';
 
 interface WormArenaTrueSkillLeaderboardProps {
   entries: SnakeBenchTrueSkillLeaderboardEntry[];
@@ -40,7 +44,39 @@ export function WormArenaTrueSkillLeaderboard({
   isLoading,
   error,
 }: WormArenaTrueSkillLeaderboardProps) {
+  const [sortColumn, setSortColumn] = useState<SortColumn>('exposed');
+  const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
   const hasRows = entries.length > 0;
+
+  const handleSort = (column: SortColumn) => {
+    if (sortColumn === column) {
+      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortColumn(column);
+      setSortDirection('desc');
+    }
+  };
+
+  const sortedEntries = useMemo(() => {
+    // Preserve original TrueSkill rank before sorting by any column
+    const entriesWithRank = entries.map((entry, index) => ({
+      ...entry,
+      _trueskillRank: index + 1,
+    }));
+
+    const sorted = [...entriesWithRank].sort((a, b) => {
+      const aVal = a[sortColumn];
+      const bVal = b[sortColumn];
+
+      if (typeof aVal === 'number' && typeof bVal === 'number') {
+        return sortDirection === 'asc' ? aVal - bVal : bVal - aVal;
+      }
+
+      return 0;
+    });
+
+    return sorted;
+  }, [entries, sortColumn, sortDirection]);
 
   return (
     <TooltipProvider>
@@ -55,14 +91,24 @@ export function WormArenaTrueSkillLeaderboard({
                 <TooltipTrigger asChild>
                   <HelpCircle className="w-4 h-4 cursor-help worm-muted" />
                 </TooltipTrigger>
-                <TooltipContent side="top" className="max-w-xs text-xs">
-                  Global Worm Arena rankings by conservative TrueSkill rating
-                  (μ - 3σ), filtered to models with at least 3 games.
+                <TooltipContent side="top" className="max-w-sm text-xs space-y-2">
+                  <div>
+                    <strong>What is TrueSkill?</strong> TrueSkill is a rating system that measures a model's true skill by tracking wins, losses, and ties. It accounts for uncertainty — new models have high uncertainty (σ), which decreases as they play more games.
+                  </div>
+                  <div>
+                    <strong>The exposed rating:</strong> This is a conservative estimate (μ − 3σ) designed to avoid overestimating newly ranked models. It represents the skill floor you can be confident about.
+                  </div>
+                  <div>
+                    <strong>Why it matters:</strong> Unlike raw win rate, TrueSkill automatically adjusts for strength of competition and uncertainty. A 70% win rate against weak opponents is worth less than 50% against strong ones.
+                  </div>
+                  <div>
+                    Filtered to models with ≥3 games. Click any column header to sort.
+                  </div>
                 </TooltipContent>
               </Tooltip>
             </CardTitle>
             <div className="text-xs font-semibold mt-1 worm-muted">
-              Top models by TrueSkill exposed rating (μ - 3σ), up to 150 rows.
+              Bayesian skill ratings with uncertainty — click headers to sort
             </div>
           </div>
         </CardHeader>
@@ -86,59 +132,135 @@ export function WormArenaTrueSkillLeaderboard({
             <ScrollArea className="h-[420px] max-h-[420px] border rounded-md bg-white/90 worm-border">
               <Table className="text-sm min-w-[900px]">
                 <TableHeader>
-                  <TableRow>
-                    <TableHead className="whitespace-nowrap font-bold text-worm-ink">
+                  <TableRow className="sticky top-0 bg-white/95 border-b-2" style={{ borderColor: 'var(--worm-red)' }}>
+                    <TableHead className="whitespace-nowrap font-bold text-worm-ink cursor-default">
                       Rank
                     </TableHead>
-                    <TableHead className="whitespace-nowrap font-bold text-worm-ink">
+                    <TableHead className="whitespace-nowrap font-bold text-worm-ink cursor-default">
                       Model
                     </TableHead>
-                    <TableHead className="whitespace-nowrap font-bold text-worm-ink">
+                    <TableHead
+                      className="whitespace-nowrap font-bold text-worm-ink cursor-pointer hover:bg-worm-track/50 transition-colors"
+                      onClick={() => handleSort('exposed')}
+                    >
                       <span className="inline-flex items-center gap-1">
                         <span>TS rating (μ - 3σ)</span>
+                        {sortColumn === 'exposed' && (
+                          sortDirection === 'desc' ? <ArrowDown className="w-3 h-3" /> : <ArrowUp className="w-3 h-3" />
+                        )}
                       </span>
                     </TableHead>
-                    <TableHead className="whitespace-nowrap font-bold text-worm-ink">
+                    <TableHead
+                      className="whitespace-nowrap font-bold text-worm-ink cursor-pointer hover:bg-worm-track/50 transition-colors"
+                      onClick={() => handleSort('sigma')}
+                    >
                       <span className="inline-flex items-center gap-1">
                         <span>σ (uncertainty)</span>
+                        {sortColumn === 'sigma' && (
+                          sortDirection === 'desc' ? <ArrowDown className="w-3 h-3" /> : <ArrowUp className="w-3 h-3" />
+                        )}
                       </span>
                     </TableHead>
-                    <TableHead className="whitespace-nowrap font-bold text-worm-ink">
-                      Games
+                    <TableHead
+                      className="whitespace-nowrap font-bold text-worm-ink cursor-pointer hover:bg-worm-track/50 transition-colors"
+                      onClick={() => handleSort('gamesPlayed')}
+                    >
+                      <span className="inline-flex items-center gap-1">
+                        <span>Games</span>
+                        {sortColumn === 'gamesPlayed' && (
+                          sortDirection === 'desc' ? <ArrowDown className="w-3 h-3" /> : <ArrowUp className="w-3 h-3" />
+                        )}
+                      </span>
                     </TableHead>
-                    <TableHead className="whitespace-nowrap font-bold text-worm-ink">
-                      Wins
+                    <TableHead
+                      className="whitespace-nowrap font-bold text-worm-ink cursor-pointer hover:bg-worm-track/50 transition-colors"
+                      onClick={() => handleSort('wins')}
+                    >
+                      <span className="inline-flex items-center gap-1">
+                        <span>Wins</span>
+                        {sortColumn === 'wins' && (
+                          sortDirection === 'desc' ? <ArrowDown className="w-3 h-3" /> : <ArrowUp className="w-3 h-3" />
+                        )}
+                      </span>
                     </TableHead>
-                    <TableHead className="whitespace-nowrap font-bold text-worm-ink">
-                      Losses
+                    <TableHead
+                      className="whitespace-nowrap font-bold text-worm-ink cursor-pointer hover:bg-worm-track/50 transition-colors"
+                      onClick={() => handleSort('losses')}
+                    >
+                      <span className="inline-flex items-center gap-1">
+                        <span>Losses</span>
+                        {sortColumn === 'losses' && (
+                          sortDirection === 'desc' ? <ArrowDown className="w-3 h-3" /> : <ArrowUp className="w-3 h-3" />
+                        )}
+                      </span>
                     </TableHead>
-                    <TableHead className="whitespace-nowrap font-bold text-worm-ink">
-                      Ties
+                    <TableHead
+                      className="whitespace-nowrap font-bold text-worm-ink cursor-pointer hover:bg-worm-track/50 transition-colors"
+                      onClick={() => handleSort('ties')}
+                    >
+                      <span className="inline-flex items-center gap-1">
+                        <span>Ties</span>
+                        {sortColumn === 'ties' && (
+                          sortDirection === 'desc' ? <ArrowDown className="w-3 h-3" /> : <ArrowUp className="w-3 h-3" />
+                        )}
+                      </span>
                     </TableHead>
-                    <TableHead className="whitespace-nowrap font-bold text-worm-ink">
-                      Apples eaten
+                    <TableHead
+                      className="whitespace-nowrap font-bold text-worm-ink cursor-pointer hover:bg-worm-track/50 transition-colors"
+                      onClick={() => handleSort('applesEaten')}
+                    >
+                      <span className="inline-flex items-center gap-1">
+                        <span>Apples eaten</span>
+                        {sortColumn === 'applesEaten' && (
+                          sortDirection === 'desc' ? <ArrowDown className="w-3 h-3" /> : <ArrowUp className="w-3 h-3" />
+                        )}
+                      </span>
                     </TableHead>
-                    <TableHead className="whitespace-nowrap font-bold text-worm-ink">
-                      Top score
+                    <TableHead
+                      className="whitespace-nowrap font-bold text-worm-ink cursor-pointer hover:bg-worm-track/50 transition-colors"
+                      onClick={() => handleSort('topScore')}
+                    >
+                      <span className="inline-flex items-center gap-1">
+                        <span>Top score</span>
+                        {sortColumn === 'topScore' && (
+                          sortDirection === 'desc' ? <ArrowDown className="w-3 h-3" /> : <ArrowUp className="w-3 h-3" />
+                        )}
+                      </span>
                     </TableHead>
-                    <TableHead className="whitespace-nowrap font-bold text-worm-ink">
-                      Win rate
+                    <TableHead
+                      className="whitespace-nowrap font-bold text-worm-ink cursor-pointer hover:bg-worm-track/50 transition-colors"
+                      onClick={() => handleSort('winRate')}
+                    >
+                      <span className="inline-flex items-center gap-1">
+                        <span>Win rate</span>
+                        {sortColumn === 'winRate' && (
+                          sortDirection === 'desc' ? <ArrowDown className="w-3 h-3" /> : <ArrowUp className="w-3 h-3" />
+                        )}
+                      </span>
                     </TableHead>
-                    <TableHead className="whitespace-nowrap font-bold text-worm-ink">
-                      Total cost
+                    <TableHead
+                      className="whitespace-nowrap font-bold text-worm-ink cursor-pointer hover:bg-worm-track/50 transition-colors"
+                      onClick={() => handleSort('totalCost')}
+                    >
+                      <span className="inline-flex items-center gap-1">
+                        <span>Total cost</span>
+                        {sortColumn === 'totalCost' && (
+                          sortDirection === 'desc' ? <ArrowDown className="w-3 h-3" /> : <ArrowUp className="w-3 h-3" />
+                        )}
+                      </span>
                     </TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {entries.map((entry, index) => {
+                  {sortedEntries.map((entry) => {
                     const winRatePercent =
                       typeof entry.winRate === 'number'
                         ? Math.round(entry.winRate * 100)
                         : undefined;
 
                     return (
-                      <TableRow key={entry.modelSlug}>
-                        <TableCell className="whitespace-nowrap font-mono">#{index + 1}</TableCell>
+                      <TableRow key={`${entry.modelSlug}-${entry._trueskillRank}`}>
+                        <TableCell className="whitespace-nowrap font-mono">#{entry._trueskillRank}</TableCell>
                         <TableCell className="whitespace-nowrap font-mono max-w-[260px] truncate">
                           {entry.modelSlug}
                         </TableCell>

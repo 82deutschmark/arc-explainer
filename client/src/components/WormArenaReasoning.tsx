@@ -11,12 +11,13 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 
 // Use broadly supported emoji to avoid missing glyphs on older platforms.
-const WORM_ICON = '🐍';
+const WORM_ICON = '🐛';
 const APPLE_ICON = String.fromCodePoint(0x1F34E);
+const WORM_ICON_2 = String.fromCodePoint(0x1F40D);
 
 interface WormArenaReasoningProps {
   playerName: string;
-  color: 'red' | 'yellow';
+  color: 'green' | 'blue';
   reasoning: string;
   score?: number;
   strategyLabel?: string;
@@ -38,14 +39,14 @@ export default function WormArenaReasoning({
 
   return (
     <Card className={cn(
-      'h-full flex flex-col border-2',
-      color === 'red' ? 'border-worm-red' : 'border-yellow-500',
+      'h-full min-h-0 flex flex-col border-2 overflow-hidden',
+      color === 'green' ? 'border-green-600' : 'border-blue-600',
     )}>
       <CardHeader className="text-center pb-4">
         <CardTitle
           className={cn(
             'text-lg font-bold flex items-center justify-center gap-2',
-            color === 'red' ? 'text-red-600' : 'text-yellow-700'
+            color === 'green' ? 'text-green-600' : 'text-blue-600'
           )}
         >
           <span role="img" aria-hidden="true">
@@ -55,8 +56,8 @@ export default function WormArenaReasoning({
         </CardTitle>
         <div className="text-xs uppercase tracking-wide text-muted-foreground">{strategyLabel}</div>
       </CardHeader>
-      <CardContent className="flex-1 flex flex-col">
-        <div className="text-base font-medium leading-relaxed whitespace-pre-wrap text-worm-ink">
+      <CardContent className="flex-1 min-h-0 flex flex-col">
+        <div className="flex-1 min-h-0 overflow-y-auto pr-1 text-base font-medium leading-relaxed whitespace-pre-wrap text-worm-ink">
           {reasoning?.trim()?.length ? reasoning : 'No reasoning captured for this moment.'}
         </div>
         <div className="mt-6 pt-4 border-t border-dashed flex flex-col items-center gap-2">

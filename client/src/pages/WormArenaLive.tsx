@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Author: Claude Code using Haiku 4.5
  * Date: 2025-12-12
  * PURPOSE: Worm Arena Live - Redesigned layout with clear information hierarchy.
@@ -20,8 +20,7 @@ import WormArenaLiveStatusStrip from '@/components/WormArenaLiveStatusStrip';
 import WormArenaLiveBoardPanel from '@/components/WormArenaLiveBoardPanel';
 import WormArenaLiveResultsPanel from '@/components/WormArenaLiveResultsPanel';
 import WormArenaRunControls from '@/components/WormArenaRunControls';
-import { Button } from '@/components/ui/button';
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
+import WormArenaReasoning from '@/components/WormArenaReasoning';
 
 import type { ModelConfig, SnakeBenchRunMatchRequest } from '@shared/types';
 import { getDefaultMatchup, type CuratedMatchup } from '@shared/utils/curatedMatchups';
@@ -48,7 +47,22 @@ function mapToSnakeBenchModelId(modelId: string): string {
 
 export default function WormArenaLive() {
   const [, params] = useRoute('/worm-arena/live/:sessionId');
-  const sessionId = params?.sessionId ?? '';
+  const sessionId = React.useMemo(() => {
+    try {
+      if (typeof window !== 'undefined' && typeof window.location?.pathname === 'string') {
+        const parts = window.location.pathname.split('/').filter(Boolean);
+        const liveIdx = parts.lastIndexOf('live');
+        const candidate = liveIdx >= 0 ? parts[liveIdx + 1] : undefined;
+        const trimmed = candidate?.trim();
+        if (trimmed && trimmed.length > 0) return trimmed;
+      }
+    } catch {
+      // ignore
+    }
+
+    const fallback = params?.sessionId?.trim();
+    return fallback && fallback.length > 0 ? fallback : '';
+  }, [params?.sessionId]);
 
   const { data: modelConfigs = [], isLoading: loadingModels, error: modelsError } = useModels();
   const snakeModels = React.useMemo(() => getSnakeEligibleModels(modelConfigs), [modelConfigs]);
@@ -76,6 +90,8 @@ export default function WormArenaLive() {
     status,
     message,
     frames,
+    reasoningBySnakeId,
+    playerNameBySnakeId,
     finalSummary,
     error,
     connect,
@@ -122,6 +138,24 @@ export default function WormArenaLive() {
   const boardWidth = (latestFrame as any)?.frame?.state?.width ?? 10;
   const boardHeight = (latestFrame as any)?.frame?.state?.height ?? 10;
 
+  const snakeIds = useMemo(() => {
+    const ids = new Set<string>();
+    Object.keys(playerNameBySnakeId || {}).forEach((k) => ids.add(k));
+    Object.keys(reasoningBySnakeId || {}).forEach((k) => ids.add(k));
+    const fromFrame = (latestFrame as any)?.frame?.state?.snakes;
+    if (fromFrame && typeof fromFrame === 'object') {
+      Object.keys(fromFrame).forEach((k) => ids.add(k));
+    }
+    return Array.from(ids).sort();
+  }, [latestFrame, playerNameBySnakeId, reasoningBySnakeId]);
+
+  const leftSnakeId = snakeIds[0];
+  const rightSnakeId = snakeIds[1];
+  const leftName = (leftSnakeId && playerNameBySnakeId[leftSnakeId]) || (leftSnakeId ? `Snake ${leftSnakeId}` : 'Player A');
+  const rightName = (rightSnakeId && playerNameBySnakeId[rightSnakeId]) || (rightSnakeId ? `Snake ${rightSnakeId}` : 'Player B');
+  const leftReasoning = (leftSnakeId && reasoningBySnakeId[leftSnakeId]) || '';
+  const rightReasoning = (rightSnakeId && reasoningBySnakeId[rightSnakeId]) || '';
+
   const viewMode: ViewMode = finalSummary
     ? 'completed'
     : status === 'connecting' || status === 'starting' || status === 'in_progress'
@@ -140,6 +174,7 @@ export default function WormArenaLive() {
         links={[
           { label: 'Replay', href: '/worm-arena' },
           { label: 'Live', href: '/worm-arena/live', active: true },
+          { label: 'Matches', href: '/worm-arena/matches' },
           { label: 'Stats & Placement', href: '/worm-arena/stats' },
         ]}
       />
@@ -173,57 +208,33 @@ export default function WormArenaLive() {
         )}
 
         {viewMode === 'live' && (
-          <div className="flex items-start justify-between gap-3 flex-wrap">
-            <div className="flex-1 min-w-[280px]">
-              <WormArenaLiveStatusStrip
-                status={status}
-                message={message}
-                error={error}
-                sessionId={sessionId}
-                currentMatchIndex={currentMatchIndex}
-                totalMatches={totalMatches}
-              />
-            </div>
+          <WormArenaLiveStatusStrip
+            status={status}
+            message={message}
+            error={error}
+            sessionId={sessionId}
+            currentMatchIndex={currentMatchIndex}
+            totalMatches={totalMatches}
+          />
+        )}
 
-            <Sheet>
-              <SheetTrigger asChild>
-                <Button variant="secondary" size="sm" className="shrink-0">
-                  Controls
-                </Button>
-              </SheetTrigger>
-              <SheetContent side="right" className="w-[420px] max-w-[90vw] overflow-auto">
-                <SheetHeader>
-                  <SheetTitle>Controls</SheetTitle>
-                </SheetHeader>
-                <div className="mt-4">
-                  <WormArenaRunControls
-                    viewMode="live"
-                    renderMode="inline"
-                    status={status}
-                    isStarting={isStarting}
-                    loadingModels={loadingModels}
-                    matchupAvailable={matchupAvailable}
-                    availableModels={availableModelSet}
-                    selectedMatchup={selectedMatchup}
-                    onSelectMatchup={setSelectedMatchup}
-                    width={width}
-                    height={height}
-                    maxRounds={maxRounds}
-                    numApples={numApples}
-                    onWidthChange={setWidth}
-                    onHeightChange={setHeight}
-                    onMaxRoundsChange={setMaxRounds}
-                    onNumApplesChange={setNumApples}
-                    byoApiKey={byoApiKey}
-                    byoProvider={byoProvider}
-                    onByoApiKeyChange={setByoApiKey}
-                    onByoProviderChange={setByoProvider}
-                    onStart={handleRunMatch}
-                    launchNotice={launchNotice}
-                  />
-                </div>
-              </SheetContent>
-            </Sheet>
+        {viewMode === 'live' && (
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            <WormArenaReasoning
+              playerName={leftName}
+              color="green"
+              reasoning={leftReasoning}
+              score={Number((latestFrame as any)?.frame?.state?.scores?.[leftSnakeId] ?? 0)}
+              strategyLabel="Live output"
+            />
+
+            <WormArenaReasoning
+              playerName={rightName}
+              color="blue"
+              reasoning={rightReasoning}
+              score={Number((latestFrame as any)?.frame?.state?.scores?.[rightSnakeId] ?? 0)}
+              strategyLabel="Live output"
+            />
           </div>
         )}
 
@@ -249,4 +260,3 @@ export default function WormArenaLive() {
     </div>
   );
  }
-

@@ -19,6 +19,11 @@ type OpenRouterModel = {
     prompt?: string;
     completion?: string;
   };
+  created?: string | number;
+  created_at?: string | number;
+  released?: string | number;
+  released_at?: string | number;
+  release_date?: string;
   supported_parameters?: string[];
   architecture?: {
     input_modalities?: string[];
@@ -88,9 +93,84 @@ function computePricePerMillion(perTokenString?: string): number | null {
 /**
  * Format price for display
  */
+function formatUsdPerMillion(perMillion: number): string {
+  const fixed = perMillion.toFixed(2);
+  const trimmed = fixed.replace(/\.00$/, '').replace(/(\.\d)0$/, '$1');
+  return `$${trimmed}`;
+}
+
 function formatPrice(perMillion: number | null): string {
   if (perMillion === null) return 'TBD';
-  return `$${(perMillion / 1_000_000).toFixed(4)}`;
+  return `${formatUsdPerMillion(perMillion)}`;
+}
+
+function parseDateLike(value: unknown): Date | null {
+  if (value === null || value === undefined) return null;
+
+  if (typeof value === 'number') {
+    const ms = value > 1_000_000_000_000 ? value : value * 1000;
+    const dt = new Date(ms);
+    return Number.isFinite(dt.getTime()) ? dt : null;
+  }
+
+  if (typeof value === 'string') {
+    const trimmed = value.trim();
+    if (!trimmed) return null;
+
+    const asNumber = Number(trimmed);
+    if (Number.isFinite(asNumber)) {
+      const ms = asNumber > 1_000_000_000_000 ? asNumber : asNumber * 1000;
+      const dt = new Date(ms);
+      return Number.isFinite(dt.getTime()) ? dt : null;
+    }
+
+    const parsed = Date.parse(trimmed);
+    if (Number.isFinite(parsed)) {
+      const dt = new Date(parsed);
+      return Number.isFinite(dt.getTime()) ? dt : null;
+    }
+  }
+
+  return null;
+}
+
+function deriveReleaseDateFromSlug(slug: string): string | null {
+  const isoDay = slug.match(/(\d{4})-(\d{2})-(\d{2})/);
+  if (isoDay) return `${isoDay[1]}-${isoDay[2]}-${isoDay[3]}`;
+
+  const yyyymmdd = slug.match(/\b(\d{4})(\d{2})(\d{2})\b/);
+  if (yyyymmdd) return `${yyyymmdd[1]}-${yyyymmdd[2]}-${yyyymmdd[3]}`;
+
+  const yyyymm = slug.match(/\b(\d{4})-(\d{2})\b/);
+  if (yyyymm) return `${yyyymm[1]}-${yyyymm[2]}`;
+
+  const dashYYMM = slug.match(/-(\d{2})(\d{2})(?:\b|$)/);
+  if (dashYYMM) {
+    const year = 2000 + Number(dashYYMM[1]);
+    const month = Number(dashYYMM[2]);
+    if (month >= 1 && month <= 12) {
+      return `${year}-${String(month).padStart(2, '0')}`;
+    }
+  }
+
+  return null;
+}
+
+function getReleaseDate(model: OpenRouterModel): string | null {
+  const candidates: unknown[] = [
+    model.release_date,
+    model.released_at,
+    model.released,
+    model.created_at,
+    model.created,
+  ];
+
+  for (const candidate of candidates) {
+    const dt = parseDateLike(candidate);
+    if (dt) return dt.toISOString().slice(0, 10);
+  }
+
+  return deriveReleaseDateFromSlug(model.id);
 }
 
 /**
@@ -160,12 +240,13 @@ export function generateModelConfig(model: OpenRouterModel): string {
   const inputPrice = computePricePerMillion(model.pricing?.prompt);
   const outputPrice = computePricePerMillion(model.pricing?.completion);
 
-  const inputStr = inputPrice ? `'$${(inputPrice / 1_000_000).toFixed(4)}'` : 'TBD';
-  const outputStr = outputPrice ? `'$${(outputPrice / 1_000_000).toFixed(4)}'` : 'TBD';
+  const inputStr = inputPrice !== null ? `'${formatUsdPerMillion(inputPrice)}'` : 'TBD';
+  const outputStr = outputPrice !== null ? `'${formatUsdPerMillion(outputPrice)}'` : 'TBD';
 
   const color = pickColor(slug, hasReasoning);
   const speedInfo = estimateSpeed(slug, hasReasoning);
   const isPremium = hasReasoning || (inputPrice && inputPrice > 1000);
+  const releaseDate = getReleaseDate(model);
 
   const config = `  {
     key: '${slug}',
@@ -180,9 +261,7 @@ export function generateModelConfig(model: OpenRouterModel): string {
   }
     apiModelName: '${slug}',
     modelType: 'openrouter',
-    contextWindow: ${contextLength}${
-    inputPrice && outputPrice ? `,\n    releaseDate: "${new Date().toISOString().split('T')[0]}"` : ''
-  }
+    contextWindow: ${contextLength}${releaseDate ? `,\n    releaseDate: "${releaseDate}"` : ''}
   },`;
 
   return config;
@@ -213,13 +292,13 @@ export async function main() {
 
     const { totalRemote, totalInConfig, newModels } = await discoverNewModels();
 
-    console.log(`📊 OpenRouter Catalog Status:`);
+    console.log('OpenRouter Catalog Status:');
     console.log(`   Total models on OpenRouter: ${totalRemote}`);
     console.log(`   Models in our config: ${totalInConfig}`);
     console.log(`   New models found: ${newModels.length}\n`);
 
     if (newModels.length === 0) {
-      console.log('✓ No new models to add.');
+      console.log('No new models to add.');
       return;
     }
 
@@ -228,11 +307,11 @@ export async function main() {
       const inputPrice = computePricePerMillion(m.pricing?.prompt);
       const outputPrice = computePricePerMillion(m.pricing?.completion);
 
-      console.log(`📦 ${m.id}`);
+      console.log(`${m.id}`);
       console.log(`   Name: ${m.name || '(unnamed)'}`);
       if (inputPrice || outputPrice) {
         console.log(
-          `   Pricing: In: ${formatPrice(inputPrice)}/M | Out: ${formatPrice(outputPrice)}/M`
+          `   Pricing (USD per 1M tokens): In: ${formatPrice(inputPrice)} | Out: ${formatPrice(outputPrice)}`
         );
       }
       if (m.context_length) {
@@ -246,9 +325,7 @@ export async function main() {
     const snippet = generateConfigSnippet(newModels);
     console.log(snippet);
     console.log('='.repeat(80));
-    console.log(
-      '\n✏️  Copy the snippets above and add them to server/config/models.ts in the appropriate section.'
-    );
+    console.log('\nCopy the snippets above and add them to server/config/models.ts in the appropriate section.');
   } catch (error) {
     console.error('Error:', error instanceof Error ? error.message : error);
     process.exit(1);
