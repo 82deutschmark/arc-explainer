@@ -184,10 +184,12 @@ interface AttemptUnionMetrics {
   unionAccuracyPercentage: number;
   unionCorrectCount: number;
   totalPuzzles: number;
+  totalTestPairs?: number;
 }
 
 const AttemptUnionCard: React.FC<{ metrics: AttemptUnionMetrics }> = ({ metrics }) => {
-  const progressValue = (metrics.unionCorrectCount / metrics.totalPuzzles) * 100;
+  const totalPairs = metrics.totalTestPairs ?? metrics.totalPuzzles;
+  const progressValue = totalPairs > 0 ? (metrics.unionCorrectCount / totalPairs) * 100 : 0;
 
   return (
     <Card className="border-blue-200 bg-gradient-to-br from-blue-50 to-blue-50/50">
@@ -220,7 +222,7 @@ const AttemptUnionCard: React.FC<{ metrics: AttemptUnionMetrics }> = ({ metrics 
           <p className="text-sm font-medium text-muted-foreground">Success Rate</p>
           <Progress value={progressValue} className="h-2" />
           <p className="text-xs text-muted-foreground">
-            {metrics.unionCorrectCount} of {metrics.totalPuzzles} puzzles solved
+            {metrics.unionCorrectCount} of {totalPairs} test pairs solved
           </p>
         </div>
 
@@ -232,8 +234,9 @@ const AttemptUnionCard: React.FC<{ metrics: AttemptUnionMetrics }> = ({ metrics 
             </p>
             <p className="mt-1.5 text-sm leading-relaxed text-gray-600">
               This metric measures how well the <strong>combination</strong> of multiple attempts
-              of the same model performs on puzzles. For each puzzle, we mark it as correct if
-              <strong> any attempt</strong> solved it correctly.
+              of the same model performs on each ARC test pair. For every test pair, we mark it
+              correct if <strong>any attempt</strong> produced the right output, then divide by the
+              total number of test pairs (ARC harness rule).
             </p>
           </div>
 
@@ -244,10 +247,10 @@ const AttemptUnionCard: React.FC<{ metrics: AttemptUnionMetrics }> = ({ metrics 
             </p>
             <div className="mt-2 space-y-1 font-mono text-xs text-gray-600 leading-relaxed bg-gray-50/50 rounded p-2">
               <div>
-                <span className="font-semibold">Union Accuracy =</span> (Puzzles solved by any attempt) / Total puzzles
+                <span className="font-semibold">Union Accuracy =</span> (Test pairs solved by any attempt) / Total test pairs
               </div>
               <div className="text-gray-500">
-                = {metrics.unionCorrectCount} / {metrics.totalPuzzles}
+                = {metrics.unionCorrectCount} / {totalPairs}
               </div>
               <div className="text-blue-600 font-semibold">
                 = {metrics.unionAccuracyPercentage.toFixed(1)}%
@@ -267,4 +270,3 @@ const AttemptUnionCard: React.FC<{ metrics: AttemptUnionMetrics }> = ({ metrics 
     </Card>
   );
 };
-

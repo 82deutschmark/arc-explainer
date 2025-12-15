@@ -13,26 +13,18 @@
  */
 export function formatProcessingTime(timeValue: number | null | undefined): string | null {
   if (!timeValue) return null;
-  
-  // Auto-detect if value is in seconds or milliseconds using same logic as detailed formatter
+
+  // Auto-detect if value is in seconds or milliseconds
+  // Values > 1000 are almost certainly milliseconds (can't be < 1 second in seconds)
   let seconds: number;
-  
-  if (timeValue < 10) {
-    // Small values are likely seconds
-    seconds = timeValue;
-  } else if (timeValue < 1000) {
-    // Medium values, treat as seconds
+
+  if (timeValue < 1000) {
+    // Small values are either seconds or milliseconds < 1000ms
+    // Treat as seconds (most likely for processing time)
     seconds = timeValue;
   } else {
-    // Large values: check if it makes sense as milliseconds
-    const asSeconds = timeValue / 1000;
-    if (asSeconds > 3600) {
-      // If it would be more than an hour as milliseconds, it's probably already in seconds
-      seconds = timeValue;
-    } else {
-      // Reasonable as milliseconds, convert to seconds
-      seconds = asSeconds;
-    }
+    // Large values (>= 1000) are milliseconds - convert to seconds
+    seconds = timeValue / 1000;
   }
   
   // Convert back to milliseconds for existing formatting logic
@@ -61,30 +53,18 @@ export function formatProcessingTime(timeValue: number | null | undefined): stri
  */
 export function formatProcessingTimeDetailed(timeValue: number | null | undefined): string | null {
   if (!timeValue) return null;
-  
-  // If the value is less than 10 and greater than 0, it's likely in seconds (e.g., 2.5 seconds)
-  // If the value is greater than 10, it could be either seconds or milliseconds
-  // If the value is very large (>1000), it's likely milliseconds unless it's unreasonably large
-  
+
+  // Auto-detect if value is in seconds or milliseconds
+  // Values > 1000 are almost certainly milliseconds (can't be < 1 second in seconds)
   let seconds: number;
-  
-  if (timeValue < 10) {
-    // Small values are likely seconds (e.g., 0.5s, 2.3s, 9.1s)
-    seconds = timeValue;
-  } else if (timeValue < 1000) {
-    // Medium values could be either, but if they look like reasonable processing times,
-    // treat as seconds (e.g., 45s, 120s)
+
+  if (timeValue < 1000) {
+    // Small values (< 1000) are either seconds or milliseconds < 1000ms
+    // Treat as seconds (most likely for processing time)
     seconds = timeValue;
   } else {
-    // Large values: check if it makes sense as milliseconds
-    const asSeconds = timeValue / 1000;
-    if (asSeconds > 3600) {
-      // If it would be more than an hour as milliseconds, it's probably already in seconds
-      seconds = timeValue;
-    } else {
-      // Reasonable as milliseconds, convert to seconds
-      seconds = asSeconds;
-    }
+    // Large values (>= 1000) are milliseconds - convert to seconds
+    seconds = timeValue / 1000;
   }
   
   // Now format the seconds value

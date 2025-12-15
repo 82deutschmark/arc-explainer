@@ -229,6 +229,193 @@ export default function WormArena() {
     ? Number((currentScores as any)[playerIds[1]] ?? (finalScores as any)[playerIds[1]] ?? 0)
     : 0;
 
+  const isFinalFrame = frames.length > 0 && frameIndex >= frames.length - 1;
+
+  const formatInt = (value: unknown): string => {
+    if (typeof value !== 'number' || !Number.isFinite(value)) return 'N/A';
+    return Math.round(value).toLocaleString();
+  };
+
+  const formatUsd = (value: unknown): string => {
+    if (typeof value !== 'number' || !Number.isFinite(value)) return 'N/A';
+    return `$${value.toFixed(6)}`;
+  };
+
+  const getSnakeResultLabel = (snakeId: string): 'won' | 'lost' | 'tied' | null => {
+    const raw = (replayData as any)?.players?.[snakeId]?.result;
+    if (raw === 'won' || raw === 'lost' || raw === 'tied') return raw;
+
+    const myFinalScore = (replayData as any)?.players?.[snakeId]?.final_score;
+    if (typeof myFinalScore === 'number') {
+      const otherId = Object.keys((replayData as any)?.players ?? {}).find((id) => id !== snakeId);
+      const otherFinalScore = otherId ? (replayData as any)?.players?.[otherId]?.final_score : undefined;
+
+      if (typeof otherFinalScore === 'number') {
+        if (myFinalScore > otherFinalScore) return 'won';
+        if (myFinalScore < otherFinalScore) return 'lost';
+        return 'tied';
+      }
+    }
+
+    const myScore = (finalScores as any)?.[snakeId];
+    if (typeof myScore === 'number') {
+      const otherId = Object.keys(finalScores ?? {}).find((id) => id !== snakeId);
+      const otherScore = otherId ? (finalScores as any)?.[otherId] : undefined;
+
+      if (typeof otherScore === 'number') {
+        if (myScore > otherScore) return 'won';
+        if (myScore < otherScore) return 'lost';
+        return 'tied';
+      }
+    }
+
+    return null;
+  };
+
+  const buildFinalSummary = (snakeId: string): string => {
+    if (!snakeId) return '';
+
+    const dataAny = replayData as any;
+    const player = dataAny?.players?.[snakeId];
+    const game = dataAny?.game;
+    const totals = dataAny?.totals;
+    const maxRounds = game?.max_rounds ?? dataAny?.metadata?.max_rounds;
+    const rounds = game?.rounds_played ?? dataAny?.metadata?.actual_rounds ?? frames.length;
+    const boardW = game?.board?.width;
+    const boardH = game?.board?.height;
+    const numApples = game?.board?.num_apples;
+
+    const resultLabel = getSnakeResultLabel(snakeId);
+    const outcome = (resultLabel ?? 'unknown').toUpperCase();
+
+    const lines: string[] = [];
+
+    lines.push(`Final result: ${outcome}`);
+
+    if (typeof player?.name === 'string' && player.name.trim().length > 0) {
+      lines.push(`Model: ${player.name}`);
+    }
+
+    if (typeof player?.model_id === 'string' && player.model_id.trim().length > 0) {
+      lines.push(`Model id: ${player.model_id}`);
+    }
+
+    if (typeof player?.final_score === 'number' && Number.isFinite(player.final_score)) {
+      lines.push(`Final score: ${formatInt(player.final_score)}`);
+    }
+
+    if (player?.death) {
+      const reason = typeof player.death?.reason === 'string' && player.death.reason.trim().length > 0 ? player.death.reason : 'unknown';
+      const round = typeof player.death?.round === 'number' && Number.isFinite(player.death.round) ? ` (round ${formatInt(player.death.round)})` : '';
+      lines.push(`Death: ${reason}${round}`);
+    } else {
+      lines.push('Death: none');
+    }
+
+    const inTok = player?.totals?.input_tokens;
+    const outTok = player?.totals?.output_tokens;
+    const cost = player?.totals?.cost;
+
+    if (typeof inTok === 'number' && Number.isFinite(inTok)) {
+      lines.push(`Input tokens: ${formatInt(inTok)}`);
+    } else {
+      lines.push('Input tokens: N/A');
+    }
+
+    if (typeof outTok === 'number' && Number.isFinite(outTok)) {
+      lines.push(`Output tokens: ${formatInt(outTok)}`);
+    } else {
+      lines.push('Output tokens: N/A');
+    }
+
+    const totalTok = (typeof inTok === 'number' && Number.isFinite(inTok) ? inTok : 0) + (typeof outTok === 'number' && Number.isFinite(outTok) ? outTok : 0);
+    if (totalTok > 0) {
+      lines.push(`Total tokens: ${formatInt(totalTok)}`);
+    } else {
+      lines.push('Total tokens: N/A');
+    }
+
+    lines.push(`Cost: ${formatUsd(cost)} (raw: ${typeof cost === 'number' && Number.isFinite(cost) ? cost : 'N/A'})`);
+
+    if (typeof rounds === 'number' && Number.isFinite(rounds) && rounds > 0) {
+      if (totalTok > 0) {
+        lines.push(`Avg tokens/round: ${formatInt(totalTok / rounds)}`);
+      }
+      if (typeof cost === 'number' && Number.isFinite(cost)) {
+        lines.push(`Avg cost/round: ${formatUsd(cost / rounds)}`);
+      }
+    }
+
+    if (typeof game?.id === 'string' && game.id.trim().length > 0) {
+      lines.push(`Game id: ${game.id}`);
+    }
+    if (typeof game?.game_type === 'string' && game.game_type.trim().length > 0) {
+      lines.push(`Game type: ${game.game_type}`);
+    }
+    if (typeof game?.started_at === 'string' && game.started_at.trim().length > 0) {
+      lines.push(`Started at: ${game.started_at}`);
+    }
+    if (typeof game?.ended_at === 'string' && game.ended_at.trim().length > 0) {
+      lines.push(`Ended at: ${game.ended_at}`);
+    }
+    if (typeof rounds === 'number' && Number.isFinite(rounds)) {
+      lines.push(`Rounds played: ${formatInt(rounds)}`);
+    }
+    if (typeof maxRounds === 'number' && Number.isFinite(maxRounds)) {
+      lines.push(`Max rounds: ${formatInt(maxRounds)}`);
+    }
+    if (typeof boardW === 'number' && Number.isFinite(boardW) && typeof boardH === 'number' && Number.isFinite(boardH)) {
+      lines.push(`Board: ${formatInt(boardW)}x${formatInt(boardH)}`);
+    }
+    if (typeof numApples === 'number' && Number.isFinite(numApples)) {
+      lines.push(`Apples per round: ${formatInt(numApples)}`);
+    }
+
+    if (totals) {
+      const matchIn = totals?.input_tokens;
+      const matchOut = totals?.output_tokens;
+      const matchCost = totals?.cost;
+      const matchTok = (typeof matchIn === 'number' && Number.isFinite(matchIn) ? matchIn : 0) + (typeof matchOut === 'number' && Number.isFinite(matchOut) ? matchOut : 0);
+      lines.push('');
+      lines.push('Match totals:');
+      lines.push(`Input tokens: ${formatInt(matchIn)}`);
+      lines.push(`Output tokens: ${formatInt(matchOut)}`);
+      lines.push(`Total tokens: ${matchTok > 0 ? formatInt(matchTok) : 'N/A'}`);
+      lines.push(`Cost: ${formatUsd(matchCost)} (raw: ${typeof matchCost === 'number' && Number.isFinite(matchCost) ? matchCost : 'N/A'})`);
+      if (typeof rounds === 'number' && Number.isFinite(rounds) && rounds > 0) {
+        if (matchTok > 0) {
+          lines.push(`Avg tokens/round: ${formatInt(matchTok / rounds)}`);
+        }
+        if (typeof matchCost === 'number' && Number.isFinite(matchCost)) {
+          lines.push(`Avg cost/round: ${formatUsd(matchCost / rounds)}`);
+        }
+      }
+    }
+
+    return lines.join('\n');
+  };
+
+  const appendFinalResultIfNeeded = (snakeId: string, reasoning: string): string => {
+    if (!isFinalFrame || !snakeId) return reasoning;
+    const finalSummary = buildFinalSummary(snakeId);
+    const prefix = reasoning?.trim()?.length ? `${reasoning.trim()}\n\n` : '';
+    return finalSummary ? `${prefix}${finalSummary}` : reasoning;
+  };
+
+  const playerAReasoningBase = showNextMove && playerIds.length > 0 && !isFinalFrame
+    ? (frames[frameIndex + 1]?.moves?.[playerIds[0]]?.rationale || '')
+    : playerAReasoning;
+  const playerBReasoningBase = showNextMove && playerIds.length > 1 && !isFinalFrame
+    ? (frames[frameIndex + 1]?.moves?.[playerIds[1]]?.rationale || '')
+    : playerBReasoning;
+
+  const playerAReasoningForPanel = playerIds.length > 0
+    ? appendFinalResultIfNeeded(playerIds[0], playerAReasoningBase)
+    : playerAReasoningBase;
+  const playerBReasoningForPanel = playerIds.length > 1
+    ? appendFinalResultIfNeeded(playerIds[1], playerBReasoningBase)
+    : playerBReasoningBase;
+
   const matchupLabel = React.useMemo(() => {
     if (playerIds.length >= 2) {
       return `${playerAName} vs ${playerBName}`;
@@ -357,7 +544,7 @@ export default function WormArena() {
           <WormArenaReasoning
             playerName={playerAName}
             color="green"
-            reasoning={showNextMove && playerIds.length > 0 ? (frames[frameIndex + 1]?.moves?.[playerIds[0]]?.rationale || '') : playerAReasoning}
+            reasoning={playerAReasoningForPanel}
             score={playerAScore}
           />
 
@@ -401,7 +588,7 @@ export default function WormArena() {
           <WormArenaReasoning
             playerName={playerBName}
             color="blue"
-            reasoning={showNextMove && playerIds.length > 1 ? (frames[frameIndex + 1]?.moves?.[playerIds[1]]?.rationale || '') : playerBReasoning}
+            reasoning={playerBReasoningForPanel}
             score={playerBScore}
           />
         </div>

@@ -27,6 +27,7 @@
     "openrouter-multi": "node --import tsx scripts/testing/test-openrouter-multi-output.ts",
     "models": "node --import tsx scripts/manage-models.ts",
     "ingest-hf": "node --import tsx server/scripts/ingest-huggingface-dataset.ts",
+    "ingest-johanland": "node --import tsx server/scripts/ingest-johanland-results.ts",
     "cleanup-hf": "node --import tsx server/scripts/cleanup-huggingface-imports.ts",
     "del": "node --import tsx server/scripts/delete-hf-now.ts",
     "worm:cheap-matchups": "node --import tsx server/scripts/generate-cheap-matchups.ts"

@@ -69,6 +69,7 @@ interface UnionMetrics {
   unionAccuracyPercentage: number;
   unionCorrectCount: number;
   totalPuzzles: number;
+  totalTestPairs?: number;
 }
 
 export default function HuggingFaceUnionAccuracy() {
@@ -200,7 +201,11 @@ export default function HuggingFaceUnionAccuracy() {
       }
 
       const comparisonData: ModelComparisonResult = result.data;
-      const metrics = computeAttemptUnionAccuracy(comparisonData, [0, 1]);
+      const attemptUnionStats = comparisonData.summary?.attemptUnionStats || [];
+      const backendUnion = attemptUnionStats.find(
+        (stat) => stat.baseModelName === selectedPair.baseModelName
+      );
+      const metrics = backendUnion ?? computeAttemptUnionAccuracy(comparisonData, [0, 1]);
 
       // Extract puzzle IDs for union
       const unionIds: string[] = [];
@@ -333,7 +338,7 @@ export default function HuggingFaceUnionAccuracy() {
           <AlertDescription className="text-xl text-blue-900 ml-2">
             <strong>What is this page?</strong> This page visualizes official test results from the ARC Prize team's evaluation harness using the <strong>public</strong> evaluation set
             (different from the semi-private set used on the official ARC Prize website). Each model was run twice per puzzle.
-            This shows the <strong>best-case score</strong>: how many puzzles each model solves <strong>if we count a puzzle correct whenever either attempt was correct</strong>.
+            This shows the <strong>best-case score</strong>: how many ARC test pairs each model solves <strong>when a pair counts as correct if either attempt was correct</strong>.
             {' '}
             <a
               href="https://huggingface.co/datasets/arcprize/arc_agi_v2_public_eval/tree/main"
@@ -517,7 +522,7 @@ export default function HuggingFaceUnionAccuracy() {
                     <div className="text-4xl font-bold text-blue-700">
                       {unionMetrics.unionAccuracyPercentage.toFixed(1)}%
                     </div>
-                    <p className="text-base text-gray-600 mt-0.5">Score (either attempt correct)</p>
+                    <p className="text-base text-gray-600 mt-0.5">Score (either attempt correct per test pair)</p>
                   </div>
                   <div className="flex items-start gap-2">
                     {unionPuzzleIds.length > 0 && (
@@ -540,10 +545,10 @@ export default function HuggingFaceUnionAccuracy() {
                 {/* The Equation - Shown Clearly */}
                 <div className="bg-white rounded p-2 mb-2 border border-blue-100 text-base space-y-1">
                   <div className="text-gray-700">
-                    <span className="font-bold">Best-Case Score</span> = (Puzzles correct in attempt 1 <strong>or</strong> attempt 2) ÷ Total puzzles
+                    <span className="font-bold">Best-Case Score</span> = (Test pairs solved in attempt 1 <strong>or</strong> attempt 2) ÷ Total test pairs
                   </div>
                   <div className="text-gray-600">
-                    = <span className="font-semibold">{unionMetrics.unionCorrectCount} puzzles</span> ÷ <span className="font-semibold">{unionMetrics.totalPuzzles} total</span>
+                    = <span className="font-semibold">{unionMetrics.unionCorrectCount} test pairs</span> ÷ <span className="font-semibold">{unionMetrics.totalTestPairs ?? unionMetrics.totalPuzzles} total</span>
                   </div>
                   <div className="text-blue-700 font-bold">
                     = <span className="text-xl">{unionMetrics.unionAccuracyPercentage.toFixed(1)}%</span>
@@ -552,11 +557,11 @@ export default function HuggingFaceUnionAccuracy() {
 
                 {/* Quick Progress Bar */}
                 <Progress
-                  value={(unionMetrics.unionCorrectCount / unionMetrics.totalPuzzles) * 100}
+                  value={(unionMetrics.unionCorrectCount / ((unionMetrics.totalTestPairs ?? unionMetrics.totalPuzzles) || 1)) * 100}
                   className="h-2 mb-1"
                 />
                 <p className="text-base text-gray-700">
-                  <strong>{unionMetrics.unionCorrectCount}</strong> of <strong>{unionMetrics.totalPuzzles}</strong> puzzles solved
+                  <strong>{unionMetrics.unionCorrectCount}</strong> of <strong>{unionMetrics.totalTestPairs ?? unionMetrics.totalPuzzles}</strong> test pairs solved
                 </p>
 
                 {/* Model Names */}
@@ -575,12 +580,12 @@ export default function HuggingFaceUnionAccuracy() {
               <CardContent className="p-2">
                 <div className="text-base text-gray-700 leading-relaxed space-y-1">
                   <div>
-                    <strong>📊 Official Scoring Method:</strong>
+                    <strong>Official Scoring Method:</strong>
                   </div>
                   <div>
-                    The ARC Prize team's evaluation harness tests each model <strong>twice independently</strong> on each puzzle.
-                    For each puzzle, if <strong>either</strong> attempt 1 <strong>or</strong> attempt 2 produces the correct answer, that puzzle counts as solved.
-                    This is the official scoring method used to evaluate all models.
+                    The ARC Prize team's evaluation harness tests each model <strong>twice independently</strong> on every ARC test pair.
+                    If <strong>either</strong> attempt gets the pair correct, that pair counts as solved. A puzzle's score is the fraction of its
+                    test pairs solved, and the dataset score averages across all test pairs. This is the official scoring method used to evaluate all models.
                   </div>
                   <div>
                     <strong>⚠️ Important:</strong> These results are from the <strong>public evaluation set</strong>, which is different from the semi-private evaluation set
@@ -740,14 +745,14 @@ export default function HuggingFaceUnionAccuracy() {
               <div className="bg-purple-50 p-2 rounded">
                 <strong className="text-purple-900">6️⃣ Scoring: Did the Model Get It Right?</strong>
                 <p className="text-gray-700 mt-1">
-                  For each puzzle, the harness checks:
+                  For each puzzle, the harness checks every <strong>test pair</strong>:
                 </p>
                 <ul className="list-disc list-inside text-gray-700 ml-1 mt-1 text-base">
-                  <li>Does the model's <strong>attempt 1 output exactly match</strong> the ground truth? ✓</li>
-                  <li>Does the model's <strong>attempt 2 output exactly match</strong> the ground truth? ✓</li>
+                  <li>Does the model's <strong>attempt 1 output exactly match</strong> the ground-truth output for that test pair?</li>
+                  <li>Does the model's <strong>attempt 2 output exactly match</strong> the same ground-truth output?</li>
                 </ul>
                 <p className="text-gray-700 mt-1">
-                  <strong>The puzzle is then recorded as correct if EITHER attempt is correct.</strong> 
+                  <strong>A test pair counts as correct if either attempt is correct.</strong> A puzzle's score is the fraction of its test pairs solved, and the dataset score averages across all test pairs.
                 </p>
               </div>
 
