@@ -1,11 +1,14 @@
 ## Goal
-Fix the Worm Arena Matches page so filters and pagination reliably update the match list and reflect applied criteria.
+Deliver a Worm Arena Matches experience that actually responds to user filters and spotlights the long, high-drama matches people care about.
 
 ## Notes
-- Backend `/api/snakebench/matches` already honors filters (manual curl confirmed).
-- Current UI updates total but rows can appear stale; add explicit apply pipeline and stale-response guards.
+- Backend `/api/snakebench/matches` filtering works; problems stem from the frontend (stale Apply reads, clunky defaults).
+- Feedback prioritizes long matches → default to high min-rounds and provide quick presets.
+- Need deterministic Apply flow (no stale closure bugs) and better UX cues (round presets, clearer defaults, reliable pagination).
 
 ## Tasks
-- Wire an applied-filters state that is updated on Apply (and defaulted once a model is available) and drives fetches.
-- Add request guards to ignore stale responses and keep loading/error state accurate.
-- Reset pagination sensibly on filter changes, validate against live API, and document in changelog.
+1. Introduce a single draft filter state (with ref mirror) so Apply always captures the latest selections even under batched state updates.
+2. Auto-bootstrap defaults: pre-select a model, default `minRounds` to a long-match threshold, and set sorting to `rounds desc`.
+3. Add long-match preset chips + helper copy; keep min-round input editable but make presets the primary affordance.
+4. Ensure pagination uses applied page size, requests ignore stale responses, and the list refreshes immediately after Apply.
+5. Update docs/changelog once behavior verified against live API responses.
