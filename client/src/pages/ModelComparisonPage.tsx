@@ -559,7 +559,13 @@ export default function ModelComparisonPage() {
           </div>
         </div>
 
-        {attemptUnionMetrics && attemptUnionMetrics.totalPuzzles > 0 && (
+        {attemptUnionMetrics && (() => {
+          const totalPairs =
+            'totalTestPairs' in attemptUnionMetrics
+              ? attemptUnionMetrics.totalTestPairs
+              : attemptUnionMetrics.totalPuzzles;
+          return totalPairs > 0;
+        })() && (
           <div className="bg-base-100 rounded-lg shadow p-2 border-l-4 border-blue-500 space-y-1">
             <div className="flex items-center justify-between gap-2">
               <h3 className="text-sm font-bold text-gray-800">Attempt Union Accuracy</h3>
@@ -581,7 +587,7 @@ export default function ModelComparisonPage() {
               </div>
             </div>
             <p className="text-xs text-gray-600 leading-tight">
-              If the model solved a puzzle correctly in <strong>either attempt 1 or attempt 2</strong>, it counts as correct.
+              Counts each test pair as correct if <strong>either attempt 1 or attempt 2</strong> solved it (ARC harness rule).
             </p>
             <div className="space-y-1">
               <div className="text-xs">
@@ -602,9 +608,12 @@ export default function ModelComparisonPage() {
                   <p className="text-xs text-gray-500">Union Accuracy</p>
                 </div>
                 <div className="text-xs">
-                  <span className="font-semibold">Puzzles Correct:</span>{' '}
+                  <span className="font-semibold">Test Pairs Correct:</span>{' '}
                   <span className="text-success font-bold">
-                    {attemptUnionMetrics.unionCorrectCount}/{attemptUnionMetrics.totalPuzzles}
+                    {attemptUnionMetrics.unionCorrectCount}/
+                    {'totalTestPairs' in attemptUnionMetrics
+                      ? attemptUnionMetrics.totalTestPairs
+                      : attemptUnionMetrics.totalPuzzles}
                   </span>
                 </div>
               </div>

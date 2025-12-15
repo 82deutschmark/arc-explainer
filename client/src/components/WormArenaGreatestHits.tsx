@@ -11,10 +11,11 @@
 import React from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import { useWormArenaGreatestHits } from '@/hooks/useWormArenaGreatestHits';
 
 export default function WormArenaGreatestHits() {
-  const { games, isLoading, error } = useWormArenaGreatestHits(5);
+  const { games, isLoading, error } = useWormArenaGreatestHits(20);
 
   return (
     <Card className="worm-card">
@@ -43,64 +44,66 @@ export default function WormArenaGreatestHits() {
         )}
 
         {!isLoading && !error && games.length > 0 && (
-          <div className="space-y-3">
-            {games.map((game) => {
-              const matchup = `${game.modelA} vs ${game.modelB}`;
-              const roundsLabel = `${game.roundsPlayed} / ${game.maxRounds || game.roundsPlayed} rounds`;
-              const hasCost = game.totalCost > 0;
-              const costLabel = hasCost ? `$${game.totalCost.toFixed(2)}` : null;
-              const scoreLabel =
-                game.scoreDelta > 0
-                  ? `Score delta: ${game.scoreDelta}`
-                  : `Max score: ${game.maxFinalScore}`;
+          <ScrollArea className="max-h-[360px] pr-3">
+            <div className="space-y-3">
+              {games.map((game) => {
+                const matchup = `${game.modelA} vs ${game.modelB}`;
+                const roundsLabel = `${game.roundsPlayed} / ${game.maxRounds || game.roundsPlayed} rounds`;
+                const hasCost = game.totalCost > 0;
+                const costLabel = hasCost ? `$${game.totalCost.toFixed(2)}` : null;
+                const scoreLabel =
+                  game.scoreDelta > 0
+                    ? `Score delta: ${game.scoreDelta}`
+                    : `Max score: ${game.maxFinalScore}`;
 
-              return (
-                <div
-                  key={game.gameId}
-                  className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 rounded-md border px-4 py-3 bg-white/80 worm-border"
-                >
-                  <div className="space-y-2 min-w-0">
-                    <div className="font-mono text-sm truncate" title={matchup}>
-                      {matchup}
-                    </div>
-                    <div className="flex flex-wrap gap-2 text-sm">
-                      <Badge variant="outline" className="font-semibold text-sm px-2 py-1">
-                        {roundsLabel}
-                      </Badge>
-                      {costLabel && (
-                        <Badge
-                          variant="outline"
-                          className="font-semibold text-sm px-2 py-1 worm-border"
-                        >
-                          Cost: {costLabel}
+                return (
+                  <div
+                    key={game.gameId}
+                    className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 rounded-md border px-4 py-3 bg-white/80 worm-border"
+                  >
+                    <div className="space-y-2 min-w-0">
+                      <div className="font-mono text-sm truncate" title={matchup}>
+                        {matchup}
+                      </div>
+                      <div className="flex flex-wrap gap-2 text-sm">
+                        <Badge variant="outline" className="font-semibold text-sm px-2 py-1">
+                          {roundsLabel}
                         </Badge>
-                      )}
-                      <Badge variant="outline" className="font-semibold text-sm px-2 py-1">
-                        {scoreLabel}
-                      </Badge>
+                        {costLabel && (
+                          <Badge
+                            variant="outline"
+                            className="font-semibold text-sm px-2 py-1 worm-border"
+                          >
+                            Cost: {costLabel}
+                          </Badge>
+                        )}
+                        <Badge variant="outline" className="font-semibold text-sm px-2 py-1">
+                          {scoreLabel}
+                        </Badge>
+                      </div>
+                      <div className="text-sm worm-muted">
+                        {game.highlightReason}
+                      </div>
                     </div>
-                    <div className="text-sm worm-muted">
-                      {game.highlightReason}
-                    </div>
-                  </div>
 
-                  <div className="flex items-center justify-end gap-4">
-                    {game.startedAt && (
-                      <span className="text-sm worm-muted">
-                        {new Date(game.startedAt).toLocaleDateString()}
-                      </span>
-                    )}
-                    <a
-                      href={`/worm-arena?matchId=${encodeURIComponent(game.gameId)}`}
-                      className="underline font-semibold text-base text-worm-ink hover:text-worm-green"
-                    >
-                      View replay
-                    </a>
+                    <div className="flex items-center justify-end gap-4">
+                      {game.startedAt && (
+                        <span className="text-sm worm-muted">
+                          {new Date(game.startedAt).toLocaleDateString()}
+                        </span>
+                      )}
+                      <a
+                        href={`/worm-arena?matchId=${encodeURIComponent(game.gameId)}`}
+                        className="underline font-semibold text-base text-worm-ink hover:text-worm-green"
+                      >
+                        View replay
+                      </a>
+                    </div>
                   </div>
-                </div>
-              );
-            })}
-          </div>
+                );
+              })}
+            </div>
+          </ScrollArea>
         )}
       </CardContent>
     </Card>
