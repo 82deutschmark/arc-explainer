@@ -9,9 +9,9 @@ vite.config.ts.*
 nul
 /solver/img_tmp
 /data/explained
-logs/dev.log
+logs/
 /temp
-/logs
+
 JFPuget.mp4
 external/SnakeBench/backend/completed_games_videos/
 

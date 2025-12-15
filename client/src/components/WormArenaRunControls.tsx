@@ -1,7 +1,21 @@
-﻿import React from 'react';
-import WormArenaMatchupSelector from '@/components/WormArenaMatchupSelector';
+﻿/**
+ * Author: Claude Code using Sonnet 4.5
+ * Date: 2025-12-15
+ * PURPOSE: Worm Arena run controls panel - simplified to two model dropdowns,
+ *          a prominent Start button, and collapsible advanced settings.
+ *          Removed curated matchup selector for cleaner, faster UX.
+ * SRP/DRY check: Pass - Single responsibility: render setup controls.
+ */
+
+import React from 'react';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import type { CuratedMatchup } from '@shared/utils/curatedMatchups';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 
 type StreamState = 'idle' | 'connecting' | 'starting' | 'in_progress' | 'completed' | 'failed';
 
@@ -20,8 +34,10 @@ export interface WormArenaRunControlsProps {
   matchupAvailable: boolean;
   availableModels: Set<string>;
 
-  selectedMatchup: CuratedMatchup;
-  onSelectMatchup: (matchup: CuratedMatchup) => void;
+  modelA: string;
+  modelB: string;
+  onModelAChange: (model: string) => void;
+  onModelBChange: (model: string) => void;
 
   width: number;
   height: number;
@@ -49,8 +65,10 @@ export default function WormArenaRunControls({
   loadingModels,
   matchupAvailable,
   availableModels,
-  selectedMatchup,
-  onSelectMatchup,
+  modelA,
+  modelB,
+  onModelAChange,
+  onModelBChange,
   width,
   height,
   maxRounds,
@@ -72,21 +90,67 @@ export default function WormArenaRunControls({
   const [advancedOpen, setAdvancedOpen] = React.useState(false);
   const [byoOpen, setByoOpen] = React.useState(false);
 
+  // Sort models alphabetically
+  const sortedModels = React.useMemo(
+    () => Array.from(availableModels).sort((a, b) => a.localeCompare(b)),
+    [availableModels],
+  );
+
   const body = (
     <div className="space-y-4">
-      <div>
-        <div className="text-xs font-bold uppercase tracking-wide text-worm-ink mb-2">Matchup</div>
-        {loadingModels ? (
-          <div className="text-xs worm-muted p-3 text-center">Loading models...</div>
-        ) : (
-          <WormArenaMatchupSelector
-            selectedMatchup={selectedMatchup}
-            onSelectMatchup={onSelectMatchup}
-            isRunning={isLiveLocked}
-            availableModels={availableModels}
-          />
-        )}
+      <div className="text-xs font-bold uppercase tracking-wide text-worm-ink mb-3">
+        Start Live Match
       </div>
+
+      {loadingModels ? (
+        <div className="text-xs text-worm-muted p-3 text-center">Loading models...</div>
+      ) : (
+        <div className="space-y-3">
+          <div>
+            <label className="text-xs font-semibold text-worm-ink mb-1 block">Model A</label>
+            <Select value={modelA} onValueChange={onModelAChange} disabled={isLiveLocked}>
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Select Model A" />
+              </SelectTrigger>
+              <SelectContent>
+                {sortedModels.map((model) => (
+                  <SelectItem key={model} value={model}>
+                    {model}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div>
+            <label className="text-xs font-semibold text-worm-ink mb-1 block">Model B</label>
+            <Select value={modelB} onValueChange={onModelBChange} disabled={isLiveLocked}>
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Select Model B" />
+              </SelectTrigger>
+              <SelectContent>
+                {sortedModels.map((model) => (
+                  <SelectItem key={model} value={model}>
+                    {model}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+      )}
+
+      <button
+        onClick={onStart}
+        disabled={isLiveLocked || loadingModels || !matchupAvailable}
+        className="w-full px-6 py-4 rounded-lg text-sm font-bold text-white transition-all disabled:opacity-50 disabled:cursor-not-allowed bg-worm-green hover:bg-worm-green-hover shadow-md hover:shadow-lg text-center"
+      >
+        {isLiveLocked ? 'Match running...' : 'Start Match'}
+      </button>
+
+      {launchNotice && (
+        <div className="text-xs text-red-700 bg-red-50 border border-red-200 rounded p-3">{launchNotice}</div>
+      )}
 
       <Collapsible open={advancedOpen} onOpenChange={setAdvancedOpen}>
         <CollapsibleTrigger asChild>
@@ -192,18 +256,6 @@ export default function WormArenaRunControls({
           </select>
         </CollapsibleContent>
       </Collapsible>
-
-      <button
-        onClick={onStart}
-        disabled={isLiveLocked || loadingModels || !matchupAvailable}
-        className="w-full px-6 py-4 rounded-lg text-sm font-bold text-white transition-all disabled:opacity-50 disabled:cursor-not-allowed bg-worm-green hover:bg-worm-green-hover shadow-md hover:shadow-lg text-center"
-      >
-        {isLiveLocked ? 'Match running...' : 'Start live match'}
-      </button>
-
-      {launchNotice && (
-        <div className="text-xs text-red-700 bg-red-50 border border-red-200 rounded p-3">{launchNotice}</div>
-      )}
     </div>
   );
 
