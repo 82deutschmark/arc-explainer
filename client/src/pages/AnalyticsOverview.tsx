@@ -72,6 +72,7 @@ export interface AttemptUnionStats {
   baseModelName: string;
   attemptModelNames: string[];
   totalPuzzles: number;
+  totalTestPairs: number;
   unionCorrectCount: number;
   unionAccuracyPercentage: number;
 }
@@ -767,7 +768,6 @@ export default function AnalyticsOverview() {
     </div>
   );
 }
-
 
 
 

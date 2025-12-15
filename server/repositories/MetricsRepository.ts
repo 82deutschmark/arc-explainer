@@ -166,6 +166,7 @@ export interface AttemptUnionStats {
   baseModelName: string;
   attemptModelNames: string[];
   totalPuzzles: number;
+  totalTestPairs: number;
   unionCorrectCount: number;
   unionAccuracyPercentage: number;
 }
@@ -762,6 +763,12 @@ export class MetricsRepository extends BaseRepository {
     details: PuzzleComparisonDetail[],
     models: string[],
     totalPuzzles: number,
+    puzzleRows: Array<{
+      puzzle_id: string;
+      model_name: string;
+      is_correct: boolean | null;
+      multi_test_results?: unknown;
+    }>,
   ): AttemptUnionStats[] {
     if (details.length === 0 || models.length < 2) {
       return [];
@@ -797,34 +804,70 @@ export class MetricsRepository extends BaseRepository {
         const attemptModelNames = attempts.slice(0, 2).map(a => a.modelName);
         
         let unionCorrectCount = 0;
+        let totalTestPairs = 0;
 
-        // Iterate through each puzzle and check if any selected model solved it
+        // Iterate through each puzzle and check per-pair correctness (ARC harness style)
         for (const detail of details) {
-          const modelResults = [
-            detail.model1Result,
-            detail.model2Result,
-            detail.model3Result,
-            detail.model4Result,
-          ];
+          const puzzleId = detail.puzzleId;
 
-          // Check if any of the selected models has 'correct' result
-          const isCorrectByAnyAttempt = modelIndices
-            .map(index => modelResults[index])
-            .some(result => result === 'correct');
+          // Gather per-attempt results for this puzzle
+          const attemptPairs: boolean[][] = modelIndices.map(idx => {
+            const modelName = models[idx];
+            const row = puzzleRows.find(r => r.puzzle_id === puzzleId && r.model_name === modelName);
 
-          if (isCorrectByAnyAttempt) {
-            unionCorrectCount++;
+            if (!row) return [];
+
+            // Parse multi_test_results if present
+            let parsedResults: any[] = [];
+            if (Array.isArray(row.multi_test_results)) {
+              parsedResults = row.multi_test_results as any[];
+            } else if (typeof row.multi_test_results === 'string') {
+              try {
+                const parsed = JSON.parse(row.multi_test_results);
+                if (Array.isArray(parsed)) {
+                  parsedResults = parsed;
+                }
+              } catch (err) {
+                logger.warn(`Failed to parse multi_test_results for ${modelName} on ${puzzleId}: ${String(err)}`, 'metrics');
+              }
+            }
+
+            if (parsedResults.length > 0) {
+              return parsedResults.map((r: any) => r?.isPredictionCorrect === true);
+            }
+
+            // Fallback to single-test correctness if no multi-test data
+            if (typeof row.is_correct === 'boolean') {
+              return [row.is_correct];
+            }
+
+            return [];
+          });
+
+          const pairsForPuzzle = Math.max(...attemptPairs.map(p => p.length), 0);
+          if (pairsForPuzzle === 0) {
+            continue;
+          }
+
+          totalTestPairs += pairsForPuzzle;
+
+          for (let i = 0; i < pairsForPuzzle; i++) {
+            const anyAttemptCorrect = attemptPairs.some(pairs => pairs[i] === true);
+            if (anyAttemptCorrect) {
+              unionCorrectCount++;
+            }
           }
         }
 
-        const unionAccuracyPercentage = totalPuzzles > 0 
-          ? Math.round((unionCorrectCount / totalPuzzles) * 10000) / 100  // Round to 2 decimal places
+        const unionAccuracyPercentage = totalTestPairs > 0 
+          ? Math.round((unionCorrectCount / totalTestPairs) * 10000) / 100  // Round to 2 decimal places
           : 0;
 
         attemptUnionStats.push({
           baseModelName,
           attemptModelNames,
           totalPuzzles,
+          totalTestPairs,
           unionCorrectCount,
           unionAccuracyPercentage,
         });
@@ -904,6 +947,7 @@ export class MetricsRepository extends BaseRepository {
           puzzle_id,
           model_name,
           (is_prediction_correct = TRUE OR multi_test_all_correct = TRUE) as is_correct,
+          multi_test_results,
           created_at
         FROM explanations
         WHERE model_name = ANY($1::text[]) 
@@ -1001,7 +1045,7 @@ export class MetricsRepository extends BaseRepository {
       logger.info(`Comparison complete: ${summary.allCorrect} all correct, ${summary.allIncorrect} all incorrect, ${summary.allNotAttempted} not attempted`, 'metrics');
 
       // Compute attempt union statistics for attempt models
-      const attemptUnionStats = this.computeAttemptUnionStats(details, models, puzzleIds.length);
+      const attemptUnionStats = this.computeAttemptUnionStats(details, models, puzzleIds.length, filteredRows);
 
       // Compute enriched per-model performance metrics
       const modelPerformance = await this.getModelPerformanceOnDataset(models, puzzleIds);

@@ -1,3 +1,16 @@
+### Version 6.1.59  Dec 15, 2025 (PENDING TESTING)
+
+- **Johan_Land ingestion: correct multi-test validation + schema-aligned storage** (Author: Cascade)
+  - Fixed Johan_Land ingestion to validate puzzles with multiple test cases using `validateSolverResponseMulti` and store:
+    - `multiplePredictedOutputs`
+    - `multiTestPredictionGrids`
+    - `multiTestResults`
+    - `multiTestAllCorrect`
+    - `multiTestAverageAccuracy`
+  - Removed incorrect usage of trustworthiness/accuracy fields during ingestion.
+  - Aligned Johan_Land ingestion TypeScript types to match repository `ExplanationData` expectations.
+  - **Files Modified**: `server/scripts/ingest-johanland-results.ts`, `server/types/johanland.ts`, `CHANGELOG.md`
+
 ### Version 6.1.58  Dec 15, 2025 (COMPLETED)
 
 - **Johan_Land_Solver_V6 evaluation results ingestion** (Author: Claude Code using Haiku 4.5)
