@@ -1,3 +1,18 @@
+### Version 6.1.55  Dec 18, 2025 (PENDING TESTING)
+
+- **Worm Arena Matches: long-game-first filtering + deterministic Apply** (Author: Codex)
+  - Filters now use a single draft state mirrored in a ref so Apply always captures the latest selections (no more stale model reads) and pagination honors the applied page size.
+  - Default configuration highlights high-drama battles by sorting on rounds desc, pre-filling 50+ rounds, and adding quick chips for 30/50/75/100-round searches.
+  - Added helper copy and refreshed the subtitle so it is obvious the page is about epic replays that are worth watching.
+  - **Files Modified**: `client/src/pages/WormArenaMatches.tsx`, `docs/2025-12-18-worm-arena-matches-plan.md`, `CHANGELOG.md`
+
+### Version 6.1.54  Dec 15, 2025 (PENDING TESTING)
+
+- **Worm Arena Greatest Hits: show 10 curated matches + refresh hall-of-fame list** (Author: Cascade)
+  - Greatest Hits now requests 10 items so the full curated set is visible.
+  - Updated the curated hall-of-fame ordering so the first 10 entries are the current Greatest Hits set.
+  - **Files Modified**: `client/src/components/WormArenaGreatestHits.tsx`, `server/services/snakeBenchHallOfFame.ts`, `CHANGELOG.md`
+
 ### Version 6.1.53  Dec 14, 2025 (PENDING TESTING)
 
 - **Worm Arena replay: show final win/loss/tie in reasoning panels** (Author: Cascade)

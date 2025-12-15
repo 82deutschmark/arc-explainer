@@ -14,7 +14,7 @@ import { Badge } from '@/components/ui/badge';
 import { useWormArenaGreatestHits } from '@/hooks/useWormArenaGreatestHits';
 
 export default function WormArenaGreatestHits() {
-  const { games, isLoading, error } = useWormArenaGreatestHits(5);
+  const { games, isLoading, error } = useWormArenaGreatestHits(10);
 
   return (
     <Card className="worm-card">

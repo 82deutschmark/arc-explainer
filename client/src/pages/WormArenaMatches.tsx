@@ -44,9 +44,12 @@ type MatchFilters = {
   limit: number;
 };
 
-type AppliedQuery = MatchFilters & {
-  offset: number;
-};
+const LONG_MATCH_PRESETS: Array<{ label: string; minRounds: string }> = [
+  { label: '30+ rounds', minRounds: '30' },
+  { label: '50+ rounds', minRounds: '50' },
+  { label: '75+ rounds', minRounds: '75' },
+  { label: '100+ rounds', minRounds: '100' },
+];
 
 function parseQueryParam(location: string, key: string): string | null {
   try {
@@ -77,79 +80,79 @@ export default function WormArenaMatches() {
   const { leaderboard } = useWormArenaStats();
   const defaultModelFromQuery = parseQueryParam(location, 'model');
 
-  const [model, setModel] = React.useState<string>(defaultModelFromQuery ?? '');
-  const [opponent, setOpponent] = React.useState<string>('');
-  const [result, setResult] = React.useState<SnakeBenchMatchSearchResultLabel | 'any'>('any');
-  const [minRounds, setMinRounds] = React.useState<string>('');
-  const [from, setFrom] = React.useState<string>('');
-  const [to, setTo] = React.useState<string>('');
+  const initialDraft = React.useMemo<MatchFilters>(
+    () => ({
+      model: defaultModelFromQuery ?? '',
+      opponent: '',
+      result: 'any',
+      minRounds: '50',
+      from: '',
+      to: '',
+      sortBy: 'rounds',
+      sortDir: 'desc',
+      limit: 50,
+    }),
+    [defaultModelFromQuery],
+  );
 
-  const [sortBy, setSortBy] = React.useState<SnakeBenchMatchSearchSortBy>('startedAt');
-  const [sortDir, setSortDir] = React.useState<SnakeBenchMatchSearchSortDir>('desc');
+  const draftRef = React.useRef<MatchFilters>(initialDraft);
+  const [draftFilters, setDraftFilters] = React.useState<MatchFilters>(initialDraft);
 
-  const [limit, setLimit] = React.useState<number>(50);
-
+  const [appliedFilters, setAppliedFilters] = React.useState<MatchFilters | null>(null);
+  const [offset, setOffset] = React.useState<number>(0);
   const [rows, setRows] = React.useState<SnakeBenchMatchSearchRow[]>([]);
-  const [appliedQuery, setAppliedQuery] = React.useState<AppliedQuery | null>(null);
   const [total, setTotal] = React.useState<number>(0);
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
   const [error, setError] = React.useState<string | null>(null);
   const latestRequestId = React.useRef<number>(0);
 
-  const effectiveLimit = appliedQuery?.limit ?? limit;
-  const offset = appliedQuery?.offset ?? 0;
+  const effectiveLimit = appliedFilters?.limit ?? draftFilters.limit;
 
   const availableModels = React.useMemo(() => {
-    const models = leaderboard.map((e) => e.modelSlug).filter(Boolean);
+    const models = leaderboard.map((entry) => entry.modelSlug).filter(Boolean);
     return Array.from(new Set(models));
   }, [leaderboard]);
 
-  React.useEffect(() => {
-    if (!model && availableModels.length > 0) {
-      setModel(availableModels[0]);
-    }
-  }, [availableModels, model]);
-
-  React.useEffect(() => {
-    if (appliedQuery || !model.trim()) return;
-    setAppliedQuery({
-      model: model.trim(),
-      opponent: opponent.trim(),
-      result,
-      minRounds,
-      from,
-      to,
-      sortBy,
-      sortDir,
-      limit,
-      offset: 0,
+  const updateDraft = React.useCallback((patch: Partial<MatchFilters>) => {
+    setDraftFilters((prev) => {
+      const next = { ...prev, ...patch };
+      draftRef.current = next;
+      return next;
     });
-  }, [appliedQuery, from, limit, minRounds, model, opponent, result, sortBy, sortDir, to]);
+  }, []);
 
   React.useEffect(() => {
-    const query = appliedQuery;
-    if (!query) return;
+    if (draftFilters.model || availableModels.length === 0) return;
+    updateDraft({ model: availableModels[0] });
+  }, [availableModels, draftFilters.model, updateDraft]);
 
-    const trimmedModel = query.model.trim();
+  React.useEffect(() => {
+    if (appliedFilters || !draftFilters.model.trim()) return;
+    setAppliedFilters({ ...draftRef.current, model: draftRef.current.model.trim() });
+  }, [appliedFilters, draftFilters.model]);
+
+  React.useEffect(() => {
+    if (!appliedFilters) return;
+    const trimmedModel = appliedFilters.model.trim();
     if (!trimmedModel) return;
 
     const params = new URLSearchParams();
     params.set('model', trimmedModel);
-    if (query.opponent.trim()) params.set('opponent', query.opponent.trim());
-    if (query.result !== 'any') params.set('result', query.result);
+    if (appliedFilters.opponent.trim()) params.set('opponent', appliedFilters.opponent.trim());
+    if (appliedFilters.result !== 'any') params.set('result', appliedFilters.result);
 
-    const minRoundsNum = Number(query.minRounds);
-    if (query.minRounds.trim().length > 0 && Number.isFinite(minRoundsNum)) {
+    const minRoundsNum = Number(appliedFilters.minRounds);
+    if (appliedFilters.minRounds.trim().length > 0 && Number.isFinite(minRoundsNum)) {
       params.set('minRounds', String(Math.max(0, Math.floor(minRoundsNum))));
     }
 
-    if (query.from.trim()) params.set('from', query.from.trim());
-    if (query.to.trim()) params.set('to', query.to.trim());
+    if (appliedFilters.from.trim()) params.set('from', appliedFilters.from.trim());
+    if (appliedFilters.to.trim()) params.set('to', appliedFilters.to.trim());
 
-    params.set('sortBy', query.sortBy);
-    params.set('sortDir', query.sortDir);
-    params.set('limit', String(query.limit));
-    params.set('offset', String(query.offset));
+    params.set('sortBy', appliedFilters.sortBy);
+    params.set('sortDir', appliedFilters.sortDir);
+    params.set('limit', String(appliedFilters.limit));
+    params.set('offset', String(offset));
 
     const requestId = latestRequestId.current + 1;
     latestRequestId.current = requestId;
@@ -179,40 +182,24 @@ export default function WormArenaMatches() {
     };
 
     void load();
-  }, [appliedQuery]);
+  }, [appliedFilters, offset]);
 
-  const canPrev = Boolean(appliedQuery && offset > 0);
-  const canNext = Boolean(appliedQuery && offset + effectiveLimit < total);
+  const canPrev = offset > 0;
+  const canNext = offset + effectiveLimit < total;
 
   const handlePrev = () => {
-    setAppliedQuery((prev) => {
-      if (!prev) return prev;
-      return { ...prev, offset: Math.max(0, prev.offset - prev.limit) };
-    });
+    setOffset((prev) => Math.max(0, prev - effectiveLimit));
   };
 
   const handleNext = () => {
-    setAppliedQuery((prev) => {
-      if (!prev) return prev;
-      return { ...prev, offset: prev.offset + prev.limit };
-    });
+    setOffset((prev) => prev + effectiveLimit);
   };
 
   const handleApply = () => {
-    const trimmedModel = model.trim();
+    const trimmedModel = draftRef.current.model.trim();
     if (!trimmedModel) return;
-    setAppliedQuery({
-      model: trimmedModel,
-      opponent: opponent.trim(),
-      result,
-      minRounds,
-      from,
-      to,
-      sortBy,
-      sortDir,
-      limit,
-      offset: 0,
-    });
+    setOffset(0);
+    setAppliedFilters({ ...draftRef.current, model: trimmedModel });
   };
 
   const rangeLabel = React.useMemo(() => {
@@ -221,6 +208,8 @@ export default function WormArenaMatches() {
     const end = Math.min(total, offset + rows.length);
     return `${start}-${end} of ${total}`;
   }, [offset, rows.length, total]);
+
+  const activePreset = draftFilters.minRounds.trim();
 
   return (
     <div className="worm-page">
@@ -233,7 +222,7 @@ export default function WormArenaMatches() {
           { label: 'Stats & Placement', href: '/worm-arena/stats' },
         ]}
         showMatchupLabel={false}
-        subtitle="Browse matches by model"
+        subtitle="Focus on the longest Worm Arena battles"
       />
 
       <main className="p-6 max-w-7xl mx-auto space-y-6">
@@ -245,7 +234,7 @@ export default function WormArenaMatches() {
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-3">
               <div className="space-y-1">
                 <div className="text-xs font-semibold text-muted-foreground">Model (required)</div>
-                <Select value={model} onValueChange={setModel}>
+                <Select value={draftFilters.model} onValueChange={(value) => updateDraft({ model: value })}>
                   <SelectTrigger className="worm-input">
                     <SelectValue placeholder="Select a model" />
                   </SelectTrigger>
@@ -261,12 +250,16 @@ export default function WormArenaMatches() {
 
               <div className="space-y-1">
                 <div className="text-xs font-semibold text-muted-foreground">Opponent contains</div>
-                <Input className="worm-input" value={opponent} onChange={(e) => setOpponent(e.target.value)} />
+                <Input
+                  className="worm-input"
+                  value={draftFilters.opponent}
+                  onChange={(e) => updateDraft({ opponent: e.target.value })}
+                />
               </div>
 
               <div className="space-y-1">
                 <div className="text-xs font-semibold text-muted-foreground">Result</div>
-                <Select value={result} onValueChange={(v) => setResult(v as any)}>
+                <Select value={draftFilters.result} onValueChange={(value) => updateDraft({ result: value as any })}>
                   <SelectTrigger className="worm-input">
                     <SelectValue />
                   </SelectTrigger>
@@ -280,29 +273,65 @@ export default function WormArenaMatches() {
               </div>
 
               <div className="space-y-1">
-                <div className="text-xs font-semibold text-muted-foreground">Min rounds</div>
+                <div className="flex items-center justify-between text-xs font-semibold text-muted-foreground">
+                  <span>Min rounds (long games)</span>
+                  <span className="font-normal text-[11px]">Long matches = max drama.</span>
+                </div>
                 <Input
                   className="worm-input"
-                  value={minRounds}
-                  onChange={(e) => setMinRounds(e.target.value)}
+                  value={draftFilters.minRounds}
+                  onChange={(e) => updateDraft({ minRounds: e.target.value })}
                   inputMode="numeric"
                 />
+                <div className="flex flex-wrap items-center gap-2 pt-1">
+                  {LONG_MATCH_PRESETS.map((preset) => {
+                    const active = preset.minRounds === activePreset;
+                    return (
+                      <Button
+                        key={preset.minRounds}
+                        type="button"
+                        size="sm"
+                        variant={active ? 'default' : 'outline'}
+                        onClick={() => updateDraft({ minRounds: preset.minRounds })}
+                      >
+                        {preset.label}
+                      </Button>
+                    );
+                  })}
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="ghost"
+                    onClick={() => updateDraft({ minRounds: '' })}
+                    disabled={!draftFilters.minRounds.trim()}
+                  >
+                    Clear
+                  </Button>
+                </div>
               </div>
 
               <div className="space-y-1">
                 <div className="text-xs font-semibold text-muted-foreground">From (ISO or ms)</div>
-                <Input className="worm-input" value={from} onChange={(e) => setFrom(e.target.value)} />
+                <Input
+                  className="worm-input"
+                  value={draftFilters.from}
+                  onChange={(e) => updateDraft({ from: e.target.value })}
+                />
               </div>
 
               <div className="space-y-1">
                 <div className="text-xs font-semibold text-muted-foreground">To (ISO or ms)</div>
-                <Input className="worm-input" value={to} onChange={(e) => setTo(e.target.value)} />
+                <Input
+                  className="worm-input"
+                  value={draftFilters.to}
+                  onChange={(e) => updateDraft({ to: e.target.value })}
+                />
               </div>
 
               <div className="space-y-1">
                 <div className="text-xs font-semibold text-muted-foreground">Sort</div>
                 <div className="grid grid-cols-2 gap-2">
-                  <Select value={sortBy} onValueChange={(v) => setSortBy(v as any)}>
+                  <Select value={draftFilters.sortBy} onValueChange={(value) => updateDraft({ sortBy: value as any })}>
                     <SelectTrigger className="worm-input">
                       <SelectValue />
                     </SelectTrigger>
@@ -314,7 +343,7 @@ export default function WormArenaMatches() {
                       <SelectItem value="scoreDelta">scoreDelta</SelectItem>
                     </SelectContent>
                   </Select>
-                  <Select value={sortDir} onValueChange={(v) => setSortDir(v as any)}>
+                  <Select value={draftFilters.sortDir} onValueChange={(value) => updateDraft({ sortDir: value as any })}>
                     <SelectTrigger className="worm-input">
                       <SelectValue />
                     </SelectTrigger>
@@ -328,7 +357,10 @@ export default function WormArenaMatches() {
 
               <div className="space-y-1">
                 <div className="text-xs font-semibold text-muted-foreground">Page size</div>
-                <Select value={String(limit)} onValueChange={(v) => setLimit(Number(v))}>
+                <Select
+                  value={String(draftFilters.limit)}
+                  onValueChange={(value) => updateDraft({ limit: Number(value) })}
+                >
                   <SelectTrigger className="worm-input">
                     <SelectValue />
                   </SelectTrigger>
@@ -343,7 +375,7 @@ export default function WormArenaMatches() {
             </div>
 
             <div className="flex flex-wrap items-center gap-3">
-              <Button onClick={handleApply} disabled={!model || isLoading}>
+              <Button onClick={handleApply} disabled={!draftFilters.model || isLoading}>
                 Apply
               </Button>
               <div className="text-sm text-muted-foreground">{isLoading ? 'Loading...' : rangeLabel}</div>
