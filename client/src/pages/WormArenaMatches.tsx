@@ -32,6 +32,18 @@ import {
   TableRow,
 } from '@/components/ui/table';
 
+type MatchFilters = {
+  model: string;
+  opponent: string;
+  result: SnakeBenchMatchSearchResultLabel | 'any';
+  minRounds: string;
+  from: string;
+  to: string;
+  sortBy: SnakeBenchMatchSearchSortBy;
+  sortDir: SnakeBenchMatchSearchSortDir;
+  limit: number;
+};
+
 function parseQueryParam(location: string, key: string): string | null {
   try {
     const query = location.split('?')[1] ?? '';
@@ -70,9 +82,13 @@ export default function WormArenaMatches() {
   const [offset, setOffset] = React.useState<number>(0);
 
   const [rows, setRows] = React.useState<SnakeBenchMatchSearchRow[]>([]);
+  const [appliedFilters, setAppliedFilters] = React.useState<MatchFilters | null>(null);
   const [total, setTotal] = React.useState<number>(0);
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
   const [error, setError] = React.useState<string | null>(null);
+  const latestRequestId = React.useRef<number>(0);
+
+  const effectiveLimit = appliedFilters?.limit ?? limit;
 
   const availableModels = React.useMemo(() => {
     const models = leaderboard.map((e) => e.modelSlug).filter(Boolean);
@@ -85,71 +101,99 @@ export default function WormArenaMatches() {
     }
   }, [availableModels, model]);
 
-  const fetchMatches = React.useCallback(
-    async (currentOffset: number = 0) => {
-      const trimmedModel = model.trim();
-      if (!trimmedModel) return;
+  React.useEffect(() => {
+    if (appliedFilters || !model.trim()) return;
+    setAppliedFilters({
+      model: model.trim(),
+      opponent: opponent.trim(),
+      result,
+      minRounds,
+      from,
+      to,
+      sortBy,
+      sortDir,
+      limit,
+    });
+  }, [appliedFilters, from, limit, minRounds, model, opponent, result, sortBy, sortDir, to]);
 
-      const params = new URLSearchParams();
-      params.set('model', trimmedModel);
-      if (opponent.trim()) params.set('opponent', opponent.trim());
-      if (result !== 'any') params.set('result', result);
+  React.useEffect(() => {
+    const trimmedModel = appliedFilters?.model.trim();
+    if (!trimmedModel) return;
 
-      const minRoundsNum = Number(minRounds);
-      if (minRounds.trim().length > 0 && Number.isFinite(minRoundsNum)) {
-        params.set('minRounds', String(Math.max(0, Math.floor(minRoundsNum))));
-      }
+    const params = new URLSearchParams();
+    params.set('model', trimmedModel);
+    if (appliedFilters.opponent.trim()) params.set('opponent', appliedFilters.opponent.trim());
+    if (appliedFilters.result !== 'any') params.set('result', appliedFilters.result);
 
-      if (from.trim()) params.set('from', from.trim());
-      if (to.trim()) params.set('to', to.trim());
+    const minRoundsNum = Number(appliedFilters.minRounds);
+    if (appliedFilters.minRounds.trim().length > 0 && Number.isFinite(minRoundsNum)) {
+      params.set('minRounds', String(Math.max(0, Math.floor(minRoundsNum))));
+    }
 
-      params.set('sortBy', sortBy);
-      params.set('sortDir', sortDir);
-      params.set('limit', String(limit));
-      params.set('offset', String(currentOffset));
+    if (appliedFilters.from.trim()) params.set('from', appliedFilters.from.trim());
+    if (appliedFilters.to.trim()) params.set('to', appliedFilters.to.trim());
 
+    params.set('sortBy', appliedFilters.sortBy);
+    params.set('sortDir', appliedFilters.sortDir);
+    params.set('limit', String(appliedFilters.limit));
+    params.set('offset', String(offset));
+
+    const requestId = latestRequestId.current + 1;
+    latestRequestId.current = requestId;
+
+    const load = async () => {
       setIsLoading(true);
       setError(null);
-
       try {
         const res = await apiRequest('GET', `/api/snakebench/matches?${params.toString()}`);
         const json = (await res.json()) as SnakeBenchMatchSearchResponse;
+        if (latestRequestId.current !== requestId) return;
         if (!json.success) {
           throw new Error(json.error || 'Failed to load matches');
         }
         setRows(json.rows ?? []);
         setTotal(json.total ?? 0);
       } catch (e: any) {
+        if (latestRequestId.current !== requestId) return;
         setError(e?.message || 'Failed to load matches');
         setRows([]);
         setTotal(0);
       } finally {
-        setIsLoading(false);
+        if (latestRequestId.current === requestId) {
+          setIsLoading(false);
+        }
       }
-    },
-    [from, limit, minRounds, model, opponent, result, sortBy, sortDir, to],
-  );
+    };
 
-  React.useEffect(() => {
-    if (model) {
-      void fetchMatches(offset);
-    }
-  }, [offset, fetchMatches, model]);
+    void load();
+  }, [appliedFilters, offset]);
 
   const canPrev = offset > 0;
-  const canNext = offset + limit < total;
+  const canNext = offset + effectiveLimit < total;
 
   const handlePrev = () => {
-    setOffset((prev) => Math.max(0, prev - limit));
+    setOffset((prev) => Math.max(0, prev - effectiveLimit));
   };
 
   const handleNext = () => {
-    setOffset((prev) => prev + limit);
+    setOffset((prev) => prev + effectiveLimit);
   };
 
   const handleApply = () => {
+    const trimmedModel = model.trim();
+    if (!trimmedModel) return;
     setOffset(0);
-    void fetchMatches(0);
+    setAppliedFilters({
+      model: trimmedModel,
+      opponent: opponent.trim(),
+      result,
+      minRounds,
+      from,
+      to,
+      sortBy,
+      sortDir,
+      limit,
+    });
   };
 
   const rangeLabel = React.useMemo(() => {
