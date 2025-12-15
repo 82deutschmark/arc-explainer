@@ -1,7 +1,7 @@
 ### Version 6.1.53  Dec 14, 2025 (PENDING TESTING)
 
 - **Worm Arena replay: show final win/loss/tie in reasoning panels** (Author: Cascade)
-  - Reasoning panels now append a final outcome line on the last frame, so "Next move" mode never ends with an empty panel.
+  - Reasoning panels now append a verbose final summary on the last frame (result, final score, death info, token totals, and cost), so "Next move" mode never ends with an empty panel.
   - **Files Modified**: `client/src/pages/WormArena.tsx`, `CHANGELOG.md`
 
 ### Version 6.1.52  Dec 18, 2025 (PENDING TESTING)
