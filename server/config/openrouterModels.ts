@@ -93,6 +93,10 @@ const STRUCTURED_OUTPUT_FALSE = new Set<string>([
 const STREAMING_FALSE = new Set<string>(['google/gemini-3-pro-preview']);
 
 function loadCatalog(): OpenRouterCatalogModel[] {
+  // Only load catalog in Node.js environment (server-side)
+  if (typeof process === 'undefined') {
+    return [];
+  }
   const catalogFilePath = path.resolve(process.cwd(), 'server', 'config', 'openrouter-catalog.json');
   const raw = fs.readFileSync(catalogFilePath, 'utf-8');
   const parsed = JSON.parse(raw) as { models?: OpenRouterCatalogModel[] };

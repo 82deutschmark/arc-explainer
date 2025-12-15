@@ -1359,7 +1359,8 @@ const STATIC_MODELS: ModelConfig[] = [
 
 ];
 
-const OPENROUTER_MODELS = buildOpenRouterModels();
+// Only build OpenRouter models in Node.js environment (server-side)
+const OPENROUTER_MODELS = typeof process !== 'undefined' ? buildOpenRouterModels() : [];
 
 // Final export merges static entries with catalog-driven OpenRouter models (catalog is SoT).
 export const MODELS: ModelConfig[] = [
