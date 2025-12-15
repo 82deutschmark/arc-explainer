@@ -21,6 +21,13 @@ export interface WormArenaControlBarProps {
   totalRounds: number;
   showNextMove: boolean;
   onToggleThought: (show: boolean) => void;
+  playerALabel?: string;
+  playerBLabel?: string;
+  playerAScore?: number;
+  playerBScore?: number;
+  matchId?: string | null;
+  onCopyMatchId?: () => void;
+  statsModels?: string[];
 }
 
 export function WormArenaControlBar({
@@ -34,9 +41,18 @@ export function WormArenaControlBar({
   totalRounds,
   showNextMove,
   onToggleThought,
+  playerALabel,
+  playerBLabel,
+  playerAScore,
+  playerBScore,
+  matchId,
+  onCopyMatchId,
+  statsModels,
 }: WormArenaControlBarProps) {
   const handleCurrentClick = React.useCallback(() => onToggleThought(false), [onToggleThought]);
   const handleNextClick = React.useCallback(() => onToggleThought(true), [onToggleThought]);
+  const canShowScores = playerALabel && playerBLabel;
+  const canShowMatchId = matchId && typeof onCopyMatchId === 'function';
 
   return (
     <div className="flex flex-col gap-3 rounded-xl border bg-card/80 p-4 shadow-sm">
@@ -64,27 +80,70 @@ export function WormArenaControlBar({
         </div>
       </div>
 
+      {(canShowScores || canShowMatchId) && (
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+          {canShowScores && (
+            <div className="text-sm font-semibold text-worm-ink flex flex-wrap items-center gap-x-3 gap-y-1">
+              <span className="text-muted-foreground font-medium">Scores:</span>
+              <span className="text-yellow-700">
+                {playerALabel}: {Number.isFinite(playerAScore) ? Math.max(0, Math.floor(playerAScore ?? 0)) : 0}
+              </span>
+              <span className="text-red-700">
+                {playerBLabel}: {Number.isFinite(playerBScore) ? Math.max(0, Math.floor(playerBScore ?? 0)) : 0}
+              </span>
+            </div>
+          )}
+
+          {canShowMatchId && (
+            <div className="flex items-center gap-2 text-xs">
+              <span className="font-semibold text-worm-ink">Match ID:</span>
+              <span className="font-mono">{matchId}</span>
+              <Button size="sm" variant="outline" onClick={onCopyMatchId}>
+                Copy
+              </Button>
+            </div>
+          )}
+        </div>
+      )}
+
       <div className="flex items-center justify-center gap-3">
-        <span className="text-sm text-muted-foreground">Show thoughts for:</span>
+        <span className="text-sm text-muted-foreground">Reasoning shown:</span>
         <div className="flex rounded-md border bg-background overflow-hidden">
           <Button
             size="sm"
-            variant={showNextMove ? 'ghost' : 'default'}
-            className={`rounded-none first:rounded-l-md ${!showNextMove ? 'bg-worm-blue text-white hover:bg-worm-blue-hover' : ''}`}
+            variant="ghost"
+            aria-pressed={!showNextMove}
+            className={`rounded-none first:rounded-l-md ${!showNextMove ? 'bg-worm-blue text-white hover:bg-worm-blue-hover' : 'text-worm-ink hover:bg-muted'}`}
             onClick={handleCurrentClick}
           >
-            Current move
+            This move
           </Button>
           <Button
             size="sm"
-            variant={showNextMove ? 'default' : 'ghost'}
-            className={`rounded-none last:rounded-r-md ${showNextMove ? 'bg-worm-blue text-white hover:bg-worm-blue-hover' : ''}`}
+            variant="ghost"
+            aria-pressed={showNextMove}
+            className={`rounded-none last:rounded-r-md ${showNextMove ? 'bg-worm-blue text-white hover:bg-worm-blue-hover' : 'text-worm-ink hover:bg-muted'}`}
             onClick={handleNextClick}
           >
-            Upcoming move
+            Next move
           </Button>
         </div>
       </div>
+
+      <div className="text-center text-xs text-muted-foreground">
+        This move uses the current round. Next move previews the upcoming round.
+      </div>
+
+      {Array.isArray(statsModels) && statsModels.length > 0 && (
+        <div className="text-xs flex flex-wrap justify-center gap-2">
+          <span className="text-muted-foreground">View stats:</span>
+          {statsModels.map((slug) => (
+            <a key={slug} href={`/worm-arena/stats?model=${encodeURIComponent(slug)}`} className="underline font-mono">
+              {slug}
+            </a>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

@@ -151,6 +151,7 @@ export const wormArenaStreamController = {
     if (isBatch) {
       // Batch initialization with opponent list
       sseStreamManager.sendEvent(sessionId, 'batch.init', {
+        matchId: sessionId,
         totalMatches: pending.opponents!.length,
         modelA: pending.payload.modelA,
         opponents: pending.opponents,
@@ -158,6 +159,7 @@ export const wormArenaStreamController = {
     } else {
       // Single match initialization (for backward compatibility)
       sseStreamManager.sendEvent(sessionId, 'stream.init', {
+        matchId: sessionId,
         sessionId,
         createdAt: new Date(connection.createdAt).toISOString(),
         payload: { modelA: pending.payload.modelA, modelB: pending.payload.modelB },
@@ -187,6 +189,7 @@ export const wormArenaStreamController = {
 
           // Emit match start with specific opponent
           const matchStartEvent: WormArenaBatchMatchStart = {
+            matchId: sessionId,
             index: matchNum,
             total: opponents.length,
             modelA: pending.payload.modelA,
@@ -205,10 +208,14 @@ export const wormArenaStreamController = {
               onFrame: (frame) => {
                 sseStreamManager.sendEvent(sessionId, 'stream.frame', frame);
               },
+              onChunk: (chunk) => {
+                sseStreamManager.sendEvent(sessionId, 'stream.chunk', chunk);
+              },
             });
 
             // Emit match complete
             const matchCompleteEvent: WormArenaBatchMatchComplete = {
+              matchId: sessionId,
               index: matchNum,
               total: opponents.length,
               gameId: result.gameId,
@@ -234,6 +241,7 @@ export const wormArenaStreamController = {
 
         // Emit batch complete
         const batchCompleteEvent: WormArenaBatchComplete = {
+          matchId: sessionId,
           totalMatches: opponents.length,
           completedMatches: results.length,
           failedMatches: failedCount,
@@ -251,8 +259,12 @@ export const wormArenaStreamController = {
           onFrame: (frame) => {
             sseStreamManager.sendEvent(sessionId, 'stream.frame', frame);
           },
+          onChunk: (chunk) => {
+            sseStreamManager.sendEvent(sessionId, 'stream.chunk', chunk);
+          },
         });
         const summary: WormArenaFinalSummary = {
+          matchId: sessionId,
           gameId: result.gameId,
           modelA: result.modelA,
           modelB: result.modelB,

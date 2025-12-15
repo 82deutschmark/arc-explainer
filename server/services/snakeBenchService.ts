@@ -29,6 +29,8 @@ import type {
   WormArenaGreatestHitGame,
   WormArenaStreamStatus,
   WormArenaFrameEvent,
+  SnakeBenchMatchSearchQuery,
+  SnakeBenchMatchSearchRow,
 } from '../../shared/types.js';
 import { logger } from '../utils/logger.ts';
 import { repositoryService } from '../repositories/RepositoryService.ts';
@@ -161,7 +163,10 @@ export class SnakeBenchService {
     }
   }
 
-  private prepareRunMatch(request: SnakeBenchRunMatchRequest): {
+  private prepareRunMatch(
+    request: SnakeBenchRunMatchRequest,
+    opts: { enableLiveDb?: boolean; enableStdoutEvents?: boolean } = {},
+  ): {
     modelA: string;
     modelB: string;
     width: number;
@@ -244,12 +249,19 @@ export class SnakeBenchService {
       ...process.env,
       PYTHONIOENCODING: 'utf-8',
       PYTHONUTF8: '1',
+      PYTHONUNBUFFERED: '1',
     };
 
     // ARC Explainer runs do not use SnakeBench's Supabase DB or Supabase Storage.
     // We persist via our own Postgres + local replay JSON under external/SnakeBench/backend/completed_games.
     // ARC Explainer handles DB persistence via its ingest queue, so disable SnakeBench's internal DB writes.
-    env.SNAKEBENCH_DISABLE_INTERNAL_DB = '1';
+    if (!opts.enableLiveDb) {
+      env.SNAKEBENCH_DISABLE_INTERNAL_DB = '1';
+    }
+
+    if (opts.enableStdoutEvents) {
+      env.ARC_EXPLAINER_STDOUT_EVENTS = '1';
+    }
 
     const expectedOpenRouterBaseUrl = 'https://openrouter.ai/api/v1';
     const configuredOpenRouterBaseUrl = (env.OPENROUTER_BASE_URL || '').trim();
@@ -336,6 +348,7 @@ export class SnakeBenchService {
     handlers: {
       onStatus?: (status: WormArenaStreamStatus) => void;
       onFrame?: (frame: WormArenaFrameEvent) => void;
+      onChunk?: (chunk: any) => void;
       onComplete?: (result: SnakeBenchRunMatchResult) => void;
       onError?: (err: Error) => void;
     } = {},
@@ -352,7 +365,7 @@ export class SnakeBenchService {
       backendDir,
       spawnOpts,
       timeoutMs,
-    } = this.prepareRunMatch(request);
+    } = this.prepareRunMatch(request, { enableLiveDb: true, enableStdoutEvents: true });
 
     return await new Promise<SnakeBenchRunMatchResult>((resolve, reject) => {
       const child = spawn(pythonBin, [runnerPath], spawnOpts);
@@ -389,6 +402,12 @@ export class SnakeBenchService {
       let livePollHandle: NodeJS.Timeout | null = null;
       let pollInFlight = false;
       let lastRoundSent = 0;
+      let pollErrorReported = false;
+      let pollMissingReported = false;
+      let pollNoStateReported = false;
+
+      const stdoutEventsEnabled =
+        String(spawnOpts.env?.ARC_EXPLAINER_STDOUT_EVENTS ?? '').trim() === '1';
 
       const stopLivePolling = () => {
         if (livePollHandle) {
@@ -399,6 +418,7 @@ export class SnakeBenchService {
 
       const startLivePolling = (gameId: string) => {
         if (!handlers.onFrame || livePollHandle) return;
+        if (stdoutEventsEnabled) return;
         if (!repositoryService.isConnected() || !repositoryService.db) return;
 
         livePollHandle = setInterval(async () => {
@@ -412,7 +432,25 @@ export class SnakeBenchService {
               [gameId],
             );
             const row = rows?.[0];
-            if (!row || !row.current_state) return;
+            if (!row) {
+              if (!pollMissingReported) {
+                pollMissingReported = true;
+                const msg = `Live frame polling: no row found in public.games for gameId=${gameId}`;
+                logger.warn(msg, 'snakebench-service');
+                handlers.onStatus?.({ state: 'in_progress', message: msg });
+              }
+              return;
+            }
+
+            if (!row.current_state) {
+              if (!pollNoStateReported) {
+                pollNoStateReported = true;
+                const msg = `Live frame polling: public.games.current_state is empty for gameId=${gameId}`;
+                logger.warn(msg, 'snakebench-service');
+                handlers.onStatus?.({ state: 'in_progress', message: msg });
+              }
+              return;
+            }
 
             const stateRaw = row.current_state;
             const state =
@@ -443,7 +481,18 @@ export class SnakeBenchService {
               timestamp: Date.now(),
             });
           } catch (err) {
-            // Ignore polling errors; stdout streaming still works.
+            if (!pollErrorReported) {
+              pollErrorReported = true;
+              const msg = err instanceof Error ? err.message : String(err);
+              logger.warn(
+                `Live frame polling error for gameId=${gameId}: ${msg}`,
+                'snakebench-service',
+              );
+              handlers.onStatus?.({
+                state: 'in_progress',
+                message: `Live frame polling error: ${msg}`,
+              });
+            }
           } finally {
             pollInFlight = false;
           }
@@ -479,8 +528,10 @@ export class SnakeBenchService {
 
           if (!discoveredGameId) {
             const inserted = line.match(/Inserted initial game record\s+([0-9a-fA-F-]+)/);
-            if (inserted?.[1]) {
-              discoveredGameId = inserted[1];
+            const gameIdLine = line.match(/^Game ID:\s*([0-9a-fA-F-]+)\s*$/);
+            const discovered = inserted?.[1] ?? gameIdLine?.[1];
+            if (discovered) {
+              discoveredGameId = discovered;
               startLivePolling(discoveredGameId);
             }
           }
@@ -507,6 +558,18 @@ export class SnakeBenchService {
                   frame: evt.frame ?? evt,
                   timestamp: Date.now(),
                 });
+                continue;
+              }
+              if (evt?.type === 'chunk' && handlers.onChunk) {
+                handlers.onChunk(evt.chunk ?? evt);
+                continue;
+              }
+              if (evt?.type === 'game.init') {
+                if (!discoveredGameId && typeof evt.gameId === 'string' && evt.gameId.trim().length > 0) {
+                  const gameId = evt.gameId.trim();
+                  discoveredGameId = gameId;
+                  startLivePolling(gameId);
+                }
                 continue;
               }
               if (evt?.type === 'status') {
@@ -890,6 +953,12 @@ export class SnakeBenchService {
       logger.error(`Failed to list SnakeBench games: ${message}`, 'snakebench-service');
       throw new Error('Failed to list SnakeBench games');
     }
+  }
+
+  async searchMatches(
+    query: SnakeBenchMatchSearchQuery,
+  ): Promise<{ rows: SnakeBenchMatchSearchRow[]; total: number }> {
+    return await repositoryService.snakeBench.searchMatches(query);
   }
 
   async getGame(gameId: string): Promise<any> {

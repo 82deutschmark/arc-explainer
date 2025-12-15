@@ -189,18 +189,47 @@ const navigationItems: NavItem[] = [
     ]
   },
   {
-    type: 'link',
+    type: 'dropdown',
     title: 'SnakeBench',
-    href: '/snakebench',
     icon: Gamepad2,
-    description: 'Official SnakeBench project (upstream)'
-  },
-  {
-    type: 'link',
-    title: 'Worm Arena',
-    href: '/worm-arena',
-    icon: Worm,
-    description: 'Our local SnakeBench with bring-your-own-key'
+    description: 'SnakeBench and Worm Arena tools',
+    children: [
+      {
+        type: 'link',
+        title: 'SnakeBench (Upstream)',
+        href: '/snakebench',
+        icon: Gamepad2,
+        description: 'Official SnakeBench project (upstream)'
+      },
+      {
+        type: 'link',
+        title: 'Worm Arena (Replay)',
+        href: '/worm-arena',
+        icon: Worm,
+        description: 'Replay a saved match by matchId'
+      },
+      {
+        type: 'link',
+        title: 'Worm Arena (Live)',
+        href: '/worm-arena/live',
+        icon: Worm,
+        description: 'Run and watch a live match'
+      },
+      {
+        type: 'link',
+        title: 'Worm Arena (Matches)',
+        href: '/worm-arena/matches',
+        icon: Worm,
+        description: 'Browse matches by model (DB-backed)'
+      },
+      {
+        type: 'link',
+        title: 'Worm Arena (Stats)',
+        href: '/worm-arena/stats',
+        icon: Worm,
+        description: 'Ratings, placements, and leaderboards'
+      }
+    ]
   },
   {
     type: 'link',
