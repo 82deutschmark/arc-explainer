@@ -16,6 +16,8 @@
 import { logger } from './logger.ts';
 import { jsonParser } from './JsonParser.js';
 
+const unexpectedTypeWarningKeys = new Set<string>();
+
 /**
  * Safe JSON parsing with fallback support
  * Handles various input types and provides comprehensive error handling
@@ -56,7 +58,11 @@ export function safeJsonParse<T>(value: any, fieldName?: string, fallback: T | n
   
   // For other types, return fallback
   if (fieldName) {
-    logger.warn(`Unexpected type for ${fieldName}: ${typeof value}`, 'utilities');
+    const key = `${fieldName}:${typeof value}`;
+    if (!unexpectedTypeWarningKeys.has(key)) {
+      unexpectedTypeWarningKeys.add(key);
+      logger.warn(`Unexpected type for ${fieldName}: ${typeof value}`, 'utilities');
+    }
   }
   return fallback;
 }
@@ -405,6 +411,15 @@ export function sanitizeGridData(gridData: any): number[][] | null {
     }
     
     const sanitizedGrid: number[][] = [];
+    let nullOrUndefinedRowCount = 0;
+    let nonArrayRowCount = 0;
+    let invalidStringCellCount = 0;
+    let objectCellExtractedCount = 0;
+    let malformedArrayCellCount = 0;
+    let recoveredFromMalformedArrayCount = 0;
+    let invalidCellTypeCount = 0;
+    let clampedCellCount = 0;
+    let detailedLogBudget = 5;
     
     for (let rowIndex = 0; rowIndex < parsedGrid.length; rowIndex++) {
       const row = parsedGrid[rowIndex];
@@ -412,12 +427,20 @@ export function sanitizeGridData(gridData: any): number[][] | null {
       // CRITICAL FIX: Skip null/undefined rows instead of failing entire grid
       // This handles legacy data with corrupt rows while preserving valid data
       if (row === null || row === undefined) {
-        logger.warn(`Grid row ${rowIndex} is null/undefined - skipping`, 'utilities');
+        nullOrUndefinedRowCount++;
+        if (detailedLogBudget > 0) {
+          detailedLogBudget--;
+          logger.warn(`Grid row ${rowIndex} is null/undefined - skipping`, 'utilities');
+        }
         continue;
       }
       
       if (!Array.isArray(row)) {
-        logger.warn(`Grid row ${rowIndex} is not an array - skipping`, 'utilities');
+        nonArrayRowCount++;
+        if (detailedLogBudget > 0) {
+          detailedLogBudget--;
+          logger.warn(`Grid row ${rowIndex} is not an array - skipping`, 'utilities');
+        }
         continue;
       }
       
@@ -434,7 +457,11 @@ export function sanitizeGridData(gridData: any): number[][] | null {
         } else if (typeof cell === 'string') {
           const parsed = parseInt(cell, 10);
           if (isNaN(parsed)) {
-            logger.warn(`Invalid grid cell at [${rowIndex}][${colIndex}]: "${cell}" - setting to 0`, 'utilities');
+            invalidStringCellCount++;
+            if (detailedLogBudget > 0) {
+              detailedLogBudget--;
+              logger.warn(`Invalid grid cell at [${rowIndex}][${colIndex}]: "${cell}" - setting to 0`, 'utilities');
+            }
             numericValue = 0;
           } else {
             numericValue = parsed;
@@ -462,34 +489,61 @@ export function sanitizeGridData(gridData: any): number[][] | null {
               extractedValue = cell[0]; // Single-element array
             } else if (cell.length > 1) {
               // Multi-element array - CRITICAL ERROR from model misunderstanding grid structure
-              logger.error(`Grid cell at [${rowIndex}][${colIndex}] is array with ${cell.length} elements - this indicates model output malformation`, 'utilities');
-              logger.error(`Array content: ${JSON.stringify(cell).slice(0, 200)}`, 'utilities');
+              malformedArrayCellCount++;
+              if (detailedLogBudget > 0) {
+                detailedLogBudget--;
+                logger.error(
+                  `Grid cell at [${rowIndex}][${colIndex}] is array with ${cell.length} elements - this indicates model output malformation`,
+                  'utilities'
+                );
+                logger.error(`Array content: ${JSON.stringify(cell).slice(0, 200)}`, 'utilities');
+              }
               // Attempt recovery: find first valid integer in range 0-9
               const firstValidInt = cell.find(v => typeof v === 'number' && Number.isInteger(v) && v >= 0 && v <= 9);
               if (firstValidInt !== undefined) {
                 extractedValue = firstValidInt;
-                logger.warn(`Recovered value ${firstValidInt} from malformed array at [${rowIndex}][${colIndex}]`, 'utilities');
+                recoveredFromMalformedArrayCount++;
+                if (detailedLogBudget > 0) {
+                  detailedLogBudget--;
+                  logger.warn(`Recovered value ${firstValidInt} from malformed array at [${rowIndex}][${colIndex}]`, 'utilities');
+                }
               }
             }
           }
           
           if (extractedValue !== null && Number.isInteger(extractedValue)) {
             numericValue = extractedValue;
-            logger.warn(`Extracted number ${extractedValue} from object at [${rowIndex}][${colIndex}]`, 'utilities');
+            objectCellExtractedCount++;
+            if (detailedLogBudget > 0) {
+              detailedLogBudget--;
+              logger.warn(`Extracted number ${extractedValue} from object at [${rowIndex}][${colIndex}]`, 'utilities');
+            }
           } else {
             // CRITICAL DEBUG: Log what the object actually contains
-            logger.warn(`Invalid grid cell type at [${rowIndex}][${colIndex}]: ${typeof cell} - setting to 0`, 'utilities');
-            logger.warn(`Cell object content: ${JSON.stringify(cell)}`, 'utilities');
+            invalidCellTypeCount++;
+            if (detailedLogBudget > 0) {
+              detailedLogBudget--;
+              logger.warn(`Invalid grid cell type at [${rowIndex}][${colIndex}]: ${typeof cell} - setting to 0`, 'utilities');
+              logger.warn(`Cell object content: ${JSON.stringify(cell)}`, 'utilities');
+            }
             numericValue = 0;
           }
         } else {
-          logger.warn(`Invalid grid cell type at [${rowIndex}][${colIndex}]: ${typeof cell} - setting to 0`, 'utilities');
+          invalidCellTypeCount++;
+          if (detailedLogBudget > 0) {
+            detailedLogBudget--;
+            logger.warn(`Invalid grid cell type at [${rowIndex}][${colIndex}]: ${typeof cell} - setting to 0`, 'utilities');
+          }
           numericValue = 0;
         }
         
         // Ensure value is in valid ARC range (0-9)
         if (numericValue < 0 || numericValue > 9) {
-          logger.warn(`Grid cell value ${numericValue} at [${rowIndex}][${colIndex}] outside valid range (0-9) - clamping`, 'utilities');
+          clampedCellCount++;
+          if (detailedLogBudget > 0) {
+            detailedLogBudget--;
+            logger.warn(`Grid cell value ${numericValue} at [${rowIndex}][${colIndex}] outside valid range (0-9) - clamping`, 'utilities');
+          }
           numericValue = Math.max(0, Math.min(9, Math.round(numericValue)));
         }
         
@@ -503,6 +557,30 @@ export function sanitizeGridData(gridData: any): number[][] | null {
     if (sanitizedGrid.length === 0) {
       logger.warn('Grid sanitization resulted in empty grid - all rows were invalid', 'utilities');
       return null;
+    }
+
+    if (
+      nullOrUndefinedRowCount > 0 ||
+      nonArrayRowCount > 0 ||
+      invalidStringCellCount > 0 ||
+      objectCellExtractedCount > 0 ||
+      malformedArrayCellCount > 0 ||
+      recoveredFromMalformedArrayCount > 0 ||
+      invalidCellTypeCount > 0 ||
+      clampedCellCount > 0
+    ) {
+      logger.warn(
+        `Grid sanitization summary: ` +
+          `nullRows=${nullOrUndefinedRowCount}, ` +
+          `nonArrayRows=${nonArrayRowCount}, ` +
+          `invalidStringCells=${invalidStringCellCount}, ` +
+          `objectExtracted=${objectCellExtractedCount}, ` +
+          `malformedArrayCells=${malformedArrayCellCount}, ` +
+          `recoveredFromMalformedArray=${recoveredFromMalformedArrayCount}, ` +
+          `invalidCellTypes=${invalidCellTypeCount}, ` +
+          `clampedCells=${clampedCellCount}`,
+        'utilities'
+      );
     }
     
     return sanitizedGrid;

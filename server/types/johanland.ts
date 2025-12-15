@@ -190,11 +190,11 @@ export interface JohanLandIngestionProgress {
 export interface JohanLandEnrichedAttempt {
   puzzleId: string;
   modelName: string;
-  patternDescription: string | null;
-  solvingStrategy: string | null;
+  patternDescription: string;
+  solvingStrategy: string;
   reasoningLog: string;
   hints: string[];
-  confidence: null; // Johan_Land doesn't provide confidence
+  confidence: number; // Johan_Land doesn't provide confidence
 
   // Token counts
   inputTokens: number;
@@ -209,13 +209,16 @@ export interface JohanLandEnrichedAttempt {
   apiProcessingTimeMs: number;
 
   // Prediction
-  predictedOutputGrid: number[][];
-  isPredictionCorrect: boolean;
-  predictionAccuracyScore?: number;
+  predictedOutputGrid: number[][] | null;
+  isPredictionCorrect: boolean | null;
 
   // Multi-test support (currently all single test)
   hasMultiplePredictions: boolean;
-  multiplePredictedOutputs?: number[][][];
+  multiplePredictedOutputs?: number[][][] | null;
+  multiTestPredictionGrids?: number[][][] | null;
+  multiTestResults?: any[] | null;
+  multiTestAllCorrect?: boolean | null;
+  multiTestAverageAccuracy?: number | null;
 
   // Prompt tracking
   systemPromptUsed: string | null;

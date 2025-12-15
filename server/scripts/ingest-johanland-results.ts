@@ -16,7 +16,6 @@ import { existsSync } from 'fs';
 import { PuzzleLoader } from '../services/puzzleLoader.ts';
 import { validateSolverResponse, validateSolverResponseMulti } from '../services/responseValidator.ts';
 import { repositoryService } from '../repositories/RepositoryService.ts';
-import { determineCorrectness } from '../../shared/utils/correctness.ts';
 
 import type {
   JohanLandIngestionConfig,
@@ -238,30 +237,49 @@ async function validateAndEnrichAttempt(
     return null;
   }
 
-  // Validate against the specified test case (usually 0)
-  const testData = testCases[metadata.pair_index];
-  if (!testData) {
-    console.warn(`Puzzle ${metadata.task_id}: test case ${metadata.pair_index} not found`);
-    return null;
-  }
+  const isMultiTest = testCases.length > 1;
+  const promptTemplateId = 'external-johan-land';
 
-  const validationResult = validateSolverResponse(
-    { predictedOutput: attempt.answer },
-    testData.output,
-    'external-johan-land',
-    null
-  );
+  let predictedOutputGrid: number[][] | null = attempt.answer;
+  let isPredictionCorrect: boolean | null = null;
+  let multiplePredictedOutputs: number[][][] | null = null;
+  let multiTestPredictionGrids: number[][][] | null = null;
+  let multiTestResults: any[] | null = null;
+  let multiTestAllCorrect: boolean | null = null;
+  let multiTestAverageAccuracy: number | null = null;
 
-  // Validate against all test cases to support multi-test puzzles
-  const hasMultiplePredictions = testCases.length > 1;
-  const multiplePredictedOutputs: number[][][] = [];
+  if (isMultiTest) {
+    predictedOutputGrid = null;
+    multiplePredictedOutputs = Array.from({ length: testCases.length }, () => attempt.answer);
+    const correctAnswers: number[][][] = testCases.map((tc: any) => tc.output);
 
-  if (hasMultiplePredictions) {
-    // Same prediction is used for all test cases
-    // This is the nature of Johan_Land - it provides a single answer
-    for (let i = 0; i < testCases.length; i++) {
-      multiplePredictedOutputs.push(attempt.answer);
+    const multi = validateSolverResponseMulti(
+      { multiplePredictedOutputs },
+      correctAnswers,
+      promptTemplateId,
+      null
+    );
+
+    multiTestPredictionGrids = (multi.multiTestPredictionGrids as number[][][]) ?? null;
+    multiTestResults = multi.multiTestResults ?? null;
+    multiTestAllCorrect = multi.multiTestAllCorrect ?? null;
+    multiTestAverageAccuracy = multi.multiTestAverageAccuracy ?? null;
+  } else {
+    // Validate against the specified test case (usually 0)
+    const testData = testCases[metadata.pair_index];
+    if (!testData) {
+      console.warn(`Puzzle ${metadata.task_id}: test case ${metadata.pair_index} not found`);
+      return null;
     }
+
+    const validationResult = validateSolverResponse(
+      { predictedOutput: attempt.answer },
+      testData.output,
+      promptTemplateId,
+      null
+    );
+
+    isPredictionCorrect = validationResult.isPredictionCorrect;
   }
 
   // Calculate processing time
@@ -280,7 +298,7 @@ async function validateAndEnrichAttempt(
     solvingStrategy: extracted.solving_strategy || 'Strategy extracted from reasoning log',
     reasoningLog: extracted.full_reasoning,
     hints: [],
-    confidence: validationResult.trustworthinessScore,
+    confidence: 50,
 
     // Tokens
     inputTokens: metadata.usage.prompt_tokens,
@@ -295,18 +313,21 @@ async function validateAndEnrichAttempt(
     apiProcessingTimeMs: processingTimeMs,
 
     // Prediction
-    predictedOutputGrid: attempt.answer,
-    isPredictionCorrect: validationResult.isPredictionCorrect,
-    predictionAccuracyScore: validationResult.trustworthinessScore,
+    predictedOutputGrid,
+    isPredictionCorrect,
 
     // Multi-test support
-    hasMultiplePredictions,
-    multiplePredictedOutputs: hasMultiplePredictions ? multiplePredictedOutputs : undefined,
+    hasMultiplePredictions: isMultiTest,
+    multiplePredictedOutputs,
+    multiTestPredictionGrids,
+    multiTestResults,
+    multiTestAllCorrect,
+    multiTestAverageAccuracy,
 
     // Prompt tracking
     systemPromptUsed: '',
     userPromptUsed: '',
-    promptTemplateId: 'external-johan-land',
+    promptTemplateId,
     customPromptText: '',
 
     // Raw data preservation
@@ -353,9 +374,12 @@ async function saveToDatabaseIfNotDryRun(
       apiProcessingTimeMs: enrichedData.apiProcessingTimeMs,
       predictedOutputGrid: enrichedData.predictedOutputGrid,
       isPredictionCorrect: enrichedData.isPredictionCorrect,
-      predictionAccuracyScore: enrichedData.predictionAccuracyScore,
       hasMultiplePredictions: enrichedData.hasMultiplePredictions,
       multiplePredictedOutputs: enrichedData.multiplePredictedOutputs,
+      multiTestPredictionGrids: enrichedData.multiTestPredictionGrids,
+      multiTestResults: enrichedData.multiTestResults,
+      multiTestAllCorrect: enrichedData.multiTestAllCorrect,
+      multiTestAverageAccuracy: enrichedData.multiTestAverageAccuracy,
       promptTemplateId: enrichedData.promptTemplateId,
       providerRawResponse: enrichedData.providerRawResponse,
       reasoningEffort: enrichedData.reasoningEffort
@@ -458,7 +482,7 @@ async function processPuzzle(
       }
     } else if (config.forceOverwrite) {
       if (config.verbose) {
-        console.log(`Note: Force overwrite flag set but no delete method available. Existing entries will be replaced by save.`);
+        console.log(`Force overwrite enabled: existing entries for ${puzzleId} / ${modelName} will be deleted before insert.`);
       }
     }
 
@@ -483,6 +507,23 @@ async function processPuzzle(
       continue;
     }
 
+    // Force overwrite: delete existing rows for this puzzle/model before insert
+    if (config.forceOverwrite && !config.dryRun) {
+      try {
+        const existing = await repositoryService.explanations.getExplanationsForPuzzle(puzzleId);
+        const matching = existing.filter((exp) => exp.modelName === modelName);
+        for (const exp of matching) {
+          await repositoryService.explanations.deleteExplanation(exp.id);
+        }
+      } catch (error: any) {
+        if (config.verbose) {
+          console.warn(
+            `Force overwrite delete failed for ${puzzleId} / ${modelName}: ${error?.message || String(error)}`
+          );
+        }
+      }
+    }
+
     // Save to database
     const saved = await saveToDatabaseIfNotDryRun(enrichedData, config);
 
@@ -490,8 +531,7 @@ async function processPuzzle(
       progress.successful++;
       progress.successDetails.push({
         puzzleId: enrichedData.puzzleId,
-        isCorrect: enrichedData.isPredictionCorrect,
-        accuracy: enrichedData.predictionAccuracyScore
+        isCorrect: enrichedData.isPredictionCorrect ?? enrichedData.multiTestAllCorrect ?? false
       });
     } else {
       progress.failed++;
@@ -550,17 +590,17 @@ async function main(): Promise<void> {
     .map((f) => f.replace('.json', ''))
     .sort();
 
-  // Apply limit
-  if (config.limit) {
-    puzzleIds = puzzleIds.slice(0, config.limit);
-  }
-
   // Apply resume
   if (config.resumeFrom) {
     const resumeIndex = puzzleIds.indexOf(config.resumeFrom);
     if (resumeIndex >= 0) {
       puzzleIds = puzzleIds.slice(resumeIndex);
     }
+  }
+
+  // Apply limit
+  if (config.limit) {
+    puzzleIds = puzzleIds.slice(0, config.limit);
   }
 
   const progress: JohanLandIngestionProgress = {
