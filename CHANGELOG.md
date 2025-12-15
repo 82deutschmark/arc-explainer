@@ -1,5 +1,28 @@
 # New entires at the top, use proper SemVer!
 
+### Version 6.1.62  Dec 15, 2025 (PENDING TESTING)
+
+- **Worm Arena: auto-publish SnakeBench replays to GitHub + persist replay_path** (Author: Cascade)
+  - SnakeBench ingest now uploads completed replay JSONs to GitHub (main branch) so Railway can fetch them reliably.
+  - After publish, the DB `public.games.replay_path` is updated to the GitHub raw URL.
+  - GitHub raw replay fetch 404s are now logged as warnings (expected for older/unpublished games).
+  - **Files Modified**: `server/services/snakeBenchIngestQueue.ts`, `server/services/snakeBenchGitHubPublisher.ts` (new), `server/repositories/SnakeBenchRepository.ts`, `server/services/snakeBenchService.ts`, `CHANGELOG.md`
+
+### Version 6.1.61  Dec 15, 2025 (PENDING TESTING)
+
+- **Worm Arena: show DB-imported OpenRouter models automatically** (Author: Codex GPT-5)
+  - Models returned by `GET /api/models` now include active OpenRouter slugs imported via the Admin UI (SnakeBench DB), so Worm Arena dropdowns reflect imports without editing config files.
+  - Admin OpenRouter page copy now clarifies that "Import" updates the DB roster used by Worm Arena, while "Sync to Config" is optional metadata curation.
+  - **Files Modified**: `server/routes/models.ts`, `client/src/pages/AdminOpenRouter.tsx`, `CHANGELOG.md`
+
+### Version 6.1.62  Dec 15, 2025 (PENDING TESTING)
+
+- **Worm Arena: enable Nemotron 3 Nano 30B and add tournament script** (Author: Codex GPT-5)
+  - Added `nvidia/nemotron-3-nano-30b-a3b:free` to the server-side OpenRouter allowlist so SnakeBench can actually run matches with it.
+  - Updated the local OpenRouter catalog snapshot to include the model metadata (context, pricing, supported parameters).
+  - Added a PowerShell tournament script that queues matches against the current top TrueSkill leaderboard models.
+  - **Files Modified**: `server/config/openrouterModels.ts`, `server/config/openrouter-catalog.json`, `scripts/worm-arena-tournaments/nemotron3-nano-30b-vs-top-leaderboard.ps1`, `CHANGELOG.md`
+
 ### Version 6.1.60  Dec 15, 2025 (PENDING TESTING)
 
 - **/scoring page copy + scoring alignment with ARC harness (pair-based)** (Author: Codex GPT-5)

@@ -1052,7 +1052,7 @@ export class SnakeBenchService {
       return payload;
     } catch (err) {
       const message = err instanceof Error ? err.message : String(err);
-      logger.error(
+      logger.warn(
         `Failed to fetch GitHub raw replay for SnakeBench game ${gameId} from ${rawUrl}: ${message}`,
         'snakebench-service',
       );

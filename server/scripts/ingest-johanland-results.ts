@@ -399,7 +399,35 @@ async function saveToDatabaseIfNotDryRun(
 }
 
 /**
- * Process a single puzzle (both attempts)
+ * Process a single puzzle's multiple test pairs
+ *
+ * CRITICAL: Understanding the submission structure for ARC-AGI scoring:
+ *
+ * Submission structure (from 1ae2feb7.json example):
+ * [
+ *   {  // Test Pair 0
+ *     "attempt_1": { "answer": [...], "correct": true, "pair_index": 0, ... },
+ *     "attempt_2": { "answer": [...], "correct": true, "pair_index": 0, ... }
+ *   },
+ *   {  // Test Pair 1
+ *     "attempt_1": { "answer": [...], "correct": true, "pair_index": 1, ... },
+ *     "attempt_2": { "answer": [...], "correct": true, "pair_index": 1, ... }
+ *   },
+ *   {  // Test Pair 2
+ *     "attempt_1": { "answer": [...], "correct": true, "pair_index": 2, ... },
+ *     "attempt_2": { "answer": [...], "correct": false, "pair_index": 2, ... }
+ *   }
+ * ]
+ *
+ * Scoring rule (per ARC-AGI official benchmarking repo):
+ * - For each test pair: if ANY attempt is correct, the pair is solved (score +1)
+ * - Final score = (solved_pairs) / (total_pairs)
+ *
+ * Example: If pair 0 solved by attempt_1, pair 1 solved by attempt_2, pair 2 not solved:
+ * - Pair 0: attempt_1 correct OR attempt_2 correct → solved (+1)
+ * - Pair 1: attempt_1 incorrect OR attempt_2 correct → solved (+1)
+ * - Pair 2: attempt_1 incorrect OR attempt_2 incorrect → not solved (+0)
+ * - Score: 2/3 = 0.67
  */
 async function processPuzzle(
   puzzleId: string,
@@ -456,88 +484,122 @@ async function processPuzzle(
     return;
   }
 
-  // Process each attempt
-  for (const attemptNumber of [1, 2]) {
-    const attemptKey = `attempt_${attemptNumber}` as const;
-    const attempt = submission[0][attemptKey];
+  // CORRECTED: Loop through submission array, where each element = one test pair
+  for (let pairIndex = 0; pairIndex < submission.length; pairIndex++) {
+    const pairData = submission[pairIndex];
 
-    if (!attempt) {
+    if (!pairData) {
       if (config.verbose) {
-        console.log(`No ${attemptKey} for ${puzzleId}`);
+        console.log(`No data for pair ${pairIndex} in ${puzzleId}`);
       }
       continue;
     }
 
-    const modelName = buildModelName(config, attemptNumber);
+    // For this pair, check both attempts
+    let pairIsSolved = false;
+    const attemptResults: { attemptNumber: number; correct: boolean; enrichedData: JohanLandEnrichedAttempt | null }[] = [];
 
-    // Check for duplicates
-    if (config.skipDuplicates) {
-      const isDuplicate = await checkDuplicate(puzzleId, modelName);
-      if (isDuplicate) {
-        progress.skipped++;
+    for (const attemptNumber of [1, 2]) {
+      const attemptKey = `attempt_${attemptNumber}` as const;
+      const attempt = pairData[attemptKey];
+
+      if (!attempt) {
         if (config.verbose) {
-          console.log(`Skipped (exists): ${puzzleId} / ${modelName}`);
+          console.log(`No ${attemptKey} for ${puzzleId} pair ${pairIndex}`);
         }
         continue;
       }
-    } else if (config.forceOverwrite) {
-      if (config.verbose) {
-        console.log(`Force overwrite enabled: existing entries for ${puzzleId} / ${modelName} will be deleted before insert.`);
-      }
-    }
 
-    // Validate and enrich
-    let enrichedData: JohanLandEnrichedAttempt | null;
-    try {
-      enrichedData = await validateAndEnrichAttempt(attempt, attemptNumber, puzzleData, config);
-    } catch (error: any) {
-      if (config.verbose) {
-        console.warn(`Validation failed for ${puzzleId}/${attemptKey}: ${error.message}`);
-      }
-      progress.validationErrors++;
-      if (config.stopOnError) throw error;
-      continue;
-    }
+      const modelName = buildModelName(config, attemptNumber);
 
-    if (!enrichedData) {
-      progress.failed++;
-      if (config.stopOnError) {
-        throw new Error(`Failed to enrich ${puzzleId}/${attemptKey}`);
-      }
-      continue;
-    }
-
-    // Force overwrite: delete existing rows for this puzzle/model before insert
-    if (config.forceOverwrite && !config.dryRun) {
-      try {
-        const existing = await repositoryService.explanations.getExplanationsForPuzzle(puzzleId);
-        const matching = existing.filter((exp) => exp.modelName === modelName);
-        for (const exp of matching) {
-          await repositoryService.explanations.deleteExplanation(exp.id);
+      // Check for duplicates
+      if (config.skipDuplicates) {
+        const isDuplicate = await checkDuplicate(puzzleId, modelName);
+        if (isDuplicate) {
+          progress.skipped++;
+          if (config.verbose) {
+            console.log(`Skipped (exists): ${puzzleId} / pair ${pairIndex} / ${modelName}`);
+          }
+          continue;
         }
+      } else if (config.forceOverwrite) {
+        if (config.verbose) {
+          console.log(`Force overwrite enabled: existing entries for ${puzzleId} / pair ${pairIndex} / ${modelName} will be deleted before insert.`);
+        }
+      }
+
+      // Validate and enrich
+      let enrichedData: JohanLandEnrichedAttempt | null;
+      try {
+        enrichedData = await validateAndEnrichAttempt(attempt, attemptNumber, puzzleData, config);
       } catch (error: any) {
         if (config.verbose) {
-          console.warn(
-            `Force overwrite delete failed for ${puzzleId} / ${modelName}: ${error?.message || String(error)}`
-          );
+          console.warn(`Validation failed for ${puzzleId} pair ${pairIndex}/${attemptKey}: ${error.message}`);
+        }
+        progress.validationErrors++;
+        if (config.stopOnError) throw error;
+        continue;
+      }
+
+      if (!enrichedData) {
+        progress.failed++;
+        if (config.stopOnError) {
+          throw new Error(`Failed to enrich ${puzzleId} pair ${pairIndex}/${attemptKey}`);
+        }
+        continue;
+      }
+
+      // Track if this attempt is correct
+      const attemptCorrect = enrichedData.isPredictionCorrect ?? enrichedData.multiTestAllCorrect ?? false;
+      if (attemptCorrect) {
+        pairIsSolved = true;
+      }
+
+      attemptResults.push({ attemptNumber, correct: attemptCorrect, enrichedData });
+    }
+
+    // Save all enriched attempts for this pair to database
+    for (const result of attemptResults) {
+      if (!result.enrichedData) continue;
+
+      // Force overwrite: delete existing rows for this puzzle/model before insert
+      if (config.forceOverwrite && !config.dryRun) {
+        try {
+          const existing = await repositoryService.explanations.getExplanationsForPuzzle(puzzleId);
+          const matching = existing.filter((exp) => exp.modelName === result.enrichedData!.modelName);
+          for (const exp of matching) {
+            await repositoryService.explanations.deleteExplanation(exp.id);
+          }
+        } catch (error: any) {
+          if (config.verbose) {
+            console.warn(
+              `Force overwrite delete failed for ${puzzleId} / ${result.enrichedData.modelName}: ${error?.message || String(error)}`
+            );
+          }
+        }
+      }
+
+      // Save to database
+      const saved = await saveToDatabaseIfNotDryRun(result.enrichedData, config);
+
+      if (saved) {
+        progress.successful++;
+        progress.successDetails.push({
+          puzzleId: result.enrichedData.puzzleId,
+          isCorrect: result.correct
+        });
+      } else {
+        progress.failed++;
+        if (config.stopOnError) {
+          throw new Error(`Failed to save ${puzzleId} pair ${pairIndex}/attempt${result.attemptNumber}`);
         }
       }
     }
 
-    // Save to database
-    const saved = await saveToDatabaseIfNotDryRun(enrichedData, config);
-
-    if (saved) {
-      progress.successful++;
-      progress.successDetails.push({
-        puzzleId: enrichedData.puzzleId,
-        isCorrect: enrichedData.isPredictionCorrect ?? enrichedData.multiTestAllCorrect ?? false
-      });
-    } else {
-      progress.failed++;
-      if (config.stopOnError) {
-        throw new Error(`Failed to save ${puzzleId}/${attemptKey}`);
-      }
+    // Log pair result (for debugging/tracking)
+    if (config.verbose) {
+      const status = pairIsSolved ? 'SOLVED' : 'NOT_SOLVED';
+      console.log(`  Pair ${pairIndex}: ${status}`);
     }
   }
 }

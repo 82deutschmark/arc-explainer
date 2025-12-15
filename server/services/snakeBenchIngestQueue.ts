@@ -11,6 +11,7 @@
 import { logger } from '../utils/logger.ts';
 import type { SnakeBenchRecordMatchParams } from '../repositories/SnakeBenchRepository.ts';
 import { repositoryService } from '../repositories/RepositoryService.ts';
+import { publishSnakeBenchReplayToGitHub } from './snakeBenchGitHubPublisher.ts';
 
 interface SnakeBenchIngestJob {
   id: string;
@@ -53,7 +54,29 @@ export class SnakeBenchIngestQueue {
     this.isProcessing = true;
 
     try {
+      let publishedRawUrl: string | null = null;
+      const completedGamePath = nextJob.params.result.completedGamePath;
+      if (completedGamePath) {
+        const published = await publishSnakeBenchReplayToGitHub({
+          gameId: nextJob.params.result.gameId,
+          completedGamePath,
+        });
+        publishedRawUrl = published?.rawUrl ?? null;
+      }
+
       await repositoryService.snakeBench.recordMatchFromResult(nextJob.params);
+
+      if (publishedRawUrl) {
+        try {
+          await repositoryService.snakeBench.setReplayPath(nextJob.params.result.gameId, publishedRawUrl);
+        } catch (err) {
+          const message = err instanceof Error ? err.message : String(err);
+          logger.warn(
+            `SnakeBenchIngestQueue: failed to persist published replay_path for ${nextJob.params.result.gameId}: ${message}`,
+            'snakebench-queue',
+          );
+        }
+      }
       logger.info(`SnakeBenchIngestQueue: completed job ${nextJob.id}`, 'snakebench-queue');
     } catch (err) {
       const message = err instanceof Error ? err.message : String(err);
