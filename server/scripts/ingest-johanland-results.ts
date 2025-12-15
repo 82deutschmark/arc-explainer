@@ -14,7 +14,7 @@ import { dirname, join } from 'path';
 import { readFile, readdir } from 'fs/promises';
 import { existsSync } from 'fs';
 import { PuzzleLoader } from '../services/puzzleLoader.ts';
-import { validateSolverResponse, validateSolverResponseMulti } from '../services/responseValidator.ts';
+import { validateSolverResponse } from '../services/responseValidator.ts';
 import { repositoryService } from '../repositories/RepositoryService.ts';
 
 import type {
@@ -237,50 +237,31 @@ async function validateAndEnrichAttempt(
     return null;
   }
 
-  const isMultiTest = testCases.length > 1;
   const promptTemplateId = 'external-johan-land';
 
+  // CRITICAL FIX: Each attempt targets a SPECIFIC test pair (indicated by pair_index)
+  // Do NOT validate against all test cases - validate only against the specific pair this attempt targets
+  const targetTestPair = testCases[metadata.pair_index];
+  if (!targetTestPair) {
+    console.warn(`Puzzle ${metadata.task_id}: test case ${metadata.pair_index} not found`);
+    return null;
+  }
+
+  // Validate against the specific test pair this attempt targets
+  const validationResult = validateSolverResponse(
+    { predictedOutput: attempt.answer },
+    targetTestPair.output,
+    promptTemplateId,
+    null
+  );
+
   let predictedOutputGrid: number[][] | null = attempt.answer;
-  let isPredictionCorrect: boolean | null = null;
+  let isPredictionCorrect: boolean | null = validationResult.isPredictionCorrect;
   let multiplePredictedOutputs: number[][][] | null = null;
   let multiTestPredictionGrids: number[][][] | null = null;
   let multiTestResults: any[] | null = null;
   let multiTestAllCorrect: boolean | null = null;
   let multiTestAverageAccuracy: number | null = null;
-
-  if (isMultiTest) {
-    predictedOutputGrid = null;
-    multiplePredictedOutputs = Array.from({ length: testCases.length }, () => attempt.answer);
-    const correctAnswers: number[][][] = testCases.map((tc: any) => tc.output);
-
-    const multi = validateSolverResponseMulti(
-      { multiplePredictedOutputs },
-      correctAnswers,
-      promptTemplateId,
-      null
-    );
-
-    multiTestPredictionGrids = (multi.multiTestPredictionGrids as number[][][]) ?? null;
-    multiTestResults = multi.multiTestResults ?? null;
-    multiTestAllCorrect = multi.multiTestAllCorrect ?? null;
-    multiTestAverageAccuracy = multi.multiTestAverageAccuracy ?? null;
-  } else {
-    // Validate against the specified test case (usually 0)
-    const testData = testCases[metadata.pair_index];
-    if (!testData) {
-      console.warn(`Puzzle ${metadata.task_id}: test case ${metadata.pair_index} not found`);
-      return null;
-    }
-
-    const validationResult = validateSolverResponse(
-      { predictedOutput: attempt.answer },
-      testData.output,
-      promptTemplateId,
-      null
-    );
-
-    isPredictionCorrect = validationResult.isPredictionCorrect;
-  }
 
   // Calculate processing time
   const processingTimeMs = calculateProcessingTime(
@@ -316,8 +297,8 @@ async function validateAndEnrichAttempt(
     predictedOutputGrid,
     isPredictionCorrect,
 
-    // Multi-test support
-    hasMultiplePredictions: isMultiTest,
+    // Multi-test support (not used - each attempt validates against single specific pair)
+    hasMultiplePredictions: false,
     multiplePredictedOutputs,
     multiTestPredictionGrids,
     multiTestResults,
