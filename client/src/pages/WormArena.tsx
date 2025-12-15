@@ -229,6 +229,61 @@ export default function WormArena() {
     ? Number((currentScores as any)[playerIds[1]] ?? (finalScores as any)[playerIds[1]] ?? 0)
     : 0;
 
+  const isFinalFrame = frames.length > 0 && frameIndex >= frames.length - 1;
+
+  const getSnakeResultLabel = (snakeId: string): 'won' | 'lost' | 'tied' | null => {
+    const raw = (replayData as any)?.players?.[snakeId]?.result;
+    if (raw === 'won' || raw === 'lost' || raw === 'tied') return raw;
+
+    const myFinalScore = (replayData as any)?.players?.[snakeId]?.final_score;
+    if (typeof myFinalScore === 'number') {
+      const otherId = Object.keys((replayData as any)?.players ?? {}).find((id) => id !== snakeId);
+      const otherFinalScore = otherId ? (replayData as any)?.players?.[otherId]?.final_score : undefined;
+
+      if (typeof otherFinalScore === 'number') {
+        if (myFinalScore > otherFinalScore) return 'won';
+        if (myFinalScore < otherFinalScore) return 'lost';
+        return 'tied';
+      }
+    }
+
+    const myScore = (finalScores as any)?.[snakeId];
+    if (typeof myScore === 'number') {
+      const otherId = Object.keys(finalScores ?? {}).find((id) => id !== snakeId);
+      const otherScore = otherId ? (finalScores as any)?.[otherId] : undefined;
+
+      if (typeof otherScore === 'number') {
+        if (myScore > otherScore) return 'won';
+        if (myScore < otherScore) return 'lost';
+        return 'tied';
+      }
+    }
+
+    return null;
+  };
+
+  const appendFinalResultIfNeeded = (snakeId: string, reasoning: string): string => {
+    if (!isFinalFrame || !snakeId) return reasoning;
+    const label = getSnakeResultLabel(snakeId);
+    const outcome = (label ?? 'unknown').toUpperCase();
+    const prefix = reasoning?.trim()?.length ? `${reasoning.trim()}\n\n` : '';
+    return `${prefix}Final result: ${outcome}`;
+  };
+
+  const playerAReasoningBase = showNextMove && playerIds.length > 0 && !isFinalFrame
+    ? (frames[frameIndex + 1]?.moves?.[playerIds[0]]?.rationale || '')
+    : playerAReasoning;
+  const playerBReasoningBase = showNextMove && playerIds.length > 1 && !isFinalFrame
+    ? (frames[frameIndex + 1]?.moves?.[playerIds[1]]?.rationale || '')
+    : playerBReasoning;
+
+  const playerAReasoningForPanel = playerIds.length > 0
+    ? appendFinalResultIfNeeded(playerIds[0], playerAReasoningBase)
+    : playerAReasoningBase;
+  const playerBReasoningForPanel = playerIds.length > 1
+    ? appendFinalResultIfNeeded(playerIds[1], playerBReasoningBase)
+    : playerBReasoningBase;
+
   const matchupLabel = React.useMemo(() => {
     if (playerIds.length >= 2) {
       return `${playerAName} vs ${playerBName}`;
@@ -357,7 +412,7 @@ export default function WormArena() {
           <WormArenaReasoning
             playerName={playerAName}
             color="green"
-            reasoning={showNextMove && playerIds.length > 0 ? (frames[frameIndex + 1]?.moves?.[playerIds[0]]?.rationale || '') : playerAReasoning}
+            reasoning={playerAReasoningForPanel}
             score={playerAScore}
           />
 
@@ -401,7 +456,7 @@ export default function WormArena() {
           <WormArenaReasoning
             playerName={playerBName}
             color="blue"
-            reasoning={showNextMove && playerIds.length > 1 ? (frames[frameIndex + 1]?.moves?.[playerIds[1]]?.rationale || '') : playerBReasoning}
+            reasoning={playerBReasoningForPanel}
             score={playerBScore}
           />
         </div>
