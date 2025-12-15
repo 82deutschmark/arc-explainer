@@ -171,6 +171,9 @@ export function validateJohanLandAttempt(
 
 /**
  * Validate the full puzzle data structure
+ *
+ * CRITICAL: Each array element represents ONE test pair (pair_index 0, 1, 2, ...).
+ * A task can have multiple required test pairs. Validate ALL pairs, not just the first.
  */
 export function validateJohanLandPuzzleData(
   data: any,
@@ -190,42 +193,45 @@ export function validateJohanLandPuzzleData(
     return { valid: false, errors, warnings };
   }
 
-  // Validate first element (only one expected currently)
-  const elem = data[0];
-  if (typeof elem !== 'object' || elem === null) {
-    errors.push(`Puzzle ${puzzleId}: first array element must be object`);
-    return { valid: false, errors, warnings };
-  }
+  // Validate ALL array elements (one per test pair)
+  for (let pairIndex = 0; pairIndex < data.length; pairIndex++) {
+    const elem = data[pairIndex];
 
-  // Check for attempts
-  let hasAttempt1 = false;
-  let hasAttempt2 = false;
+    if (typeof elem !== 'object' || elem === null) {
+      errors.push(`Puzzle ${puzzleId}: pair ${pairIndex} element must be object`);
+      continue;
+    }
 
-  if ('attempt_1' in elem && elem.attempt_1) {
-    hasAttempt1 = true;
-    const result = validateJohanLandAttempt(elem.attempt_1, puzzleId, 1);
-    errors.push(...result.errors);
-    warnings.push(...result.warnings);
-  }
+    // Check for attempts
+    let hasAttempt1 = false;
+    let hasAttempt2 = false;
 
-  if ('attempt_2' in elem && elem.attempt_2) {
-    hasAttempt2 = true;
-    const result = validateJohanLandAttempt(elem.attempt_2, puzzleId, 2);
-    errors.push(...result.errors);
-    warnings.push(...result.warnings);
-  }
+    if ('attempt_1' in elem && elem.attempt_1) {
+      hasAttempt1 = true;
+      const result = validateJohanLandAttempt(elem.attempt_1, puzzleId, 1);
+      errors.push(...result.errors);
+      warnings.push(...result.warnings);
+    }
 
-  if (!hasAttempt1 && !hasAttempt2) {
-    errors.push(`Puzzle ${puzzleId}: must have at least one of attempt_1 or attempt_2`);
-  }
+    if ('attempt_2' in elem && elem.attempt_2) {
+      hasAttempt2 = true;
+      const result = validateJohanLandAttempt(elem.attempt_2, puzzleId, 2);
+      errors.push(...result.errors);
+      warnings.push(...result.warnings);
+    }
 
-  // Warn if reasoning_summary looks empty (common mistake)
-  if (elem.attempt_1?.metadata?.reasoning_summary === 'NA' || elem.attempt_1?.metadata?.reasoning_summary === '') {
-    warnings.push(`Puzzle ${puzzleId}/attempt_1: reasoning_summary is empty or "NA"`);
-  }
+    if (!hasAttempt1 && !hasAttempt2) {
+      errors.push(`Puzzle ${puzzleId}/pair ${pairIndex}: must have at least one of attempt_1 or attempt_2`);
+    }
 
-  if (elem.attempt_2?.metadata?.reasoning_summary === 'NA' || elem.attempt_2?.metadata?.reasoning_summary === '') {
-    warnings.push(`Puzzle ${puzzleId}/attempt_2: reasoning_summary is empty or "NA"`);
+    // Warn if reasoning_summary looks empty (common mistake)
+    if (elem.attempt_1?.metadata?.reasoning_summary === 'NA' || elem.attempt_1?.metadata?.reasoning_summary === '') {
+      warnings.push(`Puzzle ${puzzleId}/pair ${pairIndex}/attempt_1: reasoning_summary is empty or "NA"`);
+    }
+
+    if (elem.attempt_2?.metadata?.reasoning_summary === 'NA' || elem.attempt_2?.metadata?.reasoning_summary === '') {
+      warnings.push(`Puzzle ${puzzleId}/pair ${pairIndex}/attempt_2: reasoning_summary is empty or "NA"`);
+    }
   }
 
   return { valid: errors.length === 0, errors, warnings };

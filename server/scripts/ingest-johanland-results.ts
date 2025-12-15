@@ -14,7 +14,6 @@ import { dirname, join } from 'path';
 import { readFile, readdir } from 'fs/promises';
 import { existsSync } from 'fs';
 import { PuzzleLoader } from '../services/puzzleLoader.ts';
-import { validateSolverResponse } from '../services/responseValidator.ts';
 import { repositoryService } from '../repositories/RepositoryService.ts';
 
 import type {
@@ -26,14 +25,11 @@ import type {
 } from '../types/johanland.ts';
 
 import {
-  validateJohanLandSubmissionOrThrow,
-  validateGrid,
-  gridsAreIdentical
+  validateJohanLandSubmissionOrThrow
 } from '../utils/johanlandValidator.ts';
 
 import {
-  parseReasoningSummary,
-  isReasoningSummaryMeaningful
+  parseReasoningSummary
 } from '../utils/johanlandExplanationExtractor.ts';
 
 // Load environment
@@ -239,24 +235,10 @@ async function validateAndEnrichAttempt(
 
   const promptTemplateId = 'external-johan-land';
 
-  // CRITICAL FIX: Each attempt targets a SPECIFIC test pair (indicated by pair_index)
-  // Do NOT validate against all test cases - validate only against the specific pair this attempt targets
-  const targetTestPair = testCases[metadata.pair_index];
-  if (!targetTestPair) {
-    console.warn(`Puzzle ${metadata.task_id}: test case ${metadata.pair_index} not found`);
-    return null;
-  }
-
-  // Validate against the specific test pair this attempt targets
-  const validationResult = validateSolverResponse(
-    { predictedOutput: attempt.answer },
-    targetTestPair.output,
-    promptTemplateId,
-    null
-  );
-
+  // CRITICAL: The attempt object ALREADY has a 'correct' flag computed by Johan_Land during evaluation
+  // Use that directly instead of re-validating (which was always returning true)
   let predictedOutputGrid: number[][] | null = attempt.answer;
-  let isPredictionCorrect: boolean | null = validationResult.isPredictionCorrect;
+  let isPredictionCorrect: boolean | null = attempt.correct;
   let multiplePredictedOutputs: number[][][] | null = null;
   let multiTestPredictionGrids: number[][][] | null = null;
   let multiTestResults: any[] | null = null;
@@ -465,6 +447,40 @@ async function processPuzzle(
     return;
   }
 
+  // CRITICAL: Delete existing records ONCE per puzzle per model (before processing any pairs)
+  // This prevents the force-overwrite logic from deleting previous pairs while saving new ones
+  const modelsToDelete = new Set<string>();
+
+  // Pre-process to determine which models will be saved
+  for (let pairIndex = 0; pairIndex < submission.length; pairIndex++) {
+    const pairData = submission[pairIndex];
+    if (!pairData) continue;
+
+    for (const attemptNumber of [1, 2]) {
+      const attempt = pairData[`attempt_${attemptNumber}` as const];
+      if (attempt) {
+        modelsToDelete.add(buildModelName(config, attemptNumber));
+      }
+    }
+  }
+
+  // Delete all existing records for these models once, before processing any pairs
+  if (config.forceOverwrite && !config.dryRun) {
+    try {
+      const existing = await repositoryService.explanations.getExplanationsForPuzzle(puzzleId);
+      for (const modelName of modelsToDelete) {
+        const matching = existing.filter((exp) => exp.modelName === modelName);
+        for (const exp of matching) {
+          await repositoryService.explanations.deleteExplanation(exp.id);
+        }
+      }
+    } catch (error: any) {
+      if (config.verbose) {
+        console.warn(`Force overwrite delete failed for ${puzzleId}: ${error?.message || String(error)}`);
+      }
+    }
+  }
+
   // CORRECTED: Loop through submission array, where each element = one test pair
   for (let pairIndex = 0; pairIndex < submission.length; pairIndex++) {
     const pairData = submission[pairIndex];
@@ -503,10 +519,6 @@ async function processPuzzle(
           }
           continue;
         }
-      } else if (config.forceOverwrite) {
-        if (config.verbose) {
-          console.log(`Force overwrite enabled: existing entries for ${puzzleId} / pair ${pairIndex} / ${modelName} will be deleted before insert.`);
-        }
       }
 
       // Validate and enrich
@@ -543,24 +555,7 @@ async function processPuzzle(
     for (const result of attemptResults) {
       if (!result.enrichedData) continue;
 
-      // Force overwrite: delete existing rows for this puzzle/model before insert
-      if (config.forceOverwrite && !config.dryRun) {
-        try {
-          const existing = await repositoryService.explanations.getExplanationsForPuzzle(puzzleId);
-          const matching = existing.filter((exp) => exp.modelName === result.enrichedData!.modelName);
-          for (const exp of matching) {
-            await repositoryService.explanations.deleteExplanation(exp.id);
-          }
-        } catch (error: any) {
-          if (config.verbose) {
-            console.warn(
-              `Force overwrite delete failed for ${puzzleId} / ${result.enrichedData.modelName}: ${error?.message || String(error)}`
-            );
-          }
-        }
-      }
-
-      // Save to database
+      // Save to database (deletion already happened once per puzzle per model above)
       const saved = await saveToDatabaseIfNotDryRun(result.enrichedData, config);
 
       if (saved) {
