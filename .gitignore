@@ -14,3 +14,4 @@ logs/dev.log
 /logs
 JFPuget.mp4
 external/SnakeBench/backend/completed_games_videos/
+*.mp4
