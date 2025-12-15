@@ -557,7 +557,7 @@ export default function HuggingFaceUnionAccuracy() {
 
                 {/* Quick Progress Bar */}
                 <Progress
-                  value={(unionMetrics.unionCorrectCount / (unionMetrics.totalTestPairs ?? unionMetrics.totalPuzzles || 1)) * 100}
+                  value={(unionMetrics.unionCorrectCount / ((unionMetrics.totalTestPairs ?? unionMetrics.totalPuzzles) || 1)) * 100}
                   className="h-2 mb-1"
                 />
                 <p className="text-base text-gray-700">
