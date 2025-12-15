@@ -1,3 +1,23 @@
+### Version 6.1.52  Dec 18, 2025 (PENDING TESTING)
+
+- **Worm Arena Matches: reliable filters + pagination refresh** (Author: Codex)
+  - Apply now drives a dedicated filter state with stale-response guards so the table refreshes with the requested criteria.
+  - Default model auto-applies on load, pagination respects the applied page size, and loading/error states stay in sync with the latest request.
+  - **Files Modified**: `client/src/pages/WormArenaMatches.tsx`, `docs/2025-12-18-worm-arena-matches-plan.md`, `CHANGELOG.md`
+
+### Version 6.1.51  Dec 14, 2025 (PENDING TESTING)
+
+- **Worm Arena TrueSkill leaderboard: full column sorting + sticky header + tooltips** (Author: Cascade)
+  - Added full column sorting across the TrueSkill leaderboard and kept the header visible while scrolling.
+  - Added small educational tooltips to clarify rating fields.
+  - **Files Modified**: `client/src/components/WormArenaTrueSkillLeaderboard.tsx`, `CHANGELOG.md`
+
+- **OpenRouter catalog loading: browser-safe guards + path resolution + local media ignores** (Author: Cascade)
+  - Hardened OpenRouter catalog loading so browser builds do not attempt Node.js-only filesystem APIs.
+  - Centralized OpenRouter catalog path resolution inside the loader helper.
+  - Updated `.gitignore` to ignore local jBudd media files.
+  - **Files Modified**: `server/config/models.ts`, `server/config/openrouterModels.ts`, `.gitignore`, `CHANGELOG.md`
+
 ### Version 6.1.50  Dec 17, 2025 (PENDING TESTING)
 
 - **Worm Arena Live: better curated matchup presets (new default + GPT-5.2 opponents)** (Author: Cascade)
