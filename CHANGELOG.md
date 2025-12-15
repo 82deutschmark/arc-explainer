@@ -1,9 +1,9 @@
 ### Version 6.1.52  Dec 18, 2025 (PENDING TESTING)
 
-- **Worm Arena Matches: reliable filters + pagination refresh** (Author: Codex)
-  - Apply now drives a dedicated filter state with stale-response guards so the table refreshes with the requested criteria.
-  - Default model auto-applies on load, pagination respects the applied page size, and loading/error states stay in sync with the latest request.
-  - **Files Modified**: `client/src/pages/WormArenaMatches.tsx`, `docs/2025-12-18-worm-arena-matches-plan.md`, `CHANGELOG.md`
+- **Worm Arena Matches: reliable filters + pagination refresh** (Author: Cascade)
+  - Apply now drives a single applied-query state (filters + offset) with stale-response guards so the table refreshes with the requested criteria.
+  - Default model auto-applies on load, pagination respects the applied page size, and model query parsing is browser-safe for query-only navigation.
+  - **Files Modified**: `client/src/pages/WormArenaMatches.tsx`, `CHANGELOG.md`
 
 ### Version 6.1.51  Dec 14, 2025 (PENDING TESTING)
 

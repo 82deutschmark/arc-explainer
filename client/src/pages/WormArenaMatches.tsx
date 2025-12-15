@@ -44,11 +44,20 @@ type MatchFilters = {
   limit: number;
 };
 
+type AppliedQuery = MatchFilters & {
+  offset: number;
+};
+
 function parseQueryParam(location: string, key: string): string | null {
   try {
-    const query = location.split('?')[1] ?? '';
-    if (!query) return null;
-    const params = new URLSearchParams(query);
+    const browserQuery =
+      typeof window !== 'undefined' && window.location && typeof window.location.search === 'string'
+        ? window.location.search
+        : '';
+    const queryFromLocation = location.split('?')[1] ?? '';
+    const rawQuery = (browserQuery.startsWith('?') ? browserQuery.slice(1) : browserQuery) || queryFromLocation;
+    if (!rawQuery) return null;
+    const params = new URLSearchParams(rawQuery);
     const raw = params.get(key);
     return raw && raw.trim().length > 0 ? raw.trim() : null;
   } catch {
@@ -79,16 +88,16 @@ export default function WormArenaMatches() {
   const [sortDir, setSortDir] = React.useState<SnakeBenchMatchSearchSortDir>('desc');
 
   const [limit, setLimit] = React.useState<number>(50);
-  const [offset, setOffset] = React.useState<number>(0);
 
   const [rows, setRows] = React.useState<SnakeBenchMatchSearchRow[]>([]);
-  const [appliedFilters, setAppliedFilters] = React.useState<MatchFilters | null>(null);
+  const [appliedQuery, setAppliedQuery] = React.useState<AppliedQuery | null>(null);
   const [total, setTotal] = React.useState<number>(0);
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
   const [error, setError] = React.useState<string | null>(null);
   const latestRequestId = React.useRef<number>(0);
 
-  const effectiveLimit = appliedFilters?.limit ?? limit;
+  const effectiveLimit = appliedQuery?.limit ?? limit;
+  const offset = appliedQuery?.offset ?? 0;
 
   const availableModels = React.useMemo(() => {
     const models = leaderboard.map((e) => e.modelSlug).filter(Boolean);
@@ -102,8 +111,8 @@ export default function WormArenaMatches() {
   }, [availableModels, model]);
 
   React.useEffect(() => {
-    if (appliedFilters || !model.trim()) return;
-    setAppliedFilters({
+    if (appliedQuery || !model.trim()) return;
+    setAppliedQuery({
       model: model.trim(),
       opponent: opponent.trim(),
       result,
@@ -113,33 +122,34 @@ export default function WormArenaMatches() {
       sortBy,
       sortDir,
       limit,
+      offset: 0,
     });
-  }, [appliedFilters, from, limit, minRounds, model, opponent, result, sortBy, sortDir, to]);
+  }, [appliedQuery, from, limit, minRounds, model, opponent, result, sortBy, sortDir, to]);
 
   React.useEffect(() => {
-    const filters = appliedFilters;
-    if (!filters) return;
+    const query = appliedQuery;
+    if (!query) return;
 
-    const trimmedModel = filters.model.trim();
+    const trimmedModel = query.model.trim();
     if (!trimmedModel) return;
 
     const params = new URLSearchParams();
     params.set('model', trimmedModel);
-    if (filters.opponent.trim()) params.set('opponent', filters.opponent.trim());
-    if (filters.result !== 'any') params.set('result', filters.result);
+    if (query.opponent.trim()) params.set('opponent', query.opponent.trim());
+    if (query.result !== 'any') params.set('result', query.result);
 
-    const minRoundsNum = Number(filters.minRounds);
-    if (filters.minRounds.trim().length > 0 && Number.isFinite(minRoundsNum)) {
+    const minRoundsNum = Number(query.minRounds);
+    if (query.minRounds.trim().length > 0 && Number.isFinite(minRoundsNum)) {
       params.set('minRounds', String(Math.max(0, Math.floor(minRoundsNum))));
     }
 
-    if (filters.from.trim()) params.set('from', filters.from.trim());
-    if (filters.to.trim()) params.set('to', filters.to.trim());
+    if (query.from.trim()) params.set('from', query.from.trim());
+    if (query.to.trim()) params.set('to', query.to.trim());
 
-    params.set('sortBy', filters.sortBy);
-    params.set('sortDir', filters.sortDir);
-    params.set('limit', String(filters.limit));
-    params.set('offset', String(offset));
+    params.set('sortBy', query.sortBy);
+    params.set('sortDir', query.sortDir);
+    params.set('limit', String(query.limit));
+    params.set('offset', String(query.offset));
 
     const requestId = latestRequestId.current + 1;
     latestRequestId.current = requestId;
@@ -169,24 +179,29 @@ export default function WormArenaMatches() {
     };
 
     void load();
-  }, [appliedFilters, offset]);
+  }, [appliedQuery]);
 
-  const canPrev = offset > 0;
-  const canNext = offset + effectiveLimit < total;
+  const canPrev = Boolean(appliedQuery && offset > 0);
+  const canNext = Boolean(appliedQuery && offset + effectiveLimit < total);
 
   const handlePrev = () => {
-    setOffset((prev) => Math.max(0, prev - effectiveLimit));
+    setAppliedQuery((prev) => {
+      if (!prev) return prev;
+      return { ...prev, offset: Math.max(0, prev.offset - prev.limit) };
+    });
   };
 
   const handleNext = () => {
-    setOffset((prev) => prev + effectiveLimit);
+    setAppliedQuery((prev) => {
+      if (!prev) return prev;
+      return { ...prev, offset: prev.offset + prev.limit };
+    });
   };
 
   const handleApply = () => {
     const trimmedModel = model.trim();
     if (!trimmedModel) return;
-    setOffset(0);
-    setAppliedFilters({
+    setAppliedQuery({
       model: trimmedModel,
       opponent: opponent.trim(),
       result,
@@ -196,6 +211,7 @@ export default function WormArenaMatches() {
       sortBy,
       sortDir,
       limit,
+      offset: 0,
     });
   };
 
