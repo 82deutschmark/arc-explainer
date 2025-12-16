@@ -59,7 +59,8 @@ export default function WormArenaGameBoardSVG({
     if (!Number.isFinite(x) || !Number.isFinite(y)) return null;
     if (x < 0 || y < 0 || x >= boardWidth || y >= boardHeight) return null;
     const cx = PADDING + x * CELL_SIZE;
-    const cy = PADDING + y * CELL_SIZE;
+    const renderY = boardHeight - 1 - y;
+    const cy = PADDING + renderY * CELL_SIZE;
 
     if (appleSrc) {
       return (
@@ -121,7 +122,8 @@ export default function WormArenaGameBoardSVG({
           if (x < 0 || y < 0 || x >= boardWidth || y >= boardHeight) return;
 
           const cellX = PADDING + x * CELL_SIZE;
-          const cellY = PADDING + y * CELL_SIZE;
+          const renderY = boardHeight - 1 - y;
+          const cellY = PADDING + renderY * CELL_SIZE;
 
           if (idx === 0 && bugHeadSrc) {
             acc.push(
