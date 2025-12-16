@@ -694,7 +694,23 @@ export default function HuggingFaceUnionAccuracy() {
                     </div>
                   </div>
 
-                  <div className="border-t border-gray-200 pt-3 space-y-2">
+                  <div className="border-t border-gray-200 pt-3 space-y-2 bg-amber-50 rounded p-3 border-l-4 border-l-amber-600">
+                    <div className="font-semibold text-amber-900">⚠️ Critical: Arc Explainer's stricter scoring (DIFFERENT from official harness)</div>
+                    <div className="text-gray-700 leading-relaxed">
+                      <strong>Important distinction:</strong> ARC Explainer calculates scores against <strong>ALL puzzles in the dataset</strong> (120 for ARC2-Eval),
+                      not just the ones the model attempted. This is MORE STRICT than the official ARC-AGI harness.
+                      <br/><br/>
+                      <strong>Official harness:</strong> Only counts attempted puzzles. A model that solves 1 puzzle out of 120 scores 1/1 = 100%.
+                      <br/><br/>
+                      <strong>Arc Explainer (this page):</strong> Counts all 120 required puzzles. A model that solves 1 puzzle out of 120 scores (1.0 + 0 + 0 + ... + 0) / 120 ≈ 0.83%.
+                      Unattempted puzzles count as zero.
+                    </div>
+                    <div className="text-gray-700 leading-relaxed text-sm">
+                      This ensures you see how a model performs against the <strong>complete required task set</strong>, not just the puzzles it happened to attempt.
+                    </div>
+                  </div>
+
+                  <div className="border-t border-gray-200 pt-3 space-y-2 mt-3">
                     <div className="font-semibold text-gray-900">Why the official score can differ from the Test Pairs rate</div>
                     <div className="text-gray-700 leading-relaxed">
                       The official harness score weights each puzzle equally. The Test Pairs rate weights puzzles with more test pairs more heavily.
