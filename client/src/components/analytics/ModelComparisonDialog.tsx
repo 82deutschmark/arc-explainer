@@ -33,8 +33,6 @@ import { Progress } from '@/components/ui/progress';
 import {
   formatModelNames,
   hasComparisonSummary,
-  computeAttemptUnionAccuracy,
-  parseAttemptModelName,
 } from '@/utils/modelComparison';
 
 interface ModelComparisonDialogProps {
@@ -65,58 +63,7 @@ export const ModelComparisonDialog: React.FC<ModelComparisonDialogProps> = ({
       return attemptUnionStats[0];
     }
 
-    // Fallback to frontend computation for backward compatibility
-    if (!summary) {
-      return null;
-    }
-
-    // Get active model names from summary
-    const activeModels = [
-      summary.model1Name,
-      summary.model2Name,
-      summary.model3Name,
-      summary.model4Name,
-    ].filter((name): name is string => Boolean(name?.trim()));
-
-    if (activeModels.length < 2) {
-      return null;
-    }
-
-    // Parse model names to identify attempt groups
-    const attemptGroups = new Map<string, { modelName: string; attemptNumber: number; index: number }[]>();
-    
-    activeModels.forEach((modelName, index) => {
-      const parsed = parseAttemptModelName(modelName);
-      if (parsed) {
-        if (!attemptGroups.has(parsed.baseModelName)) {
-          attemptGroups.set(parsed.baseModelName, []);
-        }
-        attemptGroups.get(parsed.baseModelName)!.push({
-          modelName,
-          attemptNumber: parsed.attemptNumber,
-          index,
-        });
-      }
-    });
-
-    // Find the first base model group with at least 2 attempts
-    for (const [baseModelName, attempts] of attemptGroups) {
-      if (attempts.length >= 2) {
-        // Sort by attempt number to ensure consistent ordering
-        attempts.sort((a, b) => a.attemptNumber - b.attemptNumber);
-        
-        // Use the first two attempts for union calculation
-        const modelIndices = attempts.slice(0, 2).map(a => a.index);
-        const unionMetrics = computeAttemptUnionAccuracy(comparisonResult, modelIndices);
-        
-        return {
-          baseModelName,
-          attemptModelNames: attempts.slice(0, 2).map(a => a.modelName),
-          ...unionMetrics,
-        };
-      }
-    }
-
+    // No client-side fallback for union scoring.
     return null;
   }, [comparisonResult]);
 
