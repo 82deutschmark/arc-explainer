@@ -4,13 +4,19 @@
  * Handles PURE PUZZLE-SOLVING ACCURACY operations only.
  * Focuses exclusively on boolean correctness metrics without any trustworthiness filtering.
  *
- * SCOPE: This repository handles ONE CONCEPT only:
- * - PURE ACCURACY (puzzle-solving correctness):
- *   - Whether an AI model actually solved the puzzle correctly (boolean)
- *   - Database field: is_prediction_correct (boolean) - single test correctness
- *   - Database field: multi_test_all_correct (boolean) - multi-test correctness
- *   - Simple percentage: correct predictions / total attempts
- *   - Used for: Actual solver performance stats, accuracy leaderboards
+ * SCOPE: This repository handles TWO accuracy concepts:
+ * 
+ * 1. PUZZLE-LEVEL ACCURACY (getPureAccuracyStats):
+ *    - All-or-nothing per puzzle (multi_test_all_correct must be true)
+ *    - Simple percentage: correct predictions / total attempts
+ *    - Used for: Leaderboards, model rankings
+ *    - NOTE: This is NOT the same as official ARC-AGI harness score!
+ *
+ * 2. HARNESS-ALIGNED ACCURACY (getHarnessAlignedAccuracyStats):
+ *    - Official ARC-AGI scoring: average of per-puzzle scores
+ *    - Each puzzle score = (pairs solved by either attempt) / (total pairs in puzzle)
+ *    - Dataset score = average(puzzle_scores) - each puzzle weighted equally
+ *    - Used for: Official scoring page, 2-attempt evaluations
  *
  * KEY DISTINCTIONS:
  * - NO trustworthiness filtering (trustworthiness_score is a separate metric!)
