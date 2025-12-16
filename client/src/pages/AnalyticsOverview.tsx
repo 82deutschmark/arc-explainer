@@ -76,6 +76,9 @@ export interface AttemptUnionStats {
   totalTestPairs: number;
   unionCorrectCount: number;
   unionAccuracyPercentage: number;
+  puzzlesCounted: number;
+  puzzlesFullySolved: number;
+  puzzlesFullySolvedIds?: string[];
 }
 
 export interface ModelComparisonSummary {
@@ -365,7 +368,7 @@ export default function AnalyticsOverview() {
                   </SelectTrigger>
                   <SelectContent>
                     {officialModels.map((model) => {
-                      const origin = getModelOriginInfo(model);
+                      const origin = detectModelOrigin(model);
                       return (
                         <SelectItem key={model} value={model}>
                           {model} {origin.shortLabel && `(${origin.shortLabel})`}
@@ -373,7 +376,7 @@ export default function AnalyticsOverview() {
                       );
                     })}
                     {communityModels.map((model) => {
-                      const origin = getModelOriginInfo(model);
+                      const origin = detectModelOrigin(model);
                       return (
                         <SelectItem key={model} value={model}>
                           {model} {origin.shortLabel && `(${origin.shortLabel})`}
@@ -398,7 +401,7 @@ export default function AnalyticsOverview() {
                     {officialModels
                       .filter((model) => model !== selectedModelForDataset)
                       .map((model) => {
-                        const origin = getModelOriginInfo(model);
+                        const origin = detectModelOrigin(model);
                         return (
                           <SelectItem key={model} value={model}>
                             {model} {origin.shortLabel && `(${origin.shortLabel})`}
@@ -408,7 +411,7 @@ export default function AnalyticsOverview() {
                     {communityModels
                       .filter((model) => model !== selectedModelForDataset)
                       .map((model) => {
-                        const origin = getModelOriginInfo(model);
+                        const origin = detectModelOrigin(model);
                         return (
                           <SelectItem key={model} value={model}>
                             {model} {origin.shortLabel && `(${origin.shortLabel})`}
@@ -424,13 +427,13 @@ export default function AnalyticsOverview() {
               {selectedModelForDataset && (
                 <p>
                   <span className="font-semibold">Primary model:</span>{' '}
-                  {getModelOriginInfo(selectedModelForDataset).description}
+                  {detectModelOrigin(selectedModelForDataset).description}
                 </p>
               )}
               {selectedModelForComparison && (
                 <p>
                   <span className="font-semibold">Compare model:</span>{' '}
-                  {getModelOriginInfo(selectedModelForComparison).description}
+                  {detectModelOrigin(selectedModelForComparison).description}
                 </p>
               )}
             </div>

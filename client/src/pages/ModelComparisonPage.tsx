@@ -601,18 +601,27 @@ export default function ModelComparisonPage() {
                   </div>
                   <p className="text-xs text-gray-500">Harness score (avg puzzle score)</p>
                 </div>
-                <div className="text-xs">
-                  <span className="font-semibold">Test Pairs Correct:</span>{' '}
-                  <span className="text-success font-bold">
-                    {attemptUnionMetrics.unionCorrectCount}/
-                    {(attemptUnionMetrics.totalTestPairs ?? attemptUnionMetrics.totalPuzzles)}
-                  </span>
-                  <div className="text-gray-500">
-                    Pair-weighted: {(
-                      (attemptUnionMetrics.totalTestPairs ?? attemptUnionMetrics.totalPuzzles) > 0
-                        ? (attemptUnionMetrics.unionCorrectCount / (attemptUnionMetrics.totalTestPairs ?? attemptUnionMetrics.totalPuzzles)) * 100
-                        : 0
-                    ).toFixed(1)}%
+                <div className="text-xs space-y-0.5">
+                  <div>
+                    <span className="font-semibold">Puzzles fully solved:</span>{' '}
+                    <span className="text-success font-bold">
+                      {attemptUnionMetrics.puzzlesFullySolved ?? unionPuzzleIds.length}/
+                      {attemptUnionMetrics.puzzlesCounted ?? attemptUnionMetrics.totalPuzzles}
+                    </span>
+                  </div>
+                  <div>
+                    <span className="font-semibold">Test pairs correct:</span>{' '}
+                    <span className="text-blue-600 font-bold">
+                      {attemptUnionMetrics.unionCorrectCount}/
+                      {(attemptUnionMetrics.totalTestPairs ?? attemptUnionMetrics.totalPuzzles)}
+                    </span>
+                    <span className="text-gray-500 ml-1">
+                      ({(
+                        (attemptUnionMetrics.totalTestPairs ?? attemptUnionMetrics.totalPuzzles) > 0
+                          ? (attemptUnionMetrics.unionCorrectCount / (attemptUnionMetrics.totalTestPairs ?? attemptUnionMetrics.totalPuzzles)) * 100
+                          : 0
+                      ).toFixed(1)}% pair-weighted)
+                    </span>
                   </div>
                 </div>
               </div>

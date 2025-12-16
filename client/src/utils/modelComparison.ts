@@ -8,7 +8,7 @@
  * shadcn/ui: Pass - No custom UI; utilities support shadcn/ui components.
  */
 
-import { ModelComparisonResult } from '@/pages/AnalyticsOverview';
+import { ModelComparisonResult } from '../pages/AnalyticsOverview';
 
 type ModelComparisonSummary = ModelComparisonResult['summary'] | null | undefined;
 
@@ -48,6 +48,60 @@ export const hasComparisonSummary = (
   result: ModelComparisonResult | null,
 ): result is ModelComparisonResult & { summary: NonNullable<ModelComparisonResult['summary']> } =>
   Boolean(result?.summary);
+
+/**
+ * Computes PUZZLE-LEVEL pass/fail rate (NOT harness-aligned accuracy).
+ *
+ * A puzzle counts as "passed" if any selected model has puzzle-level result === 'correct'.
+ * This cannot represent partial credit on multi-test-pair puzzles.
+ */
+export const computePuzzlePassFailRate = (
+  result: ModelComparisonResult,
+  modelIndices: number[],
+): {
+  puzzlesPassed: number;
+  totalPuzzles: number;
+  puzzlePassRatePercentage: number;
+} => {
+  if (!result?.summary || !result?.details || modelIndices.length === 0) {
+    return {
+      puzzlesPassed: 0,
+      totalPuzzles: 0,
+      puzzlePassRatePercentage: 0,
+    };
+  }
+
+  const totalPuzzles = result.summary.totalPuzzles;
+
+  let puzzlesPassed = 0;
+
+  for (const detail of result.details) {
+    const modelResults = [
+      detail.model1Result,
+      detail.model2Result,
+      detail.model3Result,
+      detail.model4Result,
+    ];
+
+    const passed = modelIndices
+      .map((index) => modelResults[index])
+      .some((value) => value === 'correct');
+
+    if (passed) {
+      puzzlesPassed++;
+    }
+  }
+
+  const puzzlePassRatePercentage = totalPuzzles > 0
+    ? Math.round((puzzlesPassed / totalPuzzles) * 10000) / 100
+    : 0;
+
+  return {
+    puzzlesPassed,
+    totalPuzzles,
+    puzzlePassRatePercentage,
+  };
+};
 
 /**
  * Parses a model name to extract base model name and attempt number.

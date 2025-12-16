@@ -134,11 +134,16 @@ interface AttemptUnionMetrics {
   unionCorrectCount: number;
   totalPuzzles: number;
   totalTestPairs?: number;
+  puzzlesCounted?: number;
+  puzzlesFullySolved?: number;
 }
 
 const AttemptUnionCard: React.FC<{ metrics: AttemptUnionMetrics }> = ({ metrics }) => {
   const totalPairs = metrics.totalTestPairs ?? metrics.totalPuzzles;
   const pairWeightedRate = totalPairs > 0 ? (metrics.unionCorrectCount / totalPairs) * 100 : 0;
+  const puzzlesCounted = metrics.puzzlesCounted ?? metrics.totalPuzzles;
+  const puzzlesFullySolved = metrics.puzzlesFullySolved ?? 0;
+  const puzzlePassRate = puzzlesCounted > 0 ? (puzzlesFullySolved / puzzlesCounted) * 100 : 0;
 
   return (
     <Card className="border-blue-200 bg-gradient-to-br from-blue-50 to-blue-50/50">
@@ -166,51 +171,42 @@ const AttemptUnionCard: React.FC<{ metrics: AttemptUnionMetrics }> = ({ metrics 
           </div>
         </div>
 
-        {/* Progress Bar */}
-        <div className="space-y-2">
-          <p className="text-sm font-medium text-muted-foreground">Pair-weighted test-pair rate</p>
-          <Progress value={pairWeightedRate} className="h-2" />
-          <p className="text-xs text-muted-foreground">
-            {metrics.unionCorrectCount} of {totalPairs} test pairs solved
-          </p>
+        {/* Three Metrics Summary */}
+        <div className="grid grid-cols-3 gap-2 text-center">
+          <div className="bg-blue-50 rounded p-2">
+            <div className="text-lg font-bold text-blue-700">{metrics.unionAccuracyPercentage.toFixed(1)}%</div>
+            <div className="text-xs text-gray-600">Harness Score</div>
+          </div>
+          <div className="bg-green-50 rounded p-2">
+            <div className="text-lg font-bold text-green-700">{puzzlePassRate.toFixed(1)}%</div>
+            <div className="text-xs text-gray-600">Puzzles Solved</div>
+            <div className="text-xs text-gray-500">{puzzlesFullySolved}/{puzzlesCounted}</div>
+          </div>
+          <div className="bg-purple-50 rounded p-2">
+            <div className="text-lg font-bold text-purple-700">{pairWeightedRate.toFixed(1)}%</div>
+            <div className="text-xs text-gray-600">Test Pairs</div>
+            <div className="text-xs text-gray-500">{metrics.unionCorrectCount}/{totalPairs}</div>
+          </div>
         </div>
 
         {/* Explanation Section */}
         <div className="mt-4 space-y-3 rounded-md bg-white/50 p-3">
           <div>
             <p className="text-xs font-semibold text-gray-700 uppercase tracking-wide">
-              What is Union Accuracy?
+              Understanding the Three Metrics
             </p>
-            <p className="mt-1.5 text-sm leading-relaxed text-gray-600">
-              This view shows two related metrics for a 2-attempt evaluation:
-              the <strong>official harness score</strong> (average of per-puzzle scores)
-              and a <strong>pair-weighted test-pair rate</strong> (solved pairs / total pairs).
-            </p>
-          </div>
-
-          {/* Equation */}
-          <div className="border-t border-gray-200 pt-3">
-            <p className="text-xs font-semibold text-gray-700 uppercase tracking-wide">
-              Formula
-            </p>
-            <div className="mt-2 space-y-1 font-mono text-xs text-gray-600 leading-relaxed bg-gray-50/50 rounded p-2">
-              <div>
-                <span className="font-semibold">Pair-weighted rate =</span> (pairs solved by attempt 1 OR attempt 2) / (total pairs)
-              </div>
-              <div className="text-gray-500">
-                = {metrics.unionCorrectCount} / {totalPairs}
-              </div>
-              <div className="text-blue-600 font-semibold">
-                = {pairWeightedRate.toFixed(1)}%
-              </div>
-            </div>
+            <ul className="mt-1.5 text-sm leading-relaxed text-gray-600 space-y-1">
+              <li><strong>Harness Score:</strong> Official ARC-AGI metric (average of per-puzzle scores)</li>
+              <li><strong>Puzzles Solved:</strong> Puzzles where ALL test pairs were correct</li>
+              <li><strong>Test Pairs:</strong> Individual test pairs solved (pair-weighted)</li>
+            </ul>
           </div>
 
           {/* Transparency Note */}
           <div className="border-t border-gray-200 pt-3 text-xs text-gray-500">
             <p>
-              ℹ️ This is useful for understanding the <strong>potential</strong> of a model when
-              given multiple solution attempts per puzzle.
+              The harness score gives equal weight to each puzzle regardless of how many test pairs it has.
+              The pair-weighted rate treats each test pair equally.
             </p>
           </div>
         </div>
