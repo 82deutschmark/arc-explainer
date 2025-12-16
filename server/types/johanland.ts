@@ -162,6 +162,12 @@ export interface JohanLandIngestionConfig {
 
   /** Resume from specific puzzle ID (skips all before this) */
   resumeFrom?: string;
+
+  /** If true, query DB after ingestion and print UI-style attempt union score for comparison */
+  compareDb?: boolean;
+
+  /** Dataset key used by /api/metrics/compare (default: "evaluation2" for ARC2-Eval) */
+  compareDbDataset?: string;
 }
 
 /**
