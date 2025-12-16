@@ -71,6 +71,8 @@ interface UnionMetrics {
   unionCorrectCount: number;
   totalPuzzles: number;
   totalTestPairs?: number;
+  puzzlesCounted?: number;
+  puzzlesFullySolved?: number;
 }
 
 export default function HuggingFaceUnionAccuracy() {
@@ -249,6 +251,8 @@ export default function HuggingFaceUnionAccuracy() {
         unionCorrectCount: metrics.unionCorrectCount,
         totalPuzzles: metrics.totalPuzzles,
         totalTestPairs: metrics.totalTestPairs,
+        puzzlesCounted: metrics.puzzlesCounted,
+        puzzlesFullySolved: metrics.puzzlesFullySolved,
       });
       setUnionPuzzleIds(unionIds);
     } catch (err) {
@@ -570,29 +574,37 @@ export default function HuggingFaceUnionAccuracy() {
                   </div>
                 </div>
 
-                {/* The Equation - Shown Clearly */}
-                <div className="bg-white rounded p-2 mb-2 border border-blue-100 text-base space-y-1">
-                  <div className="text-gray-700">
-                    <span className="font-bold">Official Harness Score</span> = average over puzzles of (pairs solved by attempt 1 <strong>or</strong> attempt 2) ÷ (pairs in that puzzle)
+                {/* Three Metrics Grid */}
+                <div className="grid grid-cols-3 gap-2 mb-3">
+                  <div className="bg-blue-100 rounded-lg p-3 text-center">
+                    <div className="text-2xl font-bold text-blue-700">{unionMetrics.unionAccuracyPercentage.toFixed(1)}%</div>
+                    <div className="text-sm font-medium text-blue-800">Harness Score</div>
+                    <div className="text-xs text-gray-600">Official ARC-AGI metric</div>
                   </div>
-                  <div className="text-gray-600">
-                    = <span className="font-semibold">{unionMetrics.unionAccuracyPercentage.toFixed(1)}%</span>
+                  <div className="bg-green-100 rounded-lg p-3 text-center">
+                    <div className="text-2xl font-bold text-green-700">
+                      {((unionMetrics.puzzlesFullySolved ?? unionPuzzleIds.length) / (unionMetrics.puzzlesCounted ?? unionMetrics.totalPuzzles) * 100).toFixed(1)}%
+                    </div>
+                    <div className="text-sm font-medium text-green-800">Puzzles Solved</div>
+                    <div className="text-xs text-gray-600">
+                      {unionMetrics.puzzlesFullySolved ?? unionPuzzleIds.length}/{unionMetrics.puzzlesCounted ?? unionMetrics.totalPuzzles} fully correct
+                    </div>
                   </div>
-                  <div className="text-blue-700 font-bold">
-                    = <span className="text-xl">{unionMetrics.unionAccuracyPercentage.toFixed(1)}%</span>
+                  <div className="bg-purple-100 rounded-lg p-3 text-center">
+                    <div className="text-2xl font-bold text-purple-700">{pairWeightedAccuracyPercentage.toFixed(1)}%</div>
+                    <div className="text-sm font-medium text-purple-800">Test Pairs</div>
+                    <div className="text-xs text-gray-600">{unionMetrics.unionCorrectCount}/{totalPairsForDisplay} pairs</div>
                   </div>
                 </div>
 
-                <div className="bg-white rounded p-2 mb-2 border border-blue-100 text-base space-y-1">
-                  <div className="text-gray-700">
-                    <span className="font-bold">Pair-Weighted Test-Pair Rate</span> = (pairs solved by attempt 1 <strong>or</strong> attempt 2) ÷ (total pairs)
-                  </div>
-                  <div className="text-gray-600">
-                    = <span className="font-semibold">{unionMetrics.unionCorrectCount} test pairs</span> ÷ <span className="font-semibold">{totalPairsForDisplay} total</span>
-                  </div>
-                  <div className="text-blue-700 font-bold">
-                    = <span className="text-xl">{pairWeightedAccuracyPercentage.toFixed(1)}%</span>
-                  </div>
+                {/* Explanation of metrics */}
+                <div className="bg-white rounded p-2 mb-2 border border-gray-200 text-sm space-y-1">
+                  <div className="font-semibold text-gray-800">Understanding the three metrics:</div>
+                  <ul className="text-gray-600 space-y-0.5 ml-4 list-disc">
+                    <li><strong>Harness Score:</strong> Average of per-puzzle scores (official ARC-AGI metric)</li>
+                    <li><strong>Puzzles Solved:</strong> Puzzles where ALL test pairs were correct</li>
+                    <li><strong>Test Pairs:</strong> Individual test pairs solved (pair-weighted rate)</li>
+                  </ul>
                 </div>
 
                 {/* Quick Progress Bar */}

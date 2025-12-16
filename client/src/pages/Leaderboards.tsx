@@ -109,7 +109,7 @@ const Leaderboards: React.FC = () => {
         id: 'overall-accuracy',
         title: 'Overall accuracy',
         value: formatPercentage(overallAccuracy),
-        description: 'Correctness rate computed by AccuracyRepository across all solver attempts.',
+        description: 'Puzzle-level correctness rate (all-or-nothing per puzzle). Not the same as harness score.',
         icon: <Activity className="h-5 w-5" />, 
         tone: determineTone(overallAccuracy),
       },
