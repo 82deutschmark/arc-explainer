@@ -1,6 +1,6 @@
 /**
  * Author: gpt-5-codex
- * Date: 2025-10-16T00:00:00Z
+ * Date: 2025-10-16T00:00:00Z (updated 2025-12-16)
  * PURPOSE: Coordinates streaming analysis sessions, bridging SSE connections with provider services, handling capability checks,
  * option parsing, and graceful lifecycle management while honoring the shared STREAMING_ENABLED feature flag.
  * SRP/DRY check: Pass — reuse of centralized streaming config avoids duplicate env parsing.
@@ -125,17 +125,52 @@ export class AnalysisStreamService {
       const { original: originalModelKey, normalized: canonicalModelKey } = canonicalizeModelKey(decodedModel);
 
       const aiService = aiServiceFactory.getService(canonicalModelKey);
-      if (!aiService?.supportsStreaming?.(canonicalModelKey)) {
+      const supportsStreaming = aiService?.supportsStreaming?.(canonicalModelKey) ?? false;
+
+      // Parse request options before branching. These are needed for both streaming and non-streaming paths.
+      const promptId = payload.promptId ?? "solver";
+      const promptOptions = payload.options ?? {};
+      const temperature = payload.temperature ?? 0.2;
+      const customPrompt = payload.customPrompt;
+      const captureReasoning = payload.captureReasoning ?? true;
+      const retryMode = payload.retryMode ?? false;
+
+      // Load puzzle once for validation and to support the non-streaming fallback path.
+      const puzzle = await puzzleService.getPuzzleById(taskId);
+
+      if (!supportsStreaming) {
         logger.warn(
-          `Streaming requested for unsupported model ${originalModelKey} (normalized: ${canonicalModelKey})`,
+          `Streaming not available for model ${originalModelKey} (normalized: ${canonicalModelKey}), falling back to non-streaming`,
           "stream-service"
         );
-        sseStreamManager.error(
-          sessionId,
-          "STREAMING_UNAVAILABLE",
-          "Streaming is not enabled for this model.",
-          { modelKey: originalModelKey }
-        );
+        // Fall back to non-streaming analysis
+        sseStreamManager.sendEvent(sessionId, "stream.status", {
+          state: "info",
+          message: `Model ${originalModelKey} does not support streaming. Running standard analysis instead.`,
+          modelKey: originalModelKey,
+          taskId,
+        });
+
+        try {
+          const result = await aiService.analyzePuzzleWithModel(
+            puzzle,
+            canonicalModelKey,
+            taskId,
+            temperature,
+            promptId,
+            customPrompt,
+            promptOptions
+          );
+          sseStreamManager.close(sessionId, {
+            status: 'success',
+            responseSummary: result,
+            durationMs: Date.now() - (payload.createdAt ?? Date.now()),
+          });
+        } catch (error) {
+          const message = error instanceof Error ? error.message : String(error);
+          logger.logError(`Non-streaming fallback analysis failed: ${message}`, { error, context: 'stream-service' });
+          sseStreamManager.error(sessionId, 'ANALYSIS_FAILED', message);
+        }
         return sessionId;
       }
 
@@ -144,15 +179,6 @@ export class AnalysisStreamService {
         modelKey: originalModelKey,
         taskId,
       });
-      const promptId = payload.promptId ?? "solver";
-      const promptOptions = payload.options ?? {};
-      const temperature = payload.temperature ?? 0.2;
-      const customPrompt = payload.customPrompt;
-      const captureReasoning = payload.captureReasoning ?? true;
-      const retryMode = payload.retryMode ?? false;
-
-      // Load puzzle for validation
-      const puzzle = await puzzleService.getPuzzleById(taskId);
 
       const baseHarness = {
         sessionId,

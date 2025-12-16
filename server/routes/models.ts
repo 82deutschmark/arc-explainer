@@ -1,8 +1,10 @@
 /**
  * Models API routes - serves model configuration to client
  * Centralizes all model metadata on server-side
+ * Exposes DB-discovered OpenRouter model timestamps for client sorting.
  * 
- * @author Cascade  
+ * @author Cascade
+ * Date: 2025-12-16
  */
 
 import { Router } from 'express';
@@ -24,6 +26,7 @@ type ClientSafeModel = {
   responseTime: any;
   isReasoning?: boolean;
   releaseDate?: string;
+  addedAt?: string;
 };
 
 function toClientSafeModel(model: any): ClientSafeModel {
@@ -40,10 +43,11 @@ function toClientSafeModel(model: any): ClientSafeModel {
     responseTime: model.responseTime,
     isReasoning: model.isReasoning,
     releaseDate: model.releaseDate,
+    addedAt: model.addedAt,
   };
 }
 
-async function getDbOpenRouterModels(): Promise<Array<{ key: string; name: string }>> {
+async function getDbOpenRouterModels(): Promise<Array<{ key: string; name: string; addedAt?: string }>> {
   if (!repositoryService.isInitialized()) return [];
   const dbModels = await repositoryService.snakeBench.listModels();
   return dbModels
@@ -51,11 +55,21 @@ async function getDbOpenRouterModels(): Promise<Array<{ key: string; name: strin
     .map((m) => ({
       key: m.model_slug,
       name: m.name || m.model_slug,
+      addedAt: (() => {
+        const raw = (m as any).discovered_at ?? (m as any).created_at ?? null;
+        if (!raw) return undefined;
+        try {
+          const d = raw instanceof Date ? raw : new Date(raw);
+          return Number.isFinite(d.getTime()) ? d.toISOString() : undefined;
+        } catch {
+          return undefined;
+        }
+      })(),
     }))
     .filter((m) => typeof m.key === 'string' && m.key.trim().length > 0);
 }
 
-function buildFallbackOpenRouterClientModel(slug: string, name: string): ClientSafeModel {
+function buildFallbackOpenRouterClientModel(slug: string, name: string, addedAt?: string): ClientSafeModel {
   return {
     key: slug,
     name,
@@ -69,6 +83,7 @@ function buildFallbackOpenRouterClientModel(slug: string, name: string): ClientS
     responseTime: { speed: 'moderate', estimate: '30-60 sec' },
     isReasoning: undefined,
     releaseDate: undefined,
+    addedAt,
   };
 }
 
@@ -84,7 +99,7 @@ router.get('/', async (req, res) => {
 
   const dbOnly = dbOpenRouter
     .filter((m) => !configKeySet.has(m.key))
-    .map((m) => buildFallbackOpenRouterClientModel(m.key, m.name));
+    .map((m) => buildFallbackOpenRouterClientModel(m.key, m.name, m.addedAt));
 
   res.json([...configModels, ...dbOnly]);
 });
@@ -139,7 +154,7 @@ router.get('/provider/:provider', async (req, res) => {
     const dbOpenRouter = await getDbOpenRouterModels();
     const dbOnly = dbOpenRouter
       .filter((m) => !configKeySet.has(m.key))
-      .map((m) => buildFallbackOpenRouterClientModel(m.key, m.name));
+      .map((m) => buildFallbackOpenRouterClientModel(m.key, m.name, m.addedAt));
     return res.json([...clientModels, ...dbOnly]);
   }
 

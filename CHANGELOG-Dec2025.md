@@ -1,3 +1,12 @@
+### Version 6.1.61  Dec 18, 2025 (PENDING TESTING)
+
+- **Puzzle Examiner: OpenRouter models now reach the streaming pipeline** (Author: Codex)
+  - Added a streaming-aware shim inside `OpenRouterService` that reuses the standard analysis flow while emitting a final chunk and completion summary so SSE clients no longer see the “model does not support streaming” error.
+  - Documented the fix and follow-up checklist in `docs/2025-12-18-openrouter-streaming-plan.md` so future work can evolve this stub into a true incremental stream.
+  - Route `stream.status`/chunk events through the harness even for the aggregated response so Puzzle Examiner sees at least one chunk before the completed summary arrives.
+  - Testing: not run (service-level change only; no automated suites were executed).
+  - **Files Modified**: `server/services/openrouter.ts`, `docs/2025-12-18-openrouter-streaming-plan.md`, `CHANGELOG-Dec2025.md`
+
 ### Version 6.1.60  Dec 15, 2025 (PENDING TESTING)
 
 - **/scoring page copy + scoring alignment with ARC harness (pair-based)** (Author: Codex GPT-5)

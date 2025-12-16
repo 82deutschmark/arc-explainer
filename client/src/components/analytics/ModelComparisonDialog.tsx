@@ -1,6 +1,6 @@
 /**
  * Author: Cascade using Claude Sonnet 4.5
- * Date: 2025-10-10T19:00:00-04:00 (updated 2025-12-16)
+ * Date: 2025-10-10T19:00:00-04:00 (updated 2025-12-16, 2025-12-16)
  * PURPOSE: Modal dialog for displaying model comparison results with MAXIMUM information density.
  * Fixed terrible UX where comparison results were rendered at the bottom of the page.
  * Now opens in a proper modal dialog with close button and better presentation.
@@ -136,12 +136,20 @@ interface AttemptUnionMetrics {
   totalTestPairs?: number;
   puzzlesCounted?: number;
   puzzlesFullySolved?: number;
+
+  // Dataset-level denominators (stable across models; returned by backend)
+  datasetTotalPuzzles?: number;
+  datasetTotalTestPairs?: number;
 }
 
 const AttemptUnionCard: React.FC<{ metrics: AttemptUnionMetrics }> = ({ metrics }) => {
-  const totalPairs = metrics.totalTestPairs ?? metrics.totalPuzzles;
+  const totalPairs =
+    metrics.datasetTotalTestPairs ??
+    metrics.totalTestPairs ??
+    metrics.datasetTotalPuzzles ??
+    metrics.totalPuzzles;
   const pairWeightedRate = totalPairs > 0 ? (metrics.unionCorrectCount / totalPairs) * 100 : 0;
-  const puzzlesCounted = metrics.puzzlesCounted ?? metrics.totalPuzzles;
+  const puzzlesCounted = metrics.datasetTotalPuzzles ?? metrics.puzzlesCounted ?? metrics.totalPuzzles;
   const puzzlesFullySolved = metrics.puzzlesFullySolved ?? 0;
   const puzzlePassRate = puzzlesCounted > 0 ? (puzzlesFullySolved / puzzlesCounted) * 100 : 0;
 
