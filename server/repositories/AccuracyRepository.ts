@@ -417,16 +417,15 @@ export class AccuracyRepository extends BaseRepository {
 
         const numPairs = Math.max(inferredNumPairs, declaredNumPairs, 0);
 
-        // If we have no evidence of any test pairs for this puzzle, do not count it.
-        // This avoids biasing the score when a dataset includes puzzles that were never evaluated.
-        if (numPairs <= 0) {
-          continue;
-        }
+        // FIXED (v5.11.0): Include unattempted puzzles as 0-score (not skipped).
+        // A model that attempts only 1 puzzle and solves it should score 1/120 (not 100%).
+        // Unattempted puzzles with no pairs are assigned numPairs=1 by computePuzzleUnionScore,
+        // resulting in puzzleScore = 0/1 = 0.0, which correctly pulls down the average.
 
         puzzles.push({
           attempt1Pairs: a1Pairs,
           attempt2Pairs: a2Pairs,
-          numPairs,
+          numPairs: numPairs > 0 ? numPairs : 1, // Unattempted puzzles default to 1 test pair
         });
       }
 

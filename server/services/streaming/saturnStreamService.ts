@@ -63,17 +63,42 @@ class SaturnStreamService {
       ? saturnService
       : aiServiceFactory.getService(canonicalModelKey);
 
-    if (!aiService?.supportsStreaming?.(canonicalModelKey)) {
+    const supportsStreaming = aiService?.supportsStreaming?.(canonicalModelKey) ?? false;
+
+    if (!supportsStreaming) {
       logger.warn(
-        `[SaturnStream] Streaming requested for unsupported model ${originalModelKey} (normalized: ${canonicalModelKey})`,
+        `[SaturnStream] Streaming not available for model ${originalModelKey} (normalized: ${canonicalModelKey}), falling back to non-streaming`,
         'SaturnStream'
       );
-      sseStreamManager.error(
-        sessionId,
-        'SATURN_STREAMING_UNAVAILABLE',
-        `Model ${originalModelKey} does not support streaming.`,
-        { modelKey: originalModelKey }
-      );
+      // Fall back to non-streaming Saturn analysis
+      sseStreamManager.sendEvent(sessionId, 'stream.status', {
+        state: 'info',
+        phase: 'prompt_building',
+        message: `Model ${originalModelKey} does not support streaming. Running standard Saturn analysis instead.`,
+        taskId,
+        modelKey: originalModelKey,
+      });
+
+      try {
+        const puzzle = await puzzleService.getPuzzleById(taskId);
+        const result = await aiService.analyzePuzzleWithModel(
+          puzzle,
+          canonicalModelKey,
+          taskId,
+          temperature,
+          promptId,
+          undefined,
+          undefined
+        );
+        sseStreamManager.close(sessionId, {
+          status: 'success',
+          responseSummary: result,
+        });
+      } catch (error) {
+        const message = error instanceof Error ? error.message : String(error);
+        logger.logError(`[SaturnStream] Non-streaming fallback analysis failed: ${message}`, { error, context: 'SaturnStream' });
+        sseStreamManager.error(sessionId, 'SATURN_ANALYSIS_FAILED', message);
+      }
       return;
     }
 

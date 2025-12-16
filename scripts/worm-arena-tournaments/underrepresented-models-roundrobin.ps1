@@ -21,10 +21,9 @@ $underrepresentedModels = @(
 
 $championModels = @(
     "x-ai/grok-code-fast-1",
-    "x-ai/grok-4-fast",
+    
     "x-ai/grok-4.1-fast",
-    "x-ai/grok-3-mini",
-    "x-ai/grok-3-mini-beta",
+ 
     "deepseek/deepseek-chat-v3-0324",
     "deepseek/deepseek-chat-v3.1",
     "deepseek/deepseek-v3.2-exp",

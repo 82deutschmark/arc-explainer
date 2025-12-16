@@ -1,9 +1,9 @@
 /**
- * OpenRouter service for analyzing ARC puzzles using multiple AI providers through OpenRouter API
- * OpenRouter provides unified access to models from OpenAI, Anthropic, Google, Meta, and more
- * Refactored to extend BaseAIService for code consolidation and consistency
- * 
- * @author Claude (original), Claude Code (refactor)
+ * Author: Codex (GPT-5.1 Codex CLI)
+ * Date: 2025-12-18T19:00:00Z
+ * PURPOSE: Coordinates ARC puzzle analysis via OpenRouter while providing fall-back streaming
+ *          support that reuses the proven non-streaming flow so SSE consumers stay live.
+ * SRP/DRY check: Pass – maintains single responsibility for OpenRouter integration and defers DTO handling to shared helpers.
  */
 
 import dotenv from 'dotenv';
@@ -14,7 +14,16 @@ import { Agent, request } from "undici";
 import { ARCTask } from "../../shared/types.js";
 import { getDefaultPromptId } from "./promptBuilder.js";
 import type { PromptOptions, PromptPackage } from "./promptBuilder.js";
-import { BaseAIService, ServiceOptions, TokenUsage, AIResponse, PromptPreview, ModelInfo } from "./base/BaseAIService.js";
+import {
+  BaseAIService,
+  ServiceOptions,
+  TokenUsage,
+  AIResponse,
+  PromptPreview,
+  ModelInfo,
+  StreamCompletion,
+  StreamingHarness,
+} from "./base/BaseAIService.js";
 import { getModelConfig, getApiModelName, MODELS } from '../config/models/index.js';
 import { responsePersistence } from './ResponsePersistence.js';
 import { responseProcessor } from './ResponseProcessor.js';
@@ -52,6 +61,11 @@ export class OpenRouterService extends BaseAIService {
   protected provider = "OpenRouter";
   protected models = {}; // We use centralized getApiModelName instead
 
+  supportsStreaming(modelKey: string): boolean {
+    const modelConfig = getModelConfig(modelKey);
+    // Default to true if config exists and doesn't explicitly disable streaming
+    return modelConfig?.supportsStreaming !== false;
+  }
 
   async analyzePuzzleWithModel(
     task: ARCTask,
@@ -98,6 +112,84 @@ export class OpenRouterService extends BaseAIService {
       );
     } catch (error) {
       this.handleAnalysisError(error, modelKey, task);
+    }
+  }
+
+  async analyzePuzzleWithStreaming(
+    task: ARCTask,
+    modelKey: string,
+    taskId: string,
+    temperature: number = 0.2,
+    promptId: string = getDefaultPromptId(),
+    customPrompt?: string,
+    options?: PromptOptions,
+    serviceOpts: ServiceOptions = {}
+  ): Promise<AIResponse> {
+    const harness: StreamingHarness | undefined = serviceOpts.stream;
+    // When no streaming harness is provided, delegate to the standard pipeline.
+    if (!harness) {
+      return this.analyzePuzzleWithModel(task, modelKey, taskId, temperature, promptId, customPrompt, options, serviceOpts);
+    }
+
+    const startTime = Date.now();
+    const serviceOptsForModel: ServiceOptions = { ...serviceOpts };
+    delete serviceOptsForModel.stream;
+
+    try {
+      const response = await this.analyzePuzzleWithModel(
+        task,
+        modelKey,
+        taskId,
+        temperature,
+        promptId,
+        customPrompt,
+        options,
+        serviceOptsForModel
+      );
+
+      // Emit a single final chunk so clients have textual data before completion.
+      const narrativeCandidates = [
+        response.patternDescription,
+        response.solvingStrategy,
+        Array.isArray(response.hints) ? response.hints.join(" ") : response.hints,
+      ].filter(Boolean);
+
+      if (narrativeCandidates.length > 0) {
+        const finalNarrative = narrativeCandidates.join(" · ");
+        harness.emit?.({
+          type: "analysis",
+          content: finalNarrative,
+          delta: finalNarrative,
+          metadata: { stage: "final", modelKey, taskId },
+          timestamp: Date.now(),
+        });
+      }
+
+      harness.emitEvent?.("stream.status", {
+        state: "completed",
+        phase: "analysis_ready",
+        message: `OpenRouter model ${modelKey} completed.`,
+        taskId,
+        modelKey,
+      });
+
+      const completion: StreamCompletion = {
+        status: "success",
+        durationMs: Date.now() - startTime,
+        responseSummary: { analysis: response },
+      };
+
+      harness.end(completion);
+      return response;
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      harness.emitEvent?.("stream.status", {
+        state: "failed",
+        message,
+        taskId,
+        modelKey,
+      });
+      throw error;
     }
   }
 
