@@ -598,7 +598,7 @@ export default function HuggingFaceUnionAccuracy() {
                   <div>
                     The ARC Prize team's evaluation harness tests each model <strong>twice independently</strong> on every ARC test pair.
                     If <strong>either</strong> attempt gets the pair correct, that pair counts as solved. A puzzle's score is the fraction of its
-                    test pairs solved, and the dataset score averages across all test pairs. This is the official scoring method used to evaluate all models.
+                    test pairs solved, and the dataset score is the average of puzzle scores (each puzzle weighted equally). This is the official scoring method used to evaluate all models.
                   </div>
                   <div>
                     <strong>⚠️ Important:</strong> These results are from the <strong>public evaluation set</strong>, which is different from the semi-private evaluation set
@@ -808,7 +808,7 @@ export default function HuggingFaceUnionAccuracy() {
                   <li>Does the model's <strong>attempt 2 output exactly match</strong> the same ground-truth output?</li>
                 </ul>
                 <p className="text-gray-700 mt-1">
-                  <strong>A test pair counts as correct if either attempt is correct.</strong> A puzzle's score is the fraction of its test pairs solved, and the dataset score averages across all test pairs.
+                  <strong>A test pair counts as correct if either attempt is correct.</strong> A puzzle's score is the fraction of its test pairs solved, and the dataset score is the average of puzzle scores (each puzzle weighted equally).
                 </p>
               </div>
 
