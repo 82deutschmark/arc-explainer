@@ -79,6 +79,10 @@ export interface AttemptUnionStats {
   puzzlesCounted: number;
   puzzlesFullySolved: number;
   puzzlesFullySolvedIds?: string[];
+
+  // Dataset-level denominators (stable across models; returned by backend)
+  datasetTotalPuzzles?: number;
+  datasetTotalTestPairs?: number;
 }
 
 export interface ModelComparisonSummary {

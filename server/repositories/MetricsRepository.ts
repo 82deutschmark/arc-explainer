@@ -30,7 +30,7 @@
  * Now properly delegates to ModelDatasetRepository for dataset operations (SRP compliance).
  * 
  * @author Claude / Cascade
- * @date 2025-08-31 (updated 2025-10-10, 2025-12-16)
+ * @date 2025-08-31 (updated 2025-10-10, 2025-12-16, 2025-12-16)
  */
 
 import { BaseRepository } from './base/BaseRepository.ts';
@@ -172,6 +172,10 @@ export interface AttemptUnionStats {
   puzzlesCounted: number;
   puzzlesFullySolved: number;
   puzzlesFullySolvedIds?: string[];
+
+  // Dataset-level denominators (stable across models; used for UI display)
+  datasetTotalPuzzles?: number;
+  datasetTotalTestPairs?: number;
 }
 
 export interface ModelComparisonSummary {
@@ -766,6 +770,7 @@ export class MetricsRepository extends BaseRepository {
     details: PuzzleComparisonDetail[],
     models: string[],
     totalPuzzles: number,
+    datasetTotals: { totalPuzzles: number; totalTestPairs: number } | null,
     puzzleRows: Array<{
       puzzle_id: string;
       model_name: string;
@@ -891,6 +896,10 @@ export class MetricsRepository extends BaseRepository {
           puzzlesCounted: tasksCounted,
           puzzlesFullySolved,
           puzzlesFullySolvedIds,
+
+          // Expose dataset-level totals so the UI can display stable denominators
+          datasetTotalPuzzles: datasetTotals?.totalPuzzles,
+          datasetTotalTestPairs: datasetTotals?.totalTestPairs,
         });
       }
     }
@@ -1065,8 +1074,13 @@ export class MetricsRepository extends BaseRepository {
 
       logger.info(`Comparison complete: ${summary.allCorrect} all correct, ${summary.allIncorrect} all incorrect, ${summary.allNotAttempted} not attempted`, 'metrics');
 
+      // Dataset-level denominators (stable across models). We compute once per dataset and
+      // return it with attempt-union stats so UI denominators don't collapse to 1-of-1.
+      const { default: modelDatasetRepo } = await import('./ModelDatasetRepository.ts');
+      const datasetTotals = modelDatasetRepo.getDatasetTotals(dataset);
+
       // Compute attempt union statistics for attempt models
-      const attemptUnionStats = this.computeAttemptUnionStats(details, models, puzzleIds.length, filteredRows);
+      const attemptUnionStats = this.computeAttemptUnionStats(details, models, puzzleIds.length, datasetTotals, filteredRows);
 
       // Compute enriched per-model performance metrics
       const modelPerformance = await this.getModelPerformanceOnDataset(models, puzzleIds);

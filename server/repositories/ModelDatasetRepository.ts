@@ -1,11 +1,12 @@
 /**
- * 
+ *
  * Author: Cascade (FIXED THE CRITICAL LOGIC ERROR + ARCHITECTURE FIX 2025-10-10)
- * Date: 2025-09-26T20:43:42-04:00 (updated 2025-10-10)
+ * Date: 2025-09-26T20:43:42-04:00 (updated 2025-10-10, 2025-12-16)
  * PURPOSE: CANONICAL SOURCE for all dataset operations including:
  * - Model performance queries on ANY ARC dataset
  * - Dataset discovery (filesystem-based)
  * - Puzzle ID retrieval from datasets (single source of truth)
+ * - Dataset-level denominators (total puzzles + total test pairs) for stable UI metrics
  * 
  * ARCHITECTURE FIX (2025-10-10): 
  * - getPuzzleIdsFromDataset() now PUBLIC (was private)
@@ -47,6 +48,11 @@ interface DatasetInfo {
   path: string;
 }
 
+interface DatasetTotals {
+  totalPuzzles: number;
+  totalTestPairs: number;
+}
+
 export interface ModelDatasetMetrics {
   modelName: string;
   dataset: string;
@@ -76,6 +82,17 @@ export interface ModelDatasetMetrics {
 }
 
 export class ModelDatasetRepository extends BaseRepository {
+
+  // NOTE: We intentionally cache this in-memory. The ARC dataset files are immutable
+  // once shipped with the repo, so this is safe and avoids re-reading hundreds of files
+  // on every metrics request.
+  private datasetTotalsCache = new Map<string, DatasetTotals>();
+
+  // NOTE: The user explicitly wants ARC2 eval to display as 120 puzzles even though
+  // local filesystem counts can sometimes differ due to dataset packaging.
+  private static readonly DATASET_TOTAL_PUZZLES_OVERRIDE: Record<string, number> = {
+    evaluation2: 120,
+  };
   
   /**
    * Get all available datasets (like retry-failed-puzzles.ts getPuzzleIdsFromDirectory)
@@ -150,6 +167,69 @@ export class ModelDatasetRepository extends BaseRepository {
       logger.error(`Error reading puzzle files from dataset ${datasetName}: ${error instanceof Error ? error.message : String(error)}`, 'dataset');
       return [];
     }
+  }
+
+  /**
+   * Get dataset-level totals used as UI denominators.
+   *
+   * - totalPuzzles: stable puzzle count for the dataset (may be overridden for known sets)
+   * - totalTestPairs: sum of `test.length` across all puzzles in the dataset JSON files
+   *
+   * SRP: This repository owns filesystem dataset structure, so it owns these totals too.
+   */
+  public getDatasetTotals(datasetName: string): DatasetTotals {
+    const cached = this.datasetTotalsCache.get(datasetName);
+    if (cached) {
+      return cached;
+    }
+
+    const directory = path.join(process.cwd(), 'data', datasetName);
+    if (!fs.existsSync(directory)) {
+      logger.warn(`Dataset directory not found while computing totals: ${directory}`, 'dataset');
+      const empty = { totalPuzzles: 0, totalTestPairs: 0 };
+      this.datasetTotalsCache.set(datasetName, empty);
+      return empty;
+    }
+
+    // Read all JSON files in the directory. Keep parsing very defensive so a single
+    // bad file doesn't break metrics endpoints.
+    const files = fs.readdirSync(directory).filter(file => file.endsWith('.json'));
+    let filePuzzleCount = 0;
+    let totalTestPairs = 0;
+
+    for (const file of files) {
+      const fullPath = path.join(directory, file);
+      try {
+        const raw = fs.readFileSync(fullPath, 'utf-8');
+        const parsed = JSON.parse(raw);
+
+        filePuzzleCount++;
+
+        const test = (parsed && Array.isArray(parsed.test)) ? parsed.test : [];
+        totalTestPairs += test.length;
+      } catch (error) {
+        logger.warn(`Failed to parse dataset JSON for totals (${datasetName}/${file}): ${error instanceof Error ? error.message : String(error)}`, 'dataset');
+      }
+    }
+
+    const overrideTotalPuzzles = ModelDatasetRepository.DATASET_TOTAL_PUZZLES_OVERRIDE[datasetName];
+    const totalPuzzles = typeof overrideTotalPuzzles === 'number' ? overrideTotalPuzzles : filePuzzleCount;
+
+    if (typeof overrideTotalPuzzles === 'number' && overrideTotalPuzzles !== filePuzzleCount) {
+      logger.warn(
+        `Dataset puzzle-count override active for ${datasetName}: override=${overrideTotalPuzzles}, files=${filePuzzleCount}. UI will display override; test-pair total is computed from files.`,
+        'dataset',
+      );
+    }
+
+    const totals: DatasetTotals = {
+      totalPuzzles,
+      totalTestPairs,
+    };
+
+    this.datasetTotalsCache.set(datasetName, totals);
+    logger.info(`Dataset totals computed: dataset=${datasetName}, totalPuzzles=${totalPuzzles}, totalTestPairs=${totalTestPairs}`, 'dataset');
+    return totals;
   }
   /**
    * Get model performance on ANY dataset - completely dynamic!

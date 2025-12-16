@@ -1,5 +1,13 @@
 # New entires at the top, use proper SemVer!
 
+### Version 6.4.5  Dec 16, 2025
+
+- **Union accuracy UI: stable denominators for “Puzzles solved” and “Test pairs”** (Author: Cascade)
+  - `/scoring` and related comparison UIs now use dataset-level totals (total puzzles and total test pairs) as denominators.
+  - Fixes confusing displays like `1 of 1 fully correct` by showing `… of 120` for ARC2-Eval, and `… of <all test pairs>`.
+  - Dataset totals are computed once (cached in-memory) from the dataset JSON files.
+  - **Files Modified**: `server/repositories/ModelDatasetRepository.ts`, `server/repositories/MetricsRepository.ts`, `client/src/pages/HuggingFaceUnionAccuracy.tsx`, `client/src/pages/ModelComparisonPage.tsx`, `client/src/components/analytics/ModelComparisonDialog.tsx`, `client/src/pages/AnalyticsOverview.tsx`, `CHANGELOG.md`
+
 ### Version 6.4.4  Dec 16, 2025
 
 - **Worm Arena Live: model dropdowns sort newest-first (DB discovered_at + releaseDate fallback)** (Author: Cascade)
