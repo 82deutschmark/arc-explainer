@@ -1,8 +1,9 @@
 /**
- * Author: Claude Code using Haiku 4.5
+ * Author: Cascade
  * Date: 2025-12-16
  * PURPOSE: Auto-sync OpenRouter catalog and add new models.
- *          Only checks top 10 newest. Filters only expensive models (>$2/M).
+ *          Merge remote catalog into the local snapshot so deployments do not break
+ *          when OpenRouter temporarily omits models we already depend on.
  * SRP/DRY check: Pass
  */
 
@@ -33,6 +34,36 @@ type Model = {
   [key: string]: unknown;
 };
 
+function normalizeId(id: unknown): string | null {
+  if (typeof id !== 'string') return null;
+  const trimmed = id.trim();
+  return trimmed.length ? trimmed : null;
+}
+
+function sortByNewestCreatedDesc(models: Model[]): Model[] {
+  return [...models].sort((a, b) => {
+    const aCreated = typeof a.created === 'number' ? a.created : -1;
+    const bCreated = typeof b.created === 'number' ? b.created : -1;
+    if (bCreated !== aCreated) return bCreated - aCreated;
+    return String(a.id ?? '').localeCompare(String(b.id ?? ''));
+  });
+}
+
+function mergeCatalog(local: Model[], remote: Model[]): Model[] {
+  const byId = new Map<string, Model>();
+  for (const m of local) {
+    const id = normalizeId(m.id);
+    if (!id) continue;
+    byId.set(id, m);
+  }
+  for (const m of remote) {
+    const id = normalizeId(m.id);
+    if (!id) continue;
+    byId.set(id, m);
+  }
+  return sortByNewestCreatedDesc(Array.from(byId.values()));
+}
+
 async function fetchLatestCatalog(): Promise<Model[]> {
   const headers: Record<string, string> = { 'Accept': 'application/json' };
   if (process.env.OPENROUTER_API_KEY) {
@@ -50,6 +81,16 @@ async function fetchLatestCatalog(): Promise<Model[]> {
   const payload = (await resp.json()) as any;
   const models = (payload.data ?? payload.models ?? []) as Model[];
   return models;
+}
+
+async function fetchLatestCatalogBestEffort(): Promise<{ ok: true; models: Model[] } | { ok: false; error: string }> {
+  try {
+    const models = await fetchLatestCatalog();
+    return { ok: true, models };
+  } catch (error) {
+    const msg = error instanceof Error ? error.message : String(error);
+    return { ok: false, error: msg };
+  }
 }
 
 function loadLocalCatalog(): Model[] {
@@ -123,10 +164,12 @@ function findAutoAddCandidates(
 
 export async function syncOpenRouterCatalog(autoAdd = true): Promise<any> {
   try {
-    const remote = await fetchLatestCatalog();
-    const remoteTopN = remote.slice(0, TOP_N_MODELS);
     const local = loadLocalCatalog();
     const currentKeys = new Set(loadCurrentModelKeys());
+
+    const remoteResult = await fetchLatestCatalogBestEffort();
+    const remote = remoteResult.ok ? remoteResult.models : [];
+    const remoteTopN = remoteResult.ok ? sortByNewestCreatedDesc(remote).slice(0, TOP_N_MODELS) : [];
 
     const { models: candidates, expensive } = findAutoAddCandidates(remoteTopN, local, currentKeys);
 
@@ -145,15 +188,20 @@ export async function syncOpenRouterCatalog(autoAdd = true): Promise<any> {
       console.log('');
     }
 
-    saveCatalog(remote);
+    if (!remoteResult.ok) {
+      console.log(`[Sync] Warning: OpenRouter catalog fetch failed (${remoteResult.error}). Keeping local catalog snapshot.`);
+    } else {
+      const merged = mergeCatalog(local, remote);
+      saveCatalog(merged);
+    }
 
     let autoAddedList: string[] = [];
-    if (autoAdd && candidates.length > 0) {
+    if (remoteResult.ok && autoAdd && candidates.length > 0) {
       console.log(`[Sync] Auto-adding ${candidates.length} new model(s)...`);
       const newKeys = [...currentKeys, ...candidates.map(m => m.id!)];
       saveModelKeys(Array.from(newKeys).sort());
       autoAddedList = candidates.map(m => m.id!);
-      candidates.forEach(m => console.log(`   ✓ ${m.id}`));
+      candidates.forEach(m => console.log(`   [OK] ${m.id}`));
       console.log('');
     }
 
@@ -166,7 +214,8 @@ export async function syncOpenRouterCatalog(autoAdd = true): Promise<any> {
         newModels: candidates.map(m => m.id!),
         autoAdded: autoAddedList,
         expensive,
-        updatedAt: new Date().toISOString()
+        updatedAt: new Date().toISOString(),
+        fetchOk: remoteResult.ok
       }
     };
   } catch (error) {
@@ -179,14 +228,14 @@ export async function syncOpenRouterCatalog(autoAdd = true): Promise<any> {
 if (import.meta.url === `file://${process.argv[1]}`) {
   syncOpenRouterCatalog(true)
     .then(result => {
-      console.log(`\n[Sync] ✓ ${result.message}`);
+      console.log(`\n[Sync] OK ${result.message}`);
       if (result.stats.autoAdded.length > 0) {
         console.log(`[Sync] Auto-added: ${result.stats.autoAdded.join(', ')}`);
       }
       process.exit(0);
     })
     .catch(error => {
-      console.error(`\n[Sync] ✗ Failed:`, error);
+      console.error(`\n[Sync] FAILED:`, error);
       process.exit(1);
     });
 }

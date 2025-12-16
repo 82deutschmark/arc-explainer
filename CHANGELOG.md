@@ -1,5 +1,12 @@
 # New entires at the top, use proper SemVer!
 
+### Version 6.4.2  Dec 16, 2025
+
+- **Build reliability: OpenRouter catalog sync now merges remote into local snapshot** (Author: Cascade)
+  - Prevents deploy failures when OpenRouter temporarily omits a model ID that is already referenced by our `OPENROUTER_MODEL_KEYS`.
+  - Sync is now best-effort: if OpenRouter fetch fails, the build keeps the existing local catalog snapshot instead of overwriting it.
+  - **Files Modified**: `server/scripts/sync-openrouter-catalog.ts`, `CHANGELOG.md`
+
 ### Version 6.4.1  Dec 16, 2025
 
 - **Build fix: Missing closing brace in adminController.ts** (Author: Cascade)
@@ -75,7 +82,7 @@
   - **Per-Pair Validation**: Each attempt validated against `task.test[pair_index].output` (ground truth), not against solver's own `correct` flag.
   - **Union Scoring**: If ANY attempt solves a pair, that pair counts as solved (matches official ARC-AGI benchmarking harness).
   - **Backend Accuracy**: Changed from global averaging to per-puzzle averaging: `(sum of per-puzzle fractions) / num_puzzles * 100`.
-  - **Validation Result**: Harness-style score 71.29% (84.83/119 tasks) matches DB/UI union score 71.29% (117/166 test pairs) ✓
+  - **Validation Result**: Harness-style score 71.29% (84.83/119 tasks) matches DB/UI union score 71.29% (117/166 test pairs)
   - **Re-ingestion**: All 238 entries (119 puzzles × 2 attempts) successfully re-ingested with corrected pair-aware logic.
   - **Files Modified**: `server/scripts/ingest-johanland-results.ts`, `server/repositories/MetricsRepository.ts`, `server/types/johanland.ts`, `CHANGELOG.md`
 
