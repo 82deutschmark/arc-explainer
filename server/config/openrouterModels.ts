@@ -37,6 +37,7 @@ type OpenRouterCatalogModel = {
 const OPENROUTER_MODEL_KEYS: string[] = [
   'allenai/olmo-3-32b-think:free',
   'allenai/olmo-3-7b-think',
+  'allenai/olmo-3.1-32b-think:free',
   'amazon/nova-2-lite-v1:free',
   'amazon/nova-premier-v1',
   'anthropic/claude-haiku-4.5',
@@ -59,6 +60,7 @@ const OPENROUTER_MODEL_KEYS: string[] = [
   'mistralai/ministral-3b-2512',
   'mistralai/ministral-8b-2512',
   'mistralai/mistral-large-2512',
+  'mistralai/mistral-small-creative',
   'moonshotai/kimi-k2-thinking',
   'nex-agi/deepseek-v3.1-nex-n1:free',
   'nousresearch/hermes-4-70b',
@@ -77,8 +79,9 @@ const OPENROUTER_MODEL_KEYS: string[] = [
   'x-ai/grok-3-mini',
   'x-ai/grok-4.1-fast',
   'x-ai/grok-code-fast-1',
+  'xiaomi/mimo-v2-flash:free',
   'z-ai/glm-4.6',
-  'z-ai/glm-4.6v'
+  'z-ai/glm-4.6v',
 ];
 
 const OPENROUTER_ID_ALIASES: Record<string, string> = {

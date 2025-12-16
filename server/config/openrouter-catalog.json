@@ -1,6 +1,205 @@
 {
-  "total": 341,
   "models": [
+    {
+      "id": "mistralai/mistral-small-creative",
+      "canonical_slug": "mistralai/mistral-small-creative-20251216",
+      "hugging_face_id": null,
+      "name": "Mistral: Mistral Small Creative",
+      "created": 1765908653,
+      "description": "Mistral Small Creative is an experimental small model designed for creative writing, narrative generation, roleplay and character-driven dialogue, general-purpose instruction following, and conversational agents.",
+      "context_length": 32768,
+      "architecture": {
+        "modality": "text->text",
+        "input_modalities": [
+          "text"
+        ],
+        "output_modalities": [
+          "text"
+        ],
+        "tokenizer": "Mistral",
+        "instruct_type": null
+      },
+      "pricing": {
+        "prompt": "0.0000001",
+        "completion": "0.0000003",
+        "request": "0",
+        "image": "0",
+        "web_search": "0",
+        "internal_reasoning": "0"
+      },
+      "top_provider": {
+        "context_length": 32768,
+        "max_completion_tokens": null,
+        "is_moderated": false
+      },
+      "per_request_limits": null,
+      "supported_parameters": [
+        "tool_choice",
+        "tools"
+      ],
+      "default_parameters": {
+        "temperature": 1,
+        "top_p": 0.95,
+        "frequency_penalty": null
+      }
+    },
+    {
+      "id": "allenai/olmo-3.1-32b-think:free",
+      "canonical_slug": "allenai/olmo-3.1-32b-think-20251215",
+      "hugging_face_id": "allenai/Olmo-3.1-32B-Think",
+      "name": "AllenAI: Olmo 3.1 32B Think (free)",
+      "created": 1765907719,
+      "description": "Olmo 3.1 32B Think is a large-scale, 32-billion-parameter model designed for deep reasoning, complex multi-step logic, and advanced instruction following. Building on the Olmo 3 series, version 3.1 delivers refined reasoning behavior and stronger performance across demanding evaluations and nuanced conversational tasks. Developed by Ai2 under the Apache 2.0 license, Olmo 3.1 32B Think continues the Olmo initiative’s commitment to openness, providing full transparency across model weights, code, and training methodology.",
+      "context_length": 65536,
+      "architecture": {
+        "modality": "text->text",
+        "input_modalities": [
+          "text"
+        ],
+        "output_modalities": [
+          "text"
+        ],
+        "tokenizer": "Other",
+        "instruct_type": null
+      },
+      "pricing": {
+        "prompt": "0",
+        "completion": "0",
+        "request": "0",
+        "image": "0",
+        "web_search": "0",
+        "internal_reasoning": "0"
+      },
+      "top_provider": {
+        "context_length": 65536,
+        "max_completion_tokens": 65536,
+        "is_moderated": false
+      },
+      "per_request_limits": null,
+      "supported_parameters": [
+        "frequency_penalty",
+        "include_reasoning",
+        "logit_bias",
+        "max_tokens",
+        "min_p",
+        "presence_penalty",
+        "reasoning",
+        "repetition_penalty",
+        "response_format",
+        "seed",
+        "stop",
+        "structured_outputs",
+        "temperature",
+        "top_k",
+        "top_p"
+      ],
+      "default_parameters": {
+        "temperature": 0.6,
+        "top_p": 0.95,
+        "frequency_penalty": null
+      }
+    },
+    {
+      "id": "xiaomi/mimo-v2-flash:free",
+      "canonical_slug": "xiaomi/mimo-v2-flash-20251210",
+      "hugging_face_id": "XiaomiMiMo/MiMo-V2-Flash",
+      "name": "Xiaomi: MiMo-V2-Flash (free)",
+      "created": 1765731308,
+      "description": "MiMo-V2-Flash is an open-source foundation language model developed by Xiaomi. It is a Mixture-of-Experts model with 309B total parameters and 15B active parameters, adopting hybrid attention architecture. MiMo-V2-Flash supports a hybrid-thinking toggle and a 256K context window, and excels at reasoning, coding, and agent scenarios. On SWE-bench Verified and SWE-bench Multilingual, MiMo-V2-Flash ranks as the top #1 open-source model globally, delivering performance comparable to Claude Sonnet 4.5 while costing only about 3.5% as much.",
+      "context_length": 262144,
+      "architecture": {
+        "modality": "text->text",
+        "input_modalities": [
+          "text"
+        ],
+        "output_modalities": [
+          "text"
+        ],
+        "tokenizer": "Other",
+        "instruct_type": null
+      },
+      "pricing": {
+        "prompt": "0",
+        "completion": "0",
+        "request": "0",
+        "image": "0",
+        "web_search": "0",
+        "internal_reasoning": "0"
+      },
+      "top_provider": {
+        "context_length": 262144,
+        "max_completion_tokens": 262144,
+        "is_moderated": false
+      },
+      "per_request_limits": null,
+      "supported_parameters": [
+        "frequency_penalty",
+        "include_reasoning",
+        "max_tokens",
+        "presence_penalty",
+        "reasoning",
+        "response_format",
+        "stop",
+        "temperature",
+        "tool_choice",
+        "tools",
+        "top_p"
+      ],
+      "default_parameters": {
+        "temperature": null,
+        "top_p": 0.95,
+        "frequency_penalty": null
+      }
+    },
+    {
+      "id": "nvidia/nemotron-3-nano-30b-a3b:free",
+      "canonical_slug": "nvidia/nemotron-3-nano-30b-a3b",
+      "hugging_face_id": "nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B-BF16",
+      "name": "NVIDIA: Nemotron 3 Nano 30B A3B (free)",
+      "created": 1765731275,
+      "description": "NVIDIA Nemotron 3 Nano 30B A3B is a small language MoE model with highest compute efficiency and accuracy for developers to build specialized agentic AI systems.\n\nThe model is fully open with open-weights, datasets and recipes so developers can easily\ncustomize, optimize, and deploy the model on their infrastructure for maximum privacy and\nsecurity.\n\nNote: For the free endpoint, all prompts and output are logged to improve the provider's model and its product and services. Please do not upload any personal, confidential, or otherwise sensitive information. This is a trial use only. Do not use for production or business-critical systems.",
+      "context_length": 256000,
+      "architecture": {
+        "modality": "text->text",
+        "input_modalities": [
+          "text"
+        ],
+        "output_modalities": [
+          "text"
+        ],
+        "tokenizer": "Other",
+        "instruct_type": null
+      },
+      "pricing": {
+        "prompt": "0",
+        "completion": "0",
+        "request": "0",
+        "image": "0",
+        "web_search": "0",
+        "internal_reasoning": "0"
+      },
+      "top_provider": {
+        "context_length": 256000,
+        "max_completion_tokens": null,
+        "is_moderated": false
+      },
+      "per_request_limits": null,
+      "supported_parameters": [
+        "include_reasoning",
+        "max_tokens",
+        "reasoning",
+        "seed",
+        "temperature",
+        "tool_choice",
+        "tools",
+        "top_p"
+      ],
+      "default_parameters": {
+        "temperature": null,
+        "top_p": null,
+        "frequency_penalty": null
+      }
+    },
     {
       "id": "openai/gpt-5.2-chat",
       "canonical_slug": "openai/gpt-5.2-chat-20251211",
@@ -49,10 +248,7 @@
         "temperature": null,
         "top_p": null,
         "frequency_penalty": null
-      },
-      "inputCostPerM": 1.75,
-      "outputCostPerM": 14,
-      "isPreview": false
+      }
     },
     {
       "id": "openai/gpt-5.2-pro",
@@ -103,10 +299,7 @@
         "temperature": null,
         "top_p": null,
         "frequency_penalty": null
-      },
-      "inputCostPerM": 21,
-      "outputCostPerM": 168,
-      "isPreview": false
+      }
     },
     {
       "id": "openai/gpt-5.2",
@@ -158,10 +351,7 @@
         "temperature": null,
         "top_p": null,
         "frequency_penalty": null
-      },
-      "inputCostPerM": 1.75,
-      "outputCostPerM": 14,
-      "isPreview": false
+      }
     },
     {
       "id": "mistralai/devstral-2512:free",
@@ -213,10 +403,7 @@
         "temperature": 0.3,
         "top_p": null,
         "frequency_penalty": null
-      },
-      "inputCostPerM": 0,
-      "outputCostPerM": 0,
-      "isPreview": true
+      }
     },
     {
       "id": "mistralai/devstral-2512",
@@ -270,10 +457,7 @@
         "temperature": 0.3,
         "top_p": null,
         "frequency_penalty": null
-      },
-      "inputCostPerM": 0.15,
-      "outputCostPerM": 0.6,
-      "isPreview": true
+      }
     },
     {
       "id": "relace/relace-search",
@@ -322,10 +506,7 @@
         "temperature": null,
         "top_p": null,
         "frequency_penalty": null
-      },
-      "inputCostPerM": 1,
-      "outputCostPerM": 3,
-      "isPreview": false
+      }
     },
     {
       "id": "z-ai/glm-4.6v",
@@ -386,10 +567,7 @@
         "temperature": 0.8,
         "top_p": 0.6,
         "frequency_penalty": null
-      },
-      "inputCostPerM": 0.3,
-      "outputCostPerM": 0.9,
-      "isPreview": false
+      }
     },
     {
       "id": "nex-agi/deepseek-v3.1-nex-n1:free",
@@ -440,10 +618,7 @@
         "temperature": null,
         "top_p": null,
         "frequency_penalty": null
-      },
-      "inputCostPerM": 0,
-      "outputCostPerM": 0,
-      "isPreview": true
+      }
     },
     {
       "id": "essentialai/rnj-1-instruct",
@@ -496,18 +671,15 @@
         "temperature": null,
         "top_p": null,
         "frequency_penalty": null
-      },
-      "inputCostPerM": 0.15,
-      "outputCostPerM": 0.15,
-      "isPreview": false
+      }
     },
     {
       "id": "openrouter/bodybuilder",
       "canonical_slug": "openrouter/bodybuilder",
       "hugging_face_id": "",
-      "name": "Body Builder",
+      "name": "Body Builder (beta)",
       "created": 1764903653,
-      "description": "Transform your natural language requests into structured OpenRouter API request objects. Describe what you want to accomplish with AI models, and Body Builder will construct the appropriate API calls. Example: \"count to 10 using gemini and opus.\"\n\nThis is useful for creating multi-model requests, custom model routers, or programmatic generation of API calls from human descriptions.",
+      "description": "Transform your natural language requests into structured OpenRouter API request objects. Describe what you want to accomplish with AI models, and Body Builder will construct the appropriate API calls. Example: \"count to 10 using gemini and opus.\"\n\nThis is useful for creating multi-model requests, custom model routers, or programmatic generation of API calls from human descriptions.\n\n**BETA NOTICE**: Body Builder is in beta, and currently free. Pricing and functionality may change in the future.",
       "context_length": 128000,
       "architecture": {
         "modality": "text->text",
@@ -535,10 +707,7 @@
         "temperature": null,
         "top_p": null,
         "frequency_penalty": null
-      },
-      "inputCostPerM": null,
-      "outputCostPerM": null,
-      "isPreview": false
+      }
     },
     {
       "id": "openai/gpt-5.1-codex-max",
@@ -589,10 +758,7 @@
         "temperature": null,
         "top_p": null,
         "frequency_penalty": null
-      },
-      "inputCostPerM": 1.25,
-      "outputCostPerM": 10,
-      "isPreview": false
+      }
     },
     {
       "id": "amazon/nova-2-lite-v1:free",
@@ -645,10 +811,7 @@
         "temperature": null,
         "top_p": null,
         "frequency_penalty": null
-      },
-      "inputCostPerM": 0,
-      "outputCostPerM": 0,
-      "isPreview": true
+      }
     },
     {
       "id": "amazon/nova-2-lite-v1",
@@ -701,10 +864,7 @@
         "temperature": null,
         "top_p": null,
         "frequency_penalty": null
-      },
-      "inputCostPerM": 0.3,
-      "outputCostPerM": 2.5,
-      "isPreview": false
+      }
     },
     {
       "id": "mistralai/ministral-14b-2512",
@@ -761,10 +921,7 @@
         "temperature": 0.3,
         "top_p": null,
         "frequency_penalty": null
-      },
-      "inputCostPerM": 0.2,
-      "outputCostPerM": 0.2,
-      "isPreview": false
+      }
     },
     {
       "id": "mistralai/ministral-8b-2512",
@@ -817,10 +974,7 @@
         "temperature": 0.3,
         "top_p": null,
         "frequency_penalty": null
-      },
-      "inputCostPerM": 0.15,
-      "outputCostPerM": 0.15,
-      "isPreview": false
+      }
     },
     {
       "id": "mistralai/ministral-3b-2512",
@@ -873,10 +1027,7 @@
         "temperature": 0.3,
         "top_p": null,
         "frequency_penalty": null
-      },
-      "inputCostPerM": 0.1,
-      "outputCostPerM": 0.1,
-      "isPreview": false
+      }
     },
     {
       "id": "mistralai/mistral-large-2512",
@@ -929,10 +1080,7 @@
         "temperature": 0.0645,
         "top_p": null,
         "frequency_penalty": null
-      },
-      "inputCostPerM": 0.5,
-      "outputCostPerM": 1.5,
-      "isPreview": false
+      }
     },
     {
       "id": "arcee-ai/trinity-mini:free",
@@ -983,10 +1131,7 @@
         "temperature": 0.15,
         "top_p": 0.75,
         "frequency_penalty": null
-      },
-      "inputCostPerM": 0,
-      "outputCostPerM": 0,
-      "isPreview": true
+      }
     },
     {
       "id": "arcee-ai/trinity-mini",
@@ -1044,10 +1189,7 @@
         "temperature": 0.15,
         "top_p": 0.75,
         "frequency_penalty": null
-      },
-      "inputCostPerM": 0.05,
-      "outputCostPerM": 0.15,
-      "isPreview": false
+      }
     },
     {
       "id": "deepseek/deepseek-v3.2-speciale",
@@ -1105,10 +1247,7 @@
         "temperature": 1,
         "top_p": 0.95,
         "frequency_penalty": null
-      },
-      "inputCostPerM": 0.27,
-      "outputCostPerM": 0.41,
-      "isPreview": false
+      }
     },
     {
       "id": "deepseek/deepseek-v3.2",
@@ -1130,7 +1269,7 @@
         "instruct_type": null
       },
       "pricing": {
-        "prompt": "0.00000025",
+        "prompt": "0.00000024",
         "completion": "0.00000038",
         "request": "0",
         "image": "0",
@@ -1170,10 +1309,7 @@
         "temperature": 1,
         "top_p": 0.95,
         "frequency_penalty": null
-      },
-      "inputCostPerM": 0.25,
-      "outputCostPerM": 0.38,
-      "isPreview": false
+      }
     },
     {
       "id": "prime-intellect/intellect-3",
@@ -1231,10 +1367,7 @@
         "temperature": 0.6,
         "top_p": null,
         "frequency_penalty": null
-      },
-      "inputCostPerM": 0.2,
-      "outputCostPerM": 1.1,
-      "isPreview": false
+      }
     },
     {
       "id": "tngtech/tng-r1t-chimera:free",
@@ -1290,10 +1423,7 @@
         "temperature": null,
         "top_p": null,
         "frequency_penalty": null
-      },
-      "inputCostPerM": 0,
-      "outputCostPerM": 0,
-      "isPreview": true
+      }
     },
     {
       "id": "tngtech/tng-r1t-chimera",
@@ -1349,10 +1479,7 @@
         "temperature": null,
         "top_p": null,
         "frequency_penalty": null
-      },
-      "inputCostPerM": 0.3,
-      "outputCostPerM": 1.2,
-      "isPreview": false
+      }
     },
     {
       "id": "anthropic/claude-opus-4.5",
@@ -1408,10 +1535,7 @@
         "temperature": null,
         "top_p": null,
         "frequency_penalty": null
-      },
-      "inputCostPerM": 5,
-      "outputCostPerM": 25,
-      "isPreview": false
+      }
     },
     {
       "id": "allenai/olmo-3-32b-think:free",
@@ -1467,10 +1591,7 @@
         "temperature": 0.6,
         "top_p": 0.95,
         "frequency_penalty": null
-      },
-      "inputCostPerM": 0,
-      "outputCostPerM": 0,
-      "isPreview": true
+      }
     },
     {
       "id": "allenai/olmo-3-7b-instruct",
@@ -1526,10 +1647,7 @@
         "temperature": 0.6,
         "top_p": 0.95,
         "frequency_penalty": null
-      },
-      "inputCostPerM": 0.1,
-      "outputCostPerM": 0.2,
-      "isPreview": false
+      }
     },
     {
       "id": "allenai/olmo-3-7b-think",
@@ -1585,10 +1703,7 @@
         "temperature": 0.6,
         "top_p": 0.95,
         "frequency_penalty": null
-      },
-      "inputCostPerM": 0.12,
-      "outputCostPerM": 0.2,
-      "isPreview": false
+      }
     },
     {
       "id": "google/gemini-3-pro-image-preview",
@@ -1639,10 +1754,7 @@
         "temperature": null,
         "top_p": null,
         "frequency_penalty": null
-      },
-      "inputCostPerM": 2,
-      "outputCostPerM": 12,
-      "isPreview": true
+      }
     },
     {
       "id": "x-ai/grok-4.1-fast",
@@ -1697,10 +1809,7 @@
         "temperature": 0.7,
         "top_p": 0.95,
         "frequency_penalty": null
-      },
-      "inputCostPerM": 0.2,
-      "outputCostPerM": 0.5,
-      "isPreview": false
+      }
     },
     {
       "id": "google/gemini-3-pro-preview",
@@ -1758,10 +1867,7 @@
         "temperature": null,
         "top_p": null,
         "frequency_penalty": null
-      },
-      "inputCostPerM": 2,
-      "outputCostPerM": 12,
-      "isPreview": true
+      }
     },
     {
       "id": "deepcogito/cogito-v2.1-671b",
@@ -1816,10 +1922,7 @@
         "temperature": null,
         "top_p": null,
         "frequency_penalty": null
-      },
-      "inputCostPerM": 1.25,
-      "outputCostPerM": 1.25,
-      "isPreview": false
+      }
     },
     {
       "id": "openai/gpt-5.1",
@@ -1871,10 +1974,7 @@
         "temperature": null,
         "top_p": null,
         "frequency_penalty": null
-      },
-      "inputCostPerM": 1.25,
-      "outputCostPerM": 10,
-      "isPreview": false
+      }
     },
     {
       "id": "openai/gpt-5.1-chat",
@@ -1924,10 +2024,7 @@
         "temperature": null,
         "top_p": null,
         "frequency_penalty": null
-      },
-      "inputCostPerM": 1.25,
-      "outputCostPerM": 10,
-      "isPreview": false
+      }
     },
     {
       "id": "openai/gpt-5.1-codex",
@@ -1978,10 +2075,7 @@
         "temperature": null,
         "top_p": null,
         "frequency_penalty": null
-      },
-      "inputCostPerM": 1.25,
-      "outputCostPerM": 10,
-      "isPreview": false
+      }
     },
     {
       "id": "openai/gpt-5.1-codex-mini",
@@ -2032,10 +2126,7 @@
         "temperature": null,
         "top_p": null,
         "frequency_penalty": null
-      },
-      "inputCostPerM": 0.25,
-      "outputCostPerM": 2,
-      "isPreview": false
+      }
     },
     {
       "id": "kwaipilot/kat-coder-pro:free",
@@ -2089,10 +2180,7 @@
         "temperature": null,
         "top_p": null,
         "frequency_penalty": null
-      },
-      "inputCostPerM": 0,
-      "outputCostPerM": 0,
-      "isPreview": true
+      }
     },
     {
       "id": "moonshotai/kimi-k2-thinking",
@@ -2152,10 +2240,7 @@
         "temperature": null,
         "top_p": null,
         "frequency_penalty": null
-      },
-      "inputCostPerM": 0.45,
-      "outputCostPerM": 2.35,
-      "isPreview": false
+      }
     },
     {
       "id": "amazon/nova-premier-v1",
@@ -2204,10 +2289,7 @@
         "temperature": null,
         "top_p": null,
         "frequency_penalty": null
-      },
-      "inputCostPerM": 2.5,
-      "outputCostPerM": 12.5,
-      "isPreview": false
+      }
     },
     {
       "id": "perplexity/sonar-pro-search",
@@ -2259,10 +2341,7 @@
         "temperature": null,
         "top_p": null,
         "frequency_penalty": null
-      },
-      "inputCostPerM": 3,
-      "outputCostPerM": 15,
-      "isPreview": false
+      }
     },
     {
       "id": "mistralai/voxtral-small-24b-2507",
@@ -2316,10 +2395,7 @@
         "temperature": 0.2,
         "top_p": 0.95,
         "frequency_penalty": null
-      },
-      "inputCostPerM": 0.1,
-      "outputCostPerM": 0.3,
-      "isPreview": false
+      }
     },
     {
       "id": "openai/gpt-oss-safeguard-20b",
@@ -2371,62 +2447,7 @@
         "temperature": null,
         "top_p": null,
         "frequency_penalty": null
-      },
-      "inputCostPerM": 0.08,
-      "outputCostPerM": 0.3,
-      "isPreview": false
-    },
-    {
-      "id": "nvidia/nemotron-3-nano-30b-a3b:free",
-      "canonical_slug": "nvidia/nemotron-3-nano-30b-a3b",
-      "hugging_face_id": "nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B-BF16",
-      "name": "NVIDIA: Nemotron 3 Nano 30B A3B (free)",
-      "created": 1765731275,
-      "description": "NVIDIA Nemotron 3 Nano 30B A3B is a small language MoE model with highest compute efficiency and accuracy for developers to build specialized agentic AI systems.\n\nThe model is fully open with open-weights, datasets and recipes so developers can easily\ncustomize, optimize, and deploy the model on their infrastructure for maximum privacy and\nsecurity.\n\nNote: All prompts and output are logged to improve the provider's model and its product and services. Please do not upload any personal, confidential, or otherwise sensitive information. This is a trial use only. Do not use for production or business-critical systems",
-      "context_length": 256000,
-      "architecture": {
-        "modality": "text->text",
-        "input_modalities": [
-          "text"
-        ],
-        "output_modalities": [
-          "text"
-        ],
-        "tokenizer": "Other",
-        "instruct_type": null
-      },
-      "pricing": {
-        "prompt": "0",
-        "completion": "0",
-        "request": "0",
-        "image": "0",
-        "web_search": "0",
-        "internal_reasoning": "0"
-      },
-      "top_provider": {
-        "context_length": 256000,
-        "max_completion_tokens": null,
-        "is_moderated": false
-      },
-      "per_request_limits": null,
-      "supported_parameters": [
-        "include_reasoning",
-        "max_tokens",
-        "reasoning",
-        "seed",
-        "temperature",
-        "tool_choice",
-        "tools",
-        "top_p"
-      ],
-      "default_parameters": {
-        "temperature": null,
-        "top_p": null,
-        "frequency_penalty": null
-      },
-      "inputCostPerM": 0,
-      "outputCostPerM": 0,
-      "isPreview": true
+      }
     },
     {
       "id": "nvidia/nemotron-nano-12b-v2-vl:free",
@@ -2477,10 +2498,7 @@
         "temperature": null,
         "top_p": null,
         "frequency_penalty": null
-      },
-      "inputCostPerM": 0,
-      "outputCostPerM": 0,
-      "isPreview": true
+      }
     },
     {
       "id": "nvidia/nemotron-nano-12b-v2-vl",
@@ -2536,10 +2554,7 @@
         "temperature": null,
         "top_p": null,
         "frequency_penalty": null
-      },
-      "inputCostPerM": 0.2,
-      "outputCostPerM": 0.6,
-      "isPreview": false
+      }
     },
     {
       "id": "minimax/minimax-m2",
@@ -2548,7 +2563,7 @@
       "name": "MiniMax: MiniMax M2",
       "created": 1761252093,
       "description": "MiniMax-M2 is a compact, high-efficiency large language model optimized for end-to-end coding and agentic workflows. With 10 billion activated parameters (230 billion total), it delivers near-frontier intelligence across general reasoning, tool use, and multi-step task execution while maintaining low latency and deployment efficiency.\n\nThe model excels in code generation, multi-file editing, compile-run-fix loops, and test-validated repair, showing strong results on SWE-Bench Verified, Multi-SWE-Bench, and Terminal-Bench. It also performs competitively in agentic evaluations such as BrowseComp and GAIA, effectively handling long-horizon planning, retrieval, and recovery from execution errors.\n\nBenchmarked by [Artificial Analysis](https://artificialanalysis.ai/models/minimax-m2), MiniMax-M2 ranks among the top open-source models for composite intelligence, spanning mathematics, science, and instruction-following. Its small activation footprint enables fast inference, high concurrency, and improved unit economics, making it well-suited for large-scale agents, developer assistants, and reasoning-driven applications that require responsiveness and cost efficiency.\n\nTo avoid degrading this model's performance, MiniMax highly recommends preserving reasoning between turns. Learn more about using reasoning_details to pass back reasoning in our [docs](https://openrouter.ai/docs/use-cases/reasoning-tokens#preserving-reasoning-blocks).",
-      "context_length": 262144,
+      "context_length": 196608,
       "architecture": {
         "modality": "text->text",
         "input_modalities": [
@@ -2561,17 +2576,17 @@
         "instruct_type": null
       },
       "pricing": {
-        "prompt": "0.000000254",
-        "completion": "0.00000102",
+        "prompt": "0.0000002",
+        "completion": "0.000001",
         "request": "0",
         "image": "0",
         "web_search": "0",
         "internal_reasoning": "0",
-        "input_cache_read": "0.000000127"
+        "input_cache_read": "0.00000003"
       },
       "top_provider": {
-        "context_length": 262144,
-        "max_completion_tokens": null,
+        "context_length": 196608,
+        "max_completion_tokens": 131072,
         "is_moderated": false
       },
       "per_request_limits": null,
@@ -2600,10 +2615,7 @@
         "temperature": 1,
         "top_p": 0.95,
         "frequency_penalty": null
-      },
-      "inputCostPerM": 0.25,
-      "outputCostPerM": 1.02,
-      "isPreview": false
+      }
     },
     {
       "id": "liquid/lfm2-8b-a1b",
@@ -2650,10 +2662,7 @@
         "top_k",
         "top_p"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 0.05,
-      "outputCostPerM": 0.1,
-      "isPreview": false
+      "default_parameters": {}
     },
     {
       "id": "liquid/lfm-2.2-6b",
@@ -2704,10 +2713,7 @@
         "temperature": null,
         "top_p": null,
         "frequency_penalty": null
-      },
-      "inputCostPerM": 0.05,
-      "outputCostPerM": 0.1,
-      "isPreview": false
+      }
     },
     {
       "id": "ibm-granite/granite-4.0-h-micro",
@@ -2756,10 +2762,7 @@
         "temperature": null,
         "top_p": null,
         "frequency_penalty": null
-      },
-      "inputCostPerM": 0.02,
-      "outputCostPerM": 0.11,
-      "isPreview": false
+      }
     },
     {
       "id": "deepcogito/cogito-v2-preview-llama-405b",
@@ -2816,10 +2819,7 @@
         "temperature": null,
         "top_p": null,
         "frequency_penalty": null
-      },
-      "inputCostPerM": 3.5,
-      "outputCostPerM": 3.5,
-      "isPreview": true
+      }
     },
     {
       "id": "openai/gpt-5-image-mini",
@@ -2880,10 +2880,7 @@
         "temperature": null,
         "top_p": null,
         "frequency_penalty": null
-      },
-      "inputCostPerM": 2.5,
-      "outputCostPerM": 2,
-      "isPreview": false
+      }
     },
     {
       "id": "anthropic/claude-haiku-4.5",
@@ -2936,10 +2933,7 @@
         "temperature": null,
         "top_p": null,
         "frequency_penalty": null
-      },
-      "inputCostPerM": 1,
-      "outputCostPerM": 5,
-      "isPreview": false
+      }
     },
     {
       "id": "qwen/qwen3-vl-8b-thinking",
@@ -2991,10 +2985,7 @@
       "default_parameters": {
         "temperature": 1,
         "top_p": 0.95
-      },
-      "inputCostPerM": 0.18,
-      "outputCostPerM": 2.1,
-      "isPreview": false
+      }
     },
     {
       "id": "qwen/qwen3-vl-8b-instruct",
@@ -3052,10 +3043,7 @@
         "temperature": 0.7,
         "top_p": 0.8,
         "frequency_penalty": null
-      },
-      "inputCostPerM": 0.06,
-      "outputCostPerM": 0.4,
-      "isPreview": false
+      }
     },
     {
       "id": "openai/gpt-5-image",
@@ -3063,7 +3051,7 @@
       "hugging_face_id": "",
       "name": "OpenAI: GPT-5 Image",
       "created": 1760447986,
-      "description": "[GPT-5](https://openrouter.ai/openai/gpt-5) Image combines OpenAI's most advanced language model with state-of-the-art image generation capabilities. It offers major improvements in reasoning, code quality, and user experience while incorporating GPT Image 1's superior instruction following, text rendering, and detailed image editing.",
+      "description": "[GPT-5](https://openrouter.ai/openai/gpt-5) Image combines OpenAI's GPT-5 model with state-of-the-art image generation capabilities. It offers major improvements in reasoning, code quality, and user experience while incorporating GPT Image 1's superior instruction following, text rendering, and detailed image editing.",
       "context_length": 400000,
       "architecture": {
         "modality": "text+image->text+image",
@@ -3116,10 +3104,7 @@
         "temperature": null,
         "top_p": null,
         "frequency_penalty": null
-      },
-      "inputCostPerM": 10,
-      "outputCostPerM": 10,
-      "isPreview": false
+      }
     },
     {
       "id": "openai/o3-deep-research",
@@ -3179,10 +3164,7 @@
         "temperature": null,
         "top_p": null,
         "frequency_penalty": null
-      },
-      "inputCostPerM": 10,
-      "outputCostPerM": 40,
-      "isPreview": false
+      }
     },
     {
       "id": "openai/o4-mini-deep-research",
@@ -3242,10 +3224,7 @@
         "temperature": null,
         "top_p": null,
         "frequency_penalty": null
-      },
-      "inputCostPerM": 2,
-      "outputCostPerM": 8,
-      "isPreview": false
+      }
     },
     {
       "id": "nvidia/llama-3.3-nemotron-super-49b-v1.5",
@@ -3297,10 +3276,7 @@
         "top_k",
         "top_p"
       ],
-      "default_parameters": null,
-      "inputCostPerM": 0.1,
-      "outputCostPerM": 0.4,
-      "isPreview": false
+      "default_parameters": null
     },
     {
       "id": "baidu/ernie-4.5-21b-a3b-thinking",
@@ -3352,10 +3328,7 @@
         "temperature": 0.6,
         "top_p": 0.95,
         "frequency_penalty": null
-      },
-      "inputCostPerM": 0.06,
-      "outputCostPerM": 0.22,
-      "isPreview": false
+      }
     },
     {
       "id": "google/gemini-2.5-flash-image",
@@ -3404,10 +3377,7 @@
         "temperature": null,
         "top_p": null,
         "frequency_penalty": null
-      },
-      "inputCostPerM": 0.3,
-      "outputCostPerM": 2.5,
-      "isPreview": false
+      }
     },
     {
       "id": "qwen/qwen3-vl-30b-a3b-thinking",
@@ -3464,10 +3434,7 @@
       "default_parameters": {
         "temperature": 0.8,
         "top_p": 0.95
-      },
-      "inputCostPerM": 0.16,
-      "outputCostPerM": 0.8,
-      "isPreview": false
+      }
     },
     {
       "id": "qwen/qwen3-vl-30b-a3b-instruct",
@@ -3526,10 +3493,7 @@
         "temperature": 0.7,
         "top_p": 0.8,
         "frequency_penalty": null
-      },
-      "inputCostPerM": 0.15,
-      "outputCostPerM": 0.6,
-      "isPreview": false
+      }
     },
     {
       "id": "openai/gpt-5-pro",
@@ -3580,10 +3544,7 @@
         "temperature": null,
         "top_p": null,
         "frequency_penalty": null
-      },
-      "inputCostPerM": 15,
-      "outputCostPerM": 120,
-      "isPreview": false
+      }
     },
     {
       "id": "z-ai/glm-4.6",
@@ -3592,7 +3553,7 @@
       "name": "Z.AI: GLM 4.6",
       "created": 1759235576,
       "description": "Compared with GLM-4.5, this generation brings several key improvements:\n\nLonger context window: The context window has been expanded from 128K to 200K tokens, enabling the model to handle more complex agentic tasks.\nSuperior coding performance: The model achieves higher scores on code benchmarks and demonstrates better real-world performance in applications such as Claude Code、Cline、Roo Code and Kilo Code, including improvements in generating visually polished front-end pages.\nAdvanced reasoning: GLM-4.6 shows a clear improvement in reasoning performance and supports tool use during inference, leading to stronger overall capability.\nMore capable agents: GLM-4.6 exhibits stronger performance in tool using and search-based agents, and integrates more effectively within agent frameworks.\nRefined writing: Better aligns with human preferences in style and readability, and performs more naturally in role-playing scenarios.",
-      "context_length": 202752,
+      "context_length": 204800,
       "architecture": {
         "modality": "text->text",
         "input_modalities": [
@@ -3605,16 +3566,16 @@
         "instruct_type": null
       },
       "pricing": {
-        "prompt": "0.0000004",
-        "completion": "0.00000175",
+        "prompt": "0.00000039",
+        "completion": "0.0000019",
         "request": "0",
         "image": "0",
         "web_search": "0",
         "internal_reasoning": "0"
       },
       "top_provider": {
-        "context_length": 202752,
-        "max_completion_tokens": 202752,
+        "context_length": 204800,
+        "max_completion_tokens": 204800,
         "is_moderated": false
       },
       "per_request_limits": null,
@@ -3644,10 +3605,7 @@
         "temperature": 0.6,
         "top_p": null,
         "frequency_penalty": null
-      },
-      "inputCostPerM": 0.4,
-      "outputCostPerM": 1.75,
-      "isPreview": false
+      }
     },
     {
       "id": "z-ai/glm-4.6:exacto",
@@ -3703,10 +3661,7 @@
         "temperature": 0.6,
         "top_p": null,
         "frequency_penalty": null
-      },
-      "inputCostPerM": 0.44,
-      "outputCostPerM": 1.76,
-      "isPreview": true
+      }
     },
     {
       "id": "anthropic/claude-sonnet-4.5",
@@ -3762,10 +3717,7 @@
         "temperature": 1,
         "top_p": 1,
         "frequency_penalty": null
-      },
-      "inputCostPerM": 3,
-      "outputCostPerM": 15,
-      "isPreview": false
+      }
     },
     {
       "id": "deepseek/deepseek-v3.2-exp",
@@ -3792,12 +3744,11 @@
         "request": "0",
         "image": "0",
         "web_search": "0",
-        "internal_reasoning": "0",
-        "input_cache_read": "0.000000168"
+        "internal_reasoning": "0"
       },
       "top_provider": {
         "context_length": 163840,
-        "max_completion_tokens": null,
+        "max_completion_tokens": 65536,
         "is_moderated": false
       },
       "per_request_limits": null,
@@ -3823,10 +3774,7 @@
         "temperature": 0.6,
         "top_p": 0.95,
         "frequency_penalty": null
-      },
-      "inputCostPerM": 0.21,
-      "outputCostPerM": 0.32,
-      "isPreview": false
+      }
     },
     {
       "id": "thedrummer/cydonia-24b-v4.1",
@@ -3880,10 +3828,7 @@
         "temperature": null,
         "top_p": null,
         "frequency_penalty": null
-      },
-      "inputCostPerM": 0.3,
-      "outputCostPerM": 0.5,
-      "isPreview": false
+      }
     },
     {
       "id": "relace/relace-apply-3",
@@ -3927,10 +3872,7 @@
         "temperature": null,
         "top_p": null,
         "frequency_penalty": null
-      },
-      "inputCostPerM": 0.85,
-      "outputCostPerM": 1.25,
-      "isPreview": false
+      }
     },
     {
       "id": "google/gemini-2.5-flash-preview-09-2025",
@@ -3989,10 +3931,7 @@
         "temperature": null,
         "top_p": null,
         "frequency_penalty": null
-      },
-      "inputCostPerM": 0.3,
-      "outputCostPerM": 2.5,
-      "isPreview": true
+      }
     },
     {
       "id": "google/gemini-2.5-flash-lite-preview-09-2025",
@@ -4048,10 +3987,7 @@
         "temperature": null,
         "top_p": null,
         "frequency_penalty": null
-      },
-      "inputCostPerM": 0.1,
-      "outputCostPerM": 0.4,
-      "isPreview": true
+      }
     },
     {
       "id": "qwen/qwen3-vl-235b-a22b-thinking",
@@ -4108,10 +4044,7 @@
         "temperature": 0.8,
         "top_p": 0.95,
         "frequency_penalty": null
-      },
-      "inputCostPerM": 0.3,
-      "outputCostPerM": 1.2,
-      "isPreview": false
+      }
     },
     {
       "id": "qwen/qwen3-vl-235b-a22b-instruct",
@@ -4170,10 +4103,7 @@
         "temperature": 0.7,
         "top_p": 0.8,
         "frequency_penalty": null
-      },
-      "inputCostPerM": 0.2,
-      "outputCostPerM": 1.2,
-      "isPreview": false
+      }
     },
     {
       "id": "qwen/qwen3-max",
@@ -4223,10 +4153,7 @@
         "temperature": 1,
         "top_p": 1,
         "frequency_penalty": null
-      },
-      "inputCostPerM": 1.2,
-      "outputCostPerM": 6,
-      "isPreview": false
+      }
     },
     {
       "id": "qwen/qwen3-coder-plus",
@@ -4277,10 +4204,7 @@
         "temperature": null,
         "top_p": null,
         "frequency_penalty": null
-      },
-      "inputCostPerM": 1,
-      "outputCostPerM": 5,
-      "isPreview": false
+      }
     },
     {
       "id": "openai/gpt-5-codex",
@@ -4331,10 +4255,7 @@
         "temperature": null,
         "top_p": null,
         "frequency_penalty": null
-      },
-      "inputCostPerM": 1.25,
-      "outputCostPerM": 10,
-      "isPreview": false
+      }
     },
     {
       "id": "deepseek/deepseek-v3.1-terminus:exacto",
@@ -4392,10 +4313,7 @@
         "temperature": null,
         "top_p": null,
         "frequency_penalty": null
-      },
-      "inputCostPerM": 0.21,
-      "outputCostPerM": 0.79,
-      "isPreview": true
+      }
     },
     {
       "id": "deepseek/deepseek-v3.1-terminus",
@@ -4453,10 +4371,7 @@
         "temperature": null,
         "top_p": null,
         "frequency_penalty": null
-      },
-      "inputCostPerM": 0.21,
-      "outputCostPerM": 0.79,
-      "isPreview": false
+      }
     },
     {
       "id": "x-ai/grok-4-fast",
@@ -4511,10 +4426,7 @@
         "temperature": null,
         "top_p": null,
         "frequency_penalty": null
-      },
-      "inputCostPerM": 0.2,
-      "outputCostPerM": 0.5,
-      "isPreview": false
+      }
     },
     {
       "id": "alibaba/tongyi-deepresearch-30b-a3b:free",
@@ -4570,10 +4482,7 @@
         "temperature": null,
         "top_p": null,
         "frequency_penalty": null
-      },
-      "inputCostPerM": 0,
-      "outputCostPerM": 0,
-      "isPreview": true
+      }
     },
     {
       "id": "alibaba/tongyi-deepresearch-30b-a3b",
@@ -4630,10 +4539,7 @@
         "temperature": null,
         "top_p": null,
         "frequency_penalty": null
-      },
-      "inputCostPerM": 0.09,
-      "outputCostPerM": 0.4,
-      "isPreview": false
+      }
     },
     {
       "id": "qwen/qwen3-coder-flash",
@@ -4683,10 +4589,7 @@
         "temperature": null,
         "top_p": null,
         "frequency_penalty": null
-      },
-      "inputCostPerM": 0.3,
-      "outputCostPerM": 1.5,
-      "isPreview": false
+      }
     },
     {
       "id": "opengvlab/internvl3-78b",
@@ -4735,10 +4638,7 @@
         "top_k",
         "top_p"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 0.1,
-      "outputCostPerM": 0.39,
-      "isPreview": false
+      "default_parameters": {}
     },
     {
       "id": "qwen/qwen3-next-80b-a3b-thinking",
@@ -4798,10 +4698,7 @@
         "temperature": null,
         "top_p": null,
         "frequency_penalty": null
-      },
-      "inputCostPerM": 0.12,
-      "outputCostPerM": 1.2,
-      "isPreview": false
+      }
     },
     {
       "id": "qwen/qwen3-next-80b-a3b-instruct",
@@ -4853,10 +4750,7 @@
         "top_k",
         "top_p"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 0.09,
-      "outputCostPerM": 1.1,
-      "isPreview": false
+      "default_parameters": {}
     },
     {
       "id": "meituan/longcat-flash-chat",
@@ -4896,10 +4790,7 @@
         "temperature",
         "top_p"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 0.15,
-      "outputCostPerM": 0.75,
-      "isPreview": false
+      "default_parameters": {}
     },
     {
       "id": "qwen/qwen-plus-2025-07-28",
@@ -4949,10 +4840,7 @@
         "temperature": null,
         "top_p": null,
         "frequency_penalty": null
-      },
-      "inputCostPerM": 0.4,
-      "outputCostPerM": 1.2,
-      "isPreview": false
+      }
     },
     {
       "id": "qwen/qwen-plus-2025-07-28:thinking",
@@ -5004,10 +4892,7 @@
         "temperature": null,
         "top_p": null,
         "frequency_penalty": null
-      },
-      "inputCostPerM": 0.4,
-      "outputCostPerM": 4,
-      "isPreview": false
+      }
     },
     {
       "id": "nvidia/nemotron-nano-9b-v2:free",
@@ -5054,10 +4939,7 @@
         "tools",
         "top_p"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 0,
-      "outputCostPerM": 0,
-      "isPreview": true
+      "default_parameters": {}
     },
     {
       "id": "nvidia/nemotron-nano-9b-v2",
@@ -5110,10 +4992,7 @@
         "top_k",
         "top_p"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 0.04,
-      "outputCostPerM": 0.16,
-      "isPreview": false
+      "default_parameters": {}
     },
     {
       "id": "moonshotai/kimi-k2-0905",
@@ -5167,10 +5046,7 @@
         "top_logprobs",
         "top_p"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 0.39,
-      "outputCostPerM": 1.9,
-      "isPreview": false
+      "default_parameters": {}
     },
     {
       "id": "moonshotai/kimi-k2-0905:exacto",
@@ -5218,10 +5094,7 @@
         "tools",
         "top_p"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 0.6,
-      "outputCostPerM": 2.5,
-      "isPreview": true
+      "default_parameters": {}
     },
     {
       "id": "deepcogito/cogito-v2-preview-llama-70b",
@@ -5278,10 +5151,7 @@
         "temperature": null,
         "top_p": null,
         "frequency_penalty": null
-      },
-      "inputCostPerM": 0.88,
-      "outputCostPerM": 0.88,
-      "isPreview": true
+      }
     },
     {
       "id": "deepcogito/cogito-v2-preview-llama-109b-moe",
@@ -5333,10 +5203,7 @@
         "top_k",
         "top_p"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 0.18,
-      "outputCostPerM": 0.59,
-      "isPreview": true
+      "default_parameters": {}
     },
     {
       "id": "stepfun-ai/step3",
@@ -5384,10 +5251,7 @@
         "top_k",
         "top_p"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 0.57,
-      "outputCostPerM": 1.42,
-      "isPreview": false
+      "default_parameters": {}
     },
     {
       "id": "qwen/qwen3-30b-a3b-thinking-2507",
@@ -5438,10 +5302,7 @@
         "top_k",
         "top_p"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 0.05,
-      "outputCostPerM": 0.34,
-      "isPreview": false
+      "default_parameters": {}
     },
     {
       "id": "x-ai/grok-code-fast-1",
@@ -5492,10 +5353,7 @@
         "top_logprobs",
         "top_p"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 0.2,
-      "outputCostPerM": 1.5,
-      "isPreview": false
+      "default_parameters": {}
     },
     {
       "id": "nousresearch/hermes-4-70b",
@@ -5547,10 +5405,7 @@
         "top_k",
         "top_p"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 0.11,
-      "outputCostPerM": 0.38,
-      "isPreview": false
+      "default_parameters": {}
     },
     {
       "id": "nousresearch/hermes-4-405b",
@@ -5602,10 +5457,7 @@
         "top_k",
         "top_p"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 0.3,
-      "outputCostPerM": 1.2,
-      "isPreview": false
+      "default_parameters": {}
     },
     {
       "id": "google/gemini-2.5-flash-image-preview",
@@ -5654,10 +5506,7 @@
         "temperature": null,
         "top_p": null,
         "frequency_penalty": null
-      },
-      "inputCostPerM": 0.3,
-      "outputCostPerM": 2.5,
-      "isPreview": true
+      }
     },
     {
       "id": "deepseek/deepseek-chat-v3.1",
@@ -5713,10 +5562,7 @@
         "top_logprobs",
         "top_p"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 0.15,
-      "outputCostPerM": 0.75,
-      "isPreview": false
+      "default_parameters": {}
     },
     {
       "id": "openai/gpt-4o-audio-preview",
@@ -5769,10 +5615,7 @@
         "top_logprobs",
         "top_p"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 2.5,
-      "outputCostPerM": 10,
-      "isPreview": true
+      "default_parameters": {}
     },
     {
       "id": "mistralai/mistral-medium-3.1",
@@ -5823,10 +5666,7 @@
       ],
       "default_parameters": {
         "temperature": 0.3
-      },
-      "inputCostPerM": 0.4,
-      "outputCostPerM": 2,
-      "isPreview": false
+      }
     },
     {
       "id": "baidu/ernie-4.5-21b-a3b",
@@ -5878,10 +5718,7 @@
         "temperature": 0.8,
         "top_p": 0.8,
         "frequency_penalty": null
-      },
-      "inputCostPerM": 0.06,
-      "outputCostPerM": 0.22,
-      "isPreview": false
+      }
     },
     {
       "id": "baidu/ernie-4.5-vl-28b-a3b",
@@ -5932,10 +5769,7 @@
         "top_k",
         "top_p"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 0.11,
-      "outputCostPerM": 0.45,
-      "isPreview": false
+      "default_parameters": {}
     },
     {
       "id": "z-ai/glm-4.5v",
@@ -5994,10 +5828,7 @@
         "temperature": 0.75,
         "top_p": null,
         "frequency_penalty": null
-      },
-      "inputCostPerM": 0.48,
-      "outputCostPerM": 1.44,
-      "isPreview": false
+      }
     },
     {
       "id": "ai21/jamba-mini-1.7",
@@ -6041,10 +5872,7 @@
         "tools",
         "top_p"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 0.2,
-      "outputCostPerM": 0.4,
-      "isPreview": false
+      "default_parameters": {}
     },
     {
       "id": "ai21/jamba-large-1.7",
@@ -6088,10 +5916,7 @@
         "tools",
         "top_p"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 2,
-      "outputCostPerM": 8,
-      "isPreview": false
+      "default_parameters": {}
     },
     {
       "id": "openai/gpt-5-chat",
@@ -6135,10 +5960,7 @@
         "seed",
         "structured_outputs"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 1.25,
-      "outputCostPerM": 10,
-      "isPreview": false
+      "default_parameters": {}
     },
     {
       "id": "openai/gpt-5",
@@ -6190,10 +6012,7 @@
         "temperature": null,
         "top_p": null,
         "frequency_penalty": null
-      },
-      "inputCostPerM": 1.25,
-      "outputCostPerM": 10,
-      "isPreview": false
+      }
     },
     {
       "id": "openai/gpt-5-mini",
@@ -6241,10 +6060,7 @@
         "tool_choice",
         "tools"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 0.25,
-      "outputCostPerM": 2,
-      "isPreview": false
+      "default_parameters": {}
     },
     {
       "id": "openai/gpt-5-nano",
@@ -6292,10 +6108,7 @@
         "tool_choice",
         "tools"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 0.05,
-      "outputCostPerM": 0.4,
-      "isPreview": false
+      "default_parameters": {}
     },
     {
       "id": "openai/gpt-oss-120b:free",
@@ -6344,10 +6157,7 @@
         "temperature": null,
         "top_p": null,
         "frequency_penalty": null
-      },
-      "inputCostPerM": 0,
-      "outputCostPerM": 0,
-      "isPreview": true
+      }
     },
     {
       "id": "openai/gpt-oss-120b",
@@ -6407,10 +6217,7 @@
         "temperature": null,
         "top_p": null,
         "frequency_penalty": null
-      },
-      "inputCostPerM": 0.04,
-      "outputCostPerM": 0.19,
-      "isPreview": false
+      }
     },
     {
       "id": "openai/gpt-oss-120b:exacto",
@@ -6467,10 +6274,7 @@
         "temperature": null,
         "top_p": null,
         "frequency_penalty": null
-      },
-      "inputCostPerM": 0.04,
-      "outputCostPerM": 0.19,
-      "isPreview": true
+      }
     },
     {
       "id": "openai/gpt-oss-20b:free",
@@ -6526,10 +6330,7 @@
         "temperature": null,
         "top_p": null,
         "frequency_penalty": null
-      },
-      "inputCostPerM": 0,
-      "outputCostPerM": 0,
-      "isPreview": true
+      }
     },
     {
       "id": "openai/gpt-oss-20b",
@@ -6587,10 +6388,7 @@
         "temperature": null,
         "top_p": null,
         "frequency_penalty": null
-      },
-      "inputCostPerM": 0.03,
-      "outputCostPerM": 0.14,
-      "isPreview": false
+      }
     },
     {
       "id": "anthropic/claude-opus-4.1",
@@ -6646,10 +6444,7 @@
         "temperature": null,
         "top_p": null,
         "frequency_penalty": null
-      },
-      "inputCostPerM": 15,
-      "outputCostPerM": 75,
-      "isPreview": false
+      }
     },
     {
       "id": "mistralai/codestral-2508",
@@ -6699,10 +6494,7 @@
       ],
       "default_parameters": {
         "temperature": 0.3
-      },
-      "inputCostPerM": 0.3,
-      "outputCostPerM": 0.9,
-      "isPreview": false
+      }
     },
     {
       "id": "qwen/qwen3-coder-30b-a3b-instruct",
@@ -6752,10 +6544,7 @@
         "top_k",
         "top_p"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 0.06,
-      "outputCostPerM": 0.25,
-      "isPreview": false
+      "default_parameters": {}
     },
     {
       "id": "qwen/qwen3-30b-a3b-instruct-2507",
@@ -6805,10 +6594,7 @@
         "top_k",
         "top_p"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 0.08,
-      "outputCostPerM": 0.33,
-      "isPreview": false
+      "default_parameters": {}
     },
     {
       "id": "z-ai/glm-4.5",
@@ -6869,10 +6655,7 @@
         "temperature": 0.75,
         "top_p": null,
         "frequency_penalty": null
-      },
-      "inputCostPerM": 0.35,
-      "outputCostPerM": 1.55,
-      "isPreview": false
+      }
     },
     {
       "id": "z-ai/glm-4.5-air:free",
@@ -6928,10 +6711,7 @@
         "temperature": 0.75,
         "top_p": null,
         "frequency_penalty": null
-      },
-      "inputCostPerM": 0,
-      "outputCostPerM": 0,
-      "isPreview": true
+      }
     },
     {
       "id": "z-ai/glm-4.5-air",
@@ -6988,10 +6768,7 @@
         "temperature": 0.75,
         "top_p": null,
         "frequency_penalty": null
-      },
-      "inputCostPerM": 0.1,
-      "outputCostPerM": 0.68,
-      "isPreview": false
+      }
     },
     {
       "id": "qwen/qwen3-235b-a22b-thinking-2507",
@@ -7045,10 +6822,7 @@
         "top_k",
         "top_p"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 0.11,
-      "outputCostPerM": 0.6,
-      "isPreview": false
+      "default_parameters": {}
     },
     {
       "id": "z-ai/glm-4-32b",
@@ -7094,10 +6868,7 @@
         "temperature": 0.75,
         "top_p": null,
         "frequency_penalty": null
-      },
-      "inputCostPerM": 0.1,
-      "outputCostPerM": 0.1,
-      "isPreview": false
+      }
     },
     {
       "id": "qwen/qwen3-coder:free",
@@ -7145,10 +6916,7 @@
         "top_k",
         "top_p"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 0,
-      "outputCostPerM": 0,
-      "isPreview": true
+      "default_parameters": {}
     },
     {
       "id": "qwen/qwen3-coder",
@@ -7203,10 +6971,7 @@
         "top_logprobs",
         "top_p"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 0.22,
-      "outputCostPerM": 0.95,
-      "isPreview": false
+      "default_parameters": {}
     },
     {
       "id": "qwen/qwen3-coder:exacto",
@@ -7257,10 +7022,7 @@
         "top_k",
         "top_p"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 0.22,
-      "outputCostPerM": 1.8,
-      "isPreview": true
+      "default_parameters": {}
     },
     {
       "id": "bytedance/ui-tars-1.5-7b",
@@ -7309,10 +7071,7 @@
         "top_k",
         "top_p"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 0.1,
-      "outputCostPerM": 0.2,
-      "isPreview": false
+      "default_parameters": {}
     },
     {
       "id": "google/gemini-2.5-flash-lite",
@@ -7370,10 +7129,7 @@
         "temperature": null,
         "top_p": null,
         "frequency_penalty": null
-      },
-      "inputCostPerM": 0.1,
-      "outputCostPerM": 0.4,
-      "isPreview": false
+      }
     },
     {
       "id": "qwen/qwen3-235b-a22b-2507",
@@ -7427,10 +7183,7 @@
         "top_logprobs",
         "top_p"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 0.07,
-      "outputCostPerM": 0.46,
-      "isPreview": false
+      "default_parameters": {}
     },
     {
       "id": "switchpoint/router",
@@ -7475,10 +7228,7 @@
         "top_k",
         "top_p"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 0.85,
-      "outputCostPerM": 3.4,
-      "isPreview": false
+      "default_parameters": {}
     },
     {
       "id": "moonshotai/kimi-k2:free",
@@ -7519,10 +7269,7 @@
         "stop",
         "temperature"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 0,
-      "outputCostPerM": 0,
-      "isPreview": true
+      "default_parameters": {}
     },
     {
       "id": "moonshotai/kimi-k2",
@@ -7573,10 +7320,7 @@
         "top_k",
         "top_p"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 0.46,
-      "outputCostPerM": 1.84,
-      "isPreview": false
+      "default_parameters": {}
     },
     {
       "id": "thudm/glm-4.1v-9b-thinking",
@@ -7625,10 +7369,7 @@
         "top_k",
         "top_p"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 0.03,
-      "outputCostPerM": 0.11,
-      "isPreview": false
+      "default_parameters": {}
     },
     {
       "id": "mistralai/devstral-medium",
@@ -7678,10 +7419,7 @@
       ],
       "default_parameters": {
         "temperature": 0.3
-      },
-      "inputCostPerM": 0.4,
-      "outputCostPerM": 2,
-      "isPreview": true
+      }
     },
     {
       "id": "mistralai/devstral-small",
@@ -7734,10 +7472,7 @@
       ],
       "default_parameters": {
         "temperature": 0.3
-      },
-      "inputCostPerM": 0.07,
-      "outputCostPerM": 0.28,
-      "isPreview": true
+      }
     },
     {
       "id": "cognitivecomputations/dolphin-mistral-24b-venice-edition:free",
@@ -7783,10 +7518,7 @@
         "top_k",
         "top_p"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 0,
-      "outputCostPerM": 0,
-      "isPreview": true
+      "default_parameters": {}
     },
     {
       "id": "x-ai/grok-4",
@@ -7837,10 +7569,7 @@
         "top_logprobs",
         "top_p"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 3,
-      "outputCostPerM": 15,
-      "isPreview": false
+      "default_parameters": {}
     },
     {
       "id": "google/gemma-3n-e2b-it:free",
@@ -7885,10 +7614,7 @@
         "temperature",
         "top_p"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 0,
-      "outputCostPerM": 0,
-      "isPreview": true
+      "default_parameters": {}
     },
     {
       "id": "tencent/hunyuan-a13b-instruct",
@@ -7933,10 +7659,7 @@
         "top_k",
         "top_p"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 0.14,
-      "outputCostPerM": 0.57,
-      "isPreview": false
+      "default_parameters": {}
     },
     {
       "id": "tngtech/deepseek-r1t2-chimera:free",
@@ -7984,10 +7707,7 @@
         "top_k",
         "top_p"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 0,
-      "outputCostPerM": 0,
-      "isPreview": true
+      "default_parameters": {}
     },
     {
       "id": "tngtech/deepseek-r1t2-chimera",
@@ -8039,10 +7759,7 @@
         "top_k",
         "top_p"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 0.3,
-      "outputCostPerM": 1.2,
-      "isPreview": false
+      "default_parameters": {}
     },
     {
       "id": "morph/morph-v3-large",
@@ -8086,10 +7803,7 @@
         "temperature": null,
         "top_p": null,
         "frequency_penalty": null
-      },
-      "inputCostPerM": 0.9,
-      "outputCostPerM": 1.9,
-      "isPreview": false
+      }
     },
     {
       "id": "morph/morph-v3-fast",
@@ -8133,10 +7847,7 @@
         "temperature": null,
         "top_p": null,
         "frequency_penalty": null
-      },
-      "inputCostPerM": 0.8,
-      "outputCostPerM": 1.2,
-      "isPreview": false
+      }
     },
     {
       "id": "baidu/ernie-4.5-vl-424b-a47b",
@@ -8185,10 +7896,7 @@
         "top_k",
         "top_p"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 0.34,
-      "outputCostPerM": 1,
-      "isPreview": false
+      "default_parameters": {}
     },
     {
       "id": "baidu/ernie-4.5-300b-a47b",
@@ -8236,10 +7944,7 @@
         "top_k",
         "top_p"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 0.22,
-      "outputCostPerM": 0.88,
-      "isPreview": false
+      "default_parameters": {}
     },
     {
       "id": "inception/mercury",
@@ -8291,10 +7996,7 @@
         "temperature": 0,
         "top_p": null,
         "frequency_penalty": null
-      },
-      "inputCostPerM": 0.25,
-      "outputCostPerM": 1,
-      "isPreview": false
+      }
     },
     {
       "id": "mistralai/mistral-small-3.2-24b-instruct",
@@ -8349,10 +8051,7 @@
       ],
       "default_parameters": {
         "temperature": 0.3
-      },
-      "inputCostPerM": 0.06,
-      "outputCostPerM": 0.18,
-      "isPreview": false
+      }
     },
     {
       "id": "minimax/minimax-m1",
@@ -8402,10 +8101,7 @@
         "top_k",
         "top_p"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 0.4,
-      "outputCostPerM": 2.2,
-      "isPreview": false
+      "default_parameters": {}
     },
     {
       "id": "google/gemini-2.5-flash",
@@ -8464,10 +8160,7 @@
         "temperature": null,
         "top_p": null,
         "frequency_penalty": null
-      },
-      "inputCostPerM": 0.3,
-      "outputCostPerM": 2.5,
-      "isPreview": false
+      }
     },
     {
       "id": "google/gemini-2.5-pro",
@@ -8525,10 +8218,7 @@
         "temperature": null,
         "top_p": null,
         "frequency_penalty": null
-      },
-      "inputCostPerM": 1.25,
-      "outputCostPerM": 10,
-      "isPreview": false
+      }
     },
     {
       "id": "moonshotai/kimi-dev-72b",
@@ -8573,10 +8263,7 @@
         "top_k",
         "top_p"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 0.29,
-      "outputCostPerM": 1.15,
-      "isPreview": true
+      "default_parameters": {}
     },
     {
       "id": "openai/o3-pro",
@@ -8623,10 +8310,7 @@
         "tool_choice",
         "tools"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 20,
-      "outputCostPerM": 80,
-      "isPreview": false
+      "default_parameters": {}
     },
     {
       "id": "x-ai/grok-3-mini",
@@ -8677,10 +8361,7 @@
         "top_logprobs",
         "top_p"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 0.3,
-      "outputCostPerM": 0.5,
-      "isPreview": false
+      "default_parameters": {}
     },
     {
       "id": "x-ai/grok-3",
@@ -8731,10 +8412,7 @@
         "top_logprobs",
         "top_p"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 3,
-      "outputCostPerM": 15,
-      "isPreview": false
+      "default_parameters": {}
     },
     {
       "id": "google/gemini-2.5-pro-preview",
@@ -8787,10 +8465,7 @@
         "tools",
         "top_p"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 1.25,
-      "outputCostPerM": 10,
-      "isPreview": true
+      "default_parameters": {}
     },
     {
       "id": "deepseek/deepseek-r1-0528-qwen3-8b",
@@ -8844,10 +8519,7 @@
         "temperature": null,
         "top_p": null,
         "frequency_penalty": null
-      },
-      "inputCostPerM": 0.02,
-      "outputCostPerM": 0.1,
-      "isPreview": false
+      }
     },
     {
       "id": "deepseek/deepseek-r1-0528",
@@ -8903,10 +8575,7 @@
         "top_logprobs",
         "top_p"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 0.4,
-      "outputCostPerM": 1.75,
-      "isPreview": false
+      "default_parameters": {}
     },
     {
       "id": "anthropic/claude-opus-4",
@@ -8960,10 +8629,7 @@
         "temperature": null,
         "top_p": null,
         "frequency_penalty": null
-      },
-      "inputCostPerM": 15,
-      "outputCostPerM": 75,
-      "isPreview": false
+      }
     },
     {
       "id": "anthropic/claude-sonnet-4",
@@ -9017,10 +8683,7 @@
         "temperature": null,
         "top_p": null,
         "frequency_penalty": null
-      },
-      "inputCostPerM": 3,
-      "outputCostPerM": 15,
-      "isPreview": false
+      }
     },
     {
       "id": "mistralai/devstral-small-2505",
@@ -9070,10 +8733,7 @@
       ],
       "default_parameters": {
         "temperature": 0.3
-      },
-      "inputCostPerM": 0.06,
-      "outputCostPerM": 0.12,
-      "isPreview": true
+      }
     },
     {
       "id": "google/gemma-3n-e4b-it:free",
@@ -9118,10 +8778,7 @@
         "temperature",
         "top_p"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 0,
-      "outputCostPerM": 0,
-      "isPreview": true
+      "default_parameters": {}
     },
     {
       "id": "google/gemma-3n-e4b-it",
@@ -9168,10 +8825,7 @@
         "top_k",
         "top_p"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 0.02,
-      "outputCostPerM": 0.04,
-      "isPreview": false
+      "default_parameters": {}
     },
     {
       "id": "openai/codex-mini",
@@ -9218,10 +8872,7 @@
         "tool_choice",
         "tools"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 1.5,
-      "outputCostPerM": 6,
-      "isPreview": false
+      "default_parameters": {}
     },
     {
       "id": "nousresearch/deephermes-3-mistral-24b-preview",
@@ -9273,10 +8924,7 @@
         "top_k",
         "top_p"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 0.05,
-      "outputCostPerM": 0.2,
-      "isPreview": true
+      "default_parameters": {}
     },
     {
       "id": "mistralai/mistral-medium-3",
@@ -9327,10 +8975,7 @@
       ],
       "default_parameters": {
         "temperature": 0.3
-      },
-      "inputCostPerM": 0.4,
-      "outputCostPerM": 2,
-      "isPreview": false
+      }
     },
     {
       "id": "google/gemini-2.5-pro-preview-05-06",
@@ -9388,10 +9033,7 @@
         "temperature": null,
         "top_p": null,
         "frequency_penalty": null
-      },
-      "inputCostPerM": 1.25,
-      "outputCostPerM": 10,
-      "isPreview": true
+      }
     },
     {
       "id": "arcee-ai/spotlight",
@@ -9439,10 +9081,7 @@
         "top_k",
         "top_p"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 0.18,
-      "outputCostPerM": 0.18,
-      "isPreview": false
+      "default_parameters": {}
     },
     {
       "id": "arcee-ai/maestro-reasoning",
@@ -9489,10 +9128,7 @@
         "top_k",
         "top_p"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 0.9,
-      "outputCostPerM": 3.3,
-      "isPreview": false
+      "default_parameters": {}
     },
     {
       "id": "arcee-ai/virtuoso-large",
@@ -9541,10 +9177,7 @@
         "top_k",
         "top_p"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 0.75,
-      "outputCostPerM": 1.2,
-      "isPreview": false
+      "default_parameters": {}
     },
     {
       "id": "arcee-ai/coder-large",
@@ -9591,10 +9224,7 @@
         "top_k",
         "top_p"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 0.5,
-      "outputCostPerM": 0.8,
-      "isPreview": false
+      "default_parameters": {}
     },
     {
       "id": "microsoft/phi-4-reasoning-plus",
@@ -9644,10 +9274,7 @@
         "top_k",
         "top_p"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 0.07,
-      "outputCostPerM": 0.35,
-      "isPreview": false
+      "default_parameters": {}
     },
     {
       "id": "inception/mercury-coder",
@@ -9699,10 +9326,7 @@
         "temperature": 0,
         "top_p": null,
         "frequency_penalty": null
-      },
-      "inputCostPerM": 0.25,
-      "outputCostPerM": 1,
-      "isPreview": false
+      }
     },
     {
       "id": "qwen/qwen3-4b:free",
@@ -9752,10 +9376,7 @@
         "top_k",
         "top_p"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 0,
-      "outputCostPerM": 0,
-      "isPreview": true
+      "default_parameters": {}
     },
     {
       "id": "deepseek/deepseek-prover-v2",
@@ -9803,10 +9424,7 @@
         "top_k",
         "top_p"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 0.5,
-      "outputCostPerM": 2.18,
-      "isPreview": false
+      "default_parameters": {}
     },
     {
       "id": "meta-llama/llama-guard-4-12b",
@@ -9856,10 +9474,7 @@
         "top_k",
         "top_p"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 0.18,
-      "outputCostPerM": 0.18,
-      "isPreview": false
+      "default_parameters": {}
     },
     {
       "id": "qwen/qwen3-30b-a3b",
@@ -9912,10 +9527,7 @@
         "top_k",
         "top_p"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 0.06,
-      "outputCostPerM": 0.22,
-      "isPreview": false
+      "default_parameters": {}
     },
     {
       "id": "qwen/qwen3-8b",
@@ -9970,10 +9582,7 @@
         "top_logprobs",
         "top_p"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 0.03,
-      "outputCostPerM": 0.11,
-      "isPreview": false
+      "default_parameters": {}
     },
     {
       "id": "qwen/qwen3-14b",
@@ -10026,10 +9635,7 @@
         "top_k",
         "top_p"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 0.05,
-      "outputCostPerM": 0.22,
-      "isPreview": false
+      "default_parameters": {}
     },
     {
       "id": "qwen/qwen3-32b",
@@ -10084,10 +9690,7 @@
         "top_logprobs",
         "top_p"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 0.08,
-      "outputCostPerM": 0.24,
-      "isPreview": false
+      "default_parameters": {}
     },
     {
       "id": "qwen/qwen3-235b-a22b:free",
@@ -10137,10 +9740,7 @@
         "top_k",
         "top_p"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 0,
-      "outputCostPerM": 0,
-      "isPreview": true
+      "default_parameters": {}
     },
     {
       "id": "qwen/qwen3-235b-a22b",
@@ -10196,10 +9796,7 @@
         "top_logprobs",
         "top_p"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 0.18,
-      "outputCostPerM": 0.54,
-      "isPreview": false
+      "default_parameters": {}
     },
     {
       "id": "tngtech/deepseek-r1t-chimera:free",
@@ -10247,10 +9844,7 @@
         "top_k",
         "top_p"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 0,
-      "outputCostPerM": 0,
-      "isPreview": true
+      "default_parameters": {}
     },
     {
       "id": "tngtech/deepseek-r1t-chimera",
@@ -10300,10 +9894,7 @@
         "top_k",
         "top_p"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 0.3,
-      "outputCostPerM": 1.2,
-      "isPreview": false
+      "default_parameters": {}
     },
     {
       "id": "openai/o4-mini-high",
@@ -10351,10 +9942,7 @@
         "tool_choice",
         "tools"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 1.1,
-      "outputCostPerM": 4.4,
-      "isPreview": false
+      "default_parameters": {}
     },
     {
       "id": "openai/o3",
@@ -10402,10 +9990,7 @@
         "tool_choice",
         "tools"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 2,
-      "outputCostPerM": 8,
-      "isPreview": false
+      "default_parameters": {}
     },
     {
       "id": "openai/o4-mini",
@@ -10453,10 +10038,7 @@
         "tool_choice",
         "tools"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 1.1,
-      "outputCostPerM": 4.4,
-      "isPreview": false
+      "default_parameters": {}
     },
     {
       "id": "qwen/qwen2.5-coder-7b-instruct",
@@ -10502,10 +10084,7 @@
         "top_k",
         "top_p"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 0.03,
-      "outputCostPerM": 0.09,
-      "isPreview": false
+      "default_parameters": {}
     },
     {
       "id": "openai/gpt-4.1",
@@ -10551,10 +10130,7 @@
         "tool_choice",
         "tools"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 2,
-      "outputCostPerM": 8,
-      "isPreview": false
+      "default_parameters": {}
     },
     {
       "id": "openai/gpt-4.1-mini",
@@ -10600,10 +10176,7 @@
         "tool_choice",
         "tools"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 0.4,
-      "outputCostPerM": 1.6,
-      "isPreview": false
+      "default_parameters": {}
     },
     {
       "id": "openai/gpt-4.1-nano",
@@ -10649,10 +10222,7 @@
         "tool_choice",
         "tools"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 0.1,
-      "outputCostPerM": 0.4,
-      "isPreview": false
+      "default_parameters": {}
     },
     {
       "id": "eleutherai/llemma_7b",
@@ -10699,10 +10269,7 @@
         "top_k",
         "top_p"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 0.8,
-      "outputCostPerM": 1.2,
-      "isPreview": false
+      "default_parameters": {}
     },
     {
       "id": "alfredpros/codellama-7b-instruct-solidity",
@@ -10749,10 +10316,7 @@
         "top_k",
         "top_p"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 0.8,
-      "outputCostPerM": 1.2,
-      "isPreview": false
+      "default_parameters": {}
     },
     {
       "id": "arliai/qwq-32b-arliai-rpr-v1",
@@ -10802,10 +10366,7 @@
         "top_k",
         "top_p"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 0.03,
-      "outputCostPerM": 0.11,
-      "isPreview": false
+      "default_parameters": {}
     },
     {
       "id": "x-ai/grok-3-mini-beta",
@@ -10855,10 +10416,7 @@
         "top_logprobs",
         "top_p"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 0.3,
-      "outputCostPerM": 0.5,
-      "isPreview": true
+      "default_parameters": {}
     },
     {
       "id": "x-ai/grok-3-beta",
@@ -10908,10 +10466,7 @@
         "top_logprobs",
         "top_p"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 3,
-      "outputCostPerM": 15,
-      "isPreview": true
+      "default_parameters": {}
     },
     {
       "id": "nvidia/llama-3.1-nemotron-ultra-253b-v1",
@@ -10959,10 +10514,7 @@
         "top_k",
         "top_p"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 0.6,
-      "outputCostPerM": 1.8,
-      "isPreview": false
+      "default_parameters": {}
     },
     {
       "id": "meta-llama/llama-4-maverick",
@@ -11015,10 +10567,7 @@
         "top_k",
         "top_p"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 0.15,
-      "outputCostPerM": 0.6,
-      "isPreview": false
+      "default_parameters": {}
     },
     {
       "id": "meta-llama/llama-4-scout",
@@ -11071,10 +10620,7 @@
         "top_k",
         "top_p"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 0.08,
-      "outputCostPerM": 0.3,
-      "isPreview": false
+      "default_parameters": {}
     },
     {
       "id": "qwen/qwen2.5-vl-32b-instruct",
@@ -11127,10 +10673,7 @@
         "top_logprobs",
         "top_p"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 0.05,
-      "outputCostPerM": 0.22,
-      "isPreview": false
+      "default_parameters": {}
     },
     {
       "id": "deepseek/deepseek-chat-v3-0324",
@@ -11186,10 +10729,7 @@
         "top_logprobs",
         "top_p"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 0.2,
-      "outputCostPerM": 0.88,
-      "isPreview": false
+      "default_parameters": {}
     },
     {
       "id": "openai/o1-pro",
@@ -11234,10 +10774,7 @@
         "seed",
         "structured_outputs"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 150,
-      "outputCostPerM": 600,
-      "isPreview": false
+      "default_parameters": {}
     },
     {
       "id": "mistralai/mistral-small-3.1-24b-instruct:free",
@@ -11288,10 +10825,7 @@
       ],
       "default_parameters": {
         "temperature": 0.3
-      },
-      "inputCostPerM": 0,
-      "outputCostPerM": 0,
-      "isPreview": true
+      }
     },
     {
       "id": "mistralai/mistral-small-3.1-24b-instruct",
@@ -11344,10 +10878,7 @@
       ],
       "default_parameters": {
         "temperature": 0.3
-      },
-      "inputCostPerM": 0.03,
-      "outputCostPerM": 0.11,
-      "isPreview": false
+      }
     },
     {
       "id": "allenai/olmo-2-0325-32b-instruct",
@@ -11383,10 +10914,7 @@
       },
       "per_request_limits": null,
       "supported_parameters": [],
-      "default_parameters": {},
-      "inputCostPerM": 0.05,
-      "outputCostPerM": 0.2,
-      "isPreview": false
+      "default_parameters": {}
     },
     {
       "id": "google/gemma-3-4b-it:free",
@@ -11430,10 +10958,7 @@
         "temperature",
         "top_p"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 0,
-      "outputCostPerM": 0,
-      "isPreview": true
+      "default_parameters": {}
     },
     {
       "id": "google/gemma-3-4b-it",
@@ -11482,10 +11007,7 @@
         "top_k",
         "top_p"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 0.02,
-      "outputCostPerM": 0.07,
-      "isPreview": false
+      "default_parameters": {}
     },
     {
       "id": "google/gemma-3-12b-it:free",
@@ -11527,10 +11049,7 @@
         "temperature",
         "top_p"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 0,
-      "outputCostPerM": 0,
-      "isPreview": true
+      "default_parameters": {}
     },
     {
       "id": "google/gemma-3-12b-it",
@@ -11581,10 +11100,7 @@
         "top_k",
         "top_p"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 0.03,
-      "outputCostPerM": 0.1,
-      "isPreview": false
+      "default_parameters": {}
     },
     {
       "id": "cohere/command-a",
@@ -11631,10 +11147,7 @@
         "top_k",
         "top_p"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 2.5,
-      "outputCostPerM": 10,
-      "isPreview": false
+      "default_parameters": {}
     },
     {
       "id": "openai/gpt-4o-mini-search-preview",
@@ -11675,10 +11188,7 @@
         "structured_outputs",
         "web_search_options"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 0.15,
-      "outputCostPerM": 0.6,
-      "isPreview": true
+      "default_parameters": {}
     },
     {
       "id": "openai/gpt-4o-search-preview",
@@ -11719,10 +11229,7 @@
         "structured_outputs",
         "web_search_options"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 2.5,
-      "outputCostPerM": 10,
-      "isPreview": true
+      "default_parameters": {}
     },
     {
       "id": "google/gemma-3-27b-it:free",
@@ -11772,10 +11279,7 @@
         "tools",
         "top_p"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 0,
-      "outputCostPerM": 0,
-      "isPreview": true
+      "default_parameters": {}
     },
     {
       "id": "google/gemma-3-27b-it",
@@ -11828,10 +11332,7 @@
         "top_k",
         "top_p"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 0.04,
-      "outputCostPerM": 0.15,
-      "isPreview": false
+      "default_parameters": {}
     },
     {
       "id": "thedrummer/skyfall-36b-v2",
@@ -11879,10 +11380,7 @@
         "top_k",
         "top_p"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 0.55,
-      "outputCostPerM": 0.8,
-      "isPreview": false
+      "default_parameters": {}
     },
     {
       "id": "microsoft/phi-4-multimodal-instruct",
@@ -11931,10 +11429,7 @@
         "top_k",
         "top_p"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 0.05,
-      "outputCostPerM": 0.1,
-      "isPreview": false
+      "default_parameters": {}
     },
     {
       "id": "perplexity/sonar-reasoning-pro",
@@ -11981,10 +11476,7 @@
         "top_p",
         "web_search_options"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 2,
-      "outputCostPerM": 8,
-      "isPreview": false
+      "default_parameters": {}
     },
     {
       "id": "perplexity/sonar-pro",
@@ -12029,10 +11521,7 @@
         "top_p",
         "web_search_options"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 3,
-      "outputCostPerM": 15,
-      "isPreview": false
+      "default_parameters": {}
     },
     {
       "id": "perplexity/sonar-deep-research",
@@ -12078,10 +11567,7 @@
         "top_p",
         "web_search_options"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 2,
-      "outputCostPerM": 8,
-      "isPreview": false
+      "default_parameters": {}
     },
     {
       "id": "qwen/qwq-32b",
@@ -12135,10 +11621,7 @@
         "top_k",
         "top_p"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 0.15,
-      "outputCostPerM": 0.4,
-      "isPreview": false
+      "default_parameters": {}
     },
     {
       "id": "google/gemini-2.0-flash-lite-001",
@@ -12192,10 +11675,7 @@
         "temperature": null,
         "top_p": null,
         "frequency_penalty": null
-      },
-      "inputCostPerM": 0.08,
-      "outputCostPerM": 0.3,
-      "isPreview": false
+      }
     },
     {
       "id": "anthropic/claude-3.7-sonnet:thinking",
@@ -12248,10 +11728,7 @@
         "temperature": null,
         "top_p": null,
         "frequency_penalty": null
-      },
-      "inputCostPerM": 3,
-      "outputCostPerM": 15,
-      "isPreview": false
+      }
     },
     {
       "id": "anthropic/claude-3.7-sonnet",
@@ -12305,10 +11782,7 @@
         "temperature": null,
         "top_p": null,
         "frequency_penalty": null
-      },
-      "inputCostPerM": 3,
-      "outputCostPerM": 15,
-      "isPreview": false
+      }
     },
     {
       "id": "mistralai/mistral-saba",
@@ -12358,10 +11832,7 @@
       ],
       "default_parameters": {
         "temperature": 0.3
-      },
-      "inputCostPerM": 0.2,
-      "outputCostPerM": 0.6,
-      "isPreview": false
+      }
     },
     {
       "id": "meta-llama/llama-guard-3-8b",
@@ -12410,10 +11881,7 @@
         "top_k",
         "top_p"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 0.02,
-      "outputCostPerM": 0.06,
-      "isPreview": false
+      "default_parameters": {}
     },
     {
       "id": "openai/o3-mini-high",
@@ -12458,10 +11926,7 @@
         "tool_choice",
         "tools"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 1.1,
-      "outputCostPerM": 4.4,
-      "isPreview": false
+      "default_parameters": {}
     },
     {
       "id": "google/gemini-2.0-flash-001",
@@ -12518,10 +11983,7 @@
         "temperature": null,
         "top_p": null,
         "frequency_penalty": null
-      },
-      "inputCostPerM": 0.1,
-      "outputCostPerM": 0.4,
-      "isPreview": false
+      }
     },
     {
       "id": "qwen/qwen-vl-plus",
@@ -12565,10 +12027,7 @@
         "temperature",
         "top_p"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 0.21,
-      "outputCostPerM": 0.63,
-      "isPreview": false
+      "default_parameters": {}
     },
     {
       "id": "aion-labs/aion-1.0",
@@ -12610,10 +12069,7 @@
         "temperature",
         "top_p"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 4,
-      "outputCostPerM": 8,
-      "isPreview": false
+      "default_parameters": {}
     },
     {
       "id": "aion-labs/aion-1.0-mini",
@@ -12655,10 +12111,7 @@
         "temperature",
         "top_p"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 0.7,
-      "outputCostPerM": 1.4,
-      "isPreview": false
+      "default_parameters": {}
     },
     {
       "id": "aion-labs/aion-rp-llama-3.1-8b",
@@ -12698,10 +12151,7 @@
         "temperature",
         "top_p"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 0.2,
-      "outputCostPerM": 0.2,
-      "isPreview": false
+      "default_parameters": {}
     },
     {
       "id": "qwen/qwen-vl-max",
@@ -12751,10 +12201,7 @@
         "temperature": null,
         "top_p": null,
         "frequency_penalty": null
-      },
-      "inputCostPerM": 0.8,
-      "outputCostPerM": 3.2,
-      "isPreview": false
+      }
     },
     {
       "id": "qwen/qwen-turbo",
@@ -12800,10 +12247,7 @@
         "tools",
         "top_p"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 0.05,
-      "outputCostPerM": 0.2,
-      "isPreview": false
+      "default_parameters": {}
     },
     {
       "id": "qwen/qwen2.5-vl-72b-instruct",
@@ -12854,10 +12298,7 @@
         "top_k",
         "top_p"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 0.03,
-      "outputCostPerM": 0.13,
-      "isPreview": false
+      "default_parameters": {}
     },
     {
       "id": "qwen/qwen-plus",
@@ -12903,10 +12344,7 @@
         "tools",
         "top_p"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 0.4,
-      "outputCostPerM": 1.2,
-      "isPreview": false
+      "default_parameters": {}
     },
     {
       "id": "qwen/qwen-max",
@@ -12952,10 +12390,7 @@
         "tools",
         "top_p"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 1.6,
-      "outputCostPerM": 6.4,
-      "isPreview": false
+      "default_parameters": {}
     },
     {
       "id": "openai/o3-mini",
@@ -13000,10 +12435,7 @@
         "tool_choice",
         "tools"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 1.1,
-      "outputCostPerM": 4.4,
-      "isPreview": false
+      "default_parameters": {}
     },
     {
       "id": "mistralai/mistral-small-24b-instruct-2501",
@@ -13056,11 +12488,10 @@
         "top_p"
       ],
       "default_parameters": {
-        "temperature": 0.3
-      },
-      "inputCostPerM": 0.03,
-      "outputCostPerM": 0.11,
-      "isPreview": false
+        "temperature": 0.3,
+        "top_p": null,
+        "frequency_penalty": null
+      }
     },
     {
       "id": "deepseek/deepseek-r1-distill-qwen-32b",
@@ -13111,10 +12542,7 @@
         "top_k",
         "top_p"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 0.24,
-      "outputCostPerM": 0.24,
-      "isPreview": false
+      "default_parameters": {}
     },
     {
       "id": "deepseek/deepseek-r1-distill-qwen-14b",
@@ -13164,10 +12592,7 @@
         "top_k",
         "top_p"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 0.12,
-      "outputCostPerM": 0.12,
-      "isPreview": false
+      "default_parameters": {}
     },
     {
       "id": "perplexity/sonar-reasoning",
@@ -13213,10 +12638,7 @@
         "top_p",
         "web_search_options"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 1,
-      "outputCostPerM": 5,
-      "isPreview": false
+      "default_parameters": {}
     },
     {
       "id": "perplexity/sonar",
@@ -13261,10 +12683,7 @@
         "top_p",
         "web_search_options"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 1,
-      "outputCostPerM": 1,
-      "isPreview": false
+      "default_parameters": {}
     },
     {
       "id": "deepseek/deepseek-r1-distill-llama-70b",
@@ -13318,10 +12737,7 @@
         "top_k",
         "top_p"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 0.03,
-      "outputCostPerM": 0.13,
-      "isPreview": false
+      "default_parameters": {}
     },
     {
       "id": "deepseek/deepseek-r1",
@@ -13374,10 +12790,7 @@
         "top_k",
         "top_p"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 0.3,
-      "outputCostPerM": 1.2,
-      "isPreview": false
+      "default_parameters": {}
     },
     {
       "id": "minimax/minimax-01",
@@ -13418,10 +12831,7 @@
         "temperature",
         "top_p"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 0.2,
-      "outputCostPerM": 1.1,
-      "isPreview": false
+      "default_parameters": {}
     },
     {
       "id": "microsoft/phi-4",
@@ -13470,10 +12880,7 @@
         "top_k",
         "top_p"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 0.06,
-      "outputCostPerM": 0.14,
-      "isPreview": false
+      "default_parameters": {}
     },
     {
       "id": "sao10k/l3.1-70b-hanami-x1",
@@ -13521,10 +12928,7 @@
         "top_k",
         "top_p"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 3,
-      "outputCostPerM": 3,
-      "isPreview": false
+      "default_parameters": {}
     },
     {
       "id": "deepseek/deepseek-chat",
@@ -13575,10 +12979,7 @@
         "top_k",
         "top_p"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 0.3,
-      "outputCostPerM": 1.2,
-      "isPreview": false
+      "default_parameters": {}
     },
     {
       "id": "sao10k/l3.3-euryale-70b",
@@ -13627,10 +13028,7 @@
         "top_k",
         "top_p"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 0.65,
-      "outputCostPerM": 0.75,
-      "isPreview": false
+      "default_parameters": {}
     },
     {
       "id": "openai/o1",
@@ -13676,10 +13074,7 @@
         "tool_choice",
         "tools"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 15,
-      "outputCostPerM": 60,
-      "isPreview": false
+      "default_parameters": {}
     },
     {
       "id": "cohere/command-r7b-12-2024",
@@ -13726,10 +13121,7 @@
         "top_k",
         "top_p"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 0.04,
-      "outputCostPerM": 0.15,
-      "isPreview": false
+      "default_parameters": {}
     },
     {
       "id": "google/gemini-2.0-flash-exp:free",
@@ -13775,10 +13167,7 @@
         "tools",
         "top_p"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 0,
-      "outputCostPerM": 0,
-      "isPreview": true
+      "default_parameters": {}
     },
     {
       "id": "meta-llama/llama-3.3-70b-instruct:free",
@@ -13826,10 +13215,7 @@
         "top_k",
         "top_p"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 0,
-      "outputCostPerM": 0,
-      "isPreview": true
+      "default_parameters": {}
     },
     {
       "id": "meta-llama/llama-3.3-70b-instruct",
@@ -13883,10 +13269,7 @@
         "top_logprobs",
         "top_p"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 0.1,
-      "outputCostPerM": 0.32,
-      "isPreview": false
+      "default_parameters": {}
     },
     {
       "id": "amazon/nova-lite-v1",
@@ -13930,10 +13313,7 @@
         "top_k",
         "top_p"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 0.06,
-      "outputCostPerM": 0.24,
-      "isPreview": false
+      "default_parameters": {}
     },
     {
       "id": "amazon/nova-micro-v1",
@@ -13976,10 +13356,7 @@
         "top_k",
         "top_p"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 0.04,
-      "outputCostPerM": 0.14,
-      "isPreview": false
+      "default_parameters": {}
     },
     {
       "id": "amazon/nova-pro-v1",
@@ -14023,10 +13400,7 @@
         "top_k",
         "top_p"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 0.8,
-      "outputCostPerM": 3.2,
-      "isPreview": false
+      "default_parameters": {}
     },
     {
       "id": "openai/gpt-4o-2024-11-20",
@@ -14081,10 +13455,7 @@
         "top_p",
         "web_search_options"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 2.5,
-      "outputCostPerM": 10,
-      "isPreview": false
+      "default_parameters": {}
     },
     {
       "id": "mistralai/mistral-large-2411",
@@ -14134,10 +13505,7 @@
       ],
       "default_parameters": {
         "temperature": 0.3
-      },
-      "inputCostPerM": 2,
-      "outputCostPerM": 6,
-      "isPreview": false
+      }
     },
     {
       "id": "mistralai/mistral-large-2407",
@@ -14187,10 +13555,7 @@
       ],
       "default_parameters": {
         "temperature": 0.3
-      },
-      "inputCostPerM": 2,
-      "outputCostPerM": 6,
-      "isPreview": false
+      }
     },
     {
       "id": "mistralai/pixtral-large-2411",
@@ -14241,10 +13606,7 @@
       ],
       "default_parameters": {
         "temperature": 0.3
-      },
-      "inputCostPerM": 2,
-      "outputCostPerM": 6,
-      "isPreview": false
+      }
     },
     {
       "id": "qwen/qwen-2.5-coder-32b-instruct",
@@ -14294,10 +13656,7 @@
         "top_k",
         "top_p"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 0.03,
-      "outputCostPerM": 0.11,
-      "isPreview": false
+      "default_parameters": {}
     },
     {
       "id": "raifle/sorcererlm-8x22b",
@@ -14345,10 +13704,7 @@
         "top_k",
         "top_p"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 4.5,
-      "outputCostPerM": 4.5,
-      "isPreview": false
+      "default_parameters": {}
     },
     {
       "id": "thedrummer/unslopnemo-12b",
@@ -14395,10 +13751,7 @@
         "tools",
         "top_p"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 0.4,
-      "outputCostPerM": 0.4,
-      "isPreview": false
+      "default_parameters": {}
     },
     {
       "id": "anthropic/claude-3.5-haiku-20241022",
@@ -14446,10 +13799,7 @@
         "top_k",
         "top_p"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 0.8,
-      "outputCostPerM": 4,
-      "isPreview": false
+      "default_parameters": {}
     },
     {
       "id": "anthropic/claude-3.5-haiku",
@@ -14500,10 +13850,7 @@
         "temperature": null,
         "top_p": null,
         "frequency_penalty": null
-      },
-      "inputCostPerM": 0.8,
-      "outputCostPerM": 4,
-      "isPreview": false
+      }
     },
     {
       "id": "anthracite-org/magnum-v4-72b",
@@ -14555,10 +13902,7 @@
         "top_logprobs",
         "top_p"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 3,
-      "outputCostPerM": 5,
-      "isPreview": false
+      "default_parameters": {}
     },
     {
       "id": "anthropic/claude-3.5-sonnet",
@@ -14604,10 +13948,7 @@
         "top_k",
         "top_p"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 6,
-      "outputCostPerM": 30,
-      "isPreview": false
+      "default_parameters": {}
     },
     {
       "id": "mistralai/ministral-8b",
@@ -14657,10 +13998,7 @@
       ],
       "default_parameters": {
         "temperature": 0.3
-      },
-      "inputCostPerM": 0.1,
-      "outputCostPerM": 0.1,
-      "isPreview": false
+      }
     },
     {
       "id": "mistralai/ministral-3b",
@@ -14710,10 +14048,7 @@
       ],
       "default_parameters": {
         "temperature": 0.3
-      },
-      "inputCostPerM": 0.04,
-      "outputCostPerM": 0.04,
-      "isPreview": false
+      }
     },
     {
       "id": "qwen/qwen-2.5-7b-instruct",
@@ -14765,10 +14100,7 @@
         "temperature": null,
         "top_p": null,
         "frequency_penalty": null
-      },
-      "inputCostPerM": 0.04,
-      "outputCostPerM": 0.1,
-      "isPreview": false
+      }
     },
     {
       "id": "nvidia/llama-3.1-nemotron-70b-instruct",
@@ -14818,10 +14150,7 @@
         "top_k",
         "top_p"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 1.2,
-      "outputCostPerM": 1.2,
-      "isPreview": false
+      "default_parameters": {}
     },
     {
       "id": "inflection/inflection-3-pi",
@@ -14862,10 +14191,7 @@
         "temperature",
         "top_p"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 2.5,
-      "outputCostPerM": 10,
-      "isPreview": false
+      "default_parameters": {}
     },
     {
       "id": "inflection/inflection-3-productivity",
@@ -14906,10 +14232,7 @@
         "temperature",
         "top_p"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 2.5,
-      "outputCostPerM": 10,
-      "isPreview": false
+      "default_parameters": {}
     },
     {
       "id": "thedrummer/rocinante-12b",
@@ -14961,10 +14284,7 @@
         "top_k",
         "top_p"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 0.17,
-      "outputCostPerM": 0.43,
-      "isPreview": false
+      "default_parameters": {}
     },
     {
       "id": "meta-llama/llama-3.2-3b-instruct:free",
@@ -15008,10 +14328,7 @@
         "top_k",
         "top_p"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 0,
-      "outputCostPerM": 0,
-      "isPreview": true
+      "default_parameters": {}
     },
     {
       "id": "meta-llama/llama-3.2-3b-instruct",
@@ -15062,10 +14379,7 @@
         "top_k",
         "top_p"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 0.02,
-      "outputCostPerM": 0.02,
-      "isPreview": false
+      "default_parameters": {}
     },
     {
       "id": "meta-llama/llama-3.2-1b-instruct",
@@ -15110,10 +14424,7 @@
         "top_k",
         "top_p"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 0.03,
-      "outputCostPerM": 0.2,
-      "isPreview": false
+      "default_parameters": {}
     },
     {
       "id": "meta-llama/llama-3.2-90b-vision-instruct",
@@ -15162,10 +14473,7 @@
         "top_k",
         "top_p"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 0.35,
-      "outputCostPerM": 0.4,
-      "isPreview": false
+      "default_parameters": {}
     },
     {
       "id": "meta-llama/llama-3.2-11b-vision-instruct",
@@ -15215,10 +14523,7 @@
         "top_k",
         "top_p"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 0.05,
-      "outputCostPerM": 0.05,
-      "isPreview": false
+      "default_parameters": {}
     },
     {
       "id": "qwen/qwen-2.5-72b-instruct",
@@ -15270,10 +14575,7 @@
         "top_k",
         "top_p"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 0.07,
-      "outputCostPerM": 0.26,
-      "isPreview": false
+      "default_parameters": {}
     },
     {
       "id": "neversleep/llama-3.1-lumimaid-8b",
@@ -15326,10 +14628,7 @@
         "top_logprobs",
         "top_p"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 0.09,
-      "outputCostPerM": 0.6,
-      "isPreview": false
+      "default_parameters": {}
     },
     {
       "id": "mistralai/pixtral-12b",
@@ -15384,10 +14683,7 @@
       ],
       "default_parameters": {
         "temperature": 0.3
-      },
-      "inputCostPerM": 0.1,
-      "outputCostPerM": 0.1,
-      "isPreview": false
+      }
     },
     {
       "id": "cohere/command-r-08-2024",
@@ -15436,10 +14732,7 @@
         "top_k",
         "top_p"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 0.15,
-      "outputCostPerM": 0.6,
-      "isPreview": false
+      "default_parameters": {}
     },
     {
       "id": "cohere/command-r-plus-08-2024",
@@ -15488,10 +14781,7 @@
         "top_k",
         "top_p"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 2.5,
-      "outputCostPerM": 10,
-      "isPreview": false
+      "default_parameters": {}
     },
     {
       "id": "sao10k/l3.1-euryale-70b",
@@ -15542,10 +14832,7 @@
         "top_k",
         "top_p"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 0.65,
-      "outputCostPerM": 0.75,
-      "isPreview": false
+      "default_parameters": {}
     },
     {
       "id": "qwen/qwen-2.5-vl-7b-instruct",
@@ -15594,10 +14881,7 @@
         "top_k",
         "top_p"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 0.2,
-      "outputCostPerM": 0.2,
-      "isPreview": false
+      "default_parameters": {}
     },
     {
       "id": "microsoft/phi-3.5-mini-128k-instruct",
@@ -15639,10 +14923,7 @@
         "tools",
         "top_p"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 0.1,
-      "outputCostPerM": 0.1,
-      "isPreview": false
+      "default_parameters": {}
     },
     {
       "id": "nousresearch/hermes-3-llama-3.1-70b",
@@ -15691,10 +14972,7 @@
         "top_k",
         "top_p"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 0.3,
-      "outputCostPerM": 0.3,
-      "isPreview": false
+      "default_parameters": {}
     },
     {
       "id": "nousresearch/hermes-3-llama-3.1-405b:free",
@@ -15738,10 +15016,7 @@
         "top_k",
         "top_p"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 0,
-      "outputCostPerM": 0,
-      "isPreview": true
+      "default_parameters": {}
     },
     {
       "id": "nousresearch/hermes-3-llama-3.1-405b",
@@ -15789,10 +15064,7 @@
         "top_k",
         "top_p"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 1,
-      "outputCostPerM": 1,
-      "isPreview": false
+      "default_parameters": {}
     },
     {
       "id": "openai/chatgpt-4o-latest",
@@ -15842,10 +15114,7 @@
         "top_logprobs",
         "top_p"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 5,
-      "outputCostPerM": 15,
-      "isPreview": false
+      "default_parameters": {}
     },
     {
       "id": "sao10k/l3-lunaris-8b",
@@ -15894,10 +15163,7 @@
         "top_k",
         "top_p"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 0.04,
-      "outputCostPerM": 0.05,
-      "isPreview": false
+      "default_parameters": {}
     },
     {
       "id": "openai/gpt-4o-2024-08-06",
@@ -15952,10 +15218,7 @@
         "top_p",
         "web_search_options"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 2.5,
-      "outputCostPerM": 10,
-      "isPreview": false
+      "default_parameters": {}
     },
     {
       "id": "meta-llama/llama-3.1-405b",
@@ -16003,10 +15266,7 @@
         "top_k",
         "top_p"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 4,
-      "outputCostPerM": 4,
-      "isPreview": false
+      "default_parameters": {}
     },
     {
       "id": "meta-llama/llama-3.1-8b-instruct",
@@ -16060,10 +15320,7 @@
         "top_logprobs",
         "top_p"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 0.02,
-      "outputCostPerM": 0.03,
-      "isPreview": false
+      "default_parameters": {}
     },
     {
       "id": "meta-llama/llama-3.1-405b-instruct",
@@ -16115,10 +15372,7 @@
         "top_k",
         "top_p"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 3.5,
-      "outputCostPerM": 3.5,
-      "isPreview": false
+      "default_parameters": {}
     },
     {
       "id": "meta-llama/llama-3.1-70b-instruct",
@@ -16169,10 +15423,7 @@
         "top_k",
         "top_p"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 0.4,
-      "outputCostPerM": 0.4,
-      "isPreview": false
+      "default_parameters": {}
     },
     {
       "id": "mistralai/mistral-nemo",
@@ -16225,10 +15476,7 @@
       ],
       "default_parameters": {
         "temperature": 0.3
-      },
-      "inputCostPerM": 0.02,
-      "outputCostPerM": 0.04,
-      "isPreview": false
+      }
     },
     {
       "id": "openai/gpt-4o-mini-2024-07-18",
@@ -16283,10 +15531,7 @@
         "top_p",
         "web_search_options"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 0.15,
-      "outputCostPerM": 0.6,
-      "isPreview": false
+      "default_parameters": {}
     },
     {
       "id": "openai/gpt-4o-mini",
@@ -16341,10 +15586,7 @@
         "top_p",
         "web_search_options"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 0.15,
-      "outputCostPerM": 0.6,
-      "isPreview": false
+      "default_parameters": {}
     },
     {
       "id": "google/gemma-2-27b-it",
@@ -16389,10 +15631,7 @@
         "temperature",
         "top_p"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 0.65,
-      "outputCostPerM": 0.65,
-      "isPreview": false
+      "default_parameters": {}
     },
     {
       "id": "google/gemma-2-9b-it",
@@ -16436,10 +15675,7 @@
         "top_k",
         "top_p"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 0.03,
-      "outputCostPerM": 0.09,
-      "isPreview": false
+      "default_parameters": {}
     },
     {
       "id": "sao10k/l3-euryale-70b",
@@ -16487,10 +15723,7 @@
         "top_k",
         "top_p"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 1.48,
-      "outputCostPerM": 1.48,
-      "isPreview": false
+      "default_parameters": {}
     },
     {
       "id": "nousresearch/hermes-2-pro-llama-3-8b",
@@ -16538,10 +15771,7 @@
         "top_k",
         "top_p"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 0.03,
-      "outputCostPerM": 0.08,
-      "isPreview": false
+      "default_parameters": {}
     },
     {
       "id": "mistralai/mistral-7b-instruct:free",
@@ -16593,10 +15823,7 @@
       ],
       "default_parameters": {
         "temperature": 0.3
-      },
-      "inputCostPerM": 0,
-      "outputCostPerM": 0,
-      "isPreview": true
+      }
     },
     {
       "id": "mistralai/mistral-7b-instruct",
@@ -16649,10 +15876,7 @@
       ],
       "default_parameters": {
         "temperature": 0.3
-      },
-      "inputCostPerM": 0.03,
-      "outputCostPerM": 0.05,
-      "isPreview": false
+      }
     },
     {
       "id": "mistralai/mistral-7b-instruct-v0.3",
@@ -16701,10 +15925,7 @@
       ],
       "default_parameters": {
         "temperature": 0.3
-      },
-      "inputCostPerM": 0.2,
-      "outputCostPerM": 0.2,
-      "isPreview": false
+      }
     },
     {
       "id": "microsoft/phi-3-mini-128k-instruct",
@@ -16746,10 +15967,7 @@
         "tools",
         "top_p"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 0.1,
-      "outputCostPerM": 0.1,
-      "isPreview": false
+      "default_parameters": {}
     },
     {
       "id": "microsoft/phi-3-medium-128k-instruct",
@@ -16791,10 +16009,7 @@
         "tools",
         "top_p"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 1,
-      "outputCostPerM": 1,
-      "isPreview": false
+      "default_parameters": {}
     },
     {
       "id": "meta-llama/llama-guard-2-8b",
@@ -16841,10 +16056,7 @@
         "top_k",
         "top_p"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 0.2,
-      "outputCostPerM": 0.2,
-      "isPreview": false
+      "default_parameters": {}
     },
     {
       "id": "openai/gpt-4o-2024-05-13",
@@ -16898,10 +16110,7 @@
         "top_p",
         "web_search_options"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 5,
-      "outputCostPerM": 15,
-      "isPreview": false
+      "default_parameters": {}
     },
     {
       "id": "openai/gpt-4o",
@@ -16956,10 +16165,7 @@
         "top_p",
         "web_search_options"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 2.5,
-      "outputCostPerM": 10,
-      "isPreview": false
+      "default_parameters": {}
     },
     {
       "id": "openai/gpt-4o:extended",
@@ -17013,10 +16219,7 @@
         "top_p",
         "web_search_options"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 6,
-      "outputCostPerM": 18,
-      "isPreview": false
+      "default_parameters": {}
     },
     {
       "id": "meta-llama/llama-3-70b-instruct",
@@ -17068,10 +16271,7 @@
         "top_k",
         "top_p"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 0.3,
-      "outputCostPerM": 0.4,
-      "isPreview": false
+      "default_parameters": {}
     },
     {
       "id": "meta-llama/llama-3-8b-instruct",
@@ -17122,10 +16322,7 @@
         "top_k",
         "top_p"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 0.03,
-      "outputCostPerM": 0.06,
-      "isPreview": false
+      "default_parameters": {}
     },
     {
       "id": "mistralai/mixtral-8x22b-instruct",
@@ -17175,10 +16372,7 @@
       ],
       "default_parameters": {
         "temperature": 0.3
-      },
-      "inputCostPerM": 2,
-      "outputCostPerM": 6,
-      "isPreview": false
+      }
     },
     {
       "id": "microsoft/wizardlm-2-8x22b",
@@ -17226,10 +16420,7 @@
         "top_k",
         "top_p"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 0.48,
-      "outputCostPerM": 0.48,
-      "isPreview": false
+      "default_parameters": {}
     },
     {
       "id": "openai/gpt-4-turbo",
@@ -17281,10 +16472,7 @@
         "top_logprobs",
         "top_p"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 10,
-      "outputCostPerM": 30,
-      "isPreview": false
+      "default_parameters": {}
     },
     {
       "id": "anthropic/claude-3-haiku",
@@ -17331,10 +16519,7 @@
         "top_k",
         "top_p"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 0.25,
-      "outputCostPerM": 1.25,
-      "isPreview": false
+      "default_parameters": {}
     },
     {
       "id": "anthropic/claude-3-opus",
@@ -17381,10 +16566,7 @@
         "top_k",
         "top_p"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 15,
-      "outputCostPerM": 75,
-      "isPreview": false
+      "default_parameters": {}
     },
     {
       "id": "mistralai/mistral-large",
@@ -17434,10 +16616,7 @@
       ],
       "default_parameters": {
         "temperature": 0.3
-      },
-      "inputCostPerM": 2,
-      "outputCostPerM": 6,
-      "isPreview": false
+      }
     },
     {
       "id": "openai/gpt-3.5-turbo-0613",
@@ -17488,10 +16667,7 @@
         "top_logprobs",
         "top_p"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 1,
-      "outputCostPerM": 2,
-      "isPreview": false
+      "default_parameters": {}
     },
     {
       "id": "openai/gpt-4-turbo-preview",
@@ -17542,10 +16718,7 @@
         "top_logprobs",
         "top_p"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 10,
-      "outputCostPerM": 30,
-      "isPreview": true
+      "default_parameters": {}
     },
     {
       "id": "mistralai/mistral-tiny",
@@ -17595,10 +16768,7 @@
       ],
       "default_parameters": {
         "temperature": 0.3
-      },
-      "inputCostPerM": 0.25,
-      "outputCostPerM": 0.25,
-      "isPreview": false
+      }
     },
     {
       "id": "mistralai/mistral-7b-instruct-v0.2",
@@ -17647,10 +16817,7 @@
       ],
       "default_parameters": {
         "temperature": 0.3
-      },
-      "inputCostPerM": 0.2,
-      "outputCostPerM": 0.2,
-      "isPreview": false
+      }
     },
     {
       "id": "mistralai/mixtral-8x7b-instruct",
@@ -17703,10 +16870,7 @@
       ],
       "default_parameters": {
         "temperature": 0.3
-      },
-      "inputCostPerM": 0.54,
-      "outputCostPerM": 0.54,
-      "isPreview": false
+      }
     },
     {
       "id": "neversleep/noromaid-20b",
@@ -17759,10 +16923,7 @@
         "top_logprobs",
         "top_p"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 1,
-      "outputCostPerM": 1.75,
-      "isPreview": false
+      "default_parameters": {}
     },
     {
       "id": "alpindale/goliath-120b",
@@ -17814,10 +16975,7 @@
         "top_logprobs",
         "top_p"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 6,
-      "outputCostPerM": 8,
-      "isPreview": false
+      "default_parameters": {}
     },
     {
       "id": "openrouter/auto",
@@ -17849,10 +17007,7 @@
       },
       "per_request_limits": null,
       "supported_parameters": [],
-      "default_parameters": {},
-      "inputCostPerM": null,
-      "outputCostPerM": null,
-      "isPreview": false
+      "default_parameters": {}
     },
     {
       "id": "openai/gpt-4-1106-preview",
@@ -17903,10 +17058,7 @@
         "top_logprobs",
         "top_p"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 10,
-      "outputCostPerM": 30,
-      "isPreview": true
+      "default_parameters": {}
     },
     {
       "id": "openai/gpt-3.5-turbo-instruct",
@@ -17955,10 +17107,7 @@
         "top_logprobs",
         "top_p"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 1.5,
-      "outputCostPerM": 2,
-      "isPreview": false
+      "default_parameters": {}
     },
     {
       "id": "mistralai/mistral-7b-instruct-v0.1",
@@ -18005,10 +17154,7 @@
       ],
       "default_parameters": {
         "temperature": 0.3
-      },
-      "inputCostPerM": 0.11,
-      "outputCostPerM": 0.19,
-      "isPreview": false
+      }
     },
     {
       "id": "openai/gpt-3.5-turbo-16k",
@@ -18059,10 +17205,7 @@
         "top_logprobs",
         "top_p"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 3,
-      "outputCostPerM": 4,
-      "isPreview": false
+      "default_parameters": {}
     },
     {
       "id": "mancer/weaver",
@@ -18114,10 +17257,7 @@
         "top_logprobs",
         "top_p"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 1.13,
-      "outputCostPerM": 1.13,
-      "isPreview": false
+      "default_parameters": {}
     },
     {
       "id": "undi95/remm-slerp-l2-13b",
@@ -18170,10 +17310,7 @@
         "top_logprobs",
         "top_p"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 0.45,
-      "outputCostPerM": 0.65,
-      "isPreview": false
+      "default_parameters": {}
     },
     {
       "id": "gryphe/mythomax-l2-13b",
@@ -18226,10 +17363,7 @@
         "top_logprobs",
         "top_p"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 0.06,
-      "outputCostPerM": 0.06,
-      "isPreview": false
+      "default_parameters": {}
     },
     {
       "id": "openai/gpt-4-0314",
@@ -18280,10 +17414,7 @@
         "top_logprobs",
         "top_p"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 30,
-      "outputCostPerM": 60,
-      "isPreview": false
+      "default_parameters": {}
     },
     {
       "id": "openai/gpt-4",
@@ -18334,10 +17465,7 @@
         "top_logprobs",
         "top_p"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 30,
-      "outputCostPerM": 60,
-      "isPreview": false
+      "default_parameters": {}
     },
     {
       "id": "openai/gpt-3.5-turbo",
@@ -18388,10 +17516,7 @@
         "top_logprobs",
         "top_p"
       ],
-      "default_parameters": {},
-      "inputCostPerM": 0.5,
-      "outputCostPerM": 1.5,
-      "isPreview": false
+      "default_parameters": {}
     }
   ]
 }
