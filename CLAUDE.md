@@ -1,5 +1,5 @@
 # CLAUDE.md
-THE SYMBOLS ✗ and ✅✔☑ are forbidden!!!  WE ARE ON WINDOWS AND NEED PROPER UTF-8!!!
+THE SYMBOLS ✗ and ✔ are forbidden!!!  WE ARE ON WINDOWS AND NEED PROPER UTF-8!!!
 Understand state transitions!!!!! ALL controls should elegantly collapse/disappear once an action starts, revealing the live streaming. Never use static lists or bloated components, never do everything at once in one cluttered file!!!
 ## File Annotation Template (Mandatory)
 Every file you create or edit should begin with a basic header like this example:

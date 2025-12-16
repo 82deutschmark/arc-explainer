@@ -745,5 +745,45 @@ export async function syncOpenRouterConfig(req: Request, res: Response) {
   }
 }
 
+/**
+ * @route   POST /api/admin/openrouter/auto-sync
+ * @desc    Auto-sync OpenRouter catalog and intelligently add new models
+ * @query   autoAdd: boolean (default true) - whether to auto-add models to config
+ * @access  Private
+ */
+export async function autoSyncOpenRouter(req: Request, res: Response) {
+  try {
+    const autoAdd = req.query.autoAdd !== 'false';
+    
+    console.log('[Admin] Starting auto-sync of OpenRouter catalog...');
+    
+    const { syncOpenRouterCatalog } = await import(
+      '../scripts/sync-openrouter-catalog.js'
+    );
+
+    const result = await syncOpenRouterCatalog(autoAdd);
+
+    if (result.stats.autoAdded.length > 0) {
+      const modelList = result.stats.autoAdded.join(', ');
+      console.log(`[Admin] Auto-added ${result.stats.autoAdded.length} new model(s): ${modelList}`);
+    }
+
+    res.json({
+      success: true,
+      message: result.message,
+      stats: result.stats,
+      nextStep: result.stats.autoAdded.length > 0 
+        ? 'Run "npm run build" to rebuild and apply changes'
+        : 'Catalog is up-to-date, no new models to add',
+    });
+  } catch (error) {
+    console.error('[Admin] OpenRouter auto-sync failed:', error);
+    res.status(500).json({
+      error: 'Failed to auto-sync catalog',
+      message: error instanceof Error ? error.message : 'Unknown error',
+    });
+  }
+}
+
 // Export router as default
 export default router;

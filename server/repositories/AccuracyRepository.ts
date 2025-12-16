@@ -4,27 +4,33 @@
  * Handles PURE PUZZLE-SOLVING ACCURACY operations only.
  * Focuses exclusively on boolean correctness metrics without any trustworthiness filtering.
  *
- * SCOPE: This repository handles ONE CONCEPT only:
- * - PURE ACCURACY (puzzle-solving correctness):
- *   - Whether an AI model actually solved the puzzle correctly (boolean)
- *   - Database field: is_prediction_correct (boolean) - single test correctness
- *   - Database field: multi_test_all_correct (boolean) - multi-test correctness
- *   - Simple percentage: correct predictions / total attempts
- *   - Used for: Actual solver performance stats, accuracy leaderboards
+ * SCOPE: This repository handles TWO accuracy concepts:
+ *
+ * 1. PUZZLE-LEVEL ACCURACY (getPureAccuracyStats):
+ *    - All-or-nothing per puzzle (multi_test_all_correct must be true)
+ *    - Simple percentage: correct predictions / total attempts
+ *    - Used for: Leaderboards, model rankings
+ *    - NOTE: This is NOT the same as official ARC-AGI harness score!
+ *
+ * 2. HARNESS-ALIGNED ACCURACY (getHarnessAlignedAccuracyStats):
+ *    - Official ARC-AGI scoring: average of per-puzzle scores
+ *    - Each puzzle score = (pairs solved by either attempt) / (total pairs in puzzle)
+ *    - Dataset score = average(puzzle_scores) - each puzzle weighted equally
+ *    - Used for: Official scoring page, 2-attempt evaluations
  *
  * KEY DISTINCTIONS:
  * - NO trustworthiness filtering (trustworthiness_score is a separate metric!)
  * - NO confidence correlation analysis (that's TrustworthinessRepository)
  * - NO user feedback about explanation quality (that's FeedbackRepository)
  * - ONLY pure boolean correctness metrics
- * 
+ *
  * INCLUSION CRITERIA:
  * - Solver attempts (have prediction grids)
  * - No filtering by confidence or trustworthiness scores
  * - Shows all models, even those without complete metadata
- * 
- * @author Claude
- * @date 2025-08-31
+ *
+ * @author Claude / Cascade
+ * @date 2025-08-31 (updated 2025-12-16)
  */
 
 import { BaseRepository } from './base/BaseRepository.ts';
@@ -32,6 +38,7 @@ import { logger } from '../utils/logger.ts';
 import { MetricsQueryBuilder } from './utils/MetricsQueryBuilder.ts';
 import { ANALYSIS_CRITERIA, CONFIDENCE_THRESHOLDS } from '../constants/metricsConstants.ts';
 import { normalizeModelName } from '../utils/modelNormalizer.ts';
+import { computeDatasetUnionScores, type HarnessPuzzleAttemptPairs } from '../utils/harnessScoring.ts';
 
 export interface PureAccuracyStats {
   totalSolverAttempts: number;
@@ -51,6 +58,24 @@ export interface ModelAccuracyRanking {
   multiTestAttempts: number;
   multiCorrectPredictions: number;
   multiTestAccuracy: number;
+}
+
+export interface HarnessAlignedAccuracyStats {
+  baseModelName: string;
+  attempt1ModelName: string;
+  attempt2ModelName: string;
+  dataset: string;
+
+  puzzlesCounted: number;
+  puzzlesFullySolved: number;
+
+  harnessScore: number; // 0..1 (average of per-puzzle scores)
+  harnessScorePercentage: number; // 0..100
+
+  pairWeightedCorrectPairs: number;
+  pairWeightedTotalPairs: number;
+  pairWeightedAccuracy: number; // 0..1
+  pairWeightedAccuracyPercentage: number; // 0..100
 }
 
 export interface DangerousModelRanking {
@@ -244,6 +269,191 @@ export class AccuracyRepository extends BaseRepository {
       };
     } catch (error) {
       logger.error(`Error getting pure accuracy stats: ${error instanceof Error ? error.message : String(error)}`, 'database');
+      throw error;
+    }
+  }
+
+  /**
+   * Get HARNESS-ALIGNED ACCURACY STATS (official ARC-AGI style).
+   *
+   * This computes:
+   * - harnessScore: average of per-puzzle union scores (each puzzle weighted equally)
+   * - pairWeightedAccuracy: total union-solved test pairs / total test pairs
+   *
+   * IMPORTANT: The two values can differ when puzzles have different numbers of test pairs.
+   *
+   * This method is used by the public endpoint `GET /api/accuracy/harness`.
+   */
+  async getHarnessAlignedAccuracyStats(baseModelName: string, dataset: string): Promise<HarnessAlignedAccuracyStats> {
+    const attempt1ModelName = `${baseModelName}-attempt1`;
+    const attempt2ModelName = `${baseModelName}-attempt2`;
+
+    if (!this.isConnected()) {
+      return {
+        baseModelName,
+        attempt1ModelName,
+        attempt2ModelName,
+        dataset,
+        puzzlesCounted: 0,
+        puzzlesFullySolved: 0,
+        harnessScore: 0,
+        harnessScorePercentage: 0,
+        pairWeightedCorrectPairs: 0,
+        pairWeightedTotalPairs: 0,
+        pairWeightedAccuracy: 0,
+        pairWeightedAccuracyPercentage: 0,
+      };
+    }
+
+    // ModelDatasetRepository is the single source of truth for dataset-to-puzzle mapping.
+    const { default: modelDatasetRepo } = await import('./ModelDatasetRepository.ts');
+    const puzzleIds = modelDatasetRepo.getPuzzleIdsFromDataset(dataset);
+
+    if (puzzleIds.length === 0) {
+      return {
+        baseModelName,
+        attempt1ModelName,
+        attempt2ModelName,
+        dataset,
+        puzzlesCounted: 0,
+        puzzlesFullySolved: 0,
+        harnessScore: 0,
+        harnessScorePercentage: 0,
+        pairWeightedCorrectPairs: 0,
+        pairWeightedTotalPairs: 0,
+        pairWeightedAccuracy: 0,
+        pairWeightedAccuracyPercentage: 0,
+      };
+    }
+
+    // Helper: extract per-test-pair correctness into a boolean array.
+    // Matches the parsing behavior used in MetricsRepository so the UI and endpoint stay consistent.
+    const extractPairResults = (row: {
+      is_prediction_correct: boolean | null;
+      multi_test_results: unknown;
+    }): boolean[] => {
+      if (Array.isArray(row.multi_test_results)) {
+        return (row.multi_test_results as any[]).map((r: any) => r?.isPredictionCorrect === true);
+      }
+
+      if (typeof row.multi_test_results === 'string') {
+        try {
+          const parsed = JSON.parse(row.multi_test_results);
+          if (Array.isArray(parsed)) {
+            return (parsed as any[]).map((r: any) => r?.isPredictionCorrect === true);
+          }
+        } catch {
+          // Fall through to single-test fallback.
+        }
+      }
+
+      if (typeof row.is_prediction_correct === 'boolean') {
+        return [row.is_prediction_correct];
+      }
+
+      return [];
+    };
+
+    try {
+      const query = `
+        SELECT DISTINCT ON (puzzle_id, model_name)
+          puzzle_id,
+          model_name,
+          is_prediction_correct,
+          multi_test_results,
+          num_test_pairs,
+          created_at
+        FROM explanations
+        WHERE puzzle_id = ANY($1)
+          AND model_name = ANY($2)
+          AND rebutting_explanation_id IS NULL
+        ORDER BY puzzle_id, model_name, created_at DESC
+      `;
+
+      const models = [attempt1ModelName, attempt2ModelName];
+      const result = await this.query(query, [puzzleIds, models]);
+
+      const byPuzzle = new Map<string, {
+        attempt1?: { pairs: boolean[]; numPairs?: number | null };
+        attempt2?: { pairs: boolean[]; numPairs?: number | null };
+      }>();
+
+      for (const row of result.rows as any[]) {
+        const puzzleId = row.puzzle_id as string;
+        const modelName = row.model_name as string;
+
+        const entry = byPuzzle.get(puzzleId) ?? {};
+        const pairs = extractPairResults({
+          is_prediction_correct: row.is_prediction_correct,
+          multi_test_results: row.multi_test_results,
+        });
+
+        const numPairs = (typeof row.num_test_pairs === 'number' ? row.num_test_pairs : null) as number | null;
+
+        if (modelName === attempt1ModelName) {
+          entry.attempt1 = { pairs, numPairs };
+        }
+
+        if (modelName === attempt2ModelName) {
+          entry.attempt2 = { pairs, numPairs };
+        }
+
+        byPuzzle.set(puzzleId, entry);
+      }
+
+      const puzzles: HarnessPuzzleAttemptPairs[] = [];
+
+      for (const puzzleId of puzzleIds) {
+        const entry = byPuzzle.get(puzzleId);
+        const a1Pairs = entry?.attempt1?.pairs ?? [];
+        const a2Pairs = entry?.attempt2?.pairs ?? [];
+
+        const inferredNumPairs = Math.max(a1Pairs.length, a2Pairs.length, 0);
+        const declaredNumPairs = Math.max(
+          entry?.attempt1?.numPairs ?? 0,
+          entry?.attempt2?.numPairs ?? 0,
+          0,
+        );
+
+        const numPairs = Math.max(inferredNumPairs, declaredNumPairs, 0);
+
+        // If we have no evidence of any test pairs for this puzzle, do not count it.
+        // This avoids biasing the score when a dataset includes puzzles that were never evaluated.
+        if (numPairs <= 0) {
+          continue;
+        }
+
+        puzzles.push({
+          attempt1Pairs: a1Pairs,
+          attempt2Pairs: a2Pairs,
+          numPairs,
+        });
+      }
+
+      const datasetScores = computeDatasetUnionScores(puzzles);
+
+      const harnessScorePercentage = Math.round((datasetScores.harnessScore * 100) * 100) / 100;
+      const pairWeightedAccuracyPercentage = Math.round((datasetScores.pairWeightedAccuracy * 100) * 100) / 100;
+
+      return {
+        baseModelName,
+        attempt1ModelName,
+        attempt2ModelName,
+        dataset,
+        puzzlesCounted: datasetScores.puzzlesCounted,
+        puzzlesFullySolved: datasetScores.puzzlesFullySolved,
+        harnessScore: datasetScores.harnessScore,
+        harnessScorePercentage,
+        pairWeightedCorrectPairs: datasetScores.pairWeightedCorrectPairs,
+        pairWeightedTotalPairs: datasetScores.pairWeightedTotalPairs,
+        pairWeightedAccuracy: datasetScores.pairWeightedAccuracy,
+        pairWeightedAccuracyPercentage,
+      };
+    } catch (error) {
+      logger.error(
+        `Error getting harness-aligned accuracy stats for ${baseModelName} on ${dataset}: ${error instanceof Error ? error.message : String(error)}`,
+        'database',
+      );
       throw error;
     }
   }

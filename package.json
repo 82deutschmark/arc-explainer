@@ -5,7 +5,7 @@
   "license": "MIT",
   "scripts": {
     "dev": "cross-env NODE_ENV=development tsx server/index.ts",
-    "build": "vite build && esbuild server/index.ts --platform=node --packages=external --bundle --format=esm --outdir=dist",
+    "build": "node --import tsx server/scripts/sync-openrouter-catalog.ts && vite build && esbuild server/index.ts --platform=node --packages=external --bundle --format=esm --outdir=dist",
     "start": "cross-env NODE_ENV=production node dist/index.js",
     "check": "tsc",
     "test": "npm run build && npm run dev",
@@ -30,7 +30,8 @@
     "ingest-johanland": "node --import tsx server/scripts/ingest-johanland-results.ts",
     "cleanup-hf": "node --import tsx server/scripts/cleanup-huggingface-imports.ts",
     "del": "node --import tsx server/scripts/delete-hf-now.ts",
-    "worm:cheap-matchups": "node --import tsx server/scripts/generate-cheap-matchups.ts"
+    "worm:cheap-matchups": "node --import tsx server/scripts/generate-cheap-matchups.ts",
+    "sync-openrouter-catalog": "node --import tsx server/scripts/sync-openrouter-catalog.ts"
   },
   "dependencies": {
     "@ai-sdk/xai": "^2.0.23",

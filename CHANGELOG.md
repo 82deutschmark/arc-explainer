@@ -1,5 +1,54 @@
 # New entires at the top, use proper SemVer!
 
+### Version 6.4.3  Dec 16, 2025
+
+- **/scoring: add explicit union scoring explanation (task/puzzle/test-pair definitions + worked examples)** (Author: Cascade)
+  - Replaced the minimal "Understanding the three metrics" blurb with a detailed, union-centric explanation.
+  - Clearly defines: puzzle vs task (same thing), training pairs vs test pairs, and how the two-attempt union rule works.
+  - Adds a worked 3-test-pair example showing Attempt 1, Attempt 2, and the union result per pair.
+  - Adds a concrete example explaining why the official harness score (average of puzzle scores) can differ from the pair-weighted test-pairs rate (e.g., 117/166).
+  - Progress bar label now explicitly states it reflects the pair-weighted rate.
+  - **Files Modified**: `client/src/pages/HuggingFaceUnionAccuracy.tsx`, `CHANGELOG.md`
+
+### Version 6.4.2  Dec 16, 2025
+
+- **Build reliability: OpenRouter catalog sync now merges remote into local snapshot** (Author: Cascade)
+  - Prevents deploy failures when OpenRouter temporarily omits a model ID that is already referenced by our `OPENROUTER_MODEL_KEYS`.
+  - Sync is now best-effort: if OpenRouter fetch fails, the build keeps the existing local catalog snapshot instead of overwriting it.
+  - **Files Modified**: `server/scripts/sync-openrouter-catalog.ts`, `CHANGELOG.md`
+
+### Version 6.4.1  Dec 16, 2025
+
+- **Build fix: Missing closing brace in adminController.ts** (Author: Cascade)
+  - Fixed syntax error at line 746 where `syncOpenRouterConfig` function was missing closing brace.
+  - **Files Modified**: `server/controllers/adminController.ts`
+
+### Version 6.4.0  Dec 16, 2025
+
+- **ARC-AGI multi-test-pair scoring: harness-aligned accuracy + clearer UI metrics** (Author: Cascade)
+  - **Critical scoring fix**: dataset score is the average of per-puzzle scores (each puzzle weighted equally), not a pair-weighted ratio.
+  - **Backend**:
+    - Added public `GET /api/accuracy/harness` endpoint returning harness-aligned accuracy for `{baseModelName}-attempt1/-attempt2`.
+    - Added `AccuracyRepository.getHarnessAlignedAccuracyStats()` returning both harness score and pair-weighted transparency metrics.
+    - Added pure scoring utilities `server/utils/harnessScoring.ts` to keep math testable and DRY.
+    - Extended `MetricsRepository.computeAttemptUnionStats()` to return `puzzlesCounted`, `puzzlesFullySolved`, and `puzzlesFullySolvedIds`.
+  - **Database**:
+    - Added `num_test_pairs` column (plus index + backfill) to support multi-test-pair scoring and aggregation.
+    - Updated `ExplanationRepository.saveExplanation()` to persist `num_test_pairs` on insert.
+  - **Frontend**:
+    - Removed client-side attempt-union scoring fallback (cannot compute harness score without per-pair data).
+    - All three metrics now displayed side-by-side: **Harness Score** (official), **Puzzles Solved** (fully correct), **Test Pairs** (pair-weighted).
+    - Three-metric grid layout on `/scoring`, `ModelComparisonPage`, and `ModelComparisonDialog`.
+    - Added `computePuzzlePassFailRate()` helper in `modelComparison.ts` for puzzle-level pass/fail rate.
+  - **Documentation Audit**:
+    - Updated `AccuracyRepository` header to clarify two accuracy concepts (puzzle-level vs harness-aligned).
+    - Updated `AccuracyLeaderboard` and `Leaderboards` descriptions to clarify puzzle-level accuracy is NOT harness score.
+  - **Tests**:
+    - Added unit tests demonstrating harness score differs from pair-weighted accuracy when puzzles have different numbers of test pairs.
+    - Added controller test for `GET /api/accuracy/harness` input validation + delegation.
+  - **Files Created**: `server/controllers/accuracyController.ts`, `server/utils/harnessScoring.ts`, `tests/harnessScoring.test.ts`, `tests/accuracyHarnessEndpoint.test.ts`
+  - **Files Modified**: `server/routes.ts`, `server/repositories/AccuracyRepository.ts`, `server/repositories/MetricsRepository.ts`, `server/repositories/database/DatabaseSchema.ts`, `server/repositories/ExplanationRepository.ts`, `client/src/pages/HuggingFaceUnionAccuracy.tsx`, `client/src/pages/ModelComparisonPage.tsx`, `client/src/pages/AnalyticsOverview.tsx`, `client/src/pages/Leaderboards.tsx`, `client/src/components/analytics/ModelComparisonDialog.tsx`, `client/src/components/overview/leaderboards/AccuracyLeaderboard.tsx`, `client/src/utils/modelComparison.ts`, `CHANGELOG.md`
+
 ### Version 6.3.2  Dec 16, 2025 (PENDING TESTING)
 
 - **SnakeBench: prevent local replays from blocking pulls** (Author: Cascade)
@@ -43,7 +92,7 @@
   - **Per-Pair Validation**: Each attempt validated against `task.test[pair_index].output` (ground truth), not against solver's own `correct` flag.
   - **Union Scoring**: If ANY attempt solves a pair, that pair counts as solved (matches official ARC-AGI benchmarking harness).
   - **Backend Accuracy**: Changed from global averaging to per-puzzle averaging: `(sum of per-puzzle fractions) / num_puzzles * 100`.
-  - **Validation Result**: Harness-style score 71.29% (84.83/119 tasks) matches DB/UI union score 71.29% (117/166 test pairs) ✓
+  - **Validation Result**: Harness-style score 71.29% (84.83/119 tasks) matches DB/UI union score 71.29% (117/166 test pairs)
   - **Re-ingestion**: All 238 entries (119 puzzles × 2 attempts) successfully re-ingested with corrected pair-aware logic.
   - **Files Modified**: `server/scripts/ingest-johanland-results.ts`, `server/repositories/MetricsRepository.ts`, `server/types/johanland.ts`, `CHANGELOG.md`
 
