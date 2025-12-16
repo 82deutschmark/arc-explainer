@@ -171,6 +171,7 @@ export interface AttemptUnionStats {
   unionAccuracyPercentage: number;
   puzzlesCounted: number;
   puzzlesFullySolved: number;
+  puzzlesFullySolvedIds?: string[];
 }
 
 export interface ModelComparisonSummary {
@@ -810,6 +811,7 @@ export class MetricsRepository extends BaseRepository {
         let taskScoreSum = 0;
         let tasksCounted = 0;
         let puzzlesFullySolved = 0;
+        const puzzlesFullySolvedIds: string[] = [];
 
         // Iterate through each puzzle and check per-pair correctness (ARC harness style)
         for (const detail of details) {
@@ -868,6 +870,7 @@ export class MetricsRepository extends BaseRepository {
 
           if (unionSolvedPairsForPuzzle === pairsForPuzzle) {
             puzzlesFullySolved++;
+            puzzlesFullySolvedIds.push(puzzleId);
           }
 
           taskScoreSum += pairsForPuzzle > 0 ? unionSolvedPairsForPuzzle / pairsForPuzzle : 0;
@@ -887,6 +890,7 @@ export class MetricsRepository extends BaseRepository {
           unionAccuracyPercentage,
           puzzlesCounted: tasksCounted,
           puzzlesFullySolved,
+          puzzlesFullySolvedIds,
         });
       }
     }
