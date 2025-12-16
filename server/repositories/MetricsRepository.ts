@@ -30,7 +30,7 @@
  * Now properly delegates to ModelDatasetRepository for dataset operations (SRP compliance).
  * 
  * @author Claude / Cascade
- * @date 2025-08-31 (updated 2025-10-10)
+ * @date 2025-08-31 (updated 2025-10-10, 2025-12-16)
  */
 
 import { BaseRepository } from './base/BaseRepository.ts';
@@ -169,6 +169,8 @@ export interface AttemptUnionStats {
   totalTestPairs: number;
   unionCorrectCount: number;
   unionAccuracyPercentage: number;
+  puzzlesCounted: number;
+  puzzlesFullySolved: number;
 }
 
 export interface ModelComparisonSummary {
@@ -807,6 +809,7 @@ export class MetricsRepository extends BaseRepository {
         let totalTestPairs = 0;
         let taskScoreSum = 0;
         let tasksCounted = 0;
+        let puzzlesFullySolved = 0;
 
         // Iterate through each puzzle and check per-pair correctness (ARC harness style)
         for (const detail of details) {
@@ -863,6 +866,10 @@ export class MetricsRepository extends BaseRepository {
             }
           }
 
+          if (unionSolvedPairsForPuzzle === pairsForPuzzle) {
+            puzzlesFullySolved++;
+          }
+
           taskScoreSum += pairsForPuzzle > 0 ? unionSolvedPairsForPuzzle / pairsForPuzzle : 0;
           tasksCounted++;
         }
@@ -878,6 +885,8 @@ export class MetricsRepository extends BaseRepository {
           totalTestPairs,
           unionCorrectCount,
           unionAccuracyPercentage,
+          puzzlesCounted: tasksCounted,
+          puzzlesFullySolved,
         });
       }
     }

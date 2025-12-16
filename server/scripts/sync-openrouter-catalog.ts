@@ -1,11 +1,9 @@
 /**
  * Author: Claude Code using Haiku 4.5
  * Date: 2025-12-16
- * PURPOSE: Automatically fetch the latest OpenRouter catalog and update server/config/openrouter-catalog.json.
- *          Intelligently auto-adds newly discovered models to OPENROUTER_MODEL_KEYS in openrouterModels.ts,
- *          skipping models that are expensive (>$2/M) or preview/beta versions.
- *          Can be run via: npm run sync-openrouter-catalog
- * SRP/DRY check: Pass - Single responsibility for catalog synchronization and model discovery
+ * PURPOSE: Auto-sync OpenRouter catalog and add new models.
+ *          Only checks top 10 newest. Filters only expensive models (>$2/M).
+ * SRP/DRY check: Pass
  */
 
 import fs from 'fs';
@@ -17,10 +15,11 @@ const CATALOG_PATH = path.resolve(__dirname, '../config/openrouter-catalog.json'
 const MODELS_KEYS_PATH = path.resolve(__dirname, '../config/openrouterModels.ts');
 const OPENROUTER_API = 'https://openrouter.ai/api/v1/models';
 
-const MAX_INPUT_COST_PER_M = 2.0; // USD
-const MAX_OUTPUT_COST_PER_M = 2.0; // USD
+const MAX_INPUT_COST_PER_M = 2.0;
+const MAX_OUTPUT_COST_PER_M = 2.0;
+const TOP_N_MODELS = 10;
 
-type OpenRouterCatalogModel = {
+type Model = {
   id: string;
   name?: string;
   description?: string;
@@ -34,220 +33,118 @@ type OpenRouterCatalogModel = {
   [key: string]: unknown;
 };
 
-type CatalogPayload = {
-  models?: OpenRouterCatalogModel[];
-  data?: OpenRouterCatalogModel[];
-  [key: string]: unknown;
-};
-
-/**
- * Fetch the latest OpenRouter catalog from the official API
- */
-async function fetchLatestCatalog(): Promise<OpenRouterCatalogModel[]> {
+async function fetchLatestCatalog(): Promise<Model[]> {
   const headers: Record<string, string> = { 'Accept': 'application/json' };
-
   if (process.env.OPENROUTER_API_KEY) {
     headers['Authorization'] = `Bearer ${process.env.OPENROUTER_API_KEY}`;
   }
 
-  console.log(`[Sync] Fetching OpenRouter catalog from ${OPENROUTER_API}...`);
+  console.log(`[Sync] Fetching OpenRouter catalog...`);
   const resp = await fetch(OPENROUTER_API, { headers });
 
   if (!resp.ok) {
-    const text = await resp.text().catch(() => '(no error text)');
+    const text = await resp.text().catch(() => '');
     throw new Error(`OpenRouter API error: ${resp.status} ${text}`);
   }
 
-  const payload = (await resp.json()) as CatalogPayload;
-  const models = (payload.data ?? payload.models ?? []) as OpenRouterCatalogModel[];
-
-  if (!Array.isArray(models)) {
-    throw new Error('Invalid catalog response: expected array of models');
-  }
-
+  const payload = (await resp.json()) as any;
+  const models = (payload.data ?? payload.models ?? []) as Model[];
   return models;
 }
 
-/**
- * Load the current local catalog
- */
-function loadLocalCatalog(): OpenRouterCatalogModel[] {
-  if (!fs.existsSync(CATALOG_PATH)) {
-    return [];
-  }
-
+function loadLocalCatalog(): Model[] {
+  if (!fs.existsSync(CATALOG_PATH)) return [];
   const raw = fs.readFileSync(CATALOG_PATH, 'utf-8');
-  const parsed = JSON.parse(raw) as CatalogPayload;
-  return (parsed.models ?? []) as OpenRouterCatalogModel[];
+  const parsed = JSON.parse(raw) as any;
+  return (parsed.models ?? []) as Model[];
 }
 
-/**
- * Save catalog to file with formatting
- */
-function saveCatalog(models: OpenRouterCatalogModel[]): void {
-  const payload: CatalogPayload = { models };
-  const json = JSON.stringify(payload, null, 2);
+function saveCatalog(models: Model[]): void {
+  const json = JSON.stringify({ models }, null, 2);
   fs.writeFileSync(CATALOG_PATH, json, 'utf-8');
-  console.log(`[Sync] Saved ${models.length} models to ${CATALOG_PATH}`);
+  console.log(`[Sync] Saved ${models.length} models to catalog`);
 }
 
-/**
- * Load current OPENROUTER_MODEL_KEYS array from openrouterModels.ts
- */
 function loadCurrentModelKeys(): string[] {
   const content = fs.readFileSync(MODELS_KEYS_PATH, 'utf-8');
-  // Extract the array between OPENROUTER_MODEL_KEYS: string[] = [ and ];
   const match = content.match(/const OPENROUTER_MODEL_KEYS: string\[\] = \[([\s\S]*?)\];/);
-  if (!match) {
-    throw new Error('Could not parse OPENROUTER_MODEL_KEYS from openrouterModels.ts');
-  }
+  if (!match) throw new Error('Could not parse OPENROUTER_MODEL_KEYS');
 
-  const arrayContent = match[1];
-  const keys = arrayContent
+  return match[1]
     .split('\n')
     .map(line => line.trim())
     .filter(line => line && !line.startsWith('//'))
     .map(line => line.replace(/[',]/g, '').trim())
     .filter(line => line.length > 0);
-
-  return keys;
 }
 
-/**
- * Save updated OPENROUTER_MODEL_KEYS to openrouterModels.ts
- */
 function saveModelKeys(keys: string[]): void {
   const content = fs.readFileSync(MODELS_KEYS_PATH, 'utf-8');
-
-  // Build new array with proper formatting
   const arrayStr = keys.map(k => `  '${k}',`).join('\n');
   const newArray = `const OPENROUTER_MODEL_KEYS: string[] = [\n${arrayStr}\n];`;
-
-  // Replace the old array
   const updated = content.replace(
     /const OPENROUTER_MODEL_KEYS: string\[\] = \[[\s\S]*?\];/,
     newArray
   );
-
   fs.writeFileSync(MODELS_KEYS_PATH, updated, 'utf-8');
   console.log(`[Sync] Updated OPENROUTER_MODEL_KEYS with ${keys.length} models`);
 }
 
-/**
- * Check if a model is too expensive
- */
-function isTooExpensive(model: OpenRouterCatalogModel): boolean {
-  const inputPrice = model.pricing?.prompt ? Number(model.pricing.prompt) * 1_000_000 : 0;
-  const outputPrice = model.pricing?.completion ? Number(model.pricing.completion) * 1_000_000 : 0;
-
-  return inputPrice > MAX_INPUT_COST_PER_M || outputPrice > MAX_OUTPUT_COST_PER_M;
+function isTooExpensive(model: Model): boolean {
+  const input = model.pricing?.prompt ? Number(model.pricing.prompt) * 1_000_000 : 0;
+  const output = model.pricing?.completion ? Number(model.pricing.completion) * 1_000_000 : 0;
+  return input > MAX_INPUT_COST_PER_M || output > MAX_OUTPUT_COST_PER_M;
 }
 
-/**
- * Check if a model should be skipped (preview, beta, sandbox, etc)
- */
-function shouldSkipModel(slug: string): boolean {
-  const lower = slug.toLowerCase();
-  return (
-    lower.includes('preview') ||
-    lower.includes('beta') ||
-    lower.includes('sandbox') ||
-    lower.includes('dev-')
-  );
-}
-
-/**
- * Find newly added models that should be auto-added
- */
 function findAutoAddCandidates(
-  remote: OpenRouterCatalogModel[],
-  local: OpenRouterCatalogModel[],
+  remoteTopN: Model[],
+  local: Model[],
   currentKeys: Set<string>
-): { models: OpenRouterCatalogModel[]; expensive: string[]; skipped: string[] } {
+): { models: Model[]; expensive: string[] } {
   const localIds = new Set(local.map(m => m.id));
-  const newModels = remote.filter(m => m.id && !localIds.has(m.id) && !currentKeys.has(m.id));
+  const newModels = remoteTopN.filter(m => m.id && !localIds.has(m.id) && !currentKeys.has(m.id));
 
-  const candidates: OpenRouterCatalogModel[] = [];
+  const candidates: Model[] = [];
   const expensive: string[] = [];
-  const skipped: string[] = [];
 
   for (const model of newModels) {
-    if (shouldSkipModel(model.id!)) {
-      skipped.push(`${model.id} (preview/beta/sandbox)`);
-      continue;
-    }
-
     if (isTooExpensive(model)) {
-      const inputPrice = model.pricing?.prompt ? (Number(model.pricing.prompt) * 1_000_000).toFixed(2) : 'unknown';
-      const outputPrice = model.pricing?.completion ? (Number(model.pricing.completion) * 1_000_000).toFixed(2) : 'unknown';
-      expensive.push(`${model.id} (input: $${inputPrice}/M, output: $${outputPrice}/M)`);
+      const inp = model.pricing?.prompt ? (Number(model.pricing.prompt) * 1_000_000).toFixed(2) : 'unknown';
+      const out = model.pricing?.completion ? (Number(model.pricing.completion) * 1_000_000).toFixed(2) : 'unknown';
+      expensive.push(`${model.id} (in: $${inp}/M, out: $${out}/M)`);
       continue;
     }
 
     candidates.push(model);
   }
 
-  return { models: candidates, expensive, skipped };
+  return { models: candidates, expensive };
 }
 
-/**
- * Find removed models
- */
-function findRemovedModels(
-  remote: OpenRouterCatalogModel[],
-  local: OpenRouterCatalogModel[]
-): string[] {
-  const remoteIds = new Set(remote.map(m => m.id));
-  return local.filter(m => m.id && !remoteIds.has(m.id)).map(m => m.id!);
-}
-
-/**
- * Main sync operation with auto-add capability
- */
-export async function syncOpenRouterCatalog(autoAdd = true): Promise<{
-  success: boolean;
-  message: string;
-  stats: {
-    totalModels: number;
-    newModels: string[];
-    autoAdded: string[];
-    skipped: string[];
-    expensive: string[];
-    removedModels: string[];
-    updatedAt: string;
-  };
-}> {
+export async function syncOpenRouterCatalog(autoAdd = true): Promise<any> {
   try {
     const remote = await fetchLatestCatalog();
+    const remoteTopN = remote.slice(0, TOP_N_MODELS);
     const local = loadLocalCatalog();
     const currentKeys = new Set(loadCurrentModelKeys());
 
-    const removedModels = findRemovedModels(remote, local);
-    const { models: candidates, expensive, skipped } = findAutoAddCandidates(remote, local, currentKeys);
+    const { models: candidates, expensive } = findAutoAddCandidates(remoteTopN, local, currentKeys);
 
-    console.log(`\n[Sync] Catalog comparison:`);
-    console.log(`   Remote catalog: ${remote.length} models`);
-    console.log(`   Local catalog:  ${local.length} models`);
-    console.log(`   Candidates for auto-add: ${candidates.length}`);
-    if (expensive.length > 0) console.log(`   Expensive (skipped): ${expensive.length}`);
-    if (skipped.length > 0) console.log(`   Preview/beta (skipped): ${skipped.length}`);
-    console.log(`   Deprecated models removed: ${removedModels.length}\n`);
+    console.log(`\n[Sync] Status:`);
+    console.log(`   Total remote: ${remote.length} | Checking top: ${remoteTopN.length}`);
+    console.log(`   Config entries: ${currentKeys.size}`);
+    console.log(`   New candidates: ${candidates.length} | Expensive: ${expensive.length}\n`);
 
-    if (expensive.length > 0) {
-      console.log(`[Sync] Expensive models (>${MAX_INPUT_COST_PER_M}/M input or >${MAX_OUTPUT_COST_PER_M}/M output):`);
-      expensive.slice(0, 5).forEach(m => console.log(`   - ${m}`));
-      if (expensive.length > 5) console.log(`   ... and ${expensive.length - 5} more`);
+    if (candidates.length > 0) {
+      console.log(`[Sync] New models to add:`);
+      candidates.forEach(m => {
+        const inp = m.pricing?.prompt ? (Number(m.pricing.prompt) * 1_000_000).toFixed(2) : 'TBD';
+        const out = m.pricing?.completion ? (Number(m.pricing.completion) * 1_000_000).toFixed(2) : 'TBD';
+        console.log(`   - ${m.id} (${m.name || 'unnamed'}) [in: $${inp}, out: $${out}]`);
+      });
       console.log('');
     }
 
-    if (skipped.length > 0) {
-      console.log(`[Sync] Skipped preview/beta/sandbox models:`);
-      skipped.slice(0, 5).forEach(m => console.log(`   - ${m}`));
-      if (skipped.length > 5) console.log(`   ... and ${skipped.length - 5} more`);
-      console.log('');
-    }
-
-    // Save updated catalog
     saveCatalog(remote);
 
     let autoAddedList: string[] = [];
@@ -256,43 +153,35 @@ export async function syncOpenRouterCatalog(autoAdd = true): Promise<{
       const newKeys = [...currentKeys, ...candidates.map(m => m.id!)];
       saveModelKeys(Array.from(newKeys).sort());
       autoAddedList = candidates.map(m => m.id!);
-
-      candidates.forEach(m => {
-        console.log(`   ✓ ${m.id} (${m.name || 'unnamed'})`);
-      });
+      candidates.forEach(m => console.log(`   ✓ ${m.id}`));
       console.log('');
     }
 
     return {
       success: true,
-      message: `Catalog synced. Found ${candidates.length} new model(s) ready to add.`,
+      message: `Catalog checked. Found ${candidates.length} new model(s).`,
       stats: {
-        totalModels: remote.length,
+        totalRemote: remote.length,
+        topNChecked: remoteTopN.length,
         newModels: candidates.map(m => m.id!),
         autoAdded: autoAddedList,
-        skipped,
         expensive,
-        removedModels,
         updatedAt: new Date().toISOString()
       }
     };
   } catch (error) {
-    const message = error instanceof Error ? error.message : String(error);
-    console.error(`[Sync] Error: ${message}`);
+    const msg = error instanceof Error ? error.message : String(error);
+    console.error(`[Sync] Error: ${msg}`);
     throw error;
   }
 }
 
-/**
- * CLI entry point
- */
 if (import.meta.url === `file://${process.argv[1]}`) {
   syncOpenRouterCatalog(true)
     .then(result => {
       console.log(`\n[Sync] ✓ ${result.message}`);
       if (result.stats.autoAdded.length > 0) {
-        console.log(`[Sync] Auto-added models: ${result.stats.autoAdded.join(', ')}`);
-        console.log('[Sync] Run "npm run build" to apply changes.');
+        console.log(`[Sync] Auto-added: ${result.stats.autoAdded.join(', ')}`);
       }
       process.exit(0);
     })
@@ -301,5 +190,3 @@ if (import.meta.url === `file://${process.argv[1]}`) {
       process.exit(1);
     });
 }
-
-export { syncOpenRouterCatalog };
