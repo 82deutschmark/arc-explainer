@@ -1,5 +1,40 @@
 # New entires at the top, use proper SemVer!
 
+### Version 6.3.2  Dec 16, 2025 (PENDING TESTING)
+
+- **SnakeBench: prevent local replays from blocking pulls** (Author: Cascade)
+  - Local SnakeBench runs now write replay JSONs to `external/SnakeBench/backend/completed_games_local/` by default (configurable via `SNAKEBENCH_COMPLETED_GAMES_DIR`).
+  - This prevents untracked local replay files from colliding with tracked files under `external/SnakeBench/backend/completed_games/` and breaking `git pull`.
+  - Local video tooling now defaults to `external/SnakeBench/backend/completed_games_videos_local/` (also aligned with `SNAKEBENCH_COMPLETED_GAMES_DIR`).
+  - **Files Modified**: `external/SnakeBench/backend/main.py`, `external/SnakeBench/backend/app.py`, `external/SnakeBench/backend/services/video_generator.py`, `external/SnakeBench/backend/cli/analyze_local_games.py`, `external/SnakeBench/backend/cli/generate_video.py`, `external/SnakeBench/backend/cli/generate_videos_local.py`, `external/SnakeBench/backend/cli/backfill_videos.py`, `external/SnakeBench/backend/tests/test_main.py`, `external/SnakeBench/backend/generate_videos.sh`, `external/SnakeBench/.gitignore`, `CHANGELOG.md`
+
+### Version 6.3.1  Dec 16, 2025 (PENDING TESTING)
+
+- **Johan_Land community solver visibility + cost metrics on all comparison pages** (Author: Claude Code using Sonnet 4.5)
+  - **Johan_Land Integration**: Johan_Land community solver results now visible across all model comparison pages (/scoring, /analytics, /model-comparison)
+  - **Cost Metrics Display**: Added comprehensive cost and performance metrics to /scoring page showing total cost, cost per puzzle, cost per correct answer, and average processing time
+  - **Model Origin Detection**: Created centralized `modelOriginDetection.ts` utility to distinguish between HuggingFace official, community solvers, and ARC Explainer platform results
+  - **Origin Badges**: Added visual badges across all pages to clearly identify data source (HF Official, Community, Platform)
+  - **Page Scope Update**: Renamed /scoring page from "Official Scoring" to "Multi-Attempt Solver Results" to reflect inclusion of community-submitted evaluations
+  - **DRY Compliance**: Eliminated duplicate origin detection logic across pages by centralizing in shared utility
+  - **Files Created**: `client/src/utils/modelOriginDetection.ts`
+  - **Files Modified**: `client/src/pages/HuggingFaceUnionAccuracy.tsx` (cost metrics, title, badges), `client/src/pages/AnalyticsOverview.tsx` (utility integration), `client/src/pages/ModelComparisonPage.tsx` (origin badges), `CHANGELOG.md`
+
+### Version 6.2.2  Dec 16, 2025 (PENDING TESTING)
+
+- **Worm Arena: align replay score text with player palettes** (Author: Codex (GPT-5))
+  - Switches the control bar score labels from warning colors to the existing green/blue worm palette so the UI matches the reasoning columns.
+  - Keeps the visual language consistent during replay streaming by using the palette tokens already defined in `client/src/index.css`.
+  - **Files Modified**: `client/src/components/WormArenaControlBar.tsx`, `CHANGELOG.md`
+
+### Version 6.2.1  Dec 16, 2025 (PENDING TESTING)
+
+- **Worm Arena: Greatest Hits #1 marathon + reliable replay links + show more entries** (Author: Cascade)
+  - Promoted the marathon replay `97c1dad4-3905-4d29-a781-f7a9691f063d` to the top of the curated Worm Arena Hall of Fame.
+  - Greatest-hits endpoint now scans the curated list until it finds the requested number of playable replays (so missing early replays no longer shrink the list).
+  - Greatest Hits UI now uses client-side navigation and normalizes `snake_game_*.json` style IDs before linking to `/worm-arena?matchId=...`.
+  - **Files Modified**: `server/services/snakeBenchHallOfFame.ts`, `server/services/snakeBenchService.ts`, `client/src/components/WormArenaGreatestHits.tsx`, `CHANGELOG.md`
+
 ### Version 6.3.0  Dec 16, 2025 (COMPLETED)
 
 - **Johan_Land_Solver_V6 scoring: pair-aware ingestion + harness-aligned union accuracy** (Author: Cascade, Validation & Execution: Claude Code)

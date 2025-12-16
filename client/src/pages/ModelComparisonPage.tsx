@@ -18,6 +18,8 @@ import { useAvailableModels } from '@/hooks/useModelDatasetPerformance';
 import { ModelComparisonResult } from './AnalyticsOverview';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import { computeAttemptUnionAccuracy, parseAttemptModelName } from '@/utils/modelComparison';
+import { detectModelOrigin } from '@/utils/modelOriginDetection';
+import { Badge } from '@/components/ui/badge';
 
 const MAX_MODELS = 4;
 const COMPARISON_CACHE_KEY = 'arc-comparison-data';
@@ -663,11 +665,18 @@ export default function ModelComparisonPage() {
                 </tr>
               </thead>
               <tbody>
-                {modelPerformance.map((model) => (
-                  <tr key={model.modelName} className="hover">
-                    <td className="font-semibold">
-                      {model.modelName}
-                    </td>
+                {modelPerformance.map((model) => {
+                  const origin = detectModelOrigin(model.modelName);
+                  return (
+                    <tr key={model.modelName} className="hover">
+                      <td className="font-semibold">
+                        <div className="flex items-center gap-2">
+                          <span>{model.modelName}</span>
+                          <Badge variant={origin.badgeVariant} className="text-xs">
+                            {origin.shortLabel}
+                          </Badge>
+                        </div>
+                      </td>
                     <td className="text-center font-bold">
                       <span
                         className={
@@ -706,7 +715,8 @@ export default function ModelComparisonPage() {
                       {model.avgConfidence.toFixed(1)}%
                     </td>
                   </tr>
-                ))}
+                  );
+                })}
               </tbody>
             </table>
           </div>
