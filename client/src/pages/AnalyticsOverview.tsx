@@ -41,6 +41,7 @@ import { DifficultPuzzlesSection } from '@/components/analytics/DifficultPuzzles
 // Import hooks that follow proper repository pattern
 import { useModelDatasetPerformance, useAvailableModels, useAvailableDatasets, useModelDatasetMetrics, DatasetInfo } from '@/hooks/useModelDatasetPerformance';
 import { usePageMeta } from '@/hooks/usePageMeta';
+import { detectModelOrigin } from '@/utils/modelOriginDetection';
 
 // Types for the new Model Comparison feature
 export interface PuzzleComparisonDetail {
@@ -124,35 +125,6 @@ const DATASET_DISPLAY_NAME_MAP: Record<string, string> = {
   'concept-arc': 'ConceptARC'
 };
 
-const isHuggingFaceOfficial = (modelName: string | null | undefined): boolean => {
-  if (!modelName) return false;
-  return modelName.endsWith('-attempt1') || modelName.endsWith('-attempt2');
-};
-
-const getModelOriginInfo = (modelName: string | null | undefined) => {
-  if (!modelName) {
-    return {
-      isOfficial: false,
-      label: '',
-      description: '',
-      shortLabel: '',
-    };
-  }
-
-  const isOfficial = isHuggingFaceOfficial(modelName);
-
-  return {
-    isOfficial,
-    label: isOfficial
-      ? 'HuggingFace ARC Prize (official)'
-      : 'ARC Explainer / community run (unofficial)',
-    description: isOfficial
-      ? 'This model\'s results come from the ARC Prize HuggingFace leaderboard ingestion.'
-      : 'This model\'s results come from ARC Explainer / community runs and are not an official leaderboard score.',
-    shortLabel: isOfficial ? 'HF official' : 'ARC Explainer',
-  };
-};
-
 type DatasetOption = DatasetInfo & { displayName: string };
 
 export default function AnalyticsOverview() {
@@ -189,13 +161,19 @@ export default function AnalyticsOverview() {
   }, [availableDatasets]);
 
   const { officialModels, communityModels } = useMemo(() => {
-    const official = availableModels.filter((model) => isHuggingFaceOfficial(model));
-    const community = availableModels.filter((model) => !isHuggingFaceOfficial(model));
+    const official = availableModels.filter((model) => {
+      const origin = detectModelOrigin(model);
+      return origin.origin === 'hf_official' || origin.origin === 'community_solver';
+    });
+    const community = availableModels.filter((model) => {
+      const origin = detectModelOrigin(model);
+      return origin.origin === 'arc_explainer';
+    });
     return { officialModels: official, communityModels: community };
   }, [availableModels]);
 
   const selectedModelOrigin = modelDatasetPerformance
-    ? getModelOriginInfo(modelDatasetPerformance.modelName)
+    ? detectModelOrigin(modelDatasetPerformance.modelName)
     : null;
 
   // Prefer ARC2 evaluation dataset by default; fall back to first available directory
@@ -499,16 +477,12 @@ export default function AnalyticsOverview() {
                           <span className="text-sm px-2 py-0.5 bg-blue-100 text-blue-700 rounded-md font-medium">
                             {DATASET_DISPLAY_NAME_MAP[modelDatasetPerformance.dataset] || modelDatasetPerformance.dataset}
                           </span>
-                          {selectedModelOrigin && selectedModelOrigin.label && (
+                          {selectedModelOrigin && (
                             <Badge
-                              variant={selectedModelOrigin.isOfficial ? 'secondary' : 'outline'}
-                              className={
-                                selectedModelOrigin.isOfficial
-                                  ? 'text-[11px] bg-green-50 text-green-700 border-green-200'
-                                  : 'text-[11px] bg-amber-50 text-amber-700 border-amber-200'
-                              }
+                              variant={selectedModelOrigin.badgeVariant}
+                              className="text-[11px]"
                             >
-                              {selectedModelOrigin.label}
+                              {selectedModelOrigin.shortLabel}
                             </Badge>
                           )}
                           <span className="text-sm text-gray-500">({modelDatasetPerformance.summary.totalPuzzles} puzzles)</span>

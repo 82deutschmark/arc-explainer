@@ -9,10 +9,18 @@
  */
 
 import React from 'react';
+import { Link } from 'wouter';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useWormArenaGreatestHits } from '@/hooks/useWormArenaGreatestHits';
+
+function normalizeGameId(raw: string): string {
+  const trimmed = (raw ?? '').trim();
+  if (!trimmed) return '';
+  const withoutExt = trimmed.endsWith('.json') ? trimmed.slice(0, -'.json'.length) : trimmed;
+  return withoutExt.startsWith('snake_game_') ? withoutExt.slice('snake_game_'.length) : withoutExt;
+}
 
 export default function WormArenaGreatestHits() {
   const { games, isLoading, error } = useWormArenaGreatestHits(20);
@@ -92,12 +100,12 @@ export default function WormArenaGreatestHits() {
                           {new Date(game.startedAt).toLocaleDateString()}
                         </span>
                       )}
-                      <a
-                        href={`/worm-arena?matchId=${encodeURIComponent(game.gameId)}`}
+                      <Link
+                        href={`/worm-arena?matchId=${encodeURIComponent(normalizeGameId(game.gameId))}`}
                         className="underline font-semibold text-base text-worm-ink hover:text-worm-green"
                       >
                         View replay
-                      </a>
+                      </Link>
                     </div>
                   </div>
                 );

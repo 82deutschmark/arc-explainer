@@ -1182,21 +1182,25 @@ export class SnakeBenchService {
 
   async getWormArenaGreatestHits(limitPerDimension: number = 5): Promise<WormArenaGreatestHitGame[]> {
     const raw = Number(limitPerDimension);
-    const safeLimit = Number.isFinite(raw) ? Math.max(1, Math.min(raw, CURATED_WORM_ARENA_HALL_OF_FAME.length)) : 5;
-    const target = CURATED_WORM_ARENA_HALL_OF_FAME.slice(0, safeLimit);
+    const safeLimit = Number.isFinite(raw)
+      ? Math.max(1, Math.min(raw, CURATED_WORM_ARENA_HALL_OF_FAME.length))
+      : 5;
 
     const playable: WormArenaGreatestHitGame[] = [];
 
-    for (const game of target) {
+    for (const game of CURATED_WORM_ARENA_HALL_OF_FAME) {
+      if (playable.length >= safeLimit) break;
+
       const available = await this.replayExists(game.gameId);
       if (available) {
         playable.push(game);
-      } else {
-        logger.warn(
-          `SnakeBenchService.getWormArenaGreatestHits: curated game ${game.gameId} has no available replay asset`,
-          'snakebench-service',
-        );
+        continue;
       }
+
+      logger.warn(
+        `SnakeBenchService.getWormArenaGreatestHits: curated game ${game.gameId} has no available replay asset`,
+        'snakebench-service',
+      );
     }
 
     return playable;

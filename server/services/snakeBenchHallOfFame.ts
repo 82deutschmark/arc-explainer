@@ -15,6 +15,20 @@ import type { WormArenaGreatestHitGame } from '../../shared/types.js';
 // NOTE: Games with actual cost data are listed first so the UI displays meaningful stats.
 // Games without cost tracking (older o3/o4 matches) are listed last.
 export const CURATED_WORM_ARENA_HALL_OF_FAME: WormArenaGreatestHitGame[] = [
+  {
+    gameId: '97c1dad4-3905-4d29-a781-f7a9691f063d',
+    startedAt: '2025-12-15T23:18:24.567702',
+    modelA: 'google/gemini-3-pro-preview',
+    modelB: 'nvidia/nemotron-3-nano-30b-a3b:free',
+    roundsPlayed: 116,
+    maxRounds: 150,
+    totalCost: 10.867604000000002,
+    maxFinalScore: 29,
+    scoreDelta: 3,
+    boardWidth: 10,
+    boardHeight: 10,
+    highlightReason: 'Marathon match (116/150 rounds) with a huge cost signal (~$10.87) and top score of 29',
+  },
   // === Games WITH cost data (show these first) ===
   {
     gameId: '8f7da248-9c6d-4088-aadd-38e926dc8464',
