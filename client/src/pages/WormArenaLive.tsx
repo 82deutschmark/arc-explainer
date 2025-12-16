@@ -222,19 +222,32 @@ export default function WormArenaLive() {
 
         {viewMode === 'live' && (
           <div className="transition-opacity duration-300 ease-in-out animate-in fade-in">
-            <WormArenaLiveStatusStrip
-              status={status}
-              message={message}
-              error={error}
-              sessionId={sessionId}
-              currentMatchIndex={currentMatchIndex}
-              totalMatches={totalMatches}
-            />
+            {(() => {
+              const snakeIds = Object.keys((latestFrame as any)?.frame?.state?.snakes ?? {}).sort();
+              const aliveNames = snakeIds.map(id => playerNameBySnakeId[id] || id).slice(0, 2);
+              return (
+                <WormArenaLiveStatusStrip
+                  status={status}
+                  message={message}
+                  error={error}
+                  sessionId={sessionId}
+                  currentMatchIndex={currentMatchIndex}
+                  totalMatches={totalMatches}
+                  playerAName={leftName}
+                  playerBName={rightName}
+                  playerAScore={Number((latestFrame as any)?.frame?.state?.scores?.[leftSnakeId] ?? 0)}
+                  playerBScore={Number((latestFrame as any)?.frame?.state?.scores?.[rightSnakeId] ?? 0)}
+                  currentRound={(latestFrame as any)?.round ?? 0}
+                  maxRounds={(latestFrame as any)?.frame?.state?.max_rounds ?? 0}
+                  aliveSnakes={aliveNames}
+                />
+              );
+            })()}
           </div>
         )}
 
         {viewMode === 'live' && (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 transition-opacity duration-300 ease-in-out animate-in fade-in">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 transition-opacity duration-300 ease-in-out animate-in fade-in items-stretch">
             <WormArenaReasoning
               playerName={leftName}
               color="green"
@@ -242,6 +255,17 @@ export default function WormArenaLive() {
               score={Number((latestFrame as any)?.frame?.state?.scores?.[leftSnakeId] ?? 0)}
               strategyLabel="Live output"
             />
+
+            <div className="flex flex-col gap-4">
+              <WormArenaLiveBoardPanel
+                viewMode="live"
+                status={status}
+                latestFrame={latestFrame}
+                boardWidth={boardWidth}
+                boardHeight={boardHeight}
+                finalSummary={null}
+              />
+            </div>
 
             <WormArenaReasoning
               playerName={rightName}
@@ -257,17 +281,6 @@ export default function WormArenaLive() {
           <div className="transition-opacity duration-300 ease-in-out animate-in fade-in">
             <WormArenaLiveResultsPanel finalSummary={finalSummary} />
           </div>
-        )}
-
-        {(viewMode === 'live' || viewMode === 'completed') && (
-          <WormArenaLiveBoardPanel
-            viewMode={viewMode}
-            status={status}
-            latestFrame={latestFrame}
-            boardWidth={boardWidth}
-            boardHeight={boardHeight}
-            finalSummary={finalSummary}
-          />
         )}
 
         {modelsError && (

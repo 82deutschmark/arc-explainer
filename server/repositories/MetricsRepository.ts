@@ -805,6 +805,8 @@ export class MetricsRepository extends BaseRepository {
         
         let unionCorrectCount = 0;
         let totalTestPairs = 0;
+        let taskScoreSum = 0;
+        let tasksCounted = 0;
 
         // Iterate through each puzzle and check per-pair correctness (ARC harness style)
         for (const detail of details) {
@@ -851,16 +853,22 @@ export class MetricsRepository extends BaseRepository {
 
           totalTestPairs += pairsForPuzzle;
 
+          let unionSolvedPairsForPuzzle = 0;
+
           for (let i = 0; i < pairsForPuzzle; i++) {
             const anyAttemptCorrect = attemptPairs.some(pairs => pairs[i] === true);
             if (anyAttemptCorrect) {
               unionCorrectCount++;
+              unionSolvedPairsForPuzzle++;
             }
           }
+
+          taskScoreSum += pairsForPuzzle > 0 ? unionSolvedPairsForPuzzle / pairsForPuzzle : 0;
+          tasksCounted++;
         }
 
-        const unionAccuracyPercentage = totalTestPairs > 0 
-          ? Math.round((unionCorrectCount / totalTestPairs) * 10000) / 100  // Round to 2 decimal places
+        const unionAccuracyPercentage = tasksCounted > 0 
+          ? Math.round(((taskScoreSum / tasksCounted) * 100) * 100) / 100  // Round to 2 decimal places
           : 0;
 
         attemptUnionStats.push({

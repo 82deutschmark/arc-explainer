@@ -58,7 +58,9 @@ function parseArguments(): JohanLandIngestionConfig {
     forceOverwrite: false,
     skipDuplicates: true,
     stopOnError: false,
-    resumeFrom: undefined
+    resumeFrom: undefined,
+    compareDb: false,
+    compareDbDataset: 'evaluation2'
   };
 
   for (let i = 0; i < args.length; i++) {
@@ -111,6 +113,13 @@ function parseArguments(): JohanLandIngestionConfig {
         config.resumeFrom = nextArg;
         i++;
         break;
+      case '--compare-db':
+        config.compareDb = true;
+        break;
+      case '--compare-db-dataset':
+        config.compareDbDataset = nextArg;
+        i++;
+        break;
       case '--help':
         printUsage();
         process.exit(0);
@@ -148,6 +157,8 @@ Options:
   --skip-duplicates               Skip existing entries (default)
   --stop-on-error                 Stop on first error
   --resume-from <puzzle-id>       Resume from specific puzzle
+  --compare-db                    After ingestion, query DB and print UI-style union score for attempt1+attempt2
+  --compare-db-dataset <name>     Dataset key for DB comparison (default: evaluation2)
   --help                          Show this message
 
 Example:
@@ -211,6 +222,26 @@ async function checkDuplicate(puzzleId: string, modelName: string): Promise<bool
   }
 }
 
+function gridsEqual(a: number[][] | null, b: number[][] | null): boolean {
+  if (!a || !b) return false;
+  if (!Array.isArray(a) || !Array.isArray(b)) return false;
+  if (a.length !== b.length) return false;
+
+  for (let r = 0; r < a.length; r++) {
+    const rowA = a[r];
+    const rowB = b[r];
+
+    if (!Array.isArray(rowA) || !Array.isArray(rowB)) return false;
+    if (rowA.length !== rowB.length) return false;
+
+    for (let c = 0; c < rowA.length; c++) {
+      if (rowA[c] !== rowB[c]) return false;
+    }
+  }
+
+  return true;
+}
+
 /**
  * Validate and enrich a single attempt for database insertion
  */
@@ -235,10 +266,10 @@ async function validateAndEnrichAttempt(
 
   const promptTemplateId = 'external-johan-land';
 
-  // CRITICAL: The attempt object ALREADY has a 'correct' flag computed by Johan_Land during evaluation
-  // Use that directly instead of re-validating (which was always returning true)
+  // NOTE: Johan_Land attempt.correct is treated as UNTRUSTED. Correctness is recomputed in processPuzzle
+  // and stored via the multi-test fields. This helper is kept for backward compatibility only.
   let predictedOutputGrid: number[][] | null = attempt.answer;
-  let isPredictionCorrect: boolean | null = attempt.correct;
+  let isPredictionCorrect: boolean | null = null;
   let multiplePredictedOutputs: number[][][] | null = null;
   let multiTestPredictionGrids: number[][][] | null = null;
   let multiTestResults: any[] | null = null;
@@ -396,7 +427,7 @@ async function processPuzzle(
   puzzleId: string,
   config: JohanLandIngestionConfig,
   progress: JohanLandIngestionProgress
-): Promise<void> {
+): Promise<number | null> {
   progress.currentPuzzle = puzzleId;
 
   // Load submission
@@ -409,7 +440,7 @@ async function processPuzzle(
     }
     progress.validationErrors++;
     if (config.stopOnError) throw error;
-    return;
+    return null;
   }
 
   if (!submission) {
@@ -420,7 +451,7 @@ async function processPuzzle(
     if (config.stopOnError) {
       throw new Error(`File not found: ${puzzleId}.json`);
     }
-    return;
+    return null;
   }
 
   // Load puzzle data for validation
@@ -433,7 +464,7 @@ async function processPuzzle(
     }
     progress.notFoundErrors++;
     if (config.stopOnError) throw error;
-    return;
+    return null;
   }
 
   if (!puzzleData) {
@@ -444,31 +475,127 @@ async function processPuzzle(
     if (config.stopOnError) {
       throw new Error(`Puzzle data not found for ${puzzleId}`);
     }
-    return;
+    return null;
   }
 
-  // CRITICAL: Delete existing records ONCE per puzzle per model (before processing any pairs)
-  // This prevents the force-overwrite logic from deleting previous pairs while saving new ones
-  const modelsToDelete = new Set<string>();
+  const testCases = Array.isArray(puzzleData?.test) ? puzzleData.test : [];
+  if (testCases.length === 0) {
+    progress.validationErrors++;
+    if (config.stopOnError) {
+      throw new Error(`Puzzle ${puzzleId}: no test cases found`);
+    }
+    return null;
+  }
 
-  // Pre-process to determine which models will be saved
-  for (let pairIndex = 0; pairIndex < submission.length; pairIndex++) {
-    const pairData = submission[pairIndex];
+  // CRITICAL: We store ONE row per puzzle per attempt number.
+  // The row uses the multi-test fields to represent all test pairs.
+  // This matches how HuggingFace ingestion stores multi-test and prevents duplicate skipping from dropping pairs.
+  type AttemptAggregate = {
+    modelName: string;
+    predictedGrids: Array<number[][] | null>;
+    multiTestResults: Array<{ index: number; isPredictionCorrect: boolean }>;
+    totalInputTokens: number;
+    totalOutputTokens: number;
+    totalReasoningTokens: number;
+    totalTokens: number;
+    totalCost: number;
+    totalProcessingTimeMs: number;
+    reasoningSummary: string | null;
+    providerRawResponse: JohanLandAttempt['metadata'][];
+  };
+
+  const aggregates = new Map<number, AttemptAggregate>();
+  for (const attemptNumber of [1, 2]) {
+    aggregates.set(attemptNumber, {
+      modelName: buildModelName(config, attemptNumber),
+      predictedGrids: Array.from({ length: testCases.length }, () => null),
+      multiTestResults: Array.from({ length: testCases.length }, (_, index) => ({
+        index,
+        isPredictionCorrect: false,
+      })),
+      totalInputTokens: 0,
+      totalOutputTokens: 0,
+      totalReasoningTokens: 0,
+      totalTokens: 0,
+      totalCost: 0,
+      totalProcessingTimeMs: 0,
+      reasoningSummary: null,
+      providerRawResponse: [],
+    });
+  }
+
+  // Fill aggregates from submission entries
+  for (let enumPairIndex = 0; enumPairIndex < submission.length; enumPairIndex++) {
+    const pairData = submission[enumPairIndex];
     if (!pairData) continue;
 
     for (const attemptNumber of [1, 2]) {
-      const attempt = pairData[`attempt_${attemptNumber}` as const];
-      if (attempt) {
-        modelsToDelete.add(buildModelName(config, attemptNumber));
+      const attemptKey = `attempt_${attemptNumber}` as const;
+      const attempt = pairData[attemptKey];
+      if (!attempt) continue;
+
+      const meta = attempt.metadata;
+      const agg = aggregates.get(attemptNumber);
+      if (!agg) continue;
+
+      // Harness behavior: prefer metadata.pair_index when valid, else fall back to enum index
+      let pairIndex: number | null = null;
+      if (typeof meta?.pair_index === 'number' && meta.pair_index >= 0 && meta.pair_index < testCases.length) {
+        pairIndex = meta.pair_index;
+      } else if (enumPairIndex >= 0 && enumPairIndex < testCases.length) {
+        pairIndex = enumPairIndex;
+      }
+
+      if (pairIndex === null) {
+        continue;
+      }
+
+      const predictedGrid = Array.isArray(attempt.answer) ? attempt.answer : null;
+      agg.predictedGrids[pairIndex] = predictedGrid;
+
+      const expectedGrid = testCases[pairIndex]?.output ?? null;
+      const isCorrect = gridsEqual(predictedGrid, expectedGrid);
+      agg.multiTestResults[pairIndex] = { index: pairIndex, isPredictionCorrect: isCorrect };
+
+      agg.providerRawResponse.push(meta);
+
+      // Aggregate tokens/cost/time (sum across pairs like HF ingest does)
+      agg.totalInputTokens += meta?.usage?.prompt_tokens || 0;
+      agg.totalOutputTokens += meta?.usage?.completion_tokens || 0;
+      agg.totalReasoningTokens += meta?.usage?.completion_tokens_details?.reasoning_tokens || 0;
+      agg.totalTokens += meta?.usage?.total_tokens || 0;
+      agg.totalCost += meta?.cost?.total_cost || 0;
+      agg.totalProcessingTimeMs += calculateProcessingTime(meta.start_timestamp, meta.end_timestamp);
+
+      if (!agg.reasoningSummary && typeof meta?.reasoning_summary === 'string' && meta.reasoning_summary.trim().length > 0) {
+        agg.reasoningSummary = meta.reasoning_summary;
       }
     }
   }
 
-  // Delete all existing records for these models once, before processing any pairs
+  // Harness-style score for this task: solved_pairs / num_pairs, where a pair is solved if ANY attempt is correct.
+  // This computation is independent of DB writes.
+  const attempt1 = aggregates.get(1);
+  const attempt2 = aggregates.get(2);
+  let solvedPairs = 0;
+  const numPairs = testCases.length;
+  for (let i = 0; i < numPairs; i++) {
+    const a1 = attempt1?.multiTestResults[i]?.isPredictionCorrect === true;
+    const a2 = attempt2?.multiTestResults[i]?.isPredictionCorrect === true;
+    if (a1 || a2) {
+      solvedPairs++;
+    }
+  }
+  const taskScore = numPairs > 0 ? solvedPairs / numPairs : 0;
+
+  // Delete existing records ONCE per puzzle per model (before saving)
   if (config.forceOverwrite && !config.dryRun) {
     try {
       const existing = await repositoryService.explanations.getExplanationsForPuzzle(puzzleId);
-      for (const modelName of modelsToDelete) {
+      for (const attemptNumber of [1, 2]) {
+        const modelName = aggregates.get(attemptNumber)?.modelName;
+        if (!modelName) continue;
+
         const matching = existing.filter((exp) => exp.modelName === modelName);
         for (const exp of matching) {
           await repositoryService.explanations.deleteExplanation(exp.id);
@@ -481,103 +608,90 @@ async function processPuzzle(
     }
   }
 
-  // CORRECTED: Loop through submission array, where each element = one test pair
-  for (let pairIndex = 0; pairIndex < submission.length; pairIndex++) {
-    const pairData = submission[pairIndex];
+  for (const attemptNumber of [1, 2]) {
+    const agg = aggregates.get(attemptNumber);
+    if (!agg) continue;
 
-    if (!pairData) {
-      if (config.verbose) {
-        console.log(`No data for pair ${pairIndex} in ${puzzleId}`);
-      }
-      continue;
-    }
-
-    // For this pair, check both attempts
-    let pairIsSolved = false;
-    const attemptResults: { attemptNumber: number; correct: boolean; enrichedData: JohanLandEnrichedAttempt | null }[] = [];
-
-    for (const attemptNumber of [1, 2]) {
-      const attemptKey = `attempt_${attemptNumber}` as const;
-      const attempt = pairData[attemptKey];
-
-      if (!attempt) {
+    if (config.skipDuplicates) {
+      const isDuplicate = await checkDuplicate(puzzleId, agg.modelName);
+      if (isDuplicate) {
+        progress.skipped++;
         if (config.verbose) {
-          console.log(`No ${attemptKey} for ${puzzleId} pair ${pairIndex}`);
+          console.log(`Skipped (exists): ${puzzleId} / ${agg.modelName}`);
         }
         continue;
-      }
-
-      const modelName = buildModelName(config, attemptNumber);
-
-      // Check for duplicates
-      if (config.skipDuplicates) {
-        const isDuplicate = await checkDuplicate(puzzleId, modelName);
-        if (isDuplicate) {
-          progress.skipped++;
-          if (config.verbose) {
-            console.log(`Skipped (exists): ${puzzleId} / pair ${pairIndex} / ${modelName}`);
-          }
-          continue;
-        }
-      }
-
-      // Validate and enrich
-      let enrichedData: JohanLandEnrichedAttempt | null;
-      try {
-        enrichedData = await validateAndEnrichAttempt(attempt, attemptNumber, puzzleData, config);
-      } catch (error: any) {
-        if (config.verbose) {
-          console.warn(`Validation failed for ${puzzleId} pair ${pairIndex}/${attemptKey}: ${error.message}`);
-        }
-        progress.validationErrors++;
-        if (config.stopOnError) throw error;
-        continue;
-      }
-
-      if (!enrichedData) {
-        progress.failed++;
-        if (config.stopOnError) {
-          throw new Error(`Failed to enrich ${puzzleId} pair ${pairIndex}/${attemptKey}`);
-        }
-        continue;
-      }
-
-      // Track if this attempt is correct
-      const attemptCorrect = enrichedData.isPredictionCorrect ?? enrichedData.multiTestAllCorrect ?? false;
-      if (attemptCorrect) {
-        pairIsSolved = true;
-      }
-
-      attemptResults.push({ attemptNumber, correct: attemptCorrect, enrichedData });
-    }
-
-    // Save all enriched attempts for this pair to database
-    for (const result of attemptResults) {
-      if (!result.enrichedData) continue;
-
-      // Save to database (deletion already happened once per puzzle per model above)
-      const saved = await saveToDatabaseIfNotDryRun(result.enrichedData, config);
-
-      if (saved) {
-        progress.successful++;
-        progress.successDetails.push({
-          puzzleId: result.enrichedData.puzzleId,
-          isCorrect: result.correct
-        });
-      } else {
-        progress.failed++;
-        if (config.stopOnError) {
-          throw new Error(`Failed to save ${puzzleId} pair ${pairIndex}/attempt${result.attemptNumber}`);
-        }
       }
     }
 
-    // Log pair result (for debugging/tracking)
-    if (config.verbose) {
-      const status = pairIsSolved ? 'SOLVED' : 'NOT_SOLVED';
-      console.log(`  Pair ${pairIndex}: ${status}`);
+    const extracted = parseReasoningSummary(agg.reasoningSummary || '');
+
+    const correctCount = agg.multiTestResults.filter(r => r.isPredictionCorrect === true).length;
+    const totalPairs = agg.multiTestResults.length;
+    const multiTestAllCorrect = totalPairs > 0 ? correctCount === totalPairs : false;
+    const multiTestAverageAccuracy = totalPairs > 0 ? correctCount / totalPairs : 0;
+
+    const enrichedData: JohanLandEnrichedAttempt = {
+      puzzleId,
+      modelName: agg.modelName,
+
+      patternDescription: extracted.pattern_description || 'Pattern description extracted from reasoning',
+      solvingStrategy: extracted.solving_strategy || 'Strategy extracted from reasoning log',
+      reasoningLog: extracted.full_reasoning,
+      hints: [],
+      confidence: 50,
+
+      inputTokens: agg.totalInputTokens,
+      outputTokens: agg.totalOutputTokens,
+      reasoningTokens: agg.totalReasoningTokens,
+      totalTokens: agg.totalTokens,
+
+      estimatedCost: agg.totalCost,
+      apiProcessingTimeMs: agg.totalProcessingTimeMs,
+
+      predictedOutputGrid: null,
+      isPredictionCorrect: null,
+
+      hasMultiplePredictions: true,
+      multiplePredictedOutputs: agg.predictedGrids as any,
+      multiTestPredictionGrids: agg.predictedGrids as any,
+      multiTestResults: agg.multiTestResults as any,
+      multiTestAllCorrect,
+      multiTestAverageAccuracy,
+
+      systemPromptUsed: '',
+      userPromptUsed: '',
+      promptTemplateId: 'external-johan-land',
+      customPromptText: '',
+
+      providerRawResponse: agg.providerRawResponse as any,
+
+      temperature: 0,
+      reasoningEffort: '',
+      reasoningVerbosity: '',
+      reasoningSummaryType: '',
+    };
+
+    const saved = await saveToDatabaseIfNotDryRun(enrichedData, config);
+    if (saved) {
+      progress.successful++;
+      progress.successDetails.push({
+        puzzleId,
+        isCorrect: multiTestAllCorrect,
+        accuracy: multiTestAverageAccuracy,
+      });
+    } else {
+      progress.failed++;
+      if (config.stopOnError) {
+        throw new Error(`Failed to save ${puzzleId} / ${agg.modelName}`);
+      }
     }
   }
+
+  if (config.verbose) {
+    console.log(`  Harness score for ${puzzleId}: ${(taskScore * 100).toFixed(2)}% (${solvedPairs}/${numPairs})`);
+  }
+
+  return taskScore;
 }
 
 /**
@@ -653,12 +767,19 @@ async function main(): Promise<void> {
   };
 
   // Process each puzzle
+  let harnessScoreSum = 0;
+  let harnessTasksCounted = 0;
+
   for (let i = 0; i < puzzleIds.length; i++) {
     const puzzleId = puzzleIds[i];
     const progress_pct = (((i + 1) / puzzleIds.length) * 100).toFixed(1);
 
     try {
-      await processPuzzle(puzzleId, config, progress);
+      const taskScore = await processPuzzle(puzzleId, config, progress);
+      if (typeof taskScore === 'number') {
+        harnessScoreSum += taskScore;
+        harnessTasksCounted++;
+      }
 
       if (config.verbose || i % 10 === 0) {
         console.log(`[${progress_pct}%] Processed: ${puzzleId}`);
@@ -668,6 +789,33 @@ async function main(): Promise<void> {
       if (config.stopOnError) {
         throw error;
       }
+    }
+  }
+
+  if (harnessTasksCounted > 0) {
+    const percentageScore = (harnessScoreSum / harnessTasksCounted) * 100;
+    console.log(`\nHarness-style Final Score: ${percentageScore.toFixed(2)}% (${harnessScoreSum.toFixed(2)}/${harnessTasksCounted})`);
+  }
+
+  if (config.compareDb) {
+    const baseModelName = config.label ? `${config.datasetName}-${config.label}` : config.datasetName;
+    const model1 = `${baseModelName}-attempt1`;
+    const model2 = `${baseModelName}-attempt2`;
+    const datasetKey = config.compareDbDataset || 'evaluation2';
+
+    try {
+      const comparison = await repositoryService.metrics.getModelComparison([model1, model2], datasetKey);
+      const stats = comparison?.summary?.attemptUnionStats?.find(s => s.baseModelName === baseModelName);
+
+      if (stats) {
+        console.log(
+          `DB/UI Attempt Union Score (${datasetKey}): ${stats.unionAccuracyPercentage.toFixed(2)}% (${stats.unionCorrectCount}/${stats.totalTestPairs})`
+        );
+      } else {
+        console.log(`DB/UI Attempt Union Score (${datasetKey}): not available (no attemptUnionStats for ${baseModelName})`);
+      }
+    } catch (error: any) {
+      console.warn(`DB comparison failed: ${error?.message || String(error)}`);
     }
   }
 
