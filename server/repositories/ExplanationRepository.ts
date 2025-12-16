@@ -4,8 +4,8 @@
  * Handles all explanation-related database operations.
  * Extracted from monolithic DbService to follow Single Responsibility Principle.
  * 
- * @author Claude
- * @date 2025-08-27
+ * @author Claude / Cascade
+ * @date 2025-08-27 (updated 2025-12-16)
  */
 
 import { BaseRepository } from './base/BaseRepository.ts';
@@ -34,6 +34,20 @@ export class ExplanationRepository extends BaseRepository implements IExplanatio
     const client = await this.getClient();
     
     try {
+      const numTestPairs = (() => {
+        if (data.hasMultiplePredictions) {
+          if (Array.isArray(data.multiTestResults)) {
+            return data.multiTestResults.length;
+          }
+          const parsed = this.safeJsonParse<any[]>(data.multiTestResults, 'multiTestResults', null);
+          if (Array.isArray(parsed)) {
+            return parsed.length;
+          }
+          return 1;
+        }
+        return 1;
+      })();
+
       const result = await this.query(`
         INSERT INTO explanations (
           puzzle_id, pattern_description, solving_strategy, hints, confidence,
@@ -50,9 +64,10 @@ export class ExplanationRepository extends BaseRepository implements IExplanatio
           rebutting_explanation_id,
           grover_iterations, grover_best_program, iteration_count,
           beetree_stage, beetree_consensus_count, beetree_model_results, beetree_cost_breakdown,
-          beetree_token_usage, beetree_run_timestamp, beetree_mode, beetree_consensus_strength, beetree_diversity_score
+          beetree_token_usage, beetree_run_timestamp, beetree_mode, beetree_consensus_strength, beetree_diversity_score,
+          num_test_pairs
         ) VALUES (
-          $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28, $29, $30, $31, $32, $33, $34, $35, $36, $37, $38, $39, $40, $41, $42, $43, $44, $45, $46, $47, $48, $49, $50, $51, $52, $53
+          $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28, $29, $30, $31, $32, $33, $34, $35, $36, $37, $38, $39, $40, $41, $42, $43, $44, $45, $46, $47, $48, $49, $50, $51, $52, $53, $54
         ) RETURNING *
       `, [
         data.puzzleId, // Simplified - consistent with ExplanationData interface
@@ -115,7 +130,8 @@ export class ExplanationRepository extends BaseRepository implements IExplanatio
         data.beetreeRunTimestamp ?? null,
         data.beetreeMode ?? null,
         data.beetreeConsensusStrength ?? null,
-        data.beetreeDiversityScore ?? null
+        data.beetreeDiversityScore ?? null,
+        numTestPairs
       ], client);
 
       if (result.rows.length === 0) {

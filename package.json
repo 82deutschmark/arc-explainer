@@ -30,7 +30,8 @@
     "ingest-johanland": "node --import tsx server/scripts/ingest-johanland-results.ts",
     "cleanup-hf": "node --import tsx server/scripts/cleanup-huggingface-imports.ts",
     "del": "node --import tsx server/scripts/delete-hf-now.ts",
-    "worm:cheap-matchups": "node --import tsx server/scripts/generate-cheap-matchups.ts"
+    "worm:cheap-matchups": "node --import tsx server/scripts/generate-cheap-matchups.ts",
+    "sync-openrouter-catalog": "node --import tsx server/scripts/sync-openrouter-catalog.ts"
   },
   "dependencies": {
     "@ai-sdk/xai": "^2.0.23",

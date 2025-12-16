@@ -562,7 +562,7 @@ export default function ModelComparisonPage() {
         {attemptUnionMetrics && (attemptUnionMetrics.totalTestPairs ?? attemptUnionMetrics.totalPuzzles) > 0 && (
           <div className="bg-base-100 rounded-lg shadow p-2 border-l-4 border-blue-500 space-y-1">
             <div className="flex items-center justify-between gap-2">
-              <h3 className="text-sm font-bold text-gray-800">Attempt Union Accuracy</h3>
+              <h3 className="text-sm font-bold text-gray-800">Attempt Union (2 attempts)</h3>
               <div className="flex gap-1">
                 <button
                   onClick={() => setShowUnionDialog(true)}
@@ -581,7 +581,7 @@ export default function ModelComparisonPage() {
               </div>
             </div>
             <p className="text-xs text-gray-600 leading-tight">
-              Counts each test pair as correct if <strong>either attempt 1 or attempt 2</strong> solved it (ARC harness rule).
+              Shows the <strong>official harness score</strong> (average of puzzle scores) and a <strong>pair-weighted</strong> test-pair rate.
             </p>
             <div className="space-y-1">
               <div className="text-xs">
@@ -599,7 +599,7 @@ export default function ModelComparisonPage() {
                   <div className="text-3xl font-bold text-blue-600">
                     {attemptUnionMetrics.unionAccuracyPercentage.toFixed(1)}%
                   </div>
-                  <p className="text-xs text-gray-500">Union Accuracy</p>
+                  <p className="text-xs text-gray-500">Harness score (avg puzzle score)</p>
                 </div>
                 <div className="text-xs">
                   <span className="font-semibold">Test Pairs Correct:</span>{' '}
@@ -607,6 +607,13 @@ export default function ModelComparisonPage() {
                     {attemptUnionMetrics.unionCorrectCount}/
                     {(attemptUnionMetrics.totalTestPairs ?? attemptUnionMetrics.totalPuzzles)}
                   </span>
+                  <div className="text-gray-500">
+                    Pair-weighted: {(
+                      (attemptUnionMetrics.totalTestPairs ?? attemptUnionMetrics.totalPuzzles) > 0
+                        ? (attemptUnionMetrics.unionCorrectCount / (attemptUnionMetrics.totalTestPairs ?? attemptUnionMetrics.totalPuzzles)) * 100
+                        : 0
+                    ).toFixed(1)}%
+                  </div>
                 </div>
               </div>
 

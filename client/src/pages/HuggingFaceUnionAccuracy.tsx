@@ -168,6 +168,18 @@ export default function HuggingFaceUnionAccuracy() {
 
   const { metrics: costMetrics } = useModelDatasetMetrics(selectedModelName, selectedDataset);
 
+  const totalPairsForDisplay = useMemo(() => {
+    if (!unionMetrics) return 0;
+    return unionMetrics.totalTestPairs ?? unionMetrics.totalPuzzles;
+  }, [unionMetrics]);
+
+  const pairWeightedAccuracyPercentage = useMemo(() => {
+    if (!unionMetrics) return 0;
+    const denom = unionMetrics.totalTestPairs ?? unionMetrics.totalPuzzles;
+    if (denom <= 0) return 0;
+    return (unionMetrics.unionCorrectCount / denom) * 100;
+  }, [unionMetrics]);
+
   // Auto-select first pair (which is ordered to prefer GPT-5.2 High)
   useEffect(() => {
     if (!selectedAttemptPair && attemptPairOptions.length > 0) {
@@ -538,7 +550,7 @@ export default function HuggingFaceUnionAccuracy() {
                     <div className="text-4xl font-bold text-blue-700">
                       {unionMetrics.unionAccuracyPercentage.toFixed(1)}%
                     </div>
-                    <p className="text-base text-gray-600 mt-0.5">Score (either attempt correct per test pair)</p>
+                    <p className="text-base text-gray-600 mt-0.5">Official harness score (average of puzzle scores)</p>
                   </div>
                   <div className="flex items-start gap-2">
                     {unionPuzzleIds.length > 0 && (
@@ -561,23 +573,35 @@ export default function HuggingFaceUnionAccuracy() {
                 {/* The Equation - Shown Clearly */}
                 <div className="bg-white rounded p-2 mb-2 border border-blue-100 text-base space-y-1">
                   <div className="text-gray-700">
-                    <span className="font-bold">Best-Case Score</span> = (Test pairs solved in attempt 1 <strong>or</strong> attempt 2) ÷ Total test pairs
+                    <span className="font-bold">Official Harness Score</span> = average over puzzles of (pairs solved by attempt 1 <strong>or</strong> attempt 2) ÷ (pairs in that puzzle)
                   </div>
                   <div className="text-gray-600">
-                    = <span className="font-semibold">{unionMetrics.unionCorrectCount} test pairs</span> ÷ <span className="font-semibold">{unionMetrics.totalTestPairs ?? unionMetrics.totalPuzzles} total</span>
+                    = <span className="font-semibold">{unionMetrics.unionAccuracyPercentage.toFixed(1)}%</span>
                   </div>
                   <div className="text-blue-700 font-bold">
                     = <span className="text-xl">{unionMetrics.unionAccuracyPercentage.toFixed(1)}%</span>
                   </div>
                 </div>
 
+                <div className="bg-white rounded p-2 mb-2 border border-blue-100 text-base space-y-1">
+                  <div className="text-gray-700">
+                    <span className="font-bold">Pair-Weighted Test-Pair Rate</span> = (pairs solved by attempt 1 <strong>or</strong> attempt 2) ÷ (total pairs)
+                  </div>
+                  <div className="text-gray-600">
+                    = <span className="font-semibold">{unionMetrics.unionCorrectCount} test pairs</span> ÷ <span className="font-semibold">{totalPairsForDisplay} total</span>
+                  </div>
+                  <div className="text-blue-700 font-bold">
+                    = <span className="text-xl">{pairWeightedAccuracyPercentage.toFixed(1)}%</span>
+                  </div>
+                </div>
+
                 {/* Quick Progress Bar */}
                 <Progress
-                  value={(unionMetrics.unionCorrectCount / ((unionMetrics.totalTestPairs ?? unionMetrics.totalPuzzles) || 1)) * 100}
+                  value={pairWeightedAccuracyPercentage}
                   className="h-2 mb-1"
                 />
                 <p className="text-base text-gray-700">
-                  <strong>{unionMetrics.unionCorrectCount}</strong> of <strong>{unionMetrics.totalTestPairs ?? unionMetrics.totalPuzzles}</strong> test pairs solved
+                  <strong>{unionMetrics.unionCorrectCount}</strong> of <strong>{totalPairsForDisplay}</strong> test pairs solved
                 </p>
 
                 {/* Model Names with Origin Badge */}
