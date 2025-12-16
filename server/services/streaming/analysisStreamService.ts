@@ -1,6 +1,6 @@
 /**
  * Author: gpt-5-codex
- * Date: 2025-10-16T00:00:00Z
+ * Date: 2025-10-16T00:00:00Z (updated 2025-12-16)
  * PURPOSE: Coordinates streaming analysis sessions, bridging SSE connections with provider services, handling capability checks,
  * option parsing, and graceful lifecycle management while honoring the shared STREAMING_ENABLED feature flag.
  * SRP/DRY check: Pass — reuse of centralized streaming config avoids duplicate env parsing.
@@ -127,6 +127,17 @@ export class AnalysisStreamService {
       const aiService = aiServiceFactory.getService(canonicalModelKey);
       const supportsStreaming = aiService?.supportsStreaming?.(canonicalModelKey) ?? false;
 
+      // Parse request options before branching. These are needed for both streaming and non-streaming paths.
+      const promptId = payload.promptId ?? "solver";
+      const promptOptions = payload.options ?? {};
+      const temperature = payload.temperature ?? 0.2;
+      const customPrompt = payload.customPrompt;
+      const captureReasoning = payload.captureReasoning ?? true;
+      const retryMode = payload.retryMode ?? false;
+
+      // Load puzzle once for validation and to support the non-streaming fallback path.
+      const puzzle = await puzzleService.getPuzzleById(taskId);
+
       if (!supportsStreaming) {
         logger.warn(
           `Streaming not available for model ${originalModelKey} (normalized: ${canonicalModelKey}), falling back to non-streaming`,
@@ -145,7 +156,7 @@ export class AnalysisStreamService {
             puzzle,
             canonicalModelKey,
             taskId,
-            payload.temperature ?? 0.2,
+            temperature,
             promptId,
             customPrompt,
             promptOptions
@@ -168,15 +179,6 @@ export class AnalysisStreamService {
         modelKey: originalModelKey,
         taskId,
       });
-      const promptId = payload.promptId ?? "solver";
-      const promptOptions = payload.options ?? {};
-      const temperature = payload.temperature ?? 0.2;
-      const customPrompt = payload.customPrompt;
-      const captureReasoning = payload.captureReasoning ?? true;
-      const retryMode = payload.retryMode ?? false;
-
-      // Load puzzle for validation
-      const puzzle = await puzzleService.getPuzzleById(taskId);
 
       const baseHarness = {
         sessionId,

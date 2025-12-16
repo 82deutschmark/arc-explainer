@@ -1,6 +1,6 @@
 /**
  * Author: Cascade
- * Date: 2025-12-16
+ * Date: 2025-12-16 (updated 2025-12-16)
  * PURPOSE: Visualization page for official ARC Prize team evaluation harness results (posted on Hugging Face).
  * Clarifies that ARC Explainer is a visualization tool for raw JSON data on the public evaluation set (not semi-private).
  * Explains union scoring at user level: two independent attempts per puzzle; for each test pair, either attempt being correct
@@ -77,6 +77,10 @@ interface UnionMetrics {
   totalTestPairs?: number;
   puzzlesCounted?: number;
   puzzlesFullySolved?: number;
+
+  // Dataset-level denominators (stable across models; returned by backend)
+  datasetTotalPuzzles?: number;
+  datasetTotalTestPairs?: number;
 }
 
 export default function HuggingFaceUnionAccuracy() {
@@ -176,12 +180,21 @@ export default function HuggingFaceUnionAccuracy() {
 
   const totalPairsForDisplay = useMemo(() => {
     if (!unionMetrics) return 0;
-    return unionMetrics.totalTestPairs ?? unionMetrics.totalPuzzles;
+    return (
+      unionMetrics.datasetTotalTestPairs ??
+      unionMetrics.totalTestPairs ??
+      unionMetrics.datasetTotalPuzzles ??
+      unionMetrics.totalPuzzles
+    );
   }, [unionMetrics]);
 
   const pairWeightedAccuracyPercentage = useMemo(() => {
     if (!unionMetrics) return 0;
-    const denom = unionMetrics.totalTestPairs ?? unionMetrics.totalPuzzles;
+    const denom =
+      unionMetrics.datasetTotalTestPairs ??
+      unionMetrics.totalTestPairs ??
+      unionMetrics.datasetTotalPuzzles ??
+      unionMetrics.totalPuzzles;
     if (denom <= 0) return 0;
     return (unionMetrics.unionCorrectCount / denom) * 100;
   }, [unionMetrics]);
@@ -257,6 +270,8 @@ export default function HuggingFaceUnionAccuracy() {
         totalTestPairs: metrics.totalTestPairs,
         puzzlesCounted: metrics.puzzlesCounted,
         puzzlesFullySolved: metrics.puzzlesFullySolved,
+        datasetTotalPuzzles: metrics.datasetTotalPuzzles,
+        datasetTotalTestPairs: metrics.datasetTotalTestPairs,
       });
       setUnionPuzzleIds(unionIds);
     } catch (err) {
@@ -587,11 +602,16 @@ export default function HuggingFaceUnionAccuracy() {
                   </div>
                   <div className="bg-green-100 rounded-lg p-3 text-center">
                     <div className="text-2xl font-bold text-green-700">
-                      {((unionMetrics.puzzlesFullySolved ?? unionPuzzleIds.length) / (unionMetrics.puzzlesCounted ?? unionMetrics.totalPuzzles) * 100).toFixed(1)}%
+                      {(
+                        ((unionMetrics.puzzlesFullySolved ?? unionPuzzleIds.length) /
+                          (unionMetrics.datasetTotalPuzzles ?? unionMetrics.puzzlesCounted ?? unionMetrics.totalPuzzles)) *
+                        100
+                      ).toFixed(1)}%
                     </div>
                     <div className="text-sm font-medium text-green-800">Puzzles Solved</div>
                     <div className="text-xs text-gray-600">
-                      {unionMetrics.puzzlesFullySolved ?? unionPuzzleIds.length}/{unionMetrics.puzzlesCounted ?? unionMetrics.totalPuzzles} fully correct
+                      {unionMetrics.puzzlesFullySolved ?? unionPuzzleIds.length}/
+                      {unionMetrics.datasetTotalPuzzles ?? unionMetrics.puzzlesCounted ?? unionMetrics.totalPuzzles} fully correct
                     </div>
                   </div>
                   <div className="bg-purple-100 rounded-lg p-3 text-center">

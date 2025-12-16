@@ -1,6 +1,6 @@
 /**
  * Author: Cascade
- * Date: 2025-12-16T00:00:00Z
+ * Date: 2025-12-16T00:00:00Z (updated 2025-12-16)
  * PURPOSE: Compact, info-focused multi-model comparison dashboard. Displays performance metrics in dense tables,
  *          reuses ModelPerformancePanel and NewModelComparisonResults components. Inline model add/remove with
  *          minimal whitespace and clear controls.
@@ -559,7 +559,12 @@ export default function ModelComparisonPage() {
           </div>
         </div>
 
-        {attemptUnionMetrics && (attemptUnionMetrics.totalTestPairs ?? attemptUnionMetrics.totalPuzzles) > 0 && (
+        {attemptUnionMetrics && (
+          (attemptUnionMetrics.datasetTotalTestPairs ??
+            attemptUnionMetrics.totalTestPairs ??
+            attemptUnionMetrics.datasetTotalPuzzles ??
+            attemptUnionMetrics.totalPuzzles) > 0
+        ) && (
           <div className="bg-base-100 rounded-lg shadow p-2 border-l-4 border-blue-500 space-y-1">
             <div className="flex items-center justify-between gap-2">
               <h3 className="text-sm font-bold text-gray-800">Attempt Union (2 attempts)</h3>
@@ -606,19 +611,34 @@ export default function ModelComparisonPage() {
                     <span className="font-semibold">Puzzles fully solved:</span>{' '}
                     <span className="text-success font-bold">
                       {attemptUnionMetrics.puzzlesFullySolved ?? unionPuzzleIds.length}/
-                      {attemptUnionMetrics.puzzlesCounted ?? attemptUnionMetrics.totalPuzzles}
+                      {attemptUnionMetrics.datasetTotalPuzzles ??
+                        attemptUnionMetrics.puzzlesCounted ??
+                        attemptUnionMetrics.totalPuzzles}
                     </span>
                   </div>
                   <div>
                     <span className="font-semibold">Test pairs correct:</span>{' '}
                     <span className="text-blue-600 font-bold">
                       {attemptUnionMetrics.unionCorrectCount}/
-                      {(attemptUnionMetrics.totalTestPairs ?? attemptUnionMetrics.totalPuzzles)}
+                      {(
+                        attemptUnionMetrics.datasetTotalTestPairs ??
+                        attemptUnionMetrics.totalTestPairs ??
+                        attemptUnionMetrics.datasetTotalPuzzles ??
+                        attemptUnionMetrics.totalPuzzles
+                      )}
                     </span>
                     <span className="text-gray-500 ml-1">
                       ({(
-                        (attemptUnionMetrics.totalTestPairs ?? attemptUnionMetrics.totalPuzzles) > 0
-                          ? (attemptUnionMetrics.unionCorrectCount / (attemptUnionMetrics.totalTestPairs ?? attemptUnionMetrics.totalPuzzles)) * 100
+                        (attemptUnionMetrics.datasetTotalTestPairs ??
+                          attemptUnionMetrics.totalTestPairs ??
+                          attemptUnionMetrics.datasetTotalPuzzles ??
+                          attemptUnionMetrics.totalPuzzles) > 0
+                          ? (attemptUnionMetrics.unionCorrectCount /
+                              (attemptUnionMetrics.datasetTotalTestPairs ??
+                                attemptUnionMetrics.totalTestPairs ??
+                                attemptUnionMetrics.datasetTotalPuzzles ??
+                                attemptUnionMetrics.totalPuzzles)) *
+                            100
                           : 0
                       ).toFixed(1)}% pair-weighted)
                     </span>
