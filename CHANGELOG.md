@@ -1,5 +1,12 @@
 # New entires at the top, use proper SemVer!
 
+### Version 6.4.4  Dec 16, 2025
+
+- **Worm Arena Live: model dropdowns sort newest-first (DB discovered_at + releaseDate fallback)** (Author: Cascade)
+  - Live match setup model dropdowns now prefer models we most recently added/discovered (SnakeBench DB `discovered_at`), then fall back to `releaseDate`, then A–Z.
+  - Prevents the Live setup panel from overriding the intended ordering by re-sorting everything alphabetically.
+  - **Files Modified**: `server/repositories/SnakeBenchRepository.ts`, `server/routes/models.ts`, `client/src/pages/WormArenaLive.tsx`, `client/src/components/WormArenaRunControls.tsx`, `CHANGELOG.md`
+
 ### Version 6.4.3  Dec 16, 2025
 
 - **/scoring: add explicit union scoring explanation (task/puzzle/test-pair definitions + worked examples)** (Author: Cascade)

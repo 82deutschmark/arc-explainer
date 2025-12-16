@@ -1,9 +1,10 @@
 ﻿/**
  * Author: Claude Code using Sonnet 4.5
- * Date: 2025-12-15
+ * Date: 2025-12-16
  * PURPOSE: Worm Arena run controls panel - simplified to two model dropdowns,
  *          a prominent Start button, and collapsible advanced settings.
  *          Removed curated matchup selector for cleaner, faster UX.
+ *          Supports passing an explicit model ordering (e.g., newest-first).
  * SRP/DRY check: Pass - Single responsibility: render setup controls.
  */
 
@@ -33,6 +34,7 @@ export interface WormArenaRunControlsProps {
   loadingModels: boolean;
   matchupAvailable: boolean;
   availableModels: Set<string>;
+  modelOptions?: string[];
 
   modelA: string;
   modelB: string;
@@ -65,6 +67,7 @@ export default function WormArenaRunControls({
   loadingModels,
   matchupAvailable,
   availableModels,
+  modelOptions,
   modelA,
   modelB,
   onModelAChange,
@@ -90,11 +93,10 @@ export default function WormArenaRunControls({
   const [advancedOpen, setAdvancedOpen] = React.useState(false);
   const [byoOpen, setByoOpen] = React.useState(false);
 
-  // Sort models alphabetically
-  const sortedModels = React.useMemo(
-    () => Array.from(availableModels).sort((a, b) => a.localeCompare(b)),
-    [availableModels],
-  );
+  const resolvedModels = React.useMemo(() => {
+    if (Array.isArray(modelOptions) && modelOptions.length > 0) return modelOptions;
+    return Array.from(availableModels).sort((a, b) => a.localeCompare(b));
+  }, [availableModels, modelOptions]);
 
   const body = (
     <div className="space-y-4">
@@ -113,7 +115,7 @@ export default function WormArenaRunControls({
                 <SelectValue placeholder="Select Model A" />
               </SelectTrigger>
               <SelectContent>
-                {sortedModels.map((model) => (
+                {resolvedModels.map((model) => (
                   <SelectItem key={model} value={model}>
                     {model}
                   </SelectItem>
@@ -129,7 +131,7 @@ export default function WormArenaRunControls({
                 <SelectValue placeholder="Select Model B" />
               </SelectTrigger>
               <SelectContent>
-                {sortedModels.map((model) => (
+                {resolvedModels.map((model) => (
                   <SelectItem key={model} value={model}>
                     {model}
                   </SelectItem>

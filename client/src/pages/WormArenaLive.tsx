@@ -1,10 +1,12 @@
 ﻿/**
  * Author: Claude Code using Sonnet 4.5
- * Date: 2025-12-15
+ * Date: 2025-12-16
  * PURPOSE: Worm Arena Live - Simplified setup with two model dropdowns and clean transitions.
  *          Removed curated matchup selector for faster, cleaner UX.
  *          Uses useWormArenaSetup hook to manage setup state.
  *          Smooth fade transitions between setup → live → completed states.
+ *          Sorts model dropdowns by newest-first using server-provided addedAt (DB discovery)
+ *          with releaseDate fallback.
  * SRP/DRY check: Pass - orchestrates child components with minimal state management.
  *                State extracted to useWormArenaSetup hook for better maintainability.
  */
@@ -25,15 +27,26 @@ import type { ModelConfig, SnakeBenchRunMatchRequest } from '@shared/types';
 
 type ViewMode = 'setup' | 'live' | 'completed';
 
-function getSnakeEligibleModels(models: ModelConfig[]): string[] {
-  const eligible = models
-    .filter((m) => m.provider === 'OpenRouter')
-    .map((m) => {
-      const name = m.apiModelName || m.key;
-      return name && typeof name === 'string' && name.trim().length > 0 ? name.trim() : null;
-    })
-    .filter((m): m is string => m !== null);
-  return eligible;
+function getSnakeEligibleModels(models: ModelConfig[]): ModelConfig[] {
+  return models.filter((m) => m.provider === 'OpenRouter');
+}
+
+function toSnakeModelId(model: ModelConfig): string {
+  const raw = model.apiModelName || model.key;
+  return typeof raw === 'string' ? raw.trim() : '';
+}
+
+function parseIsoTimestamp(value: unknown): number | null {
+  if (typeof value !== 'string' || !value.trim()) return null;
+  const ms = new Date(value).getTime();
+  return Number.isFinite(ms) ? ms : null;
+}
+
+function parseReleaseDate(value: unknown): number | null {
+  if (typeof value !== 'string' || !value.trim()) return null;
+  const normalized = value.trim();
+  const ms = new Date(`${normalized}-01T00:00:00Z`).getTime();
+  return Number.isFinite(ms) ? ms : null;
 }
 
 function mapToSnakeBenchModelId(modelId: string): string {
@@ -64,10 +77,31 @@ export default function WormArenaLive() {
 
   const { data: modelConfigs = [], isLoading: loadingModels, error: modelsError } = useModels();
   const snakeModels = React.useMemo(() => getSnakeEligibleModels(modelConfigs), [modelConfigs]);
-  const selectableModels = React.useMemo(
-    () => snakeModels.filter((m) => typeof m === 'string' && m.trim().length > 0),
-    [snakeModels],
-  );
+
+  const selectableModels = React.useMemo(() => {
+    const bestById = new Map<string, { id: string; sortMs: number; tiebreaker: string }>();
+
+    snakeModels.forEach((m) => {
+      const id = toSnakeModelId(m);
+      if (!id) return;
+
+      const addedMs = parseIsoTimestamp((m as any).addedAt);
+      const releaseMs = parseReleaseDate(m.releaseDate);
+      const sortMs = addedMs ?? releaseMs ?? Number.NEGATIVE_INFINITY;
+
+      const existing = bestById.get(id);
+      if (!existing || sortMs > existing.sortMs) {
+        bestById.set(id, { id, sortMs, tiebreaker: id });
+      }
+    });
+
+    return Array.from(bestById.values())
+      .sort((a, b) => {
+        if (a.sortMs !== b.sortMs) return b.sortMs - a.sortMs;
+        return a.tiebreaker.localeCompare(b.tiebreaker);
+      })
+      .map((entry) => entry.id);
+  }, [snakeModels]);
 
   // Setup state hook
   const {
@@ -198,6 +232,7 @@ export default function WormArenaLive() {
               loadingModels={loadingModels}
               matchupAvailable={matchupAvailable}
               availableModels={availableModelSet}
+              modelOptions={selectableModels}
               modelA={modelA}
               modelB={modelB}
               onModelAChange={setModelA}
