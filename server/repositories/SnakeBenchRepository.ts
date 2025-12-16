@@ -1196,6 +1196,21 @@ export class SnakeBenchRepository extends BaseRepository {
     }
   }
 
+  async setReplayPath(gameId: string, replayPath: string): Promise<void> {
+    if (!this.isConnected()) return;
+    if (!gameId || !replayPath) return;
+
+    try {
+      const sql = `UPDATE public.games SET replay_path = $2, updated_at = NOW() WHERE id = $1;`;
+      await this.query(sql, [gameId, replayPath]);
+    } catch (error) {
+      logger.warn(
+        `SnakeBenchRepository.setReplayPath: update failed for game ${gameId}: ${error instanceof Error ? error.message : String(error)}`,
+        'snakebench-db',
+      );
+    }
+  }
+
   /**
    * Full-fidelity ingest of a completed SnakeBench replay JSON, matching Greg's DB writes:
    * - Upsert models

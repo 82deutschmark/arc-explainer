@@ -62,6 +62,7 @@ const OPENROUTER_MODEL_KEYS: string[] = [
   'moonshotai/kimi-k2-thinking',
   'nex-agi/deepseek-v3.1-nex-n1:free',
   'nousresearch/hermes-4-70b',
+  'nvidia/nemotron-3-nano-30b-a3b:free',
   'nvidia/nemotron-nano-12b-v2-vl:free',
   'nvidia/nemotron-nano-9b-v2',
   'openai/gpt-5-mini',

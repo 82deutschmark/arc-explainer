@@ -1,5 +1,54 @@
 # New entires at the top, use proper SemVer!
 
+### Version 6.3.0  Dec 16, 2025 (COMPLETED)
+
+- **Johan_Land_Solver_V6 scoring: pair-aware ingestion + harness-aligned union accuracy** (Author: Cascade, Validation & Execution: Claude Code)
+  - **Critical Fix**: Resolved fundamental data structure misunderstanding. Submission JSON is array of test pairs (not single puzzle with 2 attempts).
+  - **Ingestion Logic**: Iterates through submission array; each element = one test pair with attempt_1 and attempt_2 solving the same pair_index.
+  - **Per-Pair Validation**: Each attempt validated against `task.test[pair_index].output` (ground truth), not against solver's own `correct` flag.
+  - **Union Scoring**: If ANY attempt solves a pair, that pair counts as solved (matches official ARC-AGI benchmarking harness).
+  - **Backend Accuracy**: Changed from global averaging to per-puzzle averaging: `(sum of per-puzzle fractions) / num_puzzles * 100`.
+  - **Validation Result**: Harness-style score 71.29% (84.83/119 tasks) matches DB/UI union score 71.29% (117/166 test pairs) ✓
+  - **Re-ingestion**: All 238 entries (119 puzzles × 2 attempts) successfully re-ingested with corrected pair-aware logic.
+  - **Files Modified**: `server/scripts/ingest-johanland-results.ts`, `server/repositories/MetricsRepository.ts`, `server/types/johanland.ts`, `CHANGELOG.md`
+
+### Version 6.2.0  Dec 16, 2025 (PENDING TESTING)
+
+- **Worm Arena: align UI coordinate system with engine prompt (y increases upward)** (Author: Cascade)
+  - Fixed Worm Arena board rendering to use the SnakeBench engine coordinate system (bottom-left origin).
+  - Fixed snake head arrow orientation so vertical movement is no longer inverted.
+  - ASCII replay preview now matches the engine coordinate orientation.
+  - **Files Modified**: `client/src/components/WormArenaGameBoard.tsx`, `client/src/components/WormArenaGameBoardSVG.tsx`, `client/src/pages/WormArena.tsx`, `CHANGELOG.md`
+
+### Version 6.1.63  Dec 16, 2025 (PENDING TESTING)
+
+- **Johan_Land scoring: harness-aligned correctness + union aggregation** (Author: Cascade)
+  - Ingestion now recomputes correctness against ground truth per test pair (treats `attempt.correct` as untrusted).
+  - Ingestion stores one row per puzzle per attempt using `multi_test_*` fields so multi-pair puzzles are preserved.
+  - Attempt union accuracy now matches ARC harness aggregation (average of per-task fractions).
+  - **Files Modified**: `server/scripts/ingest-johanland-results.ts`, `server/repositories/MetricsRepository.ts`, `server/types/johanland.ts`, `CHANGELOG.md`
+
+### Version 6.1.62  Dec 15, 2025 (PENDING TESTING)
+
+- **Worm Arena: auto-publish SnakeBench replays to GitHub + persist replay_path** (Author: Cascade)
+  - SnakeBench ingest now uploads completed replay JSONs to GitHub (main branch) so Railway can fetch them reliably.
+  - After publish, the DB `public.games.replay_path` is updated to the GitHub raw URL.
+  - GitHub raw replay fetch 404s are now logged as warnings (expected for older/unpublished games).
+  - **Files Modified**: `server/services/snakeBenchIngestQueue.ts`, `server/services/snakeBenchGitHubPublisher.ts` (new), `server/repositories/SnakeBenchRepository.ts`, `server/services/snakeBenchService.ts`, `CHANGELOG.md`
+
+- **Worm Arena: enable Nemotron 3 Nano 30B and add tournament script** (Author: Codex GPT-5)
+  - Added `nvidia/nemotron-3-nano-30b-a3b:free` to the server-side OpenRouter allowlist so SnakeBench can actually run matches with it.
+  - Updated the local OpenRouter catalog snapshot to include the model metadata (context, pricing, supported parameters).
+  - Added a PowerShell tournament script that queues matches against the current top TrueSkill leaderboard models.
+  - **Files Modified**: `server/config/openrouterModels.ts`, `server/config/openrouter-catalog.json`, `scripts/worm-arena-tournaments/nemotron3-nano-30b-vs-top-leaderboard.ps1`, `CHANGELOG.md`
+
+### Version 6.1.61  Dec 15, 2025 (PENDING TESTING)
+
+- **Worm Arena: show DB-imported OpenRouter models automatically** (Author: Codex GPT-5)
+  - Models returned by `GET /api/models` now include active OpenRouter slugs imported via the Admin UI (SnakeBench DB), so Worm Arena dropdowns reflect imports without editing config files.
+  - Admin OpenRouter page copy now clarifies that "Import" updates the DB roster used by Worm Arena, while "Sync to Config" is optional metadata curation.
+  - **Files Modified**: `server/routes/models.ts`, `client/src/pages/AdminOpenRouter.tsx`, `CHANGELOG.md`
+
 ### Version 6.1.60  Dec 15, 2025 (PENDING TESTING)
 
 - **/scoring page copy + scoring alignment with ARC harness (pair-based)** (Author: Codex GPT-5)

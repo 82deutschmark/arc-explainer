@@ -7,16 +7,27 @@
 
 import { Router } from 'express';
 import { MODELS, getModelConfig, getModelsByProvider } from '../config/models/index.js';
+import { repositoryService } from '../repositories/RepositoryService.js';
 
 const router = Router();
 
-/**
- * GET /api/models
- * Returns all available models with client-safe properties
- */
-router.get('/', (req, res) => {
-  // Strip server-only properties for client
-  const clientModels = MODELS.map(model => ({
+type ClientSafeModel = {
+  key: string;
+  name: string;
+  color: string;
+  premium: boolean;
+  cost: any;
+  supportsTemperature: boolean;
+  supportsStreaming: boolean;
+  supportsVision: boolean;
+  provider: string;
+  responseTime: any;
+  isReasoning?: boolean;
+  releaseDate?: string;
+};
+
+function toClientSafeModel(model: any): ClientSafeModel {
+  return {
     key: model.key,
     name: model.name,
     color: model.color,
@@ -28,10 +39,54 @@ router.get('/', (req, res) => {
     provider: model.provider,
     responseTime: model.responseTime,
     isReasoning: model.isReasoning,
-    releaseDate: model.releaseDate
-  }));
+    releaseDate: model.releaseDate,
+  };
+}
 
-  res.json(clientModels);
+async function getDbOpenRouterModels(): Promise<Array<{ key: string; name: string }>> {
+  if (!repositoryService.isInitialized()) return [];
+  const dbModels = await repositoryService.snakeBench.listModels();
+  return dbModels
+    .filter((m) => (m.provider || '').toLowerCase() === 'openrouter' && m.is_active)
+    .map((m) => ({
+      key: m.model_slug,
+      name: m.name || m.model_slug,
+    }))
+    .filter((m) => typeof m.key === 'string' && m.key.trim().length > 0);
+}
+
+function buildFallbackOpenRouterClientModel(slug: string, name: string): ClientSafeModel {
+  return {
+    key: slug,
+    name,
+    color: 'bg-slate-500',
+    premium: false,
+    cost: { input: 'TBD', output: 'TBD' },
+    supportsTemperature: true,
+    supportsStreaming: true,
+    supportsVision: false,
+    provider: 'OpenRouter',
+    responseTime: { speed: 'moderate', estimate: '30-60 sec' },
+    isReasoning: undefined,
+    releaseDate: undefined,
+  };
+}
+
+/**
+ * GET /api/models
+ * Returns all available models with client-safe properties
+ */
+router.get('/', async (req, res) => {
+  const configModels = MODELS.map(toClientSafeModel);
+
+  const configKeySet = new Set(configModels.map((m) => m.key));
+  const dbOpenRouter = await getDbOpenRouterModels();
+
+  const dbOnly = dbOpenRouter
+    .filter((m) => !configKeySet.has(m.key))
+    .map((m) => buildFallbackOpenRouterClientModel(m.key, m.name));
+
+  res.json([...configModels, ...dbOnly]);
 });
 
 /**
@@ -72,25 +127,21 @@ router.get('/:modelKey', (req, res) => {
  * GET /api/models/provider/:provider
  * Returns models filtered by provider
  */
-router.get('/provider/:provider', (req, res) => {
+router.get('/provider/:provider', async (req, res) => {
   const { provider } = req.params;
   const models = getModelsByProvider(provider);
   
   // Strip server-only properties
-  const clientModels = models.map(model => ({
-    key: model.key,
-    name: model.name,
-    color: model.color,
-    premium: model.premium,
-    cost: model.cost,
-    supportsTemperature: model.supportsTemperature,
-    supportsStreaming: model.supportsStreaming ?? false,
-    supportsVision: model.supportsVision ?? false,
-    provider: model.provider,
-    responseTime: model.responseTime,
-    isReasoning: model.isReasoning,
-    releaseDate: model.releaseDate
-  }));
+  const clientModels = models.map(toClientSafeModel);
+
+  if ((provider || '').toLowerCase() === 'openrouter') {
+    const configKeySet = new Set(clientModels.map((m) => m.key));
+    const dbOpenRouter = await getDbOpenRouterModels();
+    const dbOnly = dbOpenRouter
+      .filter((m) => !configKeySet.has(m.key))
+      .map((m) => buildFallbackOpenRouterClientModel(m.key, m.name));
+    return res.json([...clientModels, ...dbOnly]);
+  }
 
   res.json(clientModels);
 });

@@ -74,6 +74,71 @@ Assume:
 - External APIs are functional.
 - Bugs stem from your code; debug and fix logic/integration issues directly.
 
+## ARC-AGI Scoring & Test Pair Submission Structure (CRITICAL)
+
+**Understanding how submissions are scored** against the official ARC-AGI benchmarking harness:
+
+### Submission JSON Structure
+Each submission file (e.g., `1ae2feb7.json`) is a JSON array where **each array element represents ONE test pair**:
+
+```json
+[
+  {  // Test Pair 0 (array index 0)
+    "attempt_1": { "answer": [...], "correct": true, "pair_index": 0, "metadata": {...} },
+    "attempt_2": { "answer": [...], "correct": true, "pair_index": 0, "metadata": {...} }
+  },
+  {  // Test Pair 1 (array index 1)
+    "attempt_1": { "answer": [...], "correct": false, "pair_index": 1, "metadata": {...} },
+    "attempt_2": { "answer": [...], "correct": true, "pair_index": 1, "metadata": {...} }
+  },
+  {  // Test Pair 2 (array index 2)
+    "attempt_1": { "answer": [...], "correct": true, "pair_index": 2, "metadata": {...} },
+    "attempt_2": { "answer": [...], "correct": false, "pair_index": 2, "metadata": {...} }
+  }
+]
+```
+
+### Scoring Logic (from arc-agi-benchmarking repo)
+```python
+task_score = 0
+num_pairs = len(task.test)  # Number of test pairs in the OFFICIAL task definition
+
+for pair_attempts in testing_results:  # Iterate through pairs in submission
+    any_attempt_correct = False
+
+    for attempt_data in pair_attempts:  # Check both attempt_1 and attempt_2
+        if attempt_data.answer == task.test[pair_index].output:
+            any_attempt_correct = True
+
+    if any_attempt_correct:  # If ANY attempt solved the pair
+        task_score += 1
+
+score = task_score / num_pairs  # Range: 0.0 to 1.0
+```
+
+### Key Insights
+1. **Per-pair scoring**: A pair is considered "solved" if **ANY of the 2 attempts** produces correct output
+2. **Example**: If attempt_1 solves pairs 0,2 and attempt_2 solves pairs 1,2:
+   - Pair 0: attempt_1 ✓ → solved
+   - Pair 1: attempt_2 ✓ → solved
+   - Pair 2: attempt_1 ✓ OR attempt_2 ✓ → solved (duplicate success doesn't help)
+   - **Score: 3/3 = 1.0**
+
+3. **Task pairs count varies**: Some puzzles have 1 test pair, some have 2, some have 3+
+4. **Submission structure independent**: Submission can have extra/fewer pairs than official task (extras are skipped by scoring logic)
+5. **NOT about attempt counting**: Score is **never** based on "attempt_1 got X correct" as a ratio—only on which pairs are ultimately solved
+
+### Ingestion Implications
+- Loop through submission array (not fixed [1,2])
+- For each array element (a test pair object):
+  - Extract both `attempt_1` and `attempt_2`
+  - Validate each against the corresponding test case
+  - Mark the pair as solved if either attempt is correct
+  - Save both attempts to database (tracking correctness separately)
+- Accumulate pair-level scores for final task score = solved_pairs / total_pairs
+
+---
+
 ## Handling Revealed Cloaked Models
 When a model provider reveals the identity of a previously cloaked/anonymous model, follow this pattern:
 
