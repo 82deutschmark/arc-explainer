@@ -1,13 +1,16 @@
 /**
- * Author: Claude Code using Haiku 4.5
- * Date: 2025-11-24T00:00:00Z
+ * Author: Cascade
+ * Date: 2025-12-16
  * PURPOSE: Visualization page for official ARC Prize team evaluation harness results (posted on Hugging Face).
  * Clarifies that ARC Explainer is a visualization tool for raw JSON data on the public evaluation set (not semi-private).
- * Explains official scoring: models tested twice per puzzle, puzzle solved if either attempt correct = best-case performance.
+ * Explains union scoring at user level: two independent attempts per puzzle; for each test pair, either attempt being correct
+ * counts the pair as solved; each puzzle score is the fraction of its test pairs solved; dataset score is the average of puzzle
+ * scores (each puzzle weighted equally). Also explains why the "Test Pairs" metric differs and why users see numbers like
+ * 117 solved test pairs out of 166 total.
  * Reuses: parseAttemptModelName(), /api/metrics/compare endpoint.
  * Prominent attribution: Hugging Face link, ARC Prize team credit, clarification this is not a personal evaluation tool.
- * SRP/DRY check: Pass - Composes existing utilities; no duplication.
- * shadcn/ui: Pass - Uses Card, Select, Badge, Progress, Alert, Button.
+ * SRP/DRY check: Pass - Adds explanatory UI only; continues to compose existing utilities and backend stats.
+ * shadcn/ui: Pass - Uses Card, Select, Badge, Progress, Alert, Button, Table.
  */
 
 import React, { useState, useMemo, useEffect } from 'react';
@@ -25,6 +28,7 @@ import { parseAttemptModelName } from '@/utils/modelComparison';
 import { detectModelOrigin } from '@/utils/modelOriginDetection';
 import { ModelComparisonResult } from './AnalyticsOverview';
 import { TinyGrid } from '@/components/puzzle/TinyGrid';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 
 const SYSTEM_PROMPT_SOURCES = [
   {
@@ -597,14 +601,142 @@ export default function HuggingFaceUnionAccuracy() {
                   </div>
                 </div>
 
-                {/* Explanation of metrics */}
-                <div className="bg-white rounded p-2 mb-2 border border-gray-200 text-sm space-y-1">
-                  <div className="font-semibold text-gray-800">Understanding the three metrics:</div>
-                  <ul className="text-gray-600 space-y-0.5 ml-4 list-disc">
-                    <li><strong>Harness Score:</strong> Average of per-puzzle scores (official ARC-AGI metric)</li>
-                    <li><strong>Puzzles Solved:</strong> Puzzles where ALL test pairs were correct</li>
-                    <li><strong>Test Pairs:</strong> Individual test pairs solved (pair-weighted rate)</li>
-                  </ul>
+                {/*
+                  Scoring explanation (explicit, union-centric).
+                  Goal: A user should understand what a puzzle/task is, what a test pair is, what "2 attempts" means,
+                  and why these three metrics can disagree.
+                */}
+                <div className="bg-white rounded p-3 mb-2 border border-gray-200 text-base space-y-3">
+                  <div className="font-semibold text-gray-900">
+                    How scoring works on this page (plain English)
+                  </div>
+
+                  <div className="text-gray-700 leading-relaxed">
+                    <strong>Vocabulary:</strong> In ARC, a <strong>puzzle</strong> and a <strong>task</strong> are the same thing: one ARC JSON file.
+                    Each puzzle contains <strong>training pairs</strong> (examples that teach the pattern) and <strong>test pairs</strong> (the scored questions).
+                    A single puzzle can have multiple test pairs.
+                  </div>
+
+                  <div className="text-gray-700 leading-relaxed">
+                    <strong>Two attempts (the union rule):</strong> The ARC Prize evaluation harness runs the model <strong>twice independently</strong> for the same puzzle.
+                    For each <strong>test pair</strong>, the harness checks both attempts. If <strong>either attempt</strong> gets that test pair correct, then that test pair counts as solved.
+                    This is why this page is called a union page.
+                  </div>
+
+                  <div className="grid gap-2 md:grid-cols-3">
+                    <div className="bg-blue-50 border border-blue-200 rounded p-2">
+                      <div className="font-semibold text-blue-900">Harness Score (official)</div>
+                      <div className="text-gray-700 mt-1">
+                        Compute a score for each puzzle, then average puzzle scores.
+                      </div>
+                    </div>
+                    <div className="bg-green-50 border border-green-200 rounded p-2">
+                      <div className="font-semibold text-green-900">Puzzles Solved</div>
+                      <div className="text-gray-700 mt-1">
+                        A puzzle is counted as solved only if <strong>all</strong> its test pairs are solved by the union.
+                      </div>
+                    </div>
+                    <div className="bg-purple-50 border border-purple-200 rounded p-2">
+                      <div className="font-semibold text-purple-900">Test Pairs</div>
+                      <div className="text-gray-700 mt-1">
+                        Total solved test pairs in the union divided by total test pairs. This is <strong>not</strong> the official harness score.
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="border-t border-gray-200 pt-3 space-y-2">
+                    <div className="font-semibold text-gray-900">Worked example: one puzzle with 3 test pairs</div>
+                    <div className="text-gray-700 leading-relaxed">
+                      This puzzle has test pairs 0, 1, and 2. Each test pair is scored using the union rule: Attempt 1 OR Attempt 2.
+                    </div>
+
+                    <div className="rounded border border-gray-200 bg-gray-50">
+                      <Table>
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead>Test pair</TableHead>
+                            <TableHead>Attempt 1</TableHead>
+                            <TableHead>Attempt 2</TableHead>
+                            <TableHead>Union result</TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          <TableRow>
+                            <TableCell className="font-medium">Pair 0</TableCell>
+                            <TableCell>Correct</TableCell>
+                            <TableCell>Wrong</TableCell>
+                            <TableCell className="font-semibold text-gray-900">Solved</TableCell>
+                          </TableRow>
+                          <TableRow>
+                            <TableCell className="font-medium">Pair 1</TableCell>
+                            <TableCell>Wrong</TableCell>
+                            <TableCell>Correct</TableCell>
+                            <TableCell className="font-semibold text-gray-900">Solved</TableCell>
+                          </TableRow>
+                          <TableRow>
+                            <TableCell className="font-medium">Pair 2</TableCell>
+                            <TableCell>Wrong</TableCell>
+                            <TableCell>Wrong</TableCell>
+                            <TableCell className="font-semibold text-gray-900">Unsolved</TableCell>
+                          </TableRow>
+                        </TableBody>
+                      </Table>
+                    </div>
+
+                    <div className="text-gray-700 leading-relaxed">
+                      <strong>Puzzle score (official per-puzzle step):</strong> 2 solved test pairs out of 3 total test pairs, so this puzzle contributes 2/3 = 0.6667.
+                    </div>
+                    <div className="text-gray-700 leading-relaxed">
+                      <strong>Puzzles Solved (all-or-nothing):</strong> this puzzle is not counted as solved because one test pair is unsolved.
+                    </div>
+                    <div className="text-gray-700 leading-relaxed">
+                      <strong>Test Pairs metric contribution:</strong> this puzzle contributes +2 solved test pairs and +3 total test pairs.
+                    </div>
+                  </div>
+
+                  <div className="border-t border-gray-200 pt-3 space-y-2">
+                    <div className="font-semibold text-gray-900">Why the official score can differ from the Test Pairs rate</div>
+                    <div className="text-gray-700 leading-relaxed">
+                      The official harness score weights each puzzle equally. The Test Pairs rate weights puzzles with more test pairs more heavily.
+                      Here is a concrete two-puzzle example:
+                    </div>
+                    <div className="rounded border border-gray-200 bg-gray-50">
+                      <Table>
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead>Puzzle</TableHead>
+                            <TableHead>Total test pairs</TableHead>
+                            <TableHead>Solved test pairs (union)</TableHead>
+                            <TableHead>Puzzle score</TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          <TableRow>
+                            <TableCell className="font-medium">Puzzle A</TableCell>
+                            <TableCell>3</TableCell>
+                            <TableCell>2</TableCell>
+                            <TableCell>2/3 = 0.6667</TableCell>
+                          </TableRow>
+                          <TableRow>
+                            <TableCell className="font-medium">Puzzle B</TableCell>
+                            <TableCell>1</TableCell>
+                            <TableCell>1</TableCell>
+                            <TableCell>1/1 = 1.0</TableCell>
+                          </TableRow>
+                        </TableBody>
+                      </Table>
+                    </div>
+
+                    <div className="text-gray-700 leading-relaxed">
+                      <strong>Official harness score:</strong> average of puzzle scores = (0.6667 + 1.0) / 2 = 0.8333.
+                    </div>
+                    <div className="text-gray-700 leading-relaxed">
+                      <strong>Test Pairs rate:</strong> total solved test pairs / total test pairs = (2 + 1) / (3 + 1) = 0.75.
+                    </div>
+                    <div className="text-gray-700 leading-relaxed">
+                      This is why a count like {unionMetrics.unionCorrectCount}/{totalPairsForDisplay} can be real and still not match the official harness score shown above.
+                    </div>
+                  </div>
                 </div>
 
                 {/* Quick Progress Bar */}
@@ -613,7 +745,7 @@ export default function HuggingFaceUnionAccuracy() {
                   className="h-2 mb-1"
                 />
                 <p className="text-base text-gray-700">
-                  <strong>{unionMetrics.unionCorrectCount}</strong> of <strong>{totalPairsForDisplay}</strong> test pairs solved
+                  <strong>{unionMetrics.unionCorrectCount}</strong> of <strong>{totalPairsForDisplay}</strong> test pairs solved (pair-weighted rate)
                 </p>
 
                 {/* Model Names with Origin Badge */}

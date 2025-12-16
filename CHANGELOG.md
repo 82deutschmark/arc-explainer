@@ -1,5 +1,15 @@
 # New entires at the top, use proper SemVer!
 
+### Version 6.4.3  Dec 16, 2025
+
+- **/scoring: add explicit union scoring explanation (task/puzzle/test-pair definitions + worked examples)** (Author: Cascade)
+  - Replaced the minimal "Understanding the three metrics" blurb with a detailed, union-centric explanation.
+  - Clearly defines: puzzle vs task (same thing), training pairs vs test pairs, and how the two-attempt union rule works.
+  - Adds a worked 3-test-pair example showing Attempt 1, Attempt 2, and the union result per pair.
+  - Adds a concrete example explaining why the official harness score (average of puzzle scores) can differ from the pair-weighted test-pairs rate (e.g., 117/166).
+  - Progress bar label now explicitly states it reflects the pair-weighted rate.
+  - **Files Modified**: `client/src/pages/HuggingFaceUnionAccuracy.tsx`, `CHANGELOG.md`
+
 ### Version 6.4.2  Dec 16, 2025
 
 - **Build reliability: OpenRouter catalog sync now merges remote into local snapshot** (Author: Cascade)
