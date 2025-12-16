@@ -32,6 +32,7 @@ import { logger } from '../utils/logger.ts';
 import { MetricsQueryBuilder } from './utils/MetricsQueryBuilder.ts';
 import { ANALYSIS_CRITERIA, CONFIDENCE_THRESHOLDS } from '../constants/metricsConstants.ts';
 import { normalizeModelName } from '../utils/modelNormalizer.ts';
+import { computeDatasetUnionScores, type HarnessPuzzleAttemptPairs } from '../utils/harnessScoring.ts';
 
 export interface PureAccuracyStats {
   totalSolverAttempts: number;

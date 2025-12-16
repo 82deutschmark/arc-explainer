@@ -1,5 +1,25 @@
 # New entires at the top, use proper SemVer!
 
+### Version 6.4.0  Dec 16, 2025 (PENDING TESTING)
+
+- **ARC-AGI multi-test-pair scoring: harness-aligned accuracy + clearer UI metrics** (Author: Cascade)
+  - **Critical scoring fix**: dataset score is the average of per-puzzle scores (each puzzle weighted equally), not a pair-weighted ratio.
+  - **Backend**:
+    - Added public `GET /api/accuracy/harness` endpoint returning harness-aligned accuracy for `{baseModelName}-attempt1/-attempt2`.
+    - Added `AccuracyRepository.getHarnessAlignedAccuracyStats()` returning both harness score and pair-weighted transparency metrics.
+    - Added pure scoring utilities `server/utils/harnessScoring.ts` to keep math testable and DRY.
+  - **Database**:
+    - Added `num_test_pairs` column (plus index + backfill) to support multi-test-pair scoring and aggregation.
+    - Updated `ExplanationRepository.saveExplanation()` to persist `num_test_pairs` on insert.
+  - **Frontend**:
+    - Removed client-side attempt-union scoring fallback (cannot compute harness score without per-pair data).
+    - Updated `/scoring`, comparison dialog, and comparison page to clearly distinguish harness score vs pair-weighted test-pair rate.
+  - **Tests**:
+    - Added unit tests demonstrating harness score differs from pair-weighted accuracy when puzzles have different numbers of test pairs.
+    - Added controller test for `GET /api/accuracy/harness` input validation + delegation.
+  - **Files Created**: `server/controllers/accuracyController.ts`, `server/utils/harnessScoring.ts`, `tests/harnessScoring.test.ts`, `tests/accuracyHarnessEndpoint.test.ts`
+  - **Files Modified**: `server/routes.ts`, `server/repositories/AccuracyRepository.ts`, `server/repositories/database/DatabaseSchema.ts`, `server/repositories/ExplanationRepository.ts`, `client/src/pages/HuggingFaceUnionAccuracy.tsx`, `client/src/pages/ModelComparisonPage.tsx`, `client/src/components/analytics/ModelComparisonDialog.tsx`, `client/src/utils/modelComparison.ts`, `CHANGELOG.md`
+
 ### Version 6.3.2  Dec 16, 2025 (PENDING TESTING)
 
 - **SnakeBench: prevent local replays from blocking pulls** (Author: Cascade)
