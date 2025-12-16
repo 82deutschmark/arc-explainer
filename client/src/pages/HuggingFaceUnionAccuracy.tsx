@@ -4,7 +4,7 @@
  * PURPOSE: Visualization page for official ARC Prize team evaluation harness results (posted on Hugging Face).
  * Clarifies that ARC Explainer is a visualization tool for raw JSON data on the public evaluation set (not semi-private).
  * Explains official scoring: models tested twice per puzzle, puzzle solved if either attempt correct = best-case performance.
- * Reuses: computeAttemptUnionAccuracy(), parseAttemptModelName(), /api/metrics/compare endpoint.
+ * Reuses: parseAttemptModelName(), /api/metrics/compare endpoint.
  * Prominent attribution: Hugging Face link, ARC Prize team credit, clarification this is not a personal evaluation tool.
  * SRP/DRY check: Pass - Composes existing utilities; no duplication.
  * shadcn/ui: Pass - Uses Card, Select, Badge, Progress, Alert, Button.
@@ -21,7 +21,7 @@ import { BarChart3, ExternalLink, AlertCircle, Zap, AlertTriangle, ChevronDown, 
 import { ClickablePuzzleBadge } from '@/components/ui/ClickablePuzzleBadge';
 import { useAvailableModels, useModelDatasetMetrics } from '@/hooks/useModelDatasetPerformance';
 import { usePageMeta } from '@/hooks/usePageMeta';
-import { computeAttemptUnionAccuracy, parseAttemptModelName } from '@/utils/modelComparison';
+import { parseAttemptModelName } from '@/utils/modelComparison';
 import { detectModelOrigin } from '@/utils/modelOriginDetection';
 import { ModelComparisonResult } from './AnalyticsOverview';
 import { TinyGrid } from '@/components/puzzle/TinyGrid';
@@ -215,7 +215,10 @@ export default function HuggingFaceUnionAccuracy() {
       const backendUnion = attemptUnionStats.find(
         (stat) => stat.baseModelName === selectedPair.baseModelName
       );
-      const metrics = backendUnion ?? computeAttemptUnionAccuracy(comparisonData, [0, 1]);
+      if (!backendUnion) {
+        throw new Error('Server did not return attempt-union stats for this attempt pair');
+      }
+      const metrics = backendUnion;
 
       // Extract puzzle IDs for union
       const unionIds: string[] = [];
@@ -230,7 +233,10 @@ export default function HuggingFaceUnionAccuracy() {
       setUnionMetrics({
         baseModelName: selectedPair.baseModelName,
         attemptModelNames: selectedPair.modelNames,
-        ...metrics,
+        unionAccuracyPercentage: metrics.unionAccuracyPercentage,
+        unionCorrectCount: metrics.unionCorrectCount,
+        totalPuzzles: metrics.totalPuzzles,
+        totalTestPairs: metrics.totalTestPairs,
       });
       setUnionPuzzleIds(unionIds);
     } catch (err) {

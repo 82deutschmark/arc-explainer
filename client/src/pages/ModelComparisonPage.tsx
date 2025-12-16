@@ -1,10 +1,11 @@
 /**
- * Author: Claude Code using Sonnet 4
- * Date: 2025-10-22T00:00:00Z
+ * Author: Cascade
+ * Date: 2025-12-16T00:00:00Z
  * PURPOSE: Compact, info-focused multi-model comparison dashboard. Displays performance metrics in dense tables,
  *          reuses ModelPerformancePanel and NewModelComparisonResults components. Inline model add/remove with
- *          minimal whitespace and clear controls. No bloated summary cards or unnecessary badges.
- * SRP/DRY check: Pass - Reuses metrics endpoint, shared hooks, and visualization components without duplicating logic.
+ *          minimal whitespace and clear controls.
+ *          NOTE: Removed client-side "attempt union" scoring fallback; this page now requires backend union stats.
+ * SRP/DRY check: Pass - Uses backend metrics for scoring; client only handles selection and presentation.
  */
 
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
@@ -17,7 +18,7 @@ import { ClickablePuzzleBadge } from '@/components/ui/ClickablePuzzleBadge';
 import { useAvailableModels } from '@/hooks/useModelDatasetPerformance';
 import { ModelComparisonResult } from './AnalyticsOverview';
 import { usePageMeta } from '@/hooks/usePageMeta';
-import { computeAttemptUnionAccuracy, parseAttemptModelName } from '@/utils/modelComparison';
+import { parseAttemptModelName } from '@/utils/modelComparison';
 import { detectModelOrigin } from '@/utils/modelOriginDetection';
 import { Badge } from '@/components/ui/badge';
 
@@ -289,52 +290,49 @@ export default function ModelComparisonPage() {
 
     // Prefer backend-provided attempt union stats if available
     if (summary && Array.isArray(attemptUnionStats) && attemptUnionStats.length > 0) {
-      return attemptUnionStats[0];
+      return attemptUnionStats[0] ?? null;
     }
 
-    // Fallback to frontend computation for backward compatibility
-    if (!summary || selectedModels.length < 2) {
+    // No client-side fallback for union scoring.
+    return null;
+  }, [comparisonData]);
+
+  // Derive indices for attempt models (used only for puzzle badge extraction; not for scoring).
+  const attemptUnionModelIndices = useMemo(() => {
+    if (selectedModels.length < 2) {
       return null;
     }
 
-    // Parse model names to identify attempt groups
     const attemptGroups = new Map<string, { modelName: string; attemptNumber: number; index: number }[]>();
 
     selectedModels.forEach((modelName, index) => {
       const parsed = parseAttemptModelName(modelName);
-      if (parsed) {
-        if (!attemptGroups.has(parsed.baseModelName)) {
-          attemptGroups.set(parsed.baseModelName, []);
-        }
-        attemptGroups.get(parsed.baseModelName)!.push({
-          modelName,
-          attemptNumber: parsed.attemptNumber,
-          index,
-        });
+      if (!parsed) {
+        return;
       }
+
+      if (!attemptGroups.has(parsed.baseModelName)) {
+        attemptGroups.set(parsed.baseModelName, []);
+      }
+
+      attemptGroups.get(parsed.baseModelName)!.push({
+        modelName,
+        attemptNumber: parsed.attemptNumber,
+        index,
+      });
     });
 
-    // Find the first base model group with at least 2 attempts
-    for (const [baseModelName, attempts] of attemptGroups) {
-      if (attempts.length >= 2) {
-        // Sort by attempt number to ensure consistent ordering
-        attempts.sort((a, b) => a.attemptNumber - b.attemptNumber);
-
-        // Use the first two attempts for union calculation
-        const modelIndices = attempts.slice(0, 2).map(a => a.index);
-        const unionMetrics = computeAttemptUnionAccuracy(comparisonData, modelIndices);
-
-        return {
-          baseModelName,
-          attemptModelNames: attempts.slice(0, 2).map(a => a.modelName),
-          ...unionMetrics,
-          modelIndices, // Store indices for puzzle extraction
-        };
+    for (const attempts of attemptGroups.values()) {
+      if (attempts.length < 2) {
+        continue;
       }
+
+      attempts.sort((a, b) => a.attemptNumber - b.attemptNumber);
+      return attempts.slice(0, 2).map((a) => a.index);
     }
 
     return null;
-  }, [comparisonData, selectedModels]);
+  }, [selectedModels]);
 
   // Extract puzzle IDs that are in the union accuracy
   const unionPuzzleIds = useMemo(() => {
@@ -342,7 +340,7 @@ export default function ModelComparisonPage() {
       return [];
     }
 
-    const modelIndices = (attemptUnionMetrics as any).modelIndices || [0, 1];
+    const modelIndices = attemptUnionModelIndices ?? [0, 1];
     const unionIds: string[] = [];
 
     comparisonData.details.forEach((detail) => {
@@ -360,7 +358,7 @@ export default function ModelComparisonPage() {
     });
 
     return unionIds;
-  }, [attemptUnionMetrics, comparisonData?.details]);
+  }, [attemptUnionMetrics, attemptUnionModelIndices, comparisonData?.details]);
 
   const handleAddModel = async () => {
     if (!dataset || !modelToAdd || selectedModels.includes(modelToAdd) || isUpdating) {
@@ -561,13 +559,7 @@ export default function ModelComparisonPage() {
           </div>
         </div>
 
-        {attemptUnionMetrics && (() => {
-          const totalPairs =
-            'totalTestPairs' in attemptUnionMetrics
-              ? attemptUnionMetrics.totalTestPairs
-              : attemptUnionMetrics.totalPuzzles;
-          return totalPairs > 0;
-        })() && (
+        {attemptUnionMetrics && (attemptUnionMetrics.totalTestPairs ?? attemptUnionMetrics.totalPuzzles) > 0 && (
           <div className="bg-base-100 rounded-lg shadow p-2 border-l-4 border-blue-500 space-y-1">
             <div className="flex items-center justify-between gap-2">
               <h3 className="text-sm font-bold text-gray-800">Attempt Union Accuracy</h3>
@@ -613,9 +605,7 @@ export default function ModelComparisonPage() {
                   <span className="font-semibold">Test Pairs Correct:</span>{' '}
                   <span className="text-success font-bold">
                     {attemptUnionMetrics.unionCorrectCount}/
-                    {'totalTestPairs' in attemptUnionMetrics
-                      ? attemptUnionMetrics.totalTestPairs
-                      : attemptUnionMetrics.totalPuzzles}
+                    {(attemptUnionMetrics.totalTestPairs ?? attemptUnionMetrics.totalPuzzles)}
                   </span>
                 </div>
               </div>

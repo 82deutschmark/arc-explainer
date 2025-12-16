@@ -1,8 +1,10 @@
 /**
- * Author: Codex using GPT-5
- * Date: 2025-10-10T00:00:00Z
- * PURPOSE: Presenter utilities for model comparison dialogs; centralizes name formatting and metric aggregation to keep UI components focused on rendering while enabling reuse across analytics views.
- * SRP/DRY check: Pass - Dedicated to formatting and aggregation logic; verified no existing utilities covered this behavior.
+ * Author: Cascade
+ * Date: 2025-12-16T00:00:00Z
+ * PURPOSE: Presenter utilities for model comparison dialogs; centralizes name formatting and attempt-group parsing.
+ *          NOTE: Removed the previous frontend "attempt union" accuracy fallback because it could not compute
+ *          harness-aligned scoring without per-test-pair data.
+ * SRP/DRY check: Pass - Dedicated to formatting and small parsing helpers; avoids duplicating backend scoring logic.
  * shadcn/ui: Pass - No custom UI; utilities support shadcn/ui components.
  */
 
@@ -46,69 +48,6 @@ export const hasComparisonSummary = (
   result: ModelComparisonResult | null,
 ): result is ModelComparisonResult & { summary: NonNullable<ModelComparisonResult['summary']> } =>
   Boolean(result?.summary);
-
-/**
- * Computes union-of-correct metrics for a set of attempt models.
- * Returns the count of puzzles solved correctly by at least one of the specified models.
- */
-export const computeAttemptUnionAccuracy = (
-  result: ModelComparisonResult,
-  modelIndices: number[],
-): {
-  unionCorrectCount: number;
-  totalPuzzles: number;
-  unionAccuracyPercentage: number;
-} => {
-  // Validate inputs
-  if (!result?.summary || !result?.details || modelIndices.length === 0) {
-    return {
-      unionCorrectCount: 0,
-      totalPuzzles: 0,
-      unionAccuracyPercentage: 0,
-    };
-  }
-
-  const totalPuzzles = result.summary.totalPuzzles;
-  
-  // Dev warning if details length doesn't match expected total
-  if (process.env.NODE_ENV === 'development' && result.details.length !== totalPuzzles) {
-    console.warn(
-      `computeAttemptUnionAccuracy: details length (${result.details.length}) ` +
-      `does not match totalPuzzles (${totalPuzzles})`
-    );
-  }
-
-  let unionCorrectCount = 0;
-
-  // Iterate through each puzzle and check if any selected model solved it
-  for (const detail of result.details) {
-    const modelResults = [
-      detail.model1Result,
-      detail.model2Result,
-      detail.model3Result,
-      detail.model4Result,
-    ];
-
-    // Check if any of the selected models has 'correct' result
-    const isCorrectByAnyAttempt = modelIndices
-      .map(index => modelResults[index])
-      .some(result => result === 'correct');
-
-    if (isCorrectByAnyAttempt) {
-      unionCorrectCount++;
-    }
-  }
-
-  const unionAccuracyPercentage = totalPuzzles > 0 
-    ? Math.round((unionCorrectCount / totalPuzzles) * 10000) / 100  // Round to 2 decimal places
-    : 0;
-
-  return {
-    unionCorrectCount,
-    totalPuzzles,
-    unionAccuracyPercentage,
-  };
-};
 
 /**
  * Parses a model name to extract base model name and attempt number.

@@ -23,8 +23,8 @@
  * - No filtering by confidence or trustworthiness scores
  * - Shows all models, even those without complete metadata
  * 
- * @author Claude
- * @date 2025-08-31
+ * @author Claude / Cascade
+ * @date 2025-08-31 (updated 2025-12-16)
  */
 
 import { BaseRepository } from './base/BaseRepository.ts';
@@ -51,6 +51,24 @@ export interface ModelAccuracyRanking {
   multiTestAttempts: number;
   multiCorrectPredictions: number;
   multiTestAccuracy: number;
+}
+
+export interface HarnessAlignedAccuracyStats {
+  baseModelName: string;
+  attempt1ModelName: string;
+  attempt2ModelName: string;
+  dataset: string;
+
+  puzzlesCounted: number;
+  puzzlesFullySolved: number;
+
+  harnessScore: number; // 0..1 (average of per-puzzle scores)
+  harnessScorePercentage: number; // 0..100
+
+  pairWeightedCorrectPairs: number;
+  pairWeightedTotalPairs: number;
+  pairWeightedAccuracy: number; // 0..1
+  pairWeightedAccuracyPercentage: number; // 0..100
 }
 
 export interface DangerousModelRanking {
