@@ -1,6 +1,12 @@
 # New entires at the top, use proper SemVer!
 
-### Version 6.4.0  Dec 16, 2025 (PENDING TESTING)
+### Version 6.4.1  Dec 16, 2025
+
+- **Build fix: Missing closing brace in adminController.ts** (Author: Cascade)
+  - Fixed syntax error at line 746 where `syncOpenRouterConfig` function was missing closing brace.
+  - **Files Modified**: `server/controllers/adminController.ts`
+
+### Version 6.4.0  Dec 16, 2025
 
 - **ARC-AGI multi-test-pair scoring: harness-aligned accuracy + clearer UI metrics** (Author: Cascade)
   - **Critical scoring fix**: dataset score is the average of per-puzzle scores (each puzzle weighted equally), not a pair-weighted ratio.

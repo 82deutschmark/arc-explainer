@@ -742,8 +742,9 @@ export async function syncOpenRouterConfig(req: Request, res: Response) {
       error: 'Failed to sync config',
       message: error instanceof Error ? error.message : 'Unknown error',
     });
-
   }
+}
+
 /**
  * @route   POST /api/admin/openrouter/auto-sync
  * @desc    Auto-sync OpenRouter catalog and intelligently add new models
