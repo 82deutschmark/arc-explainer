@@ -11,17 +11,18 @@
  */
 
 import React, { useState, useMemo, useEffect } from 'react';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { BarChart3, ExternalLink, AlertCircle, Zap, AlertTriangle, ChevronDown, ChevronUp } from 'lucide-react';
+import { BarChart3, ExternalLink, AlertCircle, Zap, AlertTriangle, ChevronDown, ChevronUp, DollarSign, Clock } from 'lucide-react';
 import { ClickablePuzzleBadge } from '@/components/ui/ClickablePuzzleBadge';
-import { useAvailableModels } from '@/hooks/useModelDatasetPerformance';
+import { useAvailableModels, useModelDatasetMetrics } from '@/hooks/useModelDatasetPerformance';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import { computeAttemptUnionAccuracy, parseAttemptModelName } from '@/utils/modelComparison';
+import { detectModelOrigin } from '@/utils/modelOriginDetection';
 import { ModelComparisonResult } from './AnalyticsOverview';
 import { TinyGrid } from '@/components/puzzle/TinyGrid';
 
@@ -158,6 +159,15 @@ export default function HuggingFaceUnionAccuracy() {
     return options;
   }, [attemptGroups]);
 
+  // Get cost metrics for selected model
+  const selectedModelName = useMemo(() => {
+    if (!selectedAttemptPair) return null;
+    const selectedPair = attemptPairOptions.find((opt) => opt.value === selectedAttemptPair);
+    return selectedPair?.modelNames[0] || null;
+  }, [selectedAttemptPair, attemptPairOptions]);
+
+  const { metrics: costMetrics } = useModelDatasetMetrics(selectedModelName, selectedDataset);
+
   // Auto-select first pair (which is ordered to prefer GPT-5.2 High)
   useEffect(() => {
     if (!selectedAttemptPair && attemptPairOptions.length > 0) {
@@ -278,10 +288,10 @@ export default function HuggingFaceUnionAccuracy() {
         <div className="bg-blue-50 border-l-4 border-blue-600 p-3 rounded">
           <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-2">
             <BarChart3 className="h-6 w-6 text-blue-600" />
-            Official Scoring: Public Evaluation
+            Multi-Attempt Solver Results: Public Evaluation
           </h1>
           <p className="text-base text-gray-600 mt-1">
-            A community authored guide to the official results from the ARC Prize evaluation harness on the public evaluation set
+            Official ARC Prize harness results AND community-submitted solver evaluations on the public evaluation set
           </p>
         </div>
 
@@ -564,8 +574,11 @@ export default function HuggingFaceUnionAccuracy() {
                   <strong>{unionMetrics.unionCorrectCount}</strong> of <strong>{unionMetrics.totalTestPairs ?? unionMetrics.totalPuzzles}</strong> test pairs solved
                 </p>
 
-                {/* Model Names */}
+                {/* Model Names with Origin Badge */}
                 <div className="border-t border-blue-100 pt-2 flex flex-wrap gap-1">
+                  <Badge variant={detectModelOrigin(unionMetrics.baseModelName).badgeVariant} className="text-base py-0.5">
+                    {detectModelOrigin(unionMetrics.baseModelName).shortLabel}
+                  </Badge>
                   {unionMetrics.attemptModelNames.map((name) => (
                     <Badge key={name} variant="outline" className="text-base py-0.5">
                       {name}
@@ -598,6 +611,49 @@ export default function HuggingFaceUnionAccuracy() {
                 </div>
               </CardContent>
             </Card>
+
+            {/* Cost & Performance Metrics */}
+            {costMetrics && (
+              <Card className="shadow-sm border-green-200 bg-green-50/30">
+                <CardHeader className="p-3 pb-2">
+                  <CardTitle className="text-base flex items-center gap-2">
+                    <DollarSign className="h-4 w-4 text-green-600" />
+                    Cost & Performance Metrics
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="p-3 pt-0">
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                    <div className="bg-white rounded p-2 border border-green-100">
+                      <div className="text-xs text-gray-600 mb-1">Total Cost</div>
+                      <div className="text-lg font-bold text-gray-900">
+                        ${costMetrics.overall.totalCost.toFixed(4)}
+                      </div>
+                    </div>
+                    <div className="bg-white rounded p-2 border border-green-100">
+                      <div className="text-xs text-gray-600 mb-1">Cost per Puzzle</div>
+                      <div className="text-lg font-bold text-gray-900">
+                        ${costMetrics.overall.avgCost.toFixed(4)}
+                      </div>
+                    </div>
+                    <div className="bg-white rounded p-2 border border-green-100">
+                      <div className="text-xs text-gray-600 mb-1">Cost per Correct</div>
+                      <div className="text-lg font-bold text-green-700">
+                        ${costMetrics.correct.avgCost.toFixed(4)}
+                      </div>
+                    </div>
+                    <div className="bg-white rounded p-2 border border-green-100">
+                      <div className="text-xs text-gray-600 mb-1 flex items-center gap-1">
+                        <Clock className="h-3 w-3" />
+                        Avg Time
+                      </div>
+                      <div className="text-lg font-bold text-gray-900">
+                        {(costMetrics.overall.avgTime / 1000).toFixed(2)}s
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
 
           </div>
         )}
