@@ -6,7 +6,7 @@
  * are separated into schema and data phases to prevent race conditions.
  * 
  * @author Cascade
- * @date 2025-09-03
+ * @date 2025-09-03 (updated 2025-12-16)
  */
 
 import { Pool, PoolClient } from 'pg';
@@ -99,6 +99,7 @@ export class DatabaseSchema {
         multi_test_results JSONB DEFAULT NULL,
         multi_test_all_correct BOOLEAN DEFAULT NULL,
         multi_test_average_accuracy FLOAT DEFAULT NULL,
+        num_test_pairs INTEGER DEFAULT NULL,
         system_prompt_used TEXT DEFAULT NULL,
         user_prompt_used TEXT DEFAULT NULL,
         prompt_template_id VARCHAR(50) DEFAULT NULL,
@@ -557,6 +558,18 @@ export class DatabaseSchema {
       ADD COLUMN IF NOT EXISTS trueskill_exposed double precision,
       ADD COLUMN IF NOT EXISTS trueskill_updated_at timestamptz;
     `);
+
+    // Migration: Add num_test_pairs to support harness-aligned scoring and faster aggregation.
+    await client.query(`
+      ALTER TABLE explanations
+      ADD COLUMN IF NOT EXISTS num_test_pairs INTEGER DEFAULT NULL;
+    `);
+
+    await client.query(`
+      CREATE INDEX IF NOT EXISTS idx_explanations_num_test_pairs
+      ON explanations(num_test_pairs)
+      WHERE num_test_pairs IS NOT NULL;
+    `);
   }
 
   /**
@@ -573,5 +586,18 @@ export class DatabaseSchema {
 
     // Data Migration: Ensure 'feedback_type' has a default value for any old rows
     await client.query(`UPDATE feedback SET feedback_type = 'helpful' WHERE feedback_type IS NULL;`);
+
+    // Data Migration: Backfill num_test_pairs for existing explanation rows.
+    // - If has_multiple_predictions=true and multi_test_results is an array => use its length.
+    // - Otherwise default to 1.
+    await client.query(`
+      UPDATE explanations
+      SET num_test_pairs = CASE
+        WHEN COALESCE(has_multiple_predictions, false) = true
+          THEN COALESCE(jsonb_array_length(multi_test_results), 1)
+        ELSE 1
+      END
+      WHERE num_test_pairs IS NULL;
+    `);
   }
 }

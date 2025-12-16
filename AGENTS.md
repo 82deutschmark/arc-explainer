@@ -5,6 +5,10 @@
 **Purpose:** Guidance for AI agents working with the ARC Explainer repository. 
 THE SYMBOLS ✗ and ✅✔☑ are forbidden!!!  WE ARE ON WINDOWS AND NEED PROPER UTF-8!!!
 Understand state transitions!!!!! ALL controls should elegantly collapse/disappear once an action starts, revealing the live streaming. Never use static lists or bloated components, never do everything at once in one cluttered view.
+You are expected to make comments about your code. 
+All code you write must be clearly commented!!!
+If you edit a file, update its header at the top (Author/Date/PURPOSE/SRP-DRY check) to reflect your change.
+If you change behavior, update the relevant documentation (and the changelog).
 Do not be afraid to ask the user questions about the outcomes that they are expecting and be honest about your abilities. 
 
 If a web search would be useful or updated information, mention that.
@@ -98,18 +102,19 @@ _This directory provides a structured overview of critical docs. For deeper dive
 
 ## ✍️ Coding Standards
 
-Ideally, every TypeScript file should start with a basic header like this:
+Ideally, every file should start with a basic header like this:
 
  * Author: {Your Model Name}
  * Date: {timestamp}  
  * PURPOSE: Verbose details about functionality, integration points, dependencies
  * SRP/DRY check: Pass/Fail — did you verify existing functionality?
 
-
 Additional rules:
 
 - Production-ready only – no mock data or placeholders.  
 - Consistent naming, robust error handling, thorough comments.  
+- When modifying an existing file: update the file header (or add one if missing) and keep it accurate.
+- When behavior changes: update the most relevant docs (and always update the changelog entry).
 - Prefer composition over duplication; always search existing code first.
 
 ## 🔧 Workflow & Planning

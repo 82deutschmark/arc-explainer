@@ -213,7 +213,7 @@ export function AccuracyLeaderboard({
           <AlertTriangle className="h-4 w-4 text-amber-600" />
           <div>
             <h2 className="text-[11px] font-semibold uppercase tracking-wide">Low accuracy models</h2>
-            <p className="text-[10px] text-gray-500">Lowest performers by correctness rate.</p>
+            <p className="text-[10px] text-gray-500">Lowest performers by puzzle-level correctness (all-or-nothing per puzzle).</p>
           </div>
         </div>
         <span className="text-[10px] text-gray-500">{limitedRankings.length} shown</span>

@@ -6,6 +6,7 @@
  * Includes a catch-all route to handle client-side routing.
  * 
  * @author Cascade
+ * @date 2025-12-16
  */
 
 import type { Express } from "express";
@@ -28,16 +29,16 @@ import * as discussionController from './controllers/discussionController.js';
 import { batchController } from './controllers/batchController.ts';
 import { streamController } from "./controllers/streamController.ts";
 import { wormArenaStreamController } from "./controllers/wormArenaStreamController.ts";
-
+import { getHarnessAlignedAccuracy } from "./controllers/accuracyController.ts";
 import { eloController } from "./controllers/eloController";
 import modelDatasetController from "./controllers/modelDatasetController.ts";
 import { snakeBenchController } from "./controllers/snakeBenchController.ts";
+import { contributorController } from './controllers/contributorController.ts';
 
 // Import route modules
 import modelsRouter from "./routes/models.js";
 import metricsRouter from './routes/metricsRoutes.ts';
 import arc3Router from "./routes/arc3";
-import { contributorController } from './controllers/contributorController.ts';
 
 // Import middleware
 import { errorHandler } from "./middleware/errorHandler";
@@ -245,6 +246,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/wormarena/prepare", asyncHandler(wormArenaStreamController.prepare));
   app.get("/api/wormarena/stream/:sessionId", asyncHandler(wormArenaStreamController.stream));
 
+  // Harness-aligned accuracy (public, no auth)
+  app.get("/api/accuracy/harness", asyncHandler(getHarnessAlignedAccuracy));
+
   // Batch analysis routes
   app.post("/api/batch/start", asyncHandler(batchController.startBatch));
   app.get("/api/batch/status/:sessionId", asyncHandler(batchController.getBatchStatus));
@@ -267,6 +271,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/admin/openrouter/discover", asyncHandler(adminControllerFns.discoverOpenRouter));
   app.post("/api/admin/openrouter/import", asyncHandler(adminControllerFns.importOpenRouter));
   app.get("/api/admin/openrouter/sync-config", asyncHandler(adminControllerFns.syncOpenRouterConfig));
+  app.post("/api/admin/openrouter/auto-sync", asyncHandler(adminControllerFns.autoSyncOpenRouter));
 
   // Recovery routes for multiple predictions data
   app.get("/api/admin/recovery-stats", asyncHandler(async (req: any, res: any) => {
