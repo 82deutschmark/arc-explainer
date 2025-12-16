@@ -85,10 +85,10 @@ export function WormArenaControlBar({
           {canShowScores && (
             <div className="text-sm font-semibold text-worm-ink flex flex-wrap items-center gap-x-3 gap-y-1">
               <span className="text-muted-foreground font-medium">Scores:</span>
-              <span className="text-yellow-700">
+              <span className="text-worm-green">
                 {playerALabel}: {Number.isFinite(playerAScore) ? Math.max(0, Math.floor(playerAScore ?? 0)) : 0}
               </span>
-              <span className="text-red-700">
+              <span className="text-worm-blue">
                 {playerBLabel}: {Number.isFinite(playerBScore) ? Math.max(0, Math.floor(playerBScore ?? 0)) : 0}
               </span>
             </div>
