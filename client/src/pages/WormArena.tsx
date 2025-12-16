@@ -73,7 +73,8 @@ function renderAsciiFrame(frame: any, width: number, height: number, labels: Rec
   const apples: Array<[number, number]> = frame?.state?.apples ?? [];
   apples.forEach(([x, y]) => {
     if (Number.isFinite(x) && Number.isFinite(y) && y >= 0 && y < h && x >= 0 && x < w) {
-      grid[y][x] = '@';
+      const row = h - 1 - y;
+      grid[row][x] = '@';
     }
   });
 
@@ -84,7 +85,8 @@ function renderAsciiFrame(frame: any, width: number, height: number, labels: Rec
       const [x, y] = pos as [number, number];
       if (Number.isFinite(x) && Number.isFinite(y) && y >= 0 && y < h && x >= 0 && x < w) {
         const char = posIdx === 0 ? display.toUpperCase() : display.toLowerCase();
-        grid[y][x] = char;
+        const row = h - 1 - y;
+        grid[row][x] = char;
       }
     });
   });

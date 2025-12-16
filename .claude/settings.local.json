@@ -25,7 +25,8 @@
       "Bash(python3 -c:*)",
       "Bash(/tmp/huggingface_file.tsx)",
       "Bash(/tmp/current_file.tsx)",
-      "Bash(powershell -File:*)"
+      "Bash(powershell -File:*)",
+      "Bash(npm run ingest-johanland:*)"
     ],
     "defaultMode": "bypassPermissions"
   },

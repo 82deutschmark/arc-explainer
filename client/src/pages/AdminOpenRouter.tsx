@@ -196,7 +196,9 @@ export default function AdminOpenRouter() {
     onSuccess: (data) => {
       toast({
         title: 'Import complete',
-        description: `Inserted ${data.inserted}, updated ${data.updated}.`,
+        description:
+          `Inserted ${data.inserted}, updated ${data.updated}. ` +
+          'Imported models are stored in the SnakeBench DB and should now appear in Worm Arena model dropdowns (when DB is connected).',
       });
     },
     onError: (err) => {
@@ -321,7 +323,8 @@ export default function AdminOpenRouter() {
       <div>
         <h1 className="text-3xl font-bold">OpenRouter Models</h1>
         <p className="text-muted-foreground mt-1">
-          Discover new OpenRouter slugs, select, and import into the project models table.
+          Discover OpenRouter slugs and import them into the project models table.
+          Import affects Worm Arena model dropdowns; syncing to config is optional metadata curation.
         </p>
       </div>
 
@@ -329,7 +332,10 @@ export default function AdminOpenRouter() {
         <CardHeader className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
           <div>
             <CardTitle>Discovery</CardTitle>
-            <CardDescription>Fetch catalog and compare with DB + config roster.</CardDescription>
+            <CardDescription>
+              Fetch the OpenRouter catalog and compare it with the models in our DB and config.
+              Import writes selected slugs into the DB so Worm Arena can offer them immediately (when DB is connected).
+            </CardDescription>
           </div>
           <div className="flex items-center gap-3">
             <Button onClick={discover} disabled={loading}>

@@ -53,8 +53,8 @@ const WormArenaGameBoard: React.FC<WormArenaGameBoardProps> = ({
   const [containerWidth, setContainerWidth] = useState<number>(480);
 
   const getHeadEmoji = (dx: number, dy: number) => {
-    if (dy < 0) return '⬆️';
-    if (dy > 0) return '⬇️';
+    if (dy > 0) return '⬆️';
+    if (dy < 0) return '⬇️';
     if (dx < 0) return '⬅️';
     return '➡️';
   };
@@ -173,16 +173,18 @@ const WormArenaGameBoard: React.FC<WormArenaGameBoardProps> = ({
 
     const rowOffsetX = padding + labelMargin / 2;
     ctx.textAlign = 'right';
-    for (let y = 0; y < boardHeight; y++) {
-      const labelY = boardRectY + (y + 0.5) * cellSize;
-      ctx.fillText(y.toString(), rowOffsetX, labelY);
+    for (let row = 0; row < boardHeight; row++) {
+      const labelY = boardRectY + (row + 0.5) * cellSize;
+      const engineY = boardHeight - 1 - row;
+      ctx.fillText(engineY.toString(), rowOffsetX, labelY);
     }
 
     const rightLabelX = boardRectX + boardRectWidth + labelMargin / 2;
     ctx.textAlign = 'left';
-    for (let y = 0; y < boardHeight; y++) {
-      const labelY = boardRectY + (y + 0.5) * cellSize;
-      ctx.fillText(y.toString(), rightLabelX, labelY);
+    for (let row = 0; row < boardHeight; row++) {
+      const labelY = boardRectY + (row + 0.5) * cellSize;
+      const engineY = boardHeight - 1 - row;
+      ctx.fillText(engineY.toString(), rightLabelX, labelY);
     }
 
     // Cell coordinates inside the board
@@ -194,7 +196,8 @@ const WormArenaGameBoard: React.FC<WormArenaGameBoardProps> = ({
       for (let y = 0; y < boardHeight; y++) {
         const cx = boardRectX + (x + 0.5) * cellSize;
         const cy = boardRectY + (y + 0.5) * cellSize;
-        ctx.fillText(`${x},${y}`, cx, cy);
+        const engineY = boardHeight - 1 - y;
+        ctx.fillText(`${x},${engineY}`, cx, cy);
       }
     }
 
@@ -211,7 +214,8 @@ const WormArenaGameBoard: React.FC<WormArenaGameBoardProps> = ({
     apples.forEach(([x, y]) => {
       if (x >= 0 && x < boardWidth && y >= 0 && y < boardHeight) {
         const cx = boardRectX + (x + 0.5) * cellSize;
-        const cy = boardRectY + (y + 0.5) * cellSize;
+        const renderY = boardHeight - 1 - y;
+        const cy = boardRectY + (renderY + 0.5) * cellSize;
         let emoji: string;
 
         if (USE_VARIANT_FOOD_EMOJIS) {
@@ -263,7 +267,8 @@ const WormArenaGameBoard: React.FC<WormArenaGameBoardProps> = ({
           const [x, y] = pos as [number, number];
           if (x >= 0 && x < boardWidth && y >= 0 && y < boardHeight) {
             const cx = boardRectX + (x + 0.5) * cellSize;
-            const cy = boardRectY + (y + 0.5) * cellSize;
+            const renderY = boardHeight - 1 - y;
+            const cy = boardRectY + (renderY + 0.5) * cellSize;
             const emoji = idx === 0 ? headEmoji : emojis.body;
             ctx.fillText(emoji, cx, cy);
           }
@@ -276,7 +281,8 @@ const WormArenaGameBoard: React.FC<WormArenaGameBoardProps> = ({
         const [x, y] = pos as [number, number];
         if (x >= 0 && x < boardWidth && y >= 0 && y < boardHeight) {
           const cx = boardRectX + (x + 0.5) * cellSize;
-          const cy = boardRectY + (y + 0.5) * cellSize;
+          const renderY = boardHeight - 1 - y;
+          const cy = boardRectY + (renderY + 0.5) * cellSize;
           const emoji = idx === 0 ? '➡️' : emojis.body;
           ctx.fillText(emoji, cx, cy);
         }
