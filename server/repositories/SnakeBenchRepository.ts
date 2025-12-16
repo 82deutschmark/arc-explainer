@@ -1,10 +1,11 @@
 /**
  * Author: Cascade
- * Date: 2025-12-09
+ * Date: 2025-12-16
  * PURPOSE: SnakeBenchRepository
  *          Handles compatibility-first persistence of SnakeBench games
  *          into PostgreSQL tables that mirror the root SnakeBench
  *          project schema (models, games, game_participants).
+ *          Exposes model discovery timestamps for Worm Arena UI sorting.
  * SRP/DRY check: Pass — focused exclusively on SnakeBench DB reads/writes.
  */
 
@@ -61,10 +62,21 @@ const RESULT_SCORE: Record<string, [number, number]> = {
 };
 
 export class SnakeBenchRepository extends BaseRepository {
-  async listModels(): Promise<Array<{ id: number; model_slug: string; name: string; provider: string; is_active: boolean; test_status: string }>> {
+  async listModels(): Promise<
+    Array<{
+      id: number;
+      model_slug: string;
+      name: string;
+      provider: string;
+      is_active: boolean;
+      test_status: string;
+      discovered_at?: string | Date | null;
+      created_at?: string | Date | null;
+    }>
+  > {
     if (!this.isConnected()) return [];
     const sql = `
-      SELECT id, model_slug, name, provider, is_active, test_status
+      SELECT id, model_slug, name, provider, is_active, test_status, discovered_at, created_at
       FROM public.models
       ORDER BY name ASC
     `;
