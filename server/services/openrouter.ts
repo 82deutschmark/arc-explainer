@@ -52,6 +52,11 @@ export class OpenRouterService extends BaseAIService {
   protected provider = "OpenRouter";
   protected models = {}; // We use centralized getApiModelName instead
 
+  supportsStreaming(modelKey: string): boolean {
+    const modelConfig = getModelConfig(modelKey);
+    // Default to true if config exists and doesn't explicitly disable streaming
+    return modelConfig?.supportsStreaming !== false;
+  }
 
   async analyzePuzzleWithModel(
     task: ARCTask,

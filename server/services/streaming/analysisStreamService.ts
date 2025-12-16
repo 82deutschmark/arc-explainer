@@ -125,17 +125,41 @@ export class AnalysisStreamService {
       const { original: originalModelKey, normalized: canonicalModelKey } = canonicalizeModelKey(decodedModel);
 
       const aiService = aiServiceFactory.getService(canonicalModelKey);
-      if (!aiService?.supportsStreaming?.(canonicalModelKey)) {
+      const supportsStreaming = aiService?.supportsStreaming?.(canonicalModelKey) ?? false;
+
+      if (!supportsStreaming) {
         logger.warn(
-          `Streaming requested for unsupported model ${originalModelKey} (normalized: ${canonicalModelKey})`,
+          `Streaming not available for model ${originalModelKey} (normalized: ${canonicalModelKey}), falling back to non-streaming`,
           "stream-service"
         );
-        sseStreamManager.error(
-          sessionId,
-          "STREAMING_UNAVAILABLE",
-          "Streaming is not enabled for this model.",
-          { modelKey: originalModelKey }
-        );
+        // Fall back to non-streaming analysis
+        sseStreamManager.sendEvent(sessionId, "stream.status", {
+          state: "info",
+          message: `Model ${originalModelKey} does not support streaming. Running standard analysis instead.`,
+          modelKey: originalModelKey,
+          taskId,
+        });
+
+        try {
+          const result = await aiService.analyzePuzzleWithModel(
+            puzzle,
+            canonicalModelKey,
+            taskId,
+            payload.temperature ?? 0.2,
+            promptId,
+            customPrompt,
+            promptOptions
+          );
+          sseStreamManager.close(sessionId, {
+            status: 'success',
+            responseSummary: result,
+            durationMs: Date.now() - (payload.createdAt ?? Date.now()),
+          });
+        } catch (error) {
+          const message = error instanceof Error ? error.message : String(error);
+          logger.logError(`Non-streaming fallback analysis failed: ${message}`, { error, context: 'stream-service' });
+          sseStreamManager.error(sessionId, 'ANALYSIS_FAILED', message);
+        }
         return sessionId;
       }
 
