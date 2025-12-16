@@ -1,5 +1,25 @@
 # New entires at the top, use proper SemVer!
 
+### Version 6.3.0  Dec 16, 2025 (COMPLETED)
+
+- **Johan_Land_Solver_V6 scoring: pair-aware ingestion + harness-aligned union accuracy** (Author: Cascade, Validation & Execution: Claude Code)
+  - **Critical Fix**: Resolved fundamental data structure misunderstanding. Submission JSON is array of test pairs (not single puzzle with 2 attempts).
+  - **Ingestion Logic**: Iterates through submission array; each element = one test pair with attempt_1 and attempt_2 solving the same pair_index.
+  - **Per-Pair Validation**: Each attempt validated against `task.test[pair_index].output` (ground truth), not against solver's own `correct` flag.
+  - **Union Scoring**: If ANY attempt solves a pair, that pair counts as solved (matches official ARC-AGI benchmarking harness).
+  - **Backend Accuracy**: Changed from global averaging to per-puzzle averaging: `(sum of per-puzzle fractions) / num_puzzles * 100`.
+  - **Validation Result**: Harness-style score 71.29% (84.83/119 tasks) matches DB/UI union score 71.29% (117/166 test pairs) ✓
+  - **Re-ingestion**: All 238 entries (119 puzzles × 2 attempts) successfully re-ingested with corrected pair-aware logic.
+  - **Files Modified**: `server/scripts/ingest-johanland-results.ts`, `server/repositories/MetricsRepository.ts`, `server/types/johanland.ts`, `CHANGELOG.md`
+
+### Version 6.2.0  Dec 16, 2025 (PENDING TESTING)
+
+- **Worm Arena: align UI coordinate system with engine prompt (y increases upward)** (Author: Cascade)
+  - Fixed Worm Arena board rendering to use the SnakeBench engine coordinate system (bottom-left origin).
+  - Fixed snake head arrow orientation so vertical movement is no longer inverted.
+  - ASCII replay preview now matches the engine coordinate orientation.
+  - **Files Modified**: `client/src/components/WormArenaGameBoard.tsx`, `client/src/components/WormArenaGameBoardSVG.tsx`, `client/src/pages/WormArena.tsx`, `CHANGELOG.md`
+
 ### Version 6.1.63  Dec 16, 2025 (PENDING TESTING)
 
 - **Johan_Land scoring: harness-aligned correctness + union aggregation** (Author: Cascade)
