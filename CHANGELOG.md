@@ -1,5 +1,21 @@
 # New entires at the top, use proper SemVer!
 
+### Version 6.4.8  Dec 17, 2025
+
+- **Worm Arena Skill Analysis: unified hero graphic matching TikZ reference design** (Author: Cascade)
+  - Created `WormArenaSkillHeroGraphic.tsx` — a single unified "poster" component that draws:
+    - Top row: "Skill estimate μ" and "Uncertainty σ" headers with large blue pills and descriptive text
+    - Middle: "99.7% Confidence Interval" with red (pessimistic) and green (optimistic) pills connected by a dash, plus explanatory KaTeX formula
+    - Bottom: Overlapping SVG bell curves — gray filled reference curve behind, blue filled current curve in front, with model labels positioned above peaks
+  - Removed separate `WormArenaSkillMetrics` and `WormArenaSkillDistributionChart` from center column.
+  - Center column is now borderless (no Card chrome) — reads as one clean poster graphic.
+  - Typography uses Georgia serif for headers matching the reference.
+  - **Files Created**:
+    - `client/src/components/wormArena/stats/WormArenaSkillHeroGraphic.tsx`
+  - **Files Modified**:
+    - `client/src/pages/WormArenaSkillAnalysis.tsx`
+    - `CHANGELOG.md`
+
 ### Version 6.4.7  Dec 17, 2025
 
 - **Worm Arena Skill Analysis: finished wiring + chart polish (URL selection, KaTeX math, visible axis/ticks)** (Author: Cascade)

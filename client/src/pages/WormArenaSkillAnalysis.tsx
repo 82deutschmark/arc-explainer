@@ -2,12 +2,12 @@
  * Author: Cascade
  * Date: 2025-12-17
  * PURPOSE: Worm Arena Skill Distribution Analysis page. Orchestrates model selection (URL-driven),
- *          metric display, and the bell curve visualization to explain why TrueSkill differs from
- *          raw W/L ratio. Ensures ratings are fetched by calling useModelRating().refresh() when
- *          query params change.
+ *          a three-slice UI (selected list | hero chart | reference list), and the bell curve
+ *          visualization to explain why TrueSkill differs from raw W/L ratio.
+ *          Ensures ratings are fetched by calling useModelRating().refresh() when query params change.
  * SRP/DRY check: Pass — page-level composition only; rendering delegated to child components.
  *
- * Touches: WormArenaSkillSelector, WormArenaSkillMetrics, WormArenaSkillDistributionChart,
+ * Touches: WormArenaModelListCard, WormArenaSkillMetrics, WormArenaSkillDistributionChart,
  *          useWormArenaTrueSkillLeaderboard, useModelRating.
  */
 
@@ -16,7 +16,7 @@ import { useLocation } from 'wouter';
 import 'katex/dist/katex.min.css';
 import { InlineMath } from 'react-katex';
 import { TooltipProvider } from '@/components/ui/tooltip';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import {
   Accordion,
@@ -26,9 +26,8 @@ import {
 } from '@/components/ui/accordion';
 
 import WormArenaHeader from '@/components/WormArenaHeader';
-import WormArenaSkillSelector from '@/components/wormArena/stats/WormArenaSkillSelector';
-import WormArenaSkillMetrics from '@/components/wormArena/stats/WormArenaSkillMetrics';
-import WormArenaSkillDistributionChart from '@/components/wormArena/stats/WormArenaSkillDistributionChart';
+import WormArenaModelListCard from '@/components/wormArena/stats/WormArenaModelListCard';
+import WormArenaSkillHeroGraphic from '@/components/wormArena/stats/WormArenaSkillHeroGraphic';
 
 import useWormArenaTrueSkillLeaderboard from '@/hooks/useWormArenaTrueSkillLeaderboard';
 import { useModelRating } from '@/hooks/useSnakeBench';
@@ -100,12 +99,27 @@ export default function WormArenaSkillAnalysis() {
   const [, setLocation] = useLocation();
   const { modelSlug, referenceSlug } = useQueryParamModels();
 
+  const [selectedFilter, setSelectedFilter] = React.useState('');
+  const [referenceFilter, setReferenceFilter] = React.useState('');
+
   // Fetch all models for the selector
   const { entries: leaderboard, isLoading: loadingLeaderboard, error: errorLeaderboard } =
     useWormArenaTrueSkillLeaderboard(150, 3);
 
   // Default to first model if not specified.
   const selectedModelSlug = modelSlug || leaderboard[0]?.modelSlug || undefined;
+
+  const listEntries = React.useMemo(
+    () =>
+      leaderboard.map((entry) => ({
+        modelSlug: entry.modelSlug,
+        gamesPlayed: entry.gamesPlayed,
+        wins: entry.wins,
+        losses: entry.losses,
+        ties: entry.ties,
+      })),
+    [leaderboard],
+  );
 
   // Fetch selected model detail
   const {
@@ -153,60 +167,69 @@ export default function WormArenaSkillAnalysis() {
           showMatchupLabel={false}
         />
 
-        <main className="p-8 max-w-6xl mx-auto space-y-6">
-          {/* Page Title */}
-          <div>
-            <h1 className="text-3xl font-bold text-worm-ink mb-2">Skill Distribution Analysis</h1>
-            <p className="text-sm text-worm-muted">
-              Why TrueSkill rating ≠ Win/Loss ratio
-            </p>
+        <main className="p-6 max-w-7xl mx-auto space-y-6">
+          <div className="grid grid-cols-1 xl:grid-cols-[minmax(0,1fr)_minmax(0,1.6fr)_minmax(0,1fr)] gap-6 items-start">
+            {/* LEFT: Selected model list */}
+            <WormArenaModelListCard
+              leaderboard={listEntries}
+              recentActivityLabel={null}
+              selectedModel={selectedModelSlug ?? null}
+              filter={selectedFilter}
+              onFilterChange={setSelectedFilter}
+              onSelectModel={(slug) => {
+                setLocation(
+                  buildSkillAnalysisUrl({
+                    modelSlug: slug,
+                    referenceSlug,
+                  }),
+                );
+              }}
+            />
+
+            {/* MIDDLE: Hero graphic (metrics + bell curve as one unified poster) */}
+            <div className="bg-white rounded-lg p-8 flex flex-col items-center justify-center min-h-[600px]">
+              {selectedModel ? (
+                <WormArenaSkillHeroGraphic
+                  mu={selectedModel.mu}
+                  sigma={selectedModel.sigma}
+                  exposed={selectedModel.exposed}
+                  modelLabel={selectedModel.modelSlug}
+                  referenceMu={referenceModel?.mu}
+                  referenceSigma={referenceModel?.sigma}
+                  referenceLabel={referenceModel?.modelSlug}
+                />
+              ) : (
+                <div className="text-center text-sm font-semibold text-worm-muted py-20">
+                  Select a model from the left list to begin.
+                </div>
+              )}
+            </div>
+
+            {/* RIGHT: Reference model list */}
+            <WormArenaModelListCard
+              leaderboard={listEntries}
+              recentActivityLabel={null}
+              selectedModel={referenceSlug ?? null}
+              filter={referenceFilter}
+              onFilterChange={setReferenceFilter}
+              onSelectModel={(slug) => {
+                setLocation(
+                  buildSkillAnalysisUrl({
+                    modelSlug: selectedModelSlug,
+                    referenceSlug: slug,
+                  }),
+                );
+              }}
+            />
           </div>
 
-          {/* Educational Callout */}
           <Alert className="border-blue-200 bg-blue-50">
             <AlertDescription className="text-sm text-worm-ink">
               <strong>Why the difference?</strong> Win/Loss ratio shows how often a model wins, but doesn't account for
-              opponent strength. A 70% win rate against weak opponents ranks lower than 50% against strong ones. TrueSkill
-              adjusts for this. The width of the bell curve shows your confidence level — narrow curves mean many games
-              played; wide curves mean not enough data yet.
+              opponent strength. TrueSkill adjusts for this. Compare a narrow curve (high confidence) against a wide curve
+              (uncertain/new model).
             </AlertDescription>
           </Alert>
-
-          {/* Model Selector Table - For Detailed Exploration */}
-          {!loadingLeaderboard && leaderboard.length > 0 && (
-            <Card className="worm-card">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-lg">All Models</CardTitle>
-                <p className="text-xs text-worm-muted mt-1">
-                  Click a row to make it your selected model (left side of the comparison chart above).
-                </p>
-              </CardHeader>
-              <CardContent>
-                <WormArenaSkillSelector
-                  models={leaderboard}
-                  selectedModelSlug={selectedModelSlug || ''}
-                  onSelectModel={(slug) => {
-                    // Drive selection from the URL so users can share deep links.
-                    setLocation(
-                      buildSkillAnalysisUrl({
-                        modelSlug: slug,
-                        referenceSlug,
-                      }),
-                    );
-                  }}
-                  referenceModelSlug={referenceSlug ?? undefined}
-                  onSelectReference={(slug) => {
-                    setLocation(
-                      buildSkillAnalysisUrl({
-                        modelSlug: selectedModelSlug,
-                        referenceSlug: slug,
-                      }),
-                    );
-                  }}
-                />
-              </CardContent>
-            </Card>
-          )}
 
           {isLoading && (
             <div className="text-sm font-semibold worm-muted">Loading skill analysis…</div>
@@ -218,107 +241,6 @@ export default function WormArenaSkillAnalysis() {
                 No models are eligible yet. Run a few Worm Arena matches to populate TrueSkill ratings.
               </AlertDescription>
             </Alert>
-          )}
-
-          {/* Skill Metrics and Bell Curve - Chart with Metrics Overlay */}
-          {selectedModel && (
-            <Card className="worm-card">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-lg">Skill Distribution & Metrics</CardTitle>
-                <p className="text-xs text-worm-muted mt-1">
-                  The width shows confidence. Narrow = many games played; Wide = uncertain/new model.
-                </p>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-[1fr_1.2fr_1fr] gap-6">
-                  {/* LEFT: Reference Model Selector or Info */}
-                  <div>
-                    {referenceModel ? (
-                      <div className="border-r-2 border-r-worm-muted pr-4 h-full flex flex-col justify-center">
-                        <div className="text-xs font-semibold text-worm-muted uppercase mb-2">Reference</div>
-                        <div className="text-lg font-bold text-worm-muted mb-4">{referenceModel.modelSlug}</div>
-                        <div className="bg-worm-track/20 p-4 rounded-lg mb-4">
-                          <WormArenaSkillMetrics
-                            mu={referenceModel.mu}
-                            sigma={referenceModel.sigma}
-                            exposed={referenceModel.exposed}
-                            modelSlug={referenceModel.modelSlug}
-                          />
-                        </div>
-                        <button
-                          onClick={() => {
-                            setLocation(
-                              buildSkillAnalysisUrl({
-                                modelSlug: selectedModelSlug,
-                                referenceSlug: undefined,
-                              }),
-                            );
-                          }}
-                          className="text-xs text-worm-muted hover:text-worm-ink transition-colors underline"
-                        >
-                          Clear reference
-                        </button>
-                      </div>
-                    ) : (
-                      <div className="border-r-2 border-r-worm-border pr-4">
-                        <div className="text-xs font-semibold text-worm-muted uppercase mb-3">Reference Model</div>
-                        <div className="text-sm text-worm-muted mb-4">
-                          Select one to compare:
-                        </div>
-                        {leaderboard.length > 0 && (
-                          <div className="space-y-2">
-                            {leaderboard.slice(0, 5).map((model) => (
-                              <button
-                                key={model.modelSlug}
-                                onClick={() => {
-                                  setLocation(
-                                    buildSkillAnalysisUrl({
-                                      modelSlug: selectedModelSlug,
-                                      referenceSlug: model.modelSlug,
-                                    }),
-                                  );
-                                }}
-                                className="block w-full text-left text-xs px-3 py-2 rounded bg-worm-track/30 hover:bg-worm-track/50 transition-colors text-worm-ink font-mono truncate"
-                              >
-                                {model.modelSlug}
-                              </button>
-                            ))}
-                          </div>
-                        )}
-                      </div>
-                    )}
-                  </div>
-
-                  {/* MIDDLE: Bell Curve */}
-                  <div className="relative flex flex-col items-center justify-center">
-                    <WormArenaSkillDistributionChart
-                      mu={selectedModel.mu}
-                      sigma={selectedModel.sigma}
-                      exposed={selectedModel.exposed}
-                      referenceMu={referenceModel?.mu}
-                      referenceSigma={referenceModel?.sigma}
-                      referenceLabel={referenceModel?.modelSlug || 'Reference Model'}
-                      width={480}
-                      height={380}
-                    />
-                  </div>
-
-                  {/* RIGHT: Selected Model Info with Metrics Overlay */}
-                  <div className="border-l-2 border-l-worm-green pl-4 flex flex-col justify-center">
-                    <div className="text-xs font-semibold text-worm-muted uppercase mb-2">Selected Model</div>
-                    <div className="text-lg font-bold text-worm-ink mb-4">{selectedModel.modelSlug}</div>
-                    <div className="bg-worm-highlight-bg/50 p-4 rounded-lg">
-                      <WormArenaSkillMetrics
-                        mu={selectedModel.mu}
-                        sigma={selectedModel.sigma}
-                        exposed={selectedModel.exposed}
-                        modelSlug={selectedModel.modelSlug}
-                      />
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
           )}
 
           {/* Error States */}

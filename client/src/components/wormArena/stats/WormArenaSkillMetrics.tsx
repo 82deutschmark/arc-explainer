@@ -3,6 +3,8 @@
  * Date: 2025-12-17
  * PURPOSE: Display metric badges and confidence interval section for TrueSkill statistics.
  *          Shows skill estimate (μ), uncertainty (σ), and 99.7% confidence interval bounds.
+ *          Styled to match the Skill Analysis hero graphic (TikZ reference): big pills, centered
+ *          confidence interval, and compact explanatory copy.
  *          Uses react-katex InlineMath for all μ/σ/± notation and prefers the backend-provided
  *          exposed value (pessimistic rating) to stay consistent with leaderboard ranking.
  * SRP/DRY check: Pass — single responsibility for metrics display. Reuses shadcn/ui Badge.
@@ -57,97 +59,82 @@ export default function WormArenaSkillMetrics({
   const pessimistic = Number.isFinite(exposed) ? exposed : lower;
   const optimistic = upper;
 
+  // Reference palette (matching provided TikZ mock): blue for μ/σ, red for pessimistic, green for optimistic.
+  const BLUE_BG = '#D9EDF7';
+  const BLUE_TEXT = '#31708F';
+  const RED_BG = '#F2DEDE';
+  const RED_TEXT = '#A94442';
+  const GREEN_BG = '#D8F0DE';
+  const GREEN_TEXT = '#1E5631';
+
   return (
-    <div className="space-y-6">
-      {/* Row 1: Skill Estimate and Uncertainty Badges */}
-      <div className="grid grid-cols-[1.3fr_0.7fr] gap-6">
-        {/* Skill Estimate */}
-        <div className="flex flex-col items-start gap-2">
-          <div className="text-sm font-semibold text-worm-ink">
+    <div className="space-y-8">
+      <div className="grid grid-cols-2 gap-10 items-start">
+        <div className="text-center">
+          <div className="text-lg font-bold text-worm-ink">
             Skill estimate <InlineMath math="\\mu" />
           </div>
           <Badge
             variant="outline"
-            className="px-3 py-1.5 text-lg font-bold"
-            style={{
-              background: 'var(--worm-highlight-bg)',
-              borderColor: 'var(--worm-green)',
-              color: 'var(--worm-green-ink)',
-            }}
+            className="mt-3 px-8 py-3 text-4xl font-bold rounded-full border-0"
+            style={{ background: BLUE_BG, color: BLUE_TEXT }}
           >
             {mu.toFixed(2)}
           </Badge>
-          <div className="text-xs text-worm-muted">
-            Center of the skill distribution
+          <div className="mt-3 text-sm text-worm-muted max-w-[18rem] mx-auto">
+            The center of the model skill distribution.
           </div>
         </div>
 
-        {/* Uncertainty */}
-        <div className="flex flex-col items-start gap-2">
-          <div className="text-sm font-semibold text-worm-ink">
+        <div className="text-center">
+          <div className="text-lg font-bold text-worm-ink">
             Uncertainty <InlineMath math="\\sigma" />
           </div>
           <Badge
             variant="outline"
-            className="px-3 py-1.5 text-lg font-bold"
-            style={{
-              background: 'rgba(255, 255, 255, 0.8)',
-              borderColor: 'var(--worm-border)',
-              color: 'var(--worm-muted)',
-            }}
+            className="mt-3 px-8 py-3 text-4xl font-bold rounded-full border-0"
+            style={{ background: BLUE_BG, color: BLUE_TEXT }}
           >
             {sigma.toFixed(2)}
           </Badge>
-          <div className="text-xs text-worm-muted">
-            Range of variability
+          <div className="mt-3 text-sm text-worm-muted max-w-[18rem] mx-auto">
+            The variability of the model's skill.
           </div>
         </div>
       </div>
 
-      {/* Row 2: Confidence Interval */}
-      <div className="space-y-3">
-        <h3 className="text-base font-bold text-worm-ink">
+      <div className="text-center space-y-5">
+        <div className="text-3xl font-bold text-worm-ink">
           {confidencePercentage.toFixed(1)}% Confidence Interval
-        </h3>
+        </div>
 
-        {/* Interval Pills */}
-        <div className="flex items-center justify-start gap-3">
-          <div className="flex flex-col items-center gap-1">
+        <div className="flex items-start justify-center gap-8">
+          <div className="text-center">
             <Badge
               variant="outline"
-              className="px-3 py-1.5 text-lg font-bold"
-              style={{
-                background: 'rgba(200, 90, 58, 0.12)',
-                borderColor: 'rgba(200, 90, 58, 0.35)',
-                color: 'rgb(153, 27, 27)',
-              }}
+              className="px-8 py-3 text-4xl font-bold rounded-full border-0"
+              style={{ background: RED_BG, color: RED_TEXT }}
             >
               {pessimistic.toFixed(2)}
             </Badge>
-            <div className="text-xs font-semibold text-worm-ink">pessimistic rating</div>
+            <div className="mt-2 text-sm font-bold text-worm-ink">pessimistic rating</div>
           </div>
 
-          {/* Dash */}
-          <div className="h-0.5 w-4 bg-worm-border" />
+          <div className="mt-6 h-1 w-20" style={{ background: 'rgba(51, 51, 51, 0.9)' }} />
 
-          <div className="flex flex-col items-center gap-1">
+          <div className="text-center">
             <Badge
               variant="outline"
-              className="px-3 py-1.5 text-lg font-bold"
-              style={{
-                background: 'var(--worm-highlight-bg)',
-                borderColor: 'var(--worm-green)',
-                color: 'var(--worm-green-ink)',
-              }}
+              className="px-8 py-3 text-4xl font-bold rounded-full border-0"
+              style={{ background: GREEN_BG, color: GREEN_TEXT }}
             >
               {optimistic.toFixed(2)}
             </Badge>
-            <div className="text-xs font-semibold text-worm-ink">optimistic rating</div>
+            <div className="mt-2 text-sm font-bold text-worm-ink">optimistic rating</div>
           </div>
         </div>
 
-        {/* Explanatory Text */}
-        <div className="text-xs text-worm-muted leading-relaxed bg-worm-track/20 p-2.5 rounded">
+        <div className="text-sm text-worm-muted leading-relaxed">
           <div>
             {confidencePercentage.toFixed(1)}% of the time, the model will demonstrate skill within this interval.
           </div>
