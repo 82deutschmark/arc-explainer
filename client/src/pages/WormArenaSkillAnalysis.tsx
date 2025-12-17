@@ -1,23 +1,15 @@
 /**
- * Author: Cascade
+ * Author: GPT-5.2-Medium-Reasoning
  * Date: 2025-12-17
- * PURPOSE: Worm Arena Skill Distribution Analysis page. Orchestrates model selection (URL-driven),
- *          a three-slice UI (selected list | hero chart | reference list), and the bell curve
- *          visualization to explain why TrueSkill differs from raw W/L ratio.
- *          Reuses shared Worm Arena components (leaderboard, model snapshot, placement card) while
- *          keeping the 3-column layout.
- *          Ensures ratings are fetched by calling useModelRating().refresh() when query params change.
- *          Adds an explicit baseline picker affordance: the reference snapshot's model slug is a button
- *          that clears the baseline.
- *          Uses a wider container so the left model list card does not clip its scroll area.
- *          Simplifies the top section by removing global stat strips and wiring the TrueSkill
- *          leaderboard to select the baseline model.
- *          Restores the baseline snapshot + searchable baseline picker list to avoid regressions.
+ * PURPOSE: Worm Arena Skill Analysis orchestration. Coordinates URL-driven selections, poster vs.
+ *          interactive comparison tabs, and the flanking selector/baseline cards so visitors can
+ *          swap between the legacy hero graphic and the new scatter + multi-curve explorer while
+ *          keeping data refresh + query syncing consistent.
  * SRP/DRY check: Pass — page-level composition only; rendering delegated to child components.
  *
  * Touches: WormArenaTrueSkillLeaderboard, WormArenaPlacementCard,
  *          WormArenaModelListCard, WormArenaSkillHeroGraphic, WormArenaModelSnapshotCard,
- *          useWormArenaTrueSkillLeaderboard, useModelRating, wouter useSearch.
+ *          WormArenaSkillComparison, useWormArenaTrueSkillLeaderboard, useModelRating, wouter useSearch.
  */
 
 import React from 'react';
@@ -33,6 +25,12 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from '@/components/ui/accordion';
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from '@/components/ui/tabs';
 
 import WormArenaHeader from '@/components/WormArenaHeader';
 import WormArenaModelListCard from '@/components/wormArena/stats/WormArenaModelListCard';
@@ -40,6 +38,7 @@ import WormArenaSkillHeroGraphic from '@/components/wormArena/stats/WormArenaSki
 import WormArenaModelSnapshotCard from '@/components/wormArena/stats/WormArenaModelSnapshotCard';
 import WormArenaTrueSkillLeaderboard from '@/components/WormArenaTrueSkillLeaderboard';
 import WormArenaPlacementCard from '@/components/wormArena/stats/WormArenaPlacementCard';
+import WormArenaSkillComparison from '@/components/wormArena/stats/WormArenaSkillComparison';
 
 import useWormArenaTrueSkillLeaderboard from '@/hooks/useWormArenaTrueSkillLeaderboard';
 import { useModelRating } from '@/hooks/useSnakeBench';
@@ -115,6 +114,13 @@ export default function WormArenaSkillAnalysis() {
 
   const [selectedFilter, setSelectedFilter] = React.useState('');
   const [referenceFilter, setReferenceFilter] = React.useState('');
+  const [viewMode, setViewMode] = React.useState<'poster' | 'comparison'>('poster');
+  const [comparisonSelections, setComparisonSelections] = React.useState<string[]>(() => {
+    const seeds = [modelSlug ?? undefined, referenceSlug ?? undefined].filter(
+      (slug): slug is string => Boolean(slug),
+    );
+    return Array.from(new Set(seeds));
+  });
 
   // Fetch data
   const { entries: leaderboard, isLoading: loadingLeaderboard, error: errorLeaderboard } =
@@ -192,6 +198,24 @@ export default function WormArenaSkillAnalysis() {
       }),
     );
   }, [referenceSlug, selectedModelSlug, leaderboard, setLocation]);
+
+  React.useEffect(() => {
+    const seeds = [selectedModelSlug ?? undefined, referenceSlug ?? undefined].filter(
+      (slug): slug is string => Boolean(slug),
+    );
+    if (!seeds.length) {
+      return;
+    }
+    setComparisonSelections((prev) => {
+      const merged = [...prev];
+      seeds.forEach((slug) => {
+        if (!merged.includes(slug)) {
+          merged.push(slug);
+        }
+      });
+      return merged.slice(-5);
+    });
+  }, [referenceSlug, selectedModelSlug]);
 
   return (
     <TooltipProvider>
@@ -301,29 +325,57 @@ export default function WormArenaSkillAnalysis() {
               />
             </div>
 
-            {/* MIDDLE: Hero graphic (metrics + bell curve as one unified poster) */}
-            <div className="min-w-0 bg-white rounded-lg p-8 flex flex-col items-center justify-center min-h-[600px]">
-              {selectedModel ? (
-                <WormArenaSkillHeroGraphic
-                  key={`${selectedModel.modelSlug}-${referenceModel?.modelSlug ?? 'none'}`}
-                  mu={selectedModel.mu}
-                  sigma={selectedModel.sigma}
-                  exposed={selectedModel.exposed}
-                  modelLabel={selectedModel.modelSlug}
-                  gamesPlayed={selectedModel.gamesPlayed}
-                  wins={selectedModel.wins}
-                  losses={selectedModel.losses}
-                  ties={selectedModel.ties}
-                  totalCost={selectedModel.totalCost}
-                  referenceMu={referenceModel?.mu}
-                  referenceSigma={referenceModel?.sigma}
-                  referenceLabel={referenceModel?.modelSlug}
-                />
-              ) : (
-                <div className="text-center text-sm font-semibold text-worm-muted py-20">
-                  Select a model from the left list to begin.
-                </div>
-              )}
+            {/* MIDDLE: Poster/comparison tabs */}
+            <div className="min-w-0 rounded-lg bg-white p-4">
+              <Tabs
+                value={viewMode}
+                onValueChange={(next) => setViewMode(next as 'poster' | 'comparison')}
+                className="w-full"
+              >
+                <TabsList className="w-full">
+                  <TabsTrigger value="poster" className="flex-1">
+                    Poster View
+                  </TabsTrigger>
+                  <TabsTrigger value="comparison" className="flex-1">
+                    Comparison View
+                  </TabsTrigger>
+                </TabsList>
+
+                <TabsContent value="poster" className="mt-4">
+                  <div className="flex min-h-[560px] flex-col items-center justify-center rounded-lg bg-white p-6">
+                    {selectedModel ? (
+                      <WormArenaSkillHeroGraphic
+                        key={`${selectedModel.modelSlug}-${referenceModel?.modelSlug ?? 'none'}`}
+                        mu={selectedModel.mu}
+                        sigma={selectedModel.sigma}
+                        exposed={selectedModel.exposed}
+                        modelLabel={selectedModel.modelSlug}
+                        gamesPlayed={selectedModel.gamesPlayed}
+                        wins={selectedModel.wins}
+                        losses={selectedModel.losses}
+                        ties={selectedModel.ties}
+                        totalCost={selectedModel.totalCost}
+                        referenceMu={referenceModel?.mu}
+                        referenceSigma={referenceModel?.sigma}
+                        referenceLabel={referenceModel?.modelSlug}
+                      />
+                    ) : (
+                      <div className="py-20 text-center text-sm font-semibold text-worm-muted">
+                        Select a model from the left list to begin.
+                      </div>
+                    )}
+                  </div>
+                </TabsContent>
+
+                <TabsContent value="comparison" className="mt-4">
+                  <WormArenaSkillComparison
+                    leaderboard={leaderboard}
+                    selectedModels={comparisonSelections}
+                    onSelectionChange={setComparisonSelections}
+                    isLoading={loadingLeaderboard}
+                  />
+                </TabsContent>
+              </Tabs>
             </div>
 
             {/* RIGHT: Baseline (reference) picker + snapshot */}
