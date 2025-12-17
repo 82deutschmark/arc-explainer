@@ -1,5 +1,24 @@
 # New entires at the top, use proper SemVer!
 
+### Version 6.4.7  Dec 17, 2025
+
+- **Worm Arena Skill Analysis: finished wiring + chart polish (URL selection, KaTeX math, visible axis/ticks)** (Author: Cascade)
+  - Skill Analysis page (`/worm-arena/skill-analysis`) now drives selected model + reference model via URL query params (`?model=...&reference=...`).
+  - Ratings on the Skill Analysis page now reliably load by explicitly calling `useModelRating().refresh()` when selection changes.
+  - KaTeX math rendering (`InlineMath`) is used consistently for μ/σ/± copy, with KaTeX CSS loaded on the page.
+  - Bell curve chart no longer clips tick labels; adds axis label and displays hover readout as density (not a misleading percent).
+  - Worm Arena navigation now includes a "Skill Analysis" tab on Replay/Live/Matches/Stats pages.
+  - **Files Modified**:
+    - `client/src/pages/WormArenaSkillAnalysis.tsx`
+    - `client/src/components/wormArena/stats/WormArenaSkillDistributionChart.tsx`
+    - `client/src/components/wormArena/stats/WormArenaSkillMetrics.tsx`
+    - `client/src/components/wormArena/stats/WormArenaSkillSelector.tsx`
+    - `client/src/pages/WormArena.tsx`
+    - `client/src/pages/WormArenaLive.tsx`
+    - `client/src/pages/WormArenaMatches.tsx`
+    - `client/src/pages/WormArenaStats.tsx`
+    - `CHANGELOG.md`
+
 ### Version 6.4.6  Dec 17, 2025
 
 - **HuggingFace union accuracy SRP/DRY refactor (shared compare service + auto-fetch hook + shared union UI)** (Author: Cascade)
