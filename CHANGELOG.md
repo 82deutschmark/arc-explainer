@@ -1,5 +1,25 @@
 # New entires at the top, use proper SemVer!
 
+### Version 6.4.11  Dec 17, 2025
+
+- **Worm Arena Skill Analysis: bell curve chart containment + layout fixes (match reference)** (Author: Cascade)
+  - Bell curve SVG now reserves top/bottom margins so curves, labels, and axis ticks stay inside the poster.
+  - Uses a wider ±4σ range and stable integer axis bounds so tails taper naturally instead of feeling clipped.
+  - Adds a dashed vertical line at the selected model's μ and offsets labels to avoid overlap when models are close.
+  - **Files Modified**:
+    - `client/src/components/wormArena/stats/WormArenaSkillHeroGraphic.tsx`
+    - `CHANGELOG.md`
+
+### Version 6.4.10  Dec 17, 2025
+
+- **Worm Arena Skill Analysis: include ALL games (stop filtering by game_type) so model graph populates** (Author: Cascade)
+  - Fixes the Skill Analysis page appearing empty when replays are labeled `ladder` (or other upstream types).
+  - SnakeBench analytics queries (stats/TrueSkill leaderboard/model rating) now count all games, regardless of `public.games.game_type`.
+  - Replay ingest supports a `gameTypeOverride` so ARC Explainer can standardize the stored `game_type` going forward.
+  - **Files Modified**:
+    - `server/repositories/SnakeBenchRepository.ts`
+    - `CHANGELOG.md`
+
 ### Version 6.4.9  Dec 17, 2025
 
 - **Worm Arena Skill Analysis: reuse Stats & Placement components (global stats, leaderboard, reference placement)** (Author: Cascade)

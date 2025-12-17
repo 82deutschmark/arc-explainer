@@ -1,10 +1,15 @@
 /**
  * Author: Cascade
- * Date: 2025-12-16
+ * Date: 2025-12-17
  * PURPOSE: SnakeBenchRepository
  *          Handles compatibility-first persistence of SnakeBench games
  *          into PostgreSQL tables that mirror the root SnakeBench
  *          project schema (models, games, game_participants).
+ *          IMPORTANT: Worm Arena analytics (TrueSkill leaderboard, model ratings,
+ *          global stats) must include all games regardless of upstream game_type.
+ *          To prevent analytics pages from appearing empty, this repository:
+ *          - Allows replay ingest to override/standardize game_type for ARC Explainer.
+ *          - Avoids filtering analytics queries by game_type.
  *          Exposes model discovery timestamps for Worm Arena UI sorting.
  * SRP/DRY check: Pass — focused exclusively on SnakeBench DB reads/writes.
  */
@@ -143,18 +148,18 @@ export class SnakeBenchRepository extends BaseRepository {
       return;
     }
 
+    const gameType = params.gameType ?? 'arc-explainer';
+
     // If we have a completed replay file, ingest the full parity data path instead of the minimal summary.
     if (result.completedGamePath) {
       try {
-        await this.ingestReplayFromFile(result.completedGamePath);
+        await this.ingestReplayFromFile(result.completedGamePath, { gameTypeOverride: gameType });
         return;
       } catch (err) {
         const msg = err instanceof Error ? err.message : String(err);
         logger.warn(`SnakeBenchRepository.recordMatchFromResult: full replay ingest failed, falling back to minimal insert: ${msg}`, 'snakebench-db');
       }
     }
-
-    const gameType = params.gameType ?? 'arc-explainer';
 
     // Compute simple aggregates from the result we already have.
     const scores = result.scores || {};
@@ -306,7 +311,6 @@ export class SnakeBenchRepository extends BaseRepository {
           g.rounds,
           g.replay_path
         FROM public.games g
-        WHERE g.game_type = 'arc-explainer'
         ORDER BY COALESCE(g.start_time, g.created_at, NOW()) DESC
         LIMIT $1;
       `;
@@ -314,7 +318,6 @@ export class SnakeBenchRepository extends BaseRepository {
       const countSql = `
         SELECT COUNT(*) AS total
         FROM public.games
-        WHERE game_type = 'arc-explainer';
       `;
 
       const [listResult, countResult] = await Promise.all([
@@ -382,7 +385,6 @@ export class SnakeBenchRepository extends BaseRepository {
 
     params.push(model);
     where.push(`m.model_slug = $${params.length}`);
-    where.push(`g.game_type = 'arc-explainer'`);
     where.push(`g.status = 'completed'`);
 
     if (opponent) {
@@ -542,7 +544,6 @@ export class SnakeBenchRepository extends BaseRepository {
           FROM public.games g
           LEFT JOIN public.game_participants gp ON g.id = gp.game_id
           LEFT JOIN public.models m ON gp.model_id = m.id
-          WHERE g.game_type = 'arc-explainer';
         `;
 
         const result = await this.query(sqlAll);
@@ -563,8 +564,7 @@ export class SnakeBenchRepository extends BaseRepository {
         FROM public.games g
         LEFT JOIN public.game_participants gp ON g.id = gp.game_id
         LEFT JOIN public.models m ON gp.model_id = m.id
-        WHERE g.game_type = 'arc-explainer'
-          AND g.created_at >= NOW() - (INTERVAL '1 day' * $1);
+        WHERE g.created_at >= NOW() - (INTERVAL '1 day' * $1);
       `;
 
       const result = await this.query(sql, [safeDays]);
@@ -592,25 +592,22 @@ export class SnakeBenchRepository extends BaseRepository {
     try {
       const sql = `
         SELECT
-          (SELECT COUNT(*) FROM public.games g WHERE g.game_type = 'arc-explainer') AS total_games,
+          (SELECT COUNT(*) FROM public.games g) AS total_games,
           (
             SELECT COUNT(DISTINCT m.model_slug)
             FROM public.models m
             JOIN public.game_participants gp ON m.id = gp.model_id
             JOIN public.games g2 ON gp.game_id = g2.id
-            WHERE g2.game_type = 'arc-explainer'
           ) AS active_models,
           (
             SELECT COALESCE(MAX(gp2.score), 0)
             FROM public.game_participants gp2
             JOIN public.games g3 ON gp2.game_id = g3.id
-            WHERE g3.game_type = 'arc-explainer'
           ) AS top_apples,
           (
             SELECT COALESCE(SUM(gp3.cost), 0)
             FROM public.game_participants gp3
             JOIN public.games g4 ON gp3.game_id = g4.id
-            WHERE g4.game_type = 'arc-explainer'
           ) AS total_cost;
       `;
 
@@ -635,7 +632,7 @@ export class SnakeBenchRepository extends BaseRepository {
   /**
    * Greatest-hits selector for Worm Arena.
    *
-   * Uses three simple leaderboards over completed arc-explainer games:
+   * Uses three simple leaderboards over completed games:
    * - Longest by rounds played (rounds >= 20)
    * - Most expensive by total_cost (cost > $0.01, rounds >= 5)
    * - Highest scoring by max per-player score (rounds >= 5)
@@ -675,8 +672,7 @@ export class SnakeBenchRepository extends BaseRepository {
         FROM public.games g
         JOIN public.game_participants gp ON gp.game_id = g.id
         JOIN public.models m ON gp.model_id = m.id
-        WHERE g.game_type = 'arc-explainer'
-          AND g.status = 'completed'
+        WHERE g.status = 'completed'
           AND COALESCE(g.rounds, 0) >= 20
         GROUP BY g.id, g.start_time, g.rounds, g.board_width, g.board_height, g.total_cost
         HAVING MAX(gp.score) > 0 OR g.total_cost > 0
@@ -702,8 +698,7 @@ export class SnakeBenchRepository extends BaseRepository {
         FROM public.games g
         JOIN public.game_participants gp ON gp.game_id = g.id
         JOIN public.models m ON gp.model_id = m.id
-        WHERE g.game_type = 'arc-explainer'
-          AND g.status = 'completed'
+        WHERE g.status = 'completed'
           AND COALESCE(g.rounds, 0) >= 5
           AND g.total_cost >= 0.010
         GROUP BY g.id, g.start_time, g.rounds, g.board_width, g.board_height, g.total_cost
@@ -730,8 +725,7 @@ export class SnakeBenchRepository extends BaseRepository {
         FROM public.games g
         JOIN public.game_participants gp ON gp.game_id = g.id
         JOIN public.models m ON gp.model_id = m.id
-        WHERE g.game_type = 'arc-explainer'
-          AND g.status = 'completed'
+        WHERE g.status = 'completed'
           AND COALESCE(g.rounds, 0) >= 5
         GROUP BY g.id, g.start_time, g.rounds, g.board_width, g.board_height, g.total_cost
         HAVING MAX(gp.score) > 0 OR g.total_cost > 0
@@ -883,7 +877,6 @@ export class SnakeBenchRepository extends BaseRepository {
         JOIN public.game_participants gp ON m.id = gp.model_id
         JOIN public.games g ON gp.game_id = g.id
         WHERE m.model_slug = $1
-          AND g.game_type = 'arc-explainer'
         GROUP BY
           m.model_slug,
           m.trueskill_mu,
@@ -976,7 +969,6 @@ export class SnakeBenchRepository extends BaseRepository {
           ON opp_gp.game_id = gp.game_id AND opp_gp.player_slot <> gp.player_slot
         LEFT JOIN public.models opp ON opp_gp.model_id = opp.id
         WHERE m.model_slug = $1
-          AND g.game_type = 'arc-explainer'
         ORDER BY COALESCE(g.start_time, g.created_at, NOW()) DESC
         LIMIT $2;
       `;
@@ -1054,7 +1046,6 @@ export class SnakeBenchRepository extends BaseRepository {
         FROM public.models m
         JOIN public.game_participants gp ON m.id = gp.model_id
         JOIN public.games g ON gp.game_id = g.id
-        WHERE g.game_type = 'arc-explainer'
         GROUP BY m.model_slug, m.trueskill_mu, m.trueskill_sigma, m.trueskill_exposed
         HAVING COUNT(gp.game_id) >= $2
         ORDER BY COALESCE(m.trueskill_exposed, m.trueskill_mu - 3 * m.trueskill_sigma) DESC
@@ -1134,7 +1125,6 @@ export class SnakeBenchRepository extends BaseRepository {
           FROM public.models m
           JOIN public.game_participants gp ON m.id = gp.model_id
           JOIN public.games g ON gp.game_id = g.id
-          WHERE g.game_type = 'arc-explainer'
           GROUP BY m.model_slug
           HAVING COUNT(gp.game_id) > 0
           ORDER BY (COUNT(CASE WHEN gp.result = 'won' THEN 1 END)::float / NULLIF(COUNT(gp.game_id), 0)) DESC NULLS LAST
@@ -1151,7 +1141,6 @@ export class SnakeBenchRepository extends BaseRepository {
           FROM public.models m
           JOIN public.game_participants gp ON m.id = gp.model_id
           JOIN public.games g ON gp.game_id = g.id
-          WHERE g.game_type = 'arc-explainer'
           GROUP BY m.model_slug
           HAVING COUNT(gp.game_id) > 0
           ORDER BY games_played DESC
@@ -1233,14 +1222,19 @@ export class SnakeBenchRepository extends BaseRepository {
    * @param filePath Absolute or relative path to snake_game_<id>.json
    * @param opts.forceRecompute When true, run aggregates/ratings even if the game already exists (for backfill)
    */
-  async ingestReplayFromFile(filePath: string, opts: { forceRecompute?: boolean } = {}): Promise<void> {
+  async ingestReplayFromFile(
+    filePath: string,
+    opts: { forceRecompute?: boolean; gameTypeOverride?: string } = {},
+  ): Promise<void> {
     if (!this.isConnected()) return;
 
     const absolutePath = path.isAbsolute(filePath) ? filePath : path.join(process.cwd(), filePath);
     const raw = await fs.promises.readFile(absolutePath, 'utf8');
     const parsed = JSON.parse(raw);
 
-    const normalized = this.parseReplayJson(parsed, absolutePath);
+    const normalized = this.parseReplayJson(parsed, absolutePath, {
+      gameTypeOverride: opts.gameTypeOverride,
+    });
     if (!normalized.gameId) {
       throw new Error(`Replay missing game id: ${absolutePath}`);
     }
@@ -1346,7 +1340,11 @@ export class SnakeBenchRepository extends BaseRepository {
   /**
    * Parse replay JSON into normalized structures for DB writes.
    */
-  private parseReplayJson(raw: any, absolutePath: string): {
+  private parseReplayJson(
+    raw: any,
+    absolutePath: string,
+    opts: { gameTypeOverride?: string } = {},
+  ): {
     gameId: string;
     startTime: Date | null;
     endTime: Date | null;
@@ -1430,7 +1428,8 @@ export class SnakeBenchRepository extends BaseRepository {
 
     const filename = path.basename(absolutePath);
     const replayPath = path.join('completed_games', filename);
-    const gameType = String(gameBlock.game_type ?? metadata.game_type ?? 'ladder');
+    const gameTypeRaw = (opts.gameTypeOverride ?? gameBlock.game_type ?? metadata.game_type ?? 'arc-explainer') as any;
+    const gameType = String(gameTypeRaw);
 
     return {
       gameId,
