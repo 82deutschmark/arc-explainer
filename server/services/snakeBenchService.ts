@@ -7,9 +7,12 @@
  *          (server/python/snakebench_runner.py) and return a compact
  *          summary suitable for HTTP APIs and frontend usage.
  *
- *          Option A behavior: accept OpenRouter model slugs discovered in our
- *          SnakeBench DB (active) in addition to the curated OpenRouter entries
- *          in the central MODELS config.
+ *          Behavior notes:
+ *          - Accept OpenRouter model slugs discovered in our SnakeBench DB (active)
+ *            in addition to curated OpenRouter entries in the central MODELS config.
+ *          - List endpoints only return matches that have an available replay asset
+ *            (local file, DB replay_path URL, or GitHub raw fallback). This prevents
+ *            the UI from offering matches that cannot be replayed.
  * SRP/DRY check: Pass — dedicated to SnakeBench subprocess handling and
  *                result shaping; reuses existing logging patterns.
  */
@@ -939,7 +942,9 @@ export class SnakeBenchService {
     try {
       const { games, total } = await repositoryService.snakeBench.getRecentGames(safeLimit);
       if (total > 0 && games.length > 0) {
-        return { games: this.filterReplayableGames(games), total };
+        const replayable = this.filterReplayableGames(games);
+        const available = await this.filterGamesWithAvailableReplays(replayable);
+        return { games: available, total: available.length };
       }
     } catch (dbErr) {
       const msg = dbErr instanceof Error ? dbErr.message : String(dbErr);
@@ -992,7 +997,9 @@ export class SnakeBenchService {
         };
       });
 
-      return { games: this.filterReplayableGames(games), total };
+      const replayable = this.filterReplayableGames(games);
+      const available = await this.filterGamesWithAvailableReplays(replayable);
+      return { games: available, total: available.length };
     } catch (err) {
       const message = err instanceof Error ? err.message : String(err);
       logger.error(`Failed to list SnakeBench games: ${message}`, 'snakebench-service');
@@ -1171,19 +1178,26 @@ export class SnakeBenchService {
   private async fetchJsonFromUrl(url: string): Promise<any> {
     return await new Promise((resolve, reject) => {
       const req = https.get(url, (res) => {
-        if (res.statusCode && res.statusCode >= 400) {
-          reject(new Error(`HTTP ${res.statusCode}`));
-          return;
-        }
+        const statusCode = res.statusCode ?? 0;
         const chunks: Buffer[] = [];
         res.on('data', (chunk) => chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk)));
         res.on('end', () => {
+          const raw = Buffer.concat(chunks).toString('utf8');
+
+          // Improve failure visibility when upstream returns HTML or a helpful message.
+          if (statusCode >= 400) {
+            const snippet = raw.length > 200 ? `${raw.slice(0, 200)}...` : raw;
+            reject(new Error(`HTTP ${statusCode} ${snippet ? `- ${snippet}` : ''}`));
+            return;
+          }
+
           try {
-            const raw = Buffer.concat(chunks).toString('utf8');
             const parsed = JSON.parse(raw);
             resolve(parsed);
           } catch (err) {
-            reject(err);
+            // Include a tiny snippet so "Unexpected token <" has context.
+            const snippet = raw.length > 200 ? `${raw.slice(0, 200)}...` : raw;
+            reject(new Error(`Invalid JSON response${snippet ? ` - ${snippet}` : ''}`));
           }
         });
       });
@@ -1272,6 +1286,56 @@ export class SnakeBenchService {
     // Fallback: no games meet the threshold; return original list so the
     // UI can still show "something", but prefer longer matches first.
     return [...games].sort((a, b) => (b.roundsPlayed ?? 0) - (a.roundsPlayed ?? 0));
+  }
+
+  /**
+   * Filter a candidate list down to matches with an available replay.
+   *
+   * Notes:
+   * - Concurrency is intentionally small to avoid spamming remote replay endpoints.
+   * - We keep this inside the service so listGames stays resilient if the DB has
+   *   completed matches without persisted replay assets.
+   */
+  private async filterGamesWithAvailableReplays(games: SnakeBenchGameSummary[]): Promise<SnakeBenchGameSummary[]> {
+    if (!Array.isArray(games) || games.length === 0) return [];
+
+    const MAX_CONCURRENCY = 5;
+    const results: SnakeBenchGameSummary[] = [];
+
+    // Simple in-process concurrency limiter.
+    let index = 0;
+    const worker = async () => {
+      while (index < games.length) {
+        const current = index;
+        index += 1;
+
+        const game = games[current];
+        const gameId = String(game?.gameId ?? '').trim();
+        if (!gameId) {
+          continue;
+        }
+
+        try {
+          const available = await this.replayExists(gameId);
+          if (available) {
+            results.push(game);
+          }
+        } catch (err) {
+          const msg = err instanceof Error ? err.message : String(err);
+          logger.warn(
+            `SnakeBenchService.filterGamesWithAvailableReplays: replayExists check failed for ${gameId}: ${msg}`,
+            'snakebench-service',
+          );
+        }
+      }
+    };
+
+    const workers = Array.from({ length: Math.min(MAX_CONCURRENCY, games.length) }, () => worker());
+    await Promise.all(workers);
+
+    // Preserve the original ordering from the input list.
+    const allowed = new Set(results.map((g) => g.gameId));
+    return games.filter((g) => allowed.has(g.gameId));
   }
 
   async healthCheck(): Promise<SnakeBenchHealthResponse> {
