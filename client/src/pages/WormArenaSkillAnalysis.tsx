@@ -191,6 +191,7 @@ export default function WormArenaSkillAnalysis() {
             <div className="bg-white rounded-lg p-8 flex flex-col items-center justify-center min-h-[600px]">
               {selectedModel ? (
                 <WormArenaSkillHeroGraphic
+                  key={`${selectedModel.modelSlug}-${referenceModel?.modelSlug ?? 'none'}`}
                   mu={selectedModel.mu}
                   sigma={selectedModel.sigma}
                   exposed={selectedModel.exposed}
@@ -218,8 +219,8 @@ export default function WormArenaSkillAnalysis() {
                 leaderboard={listEntries}
                 recentActivityLabel={null}
                 selectedModel={referenceSlug ?? null}
-                filter={selectedFilter}
-                onFilterChange={setSelectedFilter}
+                filter={referenceFilter}
+                onFilterChange={setReferenceFilter}
                 onSelectModel={(slug) => {
                   setLocation(
                     buildSkillAnalysisUrl({
