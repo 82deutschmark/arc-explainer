@@ -303,7 +303,7 @@ export default function WormArenaSkillAnalysis() {
 
           <div className="grid grid-cols-1 xl:grid-cols-[minmax(360px,1fr)_minmax(0,1.6fr)_minmax(360px,1fr)] gap-6 items-start">
             {/* LEFT: Selected model list */}
-            <div className="min-w-0">
+            <div className="min-w-0 space-y-4">
               <WormArenaModelListCard
                 leaderboard={listEntries}
                 recentActivityLabel={recentActivityLabel}
@@ -321,7 +321,13 @@ export default function WormArenaSkillAnalysis() {
                 title="Compare model"
                 subtitle="Pick the model you want to analyze (blue curve)"
                 searchPlaceholder="Search compare model (e.g. openai/gpt-5.1)"
-                scrollAreaClassName="h-[520px] max-h-[60vh]"
+                scrollAreaClassName="h-[340px] max-h-[42vh]"
+              />
+
+              <WormArenaModelSnapshotCard
+                rating={selectedModel ?? null}
+                isLoading={loadingSelected}
+                error={errorSelected ?? null}
               />
             </div>
 

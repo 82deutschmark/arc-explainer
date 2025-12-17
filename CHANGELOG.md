@@ -7,11 +7,13 @@
   - Comparison View now shows a skeleton loading state during initial leaderboard load.
   - Fixed encoding issues in comparison-view headers so mu/sigma labels render cleanly.
   - Restored and hardened the baseline selector UX so the baseline picker remains visible and the baseline snapshot does not disappear.
+  - Poster View: left Compare model column now includes a Model snapshot card, and the bell curve graphic is rendered immediately under the view tabs.
   - **Files Modified**:
     - `client/src/pages/WormArenaSkillAnalysis.tsx`
     - `client/src/components/wormArena/stats/WormArenaSkillComparison.tsx`
     - `client/src/components/wormArena/stats/WormArenaSkillScatterPlot.tsx`
     - `client/src/components/wormArena/stats/WormArenaMultiCurveOverlay.tsx`
+    - `client/src/components/wormArena/stats/WormArenaSkillHeroGraphic.tsx`
     - `client/src/components/wormArena/stats/WormArenaModelListCard.tsx`
     - `docs/plans/WormArenaStatsPlan.md`
     - `package.json`
