@@ -274,6 +274,20 @@ export default function WormArenaSkillHeroGraphic({
         </text>
       </svg>
 
+      {/* Win Probability section - positioned right after bell curve per user request */}
+      {referenceMu !== undefined && referenceSigma !== undefined && referenceLabel && (
+        <div className="mt-6 mb-8">
+          <WormArenaWinProbability
+            compareMu={mu}
+            compareSigma={sigma}
+            compareLabel={modelLabel}
+            baselineMu={referenceMu}
+            baselineSigma={referenceSigma}
+            baselineLabel={referenceLabel}
+          />
+        </div>
+      )}
+
       {/* Skill estimate and Uncertainty (both models, role-colored) */}
       <div className="w-full max-w-xl mb-8 space-y-4">
         <div className="grid grid-cols-2 gap-4">
@@ -343,7 +357,7 @@ export default function WormArenaSkillHeroGraphic({
         )}
 
         <div className="text-sm text-center" style={{ color: LABEL_GRAY }}>
-          Compare is blue. Baseline is red.
+          Compare is blue. Baseline is green.
         </div>
       </div>
 
@@ -399,22 +413,12 @@ export default function WormArenaSkillHeroGraphic({
         </div>
       </div>
 
-      {/* Win Probability section (only shown when baseline is selected) */}
-      {referenceMu !== undefined && referenceSigma !== undefined && referenceLabel && (
-        <div className="mb-8">
-          <WormArenaWinProbability
-            compareMu={mu}
-            compareSigma={sigma}
-            compareLabel={modelLabel}
-            baselineMu={referenceMu}
-            baselineSigma={referenceSigma}
-            baselineLabel={referenceLabel}
-          />
+      {/* Stats boxes: Compare model statistics only */}
+      <div className="w-full max-w-xl">
+        <div className="text-sm font-semibold text-center mb-2" style={{ color: compareColors.accent }}>
+          Compare Model Stats
         </div>
-      )}
-
-      {/* Stats boxes: keep these directly above the chart so the story is visible at a glance. */}
-      <div className="w-full max-w-xl grid grid-cols-5 gap-3 mb-3">
+        <div className="grid grid-cols-5 gap-3 mb-3">
         {statBoxes.map((box) => (
           <div
             key={box.label}
@@ -424,6 +428,7 @@ export default function WormArenaSkillHeroGraphic({
             <div className="text-sm font-bold font-mono">{box.value}</div>
           </div>
         ))}
+        </div>
       </div>
     </div>
   );

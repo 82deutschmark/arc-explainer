@@ -87,8 +87,8 @@ export default function WormArenaWinProbability({
           {' '}in a head-to-head match.
         </div>
 
-        {/* Formula display using LaTeX */}
-        <div className="mt-3 text-xs">
+        {/* Formula display using LaTeX - prominent styling per user request */}
+        <div className="mt-3 text-base font-bold text-worm-ink">
           Calculated using:{' '}
           <InlineMath math="P = \Phi\left(\frac{\mu_1 - \mu_2}{\sqrt{\sigma_1^2 + \sigma_2^2}}\right)" />
         </div>

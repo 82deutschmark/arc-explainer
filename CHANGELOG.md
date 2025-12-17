@@ -2,17 +2,21 @@
 
 ### Version 6.5.10  Dec 17, 2025
 
-- **Worm Arena: Win Probability calculation + CI labeling fix** (Author: Claude Sonnet 4)
+- **Worm Arena: Win Probability calculation + UI improvements** (Author: Claude Sonnet 4)
   - Added win probability calculation for TrueSkill model comparisons using the normal distribution formula: P = Phi((mu1 - mu2) / sqrt(sigma1^2 + sigma2^2))
   - Created new utility module `wormArenaWinProbability.ts` with `erf`, `erfc`, `normalCDF`, and `calculateWinProbability` functions (Abramowitz & Stegun approximation, accurate to +/-1.5e-7)
   - Created new component `WormArenaWinProbability.tsx` for displaying statistical comparison between compare and baseline models
-  - Fixed confidence interval labeling in `WormArenaSkillHeroGraphic.tsx` to clarify it applies to the compare model only
-  - Win probability section appears when a baseline model is selected, showing the probability the compare model beats the baseline
+  - Win probability section positioned directly below bell curve for visual prominence
+  - Formula styling increased to text-base bold black for better visibility
+  - Fixed confidence interval labeling to clarify it applies to the compare model only
+  - Stats boxes (Games/Wins/Losses/Ties/Cost) now labeled "Compare Model Stats" to clarify they refer to the compare model
+  - Changed baseline model color from red to **green** for better visual distinction
   - **Files Created**:
     - `client/src/utils/wormArenaWinProbability.ts`
     - `client/src/components/wormArena/WormArenaWinProbability.tsx`
   - **Files Modified**:
     - `client/src/components/wormArena/stats/WormArenaSkillHeroGraphic.tsx`
+    - `client/src/utils/wormArenaRoleColors.ts`
     - `CHANGELOG.md`
 
 ### Version 6.5.9  Dec 17, 2025
