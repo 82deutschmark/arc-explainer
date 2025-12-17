@@ -1,10 +1,12 @@
 /**
  * Author: Cascade
- * Date: 2025-12-16T00:00:00Z (updated 2025-12-16)
+ * Date: 2025-12-16T00:00:00Z (updated 2025-12-17)
  * PURPOSE: Compact, info-focused multi-model comparison dashboard. Displays performance metrics in dense tables,
  *          reuses ModelPerformancePanel and NewModelComparisonResults components. Inline model add/remove with
  *          minimal whitespace and clear controls.
  *          NOTE: Removed client-side "attempt union" scoring fallback; this page now requires backend union stats.
+ *          Refactor note: Reuses shared compareService to avoid duplicating /api/metrics/compare request-building
+ *          and error parsing.
  * SRP/DRY check: Pass - Uses backend metrics for scoring; client only handles selection and presentation.
  */
 
@@ -21,6 +23,7 @@ import { usePageMeta } from '@/hooks/usePageMeta';
 import { parseAttemptModelName } from '@/utils/modelComparison';
 import { detectModelOrigin } from '@/utils/modelOriginDetection';
 import { Badge } from '@/components/ui/badge';
+import { fetchMetricsCompare } from '@/services/metrics/compareService';
 
 const MAX_MODELS = 4;
 const COMPARISON_CACHE_KEY = 'arc-comparison-data';
@@ -128,29 +131,17 @@ export default function ModelComparisonPage() {
       let succeeded = false;
 
       try {
-        const params = new URLSearchParams({ dataset });
-        trimmed.slice(0, MAX_MODELS).forEach((modelName, index) => {
-          params.set(`model${index + 1}`, modelName);
+        const data = await fetchMetricsCompare({
+          dataset,
+          modelNames: trimmed.slice(0, MAX_MODELS),
         });
-
-        const response = await fetch(`/api/metrics/compare?${params.toString()}`);
-        if (!response.ok) {
-          const errorPayload = await response.json().catch(() => null);
-          throw new Error(errorPayload?.message || 'Failed to fetch comparison data');
-        }
-
-        const result = await response.json();
-        if (!result.data) {
-          throw new Error('No data received from server');
-        }
-
-        setComparisonData(result.data);
+        setComparisonData(data);
         succeeded = true;
 
         try {
           const envelope: CachedComparisonEnvelope = {
             version: COMPARISON_CACHE_VERSION,
-            data: result.data,
+            data,
           };
           localStorage.setItem(COMPARISON_CACHE_KEY, JSON.stringify(envelope));
           window.history.replaceState(
