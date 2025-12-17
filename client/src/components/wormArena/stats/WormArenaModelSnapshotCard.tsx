@@ -1,10 +1,12 @@
 /**
- * Author: Cascade
+ * Author: GPT-5.2-Medium-Reasoning
  * Date: 2025-12-17
  * PURPOSE: Worm Arena model snapshot card. Displays a model's TrueSkill parameters and
  *          basic match stats in a compact, reusable card.
  *          When `onModelSlugClick` is provided, the model slug in the header becomes a
  *          clickable control (used by Skill Analysis to let the user change the baseline).
+ *          Supports role-based color coordination (compare=blue, baseline=red) so the
+ *          Skill Analysis page stays visually consistent.
  * SRP/DRY check: Pass — presentation-only; the parent owns selection state.
  */
 
@@ -20,18 +22,25 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip
 import { cn } from '@/lib/utils';
 
 import DataNumber from '@/components/wormArena/DataNumber';
+import type { WormArenaModelRole } from '@/utils/wormArenaRoleColors';
+import { getWormArenaRoleColors } from '@/utils/wormArenaRoleColors';
 
 export default function WormArenaModelSnapshotCard({
   rating,
   isLoading,
   error,
   onModelSlugClick,
+  role = 'neutral',
 }: {
   rating: SnakeBenchModelRating | null | undefined;
   isLoading: boolean;
   error: string | null;
   onModelSlugClick?: (modelSlug: string) => void;
+  role?: WormArenaModelRole;
 }) {
+  const roleColors = getWormArenaRoleColors(role);
+  const dataTone: 'blue' | 'red' | 'neutral' = role === 'compare' ? 'blue' : role === 'baseline' ? 'red' : 'neutral';
+
   const pessimisticEquation = React.useMemo(() => {
     if (!rating) return null;
     const mu = rating.mu.toFixed(2);
@@ -56,12 +65,17 @@ export default function WormArenaModelSnapshotCard({
                     badgeVariants({ variant: 'outline' }),
                     'text-xs font-mono cursor-pointer hover:bg-worm-card',
                   )}
+                  style={{ borderColor: roleColors.accent, color: roleColors.accent }}
                   title="Change baseline model"
                 >
                   {rating.modelSlug}
                 </button>
               ) : (
-                <Badge variant="outline" className="text-xs font-mono">
+                <Badge
+                  variant="outline"
+                  className="text-xs font-mono"
+                  style={{ borderColor: roleColors.accent, color: roleColors.accent }}
+                >
                   {rating.modelSlug}
                 </Badge>
               )}
@@ -95,7 +109,7 @@ export default function WormArenaModelSnapshotCard({
                     </TooltipContent>
                   </Tooltip>
                 </div>
-                <DataNumber>{rating.mu.toFixed(2)}</DataNumber>
+                <DataNumber tone={dataTone}>{rating.mu.toFixed(2)}</DataNumber>
                 <div className="text-xs font-mono mt-1">
                   <InlineMath math="\\mu" /> is the centre of the model skill distribution.
                 </div>
@@ -114,7 +128,7 @@ export default function WormArenaModelSnapshotCard({
                     </TooltipContent>
                   </Tooltip>
                 </div>
-                <DataNumber>{rating.sigma.toFixed(2)}</DataNumber>
+                <DataNumber tone={dataTone}>{rating.sigma.toFixed(2)}</DataNumber>
                 <div className="text-xs font-mono mt-1">
                   Most skill lies in <InlineMath math="\\mu \\pm 3\\sigma" />.
                 </div>
@@ -133,7 +147,7 @@ export default function WormArenaModelSnapshotCard({
                     </TooltipContent>
                   </Tooltip>
                 </div>
-                <DataNumber>{rating.exposed.toFixed(2)}</DataNumber>
+                <DataNumber tone={dataTone}>{rating.exposed.toFixed(2)}</DataNumber>
                 {pessimisticEquation && (
                   <div className="text-xs font-mono mt-1">
                     <InlineMath math={pessimisticEquation} />
@@ -153,7 +167,7 @@ export default function WormArenaModelSnapshotCard({
                     </TooltipContent>
                   </Tooltip>
                 </div>
-                <DataNumber>{rating.displayScore.toFixed(0)}</DataNumber>
+                <DataNumber tone={dataTone}>{rating.displayScore.toFixed(0)}</DataNumber>
                 <div className="text-xs font-mono mt-1">
                   Scaled from TrueSkill rating for display.
                 </div>
@@ -163,19 +177,27 @@ export default function WormArenaModelSnapshotCard({
             <div className="grid grid-cols-5 gap-3 text-sm mt-2">
               <div>
                 <div className="font-bold">Games</div>
-                <DataNumber size="lg">{rating.gamesPlayed}</DataNumber>
+                <DataNumber size="lg" tone={dataTone}>
+                  {rating.gamesPlayed}
+                </DataNumber>
               </div>
               <div>
                 <div className="font-bold">Wins</div>
-                <DataNumber size="lg">{rating.wins}</DataNumber>
+                <DataNumber size="lg" tone={dataTone}>
+                  {rating.wins}
+                </DataNumber>
               </div>
               <div>
                 <div className="font-bold">Losses</div>
-                <DataNumber size="lg">{rating.losses}</DataNumber>
+                <DataNumber size="lg" tone={dataTone}>
+                  {rating.losses}
+                </DataNumber>
               </div>
               <div>
                 <div className="font-bold">Ties</div>
-                <DataNumber size="lg">{rating.ties}</DataNumber>
+                <DataNumber size="lg" tone={dataTone}>
+                  {rating.ties}
+                </DataNumber>
               </div>
               <div>
                 <div className="font-bold flex items-center gap-1">
@@ -208,7 +230,7 @@ export default function WormArenaModelSnapshotCard({
                   <InlineMath math="\\mu - 3\\sigma" /> : conservative lower bound.
                 </div>
                 <div>
-                  Numbers shown with the green pill highlight are live metrics pulled directly from Worm Arena games.
+                  Numbers shown in the colored pill highlight are live metrics pulled directly from Worm Arena games.
                 </div>
               </div>
             </div>
