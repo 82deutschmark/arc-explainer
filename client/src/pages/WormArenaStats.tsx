@@ -106,6 +106,7 @@ export default function WormArenaStats() {
           { label: "Live", href: "/worm-arena/live" },
           { label: "Matches", href: "/worm-arena/matches" },
           { label: "Stats & Placement", href: "/worm-arena/stats", active: true },
+          { label: "Skill Analysis", href: "/worm-arena/skill-analysis" },
         ]}
         showMatchupLabel={false}
       />

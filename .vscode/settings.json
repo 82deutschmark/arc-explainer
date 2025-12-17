@@ -1,4 +1,7 @@
 {
     "chatgpt.openOnStartup": true,
-    "chatgpt.commentCodeLensEnabled": false
+    "chatgpt.commentCodeLensEnabled": false,
+    "claudeCode.allowDangerouslySkipPermissions": true,
+    "claudeCode.preferredLocation": "panel",
+    "claudeCode.respectGitIgnore": false
 }

@@ -1,18 +1,19 @@
 /*
+
  *
- * Author: Cascade using Claude Sonnet 4 (original), Claude Code using Opus 4.5 (2025-12-08 update), Claude Code using Haiku 4.5 (2025-12-09 update), GPT-5.1 Codex CLI (2025-12-11 update)
- * Date: 2025-12-11
+
+ * Author: Codex (GPT-5)
+
+ * Date: 2025-12-18
+
  * PURPOSE: Centralized AI model configuration list consumed by ModelDefinitions and provider lookup utilities.
- *          Updated DeepSeek models to v3.2 with new pricing and specifications.
- *          Added deepseek-reasoner-speciale with expiration-dated base URL.
- *          Added free OpenRouter models: arcee-ai/trinity-mini:free and amazon/nova-2-lite-v1:free (Dec 2025).
- *          Added z-ai/glm-4.6v (Vision) via OpenRouter - multimodal model with 131K context (Dec 2025).
- *          Added openai/gpt-5-nano and openai/gpt-5-mini via OpenRouter (Dec 2025).
- *          Added mistralai/devstral-2512 and mistralai/devstral-2512:free via OpenRouter (Dec 2025).
- *          Added DeepSeek v3.2 Reasoner and OLMo-3 thinking models via OpenRouter (Dec 2025).
- *          OpenRouter entries now source all metadata directly from openrouter-catalog.json (SoT).
+
+ *          Added Gemini 3 Flash Preview metadata for both the native and OpenRouter hierarchies so the low-latency reasoning tier is available across the ARC pipeline.
+
  * SRP/DRY check: Pass - file encapsulates shared model metadata without duplication.
+
  * shadcn/ui: Pass - configuration only.
+
  */
 
 import type { ModelConfig } from '@shared/types';
@@ -394,6 +395,25 @@ const STATIC_MODELS: ModelConfig[] = [
     supportsStructuredOutput: false,
     supportsVision: true,
     notes: 'Direct Gemini API (preview). Keep JSON-mode disabled to preserve reasoning traces.'
+  },
+  // Gemini 3 Flash Preview surfaces the faster reasoning tier so ARC runs can pick the lower-latency release.
+  {
+    key: 'gemini-3-flash-preview',
+    name: 'Gemini 3 Flash Preview',
+    color: 'bg-teal-500',
+    premium: false,
+    cost: { input: '$0.50', output: '$3.00' },
+    supportsTemperature: true,
+    provider: 'Gemini',
+    responseTime: { speed: 'fast', estimate: '<30 sec' },
+    isReasoning: true,
+    apiModelName: 'models/gemini-3-flash-preview',
+    modelType: 'gemini',
+    contextWindow: 1048576,
+    maxOutputTokens: 65535,
+    releaseDate: "2025-12",
+    supportsVision: true,
+    notes: 'Flash preview tuned for interactive agent loops; use the OpenRouter alias for the same tier via BYO routing.'
   },
   {
     key: 'gemini-2.5-pro',
@@ -1218,6 +1238,25 @@ const STATIC_MODELS: ModelConfig[] = [
     supportsStreaming: false,
     supportsStructuredOutput: false, // Reasoning models have issues with JSON mode enforcement
     notes: 'Reasoning details must be preserved when using multi-turn tool calling. See: https://openrouter.ai/docs/use-cases/reasoning-tokens#preserving-reasoning-blocks'
+  },
+  // Mirror the Gemini 3 Flash Preview release in the OpenRouter catalog so BYO paths can hit the fast-thinking tier.
+  {
+    key: 'google/gemini-3-flash-preview',
+    name: 'Gemini 3 Flash Preview',
+    color: 'bg-teal-500',
+    premium: false,
+    cost: { input: '$0.50', output: '$3.00' },
+    supportsTemperature: true,
+    provider: 'OpenRouter',
+    responseTime: { speed: 'fast', estimate: '<30 sec' },
+    isReasoning: true,
+    apiModelName: 'google/gemini-3-flash-preview',
+    modelType: 'openrouter',
+    contextWindow: 1048576,
+    maxOutputTokens: 65535,
+    releaseDate: "2025-12",
+    supportsVision: true,
+    notes: 'Flash preview alias sourced from the OpenRouter catalog; use this slug when routing through LiteLLM.'
   },
 
   {

@@ -220,6 +220,7 @@ export default function WormArenaMatches() {
           { label: 'Live', href: '/worm-arena/live' },
           { label: 'Matches', href: '/worm-arena/matches', active: true },
           { label: 'Stats & Placement', href: '/worm-arena/stats' },
+          { label: 'Skill Analysis', href: '/worm-arena/skill-analysis' },
         ]}
         showMatchupLabel={false}
         subtitle="Focus on the longest Worm Arena battles"

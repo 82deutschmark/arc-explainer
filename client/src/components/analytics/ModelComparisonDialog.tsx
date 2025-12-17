@@ -1,6 +1,6 @@
 /**
  * Author: Cascade using Claude Sonnet 4.5
- * Date: 2025-10-10T19:00:00-04:00 (updated 2025-12-16, 2025-12-16)
+ * Date: 2025-10-10T19:00:00-04:00 (updated 2025-12-16, 2025-12-17)
  * PURPOSE: Modal dialog for displaying model comparison results with MAXIMUM information density.
  * Fixed terrible UX where comparison results were rendered at the bottom of the page.
  * Now opens in a proper modal dialog with close button and better presentation.
@@ -27,15 +27,13 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { ModelComparisonResult } from '@/pages/AnalyticsOverview';
-import { Loader2, XCircle, Zap } from 'lucide-react';
+import { Loader2, XCircle } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Badge } from '@/components/ui/badge';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Progress } from '@/components/ui/progress';
 import {
   formatModelNames,
   hasComparisonSummary,
 } from '@/utils/modelComparison';
+import { AttemptUnionCard } from '@/components/analytics/AttemptUnionCard';
 
 interface ModelComparisonDialogProps {
   open: boolean;
@@ -124,101 +122,5 @@ export const ModelComparisonDialog: React.FC<ModelComparisonDialogProps> = ({
         )}
       </DialogContent>
     </Dialog>
-  );
-};
-
-interface AttemptUnionMetrics {
-  baseModelName: string;
-  attemptModelNames: string[];
-  unionAccuracyPercentage: number;
-  unionCorrectCount: number;
-  totalPuzzles: number;
-  totalTestPairs?: number;
-  puzzlesCounted?: number;
-  puzzlesFullySolved?: number;
-
-  // Dataset-level denominators (stable across models; returned by backend)
-  datasetTotalPuzzles?: number;
-  datasetTotalTestPairs?: number;
-}
-
-const AttemptUnionCard: React.FC<{ metrics: AttemptUnionMetrics }> = ({ metrics }) => {
-  const totalPairs =
-    metrics.datasetTotalTestPairs ??
-    metrics.totalTestPairs ??
-    metrics.datasetTotalPuzzles ??
-    metrics.totalPuzzles;
-  const pairWeightedRate = totalPairs > 0 ? (metrics.unionCorrectCount / totalPairs) * 100 : 0;
-  const puzzlesCounted = metrics.datasetTotalPuzzles ?? metrics.puzzlesCounted ?? metrics.totalPuzzles;
-  const puzzlesFullySolved = metrics.puzzlesFullySolved ?? 0;
-  const puzzlePassRate = puzzlesCounted > 0 ? (puzzlesFullySolved / puzzlesCounted) * 100 : 0;
-
-  return (
-    <Card className="border-blue-200 bg-gradient-to-br from-blue-50 to-blue-50/50">
-      <CardHeader>
-        <div className="flex items-start justify-between">
-          <div className="flex-1">
-            <CardTitle className="text-3xl text-blue-700">
-              {metrics.unionAccuracyPercentage.toFixed(1)}%
-            </CardTitle>
-            <CardDescription className="mt-2">Official harness score (average of puzzle scores)</CardDescription>
-          </div>
-          <Zap className="h-6 w-6 text-blue-500 shrink-0 mt-1" aria-hidden="true" />
-        </div>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        {/* Model Info */}
-        <div className="space-y-2">
-          <p className="text-sm font-medium text-muted-foreground">Models Compared</p>
-          <div className="flex flex-wrap gap-2">
-            {metrics.attemptModelNames.map((name, idx) => (
-              <Badge key={idx} variant="outline">
-                {name}
-              </Badge>
-            ))}
-          </div>
-        </div>
-
-        {/* Three Metrics Summary */}
-        <div className="grid grid-cols-3 gap-2 text-center">
-          <div className="bg-blue-50 rounded p-2">
-            <div className="text-lg font-bold text-blue-700">{metrics.unionAccuracyPercentage.toFixed(1)}%</div>
-            <div className="text-xs text-gray-600">Harness Score</div>
-          </div>
-          <div className="bg-green-50 rounded p-2">
-            <div className="text-lg font-bold text-green-700">{puzzlePassRate.toFixed(1)}%</div>
-            <div className="text-xs text-gray-600">Puzzles Solved</div>
-            <div className="text-xs text-gray-500">{puzzlesFullySolved}/{puzzlesCounted}</div>
-          </div>
-          <div className="bg-purple-50 rounded p-2">
-            <div className="text-lg font-bold text-purple-700">{pairWeightedRate.toFixed(1)}%</div>
-            <div className="text-xs text-gray-600">Test Pairs</div>
-            <div className="text-xs text-gray-500">{metrics.unionCorrectCount}/{totalPairs}</div>
-          </div>
-        </div>
-
-        {/* Explanation Section */}
-        <div className="mt-4 space-y-3 rounded-md bg-white/50 p-3">
-          <div>
-            <p className="text-xs font-semibold text-gray-700 uppercase tracking-wide">
-              Understanding the Three Metrics
-            </p>
-            <ul className="mt-1.5 text-sm leading-relaxed text-gray-600 space-y-1">
-              <li><strong>Harness Score:</strong> Official ARC-AGI metric (average of per-puzzle scores)</li>
-              <li><strong>Puzzles Solved:</strong> Puzzles where ALL test pairs were correct</li>
-              <li><strong>Test Pairs:</strong> Individual test pairs solved (pair-weighted)</li>
-            </ul>
-          </div>
-
-          {/* Transparency Note */}
-          <div className="border-t border-gray-200 pt-3 text-xs text-gray-500">
-            <p>
-              The harness score gives equal weight to each puzzle regardless of how many test pairs it has.
-              The pair-weighted rate treats each test pair equally.
-            </p>
-          </div>
-        </div>
-      </CardContent>
-    </Card>
   );
 };

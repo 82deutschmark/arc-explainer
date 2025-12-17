@@ -25,12 +25,12 @@ result = contribute_to_arc_explainer(
 ```
 
 **Features:**
-- ✅ One-line integration for any Python researcher
-- ✅ Current October 2025 model names (no deprecated models)
-- ✅ Uses existing `POST /api/puzzle/save-explained/:puzzleId` endpoint
-- ✅ Model-specific functions: `contribute_grok4_analysis()`, `contribute_gpt5_analysis()`
-- ✅ Batch processing for multiple puzzles
-- ✅ Zero external dependencies (only `requests`)
+- One-line integration for any Python researcher
+- Current October 2025 model names (no deprecated models)
+- Uses existing `POST /api/puzzle/save-explained/:puzzleId` endpoint
+- Model-specific functions: `contribute_grok4_analysis()`, `contribute_gpt5_analysis()`
+- Batch processing for multiple puzzles
+- Zero external dependencies (only `requests`)
 
 **Complete Documentation:** `tools/api-client/README.md`
 
@@ -369,6 +369,23 @@ Response: { "providerResponseId": "resp_def456", ... }
         model2OnlyCorrect: number; // Only model 2 correct
         model3OnlyCorrect?: number;
         model4OnlyCorrect?: number;
+
+        // Attempt-union stats (used by /scoring)
+        // If you compare two attempt-suffixed models of the same base model
+        // (e.g. "some-model-attempt1" vs "some-model-attempt2"), the server returns
+        // union metrics for the base model name.
+        attemptUnionStats: Array<{
+          baseModelName: string;
+          attemptModelNames: string[];
+          unionAccuracyPercentage: number;
+          unionCorrectCount: number;
+          totalPuzzles: number;
+          totalTestPairs?: number;
+          puzzlesCounted?: number;
+          puzzlesFullySolved?: number;
+          datasetTotalPuzzles?: number;
+          datasetTotalTestPairs?: number;
+        }>;
       },
       details: PuzzleComparisonDetail[];  // Per-puzzle results
     }
@@ -376,6 +393,7 @@ Response: { "providerResponseId": "resp_def456", ... }
   - **Use Case**: Head-to-head model performance comparison on specific datasets
   - **Example**: `/api/metrics/compare?model1=gpt-5-pro&model2=grok-4&dataset=evaluation2`
   - **Limits**: Up to 4 models simultaneously, any dataset from data/ directory
+  - **Union puzzle IDs**: For union scoring, clients can compute the solved puzzle/test-pair IDs by scanning `details[]` and treating a puzzle/test pair as solved if any compared attempt is `correct`.
 
 - `POST /api/puzzle/analyze-list` - Analyze specific puzzles across ALL models
   - **Body**: `{ puzzleIds: string[] }` - Array of puzzle IDs (max 500)

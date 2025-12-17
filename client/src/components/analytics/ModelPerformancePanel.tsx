@@ -1,6 +1,6 @@
 /**
  * Author: Cascade using Claude Sonnet 4.5
- * Date: 2025-10-10T22:30:00-04:00
+ * Date: 2025-10-10T22:30:00-04:00 (updated 2025-12-17)
  * PURPOSE: Reusable model performance panel component extracted from AnalyticsOverview.
  * Shows success rate, correct/incorrect/not attempted counts, badges, and puzzle IDs.
  * Used for side-by-side model comparison display.
@@ -15,16 +15,7 @@ import { Badge } from '@/components/ui/badge';
 import { ClickablePuzzleBadge } from '@/components/ui/ClickablePuzzleBadge';
 import { useModelDatasetPerformance, useModelDatasetMetrics } from '@/hooks/useModelDatasetPerformance';
 import { Loader2 } from 'lucide-react';
-
-const DATASET_DISPLAY_NAME_MAP: Record<string, string> = {
-  training: 'Training',
-  training2: 'Training 2',
-  evaluation: 'Evaluation',
-  evaluation2: 'Evaluation 2',
-  'arc-heavy': 'ARC-Heavy',
-  'concept-arc': 'Concept-ARC',
-  explained: 'Explained'
-};
+import { getDatasetDisplayName } from '@/constants/datasets';
 
 interface ModelPerformancePanelProps {
   modelName: string;
@@ -69,7 +60,7 @@ export const ModelPerformancePanel: React.FC<ModelPerformancePanelProps> = ({
               <div className="flex items-center gap-2 flex-wrap">
                 <h2 className="text-2xl font-bold text-gray-900">{performance.modelName}</h2>
                 <span className="text-sm px-2 py-0.5 bg-blue-100 text-blue-700 rounded-md font-medium">
-                  {DATASET_DISPLAY_NAME_MAP[performance.dataset] || performance.dataset}
+                  {getDatasetDisplayName(performance.dataset, 'plain')}
                 </span>
                 <span className="text-sm text-gray-500">({performance.summary.totalPuzzles} puzzles)</span>
               </div>

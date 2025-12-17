@@ -219,6 +219,7 @@ export default function WormArenaLive() {
           { label: 'Live', href: '/worm-arena/live', active: true },
           { label: 'Matches', href: '/worm-arena/matches' },
           { label: 'Stats & Placement', href: '/worm-arena/stats' },
+          { label: 'Skill Analysis', href: '/worm-arena/skill-analysis' },
         ]}
       />
 

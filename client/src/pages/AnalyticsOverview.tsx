@@ -1,6 +1,6 @@
 /**
  * Author: Cascade using Claude Sonnet 4.5
- * Date: 2025-10-10T19:00:00-04:00 (Updated for MAXIMUM density)
+ * Date: 2025-10-10T19:00:00-04:00 (Updated for MAXIMUM density; updated 2025-12-17)
  * PURPOSE: Analytics dashboard showing ACCURATE model performance statistics with MAXIMUM information density.
  * 
  * MAJOR UI/UX IMPROVEMENTS (2025-10-10):
@@ -42,6 +42,7 @@ import { DifficultPuzzlesSection } from '@/components/analytics/DifficultPuzzles
 import { useModelDatasetPerformance, useAvailableModels, useAvailableDatasets, useModelDatasetMetrics, DatasetInfo } from '@/hooks/useModelDatasetPerformance';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import { detectModelOrigin } from '@/utils/modelOriginDetection';
+ import { getDatasetDisplayName } from '@/constants/datasets';
 
 // Types for the new Model Comparison feature
 export interface PuzzleComparisonDetail {
@@ -123,15 +124,6 @@ export interface ModelComparisonResult {
   details: PuzzleComparisonDetail[];
 }
 
-const DATASET_DISPLAY_NAME_MAP: Record<string, string> = {
-  evaluation: 'ARC1-Eval',
-  training: 'ARC1-Train',
-  evaluation2: 'ARC2-Eval',
-  training2: 'ARC2-Train',
-  'arc-heavy': 'ARC-Heavy',
-  'concept-arc': 'ConceptARC'
-};
-
 type DatasetOption = DatasetInfo & { displayName: string };
 
 export default function AnalyticsOverview() {
@@ -163,7 +155,7 @@ export default function AnalyticsOverview() {
   const datasetOptions: DatasetOption[] = useMemo(() => {
     return availableDatasets.map((dataset) => ({
       ...dataset,
-      displayName: DATASET_DISPLAY_NAME_MAP[dataset.name] ?? dataset.name
+      displayName: getDatasetDisplayName(dataset.name)
     }));
   }, [availableDatasets]);
 
@@ -482,7 +474,7 @@ export default function AnalyticsOverview() {
                         <div className="flex items-center gap-2 flex-wrap">
                           <h2 className="text-2xl font-bold text-gray-900">{modelDatasetPerformance.modelName}</h2>
                           <span className="text-sm px-2 py-0.5 bg-blue-100 text-blue-700 rounded-md font-medium">
-                            {DATASET_DISPLAY_NAME_MAP[modelDatasetPerformance.dataset] || modelDatasetPerformance.dataset}
+                            {getDatasetDisplayName(modelDatasetPerformance.dataset)}
                           </span>
                           {selectedModelOrigin && (
                             <Badge

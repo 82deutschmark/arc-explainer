@@ -460,6 +460,7 @@ export default function WormArena() {
           { label: 'Live', href: '/worm-arena/live' },
           { label: 'Matches', href: '/worm-arena/matches' },
           { label: 'Stats & Placement', href: '/worm-arena/stats' },
+          { label: 'Skill Analysis', href: '/worm-arena/skill-analysis' },
         ]}
         showMatchupLabel={false}
       />

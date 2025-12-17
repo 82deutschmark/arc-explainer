@@ -1,4 +1,10 @@
 {
+  "_metadata": {
+    "author": "Codex (GPT-5)",
+    "date": "2025-12-18",
+    "purpose": "Document the Gemini 3 Flash Preview entry so the catalog stays a true single source of truth.",
+    "srp_dry": "Pass - metadata layer keeps streaming catalogue data isolated from consumers."
+  },
   "models": [
     {
       "id": "mistralai/mistral-small-creative",
@@ -1847,6 +1853,64 @@
       "top_provider": {
         "context_length": 1048576,
         "max_completion_tokens": 65536,
+        "is_moderated": false
+      },
+      "per_request_limits": null,
+      "supported_parameters": [
+        "include_reasoning",
+        "max_tokens",
+        "reasoning",
+        "response_format",
+        "seed",
+        "stop",
+        "structured_outputs",
+        "temperature",
+        "tool_choice",
+        "tools",
+        "top_p"
+      ],
+      "default_parameters": {
+        "temperature": null,
+        "top_p": null,
+        "frequency_penalty": null
+      }
+    },
+    {
+      "id": "google/gemini-3-flash-preview",
+      "canonical_slug": "google/gemini-3-flash-preview-20251217",
+      "hugging_face_id": "",
+      "name": "Google: Gemini 3 Flash Preview",
+      "created": 1765987078,
+      "description": "Gemini 3 Flash Preview is a high speed, high value thinking model designed for agentic workflows, multi turn chat, and coding assistance. It delivers near Pro level reasoning and tool use performance with substantially lower latency than larger Gemini variants, making it well suited for interactive development, long running agent loops, and collaborative coding tasks. Compared to Gemini 2.5 Flash, it provides broad quality improvements across reasoning, multimodal understanding, and reliability.\n\nThe model supports a 1M token context window and multimodal inputs including text, images, audio, video, and PDFs, with text output. It includes configurable reasoning via thinking levels (minimal, low, medium, high), structured output, tool use, and automatic context caching. Gemini 3 Flash Preview is optimized for users who want strong reasoning and agentic behavior without the cost or latency of full scale frontier models.",
+      "context_length": 1048576,
+      "architecture": {
+        "modality": "text+image->text",
+        "input_modalities": [
+          "text",
+          "image",
+          "file",
+          "audio",
+          "video"
+        ],
+        "output_modalities": [
+          "text"
+        ],
+        "tokenizer": "Gemini",
+        "instruct_type": null
+      },
+      "pricing": {
+        "prompt": "0.0000005",
+        "completion": "0.000003",
+        "request": "0",
+        "image": "0",
+        "audio": "0.000001",
+        "web_search": "0",
+        "internal_reasoning": "0",
+        "input_cache_read": "0.00000005"
+      },
+      "top_provider": {
+        "context_length": 1048576,
+        "max_completion_tokens": 65535,
         "is_moderated": false
       },
       "per_request_limits": null,
