@@ -1,5 +1,22 @@
 # New entires at the top, use proper SemVer!
 
+### Version 6.5.11  Dec 17, 2025
+
+- **Worm Arena: Baseline color + UI readability improvements** (Author: Claude Sonnet 4)
+  - Changed baseline model color from red to **green** across all components (role colors, snapshot cards, pills)
+  - Changed pessimistic/optimistic confidence interval pills from red/green to **gray/black** scheme for better clarity
+  - Added "Click a dot to select that model" instruction text above scatter plot
+  - Increased scatter plot axis labels from tiny gray to **bold black text** for readability
+  - Added `worm-pill-baseline` CSS class with green styling
+  - **Files Modified**:
+    - `client/src/utils/wormArenaRoleColors.ts`
+    - `client/src/components/wormArena/DataNumber.tsx`
+    - `client/src/components/wormArena/stats/WormArenaModelSnapshotCard.tsx`
+    - `client/src/components/wormArena/stats/WormArenaSkillHeroGraphic.tsx`
+    - `client/src/components/wormArena/stats/WormArenaSkillScatterPlot.tsx`
+    - `client/src/index.css`
+    - `CHANGELOG.md`
+
 ### Version 6.5.10  Dec 17, 2025
 
 - **Worm Arena: Win Probability calculation + UI improvements** (Author: Claude Sonnet 4)
