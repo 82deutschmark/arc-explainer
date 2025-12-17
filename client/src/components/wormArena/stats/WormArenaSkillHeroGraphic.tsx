@@ -1,9 +1,9 @@
 /**
- * Author: Cascade
+ * Author: GPT-5.2-Medium-Reasoning
  * Date: 2025-12-17
  * PURPOSE: Single unified "poster" graphic for the Skill Analysis page. Draws the reference
  *          design: skill estimate + uncertainty pills at top, 99.7% CI section in middle,
- *          and overlapping bell curves at bottom.
+ *          and overlapping bell curves (rendered near the top so it sits directly under the view tabs).
  *          Chart math uses explicit top/bottom margins so the curve, labels, and x-axis
  *          are fully contained (no overflow bleed) and match the reference layout.
  * SRP/DRY check: Pass — single responsibility for the hero graphic composition.
@@ -188,6 +188,80 @@ export default function WormArenaSkillHeroGraphic({
         </div>
       </div>
 
+      {/* Bottom: Bell curve chart */}
+      <svg
+        width={chartWidth}
+        height={chartHeight}
+        viewBox={`0 0 ${chartWidth} ${chartHeight}`}
+      >
+        {/* Reference curve (behind) */}
+        {refPath && (
+          <path d={refPath} fill={REF_FILL} fillOpacity={0.6} stroke={REF_STROKE} strokeWidth="2" />
+        )}
+
+        {/* Main curve (in front) */}
+        <path d={mainPath} fill={CURRENT_FILL} fillOpacity={0.7} stroke={CURRENT_STROKE} strokeWidth="2.5" />
+
+        {/* Dashed reference line at current model's μ (matches the reference image) */}
+        <line
+          x1={mainLabelX}
+          y1={topMargin}
+          x2={mainLabelX}
+          y2={plotBottomY}
+          stroke="#B0B0B0"
+          strokeWidth="1"
+          strokeDasharray="4 4"
+        />
+
+        {/* X-axis line */}
+        <line x1={0} y1={plotBottomY} x2={chartWidth} y2={plotBottomY} stroke="#999999" strokeWidth="1" />
+
+        {/* X-axis ticks and labels */}
+        {ticks.map((tick) => {
+          const px = toPixelX(tick);
+          return (
+            <g key={tick}>
+              <line x1={px} y1={plotBottomY} x2={px} y2={plotBottomY + 7} stroke="#999999" strokeWidth="1" />
+              <text x={px} y={plotBottomY + 24} textAnchor="middle" fontSize="13" fill="#333333">
+                {tick}
+              </text>
+            </g>
+          );
+        })}
+
+        {/* X-axis label */}
+        <text x={chartWidth / 2} y={chartHeight - 8} textAnchor="middle" fontSize="14" fill="#333333">
+          Skill Rating
+        </text>
+
+        {/* Reference model label */}
+        {referenceMu !== undefined && referenceSigma !== undefined && (
+          <text
+            x={refLabelX}
+            y={refLabelY}
+            textAnchor="middle"
+            fontSize="13"
+            fontWeight="400"
+            fontStyle="italic"
+            fill={REF_STROKE}
+          >
+            {referenceLabel}
+          </text>
+        )}
+
+        {/* Current model label */}
+        <text
+          x={mainLabelX}
+          y={mainLabelY}
+          textAnchor="middle"
+          fontSize="13"
+          fontWeight="600"
+          fill={CURRENT_STROKE}
+        >
+          {modelLabel}
+        </text>
+      </svg>
+
       {/* Top row: Skill estimate and Uncertainty */}
       <div className="flex justify-between w-full max-w-xl mb-8">
         {/* Skill estimate μ */}
@@ -288,80 +362,6 @@ export default function WormArenaSkillHeroGraphic({
           </div>
         ))}
       </div>
-
-      {/* Bottom: Bell curve chart */}
-      <svg
-        width={chartWidth}
-        height={chartHeight}
-        viewBox={`0 0 ${chartWidth} ${chartHeight}`}
-      >
-        {/* Reference curve (behind) */}
-        {refPath && (
-          <path d={refPath} fill={REF_FILL} fillOpacity={0.6} stroke={REF_STROKE} strokeWidth="2" />
-        )}
-
-        {/* Main curve (in front) */}
-        <path d={mainPath} fill={CURRENT_FILL} fillOpacity={0.7} stroke={CURRENT_STROKE} strokeWidth="2.5" />
-
-        {/* Dashed reference line at current model's μ (matches the reference image) */}
-        <line
-          x1={mainLabelX}
-          y1={topMargin}
-          x2={mainLabelX}
-          y2={plotBottomY}
-          stroke="#B0B0B0"
-          strokeWidth="1"
-          strokeDasharray="4 4"
-        />
-
-        {/* X-axis line */}
-        <line x1={0} y1={plotBottomY} x2={chartWidth} y2={plotBottomY} stroke="#999999" strokeWidth="1" />
-
-        {/* X-axis ticks and labels */}
-        {ticks.map((tick) => {
-          const px = toPixelX(tick);
-          return (
-            <g key={tick}>
-              <line x1={px} y1={plotBottomY} x2={px} y2={plotBottomY + 7} stroke="#999999" strokeWidth="1" />
-              <text x={px} y={plotBottomY + 24} textAnchor="middle" fontSize="13" fill="#333333">
-                {tick}
-              </text>
-            </g>
-          );
-        })}
-
-        {/* X-axis label */}
-        <text x={chartWidth / 2} y={chartHeight - 8} textAnchor="middle" fontSize="14" fill="#333333">
-          Skill Rating
-        </text>
-
-        {/* Reference model label */}
-        {referenceMu !== undefined && referenceSigma !== undefined && (
-          <text
-            x={refLabelX}
-            y={refLabelY}
-            textAnchor="middle"
-            fontSize="13"
-            fontWeight="400"
-            fontStyle="italic"
-            fill={REF_STROKE}
-          >
-            {referenceLabel}
-          </text>
-        )}
-
-        {/* Current model label */}
-        <text
-          x={mainLabelX}
-          y={mainLabelY}
-          textAnchor="middle"
-          fontSize="13"
-          fontWeight="600"
-          fill={CURRENT_STROKE}
-        >
-          {modelLabel}
-        </text>
-      </svg>
     </div>
   );
 }
