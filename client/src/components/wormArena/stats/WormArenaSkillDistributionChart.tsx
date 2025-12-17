@@ -2,22 +2,21 @@
  * Author: Cascade
  * Date: 2025-12-17
  * PURPOSE: Core bell curve visualization for TrueSkill distributions. Renders SVG Gaussian curves
- *          with optional reference model overlay, confidence interval band, and hover readouts.
- *          Uses react-katex InlineMath for μ labels and reserves chart margins so axis labels
- *          are visible (not clipped).
+ *          with optional reference model overlay. Styled to match the Skill Analysis hero graphic
+ *          (TikZ reference): blue filled current curve, gray filled reference curve, and in-chart
+ *          labels for "Current Model" and "Reference".
+ *          Reserves chart margins so axis labels are visible (not clipped).
  * SRP/DRY check: Pass — single responsibility for bell curve rendering. Reuses confidenceIntervals.ts utilities.
  *
  * Touches: WormArenaSkillAnalysis.tsx (parent), confidenceIntervals.ts (utils)
  */
 
-import React, { useState } from 'react';
-import { InlineMath } from 'react-katex';
+import React from 'react';
 import {
   gaussianPDF,
   getMaxPDFInRange,
   generateXSamples,
   dataToPx,
-  pxToData,
   normalizeToSVGHeight,
 } from '@/utils/confidenceIntervals';
 
@@ -25,6 +24,9 @@ export interface WormArenaSkillDistributionChartProps {
   mu: number;
   sigma: number;
   exposed: number; // μ − 3σ
+
+  // Model label for in-chart annotation
+  modelLabel?: string;
 
   // Optional: show faded reference curve behind
   referenceMu?: number;
@@ -59,20 +61,24 @@ export default function WormArenaSkillDistributionChart({
   mu,
   sigma,
   exposed,
+  modelLabel = 'Current Model',
   referenceMu,
   referenceSigma,
   referenceLabel = 'Reference Model',
   width = 500,
   height = 300,
 }: WormArenaSkillDistributionChartProps) {
-  const [hoveredX, setHoveredX] = useState<number | null>(null);
-  const [hoveredPDF, setHoveredPDF] = useState<number | null>(null);
-
   const svgWidth = width;
   const svgHeight = height;
   const axisMarginBottom = 28;
   const plotHeight = Math.max(60, svgHeight - axisMarginBottom);
   const sigmaRange = 4;
+
+  // Reference palette (matching provided TikZ mock)
+  const CURRENT_STROKE = '#31708F';
+  const CURRENT_FILL = '#D9EDF7';
+  const REF_STROKE = '#999999';
+  const REF_FILL = '#E0E0E0';
 
   // Calculate bounds
   const minX = mu - sigmaRange * sigma;
@@ -115,54 +121,24 @@ export default function WormArenaSkillDistributionChart({
     referencePath = refPathPoints.join(' ');
   }
 
-  // Confidence interval bounds
-  const confLower = Number.isFinite(exposed) ? exposed : mu - 3 * sigma;
-  const confUpper = mu + 3 * sigma;
-  const confLowerPx = dataToPx(confLower, mu, sigma, svgWidth, sigmaRange);
-  const confUpperPx = dataToPx(confUpper, mu, sigma, svgWidth, sigmaRange);
-
-  const handleMouseMove = (e: React.MouseEvent<SVGSVGElement>) => {
-    const svg = e.currentTarget;
-    const rect = svg.getBoundingClientRect();
-    const pxX = e.clientX - rect.left;
-    const dataX = pxToData(pxX, mu, sigma, svgWidth, sigmaRange);
-    const pdfValue = gaussianPDF(dataX, mu, sigma);
-    setHoveredX(dataX);
-    setHoveredPDF(pdfValue);
-  };
-
-  const handleMouseLeave = () => {
-    setHoveredX(null);
-    setHoveredPDF(null);
-  };
-
   return (
-    <div className="flex flex-col items-center gap-4">
+    <div className="flex flex-col items-center">
       <svg
         width={svgWidth}
         height={svgHeight}
         viewBox={`0 0 ${svgWidth} ${svgHeight}`}
         className="border border-worm-border rounded-lg bg-white"
-        onMouseMove={handleMouseMove}
-        onMouseLeave={handleMouseLeave}
       >
-        {/* Confidence interval band (bottom shading between μ-3σ and μ+3σ) */}
-        <rect
-          x={confLowerPx}
-          y={plotHeight * 0.55}
-          width={confUpperPx - confLowerPx}
-          height={plotHeight - plotHeight * 0.55}
-          fill="var(--worm-green)"
-          opacity={0.1}
-        />
-
         {/* Reference curve (if provided) */}
         {referencePath && (
-          <path d={referencePath} stroke="var(--worm-muted)" strokeWidth="2" fill="none" opacity={0.4} />
+          <>
+            <path d={referencePath + ` L ${svgWidth} ${plotHeight} L 0 ${plotHeight} Z`} fill={REF_FILL} fillOpacity={0.55} />
+            <path d={referencePath} stroke={REF_STROKE} strokeWidth="2" fill="none" opacity={0.9} />
+          </>
         )}
 
         {/* Main curve */}
-        <path d={mainPath} fill="var(--worm-green)" fillOpacity={0.7} stroke="var(--worm-green)" strokeWidth="2" />
+        <path d={mainPath} fill={CURRENT_FILL} fillOpacity={0.65} stroke={CURRENT_STROKE} strokeWidth="2.5" />
 
         {/* Vertical line at μ */}
         <line
@@ -173,7 +149,7 @@ export default function WormArenaSkillDistributionChart({
           stroke="var(--worm-ink)"
           strokeWidth="1"
           strokeDasharray="4,4"
-          opacity={0.3}
+          opacity={0.15}
         />
 
         {/* X-axis */}
@@ -229,50 +205,33 @@ export default function WormArenaSkillDistributionChart({
           Skill Rating
         </text>
 
-        {/* Hover tooltip indicator */}
-        {hoveredX !== null && (
-          <line
-            x1={dataToPx(hoveredX, mu, sigma, svgWidth, sigmaRange)}
-            y1={0}
-            x2={dataToPx(hoveredX, mu, sigma, svgWidth, sigmaRange)}
-            y2={plotHeight}
-            stroke="var(--worm-ink)"
-            strokeWidth="1"
-            opacity={0.5}
-          />
+        {/* In-chart labels (match reference mock) */}
+        {referenceMu !== undefined && referenceSigma !== undefined && (
+          <text
+            x={dataToPx(referenceMu, mu, sigma, svgWidth, sigmaRange)}
+            y={Math.max(14, normalizeToSVGHeight(gaussianPDF(referenceMu, referenceMu, referenceSigma), maxPdf, plotHeight) - 8)}
+            textAnchor="middle"
+            fill={REF_STROKE}
+            fontSize="12"
+            fontWeight={700}
+            opacity={0.9}
+          >
+            {referenceLabel || 'Reference'}
+          </text>
         )}
+
+        <text
+          x={dataToPx(mu, mu, sigma, svgWidth, sigmaRange)}
+          y={Math.max(14, normalizeToSVGHeight(gaussianPDF(mu, mu, sigma), maxPdf, plotHeight) - 10)}
+          textAnchor="middle"
+          fill={CURRENT_STROKE}
+          fontSize="12"
+          fontWeight={800}
+          opacity={0.95}
+        >
+          {modelLabel}
+        </text>
       </svg>
-
-      {/* Tooltip display */}
-      {hoveredX !== null && hoveredPDF !== null && (
-        <div className="text-xs text-worm-muted text-center">
-          <div>Skill Rating: {hoveredX.toFixed(2)}</div>
-          <div>Density: {hoveredPDF.toExponential(3)}</div>
-        </div>
-      )}
-
-      {/* Legend */}
-      <div className="text-xs space-y-1">
-        <div className="flex items-center gap-2">
-          <div className="w-3 h-3 rounded-full" style={{ background: 'var(--worm-green)', opacity: 0.7 }} />
-          <span>Current Model</span>
-        </div>
-        {referenceMu !== undefined && (
-          <div className="flex items-center gap-2">
-            <div
-              className="w-3 h-3 rounded-full border-2"
-              style={{ borderColor: 'var(--worm-muted)', opacity: 0.4 }}
-            />
-            <span>{referenceLabel}</span>
-          </div>
-        )}
-        <div className="flex items-center gap-2">
-          <div className="w-4 h-0.5" style={{ background: 'var(--worm-ink)', opacity: 0.3 }} />
-          <span>
-            Mean <InlineMath math="\\mu" />
-          </span>
-        </div>
-      </div>
     </div>
   );
 }
