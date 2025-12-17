@@ -1,10 +1,11 @@
 /**
- * Author: GPT-5.2-Medium-Reasoning
+ * Author: Claude
  * Date: 2025-12-17
  * PURPOSE: Reusable Worm Arena model list selector card.
- *          Provides a searchable, games-played-sorted list of model slugs.
+ *          Provides a searchable, sortable list of model slugs.
  *          Supports configurable title/subtitle/placeholder so pages can clearly label intent
  *          (e.g., "Compare model" vs "Baseline model") without duplicating UI.
+ *          Now supports sortBy prop: 'gamesPlayed' (default) or 'winRate'.
  * SRP/DRY check: Pass — presentational selector; parent owns selection + filtering state.
  */
 
@@ -38,6 +39,7 @@ export default function WormArenaModelListCard({
   // Allows callers to tune scroll height so multi-card columns fit without clipping.
   scrollAreaClassName = 'h-[520px] max-h-[60vh]',
   role = 'neutral',
+  sortBy = 'gamesPlayed',
 }: {
   leaderboard: WormArenaLeaderboardEntry[];
   recentActivityLabel: string | null;
@@ -50,15 +52,23 @@ export default function WormArenaModelListCard({
   searchPlaceholder?: string;
   scrollAreaClassName?: string;
   role?: WormArenaModelRole;
+  sortBy?: 'gamesPlayed' | 'winRate';
 }) {
   const filteredLeaderboard = React.useMemo(() => {
     const term = filter.trim().toLowerCase();
-    const sorted = [...leaderboard].sort(
-      (a, b) => (b.gamesPlayed ?? 0) - (a.gamesPlayed ?? 0),
-    );
+    const sorted = [...leaderboard].sort((a, b) => {
+      if (sortBy === 'winRate') {
+        // Sort by win rate (wins / gamesPlayed), descending
+        const aRate = a.gamesPlayed > 0 ? a.wins / a.gamesPlayed : 0;
+        const bRate = b.gamesPlayed > 0 ? b.wins / b.gamesPlayed : 0;
+        return bRate - aRate;
+      }
+      // Default: sort by games played, descending
+      return (b.gamesPlayed ?? 0) - (a.gamesPlayed ?? 0);
+    });
     if (!term) return sorted;
     return sorted.filter((entry) => entry.modelSlug.toLowerCase().includes(term));
-  }, [leaderboard, filter]);
+  }, [leaderboard, filter, sortBy]);
 
   const roleColors = getWormArenaRoleColors(role);
 

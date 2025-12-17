@@ -319,10 +319,11 @@ export default function WormArenaSkillAnalysis() {
                   );
                 }}
                 title="Compare model"
-                subtitle="Pick the model you want to analyze (blue curve)"
+                subtitle="Sorted by games played (most to least)"
                 searchPlaceholder="Search compare model (e.g. openai/gpt-5.1)"
                 scrollAreaClassName="h-[340px] max-h-[42vh]"
                 role="compare"
+                sortBy="gamesPlayed"
               />
 
               <WormArenaModelSnapshotCard
@@ -403,10 +404,11 @@ export default function WormArenaSkillAnalysis() {
                   );
                 }}
                 title="Baseline model"
-                subtitle="Pick the model you are comparing against (red curve)"
+                subtitle="Sorted by win rate (highest to lowest)"
                 searchPlaceholder="Search baseline model (e.g. deepseek/deepseek-v3.2)"
                 scrollAreaClassName="h-[260px] max-h-[34vh]"
                 role="baseline"
+                sortBy="winRate"
               />
 
               <WormArenaModelSnapshotCard
