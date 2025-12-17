@@ -468,8 +468,7 @@ In WormArenaSkillComparison:
 - [ ] Search for model, verify filtering works
 - [ ] Search while models selected, verify pinned selections remain
 - [ ] Toggle between Poster/Comparison views, verify state preservation
-- [ ] Test at narrow width (~600px), verify no overflow
-- [ ] Test with 150+ models, verify performance
+
 
 **5.2 Code Quality**
 

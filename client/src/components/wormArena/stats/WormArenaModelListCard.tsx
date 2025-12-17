@@ -19,6 +19,10 @@ export default function WormArenaModelListCard({
   filter,
   onFilterChange,
   onSelectModel,
+  title = 'Models',
+  subtitle = 'Sorted by games played (most to least)',
+  searchPlaceholder = 'Search model (e.g. openai/gpt-5.1)',
+  scrollAreaClassName = 'h-[520px] max-h-[60vh]',
 }: {
   leaderboard: WormArenaLeaderboardEntry[];
   recentActivityLabel: string | null;
@@ -26,6 +30,10 @@ export default function WormArenaModelListCard({
   filter: string;
   onFilterChange: (value: string) => void;
   onSelectModel: (slug: string) => void;
+  title?: string;
+  subtitle?: string;
+  searchPlaceholder?: string;
+  scrollAreaClassName?: string;
 }) {
   const filteredLeaderboard = React.useMemo(() => {
     const term = filter.trim().toLowerCase();
@@ -40,9 +48,9 @@ export default function WormArenaModelListCard({
     <Card className="worm-card">
       <CardHeader className="pb-3 flex flex-row items-baseline justify-between">
         <div>
-          <CardTitle className="text-lg worm-card-title">Models</CardTitle>
+          <CardTitle className="text-lg worm-card-title">{title}</CardTitle>
           <div className="text-sm font-semibold worm-muted">
-            Sorted by games played (most to least)
+            {subtitle}
           </div>
         </div>
         {recentActivityLabel && (
@@ -54,13 +62,13 @@ export default function WormArenaModelListCard({
 
       <CardContent className="space-y-4">
         <Input
-          placeholder="Search model (e.g. openai/gpt-5.1)"
+          placeholder={searchPlaceholder}
           value={filter}
           onChange={(e) => onFilterChange(e.target.value)}
           className="text-base font-semibold text-worm-ink"
         />
 
-        <ScrollArea className="h-[60vh] border rounded-md bg-white/90 worm-border">
+        <ScrollArea className={`${scrollAreaClassName} border rounded-md bg-white/90 worm-border`}>
           <div className="p-3 space-y-2">
             {filteredLeaderboard.map((entry, index) => {
               const active = entry.modelSlug === selectedModel;
