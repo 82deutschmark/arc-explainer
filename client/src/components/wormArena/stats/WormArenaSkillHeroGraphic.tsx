@@ -22,6 +22,11 @@ export interface WormArenaSkillHeroGraphicProps {
   sigma: number;
   exposed: number;
   modelLabel: string;
+  gamesPlayed?: number;
+  wins?: number;
+  losses?: number;
+  ties?: number;
+  totalCost?: number;
 
   // Reference model (optional)
   referenceMu?: number;
@@ -40,6 +45,11 @@ export default function WormArenaSkillHeroGraphic({
   sigma,
   exposed,
   modelLabel,
+  gamesPlayed,
+  wins,
+  losses,
+  ties,
+  totalCost,
   referenceMu,
   referenceSigma,
   referenceLabel = 'Reference',
@@ -71,8 +81,9 @@ export default function WormArenaSkillHeroGraphic({
   const REF_STROKE = '#999999';
   const REF_FILL = '#E0E0E0';
 
-  // Calculate chart bounds - accommodate both curves with ~4σ range so the tails taper naturally.
-  const sigmaRange = 4;
+  // Calculate chart bounds.
+  // The reference image reads tighter than ±4σ; we keep this closer to the 99.7% CI (±3σ).
+  const sigmaRange = 3;
   let minX = mu - sigmaRange * sigma;
   let maxX = mu + sigmaRange * sigma;
 
@@ -160,17 +171,32 @@ export default function WormArenaSkillHeroGraphic({
   const mainLabelY = labelsCollide ? mainLabelYBase - 10 : mainLabelYBase;
   const refLabelY = labelsCollide ? refLabelYBase + 14 : refLabelYBase;
 
+  const statBoxes = [
+    { label: 'Games', value: typeof gamesPlayed === 'number' ? String(gamesPlayed) : '—' },
+    { label: 'Wins', value: typeof wins === 'number' ? String(wins) : '—' },
+    { label: 'Losses', value: typeof losses === 'number' ? String(losses) : '—' },
+    { label: 'Ties', value: typeof ties === 'number' ? String(ties) : '—' },
+    { label: 'Cost', value: typeof totalCost === 'number' ? `$${totalCost.toFixed(4)}` : '—' },
+  ];
+
   return (
-    <div className="flex flex-col items-center w-full" style={{ fontFamily: 'Georgia, serif' }}>
+    <div className="flex flex-col items-center w-full font-worm" style={{ color: HEADER_COLOR }}>
+      {/* Requested page-level heading so the user always knows which model they're viewing. */}
+      <div className="w-full max-w-xl mb-6">
+        <div className="text-lg font-bold text-worm-ink">
+          Model Snapshot <span className="font-mono text-sm worm-muted">{modelLabel}</span>
+        </div>
+      </div>
+
       {/* Top row: Skill estimate and Uncertainty */}
       <div className="flex justify-between w-full max-w-xl mb-8">
         {/* Skill estimate μ */}
         <div className="text-center flex-1">
-          <div className="text-xl font-bold mb-3" style={{ color: HEADER_COLOR }}>
+          <div className="text-lg font-bold mb-3" style={{ color: HEADER_COLOR }}>
             Skill estimate <InlineMath math="\mu" />
           </div>
           <div
-            className="inline-block px-10 py-4 text-4xl font-bold rounded-full"
+            className="inline-block px-10 py-4 text-3xl font-bold rounded-full"
             style={{ background: BLUE_PILL_BG, color: BLUE_PILL_TEXT }}
           >
             {mu.toFixed(2)}
@@ -184,11 +210,11 @@ export default function WormArenaSkillHeroGraphic({
 
         {/* Uncertainty σ */}
         <div className="text-center flex-1">
-          <div className="text-xl font-bold mb-3" style={{ color: HEADER_COLOR }}>
+          <div className="text-lg font-bold mb-3" style={{ color: HEADER_COLOR }}>
             Uncertainty <InlineMath math="\sigma" />
           </div>
           <div
-            className="inline-block px-10 py-4 text-4xl font-bold rounded-full"
+            className="inline-block px-10 py-4 text-3xl font-bold rounded-full"
             style={{ background: BLUE_PILL_BG, color: BLUE_PILL_TEXT }}
           >
             {sigma.toFixed(2)}
@@ -203,11 +229,11 @@ export default function WormArenaSkillHeroGraphic({
 
       {/* Middle: 99.7% Confidence Interval */}
       <div className="text-center mb-8">
-        <div className="text-2xl font-bold mb-5" style={{ color: HEADER_COLOR }}>
+        <div className="text-xl font-bold mb-5" style={{ color: HEADER_COLOR }}>
           99.7% Confidence Interval
         </div>
 
-        <div className="flex items-center justify-center gap-6 mb-3">
+        <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-6 mb-3">
           {/* Pessimistic pill */}
           <div className="text-center">
             <div
@@ -232,10 +258,11 @@ export default function WormArenaSkillHeroGraphic({
           </div>
         </div>
 
-        <div className="flex justify-center gap-24 mb-4">
+        <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-6 mb-4">
           <div className="text-sm font-bold" style={{ color: HEADER_COLOR }}>
             Pessimistic rating
           </div>
+          <div />
           <div className="text-sm font-bold" style={{ color: HEADER_COLOR }}>
             Optimistic rating
           </div>
@@ -247,6 +274,19 @@ export default function WormArenaSkillHeroGraphic({
         <div className="text-sm mt-1" style={{ color: LABEL_GRAY }}>
           (Calculated as <InlineMath math="\mu \pm 3\sigma" />)
         </div>
+      </div>
+
+      {/* Stats boxes: keep these directly above the chart so the story is visible at a glance. */}
+      <div className="w-full max-w-xl grid grid-cols-5 gap-3 mb-3">
+        {statBoxes.map((box) => (
+          <div
+            key={box.label}
+            className="worm-card-soft px-3 py-2 text-center"
+          >
+            <div className="text-[11px] font-semibold worm-muted">{box.label}</div>
+            <div className="text-sm font-bold font-mono">{box.value}</div>
+          </div>
+        ))}
       </div>
 
       {/* Bottom: Bell curve chart */}
