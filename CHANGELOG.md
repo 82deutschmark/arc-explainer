@@ -1,5 +1,15 @@
 # New entires at the top, use proper SemVer!
 
+### Version 6.5.0  Dec 17, 2025
+
+- **Worm Arena Skill Analysis: baseline picker + layout refresh** (Author: Cascade)
+  - The reference model slug in the top-right snapshot is now a button: click it to clear the baseline and re-open the baseline model picker list (sorted by games played).
+  - Widened the Skill Analysis layout so the left-side Models list card has enough room and no longer looks clipped.
+  - **Files Modified**:
+    - `client/src/components/wormArena/stats/WormArenaModelSnapshotCard.tsx`
+    - `client/src/pages/WormArenaSkillAnalysis.tsx`
+    - `CHANGELOG.md`
+
 ### Version 6.4.11  Dec 17, 2025
 
 - **Worm Arena Skill Analysis: bell curve chart containment + layout fixes (match reference)** (Author: Cascade)

@@ -7,6 +7,9 @@
  *          Reuses shared stats components from the Stats & Placement page (global stats strip,
  *          TrueSkill leaderboard, model snapshot, placement card) while keeping the 3-column layout.
  *          Ensures ratings are fetched by calling useModelRating().refresh() when query params change.
+ *          Adds an explicit baseline picker affordance: the reference snapshot's model slug is a button
+ *          that clears the baseline, revealing the reference model list (sorted by games played).
+ *          Uses a wider container so the left model list card does not clip its scroll area.
  * SRP/DRY check: Pass — page-level composition only; rendering delegated to child components.
  *
  * Touches: WormArenaGlobalStatsStrip, WormArenaTrueSkillLeaderboard, WormArenaPlacementCard,
@@ -191,10 +194,10 @@ export default function WormArenaSkillAnalysis() {
             { label: 'Stats & Placement', href: '/worm-arena/stats' },
             { label: 'Skill Analysis', href: '/worm-arena/skill-analysis', active: true },
           ]}
-          showMatchupLabel 
+          showMatchupLabel={false}
         />
 
-        <main className="p-6 max-w-7xl mx-auto space-y-6">
+        <main className="w-full max-w-[1500px] mx-auto px-4 md:px-6 py-6 space-y-6">
           {/* Shared Worm Arena stats modules (kept consistent with the Stats & Placement page). */}
           <WormArenaGlobalStatsStrip stats={globalStats ?? null} />
 
@@ -204,7 +207,7 @@ export default function WormArenaSkillAnalysis() {
             error={errorLeaderboard}
           />
 
-          <div className="grid grid-cols-1 xl:grid-cols-[minmax(0,1fr)_minmax(0,1.6fr)_minmax(0,1fr)] gap-6 items-start">
+          <div className="grid grid-cols-1 xl:grid-cols-[minmax(360px,1fr)_minmax(0,1.6fr)_minmax(360px,1fr)] gap-6 items-start">
             {/* LEFT: Selected model list */}
             <WormArenaModelListCard
               leaderboard={listEntries}
@@ -249,6 +252,15 @@ export default function WormArenaSkillAnalysis() {
                   rating={referenceModel}
                   isLoading={loadingReference}
                   error={errorReference ?? null}
+                  onModelSlugClick={() => {
+                    // Clear the baseline so the right-side list reappears, letting the user pick a new baseline.
+                    setLocation(
+                      buildSkillAnalysisUrl({
+                        modelSlug: selectedModelSlug,
+                        referenceSlug: null,
+                      }),
+                    );
+                  }}
                 />
 
                 <WormArenaPlacementCard placement={referencePlacement} />
