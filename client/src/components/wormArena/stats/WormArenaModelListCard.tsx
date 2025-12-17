@@ -1,3 +1,13 @@
+/**
+ * Author: Cascade
+ * Date: 2025-12-17
+ * PURPOSE: Reusable Worm Arena model list selector card.
+ *          Provides a searchable, games-played-sorted list of model slugs.
+ *          Supports configurable title/subtitle/placeholder so pages can clearly label intent
+ *          (e.g., "Compare model" vs "Baseline model") without duplicating UI.
+ * SRP/DRY check: Pass — presentational selector; parent owns selection + filtering state.
+ */
+
 import React from 'react';
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -19,9 +29,11 @@ export default function WormArenaModelListCard({
   filter,
   onFilterChange,
   onSelectModel,
+  // Optional copy/customization for pages that need clearer intent.
   title = 'Models',
   subtitle = 'Sorted by games played (most to least)',
   searchPlaceholder = 'Search model (e.g. openai/gpt-5.1)',
+  // Allows callers to tune scroll height so multi-card columns fit without clipping.
   scrollAreaClassName = 'h-[520px] max-h-[60vh]',
 }: {
   leaderboard: WormArenaLeaderboardEntry[];
