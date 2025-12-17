@@ -95,13 +95,14 @@ export default function WormArenaSkillHeroGraphic({
     xSamples.push(minX + (i / (numSamples - 1)) * (maxX - minX));
   }
 
-  // Get max PDF for normalization
-  const mainPeakPdf = gaussianPDF(mu, mu, sigma);
-  const refPeakPdf =
+  // Peak PDF values at apex: 1 / (sigma * sqrt(2*pi))
+  const mainApexPdf = 1 / (sigma * Math.sqrt(2 * Math.PI));
+  const refApexPdf =
     referenceMu !== undefined && referenceSigma !== undefined
-      ? gaussianPDF(referenceMu, referenceMu, referenceSigma)
+      ? 1 / (referenceSigma * Math.sqrt(2 * Math.PI))
       : 0;
-  const maxPdf = Math.max(mainPeakPdf, refPeakPdf) * 1.15; // Add headroom for labels
+  // Add 20% headroom for labels above curves
+  const maxPdf = Math.max(mainApexPdf, refApexPdf) * 1.2;
 
   // Convert data x to pixel x
   const toPixelX = (x: number) => ((x - minX) / (maxX - minX)) * chartWidth;
@@ -136,13 +137,13 @@ export default function WormArenaSkillHeroGraphic({
     if (t >= minX && t <= maxX) ticks.push(t);
   }
 
-  // Label positions (above peaks)
+  // Label positions: place at apex (mu, 1/(sigma*sqrt(2*pi))) with small offset above
   const mainLabelX = toPixelX(mu);
-  const mainLabelY = toPixelY(mainPeakPdf) - 12;
+  const mainLabelY = toPixelY(mainApexPdf) - 8;
   const refLabelX = referenceMu !== undefined ? toPixelX(referenceMu) : 0;
   const refLabelY =
     referenceMu !== undefined && referenceSigma !== undefined
-      ? toPixelY(refPeakPdf) - 12
+      ? toPixelY(refApexPdf) - 8
       : 0;
 
   return (
