@@ -1,5 +1,149 @@
 # New entires at the top, use proper SemVer!
 
+### Version 6.5.11  Dec 17, 2025
+
+- **Worm Arena: Baseline color + UI readability improvements** (Author: Claude Sonnet 4)
+  - Changed baseline model color from red to **green** across all components (role colors, snapshot cards, pills)
+  - Changed pessimistic/optimistic confidence interval pills from red/green to **gray/black** scheme for better clarity
+  - Added "Click a dot to select that model" instruction text above scatter plot
+  - Increased scatter plot axis labels from tiny gray to **bold black text** for readability
+  - Added `worm-pill-baseline` CSS class with green styling
+  - **Files Modified**:
+    - `client/src/utils/wormArenaRoleColors.ts`
+    - `client/src/components/wormArena/DataNumber.tsx`
+    - `client/src/components/wormArena/stats/WormArenaModelSnapshotCard.tsx`
+    - `client/src/components/wormArena/stats/WormArenaSkillHeroGraphic.tsx`
+    - `client/src/components/wormArena/stats/WormArenaSkillScatterPlot.tsx`
+    - `client/src/index.css`
+    - `CHANGELOG.md`
+
+### Version 6.5.10  Dec 17, 2025
+
+- **Worm Arena: Win Probability calculation + UI improvements** (Author: Claude Sonnet 4)
+  - Added win probability calculation for TrueSkill model comparisons using the normal distribution formula: P = Phi((mu1 - mu2) / sqrt(sigma1^2 + sigma2^2))
+  - Created new utility module `wormArenaWinProbability.ts` with `erf`, `erfc`, `normalCDF`, and `calculateWinProbability` functions (Abramowitz & Stegun approximation, accurate to +/-1.5e-7)
+  - Created new component `WormArenaWinProbability.tsx` for displaying statistical comparison between compare and baseline models
+  - Win probability section positioned directly below bell curve for visual prominence
+  - Formula styling increased to text-base bold black for better visibility
+  - Fixed confidence interval labeling to clarify it applies to the compare model only
+  - Stats boxes (Games/Wins/Losses/Ties/Cost) now labeled "Compare Model Stats" to clarify they refer to the compare model
+  - Changed baseline model color from red to **green** for better visual distinction
+  - **Files Created**:
+    - `client/src/utils/wormArenaWinProbability.ts`
+    - `client/src/components/wormArena/WormArenaWinProbability.tsx`
+  - **Files Modified**:
+    - `client/src/components/wormArena/stats/WormArenaSkillHeroGraphic.tsx`
+    - `client/src/utils/wormArenaRoleColors.ts`
+    - `CHANGELOG.md`
+
+### Version 6.5.9  Dec 17, 2025
+
+- **Worm Arena: Stats panel now sortable + links into deeper model analysis** (Author: Cascade)
+  - Worm Arena replay page Stats panel now shows all models (scrollable) and supports sorting by win rate, games played, wins, losses, and ties.
+  - Added a direct link to the deeper Stats & Placement page, and model names now link to that page with the model preselected.
+  - **Files Modified**:
+    - `client/src/components/WormArenaStatsPanel.tsx`
+    - `client/src/hooks/useWormArenaStats.ts`
+    - `CHANGELOG.md`
+
+### Version 6.5.8  Dec 17, 2025
+
+- **Worm Arena: only show replayable matches + fix Greatest Hits truncation** (Author: Cascade)
+  - `/api/snakebench/games` now filters out DB-only matches that do not have an available replay asset, preventing broken replay clicks.
+  - Improved remote replay fetch diagnostics to include HTTP status and a short response snippet.
+  - Fixed the Worm Arena Greatest Hits list being cut off by switching to a simple overflow container and increasing the scroll region height.
+  - Greatest Hits "View replay" now opens in a new tab/window.
+  - **Files Modified**:
+    - `server/services/snakeBenchService.ts`
+    - `client/src/components/WormArenaGreatestHits.tsx`
+    - `docs/reference/api/SnakeBench_WormArena_API.md`
+    - `CHANGELOG.md`
+
+### Version 6.5.5  Dec 17, 2025
+
+- **Worm Arena: DB-discovered OpenRouter models now runnable + duplicate dropdown cleanup + Gemini 3 Flash tournament script** (Author: Cascade)
+  - Updated SnakeBench model allowlist to include **active, DB-discovered OpenRouter slugs** (in addition to curated config) so newly discovered models can be run immediately.
+  - Canonicalized OpenRouter model IDs before de-duping in Worm Arena Live so aliases do not appear multiple times.
+  - Rewrote the tournament script to run `google/gemini-3-flash-preview` vs the champion roster **both directions**, **localhost**, **one match at a time** (rate-limit safe).
+  - Updated SnakeBench/Worm Arena API docs to reflect the expanded allowlist behavior.
+  - **Files Modified**:
+    - `server/services/snakeBenchService.ts`
+    - `client/src/pages/WormArenaLive.tsx`
+    - `scripts/worm-arena-tournaments/underrepresented-models-roundrobin.ps1`
+    - `docs/reference/api/SnakeBench_WormArena_API.md`
+    - `CHANGELOG.md`
+
+# New entires at the top, use proper SemVer!
+
+# New entires at the top, use proper SemVer!
+
+### Version 6.5.7  Dec 19, 2025
+
+- **Worm Arena Live: restore tall reasoning columns + reinstated stats strip + clearer reconnect errors** (Author: Codex (GPT-5))
+  - Reasoning columns are tall again (≈46rem) with scrollable bodies so the layout matches the live board height, while the top apple scoreboard is now about half its previous height.
+  - The under-board status strip brings back the round/score/alive grid and shows session IDs plus live phase, so users still see the classic streaming telemetry beneath the board.
+  - If a user opens `/worm-arena/live/:sessionId` after the single-use session handshake expires, the page now stays in “live” mode and explains that current sessions cannot be rejoined mid-match.
+  - **Files Modified**:
+    - `client/src/pages/WormArenaLive.tsx`
+    - `client/src/hooks/useWormArenaStreaming.ts`
+    - `client/src/components/WormArenaReasoning.tsx`
+    - `client/src/components/WormArenaLiveScoreboard.tsx`
+    - `client/src/components/WormArenaLiveStatusStrip.tsx`
+    - `docs/2025-12-19-worm-arena-live-refresh-plan.md`
+    - `CHANGELOG.md`
+
+### Version 6.5.6  Dec 19, 2025
+
+- **Worm Arena Live: restore worm emoji in reasoning panels** (Author: Codex (GPT-5))
+  - Replaced the mojibake `ĐY?>` placeholder with the requested 🐛 emoji so headers look correct on Windows browsers.
+  - Updated the component header to document the icon change.
+  - **Files Modified**: `client/src/components/WormArenaReasoning.tsx`, `CHANGELOG.md`
+
+### Version 6.5.5  Dec 19, 2025
+
+- **Worm Arena Live: scoreboard-first layout + inline match summary** (Author: Codex (GPT-5))
+  - Apple scoreboard now pins above the live board while all other controls collapse under the board, matching the requested hierarchy.
+  - Reasoning columns keep a fixed height with scrollbars, the status strip now only shows streaming context, and the match ID has a dedicated copy-able control under the board.
+  - Final summaries render inline next to the final frame so viewers stay on the Live page when a match completes.
+  - **Files Modified**:
+    - `client/src/pages/WormArenaLive.tsx`
+    - `client/src/components/WormArenaLiveScoreboard.tsx`
+    - `client/src/components/WormArenaLiveStatusStrip.tsx`
+    - `client/src/components/WormArenaReasoning.tsx`
+    - `client/src/components/WormArenaLiveBoardPanel.tsx`
+    - `client/src/components/WormArenaLiveResultsPanel.tsx`
+    - `docs/2025-12-19-worm-arena-live-refresh-plan.md`
+    - `CHANGELOG.md`
+
+### Version 6.5.4  Dec 17, 2025
+
+- **Worm Arena Skill Analysis: Comparison overlay matches poster view** (Author: CodexGPT5.1 Low)
+  - Replaced the stacked bell-curve cards with a single shared SVG that overlays up to five models using the same axis math as Poster View, including dashed μ markers and color-matched fills.
+  - Added an interactive legend that mirrors selection ordering, displays mu/sigma/win-loss stats, and keeps hover/focus state synchronized with the scatter plot.
+  - Updated the Worm Arena stats plan to record the new progress milestone and refreshed next steps.
+  - **Files Modified**:
+    - `client/src/components/wormArena/stats/WormArenaMultiCurveOverlay.tsx`
+    - `docs/plans/WormArenaStatsPlan.md`
+    - `CHANGELOG.md`
+
+### Version 6.5.3  Dec 17, 2025
+
+- **Worm Arena Skill Analysis: role-based color normalization** (Author: GPT-5.2-Medium-Reasoning)
+  - Color coordinated the entire Skill Analysis flow so compare model UI is blue and baseline model UI is red.
+  - Model lists, snapshot cards, and the TrueSkill leaderboard picker now highlight selections using the correct role color (no green selection state).
+  - Poster View hero now renders the baseline curve in red and shows both models' skill estimate and uncertainty values in role colors.
+  - **Files Modified**:
+    - `client/src/index.css`
+    - `client/src/utils/wormArenaRoleColors.ts`
+    - `client/src/components/wormArena/DataNumber.tsx`
+    - `client/src/components/wormArena/stats/WormArenaModelListCard.tsx`
+    - `client/src/components/wormArena/stats/WormArenaModelSnapshotCard.tsx`
+    - `client/src/components/wormArena/stats/WormArenaSkillHeroGraphic.tsx`
+    - `client/src/components/WormArenaTrueSkillLeaderboard.tsx`
+    - `client/src/pages/WormArenaSkillAnalysis.tsx`
+    - `package.json`
+    - `CHANGELOG.md`
+
 ### Version 6.5.2  Dec 17, 2025
 
 - **Worm Arena Skill Analysis: Comparison View polish + regression hardening** (Author: GPT-5.2-Medium-Reasoning)

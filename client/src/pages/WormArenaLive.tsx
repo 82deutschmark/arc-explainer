@@ -1,14 +1,10 @@
-﻿/**
- * Author: Claude Code using Sonnet 4.5
- * Date: 2025-12-16
- * PURPOSE: Worm Arena Live - Simplified setup with two model dropdowns and clean transitions.
- *          Removed curated matchup selector for faster, cleaner UX.
- *          Uses useWormArenaSetup hook to manage setup state.
- *          Smooth fade transitions between setup → live → completed states.
- *          Sorts model dropdowns by newest-first using server-provided addedAt (DB discovery)
- *          with releaseDate fallback.
- * SRP/DRY check: Pass - orchestrates child components with minimal state management.
- *                State extracted to useWormArenaSetup hook for better maintainability.
+/**
+ * Author: Codex (GPT-5)
+ * Date: 2025-12-19
+ * PURPOSE: Worm Arena Live streaming hub with the apple scoreboard pinned up top,
+ *          run controls hidden mid-match, and post-game summaries that stay on the
+ *          same page alongside the final board.
+ * SRP/DRY check: Pass - coordinates child hooks/components without duplicating their logic.
  */
 
 import React, { useEffect, useMemo } from 'react';
@@ -22,6 +18,7 @@ import WormArenaLiveBoardPanel from '@/components/WormArenaLiveBoardPanel';
 import WormArenaLiveResultsPanel from '@/components/WormArenaLiveResultsPanel';
 import WormArenaRunControls from '@/components/WormArenaRunControls';
 import WormArenaReasoning from '@/components/WormArenaReasoning';
+import WormArenaLiveScoreboard from '@/components/WormArenaLiveScoreboard';
 
 import type { ModelConfig, SnakeBenchRunMatchRequest } from '@shared/types';
 
@@ -125,6 +122,7 @@ export default function WormArenaLive() {
   } = useWormArenaSetup();
 
   const [launchNotice, setLaunchNotice] = React.useState<string | null>(null);
+  const [copyHint, setCopyHint] = React.useState<string | null>(null);
 
   const availableModelSet = React.useMemo(() => new Set(selectableModels), [selectableModels]);
   const matchupAvailable = isValid(availableModelSet);
@@ -132,6 +130,7 @@ export default function WormArenaLive() {
   const {
     status,
     message,
+    phase,
     frames,
     reasoningBySnakeId,
     playerNameBySnakeId,
@@ -180,6 +179,18 @@ export default function WormArenaLive() {
   const latestFrame = useMemo(() => (frames.length ? frames[frames.length - 1] : null), [frames]);
   const boardWidth = (latestFrame as any)?.frame?.state?.width ?? 10;
   const boardHeight = (latestFrame as any)?.frame?.state?.height ?? 10;
+  const currentRoundValue = useMemo(() => {
+    const frameRound = Number((latestFrame as any)?.round);
+    if (Number.isFinite(frameRound)) return frameRound;
+    const summaryRound = Number(finalSummary?.roundsPlayed);
+    return Number.isFinite(summaryRound) ? summaryRound : null;
+  }, [latestFrame, finalSummary]);
+  const maxRoundsValue = useMemo(() => {
+    const frameMax = Number((latestFrame as any)?.frame?.state?.max_rounds);
+    if (Number.isFinite(frameMax) && frameMax > 0) return frameMax;
+    const summaryRound = Number(finalSummary?.roundsPlayed);
+    return Number.isFinite(summaryRound) ? summaryRound : null;
+  }, [latestFrame, finalSummary]);
 
   const snakeIds = useMemo(() => {
     const ids = new Set<string>();
@@ -198,15 +209,82 @@ export default function WormArenaLive() {
   const rightName = (rightSnakeId && playerNameBySnakeId[rightSnakeId]) || (rightSnakeId ? `Snake ${rightSnakeId}` : 'Player B');
   const leftReasoning = (leftSnakeId && reasoningBySnakeId[leftSnakeId]) || '';
   const rightReasoning = (rightSnakeId && reasoningBySnakeId[rightSnakeId]) || '';
+  const aliveNames = useMemo(() => {
+    const snakeState = (latestFrame as any)?.frame?.state?.snakes;
+    if (snakeState && typeof snakeState === 'object') {
+      return Object.keys(snakeState)
+        .sort()
+        .map((id) => playerNameBySnakeId[id] || id);
+    }
+    if (finalSummary?.scores) {
+      return Object.keys(finalSummary.scores)
+        .sort()
+        .map((id) => playerNameBySnakeId[id] || id);
+    }
+    return [];
+  }, [latestFrame, playerNameBySnakeId, finalSummary]);
 
+  // Pull the freshest apple score for a given snake, falling back to the final summary if needed.
+  const scoreForSnake = (snakeId?: string) => {
+    if (!snakeId) return 0;
+    const frameScores = (latestFrame as any)?.frame?.state?.scores;
+    if (frameScores && typeof frameScores === 'object' && Object.prototype.hasOwnProperty.call(frameScores, snakeId)) {
+      const raw = frameScores[snakeId];
+      const value = typeof raw === 'number' ? raw : Number(raw);
+      if (Number.isFinite(value)) return value;
+    }
+    if (finalSummary?.scores && Object.prototype.hasOwnProperty.call(finalSummary.scores, snakeId)) {
+      const raw = finalSummary.scores[snakeId];
+      const value = typeof raw === 'number' ? raw : Number(raw);
+      if (Number.isFinite(value)) return value;
+    }
+    return 0;
+  };
+  const playerAScore = scoreForSnake(leftSnakeId);
+  const playerBScore = scoreForSnake(rightSnakeId);
+
+  // Provide an explicit copy helper so sharing a match ID never requires digging through hidden UI.
+  const handleCopySessionId = React.useCallback(async () => {
+    if (!sessionId) return;
+    try {
+      if (typeof navigator !== 'undefined' && navigator?.clipboard?.writeText) {
+        await navigator.clipboard.writeText(sessionId);
+      } else if (typeof document !== 'undefined') {
+        const textarea = document.createElement('textarea');
+        textarea.value = sessionId;
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
+      }
+      setCopyHint('Copied match ID to clipboard');
+    } catch (err) {
+      console.error('[WormArenaLive] Failed to copy session ID', err);
+      setCopyHint('Copy failed. Please copy manually.');
+    } finally {
+      if (typeof window !== 'undefined') {
+        window.setTimeout(() => setCopyHint(null), 2500);
+      }
+    }
+  }, [sessionId]);
+
+  const hasSessionParam = Boolean(sessionId);
   const viewMode: ViewMode = finalSummary
     ? 'completed'
     : status === 'connecting' || status === 'starting' || status === 'in_progress'
       ? 'live'
-      : 'setup';
+      : hasSessionParam
+        ? 'live'
+        : 'setup';
+  const isActiveView = viewMode === 'live' || viewMode === 'completed';
 
+  const reconnectWarning =
+    hasSessionParam && status === 'failed' && !message && !finalSummary
+      ? 'Live session not found or already finished. Current streaming API does not support rejoining mid-match.'
+      : null;
   const headerSubtitle =
     viewMode === 'setup' ? 'Start a live match' : viewMode === 'live' ? 'Streaming...' : 'Match complete';
+  const statusMessage = reconnectWarning || message;
 
   return (
     <div className="worm-page">
@@ -256,66 +334,83 @@ export default function WormArenaLive() {
           </div>
         )}
 
-        {viewMode === 'live' && (
-          <div className="transition-opacity duration-300 ease-in-out animate-in fade-in">
-            {(() => {
-              const snakeIds = Object.keys((latestFrame as any)?.frame?.state?.snakes ?? {}).sort();
-              const aliveNames = snakeIds.map(id => playerNameBySnakeId[id] || id).slice(0, 2);
-              return (
+        {isActiveView && (
+          <div className="space-y-4 transition-opacity duration-300 ease-in-out animate-in fade-in">
+            <WormArenaLiveScoreboard
+              playerAName={leftName}
+              playerBName={rightName}
+              playerAScore={playerAScore}
+              playerBScore={playerBScore}
+            />
+
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-stretch">
+              <WormArenaReasoning
+                playerName={leftName}
+                color="green"
+                reasoning={leftReasoning}
+                score={playerAScore}
+                strategyLabel="Live output"
+              />
+
+              <div className="flex flex-col gap-4">
+                <WormArenaLiveBoardPanel
+                  viewMode={viewMode === 'completed' ? 'completed' : 'live'}
+                  status={status}
+                  latestFrame={latestFrame}
+                  boardWidth={boardWidth}
+                  boardHeight={boardHeight}
+                  finalSummary={finalSummary}
+                />
+
                 <WormArenaLiveStatusStrip
                   status={status}
-                  message={message}
+                  message={statusMessage}
                   error={error}
                   sessionId={sessionId}
                   currentMatchIndex={currentMatchIndex}
                   totalMatches={totalMatches}
                   playerAName={leftName}
                   playerBName={rightName}
-                  playerAScore={Number((latestFrame as any)?.frame?.state?.scores?.[leftSnakeId] ?? 0)}
-                  playerBScore={Number((latestFrame as any)?.frame?.state?.scores?.[rightSnakeId] ?? 0)}
-                  currentRound={(latestFrame as any)?.round ?? 0}
-                  maxRounds={(latestFrame as any)?.frame?.state?.max_rounds ?? 0}
+                  playerAScore={playerAScore}
+                  playerBScore={playerBScore}
+                  currentRound={currentRoundValue}
+                  maxRounds={maxRoundsValue}
+                  phase={phase}
                   aliveSnakes={aliveNames}
                 />
-              );
-            })()}
-          </div>
-        )}
 
-        {viewMode === 'live' && (
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 transition-opacity duration-300 ease-in-out animate-in fade-in items-stretch">
-            <WormArenaReasoning
-              playerName={leftName}
-              color="green"
-              reasoning={leftReasoning}
-              score={Number((latestFrame as any)?.frame?.state?.scores?.[leftSnakeId] ?? 0)}
-              strategyLabel="Live output"
-            />
+                {sessionId && (
+                  <div className="rounded-lg border-2 worm-border bg-white shadow-sm px-4 py-3 space-y-2">
+                    <div className="text-[11px] uppercase font-semibold text-muted-foreground">Match ID</div>
+                    <div className="flex flex-wrap items-center gap-2">
+                      <code className="text-xs sm:text-sm font-mono bg-worm-card rounded px-2 py-1 text-worm-ink break-all">
+                        {sessionId}
+                      </code>
+                      <button
+                        type="button"
+                        onClick={handleCopySessionId}
+                        className="px-3 py-1.5 text-xs font-semibold rounded border border-worm-ink text-worm-ink hover:bg-worm-card transition-colors"
+                      >
+                        {copyHint ? 'Copied' : 'Copy ID'}
+                      </button>
+                    </div>
+                    <div className="text-xs text-muted-foreground">
+                      {copyHint || 'Share this ID so others can watch the live board.'}
+                    </div>
+                  </div>
+                )}
 
-            <div className="flex flex-col gap-4">
-              <WormArenaLiveBoardPanel
-                viewMode="live"
-                status={status}
-                latestFrame={latestFrame}
-                boardWidth={boardWidth}
-                boardHeight={boardHeight}
-                finalSummary={null}
+                {finalSummary && <WormArenaLiveResultsPanel finalSummary={finalSummary} />}
+              </div>
+
+              <WormArenaReasoning
+                playerName={rightName}
+                color="blue"
+                reasoning={rightReasoning}
+                score={playerBScore}
+                strategyLabel="Live output"
               />
             </div>
-
-            <WormArenaReasoning
-              playerName={rightName}
-              color="blue"
-              reasoning={rightReasoning}
-              score={Number((latestFrame as any)?.frame?.state?.scores?.[rightSnakeId] ?? 0)}
-              strategyLabel="Live output"
-            />
-          </div>
-        )}
-
-        {viewMode === 'completed' && finalSummary && (
-          <div className="transition-opacity duration-300 ease-in-out animate-in fade-in">
-            <WormArenaLiveResultsPanel finalSummary={finalSummary} />
           </div>
         )}
 

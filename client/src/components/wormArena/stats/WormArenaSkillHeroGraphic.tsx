@@ -1,20 +1,25 @@
 /**
- * Author: GPT-5.2-Medium-Reasoning
+ * Author: Claude Sonnet 4
  * Date: 2025-12-17
  * PURPOSE: Single unified "poster" graphic for the Skill Analysis page. Draws the reference
  *          design: skill estimate + uncertainty pills at top, 99.7% CI section in middle,
  *          and overlapping bell curves (rendered near the top so it sits directly under the view tabs).
+ *          Updated to keep role-based colors consistent (compare=blue, baseline=red) and to
+ *          display both models' skill estimate and uncertainty values.
  *          Chart math uses explicit top/bottom margins so the curve, labels, and x-axis
  *          are fully contained (no overflow bleed) and match the reference layout.
- * SRP/DRY check: Pass — single responsibility for the hero graphic composition.
+ *          Added win probability section when baseline model is selected.
+ * SRP/DRY check: Pass - single responsibility for the hero graphic composition.
  *
- * Touches: WormArenaSkillAnalysis.tsx (parent)
+ * Touches: WormArenaSkillAnalysis.tsx (parent), WormArenaWinProbability.tsx (child)
  */
 
 import React from 'react';
 import { InlineMath } from 'react-katex';
 import { gaussianPDF } from '@/utils/confidenceIntervals';
 import { getConfidenceInterval } from '@/utils/confidenceIntervals';
+import { getWormArenaRoleColors } from '@/utils/wormArenaRoleColors';
+import WormArenaWinProbability from '../WormArenaWinProbability';
 
 export interface WormArenaSkillHeroGraphicProps {
   // Selected model
@@ -58,13 +63,21 @@ export default function WormArenaSkillHeroGraphic({
   const pessimistic = Number.isFinite(exposed) ? exposed : lower;
   const optimistic = upper;
 
-  // Color palette matching the TikZ reference
-  const BLUE_PILL_BG = '#D9EDF7';
-  const BLUE_PILL_TEXT = '#31708F';
-  const RED_PILL_BG = '#F2DEDE';
-  const RED_PILL_TEXT = '#A94442';
-  const GREEN_PILL_BG = '#D8F0DE';
-  const GREEN_PILL_TEXT = '#1E5631';
+  // Role colors: compare is always blue, baseline is always red.
+  const compareColors = getWormArenaRoleColors('compare');
+  const baselineColors = getWormArenaRoleColors('baseline');
+
+  // Pills for the mu/sigma blocks under the bell curve.
+  const COMPARE_PILL_BG = compareColors.tintBgStrong;
+  const COMPARE_PILL_TEXT = compareColors.accent;
+  const BASELINE_PILL_BG = baselineColors.tintBgStrong;
+  const BASELINE_PILL_TEXT = baselineColors.accent;
+
+  // Pessimistic/Optimistic pills: gray to black scheme per user request
+  const PESSIMISTIC_PILL_BG = '#E8E8E8';
+  const PESSIMISTIC_PILL_TEXT = '#666666';
+  const OPTIMISTIC_PILL_BG = '#333333';
+  const OPTIMISTIC_PILL_TEXT = '#FFFFFF';
   const LABEL_GRAY = '#666666';
   const HEADER_COLOR = '#333333';
 
@@ -76,10 +89,10 @@ export default function WormArenaSkillHeroGraphic({
   const plotBottomY = chartHeight - bottomMargin;
 
   // Curve colors
-  const CURRENT_STROKE = '#31708F';
-  const CURRENT_FILL = '#D9EDF7';
-  const REF_STROKE = '#999999';
-  const REF_FILL = '#E0E0E0';
+  const CURRENT_STROKE = compareColors.accent;
+  const CURRENT_FILL = compareColors.tintBgStrong;
+  const REF_STROKE = baselineColors.accent;
+  const REF_FILL = baselineColors.tintBg;
 
   // Calculate chart bounds.
   // The reference image reads tighter than ±4σ; we keep this closer to the 99.7% CI (±3σ).
@@ -262,49 +275,100 @@ export default function WormArenaSkillHeroGraphic({
         </text>
       </svg>
 
-      {/* Top row: Skill estimate and Uncertainty */}
-      <div className="flex justify-between w-full max-w-xl mb-8">
-        {/* Skill estimate μ */}
-        <div className="text-center flex-1">
-          <div className="text-lg font-bold mb-3" style={{ color: HEADER_COLOR }}>
-            Skill estimate <InlineMath math="\mu" />
+      {/* Win Probability section - positioned right after bell curve per user request */}
+      {referenceMu !== undefined && referenceSigma !== undefined && referenceLabel && (
+        <div className="mt-6 mb-8">
+          <WormArenaWinProbability
+            compareMu={mu}
+            compareSigma={sigma}
+            compareLabel={modelLabel}
+            baselineMu={referenceMu}
+            baselineSigma={referenceSigma}
+            baselineLabel={referenceLabel}
+          />
+        </div>
+      )}
+
+      {/* Skill estimate and Uncertainty (both models, role-colored) */}
+      <div className="w-full max-w-xl mb-8 space-y-4">
+        <div className="grid grid-cols-2 gap-4">
+          <div className="text-center">
+            <div className="text-lg font-bold mb-3" style={{ color: HEADER_COLOR }}>
+              Skill estimate <InlineMath math="\mu" />
+            </div>
+            <div
+              className="inline-block px-8 py-3 text-3xl font-bold rounded-full"
+              style={{ background: COMPARE_PILL_BG, color: COMPARE_PILL_TEXT }}
+            >
+              {mu.toFixed(2)}
+            </div>
+            <div className="mt-2 text-xs font-semibold" style={{ color: compareColors.accent }}>
+              Compare
+            </div>
           </div>
-          <div
-            className="inline-block px-10 py-4 text-3xl font-bold rounded-full"
-            style={{ background: BLUE_PILL_BG, color: BLUE_PILL_TEXT }}
-          >
-            {mu.toFixed(2)}
-          </div>
-          <div className="mt-3 text-sm" style={{ color: LABEL_GRAY }}>
-            The center of the
-            <br />
-            model skill distribution.
+
+          <div className="text-center">
+            <div className="text-lg font-bold mb-3" style={{ color: HEADER_COLOR }}>
+              Uncertainty <InlineMath math="\sigma" />
+            </div>
+            <div
+              className="inline-block px-8 py-3 text-3xl font-bold rounded-full"
+              style={{ background: COMPARE_PILL_BG, color: COMPARE_PILL_TEXT }}
+            >
+              {sigma.toFixed(2)}
+            </div>
+            <div className="mt-2 text-xs font-semibold" style={{ color: compareColors.accent }}>
+              Compare
+            </div>
           </div>
         </div>
 
-        {/* Uncertainty σ */}
-        <div className="text-center flex-1">
-          <div className="text-lg font-bold mb-3" style={{ color: HEADER_COLOR }}>
-            Uncertainty <InlineMath math="\sigma" />
+        {referenceMu !== undefined && referenceSigma !== undefined && (
+          <div className="grid grid-cols-2 gap-4">
+            <div className="text-center">
+              <div className="text-sm font-bold mb-2" style={{ color: HEADER_COLOR }}>
+                Baseline <InlineMath math="\mu" />
+              </div>
+              <div
+                className="inline-block px-6 py-2 text-2xl font-bold rounded-full"
+                style={{ background: BASELINE_PILL_BG, color: BASELINE_PILL_TEXT }}
+              >
+                {referenceMu.toFixed(2)}
+              </div>
+              <div className="mt-2 text-xs font-semibold" style={{ color: baselineColors.accent }}>
+                Baseline
+              </div>
+            </div>
+
+            <div className="text-center">
+              <div className="text-sm font-bold mb-2" style={{ color: HEADER_COLOR }}>
+                Baseline <InlineMath math="\sigma" />
+              </div>
+              <div
+                className="inline-block px-6 py-2 text-2xl font-bold rounded-full"
+                style={{ background: BASELINE_PILL_BG, color: BASELINE_PILL_TEXT }}
+              >
+                {referenceSigma.toFixed(2)}
+              </div>
+              <div className="mt-2 text-xs font-semibold" style={{ color: baselineColors.accent }}>
+                Baseline
+              </div>
+            </div>
           </div>
-          <div
-            className="inline-block px-10 py-4 text-3xl font-bold rounded-full"
-            style={{ background: BLUE_PILL_BG, color: BLUE_PILL_TEXT }}
-          >
-            {sigma.toFixed(2)}
-          </div>
-          <div className="mt-3 text-sm" style={{ color: LABEL_GRAY }}>
-            The variability of
-            <br />
-            the model's skill.
-          </div>
+        )}
+
+        <div className="text-sm text-center" style={{ color: LABEL_GRAY }}>
+          Compare is blue. Baseline is green.
         </div>
       </div>
 
-      {/* Middle: 99.7% Confidence Interval */}
+      {/* Middle: 99.7% Confidence Interval (for Compare model) */}
       <div className="text-center mb-8">
-        <div className="text-xl font-bold mb-5" style={{ color: HEADER_COLOR }}>
+        <div className="text-xl font-bold mb-2" style={{ color: HEADER_COLOR }}>
           99.7% Confidence Interval
+        </div>
+        <div className="text-xs font-semibold mb-4" style={{ color: compareColors.accent }}>
+          (Compare Model)
         </div>
 
         <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-6 mb-3">
@@ -312,7 +376,7 @@ export default function WormArenaSkillHeroGraphic({
           <div className="text-center">
             <div
               className="inline-block px-8 py-3 text-3xl font-bold rounded-full"
-              style={{ background: RED_PILL_BG, color: RED_PILL_TEXT }}
+              style={{ background: PESSIMISTIC_PILL_BG, color: PESSIMISTIC_PILL_TEXT }}
             >
               {pessimistic.toFixed(2)}
             </div>
@@ -325,7 +389,7 @@ export default function WormArenaSkillHeroGraphic({
           <div className="text-center">
             <div
               className="inline-block px-8 py-3 text-3xl font-bold rounded-full"
-              style={{ background: GREEN_PILL_BG, color: GREEN_PILL_TEXT }}
+              style={{ background: OPTIMISTIC_PILL_BG, color: OPTIMISTIC_PILL_TEXT }}
             >
               {optimistic.toFixed(2)}
             </div>
@@ -343,15 +407,19 @@ export default function WormArenaSkillHeroGraphic({
         </div>
 
         <div className="text-sm" style={{ color: LABEL_GRAY }}>
-          99.7% of the time, the model will demonstrate skill within this interval.
+          99.7% of the time, we expect the model to demonstrate skill within this interval.
         </div>
         <div className="text-sm mt-1" style={{ color: LABEL_GRAY }}>
           (Calculated as <InlineMath math="\mu \pm 3\sigma" />)
         </div>
       </div>
 
-      {/* Stats boxes: keep these directly above the chart so the story is visible at a glance. */}
-      <div className="w-full max-w-xl grid grid-cols-5 gap-3 mb-3">
+      {/* Stats boxes: Compare model statistics only */}
+      <div className="w-full max-w-xl">
+        <div className="text-sm font-semibold text-center mb-2" style={{ color: compareColors.accent }}>
+          Compare Model Stats
+        </div>
+        <div className="grid grid-cols-5 gap-3 mb-3">
         {statBoxes.map((box) => (
           <div
             key={box.label}
@@ -361,6 +429,7 @@ export default function WormArenaSkillHeroGraphic({
             <div className="text-sm font-bold font-mono">{box.value}</div>
           </div>
         ))}
+        </div>
       </div>
     </div>
   );

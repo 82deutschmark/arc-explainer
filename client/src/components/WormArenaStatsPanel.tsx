@@ -1,8 +1,10 @@
 /**
  * Author: Cascade
- * Date: 2025-12-10
- * PURPOSE: Compact Worm Arena stats panel. Shows local WormArena leaderboard
- *          and recent-activity summary powered by SnakeBench-backed tables.
+ * Date: 2025-12-17
+ * PURPOSE: Compact Worm Arena stats panel.
+ *          Shows a scrollable Worm Arena leaderboard with sortable columns
+ *          (win rate, games, wins, losses, ties) and a link into the deeper
+ *          Stats & Placement page.
  * SRP/DRY check: Pass presentation-only wrapper around useWormArenaStats.
  */
 
@@ -10,15 +12,60 @@ import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useWormArenaStats } from '@/hooks/useWormArenaStats';
 
+type SortKey = 'winRate' | 'gamesPlayed' | 'wins' | 'losses' | 'ties' | 'modelSlug';
+
 const WormArenaStatsPanel: React.FC = () => {
   const { leaderboard, recentActivity, isLoading, error } = useWormArenaStats();
 
+  const [sortKey, setSortKey] = React.useState<SortKey>('winRate');
+  const [sortDir, setSortDir] = React.useState<'asc' | 'desc'>('desc');
+
   const rows = React.useMemo(() => {
-    const sorted = [...leaderboard].sort(
-      (a, b) => (b.gamesPlayed ?? 0) - (a.gamesPlayed ?? 0),
-    );
-    return sorted.slice(0, 12);
-  }, [leaderboard]);
+    const compareNumber = (left: number, right: number) => {
+      if (left === right) return 0;
+      return sortDir === 'asc' ? left - right : right - left;
+    };
+
+    const compareString = (left: string, right: string) => {
+      const cmp = left.localeCompare(right);
+      return sortDir === 'asc' ? cmp : -cmp;
+    };
+
+    const toNumber = (val: unknown) => (Number.isFinite(Number(val)) ? Number(val) : 0);
+
+    return [...leaderboard].sort((a, b) => {
+      if (sortKey === 'modelSlug') {
+        return compareString(String(a.modelSlug ?? ''), String(b.modelSlug ?? ''));
+      }
+
+      if (sortKey === 'winRate') {
+        const aw = typeof a.winRate === 'number' ? a.winRate : -1;
+        const bw = typeof b.winRate === 'number' ? b.winRate : -1;
+        const primary = compareNumber(aw, bw);
+        if (primary !== 0) return primary;
+        const secondary = compareNumber(toNumber(a.gamesPlayed), toNumber(b.gamesPlayed));
+        if (secondary !== 0) return secondary;
+        return String(a.modelSlug ?? '').localeCompare(String(b.modelSlug ?? ''));
+      }
+
+      const av = toNumber((a as any)[sortKey]);
+      const bv = toNumber((b as any)[sortKey]);
+      const primary = compareNumber(av, bv);
+      if (primary !== 0) return primary;
+      return String(a.modelSlug ?? '').localeCompare(String(b.modelSlug ?? ''));
+    });
+  }, [leaderboard, sortKey, sortDir]);
+
+  const setSort = React.useCallback((next: SortKey) => {
+    setSortKey((prev) => {
+      if (prev === next) {
+        setSortDir((d) => (d === 'asc' ? 'desc' : 'asc'));
+        return prev;
+      }
+      setSortDir(next === 'modelSlug' ? 'asc' : 'desc');
+      return next;
+    });
+  }, []);
 
   const activityLabel = React.useMemo(() => {
     if (!recentActivity) return null;
@@ -33,7 +80,15 @@ const WormArenaStatsPanel: React.FC = () => {
     <Card className="worm-card-soft">
       <CardHeader className="pb-3">
         <CardTitle className="text-base font-semibold flex justify-between items-center">
-          <span>Worm Arena Stats</span>
+          <div className="flex items-center gap-3">
+            <span>Worm Arena Stats</span>
+            <a
+              href="/worm-arena/stats"
+              className="text-xs font-semibold underline text-worm-blue hover:text-worm-blue-hover"
+            >
+              Deeper stats
+            </a>
+          </div>
           {activityLabel && <span className="text-xs font-normal worm-muted">{activityLabel}</span>}
         </CardTitle>
       </CardHeader>
@@ -47,22 +102,40 @@ const WormArenaStatsPanel: React.FC = () => {
         )}
         {!isLoading && !error && leaderboard.length > 0 && (
           <div className="overflow-x-auto">
+            <div className="max-h-[560px] overflow-y-auto pr-1">
             <table className="min-w-full text-base">
               <thead>
                 <tr className="worm-table-head">
-                  <th className="py-2 px-3 text-left font-semibold">Model</th>
-                  <th className="py-2 px-3 text-right font-semibold">Games</th>
-                  <th className="py-2 px-3 text-right font-semibold">Wins</th>
-                  <th className="py-2 px-3 text-right font-semibold">Losses</th>
-                  <th className="py-2 px-3 text-right font-semibold">Ties</th>
-                  <th className="py-2 px-3 text-right font-semibold">Win Rate</th>
+                  <th className="py-2 px-3 text-left font-semibold">
+                    <button type="button" className="underline" onClick={() => setSort('modelSlug')}>Model</button>
+                  </th>
+                  <th className="py-2 px-3 text-right font-semibold">
+                    <button type="button" className="underline" onClick={() => setSort('gamesPlayed')}>Games</button>
+                  </th>
+                  <th className="py-2 px-3 text-right font-semibold">
+                    <button type="button" className="underline" onClick={() => setSort('wins')}>Wins</button>
+                  </th>
+                  <th className="py-2 px-3 text-right font-semibold">
+                    <button type="button" className="underline" onClick={() => setSort('losses')}>Losses</button>
+                  </th>
+                  <th className="py-2 px-3 text-right font-semibold">
+                    <button type="button" className="underline" onClick={() => setSort('ties')}>Ties</button>
+                  </th>
+                  <th className="py-2 px-3 text-right font-semibold">
+                    <button type="button" className="underline" onClick={() => setSort('winRate')}>Win Rate</button>
+                  </th>
                 </tr>
               </thead>
               <tbody>
                 {rows.map((row) => (
                   <tr key={row.modelSlug} className="worm-table-row">
                     <td className="py-2 px-3 font-mono text-sm truncate max-w-[280px]" title={row.modelSlug}>
-                      {row.modelSlug}
+                      <a
+                        href={`/worm-arena/stats?model=${encodeURIComponent(row.modelSlug)}`}
+                        className="underline"
+                      >
+                        {row.modelSlug}
+                      </a>
                     </td>
                     <td className="py-2 px-3 text-right">{row.gamesPlayed}</td>
                     <td className="py-2 px-3 text-right font-semibold worm-metric-wins">
@@ -80,11 +153,11 @@ const WormArenaStatsPanel: React.FC = () => {
               </tbody>
             </table>
 
-            {leaderboard.length > rows.length && (
-              <div className="mt-3 text-sm worm-muted">
-                Showing top {rows.length} by games played.
-              </div>
-            )}
+            </div>
+
+            <div className="mt-3 text-sm worm-muted">
+              Showing {rows.length} models.
+            </div>
           </div>
         )}
       </CardContent>

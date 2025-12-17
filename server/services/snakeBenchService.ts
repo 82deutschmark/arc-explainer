@@ -2,10 +2,17 @@
  * server/services/snakeBenchService.ts
  *
  * Author: Cascade
- * Date: 2025-12-02
- * PURPOSE: Orchestrate single SnakeBench matches via a Python runner
+ * Date: 2025-12-17
+ * PURPOSE: Orchestrate SnakeBench matches via a Python runner
  *          (server/python/snakebench_runner.py) and return a compact
  *          summary suitable for HTTP APIs and frontend usage.
+ *
+ *          Behavior notes:
+ *          - Accept OpenRouter model slugs discovered in our SnakeBench DB (active)
+ *            in addition to curated OpenRouter entries in the central MODELS config.
+ *          - List endpoints only return matches that have an available replay asset
+ *            (local file, DB replay_path URL, or GitHub raw fallback). This prevents
+ *            the UI from offering matches that cannot be replayed.
  * SRP/DRY check: Pass — dedicated to SnakeBench subprocess handling and
  *                result shaping; reuses existing logging patterns.
  */
@@ -63,6 +70,41 @@ function parseCostStringToNumber(cost: string | undefined | null): number {
 }
 
 export class SnakeBenchService {
+  private async getSnakeBenchAllowedModels(): Promise<string[]> {
+    const allowed = new Set<string>();
+
+    // Always include curated OpenRouter models from the central config.
+    MODELS
+      .filter((m) => m.provider === 'OpenRouter')
+      .forEach((m) => {
+        const raw = m.apiModelName || m.key;
+        if (typeof raw !== 'string') return;
+        const trimmed = raw.trim();
+        if (!trimmed) return;
+        allowed.add(trimmed);
+      });
+
+    // Option A: also include DB-discovered OpenRouter models marked active.
+    // This keeps Worm Arena aligned with the continually-updating OpenRouter catalog.
+    if (repositoryService.isInitialized()) {
+      try {
+        const dbModels = await repositoryService.snakeBench.listModels();
+        dbModels
+          .filter((m) => (m.provider || '').toLowerCase() === 'openrouter' && (m as any).is_active)
+          .forEach((m) => {
+            const slug = String((m as any).model_slug ?? '').trim();
+            if (!slug) return;
+            allowed.add(slug);
+          });
+      } catch (err) {
+        const msg = err instanceof Error ? err.message : String(err);
+        logger.warn(`SnakeBenchService.getSnakeBenchAllowedModels: failed to load DB models: ${msg}`, 'snakebench-service');
+      }
+    }
+
+    return Array.from(allowed).sort((a, b) => a.localeCompare(b));
+  }
+
   private resolvePythonBin(): string {
     if (process.env.PYTHON_BIN) {
       return process.env.PYTHON_BIN;
@@ -165,7 +207,7 @@ export class SnakeBenchService {
 
   private prepareRunMatch(
     request: SnakeBenchRunMatchRequest,
-    opts: { enableLiveDb?: boolean; enableStdoutEvents?: boolean } = {},
+    opts: { enableLiveDb?: boolean; enableStdoutEvents?: boolean; allowedModels?: string[] } = {},
   ): {
     modelA: string;
     modelB: string;
@@ -186,9 +228,13 @@ export class SnakeBenchService {
       throw new Error('modelA and modelB are required');
     }
 
-    const snakeBenchModels = MODELS
-      .filter((m) => m.provider === 'OpenRouter')
-      .map((m) => m.apiModelName || m.key);
+    const snakeBenchModels = (opts.allowedModels && opts.allowedModels.length > 0)
+      ? opts.allowedModels
+      : MODELS
+        .filter((m) => m.provider === 'OpenRouter')
+        .map((m) => m.apiModelName || m.key)
+        .filter((m): m is string => typeof m === 'string' && m.trim().length > 0)
+        .map((m) => m.trim());
 
     if (!snakeBenchModels.includes(modelA)) {
       throw new Error(
@@ -353,6 +399,7 @@ export class SnakeBenchService {
       onError?: (err: Error) => void;
     } = {},
   ): Promise<SnakeBenchRunMatchResult> {
+    const allowedModels = await this.getSnakeBenchAllowedModels();
     const {
       modelA,
       modelB,
@@ -365,7 +412,7 @@ export class SnakeBenchService {
       backendDir,
       spawnOpts,
       timeoutMs,
-    } = this.prepareRunMatch(request, { enableLiveDb: true, enableStdoutEvents: true });
+    } = this.prepareRunMatch(request, { enableLiveDb: true, enableStdoutEvents: true, allowedModels });
 
     return await new Promise<SnakeBenchRunMatchResult>((resolve, reject) => {
       const child = spawn(pythonBin, [runnerPath], spawnOpts);
@@ -699,6 +746,7 @@ export class SnakeBenchService {
   }
 
   async runMatch(request: SnakeBenchRunMatchRequest): Promise<SnakeBenchRunMatchResult> {
+    const allowedModels = await this.getSnakeBenchAllowedModels();
     const {
       modelA,
       modelB,
@@ -711,7 +759,7 @@ export class SnakeBenchService {
       backendDir,
       spawnOpts,
       timeoutMs,
-    } = this.prepareRunMatch(request);
+    } = this.prepareRunMatch(request, { allowedModels });
 
     return new Promise<SnakeBenchRunMatchResult>((resolve, reject) => {
       const child = spawn(pythonBin, [runnerPath], spawnOpts);
@@ -894,7 +942,9 @@ export class SnakeBenchService {
     try {
       const { games, total } = await repositoryService.snakeBench.getRecentGames(safeLimit);
       if (total > 0 && games.length > 0) {
-        return { games: this.filterReplayableGames(games), total };
+        const replayable = this.filterReplayableGames(games);
+        const available = await this.filterGamesWithAvailableReplays(replayable);
+        return { games: available, total: available.length };
       }
     } catch (dbErr) {
       const msg = dbErr instanceof Error ? dbErr.message : String(dbErr);
@@ -947,7 +997,9 @@ export class SnakeBenchService {
         };
       });
 
-      return { games: this.filterReplayableGames(games), total };
+      const replayable = this.filterReplayableGames(games);
+      const available = await this.filterGamesWithAvailableReplays(replayable);
+      return { games: available, total: available.length };
     } catch (err) {
       const message = err instanceof Error ? err.message : String(err);
       logger.error(`Failed to list SnakeBench games: ${message}`, 'snakebench-service');
@@ -1126,19 +1178,26 @@ export class SnakeBenchService {
   private async fetchJsonFromUrl(url: string): Promise<any> {
     return await new Promise((resolve, reject) => {
       const req = https.get(url, (res) => {
-        if (res.statusCode && res.statusCode >= 400) {
-          reject(new Error(`HTTP ${res.statusCode}`));
-          return;
-        }
+        const statusCode = res.statusCode ?? 0;
         const chunks: Buffer[] = [];
         res.on('data', (chunk) => chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk)));
         res.on('end', () => {
+          const raw = Buffer.concat(chunks).toString('utf8');
+
+          // Improve failure visibility when upstream returns HTML or a helpful message.
+          if (statusCode >= 400) {
+            const snippet = raw.length > 200 ? `${raw.slice(0, 200)}...` : raw;
+            reject(new Error(`HTTP ${statusCode} ${snippet ? `- ${snippet}` : ''}`));
+            return;
+          }
+
           try {
-            const raw = Buffer.concat(chunks).toString('utf8');
             const parsed = JSON.parse(raw);
             resolve(parsed);
           } catch (err) {
-            reject(err);
+            // Include a tiny snippet so "Unexpected token <" has context.
+            const snippet = raw.length > 200 ? `${raw.slice(0, 200)}...` : raw;
+            reject(new Error(`Invalid JSON response${snippet ? ` - ${snippet}` : ''}`));
           }
         });
       });
@@ -1227,6 +1286,56 @@ export class SnakeBenchService {
     // Fallback: no games meet the threshold; return original list so the
     // UI can still show "something", but prefer longer matches first.
     return [...games].sort((a, b) => (b.roundsPlayed ?? 0) - (a.roundsPlayed ?? 0));
+  }
+
+  /**
+   * Filter a candidate list down to matches with an available replay.
+   *
+   * Notes:
+   * - Concurrency is intentionally small to avoid spamming remote replay endpoints.
+   * - We keep this inside the service so listGames stays resilient if the DB has
+   *   completed matches without persisted replay assets.
+   */
+  private async filterGamesWithAvailableReplays(games: SnakeBenchGameSummary[]): Promise<SnakeBenchGameSummary[]> {
+    if (!Array.isArray(games) || games.length === 0) return [];
+
+    const MAX_CONCURRENCY = 5;
+    const results: SnakeBenchGameSummary[] = [];
+
+    // Simple in-process concurrency limiter.
+    let index = 0;
+    const worker = async () => {
+      while (index < games.length) {
+        const current = index;
+        index += 1;
+
+        const game = games[current];
+        const gameId = String(game?.gameId ?? '').trim();
+        if (!gameId) {
+          continue;
+        }
+
+        try {
+          const available = await this.replayExists(gameId);
+          if (available) {
+            results.push(game);
+          }
+        } catch (err) {
+          const msg = err instanceof Error ? err.message : String(err);
+          logger.warn(
+            `SnakeBenchService.filterGamesWithAvailableReplays: replayExists check failed for ${gameId}: ${msg}`,
+            'snakebench-service',
+          );
+        }
+      }
+    };
+
+    const workers = Array.from({ length: Math.min(MAX_CONCURRENCY, games.length) }, () => worker());
+    await Promise.all(workers);
+
+    // Preserve the original ordering from the input list.
+    const allowed = new Set(results.map((g) => g.gameId));
+    return games.filter((g) => allowed.has(g.gameId));
   }
 
   async healthCheck(): Promise<SnakeBenchHealthResponse> {

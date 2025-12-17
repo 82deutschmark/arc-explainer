@@ -322,12 +322,14 @@ export default function WormArenaSkillAnalysis() {
                 subtitle="Pick the model you want to analyze (blue curve)"
                 searchPlaceholder="Search compare model (e.g. openai/gpt-5.1)"
                 scrollAreaClassName="h-[340px] max-h-[42vh]"
+                role="compare"
               />
 
               <WormArenaModelSnapshotCard
                 rating={selectedModel ?? null}
                 isLoading={loadingSelected}
                 error={errorSelected ?? null}
+                role="compare"
               />
             </div>
 
@@ -401,15 +403,17 @@ export default function WormArenaSkillAnalysis() {
                   );
                 }}
                 title="Baseline model"
-                subtitle="Pick the model you are comparing against (gray curve)"
+                subtitle="Pick the model you are comparing against (red curve)"
                 searchPlaceholder="Search baseline model (e.g. deepseek/deepseek-v3.2)"
                 scrollAreaClassName="h-[260px] max-h-[34vh]"
+                role="baseline"
               />
 
               <WormArenaModelSnapshotCard
                 rating={referenceModel ?? null}
                 isLoading={loadingReference}
                 error={errorReference ?? null}
+                role="baseline"
                 onModelSlugClick={() => {
                   // Optional shortcut: clear the baseline selection (the searchable picker above stays visible).
                   setLocation(
@@ -431,6 +435,7 @@ export default function WormArenaSkillAnalysis() {
             error={errorLeaderboard}
             variant="compact"
             selectedModelSlug={referenceSlug ?? null}
+            selectedRole="baseline"
             onSelectModel={(slug) => {
               // Clicking the TrueSkill leaderboard selects the baseline model (right-side snapshot).
               setLocation(
