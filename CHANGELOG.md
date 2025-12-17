@@ -1,5 +1,30 @@
 # New entires at the top, use proper SemVer!
 
+### Version 6.5.10  Dec 17, 2025
+
+- **Worm Arena: Win Probability calculation + CI labeling fix** (Author: Claude Sonnet 4)
+  - Added win probability calculation for TrueSkill model comparisons using the normal distribution formula: P = Phi((mu1 - mu2) / sqrt(sigma1^2 + sigma2^2))
+  - Created new utility module `wormArenaWinProbability.ts` with `erf`, `erfc`, `normalCDF`, and `calculateWinProbability` functions (Abramowitz & Stegun approximation, accurate to +/-1.5e-7)
+  - Created new component `WormArenaWinProbability.tsx` for displaying statistical comparison between compare and baseline models
+  - Fixed confidence interval labeling in `WormArenaSkillHeroGraphic.tsx` to clarify it applies to the compare model only
+  - Win probability section appears when a baseline model is selected, showing the probability the compare model beats the baseline
+  - **Files Created**:
+    - `client/src/utils/wormArenaWinProbability.ts`
+    - `client/src/components/wormArena/WormArenaWinProbability.tsx`
+  - **Files Modified**:
+    - `client/src/components/wormArena/stats/WormArenaSkillHeroGraphic.tsx`
+    - `CHANGELOG.md`
+
+### Version 6.5.9  Dec 17, 2025
+
+- **Worm Arena: Stats panel now sortable + links into deeper model analysis** (Author: Cascade)
+  - Worm Arena replay page Stats panel now shows all models (scrollable) and supports sorting by win rate, games played, wins, losses, and ties.
+  - Added a direct link to the deeper Stats & Placement page, and model names now link to that page with the model preselected.
+  - **Files Modified**:
+    - `client/src/components/WormArenaStatsPanel.tsx`
+    - `client/src/hooks/useWormArenaStats.ts`
+    - `CHANGELOG.md`
+
 ### Version 6.5.8  Dec 17, 2025
 
 - **Worm Arena: only show replayable matches + fix Greatest Hits truncation** (Author: Cascade)

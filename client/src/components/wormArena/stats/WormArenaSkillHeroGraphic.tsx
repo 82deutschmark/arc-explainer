@@ -1,5 +1,5 @@
 /**
- * Author: GPT-5.2-Medium-Reasoning
+ * Author: Claude Sonnet 4
  * Date: 2025-12-17
  * PURPOSE: Single unified "poster" graphic for the Skill Analysis page. Draws the reference
  *          design: skill estimate + uncertainty pills at top, 99.7% CI section in middle,
@@ -8,9 +8,10 @@
  *          display both models' skill estimate and uncertainty values.
  *          Chart math uses explicit top/bottom margins so the curve, labels, and x-axis
  *          are fully contained (no overflow bleed) and match the reference layout.
- * SRP/DRY check: Pass — single responsibility for the hero graphic composition.
+ *          Added win probability section when baseline model is selected.
+ * SRP/DRY check: Pass - single responsibility for the hero graphic composition.
  *
- * Touches: WormArenaSkillAnalysis.tsx (parent)
+ * Touches: WormArenaSkillAnalysis.tsx (parent), WormArenaWinProbability.tsx (child)
  */
 
 import React from 'react';
@@ -18,6 +19,7 @@ import { InlineMath } from 'react-katex';
 import { gaussianPDF } from '@/utils/confidenceIntervals';
 import { getConfidenceInterval } from '@/utils/confidenceIntervals';
 import { getWormArenaRoleColors } from '@/utils/wormArenaRoleColors';
+import WormArenaWinProbability from '../WormArenaWinProbability';
 
 export interface WormArenaSkillHeroGraphicProps {
   // Selected model
@@ -345,10 +347,13 @@ export default function WormArenaSkillHeroGraphic({
         </div>
       </div>
 
-      {/* Middle: 99.7% Confidence Interval */}
+      {/* Middle: 99.7% Confidence Interval (for Compare model) */}
       <div className="text-center mb-8">
-        <div className="text-xl font-bold mb-5" style={{ color: HEADER_COLOR }}>
+        <div className="text-xl font-bold mb-2" style={{ color: HEADER_COLOR }}>
           99.7% Confidence Interval
+        </div>
+        <div className="text-xs font-semibold mb-4" style={{ color: compareColors.accent }}>
+          (Compare Model)
         </div>
 
         <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-6 mb-3">
@@ -393,6 +398,20 @@ export default function WormArenaSkillHeroGraphic({
           (Calculated as <InlineMath math="\mu \pm 3\sigma" />)
         </div>
       </div>
+
+      {/* Win Probability section (only shown when baseline is selected) */}
+      {referenceMu !== undefined && referenceSigma !== undefined && referenceLabel && (
+        <div className="mb-8">
+          <WormArenaWinProbability
+            compareMu={mu}
+            compareSigma={sigma}
+            compareLabel={modelLabel}
+            baselineMu={referenceMu}
+            baselineSigma={referenceSigma}
+            baselineLabel={referenceLabel}
+          />
+        </div>
+      )}
 
       {/* Stats boxes: keep these directly above the chart so the story is visible at a glance. */}
       <div className="w-full max-w-xl grid grid-cols-5 gap-3 mb-3">
