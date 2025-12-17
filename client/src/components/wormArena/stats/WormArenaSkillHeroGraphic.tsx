@@ -73,10 +73,11 @@ export default function WormArenaSkillHeroGraphic({
   const BASELINE_PILL_BG = baselineColors.tintBgStrong;
   const BASELINE_PILL_TEXT = baselineColors.accent;
 
-  const RED_PILL_BG = '#F2DEDE';
-  const RED_PILL_TEXT = '#A94442';
-  const GREEN_PILL_BG = '#D8F0DE';
-  const GREEN_PILL_TEXT = '#1E5631';
+  // Pessimistic/Optimistic pills: gray to black scheme per user request
+  const PESSIMISTIC_PILL_BG = '#E8E8E8';
+  const PESSIMISTIC_PILL_TEXT = '#666666';
+  const OPTIMISTIC_PILL_BG = '#333333';
+  const OPTIMISTIC_PILL_TEXT = '#FFFFFF';
   const LABEL_GRAY = '#666666';
   const HEADER_COLOR = '#333333';
 
@@ -375,7 +376,7 @@ export default function WormArenaSkillHeroGraphic({
           <div className="text-center">
             <div
               className="inline-block px-8 py-3 text-3xl font-bold rounded-full"
-              style={{ background: RED_PILL_BG, color: RED_PILL_TEXT }}
+              style={{ background: PESSIMISTIC_PILL_BG, color: PESSIMISTIC_PILL_TEXT }}
             >
               {pessimistic.toFixed(2)}
             </div>
@@ -388,7 +389,7 @@ export default function WormArenaSkillHeroGraphic({
           <div className="text-center">
             <div
               className="inline-block px-8 py-3 text-3xl font-bold rounded-full"
-              style={{ background: GREEN_PILL_BG, color: GREEN_PILL_TEXT }}
+              style={{ background: OPTIMISTIC_PILL_BG, color: OPTIMISTIC_PILL_TEXT }}
             >
               {optimistic.toFixed(2)}
             </div>
