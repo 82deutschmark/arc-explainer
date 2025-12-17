@@ -4,10 +4,13 @@
  * PURPOSE: Worm Arena Skill Distribution Analysis page. Orchestrates model selection (URL-driven),
  *          a three-slice UI (selected list | hero chart | reference list), and the bell curve
  *          visualization to explain why TrueSkill differs from raw W/L ratio.
+ *          Reuses shared stats components from the Stats & Placement page (global stats strip,
+ *          TrueSkill leaderboard, model snapshot, placement card) while keeping the 3-column layout.
  *          Ensures ratings are fetched by calling useModelRating().refresh() when query params change.
  * SRP/DRY check: Pass — page-level composition only; rendering delegated to child components.
  *
- * Touches: WormArenaModelListCard, WormArenaSkillHeroGraphic, WormArenaModelSnapshotCard,
+ * Touches: WormArenaGlobalStatsStrip, WormArenaTrueSkillLeaderboard, WormArenaPlacementCard,
+ *          WormArenaModelListCard, WormArenaSkillHeroGraphic, WormArenaModelSnapshotCard,
  *          useWormArenaTrueSkillLeaderboard, useModelRating, wouter useSearch.
  */
 
@@ -111,7 +114,7 @@ export default function WormArenaSkillAnalysis() {
 
   // Fetch global stats and data
   const { stats: globalStats } = useSnakeBenchStats();
-  const { leaderboard: leaderboardStats, recentActivity } = useWormArenaStats();
+  const { recentActivity } = useWormArenaStats();
   const { entries: leaderboard, isLoading: loadingLeaderboard, error: errorLeaderboard } =
     useWormArenaTrueSkillLeaderboard(150, 3);
 
@@ -146,10 +149,10 @@ export default function WormArenaSkillAnalysis() {
     refresh: refreshReference,
   } = useModelRating(referenceSlug || undefined);
 
-  // Placement info for selected model
-  const placement = React.useMemo(
-    () => summarizeWormArenaPlacement(selectedModel ?? undefined),
-    [selectedModel],
+  // Placement info for the reference model (shown in the right column under the snapshot).
+  const referencePlacement = React.useMemo(
+    () => summarizeWormArenaPlacement(referenceModel ?? undefined),
+    [referenceModel],
   );
 
   const isLoading = loadingLeaderboard || loadingSelected || loadingReference;
@@ -180,7 +183,7 @@ export default function WormArenaSkillAnalysis() {
     <TooltipProvider>
       <div className="worm-page">
         <WormArenaHeader
-          totalGames={0}
+          totalGames={globalStats?.totalGames ?? 0}
           links={[
             { label: 'Replay', href: '/worm-arena' },
             { label: 'Live', href: '/worm-arena/live' },
@@ -192,6 +195,15 @@ export default function WormArenaSkillAnalysis() {
         />
 
         <main className="p-6 max-w-7xl mx-auto space-y-6">
+          {/* Shared Worm Arena stats modules (kept consistent with the Stats & Placement page). */}
+          <WormArenaGlobalStatsStrip stats={globalStats ?? null} />
+
+          <WormArenaTrueSkillLeaderboard
+            entries={leaderboard}
+            isLoading={loadingLeaderboard}
+            error={errorLeaderboard}
+          />
+
           <div className="grid grid-cols-1 xl:grid-cols-[minmax(0,1fr)_minmax(0,1.6fr)_minmax(0,1fr)] gap-6 items-start">
             {/* LEFT: Selected model list */}
             <WormArenaModelListCard
@@ -232,11 +244,15 @@ export default function WormArenaSkillAnalysis() {
 
             {/* RIGHT: Reference model selector OR snapshot */}
             {referenceModel ? (
-              <WormArenaModelSnapshotCard
-                rating={referenceModel}
-                isLoading={loadingReference}
-                error={errorReference ?? null}
-              />
+              <div className="space-y-4">
+                <WormArenaModelSnapshotCard
+                  rating={referenceModel}
+                  isLoading={loadingReference}
+                  error={errorReference ?? null}
+                />
+
+                <WormArenaPlacementCard placement={referencePlacement} />
+              </div>
             ) : (
               <WormArenaModelListCard
                 leaderboard={listEntries}
@@ -268,22 +284,7 @@ export default function WormArenaSkillAnalysis() {
             <div className="text-sm font-semibold worm-muted">Loading skill analysis…</div>
           )}
 
-          {!loadingLeaderboard && leaderboard.length === 0 && !errorLeaderboard && (
-            <Alert className="border-worm-border bg-white/80">
-              <AlertDescription className="text-sm text-worm-ink">
-                No models are eligible yet. Run a few Worm Arena matches to populate TrueSkill ratings.
-              </AlertDescription>
-            </Alert>
-          )}
-
-          {/* Error States */}
-          {errorLeaderboard && (
-            <Alert className="border-red-200 bg-red-50">
-              <AlertDescription className="text-sm text-red-700">
-                Error loading models: {errorLeaderboard}
-              </AlertDescription>
-            </Alert>
-          )}
+          {/* Error States (leaderboard errors are rendered inside WormArenaTrueSkillLeaderboard) */}
 
           {errorSelected && selectedModelSlug && (
             <Alert className="border-red-200 bg-red-50">
