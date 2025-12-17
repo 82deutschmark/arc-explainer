@@ -1,5 +1,32 @@
 # New entires at the top, use proper SemVer!
 
+### Version 6.5.13  Dec 17, 2025
+
+- **Worm Arena Live: searchable model selector and match queue** (Author: Claude)
+  - Replaced dropdown selects with **searchable combobox** - type to filter models instead of scrolling
+  - Users can now type custom model names directly if not in the list
+  - Added **match queue** feature - queue multiple matchups and run them sequentially
+  - Queue shows pending matches with remove buttons; "Start Queue" runs all queued matches
+  - Exported `QueuedMatchup` interface and added `onStartQueue` callback prop for queue support
+  - **Files Modified**:
+    - `client/src/components/WormArenaRunControls.tsx`
+    - `CHANGELOG.md`
+
+### Version 6.5.12  Dec 17, 2025
+
+- **Worm Arena Skill Analysis: sorting, Dr. Budd credit, and TrueSkill link** (Author: Claude)
+  - Compare model list now sorted by **games played** (most to least)
+  - Baseline model list now sorted by **win rate** (highest to lowest)
+  - Card titles now display the actual model slug instead of generic labels
+  - Added `sortBy` prop to `WormArenaModelListCard` supporting `'gamesPlayed'` or `'winRate'`
+  - Updated sigma explanation to clarify that low sigma means **consistent performance**, not just many games
+  - Added Microsoft Research TrueSkill documentation link in the "Why TrueSkill?" accordion
+  - Added **human-verified badge** crediting Dr. Jeremy Budd for proofreading and statistical guidance, with link to Hall of Fame
+  - **Files Modified**:
+    - `client/src/pages/WormArenaSkillAnalysis.tsx`
+    - `client/src/components/wormArena/stats/WormArenaModelListCard.tsx`
+    - `CHANGELOG.md`
+
 ### Version 6.5.11  Dec 17, 2025
 
 - **Worm Arena: Baseline color + UI readability improvements** (Author: Claude Sonnet 4)
