@@ -75,8 +75,8 @@ export default function WormArenaSkillHeroGraphic({
   const REF_STROKE = '#999999';
   const REF_FILL = '#E0E0E0';
 
-  // Calculate chart bounds - use wider range to show both curves
-  const sigmaRange = 4;
+  // Calculate chart bounds - accommodate both curves with 3.5σ range
+  const sigmaRange = 3.5;
   let minX = mu - sigmaRange * sigma;
   let maxX = mu + sigmaRange * sigma;
 
@@ -87,11 +87,6 @@ export default function WormArenaSkillHeroGraphic({
     minX = Math.min(minX, refMin);
     maxX = Math.max(maxX, refMax);
   }
-
-  // Add padding
-  const rangeWidth = maxX - minX;
-  minX -= rangeWidth * 0.05;
-  maxX += rangeWidth * 0.05;
 
   // Generate sample points across the full range
   const numSamples = 200;
