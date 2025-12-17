@@ -1,5 +1,18 @@
 # New entires at the top, use proper SemVer!
 
+### Version 6.5.8  Dec 17, 2025
+
+- **Worm Arena: only show replayable matches + fix Greatest Hits truncation** (Author: Cascade)
+  - `/api/snakebench/games` now filters out DB-only matches that do not have an available replay asset, preventing broken replay clicks.
+  - Improved remote replay fetch diagnostics to include HTTP status and a short response snippet.
+  - Fixed the Worm Arena Greatest Hits list being cut off by switching to a simple overflow container and increasing the scroll region height.
+  - Greatest Hits "View replay" now opens in a new tab/window.
+  - **Files Modified**:
+    - `server/services/snakeBenchService.ts`
+    - `client/src/components/WormArenaGreatestHits.tsx`
+    - `docs/reference/api/SnakeBench_WormArena_API.md`
+    - `CHANGELOG.md`
+
 ### Version 6.5.5  Dec 17, 2025
 
 - **Worm Arena: DB-discovered OpenRouter models now runnable + duplicate dropdown cleanup + Gemini 3 Flash tournament script** (Author: Cascade)
@@ -12,6 +25,48 @@
     - `client/src/pages/WormArenaLive.tsx`
     - `scripts/worm-arena-tournaments/underrepresented-models-roundrobin.ps1`
     - `docs/reference/api/SnakeBench_WormArena_API.md`
+    - `CHANGELOG.md`
+
+# New entires at the top, use proper SemVer!
+
+# New entires at the top, use proper SemVer!
+
+### Version 6.5.7  Dec 19, 2025
+
+- **Worm Arena Live: restore tall reasoning columns + reinstated stats strip + clearer reconnect errors** (Author: Codex (GPT-5))
+  - Reasoning columns are tall again (≈46rem) with scrollable bodies so the layout matches the live board height, while the top apple scoreboard is now about half its previous height.
+  - The under-board status strip brings back the round/score/alive grid and shows session IDs plus live phase, so users still see the classic streaming telemetry beneath the board.
+  - If a user opens `/worm-arena/live/:sessionId` after the single-use session handshake expires, the page now stays in “live” mode and explains that current sessions cannot be rejoined mid-match.
+  - **Files Modified**:
+    - `client/src/pages/WormArenaLive.tsx`
+    - `client/src/hooks/useWormArenaStreaming.ts`
+    - `client/src/components/WormArenaReasoning.tsx`
+    - `client/src/components/WormArenaLiveScoreboard.tsx`
+    - `client/src/components/WormArenaLiveStatusStrip.tsx`
+    - `docs/2025-12-19-worm-arena-live-refresh-plan.md`
+    - `CHANGELOG.md`
+
+### Version 6.5.6  Dec 19, 2025
+
+- **Worm Arena Live: restore worm emoji in reasoning panels** (Author: Codex (GPT-5))
+  - Replaced the mojibake `ĐY?>` placeholder with the requested 🐛 emoji so headers look correct on Windows browsers.
+  - Updated the component header to document the icon change.
+  - **Files Modified**: `client/src/components/WormArenaReasoning.tsx`, `CHANGELOG.md`
+
+### Version 6.5.5  Dec 19, 2025
+
+- **Worm Arena Live: scoreboard-first layout + inline match summary** (Author: Codex (GPT-5))
+  - Apple scoreboard now pins above the live board while all other controls collapse under the board, matching the requested hierarchy.
+  - Reasoning columns keep a fixed height with scrollbars, the status strip now only shows streaming context, and the match ID has a dedicated copy-able control under the board.
+  - Final summaries render inline next to the final frame so viewers stay on the Live page when a match completes.
+  - **Files Modified**:
+    - `client/src/pages/WormArenaLive.tsx`
+    - `client/src/components/WormArenaLiveScoreboard.tsx`
+    - `client/src/components/WormArenaLiveStatusStrip.tsx`
+    - `client/src/components/WormArenaReasoning.tsx`
+    - `client/src/components/WormArenaLiveBoardPanel.tsx`
+    - `client/src/components/WormArenaLiveResultsPanel.tsx`
+    - `docs/2025-12-19-worm-arena-live-refresh-plan.md`
     - `CHANGELOG.md`
 
 ### Version 6.5.4  Dec 17, 2025

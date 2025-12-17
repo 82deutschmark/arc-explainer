@@ -1,9 +1,9 @@
 /**
- * Author: Claude Haiku 4.5
- * Date: 2025-12-15
- * PURPOSE: Live game status strip showing game state, round, scores, and apple counts.
- *          Large, centered, bold typography to make streaming status obvious.
- * SRP/DRY check: Pass - focused solely on rendering live game state at top of page.
+ * Author: Codex (GPT-5)
+ * Date: 2025-12-19
+ * PURPOSE: Under-board live status strip that restores the familiar round/score/alive
+ *          grid while also summarizing stream state and batch progress.
+ * SRP/DRY check: Pass - renders contextual status and stats; streaming logic lives in hooks.
  */
 
 import React from 'react';
@@ -21,26 +21,20 @@ export interface WormArenaLiveStatusStripProps {
   playerBName?: string;
   playerAScore?: number;
   playerBScore?: number;
-  currentRound?: number;
-  maxRounds?: number;
+  currentRound?: number | null;
+  maxRounds?: number | null;
+  phase?: string;
   aliveSnakes?: string[];
 }
 
-function StatusIcon({ status }: { status: StreamState }) {
-  switch (status) {
-    case 'in_progress':
-      return <span className="text-xl">🔴</span>;
-    case 'completed':
-      return <span className="text-xl">✓</span>;
-    case 'failed':
-      return <span className="text-xl">✗</span>;
-    case 'connecting':
-    case 'starting':
-      return <span className="text-xl">↻</span>;
-    default:
-      return <span className="text-xl">○</span>;
-  }
-}
+const STATUS_LABELS: Record<StreamState, string> = {
+  idle: 'Idle',
+  connecting: 'Connecting',
+  starting: 'Starting',
+  in_progress: 'Streaming',
+  completed: 'Match complete',
+  failed: 'Match failed',
+};
 
 export default function WormArenaLiveStatusStrip({
   status,
@@ -53,88 +47,79 @@ export default function WormArenaLiveStatusStrip({
   playerBName = 'Player B',
   playerAScore = 0,
   playerBScore = 0,
-  currentRound = 0,
-  maxRounds = 0,
+  currentRound = null,
+  maxRounds = null,
+  phase,
   aliveSnakes = [],
 }: WormArenaLiveStatusStripProps) {
   const batchText =
     currentMatchIndex && totalMatches ? `Match ${currentMatchIndex}/${totalMatches}` : undefined;
-  const sessionText = sessionId ? `${sessionId.slice(0, 8)}…` : undefined;
-  const roundText = maxRounds > 0 ? `Round ${currentRound}/${maxRounds}` : '';
-  const aliveText = aliveSnakes.length > 0 ? `Alive: ${aliveSnakes.join(', ')}` : '';
+  const aliveText = aliveSnakes.length > 0 ? aliveSnakes.join(', ') : '—';
+  const statusColor =
+    status === 'failed'
+      ? 'bg-red-500'
+      : status === 'completed'
+      ? 'bg-emerald-500'
+      : status === 'in_progress'
+      ? 'bg-green-500'
+      : status === 'starting' || status === 'connecting'
+      ? 'bg-amber-400'
+      : 'bg-slate-400';
+  const statusLabel = STATUS_LABELS[status] || STATUS_LABELS.idle;
+  const roundValue =
+    maxRounds && maxRounds > 0
+      ? `${Math.max(0, currentRound ?? 0)} / ${maxRounds}`
+      : currentRound !== null && currentRound !== undefined
+      ? `${Math.max(0, currentRound)}`
+      : '—';
 
   return (
-    <div className="rounded-lg border-2 worm-border bg-gradient-to-b from-worm-ink/5 to-white/90 shadow-md px-6 py-4">
-      <div className="space-y-3">
-        {/* Header with status and batch info */}
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <StatusIcon status={status} />
-            <div className="text-lg font-bold text-worm-ink">
-              {error ? (
-                <span className="text-red-600">Error: {error}</span>
-              ) : (
-                <>
-                  {status === 'in_progress'
-                    ? 'Streaming'
-                    : status === 'completed'
-                      ? 'Match Complete'
-                      : status === 'connecting' || status === 'starting'
-                        ? 'Starting'
-                        : 'Idle'}
-                </>
-              )}
-            </div>
-          </div>
-          <div className="flex items-center gap-4 text-xs font-mono text-muted-foreground">
-            {batchText && <span>{batchText}</span>}
-            {sessionText && <span>{sessionText}</span>}
-          </div>
+    <div className="rounded-lg border-2 worm-border bg-white shadow-sm px-6 py-4 space-y-3">
+      <div className="flex items-center gap-3">
+        <span className={`h-3 w-3 rounded-full ${statusColor}`} aria-hidden="true" />
+        <div className="text-base font-semibold text-worm-ink">
+          {error ? <span className="text-red-600">Error: {error}</span> : statusLabel}
+        </div>
+        {batchText && (
+          <div className="text-xs font-mono text-muted-foreground ml-auto">{batchText}</div>
+        )}
+      </div>
+
+      {message && <div className="text-sm text-worm-ink font-medium">{message}</div>}
+
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-sm">
+        <div>
+          <div className="text-[11px] uppercase font-semibold text-muted-foreground">Round</div>
+          <div className="text-worm-ink font-semibold">{roundValue}</div>
         </div>
 
-        {/* Message or game state */}
-        {message && (
-          <div className="text-sm text-worm-ink font-medium">{message}</div>
-        )}
+        <div>
+          <div className="text-[11px] uppercase font-semibold text-muted-foreground">Alive</div>
+          <div className="text-worm-ink font-medium">{aliveText}</div>
+        </div>
 
-        {/* Game state grid: Round | Scores | Alive */}
-        {(roundText || playerAScore !== undefined || playerBScore !== undefined || aliveText) && (
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 pt-2 border-t border-dashed border-worm-ink/10">
-            {roundText && (
-              <div className="flex flex-col items-center">
-                <div className="text-[11px] font-semibold uppercase text-muted-foreground">Round</div>
-                <div className="text-lg font-bold text-worm-ink">{roundText}</div>
-              </div>
-            )}
+        <div>
+          <div className="text-[11px] uppercase font-semibold text-green-700">{playerAName}</div>
+          <div className="text-worm-ink font-semibold">{Math.max(0, Number(playerAScore) || 0)} 🍎</div>
+        </div>
 
-            {playerAScore !== undefined && (
-              <div className="flex flex-col items-center">
-                <div className="text-[11px] font-semibold uppercase text-green-700">{playerAName}</div>
-                <div className="text-2xl font-bold text-green-600">
-                  {playerAScore} <span className="text-lg">🍎</span>
-                </div>
-              </div>
-            )}
+        <div>
+          <div className="text-[11px] uppercase font-semibold text-blue-700">{playerBName}</div>
+          <div className="text-worm-ink font-semibold">{Math.max(0, Number(playerBScore) || 0)} 🍎</div>
+        </div>
+      </div>
 
-            {playerBScore !== undefined && (
-              <div className="flex flex-col items-center">
-                <div className="text-[11px] font-semibold uppercase text-blue-700">{playerBName}</div>
-                <div className="text-2xl font-bold text-blue-600">
-                  {playerBScore} <span className="text-lg">🍎</span>
-                </div>
-              </div>
-            )}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
+        <div>
+          <div className="text-[11px] uppercase font-semibold text-muted-foreground">Phase</div>
+          <div className="text-worm-ink font-medium">{phase || (sessionId ? 'Live stream' : '—')}</div>
+        </div>
 
-            {aliveText && (
-              <div className="flex flex-col items-center">
-                <div className="text-[11px] font-semibold uppercase text-muted-foreground">Status</div>
-                <div className="text-sm font-medium text-worm-ink">{aliveText}</div>
-              </div>
-            )}
-          </div>
-        )}
+        <div>
+          <div className="text-[11px] uppercase font-semibold text-muted-foreground">Session</div>
+          <div className="text-worm-ink font-mono text-xs break-all">{sessionId || '—'}</div>
+        </div>
       </div>
     </div>
   );
 }
-

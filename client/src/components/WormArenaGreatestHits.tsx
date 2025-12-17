@@ -1,18 +1,21 @@
 /**
  * Author: Cascade
- * Date: 2025-12-11
+ * Date: 2025-12-17
  * PURPOSE: Worm Arena "Greatest Hits" card.
  *          Shows a short list of especially interesting matches
  *          (longest, most expensive, highest-scoring) with one-click
  *          replay links into the main Worm Arena viewer.
+ *
+ *          Note: Uses a simple overflow container instead of Radix ScrollArea.
+ *          ScrollArea requires a fixed height and can render a 0-height viewport
+ *          when only max-height is applied, causing the list to appear cut off.
+ *          Replay links open in a new tab so users can keep the stats page open.
  * SRP/DRY check: Pass purely presentational; data comes from hook.
  */
 
 import React from 'react';
-import { Link } from 'wouter';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { ScrollArea } from '@/components/ui/scroll-area';
 import { useWormArenaGreatestHits } from '@/hooks/useWormArenaGreatestHits';
 
 function normalizeGameId(raw: string): string {
@@ -52,7 +55,7 @@ export default function WormArenaGreatestHits() {
         )}
 
         {!isLoading && !error && games.length > 0 && (
-          <ScrollArea className="max-h-[360px] pr-3">
+          <div className="max-h-[560px] overflow-y-auto pr-3">
             <div className="space-y-3">
               {games.map((game) => {
                 const matchup = `${game.modelA} vs ${game.modelB}`;
@@ -63,6 +66,7 @@ export default function WormArenaGreatestHits() {
                   game.scoreDelta > 0
                     ? `Score delta: ${game.scoreDelta}`
                     : `Max score: ${game.maxFinalScore}`;
+                const replayHref = `/worm-arena?matchId=${encodeURIComponent(normalizeGameId(game.gameId))}`;
 
                 return (
                   <div
@@ -100,18 +104,20 @@ export default function WormArenaGreatestHits() {
                           {new Date(game.startedAt).toLocaleDateString()}
                         </span>
                       )}
-                      <Link
-                        href={`/worm-arena?matchId=${encodeURIComponent(normalizeGameId(game.gameId))}`}
+                      <a
+                        href={replayHref}
+                        target="_blank"
+                        rel="noreferrer"
                         className="underline font-semibold text-base text-worm-ink hover:text-worm-green"
                       >
                         View replay
-                      </Link>
+                      </a>
                     </div>
                   </div>
                 );
               })}
             </div>
-          </ScrollArea>
+          </div>
         )}
       </CardContent>
     </Card>

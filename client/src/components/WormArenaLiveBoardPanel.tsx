@@ -1,3 +1,11 @@
+/**
+ * Author: Codex (GPT-5)
+ * Date: 2025-12-19
+ * PURPOSE: Wrapper around the Worm Arena board that clearly labels live vs final state
+ *          and keeps the board mounted even after the stream completes.
+ * SRP/DRY check: Pass – only handles board rendering/chrome, no streaming logic.
+ */
+
 import React from 'react';
 import WormArenaGameBoard from '@/components/WormArenaGameBoard';
 import type { WormArenaFinalSummary, WormArenaFrameEvent } from '@shared/types';
@@ -57,4 +65,3 @@ export default function WormArenaLiveBoardPanel({
     </div>
   );
 }
-
