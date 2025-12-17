@@ -170,6 +170,14 @@ export default function WormArenaMultiCurveOverlay({
           {/* Axes mirror the poster view layout. */}
           <line x1={0} x2={CHART_WIDTH} y1={plotBottomY} y2={plotBottomY} stroke="#8B6A47" strokeWidth={1.5} />
           <line x1={0} x2={0} y1={TOP_MARGIN} y2={plotBottomY} stroke="#8B6A47" strokeWidth={1.5} />
+          <text
+            x={CHART_WIDTH / 2}
+            y={CHART_HEIGHT - 12}
+            textAnchor="middle"
+            className="text-[11px] font-semibold fill-worm-muted"
+          >
+            Skill rating (mu)
+          </text>
 
           {ticks.map((tick) => {
             const x = toPixelX(tick);
@@ -191,9 +199,9 @@ export default function WormArenaMultiCurveOverlay({
                 <path
                   d={curve.path}
                   fill={curve.color}
-                  fillOpacity={isDimmed ? 0.18 : 0.35}
+                  fillOpacity={isDimmed ? 0.15 : 0.4}
                   stroke={curve.color}
-                  strokeWidth={isDimmed ? 1.4 : 2.4}
+                  strokeWidth={isDimmed ? 1.2 : 2.6}
                   onMouseEnter={() => onCurveHover(curve.slug)}
                   onMouseLeave={() => onCurveHover(null)}
                   className="transition-opacity duration-150"

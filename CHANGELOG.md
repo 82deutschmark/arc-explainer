@@ -1,5 +1,16 @@
 # New entires at the top, use proper SemVer!
 
+### Version 6.5.4  Dec 17, 2025
+
+- **Worm Arena Skill Analysis: Comparison overlay matches poster view** (Author: CodexGPT5.1 Low)
+  - Replaced the stacked bell-curve cards with a single shared SVG that overlays up to five models using the same axis math as Poster View, including dashed μ markers and color-matched fills.
+  - Added an interactive legend that mirrors selection ordering, displays mu/sigma/win-loss stats, and keeps hover/focus state synchronized with the scatter plot.
+  - Updated the Worm Arena stats plan to record the new progress milestone and refreshed next steps.
+  - **Files Modified**:
+    - `client/src/components/wormArena/stats/WormArenaMultiCurveOverlay.tsx`
+    - `docs/plans/WormArenaStatsPlan.md`
+    - `CHANGELOG.md`
+
 ### Version 6.5.3  Dec 17, 2025
 
 - **Worm Arena Skill Analysis: role-based color normalization** (Author: GPT-5.2-Medium-Reasoning)
