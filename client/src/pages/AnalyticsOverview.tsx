@@ -474,7 +474,7 @@ export default function AnalyticsOverview() {
                         <div className="flex items-center gap-2 flex-wrap">
                           <h2 className="text-2xl font-bold text-gray-900">{modelDatasetPerformance.modelName}</h2>
                           <span className="text-sm px-2 py-0.5 bg-blue-100 text-blue-700 rounded-md font-medium">
-                            {DATASET_DISPLAY_NAME_MAP[modelDatasetPerformance.dataset] || modelDatasetPerformance.dataset}
+                            {getDatasetDisplayName(modelDatasetPerformance.dataset)}
                           </span>
                           {selectedModelOrigin && (
                             <Badge
