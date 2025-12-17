@@ -7,12 +7,12 @@
  *          Ensures ratings are fetched by calling useModelRating().refresh() when query params change.
  * SRP/DRY check: Pass — page-level composition only; rendering delegated to child components.
  *
- * Touches: WormArenaModelListCard, WormArenaSkillMetrics, WormArenaSkillDistributionChart,
- *          useWormArenaTrueSkillLeaderboard, useModelRating.
+ * Touches: WormArenaModelListCard, WormArenaSkillHeroGraphic, WormArenaModelSnapshotCard,
+ *          useWormArenaTrueSkillLeaderboard, useModelRating, wouter useSearch.
  */
 
 import React from 'react';
-import { useLocation } from 'wouter';
+import { useLocation, useSearch } from 'wouter';
 import 'katex/dist/katex.min.css';
 import { InlineMath } from 'react-katex';
 import { TooltipProvider } from '@/components/ui/tooltip';
@@ -29,20 +29,26 @@ import WormArenaHeader from '@/components/WormArenaHeader';
 import WormArenaModelListCard from '@/components/wormArena/stats/WormArenaModelListCard';
 import WormArenaSkillHeroGraphic from '@/components/wormArena/stats/WormArenaSkillHeroGraphic';
 import WormArenaModelSnapshotCard from '@/components/wormArena/stats/WormArenaModelSnapshotCard';
+import WormArenaGlobalStatsStrip from '@/components/wormArena/stats/WormArenaGlobalStatsStrip';
+import WormArenaTrueSkillLeaderboard from '@/components/WormArenaTrueSkillLeaderboard';
+import WormArenaPlacementCard from '@/components/wormArena/stats/WormArenaPlacementCard';
 
 import useWormArenaTrueSkillLeaderboard from '@/hooks/useWormArenaTrueSkillLeaderboard';
-import { useModelRating } from '@/hooks/useSnakeBench';
+import { useModelRating, useSnakeBenchStats } from '@/hooks/useSnakeBench';
+import useWormArenaStats from '@/hooks/useWormArenaStats';
+import { summarizeWormArenaPlacement } from '@shared/utils/wormArenaPlacement';
 
 /**
  * Parse query parameters from URL.
  * Expected format: ?model=<slug>&reference=<slug>
  */
 function useQueryParamModels(): { modelSlug: string | null; referenceSlug: string | null } {
-  const [location] = useLocation();
+  // IMPORTANT: useLocation() may be pathname-only depending on router config.
+  // useSearch() is the authoritative query-string source in wouter.
+  const search = useSearch();
 
   try {
-    const query = location.split('?')[1] ?? '';
-    const params = new URLSearchParams(query);
+    const params = new URLSearchParams(search);
     const model = params.get('model');
     const reference = params.get('reference');
     return {
@@ -103,7 +109,9 @@ export default function WormArenaSkillAnalysis() {
   const [selectedFilter, setSelectedFilter] = React.useState('');
   const [referenceFilter, setReferenceFilter] = React.useState('');
 
-  // Fetch all models for the selector
+  // Fetch global stats and data
+  const { stats: globalStats } = useSnakeBenchStats();
+  const { leaderboard: leaderboardStats, recentActivity } = useWormArenaStats();
   const { entries: leaderboard, isLoading: loadingLeaderboard, error: errorLeaderboard } =
     useWormArenaTrueSkillLeaderboard(150, 3);
 
@@ -138,7 +146,22 @@ export default function WormArenaSkillAnalysis() {
     refresh: refreshReference,
   } = useModelRating(referenceSlug || undefined);
 
+  // Placement info for selected model
+  const placement = React.useMemo(
+    () => summarizeWormArenaPlacement(selectedModel ?? undefined),
+    [selectedModel],
+  );
+
   const isLoading = loadingLeaderboard || loadingSelected || loadingReference;
+
+  // Recent activity label for model list
+  const recentActivityLabel = React.useMemo(() => {
+    if (!recentActivity) return null;
+    if (recentActivity.days && recentActivity.days > 0) {
+      return `Last ${recentActivity.days} days: ${recentActivity.gamesPlayed} games\nModels with games: ${recentActivity.uniqueModels}`;
+    }
+    return `All history: ${recentActivity.gamesPlayed} games\nModels with games: ${recentActivity.uniqueModels}`;
+  }, [recentActivity]);
 
   React.useEffect(() => {
     // useModelRating is explicitly refreshed so this page behaves consistently with other pages.
@@ -173,7 +196,7 @@ export default function WormArenaSkillAnalysis() {
             {/* LEFT: Selected model list */}
             <WormArenaModelListCard
               leaderboard={listEntries}
-              recentActivityLabel={null}
+              recentActivityLabel={recentActivityLabel}
               selectedModel={selectedModelSlug ?? null}
               filter={selectedFilter}
               onFilterChange={setSelectedFilter}
@@ -217,7 +240,7 @@ export default function WormArenaSkillAnalysis() {
             ) : (
               <WormArenaModelListCard
                 leaderboard={listEntries}
-                recentActivityLabel={null}
+                recentActivityLabel={recentActivityLabel}
                 selectedModel={referenceSlug ?? null}
                 filter={referenceFilter}
                 onFilterChange={setReferenceFilter}
