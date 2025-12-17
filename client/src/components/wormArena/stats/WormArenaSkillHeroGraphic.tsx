@@ -15,6 +15,7 @@ import React from 'react';
 import { InlineMath } from 'react-katex';
 import { gaussianPDF } from '@/utils/confidenceIntervals';
 import { getConfidenceInterval } from '@/utils/confidenceIntervals';
+import { getWormArenaRoleColors } from '@/utils/wormArenaRoleColors';
 
 export interface WormArenaSkillHeroGraphicProps {
   // Selected model
@@ -58,9 +59,16 @@ export default function WormArenaSkillHeroGraphic({
   const pessimistic = Number.isFinite(exposed) ? exposed : lower;
   const optimistic = upper;
 
-  // Color palette matching the TikZ reference
-  const BLUE_PILL_BG = '#D9EDF7';
-  const BLUE_PILL_TEXT = '#31708F';
+  // Role colors: compare is always blue, baseline is always red.
+  const compareColors = getWormArenaRoleColors('compare');
+  const baselineColors = getWormArenaRoleColors('baseline');
+
+  // Pills for the mu/sigma blocks under the bell curve.
+  const COMPARE_PILL_BG = compareColors.tintBgStrong;
+  const COMPARE_PILL_TEXT = compareColors.accent;
+  const BASELINE_PILL_BG = baselineColors.tintBgStrong;
+  const BASELINE_PILL_TEXT = baselineColors.accent;
+
   const RED_PILL_BG = '#F2DEDE';
   const RED_PILL_TEXT = '#A94442';
   const GREEN_PILL_BG = '#D8F0DE';
@@ -76,10 +84,10 @@ export default function WormArenaSkillHeroGraphic({
   const plotBottomY = chartHeight - bottomMargin;
 
   // Curve colors
-  const CURRENT_STROKE = '#31708F';
-  const CURRENT_FILL = '#D9EDF7';
-  const REF_STROKE = '#999999';
-  const REF_FILL = '#E0E0E0';
+  const CURRENT_STROKE = compareColors.accent;
+  const CURRENT_FILL = compareColors.tintBgStrong;
+  const REF_STROKE = baselineColors.accent;
+  const REF_FILL = baselineColors.tintBg;
 
   // Calculate chart bounds.
   // The reference image reads tighter than ±4σ; we keep this closer to the 99.7% CI (±3σ).
@@ -262,42 +270,76 @@ export default function WormArenaSkillHeroGraphic({
         </text>
       </svg>
 
-      {/* Top row: Skill estimate and Uncertainty */}
-      <div className="flex justify-between w-full max-w-xl mb-8">
-        {/* Skill estimate μ */}
-        <div className="text-center flex-1">
-          <div className="text-lg font-bold mb-3" style={{ color: HEADER_COLOR }}>
-            Skill estimate <InlineMath math="\mu" />
+      {/* Skill estimate and Uncertainty (both models, role-colored) */}
+      <div className="w-full max-w-xl mb-8 space-y-4">
+        <div className="grid grid-cols-2 gap-4">
+          <div className="text-center">
+            <div className="text-lg font-bold mb-3" style={{ color: HEADER_COLOR }}>
+              Skill estimate <InlineMath math="\mu" />
+            </div>
+            <div
+              className="inline-block px-8 py-3 text-3xl font-bold rounded-full"
+              style={{ background: COMPARE_PILL_BG, color: COMPARE_PILL_TEXT }}
+            >
+              {mu.toFixed(2)}
+            </div>
+            <div className="mt-2 text-xs font-semibold" style={{ color: compareColors.accent }}>
+              Compare
+            </div>
           </div>
-          <div
-            className="inline-block px-10 py-4 text-3xl font-bold rounded-full"
-            style={{ background: BLUE_PILL_BG, color: BLUE_PILL_TEXT }}
-          >
-            {mu.toFixed(2)}
-          </div>
-          <div className="mt-3 text-sm" style={{ color: LABEL_GRAY }}>
-            The center of the
-            <br />
-            model skill distribution.
+
+          <div className="text-center">
+            <div className="text-lg font-bold mb-3" style={{ color: HEADER_COLOR }}>
+              Uncertainty <InlineMath math="\sigma" />
+            </div>
+            <div
+              className="inline-block px-8 py-3 text-3xl font-bold rounded-full"
+              style={{ background: COMPARE_PILL_BG, color: COMPARE_PILL_TEXT }}
+            >
+              {sigma.toFixed(2)}
+            </div>
+            <div className="mt-2 text-xs font-semibold" style={{ color: compareColors.accent }}>
+              Compare
+            </div>
           </div>
         </div>
 
-        {/* Uncertainty σ */}
-        <div className="text-center flex-1">
-          <div className="text-lg font-bold mb-3" style={{ color: HEADER_COLOR }}>
-            Uncertainty <InlineMath math="\sigma" />
+        {referenceMu !== undefined && referenceSigma !== undefined && (
+          <div className="grid grid-cols-2 gap-4">
+            <div className="text-center">
+              <div className="text-sm font-bold mb-2" style={{ color: HEADER_COLOR }}>
+                Baseline <InlineMath math="\mu" />
+              </div>
+              <div
+                className="inline-block px-6 py-2 text-2xl font-bold rounded-full"
+                style={{ background: BASELINE_PILL_BG, color: BASELINE_PILL_TEXT }}
+              >
+                {referenceMu.toFixed(2)}
+              </div>
+              <div className="mt-2 text-xs font-semibold" style={{ color: baselineColors.accent }}>
+                Baseline
+              </div>
+            </div>
+
+            <div className="text-center">
+              <div className="text-sm font-bold mb-2" style={{ color: HEADER_COLOR }}>
+                Baseline <InlineMath math="\sigma" />
+              </div>
+              <div
+                className="inline-block px-6 py-2 text-2xl font-bold rounded-full"
+                style={{ background: BASELINE_PILL_BG, color: BASELINE_PILL_TEXT }}
+              >
+                {referenceSigma.toFixed(2)}
+              </div>
+              <div className="mt-2 text-xs font-semibold" style={{ color: baselineColors.accent }}>
+                Baseline
+              </div>
+            </div>
           </div>
-          <div
-            className="inline-block px-10 py-4 text-3xl font-bold rounded-full"
-            style={{ background: BLUE_PILL_BG, color: BLUE_PILL_TEXT }}
-          >
-            {sigma.toFixed(2)}
-          </div>
-          <div className="mt-3 text-sm" style={{ color: LABEL_GRAY }}>
-            The variability of
-            <br />
-            the model's skill.
-          </div>
+        )}
+
+        <div className="text-sm text-center" style={{ color: LABEL_GRAY }}>
+          Compare is blue. Baseline is red.
         </div>
       </div>
 

@@ -13,6 +13,8 @@ import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import type { WormArenaModelRole } from '@/utils/wormArenaRoleColors';
+import { getWormArenaRoleColors } from '@/utils/wormArenaRoleColors';
 
 interface WormArenaLeaderboardEntry {
   modelSlug: string;
@@ -35,6 +37,7 @@ export default function WormArenaModelListCard({
   searchPlaceholder = 'Search model (e.g. openai/gpt-5.1)',
   // Allows callers to tune scroll height so multi-card columns fit without clipping.
   scrollAreaClassName = 'h-[520px] max-h-[60vh]',
+  role = 'neutral',
 }: {
   leaderboard: WormArenaLeaderboardEntry[];
   recentActivityLabel: string | null;
@@ -46,6 +49,7 @@ export default function WormArenaModelListCard({
   subtitle?: string;
   searchPlaceholder?: string;
   scrollAreaClassName?: string;
+  role?: WormArenaModelRole;
 }) {
   const filteredLeaderboard = React.useMemo(() => {
     const term = filter.trim().toLowerCase();
@@ -55,6 +59,8 @@ export default function WormArenaModelListCard({
     if (!term) return sorted;
     return sorted.filter((entry) => entry.modelSlug.toLowerCase().includes(term));
   }, [leaderboard, filter]);
+
+  const roleColors = getWormArenaRoleColors(role);
 
   return (
     <Card className="worm-card">
@@ -84,22 +90,28 @@ export default function WormArenaModelListCard({
           <div className="p-3 space-y-2">
             {filteredLeaderboard.map((entry, index) => {
               const active = entry.modelSlug === selectedModel;
+              const cssVars = {
+                ['--role-accent' as string]: roleColors.accent,
+                ['--role-tint-bg' as string]: roleColors.tintBg,
+                ['--role-tint-bg-strong' as string]: roleColors.tintBgStrong,
+              } as React.CSSProperties;
+
               return (
                 <button
                   key={entry.modelSlug}
                   type="button"
                   onClick={() => onSelectModel(entry.modelSlug)}
-                  className={`w-full flex items-center justify-between px-3 py-2 text-sm font-semibold rounded border transition-colors ${
+                  className={`w-full flex items-center justify-between px-3 py-2 text-sm font-semibold rounded border transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-white hover:bg-[var(--role-tint-bg)] focus-visible:ring-[var(--role-accent)] ${
                     active
-                      ? 'bg-worm-ink-strong text-worm-card border-worm-ink-strong'
-                      : 'bg-white text-worm-ink border-worm-border hover:bg-worm-card'
+                      ? 'text-worm-ink bg-[var(--role-tint-bg-strong)] border-[var(--role-accent)]'
+                      : 'bg-white text-worm-ink border-worm-border'
                   }`}
+                  style={cssVars}
                 >
                   <div className="flex items-center gap-3 min-w-0">
                     <span
-                      className={`text-xs font-bold ${
-                        active ? 'text-worm-header-ink' : 'text-worm-muted'
-                      }`}
+                      className="text-xs font-bold"
+                      style={{ color: active ? roleColors.accent : 'var(--worm-muted)' }}
                     >
                       #{index + 1}
                     </span>
@@ -107,7 +119,7 @@ export default function WormArenaModelListCard({
                   </div>
                   <div className="text-xs sm:text-sm font-semibold text-right">
                     <div>{entry.gamesPlayed} games</div>
-                    <div className={`text-[11px] ${active ? 'text-worm-header-ink' : 'text-worm-muted'}`}>
+                    <div className="text-[11px]" style={{ color: active ? roleColors.accent : 'var(--worm-muted)' }}>
                       {entry.wins}W / {entry.losses}L / {entry.ties}T
                     </div>
                   </div>

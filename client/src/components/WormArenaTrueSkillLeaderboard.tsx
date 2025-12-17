@@ -1,12 +1,13 @@
 /**
- * Author: Cascade
+ * Author: GPT-5.2-Medium-Reasoning
  * Date: 2025-12-17
  * PURPOSE: TrueSkill-based global leaderboard for Worm Arena stats page.
  *          Renders a SnakeBench-parity leaderboard table with Rank,
  *          model slug, TrueSkill rating/uncertainty, games, outcomes,
  *          apples, top score, win rate, and total cost.
  *          Features sticky sorted header with red border and full sortability.
- *          Supports row selection/highlighting when used as a picker.
+ *          Supports role-based row selection/highlighting when used as a picker
+ *          (compare=blue, baseline=red).
  * SRP/DRY check: Pass — presentational table with client-side sorting only.
  */
 
@@ -15,6 +16,8 @@ import type { SnakeBenchTrueSkillLeaderboardEntry } from '@shared/types';
 
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
+import type { WormArenaModelRole } from '@/utils/wormArenaRoleColors';
+import { getWormArenaRoleColors } from '@/utils/wormArenaRoleColors';
 import {
   TableHead,
   TableHeader,
@@ -40,6 +43,7 @@ interface WormArenaTrueSkillLeaderboardProps {
   isLoading: boolean;
   error: string | null;
   selectedModelSlug?: string | null;
+  selectedRole?: WormArenaModelRole;
   onSelectModel?: (modelSlug: string) => void;
   variant?: LeaderboardVariant;
 }
@@ -49,12 +53,15 @@ export function WormArenaTrueSkillLeaderboard({
   isLoading,
   error,
   selectedModelSlug,
+  selectedRole = 'neutral',
   onSelectModel,
   variant = 'full',
 }: WormArenaTrueSkillLeaderboardProps) {
   const [sortColumn, setSortColumn] = useState<SortColumn>('exposed');
   const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
   const hasRows = entries.length > 0;
+
+  const roleColors = getWormArenaRoleColors(selectedRole);
 
   const handleSort = (column: SortColumn) => {
     if (
@@ -279,6 +286,10 @@ export function WormArenaTrueSkillLeaderboard({
                         : undefined;
 
                     const isSelected = !!selectedModelSlug && entry.modelSlug === selectedModelSlug;
+                    const selectedCssVars = {
+                      ['--role-accent' as string]: roleColors.accent,
+                      ['--role-tint-bg' as string]: roleColors.tintBgStrong,
+                    } as React.CSSProperties;
 
                     return (
                       <TableRow
@@ -286,8 +297,9 @@ export function WormArenaTrueSkillLeaderboard({
                         onClick={() => onSelectModel?.(entry.modelSlug)}
                         className={cn(
                           onSelectModel ? 'cursor-pointer' : undefined,
-                          isSelected ? 'bg-worm-track/70' : undefined,
+                          isSelected ? 'bg-[var(--role-tint-bg)] border-l-4 border-l-[var(--role-accent)]' : undefined,
                         )}
+                        style={isSelected ? selectedCssVars : undefined}
                       >
                         <TableCell className="whitespace-nowrap font-mono">#{entry._trueskillRank}</TableCell>
                         <TableCell className="whitespace-nowrap font-mono max-w-[260px] truncate">
