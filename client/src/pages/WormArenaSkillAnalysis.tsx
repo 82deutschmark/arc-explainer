@@ -230,38 +230,12 @@ export default function WormArenaSkillAnalysis() {
                 </p>
               </CardHeader>
               <CardContent>
-                <div className="grid grid-cols-[1fr_1fr] gap-6">
-                  {/* LEFT: Bell Curve with Overlaid Metrics */}
-                  <div className="relative">
-                    <WormArenaSkillDistributionChart
-                      mu={selectedModel.mu}
-                      sigma={selectedModel.sigma}
-                      exposed={selectedModel.exposed}
-                      referenceMu={referenceModel?.mu}
-                      referenceSigma={referenceModel?.sigma}
-                      referenceLabel={referenceModel?.modelSlug || 'Reference Model'}
-                      width={500}
-                      height={380}
-                    />
-                    {/* Metrics Overlay Card */}
-                    <div className="absolute top-4 right-4 bg-white/95 backdrop-blur-sm rounded-lg border border-worm-border p-4 shadow-sm max-w-xs">
-                      <div className="text-xs font-semibold text-worm-ink mb-3">
-                        {selectedModel.modelSlug}
-                      </div>
-                      <WormArenaSkillMetrics
-                        mu={selectedModel.mu}
-                        sigma={selectedModel.sigma}
-                        exposed={selectedModel.exposed}
-                        modelSlug={selectedModel.modelSlug}
-                      />
-                    </div>
-                  </div>
-
-                  {/* RIGHT: Reference Model or Selector */}
+                <div className="grid grid-cols-[1fr_1.2fr_1fr] gap-6">
+                  {/* LEFT: Reference Model Selector or Info */}
                   <div>
                     {referenceModel ? (
-                      <div className="border-l-2 border-l-worm-muted pl-4 h-full flex flex-col justify-center">
-                        <div className="text-xs font-semibold text-worm-muted uppercase mb-2">Reference Model</div>
+                      <div className="border-r-2 border-r-worm-muted pr-4 h-full flex flex-col justify-center">
+                        <div className="text-xs font-semibold text-worm-muted uppercase mb-2">Reference</div>
                         <div className="text-lg font-bold text-worm-muted mb-4">{referenceModel.modelSlug}</div>
                         <div className="bg-worm-track/20 p-4 rounded-lg mb-4">
                           <WormArenaSkillMetrics
@@ -282,14 +256,14 @@ export default function WormArenaSkillAnalysis() {
                           }}
                           className="text-xs text-worm-muted hover:text-worm-ink transition-colors underline"
                         >
-                          Clear comparison
+                          Clear reference
                         </button>
                       </div>
                     ) : (
-                      <div className="border-l-2 border-l-worm-border pl-4">
-                        <div className="text-xs font-semibold text-worm-muted uppercase mb-3">Select Reference</div>
+                      <div className="border-r-2 border-r-worm-border pr-4">
+                        <div className="text-xs font-semibold text-worm-muted uppercase mb-3">Reference Model</div>
                         <div className="text-sm text-worm-muted mb-4">
-                          Choose a model to compare:
+                          Select one to compare:
                         </div>
                         {leaderboard.length > 0 && (
                           <div className="space-y-2">
@@ -313,6 +287,34 @@ export default function WormArenaSkillAnalysis() {
                         )}
                       </div>
                     )}
+                  </div>
+
+                  {/* MIDDLE: Bell Curve */}
+                  <div className="relative flex flex-col items-center justify-center">
+                    <WormArenaSkillDistributionChart
+                      mu={selectedModel.mu}
+                      sigma={selectedModel.sigma}
+                      exposed={selectedModel.exposed}
+                      referenceMu={referenceModel?.mu}
+                      referenceSigma={referenceModel?.sigma}
+                      referenceLabel={referenceModel?.modelSlug || 'Reference Model'}
+                      width={480}
+                      height={380}
+                    />
+                  </div>
+
+                  {/* RIGHT: Selected Model Info with Metrics Overlay */}
+                  <div className="border-l-2 border-l-worm-green pl-4 flex flex-col justify-center">
+                    <div className="text-xs font-semibold text-worm-muted uppercase mb-2">Selected Model</div>
+                    <div className="text-lg font-bold text-worm-ink mb-4">{selectedModel.modelSlug}</div>
+                    <div className="bg-worm-highlight-bg/50 p-4 rounded-lg">
+                      <WormArenaSkillMetrics
+                        mu={selectedModel.mu}
+                        sigma={selectedModel.sigma}
+                        exposed={selectedModel.exposed}
+                        modelSlug={selectedModel.modelSlug}
+                      />
+                    </div>
                   </div>
                 </div>
               </CardContent>
