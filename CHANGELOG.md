@@ -4,6 +4,7 @@
 
 - **Worm Arena Skill Analysis: UI polish + baseline selection improvements** (Author: Cascade)
   - Removed the busy top-of-page stats strip and moved the TrueSkill leaderboard below the main 3-column analysis grid.
+  - Moved the "Why TrueSkill?" explainer into a thin, centered strip at the top of the page (expandable), instead of a large block at the bottom.
   - TrueSkill leaderboard now supports sticky headers reliably and allows row-click selection to set the baseline (highlighted selection).
   - Hero graphic now uses Worm Arena typography, shows a clear "Model Snapshot [model]" heading, adds Games/Wins/Losses/Ties/Cost stat boxes, and tightens the x-axis bounds to roughly align with the 99.7% interval story.
   - **Files Modified**:

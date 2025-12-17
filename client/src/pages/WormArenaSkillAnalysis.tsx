@@ -190,6 +190,74 @@ export default function WormArenaSkillAnalysis() {
         />
 
         <main className="w-full max-w-[1500px] mx-auto px-4 md:px-6 py-6 space-y-6">
+          {/* Thin, centered TrueSkill explainer strip (keeps the page from ending in a giant block). */}
+          <div className="flex justify-center">
+            <Card className="worm-card w-full max-w-3xl">
+              <Accordion type="single" collapsible className="w-full">
+                <AccordionItem value="trueskill-explainer" className="border-b-0">
+                  <AccordionTrigger className="px-4 py-2 hover:no-underline">
+                    <div className="w-full flex justify-center">
+                      <span className="text-sm font-semibold text-worm-ink">Why TrueSkill?</span>
+                    </div>
+                  </AccordionTrigger>
+                  <AccordionContent className="px-4 pb-3 pt-1 text-sm text-worm-muted space-y-3">
+                    <div>
+                      <strong className="text-worm-ink">What is TrueSkill?</strong>
+                      <p className="mt-1">
+                        TrueSkill is a Bayesian skill rating system developed by Microsoft. Unlike simple win/loss ratios, it accounts for
+                        opponent strength and adjusts ratings based on match outcomes.
+                      </p>
+                    </div>
+
+                    <div>
+                      <strong className="text-worm-ink">Why not just use W/L ratio?</strong>
+                      <p className="mt-1">
+                        A 70% win rate against weak opponents is less impressive than a 50% win rate against strong opponents. TrueSkill
+                        captures this nuance by considering who you play against.
+                      </p>
+                    </div>
+
+                    <div>
+                      <strong className="text-worm-ink">
+                        What do <InlineMath math="\\mu" /> and <InlineMath math="\\sigma" /> mean?
+                      </strong>
+                      <p className="mt-1">
+                        <InlineMath math="\\mu" /> is the estimated skill level. <InlineMath math="\\sigma" /> is the uncertainty. A small{' '}
+                        <InlineMath math="\\sigma" /> means you've played many games and we're confident in your rating. A large{' '}
+                        <InlineMath math="\\sigma" /> means you're new or inconsistent.
+                      </p>
+                    </div>
+
+                    <div>
+                      <strong className="text-worm-ink">What is the confidence interval?</strong>
+                      <p className="mt-1">
+                        The 99.7% confidence interval (<InlineMath math="\\mu \\pm 3\\sigma" />) shows the range where your true skill likely
+                        falls. The "pessimistic rating" is the lower bound; the "optimistic rating" is the upper bound.
+                      </p>
+                    </div>
+
+                    <div>
+                      <strong className="text-worm-ink">Why is the bell curve important?</strong>
+                      <p className="mt-1">
+                        The shape tells the story: narrow curves (small <InlineMath math="\\sigma" />) mean consistent, well-tested skill;
+                        wide curves (large <InlineMath math="\\sigma" />) mean uncertain or new models that need more games to establish a
+                        reliable rating.
+                      </p>
+                    </div>
+
+                    <div>
+                      <strong className="text-worm-ink">How does leaderboard ranking work?</strong>
+                      <p className="mt-1">
+                        Models are ranked by their "exposed" rating (<InlineMath math="\\mu - 3\\sigma" />), the pessimistic bound. This
+                        rewards both consistency and strength, penalizing new models with high uncertainty.
+                      </p>
+                    </div>
+                  </AccordionContent>
+                </AccordionItem>
+              </Accordion>
+            </Card>
+          </div>
+
           <div className="grid grid-cols-1 xl:grid-cols-[minmax(360px,1fr)_minmax(0,1.6fr)_minmax(360px,1fr)] gap-6 items-start">
             {/* LEFT: Selected model list */}
             <WormArenaModelListCard
@@ -318,70 +386,6 @@ export default function WormArenaSkillAnalysis() {
               </AlertDescription>
             </Alert>
           )}
-
-          {/* Learn More: TrueSkill Explanation */}
-          <Card className="worm-card">
-            <Accordion type="single" collapsible className="w-full">
-              <AccordionItem value="trueskill-explainer">
-                <AccordionTrigger className="px-6 py-4 hover:no-underline">
-                  <h3 className="text-lg font-semibold text-worm-ink">Why TrueSkill? Learn More</h3>
-                </AccordionTrigger>
-                <AccordionContent className="px-6 pb-4 pt-2 text-sm text-worm-muted space-y-3">
-                  <div>
-                    <strong className="text-worm-ink">What is TrueSkill?</strong>
-                    <p className="mt-1">
-                      TrueSkill is a Bayesian skill rating system developed by Microsoft. Unlike simple win/loss ratios, it accounts for
-                      opponent strength and adjusts ratings based on match outcomes.
-                    </p>
-                  </div>
-
-                  <div>
-                    <strong className="text-worm-ink">Why not just use W/L ratio?</strong>
-                    <p className="mt-1">
-                      A 70% win rate against weak opponents is less impressive than a 50% win rate against strong opponents. TrueSkill
-                      captures this nuance by considering who you play against.
-                    </p>
-                  </div>
-
-                  <div>
-                    <strong className="text-worm-ink">
-                      What do <InlineMath math="\\mu" /> and <InlineMath math="\\sigma" /> mean?
-                    </strong>
-                    <p className="mt-1">
-                      <InlineMath math="\\mu" /> is the estimated skill level. <InlineMath math="\\sigma" /> is the uncertainty. A small{' '}
-                      <InlineMath math="\\sigma" /> means you've played many games and we're confident in your rating. A large{' '}
-                      <InlineMath math="\\sigma" /> means you're new or inconsistent.
-                    </p>
-                  </div>
-
-                  <div>
-                    <strong className="text-worm-ink">What is the confidence interval?</strong>
-                    <p className="mt-1">
-                      The 99.7% confidence interval (<InlineMath math="\\mu \\pm 3\\sigma" />) shows the range where your true skill likely
-                      falls. The "pessimistic rating" is the lower bound; the "optimistic rating" is the upper bound.
-                    </p>
-                  </div>
-
-                  <div>
-                    <strong className="text-worm-ink">Why is the bell curve important?</strong>
-                    <p className="mt-1">
-                      The shape tells the story: narrow curves (small <InlineMath math="\\sigma" />) mean consistent, well-tested skill;
-                      wide curves (large <InlineMath math="\\sigma" />) mean uncertain or new models that need more games to establish a
-                      reliable rating.
-                    </p>
-                  </div>
-
-                  <div>
-                    <strong className="text-worm-ink">How does leaderboard ranking work?</strong>
-                    <p className="mt-1">
-                      Models are ranked by their "exposed" rating (<InlineMath math="\\mu - 3\\sigma" />), the pessimistic bound. This
-                      rewards both consistency and strength, penalizing new models with high uncertainty.
-                    </p>
-                  </div>
-                </AccordionContent>
-              </AccordionItem>
-            </Accordion>
-          </Card>
         </main>
       </div>
     </TooltipProvider>
