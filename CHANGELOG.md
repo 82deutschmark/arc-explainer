@@ -1,5 +1,19 @@
 # New entires at the top, use proper SemVer!
 
+### Version 6.5.5  Dec 17, 2025
+
+- **Worm Arena: DB-discovered OpenRouter models now runnable + duplicate dropdown cleanup + Gemini 3 Flash tournament script** (Author: Cascade)
+  - Updated SnakeBench model allowlist to include **active, DB-discovered OpenRouter slugs** (in addition to curated config) so newly discovered models can be run immediately.
+  - Canonicalized OpenRouter model IDs before de-duping in Worm Arena Live so aliases do not appear multiple times.
+  - Rewrote the tournament script to run `google/gemini-3-flash-preview` vs the champion roster **both directions**, **localhost**, **one match at a time** (rate-limit safe).
+  - Updated SnakeBench/Worm Arena API docs to reflect the expanded allowlist behavior.
+  - **Files Modified**:
+    - `server/services/snakeBenchService.ts`
+    - `client/src/pages/WormArenaLive.tsx`
+    - `scripts/worm-arena-tournaments/underrepresented-models-roundrobin.ps1`
+    - `docs/reference/api/SnakeBench_WormArena_API.md`
+    - `CHANGELOG.md`
+
 ### Version 6.5.4  Dec 17, 2025
 
 - **Worm Arena Skill Analysis: Comparison overlay matches poster view** (Author: CodexGPT5.1 Low)

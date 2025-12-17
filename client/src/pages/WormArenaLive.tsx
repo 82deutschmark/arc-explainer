@@ -1,12 +1,14 @@
 ﻿/**
  * Author: Claude Code using Sonnet 4.5
- * Date: 2025-12-16
+ * Date: 2025-12-17
  * PURPOSE: Worm Arena Live - Simplified setup with two model dropdowns and clean transitions.
  *          Removed curated matchup selector for faster, cleaner UX.
  *          Uses useWormArenaSetup hook to manage setup state.
  *          Smooth fade transitions between setup → live → completed states.
  *          Sorts model dropdowns by newest-first using server-provided addedAt (DB discovery)
  *          with releaseDate fallback.
+ *          Canonicalizes SnakeBench model IDs before de-duping so OpenRouter aliases
+ *          (ex: openrouter/* vs openai/*) do not appear multiple times.
  * SRP/DRY check: Pass - orchestrates child components with minimal state management.
  *                State extracted to useWormArenaSetup hook for better maintainability.
  */
@@ -82,7 +84,8 @@ export default function WormArenaLive() {
     const bestById = new Map<string, { id: string; sortMs: number; tiebreaker: string }>();
 
     snakeModels.forEach((m) => {
-      const id = toSnakeModelId(m);
+      const rawId = toSnakeModelId(m);
+      const id = mapToSnakeBenchModelId(rawId);
       if (!id) return;
 
       const addedMs = parseIsoTimestamp((m as any).addedAt);

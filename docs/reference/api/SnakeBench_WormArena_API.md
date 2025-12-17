@@ -58,7 +58,10 @@ POST /api/snakebench/run-match
 
 **Notes:**
 
-- `modelA` and `modelB` **must** be valid slugs present in the central `MODELS` config with `provider = 'OpenRouter'`.
+- `modelA` and `modelB` must be valid **OpenRouter model slugs**.
+- ARC Explainer accepts:
+  - curated OpenRouter slugs present in the central `MODELS` config, and
+  - DB-discovered OpenRouter slugs marked active (so newly-discovered models can be used immediately).
 - If `apiKey` + `provider` are supplied, the backend uses that key only for this match (BYO key); otherwise it uses server-side keys.
 
 **Response (success):**
