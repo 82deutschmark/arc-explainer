@@ -1,10 +1,11 @@
 /**
  * Author: Cascade
  * Date: 2025-12-17
- * PURPOSE: Single unified "poster" graphic for the Skill Analysis page. Draws the exact
- *          reference design: skill estimate + uncertainty pills at top, 99.7% CI section
- *          in middle, and the overlapping bell curves at bottom. All rendered as one
- *          seamless composition with no card borders.
+ * PURPOSE: Single unified "poster" graphic for the Skill Analysis page. Draws the reference
+ *          design: skill estimate + uncertainty pills at top, 99.7% CI section in middle,
+ *          and overlapping bell curves at bottom.
+ *          Chart math uses explicit top/bottom margins so the curve, labels, and x-axis
+ *          are fully contained (no overflow bleed) and match the reference layout.
  * SRP/DRY check: Pass — single responsibility for the hero graphic composition.
  *
  * Touches: WormArenaSkillAnalysis.tsx (parent)
@@ -12,13 +13,7 @@
 
 import React from 'react';
 import { InlineMath } from 'react-katex';
-import {
-  gaussianPDF,
-  getMaxPDFInRange,
-  generateXSamples,
-  dataToPx,
-  normalizeToSVGHeight,
-} from '@/utils/confidenceIntervals';
+import { gaussianPDF } from '@/utils/confidenceIntervals';
 import { getConfidenceInterval } from '@/utils/confidenceIntervals';
 
 export interface WormArenaSkillHeroGraphicProps {
@@ -63,11 +58,12 @@ export default function WormArenaSkillHeroGraphic({
   const LABEL_GRAY = '#666666';
   const HEADER_COLOR = '#333333';
 
-  // Chart dimensions
+  // Chart dimensions (extra room so labels and axis never bleed outside the SVG)
   const chartWidth = 600;
-  const chartHeight = 280;
-  const axisMargin = 32;
-  const plotHeight = chartHeight - axisMargin;
+  const chartHeight = 340;
+  const topMargin = 26;
+  const bottomMargin = 52;
+  const plotBottomY = chartHeight - bottomMargin;
 
   // Curve colors
   const CURRENT_STROKE = '#31708F';
@@ -75,8 +71,8 @@ export default function WormArenaSkillHeroGraphic({
   const REF_STROKE = '#999999';
   const REF_FILL = '#E0E0E0';
 
-  // Calculate chart bounds - accommodate both curves with 3.5σ range
-  const sigmaRange = 3.5;
+  // Calculate chart bounds - accommodate both curves with ~4σ range so the tails taper naturally.
+  const sigmaRange = 4;
   let minX = mu - sigmaRange * sigma;
   let maxX = mu + sigmaRange * sigma;
 
@@ -87,6 +83,11 @@ export default function WormArenaSkillHeroGraphic({
     minX = Math.min(minX, refMin);
     maxX = Math.max(maxX, refMax);
   }
+
+  // Make the axis bounds stable and tick-friendly.
+  // This improves visual consistency with the reference image (integer ticks, nice padding).
+  minX = Math.floor(minX);
+  maxX = Math.ceil(maxX);
 
   // Generate sample points across the full range
   const numSamples = 200;
@@ -101,50 +102,63 @@ export default function WormArenaSkillHeroGraphic({
     referenceMu !== undefined && referenceSigma !== undefined
       ? 1 / (referenceSigma * Math.sqrt(2 * Math.PI))
       : 0;
-  // Add 20% headroom for labels above curves
-  const maxPdf = Math.max(mainApexPdf, refApexPdf) * 1.2;
+  // Add headroom for labels above curves.
+  const maxPdf = Math.max(mainApexPdf, refApexPdf) * 1.18;
 
-  // Convert data x to pixel x
+  // Convert data space to SVG pixels.
+  // Note: SVG y=0 is top. We reserve top/bottom margins so labels/ticks fit.
   const toPixelX = (x: number) => ((x - minX) / (maxX - minX)) * chartWidth;
-  const toPixelY = (pdf: number) => plotHeight - (pdf / maxPdf) * plotHeight;
+  const toPixelY = (pdf: number) => {
+    const usableHeight = plotBottomY - topMargin;
+    return plotBottomY - (pdf / maxPdf) * usableHeight;
+  };
 
   // Build reference curve path (filled)
   let refPath = '';
   if (referenceMu !== undefined && referenceSigma !== undefined) {
-    const refPoints: string[] = [`M ${toPixelX(xSamples[0])} ${plotHeight}`];
+    const refPoints: string[] = [`M ${toPixelX(xSamples[0])} ${plotBottomY}`];
     for (const x of xSamples) {
       const pdf = gaussianPDF(x, referenceMu, referenceSigma);
       refPoints.push(`L ${toPixelX(x).toFixed(2)} ${toPixelY(pdf).toFixed(2)}`);
     }
-    refPoints.push(`L ${toPixelX(xSamples[xSamples.length - 1])} ${plotHeight} Z`);
+    refPoints.push(`L ${toPixelX(xSamples[xSamples.length - 1])} ${plotBottomY} Z`);
     refPath = refPoints.join(' ');
   }
 
   // Build main curve path (filled)
-  const mainPoints: string[] = [`M ${toPixelX(xSamples[0])} ${plotHeight}`];
+  const mainPoints: string[] = [`M ${toPixelX(xSamples[0])} ${plotBottomY}`];
   for (const x of xSamples) {
     const pdf = gaussianPDF(x, mu, sigma);
     mainPoints.push(`L ${toPixelX(x).toFixed(2)} ${toPixelY(pdf).toFixed(2)}`);
   }
-  mainPoints.push(`L ${toPixelX(xSamples[xSamples.length - 1])} ${plotHeight} Z`);
+  mainPoints.push(`L ${toPixelX(xSamples[xSamples.length - 1])} ${plotBottomY} Z`);
   const mainPath = mainPoints.join(' ');
 
-  // Generate x-axis ticks
-  const tickStep = Math.ceil((maxX - minX) / 10);
+  // Generate x-axis ticks (prefer integer ticks similar to the reference image).
+  const range = Math.max(1, maxX - minX);
+  const approxTickCount = 12;
+  const tickStep = Math.max(1, Math.round(range / approxTickCount));
   const ticks: number[] = [];
-  const startTick = Math.ceil(minX);
-  for (let t = startTick; t <= maxX; t += 1) {
-    if (t >= minX && t <= maxX) ticks.push(t);
+  const firstTick = Math.ceil(minX / tickStep) * tickStep;
+  for (let t = firstTick; t <= maxX; t += tickStep) {
+    ticks.push(t);
   }
 
   // Label positions: place at apex (mu, 1/(sigma*sqrt(2*pi))) with small offset above
   const mainLabelX = toPixelX(mu);
-  const mainLabelY = toPixelY(mainApexPdf) - 8;
+  const mainLabelYBase = toPixelY(mainApexPdf) - 10;
   const refLabelX = referenceMu !== undefined ? toPixelX(referenceMu) : 0;
-  const refLabelY =
+  const refLabelYBase =
     referenceMu !== undefined && referenceSigma !== undefined
-      ? toPixelY(refApexPdf) - 8
+      ? toPixelY(refApexPdf) - 10
       : 0;
+
+  // If the two labels would overlap horizontally, offset them vertically.
+  const labelCollisionPx = 90;
+  const labelsCollide =
+    referenceMu !== undefined && Math.abs(mainLabelX - refLabelX) < labelCollisionPx;
+  const mainLabelY = labelsCollide ? mainLabelYBase - 10 : mainLabelYBase;
+  const refLabelY = labelsCollide ? refLabelYBase + 14 : refLabelYBase;
 
   return (
     <div className="flex flex-col items-center w-full" style={{ fontFamily: 'Georgia, serif' }}>
@@ -240,7 +254,6 @@ export default function WormArenaSkillHeroGraphic({
         width={chartWidth}
         height={chartHeight}
         viewBox={`0 0 ${chartWidth} ${chartHeight}`}
-        style={{ overflow: 'visible' }}
       >
         {/* Reference curve (behind) */}
         {refPath && (
@@ -250,16 +263,27 @@ export default function WormArenaSkillHeroGraphic({
         {/* Main curve (in front) */}
         <path d={mainPath} fill={CURRENT_FILL} fillOpacity={0.7} stroke={CURRENT_STROKE} strokeWidth="2.5" />
 
+        {/* Dashed reference line at current model's μ (matches the reference image) */}
+        <line
+          x1={mainLabelX}
+          y1={topMargin}
+          x2={mainLabelX}
+          y2={plotBottomY}
+          stroke="#B0B0B0"
+          strokeWidth="1"
+          strokeDasharray="4 4"
+        />
+
         {/* X-axis line */}
-        <line x1={0} y1={plotHeight} x2={chartWidth} y2={plotHeight} stroke="#999999" strokeWidth="1" />
+        <line x1={0} y1={plotBottomY} x2={chartWidth} y2={plotBottomY} stroke="#999999" strokeWidth="1" />
 
         {/* X-axis ticks and labels */}
         {ticks.map((tick) => {
           const px = toPixelX(tick);
           return (
             <g key={tick}>
-              <line x1={px} y1={plotHeight} x2={px} y2={plotHeight + 6} stroke="#999999" strokeWidth="1" />
-              <text x={px} y={plotHeight + 20} textAnchor="middle" fontSize="13" fill="#333333">
+              <line x1={px} y1={plotBottomY} x2={px} y2={plotBottomY + 7} stroke="#999999" strokeWidth="1" />
+              <text x={px} y={plotBottomY + 24} textAnchor="middle" fontSize="13" fill="#333333">
                 {tick}
               </text>
             </g>
@@ -267,7 +291,7 @@ export default function WormArenaSkillHeroGraphic({
         })}
 
         {/* X-axis label */}
-        <text x={chartWidth / 2} y={chartHeight - 2} textAnchor="middle" fontSize="14" fill="#333333">
+        <text x={chartWidth / 2} y={chartHeight - 8} textAnchor="middle" fontSize="14" fill="#333333">
           Skill Rating
         </text>
 
