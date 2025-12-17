@@ -8,10 +8,11 @@
  *          keeping the 3-column layout.
  *          Ensures ratings are fetched by calling useModelRating().refresh() when query params change.
  *          Adds an explicit baseline picker affordance: the reference snapshot's model slug is a button
- *          that clears the baseline, revealing the reference model list (sorted by games played).
+ *          that clears the baseline.
  *          Uses a wider container so the left model list card does not clip its scroll area.
  *          Simplifies the top section by removing global stat strips and wiring the TrueSkill
  *          leaderboard to select the baseline model.
+ *          Restores the baseline snapshot + searchable baseline picker list to avoid regressions.
  * SRP/DRY check: Pass — page-level composition only; rendering delegated to child components.
  *
  * Touches: WormArenaTrueSkillLeaderboard, WormArenaPlacementCard,
@@ -174,6 +175,24 @@ export default function WormArenaSkillAnalysis() {
     }
   }, [referenceSlug, refreshReference]);
 
+  React.useEffect(() => {
+    // Keep a stable default baseline so the right-side snapshot is always present.
+    // We pick the most-played model that isn't the currently selected (compare) model.
+    if (referenceSlug) return;
+    if (!selectedModelSlug) return;
+    if (!leaderboard.length) return;
+
+    const defaultBaseline = leaderboard.find((entry) => entry.modelSlug !== selectedModelSlug)?.modelSlug;
+    if (!defaultBaseline) return;
+
+    setLocation(
+      buildSkillAnalysisUrl({
+        modelSlug: selectedModelSlug,
+        referenceSlug: defaultBaseline,
+      }),
+    );
+  }, [referenceSlug, selectedModelSlug, leaderboard, setLocation]);
+
   return (
     <TooltipProvider>
       <div className="worm-page">
@@ -260,24 +279,30 @@ export default function WormArenaSkillAnalysis() {
 
           <div className="grid grid-cols-1 xl:grid-cols-[minmax(360px,1fr)_minmax(0,1.6fr)_minmax(360px,1fr)] gap-6 items-start">
             {/* LEFT: Selected model list */}
-            <WormArenaModelListCard
-              leaderboard={listEntries}
-              recentActivityLabel={recentActivityLabel}
-              selectedModel={selectedModelSlug ?? null}
-              filter={selectedFilter}
-              onFilterChange={setSelectedFilter}
-              onSelectModel={(slug) => {
-                setLocation(
-                  buildSkillAnalysisUrl({
-                    modelSlug: slug,
-                    referenceSlug,
-                  }),
-                );
-              }}
-            />
+            <div className="min-w-0">
+              <WormArenaModelListCard
+                leaderboard={listEntries}
+                recentActivityLabel={recentActivityLabel}
+                selectedModel={selectedModelSlug ?? null}
+                filter={selectedFilter}
+                onFilterChange={setSelectedFilter}
+                onSelectModel={(slug) => {
+                  setLocation(
+                    buildSkillAnalysisUrl({
+                      modelSlug: slug,
+                      referenceSlug,
+                    }),
+                  );
+                }}
+                title="Compare model"
+                subtitle="Pick the model you want to analyze (blue curve)"
+                searchPlaceholder="Search compare model (e.g. openai/gpt-5.1)"
+                scrollAreaClassName="h-[520px] max-h-[60vh]"
+              />
+            </div>
 
             {/* MIDDLE: Hero graphic (metrics + bell curve as one unified poster) */}
-            <div className="bg-white rounded-lg p-8 flex flex-col items-center justify-center min-h-[600px]">
+            <div className="min-w-0 bg-white rounded-lg p-8 flex flex-col items-center justify-center min-h-[600px]">
               {selectedModel ? (
                 <WormArenaSkillHeroGraphic
                   key={`${selectedModel.modelSlug}-${referenceModel?.modelSlug ?? 'none'}`}
@@ -301,30 +326,11 @@ export default function WormArenaSkillAnalysis() {
               )}
             </div>
 
-            {/* RIGHT: Reference model selector OR snapshot */}
-            {referenceModel ? (
-              <div className="space-y-4">
-                <WormArenaModelSnapshotCard
-                  rating={referenceModel}
-                  isLoading={loadingReference}
-                  error={errorReference ?? null}
-                  onModelSlugClick={() => {
-                    // Clear the baseline so the right-side list reappears, letting the user pick a new baseline.
-                    setLocation(
-                      buildSkillAnalysisUrl({
-                        modelSlug: selectedModelSlug,
-                        referenceSlug: null,
-                      }),
-                    );
-                  }}
-                />
-
-                <WormArenaPlacementCard placement={referencePlacement} />
-              </div>
-            ) : (
+            {/* RIGHT: Baseline (reference) picker + snapshot */}
+            <div className="min-w-0 space-y-4">
               <WormArenaModelListCard
                 leaderboard={listEntries}
-                recentActivityLabel={recentActivityLabel}
+                recentActivityLabel={null}
                 selectedModel={referenceSlug ?? null}
                 filter={referenceFilter}
                 onFilterChange={setReferenceFilter}
@@ -336,8 +342,29 @@ export default function WormArenaSkillAnalysis() {
                     }),
                   );
                 }}
+                title="Baseline model"
+                subtitle="Pick the model you are comparing against (gray curve)"
+                searchPlaceholder="Search baseline model (e.g. deepseek/deepseek-v3.2)"
+                scrollAreaClassName="h-[260px] max-h-[34vh]"
               />
-            )}
+
+              <WormArenaModelSnapshotCard
+                rating={referenceModel ?? null}
+                isLoading={loadingReference}
+                error={errorReference ?? null}
+                onModelSlugClick={() => {
+                  // Optional shortcut: clear the baseline selection (the searchable picker above stays visible).
+                  setLocation(
+                    buildSkillAnalysisUrl({
+                      modelSlug: selectedModelSlug,
+                      referenceSlug: null,
+                    }),
+                  );
+                }}
+              />
+
+              <WormArenaPlacementCard placement={referencePlacement} />
+            </div>
           </div>
 
           <WormArenaTrueSkillLeaderboard
