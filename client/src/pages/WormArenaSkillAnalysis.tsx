@@ -28,6 +28,7 @@ import {
 import WormArenaHeader from '@/components/WormArenaHeader';
 import WormArenaModelListCard from '@/components/wormArena/stats/WormArenaModelListCard';
 import WormArenaSkillHeroGraphic from '@/components/wormArena/stats/WormArenaSkillHeroGraphic';
+import WormArenaModelSnapshotCard from '@/components/wormArena/stats/WormArenaModelSnapshotCard';
 
 import useWormArenaTrueSkillLeaderboard from '@/hooks/useWormArenaTrueSkillLeaderboard';
 import { useModelRating } from '@/hooks/useSnakeBench';
@@ -100,7 +101,6 @@ export default function WormArenaSkillAnalysis() {
   const { modelSlug, referenceSlug } = useQueryParamModels();
 
   const [selectedFilter, setSelectedFilter] = React.useState('');
-  const [referenceFilter, setReferenceFilter] = React.useState('');
 
   // Fetch all models for the selector
   const { entries: leaderboard, isLoading: loadingLeaderboard, error: errorLeaderboard } =
@@ -205,21 +205,11 @@ export default function WormArenaSkillAnalysis() {
               )}
             </div>
 
-            {/* RIGHT: Reference model list */}
-            <WormArenaModelListCard
-              leaderboard={listEntries}
-              recentActivityLabel={null}
-              selectedModel={referenceSlug ?? null}
-              filter={referenceFilter}
-              onFilterChange={setReferenceFilter}
-              onSelectModel={(slug) => {
-                setLocation(
-                  buildSkillAnalysisUrl({
-                    modelSlug: selectedModelSlug,
-                    referenceSlug: slug,
-                  }),
-                );
-              }}
+            {/* RIGHT: Reference model snapshot */}
+            <WormArenaModelSnapshotCard
+              rating={referenceModel ?? null}
+              isLoading={loadingReference}
+              error={errorReference ?? null}
             />
           </div>
 
