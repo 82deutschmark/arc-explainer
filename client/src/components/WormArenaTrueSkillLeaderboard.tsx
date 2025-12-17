@@ -1,11 +1,12 @@
 /**
  * Author: Cascade
- * Date: 2025-12-10
+ * Date: 2025-12-17
  * PURPOSE: TrueSkill-based global leaderboard for Worm Arena stats page.
  *          Renders a SnakeBench-parity leaderboard table with Rank,
  *          model slug, TrueSkill rating/uncertainty, games, outcomes,
  *          apples, top score, win rate, and total cost.
  *          Features sticky sorted header with red border and full sortability.
+ *          Supports row selection/highlighting when used as a picker.
  * SRP/DRY check: Pass — presentational table with client-side sorting only.
  */
 
@@ -13,9 +14,8 @@ import React, { useState, useMemo } from 'react';
 import type { SnakeBenchTrueSkillLeaderboardEntry } from '@shared/types';
 
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
-import { ScrollArea } from '@/components/ui/scroll-area';
+import { cn } from '@/lib/utils';
 import {
-  Table,
   TableHead,
   TableHeader,
   TableRow,
@@ -33,22 +33,37 @@ import { HelpCircle, ArrowUp, ArrowDown } from 'lucide-react';
 type SortColumn = 'exposed' | 'sigma' | 'gamesPlayed' | 'wins' | 'losses' | 'ties' | 'applesEaten' | 'topScore' | 'winRate' | 'totalCost';
 type SortDirection = 'asc' | 'desc';
 
+type LeaderboardVariant = 'full' | 'compact';
+
 interface WormArenaTrueSkillLeaderboardProps {
   entries: SnakeBenchTrueSkillLeaderboardEntry[];
   isLoading: boolean;
   error: string | null;
+  selectedModelSlug?: string | null;
+  onSelectModel?: (modelSlug: string) => void;
+  variant?: LeaderboardVariant;
 }
 
 export function WormArenaTrueSkillLeaderboard({
   entries,
   isLoading,
   error,
+  selectedModelSlug,
+  onSelectModel,
+  variant = 'full',
 }: WormArenaTrueSkillLeaderboardProps) {
   const [sortColumn, setSortColumn] = useState<SortColumn>('exposed');
   const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
   const hasRows = entries.length > 0;
 
   const handleSort = (column: SortColumn) => {
+    if (
+      variant === 'compact' &&
+      (column === 'applesEaten' || column === 'topScore' || column === 'winRate')
+    ) {
+      return;
+    }
+
     if (sortColumn === column) {
       setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
     } else {
@@ -108,7 +123,7 @@ export function WormArenaTrueSkillLeaderboard({
               </Tooltip>
             </CardTitle>
             <div className="text-xs font-semibold mt-1 worm-muted">
-              Bayesian skill ratings with uncertainty — click headers to sort
+              Click headers to sort. Click a row to select.
             </div>
           </div>
         </CardHeader>
@@ -129,8 +144,9 @@ export function WormArenaTrueSkillLeaderboard({
           )}
 
           {hasRows && !error && (
-            <ScrollArea className="h-[420px] max-h-[420px] border rounded-md bg-white/90 worm-border">
-              <Table className="text-sm min-w-[900px]">
+            <div className="h-[420px] max-h-[420px] overflow-auto border rounded-md bg-white/90 worm-border">
+              {/* Use a plain table here; the shared Table wrapper adds overflow styles that can break sticky headers. */}
+              <table className={cn('w-full caption-bottom text-sm', variant === 'compact' ? 'min-w-[760px]' : 'min-w-[900px]')}>
                 <TableHeader>
                   <TableRow className="sticky top-0 bg-white/95 border-b-2" style={{ borderColor: 'var(--worm-red)' }}>
                     <TableHead className="whitespace-nowrap font-bold text-worm-ink cursor-default">
@@ -205,39 +221,43 @@ export function WormArenaTrueSkillLeaderboard({
                         )}
                       </span>
                     </TableHead>
-                    <TableHead
-                      className="whitespace-nowrap font-bold text-worm-ink cursor-pointer hover:bg-worm-track/50 transition-colors"
-                      onClick={() => handleSort('applesEaten')}
-                    >
-                      <span className="inline-flex items-center gap-1">
-                        <span>Apples eaten</span>
-                        {sortColumn === 'applesEaten' && (
-                          sortDirection === 'desc' ? <ArrowDown className="w-3 h-3" /> : <ArrowUp className="w-3 h-3" />
-                        )}
-                      </span>
-                    </TableHead>
-                    <TableHead
-                      className="whitespace-nowrap font-bold text-worm-ink cursor-pointer hover:bg-worm-track/50 transition-colors"
-                      onClick={() => handleSort('topScore')}
-                    >
-                      <span className="inline-flex items-center gap-1">
-                        <span>Top score</span>
-                        {sortColumn === 'topScore' && (
-                          sortDirection === 'desc' ? <ArrowDown className="w-3 h-3" /> : <ArrowUp className="w-3 h-3" />
-                        )}
-                      </span>
-                    </TableHead>
-                    <TableHead
-                      className="whitespace-nowrap font-bold text-worm-ink cursor-pointer hover:bg-worm-track/50 transition-colors"
-                      onClick={() => handleSort('winRate')}
-                    >
-                      <span className="inline-flex items-center gap-1">
-                        <span>Win rate</span>
-                        {sortColumn === 'winRate' && (
-                          sortDirection === 'desc' ? <ArrowDown className="w-3 h-3" /> : <ArrowUp className="w-3 h-3" />
-                        )}
-                      </span>
-                    </TableHead>
+                    {variant === 'full' && (
+                      <>
+                        <TableHead
+                          className="whitespace-nowrap font-bold text-worm-ink cursor-pointer hover:bg-worm-track/50 transition-colors"
+                          onClick={() => handleSort('applesEaten')}
+                        >
+                          <span className="inline-flex items-center gap-1">
+                            <span>Apples eaten</span>
+                            {sortColumn === 'applesEaten' && (
+                              sortDirection === 'desc' ? <ArrowDown className="w-3 h-3" /> : <ArrowUp className="w-3 h-3" />
+                            )}
+                          </span>
+                        </TableHead>
+                        <TableHead
+                          className="whitespace-nowrap font-bold text-worm-ink cursor-pointer hover:bg-worm-track/50 transition-colors"
+                          onClick={() => handleSort('topScore')}
+                        >
+                          <span className="inline-flex items-center gap-1">
+                            <span>Top score</span>
+                            {sortColumn === 'topScore' && (
+                              sortDirection === 'desc' ? <ArrowDown className="w-3 h-3" /> : <ArrowUp className="w-3 h-3" />
+                            )}
+                          </span>
+                        </TableHead>
+                        <TableHead
+                          className="whitespace-nowrap font-bold text-worm-ink cursor-pointer hover:bg-worm-track/50 transition-colors"
+                          onClick={() => handleSort('winRate')}
+                        >
+                          <span className="inline-flex items-center gap-1">
+                            <span>Win rate</span>
+                            {sortColumn === 'winRate' && (
+                              sortDirection === 'desc' ? <ArrowDown className="w-3 h-3" /> : <ArrowUp className="w-3 h-3" />
+                            )}
+                          </span>
+                        </TableHead>
+                      </>
+                    )}
                     <TableHead
                       className="whitespace-nowrap font-bold text-worm-ink cursor-pointer hover:bg-worm-track/50 transition-colors"
                       onClick={() => handleSort('totalCost')}
@@ -258,8 +278,17 @@ export function WormArenaTrueSkillLeaderboard({
                         ? Math.round(entry.winRate * 100)
                         : undefined;
 
+                    const isSelected = !!selectedModelSlug && entry.modelSlug === selectedModelSlug;
+
                     return (
-                      <TableRow key={`${entry.modelSlug}-${entry._trueskillRank}`}>
+                      <TableRow
+                        key={`${entry.modelSlug}-${entry._trueskillRank}`}
+                        onClick={() => onSelectModel?.(entry.modelSlug)}
+                        className={cn(
+                          onSelectModel ? 'cursor-pointer' : undefined,
+                          isSelected ? 'bg-worm-track/70' : undefined,
+                        )}
+                      >
                         <TableCell className="whitespace-nowrap font-mono">#{entry._trueskillRank}</TableCell>
                         <TableCell className="whitespace-nowrap font-mono max-w-[260px] truncate">
                           {entry.modelSlug}
@@ -282,15 +311,19 @@ export function WormArenaTrueSkillLeaderboard({
                         <TableCell className="whitespace-nowrap font-mono worm-metric-ties">
                           {entry.ties}
                         </TableCell>
-                        <TableCell className="whitespace-nowrap font-mono worm-metric-apples">
-                          {entry.applesEaten}
-                        </TableCell>
-                        <TableCell className="whitespace-nowrap font-mono worm-metric-rating">
-                          {entry.topScore}
-                        </TableCell>
-                        <TableCell className="whitespace-nowrap font-mono worm-metric-winrate">
-                          {winRatePercent != null ? `${winRatePercent}%` : '—'}
-                        </TableCell>
+                        {variant === 'full' && (
+                          <>
+                            <TableCell className="whitespace-nowrap font-mono worm-metric-apples">
+                              {entry.applesEaten}
+                            </TableCell>
+                            <TableCell className="whitespace-nowrap font-mono worm-metric-rating">
+                              {entry.topScore}
+                            </TableCell>
+                            <TableCell className="whitespace-nowrap font-mono worm-metric-winrate">
+                              {winRatePercent != null ? `${winRatePercent}%` : '—'}
+                            </TableCell>
+                          </>
+                        )}
                         <TableCell className="whitespace-nowrap font-mono worm-metric-cost">
                           ${entry.totalCost.toFixed(4)}
                         </TableCell>
@@ -298,8 +331,8 @@ export function WormArenaTrueSkillLeaderboard({
                     );
                   })}
                 </TableBody>
-              </Table>
-            </ScrollArea>
+              </table>
+            </div>
           )}
         </CardContent>
       </Card>

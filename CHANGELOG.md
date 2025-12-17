@@ -1,5 +1,27 @@
 # New entires at the top, use proper SemVer!
 
+### Version 6.5.1  Dec 18, 2025
+
+- **Worm Arena Skill Analysis: UI polish + baseline selection improvements** (Author: Cascade)
+  - Removed the busy top-of-page stats strip and moved the TrueSkill leaderboard below the main 3-column analysis grid.
+  - TrueSkill leaderboard now supports sticky headers reliably and allows row-click selection to set the baseline (highlighted selection).
+  - Hero graphic now uses Worm Arena typography, shows a clear "Model Snapshot [model]" heading, adds Games/Wins/Losses/Ties/Cost stat boxes, and tightens the x-axis bounds to roughly align with the 99.7% interval story.
+  - **Files Modified**:
+    - `client/src/pages/WormArenaSkillAnalysis.tsx`
+    - `client/src/components/WormArenaTrueSkillLeaderboard.tsx`
+    - `client/src/components/wormArena/stats/WormArenaSkillHeroGraphic.tsx`
+    - `CHANGELOG.md`
+
+- **Gemini 3 Flash Preview routing parity** (Author: Codex)
+  - Added the native `gemini-3-flash-preview` key to the Gemini service map and primary model catalog so the low-latency thinking tier is exposed to prompt selection and analytics.
+  - Mirrored the slug across the shared model list, OpenRouter builder, and catalog (plus metadata) so BYO paths can reach the same fast reasoning model with up-to-date context/pricing data.
+  - **Files Modified**:
+    - `server/services/gemini.ts`
+    - `server/config/models.ts`
+    - `server/config/openrouterModels.ts`
+    - `server/config/openrouter-catalog.json`
+    - `CHANGELOG.md`
+
 ### Version 6.5.0  Dec 17, 2025
 
 - **Worm Arena Skill Analysis: baseline picker + layout refresh** (Author: Cascade)

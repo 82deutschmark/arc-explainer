@@ -4,15 +4,17 @@
  * PURPOSE: Worm Arena Skill Distribution Analysis page. Orchestrates model selection (URL-driven),
  *          a three-slice UI (selected list | hero chart | reference list), and the bell curve
  *          visualization to explain why TrueSkill differs from raw W/L ratio.
- *          Reuses shared stats components from the Stats & Placement page (global stats strip,
- *          TrueSkill leaderboard, model snapshot, placement card) while keeping the 3-column layout.
+ *          Reuses shared Worm Arena components (leaderboard, model snapshot, placement card) while
+ *          keeping the 3-column layout.
  *          Ensures ratings are fetched by calling useModelRating().refresh() when query params change.
  *          Adds an explicit baseline picker affordance: the reference snapshot's model slug is a button
  *          that clears the baseline, revealing the reference model list (sorted by games played).
  *          Uses a wider container so the left model list card does not clip its scroll area.
+ *          Simplifies the top section by removing global stat strips and wiring the TrueSkill
+ *          leaderboard to select the baseline model.
  * SRP/DRY check: Pass — page-level composition only; rendering delegated to child components.
  *
- * Touches: WormArenaGlobalStatsStrip, WormArenaTrueSkillLeaderboard, WormArenaPlacementCard,
+ * Touches: WormArenaTrueSkillLeaderboard, WormArenaPlacementCard,
  *          WormArenaModelListCard, WormArenaSkillHeroGraphic, WormArenaModelSnapshotCard,
  *          useWormArenaTrueSkillLeaderboard, useModelRating, wouter useSearch.
  */
@@ -35,13 +37,11 @@ import WormArenaHeader from '@/components/WormArenaHeader';
 import WormArenaModelListCard from '@/components/wormArena/stats/WormArenaModelListCard';
 import WormArenaSkillHeroGraphic from '@/components/wormArena/stats/WormArenaSkillHeroGraphic';
 import WormArenaModelSnapshotCard from '@/components/wormArena/stats/WormArenaModelSnapshotCard';
-import WormArenaGlobalStatsStrip from '@/components/wormArena/stats/WormArenaGlobalStatsStrip';
 import WormArenaTrueSkillLeaderboard from '@/components/WormArenaTrueSkillLeaderboard';
 import WormArenaPlacementCard from '@/components/wormArena/stats/WormArenaPlacementCard';
 
 import useWormArenaTrueSkillLeaderboard from '@/hooks/useWormArenaTrueSkillLeaderboard';
-import { useModelRating, useSnakeBenchStats } from '@/hooks/useSnakeBench';
-import useWormArenaStats from '@/hooks/useWormArenaStats';
+import { useModelRating } from '@/hooks/useSnakeBench';
 import { summarizeWormArenaPlacement } from '@shared/utils/wormArenaPlacement';
 
 /**
@@ -115,9 +115,7 @@ export default function WormArenaSkillAnalysis() {
   const [selectedFilter, setSelectedFilter] = React.useState('');
   const [referenceFilter, setReferenceFilter] = React.useState('');
 
-  // Fetch global stats and data
-  const { stats: globalStats } = useSnakeBenchStats();
-  const { recentActivity } = useWormArenaStats();
+  // Fetch data
   const { entries: leaderboard, isLoading: loadingLeaderboard, error: errorLeaderboard } =
     useWormArenaTrueSkillLeaderboard(150, 3);
 
@@ -160,14 +158,8 @@ export default function WormArenaSkillAnalysis() {
 
   const isLoading = loadingLeaderboard || loadingSelected || loadingReference;
 
-  // Recent activity label for model list
-  const recentActivityLabel = React.useMemo(() => {
-    if (!recentActivity) return null;
-    if (recentActivity.days && recentActivity.days > 0) {
-      return `Last ${recentActivity.days} days: ${recentActivity.gamesPlayed} games\nModels with games: ${recentActivity.uniqueModels}`;
-    }
-    return `All history: ${recentActivity.gamesPlayed} games\nModels with games: ${recentActivity.uniqueModels}`;
-  }, [recentActivity]);
+  // Intentionally hide the historical games summary in this view (keeps the top area calm).
+  const recentActivityLabel = null;
 
   React.useEffect(() => {
     // useModelRating is explicitly refreshed so this page behaves consistently with other pages.
@@ -186,7 +178,7 @@ export default function WormArenaSkillAnalysis() {
     <TooltipProvider>
       <div className="worm-page">
         <WormArenaHeader
-          totalGames={globalStats?.totalGames ?? 0}
+          subtitle="Skill analysis"
           links={[
             { label: 'Replay', href: '/worm-arena' },
             { label: 'Live', href: '/worm-arena/live' },
@@ -198,15 +190,6 @@ export default function WormArenaSkillAnalysis() {
         />
 
         <main className="w-full max-w-[1500px] mx-auto px-4 md:px-6 py-6 space-y-6">
-          {/* Shared Worm Arena stats modules (kept consistent with the Stats & Placement page). */}
-          <WormArenaGlobalStatsStrip stats={globalStats ?? null} />
-
-          <WormArenaTrueSkillLeaderboard
-            entries={leaderboard}
-            isLoading={loadingLeaderboard}
-            error={errorLeaderboard}
-          />
-
           <div className="grid grid-cols-1 xl:grid-cols-[minmax(360px,1fr)_minmax(0,1.6fr)_minmax(360px,1fr)] gap-6 items-start">
             {/* LEFT: Selected model list */}
             <WormArenaModelListCard
@@ -234,6 +217,11 @@ export default function WormArenaSkillAnalysis() {
                   sigma={selectedModel.sigma}
                   exposed={selectedModel.exposed}
                   modelLabel={selectedModel.modelSlug}
+                  gamesPlayed={selectedModel.gamesPlayed}
+                  wins={selectedModel.wins}
+                  losses={selectedModel.losses}
+                  ties={selectedModel.ties}
+                  totalCost={selectedModel.totalCost}
                   referenceMu={referenceModel?.mu}
                   referenceSigma={referenceModel?.sigma}
                   referenceLabel={referenceModel?.modelSlug}
@@ -283,6 +271,23 @@ export default function WormArenaSkillAnalysis() {
               />
             )}
           </div>
+
+          <WormArenaTrueSkillLeaderboard
+            entries={leaderboard}
+            isLoading={loadingLeaderboard}
+            error={errorLeaderboard}
+            variant="compact"
+            selectedModelSlug={referenceSlug ?? null}
+            onSelectModel={(slug) => {
+              // Clicking the TrueSkill leaderboard selects the baseline model (right-side snapshot).
+              setLocation(
+                buildSkillAnalysisUrl({
+                  modelSlug: selectedModelSlug,
+                  referenceSlug: slug,
+                }),
+              );
+            }}
+          />
 
           <Alert className="border-blue-200 bg-blue-50">
             <AlertDescription className="text-sm text-worm-ink">

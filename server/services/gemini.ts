@@ -1,21 +1,35 @@
 /**
  * @file server/services/gemini.ts
  * @description Google Gemini Service for ARC Puzzle Analysis
+
  *
+
  * This service integrates with the Google Generative AI SDK to analyze ARC puzzles using Gemini models.
+
  * It is responsible for:
+
   *  - Building prompts compatible with the Gemini API, including system instructions.
+
  *  - Handling model-specific features; thinking config is currently disabled pending SDK support.
+
  *  - Parsing the Gemini response structure, which separates `thought` parts from the main answer.
+
  *  - Using the centralized `jsonParser` for robust JSON extraction from the response text.
+
  *  - Extending the BaseAIService for a consistent analysis workflow.
- * NEEDS UPDATING!!
+
  * @assessed_by Gemini 2.5 Pro
+
  * @assessed_on 2025-09-09
+
  * Author: Codex (GPT-5)
- * Date: 2025-11-29
- * PURPOSE: Direct Gemini provider integration that aligns prompts, generation config, and parsing with ARC pipeline expectations. Thinking config is gated off until SDK support is confirmed to avoid request rejections.
- * SRP/DRY check: Pass — reuses BaseAIService and shared prompt builder; no duplicate provider logic.
+
+ * Date: 2025-12-18
+
+ * PURPOSE: Direct Gemini provider integration that aligns prompts, generation config, and parsing with ARC pipeline expectations while adding Gemini 3 Flash Preview support and keeping thinking config gated until SDK updates stabilize.
+
+ * SRP/DRY check: Pass - reuses BaseAIService and shared prompt builder; no duplicate provider logic.
+
  */
 
 import { GoogleGenerativeAI } from "@google/generative-ai";
@@ -44,6 +58,8 @@ export class GeminiService extends BaseAIService {
   protected provider = "Gemini";
   protected models = {
     "gemini-3-pro-preview": "gemini-3-pro-preview",
+    // Expose the new Gemini 3 Flash preview so the service can request the faster reasoning tier.
+    "gemini-3-flash-preview": "gemini-3-flash-preview",
     "gemini-2.5-pro": "gemini-2.5-pro",
     "gemini-2.5-flash": "gemini-2.5-flash",
     "gemini-2.5-flash-lite": "gemini-2.5-flash-lite",
