@@ -1,8 +1,8 @@
 /**
- * Author: Codex GPT-5
+ * Author: GPT-5.2-Medium-Reasoning
  * Date: 2025-12-17
  * PURPOSE: SVG scatter plot that maps Worm Arena TrueSkill models into the
- *          Ч¬ (skill) / Шџ (uncertainty) plane. Handles selection, hover tooling,
+ *          mu (skill) / sigma (uncertainty) plane. Handles selection, hover tooling,
  *          and keyboard accessibility so parent components can focus on orchestration.
  * SRP/DRY check: Pass — encapsulates scatter-only rendering logic; reuses shared types.
  */
@@ -31,6 +31,9 @@ export interface WormArenaSkillScatterPlotProps {
   onPointHover: (modelSlug: string | null) => void;
   colorPalette: readonly string[];
   unselectedColor: string;
+  // Optional stable domains (computed from the full leaderboard) so axes don't jump while filtering.
+  muDomain?: { min: number; max: number };
+  sigmaDomain?: { min: number; max: number };
 }
 
 /**
@@ -55,10 +58,16 @@ export default function WormArenaSkillScatterPlot({
   onPointHover,
   colorPalette,
   unselectedColor,
+  muDomain,
+  sigmaDomain,
 }: WormArenaSkillScatterPlotProps) {
   const effectiveLeaderboard = leaderboard ?? [];
 
   const muRange = useMemo(() => {
+    // If parent provides stable domains, prefer them.
+    if (muDomain) {
+      return muDomain;
+    }
     if (effectiveLeaderboard.length === 0) {
       return { min: 0, max: 1 };
     }
@@ -70,9 +79,13 @@ export default function WormArenaSkillScatterPlot({
       return { min: min - 1, max: max + 1 };
     }
     return { min, max };
-  }, [effectiveLeaderboard]);
+  }, [effectiveLeaderboard, muDomain]);
 
   const sigmaRange = useMemo(() => {
+    // If parent provides stable domains, prefer them.
+    if (sigmaDomain) {
+      return sigmaDomain;
+    }
     if (effectiveLeaderboard.length === 0) {
       return { min: 0, max: 1 };
     }
@@ -84,7 +97,7 @@ export default function WormArenaSkillScatterPlot({
       return { min: Math.max(0, min - 0.5), max: max + 0.5 };
     }
     return { min, max };
-  }, [effectiveLeaderboard]);
+  }, [effectiveLeaderboard, sigmaDomain]);
 
   const xTicks = useMemo(
     () => buildTicks(muRange.min, muRange.max),

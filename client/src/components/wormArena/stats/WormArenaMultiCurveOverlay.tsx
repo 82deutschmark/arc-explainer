@@ -1,8 +1,8 @@
 /**
- * Author: Codex GPT-5
+ * Author: GPT-5.2-Medium-Reasoning
  * Date: 2025-12-17
  * PURPOSE: Stacked bell-curve overlay for Worm Arena skill comparison. Mirrors the
- *          scatter-plot selection order so users can compare mu/σ distributions with
+ *          scatter-plot selection order so users can compare mu/sigma distributions with
  *          consistent color semantics and hover states.
  * SRP/DRY check: Pass — responsible solely for rendering Gaussian curves; relies on
  *                shared math utilities and accepts data via props.

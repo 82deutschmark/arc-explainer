@@ -1,5 +1,5 @@
 /**
- * Author: Codex GPT-5
+ * Author: GPT-5.2-Medium-Reasoning
  * Date: 2025-12-17
  * PURPOSE: High-level comparison orchestrator that wires the Worm Arena scatter plot
  *          and stacked bell curves together. Exposes search, selection state, and hover
@@ -12,6 +12,7 @@ import React, { useCallback, useMemo, useState } from 'react';
 import type { SnakeBenchTrueSkillLeaderboardEntry } from '@shared/types';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
+import { Skeleton } from '@/components/ui/skeleton';
 import WormArenaSkillScatterPlot from './WormArenaSkillScatterPlot';
 import WormArenaMultiCurveOverlay from './WormArenaMultiCurveOverlay';
 
@@ -29,6 +30,7 @@ export interface WormArenaSkillComparisonProps {
   leaderboard: SnakeBenchTrueSkillLeaderboardEntry[];
   selectedModels: string[];
   onSelectionChange: (slugs: string[]) => void;
+  isLoading?: boolean;
 }
 
 /**
@@ -38,12 +40,47 @@ export default function WormArenaSkillComparison({
   leaderboard,
   selectedModels,
   onSelectionChange,
+  isLoading = false,
 }: WormArenaSkillComparisonProps) {
   const [searchFilter, setSearchFilter] = useState('');
   const [hoveredModelSlug, setHoveredModelSlug] = useState<string | null>(null);
 
   const normalizedFilter = searchFilter.trim().toLowerCase();
   const hasLeaderboardData = leaderboard.length > 0;
+
+  // Stabilize plot domains based on the full leaderboard.
+  // This prevents the axes from "jumping" as the user types in the search box.
+  const muDomain = useMemo(() => {
+    if (!hasLeaderboardData) {
+      return { min: 0, max: 1 };
+    }
+
+    const values = leaderboard.map((entry) => entry.mu);
+    const min = Math.min(...values);
+    const max = Math.max(...values);
+    const span = max - min || 1;
+    const padding = span * 0.06;
+    return {
+      min: min - padding,
+      max: max + padding,
+    };
+  }, [hasLeaderboardData, leaderboard]);
+
+  const sigmaDomain = useMemo(() => {
+    if (!hasLeaderboardData) {
+      return { min: 0, max: 1 };
+    }
+
+    const values = leaderboard.map((entry) => entry.sigma);
+    const min = Math.min(...values, 0);
+    const max = Math.max(...values, 1);
+    const span = max - min || 1;
+    const padding = span * 0.08;
+    return {
+      min: Math.max(0, min - padding),
+      max: max + padding,
+    };
+  }, [hasLeaderboardData, leaderboard]);
 
   // Keep selected models visible even if they do not match the search filter.
   const filteredLeaderboard = useMemo(() => {
@@ -102,8 +139,17 @@ export default function WormArenaSkillComparison({
   if (!hasLeaderboardData) {
     return (
       <div className="rounded-lg border border-worm-border bg-white p-6 text-sm text-worm-muted">
-        TrueSkill leaderboard data is loading. Comparison controls will appear
-        once the data is available.
+        {isLoading ? (
+          <div className="space-y-4">
+            <div className="text-sm font-semibold text-worm-ink">Loading Comparison View…</div>
+            <Skeleton className="h-10 w-full" />
+            <Skeleton className="h-[360px] w-full" />
+            <Skeleton className="h-[110px] w-full" />
+            <Skeleton className="h-[110px] w-full" />
+          </div>
+        ) : (
+          'No TrueSkill leaderboard data available yet.'
+        )}
       </div>
     );
   }
@@ -138,6 +184,8 @@ export default function WormArenaSkillComparison({
           onPointHover={handlePointHover}
           colorPalette={COMPARISON_COLOR_PALETTE}
           unselectedColor={UNSELECTED_MODEL_COLOR}
+          muDomain={muDomain}
+          sigmaDomain={sigmaDomain}
         />
       )}
 

@@ -1,5 +1,5 @@
 /**
- * Author: Cascade
+ * Author: GPT-5.2-Medium-Reasoning
  * Date: 2025-12-17
  * PURPOSE: Reusable Worm Arena model list selector card.
  *          Provides a searchable, games-played-sorted list of model slugs.

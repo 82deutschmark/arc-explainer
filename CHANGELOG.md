@@ -1,5 +1,22 @@
 # New entires at the top, use proper SemVer!
 
+### Version 6.5.2  Dec 17, 2025
+
+- **Worm Arena Skill Analysis: Comparison View polish + regression hardening** (Author: GPT-5.2-Medium-Reasoning)
+  - Comparison View now has stable scatter plot axes while searching (domains are computed from the full leaderboard and reused while filtering).
+  - Comparison View now shows a skeleton loading state during initial leaderboard load.
+  - Fixed encoding issues in comparison-view headers so mu/sigma labels render cleanly.
+  - Restored and hardened the baseline selector UX so the baseline picker remains visible and the baseline snapshot does not disappear.
+  - **Files Modified**:
+    - `client/src/pages/WormArenaSkillAnalysis.tsx`
+    - `client/src/components/wormArena/stats/WormArenaSkillComparison.tsx`
+    - `client/src/components/wormArena/stats/WormArenaSkillScatterPlot.tsx`
+    - `client/src/components/wormArena/stats/WormArenaMultiCurveOverlay.tsx`
+    - `client/src/components/wormArena/stats/WormArenaModelListCard.tsx`
+    - `docs/plans/WormArenaStatsPlan.md`
+    - `package.json`
+    - `CHANGELOG.md`
+
 ### Version 6.5.1  Dec 18, 2025
 
 - **Worm Arena Skill Analysis: UI polish + baseline selection improvements** (Author: Cascade)

@@ -1,8 +1,31 @@
+<!--
+Author: Claude Haiku 4.5
+Editor: GPT-5.2-Medium-Reasoning
+Date: 2025-12-17
+PURPOSE: Maintain execution-status notes for the multi-model skill analysis plan so contributors can
+         see which phases are complete, which are in flight, and what remains.
+SRP/DRY check: Pass — single document remains the authoritative plan; progress log avoids duplication.
+-->
+
 # Interactive Multi-Model Skill Analysis Visualization
 
-**Date:** 2025-12-17
-**Author:** Claude Haiku 4.5
-**Status:** Ready for Implementation
+**Date:** 2025-12-17  
+**Author:** Claude Haiku 4.5 (plan) / GPT-5.2-Medium-Reasoning (progress updates)  
+**Status:** In Progress
+
+## Progress Log (2025-12-17 – GPT-5.2-Medium-Reasoning)
+
+- Done: Tabs + comparison wiring landed in `client/src/pages/WormArenaSkillAnalysis.tsx` (Poster vs Comparison view is selectable, comparison seeds sync with URL parameters).
+- Done: Comparison components exist (`WormArenaSkillComparison`, `WormArenaSkillScatterPlot`, `WormArenaMultiCurveOverlay`) with hover + selection plumbing.
+- Done: Scatter plot axes are now stable during search filtering (domains computed from full leaderboard and passed into the filtered scatter).
+- Done: Loading state now shows skeletons for the Comparison View.
+- Done: Encoding issues fixed in scatter/curve headers (no garbled characters).
+
+## Next Steps
+
+1. Finish scatter + curve polish (axis labels, tooltips, skeleton/loading treatment, shared tick scales) and confirm hover cross-highlighting matches plan.
+2. Add regression-safe tests/manual verification from Phase 5 checklist plus update `CHANGELOG.md` with semantic version entry once behavior ships.
+3. Refresh documentation references (README/RESPONSES guide snippets if needed) after validating live streaming expectations for the new comparison view.
 
 ## Overview
 
@@ -18,11 +41,11 @@ The old static "Poster View" will be preserved via a tabbed interface for users 
 
 ## User Requirements
 
-✅ Leverage rich multi-dimensional data (mu, sigma, winRate, gamesPlayed, etc.)
-✅ Interactive model selection and comparison (3-5 models simultaneously)
-✅ Real data only - no mocks or simulations
-✅ Memorable, distinctive aesthetic fitting Worm Arena theme
-✅ Keep old "Poster View" accessible via tabs
+Leverage rich multi-dimensional data (mu, sigma, winRate, gamesPlayed, etc.)
+Interactive model selection and comparison (3-5 models simultaneously)
+Real data only - no mocks or simulations
+Memorable, distinctive aesthetic fitting Worm Arena theme
+Keep old "Poster View" accessible via tabs
 
 ## Technical Approach
 
@@ -521,15 +544,15 @@ Add new semantic version entry:
 
 ## Success Criteria
 
-✅ Users can see all 150+ models in a scatter plot (mu vs sigma)
-✅ Users can click points to select/deselect models (max 5)
-✅ Selected models show overlaid bell curves below scatter
-✅ Hover interactions cross-highlight scatter points and curves
-✅ Search box filters visible points while keeping selections pinned
-✅ Old "Poster View" remains accessible via tabs
-✅ All data is real (no mocks or simulations)
-✅ Performance is smooth with 150+ models
-✅ Aesthetic matches Worm Arena theme (warm browns, clean typography)
+Users can see all 150+ models in a scatter plot (mu vs sigma)
+Users can click points to select/deselect models (max 5)
+Selected models show overlaid bell curves below scatter
+Hover interactions cross-highlight scatter points and curves
+Search box filters visible points while keeping selections pinned
+Old "Poster View" remains accessible via tabs
+All data is real (no mocks or simulations)
+Performance is smooth with 150+ models
+Aesthetic matches Worm Arena theme (warm browns, clean typography)
 
 ## Risks & Mitigations
 
@@ -544,4 +567,3 @@ Add new semantic version entry:
 
 **Risk:** Performance issues with SVG rendering
 **Mitigation:** useMemo for paths, useCallback for handlers, React keys for optimization
-
