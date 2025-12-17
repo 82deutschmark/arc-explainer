@@ -1,10 +1,12 @@
 /**
- * Author: GPT-5.2-Medium-Reasoning
+ * Author: Claude
  * Date: 2025-12-17
  * PURPOSE: Worm Arena Skill Analysis orchestration. Coordinates URL-driven selections, poster vs.
  *          interactive comparison tabs, and the flanking selector/baseline cards so visitors can
  *          swap between the legacy hero graphic and the new scatter + multi-curve explorer while
  *          keeping data refresh + query syncing consistent.
+ *          Card titles now display actual model slugs. Left list sorted by games played,
+ *          right list sorted by win rate. Why TrueSkill section includes MS Research link.
  * SRP/DRY check: Pass — page-level composition only; rendering delegated to child components.
  *
  * Touches: WormArenaTrueSkillLeaderboard, WormArenaPlacementCard,
@@ -265,9 +267,9 @@ export default function WormArenaSkillAnalysis() {
                         What do <InlineMath math="\\mu" /> and <InlineMath math="\\sigma" /> mean?
                       </strong>
                       <p className="mt-1">
-                        <InlineMath math="\\mu" /> is the estimated skill level. <InlineMath math="\\sigma" /> is the uncertainty. A small{' '}
-                        <InlineMath math="\\sigma" /> means you've played many games and we're confident in your rating. A large{' '}
-                        <InlineMath math="\\sigma" /> means you're new or inconsistent.
+                        <InlineMath math="\\mu" /> (mu) is the estimated skill level. <InlineMath math="\\sigma" /> (sigma) is the uncertainty. A small{' '}
+                        <InlineMath math="\\sigma" /> means consistent performance across many games. A large{' '}
+                        <InlineMath math="\\sigma" /> means the model is new or plays inconsistently (sometimes great, sometimes terrible).
                       </p>
                     </div>
 
@@ -295,6 +297,31 @@ export default function WormArenaSkillAnalysis() {
                         rewards both consistency and strength, penalizing new models with high uncertainty.
                       </p>
                     </div>
+
+                    <div className="pt-2 border-t border-worm-border space-y-2">
+                      <a
+                        href="https://www.microsoft.com/en-us/research/project/trueskill-ranking-system/"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-blue-600 hover:underline font-semibold block"
+                      >
+                        Learn more about TrueSkill (Microsoft Research)
+                      </a>
+                      <div className="flex items-center gap-2 text-xs text-worm-muted">
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-green-100 text-green-800 font-semibold">
+                          Human Verified
+                        </span>
+                        <span>
+                          Proofread and reviewed by{' '}
+                          <a
+                            href="/hall-of-fame"
+                            className="text-blue-600 hover:underline font-semibold"
+                          >
+                            Dr. Jeremy Budd
+                          </a>
+                        </span>
+                      </div>
+                    </div>
                   </AccordionContent>
                 </AccordionItem>
               </Accordion>
@@ -318,7 +345,7 @@ export default function WormArenaSkillAnalysis() {
                     }),
                   );
                 }}
-                title="Compare model"
+                title={selectedModelSlug ?? 'Select a model'}
                 subtitle="Sorted by games played (most to least)"
                 searchPlaceholder="Search compare model (e.g. openai/gpt-5.1)"
                 scrollAreaClassName="h-[340px] max-h-[42vh]"
@@ -403,7 +430,7 @@ export default function WormArenaSkillAnalysis() {
                     }),
                   );
                 }}
-                title="Baseline model"
+                title={referenceSlug ?? 'Select baseline'}
                 subtitle="Sorted by win rate (highest to lowest)"
                 searchPlaceholder="Search baseline model (e.g. deepseek/deepseek-v3.2)"
                 scrollAreaClassName="h-[260px] max-h-[34vh]"
