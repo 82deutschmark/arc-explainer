@@ -80,9 +80,16 @@ export default function WormArenaSkillDistributionChart({
   const REF_STROKE = '#999999';
   const REF_FILL = '#E0E0E0';
 
-  // Calculate bounds
-  const minX = mu - sigmaRange * sigma;
-  const maxX = mu + sigmaRange * sigma;
+  // Calculate bounds - use 3.5σ and accommodate both curves if reference exists
+  let minX = mu - 3.5 * sigma;
+  let maxX = mu + 3.5 * sigma;
+
+  if (referenceMu !== undefined && referenceSigma !== undefined) {
+    const refMin = referenceMu - 3.5 * referenceSigma;
+    const refMax = referenceMu + 3.5 * referenceSigma;
+    minX = Math.min(minX, refMin);
+    maxX = Math.max(maxX, refMax);
+  }
 
   // Get max PDF for normalization
   const maxPdf = Math.max(
