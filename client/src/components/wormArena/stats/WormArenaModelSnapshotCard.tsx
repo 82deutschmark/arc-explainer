@@ -39,7 +39,7 @@ export default function WormArenaModelSnapshotCard({
   role?: WormArenaModelRole;
 }) {
   const roleColors = getWormArenaRoleColors(role);
-  const dataTone: 'blue' | 'red' | 'neutral' = role === 'compare' ? 'blue' : role === 'baseline' ? 'red' : 'neutral';
+  const dataTone: 'blue' | 'baseline' | 'neutral' = role === 'compare' ? 'blue' : role === 'baseline' ? 'baseline' : 'neutral';
 
   const pessimisticEquation = React.useMemo(() => {
     if (!rating) return null;
