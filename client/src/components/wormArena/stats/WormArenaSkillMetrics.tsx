@@ -1,5 +1,5 @@
 /**
- * Author: Cascade
+ * Author: GPT-5.2-Medium-Reasoning
  * Date: 2025-12-17
  * PURPOSE: Display metric badges and confidence interval section for TrueSkill statistics.
  *          Shows skill estimate (μ), uncertainty (σ), and 99.7% confidence interval bounds.
@@ -136,7 +136,7 @@ export default function WormArenaSkillMetrics({
 
         <div className="text-sm text-worm-muted leading-relaxed">
           <div>
-            {confidencePercentage.toFixed(1)}% of the time, the model will demonstrate skill within this interval.
+            {confidencePercentage.toFixed(1)}% of the time, we expect the model to demonstrate skill within this interval.
           </div>
           <div className="mt-1">
             (Calculated as <InlineMath math="\\mu \\pm 3\\sigma" />)
