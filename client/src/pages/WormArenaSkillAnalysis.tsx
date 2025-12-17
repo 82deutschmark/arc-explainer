@@ -101,6 +101,7 @@ export default function WormArenaSkillAnalysis() {
   const { modelSlug, referenceSlug } = useQueryParamModels();
 
   const [selectedFilter, setSelectedFilter] = React.useState('');
+  const [referenceFilter, setReferenceFilter] = React.useState('');
 
   // Fetch all models for the selector
   const { entries: leaderboard, isLoading: loadingLeaderboard, error: errorLeaderboard } =
@@ -205,12 +206,30 @@ export default function WormArenaSkillAnalysis() {
               )}
             </div>
 
-            {/* RIGHT: Reference model snapshot */}
-            <WormArenaModelSnapshotCard
-              rating={referenceModel ?? null}
-              isLoading={loadingReference}
-              error={errorReference ?? null}
-            />
+            {/* RIGHT: Reference model selector OR snapshot */}
+            {referenceModel ? (
+              <WormArenaModelSnapshotCard
+                rating={referenceModel}
+                isLoading={loadingReference}
+                error={errorReference ?? null}
+              />
+            ) : (
+              <WormArenaModelListCard
+                leaderboard={listEntries}
+                recentActivityLabel={null}
+                selectedModel={referenceSlug ?? null}
+                filter={selectedFilter}
+                onFilterChange={setSelectedFilter}
+                onSelectModel={(slug) => {
+                  setLocation(
+                    buildSkillAnalysisUrl({
+                      modelSlug: selectedModelSlug,
+                      referenceSlug: slug,
+                    }),
+                  );
+                }}
+              />
+            )}
           </div>
 
           <Alert className="border-blue-200 bg-blue-50">
