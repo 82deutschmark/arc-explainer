@@ -1,31 +1,33 @@
 <!--
 Author: Claude Haiku 4.5
 Editor: GPT-5.2-Medium-Reasoning
+Maintainer: CodexGPT5.1 Low
 Date: 2025-12-17
 PURPOSE: Maintain execution-status notes for the multi-model skill analysis plan so contributors can
          see which phases are complete, which are in flight, and what remains.
-SRP/DRY check: Pass — single document remains the authoritative plan; progress log avoids duplication.
+SRP/DRY check: Pass - single document remains the authoritative plan; progress log avoids duplication.
 -->
 
 # Interactive Multi-Model Skill Analysis Visualization
 
 **Date:** 2025-12-17  
-**Author:** Claude Haiku 4.5 (plan) / GPT-5.2-Medium-Reasoning (progress updates)  
+**Author:** Claude Haiku 4.5 (plan) / GPT-5.2-Medium-Reasoning & CodexGPT5.1 Low (progress updates)  
 **Status:** In Progress
 
-## Progress Log (2025-12-17 – GPT-5.2-Medium-Reasoning)
+## Progress Log (2025-12-17 - CodexGPT5.1 Low)
 
 - Done: Tabs + comparison wiring landed in `client/src/pages/WormArenaSkillAnalysis.tsx` (Poster vs Comparison view is selectable, comparison seeds sync with URL parameters).
 - Done: Comparison components exist (`WormArenaSkillComparison`, `WormArenaSkillScatterPlot`, `WormArenaMultiCurveOverlay`) with hover + selection plumbing.
 - Done: Scatter plot axes are now stable during search filtering (domains computed from full leaderboard and passed into the filtered scatter).
 - Done: Loading state now shows skeletons for the Comparison View.
 - Done: Encoding issues fixed in scatter/curve headers (no garbled characters).
+- Done: Comparison bell-curve overlay now mirrors the poster view (single shared SVG with overlapping fills, legend, and hover-linked dashed mu markers).
 
 ## Next Steps
 
-1. Finish scatter + curve polish (axis labels, tooltips, skeleton/loading treatment, shared tick scales) and confirm hover cross-highlighting matches plan.
-2. Add regression-safe tests/manual verification from Phase 5 checklist plus update `CHANGELOG.md` with semantic version entry once behavior ships.
-3. Refresh documentation references (README/RESPONSES guide snippets if needed) after validating live streaming expectations for the new comparison view.
+1. Run the manual checklist + regression tests from Phase 5 (selection limits, hover cross-highlighting, search pinning) and capture findings in CHANGELOG v6.5.4.
+2. Update docs (README excerpt + RESPONSES guide, if screenshots referenced) once the Comparison View UX is finalized post-testing.
+3. Monitor performance with 150+ models (profile SVG render cost) and introduce virtualized tooltip rendering if we observe frame drops.
 
 ## Overview
 

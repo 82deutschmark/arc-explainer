@@ -1,3 +1,12 @@
+/*
+ * Author: GPT-5.2-Medium-Reasoning
+ * Date: 2025-12-17
+ * PURPOSE: Global Tailwind + Worm Arena theme tokens and utility classes.
+ *          Updated to include role-based Worm Arena pill styles so Skill Analysis can
+ *          color-coordinate compare (blue) vs baseline (red) consistently.
+ * SRP/DRY check: Pass — global styling and design tokens only.
+ */
+
 /* Tailwind Directives */
 @tailwind base;
 @tailwind components;
@@ -169,6 +178,27 @@
     background: var(--worm-highlight-bg);
     border-color: var(--worm-green);
     color: var(--worm-green-ink);
+  }
+
+  .worm-pill-blue {
+    @apply inline-flex items-baseline rounded-md border font-extrabold leading-tight;
+    background: rgba(37, 99, 235, 0.12);
+    border-color: var(--worm-blue);
+    color: var(--worm-metric-rating);
+  }
+
+  .worm-pill-red {
+    @apply inline-flex items-baseline rounded-md border font-extrabold leading-tight;
+    background: rgba(200, 90, 58, 0.12);
+    border-color: var(--worm-red);
+    color: #7a1f0f;
+  }
+
+  .worm-pill-baseline {
+    @apply inline-flex items-baseline rounded-md border font-extrabold leading-tight;
+    background: rgba(30, 86, 49, 0.12);
+    border-color: #1E5631;
+    color: #1E5631;
   }
 
   .worm-pill-neutral {

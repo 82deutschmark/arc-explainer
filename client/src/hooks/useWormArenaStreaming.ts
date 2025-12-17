@@ -25,6 +25,7 @@ export function useWormArenaStreaming() {
   const [error, setError] = useState<string | null>(null);
   const [isStarting, setIsStarting] = useState(false);
   const statusRef = useRef<StreamState>('idle');
+  const sawInitRef = useRef(false);
 
   // Batch state
   const [batchResults, setBatchResults] = useState<WormArenaBatchMatchComplete[]>([]);
@@ -88,11 +89,15 @@ export function useWormArenaStreaming() {
 
   const connect = useCallback((sessionId: string) => {
     disconnect({ preserveState: false });
+    sawInitRef.current = false;
     setStatus('connecting');
+    setMessage('Connecting to live stream...');
+    setError(null);
     const es = new EventSource(`/api/wormarena/stream/${encodeURIComponent(sessionId)}`);
     eventSourceRef.current = es;
 
     es.addEventListener('stream.init', () => {
+      sawInitRef.current = true;
       setStatus('starting');
       setMessage('Launching match...');
     });
@@ -181,6 +186,7 @@ export function useWormArenaStreaming() {
     es.addEventListener('batch.init', (event) => {
       try {
         const data = JSON.parse((event as MessageEvent).data) as { totalMatches: number; modelA: string; modelB: string };
+        sawInitRef.current = true;
         setStatus('starting');
         setTotalMatches(data.totalMatches);
         setBatchResults([]);
@@ -261,7 +267,12 @@ export function useWormArenaStreaming() {
         eventSourceRef.current = null;
         return;
       }
-      setError('Connection lost');
+      if (!sawInitRef.current) {
+        setError('Session unavailable');
+        setMessage('Live sessions can only be viewed immediately after launch (reconnect not yet supported).');
+      } else {
+        setError('Connection lost');
+      }
       setStatus('failed');
       es.close();
       eventSourceRef.current = null;

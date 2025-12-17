@@ -1,3 +1,11 @@
+/**
+ * Author: Codex (GPT-5)
+ * Date: 2025-12-19
+ * PURPOSE: Inline Worm Arena results card that summarizes the finished match without
+ *          navigating away from the streaming experience.
+ * SRP/DRY check: Pass – only formats the final summary payload.
+ */
+
 import React from 'react';
 import type { WormArenaFinalSummary } from '@shared/types';
 
@@ -6,6 +14,15 @@ export interface WormArenaLiveResultsPanelProps {
 }
 
 export default function WormArenaLiveResultsPanel({ finalSummary }: WormArenaLiveResultsPanelProps) {
+  const resultEntries = Object.entries(finalSummary.results || {});
+  const winners = resultEntries.filter(([, label]) => label === 'won').map(([id]) => id);
+  const tied = resultEntries.some(([, label]) => label === 'tied');
+  const summaryText = winners.length
+    ? `Winner: ${winners.join(', ')}`
+    : tied
+      ? 'Result: tied'
+      : 'Result: pending';
+
   return (
     <div className="rounded-lg border bg-white/90 shadow-sm px-4 py-4 worm-border space-y-4">
       <div className="flex items-center justify-between gap-3 flex-wrap">
@@ -18,6 +35,16 @@ export default function WormArenaLiveResultsPanel({ finalSummary }: WormArenaLiv
         <div className="text-sm text-worm-ink font-semibold break-words">
           {finalSummary.modelA} vs {finalSummary.modelB}
         </div>
+      </div>
+
+      <div>
+        <div className="text-[11px] worm-muted">Summary</div>
+        <div className="text-sm text-worm-ink font-semibold">{summaryText}</div>
+        {finalSummary.roundsPlayed !== undefined && (
+          <div className="text-xs text-muted-foreground">
+            Rounds played: {finalSummary.roundsPlayed}
+          </div>
+        )}
       </div>
 
       <div>
@@ -56,4 +83,3 @@ export default function WormArenaLiveResultsPanel({ finalSummary }: WormArenaLiv
     </div>
   );
 }
-

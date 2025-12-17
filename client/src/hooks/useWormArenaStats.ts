@@ -1,8 +1,10 @@
 /**
  * Author: Cascade
- * Date: 2025-12-10
+ * Date: 2025-12-17
  * PURPOSE: Hook for Worm Arena stats, backed by local SnakeBench tables.
  *          Fetches WormArena-only leaderboard and recent-activity data.
+ *          Leaderboard is fetched sorted by win rate by default so compact
+ *          UI panels can load with win-rate ordering immediately.
  * SRP/DRY check: Pass read-only stats wiring, no UI.
  */
 
@@ -47,7 +49,7 @@ export function useWormArenaStats() {
     setError(null);
     try {
       const [lbRes, activityRes] = await Promise.all([
-        apiRequest('GET', '/api/snakebench/leaderboard?limit=150&sortBy=gamesPlayed'),
+        apiRequest('GET', '/api/snakebench/leaderboard?limit=150&sortBy=winRate'),
         apiRequest('GET', '/api/snakebench/recent-activity?days=0'),
       ]);
 

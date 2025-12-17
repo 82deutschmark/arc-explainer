@@ -1,10 +1,11 @@
 /**
- * Author: GPT-5.2-Medium-Reasoning
+ * Author: Claude Sonnet 4
  * Date: 2025-12-17
  * PURPOSE: SVG scatter plot that maps Worm Arena TrueSkill models into the
  *          mu (skill) / sigma (uncertainty) plane. Handles selection, hover tooling,
  *          and keyboard accessibility so parent components can focus on orchestration.
- * SRP/DRY check: Pass — encapsulates scatter-only rendering logic; reuses shared types.
+ *          Includes instruction text and bold readable labels per user request.
+ * SRP/DRY check: Pass - encapsulates scatter-only rendering logic; reuses shared types.
  */
 
 import React, { useCallback, useMemo } from 'react';
@@ -172,6 +173,10 @@ export default function WormArenaSkillScatterPlot({
 
   return (
     <div className="rounded-lg border border-worm-border bg-white p-4">
+      {/* Instruction text for users */}
+      <div className="text-center mb-3 text-sm font-bold text-worm-ink">
+        Click a dot to select that model
+      </div>
       <svg width={SVG_WIDTH} height={SVG_HEIGHT} role="img" aria-label="TrueSkill scatter plot">
         <g transform={`translate(${SVG_MARGIN.left}, ${SVG_MARGIN.top})`}>
           {/* Horizontal grid lines */}
@@ -274,7 +279,7 @@ export default function WormArenaSkillScatterPlot({
                 <text
                   y={24}
                   textAnchor="middle"
-                  className="text-[10px] fill-worm-muted"
+                  className="text-xs font-bold fill-worm-ink"
                 >
                   {formatNumber(tick)}
                 </text>
@@ -285,7 +290,7 @@ export default function WormArenaSkillScatterPlot({
             x={PLOT_WIDTH / 2}
             y={PLOT_HEIGHT + 40}
             textAnchor="middle"
-            className="text-xs fill-worm-muted"
+            className="text-sm font-bold fill-worm-ink"
           >
             mu (skill)
           </text>
@@ -301,7 +306,7 @@ export default function WormArenaSkillScatterPlot({
                   x={-12}
                   textAnchor="end"
                   alignmentBaseline="middle"
-                  className="text-[10px] fill-worm-muted"
+                  className="text-xs font-bold fill-worm-ink"
                 >
                   {formatNumber(tick)}
                 </text>
@@ -313,7 +318,7 @@ export default function WormArenaSkillScatterPlot({
             y={-40}
             transform="rotate(-90)"
             textAnchor="middle"
-            className="text-xs fill-worm-muted"
+            className="text-sm font-bold fill-worm-ink"
           >
             sigma (uncertainty)
           </text>

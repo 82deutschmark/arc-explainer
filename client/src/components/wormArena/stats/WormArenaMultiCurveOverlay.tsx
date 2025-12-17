@@ -1,25 +1,23 @@
 /**
- * Author: GPT-5.2-Medium-Reasoning
+ * Author: CodexGPT5.1 Low
  * Date: 2025-12-17
- * PURPOSE: Stacked bell-curve overlay for Worm Arena skill comparison. Mirrors the
- *          scatter-plot selection order so users can compare mu/sigma distributions with
- *          consistent color semantics and hover states.
- * SRP/DRY check: Pass — responsible solely for rendering Gaussian curves; relies on
- *                shared math utilities and accepts data via props.
+ * PURPOSE: Overlay up to five Worm Arena bell curves in a single SVG (poster-view style) so the
+ *          comparison tab mirrors the existing hero graphic. Keeps hover wiring in sync with the
+ *          scatter plot and exposes a compact legend with per-model stats.
+ * SRP/DRY check: Pass - pure visualization layer; selection/filter logic remains upstream.
  */
 
 import React, { useMemo } from 'react';
 import type { SnakeBenchTrueSkillLeaderboardEntry } from '@shared/types';
-import {
-  gaussianPDF,
-  getConfidenceInterval,
-} from '@/utils/confidenceIntervals';
+import { gaussianPDF } from '@/utils/confidenceIntervals';
 
-const CURVE_WIDTH = 600;
-const CURVE_HEIGHT = 110;
-const SAMPLE_POINTS = 180;
-const SIGMA_RANGE = 3.5;
-const AXIS_TICK_COUNT = 4;
+const CHART_WIDTH = 620;
+const CHART_HEIGHT = 320;
+const TOP_MARGIN = 26;
+const BOTTOM_MARGIN = 52;
+const SAMPLE_POINTS = 220;
+const SIGMA_RANGE = 3.2;
+const APPROX_TICK_COUNT = 12;
 
 export interface WormArenaMultiCurveOverlayProps {
   models: SnakeBenchTrueSkillLeaderboardEntry[];
@@ -28,19 +26,25 @@ export interface WormArenaMultiCurveOverlayProps {
   colorPalette: readonly string[];
 }
 
+const formatNumber = (value: number): string => value.toFixed(2);
+
 /**
- * Build evenly spaced tick marks so every curve can share the same x-axis labels.
+ * Generate poster-friendly tick spacing (integers when possible).
  */
-function getSharedTicks(min: number, max: number): number[] {
+function buildAxisTicks(min: number, max: number): number[] {
   if (min === max) {
     return [min];
   }
-  const tickCount = AXIS_TICK_COUNT;
-  const span = max - min;
-  return Array.from({ length: tickCount }, (_, index) => min + (span / (tickCount - 1)) * index);
+  const span = Math.max(1, max - min);
+  const rawStep = span / APPROX_TICK_COUNT;
+  const step = Math.max(1, Math.round(rawStep));
+  const firstTick = Math.ceil(min / step) * step;
+  const ticks: number[] = [];
+  for (let tick = firstTick; tick <= max; tick += step) {
+    ticks.push(tick);
+  }
+  return ticks;
 }
-
-const formatNumber = (value: number): string => value.toFixed(2);
 
 export default function WormArenaMultiCurveOverlay({
   models,
@@ -48,130 +52,184 @@ export default function WormArenaMultiCurveOverlay({
   onCurveHover,
   colorPalette,
 }: WormArenaMultiCurveOverlayProps) {
-  const hasModels = models.length > 0;
-
-  const globalBounds = useMemo(() => {
-    if (!hasModels) {
-      return { min: 0, max: 1 };
-    }
-
-    const lowerBounds = models.map((model) => model.mu - SIGMA_RANGE * model.sigma);
-    const upperBounds = models.map((model) => model.mu + SIGMA_RANGE * model.sigma);
-
-    return {
-      min: Math.min(...lowerBounds),
-      max: Math.max(...upperBounds),
-    };
-  }, [hasModels, models]);
-
-  const axisTicks = useMemo(
-    () => getSharedTicks(globalBounds.min, globalBounds.max),
-    [globalBounds.max, globalBounds.min],
-  );
-
-  const buildPath = (model: SnakeBenchTrueSkillLeaderboardEntry) => {
-    const { min, max } = globalBounds;
-    const span = max - min || 1;
-    const points: Array<[number, number]> = [];
-    const maxPdf = gaussianPDF(model.mu, model.mu, model.sigma);
-
-    for (let index = 0; index < SAMPLE_POINTS; index += 1) {
-      const ratio = index / (SAMPLE_POINTS - 1);
-      const xValue = min + ratio * span;
-      const pdf = gaussianPDF(xValue, model.mu, model.sigma);
-      const x = ratio * CURVE_WIDTH;
-      const normalizedHeight = (pdf / maxPdf) * (CURVE_HEIGHT * 0.8);
-      const y = CURVE_HEIGHT - normalizedHeight;
-      points.push([x, Number.isFinite(y) ? y : CURVE_HEIGHT]);
-    }
-
-    const commands = [`M 0 ${CURVE_HEIGHT}`];
-    points.forEach(([x, y]) => {
-      commands.push(`L ${x.toFixed(2)} ${y.toFixed(2)}`);
-    });
-    commands.push(`L ${CURVE_WIDTH} ${CURVE_HEIGHT}`);
-    commands.push('Z');
-    return commands.join(' ');
-  };
-
-  if (!hasModels) {
-    return null;
+  if (!models.length) {
+    return (
+      <div className="rounded-lg border border-dashed border-worm-border bg-worm-panel px-4 py-6 text-center text-sm text-worm-muted">
+        Select models in the scatter plot to overlay their curves here.
+      </div>
+    );
   }
 
-  return (
-    <div className="space-y-3 rounded-lg border border-worm-border bg-white p-4">
-      {models.map((model, index) => {
-        const color = colorPalette[index] ?? colorPalette[colorPalette.length - 1];
-        const isDimmed = hoveredModel !== null && hoveredModel !== model.modelSlug;
-        const confidence = getConfidenceInterval(model.mu, model.sigma, 3);
+  // Shared x-bounds are the min/max of all (mu ± SIGMA_RANGE * sigma).
+  const bounds = useMemo(() => {
+    const lowers = models.map((model) => model.mu - SIGMA_RANGE * model.sigma);
+    const uppers = models.map((model) => model.mu + SIGMA_RANGE * model.sigma);
+    return {
+      min: Math.floor(Math.min(...lowers)),
+      max: Math.ceil(Math.max(...uppers)),
+    };
+  }, [models]);
 
-        return (
-          <div
-            key={model.modelSlug}
-            role="button"
-            tabIndex={0}
-            aria-pressed={hoveredModel === model.modelSlug}
-            onMouseEnter={() => onCurveHover(model.modelSlug)}
-            onMouseLeave={() => onCurveHover(null)}
-            onFocus={() => onCurveHover(model.modelSlug)}
-            onBlur={() => onCurveHover(null)}
-            className="rounded-md p-2 transition-opacity duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-white"
-            style={{
-              opacity: isDimmed ? 0.35 : 1,
-              border: `1px solid ${color}30`,
-            }}
-          >
-            <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
-              <span className="text-sm font-semibold" style={{ color }}>
-                {index + 1}. {model.modelSlug}
+  const xSamples = useMemo(() => {
+    const samples: number[] = [];
+    const { min, max } = bounds;
+    const span = Math.max(1, max - min);
+    for (let index = 0; index < SAMPLE_POINTS; index += 1) {
+      const ratio = index / (SAMPLE_POINTS - 1);
+      samples.push(min + ratio * span);
+    }
+    return samples;
+  }, [bounds]);
+
+  const globalMaxPdf = useMemo(() => {
+    const peaks = models.map((model) => 1 / (model.sigma * Math.sqrt(2 * Math.PI)));
+    return Math.max(...peaks) * 1.15; // add headroom so labels never collide with top margin
+  }, [models]);
+
+  const ticks = useMemo(() => buildAxisTicks(bounds.min, bounds.max), [bounds.max, bounds.min]);
+  const plotBottomY = CHART_HEIGHT - BOTTOM_MARGIN;
+
+  const toPixelX = (value: number) => {
+    const span = Math.max(1, bounds.max - bounds.min);
+    return ((value - bounds.min) / span) * CHART_WIDTH;
+  };
+
+  const toPixelY = (pdf: number) => {
+    const usableHeight = plotBottomY - TOP_MARGIN;
+    return plotBottomY - Math.min(1, pdf / globalMaxPdf) * usableHeight;
+  };
+
+  const curves = useMemo(
+    () =>
+      models.map((model, index) => {
+        const color = colorPalette[index] ?? colorPalette[colorPalette.length - 1];
+        const points: string[] = [`M ${toPixelX(xSamples[0])} ${plotBottomY}`];
+        for (const x of xSamples) {
+          const pdf = gaussianPDF(x, model.mu, model.sigma);
+          points.push(`L ${toPixelX(x).toFixed(2)} ${toPixelY(pdf).toFixed(2)}`);
+        }
+        points.push(`L ${toPixelX(xSamples[xSamples.length - 1])} ${plotBottomY} Z`);
+
+        const apexX = toPixelX(model.mu);
+        const apexY = toPixelY(1 / (model.sigma * Math.sqrt(2 * Math.PI))) - 10;
+
+        return {
+          slug: model.modelSlug,
+          color,
+          path: points.join(' '),
+          apexX,
+          apexY,
+          mu: model.mu,
+          sigma: model.sigma,
+          games: model.gamesPlayed,
+          wins: model.wins,
+          losses: model.losses,
+          ties: model.ties,
+        };
+      }),
+    [colorPalette, models, plotBottomY, toPixelX, toPixelY, xSamples],
+  );
+
+  return (
+    <div className="space-y-4 rounded-lg border border-worm-border bg-white p-4">
+      {/* Legend chips keep the color order obvious while sharing core stats. */}
+      <div className="flex flex-wrap gap-2">
+        {curves.map((curve, index) => {
+          const isDimmed = hoveredModel && hoveredModel !== curve.slug;
+          return (
+            <button
+              key={curve.slug}
+              type="button"
+              onMouseEnter={() => onCurveHover(curve.slug)}
+              onMouseLeave={() => onCurveHover(null)}
+              onFocus={() => onCurveHover(curve.slug)}
+              onBlur={() => onCurveHover(null)}
+              className="flex items-center gap-2 rounded-full border border-worm-border/70 px-3 py-1 text-xs transition-opacity duration-150 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-white"
+              style={{ opacity: isDimmed ? 0.35 : 1 }}
+            >
+              <span aria-hidden className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: curve.color }} />
+              <span className="font-semibold">
+                {index + 1}. {curve.slug}
               </span>
-              <div className="text-xs text-worm-muted">
-                mu {formatNumber(model.mu)} · sigma {formatNumber(model.sigma)} ·{' '}
-                {model.wins}W/{model.losses}L/{model.ties}T · games {model.gamesPlayed}
-              </div>
-            </div>
-            <svg width={CURVE_WIDTH} height={CURVE_HEIGHT} role="img" aria-label={`Bell curve for ${model.modelSlug}`}>
-              <path
-                d={buildPath(model)}
-                fill={color}
-                fillOpacity={0.18}
-                stroke={color}
-                strokeWidth={2}
-              />
-              {/* Shared x-axis ticks */}
-              <g transform={`translate(0, ${CURVE_HEIGHT})`}>
-                <line x1={0} x2={CURVE_WIDTH} y1={0} y2={0} stroke="#8B6A47" strokeWidth={1} />
-                {axisTicks.map((tick) => {
-                  const ratio = (tick - globalBounds.min) / ((globalBounds.max - globalBounds.min) || 1);
-                  const x = ratio * CURVE_WIDTH;
-                  return (
-                    <g key={`${model.modelSlug}-tick-${tick.toFixed(3)}`} transform={`translate(${x}, 0)`}>
-                      <line y2={8} stroke="#8B6A47" strokeWidth={1} />
-                      <text
-                        y={20}
-                        textAnchor="middle"
-                        className="text-[10px] fill-worm-muted"
-                      >
-                        {formatNumber(tick)}
-                      </text>
-                    </g>
-                  );
-                })}
+              <span className="text-worm-muted">
+                mu {formatNumber(curve.mu)} · sigma {formatNumber(curve.sigma)} · {curve.wins}W/
+                {curve.losses}L/{curve.ties}T
+              </span>
+            </button>
+          );
+        })}
+      </div>
+
+      <div className="overflow-x-auto">
+        <svg
+          width={CHART_WIDTH}
+          height={CHART_HEIGHT}
+          role="img"
+          aria-label="Overlapping bell curves for selected Worm Arena models"
+        >
+          {/* Axes mirror the poster view layout. */}
+          <line x1={0} x2={CHART_WIDTH} y1={plotBottomY} y2={plotBottomY} stroke="#8B6A47" strokeWidth={1.5} />
+          <line x1={0} x2={0} y1={TOP_MARGIN} y2={plotBottomY} stroke="#8B6A47" strokeWidth={1.5} />
+          <text
+            x={CHART_WIDTH / 2}
+            y={CHART_HEIGHT - 12}
+            textAnchor="middle"
+            className="text-[11px] font-semibold fill-worm-muted"
+          >
+            Skill rating (mu)
+          </text>
+
+          {ticks.map((tick) => {
+            const x = toPixelX(tick);
+            return (
+              <g key={`axis-x-${tick}`} transform={`translate(${x}, ${plotBottomY})`}>
+                <line y2={8} stroke="#8B6A47" strokeWidth={1.2} />
+                <text y={24} textAnchor="middle" className="text-[11px] font-medium fill-worm-muted">
+                  {tick}
+                </text>
               </g>
-              {/* Confidence interval marker */}
-              <line
-                x1={((confidence.lower - globalBounds.min) / ((globalBounds.max - globalBounds.min) || 1)) * CURVE_WIDTH}
-                x2={((confidence.upper - globalBounds.min) / ((globalBounds.max - globalBounds.min) || 1)) * CURVE_WIDTH}
-                y1={CURVE_HEIGHT * 0.85}
-                y2={CURVE_HEIGHT * 0.85}
-                stroke={color}
-                strokeWidth={3}
-                strokeLinecap="round"
-              />
-            </svg>
-          </div>
-        );
-      })}
+            );
+          })}
+
+          {/* Draw from back to front so later selections appear on top. */}
+          {[...curves].reverse().map((curve) => {
+            const isDimmed = hoveredModel && hoveredModel !== curve.slug;
+            return (
+              <g key={curve.slug}>
+                <path
+                  d={curve.path}
+                  fill={curve.color}
+                  fillOpacity={isDimmed ? 0.15 : 0.4}
+                  stroke={curve.color}
+                  strokeWidth={isDimmed ? 1.2 : 2.6}
+                  onMouseEnter={() => onCurveHover(curve.slug)}
+                  onMouseLeave={() => onCurveHover(null)}
+                  className="transition-opacity duration-150"
+                />
+                <line
+                  x1={curve.apexX}
+                  x2={curve.apexX}
+                  y1={curve.apexY - 12}
+                  y2={plotBottomY}
+                  stroke={curve.color}
+                  strokeDasharray="6 6"
+                  strokeWidth={1.2}
+                  opacity={isDimmed ? 0.25 : 0.55}
+                />
+                <text
+                  x={curve.apexX}
+                  y={curve.apexY}
+                  textAnchor="middle"
+                  className="text-[11px] font-semibold fill-worm-ink"
+                  style={{ opacity: isDimmed ? 0.4 : 1 }}
+                >
+                  {formatNumber(curve.mu)}
+                </text>
+              </g>
+            );
+          })}
+        </svg>
+      </div>
     </div>
   );
 }

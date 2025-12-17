@@ -1,7 +1,7 @@
 # SnakeBench & Worm Arena API Reference
 
 **Author:** Cascade  \
-**Date:** 2025-12-11  \
+**Date:** 2025-12-17  \
 **Purpose:** Document the public SnakeBench and Worm Arena HTTP APIs exposed by ARC Explainer for running matches, querying game stats, and streaming live tournaments.
 
 All endpoints described here are **public** and require **no authentication**.
@@ -58,7 +58,10 @@ POST /api/snakebench/run-match
 
 **Notes:**
 
-- `modelA` and `modelB` **must** be valid slugs present in the central `MODELS` config with `provider = 'OpenRouter'`.
+- `modelA` and `modelB` must be valid **OpenRouter model slugs**.
+- ARC Explainer accepts:
+  - curated OpenRouter slugs present in the central `MODELS` config, and
+  - DB-discovered OpenRouter slugs marked active (so newly-discovered models can be used immediately).
 - If `apiKey` + `provider` are supplied, the backend uses that key only for this match (BYO key); otherwise it uses server-side keys.
 
 **Response (success):**
@@ -137,6 +140,7 @@ GET /api/snakebench/games?limit=50
 ```
 
 - **Query:** `limit` (optional) – max number of summaries to return.
+- **Behavior:** Only returns matches that have an available replay asset (local file, DB `replay_path` URL, or GitHub raw fallback). This prevents the UI from offering non-replayable matches.
 - **Response:**
 
 ```json
@@ -273,8 +277,8 @@ GET /api/snakebench/greatest-hits?limitPerDimension=5
 
 **Important:**
 
-- This endpoint operates purely on the **database** (`public.games`, `public.game_participants`).
-- A game may appear in this list even if its replay JSON is missing locally. UI and tooling should verify replay asset availability before promising playback.
+- This endpoint is generated from the **database** (`public.games`, `public.game_participants`).
+- The service layer filters results so only games with an available replay asset are returned.
 - See `docs/reference/data/WormArena_GreatestHits_Local_Analysis.md` for details.
 
 ---
