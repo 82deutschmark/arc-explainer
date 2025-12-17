@@ -1,12 +1,23 @@
+/**
+ * Author: Cascade
+ * Date: 2025-12-17
+ * PURPOSE: Worm Arena model snapshot card. Displays a model's TrueSkill parameters and
+ *          basic match stats in a compact, reusable card.
+ *          When `onModelSlugClick` is provided, the model slug in the header becomes a
+ *          clickable control (used by Skill Analysis to let the user change the baseline).
+ * SRP/DRY check: Pass — presentation-only; the parent owns selection state.
+ */
+
 import React from 'react';
 import type { SnakeBenchModelRating } from '@shared/types';
 
 import { InlineMath } from 'react-katex';
 
-import { Badge } from '@/components/ui/badge';
+import { Badge, badgeVariants } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { HelpCircle } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { cn } from '@/lib/utils';
 
 import DataNumber from '@/components/wormArena/DataNumber';
 
@@ -14,10 +25,12 @@ export default function WormArenaModelSnapshotCard({
   rating,
   isLoading,
   error,
+  onModelSlugClick,
 }: {
   rating: SnakeBenchModelRating | null | undefined;
   isLoading: boolean;
   error: string | null;
+  onModelSlugClick?: (modelSlug: string) => void;
 }) {
   const pessimisticEquation = React.useMemo(() => {
     if (!rating) return null;
@@ -33,9 +46,26 @@ export default function WormArenaModelSnapshotCard({
         <CardTitle className="text-lg font-bold flex items-center justify-between">
           <span>Model snapshot</span>
           {rating?.modelSlug && (
-            <Badge variant="outline" className="text-xs font-mono">
-              {rating.modelSlug}
-            </Badge>
+            <>
+              {/* If a parent provides an action, treat the slug as a compact button (baseline picker). */}
+              {onModelSlugClick ? (
+                <button
+                  type="button"
+                  onClick={() => onModelSlugClick(rating.modelSlug)}
+                  className={cn(
+                    badgeVariants({ variant: 'outline' }),
+                    'text-xs font-mono cursor-pointer hover:bg-worm-card',
+                  )}
+                  title="Change baseline model"
+                >
+                  {rating.modelSlug}
+                </button>
+              ) : (
+                <Badge variant="outline" className="text-xs font-mono">
+                  {rating.modelSlug}
+                </Badge>
+              )}
+            </>
           )}
         </CardTitle>
       </CardHeader>

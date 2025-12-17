@@ -1,5 +1,151 @@
 # New entires at the top, use proper SemVer!
 
+### Version 6.5.2  Dec 17, 2025
+
+- **Worm Arena Skill Analysis: Comparison View polish + regression hardening** (Author: GPT-5.2-Medium-Reasoning)
+  - Comparison View now has stable scatter plot axes while searching (domains are computed from the full leaderboard and reused while filtering).
+  - Comparison View now shows a skeleton loading state during initial leaderboard load.
+  - Fixed encoding issues in comparison-view headers so mu/sigma labels render cleanly.
+  - Restored and hardened the baseline selector UX so the baseline picker remains visible and the baseline snapshot does not disappear.
+  - Poster View: left Compare model column now includes a Model snapshot card, and the bell curve graphic is rendered immediately under the view tabs.
+  - **Files Modified**:
+    - `client/src/pages/WormArenaSkillAnalysis.tsx`
+    - `client/src/components/wormArena/stats/WormArenaSkillComparison.tsx`
+    - `client/src/components/wormArena/stats/WormArenaSkillScatterPlot.tsx`
+    - `client/src/components/wormArena/stats/WormArenaMultiCurveOverlay.tsx`
+    - `client/src/components/wormArena/stats/WormArenaSkillHeroGraphic.tsx`
+    - `client/src/components/wormArena/stats/WormArenaModelListCard.tsx`
+    - `docs/plans/WormArenaStatsPlan.md`
+    - `package.json`
+    - `CHANGELOG.md`
+
+### Version 6.5.1  Dec 18, 2025
+
+- **Worm Arena Skill Analysis: UI polish + baseline selection improvements** (Author: Cascade)
+  - Removed the busy top-of-page stats strip and moved the TrueSkill leaderboard below the main 3-column analysis grid.
+  - Moved the "Why TrueSkill?" explainer into a thin, centered strip at the top of the page (expandable), instead of a large block at the bottom.
+  - TrueSkill leaderboard now supports sticky headers reliably and allows row-click selection to set the baseline (highlighted selection).
+  - Hero graphic now uses Worm Arena typography, shows a clear "Model Snapshot [model]" heading, adds Games/Wins/Losses/Ties/Cost stat boxes, and tightens the x-axis bounds to roughly align with the 99.7% interval story.
+  - **Files Modified**:
+    - `client/src/pages/WormArenaSkillAnalysis.tsx`
+    - `client/src/components/WormArenaTrueSkillLeaderboard.tsx`
+    - `client/src/components/wormArena/stats/WormArenaSkillHeroGraphic.tsx`
+    - `CHANGELOG.md`
+
+- **Gemini 3 Flash Preview routing parity** (Author: Codex)
+  - Added the native `gemini-3-flash-preview` key to the Gemini service map and primary model catalog so the low-latency thinking tier is exposed to prompt selection and analytics.
+  - Mirrored the slug across the shared model list, OpenRouter builder, and catalog (plus metadata) so BYO paths can reach the same fast reasoning model with up-to-date context/pricing data.
+  - **Files Modified**:
+    - `server/services/gemini.ts`
+    - `server/config/models.ts`
+    - `server/config/openrouterModels.ts`
+    - `server/config/openrouter-catalog.json`
+    - `CHANGELOG.md`
+
+### Version 6.5.0  Dec 17, 2025
+
+- **Worm Arena Skill Analysis: baseline picker + layout refresh** (Author: Cascade)
+  - The reference model slug in the top-right snapshot is now a button: click it to clear the baseline and re-open the baseline model picker list (sorted by games played).
+  - Widened the Skill Analysis layout so the left-side Models list card has enough room and no longer looks clipped.
+  - **Files Modified**:
+    - `client/src/components/wormArena/stats/WormArenaModelSnapshotCard.tsx`
+    - `client/src/pages/WormArenaSkillAnalysis.tsx`
+    - `CHANGELOG.md`
+
+### Version 6.4.11  Dec 17, 2025
+
+- **Worm Arena Skill Analysis: bell curve chart containment + layout fixes (match reference)** (Author: Cascade)
+  - Bell curve SVG now reserves top/bottom margins so curves, labels, and axis ticks stay inside the poster.
+  - Uses a wider ±4σ range and stable integer axis bounds so tails taper naturally instead of feeling clipped.
+  - Adds a dashed vertical line at the selected model's μ and offsets labels to avoid overlap when models are close.
+  - **Files Modified**:
+    - `client/src/components/wormArena/stats/WormArenaSkillHeroGraphic.tsx`
+    - `CHANGELOG.md`
+
+### Version 6.4.10  Dec 17, 2025
+
+- **Worm Arena Skill Analysis: include ALL games (stop filtering by game_type) so model graph populates** (Author: Cascade)
+  - Fixes the Skill Analysis page appearing empty when replays are labeled `ladder` (or other upstream types).
+  - SnakeBench analytics queries (stats/TrueSkill leaderboard/model rating) now count all games, regardless of `public.games.game_type`.
+  - Replay ingest supports a `gameTypeOverride` so ARC Explainer can standardize the stored `game_type` going forward.
+  - **Files Modified**:
+    - `server/repositories/SnakeBenchRepository.ts`
+    - `CHANGELOG.md`
+
+### Version 6.4.9  Dec 17, 2025
+
+- **Worm Arena Skill Analysis: reuse Stats & Placement components (global stats, leaderboard, reference placement)** (Author: Cascade)
+  - Skill Analysis page now reuses the same shared stats modules as the Stats & Placement page:
+    - Adds `WormArenaGlobalStatsStrip` and `WormArenaTrueSkillLeaderboard` above the existing 3-column skill analysis layout.
+    - When a reference model is selected, the right column now shows `WormArenaPlacementCard` beneath the reference snapshot.
+  - Fixes Skill Analysis header total games to use global stats instead of a hardcoded `0`.
+  - **Files Modified**:
+    - `client/src/pages/WormArenaSkillAnalysis.tsx`
+    - `CHANGELOG.md`
+
+### Version 6.4.8  Dec 17, 2025
+
+- **Worm Arena Skill Analysis: unified hero graphic matching TikZ reference design** (Author: Cascade)
+  - Created `WormArenaSkillHeroGraphic.tsx` — a single unified "poster" component that draws:
+    - Top row: "Skill estimate μ" and "Uncertainty σ" headers with large blue pills and descriptive text
+    - Middle: "99.7% Confidence Interval" with red (pessimistic) and green (optimistic) pills connected by a dash, plus explanatory KaTeX formula
+    - Bottom: Overlapping SVG bell curves — gray filled reference curve behind, blue filled current curve in front, with model labels positioned above peaks
+  - Removed separate `WormArenaSkillMetrics` and `WormArenaSkillDistributionChart` from center column.
+  - Center column is now borderless (no Card chrome) — reads as one clean poster graphic.
+  - Typography uses Georgia serif for headers matching the reference.
+  - **Files Created**:
+    - `client/src/components/wormArena/stats/WormArenaSkillHeroGraphic.tsx`
+  - **Files Modified**:
+    - `client/src/pages/WormArenaSkillAnalysis.tsx`
+    - `CHANGELOG.md`
+
+### Version 6.4.7  Dec 17, 2025
+
+- **Worm Arena Skill Analysis: finished wiring + chart polish (URL selection, KaTeX math, visible axis/ticks)** (Author: Cascade)
+  - Skill Analysis page (`/worm-arena/skill-analysis`) now drives selected model + reference model via URL query params (`?model=...&reference=...`).
+  - Ratings on the Skill Analysis page now reliably load by explicitly calling `useModelRating().refresh()` when selection changes.
+  - KaTeX math rendering (`InlineMath`) is used consistently for μ/σ/± copy, with KaTeX CSS loaded on the page.
+  - Bell curve chart no longer clips tick labels; adds axis label and displays hover readout as density (not a misleading percent).
+  - Worm Arena navigation now includes a "Skill Analysis" tab on Replay/Live/Matches/Stats pages.
+  - **Files Modified**:
+    - `client/src/pages/WormArenaSkillAnalysis.tsx`
+    - `client/src/components/wormArena/stats/WormArenaSkillDistributionChart.tsx`
+    - `client/src/components/wormArena/stats/WormArenaSkillMetrics.tsx`
+    - `client/src/components/wormArena/stats/WormArenaSkillSelector.tsx`
+    - `client/src/pages/WormArena.tsx`
+    - `client/src/pages/WormArenaLive.tsx`
+    - `client/src/pages/WormArenaMatches.tsx`
+    - `client/src/pages/WormArenaStats.tsx`
+    - `CHANGELOG.md`
+
+### Version 6.4.6  Dec 17, 2025
+
+- **HuggingFace union accuracy SRP/DRY refactor (shared compare service + auto-fetch hook + shared union UI)** (Author: Cascade)
+  - `/scoring` refactored from a 1000+ line page into a small orchestration component composed of focused sections.
+  - Introduced a shared `/api/metrics/compare` client service to centralize request-building, fetch, and error parsing.
+  - Added a dedicated `useAttemptUnionComparison` hook using `@tanstack/react-query` so `/scoring` auto-fetches on dataset/model pair change.
+  - Extracted `AttemptUnionCard` into a shared component and added a `variant` to preserve both dialog and `/scoring` presentations.
+  - Centralized dataset display-name mapping into `client/src/constants/datasets.ts` and updated consumers.
+  - **Files Created**:
+    - `client/src/services/metrics/compareService.ts`
+    - `client/src/hooks/useAttemptUnionComparison.ts`
+    - `client/src/components/analytics/AttemptUnionCard.tsx`
+    - `client/src/components/huggingFaceUnionAccuracy/UnionAccuracyHeader.tsx`
+    - `client/src/components/huggingFaceUnionAccuracy/UnionAccuracyControls.tsx`
+    - `client/src/components/huggingFaceUnionAccuracy/UnionAccuracyExplainers.tsx`
+    - `client/src/components/huggingFaceUnionAccuracy/ProviderSystemPromptsPanel.tsx`
+    - `client/src/components/huggingFaceUnionAccuracy/HarnessDetailsAccordion.tsx`
+    - `client/src/constants/datasets.ts`
+  - **Files Modified**:
+    - `client/src/pages/HuggingFaceUnionAccuracy.tsx`
+    - `client/src/pages/ModelComparisonPage.tsx`
+    - `client/src/components/analytics/ModelComparisonDialog.tsx`
+    - `client/src/components/analytics/ModelPerformancePanel.tsx`
+    - `client/src/pages/AnalyticsOverview.tsx`
+    - `client/src/pages/ModelBrowser.tsx`
+    - `client/src/components/analytics/AttemptUnionCard.tsx`
+    - `CHANGELOG.md`
+
 ### Version 6.4.5  Dec 16, 2025
 
 - **Union accuracy UI: stable denominators for “Puzzles solved” and “Test pairs”** (Author: Cascade)

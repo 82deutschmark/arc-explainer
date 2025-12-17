@@ -1,10 +1,17 @@
 /*
+
  * Author: Codex (GPT-5.1 Codex CLI)
- * Date: 2025-12-17
+
+ * Date: 2025-12-18
+
  * PURPOSE: Build OpenRouter ModelConfig entries from the openrouter-catalog.json source of truth.
- *          Keeps OpenRouter model metadata synchronized with the published catalog and applies
+
+ *          Keeps OpenRouter model metadata synchronized with the published catalog, including the Gemini 3 Flash Preview release, and applies
+
  *          a small set of overrides for known behavior flags (streaming/structured output).
+
  * SRP/DRY check: Pass - isolates OpenRouter catalog loading and mapping logic.
+
  */
 
 import fs from 'fs';
@@ -49,6 +56,8 @@ const OPENROUTER_MODEL_KEYS: string[] = [
   'google/gemini-2.5-flash-lite-preview-09-2025',
   'google/gemini-2.5-flash-preview-09-2025',
   'google/gemini-3-pro-preview',
+  // Include the new Gemini 3 Flash Preview slug so the catalog stays aligned with the native provider listing.
+  'google/gemini-3-flash-preview',
   'google/gemma-3n-e2b-it:free',
   'kwaipilot/kat-coder-pro:free',
   'meta-llama/llama-3.3-70b-instruct',
