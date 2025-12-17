@@ -1,5 +1,23 @@
 # New entires at the top, use proper SemVer!
 
+### Version 6.5.3  Dec 17, 2025
+
+- **Worm Arena Skill Analysis: role-based color normalization** (Author: GPT-5.2-Medium-Reasoning)
+  - Color coordinated the entire Skill Analysis flow so compare model UI is blue and baseline model UI is red.
+  - Model lists, snapshot cards, and the TrueSkill leaderboard picker now highlight selections using the correct role color (no green selection state).
+  - Poster View hero now renders the baseline curve in red and shows both models' skill estimate and uncertainty values in role colors.
+  - **Files Modified**:
+    - `client/src/index.css`
+    - `client/src/utils/wormArenaRoleColors.ts`
+    - `client/src/components/wormArena/DataNumber.tsx`
+    - `client/src/components/wormArena/stats/WormArenaModelListCard.tsx`
+    - `client/src/components/wormArena/stats/WormArenaModelSnapshotCard.tsx`
+    - `client/src/components/wormArena/stats/WormArenaSkillHeroGraphic.tsx`
+    - `client/src/components/WormArenaTrueSkillLeaderboard.tsx`
+    - `client/src/pages/WormArenaSkillAnalysis.tsx`
+    - `package.json`
+    - `CHANGELOG.md`
+
 ### Version 6.5.2  Dec 17, 2025
 
 - **Worm Arena Skill Analysis: Comparison View polish + regression hardening** (Author: GPT-5.2-Medium-Reasoning)

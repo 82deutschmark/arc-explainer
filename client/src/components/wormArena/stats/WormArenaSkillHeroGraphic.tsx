@@ -4,6 +4,8 @@
  * PURPOSE: Single unified "poster" graphic for the Skill Analysis page. Draws the reference
  *          design: skill estimate + uncertainty pills at top, 99.7% CI section in middle,
  *          and overlapping bell curves (rendered near the top so it sits directly under the view tabs).
+ *          Updated to keep role-based colors consistent (compare=blue, baseline=red) and to
+ *          display both models' skill estimate and uncertainty values.
  *          Chart math uses explicit top/bottom margins so the curve, labels, and x-axis
  *          are fully contained (no overflow bleed) and match the reference layout.
  * SRP/DRY check: Pass — single responsibility for the hero graphic composition.
@@ -385,7 +387,7 @@ export default function WormArenaSkillHeroGraphic({
         </div>
 
         <div className="text-sm" style={{ color: LABEL_GRAY }}>
-          99.7% of the time, the model will demonstrate skill within this interval.
+          99.7% of the time, we expect the model to demonstrate skill within this interval.
         </div>
         <div className="text-sm mt-1" style={{ color: LABEL_GRAY }}>
           (Calculated as <InlineMath math="\mu \pm 3\sigma" />)
