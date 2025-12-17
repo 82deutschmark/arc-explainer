@@ -1,5 +1,16 @@
 # New entires at the top, use proper SemVer!
 
+### Version 6.4.9  Dec 17, 2025
+
+- **Worm Arena Skill Analysis: reuse Stats & Placement components (global stats, leaderboard, reference placement)** (Author: Cascade)
+  - Skill Analysis page now reuses the same shared stats modules as the Stats & Placement page:
+    - Adds `WormArenaGlobalStatsStrip` and `WormArenaTrueSkillLeaderboard` above the existing 3-column skill analysis layout.
+    - When a reference model is selected, the right column now shows `WormArenaPlacementCard` beneath the reference snapshot.
+  - Fixes Skill Analysis header total games to use global stats instead of a hardcoded `0`.
+  - **Files Modified**:
+    - `client/src/pages/WormArenaSkillAnalysis.tsx`
+    - `CHANGELOG.md`
+
 ### Version 6.4.8  Dec 17, 2025
 
 - **Worm Arena Skill Analysis: unified hero graphic matching TikZ reference design** (Author: Cascade)
