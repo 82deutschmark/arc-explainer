@@ -1,5 +1,33 @@
 # New entires at the top, use proper SemVer!
 
+### Version 6.4.6  Dec 17, 2025
+
+- **HuggingFace union accuracy SRP/DRY refactor (shared compare service + auto-fetch hook + shared union UI)** (Author: Cascade)
+  - `/scoring` refactored from a 1000+ line page into a small orchestration component composed of focused sections.
+  - Introduced a shared `/api/metrics/compare` client service to centralize request-building, fetch, and error parsing.
+  - Added a dedicated `useAttemptUnionComparison` hook using `@tanstack/react-query` so `/scoring` auto-fetches on dataset/model pair change.
+  - Extracted `AttemptUnionCard` into a shared component and added a `variant` to preserve both dialog and `/scoring` presentations.
+  - Centralized dataset display-name mapping into `client/src/constants/datasets.ts` and updated consumers.
+  - **Files Created**:
+    - `client/src/services/metrics/compareService.ts`
+    - `client/src/hooks/useAttemptUnionComparison.ts`
+    - `client/src/components/analytics/AttemptUnionCard.tsx`
+    - `client/src/components/huggingFaceUnionAccuracy/UnionAccuracyHeader.tsx`
+    - `client/src/components/huggingFaceUnionAccuracy/UnionAccuracyControls.tsx`
+    - `client/src/components/huggingFaceUnionAccuracy/UnionAccuracyExplainers.tsx`
+    - `client/src/components/huggingFaceUnionAccuracy/ProviderSystemPromptsPanel.tsx`
+    - `client/src/components/huggingFaceUnionAccuracy/HarnessDetailsAccordion.tsx`
+    - `client/src/constants/datasets.ts`
+  - **Files Modified**:
+    - `client/src/pages/HuggingFaceUnionAccuracy.tsx`
+    - `client/src/pages/ModelComparisonPage.tsx`
+    - `client/src/components/analytics/ModelComparisonDialog.tsx`
+    - `client/src/components/analytics/ModelPerformancePanel.tsx`
+    - `client/src/pages/AnalyticsOverview.tsx`
+    - `client/src/pages/ModelBrowser.tsx`
+    - `client/src/components/analytics/AttemptUnionCard.tsx`
+    - `CHANGELOG.md`
+
 ### Version 6.4.5  Dec 16, 2025
 
 - **Union accuracy UI: stable denominators for “Puzzles solved” and “Test pairs”** (Author: Cascade)

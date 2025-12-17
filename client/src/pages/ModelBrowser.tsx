@@ -1,6 +1,6 @@
 /**
  * Author: Buffy the Base Agent
- * Date: 2025-10-08T00:12:00Z
+ * Date: 2025-10-08T00:12:00Z (updated 2025-12-17)
  * PURPOSE: Model Browser showing one model's results across all puzzles in a dataset (mirrors AnalyticsOverview UI).
  * Adds: Clicking a PuzzleID in Not Attempted triggers analyze+save with the selected model using the standard solver prompt.
  * SRP/DRY check: Pass - Single responsibility page, reuses existing hooks/components (shadcn/ui, ClickablePuzzleBadge, performance hooks).
@@ -17,15 +17,7 @@ import { getPuzzleName } from '@shared/utils/puzzleNames';
 import { apiRequest } from '@/lib/queryClient';
 import { useAnalysisStreaming } from '@/hooks/useAnalysisStreaming';
 import { isStreamingEnabled } from '@shared/config/streaming';
-
-const DATASET_DISPLAY_NAME_MAP: Record<string, string> = {
-  evaluation: 'ARC1-Eval',
-  training: 'ARC1-Train',
-  evaluation2: 'ARC2-Eval',
-  training2: 'ARC2-Train',
-  'arc-heavy': 'ARC-Heavy',
-  'concept-arc': 'ConceptARC'
-};
+ import { getDatasetDisplayName } from '@/constants/datasets';
 
 type DatasetOption = DatasetInfo & { displayName: string };
 
@@ -53,7 +45,7 @@ export default function ModelBrowser() {
   const { performance, loading: loadingPerformance } = useModelDatasetPerformance(selectedModel || null, selectedDataset || null, refreshKey);
 
   const datasetOptions: DatasetOption[] = useMemo(() => (
-    availableDatasets.map(d => ({ ...d, displayName: DATASET_DISPLAY_NAME_MAP[d.name] ?? d.name }))
+    availableDatasets.map(d => ({ ...d, displayName: getDatasetDisplayName(d.name) }))
   ), [availableDatasets]);
 
   // Prefer ARC2-Eval then first dataset
