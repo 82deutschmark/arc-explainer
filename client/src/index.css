@@ -194,6 +194,13 @@
     color: #7a1f0f;
   }
 
+  .worm-pill-baseline {
+    @apply inline-flex items-baseline rounded-md border font-extrabold leading-tight;
+    background: rgba(30, 86, 49, 0.12);
+    border-color: #1E5631;
+    color: #1E5631;
+  }
+
   .worm-pill-neutral {
     @apply inline-flex items-baseline rounded-md border font-bold;
     background: rgba(255, 255, 255, 0.8);
