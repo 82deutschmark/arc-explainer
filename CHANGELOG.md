@@ -3,7 +3,55 @@
 # PURPOSE: Ensure the changelog captures the new chat session menu enablement and related documentation.
 # SRP/DRY check: Pass - this entry documents the specific change without altering historical records.
 
-# New entires at the top, use proper SemVer! ŠYoYŠYoYŠYoYŠYoY 
+# New entires at the top, use proper SemVer!
+
+### Version 6.6.7  Dec 18, 2025
+
+- **Worm Arena Live: Enlarged game board by reducing padding/margins** (Author: Cascade)
+  - **WormArenaLiveBoardPanel.tsx**: Reduced container padding (px-4 py-4 -> px-2 py-2), tighter title margin
+  - **WormArenaGameBoard.tsx**: 
+    - Reduced border from 8px to 4px
+    - Reduced internal padding from 16px to 8px
+    - Reduced label margins for more board space
+    - Increased max board height (520px -> 600px) and cell size limits (56px -> 64px)
+    - Minimum cell size increased (16px -> 18px) for better visibility
+  - Result: Same page footprint but significantly larger visible game grid
+  - **Files Modified**:
+    - `client/src/components/WormArenaLiveBoardPanel.tsx`
+    - `client/src/components/WormArenaGameBoard.tsx`
+    - `CHANGELOG.md`
+
+- **Worm Arena: TrueSkill Stats Integration Plan** (Author: Cascade)
+  - Created comprehensive implementation plan for enhancing Live page with TrueSkill data
+  - Documents existing architecture, data flow, and reusable components
+  - Outlines 3-phase approach: pre-match stats strip, live scoreboard enhancement, post-match context
+  - Written as developer-to-developer handoff document
+  - **Files Created**:
+    - `docs/plans/2025-12-18-worm-arena-live-stats-integration-plan.md`
+
+### Version 6.6.6  Dec 18, 2025
+
+- **Worm Arena: Redesigned header and scoreboard with stacked/centered layout** (Author: Cascade)
+  - **WormArenaHeader.tsx**: Complete redesign with:
+    - Stacked, centered layout instead of left-aligned
+    - Larger typography (4xl/5xl title)
+    - Pill-style navigation buttons with clear affordances
+    - Active state: solid background, inactive: transparent with border
+    - Hover effect: lift + shadow for better UX feedback
+  - **WormArenaLiveScoreboard.tsx**: Enhanced scoreboard with:
+    - Larger apple score pills with winning player scale animation
+    - Model names displayed prominently with color coding (green/blue)
+    - Worm emoji icons for visual appeal
+    - Centered three-column layout (Player A / VS / Player B)
+  - **index.css**: Added new CSS classes for pill-style nav buttons:
+    - `.worm-header-title-text` for centered title
+    - `.worm-header-nav-active` for active nav pill
+    - `.worm-header-nav-inactive` for inactive nav pill with hover states
+  - **Files Modified**:
+    - `client/src/components/WormArenaHeader.tsx`
+    - `client/src/components/WormArenaLiveScoreboard.tsx`
+    - `client/src/index.css`
+    - `CHANGELOG.md`
 
 ### Version 6.6.5  Dec 18, 2025
 

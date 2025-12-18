@@ -249,6 +249,8 @@ export default function WormArenaLive() {
         const available = new Set(selectableModels);
         if (available.has(modelA) && available.has(modelB)) {
           handleRunMatch();
+        } else {
+          setLaunchNotice('Selected models are not available. Please try another matchup.');
         }
       }, 0);
     },
