@@ -1,8 +1,9 @@
 /**
- * Author: Codex (GPT-5)
- * Date: 2025-12-19
- * PURPOSE: Ultra-compact Worm Arena apple scoreboard that stays above the live board
- *          without crowding the viewport (roughly 50% shorter than the previous design).
+ * Author: Cascade
+ * Date: 2025-12-18
+ * PURPOSE: Enhanced Worm Arena apple scoreboard with larger typography, centered layout,
+ *          and visual styling that matches the redesigned WormArenaHeader. Shows model
+ *          names prominently with apple scores in pill-style badges.
  * SRP/DRY check: Pass - renders only the apple score strip with no streaming/state logic.
  */
 
@@ -23,25 +24,73 @@ export default function WormArenaLiveScoreboard({
   playerAScore,
   playerBScore,
 }: WormArenaLiveScoreboardProps) {
-  const renderEntry = (label: string, score: number, accentClass: string) => (
-    <div className="flex flex-col items-center gap-0.5 px-3">
-      <div className={`text-[11px] font-semibold uppercase tracking-wide ${accentClass}`}>{label}</div>
-      <div className="text-2xl font-bold text-worm-ink flex items-center gap-1.5 leading-none">
-        {Math.max(0, Number(score) || 0)}
-        <span aria-hidden="true" className="text-xl">
-          {APPLE_ICON}
-        </span>
+  // Determine who's winning for visual emphasis
+  const aWinning = playerAScore > playerBScore;
+  const bWinning = playerBScore > playerAScore;
+
+  const renderPlayer = (
+    name: string,
+    score: number,
+    color: 'green' | 'blue',
+    isWinning: boolean,
+  ) => {
+    const colorClasses = color === 'green'
+      ? 'bg-green-600 text-white border-green-700'
+      : 'bg-blue-600 text-white border-blue-700';
+    const nameColor = color === 'green' ? 'text-green-700' : 'text-blue-700';
+    const wormIcon = color === 'green' ? String.fromCodePoint(0x1F40C) : String.fromCodePoint(0x1F41B);
+
+    return (
+      <div className="flex flex-col items-center gap-2 flex-1 min-w-0">
+        {/* Model name - truncated if long */}
+        <div className={`text-sm md:text-base font-bold uppercase tracking-wide truncate max-w-full px-2 ${nameColor}`}>
+          {name}
+        </div>
+
+        {/* Apple score pill */}
+        <div
+          className={`
+            flex items-center gap-2 px-5 py-2 rounded-full border-2 shadow-md
+            transition-transform duration-200
+            ${colorClasses}
+            ${isWinning ? 'scale-110 shadow-lg' : ''}
+          `}
+        >
+          <span className="text-2xl md:text-3xl font-bold tabular-nums">
+            {Math.max(0, Number(score) || 0)}
+          </span>
+          <span className="text-xl md:text-2xl" aria-hidden="true">
+            {APPLE_ICON}
+          </span>
+        </div>
+
+        {/* Worm icon under score */}
+        <span className="text-2xl" aria-hidden="true">{wormIcon}</span>
       </div>
-    </div>
-  );
+    );
+  };
 
   return (
-    <div className="rounded-2xl border-2 worm-border bg-white shadow-sm px-4 py-2 flex flex-col gap-1.5">
-      <div className="text-[11px] font-bold uppercase tracking-wide text-muted-foreground">Apple score</div>
-      <div className="flex items-center justify-between gap-4">
-        {renderEntry(playerAName, playerAScore, 'text-green-700')}
-        <div className="text-[11px] font-bold uppercase tracking-[0.35em] text-worm-ink/80">vs</div>
-        {renderEntry(playerBName, playerBScore, 'text-blue-700')}
+    <div className="rounded-2xl border-2 worm-border bg-white/95 shadow-lg px-6 py-4">
+      {/* Header label */}
+      <div className="text-center mb-3">
+        <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
+          Apple Score
+        </span>
+      </div>
+
+      {/* Score display - three column layout */}
+      <div className="flex items-center justify-center gap-4 md:gap-8">
+        {renderPlayer(playerAName, playerAScore, 'green', aWinning)}
+
+        {/* VS divider */}
+        <div className="flex flex-col items-center gap-1 px-2">
+          <span className="text-lg md:text-xl font-black tracking-widest text-worm-ink/60">
+            VS
+          </span>
+        </div>
+
+        {renderPlayer(playerBName, playerBScore, 'blue', bWinning)}
       </div>
     </div>
   );
