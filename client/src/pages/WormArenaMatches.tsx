@@ -230,7 +230,7 @@ export default function WormArenaMatches() {
   return (
     <div className="worm-page">
       <WormArenaHeader
-        totalGames={total}
+        compact
         links={[
           { label: 'Replay', href: '/worm-arena' },
           { label: 'Live', href: '/worm-arena/live' },
@@ -239,231 +239,245 @@ export default function WormArenaMatches() {
           { label: 'Skill Analysis', href: '/worm-arena/skill-analysis' },
         ]}
         showMatchupLabel={false}
-        subtitle="Focus on the longest Worm Arena battles"
+        subtitle="Greatest Hits"
       />
 
-      <main className="p-6 max-w-7xl mx-auto space-y-6">
+      <main className="p-4 md:p-6 max-w-7xl mx-auto space-y-6">
+        {/* Greatest Hits - prominently featured at top */}
+        <WormArenaGreatestHits />
+
+        {/* Advanced Search - collapsible for power users */}
         <Card className="worm-card">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-lg font-bold text-worm-ink">Filters</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-3">
-              <div className="space-y-1">
-                <div className="text-xs font-semibold text-muted-foreground">Model (required)</div>
-                <Select value={draftFilters.model} onValueChange={(value) => updateDraft({ model: value })}>
-                  <SelectTrigger className="worm-input">
-                    <SelectValue placeholder="Select a model" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {availableModels.map((m) => (
-                      <SelectItem key={m} value={m}>
-                        {m}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-1">
-                <div className="text-xs font-semibold text-muted-foreground">Opponent contains</div>
-                <Input
-                  className="worm-input"
-                  value={draftFilters.opponent}
-                  onChange={(e) => updateDraft({ opponent: e.target.value })}
-                />
-              </div>
-
-              <div className="space-y-1">
-                <div className="text-xs font-semibold text-muted-foreground">Result</div>
-                <Select value={draftFilters.result} onValueChange={(value) => updateDraft({ result: value as any })}>
-                  <SelectTrigger className="worm-input">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="any">any</SelectItem>
-                    <SelectItem value="won">won</SelectItem>
-                    <SelectItem value="lost">lost</SelectItem>
-                    <SelectItem value="tied">tied</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-1">
-                <div className="flex items-center justify-between text-xs font-semibold text-muted-foreground">
-                  <span>Min rounds (long games)</span>
-                  <span className="font-normal text-[11px]">Long matches = max drama.</span>
+          <Accordion type="single" collapsible className="w-full">
+            <AccordionItem value="search" className="border-b-0">
+              <AccordionTrigger className="px-4 py-3 hover:no-underline">
+                <div className="flex items-center gap-3">
+                  <span className="text-lg font-bold text-worm-ink">Advanced Search</span>
+                  <span className="text-sm worm-muted">Find specific matchups by model, opponent, rounds, cost</span>
                 </div>
-                <Input
-                  className="worm-input"
-                  value={draftFilters.minRounds}
-                  onChange={(e) => updateDraft({ minRounds: e.target.value })}
-                  inputMode="numeric"
-                />
-                <div className="flex flex-wrap items-center gap-2 pt-1">
-                  {LONG_MATCH_PRESETS.map((preset) => {
-                    const active = preset.minRounds === activePreset;
-                    return (
-                      <Button
-                        key={preset.minRounds}
-                        type="button"
-                        size="sm"
-                        variant={active ? 'default' : 'outline'}
-                        onClick={() => updateDraft({ minRounds: preset.minRounds })}
+              </AccordionTrigger>
+              <AccordionContent className="px-4 pb-4">
+                <div className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-3">
+                    <div className="space-y-1">
+                      <div className="text-xs font-semibold text-muted-foreground">Model (required)</div>
+                      <Select value={draftFilters.model} onValueChange={(value) => updateDraft({ model: value })}>
+                        <SelectTrigger className="worm-input">
+                          <SelectValue placeholder="Select a model" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {availableModels.map((m) => (
+                            <SelectItem key={m} value={m}>
+                              {m}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div className="space-y-1">
+                      <div className="text-xs font-semibold text-muted-foreground">Opponent contains</div>
+                      <Input
+                        className="worm-input"
+                        value={draftFilters.opponent}
+                        onChange={(e) => updateDraft({ opponent: e.target.value })}
+                      />
+                    </div>
+
+                    <div className="space-y-1">
+                      <div className="text-xs font-semibold text-muted-foreground">Result</div>
+                      <Select value={draftFilters.result} onValueChange={(value) => updateDraft({ result: value as any })}>
+                        <SelectTrigger className="worm-input">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="any">any</SelectItem>
+                          <SelectItem value="won">won</SelectItem>
+                          <SelectItem value="lost">lost</SelectItem>
+                          <SelectItem value="tied">tied</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div className="space-y-1">
+                      <div className="text-xs font-semibold text-muted-foreground">Min rounds</div>
+                      <Input
+                        className="worm-input"
+                        value={draftFilters.minRounds}
+                        onChange={(e) => updateDraft({ minRounds: e.target.value })}
+                        inputMode="numeric"
+                        placeholder="e.g. 50"
+                      />
+                      <div className="flex flex-wrap items-center gap-1.5 pt-1">
+                        {LONG_MATCH_PRESETS.map((preset) => {
+                          const active = preset.minRounds === activePreset;
+                          return (
+                            <Button
+                              key={preset.minRounds}
+                              type="button"
+                              size="sm"
+                              variant={active ? 'default' : 'outline'}
+                              className="text-xs px-2 py-1 h-auto"
+                              onClick={() => updateDraft({ minRounds: preset.minRounds })}
+                            >
+                              {preset.label}
+                            </Button>
+                          );
+                        })}
+                        <Button
+                          type="button"
+                          size="sm"
+                          variant="ghost"
+                          className="text-xs px-2 py-1 h-auto"
+                          onClick={() => updateDraft({ minRounds: '' })}
+                          disabled={!draftFilters.minRounds.trim()}
+                        >
+                          Clear
+                        </Button>
+                      </div>
+                    </div>
+
+                    <div className="space-y-1">
+                      <div className="text-xs font-semibold text-muted-foreground">From (ISO or ms)</div>
+                      <Input
+                        className="worm-input"
+                        value={draftFilters.from}
+                        onChange={(e) => updateDraft({ from: e.target.value })}
+                      />
+                    </div>
+
+                    <div className="space-y-1">
+                      <div className="text-xs font-semibold text-muted-foreground">To (ISO or ms)</div>
+                      <Input
+                        className="worm-input"
+                        value={draftFilters.to}
+                        onChange={(e) => updateDraft({ to: e.target.value })}
+                      />
+                    </div>
+
+                    <div className="space-y-1">
+                      <div className="text-xs font-semibold text-muted-foreground">Sort</div>
+                      <div className="grid grid-cols-2 gap-2">
+                        <Select value={draftFilters.sortBy} onValueChange={(value) => updateDraft({ sortBy: value as any })}>
+                          <SelectTrigger className="worm-input">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="startedAt">startedAt</SelectItem>
+                            <SelectItem value="rounds">rounds</SelectItem>
+                            <SelectItem value="totalCost">totalCost</SelectItem>
+                            <SelectItem value="maxFinalScore">maxFinalScore</SelectItem>
+                            <SelectItem value="scoreDelta">scoreDelta</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <Select value={draftFilters.sortDir} onValueChange={(value) => updateDraft({ sortDir: value as any })}>
+                          <SelectTrigger className="worm-input">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="desc">desc</SelectItem>
+                            <SelectItem value="asc">asc</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+
+                    <div className="space-y-1">
+                      <div className="text-xs font-semibold text-muted-foreground">Page size</div>
+                      <Select
+                        value={String(draftFilters.limit)}
+                        onValueChange={(value) => updateDraft({ limit: Number(value) })}
                       >
-                        {preset.label}
-                      </Button>
-                    );
-                  })}
-                  <Button
-                    type="button"
-                    size="sm"
-                    variant="ghost"
-                    onClick={() => updateDraft({ minRounds: '' })}
-                    disabled={!draftFilters.minRounds.trim()}
-                  >
-                    Clear
-                  </Button>
+                        <SelectTrigger className="worm-input">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="25">25</SelectItem>
+                          <SelectItem value="50">50</SelectItem>
+                          <SelectItem value="100">100</SelectItem>
+                          <SelectItem value="200">200</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+
+                  <div className="flex flex-wrap items-center gap-3">
+                    <Button onClick={handleApply} disabled={!draftFilters.model || isLoading}>
+                      Search
+                    </Button>
+                    <div className="text-sm text-muted-foreground">{isLoading ? 'Loading...' : rangeLabel}</div>
+                    {error && <div className="text-sm text-red-600">{error}</div>}
+                  </div>
+
+                  {/* Search results table */}
+                  {appliedFilters && (
+                    <div className="mt-4 pt-4 border-t worm-border">
+                      <div className="flex items-center justify-between gap-3 mb-3">
+                        <div className="text-sm font-semibold text-worm-ink">Search Results</div>
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs worm-muted">{rangeLabel}</span>
+                          <Button variant="outline" size="sm" onClick={handlePrev} disabled={!canPrev || isLoading}>
+                            Prev
+                          </Button>
+                          <Button variant="outline" size="sm" onClick={handleNext} disabled={!canNext || isLoading}>
+                            Next
+                          </Button>
+                        </div>
+                      </div>
+
+                      <div className="overflow-x-auto">
+                        <Table>
+                          <TableHeader>
+                            <TableRow>
+                              <TableHead className="whitespace-nowrap text-xs">Date</TableHead>
+                              <TableHead className="text-xs">Opponent</TableHead>
+                              <TableHead className="text-xs">Result</TableHead>
+                              <TableHead className="text-right text-xs">Score</TableHead>
+                              <TableHead className="text-right text-xs">Rounds</TableHead>
+                              <TableHead className="text-right text-xs">Cost</TableHead>
+                              <TableHead className="text-xs">Replay</TableHead>
+                            </TableRow>
+                          </TableHeader>
+                          <TableBody>
+                            {rows.map((r) => {
+                              const replayHref = `/worm-arena?matchId=${encodeURIComponent(r.gameId)}`;
+                              const scoreLabel = `${r.myScore}-${r.opponentScore}`;
+                              return (
+                                <TableRow key={r.gameId}>
+                                  <TableCell className="whitespace-nowrap text-xs">
+                                    {r.startedAt ? new Date(r.startedAt).toLocaleDateString() : ''}
+                                  </TableCell>
+                                  <TableCell className="font-mono text-xs max-w-[200px] truncate" title={r.opponent}>
+                                    {r.opponent}
+                                  </TableCell>
+                                  <TableCell className="text-xs">{formatResult(r.result)}</TableCell>
+                                  <TableCell className="text-right font-mono text-xs">{scoreLabel}</TableCell>
+                                  <TableCell className="text-right font-mono text-xs">{r.roundsPlayed}</TableCell>
+                                  <TableCell className="text-right font-mono text-xs">${r.totalCost.toFixed(2)}</TableCell>
+                                  <TableCell>
+                                    <a className="underline text-xs text-worm-ink hover:text-worm-green" href={replayHref}>
+                                      View
+                                    </a>
+                                  </TableCell>
+                                </TableRow>
+                              );
+                            })}
+                            {rows.length === 0 && !isLoading && (
+                              <TableRow>
+                                <TableCell colSpan={7} className="text-sm text-muted-foreground">
+                                  No matches found.
+                                </TableCell>
+                              </TableRow>
+                            )}
+                          </TableBody>
+                        </Table>
+                      </div>
+                    </div>
+                  )}
                 </div>
-              </div>
-
-              <div className="space-y-1">
-                <div className="text-xs font-semibold text-muted-foreground">From (ISO or ms)</div>
-                <Input
-                  className="worm-input"
-                  value={draftFilters.from}
-                  onChange={(e) => updateDraft({ from: e.target.value })}
-                />
-              </div>
-
-              <div className="space-y-1">
-                <div className="text-xs font-semibold text-muted-foreground">To (ISO or ms)</div>
-                <Input
-                  className="worm-input"
-                  value={draftFilters.to}
-                  onChange={(e) => updateDraft({ to: e.target.value })}
-                />
-              </div>
-
-              <div className="space-y-1">
-                <div className="text-xs font-semibold text-muted-foreground">Sort</div>
-                <div className="grid grid-cols-2 gap-2">
-                  <Select value={draftFilters.sortBy} onValueChange={(value) => updateDraft({ sortBy: value as any })}>
-                    <SelectTrigger className="worm-input">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="startedAt">startedAt</SelectItem>
-                      <SelectItem value="rounds">rounds</SelectItem>
-                      <SelectItem value="totalCost">totalCost</SelectItem>
-                      <SelectItem value="maxFinalScore">maxFinalScore</SelectItem>
-                      <SelectItem value="scoreDelta">scoreDelta</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <Select value={draftFilters.sortDir} onValueChange={(value) => updateDraft({ sortDir: value as any })}>
-                    <SelectTrigger className="worm-input">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="desc">desc</SelectItem>
-                      <SelectItem value="asc">asc</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-
-              <div className="space-y-1">
-                <div className="text-xs font-semibold text-muted-foreground">Page size</div>
-                <Select
-                  value={String(draftFilters.limit)}
-                  onValueChange={(value) => updateDraft({ limit: Number(value) })}
-                >
-                  <SelectTrigger className="worm-input">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="25">25</SelectItem>
-                    <SelectItem value="50">50</SelectItem>
-                    <SelectItem value="100">100</SelectItem>
-                    <SelectItem value="200">200</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-
-            <div className="flex flex-wrap items-center gap-3">
-              <Button onClick={handleApply} disabled={!draftFilters.model || isLoading}>
-                Apply
-              </Button>
-              <div className="text-sm text-muted-foreground">{isLoading ? 'Loading...' : rangeLabel}</div>
-              {error && <div className="text-sm text-red-600">{error}</div>}
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="worm-card">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-lg font-bold text-worm-ink">Matches</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex items-center justify-between gap-3 mb-3">
-              <div className="text-sm text-muted-foreground">{rangeLabel}</div>
-              <div className="flex items-center gap-2">
-                <Button variant="outline" onClick={handlePrev} disabled={!canPrev || isLoading}>
-                  Prev
-                </Button>
-                <Button variant="outline" onClick={handleNext} disabled={!canNext || isLoading}>
-                  Next
-                </Button>
-              </div>
-            </div>
-
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="whitespace-nowrap">startedAt</TableHead>
-                  <TableHead>opponent</TableHead>
-                  <TableHead>result</TableHead>
-                  <TableHead className="text-right">score</TableHead>
-                  <TableHead className="text-right">rounds</TableHead>
-                  <TableHead className="text-right">cost</TableHead>
-                  <TableHead className="text-right">delta</TableHead>
-                  <TableHead>open</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {rows.map((r) => {
-                  const replayHref = `/worm-arena?matchId=${encodeURIComponent(r.gameId)}`;
-                  const scoreLabel = `${r.myScore}-${r.opponentScore}`;
-                  return (
-                    <TableRow key={r.gameId}>
-                      <TableCell className="whitespace-nowrap text-xs">
-                        {r.startedAt ? new Date(r.startedAt).toLocaleString() : ''}
-                      </TableCell>
-                      <TableCell className="font-mono text-xs">{r.opponent}</TableCell>
-                      <TableCell className="text-xs">{formatResult(r.result)}</TableCell>
-                      <TableCell className="text-right font-mono text-xs">{scoreLabel}</TableCell>
-                      <TableCell className="text-right font-mono text-xs">{r.roundsPlayed}</TableCell>
-                      <TableCell className="text-right font-mono text-xs">{r.totalCost.toFixed(4)}</TableCell>
-                      <TableCell className="text-right font-mono text-xs">{r.scoreDelta}</TableCell>
-                      <TableCell>
-                        <a className="underline text-xs" href={replayHref}>
-                          Replay
-                        </a>
-                      </TableCell>
-                    </TableRow>
-                  );
-                })}
-                {rows.length === 0 && !isLoading && (
-                  <TableRow>
-                    <TableCell colSpan={8} className="text-sm text-muted-foreground">
-                      No matches found.
-                    </TableCell>
-                  </TableRow>
-                )}
-              </TableBody>
-            </Table>
-          </CardContent>
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
         </Card>
       </main>
     </div>

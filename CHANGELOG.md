@@ -5,6 +5,25 @@
 
 # New entires at the top, use proper SemVer!
 
+### Version 6.6.8  Dec 18, 2025
+
+- **Worm Arena Matches: Redesigned as "Greatest Hits" showcase** (Author: Cascade)
+  - Page now leads with curated Greatest Hits matches prominently at top
+  - Advanced search filters moved to collapsible accordion for power users
+  - Uses compact header (~50% smaller footprint)
+  - Search results table is cleaner with better column sizing
+  - **Files Modified**:
+    - `client/src/pages/WormArenaMatches.tsx`
+    - `CHANGELOG.md`
+
+- **WormArenaHeader: Added compact mode** (Author: Cascade)
+  - New `compact` prop for ~50% smaller header footprint
+  - Compact mode: single-row layout with title + nav inline
+  - Title reduced from 4xl to xl, nav pills from text-sm to text-xs
+  - Standard mode unchanged (stacked, centered, large)
+  - **Files Modified**:
+    - `client/src/components/WormArenaHeader.tsx`
+
 ### Version 6.6.7  Dec 18, 2025
 
 - **Worm Arena Live: Enlarged game board by reducing padding/margins** (Author: Cascade)
