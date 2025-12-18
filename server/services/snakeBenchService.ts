@@ -13,6 +13,9 @@
  *          - List endpoints only return matches that have an available replay asset
  *            (local file, DB replay_path URL, or GitHub raw fallback). This prevents
  *            the UI from offering matches that cannot be replayed.
+ *          - Remote replay fetching is hardened for deployment: includes request headers,
+ *            follows redirects, supports a configurable timeout, and preserves the
+ *            underlying remote failure reason for API error responses.
  * SRP/DRY check: Pass — dedicated to SnakeBench subprocess handling and
  *                result shaping; reuses existing logging patterns.
  */
@@ -21,6 +24,7 @@ import { spawn, spawnSync, type SpawnOptions } from 'child_process';
 import fs from 'fs';
 import path from 'path';
 import https from 'https';
+import { URL } from 'url';
 
 import type {
   SnakeBenchRunMatchRequest,
@@ -1082,6 +1086,12 @@ export class SnakeBenchService {
       }
     }
 
+    // Keep a short trail of why remote fallbacks failed so deployment issues are diagnosable.
+    // This is especially important when the replay asset is known to exist (e.g. GitHub raw)
+    // but the hosting environment blocks outbound fetches or returns 403/429.
+    let remoteReplayError: string | null = null;
+    let rawReplayError: string | null = null;
+
     // Remote fetch fallback (e.g., Supabase public URL stored in replay_path)
     if (remoteReplayUrl) {
       try {
@@ -1089,6 +1099,7 @@ export class SnakeBenchService {
         return payload;
       } catch (err) {
         const message = err instanceof Error ? err.message : String(err);
+        remoteReplayError = message;
         logger.error(
           `Failed to fetch remote replay for SnakeBench game ${gameId} from ${remoteReplayUrl}: ${message}`,
           'snakebench-service',
@@ -1106,13 +1117,18 @@ export class SnakeBenchService {
       return payload;
     } catch (err) {
       const message = err instanceof Error ? err.message : String(err);
+      rawReplayError = message;
       logger.warn(
         `Failed to fetch GitHub raw replay for SnakeBench game ${gameId} from ${rawUrl}: ${message}`,
         'snakebench-service',
       );
     }
 
-    throw new Error(`Game not found: ${gameId}`);
+    const reasons: string[] = [];
+    if (remoteReplayError) reasons.push(`replay_path url failed: ${remoteReplayError}`);
+    if (rawReplayError) reasons.push(`github raw failed: ${rawReplayError}`);
+    const suffix = reasons.length ? ` (${reasons.join('; ')})` : '';
+    throw new Error(`Game not found: ${gameId}${suffix}`);
   }
 
   /**
@@ -1177,37 +1193,74 @@ export class SnakeBenchService {
   /**
    * Lightweight HTTPS JSON fetcher to retrieve remote replay assets (e.g., Supabase public URLs).
    */
-  private async fetchJsonFromUrl(url: string): Promise<any> {
-    return await new Promise((resolve, reject) => {
-      const req = https.get(url, (res) => {
-        const statusCode = res.statusCode ?? 0;
-        const chunks: Buffer[] = [];
-        res.on('data', (chunk) => chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk)));
-        res.on('end', () => {
-          const raw = Buffer.concat(chunks).toString('utf8');
+  private async fetchJsonFromUrl(url: string, redirectDepth: number = 0): Promise<any> {
+    // Some hosts (GitHub raw, CDNs) may return 301/302 redirects or require a User-Agent.
+    // This helper keeps the replay loading path deterministic across local dev and deployments.
+    const maxRedirects = 3;
+    if (redirectDepth > maxRedirects) {
+      throw new Error(`Too many redirects while fetching ${url}`);
+    }
 
-          // Improve failure visibility when upstream returns HTML or a helpful message.
-          if (statusCode >= 400) {
-            const snippet = raw.length > 200 ? `${raw.slice(0, 200)}...` : raw;
-            reject(new Error(`HTTP ${statusCode} ${snippet ? `- ${snippet}` : ''}`));
+    const timeoutMsRaw = process.env.SNAKEBENCH_REMOTE_FETCH_TIMEOUT_MS;
+    const timeoutMsParsed = timeoutMsRaw ? parseInt(timeoutMsRaw, 10) : NaN;
+    const timeoutMs = Number.isFinite(timeoutMsParsed) ? Math.max(1_000, timeoutMsParsed) : 15_000;
+
+    const parsedUrl = new URL(url);
+
+    return await new Promise((resolve, reject) => {
+      const req = https.request(
+        {
+          protocol: parsedUrl.protocol,
+          hostname: parsedUrl.hostname,
+          port: parsedUrl.port,
+          path: `${parsedUrl.pathname}${parsedUrl.search}`,
+          method: 'GET',
+          headers: {
+            // GitHub may block requests without a UA in some environments.
+            'User-Agent': 'arc-explainer',
+            Accept: 'application/json,text/plain;q=0.9,*/*;q=0.8',
+          },
+        },
+        (res) => {
+          const statusCode = res.statusCode ?? 0;
+
+          // Follow redirects (common for signed URLs / CDN rewrites).
+          if (statusCode >= 300 && statusCode < 400 && res.headers.location) {
+            const nextUrl = new URL(res.headers.location, parsedUrl).toString();
+            res.resume();
+            void this.fetchJsonFromUrl(nextUrl, redirectDepth + 1).then(resolve).catch(reject);
             return;
           }
 
-          try {
-            const parsed = JSON.parse(raw);
-            resolve(parsed);
-          } catch (err) {
-            // Include a tiny snippet so "Unexpected token <" has context.
-            const snippet = raw.length > 200 ? `${raw.slice(0, 200)}...` : raw;
-            reject(new Error(`Invalid JSON response${snippet ? ` - ${snippet}` : ''}`));
-          }
-        });
-      });
+          const chunks: Buffer[] = [];
+          res.on('data', (chunk) => chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk)));
+          res.on('end', () => {
+            const raw = Buffer.concat(chunks).toString('utf8');
+
+            // Improve failure visibility when upstream returns HTML or a helpful message.
+            if (statusCode >= 400) {
+              const snippet = raw.length > 200 ? `${raw.slice(0, 200)}...` : raw;
+              reject(new Error(`HTTP ${statusCode}${snippet ? ` - ${snippet}` : ''}`));
+              return;
+            }
+
+            try {
+              const parsed = JSON.parse(raw);
+              resolve(parsed);
+            } catch {
+              // Include a tiny snippet so "Unexpected token <" has context.
+              const snippet = raw.length > 200 ? `${raw.slice(0, 200)}...` : raw;
+              reject(new Error(`Invalid JSON response${snippet ? ` - ${snippet}` : ''}`));
+            }
+          });
+        },
+      );
 
       req.on('error', (err) => reject(err));
-      req.setTimeout(15_000, () => {
+      req.setTimeout(timeoutMs, () => {
         req.destroy(new Error('timeout'));
       });
+      req.end();
     });
   }
 
