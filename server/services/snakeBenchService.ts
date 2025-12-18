@@ -1338,6 +1338,205 @@ export class SnakeBenchService {
     return games.filter((g) => allowed.has(g.gameId));
   }
 
+  /**
+   * Suggest interesting unplayed matchups using one of two scoring modes:
+   *
+   * - **ladder**: Maximize ranking information gain (high sigma, close ratings)
+   * - **entertainment**: Maximize watchability (close fights, high stakes, novelty)
+   *
+   * Only includes models with >= minGames played, and only suggests pairs that
+   * have never faced each other (matchesPlayed === 0).
+   *
+   * Returns up to `limit` matchups sorted by score descending, with explanation reasons.
+   */
+  async suggestMatchups(
+    mode: 'ladder' | 'entertainment' = 'ladder',
+    limit: number = 20,
+    minGames: number = 3,
+  ): Promise<{
+    mode: 'ladder' | 'entertainment';
+    matchups: Array<{
+      modelA: { modelSlug: string; mu: number; sigma: number; exposed: number; gamesPlayed: number };
+      modelB: { modelSlug: string; mu: number; sigma: number; exposed: number; gamesPlayed: number };
+      history: { matchesPlayed: number; lastPlayedAt: string | null };
+      score: number;
+      reasons: string[];
+    }>;
+    totalCandidates: number;
+  }> {
+    const safeLimit = Number.isFinite(limit) ? Math.max(1, Math.min(limit, 50)) : 20;
+    const safeMinGames = Number.isFinite(minGames) ? Math.max(1, minGames) : 3;
+
+    // 1. Get the leaderboard pool (models with >= minGames)
+    const leaderboard = await this.getTrueSkillLeaderboard(150, safeMinGames);
+
+    if (leaderboard.length < 2) {
+      return { mode, matchups: [], totalCandidates: 0 };
+    }
+
+    // 2. Get pairing history to filter out already-played pairs
+    const pairingHistory = await repositoryService.snakeBench.getPairingHistory();
+
+    // Helper to get normalized key for a pair
+    const pairKey = (a: string, b: string): string => {
+      return a < b ? `${a}|||${b}` : `${b}|||${a}`;
+    };
+
+    // 3. Generate all candidate pairs (only unplayed)
+    type Candidate = {
+      modelA: typeof leaderboard[0];
+      modelB: typeof leaderboard[0];
+      history: { matchesPlayed: number; lastPlayedAt: string | null };
+      score: number;
+      reasons: string[];
+    };
+
+    const candidates: Candidate[] = [];
+    const modelAppearances = new Map<string, number>();
+
+    for (let i = 0; i < leaderboard.length; i++) {
+      for (let j = i + 1; j < leaderboard.length; j++) {
+        const modelA = leaderboard[i];
+        const modelB = leaderboard[j];
+        const key = pairKey(modelA.modelSlug, modelB.modelSlug);
+        const history = pairingHistory.get(key) ?? { matchesPlayed: 0, lastPlayedAt: null };
+
+        // Hard filter: only unplayed pairs
+        if (history.matchesPlayed > 0) {
+          continue;
+        }
+
+        candidates.push({
+          modelA,
+          modelB,
+          history,
+          score: 0,
+          reasons: [],
+        });
+      }
+    }
+
+    // 4. Score each candidate based on mode
+    for (const c of candidates) {
+      const reasons: string[] = [];
+      let score = 0;
+
+      // Novelty bonus (always applies since we filter to unplayed)
+      reasons.push('Unplayed pairing');
+      score += 100;
+
+      const exposedDiff = Math.abs(c.modelA.exposed - c.modelB.exposed);
+      const sigmaSum = c.modelA.sigma + c.modelB.sigma;
+      const maxExposed = Math.max(c.modelA.exposed, c.modelB.exposed);
+
+      if (mode === 'ladder') {
+        // LADDER MODE: prioritize info gain
+        // High sigma = high uncertainty = more to learn
+        if (sigmaSum > 10) {
+          score += 40;
+          reasons.push('High combined uncertainty');
+        } else if (sigmaSum > 7) {
+          score += 25;
+          reasons.push('Moderate uncertainty');
+        }
+
+        // Close ratings = ordering test (informative)
+        if (exposedDiff < 1.5) {
+          score += 35;
+          reasons.push('Very close ratings (ordering test)');
+        } else if (exposedDiff < 3) {
+          score += 20;
+          reasons.push('Close ratings');
+        }
+
+        // Slight bonus for at least one high-sigma model
+        if (c.modelA.sigma > 5 || c.modelB.sigma > 5) {
+          score += 10;
+          reasons.push('Placement model involved');
+        }
+      } else {
+        // ENTERTAINMENT MODE: prioritize watchability
+        // Close match = nail-biter potential
+        if (exposedDiff < 1.5) {
+          score += 45;
+          reasons.push('Expected nail-biter');
+        } else if (exposedDiff < 3) {
+          score += 30;
+          reasons.push('Competitive matchup');
+        }
+
+        // High stakes = top models involved
+        if (maxExposed > 20) {
+          score += 35;
+          reasons.push('High-stakes (top-tier model)');
+        } else if (maxExposed > 15) {
+          score += 20;
+          reasons.push('Strong models');
+        }
+
+        // Upset potential: underdog with decent sigma vs favorite
+        const [favorite, underdog] =
+          c.modelA.exposed > c.modelB.exposed ? [c.modelA, c.modelB] : [c.modelB, c.modelA];
+        if (exposedDiff > 2 && exposedDiff < 6 && underdog.sigma > 4) {
+          score += 15;
+          reasons.push('Upset potential');
+        }
+      }
+
+      c.score = score;
+      c.reasons = reasons;
+    }
+
+    // 5. Sort by score descending
+    candidates.sort((a, b) => b.score - a.score);
+
+    // 6. Apply variety penalty: limit how often a single model appears
+    const MAX_APPEARANCES = 3;
+    const selected: Candidate[] = [];
+
+    for (const c of candidates) {
+      if (selected.length >= safeLimit) break;
+
+      const countA = modelAppearances.get(c.modelA.modelSlug) ?? 0;
+      const countB = modelAppearances.get(c.modelB.modelSlug) ?? 0;
+
+      if (countA >= MAX_APPEARANCES || countB >= MAX_APPEARANCES) {
+        continue;
+      }
+
+      selected.push(c);
+      modelAppearances.set(c.modelA.modelSlug, countA + 1);
+      modelAppearances.set(c.modelB.modelSlug, countB + 1);
+    }
+
+    // 7. Transform to response shape
+    const matchups = selected.map((c) => ({
+      modelA: {
+        modelSlug: c.modelA.modelSlug,
+        mu: c.modelA.mu,
+        sigma: c.modelA.sigma,
+        exposed: c.modelA.exposed,
+        gamesPlayed: c.modelA.gamesPlayed,
+      },
+      modelB: {
+        modelSlug: c.modelB.modelSlug,
+        mu: c.modelB.mu,
+        sigma: c.modelB.sigma,
+        exposed: c.modelB.exposed,
+        gamesPlayed: c.modelB.gamesPlayed,
+      },
+      history: c.history,
+      score: c.score,
+      reasons: c.reasons,
+    }));
+
+    return {
+      mode,
+      matchups,
+      totalCandidates: candidates.length,
+    };
+  }
+
   async healthCheck(): Promise<SnakeBenchHealthResponse> {
     const backendDir = this.resolveBackendDir();
     const runnerPath = this.resolveRunnerPath();

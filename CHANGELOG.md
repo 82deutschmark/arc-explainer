@@ -1,5 +1,41 @@
 # New entires at the top, use proper SemVer! 🜟🜟🜟🜟 
 
+### Version 6.6.0  Dec 17, 2025
+
+- **Worm Arena: Suggested Matchups - discover interesting unplayed pairings** (Author: Cascade)
+  - New feature that identifies the **most interesting matches that haven't been run yet** from the model pool.
+  - Two scoring modes with toggle button:
+    - **Ladder Quality**: Prioritizes matches that will improve ranking accuracy (high uncertainty models, close ratings)
+    - **Entertainment**: Prioritizes exciting matches to watch (close fights, high-stakes top models, upset potential)
+  - Each suggestion shows:
+    - Both models with their TrueSkill exposed ratings and games played
+    - Explanation tags (e.g., "Unplayed pairing", "Expected nail-biter", "High-stakes (top-tier model)")
+    - One-click **Run** button to start the match
+  - Only includes models with >= 3 games (placement complete) and pairs that have **never competed**.
+  - Variety penalty ensures no model appears more than 3 times in suggestions.
+  - **Backend**: 
+    - New `GET /api/snakebench/suggest-matchups?mode=ladder|entertainment&limit=20` endpoint
+    - `getPairingHistory()` repository query computes all model pair match counts
+    - Scoring algorithm in `snakeBenchService.suggestMatchups()` with clear mode separation
+  - **Frontend**:
+    - New `WormArenaSuggestedMatchups` component with mode toggle and run buttons
+    - New `useWormArenaSuggestMatchups` hook for data fetching
+    - Integrated into main Worm Arena page (alongside Greatest Hits)
+    - Integrated into Stats & Placement page (alongside Greatest Hits)
+  - **New Types**: `WormArenaSuggestMode`, `WormArenaPairingHistory`, `WormArenaModelSummary`, `WormArenaSuggestedMatchup`, `WormArenaSuggestMatchupsResponse`
+  - **Files Created**:
+    - `client/src/components/WormArenaSuggestedMatchups.tsx`
+    - `client/src/hooks/useWormArenaSuggestMatchups.ts`
+  - **Files Modified**:
+    - `server/repositories/SnakeBenchRepository.ts` (added `getPairingHistory()`)
+    - `server/services/snakeBenchService.ts` (added `suggestMatchups()`)
+    - `server/controllers/snakeBenchController.ts` (added `suggestMatchups` handler)
+    - `server/routes.ts` (added `/api/snakebench/suggest-matchups` route)
+    - `shared/types.ts` (added suggested matchup types)
+    - `client/src/pages/WormArena.tsx` (integrated component)
+    - `client/src/pages/WormArenaStats.tsx` (integrated component)
+    - `CHANGELOG.md`
+
 ### Version 6.5.18  Dec 18, 2025
 
 - **Worm Arena Live: durable share links and single-match architecture** (Author: Cascade)

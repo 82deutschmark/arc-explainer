@@ -799,6 +799,42 @@ export interface WormArenaGreatestHitsResponse {
 }
 
 /**
+ * Suggested matchup types for "interesting unplayed matches" feature.
+ * Supports two scoring modes: ladder (info gain) vs entertainment (watchability).
+ */
+export type WormArenaSuggestMode = 'ladder' | 'entertainment';
+
+export interface WormArenaPairingHistory {
+  matchesPlayed: number;
+  lastPlayedAt: string | null;
+}
+
+export interface WormArenaModelSummary {
+  modelSlug: string;
+  mu: number;
+  sigma: number;
+  exposed: number;
+  gamesPlayed: number;
+}
+
+export interface WormArenaSuggestedMatchup {
+  modelA: WormArenaModelSummary;
+  modelB: WormArenaModelSummary;
+  history: WormArenaPairingHistory;
+  score: number;
+  reasons: string[];
+}
+
+export interface WormArenaSuggestMatchupsResponse {
+  success: boolean;
+  mode: WormArenaSuggestMode;
+  matchups: WormArenaSuggestedMatchup[];
+  totalCandidates: number;
+  error?: string;
+  timestamp: number;
+}
+
+/**
  * Worm Arena streaming status (lightweight, matches other streaming flows).
  */
 export interface WormArenaStreamStatus {

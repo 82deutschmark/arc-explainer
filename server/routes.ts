@@ -241,6 +241,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
     "/api/snakebench/trueskill-leaderboard",
     asyncHandler(snakeBenchController.trueSkillLeaderboard),
   );
+  app.get(
+    "/api/snakebench/suggest-matchups",
+    asyncHandler(snakeBenchController.suggestMatchups),
+  );
 
   // Worm Arena live streaming (SSE wrapper around SnakeBench matches)
   app.post("/api/wormarena/prepare", asyncHandler(wormArenaStreamController.prepare));
