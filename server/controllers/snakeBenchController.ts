@@ -302,6 +302,15 @@ export async function listGames(req: Request, res: Response) {
   }
 }
 
+/**
+ * GET /api/snakebench/games/:gameId
+ *
+ * Returns replay data in one of two ways (matching upstream SnakeBench pattern):
+ * - { data: <JSON> } when local file is available (local dev)
+ * - { replayUrl: <string> } when client should fetch directly from URL (deployment)
+ *
+ * This eliminates server-side JSON proxy truncation issues in deployment.
+ */
 export async function getGame(req: Request, res: Response) {
   try {
     const { gameId } = req.params as { gameId: string };
@@ -316,12 +325,14 @@ export async function getGame(req: Request, res: Response) {
       return res.status(400).json(response);
     }
 
-    const data = await snakeBenchService.getGame(gameId);
+    const result = await snakeBenchService.getGame(gameId);
 
+    // Service returns { data } or { replayUrl } - pass through to client
     const response: SnakeBenchGameDetailResponse = {
       success: true,
       gameId,
-      data,
+      data: result.data,
+      replayUrl: result.replayUrl,
       timestamp: Date.now(),
     };
 

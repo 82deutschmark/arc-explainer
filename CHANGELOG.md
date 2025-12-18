@@ -5,6 +5,22 @@
 
 # New entires at the top, use proper SemVer! ŠYoYŠYoYŠYoYŠYoY 
 
+### Version 6.6.5  Dec 18, 2025
+
+- **Worm Arena: Upstream replay URL pattern (fixes deployment replays)** (Author: Cascade)
+  - Changed `GET /api/snakebench/games/:gameId` to match upstream SnakeBench pattern:
+    - Returns `{ data }` when local file available (local dev)
+    - Returns `{ replayUrl }` when replay must be fetched remotely (deployment)
+  - Frontend `useSnakeBenchGame` hook now fetches directly from `replayUrl` when provided
+  - **This eliminates server-side JSON proxy truncation issues** that caused "Invalid JSON response" errors in Railway deployment
+  - The server no longer downloads/parses large replay JSONs - client fetches directly from GitHub raw or DB replay_path URL
+  - **Files Modified**:
+    - `server/services/snakeBenchService.ts`
+    - `server/controllers/snakeBenchController.ts`
+    - `client/src/hooks/useSnakeBench.ts`
+    - `shared/types.ts`
+    - `CHANGELOG.md`
+
 ### Version 6.6.4  Dec 18, 2025
 
 - **Worm Arena: Improved remote replay fetching diagnostics/robustness** (Author: Cascade)
