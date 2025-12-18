@@ -6,10 +6,11 @@
  *          same page alongside the final board.
  *          Supports durable share links: if a user visits a live URL after the match
  *          ends, we resolve sessionId -> gameId and redirect to the replay page.
- *          NOW SUPPORTS: Auto-start from suggested matchups - parses query params
- *          (modelA, modelB, autoStart) to pre-fill form and auto-start matches.
+ *          SETUP VIEW: Two-column layout with suggested matchups on left, run controls on right.
+ *          Users can click "Run" on a suggested matchup to instantly start it.
+ *          SUPPORTS: Auto-start from query params (modelA, modelB, autoStart) for direct links.
  * SRP/DRY check: Pass - coordinates child hooks/components without duplicating their logic.
- *                Added query param parsing and auto-start in isolated useEffects.
+ *                Suggested matchups integrated via onRunMatch callback; state updates isolated.
  */
 
 import React, { useEffect, useMemo } from 'react';
@@ -24,6 +25,7 @@ import WormArenaLiveResultsPanel from '@/components/WormArenaLiveResultsPanel';
 import WormArenaRunControls from '@/components/WormArenaRunControls';
 import WormArenaReasoning from '@/components/WormArenaReasoning';
 import WormArenaLiveScoreboard from '@/components/WormArenaLiveScoreboard';
+import WormArenaSuggestedMatchups from '@/components/WormArenaSuggestedMatchups';
 
 import type { ModelConfig, SnakeBenchRunMatchRequest } from '@shared/types';
 
@@ -237,6 +239,22 @@ export default function WormArenaLive() {
     handleRunMatch();
   }, [autoStartAttempted, loadingModels, matchupAvailable, handleRunMatch]);
 
+  // Handle running a match from suggested matchups
+  const handleSuggestedMatchupRun = React.useCallback(
+    (modelA: string, modelB: string) => {
+      setModelA(modelA);
+      setModelB(modelB);
+      // Delay to allow state to update
+      setTimeout(() => {
+        const available = new Set(selectableModels);
+        if (available.has(modelA) && available.has(modelB)) {
+          handleRunMatch();
+        }
+      }, 0);
+    },
+    [setModelA, setModelB, selectableModels, handleRunMatch],
+  );
+
   const latestFrame = useMemo(() => (frames.length ? frames[frames.length - 1] : null), [frames]);
   const boardWidth = (latestFrame as any)?.frame?.state?.width ?? 10;
   const boardHeight = (latestFrame as any)?.frame?.state?.height ?? 10;
@@ -376,33 +394,42 @@ export default function WormArenaLive() {
       <main className="p-4 max-w-7xl mx-auto space-y-4">
         {viewMode === 'setup' && (
           <div className="transition-opacity duration-300 ease-in-out">
-            <WormArenaRunControls
-              viewMode="setup"
-              status={status}
-              isStarting={isStarting}
-              loadingModels={loadingModels}
-              matchupAvailable={matchupAvailable}
-              availableModels={availableModelSet}
-              modelOptions={selectableModels}
-              modelA={modelA}
-              modelB={modelB}
-              onModelAChange={setModelA}
-              onModelBChange={setModelB}
-              width={width}
-              height={height}
-              maxRounds={maxRounds}
-              numApples={numApples}
-              onWidthChange={setWidth}
-              onHeightChange={setHeight}
-              onMaxRoundsChange={setMaxRounds}
-              onNumApplesChange={setNumApples}
-              byoApiKey={byoApiKey}
-              byoProvider={byoProvider}
-              onByoApiKeyChange={setByoApiKey}
-              onByoProviderChange={setByoProvider}
-              onStart={handleRunMatch}
-              launchNotice={launchNotice}
-            />
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
+              {/* Suggested matchups sidebar */}
+              <WormArenaSuggestedMatchups
+                limit={8}
+                onRunMatch={handleSuggestedMatchupRun}
+              />
+
+              {/* Run controls form */}
+              <WormArenaRunControls
+                viewMode="setup"
+                status={status}
+                isStarting={isStarting}
+                loadingModels={loadingModels}
+                matchupAvailable={matchupAvailable}
+                availableModels={availableModelSet}
+                modelOptions={selectableModels}
+                modelA={modelA}
+                modelB={modelB}
+                onModelAChange={setModelA}
+                onModelBChange={setModelB}
+                width={width}
+                height={height}
+                maxRounds={maxRounds}
+                numApples={numApples}
+                onWidthChange={setWidth}
+                onHeightChange={setHeight}
+                onMaxRoundsChange={setMaxRounds}
+                onNumApplesChange={setNumApples}
+                byoApiKey={byoApiKey}
+                byoProvider={byoProvider}
+                onByoApiKeyChange={setByoApiKey}
+                onByoProviderChange={setByoProvider}
+                onStart={handleRunMatch}
+                launchNotice={launchNotice}
+              />
+            </div>
           </div>
         )}
 

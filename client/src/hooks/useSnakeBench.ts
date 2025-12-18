@@ -157,15 +157,28 @@ export function useSnakeBenchGame(gameId?: string) {
       }
 
       // Option 2: Server returned replayUrl - fetch directly (deployment)
-      if (json.replayUrl) {
-        const replayRes = await fetch(json.replayUrl);
-        if (!replayRes.ok) {
-          setError(`Failed to fetch replay from ${json.replayUrl}: HTTP ${replayRes.status}`);
-          setData(null);
-          return;
+      // Try primary URL first, then fallbacks (snakebench.com, GitHub raw, etc.)
+      if (json.replayUrl || json.fallbackUrls?.length) {
+        const urlsToTry = [json.replayUrl, ...(json.fallbackUrls || [])].filter(Boolean) as string[];
+        let lastError = '';
+
+        for (const url of urlsToTry) {
+          try {
+            const replayRes = await fetch(url);
+            if (replayRes.ok) {
+              const replayJson = await replayRes.json();
+              setData(replayJson);
+              return;
+            }
+            lastError = `HTTP ${replayRes.status} from ${url}`;
+          } catch (e: any) {
+            lastError = `${e?.message || 'fetch failed'} from ${url}`;
+          }
         }
-        const replayJson = await replayRes.json();
-        setData(replayJson);
+
+        // All URLs failed
+        setError(`Failed to fetch replay: ${lastError}`);
+        setData(null);
         return;
       }
 

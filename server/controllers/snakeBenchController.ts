@@ -327,12 +327,13 @@ export async function getGame(req: Request, res: Response) {
 
     const result = await snakeBenchService.getGame(gameId);
 
-    // Service returns { data } or { replayUrl } - pass through to client
+    // Service returns { data } or { replayUrl, fallbackUrls } - pass through to client
     const response: SnakeBenchGameDetailResponse = {
       success: true,
       gameId,
       data: result.data,
       replayUrl: result.replayUrl,
+      fallbackUrls: result.fallbackUrls,
       timestamp: Date.now(),
     };
 

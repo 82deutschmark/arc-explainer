@@ -7,13 +7,17 @@
 
 ### Version 6.6.5  Dec 18, 2025
 
-- **Worm Arena: Upstream replay URL pattern (fixes deployment replays)** (Author: Cascade)
+- **Worm Arena: Upstream replay URL pattern with snakebench.com fallback** (Author: Cascade)
   - Changed `GET /api/snakebench/games/:gameId` to match upstream SnakeBench pattern:
     - Returns `{ data }` when local file available (local dev)
-    - Returns `{ replayUrl }` when replay must be fetched remotely (deployment)
-  - Frontend `useSnakeBenchGame` hook now fetches directly from `replayUrl` when provided
+    - Returns `{ replayUrl, fallbackUrls }` when replay must be fetched remotely (deployment)
+  - **Fallback URL chain** (client tries in order until one succeeds):
+    1. DB `replay_path` URL (if stored)
+    2. `https://snakebench.com/api/matches/<id>` (upstream site, for old games)
+    3. GitHub raw (`VoynichLabs/SnakeBench/main/backend/completed_games/`)
+  - Frontend `useSnakeBenchGame` hook now tries multiple URLs until one succeeds
   - **This eliminates server-side JSON proxy truncation issues** that caused "Invalid JSON response" errors in Railway deployment
-  - The server no longer downloads/parses large replay JSONs - client fetches directly from GitHub raw or DB replay_path URL
+  - Configurable via env vars: `SNAKEBENCH_UPSTREAM_URL`, `SNAKEBENCH_REPLAY_RAW_BASE`
   - **Files Modified**:
     - `server/services/snakeBenchService.ts`
     - `server/controllers/snakeBenchController.ts`
