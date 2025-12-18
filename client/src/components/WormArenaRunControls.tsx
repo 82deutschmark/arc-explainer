@@ -1,8 +1,8 @@
 ﻿/**
- * Author: Claude
- * Date: 2025-12-17
+ * Author: Cascade
+ * Date: 2025-12-18
  * PURPOSE: Worm Arena run controls panel with searchable model inputs and match queue.
- *          Users can type model names to filter (no more scrolling through huge dropdowns).
+ *          Model selection is restricted to configured OpenRouter model slugs fetched from /api/models.
  *          Champion vs Challengers mode: set one champion, add multiple challengers,
  *          then "Run All" opens each match in a new tab.
  * SRP/DRY check: Pass - Single responsibility: render setup controls.
@@ -103,9 +103,6 @@ function ModelCombobox({
     return models.filter((m) => m.toLowerCase().includes(term)).slice(0, 50);
   }, [models, search]);
 
-  // Check if typed value is valid (exists in models or is a valid custom input)
-  const isValidCustomModel = search.trim().length > 0 && !models.includes(search.trim());
-
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
@@ -123,27 +120,13 @@ function ModelCombobox({
       <PopoverContent className="w-[400px] p-0" align="start">
         <Command shouldFilter={false}>
           <CommandInput
-            placeholder="Type to search models..."
+            placeholder="Type to search OpenRouter model slugs..."
             value={search}
             onValueChange={setSearch}
           />
           <CommandList>
             <CommandEmpty>
-              {isValidCustomModel ? (
-                <button
-                  type="button"
-                  className="w-full px-2 py-3 text-sm text-left hover:bg-accent"
-                  onClick={() => {
-                    onChange(search.trim());
-                    setSearch('');
-                    setOpen(false);
-                  }}
-                >
-                  Use custom: <span className="font-mono font-bold">{search.trim()}</span>
-                </button>
-              ) : (
-                'No models found.'
-              )}
+              No models found.
             </CommandEmpty>
             <CommandGroup>
               {filteredModels.map((model) => (
@@ -291,6 +274,10 @@ export default function WormArenaRunControls({
     <div className="space-y-4">
       <div className="text-xs font-bold uppercase tracking-wide text-worm-ink mb-3">
         Start Live Match
+      </div>
+
+      <div className="text-[11px] text-worm-muted">
+        OpenRouter models only. This list comes from the app&apos;s configured model catalog.
       </div>
 
       {loadingModels ? (

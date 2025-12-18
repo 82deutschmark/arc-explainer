@@ -1,5 +1,14 @@
 # New entires at the top, use proper SemVer!
 
+### Version 6.5.16  Dec 18, 2025
+
+- **Worm Arena Live: OpenRouter-only configured model slugs** (Author: Cascade)
+  - Live match setup now clearly indicates **OpenRouter models only**.
+  - Model selection is restricted to the configured model catalog (no custom typed model slugs).
+  - **Files Modified**:
+    - `client/src/components/WormArenaRunControls.tsx`
+    - `CHANGELOG.md`
+
 ### Version 6.5.15  Dec 17, 2025
 
 - **Worm Arena: Match duration display and per-round timestamps** (Author: Claude)
