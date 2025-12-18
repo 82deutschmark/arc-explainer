@@ -676,8 +676,10 @@ export interface SnakeBenchMatchSearchResponse {
 export interface SnakeBenchGameDetailResponse {
   success: boolean;
   gameId: string;
-  /** Full SnakeBench game JSON payload for replay/inspection */
+  /** Full SnakeBench game JSON payload for replay/inspection (local dev only) */
   data?: any;
+  /** URL to fetch replay JSON directly (deployment mode - client fetches this) */
+  replayUrl?: string;
   error?: string;
   timestamp: number;
 }

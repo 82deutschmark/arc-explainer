@@ -1,9 +1,15 @@
 /**
  * Author: Cascade
- * Date: 2025-12-02
+ * Date: 2025-12-18
  * PURPOSE: Lightweight hooks for interacting with the SnakeBench backend
  *          from the ARC Explainer frontend. Provides helpers for running
  *          single matches, small batches, and listing recent games.
+ *
+ *          useSnakeBenchGame now matches upstream SnakeBench pattern:
+ *          - Server returns { data } for local files (local dev)
+ *          - Server returns { replayUrl } for remote sources (deployment)
+ *          - Client fetches directly from replayUrl, eliminating server-side
+ *            JSON proxy truncation issues in deployment environments.
  * SRP/DRY check: Pass — focused on HTTP wiring for SnakeBench endpoints.
  */
 
@@ -117,6 +123,15 @@ export function useSnakeBenchRecentGames() {
   return { games, total, isLoading, error, refresh };
 }
 
+/**
+ * Hook to fetch a single SnakeBench game replay.
+ *
+ * Matches upstream SnakeBench pattern:
+ * - If server returns { data }, use it directly (local dev)
+ * - If server returns { replayUrl }, fetch from that URL (deployment)
+ *
+ * This eliminates server-side JSON proxy truncation issues.
+ */
 export function useSnakeBenchGame(gameId?: string) {
   const [data, setData] = useState<any | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -134,7 +149,29 @@ export function useSnakeBenchGame(gameId?: string) {
         setData(null);
         return;
       }
-      setData(json.data ?? null);
+
+      // Option 1: Server returned data directly (local dev)
+      if (json.data) {
+        setData(json.data);
+        return;
+      }
+
+      // Option 2: Server returned replayUrl - fetch directly (deployment)
+      if (json.replayUrl) {
+        const replayRes = await fetch(json.replayUrl);
+        if (!replayRes.ok) {
+          setError(`Failed to fetch replay from ${json.replayUrl}: HTTP ${replayRes.status}`);
+          setData(null);
+          return;
+        }
+        const replayJson = await replayRes.json();
+        setData(replayJson);
+        return;
+      }
+
+      // Neither data nor replayUrl - unexpected
+      setError('Server returned neither data nor replayUrl');
+      setData(null);
     } catch (e: any) {
       setError(e?.message || 'Failed to load game replay');
       setData(null);

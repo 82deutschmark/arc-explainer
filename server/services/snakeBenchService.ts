@@ -13,9 +13,10 @@
  *          - List endpoints only return matches that have an available replay asset
  *            (local file, DB replay_path URL, or GitHub raw fallback). This prevents
  *            the UI from offering matches that cannot be replayed.
- *          - Remote replay fetching is hardened for deployment: includes request headers,
- *            follows redirects, supports a configurable timeout, and preserves the
- *            underlying remote failure reason for API error responses.
+ *          - getGame() now matches upstream SnakeBench pattern: returns { data } for
+ *            local files (local dev) or { replayUrl } for remote sources (deployment).
+ *            The client fetches directly from the URL, eliminating server-side JSON
+ *            proxy truncation issues.
  * SRP/DRY check: Pass — dedicated to SnakeBench subprocess handling and
  *                result shaping; reuses existing logging patterns.
  */
@@ -1017,7 +1018,18 @@ export class SnakeBenchService {
     return await repositoryService.snakeBench.searchMatches(query);
   }
 
-  async getGame(gameId: string): Promise<any> {
+  /**
+   * Resolve replay for a given gameId.
+   *
+   * Returns EITHER:
+   * - { data: <parsed JSON> } when a local file is available (local dev)
+   * - { replayUrl: <string> } when replay must be fetched from a remote URL (deployment)
+   *
+   * This matches the upstream SnakeBench pattern: the server does NOT proxy large
+   * JSON downloads. Instead, it returns the canonical URL and the client fetches directly.
+   * This eliminates truncation/timeout issues in deployment environments.
+   */
+  async getGame(gameId: string): Promise<{ data?: any; replayUrl?: string }> {
     if (!gameId) {
       throw new Error('gameId is required');
     }
@@ -1063,7 +1075,7 @@ export class SnakeBenchService {
             candidate = path.join(completedDir, filename);
           }
         } catch {
-          // continue to error below
+          // continue below
         }
       }
     }
@@ -1073,10 +1085,12 @@ export class SnakeBenchService {
     const uniquePaths = Array.from(new Set(candidatePaths));
     const existingPaths = uniquePaths.filter((p) => fs.existsSync(p));
 
+    // Local file available: return data directly (local dev scenario)
     for (const existingPath of existingPaths) {
       try {
         const raw = await fs.promises.readFile(existingPath, 'utf8');
-        return JSON.parse(raw);
+        const parsed = JSON.parse(raw);
+        return { data: parsed };
       } catch (err) {
         const message = err instanceof Error ? err.message : String(err);
         logger.warn(
@@ -1086,49 +1100,27 @@ export class SnakeBenchService {
       }
     }
 
-    // Keep a short trail of why remote fallbacks failed so deployment issues are diagnosable.
-    // This is especially important when the replay asset is known to exist (e.g. GitHub raw)
-    // but the hosting environment blocks outbound fetches or returns 403/429.
-    let remoteReplayError: string | null = null;
-    let rawReplayError: string | null = null;
-
-    // Remote fetch fallback (e.g., Supabase public URL stored in replay_path)
+    // No local file: return URL for client to fetch directly (deployment scenario)
+    // Priority: DB replay_path URL > GitHub raw fallback
     if (remoteReplayUrl) {
-      try {
-        const payload = await this.fetchJsonFromUrl(remoteReplayUrl);
-        return payload;
-      } catch (err) {
-        const message = err instanceof Error ? err.message : String(err);
-        remoteReplayError = message;
-        logger.error(
-          `Failed to fetch remote replay for SnakeBench game ${gameId} from ${remoteReplayUrl}: ${message}`,
-          'snakebench-service',
-        );
-      }
+      logger.info(
+        `SnakeBenchService.getGame: returning replayUrl from DB for ${gameId}: ${remoteReplayUrl}`,
+        'snakebench-service',
+      );
+      return { replayUrl: remoteReplayUrl };
     }
 
-    // GitHub raw fallback for committed replay assets (matches submodule repo structure)
+    // GitHub raw fallback for committed replay assets
     const rawBase =
       process.env.SNAKEBENCH_REPLAY_RAW_BASE ||
       'https://raw.githubusercontent.com/VoynichLabs/SnakeBench/main/backend/completed_games';
     const rawUrl = `${rawBase}/snake_game_${gameId}.json`;
-    try {
-      const payload = await this.fetchJsonFromUrl(rawUrl);
-      return payload;
-    } catch (err) {
-      const message = err instanceof Error ? err.message : String(err);
-      rawReplayError = message;
-      logger.warn(
-        `Failed to fetch GitHub raw replay for SnakeBench game ${gameId} from ${rawUrl}: ${message}`,
-        'snakebench-service',
-      );
-    }
 
-    const reasons: string[] = [];
-    if (remoteReplayError) reasons.push(`replay_path url failed: ${remoteReplayError}`);
-    if (rawReplayError) reasons.push(`github raw failed: ${rawReplayError}`);
-    const suffix = reasons.length ? ` (${reasons.join('; ')})` : '';
-    throw new Error(`Game not found: ${gameId}${suffix}`);
+    logger.info(
+      `SnakeBenchService.getGame: returning GitHub raw replayUrl for ${gameId}: ${rawUrl}`,
+      'snakebench-service',
+    );
+    return { replayUrl: rawUrl };
   }
 
   /**

@@ -1,12 +1,15 @@
 /**
- * Author: Cascade
+ * Author: Cascade / Claude Haiku 4.5
  * Date: 2025-12-18
  * PURPOSE: Worm Arena Live streaming hub with the apple scoreboard pinned up top,
  *          run controls hidden mid-match, and post-game summaries that stay on the
  *          same page alongside the final board.
  *          Supports durable share links: if a user visits a live URL after the match
  *          ends, we resolve sessionId -> gameId and redirect to the replay page.
+ *          NOW SUPPORTS: Auto-start from suggested matchups - parses query params
+ *          (modelA, modelB, autoStart) to pre-fill form and auto-start matches.
  * SRP/DRY check: Pass - coordinates child hooks/components without duplicating their logic.
+ *                Added query param parsing and auto-start in isolated useEffects.
  */
 
 import React, { useEffect, useMemo } from 'react';
@@ -125,6 +128,7 @@ export default function WormArenaLive() {
 
   const [launchNotice, setLaunchNotice] = React.useState<string | null>(null);
   const [copyHint, setCopyHint] = React.useState<string | null>(null);
+  const [autoStartAttempted, setAutoStartAttempted] = React.useState(false);
 
   const availableModelSet = React.useMemo(() => new Set(selectableModels), [selectableModels]);
   const matchupAvailable = isValid(availableModelSet);
@@ -148,6 +152,23 @@ export default function WormArenaLive() {
 
   // Track if we've already attempted to resolve a failed session
   const [resolveAttempted, setResolveAttempted] = React.useState(false);
+
+  // Parse query parameters (modelA, modelB) from suggested matchups and pre-fill form
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    const params = new URLSearchParams(window.location.search);
+    const queryModelA = params.get('modelA')?.trim();
+    const queryModelB = params.get('modelB')?.trim();
+
+    // Pre-fill models if provided in query
+    if (queryModelA && queryModelA !== modelA) {
+      setModelA(queryModelA);
+    }
+    if (queryModelB && queryModelB !== modelB) {
+      setModelB(queryModelB);
+    }
+  }, []);
 
   useEffect(() => {
     if (!sessionId) return;
@@ -202,6 +223,19 @@ export default function WormArenaLive() {
       setLaunchNotice(err?.message || 'Failed to start match');
     }
   };
+
+  // Auto-start match if autoStart=true was in query params and models are ready
+  useEffect(() => {
+    if (autoStartAttempted || loadingModels || !matchupAvailable) return;
+
+    const params = new URLSearchParams(window.location.search);
+    const autoStartParam = params.get('autoStart')?.toLowerCase() === 'true';
+
+    if (!autoStartParam) return;
+
+    setAutoStartAttempted(true);
+    handleRunMatch();
+  }, [autoStartAttempted, loadingModels, matchupAvailable, handleRunMatch]);
 
   const latestFrame = useMemo(() => (frames.length ? frames[frames.length - 1] : null), [frames]);
   const boardWidth = (latestFrame as any)?.frame?.state?.width ?? 10;
