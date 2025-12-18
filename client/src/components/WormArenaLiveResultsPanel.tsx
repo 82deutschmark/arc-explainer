@@ -1,8 +1,9 @@
 /**
- * Author: Codex (GPT-5)
- * Date: 2025-12-19
+ * Author: Claude
+ * Date: 2025-12-17
  * PURPOSE: Inline Worm Arena results card that summarizes the finished match without
  *          navigating away from the streaming experience.
+ *          Now displays match duration and average time per round when timestamps available.
  * SRP/DRY check: Pass – only formats the final summary payload.
  */
 
@@ -11,6 +12,54 @@ import type { WormArenaFinalSummary } from '@shared/types';
 
 export interface WormArenaLiveResultsPanelProps {
   finalSummary: WormArenaFinalSummary;
+}
+
+/**
+ * Calculate match duration from startedAt/completedAt or use pre-calculated fields.
+ */
+function calculateDuration(summary: WormArenaFinalSummary): {
+  durationSeconds: number | null;
+  avgSecondsPerRound: number | null;
+} {
+  // Use pre-calculated fields if available
+  if (summary.durationSeconds != null) {
+    const avg = summary.avgSecondsPerRound ?? 
+      (summary.roundsPlayed && summary.roundsPlayed > 0 
+        ? summary.durationSeconds / summary.roundsPlayed 
+        : null);
+    return { durationSeconds: summary.durationSeconds, avgSecondsPerRound: avg };
+  }
+
+  // Calculate from timestamps
+  if (summary.startedAt && summary.completedAt) {
+    try {
+      const start = new Date(summary.startedAt).getTime();
+      const end = new Date(summary.completedAt).getTime();
+      if (Number.isFinite(start) && Number.isFinite(end) && end > start) {
+        const durationSeconds = (end - start) / 1000;
+        const avgSecondsPerRound = summary.roundsPlayed && summary.roundsPlayed > 0
+          ? durationSeconds / summary.roundsPlayed
+          : null;
+        return { durationSeconds, avgSecondsPerRound };
+      }
+    } catch {
+      // Ignore parse errors
+    }
+  }
+
+  return { durationSeconds: null, avgSecondsPerRound: null };
+}
+
+/**
+ * Format seconds as human-readable duration (e.g., "1m 23s" or "45s").
+ */
+function formatDuration(seconds: number): string {
+  if (seconds < 60) {
+    return `${seconds.toFixed(1)}s`;
+  }
+  const mins = Math.floor(seconds / 60);
+  const secs = seconds % 60;
+  return `${mins}m ${secs.toFixed(0)}s`;
 }
 
 export default function WormArenaLiveResultsPanel({ finalSummary }: WormArenaLiveResultsPanelProps) {
@@ -22,6 +71,8 @@ export default function WormArenaLiveResultsPanel({ finalSummary }: WormArenaLiv
     : tied
       ? 'Result: tied'
       : 'Result: pending';
+
+  const { durationSeconds, avgSecondsPerRound } = calculateDuration(finalSummary);
 
   return (
     <div className="rounded-lg border bg-white/90 shadow-sm px-4 py-4 worm-border space-y-4">
@@ -43,6 +94,14 @@ export default function WormArenaLiveResultsPanel({ finalSummary }: WormArenaLiv
         {finalSummary.roundsPlayed !== undefined && (
           <div className="text-xs text-muted-foreground">
             Rounds played: {finalSummary.roundsPlayed}
+          </div>
+        )}
+        {durationSeconds != null && (
+          <div className="text-xs text-muted-foreground">
+            Duration: {formatDuration(durationSeconds)}
+            {avgSecondsPerRound != null && (
+              <span className="ml-2">({avgSecondsPerRound.toFixed(1)}s/round avg)</span>
+            )}
           </div>
         )}
       </div>

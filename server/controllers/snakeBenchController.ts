@@ -30,6 +30,8 @@ import type {
   SnakeBenchModelHistoryResponse,
   SnakeBenchTrueSkillLeaderboardResponse,
   WormArenaGreatestHitsResponse,
+  WormArenaSuggestMatchupsResponse,
+  WormArenaSuggestMode,
 } from '../../shared/types.js';
 
 export async function runMatch(req: Request, res: Response) {
@@ -300,6 +302,15 @@ export async function listGames(req: Request, res: Response) {
   }
 }
 
+/**
+ * GET /api/snakebench/games/:gameId
+ *
+ * Returns replay data in one of two ways (matching upstream SnakeBench pattern):
+ * - { data: <JSON> } when local file is available (local dev)
+ * - { replayUrl: <string> } when client should fetch directly from URL (deployment)
+ *
+ * This eliminates server-side JSON proxy truncation issues in deployment.
+ */
 export async function getGame(req: Request, res: Response) {
   try {
     const { gameId } = req.params as { gameId: string };
@@ -314,12 +325,15 @@ export async function getGame(req: Request, res: Response) {
       return res.status(400).json(response);
     }
 
-    const data = await snakeBenchService.getGame(gameId);
+    const result = await snakeBenchService.getGame(gameId);
 
+    // Service returns { data } or { replayUrl, fallbackUrls } - pass through to client
     const response: SnakeBenchGameDetailResponse = {
       success: true,
       gameId,
-      data,
+      data: result.data,
+      replayUrl: result.replayUrl,
+      fallbackUrls: result.fallbackUrls,
       timestamp: Date.now(),
     };
 
@@ -523,6 +537,57 @@ export async function modelHistory(req: Request, res: Response) {
   }
 }
 
+export async function suggestMatchups(req: Request, res: Response) {
+  try {
+    const modeQuery = req.query.mode as string | undefined;
+    const limitQuery = req.query.limit as string | undefined;
+    const minGamesQuery = req.query.minGames as string | undefined;
+
+    // Validate mode
+    let mode: WormArenaSuggestMode = 'ladder';
+    if (modeQuery === 'entertainment') {
+      mode = 'entertainment';
+    } else if (modeQuery && modeQuery !== 'ladder') {
+      const response: WormArenaSuggestMatchupsResponse = {
+        success: false,
+        mode: 'ladder',
+        matchups: [],
+        totalCandidates: 0,
+        error: `Invalid mode '${modeQuery}'. Must be 'ladder' or 'entertainment'.`,
+        timestamp: Date.now(),
+      };
+      return res.status(400).json(response);
+    }
+
+    const parsedLimit = limitQuery != null && Number.isFinite(Number(limitQuery)) ? Number(limitQuery) : 20;
+    const parsedMinGames = minGamesQuery != null && Number.isFinite(Number(minGamesQuery)) ? Number(minGamesQuery) : 3;
+
+    const result = await snakeBenchService.suggestMatchups(mode, parsedLimit, parsedMinGames);
+
+    const response: WormArenaSuggestMatchupsResponse = {
+      success: true,
+      mode: result.mode,
+      matchups: result.matchups,
+      totalCandidates: result.totalCandidates,
+      timestamp: Date.now(),
+    };
+
+    return res.json(response);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    logger.error(`SnakeBench suggestMatchups failed: ${message}`, 'snakebench-controller');
+    const response: WormArenaSuggestMatchupsResponse = {
+      success: false,
+      mode: 'ladder',
+      matchups: [],
+      totalCandidates: 0,
+      error: message,
+      timestamp: Date.now(),
+    };
+    return res.status(500).json(response);
+  }
+}
+
 export const snakeBenchController = {
   runMatch,
   runBatch,
@@ -537,4 +602,5 @@ export const snakeBenchController = {
   modelHistory,
   trueSkillLeaderboard,
   getWormArenaGreatestHits,
+  suggestMatchups,
 };

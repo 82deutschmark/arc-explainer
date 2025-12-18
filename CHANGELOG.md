@@ -1,4 +1,195 @@
-# New entires at the top, use proper SemVer!
+# Author: Codex
+# Date: 2025-12-18
+# PURPOSE: Ensure the changelog captures the new chat session menu enablement and related documentation.
+# SRP/DRY check: Pass - this entry documents the specific change without altering historical records.
+
+# New entires at the top, use proper SemVer! ŠYoYŠYoYŠYoYŠYoY 
+
+### Version 6.6.5  Dec 18, 2025
+
+- **Worm Arena: Upstream replay URL pattern with snakebench.com fallback** (Author: Cascade)
+  - Changed `GET /api/snakebench/games/:gameId` to match upstream SnakeBench pattern:
+    - Returns `{ data }` when local file available (local dev)
+    - Returns `{ replayUrl, fallbackUrls }` when replay must be fetched remotely (deployment)
+  - **Fallback URL chain** (client tries in order until one succeeds):
+    1. DB `replay_path` URL (if stored)
+    2. `https://snakebench.com/api/matches/<id>` (upstream site, for old games)
+    3. GitHub raw (`VoynichLabs/SnakeBench/main/backend/completed_games/`)
+  - Frontend `useSnakeBenchGame` hook now tries multiple URLs until one succeeds
+  - **This eliminates server-side JSON proxy truncation issues** that caused "Invalid JSON response" errors in Railway deployment
+  - Configurable via env vars: `SNAKEBENCH_UPSTREAM_URL`, `SNAKEBENCH_REPLAY_RAW_BASE`
+  - **Files Modified**:
+    - `server/services/snakeBenchService.ts`
+    - `server/controllers/snakeBenchController.ts`
+    - `client/src/hooks/useSnakeBench.ts`
+    - `shared/types.ts`
+    - `CHANGELOG.md`
+
+### Version 6.6.4  Dec 18, 2025
+
+- **Worm Arena: Improved remote replay fetching diagnostics/robustness** (Author: Cascade)
+  - Improved remote replay fetching for Worm Arena replays with better diagnostics and robustness.
+  - Added User-Agent headers, support for redirects, and a configurable timeout to improve fetching reliability.
+  - Enhanced error reporting to provide more informative error messages when fetching fails.
+  - **Files Modified**:
+    - `server/services/snakeBenchService.ts`
+    - `CHANGELOG.md`
+
+### Version 6.6.3  Dec 18, 2025
+
+- **Worm Arena: Deployment replay fallback fix** (Author: Cascade)
+  - Updated `GET /api/snakebench/games/:gameId` replay loading so a bad/unreadable local replay file no longer blocks fallback to remote replay sources (DB URL and GitHub raw).
+  - This resolves deployment cases where a replay exists (e.g. upstream GitHub raw), but the server had a stale/broken `replay_path` on disk.
+  - **Files Modified**:
+    - `server/services/snakeBenchService.ts`
+    - `CHANGELOG.md`
+
+### Version 6.6.2  Dec 18, 2025
+
+- **VS Code chatSessions proposed API enablement** (Author: Codex)
+  - Added `enabledApiProposals: ["chatSessionsProvider"]` to `package.json` so `chatSessions/newSession` is exposed when the workspace is opened normally.
+  - Documented the requirement and fallback flag in `docs/README.md`.
+  - **Files Modified**:
+    - `package.json`
+    - `docs/README.md`
+    - `CHANGELOG.md`
+
+### Version 6.6.1  Dec 18, 2025
+
+- **Worm Arena: Replay + Suggested Matchups fixes** (Author: Cascade)
+  - Moved match-wide totals out of per-player reasoning cards into a single Match totals card on the replay page.
+  - Fixed dev-mode routing so `/api/*` never falls back to `index.html` (prevents "Unexpected token '<'" in Suggested Matchups).
+  - **Files Modified**:
+    - `client/src/pages/WormArena.tsx`
+    - `server/vite.ts`
+    - `CHANGELOG.md`
+
+### Version 6.6.0  Dec 17, 2025
+
+- **Worm Arena: Suggested Matchups - discover interesting unplayed pairings** (Author: Cascade)
+  - New feature that identifies the **most interesting matches that haven't been run yet** from the model pool.
+  - Two scoring modes with toggle button:
+    - **Ladder Quality**: Prioritizes matches that will improve ranking accuracy (high uncertainty models, close ratings)
+    - **Entertainment**: Prioritizes exciting matches to watch (close fights, high-stakes top models, upset potential)
+  - Each suggestion shows:
+    - Both models with their TrueSkill exposed ratings and games played
+    - Explanation tags (e.g., "Unplayed pairing", "Expected nail-biter", "High-stakes (top-tier model)")
+    - One-click **Run** button to start the match
+  - Only includes models with >= 3 games (placement complete) and pairs that have **never competed**.
+  - Variety penalty ensures no model appears more than 3 times in suggestions.
+  - **Backend**: 
+    - New `GET /api/snakebench/suggest-matchups?mode=ladder|entertainment&limit=20` endpoint
+    - `getPairingHistory()` repository query computes all model pair match counts
+    - Scoring algorithm in `snakeBenchService.suggestMatchups()` with clear mode separation
+  - **Frontend**:
+    - New `WormArenaSuggestedMatchups` component with mode toggle and run buttons
+    - New `useWormArenaSuggestMatchups` hook for data fetching
+    - Integrated into main Worm Arena page (alongside Greatest Hits)
+    - Integrated into Stats & Placement page (alongside Greatest Hits)
+  - **New Types**: `WormArenaSuggestMode`, `WormArenaPairingHistory`, `WormArenaModelSummary`, `WormArenaSuggestedMatchup`, `WormArenaSuggestMatchupsResponse`
+  - **Files Created**:
+    - `client/src/components/WormArenaSuggestedMatchups.tsx`
+    - `client/src/hooks/useWormArenaSuggestMatchups.ts`
+  - **Files Modified**:
+    - `server/repositories/SnakeBenchRepository.ts` (added `getPairingHistory()`)
+    - `server/services/snakeBenchService.ts` (added `suggestMatchups()`)
+    - `server/controllers/snakeBenchController.ts` (added `suggestMatchups` handler)
+    - `server/routes.ts` (added `/api/snakebench/suggest-matchups` route)
+    - `shared/types.ts` (added suggested matchup types)
+    - `client/src/pages/WormArena.tsx` (integrated component)
+    - `client/src/pages/WormArenaStats.tsx` (integrated component)
+    - `CHANGELOG.md`
+
+### Version 6.5.18  Dec 18, 2025
+
+- **Worm Arena Live: durable share links and single-match architecture** (Author: Cascade)
+  - **Durable share links**: Visiting a `/worm-arena/live/:sessionId` URL after the match ends now automatically redirects to the replay page instead of showing an error.
+  - **Share button improvements**: Copy button now copies a **replay URL** when the match is complete (gameId-based), or the live URL while running.
+  - **Removed batch mode**: One session = one match. Deleted unused batch logic from frontend hook and backend controller.
+  - **Deleted dead code**: Removed unused `WormArenaSetup.tsx` component.
+  - Added `GET /api/wormarena/resolve/:sessionId` endpoint that maps sessionId to gameId for completed matches (30-day TTL).
+  - **Files Modified**:
+    - `client/src/pages/WormArenaLive.tsx`
+    - `client/src/hooks/useWormArenaStreaming.ts`
+    - `server/controllers/wormArenaStreamController.ts`
+    - `server/routes.ts`
+    - `CHANGELOG.md`
+  - **Files Deleted**:
+    - `client/src/components/WormArenaSetup.tsx`
+
+### Version 6.5.17  Dec 18, 2025
+
+- **Worm Arena Live: model dropdown shows full catalog** (Author: Cascade)
+  - Fixed the model combobox list being capped (it could stop early and hide many configured models).
+  - Dropdown is now explicitly scrollable and will show the full configured model catalog.
+  - **Files Modified**:
+    - `client/src/components/WormArenaRunControls.tsx`
+    - `CHANGELOG.md`
+
+### Version 6.5.16  Dec 17, 2025 🜟 20:42
+
+- **Worm Arena Live: OpenRouter-only configured model slugs** (Author: Cascade)
+  - Live match setup now clearly indicates **OpenRouter models only**.
+  - Model selection is restricted to the configured model catalog (no custom typed model slugs).
+  - **Files Modified**:
+    - `client/src/components/WormArenaRunControls.tsx`
+    - `CHANGELOG.md`
+
+### Version 6.5.15  Dec 17, 2025
+
+- **Worm Arena: Match duration display and per-round timestamps** (Author: Claude)
+  - Added **match duration** display to live results panel (calculated from `startedAt`/`completedAt`)
+  - Shows total duration (e.g., "1m 23s") and average time per round (e.g., "4.2s/round avg")
+  - Added `durationSeconds` and `avgSecondsPerRound` fields to `WormArenaFinalSummary` type
+  - **SnakeBench Python backend**: Added `timestamp` field to each frame in `record_frame()` for per-round timing
+  - Future games will now have per-round timestamps stored in the JSON for detailed analysis
+  - **Files Modified**:
+    - `client/src/components/WormArenaLiveResultsPanel.tsx`
+    - `shared/types.ts`
+    - `external/SnakeBench/backend/main.py`
+    - `CHANGELOG.md`
+
+### Version 6.5.14  Dec 17, 2025
+
+- **Worm Arena Live: Champion vs Challengers batch mode** (Author: Claude)
+  - Redesigned match queue to **Champion vs Challengers** pattern:
+    - Set Model A as your "champion"
+    - Add multiple Model B entries as "challengers" using the + button
+    - Click "Run All" to open each match in a **new browser tab**
+  - Each match is prepared via `/api/snakebench/stream/prepare` and opens independently
+  - Searchable combobox retained - type to filter models instead of scrolling through dropdown
+  - Users can still type custom model names if not in the list
+  - **Note**: Per-round timestamps not yet available in game JSON (only game-level `started_at`/`ended_at`)
+  - **Files Modified**:
+    - `client/src/components/WormArenaRunControls.tsx`
+    - `CHANGELOG.md`
+
+### Version 6.5.13  Dec 17, 2025
+
+- **Worm Arena Live: searchable model selector and match queue** (Author: Claude)
+  - Replaced dropdown selects with **searchable combobox** - type to filter models instead of scrolling
+  - Users can now type custom model names directly if not in the list
+  - Added **match queue** feature - queue multiple matchups and run them sequentially
+  - Queue shows pending matches with remove buttons; "Start Queue" runs all queued matches
+  - Exported `QueuedMatchup` interface and added `onStartQueue` callback prop for queue support
+  - **Files Modified**:
+    - `client/src/components/WormArenaRunControls.tsx`
+    - `CHANGELOG.md`
+
+### Version 6.5.12  Dec 17, 2025
+
+- **Worm Arena Skill Analysis: sorting, Dr. Budd credit, and TrueSkill link** (Author: Claude)
+  - Compare model list now sorted by **games played** (most to least)
+  - Baseline model list now sorted by **win rate** (highest to lowest)
+  - Card titles now display the actual model slug instead of generic labels
+  - Added `sortBy` prop to `WormArenaModelListCard` supporting `'gamesPlayed'` or `'winRate'`
+  - Updated sigma explanation to clarify that low sigma means **consistent performance**, not just many games
+  - Added Microsoft Research TrueSkill documentation link in the "Why TrueSkill?" accordion
+  - Added **human-verified badge** crediting Dr. Jeremy Budd for proofreading and statistical guidance, with link to Hall of Fame
+  - **Files Modified**:
+    - `client/src/pages/WormArenaSkillAnalysis.tsx`
+    - `client/src/components/wormArena/stats/WormArenaModelListCard.tsx`
+    - `CHANGELOG.md`
 
 ### Version 6.5.11  Dec 17, 2025
 

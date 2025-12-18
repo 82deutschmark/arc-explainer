@@ -1,10 +1,16 @@
 /**
- * Author: Codex (GPT-5)
- * Date: 2025-12-19
+ * Author: Cascade / Claude Haiku 4.5
+ * Date: 2025-12-18
  * PURPOSE: Worm Arena Live streaming hub with the apple scoreboard pinned up top,
  *          run controls hidden mid-match, and post-game summaries that stay on the
  *          same page alongside the final board.
+ *          Supports durable share links: if a user visits a live URL after the match
+ *          ends, we resolve sessionId -> gameId and redirect to the replay page.
+ *          SETUP VIEW: Two-column layout with suggested matchups on left, run controls on right.
+ *          Users can click "Run" on a suggested matchup to instantly start it.
+ *          SUPPORTS: Auto-start from query params (modelA, modelB, autoStart) for direct links.
  * SRP/DRY check: Pass - coordinates child hooks/components without duplicating their logic.
+ *                Suggested matchups integrated via onRunMatch callback; state updates isolated.
  */
 
 import React, { useEffect, useMemo } from 'react';
@@ -19,6 +25,7 @@ import WormArenaLiveResultsPanel from '@/components/WormArenaLiveResultsPanel';
 import WormArenaRunControls from '@/components/WormArenaRunControls';
 import WormArenaReasoning from '@/components/WormArenaReasoning';
 import WormArenaLiveScoreboard from '@/components/WormArenaLiveScoreboard';
+import WormArenaSuggestedMatchups from '@/components/WormArenaSuggestedMatchups';
 
 import type { ModelConfig, SnakeBenchRunMatchRequest } from '@shared/types';
 
@@ -123,6 +130,7 @@ export default function WormArenaLive() {
 
   const [launchNotice, setLaunchNotice] = React.useState<string | null>(null);
   const [copyHint, setCopyHint] = React.useState<string | null>(null);
+  const [autoStartAttempted, setAutoStartAttempted] = React.useState(false);
 
   const availableModelSet = React.useMemo(() => new Set(selectableModels), [selectableModels]);
   const matchupAvailable = isValid(availableModelSet);
@@ -144,11 +152,53 @@ export default function WormArenaLive() {
     totalMatches,
   } = useWormArenaStreaming();
 
+  // Track if we've already attempted to resolve a failed session
+  const [resolveAttempted, setResolveAttempted] = React.useState(false);
+
+  // Parse query parameters (modelA, modelB) from suggested matchups and pre-fill form
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    const params = new URLSearchParams(window.location.search);
+    const queryModelA = params.get('modelA')?.trim();
+    const queryModelB = params.get('modelB')?.trim();
+
+    // Pre-fill models if provided in query
+    if (queryModelA && queryModelA !== modelA) {
+      setModelA(queryModelA);
+    }
+    if (queryModelB && queryModelB !== modelB) {
+      setModelB(queryModelB);
+    }
+  }, []);
+
   useEffect(() => {
     if (!sessionId) return;
     connect(sessionId);
     return () => disconnect();
   }, [sessionId, connect, disconnect]);
+
+  // When SSE connection fails, try to resolve sessionId to gameId for replay redirect
+  useEffect(() => {
+    if (!sessionId || status !== 'failed' || resolveAttempted || finalSummary) return;
+
+    const tryResolve = async () => {
+      setResolveAttempted(true);
+      try {
+        const res = await fetch(`/api/wormarena/resolve/${encodeURIComponent(sessionId)}`);
+        if (!res.ok) return;
+        const data = await res.json();
+        if (data?.success && data?.status === 'completed' && data?.replayUrl) {
+          // Redirect to replay page
+          window.location.href = data.replayUrl;
+        }
+      } catch (err) {
+        console.error('[WormArenaLive] Failed to resolve session', err);
+      }
+    };
+
+    tryResolve();
+  }, [sessionId, status, resolveAttempted, finalSummary]);
 
   const handleRunMatch = async () => {
     if (!matchupAvailable) {
@@ -168,13 +218,42 @@ export default function WormArenaLive() {
 
     setLaunchNotice(null);
     try {
-      const prep = await startLiveMatch(payload, []);
+      const prep = await startLiveMatch(payload);
       if (prep?.liveUrl) window.location.href = prep.liveUrl;
     } catch (err: any) {
       console.error('[WormArenaLive] Failed to start match', err);
       setLaunchNotice(err?.message || 'Failed to start match');
     }
   };
+
+  // Auto-start match if autoStart=true was in query params and models are ready
+  useEffect(() => {
+    if (autoStartAttempted || loadingModels || !matchupAvailable) return;
+
+    const params = new URLSearchParams(window.location.search);
+    const autoStartParam = params.get('autoStart')?.toLowerCase() === 'true';
+
+    if (!autoStartParam) return;
+
+    setAutoStartAttempted(true);
+    handleRunMatch();
+  }, [autoStartAttempted, loadingModels, matchupAvailable, handleRunMatch]);
+
+  // Handle running a match from suggested matchups
+  const handleSuggestedMatchupRun = React.useCallback(
+    (modelA: string, modelB: string) => {
+      setModelA(modelA);
+      setModelB(modelB);
+      // Delay to allow state to update
+      setTimeout(() => {
+        const available = new Set(selectableModels);
+        if (available.has(modelA) && available.has(modelB)) {
+          handleRunMatch();
+        }
+      }, 0);
+    },
+    [setModelA, setModelB, selectableModels, handleRunMatch],
+  );
 
   const latestFrame = useMemo(() => (frames.length ? frames[frames.length - 1] : null), [frames]);
   const boardWidth = (latestFrame as any)?.frame?.state?.width ?? 10;
@@ -243,30 +322,41 @@ export default function WormArenaLive() {
   const playerAScore = scoreForSnake(leftSnakeId);
   const playerBScore = scoreForSnake(rightSnakeId);
 
-  // Provide an explicit copy helper so sharing a match ID never requires digging through hidden UI.
-  const handleCopySessionId = React.useCallback(async () => {
-    if (!sessionId) return;
+  // Build shareable URL: replay URL if match completed (has gameId), otherwise live URL
+  const shareableUrl = React.useMemo(() => {
+    if (finalSummary?.gameId) {
+      return `${window.location.origin}/worm-arena?matchId=${encodeURIComponent(finalSummary.gameId)}`;
+    }
+    if (sessionId) {
+      return `${window.location.origin}/worm-arena/live/${encodeURIComponent(sessionId)}`;
+    }
+    return '';
+  }, [sessionId, finalSummary?.gameId]);
+
+  // Copy shareable link (replay URL if available, otherwise live URL)
+  const handleCopyShareLink = React.useCallback(async () => {
+    if (!shareableUrl) return;
     try {
       if (typeof navigator !== 'undefined' && navigator?.clipboard?.writeText) {
-        await navigator.clipboard.writeText(sessionId);
+        await navigator.clipboard.writeText(shareableUrl);
       } else if (typeof document !== 'undefined') {
         const textarea = document.createElement('textarea');
-        textarea.value = sessionId;
+        textarea.value = shareableUrl;
         document.body.appendChild(textarea);
         textarea.select();
         document.execCommand('copy');
         document.body.removeChild(textarea);
       }
-      setCopyHint('Copied match ID to clipboard');
+      setCopyHint(finalSummary?.gameId ? 'Copied replay link!' : 'Copied live link!');
     } catch (err) {
-      console.error('[WormArenaLive] Failed to copy session ID', err);
+      console.error('[WormArenaLive] Failed to copy share link', err);
       setCopyHint('Copy failed. Please copy manually.');
     } finally {
       if (typeof window !== 'undefined') {
         window.setTimeout(() => setCopyHint(null), 2500);
       }
     }
-  }, [sessionId]);
+  }, [shareableUrl, finalSummary?.gameId]);
 
   const hasSessionParam = Boolean(sessionId);
   const viewMode: ViewMode = finalSummary
@@ -304,33 +394,42 @@ export default function WormArenaLive() {
       <main className="p-4 max-w-7xl mx-auto space-y-4">
         {viewMode === 'setup' && (
           <div className="transition-opacity duration-300 ease-in-out">
-            <WormArenaRunControls
-              viewMode="setup"
-              status={status}
-              isStarting={isStarting}
-              loadingModels={loadingModels}
-              matchupAvailable={matchupAvailable}
-              availableModels={availableModelSet}
-              modelOptions={selectableModels}
-              modelA={modelA}
-              modelB={modelB}
-              onModelAChange={setModelA}
-              onModelBChange={setModelB}
-              width={width}
-              height={height}
-              maxRounds={maxRounds}
-              numApples={numApples}
-              onWidthChange={setWidth}
-              onHeightChange={setHeight}
-              onMaxRoundsChange={setMaxRounds}
-              onNumApplesChange={setNumApples}
-              byoApiKey={byoApiKey}
-              byoProvider={byoProvider}
-              onByoApiKeyChange={setByoApiKey}
-              onByoProviderChange={setByoProvider}
-              onStart={handleRunMatch}
-              launchNotice={launchNotice}
-            />
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
+              {/* Suggested matchups sidebar */}
+              <WormArenaSuggestedMatchups
+                limit={8}
+                onRunMatch={handleSuggestedMatchupRun}
+              />
+
+              {/* Run controls form */}
+              <WormArenaRunControls
+                viewMode="setup"
+                status={status}
+                isStarting={isStarting}
+                loadingModels={loadingModels}
+                matchupAvailable={matchupAvailable}
+                availableModels={availableModelSet}
+                modelOptions={selectableModels}
+                modelA={modelA}
+                modelB={modelB}
+                onModelAChange={setModelA}
+                onModelBChange={setModelB}
+                width={width}
+                height={height}
+                maxRounds={maxRounds}
+                numApples={numApples}
+                onWidthChange={setWidth}
+                onHeightChange={setHeight}
+                onMaxRoundsChange={setMaxRounds}
+                onNumApplesChange={setNumApples}
+                byoApiKey={byoApiKey}
+                byoProvider={byoProvider}
+                onByoApiKeyChange={setByoApiKey}
+                onByoProviderChange={setByoProvider}
+                onStart={handleRunMatch}
+                launchNotice={launchNotice}
+              />
+            </div>
           </div>
         )}
 
@@ -381,21 +480,25 @@ export default function WormArenaLive() {
 
                 {sessionId && (
                   <div className="rounded-lg border-2 worm-border bg-white shadow-sm px-4 py-3 space-y-2">
-                    <div className="text-[11px] uppercase font-semibold text-muted-foreground">Match ID</div>
+                    <div className="text-[11px] uppercase font-semibold text-muted-foreground">
+                      {finalSummary?.gameId ? 'Share Replay' : 'Share Live Match'}
+                    </div>
                     <div className="flex flex-wrap items-center gap-2">
                       <code className="text-xs sm:text-sm font-mono bg-worm-card rounded px-2 py-1 text-worm-ink break-all">
-                        {sessionId}
+                        {finalSummary?.gameId || sessionId}
                       </code>
                       <button
                         type="button"
-                        onClick={handleCopySessionId}
+                        onClick={handleCopyShareLink}
                         className="px-3 py-1.5 text-xs font-semibold rounded border border-worm-ink text-worm-ink hover:bg-worm-card transition-colors"
                       >
-                        {copyHint ? 'Copied' : 'Copy ID'}
+                        {copyHint ? 'Copied!' : 'Copy Link'}
                       </button>
                     </div>
                     <div className="text-xs text-muted-foreground">
-                      {copyHint || 'Share this ID so others can watch the live board.'}
+                      {copyHint || (finalSummary?.gameId
+                        ? 'Share this link so others can watch the replay.'
+                        : 'Share this link so others can watch the live match.')}
                     </div>
                   </div>
                 )}

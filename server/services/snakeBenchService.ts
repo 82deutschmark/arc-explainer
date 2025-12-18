@@ -2,7 +2,7 @@
  * server/services/snakeBenchService.ts
  *
  * Author: Cascade
- * Date: 2025-12-17
+ * Date: 2025-12-18
  * PURPOSE: Orchestrate SnakeBench matches via a Python runner
  *          (server/python/snakebench_runner.py) and return a compact
  *          summary suitable for HTTP APIs and frontend usage.
@@ -13,6 +13,10 @@
  *          - List endpoints only return matches that have an available replay asset
  *            (local file, DB replay_path URL, or GitHub raw fallback). This prevents
  *            the UI from offering matches that cannot be replayed.
+ *          - getGame() now matches upstream SnakeBench pattern: returns { data } for
+ *            local files (local dev) or { replayUrl } for remote sources (deployment).
+ *            The client fetches directly from the URL, eliminating server-side JSON
+ *            proxy truncation issues.
  * SRP/DRY check: Pass — dedicated to SnakeBench subprocess handling and
  *                result shaping; reuses existing logging patterns.
  */
@@ -21,6 +25,7 @@ import { spawn, spawnSync, type SpawnOptions } from 'child_process';
 import fs from 'fs';
 import path from 'path';
 import https from 'https';
+import { URL } from 'url';
 
 import type {
   SnakeBenchRunMatchRequest,
@@ -1013,7 +1018,18 @@ export class SnakeBenchService {
     return await repositoryService.snakeBench.searchMatches(query);
   }
 
-  async getGame(gameId: string): Promise<any> {
+  /**
+   * Resolve replay for a given gameId.
+   *
+   * Returns EITHER:
+   * - { data: <parsed JSON> } when a local file is available (local dev)
+   * - { replayUrl: <string> } when replay must be fetched from a remote URL (deployment)
+   *
+   * This matches the upstream SnakeBench pattern: the server does NOT proxy large
+   * JSON downloads. Instead, it returns the canonical URL and the client fetches directly.
+   * This eliminates truncation/timeout issues in deployment environments.
+   */
+  async getGame(gameId: string): Promise<{ data?: any; replayUrl?: string; fallbackUrls?: string[] }> {
     if (!gameId) {
       throw new Error('gameId is required');
     }
@@ -1059,7 +1075,7 @@ export class SnakeBenchService {
             candidate = path.join(completedDir, filename);
           }
         } catch {
-          // continue to error below
+          // continue below
         }
       }
     }
@@ -1067,50 +1083,55 @@ export class SnakeBenchService {
     candidatePaths.push(candidate);
 
     const uniquePaths = Array.from(new Set(candidatePaths));
-    const existingPath = uniquePaths.find((p) => fs.existsSync(p));
+    const existingPaths = uniquePaths.filter((p) => fs.existsSync(p));
 
-    if (existingPath) {
+    // Local file available: return data directly (local dev scenario)
+    for (const existingPath of existingPaths) {
       try {
         const raw = await fs.promises.readFile(existingPath, 'utf8');
-        return JSON.parse(raw);
+        const parsed = JSON.parse(raw);
+        return { data: parsed };
       } catch (err) {
         const message = err instanceof Error ? err.message : String(err);
-        logger.error(`Failed to read SnakeBench game ${gameId}: ${message}`, 'snakebench-service');
-        throw new Error(`Failed to read game ${gameId}`);
-      }
-    }
-
-    // Remote fetch fallback (e.g., Supabase public URL stored in replay_path)
-    if (remoteReplayUrl) {
-      try {
-        const payload = await this.fetchJsonFromUrl(remoteReplayUrl);
-        return payload;
-      } catch (err) {
-        const message = err instanceof Error ? err.message : String(err);
-        logger.error(
-          `Failed to fetch remote replay for SnakeBench game ${gameId} from ${remoteReplayUrl}: ${message}`,
+        logger.warn(
+          `SnakeBenchService.getGame: failed to read/parse replay for ${gameId} from ${existingPath}: ${message}`,
           'snakebench-service',
         );
       }
     }
 
-    // GitHub raw fallback for committed replay assets (matches submodule repo structure)
+    // No local file: return URL for client to fetch directly (deployment scenario)
+    // Priority: DB replay_path URL > snakebench.com upstream > GitHub raw fallback
+    if (remoteReplayUrl) {
+      logger.info(
+        `SnakeBenchService.getGame: returning replayUrl from DB for ${gameId}: ${remoteReplayUrl}`,
+        'snakebench-service',
+      );
+      return { replayUrl: remoteReplayUrl };
+    }
+
+    // Build list of fallback URLs for the client to try
+    // The client will try these in order until one succeeds
+    const fallbackUrls: string[] = [];
+
+    // snakebench.com upstream - for old games that exist on the original site
+    // Their backend redirects to Supabase storage, client follows redirect
+    const upstreamBase = process.env.SNAKEBENCH_UPSTREAM_URL || 'https://snakebench.com';
+    fallbackUrls.push(`${upstreamBase}/api/matches/${gameId}`);
+
+    // GitHub raw fallback for committed replay assets in VoynichLabs/SnakeBench
     const rawBase =
       process.env.SNAKEBENCH_REPLAY_RAW_BASE ||
       'https://raw.githubusercontent.com/VoynichLabs/SnakeBench/main/backend/completed_games';
-    const rawUrl = `${rawBase}/snake_game_${gameId}.json`;
-    try {
-      const payload = await this.fetchJsonFromUrl(rawUrl);
-      return payload;
-    } catch (err) {
-      const message = err instanceof Error ? err.message : String(err);
-      logger.warn(
-        `Failed to fetch GitHub raw replay for SnakeBench game ${gameId} from ${rawUrl}: ${message}`,
-        'snakebench-service',
-      );
-    }
+    fallbackUrls.push(`${rawBase}/snake_game_${gameId}.json`);
 
-    throw new Error(`Game not found: ${gameId}`);
+    logger.info(
+      `SnakeBenchService.getGame: returning fallback replayUrls for ${gameId}: ${fallbackUrls.join(', ')}`,
+      'snakebench-service',
+    );
+
+    // Return primary URL, with fallbacks for client to try
+    return { replayUrl: fallbackUrls[0], fallbackUrls };
   }
 
   /**
@@ -1175,37 +1196,74 @@ export class SnakeBenchService {
   /**
    * Lightweight HTTPS JSON fetcher to retrieve remote replay assets (e.g., Supabase public URLs).
    */
-  private async fetchJsonFromUrl(url: string): Promise<any> {
-    return await new Promise((resolve, reject) => {
-      const req = https.get(url, (res) => {
-        const statusCode = res.statusCode ?? 0;
-        const chunks: Buffer[] = [];
-        res.on('data', (chunk) => chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk)));
-        res.on('end', () => {
-          const raw = Buffer.concat(chunks).toString('utf8');
+  private async fetchJsonFromUrl(url: string, redirectDepth: number = 0): Promise<any> {
+    // Some hosts (GitHub raw, CDNs) may return 301/302 redirects or require a User-Agent.
+    // This helper keeps the replay loading path deterministic across local dev and deployments.
+    const maxRedirects = 3;
+    if (redirectDepth > maxRedirects) {
+      throw new Error(`Too many redirects while fetching ${url}`);
+    }
 
-          // Improve failure visibility when upstream returns HTML or a helpful message.
-          if (statusCode >= 400) {
-            const snippet = raw.length > 200 ? `${raw.slice(0, 200)}...` : raw;
-            reject(new Error(`HTTP ${statusCode} ${snippet ? `- ${snippet}` : ''}`));
+    const timeoutMsRaw = process.env.SNAKEBENCH_REMOTE_FETCH_TIMEOUT_MS;
+    const timeoutMsParsed = timeoutMsRaw ? parseInt(timeoutMsRaw, 10) : NaN;
+    const timeoutMs = Number.isFinite(timeoutMsParsed) ? Math.max(1_000, timeoutMsParsed) : 15_000;
+
+    const parsedUrl = new URL(url);
+
+    return await new Promise((resolve, reject) => {
+      const req = https.request(
+        {
+          protocol: parsedUrl.protocol,
+          hostname: parsedUrl.hostname,
+          port: parsedUrl.port,
+          path: `${parsedUrl.pathname}${parsedUrl.search}`,
+          method: 'GET',
+          headers: {
+            // GitHub may block requests without a UA in some environments.
+            'User-Agent': 'arc-explainer',
+            Accept: 'application/json,text/plain;q=0.9,*/*;q=0.8',
+          },
+        },
+        (res) => {
+          const statusCode = res.statusCode ?? 0;
+
+          // Follow redirects (common for signed URLs / CDN rewrites).
+          if (statusCode >= 300 && statusCode < 400 && res.headers.location) {
+            const nextUrl = new URL(res.headers.location, parsedUrl).toString();
+            res.resume();
+            void this.fetchJsonFromUrl(nextUrl, redirectDepth + 1).then(resolve).catch(reject);
             return;
           }
 
-          try {
-            const parsed = JSON.parse(raw);
-            resolve(parsed);
-          } catch (err) {
-            // Include a tiny snippet so "Unexpected token <" has context.
-            const snippet = raw.length > 200 ? `${raw.slice(0, 200)}...` : raw;
-            reject(new Error(`Invalid JSON response${snippet ? ` - ${snippet}` : ''}`));
-          }
-        });
-      });
+          const chunks: Buffer[] = [];
+          res.on('data', (chunk) => chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk)));
+          res.on('end', () => {
+            const raw = Buffer.concat(chunks).toString('utf8');
+
+            // Improve failure visibility when upstream returns HTML or a helpful message.
+            if (statusCode >= 400) {
+              const snippet = raw.length > 200 ? `${raw.slice(0, 200)}...` : raw;
+              reject(new Error(`HTTP ${statusCode}${snippet ? ` - ${snippet}` : ''}`));
+              return;
+            }
+
+            try {
+              const parsed = JSON.parse(raw);
+              resolve(parsed);
+            } catch {
+              // Include a tiny snippet so "Unexpected token <" has context.
+              const snippet = raw.length > 200 ? `${raw.slice(0, 200)}...` : raw;
+              reject(new Error(`Invalid JSON response${snippet ? ` - ${snippet}` : ''}`));
+            }
+          });
+        },
+      );
 
       req.on('error', (err) => reject(err));
-      req.setTimeout(15_000, () => {
+      req.setTimeout(timeoutMs, () => {
         req.destroy(new Error('timeout'));
       });
+      req.end();
     });
   }
 
@@ -1336,6 +1394,205 @@ export class SnakeBenchService {
     // Preserve the original ordering from the input list.
     const allowed = new Set(results.map((g) => g.gameId));
     return games.filter((g) => allowed.has(g.gameId));
+  }
+
+  /**
+   * Suggest interesting unplayed matchups using one of two scoring modes:
+   *
+   * - **ladder**: Maximize ranking information gain (high sigma, close ratings)
+   * - **entertainment**: Maximize watchability (close fights, high stakes, novelty)
+   *
+   * Only includes models with >= minGames played, and only suggests pairs that
+   * have never faced each other (matchesPlayed === 0).
+   *
+   * Returns up to `limit` matchups sorted by score descending, with explanation reasons.
+   */
+  async suggestMatchups(
+    mode: 'ladder' | 'entertainment' = 'ladder',
+    limit: number = 20,
+    minGames: number = 3,
+  ): Promise<{
+    mode: 'ladder' | 'entertainment';
+    matchups: Array<{
+      modelA: { modelSlug: string; mu: number; sigma: number; exposed: number; gamesPlayed: number };
+      modelB: { modelSlug: string; mu: number; sigma: number; exposed: number; gamesPlayed: number };
+      history: { matchesPlayed: number; lastPlayedAt: string | null };
+      score: number;
+      reasons: string[];
+    }>;
+    totalCandidates: number;
+  }> {
+    const safeLimit = Number.isFinite(limit) ? Math.max(1, Math.min(limit, 50)) : 20;
+    const safeMinGames = Number.isFinite(minGames) ? Math.max(1, minGames) : 3;
+
+    // 1. Get the leaderboard pool (models with >= minGames)
+    const leaderboard = await this.getTrueSkillLeaderboard(150, safeMinGames);
+
+    if (leaderboard.length < 2) {
+      return { mode, matchups: [], totalCandidates: 0 };
+    }
+
+    // 2. Get pairing history to filter out already-played pairs
+    const pairingHistory = await repositoryService.snakeBench.getPairingHistory();
+
+    // Helper to get normalized key for a pair
+    const pairKey = (a: string, b: string): string => {
+      return a < b ? `${a}|||${b}` : `${b}|||${a}`;
+    };
+
+    // 3. Generate all candidate pairs (only unplayed)
+    type Candidate = {
+      modelA: typeof leaderboard[0];
+      modelB: typeof leaderboard[0];
+      history: { matchesPlayed: number; lastPlayedAt: string | null };
+      score: number;
+      reasons: string[];
+    };
+
+    const candidates: Candidate[] = [];
+    const modelAppearances = new Map<string, number>();
+
+    for (let i = 0; i < leaderboard.length; i++) {
+      for (let j = i + 1; j < leaderboard.length; j++) {
+        const modelA = leaderboard[i];
+        const modelB = leaderboard[j];
+        const key = pairKey(modelA.modelSlug, modelB.modelSlug);
+        const history = pairingHistory.get(key) ?? { matchesPlayed: 0, lastPlayedAt: null };
+
+        // Hard filter: only unplayed pairs
+        if (history.matchesPlayed > 0) {
+          continue;
+        }
+
+        candidates.push({
+          modelA,
+          modelB,
+          history,
+          score: 0,
+          reasons: [],
+        });
+      }
+    }
+
+    // 4. Score each candidate based on mode
+    for (const c of candidates) {
+      const reasons: string[] = [];
+      let score = 0;
+
+      // Novelty bonus (always applies since we filter to unplayed)
+      reasons.push('Unplayed pairing');
+      score += 100;
+
+      const exposedDiff = Math.abs(c.modelA.exposed - c.modelB.exposed);
+      const sigmaSum = c.modelA.sigma + c.modelB.sigma;
+      const maxExposed = Math.max(c.modelA.exposed, c.modelB.exposed);
+
+      if (mode === 'ladder') {
+        // LADDER MODE: prioritize info gain
+        // High sigma = high uncertainty = more to learn
+        if (sigmaSum > 10) {
+          score += 40;
+          reasons.push('High combined uncertainty');
+        } else if (sigmaSum > 7) {
+          score += 25;
+          reasons.push('Moderate uncertainty');
+        }
+
+        // Close ratings = ordering test (informative)
+        if (exposedDiff < 1.5) {
+          score += 35;
+          reasons.push('Very close ratings (ordering test)');
+        } else if (exposedDiff < 3) {
+          score += 20;
+          reasons.push('Close ratings');
+        }
+
+        // Slight bonus for at least one high-sigma model
+        if (c.modelA.sigma > 5 || c.modelB.sigma > 5) {
+          score += 10;
+          reasons.push('Placement model involved');
+        }
+      } else {
+        // ENTERTAINMENT MODE: prioritize watchability
+        // Close match = nail-biter potential
+        if (exposedDiff < 1.5) {
+          score += 45;
+          reasons.push('Expected nail-biter');
+        } else if (exposedDiff < 3) {
+          score += 30;
+          reasons.push('Competitive matchup');
+        }
+
+        // High stakes = top models involved
+        if (maxExposed > 20) {
+          score += 35;
+          reasons.push('High-stakes (top-tier model)');
+        } else if (maxExposed > 15) {
+          score += 20;
+          reasons.push('Strong models');
+        }
+
+        // Upset potential: underdog with decent sigma vs favorite
+        const [favorite, underdog] =
+          c.modelA.exposed > c.modelB.exposed ? [c.modelA, c.modelB] : [c.modelB, c.modelA];
+        if (exposedDiff > 2 && exposedDiff < 6 && underdog.sigma > 4) {
+          score += 15;
+          reasons.push('Upset potential');
+        }
+      }
+
+      c.score = score;
+      c.reasons = reasons;
+    }
+
+    // 5. Sort by score descending
+    candidates.sort((a, b) => b.score - a.score);
+
+    // 6. Apply variety penalty: limit how often a single model appears
+    const MAX_APPEARANCES = 3;
+    const selected: Candidate[] = [];
+
+    for (const c of candidates) {
+      if (selected.length >= safeLimit) break;
+
+      const countA = modelAppearances.get(c.modelA.modelSlug) ?? 0;
+      const countB = modelAppearances.get(c.modelB.modelSlug) ?? 0;
+
+      if (countA >= MAX_APPEARANCES || countB >= MAX_APPEARANCES) {
+        continue;
+      }
+
+      selected.push(c);
+      modelAppearances.set(c.modelA.modelSlug, countA + 1);
+      modelAppearances.set(c.modelB.modelSlug, countB + 1);
+    }
+
+    // 7. Transform to response shape
+    const matchups = selected.map((c) => ({
+      modelA: {
+        modelSlug: c.modelA.modelSlug,
+        mu: c.modelA.mu,
+        sigma: c.modelA.sigma,
+        exposed: c.modelA.exposed,
+        gamesPlayed: c.modelA.gamesPlayed,
+      },
+      modelB: {
+        modelSlug: c.modelB.modelSlug,
+        mu: c.modelB.mu,
+        sigma: c.modelB.sigma,
+        exposed: c.modelB.exposed,
+        gamesPlayed: c.modelB.gamesPlayed,
+      },
+      history: c.history,
+      score: c.score,
+      reasons: c.reasons,
+    }));
+
+    return {
+      mode,
+      matchups,
+      totalCandidates: candidates.length,
+    };
   }
 
   async healthCheck(): Promise<SnakeBenchHealthResponse> {
