@@ -5,6 +5,16 @@
 
 # New entires at the top, use proper SemVer! ŠYoYŠYoYŠYoYŠYoY 
 
+### Version 6.6.4  Dec 18, 2025
+
+- **Worm Arena: Improved remote replay fetching diagnostics/robustness** (Author: Cascade)
+  - Improved remote replay fetching for Worm Arena replays with better diagnostics and robustness.
+  - Added User-Agent headers, support for redirects, and a configurable timeout to improve fetching reliability.
+  - Enhanced error reporting to provide more informative error messages when fetching fails.
+  - **Files Modified**:
+    - `server/services/snakeBenchService.ts`
+    - `CHANGELOG.md`
+
 ### Version 6.6.3  Dec 18, 2025
 
 - **Worm Arena: Deployment replay fallback fix** (Author: Cascade)

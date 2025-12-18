@@ -18,7 +18,7 @@ $ErrorActionPreference = 'Continue'
 
 $baseUrl = $BaseUrl.TrimEnd('/')
 $queueEndpoint = "$baseUrl/api/snakebench/run-batch"
-$listGamesEndpoint = "$baseUrl/api/snakebench/games"
+$gamesEndpoint = "$baseUrl/api/snakebench/games"
 
 # Free models only
 $models = @(
@@ -63,31 +63,83 @@ foreach ($modelA in $models) {
   foreach ($modelB in $models) {
     if ($modelA -eq $modelB) { continue }
 
-    for ($i = 0; $i -lt 5; $i++) {
-      $body = @{
-        modelA = $modelA
-        modelB = $modelB
-        count = 1
-        width = 10
-        height = 10
-        maxRounds = 150
-        numApples = 5
-      } | ConvertTo-Json
+    $body = @{
+      modelA = $modelA
+      modelB = $modelB
+      count = 5
+      width = 10
+      height = 10
+      maxRounds = 150
+      numApples = 5
+    } | ConvertTo-Json
 
-      try {
-        $percent = if ($totalMatches -gt 0) { [Math]::Floor($queuedCount/$totalMatches*100) } else { 0 }
-        Write-Host "[Queue $percent%] $queuedCount/$totalMatches - $modelA vs $modelB" -ForegroundColor Yellow
+    try {
+      $percent = if ($totalMatches -gt 0) { [Math]::Floor($queuedCount/$totalMatches*100) } else { 0 }
+      Write-Host "[Queue $percent%] $queuedCount/$totalMatches - $modelA vs $modelB (5 games)" -ForegroundColor Yellow
 
-        Invoke-WebRequest -Uri $queueEndpoint -Method Post `
-          -Headers @{"Content-Type"="application/json"} `
-          -Body $body -ErrorAction Stop | Out-Null
+      Invoke-WebRequest -Uri $queueEndpoint -Method Post `
+        -Headers @{"Content-Type"="application/json"} `
+        -Body $body -ErrorAction Stop -TimeoutSec 10 | Out-Null
 
-        $queuedCount++
-        Start-Sleep -Milliseconds 300
-      } catch {
-        Write-Host "  ERROR: $($_.Exception.Message)" -ForegroundColor Red
-      }
+      $queuedCount += 5
+    } catch {
+      Write-Host "  ERROR: $($_.Exception.Message)" -ForegroundColor Red
     }
+  }
+}
+
+Write-Host ""
+Write-Host "Queueing bonus matches: All free models vs google/gemini-3-flash-preview..." -ForegroundColor Green
+Write-Host ""
+
+$bonusModel = 'google/gemini-3-flash-preview'
+
+foreach ($freeModel in $models) {
+  # Free vs Gemini
+  $body = @{
+    modelA = $freeModel
+    modelB = $bonusModel
+    count = 1
+    width = 10
+    height = 10
+    maxRounds = 150
+    numApples = 5
+  } | ConvertTo-Json
+
+  try {
+    $percent = if ($totalMatches -gt 0) { [Math]::Floor($queuedCount/$totalMatches*100) } else { 0 }
+    Write-Host "[Bonus] $freeModel vs $bonusModel" -ForegroundColor Magenta
+
+    Invoke-WebRequest -Uri $queueEndpoint -Method Post `
+      -Headers @{"Content-Type"="application/json"} `
+      -Body $body -ErrorAction Stop -TimeoutSec 10 | Out-Null
+
+    $queuedCount += 1
+  } catch {
+    Write-Host "  ERROR: $($_.Exception.Message)" -ForegroundColor Red
+  }
+
+  # Gemini vs Free (reverse)
+  $body = @{
+    modelA = $bonusModel
+    modelB = $freeModel
+    count = 1
+    width = 10
+    height = 10
+    maxRounds = 150
+    numApples = 5
+  } | ConvertTo-Json
+
+  try {
+    Write-Host "[Bonus] $bonusModel vs $freeModel" -ForegroundColor Magenta
+
+    Invoke-WebRequest -Uri $queueEndpoint -Method Post `
+      -Headers @{"Content-Type"="application/json"} `
+      -Body $body -ErrorAction Stop -TimeoutSec 10 | Out-Null
+
+    $queuedCount += 1
+  } catch {
+    Write-Host "  ERROR: $($_.Exception.Message)" -ForegroundColor Red
   }
 }
 
@@ -114,7 +166,7 @@ $pollCount = 0
 
 function Get-GameCount {
   try {
-    $resp = Invoke-WebRequest -Uri "$listGamesEndpoint?limit=10000" -Method Get -ErrorAction Stop
+    $resp = Invoke-WebRequest -Uri "$gamesEndpoint?limit=10000" -Method Get -ErrorAction Stop
     $data = $resp.Content | ConvertFrom-Json
     return $data.total
   } catch {
