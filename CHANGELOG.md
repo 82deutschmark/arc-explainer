@@ -1,4 +1,28 @@
-# New entires at the top, use proper SemVer! 🜟🜟🜟🜟 
+# Author: Codex
+# Date: 2025-12-18
+# PURPOSE: Ensure the changelog captures the new chat session menu enablement and related documentation.
+# SRP/DRY check: Pass - this entry documents the specific change without altering historical records.
+
+# New entires at the top, use proper SemVer! ŠYoYŠYoYŠYoYŠYoY 
+
+### Version 6.6.3  Dec 18, 2025
+
+- **Worm Arena: Deployment replay fallback fix** (Author: Cascade)
+  - Updated `GET /api/snakebench/games/:gameId` replay loading so a bad/unreadable local replay file no longer blocks fallback to remote replay sources (DB URL and GitHub raw).
+  - This resolves deployment cases where a replay exists (e.g. upstream GitHub raw), but the server had a stale/broken `replay_path` on disk.
+  - **Files Modified**:
+    - `server/services/snakeBenchService.ts`
+    - `CHANGELOG.md`
+
+### Version 6.6.2  Dec 18, 2025
+
+- **VS Code chatSessions proposed API enablement** (Author: Codex)
+  - Added `enabledApiProposals: ["chatSessionsProvider"]` to `package.json` so `chatSessions/newSession` is exposed when the workspace is opened normally.
+  - Documented the requirement and fallback flag in `docs/README.md`.
+  - **Files Modified**:
+    - `package.json`
+    - `docs/README.md`
+    - `CHANGELOG.md`
 
 ### Version 6.6.1  Dec 18, 2025
 

@@ -2,7 +2,7 @@
  * server/services/snakeBenchService.ts
  *
  * Author: Cascade
- * Date: 2025-12-17
+ * Date: 2025-12-18
  * PURPOSE: Orchestrate SnakeBench matches via a Python runner
  *          (server/python/snakebench_runner.py) and return a compact
  *          summary suitable for HTTP APIs and frontend usage.
@@ -1067,16 +1067,18 @@ export class SnakeBenchService {
     candidatePaths.push(candidate);
 
     const uniquePaths = Array.from(new Set(candidatePaths));
-    const existingPath = uniquePaths.find((p) => fs.existsSync(p));
+    const existingPaths = uniquePaths.filter((p) => fs.existsSync(p));
 
-    if (existingPath) {
+    for (const existingPath of existingPaths) {
       try {
         const raw = await fs.promises.readFile(existingPath, 'utf8');
         return JSON.parse(raw);
       } catch (err) {
         const message = err instanceof Error ? err.message : String(err);
-        logger.error(`Failed to read SnakeBench game ${gameId}: ${message}`, 'snakebench-service');
-        throw new Error(`Failed to read game ${gameId}`);
+        logger.warn(
+          `SnakeBenchService.getGame: failed to read/parse replay for ${gameId} from ${existingPath}: ${message}`,
+          'snakebench-service',
+        );
       }
     }
 
