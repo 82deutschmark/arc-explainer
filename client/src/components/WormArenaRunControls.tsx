@@ -3,7 +3,8 @@
  * Date: 2025-12-17
  * PURPOSE: Worm Arena run controls panel with searchable model inputs and match queue.
  *          Users can type model names to filter (no more scrolling through huge dropdowns).
- *          Supports queuing multiple matchups that run sequentially.
+ *          Champion vs Challengers mode: set one champion, add multiple challengers,
+ *          then "Run All" opens each match in a new tab.
  * SRP/DRY check: Pass - Single responsibility: render setup controls.
  */
 
@@ -208,44 +209,82 @@ export default function WormArenaRunControls({
   const [advancedOpen, setAdvancedOpen] = React.useState(false);
   const [byoOpen, setByoOpen] = React.useState(false);
   
-  // Match queue state
-  const [matchQueue, setMatchQueue] = React.useState<QueuedMatchup[]>([]);
-  const [showQueue, setShowQueue] = React.useState(false);
+  // Champion vs Challengers mode
+  const [challengers, setChallengers] = React.useState<string[]>([]);
+  const [showChallengers, setShowChallengers] = React.useState(false);
 
   const resolvedModels = React.useMemo(() => {
     if (Array.isArray(modelOptions) && modelOptions.length > 0) return modelOptions;
     return Array.from(availableModels).sort((a, b) => a.localeCompare(b));
   }, [availableModels, modelOptions]);
 
-  // Add current matchup to queue
-  const handleAddToQueue = () => {
-    if (!modelA || !modelB) return;
-    const newMatchup: QueuedMatchup = {
+  // Add current Model B as a challenger
+  const handleAddChallenger = () => {
+    if (!modelB || challengers.includes(modelB)) return;
+    setChallengers((prev) => [...prev, modelB]);
+    setShowChallengers(true);
+    // Clear modelB so user can add another
+    onModelBChange('');
+  };
+
+  // Remove a challenger from the list
+  const handleRemoveChallenger = (model: string) => {
+    setChallengers((prev) => prev.filter((m) => m !== model));
+  };
+
+  // Build queue from champion + challengers and run all in new tabs
+  const handleRunAllChallengers = async () => {
+    if (!modelA || challengers.length === 0) return;
+    
+    // Build the queue
+    const queue: QueuedMatchup[] = challengers.map((challenger) => ({
       id: `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
-      modelA,
-      modelB,
-    };
-    setMatchQueue((prev) => [...prev, newMatchup]);
-    setShowQueue(true);
-  };
+      modelA: modelA,
+      modelB: challenger,
+    }));
 
-  // Remove matchup from queue
-  const handleRemoveFromQueue = (id: string) => {
-    setMatchQueue((prev) => prev.filter((m) => m.id !== id));
-  };
-
-  // Start queued matches
-  const handleStartQueue = () => {
-    if (matchQueue.length === 0) return;
+    // If onStartQueue is provided, use it (for future backend queue support)
     if (onStartQueue) {
-      onStartQueue(matchQueue);
-    } else {
-      // Fallback: start first match using legacy handler
-      const first = matchQueue[0];
-      onModelAChange(first.modelA);
-      onModelBChange(first.modelB);
-      onStart();
+      onStartQueue(queue);
+      return;
     }
+
+    // Otherwise, start each match in a new tab via the prep endpoint
+    for (const matchup of queue) {
+      try {
+        const payload = {
+          modelA: matchup.modelA,
+          modelB: matchup.modelB,
+          width,
+          height,
+          maxRounds,
+          numApples,
+          ...(byoApiKey ? { apiKey: byoApiKey, provider: byoProvider } : {}),
+        };
+        
+        const response = await fetch('/api/snakebench/stream/prepare', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+        
+        if (response.ok) {
+          const data = await response.json();
+          if (data.sessionId) {
+            // Open in new tab
+            window.open(`/worm-arena/live/${data.sessionId}`, '_blank');
+          }
+        }
+      } catch (err) {
+        console.error('[WormArenaRunControls] Failed to start match', matchup, err);
+      }
+      
+      // Small delay between requests to avoid overwhelming the server
+      await new Promise((resolve) => setTimeout(resolve, 300));
+    }
+    
+    // Clear challengers after starting all
+    setChallengers([]);
   };
 
   const body = (
@@ -282,7 +321,7 @@ export default function WormArenaRunControls({
         </div>
       )}
 
-      {/* Primary actions: Start single or add to queue */}
+      {/* Primary actions: Start single match or add challenger */}
       <div className="flex gap-2">
         <button
           onClick={onStart}
@@ -292,55 +331,62 @@ export default function WormArenaRunControls({
           {isLiveLocked ? 'Running...' : 'Start Match'}
         </button>
         <button
-          onClick={handleAddToQueue}
+          onClick={handleAddChallenger}
           disabled={isLiveLocked || loadingModels || !modelA || !modelB}
-          title="Add to queue"
-          className="px-3 py-3 rounded-lg text-sm font-bold border-2 border-worm-ink text-worm-ink transition-all disabled:opacity-50 disabled:cursor-not-allowed hover:bg-worm-card"
+          title="Add Model B as challenger (for batch runs)"
+          className="px-3 py-3 rounded-lg text-sm font-bold border-2 border-blue-600 text-blue-600 transition-all disabled:opacity-50 disabled:cursor-not-allowed hover:bg-blue-50"
         >
           <Plus className="w-5 h-5" />
         </button>
       </div>
 
-      {/* Match Queue */}
-      {matchQueue.length > 0 && (
+      {/* Champion vs Challengers Queue */}
+      {challengers.length > 0 && (
         <div className="space-y-2">
           <button
             type="button"
-            onClick={() => setShowQueue(!showQueue)}
+            onClick={() => setShowChallengers(!showChallengers)}
             className="w-full flex items-center justify-between px-3 py-2 rounded border bg-blue-50 text-xs font-semibold border-blue-200 text-blue-800 hover:bg-blue-100 transition-colors"
           >
-            <span>Match Queue ({matchQueue.length})</span>
-            <span>{showQueue ? '^' : 'v'}</span>
+            <span>Champion vs {challengers.length} Challenger{challengers.length !== 1 ? 's' : ''}</span>
+            <span>{showChallengers ? '^' : 'v'}</span>
           </button>
           
-          {showQueue && (
+          {showChallengers && (
             <div className="space-y-2 p-3 bg-white/80 rounded border worm-border">
-              {matchQueue.map((matchup, idx) => (
+              <div className="text-xs font-semibold text-worm-ink mb-2">
+                Champion: <span className="font-mono text-blue-700">{modelA || '(select above)'}</span>
+              </div>
+              
+              <div className="text-xs font-semibold text-worm-muted mb-1">Challengers:</div>
+              {challengers.map((challenger, idx) => (
                 <div
-                  key={matchup.id}
+                  key={challenger}
                   className="flex items-center gap-2 text-xs font-mono bg-worm-card rounded px-2 py-1.5"
                 >
                   <span className="text-worm-muted font-bold">#{idx + 1}</span>
-                  <span className="flex-1 truncate">
-                    {matchup.modelA} <span className="text-worm-muted">vs</span> {matchup.modelB}
-                  </span>
+                  <span className="flex-1 truncate">{challenger}</span>
                   <button
                     type="button"
-                    onClick={() => handleRemoveFromQueue(matchup.id)}
+                    onClick={() => handleRemoveChallenger(challenger)}
                     className="p-1 text-red-600 hover:bg-red-50 rounded"
-                    title="Remove from queue"
+                    title="Remove challenger"
                   >
                     <Trash2 className="w-3.5 h-3.5" />
                   </button>
                 </div>
               ))}
               
+              <div className="text-[11px] text-worm-muted mt-2">
+                Each match opens in a new tab.
+              </div>
+              
               <button
-                onClick={handleStartQueue}
-                disabled={isLiveLocked || matchQueue.length === 0}
+                onClick={handleRunAllChallengers}
+                disabled={isLiveLocked || !modelA || challengers.length === 0}
                 className="w-full px-4 py-2 rounded-lg text-xs font-bold text-white transition-all disabled:opacity-50 disabled:cursor-not-allowed bg-blue-600 hover:bg-blue-700"
               >
-                Start Queue ({matchQueue.length} match{matchQueue.length !== 1 ? 'es' : ''})
+                Run All ({challengers.length} match{challengers.length !== 1 ? 'es' : ''} in new tabs)
               </button>
             </div>
           )}

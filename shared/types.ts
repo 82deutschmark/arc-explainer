@@ -843,6 +843,10 @@ export interface WormArenaFinalSummary {
   roundsPlayed?: number;
   startedAt?: string;
   completedAt?: string;
+  /** Total match duration in seconds (calculated from startedAt/completedAt if available) */
+  durationSeconds?: number;
+  /** Average seconds per round (durationSeconds / roundsPlayed) */
+  avgSecondsPerRound?: number;
 }
 
 /**
