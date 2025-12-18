@@ -1,9 +1,13 @@
 /**
- * Author: Claude Code using Haiku 4.5
- * Date: 2025-12-09
+ * Author: Cascade
+ * Date: 2025-12-18
  * PURPOSE: Worm Arena - Replay viewer for past/completed games. Shows game history,
  *          recent games list, and replay controls. Three-column layout: reasoning logs
- *          (left/right), game board (center). Earthy color palette, monospace reasoning.
+ *          (left/right), game board (center).
+ *
+ *          Note: Final-frame UI shows per-player final summaries inside each reasoning panel.
+ *          Match-wide totals (token/cost aggregates) are rendered once outside the panels
+ *          to avoid confusing duplication.
  * SRP/DRY check: Pass - Replay viewer only, no match-starting logic.
  */
 
@@ -16,6 +20,7 @@ import WormArenaGameBoardSVG from '@/components/WormArenaGameBoardSVG';
 import WormArenaReasoning from '@/components/WormArenaReasoning';
 import WormArenaStatsPanel from '@/components/WormArenaStatsPanel';
 import WormArenaGreatestHits from '@/components/WormArenaGreatestHits';
+import WormArenaSuggestedMatchups from '@/components/WormArenaSuggestedMatchups';
 import { WormArenaControlBar } from '@/components/WormArenaControlBar';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -280,7 +285,6 @@ export default function WormArena() {
     const dataAny = replayData as any;
     const player = dataAny?.players?.[snakeId];
     const game = dataAny?.game;
-    const totals = dataAny?.totals;
     const maxRounds = game?.max_rounds ?? dataAny?.metadata?.max_rounds;
     const rounds = game?.rounds_played ?? dataAny?.metadata?.actual_rounds ?? frames.length;
     const boardW = game?.board?.width;
@@ -373,29 +377,43 @@ export default function WormArena() {
       lines.push(`Apples per round: ${formatInt(numApples)}`);
     }
 
-    if (totals) {
-      const matchIn = totals?.input_tokens;
-      const matchOut = totals?.output_tokens;
-      const matchCost = totals?.cost;
-      const matchTok = (typeof matchIn === 'number' && Number.isFinite(matchIn) ? matchIn : 0) + (typeof matchOut === 'number' && Number.isFinite(matchOut) ? matchOut : 0);
-      lines.push('');
-      lines.push('Match totals:');
-      lines.push(`Input tokens: ${formatInt(matchIn)}`);
-      lines.push(`Output tokens: ${formatInt(matchOut)}`);
-      lines.push(`Total tokens: ${matchTok > 0 ? formatInt(matchTok) : 'N/A'}`);
-      lines.push(`Cost: ${formatUsd(matchCost)} (raw: ${typeof matchCost === 'number' && Number.isFinite(matchCost) ? matchCost : 'N/A'})`);
-      if (typeof rounds === 'number' && Number.isFinite(rounds) && rounds > 0) {
-        if (matchTok > 0) {
-          lines.push(`Avg tokens/round: ${formatInt(matchTok / rounds)}`);
-        }
-        if (typeof matchCost === 'number' && Number.isFinite(matchCost)) {
-          lines.push(`Avg cost/round: ${formatUsd(matchCost / rounds)}`);
-        }
+    return lines.join('\n');
+  };
+
+  const buildMatchTotalsSummary = React.useCallback((): string => {
+    const dataAny = replayData as any;
+    const totals = dataAny?.totals;
+    if (!totals) return '';
+
+    const game = dataAny?.game;
+    const rounds = game?.rounds_played ?? dataAny?.metadata?.actual_rounds ?? frames.length;
+
+    const matchIn = totals?.input_tokens;
+    const matchOut = totals?.output_tokens;
+    const matchCost = totals?.cost;
+    const matchTok =
+      (typeof matchIn === 'number' && Number.isFinite(matchIn) ? matchIn : 0) +
+      (typeof matchOut === 'number' && Number.isFinite(matchOut) ? matchOut : 0);
+
+    const lines: string[] = [];
+    lines.push('Match totals:');
+    lines.push(`Input tokens: ${formatInt(matchIn)}`);
+    lines.push(`Output tokens: ${formatInt(matchOut)}`);
+    lines.push(`Total tokens: ${matchTok > 0 ? formatInt(matchTok) : 'N/A'}`);
+    lines.push(
+      `Cost: ${formatUsd(matchCost)} (raw: ${typeof matchCost === 'number' && Number.isFinite(matchCost) ? matchCost : 'N/A'})`,
+    );
+    if (typeof rounds === 'number' && Number.isFinite(rounds) && rounds > 0) {
+      if (matchTok > 0) {
+        lines.push(`Avg tokens/round: ${formatInt(matchTok / rounds)}`);
+      }
+      if (typeof matchCost === 'number' && Number.isFinite(matchCost)) {
+        lines.push(`Avg cost/round: ${formatUsd(matchCost / rounds)}`);
       }
     }
 
     return lines.join('\n');
-  };
+  }, [replayData, frames.length]);
 
   const appendFinalResultIfNeeded = (snakeId: string, reasoning: string): string => {
     if (!isFinalFrame || !snakeId) return reasoning;
@@ -417,6 +435,11 @@ export default function WormArena() {
   const playerBReasoningForPanel = playerIds.length > 1
     ? appendFinalResultIfNeeded(playerIds[1], playerBReasoningBase)
     : playerBReasoningBase;
+
+  const matchTotalsSummary = React.useMemo(() => {
+    if (!isFinalFrame) return '';
+    return buildMatchTotalsSummary();
+  }, [isFinalFrame, buildMatchTotalsSummary]);
 
   const matchupLabel = React.useMemo(() => {
     if (playerIds.length >= 2) {
@@ -596,9 +619,24 @@ export default function WormArena() {
           />
         </div>
 
-        <div className="mb-8 grid grid-cols-1 lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)] gap-4 items-start">
-          <WormArenaStatsPanel />
+        {matchTotalsSummary && (
+          <Card className="worm-card mb-8">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-base font-bold text-worm-ink">Match totals</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-sm font-mono whitespace-pre-wrap text-worm-ink">{matchTotalsSummary}</div>
+            </CardContent>
+          </Card>
+        )}
+
+        <div className="mb-8 grid grid-cols-1 lg:grid-cols-2 gap-4 items-start">
+          <WormArenaSuggestedMatchups limit={8} compact />
           <WormArenaGreatestHits />
+        </div>
+
+        <div className="mb-8">
+          <WormArenaStatsPanel />
         </div>
 
       </main>

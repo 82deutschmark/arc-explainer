@@ -1101,6 +1101,68 @@ export class SnakeBenchRepository extends BaseRepository {
   }
 
   /**
+   * Get pairing history matrix: for each pair of models that have played,
+   * returns matchesPlayed and lastPlayedAt. Used by suggest-matchups endpoint
+   * to identify unplayed or rare pairings.
+   *
+   * Note: only includes pairs that have actually played; unplayed pairs won't appear.
+   */
+  async getPairingHistory(): Promise<
+    Map<string, { matchesPlayed: number; lastPlayedAt: string | null }>
+  > {
+    const result = new Map<string, { matchesPlayed: number; lastPlayedAt: string | null }>();
+
+    if (!this.isConnected()) {
+      return result;
+    }
+
+    try {
+      // Self-join game_participants to find all (A, B) pairings that occurred in the same game.
+      // We normalize the key so that (A, B) and (B, A) map to the same entry by sorting slugs.
+      const sql = `
+        SELECT
+          LEAST(m1.model_slug, m2.model_slug) AS slug_a,
+          GREATEST(m1.model_slug, m2.model_slug) AS slug_b,
+          COUNT(DISTINCT gp1.game_id) AS matches_played,
+          MAX(COALESCE(g.start_time, g.created_at)) AS last_played_at
+        FROM public.game_participants gp1
+        JOIN public.game_participants gp2
+          ON gp1.game_id = gp2.game_id AND gp1.player_slot < gp2.player_slot
+        JOIN public.models m1 ON gp1.model_id = m1.id
+        JOIN public.models m2 ON gp2.model_id = m2.id
+        JOIN public.games g ON gp1.game_id = g.id
+        WHERE g.status = 'completed'
+        GROUP BY LEAST(m1.model_slug, m2.model_slug), GREATEST(m1.model_slug, m2.model_slug);
+      `;
+
+      const { rows } = await this.query(sql);
+
+      for (const row of rows) {
+        const slugA = String(row.slug_a ?? '').trim();
+        const slugB = String(row.slug_b ?? '').trim();
+        if (!slugA || !slugB) continue;
+
+        const key = `${slugA}|||${slugB}`;
+        const matchesPlayed = parseInt(String(row.matches_played ?? '0'), 10) || 0;
+        const lastPlayedRaw = row.last_played_at;
+        const lastPlayedAt = lastPlayedRaw ? new Date(lastPlayedRaw).toISOString() : null;
+
+        result.set(key, { matchesPlayed, lastPlayedAt });
+      }
+
+      return result;
+    } catch (error) {
+      logger.warn(
+        `SnakeBenchRepository.getPairingHistory: query failed: ${
+          error instanceof Error ? error.message : String(error)
+        }`,
+        'snakebench-db',
+      );
+      return result;
+    }
+  }
+
+  /**
    * Basic local leaderboard: top N models by games played or local win rate.
    */
   async getBasicLeaderboard(limit: number = 10, sortBy: 'gamesPlayed' | 'winRate' = 'gamesPlayed'): Promise<Array<{ modelSlug: string; gamesPlayed: number; wins: number; losses: number; ties: number; winRate?: number }>> {

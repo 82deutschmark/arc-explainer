@@ -15,6 +15,7 @@ import "katex/dist/katex.min.css";
 
 import WormArenaHeader from "@/components/WormArenaHeader";
 import WormArenaGreatestHits from "@/components/WormArenaGreatestHits";
+import WormArenaSuggestedMatchups from "@/components/WormArenaSuggestedMatchups";
 import useWormArenaStats from "@/hooks/useWormArenaStats";
 import {
   useSnakeBenchStats,
@@ -150,15 +151,11 @@ export default function WormArenaStats() {
           </div>
         </div>
 
-        {/* Global greatest hits (replay-friendly matches) */}
-        <Card className="worm-card mt-6">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-lg worm-card-title">Greatest Hits</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <WormArenaGreatestHits />
-          </CardContent>
-        </Card>
+        {/* Suggested matchups + Greatest hits side by side */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
+          <WormArenaSuggestedMatchups limit={10} />
+          <WormArenaGreatestHits />
+        </div>
       </main>
       </div>
     </TooltipProvider>

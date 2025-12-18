@@ -1,9 +1,11 @@
 /**
- * Author: Claude Code using Sonnet 4.5 (Updated 2025-12-02)
- * Date: 2025-12-02
+ * Author: Cascade (Updated 2025-12-18)
+ * Date: 2025-12-18
  * PURPOSE: Vite dev server middleware setup for Express. Configures HMR WebSocket to work
  * correctly when Vite runs in middleware mode behind Express (localhost:5000), ensuring
  * the client connects to the correct port instead of defaulting to 5173.
+ *
+ * Also ensures the dev-mode HTML fallback does NOT intercept API routes under /api/*.
  * SRP/DRY check: Pass - Single responsibility for Vite middleware configuration
  */
 
@@ -65,6 +67,14 @@ export async function setupVite(app: Express, server: Server) {
   app.use(vite.middlewares);
   app.use("*", async (req, res, next) => {
     const url = req.originalUrl;
+
+    // Important: never let the SPA fallback handle API calls.
+    // If an API route is missing/misconfigured, we want Express to return a proper JSON 404/error
+    // rather than returning index.html (which breaks clients expecting JSON).
+    if (url === "/api" || url.startsWith("/api/")) {
+      next();
+      return;
+    }
 
     try {
       const clientTemplate = path.resolve(
