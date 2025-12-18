@@ -3,6 +3,7 @@
  * Date: 2025-12-18
  * PURPOSE: Worm Arena run controls panel with searchable model inputs and match queue.
  *          Model selection is restricted to configured OpenRouter model slugs fetched from /api/models.
+ *          Combobox shows the full configured model list (scrollable) and supports searching.
  *          Champion vs Challengers mode: set one champion, add multiple challengers,
  *          then "Run All" opens each match in a new tab.
  * SRP/DRY check: Pass - Single responsibility: render setup controls.
@@ -98,9 +99,11 @@ function ModelCombobox({
 
   // Filter models based on search input
   const filteredModels = React.useMemo(() => {
-    if (!search.trim()) return models.slice(0, 50); // Show first 50 when no search
+    // IMPORTANT: Do not cap the list here; users rely on being able to scroll through
+    // the full configured model catalog.
+    if (!search.trim()) return models;
     const term = search.toLowerCase();
-    return models.filter((m) => m.toLowerCase().includes(term)).slice(0, 50);
+    return models.filter((m) => m.toLowerCase().includes(term));
   }, [models, search]);
 
   return (
@@ -124,7 +127,7 @@ function ModelCombobox({
             value={search}
             onValueChange={setSearch}
           />
-          <CommandList>
+          <CommandList className="max-h-80 overflow-y-auto">
             <CommandEmpty>
               No models found.
             </CommandEmpty>

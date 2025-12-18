@@ -245,6 +245,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Worm Arena live streaming (SSE wrapper around SnakeBench matches)
   app.post("/api/wormarena/prepare", asyncHandler(wormArenaStreamController.prepare));
   app.get("/api/wormarena/stream/:sessionId", asyncHandler(wormArenaStreamController.stream));
+  app.get("/api/wormarena/resolve/:sessionId", asyncHandler(wormArenaStreamController.resolve));
 
   // Harness-aligned accuracy (public, no auth)
   app.get("/api/accuracy/harness", asyncHandler(getHarnessAlignedAccuracy));
