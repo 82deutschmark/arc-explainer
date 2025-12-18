@@ -1029,7 +1029,7 @@ export class SnakeBenchService {
    * JSON downloads. Instead, it returns the canonical URL and the client fetches directly.
    * This eliminates truncation/timeout issues in deployment environments.
    */
-  async getGame(gameId: string): Promise<{ data?: any; replayUrl?: string }> {
+  async getGame(gameId: string): Promise<{ data?: any; replayUrl?: string; fallbackUrls?: string[] }> {
     if (!gameId) {
       throw new Error('gameId is required');
     }
@@ -1101,7 +1101,7 @@ export class SnakeBenchService {
     }
 
     // No local file: return URL for client to fetch directly (deployment scenario)
-    // Priority: DB replay_path URL > GitHub raw fallback
+    // Priority: DB replay_path URL > snakebench.com upstream > GitHub raw fallback
     if (remoteReplayUrl) {
       logger.info(
         `SnakeBenchService.getGame: returning replayUrl from DB for ${gameId}: ${remoteReplayUrl}`,
@@ -1110,17 +1110,28 @@ export class SnakeBenchService {
       return { replayUrl: remoteReplayUrl };
     }
 
-    // GitHub raw fallback for committed replay assets
+    // Build list of fallback URLs for the client to try
+    // The client will try these in order until one succeeds
+    const fallbackUrls: string[] = [];
+
+    // snakebench.com upstream - for old games that exist on the original site
+    // Their backend redirects to Supabase storage, client follows redirect
+    const upstreamBase = process.env.SNAKEBENCH_UPSTREAM_URL || 'https://snakebench.com';
+    fallbackUrls.push(`${upstreamBase}/api/matches/${gameId}`);
+
+    // GitHub raw fallback for committed replay assets in VoynichLabs/SnakeBench
     const rawBase =
       process.env.SNAKEBENCH_REPLAY_RAW_BASE ||
       'https://raw.githubusercontent.com/VoynichLabs/SnakeBench/main/backend/completed_games';
-    const rawUrl = `${rawBase}/snake_game_${gameId}.json`;
+    fallbackUrls.push(`${rawBase}/snake_game_${gameId}.json`);
 
     logger.info(
-      `SnakeBenchService.getGame: returning GitHub raw replayUrl for ${gameId}: ${rawUrl}`,
+      `SnakeBenchService.getGame: returning fallback replayUrls for ${gameId}: ${fallbackUrls.join(', ')}`,
       'snakebench-service',
     );
-    return { replayUrl: rawUrl };
+
+    // Return primary URL, with fallbacks for client to try
+    return { replayUrl: fallbackUrls[0], fallbackUrls };
   }
 
   /**

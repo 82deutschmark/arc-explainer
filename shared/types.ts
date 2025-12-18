@@ -678,8 +678,10 @@ export interface SnakeBenchGameDetailResponse {
   gameId: string;
   /** Full SnakeBench game JSON payload for replay/inspection (local dev only) */
   data?: any;
-  /** URL to fetch replay JSON directly (deployment mode - client fetches this) */
+  /** Primary URL to fetch replay JSON directly (deployment mode - client fetches this) */
   replayUrl?: string;
+  /** Additional fallback URLs to try if primary fails (snakebench.com, GitHub raw, etc.) */
+  fallbackUrls?: string[];
   error?: string;
   timestamp: number;
 }
