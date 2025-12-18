@@ -1,5 +1,34 @@
 # New entires at the top, use proper SemVer!
 
+### Version 6.5.15  Dec 17, 2025
+
+- **Worm Arena: Match duration display and per-round timestamps** (Author: Claude)
+  - Added **match duration** display to live results panel (calculated from `startedAt`/`completedAt`)
+  - Shows total duration (e.g., "1m 23s") and average time per round (e.g., "4.2s/round avg")
+  - Added `durationSeconds` and `avgSecondsPerRound` fields to `WormArenaFinalSummary` type
+  - **SnakeBench Python backend**: Added `timestamp` field to each frame in `record_frame()` for per-round timing
+  - Future games will now have per-round timestamps stored in the JSON for detailed analysis
+  - **Files Modified**:
+    - `client/src/components/WormArenaLiveResultsPanel.tsx`
+    - `shared/types.ts`
+    - `external/SnakeBench/backend/main.py`
+    - `CHANGELOG.md`
+
+### Version 6.5.14  Dec 17, 2025
+
+- **Worm Arena Live: Champion vs Challengers batch mode** (Author: Claude)
+  - Redesigned match queue to **Champion vs Challengers** pattern:
+    - Set Model A as your "champion"
+    - Add multiple Model B entries as "challengers" using the + button
+    - Click "Run All" to open each match in a **new browser tab**
+  - Each match is prepared via `/api/snakebench/stream/prepare` and opens independently
+  - Searchable combobox retained - type to filter models instead of scrolling through dropdown
+  - Users can still type custom model names if not in the list
+  - **Note**: Per-round timestamps not yet available in game JSON (only game-level `started_at`/`ended_at`)
+  - **Files Modified**:
+    - `client/src/components/WormArenaRunControls.tsx`
+    - `CHANGELOG.md`
+
 ### Version 6.5.13  Dec 17, 2025
 
 - **Worm Arena Live: searchable model selector and match queue** (Author: Claude)
