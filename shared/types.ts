@@ -676,8 +676,12 @@ export interface SnakeBenchMatchSearchResponse {
 export interface SnakeBenchGameDetailResponse {
   success: boolean;
   gameId: string;
-  /** Full SnakeBench game JSON payload for replay/inspection */
+  /** Full SnakeBench game JSON payload for replay/inspection (local dev only) */
   data?: any;
+  /** Primary URL to fetch replay JSON directly (deployment mode - client fetches this) */
+  replayUrl?: string;
+  /** Additional fallback URLs to try if primary fails (snakebench.com, GitHub raw, etc.) */
+  fallbackUrls?: string[];
   error?: string;
   timestamp: number;
 }
@@ -799,6 +803,42 @@ export interface WormArenaGreatestHitsResponse {
 }
 
 /**
+ * Suggested matchup types for "interesting unplayed matches" feature.
+ * Supports two scoring modes: ladder (info gain) vs entertainment (watchability).
+ */
+export type WormArenaSuggestMode = 'ladder' | 'entertainment';
+
+export interface WormArenaPairingHistory {
+  matchesPlayed: number;
+  lastPlayedAt: string | null;
+}
+
+export interface WormArenaModelSummary {
+  modelSlug: string;
+  mu: number;
+  sigma: number;
+  exposed: number;
+  gamesPlayed: number;
+}
+
+export interface WormArenaSuggestedMatchup {
+  modelA: WormArenaModelSummary;
+  modelB: WormArenaModelSummary;
+  history: WormArenaPairingHistory;
+  score: number;
+  reasons: string[];
+}
+
+export interface WormArenaSuggestMatchupsResponse {
+  success: boolean;
+  mode: WormArenaSuggestMode;
+  matchups: WormArenaSuggestedMatchup[];
+  totalCandidates: number;
+  error?: string;
+  timestamp: number;
+}
+
+/**
  * Worm Arena streaming status (lightweight, matches other streaming flows).
  */
 export interface WormArenaStreamStatus {
@@ -843,6 +883,10 @@ export interface WormArenaFinalSummary {
   roundsPlayed?: number;
   startedAt?: string;
   completedAt?: string;
+  /** Total match duration in seconds (calculated from startedAt/completedAt if available) */
+  durationSeconds?: number;
+  /** Average seconds per round (durationSeconds / roundsPlayed) */
+  avgSecondsPerRound?: number;
 }
 
 /**

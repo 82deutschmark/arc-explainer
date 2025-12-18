@@ -1,6 +1,15 @@
+# Author: Codex
+# Date: 2025-12-18
+# PURPOSE: Maintain the documentation index while clarifying how to enable VS Code's proposed chat session menu.
+# SRP/DRY check: Pass - this addition purely documents existing workspace content with no duplication.
+
 # Documentation Index (updated 2025-10-16)
 
 The `docs/` directory is now organized around active focus areas. Use the table below to quickly locate the plan or reference material you need.
+
+## VS Code Proposed API note
+
+`chatSessions/newSession` is a proposed menu identifier and needs the workspace root `package.json` entry `enabledApiProposals: ["chatSessionsProvider"]` to surface in stable builds. The property is committed here, so reopening VS Code normally exposes the menu; otherwise or when experimenting outside this workspace, launch the application with `--enable-proposed-api openai.chatgpt`.
 
 ## Active workstreams (`docs/plans/`)
 
