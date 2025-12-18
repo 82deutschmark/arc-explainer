@@ -1,3 +1,12 @@
+/**
+ * Author: Cascade
+ * Date: 2025-12-18
+ * PURPOSE: React hook for Worm Arena live match streaming via SSE.
+ *          One session = one match. Handles connection, frame streaming, and final summary.
+ *          Batch mode removed - all matches are single-session.
+ * SRP/DRY check: Pass - manages SSE connection state only.
+ */
+
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type {
   SnakeBenchRunMatchRequest,
@@ -5,10 +14,6 @@ import type {
   WormArenaFinalSummary,
   WormArenaStreamStatus,
   WormArenaStreamChunk,
-  WormArenaBatchMatchStart,
-  WormArenaBatchMatchComplete,
-  WormArenaBatchComplete,
-  WormArenaBatchError,
 } from '@shared/types';
 
 type StreamState = 'idle' | 'connecting' | 'starting' | 'in_progress' | 'completed' | 'failed';
@@ -27,8 +32,7 @@ export function useWormArenaStreaming() {
   const statusRef = useRef<StreamState>('idle');
   const sawInitRef = useRef(false);
 
-  // Batch state
-  const [batchResults, setBatchResults] = useState<WormArenaBatchMatchComplete[]>([]);
+  // Match progress state (kept for UI compatibility but batch mode removed)
   const [currentMatchIndex, setCurrentMatchIndex] = useState<number | null>(null);
   const [totalMatches, setTotalMatches] = useState<number | null>(null);
 
@@ -38,17 +42,14 @@ export function useWormArenaStreaming() {
     statusRef.current = status;
   }, [status]);
 
-  const startMatch = useCallback(async (payload: SnakeBenchRunMatchRequest, opponents: string[] = []) => {
+  const startMatch = useCallback(async (payload: SnakeBenchRunMatchRequest) => {
     setIsStarting(true);
     setError(null);
     try {
       const res = await fetch('/api/wormarena/prepare', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          ...payload,
-          opponents: opponents.length > 0 ? opponents : undefined,
-        }),
+        body: JSON.stringify(payload),
       });
       const json = await res.json();
       if (!res.ok || !json?.success) {
@@ -81,11 +82,10 @@ export function useWormArenaStreaming() {
       setPlayerNameBySnakeId({});
       setFinalSummary(null);
       setError(null);
-      setBatchResults([]);
       setCurrentMatchIndex(null);
       setTotalMatches(null);
     }
-  }, [setBatchResults, setCurrentMatchIndex, setError, setFinalSummary, setFrames, setMessage, setPhase, setStatus, setTotalMatches]);
+  }, [setCurrentMatchIndex, setError, setFinalSummary, setFrames, setMessage, setPhase, setStatus, setTotalMatches]);
 
   const connect = useCallback((sessionId: string) => {
     disconnect({ preserveState: false });
@@ -182,73 +182,6 @@ export function useWormArenaStreaming() {
       eventSourceRef.current = null;
     });
 
-    // Batch events
-    es.addEventListener('batch.init', (event) => {
-      try {
-        const data = JSON.parse((event as MessageEvent).data) as { totalMatches: number; modelA: string; modelB: string };
-        sawInitRef.current = true;
-        setStatus('starting');
-        setTotalMatches(data.totalMatches);
-        setBatchResults([]);
-        setCurrentMatchIndex(null);
-        setFrames([]);
-        setFinalSummary(null);
-        setMessage(`Preparing batch of ${data.totalMatches} matches...`);
-      } catch (err: any) {
-        setError(err?.message || 'Failed to parse batch init event');
-      }
-    });
-
-    es.addEventListener('batch.match.start', (event) => {
-      try {
-        const data = JSON.parse((event as MessageEvent).data) as WormArenaBatchMatchStart;
-        setCurrentMatchIndex(data.index);
-        setStatus('in_progress');
-        setFrames([]);
-        setChunks([]);
-        setReasoningBySnakeId({});
-        setPlayerNameBySnakeId({});
-        setMessage(`Running match ${data.index} of ${data.total}...`);
-      } catch (err: any) {
-        setError(err?.message || 'Failed to parse match start event');
-      }
-    });
-
-    es.addEventListener('batch.match.complete', (event) => {
-      try {
-        const data = JSON.parse((event as MessageEvent).data) as WormArenaBatchMatchComplete;
-        setBatchResults((prev) => [...prev, data]);
-      } catch (err: any) {
-        setError(err?.message || 'Failed to parse match complete event');
-      }
-    });
-
-    es.addEventListener('batch.error', (event) => {
-      try {
-        const data = JSON.parse((event as MessageEvent).data) as WormArenaBatchError;
-        setError(`Match ${data.index} failed: ${data.error}`);
-        // Continue running batch despite error
-      } catch (err: any) {
-        setError(err?.message || 'Match error');
-      }
-    });
-
-    es.addEventListener('batch.complete', (event) => {
-      try {
-        const data = JSON.parse((event as MessageEvent).data) as WormArenaBatchComplete;
-        setStatus('completed');
-        setMessage(`Batch complete: ${data.completedMatches}/${data.totalMatches} matches finished`);
-        if (data.failedMatches > 0) {
-          setError(`${data.failedMatches} matches failed`);
-        }
-        es.close();
-        eventSourceRef.current = null;
-      } catch (err: any) {
-        setError(err?.message || 'Failed to parse batch complete event');
-        setStatus('failed');
-      }
-    });
-
     es.addEventListener('stream.error', (event) => {
       try {
         const data = JSON.parse((event as MessageEvent).data) as { message?: string };
@@ -298,7 +231,6 @@ export function useWormArenaStreaming() {
     finalSummary,
     error,
     isStarting,
-    batchResults,
     currentMatchIndex,
     totalMatches,
     startMatch,

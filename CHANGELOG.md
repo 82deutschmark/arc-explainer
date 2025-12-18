@@ -1,6 +1,32 @@
-# New entires at the top, use proper SemVer!
+# New entires at the top, use proper SemVer! 🜟🜟🜟🜟 
 
-### Version 6.5.16  Dec 18, 2025
+### Version 6.5.18  Dec 18, 2025
+
+- **Worm Arena Live: durable share links and single-match architecture** (Author: Cascade)
+  - **Durable share links**: Visiting a `/worm-arena/live/:sessionId` URL after the match ends now automatically redirects to the replay page instead of showing an error.
+  - **Share button improvements**: Copy button now copies a **replay URL** when the match is complete (gameId-based), or the live URL while running.
+  - **Removed batch mode**: One session = one match. Deleted unused batch logic from frontend hook and backend controller.
+  - **Deleted dead code**: Removed unused `WormArenaSetup.tsx` component.
+  - Added `GET /api/wormarena/resolve/:sessionId` endpoint that maps sessionId to gameId for completed matches (30-day TTL).
+  - **Files Modified**:
+    - `client/src/pages/WormArenaLive.tsx`
+    - `client/src/hooks/useWormArenaStreaming.ts`
+    - `server/controllers/wormArenaStreamController.ts`
+    - `server/routes.ts`
+    - `CHANGELOG.md`
+  - **Files Deleted**:
+    - `client/src/components/WormArenaSetup.tsx`
+
+### Version 6.5.17  Dec 18, 2025
+
+- **Worm Arena Live: model dropdown shows full catalog** (Author: Cascade)
+  - Fixed the model combobox list being capped (it could stop early and hide many configured models).
+  - Dropdown is now explicitly scrollable and will show the full configured model catalog.
+  - **Files Modified**:
+    - `client/src/components/WormArenaRunControls.tsx`
+    - `CHANGELOG.md`
+
+### Version 6.5.16  Dec 17, 2025 🜟 20:42
 
 - **Worm Arena Live: OpenRouter-only configured model slugs** (Author: Cascade)
   - Live match setup now clearly indicates **OpenRouter models only**.

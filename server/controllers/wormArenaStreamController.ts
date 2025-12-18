@@ -1,11 +1,11 @@
 /**
- * Author: Claude Code using Haiku 4.5
- * Date: 2025-12-10
- * PURPOSE: SSE controller for Worm Arena matches (single and batch).
- *          Prepares a session, then streams status + results for each match.
- *          Supports batch runs with sequential match execution.
- * SRP/DRY check: Pass — orchestrates batch logic via runMatch loop,
- *                delegates match execution to service layer.
+ * Author: Cascade
+ * Date: 2025-12-18
+ * PURPOSE: SSE controller for Worm Arena live matches.
+ *          One session = one match. Prepares a session, streams status + frames,
+ *          then persists sessionId -> gameId mapping so completed sessions can
+ *          redirect to replay pages (durable share links).
+ * SRP/DRY check: Pass — single-match streaming only, delegates to service layer.
  */
 
 import type { Request, Response } from 'express';
@@ -16,77 +16,47 @@ import type {
   SnakeBenchRunMatchRequest,
   WormArenaFinalSummary,
   WormArenaStreamStatus,
-  WormArenaBatchMatchStart,
-  WormArenaBatchMatchComplete,
-  WormArenaBatchComplete,
 } from '../../shared/types';
 import { logger } from '../utils/logger';
 
 type PendingSession = {
   payload: SnakeBenchRunMatchRequest;
-  opponents?: string[]; // Array of opponent model IDs for multi-opponent batch; undefined for single match
   createdAt: number;
   expiresAt: number;
 };
 
-const PENDING_TTL_MS = 5 * 60 * 1000; // 5 minutes
-const MAX_BATCH_COUNT = 10; // Safety limit for batch runs
+// Completed session mapping: sessionId -> gameId (for replay redirect)
+type CompletedSession = {
+  gameId: string;
+  modelA: string;
+  modelB: string;
+  completedAt: number;
+};
+
+const PENDING_TTL_MS = 5 * 60 * 1000; // 5 minutes for pending sessions
+const COMPLETED_TTL_MS = 30 * 24 * 60 * 60 * 1000; // 30 days for completed session mapping
 const pendingSessions: Map<string, PendingSession> = new Map();
+const completedSessions: Map<string, CompletedSession> = new Map();
 
 function generateSessionId(): string {
   return crypto.randomUUID();
 }
 
-function validatePayload(body: any): { payload?: SnakeBenchRunMatchRequest; opponents?: string[]; error?: string } {
-  const { modelA, modelB, opponents: opponentsRaw, count: countRaw } = body || {};
+/**
+ * Validates payload for single match (no batch mode).
+ */
+function validatePayload(body: any): { payload?: SnakeBenchRunMatchRequest; error?: string } {
+  const { modelA, modelB } = body || {};
   if (!modelA || typeof modelA !== 'string') {
     return { error: 'modelA is required string.' };
   }
-
-  // Determine opponents: either from explicit array or legacy count parameter
-  let opponents: string[] | undefined;
-
-  if (opponentsRaw && Array.isArray(opponentsRaw)) {
-    // New format: explicit opponent list
-    opponents = opponentsRaw
-      .filter((op) => typeof op === 'string' && op.trim().length > 0)
-      .map((op) => op.trim());
-
-    if (opponents.length === 0) {
-      return { error: 'opponents array must contain at least one model' };
-    }
-    if (opponents.length > MAX_BATCH_COUNT) {
-      return { error: `opponents array cannot exceed ${MAX_BATCH_COUNT} models` };
-    }
-  } else if (countRaw !== undefined) {
-    // Legacy format: count parameter (for backward compatibility)
-    // In legacy mode with count, modelB is required
-    const { modelB } = body || {};
-    if (!modelB || typeof modelB !== 'string') {
-      return { error: 'Legacy count mode requires modelB' };
-    }
-
-    const count = Math.floor(Number(countRaw));
-    if (!Number.isFinite(count) || count < 1 || count > MAX_BATCH_COUNT) {
-      return { error: `count must be between 1 and ${MAX_BATCH_COUNT}` };
-    }
-
-    // Convert legacy count to repeated opponents array
-    if (count > 1) {
-      opponents = Array(count).fill(modelB);
-    }
-    // If count === 1, leave opponents undefined for single match
-  } else if (modelB && typeof modelB === 'string' && modelB.trim().length > 0) {
-    // Curated/single-match format: modelB provided, no opponents/count.
-    opponents = undefined;
-  } else {
-    return { error: 'Must provide modelB for single match or an "opponents" array / "count" for batch.' };
+  if (!modelB || typeof modelB !== 'string' || modelB.trim().length === 0) {
+    return { error: 'modelB is required string.' };
   }
 
   const req: SnakeBenchRunMatchRequest = {
-    modelA: String(modelA),
-    // For batch mode, modelB will be overridden per opponent; for single match keep legacy modelB.
-    modelB: opponents ? '' : String(modelB ?? ''),
+    modelA: String(modelA).trim(),
+    modelB: String(modelB).trim(),
   };
   if (body.width !== undefined) req.width = Number(body.width);
   if (body.height !== undefined) req.height = Number(body.height);
@@ -96,13 +66,28 @@ function validatePayload(body: any): { payload?: SnakeBenchRunMatchRequest; oppo
   if (body.provider && typeof body.provider === 'string') {
     req.provider = body.provider as SnakeBenchRunMatchRequest['provider'];
   }
-  return { payload: req, opponents };
+  return { payload: req };
+}
+
+/**
+ * Periodically clean up expired completed sessions (runs on each resolve call).
+ */
+function cleanupExpiredCompletedSessions(): void {
+  const now = Date.now();
+  for (const [sessionId, session] of completedSessions.entries()) {
+    if (now - session.completedAt > COMPLETED_TTL_MS) {
+      completedSessions.delete(sessionId);
+    }
+  }
 }
 
 export const wormArenaStreamController = {
+  /**
+   * Prepare a new live match session. Returns sessionId for SSE connection.
+   */
   async prepare(req: Request, res: Response) {
     logger.info(`[WormArenaStream] PREPARE called with body: ${JSON.stringify(req.body)}`, 'worm-arena-stream');
-    const { payload, opponents, error } = validatePayload(req.body);
+    const { payload, error } = validatePayload(req.body);
     if (error || !payload) {
       logger.warn(`[WormArenaStream] Validation error: ${error}`, 'worm-arena-stream');
       res.status(422).json({ success: false, error: error ?? 'Invalid payload' });
@@ -113,12 +98,11 @@ export const wormArenaStreamController = {
     const now = Date.now();
     pendingSessions.set(sessionId, {
       payload,
-      opponents,
       createdAt: now,
       expiresAt: now + PENDING_TTL_MS,
     });
 
-    logger.info(`[WormArenaStream] Session created: ${sessionId} for ${payload.modelA} vs ${payload.modelB || opponents?.join(',')}`, 'worm-arena-stream');
+    logger.info(`[WormArenaStream] Session created: ${sessionId} for ${payload.modelA} vs ${payload.modelB}`, 'worm-arena-stream');
 
     res.json({
       success: true,
@@ -127,6 +111,9 @@ export const wormArenaStreamController = {
     });
   },
 
+  /**
+   * SSE stream endpoint for live match. Runs one match and streams frames.
+   */
   async stream(req: Request, res: Response) {
     const { sessionId } = req.params as { sessionId?: string };
     if (!sessionId) {
@@ -146,135 +133,51 @@ export const wormArenaStreamController = {
     }
 
     const connection = sseStreamManager.register(sessionId, res);
-    const isBatch = pending.opponents && pending.opponents.length > 0;
 
-    if (isBatch) {
-      // Batch initialization with opponent list
-      sseStreamManager.sendEvent(sessionId, 'batch.init', {
-        matchId: sessionId,
-        totalMatches: pending.opponents!.length,
-        modelA: pending.payload.modelA,
-        opponents: pending.opponents,
-      });
-    } else {
-      // Single match initialization (for backward compatibility)
-      sseStreamManager.sendEvent(sessionId, 'stream.init', {
-        matchId: sessionId,
-        sessionId,
-        createdAt: new Date(connection.createdAt).toISOString(),
-        payload: { modelA: pending.payload.modelA, modelB: pending.payload.modelB },
-      });
-    }
+    // Single match initialization
+    sseStreamManager.sendEvent(sessionId, 'stream.init', {
+      matchId: sessionId,
+      sessionId,
+      createdAt: new Date(connection.createdAt).toISOString(),
+      payload: { modelA: pending.payload.modelA, modelB: pending.payload.modelB },
+    });
 
     const sendStatus = (status: WormArenaStreamStatus) => {
       sseStreamManager.sendEvent(sessionId, 'stream.status', status);
     };
 
     try {
-      if (isBatch) {
-        // Execute batch of matches with different opponents
-        const opponents = pending.opponents!;
-        const results: WormArenaBatchMatchComplete[] = [];
-        let failedCount = 0;
+      // Run single match, streaming frames to SSE
+      const result = await snakeBenchService.runMatchStreaming(pending.payload, {
+        onStatus: sendStatus,
+        onFrame: (frame) => {
+          sseStreamManager.sendEvent(sessionId, 'stream.frame', frame);
+        },
+        onChunk: (chunk) => {
+          sseStreamManager.sendEvent(sessionId, 'stream.chunk', chunk);
+        },
+      });
 
-        for (let i = 0; i < opponents.length; i += 1) {
-          const matchNum = i + 1; // 1-based for user display
-          const currentOpponent = opponents[i];
+      // Persist sessionId -> gameId mapping for replay resolution
+      completedSessions.set(sessionId, {
+        gameId: result.gameId,
+        modelA: result.modelA,
+        modelB: result.modelB,
+        completedAt: Date.now(),
+      });
+      logger.info(`[WormArenaStream] Match completed: sessionId=${sessionId} -> gameId=${result.gameId}`, 'worm-arena-stream');
 
-          // Create match payload with current opponent
-          const matchPayload: SnakeBenchRunMatchRequest = {
-            ...pending.payload,
-            modelB: currentOpponent,
-          };
-
-          // Emit match start with specific opponent
-          const matchStartEvent: WormArenaBatchMatchStart = {
-            matchId: sessionId,
-            index: matchNum,
-            total: opponents.length,
-            modelA: pending.payload.modelA,
-            modelB: currentOpponent,
-          };
-          sseStreamManager.sendEvent(sessionId, 'batch.match.start', matchStartEvent);
-          sendStatus({
-            state: 'in_progress',
-            message: `Running match ${matchNum} of ${opponents.length}: ${pending.payload.modelA} vs ${currentOpponent}...`,
-          });
-
-          try {
-            // Run the match with current opponent, streaming stdout/live frames to SSE
-            const result = await snakeBenchService.runMatchStreaming(matchPayload, {
-              onStatus: sendStatus,
-              onFrame: (frame) => {
-                sseStreamManager.sendEvent(sessionId, 'stream.frame', frame);
-              },
-              onChunk: (chunk) => {
-                sseStreamManager.sendEvent(sessionId, 'stream.chunk', chunk);
-              },
-            });
-
-            // Emit match complete
-            const matchCompleteEvent: WormArenaBatchMatchComplete = {
-              matchId: sessionId,
-              index: matchNum,
-              total: opponents.length,
-              gameId: result.gameId,
-              modelA: result.modelA,
-              modelB: result.modelB,
-              scores: result.scores ?? {},
-              results: result.results ?? {},
-            };
-            sseStreamManager.sendEvent(sessionId, 'batch.match.complete', matchCompleteEvent);
-            results.push(matchCompleteEvent);
-          } catch (err: any) {
-            failedCount += 1;
-            const message = err?.message || `Match ${matchNum} failed`;
-            logger.error(`[WormArenaStream] Multi-opponent match ${matchNum} (${currentOpponent}) failed: ${message}`, 'worm-arena-stream');
-            sseStreamManager.sendEvent(sessionId, 'batch.error', {
-              index: matchNum,
-              total: opponents.length,
-              error: message,
-            });
-            // Continue with next opponent despite error
-          }
-        }
-
-        // Emit batch complete
-        const batchCompleteEvent: WormArenaBatchComplete = {
-          matchId: sessionId,
-          totalMatches: opponents.length,
-          completedMatches: results.length,
-          failedMatches: failedCount,
-        };
-        sendStatus({
-          state: 'completed',
-          message: `Batch complete: ${results.length}/${opponents.length} matches finished`,
-        });
-        sseStreamManager.sendEvent(sessionId, 'batch.complete', batchCompleteEvent);
-        sseStreamManager.close(sessionId);
-      } else {
-        // Single match (legacy flow)
-        const result = await snakeBenchService.runMatchStreaming(pending.payload, {
-          onStatus: sendStatus,
-          onFrame: (frame) => {
-            sseStreamManager.sendEvent(sessionId, 'stream.frame', frame);
-          },
-          onChunk: (chunk) => {
-            sseStreamManager.sendEvent(sessionId, 'stream.chunk', chunk);
-          },
-        });
-        const summary: WormArenaFinalSummary = {
-          matchId: sessionId,
-          gameId: result.gameId,
-          modelA: result.modelA,
-          modelB: result.modelB,
-          scores: result.scores ?? {},
-          results: result.results ?? {},
-        };
-        sendStatus({ state: 'completed', message: 'Match finished.' });
-        sseStreamManager.sendEvent(sessionId, 'stream.complete', summary);
-        sseStreamManager.close(sessionId);
-      }
+      const summary: WormArenaFinalSummary = {
+        matchId: sessionId,
+        gameId: result.gameId,
+        modelA: result.modelA,
+        modelB: result.modelB,
+        scores: result.scores ?? {},
+        results: result.results ?? {},
+      };
+      sendStatus({ state: 'completed', message: 'Match finished.' });
+      sseStreamManager.sendEvent(sessionId, 'stream.complete', summary);
+      sseStreamManager.close(sessionId);
     } catch (err: any) {
       const message = err?.message || 'Match failed';
       logger.error(`[WormArenaStream] Run failed: ${message}`, 'worm-arena-stream');
@@ -282,5 +185,53 @@ export const wormArenaStreamController = {
     } finally {
       pendingSessions.delete(sessionId);
     }
+  },
+
+  /**
+   * Resolve a sessionId to its completed match gameId (for replay redirect).
+   * This enables durable share links - visitors to /worm-arena/live/:sessionId
+   * after the match ends can be redirected to /worm-arena?matchId=:gameId.
+   */
+  async resolve(req: Request, res: Response) {
+    const { sessionId } = req.params as { sessionId?: string };
+    if (!sessionId) {
+      res.status(400).json({ success: false, error: 'Missing sessionId' });
+      return;
+    }
+
+    // Cleanup expired sessions periodically
+    cleanupExpiredCompletedSessions();
+
+    // Check if session is still pending (match in progress)
+    const pending = pendingSessions.get(sessionId);
+    if (pending) {
+      res.json({
+        success: true,
+        status: 'pending',
+        message: 'Match is still in progress or waiting to start.',
+      });
+      return;
+    }
+
+    // Check if session completed and we have gameId mapping
+    const completed = completedSessions.get(sessionId);
+    if (completed) {
+      res.json({
+        success: true,
+        status: 'completed',
+        gameId: completed.gameId,
+        modelA: completed.modelA,
+        modelB: completed.modelB,
+        replayUrl: `/worm-arena?matchId=${encodeURIComponent(completed.gameId)}`,
+      });
+      return;
+    }
+
+    // Session unknown - either never existed or expired
+    res.json({
+      success: true,
+      status: 'unknown',
+      message: 'Session not found. It may have expired or never existed.',
+    });
   },
 };
