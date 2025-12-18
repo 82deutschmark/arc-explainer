@@ -361,15 +361,25 @@ export class SnakeBenchRepository extends BaseRepository {
     }
 
     const model = String(query.model ?? '').trim();
-    if (!model) {
-      return { rows: [], total: 0 };
-    }
+    // Model is now optional - can search across all models
 
     const opponent = query.opponent != null ? String(query.opponent).trim() : '';
     const result = query.result;
+    const deathReason = query.deathReason;
 
-    const minRoundsRaw = query.minRounds != null ? Number(query.minRounds) : undefined;
-    const minRounds = Number.isFinite(minRoundsRaw as number) ? Math.max(0, Math.floor(minRoundsRaw as number)) : undefined;
+    // Parse numeric filters
+    const parseNum = (val: number | undefined): number | undefined => {
+      if (val == null) return undefined;
+      const n = Number(val);
+      return Number.isFinite(n) ? n : undefined;
+    };
+
+    const minRounds = parseNum(query.minRounds);
+    const maxRounds = parseNum(query.maxRounds);
+    const minScore = parseNum(query.minScore);
+    const maxScore = parseNum(query.maxScore);
+    const minCost = parseNum(query.minCost);
+    const maxCost = parseNum(query.maxCost);
 
     const limitRaw = query.limit != null ? Number(query.limit) : 50;
     const limit = Number.isFinite(limitRaw) ? Math.max(1, Math.min(Math.floor(limitRaw), 200)) : 50;
@@ -383,8 +393,11 @@ export class SnakeBenchRepository extends BaseRepository {
     const where: string[] = [];
     const params: any[] = [];
 
-    params.push(model);
-    where.push(`m.model_slug = $${params.length}`);
+    // Model filter (optional now)
+    if (model) {
+      params.push(model);
+      where.push(`m.model_slug = $${params.length}`);
+    }
     where.push(`g.status = 'completed'`);
 
     if (opponent) {
@@ -397,9 +410,44 @@ export class SnakeBenchRepository extends BaseRepository {
       where.push(`gp.result = $${params.length}`);
     }
 
+    // Death reason filter
+    if (deathReason === 'head_collision' || deathReason === 'body_collision' || deathReason === 'wall') {
+      params.push(deathReason);
+      where.push(`gp.death_reason = $${params.length}`);
+    } else if (deathReason === 'survived') {
+      where.push(`gp.death_reason IS NULL`);
+    }
+
     if (minRounds != null) {
-      params.push(minRounds);
+      params.push(Math.max(0, Math.floor(minRounds)));
       where.push(`COALESCE(g.rounds, 0) >= $${params.length}`);
+    }
+
+    if (maxRounds != null) {
+      params.push(Math.max(0, Math.floor(maxRounds)));
+      where.push(`COALESCE(g.rounds, 0) <= $${params.length}`);
+    }
+
+    // Score filters (on my_score)
+    if (minScore != null) {
+      params.push(Math.max(0, Math.floor(minScore)));
+      where.push(`COALESCE(gp.score, 0) >= $${params.length}`);
+    }
+
+    if (maxScore != null) {
+      params.push(Math.max(0, Math.floor(maxScore)));
+      where.push(`COALESCE(gp.score, 0) <= $${params.length}`);
+    }
+
+    // Cost filters
+    if (minCost != null) {
+      params.push(Math.max(0, minCost));
+      where.push(`COALESCE(g.total_cost, 0) >= $${params.length}`);
+    }
+
+    if (maxCost != null) {
+      params.push(Math.max(0, maxCost));
+      where.push(`COALESCE(g.total_cost, 0) <= $${params.length}`);
     }
 
     const parseDate = (value: string | undefined): Date | null => {
@@ -439,6 +487,8 @@ export class SnakeBenchRepository extends BaseRepository {
           return `GREATEST(COALESCE(gp.score, 0), COALESCE(opp_gp.score, 0))`;
         case 'scoreDelta':
           return `ABS(COALESCE(gp.score, 0) - COALESCE(opp_gp.score, 0))`;
+        case 'myScore':
+          return `COALESCE(gp.score, 0)`;
         case 'startedAt':
         default:
           return `COALESCE(g.start_time, g.created_at, NOW())`;
@@ -457,6 +507,8 @@ export class SnakeBenchRepository extends BaseRepository {
           COALESCE(gp.score, 0) AS my_score,
           COALESCE(opp_gp.score, 0) AS opponent_score,
           COALESCE(gp.result, 'tied') AS my_result,
+          gp.death_reason,
+          m.model_slug AS model_slug,
           COALESCE(opp.model_slug, '') AS opponent_slug
         FROM public.game_participants gp
         JOIN public.models m ON gp.model_id = m.id
@@ -498,10 +550,16 @@ export class SnakeBenchRepository extends BaseRepository {
         const resultLabel: SnakeBenchResultLabel =
           resultLabelRaw === 'won' || resultLabelRaw === 'lost' || resultLabelRaw === 'tied' ? resultLabelRaw : 'tied';
 
+        // Parse death reason - null means survived (no death)
+        const deathReasonRaw = row.death_reason ? String(row.death_reason) : null;
+        const deathReasonParsed = deathReasonRaw === 'head_collision' || deathReasonRaw === 'body_collision' || deathReasonRaw === 'wall'
+          ? deathReasonRaw
+          : null;
+
         return {
           gameId: String(row.game_id ?? ''),
           startedAt,
-          model,
+          model: model || String(row.model_slug ?? ''),
           opponent: String(row.opponent_slug ?? ''),
           result: resultLabel,
           myScore,
@@ -512,6 +570,7 @@ export class SnakeBenchRepository extends BaseRepository {
           scoreDelta,
           boardWidth: Number(row.board_width ?? 0) || 0,
           boardHeight: Number(row.board_height ?? 0) || 0,
+          deathReason: deathReasonParsed,
         };
       });
 

@@ -21,6 +21,7 @@ import type {
   SnakeBenchMatchSearchSortBy,
   SnakeBenchMatchSearchSortDir,
   SnakeBenchMatchSearchRow,
+  SnakeBenchDeathReason,
 } from '@shared/types';
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -52,12 +53,27 @@ type MatchFilters = {
   model: string;
   opponent: string;
   result: SnakeBenchMatchSearchResultLabel | 'any';
+  deathReason: SnakeBenchDeathReason | 'any';
   minRounds: string;
+  maxRounds: string;
+  minScore: string;
+  maxScore: string;
+  minCost: string;
+  maxCost: string;
   from: string;
   to: string;
   sortBy: SnakeBenchMatchSearchSortBy;
   sortDir: SnakeBenchMatchSearchSortDir;
   limit: number;
+};
+
+/** Human-readable labels for death reasons */
+const DEATH_REASON_LABELS: Record<SnakeBenchDeathReason | 'any', string> = {
+  any: 'Any',
+  head_collision: 'Head Collision',
+  body_collision: 'Body Collision',
+  wall: 'Hit Wall',
+  survived: 'Survived (no death)',
 };
 
 const LONG_MATCH_PRESETS: Array<{ label: string; minRounds: string }> = [
@@ -101,7 +117,13 @@ export default function WormArenaMatches() {
       model: defaultModelFromQuery ?? '',
       opponent: '',
       result: 'any',
-      minRounds: '50',
+      deathReason: 'any',
+      minRounds: '',
+      maxRounds: '',
+      minScore: '',
+      maxScore: '',
+      minCost: '',
+      maxCost: '',
       from: '',
       to: '',
       sortBy: 'rounds',
@@ -150,17 +172,32 @@ export default function WormArenaMatches() {
   React.useEffect(() => {
     if (!appliedFilters) return;
     const trimmedModel = appliedFilters.model.trim();
-    if (!trimmedModel) return;
+    // Model is now optional - can search across all models
+    if (!trimmedModel && !appliedFilters.opponent.trim() && appliedFilters.deathReason === 'any' && !appliedFilters.minRounds.trim()) {
+      // Require at least one filter to avoid returning everything
+      return;
+    }
 
     const params = new URLSearchParams();
-    params.set('model', trimmedModel);
+    if (trimmedModel) params.set('model', trimmedModel);
     if (appliedFilters.opponent.trim()) params.set('opponent', appliedFilters.opponent.trim());
     if (appliedFilters.result !== 'any') params.set('result', appliedFilters.result);
+    if (appliedFilters.deathReason !== 'any') params.set('deathReason', appliedFilters.deathReason);
 
-    const minRoundsNum = Number(appliedFilters.minRounds);
-    if (appliedFilters.minRounds.trim().length > 0 && Number.isFinite(minRoundsNum)) {
-      params.set('minRounds', String(Math.max(0, Math.floor(minRoundsNum))));
-    }
+    // Numeric range filters helper
+    const setNumericParam = (key: string, value: string) => {
+      const num = Number(value);
+      if (value.trim().length > 0 && Number.isFinite(num)) {
+        params.set(key, String(Math.max(0, num)));
+      }
+    };
+
+    setNumericParam('minRounds', appliedFilters.minRounds);
+    setNumericParam('maxRounds', appliedFilters.maxRounds);
+    setNumericParam('minScore', appliedFilters.minScore);
+    setNumericParam('maxScore', appliedFilters.maxScore);
+    setNumericParam('minCost', appliedFilters.minCost);
+    setNumericParam('maxCost', appliedFilters.maxCost);
 
     if (appliedFilters.from.trim()) params.set('from', appliedFilters.from.trim());
     if (appliedFilters.to.trim()) params.set('to', appliedFilters.to.trim());
@@ -258,14 +295,16 @@ export default function WormArenaMatches() {
               </AccordionTrigger>
               <AccordionContent className="px-4 pb-4">
                 <div className="space-y-4">
+                  {/* Row 1: Model filters */}
                   <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-3">
                     <div className="space-y-1">
-                      <div className="text-xs font-semibold text-muted-foreground">Model (required)</div>
+                      <div className="text-xs font-semibold text-muted-foreground">Model (optional)</div>
                       <Select value={draftFilters.model} onValueChange={(value) => updateDraft({ model: value })}>
                         <SelectTrigger className="worm-input">
-                          <SelectValue placeholder="Select a model" />
+                          <SelectValue placeholder="Any model" />
                         </SelectTrigger>
                         <SelectContent>
+                          <SelectItem value="">Any model</SelectItem>
                           {availableModels.map((m) => (
                             <SelectItem key={m} value={m}>
                               {m}
@@ -281,6 +320,7 @@ export default function WormArenaMatches() {
                         className="worm-input"
                         value={draftFilters.opponent}
                         onChange={(e) => updateDraft({ opponent: e.target.value })}
+                        placeholder="e.g. grok, deepseek"
                       />
                     </div>
 
@@ -291,16 +331,35 @@ export default function WormArenaMatches() {
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="any">any</SelectItem>
-                          <SelectItem value="won">won</SelectItem>
-                          <SelectItem value="lost">lost</SelectItem>
-                          <SelectItem value="tied">tied</SelectItem>
+                          <SelectItem value="any">Any</SelectItem>
+                          <SelectItem value="won">Won</SelectItem>
+                          <SelectItem value="lost">Lost</SelectItem>
+                          <SelectItem value="tied">Tied</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
 
                     <div className="space-y-1">
-                      <div className="text-xs font-semibold text-muted-foreground">Min rounds</div>
+                      <div className="text-xs font-semibold text-muted-foreground">Death Reason</div>
+                      <Select value={draftFilters.deathReason} onValueChange={(value) => updateDraft({ deathReason: value as any })}>
+                        <SelectTrigger className="worm-input">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {(Object.keys(DEATH_REASON_LABELS) as Array<SnakeBenchDeathReason | 'any'>).map((key) => (
+                            <SelectItem key={key} value={key}>
+                              {DEATH_REASON_LABELS[key]}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+
+                  {/* Row 2: Numeric ranges */}
+                  <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-3">
+                    <div className="space-y-1">
+                      <div className="text-xs font-semibold text-muted-foreground">Min Rounds</div>
                       <Input
                         className="worm-input"
                         value={draftFilters.minRounds}
@@ -308,78 +367,143 @@ export default function WormArenaMatches() {
                         inputMode="numeric"
                         placeholder="e.g. 50"
                       />
-                      <div className="flex flex-wrap items-center gap-1.5 pt-1">
-                        {LONG_MATCH_PRESETS.map((preset) => {
-                          const active = preset.minRounds === activePreset;
-                          return (
-                            <Button
-                              key={preset.minRounds}
-                              type="button"
-                              size="sm"
-                              variant={active ? 'default' : 'outline'}
-                              className="text-xs px-2 py-1 h-auto"
-                              onClick={() => updateDraft({ minRounds: preset.minRounds })}
-                            >
-                              {preset.label}
-                            </Button>
-                          );
-                        })}
-                        <Button
-                          type="button"
-                          size="sm"
-                          variant="ghost"
-                          className="text-xs px-2 py-1 h-auto"
-                          onClick={() => updateDraft({ minRounds: '' })}
-                          disabled={!draftFilters.minRounds.trim()}
-                        >
-                          Clear
-                        </Button>
-                      </div>
                     </div>
 
                     <div className="space-y-1">
-                      <div className="text-xs font-semibold text-muted-foreground">From (ISO or ms)</div>
+                      <div className="text-xs font-semibold text-muted-foreground">Max Rounds</div>
+                      <Input
+                        className="worm-input"
+                        value={draftFilters.maxRounds}
+                        onChange={(e) => updateDraft({ maxRounds: e.target.value })}
+                        inputMode="numeric"
+                        placeholder="e.g. 150"
+                      />
+                    </div>
+
+                    <div className="space-y-1">
+                      <div className="text-xs font-semibold text-muted-foreground">Min Score</div>
+                      <Input
+                        className="worm-input"
+                        value={draftFilters.minScore}
+                        onChange={(e) => updateDraft({ minScore: e.target.value })}
+                        inputMode="numeric"
+                        placeholder="e.g. 20"
+                      />
+                    </div>
+
+                    <div className="space-y-1">
+                      <div className="text-xs font-semibold text-muted-foreground">Max Score</div>
+                      <Input
+                        className="worm-input"
+                        value={draftFilters.maxScore}
+                        onChange={(e) => updateDraft({ maxScore: e.target.value })}
+                        inputMode="numeric"
+                        placeholder="e.g. 30"
+                      />
+                    </div>
+
+                    <div className="space-y-1">
+                      <div className="text-xs font-semibold text-muted-foreground">Min Cost ($)</div>
+                      <Input
+                        className="worm-input"
+                        value={draftFilters.minCost}
+                        onChange={(e) => updateDraft({ minCost: e.target.value })}
+                        inputMode="decimal"
+                        placeholder="e.g. 1.00"
+                      />
+                    </div>
+
+                    <div className="space-y-1">
+                      <div className="text-xs font-semibold text-muted-foreground">Max Cost ($)</div>
+                      <Input
+                        className="worm-input"
+                        value={draftFilters.maxCost}
+                        onChange={(e) => updateDraft({ maxCost: e.target.value })}
+                        inputMode="decimal"
+                        placeholder="e.g. 10.00"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Quick round presets */}
+                  <div className="flex flex-wrap items-center gap-1.5">
+                    <span className="text-xs font-semibold text-muted-foreground mr-1">Quick:</span>
+                    {LONG_MATCH_PRESETS.map((preset) => {
+                      const active = preset.minRounds === activePreset;
+                      return (
+                        <Button
+                          key={preset.minRounds}
+                          type="button"
+                          size="sm"
+                          variant={active ? 'default' : 'outline'}
+                          className="text-xs px-2 py-1 h-auto"
+                          onClick={() => updateDraft({ minRounds: preset.minRounds })}
+                        >
+                          {preset.label}
+                        </Button>
+                      );
+                    })}
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="ghost"
+                      className="text-xs px-2 py-1 h-auto"
+                      onClick={() => updateDraft({ minRounds: '', maxRounds: '', minScore: '', maxScore: '', minCost: '', maxCost: '' })}
+                    >
+                      Clear ranges
+                    </Button>
+                  </div>
+
+                  {/* Row 3: Date range and sort */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-3">
+                    <div className="space-y-1">
+                      <div className="text-xs font-semibold text-muted-foreground">From Date</div>
                       <Input
                         className="worm-input"
                         value={draftFilters.from}
                         onChange={(e) => updateDraft({ from: e.target.value })}
+                        placeholder="YYYY-MM-DD or timestamp"
                       />
                     </div>
 
                     <div className="space-y-1">
-                      <div className="text-xs font-semibold text-muted-foreground">To (ISO or ms)</div>
+                      <div className="text-xs font-semibold text-muted-foreground">To Date</div>
                       <Input
                         className="worm-input"
                         value={draftFilters.to}
                         onChange={(e) => updateDraft({ to: e.target.value })}
+                        placeholder="YYYY-MM-DD or timestamp"
                       />
                     </div>
 
                     <div className="space-y-1">
-                      <div className="text-xs font-semibold text-muted-foreground">Sort</div>
-                      <div className="grid grid-cols-2 gap-2">
-                        <Select value={draftFilters.sortBy} onValueChange={(value) => updateDraft({ sortBy: value as any })}>
-                          <SelectTrigger className="worm-input">
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="startedAt">startedAt</SelectItem>
-                            <SelectItem value="rounds">rounds</SelectItem>
-                            <SelectItem value="totalCost">totalCost</SelectItem>
-                            <SelectItem value="maxFinalScore">maxFinalScore</SelectItem>
-                            <SelectItem value="scoreDelta">scoreDelta</SelectItem>
-                          </SelectContent>
-                        </Select>
-                        <Select value={draftFilters.sortDir} onValueChange={(value) => updateDraft({ sortDir: value as any })}>
-                          <SelectTrigger className="worm-input">
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="desc">desc</SelectItem>
-                            <SelectItem value="asc">asc</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
+                      <div className="text-xs font-semibold text-muted-foreground">Sort By</div>
+                      <Select value={draftFilters.sortBy} onValueChange={(value) => updateDraft({ sortBy: value as any })}>
+                        <SelectTrigger className="worm-input">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="startedAt">Date</SelectItem>
+                          <SelectItem value="rounds">Rounds</SelectItem>
+                          <SelectItem value="myScore">Score</SelectItem>
+                          <SelectItem value="totalCost">Cost</SelectItem>
+                          <SelectItem value="maxFinalScore">Max Score</SelectItem>
+                          <SelectItem value="scoreDelta">Score Delta</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div className="space-y-1">
+                      <div className="text-xs font-semibold text-muted-foreground">Order</div>
+                      <Select value={draftFilters.sortDir} onValueChange={(value) => updateDraft({ sortDir: value as any })}>
+                        <SelectTrigger className="worm-input">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="desc">Highest first</SelectItem>
+                          <SelectItem value="asc">Lowest first</SelectItem>
+                        </SelectContent>
+                      </Select>
                     </div>
 
                     <div className="space-y-1">
@@ -402,7 +526,7 @@ export default function WormArenaMatches() {
                   </div>
 
                   <div className="flex flex-wrap items-center gap-3">
-                    <Button onClick={handleApply} disabled={!draftFilters.model || isLoading}>
+                    <Button onClick={handleApply} disabled={isLoading}>
                       Search
                     </Button>
                     <div className="text-sm text-muted-foreground">{isLoading ? 'Loading...' : rangeLabel}</div>
