@@ -1,9 +1,10 @@
 /**
  * Author: Cascade
  * Date: 2025-12-18
- * PURPOSE: Worm Arena header shared by all Worm Arena pages. Stacked, centered layout
- *          with large typography and pill-style navigation buttons that read as clear
- *          affordances. Supports optional subtitle, matchup label, and action slot.
+ * PURPOSE: Worm Arena header shared by all Worm Arena pages. Two modes:
+ *          - Standard: Stacked, centered layout with large typography
+ *          - Compact: Single-row inline layout, ~50% smaller footprint
+ *          Both use pill-style navigation buttons as clear affordances.
  * SRP/DRY check: Pass - presentation only.
  */
 

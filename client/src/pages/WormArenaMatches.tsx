@@ -1,7 +1,17 @@
+/**
+ * Author: Cascade
+ * Date: 2025-12-18
+ * PURPOSE: Worm Arena Matches page - showcases curated "Greatest Hits" matches
+ *          prominently, with advanced search filters in a collapsible section
+ *          for users who want to explore specific matchups.
+ * SRP/DRY check: Pass - page composition only.
+ */
+
 import React from 'react';
 import { useLocation } from 'wouter';
 
 import WormArenaHeader from '@/components/WormArenaHeader';
+import WormArenaGreatestHits from '@/components/WormArenaGreatestHits';
 import useWormArenaStats from '@/hooks/useWormArenaStats';
 import { apiRequest } from '@/lib/queryClient';
 
@@ -31,6 +41,12 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from '@/components/ui/accordion';
 
 type MatchFilters = {
   model: string;
