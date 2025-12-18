@@ -1,5 +1,15 @@
 # New entires at the top, use proper SemVer! 🜟🜟🜟🜟 
 
+### Version 6.6.1  Dec 18, 2025
+
+- **Worm Arena: Replay + Suggested Matchups fixes** (Author: Cascade)
+  - Moved match-wide totals out of per-player reasoning cards into a single Match totals card on the replay page.
+  - Fixed dev-mode routing so `/api/*` never falls back to `index.html` (prevents "Unexpected token '<'" in Suggested Matchups).
+  - **Files Modified**:
+    - `client/src/pages/WormArena.tsx`
+    - `server/vite.ts`
+    - `CHANGELOG.md`
+
 ### Version 6.6.0  Dec 17, 2025
 
 - **Worm Arena: Suggested Matchups - discover interesting unplayed pairings** (Author: Cascade)
