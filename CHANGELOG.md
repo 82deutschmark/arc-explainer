@@ -25,6 +25,8 @@
   - Fixed model rating lookups (`/api/snakebench/model-rating`) to return data for free/paid variants
   - Fixed model history lookups (`/api/snakebench/model-history`) to include matches for both variants
   - Fixed match filtering (`/api/snakebench/matches`) to include results for free/paid variants
+  - Fixed TrueSkill leaderboards (`/api/snakebench/leaderboard`) to group by normalized slugs instead of showing duplicates
+  - Fixed basic leaderboards (`/api/snakebench/leaderboard/basic`) to group by normalized slugs instead of showing duplicates
   - Ensures free models appear in suggestions instead of paid equivalents
   - **Files Modified**:
     - `server/repositories/SnakeBenchRepository.ts`
