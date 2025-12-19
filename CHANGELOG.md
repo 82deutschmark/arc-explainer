@@ -5,7 +5,19 @@
 
 # New entries at the top, use proper SemVer!
 
-### Version 6.9.0  Dec 19, 2025
+### Version 6.9.2  Dec 19, 2025
+
+- **Worm Arena: Free model preference and normalization** (Author: Cascade)
+  - Fixed issue where free and paid versions of same model (e.g., `mistralai/devstral-2512` vs `mistralai/devstral-2512:free`) were treated as separate models
+  - Modified pairing history query to normalize model slugs by removing `:free` suffix
+  - Updated suggest-matchups logic to prefer free versions over paid versions when both exist
+  - Ensures free models appear in suggestions instead of paid equivalents
+  - **Files Modified**:
+    - `server/repositories/SnakeBenchRepository.ts`
+    - `server/services/snakeBenchService.ts`
+    - `CHANGELOG.md`
+
+### Version 6.9.1  Dec 19, 2025
 
 - **Worm Arena: Persistent live-link resolution** (Author: Cascade)
   - Fixed issue where old `/worm-arena/live/:sessionId` links would show "Session unavailable" after server restarts
