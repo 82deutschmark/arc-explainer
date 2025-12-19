@@ -1204,15 +1204,26 @@ export class SnakeBenchService {
   /**
    * Check whether a replay asset exists locally or remotely for a given game.
    * Used to keep greatest-hits entries playable.
+   *
+   * Returns true if:
+   * 1. There's an HTTP URL in the DB (getGame() can fetch it)
+   * 2. There's a local file path that exists
    */
   private async replayExists(gameId: string): Promise<boolean> {
     const candidatePaths: string[] = [];
 
-    // Check database for alternate replay_path (e.g., from ingestion)
+    // Check database for alternate replay_path (e.g., from ingestion or remote URL)
     try {
       const dbReplay = await repositoryService.snakeBench.getReplayPath(gameId);
-      if (dbReplay?.replayPath && !dbReplay.replayPath.startsWith('http')) {
-        const resolved = path.isAbsolute(dbReplay.replayPath) ? dbReplay.replayPath : path.join(this.resolveBackendDir(), dbReplay.replayPath);
+      if (dbReplay?.replayPath) {
+        // If it's an HTTP URL, consider it as existing (getGame() can fetch it)
+        if (/^https?:\/\//i.test(dbReplay.replayPath)) {
+          return true;
+        }
+        // Otherwise it's a local path - add to candidates
+        const resolved = path.isAbsolute(dbReplay.replayPath)
+          ? dbReplay.replayPath
+          : path.join(this.resolveBackendDir(), dbReplay.replayPath);
         candidatePaths.push(resolved);
       }
     } catch {

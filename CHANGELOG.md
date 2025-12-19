@@ -5,6 +5,19 @@
 
 # New entries at the top, use proper SemVer!
 
+### Version 6.9.7  Dec 19, 2025
+
+- **Worm Arena: Fix replay existence check to accept HTTP URLs from database** (Author: Claude Sonnet 4)
+  - **Root Cause**: Commit `c3b3379a` broke replays by "simplifying" `replayExists()` to ignore HTTP URLs
+    - The bug was line: `if (dbReplay?.replayPath && !dbReplay.replayPath.startsWith('http'))`
+    - This explicitly skipped all remote replay URLs stored in the DB
+    - Games with remote replays (most of them) were filtered out as "non-existent"
+  - **Fix**: `replayExists()` now returns `true` for HTTP/HTTPS URLs in the DB
+    - `getGame()` already had proper logic to fetch remote URLs
+    - The mismatch meant `replayExists()` said "no replay" but `getGame()` could load it fine
+  - **Files Modified**: `server/services/snakeBenchService.ts`
+  - **Impact**: Greatest Hits and replay filtering now correctly include games with remote replay URLs
+
 ### Version 6.9.6  Dec 19, 2025
 
 - **Worm Arena: Fix replay loading to use Greg's Railway backend (root cause fix)** (Author: Claude Sonnet 4)
