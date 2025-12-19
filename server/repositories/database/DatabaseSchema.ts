@@ -37,6 +37,7 @@ export class DatabaseSchema {
       await this.createSnakeBenchModelsTable(client);
       await this.createSnakeBenchGamesTable(client);
       await this.createSnakeBenchGameParticipantsTable(client);
+      await this.createWormArenaSessionsTable(client);
       logger.info('Core tables verified/created.', 'database');
 
       // Phase 2: Apply schema-altering migrations for older database instances.
@@ -421,6 +422,26 @@ export class DatabaseSchema {
       CREATE INDEX IF NOT EXISTS idx_game_participants_model
         ON public.game_participants (model_id);
     `);
+  }
+
+  private static async createWormArenaSessionsTable(client: PoolClient): Promise<void> {
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS worm_arena_sessions (
+        session_id VARCHAR(255) PRIMARY KEY,
+        model_a VARCHAR(255) NOT NULL,
+        model_b VARCHAR(255) NOT NULL,
+        status VARCHAR(50) NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'completed', 'failed')),
+        created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+        expires_at TIMESTAMP WITH TIME ZONE NOT NULL,
+        completed_at TIMESTAMP WITH TIME ZONE DEFAULT NULL,
+        game_id VARCHAR(255) DEFAULT NULL
+      )
+    `);
+
+    // Create indexes for worm arena sessions table
+    await client.query(`CREATE INDEX IF NOT EXISTS idx_worm_arena_sessions_status ON worm_arena_sessions(status)`);
+    await client.query(`CREATE INDEX IF NOT EXISTS idx_worm_arena_sessions_expires ON worm_arena_sessions(expires_at)`);
+    await client.query(`CREATE INDEX IF NOT EXISTS idx_worm_arena_sessions_game_id ON worm_arena_sessions(game_id) WHERE game_id IS NOT NULL`);
   }
 
   /**

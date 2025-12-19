@@ -5,6 +5,25 @@
 
 # New entries at the top, use proper SemVer!
 
+### Version 6.9.0  Dec 19, 2025
+
+- **Worm Arena: Persistent live-link resolution** (Author: Cascade)
+  - Fixed issue where old `/worm-arena/live/:sessionId` links would show "Session unavailable" after server restarts
+  - Added `worm_arena_sessions` Postgres table to persist `sessionId -> gameId` mappings
+  - Old live links now reliably redirect to exact replays even after server restarts
+  - Added `WormArenaSessionRepository` for DB operations
+  - Updated `wormArenaStreamController` to persist completed sessions to DB
+  - **New files created**:
+    - `server/repositories/WormArenaSessionRepository.ts`
+    - `migrations/0005_worm-arena-sessions.sql`
+    - `docs/plans/2025-12-19-worm-arena-persistent-live-links.md`
+  - **Files modified**:
+    - `server/controllers/wormArenaStreamController.ts`
+    - `server/repositories/RepositoryService.ts`
+    - `server/repositories/database/DatabaseSchema.ts`
+    - `shared/schema.ts`
+    - `CHANGELOG.md`
+
 ### Version 6.8.2  Dec 19, 2025
 
 - **Worm Arena: Replay viewer reliability fix (CORS-proof replay loading)** (Author: Cascade)
