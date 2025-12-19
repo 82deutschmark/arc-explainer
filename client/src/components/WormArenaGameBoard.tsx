@@ -242,8 +242,8 @@ const WormArenaGameBoard: React.FC<WormArenaGameBoardProps> = ({
 
     // Draw snakes (directional heads, 🟢🔵⏹🔳🔲/🟧 for bodies)
     const snakeEmojis: Record<string, { body: string }> = {
-      '0': { body: '🟢' }, // Worm A - green body
-      '1': { body: '🔵' }, // Worm B - blue body
+      '0': { body: '🟩' }, // Worm A - green body
+      '1': { body: '🟦' }, // Worm B - blue body
     };
 
     Object.entries(snakes).forEach(([sid, positions]) => {
