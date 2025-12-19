@@ -1092,7 +1092,7 @@ export class SnakeBenchRepository extends BaseRepository {
     try {
       const sql = `
         SELECT
-          m.model_slug,
+          regexp_replace(m.model_slug, ':free$', '') AS normalized_slug,
           m.trueskill_mu,
           m.trueskill_sigma,
           m.trueskill_exposed,
@@ -1106,7 +1106,7 @@ export class SnakeBenchRepository extends BaseRepository {
         FROM public.models m
         JOIN public.game_participants gp ON m.id = gp.model_id
         JOIN public.games g ON gp.game_id = g.id
-        GROUP BY m.model_slug, m.trueskill_mu, m.trueskill_sigma, m.trueskill_exposed
+        GROUP BY regexp_replace(m.model_slug, ':free$', ''), m.trueskill_mu, m.trueskill_sigma, m.trueskill_exposed
         HAVING COUNT(gp.game_id) >= $2
         ORDER BY COALESCE(m.trueskill_exposed, m.trueskill_mu - 3 * m.trueskill_sigma) DESC
         LIMIT $1;
@@ -1132,7 +1132,7 @@ export class SnakeBenchRepository extends BaseRepository {
         const winRate = gamesPlayed > 0 ? wins / gamesPlayed : undefined;
 
         const entry: SnakeBenchTrueSkillLeaderboardEntry = {
-          modelSlug: String(row.model_slug ?? ''),
+          modelSlug: String(row.normalized_slug ?? ''),
           mu,
           sigma,
           exposed,
@@ -1252,7 +1252,7 @@ export class SnakeBenchRepository extends BaseRepository {
       if (sortBy === 'winRate') {
         sql = `
           SELECT
-            m.model_slug,
+            regexp_replace(m.model_slug, ':free$', '') AS normalized_slug,
             COUNT(gp.game_id) AS games_played,
             COUNT(CASE WHEN gp.result = 'won' THEN 1 END) AS wins,
             COUNT(CASE WHEN gp.result = 'lost' THEN 1 END) AS losses,
@@ -1260,7 +1260,7 @@ export class SnakeBenchRepository extends BaseRepository {
           FROM public.models m
           JOIN public.game_participants gp ON m.id = gp.model_id
           JOIN public.games g ON gp.game_id = g.id
-          GROUP BY m.model_slug
+          GROUP BY regexp_replace(m.model_slug, ':free$', '')
           HAVING COUNT(gp.game_id) > 0
           ORDER BY (COUNT(CASE WHEN gp.result = 'won' THEN 1 END)::float / NULLIF(COUNT(gp.game_id), 0)) DESC NULLS LAST
           LIMIT $1;
@@ -1268,7 +1268,7 @@ export class SnakeBenchRepository extends BaseRepository {
       } else {
         sql = `
           SELECT
-            m.model_slug,
+            regexp_replace(m.model_slug, ':free$', '') AS normalized_slug,
             COUNT(gp.game_id) AS games_played,
             COUNT(CASE WHEN gp.result = 'won' THEN 1 END) AS wins,
             COUNT(CASE WHEN gp.result = 'lost' THEN 1 END) AS losses,
@@ -1276,7 +1276,7 @@ export class SnakeBenchRepository extends BaseRepository {
           FROM public.models m
           JOIN public.game_participants gp ON m.id = gp.model_id
           JOIN public.games g ON gp.game_id = g.id
-          GROUP BY m.model_slug
+          GROUP BY regexp_replace(m.model_slug, ':free$', '')
           HAVING COUNT(gp.game_id) > 0
           ORDER BY games_played DESC
           LIMIT $1;
@@ -1293,7 +1293,7 @@ export class SnakeBenchRepository extends BaseRepository {
         const winRate = gamesPlayed > 0 ? wins / gamesPlayed : undefined;
 
         return {
-          modelSlug: String(row?.model_slug ?? ''),
+          modelSlug: String(row?.normalized_slug ?? ''),
           gamesPlayed,
           wins,
           losses,
