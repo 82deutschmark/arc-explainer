@@ -1,6 +1,6 @@
 /**
  * Author: Cascade / Claude Haiku 4.5 / Claude Sonnet 4
- * Date: 2025-12-18 (updated 2025-12-18)
+ * Date: 2025-12-19 (updated 2025-12-19)
  * PURPOSE: Worm Arena Live streaming hub with the apple scoreboard pinned up top,
  *          run controls hidden mid-match, and post-game summaries that stay on the
  *          same page alongside the final board.
@@ -35,6 +35,8 @@ import type { ModelConfig, SnakeBenchRunMatchRequest } from '@shared/types';
 
 type ViewMode = 'setup' | 'live' | 'completed';
 type RenderMode = 'cartoon' | 'console';
+
+type SessionGateStatus = 'idle' | 'checking' | 'pending' | 'completed' | 'unknown' | 'error';
 
 function getSnakeEligibleModels(models: ModelConfig[]): ModelConfig[] {
   return models.filter((m) => m.provider === 'OpenRouter');
@@ -164,6 +166,10 @@ export default function WormArenaLive() {
   // Track if we've already attempted to resolve a failed session
   const [resolveAttempted, setResolveAttempted] = React.useState(false);
 
+  // Session preflight gate: avoid connecting SSE to a sessionId that is already unknown/expired.
+  const [sessionGateStatus, setSessionGateStatus] = React.useState<SessionGateStatus>('idle');
+  const [sessionGateMessage, setSessionGateMessage] = React.useState<string | null>(null);
+
   // Parse query parameters (modelA, modelB) from suggested matchups and pre-fill form
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -183,8 +189,54 @@ export default function WormArenaLive() {
 
   useEffect(() => {
     if (!sessionId) return;
-    connect(sessionId);
-    return () => disconnect();
+
+    let cancelled = false;
+
+    const preflightAndConnect = async () => {
+      // IMPORTANT: EventSource treats non-2xx responses as opaque errors.
+      // We preflight via /api/wormarena/resolve so we can give a friendly UX on unknown/expired sessions.
+      setSessionGateStatus('checking');
+      setSessionGateMessage(null);
+
+      try {
+        const res = await fetch(`/api/wormarena/resolve/${encodeURIComponent(sessionId)}`);
+        if (cancelled) return;
+        if (!res.ok) {
+          setSessionGateStatus('error');
+          setSessionGateMessage('Unable to verify this live link right now. Please try again.');
+          return;
+        }
+
+        const data = await res.json();
+        if (cancelled) return;
+
+        if (data?.success && data?.status === 'completed' && data?.replayUrl) {
+          setSessionGateStatus('completed');
+          window.location.href = data.replayUrl;
+          return;
+        }
+
+        if (data?.success && data?.status === 'unknown') {
+          setSessionGateStatus('unknown');
+          setSessionGateMessage('This live link has expired or was never started. Please launch a new match.');
+          return;
+        }
+
+        // If pending, proceed to connect SSE.
+        setSessionGateStatus('pending');
+        connect(sessionId);
+      } catch (err) {
+        if (cancelled) return;
+        setSessionGateStatus('error');
+        setSessionGateMessage('Unable to verify this live link right now. Please try again.');
+      }
+    };
+
+    void preflightAndConnect();
+    return () => {
+      cancelled = true;
+      disconnect();
+    };
   }, [sessionId, connect, disconnect]);
 
   // When SSE connection fails, try to resolve sessionId to gameId for replay redirect
@@ -434,7 +486,9 @@ export default function WormArenaLive() {
     : status === 'connecting' || status === 'starting' || status === 'in_progress'
       ? 'live'
       : hasSessionParam
-        ? 'live'
+        ? sessionGateStatus === 'unknown' || sessionGateStatus === 'error'
+          ? 'setup'
+          : 'live'
         : 'setup';
   const isActiveView = viewMode === 'live' || viewMode === 'completed';
 
@@ -444,7 +498,7 @@ export default function WormArenaLive() {
       : null;
   const headerSubtitle =
     viewMode === 'setup' ? 'Start a live match' : viewMode === 'live' ? 'Streaming...' : 'Match complete';
-  const statusMessage = reconnectWarning || message;
+  const statusMessage = sessionGateMessage || reconnectWarning || message;
 
   return (
     <div className="worm-page">

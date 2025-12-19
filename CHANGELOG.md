@@ -5,6 +5,20 @@
 
 # New entries at the top, use proper SemVer!
 
+### Version 6.8.1  Dec 19, 2025
+
+- **Worm Arena: Production crash fix + friendlier live link handling** (Author: Cascade)
+  - Fixed a **blank page crash** in Worm Arena Matches caused by an invalid Radix Select item (`SelectItem value=""`)
+    - Replaced empty-string select values with a non-empty sentinel and mapped it back to “no filter” internally
+  - Improved **Live link UX** when a sessionId is expired/unknown in production
+    - Added a preflight gate using `/api/wormarena/resolve/:sessionId` before attempting SSE connect
+    - If the match already finished, users are redirected to the replay automatically
+    - If the link is expired/unknown, the page stays usable with a clear message (no hard crash)
+  - **Files Modified**:
+    - `client/src/pages/WormArenaMatches.tsx`
+    - `client/src/pages/WormArenaLive.tsx`
+    - `CHANGELOG.md`
+
 ### Version 6.8.0  Dec 18, 2025
 
 - **Worm Arena: Console Mirror View - Raw Python Terminal Experience** (Author: Claude Sonnet 4)
