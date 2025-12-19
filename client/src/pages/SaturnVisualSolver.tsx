@@ -25,11 +25,26 @@ import { getDefaultSaturnModel, getModelProvider, modelSupportsTemperature } fro
 import { PuzzleGridDisplay } from '@/components/puzzle/PuzzleGridDisplay';
 import { PuzzleGrid } from '@/components/puzzle/PuzzleGrid';
 import { DEFAULT_EMOJI_SET } from '@/lib/spaceEmojis';
+import { useSaturnAudioNarration } from '@/hooks/useSaturnAudioNarration';
 
 export default function SaturnVisualSolver() {
   const { taskId } = useParams<{ taskId: string }>();
   const { currentTask: task, isLoadingTask, taskError } = usePuzzle(taskId);
   const { state, start, cancel } = useSaturnProgress(taskId);
+  const {
+    enabled: audioEnabled,
+    available: audioAvailable,
+    status: audioStatus,
+    error: audioError,
+    volume: audioVolume,
+    toggleEnabled: toggleAudio,
+    setVolume: setAudioVolume,
+    enqueueReasoning,
+    flush: flushAudio,
+    reset: resetAudio,
+  } = useSaturnAudioNarration();
+  const reasoningCursorRef = React.useRef(0);
+  const previousStatusRef = React.useRef(state.status);
 
   // Settings state - GPT-5 Nano with balanced (low) reasoning depth and detailed summary by default
   const defaultModel = getDefaultSaturnModel();
@@ -55,6 +70,50 @@ export default function SaturnVisualSolver() {
   const isGrokFamily = React.useMemo(() => (modelProvider ?? '').toLowerCase() === 'xai', [modelProvider]);
   const showTemperatureControl = React.useMemo(() => isGrokFamily && modelSupportsTemperature(model), [isGrokFamily, model]);
   const showReasoningControls = React.useMemo(() => !isGrokFamily, [isGrokFamily]);
+
+  React.useEffect(() => {
+    const prev = previousStatusRef.current;
+    if (state.status === 'running' && prev !== 'running') {
+      reasoningCursorRef.current = state.streamingReasoning?.length ?? 0;
+      resetAudio();
+    }
+    if ((state.status === 'completed' || state.status === 'error') && prev === 'running') {
+      flushAudio();
+    }
+    if (state.status === 'idle') {
+      reasoningCursorRef.current = 0;
+    }
+    previousStatusRef.current = state.status;
+  }, [flushAudio, resetAudio, state.status, state.streamingReasoning]);
+
+  React.useEffect(() => {
+    if (!audioEnabled) {
+      return;
+    }
+    const reasoningText = state.streamingReasoning ?? '';
+    if (reasoningText.length < reasoningCursorRef.current) {
+      reasoningCursorRef.current = reasoningText.length;
+      return;
+    }
+    if (reasoningText.length > reasoningCursorRef.current) {
+      const delta = reasoningText.slice(reasoningCursorRef.current);
+      reasoningCursorRef.current = reasoningText.length;
+      enqueueReasoning(delta);
+    }
+  }, [audioEnabled, enqueueReasoning, state.streamingReasoning]);
+
+  const previousAudioEnabledRef = React.useRef(audioEnabled);
+
+  React.useEffect(() => {
+    const wasEnabled = previousAudioEnabledRef.current;
+    if (audioEnabled && !wasEnabled) {
+      reasoningCursorRef.current = state.streamingReasoning?.length ?? 0;
+    }
+    if (!audioEnabled && wasEnabled) {
+      resetAudio();
+    }
+    previousAudioEnabledRef.current = audioEnabled;
+  }, [audioEnabled, resetAudio, state.streamingReasoning]);
 
 
   // Error states
@@ -129,6 +188,28 @@ export default function SaturnVisualSolver() {
             </div>
           )}
           <a href="/solver/readme" className="btn btn-ghost btn-xs">README</a>
+          {audioAvailable && (
+            <div className="flex items-center gap-1">
+              <button
+                type="button"
+                onClick={toggleAudio}
+                className={`btn btn-xs ${audioEnabled ? 'btn-secondary' : 'btn-ghost'}`}
+                title={audioEnabled ? 'Disable narration' : 'Enable narration'}
+              >
+                🔊 {audioEnabled ? 'On' : 'Off'}
+              </button>
+              <input
+                type="range"
+                min="0"
+                max="1"
+                step="0.05"
+                value={audioVolume}
+                onChange={(e) => setAudioVolume(parseFloat(e.target.value))}
+                className="range range-xs w-20"
+                disabled={!audioEnabled}
+              />
+            </div>
+          )}
           {isRunning && (
             <button onClick={cancel} className="btn btn-error btn-sm gap-1">
               <Square className="h-3.5 w-3.5" />
@@ -402,6 +483,26 @@ export default function SaturnVisualSolver() {
             {/* AI Streaming Output - Show ONLY while running */}
             {!isDone && (
               <div className="flex-1 min-h-0">
+                {audioAvailable && (
+                  <div className="px-2 pb-1 text-[11px] text-gray-500 flex items-center gap-2">
+                    <span>
+                      {audioEnabled ? '🔊 Narration' : '🔇 Narration disabled'}
+                    </span>
+                    {audioEnabled && (
+                      <span>
+                        {audioStatus === 'buffering' && 'preparing…'}
+                        {audioStatus === 'playing' && 'playing'}
+                        {audioStatus === 'idle' && 'idle'}
+                        {audioStatus === 'error' && 'error'}
+                      </span>
+                    )}
+                    {!audioEnabled && audioError && <span className="text-red-500">{audioError}</span>}
+                    {audioEnabled && audioError && <span className="text-red-500">{audioError}</span>}
+                  </div>
+                )}
+                {!audioAvailable && audioError && (
+                  <div className="px-2 pb-1 text-[11px] text-red-500">🔇 {audioError}</div>
+                )}
                 <SaturnTerminalLogs
                   streamingText={state.streamingText}
                   streamingReasoning={state.streamingReasoning}

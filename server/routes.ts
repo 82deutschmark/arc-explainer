@@ -25,6 +25,7 @@ import * as modelManagementController from './controllers/modelManagementControl
 import * as discussionController from './controllers/discussionController.js';
 import { batchController } from './controllers/batchController.ts';
 import { streamController } from "./controllers/streamController.ts";
+import { audioController } from "./controllers/audioController.ts";
 
 import { eloController } from "./controllers/eloController";
 import modelDatasetController from "./controllers/modelDatasetController.ts";
@@ -83,6 +84,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   );
   app.delete("/api/stream/analyze/:sessionId", asyncHandler(streamController.cancel));
   app.post("/api/stream/cancel/:sessionId", asyncHandler(streamController.cancel));
+
+  // Audio narration routes (Saturn ElevenLabs proxy)
+  app.get("/api/audio/status", asyncHandler(audioController.status));
+  app.post("/api/audio/narrate", asyncHandler(audioController.narrate));
   
   // Debug route to force puzzle loader reinitialization
   app.post("/api/puzzle/reinitialize", asyncHandler(puzzleController.reinitialize));

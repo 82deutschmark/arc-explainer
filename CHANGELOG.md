@@ -1,5 +1,23 @@
 # CHANGELOG - Uses semantic versioning (MAJOR.MINOR.PATCH)
 
+## [4.11.5] - 2025-11-02
+### 🔊 Saturn ElevenLabs narration
+**Problem**: Saturn Visual Solver streams rich reasoning text, but users must watch the terminal feed to follow progress. The user asked for a spoken version powered by their ElevenLabs API key so they can listen to the solver thinking in real time.
+
+**Solution**: Added a secure ElevenLabs proxy on the backend and optional narration controls in the Saturn UI. When enabled, reasoning deltas are buffered client-side, sent to the new `/api/audio/narrate` endpoint, and streamed back as audio clips for continuous playback.
+
+**Implementation**:
+- `server/services/audio/elevenLabsService.ts` wraps ElevenLabs streaming with proper logging and env-driven defaults.
+- `server/controllers/audioController.ts` exposes `/api/audio/status` and `/api/audio/narrate` routes, registered in `routes.ts`.
+- `client/src/hooks/useSaturnAudioNarration.ts` manages buffering, queueing, playback, and UI state.
+- `client/src/pages/SaturnVisualSolver.tsx` surfaces narration controls (toggle, volume slider, status) and forwards reasoning deltas.
+- `shared/config/audio.ts` centralises feature-flag resolution so both backend and frontend detect availability.
+
+**Benefits**:
+- No secret leakage: the API key stays on the server while the client receives only audio.
+- Narration is optional and non-blocking—users can toggle it per run without affecting solver logic.
+- Graceful fallbacks when ElevenLabs credentials are absent (controls hidden, helpful error copy rendered).
+
 ## [4.11.4] - 2025-11-01
 ### ✅ Saturn Correctness Display
 **Problem**: Saturn Visual Solver showed completion status ("COMPLETED") but not correctness status (whether predictions were RIGHT or WRONG). Users couldn't tell at a glance if Saturn solved the puzzle correctly.
