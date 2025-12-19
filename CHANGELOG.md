@@ -11,6 +11,9 @@
   - Fixed issue where free and paid versions of same model (e.g., `mistralai/devstral-2512` vs `mistralai/devstral-2512:free`) were treated as separate models
   - Modified pairing history query to normalize model slugs by removing `:free` suffix
   - Updated suggest-matchups logic to prefer free versions over paid versions when both exist
+  - Fixed model rating lookups (`/api/snakebench/model-rating`) to return data for free/paid variants
+  - Fixed model history lookups (`/api/snakebench/model-history`) to include matches for both variants
+  - Fixed match filtering (`/api/snakebench/matches`) to include results for free/paid variants
   - Ensures free models appear in suggestions instead of paid equivalents
   - **Files Modified**:
     - `server/repositories/SnakeBenchRepository.ts`
