@@ -1,9 +1,10 @@
 /**
- * Author: Codex (GPT-5)
- * Date: 2025-12-19
+ * Author: Cascade
+ * Date: 2025-12-18
  * PURPOSE: Wrapper around the Worm Arena board that clearly labels live vs final state
  *          and keeps the board mounted even after the stream completes.
- * SRP/DRY check: Pass – only handles board rendering/chrome, no streaming logic.
+ *          Reduced padding to maximize board visibility.
+ * SRP/DRY check: Pass - only handles board rendering/chrome, no streaming logic.
  */
 
 import React from 'react';
@@ -34,8 +35,8 @@ export default function WormArenaLiveBoardPanel({
   const title = viewMode === 'completed' ? 'Final board' : 'Live board';
 
   return (
-    <div className="rounded-lg border bg-white/90 shadow-sm px-4 py-4 worm-border">
-      <div className="text-xs font-bold uppercase tracking-wide text-worm-ink mb-3">{title}</div>
+    <div className="rounded-lg border bg-white/90 shadow-sm px-2 py-2 worm-border">
+      <div className="text-xs font-bold uppercase tracking-wide text-worm-ink mb-1">{title}</div>
 
       {latestFrame ? (
         <div className="flex items-center justify-center">

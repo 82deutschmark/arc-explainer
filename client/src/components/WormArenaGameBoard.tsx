@@ -1,10 +1,11 @@
 /**
- * Author: Claude Code using Haiku
- * Date: 2025-12-09
+ * Author: Cascade
+ * Date: 2025-12-18
  * PURPOSE: Emoji-based Canvas renderer for Worm Arena game board.
- *          Uses emoji grid (🟫 soil, 🐛 worms, 🍎 apples) instead of ASCII.
+ *          Uses emoji grid (soil, worms, apples) instead of ASCII.
  *          Pure HTML5 Canvas 2D, responsive, fun farm aesthetic.
- * SRP/DRY check: Pass — focused solely on game board rendering.
+ *          Reduced padding/borders to maximize visible board area.
+ * SRP/DRY check: Pass - focused solely on game board rendering.
  */
 
 import React, { useEffect, useMemo, useRef, useState } from 'react';
@@ -74,22 +75,25 @@ const WormArenaGameBoard: React.FC<WormArenaGameBoardProps> = ({
 
   const sizing = useMemo(() => {
     // Cap the board height to avoid overflowing short mobile viewports
+    // Increased limits to allow larger board rendering
     const viewportHeight = typeof window !== 'undefined' ? window.innerHeight : 800;
-    const maxBoardHeight = Math.max(240, Math.min(viewportHeight * 0.45, 520));
+    const maxBoardHeight = Math.max(280, Math.min(viewportHeight * 0.55, 600));
 
-    const usableWidth = Math.max(260, Math.min(containerWidth, 900));
-    const padding = 16;
+    const usableWidth = Math.max(280, Math.min(containerWidth, 950));
+    // Reduced padding from 16 to 8 for tighter layout
+    const padding = 8;
 
     const cellSize = Math.max(
-      16,
+      18,
       Math.min(
         Math.floor((usableWidth - padding * 2) / boardWidth),
         Math.floor((maxBoardHeight - padding * 2) / boardHeight),
-        56,
+        64,
       ),
     );
 
-    const labelMargin = Math.max(16, Math.round(cellSize * 0.6));
+    // Reduced label margin for more board space
+    const labelMargin = Math.max(14, Math.round(cellSize * 0.5));
     const width = boardWidth * cellSize + padding * 2 + labelMargin * 2;
     const height = boardHeight * cellSize + padding * 2 + labelMargin * 2;
 
@@ -293,7 +297,7 @@ const WormArenaGameBoard: React.FC<WormArenaGameBoardProps> = ({
   return (
     <div
       ref={containerRef}
-      className="flex flex-col items-center justify-center rounded-xl border-8 p-4 bg-worm-board-bg border-worm-board-frame"
+      className="flex flex-col items-center justify-center rounded-lg border-4 p-1 bg-worm-board-bg border-worm-board-frame"
     >
       <canvas
         ref={canvasRef}

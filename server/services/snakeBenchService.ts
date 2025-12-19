@@ -1426,7 +1426,15 @@ export class SnakeBenchService {
     const safeMinGames = Number.isFinite(minGames) ? Math.max(1, minGames) : 3;
 
     // 1. Get the leaderboard pool (models with >= minGames)
-    const leaderboard = await this.getTrueSkillLeaderboard(150, safeMinGames);
+    let leaderboard = await this.getTrueSkillLeaderboard(150, safeMinGames);
+
+    // Filter to only approved OpenRouter models from config (avoid expensive/unsupported models)
+    const openrouterModels = new Set(
+      MODELS.filter((m) => m.provider === 'OpenRouter' && !m.premium)
+        .map((m) => m.apiModelName || m.key)
+    );
+
+    leaderboard = leaderboard.filter((entry) => openrouterModels.has(entry.modelSlug));
 
     if (leaderboard.length < 2) {
       return { mode, matchups: [], totalCandidates: 0 };

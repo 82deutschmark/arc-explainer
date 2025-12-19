@@ -3,7 +3,121 @@
 # PURPOSE: Ensure the changelog captures the new chat session menu enablement and related documentation.
 # SRP/DRY check: Pass - this entry documents the specific change without altering historical records.
 
-# New entires at the top, use proper SemVer! ŠYoYŠYoYŠYoYŠYoY 
+# New entires at the top, use proper SemVer!
+
+### Version 6.7.0  Dec 18, 2025
+
+- **Worm Arena: Major UX improvements across all pages** (Author: Cascade)
+  - **Compact headers everywhere**: All Worm Arena pages now use compact header mode (~1/3 original size)
+    - Title + nav pills inline on single row
+    - Reduced from text-4xl/5xl to text-xl
+    - Cleaner, less overwhelming first impression
+  - **Fixed OpenRouter model availability bug**: "Run" button on suggested matchups was incorrectly showing "models not available" error
+    - Root cause: React state updates are async; old code checked stale state in setTimeout
+    - Fix: Check model availability directly with passed parameters, build payload inline
+  - **Redesigned Live Scoreboard** (`WormArenaLiveScoreboard.tsx`):
+    - Compact single-row layout (~1/3 original height)
+    - Consistent worm emoji: now uses `\uD83D\uDC1B` for both players (was using snail for one)
+    - Added TrueSkill stats display: exposed rating, sigma (uncertainty), games played
+    - Stats fetched via `useModelRating` hook, shown below model name
+    - Smaller apple score pills, cleaner VS divider
+  - **Files Modified**:
+    - `client/src/pages/WormArena.tsx` - added `compact` prop to header
+    - `client/src/pages/WormArenaLive.tsx` - compact header, fixed matchup run bug, TrueSkill stats wiring
+    - `client/src/pages/WormArenaStats.tsx` - added `compact` prop to header
+    - `client/src/pages/WormArenaSkillAnalysis.tsx` - added `compact` prop to header
+    - `client/src/components/WormArenaLiveScoreboard.tsx` - complete redesign with TrueSkill integration
+    - `CHANGELOG.md`
+
+### Version 6.6.9  Dec 18, 2025
+
+- **Worm Arena Matches: Robust advanced search with death reason filter** (Author: Cascade)
+  - Added **death reason** filter: head_collision, body_collision, wall, survived
+  - Added **score range** filters (min/max score)
+  - Added **cost range** filters (min/max cost in $)
+  - Added **max rounds** filter (was only min before)
+  - Added **myScore** sort option
+  - Model filter is now **optional** - can search across all models
+  - Search results table now shows: Model, Death Reason columns
+  - Quick presets row with "Clear ranges" button
+  - Better human-readable labels (e.g., "Head Collision" vs "head_collision")
+  - **Backend changes**:
+    - `shared/types.ts`: Added `SnakeBenchDeathReason` type, enhanced `SnakeBenchMatchSearchQuery`
+    - `server/controllers/snakeBenchController.ts`: Parse new query params
+    - `server/repositories/SnakeBenchRepository.ts`: Add filters for deathReason, maxRounds, score range, cost range
+  - **Files Modified**:
+    - `shared/types.ts`
+    - `server/controllers/snakeBenchController.ts`
+    - `server/repositories/SnakeBenchRepository.ts`
+    - `client/src/pages/WormArenaMatches.tsx`
+    - `CHANGELOG.md`
+
+### Version 6.6.8  Dec 18, 2025
+
+- **Worm Arena Matches: Redesigned as "Greatest Hits" showcase** (Author: Cascade)
+  - Page now leads with curated Greatest Hits matches prominently at top
+  - Advanced search filters moved to collapsible accordion for power users
+  - Uses compact header (~50% smaller footprint)
+  - Search results table is cleaner with better column sizing
+  - **Files Modified**:
+    - `client/src/pages/WormArenaMatches.tsx`
+    - `CHANGELOG.md`
+
+- **WormArenaHeader: Added compact mode** (Author: Cascade)
+  - New `compact` prop for ~50% smaller header footprint
+  - Compact mode: single-row layout with title + nav inline
+  - Title reduced from 4xl to xl, nav pills from text-sm to text-xs
+  - Standard mode unchanged (stacked, centered, large)
+  - **Files Modified**:
+    - `client/src/components/WormArenaHeader.tsx`
+
+### Version 6.6.7  Dec 18, 2025
+
+- **Worm Arena Live: Enlarged game board by reducing padding/margins** (Author: Cascade)
+  - **WormArenaLiveBoardPanel.tsx**: Reduced container padding (px-4 py-4 -> px-2 py-2), tighter title margin
+  - **WormArenaGameBoard.tsx**: 
+    - Reduced border from 8px to 4px
+    - Reduced internal padding from 16px to 8px
+    - Reduced label margins for more board space
+    - Increased max board height (520px -> 600px) and cell size limits (56px -> 64px)
+    - Minimum cell size increased (16px -> 18px) for better visibility
+  - Result: Same page footprint but significantly larger visible game grid
+  - **Files Modified**:
+    - `client/src/components/WormArenaLiveBoardPanel.tsx`
+    - `client/src/components/WormArenaGameBoard.tsx`
+    - `CHANGELOG.md`
+
+- **Worm Arena: TrueSkill Stats Integration Plan** (Author: Cascade)
+  - Created comprehensive implementation plan for enhancing Live page with TrueSkill data
+  - Documents existing architecture, data flow, and reusable components
+  - Outlines 3-phase approach: pre-match stats strip, live scoreboard enhancement, post-match context
+  - Written as developer-to-developer handoff document
+  - **Files Created**:
+    - `docs/plans/2025-12-18-worm-arena-live-stats-integration-plan.md`
+
+### Version 6.6.6  Dec 18, 2025
+
+- **Worm Arena: Redesigned header and scoreboard with stacked/centered layout** (Author: Cascade)
+  - **WormArenaHeader.tsx**: Complete redesign with:
+    - Stacked, centered layout instead of left-aligned
+    - Larger typography (4xl/5xl title)
+    - Pill-style navigation buttons with clear affordances
+    - Active state: solid background, inactive: transparent with border
+    - Hover effect: lift + shadow for better UX feedback
+  - **WormArenaLiveScoreboard.tsx**: Enhanced scoreboard with:
+    - Larger apple score pills with winning player scale animation
+    - Model names displayed prominently with color coding (green/blue)
+    - Worm emoji icons for visual appeal
+    - Centered three-column layout (Player A / VS / Player B)
+  - **index.css**: Added new CSS classes for pill-style nav buttons:
+    - `.worm-header-title-text` for centered title
+    - `.worm-header-nav-active` for active nav pill
+    - `.worm-header-nav-inactive` for inactive nav pill with hover states
+  - **Files Modified**:
+    - `client/src/components/WormArenaHeader.tsx`
+    - `client/src/components/WormArenaLiveScoreboard.tsx`
+    - `client/src/index.css`
+    - `CHANGELOG.md`
 
 ### Version 6.6.5  Dec 18, 2025
 

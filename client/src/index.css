@@ -250,6 +250,31 @@
     border-color: var(--worm-header-ink);
   }
 
+  .worm-header-title-text {
+    color: var(--worm-header-ink);
+  }
+
+  .worm-header-nav-active {
+    background: var(--worm-header-ink);
+    color: var(--worm-header-bg);
+    border-color: var(--worm-header-ink);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+  }
+
+  .worm-header-nav-inactive {
+    background: transparent;
+    color: var(--worm-header-link);
+    border-color: var(--worm-header-link);
+  }
+
+  .worm-header-nav-inactive:hover {
+    background: var(--worm-header-accent);
+    color: var(--worm-header-bg);
+    border-color: var(--worm-header-accent);
+    transform: translateY(-1px);
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+  }
+
   .worm-metric-rating { color: var(--worm-metric-rating); }
   .worm-metric-sigma { color: var(--worm-metric-sigma); }
   .worm-metric-games { color: var(--worm-metric-games); }
