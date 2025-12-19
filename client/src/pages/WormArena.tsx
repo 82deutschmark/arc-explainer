@@ -1,6 +1,6 @@
 /**
  * Author: Cascade / Claude Sonnet 4
- * Date: 2025-12-18 (updated 2025-12-18)
+ * Date: 2025-12-18 (updated 2025-12-19)
  * PURPOSE: Worm Arena - Replay viewer for past/completed games. Shows game history,
  *          recent games list, and replay controls. Three-column layout: reasoning logs
  *          (left/right), game board (center).
@@ -9,6 +9,7 @@
  *          Match-wide totals (token/cost aggregates) are rendered once outside the panels
  *          to avoid confusing duplication.
  *          NEW: Console Mirror view toggle - switch between cartoon canvas and raw Python terminal view.
+ *          Defaults to loading the first greatest hits match to avoid blank screen.
  * SRP/DRY check: Pass - Replay viewer only, no match-starting logic.
  */
 
@@ -29,6 +30,7 @@ import { summarizeWormArenaPlacement } from '@shared/utils/wormArenaPlacement.ts
 import { useIsMobile } from '@/hooks/use-mobile';
 import WormArenaConsoleMirror from '@/components/WormArenaConsoleMirror';
 import { Button } from '@/components/ui/button';
+import { useWormArenaGreatestHits } from '@/hooks/useWormArenaGreatestHits';
 
 type RenderMode = 'cartoon' | 'console';
 
@@ -115,6 +117,7 @@ export default function WormArena() {
 
   const { games, total, refresh } = useSnakeBenchRecentGames();
   const { data: replayData, isLoading: loadingReplay, error: replayError, fetchGame } = useSnakeBenchGame(selectedMatchId);
+  const { games: greatestHitsGames, isLoading: loadingGreatestHits } = useWormArenaGreatestHits(5);
 
   // Sync URL parameter changes to selectedMatchId
   React.useEffect(() => {
@@ -130,12 +133,11 @@ export default function WormArena() {
   // Effect: Pick a default game only if none is selected (no URL param, no state set)
   // If a matchId is in the URL or state, trust it and let the API fetch handle validation
   React.useEffect(() => {
-    if (games.length === 0) return;
+    if (loadingGreatestHits || greatestHitsGames.length === 0) return;
 
     // Only pick fallback if no game is currently selected
     if (!selectedMatchId) {
-      const longGames = games.filter((g) => (g.roundsPlayed ?? 0) >= 20);
-      const fallbackId = longGames[0]?.gameId ?? games[0]?.gameId ?? '';
+      const fallbackId = greatestHitsGames[0]?.gameId ?? '';
 
       if (fallbackId) {
         setSelectedMatchId(fallbackId);
@@ -144,7 +146,7 @@ export default function WormArena() {
     }
     // For URL-provided matchIds: trust them completely. The API fetch will handle
     // invalid/missing games gracefully with errors shown to the user.
-  }, [games, selectedMatchId, setMatchIdInUrl]);
+  }, [greatestHitsGames, loadingGreatestHits, selectedMatchId, setMatchIdInUrl]);
 
   React.useEffect(() => {
     if (!selectedMatchId) return;
