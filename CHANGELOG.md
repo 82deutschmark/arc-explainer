@@ -1,9 +1,32 @@
-# Author: Codex
+# Author: Claude Sonnet 4
 # Date: 2025-12-18
-# PURPOSE: Ensure the changelog captures the new chat session menu enablement and related documentation.
+# PURPOSE: Changelog for ARC Explainer - tracks all changes with semantic versioning.
 # SRP/DRY check: Pass - this entry documents the specific change without altering historical records.
 
-# New entires at the top, use proper SemVer!
+# New entries at the top, use proper SemVer!
+
+### Version 6.8.0  Dec 18, 2025
+
+- **Worm Arena: Console Mirror View - Raw Python Terminal Experience** (Author: Claude Sonnet 4)
+  - Added **view mode toggle** to both Live and Replay pages
+  - Users can now switch between "Cartoon View" (default emoji canvas) and "Console View" (raw Python terminal)
+  - **Console View features**:
+    - ASCII board matching Python's `GameState.print_board()` format exactly
+    - Symbols: `.` = empty, `A` = apple, `0`/`1` = snake heads, `T` = body
+    - Y-axis labels on left (high to low), X-axis labels at bottom
+    - Dark terminal theme with green text
+    - Live event stream log (live page only) with auto-scroll
+    - Event type badges: init, status, frame, chunk, complete, error
+  - **New files created**:
+    - `client/src/lib/wormArena/renderPythonAsciiBoard.ts` - Python-accurate ASCII renderer
+    - `client/src/components/WormArenaConsoleMirror.tsx` - Console view component
+    - `docs/plans/2025-12-18-worm-arena-console-mirror-improved.md` - Implementation plan
+  - **Files modified**:
+    - `client/src/hooks/useWormArenaStreaming.ts` - Added `eventLog` state for chronological SSE event collection
+    - `client/src/pages/WormArenaLive.tsx` - Added render mode toggle, console view integration
+    - `client/src/pages/WormArena.tsx` - Added render mode toggle, console view integration
+    - `CHANGELOG.md`
+  - **Educational purpose**: Shows users what the Python SnakeBench engine actually outputs, bridging the gap between the friendly UI and the underlying mechanics
 
 ### Version 6.7.0  Dec 18, 2025
 
