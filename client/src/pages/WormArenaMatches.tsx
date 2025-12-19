@@ -554,8 +554,10 @@ export default function WormArenaMatches() {
                           <TableHeader>
                             <TableRow>
                               <TableHead className="whitespace-nowrap text-xs">Date</TableHead>
+                              <TableHead className="text-xs">Model</TableHead>
                               <TableHead className="text-xs">Opponent</TableHead>
                               <TableHead className="text-xs">Result</TableHead>
+                              <TableHead className="text-xs">Death</TableHead>
                               <TableHead className="text-right text-xs">Score</TableHead>
                               <TableHead className="text-right text-xs">Rounds</TableHead>
                               <TableHead className="text-right text-xs">Cost</TableHead>
@@ -566,15 +568,20 @@ export default function WormArenaMatches() {
                             {rows.map((r) => {
                               const replayHref = `/worm-arena?matchId=${encodeURIComponent(r.gameId)}`;
                               const scoreLabel = `${r.myScore}-${r.opponentScore}`;
+                              const deathLabel = r.deathReason ? DEATH_REASON_LABELS[r.deathReason] : 'Survived';
                               return (
                                 <TableRow key={r.gameId}>
                                   <TableCell className="whitespace-nowrap text-xs">
                                     {r.startedAt ? new Date(r.startedAt).toLocaleDateString() : ''}
                                   </TableCell>
-                                  <TableCell className="font-mono text-xs max-w-[200px] truncate" title={r.opponent}>
+                                  <TableCell className="font-mono text-xs max-w-[150px] truncate" title={r.model}>
+                                    {r.model}
+                                  </TableCell>
+                                  <TableCell className="font-mono text-xs max-w-[150px] truncate" title={r.opponent}>
                                     {r.opponent}
                                   </TableCell>
                                   <TableCell className="text-xs">{formatResult(r.result)}</TableCell>
+                                  <TableCell className="text-xs">{deathLabel}</TableCell>
                                   <TableCell className="text-right font-mono text-xs">{scoreLabel}</TableCell>
                                   <TableCell className="text-right font-mono text-xs">{r.roundsPlayed}</TableCell>
                                   <TableCell className="text-right font-mono text-xs">${r.totalCost.toFixed(2)}</TableCell>
@@ -588,7 +595,7 @@ export default function WormArenaMatches() {
                             })}
                             {rows.length === 0 && !isLoading && (
                               <TableRow>
-                                <TableCell colSpan={7} className="text-sm text-muted-foreground">
+                                <TableCell colSpan={9} className="text-sm text-muted-foreground">
                                   No matches found.
                                 </TableCell>
                               </TableRow>
