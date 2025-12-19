@@ -1177,11 +1177,18 @@ export class SnakeBenchRepository extends BaseRepository {
 
     try {
       // Self-join game_participants to find all (A, B) pairings that occurred in the same game.
+      // Normalize model slugs by removing ':free' suffix to treat free/paid versions as the same.
       // We normalize the key so that (A, B) and (B, A) map to the same entry by sorting slugs.
       const sql = `
         SELECT
-          LEAST(m1.model_slug, m2.model_slug) AS slug_a,
-          GREATEST(m1.model_slug, m2.model_slug) AS slug_b,
+          LEAST(
+            regexp_replace(m1.model_slug, ':free$', ''),
+            regexp_replace(m2.model_slug, ':free$', '')
+          ) AS slug_a,
+          GREATEST(
+            regexp_replace(m1.model_slug, ':free$', ''),
+            regexp_replace(m2.model_slug, ':free$', '')
+          ) AS slug_b,
           COUNT(DISTINCT gp1.game_id) AS matches_played,
           MAX(COALESCE(g.start_time, g.created_at)) AS last_played_at
         FROM public.game_participants gp1
@@ -1191,7 +1198,13 @@ export class SnakeBenchRepository extends BaseRepository {
         JOIN public.models m2 ON gp2.model_id = m2.id
         JOIN public.games g ON gp1.game_id = g.id
         WHERE g.status = 'completed'
-        GROUP BY LEAST(m1.model_slug, m2.model_slug), GREATEST(m1.model_slug, m2.model_slug);
+        GROUP BY LEAST(
+          regexp_replace(m1.model_slug, ':free$', ''),
+          regexp_replace(m2.model_slug, ':free$', '')
+        ), GREATEST(
+          regexp_replace(m1.model_slug, ':free$', ''),
+          regexp_replace(m2.model_slug, ':free$', '')
+        );
       `;
 
       const { rows } = await this.query(sql);

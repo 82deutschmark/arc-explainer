@@ -1487,6 +1487,31 @@ export class SnakeBenchService {
       return { mode, matchups: [], totalCandidates: 0 };
     }
 
+    // Normalize slugs by removing ':free' suffix and prefer free versions
+    const normalizedMap = new Map<string, SnakeBenchTrueSkillLeaderboardEntry>();
+    for (const entry of leaderboard) {
+      const normalizedSlug = entry.modelSlug.replace(/:free$/, '');
+      const existing = normalizedMap.get(normalizedSlug);
+      if (!existing) {
+        normalizedMap.set(normalizedSlug, entry);
+      } else {
+        // Prefer free version over paid version
+        const existingIsFree = existing.modelSlug.includes(':free');
+        const currentIsFree = entry.modelSlug.includes(':free');
+        if (currentIsFree && !existingIsFree) {
+          // Replace with free version
+          normalizedMap.set(normalizedSlug, entry);
+        } else if (existingIsFree === currentIsFree) {
+          // Both same type (both free or both paid), keep the one with more games
+          if (entry.gamesPlayed > existing.gamesPlayed) {
+            normalizedMap.set(normalizedSlug, entry);
+          }
+        }
+        // If existing is free and current is paid, keep existing
+      }
+    }
+    leaderboard = Array.from(normalizedMap.values());
+
     // 2. Get pairing history to filter out already-played pairs
     const pairingHistory = await repositoryService.snakeBench.getPairingHistory();
 
