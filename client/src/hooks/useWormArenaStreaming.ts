@@ -1,9 +1,10 @@
 /**
- * Author: Cascade
- * Date: 2025-12-18
+ * Author: Cascade / Claude Sonnet 4
+ * Date: 2025-12-18 (updated 2025-12-18)
  * PURPOSE: React hook for Worm Arena live match streaming via SSE.
  *          One session = one match. Handles connection, frame streaming, and final summary.
  *          Batch mode removed - all matches are single-session.
+ *          Now includes unified eventLog for Console Mirror view.
  * SRP/DRY check: Pass - manages SSE connection state only.
  */
 
@@ -18,6 +19,24 @@ import type {
 
 type StreamState = 'idle' | 'connecting' | 'starting' | 'in_progress' | 'completed' | 'failed';
 
+/**
+ * Event log entry for Console Mirror view.
+ * Captures all SSE events in chronological order.
+ */
+export interface WormArenaEventLogEntry {
+  /** SSE event type (init, status, frame, chunk, complete, error, end) */
+  type: string;
+  /** Client-side timestamp when event was received */
+  timestamp: number;
+  /** Raw payload data */
+  payload: unknown;
+  /** Human-readable summary for display */
+  summary?: string;
+}
+
+/** Maximum number of event log entries to retain (prevents memory bloat) */
+const MAX_EVENT_LOG_SIZE = 1000;
+
 export function useWormArenaStreaming() {
   const [status, setStatus] = useState<StreamState>('idle');
   const [message, setMessage] = useState<string | undefined>();
@@ -29,6 +48,7 @@ export function useWormArenaStreaming() {
   const [finalSummary, setFinalSummary] = useState<WormArenaFinalSummary | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isStarting, setIsStarting] = useState(false);
+  const [eventLog, setEventLog] = useState<WormArenaEventLogEntry[]>([]);
   const statusRef = useRef<StreamState>('idle');
   const sawInitRef = useRef(false);
 
@@ -66,6 +86,19 @@ export function useWormArenaStreaming() {
     }
   }, []);
 
+  /**
+   * Append an entry to the event log, capping at MAX_EVENT_LOG_SIZE.
+   */
+  const appendEventLog = useCallback((entry: WormArenaEventLogEntry) => {
+    setEventLog((prev) => {
+      const next = [...prev, entry];
+      if (next.length > MAX_EVENT_LOG_SIZE) {
+        return next.slice(next.length - MAX_EVENT_LOG_SIZE);
+      }
+      return next;
+    });
+  }, []);
+
   const disconnect = useCallback((opts?: { preserveState?: boolean }) => {
     if (eventSourceRef.current) {
       eventSourceRef.current.close();
@@ -82,6 +115,7 @@ export function useWormArenaStreaming() {
       setPlayerNameBySnakeId({});
       setFinalSummary(null);
       setError(null);
+      setEventLog([]);
       setCurrentMatchIndex(null);
       setTotalMatches(null);
     }
@@ -96,10 +130,26 @@ export function useWormArenaStreaming() {
     const es = new EventSource(`/api/wormarena/stream/${encodeURIComponent(sessionId)}`);
     eventSourceRef.current = es;
 
-    es.addEventListener('stream.init', () => {
+    es.addEventListener('stream.init', (event) => {
       sawInitRef.current = true;
       setStatus('starting');
       setMessage('Launching match...');
+      try {
+        const data = JSON.parse((event as MessageEvent).data);
+        appendEventLog({
+          type: 'init',
+          timestamp: Date.now(),
+          payload: data,
+          summary: `Session initialized: ${data?.payload?.modelA ?? '?'} vs ${data?.payload?.modelB ?? '?'}`,
+        });
+      } catch {
+        appendEventLog({
+          type: 'init',
+          timestamp: Date.now(),
+          payload: null,
+          summary: 'Session initialized',
+        });
+      }
     });
 
     es.addEventListener('stream.status', (event) => {
@@ -118,6 +168,12 @@ export function useWormArenaStreaming() {
         setStatus(mappedState);
         if (data.message) setMessage(data.message);
         if (data.phase) setPhase(data.phase);
+        appendEventLog({
+          type: 'status',
+          timestamp: Date.now(),
+          payload: data,
+          summary: data.message ?? `State: ${data.state}`,
+        });
       } catch (err: any) {
         setError(err?.message || 'Failed to parse status event');
       }
@@ -127,6 +183,13 @@ export function useWormArenaStreaming() {
       try {
         const data = JSON.parse((event as MessageEvent).data) as WormArenaFrameEvent;
         setFrames((prev) => [...prev, data]);
+        const round = (data as any)?.round;
+        appendEventLog({
+          type: 'frame',
+          timestamp: Date.now(),
+          payload: data,
+          summary: `Frame: round ${round ?? '?'}`,
+        });
       } catch (err: any) {
         setError(err?.message || 'Failed to parse frame event');
       }
@@ -157,6 +220,14 @@ export function useWormArenaStreaming() {
             setReasoningBySnakeId((prev) => ({ ...prev, [snakeId]: text }));
           }
         }
+        // Log chunk to event log (truncate long text for summary)
+        const truncatedText = text.length > 80 ? text.slice(0, 80) + '...' : text;
+        appendEventLog({
+          type: 'chunk',
+          timestamp: Date.now(),
+          payload: data,
+          summary: `[${playerName ?? snakeId ?? 'unknown'}] ${truncatedText}`,
+        });
       } catch (err: any) {
         setError(err?.message || 'Failed to parse chunk event');
       }
@@ -168,6 +239,12 @@ export function useWormArenaStreaming() {
         setFinalSummary(data);
         setStatus('completed');
         setMessage('Match finished');
+        appendEventLog({
+          type: 'complete',
+          timestamp: Date.now(),
+          payload: data,
+          summary: `Match complete: ${data.modelA} vs ${data.modelB} - scores: ${JSON.stringify(data.scores)}`,
+        });
         es.close();
         eventSourceRef.current = null;
       } catch (err: any) {
@@ -178,16 +255,36 @@ export function useWormArenaStreaming() {
 
     es.addEventListener('stream.end', () => {
       setStatus((prev) => (prev === 'failed' ? prev : 'completed'));
+      appendEventLog({
+        type: 'end',
+        timestamp: Date.now(),
+        payload: null,
+        summary: 'Stream ended',
+      });
       es.close();
       eventSourceRef.current = null;
     });
 
     es.addEventListener('stream.error', (event) => {
+      let errorMsg = 'Match failed';
       try {
         const data = JSON.parse((event as MessageEvent).data) as { message?: string };
-        setError(data?.message || 'Match failed');
+        errorMsg = data?.message || 'Match failed';
+        setError(errorMsg);
+        appendEventLog({
+          type: 'error',
+          timestamp: Date.now(),
+          payload: data,
+          summary: `Error: ${errorMsg}`,
+        });
       } catch {
         setError('Match failed');
+        appendEventLog({
+          type: 'error',
+          timestamp: Date.now(),
+          payload: null,
+          summary: 'Error: Match failed',
+        });
       }
       setStatus('failed');
       es.close();
@@ -233,6 +330,7 @@ export function useWormArenaStreaming() {
     isStarting,
     currentMatchIndex,
     totalMatches,
+    eventLog,
     startMatch,
     connect,
     disconnect,
