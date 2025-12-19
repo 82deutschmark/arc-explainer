@@ -5,6 +5,16 @@
 
 # New entries at the top, use proper SemVer!
 
+### Version 6.8.2  Dec 19, 2025
+
+- **Worm Arena: Replay viewer reliability fix (CORS-proof replay loading)** (Author: Cascade)
+  - Fixed replay loading failures where the browser attempted to fetch remote replay JSON directly (often blocked by CORS)
+  - Server now fetches remote replay JSON (DB replay_path, snakebench.com upstream, GitHub raw fallback) and returns it as same-origin `{ data }`
+  - Restores replay viewing (including Console View) in both local dev and production
+  - **Files Modified**:
+    - `server/services/snakeBenchService.ts`
+    - `CHANGELOG.md`
+
 ### Version 6.8.1  Dec 19, 2025
 
 - **Worm Arena: Production crash fix + friendlier live link handling** (Author: Cascade)

@@ -2,7 +2,7 @@
  * server/services/snakeBenchService.ts
  *
  * Author: Cascade
- * Date: 2025-12-18
+ * Date: 2025-12-19
  * PURPOSE: Orchestrate SnakeBench matches via a Python runner
  *          (server/python/snakebench_runner.py) and return a compact
  *          summary suitable for HTTP APIs and frontend usage.
@@ -13,10 +13,11 @@
  *          - List endpoints only return matches that have an available replay asset
  *            (local file, DB replay_path URL, or GitHub raw fallback). This prevents
  *            the UI from offering matches that cannot be replayed.
- *          - getGame() now matches upstream SnakeBench pattern: returns { data } for
- *            local files (local dev) or { replayUrl } for remote sources (deployment).
- *            The client fetches directly from the URL, eliminating server-side JSON
- *            proxy truncation issues.
+ *          - Replay loading uses "smart fallbacks":
+ *            - getGame() returns { data } for local files, or { replayUrl + fallbackUrls }
+ *              so the browser can fetch directly when allowed.
+ *            - getGameProxy() server-fetches remote replay JSON as a same-origin fallback
+ *              for cases where the browser is blocked (most commonly by CORS).
  * SRP/DRY check: Pass — dedicated to SnakeBench subprocess handling and
  *                result shaping; reuses existing logging patterns.
  */
@@ -24,6 +25,7 @@
 import { spawn, spawnSync, type SpawnOptions } from 'child_process';
 import fs from 'fs';
 import path from 'path';
+import http from 'http';
 import https from 'https';
 import { URL } from 'url';
 
@@ -1022,12 +1024,11 @@ export class SnakeBenchService {
    * Resolve replay for a given gameId.
    *
    * Returns EITHER:
-   * - { data: <parsed JSON> } when a local file is available (local dev)
-   * - { replayUrl: <string> } when replay must be fetched from a remote URL (deployment)
+   * - { data: <parsed JSON> } when a local file is available
+   * - { replayUrl: <string>, fallbackUrls?: <string[]> } when replay must be fetched remotely
    *
-   * This matches the upstream SnakeBench pattern: the server does NOT proxy large
-   * JSON downloads. Instead, it returns the canonical URL and the client fetches directly.
-   * This eliminates truncation/timeout issues in deployment environments.
+   * NOTE: Some deployments / hosts block cross-origin replay JSON fetches (CORS).
+   * The frontend should fall back to /api/snakebench/games/:gameId/proxy in that case.
    */
   async getGame(gameId: string): Promise<{ data?: any; replayUrl?: string; fallbackUrls?: string[] }> {
     if (!gameId) {
@@ -1100,7 +1101,7 @@ export class SnakeBenchService {
       }
     }
 
-    // No local file: return URL for client to fetch directly (deployment scenario)
+    // No local file: return URL for the client to fetch directly.
     // Priority: DB replay_path URL > snakebench.com upstream > GitHub raw fallback
     if (remoteReplayUrl) {
       logger.info(
@@ -1110,16 +1111,10 @@ export class SnakeBenchService {
       return { replayUrl: remoteReplayUrl };
     }
 
-    // Build list of fallback URLs for the client to try
-    // The client will try these in order until one succeeds
     const fallbackUrls: string[] = [];
-
-    // snakebench.com upstream - for old games that exist on the original site
-    // Their backend redirects to Supabase storage, client follows redirect
     const upstreamBase = process.env.SNAKEBENCH_UPSTREAM_URL || 'https://snakebench.com';
     fallbackUrls.push(`${upstreamBase}/api/matches/${gameId}`);
 
-    // GitHub raw fallback for committed replay assets in VoynichLabs/SnakeBench
     const rawBase =
       process.env.SNAKEBENCH_REPLAY_RAW_BASE ||
       'https://raw.githubusercontent.com/VoynichLabs/SnakeBench/main/backend/completed_games';
@@ -1130,8 +1125,59 @@ export class SnakeBenchService {
       'snakebench-service',
     );
 
-    // Return primary URL, with fallbacks for client to try
     return { replayUrl: fallbackUrls[0], fallbackUrls };
+  }
+
+  /**
+   * Fetch replay JSON server-side as a same-origin fallback.
+   *
+   * The frontend should ONLY call this if direct replayUrl fetching fails (e.g., CORS).
+   */
+  async getGameProxy(gameId: string): Promise<{ data: any }> {
+    // First, try the normal resolution path (local file, DB replay URL, etc.).
+    const base = await this.getGame(gameId);
+    if (base.data) {
+      return { data: base.data };
+    }
+
+    const upstreamBase = process.env.SNAKEBENCH_UPSTREAM_URL || 'https://snakebench.com';
+    const rawBase =
+      process.env.SNAKEBENCH_REPLAY_RAW_BASE ||
+      'https://raw.githubusercontent.com/VoynichLabs/SnakeBench/main/backend/completed_games';
+
+    const urlsToTry = Array.from(
+      new Set(
+        [
+          base.replayUrl,
+          ...(base.fallbackUrls ?? []),
+          `${upstreamBase}/api/matches/${gameId}`,
+          `${rawBase}/snake_game_${gameId}.json`,
+        ].filter((v): v is string => typeof v === 'string' && v.trim().length > 0),
+      ),
+    );
+
+    let lastError = '';
+    for (const url of urlsToTry) {
+      try {
+        const parsed = await this.fetchJsonFromUrl(url);
+        logger.info(
+          `SnakeBenchService.getGameProxy: fetched remote replay for ${gameId} from ${url}`,
+          'snakebench-service',
+        );
+        return { data: parsed };
+      } catch (err) {
+        const msg = err instanceof Error ? err.message : String(err);
+        lastError = msg;
+        logger.warn(
+          `SnakeBenchService.getGameProxy: failed to fetch remote replay for ${gameId} from ${url}: ${msg}`,
+          'snakebench-service',
+        );
+      }
+    }
+
+    throw new Error(
+      `Replay not found for ${gameId}. Last error: ${lastError || 'unknown error'}`,
+    );
   }
 
   /**
@@ -1211,7 +1257,8 @@ export class SnakeBenchService {
     const parsedUrl = new URL(url);
 
     return await new Promise((resolve, reject) => {
-      const req = https.request(
+      const transport = parsedUrl.protocol === 'http:' ? http : https;
+      const req = transport.request(
         {
           protocol: parsedUrl.protocol,
           hostname: parsedUrl.hostname,

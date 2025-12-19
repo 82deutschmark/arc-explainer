@@ -218,7 +218,9 @@ export default function WormArenaLive() {
 
         if (data?.success && data?.status === 'unknown') {
           setSessionGateStatus('unknown');
-          setSessionGateMessage('This live link has expired or was never started. Please launch a new match.');
+          // Smart fallback: if the live session can't be resumed, drop the user into the replay hub.
+          // If the match actually completed, resolve() should have returned replayUrl above.
+          window.location.href = '/worm-arena';
           return;
         }
 
@@ -252,6 +254,13 @@ export default function WormArenaLive() {
         if (data?.success && data?.status === 'completed' && data?.replayUrl) {
           // Redirect to replay page
           window.location.href = data.replayUrl;
+          return;
+        }
+
+        if (data?.success && data?.status === 'unknown') {
+          // Smart fallback: unknown/unresumable session. Send user to replay hub.
+          window.location.href = '/worm-arena';
+          return;
         }
       } catch (err) {
         console.error('[WormArenaLive] Failed to resolve session', err);

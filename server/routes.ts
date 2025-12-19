@@ -229,6 +229,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/snakebench/run-batch", asyncHandler(snakeBenchController.runBatch));
   app.get("/api/snakebench/games", asyncHandler(snakeBenchController.listGames));
   app.get("/api/snakebench/games/:gameId", asyncHandler(snakeBenchController.getGame));
+  app.get("/api/snakebench/games/:gameId/proxy", asyncHandler(snakeBenchController.getGameProxy));
   app.get("/api/snakebench/matches", asyncHandler(snakeBenchController.searchMatches));
   app.get("/api/snakebench/health", asyncHandler(snakeBenchController.health));
   app.get("/api/snakebench/recent-activity", asyncHandler(snakeBenchController.recentActivity));
