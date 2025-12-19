@@ -5,7 +5,7 @@
 
 # New entries at the top, use proper SemVer!
 
-### Version 6.9.3  Dec 19, 2025
+### Version 6.9.3  Dec 19, 2025 14:30 
 
 - **Worm Arena: Default to greatest hits match on page load** (Author: Cascade)
   - Fixed blank screen issue on `/worm-arena` by defaulting to load the first greatest hits match instead of showing no content
