@@ -1,10 +1,14 @@
 /**
  * Author: Cascade
- * Date: 2025-12-18
+ * Date: 2025-12-19
  * PURPOSE: SSE controller for Worm Arena live matches.
  *          One session = one match. Prepares a session, streams status + frames,
  *          then persists sessionId -> gameId mapping so completed sessions can
  *          redirect to replay pages (durable share links).
+ *
+ *          Resolve behavior notes:
+ *          - resolve() must NOT return "pending" for expired sessions; doing so
+ *            causes the client to attempt an SSE connection that will fail.
  * SRP/DRY check: Pass — single-match streaming only, delegates to service layer.
  */
 
@@ -205,6 +209,18 @@ export const wormArenaStreamController = {
     // Check if session is still pending (match in progress)
     const pending = pendingSessions.get(sessionId);
     if (pending) {
+      // IMPORTANT: Pending sessions can expire even if the entry still exists.
+      // If expired, treat as unknown so the client does not attempt SSE.
+      if (pending.expiresAt < Date.now()) {
+        pendingSessions.delete(sessionId);
+        res.json({
+          success: true,
+          status: 'unknown',
+          message: 'Session expired.',
+        });
+        return;
+      }
+
       res.json({
         success: true,
         status: 'pending',
