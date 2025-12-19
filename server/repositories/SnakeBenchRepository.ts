@@ -396,7 +396,7 @@ export class SnakeBenchRepository extends BaseRepository {
     // Model filter (optional now)
     if (model) {
       params.push(model);
-      where.push(`m.model_slug = $${params.length}`);
+      where.push(`regexp_replace(m.model_slug, ':free$', '') = regexp_replace($${params.length}, ':free$', '')`);
     }
     where.push(`g.status = 'completed'`);
 
@@ -935,7 +935,7 @@ export class SnakeBenchRepository extends BaseRepository {
         FROM public.models m
         JOIN public.game_participants gp ON m.id = gp.model_id
         JOIN public.games g ON gp.game_id = g.id
-        WHERE m.model_slug = $1
+        WHERE regexp_replace(m.model_slug, ':free$', '') = regexp_replace($1, ':free$', '')
         GROUP BY
           m.model_slug,
           m.trueskill_mu,
@@ -947,6 +947,7 @@ export class SnakeBenchRepository extends BaseRepository {
           m.apples_eaten,
           m.games_played,
           m.is_active
+        ORDER BY m.games_played DESC
         LIMIT 1;
       `;
 
@@ -1027,7 +1028,7 @@ export class SnakeBenchRepository extends BaseRepository {
         LEFT JOIN public.game_participants opp_gp
           ON opp_gp.game_id = gp.game_id AND opp_gp.player_slot <> gp.player_slot
         LEFT JOIN public.models opp ON opp_gp.model_id = opp.id
-        WHERE m.model_slug = $1
+        WHERE regexp_replace(m.model_slug, ':free$', '') = regexp_replace($1, ':free$', '')
         ORDER BY COALESCE(g.start_time, g.created_at, NOW()) DESC
         LIMIT $2;
       `;
