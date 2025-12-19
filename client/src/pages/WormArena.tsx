@@ -133,11 +133,18 @@ export default function WormArena() {
   // Effect: Pick a default game only if none is selected (no URL param, no state set)
   // If a matchId is in the URL or state, trust it and let the API fetch handle validation
   React.useEffect(() => {
-    if (loadingGreatestHits || greatestHitsGames.length === 0) return;
+    if (loadingGreatestHits) return;
 
     // Only pick fallback if no game is currently selected
     if (!selectedMatchId) {
-      const fallbackId = greatestHitsGames[0]?.gameId ?? '';
+      // Prefer greatest hits, but fall back to recent games if greatest hits is empty
+      let fallbackId = greatestHitsGames[0]?.gameId ?? '';
+
+      if (!fallbackId && games.length > 0) {
+        // Fallback: pick from recent games with >= 20 rounds
+        const longGames = games.filter((g) => (g.roundsPlayed ?? 0) >= 20);
+        fallbackId = longGames[0]?.gameId ?? games[0]?.gameId ?? '';
+      }
 
       if (fallbackId) {
         setSelectedMatchId(fallbackId);
@@ -146,7 +153,7 @@ export default function WormArena() {
     }
     // For URL-provided matchIds: trust them completely. The API fetch will handle
     // invalid/missing games gracefully with errors shown to the user.
-  }, [greatestHitsGames, loadingGreatestHits, selectedMatchId, setMatchIdInUrl]);
+  }, [greatestHitsGames, loadingGreatestHits, games, selectedMatchId, setMatchIdInUrl]);
 
   React.useEffect(() => {
     if (!selectedMatchId) return;

@@ -1187,56 +1187,11 @@ export class SnakeBenchService {
   private async replayExists(gameId: string): Promise<boolean> {
     const backendDir = this.resolveBackendDir();
     const completedDir = path.join(backendDir, 'completed_games');
+    const replayPath = path.join(completedDir, `snake_game_${gameId}.json`);
 
-    const candidatePaths: string[] = [];
-    let remoteReplayUrl: string | null = null;
-
-    try {
-      const dbReplay = await repositoryService.snakeBench.getReplayPath(gameId);
-      const replayPath = dbReplay?.replayPath;
-      if (replayPath) {
-        if (/^https?:\/\//i.test(replayPath)) {
-          remoteReplayUrl = replayPath;
-        } else {
-          const resolved = path.isAbsolute(replayPath) ? replayPath : path.join(backendDir, replayPath);
-          candidatePaths.push(resolved);
-        }
-      }
-    } catch (err) {
-      const msg = err instanceof Error ? err.message : String(err);
-      logger.warn(
-        `SnakeBenchService.replayExists: failed to fetch replay_path from DB for ${gameId}: ${msg}`,
-        'snakebench-service',
-      );
-    }
-
-    candidatePaths.push(path.join(completedDir, `snake_game_${gameId}.json`));
-
-    const uniquePaths = Array.from(new Set(candidatePaths));
-    const existingPath = uniquePaths.find((p) => fs.existsSync(p));
-    if (existingPath) return true;
-
-    if (remoteReplayUrl) {
-      try {
-        await this.fetchJsonFromUrl(remoteReplayUrl);
-        return true;
-      } catch {
-        // continue to raw fallback
-      }
-    }
-
-    const rawBase =
-      process.env.SNAKEBENCH_REPLAY_RAW_BASE ||
-      'https://raw.githubusercontent.com/VoynichLabs/SnakeBench/main/backend/completed_games';
-    const rawUrl = `${rawBase}/snake_game_${gameId}.json`;
-    try {
-      await this.fetchJsonFromUrl(rawUrl);
-      return true;
-    } catch {
-      // Not available
-    }
-
-    return false;
+    // All replay JSONs are bundled with the project in external/SnakeBench/backend/completed_games/
+    // Just check if the file exists locally. No remote fallbacks needed.
+    return fs.existsSync(replayPath);
   }
 
   /**
