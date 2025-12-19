@@ -1,9 +1,10 @@
 /**
  * Author: Cascade
- * Date: 2025-12-18
+ * Date: 2025-12-19
  * PURPOSE: Worm Arena Matches page - showcases curated "Greatest Hits" matches
  *          prominently, with advanced search filters in a collapsible section
  *          for users who want to explore specific matchups.
+ *          Fixes Radix Select invariant: SelectItem values must be non-empty.
  * SRP/DRY check: Pass - page composition only.
  */
 
@@ -66,6 +67,10 @@ type MatchFilters = {
   sortDir: SnakeBenchMatchSearchSortDir;
   limit: number;
 };
+
+// IMPORTANT: Radix Select does not allow SelectItem values of "".
+// We use a sentinel value for the UI while keeping the actual filter state as "".
+const ANY_MODEL_SENTINEL = '__any_model__';
 
 /** Human-readable labels for death reasons */
 const DEATH_REASON_LABELS: Record<SnakeBenchDeathReason | 'any', string> = {
@@ -160,11 +165,6 @@ export default function WormArenaMatches() {
   }, []);
 
   React.useEffect(() => {
-    if (draftFilters.model || availableModels.length === 0) return;
-    updateDraft({ model: availableModels[0] });
-  }, [availableModels, draftFilters.model, updateDraft]);
-
-  React.useEffect(() => {
     if (appliedFilters || !draftFilters.model.trim()) return;
     setAppliedFilters({ ...draftRef.current, model: draftRef.current.model.trim() });
   }, [appliedFilters, draftFilters.model]);
@@ -249,10 +249,11 @@ export default function WormArenaMatches() {
   };
 
   const handleApply = () => {
-    const trimmedModel = draftRef.current.model.trim();
-    if (!trimmedModel) return;
     setOffset(0);
-    setAppliedFilters({ ...draftRef.current, model: trimmedModel });
+    setAppliedFilters({
+      ...draftRef.current,
+      model: draftRef.current.model.trim(),
+    });
   };
 
   const rangeLabel = React.useMemo(() => {
@@ -299,12 +300,17 @@ export default function WormArenaMatches() {
                   <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-3">
                     <div className="space-y-1">
                       <div className="text-xs font-semibold text-muted-foreground">Model (optional)</div>
-                      <Select value={draftFilters.model} onValueChange={(value) => updateDraft({ model: value })}>
+                      <Select
+                        value={draftFilters.model.trim().length > 0 ? draftFilters.model : ANY_MODEL_SENTINEL}
+                        onValueChange={(value) => {
+                          updateDraft({ model: value === ANY_MODEL_SENTINEL ? '' : value });
+                        }}
+                      >
                         <SelectTrigger className="worm-input">
                           <SelectValue placeholder="Any model" />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="">Any model</SelectItem>
+                          <SelectItem value={ANY_MODEL_SENTINEL}>Any model</SelectItem>
                           {availableModels.map((m) => (
                             <SelectItem key={m} value={m}>
                               {m}

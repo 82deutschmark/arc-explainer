@@ -1,10 +1,14 @@
 /**
  * Author: Cascade
- * Date: 2025-12-18
+ * Date: 2025-12-19
  * PURPOSE: SSE controller for Worm Arena live matches.
  *          One session = one match. Prepares a session, streams status + frames,
  *          then persists sessionId -> gameId mapping so completed sessions can
  *          redirect to replay pages (durable share links).
+ *
+ *          Resolve behavior notes:
+ *          - resolve() must NOT return "pending" for expired sessions; doing so
+ *            causes the client to attempt an SSE connection that will fail.
  * SRP/DRY check: Pass — single-match streaming only, delegates to service layer.
  */
 
@@ -12,6 +16,7 @@ import type { Request, Response } from 'express';
 import crypto from 'crypto';
 import { sseStreamManager } from '../services/streaming/SSEStreamManager';
 import { snakeBenchService } from '../services/snakeBenchService';
+import { repositoryService } from '../repositories/RepositoryService.ts';
 import type {
   SnakeBenchRunMatchRequest,
   WormArenaFinalSummary,
@@ -102,6 +107,19 @@ export const wormArenaStreamController = {
       expiresAt: now + PENDING_TTL_MS,
     });
 
+    // Persist session to database for durable link resolution
+    try {
+      await repositoryService.wormArenaSessions.createPendingSession(
+        sessionId,
+        payload.modelA,
+        payload.modelB,
+        new Date(now + PENDING_TTL_MS)
+      );
+    } catch (dbErr) {
+      logger.warn(`Failed to persist Worm Arena session ${sessionId}: ${dbErr}`, 'worm-arena-stream');
+      // Continue anyway - in-memory will work for this session
+    }
+
     logger.info(`[WormArenaStream] Session created: ${sessionId} for ${payload.modelA} vs ${payload.modelB}`, 'worm-arena-stream');
 
     res.json({
@@ -165,6 +183,15 @@ export const wormArenaStreamController = {
         modelB: result.modelB,
         completedAt: Date.now(),
       });
+
+      // Also persist to database for durable link resolution
+      try {
+        await repositoryService.wormArenaSessions.markCompleted(sessionId, result.gameId);
+      } catch (dbErr) {
+        logger.warn(`Failed to persist completed Worm Arena session ${sessionId}: ${dbErr}`, 'worm-arena-stream');
+        // Continue anyway - in-memory will work for this session
+      }
+
       logger.info(`[WormArenaStream] Match completed: sessionId=${sessionId} -> gameId=${result.gameId}`, 'worm-arena-stream');
 
       const summary: WormArenaFinalSummary = {
@@ -205,6 +232,18 @@ export const wormArenaStreamController = {
     // Check if session is still pending (match in progress)
     const pending = pendingSessions.get(sessionId);
     if (pending) {
+      // IMPORTANT: Pending sessions can expire even if the entry still exists.
+      // If expired, treat as unknown so the client does not attempt SSE.
+      if (pending.expiresAt < Date.now()) {
+        pendingSessions.delete(sessionId);
+        res.json({
+          success: true,
+          status: 'unknown',
+          message: 'Session expired.',
+        });
+        return;
+      }
+
       res.json({
         success: true,
         status: 'pending',
@@ -213,7 +252,7 @@ export const wormArenaStreamController = {
       return;
     }
 
-    // Check if session completed and we have gameId mapping
+    // Check if session completed and we have gameId mapping in memory
     const completed = completedSessions.get(sessionId);
     if (completed) {
       res.json({
@@ -225,6 +264,28 @@ export const wormArenaStreamController = {
         replayUrl: `/worm-arena?matchId=${encodeURIComponent(completed.gameId)}`,
       });
       return;
+    }
+
+    // Check database for persistent session resolution (durable links)
+    try {
+      const dbSession = await repositoryService.wormArenaSessions.getBySessionId(sessionId);
+      if (dbSession) {
+        if (dbSession.status === 'completed' && dbSession.game_id) {
+          res.json({
+            success: true,
+            status: 'completed',
+            gameId: dbSession.game_id,
+            modelA: dbSession.model_a,
+            modelB: dbSession.model_b,
+            replayUrl: `/worm-arena?matchId=${encodeURIComponent(dbSession.game_id)}`,
+          });
+          return;
+        }
+        // If DB session exists but is not completed, treat as unknown (expired)
+      }
+    } catch (dbErr) {
+      logger.warn(`Failed to check DB for Worm Arena session ${sessionId}: ${dbErr}`, 'worm-arena-resolve');
+      // Continue with unknown response - DB issues shouldn't break the flow
     }
 
     // Session unknown - either never existed or expired

@@ -2,11 +2,17 @@
  * server/controllers/snakeBenchController.ts
  *
  * Author: Cascade
- * Date: 2025-12-02
- * PURPOSE: HTTP API controller for SnakeBench single-match runs.
+ * Date: 2025-12-19
+ * PURPOSE: HTTP API controller for SnakeBench single-match runs and replay access.
  *          Exposes a small public endpoint that runs a single game between
  *          two models via the SnakeBench backend and returns a concise
  *          summary for UI consumption.
+ *
+ *          Replay behavior:
+ *          - /api/snakebench/games/:gameId returns either local { data } or a remote
+ *            { replayUrl + fallbackUrls } for the client to fetch directly.
+ *          - /api/snakebench/games/:gameId/proxy server-fetches remote replay JSON as
+ *            a same-origin fallback for cases where browser fetch is blocked (CORS).
  * SRP/DRY check: Pass — controller-only logic, delegates execution to
  *                snakeBenchService.
  */
@@ -79,6 +85,53 @@ export async function runMatch(req: Request, res: Response) {
 
     const response: SnakeBenchRunMatchResponse = {
       success: false,
+      error: message,
+      timestamp: Date.now(),
+    };
+
+    return res.status(500).json(response);
+  }
+}
+
+/**
+ * GET /api/snakebench/games/:gameId/proxy
+ *
+ * Server-side replay proxy. Intended as a fallback when the browser cannot fetch
+ * replay JSON directly from remote URLs (most commonly due to CORS).
+ */
+export async function getGameProxy(req: Request, res: Response) {
+  try {
+    const { gameId } = req.params as { gameId: string };
+
+    if (!gameId) {
+      const response: SnakeBenchGameDetailResponse = {
+        success: false,
+        gameId: '',
+        error: 'gameId is required',
+        timestamp: Date.now(),
+      };
+      return res.status(400).json(response);
+    }
+
+    const result = await snakeBenchService.getGameProxy(gameId);
+
+    const response: SnakeBenchGameDetailResponse = {
+      success: true,
+      gameId,
+      data: result.data,
+      timestamp: Date.now(),
+    };
+
+    return res.json(response);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    logger.error(`SnakeBench getGameProxy failed: ${message}`, 'snakebench-controller');
+
+    const { gameId = '' } = req.params as { gameId?: string };
+
+    const response: SnakeBenchGameDetailResponse = {
+      success: false,
+      gameId,
       error: message,
       timestamp: Date.now(),
     };
@@ -599,6 +652,7 @@ export const snakeBenchController = {
   runBatch,
   listGames,
   getGame,
+  getGameProxy,
   searchMatches,
   health,
   recentActivity,

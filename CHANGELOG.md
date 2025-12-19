@@ -1,9 +1,103 @@
-# Author: Codex
+# Author: Claude Sonnet 4
 # Date: 2025-12-18
-# PURPOSE: Ensure the changelog captures the new chat session menu enablement and related documentation.
+# PURPOSE: Changelog for ARC Explainer - tracks all changes with semantic versioning.
 # SRP/DRY check: Pass - this entry documents the specific change without altering historical records.
 
-# New entires at the top, use proper SemVer!
+# New entries at the top, use proper SemVer!
+
+### Version 6.9.3  Dec 19, 2025 14:30 
+
+- **Worm Arena: Default to greatest hits match on page load** (Author: Cascade)
+  - Fixed blank screen issue on `/worm-arena` by defaulting to load the first greatest hits match instead of showing no content
+  - Added `useWormArenaGreatestHits` hook usage to main WormArena component
+  - Changed default selection logic from recent games to curated greatest hits games
+  - Users now see an interesting match immediately instead of a blank page
+  - **Files Modified**:
+    - `client/src/pages/WormArena.tsx`
+    - `CHANGELOG.md`
+
+### Version 6.9.2  Dec 19, 2025
+
+- **Worm Arena: Free model preference and normalization** (Author: Cascade)
+  - Fixed issue where free and paid versions of same model (e.g., `mistralai/devstral-2512` vs `mistralai/devstral-2512:free`) were treated as separate models
+  - Modified pairing history query to normalize model slugs by removing `:free` suffix
+  - Updated suggest-matchups logic to prefer free versions over paid versions when both exist
+  - Fixed model rating lookups (`/api/snakebench/model-rating`) to return data for free/paid variants
+  - Fixed model history lookups (`/api/snakebench/model-history`) to include matches for both variants
+  - Fixed match filtering (`/api/snakebench/matches`) to include results for free/paid variants
+  - Fixed TrueSkill leaderboards (`/api/snakebench/leaderboard`) to group by normalized slugs instead of showing duplicates
+  - Fixed basic leaderboards (`/api/snakebench/leaderboard/basic`) to group by normalized slugs instead of showing duplicates
+  - Ensures free models appear in suggestions instead of paid equivalents
+  - **Files Modified**:
+    - `server/repositories/SnakeBenchRepository.ts`
+    - `server/services/snakeBenchService.ts`
+    - `CHANGELOG.md`
+
+### Version 6.9.1  Dec 19, 2025
+
+- **Worm Arena: Persistent live-link resolution** (Author: Cascade)
+  - Fixed issue where old `/worm-arena/live/:sessionId` links would show "Session unavailable" after server restarts
+  - Added `worm_arena_sessions` Postgres table to persist `sessionId -> gameId` mappings
+  - Old live links now reliably redirect to exact replays even after server restarts
+  - Added `WormArenaSessionRepository` for DB operations
+  - Updated `wormArenaStreamController` to persist completed sessions to DB
+  - **New files created**:
+    - `server/repositories/WormArenaSessionRepository.ts`
+    - `migrations/0005_worm-arena-sessions.sql`
+    - `docs/plans/2025-12-19-worm-arena-persistent-live-links.md`
+  - **Files modified**:
+    - `server/controllers/wormArenaStreamController.ts`
+    - `server/repositories/RepositoryService.ts`
+    - `server/repositories/database/DatabaseSchema.ts`
+    - `shared/schema.ts`
+    - `CHANGELOG.md`
+
+### Version 6.8.2  Dec 19, 2025
+
+- **Worm Arena: Replay viewer reliability fix (CORS-proof replay loading)** (Author: Cascade)
+  - Fixed replay loading failures where the browser attempted to fetch remote replay JSON directly (often blocked by CORS)
+  - Server now fetches remote replay JSON (DB replay_path, snakebench.com upstream, GitHub raw fallback) and returns it as same-origin `{ data }`
+  - Restores replay viewing (including Console View) in both local dev and production
+  - **Files Modified**:
+    - `server/services/snakeBenchService.ts`
+    - `CHANGELOG.md`
+
+### Version 6.8.1  Dec 19, 2025
+
+- **Worm Arena: Production crash fix + friendlier live link handling** (Author: Cascade)
+  - Fixed a **blank page crash** in Worm Arena Matches caused by an invalid Radix Select item (`SelectItem value=""`)
+    - Replaced empty-string select values with a non-empty sentinel and mapped it back to “no filter” internally
+  - Improved **Live link UX** when a sessionId is expired/unknown in production
+    - Added a preflight gate using `/api/wormarena/resolve/:sessionId` before attempting SSE connect
+    - If the match already finished, users are redirected to the replay automatically
+    - If the link is expired/unknown, the page stays usable with a clear message (no hard crash)
+  - **Files Modified**:
+    - `client/src/pages/WormArenaMatches.tsx`
+    - `client/src/pages/WormArenaLive.tsx`
+    - `CHANGELOG.md`
+
+### Version 6.8.0  Dec 18, 2025
+
+- **Worm Arena: Console Mirror View - Raw Python Terminal Experience** (Author: Claude Sonnet 4)
+  - Added **view mode toggle** to both Live and Replay pages
+  - Users can now switch between "Cartoon View" (default emoji canvas) and "Console View" (raw Python terminal)
+  - **Console View features**:
+    - ASCII board matching Python's `GameState.print_board()` format exactly
+    - Symbols: `.` = empty, `A` = apple, `0`/`1` = snake heads, `T` = body
+    - Y-axis labels on left (high to low), X-axis labels at bottom
+    - Dark terminal theme with green text
+    - Live event stream log (live page only) with auto-scroll
+    - Event type badges: init, status, frame, chunk, complete, error
+  - **New files created**:
+    - `client/src/lib/wormArena/renderPythonAsciiBoard.ts` - Python-accurate ASCII renderer
+    - `client/src/components/WormArenaConsoleMirror.tsx` - Console view component
+    - `docs/plans/2025-12-18-worm-arena-console-mirror-improved.md` - Implementation plan
+  - **Files modified**:
+    - `client/src/hooks/useWormArenaStreaming.ts` - Added `eventLog` state for chronological SSE event collection
+    - `client/src/pages/WormArenaLive.tsx` - Added render mode toggle, console view integration
+    - `client/src/pages/WormArena.tsx` - Added render mode toggle, console view integration
+    - `CHANGELOG.md`
+  - **Educational purpose**: Shows users what the Python SnakeBench engine actually outputs, bridging the gap between the friendly UI and the underlying mechanics
 
 ### Version 6.7.0  Dec 18, 2025
 

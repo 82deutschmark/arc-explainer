@@ -396,7 +396,7 @@ export class SnakeBenchRepository extends BaseRepository {
     // Model filter (optional now)
     if (model) {
       params.push(model);
-      where.push(`m.model_slug = $${params.length}`);
+      where.push(`regexp_replace(m.model_slug, ':free$', '') = regexp_replace($${params.length}, ':free$', '')`);
     }
     where.push(`g.status = 'completed'`);
 
@@ -935,7 +935,7 @@ export class SnakeBenchRepository extends BaseRepository {
         FROM public.models m
         JOIN public.game_participants gp ON m.id = gp.model_id
         JOIN public.games g ON gp.game_id = g.id
-        WHERE m.model_slug = $1
+        WHERE regexp_replace(m.model_slug, ':free$', '') = regexp_replace($1, ':free$', '')
         GROUP BY
           m.model_slug,
           m.trueskill_mu,
@@ -947,6 +947,7 @@ export class SnakeBenchRepository extends BaseRepository {
           m.apples_eaten,
           m.games_played,
           m.is_active
+        ORDER BY m.games_played DESC
         LIMIT 1;
       `;
 
@@ -1027,7 +1028,7 @@ export class SnakeBenchRepository extends BaseRepository {
         LEFT JOIN public.game_participants opp_gp
           ON opp_gp.game_id = gp.game_id AND opp_gp.player_slot <> gp.player_slot
         LEFT JOIN public.models opp ON opp_gp.model_id = opp.id
-        WHERE m.model_slug = $1
+        WHERE regexp_replace(m.model_slug, ':free$', '') = regexp_replace($1, ':free$', '')
         ORDER BY COALESCE(g.start_time, g.created_at, NOW()) DESC
         LIMIT $2;
       `;
@@ -1091,7 +1092,7 @@ export class SnakeBenchRepository extends BaseRepository {
     try {
       const sql = `
         SELECT
-          m.model_slug,
+          regexp_replace(m.model_slug, ':free$', '') AS normalized_slug,
           m.trueskill_mu,
           m.trueskill_sigma,
           m.trueskill_exposed,
@@ -1105,7 +1106,7 @@ export class SnakeBenchRepository extends BaseRepository {
         FROM public.models m
         JOIN public.game_participants gp ON m.id = gp.model_id
         JOIN public.games g ON gp.game_id = g.id
-        GROUP BY m.model_slug, m.trueskill_mu, m.trueskill_sigma, m.trueskill_exposed
+        GROUP BY regexp_replace(m.model_slug, ':free$', ''), m.trueskill_mu, m.trueskill_sigma, m.trueskill_exposed
         HAVING COUNT(gp.game_id) >= $2
         ORDER BY COALESCE(m.trueskill_exposed, m.trueskill_mu - 3 * m.trueskill_sigma) DESC
         LIMIT $1;
@@ -1131,7 +1132,7 @@ export class SnakeBenchRepository extends BaseRepository {
         const winRate = gamesPlayed > 0 ? wins / gamesPlayed : undefined;
 
         const entry: SnakeBenchTrueSkillLeaderboardEntry = {
-          modelSlug: String(row.model_slug ?? ''),
+          modelSlug: String(row.normalized_slug ?? ''),
           mu,
           sigma,
           exposed,
@@ -1177,11 +1178,18 @@ export class SnakeBenchRepository extends BaseRepository {
 
     try {
       // Self-join game_participants to find all (A, B) pairings that occurred in the same game.
+      // Normalize model slugs by removing ':free' suffix to treat free/paid versions as the same.
       // We normalize the key so that (A, B) and (B, A) map to the same entry by sorting slugs.
       const sql = `
         SELECT
-          LEAST(m1.model_slug, m2.model_slug) AS slug_a,
-          GREATEST(m1.model_slug, m2.model_slug) AS slug_b,
+          LEAST(
+            regexp_replace(m1.model_slug, ':free$', ''),
+            regexp_replace(m2.model_slug, ':free$', '')
+          ) AS slug_a,
+          GREATEST(
+            regexp_replace(m1.model_slug, ':free$', ''),
+            regexp_replace(m2.model_slug, ':free$', '')
+          ) AS slug_b,
           COUNT(DISTINCT gp1.game_id) AS matches_played,
           MAX(COALESCE(g.start_time, g.created_at)) AS last_played_at
         FROM public.game_participants gp1
@@ -1191,7 +1199,13 @@ export class SnakeBenchRepository extends BaseRepository {
         JOIN public.models m2 ON gp2.model_id = m2.id
         JOIN public.games g ON gp1.game_id = g.id
         WHERE g.status = 'completed'
-        GROUP BY LEAST(m1.model_slug, m2.model_slug), GREATEST(m1.model_slug, m2.model_slug);
+        GROUP BY LEAST(
+          regexp_replace(m1.model_slug, ':free$', ''),
+          regexp_replace(m2.model_slug, ':free$', '')
+        ), GREATEST(
+          regexp_replace(m1.model_slug, ':free$', ''),
+          regexp_replace(m2.model_slug, ':free$', '')
+        );
       `;
 
       const { rows } = await this.query(sql);
@@ -1238,7 +1252,7 @@ export class SnakeBenchRepository extends BaseRepository {
       if (sortBy === 'winRate') {
         sql = `
           SELECT
-            m.model_slug,
+            regexp_replace(m.model_slug, ':free$', '') AS normalized_slug,
             COUNT(gp.game_id) AS games_played,
             COUNT(CASE WHEN gp.result = 'won' THEN 1 END) AS wins,
             COUNT(CASE WHEN gp.result = 'lost' THEN 1 END) AS losses,
@@ -1246,7 +1260,7 @@ export class SnakeBenchRepository extends BaseRepository {
           FROM public.models m
           JOIN public.game_participants gp ON m.id = gp.model_id
           JOIN public.games g ON gp.game_id = g.id
-          GROUP BY m.model_slug
+          GROUP BY regexp_replace(m.model_slug, ':free$', '')
           HAVING COUNT(gp.game_id) > 0
           ORDER BY (COUNT(CASE WHEN gp.result = 'won' THEN 1 END)::float / NULLIF(COUNT(gp.game_id), 0)) DESC NULLS LAST
           LIMIT $1;
@@ -1254,7 +1268,7 @@ export class SnakeBenchRepository extends BaseRepository {
       } else {
         sql = `
           SELECT
-            m.model_slug,
+            regexp_replace(m.model_slug, ':free$', '') AS normalized_slug,
             COUNT(gp.game_id) AS games_played,
             COUNT(CASE WHEN gp.result = 'won' THEN 1 END) AS wins,
             COUNT(CASE WHEN gp.result = 'lost' THEN 1 END) AS losses,
@@ -1262,7 +1276,7 @@ export class SnakeBenchRepository extends BaseRepository {
           FROM public.models m
           JOIN public.game_participants gp ON m.id = gp.model_id
           JOIN public.games g ON gp.game_id = g.id
-          GROUP BY m.model_slug
+          GROUP BY regexp_replace(m.model_slug, ':free$', '')
           HAVING COUNT(gp.game_id) > 0
           ORDER BY games_played DESC
           LIMIT $1;
@@ -1279,7 +1293,7 @@ export class SnakeBenchRepository extends BaseRepository {
         const winRate = gamesPlayed > 0 ? wins / gamesPlayed : undefined;
 
         return {
-          modelSlug: String(row?.model_slug ?? ''),
+          modelSlug: String(row?.normalized_slug ?? ''),
           gamesPlayed,
           wins,
           losses,

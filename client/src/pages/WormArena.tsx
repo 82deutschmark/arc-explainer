@@ -1,6 +1,6 @@
 /**
- * Author: Cascade
- * Date: 2025-12-18
+ * Author: Cascade / Claude Sonnet 4
+ * Date: 2025-12-18 (updated 2025-12-19)
  * PURPOSE: Worm Arena - Replay viewer for past/completed games. Shows game history,
  *          recent games list, and replay controls. Three-column layout: reasoning logs
  *          (left/right), game board (center).
@@ -8,6 +8,8 @@
  *          Note: Final-frame UI shows per-player final summaries inside each reasoning panel.
  *          Match-wide totals (token/cost aggregates) are rendered once outside the panels
  *          to avoid confusing duplication.
+ *          NEW: Console Mirror view toggle - switch between cartoon canvas and raw Python terminal view.
+ *          Defaults to loading the first greatest hits match to avoid blank screen.
  * SRP/DRY check: Pass - Replay viewer only, no match-starting logic.
  */
 
@@ -26,6 +28,11 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { summarizeWormArenaPlacement } from '@shared/utils/wormArenaPlacement.ts';
 import { useIsMobile } from '@/hooks/use-mobile';
+import WormArenaConsoleMirror from '@/components/WormArenaConsoleMirror';
+import { Button } from '@/components/ui/button';
+import { useWormArenaGreatestHits } from '@/hooks/useWormArenaGreatestHits';
+
+type RenderMode = 'cartoon' | 'console';
 
 function useQueryParamMatchId(): { matchId: string | null; setMatchIdInUrl: (id: string) => void } {
   const [location, setLocation] = useLocation();
@@ -106,9 +113,11 @@ export default function WormArena() {
   const [frameIndex, setFrameIndex] = React.useState<number>(0);
   const [isPlaying, setIsPlaying] = React.useState<boolean>(false);
   const [showNextMove, setShowNextMove] = React.useState<boolean>(true);
+  const [renderMode, setRenderMode] = React.useState<RenderMode>('cartoon');
 
   const { games, total, refresh } = useSnakeBenchRecentGames();
   const { data: replayData, isLoading: loadingReplay, error: replayError, fetchGame } = useSnakeBenchGame(selectedMatchId);
+  const { games: greatestHitsGames, isLoading: loadingGreatestHits } = useWormArenaGreatestHits(5);
 
   // Sync URL parameter changes to selectedMatchId
   React.useEffect(() => {
@@ -124,12 +133,11 @@ export default function WormArena() {
   // Effect: Pick a default game only if none is selected (no URL param, no state set)
   // If a matchId is in the URL or state, trust it and let the API fetch handle validation
   React.useEffect(() => {
-    if (games.length === 0) return;
+    if (loadingGreatestHits || greatestHitsGames.length === 0) return;
 
     // Only pick fallback if no game is currently selected
     if (!selectedMatchId) {
-      const longGames = games.filter((g) => (g.roundsPlayed ?? 0) >= 20);
-      const fallbackId = longGames[0]?.gameId ?? games[0]?.gameId ?? '';
+      const fallbackId = greatestHitsGames[0]?.gameId ?? '';
 
       if (fallbackId) {
         setSelectedMatchId(fallbackId);
@@ -138,7 +146,7 @@ export default function WormArena() {
     }
     // For URL-provided matchIds: trust them completely. The API fetch will handle
     // invalid/missing games gracefully with errors shown to the user.
-  }, [games, selectedMatchId, setMatchIdInUrl]);
+  }, [greatestHitsGames, loadingGreatestHits, selectedMatchId, setMatchIdInUrl]);
 
   React.useEffect(() => {
     if (!selectedMatchId) return;
@@ -396,6 +404,31 @@ export default function WormArena() {
       (typeof matchOut === 'number' && Number.isFinite(matchOut) ? matchOut : 0);
 
     const lines: string[] = [];
+
+    // Add winner information
+    const playerIds = Object.keys(finalScores ?? {});
+    if (playerIds.length >= 2) {
+      const playerAId = playerIds[0];
+      const playerBId = playerIds[1];
+      const playerAScore = (finalScores as any)?.[playerAId] ?? 0;
+      const playerBScore = (finalScores as any)?.[playerBId] ?? 0;
+
+      const playerAName = playerLabels[playerAId] ?? 'Player A';
+      const playerBName = playerLabels[playerBId] ?? 'Player B';
+
+      let winnerText = '';
+      if (playerAScore > playerBScore) {
+        winnerText = `${playerAName} won (${formatInt(playerAScore)} - ${formatInt(playerBScore)})`;
+      } else if (playerBScore > playerAScore) {
+        winnerText = `${playerBName} won (${formatInt(playerBScore)} - ${formatInt(playerAScore)})`;
+      } else {
+        winnerText = `Tie game (${formatInt(playerAScore)} - ${formatInt(playerBScore)})`;
+      }
+
+      lines.push(`Result: ${winnerText}`);
+      lines.push('');
+    }
+
     lines.push('Match totals:');
     lines.push(`Input tokens: ${formatInt(matchIn)}`);
     lines.push(`Output tokens: ${formatInt(matchOut)}`);
@@ -413,7 +446,7 @@ export default function WormArena() {
     }
 
     return lines.join('\n');
-  }, [replayData, frames.length]);
+  }, [replayData, frames.length, finalScores, playerLabels]);
 
   const appendFinalResultIfNeeded = (snakeId: string, reasoning: string): string => {
     if (!isFinalFrame || !snakeId) return reasoning;
@@ -567,58 +600,121 @@ export default function WormArena() {
           </div>
         )}
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6 items-stretch">
-          <WormArenaReasoning
-            playerName={playerAName}
-            color="green"
-            reasoning={playerAReasoningForPanel}
-            score={playerAScore}
-          />
+        {/* View mode toggle */}
+        <div className="flex justify-center mb-4">
+          <div className="inline-flex rounded-lg border border-gray-300 bg-white p-1 shadow-sm">
+            <Button
+              variant={renderMode === 'cartoon' ? 'default' : 'ghost'}
+              size="sm"
+              onClick={() => setRenderMode('cartoon')}
+              className="text-xs px-3"
+            >
+              Cartoon View
+            </Button>
+            <Button
+              variant={renderMode === 'console' ? 'default' : 'ghost'}
+              size="sm"
+              onClick={() => setRenderMode('console')}
+              className="text-xs px-3"
+            >
+              Console View
+            </Button>
+          </div>
+        </div>
 
-          <div className="flex flex-col gap-4">
-            {isMobile ? (
-              <WormArenaGameBoardSVG
-                frame={currentFrame}
-                boardWidth={boardWidth}
-                boardHeight={boardHeight}
-              />
-            ) : (
-              <WormArenaGameBoard
-                frame={currentFrame}
-                boardWidth={boardWidth}
-                boardHeight={boardHeight}
-                playerLabels={playerLabels}
-              />
-            )}
+        {/* Cartoon view (default) - 3 column layout with reasoning panels */}
+        {renderMode === 'cartoon' && (
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6 items-stretch">
+            <WormArenaReasoning
+              playerName={playerAName}
+              color="green"
+              reasoning={playerAReasoningForPanel}
+              score={playerAScore}
+            />
 
-            <WormArenaControlBar
-              onFirst={() => setFrameIndex(0)}
-              onPrev={() => setFrameIndex((idx) => Math.max(0, idx - 1))}
-              onPlayPause={() => setIsPlaying((v) => !v)}
-              onNext={() => setFrameIndex((idx) => Math.min(frames.length - 1, idx + 1))}
-              onLast={() => setFrameIndex(Math.max(0, frames.length - 1))}
-              isPlaying={isPlaying}
-              currentRound={frames.length === 0 ? 0 : frameIndex + 1}
-              totalRounds={frames.length}
-              showNextMove={showNextMove}
-              onToggleThought={setShowNextMove}
-              playerALabel={playerAName}
-              playerBLabel={playerBName}
-              playerAScore={playerAScore}
-              playerBScore={playerBScore}
-              matchId={selectedMatchId}
-              onCopyMatchId={handleCopyMatchId}
-              statsModels={Array.isArray(models) ? models.slice(0, 2) : []}
+            <div className="flex flex-col gap-4">
+              {isMobile ? (
+                <WormArenaGameBoardSVG
+                  frame={currentFrame}
+                  boardWidth={boardWidth}
+                  boardHeight={boardHeight}
+                />
+              ) : (
+                <WormArenaGameBoard
+                  frame={currentFrame}
+                  boardWidth={boardWidth}
+                  boardHeight={boardHeight}
+                  playerLabels={playerLabels}
+                />
+              )}
+
+              <WormArenaControlBar
+                onFirst={() => setFrameIndex(0)}
+                onPrev={() => setFrameIndex((idx) => Math.max(0, idx - 1))}
+                onPlayPause={() => setIsPlaying((v) => !v)}
+                onNext={() => setFrameIndex((idx) => Math.min(frames.length - 1, idx + 1))}
+                onLast={() => setFrameIndex(Math.max(0, frames.length - 1))}
+                isPlaying={isPlaying}
+                currentRound={frames.length === 0 ? 0 : frameIndex + 1}
+                totalRounds={frames.length}
+                showNextMove={showNextMove}
+                onToggleThought={setShowNextMove}
+                playerALabel={playerAName}
+                playerBLabel={playerBName}
+                playerAScore={playerAScore}
+                playerBScore={playerBScore}
+                matchId={selectedMatchId}
+                onCopyMatchId={handleCopyMatchId}
+                statsModels={Array.isArray(models) ? models.slice(0, 2) : []}
+              />
+            </div>
+
+            <WormArenaReasoning
+              playerName={playerBName}
+              color="blue"
+              reasoning={playerBReasoningForPanel}
+              score={playerBScore}
             />
           </div>
+        )}
 
-          <WormArenaReasoning
-            playerName={playerBName}
-            color="blue"
-            reasoning={playerBReasoningForPanel}
-            score={playerBScore}
-          />
-        </div>
+        {/* Console view - raw Python terminal experience */}
+        {renderMode === 'console' && (
+          <div className="max-w-4xl mx-auto mb-6">
+            <WormArenaConsoleMirror
+              frame={currentFrame}
+              boardWidth={boardWidth}
+              boardHeight={boardHeight}
+              currentRound={frameIndex + 1}
+              maxRounds={frames.length}
+              scores={currentScores as Record<string, number>}
+              playerNames={playerLabels}
+              isLive={false}
+            />
+
+            <div className="mt-4">
+              <WormArenaControlBar
+                onFirst={() => setFrameIndex(0)}
+                onPrev={() => setFrameIndex((idx) => Math.max(0, idx - 1))}
+                onPlayPause={() => setIsPlaying((v) => !v)}
+                onNext={() => setFrameIndex((idx) => Math.min(frames.length - 1, idx + 1))}
+                onLast={() => setFrameIndex(Math.max(0, frames.length - 1))}
+                isPlaying={isPlaying}
+                currentRound={frames.length === 0 ? 0 : frameIndex + 1}
+                totalRounds={frames.length}
+                showNextMove={showNextMove}
+                onToggleThought={setShowNextMove}
+                playerALabel={playerAName}
+                playerBLabel={playerBName}
+                playerAScore={playerAScore}
+                playerBScore={playerBScore}
+                matchId={selectedMatchId}
+                onCopyMatchId={handleCopyMatchId}
+                statsModels={Array.isArray(models) ? models.slice(0, 2) : []}
+              />
+            </div>
+          </div>
+        )}
 
         {matchTotalsSummary && (
           <Card className="worm-card mb-8">
