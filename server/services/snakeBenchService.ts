@@ -2,7 +2,7 @@
  * server/services/snakeBenchService.ts
  *
  * Author: Cascade
- * Date: 2025-12-19
+ * Date: 2025-12-19 (updated for upstream replay loading fix)
  * PURPOSE: Orchestrate SnakeBench matches via a Python runner
  *          (server/python/snakebench_runner.py) and return a compact
  *          summary suitable for HTTP APIs and frontend usage.
@@ -11,13 +11,20 @@
  *          - Accept OpenRouter model slugs discovered in our SnakeBench DB (active)
  *            in addition to curated OpenRouter entries in the central MODELS config.
  *          - List endpoints only return matches that have an available replay asset
- *            (local file, DB replay_path URL, or GitHub raw fallback). This prevents
+ *            (local file, DB replay_path URL, or upstream backend fallback). This prevents
  *            the UI from offering matches that cannot be replayed.
  *          - Replay loading uses "smart fallbacks":
  *            - getGame() returns { data } for local files, or { replayUrl + fallbackUrls }
  *              so the browser can fetch directly when allowed.
  *            - getGameProxy() server-fetches remote replay JSON as a same-origin fallback
  *              for cases where the browser is blocked (most commonly by CORS).
+ *
+ *          UPSTREAM REPLAY LOADING:
+ *          Greg's SnakeBench uses Next.js SSR - his server fetches from Supabase Storage
+ *          and embeds data in HTML. Our backend fetches from his Railway Flask API
+ *          (backend-production-fc22.up.railway.app) which internally redirects to Supabase.
+ *          Set SNAKEBENCH_UPSTREAM_BACKEND_URL to override the upstream backend URL.
+ *
  * SRP/DRY check: Pass — dedicated to SnakeBench subprocess handling and
  *                result shaping; reuses existing logging patterns.
  */
@@ -1102,7 +1109,9 @@ export class SnakeBenchService {
     }
 
     // No local file: return URL for the client to fetch directly.
-    // Priority: DB replay_path URL > snakebench.com upstream > GitHub raw fallback
+    // Priority: DB replay_path URL > Supabase Storage (primary) > GitHub raw fallback
+    // NOTE: Greg's SnakeBench stores replays in Supabase Storage, NOT served via Flask API.
+    // The Flask /api/matches/:id endpoint returns 404 for many games; Supabase Storage is authoritative.
     if (remoteReplayUrl) {
       logger.info(
         `SnakeBenchService.getGame: returning replayUrl from DB for ${gameId}: ${remoteReplayUrl}`,
@@ -1112,9 +1121,15 @@ export class SnakeBenchService {
     }
 
     const fallbackUrls: string[] = [];
-    const upstreamBase = process.env.SNAKEBENCH_UPSTREAM_URL || 'https://snakebench.com';
-    fallbackUrls.push(`${upstreamBase}/api/matches/${gameId}`);
 
+    // PRIMARY: Greg's Railway backend - his Flask API serves replays (redirects to Supabase internally)
+    // This is the production backend visible in network requests: backend-production-fc22.up.railway.app
+    const upstreamBackend =
+      process.env.SNAKEBENCH_UPSTREAM_BACKEND_URL ||
+      'https://backend-production-fc22.up.railway.app';
+    fallbackUrls.push(`${upstreamBackend}/api/matches/${gameId}`);
+
+    // SECONDARY: GitHub raw - for older games that may be committed to the repo
     const rawBase =
       process.env.SNAKEBENCH_REPLAY_RAW_BASE ||
       'https://raw.githubusercontent.com/VoynichLabs/SnakeBench/main/backend/completed_games';
@@ -1140,18 +1155,24 @@ export class SnakeBenchService {
       return { data: base.data };
     }
 
-    const upstreamBase = process.env.SNAKEBENCH_UPSTREAM_URL || 'https://snakebench.com';
+    // Use Greg's Railway backend as primary fallback (his Flask API redirects to Supabase internally)
+    const upstreamBackend =
+      process.env.SNAKEBENCH_UPSTREAM_BACKEND_URL ||
+      'https://backend-production-fc22.up.railway.app';
     const rawBase =
       process.env.SNAKEBENCH_REPLAY_RAW_BASE ||
       'https://raw.githubusercontent.com/VoynichLabs/SnakeBench/main/backend/completed_games';
+
+    const additionalUrls: string[] = [];
+    additionalUrls.push(`${upstreamBackend}/api/matches/${gameId}`);
+    additionalUrls.push(`${rawBase}/snake_game_${gameId}.json`);
 
     const urlsToTry = Array.from(
       new Set(
         [
           base.replayUrl,
           ...(base.fallbackUrls ?? []),
-          `${upstreamBase}/api/matches/${gameId}`,
-          `${rawBase}/snake_game_${gameId}.json`,
+          ...additionalUrls,
         ].filter((v): v is string => typeof v === 'string' && v.trim().length > 0),
       ),
     );
@@ -1185,13 +1206,24 @@ export class SnakeBenchService {
    * Used to keep greatest-hits entries playable.
    */
   private async replayExists(gameId: string): Promise<boolean> {
-    const backendDir = this.resolveBackendDir();
-    const completedDir = path.join(backendDir, 'completed_games');
-    const replayPath = path.join(completedDir, `snake_game_${gameId}.json`);
+    const candidatePaths: string[] = [];
 
-    // All replay JSONs are bundled with the project in external/SnakeBench/backend/completed_games/
-    // Just check if the file exists locally. No remote fallbacks needed.
-    return fs.existsSync(replayPath);
+    // Check database for alternate replay_path (e.g., from ingestion)
+    try {
+      const dbReplay = await repositoryService.snakeBench.getReplayPath(gameId);
+      if (dbReplay?.replayPath && !dbReplay.replayPath.startsWith('http')) {
+        const resolved = path.isAbsolute(dbReplay.replayPath) ? dbReplay.replayPath : path.join(this.resolveBackendDir(), dbReplay.replayPath);
+        candidatePaths.push(resolved);
+      }
+    } catch {
+      // DB lookup failed, continue to default path
+    }
+
+    // Check bundled replay location (primary source)
+    candidatePaths.push(path.join(this.resolveCompletedDir(), `snake_game_${gameId}.json`));
+
+    // Return true if any candidate path exists locally
+    return candidatePaths.some((p) => fs.existsSync(p));
   }
 
   /**
