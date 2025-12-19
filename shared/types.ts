@@ -631,16 +631,38 @@ export type SnakeBenchMatchSearchSortBy =
   | 'rounds'
   | 'totalCost'
   | 'maxFinalScore'
-  | 'scoreDelta';
+  | 'scoreDelta'
+  | 'myScore';
+
+/** Death reasons for worm games */
+export type SnakeBenchDeathReason = 'head_collision' | 'body_collision' | 'wall' | 'survived';
 
 export type SnakeBenchMatchSearchSortDir = 'asc' | 'desc';
 
 export interface SnakeBenchMatchSearchQuery {
-  model: string;
+  /** Model slug to search (optional - if empty, searches all models) */
+  model?: string;
+  /** Opponent model slug contains (partial match) */
   opponent?: string;
+  /** Filter by match result */
   result?: SnakeBenchMatchSearchResultLabel;
+  /** Filter by death reason */
+  deathReason?: SnakeBenchDeathReason;
+  /** Minimum rounds played */
   minRounds?: number;
+  /** Maximum rounds played */
+  maxRounds?: number;
+  /** Minimum score achieved */
+  minScore?: number;
+  /** Maximum score achieved */
+  maxScore?: number;
+  /** Minimum total cost */
+  minCost?: number;
+  /** Maximum total cost */
+  maxCost?: number;
+  /** Date range start (ISO or ms) */
   from?: string;
+  /** Date range end (ISO or ms) */
   to?: string;
   sortBy?: SnakeBenchMatchSearchSortBy;
   sortDir?: SnakeBenchMatchSearchSortDir;
@@ -662,6 +684,8 @@ export interface SnakeBenchMatchSearchRow {
   scoreDelta: number;
   boardWidth: number;
   boardHeight: number;
+  /** How the model's worm died (or 'survived' if reached max rounds) */
+  deathReason: SnakeBenchDeathReason | null;
 }
 
 export interface SnakeBenchMatchSearchResponse {

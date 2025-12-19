@@ -486,6 +486,7 @@ export default function WormArena() {
           { label: 'Skill Analysis', href: '/worm-arena/skill-analysis' },
         ]}
         showMatchupLabel={false}
+        compact
       />
 
       <main className="p-8 max-w-7xl mx-auto">
