@@ -5,6 +5,35 @@
 
 # New entries at the top, use proper SemVer!
 
+### Version 6.9.5  Dec 19, 2025
+
+- **Worm Arena: Restore fallback when greatest hits unavailable + simplify replay loading** (Author: Claude Haiku 4.5)
+  - **UI Fix**: Fixed regression from v6.9.3 where replays appeared broken due to blank page when greatest-hits endpoint returns empty
+    - Restored cascade logic: prefer greatest hits → fall back to recent games (filtered by ≥20 rounds) → show any recent game
+    - Dependency array now includes `games` so fallback logic re-evaluates when recent games load
+  - **Backend Fix**: Simplified `replayExists()` to check local bundled files only
+    - Removed slow remote URL fallbacks (GitHub raw, snakebench.com) that were timing out
+    - All replay JSONs are bundled in `external/SnakeBench/backend/completed_games/` and deployed to Railway
+    - Direct `fs.existsSync()` check is fast, reliable, and works in both dev and production
+    - Removed unnecessary `SNAKEBENCH_REPLAY_RAW_BASE` env var dependency (optional in .env)
+  - **Files Modified**: `client/src/pages/WormArena.tsx`, `server/services/snakeBenchService.ts`
+  - **Impact**: Greatest hits now always return playable games (fast local checks) + page shows fallback replays if needed
+
+### Version 6.9.4  Dec 19, 2025
+
+- **Worm Arena Console & Model Selector UI Refinement** (Author: Claude Haiku 4.5)
+  - Reduced excessive padding in model selector list for more compact, terminal-like appearance
+  - Changed model selector buttons from `px-3 py-2` to `px-2 py-1` with reduced text sizes (`text-xs`)
+  - Replaced row spacing (`space-y-2`) with subtle `border-b` dividers for cleaner look
+  - Moved win/loss/tie stats inline with model name instead of right-aligned (like trading terminal ticker)
+  - Changed console view layout from stacked (vertical) to side-by-side (horizontal)
+  - Python ASCII console now on left, event stream on right with equal horizontal space
+  - Reduced event stream text sizes and padding for denser display
+  - Improved space efficiency on live match pages by eliminating whitespace
+  - **Files Modified**:
+    - `client/src/components/wormArena/stats/WormArenaModelListCard.tsx`
+    - `client/src/components/WormArenaConsoleMirror.tsx`
+
 ### Version 6.9.3  Dec 19, 2025 14:30 
 
 - **Worm Arena: Default to greatest hits match on page load** (Author: Cascade)
