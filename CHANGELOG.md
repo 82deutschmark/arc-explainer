@@ -5,6 +5,30 @@
 
 # New entires at the top, use proper SemVer!
 
+### Version 6.7.0  Dec 18, 2025
+
+- **Worm Arena: Major UX improvements across all pages** (Author: Cascade)
+  - **Compact headers everywhere**: All Worm Arena pages now use compact header mode (~1/3 original size)
+    - Title + nav pills inline on single row
+    - Reduced from text-4xl/5xl to text-xl
+    - Cleaner, less overwhelming first impression
+  - **Fixed OpenRouter model availability bug**: "Run" button on suggested matchups was incorrectly showing "models not available" error
+    - Root cause: React state updates are async; old code checked stale state in setTimeout
+    - Fix: Check model availability directly with passed parameters, build payload inline
+  - **Redesigned Live Scoreboard** (`WormArenaLiveScoreboard.tsx`):
+    - Compact single-row layout (~1/3 original height)
+    - Consistent worm emoji: now uses `\uD83D\uDC1B` for both players (was using snail for one)
+    - Added TrueSkill stats display: exposed rating, sigma (uncertainty), games played
+    - Stats fetched via `useModelRating` hook, shown below model name
+    - Smaller apple score pills, cleaner VS divider
+  - **Files Modified**:
+    - `client/src/pages/WormArena.tsx` - added `compact` prop to header
+    - `client/src/pages/WormArenaLive.tsx` - compact header, fixed matchup run bug, TrueSkill stats wiring
+    - `client/src/pages/WormArenaStats.tsx` - added `compact` prop to header
+    - `client/src/pages/WormArenaSkillAnalysis.tsx` - added `compact` prop to header
+    - `client/src/components/WormArenaLiveScoreboard.tsx` - complete redesign with TrueSkill integration
+    - `CHANGELOG.md`
+
 ### Version 6.6.9  Dec 18, 2025
 
 - **Worm Arena Matches: Robust advanced search with death reason filter** (Author: Cascade)

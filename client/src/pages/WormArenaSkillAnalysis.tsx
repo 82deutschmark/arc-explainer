@@ -232,6 +232,7 @@ export default function WormArenaSkillAnalysis() {
             { label: 'Skill Analysis', href: '/worm-arena/skill-analysis', active: true },
           ]}
           showMatchupLabel={false}
+          compact
         />
 
         <main className="w-full max-w-[1500px] mx-auto px-4 md:px-6 py-6 space-y-6">

@@ -110,6 +110,7 @@ export default function WormArenaStats() {
           { label: "Skill Analysis", href: "/worm-arena/skill-analysis" },
         ]}
         showMatchupLabel={false}
+        compact
       />
 
       <main className="p-8 max-w-7xl mx-auto space-y-6">

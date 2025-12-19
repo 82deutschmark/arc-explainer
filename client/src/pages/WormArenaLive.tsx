@@ -16,6 +16,7 @@
 import React, { useEffect, useMemo } from 'react';
 import { useRoute } from 'wouter';
 import { useModels } from '@/hooks/useModels';
+import { useModelRating } from '@/hooks/useSnakeBench';
 import useWormArenaStreaming from '@/hooks/useWormArenaStreaming';
 import { useWormArenaSetup } from '@/hooks/useWormArenaSetup';
 import WormArenaHeader from '@/components/WormArenaHeader';
@@ -240,21 +241,38 @@ export default function WormArenaLive() {
   }, [autoStartAttempted, loadingModels, matchupAvailable, handleRunMatch]);
 
   // Handle running a match from suggested matchups
+  // Note: We check availability directly with the passed params, not React state,
+  // because state updates are async and won't be ready in a setTimeout(0).
   const handleSuggestedMatchupRun = React.useCallback(
-    (modelA: string, modelB: string) => {
-      setModelA(modelA);
-      setModelB(modelB);
-      // Delay to allow state to update
-      setTimeout(() => {
-        const available = new Set(selectableModels);
-        if (available.has(modelA) && available.has(modelB)) {
-          handleRunMatch();
-        } else {
-          setLaunchNotice('Selected models are not available. Please try another matchup.');
-        }
-      }, 0);
+    async (suggestedModelA: string, suggestedModelB: string) => {
+      // Check availability directly with passed models
+      const available = new Set(selectableModels);
+      if (!available.has(suggestedModelA) || !available.has(suggestedModelB)) {
+        setLaunchNotice('Selected models are not available on OpenRouter. Please try another matchup.');
+        return;
+      }
+
+      // Build payload directly with the passed models
+      const payload: SnakeBenchRunMatchRequest = {
+        modelA: mapToSnakeBenchModelId(suggestedModelA),
+        modelB: mapToSnakeBenchModelId(suggestedModelB),
+        width,
+        height,
+        maxRounds,
+        numApples,
+        ...(byoApiKey ? { apiKey: byoApiKey, provider: byoProvider } : {}),
+      };
+
+      setLaunchNotice(null);
+      try {
+        const prep = await startLiveMatch(payload);
+        if (prep?.liveUrl) window.location.href = prep.liveUrl;
+      } catch (err: any) {
+        console.error('[WormArenaLive] Failed to start match from suggestion', err);
+        setLaunchNotice(err?.message || 'Failed to start match');
+      }
     },
-    [setModelA, setModelB, selectableModels, handleRunMatch],
+    [selectableModels, width, height, maxRounds, numApples, byoApiKey, byoProvider, startLiveMatch],
   );
 
   const latestFrame = useMemo(() => (frames.length ? frames[frames.length - 1] : null), [frames]);
@@ -290,6 +308,31 @@ export default function WormArenaLive() {
   const rightName = (rightSnakeId && playerNameBySnakeId[rightSnakeId]) || (rightSnakeId ? `Snake ${rightSnakeId}` : 'Player B');
   const leftReasoning = (leftSnakeId && reasoningBySnakeId[leftSnakeId]) || '';
   const rightReasoning = (rightSnakeId && reasoningBySnakeId[rightSnakeId]) || '';
+
+  // Fetch TrueSkill stats for both players to show in scoreboard
+  const { rating: leftRating } = useModelRating(leftName || undefined);
+  const { rating: rightRating } = useModelRating(rightName || undefined);
+
+  // Build stats objects for scoreboard display
+  const leftStats = useMemo(() => {
+    if (!leftRating) return undefined;
+    return {
+      mu: leftRating.mu,
+      sigma: leftRating.sigma,
+      exposed: leftRating.exposed,
+      gamesPlayed: leftRating.gamesPlayed,
+    };
+  }, [leftRating]);
+
+  const rightStats = useMemo(() => {
+    if (!rightRating) return undefined;
+    return {
+      mu: rightRating.mu,
+      sigma: rightRating.sigma,
+      exposed: rightRating.exposed,
+      gamesPlayed: rightRating.gamesPlayed,
+    };
+  }, [rightRating]);
   const aliveNames = useMemo(() => {
     const snakeState = (latestFrame as any)?.frame?.state?.snakes;
     if (snakeState && typeof snakeState === 'object') {
@@ -391,6 +434,7 @@ export default function WormArenaLive() {
           { label: 'Stats & Placement', href: '/worm-arena/stats' },
           { label: 'Skill Analysis', href: '/worm-arena/skill-analysis' },
         ]}
+        compact
       />
 
       <main className="p-4 max-w-7xl mx-auto space-y-4">
@@ -442,6 +486,8 @@ export default function WormArenaLive() {
               playerBName={rightName}
               playerAScore={playerAScore}
               playerBScore={playerBScore}
+              playerAStats={leftStats}
+              playerBStats={rightStats}
             />
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-stretch">

@@ -1,21 +1,38 @@
 /**
  * Author: Cascade
  * Date: 2025-12-18
- * PURPOSE: Enhanced Worm Arena apple scoreboard with larger typography, centered layout,
- *          and visual styling that matches the redesigned WormArenaHeader. Shows model
- *          names prominently with apple scores in pill-style badges.
- * SRP/DRY check: Pass - renders only the apple score strip with no streaming/state logic.
+ * PURPOSE: Compact Worm Arena scoreboard with TrueSkill stats integration.
+ *          Shows model names, apple scores, and key TrueSkill metrics (mu, sigma, exposed)
+ *          in a compact single-row layout (~1/3 the original height).
+ *          Uses consistent 🐛 worm emoji for both players.
+ * SRP/DRY check: Pass - renders only the score strip with no streaming/state logic.
  */
 
 import React from 'react';
 
-const APPLE_ICON = String.fromCodePoint(0x1F34E);
+// Consistent worm emoji for all players
+const WORM_ICON = '\uD83D\uDC1B'; // 🐛
+const APPLE_ICON = '\uD83C\uDF4E'; // 🍎
 
 export interface WormArenaLiveScoreboardProps {
   playerAName: string;
   playerBName: string;
   playerAScore: number;
   playerBScore: number;
+  /** Optional TrueSkill stats for player A */
+  playerAStats?: {
+    mu?: number;
+    sigma?: number;
+    exposed?: number;
+    gamesPlayed?: number;
+  };
+  /** Optional TrueSkill stats for player B */
+  playerBStats?: {
+    mu?: number;
+    sigma?: number;
+    exposed?: number;
+    gamesPlayed?: number;
+  };
 }
 
 export default function WormArenaLiveScoreboard({
@@ -23,6 +40,8 @@ export default function WormArenaLiveScoreboard({
   playerBName,
   playerAScore,
   playerBScore,
+  playerAStats,
+  playerBStats,
 }: WormArenaLiveScoreboardProps) {
   // Determine who's winning for visual emphasis
   const aWinning = playerAScore > playerBScore;
@@ -33,64 +52,70 @@ export default function WormArenaLiveScoreboard({
     score: number,
     color: 'green' | 'blue',
     isWinning: boolean,
+    stats?: { mu?: number; sigma?: number; exposed?: number; gamesPlayed?: number },
   ) => {
-    const colorClasses = color === 'green'
-      ? 'bg-green-600 text-white border-green-700'
-      : 'bg-blue-600 text-white border-blue-700';
+    const pillClasses = color === 'green'
+      ? 'bg-green-600 text-white'
+      : 'bg-blue-600 text-white';
     const nameColor = color === 'green' ? 'text-green-700' : 'text-blue-700';
-    const wormIcon = color === 'green' ? String.fromCodePoint(0x1F40C) : String.fromCodePoint(0x1F41B);
 
     return (
-      <div className="flex flex-col items-center gap-2 flex-1 min-w-0">
-        {/* Model name - truncated if long */}
-        <div className={`text-sm md:text-base font-bold uppercase tracking-wide truncate max-w-full px-2 ${nameColor}`}>
-          {name}
+      <div className="flex items-center gap-2 flex-1 min-w-0">
+        {/* Worm icon */}
+        <span className="text-lg shrink-0" aria-hidden="true">{WORM_ICON}</span>
+
+        {/* Model name + stats column */}
+        <div className="flex-1 min-w-0">
+          <div className={`text-xs font-bold uppercase tracking-wide truncate ${nameColor}`}>
+            {name}
+          </div>
+          {stats && (
+            <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground font-mono">
+              {stats.exposed !== undefined && (
+                <span title="Pessimistic rating (mu - 3*sigma)">
+                  {stats.exposed.toFixed(1)}
+                </span>
+              )}
+              {stats.mu !== undefined && stats.sigma !== undefined && (
+                <span className="opacity-60" title={`mu=${stats.mu.toFixed(1)}, sigma=${stats.sigma.toFixed(1)}`}>
+                  ({stats.sigma.toFixed(1)}\u03C3)
+                </span>
+              )}
+              {stats.gamesPlayed !== undefined && (
+                <span className="opacity-60" title="Games played">
+                  {stats.gamesPlayed}g
+                </span>
+              )}
+            </div>
+          )}
         </div>
 
-        {/* Apple score pill */}
+        {/* Apple score pill - compact */}
         <div
           className={`
-            flex items-center gap-2 px-5 py-2 rounded-full border-2 shadow-md
-            transition-transform duration-200
-            ${colorClasses}
-            ${isWinning ? 'scale-110 shadow-lg' : ''}
+            flex items-center gap-1 px-2.5 py-1 rounded-full text-sm font-bold
+            transition-transform duration-150 shrink-0
+            ${pillClasses}
+            ${isWinning ? 'scale-105 ring-2 ring-offset-1 ring-yellow-400' : ''}
           `}
         >
-          <span className="text-2xl md:text-3xl font-bold tabular-nums">
-            {Math.max(0, Number(score) || 0)}
-          </span>
-          <span className="text-xl md:text-2xl" aria-hidden="true">
-            {APPLE_ICON}
-          </span>
+          <span className="tabular-nums">{Math.max(0, Number(score) || 0)}</span>
+          <span className="text-xs" aria-hidden="true">{APPLE_ICON}</span>
         </div>
-
-        {/* Worm icon under score */}
-        <span className="text-2xl" aria-hidden="true">{wormIcon}</span>
       </div>
     );
   };
 
   return (
-    <div className="rounded-2xl border-2 worm-border bg-white/95 shadow-lg px-6 py-4">
-      {/* Header label */}
-      <div className="text-center mb-3">
-        <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
-          Apple Score
-        </span>
-      </div>
+    <div className="rounded-lg border worm-border bg-white/95 shadow-sm px-3 py-2">
+      {/* Compact single-row layout */}
+      <div className="flex items-center gap-3">
+        {renderPlayer(playerAName, playerAScore, 'green', aWinning, playerAStats)}
 
-      {/* Score display - three column layout */}
-      <div className="flex items-center justify-center gap-4 md:gap-8">
-        {renderPlayer(playerAName, playerAScore, 'green', aWinning)}
+        {/* VS divider - minimal */}
+        <span className="text-xs font-bold text-worm-ink/40 shrink-0">vs</span>
 
-        {/* VS divider */}
-        <div className="flex flex-col items-center gap-1 px-2">
-          <span className="text-lg md:text-xl font-black tracking-widest text-worm-ink/60">
-            VS
-          </span>
-        </div>
-
-        {renderPlayer(playerBName, playerBScore, 'blue', bWinning)}
+        {renderPlayer(playerBName, playerBScore, 'blue', bWinning, playerBStats)}
       </div>
     </div>
   );
