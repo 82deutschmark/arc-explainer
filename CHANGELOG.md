@@ -5,6 +5,29 @@
 
 # New entires at the top, use proper SemVer!
 
+### Version 6.6.9  Dec 18, 2025
+
+- **Worm Arena Matches: Robust advanced search with death reason filter** (Author: Cascade)
+  - Added **death reason** filter: head_collision, body_collision, wall, survived
+  - Added **score range** filters (min/max score)
+  - Added **cost range** filters (min/max cost in $)
+  - Added **max rounds** filter (was only min before)
+  - Added **myScore** sort option
+  - Model filter is now **optional** - can search across all models
+  - Search results table now shows: Model, Death Reason columns
+  - Quick presets row with "Clear ranges" button
+  - Better human-readable labels (e.g., "Head Collision" vs "head_collision")
+  - **Backend changes**:
+    - `shared/types.ts`: Added `SnakeBenchDeathReason` type, enhanced `SnakeBenchMatchSearchQuery`
+    - `server/controllers/snakeBenchController.ts`: Parse new query params
+    - `server/repositories/SnakeBenchRepository.ts`: Add filters for deathReason, maxRounds, score range, cost range
+  - **Files Modified**:
+    - `shared/types.ts`
+    - `server/controllers/snakeBenchController.ts`
+    - `server/repositories/SnakeBenchRepository.ts`
+    - `client/src/pages/WormArenaMatches.tsx`
+    - `CHANGELOG.md`
+
 ### Version 6.6.8  Dec 18, 2025
 
 - **Worm Arena Matches: Redesigned as "Greatest Hits" showcase** (Author: Cascade)
