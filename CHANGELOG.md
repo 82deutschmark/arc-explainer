@@ -5,6 +5,23 @@
 
 # New entries at the top, use proper SemVer!
 
+### Version 6.9.6  Dec 19, 2025
+
+- **Worm Arena: Fix replay loading to use Greg's Railway backend (root cause fix)** (Author: Claude Sonnet 4)
+  - **Root Cause**: Previous code used wrong/stale upstream URL for fetching replays from upstream SnakeBench
+    - Was trying: `snakebench.com/api/matches/{id}` (frontend domain, not backend)
+    - Should use: `backend-production-fc22.up.railway.app/api/matches/{id}` (Greg's actual Railway backend)
+  - **Architecture clarification**: Greg uses Next.js SSR - his server fetches from Supabase Storage and embeds 
+    data in HTML. Browser sees no Supabase requests because they happen server-side. Our backend-to-backend 
+    approach (fetching from his Flask API) is correct and equivalent.
+  - **Fix**: Updated `snakeBenchService.getGame()` and `getGameProxy()` to use Greg's Railway backend directly
+    - Primary fallback: `https://backend-production-fc22.up.railway.app/api/matches/{gameId}`
+    - Secondary fallback: GitHub raw for older games
+  - **New env var**: `SNAKEBENCH_UPSTREAM_BACKEND_URL` - override Greg's backend URL if it changes
+    - Default: `https://backend-production-fc22.up.railway.app`
+  - **Fallback order**: Local file -> DB replay_path -> Greg's Railway backend -> GitHub raw
+  - **Files Modified**: `server/services/snakeBenchService.ts`
+
 ### Version 6.9.5  Dec 19, 2025
 
 - **Worm Arena: Restore fallback when greatest hits unavailable + simplify replay loading** (Author: Claude Haiku 4.5)
