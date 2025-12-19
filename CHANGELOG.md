@@ -5,6 +5,17 @@
 
 # New entries at the top, use proper SemVer!
 
+### Version 6.9.3  Dec 19, 2025
+
+- **Worm Arena: Default to greatest hits match on page load** (Author: Cascade)
+  - Fixed blank screen issue on `/worm-arena` by defaulting to load the first greatest hits match instead of showing no content
+  - Added `useWormArenaGreatestHits` hook usage to main WormArena component
+  - Changed default selection logic from recent games to curated greatest hits games
+  - Users now see an interesting match immediately instead of a blank page
+  - **Files Modified**:
+    - `client/src/pages/WormArena.tsx`
+    - `CHANGELOG.md`
+
 ### Version 6.9.2  Dec 19, 2025
 
 - **Worm Arena: Free model preference and normalization** (Author: Cascade)
