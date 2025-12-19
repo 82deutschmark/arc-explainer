@@ -404,6 +404,31 @@ export default function WormArena() {
       (typeof matchOut === 'number' && Number.isFinite(matchOut) ? matchOut : 0);
 
     const lines: string[] = [];
+
+    // Add winner information
+    const playerIds = Object.keys(finalScores ?? {});
+    if (playerIds.length >= 2) {
+      const playerAId = playerIds[0];
+      const playerBId = playerIds[1];
+      const playerAScore = (finalScores as any)?.[playerAId] ?? 0;
+      const playerBScore = (finalScores as any)?.[playerBId] ?? 0;
+
+      const playerAName = playerLabels[playerAId] ?? 'Player A';
+      const playerBName = playerLabels[playerBId] ?? 'Player B';
+
+      let winnerText = '';
+      if (playerAScore > playerBScore) {
+        winnerText = `${playerAName} won (${formatInt(playerAScore)} - ${formatInt(playerBScore)})`;
+      } else if (playerBScore > playerAScore) {
+        winnerText = `${playerBName} won (${formatInt(playerBScore)} - ${formatInt(playerAScore)})`;
+      } else {
+        winnerText = `Tie game (${formatInt(playerAScore)} - ${formatInt(playerBScore)})`;
+      }
+
+      lines.push(`Result: ${winnerText}`);
+      lines.push('');
+    }
+
     lines.push('Match totals:');
     lines.push(`Input tokens: ${formatInt(matchIn)}`);
     lines.push(`Output tokens: ${formatInt(matchOut)}`);
@@ -421,7 +446,7 @@ export default function WormArena() {
     }
 
     return lines.join('\n');
-  }, [replayData, frames.length]);
+  }, [replayData, frames.length, finalScores, playerLabels]);
 
   const appendFinalResultIfNeeded = (snakeId: string, reasoning: string): string => {
     if (!isFinalFrame || !snakeId) return reasoning;
