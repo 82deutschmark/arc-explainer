@@ -1,15 +1,16 @@
 /**
  * Author: Cascade
- * Date: 2025-12-18
+ * Date: 2025-12-19
  * PURPOSE: Lightweight hooks for interacting with the SnakeBench backend
  *          from the ARC Explainer frontend. Provides helpers for running
  *          single matches, small batches, and listing recent games.
  *
- *          useSnakeBenchGame now matches upstream SnakeBench pattern:
+ *          useSnakeBenchGame uses smart replay fallbacks:
  *          - Server returns { data } for local files (local dev)
- *          - Server returns { replayUrl } for remote sources (deployment)
- *          - Client fetches directly from replayUrl, eliminating server-side
- *            JSON proxy truncation issues in deployment environments.
+ *          - Server returns { replayUrl + fallbackUrls } for remote sources (deployment)
+ *          - Client tries to fetch directly from replayUrl(s)
+ *          - If browser fetch is blocked (commonly CORS), client falls back to
+ *            same-origin /api/snakebench/games/:id/proxy
  * SRP/DRY check: Pass — focused on HTTP wiring for SnakeBench endpoints.
  */
 
@@ -158,6 +159,7 @@ export function useSnakeBenchGame(gameId?: string) {
 
       // Option 2: Server returned replayUrl - fetch directly (deployment)
       // Try primary URL first, then fallbacks (snakebench.com, GitHub raw, etc.)
+      // If browser fetch is blocked (commonly CORS), fall back to same-origin proxy.
       if (json.replayUrl || json.fallbackUrls?.length) {
         const urlsToTry = [json.replayUrl, ...(json.fallbackUrls || [])].filter(Boolean) as string[];
         let lastError = '';
@@ -176,7 +178,20 @@ export function useSnakeBenchGame(gameId?: string) {
           }
         }
 
-        // All URLs failed
+        // Direct fetch failed. Try same-origin proxy fallback.
+        try {
+          const proxyRes = await apiRequest('GET', `/api/snakebench/games/${encodeURIComponent(id)}/proxy`);
+          const proxyJson = (await proxyRes.json()) as SnakeBenchGameDetailResponse;
+          if (proxyJson.success && proxyJson.data) {
+            setData(proxyJson.data);
+            return;
+          }
+          lastError = proxyJson.error || lastError || 'proxy did not return data';
+        } catch (e: any) {
+          lastError = e?.message || lastError || 'proxy fetch failed';
+        }
+
+        // All strategies failed
         setError(`Failed to fetch replay: ${lastError}`);
         setData(null);
         return;

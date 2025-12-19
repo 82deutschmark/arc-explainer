@@ -112,8 +112,11 @@ def main() -> int:
 
                 # Prefer direct OpenAI for OpenAI models when a key is present.
                 # (SnakeBench backend still supports OpenRouter if you explicitly set provider="openrouter".)
-                if name.startswith("openai/") and (os.getenv("OPENAI_API_KEY") or "").strip():
-                    config["provider"] = "openai"
+                # DISABLED: This was causing issues with OpenRouter models that have openai/ prefix.
+                # The OpenAI provider strips the prefix, leaving just "gpt-oss-120b", which OpenRouter
+                # doesn't recognize. Keep all models routed through OpenRouter for consistency.
+                # if name.startswith("openai/") and (os.getenv("OPENAI_API_KEY") or "").strip():
+                #     config["provider"] = "openai"
 
             return config
 

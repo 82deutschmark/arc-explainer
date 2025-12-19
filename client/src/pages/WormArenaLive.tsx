@@ -1,6 +1,6 @@
 /**
- * Author: Cascade / Claude Haiku 4.5
- * Date: 2025-12-18
+ * Author: Cascade / Claude Haiku 4.5 / Claude Sonnet 4
+ * Date: 2025-12-19 (updated 2025-12-19)
  * PURPOSE: Worm Arena Live streaming hub with the apple scoreboard pinned up top,
  *          run controls hidden mid-match, and post-game summaries that stay on the
  *          same page alongside the final board.
@@ -9,6 +9,7 @@
  *          SETUP VIEW: Two-column layout with suggested matchups on left, run controls on right.
  *          Users can click "Run" on a suggested matchup to instantly start it.
  *          SUPPORTS: Auto-start from query params (modelA, modelB, autoStart) for direct links.
+ *          NEW: Console Mirror view toggle - switch between cartoon canvas and raw Python terminal view.
  * SRP/DRY check: Pass - coordinates child hooks/components without duplicating their logic.
  *                Suggested matchups integrated via onRunMatch callback; state updates isolated.
  */
@@ -27,10 +28,15 @@ import WormArenaRunControls from '@/components/WormArenaRunControls';
 import WormArenaReasoning from '@/components/WormArenaReasoning';
 import WormArenaLiveScoreboard from '@/components/WormArenaLiveScoreboard';
 import WormArenaSuggestedMatchups from '@/components/WormArenaSuggestedMatchups';
+import WormArenaConsoleMirror from '@/components/WormArenaConsoleMirror';
+import { Button } from '@/components/ui/button';
 
 import type { ModelConfig, SnakeBenchRunMatchRequest } from '@shared/types';
 
 type ViewMode = 'setup' | 'live' | 'completed';
+type RenderMode = 'cartoon' | 'console';
+
+type SessionGateStatus = 'idle' | 'checking' | 'pending' | 'completed' | 'unknown' | 'error';
 
 function getSnakeEligibleModels(models: ModelConfig[]): ModelConfig[] {
   return models.filter((m) => m.provider === 'OpenRouter');
@@ -151,10 +157,18 @@ export default function WormArenaLive() {
     isStarting,
     currentMatchIndex,
     totalMatches,
+    eventLog,
   } = useWormArenaStreaming();
+
+  // Render mode toggle: cartoon (default) vs console (raw Python view)
+  const [renderMode, setRenderMode] = React.useState<RenderMode>('cartoon');
 
   // Track if we've already attempted to resolve a failed session
   const [resolveAttempted, setResolveAttempted] = React.useState(false);
+
+  // Session preflight gate: avoid connecting SSE to a sessionId that is already unknown/expired.
+  const [sessionGateStatus, setSessionGateStatus] = React.useState<SessionGateStatus>('idle');
+  const [sessionGateMessage, setSessionGateMessage] = React.useState<string | null>(null);
 
   // Parse query parameters (modelA, modelB) from suggested matchups and pre-fill form
   useEffect(() => {
@@ -175,8 +189,56 @@ export default function WormArenaLive() {
 
   useEffect(() => {
     if (!sessionId) return;
-    connect(sessionId);
-    return () => disconnect();
+
+    let cancelled = false;
+
+    const preflightAndConnect = async () => {
+      // IMPORTANT: EventSource treats non-2xx responses as opaque errors.
+      // We preflight via /api/wormarena/resolve so we can give a friendly UX on unknown/expired sessions.
+      setSessionGateStatus('checking');
+      setSessionGateMessage(null);
+
+      try {
+        const res = await fetch(`/api/wormarena/resolve/${encodeURIComponent(sessionId)}`);
+        if (cancelled) return;
+        if (!res.ok) {
+          setSessionGateStatus('error');
+          setSessionGateMessage('Unable to verify this live link right now. Please try again.');
+          return;
+        }
+
+        const data = await res.json();
+        if (cancelled) return;
+
+        if (data?.success && data?.status === 'completed' && data?.replayUrl) {
+          setSessionGateStatus('completed');
+          window.location.href = data.replayUrl;
+          return;
+        }
+
+        if (data?.success && data?.status === 'unknown') {
+          setSessionGateStatus('unknown');
+          // Smart fallback: if the live session can't be resumed, drop the user into the replay hub.
+          // If the match actually completed, resolve() should have returned replayUrl above.
+          window.location.href = '/worm-arena';
+          return;
+        }
+
+        // If pending, proceed to connect SSE.
+        setSessionGateStatus('pending');
+        connect(sessionId);
+      } catch (err) {
+        if (cancelled) return;
+        setSessionGateStatus('error');
+        setSessionGateMessage('Unable to verify this live link right now. Please try again.');
+      }
+    };
+
+    void preflightAndConnect();
+    return () => {
+      cancelled = true;
+      disconnect();
+    };
   }, [sessionId, connect, disconnect]);
 
   // When SSE connection fails, try to resolve sessionId to gameId for replay redirect
@@ -192,6 +254,13 @@ export default function WormArenaLive() {
         if (data?.success && data?.status === 'completed' && data?.replayUrl) {
           // Redirect to replay page
           window.location.href = data.replayUrl;
+          return;
+        }
+
+        if (data?.success && data?.status === 'unknown') {
+          // Smart fallback: unknown/unresumable session. Send user to replay hub.
+          window.location.href = '/worm-arena';
+          return;
         }
       } catch (err) {
         console.error('[WormArenaLive] Failed to resolve session', err);
@@ -278,6 +347,23 @@ export default function WormArenaLive() {
   const latestFrame = useMemo(() => (frames.length ? frames[frames.length - 1] : null), [frames]);
   const boardWidth = (latestFrame as any)?.frame?.state?.width ?? 10;
   const boardHeight = (latestFrame as any)?.frame?.state?.height ?? 10;
+
+  // Build alive map for console view
+  const aliveMap = useMemo(() => {
+    const alive: Record<string, boolean> = {};
+    const frameState = (latestFrame as any)?.frame?.state;
+    if (frameState?.alive) {
+      return frameState.alive;
+    }
+    // If no alive data in frame, assume all snakes with positions are alive
+    const snakes = frameState?.snakes;
+    if (snakes && typeof snakes === 'object') {
+      Object.keys(snakes).forEach((id) => {
+        alive[id] = true;
+      });
+    }
+    return alive;
+  }, [latestFrame]);
   const currentRoundValue = useMemo(() => {
     const frameRound = Number((latestFrame as any)?.round);
     if (Number.isFinite(frameRound)) return frameRound;
@@ -409,7 +495,9 @@ export default function WormArenaLive() {
     : status === 'connecting' || status === 'starting' || status === 'in_progress'
       ? 'live'
       : hasSessionParam
-        ? 'live'
+        ? sessionGateStatus === 'unknown' || sessionGateStatus === 'error'
+          ? 'setup'
+          : 'live'
         : 'setup';
   const isActiveView = viewMode === 'live' || viewMode === 'completed';
 
@@ -419,7 +507,7 @@ export default function WormArenaLive() {
       : null;
   const headerSubtitle =
     viewMode === 'setup' ? 'Start a live match' : viewMode === 'live' ? 'Streaming...' : 'Match complete';
-  const statusMessage = reconnectWarning || message;
+  const statusMessage = sessionGateMessage || reconnectWarning || message;
 
   return (
     <div className="worm-page">
@@ -490,24 +578,48 @@ export default function WormArenaLive() {
               playerBStats={rightStats}
             />
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-stretch">
-              <WormArenaReasoning
-                playerName={leftName}
-                color="green"
-                reasoning={leftReasoning}
-                score={playerAScore}
-                strategyLabel="Live output"
-              />
+            {/* View mode toggle */}
+            <div className="flex justify-center mb-2">
+              <div className="inline-flex rounded-lg border border-gray-300 bg-white p-1 shadow-sm">
+                <Button
+                  variant={renderMode === 'cartoon' ? 'default' : 'ghost'}
+                  size="sm"
+                  onClick={() => setRenderMode('cartoon')}
+                  className="text-xs px-3"
+                >
+                  Cartoon View
+                </Button>
+                <Button
+                  variant={renderMode === 'console' ? 'default' : 'ghost'}
+                  size="sm"
+                  onClick={() => setRenderMode('console')}
+                  className="text-xs px-3"
+                >
+                  Console View
+                </Button>
+              </div>
+            </div>
 
-              <div className="flex flex-col gap-4">
-                <WormArenaLiveBoardPanel
-                  viewMode={viewMode === 'completed' ? 'completed' : 'live'}
-                  status={status}
-                  latestFrame={latestFrame}
-                  boardWidth={boardWidth}
-                  boardHeight={boardHeight}
-                  finalSummary={finalSummary}
+            {/* Cartoon view (default) - 3 column layout with reasoning panels */}
+            {renderMode === 'cartoon' && (
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-stretch">
+                <WormArenaReasoning
+                  playerName={leftName}
+                  color="green"
+                  reasoning={leftReasoning}
+                  score={playerAScore}
+                  strategyLabel="Live output"
                 />
+
+                <div className="flex flex-col gap-4">
+                  <WormArenaLiveBoardPanel
+                    viewMode={viewMode === 'completed' ? 'completed' : 'live'}
+                    status={status}
+                    latestFrame={latestFrame}
+                    boardWidth={boardWidth}
+                    boardHeight={boardHeight}
+                    finalSummary={finalSummary}
+                  />
 
                 <WormArenaLiveStatusStrip
                   status={status}
@@ -561,7 +673,70 @@ export default function WormArenaLive() {
                 score={playerBScore}
                 strategyLabel="Live output"
               />
-            </div>
+              </div>
+            )}
+
+            {/* Console view - raw Python terminal experience */}
+            {renderMode === 'console' && (
+              <div className="max-w-4xl mx-auto">
+                <WormArenaConsoleMirror
+                  frame={latestFrame}
+                  boardWidth={boardWidth}
+                  boardHeight={boardHeight}
+                  eventLog={eventLog}
+                  aliveMap={aliveMap}
+                  currentRound={currentRoundValue ?? undefined}
+                  maxRounds={maxRoundsValue ?? undefined}
+                  scores={(latestFrame as any)?.frame?.state?.scores ?? finalSummary?.scores}
+                  playerNames={playerNameBySnakeId}
+                  isLive={true}
+                />
+
+                <WormArenaLiveStatusStrip
+                  status={status}
+                  message={statusMessage}
+                  error={error}
+                  sessionId={sessionId}
+                  currentMatchIndex={currentMatchIndex}
+                  totalMatches={totalMatches}
+                  playerAName={leftName}
+                  playerBName={rightName}
+                  playerAScore={playerAScore}
+                  playerBScore={playerBScore}
+                  currentRound={currentRoundValue}
+                  maxRounds={maxRoundsValue}
+                  phase={phase}
+                  aliveSnakes={aliveNames}
+                />
+
+                {sessionId && (
+                  <div className="rounded-lg border-2 worm-border bg-white shadow-sm px-4 py-3 space-y-2 mt-4">
+                    <div className="text-[11px] uppercase font-semibold text-muted-foreground">
+                      {finalSummary?.gameId ? 'Share Replay' : 'Share Live Match'}
+                    </div>
+                    <div className="flex flex-wrap items-center gap-2">
+                      <code className="text-xs sm:text-sm font-mono bg-worm-card rounded px-2 py-1 text-worm-ink break-all">
+                        {finalSummary?.gameId || sessionId}
+                      </code>
+                      <button
+                        type="button"
+                        onClick={handleCopyShareLink}
+                        className="px-3 py-1.5 text-xs font-semibold rounded border border-worm-ink text-worm-ink hover:bg-worm-card transition-colors"
+                      >
+                        {copyHint ? 'Copied!' : 'Copy Link'}
+                      </button>
+                    </div>
+                    <div className="text-xs text-muted-foreground">
+                      {copyHint || (finalSummary?.gameId
+                        ? 'Share this link so others can watch the replay.'
+                        : 'Share this link so others can watch the live match.')}
+                    </div>
+                  </div>
+                )}
+
+                {finalSummary && <WormArenaLiveResultsPanel finalSummary={finalSummary} />}
+              </div>
+            )}
           </div>
         )}
 

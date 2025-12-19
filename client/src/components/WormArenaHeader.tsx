@@ -102,7 +102,7 @@ export default function WormArenaHeader({
       <div className="relative px-4 py-4 max-w-7xl mx-auto flex flex-col items-center gap-3">
         {/* Title - large and centered */}
         <h1 className="text-4xl md:text-5xl font-bold tracking-tight font-worm text-center worm-header-title-text">
-          Worm Arena
+          🐛Worm Arena🐛
         </h1>
 
         {/* Subtitle - centered below title */}

@@ -47,6 +47,7 @@ import { EloRepository } from './EloRepository.ts';
 import { ModelDatasetRepository } from './ModelDatasetRepository.ts';
 import { ContributorRepository } from './ContributorRepository.ts';
 import { SnakeBenchRepository } from './SnakeBenchRepository.ts';
+import { WormArenaSessionRepository } from './WormArenaSessionRepository.ts';
 import { DatabaseSchema } from './database/DatabaseSchema.ts';
 import { logger } from '../utils/logger.ts';
 
@@ -62,6 +63,7 @@ export class RepositoryService {
   private eloRepository: EloRepository;
   private contributorRepository: ContributorRepository;
   private snakeBenchRepository: SnakeBenchRepository;
+  private wormArenaSessionRepository: WormArenaSessionRepository;
   private initialized = false;
 
   constructor() {
@@ -76,6 +78,7 @@ export class RepositoryService {
     this.eloRepository = new EloRepository();
     this.contributorRepository = new ContributorRepository();
     this.snakeBenchRepository = new SnakeBenchRepository();
+    this.wormArenaSessionRepository = new WormArenaSessionRepository();
   }
 
   /**
@@ -191,6 +194,13 @@ export class RepositoryService {
    */
   get snakeBench(): SnakeBenchRepository {
     return this.snakeBenchRepository;
+  }
+
+  /**
+   * Get Worm Arena session repository (persistent live-link resolution)
+   */
+  get wormArenaSessions(): WormArenaSessionRepository {
+    return this.wormArenaSessionRepository;
   }
 
   /**
