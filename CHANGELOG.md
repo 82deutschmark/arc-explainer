@@ -5,6 +5,84 @@
 
 # New entries at the top, use proper SemVer!
 
+### Version 6.9.8  Dec 19, 2025
+
+- **Worm Arena: Simplify replay loading - server always returns data directly** (Author: Claude Sonnet 4)
+  - **Problem**: Complex client-side URL fetching with CORS fallbacks was unreliable
+  - **Solution**: Server now ALWAYS fetches replay data server-side and returns `{data}` directly
+    - Matches how the Python SnakeBench project serves replays - simple and direct
+    - No more client-side URL fetching or CORS issues
+  - **Resolution order in getGame()**:
+    1. Local file from database replay_path
+    2. Local file at standard path (completed_games/snake_game_<id>.json)
+    3. Remote URL from database replay_path (fetched server-side)
+    4. Railway backend fallback (fetched server-side)
+    5. GitHub raw fallback (fetched server-side)
+  - **Files Modified**:
+    - `server/services/snakeBenchService.ts` - getGame() always fetches server-side
+    - `server/controllers/snakeBenchController.ts` - simplified response format
+    - `client/src/hooks/useSnakeBench.ts` - removed complex fallback logic
+  - **Note**: VoynichLabs/SnakeBench is our fork with 1244 replay JSONs committed
+
+### Version 6.9.7  Dec 19, 2025
+
+- **Worm Arena: Fix replay existence check to accept HTTP URLs from database** (Author: Claude Sonnet 4)
+  - **Root Cause**: Commit `c3b3379a` broke replays by "simplifying" `replayExists()` to ignore HTTP URLs
+    - The bug was line: `if (dbReplay?.replayPath && !dbReplay.replayPath.startsWith('http'))`
+    - This explicitly skipped all remote replay URLs stored in the DB
+    - Games with remote replays (most of them) were filtered out as "non-existent"
+  - **Fix**: `replayExists()` now returns `true` for HTTP/HTTPS URLs in the DB
+    - `getGame()` already had proper logic to fetch remote URLs
+    - The mismatch meant `replayExists()` said "no replay" but `getGame()` could load it fine
+  - **Files Modified**: `server/services/snakeBenchService.ts`
+  - **Impact**: Greatest Hits and replay filtering now correctly include games with remote replay URLs
+
+### Version 6.9.6  Dec 19, 2025
+
+- **Worm Arena: Fix replay loading to use Greg's Railway backend (root cause fix)** (Author: Claude Sonnet 4)
+  - **Root Cause**: Previous code used wrong/stale upstream URL for fetching replays from upstream SnakeBench
+    - Was trying: `snakebench.com/api/matches/{id}` (frontend domain, not backend)
+    - Should use: `backend-production-fc22.up.railway.app/api/matches/{id}` (Greg's actual Railway backend)
+  - **Architecture clarification**: Greg uses Next.js SSR - his server fetches from Supabase Storage and embeds 
+    data in HTML. Browser sees no Supabase requests because they happen server-side. Our backend-to-backend 
+    approach (fetching from his Flask API) is correct and equivalent.
+  - **Fix**: Updated `snakeBenchService.getGame()` and `getGameProxy()` to use Greg's Railway backend directly
+    - Primary fallback: `https://backend-production-fc22.up.railway.app/api/matches/{gameId}`
+    - Secondary fallback: GitHub raw for older games
+  - **New env var**: `SNAKEBENCH_UPSTREAM_BACKEND_URL` - override Greg's backend URL if it changes
+    - Default: `https://backend-production-fc22.up.railway.app`
+  - **Fallback order**: Local file -> DB replay_path -> Greg's Railway backend -> GitHub raw
+  - **Files Modified**: `server/services/snakeBenchService.ts`
+
+### Version 6.9.5  Dec 19, 2025
+
+- **Worm Arena: Restore fallback when greatest hits unavailable + simplify replay loading** (Author: Claude Haiku 4.5)
+  - **UI Fix**: Fixed regression from v6.9.3 where replays appeared broken due to blank page when greatest-hits endpoint returns empty
+    - Restored cascade logic: prefer greatest hits → fall back to recent games (filtered by ≥20 rounds) → show any recent game
+    - Dependency array now includes `games` so fallback logic re-evaluates when recent games load
+  - **Backend Fix**: Simplified `replayExists()` to check local bundled files only
+    - Removed slow remote URL fallbacks (GitHub raw, snakebench.com) that were timing out
+    - All replay JSONs are bundled in `external/SnakeBench/backend/completed_games/` and deployed to Railway
+    - Direct `fs.existsSync()` check is fast, reliable, and works in both dev and production
+    - Removed unnecessary `SNAKEBENCH_REPLAY_RAW_BASE` env var dependency (optional in .env)
+  - **Files Modified**: `client/src/pages/WormArena.tsx`, `server/services/snakeBenchService.ts`
+  - **Impact**: Greatest hits now always return playable games (fast local checks) + page shows fallback replays if needed
+
+### Version 6.9.4  Dec 19, 2025
+
+- **Worm Arena Console & Model Selector UI Refinement** (Author: Claude Haiku 4.5)
+  - Reduced excessive padding in model selector list for more compact, terminal-like appearance
+  - Changed model selector buttons from `px-3 py-2` to `px-2 py-1` with reduced text sizes (`text-xs`)
+  - Replaced row spacing (`space-y-2`) with subtle `border-b` dividers for cleaner look
+  - Moved win/loss/tie stats inline with model name instead of right-aligned (like trading terminal ticker)
+  - Changed console view layout from stacked (vertical) to side-by-side (horizontal)
+  - Python ASCII console now on left, event stream on right with equal horizontal space
+  - Reduced event stream text sizes and padding for denser display
+  - Improved space efficiency on live match pages by eliminating whitespace
+  - **Files Modified**:
+    - `client/src/components/wormArena/stats/WormArenaModelListCard.tsx`
+    - `client/src/components/WormArenaConsoleMirror.tsx`
+
 ### Version 6.9.3  Dec 19, 2025 14:30 
 
 - **Worm Arena: Default to greatest hits match on page load** (Author: Cascade)

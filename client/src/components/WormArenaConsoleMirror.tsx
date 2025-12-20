@@ -165,110 +165,116 @@ export default function WormArenaConsoleMirror({
 
   return (
     <div className="flex flex-col gap-4">
-      {/* ASCII Board Panel */}
-      <Card className="worm-card bg-gray-900 text-green-400 border-gray-700">
-        <CardHeader className="pb-2">
-          <CardTitle className="text-sm font-bold text-green-300 flex items-center gap-2">
-            <span className="font-mono">$</span>
-            <span>Python Console View</span>
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="p-0">
-          {/* Status line */}
-          {statusLine && (
-            <div className="px-4 py-2 bg-gray-800 border-b border-gray-700 text-xs font-mono text-gray-300">
-              {statusLine}
-            </div>
-          )}
-
-          {/* ASCII board */}
-          <pre className="p-4 font-mono text-sm leading-relaxed overflow-x-auto whitespace-pre">
-            {asciiBoard}
-          </pre>
-
-          {/* Legend */}
-          <div className="px-4 py-2 bg-gray-800 border-t border-gray-700 text-xs font-mono text-gray-400 flex flex-wrap gap-4">
-            <span><code className="text-green-400">.</code> empty</span>
-            <span><code className="text-yellow-400">A</code> apple</span>
-            <span><code className="text-cyan-400">0</code> snake 0 head</span>
-            <span><code className="text-blue-400">1</code> snake 1 head</span>
-            <span><code className="text-gray-300">T</code> body/tail</span>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Event Log Panel (live page only) */}
-      {isLive && (
-        <Card className="worm-card bg-gray-900 text-gray-200 border-gray-700">
-          <CardHeader className="pb-2">
-            <div className="flex items-center justify-between">
-              <CardTitle className="text-sm font-bold text-gray-300 flex items-center gap-2">
-                <span className="font-mono">&gt;</span>
-                <span>Event Stream</span>
-                <span className="text-xs font-normal text-gray-500">
-                  ({eventLog.length} events)
-                </span>
+      <div className="flex gap-4">
+        {/* ASCII Board Panel (left) */}
+        <div className="flex-1">
+          <Card className="worm-card bg-gray-900 text-green-400 border-gray-700 h-full">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-bold text-green-300 flex items-center gap-2">
+                <span className="font-mono">$</span>
+                <span>Python Console</span>
               </CardTitle>
-
-              {/* Auto-scroll toggle */}
-              <div className="flex items-center gap-2">
-                <Switch
-                  id="auto-scroll"
-                  checked={autoScroll}
-                  onCheckedChange={handleAutoScrollToggle}
-                  className="scale-75"
-                />
-                <Label
-                  htmlFor="auto-scroll"
-                  className="text-xs text-gray-400 cursor-pointer"
-                >
-                  Follow tail
-                </Label>
-              </div>
-            </div>
-          </CardHeader>
-          <CardContent className="p-0">
-            <div
-              ref={logContainerRef}
-              onScroll={handleScroll}
-              className="h-64 overflow-y-auto bg-gray-950 font-mono text-xs"
-            >
-              {eventLog.length === 0 ? (
-                <div className="p-4 text-gray-500 italic">
-                  Waiting for events...
-                </div>
-              ) : (
-                <div className="divide-y divide-gray-800">
-                  {eventLog.map((entry, idx) => (
-                    <div
-                      key={idx}
-                      className="px-3 py-1.5 hover:bg-gray-800/50 flex items-start gap-2"
-                    >
-                      {/* Timestamp */}
-                      <span className="text-gray-500 shrink-0 w-24">
-                        {formatTime(entry.timestamp)}
-                      </span>
-
-                      {/* Event type badge */}
-                      <span
-                        className={`px-1.5 py-0.5 rounded text-[10px] font-semibold uppercase shrink-0 ${getEventTypeClass(entry.type)}`}
-                      >
-                        {entry.type}
-                      </span>
-
-                      {/* Summary */}
-                      <span className="text-gray-300 break-all">
-                        {entry.summary ?? JSON.stringify(entry.payload)}
-                      </span>
-                    </div>
-                  ))}
-                  <div ref={logEndRef} />
+            </CardHeader>
+            <CardContent className="p-0">
+              {/* Status line */}
+              {statusLine && (
+                <div className="px-4 py-2 bg-gray-800 border-b border-gray-700 text-xs font-mono text-gray-300">
+                  {statusLine}
                 </div>
               )}
-            </div>
-          </CardContent>
-        </Card>
-      )}
+
+              {/* ASCII board */}
+              <pre className="p-4 font-mono text-sm leading-relaxed overflow-x-auto whitespace-pre">
+                {asciiBoard}
+              </pre>
+
+              {/* Legend */}
+              <div className="px-4 py-2 bg-gray-800 border-t border-gray-700 text-xs font-mono text-gray-400 flex flex-wrap gap-4">
+                <span><code className="text-green-400">.</code> empty</span>
+                <span><code className="text-yellow-400">A</code> apple</span>
+                <span><code className="text-cyan-400">0</code> snake 0</span>
+                <span><code className="text-blue-400">1</code> snake 1</span>
+                <span><code className="text-gray-300">T</code> body</span>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Event Log Panel (right, live only) */}
+        {isLive && (
+          <div className="flex-1">
+            <Card className="worm-card bg-gray-900 text-gray-200 border-gray-700 h-full">
+              <CardHeader className="pb-2">
+                <div className="flex items-center justify-between gap-2">
+                  <CardTitle className="text-sm font-bold text-gray-300 flex items-center gap-2 min-w-0">
+                    <span className="font-mono">&gt;</span>
+                    <span>Events</span>
+                    <span className="text-xs font-normal text-gray-500">
+                      ({eventLog.length})
+                    </span>
+                  </CardTitle>
+
+                  {/* Auto-scroll toggle */}
+                  <div className="flex items-center gap-1 shrink-0">
+                    <Switch
+                      id="auto-scroll"
+                      checked={autoScroll}
+                      onCheckedChange={handleAutoScrollToggle}
+                      className="scale-75"
+                    />
+                    <Label
+                      htmlFor="auto-scroll"
+                      className="text-xs text-gray-400 cursor-pointer"
+                    >
+                      Follow
+                    </Label>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent className="p-0">
+                <div
+                  ref={logContainerRef}
+                  onScroll={handleScroll}
+                  className="h-96 overflow-y-auto bg-gray-950 font-mono text-xs"
+                >
+                  {eventLog.length === 0 ? (
+                    <div className="p-4 text-gray-500 italic">
+                      Waiting...
+                    </div>
+                  ) : (
+                    <div className="divide-y divide-gray-800">
+                      {eventLog.map((entry, idx) => (
+                        <div
+                          key={idx}
+                          className="px-3 py-1 hover:bg-gray-800/50 flex items-start gap-2"
+                        >
+                          {/* Timestamp */}
+                          <span className="text-gray-500 shrink-0 text-[9px]">
+                            {formatTime(entry.timestamp)}
+                          </span>
+
+                          {/* Event type badge */}
+                          <span
+                            className={`px-1 py-0 rounded text-[9px] font-semibold uppercase shrink-0 ${getEventTypeClass(entry.type)}`}
+                          >
+                            {entry.type}
+                          </span>
+
+                          {/* Summary */}
+                          <span className="text-gray-300 break-all text-[10px]">
+                            {entry.summary ?? JSON.stringify(entry.payload)}
+                          </span>
+                        </div>
+                      ))}
+                      <div ref={logEndRef} />
+                    </div>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        )}
+      </div>
 
       {/* Help text for replay mode */}
       {!isLive && (

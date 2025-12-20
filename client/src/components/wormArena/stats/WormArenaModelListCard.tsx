@@ -97,7 +97,7 @@ export default function WormArenaModelListCard({
         />
 
         <ScrollArea className={`${scrollAreaClassName} border rounded-md bg-white/90 worm-border`}>
-          <div className="p-3 space-y-2">
+          <div className="p-0">
             {filteredLeaderboard.map((entry, index) => {
               const active = entry.modelSlug === selectedModel;
               const cssVars = {
@@ -111,34 +111,29 @@ export default function WormArenaModelListCard({
                   key={entry.modelSlug}
                   type="button"
                   onClick={() => onSelectModel(entry.modelSlug)}
-                  className={`w-full flex items-center justify-between px-3 py-2 text-sm font-semibold rounded border transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-white hover:bg-[var(--role-tint-bg)] focus-visible:ring-[var(--role-accent)] ${
+                  className={`w-full flex items-center gap-2 px-2 py-1 text-xs font-semibold border-b border-gray-200 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-white hover:bg-[var(--role-tint-bg)] focus-visible:ring-[var(--role-accent)] ${
                     active
-                      ? 'text-worm-ink bg-[var(--role-tint-bg-strong)] border-[var(--role-accent)]'
-                      : 'bg-white text-worm-ink border-worm-border'
+                      ? 'text-worm-ink bg-[var(--role-tint-bg-strong)]'
+                      : 'bg-white text-worm-ink'
                   }`}
                   style={cssVars}
                 >
-                  <div className="flex items-center gap-3 min-w-0">
-                    <span
-                      className="text-xs font-bold"
-                      style={{ color: active ? roleColors.accent : 'var(--worm-muted)' }}
-                    >
-                      #{index + 1}
-                    </span>
-                    <span className="truncate font-mono">{entry.modelSlug}</span>
-                  </div>
-                  <div className="text-xs sm:text-sm font-semibold text-right">
-                    <div>{entry.gamesPlayed} games</div>
-                    <div className="text-[11px]" style={{ color: active ? roleColors.accent : 'var(--worm-muted)' }}>
-                      {entry.wins}W / {entry.losses}L / {entry.ties}T
-                    </div>
-                  </div>
+                  <span
+                    className="text-[10px] font-bold shrink-0 w-6 text-center"
+                    style={{ color: active ? roleColors.accent : 'var(--worm-muted)' }}
+                  >
+                    #{index + 1}
+                  </span>
+                  <span className="truncate font-mono min-w-0 flex-1">{entry.modelSlug}</span>
+                  <span className="text-[10px] shrink-0" style={{ color: active ? roleColors.accent : 'var(--worm-muted)' }}>
+                    {entry.wins}W {entry.losses}L {entry.ties}T
+                  </span>
                 </button>
               );
             })}
 
             {filteredLeaderboard.length === 0 && (
-              <div className="text-sm text-center font-semibold py-6 worm-muted">
+              <div className="text-xs text-center font-semibold py-4 worm-muted">
                 No models yet. Run a few matches to populate stats.
               </div>
             )}
