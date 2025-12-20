@@ -1,20 +1,9 @@
 /**
  * shared/types.ts
- * 
- * Shared TypeScript interfaces and types for the ARC-AGI Puzzle Explainer application.
- * Defines data structures for puzzles, metadata, analysis results, and prompt templates.
- * Used across both frontend and backend to ensure type safety and consistent data handling.
- * 
- * Key components:
- * - ARCTask/ARCExample: Core puzzle data structures
- * - PuzzleMetadata: Puzzle classification and metadata
- * - PuzzleAnalysis: AI analysis results structure
- * - PromptTemplate: Dynamic prompt system for AI analysis
- * - PROMPT_TEMPLATES: Predefined prompt templates for different explanation approaches
- * 
- * @author Cascade
+ *
+ * Author: Codex (GPT-5)
  * Date: 2025-12-20
- * PURPOSE: Updated to include Worm Arena / SnakeBench LLM prompt transparency response types.
+ * PURPOSE: Shared TypeScript interfaces and types for ARC Explainer, including Worm Arena model insights reports.
  * SRP/DRY check: Pass - shared types only.
  */
 
@@ -566,6 +555,10 @@ export interface SnakeBenchRunMatchRequest {
   apiKey?: string;
   /** Optional provider for BYO key; if omitted, defaults to OpenRouter */
   provider?: 'openrouter' | 'openai' | 'anthropic' | 'xai' | 'gemini';
+  /** Player variant for model A (e.g., 'default', 'A'). Defaults to 'default'. */
+  playerVariantA?: string;
+  /** Player variant for model B (e.g., 'default', 'A'). Defaults to 'default'. */
+  playerVariantB?: string;
 }
 
 export interface SnakeBenchRunMatchResult {
@@ -780,6 +773,64 @@ export interface SnakeBenchModelMatchHistoryEntry {
   boardWidth: number;
   boardHeight: number;
   cost?: number;
+}
+
+/**
+ * Worm Arena model insights report types.
+ * Rates are 0 to 1 unless otherwise noted.
+ */
+export interface WormArenaModelInsightsFailureMode {
+  reason: string;
+  losses: number;
+  percentOfLosses: number;
+  averageDeathRound: number | null;
+}
+
+export interface WormArenaModelInsightsOpponent {
+  opponentSlug: string;
+  gamesPlayed: number;
+  wins: number;
+  losses: number;
+  ties: number;
+  lossRate: number;
+  lastPlayedAt: string | null;
+}
+
+export interface WormArenaModelInsightsSummary {
+  gamesPlayed: number;
+  wins: number;
+  losses: number;
+  ties: number;
+  winRate: number;
+  totalCost: number;
+  costPerGame: number | null;
+  costPerWin: number | null;
+  costPerLoss: number | null;
+  averageRounds: number | null;
+  averageScore: number | null;
+  averageDeathRoundLoss: number | null;
+  earlyLosses: number;
+  earlyLossRate: number;
+  lossDeathReasonCoverage: number;
+  unknownLosses: number;
+}
+
+export interface WormArenaModelInsightsReport {
+  modelSlug: string;
+  generatedAt: string;
+  summary: WormArenaModelInsightsSummary;
+  failureModes: WormArenaModelInsightsFailureMode[];
+  lossOpponents: WormArenaModelInsightsOpponent[];
+  markdownReport: string;
+  tweetText: string;
+}
+
+export interface WormArenaModelInsightsResponse {
+  success: boolean;
+  modelSlug: string;
+  report?: WormArenaModelInsightsReport;
+  error?: string;
+  timestamp: number;
 }
 
 export interface SnakeBenchStatsResponse {

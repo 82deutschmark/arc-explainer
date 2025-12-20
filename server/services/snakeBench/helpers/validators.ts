@@ -30,6 +30,10 @@ export interface SnakeBenchMatchPayload {
   pricingOutputA: number;
   pricingInputB: number;
   pricingOutputB: number;
+  /** Player variant for model A (e.g., 'default', 'A'). */
+  playerVariantA: string;
+  /** Player variant for model B (e.g., 'default', 'A'). */
+  playerVariantB: string;
 }
 
 export interface PreparedMatchConfig {
@@ -148,6 +152,10 @@ export function prepareRunMatch(
   const pricingInputB = configB ? parseCostStringToNumber(configB.cost.input) : 0;
   const pricingOutputB = configB ? parseCostStringToNumber(configB.cost.output) : 0;
 
+  // Player variant selection (defaults to 'default' baseline prompt)
+  const playerVariantA = request.playerVariantA?.trim() || 'default';
+  const playerVariantB = request.playerVariantB?.trim() || 'default';
+
   const payload: SnakeBenchMatchPayload = {
     modelA: String(modelA),
     modelB: String(modelB),
@@ -159,6 +167,8 @@ export function prepareRunMatch(
     pricingOutputA,
     pricingInputB,
     pricingOutputB,
+    playerVariantA,
+    playerVariantB,
   };
 
   const pythonBin = options.pythonBin || (process.platform === 'win32' ? 'python' : 'python3');

@@ -1,13 +1,10 @@
 /**
  * routes.ts
- * 
- * Main routes configuration file for the API.
- * Registers all application routes and middleware.
- * Includes a catch-all route to handle client-side routing.
- * Updated to include SnakeBench LLM player prompt transparency endpoint.
- * 
- * @author Cascade
- * @date 2025-12-20
+ *
+ * Author: Codex (GPT-5)
+ * Date: 2025-12-20
+ * PURPOSE: Main routes configuration file for the API, including SnakeBench model insights routing.
+ * SRP/DRY check: Pass - route registration only.
  */
 
 import type { Express } from "express";
@@ -263,6 +260,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
     "/api/snakebench/model-history-full",
     asyncHandler(snakeBenchController.modelHistoryFull),
   );
+  app.get(
+    "/api/snakebench/model-insights",
+    asyncHandler(snakeBenchController.modelInsightsReport),
+  );
 
   // Worm Arena live streaming (SSE wrapper around SnakeBench matches)
   app.post("/api/wormarena/prepare", asyncHandler(wormArenaStreamController.prepare));
@@ -385,3 +386,4 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   return createServer(app);
 }
+

@@ -12,7 +12,7 @@ $focusModel = "xiaomi/mimo-v2-flash:free"
 
 $opponents = @(
     "nvidia/nemotron-3-nano-30b-a3b:free",
-    "arcee-ai/trinity-mini:free",
+    "mistralai/devstral-2512:free",
     "nex-agi/deepseek-v3.1-nex-n1:free",
     "allenai/olmo-3.1-32b-think:free",
     "kwaipilot/kat-coder-pro:free",

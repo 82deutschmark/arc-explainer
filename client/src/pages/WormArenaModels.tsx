@@ -1,10 +1,10 @@
 /**
- * Author: Claude Sonnet 4
+ * Author: Codex (GPT-5)
  * Date: 2025-12-20
- * PURPOSE: Worm Arena Models page - browse every game a specific model has ever played.
+ * PURPOSE: Worm Arena Models page - browse every game a specific model has ever played,
+ *          plus generate a per-model actionable insights report inline.
  *          Mirrors the external SnakeBench /models/[id] page functionality.
  *          Only lists models that have actually played games.
- *          Updated to include Rules navigation link.
  * SRP/DRY check: Pass - page composition only, data fetching in hooks.
  */
 
@@ -13,6 +13,7 @@ import { Link } from 'wouter';
 
 import WormArenaHeader from '@/components/WormArenaHeader';
 import WormArenaRecentMatches from '@/components/wormArena/WormArenaRecentMatches';
+import WormArenaModelInsightsReport from '@/components/wormArena/WormArenaModelInsightsReport';
 import {
   useWormArenaModelsWithGames,
   useWormArenaModelHistory,
@@ -238,6 +239,13 @@ export default function WormArenaModels() {
           </div>
         )}
 
+        {/* Actionable Insights Report */}
+        {selectedModel && (
+          <div className="mb-6">
+            <WormArenaModelInsightsReport modelSlug={selectedModel} />
+          </div>
+        )}
+
         {/* Recent Matches */}
         {selectedModel && (
           <div className="mb-6">
@@ -354,3 +362,4 @@ export default function WormArenaModels() {
     </div>
   );
 }
+

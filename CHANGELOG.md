@@ -1,9 +1,51 @@
-# Author: Claude Sonnet 4
-# Date: 2025-12-18
+# Author: Codex (GPT-5)
+# Date: 2025-12-20
 # PURPOSE: Changelog for ARC Explainer - tracks all changes with semantic versioning.
-# SRP/DRY check: Pass - this entry documents the specific change without altering historical records.
-
+# SRP/DRY check: Pass - entries document changes without altering historical records.
 # New entries at the top, use proper SemVer!
+
+### Version 6.9.19  Dec 20, 2025
+
+- **Worm Arena: Add per-model actionable insights report with copy, save, and Twitter share actions** (Author: Codex (GPT-5))
+  - **New API**: `GET /api/snakebench/model-insights?modelSlug=...` for full-history insights per model
+  - **UI**: Inline report on `/worm-arena/models` with failure modes, cost efficiency, and opponent pain points
+  - **Docs**: Added `docs/reference/data/WormArena_Model_Insights_Report.md`
+  - **Files Created**:
+    - `client/src/components/wormArena/WormArenaModelInsightsReport.tsx`
+    - `docs/reference/data/WormArena_Model_Insights_Report.md`
+    - `docs/plans/2025-12-20-worm-arena-model-insights-report-plan.md`
+  - **Files Modified**:
+    - `client/src/pages/WormArenaModels.tsx`
+    - `client/src/hooks/useWormArenaModels.ts`
+    - `server/controllers/snakeBenchController.ts`
+    - `server/services/snakeBenchService.ts`
+    - `server/repositories/SnakeBenchRepository.ts`
+    - `server/routes.ts`
+    - `shared/types.ts`
+    - `CHANGELOG.md`
+
+### Version 6.9.18  Dec 20, 2025
+
+- **SnakeBench: Add player variant system for A/B testing different LLM prompts** (Author: Cascade)
+  - **Purpose**: Enable experimentation with different prompt strategies to improve LLM snake performance
+  - **Architecture**: Modular registry pattern - add new variants by creating `llm_player_x.py` and registering in `variant_registry.py`
+  - **New variant**: `LLMPlayerA` with tactical "cheat sheet" prompt featuring:
+    - Structured decision checklist (safety-first elimination process)
+    - Clearer turn context section
+    - Same rules and output contract as baseline (verbatim)
+  - **API**: Added `playerVariantA` and `playerVariantB` fields to match requests
+    - Each snake can use a different prompt variant
+    - Defaults to `'default'` (baseline LLMPlayer) if not specified
+  - **Files Created**:
+    - `external/SnakeBench/backend/players/llm_player_a.py` - Variant A player class
+    - `external/SnakeBench/backend/players/variant_registry.py` - Registry mapping variant keys to classes
+  - **Files Modified**:
+    - `external/SnakeBench/backend/players/__init__.py` - Export new classes and registry
+    - `external/SnakeBench/backend/main.py` - Use registry for dynamic player instantiation
+    - `server/python/snakebench_runner.py` - Pass playerVariant through to Python
+    - `server/services/snakeBench/helpers/validators.ts` - Add playerVariant to payload
+    - `shared/types.ts` - Add playerVariantA/B to request types
+  - **Extensibility**: To add variant B/C/D: create `llm_player_b.py`, add entry to `PLAYER_VARIANT_LOADERS` in registry
 
 ### Version 6.9.17  Dec 20, 2025
 
@@ -1117,3 +1159,4 @@
   - Added smooth fade transitions between setup → live → completed states for polished UX.
   - Deleted `WormArenaMatchupSelector` component (no longer needed).
   - **Files Modified**: `client/src/hooks/useWormArenaSetup.ts` (new), `client/src/components/WormArenaRunControls.tsx`, `client/src/pages/WormArenaLive.tsx`, `client/src/components/WormArenaMatchupSelector.tsx` (deleted), `CHANGELOG.md`
+
