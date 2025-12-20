@@ -20,7 +20,7 @@ $opponents = @(
     "z-ai/glm-4.6v"
 )
 
-$gamesPerPairing = 9
+$gamesPerPairing = 2
 
 Write-Host "Starting Devstral-free vs GPT-5 Nano + underrepresented coverage runs..." -ForegroundColor Green
 Write-Host "Focus model: $focusModel" -ForegroundColor Cyan
