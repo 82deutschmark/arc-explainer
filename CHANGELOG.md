@@ -5,6 +5,17 @@
 
 # New entries at the top, use proper SemVer!
 
+### Version 6.9.16  Dec 20, 2025
+
+- **SnakeBench: Enable GitHub replay auto-publish workflow** (Author: Claude Haiku 4.5)
+  - **Problem**: Replay publishing to GitHub was implemented but missing required environment variables, so games never pushed to VoynichLabs/SnakeBench repo
+  - **Solution**: Added explicit environment variable configuration for GitHub publishing (token, owner, repo, branch, replay directory)
+  - **Context**: Completed games are written locally to `external/SnakeBench/backend/completed_games_local`, then published to public `VoynichLabs/SnakeBench/backend/completed_games` via GitHub API for Railway and other deployments
+  - **Files Modified**:
+    - `.env` - Added `SNAKEBENCH_GITHUB_OWNER`, `SNAKEBENCH_GITHUB_REPO`, `SNAKEBENCH_GITHUB_BRANCH`, `SNAKEBENCH_GITHUB_REPLAY_DIR` configuration
+    - `README.md` - Added 30-40 word explanation of replay publishing pipeline
+  - **Going Forward**: All new games will auto-publish to GitHub; existing unpushed games from Dec 15-20 remain local
+
 ### Version 6.9.15  Dec 20, 2025
 
 - **Worm Arena: Improve navigation to Model Match History + add direct API JSON links** (Author: Claude Sonnet 4)
