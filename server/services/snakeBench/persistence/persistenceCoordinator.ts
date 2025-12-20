@@ -7,9 +7,9 @@
  */
 
 import type { SnakeBenchRunMatchResult } from '../../../shared/types.js';
-import { snakeBenchIngestQueue } from '../snakeBenchIngestQueue.ts';
+import { snakeBenchIngestQueue } from '../../snakeBenchIngestQueue.ts';
 import { GameIndexManager } from './gameIndexManager.ts';
-import { logger } from '../../utils/logger.ts';
+import { logger } from '../../../utils/logger.ts';
 
 export class PersistenceCoordinator {
   constructor(private readonly gameIndexManager: GameIndexManager) {}
