@@ -6,9 +6,9 @@
  * SRP/DRY check: Pass — model discovery logic isolated, single source for model allowlist.
  */
 
-import { MODELS } from '../../config/models.ts';
-import { repositoryService } from '../../repositories/RepositoryService.ts';
-import { logger } from '../../utils/logger.ts';
+import { MODELS } from '../../../config/models.ts';
+import { repositoryService } from '../../../repositories/RepositoryService.ts';
+import { logger } from '../../../utils/logger.ts';
 
 /**
  * Get all SnakeBench-allowed models.

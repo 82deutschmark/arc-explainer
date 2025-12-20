@@ -10,7 +10,7 @@ import type { SnakeBenchRunMatchRequest, SnakeBenchRunMatchResult, SnakeBenchRun
 import { snakeBenchPythonBridge } from './SnakeBenchPythonBridge.ts';
 import { PersistenceCoordinator } from './persistence/persistenceCoordinator.ts';
 import { prepareRunMatch, validateModels } from './helpers/validators.ts';
-import { logger } from '../utils/logger.ts';
+import { logger } from '../../utils/logger.ts';
 
 export class SnakeBenchMatchRunner {
   constructor(private readonly persistenceCoordinator: PersistenceCoordinator) {}
