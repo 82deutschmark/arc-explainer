@@ -1,120 +1,49 @@
 /**
- * Author: Cascade / Claude Sonnet 4
- * Date: 2025-12-18 (updated 2025-12-19)
+ * Author: Cascade (Claude Sonnet 4)
+ * Date: 2025-12-19
  * PURPOSE: Worm Arena - Replay viewer for past/completed games. Shows game history,
  *          recent games list, and replay controls. Three-column layout: reasoning logs
  *          (left/right), game board (center).
  *
- *          Note: Final-frame UI shows per-player final summaries inside each reasoning panel.
- *          Match-wide totals (token/cost aggregates) are rendered once outside the panels
- *          to avoid confusing duplication.
- *          NEW: Console Mirror view toggle - switch between cartoon canvas and raw Python terminal view.
- *          Defaults to loading the first greatest hits match to avoid blank screen.
- * SRP/DRY check: Pass - Replay viewer only, no match-starting logic.
+ *          Refactored to use extracted utilities, hooks, and components for SRP/DRY compliance.
+ *          - Utilities: shared/utils/formatters.ts, shared/utils/wormArenaResults.ts
+ *          - Hooks: useQueryParamMatchId, useWormArenaReplayData
+ *          - Components: WormArenaPlayerRatingCard, WormArenaReplayViewer
+ * SRP/DRY check: Pass - Orchestration only, logic extracted to dedicated modules.
  */
 
 import React from 'react';
-import { useLocation } from 'wouter';
 import { useSnakeBenchRecentGames, useSnakeBenchGame, useModelRating } from '@/hooks/useSnakeBench';
-import WormArenaGameBoard from '@/components/WormArenaGameBoard';
+import { useQueryParamMatchId } from '@/hooks/useQueryParamMatchId';
+import { useWormArenaGreatestHits } from '@/hooks/useWormArenaGreatestHits';
+import { useIsMobile } from '@/hooks/use-mobile';
 import WormArenaHeader from '@/components/WormArenaHeader';
-import WormArenaGameBoardSVG from '@/components/WormArenaGameBoardSVG';
-import WormArenaReasoning from '@/components/WormArenaReasoning';
 import WormArenaStatsPanel from '@/components/WormArenaStatsPanel';
 import WormArenaGreatestHits from '@/components/WormArenaGreatestHits';
 import WormArenaSuggestedMatchups from '@/components/WormArenaSuggestedMatchups';
-import { WormArenaControlBar } from '@/components/WormArenaControlBar';
+import WormArenaPlayerRatingCard from '@/components/WormArenaPlayerRatingCard';
+import { WormArenaReplayViewer, type RenderMode } from '@/components/wormArena/WormArenaReplayViewer';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { summarizeWormArenaPlacement } from '@shared/utils/wormArenaPlacement.ts';
-import { useIsMobile } from '@/hooks/use-mobile';
-import WormArenaConsoleMirror from '@/components/WormArenaConsoleMirror';
-import { Button } from '@/components/ui/button';
-import { useWormArenaGreatestHits } from '@/hooks/useWormArenaGreatestHits';
+import {
+  buildFinalSummary,
+  buildMatchTotalsSummary,
+  appendFinalResultIfNeeded,
+} from '@shared/utils/wormArenaResults.ts';
 
-type RenderMode = 'cartoon' | 'console';
-
-function useQueryParamMatchId(): { matchId: string | null; setMatchIdInUrl: (id: string) => void } {
-  const [location, setLocation] = useLocation();
-
-  const matchId = React.useMemo(() => {
-    try {
-      const query = (() => {
-        if (typeof window !== 'undefined' && typeof window.location?.search === 'string') {
-          const raw = window.location.search;
-          return raw.startsWith('?') ? raw.slice(1) : raw;
-        }
-
-        const idx = location.indexOf('?');
-        return idx >= 0 ? location.slice(idx + 1) : '';
-      })();
-      if (!query) return null;
-      const params = new URLSearchParams(query);
-      const raw = params.get('matchId') ?? params.get('gameId');
-      const trimmed = raw?.trim();
-      return trimmed && trimmed.length > 0 ? trimmed : null;
-    } catch {
-      return null;
-    }
-  }, [location]);
-
-  const setMatchIdInUrl = React.useCallback(
-    (id: string) => {
-      const trimmed = id.trim();
-      if (!trimmed) {
-        setLocation('/worm-arena');
-        return;
-      }
-
-      const encoded = encodeURIComponent(trimmed);
-      setLocation(`/worm-arena?matchId=${encoded}`);
-    },
-    [setLocation],
-  );
-
-  return { matchId, setMatchIdInUrl };
-}
-
-function renderAsciiFrame(frame: any, width: number, height: number, labels: Record<string, string>): string {
-  if (!frame) return '';
-  const w = Number.isFinite(width) ? Math.max(1, width) : 10;
-  const h = Number.isFinite(height) ? Math.max(1, height) : 10;
-
-  const grid: string[][] = Array.from({ length: h }, () => Array.from({ length: w }, () => '.'));
-
-  const apples: Array<[number, number]> = frame?.state?.apples ?? [];
-  apples.forEach(([x, y]) => {
-    if (Number.isFinite(x) && Number.isFinite(y) && y >= 0 && y < h && x >= 0 && x < w) {
-      const row = h - 1 - y;
-      grid[row][x] = '@';
-    }
-  });
-
-  const snakes: Record<string, Array<[number, number]>> = frame?.state?.snakes ?? {};
-  Object.entries(snakes).forEach(([sid, positions], idx) => {
-    const display = (labels[sid]?.[0] ?? sid ?? String(idx)).toString();
-    positions.forEach((pos, posIdx) => {
-      const [x, y] = pos as [number, number];
-      if (Number.isFinite(x) && Number.isFinite(y) && y >= 0 && y < h && x >= 0 && x < w) {
-        const char = posIdx === 0 ? display.toUpperCase() : display.toLowerCase();
-        const row = h - 1 - y;
-        grid[row][x] = char;
-      }
-    });
-  });
-
-  return grid.map((row) => row.join(' ')).join('\n');
-}
 export default function WormArena() {
+  // URL parameter management (extracted hook)
   const { matchId: initialMatchId, setMatchIdInUrl } = useQueryParamMatchId();
   const isMobile = useIsMobile();
 
+  // Local UI state
   const [selectedMatchId, setSelectedMatchId] = React.useState<string>(initialMatchId ?? '');
   const [frameIndex, setFrameIndex] = React.useState<number>(0);
   const [isPlaying, setIsPlaying] = React.useState<boolean>(false);
   const [showNextMove, setShowNextMove] = React.useState<boolean>(true);
   const [renderMode, setRenderMode] = React.useState<RenderMode>('cartoon');
 
+  // Data fetching hooks
   const { games, total, refresh } = useSnakeBenchRecentGames();
   const { data: replayData, isLoading: loadingReplay, error: replayError, fetchGame } = useSnakeBenchGame(selectedMatchId);
   const { games: greatestHitsGames, isLoading: loadingGreatestHits } = useWormArenaGreatestHits(5);
@@ -126,22 +55,19 @@ export default function WormArena() {
     }
   }, [initialMatchId, selectedMatchId]);
 
+  // Load recent games on mount
   React.useEffect(() => {
     void refresh(10);
   }, [refresh]);
 
-  // Effect: Pick a default game only if none is selected (no URL param, no state set)
-  // If a matchId is in the URL or state, trust it and let the API fetch handle validation
+  // Pick a default game if none selected
   React.useEffect(() => {
     if (loadingGreatestHits) return;
 
-    // Only pick fallback if no game is currently selected
     if (!selectedMatchId) {
-      // Prefer greatest hits, but fall back to recent games if greatest hits is empty
       let fallbackId = greatestHitsGames[0]?.gameId ?? '';
 
       if (!fallbackId && games.length > 0) {
-        // Fallback: pick from recent games with >= 20 rounds
         const longGames = games.filter((g) => (g.roundsPlayed ?? 0) >= 20);
         fallbackId = longGames[0]?.gameId ?? games[0]?.gameId ?? '';
       }
@@ -151,10 +77,9 @@ export default function WormArena() {
         setMatchIdInUrl(fallbackId);
       }
     }
-    // For URL-provided matchIds: trust them completely. The API fetch will handle
-    // invalid/missing games gracefully with errors shown to the user.
   }, [greatestHitsGames, loadingGreatestHits, games, selectedMatchId, setMatchIdInUrl]);
 
+  // Fetch game data when selection changes
   React.useEffect(() => {
     if (!selectedMatchId) return;
     setFrameIndex(0);
@@ -162,14 +87,17 @@ export default function WormArena() {
     void fetchGame(selectedMatchId);
   }, [selectedMatchId, fetchGame]);
 
+  // Extract frames from replay data
   const frames: any[] = React.useMemo(() => {
     if (replayData && Array.isArray(replayData.frames)) return replayData.frames;
     return [];
   }, [replayData]);
 
+  // Board dimensions
   const boardWidth = replayData?.game?.board?.width ?? 10;
   const boardHeight = replayData?.game?.board?.height ?? 10;
 
+  // Build player labels map
   const playerLabels = React.useMemo(() => {
     const labels: Record<string, string> = {};
     const players = replayData?.players ?? {};
@@ -180,17 +108,18 @@ export default function WormArena() {
     return labels;
   }, [replayData]);
 
+  // Reset frame index when frames change
   React.useEffect(() => {
     setFrameIndex(0);
   }, [frames.length]);
 
+  // Autoplay timer
   React.useEffect(() => {
     if (!isPlaying || frames.length === 0) return;
 
     const handle = setInterval(() => {
       setFrameIndex((idx) => {
         if (idx >= frames.length - 1) {
-          // Stop autoplay on the final frame instead of looping
           setIsPlaying(false);
           return idx;
         }
@@ -201,26 +130,26 @@ export default function WormArena() {
     return () => clearInterval(handle);
   }, [isPlaying, frames.length]);
 
+  // Start autoplay when frames load
   React.useEffect(() => {
     if (frames.length > 0) {
       setIsPlaying(true);
     }
   }, [frames.length]);
 
+  // Current frame and derived data
   const currentFrame = frames.length > 0 ? frames[Math.min(frameIndex, frames.length - 1)] : null;
-  const asciiFrame = React.useMemo(
-    () => (currentFrame ? renderAsciiFrame(currentFrame, boardWidth, boardHeight, playerLabels) : ''),
-    [currentFrame, boardWidth, boardHeight, playerLabels],
-  );
 
   const selectedMeta = games.find((g) => g.gameId === selectedMatchId);
   const models = (replayData?.metadata?.models as string[] | undefined) ?? [];
   const modelA = Array.isArray(models) && models.length > 0 ? models[0] : null;
   const modelB = Array.isArray(models) && models.length > 1 ? models[1] : null;
 
+  // Fetch ratings for both models
   const { rating: ratingA } = useModelRating(modelA ?? undefined);
   const { rating: ratingB } = useModelRating(modelB ?? undefined);
 
+  // Compute placement summaries
   const placementA = React.useMemo(
     () => summarizeWormArenaPlacement(ratingA ?? undefined),
     [ratingA],
@@ -229,16 +158,19 @@ export default function WormArena() {
     () => summarizeWormArenaPlacement(ratingB ?? undefined),
     [ratingB],
   );
+
+  // Scores
   const finalScores = replayData?.metadata?.final_scores ?? replayData?.totals?.scores ?? {};
   const currentScores = currentFrame?.state?.scores ?? replayData?.initial_state?.scores ?? {};
-  const roundsPlayed = selectedMeta?.roundsPlayed ?? replayData?.metadata?.actual_rounds ?? replayData?.game?.rounds_played ?? frames.length ?? 0;
   const startedAt = selectedMeta?.startedAt ?? replayData?.metadata?.start_time ?? replayData?.game?.started_at ?? '';
 
+  // Get current reasoning for a snake
   const getCurrentReasoning = (snakeId: string) => {
     if (!currentFrame?.moves?.[snakeId]) return '';
     return currentFrame.moves[snakeId].rationale || '';
   };
 
+  // Player info
   const playerIds = Object.keys(playerLabels);
   const playerAReasoning = playerIds.length > 0 ? getCurrentReasoning(playerIds[0]) : '';
   const playerBReasoning = playerIds.length > 1 ? getCurrentReasoning(playerIds[1]) : '';
@@ -253,215 +185,7 @@ export default function WormArena() {
 
   const isFinalFrame = frames.length > 0 && frameIndex >= frames.length - 1;
 
-  const formatInt = (value: unknown): string => {
-    if (typeof value !== 'number' || !Number.isFinite(value)) return 'N/A';
-    return Math.round(value).toLocaleString();
-  };
-
-  const formatUsd = (value: unknown): string => {
-    if (typeof value !== 'number' || !Number.isFinite(value)) return 'N/A';
-    return `$${value.toFixed(6)}`;
-  };
-
-  const getSnakeResultLabel = (snakeId: string): 'won' | 'lost' | 'tied' | null => {
-    const raw = (replayData as any)?.players?.[snakeId]?.result;
-    if (raw === 'won' || raw === 'lost' || raw === 'tied') return raw;
-
-    const myFinalScore = (replayData as any)?.players?.[snakeId]?.final_score;
-    if (typeof myFinalScore === 'number') {
-      const otherId = Object.keys((replayData as any)?.players ?? {}).find((id) => id !== snakeId);
-      const otherFinalScore = otherId ? (replayData as any)?.players?.[otherId]?.final_score : undefined;
-
-      if (typeof otherFinalScore === 'number') {
-        if (myFinalScore > otherFinalScore) return 'won';
-        if (myFinalScore < otherFinalScore) return 'lost';
-        return 'tied';
-      }
-    }
-
-    const myScore = (finalScores as any)?.[snakeId];
-    if (typeof myScore === 'number') {
-      const otherId = Object.keys(finalScores ?? {}).find((id) => id !== snakeId);
-      const otherScore = otherId ? (finalScores as any)?.[otherId] : undefined;
-
-      if (typeof otherScore === 'number') {
-        if (myScore > otherScore) return 'won';
-        if (myScore < otherScore) return 'lost';
-        return 'tied';
-      }
-    }
-
-    return null;
-  };
-
-  const buildFinalSummary = (snakeId: string): string => {
-    if (!snakeId) return '';
-
-    const dataAny = replayData as any;
-    const player = dataAny?.players?.[snakeId];
-    const game = dataAny?.game;
-    const maxRounds = game?.max_rounds ?? dataAny?.metadata?.max_rounds;
-    const rounds = game?.rounds_played ?? dataAny?.metadata?.actual_rounds ?? frames.length;
-    const boardW = game?.board?.width;
-    const boardH = game?.board?.height;
-    const numApples = game?.board?.num_apples;
-
-    const resultLabel = getSnakeResultLabel(snakeId);
-    const outcome = (resultLabel ?? 'unknown').toUpperCase();
-
-    const lines: string[] = [];
-
-    lines.push(`Final result: ${outcome}`);
-
-    if (typeof player?.name === 'string' && player.name.trim().length > 0) {
-      lines.push(`Model: ${player.name}`);
-    }
-
-    if (typeof player?.model_id === 'string' && player.model_id.trim().length > 0) {
-      lines.push(`Model id: ${player.model_id}`);
-    }
-
-    if (typeof player?.final_score === 'number' && Number.isFinite(player.final_score)) {
-      lines.push(`Final score: ${formatInt(player.final_score)}`);
-    }
-
-    if (player?.death) {
-      const reason = typeof player.death?.reason === 'string' && player.death.reason.trim().length > 0 ? player.death.reason : 'unknown';
-      const round = typeof player.death?.round === 'number' && Number.isFinite(player.death.round) ? ` (round ${formatInt(player.death.round)})` : '';
-      lines.push(`Death: ${reason}${round}`);
-    } else {
-      lines.push('Death: none');
-    }
-
-    const inTok = player?.totals?.input_tokens;
-    const outTok = player?.totals?.output_tokens;
-    const cost = player?.totals?.cost;
-
-    if (typeof inTok === 'number' && Number.isFinite(inTok)) {
-      lines.push(`Input tokens: ${formatInt(inTok)}`);
-    } else {
-      lines.push('Input tokens: N/A');
-    }
-
-    if (typeof outTok === 'number' && Number.isFinite(outTok)) {
-      lines.push(`Output tokens: ${formatInt(outTok)}`);
-    } else {
-      lines.push('Output tokens: N/A');
-    }
-
-    const totalTok = (typeof inTok === 'number' && Number.isFinite(inTok) ? inTok : 0) + (typeof outTok === 'number' && Number.isFinite(outTok) ? outTok : 0);
-    if (totalTok > 0) {
-      lines.push(`Total tokens: ${formatInt(totalTok)}`);
-    } else {
-      lines.push('Total tokens: N/A');
-    }
-
-    lines.push(`Cost: ${formatUsd(cost)} (raw: ${typeof cost === 'number' && Number.isFinite(cost) ? cost : 'N/A'})`);
-
-    if (typeof rounds === 'number' && Number.isFinite(rounds) && rounds > 0) {
-      if (totalTok > 0) {
-        lines.push(`Avg tokens/round: ${formatInt(totalTok / rounds)}`);
-      }
-      if (typeof cost === 'number' && Number.isFinite(cost)) {
-        lines.push(`Avg cost/round: ${formatUsd(cost / rounds)}`);
-      }
-    }
-
-    if (typeof game?.id === 'string' && game.id.trim().length > 0) {
-      lines.push(`Game id: ${game.id}`);
-    }
-    if (typeof game?.game_type === 'string' && game.game_type.trim().length > 0) {
-      lines.push(`Game type: ${game.game_type}`);
-    }
-    if (typeof game?.started_at === 'string' && game.started_at.trim().length > 0) {
-      lines.push(`Started at: ${game.started_at}`);
-    }
-    if (typeof game?.ended_at === 'string' && game.ended_at.trim().length > 0) {
-      lines.push(`Ended at: ${game.ended_at}`);
-    }
-    if (typeof rounds === 'number' && Number.isFinite(rounds)) {
-      lines.push(`Rounds played: ${formatInt(rounds)}`);
-    }
-    if (typeof maxRounds === 'number' && Number.isFinite(maxRounds)) {
-      lines.push(`Max rounds: ${formatInt(maxRounds)}`);
-    }
-    if (typeof boardW === 'number' && Number.isFinite(boardW) && typeof boardH === 'number' && Number.isFinite(boardH)) {
-      lines.push(`Board: ${formatInt(boardW)}x${formatInt(boardH)}`);
-    }
-    if (typeof numApples === 'number' && Number.isFinite(numApples)) {
-      lines.push(`Apples per round: ${formatInt(numApples)}`);
-    }
-
-    return lines.join('\n');
-  };
-
-  const buildMatchTotalsSummary = React.useCallback((): string => {
-    const dataAny = replayData as any;
-    const totals = dataAny?.totals;
-    if (!totals) return '';
-
-    const game = dataAny?.game;
-    const rounds = game?.rounds_played ?? dataAny?.metadata?.actual_rounds ?? frames.length;
-
-    const matchIn = totals?.input_tokens;
-    const matchOut = totals?.output_tokens;
-    const matchCost = totals?.cost;
-    const matchTok =
-      (typeof matchIn === 'number' && Number.isFinite(matchIn) ? matchIn : 0) +
-      (typeof matchOut === 'number' && Number.isFinite(matchOut) ? matchOut : 0);
-
-    const lines: string[] = [];
-
-    // Add winner information
-    const playerIds = Object.keys(finalScores ?? {});
-    if (playerIds.length >= 2) {
-      const playerAId = playerIds[0];
-      const playerBId = playerIds[1];
-      const playerAScore = (finalScores as any)?.[playerAId] ?? 0;
-      const playerBScore = (finalScores as any)?.[playerBId] ?? 0;
-
-      const playerAName = playerLabels[playerAId] ?? 'Player A';
-      const playerBName = playerLabels[playerBId] ?? 'Player B';
-
-      let winnerText = '';
-      if (playerAScore > playerBScore) {
-        winnerText = `${playerAName} won (${formatInt(playerAScore)} - ${formatInt(playerBScore)})`;
-      } else if (playerBScore > playerAScore) {
-        winnerText = `${playerBName} won (${formatInt(playerBScore)} - ${formatInt(playerAScore)})`;
-      } else {
-        winnerText = `Tie game (${formatInt(playerAScore)} - ${formatInt(playerBScore)})`;
-      }
-
-      lines.push(`Result: ${winnerText}`);
-      lines.push('');
-    }
-
-    lines.push('Match totals:');
-    lines.push(`Input tokens: ${formatInt(matchIn)}`);
-    lines.push(`Output tokens: ${formatInt(matchOut)}`);
-    lines.push(`Total tokens: ${matchTok > 0 ? formatInt(matchTok) : 'N/A'}`);
-    lines.push(
-      `Cost: ${formatUsd(matchCost)} (raw: ${typeof matchCost === 'number' && Number.isFinite(matchCost) ? matchCost : 'N/A'})`,
-    );
-    if (typeof rounds === 'number' && Number.isFinite(rounds) && rounds > 0) {
-      if (matchTok > 0) {
-        lines.push(`Avg tokens/round: ${formatInt(matchTok / rounds)}`);
-      }
-      if (typeof matchCost === 'number' && Number.isFinite(matchCost)) {
-        lines.push(`Avg cost/round: ${formatUsd(matchCost / rounds)}`);
-      }
-    }
-
-    return lines.join('\n');
-  }, [replayData, frames.length, finalScores, playerLabels]);
-
-  const appendFinalResultIfNeeded = (snakeId: string, reasoning: string): string => {
-    if (!isFinalFrame || !snakeId) return reasoning;
-    const finalSummary = buildFinalSummary(snakeId);
-    const prefix = reasoning?.trim()?.length ? `${reasoning.trim()}\n\n` : '';
-    return finalSummary ? `${prefix}${finalSummary}` : reasoning;
-  };
-
+  // Build reasoning with final summary appended on last frame (using extracted utilities)
   const playerAReasoningBase = showNextMove && playerIds.length > 0 && !isFinalFrame
     ? (frames[frameIndex + 1]?.moves?.[playerIds[0]]?.rationale || '')
     : playerAReasoning;
@@ -470,29 +194,30 @@ export default function WormArena() {
     : playerBReasoning;
 
   const playerAReasoningForPanel = playerIds.length > 0
-    ? appendFinalResultIfNeeded(playerIds[0], playerAReasoningBase)
+    ? appendFinalResultIfNeeded(isFinalFrame, playerIds[0], playerAReasoningBase, replayData, frames.length, finalScores)
     : playerAReasoningBase;
   const playerBReasoningForPanel = playerIds.length > 1
-    ? appendFinalResultIfNeeded(playerIds[1], playerBReasoningBase)
+    ? appendFinalResultIfNeeded(isFinalFrame, playerIds[1], playerBReasoningBase, replayData, frames.length, finalScores)
     : playerBReasoningBase;
 
+  // Match totals summary (only on final frame)
   const matchTotalsSummary = React.useMemo(() => {
     if (!isFinalFrame) return '';
-    return buildMatchTotalsSummary();
-  }, [isFinalFrame, buildMatchTotalsSummary]);
+    return buildMatchTotalsSummary(replayData, frames.length, finalScores, playerLabels);
+  }, [isFinalFrame, replayData, frames.length, finalScores, playerLabels]);
 
+  // Matchup label
   const matchupLabel = React.useMemo(() => {
     if (playerIds.length >= 2) {
       return `${playerAName} vs ${playerBName}`;
     }
-
     if (Array.isArray(models) && models.length === 2) {
       return `${models[0]} vs ${models[1]}`;
     }
-
     return 'Worm Arena Match';
   }, [playerIds.length, playerAName, playerBName, models]);
 
+  // Clipboard handler
   const handleCopyMatchId = React.useCallback(() => {
     if (!selectedMatchId) return;
     if (typeof navigator !== 'undefined' && navigator.clipboard?.writeText) {
@@ -502,19 +227,8 @@ export default function WormArena() {
     }
   }, [selectedMatchId]);
 
-  const handleSelectMatch = React.useCallback(
-    (id: string) => {
-      const trimmed = id.trim();
-      if (!trimmed) return;
-      setSelectedMatchId(trimmed);
-      setMatchIdInUrl(trimmed);
-    },
-    [setMatchIdInUrl],
-  );
-
   return (
     <div className="worm-page">
-
       <WormArenaHeader
         matchupLabel={matchupLabel}
         totalGames={total}
@@ -530,6 +244,7 @@ export default function WormArena() {
       />
 
       <main className="p-8 max-w-7xl mx-auto">
+        {/* Match header */}
         {startedAt && (
           <div className="text-center mb-6">
             <h2 className="text-3xl font-bold mb-2">{matchupLabel}</h2>
@@ -539,75 +254,27 @@ export default function WormArena() {
           </div>
         )}
 
+        {/* Player rating cards (using extracted component) */}
         {(modelA || modelB) && (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-            {modelA && ratingA && (
-              <Card className="worm-card">
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-lg font-bold text-worm-ink">
-                    {modelA}
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-2 text-sm text-worm-ink">
-                  <div className="flex items-center justify-between">
-                    <span className="font-semibold">Pessimistic rating</span>
-                    <span className="worm-pill-green px-2 py-0.5 text-base">
-                      {ratingA.exposed.toFixed(1)}
-                    </span>
-                  </div>
-                  <div className="flex flex-wrap gap-3 text-xs">
-                    <span>Games: {ratingA.gamesPlayed}</span>
-                    <span>W {ratingA.wins}</span>
-                    <span>L {ratingA.losses}</span>
-                    <span>T {ratingA.ties}</span>
-                  </div>
-                  {placementA && (
-                    <div className="flex items-center justify-between text-xs">
-                      <span>{placementA.label}</span>
-                      <Badge variant="outline" className="text-[11px] font-semibold">
-                        {placementA.gamesPlayed}/{placementA.maxGames} games
-                      </Badge>
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
+            {modelA && (
+              <WormArenaPlayerRatingCard
+                model={modelA}
+                rating={ratingA}
+                placement={placementA}
+              />
             )}
-
-            {modelB && ratingB && (
-              <Card className="worm-card">
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-lg font-bold text-worm-ink">
-                    {modelB}
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-2 text-sm text-worm-ink">
-                  <div className="flex items-center justify-between">
-                    <span className="font-semibold">Pessimistic rating</span>
-                    <span className="worm-pill-green px-2 py-0.5 text-base">
-                      {ratingB.exposed.toFixed(1)}
-                    </span>
-                  </div>
-                  <div className="flex flex-wrap gap-3 text-xs">
-                    <span>Games: {ratingB.gamesPlayed}</span>
-                    <span>W {ratingB.wins}</span>
-                    <span>L {ratingB.losses}</span>
-                    <span>T {ratingB.ties}</span>
-                  </div>
-                  {placementB && (
-                    <div className="flex items-center justify-between text-xs">
-                      <span>{placementB.label}</span>
-                      <Badge variant="outline" className="text-[11px] font-semibold">
-                        {placementB.gamesPlayed}/{placementB.maxGames} games
-                      </Badge>
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
+            {modelB && (
+              <WormArenaPlayerRatingCard
+                model={modelB}
+                rating={ratingB}
+                placement={placementB}
+              />
             )}
           </div>
         )}
 
-        {/* Show loading state while fetching replay */}
+        {/* Loading state */}
         {loadingReplay && selectedMatchId && (
           <div className="flex justify-center items-center py-12">
             <div className="text-center">
@@ -617,127 +284,37 @@ export default function WormArena() {
           </div>
         )}
 
-        {/* Only render replay interface if data loaded successfully */}
+        {/* Replay viewer (using extracted component) */}
         {!loadingReplay && !replayError && replayData && (
-          <>
-            {/* View mode toggle */}
-            <div className="flex justify-center mb-4">
-              <div className="inline-flex rounded-lg border border-gray-300 bg-white p-1 shadow-sm">
-                <Button
-                  variant={renderMode === 'cartoon' ? 'default' : 'ghost'}
-                  size="sm"
-                  onClick={() => setRenderMode('cartoon')}
-                  className="text-xs px-3"
-                >
-                  Cartoon View
-                </Button>
-                <Button
-                  variant={renderMode === 'console' ? 'default' : 'ghost'}
-                  size="sm"
-                  onClick={() => setRenderMode('console')}
-                  className="text-xs px-3"
-                >
-                  Console View
-                </Button>
-              </div>
-            </div>
-
-            {/* Cartoon view (default) - 3 column layout with reasoning panels */}
-            {renderMode === 'cartoon' && (
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6 items-stretch">
-            <WormArenaReasoning
-              playerName={playerAName}
-              color="green"
-              reasoning={playerAReasoningForPanel}
-              score={playerAScore}
-            />
-
-            <div className="flex flex-col gap-4">
-              {isMobile ? (
-                <WormArenaGameBoardSVG
-                  frame={currentFrame}
-                  boardWidth={boardWidth}
-                  boardHeight={boardHeight}
-                />
-              ) : (
-                <WormArenaGameBoard
-                  frame={currentFrame}
-                  boardWidth={boardWidth}
-                  boardHeight={boardHeight}
-                  playerLabels={playerLabels}
-                />
-              )}
-
-              <WormArenaControlBar
-                onFirst={() => setFrameIndex(0)}
-                onPrev={() => setFrameIndex((idx) => Math.max(0, idx - 1))}
-                onPlayPause={() => setIsPlaying((v) => !v)}
-                onNext={() => setFrameIndex((idx) => Math.min(frames.length - 1, idx + 1))}
-                onLast={() => setFrameIndex(Math.max(0, frames.length - 1))}
-                isPlaying={isPlaying}
-                currentRound={frames.length === 0 ? 0 : frameIndex + 1}
-                totalRounds={frames.length}
-                showNextMove={showNextMove}
-                onToggleThought={setShowNextMove}
-                playerALabel={playerAName}
-                playerBLabel={playerBName}
-                playerAScore={playerAScore}
-                playerBScore={playerBScore}
-                matchId={selectedMatchId}
-                onCopyMatchId={handleCopyMatchId}
-                statsModels={Array.isArray(models) ? models.slice(0, 2) : []}
-              />
-            </div>
-
-            <WormArenaReasoning
-              playerName={playerBName}
-              color="blue"
-              reasoning={playerBReasoningForPanel}
-              score={playerBScore}
-            />
-          </div>
+          <WormArenaReplayViewer
+            currentFrame={currentFrame}
+            boardWidth={boardWidth}
+            boardHeight={boardHeight}
+            playerLabels={playerLabels}
+            frames={frames}
+            frameIndex={frameIndex}
+            setFrameIndex={setFrameIndex}
+            isPlaying={isPlaying}
+            setIsPlaying={setIsPlaying}
+            showNextMove={showNextMove}
+            setShowNextMove={setShowNextMove}
+            renderMode={renderMode}
+            setRenderMode={setRenderMode}
+            isMobile={isMobile}
+            playerAName={playerAName}
+            playerBName={playerBName}
+            playerAScore={playerAScore}
+            playerBScore={playerBScore}
+            playerAReasoningForPanel={playerAReasoningForPanel}
+            playerBReasoningForPanel={playerBReasoningForPanel}
+            currentScores={currentScores as Record<string, number>}
+            selectedMatchId={selectedMatchId}
+            onCopyMatchId={handleCopyMatchId}
+            models={models}
+          />
         )}
 
-        {/* Console view - raw Python terminal experience */}
-        {renderMode === 'console' && (
-          <div className="max-w-4xl mx-auto mb-6">
-            <WormArenaConsoleMirror
-              frame={currentFrame}
-              boardWidth={boardWidth}
-              boardHeight={boardHeight}
-              currentRound={frameIndex + 1}
-              maxRounds={frames.length}
-              scores={currentScores as Record<string, number>}
-              playerNames={playerLabels}
-              isLive={false}
-            />
-
-            <div className="mt-4">
-              <WormArenaControlBar
-                onFirst={() => setFrameIndex(0)}
-                onPrev={() => setFrameIndex((idx) => Math.max(0, idx - 1))}
-                onPlayPause={() => setIsPlaying((v) => !v)}
-                onNext={() => setFrameIndex((idx) => Math.min(frames.length - 1, idx + 1))}
-                onLast={() => setFrameIndex(Math.max(0, frames.length - 1))}
-                isPlaying={isPlaying}
-                currentRound={frames.length === 0 ? 0 : frameIndex + 1}
-                totalRounds={frames.length}
-                showNextMove={showNextMove}
-                onToggleThought={setShowNextMove}
-                playerALabel={playerAName}
-                playerBLabel={playerBName}
-                playerAScore={playerAScore}
-                playerBScore={playerBScore}
-                matchId={selectedMatchId}
-                onCopyMatchId={handleCopyMatchId}
-                statsModels={Array.isArray(models) ? models.slice(0, 2) : []}
-              />
-            </div>
-          </div>
-        )}
-          </>
-        )}
-
+        {/* Match totals summary (only on final frame) */}
         {matchTotalsSummary && (
           <Card className="worm-card mb-8">
             <CardHeader className="pb-3">
@@ -749,15 +326,16 @@ export default function WormArena() {
           </Card>
         )}
 
+        {/* Bottom section: suggested matchups and greatest hits */}
         <div className="mb-8 grid grid-cols-1 lg:grid-cols-2 gap-4 items-start">
           <WormArenaSuggestedMatchups limit={8} compact />
           <WormArenaGreatestHits />
         </div>
 
+        {/* Stats panel */}
         <div className="mb-8">
           <WormArenaStatsPanel />
         </div>
-
       </main>
     </div>
   );

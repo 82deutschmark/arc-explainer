@@ -23,9 +23,11 @@ import type {
   SnakeBenchMatchSearchRow,
   WormArenaStreamStatus,
   WormArenaFrameEvent,
-} from '../../shared/types.js';
-import { repositoryService } from '../repositories/RepositoryService.ts';
-import { logger } from '../utils/logger.ts';
+} from '../shared/types.js';
+import { repositoryService } from './RepositoryService.ts';
+import { snakeBenchIngestQueue } from './snakeBenchIngestQueue.ts';
+import { CURATED_WORM_ARENA_HALL_OF_FAME } from './snakeBenchHallOfFame.ts';
+import { logger } from './utils/logger.ts';
 
 // Import from new modules
 import { SnakeBenchMatchRunner } from './snakeBench/SnakeBenchMatchRunner.ts';
@@ -37,7 +39,6 @@ import { GameIndexManager } from './snakeBench/persistence/gameIndexManager.ts';
 import { getSnakeBenchAllowedModels } from './snakeBench/helpers/modelAllowlist.ts';
 import { filterReplayableGames, getWormArenaGreatestHitsFiltered } from './snakeBench/helpers/replayFilters.ts';
 import { suggestMatchups } from './snakeBench/helpers/matchupSuggestions.ts';
-import { MODELS } from '../config/models.ts';
 import path from 'path';
 import fs from 'fs';
 
@@ -284,12 +285,12 @@ class SnakeBenchService {
 
     // Filter to only approved OpenRouter models
     const approvedModels = new Set(
-      MODELS
-        .filter((m: any) => m.provider === 'OpenRouter' && !m.premium)
-        .map((m: any) => (m.apiModelName || m.key) as string)
+      require('./config/models.ts').MODELS.filter((m: any) => m.provider === 'OpenRouter' && !m.premium).map(
+        (m: any) => m.apiModelName || m.key
+      )
     );
 
-    return suggestMatchups(mode, safeLimit, safeMinGames, leaderboard, pairingHistory, approvedModels as Set<string>);
+    return suggestMatchups(mode, safeLimit, safeMinGames, leaderboard, pairingHistory, approvedModels);
   }
 
   /**
@@ -342,4 +343,4 @@ class SnakeBenchService {
 }
 
 export const snakeBenchService = new SnakeBenchService();
-export type { SnakeBenchRunMatchRequest, SnakeBenchRunMatchResult } from '../../shared/types.js';
+export type { SnakeBenchRunMatchRequest, SnakeBenchRunMatchResult } from '../shared/types.js';

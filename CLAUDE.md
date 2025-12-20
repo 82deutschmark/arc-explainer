@@ -1,6 +1,7 @@
 # CLAUDE.md
 THE SYMBOLS ✗ and ✔ are forbidden!!!  WE ARE ON WINDOWS AND NEED PROPER UTF-8!!!
-Understand state transitions!!!!! ALL controls should elegantly collapse/disappear once an action starts, revealing the live streaming. Never use static lists or bloated components, never do everything at once in one cluttered file!!!
+Understand state transitions!!!!! ALL controls should elegantly collapse/disappear once an action starts, revealing the live streaming. Never use static lists or bloated components, never do everything all at once in one cluttered file!!!
+If you are working with a library or framework that is not familiar to you, especially if it's relatively new or might have had large updates recently, either ASK the human to provide documentation for it, or search for it yourself. NEVER guess at how any library/framework functionality works, you have to know for sure, and preferably have docs to back it up.
 ## File Annotation Template (Mandatory)
 Every file you create or edit should begin with a basic header like this example:
 
