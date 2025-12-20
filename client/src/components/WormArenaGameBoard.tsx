@@ -53,11 +53,12 @@ const WormArenaGameBoard: React.FC<WormArenaGameBoardProps> = ({
   const containerRef = useRef<HTMLDivElement>(null);
   const [containerWidth, setContainerWidth] = useState<number>(480);
 
-  const getHeadEmoji = (dx: number, dy: number, sid?: string) => {
-    // If we have no direction data (dx=0, dy=0), use color-coded circles for live board
-    if (dx === 0 && dy === 0) {
-      return sid === '0' ? '🟢' : sid === '1' ? '🔵' : '⭕';
+  const getHeadEmoji = (dx: number, dy: number, hasBody: boolean) => {
+    // If snake has a body, use worm emoji
+    if (hasBody) {
+      return '🐛';
     }
+    // Only head (no body yet): use colored circles based on direction
     if (dy > 0) return '⬆️';
     if (dy < 0) return '⬇️';
     if (dx < 0) return '⬅️';
@@ -270,7 +271,7 @@ const WormArenaGameBoard: React.FC<WormArenaGameBoardProps> = ({
 
         prevSnakeHeadsRef.current.set(sid, head);
 
-        const headEmoji = getHeadEmoji(dx, dy, sid);
+        const headEmoji = getHeadEmoji(dx, dy, positions.length > 1);
         positions.forEach((pos, idx) => {
           const [x, y] = pos as [number, number];
           if (x >= 0 && x < boardWidth && y >= 0 && y < boardHeight) {
@@ -291,7 +292,7 @@ const WormArenaGameBoard: React.FC<WormArenaGameBoardProps> = ({
           const cx = boardRectX + (x + 0.5) * cellSize;
           const renderY = boardHeight - 1 - y;
           const cy = boardRectY + (renderY + 0.5) * cellSize;
-          const emoji = idx === 0 ? (sid === '0' ? '🟢' : sid === '1' ? '🔵' : '⭕') : emojis.body;
+          const emoji = idx === 0 ? (positions.length > 1 ? '🐛' : '➡️') : emojis.body;
           ctx.fillText(emoji, cx, cy);
         }
       });

@@ -5,6 +5,17 @@
 
 # New entries at the top, use proper SemVer!
 
+### Version 6.9.11  Dec 19, 2025
+
+- **Worm Arena: Improve live board worm head visualization** (Author: Claude Haiku 4.5)
+  - **Problem**: Live board always showed right arrow (➡️) for worm head, regardless of actual movement or lack of direction data
+  - **Solution**: Updated head emoji logic to show direction arrows only before worm has body, then 🐛 once body grows
+  - **Behavior**:
+    - Just a head (no body): Directional arrows (⬆️ ⬇️ ⬅️ ➡️) based on movement
+    - Has a body: Worm emoji (🐛) for clear worm identification
+  - **Files Modified**:
+    - `client/src/components/WormArenaGameBoard.tsx` - Updated `getHeadEmoji()` logic and call sites
+
 ### Version 6.9.10  Dec 19, 2025
 
 - **Worm Arena: Fix suggested matchups refresh issue** (Author: Cascade)
