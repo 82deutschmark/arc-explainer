@@ -1,17 +1,15 @@
 /**
- * Author: Cascade
+ * Author: Claude Sonnet 4
  * Date: 2025-12-19
  * PURPOSE: Lightweight hooks for interacting with the SnakeBench backend
  *          from the ARC Explainer frontend. Provides helpers for running
  *          single matches, small batches, and listing recent games.
  *
- *          useSnakeBenchGame uses smart replay fallbacks:
- *          - Server returns { data } for local files (local dev)
- *          - Server returns { replayUrl + fallbackUrls } for remote sources (deployment)
- *          - Client tries to fetch directly from replayUrl(s)
- *          - If browser fetch is blocked (commonly CORS), client falls back to
- *            same-origin /api/snakebench/games/:id/proxy
- * SRP/DRY check: Pass — focused on HTTP wiring for SnakeBench endpoints.
+ *          useSnakeBenchGame fetches replay data:
+ *          - Server ALWAYS returns { data } directly (server-side fetch)
+ *          - No more client-side URL fetching or CORS issues
+ *          - Matches how Python SnakeBench serves replays - simple and direct
+ * SRP/DRY check: Pass - focused on HTTP wiring for SnakeBench endpoints.
  */
 
 import { useState, useCallback, useEffect } from 'react';
@@ -151,54 +149,14 @@ export function useSnakeBenchGame(gameId?: string) {
         return;
       }
 
-      // Option 1: Server returned data directly (local dev)
+      // Server now always returns { data } directly (server-side fetch, no CORS issues)
       if (json.data) {
         setData(json.data);
         return;
       }
 
-      // Option 2: Server returned replayUrl - fetch directly (deployment)
-      // Try primary URL first, then fallbacks (snakebench.com, GitHub raw, etc.)
-      // If browser fetch is blocked (commonly CORS), fall back to same-origin proxy.
-      if (json.replayUrl || json.fallbackUrls?.length) {
-        const urlsToTry = [json.replayUrl, ...(json.fallbackUrls || [])].filter(Boolean) as string[];
-        let lastError = '';
-
-        for (const url of urlsToTry) {
-          try {
-            const replayRes = await fetch(url);
-            if (replayRes.ok) {
-              const replayJson = await replayRes.json();
-              setData(replayJson);
-              return;
-            }
-            lastError = `HTTP ${replayRes.status} from ${url}`;
-          } catch (e: any) {
-            lastError = `${e?.message || 'fetch failed'} from ${url}`;
-          }
-        }
-
-        // Direct fetch failed. Try same-origin proxy fallback.
-        try {
-          const proxyRes = await apiRequest('GET', `/api/snakebench/games/${encodeURIComponent(id)}/proxy`);
-          const proxyJson = (await proxyRes.json()) as SnakeBenchGameDetailResponse;
-          if (proxyJson.success && proxyJson.data) {
-            setData(proxyJson.data);
-            return;
-          }
-          lastError = proxyJson.error || lastError || 'proxy did not return data';
-        } catch (e: any) {
-          lastError = e?.message || lastError || 'proxy fetch failed';
-        }
-
-        // All strategies failed
-        setError(`Failed to fetch replay: ${lastError}`);
-        setData(null);
-        return;
-      }
-
-      // Neither data nor replayUrl - unexpected
-      setError('Server returned neither data nor replayUrl');
+      // No data returned - unexpected
+      setError('Server did not return replay data');
       setData(null);
     } catch (e: any) {
       setError(e?.message || 'Failed to load game replay');
