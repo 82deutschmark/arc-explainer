@@ -1,6 +1,6 @@
 /**
  * Author: Cascade / Claude Haiku 4.5 / Claude Sonnet 4
- * Date: 2025-12-19 (updated 2025-12-19)
+ * Date: 2025-12-19 (updated 2025-12-20)
  * PURPOSE: Worm Arena Live streaming hub with the apple scoreboard pinned up top,
  *          run controls hidden mid-match, and post-game summaries that stay on the
  *          same page alongside the final board.
@@ -519,6 +519,7 @@ export default function WormArenaLive() {
           { label: 'Replay', href: '/worm-arena' },
           { label: 'Live', href: '/worm-arena/live', active: true },
           { label: 'Matches', href: '/worm-arena/matches' },
+          { label: 'Models', href: '/worm-arena/models' },
           { label: 'Stats & Placement', href: '/worm-arena/stats' },
           { label: 'Skill Analysis', href: '/worm-arena/skill-analysis' },
         ]}

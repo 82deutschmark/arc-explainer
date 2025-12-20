@@ -130,6 +130,10 @@ const REFERENCE_SECTIONS: ReferenceSectionProps[] = [
         href: 'https://github.com/pwspen/objarc',
       },
       {
+        label: 'minireason (Patrick Spencer)',
+        href: 'https://github.com/pwspen/minireason/tree/main',
+      },
+      {
         label: 'Synapsomorphy ARC',
         href: 'https://synapsomorphy.com/arc/',
       },

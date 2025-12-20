@@ -1,6 +1,6 @@
 /**
  * Author: Cascade
- * Date: 2025-12-19
+ * Date: 2025-12-20
  * PURPOSE: Worm Arena Matches page - showcases curated "Greatest Hits" matches
  *          prominently, with advanced search filters in a collapsible section
  *          for users who want to explore specific matchups.
@@ -273,6 +273,7 @@ export default function WormArenaMatches() {
           { label: 'Replay', href: '/worm-arena' },
           { label: 'Live', href: '/worm-arena/live' },
           { label: 'Matches', href: '/worm-arena/matches', active: true },
+          { label: 'Models', href: '/worm-arena/models' },
           { label: 'Stats & Placement', href: '/worm-arena/stats' },
           { label: 'Skill Analysis', href: '/worm-arena/skill-analysis' },
         ]}

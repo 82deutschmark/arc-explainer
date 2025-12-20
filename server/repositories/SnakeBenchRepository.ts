@@ -1807,4 +1807,161 @@ export class SnakeBenchRepository extends BaseRepository {
       await this.ingestReplayFromFile(entry.file, { forceRecompute: true });
     }
   }
+
+  /**
+   * Get all models that have actually played games.
+   * Used for the "Model Match History" page picker - only shows models with data.
+   */
+  async getModelsWithGames(): Promise<
+    Array<{
+      modelSlug: string;
+      gamesPlayed: number;
+      wins: number;
+      losses: number;
+      ties: number;
+      winRate?: number;
+    }>
+  > {
+    if (!this.isConnected()) {
+      return [];
+    }
+
+    try {
+      // Group by normalized slug (remove :free suffix) to treat free/paid as same model
+      const sql = `
+        SELECT
+          regexp_replace(m.model_slug, ':free$', '') AS normalized_slug,
+          COUNT(DISTINCT gp.game_id) AS games_played,
+          COUNT(CASE WHEN gp.result = 'won' THEN 1 END) AS wins,
+          COUNT(CASE WHEN gp.result = 'lost' THEN 1 END) AS losses,
+          COUNT(CASE WHEN gp.result = 'tied' THEN 1 END) AS ties
+        FROM public.models m
+        JOIN public.game_participants gp ON m.id = gp.model_id
+        JOIN public.games g ON gp.game_id = g.id
+        WHERE g.status = 'completed'
+        GROUP BY regexp_replace(m.model_slug, ':free$', '')
+        HAVING COUNT(DISTINCT gp.game_id) > 0
+        ORDER BY games_played DESC, normalized_slug ASC;
+      `;
+
+      const result = await this.query(sql);
+
+      return result.rows.map((row: any) => {
+        const gamesPlayed = parseInt(String(row.games_played ?? '0'), 10) || 0;
+        const wins = parseInt(String(row.wins ?? '0'), 10) || 0;
+        const losses = parseInt(String(row.losses ?? '0'), 10) || 0;
+        const ties = parseInt(String(row.ties ?? '0'), 10) || 0;
+        const winRate = gamesPlayed > 0 ? wins / gamesPlayed : undefined;
+
+        return {
+          modelSlug: String(row.normalized_slug ?? ''),
+          gamesPlayed,
+          wins,
+          losses,
+          ties,
+          ...(winRate !== undefined ? { winRate } : {}),
+        };
+      });
+    } catch (error) {
+      logger.warn(
+        `SnakeBenchRepository.getModelsWithGames: query failed: ${
+          error instanceof Error ? error.message : String(error)
+        }`,
+        'snakebench-db',
+      );
+      return [];
+    }
+  }
+
+  /**
+   * Get ALL match history for a model (unbounded).
+   * Used by the Model Match History page to show every game a model has ever played.
+   */
+  async getModelMatchHistoryUnbounded(modelSlug: string): Promise<SnakeBenchModelMatchHistoryEntry[]> {
+    if (!this.isConnected()) {
+      return [];
+    }
+
+    if (!modelSlug) {
+      return [];
+    }
+
+    try {
+      const sql = `
+        SELECT
+          g.id AS game_id,
+          g.start_time,
+          g.end_time,
+          g.created_at,
+          g.rounds,
+          g.board_width,
+          g.board_height,
+          gp.score AS my_score,
+          gp.result AS my_result,
+          gp.death_reason,
+          gp.cost AS my_cost,
+          opp.model_slug AS opponent_slug,
+          opp_gp.score AS opponent_score
+        FROM public.game_participants gp
+        JOIN public.models m ON gp.model_id = m.id
+        JOIN public.games g ON gp.game_id = g.id
+        LEFT JOIN public.game_participants opp_gp
+          ON opp_gp.game_id = gp.game_id AND opp_gp.player_slot <> gp.player_slot
+        LEFT JOIN public.models opp ON opp_gp.model_id = opp.id
+        WHERE regexp_replace(m.model_slug, ':free$', '') = regexp_replace($1, ':free$', '')
+          AND g.status = 'completed'
+        ORDER BY COALESCE(g.start_time, g.created_at, NOW()) DESC;
+      `;
+
+      const result = await this.query(sql, [modelSlug]);
+
+      const history: SnakeBenchModelMatchHistoryEntry[] = result.rows.map((row: any) => {
+        const startedTs = row.start_time ?? row.created_at ?? null;
+        const startedAt = startedTs ? new Date(startedTs).toISOString() : '';
+        const endedTs = row.end_time ?? null;
+        const endedAt = endedTs ? new Date(endedTs).toISOString() : '';
+
+        const myScore = Number(row.my_score ?? 0) || 0;
+        const opponentScore = Number(row.opponent_score ?? 0) || 0;
+        const rounds = Number(row.rounds ?? 0) || 0;
+        const boardWidth = Number(row.board_width ?? 0) || 0;
+        const boardHeight = Number(row.board_height ?? 0) || 0;
+        const myCost = Number(row.my_cost ?? 0) || 0;
+
+        const resultLabelRaw = String(row.my_result ?? 'tied') as SnakeBenchResultLabel;
+        const resultLabel: SnakeBenchResultLabel =
+          resultLabelRaw === 'won' || resultLabelRaw === 'lost' || resultLabelRaw === 'tied'
+            ? resultLabelRaw
+            : 'tied';
+
+        const deathReason = row.death_reason != null ? String(row.death_reason) : null;
+        const opponentSlug = row.opponent_slug ? String(row.opponent_slug) : '';
+
+        return {
+          gameId: String(row.game_id),
+          startedAt,
+          endedAt,
+          opponentSlug,
+          result: resultLabel,
+          myScore,
+          opponentScore,
+          rounds,
+          deathReason,
+          boardWidth,
+          boardHeight,
+          cost: myCost,
+        };
+      });
+
+      return history;
+    } catch (error) {
+      logger.warn(
+        `SnakeBenchRepository.getModelMatchHistoryUnbounded: query failed for ${modelSlug}: ${
+          error instanceof Error ? error.message : String(error)
+        }`,
+        'snakebench-db',
+      );
+      return [];
+    }
+  }
 }

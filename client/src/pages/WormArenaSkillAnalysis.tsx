@@ -1,10 +1,9 @@
 /**
- * Author: Claude
- * Date: 2025-12-17
- * PURPOSE: Worm Arena Skill Analysis orchestration. Coordinates URL-driven selections, poster vs.
- *          interactive comparison tabs, and the flanking selector/baseline cards so visitors can
- *          swap between the legacy hero graphic and the new scatter + multi-curve explorer while
- *          keeping data refresh + query syncing consistent.
+ * Author: Cascade
+ * Date: 2025-12-20
+ * PURPOSE: Worm Arena skill analysis - compare a model vs a reference model
+ *          using TrueSkill exposure / uncertainty and show interpretive charts.
+ * SRP/DRY check: Pass - page composition only.
  *          Card titles now display actual model slugs. Left list sorted by games played,
  *          right list sorted by win rate. Why TrueSkill section includes MS Research link.
  * SRP/DRY check: Pass — page-level composition only; rendering delegated to child components.
@@ -228,6 +227,7 @@ export default function WormArenaSkillAnalysis() {
             { label: 'Replay', href: '/worm-arena' },
             { label: 'Live', href: '/worm-arena/live' },
             { label: 'Matches', href: '/worm-arena/matches' },
+            { label: 'Models', href: '/worm-arena/models' },
             { label: 'Stats & Placement', href: '/worm-arena/stats' },
             { label: 'Skill Analysis', href: '/worm-arena/skill-analysis', active: true },
           ]}
