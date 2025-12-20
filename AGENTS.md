@@ -4,6 +4,7 @@
 **Date:** 2025-10-15  
 **Purpose:** Guidance for AI agents working with the ARC Explainer repository. 
 THE SYMBOLS ✗ and ✅✔☑ are forbidden!!!  WE ARE ON WINDOWS AND NEED PROPER UTF-8!!!
+If you are working with a library or framework that is not familiar to you, especially if it's relatively new or might have had large updates recently, either ASK the human to provide documentation for it, or search for it yourself. NEVER guess at how any library/framework functionality works, you have to know for sure, and preferably have docs to back it up.
 Understand state transitions!!!!! ALL controls should elegantly collapse/disappear once an action starts, revealing the live streaming. Never use static lists or bloated components, never do everything at once in one cluttered view.
 You are expected to make comments about your code. 
 All code you write must be clearly commented!!!
