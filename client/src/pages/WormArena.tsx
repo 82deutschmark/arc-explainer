@@ -4,6 +4,7 @@
  * PURPOSE: Worm Arena replay viewer page. Allows selecting a match from
  *          the match list, renders the replay board, and shows per-player
  *          ratings / metadata.
+ *          Updated to include Rules navigation link.
  * SRP/DRY check: Pass - page composition only.
  */
 /**
@@ -241,12 +242,13 @@ export default function WormArena() {
           { label: 'Models', href: '/worm-arena/models' },
           { label: 'Stats & Placement', href: '/worm-arena/stats' },
           { label: 'Skill Analysis', href: '/worm-arena/skill-analysis' },
+          { label: 'Rules', href: '/worm-arena/rules' },
         ]}
         showMatchupLabel={false}
         compact
       />
 
-      <main className="p-8 max-w-7xl mx-auto">
+      <main className="p-4 max-w-7xl mx-auto">
         {/* Match header */}
         {startedAt && (
           <div className="text-center mb-6">

@@ -2,11 +2,14 @@
  * server/controllers/snakeBenchController.ts
  *
  * Author: Cascade
- * Date: 2025-12-19
+ * Date: 2025-12-20
  * PURPOSE: HTTP API controller for SnakeBench single-match runs and replay access.
  *          Exposes a small public endpoint that runs a single game between
  *          two models via the SnakeBench backend and returns a concise
  *          summary for UI consumption.
+ *
+ *          Also exposes a public transparency endpoint for Worm Arena that returns
+ *          the exact LLM prompt template / rules used by the SnakeBench Python player.
  *
  *          Replay behavior:
  *          - /api/snakebench/games/:gameId returns either local { data } or a remote
@@ -21,6 +24,7 @@ import type { Request, Response } from 'express';
 
 import { snakeBenchService } from '../services/snakeBenchService';
 import { snakeBenchIngestQueue } from '../services/snakeBenchIngestQueue';
+import { loadWormArenaPromptTemplateBundle } from '../services/snakeBench/SnakeBenchLlmPlayerPromptTemplate.ts';
 import { logger } from '../utils/logger';
 import type {
   SnakeBenchRunMatchRequest,
@@ -39,7 +43,33 @@ import type {
   WormArenaGreatestHitsResponse,
   WormArenaSuggestMatchupsResponse,
   WormArenaSuggestMode,
+  SnakeBenchLlmPlayerPromptTemplateResponse,
 } from '../../shared/types.js';
+
+export async function getLlmPlayerPromptTemplate(req: Request, res: Response) {
+  try {
+    const result = await loadWormArenaPromptTemplateBundle();
+
+    const response: SnakeBenchLlmPlayerPromptTemplateResponse = {
+      success: true,
+      result,
+      timestamp: Date.now(),
+    };
+
+    return res.json(response);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    logger.error(`SnakeBench getLlmPlayerPromptTemplate failed: ${message}`, 'snakebench-controller');
+
+    const response: SnakeBenchLlmPlayerPromptTemplateResponse = {
+      success: false,
+      error: message,
+      timestamp: Date.now(),
+    };
+
+    return res.status(500).json(response);
+  }
+}
 
 export async function runMatch(req: Request, res: Response) {
   try {
@@ -760,4 +790,5 @@ export const snakeBenchController = {
   getWormArenaGreatestHits,
   suggestMatchups,
   ingestQueueStatus,
+  getLlmPlayerPromptTemplate,
 };

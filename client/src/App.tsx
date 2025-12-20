@@ -1,3 +1,11 @@
+/**
+ * Author: Cascade
+ * Date: 2025-12-20
+ * PURPOSE: Client-side router for ARC Explainer.
+ *          Updated to include Worm Arena rules/prompt transparency page.
+ * SRP/DRY check: Pass - routing table only.
+ */
+
 import { Switch, Route } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
@@ -46,6 +54,7 @@ import WormArenaStats from "@/pages/WormArenaStats";
 import WormArenaMatches from "@/pages/WormArenaMatches";
 import WormArenaModels from "@/pages/WormArenaModels";
 import WormArenaSkillAnalysis from "@/pages/WormArenaSkillAnalysis";
+import WormArenaRules from "@/pages/WormArenaRules";
 import Redirect from "@/components/Redirect";
 
 function Router() {
@@ -109,6 +118,7 @@ function Router() {
         <Route path="/worm-arena/models" component={WormArenaModels} />
         <Route path="/worm-arena/stats" component={WormArenaStats} />
         <Route path="/worm-arena/skill-analysis" component={WormArenaSkillAnalysis} />
+        <Route path="/worm-arena/rules" component={WormArenaRules} />
         <Route path="/puzzle/:taskId" component={PuzzleExaminer} />
         <Route path="/examine/:taskId" component={PuzzleExaminer} />
         <Route component={NotFound} />

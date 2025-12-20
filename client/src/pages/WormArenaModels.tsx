@@ -4,6 +4,7 @@
  * PURPOSE: Worm Arena Models page - browse every game a specific model has ever played.
  *          Mirrors the external SnakeBench /models/[id] page functionality.
  *          Only lists models that have actually played games.
+ *          Updated to include Rules navigation link.
  * SRP/DRY check: Pass - page composition only, data fetching in hooks.
  */
 
@@ -140,10 +141,11 @@ export default function WormArenaModels() {
           { label: 'Models', href: '/worm-arena/models', active: true },
           { label: 'Stats & Placement', href: '/worm-arena/stats' },
           { label: 'Skill Analysis', href: '/worm-arena/skill-analysis' },
+          { label: 'Rules', href: '/worm-arena/rules' },
         ]}
       />
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-7xl mx-auto px-2 sm:px-3 lg:px-4 py-4">
         {/* Model Selector */}
         <Card className="mb-6">
           <CardHeader>

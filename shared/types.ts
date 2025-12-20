@@ -13,6 +13,9 @@
  * - PROMPT_TEMPLATES: Predefined prompt templates for different explanation approaches
  * 
  * @author Cascade
+ * Date: 2025-12-20
+ * PURPOSE: Updated to include Worm Arena / SnakeBench LLM prompt transparency response types.
+ * SRP/DRY check: Pass - shared types only.
  */
 
 export interface ARCTask {
@@ -717,6 +720,28 @@ export interface SnakeBenchHealthResponse {
   backendDirExists: boolean;
   runnerExists: boolean;
   message?: string;
+  timestamp: number;
+}
+
+/**
+ * SnakeBench LLM player prompt template endpoint.
+ *
+ * This is used by Worm Arena Rules page to show:
+ * - The canonical (TypeScript-maintained) prompt template with placeholders.
+ * - The live Python prompt builder block extracted from llm_player.py.
+ * - The raw Python source file for transparency.
+ */
+export interface SnakeBenchLlmPlayerPromptTemplateResponse {
+  success: boolean;
+  result?: {
+    pythonSourcePath: string;
+    pythonSource: string;
+    pythonPromptBuilderBlock: string;
+    canonicalTemplate: string;
+    canonicalFixedLines: string[];
+    appleTarget: number | null;
+  };
+  error?: string;
   timestamp: number;
 }
 
