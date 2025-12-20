@@ -607,30 +607,43 @@ export default function WormArena() {
           </div>
         )}
 
-        {/* View mode toggle */}
-        <div className="flex justify-center mb-4">
-          <div className="inline-flex rounded-lg border border-gray-300 bg-white p-1 shadow-sm">
-            <Button
-              variant={renderMode === 'cartoon' ? 'default' : 'ghost'}
-              size="sm"
-              onClick={() => setRenderMode('cartoon')}
-              className="text-xs px-3"
-            >
-              Cartoon View
-            </Button>
-            <Button
-              variant={renderMode === 'console' ? 'default' : 'ghost'}
-              size="sm"
-              onClick={() => setRenderMode('console')}
-              className="text-xs px-3"
-            >
-              Console View
-            </Button>
+        {/* Show loading state while fetching replay */}
+        {loadingReplay && selectedMatchId && (
+          <div className="flex justify-center items-center py-12">
+            <div className="text-center">
+              <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-current mb-2" />
+              <p className="text-muted-foreground">Loading replay...</p>
+            </div>
           </div>
-        </div>
+        )}
 
-        {/* Cartoon view (default) - 3 column layout with reasoning panels */}
-        {renderMode === 'cartoon' && (
+        {/* Only render replay interface if data loaded successfully */}
+        {!loadingReplay && !replayError && replayData && (
+          <>
+            {/* View mode toggle */}
+            <div className="flex justify-center mb-4">
+              <div className="inline-flex rounded-lg border border-gray-300 bg-white p-1 shadow-sm">
+                <Button
+                  variant={renderMode === 'cartoon' ? 'default' : 'ghost'}
+                  size="sm"
+                  onClick={() => setRenderMode('cartoon')}
+                  className="text-xs px-3"
+                >
+                  Cartoon View
+                </Button>
+                <Button
+                  variant={renderMode === 'console' ? 'default' : 'ghost'}
+                  size="sm"
+                  onClick={() => setRenderMode('console')}
+                  className="text-xs px-3"
+                >
+                  Console View
+                </Button>
+              </div>
+            </div>
+
+            {/* Cartoon view (default) - 3 column layout with reasoning panels */}
+            {renderMode === 'cartoon' && (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6 items-stretch">
             <WormArenaReasoning
               playerName={playerAName}
@@ -722,6 +735,8 @@ export default function WormArena() {
             </div>
           </div>
         )}
+          </>
+        )}
 
         {matchTotalsSummary && (
           <Card className="worm-card mb-8">
@@ -743,7 +758,4 @@ export default function WormArena() {
           <WormArenaStatsPanel />
         </div>
 
-      </main>
-    </div>
-  );
-}
+      </m

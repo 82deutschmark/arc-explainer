@@ -5,6 +5,25 @@
 
 # New entries at the top, use proper SemVer!
 
+### Version 6.9.8  Dec 19, 2025
+
+- **Worm Arena: Simplify replay loading - server always returns data directly** (Author: Claude Sonnet 4)
+  - **Problem**: Complex client-side URL fetching with CORS fallbacks was unreliable
+  - **Solution**: Server now ALWAYS fetches replay data server-side and returns `{data}` directly
+    - Matches how the Python SnakeBench project serves replays - simple and direct
+    - No more client-side URL fetching or CORS issues
+  - **Resolution order in getGame()**:
+    1. Local file from database replay_path
+    2. Local file at standard path (completed_games/snake_game_<id>.json)
+    3. Remote URL from database replay_path (fetched server-side)
+    4. Railway backend fallback (fetched server-side)
+    5. GitHub raw fallback (fetched server-side)
+  - **Files Modified**:
+    - `server/services/snakeBenchService.ts` - getGame() always fetches server-side
+    - `server/controllers/snakeBenchController.ts` - simplified response format
+    - `client/src/hooks/useSnakeBench.ts` - removed complex fallback logic
+  - **Note**: VoynichLabs/SnakeBench is our fork with 1244 replay JSONs committed
+
 ### Version 6.9.7  Dec 19, 2025
 
 - **Worm Arena: Fix replay existence check to accept HTTP URLs from database** (Author: Claude Sonnet 4)

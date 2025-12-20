@@ -1030,14 +1030,18 @@ export class SnakeBenchService {
   /**
    * Resolve replay for a given gameId.
    *
-   * Returns EITHER:
-   * - { data: <parsed JSON> } when a local file is available
-   * - { replayUrl: <string>, fallbackUrls?: <string[]> } when replay must be fetched remotely
+   * SIMPLIFIED: Always fetches server-side and returns {data} directly.
+   * This matches how the Python SnakeBench project works - serve JSON directly,
+   * no client-side URL fetching that gets blocked by CORS.
    *
-   * NOTE: Some deployments / hosts block cross-origin replay JSON fetches (CORS).
-   * The frontend should fall back to /api/snakebench/games/:gameId/proxy in that case.
+   * Resolution order:
+   * 1. Local file from database replay_path
+   * 2. Local file at standard path (completed_games/snake_game_<id>.json)
+   * 3. Remote URL from database replay_path (fetched server-side)
+   * 4. Railway backend fallback (fetched server-side)
+   * 5. GitHub raw fallback (fetched server-side)
    */
-  async getGame(gameId: string): Promise<{ data?: any; replayUrl?: string; fallbackUrls?: string[] }> {
+  async getGame(gameId: string): Promise<{ data: any }> {
     if (!gameId) {
       throw new Error('gameId is required');
     }
@@ -1045,19 +1049,17 @@ export class SnakeBenchService {
     const backendDir = this.resolveBackendDir();
     const completedDir = path.join(backendDir, 'completed_games');
 
-    let filename = `snake_game_${gameId}.json`;
-    let candidate = path.join(completedDir, filename);
-
-    // Prefer a replay_path from the database (covers freshly completed games
-    // after a restart where the index/filename lookup may not be populated).
+    // Build list of local file paths to try
     const candidatePaths: string[] = [];
-    let remoteReplayUrl: string | null = null;
+    const remoteUrls: string[] = [];
+
+    // 1. Check database for replay_path (could be local path or remote URL)
     try {
       const dbReplay = await repositoryService.snakeBench.getReplayPath(gameId);
       const replayPath = dbReplay?.replayPath;
       if (replayPath) {
         if (/^https?:\/\//i.test(replayPath)) {
-          remoteReplayUrl = replayPath;
+          remoteUrls.push(replayPath);
         } else {
           const resolved = path.isAbsolute(replayPath) ? replayPath : path.join(backendDir, replayPath);
           candidatePaths.push(resolved);
@@ -1071,6 +1073,11 @@ export class SnakeBenchService {
       );
     }
 
+    // 2. Standard filename in completed_games
+    let filename = `snake_game_${gameId}.json`;
+    let candidate = path.join(completedDir, filename);
+
+    // 3. Check game_index.json for alternate filename
     if (!fs.existsSync(candidate)) {
       const indexPath = path.join(completedDir, 'game_index.json');
       if (fs.existsSync(indexPath)) {
@@ -1083,106 +1090,54 @@ export class SnakeBenchService {
             candidate = path.join(completedDir, filename);
           }
         } catch {
-          // continue below
+          // continue
+        }
+      }
+    }
+    candidatePaths.push(candidate);
+
+    // Try local files first
+    const uniquePaths = Array.from(new Set(candidatePaths));
+    for (const localPath of uniquePaths) {
+      if (fs.existsSync(localPath)) {
+        try {
+          const raw = await fs.promises.readFile(localPath, 'utf8');
+          const parsed = JSON.parse(raw);
+          logger.info(
+            `SnakeBenchService.getGame: loaded replay for ${gameId} from local file ${localPath}`,
+            'snakebench-service',
+          );
+          return { data: parsed };
+        } catch (err) {
+          const message = err instanceof Error ? err.message : String(err);
+          logger.warn(
+            `SnakeBenchService.getGame: failed to read/parse replay for ${gameId} from ${localPath}: ${message}`,
+            'snakebench-service',
+          );
         }
       }
     }
 
-    candidatePaths.push(candidate);
-
-    const uniquePaths = Array.from(new Set(candidatePaths));
-    const existingPaths = uniquePaths.filter((p) => fs.existsSync(p));
-
-    // Local file available: return data directly (local dev scenario)
-    for (const existingPath of existingPaths) {
-      try {
-        const raw = await fs.promises.readFile(existingPath, 'utf8');
-        const parsed = JSON.parse(raw);
-        return { data: parsed };
-      } catch (err) {
-        const message = err instanceof Error ? err.message : String(err);
-        logger.warn(
-          `SnakeBenchService.getGame: failed to read/parse replay for ${gameId} from ${existingPath}: ${message}`,
-          'snakebench-service',
-        );
-      }
-    }
-
-    // No local file: return URL for the client to fetch directly.
-    // Priority: DB replay_path URL > Supabase Storage (primary) > GitHub raw fallback
-    // NOTE: Greg's SnakeBench stores replays in Supabase Storage, NOT served via Flask API.
-    // The Flask /api/matches/:id endpoint returns 404 for many games; Supabase Storage is authoritative.
-    if (remoteReplayUrl) {
-      logger.info(
-        `SnakeBenchService.getGame: returning replayUrl from DB for ${gameId}: ${remoteReplayUrl}`,
-        'snakebench-service',
-      );
-      return { replayUrl: remoteReplayUrl };
-    }
-
-    const fallbackUrls: string[] = [];
-
-    // PRIMARY: Greg's Railway backend - his Flask API serves replays (redirects to Supabase internally)
-    // This is the production backend visible in network requests: backend-production-fc22.up.railway.app
+    // No local file found - fetch from remote URLs server-side (no CORS issues)
+    // Add fallback URLs
     const upstreamBackend =
       process.env.SNAKEBENCH_UPSTREAM_BACKEND_URL ||
       'https://backend-production-fc22.up.railway.app';
-    fallbackUrls.push(`${upstreamBackend}/api/matches/${gameId}`);
+    remoteUrls.push(`${upstreamBackend}/api/matches/${gameId}`);
 
-    // SECONDARY: GitHub raw - for older games that may be committed to the repo
     const rawBase =
       process.env.SNAKEBENCH_REPLAY_RAW_BASE ||
       'https://raw.githubusercontent.com/VoynichLabs/SnakeBench/main/backend/completed_games';
-    fallbackUrls.push(`${rawBase}/snake_game_${gameId}.json`);
+    remoteUrls.push(`${rawBase}/snake_game_${gameId}.json`);
 
-    logger.info(
-      `SnakeBenchService.getGame: returning fallback replayUrls for ${gameId}: ${fallbackUrls.join(', ')}`,
-      'snakebench-service',
-    );
-
-    return { replayUrl: fallbackUrls[0], fallbackUrls };
-  }
-
-  /**
-   * Fetch replay JSON server-side as a same-origin fallback.
-   *
-   * The frontend should ONLY call this if direct replayUrl fetching fails (e.g., CORS).
-   */
-  async getGameProxy(gameId: string): Promise<{ data: any }> {
-    // First, try the normal resolution path (local file, DB replay URL, etc.).
-    const base = await this.getGame(gameId);
-    if (base.data) {
-      return { data: base.data };
-    }
-
-    // Use Greg's Railway backend as primary fallback (his Flask API redirects to Supabase internally)
-    const upstreamBackend =
-      process.env.SNAKEBENCH_UPSTREAM_BACKEND_URL ||
-      'https://backend-production-fc22.up.railway.app';
-    const rawBase =
-      process.env.SNAKEBENCH_REPLAY_RAW_BASE ||
-      'https://raw.githubusercontent.com/VoynichLabs/SnakeBench/main/backend/completed_games';
-
-    const additionalUrls: string[] = [];
-    additionalUrls.push(`${upstreamBackend}/api/matches/${gameId}`);
-    additionalUrls.push(`${rawBase}/snake_game_${gameId}.json`);
-
-    const urlsToTry = Array.from(
-      new Set(
-        [
-          base.replayUrl,
-          ...(base.fallbackUrls ?? []),
-          ...additionalUrls,
-        ].filter((v): v is string => typeof v === 'string' && v.trim().length > 0),
-      ),
-    );
-
+    // Try each remote URL server-side
+    const uniqueUrls = Array.from(new Set(remoteUrls));
     let lastError = '';
-    for (const url of urlsToTry) {
+    for (const url of uniqueUrls) {
       try {
         const parsed = await this.fetchJsonFromUrl(url);
         logger.info(
-          `SnakeBenchService.getGameProxy: fetched remote replay for ${gameId} from ${url}`,
+          `SnakeBenchService.getGame: fetched replay for ${gameId} from remote URL ${url}`,
           'snakebench-service',
         );
         return { data: parsed };
@@ -1190,15 +1145,25 @@ export class SnakeBenchService {
         const msg = err instanceof Error ? err.message : String(err);
         lastError = msg;
         logger.warn(
-          `SnakeBenchService.getGameProxy: failed to fetch remote replay for ${gameId} from ${url}: ${msg}`,
+          `SnakeBenchService.getGame: failed to fetch replay for ${gameId} from ${url}: ${msg}`,
           'snakebench-service',
         );
       }
     }
 
     throw new Error(
-      `Replay not found for ${gameId}. Last error: ${lastError || 'unknown error'}`,
+      `Replay not found for ${gameId}. Tried ${uniquePaths.length} local paths and ${uniqueUrls.length} remote URLs. Last error: ${lastError || 'unknown'}`,
     );
+  }
+
+  /**
+   * Fetch replay JSON server-side as a same-origin fallback.
+   *
+   * NOTE: Now that getGame() always fetches server-side and returns {data},
+   * this method is just an alias for backwards compatibility with existing routes.
+   */
+  async getGameProxy(gameId: string): Promise<{ data: any }> {
+    return this.getGame(gameId);
   }
 
   /**
