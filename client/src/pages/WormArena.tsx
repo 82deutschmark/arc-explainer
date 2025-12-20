@@ -758,4 +758,7 @@ export default function WormArena() {
           <WormArenaStatsPanel />
         </div>
 
-      </m
+      </main>
+    </div>
+  );
+}
