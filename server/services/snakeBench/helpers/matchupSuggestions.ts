@@ -7,7 +7,7 @@
  */
 
 import type { SnakeBenchTrueSkillLeaderboardEntry } from '../../../shared/types.js';
-import { MODELS } from '../../config/models.ts';
+import { MODELS } from '../../../config/models.ts';
 
 export interface SuggestedMatchup {
   modelA: {

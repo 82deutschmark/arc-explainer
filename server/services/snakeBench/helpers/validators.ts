@@ -8,7 +8,7 @@
 
 import type { SpawnOptions } from 'child_process';
 import type { SnakeBenchRunMatchRequest } from '../../../shared/types.js';
-import { MODELS } from '../../config/models.ts';
+import { MODELS } from '../../../config/models.ts';
 import {
   MIN_BOARD_SIZE,
   MAX_BOARD_SIZE,
