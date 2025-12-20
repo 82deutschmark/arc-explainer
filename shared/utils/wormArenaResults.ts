@@ -216,11 +216,19 @@ export function buildMatchTotalsSummary(
     const playerAResult = getSnakeResultLabel(replayData, playerAId, finalScores);
     const playerBResult = getSnakeResultLabel(replayData, playerBId, finalScores);
 
+    // Get death reasons for context
+    const playerADeath = replayData?.players?.[playerAId]?.death;
+    const playerBDeath = replayData?.players?.[playerBId]?.death;
+    const playerADeathReason = playerADeath?.reason ? `(${playerADeath.reason})` : '';
+    const playerBDeathReason = playerBDeath?.reason ? `(${playerBDeath.reason})` : '';
+
     let winnerText = '';
     if (playerAResult === 'won') {
-      winnerText = `${playerAName} won (${formatInt(playerAScore)} - ${formatInt(playerBScore)})`;
+      const deathContext = playerBDeathReason ? ` ${playerBDeathReason}` : '';
+      winnerText = `${playerAName} won (${formatInt(playerAScore)} - ${formatInt(playerBScore)})${deathContext}`;
     } else if (playerBResult === 'won') {
-      winnerText = `${playerBName} won (${formatInt(playerBScore)} - ${formatInt(playerAScore)})`;
+      const deathContext = playerADeathReason ? ` ${playerADeathReason}` : '';
+      winnerText = `${playerBName} won (${formatInt(playerBScore)} - ${formatInt(playerAScore)})${deathContext}`;
     } else {
       winnerText = `Tie game (${formatInt(playerAScore)} - ${formatInt(playerBScore)})`;
     }
