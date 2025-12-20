@@ -282,12 +282,9 @@ export default function WormArenaMatches() {
       />
 
       <main className="p-4 md:p-6 max-w-7xl mx-auto space-y-6">
-        {/* Greatest Hits - prominently featured at top */}
-        <WormArenaGreatestHits />
-
-        {/* Advanced Search - collapsible for power users */}
+        {/* Advanced Search - open by default at top */}
         <Card className="worm-card">
-          <Accordion type="single" collapsible className="w-full">
+          <Accordion type="single" defaultValue="search" className="w-full">
             <AccordionItem value="search" className="border-b-0">
               <AccordionTrigger className="px-4 py-3 hover:no-underline">
                 <div className="flex items-center gap-3">
@@ -617,6 +614,9 @@ export default function WormArenaMatches() {
             </AccordionItem>
           </Accordion>
         </Card>
+
+        {/* Greatest Hits - after search */}
+        <WormArenaGreatestHits />
       </main>
     </div>
   );
