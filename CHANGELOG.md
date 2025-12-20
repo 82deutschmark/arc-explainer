@@ -33,18 +33,16 @@
     - Structured decision checklist (safety-first elimination process)
     - Clearer turn context section
     - Same rules and output contract as baseline (verbatim)
-  - **API**: Added `playerVariantA` and `playerVariantB` fields to match requests
-    - Each snake can use a different prompt variant
-    - Defaults to `'default'` (baseline LLMPlayer) if not specified
+  - **Status**: Variant support is present but currently **not enabled** in ARC Explainer runtime (baseline prompt remains in use)
   - **Files Created**:
     - `external/SnakeBench/backend/players/llm_player_a.py` - Variant A player class
     - `external/SnakeBench/backend/players/variant_registry.py` - Registry mapping variant keys to classes
   - **Files Modified**:
     - `external/SnakeBench/backend/players/__init__.py` - Export new classes and registry
-    - `external/SnakeBench/backend/main.py` - Use registry for dynamic player instantiation
-    - `server/python/snakebench_runner.py` - Pass playerVariant through to Python
-    - `server/services/snakeBench/helpers/validators.ts` - Add playerVariant to payload
-    - `shared/types.ts` - Add playerVariantA/B to request types
+    - `external/SnakeBench/backend/main.py` - (Dormant) wiring kept off; baseline `LLMPlayer` remains active
+    - `server/python/snakebench_runner.py` - (Dormant) no playerVariant fields passed to Python
+    - `server/services/snakeBench/helpers/validators.ts` - (Dormant) no playerVariant fields in payload
+    - `shared/types.ts` - (Dormant) no playerVariant fields in request types
   - **Extensibility**: To add variant B/C/D: create `llm_player_b.py`, add entry to `PLAYER_VARIANT_LOADERS` in registry
 
 ### Version 6.9.17  Dec 20, 2025

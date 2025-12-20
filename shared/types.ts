@@ -555,10 +555,6 @@ export interface SnakeBenchRunMatchRequest {
   apiKey?: string;
   /** Optional provider for BYO key; if omitted, defaults to OpenRouter */
   provider?: 'openrouter' | 'openai' | 'anthropic' | 'xai' | 'gemini';
-  /** Player variant for model A (e.g., 'default', 'A'). Defaults to 'default'. */
-  playerVariantA?: string;
-  /** Player variant for model B (e.g., 'default', 'A'). Defaults to 'default'. */
-  playerVariantB?: string;
 }
 
 export interface SnakeBenchRunMatchResult {
