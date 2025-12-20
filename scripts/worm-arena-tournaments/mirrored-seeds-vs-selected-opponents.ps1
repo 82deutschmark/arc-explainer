@@ -40,6 +40,7 @@ $seedModels = @(
 $opponentModels = @(
     "deepseek/deepseek-v3.1-terminus",
     "google/gemini-3-flash-preview",
+    "qwen/qwen3-coder:free"
     "nvidia/nemotron-nano-12b-v2-vl"
 )
 
