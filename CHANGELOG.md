@@ -5,6 +5,22 @@
 
 # New entries at the top, use proper SemVer!
 
+### Version 6.9.10  Dec 19, 2025
+
+- **Worm Arena: Fix suggested matchups refresh issue** (Author: Cascade)
+  - **Problem**: Suggested matchups showed stale "unplayed pairing" results for days despite hundreds of matches played
+  - **Root Cause**: Key normalization mismatch between database query and matchup suggestions logic
+    - Database query uses `LEAST()`/`GREATEST()` functions with `:free` suffix removal
+    - Matchup suggestions used simple alphabetical comparison without suffix removal
+    - This created different keys for the same model pair, preventing proper filtering
+  - **Fix**: Updated `pairKey()` function in `matchupSuggestions.ts` to match database normalization
+  - **Additional**: Added `/api/snakebench/ingest-queue-status` endpoint for debugging queue delays
+  - **Files Modified**:
+    - `server/services/snakeBench/helpers/matchupSuggestions.ts` - fixed key normalization
+    - `server/controllers/snakeBenchController.ts` - added ingest queue status endpoint
+    - `server/routes.ts` - added route for ingest queue status
+    - `client/src/hooks/useWormArenaSuggestMatchups.ts` - fixed useEffect dependency
+
 ### Version 6.9.9  Dec 19, 2025
 
 - **SnakeBench Service: Complete modular refactoring** (Author: Cascade)
