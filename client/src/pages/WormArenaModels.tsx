@@ -131,8 +131,7 @@ export default function WormArenaModels() {
   return (
     <div className="min-h-screen bg-gray-50">
       <WormArenaHeader
-        title="Model Match History"
-        subtitle="Browse every game a model has played"
+        subtitle="Model Match History"
         links={[
           { label: 'Replay', href: '/worm-arena' },
           { label: 'Live', href: '/worm-arena/live' },
