@@ -7,7 +7,7 @@
  */
 
 import { useState, useCallback } from 'react';
-import { apiRequest } from '../lib/apiRequest';
+import { apiRequest } from '@/lib/queryClient';
 import type {
   WormArenaModelWithGames,
   SnakeBenchModelMatchHistoryEntry,

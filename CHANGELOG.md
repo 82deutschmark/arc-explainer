@@ -5,6 +5,40 @@
 
 # New entries at the top, use proper SemVer!
 
+### Version 6.9.14  Dec 19, 2025
+
+- **Reference Material: Add Patrick Spencer's minireason project** (Author: Claude Haiku 4.5)
+  - **Added**: Link to minireason symbolic reasoning benchmark (https://github.com/pwspen/minireason/tree/main)
+  - **Context**: Simple, extensible symbolic reasoning benchmark with configurable difficulty knobs
+  - **Files Modified**:
+    - `client/src/components/browser/ReferenceMaterial.tsx` - Added minireason link alongside existing objarc entry in Tools & Solvers section
+
+### Version 6.9.13  Dec 19, 2025
+
+- **Worm Arena: Add Model Match History page** (Author: Claude Sonnet 4)
+  - **Feature**: New `/worm-arena/models` page to browse every game a specific model has played
+  - **Mirrors**: External SnakeBench `/models/[id]` page functionality
+  - **Key behavior**: Model picker only lists models that have actually played games (no empty results)
+  - **Backend**:
+    - `GET /api/snakebench/models-with-games` - Returns only models with games played
+    - `GET /api/snakebench/model-history-full?modelSlug=...` - Returns ALL matches (unbounded)
+  - **Frontend**:
+    - Model selector dropdown with games count and win rate
+    - Stats header (total matches, win rate, rating, apples eaten, total cost)
+    - Full match history table with opponent, date, duration, outcome, death reason, score, cost
+    - Click opponent to switch to their match history
+    - "View Replay" link to watch any game
+  - **Files Created**:
+    - `client/src/pages/WormArenaModels.tsx` - Main page component
+    - `client/src/hooks/useWormArenaModels.ts` - Data fetching hooks
+  - **Files Modified**:
+    - `server/repositories/SnakeBenchRepository.ts` - Added `getModelsWithGames()` and `getModelMatchHistoryUnbounded()`
+    - `server/services/snakeBenchService.ts` - Added service methods
+    - `server/controllers/snakeBenchController.ts` - Added controller endpoints
+    - `server/routes.ts` - Added routes
+    - `client/src/App.tsx` - Added route and import
+    - `shared/types.ts` - Added `WormArenaModelWithGames` type
+
 ### Version 6.9.12  Dec 19, 2025
 
 - **Worm Arena Greatest Hits: Fix refresh and add dynamic ranking** (Author: Claude Haiku 4.5)

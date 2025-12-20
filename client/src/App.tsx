@@ -44,6 +44,7 @@ import WormArena from "@/pages/WormArena";
 import WormArenaLive from "@/pages/WormArenaLive";
 import WormArenaStats from "@/pages/WormArenaStats";
 import WormArenaMatches from "@/pages/WormArenaMatches";
+import WormArenaModels from "@/pages/WormArenaModels";
 import WormArenaSkillAnalysis from "@/pages/WormArenaSkillAnalysis";
 import Redirect from "@/components/Redirect";
 
@@ -105,6 +106,7 @@ function Router() {
         <Route path="/worm-arena/live" component={WormArenaLive} />
         <Route path="/worm-arena/live/:sessionId" component={WormArenaLive} />
         <Route path="/worm-arena/matches" component={WormArenaMatches} />
+        <Route path="/worm-arena/models" component={WormArenaModels} />
         <Route path="/worm-arena/stats" component={WormArenaStats} />
         <Route path="/worm-arena/skill-analysis" component={WormArenaSkillAnalysis} />
         <Route path="/puzzle/:taskId" component={PuzzleExaminer} />
