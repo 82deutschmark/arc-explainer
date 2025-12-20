@@ -950,6 +950,26 @@ export interface WormArenaBatchError {
 }
 
 /**
+ * Models with games - for the "Model Match History" page picker.
+ * Only includes models that have actually played games.
+ */
+export interface WormArenaModelWithGames {
+  modelSlug: string;
+  gamesPlayed: number;
+  wins: number;
+  losses: number;
+  ties: number;
+  winRate?: number;
+}
+
+export interface WormArenaModelsWithGamesResponse {
+  success: boolean;
+  models: WormArenaModelWithGames[];
+  error?: string;
+  timestamp: number;
+}
+
+/**
  * Available prompt templates for puzzle analysis
  * These templates allow users to choose different prompt styles and approaches to guide AI analysis
  */

@@ -3,11 +3,13 @@
  * Date: 2025-12-19
  * PURPOSE: Filter replays by minimum rounds and availability for UI presentation.
  *          Avoids surfacing short diagnostic matches; ensures greatest hits are playable.
+ *          Supports both dynamic DB-driven ranking and fallback to curated list.
  * SRP/DRY check: Pass — isolated replay filtering logic, single responsibility.
  */
 
 import type { SnakeBenchGameSummary, WormArenaGreatestHitGame } from '../../../shared/types.js';
 import { CURATED_WORM_ARENA_HALL_OF_FAME } from '../../snakeBenchHallOfFame.ts';
+import { repositoryService } from '../../../repositories/RepositoryService.ts';
 import { logger } from '../../../utils/logger.ts';
 
 const MIN_ROUNDS = 20;
@@ -34,22 +36,49 @@ export function filterReplayableGames(games: SnakeBenchGameSummary[]): SnakeBenc
 }
 
 /**
- * Filter curated greatest hits down to only playable games.
+ * Get greatest hits with dynamic ranking fallback to curated list.
+ * Strategy: First attempt DB-driven dynamic ranking, then fall back to curated list.
  * A game is playable if its replay asset exists (local file or remote URL).
- * Checks up to limitPerDimension games.
  */
 export async function getWormArenaGreatestHitsFiltered(
   limitPerDimension: number,
   replayChecker: (gameId: string) => Promise<boolean>
 ): Promise<WormArenaGreatestHitGame[]> {
   const raw = Number(limitPerDimension);
-  const safeLimit = Number.isFinite(raw)
-    ? Math.max(1, Math.min(raw, CURATED_WORM_ARENA_HALL_OF_FAME.length))
-    : 5;
+  const safeLimit = Number.isFinite(raw) ? Math.max(1, Math.min(raw, 20)) : 5;
 
   const playable: WormArenaGreatestHitGame[] = [];
+  let candidateGames: WormArenaGreatestHitGame[] = [];
 
-  for (const game of CURATED_WORM_ARENA_HALL_OF_FAME) {
+  // Strategy 1: Try dynamic ranking from database
+  try {
+    const dynamicResults = await repositoryService.snakeBench.getWormArenaGreatestHits(safeLimit);
+    if (dynamicResults && Array.isArray(dynamicResults) && dynamicResults.length > 0) {
+      logger.info(
+        `getWormArenaGreatestHitsFiltered: using dynamic DB ranking (${dynamicResults.length} results)`,
+        'snakebench-service'
+      );
+      candidateGames = dynamicResults;
+    }
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
+    logger.warn(
+      `getWormArenaGreatestHitsFiltered: DB dynamic ranking failed, falling back to curated list: ${msg}`,
+      'snakebench-service'
+    );
+  }
+
+  // Strategy 2: Fall back to curated list if DB didn't produce results
+  if (candidateGames.length === 0) {
+    logger.info(
+      `getWormArenaGreatestHitsFiltered: no dynamic results, using curated hall of fame`,
+      'snakebench-service'
+    );
+    candidateGames = CURATED_WORM_ARENA_HALL_OF_FAME;
+  }
+
+  // Filter to only playable games (with available replay assets)
+  for (const game of candidateGames) {
     if (playable.length >= safeLimit) break;
 
     const available = await replayChecker(game.gameId);
@@ -59,7 +88,7 @@ export async function getWormArenaGreatestHitsFiltered(
     }
 
     logger.warn(
-      `getWormArenaGreatestHitsFiltered: curated game ${game.gameId} has no available replay asset`,
+      `getWormArenaGreatestHitsFiltered: game ${game.gameId} has no available replay asset`,
       'snakebench-service'
     );
   }
