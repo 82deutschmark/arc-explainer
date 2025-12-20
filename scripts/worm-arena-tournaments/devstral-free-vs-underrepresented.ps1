@@ -8,16 +8,16 @@
 
 $apiEndpoint = "http://localhost:5000/api/snakebench/run-batch"
 
-$focusModel = "mistralai/devstral-2512:free"
+$focusModel = "xiaomi/mimo-v2-flash:free"
 
 $opponents = @(
-    "openai/gpt-5-nano",
+    "nvidia/nemotron-3-nano-30b-a3b:free",
     "arcee-ai/trinity-mini:free",
-    "mistralai/ministral-3b-2512",
-    "nvidia/nemotron-nano-9b-v2",
-    "google/gemma-3n-e2b-it:free",
+    "nex-agi/deepseek-v3.1-nex-n1:free",
+    "allenai/olmo-3.1-32b-think:free",
+    "kwaipilot/kat-coder-pro:free",
     "nvidia/nemotron-nano-12b-v2-vl:free",
-    "z-ai/glm-4.6v"
+    "mistralai/devstral-2512:free"
 )
 
 $gamesPerPairing = 2
