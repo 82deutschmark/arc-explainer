@@ -24,8 +24,8 @@ import type {
   WormArenaStreamStatus,
   WormArenaFrameEvent,
 } from '../../shared/types.js';
-import { repositoryService } from './repositories/RepositoryService.ts';
-import { logger } from './utils/logger.ts';
+import { repositoryService } from '../repositories/RepositoryService.ts';
+import { logger } from '../utils/logger.ts';
 
 // Import from new modules
 import { SnakeBenchMatchRunner } from './snakeBench/SnakeBenchMatchRunner.ts';
@@ -37,7 +37,7 @@ import { GameIndexManager } from './snakeBench/persistence/gameIndexManager.ts';
 import { getSnakeBenchAllowedModels } from './snakeBench/helpers/modelAllowlist.ts';
 import { filterReplayableGames, getWormArenaGreatestHitsFiltered } from './snakeBench/helpers/replayFilters.ts';
 import { suggestMatchups } from './snakeBench/helpers/matchupSuggestions.ts';
-import { MODELS } from './config/models.ts';
+import { MODELS } from '../config/models.ts';
 import path from 'path';
 import fs from 'fs';
 

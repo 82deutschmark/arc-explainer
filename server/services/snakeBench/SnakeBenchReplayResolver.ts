@@ -9,8 +9,8 @@
 import fs from 'fs';
 import path from 'path';
 import type { SnakeBenchGameSummary } from '../../shared/types.js';
-import { repositoryService } from '../repositories/RepositoryService.ts';
-import { logger } from '../utils/logger.ts';
+import { repositoryService } from '../../repositories/RepositoryService.ts';
+import { logger } from '../../utils/logger.ts';
 import { fetchJsonFromUrl } from './utils/httpClient.ts';
 import { GameIndexManager } from './persistence/gameIndexManager.ts';
 
