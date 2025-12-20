@@ -4,9 +4,10 @@
  * Main routes configuration file for the API.
  * Registers all application routes and middleware.
  * Includes a catch-all route to handle client-side routing.
+ * Updated to include SnakeBench LLM player prompt transparency endpoint.
  * 
  * @author Cascade
- * @date 2025-12-16
+ * @date 2025-12-20
  */
 
 import type { Express } from "express";
@@ -230,6 +231,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/snakebench/games", asyncHandler(snakeBenchController.listGames));
   app.get("/api/snakebench/games/:gameId", asyncHandler(snakeBenchController.getGame));
   app.get("/api/snakebench/games/:gameId/proxy", asyncHandler(snakeBenchController.getGameProxy));
+  app.get(
+    "/api/snakebench/llm-player/prompt-template",
+    asyncHandler(snakeBenchController.getLlmPlayerPromptTemplate),
+  );
   app.get("/api/snakebench/matches", asyncHandler(snakeBenchController.searchMatches));
   app.get("/api/snakebench/health", asyncHandler(snakeBenchController.health));
   app.get("/api/snakebench/recent-activity", asyncHandler(snakeBenchController.recentActivity));

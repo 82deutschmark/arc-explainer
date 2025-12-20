@@ -5,6 +5,33 @@
 
 # New entries at the top, use proper SemVer!
 
+### Version 6.9.17  Dec 20, 2025
+
+- **Worm Arena: Add Rules & LLM prompt transparency page + API endpoint** (Author: Cascade)
+  - **New UI**: `/worm-arena/rules` page that shows:
+    - Human-readable rules summary
+    - Canonical TypeScript prompt template with placeholders (B2)
+    - Live-extracted Python prompt builder block and raw source (B1)
+  - **New public API**: `GET /api/snakebench/llm-player/prompt-template`
+    - Returns both B1 and B2 representations so the UI is always truthful
+    - Includes `APPLE_TARGET` parsed from SnakeBench Python constants when available
+  - **Verification**: Added a drift-detection test that fails if the canonical fixed rules lines stop matching `llm_player.py`
+  - **Files Created**:
+    - `client/src/pages/WormArenaRules.tsx`
+    - `server/services/snakeBench/SnakeBenchLlmPlayerPromptTemplate.ts`
+    - `tests/snakeBenchLlmPlayerPromptTemplate.test.ts`
+  - **Files Modified**:
+    - `client/src/App.tsx`
+    - `client/src/pages/WormArena.tsx`
+    - `client/src/pages/WormArenaLive.tsx`
+    - `client/src/pages/WormArenaMatches.tsx`
+    - `client/src/pages/WormArenaModels.tsx`
+    - `client/src/pages/WormArenaStats.tsx`
+    - `client/src/pages/WormArenaSkillAnalysis.tsx`
+    - `server/controllers/snakeBenchController.ts`
+    - `server/routes.ts`
+    - `shared/types.ts`
+
 ### Version 6.9.16  Dec 20, 2025
 
 - **SnakeBench: Enable GitHub replay auto-publish workflow** (Author: Claude Haiku 4.5)

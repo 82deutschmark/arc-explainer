@@ -522,11 +522,12 @@ export default function WormArenaLive() {
           { label: 'Models', href: '/worm-arena/models' },
           { label: 'Stats & Placement', href: '/worm-arena/stats' },
           { label: 'Skill Analysis', href: '/worm-arena/skill-analysis' },
+          { label: 'Rules', href: '/worm-arena/rules' },
         ]}
         compact
       />
 
-      <main className="p-4 max-w-7xl mx-auto space-y-4">
+      <main className="p-2 max-w-7xl mx-auto space-y-4">
         {viewMode === 'setup' && (
           <div className="transition-opacity duration-300 ease-in-out">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
