@@ -7,8 +7,8 @@
  */
 
 import type { SnakeBenchGameSummary, WormArenaGreatestHitGame } from '../../../shared/types.js';
-import { CURATED_WORM_ARENA_HALL_OF_FAME } from '../snakeBenchHallOfFame.ts';
-import { logger } from '../../utils/logger.ts';
+import { CURATED_WORM_ARENA_HALL_OF_FAME } from '../../snakeBenchHallOfFame.ts';
+import { logger } from '../../../utils/logger.ts';
 
 const MIN_ROUNDS = 20;
 

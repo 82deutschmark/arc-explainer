@@ -5,6 +5,20 @@
 
 # New entries at the top, use proper SemVer!
 
+### Version 6.9.9  Dec 19, 2025
+
+- **SnakeBench Service: Complete modular refactoring** (Author: Cascade)
+  - **Accomplishment**: Transformed monolithic 1687-line service into 14 focused modules
+  - **Architecture**: Main `snakeBenchService.ts` now serves as thin orchestrator
+  - **Benefits**: Improved maintainability, testability, and separation of concerns
+  - **Preservation**: All 19 public methods maintain identical signatures and behavior
+  - **Quality**: Comprehensive headers, JSDoc, and comments throughout all modules
+  - **Status**: Code refactoring complete, testing and deployment pending
+  - **Files Modified**:
+    - `server/services/snakeBenchService.ts` - rewritten as orchestrator
+    - `server/services/snakeBench/` - 14 new focused modules created
+  - **Documentation**: See `docs/2025-12-19-snakebench-service-refactor.md` for full details
+
 ### Version 6.9.8  Dec 19, 2025
 
 - **Worm Arena: Simplify replay loading - server always returns data directly** (Author: Claude Sonnet 4)
