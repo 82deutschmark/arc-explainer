@@ -668,6 +668,79 @@ export async function ingestQueueStatus(req: Request, res: Response) {
   }
 }
 
+/**
+ * GET /api/snakebench/models-with-games
+ * Returns only models that have actually played games.
+ * Used by the Model Match History page picker.
+ */
+export async function modelsWithGames(req: Request, res: Response) {
+  try {
+    const models = await snakeBenchService.getModelsWithGames();
+
+    return res.json({
+      success: true,
+      models,
+      timestamp: Date.now(),
+    });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    logger.error(`SnakeBench modelsWithGames failed: ${message}`, 'snakebench-controller');
+
+    return res.status(500).json({
+      success: false,
+      models: [],
+      error: message,
+      timestamp: Date.now(),
+    });
+  }
+}
+
+/**
+ * GET /api/snakebench/model-history-full?modelSlug=...
+ * Returns ALL match history for a model (unbounded).
+ * Used by the Model Match History page to show every game a model has ever played.
+ */
+export async function modelHistoryFull(req: Request, res: Response) {
+  try {
+    const modelSlugRaw = (req.query.modelSlug as string | undefined) ?? '';
+    const modelSlug = modelSlugRaw.trim();
+
+    if (!modelSlug) {
+      return res.status(400).json({
+        success: false,
+        modelSlug: '',
+        history: [],
+        error: 'modelSlug query parameter is required',
+        timestamp: Date.now(),
+      });
+    }
+
+    const history = await snakeBenchService.getModelMatchHistoryUnbounded(modelSlug);
+
+    // Also get the model's aggregate stats for the header
+    const rating = await snakeBenchService.getModelRating(modelSlug);
+
+    return res.json({
+      success: true,
+      modelSlug,
+      history,
+      rating,
+      timestamp: Date.now(),
+    });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    logger.error(`SnakeBench modelHistoryFull failed: ${message}`, 'snakebench-controller');
+
+    return res.status(500).json({
+      success: false,
+      modelSlug: '',
+      history: [],
+      error: message,
+      timestamp: Date.now(),
+    });
+  }
+}
+
 export const snakeBenchController = {
   runMatch,
   runBatch,
@@ -681,6 +754,8 @@ export const snakeBenchController = {
   stats,
   modelRating,
   modelHistory,
+  modelHistoryFull,
+  modelsWithGames,
   trueSkillLeaderboard,
   getWormArenaGreatestHits,
   suggestMatchups,

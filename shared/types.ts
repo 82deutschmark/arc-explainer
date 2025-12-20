@@ -745,6 +745,7 @@ export interface SnakeBenchModelRating {
 export interface SnakeBenchModelMatchHistoryEntry {
   gameId: string;
   startedAt: string;
+  endedAt?: string;
   opponentSlug: string;
   result: SnakeBenchResultLabel;
   myScore: number;
@@ -753,6 +754,7 @@ export interface SnakeBenchModelMatchHistoryEntry {
   deathReason: string | null;
   boardWidth: number;
   boardHeight: number;
+  cost?: number;
 }
 
 export interface SnakeBenchStatsResponse {

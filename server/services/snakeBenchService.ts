@@ -240,7 +240,7 @@ class SnakeBenchService {
   }
 
   /**
-   * Get model match history.
+   * Get model match history (limited).
    */
   async getModelMatchHistory(
     modelSlug: string,
@@ -248,6 +248,31 @@ class SnakeBenchService {
   ): Promise<SnakeBenchModelMatchHistoryEntry[]> {
     const safeLimit = limit != null && Number.isFinite(limit) ? Number(limit) : 50;
     return repositoryService.snakeBench.getModelMatchHistory(modelSlug, safeLimit);
+  }
+
+  /**
+   * Get ALL match history for a model (unbounded).
+   * Used by the Model Match History page to show every game a model has ever played.
+   */
+  async getModelMatchHistoryUnbounded(modelSlug: string): Promise<SnakeBenchModelMatchHistoryEntry[]> {
+    return repositoryService.snakeBench.getModelMatchHistoryUnbounded(modelSlug);
+  }
+
+  /**
+   * Get all models that have actually played games.
+   * Used for the Model Match History page picker.
+   */
+  async getModelsWithGames(): Promise<
+    Array<{
+      modelSlug: string;
+      gamesPlayed: number;
+      wins: number;
+      losses: number;
+      ties: number;
+      winRate?: number;
+    }>
+  > {
+    return repositoryService.snakeBench.getModelsWithGames();
   }
 
   /**
