@@ -133,11 +133,18 @@ export default function WormArena() {
   // Effect: Pick a default game only if none is selected (no URL param, no state set)
   // If a matchId is in the URL or state, trust it and let the API fetch handle validation
   React.useEffect(() => {
-    if (loadingGreatestHits || greatestHitsGames.length === 0) return;
+    if (loadingGreatestHits) return;
 
     // Only pick fallback if no game is currently selected
     if (!selectedMatchId) {
-      const fallbackId = greatestHitsGames[0]?.gameId ?? '';
+      // Prefer greatest hits, but fall back to recent games if greatest hits is empty
+      let fallbackId = greatestHitsGames[0]?.gameId ?? '';
+
+      if (!fallbackId && games.length > 0) {
+        // Fallback: pick from recent games with >= 20 rounds
+        const longGames = games.filter((g) => (g.roundsPlayed ?? 0) >= 20);
+        fallbackId = longGames[0]?.gameId ?? games[0]?.gameId ?? '';
+      }
 
       if (fallbackId) {
         setSelectedMatchId(fallbackId);
@@ -146,7 +153,7 @@ export default function WormArena() {
     }
     // For URL-provided matchIds: trust them completely. The API fetch will handle
     // invalid/missing games gracefully with errors shown to the user.
-  }, [greatestHitsGames, loadingGreatestHits, selectedMatchId, setMatchIdInUrl]);
+  }, [greatestHitsGames, loadingGreatestHits, games, selectedMatchId, setMatchIdInUrl]);
 
   React.useEffect(() => {
     if (!selectedMatchId) return;
@@ -600,30 +607,43 @@ export default function WormArena() {
           </div>
         )}
 
-        {/* View mode toggle */}
-        <div className="flex justify-center mb-4">
-          <div className="inline-flex rounded-lg border border-gray-300 bg-white p-1 shadow-sm">
-            <Button
-              variant={renderMode === 'cartoon' ? 'default' : 'ghost'}
-              size="sm"
-              onClick={() => setRenderMode('cartoon')}
-              className="text-xs px-3"
-            >
-              Cartoon View
-            </Button>
-            <Button
-              variant={renderMode === 'console' ? 'default' : 'ghost'}
-              size="sm"
-              onClick={() => setRenderMode('console')}
-              className="text-xs px-3"
-            >
-              Console View
-            </Button>
+        {/* Show loading state while fetching replay */}
+        {loadingReplay && selectedMatchId && (
+          <div className="flex justify-center items-center py-12">
+            <div className="text-center">
+              <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-current mb-2" />
+              <p className="text-muted-foreground">Loading replay...</p>
+            </div>
           </div>
-        </div>
+        )}
 
-        {/* Cartoon view (default) - 3 column layout with reasoning panels */}
-        {renderMode === 'cartoon' && (
+        {/* Only render replay interface if data loaded successfully */}
+        {!loadingReplay && !replayError && replayData && (
+          <>
+            {/* View mode toggle */}
+            <div className="flex justify-center mb-4">
+              <div className="inline-flex rounded-lg border border-gray-300 bg-white p-1 shadow-sm">
+                <Button
+                  variant={renderMode === 'cartoon' ? 'default' : 'ghost'}
+                  size="sm"
+                  onClick={() => setRenderMode('cartoon')}
+                  className="text-xs px-3"
+                >
+                  Cartoon View
+                </Button>
+                <Button
+                  variant={renderMode === 'console' ? 'default' : 'ghost'}
+                  size="sm"
+                  onClick={() => setRenderMode('console')}
+                  className="text-xs px-3"
+                >
+                  Console View
+                </Button>
+              </div>
+            </div>
+
+            {/* Cartoon view (default) - 3 column layout with reasoning panels */}
+            {renderMode === 'cartoon' && (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6 items-stretch">
             <WormArenaReasoning
               playerName={playerAName}
@@ -714,6 +734,8 @@ export default function WormArena() {
               />
             </div>
           </div>
+        )}
+          </>
         )}
 
         {matchTotalsSummary && (
