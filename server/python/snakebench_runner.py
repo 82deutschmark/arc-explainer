@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Author: Cascade (model: Cascade)
-Date: 2025-12-02
+Date: 2025-12-20
 PURPOSE: Bridge between ARC Explainer Node backend and SnakeBench backend.
          Runs a single SnakeBench game between two models without requiring
          SnakeBench's own Supabase database. Uses the existing SnakeBench
@@ -65,11 +65,6 @@ def main() -> int:
         pricing_input_b = _safe_float(payload.get("pricingInputB"))
         pricing_output_b = _safe_float(payload.get("pricingOutputB"))
 
-        # Player variant selection (for A/B testing different prompts)
-        # Defaults to "default" (baseline LLMPlayer) if not specified
-        player_variant_a = str(payload.get("playerVariantA") or "default").strip()
-        player_variant_b = str(payload.get("playerVariantB") or "default").strip()
-
         # Resolve SnakeBench backend path relative to this repo
         script_dir = Path(__file__).resolve().parent
         project_root = script_dir.parent.parent
@@ -89,12 +84,7 @@ def main() -> int:
             emit_error(f"Failed to import SnakeBench main module: {e}")
             return 1
 
-        def build_player_config(
-            name: str,
-            input_price: float,
-            output_price: float,
-            player_variant: str = "default"
-        ) -> Dict[str, Any]:
+        def build_player_config(name: str, input_price: float, output_price: float) -> Dict[str, Any]:
             """Build a minimal player_config for LLMPlayer without DB lookups.
 
             Fields match what llm_providers.OpenRouterProvider and LLMPlayer expect:
@@ -102,7 +92,6 @@ def main() -> int:
             - model_name: underlying OpenRouter model slug (we use name verbatim)
             - pricing: simple $/1M token rates (0 by default; ARC Explainer can
               handle cost tracking separately if desired).
-            - player_variant: which prompt variant to use ('default', 'A', etc.)
             """
             config: Dict[str, Any] = {
                 "name": name,
@@ -114,7 +103,6 @@ def main() -> int:
                 "provider": "OpenRouter",
                 "is_active": True,
                 "test_status": "arc-explainer",
-                "player_variant": player_variant,
             }
 
             if name.startswith("openai/") or name.startswith("x-ai/"):
@@ -122,22 +110,10 @@ def main() -> int:
                 config["reasoning"] = {"effort": "medium", "summary": "detailed"}
                 config["text"] = {"verbosity": "medium"}
 
-                # Prefer direct OpenAI for OpenAI models when a key is present.
-                # (SnakeBench backend still supports OpenRouter if you explicitly set provider="openrouter".)
-                # DISABLED: This was causing issues with OpenRouter models that have openai/ prefix.
-                # The OpenAI provider strips the prefix, leaving just "gpt-oss-120b", which OpenRouter
-                # doesn't recognize. Keep all models routed through OpenRouter for consistency.
-                # if name.startswith("openai/") and (os.getenv("OPENAI_API_KEY") or "").strip():
-                #     config["provider"] = "openai"
-
             return config
 
-        model_config_1 = build_player_config(
-            str(model_a), pricing_input_a, pricing_output_a, player_variant_a
-        )
-        model_config_2 = build_player_config(
-            str(model_b), pricing_input_b, pricing_output_b, player_variant_b
-        )
+        model_config_1 = build_player_config(str(model_a), pricing_input_a, pricing_output_a)
+        model_config_2 = build_player_config(str(model_b), pricing_input_b, pricing_output_b)
 
         # Build an argparse-like namespace expected by run_simulation
         game_params = SimpleNamespace(
