@@ -745,6 +745,7 @@ export interface SnakeBenchModelRating {
 export interface SnakeBenchModelMatchHistoryEntry {
   gameId: string;
   startedAt: string;
+  endedAt?: string;
   opponentSlug: string;
   result: SnakeBenchResultLabel;
   myScore: number;
@@ -753,6 +754,7 @@ export interface SnakeBenchModelMatchHistoryEntry {
   deathReason: string | null;
   boardWidth: number;
   boardHeight: number;
+  cost?: number;
 }
 
 export interface SnakeBenchStatsResponse {
@@ -947,6 +949,26 @@ export interface WormArenaBatchError {
   index: number;
   total: number;
   error: string;
+}
+
+/**
+ * Models with games - for the "Model Match History" page picker.
+ * Only includes models that have actually played games.
+ */
+export interface WormArenaModelWithGames {
+  modelSlug: string;
+  gamesPlayed: number;
+  wins: number;
+  losses: number;
+  ties: number;
+  winRate?: number;
+}
+
+export interface WormArenaModelsWithGamesResponse {
+  success: boolean;
+  models: WormArenaModelWithGames[];
+  error?: string;
+  timestamp: number;
 }
 
 /**

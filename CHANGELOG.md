@@ -5,6 +5,101 @@
 
 # New entries at the top, use proper SemVer!
 
+### Version 6.9.15  Dec 20, 2025
+
+- **Worm Arena: Improve navigation to Model Match History + add direct API JSON links** (Author: Claude Sonnet 4)
+  - **UX**: Added "Models" tab to Worm Arena header nav across Replay/Live/Matches/Stats/Skill pages
+  - **API navigation**: Models page now includes one-click links to open:
+    - `/api/snakebench/models-with-games`
+    - `/api/snakebench/model-history-full?modelSlug=...`
+  - **Files Modified**:
+    - `client/src/pages/WormArena.tsx`
+    - `client/src/pages/WormArenaLive.tsx`
+    - `client/src/pages/WormArenaMatches.tsx`
+    - `client/src/pages/WormArenaStats.tsx`
+    - `client/src/pages/WormArenaSkillAnalysis.tsx`
+    - `client/src/pages/WormArenaModels.tsx`
+
+### Version 6.9.14  Dec 19, 2025
+
+- **Reference Material: Add Patrick Spencer's minireason project** (Author: Claude Haiku 4.5)
+  - **Added**: Link to minireason symbolic reasoning benchmark (https://github.com/pwspen/minireason/tree/main)
+  - **Context**: Simple, extensible symbolic reasoning benchmark with configurable difficulty knobs
+  - **Files Modified**:
+    - `client/src/components/browser/ReferenceMaterial.tsx` - Added minireason link alongside existing objarc entry in Tools & Solvers section
+
+### Version 6.9.13  Dec 19, 2025
+
+- **Worm Arena: Add Model Match History page** (Author: Claude Sonnet 4)
+  - **Feature**: New `/worm-arena/models` page to browse every game a specific model has played
+  - **Mirrors**: External SnakeBench `/models/[id]` page functionality
+  - **Key behavior**: Model picker only lists models that have actually played games (no empty results)
+  - **Backend**:
+    - `GET /api/snakebench/models-with-games` - Returns only models with games played
+    - `GET /api/snakebench/model-history-full?modelSlug=...` - Returns ALL matches (unbounded)
+  - **Frontend**:
+    - Model selector dropdown with games count and win rate
+    - Stats header (total matches, win rate, rating, apples eaten, total cost)
+    - Full match history table with opponent, date, duration, outcome, death reason, score, cost
+    - Click opponent to switch to their match history
+    - "View Replay" link to watch any game
+  - **Files Created**:
+    - `client/src/pages/WormArenaModels.tsx` - Main page component
+    - `client/src/hooks/useWormArenaModels.ts` - Data fetching hooks
+  - **Files Modified**:
+    - `server/repositories/SnakeBenchRepository.ts` - Added `getModelsWithGames()` and `getModelMatchHistoryUnbounded()`
+    - `server/services/snakeBenchService.ts` - Added service methods
+    - `server/controllers/snakeBenchController.ts` - Added controller endpoints
+    - `server/routes.ts` - Added routes
+    - `client/src/App.tsx` - Added route and import
+    - `shared/types.ts` - Added `WormArenaModelWithGames` type
+
+### Version 6.9.12  Dec 19, 2025
+
+- **Worm Arena Greatest Hits: Fix refresh and add dynamic ranking** (Author: Claude Haiku 4.5)
+  - **Problem**: Greatest hits matches weren't refreshing with new interesting games; users saw stale curated list from Dec 11
+  - **Solution**:
+    1. Added 5 new dynamically-discovered high-interest games to curated hall of fame (Dec 18, 2025 matches)
+    2. Implemented dynamic DB-driven ranking with graceful fallback to curated list
+  - **New Games Added** (Dec 18, 2025):
+    - `5a632478-e6c5-45df-9f6e-c5981f1eb66e` - Epic marathon duel (93/150 rounds, decisive 21-12 finish)
+    - `d51f5e45-b148-4adc-b8e1-ab97ec34d8a0` - Highest-scoring match (23 apples with competitive 4-apple finish)
+    - `fc95a52a-ecbb-4332-868f-e0810e3afd26` - Photo finish Gemini vs GPT-5.2 (21-20 with high cost signal ~$1.79)
+    - `d24ac1c2-d4eb-42f8-8064-11dab8cc705a` - Kimi-K2 vs Gemini with extreme 3.7+ hour replay duration
+    - `cdb63849-9ad8-48f0-8548-ae8fb4e80953` - Zero-cost duel (88 rounds, 18-16 apples)
+  - **Architecture**: Service now tries dynamic DB ranking first via `SnakeBenchRepository.getWormArenaGreatestHits()`, falls back to curated list if DB unavailable
+  - **Files Modified**:
+    - `server/services/snakeBench/snakeBenchHallOfFame.ts` - Added 5 new games with meaningful highlight reasons
+    - `server/services/snakeBench/helpers/replayFilters.ts` - Implemented two-tier strategy (dynamic DB + curated fallback)
+  - **Verification**: Build and server startup successful; endpoint logic maintains backward compatibility
+
+### Version 6.9.11  Dec 19, 2025
+
+- **Worm Arena: Improve live board worm head visualization** (Author: Claude Haiku 4.5)
+  - **Problem**: Live board always showed right arrow (➡️) for worm head, regardless of actual movement or lack of direction data
+  - **Solution**: Updated head emoji logic to show direction arrows only before worm has body, then 🐛 once body grows
+  - **Behavior**:
+    - Just a head (no body): Directional arrows (⬆️ ⬇️ ⬅️ ➡️) based on movement
+    - Has a body: Worm emoji (🐛) for clear worm identification
+  - **Files Modified**:
+    - `client/src/components/WormArenaGameBoard.tsx` - Updated `getHeadEmoji()` logic and call sites
+
+### Version 6.9.10  Dec 19, 2025
+
+- **Worm Arena: Fix suggested matchups refresh issue** (Author: Cascade)
+  - **Problem**: Suggested matchups showed stale "unplayed pairing" results for days despite hundreds of matches played
+  - **Root Cause**: Key normalization mismatch between database query and matchup suggestions logic
+    - Database query uses `LEAST()`/`GREATEST()` functions with `:free` suffix removal
+    - Matchup suggestions used simple alphabetical comparison without suffix removal
+    - This created different keys for the same model pair, preventing proper filtering
+  - **Fix**: Updated `pairKey()` function in `matchupSuggestions.ts` to match database normalization
+  - **Additional**: Added `/api/snakebench/ingest-queue-status` endpoint for debugging queue delays
+  - **Files Modified**:
+    - `server/services/snakeBench/helpers/matchupSuggestions.ts` - fixed key normalization
+    - `server/controllers/snakeBenchController.ts` - added ingest queue status endpoint
+    - `server/routes.ts` - added route for ingest queue status
+    - `client/src/hooks/useWormArenaSuggestMatchups.ts` - fixed useEffect dependency
+
 ### Version 6.9.9  Dec 19, 2025
 
 - **SnakeBench Service: Complete modular refactoring** (Author: Cascade)

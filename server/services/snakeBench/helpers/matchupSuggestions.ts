@@ -6,7 +6,7 @@
  * SRP/DRY check: Pass — complex algorithm isolated, single responsibility.
  */
 
-import type { SnakeBenchTrueSkillLeaderboardEntry } from '../../../shared/types.js';
+import type { SnakeBenchTrueSkillLeaderboardEntry } from '../../../../shared/types.js';
 import { MODELS } from '../../../config/models.ts';
 
 export interface SuggestedMatchup {
@@ -86,9 +86,14 @@ export async function suggestMatchups(
   }
   filtered = Array.from(normalizedMap.values());
 
-  // Helper to get normalized key for a pair
+  // Helper to get normalized key for a pair (must match database query logic)
   const pairKey = (a: string, b: string): string => {
-    return a < b ? `${a}|||${b}` : `${b}|||${a}`;
+    const slugA = a.replace(/:free$/, '');
+    const slugB = b.replace(/:free$/, '');
+    // Use same normalization as database query: LEAST/GREATEST
+    const normalizedA = slugA < slugB ? slugA : slugB;
+    const normalizedB = slugA < slugB ? slugB : slugA;
+    return `${normalizedA}|||${normalizedB}`;
   };
 
   // Generate all candidate pairs (only unplayed)
