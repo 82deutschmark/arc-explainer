@@ -67,7 +67,7 @@ export function useWormArenaSuggestMatchups(
 
   useEffect(() => {
     void refresh();
-  }, [refresh]);
+  }, [mode, limit]);
 
   return { matchups, mode, totalCandidates, isLoading, error, refresh };
 }
