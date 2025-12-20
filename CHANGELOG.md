@@ -5,6 +5,25 @@
 
 # New entries at the top, use proper SemVer!
 
+### Version 6.9.12  Dec 19, 2025
+
+- **Worm Arena Greatest Hits: Fix refresh and add dynamic ranking** (Author: Claude Haiku 4.5)
+  - **Problem**: Greatest hits matches weren't refreshing with new interesting games; users saw stale curated list from Dec 11
+  - **Solution**:
+    1. Added 5 new dynamically-discovered high-interest games to curated hall of fame (Dec 18, 2025 matches)
+    2. Implemented dynamic DB-driven ranking with graceful fallback to curated list
+  - **New Games Added** (Dec 18, 2025):
+    - `5a632478-e6c5-45df-9f6e-c5981f1eb66e` - Epic marathon duel (93/150 rounds, decisive 21-12 finish)
+    - `d51f5e45-b148-4adc-b8e1-ab97ec34d8a0` - Highest-scoring match (23 apples with competitive 4-apple finish)
+    - `fc95a52a-ecbb-4332-868f-e0810e3afd26` - Photo finish Gemini vs GPT-5.2 (21-20 with high cost signal ~$1.79)
+    - `d24ac1c2-d4eb-42f8-8064-11dab8cc705a` - Kimi-K2 vs Gemini with extreme 3.7+ hour replay duration
+    - `cdb63849-9ad8-48f0-8548-ae8fb4e80953` - Zero-cost duel (88 rounds, 18-16 apples)
+  - **Architecture**: Service now tries dynamic DB ranking first via `SnakeBenchRepository.getWormArenaGreatestHits()`, falls back to curated list if DB unavailable
+  - **Files Modified**:
+    - `server/services/snakeBench/snakeBenchHallOfFame.ts` - Added 5 new games with meaningful highlight reasons
+    - `server/services/snakeBench/helpers/replayFilters.ts` - Implemented two-tier strategy (dynamic DB + curated fallback)
+  - **Verification**: Build and server startup successful; endpoint logic maintains backward compatibility
+
 ### Version 6.9.11  Dec 19, 2025
 
 - **Worm Arena: Improve live board worm head visualization** (Author: Claude Haiku 4.5)
