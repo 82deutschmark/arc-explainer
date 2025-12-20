@@ -8,7 +8,7 @@
 
 import fs from 'fs';
 import path from 'path';
-import { logger } from '../../utils/logger.ts';
+import { logger } from '../../../utils/logger.ts';
 import { GAME_INDEX_FILENAME } from '../utils/constants.ts';
 
 export interface GameIndexEntry {

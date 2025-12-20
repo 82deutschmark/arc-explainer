@@ -10,7 +10,7 @@
 import { spawn, type SpawnOptions as ChildProcessSpawnOptions } from 'child_process';
 import path from 'path';
 import * as readline from 'readline';
-import { logger } from '../utils/logger.ts';
+import { logger } from '../../utils/logger.ts';
 import type { SnakeBenchMatchPayload, PreparedMatchConfig } from './helpers/validators.ts';
 
 export interface SpawnOptions {
