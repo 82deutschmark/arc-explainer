@@ -1,10 +1,8 @@
 /**
- * Author: Claude Code using Haiku 4.5
- * Date: 2025-12-19
- * PURPOSE: Thin orchestrator facade for SnakeBench service.
- *          Delegates to specialized modules: MatchRunner, StreamingRunner, ReplayResolver, etc.
- *          Maintains backward compatibility (all 19 public methods with original signatures).
- * SRP/DRY check: Pass — pure delegation, orchestration only. All implementation in focused modules.
+ * Author: Codex (GPT-5)
+ * Date: 2025-12-20
+ * PURPOSE: Thin orchestrator facade for SnakeBench service with model insights report formatting.
+ * SRP/DRY check: Pass - delegation and report formatting only.
  */
 
 import type {
@@ -23,6 +21,10 @@ import type {
   SnakeBenchMatchSearchRow,
   WormArenaStreamStatus,
   WormArenaFrameEvent,
+  WormArenaModelInsightsReport,
+  WormArenaModelInsightsSummary,
+  WormArenaModelInsightsFailureMode,
+  WormArenaModelInsightsOpponent,
 } from '../../shared/types.js';
 import { repositoryService } from '../repositories/RepositoryService.ts';
 import { logger } from '../utils/logger.ts';
@@ -40,6 +42,104 @@ import { suggestMatchups } from './snakeBench/helpers/matchupSuggestions.ts';
 import { MODELS } from '../config/models.ts';
 import path from 'path';
 import fs from 'fs';
+
+// Normalize model slugs so ":free" suffixes do not split report data.
+const normalizeModelSlug = (modelSlug: string): string => modelSlug.trim().replace(/:free$/i, '');
+
+// Format a ratio as a percent string for report text.
+const formatPercent = (value: number): string => `${(value * 100).toFixed(1)}%`;
+
+// Format a number with a fallback when data is missing.
+const formatOptionalNumber = (value: number | null, digits: number): string =>
+  value == null || Number.isNaN(value) ? '-' : value.toFixed(digits);
+
+// Format a cost value for report text.
+const formatCost = (value: number | null): string =>
+  value == null || Number.isNaN(value) ? '-' : `$${value.toFixed(4)}`;
+
+// Convert snake death reason values into human-readable labels.
+const formatReasonLabel = (reason: string): string => reason.replace(/_/g, ' ').trim();
+
+// Build the markdown version of the model insights report.
+const buildInsightsMarkdown = (
+  modelSlug: string,
+  generatedAt: string,
+  summary: WormArenaModelInsightsSummary,
+  failureModes: WormArenaModelInsightsFailureMode[],
+  lossOpponents: WormArenaModelInsightsOpponent[],
+): string => {
+  const lines: string[] = [];
+  const knownLosses = Math.max(summary.losses - summary.unknownLosses, 0);
+
+  lines.push('# Worm Arena Model Insights');
+  lines.push(`Model: ${modelSlug}`);
+  lines.push(`Generated: ${generatedAt}`);
+  lines.push('');
+  lines.push('Summary');
+  lines.push(`- Games played: ${summary.gamesPlayed}`);
+  lines.push(`- Win rate (decided): ${formatPercent(summary.winRate)}`);
+  lines.push(`- Total cost: ${formatCost(summary.totalCost)}`);
+  lines.push(`- Cost per game: ${formatCost(summary.costPerGame)}`);
+  lines.push(`- Cost per win: ${formatCost(summary.costPerWin)}`);
+  lines.push(`- Cost per loss: ${formatCost(summary.costPerLoss)}`);
+  lines.push(`- Average rounds: ${formatOptionalNumber(summary.averageRounds, 1)}`);
+  lines.push(`- Average score: ${formatOptionalNumber(summary.averageScore, 2)}`);
+  lines.push(`- Average loss round: ${formatOptionalNumber(summary.averageDeathRoundLoss, 1)}`);
+  lines.push(`- Early losses (round <= 5): ${summary.earlyLosses} (${formatPercent(summary.earlyLossRate)})`);
+  lines.push('');
+  lines.push('Failure modes (losses)');
+  if (failureModes.length === 0) {
+    lines.push('- No losses recorded.');
+  } else {
+    failureModes.forEach((mode) => {
+      const reasonLabel = formatReasonLabel(mode.reason);
+      const avgRound = formatOptionalNumber(mode.averageDeathRound, 1);
+      lines.push(
+        `- ${reasonLabel}: ${mode.losses} (${formatPercent(mode.percentOfLosses)}), avg round ${avgRound}`,
+      );
+    });
+  }
+  lines.push('');
+  lines.push('Tough opponents (by losses)');
+  if (lossOpponents.length === 0) {
+    lines.push('- No opponents recorded.');
+  } else {
+    lossOpponents.forEach((opponent) => {
+      const lastPlayed = opponent.lastPlayedAt ?? '-';
+      lines.push(
+        `- ${opponent.opponentSlug}: ${opponent.losses} losses out of ${opponent.gamesPlayed} games, last played ${lastPlayed}`,
+      );
+    });
+  }
+  lines.push('');
+  lines.push('Data quality');
+  lines.push(
+    `- Losses with death reason: ${formatPercent(summary.lossDeathReasonCoverage)} (${knownLosses} of ${summary.losses})`,
+  );
+  lines.push(`- Losses without death reason: ${summary.unknownLosses}`);
+
+  return lines.join('\n');
+};
+
+// Build a concise tweet for sharing the report.
+const buildInsightsTweet = (
+  modelSlug: string,
+  summary: WormArenaModelInsightsSummary,
+  failureModes: WormArenaModelInsightsFailureMode[],
+): string => {
+  const topFailure = failureModes[0];
+  const topReason = topFailure ? formatReasonLabel(topFailure.reason) : 'none';
+  const topReasonPct = topFailure ? formatPercent(topFailure.percentOfLosses) : '0.0%';
+  const avgRounds = summary.averageRounds != null ? summary.averageRounds.toFixed(0) : 'n/a';
+  const costPerLoss =
+    summary.costPerLoss != null ? `$${summary.costPerLoss.toFixed(4)}` : 'n/a';
+
+  const tweet = `Worm Arena insights for ${modelSlug}: win rate ${formatPercent(
+    summary.winRate,
+  )}, top loss ${topReason} (${topReasonPct}), avg rounds ${avgRounds}, cost per loss ${costPerLoss}. #WormArena`;
+
+  return tweet.length > 260 ? `${tweet.slice(0, 257)}...` : tweet;
+};
 
 export interface StreamingHandlers {
   onStatus?: (status: WormArenaStreamStatus) => void;
@@ -271,6 +371,42 @@ class SnakeBenchService {
   }
 
   /**
+   * Build the actionable insights report for a specific model.
+   */
+  async getModelInsightsReport(modelSlug: string): Promise<WormArenaModelInsightsReport | null> {
+    // Normalize the slug before querying to keep report results consistent.
+    const normalizedSlug = normalizeModelSlug(modelSlug);
+    if (!normalizedSlug) {
+      return null;
+    }
+
+    const data = await repositoryService.snakeBench.getModelInsightsData(normalizedSlug);
+    if (!data) {
+      return null;
+    }
+
+    const generatedAt = new Date().toISOString();
+    const markdownReport = buildInsightsMarkdown(
+      normalizedSlug,
+      generatedAt,
+      data.summary,
+      data.failureModes,
+      data.lossOpponents,
+    );
+    const tweetText = buildInsightsTweet(normalizedSlug, data.summary, data.failureModes);
+
+    return {
+      modelSlug: normalizedSlug,
+      generatedAt,
+      summary: data.summary,
+      failureModes: data.failureModes,
+      lossOpponents: data.lossOpponents,
+      markdownReport,
+      tweetText,
+    };
+  }
+
+  /**
    * Get all models that have actually played games.
    * Used for the Model Match History page picker.
    */
@@ -380,3 +516,4 @@ class SnakeBenchService {
 
 export const snakeBenchService = new SnakeBenchService();
 export type { SnakeBenchRunMatchRequest, SnakeBenchRunMatchResult } from '../../shared/types.js';
+
