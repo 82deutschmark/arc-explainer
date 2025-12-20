@@ -11,6 +11,7 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'wouter';
 
 import WormArenaHeader from '@/components/WormArenaHeader';
+import WormArenaRecentMatches from '@/components/wormArena/WormArenaRecentMatches';
 import {
   useWormArenaModelsWithGames,
   useWormArenaModelHistory,
@@ -232,6 +233,13 @@ export default function WormArenaModels() {
                 </div>
               </CardContent>
             </Card>
+          </div>
+        )}
+
+        {/* Recent Matches */}
+        {selectedModel && (
+          <div className="mb-6">
+            <WormArenaRecentMatches modelSlug={selectedModel} limit={10} />
           </div>
         )}
 

@@ -119,6 +119,8 @@ export default function WormArenaStats() {
           entries={trueSkillEntries}
           isLoading={loadingTrueSkill}
           error={trueSkillError}
+          selectedModelSlug={selectedModel}
+          onSelectModel={handleSelectModel}
         />
 
         <div className="grid grid-cols-1 xl:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)] gap-6 items-start">
