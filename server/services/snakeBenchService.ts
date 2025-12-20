@@ -121,7 +121,18 @@ class SnakeBenchService {
       if (total > 0 && games.length > 0) {
         const replayable = filterReplayableGames(games);
         const available = await this.replayResolver.filterGamesWithAvailableReplays(replayable);
-        return { games: available, total: available.length };
+
+        // Get global total from stats (all matches ever, not just this batch)
+        let globalTotal = total;
+        try {
+          const stats = await repositoryService.snakeBench.getArcExplainerStats();
+          globalTotal = stats.totalGames;
+        } catch {
+          // Fall back to recent games total if stats fetch fails
+          globalTotal = total;
+        }
+
+        return { games: available, total: globalTotal };
       }
     } catch (dbErr) {
       const msg = dbErr instanceof Error ? dbErr.message : String(dbErr);
@@ -177,7 +188,8 @@ class SnakeBenchService {
 
       const replayable = filterReplayableGames(games);
       const available = await this.replayResolver.filterGamesWithAvailableReplays(replayable);
-      return { games: available, total: available.length };
+      // Return filesystem total (all indexed games), not just available ones
+      return { games: available, total };
     } catch (err) {
       const message = err instanceof Error ? err.message : String(err);
       logger.error(`Failed to list SnakeBench games: ${message}`, 'snakebench-service');
