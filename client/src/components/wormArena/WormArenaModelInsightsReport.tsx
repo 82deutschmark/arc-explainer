@@ -334,7 +334,7 @@ export default function WormArenaModelInsightsReport({ modelSlug }: WormArenaMod
                       Losses without reason: {report.summary.unknownLosses}
                     </Badge>
                     <Badge variant="outline">
-                      Early losses (round <= 5): {report.summary.earlyLosses} ({formatPercent(report.summary.earlyLossRate)})
+                      Early losses (round &le; 5): {report.summary.earlyLosses} ({formatPercent(report.summary.earlyLossRate)})
                     </Badge>
                   </div>
                 </AccordionContent>
