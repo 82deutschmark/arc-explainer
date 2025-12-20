@@ -20,6 +20,7 @@
 import type { Request, Response } from 'express';
 
 import { snakeBenchService } from '../services/snakeBenchService';
+import { snakeBenchIngestQueue } from '../services/snakeBenchIngestQueue';
 import { logger } from '../utils/logger';
 import type {
   SnakeBenchRunMatchRequest,
@@ -645,6 +646,28 @@ export async function suggestMatchups(req: Request, res: Response) {
   }
 }
 
+export async function ingestQueueStatus(req: Request, res: Response) {
+  try {
+    const pendingJobs = snakeBenchIngestQueue.getPendingJobCount();
+    
+    return res.json({
+      success: true,
+      pendingJobs,
+      timestamp: Date.now(),
+    });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    logger.error(`SnakeBench ingestQueueStatus failed: ${message}`, 'snakebench-controller');
+    
+    return res.status(500).json({
+      success: false,
+      pendingJobs: 0,
+      error: message,
+      timestamp: Date.now(),
+    });
+  }
+}
+
 export const snakeBenchController = {
   runMatch,
   runBatch,
@@ -661,4 +684,5 @@ export const snakeBenchController = {
   trueSkillLeaderboard,
   getWormArenaGreatestHits,
   suggestMatchups,
+  ingestQueueStatus,
 };
