@@ -1,10 +1,12 @@
 /**
- * Author: Cascade (Claude Sonnet 4)
- * Date: 2025-12-19
- * PURPOSE: Worm Arena - Replay viewer for past/completed games. Shows game history,
- *          recent games list, and replay controls. Three-column layout: reasoning logs
- *          (left/right), game board (center).
- *
+ * Author: Cascade
+ * Date: 2025-12-20
+ * PURPOSE: Worm Arena replay viewer page. Allows selecting a match from
+ *          the match list, renders the replay board, and shows per-player
+ *          ratings / metadata.
+ * SRP/DRY check: Pass - page composition only.
+ */
+/**
  *          Refactored to use extracted utilities, hooks, and components for SRP/DRY compliance.
  *          - Utilities: shared/utils/formatters.ts, shared/utils/wormArenaResults.ts
  *          - Hooks: useQueryParamMatchId, useWormArenaReplayData
@@ -236,6 +238,7 @@ export default function WormArena() {
           { label: 'Replay', href: '/worm-arena', active: true },
           { label: 'Live', href: '/worm-arena/live' },
           { label: 'Matches', href: '/worm-arena/matches' },
+          { label: 'Models', href: '/worm-arena/models' },
           { label: 'Stats & Placement', href: '/worm-arena/stats' },
           { label: 'Skill Analysis', href: '/worm-arena/skill-analysis' },
         ]}

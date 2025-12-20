@@ -1,12 +1,9 @@
 ﻿/**
  * Author: Cascade
- * Date: 2025-12-10
- * PURPOSE: Worm Arena Stats & Placement page. Shows global Worm Arena
- *          aggregates, model-centric TrueSkill snapshots, placement
- *          progress, and recent match history. Backed entirely by
- *          SnakeBench DB tables via public ARC Explainer APIs.
- * SRP/DRY check: Pass page-level composition only, delegates data
- *                fetching to dedicated hooks and shared helpers.
+ * Date: 2025-12-20
+ * PURPOSE: Worm Arena stats page - shows global stats and the Worm Arena leaderboard.
+ *          This is a read-only analytics view backed by SnakeBenchRepository.
+ * SRP/DRY check: Pass - page composition only.
  */
 
 import React from "react";
@@ -106,6 +103,7 @@ export default function WormArenaStats() {
           { label: "Replay", href: "/worm-arena" },
           { label: "Live", href: "/worm-arena/live" },
           { label: "Matches", href: "/worm-arena/matches" },
+          { label: "Models", href: "/worm-arena/models" },
           { label: "Stats & Placement", href: "/worm-arena/stats", active: true },
           { label: "Skill Analysis", href: "/worm-arena/skill-analysis" },
         ]}

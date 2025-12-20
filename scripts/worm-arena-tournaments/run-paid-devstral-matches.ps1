@@ -11,19 +11,19 @@ $freeModels = @(
     "openai/gpt-5-nano",
     "openai/gpt-5.1-codex-mini",
     "openai/gpt-5-mini",
-    "google/gemini-2.5-flash-preview-09-2025",
+    "x-ai/grok-code-fast-1",
     "google/gemini-2.5-flash-lite-preview-09-2025",
     "deepseek/deepseek-v3.2",
 
     
-    "mistralai/mistral-small-creative",
+    "x-ai/grok-4.1-fast",
     "allenai/olmo-3.1-32b-think:free",
     "moonshotai/kimi-dev-72b:free",
     "nex-agi/deepseek-v3.1-nex-n1:free",
     "mistralai/devstral-2512:free",
     "amazon/nova-2-lite-v1:free",
-    "essentialai/rnj-1-instruct"
-    "nvidia/nemotron-3-nano-30b-a3b:free"
+    "essentialai/rnj-1-instruct",
+    "nvidia/nemotron-3-nano-30b-a3b:free",
     "xiaomi/mimo-v2-flash:free"
 )
 
