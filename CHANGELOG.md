@@ -5,6 +5,21 @@
 
 # New entries at the top, use proper SemVer!
 
+### Version 6.9.15  Dec 20, 2025
+
+- **Worm Arena: Improve navigation to Model Match History + add direct API JSON links** (Author: Claude Sonnet 4)
+  - **UX**: Added "Models" tab to Worm Arena header nav across Replay/Live/Matches/Stats/Skill pages
+  - **API navigation**: Models page now includes one-click links to open:
+    - `/api/snakebench/models-with-games`
+    - `/api/snakebench/model-history-full?modelSlug=...`
+  - **Files Modified**:
+    - `client/src/pages/WormArena.tsx`
+    - `client/src/pages/WormArenaLive.tsx`
+    - `client/src/pages/WormArenaMatches.tsx`
+    - `client/src/pages/WormArenaStats.tsx`
+    - `client/src/pages/WormArenaSkillAnalysis.tsx`
+    - `client/src/pages/WormArenaModels.tsx`
+
 ### Version 6.9.14  Dec 19, 2025
 
 - **Reference Material: Add Patrick Spencer's minireason project** (Author: Claude Haiku 4.5)

@@ -1,6 +1,6 @@
 /**
  * Author: Claude Sonnet 4
- * Date: 2025-12-19
+ * Date: 2025-12-20
  * PURPOSE: Worm Arena Models page - browse every game a specific model has ever played.
  *          Mirrors the external SnakeBench /models/[id] page functionality.
  *          Only lists models that have actually played games.
@@ -172,6 +172,26 @@ export default function WormArenaModels() {
                 </SelectContent>
               </Select>
             )}
+
+            <div className="mt-4 flex flex-wrap gap-2">
+              <Button variant="outline" size="sm" asChild>
+                <a href="/api/snakebench/models-with-games" target="_blank" rel="noreferrer">
+                  Open models-with-games JSON
+                </a>
+              </Button>
+
+              {selectedModel && (
+                <Button variant="outline" size="sm" asChild>
+                  <a
+                    href={`/api/snakebench/model-history-full?modelSlug=${encodeURIComponent(selectedModel)}`}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    Open model-history-full JSON
+                  </a>
+                </Button>
+              )}
+            </div>
           </CardContent>
         </Card>
 
