@@ -16,8 +16,8 @@ import type {
 import { snakeBenchPythonBridge } from './SnakeBenchPythonBridge.ts';
 import { PersistenceCoordinator } from './persistence/persistenceCoordinator.ts';
 import { prepareRunMatch } from './helpers/validators.ts';
-import { repositoryService } from '../repositories/RepositoryService.ts';
-import { logger } from '../utils/logger.ts';
+import { repositoryService } from '../../repositories/RepositoryService.ts';
+import { logger } from '../../utils/logger.ts';
 
 export interface StreamingHandlers {
   onStatus?: (status: WormArenaStreamStatus) => void;
