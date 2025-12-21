@@ -176,7 +176,7 @@ const ExaminerActivity: React.FC<ExaminerActivityProps> = ({
                       </Badge>
                     )}
                     {result.status === 'completed' && (
-                      <Link href={`/puzzle/${result.puzzle_id}`}>
+                      <Link href={`/task/${result.puzzle_id}`}>
                         <Button variant="ghost" size="sm">
                           <Eye className="h-3 w-3" />
                         </Button>
