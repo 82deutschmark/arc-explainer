@@ -62,7 +62,7 @@ export default function ExplanationGridRow({
   };
 
   // Format cost as currency
-  const costText = explanation.estimatedCost
+  const costText = (typeof explanation.estimatedCost === 'number' && explanation.estimatedCost >= 0)
     ? `$${explanation.estimatedCost.toFixed(4)}`
     : '$0.0000';
 
