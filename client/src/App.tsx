@@ -15,6 +15,7 @@ import { PageLayout } from "@/components/layout/PageLayout";
 import DynamicFavicon from "@/components/DynamicFavicon";
 import NotFound from "@/pages/not-found";
 import PuzzleExaminer from "@/pages/PuzzleExaminer";
+import PuzzleAnalyst from "@/pages/PuzzleAnalyst";
 import PuzzleBrowser from "@/pages/PuzzleBrowser";
 import AnalyticsOverview from "@/pages/AnalyticsOverview";
 import Leaderboards from "@/pages/Leaderboards";
@@ -121,6 +122,7 @@ function Router() {
         <Route path="/worm-arena/rules" component={WormArenaRules} />
         <Route path="/puzzle/:taskId" component={PuzzleExaminer} />
         <Route path="/examine/:taskId" component={PuzzleExaminer} />
+        <Route path="/task/:taskId" component={PuzzleAnalyst} />
         <Route component={NotFound} />
       </Switch>
     </PageLayout>
