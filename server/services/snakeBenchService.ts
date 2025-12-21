@@ -1,8 +1,9 @@
 /**
  * Author: Codex (GPT-5)
  * Date: 2025-12-20
- * PURPOSE: Thin orchestrator facade for SnakeBench service with model insights report formatting.
- * SRP/DRY check: Pass - delegation and report formatting only.
+ * PURPOSE: Thin orchestrator facade for SnakeBench service with model insights report formatting
+ *          and OpenAI summary generation for the Worm Arena model insights report.
+ * SRP/DRY check: Pass - delegation, report formatting, and summary wiring only.
  */
 
 import type {
@@ -28,6 +29,8 @@ import type {
 } from '../../shared/types.js';
 import { repositoryService } from '../repositories/RepositoryService.ts';
 import { logger } from '../utils/logger.ts';
+import { openAIClient } from './openai/client.js';
+import { normalizeResponse } from './openai/responseParser.js';
 
 // Import from new modules
 import { SnakeBenchMatchRunner } from './snakeBench/SnakeBenchMatchRunner.ts';
@@ -42,6 +45,9 @@ import { suggestMatchups } from './snakeBench/helpers/matchupSuggestions.ts';
 import { MODELS } from '../config/models.ts';
 import path from 'path';
 import fs from 'fs';
+
+// Use a direct OpenAI model for the LLM summary step.
+const INSIGHTS_SUMMARY_MODEL = 'gpt-5-nano-2025-08-07';
 
 // Normalize model slugs so ":free" suffixes do not split report data.
 const normalizeModelSlug = (modelSlug: string): string => modelSlug.trim().replace(/:free$/i, '');
@@ -60,6 +66,102 @@ const formatCost = (value: number | null): string =>
 // Convert snake death reason values into human-readable labels.
 const formatReasonLabel = (reason: string): string => reason.replace(/_/g, ' ').trim();
 
+// Build the prompt used to request a short LLM summary for the report.
+const buildInsightsSummaryPrompt = (
+  modelSlug: string,
+  summary: WormArenaModelInsightsSummary,
+  failureModes: WormArenaModelInsightsFailureMode[],
+  lossOpponents: WormArenaModelInsightsOpponent[],
+): string => {
+  const failureLines = failureModes.length
+    ? failureModes
+        .slice(0, 4)
+        .map(mode => `${formatReasonLabel(mode.reason)} (${formatPercent(mode.percentOfLosses)})`)
+        .join(', ')
+    : 'None';
+
+  const opponentLines = lossOpponents.length
+    ? lossOpponents
+        .slice(0, 4)
+        .map(opponent => `${opponent.opponentSlug} (${formatPercent(opponent.lossRate)})`)
+        .join(', ')
+    : 'None';
+
+  const avgRounds = formatOptionalNumber(summary.averageRounds, 1);
+  const avgScore = formatOptionalNumber(summary.averageScore, 2);
+  const costPerLoss = formatCost(summary.costPerLoss);
+  const lossCoverage = formatPercent(summary.lossDeathReasonCoverage);
+  const earlyLossRate = formatPercent(summary.earlyLossRate);
+
+  return [
+    'Write one short paragraph (max 80 words).',
+    'No bullets, no headings, no disclaimers.',
+    'Focus on why the model loses and one practical next step.',
+    `Model: ${modelSlug}`,
+    `Games: ${summary.gamesPlayed}, Wins: ${summary.wins}, Losses: ${summary.losses}, Win rate: ${formatPercent(summary.winRate)}`,
+    `Average rounds: ${avgRounds}, Average score: ${avgScore}, Cost per loss: ${costPerLoss}`,
+    `Early loss rate: ${earlyLossRate}, Loss reason coverage: ${lossCoverage}`,
+    `Top failure modes: ${failureLines}`,
+    `Tough opponents by loss rate: ${opponentLines}`,
+  ].join('\n');
+};
+
+// Extract the text summary from a Responses API payload.
+const extractInsightsSummaryText = (response: any): string | null => {
+  const normalized = normalizeResponse(response, { modelKey: INSIGHTS_SUMMARY_MODEL });
+  const text = typeof normalized.output_text === 'string' ? normalized.output_text.trim() : '';
+  if (!text) {
+    return null;
+  }
+  return text.replace(/\s+/g, ' ').trim();
+};
+
+// Call OpenAI directly to generate the model insights summary text.
+const requestInsightsSummary = async (
+  modelSlug: string,
+  summary: WormArenaModelInsightsSummary,
+  failureModes: WormArenaModelInsightsFailureMode[],
+  lossOpponents: WormArenaModelInsightsOpponent[],
+): Promise<string | null> => {
+  // Build a compact prompt from the aggregated stats for the LLM.
+  const prompt = buildInsightsSummaryPrompt(modelSlug, summary, failureModes, lossOpponents);
+
+  // Prepare a Responses API payload tailored for a short, single-paragraph summary.
+  // Use the simple input format that works with the OpenAI SDK
+  const requestBody = {
+    model: INSIGHTS_SUMMARY_MODEL,
+    input: [
+      {
+        role: 'system',
+        content: 'You are a concise analytics reporter for game model performance.',
+      },
+      {
+        role: 'user',
+        content: prompt,
+      },
+    ],
+    reasoning: {
+      effort: 'medium',
+      summary: 'auto',
+    },
+    text: {
+      verbosity: 'high',
+    },
+    max_output_tokens: 300,
+  };
+
+  try {
+    // Execute the OpenAI request and extract the summary text from the response.
+    // Type assertion to bypass TypeScript checking since the runtime format is correct
+    const response = await openAIClient.responses.create(requestBody as any);
+    return extractInsightsSummaryText(response);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    logger.warn(`SnakeBenchService.requestInsightsSummary failed: ${message}`, 'snakebench-service');
+    return null;
+  }
+};
+
 // Build the markdown version of the model insights report.
 const buildInsightsMarkdown = (
   modelSlug: string,
@@ -67,6 +169,7 @@ const buildInsightsMarkdown = (
   summary: WormArenaModelInsightsSummary,
   failureModes: WormArenaModelInsightsFailureMode[],
   lossOpponents: WormArenaModelInsightsOpponent[],
+  llmSummary: string | null,
 ): string => {
   const lines: string[] = [];
   const knownLosses = Math.max(summary.losses - summary.unknownLosses, 0);
@@ -74,6 +177,10 @@ const buildInsightsMarkdown = (
   lines.push('# Worm Arena Model Insights');
   lines.push(`Model: ${modelSlug}`);
   lines.push(`Generated: ${generatedAt}`);
+  lines.push('');
+  // Include the LLM summary near the top for quick scanning.
+  lines.push('LLM Summary');
+  lines.push(llmSummary && llmSummary.trim().length > 0 ? llmSummary : 'Summary unavailable.');
   lines.push('');
   lines.push('Summary');
   lines.push(`- Games played: ${summary.gamesPlayed}`);
@@ -386,12 +493,20 @@ class SnakeBenchService {
     }
 
     const generatedAt = new Date().toISOString();
+    // Request the LLM summary, but do not fail the report if it is unavailable.
+    const llmSummary = await requestInsightsSummary(
+      normalizedSlug,
+      data.summary,
+      data.failureModes,
+      data.lossOpponents,
+    );
     const markdownReport = buildInsightsMarkdown(
       normalizedSlug,
       generatedAt,
       data.summary,
       data.failureModes,
       data.lossOpponents,
+      llmSummary,
     );
     const tweetText = buildInsightsTweet(normalizedSlug, data.summary, data.failureModes);
 
@@ -401,6 +516,10 @@ class SnakeBenchService {
       summary: data.summary,
       failureModes: data.failureModes,
       lossOpponents: data.lossOpponents,
+      // LLM summary paragraph when available.
+      llmSummary,
+      // Model used for the LLM summary when available.
+      llmModel: llmSummary ? INSIGHTS_SUMMARY_MODEL : null,
       markdownReport,
       tweetText,
     };
