@@ -4,6 +4,24 @@
 # SRP/DRY check: Pass - entries document changes without altering historical records.
 # New entries at the top, use proper SemVer!
 
+### Version 6.9.22  Dec 21, 2025
+
+- **Fix: Worm Arena context overflow for reasoning models** (Author: Claude Haiku 4.5)
+  - **Problem**: OpenRouter models hitting 400k token context limit (461,156 tokens requested)
+  - **Root Cause**: Reasoning models generate extremely verbose rationales (400k+ tokens), which get included in next turn's prompt, causing exponential growth per turn
+  - **Solution**: Multi-layered approach:
+    1. **OpenRouter middle-out transform**: Enables OpenRouter's automatic prompt compression feature (intelligently compresses prompts on their side)
+    2. **Output token limits**: Set `max_output_tokens: 16000` for reasoning models to prevent explosive rationale generation
+    3. **Rationale truncation**: Truncates rationales to 10,000 chars for prompts (80/20 split preserves context), but preserves full text in `move_history` for replay files
+    4. **Prompt monitoring**: Warns when prompts exceed 100k tokens for early detection
+  - **Impact**: Games that previously crashed mid-match with context errors will now complete successfully
+  - **Data Preservation**: Full verbose rationales still saved to replay JSON files for post-game analysis
+  - **Backwards Compatible**: All features opt-in/enabled by default, can be disabled via config
+  - **Files Modified**:
+    - `external/SnakeBench/backend/llm_providers.py` (lines 183-186, 222-225) - Added middle-out transform and output token limits
+    - `external/SnakeBench/backend/players/llm_player.py` (lines 107-131, 163, 50-53) - Added truncation method and prompt monitoring
+    - `external/SnakeBench/backend/players/llm_player_a.py` (lines 114-138, 171, 53-56) - Same changes for variant A player
+
 ### Version 6.9.21  Dec 20, 2025
 
 - **Fix: OpenRouter Responses API max_output_tokens requirement** (Author: Claude Code)
