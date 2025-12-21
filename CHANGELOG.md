@@ -4,6 +4,39 @@
 # SRP/DRY check: Pass - entries document changes without altering historical records.
 # New entries at the top, use proper SemVer!
 
+### Version 6.10.0  Dec 21, 2025
+
+- **Feature: Puzzle Analyst - New high-density grid page for analyzing explanations** (Author: Claude Code using Haiku 4.5)
+  - **Purpose**: Read-only, analysis-focused interface for browsing and comparing hundreds of AI-generated explanations for a single puzzle
+  - **Design**: Dark futuristic theme with high-information-density grid layout (contrasts with warm PuzzleExaminer)
+  - **Behavior**:
+    - Default puzzle navigation now routes to `/task/:taskId` (Puzzle Analyst) instead of `/puzzle/:taskId` (PuzzleExaminer)
+    - Shows all explanations for a puzzle in compact rows with: predicted grid thumbnail, model name, status badge, cost, timestamp, reasoning indicator, token count
+    - Clicking a row expands inline to show full `AnalysisResultCard` with detailed analysis
+    - Lazy-loads full explanation data on first expand via `fetchExplanationById`
+    - Supports scrolling through hundreds of explanations (no pagination)
+  - **Architectural Notes**:
+    - New page component with dedicated row component (`ExplanationGridRow`)
+    - Reuses existing `TinyGrid`, `AnalysisResultCard`, and `usePaginatedExplanationSummaries` hook
+    - SRP/DRY: Page handles layout; row handles single row rendering; data fetching via existing APIs
+    - No model selection or prompt controls (read-only mode)
+  - **Breaking Change**: All puzzle navigation links now point to `/task/:taskId` (new Puzzle Analyst) by default
+    - PuzzleExaminer still accessible via direct URL `/puzzle/:taskId` if needed
+    - Updated 10+ navigation components across the codebase
+  - **Files Created**:
+    - `client/src/pages/PuzzleAnalyst.tsx` - Main page component
+    - `client/src/components/puzzle/ExplanationGridRow.tsx` - Row renderer with expand/collapse
+  - **Files Modified**:
+    - `client/src/App.tsx` - Added import and route for PuzzleAnalyst
+    - `client/src/components/ui/ClickablePuzzleBadge.tsx` - Navigation route change
+    - `client/src/components/overview/PuzzleList.tsx` - Navigation route change
+    - `client/src/components/analytics/DifficultPuzzlesSection.tsx` - Navigation route change
+    - `client/src/components/feedback/FeedbackSummary.tsx` - Navigation route change
+    - `client/src/components/puzzle/CompactPuzzleCard.tsx` - Navigation route change
+    - `client/src/components/puzzle/ChallengePuzzleCard.tsx` - Navigation route change
+    - `client/src/pages/PuzzleBrowser.tsx` - Navigation route change
+    - `CHANGELOG.md`
+
 ### Version 6.9.22  Dec 21, 2025
 
 - **Fix: Worm Arena context overflow for reasoning models** (Author: Claude Haiku 4.5)

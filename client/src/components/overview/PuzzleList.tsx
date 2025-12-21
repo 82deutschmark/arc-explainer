@@ -225,9 +225,9 @@ export function PuzzleList({
 
                   <div className="flex gap-2">
                     <Button asChild size="sm">
-                      <Link href={`/puzzle/${puzzle.id}`}>
+                      <Link href={`/task/${puzzle.id}`}>
                         <Eye className="h-4 w-4 mr-1" />
-                        Examine
+                        Analyze
                       </Link>
                     </Button>
                   </div>
