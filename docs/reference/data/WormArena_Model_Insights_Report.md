@@ -11,7 +11,8 @@ SRP/DRY check: Pass - documentation only.
 
 ## Scope
 - Report uses the full history of completed games for the selected model.
-- LLM summary is generated from aggregated stats only (OpenAI Responses API, gpt-5-nano-2025-08-07).
+- LLM summary is generated from aggregated stats only (OpenAI Responses API, gpt-5-nano-2025-08-07) using
+  `instructions` plus `input` content blocks.
 
 ## Data sources
 - `public.game_participants`

@@ -1,10 +1,30 @@
 /*
-Author: Claude Code using Sonnet 4.5
-Date: 2025-11-06
+Author: Claude Haiku 4.5
+Date: 2025-12-20 (CRITICAL FIX: Multi-frame animation unpacking)
 PURPOSE: Runs OpenAI Agents SDK workflows against the real ARC-AGI-3 API with PostgreSQL frame persistence.
-Refactored to use helpers (frameAnalysis, captionGenerator) and persistence layer following SDK patterns.
-Eliminates duplication via timelineProcessor utility. Tracks sessions and generates frame captions.
-SRP/DRY check: Pass — agent orchestration only, delegates persistence/analysis to specialized modules (350 lines, down from 621).
+
+CRITICAL CHANGES (2025-12-20):
+- Integrated frameUnpacker.ts to detect and unpack multi-frame animation responses from ARC-AGI-3 API
+- When an action returns 4D frame data [frameIdx][layerIdx][height][width], unpacks into individual 3D frames
+- Each unpacked frame is persisted separately to database for complete frame history
+- Streaming mode emits each animation frame individually with metadata (animationFrame, animationTotalFrames, isLastAnimationFrame)
+- Prevents data loss from lossy frame storage and ensures accurate action efficiency scoring
+
+PREV VERSION ISSUES (FIXED):
+- Treated 4D multi-frame responses as single frames
+- Lost animation data (e.g., 3-frame movement sequence collapsed to 1)
+- Incomplete database history (missing intermediate frames)
+- Inaccurate replay data (animations not visible)
+- Potential scoring errors (didn't count intermediate frames)
+
+Architecture:
+- Delegates to frameUnpacker for dimensionality detection
+- Uses persistUnpackedFrames() helper for consistent frame persistence
+- Both sync (run) and async (runWithStreaming) methods fully support unpacking
+- All action tools (RESET, ACTION1-5, ACTION6) unpack before processing
+- Agent always reasons about final "settled" frame, but database has complete history
+
+SRP/DRY check: Pass — frame unpacking separated into dedicated module, reusable across both methods.
 */
 
 import { randomUUID, createHash } from 'node:crypto';
@@ -18,6 +38,7 @@ import { processRunItems, processRunItemsWithReasoning } from './utils/timelineP
 import { generateActionCaption, generateInspectCaption } from './helpers/captionGenerator.ts';
 import { countChangedPixels, analyzeFrameChanges, extractGrid, extractLayerStack } from './helpers/frameAnalysis.ts';
 import { calculateColorDistribution } from './helpers/colorAnalysis.ts';
+import { unpackFrames, summarizeFrameStructure } from './helpers/frameUnpacker.ts';
 import { createSession } from './persistence/sessionManager.ts';
 import { saveFrame } from './persistence/framePersistence.ts';
 import { renderArc3FrameToPng } from './arc3GridImageService.ts';
@@ -45,6 +66,74 @@ export class Arc3RealGameRunner {
     } catch {
       return undefined;
     }
+  }
+
+  /**
+   * CRITICAL FIX: Persist unpacked animation frames to database.
+   *
+   * When an ARC-AGI-3 action returns animation (multiple frames), we unpack them
+   * and persist each frame individually to the database. This ensures:
+   * - Complete frame history (not lossy)
+   * - Proper action efficiency scoring (counts all frames)
+   * - Accurate replay data (animation visible)
+   * - Agent context (can see state transitions)
+   *
+   * @param dbSessionId - Database session ID
+   * @param unpackedFrames - Array of FrameData objects from unpackFrames()
+   * @param action - The action that produced these frames
+   * @param prevFrame - Previous frame for pixel diff calculation
+   * @param currentFrameNumber - Starting frame number for this action
+   * @returns Updated frame number after persistence
+   */
+  private async persistUnpackedFrames(
+    dbSessionId: number | null,
+    unpackedFrames: FrameData[],
+    action: GameAction,
+    prevFrame: FrameData | null,
+    currentFrameNumber: number
+  ): Promise<number> {
+    if (!dbSessionId || unpackedFrames.length === 0) {
+      return currentFrameNumber;
+    }
+
+    let frameNum = currentFrameNumber;
+
+    try {
+      for (let i = 0; i < unpackedFrames.length; i++) {
+        const frame = unpackedFrames[i];
+
+        // Only compare pixel changes for final frame of animation
+        // Intermediate frames are IN_PROGRESS, so pixel diff is less meaningful
+        const isLastFrame = i === unpackedFrames.length - 1;
+        const pixelsChanged = isLastFrame && prevFrame
+          ? countChangedPixels(prevFrame, frame)
+          : 0;
+
+        // Generate caption (include animation sequence info if multi-frame)
+        let caption = generateActionCaption(action, prevFrame, frame);
+        if (unpackedFrames.length > 1) {
+          caption += ` (frame ${i + 1}/${unpackedFrames.length})`;
+        }
+
+        await saveFrame(dbSessionId, frameNum, frame, action, caption, pixelsChanged);
+
+        logger.debug(
+          `[Frame Persistence] Saved frame ${frameNum} (animation ${i + 1}/${unpackedFrames.length}): ` +
+          `${caption}`,
+          'arc3'
+        );
+
+        frameNum++;
+      }
+    } catch (error) {
+      logger.warn(
+        `[Frame Persistence] Failed to persist unpacked frames: ` +
+        `${error instanceof Error ? error.message : String(error)}`,
+        'arc3'
+      );
+    }
+
+    return frameNum;
   }
 
   /**
@@ -102,18 +191,40 @@ export class Arc3RealGameRunner {
         : await this.apiClient.startGame(gameId, undefined, scorecardId);
 
     gameGuid = initialFrame.guid;
-    currentFrame = initialFrame;
-    frames.push(initialFrame);
+
+    // CRITICAL FIX: Unpack initial frame if it's an animation (4D array)
+    const unpackedInitialFrames = unpackFrames(initialFrame);
+    if (unpackedInitialFrames.length > 1) {
+      logger.info(
+        `[ARC3] Initial RESET returned ${unpackedInitialFrames.length} animation frames: ` +
+        summarizeFrameStructure(initialFrame),
+        'arc3'
+      );
+    }
+
+    currentFrame = unpackedInitialFrames[unpackedInitialFrames.length - 1]; // Final frame is settled state
+    frames.push(...unpackedInitialFrames); // Add all unpacked frames
 
     // Create database session for frame persistence (only for new games)
+    let currentFrameNumber = 0;
     try {
       if (!config.existingGameGuid) {
-        dbSessionId = await createSession(gameId, gameGuid, initialFrame.win_score);
+        dbSessionId = await createSession(gameId, gameGuid, currentFrame.win_score);
 
-        // Save initial frame
-        const initialCaption = generateActionCaption({ action: 'RESET' }, null, initialFrame);
-        await saveFrame(dbSessionId, 0, initialFrame, { action: 'RESET' }, initialCaption, 0);
-        logger.info(`Created session ${dbSessionId} for game ${gameId}`, 'arc3');
+        // Persist all unpacked initial frames
+        currentFrameNumber = await this.persistUnpackedFrames(
+          dbSessionId,
+          unpackedInitialFrames,
+          { action: 'RESET' },
+          null,
+          0
+        );
+
+        logger.info(
+          `Created session ${dbSessionId} for game ${gameId} ` +
+          `(${unpackedInitialFrames.length} initial frame(s))`,
+          'arc3'
+        );
       } else {
         logger.info(`[ARC3] Continuing game session ${gameGuid} on game ${gameId}`, 'arc3');
       }
@@ -244,24 +355,40 @@ export class Arc3RealGameRunner {
         if (!gameGuid) throw new Error('Game session not initialized yet.');
 
         prevFrame = currentFrame;
-        const resetFrame = await this.apiClient.executeAction(gameId, gameGuid, { action: 'RESET' }, undefined, scorecardId);
-        currentFrame = resetFrame;
-        gameGuid = resetFrame.guid;
-        frames.push(resetFrame);
-        updateNoScoreProgress(prevFrame, currentFrame);
-        logger.info(`[ARC3 TOOL] reset_game executed: state=${resetFrame.state}, score=${resetFrame.score}`, 'arc3');
+        const resetFrameData = await this.apiClient.executeAction(gameId, gameGuid, { action: 'RESET' }, undefined, scorecardId);
 
-        if (dbSessionId) {
-          try {
-            const caption = generateActionCaption({ action: 'RESET' }, prevFrame, resetFrame);
-            const pixelsChanged = prevFrame ? countChangedPixels(prevFrame, resetFrame) : 0;
-            await saveFrame(dbSessionId, frames.length - 1, resetFrame, { action: 'RESET' }, caption, pixelsChanged);
-          } catch (error) {
-            logger.warn(`Failed to save frame after reset: ${error instanceof Error ? error.message : String(error)}`, 'arc3');
-          }
+        // CRITICAL FIX: Unpack animation frames from RESET response
+        const unpackedResetFrames = unpackFrames(resetFrameData);
+        if (unpackedResetFrames.length > 1) {
+          logger.info(
+            `[ARC3 TOOL] reset_game returned ${unpackedResetFrames.length} animation frames`,
+            'arc3'
+          );
         }
 
-        return resetFrame;
+        currentFrame = unpackedResetFrames[unpackedResetFrames.length - 1]; // Final frame is settled
+        gameGuid = currentFrame.guid;
+        frames.push(...unpackedResetFrames); // Add all unpacked frames
+        updateNoScoreProgress(prevFrame, currentFrame);
+
+        logger.info(
+          `[ARC3 TOOL] reset_game executed: state=${currentFrame.state}, score=${currentFrame.score} ` +
+          `(${unpackedResetFrames.length} frame(s))`,
+          'arc3'
+        );
+
+        // Persist unpacked reset frames
+        if (dbSessionId) {
+          currentFrameNumber = await this.persistUnpackedFrames(
+            dbSessionId,
+            unpackedResetFrames,
+            { action: 'RESET' },
+            prevFrame,
+            currentFrameNumber
+          );
+        }
+
+        return currentFrame;
       }
     });
 
@@ -274,20 +401,37 @@ export class Arc3RealGameRunner {
         logger.info(`[ARC3 TOOL] ${name} called`, 'arc3');
         if (!gameGuid) throw new Error('Game session not initialized yet.');
         prevFrame = currentFrame;
-        currentFrame = await this.apiClient.executeAction(gameId, gameGuid, { action: name });
-        frames.push(currentFrame);
-        updateNoScoreProgress(prevFrame, currentFrame);
-        logger.info(`[ARC3 TOOL] ${name} executed: state=${currentFrame.state}, score=${currentFrame.score}`, 'arc3');
 
-        // Save frame with auto-generated caption
+        const actionFrameData = await this.apiClient.executeAction(gameId, gameGuid, { action: name });
+
+        // CRITICAL FIX: Unpack animation frames from action response
+        const unpackedActionFrames = unpackFrames(actionFrameData);
+        if (unpackedActionFrames.length > 1) {
+          logger.info(
+            `[ARC3 TOOL] ${name} returned ${unpackedActionFrames.length} animation frames`,
+            'arc3'
+          );
+        }
+
+        currentFrame = unpackedActionFrames[unpackedActionFrames.length - 1]; // Final frame is settled
+        frames.push(...unpackedActionFrames); // Add all unpacked frames
+        updateNoScoreProgress(prevFrame, currentFrame);
+
+        logger.info(
+          `[ARC3 TOOL] ${name} executed: state=${currentFrame.state}, score=${currentFrame.score} ` +
+          `(${unpackedActionFrames.length} frame(s))`,
+          'arc3'
+        );
+
+        // Persist unpacked action frames
         if (dbSessionId && prevFrame) {
-          try {
-            const caption = generateActionCaption({ action: name }, prevFrame, currentFrame);
-            const pixelsChanged = countChangedPixels(prevFrame, currentFrame);
-            await saveFrame(dbSessionId, frames.length - 1, currentFrame, { action: name }, caption, pixelsChanged);
-          } catch (error) {
-            logger.warn(`Failed to save frame: ${error instanceof Error ? error.message : String(error)}`, 'arc3');
-          }
+          currentFrameNumber = await this.persistUnpackedFrames(
+            dbSessionId,
+            unpackedActionFrames,
+            { action: name },
+            prevFrame,
+            currentFrameNumber
+          );
         }
 
         return currentFrame;
@@ -302,20 +446,37 @@ export class Arc3RealGameRunner {
         logger.info(`[ARC3 TOOL] ACTION6 called with coordinates: (${x}, ${y})`, 'arc3');
         if (!gameGuid) throw new Error('Game session not initialized yet.');
         prevFrame = currentFrame;
-        currentFrame = await this.apiClient.executeAction(gameId, gameGuid, { action: 'ACTION6', coordinates: [x, y] });
-        frames.push(currentFrame);
-        updateNoScoreProgress(prevFrame, currentFrame);
-        logger.info(`[ARC3 TOOL] ACTION6 executed: state=${currentFrame.state}, score=${currentFrame.score}`, 'arc3');
 
-        // Save frame with auto-generated caption
+        const action6FrameData = await this.apiClient.executeAction(gameId, gameGuid, { action: 'ACTION6', coordinates: [x, y] });
+
+        // CRITICAL FIX: Unpack animation frames from ACTION6 response
+        const unpackedAction6Frames = unpackFrames(action6FrameData);
+        if (unpackedAction6Frames.length > 1) {
+          logger.info(
+            `[ARC3 TOOL] ACTION6 returned ${unpackedAction6Frames.length} animation frames`,
+            'arc3'
+          );
+        }
+
+        currentFrame = unpackedAction6Frames[unpackedAction6Frames.length - 1]; // Final frame is settled
+        frames.push(...unpackedAction6Frames); // Add all unpacked frames
+        updateNoScoreProgress(prevFrame, currentFrame);
+
+        logger.info(
+          `[ARC3 TOOL] ACTION6(${x},${y}) executed: state=${currentFrame.state}, score=${currentFrame.score} ` +
+          `(${unpackedAction6Frames.length} frame(s))`,
+          'arc3'
+        );
+
+        // Persist unpacked ACTION6 frames
         if (dbSessionId && prevFrame) {
-          try {
-            const caption = generateActionCaption({ action: 'ACTION6', coordinates: [x, y] }, prevFrame, currentFrame);
-            const pixelsChanged = countChangedPixels(prevFrame, currentFrame);
-            await saveFrame(dbSessionId, frames.length - 1, currentFrame, { action: 'ACTION6', coordinates: [x, y] }, caption, pixelsChanged);
-          } catch (error) {
-            logger.warn(`Failed to save frame: ${error instanceof Error ? error.message : String(error)}`, 'arc3');
-          }
+          currentFrameNumber = await this.persistUnpackedFrames(
+            dbSessionId,
+            unpackedAction6Frames,
+            { action: 'ACTION6', coordinates: [x, y] },
+            prevFrame,
+            currentFrameNumber
+          );
         }
 
         return currentFrame;
@@ -466,32 +627,72 @@ export class Arc3RealGameRunner {
       : await this.apiClient.startGame(gameId, undefined, scorecardId);
 
     gameGuid = initialFrame.guid;
-    currentFrame = initialFrame;
-    frames.push(initialFrame);
     isContinuation = !!config.existingGameGuid;
 
+    // CRITICAL FIX: Unpack initial frame if it's an animation (4D array)
+    const unpackedInitialFrames = unpackFrames(initialFrame);
+    if (unpackedInitialFrames.length > 1) {
+      logger.info(
+        `[ARC3 STREAMING] Initial RESET returned ${unpackedInitialFrames.length} animation frames: ` +
+        summarizeFrameStructure(initialFrame),
+        'arc3'
+      );
+    }
+
+    currentFrame = unpackedInitialFrames[unpackedInitialFrames.length - 1]; // Final frame is settled state
+    frames.push(...unpackedInitialFrames); // Add all unpacked frames
+
     // Create database session for frame persistence (only for new games)
+    let currentFrameNumber = 0;
     try {
       if (isContinuation) {
-        logger.info(`[ARC3] Continuing game session ${gameGuid} on game ${gameId}`, 'arc3');
+        logger.info(`[ARC3 STREAMING] Continuing game session ${gameGuid} on game ${gameId}`, 'arc3');
       } else {
-        dbSessionId = await createSession(gameId, gameGuid, initialFrame.win_score);
-        const initialCaption = generateActionCaption({ action: 'RESET' }, null, initialFrame);
-        await saveFrame(dbSessionId, 0, initialFrame, { action: 'RESET' }, initialCaption, 0);
-        logger.info(`Created streaming session ${dbSessionId} for game ${gameId}`, 'arc3');
+        dbSessionId = await createSession(gameId, gameGuid, currentFrame.win_score);
+
+        // Persist all unpacked initial frames
+        currentFrameNumber = await this.persistUnpackedFrames(
+          dbSessionId,
+          unpackedInitialFrames,
+          { action: 'RESET' },
+          null,
+          0
+        );
+
+        logger.info(
+          `Created streaming session ${dbSessionId} for game ${gameId} ` +
+          `(${unpackedInitialFrames.length} initial frame(s))`,
+          'arc3'
+        );
       }
     } catch (error) {
       logger.warn(`Failed to create database session: ${error instanceof Error ? error.message : String(error)}`, 'arc3');
     }
 
-    // Emit initial frame to streaming clients
-    streamHarness.emitEvent("game.started", {
-      initialFrame,
-      frameIndex: String(0),
-      caption: isContinuation ? `Continuing game session ${gameGuid}` : generateActionCaption({ action: 'RESET' }, null, initialFrame),
-      isContingation: isContinuation,
-      timestamp: Date.now(),
-    });
+    // Emit all initial frames to streaming clients
+    for (let i = 0; i < unpackedInitialFrames.length; i++) {
+      const frame = unpackedInitialFrames[i];
+      const isLastFrame = i === unpackedInitialFrames.length - 1;
+      let caption = isContinuation
+        ? `Continuing game session ${gameGuid}`
+        : generateActionCaption({ action: 'RESET' }, null, frame);
+
+      if (unpackedInitialFrames.length > 1) {
+        caption += ` (frame ${i + 1}/${unpackedInitialFrames.length})`;
+      }
+
+      streamHarness.emitEvent("game.started", {
+        initialFrame: frame,
+        frameIndex: String(i),
+        caption,
+        isAnimation: unpackedInitialFrames.length > 1,
+        animationFrame: i,
+        animationTotalFrames: unpackedInitialFrames.length,
+        isLastAnimationFrame: isLastFrame,
+        isContingation: isContinuation,
+        timestamp: Date.now(),
+      });
+    }
 
     // Add reasoning accumulator to track incremental reasoning content
     const streamState = {
@@ -678,29 +879,58 @@ export class Arc3RealGameRunner {
           : undefined;
 
         prevFrame = currentFrame;
-        currentFrame = await this.apiClient.executeAction(gameId, gameGuid, { action: name }, reasoningPayload, scorecardId);
-        frames.push(currentFrame);
-        logger.info(`[ARC3 TOOL STREAM] ${name} executed: state=${currentFrame.state}, score=${currentFrame.score}`, 'arc3');
+        const actionFrameData = await this.apiClient.executeAction(gameId, gameGuid, { action: name }, reasoningPayload, scorecardId);
 
-        // Generate caption and save frame
-        let caption = '';
-        if (dbSessionId && prevFrame) {
-          try {
-            caption = generateActionCaption({ action: name }, prevFrame, currentFrame);
-            const pixelsChanged = countChangedPixels(prevFrame, currentFrame);
-            await saveFrame(dbSessionId, frames.length - 1, currentFrame, { action: name }, caption, pixelsChanged);
-          } catch (error) {
-            logger.warn(`Failed to save frame: ${error instanceof Error ? error.message : String(error)}`, 'arc3');
-          }
+        // CRITICAL FIX: Unpack animation frames from action response
+        const unpackedActionFrames = unpackFrames(actionFrameData);
+        if (unpackedActionFrames.length > 1) {
+          logger.info(
+            `[ARC3 TOOL STREAM] ${name} returned ${unpackedActionFrames.length} animation frames`,
+            'arc3'
+          );
         }
 
-        streamHarness.emitEvent("game.frame_update", {
-          frameIndex: String(frames.length - 1),
-          frameData: currentFrame,
-          caption,
-          action: { type: name },
-          timestamp: Date.now()
-        });
+        currentFrame = unpackedActionFrames[unpackedActionFrames.length - 1]; // Final frame is settled
+        frames.push(...unpackedActionFrames); // Add all unpacked frames
+        logger.info(
+          `[ARC3 TOOL STREAM] ${name} executed: state=${currentFrame.state}, score=${currentFrame.score} ` +
+          `(${unpackedActionFrames.length} frame(s))`,
+          'arc3'
+        );
+
+        // Persist unpacked action frames and emit each to stream
+        if (dbSessionId && prevFrame) {
+          currentFrameNumber = await this.persistUnpackedFrames(
+            dbSessionId,
+            unpackedActionFrames,
+            { action: name },
+            prevFrame,
+            currentFrameNumber
+          );
+        }
+
+        // Emit each unpacked frame as separate update event
+        for (let i = 0; i < unpackedActionFrames.length; i++) {
+          const frame = unpackedActionFrames[i];
+          const isLastFrame = i === unpackedActionFrames.length - 1;
+          let caption = generateActionCaption({ action: name }, prevFrame, frame);
+          if (unpackedActionFrames.length > 1) {
+            caption += ` (frame ${i + 1}/${unpackedActionFrames.length})`;
+          }
+
+          streamHarness.emitEvent("game.frame_update", {
+            frameIndex: String(currentFrameNumber - unpackedActionFrames.length + i),
+            frameData: frame,
+            caption,
+            action: { type: name },
+            isAnimation: unpackedActionFrames.length > 1,
+            animationFrame: i,
+            animationTotalFrames: unpackedActionFrames.length,
+            isLastAnimationFrame: isLastFrame,
+            timestamp: Date.now()
+          });
+        }
+
         return currentFrame;
       }
     });
@@ -726,29 +956,58 @@ export class Arc3RealGameRunner {
           : undefined;
 
         prevFrame = currentFrame;
-        currentFrame = await this.apiClient.executeAction(gameId, gameGuid, { action: 'ACTION6', coordinates: [x, y] }, reasoningPayload, scorecardId);
-        frames.push(currentFrame);
-        logger.info(`[ARC3 TOOL STREAM] ACTION6 executed: state=${currentFrame.state}, score=${currentFrame.score}`, 'arc3');
+        const action6FrameData = await this.apiClient.executeAction(gameId, gameGuid, { action: 'ACTION6', coordinates: [x, y] }, reasoningPayload, scorecardId);
 
-        // Generate caption and save frame
-        let caption = '';
-        if (dbSessionId && prevFrame) {
-          try {
-            caption = generateActionCaption({ action: 'ACTION6', coordinates: [x, y] }, prevFrame, currentFrame);
-            const pixelsChanged = countChangedPixels(prevFrame, currentFrame);
-            await saveFrame(dbSessionId, frames.length - 1, currentFrame, { action: 'ACTION6', coordinates: [x, y] }, caption, pixelsChanged);
-          } catch (error) {
-            logger.warn(`Failed to save frame: ${error instanceof Error ? error.message : String(error)}`, 'arc3');
-          }
+        // CRITICAL FIX: Unpack animation frames from ACTION6 response
+        const unpackedAction6Frames = unpackFrames(action6FrameData);
+        if (unpackedAction6Frames.length > 1) {
+          logger.info(
+            `[ARC3 TOOL STREAM] ACTION6 returned ${unpackedAction6Frames.length} animation frames`,
+            'arc3'
+          );
         }
 
-        streamHarness.emitEvent("game.frame_update", {
-          frameIndex: String(frames.length - 1),
-          frameData: currentFrame,
-          caption,
-          action: { type: 'ACTION6', coordinates: [x, y] },
-          timestamp: Date.now()
-        });
+        currentFrame = unpackedAction6Frames[unpackedAction6Frames.length - 1]; // Final frame is settled
+        frames.push(...unpackedAction6Frames); // Add all unpacked frames
+        logger.info(
+          `[ARC3 TOOL STREAM] ACTION6(${x},${y}) executed: state=${currentFrame.state}, score=${currentFrame.score} ` +
+          `(${unpackedAction6Frames.length} frame(s))`,
+          'arc3'
+        );
+
+        // Persist unpacked ACTION6 frames and emit each to stream
+        if (dbSessionId && prevFrame) {
+          currentFrameNumber = await this.persistUnpackedFrames(
+            dbSessionId,
+            unpackedAction6Frames,
+            { action: 'ACTION6', coordinates: [x, y] },
+            prevFrame,
+            currentFrameNumber
+          );
+        }
+
+        // Emit each unpacked frame as separate update event
+        for (let i = 0; i < unpackedAction6Frames.length; i++) {
+          const frame = unpackedAction6Frames[i];
+          const isLastFrame = i === unpackedAction6Frames.length - 1;
+          let caption = generateActionCaption({ action: 'ACTION6', coordinates: [x, y] }, prevFrame, frame);
+          if (unpackedAction6Frames.length > 1) {
+            caption += ` (frame ${i + 1}/${unpackedAction6Frames.length})`;
+          }
+
+          streamHarness.emitEvent("game.frame_update", {
+            frameIndex: String(currentFrameNumber - unpackedAction6Frames.length + i),
+            frameData: frame,
+            caption,
+            action: { type: 'ACTION6', coordinates: [x, y] },
+            isAnimation: unpackedAction6Frames.length > 1,
+            animationFrame: i,
+            animationTotalFrames: unpackedAction6Frames.length,
+            isLastAnimationFrame: isLastFrame,
+            timestamp: Date.now()
+          });
+        }
+
         return currentFrame;
       }
     });
