@@ -127,7 +127,7 @@ export default function GroverSolver() {
       {/* Header - Compact */}
       <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between px-3 py-3 bg-base-100 border border-base-300 shadow-sm">
         <div className="flex items-center gap-2">
-          <Link href={`/puzzle/${taskId}`}>
+          <Link href={`/task/${taskId}`}>
             <button 
               className="btn btn-outline btn-sm hover:bg-gray-100 hover:border-gray-400 shadow-sm transition-all hover:shadow-md"
             >

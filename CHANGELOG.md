@@ -4,6 +4,22 @@
 # SRP/DRY check: Pass - entries document changes without altering historical records.
 # New entries at the top, use proper SemVer!
 
+### Version 6.10.1  Dec 21, 2025
+
+- **Fix: Complete navigation URL migration from /puzzle/ to /task/** (Author: Claude Code using Sonnet 4.5)
+  - **Purpose**: Finalize URL migration to ensure all internal navigation uses new /task/ routes
+  - **Files Updated**:
+    - `client/src/components/puzzle/PuzzleTradingCard.tsx` - Trading card "View Details" link
+    - `client/src/components/model-examiner/ExaminerActivity.tsx` - Activity log puzzle navigation
+    - `client/src/components/poetiq/PuzzleProgressGrid.tsx` - Grid cell window.open navigation
+    - `client/src/pages/BeetreeSolver.tsx` - Back button navigation
+    - `client/src/pages/GroverSolver.tsx` - Back button navigation  
+    - `client/src/pages/ModelDebate.tsx` - "Generate First Explanation" navigation
+    - `client/src/pages/PuzzleDiscussion.tsx` - Multiple navigation links (2 locations)
+    - `client/src/pages/FeedbackExplorer.tsx` - Puzzle and explanation navigation links (2 locations)
+    - `client/src/components/puzzle/AnalysisResultHeader.tsx` - Copy link share feature
+  - **Impact**: All internal navigation now consistently uses /task/ routes, completing the migration
+
 ### Version 6.10.0  Dec 21, 2025
 
 - **Feature: Puzzle Analyst - New high-density grid page for analyzing explanations** (Author: Claude Code using Haiku 4.5)

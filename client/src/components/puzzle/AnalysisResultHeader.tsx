@@ -116,7 +116,7 @@ export const AnalysisResultHeader: React.FC<AnalysisResultHeaderProps> = ({
 
   const handleCopyLink = () => {
     if (!result.id || !result.puzzleId) return;
-    const url = `${window.location.origin}/puzzle/${result.puzzleId}?highlight=${result.id}`;
+    const url = `${window.location.origin}/task/${result.puzzleId}?highlight=${result.id}`;
     navigator.clipboard.writeText(url).then(() => {
       toast({
         title: 'Link copied!',
