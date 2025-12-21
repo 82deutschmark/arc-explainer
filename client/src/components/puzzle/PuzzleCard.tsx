@@ -128,7 +128,7 @@ export const PuzzleCard: React.FC<PuzzleCardProps> = ({
   const compactMetrics = getCompactMetrics(puzzle.performanceData as any, 2);
 
   return (
-    <Link href={`/puzzle/${puzzle.id}`}>
+    <Link href={`/task/${puzzle.id}`}>
       <Card
         ref={cardRef}
         className="group h-full transition-shadow hover:shadow-md cursor-pointer"
