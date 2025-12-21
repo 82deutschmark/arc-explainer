@@ -21,6 +21,8 @@
 - **Worm Arena: Add OpenAI summary paragraph to the model insights report** (Author: Codex (GPT-5))
   - **Behavior**: Report now calls OpenAI Responses API (gpt-5-nano-2025-08-07) to write a short summary
   - **Fallback**: Report still renders stats if the LLM summary fails
+  - **Fix**: Summary request now matches Responses API input block format with instruction text and
+    reasoning summary fallback parsing
   - **UI**: Inline summary block added to the Models page report card
   - **Docs**: Updated `docs/reference/data/WormArena_Model_Insights_Report.md`
   - **Files Created**:
@@ -1185,4 +1187,3 @@
   - Added smooth fade transitions between setup → live → completed states for polished UX.
   - Deleted `WormArenaMatchupSelector` component (no longer needed).
   - **Files Modified**: `client/src/hooks/useWormArenaSetup.ts` (new), `client/src/components/WormArenaRunControls.tsx`, `client/src/pages/WormArenaLive.tsx`, `client/src/components/WormArenaMatchupSelector.tsx` (deleted), `CHANGELOG.md`
-

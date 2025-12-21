@@ -106,14 +106,35 @@ const buildInsightsSummaryPrompt = (
   ].join('\n');
 };
 
-// Extract the text summary from a Responses API payload.
+// Extract the text summary from a Responses API payload with reasoning fallback.
 const extractInsightsSummaryText = (response: any): string | null => {
   const normalized = normalizeResponse(response, { modelKey: INSIGHTS_SUMMARY_MODEL });
   const text = typeof normalized.output_text === 'string' ? normalized.output_text.trim() : '';
-  if (!text) {
-    return null;
+  if (text) {
+    return text.replace(/\s+/g, ' ').trim();
   }
-  return text.replace(/\s+/g, ' ').trim();
+
+  const reasoning = normalized.output_reasoning?.summary;
+  if (typeof reasoning === 'string' && reasoning.trim().length > 0) {
+    return reasoning.replace(/\s+/g, ' ').trim();
+  }
+
+  if (Array.isArray(reasoning)) {
+    const joined = reasoning
+      .map(item => (typeof item === 'string' ? item : ''))
+      .filter(Boolean)
+      .join(' ');
+    if (joined.trim().length > 0) {
+      return joined.replace(/\s+/g, ' ').trim();
+    }
+  }
+
+  if (reasoning && typeof reasoning === 'object' && typeof (reasoning as any).text === 'string') {
+    const summaryText = (reasoning as any).text.trim();
+    return summaryText.length > 0 ? summaryText.replace(/\s+/g, ' ').trim() : null;
+  }
+
+  return null;
 };
 
 // Call OpenAI directly to generate the model insights summary text.
@@ -132,14 +153,18 @@ const requestInsightsSummary = async (
     model: INSIGHTS_SUMMARY_MODEL,
     input: [
       {
-        role: 'system',
-        content: 'You are a concise analytics reporter for game model performance.',
-      },
-      {
+        id: `msg_${Date.now()}_summary_${Math.random().toString(16).slice(2)}`,
         role: 'user',
-        content: prompt,
+        type: 'message',
+        content: [
+          {
+            type: 'input_text',
+            text: prompt,
+          },
+        ],
       },
     ],
+    instructions: 'You are a concise analytics reporter for game model performance.',
     reasoning: {
       effort: 'medium',
       summary: 'auto',
@@ -147,7 +172,7 @@ const requestInsightsSummary = async (
     text: {
       verbosity: 'high',
     },
-    max_output_tokens: 300,
+    max_output_tokens: 600,
   };
 
   try {
