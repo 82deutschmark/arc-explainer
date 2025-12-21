@@ -4,6 +4,18 @@
 # SRP/DRY check: Pass - entries document changes without altering historical records.
 # New entries at the top, use proper SemVer!
 
+### Version 6.9.21  Dec 20, 2025
+
+- **Fix: OpenRouter Responses API max_output_tokens requirement** (Author: Claude Code)
+  - **Issue**: OpenRouter updated Responses API proxy to require explicit `max_output_tokens` for reasoning models
+  - **Symptom**: gpt-5.1-codex-mini returned empty `output=[]` array despite input being processed
+  - **Root Cause**: `max_output_tokens` was never set in player config for OpenAI/xAI models
+  - **Fix**: Added `config["max_output_tokens"] = 16000` for models starting with "openai/" or "x-ai/"
+  - **Impact**: SnakeBench/Worm Arena matches with gpt-5.1-codex-mini will now generate output
+  - **Files Modified**:
+    - `server/python/snakebench_runner.py` (line 112)
+    - `CHANGELOG.md`
+
 ### Version 6.9.20  Dec 20, 2025
 
 - **Worm Arena: Add OpenAI summary paragraph to the model insights report** (Author: Codex (GPT-5))

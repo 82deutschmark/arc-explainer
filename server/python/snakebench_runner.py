@@ -109,6 +109,7 @@ def main() -> int:
                 config["api_type"] = "responses"
                 config["reasoning"] = {"effort": "medium", "summary": "detailed"}
                 config["text"] = {"verbosity": "medium"}
+                config["max_output_tokens"] = 16000
 
             return config
 
