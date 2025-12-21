@@ -4,6 +4,22 @@
 # SRP/DRY check: Pass - entries document changes without altering historical records.
 # New entries at the top, use proper SemVer!
 
+### Version 6.9.20  Dec 20, 2025
+
+- **Worm Arena: Add OpenAI summary paragraph to the model insights report** (Author: Codex (GPT-5))
+  - **Behavior**: Report now calls OpenAI Responses API (gpt-5-nano-2025-08-07) to write a short summary
+  - **Fallback**: Report still renders stats if the LLM summary fails
+  - **UI**: Inline summary block added to the Models page report card
+  - **Docs**: Updated `docs/reference/data/WormArena_Model_Insights_Report.md`
+  - **Files Created**:
+    - `docs/plans/2025-12-20-worm-arena-model-insights-llm-summary-plan.md`
+  - **Files Modified**:
+    - `server/services/snakeBenchService.ts`
+    - `shared/types.ts`
+    - `client/src/components/wormArena/WormArenaModelInsightsReport.tsx`
+    - `docs/reference/data/WormArena_Model_Insights_Report.md`
+    - `CHANGELOG.md`
+
 ### Version 6.9.19  Dec 20, 2025
 
 - **Worm Arena: Add per-model actionable insights report with copy, save, and Twitter share actions** (Author: Codex (GPT-5))

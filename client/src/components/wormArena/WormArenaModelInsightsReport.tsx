@@ -2,7 +2,8 @@
  * Author: Codex (GPT-5)
  * Date: 2025-12-20
  * PURPOSE: Inline actionable insights report for the Worm Arena Models page.
- *          Generates a per-model report on demand and provides copy, save, and Twitter share actions.
+ *          Generates a per-model report on demand, displays an LLM summary,
+ *          and provides copy, save, and Twitter share actions.
  * SRP/DRY check: Pass - focused on report display and actions.
  */
 
@@ -192,6 +193,22 @@ export default function WormArenaModelInsightsReport({ modelSlug }: WormArenaMod
             {/* Report metadata for user context */}
             <div className="text-xs worm-muted">
               Generated: {formatDateTime(report.generatedAt)}
+            </div>
+            {/* LLM summary block with graceful fallback */}
+            <div className="rounded-md border px-4 py-3 bg-white/70">
+              <div className="text-xs worm-muted">LLM Summary</div>
+              {report.llmSummary ? (
+                <div className="text-sm text-worm-ink">{report.llmSummary}</div>
+              ) : (
+                <div className="text-sm worm-muted">
+                  Summary unavailable. The stats below are still accurate.
+                </div>
+              )}
+              {report.llmModel && (
+                <div className="text-xs worm-muted mt-2">
+                  Summary model: {report.llmModel}
+                </div>
+              )}
             </div>
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
               <div className="rounded-md border px-3 py-2 bg-white/70">

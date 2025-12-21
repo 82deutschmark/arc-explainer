@@ -3,7 +3,8 @@
  *
  * Author: Codex (GPT-5)
  * Date: 2025-12-20
- * PURPOSE: Shared TypeScript interfaces and types for ARC Explainer, including Worm Arena model insights reports.
+ * PURPOSE: Shared TypeScript interfaces and types for ARC Explainer, including Worm Arena model insights
+ *          reports with optional LLM summary fields.
  * SRP/DRY check: Pass - shared types only.
  */
 
@@ -817,6 +818,10 @@ export interface WormArenaModelInsightsReport {
   summary: WormArenaModelInsightsSummary;
   failureModes: WormArenaModelInsightsFailureMode[];
   lossOpponents: WormArenaModelInsightsOpponent[];
+  // LLM-generated summary paragraph (null when generation fails).
+  llmSummary: string | null;
+  // OpenAI model used for the summary (null when summary is unavailable).
+  llmModel: string | null;
   markdownReport: string;
   tweetText: string;
 }

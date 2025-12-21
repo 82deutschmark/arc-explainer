@@ -1,6 +1,7 @@
 Author: Codex (GPT-5)
 Date: 2025-12-20
-PURPOSE: Document the Worm Arena per-model actionable insights report, its data sources, and known gaps.
+PURPOSE: Document the Worm Arena per-model actionable insights report, its data sources, and known gaps,
+including the OpenAI summary step.
 SRP/DRY check: Pass - documentation only.
 
 # Worm Arena Model Insights Report
@@ -10,6 +11,7 @@ SRP/DRY check: Pass - documentation only.
 
 ## Scope
 - Report uses the full history of completed games for the selected model.
+- LLM summary is generated from aggregated stats only (OpenAI Responses API, gpt-5-nano-2025-08-07).
 
 ## Data sources
 - `public.game_participants`
@@ -43,5 +45,7 @@ SRP/DRY check: Pass - documentation only.
 - `summary`: counts, rates, cost metrics, and data quality rates.
 - `failureModes`: loss counts by reason plus share of losses and average death round.
 - `lossOpponents`: top opponents by losses with loss rate and last played timestamp.
+- `llmSummary`: short paragraph summary written by OpenAI (null if generation fails).
+- `llmModel`: OpenAI model key used for the summary (null if summary is unavailable).
 - `markdownReport`: markdown text used for copy and save actions.
 - `tweetText`: preformatted short share text for Twitter.
