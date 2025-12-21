@@ -152,12 +152,12 @@ export function FeedbackSummary({
                       </p>
                     </div>
                     <a
-                      href={`/puzzle/${puzzle.puzzleId}`}
+                      href={`/task/${puzzle.puzzleId}`}
                       target="_blank"
                       rel="noreferrer noopener"
                       className="inline-flex items-center gap-1 text-xs font-medium text-blue-600 hover:underline"
                     >
-                      Open <ArrowUpRight className="h-3 w-3" />
+                      Analyze <ArrowUpRight className="h-3 w-3" />
                     </a>
                   </li>
                 ))}

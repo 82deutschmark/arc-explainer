@@ -32,7 +32,7 @@ export function ChallengePuzzleCard({ puzzleId }: ChallengePuzzleCardProps) {
   if (error) return null; // Skip rendering if we can't load it
 
   return (
-    <Link href={`/puzzle/${puzzleId}`}>
+    <Link href={`/task/${puzzleId}`}>
       <a className="block group">
         <div className="relative overflow-hidden rounded-xl border-2 border-slate-700 bg-slate-800/50 transition-all duration-300 hover:-translate-y-1 hover:border-yellow-500/50 hover:shadow-xl hover:shadow-yellow-500/10">
           

@@ -237,7 +237,7 @@ export const CompactPuzzleCard: React.FC<CompactPuzzleCardProps> = ({
   }
 
   return (
-    <Link href={`/puzzle/${puzzle.id}`}>
+    <Link href={`/task/${puzzle.id}`}>
       {cardContent}
     </Link>
   );
