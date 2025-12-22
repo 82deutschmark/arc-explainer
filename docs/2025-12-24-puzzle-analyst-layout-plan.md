@@ -23,3 +23,7 @@ SRP/DRY check: Pass - describes UI work only, calls out reuse of existing TinyGr
 3. Ensure the expansion area uses `AnalysisResultCard` only when details are loaded, showing a background that blends with the dense theme.
 4. Fine-tune the PuzzleAnalyst page to match (collapsed header, scrollable area, responsive adjustments).
 5. Document the change in `CHANGELOG.md` with a new version entry referencing the updated files.
+
+## Update
+
+- Add stacked grid previews for multi-test predictions and pass expected outputs into `AnalysisResultCard` so grids and mismatch toggles work.

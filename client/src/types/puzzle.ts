@@ -1,7 +1,10 @@
 /**
  * Types for puzzles and related components in the ARC Explainer
  * This file contains interfaces and types used throughout the puzzle components
- * Author: Cascade
+ * Author: Codex (GPT-5)
+ * Date: 2025-12-24
+ * PURPOSE: Add multi-test prediction grid typing so Puzzle Analyst can render stacked previews.
+ * SRP/DRY check: Pass - type definitions only; no runtime behavior changes.
  */
 
 import type { EmojiSet } from '@/lib/spaceEmojis';
@@ -128,6 +131,7 @@ export interface ExplanationData {
   extractionMethod?: string; // Method used to extract the grid
   // Multi-test validation fields (set by backend controller for multi-test cases)
   predictedOutputGrids?: (number[][] | null)[]; // Array of predicted grids from validateSolverResponseMulti
+  multiTestPredictionGrids?: (number[][] | null)[]; // Sanitized multi-test grids from repository
   multiValidation?: Array<{ // Individual validation results from itemResults
     index: number;
     predictedGrid: number[][] | null;
