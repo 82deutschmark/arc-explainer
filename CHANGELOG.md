@@ -4,6 +4,19 @@
 # SRP/DRY check: Pass - entries document changes without altering historical records.
 # New entries at the top, use proper SemVer!
 
+### Version 6.10.4  Dec 24, 2025
+
+- **Fix: Restore multi-test grid previews and expected outputs in Puzzle Analyst** (Author: Codex (GPT-5))
+  - **Purpose**: Ensure multi-test explanations show stacked previews and expanded cards always include expected outputs with working mismatch toggles.
+  - **Behavior**:
+    - Added stacked grid previews that fall back to multi-test predictions when single grids are missing.
+    - Passed puzzle test cases into `AnalysisResultCard` so expected outputs and mismatch diffs render.
+    - Added the missing `multiTestPredictionGrids` type so stacked previews compile cleanly.
+  - **Files Modified**:
+    - `client/src/components/puzzle/ExplanationGridRow.tsx` - Stacked preview selection and test case wiring for expanded cards.
+    - `client/src/pages/PuzzleAnalyst.tsx` - Supplies test cases from puzzle data to each row.
+    - `docs/2025-12-24-puzzle-analyst-layout-plan.md` - Documented the multi-test grid handling update.
+
 ### Version 6.10.3  Dec 24, 2025
 
 - **Layout: Refresh Puzzle Analyst grid density** (Author: Codex (GPT-5))

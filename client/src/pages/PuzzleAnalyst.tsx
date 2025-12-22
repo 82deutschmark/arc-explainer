@@ -2,7 +2,8 @@
  * Author: Codex (GPT-5)
  * Date: 2025-12-24
  * PURPOSE: Tighten the Puzzle Analyst layout so the dense grid matches the reference art direction.
- *          Adds sticky offsets to respect the global AppHeader height and prevent overlay on rows.
+ *          Adds sticky offsets to respect the global AppHeader height and ensures grid previews
+ *          render with expected outputs in expanded cards.
  * SRP/DRY check: Pass - this file orchestrates layout only and reuses ExplanationGridRow for details.
  */
 
@@ -47,7 +48,7 @@ export default function PuzzleAnalyst() {
   const columnHeaderTop = appHeaderHeight + headerHeight;
 
   // Fetch puzzle metadata
-  const { data: puzzle, isLoading: isPuzzleLoading } = usePuzzle(taskId);
+  const { task, isLoadingTask: isPuzzleLoading } = usePuzzle(taskId);
 
   // Fetch all explanations with high page size
   const {
@@ -63,6 +64,8 @@ export default function PuzzleAnalyst() {
 
   // Keep a simple summary of totals for the header badges.
   const summaryStats = counts ?? { all: 0, correct: 0, incorrect: 0 };
+  // Provide expected outputs so AnalysisResultCard can render grids and mismatches.
+  const testCases = task?.test ?? [];
 
   const handleToggleRow = (explanationId: number) => {
     setExpandedRows(prev => {
@@ -191,6 +194,7 @@ export default function PuzzleAnalyst() {
               <ExplanationGridRow
                 key={explanation.id}
                 explanation={explanation}
+                testCases={testCases}
                 isExpanded={expandedRows.has(explanation.id)}
                 onToggleExpand={() => handleToggleRow(explanation.id)}
                 isAlternate={idx % 2 === 1}

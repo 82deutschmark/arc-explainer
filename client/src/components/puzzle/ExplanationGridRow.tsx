@@ -2,9 +2,9 @@
  * Author: Codex (GPT-5)
  * Date: 2025-12-24
  * PURPOSE: Render a high-density explanation row for PuzzleAnalyst with a compact metadata header,
- *          status badges, and streamed detail expansion. Comments explain the data formatting and
- *          animation hooks that keep the row responsive without cluttering the view.
- * SRP/DRY check: Pass – responsibility limited to one explanation row; reuses TinyGrid, badges, and
+ *          status badges, stacked grid previews for multi-test outputs, and streamed detail expansion.
+ *          Comments explain data formatting and preview selection to keep the row responsive.
+ * SRP/DRY check: Pass - responsibility limited to one explanation row; reuses TinyGrid, badges, and
  *                AnalysisResultCard. No new hooks or fetch logic outside this component.
  */
 
@@ -23,10 +23,11 @@ import {
 import { TinyGrid } from './TinyGrid';
 import { AnalysisResultCard } from './AnalysisResultCard';
 import { fetchExplanationById } from '@/hooks/useExplanation';
-import type { ExplanationData } from '@/types/puzzle';
+import type { ExplanationData, TestCase } from '@/types/puzzle';
 
 interface ExplanationGridRowProps {
   explanation: ExplanationData;
+  testCases: TestCase[];
   isExpanded: boolean;
   onToggleExpand: () => void;
   isAlternate?: boolean;
@@ -34,6 +35,7 @@ interface ExplanationGridRowProps {
 
 export default function ExplanationGridRow({
   explanation,
+  testCases,
   isExpanded,
   onToggleExpand,
   isAlternate = false,
@@ -144,6 +146,19 @@ export default function ExplanationGridRow({
   const rowBackground = isAlternate ? 'bg-gray-900/40' : 'bg-transparent';
   const borderStyle = isExpanded ? 'border-b border-gray-700/70' : 'border-b border-gray-800/60';
 
+  // Build a compact preview grid, favoring multi-test predictions when available.
+  const predictedGrid = explanation.predictedOutputGrid ?? null;
+  const multiTestGrids =
+    (Array.isArray(explanation.multiTestPredictionGrids) && explanation.multiTestPredictionGrids.length > 0)
+      ? explanation.multiTestPredictionGrids
+      : (Array.isArray(explanation.multiplePredictedOutputs) && explanation.multiplePredictedOutputs.length > 0)
+        ? explanation.multiplePredictedOutputs
+        : (Array.isArray(explanation.predictedOutputGrids) && explanation.predictedOutputGrids.length > 0)
+          ? explanation.predictedOutputGrids
+          : [];
+  const previewGrid = predictedGrid ?? multiTestGrids[0] ?? null;
+  const previewCount = multiTestGrids.length;
+
   return (
     <>
       {/* Desktop row */}
@@ -152,9 +167,23 @@ export default function ExplanationGridRow({
         onClick={handleExpand}
       >
         <div className="flex items-center justify-center">
-          {explanation.predictedOutputGrid ? (
-            <div className="w-16 h-16 border border-gray-700 rounded-sm">
-              <TinyGrid grid={explanation.predictedOutputGrid} />
+          {previewGrid ? (
+            <div className="relative w-16 h-16">
+              {/* Stacked preview to indicate multiple predictions without cluttering the row. */}
+              {previewCount > 1 && (
+                <div className="absolute -top-1 -left-1 h-full w-full rounded-sm border border-gray-700/70 bg-gray-950" />
+              )}
+              {previewCount > 2 && (
+                <div className="absolute -top-2 -left-2 h-full w-full rounded-sm border border-gray-700/50 bg-gray-950" />
+              )}
+              <div className="relative h-full w-full rounded-sm border border-gray-700">
+                <TinyGrid grid={previewGrid} />
+              </div>
+              {previewCount > 1 && (
+                <span className="absolute -bottom-2 -right-2 rounded-full border border-gray-700 bg-black/90 px-2 py-0.5 text-[9px] font-semibold text-gray-200">
+                  x{previewCount}
+                </span>
+              )}
             </div>
           ) : (
             <div className="text-[11px] text-gray-500">No Grid</div>
@@ -235,9 +264,20 @@ export default function ExplanationGridRow({
         onClick={handleExpand}
       >
         <div className="flex items-center gap-3">
-          {explanation.predictedOutputGrid ? (
-            <div className="w-12 h-12 border border-gray-700 rounded-sm flex-shrink-0">
-              <TinyGrid grid={explanation.predictedOutputGrid} />
+          {previewGrid ? (
+            <div className="relative w-12 h-12 flex-shrink-0">
+              {/* Stacked preview for mobile: keep the badge but reduce layers for space. */}
+              {previewCount > 1 && (
+                <div className="absolute -top-1 -left-1 h-full w-full rounded-sm border border-gray-700/70 bg-gray-950" />
+              )}
+              <div className="relative h-full w-full rounded-sm border border-gray-700">
+                <TinyGrid grid={previewGrid} />
+              </div>
+              {previewCount > 1 && (
+                <span className="absolute -bottom-2 -right-2 rounded-full border border-gray-700 bg-black/90 px-2 py-0.5 text-[9px] font-semibold text-gray-200">
+                  x{previewCount}
+                </span>
+              )}
             </div>
           ) : (
             <div className="text-[11px] text-gray-500">No Grid</div>
@@ -312,7 +352,7 @@ export default function ExplanationGridRow({
             <AnalysisResultCard
               result={detailedExplanation}
               modelKey={detailedExplanation.modelName}
-              testCases={[]}
+              testCases={testCases}
               eloMode={false}
             />
           ) : (
