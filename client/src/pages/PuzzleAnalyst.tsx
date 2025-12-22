@@ -2,12 +2,11 @@
  * Author: Codex (GPT-5)
  * Date: 2025-12-24
  * PURPOSE: Tighten the Puzzle Analyst layout so the dense grid matches the reference art direction.
- *          Adds sticky offsets to respect the global AppHeader height and ensures grid previews
- *          render with expected outputs in expanded cards.
+ *          Removes sticky header layers to prevent overlap and keeps the grid aligned and compact.
  * SRP/DRY check: Pass - this file orchestrates layout only and reuses ExplanationGridRow for details.
  */
 
-import React, { useLayoutEffect, useMemo, useRef, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useParams } from 'wouter';
 import { AlertCircle } from 'lucide-react';
 import { getPuzzleName } from '@shared/utils/puzzleNames';
@@ -22,31 +21,6 @@ import ExplanationGridRow from '@/components/puzzle/ExplanationGridRow';
 export default function PuzzleAnalyst() {
   const { taskId } = useParams<{ taskId: string }>();
   const [expandedRows, setExpandedRows] = useState<Set<number>>(new Set());
-  const headerRef = useRef<HTMLDivElement | null>(null);
-  const [headerHeight, setHeaderHeight] = useState(0);
-
-  // AppHeader uses h-12, so reserve 48px for the global nav when sticking content.
-  const appHeaderHeight = 48;
-
-  // Measure the PuzzleAnalyst header so column headers stick below it.
-  useLayoutEffect(() => {
-    const updateHeaderHeight = () => {
-      if (!headerRef.current) {
-        return;
-      }
-      const measuredHeight = headerRef.current.getBoundingClientRect().height;
-      setHeaderHeight(Math.ceil(measuredHeight));
-    };
-
-    updateHeaderHeight();
-    window.addEventListener('resize', updateHeaderHeight);
-    return () => {
-      window.removeEventListener('resize', updateHeaderHeight);
-    };
-  }, []);
-
-  const columnHeaderTop = appHeaderHeight + headerHeight;
-
   // Fetch puzzle metadata
   const { task, isLoadingTask: isPuzzleLoading } = usePuzzle(taskId);
 
@@ -143,11 +117,7 @@ export default function PuzzleAnalyst() {
 
   return (
     <div className="min-h-screen bg-black text-gray-50">
-      <div
-        ref={headerRef}
-        className="sticky z-40 border-b border-gray-800 bg-black/95 shadow-[0_10px_30px_-15px_rgba(0,0,0,0.9)] backdrop-blur-sm"
-        style={{ top: appHeaderHeight }}
-      >
+      <div className="border-b border-gray-800 bg-black">
         <div className="max-w-7xl mx-auto px-4 py-2">
           <h1 className="text-2xl font-semibold text-gray-100 leading-tight">
             {taskId}
@@ -171,12 +141,11 @@ export default function PuzzleAnalyst() {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 py-4">
-        <div className="space-y-px border border-gray-800/80 rounded-xl bg-black/80 shadow-[0_40px_120px_-60px_rgba(0,0,0,0.95)] overflow-hidden">
+      <div className="max-w-7xl mx-auto px-4 pt-1 pb-3">
+        <div className="space-y-px border border-gray-800/80 rounded-xl bg-black shadow-[0_40px_120px_-60px_rgba(0,0,0,0.95)] overflow-hidden">
           {/* Column headers align with ExplanationGridRow widths so every value lines up. */}
           <div
-            className="hidden md:grid grid-cols-[56px_minmax(200px,1fr)_96px_78px_92px_92px_86px_40px] gap-2 px-3 py-2 bg-black/70 border-b border-gray-800 sticky z-30 text-[9px] font-semibold uppercase tracking-[0.26em] text-gray-400"
-            style={{ top: columnHeaderTop }}
+            className="hidden md:grid grid-cols-[56px_minmax(200px,1fr)_96px_78px_92px_92px_86px_40px] gap-2 px-2.5 py-1 bg-black border-b border-gray-800 text-[9px] font-semibold uppercase tracking-[0.26em] text-gray-500"
           >
             <div>Grid</div>
             <div>Model</div>
