@@ -148,43 +148,43 @@ export default function PuzzleAnalyst() {
         className="sticky z-40 border-b border-gray-800 bg-black/95 shadow-[0_10px_30px_-15px_rgba(0,0,0,0.9)] backdrop-blur-sm"
         style={{ top: appHeaderHeight }}
       >
-        <div className="max-w-7xl mx-auto px-6 py-3">
-          <h1 className="text-3xl font-semibold text-gray-100 leading-tight">
+        <div className="max-w-7xl mx-auto px-4 py-2">
+          <h1 className="text-2xl font-semibold text-gray-100 leading-tight">
             {taskId}
             {puzzleName && ` - ${puzzleName}`}
           </h1>
-          <p className="text-xs font-semibold uppercase tracking-[0.35em] text-gray-400 mt-1">
+          <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-gray-400 mt-1">
             Analyzing {total} explanation{total !== 1 ? 's' : ''}
           </p>
           {/* Summary badges keep the header informative at a glance. */}
-          <div className="mt-3 flex flex-wrap gap-3 text-[11px] font-semibold uppercase text-gray-300">
-            <span className="rounded-full border border-gray-800 px-3 py-1 bg-white/5">
+          <div className="mt-2 flex flex-wrap gap-2 text-[10px] font-semibold uppercase text-gray-300">
+            <span className="rounded-full border border-gray-800 px-2 py-0.5 bg-white/5">
               All {summaryStats.all}
             </span>
-            <span className="rounded-full border border-gray-800 px-3 py-1 bg-emerald-500/10 text-emerald-200">
+            <span className="rounded-full border border-gray-800 px-2 py-0.5 bg-emerald-500/10 text-emerald-200">
               Correct {summaryStats.correct}
             </span>
-            <span className="rounded-full border border-gray-800 px-3 py-1 bg-rose-500/10 text-rose-200">
+            <span className="rounded-full border border-gray-800 px-2 py-0.5 bg-rose-500/10 text-rose-200">
               Incorrect {summaryStats.incorrect}
             </span>
           </div>
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-6 py-6">
-        <div className="space-y-px border border-gray-800/80 rounded-2xl bg-black/80 shadow-[0_40px_120px_-60px_rgba(0,0,0,0.95)] overflow-hidden">
+      <div className="max-w-7xl mx-auto px-4 py-4">
+        <div className="space-y-px border border-gray-800/80 rounded-xl bg-black/80 shadow-[0_40px_120px_-60px_rgba(0,0,0,0.95)] overflow-hidden">
           {/* Column headers align with ExplanationGridRow widths so every value lines up. */}
           <div
-            className="hidden md:grid grid-cols-[72px_minmax(200px,1fr)_110px_90px_110px_110px_90px_48px] gap-3 px-4 py-3 bg-black/70 border-b border-gray-800 sticky z-30 text-[10px] font-semibold uppercase tracking-[0.3em] text-gray-400"
+            className="hidden md:grid grid-cols-[56px_minmax(200px,1fr)_96px_78px_92px_92px_86px_40px] gap-2 px-3 py-2 bg-black/70 border-b border-gray-800 sticky z-30 text-[9px] font-semibold uppercase tracking-[0.26em] text-gray-400"
             style={{ top: columnHeaderTop }}
           >
             <div>Grid</div>
             <div>Model</div>
             <div>Status</div>
             <div>Cost</div>
-            <div>Created</div>
-            <div>Tokens</div>
-            <div>Latency</div>
+            <div>Date</div>
+            <div>Tokens T/I/O/R</div>
+            <div>Time</div>
             <div></div>
           </div>
 
@@ -204,7 +204,7 @@ export default function PuzzleAnalyst() {
         </div>
 
         {/* Footer Stats */}
-        <div className="mt-5 text-[11px] uppercase tracking-[0.35em] text-gray-500">
+        <div className="mt-4 text-[10px] uppercase tracking-[0.28em] text-gray-500">
           Showing {summaries.length} of {total} explanations
         </div>
       </div>

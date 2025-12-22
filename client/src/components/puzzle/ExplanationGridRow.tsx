@@ -109,10 +109,14 @@ export default function ExplanationGridRow({
     return null;
   };
 
+  const inputTokens = explanation.inputTokens ?? null;
+  const outputTokens = explanation.outputTokens ?? null;
+  const reasoningTokens = explanation.reasoningTokens ?? null;
   const totalTokens =
     explanation.totalTokens ??
-    ((explanation.inputTokens ?? 0) + (explanation.outputTokens ?? 0));
+    ((inputTokens ?? 0) + (outputTokens ?? 0) + (reasoningTokens ?? 0));
   const formattedTokens = formatTokenCount(totalTokens);
+  const tokenPartsText = `I ${formatTokenCount(inputTokens)} O ${formatTokenCount(outputTokens)} R ${formatTokenCount(reasoningTokens)}`;
   const costText = formatCurrency(explanation.estimatedCost);
   const timestampText = explanation.createdAt
     ? format(new Date(explanation.createdAt), 'MMM d, HH:mm')
@@ -163,21 +167,21 @@ export default function ExplanationGridRow({
     <>
       {/* Desktop row */}
       <div
-        className={`hidden md:grid cursor-pointer transition-colors ${rowBackground} hover:bg-gray-800/60 ${borderStyle} grid-cols-[72px_minmax(200px,1fr)_110px_90px_110px_110px_90px_48px] gap-3 px-4 py-3 items-center`}
+        className={`hidden md:grid cursor-pointer transition-colors ${rowBackground} hover:bg-gray-800/60 ${borderStyle} grid-cols-[56px_minmax(200px,1fr)_96px_78px_92px_92px_86px_40px] gap-2 px-3 py-2 items-center`}
         onClick={handleExpand}
       >
         <div className="flex items-center justify-center">
           {previewGrid ? (
-            <div className="relative w-16 h-16">
+            <div className="relative w-12 h-12">
               {/* Stacked preview to indicate multiple predictions without cluttering the row. */}
               {previewCount > 1 && (
-                <div className="absolute -top-1 -left-1 h-full w-full rounded-sm border border-gray-700/70 bg-gray-950" />
+                <div className="absolute -top-1 -left-1 h-full w-full rounded-sm border border-gray-700/70 bg-black" />
               )}
               {previewCount > 2 && (
-                <div className="absolute -top-2 -left-2 h-full w-full rounded-sm border border-gray-700/50 bg-gray-950" />
+                <div className="absolute -top-2 -left-2 h-full w-full rounded-sm border border-gray-700/50 bg-black" />
               )}
-              <div className="relative h-full w-full rounded-sm border border-gray-700">
-                <TinyGrid grid={previewGrid} />
+              <div className="relative h-full w-full rounded-sm border border-gray-700 bg-black p-0.5">
+                <TinyGrid grid={previewGrid} className="h-full w-full" />
               </div>
               {previewCount > 1 && (
                 <span className="absolute -bottom-2 -right-2 rounded-full border border-gray-700 bg-black/90 px-2 py-0.5 text-[9px] font-semibold text-gray-200">
@@ -191,10 +195,10 @@ export default function ExplanationGridRow({
         </div>
 
         <div className="flex flex-col min-w-0 gap-1">
-          <p className="text-sm font-semibold text-gray-100 truncate">
+          <p className="text-[13px] font-semibold text-gray-100 truncate">
             {explanation.modelName}
           </p>
-          <p className="text-[11px] uppercase tracking-wide text-gray-400 truncate">
+          <p className="text-[10px] uppercase tracking-wide text-gray-400 truncate">
             {metadataLine}
           </p>
         </div>
@@ -202,40 +206,40 @@ export default function ExplanationGridRow({
         <div className="flex flex-col gap-1">
           <Badge
             variant="outline"
-            className={`flex items-center gap-1 border font-mono text-[11px] uppercase px-1 py-1 ${statusColorClass}`}
+            className={`flex items-center gap-1 border font-mono text-[10px] uppercase px-1 py-0.5 ${statusColorClass}`}
           >
             <StatusIcon className="w-3 h-3" />
             {statusLabel}
           </Badge>
           {explanation.hasReasoningLog && (
-            <div className="flex items-center gap-1 text-[10px] text-blue-300">
+            <div className="flex items-center gap-1 text-[9px] text-blue-300">
               <Brain className="w-3 h-3" />
               Reasoning log
             </div>
           )}
         </div>
 
-        <div className="text-right text-[11px] text-gray-300">
+        <div className="text-right text-[10px] text-gray-300">
           <div className="font-semibold text-gray-100">{costText}</div>
-          <div className="text-[10px] text-gray-500">Cost</div>
+          <div className="text-[9px] text-gray-500">Cost</div>
         </div>
 
-        <div className="text-right text-[11px] text-gray-300">
-          <div className="font-semibold text-gray-100">{timestampText}</div>
-          <div className="text-[10px] text-gray-500">Created</div>
+        <div className="text-right text-[10px] text-gray-300">
+          <div className="text-gray-200">{timestampText}</div>
+          <div className="text-[9px] text-gray-500">Date</div>
         </div>
 
-        <div className="text-right text-[11px] text-gray-300">
+        <div className="text-right text-[10px] text-gray-300">
           <div className="inline-flex items-center justify-end gap-1 font-semibold text-gray-100">
-            <Coins className="w-4 h-4 text-amber-400" />
+            <Coins className="w-3.5 h-3.5 text-amber-400" />
             {formattedTokens}
           </div>
-          <div className="text-[10px] text-gray-500">Tokens</div>
+          <div className="text-[9px] text-gray-500">{tokenPartsText}</div>
         </div>
 
-        <div className="text-right text-[11px] text-gray-300">
+        <div className="text-right text-[10px] text-gray-300">
           <div className="font-semibold text-gray-100">{durationText}</div>
-          <div className="text-[10px] text-gray-500">Latency</div>
+          <div className="text-[9px] text-gray-500">Time</div>
         </div>
 
         <div className="flex items-center justify-center">
@@ -260,18 +264,18 @@ export default function ExplanationGridRow({
 
       {/* Mobile view */}
       <div
-        className={`${rowBackground} md:hidden cursor-pointer border-b border-gray-800/60 px-4 py-3 transition-colors hover:bg-gray-800/60`}
+        className={`${rowBackground} md:hidden cursor-pointer border-b border-gray-800/60 px-3 py-2 transition-colors hover:bg-gray-800/60`}
         onClick={handleExpand}
       >
         <div className="flex items-center gap-3">
           {previewGrid ? (
-            <div className="relative w-12 h-12 flex-shrink-0">
+            <div className="relative w-10 h-10 flex-shrink-0">
               {/* Stacked preview for mobile: keep the badge but reduce layers for space. */}
               {previewCount > 1 && (
-                <div className="absolute -top-1 -left-1 h-full w-full rounded-sm border border-gray-700/70 bg-gray-950" />
+                <div className="absolute -top-1 -left-1 h-full w-full rounded-sm border border-gray-700/70 bg-black" />
               )}
-              <div className="relative h-full w-full rounded-sm border border-gray-700">
-                <TinyGrid grid={previewGrid} />
+              <div className="relative h-full w-full rounded-sm border border-gray-700 bg-black p-0.5">
+                <TinyGrid grid={previewGrid} className="h-full w-full" />
               </div>
               {previewCount > 1 && (
                 <span className="absolute -bottom-2 -right-2 rounded-full border border-gray-700 bg-black/90 px-2 py-0.5 text-[9px] font-semibold text-gray-200">
@@ -283,17 +287,17 @@ export default function ExplanationGridRow({
             <div className="text-[11px] text-gray-500">No Grid</div>
           )}
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-semibold text-gray-100 truncate">
+            <p className="text-[13px] font-semibold text-gray-100 truncate">
               {explanation.modelName}
             </p>
-            <p className="text-[11px] uppercase tracking-wide text-gray-400 truncate">
+            <p className="text-[10px] uppercase tracking-wide text-gray-400 truncate">
               {metadataLine}
             </p>
           </div>
           <div className="flex items-center gap-2">
             <Badge
               variant="outline"
-              className={`border font-mono text-[11px] uppercase px-1 py-1 ${statusColorClass}`}
+              className={`border font-mono text-[10px] uppercase px-1 py-0.5 ${statusColorClass}`}
             >
               <StatusIcon className="w-3 h-3" />
               {statusLabel}
@@ -316,25 +320,25 @@ export default function ExplanationGridRow({
           </div>
         </div>
 
-        <div className="mt-3 grid grid-cols-2 gap-2 text-[11px] text-gray-300">
+        <div className="mt-2 grid grid-cols-2 gap-2 text-[10px] text-gray-300">
           <div>
             <div className="font-semibold text-gray-100">{costText}</div>
-            <div className="text-[10px] text-gray-500">Cost</div>
+            <div className="text-[9px] text-gray-500">Cost</div>
           </div>
           <div>
-            <div className="font-semibold text-gray-100">{timestampText}</div>
-            <div className="text-[10px] text-gray-500">Created</div>
+            <div className="text-gray-200">{timestampText}</div>
+            <div className="text-[9px] text-gray-500">Date</div>
           </div>
           <div>
             <div className="inline-flex items-center gap-1 font-semibold text-gray-100">
-              <Coins className="w-4 h-4 text-amber-400" />
+              <Coins className="w-3.5 h-3.5 text-amber-400" />
               {formattedTokens}
             </div>
-            <div className="text-[10px] text-gray-500">Tokens</div>
+            <div className="text-[9px] text-gray-500">{tokenPartsText}</div>
           </div>
           <div>
             <div className="font-semibold text-gray-100">{durationText}</div>
-            <div className="text-[10px] text-gray-500">Latency</div>
+            <div className="text-[9px] text-gray-500">Time</div>
           </div>
         </div>
       </div>
