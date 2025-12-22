@@ -20,6 +20,12 @@ function transformRawExplanation(sourceData: any, modelKey: string) {
     ? (analysisData.multiplePredictedOutputs || null)
     : null;
 
+  // CRITICAL FIX: multiplePredictedOutputs should never be a boolean
+  // If it's boolean (indicating a data processing bug), set to null
+  const safeMultiplePredictedOutputs = typeof multiplePredictedOutputsForStorage === 'boolean'
+    ? null
+    : multiplePredictedOutputsForStorage;
+
   const tokenUsage = analysisData.tokenUsage || sourceData.tokenUsage;
   const costData = analysisData.cost || sourceData.cost;
 
@@ -56,7 +62,7 @@ function transformRawExplanation(sourceData: any, modelKey: string) {
     isPredictionCorrect: analysisData.isPredictionCorrect ?? false,
     trustworthinessScore: analysisData.trustworthinessScore ?? 0,
     hasMultiplePredictions: hasMultiplePredictions,
-    multiplePredictedOutputs: multiplePredictedOutputsForStorage,
+    multiplePredictedOutputs: safeMultiplePredictedOutputs,
     multiTestResults: analysisData.multiTestResults ?? null,
     multiTestAllCorrect: analysisData.multiTestAllCorrect ?? null,
     multiTestAverageAccuracy: analysisData.multiTestAverageAccuracy ?? null,

@@ -4,6 +4,32 @@
 # SRP/DRY check: Pass - entries document changes without altering historical records.
 # New entries at the top, use proper SemVer!
 
+### Version 6.10.3  Dec 24, 2025
+
+- **Layout: Refresh Puzzle Analyst grid density** (Author: Codex (GPT-5))
+  - **Purpose**: Tighten the Puzzle Analyst presentation to match the high-density reference: align column widths, show cost/tokens/latency in a single header, and keep the details tucked behind expandable rows.
+  - **Behavior**:
+    - Added summary badges to the sticky header so analysts immediately see all/correct/incorrect counts.
+    - Rebuilt `ExplanationGridRow` to show the grid thumbnail, model metadata, cost, latency, tokens, and Badges for status/reasoning without overlapping content.
+    - Updated column headers and container styling so the grid lines match the row layout and the page keeps a compact, futuristic feel.
+    - Adjusted sticky offsets so the Puzzle Analyst header respects the global AppHeader height and does not overlap row content.
+  - **Files Modified**:
+    - `docs/2025-12-24-puzzle-analyst-layout-plan.md` - Documented the layout refresh approach and file responsibilities before coding.
+    - `client/src/components/puzzle/ExplanationGridRow.tsx` - Dense metadata header, status badges, tokens/cost formatting, and revised expand region.
+    - `client/src/pages/PuzzleAnalyst.tsx` - Sticky header counts, new column widths, and heavier dark styling around the grid container.
+
+### Version 6.10.2  Dec 21, 2025
+
+- **Fix: Handle malformed boolean data in multiplePredictedOutputs field** (Author: Cascade)
+  - **Root Cause**: Existing database records contained boolean values for `multiplePredictedOutputs` instead of expected array/object/null
+  - **Symptom**: "[WARN][utilities] Unexpected type for multiplePredictedOutputs: boolean" warnings on puzzle explanations API calls
+  - **Solution**: Enhanced `safeJsonParse()` in `CommonUtilities.ts` to gracefully handle boolean values by treating them as malformed data and returning null
+  - **Impact**: Eliminates warnings and prevents potential crashes when reading legacy malformed data
+  - **Backwards Compatible**: System continues functioning normally with existing bad data
+  - **Files Modified**:
+    - `server/utils/CommonUtilities.ts` - Added boolean handling in safeJsonParse function
+  - **Prevention**: Future writes now properly sanitize boolean values in explanationService.ts
+
 ### Version 6.10.1  Dec 21, 2025
 
 - **Fix: Complete navigation URL migration from /puzzle/ to /task/** (Author: Claude Code using Sonnet 4.5)

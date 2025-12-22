@@ -1,16 +1,14 @@
 /**
- * Author: Claude Code (Haiku 4.5)
- * Date: 2025-12-21
- * PURPOSE: High-density, futuristic grid page for analyzing existing puzzle explanations.
- *          Read-only interface focused on browsing and comparing hundreds of explanations
- *          for a single puzzle. No model selection or prompt controls.
- * SRP/DRY check: Pass - Page handles layout/orchestration; ExplanationGridRow handles row rendering;
- *                reuses TinyGrid, AnalysisResultCard, and existing API hooks.
+ * Author: Codex (GPT-5)
+ * Date: 2025-12-24
+ * PURPOSE: Tighten the Puzzle Analyst layout so the dense grid matches the reference art direction.
+ *          Adds sticky offsets to respect the global AppHeader height and prevent overlay on rows.
+ * SRP/DRY check: Pass - this file orchestrates layout only and reuses ExplanationGridRow for details.
  */
 
-import React, { useState, useMemo } from 'react';
+import React, { useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { useParams } from 'wouter';
-import { Loader2, AlertCircle } from 'lucide-react';
+import { AlertCircle } from 'lucide-react';
 import { getPuzzleName } from '@shared/utils/puzzleNames';
 import { usePaginatedExplanationSummaries } from '@/hooks/useExplanation';
 import { usePuzzle } from '@/hooks/usePuzzle';
@@ -20,12 +18,33 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Skeleton } from '@/components/ui/skeleton';
 import ExplanationGridRow from '@/components/puzzle/ExplanationGridRow';
 
-// Types
-import type { ExplanationData } from '@/types/puzzle';
-
 export default function PuzzleAnalyst() {
   const { taskId } = useParams<{ taskId: string }>();
   const [expandedRows, setExpandedRows] = useState<Set<number>>(new Set());
+  const headerRef = useRef<HTMLDivElement | null>(null);
+  const [headerHeight, setHeaderHeight] = useState(0);
+
+  // AppHeader uses h-12, so reserve 48px for the global nav when sticking content.
+  const appHeaderHeight = 48;
+
+  // Measure the PuzzleAnalyst header so column headers stick below it.
+  useLayoutEffect(() => {
+    const updateHeaderHeight = () => {
+      if (!headerRef.current) {
+        return;
+      }
+      const measuredHeight = headerRef.current.getBoundingClientRect().height;
+      setHeaderHeight(Math.ceil(measuredHeight));
+    };
+
+    updateHeaderHeight();
+    window.addEventListener('resize', updateHeaderHeight);
+    return () => {
+      window.removeEventListener('resize', updateHeaderHeight);
+    };
+  }, []);
+
+  const columnHeaderTop = appHeaderHeight + headerHeight;
 
   // Fetch puzzle metadata
   const { data: puzzle, isLoading: isPuzzleLoading } = usePuzzle(taskId);
@@ -36,10 +55,14 @@ export default function PuzzleAnalyst() {
     isInitialLoading,
     error,
     total,
+    counts,
   } = usePaginatedExplanationSummaries(taskId, {
     pageSize: 1000,
     correctness: 'all',
   });
+
+  // Keep a simple summary of totals for the header badges.
+  const summaryStats = counts ?? { all: 0, correct: 0, incorrect: 0 };
 
   const handleToggleRow = (explanationId: number) => {
     setExpandedRows(prev => {
@@ -60,7 +83,7 @@ export default function PuzzleAnalyst() {
   // Loading state
   if (isInitialLoading || isPuzzleLoading) {
     return (
-      <div className="min-h-screen bg-gray-950 p-6">
+      <div className="min-h-screen bg-black p-6">
         <div className="max-w-7xl mx-auto">
           <div className="mb-6">
             <Skeleton className="h-8 w-48 mb-2 bg-gray-800" />
@@ -79,7 +102,7 @@ export default function PuzzleAnalyst() {
   // Error state
   if (error) {
     return (
-      <div className="min-h-screen bg-gray-950 p-6">
+      <div className="min-h-screen bg-black p-6">
         <div className="max-w-7xl mx-auto">
           <Alert className="bg-red-950/30 border border-red-900/50">
             <AlertCircle className="h-4 w-4 text-red-500" />
@@ -95,12 +118,12 @@ export default function PuzzleAnalyst() {
   // Empty state
   if (!summaries || summaries.length === 0) {
     return (
-      <div className="min-h-screen bg-gray-950 p-6">
+      <div className="min-h-screen bg-black p-6">
         <div className="max-w-7xl mx-auto">
           <div className="mb-8">
             <h1 className="text-3xl font-bold text-gray-100 mb-2">
-              {taskId}
-              {puzzleName && ` — ${puzzleName}`}
+            {taskId}
+            {puzzleName && ` - ${puzzleName}`}
             </h1>
             <p className="text-gray-400">Puzzle Analysis</p>
           </div>
@@ -116,38 +139,54 @@ export default function PuzzleAnalyst() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-950">
-      {/* Header */}
-      <div className="bg-gray-900/50 border-b border-gray-800 sticky top-0 z-40 backdrop-blur-sm">
-        <div className="max-w-7xl mx-auto px-6 py-4">
-          <h1 className="text-3xl font-bold text-gray-100 mb-1">
+    <div className="min-h-screen bg-black text-gray-50">
+      <div
+        ref={headerRef}
+        className="sticky z-40 border-b border-gray-800 bg-black/95 shadow-[0_10px_30px_-15px_rgba(0,0,0,0.9)] backdrop-blur-sm"
+        style={{ top: appHeaderHeight }}
+      >
+        <div className="max-w-7xl mx-auto px-6 py-3">
+          <h1 className="text-3xl font-semibold text-gray-100 leading-tight">
             {taskId}
-            {puzzleName && ` — ${puzzleName}`}
+            {puzzleName && ` - ${puzzleName}`}
           </h1>
-          <p className="text-sm text-gray-400">
+          <p className="text-xs font-semibold uppercase tracking-[0.35em] text-gray-400 mt-1">
             Analyzing {total} explanation{total !== 1 ? 's' : ''}
           </p>
+          {/* Summary badges keep the header informative at a glance. */}
+          <div className="mt-3 flex flex-wrap gap-3 text-[11px] font-semibold uppercase text-gray-300">
+            <span className="rounded-full border border-gray-800 px-3 py-1 bg-white/5">
+              All {summaryStats.all}
+            </span>
+            <span className="rounded-full border border-gray-800 px-3 py-1 bg-emerald-500/10 text-emerald-200">
+              Correct {summaryStats.correct}
+            </span>
+            <span className="rounded-full border border-gray-800 px-3 py-1 bg-rose-500/10 text-rose-200">
+              Incorrect {summaryStats.incorrect}
+            </span>
+          </div>
         </div>
       </div>
 
-      {/* Main Content */}
       <div className="max-w-7xl mx-auto px-6 py-6">
-        {/* Grid Container */}
-        <div className="space-y-px bg-gray-900/30 rounded-lg border border-gray-800 overflow-hidden">
-          {/* Column Headers */}
-          <div className="hidden md:grid md:grid-cols-[80px_1fr_120px_100px_140px_80px_100px_50px] gap-2 px-4 py-3 bg-gray-900/70 border-b border-gray-800 sticky top-[89px] z-30 text-xs font-semibold text-gray-300 uppercase tracking-wider">
+        <div className="space-y-px border border-gray-800/80 rounded-2xl bg-black/80 shadow-[0_40px_120px_-60px_rgba(0,0,0,0.95)] overflow-hidden">
+          {/* Column headers align with ExplanationGridRow widths so every value lines up. */}
+          <div
+            className="hidden md:grid grid-cols-[72px_minmax(200px,1fr)_110px_90px_110px_110px_90px_48px] gap-3 px-4 py-3 bg-black/70 border-b border-gray-800 sticky z-30 text-[10px] font-semibold uppercase tracking-[0.3em] text-gray-400"
+            style={{ top: columnHeaderTop }}
+          >
             <div>Grid</div>
             <div>Model</div>
             <div>Status</div>
             <div>Cost</div>
             <div>Created</div>
             <div>Tokens</div>
-            <div>Reasoning</div>
+            <div>Latency</div>
             <div></div>
           </div>
 
           {/* Rows */}
-          <div className="divide-y divide-gray-800">
+          <div className="divide-y divide-gray-900/50">
             {summaries.map((explanation, idx) => (
               <ExplanationGridRow
                 key={explanation.id}
@@ -161,7 +200,7 @@ export default function PuzzleAnalyst() {
         </div>
 
         {/* Footer Stats */}
-        <div className="mt-6 text-xs text-gray-500 text-center">
+        <div className="mt-5 text-[11px] uppercase tracking-[0.35em] text-gray-500">
           Showing {summaries.length} of {total} explanations
         </div>
       </div>

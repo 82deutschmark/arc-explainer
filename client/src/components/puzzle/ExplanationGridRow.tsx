@@ -1,21 +1,29 @@
 /**
- * Author: Claude Code (Haiku 4.5)
- * Date: 2025-12-21
- * PURPOSE: High-density grid row component for displaying individual explanation summaries
- *          in the Puzzle Analyst page. Shows compact metrics with optional expansion
- *          for full details.
- * SRP/DRY check: Pass - Focused only on row rendering; reuses TinyGrid, AnalysisResultCard;
- *                delegates detail loading to parent via fetchExplanationById pattern.
+ * Author: Codex (GPT-5)
+ * Date: 2025-12-24
+ * PURPOSE: Render a high-density explanation row for PuzzleAnalyst with a compact metadata header,
+ *          status badges, and streamed detail expansion. Comments explain the data formatting and
+ *          animation hooks that keep the row responsive without cluttering the view.
+ * SRP/DRY check: Pass – responsibility limited to one explanation row; reuses TinyGrid, badges, and
+ *                AnalysisResultCard. No new hooks or fetch logic outside this component.
  */
 
 import React, { useState } from 'react';
-import { ChevronDown, Brain, Loader2 } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { formatProcessingTimeDetailed } from '@/utils/timeFormatters';
 import { format } from 'date-fns';
+import {
+  ChevronDown,
+  Brain,
+  Loader2,
+  CheckCircle,
+  Coins,
+  XCircle,
+} from 'lucide-react';
 import { TinyGrid } from './TinyGrid';
 import { AnalysisResultCard } from './AnalysisResultCard';
-import { Badge } from '@/components/ui/badge';
 import { fetchExplanationById } from '@/hooks/useExplanation';
-import type { ExplanationData, TestCase } from '@/types/puzzle';
+import type { ExplanationData } from '@/types/puzzle';
 
 interface ExplanationGridRowProps {
   explanation: ExplanationData;
@@ -34,7 +42,7 @@ export default function ExplanationGridRow({
   const [isLoadingDetails, setIsLoadingDetails] = useState(false);
   const [detailError, setDetailError] = useState<string | null>(null);
 
-  // Load full explanation details on first expand
+  // Load full explanation details once before expanding so we can show AnalysisResultCard inline.
   const handleExpand = async () => {
     if (isExpanded) {
       onToggleExpand();
@@ -49,7 +57,7 @@ export default function ExplanationGridRow({
         if (full) {
           setDetailedExplanation(full);
         } else {
-          setDetailError('Failed to load details');
+          setDetailError('Details unavailable');
         }
       } catch (err) {
         setDetailError(err instanceof Error ? err.message : 'Unknown error');
@@ -61,140 +69,198 @@ export default function ExplanationGridRow({
     onToggleExpand();
   };
 
-  // Format cost as currency
-  const costText = (typeof explanation.estimatedCost === 'number' && explanation.estimatedCost >= 0)
-    ? `$${explanation.estimatedCost.toFixed(4)}`
-    : '$0.0000';
+  // Format currency with four decimals, defaulting to $0.0000 when missing.
+  const formatCurrency = (value: number | string | null | undefined) => {
+    const numeric = typeof value === 'number' ? value : Number(value);
+    if (value === null || value === undefined || !Number.isFinite(numeric)) {
+      return '$0.0000';
+    }
+    return `$${numeric.toFixed(4)}`;
+  };
 
-  // Format timestamp
+  // Convert token totals into human-readable strings (k/M) for compact display.
+  const formatTokenCount = (value: number | null | undefined) => {
+    if (value === null || value === undefined || Number.isNaN(value)) {
+      return 'N/A';
+    }
+    if (value >= 1_000_000) {
+      return `${(value / 1_000_000).toFixed(1)}M`;
+    }
+    if (value >= 1_000) {
+      return `${(value / 1_000).toFixed(1)}k`;
+    }
+    return value.toString();
+  };
+
+  // Safely parse confidence (number or percentage string) into a consistent label.
+  const formatConfidenceLabel = (value: number | string | undefined) => {
+    if (value === null || value === undefined) {
+      return null;
+    }
+    const normalized =
+      typeof value === 'string' ? value.replace('%', '').trim() : value;
+    const parsed = typeof normalized === 'number' ? normalized : Number(normalized);
+    if (Number.isFinite(parsed)) {
+      const rounded = parsed.toFixed(parsed % 1 === 0 ? 0 : 1);
+      return `${rounded}%`;
+    }
+    return null;
+  };
+
+  const totalTokens =
+    explanation.totalTokens ??
+    ((explanation.inputTokens ?? 0) + (explanation.outputTokens ?? 0));
+  const formattedTokens = formatTokenCount(totalTokens);
+  const costText = formatCurrency(explanation.estimatedCost);
   const timestampText = explanation.createdAt
     ? format(new Date(explanation.createdAt), 'MMM d, HH:mm')
-    : '—';
+    : 'N/A';
+  const durationText = explanation.apiProcessingTimeMs
+    ? formatProcessingTimeDetailed(explanation.apiProcessingTimeMs)
+    : 'N/A';
+  const confidenceLabel = formatConfidenceLabel(explanation.confidence);
 
-  // Calculate total tokens
-  const totalTokens = (explanation.inputTokens ?? 0) + (explanation.outputTokens ?? 0);
-  const tokensText = totalTokens > 0 ? `${totalTokens}` : '—';
+  const statusLabel = explanation.multiTestAllCorrect ?? explanation.isPredictionCorrect
+    ? 'CORRECT'
+    : 'INCORRECT';
+  const isCorrect = statusLabel === 'CORRECT';
+  const statusColorClass = isCorrect
+    ? 'bg-emerald-500/20 text-emerald-200 border-emerald-500/40'
+    : 'bg-rose-500/20 text-rose-200 border-rose-500/40';
+  const StatusIcon = isCorrect ? CheckCircle : XCircle;
 
-  // Determine correctness status
-  const isCorrect = explanation.isPredictionCorrect === true;
-  const statusColor = isCorrect ? 'bg-green-500/20 text-green-300 border-green-500/30' : 'bg-red-500/20 text-red-300 border-red-500/30';
-  const statusIcon = isCorrect ? '✓' : '✗';
+  const metadataLineParts = [
+    explanation.reasoningEffort,
+    explanation.reasoningVerbosity,
+    explanation.reasoningSummaryType,
+  ].filter(Boolean);
+  if (confidenceLabel) {
+    metadataLineParts.push(`Conf ${confidenceLabel}`);
+  }
+  const metadataLine = metadataLineParts.length
+    ? metadataLineParts.join(' | ')
+    : 'Reasoning - N/A';
+
+  const rowBackground = isAlternate ? 'bg-gray-900/40' : 'bg-transparent';
+  const borderStyle = isExpanded ? 'border-b border-gray-700/70' : 'border-b border-gray-800/60';
 
   return (
     <>
-      {/* Compact Row */}
+      {/* Desktop row */}
       <div
-        className={`hidden md:grid md:grid-cols-[80px_1fr_120px_100px_140px_80px_100px_50px] gap-2 px-4 py-3 items-center cursor-pointer transition-colors ${
-          isAlternate ? 'bg-gray-800/20' : 'bg-transparent'
-        } hover:bg-gray-800/40 border-b border-gray-800/50`}
+        className={`hidden md:grid cursor-pointer transition-colors ${rowBackground} hover:bg-gray-800/60 ${borderStyle} grid-cols-[72px_minmax(200px,1fr)_110px_90px_110px_110px_90px_48px] gap-3 px-4 py-3 items-center`}
         onClick={handleExpand}
       >
-        {/* Grid Thumbnail */}
         <div className="flex items-center justify-center">
           {explanation.predictedOutputGrid ? (
-            <div className="w-14 h-14 border border-gray-700 rounded">
+            <div className="w-16 h-16 border border-gray-700 rounded-sm">
               <TinyGrid grid={explanation.predictedOutputGrid} />
             </div>
           ) : (
-            <div className="text-xs text-gray-500">—</div>
+            <div className="text-[11px] text-gray-500">No Grid</div>
           )}
         </div>
 
-        {/* Model Name */}
-        <div className="truncate">
-          <span className="text-sm text-gray-200 font-medium truncate block">
+        <div className="flex flex-col min-w-0 gap-1">
+          <p className="text-sm font-semibold text-gray-100 truncate">
             {explanation.modelName}
-          </span>
+          </p>
+          <p className="text-[11px] uppercase tracking-wide text-gray-400 truncate">
+            {metadataLine}
+          </p>
         </div>
 
-        {/* Status Badge */}
-        <div className="flex items-center justify-center">
+        <div className="flex flex-col gap-1">
           <Badge
             variant="outline"
-            className={`${statusColor} border font-mono text-xs py-1`}
+            className={`flex items-center gap-1 border font-mono text-[11px] uppercase px-1 py-1 ${statusColorClass}`}
           >
-            {statusIcon}
+            <StatusIcon className="w-3 h-3" />
+            {statusLabel}
           </Badge>
-        </div>
-
-        {/* Cost */}
-        <div className="text-right">
-          <span className="text-xs text-gray-300 font-mono">{costText}</span>
-        </div>
-
-        {/* Timestamp */}
-        <div className="text-right">
-          <span className="text-xs text-gray-400">{timestampText}</span>
-        </div>
-
-        {/* Token Count */}
-        <div className="text-right">
-          <span className="text-xs text-gray-400 font-mono">{tokensText}</span>
-        </div>
-
-        {/* Reasoning Indicator */}
-        <div className="flex items-center justify-center">
           {explanation.hasReasoningLog && (
-            <Brain className="w-4 h-4 text-blue-400" />
+            <div className="flex items-center gap-1 text-[10px] text-blue-300">
+              <Brain className="w-3 h-3" />
+              Reasoning log
+            </div>
           )}
         </div>
 
-        {/* Expand Button */}
+        <div className="text-right text-[11px] text-gray-300">
+          <div className="font-semibold text-gray-100">{costText}</div>
+          <div className="text-[10px] text-gray-500">Cost</div>
+        </div>
+
+        <div className="text-right text-[11px] text-gray-300">
+          <div className="font-semibold text-gray-100">{timestampText}</div>
+          <div className="text-[10px] text-gray-500">Created</div>
+        </div>
+
+        <div className="text-right text-[11px] text-gray-300">
+          <div className="inline-flex items-center justify-end gap-1 font-semibold text-gray-100">
+            <Coins className="w-4 h-4 text-amber-400" />
+            {formattedTokens}
+          </div>
+          <div className="text-[10px] text-gray-500">Tokens</div>
+        </div>
+
+        <div className="text-right text-[11px] text-gray-300">
+          <div className="font-semibold text-gray-100">{durationText}</div>
+          <div className="text-[10px] text-gray-500">Latency</div>
+        </div>
+
         <div className="flex items-center justify-center">
           <button
-            onClick={(e) => {
-              e.stopPropagation();
+            onClick={(event) => {
+              event.stopPropagation();
               handleExpand();
             }}
-            className="p-1 rounded hover:bg-gray-700/50 transition-colors"
             disabled={isLoadingDetails}
+            className="p-1 rounded hover:bg-gray-700/40 transition-colors"
           >
             {isLoadingDetails ? (
               <Loader2 className="w-4 h-4 text-gray-400 animate-spin" />
             ) : (
               <ChevronDown
-                className={`w-4 h-4 text-gray-400 transition-transform ${
-                  isExpanded ? 'rotate-180' : ''
-                }`}
+                className={`w-4 h-4 text-gray-400 transition-transform ${isExpanded ? 'rotate-180' : ''}`}
               />
             )}
           </button>
         </div>
       </div>
 
-      {/* Mobile Compact Row */}
+      {/* Mobile view */}
       <div
-        className={`md:hidden px-4 py-3 cursor-pointer transition-colors ${
-          isAlternate ? 'bg-gray-800/20' : 'bg-transparent'
-        } hover:bg-gray-800/40 border-b border-gray-800/50`}
+        className={`${rowBackground} md:hidden cursor-pointer border-b border-gray-800/60 px-4 py-3 transition-colors hover:bg-gray-800/60`}
         onClick={handleExpand}
       >
-        <div className="flex items-center gap-3 mb-2">
-          {explanation.predictedOutputGrid && (
-            <div className="w-12 h-12 border border-gray-700 rounded flex-shrink-0">
+        <div className="flex items-center gap-3">
+          {explanation.predictedOutputGrid ? (
+            <div className="w-12 h-12 border border-gray-700 rounded-sm flex-shrink-0">
               <TinyGrid grid={explanation.predictedOutputGrid} />
             </div>
+          ) : (
+            <div className="text-[11px] text-gray-500">No Grid</div>
           )}
           <div className="flex-1 min-w-0">
-            <div className="truncate">
-              <span className="text-sm text-gray-200 font-medium truncate">
-                {explanation.modelName}
-              </span>
-            </div>
-            <div className="text-xs text-gray-400 mt-1">
-              {timestampText} • {costText}
-            </div>
+            <p className="text-sm font-semibold text-gray-100 truncate">
+              {explanation.modelName}
+            </p>
+            <p className="text-[11px] uppercase tracking-wide text-gray-400 truncate">
+              {metadataLine}
+            </p>
           </div>
-          <div className="flex items-center gap-2 flex-shrink-0">
+          <div className="flex items-center gap-2">
             <Badge
               variant="outline"
-              className={`${statusColor} border font-mono text-xs`}
+              className={`border font-mono text-[11px] uppercase px-1 py-1 ${statusColorClass}`}
             >
-              {statusIcon}
+              <StatusIcon className="w-3 h-3" />
+              {statusLabel}
             </Badge>
             <button
-              onClick={(e) => {
-                e.stopPropagation();
+              onClick={(event) => {
+                event.stopPropagation();
                 handleExpand();
               }}
               disabled={isLoadingDetails}
@@ -203,32 +269,50 @@ export default function ExplanationGridRow({
                 <Loader2 className="w-4 h-4 text-gray-400 animate-spin" />
               ) : (
                 <ChevronDown
-                  className={`w-4 h-4 text-gray-400 transition-transform ${
-                    isExpanded ? 'rotate-180' : ''
-                  }`}
+                  className={`w-4 h-4 text-gray-400 transition-transform ${isExpanded ? 'rotate-180' : ''}`}
                 />
               )}
             </button>
           </div>
         </div>
+
+        <div className="mt-3 grid grid-cols-2 gap-2 text-[11px] text-gray-300">
+          <div>
+            <div className="font-semibold text-gray-100">{costText}</div>
+            <div className="text-[10px] text-gray-500">Cost</div>
+          </div>
+          <div>
+            <div className="font-semibold text-gray-100">{timestampText}</div>
+            <div className="text-[10px] text-gray-500">Created</div>
+          </div>
+          <div>
+            <div className="inline-flex items-center gap-1 font-semibold text-gray-100">
+              <Coins className="w-4 h-4 text-amber-400" />
+              {formattedTokens}
+            </div>
+            <div className="text-[10px] text-gray-500">Tokens</div>
+          </div>
+          <div>
+            <div className="font-semibold text-gray-100">{durationText}</div>
+            <div className="text-[10px] text-gray-500">Latency</div>
+          </div>
+        </div>
       </div>
 
-      {/* Expanded Details */}
+      {/* Expanded details */}
       {isExpanded && (
         <div
-          className={`border-t border-gray-800/50 px-4 py-4 ${
-            isAlternate ? 'bg-gray-800/20' : 'bg-transparent'
-          }`}
+          className={`border-t border-gray-800/60 px-4 py-4 ${rowBackground}`}
         >
           {detailError ? (
-            <div className="text-sm text-red-300 bg-red-500/10 border border-red-500/20 rounded px-3 py-2">
-              Error loading details: {detailError}
+            <div className="rounded border border-rose-700/40 bg-rose-900/40 px-3 py-2 text-sm text-rose-200">
+              Details error: {detailError}
             </div>
           ) : detailedExplanation ? (
             <AnalysisResultCard
               result={detailedExplanation}
               modelKey={detailedExplanation.modelName}
-              testCases={[]} // Empty test cases for read-only mode
+              testCases={[]}
               eloMode={false}
             />
           ) : (
