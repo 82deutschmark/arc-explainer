@@ -1,14 +1,14 @@
 /**
  * Author: Codex (GPT-5)
  * Date: 2025-12-24
- * PURPOSE: Render a high-density explanation row for PuzzleAnalyst with a compact metadata header,
- *          status badges, stacked grid previews for multi-test outputs, and streamed detail expansion.
+ * PURPOSE: Render a high-density explanation row for PuzzleAnalyst with compact metadata, status badges,
+ *          stacked multi-test previews, client-side PNG thumbnails, and streamed detail expansion.
  *          Comments explain data formatting and preview selection to keep the row responsive.
  * SRP/DRY check: Pass - responsibility limited to one explanation row; reuses TinyGrid, badges, and
  *                AnalysisResultCard. No new hooks or fetch logic outside this component.
  */
 
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { formatProcessingTimeDetailed } from '@/utils/timeFormatters';
 import { format } from 'date-fns';
@@ -24,6 +24,7 @@ import { TinyGrid } from './TinyGrid';
 import { AnalysisResultCard } from './AnalysisResultCard';
 import { fetchExplanationById } from '@/hooks/useExplanation';
 import type { ExplanationData, TestCase } from '@/types/puzzle';
+import { ARC_COLORS_TUPLES } from '@shared/config/colors';
 
 interface ExplanationGridRowProps {
   explanation: ExplanationData;
@@ -32,6 +33,64 @@ interface ExplanationGridRowProps {
   onToggleExpand: () => void;
   isAlternate?: boolean;
 }
+
+interface GridThumbnailOptions {
+  size: number;
+  padding: number;
+  background: string;
+}
+
+/**
+ * Render a grid into a small PNG data URL using the shared ARC palette.
+ * This keeps thumbnails compact, pixel-crisp, and on a black mat.
+ */
+const buildGridThumbnailDataUrl = (
+  grid: number[][],
+  { size, padding, background }: GridThumbnailOptions
+): string | null => {
+  if (typeof document === 'undefined') {
+    return null;
+  }
+
+  const rows = grid.length;
+  const cols = grid[0]?.length ?? 0;
+  if (!rows || !cols) {
+    return null;
+  }
+
+  const canvas = document.createElement('canvas');
+  canvas.width = size;
+  canvas.height = size;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) {
+    return null;
+  }
+
+  // Force crisp pixel edges and lay down a black mat.
+  ctx.imageSmoothingEnabled = false;
+  ctx.fillStyle = background;
+  ctx.fillRect(0, 0, size, size);
+
+  // Fit the grid within the canvas with generous padding for a zoomed-out look.
+  const maxDim = Math.max(rows, cols);
+  const available = Math.max(1, size - padding * 2);
+  const cellSize = Math.max(1, Math.floor(available / maxDim));
+  const gridWidth = cols * cellSize;
+  const gridHeight = rows * cellSize;
+  const offsetX = Math.floor((size - gridWidth) / 2);
+  const offsetY = Math.floor((size - gridHeight) / 2);
+
+  for (let y = 0; y < rows; y += 1) {
+    for (let x = 0; x < cols; x += 1) {
+      const value = grid[y]?.[x] ?? 0;
+      const colorTuple = ARC_COLORS_TUPLES[value] ?? ARC_COLORS_TUPLES[0];
+      ctx.fillStyle = `rgb(${colorTuple[0]}, ${colorTuple[1]}, ${colorTuple[2]})`;
+      ctx.fillRect(offsetX + x * cellSize, offsetY + y * cellSize, cellSize, cellSize);
+    }
+  }
+
+  return canvas.toDataURL('image/png');
+};
 
 export default function ExplanationGridRow({
   explanation,
@@ -116,7 +175,7 @@ export default function ExplanationGridRow({
     explanation.totalTokens ??
     ((inputTokens ?? 0) + (outputTokens ?? 0) + (reasoningTokens ?? 0));
   const formattedTokens = formatTokenCount(totalTokens);
-  const tokenPartsText = `I ${formatTokenCount(inputTokens)} O ${formatTokenCount(outputTokens)} R ${formatTokenCount(reasoningTokens)}`;
+  const tokenPartsText = `I ${formatTokenCount(inputTokens)} | O ${formatTokenCount(outputTokens)} | R ${formatTokenCount(reasoningTokens)}`;
   const costText = formatCurrency(explanation.estimatedCost);
   const timestampText = explanation.createdAt
     ? format(new Date(explanation.createdAt), 'MMM d, HH:mm')
@@ -162,17 +221,38 @@ export default function ExplanationGridRow({
           : [];
   const previewGrid = predictedGrid ?? multiTestGrids[0] ?? null;
   const previewCount = multiTestGrids.length;
+  // Build a tiny PNG once per grid reference for a sharper, more compact thumbnail.
+  const previewThumbnail = useMemo(() => {
+    if (!previewGrid) {
+      return null;
+    }
+    return buildGridThumbnailDataUrl(previewGrid, {
+      size: 44,
+      padding: 6,
+      background: '#000000',
+    });
+  }, [previewGrid]);
+  const previewThumbnailMobile = useMemo(() => {
+    if (!previewGrid) {
+      return null;
+    }
+    return buildGridThumbnailDataUrl(previewGrid, {
+      size: 38,
+      padding: 5,
+      background: '#000000',
+    });
+  }, [previewGrid]);
 
   return (
     <>
       {/* Desktop row */}
       <div
-        className={`hidden md:grid cursor-pointer transition-colors ${rowBackground} hover:bg-gray-800/60 ${borderStyle} grid-cols-[56px_minmax(200px,1fr)_96px_78px_92px_92px_86px_40px] gap-2 px-3 py-2 items-center`}
+        className={`hidden md:grid cursor-pointer transition-colors ${rowBackground} hover:bg-gray-800/60 ${borderStyle} grid-cols-[56px_minmax(200px,1fr)_96px_78px_92px_92px_86px_40px] gap-2 px-2.5 py-1.5 items-center`}
         onClick={handleExpand}
       >
         <div className="flex items-center justify-center">
           {previewGrid ? (
-            <div className="relative w-12 h-12">
+            <div className="relative w-11 h-11">
               {/* Stacked preview to indicate multiple predictions without cluttering the row. */}
               {previewCount > 1 && (
                 <div className="absolute -top-1 -left-1 h-full w-full rounded-sm border border-gray-700/70 bg-black" />
@@ -180,8 +260,18 @@ export default function ExplanationGridRow({
               {previewCount > 2 && (
                 <div className="absolute -top-2 -left-2 h-full w-full rounded-sm border border-gray-700/50 bg-black" />
               )}
-              <div className="relative h-full w-full rounded-sm border border-gray-700 bg-black p-0.5">
-                <TinyGrid grid={previewGrid} className="h-full w-full" />
+              <div className="relative h-full w-full rounded-sm border border-gray-700 bg-black">
+                {/* Canvas-rendered PNG keeps the preview small and zoomed out. */}
+                {previewThumbnail ? (
+                  <img
+                    src={previewThumbnail}
+                    alt="Predicted grid thumbnail"
+                    className="h-full w-full rounded-sm"
+                    style={{ imageRendering: 'pixelated' }}
+                  />
+                ) : (
+                  <TinyGrid grid={previewGrid} className="h-full w-full" />
+                )}
               </div>
               {previewCount > 1 && (
                 <span className="absolute -bottom-2 -right-2 rounded-full border border-gray-700 bg-black/90 px-2 py-0.5 text-[9px] font-semibold text-gray-200">
@@ -195,10 +285,10 @@ export default function ExplanationGridRow({
         </div>
 
         <div className="flex flex-col min-w-0 gap-1">
-          <p className="text-[13px] font-semibold text-gray-100 truncate">
+          <p className="text-[12.5px] font-semibold text-gray-100 truncate">
             {explanation.modelName}
           </p>
-          <p className="text-[10px] uppercase tracking-wide text-gray-400 truncate">
+          <p className="text-[9px] uppercase tracking-wide text-gray-400 truncate">
             {metadataLine}
           </p>
         </div>
@@ -219,27 +309,27 @@ export default function ExplanationGridRow({
           )}
         </div>
 
-        <div className="text-right text-[10px] text-gray-300">
+        <div className="text-right text-[9px] text-gray-300">
           <div className="font-semibold text-gray-100">{costText}</div>
-          <div className="text-[9px] text-gray-500">Cost</div>
+          <div className="text-[8px] text-gray-500">Cost</div>
         </div>
 
-        <div className="text-right text-[10px] text-gray-300">
+        <div className="text-right text-[9px] text-gray-300">
           <div className="text-gray-200">{timestampText}</div>
-          <div className="text-[9px] text-gray-500">Date</div>
+          <div className="text-[8px] text-gray-500">Date</div>
         </div>
 
-        <div className="text-right text-[10px] text-gray-300">
+        <div className="text-right text-[9px] text-gray-300">
           <div className="inline-flex items-center justify-end gap-1 font-semibold text-gray-100">
             <Coins className="w-3.5 h-3.5 text-amber-400" />
             {formattedTokens}
           </div>
-          <div className="text-[9px] text-gray-500">{tokenPartsText}</div>
+          <div className="text-[8px] text-gray-500">{tokenPartsText}</div>
         </div>
 
-        <div className="text-right text-[10px] text-gray-300">
+        <div className="text-right text-[9px] text-gray-300">
           <div className="font-semibold text-gray-100">{durationText}</div>
-          <div className="text-[9px] text-gray-500">Time</div>
+          <div className="text-[8px] text-gray-500">Time</div>
         </div>
 
         <div className="flex items-center justify-center">
@@ -269,13 +359,23 @@ export default function ExplanationGridRow({
       >
         <div className="flex items-center gap-3">
           {previewGrid ? (
-            <div className="relative w-10 h-10 flex-shrink-0">
+            <div className="relative w-9 h-9 flex-shrink-0">
               {/* Stacked preview for mobile: keep the badge but reduce layers for space. */}
               {previewCount > 1 && (
                 <div className="absolute -top-1 -left-1 h-full w-full rounded-sm border border-gray-700/70 bg-black" />
               )}
-              <div className="relative h-full w-full rounded-sm border border-gray-700 bg-black p-0.5">
-                <TinyGrid grid={previewGrid} className="h-full w-full" />
+              <div className="relative h-full w-full rounded-sm border border-gray-700 bg-black">
+                {/* PNG thumbnail keeps mobile preview crisp without blowing up spacing. */}
+                {previewThumbnailMobile ? (
+                  <img
+                    src={previewThumbnailMobile}
+                    alt="Predicted grid thumbnail"
+                    className="h-full w-full rounded-sm"
+                    style={{ imageRendering: 'pixelated' }}
+                  />
+                ) : (
+                  <TinyGrid grid={previewGrid} className="h-full w-full" />
+                )}
               </div>
               {previewCount > 1 && (
                 <span className="absolute -bottom-2 -right-2 rounded-full border border-gray-700 bg-black/90 px-2 py-0.5 text-[9px] font-semibold text-gray-200">

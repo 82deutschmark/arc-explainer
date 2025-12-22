@@ -4,6 +4,19 @@
 # SRP/DRY check: Pass - entries document changes without altering historical records.
 # New entries at the top, use proper SemVer!
 
+### Version 6.10.5  Dec 24, 2025
+
+- **Layout: Remove sticky headers and render PNG thumbnails in Puzzle Analyst** (Author: Codex (GPT-5))
+  - **Purpose**: Eliminate header overlap while making grid previews smaller, more zoomed out, and consistently rendered on black mats.
+  - **Behavior**:
+    - Removed sticky header layers so the column header and page header no longer overlay rows.
+    - Generated client-side PNG thumbnails with extra padding for a zoomed-out grid preview.
+    - Tightened row typography and spacing to keep metadata dense but readable.
+  - **Files Modified**:
+    - `client/src/pages/PuzzleAnalyst.tsx` - Removed sticky header logic and tightened column header spacing.
+    - `client/src/components/puzzle/ExplanationGridRow.tsx` - Added canvas-based PNG thumbnails and reduced row padding.
+    - `docs/2025-12-24-puzzle-analyst-layout-plan.md` - Recorded sticky header removal and PNG thumbnail approach.
+
 ### Version 6.10.4  Dec 24, 2025
 
 - **Fix: Restore multi-test grid previews and expected outputs in Puzzle Analyst** (Author: Codex (GPT-5))
@@ -13,6 +26,7 @@
     - Passed puzzle test cases into `AnalysisResultCard` so expected outputs and mismatch diffs render.
     - Added the missing `multiTestPredictionGrids` type so stacked previews compile cleanly.
     - Tightened padding, clarified token/time labels, and reduced thumbnail size on black backgrounds.
+    - Solidified the column header background and moved the grid container closer to the sticky header.
   - **Files Modified**:
     - `client/src/components/puzzle/ExplanationGridRow.tsx` - Stacked preview selection and test case wiring for expanded cards.
     - `client/src/pages/PuzzleAnalyst.tsx` - Supplies test cases from puzzle data to each row.

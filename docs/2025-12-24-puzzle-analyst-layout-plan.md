@@ -28,3 +28,5 @@ SRP/DRY check: Pass - describes UI work only, calls out reuse of existing TinyGr
 
 - Add stacked grid previews for multi-test predictions and pass expected outputs into `AnalysisResultCard` so grids and mismatch toggles work.
 - Tighten spacing, clarify token/time labels, and reduce thumbnail size on black backgrounds.
+- Remove sticky headers to prevent overlap and keep the header stack simple.
+- Render client-side PNG thumbnails (canvas) with extra padding for a zoomed-out grid preview.
