@@ -12,6 +12,7 @@
     - Added stacked grid previews that fall back to multi-test predictions when single grids are missing.
     - Passed puzzle test cases into `AnalysisResultCard` so expected outputs and mismatch diffs render.
     - Added the missing `multiTestPredictionGrids` type so stacked previews compile cleanly.
+    - Tightened padding, clarified token/time labels, and reduced thumbnail size on black backgrounds.
   - **Files Modified**:
     - `client/src/components/puzzle/ExplanationGridRow.tsx` - Stacked preview selection and test case wiring for expanded cards.
     - `client/src/pages/PuzzleAnalyst.tsx` - Supplies test cases from puzzle data to each row.
