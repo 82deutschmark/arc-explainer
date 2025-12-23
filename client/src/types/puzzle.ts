@@ -3,7 +3,7 @@
  * This file contains interfaces and types used throughout the puzzle components
  * Author: Codex (GPT-5)
  * Date: 2025-12-24
- * PURPOSE: Add multi-test prediction grid typing so Puzzle Analyst can render stacked previews.
+ * PURPOSE: Add multi-test prediction grid typing and a theme option for AnalysisResultCard.
  * SRP/DRY check: Pass - type definitions only; no runtime behavior changes.
  */
 
@@ -185,4 +185,5 @@ export interface AnalysisResultCardProps {
   model?: ModelConfig;
   testCases: TestCase[]; // Pass the full test array, ensuring the card has all necessary data
   eloMode?: boolean; // Hide model identifying info for double-blind A/B testing
+  theme?: 'light' | 'dark'; // Optional theme override for card styling
 }

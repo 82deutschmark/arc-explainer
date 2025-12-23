@@ -30,3 +30,4 @@ SRP/DRY check: Pass - describes UI work only, calls out reuse of existing TinyGr
 - Tighten spacing, clarify token/time labels, and reduce thumbnail size on black backgrounds.
 - Remove sticky headers to prevent overlap and keep the header stack simple.
 - Render client-side PNG thumbnails (canvas) with extra padding for a zoomed-out grid preview.
+- Add a dark theme variant for `AnalysisResultCard` in Puzzle Analyst and increase font sizes for readability.

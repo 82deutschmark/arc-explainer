@@ -4,6 +4,27 @@
 # SRP/DRY check: Pass - entries document changes without altering historical records.
 # New entries at the top, use proper SemVer!
 
+### Version 6.10.6  Dec 24, 2025
+
+- **UI: Dark theme analysis cards and larger Puzzle Analyst typography** (Author: Codex (GPT-5))
+  - **Purpose**: Make expanded analysis cards blend into the dark Puzzle Analyst view and improve readability.
+  - **Behavior**:
+    - Added a dark theme option to `AnalysisResultCard` and applied it within Puzzle Analyst.
+    - Added dark theme variants to analysis card subcomponents and feedback sections.
+    - Increased header and row font sizes in Puzzle Analyst for easier scanning.
+  - **Files Modified**:
+    - `client/src/components/puzzle/AnalysisResultCard.tsx` - Theme wrapper and dark palette for the card shell.
+    - `client/src/components/puzzle/AnalysisResultHeader.tsx` - Dark variants for badges and controls.
+    - `client/src/components/puzzle/AnalysisResultContent.tsx` - Dark variants for reasoning, prompts, and alerts.
+    - `client/src/components/puzzle/AnalysisResultActions.tsx` - Dark variants for feedback panel text.
+    - `client/src/components/puzzle/AnalysisResultMetrics.tsx` - Dark variants for Saturn metrics panels.
+    - `client/src/components/ExplanationFeedback.tsx` - Dark variants for feedback form styling.
+    - `client/src/components/feedback/FeedbackViewer.tsx` - Dark variants for feedback list cards.
+    - `client/src/components/puzzle/ExplanationGridRow.tsx` - Larger row typography and dark card theme usage.
+    - `client/src/pages/PuzzleAnalyst.tsx` - Larger typography and updated column widths.
+    - `client/src/types/puzzle.ts` - Added the AnalysisResultCard theme prop.
+    - `docs/2025-12-24-puzzle-analyst-layout-plan.md` - Documented the dark card and typography update.
+
 ### Version 6.10.5  Dec 24, 2025
 
 - **Layout: Remove sticky headers and render PNG thumbnails in Puzzle Analyst** (Author: Codex (GPT-5))

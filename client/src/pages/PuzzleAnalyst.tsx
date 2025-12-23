@@ -2,7 +2,8 @@
  * Author: Codex (GPT-5)
  * Date: 2025-12-24
  * PURPOSE: Tighten the Puzzle Analyst layout so the dense grid matches the reference art direction.
- *          Removes sticky header layers to prevent overlap and keeps the grid aligned and compact.
+ *          Removes sticky header layers to prevent overlap, keeps the grid aligned, and boosts
+ *          font sizes for better readability.
  * SRP/DRY check: Pass - this file orchestrates layout only and reuses ExplanationGridRow for details.
  */
 
@@ -119,15 +120,15 @@ export default function PuzzleAnalyst() {
     <div className="min-h-screen bg-black text-gray-50">
       <div className="border-b border-gray-800 bg-black">
         <div className="max-w-7xl mx-auto px-4 py-2">
-          <h1 className="text-2xl font-semibold text-gray-100 leading-tight">
+          <h1 className="text-3xl font-semibold text-gray-100 leading-tight">
             {taskId}
             {puzzleName && ` - ${puzzleName}`}
           </h1>
-          <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-gray-400 mt-1">
+          <p className="text-xs font-semibold uppercase tracking-[0.22em] text-gray-400 mt-1">
             Analyzing {total} explanation{total !== 1 ? 's' : ''}
           </p>
           {/* Summary badges keep the header informative at a glance. */}
-          <div className="mt-2 flex flex-wrap gap-2 text-[10px] font-semibold uppercase text-gray-300">
+          <div className="mt-2 flex flex-wrap gap-2 text-xs font-semibold uppercase text-gray-300">
             <span className="rounded-full border border-gray-800 px-2 py-0.5 bg-white/5">
               All {summaryStats.all}
             </span>
@@ -145,7 +146,7 @@ export default function PuzzleAnalyst() {
         <div className="space-y-px border border-gray-800/80 rounded-xl bg-black shadow-[0_40px_120px_-60px_rgba(0,0,0,0.95)] overflow-hidden">
           {/* Column headers align with ExplanationGridRow widths so every value lines up. */}
           <div
-            className="hidden md:grid grid-cols-[56px_minmax(200px,1fr)_96px_78px_92px_92px_86px_40px] gap-2 px-2.5 py-1 bg-black border-b border-gray-800 text-[9px] font-semibold uppercase tracking-[0.26em] text-gray-500"
+            className="hidden md:grid grid-cols-[60px_minmax(220px,1fr)_110px_90px_100px_100px_92px_44px] gap-3 px-3 py-1.5 bg-black border-b border-gray-800 text-[11px] font-semibold uppercase tracking-[0.22em] text-gray-500"
           >
             <div>Grid</div>
             <div>Model</div>
@@ -173,7 +174,7 @@ export default function PuzzleAnalyst() {
         </div>
 
         {/* Footer Stats */}
-        <div className="mt-4 text-[10px] uppercase tracking-[0.28em] text-gray-500">
+        <div className="mt-4 text-xs uppercase tracking-[0.22em] text-gray-500">
           Showing {summaries.length} of {total} explanations
         </div>
       </div>
