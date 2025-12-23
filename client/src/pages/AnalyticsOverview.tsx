@@ -199,6 +199,7 @@ export default function AnalyticsOverview() {
     if (availableModels.length > 0 && !selectedModelForComparison && selectedModelForDataset) {
       const availableForComparison = availableModels.filter(m => m !== selectedModelForDataset);
       const preferredOrder = [
+        'gemini-3-flash-preview-attempt1',
         'gemini-3-deep-think-preview-attempt1',
         'gemini-3-pro-preview-attempt1',
         'claude-haiku-4-5-20251001-thinking-32k-attempt2',
