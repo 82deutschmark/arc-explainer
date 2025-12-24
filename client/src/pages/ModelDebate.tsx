@@ -421,7 +421,7 @@ export default function ModelDebate() {
             <MessageSquare className="h-12 w-12 mx-auto mb-4 text-gray-400" />
             <p className="text-gray-500 mb-4">No explanations available for this puzzle yet.</p>
             <p className="text-sm text-gray-400 mb-4">Generate some AI explanations first, then return here to start debates.</p>
-            <Link href={`/puzzle/${taskId}`}>
+            <Link href={`/task/${taskId}`}>
               <Button>
                 <Plus className="h-4 w-4 mr-2" />
                 Generate First Explanation

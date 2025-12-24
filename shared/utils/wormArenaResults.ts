@@ -201,8 +201,8 @@ export function buildMatchTotalsSummary(
 
   const lines: string[] = [];
 
-  // Add winner information
-  const playerIds = Object.keys(finalScores ?? {});
+  // Add winner information using actual match results, not just scores
+  const playerIds = Object.keys(replayData?.players ?? {});
   if (playerIds.length >= 2) {
     const playerAId = playerIds[0];
     const playerBId = playerIds[1];
@@ -212,11 +212,23 @@ export function buildMatchTotalsSummary(
     const playerAName = playerLabels[playerAId] ?? 'Player A';
     const playerBName = playerLabels[playerBId] ?? 'Player B';
 
+    // Use actual match result, not score comparison
+    const playerAResult = getSnakeResultLabel(replayData, playerAId, finalScores);
+    const playerBResult = getSnakeResultLabel(replayData, playerBId, finalScores);
+
+    // Get death reasons for context
+    const playerADeath = replayData?.players?.[playerAId]?.death;
+    const playerBDeath = replayData?.players?.[playerBId]?.death;
+    const playerADeathReason = playerADeath?.reason ? `(${playerADeath.reason})` : '';
+    const playerBDeathReason = playerBDeath?.reason ? `(${playerBDeath.reason})` : '';
+
     let winnerText = '';
-    if (playerAScore > playerBScore) {
-      winnerText = `${playerAName} won (${formatInt(playerAScore)} - ${formatInt(playerBScore)})`;
-    } else if (playerBScore > playerAScore) {
-      winnerText = `${playerBName} won (${formatInt(playerBScore)} - ${formatInt(playerAScore)})`;
+    if (playerAResult === 'won') {
+      const deathContext = playerBDeathReason ? ` ${playerBDeathReason}` : '';
+      winnerText = `${playerAName} won (${formatInt(playerAScore)} - ${formatInt(playerBScore)})${deathContext}`;
+    } else if (playerBResult === 'won') {
+      const deathContext = playerADeathReason ? ` ${playerADeathReason}` : '';
+      winnerText = `${playerBName} won (${formatInt(playerBScore)} - ${formatInt(playerAScore)})${deathContext}`;
     } else {
       winnerText = `Tie game (${formatInt(playerAScore)} - ${formatInt(playerBScore)})`;
     }

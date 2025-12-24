@@ -186,11 +186,12 @@ export default function AnalyticsOverview() {
   // Auto-select gpt-5-2-pro-2025-12-11-high-attempt1 as the model if available, fallback through preferred models
   React.useEffect(() => {
     if (availableModels.length > 0 && !selectedModelForDataset) {
+      const geminiFlash = availableModels.find(m => m === 'gemini-3-flash-preview-thinking-high-attempt1');
       const gpt52 = availableModels.find(m => m === 'gpt-5-2-pro-2025-12-11-high-attempt1');
       const geminiPro = availableModels.find(m => m === 'gemini-3-pro-preview-attempt1');
       const geminiDeepThink = availableModels.find(m => m === 'gemini-3-deep-think-preview-attempt1');
       const gpt5 = availableModels.find(m => m === 'gpt-5-1-2025-11-13-thinking-high-attempt2');
-      setSelectedModelForDataset(gpt52 || geminiPro || geminiDeepThink || gpt5 || availableModels[0]);
+      setSelectedModelForDataset(geminiFlash || gpt52 || geminiPro || geminiDeepThink || gpt5 || availableModels[0]);
     }
   }, [availableModels, selectedModelForDataset]);
 
@@ -199,6 +200,8 @@ export default function AnalyticsOverview() {
     if (availableModels.length > 0 && !selectedModelForComparison && selectedModelForDataset) {
       const availableForComparison = availableModels.filter(m => m !== selectedModelForDataset);
       const preferredOrder = [
+        'gemini-3-flash-preview-thinking-high-attempt1',
+        'gemini-3-flash-preview-thinking-high-attempt2',
         'gemini-3-deep-think-preview-attempt1',
         'gemini-3-pro-preview-attempt1',
         'claude-haiku-4-5-20251001-thinking-32k-attempt2',

@@ -1,26 +1,17 @@
 /**
  * server/controllers/snakeBenchController.ts
  *
- * Author: Cascade
- * Date: 2025-12-19
- * PURPOSE: HTTP API controller for SnakeBench single-match runs and replay access.
- *          Exposes a small public endpoint that runs a single game between
- *          two models via the SnakeBench backend and returns a concise
- *          summary for UI consumption.
- *
- *          Replay behavior:
- *          - /api/snakebench/games/:gameId returns either local { data } or a remote
- *            { replayUrl + fallbackUrls } for the client to fetch directly.
- *          - /api/snakebench/games/:gameId/proxy server-fetches remote replay JSON as
- *            a same-origin fallback for cases where browser fetch is blocked (CORS).
- * SRP/DRY check: Pass — controller-only logic, delegates execution to
- *                snakeBenchService.
+ * Author: Codex (GPT-5)
+ * Date: 2025-12-20
+ * PURPOSE: HTTP API controller for SnakeBench match runs, replay access, and model insights reporting.
+ * SRP/DRY check: Pass - controller-only logic, delegates execution to snakeBenchService.
  */
 
 import type { Request, Response } from 'express';
 
 import { snakeBenchService } from '../services/snakeBenchService';
 import { snakeBenchIngestQueue } from '../services/snakeBenchIngestQueue';
+import { loadWormArenaPromptTemplateBundle } from '../services/snakeBench/SnakeBenchLlmPlayerPromptTemplate.ts';
 import { logger } from '../utils/logger';
 import type {
   SnakeBenchRunMatchRequest,
@@ -39,7 +30,34 @@ import type {
   WormArenaGreatestHitsResponse,
   WormArenaSuggestMatchupsResponse,
   WormArenaSuggestMode,
+  SnakeBenchLlmPlayerPromptTemplateResponse,
+  WormArenaModelInsightsResponse,
 } from '../../shared/types.js';
+
+export async function getLlmPlayerPromptTemplate(req: Request, res: Response) {
+  try {
+    const result = await loadWormArenaPromptTemplateBundle();
+
+    const response: SnakeBenchLlmPlayerPromptTemplateResponse = {
+      success: true,
+      result,
+      timestamp: Date.now(),
+    };
+
+    return res.json(response);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    logger.error(`SnakeBench getLlmPlayerPromptTemplate failed: ${message}`, 'snakebench-controller');
+
+    const response: SnakeBenchLlmPlayerPromptTemplateResponse = {
+      success: false,
+      error: message,
+      timestamp: Date.now(),
+    };
+
+    return res.status(500).json(response);
+  }
+}
 
 export async function runMatch(req: Request, res: Response) {
   try {
@@ -741,6 +759,58 @@ export async function modelHistoryFull(req: Request, res: Response) {
   }
 }
 
+/**
+ * GET /api/snakebench/model-insights?modelSlug=...
+ * Returns an actionable insights report for a specific model.
+ */
+export async function modelInsightsReport(req: Request, res: Response) {
+  try {
+    const modelSlugRaw = (req.query.modelSlug as string | undefined) ?? '';
+    const modelSlug = modelSlugRaw.trim();
+
+    if (!modelSlug) {
+      const response: WormArenaModelInsightsResponse = {
+        success: false,
+        modelSlug: '',
+        error: 'modelSlug query parameter is required',
+        timestamp: Date.now(),
+      };
+      return res.status(400).json(response);
+    }
+
+    const report = await snakeBenchService.getModelInsightsReport(modelSlug);
+
+    if (!report) {
+      const response: WormArenaModelInsightsResponse = {
+        success: false,
+        modelSlug,
+        error: 'No insights available for this model',
+        timestamp: Date.now(),
+      };
+      return res.status(404).json(response);
+    }
+
+    const response: WormArenaModelInsightsResponse = {
+      success: true,
+      modelSlug: report.modelSlug,
+      report,
+      timestamp: Date.now(),
+    };
+
+    return res.json(response);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    logger.error(`SnakeBench modelInsightsReport failed: ${message}`, 'snakebench-controller');
+    const response: WormArenaModelInsightsResponse = {
+      success: false,
+      modelSlug: '',
+      error: message,
+      timestamp: Date.now(),
+    };
+    return res.status(500).json(response);
+  }
+}
+
 export const snakeBenchController = {
   runMatch,
   runBatch,
@@ -755,9 +825,12 @@ export const snakeBenchController = {
   modelRating,
   modelHistory,
   modelHistoryFull,
+  modelInsightsReport,
   modelsWithGames,
   trueSkillLeaderboard,
   getWormArenaGreatestHits,
   suggestMatchups,
   ingestQueueStatus,
+  getLlmPlayerPromptTemplate,
 };
+

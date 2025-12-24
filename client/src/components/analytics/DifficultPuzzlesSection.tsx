@@ -56,14 +56,14 @@ export function DifficultPuzzlesSection() {
   // Handle puzzle search by ID
   const handleSearch = React.useCallback(() => {
     if (filteredPuzzles.length === 1 && searchQuery.trim() === filteredPuzzles[0].id) {
-      setLocation(`/puzzle/${filteredPuzzles[0].id}`);
+      setLocation(`/task/${filteredPuzzles[0].id}`);
     }
     // If the search query is a full puzzle ID that doesn't exist in the current list, try navigating anyway
     else if (searchQuery.trim().length > 0 && filteredPuzzles.length === 0) {
       const potentialPuzzleId = searchQuery.trim();
       // Basic validation for what a puzzle ID might look like
       if (potentialPuzzleId.length > 5 && !potentialPuzzleId.includes(' ')) {
-        setLocation(`/puzzle/${potentialPuzzleId}`);
+        setLocation(`/task/${potentialPuzzleId}`);
       }
     }
   }, [searchQuery, filteredPuzzles, setLocation]);

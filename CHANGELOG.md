@@ -1,9 +1,259 @@
-# Author: Claude Sonnet 4
-# Date: 2025-12-18
+# Author: Codex (GPT-5)
+# Date: 2025-12-20
 # PURPOSE: Changelog for ARC Explainer - tracks all changes with semantic versioning.
-# SRP/DRY check: Pass - this entry documents the specific change without altering historical records.
-
+# SRP/DRY check: Pass - entries document changes without altering historical records.
 # New entries at the top, use proper SemVer!
+
+### Version 6.10.6  Dec 24, 2025
+
+- **UI: Dark theme analysis cards and larger Puzzle Analyst typography** (Author: Codex (GPT-5))
+  - **Purpose**: Make expanded analysis cards blend into the dark Puzzle Analyst view and improve readability.
+  - **Behavior**:
+    - Added a dark theme option to `AnalysisResultCard` and applied it within Puzzle Analyst.
+    - Added dark theme variants to analysis card subcomponents and feedback sections.
+    - Increased header and row font sizes in Puzzle Analyst for easier scanning.
+  - **Files Modified**:
+    - `client/src/components/puzzle/AnalysisResultCard.tsx` - Theme wrapper and dark palette for the card shell.
+    - `client/src/components/puzzle/AnalysisResultHeader.tsx` - Dark variants for badges and controls.
+    - `client/src/components/puzzle/AnalysisResultContent.tsx` - Dark variants for reasoning, prompts, and alerts.
+    - `client/src/components/puzzle/AnalysisResultActions.tsx` - Dark variants for feedback panel text.
+    - `client/src/components/puzzle/AnalysisResultMetrics.tsx` - Dark variants for Saturn metrics panels.
+    - `client/src/components/ExplanationFeedback.tsx` - Dark variants for feedback form styling.
+    - `client/src/components/feedback/FeedbackViewer.tsx` - Dark variants for feedback list cards.
+    - `client/src/components/puzzle/ExplanationGridRow.tsx` - Larger row typography and dark card theme usage.
+    - `client/src/pages/PuzzleAnalyst.tsx` - Larger typography and updated column widths.
+    - `client/src/types/puzzle.ts` - Added the AnalysisResultCard theme prop.
+    - `docs/2025-12-24-puzzle-analyst-layout-plan.md` - Documented the dark card and typography update.
+
+### Version 6.10.5  Dec 24, 2025
+
+- **Layout: Remove sticky headers and render PNG thumbnails in Puzzle Analyst** (Author: Codex (GPT-5))
+  - **Purpose**: Eliminate header overlap while making grid previews smaller, more zoomed out, and consistently rendered on black mats.
+  - **Behavior**:
+    - Removed sticky header layers so the column header and page header no longer overlay rows.
+    - Generated client-side PNG thumbnails with extra padding for a zoomed-out grid preview.
+    - Tightened row typography and spacing to keep metadata dense but readable.
+  - **Files Modified**:
+    - `client/src/pages/PuzzleAnalyst.tsx` - Removed sticky header logic and tightened column header spacing.
+    - `client/src/components/puzzle/ExplanationGridRow.tsx` - Added canvas-based PNG thumbnails and reduced row padding.
+    - `docs/2025-12-24-puzzle-analyst-layout-plan.md` - Recorded sticky header removal and PNG thumbnail approach.
+
+### Version 6.10.4  Dec 24, 2025
+
+- **Fix: Restore multi-test grid previews and expected outputs in Puzzle Analyst** (Author: Codex (GPT-5))
+  - **Purpose**: Ensure multi-test explanations show stacked previews and expanded cards always include expected outputs with working mismatch toggles.
+  - **Behavior**:
+    - Added stacked grid previews that fall back to multi-test predictions when single grids are missing.
+    - Passed puzzle test cases into `AnalysisResultCard` so expected outputs and mismatch diffs render.
+    - Added the missing `multiTestPredictionGrids` type so stacked previews compile cleanly.
+    - Tightened padding, clarified token/time labels, and reduced thumbnail size on black backgrounds.
+    - Solidified the column header background and moved the grid container closer to the sticky header.
+  - **Files Modified**:
+    - `client/src/components/puzzle/ExplanationGridRow.tsx` - Stacked preview selection and test case wiring for expanded cards.
+    - `client/src/pages/PuzzleAnalyst.tsx` - Supplies test cases from puzzle data to each row.
+    - `docs/2025-12-24-puzzle-analyst-layout-plan.md` - Documented the multi-test grid handling update.
+
+### Version 6.10.3  Dec 24, 2025
+
+- **Layout: Refresh Puzzle Analyst grid density** (Author: Codex (GPT-5))
+  - **Purpose**: Tighten the Puzzle Analyst presentation to match the high-density reference: align column widths, show cost/tokens/latency in a single header, and keep the details tucked behind expandable rows.
+  - **Behavior**:
+    - Added summary badges to the sticky header so analysts immediately see all/correct/incorrect counts.
+    - Rebuilt `ExplanationGridRow` to show the grid thumbnail, model metadata, cost, latency, tokens, and Badges for status/reasoning without overlapping content.
+    - Updated column headers and container styling so the grid lines match the row layout and the page keeps a compact, futuristic feel.
+    - Adjusted sticky offsets so the Puzzle Analyst header respects the global AppHeader height and does not overlap row content.
+  - **Files Modified**:
+    - `docs/2025-12-24-puzzle-analyst-layout-plan.md` - Documented the layout refresh approach and file responsibilities before coding.
+    - `client/src/components/puzzle/ExplanationGridRow.tsx` - Dense metadata header, status badges, tokens/cost formatting, and revised expand region.
+    - `client/src/pages/PuzzleAnalyst.tsx` - Sticky header counts, new column widths, and heavier dark styling around the grid container.
+
+### Version 6.10.2  Dec 21, 2025
+
+- **Fix: Handle malformed boolean data in multiplePredictedOutputs field** (Author: Cascade)
+  - **Root Cause**: Existing database records contained boolean values for `multiplePredictedOutputs` instead of expected array/object/null
+  - **Symptom**: "[WARN][utilities] Unexpected type for multiplePredictedOutputs: boolean" warnings on puzzle explanations API calls
+  - **Solution**: Enhanced `safeJsonParse()` in `CommonUtilities.ts` to gracefully handle boolean values by treating them as malformed data and returning null
+  - **Impact**: Eliminates warnings and prevents potential crashes when reading legacy malformed data
+  - **Backwards Compatible**: System continues functioning normally with existing bad data
+  - **Files Modified**:
+    - `server/utils/CommonUtilities.ts` - Added boolean handling in safeJsonParse function
+  - **Prevention**: Future writes now properly sanitize boolean values in explanationService.ts
+
+### Version 6.10.1  Dec 21, 2025
+
+- **Fix: Complete navigation URL migration from /puzzle/ to /task/** (Author: Claude Code using Sonnet 4.5)
+  - **Purpose**: Finalize URL migration to ensure all internal navigation uses new /task/ routes
+  - **Files Updated**:
+    - `client/src/components/puzzle/PuzzleTradingCard.tsx` - Trading card "View Details" link
+    - `client/src/components/model-examiner/ExaminerActivity.tsx` - Activity log puzzle navigation
+    - `client/src/components/poetiq/PuzzleProgressGrid.tsx` - Grid cell window.open navigation
+    - `client/src/pages/BeetreeSolver.tsx` - Back button navigation
+    - `client/src/pages/GroverSolver.tsx` - Back button navigation  
+    - `client/src/pages/ModelDebate.tsx` - "Generate First Explanation" navigation
+    - `client/src/pages/PuzzleDiscussion.tsx` - Multiple navigation links (2 locations)
+    - `client/src/pages/FeedbackExplorer.tsx` - Puzzle and explanation navigation links (2 locations)
+    - `client/src/components/puzzle/AnalysisResultHeader.tsx` - Copy link share feature
+  - **Impact**: All internal navigation now consistently uses /task/ routes, completing the migration
+
+### Version 6.10.0  Dec 21, 2025
+
+- **Feature: Puzzle Analyst - New high-density grid page for analyzing explanations** (Author: Claude Code using Haiku 4.5)
+  - **Purpose**: Read-only, analysis-focused interface for browsing and comparing hundreds of AI-generated explanations for a single puzzle
+  - **Design**: Dark futuristic theme with high-information-density grid layout (contrasts with warm PuzzleExaminer)
+  - **Behavior**:
+    - Default puzzle navigation now routes to `/task/:taskId` (Puzzle Analyst) instead of `/puzzle/:taskId` (PuzzleExaminer)
+    - Shows all explanations for a puzzle in compact rows with: predicted grid thumbnail, model name, status badge, cost, timestamp, reasoning indicator, token count
+    - Clicking a row expands inline to show full `AnalysisResultCard` with detailed analysis
+    - Lazy-loads full explanation data on first expand via `fetchExplanationById`
+    - Supports scrolling through hundreds of explanations (no pagination)
+  - **Architectural Notes**:
+    - New page component with dedicated row component (`ExplanationGridRow`)
+    - Reuses existing `TinyGrid`, `AnalysisResultCard`, and `usePaginatedExplanationSummaries` hook
+    - SRP/DRY: Page handles layout; row handles single row rendering; data fetching via existing APIs
+    - No model selection or prompt controls (read-only mode)
+  - **Breaking Change**: All puzzle navigation links now point to `/task/:taskId` (new Puzzle Analyst) by default
+    - PuzzleExaminer still accessible via direct URL `/puzzle/:taskId` if needed
+    - Updated 10+ navigation components across the codebase
+  - **Files Created**:
+    - `client/src/pages/PuzzleAnalyst.tsx` - Main page component
+    - `client/src/components/puzzle/ExplanationGridRow.tsx` - Row renderer with expand/collapse
+  - **Files Modified**:
+    - `client/src/App.tsx` - Added import and route for PuzzleAnalyst
+    - `client/src/components/ui/ClickablePuzzleBadge.tsx` - Navigation route change
+    - `client/src/components/overview/PuzzleList.tsx` - Navigation route change
+    - `client/src/components/analytics/DifficultPuzzlesSection.tsx` - Navigation route change
+    - `client/src/components/feedback/FeedbackSummary.tsx` - Navigation route change
+    - `client/src/components/puzzle/CompactPuzzleCard.tsx` - Navigation route change
+    - `client/src/components/puzzle/ChallengePuzzleCard.tsx` - Navigation route change
+    - `client/src/pages/PuzzleBrowser.tsx` - Navigation route change
+    - `CHANGELOG.md`
+
+### Version 6.9.22  Dec 21, 2025
+
+- **Fix: Worm Arena context overflow for reasoning models** (Author: Claude Haiku 4.5)
+  - **Problem**: OpenRouter models hitting 400k token context limit (461,156 tokens requested)
+  - **Root Cause**: Reasoning models generate extremely verbose rationales (400k+ tokens), which get included in next turn's prompt, causing exponential growth per turn
+  - **Solution**: Multi-layered approach:
+    1. **OpenRouter middle-out transform**: Enables OpenRouter's automatic prompt compression feature (intelligently compresses prompts on their side)
+    2. **Output token limits**: Set `max_output_tokens: 16000` for reasoning models to prevent explosive rationale generation
+    3. **Rationale truncation**: Truncates rationales to 10,000 chars for prompts (80/20 split preserves context), but preserves full text in `move_history` for replay files
+    4. **Prompt monitoring**: Warns when prompts exceed 100k tokens for early detection
+  - **Impact**: Games that previously crashed mid-match with context errors will now complete successfully
+  - **Data Preservation**: Full verbose rationales still saved to replay JSON files for post-game analysis
+  - **Backwards Compatible**: All features opt-in/enabled by default, can be disabled via config
+  - **Files Modified**:
+    - `external/SnakeBench/backend/llm_providers.py` (lines 183-186, 222-225) - Added middle-out transform and output token limits
+    - `external/SnakeBench/backend/players/llm_player.py` (lines 107-131, 163, 50-53) - Added truncation method and prompt monitoring
+    - `external/SnakeBench/backend/players/llm_player_a.py` (lines 114-138, 171, 53-56) - Same changes for variant A player
+
+### Version 6.9.21  Dec 20, 2025
+
+- **Fix: OpenRouter Responses API max_output_tokens requirement** (Author: Claude Code)
+  - **Issue**: OpenRouter updated Responses API proxy to require explicit `max_output_tokens` for reasoning models
+  - **Symptom**: gpt-5.1-codex-mini returned empty `output=[]` array despite input being processed
+  - **Root Cause**: `max_output_tokens` was never set in player config for OpenAI/xAI models
+  - **Fix**: Added `config["max_output_tokens"] = 16000` for models starting with "openai/" or "x-ai/"
+  - **Impact**: SnakeBench/Worm Arena matches with gpt-5.1-codex-mini will now generate output
+  - **Files Modified**:
+    - `server/python/snakebench_runner.py` (line 112)
+    - `CHANGELOG.md`
+
+### Version 6.9.20  Dec 20, 2025
+
+- **Worm Arena: Add OpenAI summary paragraph to the model insights report** (Author: Codex (GPT-5))
+  - **Behavior**: Report now calls OpenAI Responses API (gpt-5-nano-2025-08-07) to write a short summary
+  - **Fallback**: Report still renders stats if the LLM summary fails
+  - **Fix**: Summary request now matches Responses API input block format with instruction text and
+    reasoning summary fallback parsing
+  - **UI**: Inline summary block added to the Models page report card
+  - **Docs**: Updated `docs/reference/data/WormArena_Model_Insights_Report.md`
+  - **Files Created**:
+    - `docs/plans/2025-12-20-worm-arena-model-insights-llm-summary-plan.md`
+  - **Files Modified**:
+    - `server/services/snakeBenchService.ts`
+    - `shared/types.ts`
+    - `client/src/components/wormArena/WormArenaModelInsightsReport.tsx`
+    - `docs/reference/data/WormArena_Model_Insights_Report.md`
+    - `CHANGELOG.md`
+
+### Version 6.9.19  Dec 20, 2025
+
+- **Worm Arena: Add per-model actionable insights report with copy, save, and Twitter share actions** (Author: Codex (GPT-5))
+  - **New API**: `GET /api/snakebench/model-insights?modelSlug=...` for full-history insights per model
+  - **UI**: Inline report on `/worm-arena/models` with failure modes, cost efficiency, and opponent pain points
+  - **Docs**: Added `docs/reference/data/WormArena_Model_Insights_Report.md`
+  - **Files Created**:
+    - `client/src/components/wormArena/WormArenaModelInsightsReport.tsx`
+    - `docs/reference/data/WormArena_Model_Insights_Report.md`
+    - `docs/plans/2025-12-20-worm-arena-model-insights-report-plan.md`
+  - **Files Modified**:
+    - `client/src/pages/WormArenaModels.tsx`
+    - `client/src/hooks/useWormArenaModels.ts`
+    - `server/controllers/snakeBenchController.ts`
+    - `server/services/snakeBenchService.ts`
+    - `server/repositories/SnakeBenchRepository.ts`
+    - `server/routes.ts`
+    - `shared/types.ts`
+    - `CHANGELOG.md`
+
+### Version 6.9.18  Dec 20, 2025
+
+- **SnakeBench: Add player variant system for A/B testing different LLM prompts** (Author: Cascade)
+  - **Purpose**: Enable experimentation with different prompt strategies to improve LLM snake performance
+  - **Architecture**: Modular registry pattern - add new variants by creating `llm_player_x.py` and registering in `variant_registry.py`
+  - **New variant**: `LLMPlayerA` with tactical "cheat sheet" prompt featuring:
+    - Structured decision checklist (safety-first elimination process)
+    - Clearer turn context section
+    - Same rules and output contract as baseline (verbatim)
+  - **Status**: Variant support is present but currently **not enabled** in ARC Explainer runtime (baseline prompt remains in use)
+  - **Files Created**:
+    - `external/SnakeBench/backend/players/llm_player_a.py` - Variant A player class
+    - `external/SnakeBench/backend/players/variant_registry.py` - Registry mapping variant keys to classes
+  - **Files Modified**:
+    - `external/SnakeBench/backend/players/__init__.py` - Export new classes and registry
+    - `external/SnakeBench/backend/main.py` - (Dormant) wiring kept off; baseline `LLMPlayer` remains active
+    - `server/python/snakebench_runner.py` - (Dormant) no playerVariant fields passed to Python
+    - `server/services/snakeBench/helpers/validators.ts` - (Dormant) no playerVariant fields in payload
+    - `shared/types.ts` - (Dormant) no playerVariant fields in request types
+  - **Extensibility**: To add variant B/C/D: create `llm_player_b.py`, add entry to `PLAYER_VARIANT_LOADERS` in registry
+
+### Version 6.9.17  Dec 20, 2025
+
+- **Worm Arena: Add Rules & LLM prompt transparency page + API endpoint** (Author: Cascade)
+  - **New UI**: `/worm-arena/rules` page that shows:
+    - Human-readable rules summary
+    - Canonical TypeScript prompt template with placeholders (B2)
+    - Live-extracted Python prompt builder block and raw source (B1)
+  - **New public API**: `GET /api/snakebench/llm-player/prompt-template`
+    - Returns both B1 and B2 representations so the UI is always truthful
+    - Includes `APPLE_TARGET` parsed from SnakeBench Python constants when available
+  - **Verification**: Added a drift-detection test that fails if the canonical fixed rules lines stop matching `llm_player.py`
+  - **Files Created**:
+    - `client/src/pages/WormArenaRules.tsx`
+    - `server/services/snakeBench/SnakeBenchLlmPlayerPromptTemplate.ts`
+    - `tests/snakeBenchLlmPlayerPromptTemplate.test.ts`
+  - **Files Modified**:
+    - `client/src/App.tsx`
+    - `client/src/pages/WormArena.tsx`
+    - `client/src/pages/WormArenaLive.tsx`
+    - `client/src/pages/WormArenaMatches.tsx`
+    - `client/src/pages/WormArenaModels.tsx`
+    - `client/src/pages/WormArenaStats.tsx`
+    - `client/src/pages/WormArenaSkillAnalysis.tsx`
+    - `server/controllers/snakeBenchController.ts`
+    - `server/routes.ts`
+    - `shared/types.ts`
+
+### Version 6.9.16  Dec 20, 2025
+
+- **SnakeBench: Enable GitHub replay auto-publish workflow** (Author: Claude Haiku 4.5)
+  - **Problem**: Replay publishing to GitHub was implemented but missing required environment variables, so games never pushed to VoynichLabs/SnakeBench repo
+  - **Solution**: Added explicit environment variable configuration for GitHub publishing (token, owner, repo, branch, replay directory)
+  - **Context**: Completed games are written locally to `external/SnakeBench/backend/completed_games_local`, then published to public `VoynichLabs/SnakeBench/backend/completed_games` via GitHub API for Railway and other deployments
+  - **Files Modified**:
+    - `.env` - Added `SNAKEBENCH_GITHUB_OWNER`, `SNAKEBENCH_GITHUB_REPO`, `SNAKEBENCH_GITHUB_BRANCH`, `SNAKEBENCH_GITHUB_REPLAY_DIR` configuration
+    - `README.md` - Added 30-40 word explanation of replay publishing pipeline
+  - **Going Forward**: All new games will auto-publish to GitHub; existing unpushed games from Dec 15-20 remain local
 
 ### Version 6.9.15  Dec 20, 2025
 

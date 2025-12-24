@@ -93,7 +93,7 @@ export const PuzzleTradingCard: React.FC<PuzzleTradingCardProps> = ({ puzzle }) 
               >
                 {stats.teamName}
               </Badge>
-              <Link href={`/puzzle/${puzzle.id}`}>
+              <Link href={`/task/${puzzle.id}`}>
                 <a
                   className="text-xs text-blue-600 hover:text-purple-600 underline font-bold"
                   onClick={(e) => e.stopPropagation()}

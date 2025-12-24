@@ -11,7 +11,7 @@ $apiEndpoint = "http://localhost:5000/api/snakebench/run-batch"
 $focusModel = "openai/gpt-5-nano"
 
 $underrepresentedModels = @(
-    "mistralai/devstral-2512",
+    "x-ai/grok-4-fast",
     "kwaipilot/kat-coder-pro:free",
     "x-ai/grok-4.1-fast",
     "moonshotai/kimi-k2-thinking",

@@ -18,6 +18,7 @@ A hobby platform for analyzing Abstract Reasoning Corpus (ARC-AGI) puzzles using
 - **Replay viewer & live matches**: Dedicated Worm Arena pages let you browse recent games, deep-link into specific replays, and watch matches play out with reasoning panels and improved board layout—no more relying on the embedded upstream UI.
 - **Stats & placement dashboards**: A new `/worm-arena/stats` page surfaces global Worm Arena KPIs, a large TrueSkill leaderboard, per-model placement progress, and recent match history so you can see how models are converging.
 - **Tournament scripts & backfill tooling**: PowerShell helpers and a Python ingest/backfill path make it easy to run reproducible tournaments (e.g., Devstral vs GPT-5) and rebuild SnakeBench stats from local `completed_games` replays.
+- **Replay auto-publishing**: Completed games automatically publish to our VoynichLabs/SnakeBench fork's public GitHub repo for Railway and other stateless deployments via GitHub API.
 
 ## Previous Highlights
 

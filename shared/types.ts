@@ -1,18 +1,11 @@
 /**
  * shared/types.ts
- * 
- * Shared TypeScript interfaces and types for the ARC-AGI Puzzle Explainer application.
- * Defines data structures for puzzles, metadata, analysis results, and prompt templates.
- * Used across both frontend and backend to ensure type safety and consistent data handling.
- * 
- * Key components:
- * - ARCTask/ARCExample: Core puzzle data structures
- * - PuzzleMetadata: Puzzle classification and metadata
- * - PuzzleAnalysis: AI analysis results structure
- * - PromptTemplate: Dynamic prompt system for AI analysis
- * - PROMPT_TEMPLATES: Predefined prompt templates for different explanation approaches
- * 
- * @author Cascade
+ *
+ * Author: Codex (GPT-5)
+ * Date: 2025-12-20
+ * PURPOSE: Shared TypeScript interfaces and types for ARC Explainer, including Worm Arena model insights
+ *          reports with optional LLM summary fields.
+ * SRP/DRY check: Pass - shared types only.
  */
 
 export interface ARCTask {
@@ -720,6 +713,28 @@ export interface SnakeBenchHealthResponse {
   timestamp: number;
 }
 
+/**
+ * SnakeBench LLM player prompt template endpoint.
+ *
+ * This is used by Worm Arena Rules page to show:
+ * - The canonical (TypeScript-maintained) prompt template with placeholders.
+ * - The live Python prompt builder block extracted from llm_player.py.
+ * - The raw Python source file for transparency.
+ */
+export interface SnakeBenchLlmPlayerPromptTemplateResponse {
+  success: boolean;
+  result?: {
+    pythonSourcePath: string;
+    pythonSource: string;
+    pythonPromptBuilderBlock: string;
+    canonicalTemplate: string;
+    canonicalFixedLines: string[];
+    appleTarget: number | null;
+  };
+  error?: string;
+  timestamp: number;
+}
+
 export interface SnakeBenchArcExplainerStats {
   totalGames: number;
   activeModels: number;
@@ -755,6 +770,68 @@ export interface SnakeBenchModelMatchHistoryEntry {
   boardWidth: number;
   boardHeight: number;
   cost?: number;
+}
+
+/**
+ * Worm Arena model insights report types.
+ * Rates are 0 to 1 unless otherwise noted.
+ */
+export interface WormArenaModelInsightsFailureMode {
+  reason: string;
+  losses: number;
+  percentOfLosses: number;
+  averageDeathRound: number | null;
+}
+
+export interface WormArenaModelInsightsOpponent {
+  opponentSlug: string;
+  gamesPlayed: number;
+  wins: number;
+  losses: number;
+  ties: number;
+  lossRate: number;
+  lastPlayedAt: string | null;
+}
+
+export interface WormArenaModelInsightsSummary {
+  gamesPlayed: number;
+  wins: number;
+  losses: number;
+  ties: number;
+  winRate: number;
+  totalCost: number;
+  costPerGame: number | null;
+  costPerWin: number | null;
+  costPerLoss: number | null;
+  averageRounds: number | null;
+  averageScore: number | null;
+  averageDeathRoundLoss: number | null;
+  earlyLosses: number;
+  earlyLossRate: number;
+  lossDeathReasonCoverage: number;
+  unknownLosses: number;
+}
+
+export interface WormArenaModelInsightsReport {
+  modelSlug: string;
+  generatedAt: string;
+  summary: WormArenaModelInsightsSummary;
+  failureModes: WormArenaModelInsightsFailureMode[];
+  lossOpponents: WormArenaModelInsightsOpponent[];
+  // LLM-generated summary paragraph (null when generation fails).
+  llmSummary: string | null;
+  // OpenAI model used for the summary (null when summary is unavailable).
+  llmModel: string | null;
+  markdownReport: string;
+  tweetText: string;
+}
+
+export interface WormArenaModelInsightsResponse {
+  success: boolean;
+  modelSlug: string;
+  report?: WormArenaModelInsightsReport;
+  error?: string;
+  timestamp: number;
 }
 
 export interface SnakeBenchStatsResponse {
