@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Author: Cascade (model: Cascade)
-Date: 2025-12-02
+Date: 2025-12-20
 PURPOSE: Bridge between ARC Explainer Node backend and SnakeBench backend.
          Runs a single SnakeBench game between two models without requiring
          SnakeBench's own Supabase database. Uses the existing SnakeBench
@@ -109,14 +109,7 @@ def main() -> int:
                 config["api_type"] = "responses"
                 config["reasoning"] = {"effort": "medium", "summary": "detailed"}
                 config["text"] = {"verbosity": "medium"}
-
-                # Prefer direct OpenAI for OpenAI models when a key is present.
-                # (SnakeBench backend still supports OpenRouter if you explicitly set provider="openrouter".)
-                # DISABLED: This was causing issues with OpenRouter models that have openai/ prefix.
-                # The OpenAI provider strips the prefix, leaving just "gpt-oss-120b", which OpenRouter
-                # doesn't recognize. Keep all models routed through OpenRouter for consistency.
-                # if name.startswith("openai/") and (os.getenv("OPENAI_API_KEY") or "").strip():
-                #     config["provider"] = "openai"
+                config["max_output_tokens"] = 16000
 
             return config
 

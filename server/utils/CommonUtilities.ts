@@ -56,6 +56,18 @@ export function safeJsonParse<T>(value: any, fieldName?: string, fallback: T | n
     }
   }
   
+  // Handle boolean values - convert to fallback (treat as malformed data)
+  if (typeof value === 'boolean') {
+    if (fieldName) {
+      const key = `${fieldName}:${typeof value}`;
+      if (!unexpectedTypeWarningKeys.has(key)) {
+        unexpectedTypeWarningKeys.add(key);
+        logger.warn(`Unexpected type for ${fieldName}: ${typeof value}`, 'utilities');
+      }
+    }
+    return fallback;
+  }
+
   // For other types, return fallback
   if (fieldName) {
     const key = `${fieldName}:${typeof value}`;

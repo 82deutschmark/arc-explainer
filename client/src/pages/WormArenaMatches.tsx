@@ -5,6 +5,7 @@
  *          prominently, with advanced search filters in a collapsible section
  *          for users who want to explore specific matchups.
  *          Fixes Radix Select invariant: SelectItem values must be non-empty.
+ *          Updated to include Rules navigation link.
  * SRP/DRY check: Pass - page composition only.
  */
 
@@ -276,18 +277,16 @@ export default function WormArenaMatches() {
           { label: 'Models', href: '/worm-arena/models' },
           { label: 'Stats & Placement', href: '/worm-arena/stats' },
           { label: 'Skill Analysis', href: '/worm-arena/skill-analysis' },
+          { label: 'Rules', href: '/worm-arena/rules' },
         ]}
         showMatchupLabel={false}
         subtitle="Greatest Hits"
       />
 
-      <main className="p-4 md:p-6 max-w-7xl mx-auto space-y-6">
-        {/* Greatest Hits - prominently featured at top */}
-        <WormArenaGreatestHits />
-
-        {/* Advanced Search - collapsible for power users */}
+      <main className="p-2 md:p-3 max-w-7xl mx-auto space-y-6">
+        {/* Advanced Search - open by default at top */}
         <Card className="worm-card">
-          <Accordion type="single" collapsible className="w-full">
+          <Accordion type="single" defaultValue="search" className="w-full">
             <AccordionItem value="search" className="border-b-0">
               <AccordionTrigger className="px-4 py-3 hover:no-underline">
                 <div className="flex items-center gap-3">
@@ -617,6 +616,9 @@ export default function WormArenaMatches() {
             </AccordionItem>
           </Accordion>
         </Card>
+
+        {/* Greatest Hits - after search */}
+        <WormArenaGreatestHits />
       </main>
     </div>
   );

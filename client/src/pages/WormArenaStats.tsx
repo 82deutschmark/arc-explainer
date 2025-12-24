@@ -3,6 +3,7 @@
  * Date: 2025-12-20
  * PURPOSE: Worm Arena stats page - shows global stats and the Worm Arena leaderboard.
  *          This is a read-only analytics view backed by SnakeBenchRepository.
+ *          Updated to include Rules navigation link.
  * SRP/DRY check: Pass - page composition only.
  */
 
@@ -106,12 +107,13 @@ export default function WormArenaStats() {
           { label: "Models", href: "/worm-arena/models" },
           { label: "Stats & Placement", href: "/worm-arena/stats", active: true },
           { label: "Skill Analysis", href: "/worm-arena/skill-analysis" },
+          { label: "Rules", href: "/worm-arena/rules" },
         ]}
         showMatchupLabel={false}
         compact
       />
 
-      <main className="p-8 max-w-7xl mx-auto space-y-6">
+      <main className="p-4 max-w-7xl mx-auto space-y-6">
         <WormArenaGlobalStatsStrip stats={globalStats ?? null} />
 
         {/* TrueSkill leaderboard (global Worm Arena rankings) */}
@@ -119,6 +121,8 @@ export default function WormArenaStats() {
           entries={trueSkillEntries}
           isLoading={loadingTrueSkill}
           error={trueSkillError}
+          selectedModelSlug={selectedModel}
+          onSelectModel={handleSelectModel}
         />
 
         <div className="grid grid-cols-1 xl:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)] gap-6 items-start">

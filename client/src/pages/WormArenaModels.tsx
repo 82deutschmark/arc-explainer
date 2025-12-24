@@ -1,7 +1,8 @@
 /**
- * Author: Claude Sonnet 4
+ * Author: Codex (GPT-5)
  * Date: 2025-12-20
- * PURPOSE: Worm Arena Models page - browse every game a specific model has ever played.
+ * PURPOSE: Worm Arena Models page - browse every game a specific model has ever played,
+ *          plus generate a per-model actionable insights report inline.
  *          Mirrors the external SnakeBench /models/[id] page functionality.
  *          Only lists models that have actually played games.
  * SRP/DRY check: Pass - page composition only, data fetching in hooks.
@@ -11,6 +12,8 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'wouter';
 
 import WormArenaHeader from '@/components/WormArenaHeader';
+import WormArenaRecentMatches from '@/components/wormArena/WormArenaRecentMatches';
+import WormArenaModelInsightsReport from '@/components/wormArena/WormArenaModelInsightsReport';
 import {
   useWormArenaModelsWithGames,
   useWormArenaModelHistory,
@@ -139,10 +142,11 @@ export default function WormArenaModels() {
           { label: 'Models', href: '/worm-arena/models', active: true },
           { label: 'Stats & Placement', href: '/worm-arena/stats' },
           { label: 'Skill Analysis', href: '/worm-arena/skill-analysis' },
+          { label: 'Rules', href: '/worm-arena/rules' },
         ]}
       />
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-7xl mx-auto px-2 sm:px-3 lg:px-4 py-4">
         {/* Model Selector */}
         <Card className="mb-6">
           <CardHeader>
@@ -232,6 +236,20 @@ export default function WormArenaModels() {
                 </div>
               </CardContent>
             </Card>
+          </div>
+        )}
+
+        {/* Actionable Insights Report */}
+        {selectedModel && (
+          <div className="mb-6">
+            <WormArenaModelInsightsReport modelSlug={selectedModel} />
+          </div>
+        )}
+
+        {/* Recent Matches */}
+        {selectedModel && (
+          <div className="mb-6">
+            <WormArenaRecentMatches modelSlug={selectedModel} limit={10} />
           </div>
         )}
 
@@ -344,3 +362,4 @@ export default function WormArenaModels() {
     </div>
   );
 }
+

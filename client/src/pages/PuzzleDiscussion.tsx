@@ -699,7 +699,7 @@ export default function PuzzleDiscussion() {
                 <li>Be less than 30 days old (provider retention window)</li>
                 <li>Have a provider response ID (for conversation chaining)</li>
               </ul>
-              <Link href={`/puzzle/${taskId}`}>
+              <Link href={`/task/${taskId}`}>
                 <Button variant="outline" size="sm" className="mt-2">
                   Generate New Analysis
                 </Button>
@@ -716,7 +716,7 @@ export default function PuzzleDiscussion() {
             <p className="text-sm text-gray-500 mb-6">
               Generate an AI explanation first to unlock progressive reasoning refinement.
             </p>
-            <Link href={`/puzzle/${taskId}`}>
+            <Link href={`/task/${taskId}`}>
               <Button className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700">
                 <Sparkles className="h-4 w-4 mr-2" />
                 Generate First Explanation

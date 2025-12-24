@@ -1,6 +1,6 @@
 /**
- * Author: Cascade
- * Date: 2025-12-17
+ * Author: Codex (GPT-5)
+ * Date: 2025-12-20
  * PURPOSE: SnakeBenchRepository
  *          Handles compatibility-first persistence of SnakeBench games
  *          into PostgreSQL tables that mirror the root SnakeBench
@@ -8,10 +8,11 @@
  *          IMPORTANT: Worm Arena analytics (TrueSkill leaderboard, model ratings,
  *          global stats) must include all games regardless of upstream game_type.
  *          To prevent analytics pages from appearing empty, this repository:
- *          - Allows replay ingest to override/standardize game_type for ARC Explainer.
+ *          - Allows replay ingest to override or standardize game_type for ARC Explainer.
  *          - Avoids filtering analytics queries by game_type.
  *          Exposes model discovery timestamps for Worm Arena UI sorting.
- * SRP/DRY check: Pass — focused exclusively on SnakeBench DB reads/writes.
+ *          Adds per-model insights aggregation for the Models page.
+ * SRP/DRY check: Pass - focused exclusively on SnakeBench DB reads and writes.
  */
 
 import fs from 'fs';
@@ -31,6 +32,9 @@ import type {
   WormArenaGreatestHitGame,
   SnakeBenchMatchSearchQuery,
   SnakeBenchMatchSearchRow,
+  WormArenaModelInsightsSummary,
+  WormArenaModelInsightsFailureMode,
+  WormArenaModelInsightsOpponent,
 } from '../../shared/types.js';
 
 export interface SnakeBenchRecordMatchParams {
@@ -1964,4 +1968,179 @@ export class SnakeBenchRepository extends BaseRepository {
       return [];
     }
   }
+
+  /**
+   * Aggregate per-model insights for the Worm Arena Models page report.
+   */
+  async getModelInsightsData(
+    modelSlug: string,
+  ): Promise<{
+    summary: WormArenaModelInsightsSummary;
+    failureModes: WormArenaModelInsightsFailureMode[];
+    lossOpponents: WormArenaModelInsightsOpponent[];
+  } | null> {
+    if (!this.isConnected()) {
+      return null;
+    }
+
+    if (!modelSlug) {
+      return null;
+    }
+
+    // Early loss threshold in rounds for the report.
+    const earlyLossThreshold = 5;
+
+    try {
+      // Summary stats for the model across all completed games.
+      const summarySql = `
+        SELECT
+          COUNT(*) AS games_played,
+          SUM(CASE WHEN gp.result = 'won' THEN 1 ELSE 0 END) AS wins,
+          SUM(CASE WHEN gp.result = 'lost' THEN 1 ELSE 0 END) AS losses,
+          SUM(CASE WHEN gp.result = 'tied' THEN 1 ELSE 0 END) AS ties,
+          COALESCE(SUM(gp.cost), 0) AS total_cost,
+          AVG(g.rounds) AS avg_rounds,
+          AVG(gp.score) AS avg_score,
+          AVG(CASE WHEN gp.result = 'lost' THEN gp.death_round END) AS avg_death_round_loss,
+          SUM(CASE WHEN gp.result = 'lost' AND gp.death_round IS NOT NULL AND gp.death_round <= $2 THEN 1 ELSE 0 END) AS early_losses,
+          SUM(CASE WHEN gp.result = 'lost' AND gp.death_reason IS NOT NULL THEN 1 ELSE 0 END) AS losses_with_reason,
+          SUM(CASE WHEN gp.result = 'lost' AND gp.death_reason IS NULL THEN 1 ELSE 0 END) AS losses_without_reason
+        FROM public.game_participants gp
+        JOIN public.models m ON gp.model_id = m.id
+        JOIN public.games g ON gp.game_id = g.id
+        WHERE regexp_replace(m.model_slug, ':free$', '') = regexp_replace($1, ':free$', '')
+          AND g.status = 'completed';
+      `;
+
+      const summaryResult = await this.query(summarySql, [modelSlug, earlyLossThreshold]);
+      const summaryRow: any = summaryResult.rows[0] ?? {};
+
+      const gamesPlayed = parseInt(String(summaryRow.games_played ?? '0'), 10) || 0;
+      const wins = parseInt(String(summaryRow.wins ?? '0'), 10) || 0;
+      const losses = parseInt(String(summaryRow.losses ?? '0'), 10) || 0;
+      const ties = parseInt(String(summaryRow.ties ?? '0'), 10) || 0;
+      const totalCost = Number(summaryRow.total_cost ?? 0) || 0;
+      const averageRounds = summaryRow.avg_rounds != null ? Number(summaryRow.avg_rounds) : null;
+      const averageScore = summaryRow.avg_score != null ? Number(summaryRow.avg_score) : null;
+      const averageDeathRoundLoss =
+        summaryRow.avg_death_round_loss != null ? Number(summaryRow.avg_death_round_loss) : null;
+      const earlyLosses = parseInt(String(summaryRow.early_losses ?? '0'), 10) || 0;
+      const lossesWithReason = parseInt(String(summaryRow.losses_with_reason ?? '0'), 10) || 0;
+      const lossesWithoutReason = parseInt(String(summaryRow.losses_without_reason ?? '0'), 10) || 0;
+
+      // Derived rates for the report summary.
+      const decidedGames = wins + losses;
+      const winRate = decidedGames > 0 ? wins / decidedGames : 0;
+      const costPerGame = gamesPlayed > 0 ? totalCost / gamesPlayed : null;
+      const costPerWin = wins > 0 ? totalCost / wins : null;
+      const costPerLoss = losses > 0 ? totalCost / losses : null;
+      const earlyLossRate = losses > 0 ? earlyLosses / losses : 0;
+      const lossDeathReasonCoverage = losses > 0 ? lossesWithReason / losses : 0;
+
+      const summary: WormArenaModelInsightsSummary = {
+        gamesPlayed,
+        wins,
+        losses,
+        ties,
+        winRate,
+        totalCost,
+        costPerGame,
+        costPerWin,
+        costPerLoss,
+        averageRounds,
+        averageScore,
+        averageDeathRoundLoss,
+        earlyLosses,
+        earlyLossRate,
+        lossDeathReasonCoverage,
+        unknownLosses: lossesWithoutReason,
+      };
+
+      // Loss failure modes grouped by death reason.
+      const failureSql = `
+        SELECT
+          COALESCE(gp.death_reason, 'unknown') AS death_reason,
+          COUNT(*) AS losses,
+          AVG(gp.death_round) AS avg_death_round
+        FROM public.game_participants gp
+        JOIN public.models m ON gp.model_id = m.id
+        JOIN public.games g ON gp.game_id = g.id
+        WHERE regexp_replace(m.model_slug, ':free$', '') = regexp_replace($1, ':free$', '')
+          AND g.status = 'completed'
+          AND gp.result = 'lost'
+        GROUP BY COALESCE(gp.death_reason, 'unknown')
+        ORDER BY losses DESC;
+      `;
+
+      const failureResult = await this.query(failureSql, [modelSlug]);
+      const totalLosses = losses;
+      const failureModes: WormArenaModelInsightsFailureMode[] = failureResult.rows.map((row: any) => {
+        const lossCount = parseInt(String(row.losses ?? '0'), 10) || 0;
+        const avgDeathRound = row.avg_death_round != null ? Number(row.avg_death_round) : null;
+        return {
+          reason: String(row.death_reason ?? 'unknown'),
+          losses: lossCount,
+          percentOfLosses: totalLosses > 0 ? lossCount / totalLosses : 0,
+          averageDeathRound: avgDeathRound,
+        };
+      });
+
+      // Opponents that account for the most losses.
+      const opponentSql = `
+        SELECT
+          regexp_replace(opp.model_slug, ':free$', '') AS opponent_slug,
+          COUNT(*) AS games_played,
+          SUM(CASE WHEN gp.result = 'won' THEN 1 ELSE 0 END) AS wins,
+          SUM(CASE WHEN gp.result = 'lost' THEN 1 ELSE 0 END) AS losses,
+          SUM(CASE WHEN gp.result = 'tied' THEN 1 ELSE 0 END) AS ties,
+          MAX(COALESCE(g.start_time, g.created_at)) AS last_played_at
+        FROM public.game_participants gp
+        JOIN public.models m ON gp.model_id = m.id
+        JOIN public.games g ON gp.game_id = g.id
+        LEFT JOIN public.game_participants opp_gp
+          ON opp_gp.game_id = gp.game_id AND opp_gp.player_slot <> gp.player_slot
+        LEFT JOIN public.models opp ON opp_gp.model_id = opp.id
+        WHERE regexp_replace(m.model_slug, ':free$', '') = regexp_replace($1, ':free$', '')
+          AND g.status = 'completed'
+          AND opp.model_slug IS NOT NULL
+          AND opp.model_slug <> ''
+        GROUP BY regexp_replace(opp.model_slug, ':free$', '')
+        ORDER BY losses DESC, games_played DESC
+        LIMIT 5;
+      `;
+
+      const opponentResult = await this.query(opponentSql, [modelSlug]);
+      const lossOpponents: WormArenaModelInsightsOpponent[] = opponentResult.rows.map((row: any) => {
+        const opponentSlug = String(row.opponent_slug ?? '');
+        const opponentGames = parseInt(String(row.games_played ?? '0'), 10) || 0;
+        const opponentWins = parseInt(String(row.wins ?? '0'), 10) || 0;
+        const opponentLosses = parseInt(String(row.losses ?? '0'), 10) || 0;
+        const opponentTies = parseInt(String(row.ties ?? '0'), 10) || 0;
+        const lastPlayedRaw = row.last_played_at ?? null;
+        const lastPlayedAt = lastPlayedRaw ? new Date(lastPlayedRaw).toISOString() : null;
+        const lossRate = opponentGames > 0 ? opponentLosses / opponentGames : 0;
+
+        return {
+          opponentSlug,
+          gamesPlayed: opponentGames,
+          wins: opponentWins,
+          losses: opponentLosses,
+          ties: opponentTies,
+          lossRate,
+          lastPlayedAt,
+        };
+      });
+
+      return { summary, failureModes, lossOpponents };
+    } catch (error) {
+      logger.warn(
+        `SnakeBenchRepository.getModelInsightsData: query failed for ${modelSlug}: ${
+          error instanceof Error ? error.message : String(error)
+        }`,
+        'snakebench-db',
+      );
+      return null;
+    }
+  }
 }
+

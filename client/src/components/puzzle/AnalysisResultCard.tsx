@@ -1,8 +1,8 @@
 /**
  * AnalysisResultCard.tsx
  *
- * Author: Cascade using Claude Sonnet 4.5
- * Date: 2025-10-12T21:36:00Z
+ * Author: Codex (GPT-5)
+ * Date: 2025-12-24
  * PURPOSE: React card orchestrating puzzle analysis presentation, coordinating reasoning visibility,
  * predicted grid metrics, feedback toggles, and Saturn integrations. FIXED: Multi-test stats now
  * correctly shows "Incorrect" (not "Some Incorrect") when 0/N tests are correct. Simplified fallback
@@ -10,6 +10,7 @@
  * ADDED: Deep linking support - each card has id="explanation-{id}" and data-explanation-id for direct URLs.
  * UPDATED (2025-10-22T00:00:00Z) by gpt-5-codex: Reintroduced last month's aurora gradient shell, warm accent borders,
  * and linen-inspired drawer treatments to remove the stark white regression while preserving dark mode balance.
+ * UPDATED (2025-12-24) by Codex (GPT-5): Adds a local theme override to render dark cards in Puzzle Analyst.
  * SRP/DRY check: Pass - Single responsibility (orchestration), reuses child components
  * shadcn/ui: Pass - Uses shadcn Card + Button primitives
  */
@@ -25,7 +26,14 @@ import { AnalysisResultActions } from './AnalysisResultActions';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 
-export const AnalysisResultCard = React.memo(function AnalysisResultCard({ modelKey, result, model, testCases, eloMode = false }: AnalysisResultCardProps) {
+export const AnalysisResultCard = React.memo(function AnalysisResultCard({
+  modelKey,
+  result,
+  model,
+  testCases,
+  eloMode = false,
+  theme = 'light',
+}: AnalysisResultCardProps) {
   const expectedOutputGrids = useMemo(() => testCases.map(tc => tc.output), [testCases]);
   const hasFeedback = (result.helpfulVotes ?? 0) > 0 || (result.notHelpfulVotes ?? 0) > 0;
   const [showReasoning, setShowReasoning] = useState(true); // Always expanded by default for better UX
@@ -160,83 +168,92 @@ export const AnalysisResultCard = React.memo(function AnalysisResultCard({ model
 
   const isSaturnResult = Boolean(result.saturnEvents || (result.saturnImages && result.saturnImages.length > 0) || result.saturnLog);
   const isGroverResult = Boolean(result.groverIterations || result.groverBestProgram || result.iterationCount);
+  // Enable dark variants locally without forcing the entire app into dark mode.
+  const isDarkTheme = theme === 'dark';
 
   return (
-    <Card
-      id={result.id ? `explanation-${result.id}` : undefined}
-      className="relative overflow-hidden rounded-3xl border border-amber-100/70 bg-[radial-gradient(circle_at_top,_rgba(254,243,199,0.92),_rgba(255,228,230,0.86)_45%,_rgba(219,234,254,0.82))] p-0 scroll-mt-24 shadow-[0_28px_65px_-40px_rgba(146,64,14,0.55)] transition-all hover:shadow-[0_34px_78px_-42px_rgba(30,64,175,0.55)] supports-[backdrop-filter]:bg-white/80 supports-[backdrop-filter]:backdrop-blur-md dark:border-violet-800/60 dark:bg-[radial-gradient(circle_at_top,_rgba(17,24,39,0.92),_rgba(76,29,149,0.62)_45%,_rgba(15,118,110,0.54))] dark:shadow-[0_28px_70px_-40px_rgba(12,74,110,0.65)] dark:hover:shadow-[0_34px_82px_-44px_rgba(94,234,212,0.55)]"
-      data-explanation-id={result.id}
-    >
-      <CardContent className="space-y-3 p-3 sm:p-4">
-      <AnalysisResultHeader
-        result={result}
-        model={model}
-        modelKey={modelKey}
-        feedbackSummary={feedbackSummary}
-        hasFeedback={hasFeedback}
-        showExistingFeedback={showExistingFeedback}
-        setShowExistingFeedback={setShowExistingFeedback}
-        showRawDb={showRawDb}
-        setShowRawDb={setShowRawDb}
-        isSaturnResult={isSaturnResult}
-        isGroverResult={isGroverResult}
-        eloMode={eloMode}
-      />
+    <div className={isDarkTheme ? 'dark' : undefined}>
+      <Card
+        id={result.id ? `explanation-${result.id}` : undefined}
+        className="relative overflow-hidden rounded-3xl border border-amber-100/70 bg-[radial-gradient(circle_at_top,_rgba(254,243,199,0.92),_rgba(255,228,230,0.86)_45%,_rgba(219,234,254,0.82))] p-0 scroll-mt-24 shadow-[0_28px_65px_-40px_rgba(146,64,14,0.55)] transition-all hover:shadow-[0_34px_78px_-42px_rgba(30,64,175,0.55)] supports-[backdrop-filter]:bg-white/80 supports-[backdrop-filter]:backdrop-blur-md dark:border-slate-800/70 dark:bg-[radial-gradient(circle_at_top,_rgba(10,12,18,0.95),_rgba(15,23,42,0.9)_40%,_rgba(2,6,23,0.85))] dark:shadow-[0_28px_70px_-40px_rgba(2,6,23,0.7)] dark:hover:shadow-[0_34px_82px_-44px_rgba(30,41,59,0.7)]"
+        data-explanation-id={result.id}
+      >
+        <CardContent className="space-y-3 p-3 sm:p-4">
+          <AnalysisResultHeader
+            result={result}
+            model={model}
+            modelKey={modelKey}
+            feedbackSummary={feedbackSummary}
+            hasFeedback={hasFeedback}
+            showExistingFeedback={showExistingFeedback}
+            setShowExistingFeedback={setShowExistingFeedback}
+            showRawDb={showRawDb}
+            setShowRawDb={setShowRawDb}
+            isSaturnResult={isSaturnResult}
+            isGroverResult={isGroverResult}
+            eloMode={eloMode}
+          />
 
-      {showRawDb && (
-        <div className="rounded-2xl border border-amber-200/70 bg-amber-50/80 shadow-[inset_0_12px_28px_-24px_rgba(120,53,15,0.45)] dark:border-violet-900/70 dark:bg-violet-950/40">
-          <div className="flex items-center justify-between gap-3 border-b border-amber-200/70 bg-gradient-to-r from-amber-100/70 via-rose-100/50 to-sky-100/60 px-4 py-3 dark:border-violet-900/70 dark:from-violet-950/80 dark:via-slate-900/40 dark:to-emerald-900/40">
-            <h5 className="font-semibold text-amber-900 dark:text-emerald-200">Raw DB record</h5>
-            <Badge variant="outline" className="text-xs bg-white/60 text-amber-800 shadow-sm dark:bg-violet-900/60 dark:text-sky-100">
-              {result.id ? `id: ${result.id}` : 'unsaved'}
-            </Badge>
+          {showRawDb && (
+            <div className="rounded-2xl border border-amber-200/70 bg-amber-50/80 shadow-[inset_0_12px_28px_-24px_rgba(120,53,15,0.45)] dark:border-slate-800/70 dark:bg-slate-950/50">
+              <div className="flex items-center justify-between gap-3 border-b border-amber-200/70 bg-gradient-to-r from-amber-100/70 via-rose-100/50 to-sky-100/60 px-4 py-3 dark:border-slate-800/70 dark:from-slate-950/80 dark:via-slate-900/50 dark:to-slate-900/40">
+                <h5 className="font-semibold text-amber-900 dark:text-slate-100">Raw DB record</h5>
+                <Badge
+                  variant="outline"
+                  className="text-xs bg-white/60 text-amber-800 shadow-sm dark:bg-slate-900/70 dark:text-slate-200 dark:border-slate-700/60"
+                >
+                  {result.id ? `id: ${result.id}` : 'unsaved'}
+                </Badge>
+              </div>
+              <div className="max-h-64 overflow-y-auto px-4 py-3">
+                <pre className="font-mono text-xs leading-relaxed text-amber-900/90 dark:text-slate-200 whitespace-pre-wrap">
+                  {JSON.stringify(result, null, 2)}
+                </pre>
+              </div>
+              <p className="px-4 pb-4 text-xs text-amber-700/80 dark:text-slate-400">
+                This shows the raw explanation object as stored/returned by the backend.
+              </p>
+            </div>
+          )}
+
+          <AnalysisResultContent
+            result={result}
+            isSaturnResult={isSaturnResult}
+            isGroverResult={isGroverResult}
+            showReasoning={showReasoning}
+            setShowReasoning={setShowReasoning}
+            showAlienMeaning={showAlienMeaning}
+            setShowAlienMeaning={setShowAlienMeaning}
+            eloMode={eloMode}
+          />
+
+          <AnalysisResultGrid
+            result={result}
+            expectedOutputGrids={expectedOutputGrids}
+            predictedGrid={predictedGrid}
+            predictedGrids={predictedGrids}
+            multiValidation={multiValidation}
+            multiTestStats={multiTestStats}
+            diffMask={diffMask}
+            multiDiffMasks={multiDiffMasks}
+            showDiff={showDiff}
+            setShowDiff={setShowDiff}
+            showMultiTest={showMultiTest}
+            setShowMultiTest={setShowMultiTest}
+            showPrediction={showPrediction}
+            setShowPrediction={setShowPrediction}
+            eloMode={eloMode}
+          />
+
+          {isSaturnResult && <AnalysisResultMetrics result={result} isSaturnResult={isSaturnResult} />}
+
+          {/* Always show feedback actions - useful for comparison evaluation */}
+          <div className="border-t border-rose-200/60 pt-4 dark:border-slate-800/70">
+            <AnalysisResultActions result={result} showExistingFeedback={showExistingFeedback} />
           </div>
-          <div className="max-h-64 overflow-y-auto px-4 py-3">
-            <pre className="font-mono text-xs leading-relaxed text-amber-900/90 dark:text-emerald-200 whitespace-pre-wrap">
-              {JSON.stringify(result, null, 2)}
-            </pre>
-          </div>
-          <p className="px-4 pb-4 text-xs text-amber-700/80 dark:text-emerald-300/80">This shows the raw explanation object as stored/returned by the backend.</p>
-        </div>
-      )}
-
-      <AnalysisResultContent
-        result={result}
-        isSaturnResult={isSaturnResult}
-        isGroverResult={isGroverResult}
-        showReasoning={showReasoning}
-        setShowReasoning={setShowReasoning}
-        showAlienMeaning={showAlienMeaning}
-        setShowAlienMeaning={setShowAlienMeaning}
-        eloMode={eloMode}
-      />
-
-      <AnalysisResultGrid
-        result={result}
-        expectedOutputGrids={expectedOutputGrids}
-        predictedGrid={predictedGrid}
-        predictedGrids={predictedGrids}
-        multiValidation={multiValidation}
-        multiTestStats={multiTestStats}
-        diffMask={diffMask}
-        multiDiffMasks={multiDiffMasks}
-        showDiff={showDiff}
-        setShowDiff={setShowDiff}
-        showMultiTest={showMultiTest}
-        setShowMultiTest={setShowMultiTest}
-        showPrediction={showPrediction}
-        setShowPrediction={setShowPrediction}
-        eloMode={eloMode}
-      />
-
-      {isSaturnResult && <AnalysisResultMetrics result={result} isSaturnResult={isSaturnResult} />}
-
-      {/* Always show feedback actions - useful for comparison evaluation */}
-      <div className="border-t border-rose-200/60 pt-4 dark:border-violet-900/60">
-        <AnalysisResultActions result={result} showExistingFeedback={showExistingFeedback} />
-      </div>
-      </CardContent>
-    </Card>
+        </CardContent>
+      </Card>
+    </div>
   );
 });
 

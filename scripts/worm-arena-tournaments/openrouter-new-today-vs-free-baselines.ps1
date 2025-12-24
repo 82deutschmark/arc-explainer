@@ -1,5 +1,5 @@
 # Author: Cascade
-# Date: 2025-12-16
+# Date: 2025-12-20
 # PURPOSE: Automatically queue Worm Arena/SnakeBench batch matches for OpenRouter models added today.
 #          New models (from server/config/openrouter-catalog.json) play a small number of matches
 #          against baseline models consisting of:
@@ -70,7 +70,7 @@ function Get-RepoRoot {
   return (Resolve-Path (Join-Path $here "..\.." )).Path
 }
 
-function Parse-OpenRouterModelKeys {
+function Get-OpenRouterModelKeys {
   param(
     [Parameter(Mandatory=$true)][string]$OpenRouterModelsTsPath
   )
@@ -82,18 +82,23 @@ function Parse-OpenRouterModelKeys {
   $raw = Get-Content -Raw -Path $OpenRouterModelsTsPath
 
   # Grab the array literal assigned to OPENROUTER_MODEL_KEYS.
-  $m = [regex]::Match($raw, "OPENROUTER_MODEL_KEYS\s*:\s*string\[\]\s*=\s*\[(?<body>[\s\S]*?)\];")
+  $pattern = 'OPENROUTER_MODEL_KEYS\s*:\s*string\[\]\s*=\s*\[(?<body>[\s\S]*?)\];'
+  $m = [regex]::Match($raw, $pattern)
   if (-not $m.Success) {
     throw "Failed to parse OPENROUTER_MODEL_KEYS from $OpenRouterModelsTsPath"
   }
 
   $body = $m.Groups['body'].Value
 
-  # Extract quoted strings 'foo/bar' or "foo/bar".
+  # Extract quoted strings using a simpler approach
   $keys = @()
-  foreach ($match in [regex]::Matches($body, "['\"](?<id>[^'\"]+)['\"]")) {
-    $id = $match.Groups['id'].Value.Trim()
-    if ($id) { $keys += $id }
+  $lines = $body -split "`n"
+  foreach ($line in $lines) {
+    $line = $line.Trim()
+    if ($line -match "['""]([^'""]+)['""]") {
+      $id = $matches[1].Trim()
+      if ($id) { $keys += $id }
+    }
   }
 
   # Deduplicate while preserving order.
@@ -109,7 +114,7 @@ function Parse-OpenRouterModelKeys {
   return $out
 }
 
-function Load-OpenRouterCatalog {
+function Get-OpenRouterCatalog {
   param(
     [Parameter(Mandatory=$true)][string]$CatalogPath
   )
@@ -122,7 +127,7 @@ function Load-OpenRouterCatalog {
   return $json.models
 }
 
-function Normalize-LocalDate {
+function Get-LocalDate {
   param(
     [Parameter(Mandatory=$false)][string]$DateString
   )
@@ -218,7 +223,7 @@ function Get-BaselineModels {
   return $baselines
 }
 
-function Invoke-QueueBatch {
+function Send-BatchRequest {
   param(
     [Parameter(Mandatory=$true)][string]$Endpoint,
     [Parameter(Mandatory=$true)][hashtable]$Body,
@@ -258,11 +263,11 @@ if ($DelayMilliseconds -lt 0) {
   throw "-DelayMilliseconds must be >= 0"
 }
 
-$dayStart = Normalize-LocalDate -DateString $Date
+$dayStart = Get-LocalDate -DateString $Date
 $dayLabel = $dayStart.ToString('yyyy-MM-dd')
 
-$catalogModels = Load-OpenRouterCatalog -CatalogPath $catalogPath
-$runnableKeys = Parse-OpenRouterModelKeys -OpenRouterModelsTsPath $openrouterModelsTsPath
+$catalogModels = Get-OpenRouterCatalog -CatalogPath $catalogPath
+$runnableKeys = Get-OpenRouterModelKeys -OpenRouterModelsTsPath $openrouterModelsTsPath
 $newModels = Get-NewModelsForDay -CatalogModels $catalogModels -RunnableKeys $runnableKeys -DayStartLocal $dayStart
 $baselines = Get-BaselineModels -RunnableKeys $runnableKeys -NewModels $newModels
 
@@ -326,7 +331,7 @@ foreach ($newModel in $newModels) {
         $body1.provider = $Provider
       }
 
-      Invoke-QueueBatch -Endpoint $endpoint -Body $body1 -AsJob $Async.IsPresent
+      Send-BatchRequest -Endpoint $endpoint -Body $body1 -AsJob $Async.IsPresent
       $queued += 1
       Start-Sleep -Milliseconds $DelayMilliseconds
 
@@ -346,7 +351,7 @@ foreach ($newModel in $newModels) {
         $body2.provider = $Provider
       }
 
-      Invoke-QueueBatch -Endpoint $endpoint -Body $body2 -AsJob $Async.IsPresent
+      Send-BatchRequest -Endpoint $endpoint -Body $body2 -AsJob $Async.IsPresent
       $queued += 1
       Start-Sleep -Milliseconds $DelayMilliseconds
 

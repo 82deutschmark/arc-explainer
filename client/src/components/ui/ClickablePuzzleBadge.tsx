@@ -69,8 +69,8 @@ export const ClickablePuzzleBadge: React.FC<ClickablePuzzleBadgeProps> = ({
 }) => {
   const handleClick = () => {
     if (!clickable) return;
-    
-    const url = `/puzzle/${puzzleId}`;
+
+    const url = `/task/${puzzleId}`;
     if (openInNewTab) {
       window.open(url, '_blank');
     } else {

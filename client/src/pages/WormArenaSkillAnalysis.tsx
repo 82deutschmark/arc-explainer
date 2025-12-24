@@ -4,6 +4,7 @@
  * PURPOSE: Worm Arena skill analysis - compare a model vs a reference model
  *          using TrueSkill exposure / uncertainty and show interpretive charts.
  * SRP/DRY check: Pass - page composition only.
+ *          Updated to include Rules navigation link.
  *          Card titles now display actual model slugs. Left list sorted by games played,
  *          right list sorted by win rate. Why TrueSkill section includes MS Research link.
  * SRP/DRY check: Pass — page-level composition only; rendering delegated to child components.
@@ -230,12 +231,13 @@ export default function WormArenaSkillAnalysis() {
             { label: 'Models', href: '/worm-arena/models' },
             { label: 'Stats & Placement', href: '/worm-arena/stats' },
             { label: 'Skill Analysis', href: '/worm-arena/skill-analysis', active: true },
+            { label: 'Rules', href: '/worm-arena/rules' },
           ]}
           showMatchupLabel={false}
           compact
         />
 
-        <main className="w-full max-w-[1500px] mx-auto px-4 md:px-6 py-6 space-y-6">
+        <main className="w-full max-w-[1500px] mx-auto px-2 md:px-3 py-3 space-y-6">
           {/* Thin, centered TrueSkill explainer strip (keeps the page from ending in a giant block). */}
           <div className="flex justify-center">
             <Card className="worm-card w-full max-w-3xl">

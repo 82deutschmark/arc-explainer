@@ -30,7 +30,7 @@ export interface ActionMapping {
 }
 
 /**
- * A single hint or strategy tip
+ * A single hint or strategy tip  TODO:  This seems like hallucinated crap...  remove this??
  */
 export interface GameHint {
   id: string;
@@ -154,7 +154,7 @@ Locksmith (ls20) is an agentic, map-based game played on a 2D grid.
 The implicit goal is to discover a route and sequence of transformations that both opens the door and preserves as much health as possible (high action efficiency).
     `,
     category: 'preview',
-    difficulty: 'medium',
+    difficulty: 'hard',
     actionMappings: [
       { action: 'ACTION1', commonName: 'Up', description: 'Move character up one cell' },
       { action: 'ACTION2', commonName: 'Down', description: 'Move character down one cell' },
@@ -198,9 +198,9 @@ The implicit goal is to discover a route and sequence of transformations that bo
     gameId: 'as66',
     officialTitle: 'as66',
     informalName: 'Always Sliding',
-    description: 'Preview game from ARC-AGI-3; this site currently tracks only basic metadata and screenshots while mechanics are still being worked out from public materials.',
+    description: 'Preview game from ARC-AGI-3; widely regarded as the most fun',
     category: 'preview',
-    difficulty: 'unknown',
+    difficulty: 'easy',
     actionMappings: [],
     hints: [],
     resources: [],
@@ -221,18 +221,18 @@ The implicit goal is to discover a route and sequence of transformations that bo
     tags: ['preview-set'],
     thumbnailUrl: '/as66.png',
     isFullyDocumented: false,
-    notes: 'Part of the original preview set. Mechanics here are intentionally high-level until more official detail is available.',
+    notes: 'Part of the original preview set. Mechanics here are missing until someone helps me write some.',
   },
 
   ft09: {
     gameId: 'ft09',
     officialTitle: 'ft09',
     informalName: 'Functional Tiles',
-    description: 'Non-agentic logic game where you match a target pattern shown on screen; later levels use overlapping patterns that increase difficulty.',
+    description: 'Game where you match a target pattern shown on screen; later levels use overlapping patterns that increase difficulty.',
     mechanicsExplanation: `
 Functional Tiles (ft09) is described in the ARC-AGI-3 preview as a non-agentic logic game.
 
-**Objective:** Match a target pattern shown on the screen.
+**Objective:** Match a target pattern shown on the screen. Tame unicorns. 
 
 **Core mechanics (from public ARC-AGI-3 materials):**
 - Each level presents a target configuration the player must recreate.
@@ -249,6 +249,7 @@ Beyond this high-level description, detailed tile semantics are not yet fully do
       { action: 'ACTION3', commonName: 'Left', description: 'Move or interact left' },
       { action: 'ACTION4', commonName: 'Right', description: 'Move or interact right' },
       { action: 'ACTION5', commonName: 'Action/Interact', description: 'Activate tile function or interact with element' },
+      { action: 'ACTION6', commonName: 'Click', description: 'Click at specific coordinates (x, y)', notes: 'Requires coordinate parameters' },
     ],
     hints: [],
     resources: [],
@@ -274,7 +275,7 @@ Beyond this high-level description, detailed tile semantics are not yet fully do
     informalName: 'Loop & Pull',
     description: 'Evaluation game from the ARC-AGI-3 preview. Detailed mechanics are not yet publicly documented; this entry currently exposes only high-level metadata and assets.',
     category: 'evaluation',
-    difficulty: 'unknown',
+    difficulty: 'hard',
     actionMappings: [],
     hints: [],
     resources: [],
@@ -288,9 +289,9 @@ Beyond this high-level description, detailed tile semantics are not yet fully do
     gameId: 'sp80',
     officialTitle: 'sp80',
     informalName: 'Streaming Purple',
-    description: 'Evaluation game informally known as "Streaming Purple". Public materials highlight distinctive purple visuals, but detailed mechanics have not been documented here yet.',
+    description: 'Evaluation game informally known as "Streaming Purple". Mechanics have not been documented here yet.',
     category: 'evaluation',
-    difficulty: 'unknown',
+    difficulty: 'medium',
     actionMappings: [],
     hints: [],
     resources: [],
@@ -304,9 +305,9 @@ Beyond this high-level description, detailed tile semantics are not yet fully do
     gameId: 'vc33',
     officialTitle: 'vc33',
     informalName: 'Volume Control',
-    description: 'Orchestration-style game where you adjust the height or "volume" of multiple objects to match target states; the evaluation version here mirrors the public preview archetype.',
+    description: 'Orchestration-style game where you adjust the height or "volume" of multiple objects to match target states.',
     category: 'evaluation',
-    difficulty: 'unknown',
+    difficulty: 'easy',
     actionMappings: [],
     hints: [],
     resources: [],

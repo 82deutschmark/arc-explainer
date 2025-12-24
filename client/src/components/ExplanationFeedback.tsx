@@ -1,10 +1,10 @@
 /**
- * ExplanationFeedback Component
- * @author Cascade - Claude 3.7 Sonnet Thinking
- * 
- * Enhanced feedback widget that allows users to rate if an explanation was helpful or not,
- * with required detailed feedback to improve explanation quality. Users must provide
- * substantial feedback (min 20 chars) to explain why they consider an explanation helpful or not.
+ * ExplanationFeedback.tsx
+ *
+ * Author: Codex (GPT-5)
+ * Date: 2025-12-24
+ * PURPOSE: Collect feedback on explanations with optional dark theme variants for Puzzle Analyst.
+ * SRP/DRY check: Pass - Feedback widget only.
  */
 
 import React, { useState, useMemo } from 'react';
@@ -87,8 +87,8 @@ export function ExplanationFeedback({ puzzleId, explanationId, onFeedbackSubmitt
 
   if (submitted) {
     return (
-      <div className="border-t pt-4 mt-4">
-        <p className="text-sm text-green-600">
+      <div className="border-t pt-4 mt-4 dark:border-slate-800/70">
+        <p className="text-sm text-green-600 dark:text-emerald-300">
           Thank you for your feedback! Your input helps improve our explanations.
         </p>
       </div>
@@ -96,9 +96,9 @@ export function ExplanationFeedback({ puzzleId, explanationId, onFeedbackSubmitt
   }
 
   return (
-    <div className="border-t pt-4 mt-4">
-      <h3 className="text-sm font-medium mb-2">Was this explanation helpful? Or just a hallucination?</h3>
-      <p className="text-xs text-muted-foreground mb-2">
+    <div className="border-t pt-4 mt-4 dark:border-slate-800/70">
+      <h3 className="text-sm font-medium mb-2 dark:text-slate-100">Was this explanation helpful? Or just a hallucination?</h3>
+      <p className="text-xs text-muted-foreground mb-2 dark:text-slate-300">
         Your detailed feedback helps us improve our AI explanations. 
         <strong> Please include what was right or wrong about the explanation!!</strong>.
       </p>
@@ -108,7 +108,7 @@ export function ExplanationFeedback({ puzzleId, explanationId, onFeedbackSubmitt
           onClick={() => setVote('helpful')}
           variant={vote === 'helpful' ? 'default' : 'outline'}
           size="sm"
-          className="flex items-center gap-1"
+          className="flex items-center gap-1 dark:border-slate-700/60 dark:text-slate-100"
         >
           <ThumbsUp className="h-4 w-4" />
           Helpful
@@ -117,7 +117,7 @@ export function ExplanationFeedback({ puzzleId, explanationId, onFeedbackSubmitt
           onClick={() => setVote('not_helpful')}
           variant={vote === 'not_helpful' ? 'destructive' : 'outline'}
           size="sm"
-          className="flex items-center gap-1"
+          className="flex items-center gap-1 dark:border-slate-700/60 dark:text-slate-100"
         >
           <ThumbsDown className="h-4 w-4" />
           Not helpful
@@ -134,7 +134,7 @@ export function ExplanationFeedback({ puzzleId, explanationId, onFeedbackSubmitt
           value={comment}
           onChange={(e) => setComment(e.target.value)}
           className={cn(
-            "w-full p-2 border rounded text-sm resize-none",
+            "w-full p-2 border rounded text-sm resize-none dark:bg-slate-950/70 dark:text-slate-100 dark:border-slate-700/60",
             attemptedSubmit && !isCommentValid && "border-red-500 focus:border-red-500 focus:ring-red-500"
           )}
           rows={3}
@@ -144,17 +144,17 @@ export function ExplanationFeedback({ puzzleId, explanationId, onFeedbackSubmitt
         <div className="flex justify-between items-center text-xs">
           <div className="flex items-center">
             {isCommentValid ? (
-              <CheckCircle className="h-3 w-3 text-green-500 mr-1" />
+              <CheckCircle className="h-3 w-3 text-green-500 dark:text-emerald-300 mr-1" />
             ) : (
-              <AlertTriangle className="h-3 w-3 text-amber-500 mr-1" />
+              <AlertTriangle className="h-3 w-3 text-amber-500 dark:text-amber-300 mr-1" />
             )}
-            <span className={isCommentValid ? "text-green-600" : "text-amber-600"}>
+            <span className={isCommentValid ? "text-green-600 dark:text-emerald-300" : "text-amber-600 dark:text-amber-300"}>
               {comment.trim().length}/{MINIMUM_COMMENT_LENGTH} characters
             </span>
           </div>
           
           {attemptedSubmit && !isCommentValid && (
-            <span className="text-red-500">
+            <span className="text-red-500 dark:text-rose-300">
               Please provide more detailed feedback
             </span>
           )}

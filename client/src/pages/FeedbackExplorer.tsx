@@ -521,14 +521,14 @@ export default function FeedbackExplorer() {
                         <div className="font-medium">{item.puzzleId}</div>
                         <div className="flex items-center gap-2 text-xs text-muted-foreground">
                           <Link
-                            href={`/puzzle/${item.puzzleId}`}
+                            href={`/task/${item.puzzleId}`}
                             className="inline-flex items-center gap-1 text-blue-600 hover:underline"
                           >
                             View puzzle <ArrowUpRight className="h-3 w-3" />
                           </Link>
                           {item.explanationId && (
                             <Link
-                              href={`/puzzle/${item.puzzleId}?highlight=${item.explanationId}`}
+                              href={`/task/${item.puzzleId}?highlight=${item.explanationId}`}
                               target="_blank"
                               rel="noreferrer noopener"
                               className="inline-flex items-center gap-1 text-blue-600 hover:underline"
