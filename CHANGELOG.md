@@ -4,6 +4,16 @@
 # SRP/DRY check: Pass - entries document changes without altering historical records.
 # New entries at the top, use proper SemVer!
 
+### Version 6.10.7  Dec 24, 2025
+
+- **Chore: Root cleanup for legacy scripts and media** (Author: Cascade)
+  - **Purpose**: Reduce clutter by grouping Johan_Land verification scripts, archival docs, and media blobs into scoped folders.
+  - **Work**:
+    - Created `scripts/legacy-johan-land/README.md` and relocated all Johan_Land DB check `.mjs` utilities there.
+    - Added `docs/archives/` and moved historical docs (AGENTS-OLD.md, oldCLAUDE.md) plus misc temp notes into purpose-built directories.
+    - Introduced `media/reference/` and moved multi-GB MP3/MP4 recordings out of the repo root.
+  - **Impact**: Root directory now surfaces only actively maintained assets; legacy tooling remains available under a documented folder.
+
 ### Version 6.10.6  Dec 24, 2025
 
 - **UI: Dark theme analysis cards and larger Puzzle Analyst typography** (Author: Codex (GPT-5))
