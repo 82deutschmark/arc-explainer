@@ -8,7 +8,7 @@ If you are working with a library or framework that is not familiar to you, espe
 Understand state transitions!!!!! ALL controls should elegantly collapse/disappear once an action starts, revealing the live streaming. Never use static lists or bloated components, never do everything at once in one cluttered view.
 You are expected to make comments about your code. 
 All code you write must be clearly commented!!!
-If you edit a file, update its header at the top (Author/Date/PURPOSE/SRP-DRY check) to reflect your change.
+If you edit a typescript or python file, update its header at the top (Author/Date/PURPOSE/SRP-DRY check) to reflect your change.  NEVER DO THIS IF IT IS A JSON file or other file type that doesnt support this!!!!
 If you change behavior, update the relevant documentation (and the changelog).
 Do not be afraid to ask the user questions about the outcomes that they are expecting and be honest about your abilities. 
 
