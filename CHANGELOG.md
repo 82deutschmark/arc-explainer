@@ -4,7 +4,7 @@
 # SRP/DRY check: Pass - entries document changes without altering historical records.
 # New entries at the top, use proper SemVer!
 
-### Version 6.10.8  Dec 24, 2025
+### Version 6.10.10  Dec 24, 2025
 
 - **UI: Improve grid size label readability on analysis cards** (Author: Cascade)
   - **Purpose**: Keep grid dimension badges and titles legible against warm gradients and dark shells.
