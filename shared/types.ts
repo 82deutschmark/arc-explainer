@@ -542,6 +542,23 @@ export interface LeaderboardStats {
   overallTrustworthiness: number;
 }
 
+/**
+ * OpenRouter Catalog Sync Status
+ * Tracks when the OpenRouter model catalog was last synced and how many new models were discovered
+ */
+export interface OpenRouterSyncStatus {
+  lastSyncAt: string;           // ISO timestamp of last sync (file modification time)
+  catalogAge: number;           // Hours since last sync
+  newModelsCount: number;       // Number of models created in the last 7 days
+  totalModels: number;          // Total models in the catalog
+  isStale: boolean;             // True if catalog is >24 hours old
+  newModels: Array<{
+    id: string;                 // Model ID (e.g., 'anthropic/claude-opus')
+    name: string;               // Human-readable model name
+    createdAt: string;          // ISO timestamp when model was created on OpenRouter
+  }>;
+}
+
 // SnakeBench integration types
 export type SnakeBenchResultLabel = 'won' | 'lost' | 'tied';
 
@@ -1393,4 +1410,21 @@ export interface LeaderboardStats {
   }>;
   totalTrustworthinessAttempts: number;
   overallTrustworthiness: number;
+}
+
+/**
+ * OpenRouter Catalog Sync Status
+ * Tracks when the OpenRouter model catalog was last synced and how many new models were discovered
+ */
+export interface OpenRouterSyncStatus {
+  lastSyncAt: string;           // ISO timestamp of last sync (file modification time)
+  catalogAge: number;           // Hours since last sync
+  newModelsCount: number;       // Number of models created in the last 7 days
+  totalModels: number;          // Total models in the catalog
+  isStale: boolean;             // True if catalog is >24 hours old
+  newModels: Array<{
+    id: string;                 // Model ID (e.g., 'anthropic/claude-opus')
+    name: string;               // Human-readable model name
+    createdAt: string;          // ISO timestamp when model was created on OpenRouter
+  }>;
 }

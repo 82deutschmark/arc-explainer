@@ -12,6 +12,14 @@
   - **Files Modified**:
     - `client/src/components/puzzle/PuzzleGrid.tsx`
 
+### Version 6.10.9  Dec 24, 2025
+
+- **Ops: OpenRouter tournament script for new Seed/GLM/Minimax models** (Author: Cascade)
+  - **Purpose**: Queue WormArena matches round-robin among new models and against baselines with optional async and completion logging.
+  - **Behavior**: Runs both-direction pairings for seed 1.6 variants, minimax m2.1, glm 4.7, and “oops” slug versus each other and baselines (GPT-5.1 Codex Mini, GPT-5 Mini, GPT-5 Nano, Grok 4.1 Fast, Devstral 2512, DeepSeek v3.2). Adds async job tracking and completion summary.
+  - **Files Modified**:
+    - `scripts/worm-arena-tournaments/run-paid-devstral-matches.ps1`
+
 ### Version 6.10.7  Dec 24, 2025
 
 - **Chore: Root cleanup for legacy scripts and media** (Author: Cascade)
