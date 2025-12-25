@@ -360,27 +360,16 @@ export default function WormArenaLive() {
         return;
       }
 
-      // Build payload directly with the passed models
-      const payload: SnakeBenchRunMatchRequest = {
+      // Start via new tab to keep Live page context intact
+      const params = new URLSearchParams({
         modelA: mapToSnakeBenchModelId(suggestedModelA),
         modelB: mapToSnakeBenchModelId(suggestedModelB),
-        width,
-        height,
-        maxRounds,
-        numApples,
-        ...(byoApiKey ? { apiKey: byoApiKey, provider: byoProvider } : {}),
-      };
-
-      setLaunchNotice(null);
-      try {
-        const prep = await startLiveMatch(payload);
-        if (prep?.liveUrl) window.location.href = prep.liveUrl;
-      } catch (err: any) {
-        console.error('[WormArenaLive] Failed to start match from suggestion', err);
-        setLaunchNotice(err?.message || 'Failed to start match');
-      }
+        autoStart: 'true',
+      });
+      const href = `/worm-arena/live?${params.toString()}`;
+      window.open(href, '_blank', 'noopener');
     },
-    [selectableModels, width, height, maxRounds, numApples, byoApiKey, byoProvider, startLiveMatch],
+    [selectableModels],
   );
 
   const latestFrame = useMemo(() => (frames.length ? frames[frames.length - 1] : null), [frames]);
