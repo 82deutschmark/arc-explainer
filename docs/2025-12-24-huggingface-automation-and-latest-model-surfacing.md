@@ -1,8 +1,9 @@
-# HuggingFace Model Automation & Latest Model Surfacing Plan
+# HuggingFace Model Automation & Latest Model Surfacing Plan NEEDS AUDIT!
 
 **Author:** Claude Code (Haiku 4.5)
-**Date:** 2025-12-24  NEEDS AUDIT
+**Date:** 2025-12-24  NEEDS AUDIT!
 **Purpose:** Automate HuggingFace model ingestion and surface the latest ingested model prominently on the Analytics Dashboard.
+
 
 **Current State:** HuggingFace model ingestion is 100% manual—a developer must navigate to the HuggingFaceIngestion page, select folders, and click "Start Ingestion." The latest model is not explicitly surfaced on AnalyticsOverview.
 

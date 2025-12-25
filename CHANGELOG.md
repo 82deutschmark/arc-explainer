@@ -4,6 +4,14 @@
 # SRP/DRY check: Pass - entries document changes without altering historical records.
 # New entries at the top, use proper SemVer!
 
+### Version 6.10.8  Dec 24, 2025
+
+- **UI: Improve grid size label readability on analysis cards** (Author: Cascade)
+  - **Purpose**: Keep grid dimension badges and titles legible against warm gradients and dark shells.
+  - **Behavior**: Forced black text on puzzle grid titles and size badges with a white badge background and dark border for reliable contrast.
+  - **Files Modified**:
+    - `client/src/components/puzzle/PuzzleGrid.tsx`
+
 ### Version 6.10.7  Dec 24, 2025
 
 - **Chore: Root cleanup for legacy scripts and media** (Author: Cascade)
