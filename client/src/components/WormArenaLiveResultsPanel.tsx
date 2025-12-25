@@ -8,6 +8,7 @@
  */
 
 import React from 'react';
+import { Check, Copy } from 'lucide-react';
 import type { WormArenaFinalSummary } from '@shared/types';
 
 export interface WormArenaLiveResultsPanelProps {
@@ -74,11 +75,36 @@ export default function WormArenaLiveResultsPanel({ finalSummary }: WormArenaLiv
 
   const { durationSeconds, avgSecondsPerRound } = calculateDuration(finalSummary);
 
+  const [copied, setCopied] = React.useState(false);
+
+  const handleCopy = React.useCallback(() => {
+    try {
+      navigator.clipboard.writeText(finalSummary.gameId);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1200);
+    } catch {
+      // Swallow copy errors quietly
+    }
+  }, [finalSummary.gameId]);
+
+  const modelEntries: Array<{ key: 'modelA' | 'modelB'; label: string }> = [
+    { key: 'modelA', label: 'A' },
+    { key: 'modelB', label: 'B' },
+  ];
+
   return (
     <div className="rounded-lg border bg-white/90 shadow-sm px-4 py-4 worm-border space-y-4">
       <div className="flex items-center justify-between gap-3 flex-wrap">
         <div className="text-xs font-bold uppercase tracking-wide text-worm-ink">Match complete</div>
-        <div className="text-[11px] worm-muted font-mono">{finalSummary.gameId.slice(0, 12)}...</div>
+        <button
+          type="button"
+          onClick={handleCopy}
+          className="flex items-center gap-1 text-[11px] font-mono px-2 py-1 rounded border border-worm-ink/40 hover:bg-worm-card transition"
+          title="Copy game ID"
+        >
+          {copied ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
+          {finalSummary.gameId.slice(0, 12)}...
+        </button>
       </div>
 
       <div>
@@ -88,32 +114,55 @@ export default function WormArenaLiveResultsPanel({ finalSummary }: WormArenaLiv
         </div>
       </div>
 
-      <div>
+      <div className="space-y-2">
         <div className="text-[11px] worm-muted">Summary</div>
         <div className="text-sm text-worm-ink font-semibold">{summaryText}</div>
-        {finalSummary.roundsPlayed !== undefined && (
-          <div className="text-xs text-muted-foreground">
-            Rounds played: {finalSummary.roundsPlayed}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs text-muted-foreground">
+          {finalSummary.roundsPlayed !== undefined && (
+            <div className="rounded border bg-white/70 px-2 py-1">
+              <div className="text-[10px] uppercase tracking-wide worm-muted">Rounds</div>
+              <div className="font-mono text-worm-ink">{finalSummary.roundsPlayed}</div>
+            </div>
+          )}
+          {durationSeconds != null && (
+            <div className="rounded border bg-white/70 px-2 py-1">
+              <div className="text-[10px] uppercase tracking-wide worm-muted">Duration</div>
+              <div className="font-mono text-worm-ink">{formatDuration(durationSeconds)}</div>
+            </div>
+          )}
+          {avgSecondsPerRound != null && (
+            <div className="rounded border bg-white/70 px-2 py-1">
+              <div className="text-[10px] uppercase tracking-wide worm-muted">Avg / round</div>
+              <div className="font-mono text-worm-ink">{avgSecondsPerRound.toFixed(1)}s</div>
+            </div>
+          )}
+          <div className="rounded border bg-white/70 px-2 py-1">
+            <div className="text-[10px] uppercase tracking-wide worm-muted">Game ID</div>
+            <div className="font-mono text-worm-ink">{finalSummary.gameId.slice(0, 8)}…</div>
           </div>
-        )}
-        {durationSeconds != null && (
-          <div className="text-xs text-muted-foreground">
-            Duration: {formatDuration(durationSeconds)}
-            {avgSecondsPerRound != null && (
-              <span className="ml-2">({avgSecondsPerRound.toFixed(1)}s/round avg)</span>
-            )}
-          </div>
-        )}
+        </div>
       </div>
 
-      <div>
-        <div className="text-[11px] worm-muted mb-2">Final scores</div>
-        <div className="grid grid-cols-2 gap-2">
-          {Object.entries(finalSummary.scores || {}).map(([k, v]) => (
-            <div key={k} className="text-xs font-mono bg-white/60 rounded p-2">
-              <span className="text-worm-ink font-semibold">{k}:</span> {v}
-            </div>
-          ))}
+      <div className="space-y-2">
+        <div className="text-[11px] worm-muted">Players</div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+          {modelEntries.map(({ key, label }) => {
+            const slug = (finalSummary as any)[key] as string | undefined;
+            if (!slug) return null;
+            const resultLabel = finalSummary.results?.[label === 'A' ? '0' : '1'] ?? '';
+            const scoreValue = finalSummary.scores?.[slug] ?? finalSummary.scores?.[label] ?? 0;
+            return (
+              <div key={key} className="rounded border bg-white/80 p-3 space-y-1">
+                <div className="flex items-center justify-between gap-2">
+                  <div className="text-xs font-semibold text-worm-ink">{label}: {slug}</div>
+                  <span className="text-[11px] px-2 py-0.5 rounded-full bg-worm-card text-worm-ink border border-worm-ink/20">
+                    {resultLabel || '—'}
+                  </span>
+                </div>
+                <div className="text-xs font-mono text-worm-ink">Score: {scoreValue}</div>
+              </div>
+            );
+          })}
         </div>
       </div>
 

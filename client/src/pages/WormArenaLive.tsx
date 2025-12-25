@@ -80,6 +80,13 @@ function toSnakeModelId(model: ModelConfig): string {
   return typeof raw === 'string' ? raw.trim() : '';
 }
 
+function parseCostValue(raw: string | undefined): number {
+  if (!raw) return Number.POSITIVE_INFINITY;
+  const cleaned = raw.replace(/[^0-9.]/g, '');
+  const num = Number(cleaned);
+  return Number.isFinite(num) ? num : Number.POSITIVE_INFINITY;
+}
+
 function parseIsoTimestamp(value: unknown): number | null {
   if (typeof value !== 'string' || !value.trim()) return null;
   const ms = new Date(value).getTime();
@@ -149,8 +156,31 @@ export default function WormArenaLive() {
 
   // Curated tournament suggested matchups (mirrors batch script pairs)
   const curatedMatchups = React.useMemo(
-    () => buildCuratedTournamentMatchups(TOURNAMENT_MODELS),
-    [],
+    () => {
+      // Prefer cheaper, newest, least-played (gamesPlayed not available here, so proxy with recency)
+      const bySlug = new Map<string, ModelConfig>();
+      modelConfigs.forEach((m) => {
+        const slug = toSnakeModelId(m);
+        if (slug) bySlug.set(slug, m);
+      });
+
+      const prioritized = [...TOURNAMENT_MODELS]
+        .map((slug) => {
+          const cfg = bySlug.get(slug);
+          const addedMs = parseIsoTimestamp((cfg as any)?.addedAt) ?? 0;
+          const costIn = parseCostValue(cfg?.cost?.input);
+          return { slug, cfg, costIn, addedMs };
+        })
+        .sort((a, b) => {
+          if (a.costIn !== b.costIn) return a.costIn - b.costIn; // cheaper first
+          if (a.addedMs !== b.addedMs) return b.addedMs - a.addedMs; // newest first
+          return a.slug.localeCompare(b.slug);
+        })
+        .map((entry) => entry.slug);
+
+      return buildCuratedTournamentMatchups(prioritized);
+    },
+    [modelConfigs],
   );
 
   // Setup state hook
@@ -561,7 +591,7 @@ export default function WormArenaLive() {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
               {/* Suggested matchups sidebar */}
               <WormArenaSuggestedMatchups
-                limit={8}
+                limit={50}
                 onRunMatch={handleSuggestedMatchupRun}
                 overrideMatchups={curatedMatchups}
               />

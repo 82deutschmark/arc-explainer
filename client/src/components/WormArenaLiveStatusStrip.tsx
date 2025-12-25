@@ -25,6 +25,8 @@ export interface WormArenaLiveStatusStripProps {
   maxRounds?: number | null;
   phase?: string;
   aliveSnakes?: string[];
+  wallClockSeconds?: number | null;
+  sinceLastMoveSeconds?: number | null;
 }
 
 const STATUS_LABELS: Record<StreamState, string> = {
@@ -51,6 +53,8 @@ export default function WormArenaLiveStatusStrip({
   maxRounds = null,
   phase,
   aliveSnakes = [],
+  wallClockSeconds = null,
+  sinceLastMoveSeconds = null,
 }: WormArenaLiveStatusStripProps) {
   const batchText =
     currentMatchIndex && totalMatches ? `Match ${currentMatchIndex}/${totalMatches}` : undefined;
@@ -96,6 +100,20 @@ export default function WormArenaLiveStatusStrip({
         <div>
           <div className="text-[11px] uppercase font-semibold text-muted-foreground">Alive</div>
           <div className="text-worm-ink font-medium">{aliveText}</div>
+        </div>
+
+        <div>
+          <div className="text-[11px] uppercase font-semibold text-muted-foreground">Wall clock</div>
+          <div className="text-worm-ink font-medium">
+            {wallClockSeconds != null ? `${Math.max(0, wallClockSeconds).toFixed(1)}s` : '—'}
+          </div>
+        </div>
+
+        <div>
+          <div className="text-[11px] uppercase font-semibold text-muted-foreground">Since move</div>
+          <div className="text-worm-ink font-medium">
+            {sinceLastMoveSeconds != null ? `${Math.max(0, sinceLastMoveSeconds).toFixed(1)}s` : '—'}
+          </div>
         </div>
 
         <div>
