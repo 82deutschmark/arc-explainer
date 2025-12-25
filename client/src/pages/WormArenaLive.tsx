@@ -31,12 +31,45 @@ import WormArenaSuggestedMatchups from '@/components/WormArenaSuggestedMatchups'
 import WormArenaConsoleMirror from '@/components/WormArenaConsoleMirror';
 import { Button } from '@/components/ui/button';
 
-import type { ModelConfig, SnakeBenchRunMatchRequest } from '@shared/types';
+import type { ModelConfig, SnakeBenchRunMatchRequest, WormArenaSuggestedMatchup } from '@shared/types';
 
 type ViewMode = 'setup' | 'live' | 'completed';
 type RenderMode = 'cartoon' | 'console';
 
 type SessionGateStatus = 'idle' | 'checking' | 'pending' | 'completed' | 'unknown' | 'error';
+
+// Curated tournament roster mirrors run-paid-devstral-matches.ps1 (new OpenRouter + baselines)
+const TOURNAMENT_MODELS: string[] = [
+  'bytedance-seed/seed-1.6',
+  'bytedance-seed/seed-1.6-flash',
+  'deepseek/deepseek-v3.1-terminus',
+  'deepseek/deepseek-v3.2',
+  'google/gemini-2.5-flash-lite-preview-09-2025',
+  'google/gemini-2.5-flash-preview-09-2025',
+  'google/gemini-3-flash-preview',
+  'x-ai/grok-4.1-fast',
+  'minimax/minimax-m2.1',
+  'z-ai/glm-4.7',
+];
+
+function buildCuratedTournamentMatchups(models: string[]): WormArenaSuggestedMatchup[] {
+  const out: WormArenaSuggestedMatchup[] = [];
+  for (let i = 0; i < models.length; i++) {
+    for (let j = i + 1; j < models.length; j++) {
+      const modelA = models[i];
+      const modelB = models[j];
+      // Minimal stats; these are curated pairs, so we keep neutral scores and reasons.
+      out.push({
+        modelA: { modelSlug: modelA, mu: 0, sigma: 0, exposed: 0, gamesPlayed: 0 },
+        modelB: { modelSlug: modelB, mu: 0, sigma: 0, exposed: 0, gamesPlayed: 0 },
+        history: { matchesPlayed: 0, lastPlayedAt: null },
+        score: 0,
+        reasons: ['Curated tournament pairing'],
+      });
+    }
+  }
+  return out;
+}
 
 function getSnakeEligibleModels(models: ModelConfig[]): ModelConfig[] {
   return models.filter((m) => m.provider === 'OpenRouter');
@@ -113,6 +146,12 @@ export default function WormArenaLive() {
       })
       .map((entry) => entry.id);
   }, [snakeModels]);
+
+  // Curated tournament suggested matchups (mirrors batch script pairs)
+  const curatedMatchups = React.useMemo(
+    () => buildCuratedTournamentMatchups(TOURNAMENT_MODELS),
+    [],
+  );
 
   // Setup state hook
   const {
@@ -535,6 +574,7 @@ export default function WormArenaLive() {
               <WormArenaSuggestedMatchups
                 limit={8}
                 onRunMatch={handleSuggestedMatchupRun}
+                overrideMatchups={curatedMatchups}
               />
 
               {/* Run controls form */}
