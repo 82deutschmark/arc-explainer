@@ -1,8 +1,18 @@
 # Author: Codex (GPT-5)
-# Date: 2025-12-20
+# Date: 2025-12-25
 # PURPOSE: Changelog for ARC Explainer - tracks all changes with semantic versioning.
 # SRP/DRY check: Pass - entries document changes without altering historical records.
 # New entries at the top, use proper SemVer!
+
+### Version 6.10.11  Dec 25, 2025
+
+- **Fix: Worm Arena OpenRouter transforms routing** (Author: Codex (GPT-5))
+  - **Purpose**: Stop OpenRouter-only `transforms` from breaking OpenAI SDK calls while preserving Worm Arena defaults.
+  - **Behavior**: Routes OpenRouter `transforms` via `extra_body`, strips them for OpenAI direct, and documents the Worm Arena integration note.
+  - **Files Modified**:
+    - `external/SnakeBench/backend/llm_providers.py`
+    - `external/SnakeBench/README.md`
+    - `external/SnakeBench/CHANGELOG.md`
 
 ### Version 6.10.10  Dec 24, 2025
 
