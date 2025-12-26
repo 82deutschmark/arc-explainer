@@ -27,6 +27,7 @@ import { MODELS } from '../config/models.js';
 import { randomUUID } from 'crypto';
 import fs from 'fs';
 import path from 'path';
+import { requiresUserApiKey } from '../utils/environmentPolicy.js';
 
 // In-memory batch session storage
 interface PoetiqBatchSession {
@@ -165,21 +166,26 @@ export const poetiqController = {
         ? (promptStyleRaw as 'classic' | 'arc' | 'arc_de' | 'arc_ru' | 'arc_fr' | 'arc_tr')
         : undefined;
 
-    // Only require BYO key for Gemini and OpenRouter runs.
-    // Direct OpenAI / other providers may fall back to server env keys.
+    // Environment-aware BYOK enforcement:
+    // - Production: ALL models require user-provided API keys
+    // - Dev/staging: Only Gemini and non-whitelisted OpenRouter models require BYO keys
     const lowerModel = (model || '').toLowerCase();
     const isOpenRouterModel =
       provider === 'openrouter' ||
       (!provider && lowerModel.startsWith('openrouter/'));
-    const requiresByo =
+    
+    // In production, require keys for all models. In dev, use existing whitelist logic.
+    const requiresByo = requiresUserApiKey() || (
       provider === 'gemini' ||
       (!provider && lowerModel.startsWith('gemini/')) ||
-      (isOpenRouterModel && !OPENROUTER_SERVER_KEY_MODELS.has(lowerModel));
+      (isOpenRouterModel && !OPENROUTER_SERVER_KEY_MODELS.has(lowerModel))
+    );
 
     if (requiresByo && (!apiKey || apiKey.trim().length === 0)) {
+      const envContext = requiresUserApiKey() ? 'Production' : 'This model';
       return res.status(400).json(formatResponse.error(
         'api_key_required',
-        'Bring Your Own Key required: Please provide your API key for this Gemini or OpenRouter model. Your key is used for this session only and is never stored.'
+        `${envContext} requires your API key. Your key is used for this session only and is never stored.`
       ));
     }
 
