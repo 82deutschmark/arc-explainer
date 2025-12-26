@@ -18,6 +18,7 @@ import React, { useEffect, useMemo } from 'react';
 import { useRoute } from 'wouter';
 import { useModels } from '@/hooks/useModels';
 import { useModelRating } from '@/hooks/useSnakeBench';
+import { useWormArenaStats } from '@/hooks/useWormArenaStats';
 import useWormArenaStreaming from '@/hooks/useWormArenaStreaming';
 import { useWormArenaSetup } from '@/hooks/useWormArenaSetup';
 import WormArenaHeader from '@/components/WormArenaHeader';
@@ -127,6 +128,7 @@ export default function WormArenaLive() {
   }, [params?.sessionId]);
 
   const { data: modelConfigs = [], isLoading: loadingModels, error: modelsError } = useModels();
+  const { leaderboard: wormLeaderboard } = useWormArenaStats();
   const snakeModels = React.useMemo(() => getSnakeEligibleModels(modelConfigs), [modelConfigs]);
 
   const selectableModels = React.useMemo(() => {
@@ -164,23 +166,28 @@ export default function WormArenaLive() {
         if (slug) bySlug.set(slug, m);
       });
 
+      const gamesBySlug = new Map<string, number>();
+      wormLeaderboard.forEach((entry) => gamesBySlug.set(entry.modelSlug, entry.gamesPlayed ?? Number.MAX_SAFE_INTEGER));
+
       const prioritized = [...TOURNAMENT_MODELS]
         .map((slug) => {
           const cfg = bySlug.get(slug);
           const addedMs = parseIsoTimestamp((cfg as any)?.addedAt) ?? 0;
           const costIn = parseCostValue(cfg?.cost?.input);
-          return { slug, cfg, costIn, addedMs };
+          const gamesPlayed = gamesBySlug.get(slug) ?? Number.MAX_SAFE_INTEGER;
+          return { slug, cfg, costIn, addedMs, gamesPlayed };
         })
         .sort((a, b) => {
-          if (a.costIn !== b.costIn) return a.costIn - b.costIn; // cheaper first
+          if (a.gamesPlayed !== b.gamesPlayed) return a.gamesPlayed - b.gamesPlayed; // fewer games first
           if (a.addedMs !== b.addedMs) return b.addedMs - a.addedMs; // newest first
+          if (a.costIn !== b.costIn) return a.costIn - b.costIn; // cheaper next
           return a.slug.localeCompare(b.slug);
         })
         .map((entry) => entry.slug);
 
       return buildCuratedTournamentMatchups(prioritized);
     },
-    [modelConfigs],
+    [modelConfigs, wormLeaderboard],
   );
 
   // Setup state hook
