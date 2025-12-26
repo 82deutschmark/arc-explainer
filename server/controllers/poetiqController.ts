@@ -3,6 +3,7 @@
  * Date: 2025-11-25
  * Updated: 2025-11-28 - BYO Key requirement enforced (no server key fallback)
  *                       Removed duplicate WebSocket broadcasting (now handled by poetiqService)
+ * Updated: 2025-12-25 - Environment-aware BYOK: production requires user keys for ALL models
  * PURPOSE: Poetiq solver API controller - handles HTTP requests for running the 
  *          Poetiq ARC-AGI solver and storing results in the database.
  * 
