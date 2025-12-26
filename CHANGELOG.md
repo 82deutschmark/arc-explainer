@@ -4,6 +4,16 @@
 # SRP/DRY check: Pass - entries document changes without altering historical records.
 # New entries at the top, use proper SemVer!
 
+### Version 6.10.12  Dec 25, 2025
+
+- **Fix: GPT-5/o-series models must route directly to OpenAI in Worm Arena** (Author: Claude Sonnet 4)
+  - **Purpose**: Fix "OpenRouter response missing output field" error for GPT-5 and o-series models.
+  - **Root Cause**: OpenRouter's Responses API proxy returns empty `output=[]` for GPT-5/o-series models. These models require the Responses API which OpenRouter does not properly proxy.
+  - **Behavior**: Added `_requires_responses_api()` helper to detect GPT-5/o-series models. Factory now routes these models directly to OpenAI regardless of explicit `provider: openrouter` config. Raises clear error if OPENAI_API_KEY is missing.
+  - **Mixed Matchups**: GPT-5.1-Codex-Mini vs Minimax 2.1 now works correctly - each player gets appropriate provider (OpenAI direct vs OpenRouter).
+  - **Files Modified**:
+    - `external/SnakeBench/backend/llm_providers.py` - Added routing fix and helper function
+
 ### Version 6.10.11  Dec 25, 2025
 
 - **Fix: Worm Arena OpenRouter transforms routing** (Author: Codex (GPT-5))
