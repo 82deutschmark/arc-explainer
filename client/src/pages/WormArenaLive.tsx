@@ -444,14 +444,30 @@ export default function WormArenaLive() {
 
   const snakeIds = useMemo(() => {
     const ids = new Set<string>();
-    Object.keys(playerNameBySnakeId || {}).forEach((k) => ids.add(k));
-    Object.keys(reasoningBySnakeId || {}).forEach((k) => ids.add(k));
+
+    // Primary source: frame.state.scores has the definitive list of active snakes with scores
+    const frameScores = (latestFrame as any)?.frame?.state?.scores;
+    if (frameScores && typeof frameScores === 'object') {
+      Object.keys(frameScores).forEach((k) => ids.add(k));
+    }
+
+    // Fallback: also check frame.state.snakes for consistency
     const fromFrame = (latestFrame as any)?.frame?.state?.snakes;
     if (fromFrame && typeof fromFrame === 'object') {
       Object.keys(fromFrame).forEach((k) => ids.add(k));
     }
+
+    // Additional fallback: player names and reasoning chunks
+    Object.keys(playerNameBySnakeId || {}).forEach((k) => ids.add(k));
+    Object.keys(reasoningBySnakeId || {}).forEach((k) => ids.add(k));
+
+    // Final fallback: check finalSummary.scores if no live frame
+    if (finalSummary?.scores && typeof finalSummary.scores === 'object' && ids.size === 0) {
+      Object.keys(finalSummary.scores).forEach((k) => ids.add(k));
+    }
+
     return Array.from(ids).sort();
-  }, [latestFrame, playerNameBySnakeId, reasoningBySnakeId]);
+  }, [latestFrame, playerNameBySnakeId, reasoningBySnakeId, finalSummary]);
 
   const leftSnakeId = snakeIds[0];
   const rightSnakeId = snakeIds[1];

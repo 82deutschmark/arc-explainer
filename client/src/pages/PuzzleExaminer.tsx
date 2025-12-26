@@ -1,6 +1,7 @@
 /**
  * Author: gpt-5-codex
  * Date: 2025-10-31
+ * Updated: 2025-12-25 - Added BYOK support for production environment
  * PURPOSE: Coordinates the Puzzle Examiner page layout, orchestrating data fetching, controls, and result surfaces.
  * SRP/DRY check: Pass - verified the page keeps orchestration concerns separated from child components that render UI.
  */
@@ -11,6 +12,7 @@ import { Loader2, ChevronDown, Brain } from 'lucide-react';
 import { getPuzzleName } from '@shared/utils/puzzleNames';
 import { DEFAULT_EMOJI_SET } from '@/lib/spaceEmojis';
 import type { EmojiSet } from '@/lib/spaceEmojis';
+import { requiresUserApiKey } from '@/lib/environmentPolicy';
 
 // Independent data fetching hooks (progressive loading for better UX)
 import { useModels } from '@/hooks/useModels';
@@ -37,6 +39,8 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 
 // Types
 import type { CorrectnessFilter } from '@/hooks/useFilteredResults';
@@ -82,6 +86,8 @@ export default function PuzzleExaminer() {
   const [omitAnswer, setOmitAnswer] = useState(true);
   const [correctnessFilter, setCorrectnessFilter] = useState<CorrectnessFilter>('all');
   const [highlightedExplanationId, setHighlightedExplanationId] = useState<number | null>(null);
+  // BYOK: API key state for production environment
+  const [userApiKey, setUserApiKey] = useState('');
   const [isModelSelectorExpanded, setIsModelSelectorExpanded] = useState(() => {
     // Default to COLLAPSED - users want to see results first
     const saved = localStorage.getItem('puzzleExaminer.modelSelector.expanded');
@@ -197,6 +203,8 @@ export default function PuzzleExaminer() {
     omitAnswer,
     retryMode: isRetryMode,
     models,
+    // BYOK: Pass user API key if provided (required in production)
+    apiKey: userApiKey.trim() || undefined,
   });
 
   // Sort explanations by date (newest first)
@@ -369,6 +377,44 @@ export default function PuzzleExaminer() {
             emojiSet={emojiSet}
           />
         </div>
+
+        {/* BYOK: API Key Input - Only shown in production */}
+        {requiresUserApiKey() && (
+          <Card className="mb-4 border-amber-200 bg-amber-50/50">
+            <CardHeader className="pb-2">
+              <div className="flex items-start justify-between gap-3">
+                <div className="flex-1">
+                  <CardTitle className="text-sm text-amber-900">API Key Required</CardTitle>
+                  <CardDescription className="text-xs mt-1 text-amber-700">
+                    Production requires your API key. Your key is used for this session only and is never stored.
+                  </CardDescription>
+                </div>
+                <Badge variant="outline" className="text-xs uppercase tracking-wide border-amber-300 text-amber-700">
+                  BYOK
+                </Badge>
+              </div>
+            </CardHeader>
+            <CardContent className="pt-0">
+              <div className="flex items-center gap-3">
+                <div className="flex-1">
+                  <Label htmlFor="api-key" className="sr-only">API Key</Label>
+                  <Input
+                    id="api-key"
+                    type="password"
+                    placeholder="Enter your OpenAI/Anthropic/OpenRouter API key..."
+                    value={userApiKey}
+                    onChange={(e) => setUserApiKey(e.target.value)}
+                    className="font-mono text-sm"
+                    disabled={isAnalyzing}
+                  />
+                </div>
+                {userApiKey.trim() && (
+                  <span className="text-xs text-green-600 font-medium">Key provided</span>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
           <Card>
