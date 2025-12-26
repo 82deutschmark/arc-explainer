@@ -50,6 +50,8 @@ export interface AnalysisStreamParams {
   originalExplanation?: Record<string, unknown>;
   customChallenge?: string;
   includeGridImages?: boolean;
+  /** User-provided API key for BYOK (required in production) */
+  apiKey?: string;
 }
 
 export interface AnalysisStreamHandlers {

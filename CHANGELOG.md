@@ -4,6 +4,19 @@
 # SRP/DRY check: Pass - entries document changes without altering historical records.
 # New entries at the top, use proper SemVer!
 
+### Version 6.10.13  Dec 25, 2025
+
+- **Fix: Worm Arena Live score display disconnected from streaming data** (Author: Claude Haiku 4.5)
+  - **Purpose**: Fix score showing "0" across all UI panels despite correct data in streaming output.
+  - **Root Cause**: Snake ID extraction prioritized `playerNameBySnakeId`/`reasoningBySnakeId` (populated from chunks) over `frame.state.scores` (source of truth). When chunk metadata used different keys than frame state, scores failed to resolve.
+  - **Behavior**:
+    - Prioritize `frame.state.scores` keys as primary source for snake IDs (ensures we extract scores from the correct keys)
+    - Move score display from bottom of reasoning panels to header (inline with player name and worm icon)
+    - Removed duplicate score section at panel bottom
+  - **Files Modified**:
+    - `client/src/pages/WormArenaLive.tsx` (snakeIds extraction logic, lines 445-470)
+    - `client/src/components/WormArenaReasoning.tsx` (score repositioned to header, removed bottom score panel)
+
 ### Version 6.10.12  Dec 25, 2025
 
 - **Fix: GPT-5/o-series models must route directly to OpenAI in Worm Arena** (Author: Claude Sonnet 4)
