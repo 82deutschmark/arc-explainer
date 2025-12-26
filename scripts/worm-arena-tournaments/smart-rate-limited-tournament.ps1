@@ -43,12 +43,13 @@ $ErrorActionPreference = 'Continue'
 
 $baseUrl = $BaseUrl.TrimEnd('/')
 $queueEndpoint = "$baseUrl/api/snakebench/run-batch"
-$gamesEndpoint = "$baseUrl/api/snakebench/games"
 
 # Models from user's list
 $models = @(
+  'xiaomi/mimo-v2-flash:free',
   'nvidia/nemotron-3-nano-30b-a3b:free',
   'deepseek/deepseek-v3.2',
+  'deepseek/deepseek-v3.2-exp',
   'openai/gpt-5-nano',
   'openai/gpt-5-mini',
   'openai/gpt-4.1-nano',
@@ -107,7 +108,6 @@ $queuedCount = 0
 $completedCount = 0
 $pairingIndex = 0
 $pollCount = 0
-$lastQueuedCount = 0
 
 Write-Host "Starting smart tournament queueing..." -ForegroundColor Green
 Write-Host ""
@@ -118,7 +118,7 @@ if ($NoWait) {
 
 $startTime = Get-Date
 
-function Print-ModelStatus {
+function Show-ModelStatus {
   Write-Host ""
   Write-Host "--- Current Model Status ---" -ForegroundColor DarkGray
   foreach ($model in $models) {
@@ -142,7 +142,6 @@ while ($pairingIndex -lt $totalPairings -or $queuedCount -gt $completedCount) {
     $pairing = $allPairings[$pairingIndex]
     $modelA = $pairing.modelA
     $modelB = $pairing.modelB
-    $gamesLeft = $pairing.gamesLeft
 
     # Check if we can queue this pairing
     $canQueueA = ($modelA -in $paidModels) -or ($activeGameCount[$modelA] -eq 0)
@@ -196,7 +195,7 @@ while ($pairingIndex -lt $totalPairings -or $queuedCount -gt $completedCount) {
 
   if ($queuedThisRound -gt 0) {
     Write-Host "  → Queued $queuedThisRound game(s) this round" -ForegroundColor Cyan
-    Print-ModelStatus
+    Show-ModelStatus
   }
 
   # If we queued everything and completed everything, we're done
@@ -232,11 +231,10 @@ while ($pairingIndex -lt $totalPairings -or $queuedCount -gt $completedCount) {
         # A better approach would fetch recent games to see which models finished
         $freeModels | ForEach-Object { $activeGameCount[$_] = 0 }
 
-        Print-ModelStatus
+        Show-ModelStatus
       }
 
       $elapsed = ((Get-Date) - $startTime).ToString('hh\:mm\:ss')
-      $remaining = $totalGames - $completedCount
       $inQueue = $queuedCount - $completedCount
       Write-Host "[$elapsed | Poll #$pollCount] Progress: $completedCount/$totalGames complete | In queue: $inQueue | Remaining pairings: $($totalPairings - $pairingIndex)" `
         -ForegroundColor DarkCyan
