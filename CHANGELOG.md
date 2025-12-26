@@ -4,6 +4,25 @@
 # SRP/DRY check: Pass - entries document changes without altering historical records.
 # New entries at the top, use proper SemVer!
 
+### Version 6.11.0  Dec 25, 2025
+
+- **Feature: BYOK Production Enforcement** (Author: Claude Sonnet 4)
+  - **Purpose**: Enforce Bring Your Own Key (BYOK) policy in production - users must provide their own API keys for all paid AI providers.
+  - **Behavior**:
+    - Production: ALL models require user-provided API keys (no server key fallback)
+    - Dev/staging: Existing behavior preserved (server keys allowed as fallback)
+  - **Backend Changes**:
+    - Created `server/utils/environmentPolicy.ts` - environment detection utility with `requiresUserApiKey()`, `isProduction()`, `isDevelopment()` helpers
+    - Updated `poetiqController.ts` - environment-aware BYOK enforcement
+    - Updated `snakeBenchController.ts` - production API key requirement for matches
+    - Updated `streamController.ts` - production API key requirement for puzzle analysis
+  - **Frontend Changes**:
+    - Created `client/src/lib/environmentPolicy.ts` - client-side environment detection
+    - Updated `client/src/lib/streaming/analysisStream.ts` - added `apiKey` to `AnalysisStreamParams`
+    - Updated `client/src/hooks/useAnalysisResults.ts` - pass `apiKey` through to streaming
+    - Updated `client/src/pages/PuzzleExaminer.tsx` - added BYOK API key input card (production only)
+  - **Security**: User keys are used for session only, never stored persistently
+
 ### Version 6.10.13  Dec 25, 2025
 
 - **Fix: Worm Arena Live score display disconnected from streaming data** (Author: Claude Haiku 4.5)
