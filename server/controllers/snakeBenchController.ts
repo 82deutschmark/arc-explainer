@@ -3,6 +3,7 @@
  *
  * Author: Codex (GPT-5)
  * Date: 2025-12-20
+ * Updated: 2025-12-25 - Environment-aware BYOK: production requires user API keys
  * PURPOSE: HTTP API controller for SnakeBench match runs, replay access, and model insights reporting.
  * SRP/DRY check: Pass - controller-only logic, delegates execution to snakeBenchService.
  */
@@ -13,6 +14,7 @@ import { snakeBenchService } from '../services/snakeBenchService';
 import { snakeBenchIngestQueue } from '../services/snakeBenchIngestQueue';
 import { loadWormArenaPromptTemplateBundle } from '../services/snakeBench/SnakeBenchLlmPlayerPromptTemplate.ts';
 import { logger } from '../utils/logger';
+import { requiresUserApiKey } from '../utils/environmentPolicy.js';
 import type {
   SnakeBenchRunMatchRequest,
   SnakeBenchRunMatchResponse,
@@ -68,6 +70,16 @@ export async function runMatch(req: Request, res: Response) {
       const response: SnakeBenchRunMatchResponse = {
         success: false,
         error: 'modelA and modelB are required',
+        timestamp: Date.now(),
+      };
+      return res.status(400).json(response);
+    }
+
+    // Environment-aware BYOK enforcement: production requires user API key
+    if (requiresUserApiKey() && (!body.apiKey || String(body.apiKey).trim().length === 0)) {
+      const response: SnakeBenchRunMatchResponse = {
+        success: false,
+        error: 'Production requires your API key. Your key is used for this session only and is never stored.',
         timestamp: Date.now(),
       };
       return res.status(400).json(response);
