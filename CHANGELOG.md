@@ -4,6 +4,16 @@
 # SRP/DRY check: Pass - entries document changes without altering historical records.
 # New entries at the top, use proper SemVer!
 
+### Version 6.11.1  Dec 25, 2025
+
+- **UI: Worm Arena Greatest Hits pinned matches** (Author: Cascade)
+  - **Purpose**: Highlight recent standout Worm Arena battles for quick replay access.
+  - **Behavior**:
+    - Added pinned replays for Grok 4.1 Fast vs GLM 4.7 (24-21, 94 rounds, high cost), GPT-5 Nano vs GPT-5.1 Codex Mini (21-20, 90 rounds), Nemotron 3 Nano vs GPT-5.1 Codex Mini (11-10, 53 rounds), DeepSeek v3.2 vs GPT-5 Nano (15-15 tie, 77 rounds), and Gemini 2.5 Flash vs DeepSeek v3.2 (18-11, 58 rounds).
+    - Pinned entries are merged with fetched greatest hits and surface at the top of the list with replay links.
+  - **Files Modified**:
+    - `client/src/components/WormArenaGreatestHits.tsx`
+
 ### Version 6.11.0  Dec 25, 2025
 
 - **Feature: BYOK Production Enforcement** (Author: Claude Sonnet 4)
