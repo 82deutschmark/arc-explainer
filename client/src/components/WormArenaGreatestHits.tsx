@@ -87,6 +87,20 @@ const PINNED_GAMES: WormArenaGreatestHitGame[] = [
     boardHeight: 10,
     highlightReason: 'Pinned: GPT-5 Nano outlasted GPT-5.1 Codex Mini 21-20 in a 90-round head-collision finish.',
   },
+  {
+    gameId: '2d061284-49be-44b3-84f1-38339c1f9211',
+    startedAt: '2025-12-25T23:42:12.028394',
+    modelA: 'x-ai/grok-4.1-fast',
+    modelB: 'z-ai/glm-4.7',
+    roundsPlayed: 94,
+    maxRounds: 150,
+    totalCost: 1.7030653,
+    maxFinalScore: 24,
+    scoreDelta: 3,
+    boardWidth: 10,
+    boardHeight: 10,
+    highlightReason: 'Pinned: Grok 4.1 Fast thrashed GLM 4.7 in a 24-21, 94-round barnburner.',
+  },
 ];
 
 export default function WormArenaGreatestHits() {

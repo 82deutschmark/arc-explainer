@@ -106,6 +106,8 @@ $models | ForEach-Object { $activeGameCount[$_] = 0 }
 $queuedCount = 0
 $completedCount = 0
 $pairingIndex = 0
+$pollCount = 0
+$lastQueuedCount = 0
 
 Write-Host "Starting smart tournament queueing..." -ForegroundColor Green
 Write-Host ""
@@ -116,12 +118,26 @@ if ($NoWait) {
 
 $startTime = Get-Date
 
+function Print-ModelStatus {
+  Write-Host ""
+  Write-Host "--- Current Model Status ---" -ForegroundColor DarkGray
+  foreach ($model in $models) {
+    $activeCount = $activeGameCount[$model]
+    $isFree = $model -in $freeModels
+    $typeLabel = if ($isFree) { "[FREE]" } else { "[PAID]" }
+    $statusColor = if ($activeCount -eq 0) { "Green" } elseif ($activeCount -eq 1 -and $isFree) { "Yellow" } else { "Red" }
+    Write-Host "  $typeLabel $model : $activeCount active game(s)" -ForegroundColor $statusColor
+  }
+  Write-Host ""
+}
+
 # ============================================================================
 # MAIN LOOP: Queue matches and monitor progress
 # ============================================================================
 while ($pairingIndex -lt $totalPairings -or $queuedCount -gt $completedCount) {
 
   # Attempt to queue new matches from pending pairings
+  $queuedThisRound = 0
   while ($pairingIndex -lt $totalPairings) {
     $pairing = $allPairings[$pairingIndex]
     $modelA = $pairing.modelA
@@ -133,7 +149,11 @@ while ($pairingIndex -lt $totalPairings -or $queuedCount -gt $completedCount) {
     $canQueueB = ($modelB -in $paidModels) -or ($activeGameCount[$modelB] -eq 0)
 
     if (-not ($canQueueA -and $canQueueB)) {
-      # Rate-limit hit; stop queueing for now
+      # Rate-limit hit; log why and stop queueing for now
+      $reasonA = if ($modelA -in $freeModels -and $activeGameCount[$modelA] -gt 0) { "$modelA BLOCKED (active: $($activeGameCount[$modelA]))" } else { "" }
+      $reasonB = if ($modelB -in $freeModels -and $activeGameCount[$modelB] -gt 0) { "$modelB BLOCKED (active: $($activeGameCount[$modelB]))" } else { "" }
+      $reasons = @($reasonA, $reasonB) | Where-Object { $_ -ne "" } | Join-String -Separator ", "
+      Write-Host "  [QUEUING PAUSED] $modelA vs $modelB → $reasons" -ForegroundColor DarkYellow
       break
     }
 
@@ -154,6 +174,7 @@ while ($pairingIndex -lt $totalPairings -or $queuedCount -gt $completedCount) {
         -Body $body -ErrorAction Stop -TimeoutSec 10 | Out-Null
 
       $queuedCount += 1
+      $queuedThisRound += 1
       $pairing.gamesLeft -= 1
 
       # Increment active game count for both models
@@ -161,25 +182,32 @@ while ($pairingIndex -lt $totalPairings -or $queuedCount -gt $completedCount) {
       $activeGameCount[$modelB] += 1
 
       $percent = [Math]::Min(100, [Math]::Floor($queuedCount / $totalGames * 100))
-      Write-Host "[$percent%] Queued: $modelA vs $modelB (total: $queuedCount/$totalGames)" -ForegroundColor Green
+      Write-Host "  [QUEUED] $modelA ($($activeGameCount[$modelA])) vs $modelB ($($activeGameCount[$modelB])) | $queuedCount/$totalGames ($percent%)" -ForegroundColor Green
 
       # If this pairing has more games, keep it in the queue; otherwise move to next
       if ($pairing.gamesLeft -eq 0) {
         $pairingIndex += 1
       }
     } catch {
-      Write-Host "  ERROR queuing $modelA vs $modelB : $($_.Exception.Message)" -ForegroundColor Red
+      Write-Host "  [ERROR] Failed to queue $modelA vs $modelB : $($_.Exception.Message)" -ForegroundColor Red
       break
     }
   }
 
+  if ($queuedThisRound -gt 0) {
+    Write-Host "  → Queued $queuedThisRound game(s) this round" -ForegroundColor Cyan
+    Print-ModelStatus
+  }
+
   # If we queued everything and completed everything, we're done
   if ($pairingIndex -ge $totalPairings -and $queuedCount -eq $completedCount) {
+    Write-Host "All pairings complete and all games finished!" -ForegroundColor Green
     break
   }
 
   # Poll for game completion
   if ($queuedCount -gt $completedCount) {
+    $pollCount++
     try {
       $resp = Invoke-WebRequest -Uri "$gamesEndpoint?limit=10000" -Method Get -ErrorAction Stop
       $data = $resp.Content | ConvertFrom-Json
@@ -188,28 +216,32 @@ while ($pairingIndex -lt $totalPairings -or $queuedCount -gt $completedCount) {
       # We assume DB count increases monotonically; completed = current - initial
       if (-not $script:initialDbCount) {
         $script:initialDbCount = $currentDbCount
+        Write-Host "[INIT] Initial DB game count: $currentDbCount" -ForegroundColor DarkCyan
       }
 
       $newCompletedCount = $currentDbCount - $script:initialDbCount
 
       # For each newly completed game, decrement active count on both models
       if ($newCompletedCount -gt $completedCount) {
-        # This is a rough heuristic: we know games completed, so let all models reset
-        # In a production system, you'd fetch game details to know which models finished
-        # For now, we'll assume completion and allow re-queueing
+        $justFinished = $newCompletedCount - $completedCount
         $completedCount = $newCompletedCount
+
+        Write-Host "[COMPLETED] $justFinished new game(s) finished | Total: $completedCount/$totalGames" -ForegroundColor Cyan
 
         # Reset active counts for all free models (conservative approach)
         # A better approach would fetch recent games to see which models finished
         $freeModels | ForEach-Object { $activeGameCount[$_] = 0 }
+
+        Print-ModelStatus
       }
 
       $elapsed = ((Get-Date) - $startTime).ToString('hh\:mm\:ss')
       $remaining = $totalGames - $completedCount
-      Write-Host "[$elapsed] Progress: $completedCount/$totalGames complete | $remaining remaining | DB total: $currentDbCount" `
-        -ForegroundColor Cyan
+      $inQueue = $queuedCount - $completedCount
+      Write-Host "[$elapsed | Poll #$pollCount] Progress: $completedCount/$totalGames complete | In queue: $inQueue | Remaining pairings: $($totalPairings - $pairingIndex)" `
+        -ForegroundColor DarkCyan
     } catch {
-      Write-Host "  ERROR polling games: $($_.Exception.Message)" -ForegroundColor Red
+      Write-Host "  [ERROR] Failed to poll games: $($_.Exception.Message)" -ForegroundColor Red
     }
 
     if ($NoWait -and $completedCount -eq 0) {
