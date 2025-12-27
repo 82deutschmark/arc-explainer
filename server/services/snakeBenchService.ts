@@ -631,6 +631,23 @@ class SnakeBenchService {
         .map((m: any) => (m.apiModelName || m.key) as string)
     );
 
+    // DEBUG: Log what's happening with model filtering
+    const leaderboardSlugs = leaderboard.map(e => e.modelSlug);
+    const unmatchedSlugs = leaderboard
+      .filter(e => !approvedModels.has(e.modelSlug))
+      .map(e => e.modelSlug);
+
+    logger.info(`
+[SUGGEST-MATCHUPS DEBUG]
+Leaderboard models: ${leaderboardSlugs.length}
+  ${leaderboardSlugs.join(', ')}
+Approved models from config: ${approvedModels.size}
+  ${Array.from(approvedModels).join(', ')}
+Models in leaderboard but NOT in approved: ${unmatchedSlugs.length}
+  ${unmatchedSlugs.join(', ')}
+Pairing history pairs: ${pairingHistory.size}
+    `, 'snakebench-service');
+
     return suggestMatchups(mode, safeLimit, safeMinGames, leaderboard, pairingHistory, approvedModels as Set<string>);
   }
 
