@@ -637,7 +637,7 @@ class SnakeBenchService {
       .filter(e => !approvedModels.has(e.modelSlug))
       .map(e => e.modelSlug);
 
-    logger.info(`
+    const debugInfo = `
 [SUGGEST-MATCHUPS DEBUG]
 Leaderboard models: ${leaderboardSlugs.length}
   ${leaderboardSlugs.join(', ')}
@@ -646,7 +646,21 @@ Approved models from config: ${approvedModels.size}
 Models in leaderboard but NOT in approved: ${unmatchedSlugs.length}
   ${unmatchedSlugs.join(', ')}
 Pairing history pairs: ${pairingHistory.size}
-    `, 'snakebench-service');
+Pairing history sample keys:
+  ${Array.from(pairingHistory.keys()).slice(0, 10).join('\n  ')}
+    `;
+
+    logger.info(debugInfo, 'snakebench-service');
+
+    // Also write to file for easier inspection
+    try {
+      const fs = await import('fs');
+      const path = await import('path');
+      const debugFile = path.join(process.cwd(), 'suggest-matchups-debug.log');
+      fs.writeFileSync(debugFile, debugInfo + '\n---\n', { flag: 'a' });
+    } catch (e) {
+      // Ignore file write errors
+    }
 
     return suggestMatchups(mode, safeLimit, safeMinGames, leaderboard, pairingHistory, approvedModels as Set<string>);
   }

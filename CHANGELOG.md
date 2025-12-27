@@ -1,5 +1,12 @@
 # New entries at the top, use proper SemVer!
 
+### Version 6.13.4  Dec 27, 2025
+
+- **Simplify: Worm Arena Run Length Chart shows all models by default** (Author: Cascade)
+  - Removed per-model selection UI and limits; chart now renders all models simultaneously with stacked wins/losses.
+  - Updated empty state copy to reflect data absence rather than thresholds.
+  - Header comment refreshed to match new behavior.
+
 ### Version 6.13.3  Dec 27, 2025
 
 - **Refactor: Worm Arena Models Page - Modular Sortable Match History** (Author: Claude Sonnet 4)
