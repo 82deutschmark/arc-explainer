@@ -85,18 +85,28 @@ Show expected JSON structure
 **Verification errors:**
 
 **Client-side validation (fast, before upload):**
-- Invalid JSON format
-- Missing required fields
-- Wrong structure
+
+Should be following format.
+
+```typescript
+type Submission = {
+  [taskId: string]: {
+    attempt_1: number[][];
+    attempt_2: number[][];
+  }[];
+};
+```
+
+- taskId is 8 char hex string
 - Grid format validation:
   - Dimensions must be 1x1 to 30x30
-  - All cells must be integers
-
-**Server-side errors:**
-- Seed recovery failure: "Could not verify submission. Task IDs don't match or file is corrupted."
-- Other failures: "Verification failed. Please check your submission and try again."
+  - Grid cells are integers 0-9
 
 All errors display inline, keep interface visible for retry.
+
+If validation fails, provide very clear guidance. Common mistakes:
+- { taskId: grid } (no attempt object)
+- { taskId: {attempt_1, attempt_2} } (not array corresponding to each test pair)
 
 ---
 

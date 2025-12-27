@@ -90,11 +90,12 @@ node --import tsx --test tests/reArcService.test.ts
 ```
 
 ### Phase 4: Backend API
-- [ ] Create `reArcController.ts` with generation endpoint
-- [ ] Create verification endpoint
-- [ ] Add routes to `server/routes.ts` (follow existing pattern)
-- [ ] Write endpoint tests (`tests/reArcController.test.ts`)
-- [ ] Add error handling and validation
+- [x] Create `reArcController.ts` with generation endpoint
+- [x] Create verification endpoint
+- [x] Add routes to `server/routes.ts` (follow existing pattern)
+- [x] Write endpoint tests (`tests/reArcController.test.ts`)
+- [x] Add error handling and validation
+- [x] Add rate limiting middleware
 
 ---
 
@@ -152,39 +153,31 @@ shared/types.ts (add ReArc types)
 
 ## API
 
+Use `express-rate-limit` for API rate limiting
+
 **Generation endpoint:** `POST /api/rearc-eval/generate` (Streaming Download)
 - No parameters
 - Returns chunked HTTP response with headers:
   - `Content-Type: application/json`
-  - `Content-Disposition: attachment; filename="rearc-dataset-{timestamp}.json"`
+  - `Content-Disposition: attachment; filename="rearc_test_challenges-{timestamp}.json"`
   - `Transfer-Encoding: chunked`
+  - `Content-Encoding: gzip`
 - Response body: JSON object streamed incrementally as tasks are generated
 - Format: Valid JSON object `{ "taskId1": {...}, "taskId2": {...}, ... }`
 - Each task contains training pairs (input+output) and test pairs (input only; ground truth reserved for verification)
 - Tasks stream in real-time (~10 seconds for full dataset)
-- On error: Returns 500 with error JSON instead of download
 
 **Verification endpoint:** `POST /api/rearc-eval/verify` (SSE stream)
-- Body: `{ submission: Submission }`
-- Client-side validation before upload:
-  - JSON format and structure
-  - Grid dimensions (min 1x1, max 30x30)
-  - Grid cells are integers
+- Body: Submission JSON
 - Returns Server-Sent Events:
   ```
   event: progress
   data: {"current": 47, "total": 128}
 
   event: complete
-  data: {"score": 0.875}
-
-  event: error
-  data: {"message": "Verification failed"}
+  data: {"type": "score", "score": 0.875}
+  data: {"type": "mismatches", "mismatches": {taskId, expectedPairs, submittedPairs}[]}
+  data: {"type": "malformed"}
   ```
 
-**Error Handling:**
-- Seed recovery failure: specific error message
-- Incorrect number of test pairs: specific error message
-- Other failures: generic 500 error ("Verification failed")
-- Grid validation handled entirely client-side
-
+Note completion event differs from `VerificationResult`: `taskIndex` and `error` are excluded
