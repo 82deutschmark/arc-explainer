@@ -19,6 +19,17 @@ export interface ARCExample {
   output: number[][];
 }
 
+/**
+ * Submission format for ARC evaluations (RE-ARC, benchmarks, etc.)
+ * Each task contains an array of test pairs, each with 2 attempts
+ */
+export interface ARCSubmission {
+  [taskId: string]: {
+    attempt_1: number[][];
+    attempt_2: number[][];
+  }[];
+}
+
 export interface PuzzleMetadata {
   id: string;
   gridSizeConsistent: boolean;
