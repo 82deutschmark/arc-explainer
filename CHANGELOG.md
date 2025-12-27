@@ -4,6 +4,25 @@
 # SRP/DRY check: Pass - entries document changes without altering historical records.
 # New entries at the top, use proper SemVer!
 
+### Version 6.12.4  Dec 27, 2025
+
+- **Feature: Worm Arena Tweet Kit & Share Buttons** (Author: Cascade)
+  - **Purpose**: Enable easy sharing of Worm Arena matches to Twitter/X with pre-filled tweet text and replay links.
+  - **Behavior**:
+    - Added `WormArenaShareButton` component with dropdown options: Share on Twitter/X, Copy tweet text, Copy replay link
+    - Tweet text auto-generates from match metadata using smart templates (tie, high score, long/expensive, default)
+    - Share button added to Greatest Hits card entries and main replay viewer header
+    - CLI script `scripts/worm-arena-tweet-kit.ts` for batch tweet generation with optional MP4 video creation
+    - Script fetches greatest hits, downloads replays if needed, generates tweet blurbs, and outputs to `tmp/tweet-kit/`
+    - npm script: `npm run worm:tweets -- --limit 5 [--video]`
+  - **Files Created**:
+    - `client/src/components/WormArenaShareButton.tsx` - Reusable share button component
+    - `scripts/worm-arena-tweet-kit.ts` - CLI tool for batch tweet generation
+  - **Files Modified**:
+    - `client/src/components/WormArenaGreatestHits.tsx` - Added share buttons to game entries
+    - `client/src/pages/WormArena.tsx` - Added share button to match header
+    - `package.json` - Added `worm:tweets` npm script
+
 ### Version 6.12.3  Dec 27, 2025
 
 - **Feature: Greatest Hits include monster apple hauls** (Author: Cascade)
