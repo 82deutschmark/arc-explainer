@@ -4,7 +4,7 @@
 # SRP/DRY check: Pass - entries document changes without altering historical records.
 # New entries at the top, use proper SemVer!
 
-### Version 6.13.0  Dec 27, 2025
+### Version 6.12.1  Dec 27, 2025
 
 - **Feature: Worm Arena Greatest Hits Enhanced Ranking Dimensions** (Author: Claude Code Sonnet 4.5)
   - **Purpose**: Extend greatest-hits ranking with 3 new dimensions (duration, total score, close matches) to surface more types of interesting games.
