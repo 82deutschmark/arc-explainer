@@ -721,11 +721,13 @@ export class SnakeBenchRepository extends BaseRepository {
         SELECT
           g.id AS game_id,
           g.start_time,
+          g.end_time,
           g.rounds AS rounds_played,
           g.board_width,
           g.board_height,
           g.total_cost,
           MAX(gp.score) AS max_final_score,
+          SUM(gp.score) AS sum_final_scores,
           ABS(
             COALESCE(MAX(CASE WHEN gp.player_slot = 0 THEN gp.score END), 0) -
             COALESCE(MAX(CASE WHEN gp.player_slot = 1 THEN gp.score END), 0)
@@ -737,7 +739,7 @@ export class SnakeBenchRepository extends BaseRepository {
         JOIN public.models m ON gp.model_id = m.id
         WHERE g.status = 'completed'
           AND COALESCE(g.rounds, 0) >= 20
-        GROUP BY g.id, g.start_time, g.rounds, g.board_width, g.board_height, g.total_cost
+        GROUP BY g.id, g.start_time, g.end_time, g.rounds, g.board_width, g.board_height, g.total_cost
         HAVING MAX(gp.score) > 0 OR g.total_cost > 0
         ORDER BY COALESCE(g.rounds, 0) DESC, COALESCE(g.start_time, NOW()) DESC
         LIMIT $1;
@@ -747,11 +749,13 @@ export class SnakeBenchRepository extends BaseRepository {
         SELECT
           g.id AS game_id,
           g.start_time,
+          g.end_time,
           g.rounds AS rounds_played,
           g.board_width,
           g.board_height,
           g.total_cost,
           MAX(gp.score) AS max_final_score,
+          SUM(gp.score) AS sum_final_scores,
           ABS(
             COALESCE(MAX(CASE WHEN gp.player_slot = 0 THEN gp.score END), 0) -
             COALESCE(MAX(CASE WHEN gp.player_slot = 1 THEN gp.score END), 0)
@@ -764,7 +768,7 @@ export class SnakeBenchRepository extends BaseRepository {
         WHERE g.status = 'completed'
           AND COALESCE(g.rounds, 0) >= 5
           AND g.total_cost >= 0.010
-        GROUP BY g.id, g.start_time, g.rounds, g.board_width, g.board_height, g.total_cost
+        GROUP BY g.id, g.start_time, g.end_time, g.rounds, g.board_width, g.board_height, g.total_cost
         HAVING MAX(gp.score) > 0 OR g.total_cost > 0
         ORDER BY g.total_cost DESC, COALESCE(g.start_time, NOW()) DESC
         LIMIT $1;
@@ -774,11 +778,13 @@ export class SnakeBenchRepository extends BaseRepository {
         SELECT
           g.id AS game_id,
           g.start_time,
+          g.end_time,
           g.rounds AS rounds_played,
           g.board_width,
           g.board_height,
           g.total_cost,
           MAX(gp.score) AS max_final_score,
+          SUM(gp.score) AS sum_final_scores,
           ABS(
             COALESCE(MAX(CASE WHEN gp.player_slot = 0 THEN gp.score END), 0) -
             COALESCE(MAX(CASE WHEN gp.player_slot = 1 THEN gp.score END), 0)
@@ -790,16 +796,113 @@ export class SnakeBenchRepository extends BaseRepository {
         JOIN public.models m ON gp.model_id = m.id
         WHERE g.status = 'completed'
           AND COALESCE(g.rounds, 0) >= 5
-        GROUP BY g.id, g.start_time, g.rounds, g.board_width, g.board_height, g.total_cost
+        GROUP BY g.id, g.start_time, g.end_time, g.rounds, g.board_width, g.board_height, g.total_cost
         HAVING MAX(gp.score) > 0 OR g.total_cost > 0
         ORDER BY MAX(gp.score) DESC, COALESCE(g.rounds, 0) DESC, COALESCE(g.start_time, NOW()) DESC
         LIMIT $1;
       `;
 
-      const [roundsResult, costResult, scoreResult] = await Promise.all([
+      // NEW: Duration query (longest wall-clock games)
+      const durationSql = `
+        SELECT
+          g.id AS game_id,
+          g.start_time,
+          g.end_time,
+          g.rounds AS rounds_played,
+          g.board_width,
+          g.board_height,
+          g.total_cost,
+          MAX(gp.score) AS max_final_score,
+          SUM(gp.score) AS sum_final_scores,
+          ABS(
+            COALESCE(MAX(CASE WHEN gp.player_slot = 0 THEN gp.score END), 0) -
+            COALESCE(MAX(CASE WHEN gp.player_slot = 1 THEN gp.score END), 0)
+          ) AS score_delta,
+          MAX(CASE WHEN gp.player_slot = 0 THEN m.model_slug END) AS model_a,
+          MAX(CASE WHEN gp.player_slot = 1 THEN m.model_slug END) AS model_b,
+          EXTRACT(EPOCH FROM (g.end_time - g.start_time)) AS duration_seconds
+        FROM public.games g
+        JOIN public.game_participants gp ON gp.game_id = g.id
+        JOIN public.models m ON gp.model_id = m.id
+        WHERE g.status = 'completed'
+          AND g.start_time IS NOT NULL
+          AND g.end_time IS NOT NULL
+          AND EXTRACT(EPOCH FROM (g.end_time - g.start_time)) >= 60
+        GROUP BY g.id, g.start_time, g.end_time, g.rounds, g.board_width, g.board_height, g.total_cost
+        HAVING MAX(gp.score) > 0 OR g.total_cost > 0
+        ORDER BY duration_seconds DESC, COALESCE(g.start_time, NOW()) DESC
+        LIMIT $1;
+      `;
+
+      // NEW: Total score query (highest combined apples from both players)
+      const totalScoreSql = `
+        SELECT
+          g.id AS game_id,
+          g.start_time,
+          g.end_time,
+          g.rounds AS rounds_played,
+          g.board_width,
+          g.board_height,
+          g.total_cost,
+          MAX(gp.score) AS max_final_score,
+          SUM(gp.score) AS sum_final_scores,
+          ABS(
+            COALESCE(MAX(CASE WHEN gp.player_slot = 0 THEN gp.score END), 0) -
+            COALESCE(MAX(CASE WHEN gp.player_slot = 1 THEN gp.score END), 0)
+          ) AS score_delta,
+          MAX(CASE WHEN gp.player_slot = 0 THEN m.model_slug END) AS model_a,
+          MAX(CASE WHEN gp.player_slot = 1 THEN m.model_slug END) AS model_b
+        FROM public.games g
+        JOIN public.game_participants gp ON gp.game_id = g.id
+        JOIN public.models m ON gp.model_id = m.id
+        WHERE g.status = 'completed'
+          AND COALESCE(g.rounds, 0) >= 5
+        GROUP BY g.id, g.start_time, g.end_time, g.rounds, g.board_width, g.board_height, g.total_cost
+        HAVING SUM(gp.score) >= 10
+        ORDER BY SUM(gp.score) DESC, COALESCE(g.start_time, NOW()) DESC
+        LIMIT $1;
+      `;
+
+      // NEW: Close matches query (photo finishes with score delta <= 2)
+      const closeMatchesSql = `
+        SELECT
+          g.id AS game_id,
+          g.start_time,
+          g.end_time,
+          g.rounds AS rounds_played,
+          g.board_width,
+          g.board_height,
+          g.total_cost,
+          MAX(gp.score) AS max_final_score,
+          SUM(gp.score) AS sum_final_scores,
+          ABS(
+            COALESCE(MAX(CASE WHEN gp.player_slot = 0 THEN gp.score END), 0) -
+            COALESCE(MAX(CASE WHEN gp.player_slot = 1 THEN gp.score END), 0)
+          ) AS score_delta,
+          MAX(CASE WHEN gp.player_slot = 0 THEN m.model_slug END) AS model_a,
+          MAX(CASE WHEN gp.player_slot = 1 THEN m.model_slug END) AS model_b
+        FROM public.games g
+        JOIN public.game_participants gp ON gp.game_id = g.id
+        JOIN public.models m ON gp.model_id = m.id
+        WHERE g.status = 'completed'
+          AND COALESCE(g.rounds, 0) >= 5
+        GROUP BY g.id, g.start_time, g.end_time, g.rounds, g.board_width, g.board_height, g.total_cost
+        HAVING ABS(
+          COALESCE(MAX(CASE WHEN gp.player_slot = 0 THEN gp.score END), 0) -
+          COALESCE(MAX(CASE WHEN gp.player_slot = 1 THEN gp.score END), 0)
+        ) <= 2
+        AND MAX(gp.score) >= 5
+        ORDER BY MAX(gp.score) DESC, score_delta ASC, COALESCE(g.start_time, NOW()) DESC
+        LIMIT $1;
+      `;
+
+      const [roundsResult, costResult, scoreResult, durationResult, totalScoreResult, closeMatchesResult] = await Promise.all([
         this.query(roundsSql, [safeLimit]),
         this.query(costSql, [safeLimit]),
         this.query(scoreSql, [safeLimit]),
+        this.query(durationSql, [safeLimit]),
+        this.query(totalScoreSql, [safeLimit]),
+        this.query(closeMatchesSql, [safeLimit]),
       ]);
 
       const seen = new Map<string, WormArenaGreatestHitGame>();
@@ -807,7 +910,7 @@ export class SnakeBenchRepository extends BaseRepository {
 
       const addGameFromRow = (
         row: any,
-        dimension: 'rounds' | 'cost' | 'score',
+        dimension: 'rounds' | 'cost' | 'score' | 'duration' | 'total_score' | 'close_match',
       ) => {
         const gameId = String(row.game_id ?? row.id ?? '').trim();
         if (!gameId || seen.has(gameId)) return;
@@ -818,9 +921,14 @@ export class SnakeBenchRepository extends BaseRepository {
         const scoreDelta = Number(row.score_delta ?? 0) || 0;
         const boardWidth = Number(row.board_width ?? 0) || 0;
         const boardHeight = Number(row.board_height ?? 0) || 0;
+        const sumFinalScores = Number(row.sum_final_scores ?? 0) || 0;
+        const durationSeconds = Number(row.duration_seconds ?? 0) || 0;
 
         const startTs = row.start_time ?? null;
         const startedAt = startTs ? new Date(startTs).toISOString() : '';
+
+        const endTs = row.end_time ?? null;
+        const endedAt = endTs ? new Date(endTs).toISOString() : undefined;
 
         const modelA = String(row.model_a ?? '').trim();
         const modelB = String(row.model_b ?? '').trim();
@@ -836,7 +944,10 @@ export class SnakeBenchRepository extends BaseRepository {
         const maxRounds = roundsPlayed;
 
         let highlightReason: string;
+        let category: string;
+
         if (dimension === 'rounds') {
+          category = 'longest_rounds';
           if (roundsPlayed >= 50) {
             highlightReason = 'Epic long game (50+ rounds)';
           } else if (roundsPlayed >= 40) {
@@ -845,6 +956,7 @@ export class SnakeBenchRepository extends BaseRepository {
             highlightReason = 'Long game (20+ rounds)';
           }
         } else if (dimension === 'cost') {
+          category = 'highest_cost';
           if (totalCost >= 1) {
             highlightReason = 'Extremely expensive match (>$1)';
           } else if (totalCost >= 0.25) {
@@ -852,7 +964,8 @@ export class SnakeBenchRepository extends BaseRepository {
           } else {
             highlightReason = 'Expensive match (>$0.01)';
           }
-        } else {
+        } else if (dimension === 'score') {
+          category = 'highest_score';
           if (maxFinalScore >= 15) {
             highlightReason = 'Highest-scoring match (15+ apples)';
           } else if (maxFinalScore >= 10) {
@@ -860,11 +973,42 @@ export class SnakeBenchRepository extends BaseRepository {
           } else {
             highlightReason = 'Notable scoring match';
           }
+        } else if (dimension === 'duration') {
+          category = 'longest_duration';
+          const hours = Math.floor(durationSeconds / 3600);
+          const minutes = Math.floor((durationSeconds % 3600) / 60);
+          if (hours >= 2) {
+            highlightReason = `Marathon duration (${hours}h ${minutes}m)`;
+          } else if (hours >= 1) {
+            highlightReason = `Long duration (${hours}h ${minutes}m)`;
+          } else {
+            highlightReason = `Extended duration (${minutes}m)`;
+          }
+        } else if (dimension === 'total_score') {
+          category = 'highest_total_score';
+          if (sumFinalScores >= 30) {
+            highlightReason = `Epic combined score (${sumFinalScores} apples)`;
+          } else if (sumFinalScores >= 20) {
+            highlightReason = `High combined score (${sumFinalScores} apples)`;
+          } else {
+            highlightReason = `Combined score (${sumFinalScores} apples)`;
+          }
+        } else {
+          // close_match
+          category = 'close_match';
+          if (scoreDelta === 0) {
+            highlightReason = 'Perfect tie';
+          } else if (scoreDelta === 1) {
+            highlightReason = 'Photo finish (1 apple difference)';
+          } else {
+            highlightReason = `Neck-and-neck (${scoreDelta} apple difference)`;
+          }
         }
 
         const game: WormArenaGreatestHitGame = {
           gameId,
           startedAt,
+          endedAt,
           modelA,
           modelB,
           roundsPlayed,
@@ -875,13 +1019,16 @@ export class SnakeBenchRepository extends BaseRepository {
           boardWidth,
           boardHeight,
           highlightReason,
+          sumFinalScores: sumFinalScores > 0 ? sumFinalScores : undefined,
+          durationSeconds: durationSeconds > 0 ? durationSeconds : undefined,
+          category,
         };
 
         seen.set(gameId, game);
         ordered.push(game);
       };
 
-      // Priority: long games first, then expensive, then scoring
+      // Priority: long games first, then expensive, then scoring, then new dimensions
       for (const row of roundsResult.rows ?? []) {
         addGameFromRow(row, 'rounds');
         if (ordered.length >= MAX_TOTAL) break;
@@ -897,6 +1044,27 @@ export class SnakeBenchRepository extends BaseRepository {
       if (ordered.length < MAX_TOTAL) {
         for (const row of scoreResult.rows ?? []) {
           addGameFromRow(row, 'score');
+          if (ordered.length >= MAX_TOTAL) break;
+        }
+      }
+
+      if (ordered.length < MAX_TOTAL) {
+        for (const row of durationResult.rows ?? []) {
+          addGameFromRow(row, 'duration');
+          if (ordered.length >= MAX_TOTAL) break;
+        }
+      }
+
+      if (ordered.length < MAX_TOTAL) {
+        for (const row of totalScoreResult.rows ?? []) {
+          addGameFromRow(row, 'total_score');
+          if (ordered.length >= MAX_TOTAL) break;
+        }
+      }
+
+      if (ordered.length < MAX_TOTAL) {
+        for (const row of closeMatchesResult.rows ?? []) {
+          addGameFromRow(row, 'close_match');
           if (ordered.length >= MAX_TOTAL) break;
         }
       }

@@ -4,6 +4,30 @@
 # SRP/DRY check: Pass - entries document changes without altering historical records.
 # New entries at the top, use proper SemVer!
 
+### Version 6.13.0  Dec 27, 2025
+
+- **Feature: Worm Arena Greatest Hits Enhanced Ranking Dimensions** (Author: Claude Code Sonnet 4.5)
+  - **Purpose**: Extend greatest-hits ranking with 3 new dimensions (duration, total score, close matches) to surface more types of interesting games.
+  - **Behavior**:
+    - Added 3 new SQL queries to repository: duration (wall-clock time), total score (combined apples from both players), close matches (score delta ≤ 2, min 5 apples)
+    - All 6 queries run in parallel via `Promise.all()` for optimal performance
+    - Updated deduplication logic to handle 6 dimensions and assign category-specific highlight reasons
+    - New highlight reasons include: "Marathon duration (Xh Ym)", "Epic combined score (X apples)", "Perfect tie", "Photo finish (1 apple difference)", "Neck-and-neck (X apple difference)"
+    - Frontend component now displays duration badges ("Duration: 2h 15m") and total score badges ("32 total apples") when data is available
+    - Optional fields added to `WormArenaGreatestHitGame` interface: `endedAt`, `sumFinalScores`, `durationSeconds`, `category` (all backward-compatible)
+  - **Files Modified**:
+    - `server/repositories/SnakeBenchRepository.ts:706-1072` - Added 3 new SQL queries, updated deduplication logic
+    - `shared/types.ts:903-921` - Added 4 new optional fields to `WormArenaGreatestHitGame` interface
+    - `client/src/components/WormArenaGreatestHits.tsx:150-227` - Added duration and total score badges
+    - `server/services/snakeBenchHallOfFame.ts:1-24` - Updated header comment documenting new optional fields
+  - **Files Deleted**:
+    - `external/SnakeBench/backend/cli/generate_greatest_hits_report.py` - Functionality integrated into database-driven system
+  - **Performance Note**: If queries are slow (>200ms), consider adding database indexes:
+    ```sql
+    CREATE INDEX IF NOT EXISTS idx_games_duration ON public.games(end_time, start_time) WHERE status = 'completed' AND end_time IS NOT NULL;
+    CREATE INDEX IF NOT EXISTS idx_game_participants_score ON public.game_participants(game_id, score);
+    ```
+
 ### Version 6.12.0  Dec 27, 2025
 
 - **Feature: ARC3 Auto-Discovered Level Screenshots** (Author: Cascade)
