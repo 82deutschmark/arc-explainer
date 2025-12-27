@@ -4,6 +4,19 @@
 # SRP/DRY check: Pass - entries document changes without altering historical records.
 # New entries at the top, use proper SemVer!
 
+### Version 6.12.2  Dec 27, 2025
+
+- **Fix: Worm Arena live status strip correctness & UX** (Author: Cascade)
+  - **Purpose**: Make live streaming status readable and accurate: apples, alive list, timers, names, and session copying.
+  - **Behavior**:
+    - Added copy-to-clipboard button for session ID; keeps layout tidy with truncation and spacing.
+    - Alive list now derives from live alive-map (with fallbacks) so it never shows empty; scores parse from frames or status text to avoid zeroed apples.
+    - Wall clock and since-last-move timers computed from frame timestamps to populate timing fields.
+    - Player rows separated into their own colored blocks to stop name overlap and keep apples aligned.
+  - **Files Modified**:
+    - `client/src/components/WormArenaLiveStatusStrip.tsx`
+    - `client/src/pages/WormArenaLive.tsx`
+
 ### Version 6.12.1  Dec 27, 2025
 
 - **Feature: Worm Arena Greatest Hits Enhanced Ranking Dimensions** (Author: Claude Code Sonnet 4.5)
