@@ -19,10 +19,10 @@ async function main() {
   const completedDir = path.join(process.cwd(), 'external', 'SnakeBench', 'backend', 'completed_games');
 
   logger.info('Resetting SnakeBench model aggregates/ratings to baseline...', 'snakebench-backfill');
-  await repositoryService.snakeBench.resetModelRatings();
+  await repositoryService.gameWrite.resetModelRatings();
 
   logger.info('Replaying completed games for aggregates + ratings...', 'snakebench-backfill');
-  await repositoryService.snakeBench.backfillFromDirectory(completedDir);
+  await repositoryService.gameWrite.backfillFromDirectory(completedDir);
 
   logger.info('SnakeBench backfill completed.', 'snakebench-backfill');
 }

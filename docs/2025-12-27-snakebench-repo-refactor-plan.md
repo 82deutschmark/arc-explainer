@@ -1,10 +1,14 @@
 ---
 title: SnakeBench Repository Split Plan
-author: Cascade (GPT-5)
+author: Gemini 3 Flash High
 date: 2025-12-27
 purpose: Refactor SnakeBenchRepository.ts into focused modules with clear SRP, reusable helpers, and testable seams.
 scope: Backend data layer for SnakeBench/Worm Arena (ingest, reads, analytics, curation, ratings).
 ---
+
+## Terminology Note
+- **Game vs. Match**: In this codebase, the terms "Game" and "Match" are used interchangeably. "Game" is often used in the underlying `SnakeBench` database schema (e.g., `public.games`), while "Match" is frequently used in the frontend and higher-level service logic. This refactor preserves this parity for compatibility.
+
 
 ## Context (why the file is 2.5k lines)
 - Single class owns **all** SnakeBench persistence/reads: ingest, replay parsing, ratings (TrueSkill/Elo), analytics, search, curation, greatest hits, insights, run-length distributions, pairing history, replay path helpers, recent activity, leaderboards.
@@ -45,6 +49,7 @@ scope: Backend data layer for SnakeBench/Worm Arena (ingest, reads, analytics, c
 - Regression: ingest + recompute path on a sample replay; ensure aggregates/rating updates occur once; backfill dry-run in staging.
 
 ## Risks & mitigations
+- Risk: Compatibility break with `external/SnakeBench`. Mitigate by preserving exact table names, column types, and JSON structures. This refactor is purely architectural and must remain 100% compatible with the original SnakeBench schema and data flow.
 - Risk: Divergent SQL between new modules. Mitigate by copying queries verbatim, factoring shared fragments.
 - Risk: Rating recompute differences (TrueSkill/Elo). Mitigate with golden-test fixtures using stored inputs/outputs.
 - Risk: Service wiring bugs. Mitigate with integration tests against a seed DB and typed dependency injection (per repo).
@@ -72,14 +77,17 @@ scope: Backend data layer for SnakeBench/Worm Arena (ingest, reads, analytics, c
 - ingestReplayFromFile
 - parseReplayJson
 - getOrCreateModelId
+- upsertModels
 - updateAggregatesForGame
 - updateTrueSkillForGame
 - updateEloForGame
+- expectedScore (as utility or private helper)
 - resetModelRatings
 - backfillFromDirectory
 - setReplayPath
 
 ### GameReadRepository
+- listModels
 - getRecentGames
 - getReplayPath
 - searchMatches (all filters, sorting, pagination)
@@ -103,6 +111,8 @@ scope: Backend data layer for SnakeBench/Worm Arena (ingest, reads, analytics, c
 - getRunLengthDistribution
 
 ### Shared utilities (new module, e.g., `snakebenchSqlHelpers.ts`)
+- **Rating Constants**: `DEFAULT_TRUESKILL_MU`, `ELO_K`, `TRUESKILL_DISPLAY_MULTIPLIER`, etc.
+- **Result Mappings**: `RESULT_RANK`, `RESULT_SCORE`
 - Slug normalization: `regexp_replace(..., ':free$', '')`
 - Safe limit/offset clamps
 - Date parsing (string or ms to Date; nullable)
@@ -112,6 +122,9 @@ scope: Backend data layer for SnakeBench/Worm Arena (ingest, reads, analytics, c
 - Cost/score numeric guards (Number.isFinite, default 0)
 - Sorting column resolver for searchMatches
 - Error logging wrapper to keep logs consistent
+
+## Transaction & Context Sharing
+- All migrated methods that perform database operations MUST accept an optional `client: PoolClient` parameter to allow for cross-repository transaction propagation, maintaining the pattern established in `BaseRepository`.
 
 ## Test fixture and coverage plan
 Unit fixtures
