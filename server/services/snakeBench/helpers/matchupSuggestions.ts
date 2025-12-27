@@ -86,6 +86,9 @@ export async function suggestMatchups(
   }
   filtered = Array.from(normalizedMap.values());
 
+  // DEBUG: Log normalized list
+  console.log(`[MATCHUP-SUGGESTIONS] After normalization: ${filtered.length} models\n${filtered.map(m => m.modelSlug).join(', ')}`);
+
   // Helper to get normalized key for a pair (must match database query logic)
   const pairKey = (a: string, b: string): string => {
     const slugA = a.replace(/:free$/, '');
@@ -108,12 +111,23 @@ export async function suggestMatchups(
   const candidates: Candidate[] = [];
   const modelAppearances = new Map<string, number>();
 
+  // DEBUG: Show pairing history sample
+  const pairingHistorySample = Array.from(pairingHistory.entries()).slice(0, 5);
+  console.log(`[MATCHUP-SUGGESTIONS] Pairing history has ${pairingHistory.size} pairs. Sample keys:\n  ${pairingHistorySample.map(([k]) => k).join('\n  ')}`);
+
   for (let i = 0; i < filtered.length; i++) {
     for (let j = i + 1; j < filtered.length; j++) {
       const modelA = filtered[i];
       const modelB = filtered[j];
       const key = pairKey(modelA.modelSlug, modelB.modelSlug);
       const history = pairingHistory.get(key) ?? { matchesPlayed: 0, lastPlayedAt: null };
+
+      // DEBUG: Show what we're looking for on first iteration
+      if (i === 0 && j === 1) {
+        console.log(`[MATCHUP-SUGGESTIONS] Looking for pair "${modelA.modelSlug}" vs "${modelB.modelSlug}"`);
+        console.log(`  Generated key: "${key}"`);
+        console.log(`  Found in history: ${history.matchesPlayed > 0 ? 'YES' : 'NO'} (matchesPlayed: ${history.matchesPlayed})`);
+      }
 
       // Hard filter: only unplayed pairs
       if (history.matchesPlayed > 0) {
