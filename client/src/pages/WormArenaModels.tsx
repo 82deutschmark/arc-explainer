@@ -1,18 +1,17 @@
 /**
- * Author: Codex (GPT-5)
- * Date: 2025-12-20
+ * Author: Claude Sonnet 4
+ * Date: 2025-12-27
  * PURPOSE: Worm Arena Models page - browse every game a specific model has ever played,
  *          plus generate a per-model actionable insights report inline.
- *          Mirrors the external SnakeBench /models/[id] page functionality.
- *          Only lists models that have actually played games.  PAGE NEEDS MAJOR REDESIGN TO USE ACTUAL RICH METRICS FROM PROJECT AND NOT DUPLICATE STUFF!!!
+ *          Uses modular WormArenaMatchHistoryTable with sortable columns.
+ *          Only lists models that have actually played games.
  * SRP/DRY check: Pass - page composition only, data fetching in hooks.
  */
 
 import React, { useEffect, useState } from 'react';
-import { Link } from 'wouter';
 
 import WormArenaHeader from '@/components/WormArenaHeader';
-import WormArenaRecentMatches from '@/components/wormArena/WormArenaRecentMatches';
+import WormArenaMatchHistoryTable from '@/components/wormArena/WormArenaMatchHistoryTable';
 import WormArenaModelInsightsReport from '@/components/wormArena/WormArenaModelInsightsReport';
 import {
   useWormArenaModelsWithGames,
@@ -28,63 +27,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
-
-import type { SnakeBenchModelMatchHistoryEntry } from '@shared/types';
-
-/**
- * Format duration from start/end timestamps.
- */
-function formatDuration(startedAt: string, endedAt?: string): string {
-  if (!startedAt || !endedAt) return '-';
-  try {
-    const start = new Date(startedAt);
-    const end = new Date(endedAt);
-    const diffMs = end.getTime() - start.getTime();
-    if (diffMs < 0) return '-';
-    const minutes = Math.floor(diffMs / 60000);
-    const seconds = Math.floor((diffMs % 60000) / 1000);
-    return `${minutes}m ${seconds}s`;
-  } catch {
-    return '-';
-  }
-}
-
-/**
- * Format date for display.
- */
-function formatDate(isoString: string): string {
-  if (!isoString) return '-';
-  try {
-    const d = new Date(isoString);
-    return d.toLocaleString('en-US', {
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-      hour: 'numeric',
-      minute: '2-digit',
-      hour12: true,
-    }).replace(',', '');
-  } catch {
-    return '-';
-  }
-}
-
-/**
- * Outcome badge styling.
- */
-function getOutcomeClass(result: string): string {
-  if (result === 'won') return 'bg-green-100 text-green-800';
-  if (result === 'lost') return 'bg-red-100 text-red-800';
-  return 'bg-gray-100 text-gray-800';
-}
 
 export default function WormArenaModels() {
   // Fetch list of models that have games
@@ -247,106 +189,15 @@ export default function WormArenaModels() {
           </div>
         )}
 
-        {/* Recent Matches */}
+        {/* Match History Table - sortable, modular component */}
         {selectedModel && (
-          <div className="mb-6">
-            <WormArenaRecentMatches modelSlug={selectedModel} limit={10} />
-          </div>
-        )}
-
-        {/* Match History Table */}
-        {selectedModel && (
-          <Card>
-            <CardHeader>
-              <CardTitle>
-                Match History for {selectedModel}
-                {history.length > 0 && (
-                  <span className="ml-2 text-sm font-normal text-gray-500">
-                    ({history.length} games)
-                  </span>
-                )}
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              {historyLoading && (
-                <p className="text-sm text-gray-500">Loading match history...</p>
-              )}
-              {historyError && (
-                <p className="text-sm text-red-600">{historyError}</p>
-              )}
-              {!historyLoading && !historyError && history.length === 0 && (
-                <p className="text-sm text-gray-500">No matches found for this model.</p>
-              )}
-              {!historyLoading && history.length > 0 && (
-                <div className="overflow-x-auto">
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Opponent</TableHead>
-                        <TableHead>Date</TableHead>
-                        <TableHead>Duration</TableHead>
-                        <TableHead>Outcome</TableHead>
-                        <TableHead>Death Reason</TableHead>
-                        <TableHead>Score</TableHead>
-                        <TableHead>Rounds</TableHead>
-                        <TableHead>Cost</TableHead>
-                        <TableHead>Actions</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {history.map((game: SnakeBenchModelMatchHistoryEntry, idx: number) => (
-                        <TableRow key={game.gameId || idx}>
-                          <TableCell className="font-medium">
-                            <button
-                              className="text-indigo-600 hover:text-indigo-900 text-left"
-                              onClick={() => setSelectedModel(game.opponentSlug)}
-                            >
-                              {game.opponentSlug || '-'}
-                            </button>
-                          </TableCell>
-                          <TableCell className="text-sm text-gray-500">
-                            {formatDate(game.startedAt)}
-                          </TableCell>
-                          <TableCell className="text-sm text-gray-500">
-                            {formatDuration(game.startedAt, game.endedAt)}
-                          </TableCell>
-                          <TableCell>
-                            <span
-                              className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${getOutcomeClass(game.result)}`}
-                            >
-                              {game.result.charAt(0).toUpperCase() + game.result.slice(1)}
-                            </span>
-                          </TableCell>
-                          <TableCell className="text-sm text-gray-500">
-                            {game.result === 'lost' && game.deathReason
-                              ? game.deathReason.replace(/_/g, ' ')
-                              : '-'}
-                          </TableCell>
-                          <TableCell className="text-sm text-gray-500">
-                            {game.myScore} - {game.opponentScore}
-                          </TableCell>
-                          <TableCell className="text-sm text-gray-500">
-                            {game.rounds}
-                          </TableCell>
-                          <TableCell className="text-sm text-gray-500">
-                            ${(game.cost ?? 0).toFixed(4)}
-                          </TableCell>
-                          <TableCell>
-                            <Link
-                              href={`/worm-arena?matchId=${encodeURIComponent(game.gameId)}`}
-                              className="text-indigo-600 hover:text-indigo-900 text-sm font-medium"
-                            >
-                              View Replay
-                            </Link>
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </div>
-              )}
-            </CardContent>
-          </Card>
+          <WormArenaMatchHistoryTable
+            history={history}
+            modelSlug={selectedModel}
+            isLoading={historyLoading}
+            error={historyError}
+            onOpponentClick={setSelectedModel}
+          />
         )}
 
         {/* Empty state when no model selected */}
