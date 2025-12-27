@@ -1,17 +1,21 @@
 /**
- * Author: Claude Code using Sonnet 4.5
- * Date: 2025-11-11
+ * Author: Claude Code using Sonnet 4.5 / Claude Haiku 4.5
+ * Date: 2025-11-11 / 2025-12-24
  * PURPOSE: Compact app header with ARC-inspired colorful branding and colorful emoji dividers.
  * Zero margins for edge-to-edge layout. Includes full AppNavigation component.
+ * Updated to include OpenRouter sync status banner above header.
  * SRP/DRY check: Pass - Single responsibility (header layout), reuses AppNavigation component
  */
 import React from 'react';
 import { Link } from 'wouter';
 import { AppNavigation } from './AppNavigation';
+import { OpenRouterSyncBanner } from './OpenRouterSyncBanner';
 
 export function AppHeader() {
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <>
+      <OpenRouterSyncBanner />
+      <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="flex h-12 items-center justify-between gap-4 px-4">
         <Link href="/">
           <div className="flex items-center gap-3 cursor-pointer group min-w-fit">
@@ -40,5 +44,6 @@ export function AppHeader() {
         </div>
       </div>
     </header>
+    </>
   );
 }

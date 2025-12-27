@@ -50,18 +50,20 @@ const OPENROUTER_MODEL_KEYS: string[] = [
   'anthropic/claude-haiku-4.5',
   'anthropic/claude-opus-4.5',
   'arcee-ai/trinity-mini:free',
+  'bytedance-seed/seed-1.6',
+  'bytedance-seed/seed-1.6-flash',
   'deepseek/deepseek-chat-v3.1',
   'deepseek/deepseek-v3.1-terminus',
   'deepseek/deepseek-v3.2',
   'google/gemini-2.5-flash-lite-preview-09-2025',
   'google/gemini-2.5-flash-preview-09-2025',
-  'google/gemini-3-pro-preview',
-  // Include the new Gemini 3 Flash Preview slug so the catalog stays aligned with the native provider listing.
   'google/gemini-3-flash-preview',
+  'google/gemini-3-pro-preview',
   'google/gemma-3n-e2b-it:free',
   'kwaipilot/kat-coder-pro:free',
   'meta-llama/llama-3.3-70b-instruct',
   'minimax/minimax-m2',
+  'minimax/minimax-m2.1',
   'mistralai/codestral-2508',
   'mistralai/devstral-2512',
   'mistralai/devstral-2512:free',
@@ -73,6 +75,7 @@ const OPENROUTER_MODEL_KEYS: string[] = [
   'moonshotai/kimi-k2-thinking',
   'nex-agi/deepseek-v3.1-nex-n1:free',
   'nousresearch/hermes-4-70b',
+  'nvidia/nemotron-3-nano-30b-a3b',
   'nvidia/nemotron-3-nano-30b-a3b:free',
   'nvidia/nemotron-nano-12b-v2-vl:free',
   'nvidia/nemotron-nano-9b-v2',
@@ -91,6 +94,7 @@ const OPENROUTER_MODEL_KEYS: string[] = [
   'xiaomi/mimo-v2-flash:free',
   'z-ai/glm-4.6',
   'z-ai/glm-4.6v',
+  'z-ai/glm-4.7',
 ];
 
 const OPENROUTER_ID_ALIASES: Record<string, string> = {

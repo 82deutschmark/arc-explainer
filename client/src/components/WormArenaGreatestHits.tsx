@@ -1,6 +1,6 @@
 /**
  * Author: Cascade
- * Date: 2025-12-17
+ * Date: 2025-12-26
  * PURPOSE: Worm Arena "Greatest Hits" card.
  *          Shows a short list of especially interesting matches
  *          (longest, most expensive, highest-scoring) with one-click
@@ -21,6 +21,7 @@ import React from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useWormArenaGreatestHits } from '@/hooks/useWormArenaGreatestHits';
+import type { WormArenaGreatestHitGame } from '@shared/types';
 
 function normalizeGameId(raw: string): string {
   const trimmed = (raw ?? '').trim();
@@ -29,8 +30,91 @@ function normalizeGameId(raw: string): string {
   return withoutExt.startsWith('snake_game_') ? withoutExt.slice('snake_game_'.length) : withoutExt;
 }
 
+const PINNED_GAMES: WormArenaGreatestHitGame[] = [
+  {
+    gameId: '17b4cccc-e0b2-44a7-bc65-d69a13221993',
+    startedAt: '2025-12-26T00:44:49.624264',
+    modelA: 'google/gemini-2.5-flash-preview-09-2025',
+    modelB: 'deepseek/deepseek-v3.2-exp',
+    roundsPlayed: 58,
+    maxRounds: 150,
+    totalCost: 0.7013982,
+    maxFinalScore: 18,
+    scoreDelta: 7,
+    boardWidth: 10,
+    boardHeight: 10,
+    highlightReason: 'Pinned: 58-round slugfest, 18-11 finish (Gemini vs DeepSeek).',
+  },
+  {
+    gameId: 'f1b8d1ab-5a62-410d-8e47-d52e27729eb6',
+    startedAt: '2025-12-26T00:45:31.741935',
+    modelA: 'deepseek/deepseek-v3.2-exp',
+    modelB: 'openai/gpt-5-nano',
+    roundsPlayed: 77,
+    maxRounds: 150,
+    totalCost: 0.1382053,
+    maxFinalScore: 15,
+    scoreDelta: 0,
+    boardWidth: 10,
+    boardHeight: 10,
+    highlightReason: 'Pinned: 77-round tie, dual head-collision at 15-15 (DeepSeek vs GPT-5 Nano).',
+  },
+  {
+    gameId: 'cbb4bc85-5970-4f9e-9335-914e6e3f1091',
+    startedAt: '2025-12-26T02:10:00.173382',
+    modelA: 'nvidia/nemotron-3-nano-30b-a3b:free',
+    modelB: 'openai/gpt-5.1-codex-mini',
+    roundsPlayed: 53,
+    maxRounds: 150,
+    totalCost: 0.117699,
+    maxFinalScore: 11,
+    scoreDelta: 1,
+    boardWidth: 10,
+    boardHeight: 10,
+    highlightReason: 'Pinned: Nemotron 3 Nano edged GPT-5.1 Codex Mini 11-10 after a 53-round duel.',
+  },
+  {
+    gameId: 'a3f0a2ba-7031-432f-87de-b57cab4623f3',
+    startedAt: '2025-12-26T01:59:40.133172',
+    modelA: 'openai/gpt-5.1-codex-mini',
+    modelB: 'openai/gpt-5-nano',
+    roundsPlayed: 90,
+    maxRounds: 150,
+    totalCost: 0.42447545,
+    maxFinalScore: 21,
+    scoreDelta: 1,
+    boardWidth: 10,
+    boardHeight: 10,
+    highlightReason: 'Pinned: GPT-5 Nano outlasted GPT-5.1 Codex Mini 21-20 in a 90-round head-collision finish.',
+  },
+  {
+    gameId: '2d061284-49be-44b3-84f1-38339c1f9211',
+    startedAt: '2025-12-25T23:42:12.028394',
+    modelA: 'x-ai/grok-4.1-fast',
+    modelB: 'z-ai/glm-4.7',
+    roundsPlayed: 94,
+    maxRounds: 150,
+    totalCost: 1.7030653,
+    maxFinalScore: 24,
+    scoreDelta: 3,
+    boardWidth: 10,
+    boardHeight: 10,
+    highlightReason: 'Pinned: Grok 4.1 Fast thrashed GLM 4.7 in a 24-21, 94-round barnburner.',
+  },
+];
+
 export default function WormArenaGreatestHits() {
   const { games, isLoading, error } = useWormArenaGreatestHits(20);
+  const mergedGames = React.useMemo(() => {
+    const existingIds = new Set(games.map((g) => g.gameId));
+    const withPinned = [...games];
+    PINNED_GAMES.forEach((pinned) => {
+      if (!existingIds.has(pinned.gameId)) {
+        withPinned.unshift(pinned);
+      }
+    });
+    return withPinned;
+  }, [games]);
 
   return (
     <Card className="worm-card">
@@ -52,16 +136,16 @@ export default function WormArenaGreatestHits() {
         {error && !isLoading && (
           <div className="py-3 text-base text-red-700">{error}</div>
         )}
-        {!isLoading && !error && games.length === 0 && (
+        {!isLoading && !error && mergedGames.length === 0 && (
           <div className="py-3 text-base worm-muted">
             No greatest hits yet — run a few matches to discover epic games.
           </div>
         )}
 
-        {!isLoading && !error && games.length > 0 && (
+        {!isLoading && !error && mergedGames.length > 0 && (
           <div className="max-h-[560px] overflow-y-auto pr-3">
             <div className="space-y-3">
-              {games.map((game) => {
+              {mergedGames.map((game) => {
                 const matchup = `${game.modelA} vs ${game.modelB}`;
                 const roundsLabel = `${game.roundsPlayed} / ${game.maxRounds || game.roundsPlayed} rounds`;
                 const hasCost = game.totalCost > 0;

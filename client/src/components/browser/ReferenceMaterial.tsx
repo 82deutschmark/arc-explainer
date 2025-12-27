@@ -90,6 +90,10 @@ const REFERENCE_SECTIONS: ReferenceSectionProps[] = [
         href: 'https://www.arxiv.org/pdf/2505.11831',
       },
       {
+        label: 'Getting 50% SOTA on ARC-AGI with GPT – Ryan Greenblatt (Redwood Research)',
+        href: 'https://blog.redwoodresearch.org/p/getting-50-sota-on-arc-agi-with-gpt',
+      },
+      {
         label: 'NVIDIA Kaggle Grandmasters - AGI Competition',
         href: 'https://developer.nvidia.com/blog/nvidia-kaggle-grandmasters-win-artificial-general-intelligence-competition/?nvid=nv-int-tblg-454784',
       },

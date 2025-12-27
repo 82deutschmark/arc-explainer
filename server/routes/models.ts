@@ -2,14 +2,23 @@
  * Models API routes - serves model configuration to client
  * Centralizes all model metadata on server-side
  * Exposes DB-discovered OpenRouter model timestamps for client sorting.
- * 
- * @author Cascade
- * Date: 2025-12-16
+ *
+ * @author Cascade / Claude Haiku 4.5
+ * Date: 2025-12-16 / 2025-12-24
+ * PURPOSE: Added GET /api/models/openrouter/sync-status endpoint to expose catalog sync metadata
+ * SRP/DRY check: Pass - endpoint is isolated, reuses catalog file only
  */
 
 import { Router } from 'express';
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import { MODELS, getModelConfig, getModelsByProvider } from '../config/models/index.js';
 import { repositoryService } from '../repositories/RepositoryService.js';
+import type { OpenRouterSyncStatus } from '../../shared/types.js';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const CATALOG_PATH = path.resolve(__dirname, '../config/openrouter-catalog.json');
 
 const router = Router();
 
@@ -159,6 +168,65 @@ router.get('/provider/:provider', async (req, res) => {
   }
 
   res.json(clientModels);
+});
+
+/**
+ * GET /api/models/openrouter/sync-status
+ * Returns OpenRouter catalog sync status: last sync time, catalog age, and count of new models (created < 7 days ago)
+ * Public endpoint - no auth required (read-only data)
+ */
+router.get('/openrouter/sync-status', async (req, res) => {
+  try {
+    // Check if catalog file exists
+    if (!fs.existsSync(CATALOG_PATH)) {
+      return res.status(404).json({
+        error: 'OpenRouter catalog not found',
+        message: 'Catalog file has not been synced yet'
+      });
+    }
+
+    // Get file modification time
+    const stats = fs.statSync(CATALOG_PATH);
+    const lastSyncAt = stats.mtime.toISOString();
+    const catalogAge = (Date.now() - stats.mtimeMs) / (1000 * 60 * 60); // hours
+    const isStale = catalogAge > 24;
+
+    // Read and parse catalog
+    const catalogContent = fs.readFileSync(CATALOG_PATH, 'utf-8');
+    const catalog = JSON.parse(catalogContent) as any;
+    const models = (catalog.models ?? []) as Array<any>;
+
+    // Find models created in the last 7 days
+    const now = Date.now() / 1000; // Unix timestamp in seconds
+    const sevenDaysAgo = now - (7 * 24 * 60 * 60); // 7 days ago in seconds
+
+    const newModels = models
+      .filter(m => typeof m.created === 'number' && m.created > sevenDaysAgo)
+      .map(m => ({
+        id: m.id,
+        name: m.name || m.id,
+        createdAt: new Date(m.created * 1000).toISOString()
+      }))
+      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+
+    const response: OpenRouterSyncStatus = {
+      lastSyncAt,
+      catalogAge: Math.round(catalogAge * 100) / 100, // Round to 2 decimal places
+      newModelsCount: newModels.length,
+      totalModels: models.length,
+      isStale,
+      newModels
+    };
+
+    res.json(response);
+  } catch (error) {
+    const msg = error instanceof Error ? error.message : String(error);
+    console.error('[Sync Status] Error reading catalog:', msg);
+    res.status(500).json({
+      error: 'Failed to read catalog',
+      message: msg
+    });
+  }
 });
 
 export default router;

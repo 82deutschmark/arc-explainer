@@ -1,6 +1,7 @@
 /**
  * Author: gpt-5-codex
  * Date: 2025-03-09T00:00:00Z
+ * Updated: 2025-12-25 - Environment-aware BYOK: production requires user API keys
  * PURPOSE: Validates streaming analysis requests, manages SSE session lifecycle hooks, and delegates orchestration to the analysis streaming service.
  * SRP/DRY check: Pass — shares helpers with existing streaming utilities and verified via `npm run check`.
  */
@@ -15,6 +16,7 @@ import { sseStreamManager } from "../services/streaming/SSEStreamManager";
 import { logger } from "../utils/logger";
 import type { PromptOptions } from "../services/promptBuilder";
 import type { ServiceOptions } from "../services/base/BaseAIService";
+import { requiresUserApiKey } from "../utils/environmentPolicy.js";
 
 function parseNumber(value: unknown, fallback?: number): number | undefined {
   if (value === undefined) return fallback;
@@ -277,6 +279,15 @@ function buildPayloadFromBody(body: any): { payload?: StreamAnalysisPayload; err
 
 export const streamController = {
   async prepareAnalysisStream(req: Request, res: Response) {
+    // Environment-aware BYOK enforcement: production requires user API key
+    const userApiKey = ensureString(req.body?.apiKey);
+    if (requiresUserApiKey() && !userApiKey) {
+      res.status(400).json({
+        error: "Production requires your API key. Your key is used for this session only and is never stored.",
+      });
+      return;
+    }
+
     const { payload, errors } = buildPayloadFromBody(req.body);
 
     if (errors.length > 0 || !payload) {
@@ -285,6 +296,11 @@ export const streamController = {
         details: errors,
       });
       return;
+    }
+
+    // Attach user API key to payload for downstream services
+    if (userApiKey) {
+      (payload as any).apiKey = userApiKey;
     }
 
     try {

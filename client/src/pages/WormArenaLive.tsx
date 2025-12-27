@@ -18,6 +18,7 @@ import React, { useEffect, useMemo } from 'react';
 import { useRoute } from 'wouter';
 import { useModels } from '@/hooks/useModels';
 import { useModelRating } from '@/hooks/useSnakeBench';
+import { useWormArenaStats } from '@/hooks/useWormArenaStats';
 import useWormArenaStreaming from '@/hooks/useWormArenaStreaming';
 import { useWormArenaSetup } from '@/hooks/useWormArenaSetup';
 import WormArenaHeader from '@/components/WormArenaHeader';
@@ -31,12 +32,45 @@ import WormArenaSuggestedMatchups from '@/components/WormArenaSuggestedMatchups'
 import WormArenaConsoleMirror from '@/components/WormArenaConsoleMirror';
 import { Button } from '@/components/ui/button';
 
-import type { ModelConfig, SnakeBenchRunMatchRequest } from '@shared/types';
+import type { ModelConfig, SnakeBenchRunMatchRequest, WormArenaSuggestedMatchup } from '@shared/types';
 
 type ViewMode = 'setup' | 'live' | 'completed';
 type RenderMode = 'cartoon' | 'console';
 
 type SessionGateStatus = 'idle' | 'checking' | 'pending' | 'completed' | 'unknown' | 'error';
+
+// Curated tournament roster mirrors run-paid-devstral-matches.ps1 (new OpenRouter + baselines)
+const TOURNAMENT_MODELS: string[] = [
+  'bytedance-seed/seed-1.6',
+  'bytedance-seed/seed-1.6-flash',
+  'deepseek/deepseek-v3.1-terminus',
+  'deepseek/deepseek-v3.2',
+  'google/gemini-2.5-flash-lite-preview-09-2025',
+  'google/gemini-2.5-flash-preview-09-2025',
+  'google/gemini-3-flash-preview',
+  'x-ai/grok-4.1-fast',
+  'minimax/minimax-m2.1',
+  'z-ai/glm-4.7',
+];
+
+function buildCuratedTournamentMatchups(models: string[]): WormArenaSuggestedMatchup[] {
+  const out: WormArenaSuggestedMatchup[] = [];
+  for (let i = 0; i < models.length; i++) {
+    for (let j = i + 1; j < models.length; j++) {
+      const modelA = models[i];
+      const modelB = models[j];
+      // Minimal stats; these are curated pairs, so we keep neutral scores and reasons.
+      out.push({
+        modelA: { modelSlug: modelA, mu: 0, sigma: 0, exposed: 0, gamesPlayed: 0 },
+        modelB: { modelSlug: modelB, mu: 0, sigma: 0, exposed: 0, gamesPlayed: 0 },
+        history: { matchesPlayed: 0, lastPlayedAt: null },
+        score: 0,
+        reasons: ['Curated tournament pairing'],
+      });
+    }
+  }
+  return out;
+}
 
 function getSnakeEligibleModels(models: ModelConfig[]): ModelConfig[] {
   return models.filter((m) => m.provider === 'OpenRouter');
@@ -45,6 +79,13 @@ function getSnakeEligibleModels(models: ModelConfig[]): ModelConfig[] {
 function toSnakeModelId(model: ModelConfig): string {
   const raw = model.apiModelName || model.key;
   return typeof raw === 'string' ? raw.trim() : '';
+}
+
+function parseCostValue(raw: string | undefined): number {
+  if (!raw) return Number.POSITIVE_INFINITY;
+  const cleaned = raw.replace(/[^0-9.]/g, '');
+  const num = Number(cleaned);
+  return Number.isFinite(num) ? num : Number.POSITIVE_INFINITY;
 }
 
 function parseIsoTimestamp(value: unknown): number | null {
@@ -87,6 +128,7 @@ export default function WormArenaLive() {
   }, [params?.sessionId]);
 
   const { data: modelConfigs = [], isLoading: loadingModels, error: modelsError } = useModels();
+  const { leaderboard: wormLeaderboard } = useWormArenaStats();
   const snakeModels = React.useMemo(() => getSnakeEligibleModels(modelConfigs), [modelConfigs]);
 
   const selectableModels = React.useMemo(() => {
@@ -113,6 +155,40 @@ export default function WormArenaLive() {
       })
       .map((entry) => entry.id);
   }, [snakeModels]);
+
+  // Curated tournament suggested matchups (mirrors batch script pairs)
+  const curatedMatchups = React.useMemo(
+    () => {
+      // Prefer cheaper, newest, least-played (gamesPlayed not available here, so proxy with recency)
+      const bySlug = new Map<string, ModelConfig>();
+      modelConfigs.forEach((m) => {
+        const slug = toSnakeModelId(m);
+        if (slug) bySlug.set(slug, m);
+      });
+
+      const gamesBySlug = new Map<string, number>();
+      wormLeaderboard.forEach((entry) => gamesBySlug.set(entry.modelSlug, entry.gamesPlayed ?? Number.MAX_SAFE_INTEGER));
+
+      const prioritized = [...TOURNAMENT_MODELS]
+        .map((slug) => {
+          const cfg = bySlug.get(slug);
+          const addedMs = parseIsoTimestamp((cfg as any)?.addedAt) ?? 0;
+          const costIn = parseCostValue(cfg?.cost?.input);
+          const gamesPlayed = gamesBySlug.get(slug) ?? Number.MAX_SAFE_INTEGER;
+          return { slug, cfg, costIn, addedMs, gamesPlayed };
+        })
+        .sort((a, b) => {
+          if (a.gamesPlayed !== b.gamesPlayed) return a.gamesPlayed - b.gamesPlayed; // fewer games first
+          if (a.addedMs !== b.addedMs) return b.addedMs - a.addedMs; // newest first
+          if (a.costIn !== b.costIn) return a.costIn - b.costIn; // cheaper next
+          return a.slug.localeCompare(b.slug);
+        })
+        .map((entry) => entry.slug);
+
+      return buildCuratedTournamentMatchups(prioritized);
+    },
+    [modelConfigs, wormLeaderboard],
+  );
 
   // Setup state hook
   const {
@@ -321,27 +397,16 @@ export default function WormArenaLive() {
         return;
       }
 
-      // Build payload directly with the passed models
-      const payload: SnakeBenchRunMatchRequest = {
+      // Start via new tab to keep Live page context intact
+      const params = new URLSearchParams({
         modelA: mapToSnakeBenchModelId(suggestedModelA),
         modelB: mapToSnakeBenchModelId(suggestedModelB),
-        width,
-        height,
-        maxRounds,
-        numApples,
-        ...(byoApiKey ? { apiKey: byoApiKey, provider: byoProvider } : {}),
-      };
-
-      setLaunchNotice(null);
-      try {
-        const prep = await startLiveMatch(payload);
-        if (prep?.liveUrl) window.location.href = prep.liveUrl;
-      } catch (err: any) {
-        console.error('[WormArenaLive] Failed to start match from suggestion', err);
-        setLaunchNotice(err?.message || 'Failed to start match');
-      }
+        autoStart: 'true',
+      });
+      const href = `/worm-arena/live?${params.toString()}`;
+      window.open(href, '_blank', 'noopener');
     },
-    [selectableModels, width, height, maxRounds, numApples, byoApiKey, byoProvider, startLiveMatch],
+    [selectableModels],
   );
 
   const latestFrame = useMemo(() => (frames.length ? frames[frames.length - 1] : null), [frames]);
@@ -379,14 +444,30 @@ export default function WormArenaLive() {
 
   const snakeIds = useMemo(() => {
     const ids = new Set<string>();
-    Object.keys(playerNameBySnakeId || {}).forEach((k) => ids.add(k));
-    Object.keys(reasoningBySnakeId || {}).forEach((k) => ids.add(k));
+
+    // Primary source: frame.state.scores has the definitive list of active snakes with scores
+    const frameScores = (latestFrame as any)?.frame?.state?.scores;
+    if (frameScores && typeof frameScores === 'object') {
+      Object.keys(frameScores).forEach((k) => ids.add(k));
+    }
+
+    // Fallback: also check frame.state.snakes for consistency
     const fromFrame = (latestFrame as any)?.frame?.state?.snakes;
     if (fromFrame && typeof fromFrame === 'object') {
       Object.keys(fromFrame).forEach((k) => ids.add(k));
     }
+
+    // Additional fallback: player names and reasoning chunks
+    Object.keys(playerNameBySnakeId || {}).forEach((k) => ids.add(k));
+    Object.keys(reasoningBySnakeId || {}).forEach((k) => ids.add(k));
+
+    // Final fallback: check finalSummary.scores if no live frame
+    if (finalSummary?.scores && typeof finalSummary.scores === 'object' && ids.size === 0) {
+      Object.keys(finalSummary.scores).forEach((k) => ids.add(k));
+    }
+
     return Array.from(ids).sort();
-  }, [latestFrame, playerNameBySnakeId, reasoningBySnakeId]);
+  }, [latestFrame, playerNameBySnakeId, reasoningBySnakeId, finalSummary]);
 
   const leftSnakeId = snakeIds[0];
   const rightSnakeId = snakeIds[1];
@@ -533,8 +614,9 @@ export default function WormArenaLive() {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
               {/* Suggested matchups sidebar */}
               <WormArenaSuggestedMatchups
-                limit={8}
+                limit={50}
                 onRunMatch={handleSuggestedMatchupRun}
+                overrideMatchups={curatedMatchups}
               />
 
               {/* Run controls form */}

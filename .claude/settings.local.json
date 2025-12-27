@@ -26,7 +26,8 @@
       "Bash(/tmp/huggingface_file.tsx)",
       "Bash(/tmp/current_file.tsx)",
       "Bash(powershell -File:*)",
-      "Bash(npm run ingest-johanland:*)"
+      "Bash(npm run ingest-johanland:*)",
+      "Bash(npm run sync-openrouter-catalog:*)"
     ],
     "defaultMode": "bypassPermissions"
   },

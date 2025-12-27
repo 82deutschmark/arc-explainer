@@ -25,6 +25,8 @@ interface UseAnalysisResultsProps {
   customChallenge?: string;
   previousResponseId?: string;
   models?: ModelConfig[];
+  /** User-provided API key for BYOK (required in production) */
+  apiKey?: string;
 }
 
 type StreamingPanelStatus = 'idle' | 'starting' | 'in_progress' | 'completed' | 'failed';
@@ -39,6 +41,7 @@ export function useAnalysisResults({
   customChallenge,
   previousResponseId,
   models,
+  apiKey,
 }: UseAnalysisResultsProps) {
   const [temperature, setTemperature] = useState(0.2);
   const [topP, setTopP] = useState(0.95);
@@ -221,6 +224,8 @@ export function useAnalysisResults({
         customChallenge,
         originalExplanationId: originalExplanation?.id,
         ...(includeGridImages ? { includeGridImages: true } : {}),
+        // BYOK: Pass user API key if provided (required in production)
+        ...(apiKey ? { apiKey } : {}),
       };
 
       void startStream(params, {
