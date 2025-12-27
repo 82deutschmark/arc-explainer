@@ -127,10 +127,10 @@ export default function WormArenaDistributions() {
   }
 
   return (
-    <div className="min-h-screen bg-[#FFFAF6]">
+    <div className="worm-page">
       <WormArenaHeader />
 
-      <main className="max-w-7xl mx-auto px-4 py-8 space-y-6">
+      <main className="p-2 md:p-3 max-w-7xl mx-auto space-y-6">
         {/* Page title with icon */}
         <div className="flex items-start gap-4">
           <div className="p-3 bg-[#4A7C59]/10 rounded-xl">

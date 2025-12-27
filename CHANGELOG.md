@@ -1,5 +1,30 @@
 # New entries at the top, use proper SemVer!
 
+### Version 6.14.0  Dec 27, 2025
+
+- **Data Quality: Exclude invalid zero-round games from all Worm Arena statistics** (Author: Cascade)
+  - **Problem**: Games with `rounds = 0` are invalid (failed to start or errored immediately) and were polluting statistics, causing "Most Common: Round 0" in distributions and skewing leaderboards.
+  - **Solution**: Added `COALESCE(g.rounds, 0) > 0` filter to all SQL queries that aggregate completed games.
+  - **Affected queries** (all in `SnakeBenchRepository.ts`):
+    1. `searchMatches` - match search results
+    2. `getWormArenaGreatestHits` - duration query
+    3. `getPairingHistory` - matchup suggestions
+    4. `getBasicLeaderboard` - both winRate and gamesPlayed sorts
+    5. `getModelsWithGames` - TrueSkill leaderboard data
+    6. `getModelMatchHistoryUnbounded` - per-model match history
+    7. `getModelInsightsData` - summary, failure modes, and opponent queries
+    8. `getRunLengthDistribution` - game length distribution chart
+  - **Impact**: All Worm Arena pages now show accurate statistics excluding invalid matches.
+  - **Files Modified**:
+    - `server/repositories/SnakeBenchRepository.ts` - Added round > 0 filter to 12 SQL queries
+
+- **Simplify: Worm Arena Run Length Chart shows all models by default** (Author: Cascade)
+  - Removed per-model selection UI and limits; chart now renders all models simultaneously with stacked wins/losses.
+  - Updated empty state copy to reflect data absence rather than thresholds.
+  - **Files Modified**:
+    - `client/src/components/wormArena/stats/WormArenaRunLengthChart.tsx`
+    - `client/src/pages/WormArenaDistributions.tsx`
+
 ### Version 6.13.4  Dec 27, 2025
 
 - **Simplify: Worm Arena Run Length Chart shows all models by default** (Author: Cascade)

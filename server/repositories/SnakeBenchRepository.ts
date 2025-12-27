@@ -1,5 +1,5 @@
 /**
- * Author: Codex (GPT-5)
+ * Author: Cascade (ChatGPT)
  * Date: 2025-12-27
  * PURPOSE: SnakeBenchRepository
  *          Handles compatibility-first persistence of SnakeBench games
@@ -405,6 +405,7 @@ export class SnakeBenchRepository extends BaseRepository {
       where.push(`regexp_replace(m.model_slug, ':free$', '') = regexp_replace($${params.length}, ':free$', '')`);
     }
     where.push(`g.status = 'completed'`);
+    where.push(`COALESCE(g.rounds, 0) > 0`); // Exclude invalid zero-round games
 
     if (opponent) {
       params.push(`%${opponent}%`);
@@ -741,6 +742,7 @@ export class SnakeBenchRepository extends BaseRepository {
         JOIN public.game_participants gp ON gp.game_id = g.id
         JOIN public.models m ON gp.model_id = m.id
         WHERE g.status = 'completed'
+          AND COALESCE(g.rounds, 0) > 0 -- Exclude invalid zero/negative round games
           AND COALESCE(g.rounds, 0) >= 20
         GROUP BY g.id, g.start_time, g.end_time, g.rounds, g.board_width, g.board_height, g.total_cost
         HAVING MAX(gp.score) > 0 OR g.total_cost > 0
@@ -828,6 +830,7 @@ export class SnakeBenchRepository extends BaseRepository {
         JOIN public.game_participants gp ON gp.game_id = g.id
         JOIN public.models m ON gp.model_id = m.id
         WHERE g.status = 'completed'
+          AND COALESCE(g.rounds, 0) > 0
           AND g.start_time IS NOT NULL
           AND g.end_time IS NOT NULL
           AND EXTRACT(EPOCH FROM (g.end_time - g.start_time)) >= 60
@@ -1427,6 +1430,7 @@ export class SnakeBenchRepository extends BaseRepository {
         JOIN public.models m2 ON gp2.model_id = m2.id
         JOIN public.games g ON gp1.game_id = g.id
         WHERE g.status = 'completed'
+          AND COALESCE(g.rounds, 0) > 0
         GROUP BY LEAST(
           regexp_replace(m1.model_slug, ':free$', ''),
           regexp_replace(m2.model_slug, ':free$', '')
@@ -1488,6 +1492,7 @@ export class SnakeBenchRepository extends BaseRepository {
           FROM public.models m
           JOIN public.game_participants gp ON m.id = gp.model_id
           JOIN public.games g ON gp.game_id = g.id
+          WHERE COALESCE(g.rounds, 0) > 0
           GROUP BY regexp_replace(m.model_slug, ':free$', '')
           HAVING COUNT(gp.game_id) > 0
           ORDER BY (COUNT(CASE WHEN gp.result = 'won' THEN 1 END)::float / NULLIF(COUNT(gp.game_id), 0)) DESC NULLS LAST
@@ -1504,6 +1509,7 @@ export class SnakeBenchRepository extends BaseRepository {
           FROM public.models m
           JOIN public.game_participants gp ON m.id = gp.model_id
           JOIN public.games g ON gp.game_id = g.id
+          WHERE COALESCE(g.rounds, 0) > 0
           GROUP BY regexp_replace(m.model_slug, ':free$', '')
           HAVING COUNT(gp.game_id) > 0
           ORDER BY games_played DESC
@@ -2067,6 +2073,7 @@ export class SnakeBenchRepository extends BaseRepository {
         JOIN public.game_participants gp ON m.id = gp.model_id
         JOIN public.games g ON gp.game_id = g.id
         WHERE g.status = 'completed'
+          AND COALESCE(g.rounds, 0) > 0
         GROUP BY regexp_replace(m.model_slug, ':free$', '')
         HAVING COUNT(DISTINCT gp.game_id) > 0
         ORDER BY games_played DESC, normalized_slug ASC;
@@ -2138,6 +2145,7 @@ export class SnakeBenchRepository extends BaseRepository {
         LEFT JOIN public.models opp ON opp_gp.model_id = opp.id
         WHERE regexp_replace(m.model_slug, ':free$', '') = regexp_replace($1, ':free$', '')
           AND g.status = 'completed'
+          AND COALESCE(g.rounds, 0) > 0
         ORDER BY COALESCE(g.start_time, g.created_at, NOW()) DESC;
       `;
 
@@ -2233,7 +2241,8 @@ export class SnakeBenchRepository extends BaseRepository {
         JOIN public.models m ON gp.model_id = m.id
         JOIN public.games g ON gp.game_id = g.id
         WHERE regexp_replace(m.model_slug, ':free$', '') = regexp_replace($1, ':free$', '')
-          AND g.status = 'completed';
+          AND g.status = 'completed'
+          AND COALESCE(g.rounds, 0) > 0;
       `;
 
       const summaryResult = await this.query(summarySql, [modelSlug, earlyLossThreshold]);
@@ -2291,6 +2300,7 @@ export class SnakeBenchRepository extends BaseRepository {
         JOIN public.games g ON gp.game_id = g.id
         WHERE regexp_replace(m.model_slug, ':free$', '') = regexp_replace($1, ':free$', '')
           AND g.status = 'completed'
+          AND COALESCE(g.rounds, 0) > 0
           AND gp.result = 'lost'
         GROUP BY COALESCE(gp.death_reason, 'unknown')
         ORDER BY losses DESC;
@@ -2326,6 +2336,7 @@ export class SnakeBenchRepository extends BaseRepository {
         LEFT JOIN public.models opp ON opp_gp.model_id = opp.id
         WHERE regexp_replace(m.model_slug, ':free$', '') = regexp_replace($1, ':free$', '')
           AND g.status = 'completed'
+          AND COALESCE(g.rounds, 0) > 0
           AND opp.model_slug IS NOT NULL
           AND opp.model_slug <> ''
         GROUP BY regexp_replace(opp.model_slug, ':free$', '')
@@ -2402,6 +2413,7 @@ export class SnakeBenchRepository extends BaseRepository {
         JOIN public.games g ON gp.game_id = g.id
         JOIN public.models m ON gp.model_id = m.id
         WHERE g.status = 'completed'
+          AND COALESCE(g.rounds, 0) > 0
         GROUP BY regexp_replace(m.model_slug, ':free$', ''), COALESCE(g.rounds, 0), gp.result
         ORDER BY regexp_replace(m.model_slug, ':free$', ''), COALESCE(g.rounds, 0)
       `;
