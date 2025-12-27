@@ -2,7 +2,7 @@
 
 ![ARC Puzzle 08573cc6](.claude/skills/slack-gif-creator/arc_puzzle_08573cc6.gif)
 
-**Version 6.0.12** — December 10, 2025
+**Version 6.11.1** — December 25, 2025
 
 
 A hobby platform for analyzing Abstract Reasoning Corpus (ARC-AGI) puzzles using state-of-the-art LLMs with reasoning capture, conversation chaining, and comprehensive performance analytics.
@@ -10,6 +10,32 @@ A hobby platform for analyzing Abstract Reasoning Corpus (ARC-AGI) puzzles using
 **[Live Production Environment](https://arc.markbarney.net) • [Technical Docs](./CLAUDE.md) • [API Reference](./docs/EXTERNAL_API.md) • [Changelog](./CHANGELOG.md)**
 
 ---
+
+## What's New in v6.11
+
+### Puzzle Analyst - High-Density Analysis Interface
+- **New default puzzle view**: `/task/:taskId` now routes to Puzzle Analyst, a dark-themed high-density grid for browsing hundreds of AI explanations
+- **Compact row layout**: Shows predicted grid thumbnails, model names, status badges, cost, tokens, and reasoning indicators in expandable rows
+- **Inline expansion**: Click any row to reveal full `AnalysisResultCard` with detailed analysis without leaving the grid
+- **Optimized for analysis**: Designed for researchers comparing many AI explanations side-by-side
+
+### Production BYOK (Bring Your Own Key) Enforcement
+- **Production security**: All AI models now require user-provided API keys in production environments
+- **Development flexibility**: Dev/staging environments preserve existing server key fallback behavior
+- **Session-only usage**: User API keys are used for the session only and never stored persistently
+- **Provider coverage**: Applies to all paid AI providers (OpenAI, xAI, Anthropic, Google, DeepSeek, OpenRouter)
+
+### Worm Arena Enhancements
+- **Live streaming with real-time scores**: Watch matches play out with live reasoning panels and updated score displays
+- **Model insights reports**: Per-model analytics with failure modes, cost efficiency, and opponent pain points
+- **Rules transparency**: New `/worm-arena/rules` page showing human-readable rules and LLM prompt templates
+- **Greatest hits curation**: Pinned standout matches for quick replay access
+- **Model match history**: Browse every game a specific model has played with detailed statistics
+
+### UI/UX Improvements
+- **Dark theme analysis cards**: Expanded analysis cards now blend into dark Puzzle Analyst view
+- **Enhanced grid readability**: Improved contrast and sizing for puzzle grid titles and dimension badges
+- **Puzzle Analyst typography**: Larger fonts and tighter spacing for better scanning of analysis results
 
 ## What's New in v6.0
 
@@ -169,7 +195,8 @@ Set either variable to any of the following case-insensitive truthy values to en
 - **Home / puzzles**
   - `/`
   - `/browser`
-  - `/puzzle/:taskId`
+  - `/task/:taskId` (new default - Puzzle Analyst)
+  - `/puzzle/:taskId` (legacy - PuzzleExaminer)
   - `/examine/:taskId`
   - `/puzzles/database`
 - **Discussion**
@@ -212,6 +239,8 @@ Set either variable to any of the following case-insensitive truthy values to en
   - `/worm-arena/live/:sessionId`
   - `/worm-arena/matches`
   - `/worm-arena/stats`
+  - `/worm-arena/models` (new - model match history)
+  - `/worm-arena/rules` (new - rules & prompt transparency)
 - **Admin**
   - `/admin`
   - `/admin/models`
@@ -350,6 +379,10 @@ Set either variable to any of the following case-insensitive truthy values to en
   - `POST /api/beetree/cancel/:sessionId`
   - `GET /api/stream/analyze/beetree-:sessionId`
 - **SnakeBench**
+  - `GET /api/snakebench/models-with-games` (new)
+  - `GET /api/snakebench/model-history-full` (new)
+  - `GET /api/snakebench/model-insights` (new)
+  - `GET /api/snakebench/llm-player/prompt-template` (new)
   - `POST /api/snakebench/run-match`
   - `POST /api/snakebench/run-batch`
   - `GET /api/snakebench/games`
