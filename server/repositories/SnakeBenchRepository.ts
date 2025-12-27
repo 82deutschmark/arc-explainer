@@ -36,6 +36,7 @@ import type {
   WormArenaModelInsightsFailureMode,
   WormArenaModelInsightsOpponent,
   WormArenaRunLengthDistributionData,
+  WormArenaRunLengthModelData,
 } from '../../shared/types.js';
 
 export interface SnakeBenchRecordMatchParams {
