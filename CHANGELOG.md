@@ -52,6 +52,14 @@
     - `client/src/pages/WormArenaModels.tsx` - Removed inline table, uses new component
   - **Note**: `WormArenaRecentMatches.tsx` still exists but is no longer used on Models page
 
+- **Planning: SnakeBench repository split migration map & test coverage** (Author: Cascade)
+  - Added detailed migration map for breaking `SnakeBenchRepository` into GameWrite/GameRead/Leaderboard/Curation/Analytics repos plus shared SQL helpers.
+  - Documented helper inventory (slug normalization, limit clamps, date parsing, common WHERE fragments, replay path resolution).
+  - Defined unit, golden, and integration test fixtures (parseReplayJson edge cases, TrueSkill/Elo goldens, search/leaderboard/greatest-hits/insights/run-length matrices).
+  - Outlined wiring/rollout, backfill/recompute, and rollback plans; listed expected file impacts.
+  - **Files Modified**:
+    - `docs/2025-12-27-snakebench-repo-refactor-plan.md`
+
 ### Version 6.13.2  Dec 27, 2025
 
 - **Fix & Enhancement: Worm Arena Run Length Distribution Chart** (Author: Claude Sonnet 4)
