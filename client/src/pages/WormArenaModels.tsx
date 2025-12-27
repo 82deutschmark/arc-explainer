@@ -9,6 +9,7 @@
  */
 
 import React, { useEffect, useState } from 'react';
+import { TooltipProvider } from '@/components/ui/tooltip';
 
 import WormArenaHeader from '@/components/WormArenaHeader';
 import WormArenaMatchHistoryTable from '@/components/wormArena/WormArenaMatchHistoryTable';
@@ -74,22 +75,23 @@ export default function WormArenaModels() {
     : '0.0';
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <WormArenaHeader
-        subtitle="Model Match History"
-        links={[
-          { label: 'Replay', href: '/worm-arena' },
-          { label: 'Live', href: '/worm-arena/live' },
-          { label: 'Matches', href: '/worm-arena/matches' },
-          { label: 'Models', href: '/worm-arena/models', active: true },
-          { label: 'Stats & Placement', href: '/worm-arena/stats' },
-          { label: 'Skill Analysis', href: '/worm-arena/skill-analysis' },
-          { label: 'Distributions', href: '/worm-arena/distributions' },
-          { label: 'Rules', href: '/worm-arena/rules' },
-        ]}
-      />
+    <TooltipProvider>
+      <div className="worm-page">
+        <WormArenaHeader
+          subtitle="Model Match History"
+          links={[
+            { label: 'Replay', href: '/worm-arena' },
+            { label: 'Live', href: '/worm-arena/live' },
+            { label: 'Matches', href: '/worm-arena/matches' },
+            { label: 'Models', href: '/worm-arena/models', active: true },
+            { label: 'Stats & Placement', href: '/worm-arena/stats' },
+            { label: 'Skill Analysis', href: '/worm-arena/skill-analysis' },
+            { label: 'Distributions', href: '/worm-arena/distributions' },
+            { label: 'Rules', href: '/worm-arena/rules' },
+          ]}
+        />
 
-      <div className="max-w-7xl mx-auto px-2 sm:px-3 lg:px-4 py-4">
+        <main className="w-full max-w-[1500px] mx-auto px-2 md:px-3 py-3 space-y-6">
         {/* Model Selector */}
         <Card className="mb-6">
           <CardHeader>
@@ -210,8 +212,9 @@ export default function WormArenaModels() {
             </CardContent>
           </Card>
         )}
+        </main>
       </div>
-    </div>
+    </TooltipProvider>
   );
 }
 
