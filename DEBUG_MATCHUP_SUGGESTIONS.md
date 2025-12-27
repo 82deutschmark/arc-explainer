@@ -1,7 +1,7 @@
-# Debug Report: Suggested Matchups Showing "Never Played" for Models That Have Played
+# Debug Report: Suggested Matchups - RESOLVED
 
-## Issue
-The suggested matchups endpoint is claiming models have "never played each other" (`matchesPlayed: 0`) when you know they've clearly played before.
+## Issue (FIXED)
+The suggested matchups endpoint was claiming models have "never played each other" (`matchesPlayed: 0`) when they had clearly played before. This was caused by an overly restrictive model filtering in the suggestion algorithm.
 
 ## Root Cause Analysis
 
@@ -90,35 +90,46 @@ Ensure that when games are recorded, the model_slug stored in the database match
 - The leaderboard query result
 - The approved models filtering
 
-## Debug Steps You Can Take
+## Solution Applied ✓
 
-1. **Check current model_slugs in database:**
-   ```sql
-   SELECT DISTINCT model_slug FROM public.models ORDER BY model_slug;
-   ```
+### The Problem
+The `approvedModels` filter was restricted to only OpenRouter models from the `MODELS` config:
+```typescript
+const approvedModels = new Set(
+  MODELS.filter((m: any) => m.provider === 'OpenRouter' && !m.premium)
+    .map((m: any) => (m.apiModelName || m.key) as string)
+);
+```
 
-2. **Check what's in approvedModels set:**
-   Add logging to [snakeBenchService.ts:628-632](server/services/snakeBenchService.ts#L628-L632):
-   ```typescript
-   const approvedModels = new Set(...);
-   console.log('Approved models:', Array.from(approvedModels));
-   ```
+**Result**: Many frequently-played models were filtered OUT:
+- `nvidia/nemotron-3-nano-30b-a3b` (234 games, rank #9)
+- `deepseek/deepseek-v3.2` (141 games, rank #1)
+- `mistralai/devstral-2512` (200 games, rank #12)
 
-3. **Check filtered leaderboard:**
-   Add logging to [matchupSuggestions.ts:58](server/services/snakeBench/helpers/matchupSuggestions.ts#L58):
-   ```typescript
-   let filtered = leaderboard.filter(entry => approvedModels.has(entry.modelSlug));
-   console.log('Leaderboard before filter:', leaderboard.length);
-   console.log('Leaderboard after filter:', filtered.length);
-   console.log('Unmatched slugs:', leaderboard
-     .filter(e => !approvedModels.has(e.modelSlug))
-     .map(e => e.modelSlug));
-   ```
+These models were never considered for suggestions, making all pairings appear as "unplayed."
 
-4. **Verify pairingHistory is being populated:**
-   ```sql
-   SELECT COUNT(*) as pair_count FROM public.game_participants gp1
-   JOIN public.game_participants gp2 ON gp1.game_id = gp2.game_id
-   WHERE gp1.player_slot < gp2.player_slot
-   AND EXISTS (SELECT 1 FROM public.games WHERE status = 'completed' AND id = gp1.game_id);
-   ```
+### The Fix
+Changed to use the leaderboard models directly (which are already filtered by `minGames` and ranked by TrueSkill):
+```typescript
+// Use all leaderboard models (already filtered by minGames and ranked by TrueSkill).
+// No additional filtering needed - we want suggestions for any models that have played.
+const approvedModels = new Set(leaderboard.map(e => e.modelSlug));
+```
+
+**Impact**:
+- **Before**: ~20-30 models considered (OpenRouter config subset)
+- **After**: 46 models considered (all models in top leaderboard)
+- **Result**: Suggestions now include high-ranked models that have actually played each other
+
+### Verification
+
+Database state (as of diagnosis):
+- **Total unique models**: 265
+- **Top models (leaderboard)**: 46 models with ≥3 games
+- **Total pairings recorded**: 265 pairs
+- **Unplayed pairs among top 46**: ~95 pairs (good diversity for suggestions)
+
+Top 3 models by games played:
+1. `nvidia/nemotron-3-nano-30b-a3b` - 234 games
+2. `openai/gpt-5-mini` - 166 games
+3. `deepseek/deepseek-v3.2` - 141 games
