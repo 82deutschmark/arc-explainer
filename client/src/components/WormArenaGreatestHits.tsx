@@ -154,6 +154,24 @@ export default function WormArenaGreatestHits() {
                   game.scoreDelta > 0
                     ? `Score delta: ${game.scoreDelta}`
                     : `Max score: ${game.maxFinalScore}`;
+
+                // NEW: Duration badge (v3.x.x - Dec 2025)
+                const durationLabel = game.durationSeconds && game.durationSeconds > 0
+                  ? (() => {
+                      const hours = Math.floor(game.durationSeconds / 3600);
+                      const minutes = Math.floor((game.durationSeconds % 3600) / 60);
+                      if (hours >= 1) {
+                        return `${hours}h ${minutes}m`;
+                      }
+                      return `${minutes}m`;
+                    })()
+                  : null;
+
+                // NEW: Total score badge (v3.x.x - Dec 2025)
+                const totalScoreLabel = game.sumFinalScores && game.sumFinalScores > 0
+                  ? `${game.sumFinalScores} total apples`
+                  : null;
+
                 const replayHref = `/worm-arena?matchId=${encodeURIComponent(normalizeGameId(game.gameId))}`;
 
                 return (
@@ -191,6 +209,22 @@ export default function WormArenaGreatestHits() {
                         <Badge variant="outline" className="font-semibold text-sm px-2 py-1">
                           {scoreLabel}
                         </Badge>
+                        {durationLabel && (
+                          <Badge
+                            variant="outline"
+                            className="font-semibold text-sm px-2 py-1 worm-border"
+                          >
+                            Duration: {durationLabel}
+                          </Badge>
+                        )}
+                        {totalScoreLabel && (
+                          <Badge
+                            variant="outline"
+                            className="font-semibold text-sm px-2 py-1 worm-border"
+                          >
+                            {totalScoreLabel}
+                          </Badge>
+                        )}
                       </div>
                       <div className="text-sm worm-muted">
                         {game.highlightReason}

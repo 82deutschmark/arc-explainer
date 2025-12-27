@@ -913,6 +913,11 @@ export interface WormArenaGreatestHitGame {
   boardWidth: number;
   boardHeight: number;
   highlightReason: string;
+  // New optional fields (v3.x.x - Dec 2025)
+  endedAt?: string;                    // ISO timestamp for duration calculation
+  sumFinalScores?: number;             // Total apples from both players
+  durationSeconds?: number;            // Wall-clock game duration in seconds
+  category?: string;                   // Which dimension qualified it (e.g., 'duration', 'total_score', 'close_match')
 }
 
 export interface WormArenaGreatestHitsResponse {
