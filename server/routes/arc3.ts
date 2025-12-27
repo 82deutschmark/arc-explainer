@@ -17,6 +17,8 @@ import { sseStreamManager } from '../services/streaming/SSEStreamManager';
 import { formatResponse } from '../utils/responseFormatter';
 import { buildArc3DefaultPrompt, listArc3PromptPresets, getArc3PromptBody } from '../services/arc3/prompts';
 import { logger } from '../utils/logger';
+import { ARC3_GAMES } from '../../shared/arc3Games';
+import { discoverLevelScreenshots, enrichGameWithScreenshots } from '../services/arc3ScreenshotService';
 
 const router = Router();
 
@@ -114,6 +116,57 @@ router.get(
   asyncHandler(async (req: Request, res: Response) => {
     const games = await arc3ApiClient.listGames();
     res.json(formatResponse.success(games));
+  }),
+);
+
+/**
+ * GET /api/arc3/metadata/games
+ * Get all games with auto-discovered level screenshots
+ */
+router.get(
+  '/metadata/games',
+  asyncHandler(async (req: Request, res: Response) => {
+    const gamesWithScreenshots = Object.entries(ARC3_GAMES).map(([gameId, game]) => {
+      return enrichGameWithScreenshots(game);
+    });
+    res.json(formatResponse.success(gamesWithScreenshots));
+  }),
+);
+
+/**
+ * GET /api/arc3/metadata/games/:gameId
+ * Get a specific game with auto-discovered level screenshots
+ */
+router.get(
+  '/metadata/games/:gameId',
+  asyncHandler(async (req: Request, res: Response) => {
+    const { gameId } = req.params;
+    const game = ARC3_GAMES[gameId];
+    
+    if (!game) {
+      return res.status(404).json(formatResponse.error('GAME_NOT_FOUND', 'Game not found'));
+    }
+
+    const gameWithScreenshots = enrichGameWithScreenshots(game);
+    res.json(formatResponse.success(gameWithScreenshots));
+  }),
+);
+
+/**
+ * GET /api/arc3/metadata/games/:gameId/screenshots
+ * Get level screenshots for a specific game
+ */
+router.get(
+  '/metadata/games/:gameId/screenshots',
+  asyncHandler(async (req: Request, res: Response) => {
+    const { gameId } = req.params;
+    const screenshots = discoverLevelScreenshots(gameId);
+    
+    res.json(formatResponse.success({
+      gameId,
+      screenshots,
+      count: screenshots.length
+    }));
   }),
 );
 
