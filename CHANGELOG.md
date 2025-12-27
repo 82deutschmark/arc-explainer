@@ -1,5 +1,25 @@
 # New entries at the top, use proper SemVer!
 
+### Version 6.13.3  Dec 27, 2025
+
+- **Refactor: Worm Arena Models Page - Modular Sortable Match History** (Author: Claude Sonnet 4)
+  - **Purpose**: Remove redundant WormArenaRecentMatches component; create reusable sortable match history table
+  - **Changes**:
+    1. **Removed**: `WormArenaRecentMatches` from Models page - was duplicating Match History with inferior layout
+    2. **Created**: `WormArenaMatchHistoryTable` - new modular, reusable component with rich metrics
+    3. **Added sorting**: All columns sortable (Opponent, Date, Duration, Outcome, Score, Rounds, Cost)
+    4. **Sortable headers**: Click column headers to sort asc/desc with visual indicators
+  - **Component Features** (`WormArenaMatchHistoryTable`):
+    - Accepts `history`, `modelSlug`, `isLoading`, `error`, `onOpponentClick` props
+    - Optional `showCard` prop to render with/without Card wrapper
+    - Clickable opponents to switch model selection
+    - Default sort: Date descending (most recent first)
+  - **Files Created**:
+    - `client/src/components/wormArena/WormArenaMatchHistoryTable.tsx` - Modular sortable table
+  - **Files Modified**:
+    - `client/src/pages/WormArenaModels.tsx` - Removed inline table, uses new component
+  - **Note**: `WormArenaRecentMatches.tsx` still exists but is no longer used on Models page
+
 ### Version 6.13.2  Dec 27, 2025
 
 - **Fix & Enhancement: Worm Arena Run Length Distribution Chart** (Author: Claude Sonnet 4)
