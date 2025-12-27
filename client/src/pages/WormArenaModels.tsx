@@ -89,6 +89,8 @@ export default function WormArenaModels() {
             { label: 'Distributions', href: '/worm-arena/distributions' },
             { label: 'Rules', href: '/worm-arena/rules' },
           ]}
+          compact
+          showMatchupLabel={false}
         />
 
         <main className="w-full max-w-[1500px] mx-auto px-2 md:px-3 py-3 space-y-6">

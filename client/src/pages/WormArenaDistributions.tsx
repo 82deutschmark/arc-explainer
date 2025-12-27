@@ -9,6 +9,7 @@
  */
 
 import React from 'react';
+import { TooltipProvider } from '@/components/ui/tooltip';
 import WormArenaHeader from '@/components/WormArenaHeader';
 import WormArenaRunLengthChart from '@/components/wormArena/stats/WormArenaRunLengthChart';
 import useWormArenaDistributions from '@/hooks/useWormArenaDistributions';
@@ -127,10 +128,11 @@ export default function WormArenaDistributions() {
   }
 
   return (
-    <div className="worm-page">
-      <WormArenaHeader />
+    <TooltipProvider>
+      <div className="worm-page">
+        <WormArenaHeader compact showMatchupLabel={false} />
 
-      <main className="p-2 md:p-3 max-w-7xl mx-auto space-y-6">
+        <main className="w-full max-w-[1500px] mx-auto px-2 md:px-3 py-3 space-y-6">
         {/* Page title with icon */}
         <div className="flex items-start gap-4">
           <div className="p-3 bg-[#4A7C59]/10 rounded-xl">
@@ -238,8 +240,9 @@ export default function WormArenaDistributions() {
             </span>
           </div>
         )}
-      </main>
-    </div>
+        </main>
+      </div>
+    </TooltipProvider>
   );
 }
 
