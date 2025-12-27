@@ -131,7 +131,10 @@ OPENAI_API_KEY=your_key_here
 DATABASE_URL=postgresql://...  # Optional
 
 # Run development server
-npm run test  # Allow ~10s to warm up, then open localhost:5173
+npm run dev  # Allow ~10s to warm up, then open localhost:5173
+
+# Or build and run dev server
+npm run build-dev
 ```
 
 **For detailed setup, deployment, and technical documentation, see [CLAUDE.md](./CLAUDE.md)**
@@ -175,10 +178,10 @@ Set either variable to any of the following case-insensitive truthy values to en
 ## Architecture Overview
 
 ### Technology Stack
-**Frontend:** React 18 + TypeScript + Vite + TailwindCSS + DaisyUI components  
-**Backend:** Express.js + TypeScript + PostgreSQL (Drizzle ORM) + in-memory fallback  
-**AI Integration:** Unified BaseAIService pattern supporting 6+ providers  
-**Real-time:** WebSocket streaming for Saturn solver and batch progress  
+**Frontend:** React 18 + TypeScript + Vite + TailwindCSS + DaisyUI components
+**Backend:** Express.js + TypeScript + PostgreSQL (Drizzle ORM) + in-memory fallback
+**AI Integration:** Unified BaseAIService pattern supporting 6+ providers
+**Real-time:** WebSocket streaming for Saturn solver and batch progress
 **Deployment:** Railway-ready with Docker support
 
 ### Key Design Patterns
