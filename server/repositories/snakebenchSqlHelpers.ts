@@ -97,5 +97,5 @@ export const safeNumeric = (val: any, fallback: number = 0): number => {
  */
 export const logRepoError = (method: string, error: unknown, context: string = 'snakebench-db'): void => {
   const message = error instanceof Error ? error.message : String(error);
-  logger.warn(`SnakeBenchRepository.${method}: ${message}`, context);
+  logger.warn(`SnakeBench.${method}: ${message}`, context);
 };
