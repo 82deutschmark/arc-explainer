@@ -123,7 +123,7 @@ export default function WormArenaGreatestHits() {
           Greatest Hits Matches
         </CardTitle>
         <p className="text-sm mt-1 worm-muted">
-          Curated Worm Arena games with long runs, high costs, or big scores.
+          Curated Worm Arena games with long runs, high costs, big scores, or monster apple hauls.
         </p>
       </CardHeader>
       <CardContent className="pt-0 text-base text-worm-ink">

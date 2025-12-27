@@ -46,20 +46,14 @@ export default function WormArenaLiveStatusStrip({
   sessionId,
   currentMatchIndex,
   totalMatches,
-  playerAName = 'Player A',
-  playerBName = 'Player B',
-  playerAScore = 0,
-  playerBScore = 0,
   currentRound = null,
   maxRounds = null,
   phase,
-  aliveSnakes = [],
   wallClockSeconds = null,
   sinceLastMoveSeconds = null,
 }: WormArenaLiveStatusStripProps) {
   const batchText =
     currentMatchIndex && totalMatches ? `Match ${currentMatchIndex}/${totalMatches}` : undefined;
-  const aliveText = aliveSnakes.length > 0 ? aliveSnakes.join(', ') : '—';
   const statusColor =
     status === 'failed'
       ? 'bg-red-500'
@@ -97,17 +91,10 @@ export default function WormArenaLiveStatusStrip({
         )}
       </div>
 
-      {message && <div className="text-sm text-worm-ink font-medium">{message}</div>}
-
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-sm">
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 text-sm">
         <div>
           <div className="text-[11px] uppercase font-semibold text-muted-foreground">Round</div>
           <div className="text-worm-ink font-semibold">{roundValue}</div>
-        </div>
-
-        <div>
-          <div className="text-[11px] uppercase font-semibold text-muted-foreground">Alive</div>
-          <div className="text-worm-ink font-medium">{aliveText}</div>
         </div>
 
         <div>
@@ -121,24 +108,6 @@ export default function WormArenaLiveStatusStrip({
           <div className="text-[11px] uppercase font-semibold text-muted-foreground">Since move</div>
           <div className="text-worm-ink font-medium">
             {sinceLastMoveSeconds != null ? `${Math.max(0, sinceLastMoveSeconds).toFixed(1)}s` : '—'}
-          </div>
-        </div>
-      </div>
-
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
-        <div className="flex items-start gap-2 rounded-md bg-emerald-50 px-3 py-2">
-          <div className="text-[11px] uppercase font-semibold text-emerald-800">Player A</div>
-          <div className="flex flex-col min-w-0">
-            <div className="text-worm-ink font-semibold truncate">{playerAName}</div>
-            <div className="text-worm-ink font-semibold">{Math.max(0, Number(playerAScore) || 0)} 🍎</div>
-          </div>
-        </div>
-
-        <div className="flex items-start gap-2 rounded-md bg-blue-50 px-3 py-2">
-          <div className="text-[11px] uppercase font-semibold text-blue-800">Player B</div>
-          <div className="flex flex-col min-w-0">
-            <div className="text-worm-ink font-semibold truncate">{playerBName}</div>
-            <div className="text-worm-ink font-semibold">{Math.max(0, Number(playerBScore) || 0)} 🍎</div>
           </div>
         </div>
       </div>

@@ -39,38 +39,6 @@ type RenderMode = 'cartoon' | 'console';
 
 type SessionGateStatus = 'idle' | 'checking' | 'pending' | 'completed' | 'unknown' | 'error';
 
-// Curated tournament roster mirrors run-paid-devstral-matches.ps1 (new OpenRouter + baselines)
-const TOURNAMENT_MODELS: string[] = [
-  'bytedance-seed/seed-1.6',
-  'bytedance-seed/seed-1.6-flash',
-  'deepseek/deepseek-v3.1-terminus',
-  'deepseek/deepseek-v3.2',
-  'google/gemini-2.5-flash-lite-preview-09-2025',
-  'google/gemini-2.5-flash-preview-09-2025',
-  'google/gemini-3-flash-preview',
-  'x-ai/grok-4.1-fast',
-  'minimax/minimax-m2.1',
-  'z-ai/glm-4.7',
-];
-
-function buildCuratedTournamentMatchups(models: string[]): WormArenaSuggestedMatchup[] {
-  const out: WormArenaSuggestedMatchup[] = [];
-  for (let i = 0; i < models.length; i++) {
-    for (let j = i + 1; j < models.length; j++) {
-      const modelA = models[i];
-      const modelB = models[j];
-      // Minimal stats; these are curated pairs, so we keep neutral scores and reasons.
-      out.push({
-        modelA: { modelSlug: modelA, mu: 0, sigma: 0, exposed: 0, gamesPlayed: 0 },
-        modelB: { modelSlug: modelB, mu: 0, sigma: 0, exposed: 0, gamesPlayed: 0 },
-        history: { matchesPlayed: 0, lastPlayedAt: null },
-        score: 0,
-        reasons: ['Curated tournament pairing'],
-      });
-    }
-  }
-  return out;
-}
 
 function getSnakeEligibleModels(models: ModelConfig[]): ModelConfig[] {
   return models.filter((m) => m.provider === 'OpenRouter');
@@ -156,39 +124,6 @@ export default function WormArenaLive() {
       .map((entry) => entry.id);
   }, [snakeModels]);
 
-  // Curated tournament suggested matchups (mirrors batch script pairs)
-  const curatedMatchups = React.useMemo(
-    () => {
-      // Prefer cheaper, newest, least-played (gamesPlayed not available here, so proxy with recency)
-      const bySlug = new Map<string, ModelConfig>();
-      modelConfigs.forEach((m) => {
-        const slug = toSnakeModelId(m);
-        if (slug) bySlug.set(slug, m);
-      });
-
-      const gamesBySlug = new Map<string, number>();
-      wormLeaderboard.forEach((entry) => gamesBySlug.set(entry.modelSlug, entry.gamesPlayed ?? Number.MAX_SAFE_INTEGER));
-
-      const prioritized = [...TOURNAMENT_MODELS]
-        .map((slug) => {
-          const cfg = bySlug.get(slug);
-          const addedMs = parseIsoTimestamp((cfg as any)?.addedAt) ?? 0;
-          const costIn = parseCostValue(cfg?.cost?.input);
-          const gamesPlayed = gamesBySlug.get(slug) ?? Number.MAX_SAFE_INTEGER;
-          return { slug, cfg, costIn, addedMs, gamesPlayed };
-        })
-        .sort((a, b) => {
-          if (a.gamesPlayed !== b.gamesPlayed) return a.gamesPlayed - b.gamesPlayed; // fewer games first
-          if (a.addedMs !== b.addedMs) return b.addedMs - a.addedMs; // newest first
-          if (a.costIn !== b.costIn) return a.costIn - b.costIn; // cheaper next
-          return a.slug.localeCompare(b.slug);
-        })
-        .map((entry) => entry.slug);
-
-      return buildCuratedTournamentMatchups(prioritized);
-    },
-    [modelConfigs, wormLeaderboard],
-  );
 
   // Setup state hook
   const {
@@ -641,6 +576,7 @@ export default function WormArenaLive() {
           { label: 'Models', href: '/worm-arena/models' },
           { label: 'Stats & Placement', href: '/worm-arena/stats' },
           { label: 'Skill Analysis', href: '/worm-arena/skill-analysis' },
+          { label: 'Distributions', href: '/worm-arena/distributions' },
           { label: 'Rules', href: '/worm-arena/rules' },
         ]}
         compact
@@ -654,7 +590,6 @@ export default function WormArenaLive() {
               <WormArenaSuggestedMatchups
                 limit={50}
                 onRunMatch={handleSuggestedMatchupRun}
-                overrideMatchups={curatedMatchups}
               />
 
               {/* Run controls form */}
@@ -696,6 +631,8 @@ export default function WormArenaLive() {
               playerBName={rightName}
               playerAScore={playerAScore}
               playerBScore={playerBScore}
+              wallClockSeconds={wallClockSeconds}
+              sinceLastMoveSeconds={sinceLastMoveSeconds}
               playerAStats={leftStats}
               playerBStats={rightStats}
             />
