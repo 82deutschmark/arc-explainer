@@ -34,7 +34,8 @@
     "cleanup-hf": "node --import tsx server/scripts/cleanup-huggingface-imports.ts",
     "del": "node --import tsx server/scripts/delete-hf-now.ts",
     "worm:cheap-matchups": "node --import tsx server/scripts/generate-cheap-matchups.ts",
-    "sync-openrouter-catalog": "node --import tsx server/scripts/sync-openrouter-catalog.ts"
+    "sync-openrouter-catalog": "node --import tsx server/scripts/sync-openrouter-catalog.ts",
+    "worm:tweets": "node --import tsx scripts/worm-arena-tweet-kit.ts"
   },
   "dependencies": {
     "@ai-sdk/xai": "^2.0.23",

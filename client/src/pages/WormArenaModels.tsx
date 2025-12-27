@@ -142,6 +142,7 @@ export default function WormArenaModels() {
           { label: 'Models', href: '/worm-arena/models', active: true },
           { label: 'Stats & Placement', href: '/worm-arena/stats' },
           { label: 'Skill Analysis', href: '/worm-arena/skill-analysis' },
+          { label: 'Distributions', href: '/worm-arena/distributions' },
           { label: 'Rules', href: '/worm-arena/rules' },
         ]}
       />

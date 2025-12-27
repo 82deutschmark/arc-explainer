@@ -34,6 +34,7 @@ import type {
   WormArenaSuggestMode,
   SnakeBenchLlmPlayerPromptTemplateResponse,
   WormArenaModelInsightsResponse,
+  WormArenaRunLengthDistributionResponse,
 } from '../../shared/types.js';
 
 export async function getLlmPlayerPromptTemplate(req: Request, res: Response) {
@@ -823,6 +824,55 @@ export async function modelInsightsReport(req: Request, res: Response) {
   }
 }
 
+export async function runLengthDistribution(req: Request, res: Response) {
+  try {
+    // Parse and validate query parameters
+    const minGamesParam = req.query.minGames;
+    let minGames = 10; // default
+
+    if (minGamesParam !== undefined) {
+      const parsed = parseInt(String(minGamesParam), 10);
+      if (Number.isNaN(parsed) || parsed < 0) {
+        const response: { success: boolean; error: string; timestamp: number } = {
+          success: false,
+          error: 'minGames must be a non-negative integer',
+          timestamp: Date.now(),
+        };
+        return res.status(400).json(response);
+      }
+      if (parsed > 1000) {
+        const response: { success: boolean; error: string; timestamp: number } = {
+          success: false,
+          error: 'minGames cannot exceed 1000',
+          timestamp: Date.now(),
+        };
+        return res.status(400).json(response);
+      }
+      minGames = parsed;
+    }
+
+    // Call service to get distribution data
+    const data = await snakeBenchService.getRunLengthDistribution(minGames);
+
+    const response: WormArenaRunLengthDistributionResponse = {
+      success: true,
+      data,
+      timestamp: Date.now(),
+    };
+
+    return res.json(response);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    logger.error(`SnakeBench runLengthDistribution failed: ${message}`, 'snakebench-controller');
+    const response: WormArenaRunLengthDistributionResponse = {
+      success: false,
+      error: message,
+      timestamp: Date.now(),
+    };
+    return res.status(500).json(response);
+  }
+}
+
 export const snakeBenchController = {
   runMatch,
   runBatch,
@@ -844,5 +894,6 @@ export const snakeBenchController = {
   suggestMatchups,
   ingestQueueStatus,
   getLlmPlayerPromptTemplate,
+  runLengthDistribution,
 };
 

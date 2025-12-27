@@ -26,15 +26,12 @@ interface WormArenaSuggestedMatchupsProps {
   onRunMatch?: (modelA: string, modelB: string) => void;
   /** If true, shows compact version without full descriptions */
   compact?: boolean;
-  /** Optional curated suggestions to override backend list */
-  overrideMatchups?: WormArenaSuggestedMatchup[];
 }
 
 export default function WormArenaSuggestedMatchups({
   limit = 10,
   onRunMatch,
   compact = false,
-  overrideMatchups,
 }: WormArenaSuggestedMatchupsProps) {
   const [, setLocation] = useLocation();
   const { matchups, mode, totalCandidates, isLoading, error, refresh } =
@@ -69,8 +66,7 @@ export default function WormArenaSuggestedMatchups({
       ? 'Prioritizes matches that will improve ranking accuracy (high uncertainty, close ratings).'
       : 'Prioritizes exciting matches to watch (close fights, high stakes, upset potential).';
 
-  const activeMatchups = overrideMatchups?.slice(0, limit) ?? matchups;
-  const hasOverride = Array.isArray(overrideMatchups);
+  const activeMatchups = matchups;
 
   return (
     <Card className="worm-card">
@@ -79,59 +75,52 @@ export default function WormArenaSuggestedMatchups({
           <CardTitle className="text-xl font-bold text-worm-ink">
             Suggested Matchups
           </CardTitle>
-          {!hasOverride && (
-            <div className="flex items-center gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleModeToggle}
-                disabled={isLoading}
-                className="gap-1.5 text-sm"
-              >
-                {mode === 'ladder' ? (
-                  <Trophy className="w-4 h-4" />
-                ) : (
-                  <Zap className="w-4 h-4" />
-                )}
-                {modeLabel}
-              </Button>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => refresh()}
-                disabled={isLoading}
-                className="h-8 w-8"
-                title="Refresh suggestions"
-              >
-                <RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
-              </Button>
-            </div>
-          )}
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleModeToggle}
+              disabled={isLoading}
+              className="gap-1.5 text-sm"
+            >
+              {mode === 'ladder' ? (
+                <Trophy className="w-4 h-4" />
+              ) : (
+                <Zap className="w-4 h-4" />
+              )}
+              {modeLabel}
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => refresh()}
+              disabled={isLoading}
+              className="h-8 w-8"
+              title="Refresh suggestions"
+            >
+              <RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
+            </Button>
+          </div>
         </div>
-        {!compact && !hasOverride && (
+        {!compact && (
           <p className="text-sm mt-2 worm-muted">{modeDescription}</p>
         )}
-        {!hasOverride && totalCandidates > 0 && (
+        {totalCandidates > 0 && (
           <p className="text-xs mt-1 worm-muted">
             {totalCandidates.toLocaleString()} unplayed pairings available
-          </p>
-        )}
-        {hasOverride && (
-          <p className="text-xs mt-1 worm-muted">
-            Curated matchups (live tournament set)
           </p>
         )}
       </CardHeader>
 
       <CardContent className="pt-0 text-base text-worm-ink">
-        {!hasOverride && isLoading && (
+        {isLoading && (
           <div className="py-4 text-base worm-muted flex items-center gap-2">
             <RefreshCw className="w-4 h-4 animate-spin" />
             Finding interesting matchups...
           </div>
         )}
 
-        {!hasOverride && error && !isLoading && (
+        {error && !isLoading && (
           <div className="py-3 text-base text-red-700">{error}</div>
         )}
 

@@ -80,6 +80,7 @@ export default function WormArenaRules() {
           { label: 'Models', href: '/worm-arena/models' },
           { label: 'Stats & Placement', href: '/worm-arena/stats' },
           { label: 'Skill Analysis', href: '/worm-arena/skill-analysis' },
+          { label: 'Distributions', href: '/worm-arena/distributions' },
           { label: 'Rules', href: '/worm-arena/rules', active: true },
         ]}
         showMatchupLabel={false}
