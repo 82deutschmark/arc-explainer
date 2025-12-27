@@ -4,6 +4,20 @@
 # SRP/DRY check: Pass - entries document changes without altering historical records.
 # New entries at the top, use proper SemVer!
 
+### Version 6.12.0  Dec 27, 2025
+
+- **Feature: ARC3 Auto-Discovered Level Screenshots** (Author: Cascade)
+  - **Purpose**: Automatically discover and include PNG level screenshots for ARC-AGI-3 games without manual hardcoding.
+  - **Behavior**:
+    - Scans `client/public` folder for PNG files matching pattern `{gameId}-lvl{levelNumber}.png` or `{gameId}-lvl{levelNumber}{suffix}.png`
+    - Automatically generates level screenshot metadata with proper sorting and variant handling (e.g., `as66-lvl6a.png` becomes "Variant A")
+    - Provides new API endpoints: `/api/arc3/metadata/games`, `/api/arc3/metadata/games/:gameId`, `/api/arc3/metadata/games/:gameId/screenshots`
+    - Supports all existing games: ls20, as66, ft09, lp85, sp80, vc33
+  - **Files Modified**:
+    - `server/services/arc3ScreenshotService.ts` (NEW)
+    - `server/routes/arc3.ts` (added metadata endpoints)
+    - `shared/arc3Games.ts` (reverted hardcoded arrays to manual entries for now)
+
 ### Version 6.11.1  Dec 25, 2025
 
 - **UI: Worm Arena Greatest Hits pinned matches** (Author: Cascade)
