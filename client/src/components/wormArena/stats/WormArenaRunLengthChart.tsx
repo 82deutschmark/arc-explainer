@@ -1,10 +1,9 @@
 /**
- * Author: Claude Sonnet 4
+ * Author: Cascade (ChatGPT)
  * Date: 2025-12-27
  * PURPOSE: Renders a stacked histogram of game run lengths for Worm Arena models.
- *          Shows distribution of game rounds by selected models, separated into wins and losses.
- *          Uses Recharts BarChart with proper stacking and model selection.
- *          Limit displayed models to prevent overcrowding (max 8 models visible).
+ *          Shows distribution of game rounds for all models (wins and losses),
+ *          with no per-model selection so everything is visible by default.
  * SRP/DRY check: Pass - focused exclusively on charting and data transformation.
  */
 
@@ -19,9 +18,6 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 import type { WormArenaRunLengthDistributionData, WormArenaRunLengthModelData } from '@shared/types';
-import { Button } from '@/components/ui/button';
-import { Checkbox } from '@/components/ui/checkbox';
-import { ChevronDown, ChevronUp } from 'lucide-react';
 
 // Distinct color palette for models (8 colors, enough contrast)
 const MODEL_COLORS = [
@@ -192,45 +188,8 @@ function renderLegend(selectedModels: WormArenaRunLengthModelData[]) {
 }
 
 export default function WormArenaRunLengthChart({ data }: WormArenaRunLengthChartProps) {
-  // Default: show top 5 models by game count
-  const DEFAULT_VISIBLE = 5;
-  const MAX_VISIBLE = 8;
-
   const allModels = data.distributionData || [];
-  const topModels = allModels.slice(0, DEFAULT_VISIBLE);
-
-  // State for selected model slugs
-  const [selectedSlugs, setSelectedSlugs] = React.useState<Set<string>>(
-    () => new Set(topModels.map((m) => m.modelSlug)),
-  );
-  const [showModelPicker, setShowModelPicker] = React.useState(false);
-
-  // Reset selection when data changes
-  React.useEffect(() => {
-    const newTopSlugs = new Set(allModels.slice(0, DEFAULT_VISIBLE).map((m) => m.modelSlug));
-    setSelectedSlugs(newTopSlugs);
-  }, [data.timestamp]);
-
-  // Get selected models in order
-  const selectedModels = allModels.filter((m) => selectedSlugs.has(m.modelSlug));
-
-  // Toggle model selection
-  const toggleModel = (slug: string) => {
-    setSelectedSlugs((prev) => {
-      const next = new Set(prev);
-      if (next.has(slug)) {
-        next.delete(slug);
-      } else if (next.size < MAX_VISIBLE) {
-        next.add(slug);
-      }
-      return next;
-    });
-  };
-
-  // Quick select helpers
-  const selectTop = (n: number) => {
-    setSelectedSlugs(new Set(allModels.slice(0, n).map((m) => m.modelSlug)));
-  };
+  const selectedModels = allModels;
 
   // Empty state
   if (allModels.length === 0) {
@@ -239,7 +198,7 @@ export default function WormArenaRunLengthChart({ data }: WormArenaRunLengthChar
         <div className="text-center">
           <p className="text-[#8B7355] font-semibold">No distribution data available</p>
           <p className="text-[#A0826D] text-sm mt-1">
-            Try lowering the minimum games threshold
+            Run matches to generate game length data.
           </p>
         </div>
       </div>
@@ -247,118 +206,6 @@ export default function WormArenaRunLengthChart({ data }: WormArenaRunLengthChar
   }
 
   const transformedData = transformDataForChart(selectedModels);
-
-  // No models selected state
-  if (selectedModels.length === 0) {
-    return (
-      <div className="space-y-4">
-        <div className="w-full h-[300px] flex items-center justify-center bg-[#FAF7F3] rounded-lg border border-[#D4B5A0]">
-          <div className="text-center">
-            <p className="text-[#8B7355] font-semibold">No models selected</p>
-            <p className="text-[#A0826D] text-sm mt-1">Select models below to view distribution</p>
-          </div>
-        </div>
-        {renderModelPicker()}
-      </div>
-    );
-  }
-
-  // Model picker component
-  function renderModelPicker() {
-    return (
-      <div className="border border-[#D4B5A0] rounded-lg bg-[#FAF7F3] p-3">
-        <button
-          onClick={() => setShowModelPicker(!showModelPicker)}
-          className="flex items-center justify-between w-full text-left"
-        >
-          <div className="flex items-center gap-2">
-            <span className="font-medium text-[#8B7355]">Model Selection</span>
-            <span className="text-xs text-[#A0826D]">
-              ({selectedSlugs.size}/{MAX_VISIBLE} max)
-            </span>
-          </div>
-          {showModelPicker ? (
-            <ChevronUp className="w-4 h-4 text-[#8B7355]" />
-          ) : (
-            <ChevronDown className="w-4 h-4 text-[#8B7355]" />
-          )}
-        </button>
-
-        {showModelPicker && (
-          <div className="mt-3 space-y-3">
-            {/* Quick select buttons */}
-            <div className="flex flex-wrap gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => selectTop(3)}
-                className="text-xs h-7 border-[#D4B5A0] hover:bg-[#4A7C59] hover:text-white"
-              >
-                Top 3
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => selectTop(5)}
-                className="text-xs h-7 border-[#D4B5A0] hover:bg-[#4A7C59] hover:text-white"
-              >
-                Top 5
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => selectTop(MAX_VISIBLE)}
-                className="text-xs h-7 border-[#D4B5A0] hover:bg-[#4A7C59] hover:text-white"
-              >
-                Top {MAX_VISIBLE}
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setSelectedSlugs(new Set())}
-                className="text-xs h-7 border-[#D4B5A0] hover:bg-[#E8645B] hover:text-white"
-              >
-                Clear All
-              </Button>
-            </div>
-
-            {/* Model checkboxes in grid */}
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2 max-h-48 overflow-y-auto">
-              {allModels.map((model) => {
-                const isSelected = selectedSlugs.has(model.modelSlug);
-                const isDisabled = !isSelected && selectedSlugs.size >= MAX_VISIBLE;
-                return (
-                  <label
-                    key={model.modelSlug}
-                    className={`flex items-center gap-2 p-1.5 rounded border text-xs cursor-pointer transition-colors ${
-                      isSelected
-                        ? 'border-[#4A7C59] bg-[#4A7C59]/10'
-                        : isDisabled
-                        ? 'border-[#D4B5A0] bg-gray-100 opacity-50 cursor-not-allowed'
-                        : 'border-[#D4B5A0] hover:border-[#8B7355]'
-                    }`}
-                  >
-                    <Checkbox
-                      checked={isSelected}
-                      disabled={isDisabled}
-                      onCheckedChange={() => toggleModel(model.modelSlug)}
-                      className="h-3.5 w-3.5"
-                    />
-                    <span className="font-mono truncate" title={model.modelSlug}>
-                      {shortenModelSlug(model.modelSlug, 16)}
-                    </span>
-                    <span className="text-[#A0826D] ml-auto flex-shrink-0">
-                      {model.totalGames}
-                    </span>
-                  </label>
-                );
-              })}
-            </div>
-          </div>
-        )}
-      </div>
-    );
-  }
 
   return (
     <div className="space-y-4">
@@ -434,9 +281,6 @@ export default function WormArenaRunLengthChart({ data }: WormArenaRunLengthChar
         </div>
         {renderLegend(selectedModels)}
       </div>
-
-      {/* Model picker */}
-      {renderModelPicker()}
     </div>
   );
 }

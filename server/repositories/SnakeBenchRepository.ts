@@ -1438,6 +1438,8 @@ export class SnakeBenchRepository extends BaseRepository {
 
       const { rows } = await this.query(sql);
 
+      console.log(`[getPairingHistory] Query returned ${rows.length} rows`);
+
       for (const row of rows) {
         const slugA = String(row.slug_a ?? '').trim();
         const slugB = String(row.slug_b ?? '').trim();
@@ -1449,8 +1451,14 @@ export class SnakeBenchRepository extends BaseRepository {
         const lastPlayedAt = lastPlayedRaw ? new Date(lastPlayedRaw).toISOString() : null;
 
         result.set(key, { matchesPlayed, lastPlayedAt });
+
+        // Log first 5 entries for debugging
+        if (result.size <= 5) {
+          console.log(`  [getPairingHistory] Added pair: ${key} (${matchesPlayed} matches)`);
+        }
       }
 
+      console.log(`[getPairingHistory] Total pairs in result: ${result.size}`);
       return result;
     } catch (error) {
       logger.warn(
