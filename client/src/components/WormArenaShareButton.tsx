@@ -16,7 +16,8 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Share2, Twitter, Copy, Check, Link } from 'lucide-react';
+import { Share2, Twitter, Copy, Check, Link, Download, Loader2 } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 // -----------------------------------------------------------------------------
 // Types
@@ -48,13 +49,16 @@ export interface WormArenaShareButtonProps {
   className?: string;
   /** Show dropdown with options or direct Twitter link */
   showDropdown?: boolean;
+  /** Optional override for base site URL (tests) */
+  siteBaseUrlOverride?: string;
 }
 
 // -----------------------------------------------------------------------------
 // Helpers
 // -----------------------------------------------------------------------------
 
-const SITE_BASE_URL = 'https://arc.markbarney.net';
+const DEFAULT_SITE_BASE_URL = 'https://arc.markbarney.net';
+const API_BASE = '';
 
 /**
  * Shorten a model slug by removing common provider prefixes if needed.
@@ -101,9 +105,9 @@ function normalizeGameId(raw: string): string {
 /**
  * Build the replay URL for a game.
  */
-export function buildWormArenaReplayUrl(gameId: string): string {
+export function buildWormArenaReplayUrl(gameId: string, siteBaseUrl: string = DEFAULT_SITE_BASE_URL): string {
   const normalized = normalizeGameId(gameId);
-  return `${SITE_BASE_URL}/worm-arena?matchId=${encodeURIComponent(normalized)}`;
+  return `${siteBaseUrl}/worm-arena?matchId=${encodeURIComponent(normalized)}`;
 }
 
 /**
@@ -169,12 +173,44 @@ export default function WormArenaShareButton({
   size = 'sm',
   className = '',
   showDropdown = true,
+  siteBaseUrlOverride,
 }: WormArenaShareButtonProps) {
   const [copied, setCopied] = React.useState(false);
+  const [videoAvailable, setVideoAvailable] = React.useState<boolean | null>(null);
+  const [checkingVideo, setCheckingVideo] = React.useState(false);
+  const [downloadError, setDownloadError] = React.useState<string | null>(null);
 
-  const replayUrl = buildWormArenaReplayUrl(data.gameId);
+  const replayUrl = buildWormArenaReplayUrl(data.gameId, siteBaseUrlOverride ?? DEFAULT_SITE_BASE_URL);
   const tweetText = customText || generateWormArenaTweetText(data);
   const twitterUrl = buildTwitterIntentUrl(tweetText, replayUrl);
+
+  // Check MP4 availability once per gameId
+  React.useEffect(() => {
+    let cancelled = false;
+    const checkAvailability = async () => {
+      setCheckingVideo(true);
+      setDownloadError(null);
+      try {
+        const res = await fetch(`${API_BASE}/api/wormarena/videos/${encodeURIComponent(data.gameId)}/availability`);
+        if (!res.ok) {
+          throw new Error(`HTTP ${res.status}`);
+        }
+        const json = (await res.json()) as { success: boolean; exists?: boolean };
+        if (cancelled) return;
+        setVideoAvailable(json.success && json.exists === true);
+      } catch (err: any) {
+        if (cancelled) return;
+        setVideoAvailable(false);
+        setDownloadError(err?.message || 'Unavailable');
+      } finally {
+        if (!cancelled) setCheckingVideo(false);
+      }
+    };
+    void checkAvailability();
+    return () => {
+      cancelled = true;
+    };
+  }, [data.gameId]);
 
   const handleCopyLink = React.useCallback(async () => {
     try {
@@ -201,6 +237,12 @@ export default function WormArenaShareButton({
     window.open(twitterUrl, '_blank', 'noopener,noreferrer,width=600,height=400');
   }, [twitterUrl]);
 
+  const handleDownload = React.useCallback(() => {
+    if (!videoAvailable) return;
+    const url = `${API_BASE}/api/wormarena/videos/${encodeURIComponent(data.gameId)}/download`;
+    window.open(url, '_blank', 'noopener,noreferrer');
+  }, [videoAvailable, data.gameId]);
+
   // Simple button mode (direct to Twitter)
   if (!showDropdown) {
     return (
@@ -223,13 +265,31 @@ export default function WormArenaShareButton({
       <DropdownMenuTrigger asChild>
         <Button variant={variant} size={size} className={className}>
           <Share2 className="h-4 w-4 mr-1" />
-          Share
+          Tweet/Share
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-48">
+      <DropdownMenuContent align="end" className="w-56">
         <DropdownMenuItem onClick={handleTwitterShare}>
           <Twitter className="h-4 w-4 mr-2" />
           Share on Twitter/X
+        </DropdownMenuItem>
+        <DropdownMenuItem
+          onClick={handleDownload}
+          disabled={checkingVideo || !videoAvailable}
+          className={cn(
+            (checkingVideo || !videoAvailable) && 'opacity-70 cursor-not-allowed',
+          )}
+        >
+          {checkingVideo ? (
+            <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+          ) : (
+            <Download className="h-4 w-4 mr-2" />
+          )}
+          {checkingVideo
+            ? 'Checking video...'
+            : videoAvailable
+            ? 'Download MP4'
+            : 'Video not available'}
         </DropdownMenuItem>
         <DropdownMenuItem onClick={handleCopyTweet}>
           {copied ? (

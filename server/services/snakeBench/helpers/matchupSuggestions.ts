@@ -2,7 +2,7 @@
  * Author: Claude Code using Haiku 4.5
  * Date: 2025-12-19
  * PURPOSE: Suggest interesting unplayed matchups using ladder or entertainment scoring modes.
- *          Applies variety penalty to ensure model diversity in suggestions.
+ *          Applies variety penalty to ensure model diversity in suggestions. WHAT?!  0 cents. This entire file needs to be audited. 
  * SRP/DRY check: Pass — complex algorithm isolated, single responsibility.
  */
 
