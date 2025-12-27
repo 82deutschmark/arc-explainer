@@ -2371,6 +2371,7 @@ export class SnakeBenchRepository extends BaseRepository {
    * Get run length distribution data for models with minimum games threshold.
    * Returns distribution of game lengths (rounds) separated by win/loss outcome.
    * Aggregates across all completed games for qualifying models.
+   * Follows same pattern as getTrueSkillLeaderboard for consistency.
    */
   async getRunLengthDistribution(
     minGames: number = 10,
@@ -2385,53 +2386,32 @@ export class SnakeBenchRepository extends BaseRepository {
       };
     }
 
+    const safeMinGames = Number.isFinite(minGames) ? Math.max(1, Math.min(minGames, 1000)) : 10;
+
     try {
-      // CTE 1: Find models with at least minGames completed games
-      // CTE 2: Get distribution of rounds by outcome for those models
+      // Get all run length data grouped by model, rounds, and result.
+      // Follows getTrueSkillLeaderboard pattern: simple GROUP BY aggregation with COALESCE for NULLs.
+      // Filter by completion in TypeScript to handle edge cases gracefully.
       const sql = `
-        WITH qualified_models AS (
-          SELECT m.id, m.model_slug
-          FROM public.models m
-          WHERE m.is_active = true
-          GROUP BY m.id, m.model_slug
-          HAVING COUNT(DISTINCT CASE
-            WHEN gp.game_id IN (SELECT id FROM public.games WHERE status = 'completed')
-            THEN gp.game_id
-          END) >= $1
-        ),
-        distribution_raw AS (
-          SELECT
-            m.model_slug,
-            g.rounds,
-            gp.result,
-            COUNT(*) as frequency
-          FROM public.games g
-          INNER JOIN public.game_participants gp ON g.id = gp.game_id
-          INNER JOIN public.models m ON gp.model_id = m.id
-          INNER JOIN qualified_models qm ON m.id = qm.id
-          WHERE g.status = 'completed'
-            AND g.rounds IS NOT NULL
-          GROUP BY m.model_slug, g.rounds, gp.result
-        )
         SELECT
-          model_slug,
-          rounds,
-          result,
-          frequency,
-          (SELECT COUNT(*) FROM public.game_participants gp2
-           JOIN public.models m2 ON gp2.model_id = m2.id
-           WHERE regexp_replace(m2.model_slug, ':free$', '') = regexp_replace(distribution_raw.model_slug, ':free$', '')
-           AND gp2.game_id IN (SELECT id FROM public.games WHERE status = 'completed')) as total_games_for_model
-        FROM distribution_raw
-        ORDER BY model_slug, rounds;
+          regexp_replace(m.model_slug, ':free$', '') AS model_slug,
+          COALESCE(g.rounds, 0) AS rounds,
+          gp.result,
+          COUNT(*) AS frequency
+        FROM public.models m
+        JOIN public.game_participants gp ON m.id = gp.model_id
+        JOIN public.games g ON gp.game_id = g.id
+        WHERE g.status = 'completed'
+        GROUP BY regexp_replace(m.model_slug, ':free$', ''), COALESCE(g.rounds, 0), gp.result
+        ORDER BY model_slug, COALESCE(g.rounds, 0);
       `;
 
-      const result = await this.query(sql, [minGames]);
+      const result = await this.query(sql);
       const rows: any[] = result.rows || [];
 
       if (rows.length === 0) {
         return {
-          minGamesThreshold: minGames,
+          minGamesThreshold: safeMinGames,
           modelsIncluded: 0,
           totalGamesAnalyzed: 0,
           distributionData: [],
@@ -2439,21 +2419,30 @@ export class SnakeBenchRepository extends BaseRepository {
         };
       }
 
-      // Group rows by model and transform into nested structure
+      // Aggregate in TypeScript: compute model totals and filter by minGames threshold.
+      // This keeps SQL simple (just GROUP BY), matching the getTrueSkillLeaderboard pattern.
       const modelMap = new Map<string, Map<number, { wins: number; losses: number }>>();
-      const modelTotals = new Map<string, number>();
+      const modelGameCounts = new Map<string, number>();
       let totalGamesAnalyzed = 0;
 
       rows.forEach((row: any) => {
         const modelSlug = String(row.model_slug ?? '');
         const rounds = parseInt(String(row.rounds ?? '0'), 10) || 0;
-        const result = String(row.result ?? 'lost');
+        const resultLabel = String(row.result ?? 'lost').toLowerCase();
         const frequency = parseInt(String(row.frequency ?? '0'), 10) || 0;
-        const totalGames = parseInt(String(row.total_games_for_model ?? '0'), 10) || 0;
 
+        // Skip rows with 0 frequency (shouldn't happen, but defensive)
+        if (frequency <= 0) {
+          return;
+        }
+
+        // Track total games per model
+        const currentTotal = modelGameCounts.get(modelSlug) || 0;
+        modelGameCounts.set(modelSlug, currentTotal + frequency);
+
+        // Initialize model map if needed
         if (!modelMap.has(modelSlug)) {
           modelMap.set(modelSlug, new Map());
-          modelTotals.set(modelSlug, totalGames);
         }
 
         const binMap = modelMap.get(modelSlug)!;
@@ -2462,7 +2451,7 @@ export class SnakeBenchRepository extends BaseRepository {
         }
 
         const bin = binMap.get(rounds)!;
-        if (result === 'won') {
+        if (resultLabel === 'won') {
           bin.wins += frequency;
         } else {
           bin.losses += frequency;
@@ -2471,11 +2460,12 @@ export class SnakeBenchRepository extends BaseRepository {
         totalGamesAnalyzed += frequency;
       });
 
-      // Transform to response structure, sorted by total games descending
+      // Filter to only models with >= minGames and build response.
       const distributionData: WormArenaRunLengthModelData[] = Array.from(modelMap.entries())
+        .filter(([modelSlug]) => (modelGameCounts.get(modelSlug) || 0) >= safeMinGames)
         .map(([modelSlug, binMap]) => ({
           modelSlug,
-          totalGames: modelTotals.get(modelSlug) || 0,
+          totalGames: modelGameCounts.get(modelSlug) || 0,
           bins: Array.from(binMap.entries())
             .map(([rounds, { wins, losses }]) => ({
               rounds,
@@ -2487,7 +2477,7 @@ export class SnakeBenchRepository extends BaseRepository {
         .sort((a, b) => b.totalGames - a.totalGames);
 
       return {
-        minGamesThreshold: minGames,
+        minGamesThreshold: safeMinGames,
         modelsIncluded: distributionData.length,
         totalGamesAnalyzed,
         distributionData,
@@ -2501,7 +2491,7 @@ export class SnakeBenchRepository extends BaseRepository {
         'snakebench-db',
       );
       return {
-        minGamesThreshold: minGames,
+        minGamesThreshold: safeMinGames,
         modelsIncluded: 0,
         totalGamesAnalyzed: 0,
         distributionData: [],
