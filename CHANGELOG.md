@@ -1,8 +1,96 @@
 # Author: Codex (GPT-5)
-# Date: 2025-12-20
+# Date: 2025-12-25
 # PURPOSE: Changelog for ARC Explainer - tracks all changes with semantic versioning.
 # SRP/DRY check: Pass - entries document changes without altering historical records.
 # New entries at the top, use proper SemVer!
+
+### Version 6.11.1  Dec 25, 2025
+
+- **UI: Worm Arena Greatest Hits pinned matches** (Author: Cascade)
+  - **Purpose**: Highlight recent standout Worm Arena battles for quick replay access.
+  - **Behavior**:
+    - Added pinned replays for Grok 4.1 Fast vs GLM 4.7 (24-21, 94 rounds, high cost), GPT-5 Nano vs GPT-5.1 Codex Mini (21-20, 90 rounds), Nemotron 3 Nano vs GPT-5.1 Codex Mini (11-10, 53 rounds), DeepSeek v3.2 vs GPT-5 Nano (15-15 tie, 77 rounds), and Gemini 2.5 Flash vs DeepSeek v3.2 (18-11, 58 rounds).
+    - Pinned entries are merged with fetched greatest hits and surface at the top of the list with replay links.
+  - **Files Modified**:
+    - `client/src/components/WormArenaGreatestHits.tsx`
+
+### Version 6.11.0  Dec 25, 2025
+
+- **Feature: BYOK Production Enforcement** (Author: Claude Sonnet 4)
+  - **Purpose**: Enforce Bring Your Own Key (BYOK) policy in production - users must provide their own API keys for all paid AI providers.
+  - **Behavior**:
+    - Production: ALL models require user-provided API keys (no server key fallback)
+    - Dev/staging: Existing behavior preserved (server keys allowed as fallback)
+  - **Backend Changes**:
+    - Created `server/utils/environmentPolicy.ts` - environment detection utility with `requiresUserApiKey()`, `isProduction()`, `isDevelopment()` helpers
+    - Updated `poetiqController.ts` - environment-aware BYOK enforcement
+    - Updated `snakeBenchController.ts` - production API key requirement for matches
+    - Updated `streamController.ts` - production API key requirement for puzzle analysis
+  - **Frontend Changes**:
+    - Created `client/src/lib/environmentPolicy.ts` - client-side environment detection
+    - Updated `client/src/lib/streaming/analysisStream.ts` - added `apiKey` to `AnalysisStreamParams`
+    - Updated `client/src/hooks/useAnalysisResults.ts` - pass `apiKey` through to streaming
+    - Updated `client/src/pages/PuzzleExaminer.tsx` - added BYOK API key input card (production only)
+  - **Security**: User keys are used for session only, never stored persistently
+
+### Version 6.10.13  Dec 25, 2025
+
+- **Fix: Worm Arena Live score display disconnected from streaming data** (Author: Claude Haiku 4.5)
+  - **Purpose**: Fix score showing "0" across all UI panels despite correct data in streaming output.
+  - **Root Cause**: Snake ID extraction prioritized `playerNameBySnakeId`/`reasoningBySnakeId` (populated from chunks) over `frame.state.scores` (source of truth). When chunk metadata used different keys than frame state, scores failed to resolve.
+  - **Behavior**:
+    - Prioritize `frame.state.scores` keys as primary source for snake IDs (ensures we extract scores from the correct keys)
+    - Move score display from bottom of reasoning panels to header (inline with player name and worm icon)
+    - Removed duplicate score section at panel bottom
+  - **Files Modified**:
+    - `client/src/pages/WormArenaLive.tsx` (snakeIds extraction logic, lines 445-470)
+    - `client/src/components/WormArenaReasoning.tsx` (score repositioned to header, removed bottom score panel)
+
+### Version 6.10.12  Dec 25, 2025
+
+- **Fix: GPT-5/o-series models must route directly to OpenAI in Worm Arena** (Author: Claude Sonnet 4)
+  - **Purpose**: Fix "OpenRouter response missing output field" error for GPT-5 and o-series models.
+  - **Root Cause**: OpenRouter's Responses API proxy returns empty `output=[]` for GPT-5/o-series models. These models require the Responses API which OpenRouter does not properly proxy.
+  - **Behavior**: Added `_requires_responses_api()` helper to detect GPT-5/o-series models. Factory now routes these models directly to OpenAI regardless of explicit `provider: openrouter` config. Raises clear error if OPENAI_API_KEY is missing.
+  - **Mixed Matchups**: GPT-5.1-Codex-Mini vs Minimax 2.1 now works correctly - each player gets appropriate provider (OpenAI direct vs OpenRouter).
+  - **Files Modified**:
+    - `external/SnakeBench/backend/llm_providers.py` - Added routing fix and helper function
+
+### Version 6.10.11  Dec 25, 2025
+
+- **Fix: Worm Arena OpenRouter transforms routing** (Author: Codex (GPT-5))
+  - **Purpose**: Stop OpenRouter-only `transforms` from breaking OpenAI SDK calls while preserving Worm Arena defaults.
+  - **Behavior**: Routes OpenRouter `transforms` via `extra_body`, strips them for OpenAI direct, and documents the Worm Arena integration note.
+  - **Files Modified**:
+    - `external/SnakeBench/backend/llm_providers.py`
+    - `external/SnakeBench/README.md`
+    - `external/SnakeBench/CHANGELOG.md`
+
+### Version 6.10.10  Dec 24, 2025
+
+- **UI: Improve grid size label readability on analysis cards** (Author: Cascade)
+  - **Purpose**: Keep grid dimension badges and titles legible against warm gradients and dark shells.
+  - **Behavior**: Forced black text on puzzle grid titles and size badges with a white badge background and dark border for reliable contrast.
+  - **Files Modified**:
+    - `client/src/components/puzzle/PuzzleGrid.tsx`
+
+### Version 6.10.9  Dec 24, 2025
+
+- **Ops: OpenRouter tournament script for new Seed/GLM/Minimax models** (Author: Cascade)
+  - **Purpose**: Queue WormArena matches round-robin among new models and against baselines with optional async and completion logging.
+  - **Behavior**: Runs both-direction pairings for seed 1.6 variants, minimax m2.1, glm 4.7, and “oops” slug versus each other and baselines (GPT-5.1 Codex Mini, GPT-5 Mini, GPT-5 Nano, Grok 4.1 Fast, Devstral 2512, DeepSeek v3.2). Adds async job tracking and completion summary.
+  - **Files Modified**:
+    - `scripts/worm-arena-tournaments/run-paid-devstral-matches.ps1`
+
+### Version 6.10.7  Dec 24, 2025
+
+- **Chore: Root cleanup for legacy scripts and media** (Author: Cascade)
+  - **Purpose**: Reduce clutter by grouping Johan_Land verification scripts, archival docs, and media blobs into scoped folders.
+  - **Work**:
+    - Created `scripts/legacy-johan-land/README.md` and relocated all Johan_Land DB check `.mjs` utilities there.
+    - Added `docs/archives/` and moved historical docs (AGENTS-OLD.md, oldCLAUDE.md) plus misc temp notes into purpose-built directories.
+    - Introduced `media/reference/` and moved multi-GB MP3/MP4 recordings out of the repo root.
+  - **Impact**: Root directory now surfaces only actively maintained assets; legacy tooling remains available under a documented folder.
 
 ### Version 6.10.6  Dec 24, 2025
 

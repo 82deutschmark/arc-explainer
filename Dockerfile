@@ -8,10 +8,11 @@ FROM node:20-alpine
 # Author: Cascade (Claude Sonnet 4)
 # Updated: 2025-12-02 - Ensure beetreeARC and SnakeBench are available even when submodules are not pre-initialized
 
-# Add Python3, git, and canvas dependencies
+# Add Python3, git, canvas dependencies, and cron daemon for scheduled tasks
 RUN apk add --no-cache \
     python3 py3-pip \
     git \
+    dcron \
     pkgconf \
     cairo-dev \
     pango-dev \
@@ -101,5 +102,10 @@ RUN echo "=== CHECKING BUILD OUTPUT ===" && \
     echo "=== INSPECTING JS BUNDLE ===" && \
     if ls dist/public/assets/*.js 1> /dev/null 2>&1; then head -n 20 dist/public/assets/*.js; else echo "No JS bundles present in assets directory (unexpected for Vite build)."; fi
 
+# Copy crontab and entrypoint script for scheduled sync
+COPY crontab /etc/crontabs/root
+COPY docker-entrypoint.sh /app/docker-entrypoint.sh
+RUN chmod +x /app/docker-entrypoint.sh
+
 EXPOSE 5000
-CMD ["node", "dist/index.js"]
+ENTRYPOINT ["/app/docker-entrypoint.sh"]

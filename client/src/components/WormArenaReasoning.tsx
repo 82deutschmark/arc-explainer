@@ -33,13 +33,6 @@ export default function WormArenaReasoning({
 }: WormArenaReasoningProps) {
   const safeScore = Number.isFinite(score) ? Math.max(0, Math.floor(score)) : 0;
 
-  // Limit the number of rendered apple emojis to keep layout tidy while hinting at overflow.
-  const appleIcons = React.useMemo(() => {
-    const visible = Math.min(6, safeScore);
-    return Array.from({ length: visible }, (_, idx) => idx);
-  }, [safeScore]);
-  const remainingScore = safeScore - appleIcons.length;
-
   return (
     <Card
       className={cn(
@@ -48,7 +41,7 @@ export default function WormArenaReasoning({
       )}
       style={{ height: `${PANEL_HEIGHT_REM}rem` }}
     >
-      <CardHeader className="text-center pb-4">
+      <CardHeader className="text-center pb-3">
         <CardTitle
           className={cn(
             'text-lg font-bold flex items-center justify-center gap-2',
@@ -58,27 +51,15 @@ export default function WormArenaReasoning({
           <span role="img" aria-hidden="true">
             {WORM_ICON}
           </span>
-          {playerName}
+          <span className="flex-1">{playerName}</span>
+          <span className="text-base font-semibold text-amber-600 ml-2" title={`Score: ${safeScore}`}>
+            {safeScore} {APPLE_ICON}
+          </span>
         </CardTitle>
         <div className="text-xs uppercase tracking-wide text-muted-foreground">{strategyLabel}</div>
       </CardHeader>
-      <CardContent className="flex-1 min-h-0 flex flex-col">
-        <div className="flex-1 min-h-0 overflow-y-auto pr-1 text-base font-medium leading-relaxed whitespace-pre-wrap text-worm-ink">
-          {reasoning?.trim()?.length ? reasoning : 'No reasoning captured for this moment.'}
-        </div>
-        <div className="mt-6 pt-4 border-t border-dashed flex flex-col items-center gap-2">
-          <div className="flex items-center gap-1 text-xl" aria-label={`Score ${safeScore}`}>
-            {appleIcons.map((idx) => (
-              <span key={idx} role="img" aria-hidden="true">
-                {APPLE_ICON}
-              </span>
-            ))}
-            {remainingScore > 0 && (
-              <span className="text-base font-semibold text-muted-foreground">+{remainingScore}</span>
-            )}
-          </div>
-          <div className="text-sm text-muted-foreground font-semibold">Score: {safeScore}</div>
-        </div>
+      <CardContent className="flex-1 min-h-0 overflow-y-auto pr-1 text-base font-medium leading-relaxed whitespace-pre-wrap text-worm-ink">
+        {reasoning?.trim()?.length ? reasoning : 'No reasoning captured for this moment.'}
       </CardContent>
     </Card>
   );

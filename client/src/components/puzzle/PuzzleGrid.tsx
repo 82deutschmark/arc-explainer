@@ -13,6 +13,7 @@
  *
  * SRP/DRY check: Pass - Single responsibility (grid rendering with adaptive sizing)
  * DaisyUI: Pass - Uses DaisyUI badge component
+ * UPDATED (2025-12-24) by Cascade: Enforce black, high-contrast grid size labels for readability on warm and dark card backgrounds.
  */
 
 import React, { useMemo } from 'react';
@@ -165,8 +166,9 @@ export const PuzzleGrid = React.memo(function PuzzleGrid({
     <div className={`inline-block ${compact ? 'space-y-0' : 'space-y-1'}`} style={containerStyle}>
       {title && (
         <div className={`flex items-center justify-center ${compact ? 'gap-0.5' : 'gap-1'} ${compact ? 'mb-0.5' : 'mb-1'}`}>
-          <h3 className={`${compact ? 'text-[10px]' : 'text-xs'} font-medium text-gray-700`}>{title}</h3>
-          <div className="badge badge-outline badge-sm text-[10px] px-1 py-0 bg-base-200">{gridMetadata.rows}×{gridMetadata.cols}</div>
+          {/* Adapt text color for both warm (light) and dark theme cards */}
+          <h3 className={`${compact ? 'text-[10px]' : 'text-xs'} font-medium text-amber-900 dark:text-emerald-200`}>{title}</h3>
+          <div className="badge badge-outline badge-sm text-[10px] px-1 py-0 bg-white text-black dark:bg-slate-900/50 dark:text-emerald-200 dark:border-violet-700/70 border-gray-800">{gridMetadata.rows}×{gridMetadata.cols}</div>
         </div>
       )}
       <div className="inline-block">

@@ -1,51 +1,107 @@
-# Worm Arena Tournament Script - Devstral 2512 Paid vs All Free Models
+# Worm Arena Tournament Script - Seed/Grok/Devstral vs baselines
 # Author: Cascade GPT 5.1 high reasoning
-# Date: 2025-12-10
-# PURPOSE: Run parallel Worm Arena matches between Devstral 2512 Paid and all free models listed in server/config/models.ts.
- $apiEndpoint = "https://localhost:5000/api/snakebench/run-batch"
-# $apiEndpoint = "https://arc-explainer-staging.up.railway.app/api/snakebench/run-batch"
-$modelA = "google/gemini-3-flash-preview"
+# Date: 2025-12-25
+# PURPOSE: Run parallel Worm Arena matches for new OpenRouter models plus baselines.
+#          - Pairwise round-robin among new models (both directions).
+#          - Each new model also plays baseline opponents (both directions).
+#          - Logs queued matches for visibility.
+# SRP/DRY check: Pass (single-purpose queue script)
 
-# mostly free models whose apiModelName exists in server/config/models.ts (provider: OpenRouter)
-$freeModels = @(
-    "openai/gpt-5-nano",
-    "openai/gpt-5.1-codex-mini",
-    "openai/gpt-5-mini",
-    "x-ai/grok-code-fast-1",
-    "google/gemini-2.5-flash-lite-preview-09-2025",
-    "deepseek/deepseek-v3.2",
-
-    
-    "x-ai/grok-4.1-fast",
-    "allenai/olmo-3.1-32b-think:free",
-    "moonshotai/kimi-dev-72b:free",
-    "nex-agi/deepseek-v3.1-nex-n1:free",
-    "mistralai/devstral-2512:free",
-    "amazon/nova-2-lite-v1:free",
-    "essentialai/rnj-1-instruct",
-    "nvidia/nemotron-3-nano-30b-a3b:free",
-    "xiaomi/mimo-v2-flash:free"
+param(
+  [string]$ApiEndpoint = "https://localhost:5000/api/snakebench/run-batch",
+  [int]$MatchesPerDirection = 1,
+  [int]$DelayMs = 300,
+  [switch]$Async
 )
 
-$jobCount = 0
+$newModels = @(
+  # New OpenRouter models you want to pit against baselines (edit as needed)
+  "bytedance-seed/seed-1.6",
+  "bytedance-seed/seed-1.6-flash",
+  "deepseek/deepseek-v3.1-terminus",
+  "deepseek/deepseek-v3.2",
+  "google/gemini-2.5-flash-lite-preview-09-2025",
+  "google/gemini-2.5-flash-preview-09-2025",
+  "google/gemini-3-flash-preview",
+  "x-ai/grok-4.1-fast",
+  "minimax/minimax-m2.1",
+  "z-ai/glm-4.7"
+)
 
-foreach ($modelB in $freeModels) {
-    Write-Host "Queuing match: $modelA vs $modelB" -ForegroundColor Cyan
-    $body = @{
-        modelA = $modelA
-        modelB = $modelB
-        count = 9
-    } | ConvertTo-Json
+$baselines = @(
+  # Baselines stay separate so you can add/remove without touching the new list
+  "bytedance-seed/seed-1.6",
+  "bytedance-seed/seed-1.6-flash",
+  "deepseek/deepseek-v3.1-terminus",
+  "deepseek/deepseek-v3.2",
+  "google/gemini-2.5-flash-lite-preview-09-2025",
+  "google/gemini-2.5-flash-preview-09-2025",
+  "google/gemini-3-flash-preview",
+  "x-ai/grok-4.1-fast",
+  "minimax/minimax-m2.1",
+  "z-ai/glm-4.7"
+)
 
-    Start-Job -ScriptBlock {
-        param($uri, $body)
-        Invoke-WebRequest -Uri $uri -Method Post -Headers @{"Content-Type"="application/json"} -Body $body | Out-Null
-    } -ArgumentList $apiEndpoint, $body | Out-Null
+$jobs = New-Object System.Collections.Generic.List[System.Management.Automation.Job]
 
-    $jobCount++
-    Start-Sleep -Milliseconds 500
+function Invoke-WormMatchBatch {
+  param(
+    [string]$A,
+    [string]$B
+  )
+  $body = @{
+    modelA = $A
+    modelB = $B
+    count = $MatchesPerDirection
+  } | ConvertTo-Json
+
+  Write-Host "Queue: $A vs $B (x$MatchesPerDirection)" -ForegroundColor Cyan
+  if ($Async) {
+    $jobs.Add(
+      (Start-Job -ScriptBlock {
+        param($uri, $payload)
+        Invoke-WebRequest -Uri $uri -Method Post -Headers @{"Content-Type"="application/json"} -Body $payload | Out-Null
+      } -ArgumentList $ApiEndpoint, $body)
+    ) | Out-Null
+  } else {
+    Invoke-WebRequest -Uri $ApiEndpoint -Method Post -Headers @{"Content-Type"="application/json"} -Body $body | Out-Null
+  }
+}
+
+# Round-robin among new models (both directions)
+for ($i = 0; $i -lt $newModels.Count; $i++) {
+  for ($j = $i + 1; $j -lt $newModels.Count; $j++) {
+    Invoke-WormMatchBatch -A $newModels[$i] -B $newModels[$j]
+    Invoke-WormMatchBatch -A $newModels[$j] -B $newModels[$i]
+    Start-Sleep -Milliseconds $DelayMs
+  }
+}
+
+# New models vs baselines (both directions)
+foreach ($n in $newModels) {
+  foreach ($b in $baselines) {
+    Invoke-WormMatchBatch -A $n -B $b
+    Invoke-WormMatchBatch -A $b -B $n
+    Start-Sleep -Milliseconds $DelayMs
+  }
 }
 
 Write-Host ""
-Write-Host "All $jobCount batches submitted asynchronously!" -ForegroundColor Green
-Write-Host "Games running in parallel on backend"
+Write-Host "Submitted $($jobs.Count) async jobs (if Async on)." -ForegroundColor Green
+Write-Host "Matches running in parallel on backend."
+
+if ($Async -and $jobs.Count -gt 0) {
+  Write-Host ""
+  Write-Host "Waiting for job completions to summarize results..." -ForegroundColor Yellow
+  Receive-Job -Job $jobs -Wait | Out-Null
+
+  $failed = $jobs | Where-Object { $_.State -ne 'Completed' }
+  if ($failed.Count -gt 0) {
+    Write-Host "Some jobs did not complete:" -ForegroundColor Red
+    $failed | ForEach-Object { Write-Host " - $($_.Id): $($_.State)" -ForegroundColor Red }
+  } else {
+    Write-Host "All jobs completed. Fetch match results via /api/snakebench/games or UI." -ForegroundColor Green
+  }
+
+  $jobs | Remove-Job | Out-Null
+}

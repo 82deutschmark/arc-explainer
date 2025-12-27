@@ -1,0 +1,7 @@
+# Author: Claude Haiku 4.5
+# Date: 2025-12-25
+# PURPOSE: Schedule OpenRouter catalog sync every 12 hours
+# Format: minute hour day month day-of-week command
+
+# Run sync-openrouter-catalog.ts every 12 hours (at 00:00 and 12:00 UTC)
+0 0,12 * * * cd /app && node --import tsx server/scripts/sync-openrouter-catalog.ts >> /var/log/cron-sync.log 2>&1
