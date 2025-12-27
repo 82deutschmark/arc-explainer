@@ -1,5 +1,40 @@
 # New entries at the top, use proper SemVer!
 
+### Version 6.16.0  Dec 27, 2025
+
+- **Architecture: Modularize Arc3Games into per-game files for 100+ game scalability** (Author: Claude Haiku 4.5)
+  - **Purpose**: Transform monolithic `shared/arc3Games.ts` (383 lines) into modular, extensible architecture where each game has its own self-contained file. Designed to scale to 100+ games with zero merge conflicts.
+  - **Problem Solved**: Monolithic file caused merge conflicts, unclear ownership, poor scalability. Adding game #100 required editing central file.
+  - **Solution**: Per-game files with central registry maintaining backward compatibility.
+  - **Architecture Changes**:
+    - Extracted all TypeScript interfaces to `shared/arc3Games/types.ts`
+    - Created per-game files: `ls20.ts`, `as66.ts`, `ft09.ts`, `lp85.ts`, `sp80.ts`, `vc33.ts`
+    - Central registry in `shared/arc3Games/index.ts` (maintains 100% backward compatibility)
+    - Deleted original monolithic file
+  - **New Features**:
+    - Added `'replay'` type to `GameResource` interface for expert playthroughs
+    - Added Zanthous grandmaster replays:
+      - **LP85**: 92 moves completion (https://three.arcprize.org/replay/lp85-d265526edbaa/dcae645c-3fec-4388-b805-7427f8cdb318)
+      - **AS66**: 415 moves completion (https://three.arcprize.org/replay/as66-821a4dcad9c2/515e3de3-0b2a-4199-b268-4b1f84d75e10)
+  - **UI Enhancements**:
+    - Updated `Arc3GameSpoiler.tsx` with new "Notable Playthroughs" section
+    - Replays displayed separately from general resources with gradient background styling
+    - Replays get visual prominence to highlight expert gameplay
+  - **Documentation**:
+    - Added `docs/arc3-game-analysis/ls20-analysis.md` - detailed frame-by-frame analysis of LS20 grid patterns and mechanics
+    - LS20 game page now includes analysis resource link
+  - **Backward Compatibility**: 100% maintained - all existing imports work unchanged
+  - **Future Extensibility**: Adding game #100 requires only:
+    1. Create `shared/arc3Games/game100.ts`
+    2. Add 1 import line in `shared/arc3Games/index.ts`
+  - **Files Modified**:
+    - `client/src/pages/Arc3GameSpoiler.tsx` (+Notable Playthroughs section, +replay filtering)
+    - `shared/arc3Games/` (new directory with 8 files: types, index, 6 games)
+    - `docs/arc3-game-analysis/` (new analysis documentation)
+  - **Files Deleted**:
+    - `shared/arc3Games.ts` (monolithic file replaced by directory structure)
+  - **Build Status**: No errors, full production build succeeds
+
 ### Version 6.15.0  Dec 27, 2025
 
 - **Architectural Refactor: Monolithic SnakeBench Repository Split** (Author: Gemini 3 Flash High)
