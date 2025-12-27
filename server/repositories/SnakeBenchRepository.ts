@@ -1,6 +1,6 @@
 /**
  * Author: Codex (GPT-5)
- * Date: 2025-12-20
+ * Date: 2025-12-27
  * PURPOSE: SnakeBenchRepository
  *          Handles compatibility-first persistence of SnakeBench games
  *          into PostgreSQL tables that mirror the root SnakeBench
@@ -35,6 +35,7 @@ import type {
   WormArenaModelInsightsSummary,
   WormArenaModelInsightsFailureMode,
   WormArenaModelInsightsOpponent,
+  WormArenaRunLengthDistributionData,
 } from '../../shared/types.js';
 
 export interface SnakeBenchRecordMatchParams {
@@ -695,10 +696,11 @@ export class SnakeBenchRepository extends BaseRepository {
   /**
    * Greatest-hits selector for Worm Arena.
    *
-   * Uses three simple leaderboards over completed games:
+   * Uses multiple leaderboards over completed games:
    * - Longest by rounds played (rounds >= 20)
    * - Most expensive by total_cost (cost > $0.01, rounds >= 5)
    * - Highest scoring by max per-player score (rounds >= 5)
+   * - Monster apple hauls (any player with 25+ apples)
    *
    * Then merges/deduplicates the results into a compact list of
    * WormArenaGreatestHitGame entries with human-readable highlight reasons.
@@ -896,13 +898,50 @@ export class SnakeBenchRepository extends BaseRepository {
         LIMIT $1;
       `;
 
-      const [roundsResult, costResult, scoreResult, durationResult, totalScoreResult, closeMatchesResult] = await Promise.all([
+      const applesHaulSql = `
+        SELECT
+          g.id AS game_id,
+          g.start_time,
+          g.end_time,
+          g.rounds AS rounds_played,
+          g.board_width,
+          g.board_height,
+          g.total_cost,
+          MAX(gp.score) AS max_final_score,
+          SUM(gp.score) AS sum_final_scores,
+          ABS(
+            COALESCE(MAX(CASE WHEN gp.player_slot = 0 THEN gp.score END), 0) -
+            COALESCE(MAX(CASE WHEN gp.player_slot = 1 THEN gp.score END), 0)
+          ) AS score_delta,
+          MAX(CASE WHEN gp.player_slot = 0 THEN m.model_slug END) AS model_a,
+          MAX(CASE WHEN gp.player_slot = 1 THEN m.model_slug END) AS model_b
+        FROM public.games g
+        JOIN public.game_participants gp ON gp.game_id = g.id
+        JOIN public.models m ON gp.model_id = m.id
+        WHERE g.status = 'completed'
+          AND COALESCE(g.rounds, 0) >= 5
+        GROUP BY g.id, g.start_time, g.end_time, g.rounds, g.board_width, g.board_height, g.total_cost
+        HAVING MAX(gp.score) >= 25
+        ORDER BY MAX(gp.score) DESC, COALESCE(g.start_time, NOW()) DESC
+        LIMIT $1;
+      `;
+
+      const [
+        roundsResult,
+        costResult,
+        scoreResult,
+        durationResult,
+        totalScoreResult,
+        closeMatchesResult,
+        applesHaulResult,
+      ] = await Promise.all([
         this.query(roundsSql, [safeLimit]),
         this.query(costSql, [safeLimit]),
         this.query(scoreSql, [safeLimit]),
         this.query(durationSql, [safeLimit]),
         this.query(totalScoreSql, [safeLimit]),
         this.query(closeMatchesSql, [safeLimit]),
+        this.query(applesHaulSql, [safeLimit]),
       ]);
 
       const seen = new Map<string, WormArenaGreatestHitGame>();
@@ -910,7 +949,7 @@ export class SnakeBenchRepository extends BaseRepository {
 
       const addGameFromRow = (
         row: any,
-        dimension: 'rounds' | 'cost' | 'score' | 'duration' | 'total_score' | 'close_match',
+        dimension: 'rounds' | 'cost' | 'score' | 'duration' | 'total_score' | 'close_match' | 'apples_25_plus',
       ) => {
         const gameId = String(row.game_id ?? row.id ?? '').trim();
         if (!gameId || seen.has(gameId)) return;
@@ -993,6 +1032,15 @@ export class SnakeBenchRepository extends BaseRepository {
           } else {
             highlightReason = `Combined score (${sumFinalScores} apples)`;
           }
+        } else if (dimension === 'apples_25_plus') {
+          category = 'apples_25_plus';
+          if (maxFinalScore >= 35) {
+            highlightReason = `Monster apple haul (${maxFinalScore} apples by one player)`;
+          } else if (maxFinalScore >= 30) {
+            highlightReason = `Huge apple haul (${maxFinalScore} apples by one player)`;
+          } else {
+            highlightReason = `25+ apples by one player`;
+          }
         } else {
           // close_match
           category = 'close_match';
@@ -1065,6 +1113,13 @@ export class SnakeBenchRepository extends BaseRepository {
       if (ordered.length < MAX_TOTAL) {
         for (const row of closeMatchesResult.rows ?? []) {
           addGameFromRow(row, 'close_match');
+          if (ordered.length >= MAX_TOTAL) break;
+        }
+      }
+
+      if (ordered.length < MAX_TOTAL) {
+        for (const row of applesHaulResult.rows ?? []) {
+          addGameFromRow(row, 'apples_25_plus');
           if (ordered.length >= MAX_TOTAL) break;
         }
       }
@@ -2308,6 +2363,149 @@ export class SnakeBenchRepository extends BaseRepository {
         'snakebench-db',
       );
       return null;
+    }
+  }
+
+  /**
+   * Get run length distribution data for models with minimum games threshold.
+   * Returns distribution of game lengths (rounds) separated by win/loss outcome.
+   * Aggregates across all completed games for qualifying models.
+   */
+  async getRunLengthDistribution(
+    minGames: number = 10,
+  ): Promise<WormArenaRunLengthDistributionData> {
+    if (!this.isConnected()) {
+      return {
+        minGamesThreshold: minGames,
+        modelsIncluded: 0,
+        totalGamesAnalyzed: 0,
+        distributionData: [],
+        timestamp: Date.now(),
+      };
+    }
+
+    try {
+      // CTE 1: Find models with at least minGames completed games
+      // CTE 2: Get distribution of rounds by outcome for those models
+      const sql = `
+        WITH qualified_models AS (
+          SELECT m.id, m.model_slug
+          FROM public.models m
+          WHERE m.is_active = true
+          GROUP BY m.id, m.model_slug
+          HAVING COUNT(DISTINCT CASE
+            WHEN gp.game_id IN (SELECT id FROM public.games WHERE status = 'completed')
+            THEN gp.game_id
+          END) >= $1
+        ),
+        distribution_raw AS (
+          SELECT
+            m.model_slug,
+            g.rounds,
+            gp.result,
+            COUNT(*) as frequency
+          FROM public.games g
+          INNER JOIN public.game_participants gp ON g.id = gp.game_id
+          INNER JOIN public.models m ON gp.model_id = m.id
+          INNER JOIN qualified_models qm ON m.id = qm.id
+          WHERE g.status = 'completed'
+            AND g.rounds IS NOT NULL
+          GROUP BY m.model_slug, g.rounds, gp.result
+        )
+        SELECT
+          model_slug,
+          rounds,
+          result,
+          frequency,
+          (SELECT COUNT(*) FROM public.game_participants gp2
+           JOIN public.models m2 ON gp2.model_id = m2.id
+           WHERE regexp_replace(m2.model_slug, ':free$', '') = regexp_replace(distribution_raw.model_slug, ':free$', '')
+           AND gp2.game_id IN (SELECT id FROM public.games WHERE status = 'completed')) as total_games_for_model
+        FROM distribution_raw
+        ORDER BY model_slug, rounds;
+      `;
+
+      const result = await this.query(sql, [minGames]);
+      const rows: any[] = result.rows || [];
+
+      if (rows.length === 0) {
+        return {
+          minGamesThreshold: minGames,
+          modelsIncluded: 0,
+          totalGamesAnalyzed: 0,
+          distributionData: [],
+          timestamp: Date.now(),
+        };
+      }
+
+      // Group rows by model and transform into nested structure
+      const modelMap = new Map<string, Map<number, { wins: number; losses: number }>>();
+      const modelTotals = new Map<string, number>();
+      let totalGamesAnalyzed = 0;
+
+      rows.forEach((row: any) => {
+        const modelSlug = String(row.model_slug ?? '');
+        const rounds = parseInt(String(row.rounds ?? '0'), 10) || 0;
+        const result = String(row.result ?? 'lost');
+        const frequency = parseInt(String(row.frequency ?? '0'), 10) || 0;
+        const totalGames = parseInt(String(row.total_games_for_model ?? '0'), 10) || 0;
+
+        if (!modelMap.has(modelSlug)) {
+          modelMap.set(modelSlug, new Map());
+          modelTotals.set(modelSlug, totalGames);
+        }
+
+        const binMap = modelMap.get(modelSlug)!;
+        if (!binMap.has(rounds)) {
+          binMap.set(rounds, { wins: 0, losses: 0 });
+        }
+
+        const bin = binMap.get(rounds)!;
+        if (result === 'won') {
+          bin.wins += frequency;
+        } else {
+          bin.losses += frequency;
+        }
+
+        totalGamesAnalyzed += frequency;
+      });
+
+      // Transform to response structure, sorted by total games descending
+      const distributionData: WormArenaRunLengthModelData[] = Array.from(modelMap.entries())
+        .map(([modelSlug, binMap]) => ({
+          modelSlug,
+          totalGames: modelTotals.get(modelSlug) || 0,
+          bins: Array.from(binMap.entries())
+            .map(([rounds, { wins, losses }]) => ({
+              rounds,
+              wins,
+              losses,
+            }))
+            .sort((a, b) => a.rounds - b.rounds),
+        }))
+        .sort((a, b) => b.totalGames - a.totalGames);
+
+      return {
+        minGamesThreshold: minGames,
+        modelsIncluded: distributionData.length,
+        totalGamesAnalyzed,
+        distributionData,
+        timestamp: Date.now(),
+      };
+    } catch (error) {
+      logger.warn(
+        `SnakeBenchRepository.getRunLengthDistribution: query failed: ${
+          error instanceof Error ? error.message : String(error)
+        }`,
+        'snakebench-db',
+      );
+      return {
+        minGamesThreshold: minGames,
+        modelsIncluded: 0,
+        totalGamesAnalyzed: 0,
+        distributionData: [],
+        timestamp: Date.now(),
+      };
     }
   }
 }

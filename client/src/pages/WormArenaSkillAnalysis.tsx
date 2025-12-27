@@ -231,6 +231,7 @@ export default function WormArenaSkillAnalysis() {
             { label: 'Models', href: '/worm-arena/models' },
             { label: 'Stats & Placement', href: '/worm-arena/stats' },
             { label: 'Skill Analysis', href: '/worm-arena/skill-analysis', active: true },
+            { label: 'Distributions', href: '/worm-arena/distributions' },
             { label: 'Rules', href: '/worm-arena/rules' },
           ]}
           showMatchupLabel={false}

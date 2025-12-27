@@ -656,6 +656,14 @@ class SnakeBenchService {
       timestamp: Date.now(),
     };
   }
+
+  /**
+   * Get run length distribution for models with minimum games threshold.
+   * Delegates to repository method.
+   */
+  async getRunLengthDistribution(minGames: number = 10) {
+    return repositoryService.snakeBench.getRunLengthDistribution(minGames);
+  }
 }
 
 export const snakeBenchService = new SnakeBenchService();

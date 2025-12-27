@@ -1,11 +1,10 @@
 /**
- * Author: Cascade
- * Date: 2025-12-18
+ * Author: Cascade (GPT-4.1)
+ * Date: 2025-12-27
  * PURPOSE: Compact Worm Arena scoreboard with TrueSkill stats integration.
- *          Shows model names, apple scores, and key TrueSkill metrics (mu, sigma, exposed)
- *          in a compact single-row layout (~1/3 the original height).
- *          Uses consistent 🐛 worm emoji for both players.
- * SRP/DRY check: Pass - renders only the score strip with no streaming/state logic.
+ *          Shows model names, adjacent apple scores, and key TrueSkill metrics (mu, sigma, exposed).
+ *          Adds live timing context (wall clock + since-last-move) in-band with the strip.
+ * SRP/DRY check: Pass - presentational only; all streaming/state logic passed via props.
  */
 
 import React from 'react';
@@ -19,6 +18,8 @@ export interface WormArenaLiveScoreboardProps {
   playerBName: string;
   playerAScore: number;
   playerBScore: number;
+  wallClockSeconds?: number | null;
+  sinceLastMoveSeconds?: number | null;
   /** Optional TrueSkill stats for player A */
   playerAStats?: {
     mu?: number;
@@ -40,12 +41,19 @@ export default function WormArenaLiveScoreboard({
   playerBName,
   playerAScore,
   playerBScore,
+  wallClockSeconds = null,
+  sinceLastMoveSeconds = null,
   playerAStats,
   playerBStats,
 }: WormArenaLiveScoreboardProps) {
   // Determine who's winning for visual emphasis
   const aWinning = playerAScore > playerBScore;
   const bWinning = playerBScore > playerAScore;
+
+  const formatSeconds = (value: number | null | undefined) => {
+    if (value == null || Number.isNaN(value)) return '—';
+    return `${Math.max(0, value).toFixed(1)}s`;
+  };
 
   const renderPlayer = (
     name: string,
@@ -60,62 +68,71 @@ export default function WormArenaLiveScoreboard({
     const nameColor = color === 'green' ? 'text-green-700' : 'text-blue-700';
 
     return (
-      <div className="flex items-center gap-2 flex-1 min-w-0">
+      <div className="flex items-center gap-3 flex-1 min-w-0">
         {/* Worm icon */}
         <span className="text-lg shrink-0" aria-hidden="true">{WORM_ICON}</span>
 
-        {/* Model name + stats column */}
-        <div className="flex-1 min-w-0">
-          <div className={`text-xs font-bold uppercase tracking-wide truncate ${nameColor}`}>
-            {name}
-          </div>
-          {stats && (
-            <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground font-mono">
-              {stats.exposed !== undefined && (
-                <span title="Pessimistic rating (mu - 3*sigma)">
-                  {stats.exposed.toFixed(1)}
-                </span>
-              )}
-              {stats.mu !== undefined && stats.sigma !== undefined && (
-                <span className="opacity-60" title={`mu=${stats.mu.toFixed(1)}, sigma=${stats.sigma.toFixed(1)}`}>
-                  ({stats.sigma.toFixed(1)}\u03C3)
-                </span>
-              )}
-              {stats.gamesPlayed !== undefined && (
-                <span className="opacity-60" title="Games played">
-                  {stats.gamesPlayed}g
-                </span>
-              )}
+        {/* Name + stats + score pill grouped tightly */}
+        <div className="flex items-center gap-2 min-w-0">
+          <div className="flex-1 min-w-0">
+            <div className={`text-xs font-bold uppercase tracking-wide truncate ${nameColor}`}>
+              {name}
             </div>
-          )}
-        </div>
+            {stats && (
+              <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground font-mono">
+                {stats.exposed !== undefined && (
+                  <span title="Pessimistic rating (mu - 3*sigma)">
+                    {stats.exposed.toFixed(1)}
+                  </span>
+                )}
+                {stats.mu !== undefined && stats.sigma !== undefined && (
+                  <span className="opacity-60" title={`mu=${stats.mu.toFixed(1)}, sigma=${stats.sigma.toFixed(1)}`}>
+                    ({stats.sigma.toFixed(1)}\u03C3)
+                  </span>
+                )}
+                {stats.gamesPlayed !== undefined && (
+                  <span className="opacity-60" title="Games played">
+                    {stats.gamesPlayed}g
+                  </span>
+                )}
+              </div>
+            )}
+          </div>
 
-        {/* Apple score pill - compact */}
-        <div
-          className={`
-            flex items-center gap-1 px-2.5 py-1 rounded-full text-sm font-bold
-            transition-transform duration-150 shrink-0
-            ${pillClasses}
-            ${isWinning ? 'scale-105 ring-2 ring-offset-1 ring-yellow-400' : ''}
-          `}
-        >
-          <span className="tabular-nums">{Math.max(0, Number(score) || 0)}</span>
-          <span className="text-xs" aria-hidden="true">{APPLE_ICON}</span>
+          {/* Apple score pill - tight to name */}
+          <div
+            className={`
+              flex items-center gap-1 px-2.5 py-1 rounded-full text-sm font-bold
+              transition-transform duration-150 shrink-0
+              ${pillClasses}
+              ${isWinning ? 'scale-105 ring-2 ring-offset-1 ring-yellow-400' : ''}
+            `}
+          >
+            <span className="tabular-nums">{Math.max(0, Number(score) || 0)}</span>
+            <span className="text-xs" aria-hidden="true">{APPLE_ICON}</span>
+          </div>
         </div>
       </div>
     );
   };
 
   return (
-    <div className="rounded-lg border worm-border bg-white/95 shadow-sm px-3 py-2">
+    <div className="rounded-lg border worm-border bg-white/95 shadow-sm px-3 py-2 space-y-1.5">
       {/* Compact single-row layout */}
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-4">
         {renderPlayer(playerAName, playerAScore, 'green', aWinning, playerAStats)}
 
         {/* VS divider - minimal */}
-        <span className="text-xs font-bold text-worm-ink/40 shrink-0">vs</span>
+        <span className="text-xs font-bold text-worm-ink/60 shrink-0 px-2">vs</span>
 
         {renderPlayer(playerBName, playerBScore, 'blue', bWinning, playerBStats)}
+      </div>
+
+      <div className="flex items-center gap-3 text-[11px] text-muted-foreground font-mono">
+        <span className="uppercase text-[10px] text-worm-ink/70">Wall</span>
+        <span className="tabular-nums">{formatSeconds(wallClockSeconds)}</span>
+        <span className="uppercase text-[10px] text-worm-ink/70">Since move</span>
+        <span className="tabular-nums">{formatSeconds(sinceLastMoveSeconds)}</span>
       </div>
     </div>
   );

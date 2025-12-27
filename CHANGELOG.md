@@ -4,18 +4,31 @@
 # SRP/DRY check: Pass - entries document changes without altering historical records.
 # New entries at the top, use proper SemVer!
 
+### Version 6.12.3  Dec 27, 2025
+
+- **Feature: Greatest Hits include monster apple hauls** (Author: Cascade)
+  - **Purpose**: Surface memorable matches where a single player collected 25+ apples.
+  - **Behavior**:
+    - Added apples-haul leaderboard dimension (25+ apples by any player) to greatest-hits query and highlight messaging.
+    - Greatest Hits card copy now mentions monster apple hauls.
+  - **Files Modified**:
+    - `server/repositories/SnakeBenchRepository.ts`
+    - `client/src/components/WormArenaGreatestHits.tsx`
+
 ### Version 6.12.2  Dec 27, 2025
 
 - **Fix: Worm Arena live status strip correctness & UX** (Author: Cascade)
   - **Purpose**: Make live streaming status readable and accurate: apples, alive list, timers, names, and session copying.
   - **Behavior**:
     - Added copy-to-clipboard button for session ID; keeps layout tidy with truncation and spacing.
-    - Alive list now derives from live alive-map (with fallbacks) so it never shows empty; scores parse from frames or status text to avoid zeroed apples.
-    - Wall clock and since-last-move timers computed from frame timestamps to populate timing fields.
-    - Player rows separated into their own colored blocks to stop name overlap and keep apples aligned.
+    - Alive/scores duplicated data removed from the strip; strip now focuses on round, wall clock, since-last-move, phase, and session copy.
+    - Alive list still derives from live alive-map (with fallbacks) and scores parse from frames/status text for other components (scoreboard).
+    - Wall clock and since-last-move timers computed from frame timestamps to populate timing fields (shared with scoreboard).
+    - Player rows removed from the strip to prevent overlap; scoreboard holds names/scores.
   - **Files Modified**:
     - `client/src/components/WormArenaLiveStatusStrip.tsx`
     - `client/src/pages/WormArenaLive.tsx`
+    - `client/src/components/WormArenaLiveScoreboard.tsx`
 
 ### Version 6.12.1  Dec 27, 2025
 

@@ -1071,6 +1071,46 @@ export interface WormArenaModelsWithGamesResponse {
 }
 
 /**
+ * Single bin in run length distribution (one round count with win/loss counts)
+ */
+export interface WormArenaRunLengthBin {
+  rounds: number;
+  wins: number;
+  losses: number;
+}
+
+/**
+ * Distribution data for one model (run lengths with win/loss breakdown)
+ */
+export interface WormArenaRunLengthModelData {
+  modelSlug: string;
+  totalGames: number;
+  bins: WormArenaRunLengthBin[];
+}
+
+/**
+ * Complete run length distribution response data
+ * Contains distribution for all qualifying models with metadata
+ */
+export interface WormArenaRunLengthDistributionData {
+  minGamesThreshold: number;
+  modelsIncluded: number;
+  totalGamesAnalyzed: number;
+  distributionData: WormArenaRunLengthModelData[];
+  timestamp: number;
+}
+
+/**
+ * API response for run length distribution endpoint
+ */
+export interface WormArenaRunLengthDistributionResponse {
+  success: boolean;
+  data?: WormArenaRunLengthDistributionData;
+  error?: string;
+  timestamp: number;
+}
+
+/**
  * Available prompt templates for puzzle analysis
  * These templates allow users to choose different prompt styles and approaches to guide AI analysis
  */
