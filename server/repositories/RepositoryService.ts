@@ -47,7 +47,13 @@ import { EloRepository } from './EloRepository.ts';
 import { ModelDatasetRepository } from './ModelDatasetRepository.ts';
 import { ContributorRepository } from './ContributorRepository.ts';
 import { SnakeBenchRepository } from './SnakeBenchRepository.ts';
+import { GameWriteRepository } from './GameWriteRepository.ts';
+import { GameReadRepository } from './GameReadRepository.ts';
+import { LeaderboardRepository } from './LeaderboardRepository.ts';
+import { CurationRepository } from './CurationRepository.ts';
+import { AnalyticsRepository } from './AnalyticsRepository.ts';
 import { WormArenaSessionRepository } from './WormArenaSessionRepository.ts';
+
 import { DatabaseSchema } from './database/DatabaseSchema.ts';
 import { logger } from '../utils/logger.ts';
 
@@ -63,7 +69,13 @@ export class RepositoryService {
   private eloRepository: EloRepository;
   private contributorRepository: ContributorRepository;
   private snakeBenchRepository: SnakeBenchRepository;
+  private gameWriteRepository: GameWriteRepository;
+  private gameReadRepository: GameReadRepository;
+  private leaderboardRepository: LeaderboardRepository;
+  private curationRepository: CurationRepository;
+  private analyticsRepository: AnalyticsRepository;
   private wormArenaSessionRepository: WormArenaSessionRepository;
+
   private initialized = false;
 
   constructor() {
@@ -78,6 +90,11 @@ export class RepositoryService {
     this.eloRepository = new EloRepository();
     this.contributorRepository = new ContributorRepository();
     this.snakeBenchRepository = new SnakeBenchRepository();
+    this.gameWriteRepository = new GameWriteRepository();
+    this.gameReadRepository = new GameReadRepository();
+    this.leaderboardRepository = new LeaderboardRepository();
+    this.curationRepository = new CurationRepository();
+    this.analyticsRepository = new AnalyticsRepository();
     this.wormArenaSessionRepository = new WormArenaSessionRepository();
   }
 
@@ -191,9 +208,30 @@ export class RepositoryService {
 
   /**
    * Get SnakeBench repository (compatibility-first SnakeBench DB access)
+   * @deprecated Use specific domain repositories: gameWrite, gameRead, leaderboard, curation, analytics
    */
   get snakeBench(): SnakeBenchRepository {
     return this.snakeBenchRepository;
+  }
+
+  get gameWrite(): GameWriteRepository {
+    return this.gameWriteRepository;
+  }
+
+  get gameRead(): GameReadRepository {
+    return this.gameReadRepository;
+  }
+
+  get leaderboard(): LeaderboardRepository {
+    return this.leaderboardRepository;
+  }
+
+  get curation(): CurationRepository {
+    return this.curationRepository;
+  }
+
+  get analytics(): AnalyticsRepository {
+    return this.analyticsRepository;
   }
 
   /**

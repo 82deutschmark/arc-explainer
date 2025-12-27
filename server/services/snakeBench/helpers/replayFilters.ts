@@ -52,7 +52,7 @@ export async function getWormArenaGreatestHitsFiltered(
 
   // Strategy 1: Try dynamic ranking from database
   try {
-    const dynamicResults = await repositoryService.snakeBench.getWormArenaGreatestHits(safeLimit);
+    const dynamicResults = await repositoryService.curation.getWormArenaGreatestHits(limitPerDimension);
     if (dynamicResults && Array.isArray(dynamicResults) && dynamicResults.length > 0) {
       logger.info(
         `getWormArenaGreatestHitsFiltered: using dynamic DB ranking (${dynamicResults.length} results)`,
