@@ -7,7 +7,7 @@
  * SRP/DRY check: Pass — isolated replay filtering logic, single responsibility.
  */
 
-import type { SnakeBenchGameSummary, WormArenaGreatestHitGame } from '../../../shared/types.js';
+import type { SnakeBenchGameSummary, WormArenaGreatestHitGame } from '../../../../shared/types.js';
 import { CURATED_WORM_ARENA_HALL_OF_FAME } from '../../snakeBenchHallOfFame.ts';
 import { repositoryService } from '../../../repositories/RepositoryService.ts';
 import { logger } from '../../../utils/logger.ts';
