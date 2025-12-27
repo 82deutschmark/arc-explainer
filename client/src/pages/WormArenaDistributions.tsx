@@ -25,7 +25,7 @@ import { AlertCircle, Loader } from 'lucide-react';
 const MIN_GAMES_OPTIONS = [5, 10, 15, 20, 25, 50];
 
 export default function WormArenaDistributions() {
-  const [minGames, setMinGames] = React.useState(10);
+  const [minGames, setMinGames] = React.useState(5);
   const { data, isLoading, error } = useWormArenaDistributions(minGames);
 
   const handleMinGamesChange = (value: string) => {

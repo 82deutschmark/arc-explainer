@@ -18,7 +18,7 @@ export interface UseWormArenaDistributionsState {
   refresh: () => Promise<void>;
 }
 
-export function useWormArenaDistributions(minGames: number = 10): UseWormArenaDistributionsState {
+export function useWormArenaDistributions(minGames: number = 5): UseWormArenaDistributionsState {
   const [data, setData] = useState<WormArenaRunLengthDistributionData | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
