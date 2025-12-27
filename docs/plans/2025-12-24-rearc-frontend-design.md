@@ -26,17 +26,14 @@
 **Card with:**
 - Title: "Generate Challenge Dataset"
 - Description: "Creates unique ARC puzzles"
-- Warning: "Each generation is unique. The file will download automatically."
+- Warning: "Each generation is unique."
 - Button: "Generate Dataset"
 
 **Generation states:**
 1. **Idle**: Show generate button
-2. **Generating**:
-   - Hide button
-   - Show progress bar with current progress
-3. **Complete**:
-   - Auto-download triggers
-   - Return to idle state
+2. **Downloading**:
+   - Browser save dialog appears immediately
+   - Browser's native download progress indicator shows streaming progress
 
 ---
 
@@ -68,10 +65,14 @@ Show expected JSON structure
 
 ## Progress Bars
 
-**Both generation and verification:**
+**Verification only:**
 - Show current percentage (X% or X/total format)
 - No task details
 - No time estimates
+
+**Generation:**
+- No in-page progress bar
+- Browser's native download UI shows progress
 
 ---
 
@@ -105,10 +106,10 @@ All errors display inline, keep interface visible for retry.
 Header
   ↓
 Generate Dataset
-  - Generate button (or progress bar)
+  - Generate button
   ↓
 Verify Solution
-  - Upload interface (or progress bar)
+  - Upload interface (or progress bar when verifying)
   - Results (when complete)
 ```
 
@@ -129,13 +130,14 @@ Verify Solution
 
 **Happy path:**
 1. User clicks "Generate Dataset"
-2. Watches progress bar
-3. File auto-downloads when complete
-4. (Solves puzzles offline)
-5. Returns to page
-6. Drags submission.json onto upload zone
-7. Watches progress bar
-8. Sees final score
+2. Browser save dialog appears immediately
+3. User chooses save location
+4. File downloads with browser's progress indicator (~10 seconds)
+5. (Solves puzzles offline)
+6. Returns to page
+7. Drags submission.json onto upload zone
+8. Watches in-page progress bar
+9. Sees final score
 
 **Error path:**
 1. User uploads invalid submission
