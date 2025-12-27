@@ -70,11 +70,12 @@ type Submission = {
 ## Implementation Steps
 
 ### Phase 1: Setup & Install
-- [ ] Clone re-arc library from GitHub
-- [ ] Review re-arc library (lib.py)
-- [ ] Install `express-rate-limit` for API rate limiting
+- [x] Clone re-arc library from GitHub (added as submodule at `external/re-arc`)
+- [x] Install `express-rate-limit` for API rate limiting
+- [x] Update Dockerfile with re-arc fallback clone logic
 
 ### Phase 2: Core Infrastructure
+- [ ] Review re-arc library (lib.py)
 - [ ] Create type definitions in `shared/types.ts`
 - [ ] Implement XOR seed logic in `server/utils/reArcSeed.ts`
 - [ ] Write tests for XOR seed logic (`tests/reArcSeed.test.ts`)

@@ -73,6 +73,18 @@ RUN echo "=== PREPARING SNAKEBENCH BACKEND ===" && \
     echo "=== INSTALLING SNAKEBENCH BACKEND DEPENDENCIES ===" && \
     python3 -m pip install --no-cache-dir --break-system-packages -r external/SnakeBench/backend/requirements.txt
 
+# Prepare re-arc: use existing checkout if present, otherwise clone from GitHub
+RUN echo "=== PREPARING RE-ARC LIBRARY ===" && \
+    if [ ! -f external/re-arc/lib.py ]; then \
+        echo "\u2717 re-arc not present in build context; cloning from GitHub" && \
+        rm -rf external/re-arc && \
+        mkdir -p external && \
+        git clone --depth 1 https://github.com/conundrumer/re-arc external/re-arc; \
+    else \
+        echo "\u2713 re-arc present in build context; using existing checkout"; \
+    fi && \
+    test -f external/re-arc/lib.py && echo "\u2713 re-arc lib.py exists" || (echo "\u2717 re-arc lib.py NOT FOUND after clone" && exit 1)
+
 # Poetiq solver is now internalized at solver/poetiq/ (copied above)
 # Verify the internalized solver exists
 RUN echo "=== VERIFYING INTERNALIZED POETIQ SOLVER ===" && \
