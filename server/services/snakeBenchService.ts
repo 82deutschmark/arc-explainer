@@ -42,7 +42,6 @@ import { GameIndexManager } from './snakeBench/persistence/gameIndexManager.ts';
 import { getSnakeBenchAllowedModels } from './snakeBench/helpers/modelAllowlist.ts';
 import { filterReplayableGames, getWormArenaGreatestHitsFiltered } from './snakeBench/helpers/replayFilters.ts';
 import { suggestMatchups } from './snakeBench/helpers/matchupSuggestions.ts';
-import { MODELS } from '../config/models.ts';
 import path from 'path';
 import fs from 'fs';
 
@@ -624,43 +623,9 @@ class SnakeBenchService {
     const leaderboard = await this.getTrueSkillLeaderboard(150, safeMinGames);
     const pairingHistory = await repositoryService.snakeBench.getPairingHistory();
 
-    // Filter to only approved OpenRouter models
-    const approvedModels = new Set(
-      MODELS
-        .filter((m: any) => m.provider === 'OpenRouter' && !m.premium)
-        .map((m: any) => (m.apiModelName || m.key) as string)
-    );
-
-    // DEBUG: Log what's happening with model filtering
-    const leaderboardSlugs = leaderboard.map(e => e.modelSlug);
-    const unmatchedSlugs = leaderboard
-      .filter(e => !approvedModels.has(e.modelSlug))
-      .map(e => e.modelSlug);
-
-    const debugInfo = `
-[SUGGEST-MATCHUPS DEBUG]
-Leaderboard models: ${leaderboardSlugs.length}
-  ${leaderboardSlugs.join(', ')}
-Approved models from config: ${approvedModels.size}
-  ${Array.from(approvedModels).join(', ')}
-Models in leaderboard but NOT in approved: ${unmatchedSlugs.length}
-  ${unmatchedSlugs.join(', ')}
-Pairing history pairs: ${pairingHistory.size}
-Pairing history sample keys:
-  ${Array.from(pairingHistory.keys()).slice(0, 10).join('\n  ')}
-    `;
-
-    logger.info(debugInfo, 'snakebench-service');
-
-    // Also write to file for easier inspection
-    try {
-      const fs = await import('fs');
-      const path = await import('path');
-      const debugFile = path.join(process.cwd(), 'suggest-matchups-debug.log');
-      fs.writeFileSync(debugFile, debugInfo + '\n---\n', { flag: 'a' });
-    } catch (e) {
-      // Ignore file write errors
-    }
+    // Use all leaderboard models (already filtered by minGames and ranked by TrueSkill).
+    // No additional filtering needed - we want suggestions for any models that have played.
+    const approvedModels = new Set(leaderboard.map(e => e.modelSlug));
 
     return suggestMatchups(mode, safeLimit, safeMinGames, leaderboard, pairingHistory, approvedModels as Set<string>);
   }
