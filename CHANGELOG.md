@@ -1,5 +1,43 @@
 # New entries at the top, use proper SemVer!
 
+### Version 6.15.0  Dec 27, 2025
+
+- **Architectural Refactor: Monolithic SnakeBench Repository Split** (Author: Gemini 3 Flash High)
+  - **Purpose**: Refactored the 2.5k-line monolithic `SnakeBenchRepository.ts` into six focused modules to improve SRP (Single Responsibility Principle), testability, and maintainability.
+  - **Terminology Clarification**: Explicitly documented that "Game" and "Match" are used interchangeably across the codebase (DB vs. Frontend) and preserved this parity for compatibility.
+  - **External Compatibility**: Maintained 100% compatibility with the original `SnakeBench` database schema and JSON structures.
+  - **Key Modules Created**:
+    1. `GameWriteRepository.ts`: Handles match recording, replay ingestion, and rating updates (TrueSkill/Elo).
+    2. `GameReadRepository.ts`: Handles match search, recent games, global stats, and model history.
+    3. `LeaderboardRepository.ts`: Handles TrueSkill/Elo leaderboards and pairing history.
+    4. `CurationRepository.ts`: Handles "Greatest Hits" multi-dimension logic.
+    5. `AnalyticsRepository.ts`: Handles model insights data and run-length distributions.
+    6. `snakebenchSqlHelpers.ts`: Centralizes shared SQL fragments, constants (TrueSkill/Elo), and utility functions.
+  - **Integration Changes**:
+    - Updated `RepositoryService` to manage the new repository instances.
+    - Updated `SnakeBenchService`, `SnakeBenchIngestQueue`, `ReplayResolver`, and other consumers to use domain-specific repositories.
+    - Updated `adminController` and `backfill` scripts to use split write/read paths.
+  - **Files Removed**:
+    - `server/repositories/SnakeBenchRepository.ts` (Legacy monolith deleted)
+  - **Files Created**:
+    - `server/repositories/GameWriteRepository.ts`
+    - `server/repositories/GameReadRepository.ts`
+    - `server/repositories/LeaderboardRepository.ts`
+    - `server/repositories/CurationRepository.ts`
+    - `server/repositories/AnalyticsRepository.ts`
+    - `server/repositories/snakebenchSqlHelpers.ts`
+  - **Files Modified**:
+    - `server/repositories/RepositoryService.ts`
+    - `server/services/snakeBenchService.ts`
+    - `server/services/snakeBench.ts`
+    - `server/services/snakeBenchIngestQueue.ts`
+    - `server/services/snakeBench/SnakeBenchReplayResolver.ts`
+    - `server/services/snakeBench/helpers/replayFilters.ts`
+    - `server/services/snakeBench/helpers/modelAllowlist.ts`
+    - `server/controllers/adminController.ts`
+    - `server/routes/models.ts`
+    - `server/scripts/snakebench-backfill.ts`
+
 ### Version 6.14.0  Dec 27, 2025
 
 - **Data Quality: Exclude invalid zero-round games from all Worm Arena statistics** (Author: Cascade)
