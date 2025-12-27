@@ -661,7 +661,7 @@ class SnakeBenchService {
    * Get run length distribution for models with minimum games threshold.
    * Delegates to repository method.
    */
-  async getRunLengthDistribution(minGames: number = 10) {
+  async getRunLengthDistribution(minGames: number = 5) {
     return repositoryService.snakeBench.getRunLengthDistribution(minGames);
   }
 }

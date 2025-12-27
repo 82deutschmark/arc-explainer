@@ -2374,7 +2374,7 @@ export class SnakeBenchRepository extends BaseRepository {
    * Follows same pattern as getTrueSkillLeaderboard for consistency.
    */
   async getRunLengthDistribution(
-    minGames: number = 10,
+    minGames: number = 5,
   ): Promise<WormArenaRunLengthDistributionData> {
     if (!this.isConnected()) {
       return {
@@ -2386,7 +2386,7 @@ export class SnakeBenchRepository extends BaseRepository {
       };
     }
 
-    const safeMinGames = Number.isFinite(minGames) ? Math.max(1, Math.min(minGames, 1000)) : 10;
+    const safeMinGames = Number.isFinite(minGames) ? Math.max(1, Math.min(minGames, 1000)) : 5;
 
     try {
       // Get all run length data grouped by model, rounds, and result.
@@ -2396,14 +2396,14 @@ export class SnakeBenchRepository extends BaseRepository {
         SELECT
           regexp_replace(m.model_slug, ':free$', '') AS model_slug,
           COALESCE(g.rounds, 0) AS rounds,
-          gp.result,
+          gp.result AS result,
           COUNT(*) AS frequency
-        FROM public.models m
-        JOIN public.game_participants gp ON m.id = gp.model_id
+        FROM public.game_participants gp
         JOIN public.games g ON gp.game_id = g.id
+        JOIN public.models m ON gp.model_id = m.id
         WHERE g.status = 'completed'
         GROUP BY regexp_replace(m.model_slug, ':free$', ''), COALESCE(g.rounds, 0), gp.result
-        ORDER BY model_slug, COALESCE(g.rounds, 0);
+        ORDER BY regexp_replace(m.model_slug, ':free$', ''), COALESCE(g.rounds, 0)
       `;
 
       const result = await this.query(sql);
@@ -2453,11 +2453,16 @@ export class SnakeBenchRepository extends BaseRepository {
         const bin = binMap.get(rounds)!;
         if (resultLabel === 'won') {
           bin.wins += frequency;
-        } else {
+        } else if (resultLabel === 'lost') {
           bin.losses += frequency;
         }
+        // Note: 'tied' games are intentionally excluded from this distribution
+        // as the chart only displays win/loss binary outcomes
 
-        totalGamesAnalyzed += frequency;
+        // Only count won/lost in totalGamesAnalyzed (exclude ties)
+        if (resultLabel === 'won' || resultLabel === 'lost') {
+          totalGamesAnalyzed += frequency;
+        }
       });
 
       // Filter to only models with >= minGames and build response.
