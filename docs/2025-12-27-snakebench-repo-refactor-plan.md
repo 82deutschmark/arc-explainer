@@ -65,3 +65,106 @@ scope: Backend data layer for SnakeBench/Worm Arena (ingest, reads, analytics, c
 - [ ] Migrate curation (greatest hits).
 - [ ] Migrate analytics (insights, run-length distribution).
 - [ ] Remove legacy monolith class and run full test suite.
+
+## Detailed migration map (who moves where)
+### GameWriteRepository
+- recordMatchFromResult
+- ingestReplayFromFile
+- parseReplayJson
+- getOrCreateModelId
+- updateAggregatesForGame
+- updateTrueSkillForGame
+- updateEloForGame
+- resetModelRatings
+- backfillFromDirectory
+- setReplayPath
+
+### GameReadRepository
+- getRecentGames
+- getReplayPath
+- searchMatches (all filters, sorting, pagination)
+- getRecentActivity
+- getArcExplainerStats
+- getModelsWithGames
+- getModelMatchHistory
+- getModelMatchHistoryUnbounded
+
+### LeaderboardRepository
+- getModelRating
+- getTrueSkillLeaderboard
+- getBasicLeaderboard
+- getPairingHistory
+
+### CurationRepository
+- getWormArenaGreatestHits (all dimensions and dedupe/priority rules)
+
+### AnalyticsRepository
+- getModelInsightsData
+- getRunLengthDistribution
+
+### Shared utilities (new module, e.g., `snakebenchSqlHelpers.ts`)
+- Slug normalization: `regexp_replace(..., ':free$', '')`
+- Safe limit/offset clamps
+- Date parsing (string or ms to Date; nullable)
+- Common WHERE fragments: completed games, rounds > 0, optional model/opponent filters
+- Death reason parsing helpers
+- Replay path resolution (filename <-> path helpers)
+- Cost/score numeric guards (Number.isFinite, default 0)
+- Sorting column resolver for searchMatches
+- Error logging wrapper to keep logs consistent
+
+## Test fixture and coverage plan
+Unit fixtures
+- parseReplayJson: happy path; missing death_reason; zero/negative rounds; :free suffix; missing start/end; custom gameTypeOverride; corrupted JSON error.
+- Helper clamps: limits, offsets, date parsing edge cases.
+- Slug normalization: paid vs :free treated same.
+- Sorting resolver: each sortBy branch, default, invalid input.
+
+Golden math tests
+- updateTrueSkillForGame: small 2-player game set with expected mu/sigma/exposed/display outputs.
+- updateEloForGame: deterministic delta for wins/losses/ties across 2-player grid.
+
+Integration (DB) tests
+- searchMatches: matrix over result, deathReason, min/max rounds/score/cost, from/to dates, sortBy variants, pagination.
+- getRecentGames: respects limit, returns filename/path, orders by start_time.
+- getRecentActivity: days>0 vs all-time path.
+- getArcExplainerStats: counts and max score.
+- getModelsWithGames: normalized slug grouping; winRate computed.
+- getModelMatchHistory / Unbounded: ordering, result labels, death reasons, costs, date fields.
+- getModelRating: sums cost, returns defaults when null.
+- getTrueSkillLeaderboard: minGames filter, exposed fallback.
+- getBasicLeaderboard: winRate vs gamesPlayed sorts.
+- getPairingHistory: normalization A|||B, lastPlayedAt ISO.
+- getWormArenaGreatestHits: each dimension returns category/reason; dedupe/priority order preserved; skips missing models/rounds.
+- getModelInsightsData: summary fields, failure modes, loss opponents; early loss threshold; lossDeathReasonCoverage; unknown losses.
+- getRunLengthDistribution: ties excluded, wins/losses binned, minGames threshold filter.
+
+Replay/backfill fixtures
+- Small set of snake_game_*.json in a test directory covering: normal game; zero rounds (should be filtered); missing replay_path; long duration; close match; high total score; monster apples; cost > 0; missing death reason.
+
+## Wiring and rollout plan
+1) Add shared helpers; refactor monolith to use them (behavior-neutral PR).
+2) Introduce new repository classes; temporarily wrap monolith to delegate to new modules (adapter) to avoid breaking controllers.
+3) Move write path first (GameWriteRepository); update services/controllers DI; run ingest/backfill tests.
+4) Move read/search paths (GameReadRepository); verify recent/search/resolve flows.
+5) Move leaderboards (LeaderboardRepository); verify leaderboard and pairing endpoints.
+6) Move curation (CurationRepository); verify greatest-hits and categories.
+7) Move analytics (AnalyticsRepository); verify insights and run-length endpoints.
+8) Remove monolith and adapter after all modules wired and tests pass.
+
+## Backfill and recompute notes
+- Before recompute, run resetModelRatings once in staging; then ingest/backfill replays with forceRecompute=true to avoid double-counting.
+- Order backfill chronologically (existing backfillFromDirectory behavior) to keep rating evolution stable.
+- Ensure replay path resolution aligns with production storage (completed_games vs completed_games_local); include helper to swap roots if needed.
+
+## Rollback plan
+- Keep monolith class and adapter until final step; feature-flag DI binding to switch back quickly if regressions found.
+- Preserve SQL text verbatim in new modules; if tests fail, revert to monolith binding without dropping data.
+
+## File impact (expected edits)
+- server/repositories/: new files GameWriteRepository.ts, GameReadRepository.ts, LeaderboardRepository.ts, CurationRepository.ts, AnalyticsRepository.ts, snakebenchSqlHelpers.ts
+- server/services/snakeBenchService.ts (DI wiring)
+- server/controllers/snakeBenchController.ts (constructor wiring if needed)
+- server/services/snakeBench/helpers/matchupSuggestions.ts (pairing history consumer)
+- Tests: new unit + integration suites under tests/ (mirror method coverage above)
+- Docs: this plan file; changelog entry
