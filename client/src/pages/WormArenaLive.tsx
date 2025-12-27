@@ -500,7 +500,34 @@ export default function WormArenaLive() {
       gamesPlayed: rightRating.gamesPlayed,
     };
   }, [rightRating]);
+
+  const hasSessionParam = Boolean(sessionId);
+  const viewMode: ViewMode = finalSummary
+    ? 'completed'
+    : status === 'connecting' || status === 'starting' || status === 'in_progress'
+      ? 'live'
+      : hasSessionParam
+        ? sessionGateStatus === 'unknown' || sessionGateStatus === 'error'
+          ? 'setup'
+          : 'live'
+        : 'setup';
+  const isActiveView = viewMode === 'live' || viewMode === 'completed';
+
+  const reconnectWarning =
+    hasSessionParam && status === 'failed' && !message && !finalSummary
+      ? 'Live session not found or already finished. Current streaming API does not support rejoining mid-match.'
+      : null;
+  const headerSubtitle =
+    viewMode === 'setup' ? 'Start a live match' : viewMode === 'live' ? 'Streaming...' : 'Match complete';
+  const statusMessage = sessionGateMessage || reconnectWarning || message;
+
   const aliveNames = useMemo(() => {
+    const aliveEntries = Object.entries(aliveMap).filter(([, isAlive]) => isAlive);
+    if (aliveEntries.length > 0) {
+      return aliveEntries
+        .map(([id]) => playerNameBySnakeId[id] || id)
+        .sort();
+    }
     const snakeState = (latestFrame as any)?.frame?.state?.snakes;
     if (snakeState && typeof snakeState === 'object') {
       return Object.keys(snakeState)
@@ -513,26 +540,57 @@ export default function WormArenaLive() {
         .map((id) => playerNameBySnakeId[id] || id);
     }
     return [];
-  }, [latestFrame, playerNameBySnakeId, finalSummary]);
+  }, [aliveMap, latestFrame, playerNameBySnakeId, finalSummary]);
+
+  const derivedScores = useMemo(() => {
+    const frameScores = (latestFrame as any)?.frame?.state?.scores;
+    if (frameScores && typeof frameScores === 'object') return frameScores as Record<string, number>;
+
+    // Parse inline scores from status message e.g. "Scores: {'0': 0, '1': 2}"
+    const scoresFromMessage = (() => {
+      const text = statusMessage;
+      if (!text) return null;
+      const match = text.match(/Scores:\s*({[^}]+})/i);
+      if (!match?.[1]) return null;
+      try {
+        const jsonish = match[1].replace(/'/g, '"');
+        const parsed = JSON.parse(jsonish) as Record<string, number>;
+        return parsed;
+      } catch {
+        return null;
+      }
+    })();
+    if (scoresFromMessage) return scoresFromMessage;
+
+    if (finalSummary?.scores) return finalSummary.scores;
+    return {};
+  }, [latestFrame, finalSummary, statusMessage]);
 
   // Pull the freshest apple score for a given snake, falling back to the final summary if needed.
   const scoreForSnake = (snakeId?: string) => {
     if (!snakeId) return 0;
-    const frameScores = (latestFrame as any)?.frame?.state?.scores;
-    if (frameScores && typeof frameScores === 'object' && Object.prototype.hasOwnProperty.call(frameScores, snakeId)) {
-      const raw = frameScores[snakeId];
-      const value = typeof raw === 'number' ? raw : Number(raw);
-      if (Number.isFinite(value)) return value;
-    }
-    if (finalSummary?.scores && Object.prototype.hasOwnProperty.call(finalSummary.scores, snakeId)) {
-      const raw = finalSummary.scores[snakeId];
-      const value = typeof raw === 'number' ? raw : Number(raw);
-      if (Number.isFinite(value)) return value;
-    }
-    return 0;
+    const raw = derivedScores[snakeId];
+    const value = typeof raw === 'number' ? raw : Number(raw);
+    return Number.isFinite(value) ? value : 0;
   };
   const playerAScore = scoreForSnake(leftSnakeId);
   const playerBScore = scoreForSnake(rightSnakeId);
+
+  const wallClockSeconds = useMemo(() => {
+    if (!frames.length) return null;
+    const first = frames[0]?.timestamp;
+    const last = frames[frames.length - 1]?.timestamp;
+    if (!Number.isFinite(first) || !Number.isFinite(last)) return null;
+    return Math.max(0, (last - first) / 1000);
+  }, [frames]);
+
+  const sinceLastMoveSeconds = useMemo(() => {
+    if (frames.length < 2) return null;
+    const prev = frames[frames.length - 2]?.timestamp;
+    const last = frames[frames.length - 1]?.timestamp;
+    if (!Number.isFinite(prev) || !Number.isFinite(last)) return null;
+    return Math.max(0, (last - prev) / 1000);
+  }, [frames]);
 
   // Build shareable URL: replay URL if match completed (has gameId), otherwise live URL
   const shareableUrl = React.useMemo(() => {
@@ -569,26 +627,6 @@ export default function WormArenaLive() {
       }
     }
   }, [shareableUrl, finalSummary?.gameId]);
-
-  const hasSessionParam = Boolean(sessionId);
-  const viewMode: ViewMode = finalSummary
-    ? 'completed'
-    : status === 'connecting' || status === 'starting' || status === 'in_progress'
-      ? 'live'
-      : hasSessionParam
-        ? sessionGateStatus === 'unknown' || sessionGateStatus === 'error'
-          ? 'setup'
-          : 'live'
-        : 'setup';
-  const isActiveView = viewMode === 'live' || viewMode === 'completed';
-
-  const reconnectWarning =
-    hasSessionParam && status === 'failed' && !message && !finalSummary
-      ? 'Live session not found or already finished. Current streaming API does not support rejoining mid-match.'
-      : null;
-  const headerSubtitle =
-    viewMode === 'setup' ? 'Start a live match' : viewMode === 'live' ? 'Streaming...' : 'Match complete';
-  const statusMessage = sessionGateMessage || reconnectWarning || message;
 
   return (
     <div className="worm-page">
@@ -720,6 +758,8 @@ export default function WormArenaLive() {
                   maxRounds={maxRoundsValue}
                   phase={phase}
                   aliveSnakes={aliveNames}
+                  wallClockSeconds={wallClockSeconds}
+                  sinceLastMoveSeconds={sinceLastMoveSeconds}
                 />
 
                 {sessionId && (

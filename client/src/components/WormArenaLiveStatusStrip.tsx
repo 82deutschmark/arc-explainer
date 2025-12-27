@@ -1,12 +1,13 @@
 /**
- * Author: Codex (GPT-5)
- * Date: 2025-12-19
- * PURPOSE: Under-board live status strip that restores the familiar round/score/alive
- *          grid while also summarizing stream state and batch progress.
- * SRP/DRY check: Pass - renders contextual status and stats; streaming logic lives in hooks.
+ * Author: Cascade (GPT-4.1)
+ * Date: 2025-12-27
+ * PURPOSE: Under-board live status strip that restores the round/score/alive grid,
+ *          surfaces timing + session metadata, and keeps layout legible during streaming.
+ * SRP/DRY check: Pass - purely presentational; all streaming logic lives in hooks/pages.
  */
 
 import React from 'react';
+import { Clipboard } from 'lucide-react';
 
 type StreamState = 'idle' | 'connecting' | 'starting' | 'in_progress' | 'completed' | 'failed';
 
@@ -77,6 +78,13 @@ export default function WormArenaLiveStatusStrip({
       ? `${Math.max(0, currentRound)}`
       : '—';
 
+  const copySession = React.useCallback(() => {
+    if (!sessionId) return;
+    if (navigator?.clipboard?.writeText) {
+      void navigator.clipboard.writeText(sessionId);
+    }
+  }, [sessionId]);
+
   return (
     <div className="rounded-lg border-2 worm-border bg-white shadow-sm px-6 py-4 space-y-3">
       <div className="flex items-center gap-3">
@@ -115,15 +123,23 @@ export default function WormArenaLiveStatusStrip({
             {sinceLastMoveSeconds != null ? `${Math.max(0, sinceLastMoveSeconds).toFixed(1)}s` : '—'}
           </div>
         </div>
+      </div>
 
-        <div>
-          <div className="text-[11px] uppercase font-semibold text-green-700">{playerAName}</div>
-          <div className="text-worm-ink font-semibold">{Math.max(0, Number(playerAScore) || 0)} 🍎</div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
+        <div className="flex items-start gap-2 rounded-md bg-emerald-50 px-3 py-2">
+          <div className="text-[11px] uppercase font-semibold text-emerald-800">Player A</div>
+          <div className="flex flex-col min-w-0">
+            <div className="text-worm-ink font-semibold truncate">{playerAName}</div>
+            <div className="text-worm-ink font-semibold">{Math.max(0, Number(playerAScore) || 0)} 🍎</div>
+          </div>
         </div>
 
-        <div>
-          <div className="text-[11px] uppercase font-semibold text-blue-700">{playerBName}</div>
-          <div className="text-worm-ink font-semibold">{Math.max(0, Number(playerBScore) || 0)} 🍎</div>
+        <div className="flex items-start gap-2 rounded-md bg-blue-50 px-3 py-2">
+          <div className="text-[11px] uppercase font-semibold text-blue-800">Player B</div>
+          <div className="flex flex-col min-w-0">
+            <div className="text-worm-ink font-semibold truncate">{playerBName}</div>
+            <div className="text-worm-ink font-semibold">{Math.max(0, Number(playerBScore) || 0)} 🍎</div>
+          </div>
         </div>
       </div>
 
@@ -134,7 +150,20 @@ export default function WormArenaLiveStatusStrip({
         </div>
 
         <div>
-          <div className="text-[11px] uppercase font-semibold text-muted-foreground">Session</div>
+          <div className="text-[11px] uppercase font-semibold text-muted-foreground flex items-center gap-2">
+            <span>Session</span>
+            {sessionId && (
+              <button
+                type="button"
+                onClick={copySession}
+                className="inline-flex items-center gap-1 rounded border border-muted-foreground/30 px-2 py-0.5 text-[10px] font-semibold text-muted-foreground hover:bg-muted-foreground/10"
+                aria-label="Copy session id"
+              >
+                <Clipboard className="h-3 w-3" aria-hidden="true" />
+                Copy
+              </button>
+            )}
+          </div>
           <div className="text-worm-ink font-mono text-xs break-all">{sessionId || '—'}</div>
         </div>
       </div>
