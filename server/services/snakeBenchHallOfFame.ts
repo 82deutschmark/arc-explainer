@@ -1,6 +1,6 @@
 /**
- * Author: GPT-5.2 Extra High
- * Date: 2025-12-11
+ * Author: GPT-5.2 Extra High (updated by Claude Code Sonnet 4.5 - Dec 2025)
+ * Date: 2025-12-11 (updated 2025-12-27)
  * PURPOSE: Centralized curated Worm Arena Hall of Fame data.
  *          Extracted from SnakeBenchService to keep SRP/DRY.
  * SRP/DRY check: Pass — data-only module.
@@ -14,6 +14,13 @@ import type { WormArenaGreatestHitGame } from '../../shared/types.js';
 // via analyze_local_games.py and manual inspection.
 // NOTE: Games with actual cost data are listed first so the UI displays meaningful stats.
 // Games without cost tracking (older o3/o4 matches) are listed last.
+//
+// NEW (v3.x.x - Dec 2025): Optional fields added to interface:
+//   - endedAt: ISO timestamp for duration calculation
+//   - sumFinalScores: Total apples from both players
+//   - durationSeconds: Wall-clock game duration in seconds
+//   - category: Which dimension qualified it
+// These fields can be added to entries when data is available from replay JSON files.
 export const CURATED_WORM_ARENA_HALL_OF_FAME: WormArenaGreatestHitGame[] = [
   // === RECENT ADDITIONS (Dec 18, 2025) - Dynamically discovered ===
   {

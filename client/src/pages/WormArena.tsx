@@ -1,10 +1,9 @@
 /**
  * Author: Cascade
- * Date: 2025-12-20
+ * Date: 2025-12-27
  * PURPOSE: Worm Arena replay viewer page. Allows selecting a match from
  *          the match list, renders the replay board, and shows per-player
- *          ratings / metadata.
- *          Updated to include Rules navigation link.
+ *          ratings / metadata. Includes Share/Tweet button for easy social sharing.
  * SRP/DRY check: Pass - page composition only.
  */
 /**
@@ -25,6 +24,7 @@ import WormArenaStatsPanel from '@/components/WormArenaStatsPanel';
 import WormArenaGreatestHits from '@/components/WormArenaGreatestHits';
 import WormArenaSuggestedMatchups from '@/components/WormArenaSuggestedMatchups';
 import WormArenaPlayerRatingCard from '@/components/WormArenaPlayerRatingCard';
+import WormArenaShareButton from '@/components/WormArenaShareButton';
 import { WormArenaReplayViewer, type RenderMode } from '@/components/wormArena/WormArenaReplayViewer';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { summarizeWormArenaPlacement } from '@shared/utils/wormArenaPlacement.ts';
@@ -242,6 +242,7 @@ export default function WormArena() {
           { label: 'Models', href: '/worm-arena/models' },
           { label: 'Stats & Placement', href: '/worm-arena/stats' },
           { label: 'Skill Analysis', href: '/worm-arena/skill-analysis' },
+          { label: 'Distributions', href: '/worm-arena/distributions' },
           { label: 'Rules', href: '/worm-arena/rules' },
         ]}
         showMatchupLabel={false}
@@ -249,13 +250,29 @@ export default function WormArena() {
       />
 
       <main className="p-4 max-w-7xl mx-auto">
-        {/* Match header */}
+        {/* Match header with share button */}
         {startedAt && (
           <div className="text-center mb-6">
             <h2 className="text-3xl font-bold mb-2">{matchupLabel}</h2>
-            <p className="text-base text-muted-foreground">
-              Match run on {new Date(startedAt).toLocaleString()}
-            </p>
+            <div className="flex items-center justify-center gap-4">
+              <p className="text-base text-muted-foreground">
+                Match run on {new Date(startedAt).toLocaleString()}
+              </p>
+              {selectedMatchId && modelA && modelB && (
+                <WormArenaShareButton
+                  data={{
+                    gameId: selectedMatchId,
+                    modelA: modelA,
+                    modelB: modelB,
+                    roundsPlayed: frames.length,
+                    maxFinalScore: Math.max(playerAScore, playerBScore),
+                    scoreDelta: Math.abs(playerAScore - playerBScore),
+                  }}
+                  variant="outline"
+                  size="sm"
+                />
+              )}
+            </div>
           </div>
         )}
 

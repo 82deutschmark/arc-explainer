@@ -1,8 +1,109 @@
-# Author: Codex (GPT-5)
-# Date: 2025-12-25
-# PURPOSE: Changelog for ARC Explainer - tracks all changes with semantic versioning.
-# SRP/DRY check: Pass - entries document changes without altering historical records.
+
 # New entries at the top, use proper SemVer!
+
+### Version 6.13.1  Dec 27, 2025
+
+- **Fix: Worm Arena Run Length Distribution page** (Author: Claude Code Haiku 4.5)
+  - **Purpose**: Resolve SQL parsing error and low default threshold preventing data display
+  - **Issues Fixed**:
+    1. SQL query had incorrect JOIN ordering causing "missing FROM-clause entry for table "gp"" error
+       - Reorganized FROM clause to start with game_participants (primary data source)
+       - Made ORDER BY more explicit using full expressions instead of aliases
+    2. Tied games were miscounted as losses in distribution aggregation
+       - Now explicitly checks for 'won' vs 'lost' results
+       - Tied games excluded from distribution (don't fit binary win/loss model)
+    3. Default minimum games threshold was too high (10), preventing data display
+       - Lowered default from 10 to 5 games per model
+       - Makes page more useful with limited data while still being meaningful
+  - **Files Modified**:
+    - `server/repositories/SnakeBenchRepository.ts` - Fixed SQL query structure, result classification, default threshold
+    - `server/services/snakeBenchService.ts` - Updated default minGames parameter
+    - `client/src/hooks/useWormArenaDistributions.ts` - Updated default minGames parameter
+    - `client/src/pages/WormArenaDistributions.tsx` - Updated default minGames threshold
+  - **Testing**: Distribution page now returns data when models have 5+ completed games
+
+### Version 6.13.0  Dec 27, 2025
+
+- **Feature: Worm Arena Tweet Kit & Share Buttons** (Author: Cascade)
+  - **Purpose**: Enable easy sharing of Worm Arena matches to Twitter/X with pre-filled tweet text and replay links.
+  - **Behavior**:
+    - Added `WormArenaShareButton` component with dropdown options: Share on Twitter/X, Copy tweet text, Copy replay link
+    - Tweet text auto-generates from match metadata using smart templates (tie, high score, long/expensive, default)
+    - Share button added to Greatest Hits card entries and main replay viewer header
+    - CLI script `scripts/worm-arena-tweet-kit.ts` for batch tweet generation with optional MP4 video creation
+    - Script fetches greatest hits, downloads replays if needed, generates tweet blurbs, and outputs to `tmp/tweet-kit/`
+    - npm script: `npm run worm:tweets -- --limit 5 [--video]`
+  - **Files Created**:
+    - `client/src/components/WormArenaShareButton.tsx` - Reusable share button component
+    - `scripts/worm-arena-tweet-kit.ts` - CLI tool for batch tweet generation
+  - **Files Modified**:
+    - `client/src/components/WormArenaGreatestHits.tsx` - Added share buttons to game entries
+    - `client/src/pages/WormArena.tsx` - Added share button to match header
+    - `package.json` - Added `worm:tweets` npm script
+
+### Version 6.12.3  Dec 27, 2025
+
+- **Feature: Greatest Hits include monster apple hauls** (Author: Cascade)
+  - **Purpose**: Surface memorable matches where a single player collected 25+ apples.
+  - **Behavior**:
+    - Added apples-haul leaderboard dimension (25+ apples by any player) to greatest-hits query and highlight messaging.
+    - Greatest Hits card copy now mentions monster apple hauls.
+  - **Files Modified**:
+    - `server/repositories/SnakeBenchRepository.ts`
+    - `client/src/components/WormArenaGreatestHits.tsx`
+
+### Version 6.12.2  Dec 27, 2025
+
+- **Fix: Worm Arena live status strip correctness & UX** (Author: Cascade)
+  - **Purpose**: Make live streaming status readable and accurate: apples, alive list, timers, names, and session copying.
+  - **Behavior**:
+    - Added copy-to-clipboard button for session ID; keeps layout tidy with truncation and spacing.
+    - Alive/scores duplicated data removed from the strip; strip now focuses on round, wall clock, since-last-move, phase, and session copy.
+    - Alive list still derives from live alive-map (with fallbacks) and scores parse from frames/status text for other components (scoreboard).
+    - Wall clock and since-last-move timers computed from frame timestamps to populate timing fields (shared with scoreboard).
+    - Player rows removed from the strip to prevent overlap; scoreboard holds names/scores.
+  - **Files Modified**:
+    - `client/src/components/WormArenaLiveStatusStrip.tsx`
+    - `client/src/pages/WormArenaLive.tsx`
+    - `client/src/components/WormArenaLiveScoreboard.tsx`
+
+### Version 6.12.1  Dec 27, 2025
+
+- **Feature: Worm Arena Greatest Hits Enhanced Ranking Dimensions** (Author: Claude Code Sonnet 4.5)
+  - **Purpose**: Extend greatest-hits ranking with 3 new dimensions (duration, total score, close matches) to surface more types of interesting games.
+  - **Behavior**:
+    - Added 3 new SQL queries to repository: duration (wall-clock time), total score (combined apples from both players), close matches (score delta ≤ 2, min 5 apples)
+    - All 6 queries run in parallel via `Promise.all()` for optimal performance
+    - Updated deduplication logic to handle 6 dimensions and assign category-specific highlight reasons
+    - New highlight reasons include: "Marathon duration (Xh Ym)", "Epic combined score (X apples)", "Perfect tie", "Photo finish (1 apple difference)", "Neck-and-neck (X apple difference)"
+    - Frontend component now displays duration badges ("Duration: 2h 15m") and total score badges ("32 total apples") when data is available
+    - Optional fields added to `WormArenaGreatestHitGame` interface: `endedAt`, `sumFinalScores`, `durationSeconds`, `category` (all backward-compatible)
+  - **Files Modified**:
+    - `server/repositories/SnakeBenchRepository.ts:706-1072` - Added 3 new SQL queries, updated deduplication logic
+    - `shared/types.ts:903-921` - Added 4 new optional fields to `WormArenaGreatestHitGame` interface
+    - `client/src/components/WormArenaGreatestHits.tsx:150-227` - Added duration and total score badges
+    - `server/services/snakeBenchHallOfFame.ts:1-24` - Updated header comment documenting new optional fields
+  - **Files Deleted**:
+    - `external/SnakeBench/backend/cli/generate_greatest_hits_report.py` - Functionality integrated into database-driven system
+  - **Performance Note**: If queries are slow (>200ms), consider adding database indexes:
+    ```sql
+    CREATE INDEX IF NOT EXISTS idx_games_duration ON public.games(end_time, start_time) WHERE status = 'completed' AND end_time IS NOT NULL;
+    CREATE INDEX IF NOT EXISTS idx_game_participants_score ON public.game_participants(game_id, score);
+    ```
+
+### Version 6.12.0  Dec 27, 2025
+
+- **Feature: ARC3 Auto-Discovered Level Screenshots** (Author: Cascade)
+  - **Purpose**: Automatically discover and include PNG level screenshots for ARC-AGI-3 games without manual hardcoding.
+  - **Behavior**:
+    - Scans `client/public` folder for PNG files matching pattern `{gameId}-lvl{levelNumber}.png` or `{gameId}-lvl{levelNumber}{suffix}.png`
+    - Automatically generates level screenshot metadata with proper sorting and variant handling (e.g., `as66-lvl6a.png` becomes "Variant A")
+    - Provides new API endpoints: `/api/arc3/metadata/games`, `/api/arc3/metadata/games/:gameId`, `/api/arc3/metadata/games/:gameId/screenshots`
+    - Supports all existing games: ls20, as66, ft09, lp85, sp80, vc33
+  - **Files Modified**:
+    - `server/services/arc3ScreenshotService.ts` (NEW)
+    - `server/routes/arc3.ts` (added metadata endpoints)
+    - `shared/arc3Games.ts` (reverted hardcoded arrays to manual entries for now)
 
 ### Version 6.11.1  Dec 25, 2025
 

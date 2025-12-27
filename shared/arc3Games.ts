@@ -203,7 +203,14 @@ The implicit goal is to discover a route and sequence of transformations that bo
     difficulty: 'easy',
     actionMappings: [],
     hints: [],
-    resources: [],
+    resources: [
+      {
+        title: 'AS66 Replay',
+        url: 'https://three.arcprize.org/replay/as66-821a4dcad9c2/db85123a-891c-4fde-8bd3-b85c6702575d',
+        type: 'video',
+        description: 'Gameplay replay of AS66 (Always Sliding)',
+      },
+    ],
     levelScreenshots: [
       {
         level: 3,
@@ -214,8 +221,30 @@ The implicit goal is to discover a route and sequence of transformations that bo
         imageUrl: '/as66-lvl4.png',
       },
       {
+        level: 5,
+        imageUrl: '/as66-lvl5.png',
+      },
+      {
+        level: 6,
+        imageUrl: '/as66-lvl6.png',
+      },
+      {
+        level: 6,
+        imageUrl: '/as66-lvl6a.png',
+        caption: 'Variant A',
+        notes: 'Alternative version of level 6'
+      },
+      {
+        level: 7,
+        imageUrl: '/as66-lvl7.png',
+      },
+      {
         level: 8,
         imageUrl: '/as66-lvl8.png',
+      },
+      {
+        level: 9,
+        imageUrl: '/as66-lvl9.png',
       },
     ],
     tags: ['preview-set'],

@@ -264,6 +264,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
     "/api/snakebench/model-insights",
     asyncHandler(snakeBenchController.modelInsightsReport),
   );
+  app.get(
+    "/api/snakebench/run-length-distribution",
+    asyncHandler(snakeBenchController.runLengthDistribution),
+  );
 
   // Worm Arena live streaming (SSE wrapper around SnakeBench matches)
   app.post("/api/wormarena/prepare", asyncHandler(wormArenaStreamController.prepare));

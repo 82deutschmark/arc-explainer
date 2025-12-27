@@ -1,7 +1,7 @@
 /**
  * Author: Cascade
- * Date: 2025-12-26
- * PURPOSE: Worm Arena "Greatest Hits" card.
+ * Date: 2025-12-27
+ * PURPOSE: Worm Arena "Greatest Hits" card with Share/Tweet buttons.
  *          Shows a short list of especially interesting matches
  *          (longest, most expensive, highest-scoring) with one-click
  *          replay links into the main Worm Arena viewer.
@@ -21,6 +21,7 @@ import React from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useWormArenaGreatestHits } from '@/hooks/useWormArenaGreatestHits';
+import WormArenaShareButton from '@/components/WormArenaShareButton';
 import type { WormArenaGreatestHitGame } from '@shared/types';
 
 function normalizeGameId(raw: string): string {
@@ -123,7 +124,7 @@ export default function WormArenaGreatestHits() {
           Greatest Hits Matches
         </CardTitle>
         <p className="text-sm mt-1 worm-muted">
-          Curated Worm Arena games with long runs, high costs, or big scores.
+          Curated Worm Arena games with long runs, high costs, big scores, or monster apple hauls.
         </p>
       </CardHeader>
       <CardContent className="pt-0 text-base text-worm-ink">
@@ -154,6 +155,24 @@ export default function WormArenaGreatestHits() {
                   game.scoreDelta > 0
                     ? `Score delta: ${game.scoreDelta}`
                     : `Max score: ${game.maxFinalScore}`;
+
+                // NEW: Duration badge (v3.x.x - Dec 2025)
+                const durationLabel = game.durationSeconds && game.durationSeconds > 0
+                  ? (() => {
+                      const hours = Math.floor(game.durationSeconds / 3600);
+                      const minutes = Math.floor((game.durationSeconds % 3600) / 60);
+                      if (hours >= 1) {
+                        return `${hours}h ${minutes}m`;
+                      }
+                      return `${minutes}m`;
+                    })()
+                  : null;
+
+                // NEW: Total score badge (v3.x.x - Dec 2025)
+                const totalScoreLabel = game.sumFinalScores && game.sumFinalScores > 0
+                  ? `${game.sumFinalScores} total apples`
+                  : null;
+
                 const replayHref = `/worm-arena?matchId=${encodeURIComponent(normalizeGameId(game.gameId))}`;
 
                 return (
@@ -191,6 +210,22 @@ export default function WormArenaGreatestHits() {
                         <Badge variant="outline" className="font-semibold text-sm px-2 py-1">
                           {scoreLabel}
                         </Badge>
+                        {durationLabel && (
+                          <Badge
+                            variant="outline"
+                            className="font-semibold text-sm px-2 py-1 worm-border"
+                          >
+                            Duration: {durationLabel}
+                          </Badge>
+                        )}
+                        {totalScoreLabel && (
+                          <Badge
+                            variant="outline"
+                            className="font-semibold text-sm px-2 py-1 worm-border"
+                          >
+                            {totalScoreLabel}
+                          </Badge>
+                        )}
                       </div>
                       <div className="text-sm worm-muted">
                         {game.highlightReason}
@@ -203,14 +238,33 @@ export default function WormArenaGreatestHits() {
                           {new Date(game.startedAt).toLocaleDateString()}
                         </span>
                       )}
-                      <a
-                        href={replayHref}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="underline font-semibold text-sm text-worm-ink hover:text-worm-green whitespace-nowrap"
-                      >
-                        View replay
-                      </a>
+                      <div className="flex gap-2">
+                        <WormArenaShareButton
+                          data={{
+                            gameId: game.gameId,
+                            modelA: game.modelA,
+                            modelB: game.modelB,
+                            roundsPlayed: game.roundsPlayed,
+                            maxFinalScore: game.maxFinalScore,
+                            scoreDelta: game.scoreDelta,
+                            totalCost: game.totalCost,
+                            highlightReason: game.highlightReason,
+                            durationSeconds: game.durationSeconds,
+                            sumFinalScores: game.sumFinalScores,
+                          }}
+                          variant="ghost"
+                          size="sm"
+                          className="text-xs"
+                        />
+                        <a
+                          href={replayHref}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="underline font-semibold text-sm text-worm-ink hover:text-worm-green whitespace-nowrap"
+                        >
+                          View replay
+                        </a>
+                      </div>
                     </div>
                   </div>
                 );

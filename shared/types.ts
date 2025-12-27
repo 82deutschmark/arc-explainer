@@ -913,6 +913,11 @@ export interface WormArenaGreatestHitGame {
   boardWidth: number;
   boardHeight: number;
   highlightReason: string;
+  // New optional fields (v3.x.x - Dec 2025)
+  endedAt?: string;                    // ISO timestamp for duration calculation
+  sumFinalScores?: number;             // Total apples from both players
+  durationSeconds?: number;            // Wall-clock game duration in seconds
+  category?: string;                   // Which dimension qualified it (e.g., 'duration', 'total_score', 'close_match')
 }
 
 export interface WormArenaGreatestHitsResponse {
@@ -1061,6 +1066,46 @@ export interface WormArenaModelWithGames {
 export interface WormArenaModelsWithGamesResponse {
   success: boolean;
   models: WormArenaModelWithGames[];
+  error?: string;
+  timestamp: number;
+}
+
+/**
+ * Single bin in run length distribution (one round count with win/loss counts)
+ */
+export interface WormArenaRunLengthBin {
+  rounds: number;
+  wins: number;
+  losses: number;
+}
+
+/**
+ * Distribution data for one model (run lengths with win/loss breakdown)
+ */
+export interface WormArenaRunLengthModelData {
+  modelSlug: string;
+  totalGames: number;
+  bins: WormArenaRunLengthBin[];
+}
+
+/**
+ * Complete run length distribution response data
+ * Contains distribution for all qualifying models with metadata
+ */
+export interface WormArenaRunLengthDistributionData {
+  minGamesThreshold: number;
+  modelsIncluded: number;
+  totalGamesAnalyzed: number;
+  distributionData: WormArenaRunLengthModelData[];
+  timestamp: number;
+}
+
+/**
+ * API response for run length distribution endpoint
+ */
+export interface WormArenaRunLengthDistributionResponse {
+  success: boolean;
+  data?: WormArenaRunLengthDistributionData;
   error?: string;
   timestamp: number;
 }
