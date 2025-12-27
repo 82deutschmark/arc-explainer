@@ -1,10 +1,10 @@
 /**
- * Author: Claude Sonnet 4
+ * Author: Cascade (ChatGPT)
  * Date: 2025-12-27
  * PURPOSE: Worm Arena Run Length Distribution page.
  *          Displays histogram visualization of game lengths (rounds) by model,
- *          with wins and losses separated. Includes minimum games threshold filter
- *          and computed summary statistics (avg game length, most common rounds, etc.).
+ *          with wins and losses separated. Removes per-model selection to
+ *          show all models at once and keeps stats in sync with backend data.
  * SRP/DRY check: Pass - focused on page composition and state management.
  */
 
@@ -13,33 +13,13 @@ import WormArenaHeader from '@/components/WormArenaHeader';
 import WormArenaRunLengthChart from '@/components/wormArena/stats/WormArenaRunLengthChart';
 import useWormArenaDistributions from '@/hooks/useWormArenaDistributions';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import { Button } from '@/components/ui/button';
 import { AlertCircle, Loader, BarChart3, Trophy, Clock, Target, TrendingUp, Zap } from 'lucide-react';
 import type { WormArenaRunLengthDistributionData } from '@shared/types';
 
-const MIN_GAMES_OPTIONS = [3, 5, 10, 15, 20, 25, 50];
+const MIN_GAMES = 1; // Show every model regardless of game count
 
 export default function WormArenaDistributions() {
-  const [minGames, setMinGames] = React.useState(5);
-  const { data, isLoading, error } = useWormArenaDistributions(minGames);
-
-  const handleMinGamesChange = (value: string) => {
-    setMinGames(Number(value));
-  };
-
-  const handleDecreaseThreshold = () => {
-    const currentIndex = MIN_GAMES_OPTIONS.indexOf(minGames);
-    if (currentIndex > 0) {
-      setMinGames(MIN_GAMES_OPTIONS[currentIndex - 1]);
-    }
-  };
+  const { data, isLoading, error } = useWormArenaDistributions(MIN_GAMES);
 
   // Compute summary statistics from distribution data
   const stats = React.useMemo(() => {
@@ -206,34 +186,6 @@ export default function WormArenaDistributions() {
           </div>
         )}
 
-        {/* Filter controls - compact */}
-        <Card className="worm-card">
-          <CardContent className="py-4">
-            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
-              <div className="flex items-center gap-3">
-                <label className="text-sm font-medium text-[#8B7355] whitespace-nowrap">
-                  Min Games:
-                </label>
-                <Select value={String(minGames)} onValueChange={handleMinGamesChange}>
-                  <SelectTrigger className="worm-border w-28">
-                    <SelectValue placeholder="Select" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {MIN_GAMES_OPTIONS.map((option) => (
-                      <SelectItem key={option} value={String(option)}>
-                        {option}+
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <p className="text-xs text-[#A0826D]">
-                Only models with at least this many completed games will appear in the chart.
-              </p>
-            </div>
-          </CardContent>
-        </Card>
-
         {/* Error state */}
         {error && (
           <Card className="worm-card border-[#E8645B]">
@@ -257,25 +209,6 @@ export default function WormArenaDistributions() {
           </Card>
         )}
 
-        {/* Empty state */}
-        {data && data.modelsIncluded === 0 && !isLoading && (
-          <Card className="worm-card">
-            <CardContent className="pt-8 pb-8 text-center space-y-4">
-              <p className="text-[#8B7355] font-semibold">No Distribution Data Available</p>
-              <p className="text-[#A0826D]">
-                No models have played at least {minGames} games yet.
-              </p>
-              <Button
-                onClick={handleDecreaseThreshold}
-                disabled={minGames === MIN_GAMES_OPTIONS[0]}
-                className="bg-[#4A7C59] hover:bg-[#3A6949] text-white"
-              >
-                Lower Threshold to {Math.max(minGames - 5, MIN_GAMES_OPTIONS[0])}+
-              </Button>
-            </CardContent>
-          </Card>
-        )}
-
         {/* Chart */}
         {data && data.modelsIncluded > 0 && !isLoading && (
           <Card className="worm-card">
@@ -285,7 +218,7 @@ export default function WormArenaDistributions() {
                 Run Length Distribution
               </CardTitle>
               <p className="text-sm text-[#A0826D]">
-                Stacked bars show game count at each round length. Select models below to compare.
+                Stacked bars show game count at each round length across all models.
               </p>
             </CardHeader>
             <CardContent>

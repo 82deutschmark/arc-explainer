@@ -287,6 +287,11 @@ class SnakeBenchService {
   private readonly replayResolver: SnakeBenchReplayResolver;
   private readonly persistenceCoordinator: PersistenceCoordinator;
   private readonly gameIndexManager: GameIndexManager;
+  /**
+   * Locate local MP4 assets for completed games.
+   * We do not attempt generation here—only presence checks to expose downloads.
+   */
+  private readonly videoDirectories: string[];
 
   constructor() {
     const backendDir = path.join(process.cwd(), 'external', 'SnakeBench', 'backend');
@@ -297,6 +302,26 @@ class SnakeBenchService {
     this.matchRunner = new SnakeBenchMatchRunner(this.persistenceCoordinator);
     this.streamingRunner = new SnakeBenchStreamingRunner(this.persistenceCoordinator);
     this.replayResolver = new SnakeBenchReplayResolver(backendDir);
+    this.videoDirectories = [
+      path.join(backendDir, 'completed_games_videos'),
+      path.join(backendDir, 'completed_games_videos_local'),
+    ];
+  }
+
+  /**
+   * Return local MP4 path if present (no generation). Normalizes snake_game_ prefix.
+   */
+  getLocalVideoPath(gameId: string): string | null {
+    if (!gameId) return null;
+    const normalized = gameId
+      .replace(/^snake_game_/i, '')
+      .replace(/\.mp4$/i, '')
+      .replace(/\.json$/i, '');
+    const candidates = this.videoDirectories.map((dir) =>
+      path.join(dir, `snake_game_${normalized}.mp4`),
+    );
+    const found = candidates.find((candidate) => fs.existsSync(candidate));
+    return found ?? null;
   }
 
   /**
