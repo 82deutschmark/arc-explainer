@@ -4,7 +4,28 @@
 # SRP/DRY check: Pass - entries document changes without altering historical records.
 # New entries at the top, use proper SemVer!
 
-### Version 6.12.4  Dec 27, 2025
+### Version 6.13.1  Dec 27, 2025
+
+- **Fix: Worm Arena Run Length Distribution page** (Author: Claude Code Haiku 4.5)
+  - **Purpose**: Resolve SQL parsing error and low default threshold preventing data display
+  - **Issues Fixed**:
+    1. SQL query had incorrect JOIN ordering causing "missing FROM-clause entry for table "gp"" error
+       - Reorganized FROM clause to start with game_participants (primary data source)
+       - Made ORDER BY more explicit using full expressions instead of aliases
+    2. Tied games were miscounted as losses in distribution aggregation
+       - Now explicitly checks for 'won' vs 'lost' results
+       - Tied games excluded from distribution (don't fit binary win/loss model)
+    3. Default minimum games threshold was too high (10), preventing data display
+       - Lowered default from 10 to 5 games per model
+       - Makes page more useful with limited data while still being meaningful
+  - **Files Modified**:
+    - `server/repositories/SnakeBenchRepository.ts` - Fixed SQL query structure, result classification, default threshold
+    - `server/services/snakeBenchService.ts` - Updated default minGames parameter
+    - `client/src/hooks/useWormArenaDistributions.ts` - Updated default minGames parameter
+    - `client/src/pages/WormArenaDistributions.tsx` - Updated default minGames threshold
+  - **Testing**: Distribution page now returns data when models have 5+ completed games
+
+### Version 6.13.0  Dec 27, 2025
 
 - **Feature: Worm Arena Tweet Kit & Share Buttons** (Author: Cascade)
   - **Purpose**: Enable easy sharing of Worm Arena matches to Twitter/X with pre-filled tweet text and replay links.
