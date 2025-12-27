@@ -1,7 +1,4 @@
-# Author: Codex (GPT-5)
-# Date: 2025-12-25
-# PURPOSE: Changelog for ARC Explainer - tracks all changes with semantic versioning.
-# SRP/DRY check: Pass - entries document changes without altering historical records.
+
 # New entries at the top, use proper SemVer!
 
 ### Version 6.13.1  Dec 27, 2025
