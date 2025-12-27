@@ -4,7 +4,7 @@
  * PURPOSE: Worm Arena Models page - browse every game a specific model has ever played,
  *          plus generate a per-model actionable insights report inline.
  *          Mirrors the external SnakeBench /models/[id] page functionality.
- *          Only lists models that have actually played games.
+ *          Only lists models that have actually played games.  PAGE NEEDS MAJOR REDESIGN TO USE ACTUAL RICH METRICS FROM PROJECT AND NOT DUPLICATE STUFF!!!
  * SRP/DRY check: Pass - page composition only, data fetching in hooks.
  */
 

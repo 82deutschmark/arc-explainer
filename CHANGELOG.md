@@ -1,5 +1,25 @@
-
 # New entries at the top, use proper SemVer!
+
+### Version 6.13.2  Dec 27, 2025
+
+- **Fix & Enhancement: Worm Arena Run Length Distribution Chart** (Author: Claude Sonnet 4)
+  - **Purpose**: Fix histogram not rendering due to chart design issues; add model selection and summary statistics
+  - **Root Cause**: Original chart tried to show all 44 models with 88 bar series (wins+losses each), making bars invisibly thin. Also used per-model stackId which created grouped bars instead of proper stacked histogram.
+  - **Fixes**:
+    1. **Chart rendering**: Switched from ChartContainer wrapper to direct Recharts ResponsiveContainer to avoid height conflicts
+    2. **Proper stacking**: Changed to single `stackId="stack"` so all bars stack together correctly
+    3. **Model limiting**: Default to top 5 models (max 8) to prevent bar overcrowding
+  - **New Features**:
+    1. **Model selection UI**: Collapsible picker with checkboxes to choose which models to visualize
+    2. **Quick select buttons**: Top 3, Top 5, Top 8, Clear All for fast model selection
+    3. **Summary statistics row**: 6 stat cards showing Models count, Avg Length, Most Common round, Range, Top Win Rate model, Longest Average model
+    4. **Distinct color palette**: 8 distinct colors for models with lighter variants for losses
+    5. **Improved tooltip**: Shows breakdown per model at each round with color indicators
+    6. **Custom legend**: Cleaner display with win/loss color boxes per model
+  - **Files Modified**:
+    - `client/src/components/wormArena/stats/WormArenaRunLengthChart.tsx` - Complete rewrite with proper stacking and model selection
+    - `client/src/pages/WormArenaDistributions.tsx` - Added stats row, improved layout with icons, computed statistics
+  - **Testing**: Chart now renders correctly with top 5 models visible by default; users can select/deselect models to compare
 
 ### Version 6.13.1  Dec 27, 2025
 
@@ -21,6 +41,7 @@
     - `client/src/hooks/useWormArenaDistributions.ts` - Updated default minGames parameter
     - `client/src/pages/WormArenaDistributions.tsx` - Updated default minGames threshold
   - **Testing**: Distribution page now returns data when models have 5+ completed games
+
 
 ### Version 6.13.0  Dec 27, 2025
 
