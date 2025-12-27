@@ -66,7 +66,10 @@ VERY IMPORTANT: To avoid what is often referred to as "AI slop", avoid using exc
 - If the user tells you to `git add`/commit with detailed messages for code changes.
 
 ## Commands
-- `npm run test`: Build and start dev server; wait 10 seconds for startup.
+- `npm run dev`: Start development server.
+- `npm run test`: Run test suite.
+- `npm run build`: Build production artifacts.
+- `npm run prod`: Build and start production server.
 - `npm run db:push`: Apply Drizzle schema changes (tables auto-create on startup if PostgreSQL).
 
 ## Error Attribution
@@ -316,8 +319,11 @@ See `docs/DEVELOPER_GUIDE.md` for full diagrams and table of key files.
 
 ## 🛠️ Common Commands
 
-- `npm run test` – build & start dev server (wait 10 s).
-- `npm run db:push` – apply Drizzle schema changes.
+- `npm run dev` – Start development server.
+- `npm run test` – Run test suite.
+- `npm run build` – Build production artifacts.
+- `npm run prod` – Build and start production server.
+- `npm run db:push` – Apply Drizzle schema changes.
 - **Never** run the dev server automatically; the user controls it.
 
 ## 🚫 Prohibited Actions
