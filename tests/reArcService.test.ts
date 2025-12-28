@@ -18,11 +18,17 @@ import {
   evaluateSubmission,
   type GeneratedTask,
   type EvaluationProgress,
+  __testOnly_datasetCache,
 } from '../server/services/reArc/reArcService.ts';
 import type { ARCSubmission } from '../shared/types.ts';
 
 // Enable dev mode for all tests (faster generation with fewer tasks)
 process.env.RE_ARC_DEV_MODE = 'true';
+
+// Clear cache before each test to ensure isolation
+test.beforeEach(() => {
+  __testOnly_datasetCache.clear();
+});
 
 // ============================================================================
 // Python Binary Resolution Tests
@@ -505,5 +511,156 @@ test('evaluateSubmission: returns mismatches when submission has too many test p
     const mismatch = result.mismatches[0];
     assert.ok(mismatch.taskId, 'Mismatch should have taskId');
     assert.ok(mismatch.submittedPredictions > mismatch.expectedPredictions, 'Submitted more predictions than expected');
+  }
+});
+
+// ============================================================================
+// Dataset Caching Tests
+// ============================================================================
+
+test('evaluateSubmission: uses cached dataset on second evaluation (same seed)', async () => {
+  const seed = 88888;
+  const tasks: GeneratedTask[] = [];
+
+  // Generate full dataset
+  for await (const task of generateDataset(seed)) {
+    tasks.push(task);
+  }
+
+  // Create perfect submission
+  const submission: ARCSubmission = {};
+  for (const { taskId, task } of tasks) {
+    submission[taskId] = task.test.map((testPair) => ({
+      attempt_1: testPair.output || [],
+      attempt_2: testPair.output || [],
+    }));
+  }
+
+  // First evaluation: cache miss (generates dataset)
+  assert.strictEqual(__testOnly_datasetCache.size(), 0, 'Cache should be empty initially');
+  const result1 = await evaluateSubmission(submission);
+  assert.strictEqual(result1.type, 'score', 'First evaluation should return score');
+  assert.strictEqual(__testOnly_datasetCache.size(), 1, 'Cache should have 1 entry after first evaluation');
+
+  // Second evaluation: cache hit (uses cached dataset)
+  const result2 = await evaluateSubmission(submission);
+  assert.strictEqual(result2.type, 'score', 'Second evaluation should return score');
+  assert.strictEqual(__testOnly_datasetCache.size(), 1, 'Cache should still have 1 entry');
+
+  // Scores should be identical (deterministic)
+  if (result1.type === 'score' && result2.type === 'score') {
+    assert.strictEqual(result1.score, result2.score, 'Scores should be identical');
+    assert.strictEqual(result1.score, 1.0, 'Perfect submission should score 1.0');
+  }
+});
+
+test('evaluateSubmission: cache miss for different seeds', async () => {
+  const seed1 = 11111;
+  const seed2 = 22222;
+
+  // Generate dataset for seed1
+  const tasks1: GeneratedTask[] = [];
+  for await (const task of generateDataset(seed1)) {
+    tasks1.push(task);
+  }
+
+  // Generate dataset for seed2
+  const tasks2: GeneratedTask[] = [];
+  for await (const task of generateDataset(seed2)) {
+    tasks2.push(task);
+  }
+
+  // Create submissions
+  const submission1: ARCSubmission = {};
+  for (const { taskId, task } of tasks1) {
+    submission1[taskId] = task.test.map((testPair) => ({
+      attempt_1: testPair.output || [],
+      attempt_2: testPair.output || [],
+    }));
+  }
+
+  const submission2: ARCSubmission = {};
+  for (const { taskId, task } of tasks2) {
+    submission2[taskId] = task.test.map((testPair) => ({
+      attempt_1: testPair.output || [],
+      attempt_2: testPair.output || [],
+    }));
+  }
+
+  // Evaluate both (should cache both)
+  assert.strictEqual(__testOnly_datasetCache.size(), 0, 'Cache should be empty initially');
+  await evaluateSubmission(submission1);
+  assert.strictEqual(__testOnly_datasetCache.size(), 1, 'Cache should have 1 entry after first eval');
+  await evaluateSubmission(submission2);
+  assert.strictEqual(__testOnly_datasetCache.size(), 2, 'Cache should have 2 entries after second eval');
+});
+
+test('SimpleLRU: evicts oldest when max size exceeded', async () => {
+  // Set smaller maxSize for faster testing
+  const originalMaxSize = __testOnly_datasetCache.maxSize;
+  __testOnly_datasetCache.maxSize = 3;
+
+  try {
+    // Fill cache to exactly maxSize (3 entries)
+    const seeds: number[] = [];
+    for (let i = 0; i < 3; i++) {
+      const seed = 10000 + i;
+      seeds.push(seed);
+
+      const tasks: GeneratedTask[] = [];
+      for await (const task of generateDataset(seed)) {
+        tasks.push(task);
+      }
+
+      const submission: ARCSubmission = {};
+      for (const { taskId, task } of tasks) {
+        submission[taskId] = task.test.map((testPair) => ({
+          attempt_1: testPair.output || [],
+          attempt_2: testPair.output || [],
+        }));
+      }
+
+      await evaluateSubmission(submission);
+    }
+
+    assert.strictEqual(__testOnly_datasetCache.size(), 3, 'Cache should have 3 entries');
+
+    // Verify all seeds are cached
+    for (const seed of seeds) {
+      const cached = __testOnly_datasetCache.get(seed);
+      assert.ok(cached !== undefined, `Seed ${seed} should be in cache`);
+    }
+
+    // Add one more to trigger eviction
+    const newSeed = 10000 + 3;
+    const newTasks: GeneratedTask[] = [];
+    for await (const task of generateDataset(newSeed)) {
+      newTasks.push(task);
+    }
+
+    const newSubmission: ARCSubmission = {};
+    for (const { taskId, task } of newTasks) {
+      newSubmission[taskId] = task.test.map((testPair) => ({
+        attempt_1: testPair.output || [],
+        attempt_2: testPair.output || [],
+      }));
+    }
+
+    await evaluateSubmission(newSubmission);
+
+    // Cache should still have 3 entries (evicted oldest)
+    assert.strictEqual(__testOnly_datasetCache.size(), 3, 'Cache should still have 3 entries after eviction');
+
+    // Oldest seed (first one) should be evicted
+    const oldestCached = __testOnly_datasetCache.get(seeds[0]);
+    assert.strictEqual(oldestCached, undefined, `Oldest seed ${seeds[0]} should be evicted`);
+
+    // New seed should be cached
+    const newCached = __testOnly_datasetCache.get(newSeed);
+    assert.ok(newCached !== undefined, `New seed ${newSeed} should be in cache`);
+  } finally {
+    // Restore original maxSize
+    __testOnly_datasetCache.maxSize = originalMaxSize;
+    __testOnly_datasetCache.clear();
   }
 });
