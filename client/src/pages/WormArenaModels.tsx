@@ -89,7 +89,6 @@ export default function WormArenaModels() {
             { label: 'Distributions', href: '/worm-arena/distributions' },
             { label: 'Rules', href: '/worm-arena/rules' },
           ]}
-          compact
           showMatchupLabel={false}
         />
 

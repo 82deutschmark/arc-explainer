@@ -269,7 +269,6 @@ export default function WormArenaMatches() {
   return (
     <div className="worm-page">
       <WormArenaHeader
-        compact
         links={[
           { label: 'Replay', href: '/worm-arena' },
           { label: 'Live', href: '/worm-arena/live' },
