@@ -1056,6 +1056,7 @@ export interface WormArenaBatchError {
  */
 export interface WormArenaModelWithGames {
   modelSlug: string;
+  modelName: string;
   gamesPlayed: number;
   wins: number;
   losses: number;

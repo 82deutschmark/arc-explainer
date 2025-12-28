@@ -215,7 +215,7 @@ export default function WormArenaModels() {
                           value={m.modelSlug}
                           className="text-[var(--worm-ink)]"
                         >
-                          <span className="font-semibold">{m.modelSlug}</span>
+                          <span className="font-semibold">{m.modelName || m.modelSlug}</span>
                           <span className="ml-2 text-[var(--worm-muted)]">
                             ({m.gamesPlayed} games, {((m.winRate ?? 0) * 100).toFixed(0)}% win)
                           </span>
@@ -268,7 +268,7 @@ export default function WormArenaModels() {
                   <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
                     <div>
                       <h1 className="text-lg sm:text-xl font-bold text-[var(--worm-header-ink)]">
-                        {selectedModel}
+                        {selectedModelInfo?.modelName || selectedModel}
                       </h1>
                     </div>
                     <div className="flex flex-wrap items-center gap-3">
