@@ -194,22 +194,122 @@ export default function WormArenaModelInsightsReport({ modelSlug }: WormArenaMod
             <div className="text-xs" style={{ color: 'var(--worm-muted)' }}>
               Generated: {formatDateTime(report.generatedAt)}
             </div>
-            {/* LLM summary block with graceful fallback */}
-            <div className="rounded-lg border p-4" style={{ backgroundColor: 'rgba(228, 242, 233, 0.5)', borderColor: 'var(--worm-border)' }}>
-              <div className="text-xs font-semibold mb-2" style={{ color: 'var(--worm-muted)' }}>LLM Summary</div>
-              {report.llmSummary ? (
-                <div className="text-sm leading-relaxed" style={{ color: 'var(--worm-ink)' }}>{report.llmSummary}</div>
-              ) : (
+            {/* Structured insights from LLM */}
+            {report.llmSummary && (
+              <div className="space-y-4">
+                {/* Parse and display structured insights */}
+                {(() => {
+                  try {
+                    const insights = JSON.parse(report.llmSummary);
+                    return (
+                      <div className="space-y-4">
+                        {/* Overview */}
+                        {insights.summary && (
+                          <div className="rounded-lg border p-4" style={{ backgroundColor: 'rgba(228, 242, 233, 0.5)', borderColor: 'var(--worm-border)' }}>
+                            <div className="text-sm leading-relaxed font-semibold" style={{ color: 'var(--worm-ink)' }}>
+                              {insights.summary}
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Death Analysis */}
+                        {insights.deathAnalysis && insights.deathAnalysis.length > 0 && (
+                          <div>
+                            <h4 className="text-sm font-bold mb-2" style={{ color: 'var(--worm-ink)' }}>Why It Dies</h4>
+                            <div className="space-y-2">
+                              {insights.deathAnalysis.map((death: any, idx: number) => (
+                                <div key={idx} className="rounded-lg border p-3" style={{ backgroundColor: 'rgba(255, 250, 240, 0.8)', borderColor: 'var(--worm-border)' }}>
+                                  <div className="flex items-start gap-2">
+                                    <span className="text-xs font-bold text-red-700 mt-0.5">⚠</span>
+                                    <div className="flex-1">
+                                      <div className="text-sm font-semibold" style={{ color: 'var(--worm-metric-losses)' }}>
+                                        {death.cause}
+                                      </div>
+                                      <div className="text-xs mt-1" style={{ color: 'var(--worm-ink)' }}>
+                                        {death.frequency}
+                                      </div>
+                                      <div className="text-xs mt-1" style={{ color: 'var(--worm-muted)' }}>
+                                        {death.pattern}
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Tough Opponents */}
+                        {insights.toughOpponents && insights.toughOpponents.length > 0 && (
+                          <div>
+                            <h4 className="text-sm font-bold mb-2" style={{ color: 'var(--worm-ink)' }}>Tough Matchups</h4>
+                            <div className="space-y-2">
+                              {insights.toughOpponents.map((opp: any, idx: number) => (
+                                <div key={idx} className="rounded-lg border p-3" style={{ backgroundColor: 'rgba(255, 240, 240, 0.8)', borderColor: 'var(--worm-border)' }}>
+                                  <div className="text-sm font-semibold" style={{ color: 'var(--worm-metric-losses)' }}>
+                                    {opp.opponent}
+                                  </div>
+                                  <div className="text-xs mt-1" style={{ color: 'var(--worm-ink)' }}>
+                                    Record: <span className="font-bold">{opp.record}</span>
+                                  </div>
+                                  <div className="text-xs mt-1" style={{ color: 'var(--worm-muted)' }}>
+                                    {opp.issue}
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Recommendations */}
+                        {insights.recommendations && insights.recommendations.length > 0 && (
+                          <div>
+                            <h4 className="text-sm font-bold mb-2" style={{ color: 'var(--worm-ink)' }}>What to Fix</h4>
+                            <div className="space-y-2">
+                              {insights.recommendations.map((rec: string, idx: number) => (
+                                <div key={idx} className="flex items-start gap-2 rounded-lg border p-3" style={{ backgroundColor: 'rgba(240, 250, 240, 0.8)', borderColor: 'var(--worm-border)' }}>
+                                  <span className="text-xs font-bold" style={{ color: 'var(--worm-green)' }}>✓</span>
+                                  <div className="text-sm flex-1" style={{ color: 'var(--worm-ink)' }}>
+                                    {rec}
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+
+                        {report.llmModel && (
+                          <div className="text-xs text-center mt-3 pt-3 border-t" style={{ color: 'var(--worm-muted)', borderColor: 'var(--worm-border)' }}>
+                            Generated by {report.llmModel}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  } catch {
+                    // Fallback if JSON parsing fails
+                    return (
+                      <div className="rounded-lg border p-4" style={{ backgroundColor: 'rgba(228, 242, 233, 0.5)', borderColor: 'var(--worm-border)' }}>
+                        <div className="text-sm leading-relaxed" style={{ color: 'var(--worm-ink)' }}>
+                          {report.llmSummary}
+                        </div>
+                        {report.llmModel && (
+                          <div className="text-xs mt-3 pt-3 border-t" style={{ color: 'var(--worm-muted)', borderColor: 'var(--worm-border)' }}>
+                            Model: {report.llmModel}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  }
+                })()}
+              </div>
+            )}
+            {!report.llmSummary && (
+              <div className="rounded-lg border p-4" style={{ backgroundColor: 'rgba(228, 242, 233, 0.5)', borderColor: 'var(--worm-border)' }}>
                 <div className="text-sm" style={{ color: 'var(--worm-muted)' }}>
-                  Summary unavailable. The stats below are still accurate.
+                  Insights unavailable. The stats below are still accurate.
                 </div>
-              )}
-              {report.llmModel && (
-                <div className="text-xs mt-3 pt-3 border-t" style={{ color: 'var(--worm-muted)', borderColor: 'var(--worm-border)' }}>
-                  Model: {report.llmModel}
-                </div>
-              )}
-            </div>
+              </div>
+            )}
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
               <div className="rounded-lg border p-3" style={{ backgroundColor: 'rgba(255, 255, 255, 0.8)', borderColor: 'var(--worm-border)' }}>
                 <div className="text-xs font-semibold mb-1" style={{ color: 'var(--worm-muted)' }}>Games</div>
