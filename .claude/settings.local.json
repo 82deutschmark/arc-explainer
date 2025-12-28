@@ -27,7 +27,8 @@
       "Bash(/tmp/current_file.tsx)",
       "Bash(powershell -File:*)",
       "Bash(npm run ingest-johanland:*)",
-      "Bash(npm run sync-openrouter-catalog:*)"
+      "Bash(npm run sync-openrouter-catalog:*)",
+      "Bash(grep:*)"
     ],
     "defaultMode": "bypassPermissions"
   },

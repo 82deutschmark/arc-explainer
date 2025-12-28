@@ -579,7 +579,6 @@ export default function WormArenaLive() {
           { label: 'Distributions', href: '/worm-arena/distributions' },
           { label: 'Rules', href: '/worm-arena/rules' },
         ]}
-        compact
       />
 
       <main className="p-2 max-w-7xl mx-auto space-y-4">

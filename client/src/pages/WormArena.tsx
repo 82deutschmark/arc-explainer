@@ -246,7 +246,6 @@ export default function WormArena() {
           { label: 'Rules', href: '/worm-arena/rules' },
         ]}
         showMatchupLabel={false}
-        compact
       />
 
       <main className="p-4 max-w-7xl mx-auto">

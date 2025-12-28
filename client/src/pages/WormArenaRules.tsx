@@ -84,7 +84,6 @@ export default function WormArenaRules() {
           { label: 'Rules', href: '/worm-arena/rules', active: true },
         ]}
         showMatchupLabel={false}
-        compact
       />
 
       <main className="p-3 max-w-7xl mx-auto space-y-6">
