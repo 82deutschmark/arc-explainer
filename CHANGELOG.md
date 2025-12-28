@@ -1,6 +1,6 @@
 # New entries at the top, use proper SemVer!
 
-### Version 6.17.0  Dec 27, 2025
+### Version 6.16.1  Dec 27, 2025
 
 - **Insights: Comprehensive local game analysis and record-breaking matches** (Author: Gemini 3 Flash High)
   - **Purpose**: Deep-dive into local SnakeBench history to extract performance records and fix directory blindness in the UI.
