@@ -191,7 +191,7 @@ export default function WormArenaModels() {
               <div className="flex-1">
                 <h2 className="text-lg font-bold text-[var(--worm-ink)] mb-2 flex items-center gap-2">
                   <Target className="w-5 h-5 text-[var(--worm-metric-rating)]" />
-                  Select Combatant
+                  Select Model
                 </h2>
 
                 {modelsLoading && (
@@ -215,10 +215,7 @@ export default function WormArenaModels() {
                           value={m.modelSlug}
                           className="text-[var(--worm-ink)]"
                         >
-                          <span className="font-semibold">{m.modelName || m.modelSlug}</span>
-                          <span className="ml-2 text-[var(--worm-muted)]">
-                            ({m.gamesPlayed} games, {((m.winRate ?? 0) * 100).toFixed(0)}% win)
-                          </span>
+                          {m.modelName || m.modelSlug} ({m.gamesPlayed} games, {((m.winRate ?? 0) * 100).toFixed(0)}% win)
                         </SelectItem>
                       ))}
                     </SelectContent>
