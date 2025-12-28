@@ -9,7 +9,7 @@
  */
 
 import type { Request, Response } from 'express';
-import { createGzip } from 'zlib';
+import { createGzip, constants } from 'zlib';
 import { pipeline } from 'stream/promises';
 import { Readable } from 'stream';
 import { generateDataset, evaluateSubmission } from '../services/reArc/reArcService';
@@ -64,7 +64,8 @@ export async function generate(_req: Request, res: Response): Promise<void> {
 
     // Stream JSON through gzip to response
     const jsonStream = Readable.from(jsonChunks());
-    const gzip = createGzip();
+    // Z_SYNC_FLUSH ensures data is flushed immediately after each chunk
+    const gzip = createGzip({ flush: constants.Z_SYNC_FLUSH });
 
     await pipeline(jsonStream, gzip, res);
 
@@ -176,6 +177,8 @@ export async function evaluate(req: Request, res: Response): Promise<void> {
       try {
         res.write(`event: ${event}\n`);
         res.write(`data: ${JSON.stringify(data)}\n\n`);
+        // Force immediate flush to avoid buffering
+        (res as any).socket?.write('');
       } catch (err) {
         logger.error(`[RE-ARC] Failed to write SSE event: ${err}`, 're-arc');
       }
