@@ -60,9 +60,10 @@ export class SimplePRNG {
 
   /**
    * Generate next random 16-bit unsigned integer.
+   * Uses upper 16 bits for better statistical properties (lower bits of LCG have poor randomness).
    */
   next16(): number {
-    return this.next() & 0xffff;
+    return (this.next() >>> 16) & 0xffff;
   }
 
   /**
