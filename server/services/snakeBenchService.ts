@@ -30,7 +30,6 @@ import type {
 import { repositoryService } from '../repositories/RepositoryService.ts';
 import { logger } from '../utils/logger.ts';
 import { openAIClient } from './openai/client.js';
-import { normalizeResponse } from './openai/responseParser.js';
 
 // Import from new modules
 import { SnakeBenchMatchRunner } from './snakeBench/SnakeBenchMatchRunner.ts';
@@ -105,37 +104,6 @@ const buildInsightsSummaryPrompt = (
   ].join('\n');
 };
 
-// Extract the text summary from a Responses API payload with reasoning fallback.
-const extractInsightsSummaryText = (response: any): string | null => {
-  const normalized = normalizeResponse(response, { modelKey: INSIGHTS_SUMMARY_MODEL });
-  const text = typeof normalized.output_text === 'string' ? normalized.output_text.trim() : '';
-  if (text) {
-    return text.replace(/\s+/g, ' ').trim();
-  }
-
-  const reasoning = normalized.output_reasoning?.summary;
-  if (typeof reasoning === 'string' && reasoning.trim().length > 0) {
-    return reasoning.replace(/\s+/g, ' ').trim();
-  }
-
-  if (Array.isArray(reasoning)) {
-    const joined = reasoning
-      .map(item => (typeof item === 'string' ? item : ''))
-      .filter(Boolean)
-      .join(' ');
-    if (joined.trim().length > 0) {
-      return joined.replace(/\s+/g, ' ').trim();
-    }
-  }
-
-  if (reasoning && typeof reasoning === 'object' && typeof (reasoning as any).text === 'string') {
-    const summaryText = (reasoning as any).text.trim();
-    return summaryText.length > 0 ? summaryText.replace(/\s+/g, ' ').trim() : null;
-  }
-
-  return null;
-};
-
 // Call OpenAI directly to generate the model insights summary text.
 const requestInsightsSummary = async (
   modelSlug: string,
@@ -146,8 +114,7 @@ const requestInsightsSummary = async (
   // Build a compact prompt from the aggregated stats for the LLM.
   const prompt = buildInsightsSummaryPrompt(modelSlug, summary, failureModes, lossOpponents);
 
-  // Prepare a Responses API payload tailored for a short, single-paragraph summary.
-  // Use the simple input format that works with the OpenAI SDK
+  // Prepare a Responses API payload with structured outputs for actionable insights.
   const requestBody = {
     model: INSIGHTS_SUMMARY_MODEL,
     input: [
@@ -163,7 +130,53 @@ const requestInsightsSummary = async (
         ],
       },
     ],
-    instructions: 'You are a concise analytics reporter for game model performance.',
+    instructions: 'You are a concise analytics reporter for game model performance. Focus on WHY the model loses, not just stats.',
+    response_format: {
+      type: 'json_schema',
+      json_schema: {
+        name: 'model_insights',
+        schema: {
+          type: 'object',
+          properties: {
+            summary: {
+              type: 'string',
+              description: 'One sentence overview of the model\'s main issue'
+            },
+            deathAnalysis: {
+              type: 'array',
+              items: {
+                type: 'object',
+                properties: {
+                  cause: { type: 'string' },
+                  frequency: { type: 'string' },
+                  pattern: { type: 'string' }
+                }
+              },
+              description: 'Top death causes with context'
+            },
+            toughOpponents: {
+              type: 'array',
+              items: {
+                type: 'object',
+                properties: {
+                  opponent: { type: 'string' },
+                  record: { type: 'string' },
+                  issue: { type: 'string' }
+                }
+              },
+              description: 'Hardest opponents to beat'
+            },
+            recommendations: {
+              type: 'array',
+              items: { type: 'string' },
+              description: 'Specific actionable improvements'
+            }
+          },
+          required: ['summary', 'deathAnalysis', 'toughOpponents', 'recommendations'],
+          additionalProperties: false
+        }
+      }
+    },
     reasoning: {
       effort: 'high',
       summary: 'auto',
@@ -171,14 +184,16 @@ const requestInsightsSummary = async (
     text: {
       verbosity: 'high',
     },
-    max_output_tokens: 600,
+    max_output_tokens: 1200,
   };
 
   try {
-    // Execute the OpenAI request and extract the summary text from the response.
-    // Type assertion to bypass TypeScript checking since the runtime format is correct
     const response = await openAIClient.responses.create(requestBody as any);
-    return extractInsightsSummaryText(response);
+    const text = typeof response.output_text === 'string' ? response.output_text.trim() : '';
+    if (text) {
+      return text;
+    }
+    return null;
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
     logger.warn(`SnakeBenchService.requestInsightsSummary failed: ${message}`, 'snakebench-service');
