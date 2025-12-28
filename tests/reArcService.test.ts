@@ -4,7 +4,7 @@
  * Author: Claude Code using Sonnet 4.5
  * Date: 2025-12-27
  * PURPOSE: Integration tests for RE-ARC Python subprocess integration.
- *          Tests dataset generation, verification, and scoring logic.
+ *          Tests dataset generation, evaluation, and scoring logic.
  * SRP/DRY check: Pass - Focused tests for reArcService functions.
  *
  * Note: These tests use RE_ARC_DEV_MODE=true for faster execution with fewer tasks.
@@ -15,9 +15,9 @@ import { strict as assert } from 'node:assert';
 import {
   resolvePythonBin,
   generateDataset,
-  verifySubmission,
+  evaluateSubmission,
   type GeneratedTask,
-  type VerificationProgress,
+  type EvaluationProgress,
 } from '../server/services/reArc/reArcService.ts';
 import type { ARCSubmission } from '../shared/types.ts';
 
@@ -151,7 +151,7 @@ test('generateDataset: task data structure is valid', async () => {
       }
     }
 
-    // Verify test examples have input (output may be missing - withheld for verification)
+    // Verify test examples have input (output may be missing - withheld for evaluation)
     for (const example of task.test) {
       assert.ok(Array.isArray(example.input), 'Test input should be array');
       assert.ok(example.input.length > 0, 'Test input should not be empty');
@@ -160,10 +160,10 @@ test('generateDataset: task data structure is valid', async () => {
 });
 
 // ============================================================================
-// Verification Tests
+// Evaluation Tests
 // ============================================================================
 
-test('verifySubmission: perfect submission scores 1.0', async () => {
+test('evaluateSubmission: perfect submission scores 1.0', async () => {
   const seed = 22222;
   const tasks: GeneratedTask[] = [];
 
@@ -181,8 +181,8 @@ test('verifySubmission: perfect submission scores 1.0', async () => {
     }));
   }
 
-  // Verify
-  const result = await verifySubmission(submission);
+  // Evaluate
+  const result = await evaluateSubmission(submission);
 
   assert.strictEqual(result.type, 'score', 'Perfect submission should return score type');
   if (result.type === 'score') {
@@ -190,7 +190,7 @@ test('verifySubmission: perfect submission scores 1.0', async () => {
   }
 });
 
-test('verifySubmission: all wrong answers scores 0.0', async () => {
+test('evaluateSubmission: all wrong answers scores 0.0', async () => {
   const seed = 33333;
   const tasks: GeneratedTask[] = [];
 
@@ -209,8 +209,8 @@ test('verifySubmission: all wrong answers scores 0.0', async () => {
     }));
   }
 
-  // Verify
-  const result = await verifySubmission(submission);
+  // Evaluate
+  const result = await evaluateSubmission(submission);
 
   assert.strictEqual(result.type, 'score', 'Should return score type');
   if (result.type === 'score') {
@@ -218,7 +218,7 @@ test('verifySubmission: all wrong answers scores 0.0', async () => {
   }
 });
 
-test('verifySubmission: partial correctness scores between 0 and 1', async () => {
+test('evaluateSubmission: partial correctness scores between 0 and 1', async () => {
   const seed = 44444;
   const tasks: GeneratedTask[] = [];
 
@@ -248,8 +248,8 @@ test('verifySubmission: partial correctness scores between 0 and 1', async () =>
     }
   }
 
-  // Verify
-  const result = await verifySubmission(submission);
+  // Evaluate
+  const result = await evaluateSubmission(submission);
 
   assert.strictEqual(result.type, 'score', 'Should return score type');
   if (result.type === 'score') {
@@ -258,7 +258,7 @@ test('verifySubmission: partial correctness scores between 0 and 1', async () =>
   }
 });
 
-test('verifySubmission: either attempt correct solves the pair', async () => {
+test('evaluateSubmission: either attempt correct solves the pair', async () => {
   const seed = 55555;
   const tasks: GeneratedTask[] = [];
 
@@ -302,8 +302,8 @@ test('verifySubmission: either attempt correct solves the pair', async () => {
     });
   }
 
-  // Verify
-  const result = await verifySubmission(submission);
+  // Evaluate
+  const result = await evaluateSubmission(submission);
 
   // Score should be approximately 2/3 (2 out of 3 pairs solved per task)
   assert.strictEqual(result.type, 'score', 'Should return score type');
@@ -313,7 +313,7 @@ test('verifySubmission: either attempt correct solves the pair', async () => {
   }
 });
 
-test('verifySubmission: order-independent (shuffled submission)', async () => {
+test('evaluateSubmission: order-independent (shuffled submission)', async () => {
   const seed = 66666;
   const tasks: GeneratedTask[] = [];
 
@@ -331,8 +331,8 @@ test('verifySubmission: order-independent (shuffled submission)', async () => {
     }));
   }
 
-  // Verify (codec should handle ordering internally)
-  const result = await verifySubmission(submission);
+  // Evaluate (codec should handle ordering internally)
+  const result = await evaluateSubmission(submission);
 
   assert.strictEqual(result.type, 'score', 'Should return score type');
   if (result.type === 'score') {
@@ -340,7 +340,7 @@ test('verifySubmission: order-independent (shuffled submission)', async () => {
   }
 });
 
-test('verifySubmission: progress callback is called', async () => {
+test('evaluateSubmission: progress callback is called', async () => {
   const seed = 77777;
   const tasks: GeneratedTask[] = [];
 
@@ -361,10 +361,10 @@ test('verifySubmission: progress callback is called', async () => {
   }
 
   // Track progress
-  const progressUpdates: VerificationProgress[] = [];
+  const progressUpdates: EvaluationProgress[] = [];
 
-  // Verify with progress callback
-  await verifySubmission(submission, (progress) => {
+  // Evaluate with progress callback
+  await evaluateSubmission(submission, (progress) => {
     progressUpdates.push(progress);
   });
 
@@ -379,13 +379,13 @@ test('verifySubmission: progress callback is called', async () => {
   }
 });
 
-test('verifySubmission: returns malformed for invalid task IDs', async () => {
+test('evaluateSubmission: returns malformed for invalid task IDs', async () => {
   const invalidSubmission: ARCSubmission = {
     'invalid1': [],
     'invalid2': [],
   };
 
-  const result = await verifySubmission(invalidSubmission);
+  const result = await evaluateSubmission(invalidSubmission);
 
   assert.strictEqual(result.type, 'malformed', 'Should return malformed type');
 });
@@ -394,7 +394,7 @@ test('verifySubmission: returns malformed for invalid task IDs', async () => {
 // Edge Cases & Round-trip
 // ============================================================================
 
-test('round-trip: generate → submit → verify', async () => {
+test('round-trip: generate → submit → evaluate', async () => {
   const seed = 99999;
   const tasks: GeneratedTask[] = [];
 
@@ -414,8 +414,8 @@ test('round-trip: generate → submit → verify', async () => {
     }));
   }
 
-  // Step 3: Verify
-  const result = await verifySubmission(submission);
+  // Step 3: Evaluate
+  const result = await evaluateSubmission(submission);
 
   // Step 4: Assert
   assert.strictEqual(result.type, 'score', 'Should return score type');
@@ -428,7 +428,7 @@ test('round-trip: generate → submit → verify', async () => {
 // Test Pair Count Validation Tests
 // ============================================================================
 
-test('verifySubmission: returns mismatches when submission has too few test pairs', async () => {
+test('evaluateSubmission: returns mismatches when submission has too few test pairs', async () => {
   const seed = 11111;
   const tasks: GeneratedTask[] = [];
 
@@ -457,19 +457,19 @@ test('verifySubmission: returns mismatches when submission has too few test pair
     }
   }
 
-  // Verify - should return mismatches
-  const result = await verifySubmission(submission);
+  // Evaluate - should return mismatches
+  const result = await evaluateSubmission(submission);
 
   assert.strictEqual(result.type, 'mismatches', 'Should return mismatches type');
   if (result.type === 'mismatches') {
     assert.ok(result.mismatches.length > 0, 'Should have at least one mismatch');
     const mismatch = result.mismatches[0];
     assert.ok(mismatch.taskId, 'Mismatch should have taskId');
-    assert.ok(mismatch.expectedPairs > mismatch.submittedPairs, 'Expected more pairs than submitted');
+    assert.ok(mismatch.expectedPredictions > mismatch.submittedPredictions, 'Expected more predictions than submitted');
   }
 });
 
-test('verifySubmission: returns mismatches when submission has too many test pairs', async () => {
+test('evaluateSubmission: returns mismatches when submission has too many test pairs', async () => {
   const seed = 22222;
   const tasks: GeneratedTask[] = [];
 
@@ -496,14 +496,14 @@ test('verifySubmission: returns mismatches when submission has too many test pai
     ];
   }
 
-  // Verify - should return mismatches
-  const result = await verifySubmission(submission);
+  // Evaluate - should return mismatches
+  const result = await evaluateSubmission(submission);
 
   assert.strictEqual(result.type, 'mismatches', 'Should return mismatches type');
   if (result.type === 'mismatches') {
     assert.strictEqual(result.mismatches.length, tasks.length, 'Should have mismatch for every task');
     const mismatch = result.mismatches[0];
     assert.ok(mismatch.taskId, 'Mismatch should have taskId');
-    assert.ok(mismatch.submittedPairs > mismatch.expectedPairs, 'Submitted more pairs than expected');
+    assert.ok(mismatch.submittedPredictions > mismatch.expectedPredictions, 'Submitted more predictions than expected');
   }
 });

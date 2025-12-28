@@ -13,7 +13,6 @@ import {
   recoverSeed,
   generateTaskIds,
   decodeTaskIds,
-  verifySeed,
   SimplePRNG,
   getTaskIdUpper,
   getTaskIdLower,
@@ -152,20 +151,6 @@ test('recoverSeed: throws on invalid task ID format', () => {
 
 test('recoverSeed: throws on empty task ID list', () => {
   assert.throws(() => recoverSeed([]), /Cannot recover seed from empty task ID list/);
-});
-
-test('verifySeed: returns true for correct seed', () => {
-  const seed = 0x11223344;
-  const taskIds = generateTaskIds(seed, 15);
-
-  assert.strictEqual(verifySeed(taskIds, seed), true);
-});
-
-test('verifySeed: returns false for incorrect seed', () => {
-  const seed = 0x11223344;
-  const taskIds = generateTaskIds(seed, 15);
-
-  assert.strictEqual(verifySeed(taskIds, 0x99999999), false);
 });
 
 // ============================================================================

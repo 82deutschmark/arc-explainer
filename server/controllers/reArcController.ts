@@ -1,10 +1,10 @@
 /**
- * RE-ARC Dataset Generation and Verification Controller
+ * RE-ARC Dataset Generation and Evaluation Controller
  *
  * Author: Claude Code using Sonnet 4.5
  * Date: 2025-12-27
- * PURPOSE: HTTP/SSE endpoints for RE-ARC dataset generation and verification.
- *          Generation streams JSON as chunked download, verification streams progress via SSE.
+ * PURPOSE: HTTP/SSE endpoints for RE-ARC dataset generation and evaluation.
+ *          Generation streams JSON as chunked download, evaluation streams progress via SSE.
  * SRP/DRY check: Pass - Single responsibility: RE-ARC HTTP API
  */
 
@@ -12,7 +12,7 @@ import type { Request, Response } from 'express';
 import { createGzip } from 'zlib';
 import { pipeline } from 'stream/promises';
 import { Readable } from 'stream';
-import { generateDataset, verifySubmission } from '../services/reArc/reArcService';
+import { generateDataset, evaluateSubmission } from '../services/reArc/reArcService';
 import type { ARCSubmission } from '../../shared/types';
 import { logger } from '../utils/logger';
 import { formatResponse } from '../utils/responseFormatter';
@@ -84,10 +84,10 @@ export async function generate(_req: Request, res: Response): Promise<void> {
 }
 
 /**
- * Verify submission against deterministically regenerated ground truth.
+ * Evaluate submission against deterministically regenerated ground truth.
  * Streams progress events via SSE.
  *
- * POST /api/rearc/verify
+ * POST /api/rearc/evaluate
  * Body: ARCSubmission JSON
  * Response: SSE stream with progress and completion events
  *
@@ -95,7 +95,7 @@ export async function generate(_req: Request, res: Response): Promise<void> {
  * - event: progress, data: { current: number, total: number }
  * - event: complete, data: { type: 'score', score: number } | { type: 'mismatches', mismatches: [...] } | { type: 'malformed' }
  */
-export async function verify(req: Request, res: Response): Promise<void> {
+export async function evaluate(req: Request, res: Response): Promise<void> {
   try {
     const submission = req.body as ARCSubmission;
 
@@ -106,29 +106,29 @@ export async function verify(req: Request, res: Response): Promise<void> {
     }
 
     // Validate submission structure
-    for (const [taskId, attempts] of Object.entries(submission)) {
-      if (!Array.isArray(attempts)) {
+    for (const [taskId, predictions] of Object.entries(submission)) {
+      if (!Array.isArray(predictions)) {
         res.status(400).json(
-          formatResponse.error('INVALID_SUBMISSION', `Task ${taskId}: attempts must be an array`)
+          formatResponse.error('INVALID_SUBMISSION', `Task ${taskId}: predictions must be an array`)
         );
         return;
       }
 
-      for (let i = 0; i < attempts.length; i++) {
-        const attempt = attempts[i];
-        if (!attempt || typeof attempt !== 'object') {
+      for (let i = 0; i < predictions.length; i++) {
+        const prediction = predictions[i];
+        if (!prediction || typeof prediction !== 'object') {
           res.status(400).json(
-            formatResponse.error('INVALID_SUBMISSION', `Task ${taskId}: attempt ${i} must be an object`)
+            formatResponse.error('INVALID_SUBMISSION', `Task ${taskId}: prediction ${i} must be an object`)
           );
           return;
         }
 
-        const { attempt_1, attempt_2 } = attempt;
+        const { attempt_1, attempt_2 } = prediction;
         if (!Array.isArray(attempt_1) || !Array.isArray(attempt_2)) {
           res.status(400).json(
             formatResponse.error(
               'INVALID_SUBMISSION',
-              `Task ${taskId}: attempt ${i} must have attempt_1 and attempt_2 arrays`
+              `Task ${taskId}: prediction ${i} must have attempt_1 and attempt_2 arrays`
             )
           );
           return;
@@ -142,7 +142,7 @@ export async function verify(req: Request, res: Response): Promise<void> {
               res.status(400).json(
                 formatResponse.error(
                   'INVALID_SUBMISSION',
-                  `Task ${taskId}: attempt ${i} ${gridName} row ${row} must be an array`
+                  `Task ${taskId}: prediction ${i} ${gridName} row ${row} must be an array`
                 )
               );
               return false;
@@ -156,7 +156,7 @@ export async function verify(req: Request, res: Response): Promise<void> {
       }
     }
 
-    logger.info(`[RE-ARC] Starting verification for ${Object.keys(submission).length} tasks`, 're-arc');
+    logger.info(`[RE-ARC] Starting evaluation for ${Object.keys(submission).length} tasks`, 're-arc');
 
     // Set up SSE connection
     res.setHeader('Content-Type', 'text/event-stream');
@@ -182,41 +182,41 @@ export async function verify(req: Request, res: Response): Promise<void> {
     };
 
     try {
-      // Run verification with progress callback
-      const result = await verifySubmission(submission, (progress) => {
+      // Run evaluation with progress callback
+      const result = await evaluateSubmission(submission, (progress) => {
         sendEvent('progress', progress);
       });
 
       // Send completion event based on result type
-      // Note: Complete event format excludes taskIndex and error fields from VerificationResult
+      // Note: Complete event format excludes taskIndex and error fields from EvaluationResult
       if (result.type === 'score') {
         sendEvent('complete', { type: 'score', score: result.score });
-        logger.info(`[RE-ARC] Verification complete: score=${result.score.toFixed(4)}`, 're-arc');
+        logger.info(`[RE-ARC] Evaluation complete: score=${result.score.toFixed(4)}`, 're-arc');
       } else if (result.type === 'mismatches') {
         // Transform mismatches to exclude taskIndex from event data
-        const mismatches = result.mismatches.map(({ taskId, expectedPairs, submittedPairs }) => ({
+        const mismatches = result.mismatches.map(({ taskId, expectedPredictions, submittedPredictions }) => ({
           taskId,
-          expectedPairs,
-          submittedPairs,
+          expectedPredictions,
+          submittedPredictions,
         }));
         sendEvent('complete', { type: 'mismatches', mismatches });
-        logger.info(`[RE-ARC] Verification failed: ${result.mismatches.length} test pair mismatches`, 're-arc');
+        logger.info(`[RE-ARC] Evaluation failed: ${result.mismatches.length} prediction count mismatches`, 're-arc');
       } else {
         sendEvent('complete', { type: 'malformed' });
-        logger.warn(`[RE-ARC] Verification failed: malformed submission - ${result.error}`, 're-arc');
+        logger.warn(`[RE-ARC] Evaluation failed: malformed submission - ${result.error}`, 're-arc');
       }
-    } catch (verifyErr) {
-      // Internal error during verification
-      const errorMsg = verifyErr instanceof Error ? verifyErr.message : String(verifyErr);
-      logger.error(`[RE-ARC] Verification error: ${errorMsg}`, 're-arc');
+    } catch (evaluateErr) {
+      // Internal error during evaluation
+      const errorMsg = evaluateErr instanceof Error ? evaluateErr.message : String(evaluateErr);
+      logger.error(`[RE-ARC] Evaluation error: ${errorMsg}`, 're-arc');
 
       // If headers haven't been sent yet, bubble up to send proper 500 response
       if (!res.headersSent) {
-        throw verifyErr;
+        throw evaluateErr;
       }
 
       // SSE stream already started - send error event and end stream
-      sendEvent('error', { message: 'Internal server error during verification' });
+      sendEvent('error', { message: 'Internal server error during evaluation' });
     } finally {
       if (!res.writableEnded) {
         res.end();
@@ -224,10 +224,10 @@ export async function verify(req: Request, res: Response): Promise<void> {
     }
   } catch (err) {
     const errorMsg = err instanceof Error ? err.message : String(err);
-    logger.error(`[RE-ARC] Verify endpoint error: ${errorMsg}`, 're-arc');
+    logger.error(`[RE-ARC] Evaluate endpoint error: ${errorMsg}`, 're-arc');
 
     if (!res.headersSent) {
-      res.status(500).json(formatResponse.error('VERIFICATION_FAILED', errorMsg));
+      res.status(500).json(formatResponse.error('EVALUATION_FAILED', errorMsg));
     } else {
       res.end();
     }

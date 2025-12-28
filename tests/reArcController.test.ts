@@ -4,7 +4,7 @@
  * Author: Claude Code using Sonnet 4.5
  * Date: 2025-12-27
  * PURPOSE: Integration tests for RE-ARC HTTP endpoints.
- *          Tests generation streaming download and verification SSE streaming.
+ *          Tests generation streaming download and evaluation SSE streaming.
  * SRP/DRY check: Pass - Focused tests for reArcController endpoints.
  *
  * Note: These tests use RE_ARC_DEV_MODE=true for faster execution with fewer tasks.
@@ -13,7 +13,7 @@
 import test from 'node:test';
 import { strict as assert } from 'node:assert';
 import type { Request, Response } from 'express';
-import { generate, verify } from '../server/controllers/reArcController.ts';
+import { generate, evaluate } from '../server/controllers/reArcController.ts';
 import type { ARCSubmission } from '../shared/types.ts';
 import { generateDataset } from '../server/services/reArc/reArcService.ts';
 
@@ -152,20 +152,20 @@ test('generate: controller function exists and is callable', async () => {
 });
 
 // ============================================================================
-// Verification Endpoint Tests
+// Evaluation Endpoint Tests
 // ============================================================================
 
-test('verify: rejects empty submission', async () => {
+test('evaluate: rejects empty submission', async () => {
   const req = { body: {} } as Request;
   const res = createMockResponse();
 
-  await verify(req, res);
+  await evaluate(req, res);
 
   assert.strictEqual(res.statusCode, 400);
   assert.ok(res.ended);
 });
 
-test('verify: rejects malformed submission (non-array attempts)', async () => {
+test('evaluate: rejects malformed submission (non-array attempts)', async () => {
   const req = {
     body: {
       '12345678': 'invalid',
@@ -173,12 +173,12 @@ test('verify: rejects malformed submission (non-array attempts)', async () => {
   } as Request;
   const res = createMockResponse();
 
-  await verify(req, res);
+  await evaluate(req, res);
 
   assert.strictEqual(res.statusCode, 400);
 });
 
-test('verify: rejects submission with missing attempt_1/attempt_2', async () => {
+test('evaluate: rejects submission with missing attempt_1/attempt_2', async () => {
   const req = {
     body: {
       '12345678': [{ invalid: true }],
@@ -186,12 +186,12 @@ test('verify: rejects submission with missing attempt_1/attempt_2', async () => 
   } as Request;
   const res = createMockResponse();
 
-  await verify(req, res);
+  await evaluate(req, res);
 
   assert.strictEqual(res.statusCode, 400);
 });
 
-test('verify: rejects submission with non-2D grid arrays', async () => {
+test('evaluate: rejects submission with non-2D grid arrays', async () => {
   const req = {
     body: {
       '12345678': [
@@ -204,14 +204,14 @@ test('verify: rejects submission with non-2D grid arrays', async () => {
   } as Request;
   const res = createMockResponse();
 
-  await verify(req, res);
+  await evaluate(req, res);
 
   assert.strictEqual(res.statusCode, 400);
   const responseData = JSON.parse(Buffer.concat(res.chunks).toString());
   assert.ok(responseData.message.includes('must be an array'), 'Should mention array validation in error');
 });
 
-test('verify: streams SSE events for valid submission', async () => {
+test('evaluate: streams SSE events for valid submission', async () => {
   // Generate a small dataset
   const seed = 99999;
   const tasks: any[] = [];
@@ -237,7 +237,7 @@ test('verify: streams SSE events for valid submission', async () => {
   const req = { body: submission } as Request;
   const res = createMockResponse();
 
-  await verify(req, res);
+  await evaluate(req, res);
 
   assert.ok(res.ended, 'Response should be ended');
   assert.strictEqual(res.headers['content-type'], 'text/event-stream');
@@ -281,7 +281,7 @@ test('verify: streams SSE events for valid submission', async () => {
   assert.strictEqual(completeData.score, 1.0, 'Perfect submission should score 1.0');
 });
 
-test('verify: returns mismatches for incorrect test pair count', async () => {
+test('evaluate: returns mismatches for incorrect test pair count', async () => {
   // Generate a small dataset
   const seed = 88888;
   const tasks: any[] = [];
@@ -318,7 +318,7 @@ test('verify: returns mismatches for incorrect test pair count', async () => {
   const req = { body: submission } as Request;
   const res = createMockResponse();
 
-  await verify(req, res);
+  await evaluate(req, res);
 
   // Parse SSE events
   const sseText = Buffer.concat(res.chunks).toString('utf-8');
@@ -348,12 +348,12 @@ test('verify: returns mismatches for incorrect test pair count', async () => {
   // Verify mismatch structure (excludes taskIndex per plan)
   const mismatch = completeData.mismatches[0];
   assert.ok(mismatch.taskId, 'Mismatch should have taskId');
-  assert.strictEqual(typeof mismatch.expectedPairs, 'number', 'Should have expectedPairs');
-  assert.strictEqual(typeof mismatch.submittedPairs, 'number', 'Should have submittedPairs');
+  assert.strictEqual(typeof mismatch.expectedPredictions, 'number', 'Should have expectedPredictions');
+  assert.strictEqual(typeof mismatch.submittedPredictions, 'number', 'Should have submittedPredictions');
   assert.strictEqual(mismatch.taskIndex, undefined, 'Should not include taskIndex in event data');
 });
 
-test('verify: returns malformed for invalid task IDs', async () => {
+test('evaluate: returns malformed for invalid task IDs', async () => {
   const submission: ARCSubmission = {
     '1234abcd': [
       {
@@ -372,7 +372,7 @@ test('verify: returns malformed for invalid task IDs', async () => {
   const req = { body: submission } as Request;
   const res = createMockResponse();
 
-  await verify(req, res);
+  await evaluate(req, res);
 
   // Parse SSE events
   const sseText = Buffer.concat(res.chunks).toString('utf-8');
