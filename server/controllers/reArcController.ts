@@ -20,7 +20,7 @@ import { formatResponse } from '../utils/responseFormatter';
 /**
  * Generate RE-ARC dataset and stream as chunked JSON download.
  *
- * POST /api/rearc-eval/generate
+ * POST /api/rearc/generate
  * Response: Chunked JSON download with gzip compression
  *
  * The response is a valid JSON object streamed incrementally as tasks generate.
@@ -34,7 +34,7 @@ export async function generate(req: Request, res: Response): Promise<void> {
 
     // Set download headers
     res.setHeader('Content-Type', 'application/json');
-    res.setHeader('Content-Disposition', `attachment; filename="rearc_test_challenges-${timestamp}.json"`);
+    res.setHeader('Content-Disposition', `attachment; filename="re-arc_test_challenges-${timestamp}.json"`);
     res.setHeader('Transfer-Encoding', 'chunked');
     res.setHeader('Content-Encoding', 'gzip');
     res.setHeader('Cache-Control', 'no-cache');
@@ -87,7 +87,7 @@ export async function generate(req: Request, res: Response): Promise<void> {
  * Verify submission against deterministically regenerated ground truth.
  * Streams progress events via SSE.
  *
- * POST /api/rearc-eval/verify
+ * POST /api/rearc/verify
  * Body: ARCSubmission JSON
  * Response: SSE stream with progress and completion events
  *

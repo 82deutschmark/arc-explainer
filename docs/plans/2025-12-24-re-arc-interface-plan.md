@@ -155,7 +155,7 @@ shared/types.ts (add ReArc types)
 
 Use `express-rate-limit` for API rate limiting
 
-**Generation endpoint:** `POST /api/rearc-eval/generate` (Streaming Download)
+**Generation endpoint:** `POST /api/rearc/generate` (Streaming Download)
 - No parameters
 - Returns chunked HTTP response with headers:
   - `Content-Type: application/json`
@@ -167,7 +167,7 @@ Use `express-rate-limit` for API rate limiting
 - Each task contains training pairs (input+output) and test pairs (input only; ground truth reserved for verification)
 - Tasks stream in real-time (~10 seconds for full dataset)
 
-**Verification endpoint:** `POST /api/rearc-eval/verify` (SSE stream)
+**Verification endpoint:** `POST /api/rearc/verify` (SSE stream)
 - Body: Submission JSON
 - Returns Server-Sent Events:
   ```

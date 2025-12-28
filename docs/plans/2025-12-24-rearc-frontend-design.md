@@ -1,23 +1,34 @@
-# RE-ARC Eval Frontend Design
+# RE-ARC Frontend Design
 
 **Author:** Claude Code using Sonnet 4.5
 **Date:** 2025-12-25
-**Purpose:** Self-service page for generating and verifying cryptographic ARC datasets
+**Purpose:** Self-service page for generating RE-ARC datasets and verifying solutions to them
 
-## Page: `/rearc-eval`
+## Context
+
+The people who will find themselves at this page are those who created an ARC solver and want to see if it works and how well it does. They will probably have been directed here by the ARC community to prove their solver works or to demo how well it does, with proof. The ARC community can know for sure how well the solver works if the user shares their solution file with the community, as anyone can upload and verify, and it's tied directly to the same dataset, and there's an upper bound on how long it took for the solver to solve since it also encodes the generation timestamp.
+
+Though creating a solver is technical work, the user may not have a rigorous background in programming, and the ARC challenge is quite confusing, so we want the UX to be smooth and the copy to be well written, e.g. error messages should provide guidance and be helpful and actionable, and instructions should be clear.
+
+## Page: `/re-arc`
 
 ### Single-page design with 3 sections:
 1. Header
 2. Generate Dataset
-3. Verify Solution
+3. Verify Submission
 
 ---
 
 ## Section 1: Header
 
-**Title:** RE-ARC Eval
+**Title:** RE-ARC
 
-**Subtitle:** Generate and verify ARC puzzle datasets
+**Subtitle:** Generate RE-ARC datasets and verify your solutions
+
+**How it works (expandable):**
+
+> Click "Generate" to create a brand-new set of ARC puzzles. Difficulty is tuned to roughly match the ARC-AGI-2 evaluation set. After your solver processes them, upload the results to calculate your score. Share the solution file with others to let them verify your score independently—no trust required.
+
 
 ---
 
@@ -26,7 +37,6 @@
 **Card with:**
 - Title: "Generate Challenge Dataset"
 - Description: "Creates unique ARC puzzles"
-- Warning: "Each generation is unique."
 - Button: "Generate Dataset"
 
 **Generation states:**
@@ -37,14 +47,28 @@
 
 ---
 
-## Section 3: Verify Solution
+## Section 3: Verify Submission
 
 **Card with:**
 - Title: "Verify Your Submission"
 - Description: "Upload your submission to check your score"
 
-**Submission format guide (collapsible):**
-Show expected JSON structure
+**Submission format guide:**
+Expandable section explaining:
+- **How it works:** ARC tasks contain test pairs (input → output). Each task has 1 or more test pairs. For each test pair, your solver makes 2 attempts to predict the output.
+- **Format:** An object where each key is a task ID, and the value is an array of test pair attempts.
+- **Example:** A task with 2 test pairs would have 2 elements in the array, each with `attempt_1` and `attempt_2` grids.
+
+```typescript
+type Submission = {
+  [taskId: string]: {
+    attempt_1: number[][];  // First attempt at this test pair
+    attempt_2: number[][];  // Second attempt at this test pair
+  }[];  // Array because tasks can have multiple test pairs
+};
+```
+
+Most tasks have only 1 test pair, so the array usually has 1 element.
 
 **Upload interface:**
 - Drag-and-drop zone
@@ -58,8 +82,12 @@ Show expected JSON structure
    - Show progress bar with current progress
 3. **Complete**:
    - Display score (percentage)
-   - Display time elapsed (e.g., "Completed in 1 hour 4 minutes")
-   - Return to idle (allow retry)
+   - Display generation timestamp
+   - Display time elapsed since generation (e.g., "Verified 2 hours after generation")
+   - **If mismatches exist:** Show collapsible "View Details" section with:
+     - List of task IDs with test pair count mismatches
+     - For each: expected test pair count vs submitted test pair count
+   - "Verify Another Submission" button
 
 ---
 
@@ -84,9 +112,52 @@ Show expected JSON structure
 
 **Verification errors:**
 
-**Client-side validation (fast, before upload):**
+All errors display inline, keep interface visible for retry.
 
-Should be following format.
+**Client-side validation error messages:**
+
+Format validation errors (shown immediately on file drop):
+
+- **Missing array wrapper:**
+  ```
+  Task "abc12345" has wrong structure.
+
+  Found: { "attempt_1": [[grid]], "attempt_2": [[grid]] }
+  Expected: [{ "attempt_1": [[grid]], "attempt_2": [[grid]] }]
+
+  Each task has one or more test pairs. Even if this task has only 1 test pair,
+  it must be wrapped in an array: one element per test pair.
+  ```
+
+- **Wrong top-level value:**
+  ```
+  Task "abc12345" must contain test pair attempts, not raw grids.
+
+  Found: [[0,1,2], [3,4,5], ...]
+  Expected: [{ "attempt_1": [[grid]], "attempt_2": [[grid]] }]
+
+  For each test pair, your solver submits 2 attempts.
+  ```
+
+- **Incomplete submission:**
+  ```
+  This submission is missing tasks.
+  Found 127 tasks, expected 128.
+  ```
+
+- **Grid size violation:**
+  ```
+  Task "abc12345", attempt_1: Grid is 31×31 (maximum allowed: 30×30)
+  ```
+
+- **Invalid grid values:**
+  ```
+  Task "abc12345", attempt_2: Grid contains value 10 (valid values: 0-9)
+  ```
+
+**Client-side validation (instant, before upload):**
+
+Must follow this format:
 
 ```typescript
 type Submission = {
@@ -97,16 +168,26 @@ type Submission = {
 };
 ```
 
+- There should be 128 tasks
 - taskId is 8 char hex string
 - Grid format validation:
   - Dimensions must be 1x1 to 30x30
   - Grid cells are integers 0-9
 
-All errors display inline, keep interface visible for retry.
+**Server-side validation error (during verification):**
 
-If validation fails, provide very clear guidance. Common mistakes:
-- { taskId: grid } (no attempt object)
-- { taskId: {attempt_1, attempt_2} } (not array corresponding to each test pair)
+If the backend cannot verify the submission:
+```
+Unable to verify this submission.
+
+The task IDs don't match a valid RE-ARC dataset. This can happen if:
+- Task IDs were manually edited
+- You're submitting answers for a dataset not generated from this site
+
+Make sure your submission has the same task IDs as the dataset you downloaded.
+```
+
+*Implementation note: Backend returns `event: complete` with `data: {"type": "malformed"}` when XOR timestamp recovery fails*
 
 ---
 
@@ -118,7 +199,7 @@ Header
 Generate Dataset
   - Generate button
   ↓
-Verify Solution
+Verify Submission
   - Upload interface (or progress bar when verifying)
   - Results (when complete)
 ```
@@ -133,6 +214,51 @@ Verify Solution
 - Progress bars (shadcn/ui)
 - File upload with drag-and-drop
 - Alert/error display (shadcn/ui)
+
+**Utility functions needed:**
+- XOR task IDs to recover timestamp
+- Format timestamp as human-readable date
+- Calculate time elapsed since generation
+
+---
+
+## API Integration
+
+**Generation endpoint:** `POST /api/rearc/generate`
+- No request body
+- Response: Streaming download (chunked HTTP)
+  - Headers:
+    - `Content-Type: application/json`
+    - `Content-Disposition: attachment; filename="arc-verifier_test_challenges-{timestamp}.json"`
+    - `Transfer-Encoding: chunked`
+    - `Content-Encoding: gzip`
+  - Body: JSON object streamed incrementally
+  - Format: `{ "taskId1": {...}, "taskId2": {...}, ... }`
+
+**Verification endpoint:** `POST /api/rearc/verify`
+- Request body: Submission JSON (multipart/form-data or application/json)
+- Response: Server-Sent Events (SSE)
+  - Progress events:
+    ```
+    event: progress
+    data: {"current": 47, "total": 128}
+    ```
+  - Completion events (one or more):
+    ```
+    event: complete
+    data: {"type": "score", "score": 0.875}
+
+    event: complete
+    data: {"type": "mismatches", "mismatches": [{taskId, expectedPairs, submittedPairs}, ...]}
+
+    event: complete
+    data: {"type": "malformed"}
+    ```
+  - Error events:
+    ```
+    event: error
+    data: {"message": "Error description"}
+    ```
 
 ---
 
