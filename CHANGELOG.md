@@ -1,5 +1,37 @@
 # New entries at the top, use proper SemVer!
 
+### Version 6.17.0  Dec 27, 2025
+
+- **Insights: Comprehensive local game analysis and record-breaking matches** (Author: Gemini 3 Flash High)
+  - **Purpose**: Deep-dive into local SnakeBench history to extract performance records and fix directory blindness in the UI.
+  - **Local Records Found**:
+    - Discovered **30-apple record** (104 rounds) by `openai/gpt-5.1-codex-mini` vs `nvidia/nemotron-3-nano-30b-a3b:free`.
+    - Promoted top local matches to the "Greatest Hits" Hall of Fame.
+  - **Tooling Enhancements**:
+    - Upgraded `analyze_local_games.py` with CSV/Markdown reporting, model/winner extraction, and date-range filtering.
+    - Generated `docs/local-game-insights-dec-2025.md` with architectural recommendations for the frontend stats engine.
+  - **Backend Fixes**:
+    - Fixed `SnakeBenchReplayResolver` to scan both `completed_games` and `completed_games_local`, resolving missing replay links in the UI.
+    - Fixed broken relative import paths across 7 SnakeBench services (`shared/types.js` level traversal).
+    - Aligned `SnakeBenchLlmPlayerPromptTemplate.ts` with new Python source (added web search prohibition).
+  - **Author Updates**: Refreshed headers in 8 files to reflect **Gemini 3 Flash High** authorship.
+  - **Files Created**:
+    - `docs/local-game-insights-dec-2025.md`
+    - `external/SnakeBench/local_game_analysis_dec_2025.csv`
+  - **Files Modified**:
+    - `server/services/snakeBench/SnakeBenchReplayResolver.ts`
+    - `server/services/snakeBench/SnakeBenchMatchRunner.ts`
+    - `server/services/snakeBench/SnakeBenchStreamingRunner.ts`
+    - `server/services/snakeBench/SnakeBenchLlmPlayerPromptTemplate.ts`
+    - `server/services/snakeBench/helpers/replayFilters.ts`
+    - `server/services/snakeBench/helpers/validators.ts`
+    - `server/services/snakeBench/persistence/persistenceCoordinator.ts`
+    - `server/services/snakeBenchHallOfFame.ts`
+    - `client/src/components/WormArenaGreatestHits.tsx`
+    - `client/src/pages/WormArenaDistributions.tsx`
+    - `client/src/hooks/useWormArenaGreatestHits.ts`
+    - `external/SnakeBench/backend/cli/analyze_local_games.py`
+
 ### Version 6.16.0  Dec 27, 2025
 
 - **Architecture: Modularize Arc3Games into per-game files for 100+ game scalability** (Author: Claude Haiku 4.5)

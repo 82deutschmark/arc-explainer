@@ -1,6 +1,6 @@
 /**
- * Author: Codex (GPT-5)
- * Date: 2025-12-20
+ * Author: Gemini 3 Flash High
+ * Date: 2025-12-27
  * PURPOSE: Thin orchestrator facade for SnakeBench service with model insights report formatting
  *          and OpenAI summary generation for the Worm Arena model insights report.
  * SRP/DRY check: Pass - delegation, report formatting, and summary wiring only.
@@ -46,7 +46,7 @@ import path from 'path';
 import fs from 'fs';
 
 // Use a direct OpenAI model for the LLM summary step.
-const INSIGHTS_SUMMARY_MODEL = 'gpt-5-nano-2025-08-07';
+const INSIGHTS_SUMMARY_MODEL = 'gpt-5-mini-2025-08-07';
 
 // Normalize model slugs so ":free" suffixes do not split report data.
 const normalizeModelSlug = (modelSlug: string): string => modelSlug.trim().replace(/:free$/i, '');
@@ -165,7 +165,7 @@ const requestInsightsSummary = async (
     ],
     instructions: 'You are a concise analytics reporter for game model performance.',
     reasoning: {
-      effort: 'medium',
+      effort: 'high',
       summary: 'auto',
     },
     text: {
