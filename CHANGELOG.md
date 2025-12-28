@@ -1,5 +1,23 @@
 # New entries at the top, use proper SemVer!
 
+### Version 6.16.2  Dec 28, 2025
+
+- **Fix: Worm Arena Models page display and navigation completeness** (Author: Claude Haiku 4.5)
+  - **Purpose**: Fix broken model name display in Worm Arena Models page and ensure all Worm Arena subitems are accessible from main navigation.
+  - **Issues Fixed**:
+    - Fixed SelectItem structure in WormArenaModels.tsx that caused malformed dropdown display ("Choose a model_openai/gpt-5-nano" concatenation bug).
+    - Added missing `modelName` field to `WormArenaModelWithGames` type for proper display names.
+    - Updated backend SQL query to fetch `models.name` field for model name display.
+    - Corrected page label from "Select Combatant" to "Select Model".
+    - Updated navigation to include all 8 Worm Arena pages under SnakeBench dropdown (was missing Models, Skill Analysis, Distributions, Rules).
+    - Updated Stats page navigation title to "Worm Arena (Stats & Placement)" for accuracy.
+  - **Files Modified**:
+    - `client/src/pages/WormArenaModels.tsx` (fixed SelectItem structure, corrected label, added modelName display)
+    - `client/src/components/layout/AppNavigation.tsx` (added 4 missing Worm Arena pages to dropdown menu)
+    - `server/repositories/GameReadRepository.ts` (added `m.name` to SQL query and result mapping)
+    - `shared/types.ts` (added `modelName: string` to `WormArenaModelWithGames` interface)
+  - **Impact**: Worm Arena Models page now renders correctly with friendly model names, and full navigation suite is accessible from main menu.
+
 ### Version 6.16.1  Dec 27, 2025
 
 - **Insights: Comprehensive local game analysis and record-breaking matches** (Author: Gemini 3 Flash High)
