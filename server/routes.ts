@@ -291,8 +291,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
     legacyHeaders: false,
   });
 
-  app.post("/api/rearc-eval/generate", reArcGenerateLimiter, asyncHandler(reArcController.generate));
-  app.post("/api/rearc-eval/verify", reArcVerifyLimiter, asyncHandler(reArcController.verify));
+  app.post("/api/rearc/generate", reArcGenerateLimiter, asyncHandler(reArcController.generate));
+  app.post("/api/rearc/verify", reArcVerifyLimiter, asyncHandler(reArcController.verify));
 
   // Batch analysis routes
   app.post("/api/batch/start", asyncHandler(batchController.startBatch));
