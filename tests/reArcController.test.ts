@@ -142,8 +142,8 @@ test('generate: sets correct download headers', async () => {
   assert.strictEqual(res.headers['content-type'], 'application/json');
   assert.strictEqual(res.headers['transfer-encoding'], 'chunked');
   assert.strictEqual(res.headers['content-encoding'], 'gzip');
-  assert.strictEqual(res.headers['cache-control'], 'no-cache');
-  assert.ok(res.headers['content-disposition']?.startsWith('attachment; filename="rearc_test_challenges-'));
+  assert.strictEqual(res.headers['cache-control'], 'no-cache, no-store');
+  assert.ok(res.headers['content-disposition']?.startsWith('attachment; filename="re-arc_test_challenges-'));
 });
 
 test('generate: controller function exists and is callable', async () => {

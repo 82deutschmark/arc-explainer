@@ -26,7 +26,7 @@ import { formatResponse } from '../utils/responseFormatter';
  * The response is a valid JSON object streamed incrementally as tasks generate.
  * Client receives a file download that completes when all tasks are generated (~10 seconds).
  */
-export async function generate(req: Request, res: Response): Promise<void> {
+export async function generate(_req: Request, res: Response): Promise<void> {
   try {
     // Generate seed from current timestamp (seconds). This is intentional.
     const seed = Math.floor(Date.now() / 1000);
@@ -37,7 +37,7 @@ export async function generate(req: Request, res: Response): Promise<void> {
     res.setHeader('Content-Disposition', `attachment; filename="re-arc_test_challenges-${timestamp}.json"`);
     res.setHeader('Transfer-Encoding', 'chunked');
     res.setHeader('Content-Encoding', 'gzip');
-    res.setHeader('Cache-Control', 'no-cache');
+    res.setHeader('Cache-Control', 'no-cache, no-store');
 
     logger.info(`[RE-ARC] Starting dataset generation with seed=${seed}`, 're-arc');
 
