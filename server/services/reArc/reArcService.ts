@@ -93,6 +93,71 @@ class InactivityTimeoutManager {
 }
 
 /**
+ * Simple Least Recently Used (LRU) cache implementation.
+ * Automatically evicts oldest entries when max size is exceeded.
+ */
+class SimpleLRU<K, V> {
+  private cache = new Map<K, V>();
+
+  constructor(public maxSize: number) {}
+
+  /**
+   * Get value from cache. Moves entry to end (most recently used).
+   * @returns Value if found, undefined otherwise
+   */
+  get(key: K): V | undefined {
+    const value = this.cache.get(key);
+    if (value !== undefined) {
+      // Move to end (most recently used)
+      this.cache.delete(key);
+      this.cache.set(key, value);
+    }
+    return value;
+  }
+
+  /**
+   * Set value in cache. Evicts oldest entry if max size exceeded.
+   */
+  set(key: K, value: V): void {
+    // Remove if exists (to update position)
+    this.cache.delete(key);
+    // Add to end
+    this.cache.set(key, value);
+    // Evict oldest if over limit
+    if (this.cache.size > this.maxSize) {
+      const firstKey = this.cache.keys().next().value;
+      if (firstKey !== undefined) {
+        this.cache.delete(firstKey);
+      }
+    }
+  }
+
+  /**
+   * Get current cache size (for testing).
+   */
+  size(): number {
+    return this.cache.size;
+  }
+
+  /**
+   * Clear all entries (for test cleanup).
+   */
+  clear(): void {
+    this.cache.clear();
+  }
+}
+
+/**
+ * Dataset cache for RE-ARC evaluation.
+ * Caches test outputs by seed to avoid regenerating during evaluation.
+ * Structure: Array of tasks, each task has array of test pairs with outputs.
+ * Max 50 datasets, LRU eviction.
+ *
+ * Exported with __testOnly_ prefix for test access only.
+ */
+export const __testOnly_datasetCache = new SimpleLRU<number, { output: number[][] }[][]>(50);
+
+/**
  * Configuration for running a re-arc subprocess.
  */
 interface SubprocessRunnerConfig<T> {
@@ -403,53 +468,79 @@ export async function evaluateSubmission(
   // Step 2: Build ordered submission array
   const submissionInOrder = orderedTaskIds.map((taskId) => submission[taskId]);
 
-  // Step 3: Spawn Python and stream evaluation
+  // Step 3: Check cache for this seed
+  const cachedTestOutputs = __testOnly_datasetCache.get(seed);
   let totalScore = 0;
   const mismatches: PredictionCountMismatch[] = [];
 
-  for await (const _ of runReArcSubprocess({
-    seed,
-    contextName: 're-arc evaluateSubmission',
-    expectedCount: numTasks,
-    processLine: (line, taskIndex) => {
-      // Parse ground truth task (skip first 8 chars = re-arc task ID)
-      const jsonStr = line.slice(8);
-      const groundTruth = JSON.parse(jsonStr);
+  // Helper: Process a single task (shared between cache hit/miss paths)
+  const processTask = (
+    taskIndex: number,
+    testPairs: { output: number[][] }[],
+  ): void => {
+    const submittedPredictions = submissionInOrder[taskIndex];
+    const taskId = orderedTaskIds[taskIndex];
 
-      // Get corresponding predictions from submission
-      const submittedPredictions = submissionInOrder[taskIndex];
-      const taskId = orderedTaskIds[taskIndex];
+    if (!submittedPredictions) {
+      throw new Error(`Missing submission for task ${taskId} at index ${taskIndex}`);
+    }
 
-      if (!submittedPredictions) {
-        // Missing submission for this task is a malformed submission
-        throw new Error(`Missing submission for task ${taskId} at index ${taskIndex}`);
-      }
+    // Check prediction count (must match number of test inputs)
+    if (submittedPredictions.length !== testPairs.length) {
+      mismatches.push({
+        taskId,
+        taskIndex,
+        expectedPredictions: testPairs.length,
+        submittedPredictions: submittedPredictions.length,
+      });
+    } else {
+      // Score this task
+      const taskScore = scoreTask(testPairs, submittedPredictions);
+      totalScore += taskScore;
+    }
 
-      // Check prediction count (must match number of test inputs)
-      const testPairs = groundTruth.test;
-      if (submittedPredictions.length !== testPairs.length) {
-        // Collect mismatch and skip scoring
-        mismatches.push({
-          taskId,
-          taskIndex,
-          expectedPredictions: testPairs.length,
-          submittedPredictions: submittedPredictions.length,
-        });
-      } else {
-        // Score this task
-        const taskScore = scoreTask(testPairs, submittedPredictions);
-        totalScore += taskScore;
-      }
+    // Emit progress
+    if (onProgress) {
+      onProgress({ current: taskIndex + 1, total: numTasks });
+    }
+  };
 
-      // Emit progress
-      if (onProgress) {
-        onProgress({ current: taskIndex + 1, total: numTasks });
-      }
+  if (cachedTestOutputs) {
+    // Cache HIT: Score against cached data (no Python subprocess)
+    for (let taskIndex = 0; taskIndex < numTasks; taskIndex++) {
+      processTask(taskIndex, cachedTestOutputs[taskIndex]);
+    }
+  } else {
+    // Cache MISS: Stream from Python, score as we go, collect for caching
+    const testOutputs: { output: number[][] }[][] = [];
 
-      // No need to yield anything (void return)
-    },
-  })) {
-    // No-op: just processing for side effects (scoring + progress)
+    for await (const _ of runReArcSubprocess({
+      seed,
+      contextName: 're-arc evaluateSubmission',
+      expectedCount: numTasks,
+      processLine: (line, taskIndex) => {
+        // Parse ground truth task (skip first 8 chars = re-arc task ID)
+        const jsonStr = line.slice(8);
+        const groundTruth = JSON.parse(jsonStr);
+
+        // Extract and cache test outputs
+        const testPairs = groundTruth.test;
+        const taskTestOutputs = testPairs.map((testPair: { output: number[][] }) => ({
+          output: testPair.output,
+        }));
+        testOutputs.push(taskTestOutputs);
+
+        // Score this task (streaming)
+        processTask(taskIndex, testPairs);
+
+        // No need to yield anything (void return)
+      },
+    })) {
+      // No-op: just processing for side effects (scoring + collecting)
+    }
+
+    // Cache the collected dataset
+    __testOnly_datasetCache.set(seed, testOutputs);
   }
 
   // Step 4: Return mismatches if any, otherwise return score
@@ -474,7 +565,7 @@ export async function evaluateSubmission(
  * @returns Task score between 0.0 and 1.0
  */
 function scoreTask(
-  testPairs: { input: number[][]; output: number[][] }[],
+  testPairs: { output: number[][] }[],
   predictions: { attempt_1: number[][]; attempt_2: number[][] }[],
 ): number {
   if (testPairs.length === 0) return 0;
