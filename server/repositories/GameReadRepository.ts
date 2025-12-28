@@ -315,6 +315,7 @@ export class GameReadRepository extends BaseRepository {
     try {
       const sql = `
         SELECT ${SQL_NORMALIZE_SLUG('m.model_slug')} AS model_slug,
+               m.name AS model_name,
                COUNT(DISTINCT gp.game_id) AS games_played,
                COUNT(CASE WHEN gp.result = 'won' THEN 1 END) AS wins,
                COUNT(CASE WHEN gp.result = 'lost' THEN 1 END) AS losses,
@@ -323,13 +324,14 @@ export class GameReadRepository extends BaseRepository {
         JOIN public.game_participants gp ON m.id = gp.model_id
         JOIN public.games g ON gp.game_id = g.id
         WHERE g.status = 'completed' AND COALESCE(g.rounds, 0) > 0
-        GROUP BY ${SQL_NORMALIZE_SLUG('m.model_slug')}
+        GROUP BY ${SQL_NORMALIZE_SLUG('m.model_slug')}, m.name
         HAVING COUNT(DISTINCT gp.game_id) > 0
         ORDER BY games_played DESC, model_slug ASC;
       `;
       const { rows } = await this.query(sql, [], client);
       return rows.map(row => ({
         ...row,
+        modelName: row.model_name || row.model_slug,
         gamesPlayed: parseInt(String(row.games_played), 10),
         wins: parseInt(String(row.wins), 10),
         losses: parseInt(String(row.losses), 10),
