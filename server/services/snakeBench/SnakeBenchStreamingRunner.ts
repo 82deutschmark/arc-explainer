@@ -1,6 +1,6 @@
 /**
- * Author: Claude Code using Haiku 4.5
- * Date: 2025-12-19
+ * Author: Gemini 3 Flash High
+ * Date: 2025-12-27
  * PURPOSE: Orchestrate streaming match execution with live frame polling.
  *          Parses stdout for JSON events, emits status/frame/chunk to handlers.
  *          Coordinates persistence on completion.
@@ -12,7 +12,7 @@ import type {
   SnakeBenchRunMatchResult,
   WormArenaStreamStatus,
   WormArenaFrameEvent,
-} from '../../shared/types.js';
+} from '../../../shared/types.js';
 import { snakeBenchPythonBridge } from './SnakeBenchPythonBridge.ts';
 import { PersistenceCoordinator } from './persistence/persistenceCoordinator.ts';
 import { prepareRunMatch } from './helpers/validators.ts';
@@ -228,9 +228,10 @@ export class SnakeBenchStreamingRunner {
               }
               if (evt?.type === 'game.init') {
                 if (!discoveredGameId && typeof evt.gameId === 'string' && evt.gameId.trim().length > 0) {
-                  discoveredGameId = evt.gameId.trim();
+                  const gameId = evt.gameId.trim();
+                  discoveredGameId = gameId;
                   poller.start(
-                    discoveredGameId,
+                    gameId,
                     prepared.width,
                     prepared.height,
                     prepared.maxRounds,

@@ -1,6 +1,6 @@
 /**
- * Author: Cascade
- * Date: 2025-12-11
+ * Author: Gemini 3 Flash High
+ * Date: 2025-12-27
  * PURPOSE: Hook for Worm Arena "Greatest Hits" matches.
  *          Fetches a small curated list of standout Worm Arena games
  *          (longest, most expensive, highest-scoring) from the backend

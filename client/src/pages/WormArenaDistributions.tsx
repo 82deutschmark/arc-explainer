@@ -1,5 +1,5 @@
 /**
- * Author: Cascade (ChatGPT)
+ * Author: Gemini 3 Flash High
  * Date: 2025-12-27
  * PURPOSE: Worm Arena Run Length Distribution page.
  *          Displays histogram visualization of game lengths (rounds) by model,

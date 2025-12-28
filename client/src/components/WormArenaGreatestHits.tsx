@@ -1,5 +1,5 @@
 /**
- * Author: Cascade
+ * Author: Gemini 3 Flash High
  * Date: 2025-12-27
  * PURPOSE: Worm Arena "Greatest Hits" card with Share/Tweet buttons.
  *          Shows a short list of especially interesting matches

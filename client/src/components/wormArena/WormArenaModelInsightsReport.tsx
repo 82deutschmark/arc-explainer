@@ -133,7 +133,7 @@ export default function WormArenaModelInsightsReport({ modelSlug }: WormArenaMod
     <Card className="worm-card">
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between gap-3 flex-wrap">
-          <CardTitle className="text-xl font-bold text-worm-ink">
+          <CardTitle className="text-xl font-bold" style={{ color: 'var(--worm-ink)' }}>
             Actionable Insights Report
           </CardTitle>
           {report && !isLoading && (
@@ -162,28 +162,28 @@ export default function WormArenaModelInsightsReport({ modelSlug }: WormArenaMod
             </div>
           )}
         </div>
-        <p className="text-sm worm-muted">
+        <p className="text-sm" style={{ color: 'var(--worm-muted)' }}>
           Full history report focused on loss reasons, cost, and opponent pain points.
         </p>
       </CardHeader>
-      <CardContent className="pt-0 text-base text-worm-ink">
+      <CardContent className="pt-0 text-base" style={{ color: 'var(--worm-ink)' }}>
         {error && !isLoading && (
           <div className="py-3 text-base text-red-700">{error}</div>
         )}
 
         {!report && !isLoading && (
           <div className="flex items-center gap-3 flex-wrap">
-            <Button onClick={handleGenerateReport} className="bg-worm-green hover:bg-worm-green-hover text-worm-green-ink">
+            <Button onClick={handleGenerateReport} style={{ backgroundColor: 'var(--worm-green)', color: 'var(--worm-green-ink)' }} className="hover:opacity-90">
               Generate Report
             </Button>
-            <span className="text-sm worm-muted">
+            <span className="text-sm" style={{ color: 'var(--worm-muted)' }}>
               Report generation uses all completed games for this model.
             </span>
           </div>
         )}
 
         {isLoading && (
-          <div className="py-6 text-base worm-muted">
+          <div className="py-6 text-base" style={{ color: 'var(--worm-muted)' }}>
             Generating report. Controls are hidden until the report is ready.
           </div>
         )}
@@ -191,54 +191,54 @@ export default function WormArenaModelInsightsReport({ modelSlug }: WormArenaMod
         {report && !isLoading && (
           <div className="space-y-4">
             {/* Report metadata for user context */}
-            <div className="text-xs worm-muted">
+            <div className="text-xs" style={{ color: 'var(--worm-muted)' }}>
               Generated: {formatDateTime(report.generatedAt)}
             </div>
             {/* LLM summary block with graceful fallback */}
-            <div className="rounded-md border px-4 py-3 bg-white/70">
-              <div className="text-xs worm-muted">LLM Summary</div>
+            <div className="rounded-lg border p-4" style={{ backgroundColor: 'rgba(228, 242, 233, 0.5)', borderColor: 'var(--worm-border)' }}>
+              <div className="text-xs font-semibold mb-2" style={{ color: 'var(--worm-muted)' }}>LLM Summary</div>
               {report.llmSummary ? (
-                <div className="text-sm text-worm-ink">{report.llmSummary}</div>
+                <div className="text-sm leading-relaxed" style={{ color: 'var(--worm-ink)' }}>{report.llmSummary}</div>
               ) : (
-                <div className="text-sm worm-muted">
+                <div className="text-sm" style={{ color: 'var(--worm-muted)' }}>
                   Summary unavailable. The stats below are still accurate.
                 </div>
               )}
               {report.llmModel && (
-                <div className="text-xs worm-muted mt-2">
-                  Summary model: {report.llmModel}
+                <div className="text-xs mt-3 pt-3 border-t" style={{ color: 'var(--worm-muted)', borderColor: 'var(--worm-border)' }}>
+                  Model: {report.llmModel}
                 </div>
               )}
             </div>
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-              <div className="rounded-md border px-3 py-2 bg-white/70">
-                <div className="text-xs worm-muted">Games</div>
-                <div className="text-base font-semibold">{report.summary.gamesPlayed}</div>
+              <div className="rounded-lg border p-3" style={{ backgroundColor: 'rgba(255, 255, 255, 0.8)', borderColor: 'var(--worm-border)' }}>
+                <div className="text-xs font-semibold mb-1" style={{ color: 'var(--worm-muted)' }}>Games</div>
+                <div className="text-lg font-bold" style={{ color: 'var(--worm-metric-games)' }}>{report.summary.gamesPlayed}</div>
               </div>
-              <div className="rounded-md border px-3 py-2 bg-white/70">
-                <div className="text-xs worm-muted">Win Rate</div>
-                <div className="text-base font-semibold">{formatPercent(report.summary.winRate)}</div>
+              <div className="rounded-lg border p-3" style={{ backgroundColor: 'rgba(255, 255, 255, 0.8)', borderColor: 'var(--worm-border)' }}>
+                <div className="text-xs font-semibold mb-1" style={{ color: 'var(--worm-muted)' }}>Win Rate</div>
+                <div className="text-lg font-bold" style={{ color: 'var(--worm-metric-winrate)' }}>{formatPercent(report.summary.winRate)}</div>
               </div>
-              <div className="rounded-md border px-3 py-2 bg-white/70">
-                <div className="text-xs worm-muted">Total Cost</div>
-                <div className="text-base font-semibold">{formatCost(report.summary.totalCost)}</div>
+              <div className="rounded-lg border p-3" style={{ backgroundColor: 'rgba(255, 255, 255, 0.8)', borderColor: 'var(--worm-border)' }}>
+                <div className="text-xs font-semibold mb-1" style={{ color: 'var(--worm-muted)' }}>Total Cost</div>
+                <div className="text-lg font-bold" style={{ color: 'var(--worm-metric-cost)' }}>{formatCost(report.summary.totalCost)}</div>
               </div>
-              <div className="rounded-md border px-3 py-2 bg-white/70">
-                <div className="text-xs worm-muted">Cost per Loss</div>
-                <div className="text-base font-semibold">{formatCost(report.summary.costPerLoss)}</div>
+              <div className="rounded-lg border p-3" style={{ backgroundColor: 'rgba(255, 255, 255, 0.8)', borderColor: 'var(--worm-border)' }}>
+                <div className="text-xs font-semibold mb-1" style={{ color: 'var(--worm-muted)' }}>Cost/Loss</div>
+                <div className="text-lg font-bold" style={{ color: 'var(--worm-metric-cost)' }}>{formatCost(report.summary.costPerLoss)}</div>
               </div>
-              <div className="rounded-md border px-3 py-2 bg-white/70">
-                <div className="text-xs worm-muted">Avg Rounds</div>
-                <div className="text-base font-semibold">
+              <div className="rounded-lg border p-3" style={{ backgroundColor: 'rgba(255, 255, 255, 0.8)', borderColor: 'var(--worm-border)' }}>
+                <div className="text-xs font-semibold mb-1" style={{ color: 'var(--worm-muted)' }}>Avg Rounds</div>
+                <div className="text-lg font-bold" style={{ color: 'var(--worm-metric-games)' }}>
                   {formatOptionalNumber(report.summary.averageRounds, 1)}
                 </div>
               </div>
-              <div className="rounded-md border px-3 py-2 bg-white/70">
-                <div className="text-xs worm-muted">Top Loss Reason</div>
-                <div className="text-base font-semibold">
+              <div className="rounded-lg border p-3" style={{ backgroundColor: 'rgba(255, 255, 255, 0.8)', borderColor: 'var(--worm-border)' }}>
+                <div className="text-xs font-semibold mb-1" style={{ color: 'var(--worm-muted)' }}>Top Loss</div>
+                <div className="text-lg font-bold" style={{ color: 'var(--worm-metric-losses)' }}>
                   {topFailureLabel}
                   {topFailure && (
-                    <span className="ml-1 text-xs worm-muted">({topFailureRate})</span>
+                    <div className="text-xs font-normal mt-1" style={{ color: 'var(--worm-muted)' }}>({topFailureRate})</div>
                   )}
                 </div>
               </div>

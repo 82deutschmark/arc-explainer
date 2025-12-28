@@ -1,12 +1,12 @@
 /**
- * Author: Claude Code using Haiku 4.5
- * Date: 2025-12-19
+ * Author: Gemini 3 Flash High
+ * Date: 2025-12-27
  * PURPOSE: Orchestrate non-streaming match execution (single + batch).
  *          Coordinates Python bridge, persistence, and error handling.
  * SRP/DRY check: Pass — match execution orchestration only, delegates to bridge and persistence.
  */
 
-import type { SnakeBenchRunMatchRequest, SnakeBenchRunMatchResult, SnakeBenchRunBatchRequest, SnakeBenchRunBatchResult } from '../../shared/types.js';
+import type { SnakeBenchRunMatchRequest, SnakeBenchRunMatchResult, SnakeBenchRunBatchRequest, SnakeBenchRunBatchResult } from '../../../shared/types.js';
 import { snakeBenchPythonBridge } from './SnakeBenchPythonBridge.ts';
 import { PersistenceCoordinator } from './persistence/persistenceCoordinator.ts';
 import { prepareRunMatch, validateModels } from './helpers/validators.ts';
