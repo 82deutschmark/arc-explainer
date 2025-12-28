@@ -1,15 +1,15 @@
-# RE-ARC Dataset Generation & Verification Interface
+# RE-ARC Dataset Generation & Evaluation Interface
 
 **Author:** Claude Code using Sonnet 4.5
 **Date:** 2025-12-24
-**Purpose:** Plan for implementing a stateless RE-ARC dataset generation and verification interface
+**Purpose:** Plan for implementing a stateless RE-ARC dataset generation and evaluation interface
 
 ## Overview
 
 Create a web interface that allows users to:
 1. Generate RE-ARC datasets on demand
-2. Submit solutions for verification
-3. Verification works via XOR of task IDs to regenerate the seed (stateless, no DB needed)
+2. Submit solutions for evaluation
+3. Evaluation works via XOR of task IDs to regenerate the seed (stateless, no DB needed)
 
 ## Data Structures
 
@@ -40,7 +40,7 @@ type Submission = {
 4. Client receives streaming download (~10 seconds total)
 5. File download completes when all tasks generated
 
-### Verification Flow
+### Evaluation Flow
 1. User uploads submission JSON
 2. Validate submission structure
 3. Extract task IDs, XOR to recover seed (seed = generation timestamp)
@@ -50,7 +50,7 @@ type Submission = {
 
 ### Components
 
-- reArcController: /generate (streaming download) and /verify (SSE streaming) endpoints
+- reArcController: /generate (streaming download) and /evaluate (SSE streaming) endpoints
 - reArcService: orchestrate Python re-arc library calls
 - reArcCodec utils: XOR logic and message encoding/decoding
 
@@ -91,7 +91,7 @@ node --import tsx --test tests/reArcService.test.ts
 
 ### Phase 4: Backend API
 - [x] Create `reArcController.ts` with generation endpoint
-- [x] Create verification endpoint
+- [x] Create evaluation endpoint
 - [x] Add routes to `server/routes.ts` (follow existing pattern)
 - [x] Write endpoint tests (`tests/reArcController.test.ts`)
 - [x] Add error handling and validation
@@ -122,8 +122,8 @@ node --import tsx --test tests/reArcService.test.ts
 - No message encoding in this iteration
 
 ### Scoring
-- Each task worth 1.0 point, divided equally across its test pairs
-- Test pair solved if ANY of 2 attempts correct
+- Each task worth 1.0 point, divided equally across its test inputs
+- Test input solved if ANY of 2 prediction attempts correct
 - Overall score = (sum of task scores) / (total tasks)
 
 ## Files to Create
@@ -164,10 +164,10 @@ Use `express-rate-limit` for API rate limiting
   - `Content-Encoding: gzip`
 - Response body: JSON object streamed incrementally as tasks are generated
 - Format: Valid JSON object `{ "taskId1": {...}, "taskId2": {...}, ... }`
-- Each task contains training pairs (input+output) and test pairs (input only; ground truth reserved for verification)
+- Each task contains training pairs (input+output) and test inputs (input only; ground truth reserved for evaluation)
 - Tasks stream in real-time (~10 seconds for full dataset)
 
-**Verification endpoint:** `POST /api/rearc/verify` (SSE stream)
+**Evaluation endpoint:** `POST /api/rearc/evaluate` (SSE stream)
 - Body: Submission JSON
 - Returns Server-Sent Events:
   ```
@@ -176,8 +176,8 @@ Use `express-rate-limit` for API rate limiting
 
   event: complete
   data: {"type": "score", "score": 0.875}
-  data: {"type": "mismatches", "mismatches": {taskId, expectedPairs, submittedPairs}[]}
+  data: {"type": "mismatches", "mismatches": {taskId, expectedPredictions, submittedPredictions}[]}
   data: {"type": "malformed"}
   ```
 
-Note completion event differs from `VerificationResult`: `taskIndex` and `error` are excluded
+Note completion event differs from `EvaluationResult`: `taskIndex` and `error` are excluded

@@ -2,11 +2,11 @@
 
 **Author:** Claude Code using Sonnet 4.5
 **Date:** 2025-12-25
-**Purpose:** Self-service page for generating RE-ARC datasets and verifying solutions to them
+**Purpose:** Self-service page for generating RE-ARC datasets and evaluating solutions to them
 
 ## Context
 
-The people who will find themselves at this page are those who created an ARC solver and want to see if it works and how well it does. They will probably have been directed here by the ARC community to prove their solver works or to demo how well it does, with proof. The ARC community can know for sure how well the solver works if the user shares their solution file with the community, as anyone can upload and verify, and it's tied directly to the same dataset, and there's an upper bound on how long it took for the solver to solve since it also encodes the generation timestamp.
+The people who will find themselves at this page are those who created an ARC solver and want to see if it works and how well it does. They will probably have been directed here by the ARC community to prove their solver works or to demo how well it does, with proof. The ARC community can know for sure how well the solver works if the user shares their solution file with the community, as anyone can upload and evaluate, and it's tied directly to the same dataset, and there's an upper bound on how long it took for the solver to solve since it also encodes the generation timestamp.
 
 Though creating a solver is technical work, the user may not have a rigorous background in programming, and the ARC challenge is quite confusing, so we want the UX to be smooth and the copy to be well written, e.g. error messages should provide guidance and be helpful and actionable, and instructions should be clear.
 
@@ -15,7 +15,7 @@ Though creating a solver is technical work, the user may not have a rigorous bac
 ### Single-page design with 3 sections:
 1. Header
 2. Generate Dataset
-3. Verify Submission
+3. Evaluate Submission
 
 ---
 
@@ -23,11 +23,11 @@ Though creating a solver is technical work, the user may not have a rigorous bac
 
 **Title:** RE-ARC
 
-**Subtitle:** Generate RE-ARC datasets and verify your solutions
+**Subtitle:** Generate RE-ARC datasets and evaluate your solutions
 
 **How it works (expandable):**
 
-> Click "Generate" to create a brand-new set of ARC puzzles. Difficulty is tuned to roughly match the ARC-AGI-2 evaluation set. After your solver processes them, upload the results to calculate your score. Share the solution file with others to let them verify your score independently—no trust required.
+> Click "Generate" to create a brand-new set of ARC puzzles. Difficulty is tuned to roughly match the ARC-AGI-2 evaluation set. After your solver processes them, upload the results to calculate your score. Share the solution file with others to let them evaluate your score independently—no trust required.
 
 
 ---
@@ -47,53 +47,53 @@ Though creating a solver is technical work, the user may not have a rigorous bac
 
 ---
 
-## Section 3: Verify Submission
+## Section 3: Evaluate Submission
 
 **Card with:**
-- Title: "Verify Your Submission"
+- Title: "Evaluate Your Submission"
 - Description: "Upload your submission to check your score"
 
 **Submission format guide:**
 Expandable section explaining:
-- **How it works:** ARC tasks contain test pairs (input → output). Each task has 1 or more test pairs. For each test pair, your solver makes 2 attempts to predict the output.
-- **Format:** An object where each key is a task ID, and the value is an array of test pair attempts.
-- **Example:** A task with 2 test pairs would have 2 elements in the array, each with `attempt_1` and `attempt_2` grids.
+- **How it works:** ARC tasks contain test inputs (input grids). Each task has 1 or more test inputs. For each test input, your solver makes 2 prediction attempts to generate the correct output.
+- **Format:** An object where each key is a task ID, and the value is an array of predictions (one per test input).
+- **Example:** A task with 2 test inputs would have 2 elements in the array, each with `attempt_1` and `attempt_2` grids.
 
 ```typescript
 type Submission = {
   [taskId: string]: {
-    attempt_1: number[][];  // First attempt at this test pair
-    attempt_2: number[][];  // Second attempt at this test pair
-  }[];  // Array because tasks can have multiple test pairs
+    attempt_1: number[][];  // First prediction attempt
+    attempt_2: number[][];  // Second prediction attempt
+  }[];  // Array of predictions (one per test input)
 };
 ```
 
-Most tasks have only 1 test pair, so the array usually has 1 element.
+Most tasks have only 1 test input, so the array usually has 1 element.
 
 **Upload interface:**
 - Drag-and-drop zone
 - "Drop submission.json here" text
 - File picker button as fallback
 
-**Verification states:**
+**Evaluation states:**
 1. **Idle**: Show drop zone
-2. **Verifying**:
+2. **Evaluating**:
    - Hide upload interface
    - Show progress bar with current progress
 3. **Complete**:
    - Display score (percentage)
    - Display generation timestamp
-   - Display time elapsed since generation (e.g., "Verified 2 hours after generation")
+   - Display time elapsed since generation (e.g., "Evaluated 2 hours after generation")
    - **If mismatches exist:** Show collapsible "View Details" section with:
-     - List of task IDs with test pair count mismatches
-     - For each: expected test pair count vs submitted test pair count
-   - "Verify Another Submission" button
+     - List of task IDs with prediction count mismatches
+     - For each: expected prediction count vs submitted prediction count
+   - "Evaluate Another Submission" button
 
 ---
 
 ## Progress Bars
 
-**Verification only:**
+**Evaluation only:**
 - Show current percentage (X% or X/total format)
 - No task details
 - No time estimates
@@ -110,7 +110,7 @@ Most tasks have only 1 test pair, so the array usually has 1 element.
 - Display error message inline
 - Show "Try Again" button
 
-**Verification errors:**
+**Evaluation errors:**
 
 All errors display inline, keep interface visible for retry.
 
@@ -125,18 +125,18 @@ Format validation errors (shown immediately on file drop):
   Found: { "attempt_1": [[grid]], "attempt_2": [[grid]] }
   Expected: [{ "attempt_1": [[grid]], "attempt_2": [[grid]] }]
 
-  Each task has one or more test pairs. Even if this task has only 1 test pair,
-  it must be wrapped in an array: one element per test pair.
+  Each task has one or more test inputs. Even if this task has only 1 test input,
+  it must be wrapped in an array: one prediction per test input.
   ```
 
 - **Wrong top-level value:**
   ```
-  Task "abc12345" must contain test pair attempts, not raw grids.
+  Task "abc12345" must contain prediction attempts, not raw grids.
 
   Found: [[0,1,2], [3,4,5], ...]
   Expected: [{ "attempt_1": [[grid]], "attempt_2": [[grid]] }]
 
-  For each test pair, your solver submits 2 attempts.
+  For each test input, your solver submits 2 prediction attempts.
   ```
 
 - **Incomplete submission:**
@@ -174,11 +174,11 @@ type Submission = {
   - Dimensions must be 1x1 to 30x30
   - Grid cells are integers 0-9
 
-**Server-side validation error (during verification):**
+**Server-side validation error (during evaluation):**
 
-If the backend cannot verify the submission:
+If the backend cannot evaluate the submission:
 ```
-Unable to verify this submission.
+Unable to evaluate this submission.
 
 The task IDs don't match a valid RE-ARC dataset. This can happen if:
 - Task IDs were manually edited
@@ -199,8 +199,8 @@ Header
 Generate Dataset
   - Generate button
   ↓
-Verify Submission
-  - Upload interface (or progress bar when verifying)
+Evaluate Submission
+  - Upload interface (or progress bar when evaluating)
   - Results (when complete)
 ```
 
@@ -235,7 +235,7 @@ Verify Submission
   - Body: JSON object streamed incrementally
   - Format: `{ "taskId1": {...}, "taskId2": {...}, ... }`
 
-**Verification endpoint:** `POST /api/rearc/verify`
+**Evaluation endpoint:** `POST /api/rearc/evaluate`
 - Request body: Submission JSON (multipart/form-data or application/json)
 - Response: Server-Sent Events (SSE)
   - Progress events:
@@ -249,7 +249,7 @@ Verify Submission
     data: {"type": "score", "score": 0.875}
 
     event: complete
-    data: {"type": "mismatches", "mismatches": [{taskId, expectedPairs, submittedPairs}, ...]}
+    data: {"type": "mismatches", "mismatches": [{taskId, expectedPredictions, submittedPredictions}, ...]}
 
     event: complete
     data: {"type": "malformed"}

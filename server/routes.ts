@@ -284,7 +284,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     legacyHeaders: false,
   });
 
-  const reArcVerifyLimiter = rateLimit({
+  const reArcEvaluateLimiter = rateLimit({
     windowMs: 5 * 60 * 1000, // 5min
     max: 5,
     standardHeaders: true,
@@ -292,7 +292,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   app.post("/api/rearc/generate", reArcGenerateLimiter, asyncHandler(reArcController.generate));
-  app.post("/api/rearc/verify", reArcVerifyLimiter, asyncHandler(reArcController.verify));
+  app.post("/api/rearc/evaluate", reArcEvaluateLimiter, asyncHandler(reArcController.evaluate));
 
   // Batch analysis routes
   app.post("/api/batch/start", asyncHandler(batchController.startBatch));

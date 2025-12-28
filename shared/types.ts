@@ -21,13 +21,14 @@ export interface ARCExample {
 
 /**
  * Submission format for ARC evaluations (RE-ARC, benchmarks, etc.)
- * Each task contains an array of test pairs, each with 2 attempts
+ * Maps task IDs to arrays of predictions (one prediction per test input).
+ * Each prediction contains 2 attempts at solving that test input.
  */
 export interface ARCSubmission {
   [taskId: string]: {
-    attempt_1: number[][];
-    attempt_2: number[][];
-  }[];
+    attempt_1: number[][];  // First prediction attempt
+    attempt_2: number[][];  // Second prediction attempt
+  }[];  // Array of predictions (one per test input)
 }
 
 export interface PuzzleMetadata {

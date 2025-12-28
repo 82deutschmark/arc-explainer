@@ -3,8 +3,8 @@
  *
  * Author: Claude Code using Sonnet 4.5
  * Date: 2025-12-26
- * PURPOSE: Codec for encoding/decoding task IDs with embedded verification data.
- *          Implements stateless verification for RE-ARC datasets using XOR-based seed recovery
+ * PURPOSE: Codec for encoding/decoding task IDs with embedded evaluation data.
+ *          Implements stateless evaluation for RE-ARC datasets using XOR-based seed recovery
  *          and steganographic message encoding.
  *
  *          Task IDs are 8 hex characters (32 bits):
@@ -14,13 +14,13 @@
  *          Seed recovery: XOR(all_task_ids) = seed (order-independent)
  *          Message encoding: XOR arbitrary bytes into lower 16 bits of tasks [0..n-2]
  *
- * SRP/DRY check: Pass - Single purpose: task ID encoding/decoding for RE-ARC verification
+ * SRP/DRY check: Pass - Single purpose: task ID encoding/decoding for RE-ARC evaluation
  */
 
 
 /**
  * Result of decoding task IDs.
- * Contains all information needed for verification.
+ * Contains all information needed for evaluation.
  */
 export interface DecodedTaskIds {
   /** Recovered seed from XOR of all task IDs */
@@ -122,22 +122,6 @@ export function recoverSeed(taskIds: string[]): number {
 
   // Ensure result is unsigned 32-bit
   return seed >>> 0;
-}
-
-/**
- * Verify that a set of task IDs correctly encodes the expected seed.
- *
- * @param taskIds - Array of task IDs to verify
- * @param expectedSeed - Expected seed value
- * @returns true if XOR of task IDs equals expected seed
- */
-export function verifySeed(taskIds: string[], expectedSeed: number): boolean {
-  try {
-    const recoveredSeed = recoverSeed(taskIds);
-    return recoveredSeed === expectedSeed;
-  } catch {
-    return false;
-  }
 }
 
 /**
@@ -328,7 +312,7 @@ export function generateTaskIds(
 
 /**
  * Decode task IDs to recover seed, generation order, and optional message.
- * This is the primary decoding function that returns all verification data.
+ * This is the primary decoding function that returns all evaluation data.
  *
  * Algorithm:
  * 1. Recover seed via XOR of all task IDs

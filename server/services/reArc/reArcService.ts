@@ -1,9 +1,9 @@
 /**
- * RE-ARC Dataset Generation and Verification Service
+ * RE-ARC Dataset Generation and Evaluation Service
  *
  * Author: Claude Code using Sonnet 4.5
  * Date: 2025-12-27
- * PURPOSE: Python subprocess integration for RE-ARC dataset generation and verification.
+ * PURPOSE: Python subprocess integration for RE-ARC dataset generation and evaluation.
  *          Streams tasks from Python lib.py, manages task ID encoding/decoding,
  *          and scores submissions against deterministically regenerated ground truth.
  *
@@ -241,29 +241,30 @@ async function* runReArcSubprocess<T>(
 }
 
 /**
- * Progress callback for streaming verification events.
+ * Progress callback for streaming evaluation events.
  */
-export interface VerificationProgress {
+export interface EvaluationProgress {
   current: number;
   total: number;
 }
 
 /**
- * Information about a test pair count mismatch during verification.
+ * Information about a prediction count mismatch during evaluation.
+ * Occurs when submission has different number of predictions than dataset has test inputs.
  */
-export interface TestPairMismatch {
+export interface PredictionCountMismatch {
   taskId: string;
   taskIndex: number;
-  expectedPairs: number;
-  submittedPairs: number;
+  expectedPredictions: number;
+  submittedPredictions: number;
 }
 
 /**
- * Verification result: score, mismatches, or malformed submission.
+ * Evaluation result: score, mismatches, or malformed submission.
  */
-export type VerificationResult =
+export type EvaluationResult =
   | { type: 'score'; score: number }
-  | { type: 'mismatches'; mismatches: TestPairMismatch[] }
+  | { type: 'mismatches'; mismatches: PredictionCountMismatch[] }
   | { type: 'malformed'; error: string };
 
 /**
@@ -327,7 +328,7 @@ async function getTaskCount(seed: number): Promise<number> {
  * generation begins.
  *
  * **Seed as timestamp**: In this iteration, the seed should be the Unix timestamp
- * (seconds) at generation time. This allows recovery during verification without
+ * (seconds) at generation time. This allows recovery during evaluation without
  * separate timestamp encoding.
  *
  * @param seed - Random seed for deterministic generation (typically Unix timestamp in seconds)
@@ -365,25 +366,25 @@ export async function* generateDataset(
 }
 
 /**
- * Verify a submission against deterministically regenerated ground truth.
+ * Evaluate a submission against deterministically regenerated ground truth.
  *
  * Recovers seed from task IDs, regenerates the dataset,
- * compares submission attempts against ground truth, and streams progress.
+ * compares submission predictions against ground truth, and streams progress.
  *
- * Scoring: Each test pair is solved if ANY of the 2 attempts match the output.
- * Task score = (solved pairs / total pairs). Overall score = average of task scores.
+ * Scoring: A test input is solved if ANY of the 2 prediction attempts match the output.
+ * Task score = (solved test inputs / total test inputs). Overall score = average of task scores.
  *
- * @param submission - Submission object mapping task IDs to attempts
+ * @param submission - Submission object mapping task IDs to predictions
  * @param onProgress - Optional callback for progress updates
- * @returns Verification result:
+ * @returns Evaluation result:
  *   - { type: 'score', score } if submission is valid and scored
- *   - { type: 'mismatches', mismatches } if test pair counts don't match
+ *   - { type: 'mismatches', mismatches } if prediction counts don't match test input counts
  *   - { type: 'malformed', error } if task IDs can't be decoded
  */
-export async function verifySubmission(
+export async function evaluateSubmission(
   submission: ARCSubmission,
-  onProgress?: (progress: VerificationProgress) => void,
-): Promise<VerificationResult> {
+  onProgress?: (progress: EvaluationProgress) => void,
+): Promise<EvaluationResult> {
   // Step 1: Recover seed and ordered task IDs
   let decoded;
   try {
@@ -402,41 +403,41 @@ export async function verifySubmission(
   // Step 2: Build ordered submission array
   const submissionInOrder = orderedTaskIds.map((taskId) => submission[taskId]);
 
-  // Step 3: Spawn Python and stream verification
+  // Step 3: Spawn Python and stream evaluation
   let totalScore = 0;
-  const mismatches: TestPairMismatch[] = [];
+  const mismatches: PredictionCountMismatch[] = [];
 
   for await (const _ of runReArcSubprocess({
     seed,
-    contextName: 're-arc verifySubmission',
+    contextName: 're-arc evaluateSubmission',
     expectedCount: numTasks,
     processLine: (line, taskIndex) => {
       // Parse ground truth task (skip first 8 chars = re-arc task ID)
       const jsonStr = line.slice(8);
       const groundTruth = JSON.parse(jsonStr);
 
-      // Get corresponding submission
-      const submittedAttempts = submissionInOrder[taskIndex];
+      // Get corresponding predictions from submission
+      const submittedPredictions = submissionInOrder[taskIndex];
       const taskId = orderedTaskIds[taskIndex];
 
-      if (!submittedAttempts) {
+      if (!submittedPredictions) {
         // Missing submission for this task is a malformed submission
         throw new Error(`Missing submission for task ${taskId} at index ${taskIndex}`);
       }
 
-      // Check test pair count
+      // Check prediction count (must match number of test inputs)
       const testPairs = groundTruth.test;
-      if (submittedAttempts.length !== testPairs.length) {
+      if (submittedPredictions.length !== testPairs.length) {
         // Collect mismatch and skip scoring
         mismatches.push({
           taskId,
           taskIndex,
-          expectedPairs: testPairs.length,
-          submittedPairs: submittedAttempts.length,
+          expectedPredictions: testPairs.length,
+          submittedPredictions: submittedPredictions.length,
         });
       } else {
         // Score this task
-        const taskScore = scoreTask(testPairs, submittedAttempts);
+        const taskScore = scoreTask(testPairs, submittedPredictions);
         totalScore += taskScore;
       }
 
@@ -461,39 +462,39 @@ export async function verifySubmission(
 }
 
 /**
- * Score a single task by comparing test pairs against submission attempts.
+ * Score a single task by comparing predictions against ground truth test pairs.
  *
- * A test pair is considered solved if ANY of the 2 attempts match the ground truth output.
- * Task score = (number of solved pairs) / (total pairs).
+ * A test input is considered solved if ANY of the 2 prediction attempts match the ground truth output.
+ * Task score = (number of solved test inputs) / (total test inputs).
  *
- * IMPORTANT: Caller must ensure attempts.length === testPairs.length before calling.
+ * IMPORTANT: Caller must ensure predictions.length === testPairs.length before calling.
  *
- * @param testPairs - Ground truth test pairs
- * @param attempts - Array of attempt pairs from submission (must match testPairs.length)
+ * @param testPairs - Ground truth test pairs from dataset
+ * @param predictions - Array of predictions from submission (must match testPairs.length)
  * @returns Task score between 0.0 and 1.0
  */
 function scoreTask(
   testPairs: { input: number[][]; output: number[][] }[],
-  attempts: { attempt_1: number[][]; attempt_2: number[][] }[],
+  predictions: { attempt_1: number[][]; attempt_2: number[][] }[],
 ): number {
   if (testPairs.length === 0) return 0;
 
-  let solvedPairs = 0;
+  let solvedTestInputs = 0;
 
   for (let i = 0; i < testPairs.length; i++) {
     const groundTruth = testPairs[i].output;
-    const { attempt_1, attempt_2 } = attempts[i];
+    const { attempt_1, attempt_2 } = predictions[i];
 
-    // Check if either attempt matches ground truth
+    // Check if either prediction attempt matches ground truth
     const attempt1Correct = gridsEqual(attempt_1, groundTruth);
     const attempt2Correct = gridsEqual(attempt_2, groundTruth);
 
     if (attempt1Correct || attempt2Correct) {
-      solvedPairs++;
+      solvedTestInputs++;
     }
   }
 
-  return solvedPairs / testPairs.length;
+  return solvedTestInputs / testPairs.length;
 }
 
 /**
