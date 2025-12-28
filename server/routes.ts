@@ -276,7 +276,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/accuracy/harness", asyncHandler(getHarnessAlignedAccuracy));
 
   // RE-ARC dataset generation and verification routes
-  // Rate limiting: 2 generations per 5min, 5 verifications per 5min per IP
+  // Rate limiting: 2 generations per 5min, 20 verifications per 5min per IP
   const reArcGenerateLimiter = rateLimit({
     windowMs: 5 * 60 * 1000, // 5min
     max: 2,
@@ -286,7 +286,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   const reArcEvaluateLimiter = rateLimit({
     windowMs: 5 * 60 * 1000, // 5min
-    max: 5,
+    max: 20,
     standardHeaders: true,
     legacyHeaders: false,
   });

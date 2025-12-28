@@ -13,9 +13,10 @@ import { createGzip, constants } from 'zlib';
 import { pipeline } from 'stream/promises';
 import { Readable } from 'stream';
 import { generateDataset, evaluateSubmission } from '../services/reArc/reArcService';
-import type { ARCSubmission } from '../../shared/types';
+import type { ARCSubmission, ReArcSSEEvent } from '../../shared/types';
 import { logger } from '../utils/logger';
 import { formatResponse } from '../utils/responseFormatter';
+import { sendSSEEvent } from '../utils/sseHelpers';
 
 /**
  * Generate RE-ARC dataset and stream as chunked JSON download.
@@ -97,6 +98,7 @@ export async function generate(_req: Request, res: Response): Promise<void> {
  * - event: complete, data: { type: 'score', score: number } | { type: 'mismatches', mismatches: [...] } | { type: 'malformed' }
  */
 export async function evaluate(req: Request, res: Response): Promise<void> {
+  const sendReArcEvent = (event: ReArcSSEEvent) => sendSSEEvent(res, event, { logger, forceFlush: true });
   try {
     const submission = req.body as ARCSubmission;
 
@@ -168,32 +170,16 @@ export async function evaluate(req: Request, res: Response): Promise<void> {
       res.flushHeaders();
     }
 
-    // Helper to send SSE events
-    const sendEvent = (event: string, data: any) => {
-      if (res.writableEnded) {
-        logger.debug(`[RE-ARC] Event ${event} dropped: stream already ended`, 're-arc');
-        return;
-      }
-      try {
-        res.write(`event: ${event}\n`);
-        res.write(`data: ${JSON.stringify(data)}\n\n`);
-        // Force immediate flush to avoid buffering
-        (res as any).socket?.write('');
-      } catch (err) {
-        logger.error(`[RE-ARC] Failed to write SSE event: ${err}`, 're-arc');
-      }
-    };
-
     try {
       // Run evaluation with progress callback
       const result = await evaluateSubmission(submission, (progress) => {
-        sendEvent('progress', progress);
+        sendReArcEvent({ type: 'progress', data: progress });
       });
 
       // Send completion event based on result type
       // Note: Complete event format excludes taskIndex and error fields from EvaluationResult
       if (result.type === 'score') {
-        sendEvent('complete', { type: 'score', score: result.score });
+        sendReArcEvent({ type: 'complete', data: { type: 'score', score: result.score } });
         logger.info(`[RE-ARC] Evaluation complete: score=${result.score.toFixed(4)}`, 're-arc');
       } else if (result.type === 'mismatches') {
         // Transform mismatches to exclude taskIndex from event data
@@ -202,10 +188,10 @@ export async function evaluate(req: Request, res: Response): Promise<void> {
           expectedPredictions,
           submittedPredictions,
         }));
-        sendEvent('complete', { type: 'mismatches', mismatches });
+        sendReArcEvent({ type: 'complete', data: { type: 'mismatches', mismatches } });
         logger.info(`[RE-ARC] Evaluation failed: ${result.mismatches.length} prediction count mismatches`, 're-arc');
       } else {
-        sendEvent('complete', { type: 'malformed' });
+        sendReArcEvent({ type: 'complete', data: { type: 'malformed' } });
         logger.warn(`[RE-ARC] Evaluation failed: malformed submission - ${result.error}`, 're-arc');
       }
     } catch (evaluateErr) {
@@ -219,7 +205,7 @@ export async function evaluate(req: Request, res: Response): Promise<void> {
       }
 
       // SSE stream already started - send error event and end stream
-      sendEvent('error', { message: 'Internal server error during evaluation' });
+      sendReArcEvent({ type: 'error', data: { message: 'Internal server error during evaluation' } });
     } finally {
       if (!res.writableEnded) {
         res.end();
