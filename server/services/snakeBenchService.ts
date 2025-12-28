@@ -42,7 +42,6 @@ import { GameIndexManager } from './snakeBench/persistence/gameIndexManager.ts';
 import { getSnakeBenchAllowedModels } from './snakeBench/helpers/modelAllowlist.ts';
 import { filterReplayableGames, getWormArenaGreatestHitsFiltered } from './snakeBench/helpers/replayFilters.ts';
 import { suggestMatchups } from './snakeBench/helpers/matchupSuggestions.ts';
-import { MODELS } from '../config/models.ts';
 import path from 'path';
 import fs from 'fs';
 
@@ -287,6 +286,11 @@ class SnakeBenchService {
   private readonly replayResolver: SnakeBenchReplayResolver;
   private readonly persistenceCoordinator: PersistenceCoordinator;
   private readonly gameIndexManager: GameIndexManager;
+  /**
+   * Locate local MP4 assets for completed games.
+   * We do not attempt generation here—only presence checks to expose downloads.
+   */
+  private readonly videoDirectories: string[];
 
   constructor() {
     const backendDir = path.join(process.cwd(), 'external', 'SnakeBench', 'backend');
@@ -297,6 +301,26 @@ class SnakeBenchService {
     this.matchRunner = new SnakeBenchMatchRunner(this.persistenceCoordinator);
     this.streamingRunner = new SnakeBenchStreamingRunner(this.persistenceCoordinator);
     this.replayResolver = new SnakeBenchReplayResolver(backendDir);
+    this.videoDirectories = [
+      path.join(backendDir, 'completed_games_videos'),
+      path.join(backendDir, 'completed_games_videos_local'),
+    ];
+  }
+
+  /**
+   * Return local MP4 path if present (no generation). Normalizes snake_game_ prefix.
+   */
+  getLocalVideoPath(gameId: string): string | null {
+    if (!gameId) return null;
+    const normalized = gameId
+      .replace(/^snake_game_/i, '')
+      .replace(/\.mp4$/i, '')
+      .replace(/\.json$/i, '');
+    const candidates = this.videoDirectories.map((dir) =>
+      path.join(dir, `snake_game_${normalized}.mp4`),
+    );
+    const found = candidates.find((candidate) => fs.existsSync(candidate));
+    return found ?? null;
   }
 
   /**
@@ -349,7 +373,7 @@ class SnakeBenchService {
 
     // Prefer database-backed summaries, but gracefully fall back to filesystem index
     try {
-      const { games, total } = await repositoryService.snakeBench.getRecentGames(safeLimit);
+      const { games, total } = await repositoryService.gameRead.getRecentGames(safeLimit);
       if (total > 0 && games.length > 0) {
         const replayable = filterReplayableGames(games);
         const available = await this.replayResolver.filterGamesWithAvailableReplays(replayable);
@@ -357,7 +381,7 @@ class SnakeBenchService {
         // Get global total from stats (all matches ever, not just this batch)
         let globalTotal = total;
         try {
-          const stats = await repositoryService.snakeBench.getArcExplainerStats();
+          const stats = await repositoryService.gameRead.getArcExplainerStats();
           globalTotal = stats.totalGames;
         } catch {
           // Fall back to recent games total if stats fetch fails
@@ -435,7 +459,7 @@ class SnakeBenchService {
   async searchMatches(
     query: SnakeBenchMatchSearchQuery
   ): Promise<{ rows: SnakeBenchMatchSearchRow[]; total: number }> {
-    return repositoryService.snakeBench.searchMatches(query);
+    return repositoryService.gameRead.searchMatches(query);
   }
 
   /**
@@ -456,7 +480,7 @@ class SnakeBenchService {
   ): Promise<SnakeBenchTrueSkillLeaderboardEntry[]> {
     const safeLimit = Number.isFinite(limit) ? Math.max(1, Math.min(limit, 150)) : 150;
     const safeMinGames = Number.isFinite(minGames) ? Math.max(1, minGames) : 3;
-    return repositoryService.snakeBench.getTrueSkillLeaderboard(safeLimit, safeMinGames);
+    return repositoryService.leaderboard.getTrueSkillLeaderboard(safeLimit, safeMinGames);
   }
 
   /**
@@ -466,21 +490,21 @@ class SnakeBenchService {
     limit: number = 10,
     sortBy: 'gamesPlayed' | 'winRate' = 'gamesPlayed'
   ): Promise<Array<{ modelSlug: string; gamesPlayed: number; wins: number; losses: number; ties: number; winRate?: number }>> {
-    return repositoryService.snakeBench.getBasicLeaderboard(limit, sortBy);
+    return repositoryService.leaderboard.getBasicLeaderboard(limit, sortBy);
   }
 
   /**
    * Get ARC explainer stats.
    */
   async getArcExplainerStats(): Promise<SnakeBenchArcExplainerStats> {
-    return repositoryService.snakeBench.getArcExplainerStats();
+    return repositoryService.gameRead.getArcExplainerStats();
   }
 
   /**
    * Get model rating.
    */
   async getModelRating(modelSlug: string): Promise<SnakeBenchModelRating | null> {
-    return repositoryService.snakeBench.getModelRating(modelSlug);
+    return repositoryService.leaderboard.getModelRating(modelSlug);
   }
 
   /**
@@ -491,7 +515,7 @@ class SnakeBenchService {
     limit?: number
   ): Promise<SnakeBenchModelMatchHistoryEntry[]> {
     const safeLimit = limit != null && Number.isFinite(limit) ? Number(limit) : 50;
-    return repositoryService.snakeBench.getModelMatchHistory(modelSlug, safeLimit);
+    return repositoryService.gameRead.getModelMatchHistory(modelSlug, safeLimit);
   }
 
   /**
@@ -499,7 +523,7 @@ class SnakeBenchService {
    * Used by the Model Match History page to show every game a model has ever played.
    */
   async getModelMatchHistoryUnbounded(modelSlug: string): Promise<SnakeBenchModelMatchHistoryEntry[]> {
-    return repositoryService.snakeBench.getModelMatchHistoryUnbounded(modelSlug);
+    return repositoryService.gameRead.getModelMatchHistoryUnbounded(modelSlug);
   }
 
   /**
@@ -512,7 +536,7 @@ class SnakeBenchService {
       return null;
     }
 
-    const data = await repositoryService.snakeBench.getModelInsightsData(normalizedSlug);
+    const data = await repositoryService.analytics.getModelInsightsData(normalizedSlug);
     if (!data) {
       return null;
     }
@@ -564,14 +588,14 @@ class SnakeBenchService {
       winRate?: number;
     }>
   > {
-    return repositoryService.snakeBench.getModelsWithGames();
+    return repositoryService.gameRead.getModelsWithGames();
   }
 
   /**
    * Get recent activity.
    */
   async getRecentActivity(days: number = 7): Promise<{ days: number; gamesPlayed: number; uniqueModels: number }> {
-    return repositoryService.snakeBench.getRecentActivity(days);
+    return repositoryService.gameRead.getRecentActivity(days);
   }
 
   /**
@@ -597,14 +621,11 @@ class SnakeBenchService {
 
     // Get the leaderboard and pairing history
     const leaderboard = await this.getTrueSkillLeaderboard(150, safeMinGames);
-    const pairingHistory = await repositoryService.snakeBench.getPairingHistory();
+    const pairingHistory = await repositoryService.leaderboard.getPairingHistory();
 
-    // Filter to only approved OpenRouter models
-    const approvedModels = new Set(
-      MODELS
-        .filter((m: any) => m.provider === 'OpenRouter' && !m.premium)
-        .map((m: any) => (m.apiModelName || m.key) as string)
-    );
+    // Use all leaderboard models (already filtered by minGames and ranked by TrueSkill).
+    // No additional filtering needed - we want suggestions for any models that have played.
+    const approvedModels = new Set(leaderboard.map(e => e.modelSlug));
 
     return suggestMatchups(mode, safeLimit, safeMinGames, leaderboard, pairingHistory, approvedModels as Set<string>);
   }
@@ -662,7 +683,7 @@ class SnakeBenchService {
    * Delegates to repository method.
    */
   async getRunLengthDistribution(minGames: number = 5) {
-    return repositoryService.snakeBench.getRunLengthDistribution(minGames);
+    return repositoryService.analytics.getRunLengthDistribution(minGames);
   }
 }
 

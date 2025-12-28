@@ -9,7 +9,7 @@
  */
 
 import { logger } from '../utils/logger.ts';
-import type { SnakeBenchRecordMatchParams } from '../repositories/SnakeBenchRepository.ts';
+import type { SnakeBenchRecordMatchParams } from '../repositories/GameWriteRepository.ts';
 import { repositoryService } from '../repositories/RepositoryService.ts';
 import { publishSnakeBenchReplayToGitHub } from './snakeBenchGitHubPublisher.ts';
 
@@ -64,11 +64,11 @@ export class SnakeBenchIngestQueue {
         publishedRawUrl = published?.rawUrl ?? null;
       }
 
-      await repositoryService.snakeBench.recordMatchFromResult(nextJob.params);
+      await repositoryService.gameWrite.recordMatchFromResult(nextJob.params);
 
       if (publishedRawUrl) {
         try {
-          await repositoryService.snakeBench.setReplayPath(nextJob.params.result.gameId, publishedRawUrl);
+          await repositoryService.gameWrite.setReplayPath(nextJob.params.result.gameId, publishedRawUrl);
         } catch (err) {
           const message = err instanceof Error ? err.message : String(err);
           logger.warn(

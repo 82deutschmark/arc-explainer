@@ -273,6 +273,9 @@ export default function WormArena() {
                 />
               )}
             </div>
+            <p className="text-sm text-muted-foreground mt-2">
+              Tip: Click Tweet/Share to post with the replay link. If an MP4 exists for this match, the menu will show “Download MP4” so you can attach it to your tweet.
+            </p>
           </div>
         )}
 

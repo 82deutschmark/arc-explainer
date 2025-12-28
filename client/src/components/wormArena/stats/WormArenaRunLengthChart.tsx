@@ -1,26 +1,51 @@
 /**
- * Author: Claude Haiku 4.5
+ * Author: Cascade (ChatGPT)
  * Date: 2025-12-27
  * PURPOSE: Renders a stacked histogram of game run lengths for Worm Arena models.
- *          Shows distribution of game rounds by model, separated into wins and losses.
- *          Uses Recharts with custom color theming for Worm Arena aesthetic.
+ *          Shows distribution of game rounds for all models (wins and losses),
+ *          with no per-model selection so everything is visible by default.
  * SRP/DRY check: Pass - focused exclusively on charting and data transformation.
  */
 
 import React from 'react';
-import * as RechartsPrimitive from 'recharts';
-import type { WormArenaRunLengthDistributionData } from '@shared/types';
-import { ChartContainer, ChartTooltip, ChartTooltipContent, ChartLegend } from '@/components/ui/chart';
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+} from 'recharts';
+import type { WormArenaRunLengthDistributionData, WormArenaRunLengthModelData } from '@shared/types';
 
-// Worm Arena color palette
-// Wins: greens/earth tones
-const WIN_COLORS = ['#4A7C59', '#5D8A6B', '#6FA87D', '#7FB68F', '#8FC0A0'];
-// Losses: browns/warm tones
-const LOSS_COLORS = ['#8B6F47', '#A17E55', '#B78D63', '#C89B71', '#D5A080'];
+// Distinct color palette for models (8 colors, enough contrast)
+const MODEL_COLORS = [
+  '#4A7C59', // Forest green
+  '#5B8BA0', // Steel blue
+  '#8B6F47', // Brown
+  '#7E5F9A', // Purple
+  '#C97B5D', // Terracotta
+  '#4A90A4', // Teal
+  '#A17355', // Copper
+  '#6B8E6B', // Sage
+];
+
+// Lighter versions for losses (same hue, less saturation)
+const MODEL_LOSS_COLORS = [
+  '#8FB89E', // Light forest green
+  '#9CBCCA', // Light steel blue
+  '#C4A882', // Light brown
+  '#B9A3C9', // Light purple
+  '#E4B5A2', // Light terracotta
+  '#8FC1CE', // Light teal
+  '#D4B59A', // Light copper
+  '#A8C4A8', // Light sage
+];
 
 interface TransformedDataPoint {
   rounds: number;
-  [key: string]: number | string;
+  [key: string]: number;
 }
 
 interface WormArenaRunLengthChartProps {
@@ -28,110 +53,103 @@ interface WormArenaRunLengthChartProps {
 }
 
 /**
- * Transform API data into Recharts format
- * Groups all models' data into a single array where each object represents a round count
- * with properties for each model's wins and losses
+ * Transform API data for selected models into Recharts format.
+ * Each data point contains round count and win/loss counts per model.
  */
-function transformDataForChart(data: WormArenaRunLengthDistributionData): TransformedDataPoint[] {
-  if (!data.distributionData || data.distributionData.length === 0) {
-    return [];
-  }
+function transformDataForChart(
+  models: WormArenaRunLengthModelData[],
+): TransformedDataPoint[] {
+  if (models.length === 0) return [];
 
-  // Collect all unique round values across all models
+  // Collect all unique round values across selected models
   const allRounds = new Set<number>();
-  data.distributionData.forEach((model) => {
-    model.bins.forEach((bin) => {
-      allRounds.add(bin.rounds);
-    });
+  models.forEach((model) => {
+    model.bins.forEach((bin) => allRounds.add(bin.rounds));
   });
 
   // Sort rounds numerically
   const roundsArray = Array.from(allRounds).sort((a, b) => a - b);
 
-  // Build data points: one object per round value with all models' win/loss counts
+  // Build data points
   return roundsArray.map((rounds) => {
     const dataPoint: TransformedDataPoint = { rounds };
-
-    data.distributionData.forEach((model) => {
+    models.forEach((model) => {
       const bin = model.bins.find((b) => b.rounds === rounds);
       dataPoint[`${model.modelSlug}-wins`] = bin?.wins || 0;
       dataPoint[`${model.modelSlug}-losses`] = bin?.losses || 0;
     });
-
     return dataPoint;
   });
 }
 
 /**
- * Create chart config for theming
- * Maps each bar type to a color and label
+ * Shorten model slug for display in legend/tooltip.
+ * Strips provider prefix and truncates if too long.
  */
-function createChartConfig(data: WormArenaRunLengthDistributionData) {
-  const config: Record<string, { label: string; color: string }> = {};
-
-  data.distributionData.forEach((model, index) => {
-    const winsKey = `${model.modelSlug}-wins`;
-    const lossesKey = `${model.modelSlug}-losses`;
-    const winColor = WIN_COLORS[index % WIN_COLORS.length];
-    const lossColor = LOSS_COLORS[index % LOSS_COLORS.length];
-
-    config[winsKey] = {
-      label: `${model.modelSlug} (Wins)`,
-      color: winColor,
-    };
-    config[lossesKey] = {
-      label: `${model.modelSlug} (Losses)`,
-      color: lossColor,
-    };
-  });
-
-  return config;
+function shortenModelSlug(slug: string, maxLen: number = 20): string {
+  // Remove provider prefix (e.g., "openai/gpt-5-nano" -> "gpt-5-nano")
+  const parts = slug.split('/');
+  const name = parts.length > 1 ? parts[parts.length - 1] : slug;
+  return name.length > maxLen ? name.slice(0, maxLen - 2) + '..' : name;
 }
 
 /**
- * Custom tooltip for Recharts
- * Shows detailed breakdown per model at each round
+ * Custom tooltip showing breakdown per model at a given round.
  */
-function CustomTooltip({ active, payload }: any) {
-  if (!active || !payload || payload.length === 0) {
-    return null;
-  }
+function CustomTooltip({ active, payload, label }: any) {
+  if (!active || !payload || payload.length === 0) return null;
 
-  // Group payload by model
-  const roundValue = payload[0]?.payload?.rounds;
-  const modelGroups: Record<string, { wins: number; losses: number }> = {};
-
+  // Group by model
+  const modelGroups: Record<string, { wins: number; losses: number; color: string }> = {};
   payload.forEach((entry: any) => {
     const dataKey = entry.dataKey as string;
-    const isWin = dataKey.includes('-wins');
-    const modelSlug = dataKey.replace('-wins', '').replace('-losses', '');
-
+    const isWin = dataKey.endsWith('-wins');
+    const modelSlug = dataKey.replace(/-wins$/, '').replace(/-losses$/, '');
     if (!modelGroups[modelSlug]) {
-      modelGroups[modelSlug] = { wins: 0, losses: 0 };
+      modelGroups[modelSlug] = { wins: 0, losses: 0, color: entry.fill };
     }
-
     if (isWin) {
-      modelGroups[modelSlug].wins = entry.value;
+      modelGroups[modelSlug].wins = entry.value || 0;
+      modelGroups[modelSlug].color = entry.fill; // Use win color as primary
     } else {
-      modelGroups[modelSlug].losses = entry.value;
+      modelGroups[modelSlug].losses = entry.value || 0;
     }
   });
 
   const totalGames = Object.values(modelGroups).reduce(
-    (sum, group) => sum + group.wins + group.losses,
+    (sum, g) => sum + g.wins + g.losses,
     0,
   );
 
+  // Skip if no games at this round
+  if (totalGames === 0) return null;
+
   return (
-    <div className="rounded-lg bg-white p-3 shadow-lg border border-[#8B7355]">
-      <p className="font-semibold text-[#8B7355] mb-2">Round {roundValue}</p>
-      {Object.entries(modelGroups).map(([modelSlug, { wins, losses }]) => (
-        <div key={modelSlug} className="mb-2 last:mb-0 text-sm">
-          <p className="font-mono font-semibold text-[#4A5568]">{modelSlug}</p>
-          <p className="ml-2 text-[#4A7C59]">Wins: {wins}</p>
-          <p className="ml-2 text-[#8B6F47]">Losses: {losses}</p>
-        </div>
-      ))}
+    <div className="rounded-lg bg-white p-3 shadow-lg border border-[#8B7355] max-w-xs">
+      <p className="font-semibold text-[#8B7355] mb-2 border-b border-[#D4B5A0] pb-1">
+        Round {label}
+      </p>
+      <div className="space-y-2 max-h-48 overflow-y-auto">
+        {Object.entries(modelGroups)
+          .filter(([, g]) => g.wins > 0 || g.losses > 0)
+          .map(([modelSlug, { wins, losses, color }]) => (
+            <div key={modelSlug} className="text-xs">
+              <div className="flex items-center gap-1.5">
+                <div
+                  className="w-2.5 h-2.5 rounded-sm flex-shrink-0"
+                  style={{ backgroundColor: color }}
+                />
+                <span className="font-mono font-medium text-[#4A5568] truncate">
+                  {shortenModelSlug(modelSlug)}
+                </span>
+              </div>
+              <div className="ml-4 flex gap-3 text-[10px]">
+                <span className="text-[#4A7C59]">W: {wins}</span>
+                <span className="text-[#8B6F47]">L: {losses}</span>
+              </div>
+            </div>
+          ))}
+      </div>
       <div className="border-t border-[#D4B5A0] mt-2 pt-2">
         <p className="text-xs text-[#8B7355] font-semibold">Total: {totalGames} games</p>
       </div>
@@ -139,93 +157,130 @@ function CustomTooltip({ active, payload }: any) {
   );
 }
 
+/**
+ * Custom legend renderer for cleaner display.
+ */
+function renderLegend(selectedModels: WormArenaRunLengthModelData[]) {
+  return (
+    <div className="flex flex-wrap justify-center gap-x-4 gap-y-1 mt-4 px-2">
+      {selectedModels.map((model, idx) => (
+        <div key={model.modelSlug} className="flex items-center gap-1.5 text-xs">
+          <div className="flex gap-0.5">
+            <div
+              className="w-3 h-3 rounded-sm"
+              style={{ backgroundColor: MODEL_COLORS[idx % MODEL_COLORS.length] }}
+              title="Wins"
+            />
+            <div
+              className="w-3 h-3 rounded-sm"
+              style={{ backgroundColor: MODEL_LOSS_COLORS[idx % MODEL_LOSS_COLORS.length] }}
+              title="Losses"
+            />
+          </div>
+          <span className="font-mono text-[#4A5568]" title={model.modelSlug}>
+            {shortenModelSlug(model.modelSlug, 18)}
+          </span>
+          <span className="text-[#A0826D]">({model.totalGames})</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 export default function WormArenaRunLengthChart({ data }: WormArenaRunLengthChartProps) {
-  if (!data.distributionData || data.distributionData.length === 0) {
+  const allModels = data.distributionData || [];
+  const selectedModels = allModels;
+
+  // Empty state
+  if (allModels.length === 0) {
     return (
       <div className="w-full h-[400px] flex items-center justify-center bg-[#FAF7F3] rounded-lg border border-[#D4B5A0]">
         <div className="text-center">
           <p className="text-[#8B7355] font-semibold">No distribution data available</p>
           <p className="text-[#A0826D] text-sm mt-1">
-            Try lowering the minimum games threshold
+            Run matches to generate game length data.
           </p>
         </div>
       </div>
     );
   }
 
-  const transformedData = transformDataForChart(data);
-  const chartConfig = createChartConfig(data);
-
-  if (transformedData.length === 0) {
-    return (
-      <div className="w-full h-[400px] flex items-center justify-center bg-[#FAF7F3] rounded-lg border border-[#D4B5A0]">
-        <p className="text-[#8B7355] font-semibold">Unable to render chart</p>
-      </div>
-    );
-  }
+  const transformedData = transformDataForChart(selectedModels);
 
   return (
-    <ChartContainer config={chartConfig} className="w-full h-[500px]">
-      <RechartsPrimitive.BarChart
-        data={transformedData}
-        margin={{ top: 20, right: 30, left: 20, bottom: 60 }}
-      >
-        <RechartsPrimitive.CartesianGrid
-          strokeDasharray="3 3"
-          stroke="#D4B5A0"
-          vertical={true}
-        />
-        <RechartsPrimitive.XAxis
-          dataKey="rounds"
-          label={{
-            value: 'Game Length (Rounds Played)',
-            position: 'insideBottomRight',
-            offset: -5,
-            fill: '#8B7355',
-            fontSize: 12,
-            fontWeight: 500,
-          }}
-          tick={{ fill: '#8B7355', fontSize: 12 }}
-        />
-        <RechartsPrimitive.YAxis
-          label={{
-            value: 'Number of Games',
-            angle: -90,
-            position: 'insideLeft',
-            fill: '#8B7355',
-            fontSize: 12,
-            fontWeight: 500,
-          }}
-          tick={{ fill: '#8B7355', fontSize: 12 }}
-        />
-        <ChartTooltip content={<CustomTooltip />} cursor={{ fill: 'rgba(212, 181, 160, 0.1)' }} />
-        <ChartLegend
-          wrapperStyle={{ paddingTop: '20px' }}
-          iconType="square"
-          verticalAlign="bottom"
-          height={40}
-        />
+    <div className="space-y-4">
+      {/* Chart */}
+      <div className="w-full" style={{ height: '450px' }}>
+        <ResponsiveContainer width="100%" height="100%">
+          <BarChart
+            data={transformedData}
+            margin={{ top: 20, right: 20, left: 10, bottom: 30 }}
+          >
+            <CartesianGrid strokeDasharray="3 3" stroke="#D4B5A0" vertical={false} />
+            <XAxis
+              dataKey="rounds"
+              tick={{ fill: '#8B7355', fontSize: 11 }}
+              axisLine={{ stroke: '#D4B5A0' }}
+              tickLine={{ stroke: '#D4B5A0' }}
+              label={{
+                value: 'Game Length (Rounds)',
+                position: 'insideBottom',
+                offset: -20,
+                fill: '#8B7355',
+                fontSize: 12,
+                fontWeight: 500,
+              }}
+            />
+            <YAxis
+              tick={{ fill: '#8B7355', fontSize: 11 }}
+              axisLine={{ stroke: '#D4B5A0' }}
+              tickLine={{ stroke: '#D4B5A0' }}
+              label={{
+                value: 'Number of Games',
+                angle: -90,
+                position: 'insideLeft',
+                offset: 10,
+                fill: '#8B7355',
+                fontSize: 12,
+                fontWeight: 500,
+              }}
+            />
+            <Tooltip content={<CustomTooltip />} cursor={{ fill: 'rgba(212, 181, 160, 0.15)' }} />
 
-        {/* Render bars for each model's wins and losses */}
-        {data.distributionData.map((model, modelIndex) => (
-          <React.Fragment key={model.modelSlug}>
-            {/* Wins bar */}
-            <RechartsPrimitive.Bar
-              dataKey={`${model.modelSlug}-wins`}
-              stackId={model.modelSlug}
-              fill={WIN_COLORS[modelIndex % WIN_COLORS.length]}
-              radius={[2, 2, 0, 0]}
-            />
-            {/* Losses bar */}
-            <RechartsPrimitive.Bar
-              dataKey={`${model.modelSlug}-losses`}
-              stackId={model.modelSlug}
-              fill={LOSS_COLORS[modelIndex % LOSS_COLORS.length]}
-              radius={[2, 2, 0, 0]}
-            />
-          </React.Fragment>
-        ))}
-      </RechartsPrimitive.BarChart>
-    </ChartContainer>
+            {/* Render stacked bars for each selected model */}
+            {selectedModels.map((model, modelIndex) => (
+              <React.Fragment key={model.modelSlug}>
+                {/* Wins (darker color) */}
+                <Bar
+                  dataKey={`${model.modelSlug}-wins`}
+                  stackId="stack"
+                  fill={MODEL_COLORS[modelIndex % MODEL_COLORS.length]}
+                  name={`${shortenModelSlug(model.modelSlug)} W`}
+                />
+                {/* Losses (lighter color) */}
+                <Bar
+                  dataKey={`${model.modelSlug}-losses`}
+                  stackId="stack"
+                  fill={MODEL_LOSS_COLORS[modelIndex % MODEL_LOSS_COLORS.length]}
+                  name={`${shortenModelSlug(model.modelSlug)} L`}
+                />
+              </React.Fragment>
+            ))}
+          </BarChart>
+        </ResponsiveContainer>
+      </div>
+
+      {/* Custom legend */}
+      <div className="bg-[#FAF7F3] rounded-lg p-3 border border-[#D4B5A0]">
+        <div className="text-center mb-2">
+          <span className="text-xs text-[#A0826D]">
+            <span className="inline-block w-3 h-3 rounded-sm bg-[#4A7C59] mr-1 align-middle" /> Wins
+            <span className="mx-3">|</span>
+            <span className="inline-block w-3 h-3 rounded-sm bg-[#8FB89E] mr-1 align-middle" /> Losses
+          </span>
+        </div>
+        {renderLegend(selectedModels)}
+      </div>
+    </div>
   );
 }

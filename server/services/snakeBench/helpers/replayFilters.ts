@@ -7,7 +7,7 @@
  * SRP/DRY check: Pass — isolated replay filtering logic, single responsibility.
  */
 
-import type { SnakeBenchGameSummary, WormArenaGreatestHitGame } from '../../../shared/types.js';
+import type { SnakeBenchGameSummary, WormArenaGreatestHitGame } from '../../../../shared/types.js';
 import { CURATED_WORM_ARENA_HALL_OF_FAME } from '../../snakeBenchHallOfFame.ts';
 import { repositoryService } from '../../../repositories/RepositoryService.ts';
 import { logger } from '../../../utils/logger.ts';
@@ -52,7 +52,7 @@ export async function getWormArenaGreatestHitsFiltered(
 
   // Strategy 1: Try dynamic ranking from database
   try {
-    const dynamicResults = await repositoryService.snakeBench.getWormArenaGreatestHits(safeLimit);
+    const dynamicResults = await repositoryService.curation.getWormArenaGreatestHits(limitPerDimension);
     if (dynamicResults && Array.isArray(dynamicResults) && dynamicResults.length > 0) {
       logger.info(
         `getWormArenaGreatestHitsFiltered: using dynamic DB ranking (${dynamicResults.length} results)`,

@@ -1,5 +1,159 @@
-
 # New entries at the top, use proper SemVer!
+
+### Version 6.16.0  Dec 27, 2025
+
+- **Architecture: Modularize Arc3Games into per-game files for 100+ game scalability** (Author: Claude Haiku 4.5)
+  - **Purpose**: Transform monolithic `shared/arc3Games.ts` (383 lines) into modular, extensible architecture where each game has its own self-contained file. Designed to scale to 100+ games with zero merge conflicts.
+  - **Problem Solved**: Monolithic file caused merge conflicts, unclear ownership, poor scalability. Adding game #100 required editing central file.
+  - **Solution**: Per-game files with central registry maintaining backward compatibility.
+  - **Architecture Changes**:
+    - Extracted all TypeScript interfaces to `shared/arc3Games/types.ts`
+    - Created per-game files: `ls20.ts`, `as66.ts`, `ft09.ts`, `lp85.ts`, `sp80.ts`, `vc33.ts`
+    - Central registry in `shared/arc3Games/index.ts` (maintains 100% backward compatibility)
+    - Deleted original monolithic file
+  - **New Features**:
+    - Added `'replay'` type to `GameResource` interface for expert playthroughs
+    - Added Zanthous grandmaster replays:
+      - **LP85**: 92 moves completion (https://three.arcprize.org/replay/lp85-d265526edbaa/dcae645c-3fec-4388-b805-7427f8cdb318)
+      - **AS66**: 415 moves completion (https://three.arcprize.org/replay/as66-821a4dcad9c2/515e3de3-0b2a-4199-b268-4b1f84d75e10)
+  - **UI Enhancements**:
+    - Updated `Arc3GameSpoiler.tsx` with new "Notable Playthroughs" section
+    - Replays displayed separately from general resources with gradient background styling
+    - Replays get visual prominence to highlight expert gameplay
+  - **Documentation**:
+    - Added `docs/arc3-game-analysis/ls20-analysis.md` - detailed frame-by-frame analysis of LS20 grid patterns and mechanics
+    - LS20 game page now includes analysis resource link
+  - **Backward Compatibility**: 100% maintained - all existing imports work unchanged
+  - **Future Extensibility**: Adding game #100 requires only:
+    1. Create `shared/arc3Games/game100.ts`
+    2. Add 1 import line in `shared/arc3Games/index.ts`
+  - **Files Modified**:
+    - `client/src/pages/Arc3GameSpoiler.tsx` (+Notable Playthroughs section, +replay filtering)
+    - `shared/arc3Games/` (new directory with 8 files: types, index, 6 games)
+    - `docs/arc3-game-analysis/` (new analysis documentation)
+  - **Files Deleted**:
+    - `shared/arc3Games.ts` (monolithic file replaced by directory structure)
+  - **Build Status**: No errors, full production build succeeds
+
+### Version 6.15.0  Dec 27, 2025
+
+- **Architectural Refactor: Monolithic SnakeBench Repository Split** (Author: Gemini 3 Flash High)
+  - **Purpose**: Refactored the 2.5k-line monolithic `SnakeBenchRepository.ts` into six focused modules to improve SRP (Single Responsibility Principle), testability, and maintainability.
+  - **Terminology Clarification**: Explicitly documented that "Game" and "Match" are used interchangeably across the codebase (DB vs. Frontend) and preserved this parity for compatibility.
+  - **External Compatibility**: Maintained 100% compatibility with the original `SnakeBench` database schema and JSON structures.
+  - **Key Modules Created**:
+    1. `GameWriteRepository.ts`: Handles match recording, replay ingestion, and rating updates (TrueSkill/Elo).
+    2. `GameReadRepository.ts`: Handles match search, recent games, global stats, and model history.
+    3. `LeaderboardRepository.ts`: Handles TrueSkill/Elo leaderboards and pairing history.
+    4. `CurationRepository.ts`: Handles "Greatest Hits" multi-dimension logic.
+    5. `AnalyticsRepository.ts`: Handles model insights data and run-length distributions.
+    6. `snakebenchSqlHelpers.ts`: Centralizes shared SQL fragments, constants (TrueSkill/Elo), and utility functions.
+  - **Integration Changes**:
+    - Updated `RepositoryService` to manage the new repository instances and removed the deprecated monolithic reference.
+    - Updated `SnakeBenchService`, `SnakeBenchIngestQueue`, `ReplayResolver`, and other consumers to use domain-specific repositories.
+    - Updated `adminController` and `backfill` scripts to use split write/read paths.
+  - **Maintenance**: Cleaned up the `docs/` folder by moving older implementation plans to `docs/oldPlans/`.
+  - **Files Removed**:
+    - `server/repositories/SnakeBenchRepository.ts` (Legacy monolith deleted)
+  - **Files Created**:
+    - `server/repositories/GameWriteRepository.ts`
+    - `server/repositories/GameReadRepository.ts`
+    - `server/repositories/LeaderboardRepository.ts`
+    - `server/repositories/CurationRepository.ts`
+    - `server/repositories/AnalyticsRepository.ts`
+    - `server/repositories/snakebenchSqlHelpers.ts`
+  - **Files Modified**:
+    - `server/repositories/RepositoryService.ts`
+    - `server/services/snakeBenchService.ts`
+    - `server/services/snakeBench.ts`
+    - `server/services/snakeBenchIngestQueue.ts`
+    - `server/services/snakeBench/SnakeBenchReplayResolver.ts`
+    - `server/services/snakeBench/helpers/replayFilters.ts`
+    - `server/services/snakeBench/helpers/modelAllowlist.ts`
+    - `server/controllers/adminController.ts`
+    - `server/routes/models.ts`
+    - `server/scripts/snakebench-backfill.ts`
+
+### Version 6.14.0  Dec 27, 2025
+
+- **Data Quality: Exclude invalid zero-round games from all Worm Arena statistics** (Author: Cascade)
+  - **Problem**: Games with `rounds = 0` are invalid (failed to start or errored immediately) and were polluting statistics, causing "Most Common: Round 0" in distributions and skewing leaderboards.
+  - **Solution**: Added `COALESCE(g.rounds, 0) > 0` filter to all SQL queries that aggregate completed games.
+  - **Affected queries** (all in `SnakeBenchRepository.ts`):
+    1. `searchMatches` - match search results
+    2. `getWormArenaGreatestHits` - duration query
+    3. `getPairingHistory` - matchup suggestions
+    4. `getBasicLeaderboard` - both winRate and gamesPlayed sorts
+    5. `getModelsWithGames` - TrueSkill leaderboard data
+    6. `getModelMatchHistoryUnbounded` - per-model match history
+    7. `getModelInsightsData` - summary, failure modes, and opponent queries
+    8. `getRunLengthDistribution` - game length distribution chart
+  - **Impact**: All Worm Arena pages now show accurate statistics excluding invalid matches.
+  - **Files Modified**:
+    - `server/repositories/SnakeBenchRepository.ts` - Added round > 0 filter to 12 SQL queries
+
+- **Simplify: Worm Arena Run Length Chart shows all models by default** (Author: Cascade)
+  - Removed per-model selection UI and limits; chart now renders all models simultaneously with stacked wins/losses.
+  - Updated empty state copy to reflect data absence rather than thresholds.
+  - **Files Modified**:
+    - `client/src/components/wormArena/stats/WormArenaRunLengthChart.tsx`
+    - `client/src/pages/WormArenaDistributions.tsx`
+
+### Version 6.13.4  Dec 27, 2025
+
+- **Simplify: Worm Arena Run Length Chart shows all models by default** (Author: Cascade)
+  - Removed per-model selection UI and limits; chart now renders all models simultaneously with stacked wins/losses.
+  - Updated empty state copy to reflect data absence rather than thresholds.
+  - Header comment refreshed to match new behavior.
+
+### Version 6.13.3  Dec 27, 2025
+
+- **Refactor: Worm Arena Models Page - Modular Sortable Match History** (Author: Claude Sonnet 4)
+  - **Purpose**: Remove redundant WormArenaRecentMatches component; create reusable sortable match history table
+  - **Changes**:
+    1. **Removed**: `WormArenaRecentMatches` from Models page - was duplicating Match History with inferior layout
+    2. **Created**: `WormArenaMatchHistoryTable` - new modular, reusable component with rich metrics
+    3. **Added sorting**: All columns sortable (Opponent, Date, Duration, Outcome, Score, Rounds, Cost)
+    4. **Sortable headers**: Click column headers to sort asc/desc with visual indicators
+  - **Component Features** (`WormArenaMatchHistoryTable`):
+    - Accepts `history`, `modelSlug`, `isLoading`, `error`, `onOpponentClick` props
+    - Optional `showCard` prop to render with/without Card wrapper
+    - Clickable opponents to switch model selection
+    - Default sort: Date descending (most recent first)
+  - **Files Created**:
+    - `client/src/components/wormArena/WormArenaMatchHistoryTable.tsx` - Modular sortable table
+  - **Files Modified**:
+    - `client/src/pages/WormArenaModels.tsx` - Removed inline table, uses new component
+  - **Note**: `WormArenaRecentMatches.tsx` still exists but is no longer used on Models page
+
+- **Planning: SnakeBench repository split migration map & test coverage** (Author: Cascade)
+  - Added detailed migration map for breaking `SnakeBenchRepository` into GameWrite/GameRead/Leaderboard/Curation/Analytics repos plus shared SQL helpers.
+  - Documented helper inventory (slug normalization, limit clamps, date parsing, common WHERE fragments, replay path resolution).
+  - Defined unit, golden, and integration test fixtures (parseReplayJson edge cases, TrueSkill/Elo goldens, search/leaderboard/greatest-hits/insights/run-length matrices).
+  - Outlined wiring/rollout, backfill/recompute, and rollback plans; listed expected file impacts.
+  - **Files Modified**:
+    - `docs/2025-12-27-snakebench-repo-refactor-plan.md`
+
+### Version 6.13.2  Dec 27, 2025
+
+- **Fix & Enhancement: Worm Arena Run Length Distribution Chart** (Author: Claude Sonnet 4)
+  - **Purpose**: Fix histogram not rendering due to chart design issues; add model selection and summary statistics
+  - **Root Cause**: Original chart tried to show all 44 models with 88 bar series (wins+losses each), making bars invisibly thin. Also used per-model stackId which created grouped bars instead of proper stacked histogram.
+  - **Fixes**:
+    1. **Chart rendering**: Switched from ChartContainer wrapper to direct Recharts ResponsiveContainer to avoid height conflicts
+    2. **Proper stacking**: Changed to single `stackId="stack"` so all bars stack together correctly
+    3. **Model limiting**: Default to top 5 models (max 8) to prevent bar overcrowding
+  - **New Features**:
+    1. **Model selection UI**: Collapsible picker with checkboxes to choose which models to visualize
+    2. **Quick select buttons**: Top 3, Top 5, Top 8, Clear All for fast model selection
+    3. **Summary statistics row**: 6 stat cards showing Models count, Avg Length, Most Common round, Range, Top Win Rate model, Longest Average model
+    4. **Distinct color palette**: 8 distinct colors for models with lighter variants for losses
+    5. **Improved tooltip**: Shows breakdown per model at each round with color indicators
+    6. **Custom legend**: Cleaner display with win/loss color boxes per model
+  - **Files Modified**:
+    - `client/src/components/wormArena/stats/WormArenaRunLengthChart.tsx` - Complete rewrite with proper stacking and model selection
+    - `client/src/pages/WormArenaDistributions.tsx` - Added stats row, improved layout with icons, computed statistics
+  - **Testing**: Chart now renders correctly with top 5 models visible by default; users can select/deselect models to compare
 
 ### Version 6.13.1  Dec 27, 2025
 
@@ -21,6 +175,7 @@
     - `client/src/hooks/useWormArenaDistributions.ts` - Updated default minGames parameter
     - `client/src/pages/WormArenaDistributions.tsx` - Updated default minGames threshold
   - **Testing**: Distribution page now returns data when models have 5+ completed games
+
 
 ### Version 6.13.0  Dec 27, 2025
 
