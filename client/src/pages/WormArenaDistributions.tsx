@@ -130,7 +130,21 @@ export default function WormArenaDistributions() {
   return (
     <TooltipProvider>
       <div className="worm-page">
-        <WormArenaHeader compact showMatchupLabel={false} />
+        <WormArenaHeader
+          subtitle="Distributions"
+          links={[
+            { label: 'Replay', href: '/worm-arena' },
+            { label: 'Live', href: '/worm-arena/live' },
+            { label: 'Matches', href: '/worm-arena/matches' },
+            { label: 'Models', href: '/worm-arena/models' },
+            { label: 'Stats & Placement', href: '/worm-arena/stats' },
+            { label: 'Skill Analysis', href: '/worm-arena/skill-analysis' },
+            { label: 'Distributions', href: '/worm-arena/distributions', active: true },
+            { label: 'Rules', href: '/worm-arena/rules' },
+          ]}
+          compact
+          showMatchupLabel={false}
+        />
 
         <main className="w-full max-w-[1500px] mx-auto px-2 md:px-3 py-3 space-y-6">
         {/* Page title with icon */}
