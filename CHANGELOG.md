@@ -49,9 +49,10 @@
     5. `AnalyticsRepository.ts`: Handles model insights data and run-length distributions.
     6. `snakebenchSqlHelpers.ts`: Centralizes shared SQL fragments, constants (TrueSkill/Elo), and utility functions.
   - **Integration Changes**:
-    - Updated `RepositoryService` to manage the new repository instances.
+    - Updated `RepositoryService` to manage the new repository instances and removed the deprecated monolithic reference.
     - Updated `SnakeBenchService`, `SnakeBenchIngestQueue`, `ReplayResolver`, and other consumers to use domain-specific repositories.
     - Updated `adminController` and `backfill` scripts to use split write/read paths.
+  - **Maintenance**: Cleaned up the `docs/` folder by moving older implementation plans to `docs/oldPlans/`.
   - **Files Removed**:
     - `server/repositories/SnakeBenchRepository.ts` (Legacy monolith deleted)
   - **Files Created**:
