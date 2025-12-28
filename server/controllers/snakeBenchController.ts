@@ -273,6 +273,59 @@ export async function getWormArenaGreatestHits(req: Request, res: Response) {
   }
 }
 
+/**
+ * Check if an MP4 exists locally for the given gameId and, if so, expose a download URL.
+ * No generation is attempted here—this is a lightweight availability probe.
+ */
+export async function getWormArenaVideoAvailability(req: Request, res: Response) {
+  try {
+    const { gameId } = req.params as { gameId?: string };
+    if (!gameId) {
+      return res.status(400).json({ success: false, error: 'Missing gameId' });
+    }
+
+    const path = snakeBenchService.getLocalVideoPath(gameId);
+    if (!path) {
+      return res.json({ success: true, exists: false });
+    }
+
+    return res.json({
+      success: true,
+      exists: true,
+      downloadUrl: `/api/wormarena/videos/${encodeURIComponent(gameId)}/download`,
+    });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    logger.error(`SnakeBench getWormArenaVideoAvailability failed: ${message}`, 'snakebench-controller');
+    return res.status(500).json({ success: false, error: message });
+  }
+}
+
+/**
+ * Stream the MP4 file to the client if it exists locally.
+ */
+export async function downloadWormArenaVideo(req: Request, res: Response) {
+  try {
+    const { gameId } = req.params as { gameId?: string };
+    if (!gameId) {
+      return res.status(400).json({ success: false, error: 'Missing gameId' });
+    }
+
+    const filePath = snakeBenchService.getLocalVideoPath(gameId);
+    if (!filePath) {
+      return res.status(404).json({ success: false, error: 'Video not found' });
+    }
+
+    res.setHeader('Content-Type', 'video/mp4');
+    res.setHeader('Content-Disposition', `attachment; filename="snake_game_${gameId}.mp4"`);
+    res.sendFile(filePath);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    logger.error(`SnakeBench downloadWormArenaVideo failed: ${message}`, 'snakebench-controller');
+    return res.status(500).json({ success: false, error: message });
+  }
+}
+
 export async function trueSkillLeaderboard(req: Request, res: Response) {
   try {
     const limitQuery = req.query.limit as string | undefined;
@@ -891,6 +944,8 @@ export const snakeBenchController = {
   modelsWithGames,
   trueSkillLeaderboard,
   getWormArenaGreatestHits,
+  getWormArenaVideoAvailability,
+  downloadWormArenaVideo,
   suggestMatchups,
   ingestQueueStatus,
   getLlmPlayerPromptTemplate,

@@ -46,7 +46,7 @@ export class SnakeBenchReplayResolver {
 
     // 1. Check database for replay_path (could be local path or remote URL)
     try {
-      const dbReplay = await repositoryService.snakeBench.getReplayPath(gameId);
+      const dbReplay = await repositoryService.gameRead.getReplayPath(gameId);
       const replayPath = dbReplay?.replayPath;
       if (replayPath) {
         if (/^https?:\/\//i.test(replayPath)) {
@@ -153,7 +153,7 @@ export class SnakeBenchReplayResolver {
 
     // Check database for alternate replay_path (e.g., from ingestion or remote URL)
     try {
-      const dbReplay = await repositoryService.snakeBench.getReplayPath(gameId);
+      const dbReplay = await repositoryService.gameRead.getReplayPath(gameId);
       if (dbReplay?.replayPath) {
         // If it's an HTTP URL, consider it as existing (getReplay() can fetch it)
         if (/^https?:\/\//i.test(dbReplay.replayPath)) {

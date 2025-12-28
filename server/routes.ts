@@ -269,6 +269,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
     asyncHandler(snakeBenchController.runLengthDistribution),
   );
 
+  // Worm Arena media (MP4 availability/download)
+  app.get(
+    "/api/wormarena/videos/:gameId/availability",
+    asyncHandler(snakeBenchController.getWormArenaVideoAvailability),
+  );
+  app.get(
+    "/api/wormarena/videos/:gameId/download",
+    asyncHandler(snakeBenchController.downloadWormArenaVideo),
+  );
+
   // Worm Arena live streaming (SSE wrapper around SnakeBench matches)
   app.post("/api/wormarena/prepare", asyncHandler(wormArenaStreamController.prepare));
   app.get("/api/wormarena/stream/:sessionId", asyncHandler(wormArenaStreamController.stream));

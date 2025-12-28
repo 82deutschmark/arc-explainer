@@ -609,7 +609,7 @@ export async function discoverOpenRouter(req: Request, res: Response) {
         .filter(Boolean) as string[]
     );
 
-    const dbModels = repositoryService.isInitialized() ? await repositoryService.snakeBench.listModels() : [];
+    const dbModels = repositoryService.isInitialized() ? await repositoryService.gameRead.listModels() : [];
     const dbSlugs = new Set(dbModels.map((m) => m.model_slug));
 
     const newModels = remote
@@ -663,7 +663,7 @@ export async function importOpenRouter(req: Request, res: Response) {
       testStatus: 'untested',
     }));
 
-    const result = await repositoryService.snakeBench.upsertModels(models);
+    const result = await repositoryService.gameWrite.upsertModels(models);
 
     res.json({
       inserted: result.inserted,

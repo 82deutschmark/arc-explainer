@@ -9,5 +9,6 @@ echo "[ENTRYPOINT] Starting crond daemon..."
 crond -f -l 2 &
 
 # Start the Node app in the foreground (Docker will manage it)
-echo "[ENTRYPOINT] Starting Node app..."
-exec node dist/index.js
+# Explicitly set NODE_ENV=production to enforce BYOK API key requirements
+echo "[ENTRYPOINT] Starting Node app with NODE_ENV=production..."
+exec env NODE_ENV=production node dist/index.js
