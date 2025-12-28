@@ -111,12 +111,9 @@ export default function WormArenaStats() {
           { label: "Rules", href: "/worm-arena/rules" },
         ]}
         showMatchupLabel={false}
-        compact
       />
 
       <main className="p-4 max-w-7xl mx-auto space-y-6">
-        <WormArenaGlobalStatsStrip stats={globalStats ?? null} />
-
         {/* TrueSkill leaderboard (global Worm Arena rankings) */}
         <WormArenaTrueSkillLeaderboard
           entries={trueSkillEntries}
