@@ -23,6 +23,12 @@ export const as66: Arc3GameMetadata = {
       type: 'replay',
       description: 'Grandmaster gameplay by Zanthous - expert playthrough completing all levels in 415 moves',
     },
+    {
+      title: 'AS66 Replay - 800 moves',
+      url: 'https://three.arcprize.org/replay/as66-821a4dcad9c2/db85123a-891c-4fde-8bd3-b85c6702575d',
+      type: 'replay',
+      description: 'Gameplay replay of AS66 (Always Sliding)',
+    },
   ],
   levelScreenshots: [
     {
