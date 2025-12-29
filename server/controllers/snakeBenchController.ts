@@ -9,11 +9,13 @@
  */
 
 import type { Request, Response } from 'express';
+import { randomUUID } from 'crypto';
 
 import { snakeBenchService } from '../services/snakeBenchService';
 import { snakeBenchIngestQueue } from '../services/snakeBenchIngestQueue';
 import { loadWormArenaPromptTemplateBundle } from '../services/snakeBench/SnakeBenchLlmPlayerPromptTemplate.ts';
 import { logger } from '../utils/logger';
+import { sseStreamManager } from '../services/streaming/SSEStreamManager';
 import { requiresUserApiKey } from '../utils/environmentPolicy.js';
 import type {
   SnakeBenchRunMatchRequest,
@@ -926,6 +928,65 @@ export async function runLengthDistribution(req: Request, res: Response) {
   }
 }
 
+/**
+ * GET /api/stream/snakebench/model-insights/:modelSlug
+ * Stream model insights report generation with live reasoning and output updates.
+ * Follows the WormArena streaming pattern: register → init → service with callbacks → complete → close
+ */
+async function streamModelInsights(req: Request, res: Response) {
+  try {
+    const { modelSlug } = req.params as { modelSlug: string };
+
+    if (!modelSlug || !modelSlug.trim()) {
+      res.status(400).json({ error: 'modelSlug is required' });
+      return;
+    }
+
+    const sessionId = randomUUID();
+    sseStreamManager.register(sessionId, res);
+    sseStreamManager.sendEvent(sessionId, 'stream.init', {
+      sessionId,
+      modelSlug,
+      createdAt: new Date().toISOString(),
+    });
+
+    const abortController = new AbortController();
+    res.on('close', () => abortController.abort());
+
+    try {
+      // Call service with callbacks - service emits events through handlers
+      const report = await snakeBenchService.streamModelInsightsReport(
+        modelSlug,
+        {
+          onStatus: (status) => {
+            sseStreamManager.sendEvent(sessionId, 'stream.status', status);
+          },
+          onChunk: (chunk) => {
+            sseStreamManager.sendEvent(sessionId, 'stream.chunk', chunk);
+          },
+        },
+        abortController.signal
+      );
+
+      // Service completed successfully - send completion and close
+      sseStreamManager.sendEvent(sessionId, 'stream.complete', {
+        status: 'success',
+        report,
+        timestamp: Date.now(),
+      });
+      sseStreamManager.close(sessionId);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      logger.error(`[ModelInsightsStream] Failed: ${message}`, 'snakebench-controller');
+      sseStreamManager.error(sessionId, 'INSIGHTS_STREAM_ERROR', message);
+    }
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    logger.error(`SnakeBench streamModelInsights failed: ${message}`, 'snakebench-controller');
+    res.status(500).json({ error: message });
+  }
+}
+
 export const snakeBenchController = {
   runMatch,
   runBatch,
@@ -950,5 +1011,6 @@ export const snakeBenchController = {
   ingestQueueStatus,
   getLlmPlayerPromptTemplate,
   runLengthDistribution,
+  streamModelInsights,
 };
 

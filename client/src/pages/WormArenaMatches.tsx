@@ -14,6 +14,7 @@ import { useLocation } from 'wouter';
 
 import WormArenaHeader from '@/components/WormArenaHeader';
 import WormArenaGreatestHits from '@/components/WormArenaGreatestHits';
+import WormArenaMatchCard from '@/components/wormArena/WormArenaMatchCard';
 import useWormArenaStats from '@/hooks/useWormArenaStats';
 import { apiRequest } from '@/lib/queryClient';
 
@@ -153,8 +154,10 @@ export default function WormArenaMatches() {
   const effectiveLimit = appliedFilters?.limit ?? draftFilters.limit;
 
   const availableModels = React.useMemo(() => {
-    const models = leaderboard.map((entry) => entry.modelSlug).filter(Boolean);
-    return Array.from(new Set(models));
+    const models = leaderboard
+      .map((entry) => entry.modelSlug)
+      .filter((slug): slug is string => Boolean(slug && slug !== 'undefined'));
+    return Array.from(new Set(models)).sort();
   }, [leaderboard]);
 
   const updateDraft = React.useCallback((patch: Partial<MatchFilters>) => {
@@ -539,75 +542,45 @@ export default function WormArenaMatches() {
                     {error && <div className="text-sm text-red-600">{error}</div>}
                   </div>
 
-                  {/* Search results table */}
+                  {/* Search results list */}
                   {appliedFilters && (
                     <div className="mt-4 pt-4 border-t worm-border">
-                      <div className="flex items-center justify-between gap-3 mb-3">
-                        <div className="text-sm font-semibold text-worm-ink">Search Results</div>
+                      <div className="flex items-center justify-between gap-3 mb-4">
+                        <div className="text-sm font-bold text-worm-ink uppercase tracking-tight">Search Results</div>
                         <div className="flex items-center gap-2">
-                          <span className="text-xs worm-muted">{rangeLabel}</span>
-                          <Button variant="outline" size="sm" onClick={handlePrev} disabled={!canPrev || isLoading}>
+                          <span className="text-xs worm-muted font-mono">{rangeLabel}</span>
+                          <Button variant="outline" size="sm" className="h-8 text-xs" onClick={handlePrev} disabled={!canPrev || isLoading}>
                             Prev
                           </Button>
-                          <Button variant="outline" size="sm" onClick={handleNext} disabled={!canNext || isLoading}>
+                          <Button variant="outline" size="sm" className="h-8 text-xs" onClick={handleNext} disabled={!canNext || isLoading}>
                             Next
                           </Button>
                         </div>
                       </div>
 
-                      <div className="overflow-x-auto">
-                        <Table>
-                          <TableHeader>
-                            <TableRow>
-                              <TableHead className="whitespace-nowrap text-xs">Date</TableHead>
-                              <TableHead className="text-xs">Model</TableHead>
-                              <TableHead className="text-xs">Opponent</TableHead>
-                              <TableHead className="text-xs">Result</TableHead>
-                              <TableHead className="text-xs">Death</TableHead>
-                              <TableHead className="text-right text-xs">Score</TableHead>
-                              <TableHead className="text-right text-xs">Rounds</TableHead>
-                              <TableHead className="text-right text-xs">Cost</TableHead>
-                              <TableHead className="text-xs">Replay</TableHead>
-                            </TableRow>
-                          </TableHeader>
-                          <TableBody>
-                            {rows.map((r) => {
-                              const replayHref = `/worm-arena?matchId=${encodeURIComponent(r.gameId)}`;
-                              const scoreLabel = `${r.myScore}-${r.opponentScore}`;
-                              const deathLabel = r.deathReason ? DEATH_REASON_LABELS[r.deathReason] : 'Survived';
-                              return (
-                                <TableRow key={r.gameId}>
-                                  <TableCell className="whitespace-nowrap text-xs">
-                                    {r.startedAt ? new Date(r.startedAt).toLocaleDateString() : ''}
-                                  </TableCell>
-                                  <TableCell className="font-mono text-xs max-w-[150px] truncate" title={r.model}>
-                                    {r.model}
-                                  </TableCell>
-                                  <TableCell className="font-mono text-xs max-w-[150px] truncate" title={r.opponent}>
-                                    {r.opponent}
-                                  </TableCell>
-                                  <TableCell className="text-xs">{formatResult(r.result)}</TableCell>
-                                  <TableCell className="text-xs">{deathLabel}</TableCell>
-                                  <TableCell className="text-right font-mono text-xs">{scoreLabel}</TableCell>
-                                  <TableCell className="text-right font-mono text-xs">{r.roundsPlayed}</TableCell>
-                                  <TableCell className="text-right font-mono text-xs">${r.totalCost.toFixed(2)}</TableCell>
-                                  <TableCell>
-                                    <a className="underline text-xs text-worm-ink hover:text-worm-green" href={replayHref}>
-                                      View
-                                    </a>
-                                  </TableCell>
-                                </TableRow>
-                              );
-                            })}
-                            {rows.length === 0 && !isLoading && (
-                              <TableRow>
-                                <TableCell colSpan={9} className="text-sm text-muted-foreground">
-                                  No matches found.
-                                </TableCell>
-                              </TableRow>
-                            )}
-                          </TableBody>
-                        </Table>
+                      <div className="space-y-3">
+                        {rows.map((r) => (
+                          <WormArenaMatchCard
+                            key={r.gameId}
+                            gameId={r.gameId}
+                            startedAt={r.startedAt}
+                            modelA={r.model}
+                            modelB={r.opponent}
+                            result={r.result}
+                            myScore={r.myScore}
+                            opponentScore={r.opponentScore}
+                            roundsPlayed={r.roundsPlayed}
+                            totalCost={r.totalCost}
+                            maxFinalScore={r.maxFinalScore}
+                            scoreDelta={r.scoreDelta}
+                            deathReason={r.deathReason}
+                          />
+                        ))}
+                        {rows.length === 0 && !isLoading && (
+                          <div className="py-8 text-center text-sm text-muted-foreground bg-white/50 rounded-md border border-dashed">
+                            No matches found.
+                          </div>
+                        )}
                       </div>
                     </div>
                   )}

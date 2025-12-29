@@ -1,8 +1,15 @@
 /**
- * Author: Codex (GPT-5)
- * Date: 2025-12-20
+ * Author: Claude Code using Haiku
+ * Date: 2025-12-29
  * PURPOSE: Thin orchestrator facade for SnakeBench service with model insights report formatting
  *          and OpenAI summary generation for the Worm Arena model insights report.
+ *
+ *          FIXES:
+ *          1. Fixed Responses API request format: moved response_format to text.format per API changes
+ *          2. Refactored streaming to use handleStreamEvent helper for reliable event handling
+ *          3. Improved summary extraction to handle both JSON and text responses
+ *          4. Ensured report generation succeeds even if LLM summary fails
+ *
  * SRP/DRY check: Pass - delegation, report formatting, and summary wiring only.
  */
 
@@ -30,7 +37,8 @@ import type {
 import { repositoryService } from '../repositories/RepositoryService.ts';
 import { logger } from '../utils/logger.ts';
 import { openAIClient } from './openai/client.js';
-import { normalizeResponse } from './openai/responseParser.js';
+import { handleStreamEvent, createStreamAggregates } from './openai/streaming.js';
+import type { ResponseStreamEvent } from 'openai/resources/responses/responses';
 
 // Import from new modules
 import { SnakeBenchMatchRunner } from './snakeBench/SnakeBenchMatchRunner.ts';
@@ -46,7 +54,7 @@ import path from 'path';
 import fs from 'fs';
 
 // Use a direct OpenAI model for the LLM summary step.
-const INSIGHTS_SUMMARY_MODEL = 'gpt-5-nano-2025-08-07';
+const INSIGHTS_SUMMARY_MODEL = 'gpt-5-mini-2025-08-07';
 
 // Normalize model slugs so ":free" suffixes do not split report data.
 const normalizeModelSlug = (modelSlug: string): string => modelSlug.trim().replace(/:free$/i, '');
@@ -105,37 +113,6 @@ const buildInsightsSummaryPrompt = (
   ].join('\n');
 };
 
-// Extract the text summary from a Responses API payload with reasoning fallback.
-const extractInsightsSummaryText = (response: any): string | null => {
-  const normalized = normalizeResponse(response, { modelKey: INSIGHTS_SUMMARY_MODEL });
-  const text = typeof normalized.output_text === 'string' ? normalized.output_text.trim() : '';
-  if (text) {
-    return text.replace(/\s+/g, ' ').trim();
-  }
-
-  const reasoning = normalized.output_reasoning?.summary;
-  if (typeof reasoning === 'string' && reasoning.trim().length > 0) {
-    return reasoning.replace(/\s+/g, ' ').trim();
-  }
-
-  if (Array.isArray(reasoning)) {
-    const joined = reasoning
-      .map(item => (typeof item === 'string' ? item : ''))
-      .filter(Boolean)
-      .join(' ');
-    if (joined.trim().length > 0) {
-      return joined.replace(/\s+/g, ' ').trim();
-    }
-  }
-
-  if (reasoning && typeof reasoning === 'object' && typeof (reasoning as any).text === 'string') {
-    const summaryText = (reasoning as any).text.trim();
-    return summaryText.length > 0 ? summaryText.replace(/\s+/g, ' ').trim() : null;
-  }
-
-  return null;
-};
-
 // Call OpenAI directly to generate the model insights summary text.
 const requestInsightsSummary = async (
   modelSlug: string,
@@ -146,8 +123,7 @@ const requestInsightsSummary = async (
   // Build a compact prompt from the aggregated stats for the LLM.
   const prompt = buildInsightsSummaryPrompt(modelSlug, summary, failureModes, lossOpponents);
 
-  // Prepare a Responses API payload tailored for a short, single-paragraph summary.
-  // Use the simple input format that works with the OpenAI SDK
+  // Prepare a Responses API payload with structured outputs for actionable insights.
   const requestBody = {
     model: INSIGHTS_SUMMARY_MODEL,
     input: [
@@ -163,25 +139,96 @@ const requestInsightsSummary = async (
         ],
       },
     ],
-    instructions: 'You are a concise analytics reporter for game model performance.',
+    instructions: 'You are a concise analytics reporter for game model performance. Focus on WHY the model loses, not just stats.',
     reasoning: {
-      effort: 'medium',
-      summary: 'auto',
+      effort: 'high',
+      summary: 'detailed',
     },
     text: {
       verbosity: 'high',
+      format: {
+        type: 'json_schema',
+        name: 'model_insights',
+        strict: false,
+        schema: {
+          type: 'object',
+          properties: {
+            summary: {
+              type: 'string',
+              description: 'One sentence overview of the model\'s main issue'
+            },
+            deathAnalysis: {
+              type: 'array',
+              items: {
+                type: 'object',
+                properties: {
+                  cause: { type: 'string' },
+                  frequency: { type: 'string' },
+                  pattern: { type: 'string' }
+                }
+              },
+              description: 'Top death causes with context'
+            },
+            toughOpponents: {
+              type: 'array',
+              items: {
+                type: 'object',
+                properties: {
+                  opponent: { type: 'string' },
+                  record: { type: 'string' },
+                  issue: { type: 'string' }
+                }
+              },
+              description: 'Hardest opponents to beat'
+            },
+            recommendations: {
+              type: 'array',
+              items: { type: 'string' },
+              description: 'Specific actionable improvements'
+            }
+          },
+          required: ['summary', 'deathAnalysis', 'toughOpponents', 'recommendations'],
+          additionalProperties: false
+        }
+      }
     },
-    max_output_tokens: 600,
+    max_output_tokens: 120000,
   };
 
   try {
-    // Execute the OpenAI request and extract the summary text from the response.
-    // Type assertion to bypass TypeScript checking since the runtime format is correct
-    const response = await openAIClient.responses.create(requestBody as any);
-    return extractInsightsSummaryText(response);
+    const response = await openAIClient.responses.create(requestBody as any) as any;
+
+    // Try to extract summary from structured JSON output first
+    // Responses API with json_schema puts output in output_parsed or as text
+    if (response.output_parsed) {
+      const parsed = response.output_parsed;
+      if (typeof parsed.summary === 'string' && parsed.summary.trim()) {
+        return parsed.summary.trim();
+      }
+    }
+
+    // Try parsing output_text as JSON if it contains JSON structure
+    if (response.output_text && typeof response.output_text === 'string') {
+      try {
+        const parsed = JSON.parse(response.output_text);
+        if (typeof parsed.summary === 'string' && parsed.summary.trim()) {
+          return parsed.summary.trim();
+        }
+      } catch {
+        // Not JSON, use as-is
+        const text = response.output_text.trim();
+        if (text) {
+          return text;
+        }
+      }
+    }
+
+    // If no summary was generated, that's okay - report can still be built
+    return null;
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
     logger.warn(`SnakeBenchService.requestInsightsSummary failed: ${message}`, 'snakebench-service');
+    // Return null on failure, but don't throw - report generation should continue
     return null;
   }
 };
@@ -270,6 +317,90 @@ const buildInsightsTweet = (
   )}, top loss ${topReason} (${topReasonPct}), avg rounds ${avgRounds}, cost per loss ${costPerLoss}. #WormArena`;
 
   return tweet.length > 260 ? `${tweet.slice(0, 257)}...` : tweet;
+};
+
+/**
+ * Build the OpenAI Responses API request payload for model insights.
+ * Separated for reuse between streaming and non-streaming modes.
+ */
+const buildInsightsRequest = (
+  modelSlug: string,
+  summary: WormArenaModelInsightsSummary,
+  failureModes: WormArenaModelInsightsFailureMode[],
+  lossOpponents: WormArenaModelInsightsOpponent[],
+) => {
+  const prompt = buildInsightsSummaryPrompt(modelSlug, summary, failureModes, lossOpponents);
+
+  return {
+    model: INSIGHTS_SUMMARY_MODEL,
+    input: [
+      {
+        id: `msg_${Date.now()}_summary_${Math.random().toString(16).slice(2)}`,
+        role: 'user' as const,
+        type: 'message' as const,
+        content: [
+          {
+            type: 'input_text' as const,
+            text: prompt,
+          },
+        ],
+      },
+    ],
+    instructions: 'You are a concise analytics reporter for game model performance. Focus on WHY the model loses, not just stats.',
+    reasoning: {
+      effort: 'high' as const,
+      summary: 'detailed' as const,
+    },
+    text: {
+      verbosity: 'high' as const,
+      format: {
+        type: 'json_schema' as const,
+        name: 'model_insights',
+        strict: false as const,
+        schema: {
+          type: 'object',
+          properties: {
+            summary: {
+              type: 'string',
+              description: 'One sentence overview of the model\'s main issue'
+            },
+            deathAnalysis: {
+              type: 'array',
+              items: {
+                type: 'object',
+                properties: {
+                  cause: { type: 'string' },
+                  frequency: { type: 'string' },
+                  pattern: { type: 'string' }
+                }
+              },
+              description: 'Top death causes with context'
+            },
+            toughOpponents: {
+              type: 'array',
+              items: {
+                type: 'object',
+                properties: {
+                  opponent: { type: 'string' },
+                  record: { type: 'string' },
+                  issue: { type: 'string' }
+                }
+              },
+              description: 'Hardest opponents to beat'
+            },
+            recommendations: {
+              type: 'array',
+              items: { type: 'string' },
+              description: 'Specific actionable improvements'
+            }
+          },
+          required: ['summary', 'deathAnalysis', 'toughOpponents', 'recommendations'],
+          additionalProperties: false
+        }
+      }
+    },
+    max_output_tokens: 120000,
+  };
 };
 
 export interface StreamingHandlers {
@@ -572,6 +703,128 @@ class SnakeBenchService {
       markdownReport,
       tweetText,
     };
+  }
+
+  /**
+   * Stream model insights report generation with live reasoning updates via callbacks.
+   * Delegates SSE management to the caller (controller).
+   */
+  async streamModelInsightsReport(
+    modelSlug: string,
+    handlers: {
+      onStatus: (status: WormArenaStreamStatus) => void;
+      onChunk: (chunk: { type: string; delta?: string; content?: string; timestamp: number }) => void;
+    },
+    abortSignal: AbortSignal
+  ): Promise<WormArenaModelInsightsReport> {
+    const normalizedSlug = normalizeModelSlug(modelSlug);
+    if (!normalizedSlug) {
+      throw new Error('Invalid model slug');
+    }
+
+    // Emit status: fetching data
+    handlers.onStatus({
+      state: 'in_progress',
+      phase: 'fetching_data',
+      message: 'Loading model statistics...'
+    });
+
+    const data = await repositoryService.analytics.getModelInsightsData(normalizedSlug);
+    if (!data) {
+      throw new Error('No data available for this model');
+    }
+
+    // Emit status: generating insights
+    handlers.onStatus({
+      state: 'in_progress',
+      phase: 'generating_insights',
+      message: 'Analyzing model performance...'
+    });
+
+    const requestBody = buildInsightsRequest(
+      normalizedSlug,
+      data.summary,
+      data.failureModes,
+      data.lossOpponents
+    );
+
+    // Enable streaming
+    const streamingRequest = {
+      ...requestBody,
+      stream: true,
+    };
+
+    const stream = await openAIClient.responses.stream(streamingRequest as any);
+    const aggregates = createStreamAggregates(true); // Expecting JSON schema output
+
+    // Stream events from OpenAI through callbacks
+    for await (const event of stream as AsyncIterable<ResponseStreamEvent>) {
+      if (abortSignal.aborted) {
+        stream.controller.abort();
+        throw new Error('Stream aborted by client');
+      }
+
+      handleStreamEvent(event, aggregates, {
+        emitChunk: (chunk) => {
+          // Forward chunks through callback
+          handlers.onChunk({
+            type: chunk.type,
+            delta: chunk.delta,
+            content: chunk.content,
+            timestamp: Date.now(),
+          });
+        },
+        emitEvent: (_eventName, payload) => {
+          // Forward status events through callback
+          handlers.onStatus(payload as unknown as WormArenaStreamStatus);
+        },
+      });
+    }
+
+    // Get final response and build report
+    const finalResponse = await stream.finalResponse();
+
+    // Extract LLM summary from aggregated parsed JSON or text
+    let llmSummary = '';
+    if (aggregates.parsed) {
+      try {
+        const parsed = JSON.parse(aggregates.parsed);
+        // Use the summary field from structured output if available
+        llmSummary = typeof parsed.summary === 'string' ? parsed.summary : aggregates.parsed;
+      } catch {
+        // Fallback to accumulated text if JSON parsing fails
+        llmSummary = aggregates.text || aggregates.parsed;
+      }
+    } else {
+      // Final fallback to response text
+      llmSummary = finalResponse.output_text || '';
+    }
+
+    // Build complete report
+    const generatedAt = new Date().toISOString();
+    const markdownReport = buildInsightsMarkdown(
+      normalizedSlug,
+      generatedAt,
+      data.summary,
+      data.failureModes,
+      data.lossOpponents,
+      llmSummary,
+    );
+    const tweetText = buildInsightsTweet(normalizedSlug, data.summary, data.failureModes);
+
+    const report: WormArenaModelInsightsReport = {
+      modelSlug: normalizedSlug,
+      generatedAt,
+      summary: data.summary,
+      failureModes: data.failureModes,
+      lossOpponents: data.lossOpponents,
+      llmSummary,
+      llmModel: INSIGHTS_SUMMARY_MODEL,
+      markdownReport,
+      tweetText,
+    };
+
+    return report;
   }
 
   /**

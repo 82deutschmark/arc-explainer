@@ -265,6 +265,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
     asyncHandler(snakeBenchController.modelInsightsReport),
   );
   app.get(
+    "/api/stream/snakebench/model-insights/:modelSlug",
+    asyncHandler(snakeBenchController.streamModelInsights),
+  );
+  app.get(
     "/api/snakebench/run-length-distribution",
     asyncHandler(snakeBenchController.runLengthDistribution),
   );
