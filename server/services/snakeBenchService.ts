@@ -10,6 +10,7 @@
  *          3. Improved summary extraction to handle both JSON and text responses
  *          4. Ensured report generation succeeds even if LLM summary fails
  *          5. Reworded insights prompts to use eSports commentator framing for LLM Snake play analysis
+ *          6. Clarified insights prompts to prohibit recommendations and collect pure analysis only
  *
  * SRP/DRY check: Pass - delegation, report formatting, and summary wiring only.
  */
@@ -104,10 +105,11 @@ const buildInsightsSummaryPrompt = (
   return [
     'Write one short paragraph (max 180 words).',
     'No bullets, no headings, no disclaimers.',
-    'Focus on why the model loses and when. Focus on max apples ever achieved. How many rounds can it go?',
+    'Focus on why the model loses and when. Focus on max apples (score) ever achieved. How many rounds can it go?',
+    'Strictly describe observed performance; do not suggest strategies, tips, or recommendations.',
     `Model: ${modelSlug}`,
     `Games: ${summary.gamesPlayed}, Wins: ${summary.wins}, Losses: ${summary.losses}, Win rate: ${formatPercent(summary.winRate)}`,
-    `Average rounds: ${avgRounds}, Average score: ${avgScore}, Cost per loss: ${costPerLoss}`,
+    `Average rounds: ${avgRounds}, Average apples: ${avgScore}, Cost per loss: ${costPerLoss}`,
     `Early loss rate: ${earlyLossRate}, Loss reason coverage: ${lossCoverage}`,
     `Top failure modes: ${failureLines}`,
     `Tough opponents by loss rate: ${opponentLines}`,
@@ -141,7 +143,7 @@ const requestInsightsSummary = async (
       },
     ],
     instructions:
-      'You are an eSports commentator covering how this LLM plays Snake. Give a brisk, hype-y breakdown of how it wins and loses, spotlight the key losses and what went wrong in those matches, and skip any ML training talk. Focus on match moments, risky habits, and the opponents that punish it.',
+      'You are an eSports commentator covering how this LLM plays Snake. Give a brisk, hype-y breakdown of how it wins and loses, spotlight the key losses and what went wrong in those matches, and skip any ML training talk. Focus on match moments, risky habits, and the opponents that punish it. Do not provide recommendations, coaching, or improvement tips—only describe observed behavior.',
     reasoning: {
       effort: 'high',
       summary: 'detailed',
@@ -183,13 +185,8 @@ const requestInsightsSummary = async (
               },
               description: 'Opponents who consistently hand it losses and the matchup quirks they exploit'
             },
-            recommendations: {
-              type: 'array',
-              items: { type: 'string' },
-              description: 'Where this LLM shines, where it struggles (e.g., early chaos vs long setups), and what to lean into or avoid'
-            }
           },
-          required: ['summary', 'deathAnalysis', 'toughOpponents', 'recommendations'],
+          required: ['summary', 'deathAnalysis', 'toughOpponents'],
           additionalProperties: false
         }
       }
