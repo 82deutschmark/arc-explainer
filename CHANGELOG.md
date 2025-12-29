@@ -1,6 +1,20 @@
 # New entries at the top, use proper SemVer!
 
-### Version 6.16.2  Dec 28, 2025
+### Version 6.16.4  Dec 28, 2025
+
+- **Fix: Robust Model Aggregation & Visibility Restoration** (Author: Cascade)
+  - **Purpose**: Fix empty model list on Worm Arena Models page caused by overly restrictive SQL filtering and grouping issues.
+  - **Issues Fixed**:
+    - Restored visibility of models by removing the restrictive `g.status = 'completed'` filter from `GameReadRepository.ts`.
+    - Implemented a more robust "Hybrid Aggregation" approach: SQL handles initial grouping by name/slug to ensure results return, while JavaScript handles final deduplication and stat aggregation by normalized slug.
+    - This hybrid approach solves the `model-item-undefined` React warning without the risk of empty results from complex SQL `MAX()` aggregations on join-heavy tables.
+    - Preserved URL persistence and auto-selection logic for a seamless "Combat Dossier" experience.
+  - **Files Modified**:
+    - `server/repositories/GameReadRepository.ts` (Implemented JS-side aggregation and removed status filter)
+    - `client/src/pages/WormArenaModels.tsx` (Final logic verification and cleanup)
+  - **Impact**: All models with played games are now correctly visible, and the page is resilient to database inconsistencies like model renames.
+
+### Version 6.16.3  Dec 28, 2025
 
 - **Fix: Worm Arena Models page display and navigation completeness** (Author: Claude Haiku 4.5)
   - **Purpose**: Fix broken model name display in Worm Arena Models page and ensure all Worm Arena subitems are accessible from main navigation.

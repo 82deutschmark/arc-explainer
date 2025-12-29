@@ -1,14 +1,15 @@
 /**
- * Author: Claude Opus 4.5 (frontend-design skill)
- * Date: 2025-12-27
+ * Author: Cascade
+ * Date: 2025-12-28
  * PURPOSE: Worm Arena Models page - "Combat Dossier" style redesign.
- *          Auto-selects first model on load, eliminates illegible grey text,
- *          uses warm earthy Worm Arena theme with bold typography and visual flair.
- *          Shows model combat profile with stats, streaks, and full match history.
+ *          Auto-selects first model on load if none specified in URL,
+ *          persists selection in URL query params,
+ *          shows model combat profile with stats, streaks, and full match history.
  * SRP/DRY check: Pass - page composition only, data fetching in hooks.
  */
 
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useEffect, useState, useMemo, useCallback } from 'react';
+import { useLocation } from 'wouter';
 import { TooltipProvider } from '@/components/ui/tooltip';
 
 import WormArenaHeader from '@/components/WormArenaHeader';
@@ -108,13 +109,32 @@ function StreakBadge({ streak }: { streak: { type: string; count: number } }) {
 }
 
 export default function WormArenaModels() {
+  const [location, setLocation] = useLocation();
+
+  // Helper to get model from URL
+  const getModelFromUrl = useCallback(() => {
+    const params = new URLSearchParams(window.location.search);
+    return params.get('model') || '';
+  }, []);
+
   // Fetch list of models that have games
   const {
-    models,
+    models: rawModels,
     isLoading: modelsLoading,
     error: modelsError,
     fetchModels,
   } = useWormArenaModelsWithGames();
+
+  // Filter models to ensure they have a valid slug (defensive)
+  const models = useMemo(() => {
+    const filtered = rawModels.filter(m => m && m.modelSlug && m.modelSlug !== 'undefined');
+    console.log('[WormArenaModels] Filtered models:', filtered.length, 'of', rawModels.length);
+    if (filtered.length < rawModels.length) {
+      console.warn('[WormArenaModels] Some models were filtered out due to missing or invalid modelSlug:', 
+        rawModels.filter(m => !m || !m.modelSlug || m.modelSlug === 'undefined'));
+    }
+    return filtered;
+  }, [rawModels]);
 
   // Fetch full match history for selected model
   const {
@@ -126,28 +146,56 @@ export default function WormArenaModels() {
     clearHistory,
   } = useWormArenaModelHistory();
 
-  // Selected model state
-  const [selectedModel, setSelectedModel] = useState<string>('');
+  // Selected model state - initialized from URL
+  const [selectedModel, setSelectedModel] = useState<string>(getModelFromUrl());
+
+  // Update URL when model changes
+  const handleModelChange = useCallback((newModel: string) => {
+    setSelectedModel(newModel);
+    const params = new URLSearchParams(window.location.search);
+    if (newModel) {
+      params.set('model', newModel);
+    } else {
+      params.delete('model');
+    }
+    const newSearch = params.toString();
+    const newPath = `${window.location.pathname}${newSearch ? '?' + newSearch : ''}`;
+    setLocation(newPath);
+  }, [setLocation]);
+
+  // Sync with URL changes (back/forward buttons)
+  useEffect(() => {
+    const fromUrl = getModelFromUrl();
+    if (fromUrl !== selectedModel) {
+      setSelectedModel(fromUrl);
+    }
+  }, [location, getModelFromUrl, selectedModel]);
 
   // Load models on mount
   useEffect(() => {
     fetchModels();
   }, [fetchModels]);
 
-  // AUTO-SELECT FIRST MODEL when models load (fixes empty state issue)
+  // AUTO-SELECT FIRST MODEL when models load IF none in URL
   useEffect(() => {
-    if (!selectedModel && models.length > 0) {
+    if (!selectedModel && !getModelFromUrl() && models.length > 0) {
+      // Filter out any models without slugs just in case
+      const validModels = models.filter(m => m.modelSlug);
+      if (validModels.length === 0) return;
+
       // Select model with most games played
-      const sorted = [...models].sort((a, b) => (b.gamesPlayed ?? 0) - (a.gamesPlayed ?? 0));
-      console.log('[WormArenaModels] Auto-selecting model:', sorted[0].modelSlug, 'from', models.length, 'models');
-      console.log('[WormArenaModels] First model data:', sorted[0]);
-      setSelectedModel(sorted[0].modelSlug);
+      const sorted = [...validModels].sort((a, b) => (b.gamesPlayed ?? 0) - (a.gamesPlayed ?? 0));
+      const targetSlug = sorted[0].modelSlug;
+
+      if (targetSlug) {
+        console.log('[WormArenaModels] Auto-selecting model:', targetSlug, 'from', models.length, 'models');
+        handleModelChange(targetSlug);
+      }
     }
-  }, [models, selectedModel]);
+  }, [models, selectedModel, getModelFromUrl, handleModelChange]);
 
   // When model selection changes, fetch history
   useEffect(() => {
-    console.log('[WormArenaModels] Selection changed to:', selectedModel);
     if (selectedModel) {
       fetchHistory(selectedModel);
     } else {
@@ -167,7 +215,6 @@ export default function WormArenaModels() {
 
   // Get selected model info
   const selectedModelInfo = models.find(m => m.modelSlug === selectedModel);
-  console.log('[WormArenaModels] Render - selectedModel:', selectedModel, 'selectedModelInfo:', selectedModelInfo, 'models.length:', models.length);
 
   return (
     <TooltipProvider>
@@ -210,11 +257,10 @@ export default function WormArenaModels() {
                 {!modelsLoading && models.length > 0 && (
                   <div className="space-y-2">
                     <Select
-                      key={models.length > 0 ? models[0].modelSlug : 'empty'}
-                      value={selectedModel}
+                      value={selectedModel || 'none'}
                       onValueChange={(value) => {
                         console.log('[WormArenaModels] User selected:', value);
-                        setSelectedModel(value);
+                        handleModelChange(value === 'none' ? '' : value);
                       }}
                     >
                       <SelectTrigger className="w-full max-w-lg bg-white border-[var(--worm-border)] text-[var(--worm-ink)] font-medium">
@@ -223,7 +269,7 @@ export default function WormArenaModels() {
                       <SelectContent className="max-h-80">
                         {models.map((m) => (
                           <SelectItem
-                            key={m.modelSlug}
+                            key={`model-item-${m.modelSlug}`}
                             value={m.modelSlug}
                             className="text-[var(--worm-ink)]"
                           >
@@ -312,7 +358,7 @@ export default function WormArenaModels() {
               modelSlug={selectedModel}
               isLoading={historyLoading}
               error={historyError}
-              onOpponentClick={setSelectedModel}
+              onOpponentClick={handleModelChange}
             />
           )}
 
