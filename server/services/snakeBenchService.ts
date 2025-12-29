@@ -1,8 +1,9 @@
 /**
- * Author: Gemini 3 Flash High
- * Date: 2025-12-27
+ * Author: Cascade
+ * Date: 2025-12-29
  * PURPOSE: Thin orchestrator facade for SnakeBench service with model insights report formatting
  *          and OpenAI summary generation for the Worm Arena model insights report.
+ *          Fixed TypeScript errors in streamModelInsightsReport regarding Responses API event types.
  * SRP/DRY check: Pass - delegation, report formatting, and summary wiring only.
  */
 
@@ -744,7 +745,7 @@ class SnakeBenchService {
             break;
 
           case 'response.content_part.added':
-          case 'response.content_part.delta':
+          case 'response.output_text.delta':
             // Send text/JSON deltas
             const textDelta = (event as any).part?.text || (event as any).delta;
             if (textDelta) {
@@ -763,7 +764,7 @@ class SnakeBenchService {
             });
             break;
 
-          case 'response.done':
+          case 'response.completed':
             // Stream completed successfully
             const finalResponse = await stream.finalResponse();
             const llmSummary = finalResponse.output_text || accumulatedJson;
