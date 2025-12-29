@@ -41,18 +41,23 @@ export function useWormArenaModelsWithGames() {
   const [error, setError] = useState<string | null>(null);
 
   const fetchModels = useCallback(async () => {
+    console.log('[useWormArenaModelsWithGames] Fetching models...');
     setIsLoading(true);
     setError(null);
     try {
       const res = await apiRequest('GET', '/api/snakebench/models-with-games');
       const json = (await res.json()) as ModelsWithGamesResponse;
+      console.log('[useWormArenaModelsWithGames] Response:', json);
       if (!json.success) {
         setError(json.error || 'Failed to load models');
         setModels([]);
         return;
       }
+      console.log('[useWormArenaModelsWithGames] Loaded', json.models.length, 'models');
+      console.log('[useWormArenaModelsWithGames] First model:', json.models[0]);
       setModels(json.models);
     } catch (e: any) {
+      console.error('[useWormArenaModelsWithGames] Error:', e);
       setError(e?.message || 'Failed to load models');
       setModels([]);
     } finally {
