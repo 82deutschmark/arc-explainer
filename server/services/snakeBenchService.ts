@@ -30,6 +30,7 @@ import type {
 import { repositoryService } from '../repositories/RepositoryService.ts';
 import { logger } from '../utils/logger.ts';
 import { openAIClient } from './openai/client.js';
+import { sseStreamManager } from './streaming/SSEStreamManager';
 
 // Import from new modules
 import { SnakeBenchMatchRunner } from './snakeBench/SnakeBenchMatchRunner.ts';
@@ -285,6 +286,91 @@ const buildInsightsTweet = (
   )}, top loss ${topReason} (${topReasonPct}), avg rounds ${avgRounds}, cost per loss ${costPerLoss}. #WormArena`;
 
   return tweet.length > 260 ? `${tweet.slice(0, 257)}...` : tweet;
+};
+
+/**
+ * Build the OpenAI Responses API request payload for model insights.
+ * Separated for reuse between streaming and non-streaming modes.
+ */
+const buildInsightsRequest = (
+  modelSlug: string,
+  summary: WormArenaModelInsightsSummary,
+  failureModes: WormArenaModelInsightsFailureMode[],
+  lossOpponents: WormArenaModelInsightsOpponent[],
+) => {
+  const prompt = buildInsightsSummaryPrompt(modelSlug, summary, failureModes, lossOpponents);
+
+  return {
+    model: INSIGHTS_SUMMARY_MODEL,
+    input: [
+      {
+        id: `msg_${Date.now()}_summary_${Math.random().toString(16).slice(2)}`,
+        role: 'user' as const,
+        type: 'message' as const,
+        content: [
+          {
+            type: 'input_text' as const,
+            text: prompt,
+          },
+        ],
+      },
+    ],
+    instructions: 'You are a concise analytics reporter for game model performance. Focus on WHY the model loses, not just stats.',
+    response_format: {
+      type: 'json_schema' as const,
+      json_schema: {
+        name: 'model_insights',
+        schema: {
+          type: 'object',
+          properties: {
+            summary: {
+              type: 'string',
+              description: 'One sentence overview of the model\'s main issue'
+            },
+            deathAnalysis: {
+              type: 'array',
+              items: {
+                type: 'object',
+                properties: {
+                  cause: { type: 'string' },
+                  frequency: { type: 'string' },
+                  pattern: { type: 'string' }
+                }
+              },
+              description: 'Top death causes with context'
+            },
+            toughOpponents: {
+              type: 'array',
+              items: {
+                type: 'object',
+                properties: {
+                  opponent: { type: 'string' },
+                  record: { type: 'string' },
+                  issue: { type: 'string' }
+                }
+              },
+              description: 'Hardest opponents to beat'
+            },
+            recommendations: {
+              type: 'array',
+              items: { type: 'string' },
+              description: 'Specific actionable improvements'
+            }
+          },
+          required: ['summary', 'deathAnalysis', 'toughOpponents', 'recommendations'],
+          additionalProperties: false
+        }
+      }
+    },
+    reasoning: {
+      effort: 'high' as const,
+      summary: 'detailed' as const,
+    },
+    text: {
+      verbosity: 'high' as const,
+    },
+    max_output_tokens: 120000,
+  };
 };
 
 export interface StreamingHandlers {
@@ -587,6 +673,148 @@ class SnakeBenchService {
       markdownReport,
       tweetText,
     };
+  }
+
+  /**
+   * Stream model insights report generation with live reasoning updates via SSE.
+   */
+  async streamModelInsightsReport(
+    modelSlug: string,
+    sessionId: string,
+    abortSignal: AbortSignal
+  ): Promise<void> {
+    const normalizedSlug = normalizeModelSlug(modelSlug);
+    if (!normalizedSlug) {
+      throw new Error('Invalid model slug');
+    }
+
+    // Send status: fetching data
+    sseStreamManager.sendEvent(sessionId, 'stream.status', {
+      state: 'in_progress',
+      phase: 'fetching_data',
+      message: 'Loading model statistics...'
+    });
+
+    const data = await repositoryService.analytics.getModelInsightsData(normalizedSlug);
+    if (!data) {
+      throw new Error('No data available for this model');
+    }
+
+    // Send status: generating insights
+    sseStreamManager.sendEvent(sessionId, 'stream.status', {
+      state: 'in_progress',
+      phase: 'generating_insights',
+      message: 'Analyzing model performance...'
+    });
+
+    const requestBody = buildInsightsRequest(
+      normalizedSlug,
+      data.summary,
+      data.failureModes,
+      data.lossOpponents
+    );
+
+    // Enable streaming
+    const streamingRequest = {
+      ...requestBody,
+      stream: true,
+    };
+
+    try {
+      const stream = await openAIClient.responses.stream(streamingRequest as any);
+
+      // Track accumulated JSON for final parse
+      let accumulatedJson = '';
+
+      // Stream events to client
+      for await (const event of stream) {
+        if (abortSignal.aborted) {
+          stream.controller.abort();
+          throw new Error('Stream aborted by client');
+        }
+
+        switch (event.type) {
+          case 'response.reasoning_summary_text.delta':
+            // Send reasoning deltas
+            sseStreamManager.sendEvent(sessionId, 'stream.chunk', {
+              type: 'reasoning',
+              delta: (event as any).delta,
+              timestamp: Date.now(),
+            });
+            break;
+
+          case 'response.content_part.added':
+          case 'response.content_part.delta':
+            // Send text/JSON deltas
+            const textDelta = (event as any).part?.text || (event as any).delta;
+            if (textDelta) {
+              accumulatedJson += textDelta;
+              sseStreamManager.sendEvent(sessionId, 'stream.chunk', {
+                type: 'json',
+                delta: textDelta,
+                timestamp: Date.now(),
+              });
+            }
+            break;
+
+          case 'response.in_progress':
+            sseStreamManager.sendEvent(sessionId, 'stream.status', {
+              state: 'in_progress',
+            });
+            break;
+
+          case 'response.done':
+            // Stream completed successfully
+            const finalResponse = await stream.finalResponse();
+            const llmSummary = finalResponse.output_text || accumulatedJson;
+
+            // Build complete report
+            const generatedAt = new Date().toISOString();
+            const markdownReport = buildInsightsMarkdown(
+              normalizedSlug,
+              generatedAt,
+              data.summary,
+              data.failureModes,
+              data.lossOpponents,
+              llmSummary,
+            );
+            const tweetText = buildInsightsTweet(normalizedSlug, data.summary, data.failureModes);
+
+            const report: WormArenaModelInsightsReport = {
+              modelSlug: normalizedSlug,
+              generatedAt,
+              summary: data.summary,
+              failureModes: data.failureModes,
+              lossOpponents: data.lossOpponents,
+              llmSummary,
+              llmModel: INSIGHTS_SUMMARY_MODEL,
+              markdownReport,
+              tweetText,
+            };
+
+            // Send completion with full report
+            sseStreamManager.sendEvent(sessionId, 'stream.complete', {
+              status: 'success',
+              report,
+              timestamp: Date.now(),
+            });
+
+            sseStreamManager.close(sessionId, { status: 'completed' });
+            break;
+        }
+      }
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      logger.error(`[ModelInsightsStream] OpenAI stream failed: ${message}`, 'snakebench-service');
+
+      sseStreamManager.sendEvent(sessionId, 'stream.error', {
+        code: 'OPENAI_STREAM_ERROR',
+        message,
+      });
+
+      sseStreamManager.close(sessionId, { status: 'failed', error: message });
+      throw error;
+    }
   }
 
   /**
