@@ -154,8 +154,10 @@ export default function WormArenaMatches() {
   const effectiveLimit = appliedFilters?.limit ?? draftFilters.limit;
 
   const availableModels = React.useMemo(() => {
-    const models = leaderboard.map((entry) => entry.modelSlug).filter(Boolean);
-    return Array.from(new Set(models));
+    const models = leaderboard
+      .map((entry) => entry.modelSlug)
+      .filter((slug): slug is string => Boolean(slug && slug !== 'undefined'));
+    return Array.from(new Set(models)).sort();
   }, [leaderboard]);
 
   const updateDraft = React.useCallback((patch: Partial<MatchFilters>) => {

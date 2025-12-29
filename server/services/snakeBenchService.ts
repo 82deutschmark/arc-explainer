@@ -179,12 +179,12 @@ const requestInsightsSummary = async (
     },
     reasoning: {
       effort: 'high',
-      summary: 'auto',
+      summary: 'detailed',
     },
     text: {
       verbosity: 'high',
     },
-    max_output_tokens: 1200,
+    max_output_tokens: 120000,
   };
 
   try {
