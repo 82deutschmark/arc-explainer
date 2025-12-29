@@ -1,9 +1,15 @@
 /**
- * Author: Cascade
+ * Author: Claude Code using Haiku
  * Date: 2025-12-29
  * PURPOSE: Thin orchestrator facade for SnakeBench service with model insights report formatting
  *          and OpenAI summary generation for the Worm Arena model insights report.
- *          Fixed TypeScript errors in streamModelInsightsReport regarding Responses API event types.
+ *
+ *          FIXES:
+ *          1. Fixed Responses API request format: moved response_format to text.format per API changes
+ *          2. Refactored streaming to use handleStreamEvent helper for reliable event handling
+ *          3. Improved summary extraction to handle both JSON and text responses
+ *          4. Ensured report generation succeeds even if LLM summary fails
+ *
  * SRP/DRY check: Pass - delegation, report formatting, and summary wiring only.
  */
 
@@ -32,6 +38,8 @@ import { repositoryService } from '../repositories/RepositoryService.ts';
 import { logger } from '../utils/logger.ts';
 import { openAIClient } from './openai/client.js';
 import { sseStreamManager } from './streaming/SSEStreamManager';
+import { handleStreamEvent, createStreamAggregates } from './openai/streaming.js';
+import type { ResponseStreamEvent } from 'openai/resources/responses/responses';
 
 // Import from new modules
 import { SnakeBenchMatchRunner } from './snakeBench/SnakeBenchMatchRunner.ts';
@@ -133,72 +141,96 @@ const requestInsightsSummary = async (
       },
     ],
     instructions: 'You are a concise analytics reporter for game model performance. Focus on WHY the model loses, not just stats.',
-    response_format: {
-      type: 'json_schema',
-      json_schema: {
-        name: 'model_insights',
-        schema: {
-          type: 'object',
-          properties: {
-            summary: {
-              type: 'string',
-              description: 'One sentence overview of the model\'s main issue'
-            },
-            deathAnalysis: {
-              type: 'array',
-              items: {
-                type: 'object',
-                properties: {
-                  cause: { type: 'string' },
-                  frequency: { type: 'string' },
-                  pattern: { type: 'string' }
-                }
-              },
-              description: 'Top death causes with context'
-            },
-            toughOpponents: {
-              type: 'array',
-              items: {
-                type: 'object',
-                properties: {
-                  opponent: { type: 'string' },
-                  record: { type: 'string' },
-                  issue: { type: 'string' }
-                }
-              },
-              description: 'Hardest opponents to beat'
-            },
-            recommendations: {
-              type: 'array',
-              items: { type: 'string' },
-              description: 'Specific actionable improvements'
-            }
-          },
-          required: ['summary', 'deathAnalysis', 'toughOpponents', 'recommendations'],
-          additionalProperties: false
-        }
-      }
-    },
     reasoning: {
       effort: 'high',
       summary: 'detailed',
     },
     text: {
       verbosity: 'high',
+      format: {
+        type: 'json_schema',
+        json_schema: {
+          name: 'model_insights',
+          schema: {
+            type: 'object',
+            properties: {
+              summary: {
+                type: 'string',
+                description: 'One sentence overview of the model\'s main issue'
+              },
+              deathAnalysis: {
+                type: 'array',
+                items: {
+                  type: 'object',
+                  properties: {
+                    cause: { type: 'string' },
+                    frequency: { type: 'string' },
+                    pattern: { type: 'string' }
+                  }
+                },
+                description: 'Top death causes with context'
+              },
+              toughOpponents: {
+                type: 'array',
+                items: {
+                  type: 'object',
+                  properties: {
+                    opponent: { type: 'string' },
+                    record: { type: 'string' },
+                    issue: { type: 'string' }
+                  }
+                },
+                description: 'Hardest opponents to beat'
+              },
+              recommendations: {
+                type: 'array',
+                items: { type: 'string' },
+                description: 'Specific actionable improvements'
+              }
+            },
+            required: ['summary', 'deathAnalysis', 'toughOpponents', 'recommendations'],
+            additionalProperties: false
+          }
+        }
+      }
     },
     max_output_tokens: 120000,
   };
 
   try {
-    const response = await openAIClient.responses.create(requestBody as any);
-    const text = typeof response.output_text === 'string' ? response.output_text.trim() : '';
-    if (text) {
-      return text;
+    const response = await openAIClient.responses.create(requestBody as any) as any;
+
+    // Try to extract summary from structured JSON output first
+    // Responses API with json_schema puts output in output_parsed or as text
+    if (response.output_parsed) {
+      const parsed = response.output_parsed;
+      if (typeof parsed.summary === 'string' && parsed.summary.trim()) {
+        return parsed.summary.trim();
+      }
     }
+
+    // Try parsing output_text as JSON if it contains JSON structure
+    if (response.output_text && typeof response.output_text === 'string') {
+      try {
+        const parsed = JSON.parse(response.output_text);
+        if (typeof parsed.summary === 'string' && parsed.summary.trim()) {
+          return parsed.summary.trim();
+        }
+      } catch {
+        // Not JSON, use as-is
+        const text = response.output_text.trim();
+        if (text) {
+          return text;
+        }
+      }
+    }
+
+    // If no summary was generated, that's okay - report can still be built
     return null;
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
     logger.warn(`SnakeBenchService.requestInsightsSummary failed: ${message}`, 'snakebench-service');
+    // Return null on failure, but don't throw - report generation should continue
     return null;
   }
 };
@@ -317,58 +349,58 @@ const buildInsightsRequest = (
       },
     ],
     instructions: 'You are a concise analytics reporter for game model performance. Focus on WHY the model loses, not just stats.',
-    response_format: {
-      type: 'json_schema' as const,
-      json_schema: {
-        name: 'model_insights',
-        schema: {
-          type: 'object',
-          properties: {
-            summary: {
-              type: 'string',
-              description: 'One sentence overview of the model\'s main issue'
-            },
-            deathAnalysis: {
-              type: 'array',
-              items: {
-                type: 'object',
-                properties: {
-                  cause: { type: 'string' },
-                  frequency: { type: 'string' },
-                  pattern: { type: 'string' }
-                }
-              },
-              description: 'Top death causes with context'
-            },
-            toughOpponents: {
-              type: 'array',
-              items: {
-                type: 'object',
-                properties: {
-                  opponent: { type: 'string' },
-                  record: { type: 'string' },
-                  issue: { type: 'string' }
-                }
-              },
-              description: 'Hardest opponents to beat'
-            },
-            recommendations: {
-              type: 'array',
-              items: { type: 'string' },
-              description: 'Specific actionable improvements'
-            }
-          },
-          required: ['summary', 'deathAnalysis', 'toughOpponents', 'recommendations'],
-          additionalProperties: false
-        }
-      }
-    },
     reasoning: {
       effort: 'high' as const,
       summary: 'detailed' as const,
     },
     text: {
       verbosity: 'high' as const,
+      format: {
+        type: 'json_schema' as const,
+        json_schema: {
+          name: 'model_insights',
+          schema: {
+            type: 'object',
+            properties: {
+              summary: {
+                type: 'string',
+                description: 'One sentence overview of the model\'s main issue'
+              },
+              deathAnalysis: {
+                type: 'array',
+                items: {
+                  type: 'object',
+                  properties: {
+                    cause: { type: 'string' },
+                    frequency: { type: 'string' },
+                    pattern: { type: 'string' }
+                  }
+                },
+                description: 'Top death causes with context'
+              },
+              toughOpponents: {
+                type: 'array',
+                items: {
+                  type: 'object',
+                  properties: {
+                    opponent: { type: 'string' },
+                    record: { type: 'string' },
+                    issue: { type: 'string' }
+                  }
+                },
+                description: 'Hardest opponents to beat'
+              },
+              recommendations: {
+                type: 'array',
+                items: { type: 'string' },
+                description: 'Specific actionable improvements'
+              }
+            },
+            required: ['summary', 'deathAnalysis', 'toughOpponents', 'recommendations'],
+            additionalProperties: false
+          }
+        }
+      }
     },
     max_output_tokens: 120000,
   };
@@ -723,87 +755,83 @@ class SnakeBenchService {
 
     try {
       const stream = await openAIClient.responses.stream(streamingRequest as any);
+      const aggregates = createStreamAggregates(true); // Expecting JSON schema output
 
-      // Track accumulated JSON for final parse
-      let accumulatedJson = '';
-
-      // Stream events to client
-      for await (const event of stream) {
+      // Stream events to client using the proven event handler
+      for await (const event of stream as AsyncIterable<ResponseStreamEvent>) {
         if (abortSignal.aborted) {
           stream.controller.abort();
           throw new Error('Stream aborted by client');
         }
 
-        switch (event.type) {
-          case 'response.reasoning_summary_text.delta':
-            // Send reasoning deltas
+        handleStreamEvent(event, aggregates, {
+          emitChunk: (chunk) => {
+            // Forward chunks to SSE client
             sseStreamManager.sendEvent(sessionId, 'stream.chunk', {
-              type: 'reasoning',
-              delta: (event as any).delta,
+              type: chunk.type,
+              delta: chunk.delta,
+              content: chunk.content,
               timestamp: Date.now(),
             });
-            break;
-
-          case 'response.content_part.added':
-          case 'response.output_text.delta':
-            // Send text/JSON deltas
-            const textDelta = (event as any).part?.text || (event as any).delta;
-            if (textDelta) {
-              accumulatedJson += textDelta;
-              sseStreamManager.sendEvent(sessionId, 'stream.chunk', {
-                type: 'json',
-                delta: textDelta,
-                timestamp: Date.now(),
-              });
-            }
-            break;
-
-          case 'response.in_progress':
-            sseStreamManager.sendEvent(sessionId, 'stream.status', {
-              state: 'in_progress',
-            });
-            break;
-
-          case 'response.completed':
-            // Stream completed successfully
-            const finalResponse = await stream.finalResponse();
-            const llmSummary = finalResponse.output_text || accumulatedJson;
-
-            // Build complete report
-            const generatedAt = new Date().toISOString();
-            const markdownReport = buildInsightsMarkdown(
-              normalizedSlug,
-              generatedAt,
-              data.summary,
-              data.failureModes,
-              data.lossOpponents,
-              llmSummary,
-            );
-            const tweetText = buildInsightsTweet(normalizedSlug, data.summary, data.failureModes);
-
-            const report: WormArenaModelInsightsReport = {
-              modelSlug: normalizedSlug,
-              generatedAt,
-              summary: data.summary,
-              failureModes: data.failureModes,
-              lossOpponents: data.lossOpponents,
-              llmSummary,
-              llmModel: INSIGHTS_SUMMARY_MODEL,
-              markdownReport,
-              tweetText,
-            };
-
-            // Send completion with full report
-            sseStreamManager.sendEvent(sessionId, 'stream.complete', {
-              status: 'success',
-              report,
-              timestamp: Date.now(),
-            });
-
-            sseStreamManager.close(sessionId, { status: 'completed' });
-            break;
-        }
+          },
+          emitEvent: (_eventName, payload) => {
+            // Forward status events to SSE client
+            sseStreamManager.sendEvent(sessionId, 'stream.status', payload);
+          },
+        });
       }
+
+      // Get final response and build report
+      const finalResponse = await stream.finalResponse();
+
+      // Extract LLM summary from aggregated parsed JSON or text
+      let llmSummary = '';
+      if (aggregates.parsed) {
+        try {
+          const parsed = JSON.parse(aggregates.parsed);
+          // Use the summary field from structured output if available
+          llmSummary = typeof parsed.summary === 'string' ? parsed.summary : aggregates.parsed;
+        } catch {
+          // Fallback to accumulated text if JSON parsing fails
+          llmSummary = aggregates.text || aggregates.parsed;
+        }
+      } else {
+        // Final fallback to response text
+        llmSummary = finalResponse.output_text || '';
+      }
+
+      // Build complete report
+      const generatedAt = new Date().toISOString();
+      const markdownReport = buildInsightsMarkdown(
+        normalizedSlug,
+        generatedAt,
+        data.summary,
+        data.failureModes,
+        data.lossOpponents,
+        llmSummary,
+      );
+      const tweetText = buildInsightsTweet(normalizedSlug, data.summary, data.failureModes);
+
+      const report: WormArenaModelInsightsReport = {
+        modelSlug: normalizedSlug,
+        generatedAt,
+        summary: data.summary,
+        failureModes: data.failureModes,
+        lossOpponents: data.lossOpponents,
+        llmSummary,
+        llmModel: INSIGHTS_SUMMARY_MODEL,
+        markdownReport,
+        tweetText,
+      };
+
+      // Send completion with full report
+      sseStreamManager.sendEvent(sessionId, 'stream.complete', {
+        status: 'success',
+        report,
+        timestamp: Date.now(),
+      });
+
+      sseStreamManager.close(sessionId, { status: 'completed' });
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
       logger.error(`[ModelInsightsStream] OpenAI stream failed: ${message}`, 'snakebench-service');
