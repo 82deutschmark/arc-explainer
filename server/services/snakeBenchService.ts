@@ -1,14 +1,15 @@
 /**
- * Author: Claude Code using Haiku
+ * Author: Cascade (ChatGPT)
  * Date: 2025-12-29
- * PURPOSE: Thin orchestrator facade for SnakeBench service with model insights report formatting
- *          and OpenAI summary generation for the Worm Arena model insights report.
+ * PURPOSE: Thin orchestrator facade for SnakeBench service with model insights report formatting,
+ *          OpenAI summary generation for the Worm Arena model insights report, and streaming helpers.
  *
  *          FIXES:
  *          1. Fixed Responses API request format: moved response_format to text.format per API changes
  *          2. Refactored streaming to use handleStreamEvent helper for reliable event handling
  *          3. Improved summary extraction to handle both JSON and text responses
  *          4. Ensured report generation succeeds even if LLM summary fails
+ *          5. Reworded insights prompts to use eSports commentator framing for LLM Snake play analysis
  *
  * SRP/DRY check: Pass - delegation, report formatting, and summary wiring only.
  */
@@ -139,7 +140,8 @@ const requestInsightsSummary = async (
         ],
       },
     ],
-    instructions: 'You are a concise analytics reporter for game model performance. Focus on WHY the model loses, not just stats.',
+    instructions:
+      'You are an eSports commentator covering how this LLM plays Snake. Give a brisk, hype-y breakdown of how it wins and loses, spotlight the key losses and what went wrong in those matches, and skip any ML training talk. Focus on match moments, risky habits, and the opponents that punish it.',
     reasoning: {
       effort: 'high',
       summary: 'detailed',
@@ -155,7 +157,7 @@ const requestInsightsSummary = async (
           properties: {
             summary: {
               type: 'string',
-              description: 'One sentence overview of the model\'s main issue'
+              description: 'Brief Twitch streamer type takeaway about how this LLM tends to win or get knocked out'
             },
             deathAnalysis: {
               type: 'array',
@@ -167,7 +169,7 @@ const requestInsightsSummary = async (
                   pattern: { type: 'string' }
                 }
               },
-              description: 'Top death causes with context'
+              description: 'How it got eliminated, how often, and the situational pattern (early blunders vs late greed)'
             },
             toughOpponents: {
               type: 'array',
@@ -179,12 +181,12 @@ const requestInsightsSummary = async (
                   issue: { type: 'string' }
                 }
               },
-              description: 'Hardest opponents to beat'
+              description: 'Opponents who consistently hand it losses and the matchup quirks they exploit'
             },
             recommendations: {
               type: 'array',
               items: { type: 'string' },
-              description: 'Specific actionable improvements'
+              description: 'Where this LLM shines, where it struggles (e.g., early chaos vs long setups), and what to lean into or avoid'
             }
           },
           required: ['summary', 'deathAnalysis', 'toughOpponents', 'recommendations'],
@@ -346,7 +348,8 @@ const buildInsightsRequest = (
         ],
       },
     ],
-    instructions: 'You are a concise analytics reporter for game model performance. Focus on WHY the model loses, not just stats.',
+    instructions:
+      'You are an eSports commentator covering how this LLM plays Snake. Give a brisk, hype-y breakdown of how it wins and loses, spotlight the key losses and what went wrong in those matches, and skip any ML training talk. Focus on match moments, risky habits, and the opponents that punish it.',
     reasoning: {
       effort: 'high' as const,
       summary: 'detailed' as const,
@@ -362,7 +365,7 @@ const buildInsightsRequest = (
           properties: {
             summary: {
               type: 'string',
-              description: 'One sentence overview of the model\'s main issue'
+              description: 'One-sentence on-cast takeaway about how this LLM tends to win or get knocked out'
             },
             deathAnalysis: {
               type: 'array',
@@ -374,7 +377,7 @@ const buildInsightsRequest = (
                   pattern: { type: 'string' }
                 }
               },
-              description: 'Top death causes with context'
+              description: 'How it got eliminated, how often, and the situational pattern (early blunders vs late greed)'
             },
             toughOpponents: {
               type: 'array',
@@ -386,12 +389,12 @@ const buildInsightsRequest = (
                   issue: { type: 'string' }
                 }
               },
-              description: 'Hardest opponents to beat'
+              description: 'Opponents who consistently hand it losses and the matchup quirks they exploit'
             },
             recommendations: {
               type: 'array',
               items: { type: 'string' },
-              description: 'Specific actionable improvements'
+              description: 'Where this LLM shines, where it struggles (e.g., early chaos vs long setups), and what to lean into or avoid'
             }
           },
           required: ['summary', 'deathAnalysis', 'toughOpponents', 'recommendations'],
@@ -774,9 +777,20 @@ class SnakeBenchService {
             timestamp: Date.now(),
           });
         },
-        emitEvent: (_eventName, payload) => {
-          // Forward status events through callback
-          handlers.onStatus(payload as unknown as WormArenaStreamStatus);
+        emitEvent: (eventName, payload) => {
+          // Route events based on type
+          if (eventName === 'stream.status') {
+            handlers.onStatus(payload as unknown as WormArenaStreamStatus);
+          } else if (eventName === 'stream.chunk') {
+            // Treat stream.chunk events as chunk data
+            handlers.onChunk({
+              type: (payload as any)?.type || 'unknown',
+              delta: (payload as any)?.delta,
+              content: (payload as any)?.content,
+              timestamp: Date.now(),
+            });
+          }
+          // Other event types are silently ignored for now
         },
       });
     }
