@@ -931,6 +931,7 @@ export async function runLengthDistribution(req: Request, res: Response) {
 /**
  * GET /api/stream/snakebench/model-insights/:modelSlug
  * Stream model insights report generation with live reasoning and output updates.
+ * Follows the WormArena streaming pattern: register → init → service with callbacks → complete → close
  */
 async function streamModelInsights(req: Request, res: Response) {
   try {
@@ -953,11 +954,27 @@ async function streamModelInsights(req: Request, res: Response) {
     res.on('close', () => abortController.abort());
 
     try {
-      await snakeBenchService.streamModelInsightsReport(
+      // Call service with callbacks - service emits events through handlers
+      const report = await snakeBenchService.streamModelInsightsReport(
         modelSlug,
-        sessionId,
+        {
+          onStatus: (status) => {
+            sseStreamManager.sendEvent(sessionId, 'stream.status', status);
+          },
+          onChunk: (chunk) => {
+            sseStreamManager.sendEvent(sessionId, 'stream.chunk', chunk);
+          },
+        },
         abortController.signal
       );
+
+      // Service completed successfully - send completion and close
+      sseStreamManager.sendEvent(sessionId, 'stream.complete', {
+        status: 'success',
+        report,
+        timestamp: Date.now(),
+      });
+      sseStreamManager.close(sessionId);
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
       logger.error(`[ModelInsightsStream] Failed: ${message}`, 'snakebench-controller');
