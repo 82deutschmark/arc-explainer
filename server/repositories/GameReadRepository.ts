@@ -315,6 +315,7 @@ export class GameReadRepository extends BaseRepository {
     try {
       const sql = `
         SELECT ${SQL_NORMALIZE_SLUG('m.model_slug')} AS model_slug,
+               m.name AS model_name,
                COUNT(DISTINCT gp.game_id) AS games_played,
                COUNT(CASE WHEN gp.result = 'won' THEN 1 END) AS wins,
                COUNT(CASE WHEN gp.result = 'lost' THEN 1 END) AS losses,
@@ -322,20 +323,41 @@ export class GameReadRepository extends BaseRepository {
         FROM public.models m
         JOIN public.game_participants gp ON m.id = gp.model_id
         JOIN public.games g ON gp.game_id = g.id
-        WHERE g.status = 'completed' AND COALESCE(g.rounds, 0) > 0
-        GROUP BY ${SQL_NORMALIZE_SLUG('m.model_slug')}
+        WHERE COALESCE(g.rounds, 0) > 0
+        GROUP BY ${SQL_NORMALIZE_SLUG('m.model_slug')}, m.name
         HAVING COUNT(DISTINCT gp.game_id) > 0
         ORDER BY games_played DESC, model_slug ASC;
       `;
       const { rows } = await this.query(sql, [], client);
-      return rows.map(row => ({
-        ...row,
-        gamesPlayed: parseInt(String(row.games_played), 10),
-        wins: parseInt(String(row.wins), 10),
-        losses: parseInt(String(row.losses), 10),
-        ties: parseInt(String(row.ties), 10),
-        winRate: row.games_played > 0 ? row.wins / row.games_played : 0,
-      }));
+
+      // JS-side deduplication by normalized slug
+      const slugMap = new Map<string, any>();
+
+      for (const row of rows) {
+        const slug = row.model_slug;
+        if (!slugMap.has(slug)) {
+          slugMap.set(slug, {
+            modelSlug: slug,
+            modelName: row.model_name || slug,
+            gamesPlayed: parseInt(String(row.games_played), 10),
+            wins: parseInt(String(row.wins), 10),
+            losses: parseInt(String(row.losses), 10),
+            ties: parseInt(String(row.ties), 10),
+            winRate: row.games_played > 0 ? row.wins / row.games_played : 0,
+          });
+        } else {
+          // Aggregate stats for duplicate slugs (e.g. model was renamed)
+          const existing = slugMap.get(slug);
+          existing.gamesPlayed += parseInt(String(row.games_played), 10);
+          existing.wins += parseInt(String(row.wins), 10);
+          existing.losses += parseInt(String(row.losses), 10);
+          existing.ties += parseInt(String(row.ties), 10);
+          existing.winRate = existing.gamesPlayed > 0 ? existing.wins / existing.games_played : 0;
+          // Keep the first (likely most recent/accurate) name
+        }
+      }
+
+      return Array.from(slugMap.values());
     } catch (error) {
       logRepoError('getModelsWithGames', error);
       return [];
@@ -397,7 +419,7 @@ export class GameReadRepository extends BaseRepository {
         LEFT JOIN public.game_participants opp_gp ON opp_gp.game_id = gp.game_id AND opp_gp.player_slot <> gp.player_slot
         LEFT JOIN public.models opp ON opp_gp.model_id = opp.id
         WHERE ${SQL_NORMALIZE_SLUG('m.model_slug')} = ${SQL_NORMALIZE_SLUG('$1')}
-          AND g.status = 'completed' AND COALESCE(g.rounds, 0) > 0
+          AND COALESCE(g.rounds, 0) > 0
         ORDER BY COALESCE(g.start_time, g.created_at, NOW()) DESC;
       `;
       const { rows } = await this.query(sql, [modelSlug], client);

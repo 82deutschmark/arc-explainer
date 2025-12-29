@@ -1,5 +1,77 @@
 # New entries at the top, use proper SemVer!
 
+### Version 6.16.5  Dec 29, 2025
+
+- **Fix: Worm Arena Model Insights report generation and streaming** (Author: Claude Code using Haiku)
+  - Fixed Responses API request format in `text.format` structure
+  - Refactored streaming to use `handleStreamEvent` helper for consistent event processing
+  - Improved response parsing to handle multiple output formats
+  - Report generation now resilient to LLM summary API failures
+
+### Version 6.16.4  Dec 28, 2025
+
+- **Fix: Robust Model Aggregation & Visibility Restoration** (Author: Cascade)
+  - **Purpose**: Fix empty model list on Worm Arena Models page caused by overly restrictive SQL filtering and grouping issues.
+  - **Issues Fixed**:
+    - Restored visibility of models by removing the restrictive `g.status = 'completed'` filter from `GameReadRepository.ts`.
+    - Implemented a more robust "Hybrid Aggregation" approach: SQL handles initial grouping by name/slug to ensure results return, while JavaScript handles final deduplication and stat aggregation by normalized slug.
+    - This hybrid approach solves the `model-item-undefined` React warning without the risk of empty results from complex SQL `MAX()` aggregations on join-heavy tables.
+    - Preserved URL persistence and auto-selection logic for a seamless "Combat Dossier" experience.
+  - **Files Modified**:
+    - `server/repositories/GameReadRepository.ts` (Implemented JS-side aggregation and removed status filter)
+    - `client/src/pages/WormArenaModels.tsx` (Final logic verification and cleanup)
+  - **Impact**: All models with played games are now correctly visible, and the page is resilient to database inconsistencies like model renames.
+
+### Version 6.16.3  Dec 28, 2025
+
+- **Fix: Worm Arena Models page display and navigation completeness** (Author: Claude Haiku 4.5)
+  - **Purpose**: Fix broken model name display in Worm Arena Models page and ensure all Worm Arena subitems are accessible from main navigation.
+  - **Issues Fixed**:
+    - Fixed SelectItem structure in WormArenaModels.tsx that caused malformed dropdown display ("Choose a model_openai/gpt-5-nano" concatenation bug).
+    - Added missing `modelName` field to `WormArenaModelWithGames` type for proper display names.
+    - Updated backend SQL query to fetch `models.name` field for model name display.
+    - Corrected page label from "Select Combatant" to "Select Model".
+    - Updated navigation to include all 8 Worm Arena pages under SnakeBench dropdown (was missing Models, Skill Analysis, Distributions, Rules).
+    - Updated Stats page navigation title to "Worm Arena (Stats & Placement)" for accuracy.
+  - **Files Modified**:
+    - `client/src/pages/WormArenaModels.tsx` (fixed SelectItem structure, corrected label, added modelName display)
+    - `client/src/components/layout/AppNavigation.tsx` (added 4 missing Worm Arena pages to dropdown menu)
+    - `server/repositories/GameReadRepository.ts` (added `m.name` to SQL query and result mapping)
+    - `shared/types.ts` (added `modelName: string` to `WormArenaModelWithGames` interface)
+  - **Impact**: Worm Arena Models page now renders correctly with friendly model names, and full navigation suite is accessible from main menu.
+
+### Version 6.16.1  Dec 27, 2025
+
+- **Insights: Comprehensive local game analysis and record-breaking matches** (Author: Gemini 3 Flash High)
+  - **Purpose**: Deep-dive into local SnakeBench history to extract performance records and fix directory blindness in the UI.
+  - **Local Records Found**:
+    - Discovered **30-apple record** (104 rounds) by `openai/gpt-5.1-codex-mini` vs `nvidia/nemotron-3-nano-30b-a3b:free`.
+    - Promoted top local matches to the "Greatest Hits" Hall of Fame.
+  - **Tooling Enhancements**:
+    - Upgraded `analyze_local_games.py` with CSV/Markdown reporting, model/winner extraction, and date-range filtering.
+    - Generated `docs/local-game-insights-dec-2025.md` with architectural recommendations for the frontend stats engine.
+  - **Backend Fixes**:
+    - Fixed `SnakeBenchReplayResolver` to scan both `completed_games` and `completed_games_local`, resolving missing replay links in the UI.
+    - Fixed broken relative import paths across 7 SnakeBench services (`shared/types.js` level traversal).
+    - Aligned `SnakeBenchLlmPlayerPromptTemplate.ts` with new Python source (added web search prohibition).
+  - **Author Updates**: Refreshed headers in 8 files to reflect **Gemini 3 Flash High** authorship.
+  - **Files Created**:
+    - `docs/local-game-insights-dec-2025.md`
+    - `external/SnakeBench/local_game_analysis_dec_2025.csv`
+  - **Files Modified**:
+    - `server/services/snakeBench/SnakeBenchReplayResolver.ts`
+    - `server/services/snakeBench/SnakeBenchMatchRunner.ts`
+    - `server/services/snakeBench/SnakeBenchStreamingRunner.ts`
+    - `server/services/snakeBench/SnakeBenchLlmPlayerPromptTemplate.ts`
+    - `server/services/snakeBench/helpers/replayFilters.ts`
+    - `server/services/snakeBench/helpers/validators.ts`
+    - `server/services/snakeBench/persistence/persistenceCoordinator.ts`
+    - `server/services/snakeBenchHallOfFame.ts`
+    - `client/src/components/WormArenaGreatestHits.tsx`
+    - `client/src/pages/WormArenaDistributions.tsx`
+    - `client/src/hooks/useWormArenaGreatestHits.ts`
+    - `external/SnakeBench/backend/cli/analyze_local_games.py`
+
 ### Version 6.16.0  Dec 27, 2025
 
 - **Architecture: Modularize Arc3Games into per-game files for 100+ game scalability** (Author: Claude Haiku 4.5)

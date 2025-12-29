@@ -11,8 +11,8 @@
 
 import React from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { useWormArenaRecentMatches } from '@/hooks/useWormArenaRecentMatches';
+import WormArenaMatchCard from '@/components/wormArena/WormArenaMatchCard';
 
 function normalizeGameId(raw: string): string {
   const trimmed = (raw ?? '').trim();
@@ -80,79 +80,25 @@ export default function WormArenaRecentMatches({
         )}
 
         {!isLoading && !error && matches.length > 0 && (
-          <div className="max-h-[560px] overflow-y-auto pr-3">
+          <div className="max-h-[600px] overflow-y-auto pr-2 custom-scrollbar">
             <div className="space-y-3">
-              {matches.map((match) => {
-                const resultLabel = match.result.charAt(0).toUpperCase() + match.result.slice(1);
-                const scoreLabel = `${match.myScore} - ${match.opponentScore}`;
-                const roundsLabel = `${match.roundsPlayed} rounds`;
-                const hasCost = match.totalCost > 0;
-                const costLabel = hasCost ? `$${match.totalCost.toFixed(2)}` : null;
-                const replayHref = `/worm-arena?matchId=${encodeURIComponent(normalizeGameId(match.gameId))}`;
-
-                return (
-                  <div
-                    key={match.gameId}
-                    className="grid grid-cols-1 md:grid-cols-[1fr_auto] gap-3 rounded-md border px-4 py-3 bg-white/80 worm-border"
-                  >
-                    <div className="space-y-2 min-w-0">
-                      {/* Opponent name */}
-                      <div className="font-mono text-sm leading-snug">
-                        vs <span className="min-w-0 break-words">{match.opponent}</span>
-                      </div>
-
-                      {/* Result and Score */}
-                      <div className="flex flex-wrap gap-2 text-sm">
-                        <Badge
-                          variant="outline"
-                          className={`font-semibold text-sm px-2 py-1 ${getResultBgClass(match.result)}`}
-                        >
-                          {resultLabel}
-                        </Badge>
-                        <Badge variant="outline" className="font-semibold text-sm px-2 py-1">
-                          {scoreLabel}
-                        </Badge>
-                      </div>
-
-                      {/* Metadata badges */}
-                      <div className="flex flex-wrap gap-2 text-sm">
-                        <Badge variant="outline" className="font-semibold text-sm px-2 py-1">
-                          {roundsLabel}
-                        </Badge>
-                        {costLabel && (
-                          <Badge
-                            variant="outline"
-                            className="font-semibold text-sm px-2 py-1 worm-border"
-                          >
-                            Cost: {costLabel}
-                          </Badge>
-                        )}
-                        {match.deathReason && match.result === 'lost' && (
-                          <Badge variant="outline" className="font-semibold text-sm px-2 py-1">
-                            {match.deathReason.replace(/_/g, ' ')}
-                          </Badge>
-                        )}
-                      </div>
-                    </div>
-
-                    <div className="flex md:flex-col items-end justify-end gap-2 md:gap-1">
-                      {match.startedAt && (
-                        <span className="text-sm worm-muted">
-                          {formatDate(match.startedAt)}
-                        </span>
-                      )}
-                      <a
-                        href={replayHref}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="underline font-semibold text-sm text-worm-ink hover:text-worm-green whitespace-nowrap"
-                      >
-                        View replay
-                      </a>
-                    </div>
-                  </div>
-                );
-              })}
+              {matches.map((match) => (
+                <WormArenaMatchCard
+                  key={match.gameId}
+                  gameId={match.gameId}
+                  startedAt={match.startedAt}
+                  modelA={modelSlug}
+                  modelB={match.opponent}
+                  result={match.result}
+                  myScore={match.myScore}
+                  opponentScore={match.opponentScore}
+                  roundsPlayed={match.roundsPlayed}
+                  totalCost={match.totalCost}
+                  maxFinalScore={Math.max(match.myScore, match.opponentScore)}
+                  scoreDelta={Math.abs(match.myScore - match.opponentScore)}
+                  deathReason={match.deathReason}
+                />
+              ))}
             </div>
           </div>
         )}
