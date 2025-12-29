@@ -102,9 +102,9 @@ const buildInsightsSummaryPrompt = (
   const earlyLossRate = formatPercent(summary.earlyLossRate);
 
   return [
-    'Write one short paragraph (max 80 words).',
+    'Write one short paragraph (max 180 words).',
     'No bullets, no headings, no disclaimers.',
-    'Focus on why the model loses and one practical next step.',
+    'Focus on why the model loses and when. Focus on max apples ever achieved. How many rounds can it go?',
     `Model: ${modelSlug}`,
     `Games: ${summary.gamesPlayed}, Wins: ${summary.wins}, Losses: ${summary.losses}, Win rate: ${formatPercent(summary.winRate)}`,
     `Average rounds: ${avgRounds}, Average score: ${avgScore}, Cost per loss: ${costPerLoss}`,
