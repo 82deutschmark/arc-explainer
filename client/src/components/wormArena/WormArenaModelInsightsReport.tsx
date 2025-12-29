@@ -9,7 +9,7 @@
 
 import React from 'react';
 
-import { useWormArenaModelInsights } from '@/hooks/useWormArenaModels';
+import { useWormArenaModelInsightsStream } from '@/hooks/useWormArenaModelInsightsStream';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -53,16 +53,26 @@ const formatDateTime = (value: string | null): string => {
 };
 
 export default function WormArenaModelInsightsReport({ modelSlug }: WormArenaModelInsightsReportProps) {
-  const { report, isLoading, error, fetchReport, clearReport } = useWormArenaModelInsights();
+  const {
+    status,
+    report,
+    error,
+    reasoningText,
+    parsedInsights,
+    isStreaming,
+    isComplete,
+    startStream,
+    closeStream,
+  } = useWormArenaModelInsightsStream();
   const [copyHint, setCopyHint] = React.useState<string | null>(null);
   const [downloadUrl, setDownloadUrl] = React.useState<string | null>(null);
 
   // Reset report state when the selected model changes.
   React.useEffect(() => {
-    clearReport();
+    closeStream();
     setCopyHint(null);
     setDownloadUrl(null);
-  }, [modelSlug, clearReport]);
+  }, [modelSlug, closeStream]);
 
   // Build a downloadable markdown URL for the save action.
   React.useEffect(() => {
@@ -90,8 +100,8 @@ export default function WormArenaModelInsightsReport({ modelSlug }: WormArenaMod
   // Trigger report generation on demand.
   const handleGenerateReport = React.useCallback(() => {
     setCopyHint(null);
-    void fetchReport(modelSlug);
-  }, [fetchReport, modelSlug]);
+    startStream(modelSlug);
+  }, [startStream, modelSlug]);
 
   // Copy report markdown to the clipboard with a fallback for older browsers.
   const handleCopyReport = React.useCallback(async () => {
@@ -136,7 +146,7 @@ export default function WormArenaModelInsightsReport({ modelSlug }: WormArenaMod
           <CardTitle className="text-xl font-bold" style={{ color: 'var(--worm-ink)' }}>
             Actionable Insights Report
           </CardTitle>
-          {report && !isLoading && (
+          {report && isComplete && (
             <div className="flex items-center gap-2 flex-wrap">
               <Button
                 variant="outline"
@@ -167,11 +177,11 @@ export default function WormArenaModelInsightsReport({ modelSlug }: WormArenaMod
         </p>
       </CardHeader>
       <CardContent className="pt-0 text-base" style={{ color: 'var(--worm-ink)' }}>
-        {error && !isLoading && (
-          <div className="py-3 text-base text-red-700">{error}</div>
+        {error && !isStreaming && (
+          <div className="py-3 text-base text-red-700">{error.message}</div>
         )}
 
-        {!report && !isLoading && (
+        {!report && !isStreaming && (
           <div className="flex items-center gap-3 flex-wrap">
             <Button onClick={handleGenerateReport} style={{ backgroundColor: 'var(--worm-green)', color: 'var(--worm-green-ink)' }} className="hover:opacity-90">
               Generate Report
@@ -182,13 +192,42 @@ export default function WormArenaModelInsightsReport({ modelSlug }: WormArenaMod
           </div>
         )}
 
-        {isLoading && (
-          <div className="py-6 text-base" style={{ color: 'var(--worm-muted)' }}>
-            Generating report. Controls are hidden until the report is ready.
+        {isStreaming && (
+          <div className="space-y-4">
+            {/* Status message */}
+            {status.message && (
+              <div className="text-sm text-[var(--worm-muted)] italic">
+                {status.message}
+              </div>
+            )}
+
+            {/* Live reasoning (if present) */}
+            {reasoningText && (
+              <div className="rounded-lg border p-4 bg-amber-50/30" style={{ borderColor: 'var(--worm-border)' }}>
+                <h4 className="text-sm font-bold mb-2" style={{ color: 'var(--worm-ink)' }}>
+                  Reasoning (live)
+                </h4>
+                <div className="text-sm font-mono whitespace-pre-wrap break-words overflow-hidden max-h-64 overflow-y-auto" style={{ color: 'var(--worm-muted)' }}>
+                  {reasoningText}
+                </div>
+              </div>
+            )}
+
+            {/* Partial insights (if parseable) */}
+            {parsedInsights && (
+              <div className="rounded-lg border p-4 bg-blue-50/30" style={{ borderColor: 'var(--worm-border)' }}>
+                <h4 className="text-sm font-bold mb-2" style={{ color: 'var(--worm-ink)' }}>
+                  Insights (streaming...)
+                </h4>
+                <pre className="text-xs overflow-auto max-h-40 overflow-y-auto">
+                  {JSON.stringify(parsedInsights, null, 2)}
+                </pre>
+              </div>
+            )}
           </div>
         )}
 
-        {report && !isLoading && (
+        {report && isComplete && (
           <div className="space-y-4">
             {/* Report metadata for user context */}
             <div className="text-xs" style={{ color: 'var(--worm-muted)' }}>
