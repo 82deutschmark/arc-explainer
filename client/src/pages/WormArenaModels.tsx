@@ -139,12 +139,15 @@ export default function WormArenaModels() {
     if (!selectedModel && models.length > 0) {
       // Select model with most games played
       const sorted = [...models].sort((a, b) => (b.gamesPlayed ?? 0) - (a.gamesPlayed ?? 0));
+      console.log('[WormArenaModels] Auto-selecting model:', sorted[0].modelSlug, 'from', models.length, 'models');
+      console.log('[WormArenaModels] First model data:', sorted[0]);
       setSelectedModel(sorted[0].modelSlug);
     }
   }, [models, selectedModel]);
 
   // When model selection changes, fetch history
   useEffect(() => {
+    console.log('[WormArenaModels] Selection changed to:', selectedModel);
     if (selectedModel) {
       fetchHistory(selectedModel);
     } else {
@@ -164,6 +167,7 @@ export default function WormArenaModels() {
 
   // Get selected model info
   const selectedModelInfo = models.find(m => m.modelSlug === selectedModel);
+  console.log('[WormArenaModels] Render - selectedModel:', selectedModel, 'selectedModelInfo:', selectedModelInfo, 'models.length:', models.length);
 
   return (
     <TooltipProvider>
@@ -204,22 +208,36 @@ export default function WormArenaModels() {
                   <p className="text-sm text-[var(--worm-ink)]">No models with games found.</p>
                 )}
                 {!modelsLoading && models.length > 0 && (
-                  <Select value={selectedModel} onValueChange={setSelectedModel}>
-                    <SelectTrigger className="w-full max-w-lg bg-white border-[var(--worm-border)] text-[var(--worm-ink)] font-medium">
-                      <SelectValue placeholder="Choose a model..." />
-                    </SelectTrigger>
-                    <SelectContent className="max-h-80">
-                      {models.map((m) => (
-                        <SelectItem
-                          key={m.modelSlug}
-                          value={m.modelSlug}
-                          className="text-[var(--worm-ink)]"
-                        >
-                          {m.modelName || m.modelSlug} ({m.gamesPlayed} games, {((m.winRate ?? 0) * 100).toFixed(0)}% win)
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <div className="space-y-2">
+                    <Select
+                      key={models.length > 0 ? models[0].modelSlug : 'empty'}
+                      value={selectedModel}
+                      onValueChange={(value) => {
+                        console.log('[WormArenaModels] User selected:', value);
+                        setSelectedModel(value);
+                      }}
+                    >
+                      <SelectTrigger className="w-full max-w-lg bg-white border-[var(--worm-border)] text-[var(--worm-ink)] font-medium">
+                        <SelectValue placeholder="Choose a model..." />
+                      </SelectTrigger>
+                      <SelectContent className="max-h-80">
+                        {models.map((m) => (
+                          <SelectItem
+                            key={m.modelSlug}
+                            value={m.modelSlug}
+                            className="text-[var(--worm-ink)]"
+                          >
+                            {m.modelName || m.modelSlug}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    {selectedModelInfo && (
+                      <div className="text-sm text-[var(--worm-ink)] opacity-75">
+                        {selectedModelInfo.gamesPlayed} games · {((selectedModelInfo.winRate ?? 0) * 100).toFixed(0)}% win rate · {selectedModelInfo.wins}W-{selectedModelInfo.losses}L-{selectedModelInfo.ties}T
+                      </div>
+                    )}
+                  </div>
                 )}
               </div>
 
