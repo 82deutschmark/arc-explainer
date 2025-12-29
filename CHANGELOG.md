@@ -1,5 +1,18 @@
 # New entries at the top, use proper SemVer!
 
+### Version 6.16.5  Dec 29, 2025
+
+- **Fix: Worm Arena Model Insights report generation and streaming** (Author: Claude Code using Haiku)
+  - **Purpose**: Resolve Responses API compatibility issues and refactor streaming implementation for model insights reports.
+  - **Issues Fixed**:
+    - Fixed Responses API request format: moved `response_format` parameter to `text.format` per OpenAI's API changes. Both synchronous and streaming endpoints now use correct structure.
+    - Refactored streaming event handling to use proven `handleStreamEvent` helper from `openai/streaming.ts` instead of manual switch statement, ensuring consistent event processing across all event types.
+    - Improved LLM summary extraction to handle multiple response formats: tries `output_parsed` (native structured output), falls back to parsing `output_text` as JSON, then uses plain text.
+    - Ensured report generation succeeds gracefully even if LLM summary API call fails, with `requestInsightsSummary` returning null on error rather than throwing.
+  - **Files Modified**:
+    - `server/services/snakeBenchService.ts` (Fixed API format for both `requestInsightsSummary` and `buildInsightsRequest`, refactored `streamModelInsightsReport` to use event helper, improved response extraction)
+  - **Impact**: Model insights reports now generate correctly and streaming displays live reasoning/output. Report generation is resilient to API failures while LLM summaries are still available when successful.
+
 ### Version 6.16.4  Dec 28, 2025
 
 - **Fix: Robust Model Aggregation & Visibility Restoration** (Author: Cascade)
