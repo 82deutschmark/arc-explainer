@@ -355,6 +355,8 @@ export function handleStreamEvent(
           source: "parsed",
           fallback: false,
         },
+        expectingJson: aggregates.expectingJson,
+        fallback: false,
       });
       break;
     }
