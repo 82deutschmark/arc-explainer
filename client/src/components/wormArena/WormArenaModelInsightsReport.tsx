@@ -1,11 +1,14 @@
 /**
  * Author: Cascade
- * Date: 2025-12-29
+ * Date: 2025-12-30
  * PURPOSE: Inline actionable insights report for the Worm Arena Models page.
  *          Generates a per-model report on demand, displays an LLM summary,
- *          and provides copy, save, and Twitter share actions.
+ *          and provides copy, save, and Twitter/X share actions.
  *          Integrated full performance metrics including quartiles and ranking.
  * SRP/DRY check: Pass - focused on report display and actions.
+ * 
+ * 2025-12-30: UI polish - smaller title, larger summary text, compact buttons,
+ *             improved Share on X button styling.
  */
 
 import React from 'react';
@@ -136,37 +139,37 @@ export default function WormArenaModelInsightsReport({ modelSlug }: WormArenaMod
     <Card className="worm-card">
       <CardHeader className="pb-6">
         <div className="flex items-center justify-between gap-4 flex-wrap">
-          <CardTitle className="text-5xl font-black" style={{ color: '#000' }}>
+          <CardTitle className="text-2xl font-bold" style={{ color: '#000' }}>
             Actionable Insights Report
           </CardTitle>
           {report && isComplete && (
-            <div className="flex items-center gap-3 flex-wrap">
+            <div className="flex items-center gap-1 flex-wrap">
               <Button
                 variant="outline"
-                size="lg"
+                size="sm"
                 onClick={handleCopyReport}
-                className="text-base font-bold"
+                className="text-sm font-medium"
               >
-                {copyHint ? copyHint : 'Copy Report'}
+                {copyHint ? copyHint : 'Copy'}
               </Button>
               {downloadUrl && (
-                <Button variant="outline" size="lg" asChild className="text-base font-bold">
+                <Button variant="outline" size="sm" asChild className="text-sm font-medium">
                   <a href={downloadUrl} download={`worm-arena-${modelSlug}-insights.md`}>
-                    Save Markdown
+                    Save .md
                   </a>
                 </Button>
               )}
               {tweetUrl && (
-                <Button variant="outline" size="lg" asChild className="text-base font-bold">
+                <Button variant="outline" size="sm" asChild className="text-sm font-medium bg-black text-white hover:bg-gray-800">
                   <a href={tweetUrl} target="_blank" rel="noreferrer">
-                    Share on Twitter
+                    Share on X
                   </a>
                 </Button>
               )}
             </div>
           )}
         </div>
-        <p className="text-2xl font-semibold mt-3" style={{ color: '#000' }}>
+        <p className="text-sm font-medium mt-2" style={{ color: 'var(--worm-muted)' }}>
           Full history report focused on loss reasons, cost, and opponent pain points.
         </p>
       </CardHeader>
@@ -256,7 +259,7 @@ export default function WormArenaModelInsightsReport({ modelSlug }: WormArenaMod
                         {/* Overview */}
                         {insights.summary && (
                           <div className="rounded-lg border p-4" style={{ backgroundColor: 'rgba(228, 242, 233, 0.5)', borderColor: 'var(--worm-border)' }}>
-                            <div className="text-sm leading-relaxed font-semibold" style={{ color: 'var(--worm-ink)' }}>
+                            <div className="text-base leading-relaxed font-medium" style={{ color: 'var(--worm-ink)' }}>
                               {insights.summary}
                             </div>
                           </div>
