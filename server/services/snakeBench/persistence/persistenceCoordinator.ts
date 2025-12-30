@@ -6,7 +6,7 @@
  * SRP/DRY check: Pass — isolated persistence coordination, prevents data loss.
  */
 
-import type { SnakeBenchRunMatchResult } from '../../../shared/types.js';
+import type { SnakeBenchRunMatchResult } from '../../../../shared/types.js';
 import { snakeBenchIngestQueue } from '../../snakeBenchIngestQueue.ts';
 import { GameIndexManager } from './gameIndexManager.ts';
 import { logger } from '../../../utils/logger.ts';

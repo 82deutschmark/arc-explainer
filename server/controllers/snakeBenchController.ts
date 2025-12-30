@@ -9,11 +9,13 @@
  */
 
 import type { Request, Response } from 'express';
+import { randomUUID } from 'crypto';
 
 import { snakeBenchService } from '../services/snakeBenchService';
 import { snakeBenchIngestQueue } from '../services/snakeBenchIngestQueue';
 import { loadWormArenaPromptTemplateBundle } from '../services/snakeBench/SnakeBenchLlmPlayerPromptTemplate.ts';
 import { logger } from '../utils/logger';
+import { sseStreamManager } from '../services/streaming/SSEStreamManager';
 import { requiresUserApiKey } from '../utils/environmentPolicy.js';
 import type {
   SnakeBenchRunMatchRequest,
@@ -34,6 +36,7 @@ import type {
   WormArenaSuggestMode,
   SnakeBenchLlmPlayerPromptTemplateResponse,
   WormArenaModelInsightsResponse,
+  WormArenaRunLengthDistributionResponse,
 } from '../../shared/types.js';
 
 export async function getLlmPlayerPromptTemplate(req: Request, res: Response) {
@@ -269,6 +272,59 @@ export async function getWormArenaGreatestHits(req: Request, res: Response) {
     };
 
     return res.status(500).json(response);
+  }
+}
+
+/**
+ * Check if an MP4 exists locally for the given gameId and, if so, expose a download URL.
+ * No generation is attempted here—this is a lightweight availability probe.
+ */
+export async function getWormArenaVideoAvailability(req: Request, res: Response) {
+  try {
+    const { gameId } = req.params as { gameId?: string };
+    if (!gameId) {
+      return res.status(400).json({ success: false, error: 'Missing gameId' });
+    }
+
+    const path = snakeBenchService.getLocalVideoPath(gameId);
+    if (!path) {
+      return res.json({ success: true, exists: false });
+    }
+
+    return res.json({
+      success: true,
+      exists: true,
+      downloadUrl: `/api/wormarena/videos/${encodeURIComponent(gameId)}/download`,
+    });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    logger.error(`SnakeBench getWormArenaVideoAvailability failed: ${message}`, 'snakebench-controller');
+    return res.status(500).json({ success: false, error: message });
+  }
+}
+
+/**
+ * Stream the MP4 file to the client if it exists locally.
+ */
+export async function downloadWormArenaVideo(req: Request, res: Response) {
+  try {
+    const { gameId } = req.params as { gameId?: string };
+    if (!gameId) {
+      return res.status(400).json({ success: false, error: 'Missing gameId' });
+    }
+
+    const filePath = snakeBenchService.getLocalVideoPath(gameId);
+    if (!filePath) {
+      return res.status(404).json({ success: false, error: 'Video not found' });
+    }
+
+    res.setHeader('Content-Type', 'video/mp4');
+    res.setHeader('Content-Disposition', `attachment; filename="snake_game_${gameId}.mp4"`);
+    res.sendFile(filePath);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    logger.error(`SnakeBench downloadWormArenaVideo failed: ${message}`, 'snakebench-controller');
+    return res.status(500).json({ success: false, error: message });
   }
 }
 
@@ -823,6 +879,114 @@ export async function modelInsightsReport(req: Request, res: Response) {
   }
 }
 
+export async function runLengthDistribution(req: Request, res: Response) {
+  try {
+    // Parse and validate query parameters
+    const minGamesParam = req.query.minGames;
+    let minGames = 10; // default
+
+    if (minGamesParam !== undefined) {
+      const parsed = parseInt(String(minGamesParam), 10);
+      if (Number.isNaN(parsed) || parsed < 0) {
+        const response: { success: boolean; error: string; timestamp: number } = {
+          success: false,
+          error: 'minGames must be a non-negative integer',
+          timestamp: Date.now(),
+        };
+        return res.status(400).json(response);
+      }
+      if (parsed > 1000) {
+        const response: { success: boolean; error: string; timestamp: number } = {
+          success: false,
+          error: 'minGames cannot exceed 1000',
+          timestamp: Date.now(),
+        };
+        return res.status(400).json(response);
+      }
+      minGames = parsed;
+    }
+
+    // Call service to get distribution data
+    const data = await snakeBenchService.getRunLengthDistribution(minGames);
+
+    const response: WormArenaRunLengthDistributionResponse = {
+      success: true,
+      data,
+      timestamp: Date.now(),
+    };
+
+    return res.json(response);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    logger.error(`SnakeBench runLengthDistribution failed: ${message}`, 'snakebench-controller');
+    const response: WormArenaRunLengthDistributionResponse = {
+      success: false,
+      error: message,
+      timestamp: Date.now(),
+    };
+    return res.status(500).json(response);
+  }
+}
+
+/**
+ * GET /api/stream/snakebench/model-insights/:modelSlug
+ * Stream model insights report generation with live reasoning and output updates.
+ * Follows the WormArena streaming pattern: register → init → service with callbacks → complete → close
+ */
+async function streamModelInsights(req: Request, res: Response) {
+  try {
+    const { modelSlug } = req.params as { modelSlug: string };
+
+    if (!modelSlug || !modelSlug.trim()) {
+      res.status(400).json({ error: 'modelSlug is required' });
+      return;
+    }
+
+    const sessionId = randomUUID();
+    sseStreamManager.register(sessionId, res);
+    sseStreamManager.sendEvent(sessionId, 'stream.init', {
+      sessionId,
+      modelSlug,
+      createdAt: new Date().toISOString(),
+    });
+
+    const abortController = new AbortController();
+    res.on('close', () => abortController.abort());
+
+    try {
+      // Call service with callbacks - service emits events through handlers
+      const report = await snakeBenchService.streamModelInsightsReport(
+        modelSlug,
+        {
+          onStatus: (status) => {
+            sseStreamManager.sendEvent(sessionId, 'stream.status', status);
+          },
+          onChunk: (chunk) => {
+            sseStreamManager.sendEvent(sessionId, 'stream.chunk', chunk);
+          },
+        },
+        abortController.signal
+      );
+
+      // Service completed successfully - send completion and close
+      sseStreamManager.sendEvent(sessionId, 'stream.complete', {
+        status: 'success',
+        report,
+        timestamp: Date.now(),
+      });
+      sseStreamManager.close(sessionId);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      logger.error(`[ModelInsightsStream] Failed: ${message}`, 'snakebench-controller');
+      sseStreamManager.error(sessionId, 'INSIGHTS_STREAM_ERROR', message);
+    }
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    logger.error(`SnakeBench streamModelInsights failed: ${message}`, 'snakebench-controller');
+    res.status(500).json({ error: message });
+  }
+}
+
 export const snakeBenchController = {
   runMatch,
   runBatch,
@@ -841,8 +1005,12 @@ export const snakeBenchController = {
   modelsWithGames,
   trueSkillLeaderboard,
   getWormArenaGreatestHits,
+  getWormArenaVideoAvailability,
+  downloadWormArenaVideo,
   suggestMatchups,
   ingestQueueStatus,
   getLlmPlayerPromptTemplate,
+  runLengthDistribution,
+  streamModelInsights,
 };
 

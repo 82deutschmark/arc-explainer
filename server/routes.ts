@@ -266,6 +266,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
     "/api/snakebench/model-insights",
     asyncHandler(snakeBenchController.modelInsightsReport),
   );
+  app.get(
+    "/api/stream/snakebench/model-insights/:modelSlug",
+    asyncHandler(snakeBenchController.streamModelInsights),
+  );
+  app.get(
+    "/api/snakebench/run-length-distribution",
+    asyncHandler(snakeBenchController.runLengthDistribution),
+  );
+
+  // Worm Arena media (MP4 availability/download)
+  app.get(
+    "/api/wormarena/videos/:gameId/availability",
+    asyncHandler(snakeBenchController.getWormArenaVideoAvailability),
+  );
+  app.get(
+    "/api/wormarena/videos/:gameId/download",
+    asyncHandler(snakeBenchController.downloadWormArenaVideo),
+  );
 
   // Worm Arena live streaming (SSE wrapper around SnakeBench matches)
   app.post("/api/wormarena/prepare", asyncHandler(wormArenaStreamController.prepare));

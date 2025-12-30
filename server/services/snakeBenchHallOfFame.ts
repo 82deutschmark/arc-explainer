@@ -1,6 +1,6 @@
 /**
- * Author: GPT-5.2 Extra High
- * Date: 2025-12-11
+ * Author: Gemini 3 Flash High
+ * Date: 2025-12-27
  * PURPOSE: Centralized curated Worm Arena Hall of Fame data.
  *          Extracted from SnakeBenchService to keep SRP/DRY.
  * SRP/DRY check: Pass — data-only module.
@@ -14,7 +14,43 @@ import type { WormArenaGreatestHitGame } from '../../shared/types.js';
 // via analyze_local_games.py and manual inspection.
 // NOTE: Games with actual cost data are listed first so the UI displays meaningful stats.
 // Games without cost tracking (older o3/o4 matches) are listed last.
+//
+// NEW (v3.x.x - Dec 2025): Optional fields added to interface:
+//   - endedAt: ISO timestamp for duration calculation
+//   - sumFinalScores: Total apples from both players
+//   - durationSeconds: Wall-clock game duration in seconds
+//   - category: Which dimension qualified it
+// These fields can be added to entries when data is available from replay JSON files.
 export const CURATED_WORM_ARENA_HALL_OF_FAME: WormArenaGreatestHitGame[] = [
+  // === NEW PRO MATCHES (Dec 2025) - Discovered via local analysis ===
+  {
+    gameId: '5edcbc7b-5cef-4275-a7a8-7b4f392f85bb',
+    startedAt: '2025-12-15T23:16:29.059484',
+    modelA: 'nvidia/nemotron-3-nano-30b-a3b:free',
+    modelB: 'openai/gpt-5.1-codex-mini',
+    roundsPlayed: 104,
+    maxRounds: 150,
+    totalCost: 0.2766,
+    maxFinalScore: 30,
+    scoreDelta: 9,
+    boardWidth: 10,
+    boardHeight: 10,
+    highlightReason: 'CURRENT RECORD: 30 apples by GPT-5.1 Codex Mini in a 104-round marathon.',
+  },
+  {
+    gameId: '8f7da248-9c6d-4088-aadd-38e926dc8464',
+    startedAt: '2025-12-13T06:21:10.530051',
+    modelA: 'openai/gpt-5.1-codex-mini',
+    modelB: 'openai/gpt-5.2',
+    roundsPlayed: 101,
+    maxRounds: 150,
+    totalCost: 2.1513,
+    maxFinalScore: 29,
+    scoreDelta: 3,
+    boardWidth: 10,
+    boardHeight: 10,
+    highlightReason: 'Elite duel: GPT-5.1 Codex Mini edges GPT-5.2 (29-26) in high-cost reasoning showdown.',
+  },
   // === RECENT ADDITIONS (Dec 18, 2025) - Dynamically discovered ===
   {
     gameId: '5a632478-e6c5-45df-9f6e-c5981f1eb66e',

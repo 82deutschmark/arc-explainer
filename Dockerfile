@@ -114,6 +114,9 @@ RUN echo "=== CHECKING BUILD OUTPUT ===" && \
     echo "=== INSPECTING JS BUNDLE ===" && \
     if ls dist/public/assets/*.js 1> /dev/null 2>&1; then head -n 20 dist/public/assets/*.js; else echo "No JS bundles present in assets directory (unexpected for Vite build)."; fi
 
+# Set production environment for runtime
+ENV NODE_ENV=production
+
 # Copy crontab and entrypoint script for scheduled sync
 COPY crontab /etc/crontabs/root
 COPY docker-entrypoint.sh /app/docker-entrypoint.sh

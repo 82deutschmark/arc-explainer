@@ -224,10 +224,38 @@ const navigationItems: NavItem[] = [
       },
       {
         type: 'link',
-        title: 'Worm Arena (Stats)',
+        title: 'Worm Arena (Models)',
+        href: '/worm-arena/models',
+        icon: Worm,
+        description: 'Model match history and combat profiles'
+      },
+      {
+        type: 'link',
+        title: 'Worm Arena (Stats & Placement)',
         href: '/worm-arena/stats',
         icon: Worm,
         description: 'Ratings, placements, and leaderboards'
+      },
+      {
+        type: 'link',
+        title: 'Worm Arena (Skill Analysis)',
+        href: '/worm-arena/skill-analysis',
+        icon: Worm,
+        description: 'Model performance analysis and skill metrics'
+      },
+      {
+        type: 'link',
+        title: 'Worm Arena (Distributions)',
+        href: '/worm-arena/distributions',
+        icon: Worm,
+        description: 'Run length distributions and match statistics'
+      },
+      {
+        type: 'link',
+        title: 'Worm Arena (Rules)',
+        href: '/worm-arena/rules',
+        icon: Worm,
+        description: 'Game rules and LLM prompt transparency'
       }
     ]
   },

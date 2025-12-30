@@ -177,8 +177,8 @@
         "instruct_type": null
       },
       "pricing": {
-        "prompt": "0.0000004",
-        "completion": "0.0000015",
+        "prompt": "0.0000006",
+        "completion": "0.0000022",
         "request": "0",
         "image": "0",
         "web_search": "0",

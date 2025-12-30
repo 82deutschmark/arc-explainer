@@ -55,6 +55,7 @@ import WormArenaStats from "@/pages/WormArenaStats";
 import WormArenaMatches from "@/pages/WormArenaMatches";
 import WormArenaModels from "@/pages/WormArenaModels";
 import WormArenaSkillAnalysis from "@/pages/WormArenaSkillAnalysis";
+import WormArenaDistributions from "@/pages/WormArenaDistributions";
 import WormArenaRules from "@/pages/WormArenaRules";
 import ReArc from "@/pages/ReArc";
 import Redirect from "@/components/Redirect";
@@ -124,6 +125,7 @@ function Router() {
         <Route path="/worm-arena/models" component={WormArenaModels} />
         <Route path="/worm-arena/stats" component={WormArenaStats} />
         <Route path="/worm-arena/skill-analysis" component={WormArenaSkillAnalysis} />
+        <Route path="/worm-arena/distributions" component={WormArenaDistributions} />
         <Route path="/worm-arena/rules" component={WormArenaRules} />
         <Route path="/puzzle/:taskId" component={PuzzleExaminer} />
         <Route path="/examine/:taskId" component={PuzzleExaminer} />

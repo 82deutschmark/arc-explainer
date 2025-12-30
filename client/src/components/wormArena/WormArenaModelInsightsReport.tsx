@@ -9,7 +9,7 @@
 
 import React from 'react';
 
-import { useWormArenaModelInsights } from '@/hooks/useWormArenaModels';
+import { useWormArenaModelInsightsStream } from '@/hooks/useWormArenaModelInsightsStream';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -53,16 +53,26 @@ const formatDateTime = (value: string | null): string => {
 };
 
 export default function WormArenaModelInsightsReport({ modelSlug }: WormArenaModelInsightsReportProps) {
-  const { report, isLoading, error, fetchReport, clearReport } = useWormArenaModelInsights();
+  const {
+    status,
+    report,
+    error,
+    reasoningText,
+    parsedInsights,
+    isStreaming,
+    isComplete,
+    startStream,
+    closeStream,
+  } = useWormArenaModelInsightsStream();
   const [copyHint, setCopyHint] = React.useState<string | null>(null);
   const [downloadUrl, setDownloadUrl] = React.useState<string | null>(null);
 
   // Reset report state when the selected model changes.
   React.useEffect(() => {
-    clearReport();
+    closeStream();
     setCopyHint(null);
     setDownloadUrl(null);
-  }, [modelSlug, clearReport]);
+  }, [modelSlug, closeStream]);
 
   // Build a downloadable markdown URL for the save action.
   React.useEffect(() => {
@@ -90,8 +100,8 @@ export default function WormArenaModelInsightsReport({ modelSlug }: WormArenaMod
   // Trigger report generation on demand.
   const handleGenerateReport = React.useCallback(() => {
     setCopyHint(null);
-    void fetchReport(modelSlug);
-  }, [fetchReport, modelSlug]);
+    startStream(modelSlug);
+  }, [startStream, modelSlug]);
 
   // Copy report markdown to the clipboard with a fallback for older browsers.
   const handleCopyReport = React.useCallback(async () => {
@@ -131,29 +141,30 @@ export default function WormArenaModelInsightsReport({ modelSlug }: WormArenaMod
 
   return (
     <Card className="worm-card">
-      <CardHeader className="pb-3">
-        <div className="flex items-center justify-between gap-3 flex-wrap">
-          <CardTitle className="text-xl font-bold text-worm-ink">
+      <CardHeader className="pb-6">
+        <div className="flex items-center justify-between gap-4 flex-wrap">
+          <CardTitle className="text-5xl font-black" style={{ color: '#000' }}>
             Actionable Insights Report
           </CardTitle>
-          {report && !isLoading && (
-            <div className="flex items-center gap-2 flex-wrap">
+          {report && isComplete && (
+            <div className="flex items-center gap-3 flex-wrap">
               <Button
                 variant="outline"
-                size="sm"
+                size="lg"
                 onClick={handleCopyReport}
+                className="text-base font-bold"
               >
                 {copyHint ? copyHint : 'Copy Report'}
               </Button>
               {downloadUrl && (
-                <Button variant="outline" size="sm" asChild>
+                <Button variant="outline" size="lg" asChild className="text-base font-bold">
                   <a href={downloadUrl} download={`worm-arena-${modelSlug}-insights.md`}>
                     Save Markdown
                   </a>
                 </Button>
               )}
               {tweetUrl && (
-                <Button variant="outline" size="sm" asChild>
+                <Button variant="outline" size="lg" asChild className="text-base font-bold">
                   <a href={tweetUrl} target="_blank" rel="noreferrer">
                     Share on Twitter
                   </a>
@@ -162,83 +173,219 @@ export default function WormArenaModelInsightsReport({ modelSlug }: WormArenaMod
             </div>
           )}
         </div>
-        <p className="text-sm worm-muted">
+        <p className="text-2xl font-semibold mt-3" style={{ color: '#000' }}>
           Full history report focused on loss reasons, cost, and opponent pain points.
         </p>
       </CardHeader>
-      <CardContent className="pt-0 text-base text-worm-ink">
-        {error && !isLoading && (
-          <div className="py-3 text-base text-red-700">{error}</div>
+      <CardContent className="pt-0 text-base" style={{ color: 'var(--worm-ink)' }}>
+        {error && !isStreaming && (
+          <div className="py-3 text-base text-red-700">{error.message}</div>
         )}
 
-        {!report && !isLoading && (
-          <div className="flex items-center gap-3 flex-wrap">
-            <Button onClick={handleGenerateReport} className="bg-worm-green hover:bg-worm-green-hover text-worm-green-ink">
+        {!report && !isStreaming && (
+          <div className="flex items-center gap-4 flex-wrap">
+            <Button onClick={handleGenerateReport} style={{ backgroundColor: 'var(--worm-green)', color: 'var(--worm-green-ink)' }} className="hover:opacity-90 text-lg font-bold px-6 py-3" size="lg">
               Generate Report
             </Button>
-            <span className="text-sm worm-muted">
+            <span className="text-xl font-semibold" style={{ color: '#000' }}>
               Report generation uses all completed games for this model.
             </span>
           </div>
         )}
 
-        {isLoading && (
-          <div className="py-6 text-base worm-muted">
-            Generating report. Controls are hidden until the report is ready.
+        {isStreaming && (
+          <div className="space-y-4">
+            {/* Loading indicator - show during entire streaming duration until content arrives */}
+            {!reasoningText && !parsedInsights && (
+              <div className="flex items-center justify-center py-8">
+                <div className="flex flex-col items-center gap-3">
+                  <div className="animate-spin">
+                    <svg className="w-8 h-8" style={{ color: 'var(--worm-green)' }} fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                    </svg>
+                  </div>
+                  <p className="text-sm" style={{ color: 'var(--worm-muted)' }}>
+                    Analyzing model performance...
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {/* Status message */}
+            {status.message && (
+              <div className="text-sm text-[var(--worm-muted)] italic">
+                {status.message}
+              </div>
+            )}
+
+            {/* Live reasoning (if present) */}
+            {reasoningText && (
+              <div className="rounded-lg border p-6 bg-amber-50/30" style={{ borderColor: 'var(--worm-border)' }}>
+                <h4 className="text-3xl font-black mb-4" style={{ color: '#000' }}>
+                  Reasoning (live)
+                </h4>
+                <div className="text-xl font-medium whitespace-pre-wrap break-words overflow-hidden max-h-96 overflow-y-auto" style={{ color: '#000', lineHeight: '1.6' }}>
+                  {reasoningText}
+                </div>
+              </div>
+            )}
+
+            {/* Partial insights (if parseable) */}
+            {parsedInsights && (
+              <div className="rounded-lg border p-6 bg-blue-50/30" style={{ borderColor: 'var(--worm-border)' }}>
+                <h4 className="text-3xl font-black mb-4" style={{ color: '#000' }}>
+                  Insights (streaming...)
+                </h4>
+                <pre className="text-lg font-mono overflow-auto max-h-96 overflow-y-auto" style={{ color: '#000' }}>
+                  {JSON.stringify(parsedInsights, null, 2)}
+                </pre>
+              </div>
+            )}
           </div>
         )}
 
-        {report && !isLoading && (
+        {report && isComplete && (
           <div className="space-y-4">
             {/* Report metadata for user context */}
-            <div className="text-xs worm-muted">
+            <div className="text-xs" style={{ color: 'var(--worm-muted)' }}>
               Generated: {formatDateTime(report.generatedAt)}
             </div>
-            {/* LLM summary block with graceful fallback */}
-            <div className="rounded-md border px-4 py-3 bg-white/70">
-              <div className="text-xs worm-muted">LLM Summary</div>
-              {report.llmSummary ? (
-                <div className="text-sm text-worm-ink">{report.llmSummary}</div>
-              ) : (
-                <div className="text-sm worm-muted">
-                  Summary unavailable. The stats below are still accurate.
+            {/* Structured insights from LLM */}
+            {report.llmSummary && (
+              <div className="space-y-4">
+                {/* Parse and display structured insights */}
+                {(() => {
+                  try {
+                    const insights = JSON.parse(report.llmSummary);
+                    return (
+                      <div className="space-y-4">
+                        {/* Overview */}
+                        {insights.summary && (
+                          <div className="rounded-lg border p-4" style={{ backgroundColor: 'rgba(228, 242, 233, 0.5)', borderColor: 'var(--worm-border)' }}>
+                            <div className="text-sm leading-relaxed font-semibold" style={{ color: 'var(--worm-ink)' }}>
+                              {insights.summary}
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Death Analysis */}
+                        {insights.deathAnalysis && insights.deathAnalysis.length > 0 && (
+                          <div>
+                            <h4 className="text-base font-bold mb-3" style={{ color: 'var(--worm-ink)' }}>Why It Dies</h4>
+                            <div className="space-y-2">
+                              {insights.deathAnalysis.map((death: any, idx: number) => (
+                                <div key={idx} className="rounded-lg border p-3" style={{ backgroundColor: 'rgba(255, 250, 240, 0.8)', borderColor: 'var(--worm-border)' }}>
+                                  <div className="flex items-start gap-2">
+                                    <span className="text-xs font-bold text-red-700 mt-0.5">⚠</span>
+                                    <div className="flex-1">
+                                      <div className="text-sm font-semibold" style={{ color: 'var(--worm-metric-losses)' }}>
+                                        {death.cause}
+                                      </div>
+                                      <div className="text-xs mt-1" style={{ color: 'var(--worm-ink)' }}>
+                                        {death.frequency}
+                                      </div>
+                                      <div className="text-xs mt-1" style={{ color: 'var(--worm-muted)' }}>
+                                        {death.pattern}
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Tough Opponents */}
+                        {insights.toughOpponents && insights.toughOpponents.length > 0 && (
+                          <div>
+                            <h4 className="text-base font-bold mb-3" style={{ color: 'var(--worm-ink)' }}>Tough Matchups</h4>
+                            <div className="space-y-2">
+                              {insights.toughOpponents.map((opp: any, idx: number) => (
+                                <div key={idx} className="rounded-lg border p-3" style={{ backgroundColor: 'rgba(255, 240, 240, 0.8)', borderColor: 'var(--worm-border)' }}>
+                                  <div className="text-sm font-semibold" style={{ color: 'var(--worm-metric-losses)' }}>
+                                    {opp.opponent}
+                                  </div>
+                                  <div className="text-xs mt-1" style={{ color: 'var(--worm-ink)' }}>
+                                    Record: <span className="font-bold">{opp.record}</span>
+                                  </div>
+                                  <div className="text-xs mt-1" style={{ color: 'var(--worm-muted)' }}>
+                                    {opp.issue}
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Recommendations */}
+                        {insights.recommendations && insights.recommendations.length > 0 && (
+                          <div>
+                            <h4 className="text-base font-bold mb-3" style={{ color: 'var(--worm-ink)' }}>What to Fix</h4>
+                            <div className="space-y-2">
+                              {insights.recommendations.map((rec: string, idx: number) => (
+                                <div key={idx} className="flex items-start gap-2 rounded-lg border p-3" style={{ backgroundColor: 'rgba(240, 250, 240, 0.8)', borderColor: 'var(--worm-border)' }}>
+                                  <span className="text-xs font-bold" style={{ color: 'var(--worm-green)' }}>✓</span>
+                                  <div className="text-sm flex-1" style={{ color: 'var(--worm-ink)' }}>
+                                    {rec}
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+
+                      </div>
+                    );
+                  } catch {
+                    // Fallback if JSON parsing fails
+                    return (
+                      <div className="rounded-lg border p-4" style={{ backgroundColor: 'rgba(228, 242, 233, 0.5)', borderColor: 'var(--worm-border)' }}>
+                        <div className="text-sm leading-relaxed" style={{ color: 'var(--worm-ink)' }}>
+                          {report.llmSummary}
+                        </div>
+                      </div>
+                    );
+                  }
+                })()}
+              </div>
+            )}
+            {!report.llmSummary && (
+              <div className="rounded-lg border p-4" style={{ backgroundColor: 'rgba(228, 242, 233, 0.5)', borderColor: 'var(--worm-border)' }}>
+                <div className="text-sm" style={{ color: 'var(--worm-muted)' }}>
+                  Insights unavailable. The stats below are still accurate.
                 </div>
-              )}
-              {report.llmModel && (
-                <div className="text-xs worm-muted mt-2">
-                  Summary model: {report.llmModel}
-                </div>
-              )}
-            </div>
+              </div>
+            )}
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-              <div className="rounded-md border px-3 py-2 bg-white/70">
-                <div className="text-xs worm-muted">Games</div>
-                <div className="text-base font-semibold">{report.summary.gamesPlayed}</div>
+              <div className="rounded-lg border p-3" style={{ backgroundColor: 'rgba(255, 255, 255, 0.8)', borderColor: 'var(--worm-border)' }}>
+                <div className="text-xs font-semibold mb-1" style={{ color: 'var(--worm-muted)' }}>Games</div>
+                <div className="text-lg font-bold" style={{ color: 'var(--worm-metric-games)' }}>{report.summary.gamesPlayed}</div>
               </div>
-              <div className="rounded-md border px-3 py-2 bg-white/70">
-                <div className="text-xs worm-muted">Win Rate</div>
-                <div className="text-base font-semibold">{formatPercent(report.summary.winRate)}</div>
+              <div className="rounded-lg border p-3" style={{ backgroundColor: 'rgba(255, 255, 255, 0.8)', borderColor: 'var(--worm-border)' }}>
+                <div className="text-xs font-semibold mb-1" style={{ color: 'var(--worm-muted)' }}>Win Rate</div>
+                <div className="text-lg font-bold" style={{ color: 'var(--worm-metric-winrate)' }}>{formatPercent(report.summary.winRate)}</div>
               </div>
-              <div className="rounded-md border px-3 py-2 bg-white/70">
-                <div className="text-xs worm-muted">Total Cost</div>
-                <div className="text-base font-semibold">{formatCost(report.summary.totalCost)}</div>
+              <div className="rounded-lg border p-3" style={{ backgroundColor: 'rgba(255, 255, 255, 0.8)', borderColor: 'var(--worm-border)' }}>
+                <div className="text-xs font-semibold mb-1" style={{ color: 'var(--worm-muted)' }}>Total Cost</div>
+                <div className="text-lg font-bold" style={{ color: 'var(--worm-metric-cost)' }}>{formatCost(report.summary.totalCost)}</div>
               </div>
-              <div className="rounded-md border px-3 py-2 bg-white/70">
-                <div className="text-xs worm-muted">Cost per Loss</div>
-                <div className="text-base font-semibold">{formatCost(report.summary.costPerLoss)}</div>
+              <div className="rounded-lg border p-3" style={{ backgroundColor: 'rgba(255, 255, 255, 0.8)', borderColor: 'var(--worm-border)' }}>
+                <div className="text-xs font-semibold mb-1" style={{ color: 'var(--worm-muted)' }}>Cost/Loss</div>
+                <div className="text-lg font-bold" style={{ color: 'var(--worm-metric-cost)' }}>{formatCost(report.summary.costPerLoss)}</div>
               </div>
-              <div className="rounded-md border px-3 py-2 bg-white/70">
-                <div className="text-xs worm-muted">Avg Rounds</div>
-                <div className="text-base font-semibold">
+              <div className="rounded-lg border p-3" style={{ backgroundColor: 'rgba(255, 255, 255, 0.8)', borderColor: 'var(--worm-border)' }}>
+                <div className="text-xs font-semibold mb-1" style={{ color: 'var(--worm-muted)' }}>Avg Rounds</div>
+                <div className="text-lg font-bold" style={{ color: 'var(--worm-metric-games)' }}>
                   {formatOptionalNumber(report.summary.averageRounds, 1)}
                 </div>
               </div>
-              <div className="rounded-md border px-3 py-2 bg-white/70">
-                <div className="text-xs worm-muted">Top Loss Reason</div>
-                <div className="text-base font-semibold">
+              <div className="rounded-lg border p-3" style={{ backgroundColor: 'rgba(255, 255, 255, 0.8)', borderColor: 'var(--worm-border)' }}>
+                <div className="text-xs font-semibold mb-1" style={{ color: 'var(--worm-muted)' }}>Top Loss</div>
+                <div className="text-lg font-bold" style={{ color: 'var(--worm-metric-losses)' }}>
                   {topFailureLabel}
                   {topFailure && (
-                    <span className="ml-1 text-xs worm-muted">({topFailureRate})</span>
+                    <div className="text-xs font-normal mt-1" style={{ color: 'var(--worm-muted)' }}>({topFailureRate})</div>
                   )}
                 </div>
               </div>
@@ -246,9 +393,9 @@ export default function WormArenaModelInsightsReport({ modelSlug }: WormArenaMod
 
             <Separator />
 
-            <Accordion type="single" collapsible className="w-full">
+            <Accordion type="multiple" defaultValue={["failure-modes", "cost-efficiency", "opponents", "data-quality"]} className="w-full">
               <AccordionItem value="failure-modes">
-                <AccordionTrigger>Failure Modes</AccordionTrigger>
+                <AccordionTrigger className="text-base font-bold">Failure Modes</AccordionTrigger>
                 <AccordionContent>
                   {report.failureModes.length === 0 && (
                     <div className="text-sm worm-muted">No losses recorded.</div>
@@ -281,7 +428,7 @@ export default function WormArenaModelInsightsReport({ modelSlug }: WormArenaMod
               </AccordionItem>
 
               <AccordionItem value="cost-efficiency">
-                <AccordionTrigger>Cost and Efficiency</AccordionTrigger>
+                <AccordionTrigger className="text-base font-bold">Cost and Efficiency</AccordionTrigger>
                 <AccordionContent>
                   <div className="flex flex-wrap gap-2">
                     <Badge variant="outline">
@@ -304,7 +451,7 @@ export default function WormArenaModelInsightsReport({ modelSlug }: WormArenaMod
               </AccordionItem>
 
               <AccordionItem value="opponents">
-                <AccordionTrigger>Opponent Pain Points</AccordionTrigger>
+                <AccordionTrigger className="text-base font-bold">Opponent Pain Points</AccordionTrigger>
                 <AccordionContent>
                   {report.lossOpponents.length === 0 && (
                     <div className="text-sm worm-muted">No opponents recorded.</div>
@@ -341,18 +488,18 @@ export default function WormArenaModelInsightsReport({ modelSlug }: WormArenaMod
               </AccordionItem>
 
               <AccordionItem value="data-quality">
-                <AccordionTrigger>Data Quality</AccordionTrigger>
+                <AccordionTrigger className="text-base font-bold">Data Quality</AccordionTrigger>
                 <AccordionContent>
-                  <div className="flex flex-wrap gap-2">
-                    <Badge variant="outline">
-                      Loss reason coverage: {formatPercent(report.summary.lossDeathReasonCoverage)}
-                    </Badge>
-                    <Badge variant="outline">
-                      Losses without reason: {report.summary.unknownLosses}
-                    </Badge>
-                    <Badge variant="outline">
-                      Early losses (round &le; 5): {report.summary.earlyLosses} ({formatPercent(report.summary.earlyLossRate)})
-                    </Badge>
+                  <div className="flex flex-wrap gap-1">
+                    <div className="px-3 py-2 rounded-full font-bold text-sm" style={{ backgroundColor: 'rgba(76, 175, 80, 0.2)', color: '#2E7D32', border: '1px solid rgba(76, 175, 80, 0.4)' }}>
+                      Loss coverage: {formatPercent(report.summary.lossDeathReasonCoverage)}
+                    </div>
+                    <div className="px-3 py-2 rounded-full font-bold text-sm" style={{ backgroundColor: 'rgba(244, 67, 54, 0.2)', color: '#C62828', border: '1px solid rgba(244, 67, 54, 0.4)' }}>
+                      Unknown: {report.summary.unknownLosses}
+                    </div>
+                    <div className="px-3 py-2 rounded-full font-bold text-sm" style={{ backgroundColor: 'rgba(255, 152, 0, 0.2)', color: '#E65100', border: '1px solid rgba(255, 152, 0, 0.4)' }}>
+                      Early losses: {report.summary.earlyLosses} ({formatPercent(report.summary.earlyLossRate)})
+                    </div>
                   </div>
                 </AccordionContent>
               </AccordionItem>
