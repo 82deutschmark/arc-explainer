@@ -1,186 +1,185 @@
-# Kaggle-like ARC Submission Interface Plan
+# Kaggle-style ARC Submission Interface Plan
 
-**Author:** Claude Opus 4.5
+**Author:** Cascade (ChatGPT)
 **Date:** 2025-12-30
-**Goal:** Create a new ARC submission and evaluation page with supporting backend endpoints
+**Goal:** Replace the deprecated Kaggle Readiness Validation page with a Kaggle-style submission workflow where users upload ARC solution notebooks for offline evaluation against a private dataset.
 
-## Overview
-Build a new submission page where users can upload solution notebooks, track execution progress in real-time, and view their results. Leaderboard is out of scope for now.
+---
 
-## Deprecation Note
-- `client/src/pages/KaggleReadinessValidation.tsx` can be deprecated/removed (not needed for this feature)
+## Executive Summary
+- Build a single submission page where users upload `.ipynb` files, see their submission added to a queue, and later view the recorded score/results once processing completes.
+- No streaming, live logs, or mid-run visibility—parity with Kaggle’s “queued → running → finished” experience.
+- Kaggle Readiness Validation assets are removed entirely; the new page lives at `/submissions` and becomes the canonical entry point for ARC evaluations.
+- Initial milestone excludes leaderboards; focus is on safe ingestion, deterministic scoring, and historical submission visibility for each user/session.
 
-## Critical Files to Create
+---
 
-### Frontend
-- **`client/src/pages/ARCSubmissions.tsx`** - New page component
-- **Router update** - Add route for `/submissions` or `/compete`
-- New components:
-  - `client/src/components/submissions/NotebookUploader.tsx` - File upload UI
-  - `client/src/components/submissions/ExecutionTracker.tsx` - Real-time execution status
-  - `client/src/components/submissions/ResultsViewer.tsx` - Score and detailed results
+## Scope & Non-Goals
 
-### Backend
-- **New endpoints:**
-  - `POST /api/submissions/upload` - Accept notebook file
-  - `POST /api/submissions/:id/execute` - Trigger execution
-  - `GET /api/submissions/:id/status` - SSE stream for execution progress
-  - `GET /api/submissions/:id/results` - Fetch final results
+| In Scope | Out of Scope |
+| --- | --- |
+| Notebook upload, validation, storage, execution queueing, scoring, historical submission list | Real-time streaming/logs, live progress UI, public leaderboard, BYO dataset selection |
+| Private ARC evaluation dataset execution | Arbitrary datasets or interactive debugging |
+| Basic status polling (queued/running/completed/failed) | Websocket/SSE push updates |
+| Submission quotas and sandboxing | Full multi-tenant auth (unless mandated later) |
 
-- **New files:**
-  - `server/controllers/submissionsController.ts`
-  - `server/services/notebookExecutor.ts`
-  - `server/services/arcScorer.ts`
-  - `server/repositories/submissionsRepository.ts`
+---
 
-### Database
-- **New table:** `submissions` (id, user_id, notebook_file_path, status, score, results_json, execution_log, submitted_at, completed_at)
+## Inconsistencies Resolved
+1. **Streaming vs. Batch:** Removed all SSE references; execution is strictly offline batch.
+2. **Kaggle Readiness Page:** Fully deprecated; no shared routing or component reuse requirements remain.
+3. **Leaderboard Scope:** Leaderboard postponed until scoring pipeline is proven; success criteria now reflect that.
+4. **Auth vs. Anonymous:** Plan now treats `user_id` as optional (nullable) until we finalize identity strategy; session fingerprinting fills the gap short-term.
+5. **Status Visibility:** UI only shows discrete states with timestamps (queued, running, completed, failed) rather than continuous progress bars/logs.
 
-## Implementation Phases
+---
 
-### Phase 1: Page Scaffolding
-1. Create new `ARCSubmissions.tsx` page
-2. Add route to router configuration
-3. Basic layout with two sections:
-   - Upload section (left/top)
-   - Results/tracking section (right/bottom)
+## System Overview
+1. **Upload Service (API tier):** Receives `.ipynb`, validates metadata, stores raw file, creates DB row with `status='queued'`.
+2. **Queue Broker:** Lightweight job queue (BullMQ/Redis or Drizzle-backed table) ensures workers pull submissions FIFO with retry policies.
+3. **Execution Workers:** Node service orchestrating Python runner in Docker, ensures deterministic environment, enforces resource limits, and writes artifacts/logs to storage.
+4. **Scoring Service:** Applies ARC Prize scoring (two attempts per pair, exact match) and aggregates metrics persisted back to DB.
+5. **Frontend:** Single page for upload + submission history table with filters; users refresh or revisit to see updated statuses.
 
-### Phase 2: Upload Interface
-1. Build `NotebookUploader` component
-   - Accept `.ipynb` files only
-   - File size validation (max 10MB)
-   - Preview uploaded file metadata
-   - Submit button that calls `POST /api/submissions/upload`
-2. Show upload confirmation with submission ID
+---
 
-### Phase 3: Execution Tracking
-1. Build `ExecutionTracker` component
-   - Display current status (queued/running/completed/failed)
-   - SSE connection to `GET /api/submissions/:id/status`
-   - Live log output in scrollable terminal-style view
-   - Progress indicator (e.g., "Task 23/100")
+## User Flow
+1. User visits `/submissions`.
+2. Upload form accepts `.ipynb` ≤ 10 MB; user optionally inputs label/notes.
+3. API returns submission ID; UI confirms “Queued” and stores ID locally for future lookups.
+4. Worker picks submission, updates status “Running,” executes notebook in sandbox against private evaluation set.
+5. Upon completion, score + per-task summary saved; status flips to “Completed” or “Failed” with failure reason.
+6. User reloads page to see updated status/results table; no mid-run inspection.
 
-### Phase 4: Results Display
-1. Build `ResultsViewer` component
-   - Overall score (e.g., "73/100 tasks solved = 0.73")
-   - Per-task breakdown table:
-     - Task ID
-     - Attempt 1 result
-     - Attempt 2 result
-     - Final result (solved/failed)
-   - Filter controls (show only failed, show only solved)
+---
 
-### Phase 5: Backend - Upload & Storage
-1. Create `POST /api/submissions/upload` endpoint
-   - Use multer for file upload
-   - Validate file type (.ipynb)
-   - Store file in `data/submissions/` directory
-   - Create database entry with status='pending'
-   - Return submission ID
+## Frontend Deliverables
+1. **`client/src/pages/ARCSubmissions.tsx`**
+   - Layout: left column for upload form, right column for recent submissions (mobile stacks vertically).
+   - Pulls data via `GET /api/submissions?limit=20`.
+2. **Components**
+   - `NotebookUploader.tsx`: file picker, validation messages, submission metadata (filename, size).
+   - `SubmissionTable.tsx`: tabular history with columns (ID, submitted at, status, score, duration) plus “View details” action.
+   - `SubmissionDetailsDrawer.tsx`: shows per-task breakdown and raw log excerpt after completion.
+3. **State Handling**
+   - Local optimistic row inserted immediately after upload (status = queued).
+   - Background polling (every 30s) or manual refresh button; no SSE/WebSocket.
+4. **Deprecation Cleanup**
+   - Remove `client/src/pages/KaggleReadinessValidation.tsx` and its route, nav links, translation keys, tests.
 
-### Phase 6: Backend - Execution Engine
-1. Create `notebookExecutor.ts` service
-   - Spawn Python process to execute notebook
-   - Use existing evaluation dataset
-   - Capture stdout/stderr for logs
-   - Stream progress via SSE
-2. Create `arcScorer.ts` service
-   - 2-attempt scoring (per ARC Prize rules)
-   - Score = solved_pairs / total_pairs
+---
 
-### Phase 7: Backend - Status & Results
-1. `GET /api/submissions/:id/status` SSE endpoint
-2. `GET /api/submissions/:id/results` endpoint
+## Backend/API Deliverables
+1. **Endpoints**
+   - `POST /api/submissions` – multipart upload (multer). Returns `{ submissionId }`.
+   - `POST /api/submissions/:id/queue` – (optional) explicit “submit” after upload; default immediate queueing so we may omit.
+   - `GET /api/submissions` – list submissions filtered by user/session with pagination.
+   - `GET /api/submissions/:id` – returns metadata, status, score, and summary JSON.
+   - `GET /api/submissions/:id/log` – truncated execution log/plaintext for post-mortem (completed/failed only).
+2. **Controller/Service Files**
+   - `server/controllers/submissionsController.ts`
+   - `server/services/submissionService.ts`
+   - `server/services/notebookExecutor.ts`
+   - `server/services/arcScorer.ts`
+   - `server/repositories/submissionsRepository.ts`
+3. **Queue Integration**
+   - `server/queues/submissionQueue.ts` (BullMQ or similar) to decouple worker from API thread.
+4. **Validation Rules**
+   - MIME/type sniffing, size limit, virus scan (ClamAV or Defender on Windows), block embedded secrets.
 
-## UI/UX Design Principles
+---
 
-### Visual Style
-- **Avoid "AI slop"**: No excessive centered layouts, purple gradients, or uniform rounded corners
-- Use functional, data-dense design inspired by Kaggle
-- Tables with clear headers and zebra striping
-- Minimal use of icons, focus on text and data
-- Monospace font for logs and code-related content
+## Execution & Scoring Pipeline
+1. **File Storage**
+   - `data/submissions/{submission_id}/submission.ipynb`
+   - Derived artifacts (stdout.log, stderr.log, results.json) stay in same directory.
+2. **Sandbox**
+   - Docker image `arc-submission-runner` with pinned Python + dependencies.
+   - Resource caps: CPU 2 cores, RAM 8 GB, wall-clock timeout 30 min.
+   - No outbound network except S3/GCS for dataset fetch (pre-mounted read-only).
+3. **Notebook Runner**
+   - Use `papermill` or `nbconvert` CLI to execute; fail if writes to disallowed paths.
+4. **Scoring**
+   - Worker loads outputs, computes per-task attempt results, writes `results_json` and normalized score.
+   - Supports optional secondary metrics (duration, cells executed) for future leaderboard.
+5. **Status Updates**
+   - Queue worker updates DB statuses at lifecycle checkpoints; API simply reads these values.
 
-### State Transitions
-- Upload form → Confirmation → Execution tracker (auto-navigate)
-- Execution tracker shows live updates, then auto-switches to results view
-- No static lists or cluttered all-in-one views
-- Collapse completed sections, expand active ones
+---
 
-### Real-time Updates
-- Use SSE for execution status (no polling)
-- Toast notifications for completion
-- Auto-update leaderboard when new submissions complete
-
-## Technical Decisions
-
-### File Upload
-- Store notebooks in `data/submissions/{user_id}/{submission_id}.ipynb`
-- Max file size: 10MB
-- Only accept `.ipynb` extension
-
-### Execution Environment
-- Use Python subprocess to execute notebooks
-- Timeout: 30 minutes per submission
-- Sandbox execution (consider using Docker or similar if needed later)
-- Capture both stdout and stderr
-
-### Scoring Implementation
-- Follow ARC Prize scoring exactly:
-  - 2 attempts per test pair
-  - Exact match = 1 point, any mismatch = 0 points
-  - Score = sum(solved_pairs) / total_pairs
-  - Range: 0.00 to 1.00
-
-### Database Schema
+## Data & Schema
 ```sql
 CREATE TABLE submissions (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id VARCHAR(255) NOT NULL,
+  user_id VARCHAR(255), -- nullable until auth enforced
+  session_fingerprint VARCHAR(255),
   notebook_file_path TEXT NOT NULL,
-  status VARCHAR(50) NOT NULL, -- pending, running, completed, failed
-  score NUMERIC(5,4), -- 0.0000 to 1.0000
-  results_json JSONB, -- detailed per-task results
-  execution_log TEXT,
+  status VARCHAR(32) NOT NULL, -- queued, running, completed, failed
+  score NUMERIC(5,4),
+  total_pairs INT,
+  solved_pairs INT,
+  failure_reason TEXT,
+  results_json JSONB,
+  log_path TEXT,
   submitted_at TIMESTAMP DEFAULT NOW(),
+  started_at TIMESTAMP,
   completed_at TIMESTAMP,
   created_at TIMESTAMP DEFAULT NOW(),
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_submissions_user_id ON submissions(user_id);
-CREATE INDEX idx_submissions_score ON submissions(score DESC);
+CREATE INDEX idx_submissions_user ON submissions(user_id);
+CREATE INDEX idx_submissions_session ON submissions(session_fingerprint);
 CREATE INDEX idx_submissions_status ON submissions(status);
+CREATE INDEX idx_submissions_score ON submissions(score DESC NULLS LAST);
 ```
 
-## Dependencies to Add
-- `multer` - File upload middleware (or existing upload solution)
-- Potentially `dockerode` if we want Docker sandboxing (later phase)
+Retention policy: store raw notebooks + logs for 30 days, aggregate results forever (or until user deletes).
+
+---
+
+## Security, Compliance, and Operations
+1. **Sandboxing:** Docker with read-only datasets, no host volume mounts beyond submission folder, SELinux/AppArmor profile.
+2. **Resource Limits:** Timeout, memory, disk quota per submission; terminate runaway kernels.
+3. **Code Scanning:** Basic static lint (e.g., reject `os.system("curl ...")` attempts) plus antivirus scan before queueing.
+4. **Secret Handling:** Notebooks cannot access environment secrets; run with empty env except dataset paths.
+5. **Monitoring:** Metrics on queue depth, success/failure counts, average runtime; alerts for >X failures in Y minutes.
+6. **Cleanup:** Nightly job purges expired artifacts and orphaned temporary files.
+7. **Quotas:** Default 5 active submissions per user/session, configurable via env.
+
+---
 
 ## Testing Strategy
-1. Manual testing with sample notebooks
-2. Test with malformed notebooks (error handling)
-3. Test with various scores (0.0, 0.5, 1.0)
-4. Load test with multiple concurrent submissions
+1. **Unit Tests:** Upload validation, repository interactions, scoring math (two-attempt logic).
+2. **Integration Tests:** Simulated worker executing a stub notebook, verifying DB transitions.
+3. **End-to-End Smoke:** Use a minimal notebook that solves one ARC task to ensure scoring/regression detection.
+4. **Failure Scenarios:** Corrupt notebook, timeout, deliberate exception, file too large.
+5. **Load/Capacity:** Stress queue with concurrent uploads to measure worker throughput and disk impact.
 
-## Migration from Current Page
-1. Keep route path `/kaggle-readiness-validation` or rename to `/compete` or `/submissions`
-2. Remove all validation assessment logic
-3. Preserve shadcn/ui component usage (Card, Button, Tabs, etc.)
-4. Keep general layout structure but replace content
+---
+
+## Migration Plan
+1. Remove `KaggleReadinessValidation` page, routes, navigation references, and any feature flags guarding it.
+2. Redirect `/kaggle-readiness-validation` to `/submissions` until clients update bookmarks.
+3. Update documentation (README, docs/reference/frontend) to point to the new workflow.
+4. Drop any legacy APIs or backend logic specific to readiness validation once the new endpoints ship.
+
+---
 
 ## Open Questions
-- [ ] Should we support user accounts or just use session-based anonymous submissions?
-- [ ] What's the max number of submissions per user?
-- [ ] Should we show public leaderboard or only user's own submissions?
-- [ ] Do we need submission quotas/rate limiting?
-- [ ] Should we store user code or just execution results?
+- Do we require authentication before allowing uploads, or will session fingerprint + email optional field suffice?
+- What storage backend is preferred for notebook artifacts if disk space becomes a constraint (S3, Azure Blob, etc.)?
+- Should we expose submission logs for failed runs to users, or keep them internal for now?
+- Are there legal/privacy constraints around storing user-submitted notebooks indefinitely?
 
-## Success Criteria
-- ✅ User can upload .ipynb file
-- ✅ System executes notebook against evaluation dataset
-- ✅ User sees real-time execution progress
-- ✅ System calculates score using ARC Prize methodology (2 attempts, exact match)
-- ✅ User sees detailed per-task results
-- ✅ Leaderboard displays all submissions ranked by score
-- ✅ UI is clean, functional, and avoids generic AI design patterns
+---
+
+## Success Criteria (Milestone 1)
+1. Users can upload `.ipynb` files and receive a submission ID.
+2. Submissions are executed in a sandboxed environment against the private ARC evaluation set.
+3. Scores are computed using ARC Prize methodology (two attempts per pair, exact match scoring).
+4. Users can revisit `/submissions` to see historical submissions with accurate statuses and scores.
+5. System gracefully handles invalid notebooks, oversize files, timeouts, and worker crashes without affecting other jobs.
+6. Kaggle Readiness Validation path is removed and no longer exposed anywhere in the product.
+
+Future milestone: add leaderboards, notifications, and richer analytics once the batch pipeline is stable.
