@@ -14,6 +14,7 @@ Hobby platform for analyzing ARC puzzles with multi-provider LLMs, reasoning cap
 # Clone and install
 git clone <repository-url> arc-explainer
 cd arc-explainer
+git submodule update --init --recursive
 npm install
 
 # Minimal .env (root)
