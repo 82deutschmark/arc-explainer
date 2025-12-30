@@ -1,8 +1,9 @@
 /**
- * Author: Cascade
- * Date: 2025-12-29
+ * Author: Cascade (original), Claude Sonnet 4.5 (formatCostSmart, formatUsdLocale additions)
+ * Date: 2025-12-30
  * PURPOSE: Shared formatting utilities for numbers, currency, and model-specific labels.
  *          Centralizes logic used by both server and client for consistent display.
+ *          Added specialized formatters: smart unit conversion and locale-aware currency.
  * SRP/DRY check: Pass - pure formatting functions only.
  */
 
@@ -57,10 +58,65 @@ export function formatOptionalNumber(value: number | null | undefined, digits: n
 
 /**
  * Convert snake death reason values into human-readable labels.
- * 
+ *
  * @param reason - Raw snake death reason string (e.g. 'body_collision')
  */
 export function formatReasonLabel(reason: string | null | undefined): string {
   if (!reason) return 'unknown';
   return reason.replace(/_/g, ' ').trim();
+}
+
+/**
+ * Format cost with smart unit conversion (millicents/cents/dollars).
+ * Used for displaying very small costs in readable units.
+ *
+ * @param value - Cost value in dollars
+ * @returns Formatted string with appropriate unit (e.g., "2.50 m", "5.00 c", "$1.2345")
+ *
+ * @example
+ * formatCostSmart(0.00025) // "0.25 m" (millicents)
+ * formatCostSmart(0.05)    // "5.00 c" (cents)
+ * formatCostSmart(1.2345)  // "$1.2345"
+ * formatCostSmart(0)       // "Free"
+ * formatCostSmart(null)    // "N/A"
+ */
+export function formatCostSmart(value: number | null | undefined): string {
+  if (value === null || value === undefined) return 'N/A';
+  if (value === 0) return 'Free';
+
+  if (value < 0.01) {
+    return `${(value * 1000).toFixed(2)} m`; // millicents
+  }
+  if (value < 1) {
+    return `${(value * 100).toFixed(2)} c`; // cents
+  }
+  return `$${value.toFixed(4)}`;
+}
+
+/**
+ * Format USD amount using locale-aware Intl.NumberFormat.
+ * Useful for displaying prices in international contexts.
+ *
+ * @param value - Numeric value to format
+ * @param decimals - Number of decimal places (default: 2)
+ * @returns Locale-formatted currency string or 'N/A'
+ *
+ * @example
+ * formatUsdLocale(1234.56)    // "$1,234.56" (en-US locale)
+ * formatUsdLocale(0.5, 4)     // "$0.5000"
+ * formatUsdLocale(null)       // "N/A"
+ */
+export function formatUsdLocale(
+  value: number | null | undefined,
+  decimals = 2
+): string {
+  if (value == null) return 'N/A';
+  if (typeof value !== 'number' || !Number.isFinite(value)) return 'N/A';
+
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    minimumFractionDigits: decimals,
+    maximumFractionDigits: decimals,
+  }).format(value);
 }
