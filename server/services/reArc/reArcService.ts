@@ -163,9 +163,9 @@ export const __testOnly_datasetCache = new SimpleLRU<number, { output: number[][
 interface SubprocessRunnerConfig<T> {
   /** Random seed for dataset generation */
   seed: number;
-  /** Use --ids-only flag */
-  idsOnly?: boolean;
-  /** Context name for error messages (e.g., "re-arc --ids-only") */
+  /** Use --task-ids flag */
+  taskIds?: boolean;
+  /** Context name for error messages (e.g., "re-arc --task-ids") */
   contextName: string;
   /** Expected number of lines (optional, for validation) */
   expectedCount?: number;
@@ -183,7 +183,7 @@ interface SubprocessRunnerConfig<T> {
 async function* runReArcSubprocess<T>(
   config: SubprocessRunnerConfig<T>
 ): AsyncGenerator<T> {
-  const { seed, idsOnly, contextName, expectedCount, processLine } = config;
+  const { seed, taskIds, contextName, expectedCount, processLine } = config;
 
   // Build Python arguments
   const reArcDir = path.join(process.cwd(), 'external', 're-arc');
@@ -194,8 +194,8 @@ async function* runReArcSubprocess<T>(
     args.push('--dev');
   }
 
-  if (idsOnly) {
-    args.push('--ids-only');
+  if (taskIds) {
+    args.push('--task-ids');
   }
 
   // Spawn Python subprocess
@@ -355,7 +355,7 @@ export function resolvePythonBin(): string {
 }
 
 /**
- * Get the number of tasks for a given seed by calling lib.py --ids-only.
+ * Get the number of tasks for a given seed by calling lib.py --task-ids.
  *
  * @param seed - Random seed for dataset generation
  * @returns Number of tasks in the dataset
@@ -367,8 +367,8 @@ async function getTaskCount(seed: number): Promise<number> {
   // Count non-empty lines (each line is a task ID)
   for await (const _ of runReArcSubprocess({
     seed,
-    idsOnly: true,
-    contextName: 're-arc --ids-only',
+    taskIds: true,
+    contextName: 're-arc --task-ids',
     processLine: (line) => {
       if (line.trim()) {
         taskCount++;
@@ -415,11 +415,8 @@ export async function* generateDataset(
     contextName: 're-arc generateDataset',
     expectedCount: taskCount,
     processLine: (line, taskIndex) => {
-      // Parse: first 8 chars = re-arc task ID (unused), rest = JSON
-      const jsonStr = line.slice(8);
-
       // Parse task JSON
-      const task = JSON.parse(jsonStr);
+      const task = JSON.parse(line);
 
       // Return with our generated task ID (by sequence order)
       return {
@@ -519,9 +516,7 @@ export async function evaluateSubmission(
       contextName: 're-arc evaluateSubmission',
       expectedCount: numTasks,
       processLine: (line, taskIndex) => {
-        // Parse ground truth task (skip first 8 chars = re-arc task ID)
-        const jsonStr = line.slice(8);
-        const groundTruth = JSON.parse(jsonStr);
+        const groundTruth = JSON.parse(line);
 
         // Extract and cache test outputs
         const testPairs = groundTruth.test;
