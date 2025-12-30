@@ -1,5 +1,20 @@
 # New entries at the top, use proper SemVer!
 
+### Version 6.16.10  Dec 30, 2025
+
+- **Build Fix: Resolved Missing Import Path for Shared Formatters** (Author: Claude Sonnet 4.5)
+  - **Critical Build Failure Fix**:
+    - Fixed broken import path in `WormArenaModelInsightsReport.tsx` that was preventing production build
+    - Changed import from non-existent `@/lib/utils/formatters` to correct `@shared/utils/formatters`
+    - Added missing shadcn/ui component imports (Card, Button, Separator, Accordion, Table, Badge)
+    - Added missing TypeScript interface `WormArenaModelInsightsReportProps`
+  - **Root Cause**:
+    - Previous assistant moved formatters to shared folder but failed to update import path in component
+    - Missing component imports and type definition prevented build from completing
+  - **Files Modified**:
+    - `client/src/components/wormArena/WormArenaModelInsightsReport.tsx` (fixed import paths, added missing imports and types)
+  - **Impact**: Production build now succeeds, resolving deployment blocker to staging environment
+
 ### Version 6.16.9  Dec 29, 2025
 
 - **Code Quality: Fixed Critical Maintainability Issues in Worm Arena Refactor** (Author: Claude Sonnet 4.5)

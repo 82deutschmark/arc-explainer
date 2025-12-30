@@ -15,8 +15,18 @@ import {
   formatUsd,
   formatOptionalNumber,
   formatReasonLabel,
-} from '@/lib/utils/formatters';
+} from '@shared/utils/formatters';
 import { useWormArenaModelInsightsStream } from '@/hooks/useWormArenaModelInsightsStream';
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Separator } from '@/components/ui/separator';
+import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from '@/components/ui/accordion';
+import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from '@/components/ui/table';
+import { Badge } from '@/components/ui/badge';
+
+interface WormArenaModelInsightsReportProps {
+  modelSlug: string;
+}
 
 // Format ISO timestamps for display with a short locale string.
 const formatDateTime = (value: string | null): string => {
