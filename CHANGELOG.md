@@ -1,5 +1,44 @@
 # New entries at the top, use proper SemVer!
 
+### Version 6.16.17  Dec 30, 2025
+
+- **Model Insights Dashboard Enhancement: Real TrueSkill Metrics and Visualizations** (Author: Claude Code using Opus 4.5)
+  - **Part 1 - Header Bar Badges (WormArenaModels.tsx)**:
+    - Removed fake StreakBadge component and calculateStreak function
+    - Added useWormArenaTrueSkillLeaderboard hook for real TrueSkill rankings
+    - Display 5 real TrueSkill metric badges:
+      - Rank (amber) - actual leaderboard position, not array index
+      - Skill mu (blue) - skill estimate value
+      - Uncertainty sigma (green/gray) - stability indicator (<3 = stable)
+      - Win Rate (emerald) - calculated from decided games
+      - Placement progress (green/yellow) - games played toward 9-game placement
+  - **Part 2 - Report Visualizations (WormArenaModelInsightsReport.tsx)**:
+    - Added TrueSkill metrics visualization after timestamp using WormArenaSkillMetrics
+    - Added Skill Comparison accordion with bell curve chart vs toughest opponent
+    - Added Game Length Distribution accordion filtered to current model only
+    - Wired up useWormArenaTrueSkillLeaderboard for opponent TrueSkill lookup
+    - Pre-filter distribution data to show only selected model
+  - **Files Modified**:
+    - `client/src/pages/WormArenaModels.tsx` (86 additions, 98 deletions)
+    - `client/src/components/wormArena/WormArenaModelInsightsReport.tsx` (103 additions, 3 deletions)
+
+### Version 6.16.16  Dec 30, 2025
+
+- **Distributions Page: Min-Rounds Filtering and Chart Enhancements** (Author: Gemini 3 Flash High, bugfix by Claude Code using Opus 4.5)
+  - **Page Controls (WormArenaDistributions.tsx)**:
+    - Added slider for minimum rounds threshold (default 50, range 0-120)
+    - Added toggle to include/exclude models without games at threshold
+    - Forwarded minRounds and includeLowModels props to chart component
+  - **Chart Updates (WormArenaRunLengthChart.tsx)**:
+    - Added minRounds bucketing - games below threshold grouped into "<N" bucket
+    - Default inclusion: only models with games >= minRounds shown by default
+    - Optional inclusion of low-round-only models via toggle
+    - Click-to-detail on bars shows round-specific breakdown
+    - **Bugfix**: Fixed ModelFilterPopover referencing out-of-scope `modelPool` variable (changed to `allModels` prop)
+  - **Files Modified**:
+    - `client/src/pages/WormArenaDistributions.tsx`
+    - `client/src/components/wormArena/stats/WormArenaRunLengthChart.tsx`
+
 ### Version 6.16.15  Dec 30, 2025
 
 - **UI: Fixed Worm Arena Match Card layout and model name truncation** (Author: Cascade)
