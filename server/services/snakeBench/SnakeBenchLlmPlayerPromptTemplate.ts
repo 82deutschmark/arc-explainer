@@ -1,6 +1,6 @@
 /**
- * Author: Cascade
- * Date: 2025-12-20
+ * Author: Gemini 3 Flash High
+ * Date: 2025-12-27
  * PURPOSE: Source-of-truth plumbing for exposing the Worm Arena (SnakeBench) LLM player prompt.
  *          Provides two complementary representations:
  *          - B1 (live): Read the upstream Python source file (external/SnakeBench/backend/players/llm_player.py)
@@ -81,6 +81,7 @@ export function getCanonicalLlmPlayerPromptTemplate(): string {
   // (LLMPlayer._construct_prompt).
   return [
     'You are controlling a snake in a multi-apple Snake game. The board size is {width}x{height}. Normal X,Y coordinates are used. Coordinates range from (0,0) at bottom left to ({width_minus_1},{height_minus_1}) at top right. All snake coordinate lists are ordered head-to-tail: the first tuple is the head, each subsequent tuple connects to the previous one, and the last tuple is the tail.',
+    'IMPORTANT: Do not perform web searches or access external information. Use only the game state provided.',
     '',
     'Turn: {round_number} / {max_rounds?}',
     '',

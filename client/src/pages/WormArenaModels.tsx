@@ -1,25 +1,26 @@
 /**
- * Author: Codex (GPT-5)
- * Date: 2025-12-20
- * PURPOSE: Worm Arena Models page - browse every game a specific model has ever played,
- *          plus generate a per-model actionable insights report inline.
- *          Mirrors the external SnakeBench /models/[id] page functionality.
- *          Only lists models that have actually played games.
+ * Author: Cascade
+ * Date: 2025-12-28
+ * PURPOSE: Worm Arena Models page - "Combat Dossier" style redesign.
+ *          Auto-selects first model on load if none specified in URL,
+ *          persists selection in URL query params,
+ *          shows model combat profile with stats, streaks, and full match history.
  * SRP/DRY check: Pass - page composition only, data fetching in hooks.
  */
 
-import React, { useEffect, useState } from 'react';
-import { Link } from 'wouter';
+import React, { useEffect, useState, useMemo, useCallback } from 'react';
+import { useLocation } from 'wouter';
+import { TooltipProvider } from '@/components/ui/tooltip';
 
 import WormArenaHeader from '@/components/WormArenaHeader';
-import WormArenaRecentMatches from '@/components/wormArena/WormArenaRecentMatches';
+import WormArenaMatchHistoryTable from '@/components/wormArena/WormArenaMatchHistoryTable';
 import WormArenaModelInsightsReport from '@/components/wormArena/WormArenaModelInsightsReport';
 import {
   useWormArenaModelsWithGames,
   useWormArenaModelHistory,
 } from '@/hooks/useWormArenaModels';
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import {
   Select,
@@ -29,71 +30,111 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
+  Trophy,
+  Skull,
+  Target,
+  TrendingUp,
+  TrendingDown,
+  Minus,
+  FileJson,
+} from 'lucide-react';
 
-import type { SnakeBenchModelMatchHistoryEntry } from '@shared/types';
+/** Calculate current streak from match history */
+function calculateStreak(history: { result: string }[]): { type: 'win' | 'loss' | 'tie' | 'none'; count: number } {
+  if (!history || history.length === 0) return { type: 'none', count: 0 };
 
-/**
- * Format duration from start/end timestamps.
- */
-function formatDuration(startedAt: string, endedAt?: string): string {
-  if (!startedAt || !endedAt) return '-';
-  try {
-    const start = new Date(startedAt);
-    const end = new Date(endedAt);
-    const diffMs = end.getTime() - start.getTime();
-    if (diffMs < 0) return '-';
-    const minutes = Math.floor(diffMs / 60000);
-    const seconds = Math.floor((diffMs % 60000) / 1000);
-    return `${minutes}m ${seconds}s`;
-  } catch {
-    return '-';
+  // Sort by date descending (most recent first)
+  const sorted = [...history].sort((a: any, b: any) =>
+    new Date(b.startedAt || 0).getTime() - new Date(a.startedAt || 0).getTime()
+  );
+
+  const firstResult = sorted[0].result as 'won' | 'lost' | 'tied';
+  let count = 0;
+
+  for (const game of sorted) {
+    if (game.result === firstResult) {
+      count++;
+    } else {
+      break;
+    }
   }
+
+  const typeMap: Record<string, 'win' | 'loss' | 'tie'> = {
+    won: 'win',
+    lost: 'loss',
+    tied: 'tie',
+  };
+
+  return { type: typeMap[firstResult] || 'none', count };
 }
 
-/**
- * Format date for display.
- */
-function formatDate(isoString: string): string {
-  if (!isoString) return '-';
-  try {
-    const d = new Date(isoString);
-    return d.toLocaleString('en-US', {
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-      hour: 'numeric',
-      minute: '2-digit',
-      hour12: true,
-    }).replace(',', '');
-  } catch {
-    return '-';
-  }
-}
+/** Streak badge component */
+function StreakBadge({ streak }: { streak: { type: string; count: number } }) {
+  if (streak.type === 'none' || streak.count === 0) return null;
 
-/**
- * Outcome badge styling.
- */
-function getOutcomeClass(result: string): string {
-  if (result === 'won') return 'bg-green-100 text-green-800';
-  if (result === 'lost') return 'bg-red-100 text-red-800';
-  return 'bg-gray-100 text-gray-800';
+  const config = {
+    win: {
+      bg: 'bg-emerald-900/20',
+      border: 'border-emerald-700',
+      text: 'text-emerald-800',
+      icon: TrendingUp,
+      label: 'Win Streak'
+    },
+    loss: {
+      bg: 'bg-red-900/20',
+      border: 'border-red-700',
+      text: 'text-red-800',
+      icon: TrendingDown,
+      label: 'Loss Streak'
+    },
+    tie: {
+      bg: 'bg-amber-900/20',
+      border: 'border-amber-700',
+      text: 'text-amber-800',
+      icon: Minus,
+      label: 'Tie Streak'
+    },
+  }[streak.type] || { bg: '', border: '', text: '', icon: Minus, label: '' };
+
+  const Icon = config.icon;
+
+  return (
+    <div className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md border ${config.bg} ${config.border}`}>
+      <Icon className={`w-4 h-4 ${config.text}`} />
+      <span className={`text-sm font-bold ${config.text}`}>
+        {streak.count} {config.label}
+      </span>
+    </div>
+  );
 }
 
 export default function WormArenaModels() {
+  const [location, setLocation] = useLocation();
+
+  // Helper to get model from URL
+  const getModelFromUrl = useCallback(() => {
+    const params = new URLSearchParams(window.location.search);
+    return params.get('model') || '';
+  }, []);
+
   // Fetch list of models that have games
   const {
-    models,
+    models: rawModels,
     isLoading: modelsLoading,
     error: modelsError,
     fetchModels,
   } = useWormArenaModelsWithGames();
+
+  // Filter models to ensure they have a valid slug (defensive)
+  const models = useMemo(() => {
+    const filtered = rawModels.filter(m => m && m.modelSlug && m.modelSlug !== 'undefined');
+    console.log('[WormArenaModels] Filtered models:', filtered.length, 'of', rawModels.length);
+    if (filtered.length < rawModels.length) {
+      console.warn('[WormArenaModels] Some models were filtered out due to missing or invalid modelSlug:', 
+        rawModels.filter(m => !m || !m.modelSlug || m.modelSlug === 'undefined'));
+    }
+    return filtered;
+  }, [rawModels]);
 
   // Fetch full match history for selected model
   const {
@@ -105,13 +146,53 @@ export default function WormArenaModels() {
     clearHistory,
   } = useWormArenaModelHistory();
 
-  // Selected model state
-  const [selectedModel, setSelectedModel] = useState<string>('');
+  // Selected model state - initialized from URL
+  const [selectedModel, setSelectedModel] = useState<string>(getModelFromUrl());
+
+  // Update URL when model changes
+  const handleModelChange = useCallback((newModel: string) => {
+    setSelectedModel(newModel);
+    const params = new URLSearchParams(window.location.search);
+    if (newModel) {
+      params.set('model', newModel);
+    } else {
+      params.delete('model');
+    }
+    const newSearch = params.toString();
+    const newPath = `${window.location.pathname}${newSearch ? '?' + newSearch : ''}`;
+    setLocation(newPath);
+  }, [setLocation]);
+
+  // Sync with URL changes (back/forward buttons)
+  useEffect(() => {
+    const fromUrl = getModelFromUrl();
+    if (fromUrl !== selectedModel) {
+      setSelectedModel(fromUrl);
+    }
+  }, [location, getModelFromUrl, selectedModel]);
 
   // Load models on mount
   useEffect(() => {
     fetchModels();
   }, [fetchModels]);
+
+  // AUTO-SELECT FIRST MODEL when models load IF none in URL
+  useEffect(() => {
+    if (!selectedModel && !getModelFromUrl() && models.length > 0) {
+      // Filter out any models without slugs just in case
+      const validModels = models.filter(m => m.modelSlug);
+      if (validModels.length === 0) return;
+
+      // Select model with most games played
+      const sorted = [...validModels].sort((a, b) => (b.gamesPlayed ?? 0) - (a.gamesPlayed ?? 0));
+      const targetSlug = sorted[0].modelSlug;
+
+      if (targetSlug) {
+        console.log('[WormArenaModels] Auto-selecting model:', targetSlug, 'from', models.length, 'models');
+        handleModelChange(targetSlug);
+      }
+    }
+  }, [models, selectedModel, getModelFromUrl, handleModelChange]);
 
   // When model selection changes, fetch history
   useEffect(() => {
@@ -122,244 +203,178 @@ export default function WormArenaModels() {
     }
   }, [selectedModel, fetchHistory, clearHistory]);
 
-  // Compute stats for header display
-  const totalGames = rating
-    ? rating.wins + rating.losses + rating.ties
-    : 0;
+  // Compute stats
+  const totalGames = rating ? rating.wins + rating.losses + rating.ties : 0;
   const decidedGames = rating ? rating.wins + rating.losses : 0;
   const winRatePercent = decidedGames > 0
     ? ((rating!.wins / decidedGames) * 100).toFixed(1)
     : '0.0';
 
+  // Calculate streak from history
+  const streak = useMemo(() => calculateStreak(history), [history]);
+
+  // Get selected model info
+  const selectedModelInfo = models.find(m => m.modelSlug === selectedModel);
+
   return (
-    <div className="min-h-screen bg-gray-50">
-      <WormArenaHeader
-        subtitle="Model Match History"
-        links={[
-          { label: 'Replay', href: '/worm-arena' },
-          { label: 'Live', href: '/worm-arena/live' },
-          { label: 'Matches', href: '/worm-arena/matches' },
-          { label: 'Models', href: '/worm-arena/models', active: true },
-          { label: 'Stats & Placement', href: '/worm-arena/stats' },
-          { label: 'Skill Analysis', href: '/worm-arena/skill-analysis' },
-          { label: 'Rules', href: '/worm-arena/rules' },
-        ]}
-      />
+    <TooltipProvider>
+      <div className="worm-page">
+        <WormArenaHeader
+          subtitle="Model Match History"
+          links={[
+            { label: 'Replay', href: '/worm-arena' },
+            { label: 'Live', href: '/worm-arena/live' },
+            { label: 'Matches', href: '/worm-arena/matches' },
+            { label: 'Models', href: '/worm-arena/models', active: true },
+            { label: 'Stats & Placement', href: '/worm-arena/stats' },
+            { label: 'Skill Analysis', href: '/worm-arena/skill-analysis' },
+            { label: 'Distributions', href: '/worm-arena/distributions' },
+            { label: 'Rules', href: '/worm-arena/rules' },
+          ]}
+          showMatchupLabel={false}
+        />
 
-      <div className="max-w-7xl mx-auto px-2 sm:px-3 lg:px-4 py-4">
-        {/* Model Selector */}
-        <Card className="mb-6">
-          <CardHeader>
-            <CardTitle>Select a Model</CardTitle>
-          </CardHeader>
-          <CardContent>
-            {modelsLoading && (
-              <p className="text-sm text-gray-500">Loading models...</p>
-            )}
-            {modelsError && (
-              <p className="text-sm text-red-600">{modelsError}</p>
-            )}
-            {!modelsLoading && !modelsError && models.length === 0 && (
-              <p className="text-sm text-gray-500">No models with games found.</p>
-            )}
-            {!modelsLoading && models.length > 0 && (
-              <Select value={selectedModel} onValueChange={setSelectedModel}>
-                <SelectTrigger className="w-full max-w-md">
-                  <SelectValue placeholder="Choose a model to view its match history" />
-                </SelectTrigger>
-                <SelectContent>
-                  {models.map((m) => (
-                    <SelectItem key={m.modelSlug} value={m.modelSlug}>
-                      {m.modelSlug} ({m.gamesPlayed} games, {((m.winRate ?? 0) * 100).toFixed(0)}% win)
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            )}
+        <main className="w-full max-w-[1400px] mx-auto px-3 md:px-4 py-4 space-y-5">
 
-            <div className="mt-4 flex flex-wrap gap-2">
-              <Button variant="outline" size="sm" asChild>
-                <a href="/api/snakebench/models-with-games" target="_blank" rel="noreferrer">
-                  Open models-with-games JSON
-                </a>
-              </Button>
+          {/* Model Selector - Compact Header Bar */}
+          <div className="worm-card p-4">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+              <div className="flex-1">
+                <h2 className="text-lg font-bold text-[var(--worm-ink)] mb-2 flex items-center gap-2">
+                  <Target className="w-5 h-5 text-[var(--worm-metric-rating)]" />
+                  Select Model
+                </h2>
 
-              {selectedModel && (
-                <Button variant="outline" size="sm" asChild>
-                  <a
-                    href={`/api/snakebench/model-history-full?modelSlug=${encodeURIComponent(selectedModel)}`}
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    Open model-history-full JSON
+                {modelsLoading && (
+                  <p className="text-sm text-[var(--worm-ink)]">Loading models...</p>
+                )}
+                {modelsError && (
+                  <p className="text-sm text-[var(--worm-red)] font-medium">{modelsError}</p>
+                )}
+                {!modelsLoading && !modelsError && models.length === 0 && (
+                  <p className="text-sm text-[var(--worm-ink)]">No models with games found.</p>
+                )}
+                {!modelsLoading && models.length > 0 && (
+                  <div className="space-y-2">
+                    <Select
+                      value={selectedModel || 'none'}
+                      onValueChange={(value) => {
+                        console.log('[WormArenaModels] User selected:', value);
+                        handleModelChange(value === 'none' ? '' : value);
+                      }}
+                    >
+                      <SelectTrigger className="w-full max-w-lg bg-white border-[var(--worm-border)] text-[var(--worm-ink)] font-medium">
+                        <SelectValue placeholder="Choose a model..." />
+                      </SelectTrigger>
+                      <SelectContent className="max-h-80">
+                        {models.map((m) => (
+                          <SelectItem
+                            key={`model-item-${m.modelSlug}`}
+                            value={m.modelSlug}
+                            className="text-[var(--worm-ink)]"
+                          >
+                            {m.modelName || m.modelSlug}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    {selectedModelInfo && (
+                      <div className="text-sm text-[var(--worm-ink)] opacity-75">
+                        {selectedModelInfo.gamesPlayed} games · {((selectedModelInfo.winRate ?? 0) * 100).toFixed(0)}% win rate · {selectedModelInfo.wins}W-{selectedModelInfo.losses}L-{selectedModelInfo.ties}T
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+
+              {/* Quick Actions */}
+              <div className="flex flex-wrap gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="border-[var(--worm-border)] text-[var(--worm-ink)] hover:bg-[var(--worm-track)]"
+                  asChild
+                >
+                  <a href="/api/snakebench/models-with-games" target="_blank" rel="noreferrer">
+                    <FileJson className="w-4 h-4 mr-1.5" />
+                    Models JSON
                   </a>
                 </Button>
-              )}
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Model Stats Header (shown when model is selected) */}
-        {selectedModel && rating && (
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 mb-6">
-            <Card>
-              <CardContent className="pt-6">
-                <div className="text-sm font-medium text-gray-500">Total Matches</div>
-                <div className="mt-1 text-2xl font-semibold">{totalGames}</div>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardContent className="pt-6">
-                <div className="text-sm font-medium text-gray-500">Win Rate</div>
-                <div className="mt-1 text-2xl font-semibold">{winRatePercent}%</div>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardContent className="pt-6">
-                <div className="text-sm font-medium text-gray-500">Rating</div>
-                <div className="mt-1 text-2xl font-semibold">
-                  {rating.displayScore?.toLocaleString() ?? '-'}
-                </div>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardContent className="pt-6">
-                <div className="text-sm font-medium text-gray-500">Apples Eaten</div>
-                <div className="mt-1 text-2xl font-semibold">{rating.applesEaten}</div>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardContent className="pt-6">
-                <div className="text-sm font-medium text-gray-500">Total Cost</div>
-                <div className="mt-1 text-2xl font-semibold">
-                  ${(rating.totalCost ?? 0).toFixed(4)}
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        )}
-
-        {/* Actionable Insights Report */}
-        {selectedModel && (
-          <div className="mb-6">
-            <WormArenaModelInsightsReport modelSlug={selectedModel} />
-          </div>
-        )}
-
-        {/* Recent Matches */}
-        {selectedModel && (
-          <div className="mb-6">
-            <WormArenaRecentMatches modelSlug={selectedModel} limit={10} />
-          </div>
-        )}
-
-        {/* Match History Table */}
-        {selectedModel && (
-          <Card>
-            <CardHeader>
-              <CardTitle>
-                Match History for {selectedModel}
-                {history.length > 0 && (
-                  <span className="ml-2 text-sm font-normal text-gray-500">
-                    ({history.length} games)
-                  </span>
+                {selectedModel && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="border-[var(--worm-border)] text-[var(--worm-ink)] hover:bg-[var(--worm-track)]"
+                    asChild
+                  >
+                    <a
+                      href={`/api/snakebench/model-history-full?modelSlug=${encodeURIComponent(selectedModel)}`}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      <FileJson className="w-4 h-4 mr-1.5" />
+                      History JSON
+                    </a>
+                  </Button>
                 )}
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              {historyLoading && (
-                <p className="text-sm text-gray-500">Loading match history...</p>
-              )}
-              {historyError && (
-                <p className="text-sm text-red-600">{historyError}</p>
-              )}
-              {!historyLoading && !historyError && history.length === 0 && (
-                <p className="text-sm text-gray-500">No matches found for this model.</p>
-              )}
-              {!historyLoading && history.length > 0 && (
-                <div className="overflow-x-auto">
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Opponent</TableHead>
-                        <TableHead>Date</TableHead>
-                        <TableHead>Duration</TableHead>
-                        <TableHead>Outcome</TableHead>
-                        <TableHead>Death Reason</TableHead>
-                        <TableHead>Score</TableHead>
-                        <TableHead>Rounds</TableHead>
-                        <TableHead>Cost</TableHead>
-                        <TableHead>Actions</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {history.map((game: SnakeBenchModelMatchHistoryEntry, idx: number) => (
-                        <TableRow key={game.gameId || idx}>
-                          <TableCell className="font-medium">
-                            <button
-                              className="text-indigo-600 hover:text-indigo-900 text-left"
-                              onClick={() => setSelectedModel(game.opponentSlug)}
-                            >
-                              {game.opponentSlug || '-'}
-                            </button>
-                          </TableCell>
-                          <TableCell className="text-sm text-gray-500">
-                            {formatDate(game.startedAt)}
-                          </TableCell>
-                          <TableCell className="text-sm text-gray-500">
-                            {formatDuration(game.startedAt, game.endedAt)}
-                          </TableCell>
-                          <TableCell>
-                            <span
-                              className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${getOutcomeClass(game.result)}`}
-                            >
-                              {game.result.charAt(0).toUpperCase() + game.result.slice(1)}
-                            </span>
-                          </TableCell>
-                          <TableCell className="text-sm text-gray-500">
-                            {game.result === 'lost' && game.deathReason
-                              ? game.deathReason.replace(/_/g, ' ')
-                              : '-'}
-                          </TableCell>
-                          <TableCell className="text-sm text-gray-500">
-                            {game.myScore} - {game.opponentScore}
-                          </TableCell>
-                          <TableCell className="text-sm text-gray-500">
-                            {game.rounds}
-                          </TableCell>
-                          <TableCell className="text-sm text-gray-500">
-                            ${(game.cost ?? 0).toFixed(4)}
-                          </TableCell>
-                          <TableCell>
-                            <Link
-                              href={`/worm-arena?matchId=${encodeURIComponent(game.gameId)}`}
-                              className="text-indigo-600 hover:text-indigo-900 text-sm font-medium"
-                            >
-                              View Replay
-                            </Link>
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        )}
+              </div>
+            </div>
+          </div>
 
-        {/* Empty state when no model selected */}
-        {!selectedModel && !modelsLoading && models.length > 0 && (
-          <Card>
-            <CardContent className="py-12 text-center">
-              <p className="text-gray-500">
-                Select a model above to view its complete match history.
-              </p>
-            </CardContent>
-          </Card>
-        )}
+          {/* Combat Profile - Compact header only when model selected */}
+          {selectedModel && rating && (
+            <>
+              <div className="worm-card overflow-hidden">
+                <div className="bg-gradient-to-r from-[var(--worm-header-bg)] to-[#3d2817] p-4">
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                    <div>
+                      <h1 className="text-lg sm:text-xl font-bold text-[var(--worm-header-ink)]">
+                        {selectedModelInfo?.modelName || selectedModel}
+                      </h1>
+                    </div>
+                    <div className="flex flex-wrap items-center gap-3">
+                      <StreakBadge streak={streak} />
+                      {selectedModelInfo && (
+                        <span className="text-xs text-[var(--worm-header-accent)] font-semibold">
+                          Rank #{models.findIndex(m => m.modelSlug === selectedModel) + 1}/{models.length}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </>
+          )}
+
+          {/* Actionable Insights Report */}
+          {selectedModel && (
+            <WormArenaModelInsightsReport modelSlug={selectedModel} />
+          )}
+
+          {/* Match History Table */}
+          {selectedModel && (
+            <WormArenaMatchHistoryTable
+              history={history}
+              modelSlug={selectedModel}
+              isLoading={historyLoading}
+              error={historyError}
+              onOpponentClick={handleModelChange}
+            />
+          )}
+
+          {/* Loading state for initial load */}
+          {modelsLoading && (
+            <Card className="worm-card">
+              <CardContent className="py-12 text-center">
+                <div className="inline-flex items-center gap-2 text-[var(--worm-ink)]">
+                  <div className="w-5 h-5 border-2 border-[var(--worm-ink)] border-t-transparent rounded-full animate-spin" />
+                  <span className="font-medium">Loading combatants...</span>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+        </main>
       </div>
-    </div>
+    </TooltipProvider>
   );
 }
-

@@ -35,7 +35,7 @@ export async function getSnakeBenchAllowedModels(): Promise<string[]> {
   // This keeps Worm Arena aligned with the continually-updating OpenRouter catalog.
   if (repositoryService.isInitialized()) {
     try {
-      const dbModels = await repositoryService.snakeBench.listModels();
+      const dbModels = await repositoryService.gameRead.listModels();
       dbModels
         .filter((m) => (m.provider || '').toLowerCase() === 'openrouter' && (m as any).is_active)
         .forEach((m) => {

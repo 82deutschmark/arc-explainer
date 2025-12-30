@@ -231,10 +231,10 @@ export default function WormArenaSkillAnalysis() {
             { label: 'Models', href: '/worm-arena/models' },
             { label: 'Stats & Placement', href: '/worm-arena/stats' },
             { label: 'Skill Analysis', href: '/worm-arena/skill-analysis', active: true },
+            { label: 'Distributions', href: '/worm-arena/distributions' },
             { label: 'Rules', href: '/worm-arena/rules' },
           ]}
           showMatchupLabel={false}
-          compact
         />
 
         <main className="w-full max-w-[1500px] mx-auto px-2 md:px-3 py-3 space-y-6">

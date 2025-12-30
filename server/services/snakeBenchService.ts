@@ -1,8 +1,17 @@
 /**
- * Author: Codex (GPT-5)
- * Date: 2025-12-20
- * PURPOSE: Thin orchestrator facade for SnakeBench service with model insights report formatting
- *          and OpenAI summary generation for the Worm Arena model insights report.
+ * Author: Cascade (ChatGPT)
+ * Date: 2025-12-29
+ * PURPOSE: Thin orchestrator facade for SnakeBench service with model insights report formatting,
+ *          OpenAI summary generation for the Worm Arena model insights report, and streaming helpers.
+ *
+ *          FIXES:
+ *          1. Fixed Responses API request format: moved response_format to text.format per API changes
+ *          2. Refactored streaming to use handleStreamEvent helper for reliable event handling
+ *          3. Improved summary extraction to handle both JSON and text responses
+ *          4. Ensured report generation succeeds even if LLM summary fails
+ *          5. Reworded insights prompts to use eSports commentator framing for LLM Snake play analysis
+ *          6. Clarified insights prompts to prohibit recommendations and collect pure analysis only
+ *
  * SRP/DRY check: Pass - delegation, report formatting, and summary wiring only.
  */
 
@@ -30,7 +39,8 @@ import type {
 import { repositoryService } from '../repositories/RepositoryService.ts';
 import { logger } from '../utils/logger.ts';
 import { openAIClient } from './openai/client.js';
-import { normalizeResponse } from './openai/responseParser.js';
+import { handleStreamEvent, createStreamAggregates } from './openai/streaming.js';
+import type { ResponseStreamEvent } from 'openai/resources/responses/responses';
 
 // Import from new modules
 import { SnakeBenchMatchRunner } from './snakeBench/SnakeBenchMatchRunner.ts';
@@ -42,12 +52,11 @@ import { GameIndexManager } from './snakeBench/persistence/gameIndexManager.ts';
 import { getSnakeBenchAllowedModels } from './snakeBench/helpers/modelAllowlist.ts';
 import { filterReplayableGames, getWormArenaGreatestHitsFiltered } from './snakeBench/helpers/replayFilters.ts';
 import { suggestMatchups } from './snakeBench/helpers/matchupSuggestions.ts';
-import { MODELS } from '../config/models.ts';
 import path from 'path';
 import fs from 'fs';
 
 // Use a direct OpenAI model for the LLM summary step.
-const INSIGHTS_SUMMARY_MODEL = 'gpt-5-nano-2025-08-07';
+const INSIGHTS_SUMMARY_MODEL = 'gpt-5-mini-2025-08-07';
 
 // Normalize model slugs so ":free" suffixes do not split report data.
 const normalizeModelSlug = (modelSlug: string): string => modelSlug.trim().replace(/:free$/i, '');
@@ -87,54 +96,45 @@ const buildInsightsSummaryPrompt = (
         .join(', ')
     : 'None';
 
+  // Format all metrics for the prompt
   const avgRounds = formatOptionalNumber(summary.averageRounds, 1);
-  const avgScore = formatOptionalNumber(summary.averageScore, 2);
+  const minRounds = formatOptionalNumber(summary.minRounds, 1);
+  const maxRounds = formatOptionalNumber(summary.maxRounds, 1);
+  const maxScore = formatOptionalNumber(summary.maxScore, 2);
+  const minScore = formatOptionalNumber(summary.minScore, 2);
+  const medianScore = formatOptionalNumber(summary.medianScore, 2);
+  const p75Score = formatOptionalNumber(summary.p75Score, 2);
+  const totalCost = formatCost(summary.totalCost);
+  const costPerGame = formatCost(summary.costPerGame);
+  const costPerWin = formatCost(summary.costPerWin);
   const costPerLoss = formatCost(summary.costPerLoss);
+  const avgDeathRound = formatOptionalNumber(summary.averageDeathRoundLoss, 1);
   const lossCoverage = formatPercent(summary.lossDeathReasonCoverage);
   const earlyLossRate = formatPercent(summary.earlyLossRate);
+  const trueSkillNote = summary.trueSkillExposed != null
+    ? `TrueSkill exposed: ${Math.round(summary.trueSkillExposed)} (mu: ${Number(summary.trueSkillMu || 0).toFixed(1)}, sigma: ${Number(summary.trueSkillSigma || 0).toFixed(1)})`
+    : 'TrueSkill: unrated';
+
+  const leaderboardNote = summary.leaderboardRank != null && summary.totalModelsRanked != null
+    ? `Leaderboard: Rank #${summary.leaderboardRank} of ${summary.totalModelsRanked} models (by TrueSkill)`
+    : 'Leaderboard: Ranking unavailable';
 
   return [
-    'Write one short paragraph (max 80 words).',
+    'Write one short paragraph (max 400 words).',
     'No bullets, no headings, no disclaimers.',
-    'Focus on why the model loses and one practical next step.',
+    'Focus on why the model loses and when. Analyze the score distribution (min/max/median/75th percentile apples) and round survival patterns.',
+    'Strictly describe observed performance; do not suggest strategies, tips, or recommendations.',
     `Model: ${modelSlug}`,
-    `Games: ${summary.gamesPlayed}, Wins: ${summary.wins}, Losses: ${summary.losses}, Win rate: ${formatPercent(summary.winRate)}`,
-    `Average rounds: ${avgRounds}, Average score: ${avgScore}, Cost per loss: ${costPerLoss}`,
-    `Early loss rate: ${earlyLossRate}, Loss reason coverage: ${lossCoverage}`,
+    `Match record: ${summary.gamesPlayed} games (${summary.wins}W / ${summary.losses}L / ${summary.ties}T), Win rate: ${formatPercent(summary.winRate)} (ties excluded)`,
+    `${leaderboardNote}`,
+    `Rounds: Min ${minRounds} / Avg ${avgRounds} / Max ${maxRounds}`,
+    `Apples: Min ${minScore} / Median ${medianScore} / 75th %ile ${p75Score} / Max ${maxScore} (Total: ${summary.totalApples})`,
+    `Cost: Total ${totalCost} / Per-game ${costPerGame} / Per-win ${costPerWin} / Per-loss ${costPerLoss}`,
+    `Death patterns: Avg round ${avgDeathRound} when losing, ${summary.unknownLosses} losses without recorded death reason, Loss reason coverage: ${lossCoverage}, Early loss rate: ${earlyLossRate}`,
+    `${trueSkillNote}`,
     `Top failure modes: ${failureLines}`,
     `Tough opponents by loss rate: ${opponentLines}`,
   ].join('\n');
-};
-
-// Extract the text summary from a Responses API payload with reasoning fallback.
-const extractInsightsSummaryText = (response: any): string | null => {
-  const normalized = normalizeResponse(response, { modelKey: INSIGHTS_SUMMARY_MODEL });
-  const text = typeof normalized.output_text === 'string' ? normalized.output_text.trim() : '';
-  if (text) {
-    return text.replace(/\s+/g, ' ').trim();
-  }
-
-  const reasoning = normalized.output_reasoning?.summary;
-  if (typeof reasoning === 'string' && reasoning.trim().length > 0) {
-    return reasoning.replace(/\s+/g, ' ').trim();
-  }
-
-  if (Array.isArray(reasoning)) {
-    const joined = reasoning
-      .map(item => (typeof item === 'string' ? item : ''))
-      .filter(Boolean)
-      .join(' ');
-    if (joined.trim().length > 0) {
-      return joined.replace(/\s+/g, ' ').trim();
-    }
-  }
-
-  if (reasoning && typeof reasoning === 'object' && typeof (reasoning as any).text === 'string') {
-    const summaryText = (reasoning as any).text.trim();
-    return summaryText.length > 0 ? summaryText.replace(/\s+/g, ' ').trim() : null;
-  }
-
-  return null;
 };
 
 // Call OpenAI directly to generate the model insights summary text.
@@ -147,8 +147,7 @@ const requestInsightsSummary = async (
   // Build a compact prompt from the aggregated stats for the LLM.
   const prompt = buildInsightsSummaryPrompt(modelSlug, summary, failureModes, lossOpponents);
 
-  // Prepare a Responses API payload tailored for a short, single-paragraph summary.
-  // Use the simple input format that works with the OpenAI SDK
+  // Prepare a Responses API payload with structured outputs for actionable insights.
   const requestBody = {
     model: INSIGHTS_SUMMARY_MODEL,
     input: [
@@ -164,25 +163,92 @@ const requestInsightsSummary = async (
         ],
       },
     ],
-    instructions: 'You are a concise analytics reporter for game model performance.',
+    instructions:
+      'You are an eSports commentator covering how this LLM plays Snake. Give a brisk, hype-y breakdown of how it wins and loses, spotlight the key losses and what went wrong in those matches, and skip any ML training talk. Focus on match moments, risky habits, and the opponents that punish it. Do not provide recommendations, coaching, or improvement tips—only describe observed behavior.',
     reasoning: {
-      effort: 'medium',
-      summary: 'auto',
+      effort: 'high',
+      summary: 'detailed',
     },
     text: {
       verbosity: 'high',
+      format: {
+        type: 'json_schema',
+        name: 'model_insights',
+        strict: false,
+        schema: {
+          type: 'object',
+          properties: {
+            summary: {
+              type: 'string',
+              description: 'Brief Twitch streamer type takeaway about how this LLM tends to win or get knocked out'
+            },
+            deathAnalysis: {
+              type: 'array',
+              items: {
+                type: 'object',
+                properties: {
+                  cause: { type: 'string' },
+                  frequency: { type: 'string' },
+                  pattern: { type: 'string' }
+                }
+              },
+              description: 'How it got eliminated, how often, and the situational pattern (early blunders vs late greed)'
+            },
+            toughOpponents: {
+              type: 'array',
+              items: {
+                type: 'object',
+                properties: {
+                  opponent: { type: 'string' },
+                  record: { type: 'string' },
+                  issue: { type: 'string' }
+                }
+              },
+              description: 'Opponents who consistently hand it losses and the matchup quirks they exploit'
+            },
+          },
+          required: ['summary', 'deathAnalysis', 'toughOpponents'],
+          additionalProperties: false
+        }
+      }
     },
-    max_output_tokens: 600,
+    max_output_tokens: 120000,
   };
 
   try {
-    // Execute the OpenAI request and extract the summary text from the response.
-    // Type assertion to bypass TypeScript checking since the runtime format is correct
-    const response = await openAIClient.responses.create(requestBody as any);
-    return extractInsightsSummaryText(response);
+    const response = await openAIClient.responses.create(requestBody as any) as any;
+
+    // Try to extract summary from structured JSON output first
+    // Responses API with json_schema puts output in output_parsed or as text
+    if (response.output_parsed) {
+      const parsed = response.output_parsed;
+      if (typeof parsed.summary === 'string' && parsed.summary.trim()) {
+        return parsed.summary.trim();
+      }
+    }
+
+    // Try parsing output_text as JSON if it contains JSON structure
+    if (response.output_text && typeof response.output_text === 'string') {
+      try {
+        const parsed = JSON.parse(response.output_text);
+        if (typeof parsed.summary === 'string' && parsed.summary.trim()) {
+          return parsed.summary.trim();
+        }
+      } catch {
+        // Not JSON, use as-is
+        const text = response.output_text.trim();
+        if (text) {
+          return text;
+        }
+      }
+    }
+
+    // If no summary was generated, that's okay - report can still be built
+    return null;
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
     logger.warn(`SnakeBenchService.requestInsightsSummary failed: ${message}`, 'snakebench-service');
+    // Return null on failure, but don't throw - report generation should continue
     return null;
   }
 };
@@ -273,6 +339,91 @@ const buildInsightsTweet = (
   return tweet.length > 260 ? `${tweet.slice(0, 257)}...` : tweet;
 };
 
+/**
+ * Build the OpenAI Responses API request payload for model insights.
+ * Separated for reuse between streaming and non-streaming modes.
+ */
+const buildInsightsRequest = (
+  modelSlug: string,
+  summary: WormArenaModelInsightsSummary,
+  failureModes: WormArenaModelInsightsFailureMode[],
+  lossOpponents: WormArenaModelInsightsOpponent[],
+) => {
+  const prompt = buildInsightsSummaryPrompt(modelSlug, summary, failureModes, lossOpponents);
+
+  return {
+    model: INSIGHTS_SUMMARY_MODEL,
+    input: [
+      {
+        id: `msg_${Date.now()}_summary_${Math.random().toString(16).slice(2)}`,
+        role: 'user' as const,
+        type: 'message' as const,
+        content: [
+          {
+            type: 'input_text' as const,
+            text: prompt,
+          },
+        ],
+      },
+    ],
+    instructions:
+      'You are an eSports commentator covering how this LLM plays Snake. Give a brisk, hype-y breakdown of how it wins and loses, spotlight the key losses and what went wrong in those matches, and skip any ML training talk. Focus on match moments, risky habits, and the opponents that punish it.',
+    reasoning: {
+      effort: 'high' as const,
+      summary: 'detailed' as const,
+    },
+    text: {
+      verbosity: 'high' as const,
+      format: {
+        type: 'json_schema' as const,
+        name: 'model_insights',
+        strict: false as const,
+        schema: {
+          type: 'object',
+          properties: {
+            summary: {
+              type: 'string',
+              description: 'One-sentence on-cast takeaway about how this LLM tends to win or get knocked out'
+            },
+            deathAnalysis: {
+              type: 'array',
+              items: {
+                type: 'object',
+                properties: {
+                  cause: { type: 'string' },
+                  frequency: { type: 'string' },
+                  pattern: { type: 'string' }
+                }
+              },
+              description: 'How it got eliminated, how often, and the situational pattern (early blunders vs late greed)'
+            },
+            toughOpponents: {
+              type: 'array',
+              items: {
+                type: 'object',
+                properties: {
+                  opponent: { type: 'string' },
+                  record: { type: 'string' },
+                  issue: { type: 'string' }
+                }
+              },
+              description: 'Opponents who consistently hand it losses and the matchup quirks they exploit'
+            },
+            recommendations: {
+              type: 'array',
+              items: { type: 'string' },
+              description: 'Where this LLM shines, where it struggles (e.g., early chaos vs long setups), and what to lean into or avoid'
+            }
+          },
+          required: ['summary', 'deathAnalysis', 'toughOpponents', 'recommendations'],
+          additionalProperties: false
+        }
+      }
+    },
+    max_output_tokens: 120000,
+  };
+};
+
 export interface StreamingHandlers {
   onStatus?: (status: WormArenaStreamStatus) => void;
   onFrame?: (frame: WormArenaFrameEvent) => void;
@@ -287,6 +438,11 @@ class SnakeBenchService {
   private readonly replayResolver: SnakeBenchReplayResolver;
   private readonly persistenceCoordinator: PersistenceCoordinator;
   private readonly gameIndexManager: GameIndexManager;
+  /**
+   * Locate local MP4 assets for completed games.
+   * We do not attempt generation here—only presence checks to expose downloads.
+   */
+  private readonly videoDirectories: string[];
 
   constructor() {
     const backendDir = path.join(process.cwd(), 'external', 'SnakeBench', 'backend');
@@ -297,6 +453,26 @@ class SnakeBenchService {
     this.matchRunner = new SnakeBenchMatchRunner(this.persistenceCoordinator);
     this.streamingRunner = new SnakeBenchStreamingRunner(this.persistenceCoordinator);
     this.replayResolver = new SnakeBenchReplayResolver(backendDir);
+    this.videoDirectories = [
+      path.join(backendDir, 'completed_games_videos'),
+      path.join(backendDir, 'completed_games_videos_local'),
+    ];
+  }
+
+  /**
+   * Return local MP4 path if present (no generation). Normalizes snake_game_ prefix.
+   */
+  getLocalVideoPath(gameId: string): string | null {
+    if (!gameId) return null;
+    const normalized = gameId
+      .replace(/^snake_game_/i, '')
+      .replace(/\.mp4$/i, '')
+      .replace(/\.json$/i, '');
+    const candidates = this.videoDirectories.map((dir) =>
+      path.join(dir, `snake_game_${normalized}.mp4`),
+    );
+    const found = candidates.find((candidate) => fs.existsSync(candidate));
+    return found ?? null;
   }
 
   /**
@@ -349,7 +525,7 @@ class SnakeBenchService {
 
     // Prefer database-backed summaries, but gracefully fall back to filesystem index
     try {
-      const { games, total } = await repositoryService.snakeBench.getRecentGames(safeLimit);
+      const { games, total } = await repositoryService.gameRead.getRecentGames(safeLimit);
       if (total > 0 && games.length > 0) {
         const replayable = filterReplayableGames(games);
         const available = await this.replayResolver.filterGamesWithAvailableReplays(replayable);
@@ -357,7 +533,7 @@ class SnakeBenchService {
         // Get global total from stats (all matches ever, not just this batch)
         let globalTotal = total;
         try {
-          const stats = await repositoryService.snakeBench.getArcExplainerStats();
+          const stats = await repositoryService.gameRead.getArcExplainerStats();
           globalTotal = stats.totalGames;
         } catch {
           // Fall back to recent games total if stats fetch fails
@@ -435,7 +611,7 @@ class SnakeBenchService {
   async searchMatches(
     query: SnakeBenchMatchSearchQuery
   ): Promise<{ rows: SnakeBenchMatchSearchRow[]; total: number }> {
-    return repositoryService.snakeBench.searchMatches(query);
+    return repositoryService.gameRead.searchMatches(query);
   }
 
   /**
@@ -456,7 +632,7 @@ class SnakeBenchService {
   ): Promise<SnakeBenchTrueSkillLeaderboardEntry[]> {
     const safeLimit = Number.isFinite(limit) ? Math.max(1, Math.min(limit, 150)) : 150;
     const safeMinGames = Number.isFinite(minGames) ? Math.max(1, minGames) : 3;
-    return repositoryService.snakeBench.getTrueSkillLeaderboard(safeLimit, safeMinGames);
+    return repositoryService.leaderboard.getTrueSkillLeaderboard(safeLimit, safeMinGames);
   }
 
   /**
@@ -466,21 +642,21 @@ class SnakeBenchService {
     limit: number = 10,
     sortBy: 'gamesPlayed' | 'winRate' = 'gamesPlayed'
   ): Promise<Array<{ modelSlug: string; gamesPlayed: number; wins: number; losses: number; ties: number; winRate?: number }>> {
-    return repositoryService.snakeBench.getBasicLeaderboard(limit, sortBy);
+    return repositoryService.leaderboard.getBasicLeaderboard(limit, sortBy);
   }
 
   /**
    * Get ARC explainer stats.
    */
   async getArcExplainerStats(): Promise<SnakeBenchArcExplainerStats> {
-    return repositoryService.snakeBench.getArcExplainerStats();
+    return repositoryService.gameRead.getArcExplainerStats();
   }
 
   /**
    * Get model rating.
    */
   async getModelRating(modelSlug: string): Promise<SnakeBenchModelRating | null> {
-    return repositoryService.snakeBench.getModelRating(modelSlug);
+    return repositoryService.leaderboard.getModelRating(modelSlug);
   }
 
   /**
@@ -491,7 +667,7 @@ class SnakeBenchService {
     limit?: number
   ): Promise<SnakeBenchModelMatchHistoryEntry[]> {
     const safeLimit = limit != null && Number.isFinite(limit) ? Number(limit) : 50;
-    return repositoryService.snakeBench.getModelMatchHistory(modelSlug, safeLimit);
+    return repositoryService.gameRead.getModelMatchHistory(modelSlug, safeLimit);
   }
 
   /**
@@ -499,7 +675,7 @@ class SnakeBenchService {
    * Used by the Model Match History page to show every game a model has ever played.
    */
   async getModelMatchHistoryUnbounded(modelSlug: string): Promise<SnakeBenchModelMatchHistoryEntry[]> {
-    return repositoryService.snakeBench.getModelMatchHistoryUnbounded(modelSlug);
+    return repositoryService.gameRead.getModelMatchHistoryUnbounded(modelSlug);
   }
 
   /**
@@ -512,7 +688,7 @@ class SnakeBenchService {
       return null;
     }
 
-    const data = await repositoryService.snakeBench.getModelInsightsData(normalizedSlug);
+    const data = await repositoryService.analytics.getModelInsightsData(normalizedSlug);
     if (!data) {
       return null;
     }
@@ -551,6 +727,139 @@ class SnakeBenchService {
   }
 
   /**
+   * Stream model insights report generation with live reasoning updates via callbacks.
+   * Delegates SSE management to the caller (controller).
+   */
+  async streamModelInsightsReport(
+    modelSlug: string,
+    handlers: {
+      onStatus: (status: WormArenaStreamStatus) => void;
+      onChunk: (chunk: { type: string; delta?: string; content?: string; timestamp: number }) => void;
+    },
+    abortSignal: AbortSignal
+  ): Promise<WormArenaModelInsightsReport> {
+    const normalizedSlug = normalizeModelSlug(modelSlug);
+    if (!normalizedSlug) {
+      throw new Error('Invalid model slug');
+    }
+
+    // Emit status: fetching data
+    handlers.onStatus({
+      state: 'in_progress',
+      phase: 'fetching_data',
+      message: 'Loading model statistics...'
+    });
+
+    const data = await repositoryService.analytics.getModelInsightsData(normalizedSlug);
+    if (!data) {
+      throw new Error('No data available for this model');
+    }
+
+    // Emit status: generating insights
+    handlers.onStatus({
+      state: 'in_progress',
+      phase: 'generating_insights',
+      message: 'Analyzing model performance...'
+    });
+
+    const requestBody = buildInsightsRequest(
+      normalizedSlug,
+      data.summary,
+      data.failureModes,
+      data.lossOpponents
+    );
+
+    // Enable streaming
+    const streamingRequest = {
+      ...requestBody,
+      stream: true,
+    };
+
+    const stream = await openAIClient.responses.stream(streamingRequest as any);
+    const aggregates = createStreamAggregates(true); // Expecting JSON schema output
+
+    // Stream events from OpenAI through callbacks
+    for await (const event of stream as AsyncIterable<ResponseStreamEvent>) {
+      if (abortSignal.aborted) {
+        stream.controller.abort();
+        throw new Error('Stream aborted by client');
+      }
+
+      handleStreamEvent(event, aggregates, {
+        emitChunk: (chunk) => {
+          // Forward chunks through callback
+          handlers.onChunk({
+            type: chunk.type,
+            delta: chunk.delta,
+            content: chunk.content,
+            timestamp: Date.now(),
+          });
+        },
+        emitEvent: (eventName, payload) => {
+          // Route events based on type
+          if (eventName === 'stream.status') {
+            handlers.onStatus(payload as unknown as WormArenaStreamStatus);
+          } else if (eventName === 'stream.chunk') {
+            // Treat stream.chunk events as chunk data
+            handlers.onChunk({
+              type: (payload as any)?.type || 'unknown',
+              delta: (payload as any)?.delta,
+              content: (payload as any)?.content,
+              timestamp: Date.now(),
+            });
+          }
+          // Other event types are silently ignored for now
+        },
+      });
+    }
+
+    // Get final response and build report
+    const finalResponse = await stream.finalResponse();
+
+    // Extract LLM summary from aggregated parsed JSON or text
+    let llmSummary = '';
+    if (aggregates.parsed) {
+      try {
+        const parsed = JSON.parse(aggregates.parsed);
+        // Use the summary field from structured output if available
+        llmSummary = typeof parsed.summary === 'string' ? parsed.summary : aggregates.parsed;
+      } catch {
+        // Fallback to accumulated text if JSON parsing fails
+        llmSummary = aggregates.text || aggregates.parsed;
+      }
+    } else {
+      // Final fallback to response text
+      llmSummary = finalResponse.output_text || '';
+    }
+
+    // Build complete report
+    const generatedAt = new Date().toISOString();
+    const markdownReport = buildInsightsMarkdown(
+      normalizedSlug,
+      generatedAt,
+      data.summary,
+      data.failureModes,
+      data.lossOpponents,
+      llmSummary,
+    );
+    const tweetText = buildInsightsTweet(normalizedSlug, data.summary, data.failureModes);
+
+    const report: WormArenaModelInsightsReport = {
+      modelSlug: normalizedSlug,
+      generatedAt,
+      summary: data.summary,
+      failureModes: data.failureModes,
+      lossOpponents: data.lossOpponents,
+      llmSummary,
+      llmModel: INSIGHTS_SUMMARY_MODEL,
+      markdownReport,
+      tweetText,
+    };
+
+    return report;
+  }
+
+  /**
    * Get all models that have actually played games.
    * Used for the Model Match History page picker.
    */
@@ -564,14 +873,14 @@ class SnakeBenchService {
       winRate?: number;
     }>
   > {
-    return repositoryService.snakeBench.getModelsWithGames();
+    return repositoryService.gameRead.getModelsWithGames();
   }
 
   /**
    * Get recent activity.
    */
   async getRecentActivity(days: number = 7): Promise<{ days: number; gamesPlayed: number; uniqueModels: number }> {
-    return repositoryService.snakeBench.getRecentActivity(days);
+    return repositoryService.gameRead.getRecentActivity(days);
   }
 
   /**
@@ -597,14 +906,11 @@ class SnakeBenchService {
 
     // Get the leaderboard and pairing history
     const leaderboard = await this.getTrueSkillLeaderboard(150, safeMinGames);
-    const pairingHistory = await repositoryService.snakeBench.getPairingHistory();
+    const pairingHistory = await repositoryService.leaderboard.getPairingHistory();
 
-    // Filter to only approved OpenRouter models
-    const approvedModels = new Set(
-      MODELS
-        .filter((m: any) => m.provider === 'OpenRouter' && !m.premium)
-        .map((m: any) => (m.apiModelName || m.key) as string)
-    );
+    // Use all leaderboard models (already filtered by minGames and ranked by TrueSkill).
+    // No additional filtering needed - we want suggestions for any models that have played.
+    const approvedModels = new Set(leaderboard.map(e => e.modelSlug));
 
     return suggestMatchups(mode, safeLimit, safeMinGames, leaderboard, pairingHistory, approvedModels as Set<string>);
   }
@@ -655,6 +961,14 @@ class SnakeBenchService {
       message,
       timestamp: Date.now(),
     };
+  }
+
+  /**
+   * Get run length distribution for models with minimum games threshold.
+   * Delegates to repository method.
+   */
+  async getRunLengthDistribution(minGames: number = 5) {
+    return repositoryService.analytics.getRunLengthDistribution(minGames);
   }
 }
 

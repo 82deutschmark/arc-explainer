@@ -1,14 +1,15 @@
 /**
- * Author: Claude Code using Haiku 4.5
- * Date: 2025-12-19
+ * Author: Gemini 3 Flash High
+ * Date: 2025-12-27
  * PURPOSE: Resolve replay assets for games using smart fallback strategy.
  *          Local files → DB replay_path → remote URLs (Railway backend, GitHub raw).
+ *          Checks both standard and local-only completed game directories.
  * SRP/DRY check: Pass — isolated replay resolution, single source of truth for loading.
  */
 
 import fs from 'fs';
 import path from 'path';
-import type { SnakeBenchGameSummary } from '../../shared/types.js';
+import type { SnakeBenchGameSummary } from '../../../shared/types.js';
 import { repositoryService } from '../../repositories/RepositoryService.ts';
 import { logger } from '../../utils/logger.ts';
 import { fetchJsonFromUrl } from './utils/httpClient.ts';
@@ -38,7 +39,11 @@ export class SnakeBenchReplayResolver {
       throw new Error('gameId is required');
     }
 
-    const completedDir = path.join(this.backendDir, 'completed_games');
+    const backendDir = this.backendDir;
+    const completedDirs = [
+      path.join(backendDir, 'completed_games'),
+      path.join(backendDir, 'completed_games_local'),
+    ];
 
     // Build list of candidate paths and URLs
     const candidatePaths: string[] = [];
@@ -46,7 +51,7 @@ export class SnakeBenchReplayResolver {
 
     // 1. Check database for replay_path (could be local path or remote URL)
     try {
-      const dbReplay = await repositoryService.snakeBench.getReplayPath(gameId);
+      const dbReplay = await repositoryService.gameRead.getReplayPath(gameId);
       const replayPath = dbReplay?.replayPath;
       if (replayPath) {
         if (/^https?:\/\//i.test(replayPath)) {
@@ -66,19 +71,21 @@ export class SnakeBenchReplayResolver {
       );
     }
 
-    // 2. Standard filename in completed_games
+    // 2. Standard filename in all completed_games directories
     let filename = `snake_game_${gameId}.json`;
-    let candidate = path.join(completedDir, filename);
+    for (const dir of completedDirs) {
+      candidatePaths.push(path.join(dir, filename));
+    }
 
-    // 3. Check game_index.json for alternate filename
-    if (!fs.existsSync(candidate)) {
-      const indexFilename = await this.gameIndexManager.findGameFilename(gameId);
-      if (indexFilename) {
-        filename = indexFilename;
-        candidate = path.join(completedDir, filename);
+    // 3. Check game_index.json for alternate filename (try primary dir first)
+    const primaryDir = completedDirs[0];
+    const indexFilename = await this.gameIndexManager.findGameFilename(gameId);
+    if (indexFilename) {
+      filename = indexFilename;
+      for (const dir of completedDirs) {
+        candidatePaths.push(path.join(dir, filename));
       }
     }
-    candidatePaths.push(candidate);
 
     // Try local files first
     const uniquePaths = Array.from(new Set(candidatePaths));
@@ -151,28 +158,32 @@ export class SnakeBenchReplayResolver {
   async replayExists(gameId: string): Promise<boolean> {
     const candidatePaths: string[] = [];
 
-    // Check database for alternate replay_path (e.g., from ingestion or remote URL)
+    // Check database for alternate replay_path
     try {
-      const dbReplay = await repositoryService.snakeBench.getReplayPath(gameId);
+      const dbReplay = await repositoryService.gameRead.getReplayPath(gameId);
       if (dbReplay?.replayPath) {
-        // If it's an HTTP URL, consider it as existing (getReplay() can fetch it)
         if (/^https?:\/\//i.test(dbReplay.replayPath)) {
           return true;
         }
-        // Otherwise it's a local path - add to candidates
         const resolved = path.isAbsolute(dbReplay.replayPath)
           ? dbReplay.replayPath
           : path.join(this.backendDir, dbReplay.replayPath);
         candidatePaths.push(resolved);
       }
     } catch {
-      // DB lookup failed, continue to default path
+      // DB lookup failed
     }
 
-    // Check bundled replay location (primary source)
-    candidatePaths.push(
-      path.join(this.backendDir, 'completed_games', `snake_game_${gameId}.json`)
-    );
+    // Check all bundled replay locations
+    const backendDir = this.backendDir;
+    const completedDirs = [
+      path.join(backendDir, 'completed_games'),
+      path.join(backendDir, 'completed_games_local'),
+    ];
+
+    for (const dir of completedDirs) {
+      candidatePaths.push(path.join(dir, `snake_game_${gameId}.json`));
+    }
 
     // Return true if any candidate path exists locally
     return candidatePaths.some((p) => fs.existsSync(p));

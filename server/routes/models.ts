@@ -58,7 +58,7 @@ function toClientSafeModel(model: any): ClientSafeModel {
 
 async function getDbOpenRouterModels(): Promise<Array<{ key: string; name: string; addedAt?: string }>> {
   if (!repositoryService.isInitialized()) return [];
-  const dbModels = await repositoryService.snakeBench.listModels();
+  const dbModels = await repositoryService.gameRead.listModels();
   return dbModels
     .filter((m) => (m.provider || '').toLowerCase() === 'openrouter' && m.is_active)
     .map((m) => ({

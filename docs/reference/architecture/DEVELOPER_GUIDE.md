@@ -1,6 +1,6 @@
 # ARC Explainer Developer Onboarding Guide
 
-*Last Updated: October 6, 2025*
+*Last Updated: October 6, 2025*  NEEDS UPDATE FOR DECEMBER 27 2025!!!
 
 Welcome to the ARC Explainer project! This guide is designed to help new developers understand the project's architecture, locate key files, and contribute effectively. Our goal is to reuse existing components and maintain a clear, modular structure.
 
