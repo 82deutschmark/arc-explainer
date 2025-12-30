@@ -96,19 +96,28 @@ const buildInsightsSummaryPrompt = (
         .join(', ')
     : 'None';
 
+  // Format all metrics for the prompt
   const avgRounds = formatOptionalNumber(summary.averageRounds, 1);
   const minRounds = formatOptionalNumber(summary.minRounds, 1);
   const maxRounds = formatOptionalNumber(summary.maxRounds, 1);
-  const avgScore = formatOptionalNumber(summary.averageScore, 2);
   const maxScore = formatOptionalNumber(summary.maxScore, 2);
+  const minScore = formatOptionalNumber(summary.minScore, 2);
   const medianScore = formatOptionalNumber(summary.medianScore, 2);
   const p75Score = formatOptionalNumber(summary.p75Score, 2);
+  const totalCost = formatCost(summary.totalCost);
+  const costPerGame = formatCost(summary.costPerGame);
+  const costPerWin = formatCost(summary.costPerWin);
   const costPerLoss = formatCost(summary.costPerLoss);
+  const avgDeathRound = formatOptionalNumber(summary.averageDeathRoundLoss, 1);
   const lossCoverage = formatPercent(summary.lossDeathReasonCoverage);
   const earlyLossRate = formatPercent(summary.earlyLossRate);
   const trueSkillNote = summary.trueSkillExposed != null
     ? `TrueSkill exposed: ${Math.round(summary.trueSkillExposed)} (mu: ${Number(summary.trueSkillMu || 0).toFixed(1)}, sigma: ${Number(summary.trueSkillSigma || 0).toFixed(1)})`
     : 'TrueSkill: unrated';
+
+  const leaderboardNote = summary.leaderboardRank != null && summary.totalModelsRanked != null
+    ? `Leaderboard: Rank #${summary.leaderboardRank} of ${summary.totalModelsRanked} models (by TrueSkill)`
+    : 'Leaderboard: Ranking unavailable';
 
   return [
     'Write one short paragraph (max 400 words).',
@@ -116,11 +125,12 @@ const buildInsightsSummaryPrompt = (
     'Focus on why the model loses and when. Analyze the score distribution (min/max/median/75th percentile apples) and round survival patterns.',
     'Strictly describe observed performance; do not suggest strategies, tips, or recommendations.',
     `Model: ${modelSlug}`,
-    `Games: ${summary.gamesPlayed}, Wins: ${summary.wins}, Losses: ${summary.losses}, Win rate: ${formatPercent(summary.winRate)}`,
+    `Match record: ${summary.gamesPlayed} games (${summary.wins}W / ${summary.losses}L / ${summary.ties}T), Win rate: ${formatPercent(summary.winRate)} (ties excluded)`,
+    `${leaderboardNote}`,
     `Rounds: Min ${minRounds} / Avg ${avgRounds} / Max ${maxRounds}`,
-    `Apples: Min ${formatOptionalNumber(summary.minScore, 2)} / Median ${medianScore} / 75th %ile ${p75Score} / Max ${maxScore} (Total: ${summary.totalApples})`,
-    `Average score: ${avgScore}, Cost per loss: ${costPerLoss}`,
-    `Early loss rate: ${earlyLossRate}, Loss reason coverage: ${lossCoverage}`,
+    `Apples: Min ${minScore} / Median ${medianScore} / 75th %ile ${p75Score} / Max ${maxScore} (Total: ${summary.totalApples})`,
+    `Cost: Total ${totalCost} / Per-game ${costPerGame} / Per-win ${costPerWin} / Per-loss ${costPerLoss}`,
+    `Death patterns: Avg round ${avgDeathRound} when losing, ${summary.unknownLosses} losses without recorded death reason, Loss reason coverage: ${lossCoverage}, Early loss rate: ${earlyLossRate}`,
     `${trueSkillNote}`,
     `Top failure modes: ${failureLines}`,
     `Tough opponents by loss rate: ${opponentLines}`,

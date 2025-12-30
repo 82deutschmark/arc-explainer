@@ -133,6 +133,9 @@ export class AnalyticsRepository extends BaseRepository {
         trueSkillMu: row.trueskill_mu != null ? Number(row.trueskill_mu) : null,
         trueSkillSigma: row.trueskill_sigma != null ? Number(row.trueskill_sigma) : null,
         trueSkillExposed: row.trueskill_exposed != null ? Number(row.trueskill_exposed) : null,
+        // Leaderboard ranking
+        leaderboardRank,
+        totalModelsRanked,
       };
 
       const failureSql = `

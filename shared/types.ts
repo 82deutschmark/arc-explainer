@@ -838,6 +838,9 @@ export interface WormArenaModelInsightsSummary {
   trueSkillMu: number | null;
   trueSkillSigma: number | null;
   trueSkillExposed: number | null;
+  // Leaderboard ranking
+  leaderboardRank: number | null;
+  totalModelsRanked: number | null;
 }
 
 export interface WormArenaModelInsightsReport {
