@@ -1,5 +1,14 @@
 # New entries at the top, use proper SemVer!
 
+### Version 6.16.13  Dec 30, 2025
+
+- **Streaming: Default enablement + OpenAI handler flags** (Author: Cascade - ChatGPT)
+  - Guarded puzzle fetch in `analysisStreamService` so streaming proceeds even when puzzles are unavailable in test harnesses; validation now skips when puzzle is missing.
+  - For non-streaming models, emit `STREAMING_UNAVAILABLE` instead of falling back, matching tests and intent.
+  - OpenAI streaming `json.done` events now include `expectingJson` and `fallback` flags alongside metadata.
+  - **Tests:** `analysisStreamService.test.ts`, `analysisStreamService.streaming.test.ts`, `openaiStreamingHandlers.test.ts`.
+  - **Files Modified:** `server/services/streaming/analysisStreamService.ts`, `server/services/openai/streaming.ts`.
+
 ### Version 6.16.12  Dec 30, 2025
 
 - **UI Polish: Model Insights Report Text Sizing and Twitter Share Improvements** (Author: Claude Sonnet 4)
