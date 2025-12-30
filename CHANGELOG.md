@@ -1,5 +1,26 @@
 # New entries at the top, use proper SemVer!
 
+### Version 6.16.11  Dec 30, 2025
+
+- **DRY: Consolidate Specialized Formatters to Shared Utilities** (Author: Claude Sonnet 4.5)
+  - **New Shared Formatters**:
+    - Added `formatCostSmart()` to `shared/utils/formatters.ts` - Smart unit conversion for very small costs (millicents/cents/dollars)
+    - Added `formatUsdLocale()` to `shared/utils/formatters.ts` - Locale-aware Intl.NumberFormat currency formatting
+    - Both include comprehensive JSDoc with examples and parameter descriptions
+  - **Eliminated Duplicate Code**:
+    - Removed local `formatCost` from `ModelComparisonPage.tsx:380-391` (12 lines) → replaced with `formatCostSmart` (2 call sites)
+    - Removed local `formatUsdPerM` from `AdminOpenRouter.tsx:105-113` (9 lines) → replaced with `formatUsdLocale` (4 call sites)
+  - **Behavior Improvements**:
+    - AdminOpenRouter now shows 'N/A' instead of null for missing pricing (consistent with shared formatter pattern)
+    - Updated conditional checks from `!value` to `value === 'N/A'` for explicit null handling
+  - **Intentionally Kept Local**:
+    - Simple 2-4 decimal formatters in BeetreeSolver, Leaderboards, PoetiqSolver remain local (context-specific variations)
+  - **Files Modified**:
+    - `shared/utils/formatters.ts` (added formatCostSmart, formatUsdLocale with JSDoc)
+    - `client/src/pages/ModelComparisonPage.tsx:27,380-391,712,716` (import shared formatter, remove local, update usages)
+    - `client/src/pages/AdminOpenRouter.tsx:18,106-113,107-109,112-113,119-121,124-125` (import shared formatter, remove local, update conditional checks)
+  - **Impact**: Reduced formatter duplication, centralized specialized logic, maintained backward compatibility
+
 ### Version 6.16.10  Dec 30, 2025
 
 - **Build Fix: Resolved Missing Import Path for Shared Formatters** (Author: Claude Sonnet 4.5)
