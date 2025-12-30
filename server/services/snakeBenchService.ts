@@ -97,20 +97,31 @@ const buildInsightsSummaryPrompt = (
     : 'None';
 
   const avgRounds = formatOptionalNumber(summary.averageRounds, 1);
+  const minRounds = formatOptionalNumber(summary.minRounds, 1);
+  const maxRounds = formatOptionalNumber(summary.maxRounds, 1);
   const avgScore = formatOptionalNumber(summary.averageScore, 2);
+  const maxScore = formatOptionalNumber(summary.maxScore, 2);
+  const medianScore = formatOptionalNumber(summary.medianScore, 2);
+  const p75Score = formatOptionalNumber(summary.p75Score, 2);
   const costPerLoss = formatCost(summary.costPerLoss);
   const lossCoverage = formatPercent(summary.lossDeathReasonCoverage);
   const earlyLossRate = formatPercent(summary.earlyLossRate);
+  const trueSkillNote = summary.trueSkillExposed != null
+    ? `TrueSkill exposed: ${Math.round(summary.trueSkillExposed)} (mu: ${Number(summary.trueSkillMu || 0).toFixed(1)}, sigma: ${Number(summary.trueSkillSigma || 0).toFixed(1)})`
+    : 'TrueSkill: unrated';
 
   return [
     'Write one short paragraph (max 180 words).',
     'No bullets, no headings, no disclaimers.',
-    'Focus on why the model loses and when. Focus on max apples (score) ever achieved. How many rounds can it go?',
+    'Focus on why the model loses and when. Analyze the score distribution (min/max/median/75th percentile apples) and round survival patterns.',
     'Strictly describe observed performance; do not suggest strategies, tips, or recommendations.',
     `Model: ${modelSlug}`,
     `Games: ${summary.gamesPlayed}, Wins: ${summary.wins}, Losses: ${summary.losses}, Win rate: ${formatPercent(summary.winRate)}`,
-    `Average rounds: ${avgRounds}, Average apples: ${avgScore}, Cost per loss: ${costPerLoss}`,
+    `Rounds: Min ${minRounds} / Avg ${avgRounds} / Max ${maxRounds}`,
+    `Apples: Min ${formatOptionalNumber(summary.minScore, 2)} / Median ${medianScore} / 75th %ile ${p75Score} / Max ${maxScore} (Total: ${summary.totalApples})`,
+    `Average score: ${avgScore}, Cost per loss: ${costPerLoss}`,
     `Early loss rate: ${earlyLossRate}, Loss reason coverage: ${lossCoverage}`,
+    `${trueSkillNote}`,
     `Top failure modes: ${failureLines}`,
     `Tough opponents by loss rate: ${opponentLines}`,
   ].join('\n');

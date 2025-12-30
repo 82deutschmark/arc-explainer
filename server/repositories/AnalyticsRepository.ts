@@ -47,16 +47,27 @@ export class AnalyticsRepository extends BaseRepository {
           SUM(CASE WHEN gp.result = 'tied' THEN 1 ELSE 0 END) AS ties,
           COALESCE(SUM(gp.cost), 0) AS total_cost,
           AVG(g.rounds) AS avg_rounds,
+          MIN(g.rounds) AS min_rounds,
+          MAX(g.rounds) AS max_rounds,
           AVG(gp.score) AS avg_score,
+          MAX(gp.score) AS max_score,
+          MIN(gp.score) AS min_score,
+          COALESCE(SUM(gp.score), 0) AS total_apples,
+          PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY gp.score) AS median_score,
+          PERCENTILE_CONT(0.75) WITHIN GROUP (ORDER BY gp.score) AS p75_score,
           AVG(CASE WHEN gp.result = 'lost' THEN gp.death_round END) AS avg_death_round_loss,
           SUM(CASE WHEN gp.result = 'lost' AND gp.death_round IS NOT NULL AND gp.death_round <= $2 THEN 1 ELSE 0 END) AS early_losses,
           SUM(CASE WHEN gp.result = 'lost' AND gp.death_reason IS NOT NULL THEN 1 ELSE 0 END) AS losses_with_reason,
-          SUM(CASE WHEN gp.result = 'lost' AND gp.death_reason IS NULL THEN 1 ELSE 0 END) AS losses_without_reason
+          SUM(CASE WHEN gp.result = 'lost' AND gp.death_reason IS NULL THEN 1 ELSE 0 END) AS losses_without_reason,
+          m.trueskill_mu,
+          m.trueskill_sigma,
+          m.trueskill_exposed
         FROM public.game_participants gp
         JOIN public.models m ON gp.model_id = m.id
         JOIN public.games g ON gp.game_id = g.id
         WHERE ${SQL_NORMALIZE_SLUG('m.model_slug')} = ${SQL_NORMALIZE_SLUG('$1')}
-          AND g.status = 'completed' AND COALESCE(g.rounds, 0) > 0;
+          AND g.status = 'completed' AND COALESCE(g.rounds, 0) > 0
+        GROUP BY m.trueskill_mu, m.trueskill_sigma, m.trueskill_exposed;
       `;
 
       const summaryRes = await this.query(summarySql, [modelSlug, earlyLossThreshold], client);
@@ -75,13 +86,27 @@ export class AnalyticsRepository extends BaseRepository {
         costPerGame: gamesPlayed > 0 ? totalCost / gamesPlayed : null,
         costPerWin: wins > 0 ? totalCost / wins : null,
         costPerLoss: losses > 0 ? totalCost / losses : null,
+        // Round statistics
         averageRounds: row.avg_rounds != null ? Number(row.avg_rounds) : null,
+        minRounds: row.min_rounds != null ? Number(row.min_rounds) : null,
+        maxRounds: row.max_rounds != null ? Number(row.max_rounds) : null,
+        // Score/apple statistics
         averageScore: row.avg_score != null ? Number(row.avg_score) : null,
+        minScore: row.min_score != null ? Number(row.min_score) : null,
+        maxScore: row.max_score != null ? Number(row.max_score) : null,
+        medianScore: row.median_score != null ? Number(row.median_score) : null,
+        p75Score: row.p75_score != null ? Number(row.p75_score) : null,
+        totalApples: parseInt(String(row.total_apples || '0'), 10),
+        // Death statistics
         averageDeathRoundLoss: row.avg_death_round_loss != null ? Number(row.avg_death_round_loss) : null,
         earlyLosses: parseInt(String(row.early_losses || '0'), 10),
         earlyLossRate: losses > 0 ? parseInt(String(row.early_losses || '0'), 10) / losses : 0,
         lossDeathReasonCoverage: losses > 0 ? parseInt(String(row.losses_with_reason || '0'), 10) / losses : 0,
         unknownLosses: parseInt(String(row.losses_without_reason || '0'), 10),
+        // TrueSkill rating
+        trueSkillMu: row.trueskill_mu != null ? Number(row.trueskill_mu) : null,
+        trueSkillSigma: row.trueskill_sigma != null ? Number(row.trueskill_sigma) : null,
+        trueSkillExposed: row.trueskill_exposed != null ? Number(row.trueskill_exposed) : null,
       };
 
       const failureSql = `

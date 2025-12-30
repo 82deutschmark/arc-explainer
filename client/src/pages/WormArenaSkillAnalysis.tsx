@@ -235,7 +235,6 @@ export default function WormArenaSkillAnalysis() {
             { label: 'Rules', href: '/worm-arena/rules' },
           ]}
           showMatchupLabel={false}
-          compact
         />
 
         <main className="w-full max-w-[1500px] mx-auto px-2 md:px-3 py-3 space-y-6">
