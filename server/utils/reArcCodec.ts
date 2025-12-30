@@ -17,14 +17,34 @@
  * SRP/DRY check: Pass - Single purpose: task ID encoding/decoding for RE-ARC evaluation
  */
 
+import crypto from 'crypto';
+
+/**
+ * Derive internal seed from public seedId using HMAC-SHA256.
+ * Prevents dataset regeneration and task ID prediction without server secret.
+ *
+ * @param seedId - Public seed identifier (typically Unix timestamp)
+ * @param pepper - Server secret (RE_ARC_SEED_PEPPER)
+ * @returns 32-bit unsigned integer for PRNG seeding
+ */
+export function deriveSeed(seedId: number, pepper: string): number {
+  const hmac = crypto.createHmac('sha256', pepper)
+    .update(seedId.toString())
+    .digest();
+
+  // Extract first 4 bytes as unsigned 32-bit integer
+  return hmac.readUInt32BE(0);
+}
 
 /**
  * Result of decoding task IDs.
  * Contains all information needed for evaluation.
  */
 export interface DecodedTaskIds {
-  /** Recovered seed from XOR of all task IDs */
-  seed: number;
+  /** Recovered public seedId from XOR of all task IDs */
+  seedId: number;
+  /** Derived internal seed (from seedId + pepper) */
+  internalSeed: number;
   /** Task IDs sorted in generation order (position 0, 1, 2, ...) */
   orderedTaskIds: string[];
   /** Decoded message bytes (if messageLength was provided) */
@@ -225,25 +245,27 @@ function generateUniqueSequence(rng: SimplePRNG, count: number, targetXor: numbe
 }
 
 /**
- * Generate task IDs with optional message encoding.
+ * Generate task IDs with separated public ID and PRNG seed.
  *
  * Algorithm:
- * 1. Generate normal sequence (lower 16 bits) - XORs to seed & 0xFFFF
- * 2. Generate unique sequence (upper 16 bits) - XORs to seed >>> 16
+ * 1. Use internalSeed to seed PRNG for generating random sequences
+ * 2. Generate sequences that XOR to seedId (public, recoverable)
  * 3. Optionally XOR message bytes into lower bits of tasks [0..n-2]
  * 4. Combine into 32-bit task IDs
  *
  * Message capacity: (numTasks - 1) × 2 bytes
  * (Task n-1 cannot encode because its lower bits are determined by XOR constraint)
  *
- * @param seed - Random seed for generation
+ * @param seedId - Public identifier (XOR-encoded, recoverable)
+ * @param internalSeed - Server-secret seed for PRNG (prevents prediction)
  * @param numTasks - Number of task IDs to generate
  * @param messageBytes - Optional message to encode
  * @returns Array of 8-character hex task IDs
  * @throws Error if message is too large or generation fails
  */
 export function generateTaskIds(
-  seed: number,
+  seedId: number,
+  internalSeed: number,
   numTasks: number,
   messageBytes?: Uint8Array
 ): string[] {
@@ -264,10 +286,12 @@ export function generateTaskIds(
     );
   }
 
-  const rng = new SimplePRNG(seed);
+  // Use internalSeed for PRNG (unpredictable without server secret)
+  const rng = new SimplePRNG(internalSeed);
 
   // Step 1: Generate lower bits with message encoding
-  const lowerTargetXor = seed & 0xffff;
+  // XOR target is seedId (public, recoverable)
+  const lowerTargetXor = seedId & 0xffff;
   const lowerBits: number[] = [];
   let xorAccumulator = 0;
 
@@ -297,7 +321,8 @@ export function generateTaskIds(
   lowerBits.push(lastLower);
 
   // Step 2: Generate unique sequence (upper 16 bits)
-  const upperTargetXor = seed >>> 16;
+  // XOR target is seedId (public, recoverable)
+  const upperTargetXor = seedId >>> 16;
   const upperBits = generateUniqueSequence(rng, numTasks, upperTargetXor);
 
   // Step 4: Combine into task IDs
@@ -311,41 +336,47 @@ export function generateTaskIds(
 }
 
 /**
- * Decode task IDs to recover seed, generation order, and optional message.
+ * Decode task IDs to recover seedId, derive internalSeed, and restore order.
  * This is the primary decoding function that returns all evaluation data.
  *
  * Algorithm:
- * 1. Recover seed via XOR of all task IDs
- * 2. Regenerate lower and upper bit sequences
- * 3. Map task IDs to generation positions using upper bits
- * 4. Optionally decode message from lower bits
+ * 1. Recover seedId via XOR of all task IDs
+ * 2. Derive internalSeed from seedId + pepper
+ * 3. Regenerate PRNG sequences using internalSeed
+ * 4. Map task IDs to generation positions using upper bits
+ * 5. Optionally decode message from lower bits
  *
  * @param taskIds - Array of task IDs (in any order)
+ * @param pepper - Server secret for deriving internalSeed
  * @param messageLength - Optional message length to decode
- * @returns Object containing seed, ordered task IDs, and optional message
+ * @returns Object with seedId, internalSeed, ordered task IDs, optional message
  * @throws Error if task IDs are invalid or message decoding fails
  */
-export function decodeTaskIds(taskIds: string[], messageLength?: number): DecodedTaskIds {
-  // Step 1: Recover seed via XOR
-  const seed = recoverSeed(taskIds);
+export function decodeTaskIds(taskIds: string[], pepper: string, messageLength?: number): DecodedTaskIds {
+  // Step 1: Recover public seedId via XOR
+  const seedId = recoverSeed(taskIds);
 
-  const rng = new SimplePRNG(seed);
+  // Step 2: Derive internalSeed from seedId + pepper
+  const internalSeed = deriveSeed(seedId, pepper);
 
-  // Step 2: Regenerate sequences (must match generation exactly)
-  const lowerTargetXor = seed & 0xffff;
+  // Step 3: Regenerate sequences using internalSeed for PRNG
+  const rng = new SimplePRNG(internalSeed);
+
+  // XOR targets are seedId (public, recoverable)
+  const lowerTargetXor = seedId & 0xffff;
   const lowerBits = generateNormalSequence(rng, taskIds.length, lowerTargetXor);
 
-  const upperTargetXor = seed >>> 16;
+  const upperTargetXor = seedId >>> 16;
   const upperBits = generateUniqueSequence(rng, taskIds.length, upperTargetXor);
 
-  // Step 3: Build map of upper bits → task ID
+  // Step 4: Build map of upper bits → task ID
   const taskMap = new Map<number, string>();
   for (const taskId of taskIds) {
     const upper = getTaskIdUpper(taskId);
     taskMap.set(upper, taskId);
   }
 
-  // Step 4: Sort task IDs by generation order
+  // Step 5: Sort task IDs by generation order
   const orderedTaskIds: string[] = [];
   for (let i = 0; i < upperBits.length; i++) {
     const expectedUpper = upperBits[i];
@@ -360,7 +391,7 @@ export function decodeTaskIds(taskIds: string[], messageLength?: number): Decode
     orderedTaskIds.push(taskId);
   }
 
-  // Step 5: Optionally decode message
+  // Step 6: Optionally decode message
   let message: Uint8Array | undefined;
   if (messageLength !== undefined && messageLength > 0) {
     message = new Uint8Array(messageLength);
@@ -390,5 +421,5 @@ export function decodeTaskIds(taskIds: string[], messageLength?: number): Decode
     }
   }
 
-  return { seed, orderedTaskIds, message };
+  return { seedId, internalSeed, orderedTaskIds, message };
 }

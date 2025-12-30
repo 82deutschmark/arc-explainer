@@ -18,6 +18,7 @@ import { logger } from '../../utils/logger.ts';
 import {
   generateTaskIds,
   decodeTaskIds,
+  deriveSeed,
 } from '../../utils/reArcCodec.ts';
 import type { ARCSubmission } from '../../../shared/types.ts';
 
@@ -392,26 +393,32 @@ async function getTaskCount(seed: number): Promise<number> {
  * the re-arc library's filtering logic). The task count is queried from Python before
  * generation begins.
  *
- * **Seed as timestamp**: In this iteration, the seed should be the Unix timestamp
- * (seconds) at generation time. This allows recovery during evaluation without
- * separate timestamp encoding.
+ * **Security**: Task IDs encode the public seedId but use server-secret-derived
+ * internalSeed for PRNG patterns (prevents external regeneration).
  *
- * @param seed - Random seed for deterministic generation (typically Unix timestamp in seconds)
+ * @param seedId - Public seed identifier (typically Unix timestamp in seconds)
  * @yields Objects with {taskId, task} for each generated task
- * @throws Error if Python subprocess fails or times out
+ * @throws Error if Python subprocess fails, times out, or RE_ARC_SEED_PEPPER not configured
  */
 export async function* generateDataset(
-  seed: number,
+  seedId: number,
 ): AsyncGenerator<GeneratedTask> {
-  // Step 1: Get task count from Python (seed determines count)
-  const taskCount = await getTaskCount(seed);
+  // Derive internal seed for Python RNG (prevents external regeneration)
+  const pepper = process.env.RE_ARC_SEED_PEPPER;
+  if (!pepper) {
+    throw new Error('RE_ARC_SEED_PEPPER environment variable not configured');
+  }
+  const internalSeed = deriveSeed(seedId, pepper);
 
-  // Step 2: Generate our task IDs (no message encoding in this iteration)
-  const ourTaskIds = generateTaskIds(seed, taskCount);
+  // Step 1: Get task count from Python using internal seed
+  const taskCount = await getTaskCount(internalSeed);
 
-  // Step 3: Spawn Python for dataset generation and yield tasks
+  // Step 2: Generate task IDs (seedId encoded, internalSeed for PRNG)
+  const ourTaskIds = generateTaskIds(seedId, internalSeed, taskCount);
+
+  // Step 3: Spawn Python for dataset generation using internal seed
   yield* runReArcSubprocess<GeneratedTask>({
-    seed,
+    seed: internalSeed,
     contextName: 're-arc generateDataset',
     expectedCount: taskCount,
     processLine: (line, taskIndex) => {
@@ -430,7 +437,7 @@ export async function* generateDataset(
 /**
  * Evaluate a submission against deterministically regenerated ground truth.
  *
- * Recovers seed from task IDs, regenerates the dataset,
+ * Recovers seedId from task IDs, derives internalSeed, regenerates the dataset,
  * compares submission predictions against ground truth, and streams progress.
  *
  * Scoring: A test input is solved if ANY of the 2 prediction attempts match the output.
@@ -441,16 +448,23 @@ export async function* generateDataset(
  * @returns Evaluation result:
  *   - { type: 'score', score } if submission is valid and scored
  *   - { type: 'mismatches', mismatches } if prediction counts don't match test input counts
- *   - { type: 'malformed', error } if task IDs can't be decoded
+ *   - { type: 'malformed', error } if task IDs can't be decoded or RE_ARC_SEED_PEPPER not configured
  */
 export async function evaluateSubmission(
   submission: ARCSubmission,
   onProgress?: (progress: EvaluationProgress) => void,
 ): Promise<EvaluationResult> {
-  // Step 1: Recover seed and ordered task IDs
+  // Step 1: Recover seedId and derive internalSeed from task IDs
   let decoded;
   try {
-    decoded = decodeTaskIds(Object.keys(submission));
+    const pepper = process.env.RE_ARC_SEED_PEPPER;
+    if (!pepper) {
+      return {
+        type: 'malformed',
+        error: 'RE_ARC_SEED_PEPPER not configured on server',
+      };
+    }
+    decoded = decodeTaskIds(Object.keys(submission), pepper);
   } catch (err) {
     const errorMessage = err instanceof Error ? err.message : String(err);
     return {
@@ -459,14 +473,14 @@ export async function evaluateSubmission(
     };
   }
 
-  const { seed, orderedTaskIds } = decoded;
+  const { seedId, internalSeed, orderedTaskIds } = decoded;
   const numTasks = orderedTaskIds.length;
 
   // Step 2: Build ordered submission array
   const submissionInOrder = orderedTaskIds.map((taskId) => submission[taskId]);
 
-  // Step 3: Check cache for this seed
-  const cachedTestOutputs = __testOnly_datasetCache.get(seed);
+  // Step 3: Check cache for this seedId (public identifier)
+  const cachedTestOutputs = __testOnly_datasetCache.get(seedId);
   let totalScore = 0;
   const mismatches: PredictionCountMismatch[] = [];
 
@@ -512,7 +526,7 @@ export async function evaluateSubmission(
     const testOutputs: { output: number[][] }[][] = [];
 
     for await (const _ of runReArcSubprocess({
-      seed,
+      seed: internalSeed,
       contextName: 're-arc evaluateSubmission',
       expectedCount: numTasks,
       processLine: (line, taskIndex) => {
@@ -534,8 +548,8 @@ export async function evaluateSubmission(
       // No-op: just processing for side effects (scoring + collecting)
     }
 
-    // Cache the collected dataset
-    __testOnly_datasetCache.set(seed, testOutputs);
+    // Cache the collected dataset (keyed by public seedId)
+    __testOnly_datasetCache.set(seedId, testOutputs);
   }
 
   // Step 4: Return mismatches if any, otherwise return score
