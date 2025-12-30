@@ -1,14 +1,16 @@
 /**
- * Author: Cascade
+ * Author: Cascade (updated by Claude Code using Opus 4.5)
  * Date: 2025-12-30
  * PURPOSE: Inline actionable insights report for the Worm Arena Models page.
  *          Generates a per-model report on demand, displays an LLM summary,
  *          and provides copy, save, and Twitter/X share actions.
  *          Integrated full performance metrics including quartiles and ranking.
  * SRP/DRY check: Pass - focused on report display and actions.
- * 
+ *
  * 2025-12-30: UI polish - smaller title, larger summary text, compact buttons,
  *             improved Share on X button styling.
+ * 2025-12-30: Added visualizations - TrueSkill metrics display, bell curve comparison
+ *             vs toughest opponent, and game length distribution chart filtered to model.
  */
 
 import React from 'react';
@@ -20,12 +22,17 @@ import {
   formatReasonLabel,
 } from '@shared/utils/formatters';
 import { useWormArenaModelInsightsStream } from '@/hooks/useWormArenaModelInsightsStream';
+import { useWormArenaTrueSkillLeaderboard } from '@/hooks/useWormArenaTrueSkillLeaderboard';
+import { useWormArenaDistributions } from '@/hooks/useWormArenaDistributions';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from '@/components/ui/accordion';
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
+import WormArenaSkillMetrics from '@/components/wormArena/stats/WormArenaSkillMetrics';
+import WormArenaSkillDistributionChart from '@/components/wormArena/stats/WormArenaSkillDistributionChart';
+import WormArenaRunLengthChart from '@/components/wormArena/stats/WormArenaRunLengthChart';
 
 interface WormArenaModelInsightsReportProps {
   modelSlug: string;
@@ -62,6 +69,41 @@ export default function WormArenaModelInsightsReport({ modelSlug }: WormArenaMod
   } = useWormArenaModelInsightsStream();
   const [copyHint, setCopyHint] = React.useState<string | null>(null);
   const [downloadUrl, setDownloadUrl] = React.useState<string | null>(null);
+
+  // Fetch TrueSkill leaderboard for opponent comparison
+  const { entries: leaderboardEntries } = useWormArenaTrueSkillLeaderboard(150, 3);
+
+  // Fetch distribution data for run length chart
+  const { data: distributionData } = useWormArenaDistributions(1);
+
+  // Get opponent TrueSkill from leaderboard (for the toughest opponent)
+  const opponentTrueSkill = React.useMemo(() => {
+    if (!report?.lossOpponents?.length || !leaderboardEntries.length) return null;
+
+    const toughestOpponent = report.lossOpponents[0]; // Already sorted by loss rate
+    const entry = leaderboardEntries.find(e => e.modelSlug === toughestOpponent.opponentSlug);
+    if (!entry) return null;
+
+    return {
+      slug: toughestOpponent.opponentSlug,
+      mu: entry.mu,
+      sigma: entry.sigma,
+    };
+  }, [report?.lossOpponents, leaderboardEntries]);
+
+  // Filter distribution data to only include the current model
+  const filteredDistributionData = React.useMemo(() => {
+    if (!distributionData?.distributionData) return null;
+
+    const modelData = distributionData.distributionData.find(m => m.modelSlug === modelSlug);
+    if (!modelData) return null;
+
+    return {
+      ...distributionData,
+      distributionData: [modelData],
+      modelsIncluded: 1,
+    };
+  }, [distributionData, modelSlug]);
 
   // Reset report state when the selected model changes.
   React.useEffect(() => {
@@ -247,6 +289,20 @@ export default function WormArenaModelInsightsReport({ modelSlug }: WormArenaMod
             <div className="text-xs" style={{ color: 'var(--worm-muted)' }}>
               Generated: {formatDateTime(report.generatedAt)}
             </div>
+
+            {/* TrueSkill Metrics Visualization */}
+            {report.summary.trueSkillMu != null && report.summary.trueSkillSigma != null && (
+              <div className="rounded-lg border p-4" style={{ borderColor: 'var(--worm-border)', backgroundColor: 'rgba(255, 255, 255, 0.5)' }}>
+                <h4 className="text-base font-bold mb-4" style={{ color: 'var(--worm-ink)' }}>TrueSkill Rating</h4>
+                <WormArenaSkillMetrics
+                  mu={report.summary.trueSkillMu}
+                  sigma={report.summary.trueSkillSigma}
+                  exposed={report.summary.trueSkillExposed ?? report.summary.trueSkillMu - 3 * report.summary.trueSkillSigma}
+                  modelSlug={modelSlug}
+                />
+              </div>
+            )}
+
             {/* Structured insights from LLM */}
             {report.llmSummary && (
               <div className="space-y-4">
@@ -406,7 +462,51 @@ export default function WormArenaModelInsightsReport({ modelSlug }: WormArenaMod
 
             <Separator />
 
-            <Accordion type="multiple" defaultValue={["failure-modes", "cost-efficiency", "opponents", "data-quality"]} className="w-full">
+            <Accordion type="multiple" defaultValue={["skill-comparison", "game-length", "failure-modes", "cost-efficiency", "opponents", "data-quality"]} className="w-full">
+              {/* Skill Comparison - Bell Curve vs Toughest Opponent */}
+              {report.summary.trueSkillMu != null && report.summary.trueSkillSigma != null && (
+                <AccordionItem value="skill-comparison">
+                  <AccordionTrigger className="text-base font-bold">Skill Comparison</AccordionTrigger>
+                  <AccordionContent>
+                    <div className="space-y-3">
+                      <p className="text-sm" style={{ color: 'var(--worm-muted)' }}>
+                        Bell curve showing skill distribution{opponentTrueSkill ? ` compared to toughest opponent (${opponentTrueSkill.slug})` : ''}.
+                      </p>
+                      <WormArenaSkillDistributionChart
+                        mu={report.summary.trueSkillMu}
+                        sigma={report.summary.trueSkillSigma}
+                        exposed={report.summary.trueSkillExposed ?? report.summary.trueSkillMu - 3 * report.summary.trueSkillSigma}
+                        modelLabel={modelSlug.split('/').pop() || modelSlug}
+                        referenceMu={opponentTrueSkill?.mu}
+                        referenceSigma={opponentTrueSkill?.sigma}
+                        referenceLabel={opponentTrueSkill?.slug.split('/').pop()}
+                        width={500}
+                        height={280}
+                      />
+                    </div>
+                  </AccordionContent>
+                </AccordionItem>
+              )}
+
+              {/* Game Length Analysis - Run Length Distribution */}
+              {filteredDistributionData && (
+                <AccordionItem value="game-length">
+                  <AccordionTrigger className="text-base font-bold">Game Length Distribution</AccordionTrigger>
+                  <AccordionContent>
+                    <div className="space-y-3">
+                      <p className="text-sm" style={{ color: 'var(--worm-muted)' }}>
+                        Distribution of game lengths (rounds) for this model, showing wins and losses.
+                      </p>
+                      <WormArenaRunLengthChart
+                        data={filteredDistributionData}
+                        minRounds={0}
+                        includeLowModels={true}
+                      />
+                    </div>
+                  </AccordionContent>
+                </AccordionItem>
+              )}
+
               <AccordionItem value="failure-modes">
                 <AccordionTrigger className="text-base font-bold">Failure Modes</AccordionTrigger>
                 <AccordionContent>
