@@ -1,11 +1,14 @@
 /**
- * Author: Cascade
- * Date: 2025-12-28
+ * Author: Cascade (updated by Claude Code using Opus 4.5)
+ * Date: 2025-12-30
  * PURPOSE: Worm Arena Models page - "Combat Dossier" style redesign.
  *          Auto-selects first model on load if none specified in URL,
  *          persists selection in URL query params,
- *          shows model combat profile with stats, streaks, and full match history.
+ *          shows model combat profile with TrueSkill metrics and full match history.
  * SRP/DRY check: Pass - page composition only, data fetching in hooks.
+ *
+ * 2025-12-30: Replaced streak badge with 5 real TrueSkill metric badges:
+ *             Rank, Skill (mu), Uncertainty (sigma), Win Rate, Placement progress.
  */
 
 import React, { useEffect, useState, useMemo, useCallback } from 'react';
@@ -19,6 +22,7 @@ import {
   useWormArenaModelsWithGames,
   useWormArenaModelHistory,
 } from '@/hooks/useWormArenaModels';
+import { useWormArenaTrueSkillLeaderboard } from '@/hooks/useWormArenaTrueSkillLeaderboard';
 
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -30,83 +34,10 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import {
-  Trophy,
-  Skull,
   Target,
-  TrendingUp,
-  TrendingDown,
-  Minus,
   FileJson,
 } from 'lucide-react';
-
-/** Calculate current streak from match history */
-function calculateStreak(history: { result: string }[]): { type: 'win' | 'loss' | 'tie' | 'none'; count: number } {
-  if (!history || history.length === 0) return { type: 'none', count: 0 };
-
-  // Sort by date descending (most recent first)
-  const sorted = [...history].sort((a: any, b: any) =>
-    new Date(b.startedAt || 0).getTime() - new Date(a.startedAt || 0).getTime()
-  );
-
-  const firstResult = sorted[0].result as 'won' | 'lost' | 'tied';
-  let count = 0;
-
-  for (const game of sorted) {
-    if (game.result === firstResult) {
-      count++;
-    } else {
-      break;
-    }
-  }
-
-  const typeMap: Record<string, 'win' | 'loss' | 'tie'> = {
-    won: 'win',
-    lost: 'loss',
-    tied: 'tie',
-  };
-
-  return { type: typeMap[firstResult] || 'none', count };
-}
-
-/** Streak badge component */
-function StreakBadge({ streak }: { streak: { type: string; count: number } }) {
-  if (streak.type === 'none' || streak.count === 0) return null;
-
-  const config = {
-    win: {
-      bg: 'bg-emerald-900/20',
-      border: 'border-emerald-700',
-      text: 'text-emerald-800',
-      icon: TrendingUp,
-      label: 'Win Streak'
-    },
-    loss: {
-      bg: 'bg-red-900/20',
-      border: 'border-red-700',
-      text: 'text-red-800',
-      icon: TrendingDown,
-      label: 'Loss Streak'
-    },
-    tie: {
-      bg: 'bg-amber-900/20',
-      border: 'border-amber-700',
-      text: 'text-amber-800',
-      icon: Minus,
-      label: 'Tie Streak'
-    },
-  }[streak.type] || { bg: '', border: '', text: '', icon: Minus, label: '' };
-
-  const Icon = config.icon;
-
-  return (
-    <div className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md border ${config.bg} ${config.border}`}>
-      <Icon className={`w-4 h-4 ${config.text}`} />
-      <span className={`text-sm font-bold ${config.text}`}>
-        {streak.count} {config.label}
-      </span>
-    </div>
-  );
-}
+import { Badge } from '@/components/ui/badge';
 
 export default function WormArenaModels() {
   const [location, setLocation] = useLocation();
@@ -145,6 +76,9 @@ export default function WormArenaModels() {
     fetchHistory,
     clearHistory,
   } = useWormArenaModelHistory();
+
+  // Fetch TrueSkill leaderboard for real ranking
+  const { entries: leaderboardEntries } = useWormArenaTrueSkillLeaderboard(150, 3);
 
   // Selected model state - initialized from URL
   const [selectedModel, setSelectedModel] = useState<string>(getModelFromUrl());
@@ -210,11 +144,32 @@ export default function WormArenaModels() {
     ? ((rating!.wins / decidedGames) * 100).toFixed(1)
     : '0.0';
 
-  // Calculate streak from history
-  const streak = useMemo(() => calculateStreak(history), [history]);
-
   // Get selected model info
   const selectedModelInfo = models.find(m => m.modelSlug === selectedModel);
+
+  // Compute TrueSkill metrics from leaderboard
+  const trueSkillMetrics = useMemo(() => {
+    if (!selectedModel || !leaderboardEntries.length) return null;
+
+    const entryIndex = leaderboardEntries.findIndex(e => e.modelSlug === selectedModel);
+    if (entryIndex === -1) return null;
+
+    const entry = leaderboardEntries[entryIndex];
+    const gamesPlayed = entry.wins + entry.losses + entry.ties;
+    const placementProgress = Math.min(gamesPlayed / 9, 1); // 9 games = full placement
+
+    return {
+      rank: entryIndex + 1,
+      totalRanked: leaderboardEntries.length,
+      mu: entry.mu,
+      sigma: entry.sigma,
+      exposed: entry.exposed,
+      winRate: decidedGames > 0 ? (rating!.wins / decidedGames) : 0,
+      gamesPlayed,
+      placementProgress,
+      isPlaced: gamesPlayed >= 9,
+    };
+  }, [selectedModel, leaderboardEntries, decidedGames, rating]);
 
   return (
     <TooltipProvider>
@@ -323,27 +278,60 @@ export default function WormArenaModels() {
 
           {/* Combat Profile - Compact header only when model selected */}
           {selectedModel && rating && (
-            <>
-              <div className="worm-card overflow-hidden">
-                <div className="bg-gradient-to-r from-[var(--worm-header-bg)] to-[#3d2817] p-4">
-                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-                    <div>
-                      <h1 className="text-lg sm:text-xl font-bold text-[var(--worm-header-ink)]">
-                        {selectedModelInfo?.modelName || selectedModel}
-                      </h1>
-                    </div>
-                    <div className="flex flex-wrap items-center gap-3">
-                      <StreakBadge streak={streak} />
-                      {selectedModelInfo && (
-                        <span className="text-xs text-[var(--worm-header-accent)] font-semibold">
-                          Rank #{models.findIndex(m => m.modelSlug === selectedModel) + 1}/{models.length}
-                        </span>
-                      )}
-                    </div>
+            <div className="worm-card overflow-hidden">
+              <div className="bg-gradient-to-r from-[var(--worm-header-bg)] to-[#3d2817] p-4">
+                <div className="flex flex-col gap-3">
+                  <h1 className="text-lg sm:text-xl font-bold text-[var(--worm-header-ink)]">
+                    {selectedModelInfo?.modelName || selectedModel}
+                  </h1>
+                  {/* TrueSkill Metric Badges */}
+                  <div className="flex flex-wrap items-center gap-2">
+                    {trueSkillMetrics ? (
+                      <>
+                        {/* TrueSkill Rank */}
+                        <Badge className="bg-amber-600 hover:bg-amber-600 text-white border-0 px-3 py-1">
+                          Rank #{trueSkillMetrics.rank}/{trueSkillMetrics.totalRanked}
+                        </Badge>
+                        {/* Skill mu */}
+                        <Badge className="bg-blue-600 hover:bg-blue-600 text-white border-0 px-3 py-1">
+                          Skill {trueSkillMetrics.mu.toFixed(1)}
+                        </Badge>
+                        {/* Uncertainty sigma */}
+                        <Badge
+                          className={`border-0 px-3 py-1 text-white ${
+                            trueSkillMetrics.sigma < 3
+                              ? 'bg-green-600 hover:bg-green-600'
+                              : 'bg-gray-500 hover:bg-gray-500'
+                          }`}
+                        >
+                          {trueSkillMetrics.sigma < 3 ? 'Stable' : 'Uncertain'} ({trueSkillMetrics.sigma.toFixed(1)})
+                        </Badge>
+                        {/* Win Rate */}
+                        <Badge className="bg-emerald-600 hover:bg-emerald-600 text-white border-0 px-3 py-1">
+                          {(trueSkillMetrics.winRate * 100).toFixed(0)}% WR
+                        </Badge>
+                        {/* Placement Progress */}
+                        <Badge
+                          className={`border-0 px-3 py-1 text-white ${
+                            trueSkillMetrics.isPlaced
+                              ? 'bg-green-600 hover:bg-green-600'
+                              : 'bg-yellow-600 hover:bg-yellow-600'
+                          }`}
+                        >
+                          {trueSkillMetrics.isPlaced
+                            ? 'Placed'
+                            : `${trueSkillMetrics.gamesPlayed}/9 games`}
+                        </Badge>
+                      </>
+                    ) : (
+                      <span className="text-sm text-[var(--worm-header-accent)]">
+                        Loading TrueSkill metrics...
+                      </span>
+                    )}
                   </div>
                 </div>
               </div>
-            </>
+            </div>
           )}
 
           {/* Actionable Insights Report */}
