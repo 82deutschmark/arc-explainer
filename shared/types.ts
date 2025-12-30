@@ -821,12 +821,23 @@ export interface WormArenaModelInsightsSummary {
   costPerWin: number | null;
   costPerLoss: number | null;
   averageRounds: number | null;
+  minRounds: number | null;
+  maxRounds: number | null;
   averageScore: number | null;
+  minScore: number | null;
+  maxScore: number | null;
+  medianScore: number | null;
+  p75Score: number | null;
+  totalApples: number;
   averageDeathRoundLoss: number | null;
   earlyLosses: number;
   earlyLossRate: number;
   lossDeathReasonCoverage: number;
   unknownLosses: number;
+  // TrueSkill rating metrics
+  trueSkillMu: number | null;
+  trueSkillSigma: number | null;
+  trueSkillExposed: number | null;
 }
 
 export interface WormArenaModelInsightsReport {
