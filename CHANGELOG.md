@@ -1,5 +1,41 @@
 # New entries at the top, use proper SemVer!
 
+### Version 6.16.15  Dec 30, 2025
+
+- **UI: Fixed Worm Arena Match Card layout and model name truncation** (Author: Cascade)
+  - Removed "Champion" and "Challenger" labels from `WormArenaMatchCard` to save horizontal space.
+  - Removed truncation from model names in `WormArenaMatchCard` to ensure full slugs are visible.
+  - Improved layout flow for long model names in "Greatest Hits" and search results.
+  - **Files Modified**:
+    - `client/src/components/wormArena/WormArenaMatchCard.tsx`
+    - `client/src/components/WormArenaGreatestHits.tsx` (header update)
+
+### Version 6.16.14  Dec 30, 2025
+
+- **Enhanced Run Length Distribution Chart with Interactive Filtering and Metrics** (Author: Cascade)
+  - **Phase I - Interactive Model Filtering**:
+    - Added searchable multi-select filter popover with "Select All" / "Clear All" buttons
+    - All models shown by default - chart remains fully populated on load
+    - Filter badge shows "X of Y models" when filtering is active
+    - Clear affordance with "Tip:" message showing users they can filter
+  - **Phase II - Enhanced Chart Interactivity**:
+    - Clickable legend items: click to toggle visibility, Shift+click to solo a model
+    - Bar hover highlighting: hovering a model dims all other models (opacity 0.25)
+    - Enhanced tooltip showing win rate %, % of model's total games, and comparison to average
+  - **Phase III - View Mode Toggle and Reference Lines**:
+    - Three-mode toggle: Count (default stacked bars), Win Rate (line overlay), Cumulative (% completed by round)
+    - Global average reference line (dashed) always visible
+    - Selected model average reference line when single model filtered
+  - **Technical Changes**:
+    - Migrated from `BarChart` to `ComposedChart` for line overlay support
+    - Added `ReferenceLine` component for average markers
+    - Expanded color palette from 8 to 12 colors for better model differentiation
+  - **Files Modified**:
+    - `client/src/components/wormArena/stats/WormArenaRunLengthChart.tsx` (complete rewrite, 856 lines)
+  - **Files Added**:
+    - `docs/plans/2025-12-30-run-length-chart-enhancements-plan.md` (implementation plan)
+  - **Impact**: Significantly improved data exploration UX while maintaining backward compatibility
+
 ### Version 6.16.13  Dec 30, 2025
 
 - **Streaming: Default enablement + OpenAI handler flags** (Author: Cascade - ChatGPT)
