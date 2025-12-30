@@ -1,12 +1,13 @@
 /**
- * Author: Cascade
+ * Author: Cascade (bugfix by Claude Code using Opus 4.5)
  * Date: 2025-12-30
  * PURPOSE: Enhanced stacked histogram of game run lengths for Worm Arena models.
- *          Phase I: Interactive model filtering with search, select all/clear all
- *          Phase II: Clickable legend, bar hover highlighting, enhanced tooltip
- *          Phase III: View mode toggle (count/winRate/cumulative), reference lines
- *          All models shown by default with clear affordance for filtering.
- * SRP/DRY check: Pass - focused on charting, filtering, and data transformation.
+ *          Adds min-rounds bucketing (<N), default inclusion of models with games >= N,
+ *          optional inclusion of low-round-only models, and click-to-detail on bars.
+ * SRP/DRY check: Pass - chart rendering, filtering, and drill-down only.
+ *
+ * 2025-12-30: Fixed bug where ModelFilterPopover referenced out-of-scope `modelPool`
+ *             variable - changed to use `allModels` prop instead.
  */
 
 import React, { useState, useMemo, useCallback } from 'react';
@@ -32,6 +33,7 @@ import {
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
 import type { WormArenaRunLengthDistributionData, WormArenaRunLengthModelData } from '@shared/types';
+import { Card } from '@/components/ui/card';
 
 // ============================================================================
 // Constants
@@ -83,6 +85,8 @@ interface TransformedDataPoint {
 
 interface WormArenaRunLengthChartProps {
   data: WormArenaRunLengthDistributionData;
+  minRounds: number;
+  includeLowModels: boolean;
 }
 
 // ============================================================================
@@ -104,13 +108,21 @@ function shortenModelSlug(slug: string, maxLen: number = 20): string {
 function transformDataForChart(
   models: WormArenaRunLengthModelData[],
   viewMode: ViewMode,
+  minRounds: number,
 ): TransformedDataPoint[] {
   if (models.length === 0) return [];
 
-  // Collect all unique round values
+  // Collect all unique round values with bucketing for rounds < minRounds
   const allRounds = new Set<number>();
+  const bucketRound = Math.max(minRounds - 1, 0);
   models.forEach((model) => {
-    model.bins.forEach((bin) => allRounds.add(bin.rounds));
+    model.bins.forEach((bin) => {
+      if (bin.rounds < minRounds) {
+        allRounds.add(bucketRound);
+      } else {
+        allRounds.add(bin.rounds);
+      }
+    });
   });
 
   const roundsArray = Array.from(allRounds).sort((a, b) => a - b);
@@ -122,8 +134,10 @@ function transformDataForChart(
     return roundsArray.map((rounds) => {
       let gamesAtRound = 0;
       models.forEach((model) => {
-        const bin = model.bins.find((b) => b.rounds === rounds);
-        if (bin) gamesAtRound += bin.wins + bin.losses;
+        const bin = model.bins.find((b) => (b.rounds < minRounds ? bucketRound === rounds : b.rounds === rounds));
+        if (bin) {
+          gamesAtRound += bin.wins + bin.losses;
+        }
       });
       cumulative += gamesAtRound;
       return {
@@ -142,7 +156,7 @@ function transformDataForChart(
       let totalWins = 0;
       let totalGames = 0;
       models.forEach((model) => {
-        const bin = model.bins.find((b) => b.rounds === rounds);
+        const bin = model.bins.find((b) => (b.rounds < minRounds ? bucketRound === rounds : b.rounds === rounds));
         if (bin) {
           totalWins += bin.wins;
           totalGames += bin.wins + bin.losses;
@@ -153,7 +167,7 @@ function transformDataForChart(
 
     // Always include count data for bars
     models.forEach((model) => {
-      const bin = model.bins.find((b) => b.rounds === rounds);
+      const bin = model.bins.find((b) => (b.rounds < minRounds ? bucketRound === rounds : b.rounds === rounds));
       dataPoint[`${model.modelSlug}-wins`] = bin?.wins || 0;
       dataPoint[`${model.modelSlug}-losses`] = bin?.losses || 0;
     });
@@ -204,6 +218,7 @@ interface EnhancedTooltipProps {
   hoveredModel: string | null;
   globalAverage: number;
   viewMode: ViewMode;
+  minRounds: number;
 }
 
 function EnhancedTooltip({
@@ -214,8 +229,12 @@ function EnhancedTooltip({
   hoveredModel,
   globalAverage,
   viewMode,
+  minRounds,
 }: EnhancedTooltipProps) {
   if (!active || !payload || payload.length === 0) return null;
+
+  const bucketRound = Math.max(minRounds - 1, 0);
+  const labelDisplay = (label ?? 0) === bucketRound ? `<${minRounds}` : label;
 
   // For cumulative view, show simple tooltip
   if (viewMode === 'cumulative') {
@@ -223,7 +242,7 @@ function EnhancedTooltip({
     if (cumulativeEntry) {
       return (
         <div className="rounded-lg bg-white p-3 shadow-lg border border-[#8B7355] max-w-xs">
-          <p className="font-semibold text-[#8B7355] mb-1">Round {label}</p>
+          <p className="font-semibold text-[#8B7355] mb-1">Round {labelDisplay}</p>
           <p className="text-sm text-[#4A7C59] font-medium">
             {cumulativeEntry.value.toFixed(1)}% of games completed
           </p>
@@ -280,7 +299,7 @@ function EnhancedTooltip({
   return (
     <div className="rounded-lg bg-white p-3 shadow-lg border border-[#8B7355] max-w-xs">
       <div className="flex items-center justify-between mb-2 border-b border-[#D4B5A0] pb-1">
-        <p className="font-semibold text-[#8B7355]">Round {label}</p>
+        <p className="font-semibold text-[#8B7355]">Round {labelDisplay}</p>
         <span className="text-[10px] px-1.5 py-0.5 rounded bg-[#FAF7F3] text-[#A0826D]">
           {comparisonText}
         </span>
@@ -542,7 +561,7 @@ function InteractiveLegend({
 // Main Component
 // ============================================================================
 
-export default function WormArenaRunLengthChart({ data }: WormArenaRunLengthChartProps) {
+export default function WormArenaRunLengthChart({ data, minRounds, includeLowModels }: WormArenaRunLengthChartProps) {
   const allModels = data.distributionData || [];
 
   // Phase I: Filtering state - all models selected by default
@@ -556,19 +575,31 @@ export default function WormArenaRunLengthChart({ data }: WormArenaRunLengthChar
   // Phase III: View mode state
   const [viewMode, setViewMode] = useState<ViewMode>('count');
 
+  // Bucket sentinel for labeling helper
+  const bucketRound = Math.max(minRounds - 1, 0);
+
+  // Threshold-eligible models (default pool)
+  const thresholdModels = useMemo(
+    () => allModels.filter((m) => m.bins.some((b) => b.rounds >= minRounds)),
+    [allModels, minRounds],
+  );
+
+  // Model pool depends on includeLowModels flag
+  const modelPool = includeLowModels ? allModels : thresholdModels;
+
   // Keep selection in sync when data changes
   React.useEffect(() => {
-    setSelectedSlugs(new Set(allModels.map((m) => m.modelSlug)));
-  }, [allModels.length]);
+    setSelectedSlugs(new Set(modelPool.map((m) => m.modelSlug)));
+  }, [modelPool]);
 
   // Filtered models based on selection
   const selectedModels = useMemo(
-    () => allModels.filter((m) => selectedSlugs.has(m.modelSlug)),
-    [allModels, selectedSlugs]
+    () => modelPool.filter((m) => selectedSlugs.has(m.modelSlug)),
+    [modelPool, selectedSlugs]
   );
 
   // Calculate averages for reference lines
-  const globalAverage = useMemo(() => calculateGlobalAverage(allModels), [allModels]);
+  const globalAverage = useMemo(() => calculateGlobalAverage(selectedModels.length ? selectedModels : modelPool), [modelPool, selectedModels]);
   const selectedAverage = useMemo(
     () => selectedModels.length === 1 ? calculateModelAverage(selectedModels[0]) : null,
     [selectedModels]
@@ -576,9 +607,12 @@ export default function WormArenaRunLengthChart({ data }: WormArenaRunLengthChar
 
   // Transform data for chart
   const transformedData = useMemo(
-    () => transformDataForChart(selectedModels, viewMode),
-    [selectedModels, viewMode]
+    () => transformDataForChart(selectedModels, viewMode, minRounds),
+    [selectedModels, viewMode, minRounds]
   );
+
+  // Click-to-detail state
+  const [selectedRound, setSelectedRound] = useState<number | null>(null);
 
   // Handlers
   const handleToggleModel = useCallback((slug: string, shiftKey: boolean) => {
@@ -598,8 +632,8 @@ export default function WormArenaRunLengthChart({ data }: WormArenaRunLengthChar
   }, []);
 
   const handleSelectAll = useCallback(() => {
-    setSelectedSlugs(new Set(allModels.map((m) => m.modelSlug)));
-  }, [allModels]);
+    setSelectedSlugs(new Set(modelPool.map((m) => m.modelSlug)));
+  }, [modelPool]);
 
   const handleClearAll = useCallback(() => {
     setSelectedSlugs(new Set());
@@ -661,7 +695,7 @@ export default function WormArenaRunLengthChart({ data }: WormArenaRunLengthChar
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-3">
           <ModelFilterPopover
-            allModels={allModels}
+            allModels={modelPool}
             selectedSlugs={selectedSlugs}
             onToggle={(slug) => handleToggleModel(slug, false)}
             onSelectAll={handleSelectAll}
@@ -669,7 +703,7 @@ export default function WormArenaRunLengthChart({ data }: WormArenaRunLengthChar
           />
           {!allSelected && (
             <div className="flex items-center gap-1 text-xs text-[#A0826D]">
-              <span>Showing {selectedSlugs.size} of {allModels.length} models</span>
+              <span>Showing {selectedSlugs.size} of {modelPool.length} models</span>
               <button
                 onClick={handleSelectAll}
                 className="text-[#4A7C59] hover:underline ml-1"
@@ -703,6 +737,7 @@ export default function WormArenaRunLengthChart({ data }: WormArenaRunLengthChar
               tick={{ fill: '#8B7355', fontSize: 11 }}
               axisLine={{ stroke: '#D4B5A0' }}
               tickLine={{ stroke: '#D4B5A0' }}
+              tickFormatter={(v) => (v === bucketRound && minRounds > 0 ? `<${minRounds}` : v)}
               label={{
                 value: 'Game Length (Rounds)',
                 position: 'insideBottom',
@@ -735,6 +770,7 @@ export default function WormArenaRunLengthChart({ data }: WormArenaRunLengthChar
                   hoveredModel={hoveredModel}
                   globalAverage={globalAverage}
                   viewMode={viewMode}
+                  minRounds={minRounds}
                 />
               }
               cursor={{ fill: 'rgba(212, 181, 160, 0.15)' }}
@@ -810,6 +846,10 @@ export default function WormArenaRunLengthChart({ data }: WormArenaRunLengthChar
                       name={`${shortenModelSlug(model.modelSlug)} W`}
                       onMouseEnter={() => setHoveredModel(model.modelSlug)}
                       onMouseLeave={() => setHoveredModel(null)}
+                      onClick={(_, index) => {
+                        const roundValue = transformedData[index]?.rounds;
+                        setSelectedRound((prev) => (prev === roundValue ? null : roundValue ?? null));
+                      }}
                     />
                     <Bar
                       dataKey={`${model.modelSlug}-losses`}
@@ -821,6 +861,10 @@ export default function WormArenaRunLengthChart({ data }: WormArenaRunLengthChar
                       name={`${shortenModelSlug(model.modelSlug)} L`}
                       onMouseEnter={() => setHoveredModel(model.modelSlug)}
                       onMouseLeave={() => setHoveredModel(null)}
+                      onClick={(_, index) => {
+                        const roundValue = transformedData[index]?.rounds;
+                        setSelectedRound((prev) => (prev === roundValue ? null : roundValue ?? null));
+                      }}
                     />
                   </React.Fragment>
                 );
@@ -828,6 +872,64 @@ export default function WormArenaRunLengthChart({ data }: WormArenaRunLengthChar
           </ComposedChart>
         </ResponsiveContainer>
       </div>
+
+      {/* Detail panel for selected round */}
+      {selectedRound !== null && (
+        <Card className="p-3 border border-[#D4B5A0] bg-[#FAF7F3]">
+          <div className="flex items-center justify-between mb-2">
+            <div className="text-sm text-[#8B7355] font-semibold">
+              Round {selectedRound === bucketRound && minRounds > 0 ? `<${minRounds}` : selectedRound} details
+            </div>
+            <Button
+              size="sm"
+              variant="ghost"
+              className="text-[#4A7C59]"
+              onClick={() => setSelectedRound(null)}
+            >
+              Clear
+            </Button>
+          </div>
+          <div className="grid gap-2">
+            {selectedModels.map((model, idx) => {
+              const bin = model.bins.find((b) =>
+                b.rounds < minRounds ? selectedRound === bucketRound : b.rounds === selectedRound
+              );
+              const games = bin ? bin.wins + bin.losses : 0;
+              if (games === 0) return null;
+              const winRate = games > 0 ? ((bin!.wins / games) * 100).toFixed(1) : '0.0';
+              const color = MODEL_COLORS[idx % MODEL_COLORS.length];
+              const lossColor = MODEL_LOSS_COLORS[idx % MODEL_LOSS_COLORS.length];
+              const shareOfModel = model.totalGames > 0 ? ((games / model.totalGames) * 100).toFixed(1) : '0.0';
+              return (
+                <div
+                  key={model.modelSlug}
+                  className="flex items-center justify-between text-xs bg-white rounded-md border border-[#E5D5C8] px-3 py-2"
+                >
+                  <div className="flex items-center gap-2">
+                    <div className="flex gap-1">
+                      <span className="w-3 h-3 rounded-sm" style={{ backgroundColor: color }} />
+                      <span className="w-3 h-3 rounded-sm" style={{ backgroundColor: lossColor }} />
+                    </div>
+                    <span className="font-mono text-[#4A5568]">{shortenModelSlug(model.modelSlug, 18)}</span>
+                    <Badge className="bg-[#4A7C59] text-white">{games} games</Badge>
+                  </div>
+                  <div className="flex items-center gap-3 text-[#8B7355]">
+                    <span>W {bin?.wins ?? 0}</span>
+                    <span>L {bin?.losses ?? 0}</span>
+                    <span className="font-semibold text-[#4A7C59]">{winRate}% WR</span>
+                    <span className="text-[#A0826D]">{shareOfModel}% of this model</span>
+                  </div>
+                </div>
+              );
+            })}
+            {selectedModels.every((m) =>
+              !m.bins.some((b) => (b.rounds < minRounds ? selectedRound === bucketRound : b.rounds === selectedRound))
+            ) && (
+              <p className="text-xs text-[#A0826D]">No data at this round for the selected models.</p>
+            )}
+          </div>
+        </Card>
+      )}
 
       {/* Interactive legend */}
       {viewMode !== 'cumulative' && (
