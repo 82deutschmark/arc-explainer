@@ -196,8 +196,8 @@ export default function WormArenaModelInsightsReport({ modelSlug }: WormArenaMod
 
         {isStreaming && (
           <div className="space-y-4">
-            {/* Loading indicator for initial waiting state */}
-            {status.state === 'requested' && !reasoningText && !parsedInsights && (
+            {/* Loading indicator - show during entire streaming duration until content arrives */}
+            {!reasoningText && !parsedInsights && (
               <div className="flex items-center justify-center py-8">
                 <div className="flex flex-col items-center gap-3">
                   <div className="animate-spin">
@@ -207,7 +207,7 @@ export default function WormArenaModelInsightsReport({ modelSlug }: WormArenaMod
                     </svg>
                   </div>
                   <p className="text-sm" style={{ color: 'var(--worm-muted)' }}>
-                    Preparing analysis...
+                    Analyzing model performance...
                   </p>
                 </div>
               </div>
