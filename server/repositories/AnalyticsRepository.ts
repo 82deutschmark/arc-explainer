@@ -73,6 +73,32 @@ export class AnalyticsRepository extends BaseRepository {
       const summaryRes = await this.query(summarySql, [modelSlug, earlyLossThreshold], client);
       const row: any = summaryRes.rows[0] ?? {};
 
+      // Calculate leaderboard ranking by TrueSkill exposed rating
+      const rankingSql = `
+        WITH ranked_models AS (
+          SELECT
+            ${SQL_NORMALIZE_SLUG('m.model_slug')} AS normalized_slug,
+            COALESCE(m.trueskill_exposed, m.trueskill_mu - 3 * m.trueskill_sigma) AS exposed_rating,
+            ROW_NUMBER() OVER (ORDER BY COALESCE(m.trueskill_exposed, m.trueskill_mu - 3 * m.trueskill_sigma) DESC) AS rank
+          FROM public.models m
+          JOIN public.game_participants gp ON m.id = gp.model_id
+          JOIN public.games g ON gp.game_id = g.id
+          WHERE g.status = 'completed' AND COALESCE(g.rounds, 0) > 0
+          GROUP BY ${SQL_NORMALIZE_SLUG('m.model_slug')}, m.trueskill_exposed, m.trueskill_mu, m.trueskill_sigma
+        )
+        SELECT
+          rank,
+          (SELECT COUNT(*) FROM ranked_models) AS total_models,
+          exposed_rating
+        FROM ranked_models
+        WHERE ${SQL_NORMALIZE_SLUG('normalized_slug')} = ${SQL_NORMALIZE_SLUG('$1')}
+      `;
+
+      const rankingRes = await this.query(rankingSql, [modelSlug], client);
+      const rankingRow: any = rankingRes.rows[0];
+      const leaderboardRank = rankingRow?.rank ? parseInt(String(rankingRow.rank), 10) : null;
+      const totalModelsRanked = rankingRow?.total_models ? parseInt(String(rankingRow.total_models), 10) : null;
+
       const wins = parseInt(String(row.wins || '0'), 10);
       const losses = parseInt(String(row.losses || '0'), 10);
       const gamesPlayed = parseInt(String(row.games_played || '0'), 10);
