@@ -1,5 +1,14 @@
 # New entries at the top, use proper SemVer!
 
+### Version 6.16.18  Dec 30, 2025
+
+- **TypeScript compile fixes for ARC3 Spoiler + SnakeBench service** (Author: Cascade)
+  - Annotated all callback parameters in `Arc3GameSpoiler.tsx` so `noImplicitAny` stays satisfied.
+  - Corrected `frameUnpacker.ts` predicate signature to align with the union it narrows.
+  - Patched `snakeBench.ts` to use the right shared-type import paths, new `MODELS` helper, and a typed OpenRouter allowlist Set.
+  - Extended `GameIndexEntry` with optional camelCase properties for legacy rows so filename lookups stay typed.
+  - Result: `npm run check` now passes with zero TypeScript errors.
+
 ### Version 6.16.17  Dec 30, 2025
 
 - **Model Insights Dashboard Enhancement: Real TrueSkill Metrics and Visualizations** (Author: Claude Code using Opus 4.5)
