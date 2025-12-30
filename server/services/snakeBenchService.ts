@@ -111,7 +111,7 @@ const buildInsightsSummaryPrompt = (
     : 'TrueSkill: unrated';
 
   return [
-    'Write one short paragraph (max 180 words).',
+    'Write one short paragraph (max 400 words).',
     'No bullets, no headings, no disclaimers.',
     'Focus on why the model loses and when. Analyze the score distribution (min/max/median/75th percentile apples) and round survival patterns.',
     'Strictly describe observed performance; do not suggest strategies, tips, or recommendations.',
