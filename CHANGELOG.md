@@ -1,5 +1,26 @@
 # New entries at the top, use proper SemVer!
 
+### Version 6.16.12  Dec 30, 2025
+
+- **UI Polish: Model Insights Report Text Sizing and Twitter Share Improvements** (Author: Claude Sonnet 4)
+  - **Text Size Adjustments**:
+    - Reduced title from `text-5xl` to `text-2xl` (was too dominant)
+    - Increased main summary insight text from `text-sm` to `text-base` (more readable)
+    - Made subtitle smaller and muted for visual hierarchy
+  - **Button Improvements**:
+    - Reduced button gap from `gap-3` to `gap-1` (tighter grouping)
+    - Changed to smaller `size="sm"` buttons with shorter labels (Copy, Save .md, Share on X)
+    - Added dark styling for Share on X button (`bg-black text-white`)
+  - **Twitter/X Share Updates**:
+    - Changed hashtag from #WormArena to #SnakeBench
+    - Added @arcprize mention and #arcagi3 hashtag
+    - Included model page URL in tweet for easy navigation
+    - Updated character limit from 260 to 280 (X's current limit)
+  - **Files Modified**:
+    - `client/src/components/wormArena/WormArenaModelInsightsReport.tsx` (UI styling)
+    - `server/services/wormArena/WormArenaReportService.ts` (tweet format)
+  - **Impact**: Improved visual hierarchy, more compact buttons, better Twitter engagement with proper hashtags and attribution
+
 ### Version 6.16.11  Dec 30, 2025
 
 - **DRY: Consolidate Specialized Formatters to Shared Utilities** (Author: Claude Sonnet 4.5)

@@ -1,11 +1,13 @@
 /**
  * Author: Cascade
- * Date: 2025-12-29
+ * Date: 2025-12-30
  * PURPOSE: Specialized service for generating Worm Arena model insights reports.
  *          Handles LLM orchestration (OpenAI Responses API), Markdown formatting, 
  *          and Tweet generation.
  * 
  * SRP/DRY check: Pass - focused on reporting and LLM summary orchestration.
+ * 
+ * 2025-12-30: Updated tweet format - #SnakeBench, @arcprize, #arcagi3, model page link.
  */
 
 import { openAIClient } from '../openai/client.js';
@@ -142,12 +144,13 @@ export class WormArenaReportService {
     const topReasonPct = topFailure ? formatPercent(topFailure.percentOfLosses) : '0.0%';
     const avgRounds = summary.averageRounds != null ? summary.averageRounds.toFixed(0) : 'n/a';
     const costPerLoss = formatUsd(summary.costPerLoss);
+    
+    // Build model page URL
+    const modelUrl = `https://arc.markbarney.net/worm-arena/models?model=${encodeURIComponent(modelSlug)}`;
 
-    const tweet = `Worm Arena insights for ${modelSlug}: win rate ${formatPercent(
-      summary.winRate,
-    )}, top loss ${topReason} (${topReasonPct}), avg rounds ${avgRounds}, cost per loss ${costPerLoss}. #WormArena`;
+    const tweet = `${modelSlug} #SnakeBench report: ${formatPercent(summary.winRate)} win rate, top death ${topReason} (${topReasonPct}), avg ${avgRounds} rounds, ${costPerLoss}/loss\n\n${modelUrl}\n\n@arcprize #arcagi3`;
 
-    return tweet.length > 260 ? `${tweet.slice(0, 257)}...` : tweet;
+    return tweet.length > 280 ? `${tweet.slice(0, 277)}...` : tweet;
   }
 
   /**
