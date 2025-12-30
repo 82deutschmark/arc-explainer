@@ -1,5 +1,69 @@
 # New entries at the top, use proper SemVer!
 
+### Version 6.16.9  Dec 29, 2025
+
+- **Code Quality: Fixed Critical Maintainability Issues in Worm Arena Refactor** (Author: Claude Sonnet 4.5)
+  - **Critical Bug Fixes**:
+    - Fixed catch block bug in `WormArenaReportService.ts:60-66` that was injecting duplicate performance metrics into markdown output instead of handling JSON parse errors properly.
+    - Removed excessive `as any` type assertions - reduced from double-cast `(as any) as any` to single cast with explanatory comments.
+    - Fixed parse-and-discard logic in `requestInsightsSummary` - removed pointless JSON.parse that validated then discarded the result.
+  - **DRY Improvements**:
+    - Created `SQL_TRUESKILL_EXPOSED()` helper in `snakebenchSqlHelpers.ts` to consolidate TrueSkill formula `COALESCE(trueskill_exposed, trueskill_mu - 3 * trueskill_sigma)`.
+    - Updated `AnalyticsRepository.ts` and `LeaderboardRepository.ts` to use shared helper, eliminating formula duplication.
+  - **Documentation**:
+    - Added comprehensive error handling strategy documentation to `WormArenaReportService` class explaining when to throw vs return null.
+    - Added JSDoc for `SQL_TRUESKILL_EXPOSED` explaining the conservative skill estimate formula.
+  - **Cleanup**:
+    - Removed unused `WormArenaModelInsightsLLMOutput` import.
+    - Removed unnecessary `await` on stream initialization.
+  - **Files Modified**:
+    - `server/services/wormArena/WormArenaReportService.ts` (bug fixes, type safety, error handling docs)
+    - `server/repositories/snakebenchSqlHelpers.ts` (new SQL_TRUESKILL_EXPOSED helper)
+    - `server/repositories/AnalyticsRepository.ts` (use shared TrueSkill helper)
+    - `server/repositories/LeaderboardRepository.ts` (use shared TrueSkill helper)
+  - **Impact**: Eliminated production-breaking bug, improved code readability, reduced technical debt for future developers.
+
+### Version 6.16.8  Dec 30, 2025
+
+- **Insights: Enhanced Performance Metrics & UI Consistency** (Author: Cascade)
+  - **Metric Expansion**:
+    - Added p25 (25th percentile) score calculation to `AnalyticsRepository.ts` for full quartile analysis (p25, p50, p75).
+    - Integrated leaderboard rank and total model count into model insights reports.
+  - **UI/UX Polish**:
+    - Updated `WormArenaModelInsightsReport.tsx` to display 'Rank X of Y' in summary tiles.
+    - Integrated full score distribution (avg, p25, p50, p75) into the Cost and Efficiency section.
+    - Cleaned up stale local formatting helpers in favor of centralized `shared/utils/formatters.ts`.
+    - Switched UI to use `formatUsd` for currency consistency.
+  - **Code Quality**:
+    - Consolidated streaming report finalization in `WormArenaReportService.ts` to use `buildReportObject` as a single source of truth.
+    - Standardized all 7 modified file headers to strictly comply with `AGENTS.md` (Author/Date/PURPOSE/SRP-DRY).
+    - Verified clean delegation in `snakeBenchService.ts` as a thin facade.
+  - **Files Modified**: 
+    - `server/repositories/AnalyticsRepository.ts`
+    - `server/services/wormArena/WormArenaReportService.ts`
+    - `server/services/prompts/wormArenaInsights.ts`
+    - `server/services/snakeBenchService.ts`
+    - `client/src/components/wormArena/WormArenaModelInsightsReport.tsx`
+    - `shared/utils/formatters.ts`
+    - `shared/types.ts`
+
+### Version 6.16.7  Dec 29, 2025
+
+- **Architecture: Refactored SnakeBenchService & Fixed Responses API Conflicts** (Author: Cascade)
+  - **SRP Refactor**: 
+    - Extracted prompt building logic to `server/services/prompts/wormArenaInsights.ts`.
+    - Extracted report generation and LLM orchestration to `server/services/wormArena/WormArenaReportService.ts`.
+    - Reduced `snakeBenchService.ts` size by ~50%, transforming it into a clean delegation facade.
+  - **Responses API Fix**: 
+    - Resolved conflicting instructions in the model insights payload.
+    - Separated narrative instructions (commentator style) from data context in the user prompt.
+    - Aligned payload with `json_schema` requirements for more reliable structured output.
+  - **Insights Audit Enhancement**: 
+    - Updated `AnalyticsRepository.ts` to include missing metrics (ties, unknown losses) in the insights summary.
+    - Enhanced prompts to include leaderboard rank and detailed cost efficiency metrics (cost per game/win/loss).
+  - **Files Created**: `server/services/prompts/wormArenaInsights.ts`, `server/services/wormArena/WormArenaReportService.ts`, `docs/plans/2025-12-29-worm-arena-refactor-plan.md`
+  - **Files Modified**: `server/services/snakeBenchService.ts`, `server/repositories/AnalyticsRepository.ts`
+
 ### Version 6.16.6  Dec 29, 2025
 
 - **Worm Arena Model Insights: Streaming fixes, loading state, and UI polish** (Author: Claude Code using Haiku)

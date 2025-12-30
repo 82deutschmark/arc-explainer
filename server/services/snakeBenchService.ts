@@ -1,18 +1,11 @@
 /**
- * Author: Cascade (ChatGPT)
+ * Author: Cascade
  * Date: 2025-12-29
- * PURPOSE: Thin orchestrator facade for SnakeBench service with model insights report formatting,
- *          OpenAI summary generation for the Worm Arena model insights report, and streaming helpers.
- *
- *          FIXES:
- *          1. Fixed Responses API request format: moved response_format to text.format per API changes
- *          2. Refactored streaming to use handleStreamEvent helper for reliable event handling
- *          3. Improved summary extraction to handle both JSON and text responses
- *          4. Ensured report generation succeeds even if LLM summary fails
- *          5. Reworded insights prompts to use eSports commentator framing for LLM Snake play analysis
- *          6. Clarified insights prompts to prohibit recommendations and collect pure analysis only
- *
- * SRP/DRY check: Pass - delegation, report formatting, and summary wiring only.
+ * PURPOSE: Thin orchestrator facade for SnakeBench/Worm Arena.
+ *          Delegates match execution to specialized runners and report generation
+ *          to WormArenaReportService.
+ * 
+ * SRP/DRY check: Pass - facade only, no business logic or formatting.
  */
 
 import type {
@@ -38,13 +31,13 @@ import type {
 } from '../../shared/types.js';
 import { repositoryService } from '../repositories/RepositoryService.ts';
 import { logger } from '../utils/logger.ts';
-import { openAIClient } from './openai/client.js';
-import { handleStreamEvent, createStreamAggregates } from './openai/streaming.js';
-import type { ResponseStreamEvent } from 'openai/resources/responses/responses';
 
 // Import from new modules
 import { SnakeBenchMatchRunner } from './snakeBench/SnakeBenchMatchRunner.ts';
-import { SnakeBenchStreamingRunner } from './snakeBench/SnakeBenchStreamingRunner.ts';
+import {
+  SnakeBenchStreamingRunner,
+  type StreamingHandlers,
+} from './snakeBench/SnakeBenchStreamingRunner.ts';
 import { SnakeBenchReplayResolver } from './snakeBench/SnakeBenchReplayResolver.ts';
 import { snakeBenchPythonBridge } from './snakeBench/SnakeBenchPythonBridge.ts';
 import { PersistenceCoordinator } from './snakeBench/persistence/persistenceCoordinator.ts';
@@ -52,386 +45,20 @@ import { GameIndexManager } from './snakeBench/persistence/gameIndexManager.ts';
 import { getSnakeBenchAllowedModels } from './snakeBench/helpers/modelAllowlist.ts';
 import { filterReplayableGames, getWormArenaGreatestHitsFiltered } from './snakeBench/helpers/replayFilters.ts';
 import { suggestMatchups } from './snakeBench/helpers/matchupSuggestions.ts';
+import {
+  wormArenaReportService,
+  INSIGHTS_SUMMARY_MODEL,
+} from './wormArena/WormArenaReportService.ts';
 import path from 'path';
 import fs from 'fs';
-
-// Use a direct OpenAI model for the LLM summary step.
-const INSIGHTS_SUMMARY_MODEL = 'gpt-5-mini-2025-08-07';
 
 // Normalize model slugs so ":free" suffixes do not split report data.
 const normalizeModelSlug = (modelSlug: string): string => modelSlug.trim().replace(/:free$/i, '');
 
-// Format a ratio as a percent string for report text.
-const formatPercent = (value: number): string => `${(value * 100).toFixed(1)}%`;
-
-// Format a number with a fallback when data is missing.
-const formatOptionalNumber = (value: number | null, digits: number): string =>
-  value == null || Number.isNaN(value) ? '-' : value.toFixed(digits);
-
-// Format a cost value for report text.
-const formatCost = (value: number | null): string =>
-  value == null || Number.isNaN(value) ? '-' : `$${value.toFixed(4)}`;
-
-// Convert snake death reason values into human-readable labels.
-const formatReasonLabel = (reason: string): string => reason.replace(/_/g, ' ').trim();
-
-// Build the prompt used to request a short LLM summary for the report.
-const buildInsightsSummaryPrompt = (
-  modelSlug: string,
-  summary: WormArenaModelInsightsSummary,
-  failureModes: WormArenaModelInsightsFailureMode[],
-  lossOpponents: WormArenaModelInsightsOpponent[],
-): string => {
-  const failureLines = failureModes.length
-    ? failureModes
-        .slice(0, 4)
-        .map(mode => `${formatReasonLabel(mode.reason)} (${formatPercent(mode.percentOfLosses)})`)
-        .join(', ')
-    : 'None';
-
-  const opponentLines = lossOpponents.length
-    ? lossOpponents
-        .slice(0, 4)
-        .map(opponent => `${opponent.opponentSlug} (${formatPercent(opponent.lossRate)})`)
-        .join(', ')
-    : 'None';
-
-  // Format all metrics for the prompt
-  const avgRounds = formatOptionalNumber(summary.averageRounds, 1);
-  const minRounds = formatOptionalNumber(summary.minRounds, 1);
-  const maxRounds = formatOptionalNumber(summary.maxRounds, 1);
-  const maxScore = formatOptionalNumber(summary.maxScore, 2);
-  const minScore = formatOptionalNumber(summary.minScore, 2);
-  const medianScore = formatOptionalNumber(summary.medianScore, 2);
-  const p75Score = formatOptionalNumber(summary.p75Score, 2);
-  const totalCost = formatCost(summary.totalCost);
-  const costPerGame = formatCost(summary.costPerGame);
-  const costPerWin = formatCost(summary.costPerWin);
-  const costPerLoss = formatCost(summary.costPerLoss);
-  const avgDeathRound = formatOptionalNumber(summary.averageDeathRoundLoss, 1);
-  const lossCoverage = formatPercent(summary.lossDeathReasonCoverage);
-  const earlyLossRate = formatPercent(summary.earlyLossRate);
-  const trueSkillNote = summary.trueSkillExposed != null
-    ? `TrueSkill exposed: ${Math.round(summary.trueSkillExposed)} (mu: ${Number(summary.trueSkillMu || 0).toFixed(1)}, sigma: ${Number(summary.trueSkillSigma || 0).toFixed(1)})`
-    : 'TrueSkill: unrated';
-
-  const leaderboardNote = summary.leaderboardRank != null && summary.totalModelsRanked != null
-    ? `Leaderboard: Rank #${summary.leaderboardRank} of ${summary.totalModelsRanked} models (by TrueSkill)`
-    : 'Leaderboard: Ranking unavailable';
-
-  return [
-    'Write one short paragraph (max 400 words).',
-    'No bullets, no headings, no disclaimers.',
-    'Focus on why the model loses and when. Analyze the score distribution (min/max/median/75th percentile apples) and round survival patterns.',
-    'Strictly describe observed performance; do not suggest strategies, tips, or recommendations.',
-    `Model: ${modelSlug}`,
-    `Match record: ${summary.gamesPlayed} games (${summary.wins}W / ${summary.losses}L / ${summary.ties}T), Win rate: ${formatPercent(summary.winRate)} (ties excluded)`,
-    `${leaderboardNote}`,
-    `Rounds: Min ${minRounds} / Avg ${avgRounds} / Max ${maxRounds}`,
-    `Apples: Min ${minScore} / Median ${medianScore} / 75th %ile ${p75Score} / Max ${maxScore} (Total: ${summary.totalApples})`,
-    `Cost: Total ${totalCost} / Per-game ${costPerGame} / Per-win ${costPerWin} / Per-loss ${costPerLoss}`,
-    `Death patterns: Avg round ${avgDeathRound} when losing, ${summary.unknownLosses} losses without recorded death reason, Loss reason coverage: ${lossCoverage}, Early loss rate: ${earlyLossRate}`,
-    `${trueSkillNote}`,
-    `Top failure modes: ${failureLines}`,
-    `Tough opponents by loss rate: ${opponentLines}`,
-  ].join('\n');
-};
-
-// Call OpenAI directly to generate the model insights summary text.
-const requestInsightsSummary = async (
-  modelSlug: string,
-  summary: WormArenaModelInsightsSummary,
-  failureModes: WormArenaModelInsightsFailureMode[],
-  lossOpponents: WormArenaModelInsightsOpponent[],
-): Promise<string | null> => {
-  // Build a compact prompt from the aggregated stats for the LLM.
-  const prompt = buildInsightsSummaryPrompt(modelSlug, summary, failureModes, lossOpponents);
-
-  // Prepare a Responses API payload with structured outputs for actionable insights.
-  const requestBody = {
-    model: INSIGHTS_SUMMARY_MODEL,
-    input: [
-      {
-        id: `msg_${Date.now()}_summary_${Math.random().toString(16).slice(2)}`,
-        role: 'user',
-        type: 'message',
-        content: [
-          {
-            type: 'input_text',
-            text: prompt,
-          },
-        ],
-      },
-    ],
-    instructions:
-      'You are an eSports commentator covering how this LLM plays Snake. Give a brisk, hype-y breakdown of how it wins and loses, spotlight the key losses and what went wrong in those matches, and skip any ML training talk. Focus on match moments, risky habits, and the opponents that punish it. Do not provide recommendations, coaching, or improvement tips—only describe observed behavior.',
-    reasoning: {
-      effort: 'high',
-      summary: 'detailed',
-    },
-    text: {
-      verbosity: 'high',
-      format: {
-        type: 'json_schema',
-        name: 'model_insights',
-        strict: false,
-        schema: {
-          type: 'object',
-          properties: {
-            summary: {
-              type: 'string',
-              description: 'Brief Twitch streamer type takeaway about how this LLM tends to win or get knocked out'
-            },
-            deathAnalysis: {
-              type: 'array',
-              items: {
-                type: 'object',
-                properties: {
-                  cause: { type: 'string' },
-                  frequency: { type: 'string' },
-                  pattern: { type: 'string' }
-                }
-              },
-              description: 'How it got eliminated, how often, and the situational pattern (early blunders vs late greed)'
-            },
-            toughOpponents: {
-              type: 'array',
-              items: {
-                type: 'object',
-                properties: {
-                  opponent: { type: 'string' },
-                  record: { type: 'string' },
-                  issue: { type: 'string' }
-                }
-              },
-              description: 'Opponents who consistently hand it losses and the matchup quirks they exploit'
-            },
-          },
-          required: ['summary', 'deathAnalysis', 'toughOpponents'],
-          additionalProperties: false
-        }
-      }
-    },
-    max_output_tokens: 120000,
-  };
-
-  try {
-    const response = await openAIClient.responses.create(requestBody as any) as any;
-
-    // Try to extract summary from structured JSON output first
-    // Responses API with json_schema puts output in output_parsed or as text
-    if (response.output_parsed) {
-      const parsed = response.output_parsed;
-      if (typeof parsed.summary === 'string' && parsed.summary.trim()) {
-        return parsed.summary.trim();
-      }
-    }
-
-    // Try parsing output_text as JSON if it contains JSON structure
-    if (response.output_text && typeof response.output_text === 'string') {
-      try {
-        const parsed = JSON.parse(response.output_text);
-        if (typeof parsed.summary === 'string' && parsed.summary.trim()) {
-          return parsed.summary.trim();
-        }
-      } catch {
-        // Not JSON, use as-is
-        const text = response.output_text.trim();
-        if (text) {
-          return text;
-        }
-      }
-    }
-
-    // If no summary was generated, that's okay - report can still be built
-    return null;
-  } catch (error) {
-    const message = error instanceof Error ? error.message : String(error);
-    logger.warn(`SnakeBenchService.requestInsightsSummary failed: ${message}`, 'snakebench-service');
-    // Return null on failure, but don't throw - report generation should continue
-    return null;
-  }
-};
-
-// Build the markdown version of the model insights report.
-const buildInsightsMarkdown = (
-  modelSlug: string,
-  generatedAt: string,
-  summary: WormArenaModelInsightsSummary,
-  failureModes: WormArenaModelInsightsFailureMode[],
-  lossOpponents: WormArenaModelInsightsOpponent[],
-  llmSummary: string | null,
-): string => {
-  const lines: string[] = [];
-  const knownLosses = Math.max(summary.losses - summary.unknownLosses, 0);
-
-  lines.push('# Worm Arena Model Insights');
-  lines.push(`Model: ${modelSlug}`);
-  lines.push(`Generated: ${generatedAt}`);
-  lines.push('');
-  // Include the LLM summary near the top for quick scanning.
-  lines.push('LLM Summary');
-  lines.push(llmSummary && llmSummary.trim().length > 0 ? llmSummary : 'Summary unavailable.');
-  lines.push('');
-  lines.push('Summary');
-  lines.push(`- Games played: ${summary.gamesPlayed}`);
-  lines.push(`- Win rate (decided): ${formatPercent(summary.winRate)}`);
-  lines.push(`- Total cost: ${formatCost(summary.totalCost)}`);
-  lines.push(`- Cost per game: ${formatCost(summary.costPerGame)}`);
-  lines.push(`- Cost per win: ${formatCost(summary.costPerWin)}`);
-  lines.push(`- Cost per loss: ${formatCost(summary.costPerLoss)}`);
-  lines.push(`- Average rounds: ${formatOptionalNumber(summary.averageRounds, 1)}`);
-  lines.push(`- Average score: ${formatOptionalNumber(summary.averageScore, 2)}`);
-  lines.push(`- Average loss round: ${formatOptionalNumber(summary.averageDeathRoundLoss, 1)}`);
-  lines.push(`- Early losses (round <= 5): ${summary.earlyLosses} (${formatPercent(summary.earlyLossRate)})`);
-  lines.push('');
-  lines.push('Failure modes (losses)');
-  if (failureModes.length === 0) {
-    lines.push('- No losses recorded.');
-  } else {
-    failureModes.forEach((mode) => {
-      const reasonLabel = formatReasonLabel(mode.reason);
-      const avgRound = formatOptionalNumber(mode.averageDeathRound, 1);
-      lines.push(
-        `- ${reasonLabel}: ${mode.losses} (${formatPercent(mode.percentOfLosses)}), avg round ${avgRound}`,
-      );
-    });
-  }
-  lines.push('');
-  lines.push('Tough opponents (by losses)');
-  if (lossOpponents.length === 0) {
-    lines.push('- No opponents recorded.');
-  } else {
-    lossOpponents.forEach((opponent) => {
-      const lastPlayed = opponent.lastPlayedAt ?? '-';
-      lines.push(
-        `- ${opponent.opponentSlug}: ${opponent.losses} losses out of ${opponent.gamesPlayed} games, last played ${lastPlayed}`,
-      );
-    });
-  }
-  lines.push('');
-  lines.push('Data quality');
-  lines.push(
-    `- Losses with death reason: ${formatPercent(summary.lossDeathReasonCoverage)} (${knownLosses} of ${summary.losses})`,
-  );
-  lines.push(`- Losses without death reason: ${summary.unknownLosses}`);
-
-  return lines.join('\n');
-};
-
-// Build a concise tweet for sharing the report.
-const buildInsightsTweet = (
-  modelSlug: string,
-  summary: WormArenaModelInsightsSummary,
-  failureModes: WormArenaModelInsightsFailureMode[],
-): string => {
-  const topFailure = failureModes[0];
-  const topReason = topFailure ? formatReasonLabel(topFailure.reason) : 'none';
-  const topReasonPct = topFailure ? formatPercent(topFailure.percentOfLosses) : '0.0%';
-  const avgRounds = summary.averageRounds != null ? summary.averageRounds.toFixed(0) : 'n/a';
-  const costPerLoss =
-    summary.costPerLoss != null ? `$${summary.costPerLoss.toFixed(4)}` : 'n/a';
-
-  const tweet = `Worm Arena insights for ${modelSlug}: win rate ${formatPercent(
-    summary.winRate,
-  )}, top loss ${topReason} (${topReasonPct}), avg rounds ${avgRounds}, cost per loss ${costPerLoss}. #WormArena`;
-
-  return tweet.length > 260 ? `${tweet.slice(0, 257)}...` : tweet;
-};
-
 /**
- * Build the OpenAI Responses API request payload for model insights.
- * Separated for reuse between streaming and non-streaming modes.
+ * SnakeBenchService - Orchestrator for SnakeBench/Worm Arena operations.
+ * Delegates specialized tasks to runners and report services.
  */
-const buildInsightsRequest = (
-  modelSlug: string,
-  summary: WormArenaModelInsightsSummary,
-  failureModes: WormArenaModelInsightsFailureMode[],
-  lossOpponents: WormArenaModelInsightsOpponent[],
-) => {
-  const prompt = buildInsightsSummaryPrompt(modelSlug, summary, failureModes, lossOpponents);
-
-  return {
-    model: INSIGHTS_SUMMARY_MODEL,
-    input: [
-      {
-        id: `msg_${Date.now()}_summary_${Math.random().toString(16).slice(2)}`,
-        role: 'user' as const,
-        type: 'message' as const,
-        content: [
-          {
-            type: 'input_text' as const,
-            text: prompt,
-          },
-        ],
-      },
-    ],
-    instructions:
-      'You are an eSports commentator covering how this LLM plays Snake. Give a brisk, hype-y breakdown of how it wins and loses, spotlight the key losses and what went wrong in those matches, and skip any ML training talk. Focus on match moments, risky habits, and the opponents that punish it.',
-    reasoning: {
-      effort: 'high' as const,
-      summary: 'detailed' as const,
-    },
-    text: {
-      verbosity: 'high' as const,
-      format: {
-        type: 'json_schema' as const,
-        name: 'model_insights',
-        strict: false as const,
-        schema: {
-          type: 'object',
-          properties: {
-            summary: {
-              type: 'string',
-              description: 'One-sentence on-cast takeaway about how this LLM tends to win or get knocked out'
-            },
-            deathAnalysis: {
-              type: 'array',
-              items: {
-                type: 'object',
-                properties: {
-                  cause: { type: 'string' },
-                  frequency: { type: 'string' },
-                  pattern: { type: 'string' }
-                }
-              },
-              description: 'How it got eliminated, how often, and the situational pattern (early blunders vs late greed)'
-            },
-            toughOpponents: {
-              type: 'array',
-              items: {
-                type: 'object',
-                properties: {
-                  opponent: { type: 'string' },
-                  record: { type: 'string' },
-                  issue: { type: 'string' }
-                }
-              },
-              description: 'Opponents who consistently hand it losses and the matchup quirks they exploit'
-            },
-            recommendations: {
-              type: 'array',
-              items: { type: 'string' },
-              description: 'Where this LLM shines, where it struggles (e.g., early chaos vs long setups), and what to lean into or avoid'
-            }
-          },
-          required: ['summary', 'deathAnalysis', 'toughOpponents', 'recommendations'],
-          additionalProperties: false
-        }
-      }
-    },
-    max_output_tokens: 120000,
-  };
-};
-
-export interface StreamingHandlers {
-  onStatus?: (status: WormArenaStreamStatus) => void;
-  onFrame?: (frame: WormArenaFrameEvent) => void;
-  onChunk?: (chunk: any) => void;
-  onComplete?: (result: SnakeBenchRunMatchResult) => void;
-  onError?: (err: Error) => void;
-}
-
 class SnakeBenchService {
   private readonly matchRunner: SnakeBenchMatchRunner;
   private readonly streamingRunner: SnakeBenchStreamingRunner;
@@ -680,55 +307,29 @@ class SnakeBenchService {
 
   /**
    * Build the actionable insights report for a specific model.
+   * Delegates LLM summary generation and formatting to WormArenaReportService.
    */
   async getModelInsightsReport(modelSlug: string): Promise<WormArenaModelInsightsReport | null> {
-    // Normalize the slug before querying to keep report results consistent.
     const normalizedSlug = normalizeModelSlug(modelSlug);
-    if (!normalizedSlug) {
-      return null;
-    }
+    if (!normalizedSlug) return null;
 
     const data = await repositoryService.analytics.getModelInsightsData(normalizedSlug);
-    if (!data) {
-      return null;
-    }
+    if (!data) return null;
 
-    const generatedAt = new Date().toISOString();
-    // Request the LLM summary, but do not fail the report if it is unavailable.
-    const llmSummary = await requestInsightsSummary(
+    // Request the LLM summary paragraph
+    const llmSummary = await wormArenaReportService.requestInsightsSummary(
       normalizedSlug,
       data.summary,
       data.failureModes,
       data.lossOpponents,
     );
-    const markdownReport = buildInsightsMarkdown(
-      normalizedSlug,
-      generatedAt,
-      data.summary,
-      data.failureModes,
-      data.lossOpponents,
-      llmSummary,
-    );
-    const tweetText = buildInsightsTweet(normalizedSlug, data.summary, data.failureModes);
 
-    return {
-      modelSlug: normalizedSlug,
-      generatedAt,
-      summary: data.summary,
-      failureModes: data.failureModes,
-      lossOpponents: data.lossOpponents,
-      // LLM summary paragraph when available.
-      llmSummary,
-      // Model used for the LLM summary when available.
-      llmModel: llmSummary ? INSIGHTS_SUMMARY_MODEL : null,
-      markdownReport,
-      tweetText,
-    };
+    return wormArenaReportService.buildReportObject(normalizedSlug, data, llmSummary);
   }
 
   /**
-   * Stream model insights report generation with live reasoning updates via callbacks.
-   * Delegates SSE management to the caller (controller).
+   * Stream model insights report generation with live reasoning updates.
+   * Delegates to WormArenaReportService.
    */
   async streamModelInsightsReport(
     modelSlug: string,
@@ -743,7 +344,6 @@ class SnakeBenchService {
       throw new Error('Invalid model slug');
     }
 
-    // Emit status: fetching data
     handlers.onStatus({
       state: 'in_progress',
       phase: 'fetching_data',
@@ -755,108 +355,18 @@ class SnakeBenchService {
       throw new Error('No data available for this model');
     }
 
-    // Emit status: generating insights
     handlers.onStatus({
       state: 'in_progress',
       phase: 'generating_insights',
       message: 'Analyzing model performance...'
     });
 
-    const requestBody = buildInsightsRequest(
+    return wormArenaReportService.streamModelInsightsReport(
       normalizedSlug,
-      data.summary,
-      data.failureModes,
-      data.lossOpponents
+      data,
+      handlers,
+      abortSignal
     );
-
-    // Enable streaming
-    const streamingRequest = {
-      ...requestBody,
-      stream: true,
-    };
-
-    const stream = await openAIClient.responses.stream(streamingRequest as any);
-    const aggregates = createStreamAggregates(true); // Expecting JSON schema output
-
-    // Stream events from OpenAI through callbacks
-    for await (const event of stream as AsyncIterable<ResponseStreamEvent>) {
-      if (abortSignal.aborted) {
-        stream.controller.abort();
-        throw new Error('Stream aborted by client');
-      }
-
-      handleStreamEvent(event, aggregates, {
-        emitChunk: (chunk) => {
-          // Forward chunks through callback
-          handlers.onChunk({
-            type: chunk.type,
-            delta: chunk.delta,
-            content: chunk.content,
-            timestamp: Date.now(),
-          });
-        },
-        emitEvent: (eventName, payload) => {
-          // Route events based on type
-          if (eventName === 'stream.status') {
-            handlers.onStatus(payload as unknown as WormArenaStreamStatus);
-          } else if (eventName === 'stream.chunk') {
-            // Treat stream.chunk events as chunk data
-            handlers.onChunk({
-              type: (payload as any)?.type || 'unknown',
-              delta: (payload as any)?.delta,
-              content: (payload as any)?.content,
-              timestamp: Date.now(),
-            });
-          }
-          // Other event types are silently ignored for now
-        },
-      });
-    }
-
-    // Get final response and build report
-    const finalResponse = await stream.finalResponse();
-
-    // Extract LLM summary from aggregated parsed JSON or text
-    let llmSummary = '';
-    if (aggregates.parsed) {
-      try {
-        const parsed = JSON.parse(aggregates.parsed);
-        // Use the summary field from structured output if available
-        llmSummary = typeof parsed.summary === 'string' ? parsed.summary : aggregates.parsed;
-      } catch {
-        // Fallback to accumulated text if JSON parsing fails
-        llmSummary = aggregates.text || aggregates.parsed;
-      }
-    } else {
-      // Final fallback to response text
-      llmSummary = finalResponse.output_text || '';
-    }
-
-    // Build complete report
-    const generatedAt = new Date().toISOString();
-    const markdownReport = buildInsightsMarkdown(
-      normalizedSlug,
-      generatedAt,
-      data.summary,
-      data.failureModes,
-      data.lossOpponents,
-      llmSummary,
-    );
-    const tweetText = buildInsightsTweet(normalizedSlug, data.summary, data.failureModes);
-
-    const report: WormArenaModelInsightsReport = {
-      modelSlug: normalizedSlug,
-      generatedAt,
-      summary: data.summary,
-      failureModes: data.failureModes,
-      lossOpponents: data.lossOpponents,
-      llmSummary,
-      llmModel: INSIGHTS_SUMMARY_MODEL,
-      markdownReport,
-      tweetText,
-    };
-
-    return report;
   }
 
   /**
