@@ -13,10 +13,14 @@ import {
   recoverSeed,
   generateTaskIds,
   decodeTaskIds,
+  deriveSeed,
   SimplePRNG,
   getTaskIdUpper,
   getTaskIdLower,
 } from '../server/utils/reArcCodec.ts';
+
+// Test pepper for deterministic test behavior
+const TEST_PEPPER = 'test-pepper-for-codec-deterministic-tests-32-chars';
 
 // ============================================================================
 // PRNG Tests
@@ -124,22 +128,24 @@ test('getTaskIdLower: extracts lower 16 bits', () => {
 // ============================================================================
 
 test('recoverSeed: XOR of generated task IDs returns original seed', () => {
-  const seed = 0x12345678;
-  const taskIds = generateTaskIds(seed, 10);
+  const seedId = 0x12345678;
+  const internalSeed = deriveSeed(seedId, TEST_PEPPER);
+  const taskIds = generateTaskIds(seedId, internalSeed, 10);
 
   const recoveredSeed = recoverSeed(taskIds);
-  assert.strictEqual(recoveredSeed, seed);
+  assert.strictEqual(recoveredSeed, seedId);
 });
 
 test('recoverSeed: order-independent (shuffled task IDs)', () => {
-  const seed = 0xabcdef12;
-  const taskIds = generateTaskIds(seed, 20);
+  const seedId = 0xabcdef12;
+  const internalSeed = deriveSeed(seedId, TEST_PEPPER);
+  const taskIds = generateTaskIds(seedId, internalSeed, 20);
 
   // Shuffle task IDs deterministically
-  const shuffled = new SimplePRNG(seed + 1).shuffle([...taskIds]);
+  const shuffled = new SimplePRNG(internalSeed + 1).shuffle([...taskIds]);
 
   const recoveredSeed = recoverSeed(shuffled);
-  assert.strictEqual(recoveredSeed, seed);
+  assert.strictEqual(recoveredSeed, seedId);
 });
 
 test('recoverSeed: throws on invalid task ID format', () => {
@@ -158,34 +164,37 @@ test('recoverSeed: throws on empty task ID list', () => {
 // ============================================================================
 
 test('generateTaskIds: without message encoding', () => {
-  const seed = 0x12345678;
+  const seedId = 0x12345678;
+  const internalSeed = deriveSeed(seedId, TEST_PEPPER);
   const numTasks = 5;
 
-  const taskIds = generateTaskIds(seed, numTasks);
+  const taskIds = generateTaskIds(seedId, internalSeed, numTasks);
 
   assert.strictEqual(taskIds.length, numTasks);
   assert.ok(taskIds.every((id) => /^[0-9a-f]{8}$/.test(id)));
 
   // Verify seed recovery
   const recoveredSeed = recoverSeed(taskIds);
-  assert.strictEqual(recoveredSeed, seed);
+  assert.strictEqual(recoveredSeed, seedId);
 });
 
 test('generateTaskIds: all task IDs are unique', () => {
-  const seed = 0xaabbccdd;
+  const seedId = 0xaabbccdd;
+  const internalSeed = deriveSeed(seedId, TEST_PEPPER);
   const numTasks = 100;
 
-  const taskIds = generateTaskIds(seed, numTasks);
+  const taskIds = generateTaskIds(seedId, internalSeed, numTasks);
 
   const uniqueIds = new Set(taskIds);
   assert.strictEqual(uniqueIds.size, numTasks, 'All task IDs should be unique');
 });
 
 test('generateTaskIds: upper bits are unique (position identifiers)', () => {
-  const seed = 0x12345678;
+  const seedId = 0x12345678;
+  const internalSeed = deriveSeed(seedId, TEST_PEPPER);
   const numTasks = 50;
 
-  const taskIds = generateTaskIds(seed, numTasks);
+  const taskIds = generateTaskIds(seedId, internalSeed, numTasks);
 
   const upperBits = taskIds.map(getTaskIdUpper);
   const uniqueUppers = new Set(upperBits);
@@ -194,23 +203,28 @@ test('generateTaskIds: upper bits are unique (position identifiers)', () => {
 });
 
 test('generateTaskIds: deterministic (same seed produces same IDs)', () => {
-  const seed = 0x99887766;
+  const seedId = 0x99887766;
+  const internalSeed = deriveSeed(seedId, TEST_PEPPER);
   const numTasks = 20;
 
-  const taskIds1 = generateTaskIds(seed, numTasks);
-  const taskIds2 = generateTaskIds(seed, numTasks);
+  const taskIds1 = generateTaskIds(seedId, internalSeed, numTasks);
+  const taskIds2 = generateTaskIds(seedId, internalSeed, numTasks);
 
   assert.deepStrictEqual(taskIds1, taskIds2);
 });
 
 test('generateTaskIds: throws if numTasks < 1', () => {
-  assert.throws(() => generateTaskIds(0x12345678, 0), /Must generate at least 1 task ID/);
-  assert.throws(() => generateTaskIds(0x12345678, -1), /Must generate at least 1 task ID/);
+  const seedId = 0x12345678;
+  const internalSeed = deriveSeed(seedId, TEST_PEPPER);
+  assert.throws(() => generateTaskIds(seedId, internalSeed, 0), /Must generate at least 1 task ID/);
+  assert.throws(() => generateTaskIds(seedId, internalSeed, -1), /Must generate at least 1 task ID/);
 });
 
 test('generateTaskIds: throws if numTasks > 65536', () => {
+  const seedId = 0x12345678;
+  const internalSeed = deriveSeed(seedId, TEST_PEPPER);
   assert.throws(
-    () => generateTaskIds(0x12345678, 65537),
+    () => generateTaskIds(seedId, internalSeed, 65537),
     /Cannot generate more than 65536 tasks/
   );
 });
@@ -220,57 +234,61 @@ test('generateTaskIds: throws if numTasks > 65536', () => {
 // ============================================================================
 
 test('generateTaskIds: with message encoding (4 bytes)', () => {
-  const seed = 0xaabbccdd;
+  const seedId = 0xaabbccdd;
+  const internalSeed = deriveSeed(seedId, TEST_PEPPER);
   const message = new Uint8Array([0xde, 0xad, 0xbe, 0xef]);
   const numTasks = 5;
 
-  const taskIds = generateTaskIds(seed, numTasks, message);
+  const taskIds = generateTaskIds(seedId, internalSeed, numTasks, message);
 
   assert.strictEqual(taskIds.length, numTasks);
 
   // Verify seed recovery
   const recoveredSeed = recoverSeed(taskIds);
-  assert.strictEqual(recoveredSeed, seed);
+  assert.strictEqual(recoveredSeed, seedId);
 
   // Verify message decoding
-  const decoded = decodeTaskIds(taskIds, message.length);
+  const decoded = decodeTaskIds(taskIds, TEST_PEPPER, message.length);
   assert.deepStrictEqual(decoded.message, message);
 });
 
 test('generateTaskIds: message capacity is (numTasks - 1) * 2 bytes', () => {
-  const seed = 0x12345678;
+  const seedId = 0x12345678;
+  const internalSeed = deriveSeed(seedId, TEST_PEPPER);
 
   // 10 tasks → max 18 bytes (9 * 2)
   const maxMessage = new Uint8Array(18).fill(0xaa);
-  assert.doesNotThrow(() => generateTaskIds(seed, 10, maxMessage));
+  assert.doesNotThrow(() => generateTaskIds(seedId, internalSeed, 10, maxMessage));
 
   // 19 bytes should fail
   const tooLarge = new Uint8Array(19).fill(0xaa);
-  assert.throws(() => generateTaskIds(seed, 10, tooLarge), /Message too large/);
+  assert.throws(() => generateTaskIds(seedId, internalSeed, 10, tooLarge), /Message too large/);
 });
 
 test('generateTaskIds: encodes partial message (odd byte count)', () => {
-  const seed = 0x11223344;
+  const seedId = 0x11223344;
+  const internalSeed = deriveSeed(seedId, TEST_PEPPER);
   const message = new Uint8Array([0xaa, 0xbb, 0xcc]); // 3 bytes
   const numTasks = 5;
 
-  const taskIds = generateTaskIds(seed, numTasks, message);
-  const decoded = decodeTaskIds(taskIds, message.length);
+  const taskIds = generateTaskIds(seedId, internalSeed, numTasks, message);
+  const decoded = decodeTaskIds(taskIds, TEST_PEPPER, message.length);
 
   assert.deepStrictEqual(decoded.message, message);
 });
 
 test('generateTaskIds: empty message is allowed', () => {
-  const seed = 0x12345678;
+  const seedId = 0x12345678;
+  const internalSeed = deriveSeed(seedId, TEST_PEPPER);
   const emptyMessage = new Uint8Array(0);
   const numTasks = 5;
 
-  const taskIds = generateTaskIds(seed, numTasks, emptyMessage);
+  const taskIds = generateTaskIds(seedId, internalSeed, numTasks, emptyMessage);
 
   assert.strictEqual(taskIds.length, numTasks);
 
   // Should decode to no message (undefined when messageLength = 0)
-  const decoded = decodeTaskIds(taskIds, 0);
+  const decoded = decodeTaskIds(taskIds, TEST_PEPPER, 0);
   assert.strictEqual(decoded.message, undefined);
 });
 
@@ -279,42 +297,47 @@ test('generateTaskIds: empty message is allowed', () => {
 // ============================================================================
 
 test('decodeTaskIds: recovers seed from task IDs', () => {
-  const seed = 0x12345678;
-  const taskIds = generateTaskIds(seed, 10);
+  const seedId = 0x12345678;
+  const internalSeed = deriveSeed(seedId, TEST_PEPPER);
+  const taskIds = generateTaskIds(seedId, internalSeed, 10);
 
-  const decoded = decodeTaskIds(taskIds);
+  const decoded = decodeTaskIds(taskIds, TEST_PEPPER);
 
-  assert.strictEqual(decoded.seed, seed);
+  assert.strictEqual(decoded.seedId, seedId);
+  assert.strictEqual(decoded.internalSeed, internalSeed);
   assert.strictEqual(decoded.orderedTaskIds.length, 10);
   assert.strictEqual(decoded.message, undefined);
 });
 
 test('decodeTaskIds: returns task IDs in generation order', () => {
-  const seed = 0xaabbccdd;
-  const taskIds = generateTaskIds(seed, 20);
+  const seedId = 0xaabbccdd;
+  const internalSeed = deriveSeed(seedId, TEST_PEPPER);
+  const taskIds = generateTaskIds(seedId, internalSeed, 20);
 
   // Shuffle task IDs deterministically
-  const shuffled = new SimplePRNG(seed + 1).shuffle([...taskIds]);
+  const shuffled = new SimplePRNG(internalSeed + 1).shuffle([...taskIds]);
 
-  const decoded = decodeTaskIds(shuffled);
+  const decoded = decodeTaskIds(shuffled, TEST_PEPPER);
 
   // Ordered task IDs should match original generation order
   assert.deepStrictEqual(decoded.orderedTaskIds, taskIds);
 });
 
 test('decodeTaskIds: recovers encoded message', () => {
-  const seed = 0xfeedbeef;
+  const seedId = 0xfeedbeef;
+  const internalSeed = deriveSeed(seedId, TEST_PEPPER);
   const message = new Uint8Array([0x01, 0x02, 0x03, 0x04, 0x05, 0x06]);
   const numTasks = 10;
 
-  const taskIds = generateTaskIds(seed, numTasks, message);
+  const taskIds = generateTaskIds(seedId, internalSeed, numTasks, message);
 
   // Shuffle to test order independence (deterministically)
-  const shuffled = new SimplePRNG(seed + 1).shuffle([...taskIds]);
+  const shuffled = new SimplePRNG(internalSeed + 1).shuffle([...taskIds]);
 
-  const decoded = decodeTaskIds(shuffled, message.length);
+  const decoded = decodeTaskIds(shuffled, TEST_PEPPER, message.length);
 
-  assert.strictEqual(decoded.seed, seed);
+  assert.strictEqual(decoded.seedId, seedId);
+  assert.strictEqual(decoded.internalSeed, internalSeed);
   assert.strictEqual(decoded.orderedTaskIds.length, numTasks);
   assert.deepStrictEqual(decoded.message, message);
   // Ordered task IDs should match original generation order
@@ -322,47 +345,53 @@ test('decodeTaskIds: recovers encoded message', () => {
 });
 
 test('decodeTaskIds: without messageLength returns no message', () => {
-  const seed = 0x11223344;
+  const seedId = 0x11223344;
+  const internalSeed = deriveSeed(seedId, TEST_PEPPER);
   const message = new Uint8Array([0xaa, 0xbb, 0xcc]);
-  const taskIds = generateTaskIds(seed, 5, message);
+  const taskIds = generateTaskIds(seedId, internalSeed, 5, message);
 
-  const decoded = decodeTaskIds(taskIds);
+  const decoded = decodeTaskIds(taskIds, TEST_PEPPER);
 
-  assert.strictEqual(decoded.seed, seed);
+  assert.strictEqual(decoded.seedId, seedId);
+  assert.strictEqual(decoded.internalSeed, internalSeed);
   assert.strictEqual(decoded.orderedTaskIds.length, 5);
   assert.strictEqual(decoded.message, undefined);
 });
 
 test('decodeTaskIds: messageLength 0 returns no message', () => {
-  const seed = 0x99887766;
-  const taskIds = generateTaskIds(seed, 5);
+  const seedId = 0x99887766;
+  const internalSeed = deriveSeed(seedId, TEST_PEPPER);
+  const taskIds = generateTaskIds(seedId, internalSeed, 5);
 
-  const decoded = decodeTaskIds(taskIds, 0);
+  const decoded = decodeTaskIds(taskIds, TEST_PEPPER, 0);
 
-  assert.strictEqual(decoded.seed, seed);
+  assert.strictEqual(decoded.seedId, seedId);
+  assert.strictEqual(decoded.internalSeed, internalSeed);
   assert.strictEqual(decoded.message, undefined);
 });
 
 test('decodeTaskIds: throws if task not found at expected position', () => {
-  const seed = 0x12345678;
+  const seedId = 0x12345678;
+  const internalSeed = deriveSeed(seedId, TEST_PEPPER);
   const message = new Uint8Array([0xaa, 0xbb]);
-  const taskIds = generateTaskIds(seed, 10, message);
+  const taskIds = generateTaskIds(seedId, internalSeed, 10, message);
 
   // Remove a task ID to break the sequence
   taskIds.splice(2, 1);
 
-  assert.throws(() => decodeTaskIds(taskIds, message.length), /Decode failed/);
+  assert.throws(() => decodeTaskIds(taskIds, TEST_PEPPER, message.length), /Decode failed/);
 });
 
 test('decodeTaskIds: throws on invalid task IDs', () => {
-  const seed = 0x12345678;
-  const taskIds = generateTaskIds(seed, 5);
+  const seedId = 0x12345678;
+  const internalSeed = deriveSeed(seedId, TEST_PEPPER);
+  const taskIds = generateTaskIds(seedId, internalSeed, 5);
 
   // Create a corrupted duplicate by copying the first task ID
   const duplicateTaskIds = [...taskIds, taskIds[0]];
 
   assert.throws(
-    () => decodeTaskIds(duplicateTaskIds),
+    () => decodeTaskIds(duplicateTaskIds, TEST_PEPPER),
     /Decode failed: no task found with upper bits/
   );
 });
@@ -373,33 +402,36 @@ test('decodeTaskIds: throws on invalid task IDs', () => {
 // ============================================================================
 
 test('edge case: single task (no message encoding)', () => {
-  const seed = 0x12345678;
-  const taskIds = generateTaskIds(seed, 1);
+  const seedId = 0x12345678;
+  const internalSeed = deriveSeed(seedId, TEST_PEPPER);
+  const taskIds = generateTaskIds(seedId, internalSeed, 1);
 
   assert.strictEqual(taskIds.length, 1);
 
   // Seed recovery should still work
   const recoveredSeed = recoverSeed(taskIds);
-  assert.strictEqual(recoveredSeed, seed);
+  assert.strictEqual(recoveredSeed, seedId);
 });
 
 test('edge case: two tasks (can encode 2 bytes max)', () => {
-  const seed = 0xaabbccdd;
+  const seedId = 0xaabbccdd;
+  const internalSeed = deriveSeed(seedId, TEST_PEPPER);
   const message = new Uint8Array([0xaa, 0xbb]);
-  const taskIds = generateTaskIds(seed, 2, message);
+  const taskIds = generateTaskIds(seedId, internalSeed, 2, message);
 
-  const decoded = decodeTaskIds(taskIds, message.length);
+  const decoded = decodeTaskIds(taskIds, TEST_PEPPER, message.length);
   assert.deepStrictEqual(decoded.message, message);
 
   // 3 bytes should fail
-  assert.throws(() => generateTaskIds(seed, 2, new Uint8Array(3)), /Message too large/);
+  assert.throws(() => generateTaskIds(seedId, internalSeed, 2, new Uint8Array(3)), /Message too large/);
 });
 
 test('stress test: large number of tasks', () => {
-  const seed = 0x11111111;
+  const seedId = 0x11111111;
+  const internalSeed = deriveSeed(seedId, TEST_PEPPER);
   const numTasks = 500;
 
-  const taskIds = generateTaskIds(seed, numTasks);
+  const taskIds = generateTaskIds(seedId, internalSeed, numTasks);
 
   assert.strictEqual(taskIds.length, numTasks);
 
@@ -409,11 +441,12 @@ test('stress test: large number of tasks', () => {
 
   // Seed recovery should work
   const recovered = recoverSeed(taskIds);
-  assert.strictEqual(recovered, seed);
+  assert.strictEqual(recovered, seedId);
 });
 
 test('stress test: maximum message size', () => {
-  const seed = 0x99999999;
+  const seedId = 0x99999999;
+  const internalSeed = deriveSeed(seedId, TEST_PEPPER);
   const numTasks = 100;
   const maxBytes = (numTasks - 1) * 2; // 198 bytes
 
@@ -422,28 +455,30 @@ test('stress test: maximum message size', () => {
     message[i] = i & 0xff; // Sequential pattern
   }
 
-  const taskIds = generateTaskIds(seed, numTasks, message);
-  const decoded = decodeTaskIds(taskIds, maxBytes);
+  const taskIds = generateTaskIds(seedId, internalSeed, numTasks, message);
+  const decoded = decodeTaskIds(taskIds, TEST_PEPPER, maxBytes);
 
   assert.deepStrictEqual(decoded.message, message);
 });
 
 test('end-to-end: generate → shuffle → recover seed', () => {
-  const originalSeed = 0xfeedbeef;
+  const originalSeedId = 0xfeedbeef;
+  const internalSeed = deriveSeed(originalSeedId, TEST_PEPPER);
   const numTasks = 100;
 
   // Generate task IDs
-  const taskIds = generateTaskIds(originalSeed, numTasks);
+  const taskIds = generateTaskIds(originalSeedId, internalSeed, numTasks);
 
   // Shuffle deterministically to simulate submission in arbitrary order
-  const shuffled = new SimplePRNG(originalSeed + 1).shuffle([...taskIds]);
+  const shuffled = new SimplePRNG(internalSeed + 1).shuffle([...taskIds]);
 
   // Recover seed from shuffled task IDs
   const recoveredSeed = recoverSeed(shuffled);
-  assert.strictEqual(recoveredSeed, originalSeed);
+  assert.strictEqual(recoveredSeed, originalSeedId);
 
   // Decode and verify order recovery
-  const decoded = decodeTaskIds(shuffled);
-  assert.strictEqual(decoded.seed, originalSeed);
+  const decoded = decodeTaskIds(shuffled, TEST_PEPPER);
+  assert.strictEqual(decoded.seedId, originalSeedId);
+  assert.strictEqual(decoded.internalSeed, internalSeed);
   assert.deepStrictEqual(decoded.orderedTaskIds, taskIds);
 });

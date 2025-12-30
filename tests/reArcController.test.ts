@@ -20,6 +20,9 @@ import { generateDataset } from '../server/services/reArc/reArcService.ts';
 // Enable dev mode for all tests (faster generation with fewer tasks)
 process.env.RE_ARC_DEV_MODE = 'true';
 
+// Set test pepper for deterministic test behavior
+process.env.RE_ARC_SEED_PEPPER = 'test-pepper-controller-deterministic-32-chars';
+
 // ============================================================================
 // Mock Response Helpers
 // ============================================================================

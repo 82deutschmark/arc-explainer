@@ -29,8 +29,10 @@ import { sendSSEEvent } from '../utils/sseHelpers';
  */
 export async function generate(_req: Request, res: Response): Promise<void> {
   try {
-    // Generate seed from current timestamp (seconds). This is intentional.
-    const seed = Math.floor(Date.now() / 1000);
+    // Generate public seed ID from Unix timestamp (seconds).
+    // This ID is encoded in task IDs for dataset identification.
+    // Service derives server-secret internal seed for Python RNG and task ID PRNG.
+    const seedId = Math.floor(Date.now() / 1000);
     const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, -5);
 
     // Set download headers
@@ -40,14 +42,14 @@ export async function generate(_req: Request, res: Response): Promise<void> {
     res.setHeader('Content-Encoding', 'gzip');
     res.setHeader('Cache-Control', 'no-cache, no-store');
 
-    logger.info(`[RE-ARC] Starting dataset generation with seed=${seed}`, 're-arc');
+    logger.info(`[RE-ARC] Starting dataset generation with seedId=${seedId}`, 're-arc');
 
     // Create async generator that yields JSON chunks
     async function* jsonChunks() {
       yield '{\n';
       let isFirst = true;
 
-      for await (const { taskId, task } of generateDataset(seed)) {
+      for await (const { taskId, task } of generateDataset(seedId)) {
         if (!isFirst) {
           yield ',\n';
         }
@@ -70,7 +72,7 @@ export async function generate(_req: Request, res: Response): Promise<void> {
 
     await pipeline(jsonStream, gzip, res);
 
-    logger.info(`[RE-ARC] Dataset generation complete for seed=${seed}`, 're-arc');
+    logger.info(`[RE-ARC] Dataset generation complete for seedId=${seedId}`, 're-arc');
   } catch (err) {
     const errorMsg = err instanceof Error ? err.message : String(err);
     logger.error(`[RE-ARC] Generation error: ${errorMsg}`, 're-arc');
