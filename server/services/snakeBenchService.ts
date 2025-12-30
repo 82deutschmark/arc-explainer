@@ -1,14 +1,16 @@
 /**
- * Author: Claude Code using Haiku
+ * Author: Cascade (ChatGPT)
  * Date: 2025-12-29
- * PURPOSE: Thin orchestrator facade for SnakeBench service with model insights report formatting
- *          and OpenAI summary generation for the Worm Arena model insights report.
+ * PURPOSE: Thin orchestrator facade for SnakeBench service with model insights report formatting,
+ *          OpenAI summary generation for the Worm Arena model insights report, and streaming helpers.
  *
  *          FIXES:
  *          1. Fixed Responses API request format: moved response_format to text.format per API changes
  *          2. Refactored streaming to use handleStreamEvent helper for reliable event handling
  *          3. Improved summary extraction to handle both JSON and text responses
  *          4. Ensured report generation succeeds even if LLM summary fails
+ *          5. Reworded insights prompts to use eSports commentator framing for LLM Snake play analysis
+ *          6. Clarified insights prompts to prohibit recommendations and collect pure analysis only
  *
  * SRP/DRY check: Pass - delegation, report formatting, and summary wiring only.
  */
@@ -94,20 +96,42 @@ const buildInsightsSummaryPrompt = (
         .join(', ')
     : 'None';
 
+  // Format all metrics for the prompt
   const avgRounds = formatOptionalNumber(summary.averageRounds, 1);
-  const avgScore = formatOptionalNumber(summary.averageScore, 2);
+  const minRounds = formatOptionalNumber(summary.minRounds, 1);
+  const maxRounds = formatOptionalNumber(summary.maxRounds, 1);
+  const maxScore = formatOptionalNumber(summary.maxScore, 2);
+  const minScore = formatOptionalNumber(summary.minScore, 2);
+  const medianScore = formatOptionalNumber(summary.medianScore, 2);
+  const p75Score = formatOptionalNumber(summary.p75Score, 2);
+  const totalCost = formatCost(summary.totalCost);
+  const costPerGame = formatCost(summary.costPerGame);
+  const costPerWin = formatCost(summary.costPerWin);
   const costPerLoss = formatCost(summary.costPerLoss);
+  const avgDeathRound = formatOptionalNumber(summary.averageDeathRoundLoss, 1);
   const lossCoverage = formatPercent(summary.lossDeathReasonCoverage);
   const earlyLossRate = formatPercent(summary.earlyLossRate);
+  const trueSkillNote = summary.trueSkillExposed != null
+    ? `TrueSkill exposed: ${Math.round(summary.trueSkillExposed)} (mu: ${Number(summary.trueSkillMu || 0).toFixed(1)}, sigma: ${Number(summary.trueSkillSigma || 0).toFixed(1)})`
+    : 'TrueSkill: unrated';
+
+  const leaderboardNote = summary.leaderboardRank != null && summary.totalModelsRanked != null
+    ? `Leaderboard: Rank #${summary.leaderboardRank} of ${summary.totalModelsRanked} models (by TrueSkill)`
+    : 'Leaderboard: Ranking unavailable';
 
   return [
-    'Write one short paragraph (max 80 words).',
+    'Write one short paragraph (max 400 words).',
     'No bullets, no headings, no disclaimers.',
-    'Focus on why the model loses and one practical next step.',
+    'Focus on why the model loses and when. Analyze the score distribution (min/max/median/75th percentile apples) and round survival patterns.',
+    'Strictly describe observed performance; do not suggest strategies, tips, or recommendations.',
     `Model: ${modelSlug}`,
-    `Games: ${summary.gamesPlayed}, Wins: ${summary.wins}, Losses: ${summary.losses}, Win rate: ${formatPercent(summary.winRate)}`,
-    `Average rounds: ${avgRounds}, Average score: ${avgScore}, Cost per loss: ${costPerLoss}`,
-    `Early loss rate: ${earlyLossRate}, Loss reason coverage: ${lossCoverage}`,
+    `Match record: ${summary.gamesPlayed} games (${summary.wins}W / ${summary.losses}L / ${summary.ties}T), Win rate: ${formatPercent(summary.winRate)} (ties excluded)`,
+    `${leaderboardNote}`,
+    `Rounds: Min ${minRounds} / Avg ${avgRounds} / Max ${maxRounds}`,
+    `Apples: Min ${minScore} / Median ${medianScore} / 75th %ile ${p75Score} / Max ${maxScore} (Total: ${summary.totalApples})`,
+    `Cost: Total ${totalCost} / Per-game ${costPerGame} / Per-win ${costPerWin} / Per-loss ${costPerLoss}`,
+    `Death patterns: Avg round ${avgDeathRound} when losing, ${summary.unknownLosses} losses without recorded death reason, Loss reason coverage: ${lossCoverage}, Early loss rate: ${earlyLossRate}`,
+    `${trueSkillNote}`,
     `Top failure modes: ${failureLines}`,
     `Tough opponents by loss rate: ${opponentLines}`,
   ].join('\n');
@@ -139,7 +163,8 @@ const requestInsightsSummary = async (
         ],
       },
     ],
-    instructions: 'You are a concise analytics reporter for game model performance. Focus on WHY the model loses, not just stats.',
+    instructions:
+      'You are an eSports commentator covering how this LLM plays Snake. Give a brisk, hype-y breakdown of how it wins and loses, spotlight the key losses and what went wrong in those matches, and skip any ML training talk. Focus on match moments, risky habits, and the opponents that punish it. Do not provide recommendations, coaching, or improvement tips—only describe observed behavior.',
     reasoning: {
       effort: 'high',
       summary: 'detailed',
@@ -155,7 +180,7 @@ const requestInsightsSummary = async (
           properties: {
             summary: {
               type: 'string',
-              description: 'One sentence overview of the model\'s main issue'
+              description: 'Brief Twitch streamer type takeaway about how this LLM tends to win or get knocked out'
             },
             deathAnalysis: {
               type: 'array',
@@ -167,7 +192,7 @@ const requestInsightsSummary = async (
                   pattern: { type: 'string' }
                 }
               },
-              description: 'Top death causes with context'
+              description: 'How it got eliminated, how often, and the situational pattern (early blunders vs late greed)'
             },
             toughOpponents: {
               type: 'array',
@@ -179,15 +204,10 @@ const requestInsightsSummary = async (
                   issue: { type: 'string' }
                 }
               },
-              description: 'Hardest opponents to beat'
+              description: 'Opponents who consistently hand it losses and the matchup quirks they exploit'
             },
-            recommendations: {
-              type: 'array',
-              items: { type: 'string' },
-              description: 'Specific actionable improvements'
-            }
           },
-          required: ['summary', 'deathAnalysis', 'toughOpponents', 'recommendations'],
+          required: ['summary', 'deathAnalysis', 'toughOpponents'],
           additionalProperties: false
         }
       }
@@ -346,7 +366,8 @@ const buildInsightsRequest = (
         ],
       },
     ],
-    instructions: 'You are a concise analytics reporter for game model performance. Focus on WHY the model loses, not just stats.',
+    instructions:
+      'You are an eSports commentator covering how this LLM plays Snake. Give a brisk, hype-y breakdown of how it wins and loses, spotlight the key losses and what went wrong in those matches, and skip any ML training talk. Focus on match moments, risky habits, and the opponents that punish it.',
     reasoning: {
       effort: 'high' as const,
       summary: 'detailed' as const,
@@ -362,7 +383,7 @@ const buildInsightsRequest = (
           properties: {
             summary: {
               type: 'string',
-              description: 'One sentence overview of the model\'s main issue'
+              description: 'One-sentence on-cast takeaway about how this LLM tends to win or get knocked out'
             },
             deathAnalysis: {
               type: 'array',
@@ -374,7 +395,7 @@ const buildInsightsRequest = (
                   pattern: { type: 'string' }
                 }
               },
-              description: 'Top death causes with context'
+              description: 'How it got eliminated, how often, and the situational pattern (early blunders vs late greed)'
             },
             toughOpponents: {
               type: 'array',
@@ -386,12 +407,12 @@ const buildInsightsRequest = (
                   issue: { type: 'string' }
                 }
               },
-              description: 'Hardest opponents to beat'
+              description: 'Opponents who consistently hand it losses and the matchup quirks they exploit'
             },
             recommendations: {
               type: 'array',
               items: { type: 'string' },
-              description: 'Specific actionable improvements'
+              description: 'Where this LLM shines, where it struggles (e.g., early chaos vs long setups), and what to lean into or avoid'
             }
           },
           required: ['summary', 'deathAnalysis', 'toughOpponents', 'recommendations'],
@@ -774,9 +795,20 @@ class SnakeBenchService {
             timestamp: Date.now(),
           });
         },
-        emitEvent: (_eventName, payload) => {
-          // Forward status events through callback
-          handlers.onStatus(payload as unknown as WormArenaStreamStatus);
+        emitEvent: (eventName, payload) => {
+          // Route events based on type
+          if (eventName === 'stream.status') {
+            handlers.onStatus(payload as unknown as WormArenaStreamStatus);
+          } else if (eventName === 'stream.chunk') {
+            // Treat stream.chunk events as chunk data
+            handlers.onChunk({
+              type: (payload as any)?.type || 'unknown',
+              delta: (payload as any)?.delta,
+              content: (payload as any)?.content,
+              timestamp: Date.now(),
+            });
+          }
+          // Other event types are silently ignored for now
         },
       });
     }
