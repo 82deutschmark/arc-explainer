@@ -32,6 +32,9 @@ import {
   getGameById,
   type Arc3GameMetadata,
   type DifficultyRating,
+  type ActionMapping,
+  type LevelScreenshot,
+  type GameResource,
 } from '../../../shared/arc3Games';
 
 /**
@@ -195,7 +198,7 @@ export default function Arc3GameSpoiler() {
             </CardHeader>
             <CardContent>
               <div className="space-y-3">
-                {game.actionMappings.map(mapping => (
+                {game.actionMappings.map((mapping: ActionMapping) => (
                   <div
                     key={mapping.action}
                     className="flex items-start gap-3 p-3 bg-muted rounded-lg"
@@ -233,8 +236,8 @@ export default function Arc3GameSpoiler() {
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {game.levelScreenshots
-                  .sort((a, b) => a.level - b.level)
-                  .map(screenshot => (
+                  .sort((a: LevelScreenshot, b: LevelScreenshot) => a.level - b.level)
+                  .map((screenshot: LevelScreenshot) => (
                     <div key={screenshot.level} className="border rounded-lg overflow-hidden bg-muted">
                       <div className="p-3 bg-muted/80 border-b">
                         <p className="font-semibold text-sm">
@@ -265,7 +268,7 @@ export default function Arc3GameSpoiler() {
         )}
 
         {/* Replays */}
-        {game.resources.filter(r => r.type === 'replay').length > 0 && (
+        {game.resources.filter((r: GameResource) => r.type === 'replay').length > 0 && (
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
@@ -279,8 +282,8 @@ export default function Arc3GameSpoiler() {
             <CardContent>
               <div className="space-y-3">
                 {game.resources
-                  .filter(r => r.type === 'replay')
-                  .map((replay, idx) => (
+                  .filter((r: GameResource) => r.type === 'replay')
+                  .map((replay: GameResource, idx: number) => (
                     <a
                       key={idx}
                       href={replay.url}
@@ -325,8 +328,8 @@ export default function Arc3GameSpoiler() {
             <CardContent>
               <div className="space-y-4">
                 {game.resources
-                  .filter(r => r.type !== 'replay')
-                  .map((resource, idx) => (
+                  .filter((r: GameResource) => r.type !== 'replay')
+                  .map((resource: GameResource, idx: number) => (
                     <a
                       key={idx}
                       href={resource.url}
@@ -364,7 +367,7 @@ export default function Arc3GameSpoiler() {
             </CardHeader>
             <CardContent>
               <div className="flex flex-wrap gap-2">
-                {game.tags.map(tag => (
+                {game.tags.map((tag: string) => (
                   <Badge key={tag} variant="outline">
                     {tag}
                   </Badge>
