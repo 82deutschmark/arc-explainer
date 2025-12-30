@@ -13,6 +13,7 @@ import {
   DEFAULT_TRUESKILL_SIGMA,
   TRUESKILL_DISPLAY_MULTIPLIER,
   SQL_NORMALIZE_SLUG,
+  SQL_TRUESKILL_EXPOSED,
   clampLimit,
   logRepoError,
 } from './snakebenchSqlHelpers.ts';
@@ -103,7 +104,7 @@ export class LeaderboardRepository extends BaseRepository {
         JOIN public.games g ON gp.game_id = g.id
         GROUP BY ${SQL_NORMALIZE_SLUG('m.model_slug')}, m.trueskill_mu, m.trueskill_sigma, m.trueskill_exposed
         HAVING COUNT(gp.game_id) >= $2
-        ORDER BY COALESCE(m.trueskill_exposed, m.trueskill_mu - 3 * m.trueskill_sigma) DESC
+        ORDER BY ${SQL_TRUESKILL_EXPOSED('m')} DESC
         LIMIT $1;
       `;
 

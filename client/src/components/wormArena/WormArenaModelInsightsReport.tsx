@@ -1,39 +1,22 @@
 /**
- * Author: Codex (GPT-5)
- * Date: 2025-12-20
+ * Author: Cascade
+ * Date: 2025-12-29
  * PURPOSE: Inline actionable insights report for the Worm Arena Models page.
  *          Generates a per-model report on demand, displays an LLM summary,
  *          and provides copy, save, and Twitter share actions.
+ *          Integrated full performance metrics including quartiles and ranking.
  * SRP/DRY check: Pass - focused on report display and actions.
  */
 
 import React from 'react';
 
+import {
+  formatPercent,
+  formatUsd,
+  formatOptionalNumber,
+  formatReasonLabel,
+} from '@/lib/utils/formatters';
 import { useWormArenaModelInsightsStream } from '@/hooks/useWormArenaModelInsightsStream';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Separator } from '@/components/ui/separator';
-
-interface WormArenaModelInsightsReportProps {
-  modelSlug: string;
-}
-
-// Format a ratio as a percent string for display.
-const formatPercent = (value: number): string => `${(value * 100).toFixed(1)}%`;
-
-// Format a cost value for display with a fallback.
-const formatCost = (value: number | null): string =>
-  value == null || Number.isNaN(value) ? '-' : `$${value.toFixed(4)}`;
-
-// Format an optional number with a fixed precision.
-const formatOptionalNumber = (value: number | null, digits: number): string =>
-  value == null || Number.isNaN(value) ? '-' : value.toFixed(digits);
-
-// Convert snake death reason values into human-readable labels.
-const formatReasonLabel = (reason: string): string => reason.replace(/_/g, ' ').trim();
 
 // Format ISO timestamps for display with a short locale string.
 const formatDateTime = (value: string | null): string => {
@@ -357,22 +340,39 @@ export default function WormArenaModelInsightsReport({ modelSlug }: WormArenaMod
                 </div>
               </div>
             )}
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+            <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3">
               <div className="rounded-lg border p-3" style={{ backgroundColor: 'rgba(255, 255, 255, 0.8)', borderColor: 'var(--worm-border)' }}>
                 <div className="text-xs font-semibold mb-1" style={{ color: 'var(--worm-muted)' }}>Games</div>
                 <div className="text-lg font-bold" style={{ color: 'var(--worm-metric-games)' }}>{report.summary.gamesPlayed}</div>
+              </div>
+              <div className="rounded-lg border p-3" style={{ backgroundColor: 'rgba(255, 255, 255, 0.8)', borderColor: 'var(--worm-border)' }}>
+                <div className="text-xs font-semibold mb-1" style={{ color: 'var(--worm-muted)' }}>Record (W/L/T)</div>
+                <div className="text-lg font-bold" style={{ color: 'var(--worm-metric-winrate)' }}>
+                  {report.summary.wins}/{report.summary.losses}/{report.summary.ties}
+                </div>
               </div>
               <div className="rounded-lg border p-3" style={{ backgroundColor: 'rgba(255, 255, 255, 0.8)', borderColor: 'var(--worm-border)' }}>
                 <div className="text-xs font-semibold mb-1" style={{ color: 'var(--worm-muted)' }}>Win Rate</div>
                 <div className="text-lg font-bold" style={{ color: 'var(--worm-metric-winrate)' }}>{formatPercent(report.summary.winRate)}</div>
               </div>
               <div className="rounded-lg border p-3" style={{ backgroundColor: 'rgba(255, 255, 255, 0.8)', borderColor: 'var(--worm-border)' }}>
-                <div className="text-xs font-semibold mb-1" style={{ color: 'var(--worm-muted)' }}>Total Cost</div>
-                <div className="text-lg font-bold" style={{ color: 'var(--worm-metric-cost)' }}>{formatCost(report.summary.totalCost)}</div>
+                <div className="text-xs font-semibold mb-1" style={{ color: 'var(--worm-muted)' }}>Rank</div>
+                <div className="text-lg font-bold" style={{ color: 'var(--worm-metric-cost)' }}>
+                  {report.summary.leaderboardRank ? `#${report.summary.leaderboardRank}` : 'unrated'}
+                  {report.summary.totalModelsRanked && (
+                    <span className="text-xs font-normal ml-1" style={{ color: 'var(--worm-muted)' }}>
+                      of {report.summary.totalModelsRanked}
+                    </span>
+                  )}
+                </div>
               </div>
               <div className="rounded-lg border p-3" style={{ backgroundColor: 'rgba(255, 255, 255, 0.8)', borderColor: 'var(--worm-border)' }}>
-                <div className="text-xs font-semibold mb-1" style={{ color: 'var(--worm-muted)' }}>Cost/Loss</div>
-                <div className="text-lg font-bold" style={{ color: 'var(--worm-metric-cost)' }}>{formatCost(report.summary.costPerLoss)}</div>
+                <div className="text-xs font-semibold mb-1" style={{ color: 'var(--worm-muted)' }}>Total Cost</div>
+                <div className="text-lg font-bold" style={{ color: 'var(--worm-metric-cost)' }}>{formatUsd(report.summary.totalCost)}</div>
+              </div>
+              <div className="rounded-lg border p-3" style={{ backgroundColor: 'rgba(255, 255, 255, 0.8)', borderColor: 'var(--worm-border)' }}>
+                <div className="text-xs font-semibold mb-1" style={{ color: 'var(--worm-muted)' }}>Cost/Win</div>
+                <div className="text-lg font-bold" style={{ color: 'var(--worm-metric-cost)' }}>{formatUsd(report.summary.costPerWin)}</div>
               </div>
               <div className="rounded-lg border p-3" style={{ backgroundColor: 'rgba(255, 255, 255, 0.8)', borderColor: 'var(--worm-border)' }}>
                 <div className="text-xs font-semibold mb-1" style={{ color: 'var(--worm-muted)' }}>Avg Rounds</div>
@@ -432,19 +432,19 @@ export default function WormArenaModelInsightsReport({ modelSlug }: WormArenaMod
                 <AccordionContent>
                   <div className="flex flex-wrap gap-2">
                     <Badge variant="outline">
-                      Total Cost: {formatCost(report.summary.totalCost)}
+                      Total Cost: {formatUsd(report.summary.totalCost)}
                     </Badge>
                     <Badge variant="outline">
-                      Cost per Game: {formatCost(report.summary.costPerGame)}
+                      Cost per Game: {formatUsd(report.summary.costPerGame)}
                     </Badge>
                     <Badge variant="outline">
-                      Cost per Win: {formatCost(report.summary.costPerWin)}
+                      Cost per Win: {formatUsd(report.summary.costPerWin)}
                     </Badge>
                     <Badge variant="outline">
-                      Cost per Loss: {formatCost(report.summary.costPerLoss)}
+                      Cost per Loss: {formatUsd(report.summary.costPerLoss)}
                     </Badge>
                     <Badge variant="outline">
-                      Avg Score: {formatOptionalNumber(report.summary.averageScore, 2)}
+                      Score: {formatOptionalNumber(report.summary.averageScore, 2)} avg / {formatOptionalNumber(report.summary.p25Score, 1)} p25 / {formatOptionalNumber(report.summary.medianScore, 1)} p50 / {formatOptionalNumber(report.summary.p75Score, 1)} p75
                     </Badge>
                   </div>
                 </AccordionContent>

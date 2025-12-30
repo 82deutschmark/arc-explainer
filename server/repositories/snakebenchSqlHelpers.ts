@@ -44,6 +44,18 @@ export const normalizeSlug = (slug: string): string => {
 export const SQL_NORMALIZE_SLUG = (col: string) => `regexp_replace(${col}, ':free$', '')`;
 
 /**
+ * SQL expression for TrueSkill exposed rating calculation.
+ * Formula: COALESCE(trueskill_exposed, trueskill_mu - 3 * trueskill_sigma)
+ *
+ * This represents the conservative skill estimate where we subtract 3 standard deviations
+ * from the mean to account for uncertainty. The exposed rating is pre-calculated when available.
+ *
+ * @param prefix - Table alias prefix (e.g., 'm' for 'm.trueskill_mu')
+ */
+export const SQL_TRUESKILL_EXPOSED = (prefix: string = 'm'): string =>
+  `COALESCE(${prefix}.trueskill_exposed, ${prefix}.trueskill_mu - 3 * ${prefix}.trueskill_sigma)`;
+
+/**
  * Clamps a limit value to a safe range.
  */
 export const clampLimit = (limit: any, defaultVal: number = 20, maxVal: number = 200): number => {

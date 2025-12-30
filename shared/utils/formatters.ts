@@ -1,8 +1,8 @@
 /**
- * Author: Cascade (Claude Sonnet 4)
- * Date: 2025-12-19
- * PURPOSE: Shared formatting utilities for numbers and currency.
- *          Used by both server and client for consistent display.
+ * Author: Cascade
+ * Date: 2025-12-29
+ * PURPOSE: Shared formatting utilities for numbers, currency, and model-specific labels.
+ *          Centralizes logic used by both server and client for consistent display.
  * SRP/DRY check: Pass - pure formatting functions only.
  */
 
@@ -41,4 +41,26 @@ export function formatUsd(value: unknown): string {
 export function formatPercent(value: unknown, decimals = 1): string {
   if (typeof value !== 'number' || !Number.isFinite(value)) return 'N/A';
   return `${(value * 100).toFixed(decimals)}%`;
+}
+
+/**
+ * Format an optional number with fixed precision and a fallback.
+ * 
+ * @param value - Numeric value or null
+ * @param digits - Precision digits
+ * @param fallback - Fallback string (default '-')
+ */
+export function formatOptionalNumber(value: number | null | undefined, digits: number, fallback = '-'): string {
+  if (value == null || !Number.isFinite(value)) return fallback;
+  return value.toFixed(digits);
+}
+
+/**
+ * Convert snake death reason values into human-readable labels.
+ * 
+ * @param reason - Raw snake death reason string (e.g. 'body_collision')
+ */
+export function formatReasonLabel(reason: string | null | undefined): string {
+  if (!reason) return 'unknown';
+  return reason.replace(/_/g, ' ').trim();
 }
