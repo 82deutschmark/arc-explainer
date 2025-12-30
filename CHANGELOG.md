@@ -1,5 +1,10 @@
 # New entries at the top, use proper SemVer!
 
+### Version 6.16.19  Dec 30, 2025
+
+- **Tooling: Added local npm script for build+dev combo** (Author: Cascade)
+  - Added `local` npm script so `npm run local` executes a production build followed by the dev server for a single-command local run loop.
+
 ### Version 6.16.18  Dec 30, 2025
 
 - **TypeScript compile fixes for ARC3 Spoiler + SnakeBench service** (Author: Cascade)
