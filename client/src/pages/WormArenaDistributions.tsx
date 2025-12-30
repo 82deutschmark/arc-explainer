@@ -1,11 +1,10 @@
 /**
  * Author: Gemini 3 Flash High
- * Date: 2025-12-27
+ * Date: 2025-12-30
  * PURPOSE: Worm Arena Run Length Distribution page.
- *          Displays histogram visualization of game lengths (rounds) by model,
- *          with wins and losses separated. Removes per-model selection to
- *          show all models at once and keeps stats in sync with backend data.
- * SRP/DRY check: Pass - focused on page composition and state management.
+ *          Adds min-rounds filtering defaults (>=50), model inclusion controls,
+ *          and forwards the threshold to the chart for bucketing and detail drill.
+ * SRP/DRY check: Pass - page-level composition, thresholds, and state wiring only.
  */
 
 import React from 'react';
@@ -14,13 +13,20 @@ import WormArenaHeader from '@/components/WormArenaHeader';
 import WormArenaRunLengthChart from '@/components/wormArena/stats/WormArenaRunLengthChart';
 import useWormArenaDistributions from '@/hooks/useWormArenaDistributions';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { AlertCircle, Loader, BarChart3, Trophy, Clock, Target, TrendingUp, Zap } from 'lucide-react';
+import { AlertCircle, Loader, BarChart3, Trophy, Clock, Target, TrendingUp, Zap, SlidersHorizontal, EyeOff } from 'lucide-react';
 import type { WormArenaRunLengthDistributionData } from '@shared/types';
+import { Slider } from '@/components/ui/slider';
+import { Switch } from '@/components/ui/switch';
+import { Label } from '@/components/ui/label';
 
-const MIN_GAMES = 1; // Show every model regardless of game count
+const MIN_GAMES = 1; // Keep backend wide-open; apply client filters locally
+const DEFAULT_MIN_ROUNDS = 50;
+const MIN_ROUNDS_RANGE: [number, number] = [0, 120];
 
 export default function WormArenaDistributions() {
   const { data, isLoading, error } = useWormArenaDistributions(MIN_GAMES);
+  const [minRounds, setMinRounds] = React.useState<number>(DEFAULT_MIN_ROUNDS);
+  const [includeLowModels, setIncludeLowModels] = React.useState<boolean>(false);
 
   // Compute summary statistics from distribution data
   const stats = React.useMemo(() => {
@@ -228,16 +234,54 @@ export default function WormArenaDistributions() {
         {data && data.modelsIncluded > 0 && !isLoading && (
           <Card className="worm-card">
             <CardHeader className="pb-2">
-              <CardTitle className="text-lg text-[#8B7355] flex items-center gap-2">
-                <BarChart3 className="w-5 h-5" />
-                Run Length Distribution
-              </CardTitle>
-              <p className="text-sm text-[#A0826D]">
-                Stacked bars show game count at each round length across all models.
-              </p>
+              <div className="flex flex-col gap-2">
+                <CardTitle className="text-lg text-[#8B7355] flex items-center gap-2">
+                  <BarChart3 className="w-5 h-5" />
+                  Run Length Distribution
+                </CardTitle>
+                <p className="text-sm text-[#A0826D]">
+                  Stacked bars show game count at each round length. Defaults to models with ≥ {minRounds} round games.
+                </p>
+              </div>
+              <div className="mt-2 flex flex-col gap-3">
+                <div className="flex items-center gap-3 text-sm text-[#8B7355]">
+                  <SlidersHorizontal className="w-4 h-4" />
+                  <div className="flex flex-col w-full">
+                    <div className="flex items-center justify-between text-xs text-[#A0826D] mb-1">
+                      <span>Minimum rounds to show</span>
+                      <span className="font-semibold text-[#4A7C59]">{minRounds} rounds</span>
+                    </div>
+                    <Slider
+                      value={[minRounds]}
+                      min={MIN_ROUNDS_RANGE[0]}
+                      max={MIN_ROUNDS_RANGE[1]}
+                      step={5}
+                      onValueChange={(v) => setMinRounds(v[0] ?? DEFAULT_MIN_ROUNDS)}
+                    />
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Switch
+                    id="include-low-models"
+                    checked={includeLowModels}
+                    onCheckedChange={setIncludeLowModels}
+                  />
+                  <Label htmlFor="include-low-models" className="text-sm text-[#8B7355] flex items-center gap-1">
+                    <EyeOff className="w-4 h-4" />
+                    Show models without games ≥ {minRounds} rounds
+                  </Label>
+                </div>
+                <p className="text-xs text-[#A0826D]">
+                  Models are included by default only if they have at least one game at or above the minimum rounds. Games below the threshold are grouped into a “&lt;{minRounds}” bucket so totals stay accurate.
+                </p>
+              </div>
             </CardHeader>
             <CardContent>
-              <WormArenaRunLengthChart data={data} />
+              <WormArenaRunLengthChart
+                data={data}
+                minRounds={minRounds}
+                includeLowModels={includeLowModels}
+              />
             </CardContent>
           </Card>
         )}
