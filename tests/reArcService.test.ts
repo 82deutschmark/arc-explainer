@@ -525,7 +525,7 @@ test('evaluateSubmission: uses cached dataset on second evaluation (same seed)',
   const seed = 88888;
   const tasks: GeneratedTask[] = [];
 
-  // Generate full dataset
+  // Generate full dataset (now populates cache during generation)
   for await (const task of generateDataset(seed)) {
     tasks.push(task);
   }
@@ -539,11 +539,13 @@ test('evaluateSubmission: uses cached dataset on second evaluation (same seed)',
     }));
   }
 
-  // First evaluation: cache miss (generates dataset)
-  assert.strictEqual(__testOnly_datasetCache.size(), 0, 'Cache should be empty initially');
+  // Cache already populated by generation
+  assert.strictEqual(__testOnly_datasetCache.size(), 1, 'Cache should have 1 entry after generation');
+
+  // First evaluation: cache hit (uses cached dataset from generation)
   const result1 = await evaluateSubmission(submission);
   assert.strictEqual(result1.type, 'score', 'First evaluation should return score');
-  assert.strictEqual(__testOnly_datasetCache.size(), 1, 'Cache should have 1 entry after first evaluation');
+  assert.strictEqual(__testOnly_datasetCache.size(), 1, 'Cache should still have 1 entry');
 
   // Second evaluation: cache hit (uses cached dataset)
   const result2 = await evaluateSubmission(submission);
@@ -561,13 +563,13 @@ test('evaluateSubmission: cache miss for different seeds', async () => {
   const seed1 = 11111;
   const seed2 = 22222;
 
-  // Generate dataset for seed1
+  // Generate dataset for seed1 (populates cache during generation)
   const tasks1: GeneratedTask[] = [];
   for await (const task of generateDataset(seed1)) {
     tasks1.push(task);
   }
 
-  // Generate dataset for seed2
+  // Generate dataset for seed2 (populates cache during generation)
   const tasks2: GeneratedTask[] = [];
   for await (const task of generateDataset(seed2)) {
     tasks2.push(task);
@@ -590,12 +592,14 @@ test('evaluateSubmission: cache miss for different seeds', async () => {
     }));
   }
 
-  // Evaluate both (should cache both)
-  assert.strictEqual(__testOnly_datasetCache.size(), 0, 'Cache should be empty initially');
+  // Cache already populated by generation for both seeds
+  assert.strictEqual(__testOnly_datasetCache.size(), 2, 'Cache should have 2 entries after both generations');
+
+  // Evaluations use cached datasets (no additional cache entries)
   await evaluateSubmission(submission1);
-  assert.strictEqual(__testOnly_datasetCache.size(), 1, 'Cache should have 1 entry after first eval');
+  assert.strictEqual(__testOnly_datasetCache.size(), 2, 'Cache should still have 2 entries after first eval');
   await evaluateSubmission(submission2);
-  assert.strictEqual(__testOnly_datasetCache.size(), 2, 'Cache should have 2 entries after second eval');
+  assert.strictEqual(__testOnly_datasetCache.size(), 2, 'Cache should still have 2 entries after second eval');
 });
 
 test('SimpleLRU: evicts oldest when max size exceeded', async () => {
