@@ -9,7 +9,7 @@
  * SRP/DRY check: Pass - Single responsibility: efficiency visualization
  */
 
-import { ScatterChart, Scatter, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Legend } from 'recharts';
+import { ScatterChart, Scatter, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
 
 interface EfficiencyPlotProps {
   data: Array<{
@@ -33,14 +33,20 @@ interface PlotDataPoint {
 
 export function EfficiencyPlot({ data }: EfficiencyPlotProps) {
   // Transform data for recharts
+  const MIN_TIME_MINUTES = 5;
+
   const plotData: PlotDataPoint[] = data.map(d => ({
-    x: d.elapsedMs / 1000 / 60, // Convert to minutes for display
+    x: Math.max(d.elapsedMs / 1000 / 60, MIN_TIME_MINUTES), // Convert to minutes, clamp to minimum
     y: d.score * 100,           // Convert to percentage
     name: d.solverName,
     tasksSolved: d.tasksSolved,
     solvedPairs: d.solvedPairs,
     totalPairs: d.totalPairs,
   }));
+
+  // Calculate max score for dynamic Y-axis scaling
+  const maxScore = Math.max(...plotData.map(p => p.y), 100);
+  const yDomain = [0, Math.ceil(maxScore * 1.1)]; // 10% padding for headroom
 
   // Custom tooltip to show detailed submission info
   const CustomTooltip = ({ active, payload }: any) => {
@@ -69,8 +75,11 @@ export function EfficiencyPlot({ data }: EfficiencyPlotProps) {
             dataKey="x"
             name="Time"
             unit=" min"
+            scale="log"
+            domain={[1, 10000]} // Log domain in minutes
+            ticks={[5, 10, 30, 100, 300, 1000, 3000]}
             label={{
-              value: 'Elapsed Time (minutes)',
+              value: 'Elapsed Time (minutes, log scale)',
               position: 'bottom',
               offset: 40,
               style: { fill: 'hsl(var(--muted-foreground))' }
@@ -82,7 +91,7 @@ export function EfficiencyPlot({ data }: EfficiencyPlotProps) {
             dataKey="y"
             name="Score"
             unit="%"
-            domain={[0, 100]}
+            domain={yDomain}
             label={{
               value: 'Score (%)',
               angle: -90,
@@ -93,11 +102,6 @@ export function EfficiencyPlot({ data }: EfficiencyPlotProps) {
             tick={{ fill: 'hsl(var(--muted-foreground))' }}
           />
           <Tooltip content={<CustomTooltip />} />
-          <Legend
-            verticalAlign="top"
-            height={36}
-            wrapperStyle={{ paddingBottom: '10px' }}
-          />
           <Scatter
             name="Submissions"
             data={plotData}
@@ -109,24 +113,13 @@ export function EfficiencyPlot({ data }: EfficiencyPlotProps) {
         </ScatterChart>
       </ResponsiveContainer>
 
-      {/* Interpretation guide */}
-      <div className="mt-6 grid grid-cols-2 gap-4 text-sm">
-        <div className="border border-border rounded-lg p-3">
-          <p className="font-semibold mb-1">Top-left (ideal)</p>
-          <p className="text-muted-foreground">High score, fast time = efficient solver</p>
-        </div>
-        <div className="border border-border rounded-lg p-3">
-          <p className="font-semibold mb-1">Top-right</p>
-          <p className="text-muted-foreground">High score, slow time = thorough but slow</p>
-        </div>
-        <div className="border border-border rounded-lg p-3">
-          <p className="font-semibold mb-1">Bottom-left</p>
-          <p className="text-muted-foreground">Low score, fast time = quick but ineffective</p>
-        </div>
-        <div className="border border-border rounded-lg p-3">
-          <p className="font-semibold mb-1">Bottom-right</p>
-          <p className="text-muted-foreground">Low score, slow time = struggling</p>
-        </div>
+      {/* Elapsed Time Description */}
+      <div className="mt-6 pt-4 border-t border-border">
+        <p className="text-xs text-muted-foreground">
+          <span className="font-semibold">Elapsed time:</span> Time between dataset generation and evaluation. Provides an upper bound on solving time.
+          <br />
+          <span className="font-semibold">Log scale:</span> The X-axis uses a logarithmic scale to handle the wide range of submission times. Submissions faster than 5 minutes are displayed at the 5-minute mark.
+        </p>
       </div>
     </div>
   );
