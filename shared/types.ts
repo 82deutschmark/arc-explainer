@@ -1,10 +1,9 @@
 /**
- * shared/types.ts
- *
- * Author: Codex (GPT-5)
- * Date: 2025-12-20
- * PURPOSE: Shared TypeScript interfaces and types for ARC Explainer, including Worm Arena model insights
- *          reports with optional LLM summary fields.
+ * Author: Cascade
+ * Date: 2025-12-29
+ * PURPOSE: Shared TypeScript interfaces and types for ARC Explainer.
+ *          Includes comprehensive definitions for Worm Arena model insights,
+ *          performance metrics, and streaming status.
  * SRP/DRY check: Pass - shared types only.
  */
 
@@ -827,6 +826,7 @@ export interface WormArenaModelInsightsSummary {
   minScore: number | null;
   maxScore: number | null;
   medianScore: number | null;
+  p25Score: number | null;
   p75Score: number | null;
   totalApples: number;
   averageDeathRoundLoss: number | null;
@@ -841,6 +841,21 @@ export interface WormArenaModelInsightsSummary {
   // Leaderboard ranking
   leaderboardRank: number | null;
   totalModelsRanked: number | null;
+}
+
+export interface WormArenaModelInsightsLLMOutput {
+  summary: string;
+  deathAnalysis: Array<{
+    cause: string;
+    frequency: string;
+    pattern: string;
+  }>;
+  toughOpponents: Array<{
+    opponent: string;
+    record: string;
+    issue: string;
+  }>;
+  recommendations: string[];
 }
 
 export interface WormArenaModelInsightsReport {

@@ -1,39 +1,42 @@
 /**
- * Author: Codex (GPT-5)
- * Date: 2025-12-20
+ * Author: Cascade (updated by Claude Code using Opus 4.5)
+ * Date: 2025-12-30
  * PURPOSE: Inline actionable insights report for the Worm Arena Models page.
  *          Generates a per-model report on demand, displays an LLM summary,
- *          and provides copy, save, and Twitter share actions.
+ *          and provides copy, save, and Twitter/X share actions.
+ *          Integrated full performance metrics including quartiles and ranking.
  * SRP/DRY check: Pass - focused on report display and actions.
+ *
+ * 2025-12-30: UI polish - smaller title, larger summary text, compact buttons,
+ *             improved Share on X button styling.
+ * 2025-12-30: Added visualizations - TrueSkill metrics display, bell curve comparison
+ *             vs toughest opponent, and game length distribution chart filtered to model.
  */
 
 import React from 'react';
 
+import {
+  formatPercent,
+  formatUsd,
+  formatOptionalNumber,
+  formatReasonLabel,
+} from '@shared/utils/formatters';
 import { useWormArenaModelInsightsStream } from '@/hooks/useWormArenaModelInsightsStream';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { useWormArenaTrueSkillLeaderboard } from '@/hooks/useWormArenaTrueSkillLeaderboard';
+import { useWormArenaDistributions } from '@/hooks/useWormArenaDistributions';
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Separator } from '@/components/ui/separator';
+import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from '@/components/ui/accordion';
+import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from '@/components/ui/table';
+import { Badge } from '@/components/ui/badge';
+import WormArenaSkillMetrics from '@/components/wormArena/stats/WormArenaSkillMetrics';
+import WormArenaSkillDistributionChart from '@/components/wormArena/stats/WormArenaSkillDistributionChart';
+import WormArenaRunLengthChart from '@/components/wormArena/stats/WormArenaRunLengthChart';
 
 interface WormArenaModelInsightsReportProps {
   modelSlug: string;
 }
-
-// Format a ratio as a percent string for display.
-const formatPercent = (value: number): string => `${(value * 100).toFixed(1)}%`;
-
-// Format a cost value for display with a fallback.
-const formatCost = (value: number | null): string =>
-  value == null || Number.isNaN(value) ? '-' : `$${value.toFixed(4)}`;
-
-// Format an optional number with a fixed precision.
-const formatOptionalNumber = (value: number | null, digits: number): string =>
-  value == null || Number.isNaN(value) ? '-' : value.toFixed(digits);
-
-// Convert snake death reason values into human-readable labels.
-const formatReasonLabel = (reason: string): string => reason.replace(/_/g, ' ').trim();
 
 // Format ISO timestamps for display with a short locale string.
 const formatDateTime = (value: string | null): string => {
@@ -66,6 +69,41 @@ export default function WormArenaModelInsightsReport({ modelSlug }: WormArenaMod
   } = useWormArenaModelInsightsStream();
   const [copyHint, setCopyHint] = React.useState<string | null>(null);
   const [downloadUrl, setDownloadUrl] = React.useState<string | null>(null);
+
+  // Fetch TrueSkill leaderboard for opponent comparison
+  const { entries: leaderboardEntries } = useWormArenaTrueSkillLeaderboard(150, 3);
+
+  // Fetch distribution data for run length chart
+  const { data: distributionData } = useWormArenaDistributions(1);
+
+  // Get opponent TrueSkill from leaderboard (for the toughest opponent)
+  const opponentTrueSkill = React.useMemo(() => {
+    if (!report?.lossOpponents?.length || !leaderboardEntries.length) return null;
+
+    const toughestOpponent = report.lossOpponents[0]; // Already sorted by loss rate
+    const entry = leaderboardEntries.find(e => e.modelSlug === toughestOpponent.opponentSlug);
+    if (!entry) return null;
+
+    return {
+      slug: toughestOpponent.opponentSlug,
+      mu: entry.mu,
+      sigma: entry.sigma,
+    };
+  }, [report?.lossOpponents, leaderboardEntries]);
+
+  // Filter distribution data to only include the current model
+  const filteredDistributionData = React.useMemo(() => {
+    if (!distributionData?.distributionData) return null;
+
+    const modelData = distributionData.distributionData.find(m => m.modelSlug === modelSlug);
+    if (!modelData) return null;
+
+    return {
+      ...distributionData,
+      distributionData: [modelData],
+      modelsIncluded: 1,
+    };
+  }, [distributionData, modelSlug]);
 
   // Reset report state when the selected model changes.
   React.useEffect(() => {
@@ -143,37 +181,37 @@ export default function WormArenaModelInsightsReport({ modelSlug }: WormArenaMod
     <Card className="worm-card">
       <CardHeader className="pb-6">
         <div className="flex items-center justify-between gap-4 flex-wrap">
-          <CardTitle className="text-5xl font-black" style={{ color: '#000' }}>
+          <CardTitle className="text-2xl font-bold" style={{ color: '#000' }}>
             Actionable Insights Report
           </CardTitle>
           {report && isComplete && (
-            <div className="flex items-center gap-3 flex-wrap">
+            <div className="flex items-center gap-1 flex-wrap">
               <Button
                 variant="outline"
-                size="lg"
+                size="sm"
                 onClick={handleCopyReport}
-                className="text-base font-bold"
+                className="text-sm font-medium"
               >
-                {copyHint ? copyHint : 'Copy Report'}
+                {copyHint ? copyHint : 'Copy'}
               </Button>
               {downloadUrl && (
-                <Button variant="outline" size="lg" asChild className="text-base font-bold">
+                <Button variant="outline" size="sm" asChild className="text-sm font-medium">
                   <a href={downloadUrl} download={`worm-arena-${modelSlug}-insights.md`}>
-                    Save Markdown
+                    Save .md
                   </a>
                 </Button>
               )}
               {tweetUrl && (
-                <Button variant="outline" size="lg" asChild className="text-base font-bold">
+                <Button variant="outline" size="sm" asChild className="text-sm font-medium bg-black text-white hover:bg-gray-800">
                   <a href={tweetUrl} target="_blank" rel="noreferrer">
-                    Share on Twitter
+                    Share on X
                   </a>
                 </Button>
               )}
             </div>
           )}
         </div>
-        <p className="text-2xl font-semibold mt-3" style={{ color: '#000' }}>
+        <p className="text-sm font-medium mt-2" style={{ color: 'var(--worm-muted)' }}>
           Full history report focused on loss reasons, cost, and opponent pain points.
         </p>
       </CardHeader>
@@ -251,6 +289,20 @@ export default function WormArenaModelInsightsReport({ modelSlug }: WormArenaMod
             <div className="text-xs" style={{ color: 'var(--worm-muted)' }}>
               Generated: {formatDateTime(report.generatedAt)}
             </div>
+
+            {/* TrueSkill Metrics Visualization */}
+            {report.summary.trueSkillMu != null && report.summary.trueSkillSigma != null && (
+              <div className="rounded-lg border p-4" style={{ borderColor: 'var(--worm-border)', backgroundColor: 'rgba(255, 255, 255, 0.5)' }}>
+                <h4 className="text-base font-bold mb-4" style={{ color: 'var(--worm-ink)' }}>TrueSkill Rating</h4>
+                <WormArenaSkillMetrics
+                  mu={report.summary.trueSkillMu}
+                  sigma={report.summary.trueSkillSigma}
+                  exposed={report.summary.trueSkillExposed ?? report.summary.trueSkillMu - 3 * report.summary.trueSkillSigma}
+                  modelSlug={modelSlug}
+                />
+              </div>
+            )}
+
             {/* Structured insights from LLM */}
             {report.llmSummary && (
               <div className="space-y-4">
@@ -263,7 +315,7 @@ export default function WormArenaModelInsightsReport({ modelSlug }: WormArenaMod
                         {/* Overview */}
                         {insights.summary && (
                           <div className="rounded-lg border p-4" style={{ backgroundColor: 'rgba(228, 242, 233, 0.5)', borderColor: 'var(--worm-border)' }}>
-                            <div className="text-sm leading-relaxed font-semibold" style={{ color: 'var(--worm-ink)' }}>
+                            <div className="text-base leading-relaxed font-medium" style={{ color: 'var(--worm-ink)' }}>
                               {insights.summary}
                             </div>
                           </div>
@@ -357,22 +409,39 @@ export default function WormArenaModelInsightsReport({ modelSlug }: WormArenaMod
                 </div>
               </div>
             )}
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+            <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3">
               <div className="rounded-lg border p-3" style={{ backgroundColor: 'rgba(255, 255, 255, 0.8)', borderColor: 'var(--worm-border)' }}>
                 <div className="text-xs font-semibold mb-1" style={{ color: 'var(--worm-muted)' }}>Games</div>
                 <div className="text-lg font-bold" style={{ color: 'var(--worm-metric-games)' }}>{report.summary.gamesPlayed}</div>
+              </div>
+              <div className="rounded-lg border p-3" style={{ backgroundColor: 'rgba(255, 255, 255, 0.8)', borderColor: 'var(--worm-border)' }}>
+                <div className="text-xs font-semibold mb-1" style={{ color: 'var(--worm-muted)' }}>Record (W/L/T)</div>
+                <div className="text-lg font-bold" style={{ color: 'var(--worm-metric-winrate)' }}>
+                  {report.summary.wins}/{report.summary.losses}/{report.summary.ties}
+                </div>
               </div>
               <div className="rounded-lg border p-3" style={{ backgroundColor: 'rgba(255, 255, 255, 0.8)', borderColor: 'var(--worm-border)' }}>
                 <div className="text-xs font-semibold mb-1" style={{ color: 'var(--worm-muted)' }}>Win Rate</div>
                 <div className="text-lg font-bold" style={{ color: 'var(--worm-metric-winrate)' }}>{formatPercent(report.summary.winRate)}</div>
               </div>
               <div className="rounded-lg border p-3" style={{ backgroundColor: 'rgba(255, 255, 255, 0.8)', borderColor: 'var(--worm-border)' }}>
-                <div className="text-xs font-semibold mb-1" style={{ color: 'var(--worm-muted)' }}>Total Cost</div>
-                <div className="text-lg font-bold" style={{ color: 'var(--worm-metric-cost)' }}>{formatCost(report.summary.totalCost)}</div>
+                <div className="text-xs font-semibold mb-1" style={{ color: 'var(--worm-muted)' }}>Rank</div>
+                <div className="text-lg font-bold" style={{ color: 'var(--worm-metric-cost)' }}>
+                  {report.summary.leaderboardRank ? `#${report.summary.leaderboardRank}` : 'unrated'}
+                  {report.summary.totalModelsRanked && (
+                    <span className="text-xs font-normal ml-1" style={{ color: 'var(--worm-muted)' }}>
+                      of {report.summary.totalModelsRanked}
+                    </span>
+                  )}
+                </div>
               </div>
               <div className="rounded-lg border p-3" style={{ backgroundColor: 'rgba(255, 255, 255, 0.8)', borderColor: 'var(--worm-border)' }}>
-                <div className="text-xs font-semibold mb-1" style={{ color: 'var(--worm-muted)' }}>Cost/Loss</div>
-                <div className="text-lg font-bold" style={{ color: 'var(--worm-metric-cost)' }}>{formatCost(report.summary.costPerLoss)}</div>
+                <div className="text-xs font-semibold mb-1" style={{ color: 'var(--worm-muted)' }}>Total Cost</div>
+                <div className="text-lg font-bold" style={{ color: 'var(--worm-metric-cost)' }}>{formatUsd(report.summary.totalCost)}</div>
+              </div>
+              <div className="rounded-lg border p-3" style={{ backgroundColor: 'rgba(255, 255, 255, 0.8)', borderColor: 'var(--worm-border)' }}>
+                <div className="text-xs font-semibold mb-1" style={{ color: 'var(--worm-muted)' }}>Cost/Win</div>
+                <div className="text-lg font-bold" style={{ color: 'var(--worm-metric-cost)' }}>{formatUsd(report.summary.costPerWin)}</div>
               </div>
               <div className="rounded-lg border p-3" style={{ backgroundColor: 'rgba(255, 255, 255, 0.8)', borderColor: 'var(--worm-border)' }}>
                 <div className="text-xs font-semibold mb-1" style={{ color: 'var(--worm-muted)' }}>Avg Rounds</div>
@@ -393,7 +462,51 @@ export default function WormArenaModelInsightsReport({ modelSlug }: WormArenaMod
 
             <Separator />
 
-            <Accordion type="multiple" defaultValue={["failure-modes", "cost-efficiency", "opponents", "data-quality"]} className="w-full">
+            <Accordion type="multiple" defaultValue={["skill-comparison", "game-length", "failure-modes", "cost-efficiency", "opponents", "data-quality"]} className="w-full">
+              {/* Skill Comparison - Bell Curve vs Toughest Opponent */}
+              {report.summary.trueSkillMu != null && report.summary.trueSkillSigma != null && (
+                <AccordionItem value="skill-comparison">
+                  <AccordionTrigger className="text-base font-bold">Skill Comparison</AccordionTrigger>
+                  <AccordionContent>
+                    <div className="space-y-3">
+                      <p className="text-sm" style={{ color: 'var(--worm-muted)' }}>
+                        Bell curve showing skill distribution{opponentTrueSkill ? ` compared to toughest opponent (${opponentTrueSkill.slug})` : ''}.
+                      </p>
+                      <WormArenaSkillDistributionChart
+                        mu={report.summary.trueSkillMu}
+                        sigma={report.summary.trueSkillSigma}
+                        exposed={report.summary.trueSkillExposed ?? report.summary.trueSkillMu - 3 * report.summary.trueSkillSigma}
+                        modelLabel={modelSlug.split('/').pop() || modelSlug}
+                        referenceMu={opponentTrueSkill?.mu}
+                        referenceSigma={opponentTrueSkill?.sigma}
+                        referenceLabel={opponentTrueSkill?.slug.split('/').pop()}
+                        width={500}
+                        height={280}
+                      />
+                    </div>
+                  </AccordionContent>
+                </AccordionItem>
+              )}
+
+              {/* Game Length Analysis - Run Length Distribution */}
+              {filteredDistributionData && (
+                <AccordionItem value="game-length">
+                  <AccordionTrigger className="text-base font-bold">Game Length Distribution</AccordionTrigger>
+                  <AccordionContent>
+                    <div className="space-y-3">
+                      <p className="text-sm" style={{ color: 'var(--worm-muted)' }}>
+                        Distribution of game lengths (rounds) for this model, showing wins and losses.
+                      </p>
+                      <WormArenaRunLengthChart
+                        data={filteredDistributionData}
+                        minRounds={0}
+                        includeLowModels={true}
+                      />
+                    </div>
+                  </AccordionContent>
+                </AccordionItem>
+              )}
+
               <AccordionItem value="failure-modes">
                 <AccordionTrigger className="text-base font-bold">Failure Modes</AccordionTrigger>
                 <AccordionContent>
@@ -432,19 +545,19 @@ export default function WormArenaModelInsightsReport({ modelSlug }: WormArenaMod
                 <AccordionContent>
                   <div className="flex flex-wrap gap-2">
                     <Badge variant="outline">
-                      Total Cost: {formatCost(report.summary.totalCost)}
+                      Total Cost: {formatUsd(report.summary.totalCost)}
                     </Badge>
                     <Badge variant="outline">
-                      Cost per Game: {formatCost(report.summary.costPerGame)}
+                      Cost per Game: {formatUsd(report.summary.costPerGame)}
                     </Badge>
                     <Badge variant="outline">
-                      Cost per Win: {formatCost(report.summary.costPerWin)}
+                      Cost per Win: {formatUsd(report.summary.costPerWin)}
                     </Badge>
                     <Badge variant="outline">
-                      Cost per Loss: {formatCost(report.summary.costPerLoss)}
+                      Cost per Loss: {formatUsd(report.summary.costPerLoss)}
                     </Badge>
                     <Badge variant="outline">
-                      Avg Score: {formatOptionalNumber(report.summary.averageScore, 2)}
+                      Score: {formatOptionalNumber(report.summary.averageScore, 2)} avg / {formatOptionalNumber(report.summary.p25Score, 1)} p25 / {formatOptionalNumber(report.summary.medianScore, 1)} p50 / {formatOptionalNumber(report.summary.p75Score, 1)} p75
                     </Badge>
                   </div>
                 </AccordionContent>

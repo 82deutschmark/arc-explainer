@@ -1,210 +1,201 @@
 # ARC Explainer Developer Onboarding Guide
 
-*Last Updated: October 6, 2025*  NEEDS UPDATE FOR DECEMBER 27 2025!!!
+* Author: Cascade (ChatGPT)
+* Date: 2025-12-30
+* PURPOSE: Canonical architectural overview for new contributors, synced with latest Responses API streaming, SnakeBench, ARC3, and repository refactors described in `CHANGELOG.md`, `docs/reference/api/EXTERNAL_API.md`, and Responses API reference docs.
+* SRP/DRY check: Pass — Cross-checked against current API reference and changelog entries.
+
+# ARC Explainer Developer Onboarding Guide
+
+*Last Updated: December 30, 2025*
 
 Welcome to the ARC Explainer project! This guide is designed to help new developers understand the project's architecture, locate key files, and contribute effectively. Our goal is to reuse existing components and maintain a clear, modular structure.
 
 ## Project Overview
 
-The ARC Explainer is a full-stack web application for analyzing and visualizing Abstract Reasoning Corpus (ARC) puzzles. It allows users to submit puzzles to various AI models, view their analyses, and compare results. The application is built with a React frontend and a Node.js/Express backend, following a "database-first" architecture.
+ARC Explainer is a full-stack platform for analyzing ARC puzzles, streaming live SnakeBench matches, and curating encyclopedic explanations. The React (Vite) frontend and Node.js/Express backend share a strict “database-first” contract: everything rendered in the UI must already exist in PostgreSQL so refreshes and external consumers stay consistent.
 
-### 🆕 NEW: Model Debate & Rebuttal Tracking (September 2025) ✅ COMPLETE
-The application now includes AI-vs-AI debate functionality with parent-child rebuttal tracking:
-- **ModelDebate Page**: Interface for AI models to challenge each other's incorrect explanations
-- **Rebuttal Tracking**: Database tracks which explanations are rebuttals challenging other explanations via `rebutting_explanation_id` FK
-- **Debate Chains**: Recursive CTE queries to show full debate threads (Original → Rebuttal 1 → Rebuttal 2)
-- **Custom Challenges**: Users can provide optional guidance text when generating challenges
-- **Debate Chain UI**: Breadcrumb navigation showing debate participants with current explanation highlighted
-- **Rebuttal Badges**: Visual indicators on explanation cards showing rebuttal relationships
-- **API Endpoints**:
-  - `GET /api/explanations/:id/chain` - Get full debate chain
-  - `GET /api/explanations/:id/original` - Get parent explanation
-  - `GET /api/puzzle/:puzzleId/explanations?correctness=incorrect` - Filter debatable explanations
-- **Status**: 100% Complete (v2.30.8) - Backend, UI, and navigation fully implemented
+The platform now spans three major domains:
+1. **Puzzle Analysis** — single-turn solvers, Model Debate, conversation chaining, and streaming `/api/stream/analyze` runs.
+2. **SnakeBench / Worm Arena** — Real-time match orchestration, insights dashboards, placement stats, and replay streaming.
+3. **ARC3 Agent Playground** — Modular per-game resources backed by new shared `arc3Games/` registry files and real ARC-AGI-3 integrations.
 
-### 🆕 NEW: Conversation Chaining & PuzzleDiscussion (October 2025) ✅ COMPLETE
-The application now supports multi-turn conversations with full context retention using provider-native Responses API:
-- **PuzzleDiscussion Page**: Progressive reasoning where one model refines its own analysis across multiple turns
-- **Conversation Chaining**: Pass `previousResponseId` to maintain full conversation context (30-day retention)
-- **Supported Providers**: OpenAI (o-series, GPT-5), xAI (Grok-4)
-- **Server-Side Storage**: No token cost for accessing previous reasoning (stored on provider servers)
-- **Eligibility API**: `GET /api/discussion/eligible` - Get recent explanations eligible for chaining
-- **Simplified Criteria**: Only requires `provider_response_id` + within 30 days (no model type restrictions)
-- **Frontend Mapping**: `providerResponseId` field automatically mapped in `useExplanation` hook
-- **Landing Page**: Search box + table showing recent eligible analyses with direct "Refine" buttons
-- **Auto-Selection**: Supports `?select=:explanationId` URL parameter for deep-linking
-- **Database**: `provider_response_id` column in `explanations` table stores response IDs
-- **API Documentation**:
-  - `docs/API_Conversation_Chaining.md` - Complete usage guide
-  - `docs/Responses_API_Chain_Storage_Analysis.md` - Technical implementation
-- **Status**: 100% Complete (v3.6.4) - Backend, frontend, and UI fully implemented
+### 2025 Architecture Milestones
 
-### Model Dataset Performance Analysis (September 2025)
-The application includes dynamic model performance analysis across ANY ARC dataset:
-- **Dynamic Dataset Discovery**: Automatically discovers available datasets from `data/` directory
-- **Model Performance Tracking**: Shows which puzzles each model solved/failed/skipped on any dataset
-- **Real Database Queries**: Uses same logic as `puzzle-analysis.ts` and `retry-failed-puzzles.ts` scripts
-- **Complete Flexibility**: No hardcoded datasets or models - works with any combination
-- **Analytics Dashboard**: Available in the Analytics section with dataset and model selectors
+| Feature | Summary | Key References |
+| --- | --- | --- |
+| Model Debate & Rebuttals | Tracks `rebutting_explanation_id`, renders debate breadcrumbs, and exposes `/api/explanations/:id/{chain,original}` for recursion. | `client/src/pages/ModelDebate.tsx`, `server/repositories/ExplanationRepository.ts` |
+| Conversation Chaining | Responses API `previousResponseId` support with eligibility endpoint and PuzzleDiscussion UI. | `docs/API_Conversation_Chaining.md`, `docs/Responses_API_Chain_Storage_Analysis.md`, `docs/reference/api/EXTERNAL_API.md` |
+| Streaming Analyses | Two-step SSE handshake via `/api/stream/analyze` POST + GET, emitting `stream.*` events with OpenAI/xAI specific handlers. Enabled by default (`STREAMING_ENABLED`). | `docs/reference/api/EXTERNAL_API.md`, `docs/reference/api/OpenAI_Responses_API_Streaming_Implementation.md`, `client/src/lib/streaming/analysisStream.ts` |
+| SnakeBench Refactor | Monolithic repository split into `GameReadRepository`, `LeaderboardRepository`, `AnalyticsRepository`, etc., plus dedicated prompt + report services. | `server/repositories/*`, `server/services/prompts/wormArenaInsights.ts`, `server/services/wormArena/WormArenaReportService.ts` |
+| Model Insights Dashboards | Expanded TrueSkill metrics, run-length charts, and streaming insights for Worm Arena models. | `client/src/pages/WormArenaModels.tsx`, `client/src/components/wormArena/**/*` |
+| ARC3 Modularization | `shared/arc3Games/` now stores per-game files with new replay resource type and enhanced spoilers UI. | `shared/arc3Games/index.ts`, `client/src/pages/Arc3GameSpoiler.tsx` |
+| Dataset Performance Explorer | Dynamic dataset discovery and `/api/model-dataset/*` endpoints for arbitrary model/dataset combinations. | `docs/reference/api/EXTERNAL_API.md`, `client/src/pages/ModelDatasetPerformance.tsx` |
 
-### Core Philosophy: Database-First Architecture
+## Core Philosophy: Database-First + SRP Everywhere
 
-The application's data flow is designed to ensure data integrity and persistence. Here’s the typical flow for an analysis request:
-
-1.  **Frontend Request**: The user initiates an action (e.g., clicking "Analyze") in the UI.
-2.  **Backend Processing**: The backend receives the request, constructs a prompt, calls an external AI service, validates the response, and saves the complete, validated result to the PostgreSQL database.
-3.  **Frontend Refetch**: After the backend confirms the database write, the frontend re-fetches the data from the database to update the UI.
-
-This ensures that the UI always displays a persistent, validated record. For a detailed trace, see [Analysis Data Flow Trace](./Analysis_Data_Flow_Trace.md).
+1. **Database-first rendering** — Every surface (puzzle explanations, SnakeBench stats, ARC3 spoilers) reads from PostgreSQL or curated JSONs. Frontend components never assume temporary responses; they refetch after each mutation. See `docs/reference/api/EXTERNAL_API.md` and `docs/Analysis_Data_Flow_Trace.md` for request/response contracts.
+2. **Strict SRP/DRY** — Repository split ensures each domain (accuracy, trust, cost, SnakeBench stats) owns its SQL. Shared helpers live under `shared/` or `server/utils/`.
+3. **Public APIs** — All endpoints remain unauthenticated (do **not** wire `server/middleware/apiKeyAuth.ts`). Researchers rely on open access.
+4. **Controlled streaming/state transitions** — Long-running tasks (analysis streaming, Worm Arena live sessions) collapse setup controls once a run starts and surface live telemetry via SSE.
 
 ## Directory Structure
 
 The project is organized into three main parts: `client`, `server`, and `shared`.
 
-### `client/` - The Frontend
+### `client/` - Frontend Highlights
 
-The frontend is a React application built with Vite. All source code resides in `client/src/`.
+- **`pages/`** — Route-level surfaces (PuzzleExaminer, PuzzleBrowser, ModelDebate, PuzzleDiscussion, WormArena* pages, Arc3GameSpoiler, KaggleReadinessValidation, etc.).
+- **`components/`** — Feature-scoped UI building blocks. Worm Arena now has dedicated subfolders (`wormArena`, `wormArena/stats`) for dashboards, insights reports, and run-length charts.
+- **`hooks/`** — Data and state orchestration: `usePuzzle`, `useAnalysisResults`, `useExplanation`, `useWormArenaGreatestHits`, `useWormArenaStreaming`, etc.
+- **`lib/streaming/analysisStream.ts`** — Typed handshake helper for SSE analysis sessions (auto POST + GET).
+- **`contexts/`** — Shared state (e.g., `AnalysisContext`), plus BYO-provider contexts for SnakeBench live matches.
+- **`constants/` & `config/`** — Model metadata, feature flags, streaming defaults.
 
--   **`pages/`**: Top-level components that correspond to a specific URL route (e.g., `PuzzleExaminer.tsx`). These components assemble layouts and are responsible for page-level concerns.
--   **`components/`**: Reusable UI elements. This directory is further organized by feature (e.g., `puzzle/`, `overview/`) and common UI elements (`ui/`). Before creating a new component, always check here first.
--   **`hooks/`**: Custom React hooks that encapsulate business logic and data fetching (e.g., `usePuzzle.ts`, `useAnalysisResults.ts`). Hooks are the primary way the frontend interacts with the backend API.
--   **`contexts/`**: React context providers for managing global or shared state across the application (e.g., `AnalysisContext.tsx`).
--   **`lib/`**: Utility functions, query client configuration, and other shared frontend logic.
+### `server/` - Backend Highlights
 
-### `server/` - The Backend
+- **`controllers/`** — HTTP entry points (puzzle, analysis stream, accuracy, admin, SnakeBench, ARC3, etc.).
+- **`services/`** — AI providers (`services/openai/*`, `services/xai/*`), prompt builders (`services/prompts/*`), streaming orchestrators (`services/streaming/analysisStreamService.ts`), Worm Arena insight services, SnakeBench match runners, and Python bridge helpers.
+- **`services/wormArena` & `services/prompts`** — House the new Worm Arena insights pipeline, separating prompt construction from report orchestration.
+- **`repositories/`** — SRP-compliant data access: `ExplanationRepository`, `AccuracyRepository`, `TrustworthinessRepository`, `CostRepository`, `MetricsRepository`, plus the SnakeBench-specific repositories (`GameReadRepository`, `GameWriteRepository`, `LeaderboardRepository`, `CurationRepository`, `AnalyticsRepository`) and shared SQL helpers.
+- **`routes.ts`** — Registers all public routes; ensure streaming and Worm Arena endpoints are wired here.
+- **`storage.ts` / `config`** — Provider credentials, model catalogs, streaming flags.
 
-The backend is a Node.js application using Express.js.
+### `shared/`
 
--   **`controllers/`**: These handle incoming HTTP requests, orchestrate the necessary business logic, and send back responses. They act as the bridge between the client and the backend services (e.g., `puzzleController.ts`).
--   **`services/`**: This is where the core business logic lives. Services are responsible for tasks like calling external AI APIs (`openai.ts`, `gemini.ts`), building prompts (`promptBuilder.ts`), and validating responses (`responseValidator.ts`).
--   **`repositories/`**: These classes are responsible for all database interactions. They contain the raw SQL queries and logic for creating, reading, updating, and deleting records (e.g., `ExplanationRepository.ts`, `AccuracyRepository.ts`, `CostRepository.ts`). Each repository follows Single Responsibility Principle (SRP) - handling only one domain concern. No other part of the application should interact with the database directly.
--   **`routes/`**: Defines the API endpoints and maps them to the appropriate controller functions.
--   **`utils/`**: Shared utility functions for the backend, such as logging and response formatting.
+- **`types.ts`** — Core interfaces (puzzles, explanations, Worm Arena streaming types, provider metadata).
+- **`arc3Games/`** — Modular ARC3 game definitions with dedicated resources, replays, and metadata.
+- **`utils/`** — Formatters, correctness helpers, feature flags.
+- **`config/streaming.ts` & `shared/modelGroups.ts`** — Shared tuning for streaming defaults and curated model buckets.
 
-### `shared/` - Code for Both Client and Server
+### `docs/` and Plans
 
-This directory contains code that is used by both the frontend and the backend.
+- **`docs/reference/api/`** — Source of truth for external APIs, Responses API streaming, and conversation chaining.
+- **`docs/reference/architecture/`** — This guide plus complementary diagrams.
+- **`docs/plans/`** — Required for any multi-step implementation; older plans live under `docs/oldPlans/`.
+- **`docs/local-game-insights-dec-2025.md`** — SnakeBench research dump referenced by Worm Arena dashboards.
 
--   **`types.ts`**: Contains TypeScript type definitions and interfaces (e.g., `ARCTask`, `AnalysisResult`) shared across the entire application to ensure type safety.
+### `data/`, `external/`, and Submodules
+
+- **`data/`** — ARC datasets (training/evaluation/evaluation2/concept-arc) discovered dynamically by dataset endpoints.
+- **`external/SnakeBench/`** — Embedded SnakeBench backend/frontend for local replay analysis; referenced by replay resolvers and CLI tooling.
+- **`beetreeARC/`, `poetiq-solver/`, `solver/`** — Python solvers invoked through `pythonBridge`.
 
 ## Repository Architecture & Domain Separation
 
-**🚨 CRITICAL**: As of September 24, 2025, the repository layer underwent a major architectural refactoring to eliminate Single Responsibility Principle (SRP) violations and ensure proper domain separation.
+**Status: Verified December 2025** — All repositories adhere to SRP with shared utilities for normalization and SQL fragments.
 
 ### Repository Design Principles
 
-1. **Single Responsibility Principle (SRP)**: Each repository handles exactly one domain concern:
-   - `AccuracyRepository` → Pure puzzle-solving correctness metrics only
-   - `TrustworthinessRepository` → AI confidence reliability analysis only
-   - `CostRepository` → All cost calculations and cost domain logic only
-   - `MetricsRepository` → Aggregated analytics using delegation pattern
+1. **Single Responsibility Principle (SRP)**  
+   - `AccuracyRepository` — Boolean correctness only (pure solver stats).  
+   - `TrustworthinessRepository` — Confidence reliability (no cost math).  
+   - `CostRepository` — Aggregated model cost calculations, normalization, and trend queries.  
+   - `MetricsRepository` — Delegation aggregator for dashboards.  
+   - `GameReadRepository` / `GameWriteRepository` / `LeaderboardRepository` / `AnalyticsRepository` / `CurationRepository` — Each handles a specific Worm Arena concern (recent games, ingestion writes, skill rankings, insights data, curated “greatest hits”).
 
-2. **DRY (Don't Repeat Yourself)**: No duplicate business logic across repositories:
-   - Model name normalization handled by shared `utils/modelNormalizer.ts`
-   - Cost calculations centralized in `CostRepository` only
-   - Cross-repository data access via delegation pattern
+2. **DRY Enforcement**  
+   - Model normalization lives in `shared/utils/featureFlags.ts` + dedicated helpers.  
+   - Cost logic centralized; other services depend on `repositoryService.cost`.  
+   - SnakeBench SQL fragments live in `server/repositories/snakebenchSqlHelpers.ts` (e.g., `SQL_TRUESKILL_EXPOSED()`).
 
-3. **Domain Separation**: Related concerns are kept together, unrelated concerns are separated:
-   - **WRONG**: TrustworthinessRepository calculating costs (mixing domains)
-   - **RIGHT**: TrustworthinessRepository → trustworthiness, CostRepository → costs
+3. **Delegation Pattern**  
+   - Always access repositories through `RepositoryService`.  
+   - Example:
+     ```typescript
+     const accuracyStats = await repositoryService.accuracy.getPureAccuracyStats();
+     const trust = await repositoryService.trustworthiness.getTrustworthinessStats();
+     const costs = await repositoryService.cost.getModelCostMap();
+     const dashboard = await repositoryService.metrics.getComprehensiveDashboard();
+     ```
 
-### Critical Architectural History
+4. **Public API Contracts**  
+   - Mirror `docs/reference/api/EXTERNAL_API.md` exactly; do not invent new response shapes without updating documentation + changelog.
 
-**Problem Solved (September 2025)**: The system had severe SRP violations where:
-- `TrustworthinessRepository` was calculating cost metrics (lines 342-343)
-- `MetricsRepository` had duplicate cost logic with different business rules
-- Same models showed different costs in different UI components due to inconsistent data sources
+## Key Component Reference (2025)
 
-**Solution Implemented**: Complete domain separation with dedicated `CostRepository` following SRP/DRY principles.
+### Server-Side
 
-### Repository Integration Pattern
+| Area | Files | Notes |
+| --- | --- | --- |
+| Puzzle orchestration | `server/controllers/puzzleController.ts`, `server/services/puzzleAnalysisService.ts`, `server/services/streaming/analysisStreamService.ts` | Handles synchronous and streaming analysis flows. |
+| Debate + conversation | `server/controllers/debateController.ts`, `server/services/puzzleDiscussionService.ts`, `server/repositories/ExplanationRepository.ts` | Powers ModelDebate & PuzzleDiscussion. |
+| AI providers | `server/services/openai/*`, `server/services/xai/*`, `server/services/prompts/*` | Prompts separated from orchestration for SRP. |
+| Streaming handshake | `/api/stream/analyze` routes, `analysisStreamService.ts`, `storage.ts` caching | Implements POST handshake + SSE GET contract. |
+| SnakeBench | `server/services/snakeBench/*.ts`, `server/services/wormArena/*.ts`, repositories listed above | Match execution, replay resolution, insights streaming. |
+| Cost & metrics | `server/controllers/costController.ts`, `repositoryService.cost`, `repositoryService.metrics` | Cost endpoints now rely solely on `CostRepository`. |
 
-Use `RepositoryService` for centralized access:
+### Client-Side
 
-```typescript
-// Access individual repositories through service
-const accuracyStats = await repositoryService.accuracy.getPureAccuracyStats();
-const costData = await repositoryService.cost.getAllModelCosts();
-const trustworthinessData = await repositoryService.trustworthiness.getTrustworthinessStats();
+| Area | Files | Notes |
+| --- | --- | --- |
+| Puzzle UX | `client/src/pages/PuzzleExaminer.tsx`, `client/src/components/puzzle/PuzzleViewer.tsx`, `client/src/hooks/useAnalysisResults.ts` | DB-first refresh cycle; uses SSE when enabled. |
+| Debate & discussion | `client/src/pages/ModelDebate.tsx`, `client/src/pages/PuzzleDiscussion.tsx`, `client/src/components/debate/*` | Renders rebuttal chains and conversation history. |
+| Streaming utilities | `client/src/lib/streaming/analysisStream.ts`, `client/src/hooks/useAnalysisStream.ts` | Wrap handshake + SSE event parsing. |
+| Worm Arena dashboards | `client/src/pages/WormArena*.tsx`, `client/src/components/wormArena/**/*`, `client/src/hooks/useWormArenaStreaming.ts` | Includes live page, insights report, distributions, models, placement stats. |
+| ARC3 | `client/src/pages/Arc3GameSpoiler.tsx`, `client/src/components/arc3/*` | Pulls metadata from `shared/arc3Games`. |
 
-// MetricsRepository aggregates data from multiple repositories
-const dashboard = await repositoryService.metrics.getComprehensiveDashboard();
-```
+### Debate Repository Methods
 
-**⚠️ Developer Guideline**: When adding new features:
-1. **Identify the domain** (accuracy, trustworthiness, cost, etc.)
-2. **Add logic to the appropriate repository** (don't mix domains)
-3. **Use delegation pattern** if multiple repositories needed
-4. **Never duplicate business logic** across repositories
+- `ExplanationRepository.getRebuttalChain(explanationId)`
+- `ExplanationRepository.getOriginalExplanation(rebuttalId)`
+- `ExplanationRepository.getByPuzzle(puzzleId, correctness)`
+- `ExplanationRepository.getEligibleForDiscussion({ limit, offset })` — backs `/api/discussion/eligible`.
 
-## Key Component Reference
+## Analysis Streaming & Conversation Infrastructure
 
-This section provides a quick reference to the most important files in the project. Before starting a new task, review these files to see if the functionality you need already exists.
+1. **Handshake Flow**  
+   - `POST /api/stream/analyze` accepts the same payload as synchronous analysis plus `{ taskId, modelKey }`. It caches the payload (with TTL) and returns `{ sessionId, expiresAt }`.  
+   - `GET /api/stream/analyze/:taskId/:modelKey/:sessionId` opens the Server-Sent Events channel and replays cached payload data through provider-specific streaming handlers. Event types: `stream.init`, `stream.chunk`, `stream.status`, `stream.complete`, `stream.error`.
 
-### Server-Side Components
+2. **Client Utilities**  
+   - `createAnalysisStream` automatically performs the POST handshake, then attaches event listeners (including `text.verbosity: "high"` deltas).  
+   - UI components collapse setup controls and show live output per `AGENTS.md` “state transitions” rule.
 
-| Directory | File | Description |
-| :--- | :--- | :--- |
-| `controllers` | `puzzleController.ts` | Orchestrates all puzzle-related operations, including analysis, fetching, and stats. |
-| | `batchAnalysisController.ts` | Handles starting, pausing, and monitoring batch analysis sessions. |
-| | `eloController.ts` | Manages ELO rating calculations and leaderboards for models. |
-| | `costController.ts` | **NEW**: Handles all cost-related API endpoints following RESTful principles. |
-| `services` | `puzzleAnalysisService.ts` | Core logic for analyzing a single puzzle, including prompt building and validation. |
-| | `explanationService.ts` | Handles the saving and processing of AI-generated explanations. |
-| | `aiServiceFactory.ts` | A factory that returns the correct AI provider service (e.g., OpenAI, Gemini) based on a model key. |
-| | `pythonBridge.ts` | Manages communication with Python scripts for specialized solvers. |
-| `repositories`| `ExplanationRepository.ts` | All database operations for the `explanations` table, including debate chain queries. |
-| | `AccuracyRepository.ts` | Pure puzzle-solving accuracy metrics (boolean correctness only). |
-| | `TrustworthinessRepository.ts` | AI confidence reliability analysis (no cost calculations). |
-| | `CostRepository.ts` | **NEW**: All cost calculations and cost domain logic (SRP compliant). |
-| | `MetricsRepository.ts` | Aggregated analytics from multiple repositories using delegation. |
-| | `EloRepository.ts` | Database logic for storing and updating ELO scores. |
+3. **Conversation Chaining**  
+   - Store `provider_response_id` (column + `ExplanationData.providerResponseId`).  
+   - Pass `previousResponseId` for follow-up calls (same provider only).  
+   - `/api/discussion/eligible` filters explanations created within 30 days with response IDs.  
+   - Documentation: `docs/reference/api/OpenAI_Responses_API_Streaming_Implementation.md`, `docs/Responses_API_Chain_Storage_Analysis.md`.
 
-**Key Repository Methods for Debate:**
-- `ExplanationRepository.getRebuttalChain(explanationId)` - Recursive CTE query for debate threads
-- `ExplanationRepository.getOriginalExplanation(rebuttalId)` - Parent explanation lookup
-- `ExplanationRepository.getByPuzzle(puzzleId, correctness)` - Filter by correct/incorrect for debates
+4. **Testing**  
+   - `tests/analysisStreamService.test.ts` + `.streaming.test.ts` cover chaining, SSE, and fallback handling.  
+   - Set `STREAMING_ENABLED=false` in `.env` to disable SSE globally.
 
-### Client-Side Components
+## SnakeBench & Worm Arena Stack
 
-| Directory | File | Description |
-| :--- | :--- | :--- |
-| `pages` | `PuzzleExaminer.tsx` | The main page for viewing a puzzle, triggering analysis, and displaying results. |
-| | `PuzzleBrowser.tsx` | The primary dashboard for browsing and filtering all puzzles. |
-| | `EloLeaderboard.tsx` | Displays the ELO rankings of all AI models. |
-| | `ModelDebate.tsx` | **v2.30.0**: AI-vs-AI debate interface for challenging incorrect explanations. |
-| `components` | `PuzzleViewer.tsx` | A core component that displays the training and test grids for a puzzle. |
-| | `AnalysisResultCard.tsx`| Renders a single AI model's explanation for a puzzle. |
-| | `AnalysisResultListCard.tsx`| **v2.30.8**: Compact explanation cards with rebuttal badges. |
-| | `ModelButton.tsx` | A specialized button for triggering an analysis with a specific model. |
-| | `debate/IndividualDebate.tsx` | **v2.30.0**: Manages individual debate sessions with challenge generation and chain display. |
-| | `debate/ExplanationsList.tsx` | **v2.30.0**: Reusable explanation browsing with correctness filtering. |
-| | `TinyGrid.tsx` | **v2.30.5**: Minimal grid component for compact puzzle display in debates. |
-| `hooks` | `usePuzzle.ts` | Fetches and manages the state for a single puzzle. |
-| | `useAnalysisResults.ts`| Manages the state and logic for running analyses and handling results (includes debate support). |
-| | `useExplanation.ts` | Fetches existing explanations for a puzzle from the database. |
-| | `debate/useDebateState.ts` | **v2.30.0**: Debate-specific state management (messages, challenges). |
-| | `debate/useChallengeGeneration.ts` | **v2.30.0**: Challenge prompt generation with original explanation context. |
-| `contexts` | `AnalysisContext.tsx` | Provides shared state for analysis operations across different components. |
+1. **Repositories** — Game read/write separation, leaderboard math, curated “greatest hits,” insights analytics, and SQL helper utilities.
+2. **Services** — `snakeBenchService.ts` as thin facade; `SnakeBenchMatchRunner` / `SnakeBenchStreamingRunner` for live play; `WormArenaReportService` for LLM insights; `wormArenaStreaming` stack (controller + SSE) for live sessions.
+3. **Frontend** — Pages for Stats & Placement, Models, Distributions, Model Insights, Live stream, Greatest Hits, Match search. Components include `WormArenaMatchCard`, `WormArenaRunLengthChart`, `WormArenaModelInsightsReport`, etc.
+4. **Streaming Live Matches** — `WormArenaLive` page uses `useWormArenaStreaming` to subscribe to backend SSE statuses (`WormArenaStreamStatus`, `WormArenaFrameEvent`, `WormArenaFinalSummary` in `shared/types.ts`).
+5. **Greatest Hits & Replays** — Backed by `SnakeBenchReplayResolver` scanning both `external/SnakeBench/backend/completed_games` and local dirs. API: `/api/snakebench/greatest-hits`, `/api/snakebench/games/:id`.
+6. **Insights Enhancements (Dec 2025)** — TrueSkill rankings, run-length filters, streaming insights with Twitter-ready summaries. Check `CHANGELOG.md` 6.16.7–6.16.18 entries for context.
 
-By familiarizing yourself with this structure, you can quickly identify where to find existing logic and where to add new features, ensuring that we continue to build upon the solid foundation of the ARC Explainer.
+## Python Solvers & External Integrations
 
-## Python Solvers & Beetree Integration
+Specialized solvers (Saturn, Beetree, Poetiq, Grover, SnakeBench) run as subprocesses launched via `server/services/pythonBridge.ts`.
 
-Specialized solvers (Saturn, Beetree, Poetiq, Grover, SnakeBench) run as Python processes launched from `server/services/pythonBridge.ts`. Beetree is the heaviest of these and requires the pinned `beetreeARC/` submodule plus all of its dependencies.
+### Key Files
 
-### Key Beetree files
-- `server/services/pythonBridge.ts` – `runBeetreeAnalysis()` streams NDJSON events from the Python wrapper into the Node service layer.
-- `server/python/beetree_wrapper.py` – bridges our NDJSON protocol to `beetreeARC/src/solver_engine.py`, captures cost logs, and enforces SRP-friendly logging.
-- `server/services/beetreeService.ts` – orchestrates a Beetree run inside the AI service factory, persists results, and surfaces metadata to the client.
-- `client/src/hooks/useBeetreeRun.ts` and `client/src/pages/BeetreeSolver.tsx` – front-end entry points that drive the Beetree workflow via `/api/beetree/*` endpoints.
+- `server/services/pythonBridge.ts` — `runBeetreeAnalysis()`, `runPoetiqAnalysis()`, etc., streaming NDJSON back to Node.
+- `server/python/beetree_wrapper.py` — Connects to `beetreeARC/src/solver_engine.py`, enriches logs with cost metadata.
+- `server/services/beetreeService.ts` — Orchestrates Beetree runs inside the AI service factory.
+- `client/src/pages/BeetreeSolver.tsx`, `client/src/hooks/useBeetreeRun.ts` — Frontend entry points.
+- `external/SnakeBench/backend/cli/analyze_local_games.py` — Local analytics for Worm Arena “greatest hits.”
 
-### Setup checklist
-1. Initialize submodules so `beetreeARC/` exists locally:
-   - `git submodule update --init --recursive`
-2. Install Python requirements (this now chains into the Beetree list automatically):
-   - `python -m pip install --upgrade pip`
-   - `python -m pip install -r requirements.txt`
-3. Provide provider API keys (`OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, `GOOGLE_AI_API_KEY`) in `.env` so Beetree has credentials for every stage.
+### Setup Checklist
 
-`requirements.txt` now includes `-r beetreeARC/requirements.txt`, so missing modules such as `rich`, `google-genai`, `matplotlib`, and Beetree's pinned OpenAI client are installed whenever you run the standard setup command. This mirrors the Dockerfile flow (which also installs the Beetree requirements separately) and prevents `ModuleNotFoundError` crashes inside `beetree_wrapper.py` or upstream beetreeARC imports.
+1. Initialize submodules (`git submodule update --init --recursive`).
+2. Install Python deps (`python -m pip install -r requirements.txt`), which cascades into Beetree requirements.
+3. Provide provider keys in `.env` (`OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, `GOOGLE_AI_API_KEY`, etc.).
+4. Optional: run SnakeBench CLI scripts for local replay insights (see `docs/local-game-insights-dec-2025.md`).
+
+## Onboarding Tips
+
+1. **Read the API reference first** — `docs/reference/api/EXTERNAL_API.md` is the contract for every endpoint.
+2. **Check the changelog** — Always add a top-level entry when behavior changes; use semantic versioning.
+3. **Create plan docs for large tasks** — Store them under `docs/plans/` unless explicitly instructed otherwise.
+4. **Respect state transitions** — Collapsible controls + live streaming view patterns apply across PuzzleExaminer, Worm Arena, and forthcoming ARC3 UIs.
+5. **Test streaming & fallback paths** — Run `npm run test analysisStreamService` and, when applicable, start local SnakeBench servers for end-to-end validation.
+
+By following this guide and the linked references, new contributors can ramp up quickly while preserving ARC Explainer’s SRP, DRY, and database-first guarantees.

@@ -1,6 +1,6 @@
 /**
  * Author: Cascade (GPT-4.1)
- * Date: 2025-12-27
+ * Date: 2025-12-30
  * PURPOSE: Under-board live status strip that restores the round/score/alive grid,
  *          surfaces timing + session metadata, and keeps layout legible during streaming.
  * SRP/DRY check: Pass - purely presentational; all streaming logic lives in hooks/pages.
@@ -72,6 +72,13 @@ export default function WormArenaLiveStatusStrip({
       ? `${Math.max(0, currentRound)}`
       : '—';
 
+  // Format wall clock and idle timers in minutes to avoid large second counts for long games.
+  const formatMinutes = (seconds: number | null | undefined) => {
+    if (seconds == null || Number.isNaN(seconds)) return '—';
+    const mins = Math.max(0, seconds) / 60;
+    return `${mins.toFixed(1)}m`;
+  };
+
   const copySession = React.useCallback(() => {
     if (!sessionId) return;
     if (navigator?.clipboard?.writeText) {
@@ -100,14 +107,14 @@ export default function WormArenaLiveStatusStrip({
         <div>
           <div className="text-[11px] uppercase font-semibold text-muted-foreground">Wall clock</div>
           <div className="text-worm-ink font-medium">
-            {wallClockSeconds != null ? `${Math.max(0, wallClockSeconds).toFixed(1)}s` : '—'}
+            {formatMinutes(wallClockSeconds)}
           </div>
         </div>
 
         <div>
           <div className="text-[11px] uppercase font-semibold text-muted-foreground">Since move</div>
           <div className="text-worm-ink font-medium">
-            {sinceLastMoveSeconds != null ? `${Math.max(0, sinceLastMoveSeconds).toFixed(1)}s` : '—'}
+            {formatMinutes(sinceLastMoveSeconds)}
           </div>
         </div>
       </div>
