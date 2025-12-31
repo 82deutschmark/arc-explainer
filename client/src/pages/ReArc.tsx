@@ -68,7 +68,7 @@ export default function ReArc() {
           </Link>
         </div>
 
-        <div className="text-sm text-muted-foreground bg-muted/50 p-4 rounded-md">
+        <div className="text-sm text-foreground/90 bg-muted/50 p-4 rounded-md">
           <p className="mb-2">
             Click "Generate" to create a brand-new set of ARC puzzles.
             Difficulty is tuned to roughly match the ARC-AGI-2 evaluation set.
@@ -87,7 +87,7 @@ export default function ReArc() {
           triggerText="Submission format guide"
           triggerClassName="mt-3"
         >
-          <div className="mt-2 text-sm text-muted-foreground bg-muted/50 p-4 rounded-md">
+          <div className="mt-2 text-sm text-foreground/90 bg-muted/50 p-4 rounded-md">
             <p className="mb-3">
               ARC tasks contain test inputs (input grids). Each task has one or
               more test inputs. For each test input, your solver makes two
@@ -136,7 +136,7 @@ type Grid = number[][]`}
           triggerText="How scoring works"
           triggerClassName="mt-2"
         >
-          <div className="mt-2 text-sm text-muted-foreground bg-muted/50 p-4 rounded-md">
+          <div className="mt-2 text-sm text-foreground/90 bg-muted/50 p-4 rounded-md">
             <div className="space-y-3">
               <div>
                 <p className="font-semibold mb-1">Per test input:</p>
@@ -179,8 +179,8 @@ type Grid = number[][]`}
           </div>
         </CollapsibleSection>
 
-        <CollapsibleSection triggerText="About RE-ARC" triggerClassName="mt-2">
-          <div className="mt-2 text-sm text-muted-foreground bg-muted/50 p-4 rounded-md">
+        <CollapsibleSection triggerText="About RE-ARC" triggerClassName="mt-2" defaultOpen={true}>
+          <div className="mt-2 text-sm text-foreground/90 bg-muted/50 p-4 rounded-md">
             <div className="space-y-3">
               <div>
                 <p className="font-semibold mb-1">Origin</p>
