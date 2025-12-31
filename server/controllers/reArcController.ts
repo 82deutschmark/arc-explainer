@@ -227,6 +227,7 @@ export async function evaluate(req: Request, res: Response): Promise<void> {
 
       // Success! Now save to database
       const score = result.score;
+      const taskScores = result.taskScores;
       const submissionHash = computeSubmissionHash(submission);
       const evaluationDurationMs = Date.now() - startTime;
 
@@ -248,6 +249,9 @@ export async function evaluate(req: Request, res: Response): Promise<void> {
           }
           const solvedPairs = Math.round(score * totalPairs);
 
+          // Calculate tasks fully solved (where task score = 1.0 meaning all pairs correct)
+          const tasksSolved = taskScores.filter(taskScore => taskScore === 1.0).length;
+
           // Check for matching submissions first
           matchingSubmissions = await reArcRepository.findMatchingSubmissions(submissionHash);
 
@@ -262,6 +266,7 @@ export async function evaluate(req: Request, res: Response): Promise<void> {
             submissionFileName: fileName,
             totalPairs,
             solvedPairs,
+            tasksSolved,
             score,
             evaluationDurationMs,
           });

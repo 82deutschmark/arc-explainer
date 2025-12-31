@@ -329,7 +329,7 @@ export interface PredictionCountMismatch {
  * Evaluation result: score, mismatches, or malformed submission.
  */
 export type EvaluationResult =
-  | { type: 'score'; score: number }
+  | { type: 'score'; score: number; taskScores: number[] }
   | { type: 'mismatches'; mismatches: PredictionCountMismatch[] }
   | { type: 'malformed'; error: string };
 
@@ -497,6 +497,7 @@ export async function evaluateSubmission(
   // Step 3: Check cache for this seedId (public identifier)
   const cachedTestOutputs = __testOnly_datasetCache.get(seedId);
   let totalScore = 0;
+  const taskScores: number[] = [];
   const mismatches: PredictionCountMismatch[] = [];
 
   // Helper: Process a single task (shared between cache hit/miss paths)
@@ -519,10 +520,12 @@ export async function evaluateSubmission(
         expectedPredictions: testPairs.length,
         submittedPredictions: submittedPredictions.length,
       });
+      taskScores.push(0); // Mismatch scores 0
     } else {
       // Score this task
       const taskScore = scoreTask(testPairs, submittedPredictions);
       totalScore += taskScore;
+      taskScores.push(taskScore);
     }
 
     // Emit progress
@@ -573,7 +576,7 @@ export async function evaluateSubmission(
   }
 
   const overallScore = totalScore / numTasks;
-  return { type: 'score', score: overallScore };
+  return { type: 'score', score: overallScore, taskScores };
 }
 
 /**
