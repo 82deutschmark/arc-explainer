@@ -239,6 +239,37 @@ export default function About() {
               </div>
             </div>
 
+            {/* David Lu Contributor Spotlight */}
+            <div className="relative border border-blue-500/50 rounded-lg p-5 bg-gradient-to-br from-blue-950/80 via-slate-950 to-cyan-950/80 backdrop-blur">
+              <div className="absolute -top-3 -right-3">
+                <EmojiMosaicAccent
+                  pattern="success"
+                  width={4}
+                  height={3}
+                  size="xs"
+                  framed
+                />
+              </div>
+              <h3 className="text-lg font-bold text-blue-100 mb-3">First Major Contributor</h3>
+              <div className="space-y-3 text-sm">
+                <p className="text-blue-50 font-semibold">
+                  David Lu <span className="text-blue-200">@conundrumer</span>
+                </p>
+                <p className="text-blue-100/90">
+                  Created RE-ARC Bench—a complete self-service platform for generating unique ARC evaluation datasets and scoring solver submissions. This is the project&apos;s first major external contribution, bringing sophisticated cryptographic seed recovery, stateless verification, and real-time evaluation streaming to the platform.
+                </p>
+                <a
+                  href="https://github.com/conundrumer"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 px-3 py-1 bg-blue-900/60 hover:bg-blue-800 rounded text-xs font-medium text-blue-200 transition-colors"
+                >
+                  <Github className="h-3 w-3" />
+                  View David&apos;s GitHub
+                </a>
+              </div>
+            </div>
+
             {/* Acknowledgments */}
             <div className="relative border border-slate-800 rounded-lg p-5 bg-slate-900/40 backdrop-blur">
               <div className="absolute -bottom-3 -left-3">
@@ -257,8 +288,7 @@ export default function About() {
                   tireless documentation, tooling, and personal encouragement.
                 </p>
                 <p>
-                  <span className="text-slate-300 font-semibold">David Lu (@conundrumer)</span> for
-                  RE-ARC Bench, the project&apos;s first major external contribution.
+                  <span className="text-slate-300 font-semibold">David Lu (@conundrumer)</span> for RE-ARC Bench
                 </p>
                 <p>
                   <span className="text-slate-300 font-semibold">François Chollet</span> for creating ARC-AGI
