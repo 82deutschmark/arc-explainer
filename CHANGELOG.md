@@ -1,5 +1,23 @@
 # New entries at the top, use proper SemVer!
 
+### Version 6.17.3  Dec 31, 2025
+
+- **RE-ARC Leaderboard Bug Fix & Scoring Clarifications** (Author: Claude Opus 4.5)
+  - **Bug Fixes**:
+    - Fixed Tasks column showing "/120" with no actual value - `tasksSolved` was missing from API response
+    - Fixed Time column showing "NaNd NaNh" - `elapsedMs` and `generatedAt` were missing from API response
+    - Root cause: Controller response mapping at `server/controllers/reArcController.ts:476-492` was not including
+      three fields that the repository already calculated correctly
+  - **Scoring Clarification UI**:
+    - Added tooltip on "Tasks" column header explaining: fully solved tasks (all test pairs correct)
+    - Added tooltip on "Pairs" column header explaining: each task has 1-3 test pairs, partial solves contribute
+    - Added "Tasks vs Pairs" explanation in info section clarifying the scoring relationship
+    - Key insight for users: ARC tasks can have 1-3 test pairs; solving 1/3 pairs = 33% task score, not a full solve
+  - **Files Modified**:
+    - `server/controllers/reArcController.ts` (line 484, 488-489): Added `tasksSolved`, `generatedAt`, `elapsedMs` to response
+    - `client/src/pages/ReArcLeaderboard.tsx` (lines 33-38, 238-267, 344-349): Added Tooltip imports, column tooltips, info text
+  - **Build Status**: All changes compile successfully
+
 ### Version 6.17.2  Dec 31, 2025
 
 - **RE-ARC Efficiency Visualization** (Author: Claude Sonnet 4.5)
