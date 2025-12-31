@@ -91,7 +91,7 @@ const navigationItems: NavItem[] = [
   },
   {
     type: 'link',
-    title: 'Testing',
+    title: 'RE-ARC',
     href: '/re-arc',
     icon: Beaker,
     description: 'Generate unique evaluation datasets and validate solver submissions'
