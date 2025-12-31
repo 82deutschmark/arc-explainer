@@ -147,6 +147,24 @@ export function ErrorDisplay({ error }: { error: EvaluationError }) {
         </>
       );
 
+    case "dataset_file_detected":
+      return (
+        <>
+          <AlertTitle>You uploaded the puzzle file instead of your predictions</AlertTitle>
+          <AlertDescription className="space-y-2">
+            <p>
+              This looks like the dataset file you downloaded (which contains the puzzles).
+              You need to upload your solver's predictions instead.
+            </p>
+            <p className="mt-2">
+              <strong>Next Steps:</strong> Run your solver on the downloaded dataset,
+              then upload the predictions file it generates. Check the Submission Format
+              Guide above if you're not sure about the format.
+            </p>
+          </AlertDescription>
+        </>
+      );
+
     case "invalid_task_structure":
       return (
         <>
