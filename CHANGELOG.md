@@ -1,5 +1,31 @@
 # New entries at the top, use proper SemVer!
 
+### Version 6.18.0  Dec 31, 2025
+
+- **RE-ARC Leaderboard Opt-In UX Redesign** (Author: Claude Opus 4.5)
+  - **Core Changes**: Made leaderboard submission explicitly opt-in AFTER seeing evaluation results
+  - **UX Flow**:
+    - Old: Enter name upfront → Upload → Auto-submit to leaderboard
+    - New: Upload → See score → If score > 0%, optional "Submit to Leaderboard" card appears
+  - **Removed Trophy Icons**: Eliminated competitive imagery for neutral benchmarking experience
+    - Removed from leaderboard button in main page (client/src/pages/ReArc.tsx:55)
+    - Removed from evaluation section header (client/src/components/rearc/EvaluationSection.tsx:554)
+    - Removed "Added to leaderboard!" trophy icon
+  - **Backend Split**:
+    - `POST /api/rearc/evaluate` - Now ONLY evaluates, does NOT save to leaderboard
+    - `POST /api/rearc/submit` - NEW endpoint for opt-in leaderboard submission (server/controllers/reArcController.ts:400-485)
+  - **Opt-In UI**: New card component appears after successful evaluation when score > 0%
+    - Name input with shuffle button (appears post-evaluation, not upfront)
+    - "Submit to Leaderboard" button with loading state
+    - Success confirmation with leaderboard link
+  - **Cache Performance**: Submit endpoint re-evaluates submission (cache hit for fast response)
+  - **Files Modified**:
+    - `client/src/pages/ReArc.tsx` (line 55): Removed Trophy icon from leaderboard button
+    - `client/src/components/rearc/EvaluationSection.tsx` (lines 19, 93-104, 106-132, 285-286, 442-512, 554-557): Removed upfront name input, added opt-in submission UI
+    - `server/controllers/reArcController.ts` (lines 160-237, 388-485): Split evaluate/submit endpoints
+    - `server/routes.ts` (line 315): Added submit route
+  - **Build Status**: All TypeScript checks passing
+
 ### Version 6.17.3  Dec 31, 2025
 
 - **RE-ARC Leaderboard Bug Fix & Scoring Clarifications** (Author: Claude Opus 4.5)
