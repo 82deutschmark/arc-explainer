@@ -38,6 +38,8 @@ export class DatabaseSchema {
       await this.createSnakeBenchGamesTable(client);
       await this.createSnakeBenchGameParticipantsTable(client);
       await this.createWormArenaSessionsTable(client);
+      await this.createReArcDatasetsTable(client);
+      await this.createReArcSubmissionsTable(client);
       logger.info('Core tables verified/created.', 'database');
 
       // Phase 2: Apply schema-altering migrations for older database instances.
@@ -422,6 +424,61 @@ export class DatabaseSchema {
       CREATE INDEX IF NOT EXISTS idx_game_participants_model
         ON public.game_participants (model_id);
     `);
+  }
+
+  private static async createReArcDatasetsTable(client: PoolClient): Promise<void> {
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS rearc_datasets (
+        id SERIAL PRIMARY KEY,
+        seed_id BIGINT NOT NULL UNIQUE,
+        internal_seed BIGINT NOT NULL,
+        num_tasks INTEGER NOT NULL,
+        generated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+      )
+    `);
+
+    await client.query(`CREATE INDEX IF NOT EXISTS idx_rearc_datasets_seed_id ON rearc_datasets(seed_id)`);
+    await client.query(`CREATE INDEX IF NOT EXISTS idx_rearc_datasets_generated_at ON rearc_datasets(generated_at DESC)`);
+  }
+
+  private static async createReArcSubmissionsTable(client: PoolClient): Promise<void> {
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS rearc_submissions (
+        id SERIAL PRIMARY KEY,
+
+        -- Solver identity (no login required)
+        solver_name VARCHAR(255) NOT NULL,
+
+        -- Reference to dataset
+        rearc_dataset_id INTEGER NOT NULL REFERENCES rearc_datasets(id),
+
+        -- Submission fingerprint for verification
+        submission_hash VARCHAR(64) NOT NULL,
+        submission_file_name VARCHAR(255),
+
+        -- Evaluation results
+        total_pairs INTEGER NOT NULL,
+        solved_pairs INTEGER NOT NULL,
+        score DECIMAL(5,4) NOT NULL,
+
+        -- Per-pair breakdown
+        pair_results JSONB,
+
+        -- Metadata
+        evaluated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+        evaluation_duration_ms INTEGER,
+
+        -- Verification tracking
+        verification_count INTEGER DEFAULT 0,
+        last_verified_at TIMESTAMP WITH TIME ZONE
+      )
+    `);
+
+    await client.query(`CREATE INDEX IF NOT EXISTS idx_rearc_submissions_hash ON rearc_submissions(submission_hash)`);
+    await client.query(`CREATE INDEX IF NOT EXISTS idx_rearc_submissions_score ON rearc_submissions(score DESC)`);
+    await client.query(`CREATE INDEX IF NOT EXISTS idx_rearc_submissions_evaluated_at ON rearc_submissions(evaluated_at DESC)`);
+    await client.query(`CREATE INDEX IF NOT EXISTS idx_rearc_submissions_solver_name ON rearc_submissions(solver_name)`);
+    await client.query(`CREATE INDEX IF NOT EXISTS idx_rearc_submissions_dataset_id ON rearc_submissions(rearc_dataset_id)`);
   }
 
   private static async createWormArenaSessionsTable(client: PoolClient): Promise<void> {

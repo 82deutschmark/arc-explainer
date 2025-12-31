@@ -1,21 +1,23 @@
 /**
  * EvaluationSection.tsx
  *
- * Author: Claude Code using Sonnet 4.5
- * Date: 2025-12-28 (Refactored to extract ErrorDisplay, FormatGuide, SSE parsing)
+ * Author: Claude Code using Sonnet 4.5 (updated by Claude Opus 4.5)
+ * Date: 2025-12-28 (updated 2025-12-30 for leaderboard integration)
  * PURPOSE: Submission evaluation section for RE-ARC page.
  *          Orchestrates file upload, validation, SSE streaming, and result display.
+ *          Saves results to leaderboard with solver name.
  *          Uses phase-based state management for cleaner logic and maintainability.
  * SRP/DRY check: Pass - Single responsibility: submission evaluation orchestration
- *
- * Guidelines for writing copy in client/src/pages/ReArc.tsx
  */
 
 import { useState, useCallback, useRef } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Upload, CheckCircle2, XCircle, Loader2 } from 'lucide-react';
+import { Upload, CheckCircle2, XCircle, Loader2, Trophy, Shuffle, ExternalLink } from 'lucide-react';
+import { Link } from 'wouter';
 import type { ARCSubmission, ReArcSSEEvent } from '@shared/types';
 import { validateSubmission } from '@/utils/arcSubmissionValidator';
 import { parseSSEEvents, SSEParseError } from '@/utils/sseParser';
@@ -39,9 +41,33 @@ interface EvaluationSectionProps {
   numTasks: number;
 }
 
+interface MatchingSubmission {
+  id: number;
+  solverName: string;
+  score: number;
+}
+
 interface EvaluationResult {
   score: number;
   timestamp: number;
+  submissionId: number | null;
+  matchingSubmissions: MatchingSubmission[];
+}
+
+// Fun name generator (mirrors server-side logic)
+const ADJECTIVES = [
+  'Brave', 'Swift', 'Clever', 'Noble', 'Cosmic', 'Quantum',
+  'Stellar', 'Bold', 'Wise', 'Nimble', 'Radiant', 'Mystic',
+];
+const ANIMALS = [
+  'Pangolin', 'Axolotl', 'Narwhal', 'Quokka', 'Capybara',
+  'Octopus', 'Phoenix', 'Griffin', 'Mantis', 'Falcon',
+];
+
+function generateRandomName(): string {
+  const adj = ADJECTIVES[Math.floor(Math.random() * ADJECTIVES.length)];
+  const animal = ANIMALS[Math.floor(Math.random() * ANIMALS.length)];
+  return `${adj} ${animal}`;
 }
 
 interface UploadProgress {
@@ -65,10 +91,13 @@ type EvaluationPhase =
 export function EvaluationSection({ numTasks }: EvaluationSectionProps) {
   const [phase, setPhase] = useState<EvaluationPhase>({ type: 'idle' });
   const [isDragging, setIsDragging] = useState(false);
-  const [showFormatGuide, setShowFormatGuide] = useState(false);
-  const [showScoringGuide, setShowScoringGuide] = useState(false);
+  const [solverName, setSolverName] = useState('');
 
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleGenerateName = useCallback(() => {
+    setSolverName(generateRandomName());
+  }, []);
 
   const handleFileUpload = useCallback(
     async (file: File) => {
@@ -103,7 +132,12 @@ export function EvaluationSection({ numTasks }: EvaluationSectionProps) {
         }
 
         // File validated, now upload with progress tracking
-        const jsonBody = JSON.stringify(submission);
+        // Include solver name and file name for leaderboard
+        const jsonBody = JSON.stringify({
+          submission,
+          solverName: solverName.trim() || undefined,
+          fileName: file.name,
+        });
 
         // Use XHR for upload progress + SSE streaming
         await new Promise<void>((resolve, reject) => {
@@ -203,16 +237,24 @@ export function EvaluationSection({ numTasks }: EvaluationSectionProps) {
                     // TypeScript narrows to completion data union
 
                     if (event.data.type === 'score') {
-                      // Success with score
+                      // Success with score - includes leaderboard data
                       const taskIds = Object.keys(submission);
                       const timestamp = recoverTimestamp(taskIds);
+                      const data = event.data as {
+                        type: 'score';
+                        score: number;
+                        submissionId?: number | null;
+                        matchingSubmissions?: MatchingSubmission[];
+                      };
 
                       setPhase({
                         type: 'success',
                         fileName: file.name,
                         result: {
-                          score: event.data.score,
+                          score: data.score,
                           timestamp: timestamp,
+                          submissionId: data.submissionId ?? null,
+                          matchingSubmissions: data.matchingSubmissions ?? [],
                         },
                       });
                     } else if (event.data.type === 'mismatches') {
@@ -279,7 +321,7 @@ export function EvaluationSection({ numTasks }: EvaluationSectionProps) {
         });
       }
     },
-    [numTasks]
+    [numTasks, solverName]
   );
 
   const handleDragOver = useCallback((e: React.DragEvent) => {
@@ -318,7 +360,13 @@ export function EvaluationSection({ numTasks }: EvaluationSectionProps) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Evaluate Submission</CardTitle>
+        <CardTitle className="flex items-center gap-2">
+          <Trophy className="h-5 w-5" />
+          Evaluate Your Solution
+        </CardTitle>
+        <CardDescription>
+          Upload your submission to score it and add to the leaderboard
+        </CardDescription>
       </CardHeader>
       <CardContent>
         {/* Success State */}
@@ -333,6 +381,25 @@ export function EvaluationSection({ numTasks }: EvaluationSectionProps) {
                 {phase.result.timestamp && (
                   <div className="text-sm mt-1">
                     Generated: {new Date(phase.result.timestamp * 1000).toLocaleString()}
+                  </div>
+                )}
+                {phase.result.submissionId && (
+                  <div className="text-sm mt-2 flex items-center gap-2">
+                    <Trophy className="h-4 w-4 text-yellow-500" />
+                    <span>Added to leaderboard!</span>
+                    <Link href="/re-arc/leaderboard" className="text-primary hover:underline inline-flex items-center gap-1">
+                      View Leaderboard <ExternalLink className="h-3 w-3" />
+                    </Link>
+                  </div>
+                )}
+                {phase.result.matchingSubmissions.length > 0 && (
+                  <div className="text-sm mt-3 p-2 bg-yellow-500/10 border border-yellow-500/20 rounded">
+                    <strong>Note:</strong> This submission matches {phase.result.matchingSubmissions.length} existing {phase.result.matchingSubmissions.length === 1 ? 'entry' : 'entries'}:
+                    <ul className="mt-1 ml-4 list-disc">
+                      {phase.result.matchingSubmissions.map((m) => (
+                        <li key={m.id}>{m.solverName} ({(m.score * 100).toFixed(2)}%)</li>
+                      ))}
+                    </ul>
                   </div>
                 )}
                 {phase.result.score === 0 && (
@@ -401,30 +468,63 @@ export function EvaluationSection({ numTasks }: EvaluationSectionProps) {
 
         {/* Upload Interface - always show except during active upload/evaluation */}
         {(phase.type === 'idle' || phase.type === 'success' || phase.type === 'error') && (
-          <div
-            onDragOver={handleDragOver}
-            onDragLeave={handleDragLeave}
-            onDrop={handleDrop}
-            className={`border-2 border-dashed rounded-lg p-12 text-center transition-colors ${
-              isDragging
-                ? 'border-primary bg-primary/5'
-                : 'border-muted-foreground/25 hover:border-muted-foreground/50'
-            }`}
-          >
-            <Upload className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
-            <p className="text-lg mb-2">Drop submission.json here</p>
-            <p className="text-sm text-muted-foreground mb-4">or</p>
-            <Button onClick={() => fileInputRef.current?.click()} variant="outline">
-              Choose File
-            </Button>
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept="application/json"
-              onChange={handleFileInputChange}
-              className="hidden"
-            />
-          </div>
+          <>
+            {/* Solver Name Input */}
+            <div className="mb-4">
+              <Label htmlFor="solver-name" className="text-sm font-medium">
+                Your Name (for leaderboard)
+              </Label>
+              <div className="flex gap-2 mt-1">
+                <Input
+                  id="solver-name"
+                  type="text"
+                  placeholder="e.g., Brave Pangolin"
+                  value={solverName}
+                  onChange={(e) => setSolverName(e.target.value)}
+                  className="flex-1"
+                  maxLength={255}
+                />
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="icon"
+                  onClick={handleGenerateName}
+                  title="Generate random name"
+                >
+                  <Shuffle className="h-4 w-4" />
+                </Button>
+              </div>
+              <p className="text-xs text-muted-foreground mt-1">
+                Leave blank for a randomly generated name
+              </p>
+            </div>
+
+            {/* Drop Zone */}
+            <div
+              onDragOver={handleDragOver}
+              onDragLeave={handleDragLeave}
+              onDrop={handleDrop}
+              className={`border-2 border-dashed rounded-lg p-12 text-center transition-colors ${
+                isDragging
+                  ? 'border-primary bg-primary/5'
+                  : 'border-muted-foreground/25 hover:border-muted-foreground/50'
+              }`}
+            >
+              <Upload className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
+              <p className="text-lg mb-2">Drop submission.json here</p>
+              <p className="text-sm text-muted-foreground mb-4">or</p>
+              <Button onClick={() => fileInputRef.current?.click()} variant="outline">
+                Choose File
+              </Button>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="application/json"
+                onChange={handleFileInputChange}
+                className="hidden"
+              />
+            </div>
+          </>
         )}
       </CardContent>
     </Card>
