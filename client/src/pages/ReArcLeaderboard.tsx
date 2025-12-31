@@ -3,10 +3,10 @@
  *
  * Author: Claude Opus 4.5
  * Date: 2025-12-30
- * PURPOSE: Leaderboard page for RE-ARC submissions.
- *          Shows ranked list of solver submissions with scores and verification counts.
- *          Supports sorting by score, latest, or most verified.
- * SRP/DRY check: Pass - Single responsibility: RE-ARC leaderboard display
+ * PURPOSE: Submission board page for RE-ARC.
+ *          Shows list of solver submissions with scores and timestamps.
+ *          Supports sorting by score or recency; visualization options (table/efficiency plot).
+ * SRP/DRY check: Pass - Single responsibility: RE-ARC submission board display
  */
 
 import { useState } from 'react';
@@ -319,14 +319,25 @@ export default function ReArcLeaderboard() {
           <CardTitle className="text-lg">About These Submissions</CardTitle>
         </CardHeader>
         <CardContent className="space-y-3 text-sm">
+          <div>
+            <p className="font-semibold text-foreground mb-2">⚠️ Key Limitations</p>
+            <p className="text-muted-foreground mb-2">
+              This board contains <span className="font-semibold">self-reported, unverified submissions</span>. Direct comparison between submissions is <span className="font-semibold">not reliable, not fair, and not legitimate</span>. This board is <span className="font-semibold">for community analysis and fun only</span>—not for official rankings or real-world decisions.
+            </p>
+          </div>
+
+          <div>
+            <p className="font-semibold text-foreground mb-2">Why This Board Has These Limitations</p>
+            <ul className="list-disc list-inside space-y-1 text-muted-foreground text-xs">
+              <li><span className="font-semibold">No verification:</span> Submissions are self-reported with no independent verification infrastructure. Solvers could make honest mistakes or intentionally misrepresent results.</li>
+              <li><span className="font-semibold">Unfair comparison:</span> Solvers have different computational resources, optimization budgets, code maturity levels, and specialized techniques. Some may spend hours; others minutes.</li>
+              <li><span className="font-semibold">No legitimacy guarantees:</span> There's no way to verify that results are honest, that submissions used the datasets correctly, or that solving methods are legitimate.</li>
+              <li><span className="font-semibold">Community-driven:</span> This is an exploratory effort to showcase diverse approaches, not an official competition or benchmark with rigorous standards.</li>
+            </ul>
+          </div>
+
           <p className="text-muted-foreground">
-            This board contains <span className="font-semibold">self-reported, unverified submissions</span> from community members. Submissions are not independently verified and should not be considered official rankings or fair comparisons.
-          </p>
-          <p className="text-muted-foreground">
-            Solvers may use different approaches, computational resources, optimization techniques, and implementation strategies. Direct comparison between submissions is not reliable and may be misleading.
-          </p>
-          <p className="text-muted-foreground">
-            This submission board is <span className="font-semibold">experimental and exploratory</span> in nature. It aims to showcase the diversity of approaches to the ARC challenge and enable research into different solving strategies. Treat all submissions and claims critically and verify results independently before drawing conclusions.
+            Use this board to explore different solving strategies, learn from the community, and have fun. <span className="font-semibold">Don't use it to draw conclusions about solver quality or for any real-world decision-making.</span> Always verify claims independently.
           </p>
         </CardContent>
       </Card>

@@ -5,7 +5,7 @@
  * Date: 2025-12-28 (updated 2025-12-31 for terminal layout)
  * PURPOSE: Submission evaluation section for RE-ARC page.
  *          Orchestrates file upload, validation, SSE streaming, and result display.
- *          Saves results to leaderboard with solver name.
+ *          Saves results to submission board with solver name.
  *          Supports compact mode for dense layouts.
  * SRP/DRY check: Pass - Single responsibility: submission evaluation orchestration
  */
@@ -498,9 +498,9 @@ export function EvaluationSection({ numTasks, compact = false }: EvaluationSecti
             <Alert className="border-green-500 bg-green-500/10 mt-4">
               <CheckCircle2 className="h-4 w-4 text-green-500" />
               <AlertDescription>
-                <div className="font-semibold">Submitted to leaderboard!</div>
+                <div className="font-semibold">Submission added to board!</div>
                 <Link href="/re-arc/leaderboard" className="text-sm text-primary hover:underline inline-flex items-center gap-1 mt-1">
-                  View leaderboard <ExternalLink className="h-3 w-3" />
+                  View submissions <ExternalLink className="h-3 w-3" />
                 </Link>
               </AlertDescription>
             </Alert>

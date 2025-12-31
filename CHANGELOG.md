@@ -2,28 +2,45 @@
 
 ### Version 6.18.2  Dec 31, 2025
 
-- **RE-ARC Leaderboard: Clarity & Verification Improvements** (Author: Claude Haiku 4.5)
-  - **What**: Addressed collaborator feedback to improve leaderboard messaging and reduce confusion about data legitimacy
-  - **Why**: Previous "Community-verified" subtitle was misleading; helper UI elements added noise; needed clear disclaimers about unverified submissions
+- **RE-ARC Submission Board: Non-Competitive Redesign** (Author: Claude Haiku 4.5)
+  - **What**: Reframed as exploratory "submission board" and removed all competitive imagery to emphasize research and transparency over competition
+  - **Why**: Design inadvertently suggested competitive ranking; intent is community exploration and research, not competition
   - **How**:
-    - Changed subtitle from "Community-verified ARC solver rankings" → "RE-ARC solver results" (removes false implication of verification)
-    - Removed redundant "View:" label from view toggle
-    - Conditional display: "Sort by" dropdown now only shows in table view (not in efficiency plot where sorting doesn't apply)
-    - Added elapsed time explanation in both table and plot views
-    - Added prominent "About This Leaderboard" disclaimer card (amber-styled):
-      - Clarifies submissions are self-reported and unverified
-      - Explains comparisons are unreliable due to different approaches/resources/optimizations
-      - Frames leaderboard as experimental/exploratory for research purposes
-      - Encourages critical evaluation of all claims
+    - **Terminology shift**: "RE-ARC Leaderboard" → "RE-ARC Submissions"; "RE-ARC solver results" → "Community solver results"; "About This Leaderboard" → "About These Submissions"
+    - **Removed all competitive imagery and language**:
+      - Removed Trophy icon from page header
+      - Removed Medal icons for rank 1/2/3; now shows plain rank numbers
+      - Removed Trophy icon from "Highest Score" sort option
+      - Removed Trophy icon from empty state message
+      - Removed references to "rankings" and "competitive" framing
+    - **UI clarity improvements**:
+      - Removed redundant "View:" label from view toggle
+      - Conditional display: "Sort by" dropdown now only shows in table view (not efficiency plot)
+      - Added elapsed time explanation in both views
+      - **Comprehensive "About These Submissions" disclaimer** (amber-styled):
+        - Key limitations section explicitly stating: "not reliable, not fair, and not legitimate"
+        - Clear statement: "for community analysis and fun only"
+        - "Why This Board Has These Limitations" section explaining:
+          - No verification infrastructure; self-reported submissions prone to errors or misrepresentation
+          - Unfair comparison due to different computational resources, optimization budgets, code maturity
+          - No legitimacy guarantees; impossible to verify honesty or correct dataset usage
+          - Community-driven exploratory effort, not official competition
+        - Guidance: Use for learning and fun, not for real-world decisions or quality conclusions
     - **Efficiency Plot improvements**:
       - Removed confusing "Submissions" legend dot
-      - Removed quadrant helper boxes ("top-left ideal", etc.) - users with data viz literacy don't need them
-      - Implemented log scale for X-axis with 5-minute minimum (clamps faster submissions to prevent visualization compression)
-      - Implemented dynamic Y-axis scaling to highest score (instead of fixed 0-100)
-      - Added explanation of log scale and elapsed time below chart
+      - Removed quadrant interpretation boxes (assumed data viz literacy)
+      - Implemented log scale for X-axis with 5-minute minimum
+      - Implemented dynamic Y-axis scaling to highest score
+      - Added explanations of log scale and elapsed time
+  - **Terminology updates across codebase**:
+    - Changed all references from "leaderboard" to "submission board" or "submissions" in user-facing text
+    - Updated button labels and success messages to use non-competitive language
+    - Updated component documentation/comments for consistency
   - **Files Modified**:
-    - `client/src/pages/ReArcLeaderboard.tsx`: Subtitle, view toggle label, conditional sort controls, elapsed time description, disclaimer section
-    - `client/src/components/rearc/EfficiencyPlot.tsx`: Removed Legend import/component, removed helper boxes grid, added dynamic axis scaling (log X, dynamic Y), added description text
+    - `client/src/pages/ReArcLeaderboard.tsx`: Removed Trophy/Medal imports and icons, updated PURPOSE comment, changed page title/subtitle, consolidated disclaimer text, removed duplicate content, made sort controls conditional, added explanations
+    - `client/src/pages/ReArc.tsx`: Changed "Leaderboard" button to "View Submissions"
+    - `client/src/components/rearc/EvaluationSection.tsx`: Updated PURPOSE comment, changed success message from "Submitted to leaderboard!" to "Submission added to board!", updated link text to "View submissions"
+    - `client/src/components/rearc/EfficiencyPlot.tsx`: Removed Legend component and interpretation boxes, implemented log/dynamic axes
 
 ### Version 6.18.1  Dec 31, 2025
 
