@@ -396,6 +396,9 @@ async function getTaskCount(seed: number): Promise<number> {
  * **Security**: Task IDs encode the public seedId but use server-secret-derived
  * internalSeed for PRNG patterns (prevents external regeneration).
  *
+ * **Caching**: Populates the dataset cache with test outputs during generation,
+ * allowing subsequent evaluation calls to skip Python subprocess regeneration.
+ *
  * @param seedId - Public seed identifier (typically Unix timestamp in seconds)
  * @yields Objects with {taskId, task} for each generated task
  * @throws Error if Python subprocess fails, times out, or RE_ARC_SEED_PEPPER not configured
@@ -416,7 +419,10 @@ export async function* generateDataset(
   // Step 2: Generate task IDs (seedId encoded, internalSeed for PRNG)
   const ourTaskIds = generateTaskIds(seedId, internalSeed, taskCount);
 
-  // Step 3: Spawn Python for dataset generation using internal seed
+  // Step 3: Collect test outputs for caching during generation
+  const testOutputs: { output: number[][] }[][] = [];
+
+  // Step 4: Spawn Python for dataset generation using internal seed
   yield* runReArcSubprocess<GeneratedTask>({
     seed: internalSeed,
     contextName: 're-arc generateDataset',
@@ -425,6 +431,12 @@ export async function* generateDataset(
       // Parse task JSON
       const task = JSON.parse(line);
 
+      // Extract and cache test outputs for evaluation reuse
+      const taskTestOutputs = task.test.map((testPair: { output: number[][] }) => ({
+        output: testPair.output,
+      }));
+      testOutputs.push(taskTestOutputs);
+
       // Return with our generated task ID (by sequence order)
       return {
         taskId: ourTaskIds[taskIndex],
@@ -432,6 +444,9 @@ export async function* generateDataset(
       };
     },
   });
+
+  // Step 5: Cache the collected test outputs (keyed by public seedId)
+  __testOnly_datasetCache.set(seedId, testOutputs);
 }
 
 /**
