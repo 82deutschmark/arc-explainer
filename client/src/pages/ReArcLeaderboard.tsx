@@ -36,7 +36,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
-import { Trophy, ArrowLeft, Medal, Clock, Loader2, Table as TableIcon, ScatterChart as ScatterIcon, HelpCircle } from 'lucide-react';
+import { ArrowLeft, Clock, Loader2, Table as TableIcon, ScatterChart as ScatterIcon, HelpCircle } from 'lucide-react';
 import { EfficiencyPlot } from '@/components/rearc/EfficiencyPlot';
 
 interface LeaderboardEntry {
@@ -82,12 +82,6 @@ function formatElapsedTime(ms: number): string {
   return `${days}d ${hours % 24}h`;
 }
 
-function getRankIcon(rank: number) {
-  if (rank === 1) return <Medal className="h-5 w-5 text-yellow-500" />;
-  if (rank === 2) return <Medal className="h-5 w-5 text-gray-400" />;
-  if (rank === 3) return <Medal className="h-5 w-5 text-amber-600" />;
-  return <span className="text-muted-foreground">{rank}</span>;
-}
 
 export default function ReArcLeaderboard() {
   const [sort, setSort] = useState<SortOption>('score');
@@ -121,12 +115,9 @@ export default function ReArcLeaderboard() {
           </Button>
         </Link>
 
-        <div className="flex items-center gap-3 mb-2">
-          <Trophy className="h-8 w-8 text-yellow-500" />
-          <h1 className="text-3xl font-bold">RE-ARC Leaderboard</h1>
-        </div>
+        <h1 className="text-3xl font-bold">RE-ARC Submissions</h1>
         <p className="text-muted-foreground">
-          Community-verified ARC solver rankings
+          Community solver results
         </p>
       </div>
 
@@ -135,9 +126,7 @@ export default function ReArcLeaderboard() {
         <CardContent className="pt-4">
           <div className="flex items-center gap-4 flex-wrap">
             {/* View Toggle */}
-            <div className="flex items-center gap-2">
-              <span className="text-sm text-muted-foreground">View:</span>
-              <div className="flex gap-1 border border-border rounded-md p-1">
+            <div className="flex gap-1 border border-border rounded-md p-1">
                 <Button
                   variant={view === 'table' ? 'default' : 'ghost'}
                   size="sm"
@@ -157,31 +146,29 @@ export default function ReArcLeaderboard() {
                   Efficiency
                 </Button>
               </div>
-            </div>
 
-            {/* Sort Controls */}
-            <div className="flex items-center gap-2">
-              <span className="text-sm text-muted-foreground">Sort by:</span>
-              <Select value={sort} onValueChange={(v) => { setSort(v as SortOption); setPage(0); }}>
-                <SelectTrigger className="w-40">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="score">
-                    <div className="flex items-center gap-2">
-                      <Trophy className="h-4 w-4" />
+            {/* Sort Controls - only show in table view */}
+            {view === 'table' && (
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-muted-foreground">Sort by:</span>
+                <Select value={sort} onValueChange={(v) => { setSort(v as SortOption); setPage(0); }}>
+                  <SelectTrigger className="w-40">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="score">
                       Highest Score
-                    </div>
-                  </SelectItem>
-                  <SelectItem value="latest">
-                    <div className="flex items-center gap-2">
-                      <Clock className="h-4 w-4" />
-                      Most Recent
-                    </div>
-                  </SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+                    </SelectItem>
+                    <SelectItem value="latest">
+                      <div className="flex items-center gap-2">
+                        <Clock className="h-4 w-4" />
+                        Most Recent
+                      </div>
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
 
             {data && (
               <span className="text-sm text-muted-foreground ml-auto">
@@ -217,7 +204,6 @@ export default function ReArcLeaderboard() {
 
           {data && data.submissions.length === 0 && (
             <div className="text-center py-12 text-muted-foreground">
-              <Trophy className="h-12 w-12 mx-auto mb-4 opacity-50" />
               <p>No submissions yet. Be the first!</p>
               <Link href="/re-arc">
                 <Button className="mt-4">Submit Your Solution</Button>
@@ -256,10 +242,8 @@ export default function ReArcLeaderboard() {
                     <TableBody>
                       {data.submissions.map((entry) => (
                         <TableRow key={entry.id}>
-                          <TableCell className="font-medium">
-                            <div className="flex items-center justify-center">
-                              {getRankIcon(entry.rank)}
-                            </div>
+                          <TableCell className="font-medium text-center">
+                            {entry.rank}
                           </TableCell>
                           <TableCell>
                             <span className="font-medium">{entry.solverName}</span>
@@ -317,8 +301,33 @@ export default function ReArcLeaderboard() {
                   }))}
                 />
               )}
+
+              {/* Elapsed Time Description */}
+              <div className="mt-6 pt-4 border-t border-border">
+                <p className="text-xs text-muted-foreground">
+                  <span className="font-semibold">Elapsed time:</span> Time between dataset generation and evaluation. Provides an upper bound on solving time.
+                </p>
+              </div>
             </>
           )}
+        </CardContent>
+      </Card>
+
+      {/* Disclaimer Section */}
+      <Card className="mt-6 border-amber-200 bg-amber-50 dark:border-amber-900 dark:bg-amber-950">
+        <CardHeader>
+          <CardTitle className="text-lg">About These Submissions</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-3 text-sm">
+          <p className="text-muted-foreground">
+            This board contains <span className="font-semibold">self-reported, unverified submissions</span> from community members. Submissions are not independently verified and should not be considered official rankings or fair comparisons.
+          </p>
+          <p className="text-muted-foreground">
+            Solvers may use different approaches, computational resources, optimization techniques, and implementation strategies. Direct comparison between submissions is not reliable and may be misleading.
+          </p>
+          <p className="text-muted-foreground">
+            This submission board is <span className="font-semibold">experimental and exploratory</span> in nature. It aims to showcase the diversity of approaches to the ARC challenge and enable research into different solving strategies. Treat all submissions and claims critically and verify results independently before drawing conclusions.
+          </p>
         </CardContent>
       </Card>
     </div>
