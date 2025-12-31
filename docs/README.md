@@ -39,7 +39,7 @@ The `docs/` directory is now organized around active focus areas. Use the table 
 - `api/` – External and internal API contracts, streaming guides, and integration notes.
 - `architecture/` – System-wide architecture, schema alignment, and developer onboarding references.
 - `data/` – Data extracts and schema investigations.
-- `frontend/` – Frontend hook usage guides.
+- `frontend/` – Frontend patterns: hooks reference, error message guidelines, dev routes pattern.
 - `solvers/` – Deep dives on Python/solver implementations.
 
 ## Archived work (`docs/oldPlans/`)

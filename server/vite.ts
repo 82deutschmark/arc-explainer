@@ -20,6 +20,7 @@ const importViteConfig = async () => {
   return config.default;
 };
 import { nanoid } from "nanoid";
+import { injectMetaTagsIntoHtml } from "./middleware/metaTagInjector.js";
 
 const viteLogger = createLogger('info'); // Specify log level to fix argument error
 
@@ -90,6 +91,10 @@ export async function setupVite(app: Express, server: Server) {
         `src="/src/main.tsx"`,
         `src="/src/main.tsx?v=${nanoid()}"`,
       );
+
+      // Inject route-specific meta tags before Vite transformation
+      template = injectMetaTagsIntoHtml(template, url);
+
       const page = await vite.transformIndexHtml(url, template);
       res.status(200).set({ "Content-Type": "text/html" }).end(page);
     } catch (e) {

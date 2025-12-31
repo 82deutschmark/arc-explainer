@@ -32,6 +32,7 @@ import { eloController } from "./controllers/eloController";
 import modelDatasetController from "./controllers/modelDatasetController.ts";
 import { snakeBenchController } from "./controllers/snakeBenchController.ts";
 import { contributorController } from './controllers/contributorController.ts';
+import * as reArcController from './controllers/reArcController.ts';
 
 // Import route modules
 import modelsRouter from "./routes/models.js";
@@ -42,6 +43,7 @@ import arc3Router from "./routes/arc3";
 import { errorHandler } from "./middleware/errorHandler";
 import { asyncHandler } from "./middleware/asyncHandler";
 import { validation } from "./middleware/validation";
+import rateLimit from "express-rate-limit";
 // NOTE: Authentication middleware is NOT USED - all endpoints are public
 // import { apiKeyAuth, optionalApiKeyAuth } from "./middleware/apiKeyAuth.js";
 
@@ -54,11 +56,11 @@ import { formatResponse } from "./utils/responseFormatter.ts";
 export async function registerRoutes(app: Express): Promise<Server> {
   // Initialize services
   await aiServiceFactory.initialize();
-  
+
   // Database initialization is handled in index.ts - routes should not re-initialize;
 
   // Routes with consistent naming and error handling
-  
+
   // Models API routes
   app.use("/api/models", modelsRouter);
 
@@ -67,7 +69,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Contributor trading cards routes
   app.use("/api/contributors", contributorController);
-  
+
   // Model Management GUI API routes
   app.get("/api/model-management/list", asyncHandler(modelManagementController.listModels));
   app.get("/api/model-management/stats", asyncHandler(modelManagementController.getModelStats));
@@ -79,7 +81,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.put("/api/model-management/notes", asyncHandler(modelManagementController.updateNotes));
   app.delete("/api/model-management/delete", asyncHandler(modelManagementController.deleteModel));
   app.get("/api/model-management/openrouter-models", asyncHandler(modelManagementController.fetchOpenRouterModels));
-  
+
   // Puzzle routes
   app.get("/api/puzzle/list", asyncHandler(puzzleController.list));
   app.get("/api/puzzle/overview", asyncHandler(puzzleController.overview));
@@ -95,23 +97,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
   );
   app.delete("/api/stream/analyze/:sessionId", asyncHandler(streamController.cancel));
   app.post("/api/stream/cancel/:sessionId", asyncHandler(streamController.cancel));
-  
+
   // Debug route to force puzzle loader reinitialization
   app.post("/api/puzzle/reinitialize", asyncHandler(puzzleController.reinitialize));
-  
+
   // MIXED ACCURACY/TRUSTWORTHINESS STATISTICS - G��n+� MISLEADING ENDPOINTS!
   app.get("/api/puzzle/accuracy-stats", asyncHandler(puzzleController.getAccuracyStats));
   // WARNING: Despite name, returns mixed data. accuracyByModel contains trustworthiness-filtered results!
   // Models without trustworthiness scores are excluded from "accuracy" rankings.
-  
+
   app.get("/api/puzzle/general-stats", asyncHandler(puzzleController.getGeneralModelStats));
   // WARNING: Returns mixed data combining all explanations + solver attempts + trustworthiness metrics
   // Different arrays have different inclusion criteria - very confusing!
-  
+
   // RAW DATABASE STATISTICS - Infrastructure metrics only
   app.get("/api/puzzle/raw-stats", asyncHandler(puzzleController.getRawStats));
   // NOTE: avgPredictionAccuracy field contains trustworthiness data, not pure accuracy!
-  
+
   // TRUSTWORTHINESS STATISTICS - AI confidence reliability analysis
   app.get("/api/puzzle/performance-stats", asyncHandler(puzzleController.getRealPerformanceStats));
   // CORRECT: Returns trustworthiness-focused analysis (confidence reliability metrics)
@@ -122,14 +124,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // CONFIDENCE ANALYSIS STATISTICS - AI confidence patterns
   app.get("/api/puzzle/confidence-stats", asyncHandler(puzzleController.getConfidenceStats));
-  
+
   // DISCUSSION PAGE - worst-performing puzzles for retry analysis
   app.get("/api/puzzle/worst-performing", asyncHandler(puzzleController.getWorstPerformingPuzzles));
   app.get("/api/puzzles/stats", asyncHandler(puzzleController.getPuzzleStats));
-  
+
   // Discussion routes - conversation chaining eligible explanations
   app.get("/api/discussion/eligible", asyncHandler(discussionController.getEligibleExplanations));
-  
+
   // Metrics routes (reliability, comprehensive dashboard, etc.)
   app.use("/api/metrics", metricsRouter);
 
@@ -142,11 +144,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Prompt preview route - shows exact prompt that will be sent to specific provider
   app.post("/api/prompt/preview/:provider/:taskId", validation.promptPreview, asyncHandler(puzzleController.previewPrompt));
-  
+
   // Prompt template routes
   app.get("/api/prompts", asyncHandler(promptController.getAll));
   app.post("/api/prompt-preview", validation.required(['provider', 'taskId']), asyncHandler(promptController.preview));
-  
+
   // Explanation routes
   app.get("/api/puzzle/:puzzleId/explanations/summary", asyncHandler(explanationController.getSummary));
   app.get("/api/puzzle/:puzzleId/explanations", asyncHandler(explanationController.getAll));
@@ -291,6 +293,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Harness-aligned accuracy (public, no auth)
   app.get("/api/accuracy/harness", asyncHandler(getHarnessAlignedAccuracy));
 
+  // RE-ARC dataset generation and verification routes
+  // Rate limiting: 2 generations per 5min, 20 verifications per 5min per IP
+  const reArcGenerateLimiter = rateLimit({
+    windowMs: 5 * 60 * 1000, // 5min
+    max: 2,
+    standardHeaders: true,
+    legacyHeaders: false,
+  });
+
+  const reArcEvaluateLimiter = rateLimit({
+    windowMs: 5 * 60 * 1000, // 5min
+    max: 20,
+    standardHeaders: true,
+    legacyHeaders: false,
+  });
+
+  app.post("/api/rearc/generate", reArcGenerateLimiter, asyncHandler(reArcController.generate));
+  app.post("/api/rearc/evaluate", reArcEvaluateLimiter, asyncHandler(reArcController.evaluate));
+
   // Batch analysis routes
   app.post("/api/batch/start", asyncHandler(batchController.startBatch));
   app.get("/api/batch/status/:sessionId", asyncHandler(batchController.getBatchStatus));
@@ -324,31 +345,31 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json(formatResponse.error('STATS_FAILED', 'Failed to get recovery stats'));
     }
   }));
-  
+
   app.post("/api/admin/recover-multiple-predictions", asyncHandler(async (req: any, res: any) => {
     try {
       const entries = await repositoryService.explanations.findMissingMultiplePredictions();
-      
+
       let recoveredCount = 0;
       let processedCount = 0;
       const results: any[] = [];
-      
+
       for (const entry of entries) {
         processedCount++;
         const { id, puzzleId, modelName, providerRawResponse } = entry;
-        
+
         let parsedResponse;
         try {
-          parsedResponse = typeof providerRawResponse === 'string' 
-            ? JSON.parse(providerRawResponse) 
+          parsedResponse = typeof providerRawResponse === 'string'
+            ? JSON.parse(providerRawResponse)
             : providerRawResponse;
         } catch (e) {
           results.push({ id, puzzleId, modelName, status: 'parse_failed' });
           continue;
         }
-        
+
         const collectedGrids = [];
-        
+
         // Look for predictedOutput1, predictedOutput2, predictedOutput3
         let i = 1;
         while (parsedResponse[`predictedOutput${i}`]) {
@@ -358,7 +379,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           }
           i++;
         }
-        
+
         if (collectedGrids.length > 0) {
           await repositoryService.explanations.updateMultiplePredictions(id, collectedGrids);
           recoveredCount++;
@@ -367,18 +388,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
           results.push({ id, puzzleId, modelName, status: 'no_multiple_predictions' });
         }
       }
-      
+
       res.json(formatResponse.success({
         processed: processedCount,
         recovered: recoveredCount,
         results: results.slice(0, 20)
       }, `Recovery complete: ${recoveredCount} entries recovered from ${processedCount} processed`));
-      
+
     } catch (error) {
       res.status(500).json(formatResponse.error('RECOVERY_FAILED', 'Failed to recover multiple predictions data'));
     }
   }));
-  
+
   // Simple health check endpoint for deployment monitoring
   app.get("/api/health", (req, res) => {
     res.json({
@@ -398,7 +419,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Error handling middleware
   app.use(errorHandler);
-  
+
   // NOTE: The catch-all route for serving the SPA is in server/index.ts
   // It's important that it comes AFTER the API routes and static file middleware
 

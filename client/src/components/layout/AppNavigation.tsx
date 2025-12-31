@@ -44,7 +44,8 @@ import {
   FileCheck,
   Zap,
   Code,
-  Worm
+  Worm,
+  Beaker
 } from 'lucide-react';
 
 // Type definitions for discriminated union
@@ -87,6 +88,13 @@ const navigationItems: NavItem[] = [
     href: '/scoring',
     icon: Zap,
     description: 'Official test results on public evaluation set with 2 attempts per puzzle'
+  },
+  {
+    type: 'link',
+    title: 'RE-ARC',
+    href: '/re-arc',
+    icon: Beaker,
+    description: 'Generate unique evaluation datasets and validate solver submissions'
   },
   {
     type: 'link',

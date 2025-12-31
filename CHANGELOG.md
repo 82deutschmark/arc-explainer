@@ -1,5 +1,50 @@
 # New entries at the top, use proper SemVer!
 
+### Version 6.17.0  Dec 31, 2025
+
+- **RE-ARC Bench: Self-Service Dataset Generation and Evaluation Platform** (Author: Claude Sonnet 4.5, integration by Claude Haiku 4.5)
+  - **Core Features**:
+    - Stateless 120-task evaluation set generation with XOR-based seed recovery
+    - HMAC-SHA256 seed derivation (RE_ARC_SEED_PEPPER) prevents dataset regeneration without server access
+    - Real-time SSE streaming evaluation with live progress updates
+    - LRU cache for 100x speedup on repeated evaluations (~100ms vs ~10s)
+  - **Backend Architecture**:
+    - `server/utils/reArcCodec.ts` - XOR seed recovery, SimplePRNG, steganographic message encoding
+    - `server/services/reArc/reArcService.ts` - Python subprocess integration, dataset generation, scoring
+    - `server/controllers/reArcController.ts` - HTTP endpoints with rate limiting (2 gen/5min, 20 eval/5min)
+    - `server/middleware/metaTagInjector.ts` - Link unfurling for Discord/Twitter/Slack previews
+    - `server/utils/sseHelpers.ts` - Generic type-safe SSE event streaming
+  - **Frontend Components** (`client/src/pages/ReArc.tsx`):
+    - Single-page interface with generation and evaluation sections
+    - Reusable components: GenerationSection, EvaluationSection, ErrorDisplay, ProgressDisplay
+    - Client-side validation with 13+ error types and UX writing guidelines compliance
+    - Collapsible format guides and scoring explanations
+  - **Testing**:
+    - `tests/reArcCodec.test.ts` (484 lines) - XOR seed recovery, steganography, edge cases
+    - `tests/reArcService.test.ts` (669 lines) - dataset generation, evaluation, cache behavior
+    - `tests/reArcController.test.ts` (402 lines) - HTTP streaming, SSE, validation, rate limiting
+    - `tests/metaTagInjector.test.ts` (184 lines) - meta tag injection, HTML preservation
+    - **All 63 tests passing**
+  - **Documentation**:
+    - `docs/LINK_UNFURLING.md` - Link unfurling architecture and usage
+    - `docs/plans/2025-12-24-re-arc-interface-plan.md` - Backend implementation plan
+    - `docs/plans/2025-12-24-rearc-frontend-design.md` - Frontend UX design spec
+    - `docs/reference/frontend/DEV_ROUTES.md` - Dev-only route patterns
+    - `docs/reference/frontend/ERROR_MESSAGE_GUIDELINES.md` - Error message standards
+  - **Configuration**:
+    - Added `RE_ARC_SEED_PEPPER` environment variable (32+ character secret for seed derivation)
+    - Updated `.env.example` with pepper configuration
+    - Docker support with re-arc submodule initialization
+  - **Navigation**:
+    - Added "Testing" link in AppNavigation after "Official Scoring"
+    - Beaker icon for easy identification
+  - **Files Modified**: 41 files, +6,455/-74 insertions
+    - New submodule: `external/re-arc` (conundrumer/re-arc)
+  - **Security Notes**:
+    - Pepper must be 32+ characters and kept secret (controls task patterns and Python RNG)
+    - Solutions inaccessible without server pepper
+    - Production pepper managed separately for security
+
 ### Version 6.16.19  Dec 30, 2025
 
 - **Tooling: Added local npm script for build+dev combo** (Author: Cascade)

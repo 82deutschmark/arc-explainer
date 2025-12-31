@@ -14,6 +14,7 @@ Hobby platform for analyzing ARC puzzles with multi-provider LLMs, reasoning cap
 # Clone and install
 git clone <repository-url> arc-explainer
 cd arc-explainer
+git submodule update --init --recursive
 npm install
 
 # Minimal .env (root)
@@ -38,9 +39,10 @@ More detail: [CLAUDE.md](./CLAUDE.md) and [docs/reference/architecture/DEVELOPER
 
 ## What to Try First
 
-- **Puzzle Analyst:** `/task/:taskId` — high-density grid of analyses.  
-- **Worm Arena:** `/worm-arena` (replays), `/worm-arena/live/:sessionId` (live), `/worm-arena/stats` (leaderboard).  
-- **ARC3 playground:** `/arc3/playground` — watch agents solve real ARC-AGI-3 games.  
+- **Puzzle Analyst:** `/task/:taskId` — high-density grid of analyses.
+- **RE-ARC Bench:** `/re-arc` — generate unique evaluation datasets and validate solver submissions.
+- **Worm Arena:** `/worm-arena` (replays), `/worm-arena/live/:sessionId` (live), `/worm-arena/stats` (leaderboard).
+- **ARC3 playground:** `/arc3/playground` — watch agents solve real ARC-AGI-3 games.
 - **APIs:** start with `/api/health`, then `/api/puzzle/overview`; see EXTERNAL_API.md for the full surface area.
 
 ## Working in This Repo
@@ -112,6 +114,8 @@ More detail: [CLAUDE.md](./CLAUDE.md) and [docs/reference/architecture/DEVELOPER
   - `/puzzle/beetree/:taskId?`
   - `/puzzle/poetiq/:taskId`
   - `/poetiq`
+- **RE-ARC Bench** (new - community testing)
+  - `/re-arc` - generate datasets and evaluate submissions
 - **ARC3**
   - `/arc3`
   - `/arc3/playground`
