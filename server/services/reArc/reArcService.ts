@@ -25,9 +25,8 @@ import type { ARCSubmission } from '../../../shared/types.ts';
 /**
  * Inactivity timeout for RE-ARC subprocess operations.
  * Process is killed if it produces no output for this duration.
- * 10 seconds is generous for a single task (should take < 1 second each).
  */
-const INACTIVITY_TIMEOUT_MS = 10000;
+const INACTIVITY_TIMEOUT_MS = 30000;
 
 // ============================================================================
 // Shared Configuration & Utilities
