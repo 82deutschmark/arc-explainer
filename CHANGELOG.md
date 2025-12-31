@@ -1,5 +1,49 @@
 # New entries at the top, use proper SemVer!
 
+### Version 6.17.2  Dec 31, 2025
+
+- **RE-ARC Efficiency Visualization** (Author: Claude Sonnet 4.5)
+  - **Core Features**:
+    - Elapsed time tracking: calculates time from dataset generation to submission evaluation
+    - Scatter plot visualization: score vs elapsed time showing solver efficiency patterns
+    - View toggle: switch between traditional table view and efficiency plot
+    - Interactive tooltips: hover over plot points to see detailed submission info
+  - **Backend Changes**:
+    - `server/repositories/ReArcRepository.ts` (lines 57-68, 290-337):
+      - Added `generatedAt: Date` field to `LeaderboardEntry` interface (derived from seed_id Unix timestamp)
+      - Added `elapsedMs: number` field to `LeaderboardEntry` interface (calculated as evaluated_at - generated_at)
+      - Updated SQL query to convert seed_id to timestamp: `to_timestamp(d.seed_id::bigint) as generated_at`
+      - Calculate elapsed time in milliseconds during result mapping
+  - **Frontend Components**:
+    - New `client/src/components/rearc/EfficiencyPlot.tsx` - Scatter plot component using recharts:
+      - X-axis: Elapsed time in minutes
+      - Y-axis: Score as percentage (0-100%)
+      - Custom tooltips showing solver name, score, time, tasks solved, and pairs solved
+      - Quadrant interpretation guide (top-left = efficient, top-right = thorough but slow, etc.)
+      - Styled with shadcn/ui theming for consistency
+    - Updated `client/src/pages/ReArcLeaderboard.tsx`:
+      - Added `generatedAt` and `elapsedMs` to `LeaderboardEntry` interface (lines 46-47)
+      - New `formatElapsedTime()` helper function (lines 66-76) with human-readable formatting (< 1s, Xs, Xm Ys, Xh Ym, Xd Yh)
+      - Added "Time" column to leaderboard table showing formatted elapsed time (line 208, 235-237)
+      - View toggle buttons with Table/Efficiency options using Lucide icons (lines 131-154)
+      - Conditional rendering: table view shows paginated rankings, plot view shows scatter chart (lines 230-324)
+      - Dynamic card header/description based on active view
+  - **Visualization Insights**:
+    - Top-left quadrant: High score + fast time = ideal efficient solver
+    - Top-right quadrant: High score + slow time = thorough but slow approach
+    - Bottom-left quadrant: Low score + fast time = quick but ineffective
+    - Bottom-right quadrant: Low score + slow time = struggling solver
+  - **Technical Implementation**:
+    - No database migrations required: seed_id already stored as Unix timestamp
+    - Elapsed time calculated from existing timestamps (generation time embedded in seed_id)
+    - Recharts already installed as dependency (confirmed via package.json)
+    - Fully type-safe with TypeScript interfaces
+  - **Files Modified**: 3 files, +~250 insertions
+    - Modified: `server/repositories/ReArcRepository.ts` (added fields to interface and query)
+    - Modified: `client/src/pages/ReArcLeaderboard.tsx` (added view toggle and elapsed time column)
+    - New file: `client/src/components/rearc/EfficiencyPlot.tsx` (scatter plot component)
+  - **Build Status**: All builds passing, no TypeScript errors
+
 ### Version 6.17.1  Dec 31, 2025
 
 - **RE-ARC Result Persistence & Public Leaderboard** (Author: Claude Haiku 4.5)

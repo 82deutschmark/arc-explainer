@@ -64,6 +64,8 @@ export interface LeaderboardEntry {
   evaluatedAt: Date;
   verificationCount: number;
   datasetSeedId: string;
+  generatedAt: Date; // Derived from seed_id (Unix timestamp)
+  elapsedMs: number; // Time from generation to submission
 }
 
 export interface MatchingSubmission {
@@ -297,9 +299,11 @@ export class ReArcRepository extends BaseRepository {
       evaluated_at: Date;
       verification_count: number;
       seed_id: string;
+      generated_at: Date;
     }>(
       `SELECT s.id, s.solver_name, s.score, s.solved_pairs, s.total_pairs, s.tasks_solved,
-              s.evaluated_at, s.verification_count, d.seed_id
+              s.evaluated_at, s.verification_count, d.seed_id,
+              to_timestamp(d.seed_id::bigint) as generated_at
        FROM rearc_submissions s
        JOIN rearc_datasets d ON s.rearc_dataset_id = d.id
        ${whereClause}
@@ -328,6 +332,8 @@ export class ReArcRepository extends BaseRepository {
       evaluatedAt: row.evaluated_at,
       verificationCount: row.verification_count,
       datasetSeedId: row.seed_id,
+      generatedAt: row.generated_at,
+      elapsedMs: row.evaluated_at.getTime() - row.generated_at.getTime(),
     }));
 
     return {
