@@ -200,13 +200,13 @@ type Grid = number[][]`}
               <div>
                 <p className="font-semibold mb-1">Limitations</p>
                 <p>
-                  This is not an authoritative benchmark. While the solutions to
-                  the generate datasets are basically not available to anyone, a
+                  This is not an authoritative benchmark. While solutions to
+                  the generated datasets are completely inaccessible, a
                   dedicated adversary could still create a brute force solver
                   for these specific 120 tasks. However, the development effort
                   required makes this impractical for casual claimants.
-                  Additionally, RE-ARC has a fundamental flaw where it doesn't
-                  determine if the example pairs of a task give enough
+                  Additionally, RE-ARC has a fundamental limitation where it doesn't
+                  determine if the example pairs of a task provide enough
                   information to solve the task, so some tasks may be
                   unsolvable.
                 </p>
