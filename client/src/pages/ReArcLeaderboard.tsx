@@ -30,7 +30,8 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
-import { Trophy, ArrowLeft, Medal, Clock, Shield, Loader2 } from 'lucide-react';
+import { Trophy, ArrowLeft, Medal, Clock, Shield, Loader2, Table as TableIcon, ScatterChart as ScatterIcon } from 'lucide-react';
+import { EfficiencyPlot } from '@/components/rearc/EfficiencyPlot';
 
 interface LeaderboardEntry {
   rank: number;
@@ -43,6 +44,8 @@ interface LeaderboardEntry {
   evaluatedAt: string;
   verificationCount: number;
   datasetSeedId: string;
+  generatedAt: string;
+  elapsedMs: number;
 }
 
 interface LeaderboardResponse {
@@ -61,6 +64,18 @@ function formatDate(dateString: string): string {
   });
 }
 
+function formatElapsedTime(ms: number): string {
+  const seconds = Math.floor(ms / 1000);
+  if (seconds < 1) return '< 1s';
+  if (seconds < 60) return `${seconds}s`;
+  const minutes = Math.floor(seconds / 60);
+  if (minutes < 60) return `${minutes}m ${seconds % 60}s`;
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) return `${hours}h ${minutes % 60}m`;
+  const days = Math.floor(hours / 24);
+  return `${days}d ${hours % 24}h`;
+}
+
 function getRankIcon(rank: number) {
   if (rank === 1) return <Medal className="h-5 w-5 text-yellow-500" />;
   if (rank === 2) return <Medal className="h-5 w-5 text-gray-400" />;
@@ -71,6 +86,7 @@ function getRankIcon(rank: number) {
 export default function ReArcLeaderboard() {
   const [sort, setSort] = useState<SortOption>('score');
   const [page, setPage] = useState(0);
+  const [view, setView] = useState<'table' | 'plot'>('table');
   const pageSize = 25;
 
   const { data, isLoading, error } = useQuery<LeaderboardResponse>({
@@ -111,7 +127,33 @@ export default function ReArcLeaderboard() {
       {/* Controls */}
       <Card className="mb-6">
         <CardContent className="pt-4">
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-4 flex-wrap">
+            {/* View Toggle */}
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-muted-foreground">View:</span>
+              <div className="flex gap-1 border border-border rounded-md p-1">
+                <Button
+                  variant={view === 'table' ? 'default' : 'ghost'}
+                  size="sm"
+                  onClick={() => setView('table')}
+                  className="gap-2"
+                >
+                  <TableIcon className="h-4 w-4" />
+                  Table
+                </Button>
+                <Button
+                  variant={view === 'plot' ? 'default' : 'ghost'}
+                  size="sm"
+                  onClick={() => setView('plot')}
+                  className="gap-2"
+                >
+                  <ScatterIcon className="h-4 w-4" />
+                  Efficiency
+                </Button>
+              </div>
+            </div>
+
+            {/* Sort Controls */}
             <div className="flex items-center gap-2">
               <span className="text-sm text-muted-foreground">Sort by:</span>
               <Select value={sort} onValueChange={(v) => { setSort(v as SortOption); setPage(0); }}>
@@ -150,12 +192,14 @@ export default function ReArcLeaderboard() {
         </CardContent>
       </Card>
 
-      {/* Leaderboard Table */}
+      {/* Leaderboard Content */}
       <Card>
         <CardHeader>
-          <CardTitle>Rankings</CardTitle>
+          <CardTitle>{view === 'table' ? 'Rankings' : 'Efficiency Analysis'}</CardTitle>
           <CardDescription>
-            Submit your own solution to join the leaderboard
+            {view === 'table'
+              ? 'Submit your own solution to join the leaderboard'
+              : 'Score vs elapsed time visualization'}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -183,81 +227,100 @@ export default function ReArcLeaderboard() {
 
           {data && data.submissions.length > 0 && (
             <>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead className="w-16">Rank</TableHead>
-                    <TableHead>Solver</TableHead>
-                    <TableHead className="text-right">Score</TableHead>
-                    <TableHead className="text-right">Tasks</TableHead>
-                    <TableHead className="text-right">Pairs</TableHead>
-                    <TableHead className="text-center">Verified</TableHead>
-                    <TableHead className="text-right">Date</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {data.submissions.map((entry) => (
-                    <TableRow key={entry.id}>
-                      <TableCell className="font-medium">
-                        <div className="flex items-center justify-center">
-                          {getRankIcon(entry.rank)}
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <span className="font-medium">{entry.solverName}</span>
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <span className="font-mono font-semibold">
-                          {(entry.score * 100).toFixed(2)}%
-                        </span>
-                      </TableCell>
-                      <TableCell className="text-right text-muted-foreground">
-                        {entry.tasksSolved}/120
-                      </TableCell>
-                      <TableCell className="text-right text-muted-foreground">
-                        {entry.solvedPairs}/{entry.totalPairs}
-                      </TableCell>
-                      <TableCell className="text-center">
-                        {entry.verificationCount > 0 ? (
-                          <Badge variant="secondary" className="gap-1">
-                            <Shield className="h-3 w-3" />
-                            {entry.verificationCount}
-                          </Badge>
-                        ) : (
-                          <span className="text-muted-foreground text-sm">-</span>
-                        )}
-                      </TableCell>
-                      <TableCell className="text-right text-muted-foreground text-sm">
-                        {formatDate(entry.evaluatedAt)}
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+              {view === 'table' ? (
+                <>
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead className="w-16">Rank</TableHead>
+                        <TableHead>Solver</TableHead>
+                        <TableHead className="text-right">Score</TableHead>
+                        <TableHead className="text-right">Tasks</TableHead>
+                        <TableHead className="text-right">Pairs</TableHead>
+                        <TableHead className="text-right">Time</TableHead>
+                        <TableHead className="text-center">Verified</TableHead>
+                        <TableHead className="text-right">Date</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {data.submissions.map((entry) => (
+                        <TableRow key={entry.id}>
+                          <TableCell className="font-medium">
+                            <div className="flex items-center justify-center">
+                              {getRankIcon(entry.rank)}
+                            </div>
+                          </TableCell>
+                          <TableCell>
+                            <span className="font-medium">{entry.solverName}</span>
+                          </TableCell>
+                          <TableCell className="text-right">
+                            <span className="font-mono font-semibold">
+                              {(entry.score * 100).toFixed(2)}%
+                            </span>
+                          </TableCell>
+                          <TableCell className="text-right text-muted-foreground">
+                            {entry.tasksSolved}/120
+                          </TableCell>
+                          <TableCell className="text-right text-muted-foreground">
+                            {entry.solvedPairs}/{entry.totalPairs}
+                          </TableCell>
+                          <TableCell className="text-right text-muted-foreground font-mono text-sm">
+                            {formatElapsedTime(entry.elapsedMs)}
+                          </TableCell>
+                          <TableCell className="text-center">
+                            {entry.verificationCount > 0 ? (
+                              <Badge variant="secondary" className="gap-1">
+                                <Shield className="h-3 w-3" />
+                                {entry.verificationCount}
+                              </Badge>
+                            ) : (
+                              <span className="text-muted-foreground text-sm">-</span>
+                            )}
+                          </TableCell>
+                          <TableCell className="text-right text-muted-foreground text-sm">
+                            {formatDate(entry.evaluatedAt)}
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
 
-              {/* Pagination */}
-              {totalPages > 1 && (
-                <div className="flex items-center justify-center gap-2 mt-4 pt-4 border-t">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setPage(p => Math.max(0, p - 1))}
-                    disabled={page === 0}
-                  >
-                    Previous
-                  </Button>
-                  <span className="text-sm text-muted-foreground px-4">
-                    Page {page + 1} of {totalPages}
-                  </span>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setPage(p => Math.min(totalPages - 1, p + 1))}
-                    disabled={page >= totalPages - 1}
-                  >
-                    Next
-                  </Button>
-                </div>
+                  {/* Pagination */}
+                  {totalPages > 1 && (
+                    <div className="flex items-center justify-center gap-2 mt-4 pt-4 border-t">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setPage(p => Math.max(0, p - 1))}
+                        disabled={page === 0}
+                      >
+                        Previous
+                      </Button>
+                      <span className="text-sm text-muted-foreground px-4">
+                        Page {page + 1} of {totalPages}
+                      </span>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setPage(p => Math.min(totalPages - 1, p + 1))}
+                        disabled={page >= totalPages - 1}
+                      >
+                        Next
+                      </Button>
+                    </div>
+                  )}
+                </>
+              ) : (
+                <EfficiencyPlot
+                  data={data.submissions.map(entry => ({
+                    solverName: entry.solverName,
+                    score: entry.score,
+                    elapsedMs: entry.elapsedMs,
+                    tasksSolved: entry.tasksSolved,
+                    solvedPairs: entry.solvedPairs,
+                    totalPairs: entry.totalPairs,
+                  }))}
+                />
               )}
             </>
           )}
