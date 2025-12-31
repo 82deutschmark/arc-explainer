@@ -459,6 +459,7 @@ export class DatabaseSchema {
         -- Evaluation results
         total_pairs INTEGER NOT NULL,
         solved_pairs INTEGER NOT NULL,
+        tasks_solved INTEGER NOT NULL DEFAULT 0,
         score DECIMAL(5,4) NOT NULL,
 
         -- Per-pair breakdown
@@ -647,6 +648,12 @@ export class DatabaseSchema {
       CREATE INDEX IF NOT EXISTS idx_explanations_num_test_pairs
       ON explanations(num_test_pairs)
       WHERE num_test_pairs IS NOT NULL;
+    `);
+
+    // Migration: Add tasks_solved column to rearc_submissions for displaying task completion metrics
+    await client.query(`
+      ALTER TABLE rearc_submissions
+      ADD COLUMN IF NOT EXISTS tasks_solved INTEGER DEFAULT 0;
     `);
   }
 

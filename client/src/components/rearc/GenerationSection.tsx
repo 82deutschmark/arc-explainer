@@ -1,13 +1,12 @@
 /**
  * GenerationSection.tsx
  *
- * Author: Claude Code using Sonnet 4.5
- * Date: 2025-12-27
+ * Author: Claude Code using Sonnet 4.5 (updated by Claude Opus 4.5)
+ * Date: 2025-12-27 (updated 2025-12-31 for terminal layout)
  * PURPOSE: Dataset generation section for RE-ARC page.
  *          Handles generation, progress tracking, and file download.
+ *          Supports compact mode for dense layouts.
  * SRP/DRY check: Pass - Single responsibility: dataset generation UI
- *
- * Guidelines for writing copy in client/src/pages/ReArc.tsx
  */
 
 import { useState, useCallback } from 'react';
@@ -19,6 +18,8 @@ import { ProgressDisplay } from './ProgressDisplay';
 
 interface GenerationSectionProps {
   numTasks: number;
+  /** When true, renders without Card wrapper for dense layouts */
+  compact?: boolean;
 }
 
 // Generation phase machine using discriminated union
@@ -28,7 +29,7 @@ type GenerationPhase =
   | { phase: 'completed' }
   | { phase: 'error'; message: string };
 
-export function GenerationSection({ numTasks }: GenerationSectionProps) {
+export function GenerationSection({ numTasks, compact = false }: GenerationSectionProps) {
   const [phase, setPhase] = useState<GenerationPhase>({ phase: 'idle' });
 
   const handleGenerate = useCallback(async () => {
@@ -110,33 +111,40 @@ export function GenerationSection({ numTasks }: GenerationSectionProps) {
     }
   }, []);
 
-  return (
-    <Card className="mb-8">
-      <CardHeader>
-        <CardTitle>Generate New Dataset</CardTitle>
-      </CardHeader>
-      <CardContent>
-        {phase.phase === 'error' && (
-          <Alert variant="destructive" className="mb-4">
-            <AlertCircle className="h-4 w-4" />
-            <AlertDescription>{phase.message}</AlertDescription>
-          </Alert>
-        )}
+  const content = (
+    <>
+      {phase.phase === 'error' && (
+        <Alert variant="destructive" className={compact ? "mb-3" : "mb-4"}>
+          <AlertCircle className="h-4 w-4" />
+          <AlertDescription className={compact ? "text-xs" : ""}>{phase.message}</AlertDescription>
+        </Alert>
+      )}
 
-        {phase.phase === 'generating' && (
-          <div className="mb-4">
-            <ProgressDisplay
-              label="Generating dataset..."
-              current={phase.progress}
-              total={numTasks}
-            />
-          </div>
-        )}
+      {phase.phase === 'generating' && (
+        <div className={compact ? "mb-3" : "mb-4"}>
+          <ProgressDisplay
+            label="Generating dataset..."
+            current={phase.progress}
+            total={numTasks}
+          />
+        </div>
+      )}
 
+      {phase.phase === 'completed' && (
+        <Alert className={compact ? "mb-3 border-emerald-500/50 bg-emerald-500/5" : "mb-4 border-green-500/50 bg-green-500/5"}>
+          <CheckCircle2 className="h-4 w-4 text-emerald-500" />
+          <AlertDescription className={compact ? "text-xs" : ""}>
+            Dataset downloaded. Run your solver on the challenges, then upload the results below.
+          </AlertDescription>
+        </Alert>
+      )}
+
+      <div className={compact ? "flex gap-2" : ""}>
         <Button
           onClick={handleGenerate}
-          disabled={phase.phase === 'generating' || phase.phase === 'completed'}
-          className="w-full sm:w-auto"
+          disabled={phase.phase === 'generating'}
+          size={compact ? "sm" : "default"}
+          className={compact ? "font-mono text-xs" : "w-full sm:w-auto"}
         >
           {phase.phase === 'generating' ? (
             <>
@@ -145,8 +153,8 @@ export function GenerationSection({ numTasks }: GenerationSectionProps) {
             </>
           ) : phase.phase === 'completed' ? (
             <>
-              <CheckCircle2 className="mr-2 h-4 w-4" />
-              Dataset Generated
+              <Download className="mr-2 h-4 w-4" />
+              Generate Again
             </>
           ) : (
             <>
@@ -157,10 +165,31 @@ export function GenerationSection({ numTasks }: GenerationSectionProps) {
         </Button>
 
         {phase.phase === 'error' && (
-          <Button onClick={handleGenerate} variant="outline" className="ml-2">
-            Try Again
+          <Button onClick={handleGenerate} variant="outline" size={compact ? "sm" : "default"} className={compact ? "font-mono text-xs" : "ml-2"}>
+            Retry
           </Button>
         )}
+      </div>
+
+      {phase.phase === 'idle' && (
+        <p className={compact ? "mt-2 text-xs text-muted-foreground" : "mt-3 text-sm text-muted-foreground"}>
+          Creates {numTasks} fresh puzzles with unique task IDs.
+        </p>
+      )}
+    </>
+  );
+
+  if (compact) {
+    return content;
+  }
+
+  return (
+    <Card className="mb-8">
+      <CardHeader>
+        <CardTitle>Generate New Dataset</CardTitle>
+      </CardHeader>
+      <CardContent>
+        {content}
       </CardContent>
     </Card>
   );

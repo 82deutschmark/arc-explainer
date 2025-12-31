@@ -2,11 +2,11 @@
  * EvaluationSection.tsx
  *
  * Author: Claude Code using Sonnet 4.5 (updated by Claude Opus 4.5)
- * Date: 2025-12-28 (updated 2025-12-30 for leaderboard integration)
+ * Date: 2025-12-28 (updated 2025-12-31 for terminal layout)
  * PURPOSE: Submission evaluation section for RE-ARC page.
  *          Orchestrates file upload, validation, SSE streaming, and result display.
  *          Saves results to leaderboard with solver name.
- *          Uses phase-based state management for cleaner logic and maintainability.
+ *          Supports compact mode for dense layouts.
  * SRP/DRY check: Pass - Single responsibility: submission evaluation orchestration
  */
 
@@ -39,6 +39,8 @@ function recoverTimestamp(taskIds: string[]): number {
 
 interface EvaluationSectionProps {
   numTasks: number;
+  /** When true, renders without Card wrapper for dense layouts */
+  compact?: boolean;
 }
 
 interface MatchingSubmission {
@@ -88,7 +90,7 @@ type EvaluationPhase =
   | { type: 'success'; fileName: string; result: EvaluationResult }
   | { type: 'error'; fileName: string | null; error: EvaluationError };
 
-export function EvaluationSection({ numTasks }: EvaluationSectionProps) {
+export function EvaluationSection({ numTasks, compact = false }: EvaluationSectionProps) {
   const [phase, setPhase] = useState<EvaluationPhase>({ type: 'idle' });
   const [isDragging, setIsDragging] = useState(false);
   const [solverName, setSolverName] = useState('');
@@ -357,6 +359,195 @@ export function EvaluationSection({ numTasks }: EvaluationSectionProps) {
     [handleFileUpload]
   );
 
+  const content = (
+    <>
+      {/* Success State */}
+      {phase.type === 'success' && (
+        <div className={compact ? "mb-3" : "space-y-4 mb-6"}>
+          <Alert className={compact ? "border-emerald-500/50 bg-emerald-500/5" : "border-green-500 bg-green-500/10"}>
+            <CheckCircle2 className={compact ? "h-3.5 w-3.5 text-emerald-500" : "h-4 w-4 text-green-500"} />
+            <AlertDescription>
+              <div className={compact ? "font-mono font-bold text-base" : "font-semibold text-lg"}>
+                Score: {(phase.result.score * 100).toFixed(2)}%
+              </div>
+              {phase.result.timestamp && (
+                <div className={compact ? "text-xs mt-0.5 text-muted-foreground" : "text-sm mt-1"}>
+                  Generated: {new Date(phase.result.timestamp * 1000).toLocaleString()}
+                </div>
+              )}
+              {phase.result.submissionId && (
+                <div className={compact ? "text-xs mt-1.5 flex items-center gap-1.5" : "text-sm mt-2 flex items-center gap-2"}>
+                  <Trophy className={compact ? "h-3 w-3 text-yellow-500" : "h-4 w-4 text-yellow-500"} />
+                  <span>Added to leaderboard!</span>
+                  <Link href="/re-arc/leaderboard" className="text-primary hover:underline inline-flex items-center gap-1">
+                    View <ExternalLink className="h-3 w-3" />
+                  </Link>
+                </div>
+              )}
+              {phase.result.matchingSubmissions.length > 0 && (
+                <div className={compact ? "text-xs mt-2 p-1.5 bg-yellow-500/10 border border-yellow-500/20 rounded-sm" : "text-sm mt-3 p-2 bg-yellow-500/10 border border-yellow-500/20 rounded"}>
+                  <strong>Note:</strong> Matches {phase.result.matchingSubmissions.length} existing {phase.result.matchingSubmissions.length === 1 ? 'entry' : 'entries'}:
+                  {compact ? (
+                    <span className="ml-1 font-mono">
+                      {phase.result.matchingSubmissions.map((m) => m.solverName).join(', ')}
+                    </span>
+                  ) : (
+                    <ul className="mt-1 ml-4 list-disc">
+                      {phase.result.matchingSubmissions.map((m) => (
+                        <li key={m.id}>{m.solverName} ({(m.score * 100).toFixed(2)}%)</li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+              )}
+              {phase.result.score === 0 && !compact && (
+                <div className="text-sm mt-3 p-2 bg-blue-500/10 border border-blue-500/20 rounded">
+                  <strong>Note:</strong> A 0% score is normal and expected. RE-ARC tasks
+                  are challenging, and most submissions score 0%. Your submission format
+                  was validated successfully - this result just means the predictions didn't match
+                  the ground truth outputs.
+                </div>
+              )}
+            </AlertDescription>
+          </Alert>
+        </div>
+      )}
+
+      {/* Error State */}
+      {phase.type === 'error' && (
+        <Alert variant="destructive" className={compact ? "mb-3" : "mb-4"}>
+          <XCircle className="h-4 w-4" />
+          <ErrorDisplay error={phase.error} />
+        </Alert>
+      )}
+
+      {/* Upload Progress */}
+      {phase.type === 'uploading' && (
+        <div className={compact ? "mb-3" : "space-y-4 mb-6"}>
+          <Alert className={compact ? "border-blue-500/50 bg-blue-500/5" : "border-blue-500 bg-blue-500/10"}>
+            <Loader2 className={compact ? "h-3.5 w-3.5 animate-spin" : "h-4 w-4 animate-spin"} />
+            <AlertDescription>
+              <div className={compact ? "text-xs font-mono" : "text-sm"}>
+                Uploading: {phase.fileName}
+              </div>
+            </AlertDescription>
+          </Alert>
+          {phase.progress && !compact && (
+            <ProgressDisplay
+              label="Uploading submission..."
+              current={phase.progress.loaded}
+              total={phase.progress.total}
+              formatValue={(bytes) => `${(bytes / 1024).toFixed(1)} KB`}
+            />
+          )}
+        </div>
+      )}
+
+      {/* Evaluation Progress */}
+      {phase.type === 'evaluating' && (
+        <div className={compact ? "mb-3" : "space-y-4 mb-6"}>
+          <Alert className={compact ? "border-blue-500/50 bg-blue-500/5" : "border-blue-500 bg-blue-500/10"}>
+            <Loader2 className={compact ? "h-3.5 w-3.5 animate-spin" : "h-4 w-4 animate-spin"} />
+            <AlertDescription>
+              <div className={compact ? "text-xs font-mono" : "text-sm"}>
+                Processing: {phase.fileName}
+                {compact && phase.progress && (
+                  <span className="ml-2 text-muted-foreground">
+                    {phase.progress.current}/{phase.progress.total}
+                  </span>
+                )}
+              </div>
+            </AlertDescription>
+          </Alert>
+          {phase.progress && !compact && (
+            <ProgressDisplay
+              label="Evaluating submission..."
+              current={phase.progress.current}
+              total={phase.progress.total}
+            />
+          )}
+        </div>
+      )}
+
+      {/* Upload Interface - always show except during active upload/evaluation */}
+      {(phase.type === 'idle' || phase.type === 'success' || phase.type === 'error') && (
+        <>
+          {/* Solver Name Input */}
+          <div className={compact ? "mb-3" : "mb-4"}>
+            <Label htmlFor="solver-name" className={compact ? "text-xs font-mono text-muted-foreground" : "text-sm font-medium"}>
+              {compact ? "SOLVER NAME" : "Your Name (for leaderboard)"}
+            </Label>
+            <div className={compact ? "flex gap-1.5 mt-1" : "flex gap-2 mt-1"}>
+              <Input
+                id="solver-name"
+                type="text"
+                placeholder={compact ? "e.g., Brave Pangolin" : "e.g., Brave Pangolin"}
+                value={solverName}
+                onChange={(e) => setSolverName(e.target.value)}
+                className={compact ? "flex-1 h-8 text-xs font-mono" : "flex-1"}
+                maxLength={255}
+              />
+              <Button
+                type="button"
+                variant="outline"
+                size={compact ? "sm" : "icon"}
+                onClick={handleGenerateName}
+                title="Generate random name"
+                className={compact ? "h-8 w-8 p-0" : ""}
+              >
+                <Shuffle className={compact ? "h-3.5 w-3.5" : "h-4 w-4"} />
+              </Button>
+            </div>
+            {!compact && (
+              <p className="text-xs text-muted-foreground mt-1">
+                Leave blank for a randomly generated name
+              </p>
+            )}
+          </div>
+
+          {/* Drop Zone */}
+          <div
+            onDragOver={handleDragOver}
+            onDragLeave={handleDragLeave}
+            onDrop={handleDrop}
+            className={`border-2 border-dashed rounded-sm text-center transition-colors ${
+              compact ? "p-4" : "rounded-lg p-12"
+            } ${
+              isDragging
+                ? 'border-primary bg-primary/5'
+                : 'border-muted-foreground/25 hover:border-muted-foreground/50'
+            }`}
+          >
+            <Upload className={compact ? "mx-auto h-6 w-6 text-muted-foreground mb-2" : "mx-auto h-12 w-12 text-muted-foreground mb-4"} />
+            <p className={compact ? "text-xs font-mono mb-1.5" : "text-lg mb-2"}>
+              {compact ? "Drop submission.json" : "Drop submission.json here"}
+            </p>
+            {!compact && <p className="text-sm text-muted-foreground mb-4">or</p>}
+            <Button
+              onClick={() => fileInputRef.current?.click()}
+              variant="outline"
+              size={compact ? "sm" : "default"}
+              className={compact ? "text-xs font-mono" : ""}
+            >
+              {compact ? "Browse" : "Choose File"}
+            </Button>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="application/json"
+              onChange={handleFileInputChange}
+              className="hidden"
+            />
+          </div>
+        </>
+      )}
+    </>
+  );
+
+  if (compact) {
+    return content;
+  }
+
   return (
     <Card>
       <CardHeader>
@@ -369,163 +560,7 @@ export function EvaluationSection({ numTasks }: EvaluationSectionProps) {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        {/* Success State */}
-        {phase.type === 'success' && (
-          <div className="space-y-4 mb-6">
-            <Alert className="border-green-500 bg-green-500/10">
-              <CheckCircle2 className="h-4 w-4 text-green-500" />
-              <AlertDescription>
-                <div className="font-semibold text-lg">
-                  Score: {(phase.result.score * 100).toFixed(2)}%
-                </div>
-                {phase.result.timestamp && (
-                  <div className="text-sm mt-1">
-                    Generated: {new Date(phase.result.timestamp * 1000).toLocaleString()}
-                  </div>
-                )}
-                {phase.result.submissionId && (
-                  <div className="text-sm mt-2 flex items-center gap-2">
-                    <Trophy className="h-4 w-4 text-yellow-500" />
-                    <span>Added to leaderboard!</span>
-                    <Link href="/re-arc/leaderboard" className="text-primary hover:underline inline-flex items-center gap-1">
-                      View Leaderboard <ExternalLink className="h-3 w-3" />
-                    </Link>
-                  </div>
-                )}
-                {phase.result.matchingSubmissions.length > 0 && (
-                  <div className="text-sm mt-3 p-2 bg-yellow-500/10 border border-yellow-500/20 rounded">
-                    <strong>Note:</strong> This submission matches {phase.result.matchingSubmissions.length} existing {phase.result.matchingSubmissions.length === 1 ? 'entry' : 'entries'}:
-                    <ul className="mt-1 ml-4 list-disc">
-                      {phase.result.matchingSubmissions.map((m) => (
-                        <li key={m.id}>{m.solverName} ({(m.score * 100).toFixed(2)}%)</li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-                {phase.result.score === 0 && (
-                  <div className="text-sm mt-3 p-2 bg-blue-500/10 border border-blue-500/20 rounded">
-                    <strong>Note:</strong> A 0% score is normal and expected. RE-ARC tasks
-                    are challenging, and most submissions score 0%. Your submission format
-                    was validated successfully - this result just means the predictions didn't match
-                    the ground truth outputs.
-                  </div>
-                )}
-              </AlertDescription>
-            </Alert>
-          </div>
-        )}
-
-        {/* Error State */}
-        {phase.type === 'error' && (
-          <Alert variant="destructive" className="mb-4">
-            <XCircle className="h-4 w-4" />
-            <ErrorDisplay error={phase.error} />
-          </Alert>
-        )}
-
-        {/* Upload Progress */}
-        {phase.type === 'uploading' && (
-          <div className="space-y-4 mb-6">
-            <Alert className="border-blue-500 bg-blue-500/10">
-              <Loader2 className="h-4 w-4 animate-spin" />
-              <AlertDescription>
-                <div className="text-sm">
-                  <strong>Uploading:</strong> {phase.fileName}
-                </div>
-              </AlertDescription>
-            </Alert>
-            {phase.progress && (
-              <ProgressDisplay
-                label="Uploading submission..."
-                current={phase.progress.loaded}
-                total={phase.progress.total}
-                formatValue={(bytes) => `${(bytes / 1024).toFixed(1)} KB`}
-              />
-            )}
-          </div>
-        )}
-
-        {/* Evaluation Progress */}
-        {phase.type === 'evaluating' && (
-          <div className="space-y-4 mb-6">
-            <Alert className="border-blue-500 bg-blue-500/10">
-              <Loader2 className="h-4 w-4 animate-spin" />
-              <AlertDescription>
-                <div className="text-sm">
-                  <strong>Processing:</strong> {phase.fileName}
-                </div>
-              </AlertDescription>
-            </Alert>
-            {phase.progress && (
-              <ProgressDisplay
-                label="Evaluating submission..."
-                current={phase.progress.current}
-                total={phase.progress.total}
-              />
-            )}
-          </div>
-        )}
-
-        {/* Upload Interface - always show except during active upload/evaluation */}
-        {(phase.type === 'idle' || phase.type === 'success' || phase.type === 'error') && (
-          <>
-            {/* Solver Name Input */}
-            <div className="mb-4">
-              <Label htmlFor="solver-name" className="text-sm font-medium">
-                Your Name (for leaderboard)
-              </Label>
-              <div className="flex gap-2 mt-1">
-                <Input
-                  id="solver-name"
-                  type="text"
-                  placeholder="e.g., Brave Pangolin"
-                  value={solverName}
-                  onChange={(e) => setSolverName(e.target.value)}
-                  className="flex-1"
-                  maxLength={255}
-                />
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="icon"
-                  onClick={handleGenerateName}
-                  title="Generate random name"
-                >
-                  <Shuffle className="h-4 w-4" />
-                </Button>
-              </div>
-              <p className="text-xs text-muted-foreground mt-1">
-                Leave blank for a randomly generated name
-              </p>
-            </div>
-
-            {/* Drop Zone */}
-            <div
-              onDragOver={handleDragOver}
-              onDragLeave={handleDragLeave}
-              onDrop={handleDrop}
-              className={`border-2 border-dashed rounded-lg p-12 text-center transition-colors ${
-                isDragging
-                  ? 'border-primary bg-primary/5'
-                  : 'border-muted-foreground/25 hover:border-muted-foreground/50'
-              }`}
-            >
-              <Upload className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
-              <p className="text-lg mb-2">Drop submission.json here</p>
-              <p className="text-sm text-muted-foreground mb-4">or</p>
-              <Button onClick={() => fileInputRef.current?.click()} variant="outline">
-                Choose File
-              </Button>
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept="application/json"
-                onChange={handleFileInputChange}
-                className="hidden"
-              />
-            </div>
-          </>
-        )}
+        {content}
       </CardContent>
     </Card>
   );
