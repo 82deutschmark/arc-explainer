@@ -16,7 +16,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Upload, CheckCircle2, XCircle, Loader2, Trophy, Shuffle, ExternalLink } from 'lucide-react';
+import { Upload, CheckCircle2, XCircle, Loader2, Shuffle, ExternalLink } from 'lucide-react';
 import { Link } from 'wouter';
 import type { ARCSubmission, ReArcSSEEvent } from '@shared/types';
 import { validateSubmission } from '@/utils/arcSubmissionValidator';
@@ -94,6 +94,9 @@ export function EvaluationSection({ numTasks, compact = false }: EvaluationSecti
   const [phase, setPhase] = useState<EvaluationPhase>({ type: 'idle' });
   const [isDragging, setIsDragging] = useState(false);
   const [solverName, setSolverName] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [hasSubmitted, setHasSubmitted] = useState(false);
+  const [currentSubmission, setCurrentSubmission] = useState<ARCSubmission | null>(null);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -101,8 +104,41 @@ export function EvaluationSection({ numTasks, compact = false }: EvaluationSecti
     setSolverName(generateRandomName());
   }, []);
 
+  const handleSubmitToLeaderboard = useCallback(
+    async (submission: ARCSubmission) => {
+      setIsSubmitting(true);
+      try {
+        const response = await fetch('/api/rearc/submit', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            submission,
+            solverName: solverName.trim() || undefined,
+          }),
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to submit to leaderboard');
+        }
+
+        setHasSubmitted(true);
+      } catch (err) {
+        console.error('Leaderboard submission error:', err);
+        alert('Failed to submit to leaderboard. Please try again.');
+      } finally {
+        setIsSubmitting(false);
+      }
+    },
+    [solverName]
+  );
+
   const handleFileUpload = useCallback(
     async (file: File) => {
+      // Reset submission state
+      setCurrentSubmission(null);
+      setHasSubmitted(false);
+      setSolverName('');
+
       // Phase 1: Start uploading
       setPhase({ type: 'uploading', fileName: file.name, progress: null });
 
@@ -134,11 +170,8 @@ export function EvaluationSection({ numTasks, compact = false }: EvaluationSecti
         }
 
         // File validated, now upload with progress tracking
-        // Include solver name and file name for leaderboard
         const jsonBody = JSON.stringify({
           submission,
-          solverName: solverName.trim() || undefined,
-          fileName: file.name,
         });
 
         // Use XHR for upload progress + SSE streaming
@@ -239,7 +272,7 @@ export function EvaluationSection({ numTasks, compact = false }: EvaluationSecti
                     // TypeScript narrows to completion data union
 
                     if (event.data.type === 'score') {
-                      // Success with score - includes leaderboard data
+                      // Success with score
                       const taskIds = Object.keys(submission);
                       const timestamp = recoverTimestamp(taskIds);
                       const data = event.data as {
@@ -248,6 +281,9 @@ export function EvaluationSection({ numTasks, compact = false }: EvaluationSecti
                         submissionId?: number | null;
                         matchingSubmissions?: MatchingSubmission[];
                       };
+
+                      // Store submission for later leaderboard submission
+                      setCurrentSubmission(submission);
 
                       setPhase({
                         type: 'success',
@@ -323,7 +359,7 @@ export function EvaluationSection({ numTasks, compact = false }: EvaluationSecti
         });
       }
     },
-    [numTasks, solverName]
+    [numTasks]
   );
 
   const handleDragOver = useCallback((e: React.DragEvent) => {
@@ -375,15 +411,6 @@ export function EvaluationSection({ numTasks, compact = false }: EvaluationSecti
                   Generated: {new Date(phase.result.timestamp * 1000).toLocaleString()}
                 </div>
               )}
-              {phase.result.submissionId && (
-                <div className={compact ? "text-xs mt-1.5 flex items-center gap-1.5" : "text-sm mt-2 flex items-center gap-2"}>
-                  <Trophy className={compact ? "h-3 w-3 text-yellow-500" : "h-4 w-4 text-yellow-500"} />
-                  <span>Added to leaderboard!</span>
-                  <Link href="/re-arc/leaderboard" className="text-primary hover:underline inline-flex items-center gap-1">
-                    View <ExternalLink className="h-3 w-3" />
-                  </Link>
-                </div>
-              )}
               {phase.result.matchingSubmissions.length > 0 && (
                 <div className={compact ? "text-xs mt-2 p-1.5 bg-yellow-500/10 border border-yellow-500/20 rounded-sm" : "text-sm mt-3 p-2 bg-yellow-500/10 border border-yellow-500/20 rounded"}>
                   <strong>Note:</strong> Matches {phase.result.matchingSubmissions.length} existing {phase.result.matchingSubmissions.length === 1 ? 'entry' : 'entries'}:
@@ -410,6 +437,79 @@ export function EvaluationSection({ numTasks, compact = false }: EvaluationSecti
               )}
             </AlertDescription>
           </Alert>
+
+          {/* Opt-in Leaderboard Submission - only show if score > 0% and not yet submitted */}
+          {phase.result.score > 0 && !hasSubmitted && currentSubmission && !compact && (
+            <Card className="border-blue-500/50">
+              <CardHeader>
+                <CardTitle className="text-base">Submit to Leaderboard (Optional)</CardTitle>
+                <CardDescription className="text-sm">
+                  Share your result with the community
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3">
+                  <div>
+                    <Label htmlFor="leaderboard-name" className="text-sm font-medium">
+                      Your Name
+                    </Label>
+                    <div className="flex gap-2 mt-1">
+                      <Input
+                        id="leaderboard-name"
+                        type="text"
+                        placeholder="e.g., Brave Pangolin"
+                        value={solverName}
+                        onChange={(e) => setSolverName(e.target.value)}
+                        className="flex-1"
+                        maxLength={255}
+                        disabled={isSubmitting}
+                      />
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="icon"
+                        onClick={handleGenerateName}
+                        title="Generate random name"
+                        disabled={isSubmitting}
+                      >
+                        <Shuffle className="h-4 w-4" />
+                      </Button>
+                    </div>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Leave blank for a randomly generated name
+                    </p>
+                  </div>
+                  <Button
+                    onClick={() => handleSubmitToLeaderboard(currentSubmission)}
+                    disabled={isSubmitting}
+                    className="w-full"
+                  >
+                    {isSubmitting ? (
+                      <>
+                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                        Submitting...
+                      </>
+                    ) : (
+                      'Submit to Leaderboard'
+                    )}
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Confirmation after submission */}
+          {hasSubmitted && (
+            <Alert className="border-green-500 bg-green-500/10 mt-4">
+              <CheckCircle2 className="h-4 w-4 text-green-500" />
+              <AlertDescription>
+                <div className="font-semibold">Submitted to leaderboard!</div>
+                <Link href="/re-arc/leaderboard" className="text-sm text-primary hover:underline inline-flex items-center gap-1 mt-1">
+                  View leaderboard <ExternalLink className="h-3 w-3" />
+                </Link>
+              </AlertDescription>
+            </Alert>
+          )}
         </div>
       )}
 
@@ -472,39 +572,6 @@ export function EvaluationSection({ numTasks, compact = false }: EvaluationSecti
       {/* Upload Interface - always show except during active upload/evaluation */}
       {(phase.type === 'idle' || phase.type === 'success' || phase.type === 'error') && (
         <>
-          {/* Solver Name Input */}
-          <div className={compact ? "mb-3" : "mb-4"}>
-            <Label htmlFor="solver-name" className={compact ? "text-xs font-mono text-muted-foreground" : "text-sm font-medium"}>
-              {compact ? "SOLVER NAME" : "Your Name (for leaderboard)"}
-            </Label>
-            <div className={compact ? "flex gap-1.5 mt-1" : "flex gap-2 mt-1"}>
-              <Input
-                id="solver-name"
-                type="text"
-                placeholder={compact ? "e.g., Brave Pangolin" : "e.g., Brave Pangolin"}
-                value={solverName}
-                onChange={(e) => setSolverName(e.target.value)}
-                className={compact ? "flex-1 h-8 text-xs font-mono" : "flex-1"}
-                maxLength={255}
-              />
-              <Button
-                type="button"
-                variant="outline"
-                size={compact ? "sm" : "icon"}
-                onClick={handleGenerateName}
-                title="Generate random name"
-                className={compact ? "h-8 w-8 p-0" : ""}
-              >
-                <Shuffle className={compact ? "h-3.5 w-3.5" : "h-4 w-4"} />
-              </Button>
-            </div>
-            {!compact && (
-              <p className="text-xs text-muted-foreground mt-1">
-                Leave blank for a randomly generated name
-              </p>
-            )}
-          </div>
-
           {/* Drop Zone */}
           <div
             onDragOver={handleDragOver}
@@ -551,12 +618,9 @@ export function EvaluationSection({ numTasks, compact = false }: EvaluationSecti
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Trophy className="h-5 w-5" />
-          Evaluate Your Solution
-        </CardTitle>
+        <CardTitle>Evaluate Your Solution</CardTitle>
         <CardDescription>
-          Upload your submission to score it and add to the leaderboard
+          Upload your submission to see your score
         </CardDescription>
       </CardHeader>
       <CardContent>

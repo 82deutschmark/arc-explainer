@@ -33,7 +33,6 @@ TERMINOLOGY:
 
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
-import { Trophy, ExternalLink } from "lucide-react";
 import { GenerationSection } from "@/components/rearc/GenerationSection";
 import { EvaluationSection } from "@/components/rearc/EvaluationSection";
 import { CollapsibleSection } from "@/components/rearc/CollapsibleSection";
@@ -51,18 +50,8 @@ export default function ReArc() {
         </p>
 
         <div className="flex items-center gap-4 mb-4">
-          <a
-            href="https://github.com/conundrumer/re-arc"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-sm text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1.5"
-          >
-            RE-ARC by conundrumer
-            <ExternalLink className="h-3.5 w-3.5" />
-          </a>
           <Link href="/re-arc/leaderboard">
-            <Button variant="outline" size="sm" className="gap-2">
-              <Trophy className="h-4 w-4" />
+            <Button variant="outline" size="sm">
               Leaderboard
             </Button>
           </Link>
@@ -80,16 +69,6 @@ export default function ReArc() {
             The submission format and scoring is the same as the ARC Prize
             competition, so you can use this to test your solver before
             entering.
-          </p>
-        </div>
-
-        <div className="text-sm text-foreground/90 bg-amber-500/10 border border-amber-500/30 p-4 rounded-md mt-3">
-          <p className="font-medium mb-1">Why this matters</p>
-          <p>
-            A high score here helps the ARC Prize team—a small non-profit—separate
-            signal from noise when deciding which solvers to evaluate on the official
-            ARC-AGI-2 semi-private set. A high score doesn't guarantee your submission
-            will be selected for official validation, but it makes your work more credible.
           </p>
         </div>
 
