@@ -1,5 +1,19 @@
 # New entries at the top, use proper SemVer!
 
+### Version 6.18.1  Dec 31, 2025
+
+- **RE-ARC UI Refinement: Analysis-First Leaderboard** (Author: Claude Haiku 4.5)
+  - Removed non-official metrics: Pairs, Verified, Tasks columns (not in ARC-AGI Prize scoring)
+  - Kept official metrics: Score, Time, Date
+  - File dropper always visible, disabled/greyed during evaluation
+  - Moved matching submissions note into Submit to Leaderboard card
+  - Added leaderboard intention copy: "community analysis and just-for-fun benchmarking"
+  - Fixed tooltips: Tasks (clarified scoring), added Time explanation
+  - Default leaderboard view: changed from table to Efficiency plot
+  - Removed bottom info section (explanations consolidated to main page)
+  - **Files Modified**: `client/src/components/rearc/EvaluationSection.tsx`, `client/src/pages/ReArcLeaderboard.tsx`
+
+
 ### Version 6.18.0  Dec 31, 2025
 
 - **RE-ARC Leaderboard Opt-In UX Redesign** (Author: Claude Opus 4.5)
