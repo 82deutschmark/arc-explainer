@@ -36,7 +36,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
-import { Trophy, ArrowLeft, Medal, Clock, Shield, Loader2, Table as TableIcon, ScatterChart as ScatterIcon, HelpCircle } from 'lucide-react';
+import { Trophy, ArrowLeft, Medal, Clock, Loader2, Table as TableIcon, ScatterChart as ScatterIcon, HelpCircle } from 'lucide-react';
 import { EfficiencyPlot } from '@/components/rearc/EfficiencyPlot';
 
 interface LeaderboardEntry {
@@ -92,7 +92,7 @@ function getRankIcon(rank: number) {
 export default function ReArcLeaderboard() {
   const [sort, setSort] = useState<SortOption>('score');
   const [page, setPage] = useState(0);
-  const [view, setView] = useState<'table' | 'plot'>('table');
+  const [view, setView] = useState<'table' | 'plot'>('plot');
   const pageSize = 25;
 
   const { data, isLoading, error } = useQuery<LeaderboardResponse>({
@@ -179,12 +179,6 @@ export default function ReArcLeaderboard() {
                       Most Recent
                     </div>
                   </SelectItem>
-                  <SelectItem value="verified">
-                    <div className="flex items-center gap-2">
-                      <Shield className="h-4 w-4" />
-                      Most Verified
-                    </div>
-                  </SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -246,33 +240,16 @@ export default function ReArcLeaderboard() {
                             <Tooltip>
                               <TooltipTrigger asChild>
                                 <span className="inline-flex items-center gap-1 cursor-help">
-                                  Tasks
+                                  Time
                                   <HelpCircle className="h-3.5 w-3.5 text-muted-foreground" />
                                 </span>
                               </TooltipTrigger>
                               <TooltipContent side="top" className="max-w-xs text-xs">
-                                <p>Tasks <strong>fully solved</strong> (all test pairs correct). A task with 3 test pairs requires all 3 correct to count here.</p>
+                                <p>Elapsed time between dataset generation and evaluation. Provides an upper bound on solving time.</p>
                               </TooltipContent>
                             </Tooltip>
                           </TooltipProvider>
                         </TableHead>
-                        <TableHead className="text-right">
-                          <TooltipProvider>
-                            <Tooltip>
-                              <TooltipTrigger asChild>
-                                <span className="inline-flex items-center gap-1 cursor-help">
-                                  Pairs
-                                  <HelpCircle className="h-3.5 w-3.5 text-muted-foreground" />
-                                </span>
-                              </TooltipTrigger>
-                              <TooltipContent side="top" className="max-w-xs text-xs">
-                                <p><strong>Test pairs solved</strong> across all tasks. Each task has 1-3 test pairs. Solving 1 of 3 pairs in a task scores 33% on that task.</p>
-                              </TooltipContent>
-                            </Tooltip>
-                          </TooltipProvider>
-                        </TableHead>
-                        <TableHead className="text-right">Time</TableHead>
-                        <TableHead className="text-center">Verified</TableHead>
                         <TableHead className="text-right">Date</TableHead>
                       </TableRow>
                     </TableHeader>
@@ -292,24 +269,8 @@ export default function ReArcLeaderboard() {
                               {(entry.score * 100).toFixed(2)}%
                             </span>
                           </TableCell>
-                          <TableCell className="text-right text-muted-foreground">
-                            {entry.tasksSolved}/120
-                          </TableCell>
-                          <TableCell className="text-right text-muted-foreground">
-                            {entry.solvedPairs}/{entry.totalPairs}
-                          </TableCell>
                           <TableCell className="text-right text-muted-foreground font-mono text-sm">
                             {formatElapsedTime(entry.elapsedMs)}
-                          </TableCell>
-                          <TableCell className="text-center">
-                            {entry.verificationCount > 0 ? (
-                              <Badge variant="secondary" className="gap-1">
-                                <Shield className="h-3 w-3" />
-                                {entry.verificationCount}
-                              </Badge>
-                            ) : (
-                              <span className="text-muted-foreground text-sm">-</span>
-                            )}
                           </TableCell>
                           <TableCell className="text-right text-muted-foreground text-sm">
                             {formatDate(entry.evaluatedAt)}
@@ -358,30 +319,6 @@ export default function ReArcLeaderboard() {
               )}
             </>
           )}
-        </CardContent>
-      </Card>
-
-      {/* Info Section */}
-      <Card className="mt-6">
-        <CardContent className="pt-6">
-          <div className="text-sm text-muted-foreground space-y-2">
-            <p>
-              <strong>How verification works:</strong> Anyone can upload a submission file
-              to verify its score. When a submission matches an existing entry, both are
-              marked as verified. This ensures claimed scores are accurate without requiring trust.
-            </p>
-            <p>
-              <strong>Scoring:</strong> Each submission is evaluated against the same
-              deterministically-generated dataset. Scores represent the percentage of
-              test pairs solved correctly (either attempt matching the ground truth).
-            </p>
-            <p>
-              <strong>Tasks vs Pairs:</strong> Each ARC task contains 1-3 test pairs.
-              Your score is the average of per-task scores, where each task scores
-              (pairs solved / total pairs in that task). A task with 3 test pairs
-              where you solve 1 contributes 33% for that task, not a full solve.
-            </p>
-          </div>
         </CardContent>
       </Card>
     </div>
