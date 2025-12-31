@@ -15,6 +15,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
+import { formatUsdLocale } from '@shared/utils/formatters';
 
 type DiscoverResponse = {
   totalRemote: number;
@@ -102,36 +103,26 @@ export default function AdminOpenRouter() {
   const [maxInputCost, setMaxInputCost] = React.useState('');
   const [maxOutputCost, setMaxOutputCost] = React.useState('5.0');
 
-  const formatUsdPerM = (value?: number | null): string | null => {
-    if (value == null) return null;
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    }).format(value);
-  };
-
   const renderPricing = (model: DiscoverResponse['newModels'][number]) => {
-    const input = formatUsdPerM(model.inputCostPerM);
-    const output = formatUsdPerM(model.outputCostPerM);
-    if (!input && !output) return 'N/A';
+    const input = formatUsdLocale(model.inputCostPerM, 2);
+    const output = formatUsdLocale(model.outputCostPerM, 2);
+    if (input === 'N/A' && output === 'N/A') return 'N/A';
     return (
       <div className="flex flex-col text-xs text-muted-foreground">
-        {input && <span>In: {input}/M</span>}
-        {output && <span>Out: {output}/M</span>}
+        {input !== 'N/A' && <span>In: {input}/M</span>}
+        {output !== 'N/A' && <span>Out: {output}/M</span>}
       </div>
     );
   };
 
   const renderCatalogPricing = (model: CatalogModel) => {
-    const input = formatUsdPerM(model.inputCostPerM ?? null);
-    const output = formatUsdPerM(model.outputCostPerM ?? null);
-    if (!input && !output) return 'N/A';
+    const input = formatUsdLocale(model.inputCostPerM ?? null, 2);
+    const output = formatUsdLocale(model.outputCostPerM ?? null, 2);
+    if (input === 'N/A' && output === 'N/A') return 'N/A';
     return (
       <div className="flex flex-col text-xs text-muted-foreground">
-        {input && <span>In: {input}/M</span>}
-        {output && <span>Out: {output}/M</span>}
+        {input !== 'N/A' && <span>In: {input}/M</span>}
+        {output !== 'N/A' && <span>Out: {output}/M</span>}
       </div>
     );
   };
