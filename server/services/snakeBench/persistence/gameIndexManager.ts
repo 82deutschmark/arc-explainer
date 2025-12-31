@@ -12,6 +12,7 @@ import { logger } from '../../../utils/logger.ts';
 import { GAME_INDEX_FILENAME } from '../utils/constants.ts';
 
 export interface GameIndexEntry {
+  // Canonical snake_case properties written to disk
   game_id: string;
   filename: string;
   start_time: string;
@@ -20,6 +21,15 @@ export interface GameIndexEntry {
   actual_rounds: number;
   model_a: string;
   model_b: string;
+
+  // Optional camelCase aliases for legacy rows (ts-node scripts wrote camelCase prior to 2024)
+  gameId?: string;
+  startTime?: string;
+  endTime?: string;
+  totalScore?: number;
+  actualRounds?: number;
+  modelA?: string;
+  modelB?: string;
 }
 
 export class GameIndexManager {

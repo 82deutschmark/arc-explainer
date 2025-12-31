@@ -1,9 +1,10 @@
 /**
- * Author: Claude Code using Haiku 4.5
- * Date: 2025-12-19
+ * Author: Claude Code using Haiku 4.5 (updated by Cascade)
+ * Date: 2025-12-30
  * PURPOSE: Thin orchestrator facade for SnakeBench service.
  *          Delegates to specialized modules: MatchRunner, StreamingRunner, ReplayResolver, etc.
  *          Maintains backward compatibility (all 19 public methods with original signatures).
+ *          2025-12-30 update: Fixed relative imports, shared type resolution, and OpenRouter model typing.
  * SRP/DRY check: Pass — pure delegation, orchestration only. All implementation in focused modules.
  */
 
@@ -23,11 +24,12 @@ import type {
   SnakeBenchMatchSearchRow,
   WormArenaStreamStatus,
   WormArenaFrameEvent,
-} from '../shared/types.js';
-import { repositoryService } from './RepositoryService.ts';
+} from '../../shared/types.js';
+import { repositoryService } from '../repositories/RepositoryService.ts';
 import { snakeBenchIngestQueue } from './snakeBenchIngestQueue.ts';
 import { CURATED_WORM_ARENA_HALL_OF_FAME } from './snakeBenchHallOfFame.ts';
-import { logger } from './utils/logger.ts';
+import { logger } from '../utils/logger.ts';
+import { MODELS } from '../config/models.ts';
 
 // Import from new modules
 import { SnakeBenchMatchRunner } from './snakeBench/SnakeBenchMatchRunner.ts';
@@ -283,11 +285,11 @@ class SnakeBenchService {
     const leaderboard = await this.getTrueSkillLeaderboard(150, safeMinGames);
     const pairingHistory = await repositoryService.leaderboard.getPairingHistory();
 
-    // Filter to only approved OpenRouter models
-    const approvedModels = new Set(
-      require('./config/models.ts').MODELS.filter((m: any) => m.provider === 'OpenRouter' && !m.premium).map(
-        (m: any) => m.apiModelName || m.key
-      )
+    // Filter to only approved OpenRouter models (explicitly type to keep Set<string>)
+    const approvedModels = new Set<string>(
+      MODELS.filter(
+        (model) => model.provider === 'OpenRouter' && !model.premium
+      ).map((model) => model.apiModelName || model.key)
     );
 
     return suggestMatchups(mode, safeLimit, safeMinGames, leaderboard, pairingHistory, approvedModels);
@@ -343,4 +345,4 @@ class SnakeBenchService {
 }
 
 export const snakeBenchService = new SnakeBenchService();
-export type { SnakeBenchRunMatchRequest, SnakeBenchRunMatchResult } from '../shared/types.js';
+export type { SnakeBenchRunMatchRequest, SnakeBenchRunMatchResult } from '../../shared/types.js';

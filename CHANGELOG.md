@@ -1,5 +1,224 @@
 # New entries at the top, use proper SemVer!
 
+### Version 6.16.19  Dec 30, 2025
+
+- **Tooling: Added local npm script for build+dev combo** (Author: Cascade)
+  - Added `local` npm script so `npm run local` executes a production build followed by the dev server for a single-command local run loop.
+
+### Version 6.16.18  Dec 30, 2025
+
+- **TypeScript compile fixes for ARC3 Spoiler + SnakeBench service** (Author: Cascade)
+  - Annotated all callback parameters in `Arc3GameSpoiler.tsx` so `noImplicitAny` stays satisfied.
+  - Corrected `frameUnpacker.ts` predicate signature to align with the union it narrows.
+  - Patched `snakeBench.ts` to use the right shared-type import paths, new `MODELS` helper, and a typed OpenRouter allowlist Set.
+  - Extended `GameIndexEntry` with optional camelCase properties for legacy rows so filename lookups stay typed.
+  - Result: `npm run check` now passes with zero TypeScript errors.
+
+### Version 6.16.17  Dec 30, 2025
+
+- **Model Insights Dashboard Enhancement: Real TrueSkill Metrics and Visualizations** (Author: Claude Code using Opus 4.5)
+  - **Part 1 - Header Bar Badges (WormArenaModels.tsx)**:
+    - Removed fake StreakBadge component and calculateStreak function
+    - Added useWormArenaTrueSkillLeaderboard hook for real TrueSkill rankings
+    - Display 5 real TrueSkill metric badges:
+      - Rank (amber) - actual leaderboard position, not array index
+      - Skill mu (blue) - skill estimate value
+      - Uncertainty sigma (green/gray) - stability indicator (<3 = stable)
+      - Win Rate (emerald) - calculated from decided games
+      - Placement progress (green/yellow) - games played toward 9-game placement
+  - **Part 2 - Report Visualizations (WormArenaModelInsightsReport.tsx)**:
+    - Added TrueSkill metrics visualization after timestamp using WormArenaSkillMetrics
+    - Added Skill Comparison accordion with bell curve chart vs toughest opponent
+    - Added Game Length Distribution accordion filtered to current model only
+    - Wired up useWormArenaTrueSkillLeaderboard for opponent TrueSkill lookup
+    - Pre-filter distribution data to show only selected model
+  - **Files Modified**:
+    - `client/src/pages/WormArenaModels.tsx` (86 additions, 98 deletions)
+    - `client/src/components/wormArena/WormArenaModelInsightsReport.tsx` (103 additions, 3 deletions)
+
+### Version 6.16.16  Dec 30, 2025
+
+- **Distributions Page: Min-Rounds Filtering and Chart Enhancements** (Author: Gemini 3 Flash High, bugfix by Claude Code using Opus 4.5)
+  - **Page Controls (WormArenaDistributions.tsx)**:
+    - Added slider for minimum rounds threshold (default 50, range 0-120)
+    - Added toggle to include/exclude models without games at threshold
+    - Forwarded minRounds and includeLowModels props to chart component
+  - **Chart Updates (WormArenaRunLengthChart.tsx)**:
+    - Added minRounds bucketing - games below threshold grouped into "<N" bucket
+    - Default inclusion: only models with games >= minRounds shown by default
+    - Optional inclusion of low-round-only models via toggle
+    - Click-to-detail on bars shows round-specific breakdown
+    - **Bugfix**: Fixed ModelFilterPopover referencing out-of-scope `modelPool` variable (changed to `allModels` prop)
+  - **Files Modified**:
+    - `client/src/pages/WormArenaDistributions.tsx`
+    - `client/src/components/wormArena/stats/WormArenaRunLengthChart.tsx`
+
+### Version 6.16.15  Dec 30, 2025
+
+- **UI: Fixed Worm Arena Match Card layout and model name truncation** (Author: Cascade)
+  - Removed "Champion" and "Challenger" labels from `WormArenaMatchCard` to save horizontal space.
+  - Removed truncation from model names in `WormArenaMatchCard` to ensure full slugs are visible.
+  - Improved layout flow for long model names in "Greatest Hits" and search results.
+  - **Files Modified**:
+    - `client/src/components/wormArena/WormArenaMatchCard.tsx`
+    - `client/src/components/WormArenaGreatestHits.tsx` (header update)
+
+### Version 6.16.14  Dec 30, 2025
+
+- **Enhanced Run Length Distribution Chart with Interactive Filtering and Metrics** (Author: Cascade)
+  - **Phase I - Interactive Model Filtering**:
+    - Added searchable multi-select filter popover with "Select All" / "Clear All" buttons
+    - All models shown by default - chart remains fully populated on load
+    - Filter badge shows "X of Y models" when filtering is active
+    - Clear affordance with "Tip:" message showing users they can filter
+  - **Phase II - Enhanced Chart Interactivity**:
+    - Clickable legend items: click to toggle visibility, Shift+click to solo a model
+    - Bar hover highlighting: hovering a model dims all other models (opacity 0.25)
+    - Enhanced tooltip showing win rate %, % of model's total games, and comparison to average
+  - **Phase III - View Mode Toggle and Reference Lines**:
+    - Three-mode toggle: Count (default stacked bars), Win Rate (line overlay), Cumulative (% completed by round)
+    - Global average reference line (dashed) always visible
+    - Selected model average reference line when single model filtered
+  - **Technical Changes**:
+    - Migrated from `BarChart` to `ComposedChart` for line overlay support
+    - Added `ReferenceLine` component for average markers
+    - Expanded color palette from 8 to 12 colors for better model differentiation
+  - **Files Modified**:
+    - `client/src/components/wormArena/stats/WormArenaRunLengthChart.tsx` (complete rewrite, 856 lines)
+  - **Files Added**:
+    - `docs/plans/2025-12-30-run-length-chart-enhancements-plan.md` (implementation plan)
+  - **Impact**: Significantly improved data exploration UX while maintaining backward compatibility
+
+### Version 6.16.13  Dec 30, 2025
+
+- **Streaming: Default enablement + OpenAI handler flags** (Author: Cascade - ChatGPT)
+  - Guarded puzzle fetch in `analysisStreamService` so streaming proceeds even when puzzles are unavailable in test harnesses; validation now skips when puzzle is missing.
+  - For non-streaming models, emit `STREAMING_UNAVAILABLE` instead of falling back, matching tests and intent.
+  - OpenAI streaming `json.done` events now include `expectingJson` and `fallback` flags alongside metadata.
+  - **Tests:** `analysisStreamService.test.ts`, `analysisStreamService.streaming.test.ts`, `openaiStreamingHandlers.test.ts`.
+  - **Files Modified:** `server/services/streaming/analysisStreamService.ts`, `server/services/openai/streaming.ts`.
+
+### Version 6.16.12  Dec 30, 2025
+
+- **UI Polish: Model Insights Report Text Sizing and Twitter Share Improvements** (Author: Claude Sonnet 4)
+  - **Text Size Adjustments**:
+    - Reduced title from `text-5xl` to `text-2xl` (was too dominant)
+    - Increased main summary insight text from `text-sm` to `text-base` (more readable)
+    - Made subtitle smaller and muted for visual hierarchy
+  - **Button Improvements**:
+    - Reduced button gap from `gap-3` to `gap-1` (tighter grouping)
+    - Changed to smaller `size="sm"` buttons with shorter labels (Copy, Save .md, Share on X)
+    - Added dark styling for Share on X button (`bg-black text-white`)
+  - **Twitter/X Share Updates**:
+    - Changed hashtag from #WormArena to #SnakeBench
+    - Added @arcprize mention and #arcagi3 hashtag
+    - Included model page URL in tweet for easy navigation
+    - Updated character limit from 260 to 280 (X's current limit)
+  - **Files Modified**:
+    - `client/src/components/wormArena/WormArenaModelInsightsReport.tsx` (UI styling)
+    - `server/services/wormArena/WormArenaReportService.ts` (tweet format)
+  - **Impact**: Improved visual hierarchy, more compact buttons, better Twitter engagement with proper hashtags and attribution
+
+### Version 6.16.11  Dec 30, 2025
+
+- **DRY: Consolidate Specialized Formatters to Shared Utilities** (Author: Claude Sonnet 4.5)
+  - **New Shared Formatters**:
+    - Added `formatCostSmart()` to `shared/utils/formatters.ts` - Smart unit conversion for very small costs (millicents/cents/dollars)
+    - Added `formatUsdLocale()` to `shared/utils/formatters.ts` - Locale-aware Intl.NumberFormat currency formatting
+    - Both include comprehensive JSDoc with examples and parameter descriptions
+  - **Eliminated Duplicate Code**:
+    - Removed local `formatCost` from `ModelComparisonPage.tsx:380-391` (12 lines) → replaced with `formatCostSmart` (2 call sites)
+    - Removed local `formatUsdPerM` from `AdminOpenRouter.tsx:105-113` (9 lines) → replaced with `formatUsdLocale` (4 call sites)
+  - **Behavior Improvements**:
+    - AdminOpenRouter now shows 'N/A' instead of null for missing pricing (consistent with shared formatter pattern)
+    - Updated conditional checks from `!value` to `value === 'N/A'` for explicit null handling
+  - **Intentionally Kept Local**:
+    - Simple 2-4 decimal formatters in BeetreeSolver, Leaderboards, PoetiqSolver remain local (context-specific variations)
+  - **Files Modified**:
+    - `shared/utils/formatters.ts` (added formatCostSmart, formatUsdLocale with JSDoc)
+    - `client/src/pages/ModelComparisonPage.tsx:27,380-391,712,716` (import shared formatter, remove local, update usages)
+    - `client/src/pages/AdminOpenRouter.tsx:18,106-113,107-109,112-113,119-121,124-125` (import shared formatter, remove local, update conditional checks)
+  - **Impact**: Reduced formatter duplication, centralized specialized logic, maintained backward compatibility
+
+### Version 6.16.10  Dec 30, 2025
+
+- **Build Fix: Resolved Missing Import Path for Shared Formatters** (Author: Claude Sonnet 4.5)
+  - **Critical Build Failure Fix**:
+    - Fixed broken import path in `WormArenaModelInsightsReport.tsx` that was preventing production build
+    - Changed import from non-existent `@/lib/utils/formatters` to correct `@shared/utils/formatters`
+    - Added missing shadcn/ui component imports (Card, Button, Separator, Accordion, Table, Badge)
+    - Added missing TypeScript interface `WormArenaModelInsightsReportProps`
+  - **Root Cause**:
+    - Previous assistant moved formatters to shared folder but failed to update import path in component
+    - Missing component imports and type definition prevented build from completing
+  - **Files Modified**:
+    - `client/src/components/wormArena/WormArenaModelInsightsReport.tsx` (fixed import paths, added missing imports and types)
+  - **Impact**: Production build now succeeds, resolving deployment blocker to staging environment
+
+### Version 6.16.9  Dec 29, 2025
+
+- **Code Quality: Fixed Critical Maintainability Issues in Worm Arena Refactor** (Author: Claude Sonnet 4.5)
+  - **Critical Bug Fixes**:
+    - Fixed catch block bug in `WormArenaReportService.ts:60-66` that was injecting duplicate performance metrics into markdown output instead of handling JSON parse errors properly.
+    - Removed excessive `as any` type assertions - reduced from double-cast `(as any) as any` to single cast with explanatory comments.
+    - Fixed parse-and-discard logic in `requestInsightsSummary` - removed pointless JSON.parse that validated then discarded the result.
+  - **DRY Improvements**:
+    - Created `SQL_TRUESKILL_EXPOSED()` helper in `snakebenchSqlHelpers.ts` to consolidate TrueSkill formula `COALESCE(trueskill_exposed, trueskill_mu - 3 * trueskill_sigma)`.
+    - Updated `AnalyticsRepository.ts` and `LeaderboardRepository.ts` to use shared helper, eliminating formula duplication.
+  - **Documentation**:
+    - Added comprehensive error handling strategy documentation to `WormArenaReportService` class explaining when to throw vs return null.
+    - Added JSDoc for `SQL_TRUESKILL_EXPOSED` explaining the conservative skill estimate formula.
+  - **Cleanup**:
+    - Removed unused `WormArenaModelInsightsLLMOutput` import.
+    - Removed unnecessary `await` on stream initialization.
+  - **Files Modified**:
+    - `server/services/wormArena/WormArenaReportService.ts` (bug fixes, type safety, error handling docs)
+    - `server/repositories/snakebenchSqlHelpers.ts` (new SQL_TRUESKILL_EXPOSED helper)
+    - `server/repositories/AnalyticsRepository.ts` (use shared TrueSkill helper)
+    - `server/repositories/LeaderboardRepository.ts` (use shared TrueSkill helper)
+  - **Impact**: Eliminated production-breaking bug, improved code readability, reduced technical debt for future developers.
+
+### Version 6.16.8  Dec 30, 2025
+
+- **Insights: Enhanced Performance Metrics & UI Consistency** (Author: Cascade)
+  - **Metric Expansion**:
+    - Added p25 (25th percentile) score calculation to `AnalyticsRepository.ts` for full quartile analysis (p25, p50, p75).
+    - Integrated leaderboard rank and total model count into model insights reports.
+  - **UI/UX Polish**:
+    - Updated `WormArenaModelInsightsReport.tsx` to display 'Rank X of Y' in summary tiles.
+    - Integrated full score distribution (avg, p25, p50, p75) into the Cost and Efficiency section.
+    - Cleaned up stale local formatting helpers in favor of centralized `shared/utils/formatters.ts`.
+    - Switched UI to use `formatUsd` for currency consistency.
+  - **Code Quality**:
+    - Consolidated streaming report finalization in `WormArenaReportService.ts` to use `buildReportObject` as a single source of truth.
+    - Standardized all 7 modified file headers to strictly comply with `AGENTS.md` (Author/Date/PURPOSE/SRP-DRY).
+    - Verified clean delegation in `snakeBenchService.ts` as a thin facade.
+  - **Files Modified**: 
+    - `server/repositories/AnalyticsRepository.ts`
+    - `server/services/wormArena/WormArenaReportService.ts`
+    - `server/services/prompts/wormArenaInsights.ts`
+    - `server/services/snakeBenchService.ts`
+    - `client/src/components/wormArena/WormArenaModelInsightsReport.tsx`
+    - `shared/utils/formatters.ts`
+    - `shared/types.ts`
+
+### Version 6.16.7  Dec 29, 2025
+
+- **Architecture: Refactored SnakeBenchService & Fixed Responses API Conflicts** (Author: Cascade)
+  - **SRP Refactor**: 
+    - Extracted prompt building logic to `server/services/prompts/wormArenaInsights.ts`.
+    - Extracted report generation and LLM orchestration to `server/services/wormArena/WormArenaReportService.ts`.
+    - Reduced `snakeBenchService.ts` size by ~50%, transforming it into a clean delegation facade.
+  - **Responses API Fix**: 
+    - Resolved conflicting instructions in the model insights payload.
+    - Separated narrative instructions (commentator style) from data context in the user prompt.
+    - Aligned payload with `json_schema` requirements for more reliable structured output.
+  - **Insights Audit Enhancement**: 
+    - Updated `AnalyticsRepository.ts` to include missing metrics (ties, unknown losses) in the insights summary.
+    - Enhanced prompts to include leaderboard rank and detailed cost efficiency metrics (cost per game/win/loss).
+  - **Files Created**: `server/services/prompts/wormArenaInsights.ts`, `server/services/wormArena/WormArenaReportService.ts`, `docs/plans/2025-12-29-worm-arena-refactor-plan.md`
+  - **Files Modified**: `server/services/snakeBenchService.ts`, `server/repositories/AnalyticsRepository.ts`
+
 ### Version 6.16.6  Dec 29, 2025
 
 - **Worm Arena Model Insights: Streaming fixes, loading state, and UI polish** (Author: Claude Code using Haiku)

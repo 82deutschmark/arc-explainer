@@ -1,9 +1,10 @@
 /**
- * Author: Gemini 3 Flash High
- * Date: 2025-12-28
+ * Author: Cascade
+ * Date: 2025-12-30
  * PURPOSE: A reusable, compact card for displaying Worm Arena matches.
  *          Unifies the design between "Greatest Hits" and "Search Results"
  *          while minimizing wasted vertical space.
+ *          Updated to remove "Champion/Challenger" labels and prevent model name truncation.
  * SRP/DRY check: Pass - Single responsibility for match display, reused across pages.
  */
 
@@ -87,14 +88,12 @@ export default function WormArenaMatchCard(props: MatchCardProps) {
       {/* Left side: Models and Badges */}
       <div className="flex-1 min-w-0 space-y-1">
         <div className="flex flex-col sm:flex-row sm:items-baseline gap-x-2 gap-y-0.5">
-          <div className="font-mono text-[11px] font-bold truncate flex items-center gap-1" title={modelA}>
-            <span className="worm-muted font-normal text-[10px] uppercase tracking-wider">Champion:</span>
-            <span className="truncate">{modelA}</span>
+          <div className="font-mono text-[11px] font-bold flex items-center gap-1" title={modelA}>
+            <span>{modelA}</span>
           </div>
           <span className="hidden sm:inline text-[10px] text-worm-muted">vs</span>
-          <div className="font-mono text-[11px] font-bold truncate flex items-center gap-1" title={modelB}>
-            <span className="worm-muted font-normal text-[10px] uppercase tracking-wider">Challenger:</span>
-            <span className="truncate">{modelB}</span>
+          <div className="font-mono text-[11px] font-bold flex items-center gap-1" title={modelB}>
+            <span>{modelB}</span>
           </div>
         </div>
 
