@@ -40,7 +40,7 @@ export function GenerationSection({ numTasks }: GenerationSectionProps) {
       });
 
       if (!response.ok) {
-        throw new Error(`Generation failed: ${response.statusText}`);
+        throw new Error(`Unable to generate dataset. The server returned an error: ${response.statusText}`);
       }
 
       // Extract filename from Content-Disposition header
@@ -51,7 +51,7 @@ export function GenerationSection({ numTasks }: GenerationSectionProps) {
       // Stream the response and track progress by counting newlines
       const reader = response.body?.getReader();
       if (!reader) {
-        throw new Error('No response body');
+        throw new Error('Dataset generation failed. The server response was incomplete. Please try again.');
       }
 
       const decoder = new TextDecoder();
@@ -89,9 +89,20 @@ export function GenerationSection({ numTasks }: GenerationSectionProps) {
       // Transition to completed phase
       setPhase({ phase: 'completed' });
     } catch (err) {
+      let errorMessage = 'Unknown error occurred';
+
+      if (err instanceof Error) {
+        // Handle common network/fetch errors with user-friendly messages
+        if (err.message === 'Failed to fetch' || err.message.toLowerCase().includes('network')) {
+          errorMessage = 'Unable to connect to the server. Please check your internet connection and try again.';
+        } else {
+          errorMessage = err.message;
+        }
+      }
+
       setPhase({
         phase: 'error',
-        message: err instanceof Error ? err.message : 'Unknown error occurred',
+        message: errorMessage,
       });
     }
   }, []);
