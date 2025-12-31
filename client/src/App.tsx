@@ -135,7 +135,7 @@ function Router() {
             See docs/reference/frontend/DEV_ROUTES.md for pattern guide */}
         {import.meta.env.DEV && (
           <>
-            <Route path="/dev/rearc/error-display" component={ReArcErrorShowcase} />
+            <Route path="/dev/re-arc/error-display" component={ReArcErrorShowcase} />
           </>
         )}
 
