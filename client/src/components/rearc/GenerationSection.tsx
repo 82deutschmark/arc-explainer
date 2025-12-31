@@ -40,6 +40,9 @@ export function GenerationSection({ numTasks }: GenerationSectionProps) {
       });
 
       if (!response.ok) {
+        if (response.status === 429) {
+          throw new Error('Too many generation requests. Please wait a moment before trying again.');
+        }
         throw new Error(`Unable to generate dataset. The server returned an error: ${response.statusText}`);
       }
 
