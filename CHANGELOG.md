@@ -1,5 +1,30 @@
 # New entries at the top, use proper SemVer!
 
+### Version 6.18.2  Dec 31, 2025
+
+- **RE-ARC Leaderboard: Clarity & Verification Improvements** (Author: Claude Haiku 4.5)
+  - **What**: Addressed collaborator feedback to improve leaderboard messaging and reduce confusion about data legitimacy
+  - **Why**: Previous "Community-verified" subtitle was misleading; helper UI elements added noise; needed clear disclaimers about unverified submissions
+  - **How**:
+    - Changed subtitle from "Community-verified ARC solver rankings" → "RE-ARC solver results" (removes false implication of verification)
+    - Removed redundant "View:" label from view toggle
+    - Conditional display: "Sort by" dropdown now only shows in table view (not in efficiency plot where sorting doesn't apply)
+    - Added elapsed time explanation in both table and plot views
+    - Added prominent "About This Leaderboard" disclaimer card (amber-styled):
+      - Clarifies submissions are self-reported and unverified
+      - Explains comparisons are unreliable due to different approaches/resources/optimizations
+      - Frames leaderboard as experimental/exploratory for research purposes
+      - Encourages critical evaluation of all claims
+    - **Efficiency Plot improvements**:
+      - Removed confusing "Submissions" legend dot
+      - Removed quadrant helper boxes ("top-left ideal", etc.) - users with data viz literacy don't need them
+      - Implemented log scale for X-axis with 5-minute minimum (clamps faster submissions to prevent visualization compression)
+      - Implemented dynamic Y-axis scaling to highest score (instead of fixed 0-100)
+      - Added explanation of log scale and elapsed time below chart
+  - **Files Modified**:
+    - `client/src/pages/ReArcLeaderboard.tsx`: Subtitle, view toggle label, conditional sort controls, elapsed time description, disclaimer section
+    - `client/src/components/rearc/EfficiencyPlot.tsx`: Removed Legend import/component, removed helper boxes grid, added dynamic axis scaling (log X, dynamic Y), added description text
+
 ### Version 6.18.1  Dec 31, 2025
 
 - **RE-ARC UI Refinement: Analysis-First Leaderboard** (Author: Claude Haiku 4.5)
