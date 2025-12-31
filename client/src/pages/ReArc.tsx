@@ -52,7 +52,7 @@ export default function ReArc() {
         <div className="flex items-center gap-4 mb-4">
           <Link href="/re-arc/leaderboard">
             <Button variant="outline" size="sm">
-              Leaderboard
+              View Submissions
             </Button>
           </Link>
         </div>
