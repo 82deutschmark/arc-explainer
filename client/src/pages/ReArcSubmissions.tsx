@@ -1,12 +1,12 @@
 /**
- * ReArcLeaderboard.tsx
+ * ReArcSubmissions.tsx
  *
  * Author: Claude Opus 4.5
  * Date: 2025-12-30
- * PURPOSE: Submission board page for RE-ARC.
- *          Shows list of solver submissions with scores and timestamps.
+ * PURPOSE: Displays RE-ARC evaluation submissions with scores and timestamps.
  *          Supports sorting by score or recency; visualization options (table/efficiency plot).
- * SRP/DRY check: Pass - Single responsibility: RE-ARC submission board display
+ *          Not publicly linked - exists for reviewing recorded evaluations.
+ * SRP/DRY check: Pass - Single responsibility: RE-ARC submission display
  */
 
 import { useState } from 'react';
@@ -83,7 +83,7 @@ function formatElapsedTime(ms: number): string {
 }
 
 
-export default function ReArcLeaderboard() {
+export default function ReArcSubmissions() {
   const [sort, setSort] = useState<SortOption>('score');
   const [page, setPage] = useState(0);
   const [view, setView] = useState<'table' | 'plot'>('plot');
@@ -116,9 +116,6 @@ export default function ReArcLeaderboard() {
         </Link>
 
         <h1 className="text-3xl font-bold">RE-ARC Submissions</h1>
-        <p className="text-muted-foreground">
-          Community solver results
-        </p>
       </div>
 
       {/* Controls */}
@@ -179,13 +176,13 @@ export default function ReArcLeaderboard() {
         </CardContent>
       </Card>
 
-      {/* Leaderboard Content */}
+      {/* Submissions Content */}
       <Card>
         <CardHeader>
-          <CardTitle>{view === 'table' ? 'Rankings' : 'Efficiency Analysis'}</CardTitle>
+          <CardTitle>{view === 'table' ? 'Submissions' : 'Efficiency Analysis'}</CardTitle>
           <CardDescription>
             {view === 'table'
-              ? 'Submit your own solution to join the leaderboard'
+              ? 'Recorded evaluation results'
               : 'Score vs elapsed time visualization'}
           </CardDescription>
         </CardHeader>
@@ -198,16 +195,13 @@ export default function ReArcLeaderboard() {
 
           {error && (
             <div className="text-center py-12 text-destructive">
-              Failed to load leaderboard. Please try again.
+              Failed to load submissions. Please try again.
             </div>
           )}
 
           {data && data.submissions.length === 0 && (
             <div className="text-center py-12 text-muted-foreground">
-              <p>No submissions yet. Be the first!</p>
-              <Link href="/re-arc">
-                <Button className="mt-4">Submit Your Solution</Button>
-              </Link>
+              <p>No evaluations recorded yet.</p>
             </div>
           )}
 
@@ -320,24 +314,23 @@ export default function ReArcLeaderboard() {
         </CardHeader>
         <CardContent className="space-y-3 text-sm">
           <div>
-            <p className="font-semibold text-foreground mb-2">⚠️ Key Limitations</p>
+            <p className="font-semibold text-foreground mb-2">Limitations</p>
             <p className="text-muted-foreground mb-2">
-              This board contains <span className="font-semibold">self-reported, unverified submissions</span>. Direct comparison between submissions is <span className="font-semibold">not reliable, not fair, and not legitimate</span>. This board is <span className="font-semibold">for community analysis and fun only</span>—not for official rankings or real-world decisions.
+              Submissions are <span className="font-semibold">self-reported and unverified</span>. Direct comparison between submissions is not reliable, not fair, and not legitimate.
             </p>
           </div>
 
           <div>
-            <p className="font-semibold text-foreground mb-2">Why This Board Has These Limitations</p>
+            <p className="font-semibold text-foreground mb-2">Why</p>
             <ul className="list-disc list-inside space-y-1 text-muted-foreground text-xs">
-              <li><span className="font-semibold">No verification:</span> Submissions are self-reported with no independent verification infrastructure. Solvers could make honest mistakes or intentionally misrepresent results.</li>
-              <li><span className="font-semibold">Unfair comparison:</span> Solvers have different computational resources, optimization budgets, code maturity levels, and specialized techniques. Some may spend hours; others minutes.</li>
-              <li><span className="font-semibold">No legitimacy guarantees:</span> There's no way to verify that results are honest, that submissions used the datasets correctly, or that solving methods are legitimate.</li>
-              <li><span className="font-semibold">Community-driven:</span> This is an exploratory effort to showcase diverse approaches, not an official competition or benchmark with rigorous standards.</li>
+              <li><span className="font-semibold">No verification:</span> Results are self-reported. Solvers could make honest mistakes or misrepresent results.</li>
+              <li><span className="font-semibold">Unfair comparison:</span> Solvers have different computational resources, optimization budgets, and techniques.</li>
+              <li><span className="font-semibold">No legitimacy guarantees:</span> There's no way to verify that results are honest or that solving methods are legitimate.</li>
             </ul>
           </div>
 
           <p className="text-muted-foreground">
-            Use this board to explore different solving strategies, learn from the community, and have fun. <span className="font-semibold">Don't use it to draw conclusions about solver quality or for any real-world decision-making.</span> Always verify claims independently.
+            <span className="font-semibold">Don't use this data to draw conclusions about solver quality.</span> Verify claims independently.
           </p>
         </CardContent>
       </Card>

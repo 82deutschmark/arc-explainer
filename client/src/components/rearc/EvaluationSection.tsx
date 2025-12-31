@@ -1,11 +1,11 @@
 /**
  * EvaluationSection.tsx
  *
- * Author: Claude Code using Sonnet 4.5 (updated by Claude Opus 4.5)
- * Date: 2025-12-28 (updated 2025-12-31 for terminal layout)
+ * Author: Claude Opus 4.5
+ * Date: 2025-12-31
  * PURPOSE: Submission evaluation section for RE-ARC page.
  *          Orchestrates file upload, validation, SSE streaming, and result display.
- *          Saves results to submission board with solver name.
+ *          Auto-saves evaluations to backend. Optional label input for user reference.
  *          Supports compact mode for dense layouts.
  * SRP/DRY check: Pass - Single responsibility: submission evaluation orchestration
  */
@@ -16,8 +16,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Upload, CheckCircle2, XCircle, Loader2, Shuffle, ExternalLink } from 'lucide-react';
-import { Link } from 'wouter';
+import { Upload, CheckCircle2, XCircle, Loader2, Shuffle } from 'lucide-react';
 import type { ARCSubmission, ReArcSSEEvent } from '@shared/types';
 import { validateSubmission } from '@/utils/arcSubmissionValidator';
 import { parseSSEEvents, SSEParseError } from '@/utils/sseParser';
@@ -94,9 +93,7 @@ export function EvaluationSection({ numTasks, compact = false }: EvaluationSecti
   const [phase, setPhase] = useState<EvaluationPhase>({ type: 'idle' });
   const [isDragging, setIsDragging] = useState(false);
   const [solverName, setSolverName] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [hasSubmitted, setHasSubmitted] = useState(false);
-  const [currentSubmission, setCurrentSubmission] = useState<ARCSubmission | null>(null);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -104,40 +101,14 @@ export function EvaluationSection({ numTasks, compact = false }: EvaluationSecti
     setSolverName(generateRandomName());
   }, []);
 
-  const handleSubmitToLeaderboard = useCallback(
-    async (submission: ARCSubmission) => {
-      setIsSubmitting(true);
-      try {
-        const response = await fetch('/api/rearc/submit', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            submission,
-            solverName: solverName.trim() || undefined,
-          }),
-        });
-
-        if (!response.ok) {
-          throw new Error('Failed to submit to leaderboard');
-        }
-
-        setHasSubmitted(true);
-      } catch (err) {
-        console.error('Leaderboard submission error:', err);
-        alert('Failed to submit to leaderboard. Please try again.');
-      } finally {
-        setIsSubmitting(false);
-      }
-    },
-    [solverName]
-  );
+  // Ref to capture current solverName at submit time (avoids stale closure)
+  const solverNameRef = useRef(solverName);
+  solverNameRef.current = solverName;
 
   const handleFileUpload = useCallback(
     async (file: File) => {
       // Reset submission state
-      setCurrentSubmission(null);
       setHasSubmitted(false);
-      setSolverName('');
 
       // Phase 1: Start uploading
       setPhase({ type: 'uploading', fileName: file.name, progress: null });
@@ -282,9 +253,6 @@ export function EvaluationSection({ numTasks, compact = false }: EvaluationSecti
                         matchingSubmissions?: MatchingSubmission[];
                       };
 
-                      // Store submission for later leaderboard submission
-                      setCurrentSubmission(submission);
-
                       setPhase({
                         type: 'success',
                         fileName: file.name,
@@ -295,6 +263,26 @@ export function EvaluationSection({ numTasks, compact = false }: EvaluationSecti
                           matchingSubmissions: data.matchingSubmissions ?? [],
                         },
                       });
+
+                      // Auto-submit evaluation to backend (with optional label if user entered one)
+                      if (data.score > 0) {
+                        fetch('/api/rearc/submit', {
+                          method: 'POST',
+                          headers: { 'Content-Type': 'application/json' },
+                          body: JSON.stringify({
+                            submission,
+                            solverName: solverNameRef.current.trim() || undefined,
+                          }),
+                        })
+                          .then((res) => {
+                            if (res.ok) {
+                              setHasSubmitted(true);
+                            }
+                          })
+                          .catch((err) => {
+                            console.error('Auto-save error:', err);
+                          });
+                      }
                     } else if (event.data.type === 'mismatches') {
                       // Failed due to prediction count mismatches
                       setPhase({
@@ -422,88 +410,11 @@ export function EvaluationSection({ numTasks, compact = false }: EvaluationSecti
             </AlertDescription>
           </Alert>
 
-          {/* Opt-in Leaderboard Submission - only show if score > 0% and not yet submitted */}
-          {phase.result.score > 0 && !hasSubmitted && currentSubmission && !compact && (
-            <Card className="border-blue-500/50">
-              <CardHeader>
-                <CardTitle className="text-base">Submit to Leaderboard (Optional)</CardTitle>
-                <CardDescription className="text-sm">
-                  Share your result for community analysis and just-for-fun benchmarking
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  {/* Matching submissions note */}
-                  {phase.result.matchingSubmissions.length > 0 && (
-                    <div className="text-sm p-2 bg-yellow-500/10 border border-yellow-500/20 rounded">
-                      <strong>Note:</strong> Matches {phase.result.matchingSubmissions.length} existing {phase.result.matchingSubmissions.length === 1 ? 'entry' : 'entries'}:
-                      <ul className="mt-1 ml-4 list-disc">
-                        {phase.result.matchingSubmissions.map((m) => (
-                          <li key={m.id}>{m.solverName} ({(m.score * 100).toFixed(2)}%)</li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
-                  <div>
-                    <Label htmlFor="leaderboard-name" className="text-sm font-medium">
-                      Your Name
-                    </Label>
-                    <div className="flex gap-2 mt-1">
-                      <Input
-                        id="leaderboard-name"
-                        type="text"
-                        placeholder="e.g., Brave Pangolin"
-                        value={solverName}
-                        onChange={(e) => setSolverName(e.target.value)}
-                        className="flex-1"
-                        maxLength={255}
-                        disabled={isSubmitting}
-                      />
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="icon"
-                        onClick={handleGenerateName}
-                        title="Generate random name"
-                        disabled={isSubmitting}
-                      >
-                        <Shuffle className="h-4 w-4" />
-                      </Button>
-                    </div>
-                    <p className="text-xs text-muted-foreground mt-1">
-                      Leave blank for a randomly generated name
-                    </p>
-                  </div>
-                  <Button
-                    onClick={() => handleSubmitToLeaderboard(currentSubmission)}
-                    disabled={isSubmitting}
-                    className="w-full"
-                  >
-                    {isSubmitting ? (
-                      <>
-                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                        Submitting...
-                      </>
-                    ) : (
-                      'Submit to Leaderboard'
-                    )}
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          )}
-
-          {/* Confirmation after submission */}
+          {/* Confirmation after auto-save */}
           {hasSubmitted && (
-            <Alert className="border-green-500 bg-green-500/10 mt-4">
-              <CheckCircle2 className="h-4 w-4 text-green-500" />
-              <AlertDescription>
-                <div className="font-semibold">Submission added to board!</div>
-                <Link href="/re-arc/leaderboard" className="text-sm text-primary hover:underline inline-flex items-center gap-1 mt-1">
-                  View submissions <ExternalLink className="h-3 w-3" />
-                </Link>
-              </AlertDescription>
-            </Alert>
+            <div className="text-xs text-muted-foreground mt-2">
+              Evaluation recorded.
+            </div>
           )}
         </div>
       )}
@@ -561,6 +472,34 @@ export function EvaluationSection({ numTasks, compact = false }: EvaluationSecti
               total={phase.progress.total}
             />
           )}
+        </div>
+      )}
+
+      {/* Optional label input - understated, only in non-compact mode */}
+      {!compact && phase.type === 'idle' && (
+        <div className="mb-4">
+          <div className="flex items-center gap-2">
+            <Input
+              type="text"
+              placeholder="Label (optional)"
+              value={solverName}
+              onChange={(e) => setSolverName(e.target.value)}
+              className="max-w-xs h-8 text-sm"
+            />
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              onClick={handleGenerateName}
+              className="h-8 px-2 text-muted-foreground hover:text-foreground"
+              title="Generate random name"
+            >
+              <Shuffle className="h-3.5 w-3.5" />
+            </Button>
+          </div>
+          <p className="text-xs text-muted-foreground mt-1">
+            Optionally label your submission for your own reference.
+          </p>
         </div>
       )}
 

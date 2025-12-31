@@ -1,5 +1,27 @@
 # New entries at the top, use proper SemVer!
 
+### Version 6.18.3  Dec 31, 2025
+
+- **RE-ARC Submissions: Remove Competitive Framing, Auto-Save Evaluations** (Author: Claude Opus 4.5)
+  - **What**: Renamed "leaderboard" to "submissions", removed public promotion, auto-save all evaluations
+  - **Why**: Previous framing was too competitive; submissions page exists for reference but is not advertised
+  - **How**:
+    - **File/Route Rename**: `ReArcLeaderboard.tsx` -> `ReArcSubmissions.tsx`, route `/re-arc/leaderboard` -> `/re-arc/submissions`
+    - **Removed public link**: No longer linking to submissions page from main RE-ARC page
+    - **Auto-save evaluations**: All evaluations with score > 0 are automatically saved (no opt-in UI)
+    - **Optional label input**: Understated input field for users to label their submissions (for their own reference)
+    - **Language cleanup**: Removed all "community" and competitive language from disclaimer and UI
+    - **Code cleanup in EvaluationSection.tsx**:
+      - Removed unused `handleSubmitToLeaderboard` function
+      - Removed unused `isSubmitting` and `currentSubmission` state
+      - Removed unused `Link` and `ExternalLink` imports
+      - Fixed solverName closure issue using ref
+  - **Files Modified**:
+    - `client/src/pages/ReArcSubmissions.tsx` (renamed from ReArcLeaderboard.tsx): Updated function name, removed subtitle, updated disclaimer to factual language
+    - `client/src/App.tsx`: Updated import and route
+    - `client/src/pages/ReArc.tsx`: Removed "View Submissions" button and unused imports
+    - `client/src/components/rearc/EvaluationSection.tsx`: Auto-save, optional label input, dead code removal, closure fix
+
 ### Version 6.18.2  Dec 31, 2025
 
 - **RE-ARC Submission Board: Non-Competitive Redesign** (Author: Claude Haiku 4.5)
