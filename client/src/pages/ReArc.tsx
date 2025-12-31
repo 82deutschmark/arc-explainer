@@ -1,13 +1,13 @@
 /**
  * ReArc.tsx
  *
- * Author: Claude Opus 4.5 (redesign)
+ * Author: Claude Opus 4.5
  * Date: 2025-12-31
  * PURPOSE: Self-service page for generating RE-ARC datasets and evaluating solver predictions.
- *          Bloomberg terminal-style dense layout for desktop users.
- *          Users can generate brand-new ARC puzzle sets and evaluate their solver predictions
- *          with proof of dataset authenticity via XOR-encoded timestamps.
- * SRP/DRY check: Pass - Single page orchestrating generation and evaluation sections
+ *          About section prominently displayed at top with full context.
+ *          Users can generate datasets, evaluate solutions, or verify existing submissions.
+ *          Reference section (Format/Scoring/Limits) with Scoring tab expanded by default.
+ * SRP/DRY check: Pass - Single page orchestrating generation, evaluation, and verification sections
  */
 
 import { useState } from "react";
@@ -21,10 +21,10 @@ import { cn } from "@/lib/utils";
 
 const NUM_TASKS = 120;
 
-type ReferenceTab = "format" | "scoring" | "about" | "limits";
+type ReferenceTab = "format" | "scoring" | "limits";
 
 export default function ReArc() {
-  const [activeTab, setActiveTab] = useState<ReferenceTab>("format");
+  const [activeTab, setActiveTab] = useState<ReferenceTab>("scoring");
 
   return (
     <div className="min-h-screen bg-background">
@@ -58,70 +58,106 @@ export default function ReArc() {
         </div>
       </div>
 
-      {/* Purpose Banner - High Contrast */}
-      <div className="border-b border-border/60 bg-card">
-        <div className="max-w-7xl mx-auto px-4 py-3">
-          <p className="text-sm leading-relaxed">
-            <span className="font-semibold text-foreground">Community benchmark for ARC solvers.</span>{" "}
-            <span className="text-foreground/80">
-              Validate solver claims without prolonged debates. Enable clean benchmarking without overfitting.
-              Verify novel approaches without waiting for official evaluations. Anyone can re-verify any submission.
-            </span>
-          </p>
-        </div>
-      </div>
+      {/* Main Content */}
+      <div className="max-w-7xl mx-auto px-4 py-6 space-y-6">
 
-      {/* Main Content - Dense Grid */}
-      <div className="max-w-7xl mx-auto px-4 py-4">
+        {/* About Section - Expanded at Top */}
+        <div className="border border-border/60 rounded overflow-hidden bg-card">
+          <div className="bg-muted/40 px-4 py-2.5 border-b border-border/60">
+            <h2 className="text-sm font-bold font-mono tracking-wide text-foreground">ABOUT RE-ARC BENCH</h2>
+          </div>
+          <div className="p-4">
+            <div className="grid grid-cols-2 gap-6">
+              <div>
+                <h3 className="text-xs font-bold font-mono text-muted-foreground mb-2">PURPOSE</h3>
+                <p className="text-sm leading-relaxed text-foreground mb-4">
+                  Community benchmark for ARC solvers. Validate solver claims without prolonged debates.
+                  Enable clean benchmarking without overfitting. Verify novel approaches without waiting
+                  for official evaluations.
+                </p>
+                <h3 className="text-xs font-bold font-mono text-muted-foreground mb-2">ORIGIN</h3>
+                <p className="text-sm text-foreground/90">
+                  RE-ARC (Reverse-Engineering the Abstraction and Reasoning Corpus) was created by
+                  Michael Hodel as a synthetic data generation framework. Each of the 400 ARC-AGI-1
+                  training tasks has a corresponding generator and verifier program.
+                </p>
+              </div>
+              <div>
+                <h3 className="text-xs font-bold font-mono text-muted-foreground mb-2">THIS BENCHMARK</h3>
+                <p className="text-sm text-foreground/90 mb-4">
+                  RE-ARC Bench is a curated 120-task evaluation set created by David Lu
+                  (<a href="https://github.com/conundrumer" target="_blank" rel="noopener noreferrer"
+                      className="text-primary hover:underline">conundrumer</a>).
+                </p>
+                <h3 className="text-xs font-bold font-mono text-muted-foreground mb-2">CONSTRUCTION</h3>
+                <ul className="space-y-1.5 text-sm text-foreground/90">
+                  <li className="flex gap-2">
+                    <span className="font-mono text-muted-foreground shrink-0">1.</span>
+                    Removed all tasks solvable by icecuber (matching ARC-AGI-2)
+                  </li>
+                  <li className="flex gap-2">
+                    <span className="font-mono text-muted-foreground shrink-0">2.</span>
+                    Selected 120 most complex tasks by verifier line count
+                  </li>
+                  <li className="flex gap-2">
+                    <span className="font-mono text-muted-foreground shrink-0">3.</span>
+                    Applied color permutations + rotation/flip transforms
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
         {/* Three-Column Action Grid */}
-        <div className="grid grid-cols-3 gap-4 mb-4">
-          <div className="border border-border/60 rounded-sm overflow-hidden">
-            <div className="bg-muted/40 px-3 py-1.5 border-b border-border/60">
-              <h2 className="text-xs font-bold font-mono tracking-wide text-muted-foreground">
+        <div className="grid grid-cols-3 gap-4">
+          <div className="border border-border/60 rounded overflow-hidden bg-card">
+            <div className="bg-muted/40 px-4 py-2.5 border-b border-border/60">
+              <h2 className="text-xs font-bold font-mono tracking-wide text-foreground">
                 01 GENERATE DATASET
               </h2>
             </div>
-            <div className="p-3">
+            <div className="p-4">
               <GenerationSection numTasks={NUM_TASKS} compact />
             </div>
           </div>
 
-          <div className="border border-border/60 rounded-sm overflow-hidden">
-            <div className="bg-muted/40 px-3 py-1.5 border-b border-border/60">
-              <h2 className="text-xs font-bold font-mono tracking-wide text-muted-foreground">
+          <div className="border border-border/60 rounded overflow-hidden bg-card">
+            <div className="bg-muted/40 px-4 py-2.5 border-b border-border/60">
+              <h2 className="text-xs font-bold font-mono tracking-wide text-foreground">
                 02 EVALUATE YOUR SOLUTION
               </h2>
             </div>
-            <div className="p-3">
+            <div className="p-4">
               <EvaluationSection numTasks={NUM_TASKS} compact />
             </div>
           </div>
 
-          <div className="border border-border/60 rounded-sm overflow-hidden">
-            <div className="bg-muted/40 px-3 py-1.5 border-b border-border/60">
-              <h2 className="text-xs font-bold font-mono tracking-wide text-muted-foreground">
+          <div className="border border-border/60 rounded overflow-hidden bg-card">
+            <div className="bg-muted/40 px-4 py-2.5 border-b border-border/60">
+              <h2 className="text-xs font-bold font-mono tracking-wide text-foreground">
                 03 VERIFY SUBMISSION
               </h2>
             </div>
-            <div className="p-3">
+            <div className="p-4">
               <VerificationSection numTasks={NUM_TASKS} compact />
             </div>
           </div>
         </div>
 
         {/* Reference Panel with Tabs */}
-        <div className="border border-border/60 rounded-sm overflow-hidden">
-          <div className="bg-muted/40 px-3 py-1.5 border-b border-border/60 flex items-center justify-between">
-            <h2 className="text-xs font-bold font-mono tracking-wide text-muted-foreground">
+        <div className="border border-border/60 rounded overflow-hidden bg-card">
+          <div className="bg-muted/40 px-4 py-2.5 border-b border-border/60 flex items-center justify-between">
+            <h2 className="text-xs font-bold font-mono tracking-wide text-foreground">
               REFERENCE
             </h2>
             <div className="flex gap-0.5">
-              {(["format", "scoring", "about", "limits"] as const).map((tab) => (
+              {(["format", "scoring", "limits"] as const).map((tab) => (
                 <button
                   key={tab}
                   onClick={() => setActiveTab(tab)}
                   className={cn(
-                    "px-2.5 py-1 text-xs font-mono transition-colors rounded-sm",
+                    "px-2.5 py-1 text-xs font-mono transition-colors rounded",
                     activeTab === tab
                       ? "bg-foreground/10 text-foreground font-medium"
                       : "text-muted-foreground hover:text-foreground hover:bg-foreground/5"
@@ -136,13 +172,12 @@ export default function ReArc() {
           <div className="p-4 text-sm">
             {activeTab === "format" && <FormatReference />}
             {activeTab === "scoring" && <ScoringReference />}
-            {activeTab === "about" && <AboutReference />}
             {activeTab === "limits" && <LimitsReference />}
           </div>
         </div>
 
         {/* Quick Start Footer */}
-        <div className="mt-4 text-xs text-muted-foreground font-mono flex items-center gap-4">
+        <div className="text-xs text-muted-foreground font-mono flex items-center gap-4">
           <span className="flex items-center gap-1">
             <ChevronRight className="h-3 w-3" />
             Generate fresh puzzles
@@ -233,47 +268,6 @@ function ScoringReference() {
           Task A: 2 inputs, 1 solved = 0.50 | Task B: 1 input, 1 solved = 1.00 |
           <span className="text-foreground font-medium"> Final: (0.50 + 1.00) / 2 = 75%</span>
         </p>
-      </div>
-    </div>
-  );
-}
-
-function AboutReference() {
-  return (
-    <div className="grid grid-cols-2 gap-6">
-      <div>
-        <h3 className="text-xs font-bold font-mono text-muted-foreground mb-2">ORIGIN</h3>
-        <p className="text-foreground/90 mb-4">
-          RE-ARC (Reverse-Engineering the Abstraction and Reasoning Corpus) was created by
-          Michael Hodel as a synthetic data generation framework. Each of the 400 ARC-AGI-1
-          training tasks has a corresponding generator and verifier program.
-        </p>
-        <h3 className="text-xs font-bold font-mono text-muted-foreground mb-2">THIS BENCHMARK</h3>
-        <p className="text-foreground/90">
-          RE-ARC Bench is a curated 120-task evaluation set created by David Lu
-          (<a href="https://github.com/conundrumer" target="_blank" rel="noopener noreferrer"
-              className="text-primary hover:underline">conundrumer</a>).
-        </p>
-      </div>
-      <div>
-        <h3 className="text-xs font-bold font-mono text-muted-foreground mb-2">CONSTRUCTION</h3>
-        <ul className="space-y-1.5 text-foreground/90">
-          <li className="flex gap-2">
-            <span className="font-mono text-muted-foreground">1.</span>
-            Removed all tasks solvable by icecuber (matching ARC-AGI-2)
-          </li>
-          <li className="flex gap-2">
-            <span className="font-mono text-muted-foreground">2.</span>
-            Selected 120 most complex tasks by verifier line count
-          </li>
-          <li className="flex gap-2">
-            <span className="font-mono text-muted-foreground">3.</span>
-            Applied color permutations + rotation/flip transforms
-          </li>
-        </ul>
-        <div className="mt-3 text-xs font-mono bg-muted/30 px-2 py-1 rounded-sm inline-block">
-          Result: 5/120 tasks solvable by verifiers | 0/120 tasks by icecuber
-        </div>
       </div>
     </div>
   );
