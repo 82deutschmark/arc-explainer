@@ -253,7 +253,7 @@ function ScoringReference() {
       <div className="border-l-2 border-foreground/20 pl-3">
         <h3 className="text-xs font-bold font-mono text-muted-foreground mb-1">PER TASK</h3>
         <p className="text-foreground">
-          Score = solved_inputs / total_inputs
+          Score = correct_outputs / total_test_pairs
         </p>
       </div>
       <div className="border-l-2 border-foreground/20 pl-3">
@@ -265,7 +265,7 @@ function ScoringReference() {
       <div className="col-span-3 bg-muted/30 p-3 rounded-sm border border-border/40">
         <h3 className="text-xs font-bold font-mono text-muted-foreground mb-1">EXAMPLE</h3>
         <p className="text-xs font-mono text-foreground/80">
-          Task A: 2 inputs, 1 solved = 0.50 | Task B: 1 input, 1 solved = 1.00 |
+          Task A: 2 test pairs, 1 correct = 0.50 | Task B: 1 test pair, 1 correct = 1.00 |
           <span className="text-foreground font-medium"> Final: (0.50 + 1.00) / 2 = 75%</span>
         </p>
       </div>
