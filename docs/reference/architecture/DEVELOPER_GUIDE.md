@@ -15,10 +15,11 @@ Welcome to the ARC Explainer project! This guide is designed to help new develop
 
 ARC Explainer is a full-stack platform for analyzing ARC puzzles, streaming live SnakeBench matches, and curating encyclopedic explanations. The React (Vite) frontend and Node.js/Express backend share a strict “database-first” contract: everything rendered in the UI must already exist in PostgreSQL so refreshes and external consumers stay consistent.
 
-The platform now spans three major domains:
+The platform now spans four major domains:
 1. **Puzzle Analysis** — single-turn solvers, Model Debate, conversation chaining, and streaming `/api/stream/analyze` runs.
 2. **SnakeBench / Worm Arena** — Real-time match orchestration, insights dashboards, placement stats, and replay streaming.
 3. **ARC3 Agent Playground** — Modular per-game resources backed by new shared `arc3Games/` registry files and real ARC-AGI-3 integrations.
+4. **RE-ARC Bench** — Self-service dataset generation and evaluation for solver validation, contributed by David Lu (@conundrumer).
 
 ### 2025 Architecture Milestones
 
@@ -31,6 +32,7 @@ The platform now spans three major domains:
 | Model Insights Dashboards | Expanded TrueSkill metrics, run-length charts, and streaming insights for Worm Arena models. | `client/src/pages/WormArenaModels.tsx`, `client/src/components/wormArena/**/*` |
 | ARC3 Modularization | `shared/arc3Games/` now stores per-game files with new replay resource type and enhanced spoilers UI. | `shared/arc3Games/index.ts`, `client/src/pages/Arc3GameSpoiler.tsx` |
 | Dataset Performance Explorer | Dynamic dataset discovery and `/api/model-dataset/*` endpoints for arbitrary model/dataset combinations. | `docs/reference/api/EXTERNAL_API.md`, `client/src/pages/ModelDatasetPerformance.tsx` |
+| RE-ARC Bench | Self-service dataset generation and evaluation platform. Stateless 120-task eval sets with XOR-based seed recovery, HMAC-SHA256 derivation, SSE streaming evaluation, and LRU caching. First major external contribution (David Lu @conundrumer). | `server/services/reArc/reArcService.ts`, `server/utils/reArcCodec.ts`, `client/src/pages/ReArc.tsx`, `docs/plans/2025-12-24-re-arc-interface-plan.md` |
 
 ## Core Philosophy: Database-First + SRP Everywhere
 
@@ -79,6 +81,7 @@ The project is organized into three main parts: `client`, `server`, and `shared`
 
 - **`data/`** — ARC datasets (training/evaluation/evaluation2/concept-arc) discovered dynamically by dataset endpoints.
 - **`external/SnakeBench/`** — Embedded SnakeBench backend/frontend for local replay analysis; referenced by replay resolvers and CLI tooling.
+- **`external/re-arc/`** — RE-ARC library (conundrumer/re-arc) for synthetic puzzle generation. Powers RE-ARC Bench dataset generation and evaluation via Python subprocess.
 - **`beetreeARC/`, `poetiq-solver/`, `solver/`** — Python solvers invoked through `pythonBridge`.
 
 ## Repository Architecture & Domain Separation

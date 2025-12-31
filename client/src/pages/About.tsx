@@ -257,6 +257,10 @@ export default function About() {
                   tireless documentation, tooling, and personal encouragement.
                 </p>
                 <p>
+                  <span className="text-slate-300 font-semibold">David Lu (@conundrumer)</span> for
+                  RE-ARC Bench, the project&apos;s first major external contribution.
+                </p>
+                <p>
                   <span className="text-slate-300 font-semibold">François Chollet</span> for creating ARC-AGI
                 </p>
                 <p>
