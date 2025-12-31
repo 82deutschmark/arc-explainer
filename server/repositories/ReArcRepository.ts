@@ -32,6 +32,7 @@ export interface ReArcSubmissionRow {
   submission_file_name: string | null;
   total_pairs: number;
   solved_pairs: number;
+  tasks_solved: number;
   score: string; // decimal comes as string from pg
   pair_results: any | null;
   evaluated_at: Date;
@@ -47,6 +48,7 @@ export interface ReArcSubmissionInput {
   submissionFileName?: string;
   totalPairs: number;
   solvedPairs: number;
+  tasksSolved: number;
   score: number;
   pairResults?: any;
   evaluationDurationMs?: number;
@@ -58,6 +60,7 @@ export interface LeaderboardEntry {
   score: number;
   solvedPairs: number;
   totalPairs: number;
+  tasksSolved: number;
   evaluatedAt: Date;
   verificationCount: number;
   datasetSeedId: string;
@@ -150,9 +153,9 @@ export class ReArcRepository extends BaseRepository {
     const result = await this.query<{ id: number }>(
       `INSERT INTO rearc_submissions (
          solver_name, rearc_dataset_id, submission_hash, submission_file_name,
-         total_pairs, solved_pairs, score, pair_results, evaluation_duration_ms
+         total_pairs, solved_pairs, tasks_solved, score, pair_results, evaluation_duration_ms
        )
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
        RETURNING id`,
       [
         input.solverName,
@@ -161,6 +164,7 @@ export class ReArcRepository extends BaseRepository {
         input.submissionFileName || null,
         input.totalPairs,
         input.solvedPairs,
+        input.tasksSolved,
         input.score,
         input.pairResults ? JSON.stringify(input.pairResults) : null,
         input.evaluationDurationMs || null,
@@ -289,11 +293,12 @@ export class ReArcRepository extends BaseRepository {
       score: string;
       solved_pairs: number;
       total_pairs: number;
+      tasks_solved: number;
       evaluated_at: Date;
       verification_count: number;
       seed_id: string;
     }>(
-      `SELECT s.id, s.solver_name, s.score, s.solved_pairs, s.total_pairs,
+      `SELECT s.id, s.solver_name, s.score, s.solved_pairs, s.total_pairs, s.tasks_solved,
               s.evaluated_at, s.verification_count, d.seed_id
        FROM rearc_submissions s
        JOIN rearc_datasets d ON s.rearc_dataset_id = d.id
@@ -319,6 +324,7 @@ export class ReArcRepository extends BaseRepository {
       score: parseFloat(row.score),
       solvedPairs: row.solved_pairs,
       totalPairs: row.total_pairs,
+      tasksSolved: row.tasks_solved,
       evaluatedAt: row.evaluated_at,
       verificationCount: row.verification_count,
       datasetSeedId: row.seed_id,

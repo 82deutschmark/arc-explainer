@@ -39,6 +39,7 @@ interface LeaderboardEntry {
   score: number;
   solvedPairs: number;
   totalPairs: number;
+  tasksSolved: number;
   evaluatedAt: string;
   verificationCount: number;
   datasetSeedId: string;
@@ -188,6 +189,7 @@ export default function ReArcLeaderboard() {
                     <TableHead className="w-16">Rank</TableHead>
                     <TableHead>Solver</TableHead>
                     <TableHead className="text-right">Score</TableHead>
+                    <TableHead className="text-right">Tasks</TableHead>
                     <TableHead className="text-right">Pairs</TableHead>
                     <TableHead className="text-center">Verified</TableHead>
                     <TableHead className="text-right">Date</TableHead>
@@ -208,6 +210,9 @@ export default function ReArcLeaderboard() {
                         <span className="font-mono font-semibold">
                           {(entry.score * 100).toFixed(2)}%
                         </span>
+                      </TableCell>
+                      <TableCell className="text-right text-muted-foreground">
+                        {entry.tasksSolved}/120
                       </TableCell>
                       <TableCell className="text-right text-muted-foreground">
                         {entry.solvedPairs}/{entry.totalPairs}

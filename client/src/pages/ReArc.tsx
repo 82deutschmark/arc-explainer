@@ -16,6 +16,7 @@ import { Button } from "@/components/ui/button";
 import { Trophy, ExternalLink, ChevronRight } from "lucide-react";
 import { GenerationSection } from "@/components/rearc/GenerationSection";
 import { EvaluationSection } from "@/components/rearc/EvaluationSection";
+import { VerificationSection } from "@/components/rearc/VerificationSection";
 import { cn } from "@/lib/utils";
 
 const NUM_TASKS = 120;
@@ -72,8 +73,8 @@ export default function ReArc() {
 
       {/* Main Content - Dense Grid */}
       <div className="max-w-7xl mx-auto px-4 py-4">
-        {/* Two-Column Action Grid */}
-        <div className="grid grid-cols-2 gap-4 mb-4">
+        {/* Three-Column Action Grid */}
+        <div className="grid grid-cols-3 gap-4 mb-4">
           <div className="border border-border/60 rounded-sm overflow-hidden">
             <div className="bg-muted/40 px-3 py-1.5 border-b border-border/60">
               <h2 className="text-xs font-bold font-mono tracking-wide text-muted-foreground">
@@ -88,11 +89,22 @@ export default function ReArc() {
           <div className="border border-border/60 rounded-sm overflow-hidden">
             <div className="bg-muted/40 px-3 py-1.5 border-b border-border/60">
               <h2 className="text-xs font-bold font-mono tracking-wide text-muted-foreground">
-                02 EVALUATE SUBMISSION
+                02 EVALUATE YOUR SOLUTION
               </h2>
             </div>
             <div className="p-3">
               <EvaluationSection numTasks={NUM_TASKS} compact />
+            </div>
+          </div>
+
+          <div className="border border-border/60 rounded-sm overflow-hidden">
+            <div className="bg-muted/40 px-3 py-1.5 border-b border-border/60">
+              <h2 className="text-xs font-bold font-mono tracking-wide text-muted-foreground">
+                03 VERIFY SUBMISSION
+              </h2>
+            </div>
+            <div className="p-3">
+              <VerificationSection numTasks={NUM_TASKS} compact />
             </div>
           </div>
         </div>
