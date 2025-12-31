@@ -665,6 +665,49 @@ interface IngestionRun {
 }
 ```
 
+### RE-ARC Bench (Dataset Generation & Evaluation) ✨ NEW! (December 2025)
+
+Self-service platform for generating unique ARC evaluation datasets and scoring solver submissions. Contributed by David Lu (@conundrumer).
+
+#### Dataset Generation
+- `POST /api/rearc/generate` - Generate unique 120-task evaluation dataset
+  - **Response**: Streaming gzip JSON download
+  - **Headers**: `Content-Disposition: attachment; filename="re-arc_test_challenges-{timestamp}.json"`
+  - **Rate Limit**: 2 requests per 5 minutes
+  - **Notes**: Each request generates a cryptographically unique dataset. Task IDs encode the generation seed via XOR, enabling stateless verification without server-side storage.
+
+#### Submission Evaluation
+- `POST /api/rearc/evaluate` - Evaluate solver submission against generated dataset
+  - **Content-Type**: `multipart/form-data` with JSON submission file
+  - **Response**: Server-Sent Events stream
+  - **Rate Limit**: 20 requests per 5 minutes
+  - **SSE Events**:
+    - `progress` - `{ current: number, total: number }` - Evaluation progress
+    - `complete` - `{ type: "score", score: number }` - Final score (0.0-1.0)
+    - `complete` - `{ type: "mismatches", mismatches: [...] }` - Test pair count mismatches
+    - `error` - `{ message: string }` - Validation or processing error
+  - **Scoring**: Uses official ARC Prize competition rules - pair solved if ANY of 2 attempts correct
+  - **Caching**: LRU cache provides ~100x speedup on repeated evaluations of same dataset
+
+#### Submission Format
+```json
+[
+  {  // Test Pair 0
+    "attempt_1": [[0, 1], [2, 3]],
+    "attempt_2": [[0, 1], [2, 3]]
+  },
+  {  // Test Pair 1
+    "attempt_1": [[4, 5]],
+    "attempt_2": [[4, 5]]
+  }
+]
+```
+
+#### Security Notes
+- Task solutions are inaccessible without server-side `RE_ARC_SEED_PEPPER` environment variable
+- HMAC-SHA256 seed derivation prevents dataset regeneration without server access
+- Each production deployment should use a unique pepper value
+
 ## Authentication
 
 **All endpoints are publicly accessible with NO authentication required.**
