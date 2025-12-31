@@ -481,9 +481,12 @@ export async function getLeaderboard(req: Request, res: Response): Promise<void>
         score: entry.score,
         solvedPairs: entry.solvedPairs,
         totalPairs: entry.totalPairs,
+        tasksSolved: entry.tasksSolved,
         evaluatedAt: entry.evaluatedAt.toISOString(),
         verificationCount: entry.verificationCount,
         datasetSeedId: entry.datasetSeedId,
+        generatedAt: entry.generatedAt.toISOString(),
+        elapsedMs: entry.elapsedMs,
       })),
       totalCount,
     });
