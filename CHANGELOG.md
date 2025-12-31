@@ -1,5 +1,59 @@
 # New entries at the top, use proper SemVer!
 
+### Version 6.17.1  Dec 31, 2025
+
+- **RE-ARC Result Persistence & Public Leaderboard** (Author: Claude Haiku 4.5)
+  - **Core Features**:
+    - Leaderboard persistence: all evaluations automatically saved with solver name
+    - Public leaderboard with multi-sort support (by score, latest, most verified)
+    - Submission verification: identical submissions trigger match detection via SHA-256 hashing
+    - Two distinct user flows: "Evaluate Your Own Solution" (saves) vs "Verify Someone Else's" (checks only)
+    - Anonymous submissions: no login required, just solver name (with optional auto-generation)
+    - Verification tracking: external uploads increment verification_count on matching submissions
+  - **Backend Architecture**:
+    - `server/repositories/ReArcRepository.ts` - Domain repository with SRP methods for leaderboard operations
+    - `server/utils/submissionHash.ts` - Deterministic SHA-256 hashing of submission JSON (sorted keys, no whitespace)
+    - `server/utils/nameGenerator.ts` - Fun random name generation (adjectives + animals) with input validation
+    - `server/repositories/database/DatabaseSchema.ts` - New tables: `rearc_datasets`, `rearc_submissions` with verification tracking
+    - **Three New Endpoints**:
+      - `POST /api/rearc/evaluate` - Evaluate submission, save to leaderboard, find matching entries
+      - `POST /api/rearc/verify` - Verify someone else's submission, increment verification_count on matches (no save)
+      - `GET /api/rearc/leaderboard?sort=score&limit=25&offset=0` - Paginated leaderboard with sorting
+      - `GET /api/rearc/submissions/:id` - Submission detail view with matching entries
+  - **Frontend Components**:
+    - Updated `client/src/components/rearc/EvaluationSection.tsx` - Solver name input with shuffle button for auto-generation
+    - New `client/src/pages/ReArcLeaderboard.tsx` - Full leaderboard page with table, medals for top 3, verification badges
+    - Updated `client/src/pages/ReArc.tsx` - Added "Leaderboard" button in header linking to `/re-arc/leaderboard`
+    - Updated `client/src/App.tsx` - New route for leaderboard page
+  - **Database Schema** (`rearc_submissions` table):
+    - `solver_name` - User-provided or auto-generated name (255 chars max)
+    - `submission_hash` - SHA-256 hash of normalized JSON (indexed for duplicate detection)
+    - `score`, `solved_pairs`, `total_pairs` - Evaluation results
+    - `verification_count` - Tracks how many times this submission was verified by others
+    - `pair_results` - JSONB for detailed per-pair correctness data
+    - Indexes on: hash, score (DESC), evaluated_at (DESC), solver_name, rearc_dataset_id
+  - **Updated API Event Format**:
+    - SSE completion event now includes `submissionId` and `matchingSubmissions` array
+    - Matching entries show id, solverName, score, and evaluatedAt timestamp
+    - Allows frontend to display verification warnings immediately on evaluation
+  - **UX Enhancements**:
+    - Success screen shows "Added to leaderboard!" with link to view rankings
+    - Yellow warning box displays matching submissions if hash collision detected
+    - Leaderboard shows rank with medal icons for gold/silver/bronze
+    - Verification count displayed as shield badge
+    - 25 entries per page with Previous/Next pagination
+    - Sort dropdown with Trophy/Clock/Shield icons for visual clarity
+  - **Files Modified**: 11 files, +~1200 insertions
+    - New files: ReArcRepository.ts, submissionHash.ts, nameGenerator.ts, ReArcLeaderboard.tsx
+    - Modified: DatabaseSchema.ts, reArcController.ts, EvaluationSection.tsx, ReArc.tsx, App.tsx, routes.ts, shared/types.ts
+  - **Implementation Notes**:
+    - Hashing uses deterministic JSON.stringify with sorted task IDs for consistent matching
+    - Verification flow doesn't save to leaderboard but increments verification_count on matches
+    - No authentication: "anyone can upload anyone else's submission to verify they're being truthful" (credit: conundrumer)
+    - Both evaluate and verify flows find and report matching entries for transparency
+  - **Special Thanks**:
+    - Credit to [conundrumer](https://github.com/conundrumer) for creating RE-ARC and the core concept of verification-by-submission
+
 ### Version 6.17.0  Dec 30, 2025 21:43
 
 - **RE-ARC Bench: Self-Service Dataset Generation and Evaluation Platform** (Author: Claude Sonnet 4.5, integration by Claude Haiku 4.5)
