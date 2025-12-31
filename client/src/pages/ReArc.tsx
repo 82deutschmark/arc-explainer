@@ -31,6 +31,9 @@ TERMINOLOGY:
   - Solutions: correct predictions (after evaluation)
 */
 
+import { Link } from "wouter";
+import { Button } from "@/components/ui/button";
+import { Trophy, ExternalLink } from "lucide-react";
 import { GenerationSection } from "@/components/rearc/GenerationSection";
 import { EvaluationSection } from "@/components/rearc/EvaluationSection";
 import { CollapsibleSection } from "@/components/rearc/CollapsibleSection";
@@ -46,6 +49,24 @@ export default function ReArc() {
         <p className="text-lg text-muted-foreground mb-4">
           Test your ARC solver!
         </p>
+
+        <div className="flex items-center gap-4 mb-4">
+          <a
+            href="https://github.com/conundrumer/re-arc"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-sm text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1.5"
+          >
+            RE-ARC by conundrumer
+            <ExternalLink className="h-3.5 w-3.5" />
+          </a>
+          <Link href="/re-arc/leaderboard">
+            <Button variant="outline" size="sm" className="gap-2">
+              <Trophy className="h-4 w-4" />
+              Leaderboard
+            </Button>
+          </Link>
+        </div>
 
         <div className="text-sm text-muted-foreground bg-muted/50 p-4 rounded-md">
           <p className="mb-2">
