@@ -31,8 +31,6 @@ TERMINOLOGY:
   - Solutions: correct predictions (after evaluation)
 */
 
-import { Link } from "wouter";
-import { Button } from "@/components/ui/button";
 import { GenerationSection } from "@/components/rearc/GenerationSection";
 import { EvaluationSection } from "@/components/rearc/EvaluationSection";
 import { CollapsibleSection } from "@/components/rearc/CollapsibleSection";
@@ -48,14 +46,6 @@ export default function ReArc() {
         <p className="text-lg text-foreground/70 mb-4">
           Verifiable benchmarking for ARC solvers
         </p>
-
-        <div className="flex items-center gap-4 mb-4">
-          <Link href="/re-arc/leaderboard">
-            <Button variant="outline" size="sm">
-              View Submissions
-            </Button>
-          </Link>
-        </div>
 
         <div className="text-sm text-foreground/90 bg-muted/50 p-4 rounded-md">
           <p className="mb-2">
