@@ -79,6 +79,14 @@ export function GenerationSection({ numTasks }: GenerationSectionProps) {
       // Reconstruct blob from chunks
       const blob = new Blob(chunks as BlobPart[], { type: 'application/json' });
 
+      // Validate JSON completeness - server streams JSON that ends with '\n}\n'
+      const fullText = await blob.text();
+      if (!fullText.endsWith('\n}\n')) {
+        throw new Error(
+          'Incomplete dataset received from server. The generation may have timed out or been interrupted. Please try again.'
+        );
+      }
+
       // Trigger download
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
@@ -155,12 +163,6 @@ export function GenerationSection({ numTasks }: GenerationSectionProps) {
             </>
           )}
         </Button>
-
-        {phase.phase === 'error' && (
-          <Button onClick={handleGenerate} variant="outline" className="ml-2">
-            Try Again
-          </Button>
-        )}
       </CardContent>
     </Card>
   );
