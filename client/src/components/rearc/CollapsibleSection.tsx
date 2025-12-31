@@ -38,7 +38,7 @@ export function CollapsibleSection({
   return (
     <Collapsible open={isOpen} onOpenChange={setIsOpen}>
       <CollapsibleTrigger
-        className={`flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors ${triggerClassName}`}
+        className={`flex items-center gap-2 text-sm font-medium text-foreground/80 hover:text-foreground transition-colors cursor-pointer underline decoration-dotted underline-offset-4 ${triggerClassName}`}
       >
         <ChevronDown
           className={`h-4 w-4 transition-transform ${
