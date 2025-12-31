@@ -10,3 +10,6 @@
 [submodule "SnakeBench"]
 	path = external/SnakeBench
 	url = https://github.com/VoynichLabs/SnakeBench
+[submodule "external/re-arc"]
+	path = external/re-arc
+	url = https://github.com/conundrumer/re-arc

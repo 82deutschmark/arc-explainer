@@ -18,6 +18,18 @@ export interface ARCExample {
   output: number[][];
 }
 
+/**
+ * Submission format for ARC evaluations (RE-ARC, benchmarks, etc.)
+ * Maps task IDs to arrays of predictions (one prediction per test input).
+ * Each prediction contains 2 attempts at solving that test input.
+ */
+export interface ARCSubmission {
+  [taskId: string]: {
+    attempt_1: number[][];  // First prediction attempt
+    attempt_2: number[][];  // Second prediction attempt
+  }[];  // Array of predictions (one per test input)
+}
+
 export interface PuzzleMetadata {
   id: string;
   gridSizeConsistent: boolean;
@@ -353,7 +365,7 @@ export interface PuzzleOverviewResponse {
  * LEGACY: Mixed accuracy/trustworthiness statistics interface
  * @deprecated This interface mixes accuracy and trustworthiness concepts!
  * Use PureAccuracyStats, TrustworthinessStats, or ConfidenceStats instead for clarity.
- * 
+ *
  * WARNING: Despite the name "AccuracyStats", the accuracyByModel array often
  * contains trustworthiness data filtered by trustworthiness_score.
  */
@@ -382,7 +394,7 @@ export interface AccuracyStats {
 
 /**
  * PURE ACCURACY STATS - Only boolean correctness metrics
- * 
+ *
  * Uses only is_prediction_correct and multi_test_all_correct boolean fields.
  * No trustworthiness or confidence filtering applied.
  * Shows true puzzle-solving success rates across all models.
@@ -407,7 +419,7 @@ export interface PureAccuracyStats {
 
 /**
  * TRUSTWORTHINESS STATS - AI confidence reliability metrics
- * 
+ *
  * Uses trustworthiness_score field (despite misleading name, this measures trustworthiness).
  * Focuses on how well AI confidence claims correlate with actual performance.
  * This is the PRIMARY METRIC for AI reliability research.
@@ -428,7 +440,7 @@ export interface TrustworthinessStats {
 
 /**
  * CONFIDENCE ANALYSIS STATS - AI confidence patterns and calibration
- * 
+ *
  * Analyzes AI confidence behavior across correct vs incorrect predictions.
  * Measures overconfidence, underconfidence, and calibration quality.
  */
@@ -1153,7 +1165,7 @@ export const PROMPT_TEMPLATES: Record<string, PromptTemplate> = {
     emojiMapIncluded: true
   },
   standardExplanation: {
-    id: "standardExplanation", 
+    id: "standardExplanation",
     name: "📝 Standard Analysis",
     description: "Clear, straightforward analysis of puzzle patterns. AI explains the transformation rules step-by-step using simple language and logical reasoning.",
     content: `Explain the transformation rules observed in the {train} examples and applied to the {test} case. Your job is to explain in very simple terms what transformations were used.`,
@@ -1161,7 +1173,7 @@ export const PROMPT_TEMPLATES: Record<string, PromptTemplate> = {
   },
   educationalApproach: {
     id: "educationalApproach",
-    name: "🧠 Educational Approach", 
+    name: "🧠 Educational Approach",
     description: "Algorithmic thinking approach - AI teaches problem-solving methodology using step-by-step algorithms, computational processes, and learning-focused explanations.",
     content: `Help students understand the step-by-step algorithms and logical patterns in this puzzle. Explain transformations as computational processes and rules, focusing on algorithmic thinking and problem-solving methodology.`,
     emojiMapIncluded: false
@@ -1254,7 +1266,7 @@ export interface ModelConfig {
   supportsVision?: boolean;
   requiresPromptFormat?: boolean; // For OpenRouter models that need "prompt" instead of "messages"
   supportsStreaming?: boolean;
-  
+
   // Model Management fields
   isActive?: boolean; // Controls whether model appears in selectors (default: true)
   aliasFor?: string; // Key of the model this is an alias for
@@ -1503,3 +1515,18 @@ export interface OpenRouterSyncStatus {
     createdAt: string;          // ISO timestamp when model was created on OpenRouter
   }>;
 }
+
+/**
+ * RE-ARC SSE Event Types
+ * Shared between frontend and backend for type-safe SSE streaming.
+ */
+export type ReArcSSEEvent =
+  | { type: 'progress'; data: { current: number; total: number } }
+  | { type: 'complete'; data: { type: 'score'; score: number } }
+  | { type: 'complete'; data: { type: 'mismatches'; mismatches: Array<{
+      taskId: string;
+      expectedPredictions: number;
+      submittedPredictions: number;
+    }> } }
+  | { type: 'complete'; data: { type: 'malformed' } }
+  | { type: 'error'; data: { message: string } };

@@ -19,6 +19,7 @@ import { logger } from './utils/logger.ts';
 import { resolveStreamingConfig } from '@shared/config/streaming';
 import { databaseMaintenance } from './maintenance/dbCleanup.js';
 import { syncContributors } from './scripts/seedContributors.ts';
+import { metaTagInjector } from './middleware/metaTagInjector.js';
 import './services/poetiq/PoetiqAgentsRunner.ts';
 
 // Fix for ES modules and bundled code - get the actual current directory
@@ -189,6 +190,8 @@ const initServer = async () => {
         }
       }
     }));
+
+    app.use(metaTagInjector);
 
     // For any other request that doesn't match an API route or a static file,
     // send the client's index.html file. This is the SPA fallback.
