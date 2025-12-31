@@ -24,6 +24,7 @@ import { parseAttemptModelName } from '@/utils/modelComparison';
 import { detectModelOrigin } from '@/utils/modelOriginDetection';
 import { Badge } from '@/components/ui/badge';
 import { fetchMetricsCompare } from '@/services/metrics/compareService';
+import { formatCostSmart } from '@shared/utils/formatters';
 
 const MAX_MODELS = 4;
 const COMPARISON_CACHE_KEY = 'arc-comparison-data';
@@ -377,19 +378,6 @@ export default function ModelComparisonPage() {
     await requestComparisonData(nextModels, dataset, 'update');
   };
 
-  const formatCost = (cost: number | null | undefined) => {
-    if (cost === null || cost === undefined || cost === 0) {
-      return 'Free';
-    }
-    if (cost < 0.01) {
-      return `${(cost * 1000).toFixed(2)} m`;
-    }
-    if (cost < 1) {
-      return `${(cost * 100).toFixed(2)} c`;
-    }
-    return `$${cost.toFixed(4)}`;
-  };
-
   const formatTime = (ms: number | undefined) => {
     if (!ms || ms === 0) {
       return 'N/A';
@@ -721,11 +709,11 @@ export default function ModelComparisonPage() {
                       {formatTime(model.avgProcessingTime)}
                     </td>
                     <td className="text-center text-xs font-semibold">
-                      {formatCost(model.totalCost)}
+                      {formatCostSmart(model.totalCost)}
                     </td>
                     <td className="text-center text-xs font-semibold text-info">
                       {model.costPerCorrectAnswer !== null
-                        ? formatCost(model.costPerCorrectAnswer)
+                        ? formatCostSmart(model.costPerCorrectAnswer)
                         : 'N/A'}
                     </td>
                     <td className="text-center text-xs">

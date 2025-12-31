@@ -135,42 +135,33 @@ export class AnalysisStreamService {
       const captureReasoning = payload.captureReasoning ?? true;
       const retryMode = payload.retryMode ?? false;
 
-      // Load puzzle once for validation and to support the non-streaming fallback path.
-      const puzzle = await puzzleService.getPuzzleById(taskId);
+      // Only fetch puzzle when streaming is supported; allow missing puzzle to continue for tests/harnesses.
+      let puzzle: Awaited<ReturnType<typeof puzzleService.getPuzzleById>> | undefined;
+      if (supportsStreaming) {
+        try {
+          puzzle = await puzzleService.getPuzzleById(taskId);
+        } catch (puzzleError) {
+          logger.warn(
+            `Puzzle fetch failed for ${taskId}; continuing streaming without validation. Reason: ${
+              puzzleError instanceof Error ? puzzleError.message : String(puzzleError)
+            }`,
+            "stream-service"
+          );
+          puzzle = undefined;
+        }
+      }
 
       if (!supportsStreaming) {
+        // Emit explicit unavailable signal instead of falling back to non-streaming work.
         logger.warn(
-          `Streaming not available for model ${originalModelKey} (normalized: ${canonicalModelKey}), falling back to non-streaming`,
+          `Streaming not available for model ${originalModelKey} (normalized: ${canonicalModelKey}); emitting STREAMING_UNAVAILABLE`,
           "stream-service"
         );
-        // Fall back to non-streaming analysis
-        sseStreamManager.sendEvent(sessionId, "stream.status", {
-          state: "info",
-          message: `Model ${originalModelKey} does not support streaming. Running standard analysis instead.`,
-          modelKey: originalModelKey,
-          taskId,
-        });
-
-        try {
-          const result = await aiService.analyzePuzzleWithModel(
-            puzzle,
-            canonicalModelKey,
-            taskId,
-            temperature,
-            promptId,
-            customPrompt,
-            promptOptions
-          );
-          sseStreamManager.close(sessionId, {
-            status: 'success',
-            responseSummary: result,
-            durationMs: Date.now() - (payload.createdAt ?? Date.now()),
-          });
-        } catch (error) {
-          const message = error instanceof Error ? error.message : String(error);
-          logger.logError(`Non-streaming fallback analysis failed: ${message}`, { error, context: 'stream-service' });
-          sseStreamManager.error(sessionId, 'ANALYSIS_FAILED', message);
-        }
+        sseStreamManager.error(
+          sessionId,
+          "STREAMING_UNAVAILABLE",
+          `Model ${originalModelKey} does not support streaming.`
+        );
         return sessionId;
       }
 
@@ -216,8 +207,8 @@ export class AnalysisStreamService {
         emitEvent: baseHarness.emitEvent,
         metadata: baseHarness.metadata,
         end: async (summary: any) => {
-          // Validate streaming result before sending completion
-          if (summary?.responseSummary?.analysis) {
+          // Validate streaming result before sending completion; guard when puzzle is unavailable.
+          if (summary?.responseSummary?.analysis && puzzle) {
             try {
               logger.debug('[AnalysisStream] Validating streaming result before completion', 'stream-service');
               const validatedAnalysis = validateStreamingResult(

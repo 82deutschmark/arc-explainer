@@ -1,8 +1,10 @@
 /**
- * Author: Gemini 3 Flash High
- * Date: 2025-12-27
+ * Author: Cascade
+ * Date: 2025-12-29
  * PURPOSE: AnalyticsRepository - Handles complex data aggregations, model insights,
  *          and run-length distributions for Worm Arena/SnakeBench.
+ *          Calculates detailed performance metrics including quartiles (p25, median, p75),
+ *          TrueSkill ratings, and leaderboard rankings.
  *          INTERCHANGEABLE: "Game" and "Match" refer to the same entity.
  * SRP/DRY check: Pass - focused exclusively on analytical data processing.
  */
@@ -11,6 +13,7 @@ import { PoolClient } from 'pg';
 import { BaseRepository } from './base/BaseRepository.ts';
 import {
   SQL_NORMALIZE_SLUG,
+  SQL_TRUESKILL_EXPOSED,
   logRepoError,
   safeNumeric,
 } from './snakebenchSqlHelpers.ts';
@@ -53,6 +56,7 @@ export class AnalyticsRepository extends BaseRepository {
           MAX(gp.score) AS max_score,
           MIN(gp.score) AS min_score,
           COALESCE(SUM(gp.score), 0) AS total_apples,
+          PERCENTILE_CONT(0.25) WITHIN GROUP (ORDER BY gp.score) AS p25_score,
           PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY gp.score) AS median_score,
           PERCENTILE_CONT(0.75) WITHIN GROUP (ORDER BY gp.score) AS p75_score,
           AVG(CASE WHEN gp.result = 'lost' THEN gp.death_round END) AS avg_death_round_loss,
@@ -78,8 +82,8 @@ export class AnalyticsRepository extends BaseRepository {
         WITH ranked_models AS (
           SELECT
             ${SQL_NORMALIZE_SLUG('m.model_slug')} AS normalized_slug,
-            COALESCE(m.trueskill_exposed, m.trueskill_mu - 3 * m.trueskill_sigma) AS exposed_rating,
-            ROW_NUMBER() OVER (ORDER BY COALESCE(m.trueskill_exposed, m.trueskill_mu - 3 * m.trueskill_sigma) DESC) AS rank
+            ${SQL_TRUESKILL_EXPOSED('m')} AS exposed_rating,
+            ROW_NUMBER() OVER (ORDER BY ${SQL_TRUESKILL_EXPOSED('m')} DESC) AS rank
           FROM public.models m
           JOIN public.game_participants gp ON m.id = gp.model_id
           JOIN public.games g ON gp.game_id = g.id
@@ -121,6 +125,7 @@ export class AnalyticsRepository extends BaseRepository {
         minScore: row.min_score != null ? Number(row.min_score) : null,
         maxScore: row.max_score != null ? Number(row.max_score) : null,
         medianScore: row.median_score != null ? Number(row.median_score) : null,
+        p25Score: row.p25_score != null ? Number(row.p25_score) : null,
         p75Score: row.p75_score != null ? Number(row.p75_score) : null,
         totalApples: parseInt(String(row.total_apples || '0'), 10),
         // Death statistics

@@ -1,14 +1,14 @@
 /**
- * Author: Gemini 3 Flash High
- * Date: 2025-12-27
+ * Author: Cascade
+ * Date: 2025-12-30
  * PURPOSE: Worm Arena "Greatest Hits" card with Share/Tweet buttons.
  *          Shows a short list of especially interesting matches
  *          (longest, most expensive, highest-scoring) with one-click
  *          replay links into the main Worm Arena viewer.
  *
  *          Layout note: Matchup strings can be long (provider/model IDs).
- *          We intentionally avoid truncation so users can always see both
- *          sides of the matchup (champion + challenger).
+ *          Updated to ensure full model slugs are visible without truncation
+ *          labels (Champion/Challenger).
  *
  *          Note: Uses a simple overflow container instead of Radix ScrollArea.
  *          ScrollArea requires a fixed height and can render a 0-height viewport

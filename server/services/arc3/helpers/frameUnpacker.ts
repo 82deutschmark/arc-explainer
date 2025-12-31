@@ -23,7 +23,7 @@ import { logger } from '../../../utils/logger.ts';
  * @returns true if 4D (animation), false if 3D (single frame)
  * @throws Error if structure is invalid
  */
-export function isAnimationFrame(frameArray: number[][][] | number[][][][] | undefined): frameArray is number[][][][][] {
+export function isAnimationFrame(frameArray: number[][][] | number[][][][] | undefined): frameArray is number[][][][] {
   if (!frameArray || frameArray.length === 0) {
     return false;
   }
