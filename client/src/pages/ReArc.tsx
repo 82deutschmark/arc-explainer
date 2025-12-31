@@ -180,7 +180,7 @@ type Grid = number[][]`}
                   solver (matching ARC-AGI-2's approach), (2) selected the 120
                   most complex tasks by verifier line count, (3) applied color
                   permutations and rotation/flip transforms so verifiers no
-                  longer trivially solve the tasks (only 5/120 remain solvable
+                  longer trivially solve the tasks (only 1/120 remain solvable
                   by verifiers; 0/120 by icecuber).
                 </p>
               </div>
