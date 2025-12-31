@@ -30,7 +30,13 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
-import { Trophy, ArrowLeft, Medal, Clock, Shield, Loader2, Table as TableIcon, ScatterChart as ScatterIcon } from 'lucide-react';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
+import { Trophy, ArrowLeft, Medal, Clock, Shield, Loader2, Table as TableIcon, ScatterChart as ScatterIcon, HelpCircle } from 'lucide-react';
 import { EfficiencyPlot } from '@/components/rearc/EfficiencyPlot';
 
 interface LeaderboardEntry {
@@ -235,8 +241,36 @@ export default function ReArcLeaderboard() {
                         <TableHead className="w-16">Rank</TableHead>
                         <TableHead>Solver</TableHead>
                         <TableHead className="text-right">Score</TableHead>
-                        <TableHead className="text-right">Tasks</TableHead>
-                        <TableHead className="text-right">Pairs</TableHead>
+                        <TableHead className="text-right">
+                          <TooltipProvider>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <span className="inline-flex items-center gap-1 cursor-help">
+                                  Tasks
+                                  <HelpCircle className="h-3.5 w-3.5 text-muted-foreground" />
+                                </span>
+                              </TooltipTrigger>
+                              <TooltipContent side="top" className="max-w-xs text-xs">
+                                <p>Tasks <strong>fully solved</strong> (all test pairs correct). A task with 3 test pairs requires all 3 correct to count here.</p>
+                              </TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
+                        </TableHead>
+                        <TableHead className="text-right">
+                          <TooltipProvider>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <span className="inline-flex items-center gap-1 cursor-help">
+                                  Pairs
+                                  <HelpCircle className="h-3.5 w-3.5 text-muted-foreground" />
+                                </span>
+                              </TooltipTrigger>
+                              <TooltipContent side="top" className="max-w-xs text-xs">
+                                <p><strong>Test pairs solved</strong> across all tasks. Each task has 1-3 test pairs. Solving 1 of 3 pairs in a task scores 33% on that task.</p>
+                              </TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
+                        </TableHead>
                         <TableHead className="text-right">Time</TableHead>
                         <TableHead className="text-center">Verified</TableHead>
                         <TableHead className="text-right">Date</TableHead>
@@ -340,6 +374,12 @@ export default function ReArcLeaderboard() {
               <strong>Scoring:</strong> Each submission is evaluated against the same
               deterministically-generated dataset. Scores represent the percentage of
               test pairs solved correctly (either attempt matching the ground truth).
+            </p>
+            <p>
+              <strong>Tasks vs Pairs:</strong> Each ARC task contains 1-3 test pairs.
+              Your score is the average of per-task scores, where each task scores
+              (pairs solved / total pairs in that task). A task with 3 test pairs
+              where you solve 1 contributes 33% for that task, not a full solve.
             </p>
           </div>
         </CardContent>
