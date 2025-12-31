@@ -26,6 +26,7 @@ export type ValidationError =
   | { type: 'empty_submission' }
   | { type: 'task_count_mismatch'; found: number; expected: number; tooMany: boolean }
   | { type: 'invalid_task_id'; taskId: string }
+  | { type: 'dataset_file_detected'; taskId: string }
   | { type: 'invalid_task_structure'; taskId: string; found: 'grid' | 'object' | 'grid_array' }
   | { type: 'empty_predictions'; taskId: string }
   | { type: 'invalid_prediction_object'; taskId: string; predictionIndex?: number }
@@ -128,6 +129,30 @@ export function validateSubmission(
 
     // Check if predictions is an array
     if (!Array.isArray(predictions)) {
+      // Check if this looks like a dataset file (has train/test keys)
+      if (predictions && typeof predictions === 'object') {
+        const hasTrain = 'train' in predictions;
+        const hasTest = 'test' in predictions;
+
+        if (hasTrain || hasTest) {
+          // Verify it really looks like a dataset structure
+          const trainOrTest = (predictions as any).train || (predictions as any).test;
+          if (Array.isArray(trainOrTest) && trainOrTest.length > 0) {
+            const firstExample = trainOrTest[0];
+            if (firstExample &&
+                typeof firstExample === 'object' &&
+                ('input' in firstExample || 'output' in firstExample)) {
+              // This is a dataset file, not a submission
+              return {
+                type: 'dataset_file_detected',
+                taskId
+              };
+            }
+          }
+        }
+      }
+
+      // Generic object error (not a dataset, just wrong structure)
       return { type: 'invalid_task_structure', taskId, found: 'object' };
     }
 
