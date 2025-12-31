@@ -411,22 +411,6 @@ export function EvaluationSection({ numTasks, compact = false }: EvaluationSecti
                   Generated: {new Date(phase.result.timestamp * 1000).toLocaleString()}
                 </div>
               )}
-              {phase.result.matchingSubmissions.length > 0 && (
-                <div className={compact ? "text-xs mt-2 p-1.5 bg-yellow-500/10 border border-yellow-500/20 rounded-sm" : "text-sm mt-3 p-2 bg-yellow-500/10 border border-yellow-500/20 rounded"}>
-                  <strong>Note:</strong> Matches {phase.result.matchingSubmissions.length} existing {phase.result.matchingSubmissions.length === 1 ? 'entry' : 'entries'}:
-                  {compact ? (
-                    <span className="ml-1 font-mono">
-                      {phase.result.matchingSubmissions.map((m) => m.solverName).join(', ')}
-                    </span>
-                  ) : (
-                    <ul className="mt-1 ml-4 list-disc">
-                      {phase.result.matchingSubmissions.map((m) => (
-                        <li key={m.id}>{m.solverName} ({(m.score * 100).toFixed(2)}%)</li>
-                      ))}
-                    </ul>
-                  )}
-                </div>
-              )}
               {phase.result.score === 0 && !compact && (
                 <div className="text-sm mt-3 p-2 bg-blue-500/10 border border-blue-500/20 rounded">
                   <strong>Note:</strong> A 0% score is normal and expected. RE-ARC tasks
@@ -444,11 +428,22 @@ export function EvaluationSection({ numTasks, compact = false }: EvaluationSecti
               <CardHeader>
                 <CardTitle className="text-base">Submit to Leaderboard (Optional)</CardTitle>
                 <CardDescription className="text-sm">
-                  Share your result with the community
+                  Share your result for community analysis and just-for-fun benchmarking
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
+                  {/* Matching submissions note */}
+                  {phase.result.matchingSubmissions.length > 0 && (
+                    <div className="text-sm p-2 bg-yellow-500/10 border border-yellow-500/20 rounded">
+                      <strong>Note:</strong> Matches {phase.result.matchingSubmissions.length} existing {phase.result.matchingSubmissions.length === 1 ? 'entry' : 'entries'}:
+                      <ul className="mt-1 ml-4 list-disc">
+                        {phase.result.matchingSubmissions.map((m) => (
+                          <li key={m.id}>{m.solverName} ({(m.score * 100).toFixed(2)}%)</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
                   <div>
                     <Label htmlFor="leaderboard-name" className="text-sm font-medium">
                       Your Name
@@ -569,45 +564,44 @@ export function EvaluationSection({ numTasks, compact = false }: EvaluationSecti
         </div>
       )}
 
-      {/* Upload Interface - always show except during active upload/evaluation */}
-      {(phase.type === 'idle' || phase.type === 'success' || phase.type === 'error') && (
-        <>
-          {/* Drop Zone */}
-          <div
-            onDragOver={handleDragOver}
-            onDragLeave={handleDragLeave}
-            onDrop={handleDrop}
-            className={`border-2 border-dashed rounded-sm text-center transition-colors ${
-              compact ? "p-4" : "rounded-lg p-12"
-            } ${
-              isDragging
-                ? 'border-primary bg-primary/5'
-                : 'border-muted-foreground/25 hover:border-muted-foreground/50'
-            }`}
-          >
-            <Upload className={compact ? "mx-auto h-6 w-6 text-muted-foreground mb-2" : "mx-auto h-12 w-12 text-muted-foreground mb-4"} />
-            <p className={compact ? "text-xs font-mono mb-1.5" : "text-lg mb-2"}>
-              {compact ? "Drop submission.json" : "Drop submission.json here"}
-            </p>
-            {!compact && <p className="text-sm text-muted-foreground mb-4">or</p>}
-            <Button
-              onClick={() => fileInputRef.current?.click()}
-              variant="outline"
-              size={compact ? "sm" : "default"}
-              className={compact ? "text-xs font-mono" : ""}
-            >
-              {compact ? "Browse" : "Choose File"}
-            </Button>
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept="application/json"
-              onChange={handleFileInputChange}
-              className="hidden"
-            />
-          </div>
-        </>
-      )}
+      {/* Upload Interface - always visible, disabled during upload/evaluation */}
+      <div
+        onDragOver={phase.type === 'uploading' || phase.type === 'evaluating' ? undefined : handleDragOver}
+        onDragLeave={phase.type === 'uploading' || phase.type === 'evaluating' ? undefined : handleDragLeave}
+        onDrop={phase.type === 'uploading' || phase.type === 'evaluating' ? undefined : handleDrop}
+        className={`border-2 border-dashed rounded-sm text-center transition-colors ${
+          compact ? "p-4" : "rounded-lg p-12"
+        } ${
+          phase.type === 'uploading' || phase.type === 'evaluating'
+            ? 'border-muted-foreground/10 bg-muted/30 opacity-50 pointer-events-none'
+            : isDragging
+            ? 'border-primary bg-primary/5'
+            : 'border-muted-foreground/25 hover:border-muted-foreground/50'
+        }`}
+      >
+        <Upload className={compact ? "mx-auto h-6 w-6 text-muted-foreground mb-2" : "mx-auto h-12 w-12 text-muted-foreground mb-4"} />
+        <p className={compact ? "text-xs font-mono mb-1.5" : "text-lg mb-2"}>
+          {compact ? "Drop submission.json" : "Drop submission.json here"}
+        </p>
+        {!compact && <p className="text-sm text-muted-foreground mb-4">or</p>}
+        <Button
+          onClick={() => fileInputRef.current?.click()}
+          variant="outline"
+          size={compact ? "sm" : "default"}
+          className={compact ? "text-xs font-mono" : ""}
+          disabled={phase.type === 'uploading' || phase.type === 'evaluating'}
+        >
+          {compact ? "Browse" : "Choose File"}
+        </Button>
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="application/json"
+          onChange={handleFileInputChange}
+          className="hidden"
+          disabled={phase.type === 'uploading' || phase.type === 'evaluating'}
+        />
+      </div>
     </>
   );
 
