@@ -31,6 +31,9 @@ TERMINOLOGY:
   - Solutions: correct predictions (after evaluation)
 */
 
+import { Link } from "wouter";
+import { Button } from "@/components/ui/button";
+import { Trophy } from "lucide-react";
 import { GenerationSection } from "@/components/rearc/GenerationSection";
 import { EvaluationSection } from "@/components/rearc/EvaluationSection";
 import { CollapsibleSection } from "@/components/rearc/CollapsibleSection";
@@ -42,7 +45,15 @@ export default function ReArc() {
     <div className="container mx-auto py-8 px-4 max-w-4xl">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-4xl font-bold mb-2">RE-ARC Bench</h1>
+        <div className="flex items-center justify-between mb-2">
+          <h1 className="text-4xl font-bold">RE-ARC Bench</h1>
+          <Link href="/re-arc/leaderboard">
+            <Button variant="outline" className="gap-2">
+              <Trophy className="h-4 w-4" />
+              Leaderboard
+            </Button>
+          </Link>
+        </div>
         <p className="text-lg text-muted-foreground mb-4">
           Test your ARC solver!
         </p>

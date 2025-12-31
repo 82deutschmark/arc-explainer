@@ -58,6 +58,7 @@ import WormArenaSkillAnalysis from "@/pages/WormArenaSkillAnalysis";
 import WormArenaDistributions from "@/pages/WormArenaDistributions";
 import WormArenaRules from "@/pages/WormArenaRules";
 import ReArc from "@/pages/ReArc";
+import ReArcLeaderboard from "@/pages/ReArcLeaderboard";
 import Redirect from "@/components/Redirect";
 
 import ReArcErrorShowcase from "@/pages/dev/ReArcErrorShowcase";
@@ -113,6 +114,7 @@ function Router() {
         <Route path="/arc3/games/:gameId" component={Arc3GameSpoiler} />
         {/* RE-ARC - self-service dataset generation and evaluation */}
         <Route path="/re-arc" component={ReArc} />
+        <Route path="/re-arc/leaderboard" component={ReArcLeaderboard} />
         {/* SnakeBench = official upstream project at snakebench.com */}
         <Route path="/snakebench" component={SnakeBenchEmbed} />
         {/* Backwards compatibility redirect */}
