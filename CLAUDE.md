@@ -234,7 +234,19 @@ for await (const event of result) {
 _Benefits: preserves historical data via normalization, avoids downtime/migrations, and keeps analytics continuous._
 
 ## 6. ARC & RE-ARC Scoring
-**RE-ARC scoring is exactly the same as ARC-AGI scoring.** Every task is scored per test pair with two attempts; solving any pair requires at least one matching attempt. The backend enforces the identical per-pair logic regardless of how many test pairs a task has.
+
+**CRITICAL: Official Scoring Source of Truth**
+The authoritative implementation of ARC-AGI scoring is located at:
+**`arc-agi-benchmarking/src/arc_agi_benchmarking/scoring/scoring.py`**
+
+All scoring logic in this project MUST match the official Python implementation. The `ARCScorer.score_task()` method (lines 36-125) defines the exact algorithm:
+- For each test case: check if ANY of 2 attempts matches ground truth
+- Task score = (solved test cases) / (total test cases)
+- Overall score = average of task scores (each task weighted equally)
+
+**RE-ARC scoring is exactly the same as ARC-AGI scoring.** Every task is scored per test case with two attempts; solving any test case requires at least one matching attempt. The backend enforces the identical per-test-case logic regardless of how many test cases a task has.
+
+**TERMINOLOGY NOTE:** The official Python code uses `num_pairs` to refer to test cases (each with 2 attempts). This is legacy naming. Our TypeScript uses "testCases" for clarity, but DB columns retain "pairs" for backwards compatibility.
 
 ### Submission JSON Structure
 Each submission file (e.g., `1ae2feb7.json`) is a JSON array where **each element represents a single test pair**:

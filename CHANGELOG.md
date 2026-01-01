@@ -1,5 +1,26 @@
 # New entries at the top, use proper SemVer!
 
+### Version 6.18.9  Jan 1, 2026
+
+- **Document Official ARC-AGI scoring.py as Source of Truth** (Author: Claude Sonnet 4)
+  - **What**: Established `arc-agi-benchmarking/src/arc_agi_benchmarking/scoring/scoring.py` as the authoritative reference for all ARC-AGI scoring logic. Fixed undefined variable bug in leaderboard submission. Updated terminology from "test pairs" to "test cases" for clarity.
+  - **Why**: The official Python scoring implementation is the single source of truth. Users and developers need clear documentation linking to it. The Python code uses legacy naming (`num_pairs`) that refers to test cases (each with 2 attempts), which was causing terminology confusion.
+  - **How**:
+    - **Bug fix**: Fixed undefined `totalPairs`/`solvedPairs` variables in `reArcController.ts:submitToLeaderboard()` - now correctly uses `totalTestCases`/`solvedTestCases`
+    - **Terminology update**: Renamed `EvaluationResult.solvedPairs` to `solvedTestCases` in `reArcService.ts` for clarity (DB columns retain "pairs" for backwards compatibility)
+    - **Frontend**: Added "Official scoring" button to RE-ARC landing page header linking to `/scoring` page
+    - **Scoring page**: Added expandable Accordion in `UnionAccuracyExplainers.tsx` displaying official Python `score_task()` implementation with explanatory notes
+    - **Documentation**: Updated CLAUDE.md Section 6 and AGENTS.md Section 10 to explicitly reference `scoring.py` as source of truth with terminology notes
+  - **Official Scoring Reference**: `arc-agi-benchmarking/src/arc_agi_benchmarking/scoring/scoring.py:36-125` (ARCScorer.score_task method)
+  - **Files changed**:
+    - `server/controllers/reArcController.ts` - Fixed undefined vars, added terminology comments
+    - `server/services/reArc/reArcService.ts` - Renamed `solvedPairs` to `solvedTestCases` in type and implementation
+    - `client/src/pages/ReArc.tsx` - Added "Official scoring" button in header
+    - `client/src/components/huggingFaceUnionAccuracy/UnionAccuracyExplainers.tsx` - Added official Python code Accordion
+    - `CLAUDE.md` - Added official scoring.py reference to Section 6
+    - `AGENTS.md` - Added official scoring.py reference to Section 10
+  - **Terminology clarification**: The official Python uses `num_pairs` to mean "test cases" (each with 2 attempts). Our TypeScript uses "testCases" for clarity, but DB columns retain "pairs" for backwards compatibility.
+
 ### Version 6.18.8  Jan 1, 2026
 
 - **Critical Fix: RE-ARC Scoring Validation Bug** (Author: Claude Haiku 4.5)
