@@ -497,9 +497,6 @@ export function EvaluationSection({ numTasks, compact = false }: EvaluationSecti
               <Shuffle className="h-3.5 w-3.5" />
             </Button>
           </div>
-          <p className="text-xs text-muted-foreground mt-1">
-            Optionally label your submission for your own reference.
-          </p>
         </div>
       )}
 
