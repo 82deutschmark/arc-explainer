@@ -194,7 +194,16 @@ _Use this file plus CLAUDE.md for full directory maps and expectations._
 - **Documentation** – `docs/plans/2025-12-24-re-arc-interface-plan.md`, `docs/plans/2025-12-24-rearc-frontend-design.md`, `docs/archives/AGENTS-OLD.md`.
 
 ## 10. ARC & RE-ARC Scoring
-**RE-ARC scoring is exactly the same as official ARC-AGI scoring.** Every task includes N test pairs; you get two attempts per pair. A pair counts as solved if either attempt matches the ground-truth output. Task score = solved_pairs / total_pairs; submission score = average across tasks.
+
+**CRITICAL: Official Scoring Source of Truth**
+The authoritative ARC-AGI scoring implementation is at:
+**`arc-agi-benchmarking/src/arc_agi_benchmarking/scoring/scoring.py`**
+
+All scoring implementations in this project MUST match this official Python code. The `ARCScorer.score_task()` method (lines 36-125) defines the exact algorithm.
+
+**RE-ARC scoring is exactly the same as official ARC-AGI scoring.** Every task includes N test cases; you get two attempts per test case. A test case counts as solved if either attempt matches the ground-truth output. Task score = solved_test_cases / total_test_cases; submission score = average across tasks (each task weighted equally).
+
+**TERMINOLOGY NOTE:** The official Python code uses variable names like `num_pairs` and `pair_index`, but these refer to **test cases**, NOT pairs of attempts. Each test case has 2 attempts. Our TypeScript uses "testCases" for clarity, but DB columns retain "pairs" for backwards compatibility.
 
 ### Submission JSON Structure
 Each submission file (e.g., `1ae2feb7.json`) is a JSON array where every element represents one test pair:
@@ -240,17 +249,27 @@ score = task_score / num_pairs
 - Compute each task score as `solved_pairs / total_pairs`, then average across tasks. `tasksSolved` counts tasks with perfect scores (1.0).
 
 ### CRITICAL: Where Does Scoring Actually Happen?
-**⚠️ IMPORTANT ARCHITECTURAL NOTE**: RE-ARC task verification is currently split between **Python (generators) and TypeScript (scorer)**. The Python library in `external/re-arc/` contains verifiers for each task, but scoring is reimplemented in TypeScript via `server/services/reArc/reArcService.ts:scoreTask()`.
+
+**Official Scoring Reference**: `arc-agi-benchmarking/src/arc_agi_benchmarking/scoring/scoring.py` (ARCScorer class, lines 36-125)
+
+**IMPORTANT ARCHITECTURAL NOTE**: RE-ARC task verification is currently split between **Python (generators) and TypeScript (scorer)**. The Python library in `external/re-arc/` contains verifiers for each task, but scoring is reimplemented in TypeScript via `server/services/reArc/reArcService.ts:scoreTask()`.
+
+**Our TypeScript implementation matches the official Python scoring.py exactly.** See `reArcService.ts:591-627` for the implementation that mirrors `scoring.py:36-125`.
 
 **Current flow**:
 1. Python generates tasks + test outputs (generators.py)
 2. Python has verifiers (verifiers.py) that check correctness
-3. **TypeScript re-implements grid comparison** instead of calling Python verifiers
+3. **TypeScript re-implements grid comparison** to match the official Python scoring logic
 
-**This works for now** because RE-ARC tasks are identity-matched (no custom logic), so grid equality = correct answer. However:
+**This works for now** because:
+- RE-ARC tasks are identity-matched (no custom logic), so grid equality = correct answer
+- Our TypeScript `scoreTask()` matches Python's `ARCScorer.score_task()` line-for-line
+- Both use the same algorithm: count test cases where ANY attempt matches ground truth
+
+However:
 - Any future task with custom verification rules will break
 - Scoring logic is duplicated across languages
-- Single source of truth should be Python's official verifiers
+- Single source of truth should be Python's official implementation
 
 **Future refactor recommendation**: Move scoring to Python subprocess, call it from TypeScript for evaluation. See CLAUDE.md Section 6 for full details.
 
