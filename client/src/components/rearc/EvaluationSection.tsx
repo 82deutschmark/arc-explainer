@@ -92,18 +92,8 @@ type EvaluationPhase =
 export function EvaluationSection({ numTasks, compact = false }: EvaluationSectionProps) {
   const [phase, setPhase] = useState<EvaluationPhase>({ type: 'idle' });
   const [isDragging, setIsDragging] = useState(false);
-  const [solverName, setSolverName] = useState('');
-  const [hasSubmitted, setHasSubmitted] = useState(false);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
-
-  const handleGenerateName = useCallback(() => {
-    setSolverName(generateRandomName());
-  }, []);
-
-  // Ref to capture current solverName at submit time (avoids stale closure)
-  const solverNameRef = useRef(solverName);
-  solverNameRef.current = solverName;
 
   const handleFileUpload = useCallback(
     async (file: File) => {
@@ -472,31 +462,6 @@ export function EvaluationSection({ numTasks, compact = false }: EvaluationSecti
               total={phase.progress.total}
             />
           )}
-        </div>
-      )}
-
-      {/* Optional label input - understated, only in non-compact mode */}
-      {!compact && phase.type === 'idle' && (
-        <div className="mb-4">
-          <div className="flex items-center gap-2">
-            <Input
-              type="text"
-              placeholder="Label (optional)"
-              value={solverName}
-              onChange={(e) => setSolverName(e.target.value)}
-              className="max-w-xs h-8 text-sm"
-            />
-            <Button
-              type="button"
-              variant="ghost"
-              size="sm"
-              onClick={handleGenerateName}
-              className="h-8 px-2 text-muted-foreground hover:text-foreground"
-              title="Generate random name"
-            >
-              <Shuffle className="h-3.5 w-3.5" />
-            </Button>
-          </div>
         </div>
       )}
 
