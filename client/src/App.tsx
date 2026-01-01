@@ -116,7 +116,7 @@ function Router() {
         {/* RE-ARC - self-service dataset generation and evaluation */}
         <Route path="/re-arc" component={ReArc} />
         <Route path="/re-arc/submissions" component={ReArcSubmissions} />
-        <Route path="/re-arc/dataset" component={ReArcDataset} />
+        <Route path="/dataset-viewer" component={ReArcDataset} />
         {/* SnakeBench = official upstream project at snakebench.com */}
         <Route path="/snakebench" component={SnakeBenchEmbed} />
         {/* Backwards compatibility redirect */}
