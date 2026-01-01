@@ -1,11 +1,15 @@
 /**
  * RE-ARC Dataset Generation and Evaluation Service
  *
- * Author: Claude Code using Sonnet 4.5
- * Date: 2025-12-27
+ * Author: Claude Code using Sonnet 4.5 (updated by Claude Sonnet 4)
+ * Date: 2026-01-01
  * PURPOSE: Python subprocess integration for RE-ARC dataset generation and evaluation.
  *          Streams tasks from Python lib.py, manages task ID encoding/decoding,
  *          and scores submissions against deterministically regenerated ground truth.
+ *          Scoring logic matches official ARC-AGI Python implementation (scoring.py).
+ *
+ * TERMINOLOGY NOTE: The official Python scoring.py uses "num_pairs" to refer to test cases
+ * (each with 2 attempts). We use "testCases" for clarity throughout this service.
  *
  * SRP/DRY check: Pass - Single responsibility: RE-ARC Python integration
  *                        Refactored to eliminate duplication in spawn/timeout logic
@@ -326,9 +330,13 @@ export interface PredictionCountMismatch {
 
 /**
  * Evaluation result: score, mismatches, or malformed submission.
+ * 
+ * NOTE: "solvedTestCases" counts the number of test cases (not attempts) that were solved.
+ * Each test case has 2 attempts; a test case is solved if EITHER attempt matches ground truth.
+ * This matches the official ARC-AGI Python scoring.py terminology where "num_pairs" refers to test cases.
  */
 export type EvaluationResult =
-  | { type: 'score'; score: number; taskScores: number[]; solvedPairs: number }
+  | { type: 'score'; score: number; taskScores: number[]; solvedTestCases: number }
   | { type: 'mismatches'; mismatches: PredictionCountMismatch[] }
   | { type: 'malformed'; error: string };
 
@@ -496,14 +504,14 @@ export async function evaluateSubmission(
   // Step 3: Check cache for this seedId (public identifier)
   const cachedTestOutputs = __testOnly_datasetCache.get(seedId);
   let totalScore = 0;
-  let solvedPairs = 0;
+  let solvedTestCases = 0;
   const taskScores: number[] = [];
   const mismatches: PredictionCountMismatch[] = [];
 
   // Helper: Process a single task (shared between cache hit/miss paths)
   const processTask = (
     taskIndex: number,
-    testPairs: { output: number[][] }[],
+    testCases: { output: number[][] }[],
   ): void => {
     const submittedPredictions = submissionInOrder[taskIndex];
     const taskId = orderedTaskIds[taskIndex];
@@ -512,20 +520,20 @@ export async function evaluateSubmission(
       throw new Error(`Missing submission for task ${taskId} at index ${taskIndex}`);
     }
 
-    // Check prediction count (must match number of test inputs)
-    if (submittedPredictions.length !== testPairs.length) {
+    // Check prediction count (must match number of test cases)
+    if (submittedPredictions.length !== testCases.length) {
       mismatches.push({
         taskId,
         taskIndex,
-        expectedPredictions: testPairs.length,
+        expectedPredictions: testCases.length,
         submittedPredictions: submittedPredictions.length,
       });
       taskScores.push(0); // Mismatch scores 0
     } else {
-      // Score this task and track actual solved pairs
-      const { score: taskScore, solvedCount } = scoreTask(testPairs, submittedPredictions);
+      // Score this task and track actual solved test cases
+      const { score: taskScore, solvedCount } = scoreTask(testCases, submittedPredictions);
       totalScore += taskScore;
-      solvedPairs += solvedCount;
+      solvedTestCases += solvedCount;
       taskScores.push(taskScore);
     }
 
@@ -551,15 +559,15 @@ export async function evaluateSubmission(
       processLine: (line, taskIndex) => {
         const groundTruth = JSON.parse(line);
 
-        // Extract and cache test outputs
-        const testPairs = groundTruth.test;
-        const taskTestOutputs = testPairs.map((testPair: { output: number[][] }) => ({
-          output: testPair.output,
+        // Extract and cache test case outputs
+        const testCases = groundTruth.test;
+        const taskTestOutputs = testCases.map((testCase: { output: number[][] }) => ({
+          output: testCase.output,
         }));
         testOutputs.push(taskTestOutputs);
 
         // Score this task (streaming)
-        processTask(taskIndex, testPairs);
+        processTask(taskIndex, testCases);
 
         // No need to yield anything (void return)
       },
@@ -577,31 +585,31 @@ export async function evaluateSubmission(
   }
 
   const overallScore = totalScore / numTasks;
-  return { type: 'score', score: overallScore, taskScores, solvedPairs };
+  return { type: 'score', score: overallScore, taskScores, solvedTestCases };
 }
 
 /**
- * Score a single task by comparing predictions against ground truth test pairs.
+ * Score a single task by comparing predictions against ground truth test cases.
  *
- * A test input is considered solved if ANY of the 2 prediction attempts match the ground truth output.
- * Task score = (number of solved test inputs) / (total test inputs).
+ * A test case is considered solved if ANY of the 2 prediction attempts match the ground truth output.
+ * Task score = (number of solved test cases) / (total test cases).
  *
- * IMPORTANT: Caller must ensure predictions.length === testPairs.length before calling.
+ * IMPORTANT: Caller must ensure predictions.length === testCases.length before calling.
  *
- * @param testPairs - Ground truth test pairs from dataset
- * @param predictions - Array of predictions from submission (must match testPairs.length)
- * @returns Object with { score, solvedCount } where score is 0.0-1.0 and solvedCount is actual pair count
+ * @param testCases - Ground truth test cases from dataset (each test case has an input and expected output)
+ * @param predictions - Array of predictions from submission (must match testCases.length)
+ * @returns Object with { score, solvedCount } where score is 0.0-1.0 and solvedCount is actual test case count
  */
 function scoreTask(
-  testPairs: { output: number[][] }[],
+  testCases: { output: number[][] }[],
   predictions: { attempt_1: number[][]; attempt_2: number[][] }[],
 ): { score: number; solvedCount: number } {
-  if (testPairs.length === 0) return { score: 0, solvedCount: 0 };
+  if (testCases.length === 0) return { score: 0, solvedCount: 0 };
 
-  let solvedTestInputs = 0;
+  let solvedTestCases = 0;
 
-  for (let i = 0; i < testPairs.length; i++) {
-    const groundTruth = testPairs[i].output;
+  for (let i = 0; i < testCases.length; i++) {
+    const groundTruth = testCases[i].output;
     const { attempt_1, attempt_2 } = predictions[i];
 
     // Check if either prediction attempt matches ground truth
@@ -609,13 +617,13 @@ function scoreTask(
     const attempt2Correct = gridsEqual(attempt_2, groundTruth);
 
     if (attempt1Correct || attempt2Correct) {
-      solvedTestInputs++;
+      solvedTestCases++;
     }
   }
 
   return {
-    score: solvedTestInputs / testPairs.length,
-    solvedCount: solvedTestInputs,
+    score: solvedTestCases / testCases.length,
+    solvedCount: solvedTestCases,
   };
 }
 

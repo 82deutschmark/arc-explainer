@@ -54,6 +54,9 @@ export default function ReArc() {
           <Button asChild variant="outline">
             <Link href="/re-arc/submissions">View submissions</Link>
           </Button>
+          <Button asChild variant="outline">
+            <Link href="/scoring">Official scoring</Link>
+          </Button>
           <Button asChild>
             <Link href="/re-arc/dataset">View dataset</Link>
           </Button>
